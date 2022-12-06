@@ -8480,9 +8480,16 @@ std::vector<DriverHandle> GetActiveDrivers() {
 }
 
 
-const std::unordered_map<std::string, std::string>& GetAttributes(DriverHandle handle) {
+const std::unordered_map<std::string, std::string> GetAttributes(DriverHandle handle) {
   auto& registry = CommDriverRegistry::GetInstance();
-  auto driver = FindDriver(registry.GetDrivers(), handle);
+  auto drivers = registry.GetDrivers();
+  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
+  auto found = std::find_if(drivers.begin(), drivers.end(), func);
 
-  return driver->attributes;
+  std::unordered_map<std::string, std::string> rv;
+  if (found == drivers.end()){
+    return rv;
+  }
+
+  return found->get()->GetAttributes();
 }

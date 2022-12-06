@@ -1726,7 +1726,7 @@ extern DECL_EXP std::vector<DriverHandle> GetActiveDrivers();
  */
 
 /**  Query driver attributes  */
-extern DECL_EXP const std::unordered_map<std::string, std::string>&
+extern DECL_EXP const std::unordered_map<std::string, std::string>
         GetAttributes(DriverHandle handle);
 
 /* Writing to a specific driver  */

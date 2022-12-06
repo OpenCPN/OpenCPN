@@ -88,6 +88,9 @@ public:
   const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
+
+  virtual std::unordered_map<std::string, std::string> GetAttributes() const { return attributes;}
+
   std::unordered_map<std::string, std::string> attributes;
 
 protected:
