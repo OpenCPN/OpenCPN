@@ -87,7 +87,7 @@ jobs:
           wget https://download.opencpn.org/s/i3QdxibNL732mgJ/download -O OpenCPN_buildwin-4.99c.7z
           7z x -y OpenCPN_buildwin-4.99c.7z -obuildwin
           cmake -A win32 -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{ matrix.cmake_defines }}
-          cmake --build build
+          cmake --build build --parallel 8
         shell: cmd
 
       - name: Configure CMake
@@ -96,5 +96,5 @@ jobs:
 
       - name: Build
         if: runner.os != 'Windows'
-        run: cmake --build build --config ${{env.BUILD_TYPE}}
+        run: cmake --build build --config ${{env.BUILD_TYPE}} --parallel 8
 ...
