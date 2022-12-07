@@ -42,6 +42,7 @@
 #include "ocpn_plugin.h"
 #include "color_handler.h"
 #include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -53,6 +54,7 @@ extern bool g_bopengl;
 extern GLenum g_texture_rectangle_format;
 #endif
 extern MyFrame *gFrame;
+extern BasePlatform *g_BasePlatform;
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
 EVT_PAINT(RolloverWin::OnPaint) EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
@@ -443,12 +445,12 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
     h = 10;
   }
 
+  double scaler = g_BasePlatform->GetDisplayDPIMult(this);
+
   m_size.x = w + 1 * sizeM.x;
   m_size.y = h + 1 * sizeM.y;
 
-#ifdef WX316PLUS
-  m_size = gFrame->ToDIP(m_size);
-#endif
+  m_size *= scaler;
 
   int xp, yp;
   if ((x + off_x + m_size.x) > parent_size.x) {
