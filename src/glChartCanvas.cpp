@@ -427,6 +427,7 @@ void glChartCanvas::Init() {
   m_currentTex = 0;
 
   m_gldc.SetGLCanvas(this);
+  m_gldc.SetDPIFactor(g_BasePlatform->GetDisplayDPIMult(GetParent()));
 
   m_displayScale = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
