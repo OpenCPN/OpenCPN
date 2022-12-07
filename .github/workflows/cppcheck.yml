@@ -4,7 +4,7 @@ on: [push]
 jobs:
   build:
     name: cppcheck
-    runs-on: ubuntu-latest
+    runs-on: debian-bullseye
     steps:
       - uses: actions/checkout@v2
           
