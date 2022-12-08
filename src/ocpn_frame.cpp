@@ -1680,6 +1680,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       // Verify that glCanvas is ready, if necessary
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
+        cc->GetglCanvas()->Show();
       }
 
       g_canvasConfigArray.Item(0)->canvas = cc;
