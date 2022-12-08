@@ -3851,9 +3851,9 @@ void glChartCanvas::Render() {
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
 
-#ifdef __WXOSX__
-  gl_height = m_pParentCanvas->GetClientSize().y;
-#endif
+// #ifdef __WXOSX__
+//   gl_height = m_pParentCanvas->GetClientSize().y;
+// #endif
 
   OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
 
