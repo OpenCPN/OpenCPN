@@ -24,28 +24,6 @@ set( SRC
     jeeps/gpsusbread.c
     jeeps/gpsusbsend.c
     jeeps/gpsusbcommon.c
-    jeeps/garmin_gps.h
-    jeeps/gpsapp.h
-    jeeps/gpsdatum.h
-    jeeps/gpsfmt.h
-    jeeps/gpsmath.h
-    jeeps/gpsport.h
-    jeeps/gpsprot.h
-    jeeps/gpsrqst.h
-    jeeps/gpsserial.h
-    jeeps/gpsusbint.h
-    jeeps/gps_wx_logging.h
-    jeeps/garminusb.h
-    jeeps/gpscom.h
-    jeeps/gpsdevice.h
-    jeeps/gpsinput.h
-    jeeps/gpsmem.h
-    jeeps/gpsproj.h
-    jeeps/gpsread.h
-    jeeps/gpssend.h
-    jeeps/gpsusbcommon.h
-    jeeps/gpsutil.h
-    jeeps/garmin_wrapper_utils.h
     jeeps/garmin_wrapper_utils.c
 )
 if (WIN32)
