@@ -668,9 +668,13 @@ float AIS_width_interceptline;
 float AIS_width_cogpredictor_base;
 float AIS_width_cogpredictor_line;
 float AIS_width_target_outline;
+float AIS_icon_diameter;
 
 static void AISSetMetrics() {
   AIS_scale_factor = 1.0;
+  // Adapt for possible scaled display (Win)
+  double DPIscale = 1.0;
+  DPIscale = g_Platform->GetDisplayDPIMult(gFrame);
 
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
@@ -688,11 +692,11 @@ static void AISSetMetrics() {
   AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 6.0);
 
   AIS_nominal_icon_size_pixels =
-      wxMax(4.0, floor(g_Platform->GetDisplayDPmm() *
-                       AIS_nominal_target_size_mm));  // nominal size, but not
-                                                      // less than 4 pixel
+               wxMax(4.0, g_Platform->GetDisplayDPmm() *
+               AIS_nominal_target_size_mm);  // nominal size, but not
+                                             // less than 4 pixel
   AIS_pix_factor = AIS_nominal_icon_size_pixels /
-                   30.0;  // generic A/B icons are 30 units in size
+                   30.0; // generic A/B icons are 30 units in size
 
   AIS_scale_factor *= AIS_pix_factor;
 
@@ -706,16 +710,17 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, floor(g_Platform->GetDisplayDPmm() /
-                       5.0));  // 0.4 mm nominal, but not less than 1 pixel
+      wxMax(1.5, g_Platform->GetDisplayDPmm() / (5.0 * DPIscale));
+        // 0.4 mm nominal, but not less than 1 pixel
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
-  AIS_intercept_bar_circle_diameter = 4 * AIS_nominal_line_width_pix;
+  AIS_intercept_bar_circle_diameter = 3.5 * AIS_nominal_line_width_pix;
   AIS_width_interceptline = 2 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
-  AIS_width_cogpredictor_line = 1.5 * AIS_nominal_line_width_pix;
-  AIS_width_target_outline = 1.5 * AIS_nominal_line_width_pix;
+  AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
+  AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
+  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
 }
 
 static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
@@ -1061,9 +1066,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
       //  Using the true ends, not the clipped ends
       dc.StrokeCircle(tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
-                      AIS_intercept_bar_circle_diameter);
-      dc.StrokeCircle(oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
-                      AIS_intercept_bar_circle_diameter);
+          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
     }
 
     // Draw the intercept line from ownship
@@ -1185,14 +1188,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           glEnd();
           glPopMatrix();
 #else
-          double nominal_circle_size_pixels = wxMax(
-              14.0,
-              floor(g_Platform->GetDisplayDPmm() *
-                    1));  // 1.0 mm nominal diameter, but not less than 4 pixel
+          
           dc.SetBrush(target_brush);
           dc.StrokeCircle(PredPoint.x, PredPoint.y,
-                          nominal_circle_size_pixels / 2);
-
+                          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
 #endif
 #endif
         }
@@ -1225,8 +1224,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
     dc.SetPen(target_pen);
     dc.SetBrush(target_brush);
-
-    dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 9);
+    dc.StrokeCircle(TargetPoint.x, TargetPoint.y,
+                    1.4 * AIS_icon_diameter);  // 9
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
     //        Draw the inactive cross-out line
     if (!td->b_active) {
@@ -1236,7 +1235,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       dc.SetPen(wxPen(UBLCK, 1));
     }
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
-    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y, 12, td);
+    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
+                 2 * AIS_icon_diameter, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
   } else if (td->Class == AIS_SART) {  // SART Target
