@@ -46,6 +46,18 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
 
   if (!RoutePointGui(m_point).IsVisibleSelectable(canvas, boverride_viz)) return;
 
+  // If waypoint is well off screen, skip the drawing
+  if( (abs(r.x) > canvas->GetCanvasWidth() * 4 ) ||
+      (abs(r.y) > canvas->GetCanvasHeight() * 4))
+    return;
+
+  // If waypoint pixel location is invalid, skip the drawing
+  if ((abs(r.x) == INVALID_COORD ) ||
+      (abs(r.y) == INVALID_COORD) )
+  return;
+
+
+
   //    Optimization, especially apparent on tracks in normal cases
   if (m_point.m_IconName == _T("empty") && !m_point.m_bShowName
        && !m_point.m_bPtIsSelected){
