@@ -48,6 +48,7 @@
 #include "wx28compat.h"
 #include "route.h"
 #include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 
 extern Routeman* g_pRouteMan;
 extern MyFrame* gFrame;
@@ -55,6 +56,7 @@ extern bool g_bShowActiveRouteHighway;
 extern double gCog;
 extern double gSog;
 extern bool g_bShowTrue, g_bShowMag;
+extern BasePlatform* g_BasePlatform;
 
 bool g_bShowRouteTotal;
 
@@ -516,6 +518,10 @@ void AnnunText::CalculateMinSize(void) {
 
   if (m_pvalueFont)
     GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
+
+  double pdifactor = g_BasePlatform->GetDisplayDPIMult(gFrame);
+  wl *= pdifactor; hl *= pdifactor;
+  wv *= pdifactor; hv *= pdifactor;
 
   wxSize min;
   min.x = wl + wv;
