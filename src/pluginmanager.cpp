@@ -5125,7 +5125,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   path.AppendDir("uidata");
   path.AppendDir("traditional");
   bool ok = false;
-  int bmsize = GetCharWidth() * 3;
+  int bmsize = GetCharWidth() * 3 * dpi_mult;
   if (path.IsFileReadable()) {
     statusBitmap = LoadSVG(path.GetFullPath(), bmsize, bmsize);
     ok = statusBitmap.IsOk();
