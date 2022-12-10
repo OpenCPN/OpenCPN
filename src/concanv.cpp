@@ -534,6 +534,13 @@ void AnnunText::CalculateMinSize(void) {
   min.y = (int)((hl + hv) * 1.2);
 
   SetMinSize(min);
+
+  //resize background to the necessary size
+  ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+  if (style->consoleTextBackground.IsOk()) {
+    wxImage img = style->consoleTextBackground.ConvertToImage();
+    style->consoleTextBackground = wxBitmap(img.Rescale(min.x, min.y));
+  }
 }
 
 void AnnunText::SetColorScheme(ColorScheme cs) {

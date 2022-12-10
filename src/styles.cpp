@@ -699,13 +699,10 @@ void Style::SetColorScheme(ColorScheme cs) {
     wxBitmap bm = graphics->GetSubBitmap(
         wxRect(consoleTextBackgroundLoc, consoleTextBackgroundSize));
 
-    // The background bitmap in the icons file may be too small, so will grow it
-    // arbitrailly
-    wxImage image = bm.ConvertToImage();
-    image.Rescale(consoleTextBackgroundSize.GetX() * 2,
-                  consoleTextBackgroundSize.GetY() * 2, wxIMAGE_QUALITY_NORMAL);
-    wxBitmap bn(image);
-    consoleTextBackground = SetBitmapBrightness(bn, cs);
+    // The background bitmap in the icons file may be too small but it's better to resize it
+    // when we use it
+
+    consoleTextBackground = SetBitmapBrightness(bm, cs);
   }
 }
 
