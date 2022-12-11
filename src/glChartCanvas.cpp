@@ -1912,7 +1912,7 @@ void glChartCanvas::GridDraw() {
     double dpi_factor = g_BasePlatform->GetDisplayDPIMult(this);
     wxFont *dFont = FontMgr::Get().GetFont(_("ChartTexts"), 0);
     wxFont font = *dFont;
-    font.SetPointSize(8);
+    font.SetPointSize(28);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
     font.Scale( 1.0 / dpi_factor);
 
@@ -3829,8 +3829,14 @@ void glChartCanvas::Render() {
   ocpnDC gldc(*this);
 
   int gl_width, gl_height;
-  m_pParentCanvas->GetClientSize(&gl_width, &gl_height);
+  gl_width = m_pParentCanvas->VPoint.pix_width;
+  gl_height = m_pParentCanvas->VPoint.pix_height;
 
+  // Take a copy for use later by DC
+  m_glcanvas_width = gl_width;
+  m_glcanvas_height = gl_height;
+
+#if 0
   if (gl_height & 1){
     gl_height -= 1;
     // Adjust the Viewport height
@@ -3847,13 +3853,14 @@ void glChartCanvas::Render() {
     mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
                              -vp->pix_height / 2, 0);
   }
+#endif
 
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
   OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
 
-  glViewport(0, 0, (GLint)gl_width * m_displayScale,
-             (GLint)gl_height * m_displayScale);
+  glViewport(0, 0, (GLint)gl_width/* * m_displayScale*/,
+             (GLint)gl_height/* * m_displayScale*/);
 
 //#ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2)
@@ -4218,7 +4225,7 @@ void glChartCanvas::Render() {
 #if 0  //#ifndef USE_ANDROID_GLES2
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fb0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(0, 0, sx, sy, 0, 0, sx, sy, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    glBlitFramebuffer(0, 0, sx, sy, 0, 0, sx*2, sy*2, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -4288,7 +4295,8 @@ void glChartCanvas::Render() {
 
   // Render static overlay objects
   for (OCPNRegionIterator upd(screen_region); upd.HaveRects(); upd.NextRect()) {
-    LLRegion region = VPoint.GetLLRegion(upd.GetRect());
+      wxRect rt = upd.GetRect();
+    LLRegion region = VPoint.GetLLRegion(rt);
     ViewPort cvp = ClippedViewport(VPoint, region);
     DrawGroundedOverlayObjects(gldc, cvp);
   }
