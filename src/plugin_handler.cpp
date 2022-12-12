@@ -287,7 +287,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
 
   static const std::vector<std::string> simple_abis = {"msvc", "msvc-wx32",
-  "darwin", "darwin-wx315", "android-armhf", "android-arm64"};
+  "darwin", "darwin-wx315", "darwin-wx32", "android-armhf", "android-arm64"};
+  // FIXME (leamas) review whether darwin-wx315 should be removed.
 
   auto compatOS = CompatOs::getInstance();
   Host host(compatOS);
