@@ -45,7 +45,11 @@ jobs:
           - name: macOS 10.15 wxOSX
             runner: macos-10.15
             cmake_generator: Xcode
-            cmake_defines: -DCMAKE_CXX_STANDARD=11 -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010"
+            cmake_defines: >
+              -DCMAKE_CXX_STANDARD=11
+              -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config
+              -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010"
+              -DOCPN_BUILD_TEST=OFF
           # Prepare for the moment when we do not need Windows XP support anymore (v141_xp toolcahin not available in VS 2022 builders anymore, so we can't link against our usual dependency bundle)
           # - name: Windows MSVC
           #   runner: windows-latest
