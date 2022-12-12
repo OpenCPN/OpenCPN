@@ -3002,6 +3002,14 @@ if (NOT QT_ANDROID AND NOT APPLE)
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
 
+  if (CMAKE_VERSION VERSION_GREATER 3.4)
+    if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+      target_link_libraries(opencpn-cmd
+        PRIVATE -fsanitize=${ENABLE_SANITIZER}
+      )
+    endif ()
+  endif ()
+
   target_include_directories(
     opencpn-cmd
     PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include

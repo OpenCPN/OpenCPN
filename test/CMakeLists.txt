@@ -37,6 +37,14 @@ target_include_directories(
   ${PROJECT_SOURCE_DIR}/../buildandroid/libcurl/include
 )
 
+if (CMAKE_VERSION VERSION_GREATER 3.4)
+  if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+    target_link_libraries(tests
+        PRIVATE -fsanitize=${ENABLE_SANITIZER}
+    )
+  endif ()
+endif ()
+
 target_link_libraries(tests PRIVATE ${wxWidgets_LIBRARIES})
 if (DEFINED LIBELF_LIBRARY)
   target_link_libraries(tests PRIVATE "${LIBELF_LIBRARY}")
