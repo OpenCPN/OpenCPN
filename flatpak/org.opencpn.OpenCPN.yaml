@@ -55,15 +55,20 @@ modules:
         - /include"
         - /lib/pkgconfig"
         - /lib/*.a"
-    - name: mesa-libGLU
-      sources:
-          - type: archive
-            url: https://mesa.freedesktop.org/archive/glu/glu-9.0.0.tar.bz2
-            sha256: 1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
-          - type: patch
-            path: ../flatpak/src/0001-error.c-Add-missing-stddef-include.patch
+
+    - name: glu
       config-opts:
-          - --disable-static
+        - --disable-static
+      sources:
+        - type: archive
+          url: https://ftp.osuosl.org/pub/blfs/conglomeration/glu/glu-9.0.2.tar.xz
+          sha256: 6e7280ff585c6a1d9dfcdf2fca489251634b3377bfc33c29e4002466a38d02d4
+      cleanup:
+        - /include
+        - /lib/*.a
+        - /lib/*.la
+        - /lib/pkgconfig
+
     - name: libusb
       config-opts:
         - --disable-static
