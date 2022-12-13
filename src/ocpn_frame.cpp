@@ -3495,9 +3495,8 @@ Track *MyFrame::TrackOff(bool do_add_point) {
         }
       }
     }
+    g_pActiveTrack = NULL;
   }
-
-  g_pActiveTrack = NULL;
 
   g_bTrackActive = false;
 

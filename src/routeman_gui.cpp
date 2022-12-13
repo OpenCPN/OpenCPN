@@ -245,7 +245,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
       pTrackPropDialog->Hide();
     }
 
-    if (pTrack == g_pActiveTrack) {
+    if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()){
       pTrack = gFrame->TrackOff();
     }
     //    Remove the track from associated lists
@@ -263,6 +263,8 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
 }
 
 void RoutemanGui::DeleteAllTracks() {
+  gFrame->TrackOff();
+
   ::wxBeginBusyCursor();
 
   // Iterate on the RouteList, we delete from g_TrackList in DeleteTrack,
