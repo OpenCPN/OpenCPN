@@ -128,12 +128,12 @@ private:
 #endif
 
 TrackPoint::TrackPoint(double lat, double lon, wxString ts)
-    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1), m_timestring(NULL) {
+    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(ts);
 }
 
 TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
-    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1), m_timestring(NULL) {
+    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(dt);
 }
 
@@ -141,20 +141,15 @@ TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
 TrackPoint::TrackPoint(TrackPoint *orig)
     : m_lat(orig->m_lat),
       m_lon(orig->m_lon),
-      m_GPXTrkSegNo(1),
-      m_timestring(NULL) {
+      m_GPXTrkSegNo(1) {
   SetCreateTime(orig->GetCreateTime());
 }
 
-TrackPoint::~TrackPoint() { delete[] m_timestring; }
+TrackPoint::~TrackPoint() { }
 
 wxDateTime TrackPoint::GetCreateTime() {
   wxDateTime CreateTimeX;
-
-  if (m_timestring) {
-    wxString ts = m_timestring;
-    ParseGPXDateTime(CreateTimeX, ts);
-  }
+  ParseGPXDateTime(CreateTimeX, wxString(m_stimestring.c_str()));
   return CreateTimeX;
 }
 
@@ -170,12 +165,10 @@ void TrackPoint::SetCreateTime(wxDateTime dt) {
 }
 
 void TrackPoint::SetCreateTime(wxString ts) {
-  delete[] m_timestring;
   if (ts.Length()) {
-    m_timestring = new char[ts.Length() + 1];
-    strcpy(m_timestring, ts.mb_str());
+    m_stimestring = ts.mb_str();
   } else
-    m_timestring = NULL;
+    m_stimestring = "";
 }
 
 //---------------------------------------------------------------------------------
