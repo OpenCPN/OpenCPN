@@ -2369,7 +2369,8 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
 
 #ifdef __WXOSX__
   // Support Mac Retina displays.
-  max_physical /= GetContentScaleFactor();
+  //FIXME Monterey...fixes displayed chart_scale, and SCAMIN calcs.
+  //max_physical /= GetContentScaleFactor();
 #endif
 
   m_pix_per_mm = (max_physical) / ((double)m_display_size_mm);
@@ -11102,7 +11103,10 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   }
 
   if (m_brepaint_piano && g_bShowChartBar) {
-    m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
+    int canvas_height = GetClientSize().y;
+    // FIXME Monterey
+    canvas_height *= 2;
+    m_Piano->Paint(canvas_height - m_Piano->GetHeight(), mscratch_dc);
     // m_brepaint_piano = false;
   }
 
@@ -13082,6 +13086,9 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
   int cc1_edge_comp = 2;
   wxRect rect = m_Compass->GetRect();
   wxSize parent_size = GetSize();
+
+  // FIXME Monterey
+  parent_size *= 2;
 
   // check to see if it would overlap if it was in its home position (upper
   // right)

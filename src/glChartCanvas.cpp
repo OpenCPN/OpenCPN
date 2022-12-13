@@ -2679,10 +2679,16 @@ void glChartCanvas::DrawFloatingOverlayObjects(ocpnDC &dc) {
 }
 
 void glChartCanvas::DrawChartBar(ocpnDC &dc) {
-  if (m_pParentCanvas->GetPiano())
+  if (m_pParentCanvas->GetPiano()){
+
+    int canvas_height = GetClientSize().y;
+    // FIXME Monterey
+    canvas_height *= 2;
+
     m_pParentCanvas->GetPiano()->DrawGL(
-        m_pParentCanvas->GetClientSize().y -
+        canvas_height -
         m_pParentCanvas->GetPiano()->GetHeight());
+  }
 }
 
 void glChartCanvas::DrawQuiting() {
