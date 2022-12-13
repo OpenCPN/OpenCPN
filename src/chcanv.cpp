@@ -361,6 +361,8 @@ wxDialog *g_pcurtain;
 extern double gLat, gLat;
 
 extern int g_GUIScaleFactor;
+// Win DPI scale factor
+double g_scaler;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -2366,6 +2368,8 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   // Calculate pixels per mm for later reference
   wxSize sd = g_Platform->getDisplaySize();
   double max_physical = wxMax(sd.x, sd.y);
+  // Set DPI (Win) scale factor
+  g_scaler = g_Platform->GetDisplayDPIMult(this);
 
 #ifdef __WXOSX__
   // Support Mac Retina displays.
@@ -5636,6 +5640,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
       double png_pred_icon_scale_factor = .4;
       if (g_ShipScaleFactorExp > 1.0)
         png_pred_icon_scale_factor *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
+      if (g_scaler)
+        png_pred_icon_scale_factor *= 1.0 / g_scaler;
 
       wxPoint icon[4];
 
