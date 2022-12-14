@@ -66,6 +66,7 @@
 #include "plugin_handler.h"
 #include "plugin_paths.h"
 #include "safe_mode.h"
+#include "chartdb.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -75,6 +76,7 @@
 extern wxConfigBase* pBaseConfig;
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
+extern ChartDB* ChartData;
 
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
@@ -544,6 +546,13 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
   if (pic->m_bInitState) {
     wxString msg("PlugInManager: Deactivating PlugIn: ");
     wxLogMessage(msg + pic->m_plugin_file);
+
+    // if this plugin is responsible for any charts, then unload chart cache 
+    if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
+        (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
+      ChartData->PurgeCachePlugins();
+     }
+
     pic->m_bInitState = false;
     pic->m_pplugin->DeInit();
     // pic is doomed and will be deleted. Make a copy to handler which
