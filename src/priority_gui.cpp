@@ -288,5 +288,11 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   std::string s_upd(prio_mod.c_str());
   m_map[pe->m_category] = s_upd;
 
+  // Update the priority mechanism
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.UpdateAndApplyMaps(m_map);
+
+  // And reload the tree GUI
+  m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
 }

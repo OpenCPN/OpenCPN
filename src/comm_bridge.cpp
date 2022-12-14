@@ -997,6 +997,13 @@ void CommBridge::ClearPriorityMaps(){
   priority_map_satellites.clear();
 }
 
+void CommBridge::UpdateAndApplyMaps(std::vector<std::string> new_maps){
+  ApplyPriorityMaps(new_maps);
+  SaveConfig();
+  PresetPriorityContainers();
+}
+
+
 bool CommBridge::LoadConfig( void )
 {
   wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
