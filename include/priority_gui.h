@@ -54,6 +54,10 @@ private:
   wxButton *btnMoveUp, *btnMoveDown;
   wxTreeCtrl *m_prioTree;
   std::vector<std::string> m_map;
+
+  int m_selmap_index;
+  int m_selIndex;
+  wxTreeItemId m_selID;
 };
 
 

@@ -62,6 +62,11 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Adjust Comm Priorities"), wxDefaultPosition,
                wxSize(480, 420))
 {
+
+  m_selIndex = 0;
+  m_selmap_index = 0;
+  m_selID = 0;
+
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
 
@@ -135,6 +140,8 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
     wxString item_string = tk.GetNextToken();
     PriorityEntry *pe = new PriorityEntry(map_index, index);
     wxTreeItemId id_tk = m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
+    if ((map_index == m_selmap_index) && (index == m_selIndex))
+      m_selID = id_tk;
     index++;
   }
 }
@@ -170,6 +177,9 @@ void PriorityDlg::Populate() {
 
   m_prioTree->ExpandAll();
 
+  if(m_selID)
+    m_prioTree->SelectItem(m_selID);
+
 #if 0
   wxString dirname;
   int nDir = dir_array.GetCount();
@@ -201,6 +211,8 @@ void PriorityDlg::OnItemSelected(wxCommandEvent& event){
 
   wxTreeItemId id = m_prioTree->GetSelection();
   PriorityEntry *pe = (PriorityEntry *)m_prioTree->GetItemData(id);
+  m_selIndex = pe->m_index;
+  m_selmap_index = pe->m_category;
 
   if (!pe)
     return;
@@ -263,6 +275,7 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
       wxString s_move = prio_array[pe->m_index];
       prio_array[pe->m_index - 1] = s_move;
       prio_array[pe->m_index] = s_above;
+      m_selIndex--;
     }
   }
   else{               // Move DOWN
@@ -272,6 +285,7 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
       wxString s_move = prio_array[pe->m_index];
       prio_array[pe->m_index + 1] = s_move;
       prio_array[pe->m_index] = s_below;
+      m_selIndex++;
     }
   }
 
