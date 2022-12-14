@@ -3516,6 +3516,10 @@ Track *MyFrame::TrackOff(bool do_add_point) {
   androidSetTrackTool(false);
 #endif
 
+   if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   g_FlushNavobjChangesTimeout =
       600;  // Revert to checking/flushing navob changes every 5 minutes
 

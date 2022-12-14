@@ -1686,12 +1686,13 @@ void MyConfig::LoadNavObjects() {
                wpt_dups);
   delete m_pNavObjectInputSet;
 
+  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
+
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
     if (ReloadPendingChanges(m_sNavObjSetChangesFile)) {
       UpdateNavObj();
     }
   }
-  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
   m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
 }
 
@@ -2802,12 +2803,17 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
 
   delete pNavObjectSet;
 
+  if (m_pNavObjectChangesSet->m_changes_file)
+    fclose(m_pNavObjectChangesSet->m_changes_file);
+
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
     wxLogNull logNo;  // avoid silly log error message.
     wxRemoveFile(m_sNavObjSetChangesFile);
   }
 
   if (bRecreate) {
+    m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
+
     m_pNavObjectChangesSet->reset();
     m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
   }
