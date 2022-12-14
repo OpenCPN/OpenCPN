@@ -161,7 +161,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format) {
   n_catalog_entries = 0;
   m_catalog_offset = sizeof(CompressedCacheHeader);
   wxDateTime ed = chart->GetEditionDate();
-  m_chart_date_binary = (uint32_t)ed.GetTicks();
+  m_chart_date_binary = (uint32_t)ed.IsValid() ? ed.GetTicks() : 0;
   m_chartfile_date_binary = ::wxFileModificationTime(chart->GetFullPath());
   m_chartfile_size =
       (uint32_t)wxFileName::GetSize(chart->GetFullPath()).GetLo();
