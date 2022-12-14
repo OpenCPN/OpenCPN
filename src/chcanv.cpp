@@ -785,6 +785,13 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   SetMinSize(wxSize(200, 200));
 
+  m_displayScale = 1.0;
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
+
 #ifdef HAVE_WX_GESTURE_EVENTS
   if (!EnableTouchEvents(wxTOUCH_ZOOM_GESTURE |
                          wxTOUCH_PRESS_GESTURES)) {
@@ -2370,12 +2377,6 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   double max_physical = wxMax(sd.x, sd.y);
   // Set DPI (Win) scale factor
   g_scaler = g_Platform->GetDisplayDPIMult(this);
-
-#ifdef __WXOSX__
-  // Support Mac Retina displays.
-  //FIXME Monterey...fixes displayed chart_scale, and SCAMIN calcs.
-  //max_physical /= GetContentScaleFactor();
-#endif
 
   m_pix_per_mm = (max_physical) / ((double)m_display_size_mm);
   m_canvas_scale_factor = (max_physical) / (m_display_size_mm / 1000.);
@@ -6581,9 +6582,9 @@ void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
 void ChartCanvas::OnSize(wxSizeEvent &event) {
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
-  //Monterey
-  m_canvas_width *= 2;
-  m_canvas_height *= 2;
+
+  m_canvas_width *= m_displayScale;
+  m_canvas_height *= m_displayScale;
 
   //    Resize the current viewport
   VPoint.pix_width = m_canvas_width;
@@ -6949,8 +6950,8 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
 
   event.GetPosition(&x, &y);
 
-  //Monterey
-  x *= 2; y *= 2;
+  x *= m_displayScale;
+  y *= m_displayScale;
 
   m_MouseDragging = event.Dragging();
 
@@ -11110,8 +11111,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   if (m_brepaint_piano && g_bShowChartBar) {
     int canvas_height = GetClientSize().y;
-    // FIXME Monterey
-    canvas_height *= 2;
+    canvas_height *= m_displayScale;
     m_Piano->Paint(canvas_height - m_Piano->GetHeight(), mscratch_dc);
     // m_brepaint_piano = false;
   }
@@ -13093,8 +13093,7 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
   wxRect rect = m_Compass->GetRect();
   wxSize parent_size = GetSize();
 
-  // FIXME Monterey
-  parent_size *= 2;
+  parent_size *= m_displayScale;
 
   // check to see if it would overlap if it was in its home position (upper
   // right)

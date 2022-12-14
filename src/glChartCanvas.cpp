@@ -1912,7 +1912,7 @@ void glChartCanvas::GridDraw() {
     double dpi_factor = g_BasePlatform->GetDisplayDPIMult(this);
     wxFont *dFont = FontMgr::Get().GetFont(_("ChartTexts"), 0);
     wxFont font = *dFont;
-    font.SetPointSize(28);
+    font.SetPointSize(10 * m_displayScale);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
     font.Scale( 1.0 / dpi_factor);
 
@@ -2682,8 +2682,7 @@ void glChartCanvas::DrawChartBar(ocpnDC &dc) {
   if (m_pParentCanvas->GetPiano()){
 
     int canvas_height = GetClientSize().y;
-    // FIXME Monterey
-    canvas_height *= 2;
+    canvas_height *= m_displayScale;
 
     m_pParentCanvas->GetPiano()->DrawGL(
         canvas_height -
@@ -3842,7 +3841,7 @@ void glChartCanvas::Render() {
   m_glcanvas_width = gl_width;
   m_glcanvas_height = gl_height;
 
-#if 0
+#if 1
   if (gl_height & 1){
     gl_height -= 1;
     // Adjust the Viewport height
@@ -3864,9 +3863,7 @@ void glChartCanvas::Render() {
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
   OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
-
-  glViewport(0, 0, (GLint)gl_width/* * m_displayScale*/,
-             (GLint)gl_height/* * m_displayScale*/);
+  glViewport(0, 0, (GLint)gl_width, (GLint)gl_height);
 
 //#ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2)

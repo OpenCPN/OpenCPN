@@ -940,6 +940,7 @@ private:
   double m_sector_glat, m_sector_glon;
   std::vector<s57Sector_t> m_sectorlegsVisible;
   bool m_bShowVisibleSectors;
+  double m_displayScale;
 
   DECLARE_EVENT_TABLE()
 };
