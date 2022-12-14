@@ -268,10 +268,13 @@ void ocpnDC::GetSize(wxCoord *width, wxCoord *height) const {
     dc->GetSize(width, height);
   else {
 #ifdef ocpnUSE_GL
-    if (m_glchartCanvas)
-      m_glchartCanvas->GetSize(width, height);
-    else if (m_glcanvas)
+    if (m_glchartCanvas){
+      *width = m_glchartCanvas->GetGLCanvasWidth();
+      *height = m_glchartCanvas->GetGLCanvasHeight();
+    }
+    else if (m_glcanvas){
       m_glcanvas->GetSize(width, height);
+    }
 #endif
   }
 }

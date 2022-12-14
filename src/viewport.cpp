@@ -133,6 +133,12 @@ ViewPort::ViewPort() {
   m_projection_type = PROJECTION_MERCATOR;
 }
 
+void ViewPort::PixelScale(float scale){
+  pix_width *= scale;
+  pix_height *= scale;
+  view_scale_ppm *= scale;
+}
+
 // TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
   wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);

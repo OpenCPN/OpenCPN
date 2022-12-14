@@ -131,6 +131,9 @@ public:
   void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
   int GetCanvasIndex() { return m_pParentCanvas->m_canvasIndex; }
 
+  int GetGLCanvasWidth() { return m_glcanvas_width; }
+  int GetGLCanvasHeight() { return m_glcanvas_height; }
+
   void OnPaint(wxPaintEvent &event);
   void OnEraseBG(wxEraseEvent &evt);
   void Render();
@@ -308,6 +311,9 @@ protected:
   int m_currentTexWidth;
   int m_currentTexHeight;
   int m_displayScale;
+
+  int m_glcanvas_width;
+  int m_glcanvas_height;
 
   bool m_bUseGLSL;
 
