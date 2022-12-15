@@ -231,12 +231,11 @@ void ConnectionsDialog::Init(){
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
 
-  m_cbPriorityDialog =
-      new wxCheckBox(m_container, wxID_ANY,
-                     _("Adjust communication priorities"),
+  m_ButtonPriorityDialog =
+      new wxButton(m_container, wxID_ANY,
+                     _("Adjust communication priorities..."),
                      wxDefaultPosition, wxDefaultSize, 0);
-  m_cbPriorityDialog->SetValue(false);
-  bSizer161->Add(m_cbPriorityDialog, 0, wxALL, cb_space);
+  bSizer161->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
 
   bSizer151->Add(bSizer161, 1, wxEXPAND, 5);
   sbSizerGeneral->Add(bSizer151, 1, wxEXPAND, 5);
@@ -836,7 +835,7 @@ void ConnectionsDialog::Init(){
                            wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL,
                            this);
 
-  m_cbPriorityDialog->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+  m_ButtonPriorityDialog->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL,
                            this);
 

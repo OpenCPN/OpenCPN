@@ -123,10 +123,10 @@ public:
   wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
       *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
-  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic, *m_cbPriorityDialog;
+  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton  *m_ButtonSKDiscover;
+  wxButton  *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
   wxStaticText *m_StaticTextSKServerStatus;
 
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
