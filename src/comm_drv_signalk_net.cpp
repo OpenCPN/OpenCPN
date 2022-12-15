@@ -141,11 +141,19 @@ void *WebSocketThread::Entry() {
   wsAddress << "ws://" << host.mb_str() << ":" << port
             << "/signalk/v1/stream?subscribe=all&sendCachedValues=false";
 
-  WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
-  if (ws == NULL) {
-    printf("No Connect\n");
-    m_parentStream->SetThreadRunning(false);
-    return 0;
+  bool not_connected = true;
+  WebSocket::pointer ws;
+  while ((not_connected) && (m_parentStream->m_Thread_run_flag > 0)) {
+    ws = WebSocket::from_url(wsAddress.str());
+    if (ws == NULL)
+      printf("No Connect\n");
+    else
+      not_connected = false;
+
+    if (m_parentStream->m_Thread_run_flag == 0){
+      m_parentStream->SetThreadRunning(false);
+      return 0;
+    }
   }
 
   while ((not_done) && (m_parentStream->m_Thread_run_flag > 0)) {
