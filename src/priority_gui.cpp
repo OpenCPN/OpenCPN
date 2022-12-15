@@ -116,7 +116,10 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   m_map = app.m_comm_bridge.GetPriorityMaps();
 
   Populate();
+  stcSizer->SetMinSize(m_maxStringLength * GetCharWidth() * 15 / 10, -1);
+
   Layout();
+  mainSizer->Fit(this);
   Centre();
 }
 
@@ -138,6 +141,10 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
   int index = 0;
   while (tk.HasMoreTokens()) {
     wxString item_string = tk.GetNextToken();
+
+    // Record the maximum dispoay string length, for usin dialog sizing.
+    m_maxStringLength = wxMax(m_maxStringLength, item_string.Length());
+
     PriorityEntry *pe = new PriorityEntry(map_index, index);
     wxTreeItemId id_tk = m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
     if ((map_index == m_selmap_index) && (index == m_selIndex))
@@ -150,6 +157,7 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
 void PriorityDlg::Populate() {
 
   m_prioTree->DeleteAllItems();
+  m_maxStringLength = 0;
 
 //  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"), TRUE);
   wxTreeItemId m_rootId = m_prioTree->AddRoot(_("Priorities"), -1, -1, NULL);
