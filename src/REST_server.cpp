@@ -349,6 +349,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
           // Check for duplicate GUID
           if (g_pRouteMan){
             bool b_add = true;
+            bool b_overwrite_one = false;
             Route *duplicate = g_pRouteMan->FindRouteByGUID(pRoute->GetGUID());
             if (duplicate){
               if (!m_b_overwrite){
@@ -367,11 +368,12 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 }
                 else{
                   m_b_overwrite = b_always;
+                  b_overwrite_one = true;
                   SaveConfig();
                 }
               }
 
-              if (m_b_overwrite){
+              if (m_b_overwrite || b_overwrite_one){
                 //  Remove the existing duplicate route before adding new route
                 g_pRouteMan->DeleteRoute(duplicate,
                                          NavObjectChanges::getInstance());
