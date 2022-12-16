@@ -985,14 +985,19 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   // and....
   wxColour URED = GetGlobalColor(_T ( "URED" ));
   if (!td->b_nameValid) target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
-  if ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) )  // distress(relayed)
+
+  if ((td->Class == AIS_DSC) && ((td->ShipType == 12) ||
+                    (td->ShipType == 16)) )  // distress(relayed)
     target_brush = wxBrush(URED);
+
   if (td->b_SarAircraftPosnReport) target_brush = wxBrush(UINFG);
 
   if ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid))
     target_brush = wxBrush(URED);
 
-  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) && (td->bCPA_Valid))
+  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) &&
+                            (td->bCPA_Valid) &&
+                            (!td->b_isFollower))
     target_brush = wxBrush(URED);
 
   if (td->b_positionDoubtful)
