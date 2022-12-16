@@ -141,46 +141,49 @@ void *WebSocketThread::Entry() {
   wsAddress << "ws://" << host.mb_str() << ":" << port
             << "/signalk/v1/stream?subscribe=all&sendCachedValues=false";
 
-  bool not_connected = true;
-  WebSocket::pointer ws;
-  while ((not_connected) && (m_parentStream->m_Thread_run_flag > 0)) {
-    ws = WebSocket::from_url(wsAddress.str());
-    if (ws == NULL)
-      printf("No Connect\n");
-    else
-      not_connected = false;
-
-    if (m_parentStream->m_Thread_run_flag == 0){
-      m_parentStream->SetThreadRunning(false);
-      return 0;
-    }
-  }
+  WebSocket::pointer ws = 0;
 
   while ((not_done) && (m_parentStream->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) {
-       //printf("ws receiving delete\n");
-      ws->close();
-      not_done = false;  // smooth exit
-      //break;
+    bool not_connected = true;
+    while ((not_connected) && (m_parentStream->m_Thread_run_flag > 0)) {
+      ws = WebSocket::from_url(wsAddress.str());
+      if (ws == NULL)
+        printf("No Connect\n");
+      else
+        not_connected = false;
+
+      if (m_parentStream->m_Thread_run_flag == 0){
+        m_parentStream->SetThreadRunning(false);
+        return 0;
+      }
     }
 
-    if (ws->getReadyState() == WebSocket::CLOSED) {
-       //printf("ws closed\n");
-      break;
-    }
-    ws->poll(10);
-    if (ws->getReadyState() == WebSocket::OPEN) {
-      ws->dispatch(HandleMessage);
-    }
-    if( m_parentStream->m_Thread_run_flag <= 0){
-      //printf("done\n");
-      ws->close();
-      not_done = false;  // smooth exit
+    while ((not_done) && (m_parentStream->m_Thread_run_flag > 0)) {
+      if (TestDestroy()) {
+        //printf("ws receiving delete\n");
+        ws->close();
+        not_done = false;  // smooth exit
+        //break;
+      }
+
+      if (ws->getReadyState() == WebSocket::CLOSED) {
+        //printf("ws closed\n");
+        break;
+      }
+      ws->poll(10);
+      if (ws->getReadyState() == WebSocket::OPEN) {
+        ws->dispatch(HandleMessage);
+      }
+      if( m_parentStream->m_Thread_run_flag <= 0){
+        //printf("done\n");
+        ws->close();
+        not_done = false;  // smooth exit
+      }
     }
   }
 
    //printf("ws delete\n");
-   delete ws;
+  delete ws;
 
   m_parentStream->SetThreadRunning(false);
   m_parentStream->m_Thread_run_flag = -1;
