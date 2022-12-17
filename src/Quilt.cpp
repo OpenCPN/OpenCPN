@@ -1206,7 +1206,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
   EmptyCandidateArray();
   m_extended_stack_array.clear();
 
-  int reference_scale = 1;
+  int reference_scale = 1e8;
   int reference_type = -1;
   int reference_family = -1;
   int quilt_proj =
@@ -1236,9 +1236,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
   //    Walk the current ChartStack...
   //    Building the quilt candidate array
   for (int ics = 0; ics < n_charts; ics++) {
-    int i = m_parent->GetpCurrentStack()->GetDBIndex(ics);
-    if (i < 0) continue;
-    m_extended_stack_array.push_back(i);
+    int istack = m_parent->GetpCurrentStack()->GetDBIndex(ics);
+    if (istack < 0) continue;
+    m_extended_stack_array.push_back(istack);
 
     //  If the reference chart is cm93, we need not add any charts to the
     //  candidate array from the vp center. All required charts will be added
@@ -1246,7 +1246,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     //  later
     if (reference_type == CHART_TYPE_CM93COMP) continue;
 
-    const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(istack);
 
     // only charts of the proper projection and type may be quilted....
     // Also, only unskewed charts if so directed
@@ -1267,15 +1267,26 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
 
+    // Also, check the scale of the proposed chart.  If too small, skip it.
+    int candidate_chart_scale = cte.GetScale();
+    double chart_native_ppm =
+        m_canvas_scale_factor / (double)candidate_chart_scale;
+    double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
+    if (zoom_factor < .002){
+        m_extended_stack_array.pop_back();
+        continue;
+    }
+
     double skew_norm = cte.GetChartSkew();
     if (skew_norm > 180.) skew_norm -= 360.;
 
     if ((m_bquiltskew ? 1 : fabs(skew_norm) < 1.0) &&
         (m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj)) {
       QuiltCandidate *qcnew = new QuiltCandidate;
-      qcnew->dbIndex = i;
+      qcnew->dbIndex = istack;
       qcnew->SetScale(cte.GetScale());
       m_pcandidate_array->push_back(qcnew);  // auto-sorted on scale
+
     }
 
     //             if( ( reference_type == cte.GetChartType() ) ||
@@ -1326,7 +1337,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       continue;
 #endif
 
-    if (reference_family != cte.GetChartFamily()) continue;
+    //if (reference_family != cte.GetChartFamily()) continue;
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
 
@@ -1362,7 +1373,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     //    and is on-screen somewhere.... Now  add the candidate if its scale is
     //    smaller than the reference scale, or is not excessively underzoomed.
 
-    if (cte.Scale_ge(reference_scale) || (zoom_factor > .2)) {
+    if ((cte.Scale_ge(reference_scale) && (zoom_factor > .002)) || (zoom_factor > .2)) {
       //    Special case for S57 ENC
       //    Add the chart only if the chart's fractional area exceeds n%
       /* if( CHART_TYPE_S57 == reference_type ) {
@@ -1647,11 +1658,21 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   // Detect this case, and build the quilt based on the smallest scale chart
   // anywhere on screen.
 
-  if ((m_refchart_dbIndex < 0) && m_extended_stack_array.size()){
-    // Take the smallest scale chart in the array.
-    m_refchart_dbIndex = m_extended_stack_array.back();
-    BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
-  }
+//   if ((m_refchart_dbIndex < 0) && m_extended_stack_array.size()){
+//     // Take the smallest scale chart in the array.
+//     int tentative_dbIndex = m_extended_stack_array.back();
+//
+//     // Verify that the zoom scale is acceptable.
+//     const ChartTableEntry &cte = ChartData->GetChartTableEntry(tentative_dbIndex);
+//     int candidate_chart_scale = cte.GetScale();
+//     double chart_native_ppm =
+//         m_canvas_scale_factor / (double)candidate_chart_scale;
+//     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
+//     if (zoom_factor > 0.1){
+//       m_refchart_dbIndex = tentative_dbIndex;
+//       BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
+//     }
+//   }
 
   //    It is possible that the reference chart is not really part of the
   //    visible quilt This can happen when the reference chart is panned
