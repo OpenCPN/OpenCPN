@@ -49,6 +49,8 @@
 #include "routeman.h"
 #include "nav_object_database.h"
 
+extern bool g_bportable;
+
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
                             bool b_change);
@@ -414,8 +416,12 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 }
 
 
-static const char *s_http_addr = "http://0.0.0.0:8000";    // HTTP port
-static const char *s_https_addr = "https://0.0.0.0:8443";  // HTTPS port
+  static const char* s_http_addr = "http://0.0.0.0:8000";    // HTTP port
+  static const char* s_https_addr = "https://0.0.0.0:8443";  // HTTPS port
+  // Is this host a portable?  Must use another port to avoid equal IP addres conflicts.
+  static const char* s_http_addr_portable = "http://0.0.0.0:8001";    // HTTP port
+  static const char* s_https_addr_portable = "https://0.0.0.0:8444";  // HTTPS port
+  
 
 
 // We use the same event handler function for HTTP and HTTPS connections
@@ -479,8 +485,18 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   (void) fn_data;
 }
 
+std::string server_ip;
+
 RESTServerThread::RESTServerThread(RESTServer* Launcher) {
   m_pParent = Launcher;  // This thread's immediate "parent"
+
+  server_ip = s_https_addr;
+  // If Portable use another port
+  if (g_bportable) {
+    server_ip = s_https_addr_portable;
+   wxString sip(server_ip);
+   wxLogMessage("Portable REST server IP: Port " + sip);
+  }
 
   Create();
 }
@@ -491,17 +507,19 @@ void RESTServerThread::OnExit(void) {}
 
 void* RESTServerThread::Entry() {
   bool not_done = true;
-  m_pParent->SetSecThreadActive();  // I am alive
+  m_pParent->SetSecThreadActive();                        // I am alive
 
-  struct mg_mgr mgr;                            // Event manager
-  mg_log_set(MG_LL_DEBUG);                      // Set log level
-  mg_mgr_init(&mgr);                            // Initialise event manager
-  mg_http_listen(&mgr, s_https_addr, fn, m_pParent);  // Create HTTP listener
-  //mg_http_listen(&mgr, s_https_addr, fn, (void *) 1);  // HTTPS listener
-  for (;;) mg_mgr_poll(&mgr, 1000);                    // Infinite event loop
+  struct mg_mgr mgr;                                      // Event manager
+  mg_log_set(MG_LL_DEBUG);                                // Set log level
+  mg_mgr_init(&mgr);                                      // Initialise event manager
+
+  mg_http_listen(&mgr, server_ip.c_str(), fn, m_pParent); // Create HTTPS listener
+  //mg_http_listen(&mgr, s_https_addr, fn, (void *) 1);   // (HTTPS listener)
+
+  for (;;) mg_mgr_poll(&mgr, 1000);                       // Infinite event loop
   mg_mgr_free(&mgr);
 
-  m_pParent->SetSecThreadInActive();  // I am dead
+  m_pParent->SetSecThreadInActive();                      // I am dead
   m_pParent->m_Thread_run_flag = -1;
 
   return 0;

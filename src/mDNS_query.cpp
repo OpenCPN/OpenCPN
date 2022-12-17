@@ -49,6 +49,8 @@
 #include "mdns_util.h"
 #include "mDNS_query.h"
 
+extern bool g_bportable;
+
 // Static data structs
 std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 
@@ -121,7 +123,11 @@ ocpn_query_callback(int sock, const struct sockaddr* from, size_t addrlen, mdns_
     entry->hostname = hostname;
     entry->ip = ip;
     entry->port = "8000";
-
+    // Is the destination a portable?  Detect by string inspection.
+    std::string p ("Portable");
+    std::size_t port = hostname.find(p);;   
+    if (port != std::string::npos)
+      entry->port = "8001";
   }
 
 
