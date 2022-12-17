@@ -2108,6 +2108,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   FrameTimer1.Stop();
   FrameCOGTimer.Stop();
+
   TrackOff();
 
   /*
@@ -3005,7 +3006,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
         TrackOn();
         g_bTrackCarryOver = true;
       } else {
-        TrackOff(true);
+        TrackOff(true);  // catch the last point
+        if (pConfig && pConfig->IsChangesFileDirty()) {
+          pConfig->UpdateNavObj(true);
+        }
         g_bTrackCarryOver = false;
         RefreshAllCanvas(true);
       }
@@ -3516,10 +3520,6 @@ Track *MyFrame::TrackOff(bool do_add_point) {
   androidSetTrackTool(false);
 #endif
 
-   if (pConfig && pConfig->IsChangesFileDirty()) {
-    pConfig->UpdateNavObj(true);
-  }
-
   g_FlushNavobjChangesTimeout =
       600;  // Revert to checking/flushing navob changes every 5 minutes
 
@@ -3567,6 +3567,10 @@ void MyFrame::TrackDailyRestart(void) {
   if (!g_pActiveTrack) return;
 
   Track *pPreviousTrack = TrackOff(true);
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   TrackOn();
 
   //  Set the restarted track's current state such that the current track

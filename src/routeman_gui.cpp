@@ -48,6 +48,7 @@
 #include "nav_object_database.h"
 #include "track.h"
 #include "TrackPropDlg.h"
+#include "navutil.h"
 
 extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
@@ -64,6 +65,7 @@ extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern TrackPropDlg *pTrackPropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
+extern MyConfig *pConfig;
 
 bool RoutemanGui::UpdateProgress() {
   bool bret_val = false;
@@ -279,6 +281,10 @@ void RoutemanGui::DeleteAllTracks() {
     NavObjectChanges::getInstance()->DeleteConfigTrack(ptrack);
     DeleteTrack(ptrack);
     NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
+  }
+
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
   }
 
   ::wxEndBusyCursor();

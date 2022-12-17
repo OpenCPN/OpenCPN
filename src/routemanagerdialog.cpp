@@ -2016,6 +2016,10 @@ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
 
 void RouteManagerDialog::OnTrkNewClick(wxCommandEvent &event) {
   gFrame->TrackOff();
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   gFrame->TrackOn();
 
   UpdateTrkListCtrl();
@@ -2080,6 +2084,10 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
     m_lastTrkItem = -1;
     //        UpdateRouteListCtrl();
     UpdateTrkListCtrl();
+
+    if (pConfig && pConfig->IsChangesFileDirty()) {
+      pConfig->UpdateNavObj(true);
+    }
 
     gFrame->InvalidateAllCanvasUndo();
     gFrame->RefreshAllCanvas();
