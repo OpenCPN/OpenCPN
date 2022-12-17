@@ -4781,6 +4781,11 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
   }
 
+  // update S52 PLIB scale factors
+  if (ps52plib){
+    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
+  }
+
   // Apply any needed updates to each canvas
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -6005,15 +6010,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
                     _T(" COG ---\u00B0"));
     if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);
-  // update S52 PLIB scale factors
-  if (ps52plib){
-    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
-  }
-
-  if (g_MainToolbar) {
-    g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
-    g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
-  }
 
     gCog = 0.0;  // say speed is zero to kill ownship predictor
   }
@@ -8899,6 +8895,10 @@ void LoadS57() {
       double dpi_factor = g_BasePlatform->GetDisplayDPIMult(gFrame->GetPrimaryCanvas());
       ps52plib->SetDIPFactor(dpi_factor);
     }
+
+    // preset S52 PLIB scale factors vector chart scale factor
+    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
+
 #ifdef ocpnUSE_GL
 
     // Setup PLIB OpenGL options, if enabled
