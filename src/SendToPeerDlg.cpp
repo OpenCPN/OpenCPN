@@ -35,6 +35,7 @@
 extern OCPNPlatform* g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxString g_hostname;
+extern bool g_bportable;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
 
@@ -178,13 +179,18 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
   //    Get the selected peer information
   wxString peer_ip = m_PeerListBox->GetValue();
   wxString server_name = peer_ip.BeforeFirst('{').Trim();
-
   int tail = peer_ip.Find('{');
   if (tail != wxNOT_FOUND)
     peer_ip = peer_ip.Mid(tail+1);
   peer_ip = peer_ip.BeforeFirst('}');
   peer_ip += ":";
-  peer_ip += "8443";
+
+  // Is the destination a portable?  Detect by string inspection.
+  wxString p = "Portable";
+  if (p.IsSameAs(server_name.BeforeFirst('-')))
+    peer_ip += "8444";
+  else
+    peer_ip += "8443";
 
   std::string server_address("https://");
   server_address += peer_ip.ToStdString();
