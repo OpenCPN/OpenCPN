@@ -1203,6 +1203,9 @@ const LLRegion &Quilt::GetTilesetRegion(int dbIndex) {
 
 bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
                                                      ViewPort &vp_in) {
+  double zoom_test_val = .002;
+  zoom_test_val *= 2;
+
   EmptyCandidateArray();
   m_extended_stack_array.clear();
 
@@ -1272,7 +1275,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     double chart_native_ppm =
         m_canvas_scale_factor / (double)candidate_chart_scale;
     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
-    if (zoom_factor < .002){
+    if (zoom_factor < zoom_test_val){
         m_extended_stack_array.pop_back();
         continue;
     }
@@ -1358,6 +1361,19 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
         m_canvas_scale_factor / (double)candidate_chart_scale;
     double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
 
+    double zoom_factor_test = 0.2;
+
+    //    Special case for S57 ENC
+    //    Add the chart only if the chart's fractional area exceeds n%
+    if( CHART_TYPE_S57 == cte.GetChartType() ) {
+      //Get the fractional area of this candidate
+      double chart_area = (cte.GetLonMax() - cte.GetLonMin()) *
+                          (cte.GetLatMax() - cte.GetLatMin());
+      double quilt_area =  viewbox.GetLonRange() * viewbox.GetLatRange();
+      if ((chart_area / quilt_area) < .01)
+        continue;
+    }
+
     //  Try to guarantee that there is one chart added with scale larger than
     //  reference scale
     //    Take note here, and keep track of the smallest scale chart that is
@@ -1373,14 +1389,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     //    and is on-screen somewhere.... Now  add the candidate if its scale is
     //    smaller than the reference scale, or is not excessively underzoomed.
 
-    if ((cte.Scale_ge(reference_scale) && (zoom_factor > .002)) || (zoom_factor > .2)) {
-      //    Special case for S57 ENC
-      //    Add the chart only if the chart's fractional area exceeds n%
-      /* if( CHART_TYPE_S57 == reference_type ) {
-      //Get the fractional area of this chart
-          double chart_fractional_area = 0.;
-          double quilt_area = vp_local.pix_width * vp_local.pix_height;
-      */
+
+    if ((cte.Scale_ge(reference_scale) && (zoom_factor > zoom_test_val)) || (zoom_factor > zoom_factor_test)) {
+
       LLRegion cell_region = GetChartQuiltRegion(cte, vp_local);
 
       // this is false if the chart has no actual overlap on screen
