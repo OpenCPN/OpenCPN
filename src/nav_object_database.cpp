@@ -1335,7 +1335,7 @@ bool NavObjectCollection1::CreateNavObjGPXTracks(void) {
       if (!pTrack->m_bIsInLayer && !pTrack->m_btemp){
         pugi::xml_node doc = root();
         pugi::xml_node gpx = doc.first_child();
-        pugi::xml_node new_node = gpx.append_child("rte");
+        pugi::xml_node new_node = gpx.append_child("trk");
 
         GPXCreateTrk(new_node, pTrack, 0);
       }
@@ -1357,19 +1357,31 @@ bool NavObjectCollection1::CreateAllGPXObjects() {
 
 bool NavObjectCollection1::AddGPXRoute(Route *pRoute) {
   SetRootGPXNode();
-  GPXCreateRoute(root().append_child("rte"), pRoute);
+  pugi::xml_node doc = root();
+  pugi::xml_node gpx = doc.first_child();
+  pugi::xml_node new_node = gpx.append_child("rte");
+
+  GPXCreateRoute(new_node, pRoute);
   return true;
 }
 
 bool NavObjectCollection1::AddGPXTrack(Track *pTrk) {
   SetRootGPXNode();
-  GPXCreateTrk(root().append_child("trk"), pTrk, 0);
+  pugi::xml_node doc = root();
+  pugi::xml_node gpx = doc.first_child();
+  pugi::xml_node new_node = gpx.append_child("trk");
+
+  GPXCreateTrk(new_node, pTrk, 0);
   return true;
 }
 
 bool NavObjectCollection1::AddGPXWaypoint(RoutePoint *pWP) {
   SetRootGPXNode();
-  GPXCreateWpt(root().append_child("wpt"), pWP, OPT_WPT);
+  pugi::xml_node doc = root();
+  pugi::xml_node gpx = doc.first_child();
+  pugi::xml_node new_node = gpx.append_child("wpt");
+
+  GPXCreateWpt(new_node, pWP, OPT_WPT);
   return true;
 }
 
