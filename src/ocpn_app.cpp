@@ -1343,6 +1343,12 @@ bool MyApp::OnInit() {
   if(g_hostname.IsEmpty())
      g_hostname = wxGetUserName();
 
+  //      A Portabel need a unique mDNS data hostname to share routes.
+  if (g_bportable) {
+    wxString p("Portable-");
+    g_hostname = p + g_hostname;
+  }
+
 
   //      Initialize connection parameters array
   g_pConnectionParams = new wxArrayOfConnPrm();
