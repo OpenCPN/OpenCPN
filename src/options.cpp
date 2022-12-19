@@ -3454,6 +3454,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_SCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SCAMIN, inputFlags);
 
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
+                       labelFlags);
+    pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
+                                   _("Additonal detail reduction at Small Scale"));
+    pCheck_SuperSCAMIN->SetValue(FALSE);
+    optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
+
     // spacer
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
@@ -3634,6 +3641,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                                    _("Reduced Detail at Small Scale"));
     pCheck_SCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SCAMIN, inputFlags);
+
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
+                       labelFlags);
+    pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
+                                   _("Additonal detail reduction at Small Scale"));
+    pCheck_SuperSCAMIN->SetValue(FALSE);
+    optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
@@ -6413,6 +6427,8 @@ void options::SetInitialVectorSettings(void) {
     pCheck_META->SetValue(ps52plib->m_bShowMeta);
     pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
     pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
+    pCheck_SuperSCAMIN->SetValue(ps52plib->m_bUseSUPER_SCAMIN);
+
     pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
     pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
 
@@ -7231,6 +7247,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
     ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
     ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
+    ps52plib->m_bUseSUPER_SCAMIN = pCheck_SuperSCAMIN->GetValue();
 
     ps52plib->m_nSymbolStyle =
         pPointStyle->GetSelection() == 0 ? PAPER_CHART : SIMPLIFIED;

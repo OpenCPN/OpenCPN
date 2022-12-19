@@ -2554,6 +2554,7 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Some rendering parameters
   v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
   v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
+  v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
   v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
 
   wxJSONWriter w;
@@ -2589,6 +2590,7 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
     v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] =
         ps52plib->m_bShowS57ImportantTextOnly;
     v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+    v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
     v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
     v[_T("OpenCPN S52PLIB ColorShades")] =

@@ -326,6 +326,7 @@ struct chart_context {
   double safety_contour;
   float *vertex_buffer;
   int chart_type;
+  int chart_scale;
 };
 
 class LineGeometryDescriptor {
@@ -411,6 +412,7 @@ public:
   wxRect rText;
 
   int Scamin;  // SCAMIN attribute decoded during load
+  int SuperScamin;
   bool bIsClone;
   int nRef;            // Reference counter, to signal OK for deletion
   bool bIsAton;        // This object is an aid-to-navigation

@@ -159,6 +159,7 @@ enum {
   ID_RADARDISTUNIT,
   ID_RASTERCHECKBOX1,
   ID_SCAMINCHECKBOX,
+  ID_SUPERSCAMINCHECKBOX,
   ID_SCANCHECKBOX,
   ID_SDMMFORMATCHOICE,
   ID_DISTANCEUNITSCHOICE,
@@ -454,7 +455,8 @@ public:
   wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
   wxButton *itemButtonClearList, *itemButtonSelectList, *itemButtonSetStd;
   wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
-  wxCheckBox *pCheck_SCAMIN, *pCheck_ATONTEXT, *pCheck_LDISTEXT;
+  wxCheckBox *pCheck_SCAMIN, *pCheck_SuperSCAMIN;
+  wxCheckBox *pCheck_ATONTEXT, *pCheck_LDISTEXT;
   wxCheckBox *pCheck_XLSECTTEXT, *pCheck_DECLTEXT, *pCheck_NATIONALTEXT;
   wxCheckBox *pSEnableCM93Offset;
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;

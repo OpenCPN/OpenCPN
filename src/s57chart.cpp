@@ -4188,6 +4188,7 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   m_this_chart_context->chart = this;
   m_this_chart_context->chart_type = GetChartType();
   m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+  m_this_chart_context->chart_scale = GetNativeScale();
 
   //  Loop and populate all the objects
   for (int i = 0; i < PRIO_NUM; ++i) {

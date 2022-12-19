@@ -4389,7 +4389,8 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   // update S52 PLIB scale factors
   if (ps52plib){
-    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
+    ps52plib->SetScaleFactorExp(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor));
+    ps52plib-> SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
   }
 
   // Apply any needed updates to each canvas
@@ -8502,8 +8503,9 @@ void LoadS57() {
       ps52plib->SetDIPFactor(dpi_factor);
     }
 
-    // preset S52 PLIB scale factors vector chart scale factor
-    ps52plib->SetGuiScaleFactors(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor), g_chart_zoom_modifier_vector);
+    // preset S52 PLIB scale factors
+    ps52plib->SetScaleFactorExp(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor));
+    ps52plib-> SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
 
 #ifdef ocpnUSE_GL
 

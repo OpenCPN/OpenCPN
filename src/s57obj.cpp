@@ -152,7 +152,8 @@ void S57Obj::Init() {
   geoPtz = NULL;
   geoPt = NULL;
   bIsClone = false;
-  Scamin = 10000000;  // ten million enough?
+  Scamin = 1e8+2;  // Default is very large number, effectively unused.
+  SuperScamin = -1;
   nRef = 0;
 
   bIsAton = false;

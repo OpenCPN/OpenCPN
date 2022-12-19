@@ -1565,6 +1565,9 @@ void MyConfig::LoadS57Config() {
   Read(_T ( "bUseSCAMIN" ), &read_int, 1);
   ps52plib->m_bUseSCAMIN = !(read_int == 0);
 
+  Read(_T ( "bUseSUPER_SCAMIN" ), &read_int, 0);
+  ps52plib->m_bUseSUPER_SCAMIN = !(read_int == 0);
+
   Read(_T ( "bShowAtonText" ), &read_int, 1);
   ps52plib->m_bShowAtonText = !(read_int == 0);
 
@@ -2650,6 +2653,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
     Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);

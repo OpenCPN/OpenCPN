@@ -1125,6 +1125,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     conf->Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     conf->Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     conf->Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    conf->Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     conf->Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     conf->Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
     conf->Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
@@ -1780,6 +1781,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     CHECK_BFN(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     CHECK_BFN(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     CHECK_BFN(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    CHECK_BFN(_T ( "bUseSUPERSCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     CHECK_BFN(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     CHECK_BFN(_T ( "bDeClutterText" ), ps52plib->m_bDeClutterText);
     CHECK_BFN(_T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts);

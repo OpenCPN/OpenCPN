@@ -503,8 +503,11 @@ void s52plib::SetPPMM(float ppmm) {
   wxLogMessage(msg);
 }
 
-void s52plib::SetGuiScaleFactors(double ChartScaleFactorExp, int chart_zoom_modifier_vector) {
+void s52plib::SetScaleFactorExp(double ChartScaleFactorExp) {
   m_ChartScaleFactorExp = ChartScaleFactorExp;
+}
+
+void s52plib::SetScaleFactorZoomMod(int chart_zoom_modifier_vector) {
   m_chart_zoom_modifier_vector = chart_zoom_modifier_vector;
 }
 
@@ -5858,7 +5861,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   //   and scale it down when rendered if necessary.
 
   float xscale = 1.0;
-  if (rzRules->obj->Scamin > 10000000) {  // huge (unset) SCAMIN)
+  if (rzRules->obj->Scamin > 1e8) {  // huge (unset) SCAMIN)
     float radius_meters_target = 200;
 
     float radius_meters = (radius * canvas_pix_per_mm) / vp_plib.view_scale_ppm;
@@ -6146,7 +6149,7 @@ int s52plib::RenderCARC_VBO(ObjRazRules *rzRules, Rules *rules) {
   //   and scale it down when rendered if necessary.
 
   float xscale = 1.0;
-  if (rzRules->obj->Scamin > 10000000) {  // huge (unset) SCAMIN)
+  if (rzRules->obj->Scamin > 1e8) {  // huge (unset) SCAMIN)
     float radius_meters_target = 200;
 
     float radius_meters = (radius * canvas_pix_per_mm) / vp_plib.view_scale_ppm;
@@ -9466,6 +9469,32 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
           if (vp_plib.chart_scale > rzRules->obj->Scamin) b_visible = false;
         }
       }
+
+      // Check for SUPER_SCAMIN, apply if enabled
+      if (m_bUseSUPER_SCAMIN){
+        if (rzRules->obj->SuperScamin < 0){
+          if ( (strncmp(rzRules->obj->FeatureName, "LNDARE", 6) &&
+                strncmp(rzRules->obj->FeatureName, "DEPARE", 6) &&
+                strncmp(rzRules->obj->FeatureName, "COALNE", 6)) ||
+              (!strncmp(rzRules->obj->FeatureName, "LNDARE", 6) && (rzRules->LUP->ruleList->ruleType != RUL_ARE_CO))) {
+
+            // Is the ENC cell SCAMIN for this object un-defined?
+            if (rzRules->obj->Scamin > 1e8) {   // undefined default value is 1e8+2
+              // Get the scale of the ENC, and establish SUPERSCAMIN
+              double chart_ref_scale = rzRules->obj->m_chart_context->chart_scale;
+              double super_scamin = chart_ref_scale * 4;
+              rzRules->obj->SuperScamin = super_scamin;
+            }
+          }
+        }
+
+        // Make the test
+        if ((rzRules->obj->SuperScamin > 0) &&
+             (vp_plib.chart_scale > rzRules->obj->SuperScamin))
+            b_visible = false;
+
+      }
+
 
       //      On the other hand, $TEXTS features need not really be displayed at
       //      all scales, always To do so makes a very cluttered display
