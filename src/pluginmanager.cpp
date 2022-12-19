@@ -214,7 +214,7 @@ extern wxString g_locale;
 extern bool g_btouch;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern double g_display_size_mm;
 extern bool g_bopengl;
@@ -2553,7 +2553,7 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
 
   // Some rendering parameters
   v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
-  v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier;
+  v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
   v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
 
   wxJSONWriter w;

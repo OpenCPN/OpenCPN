@@ -327,7 +327,7 @@ extern bool g_bGLexpert;
 extern int g_SENC_LOD_pixels;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
@@ -935,7 +935,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
 
-  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier);
+  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   conf->Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
 
   conf->Write(_T ( "SmoothPanZoom" ), g_bsmoothpanzoom);
@@ -1383,7 +1383,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "MobileTouch" ), &g_btouch);
   CHECK_INT(_T ( "ResponsiveGraphics" ), &g_bresponsive);
 
-  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
+  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
   CHECK_INT(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
 
   CHECK_INT(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
