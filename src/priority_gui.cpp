@@ -43,7 +43,9 @@
 #include "priority_gui.h"
 #include "ocpn_app.h"
 #include "comm_bridge.h"
+#include "ocpn_frame.h"
 
+extern MyFrame *gFrame;
 
 wxDECLARE_APP(MyApp);
 
@@ -60,7 +62,7 @@ public:
 
 PriorityDlg::PriorityDlg(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Adjust Comm Priorities"), wxDefaultPosition,
-               wxSize(480, 420))
+               wxSize(480, 420), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
 
   m_selIndex = 0;
@@ -116,20 +118,18 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   m_map = app.m_comm_bridge.GetPriorityMaps();
 
   Populate();
-  stcSizer->SetMinSize(m_maxStringLength * GetCharWidth() * 15 / 10, -1);
+
+  int n_lines = m_prioTree->GetCount();
+
+  stcSizer->SetMinSize(m_maxStringLength * GetCharWidth() * 15 / 10,
+                       wxMin(gFrame->GetSize().y * 3 /4 , n_lines * GetCharHeight()));
+
 
   Layout();
   mainSizer->Fit(this);
   Centre();
 }
 
-// wxString PriorityDlg::GetBoxLabel(void) const {
-//   if (m_dir == FILTER_OUTPUT)
-//     return m_type == WHITELIST ? _("Transmit sentences") : _("Drop sentences");
-//   else
-//     return m_type == WHITELIST ? _("Accept only sentences")
-//                                : _("Ignore sentences");
-// }
 
 void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
                             size_t map_index,
@@ -138,7 +138,7 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
     return;
   wxString priority_string(map_list[map_index].c_str());
   wxStringTokenizer tk(priority_string, "|");
-  int index = 0;
+  size_t index = 0;
   while (tk.HasMoreTokens()) {
     wxString item_string = tk.GetNextToken();
 
