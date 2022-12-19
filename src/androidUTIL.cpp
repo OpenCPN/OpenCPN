@@ -146,7 +146,7 @@ extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
 extern bool g_bShowMag;
 extern double g_UserVar;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
 

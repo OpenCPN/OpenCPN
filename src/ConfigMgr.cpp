@@ -327,7 +327,7 @@ extern bool g_bGLexpert;
 extern int g_SENC_LOD_pixels;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
@@ -935,7 +935,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
 
-  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier);
+  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   conf->Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
 
   conf->Write(_T ( "SmoothPanZoom" ), g_bsmoothpanzoom);
@@ -1125,6 +1125,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     conf->Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     conf->Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     conf->Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    conf->Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     conf->Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     conf->Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
     conf->Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
@@ -1383,7 +1384,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "MobileTouch" ), &g_btouch);
   CHECK_INT(_T ( "ResponsiveGraphics" ), &g_bresponsive);
 
-  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
+  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
   CHECK_INT(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
 
   CHECK_INT(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
@@ -1780,6 +1781,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     CHECK_BFN(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     CHECK_BFN(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     CHECK_BFN(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    CHECK_BFN(_T ( "bUseSUPERSCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     CHECK_BFN(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     CHECK_BFN(_T ( "bDeClutterText" ), ps52plib->m_bDeClutterText);
     CHECK_BFN(_T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts);

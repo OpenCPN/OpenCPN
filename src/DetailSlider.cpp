@@ -41,7 +41,7 @@
 extern bool g_bShowDetailSlider;
 extern PopUpDSlide* pPopupDetailSlider;
 extern int g_cm93_zoom_factor;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern int g_detailslider_dialog_x;
 extern int g_detailslider_dialog_y;
@@ -88,7 +88,7 @@ bool PopUpDSlide::Create(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartT,
     WindowText = _("CM93 Detail Level");
   } else if ((ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) ||
              (ChartFam == CHART_FAMILY_RASTER)) {
-    value = g_chart_zoom_modifier;
+    value = g_chart_zoom_modifier_raster;
     WindowText = _("Rasterchart Zoom/Scale Weighting");
   } else if ((ChartType == CHART_TYPE_S57) ||
              (ChartFam == CHART_FAMILY_VECTOR)) {
@@ -176,7 +176,7 @@ void PopUpDSlide::OnChangeValue(wxScrollEvent& event)
 
   if ((ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) ||
       (ChartFam == CHART_FAMILY_RASTER)) {
-    g_chart_zoom_modifier = m_p_DetailSlider->GetValue();
+    g_chart_zoom_modifier_raster = m_p_DetailSlider->GetValue();
   }
 
   if ((ChartType == CHART_TYPE_S57) || (ChartFam == CHART_FAMILY_VECTOR)) {

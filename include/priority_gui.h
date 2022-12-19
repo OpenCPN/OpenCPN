@@ -55,8 +55,8 @@ private:
   wxTreeCtrl *m_prioTree;
   std::vector<std::string> m_map;
 
-  int m_selmap_index;
-  int m_selIndex;
+  size_t m_selmap_index;
+  size_t m_selIndex;
   wxTreeItemId m_selID;
 
   int m_maxStringLength;

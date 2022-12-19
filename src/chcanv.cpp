@@ -292,6 +292,10 @@ extern OcpnSound *g_anchorwatch_sound;
 extern bool g_bShowTrue, g_bShowMag;
 extern bool g_btouch;
 extern bool g_bresponsive;
+extern int g_chart_zoom_modifier_raster;
+extern int g_chart_zoom_modifier_vector;
+extern int g_ChartScaleFactor;
+
 
 #ifdef ocpnUSE_GL
 #endif
@@ -10590,16 +10594,23 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
 
     v[_T("OpenCPN S52PLIB SoundingsFactor")] = g_ENCSoundingScaleFactor;
 
-    // Global options
+    // Global S52 options
 
     v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
     v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
     v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
     v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] = ps52plib->m_bShowS57ImportantTextOnly;
     v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+    v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
     v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
     v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+
+    // Some global GUI parameters, for completeness
+    v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
+    v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
+    v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+    v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
 
     wxJSONWriter w;
     wxString out;

@@ -44,7 +44,7 @@ WX_DEFINE_LIST(PatchList);
 extern ChartDB *ChartData;
 extern s52plib *ps52plib;
 extern ColorScheme global_color_scheme;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -831,7 +831,7 @@ int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type,
 
 int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type,
                           ChartFamilyEnum family) {
-  double zoom_mod = (double)g_chart_zoom_modifier;
+  double zoom_mod = (double)g_chart_zoom_modifier_raster;
 
   if (family == CHART_FAMILY_VECTOR)
     zoom_mod = (double)g_chart_zoom_modifier_vector;

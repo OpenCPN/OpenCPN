@@ -156,7 +156,7 @@ extern bool g_bsmoothpanzoom;
 extern bool g_bShowTrue, g_bShowMag;
 extern double g_UserVar;
 extern double gVar;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
@@ -3061,7 +3061,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")),
         inputFlags);
 
-    m_pSlider_Zoom =
+    m_pSlider_Zoom_Raster =
         new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
@@ -3069,7 +3069,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     prepareSlider(m_pSlider_Zoom);
 #endif
 
-    itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
+    itemBoxSizerUI->Add(m_pSlider_Zoom_Raster, inputFlags);
 
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")),
@@ -3234,15 +3234,15 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")),
         labelFlags);
-    m_pSlider_Zoom =
+    m_pSlider_Zoom_Raster =
         new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
-    prepareSlider(m_pSlider_Zoom);
+    prepareSlider(m_pSlider_Zoom_Raster);
 #endif
 
-    itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
+    itemBoxSizerUI->Add(m_pSlider_Zoom_Raster, inputFlags);
 
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")),
@@ -3454,6 +3454,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_SCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SCAMIN, inputFlags);
 
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
+                       labelFlags);
+    pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
+                                   _("Additonal detail reduction at Small Scale"));
+    pCheck_SuperSCAMIN->SetValue(FALSE);
+    optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
+
     // spacer
     optionsColumn->Add(0, border_size * 4);
     optionsColumn->Add(0, border_size * 4);
@@ -3634,6 +3641,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                                    _("Reduced Detail at Small Scale"));
     pCheck_SCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SCAMIN, inputFlags);
+
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
+                       labelFlags);
+    pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
+                                   _("Additonal detail reduction at Small Scale"));
+    pCheck_SuperSCAMIN->SetValue(FALSE);
+    optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
@@ -6245,7 +6259,7 @@ void options::SetInitialSettings(void) {
   m_pCheck_Rollover_COG->SetValue(g_bAISRolloverShowCOG);
   m_pCheck_Rollover_CPA->SetValue(g_bAISRolloverShowCPA);
 
-  m_pSlider_Zoom->SetValue(g_chart_zoom_modifier);
+  m_pSlider_Zoom_Raster->SetValue(g_chart_zoom_modifier_raster);
   m_pSlider_Zoom_Vector->SetValue(g_chart_zoom_modifier_vector);
 
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
@@ -6413,6 +6427,8 @@ void options::SetInitialVectorSettings(void) {
     pCheck_META->SetValue(ps52plib->m_bShowMeta);
     pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
     pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
+    pCheck_SuperSCAMIN->SetValue(ps52plib->m_bUseSUPER_SCAMIN);
+
     pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
     pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
 
@@ -7135,7 +7151,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAISRolloverShowCOG = m_pCheck_Rollover_COG->GetValue();
   g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
-  g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+  g_chart_zoom_modifier_raster = m_pSlider_Zoom_Raster->GetValue();
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
@@ -7231,6 +7247,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
     ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
     ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
+    ps52plib->m_bUseSUPER_SCAMIN = pCheck_SuperSCAMIN->GetValue();
 
     ps52plib->m_nSymbolStyle =
         pPointStyle->GetSelection() == 0 ? PAPER_CHART : SIMPLIFIED;

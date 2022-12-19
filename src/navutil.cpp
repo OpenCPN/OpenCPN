@@ -398,7 +398,7 @@ extern bool g_bGLexpert;
 extern int g_SENC_LOD_pixels;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
@@ -719,8 +719,8 @@ int MyConfig::LoadMyConfig() {
     }
 #endif
 
-    g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier, 5);
-    g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier, -5);
+    g_chart_zoom_modifier_raster = wxMin(g_chart_zoom_modifier_raster, 5);
+    g_chart_zoom_modifier_raster = wxMax(g_chart_zoom_modifier_raster, -5);
     g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector, 5);
     g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector, -5);
     g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor, CM93_ZOOM_FACTOR_MAX_RANGE);
@@ -945,7 +945,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ResponsiveGraphics" ), &g_bresponsive);
   Read(_T ( "EnableRolloverBlock" ), &g_bRollover);
 
-  Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
+  Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
   Read(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
   Read(_T ( "PlusMinusZoomFactor" ), &g_plus_minus_zoom_factor, 2.0);
   Read("MouseZoomSensitivity", &g_mouse_zoom_sensitivity, 1.3);
@@ -1564,6 +1564,9 @@ void MyConfig::LoadS57Config() {
 
   Read(_T ( "bUseSCAMIN" ), &read_int, 1);
   ps52plib->m_bUseSCAMIN = !(read_int == 0);
+
+  Read(_T ( "bUseSUPER_SCAMIN" ), &read_int, 0);
+  ps52plib->m_bUseSUPER_SCAMIN = !(read_int == 0);
 
   Read(_T ( "bShowAtonText" ), &read_int, 1);
   ps52plib->m_bShowAtonText = !(read_int == 0);
@@ -2345,7 +2348,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
   Write(_T ( "ShowFPS" ), g_bShowFPS);
 
-  Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier);
+  Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
 
   Write(_T ( "FogOnOverzoom" ), g_fog_overzoom);
@@ -2650,6 +2653,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
     Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
