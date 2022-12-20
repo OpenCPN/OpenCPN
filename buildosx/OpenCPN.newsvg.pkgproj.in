@@ -145,7 +145,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -177,7 +177,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_net-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_net-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -209,7 +209,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_xml-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_baseu_xml-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -241,7 +241,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_aui-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_aui-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -273,7 +273,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_core-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_core-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -305,7 +305,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_gl-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_gl-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -337,7 +337,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_html-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_html-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -369,7 +369,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_webview-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_webview-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -401,7 +401,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_media-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_media-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -433,7 +433,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_propgrid-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_propgrid-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -465,7 +465,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_qa-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_qa-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -497,7 +497,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_ribbon-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_ribbon-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -529,7 +529,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_richtext-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_richtext-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -561,7 +561,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_stc-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_stc-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
@@ -593,7 +593,7 @@ ${LIBARCHIVE_COMMENT_END}
 															<key>GID</key>
 															<integer>20</integer>
 															<key>PATH</key>
-															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_xrc-${wxWidgets_VERSION_STRING}.1.0.dylib</string>
+															<string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libwx_osx_cocoau_xrc-3.2.0.1.0.dylib</string>
 															<key>PATH_TYPE</key>
 															<integer>0</integer>
 															<key>PERMISSIONS</key>
