@@ -68,6 +68,7 @@ TexFont::TexFont() {
   m_blur = false;
   m_built = false;
   m_color = wxColor(0, 0, 0);
+  m_angle = 0;
 
   m_shadersLoaded = false;
 
@@ -317,14 +318,19 @@ void TexFont::RenderGlyph(int c) {
   glUniform4fv(colloc, 1, colorv);
 
   // Rotate
-  float angle = 0;
+  //float angle = 0;
   mat4x4 I, Q;
   mat4x4_identity(I);
-  mat4x4_rotate_Z(Q, I, angle);
+  mat4x4_identity(Q);
+  //mat4x4_rotate_Z(Q, I, m_angle);
 
     // Translate
-  Q[3][0] = m_dx;
-  Q[3][1] = m_dy;
+  Q[3][0] = m_dx; // - m_vpwidth/2; //m_dx;
+  Q[3][1] = m_dy;// - m_vpheight/2; //m_dy;
+
+ // mat4x4_translate_in_place(I, m_dx, m_dy, 0);
+ // mat4x4_rotate_Z(Q, I, m_angle);
+  //mat4x4_translate_in_place(Q, -m_dx, -m_dy, 0);
 
   GLint matloc = glGetUniformLocation(m_TexFontShader,
                                           "TransformMatrix");
@@ -380,12 +386,13 @@ void TexFont::RenderGlyph(int c) {
 
 #endif
 
-  m_dx += tgic.advance;
+  m_dx += tgic.advance; // * cos(m_angle); // + tgic.advance * sin(m_angle);
+  //m_dy += tgic.advance * sin(m_angle); // - tgic.advance * cos(m_angle);
 
 #endif
 }
 
-void TexFont::RenderString(const char *string, int x, int y) {
+void TexFont::RenderString(const char *string, int x, int y, float angle) {
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   glPushMatrix();
@@ -416,8 +423,14 @@ void TexFont::RenderString(const char *string, int x, int y) {
 #else
   //FIXME (dave)  this is awful code, drawing chars glyph at a time.
   //FIXME (dave)  Also, need to render string at an angle....
+  m_dx = (x - m_vpwidth/2) * cos(angle) + (y - m_vpheight/2) * sin(angle);
+  m_dx += m_vpwidth/2;
+  m_dy = -(x - m_vpwidth/2) * sin(angle) + (y - m_vpheight/2) * cos(angle);
+  m_dy += m_vpheight/2;
+
   m_dx = x;
   m_dy = y;
+  m_angle = angle;
 
   glBindTexture(GL_TEXTURE_2D, texobj);
 
@@ -439,14 +452,17 @@ void TexFont::RenderString(const char *string, int x, int y) {
 #endif
 }
 
-void TexFont::RenderString(const wxString &string, int x, int y) {
+void TexFont::RenderString(const wxString &string, int x, int y, float angle) {
   LoadTexFontShaders();
-  RenderString((const char *)string.ToUTF8(), x, y);
+  RenderString((const char *)string.ToUTF8(), x, y, angle);
 }
 
 void TexFont::PrepareShader(int width, int height, double rotation){
   if(!m_TexFontShader)
     LoadTexFontShaders();
+
+  m_vpwidth = width;
+  m_vpheight = height;
 
   mat4x4 m;
   float vp_transform[16];

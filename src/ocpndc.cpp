@@ -1752,14 +1752,15 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
 #endif
 }
 
-void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
+void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
   if (dc) dc->DrawText(text, x, y);
 #ifdef ocpnUSE_GL
   else {
     wxCoord w = 0;
     wxCoord h = 0;
 
-    if (m_buseTex) {
+    //FIXME Dave Re-enable, and fix rotation logic.
+    if (0/*m_buseTex*/) {
       m_texfont.Build(m_font, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(text, &w, &h);
       m_texfont.SetColor(m_textforegroundcolour);
@@ -1769,7 +1770,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         glEnable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        m_texfont.RenderString(text, x, y);
+        m_texfont.RenderString(text, x, y, angle);
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
@@ -1880,10 +1881,9 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
     shader->SetUniform1i("uTex", 0);
 
     // Rotate
-    float angle = 0;
     mat4x4 I, Q;
     mat4x4_identity(I);
-    mat4x4_rotate_Z(Q, I, angle);
+    mat4x4_rotate_Z(Q, I, 0);
 
     // Translate
     Q[3][0] = x;

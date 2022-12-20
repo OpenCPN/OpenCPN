@@ -109,7 +109,7 @@ public:
 
   void DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask);
 
-  void DrawText(const wxString &text, wxCoord x, wxCoord y);
+  void DrawText(const wxString &text, wxCoord x, wxCoord y, float angle = 0.0);
   void GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
                      wxCoord *descent = NULL, wxCoord *externalLeading = NULL,
                      wxFont *font = NULL);
