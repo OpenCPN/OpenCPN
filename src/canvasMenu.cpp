@@ -127,6 +127,8 @@ extern TrackPropDlg *pTrackPropDialog;
 extern double gHdt;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
+extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
+extern wxString g_hostname;
 
 //    Constants for right click menus
 enum {
@@ -1662,6 +1664,25 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         g_Platform->ShowBusySpinner();
         FindAllOCPNServers();
         g_Platform->HideBusySpinner();
+
+        // Count viable servers.
+        int n_servers = 0;
+        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+          wxString item(g_DNS_cache[i]->hostname.c_str());
+
+          //skip "self"
+          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+            n_servers++;
+          }
+        }
+
+        if(n_servers == 0){
+          OCPNMessageBox(NULL,
+            _("No OpenCPN servers found on this network."),
+            _("OpenCPN Send Route"), wxOK, 5);
+
+          return;
+        }
 
         SendToPeerDlg dlg;
         dlg.SetRoute(m_pSelectedRoute);
