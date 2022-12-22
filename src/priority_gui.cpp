@@ -310,6 +310,8 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   std::string s_upd(prio_mod.c_str());
   m_map[pe->m_category] = s_upd;
 
+  AdjustSatPriority();
+
   // Update the priority mechanism
   MyApp& app = wxGetApp();
   app.m_comm_bridge.UpdateAndApplyMaps(m_map);
@@ -317,4 +319,50 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   // And reload the tree GUI
   m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
+}
+
+void PriorityDlg::AdjustSatPriority() {
+
+  // Get an array of available sat sources
+  std::string sat_prio = m_map[4];
+  wxArrayString sat_sources;
+  wxString sat_priority_string(sat_prio.c_str());
+  wxStringTokenizer tks(sat_priority_string, "|");
+  while (tks.HasMoreTokens()) {
+    wxString item_string = tks.GetNextToken();
+    sat_sources.Add(item_string);
+  }
+
+  // Step thru the POS priority map
+  std::string pos_prio = m_map[0];
+  wxString pos_priority_string(pos_prio.c_str());
+  wxStringTokenizer tk(pos_priority_string, "|");
+  wxArrayString new_sat_prio;
+  while (tk.HasMoreTokens()) {
+    wxString item_string = tk.GetNextToken();
+    wxString pos_channel = item_string.BeforeFirst(';');
+
+    // search the sat sources array for a match
+    // if found, add to proposed new priority array
+    for (size_t i = 0 ; i < sat_sources.GetCount(); i++){
+      if (pos_channel.IsSameAs(sat_sources[i].BeforeFirst(';'))){
+        new_sat_prio.Add(sat_sources[i]);
+        // Mark this source as "used"
+        sat_sources[i] = "USED";
+        break;
+      }
+      else {      // no match, what to do? //FIXME (dave)
+        int yyp = 4;
+      }
+    }
+  }
+    //  Create a new sat priority string from new_sat_prio array
+  wxString proposed_sat_prio;
+  for (size_t i = 0 ; i < new_sat_prio.GetCount(); i++){
+    proposed_sat_prio += new_sat_prio[i];
+    proposed_sat_prio += wxString("|");
+  }
+
+  // Update the maps with the new sat priority string
+  m_map[4] = proposed_sat_prio.ToStdString();
 }
