@@ -1,0 +1,32 @@
+{
+  "name": "opencpn-manuals",
+  "version": "0.1.0",
+  "description": "Experimental update of OpenCPN Antora manuals. ",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "npx antora site.yml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leamas/manuals-v2.git"
+  },
+  "author": "Alec Leamas",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/leamas/manuals-v2/issues"
+  },
+  "homepage": "https://github.com/leamas/manuals-v2#readme",
+  "devDependencies": {
+    "@antora/cli": "3.0.0",
+    "npm": "8.5.1"
+  },
+  "dependencies": {
+    "@antora/logger": "^3.0.1",
+    "@antora/lunr-extension": "^1.0.0-alpha.5",
+    "@antora/site-generator": "^3.0.1",
+    "isomorphic-git": "^1.12.0"
+  }
+}

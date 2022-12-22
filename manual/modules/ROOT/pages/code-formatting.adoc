@@ -1,0 +1,65 @@
+= Code Formatting
+
+== C/C++
+
+After resolving https://github.com/OpenCPN/OpenCPN/issues/1118[Bug 1118]
+and https://github.com/OpenCPN/OpenCPN/issues/2357[Bug 2357] the sources
+have a uniform coding formatting based on the
+https://google.github.io/styleguide/cppguide.html#Formatting[Google Style].
+
+The style is also defined in the _.clang-format_ file which when used
+by https://clang.llvm.org/docs/ClangFormat.html[clang-format] produces a
+correctly formatted source file.
+
+Some short notes:
+
+  - Indentation: two spaces per level, no hard tabs.
+  - The two-spaces indentation also applies to headers despite standard
+    Google style here is one space.
+  - 80 characters max line length.
+  - Unix-style lf line endings are used in the git repository.
+  - No trailing space or hard tabs in sources.
+  - Sources should use 7-bit ascii. Use  for example "\x00b0" rather than "°"
+
+== CMake
+
+Cmake file uses formatting defined by the _.cmake-format.yaml_ which when used
+with https://github.com/cheshirekow/cmake_format[cmake-format] produces
+correctly formatted files. This has been applied to all _cmake/*.cmake_ files
+and CMakeLists.txt.
+
+== Using clang-format
+
+clang is part of the llvm tools. These are usually installed using package
+managers like choco (Windows), brew (MacOS) or apt (Debian/Ubuntu).
+
+To format a C, C++ or header file with clang-format with the project's default 
+configuration use:
+
+    clang-format -i  <filename>
+
+== Using  cmake-format
+
+Install cmake-format as described in
+https://github.com/cheshirekow/cmake_format[]. To format a single file use
+
+    cmake-format -i  <filename>
+
+== Using the git pre-commit hook
+
+The standard git pre-commit hook avoids committing trailing whitespace, bogus
+line-endings etc. It needs to be activated by
+
+    cp .git/hooks/pre-commit.sample .git/hooks/pre-commit
+
+Windows users uses `copy` instead of `cp`. Using the hook is strongly
+recommended.
+
+== Editor and IDE configuration
+
+There is an https://github.com/OpenCPN/OpenCPN/issues/1416[open bug] for
+creating an _.editorconfig_ file.  This file could be used by most
+editors to define basic settings.
+
+There are no standard configurations available for IDEs like Visual Studio
+Code, Eclipse or CLion.

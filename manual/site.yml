@@ -1,0 +1,25 @@
+site:
+  title: OpenCPN Programmer Manual
+  url:  https://nowhere.net
+  start_page: opencpn-dev::index.adoc
+
+content:
+  sources:
+    - url: ..
+      branches: [manual] 
+      start_path: manual
+
+ui:   
+  bundle:
+    url: https://gitlab.com/leamas/antora-ui-default/-/raw/master/latest/ui-bundle.zip
+    snapshot: true
+
+output:
+  dir: ./docs
+  clean: true              
+
+asciidoc:
+  attributes:
+    copyright: 2022 Alec Leamas
+    license: CC BY-SA 4.0
+    license-link: https://creativecommons.org/licenses/by-sa/4.0/
