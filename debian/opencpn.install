@@ -4,4 +4,4 @@ usr/lib/opencpn/*.so
 usr/share/applications/opencpn.desktop
 usr/share/icons/hicolor/*/apps/opencpn.*
 usr/share/metainfo/opencpn.appdata.xml
-usr/share/doc/opencpn/changelog usr/share/doc/opencpn/
+usr/share/doc/opencpn/changelog
