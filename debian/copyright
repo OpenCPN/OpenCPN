@@ -4,22 +4,22 @@ Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
 Source: https://github.com/OpenCPN/OpenCPN.git
 Files-Excluded:
  */NSIS.template.in*
- buildosx*
- buildandroid*
- buildwin*
- data/doc*
- debian*
- Docs/*
- flatpak*
- mingw*
- plugins/chartdldr_pi/src/tinyxml*
- plugins/chartdldr_pi/src/unarr*
+ buildosx
+ buildandroid
+ buildwin
+ data/doc
+ debian
+ Docs
+ flatpak
+ mingw
+ plugins/chartdldr_pi/src/tinyxml
+ plugins/chartdldr_pi/src/unarr
  plugins/chartdldr_pi/data/doc
- plugins/grib_pi/src/bzip2*
- libs/lz4*
- libs/serial*
- libs/tinyxml*
- libs/wxsvg*
+ plugins/grib_pi/src/bzip2
+ libs/lz4
+ libs/serial
+ libs/tinyxml
+ libs/wxsvg
  data/CoC-909_2013-InlandECDIS_20170308s.pdf
 
 Files: *
