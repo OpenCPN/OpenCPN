@@ -1,2 +1,0 @@
-# Mute warnings due to lintian bug #994271 
-opencpn source: superfluous-file-pattern *
