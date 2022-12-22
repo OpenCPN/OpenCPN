@@ -119,7 +119,7 @@ modules:
           - -DOCPN_FLATPAK=ON
           - -DOCPN_USE_SYSFS_PORTS=ON
           - -DBUILD_SHARED_LIBS=OFF
-          - -DOCPN_TARGET_TUPLE=flatpak-x86_64;20.08;x86_64
+          - -DOCPN_TARGET_TUPLE=flatpak-x86_64-wx32;22.08;x86_64
           - -DCMAKE_FIND_ROOT_PATH=/app
           - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
