@@ -987,6 +987,8 @@ void CommBridge::InitializePriorityContainers(){
   active_priority_variation.active_source_address = -1;
   active_priority_satellites.active_source_address = -1;
 
+  active_priority_void.active_priority = -1;
+
  }
 
 void CommBridge::ClearPriorityMaps(){
@@ -995,6 +997,21 @@ void CommBridge::ClearPriorityMaps(){
   priority_map_heading.clear();
   priority_map_variation.clear();
   priority_map_satellites.clear();
+}
+
+PriorityContainer& CommBridge::GetPriorityContainer(const std::string category){
+  if (!category.compare("position"))
+    return active_priority_position;
+  else if (!category.compare("velocity"))
+    return active_priority_velocity;
+  else if (!category.compare("heading"))
+    return active_priority_heading;
+  else if (!category.compare("variation"))
+    return active_priority_variation;
+  else if (!category.compare("satellites"))
+    return active_priority_satellites;
+  else
+    return active_priority_void;
 }
 
 void CommBridge::UpdateAndApplyMaps(std::vector<std::string> new_maps){

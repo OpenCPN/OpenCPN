@@ -132,21 +132,31 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
 
 void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
-                            size_t map_index,
+                            size_t map_index, std::string map_name,
                             wxTreeItemId leaf_parent){
   if(map_list.size() < (size_t)map_index)
     return;
+
+  // Get the current Priority container for this branch
+  MyApp& app = wxGetApp();
+  PriorityContainer pc = app.m_comm_bridge.GetPriorityContainer(map_name);
+
   wxString priority_string(map_list[map_index].c_str());
   wxStringTokenizer tk(priority_string, "|");
   size_t index = 0;
   while (tk.HasMoreTokens()) {
     wxString item_string = tk.GetNextToken();
 
-    // Record the maximum dispoay string length, for usin dialog sizing.
+    // Record the maximum display string length, for use in dialog sizing.
     m_maxStringLength = wxMax(m_maxStringLength, item_string.Length());
 
     PriorityEntry *pe = new PriorityEntry(map_index, index);
     wxTreeItemId id_tk = m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
+
+    //  Set bold text on item currently active (usually 0)
+    if ( (size_t)(pc.active_priority) == index)
+      m_prioTree->SetItemBold(id_tk);
+
     if ((map_index == m_selmap_index) && (index == m_selIndex))
       m_selID = id_tk;
     index++;
@@ -165,23 +175,23 @@ void PriorityDlg::Populate() {
 
   wxTreeItemId id_position = m_prioTree->AppendItem(m_rootId, _("Position"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_position);
-  AddLeaves(m_map, 0, id_position);
+  AddLeaves(m_map, 0, "position", id_position);
 
   wxTreeItemId id_velocity = m_prioTree->AppendItem(m_rootId, _("Speed/Course"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_velocity);
-  AddLeaves(m_map, 1, id_velocity);
+  AddLeaves(m_map, 1, "velocity", id_velocity);
 
   wxTreeItemId id_heading = m_prioTree->AppendItem(m_rootId, _("Heading"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_heading);
-  AddLeaves(m_map, 2, id_heading);
+  AddLeaves(m_map, 2, "heading", id_heading);
 
   wxTreeItemId id_magvar = m_prioTree->AppendItem(m_rootId, _("Mag Variation"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_magvar);
-  AddLeaves(m_map, 3, id_magvar);
+  AddLeaves(m_map, 3, "variation", id_magvar);
 
   wxTreeItemId id_sats = m_prioTree->AppendItem(m_rootId, _("Satellites"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(id_sats);
-  AddLeaves(m_map, 4, id_sats);
+  AddLeaves(m_map, 4, "satellites", id_sats);
 
   m_prioTree->ExpandAll();
 
