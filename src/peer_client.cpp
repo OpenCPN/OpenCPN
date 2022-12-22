@@ -265,7 +265,7 @@ int SendRoute(std::string dest_ip_address, std::string server_name, Route *route
           dlg.SetText1Message("");
 
           if (dlg.ShowModal() == ID_PCD_OK) {
-            wxString PIN_tentative = dlg.GetText1Value();
+            wxString PIN_tentative = dlg.GetText1Value().Trim().Trim(false);
             unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
             std::string new_api_key = PINtoRandomKeyString(dPIN);;
 
