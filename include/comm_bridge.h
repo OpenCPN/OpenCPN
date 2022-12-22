@@ -92,6 +92,8 @@ public:
   std::string GetPriorityKey(std::shared_ptr <const NavMsg> msg);
 
   std::vector<std::string> GetPriorityMaps();
+  PriorityContainer& GetPriorityContainer(const std::string category);
+
   void UpdateAndApplyMaps(std::vector<std::string> new_maps);
   bool LoadConfig( void );
   bool SaveConfig( void );
@@ -144,6 +146,7 @@ private:
   PriorityContainer active_priority_heading;
   PriorityContainer active_priority_variation;
   PriorityContainer active_priority_satellites;
+  PriorityContainer active_priority_void;
 
   std::unordered_map<std::string, int> priority_map_position;
   std::unordered_map<std::string, int> priority_map_velocity;

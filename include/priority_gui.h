@@ -50,6 +50,7 @@ private:
   void AddLeaves(const std::vector<std::string> &map_list,
                             size_t map_index,
                             wxTreeItemId leaf_parent);
+  void AdjustSatPriority();
 
   wxButton *btnMoveUp, *btnMoveDown;
   wxTreeCtrl *m_prioTree;
