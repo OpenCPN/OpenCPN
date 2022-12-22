@@ -231,6 +231,7 @@ public:
                     bool b_useFBO, bool b_useVBO, int nTextureFormat,
                     float MinCartographicLineWidth,
                     float MinSymbolLineWidth);
+  void SetUseGLSL(bool useGLSL) { m_useGLSL = useGLSL; }
 
   bool ObjectRenderCheck(ObjRazRules *rzRules);
   bool ObjectRenderCheckRules(ObjRazRules *rzRules,
