@@ -48,7 +48,7 @@ private:
 
   void Populate();
   void AddLeaves(const std::vector<std::string> &map_list,
-                            size_t map_index,
+                            size_t map_index, std::string map_name,
                             wxTreeItemId leaf_parent);
   void AdjustSatPriority();
 
