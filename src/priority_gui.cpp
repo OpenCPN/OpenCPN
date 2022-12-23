@@ -93,6 +93,20 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   btnEntrySizer->Add(btnMoveUp, 0, wxALL, 5);
   btnEntrySizer->Add(btnMoveDown, 0, wxALL, 5);
 
+  btnEntrySizer->AddSpacer(15);
+
+  btnRefresh = new wxButton(this, wxID_ANY, _("Refresh"));
+  btnClear = new wxButton(this, wxID_ANY, _("Clear All"));
+
+  btnEntrySizer->Add(btnRefresh, 0, wxALL, 5);
+  btnEntrySizer->Add(btnClear, 0, wxALL, 5);
+
+#ifndef __WXMSW__
+  //FIXME (dave)    gtk crashes on second call to tree->DeleteAllItems()...Why?
+  btnRefresh->Hide();
+  btnClear->Hide();
+#endif
+
   wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
   wxButton* btnOK = new wxButton(this, wxID_OK);
   wxButton* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
@@ -109,6 +123,14 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
                      wxCommandEventHandler(PriorityDlg::OnMoveDownClick), NULL,
                      this);
 
+  btnRefresh->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                     wxCommandEventHandler(PriorityDlg::OnRefreshClick), NULL,
+                     this);
+
+  btnClear->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                     wxCommandEventHandler(PriorityDlg::OnClearClick), NULL,
+                     this);
+
   m_prioTree->Connect(wxEVT_TREE_SEL_CHANGED,
                            wxCommandEventHandler(PriorityDlg::OnItemSelected),
                            NULL, this);
@@ -119,7 +141,7 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   Populate();
 
-  int n_lines = m_prioTree->GetCount();
+  int n_lines = wxMax(m_prioTree->GetCount(), 15);
 
   stcSizer->SetMinSize(m_maxStringLength * GetCharWidth() * 15 / 10,
                        wxMin(gFrame->GetSize().y * 3 /4 , n_lines * GetCharHeight()));
@@ -166,8 +188,9 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
 
 void PriorityDlg::Populate() {
 
+  m_prioTree->Unselect();
   m_prioTree->DeleteAllItems();
-  m_maxStringLength = 0;
+  m_maxStringLength = 15;   // default width calculation
 
 //  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"), TRUE);
   wxTreeItemId m_rootId = m_prioTree->AddRoot(_("Priorities"), -1, -1, NULL);
@@ -229,11 +252,11 @@ void PriorityDlg::OnItemSelected(wxCommandEvent& event){
 
   wxTreeItemId id = m_prioTree->GetSelection();
   PriorityEntry *pe = (PriorityEntry *)m_prioTree->GetItemData(id);
-  m_selIndex = pe->m_index;
-  m_selmap_index = pe->m_category;
-
   if (!pe)
     return;
+
+  m_selIndex = pe->m_index;
+  m_selmap_index = pe->m_category;
 
   if (pe->m_index > 0){
     btnMoveUp->Enable();
@@ -329,6 +352,30 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   // And reload the tree GUI
   m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
+}
+
+void PriorityDlg::OnRefreshClick(wxCommandEvent& event) {
+  // Reload the tree GUI
+  MyApp& app = wxGetApp();
+  m_map = app.m_comm_bridge.GetPriorityMaps();
+  Populate();
+}
+
+void PriorityDlg::OnClearClick(wxCommandEvent& event) {
+  m_map[0].clear();
+  m_map[1].clear();
+  m_map[2].clear();
+  m_map[3].clear();
+  m_map[4].clear();
+
+  // Update the priority mechanism
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.UpdateAndApplyMaps(m_map);
+
+  // And reload the tree GUI
+  m_map = app.m_comm_bridge.GetPriorityMaps();
+  Populate();
+
 }
 
 void PriorityDlg::AdjustSatPriority() {
