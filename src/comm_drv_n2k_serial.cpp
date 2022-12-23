@@ -276,6 +276,31 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
   return name;
 }
 
+bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                        std::shared_ptr<const NavAddr> addr) {
+
+  //auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
+  wxString sentence; //(msg_0183->payload.c_str());
+
+  if( GetSecondaryThread() ) {
+    if( IsSecThreadActive() )
+    {
+      int retry = 10;
+      while( retry ) {
+        if( GetSecondaryThread()->SetOutMsg( sentence ))
+          return true;
+        else
+          retry--;
+      }
+      return false;   // could not send after several tries....
+    }
+    else
+      return false;
+  }
+  return false;
+}
+
+
 void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
     CommDriverN2KSerialEvent& event) {
   auto p = event.GetPayload();
@@ -404,6 +429,21 @@ void CommDriverN2KSerialThread::SetGatewayOperationMode(void) {
 
   WriteComPortPhysical(config_string, 10);
 
+}
+
+bool CommDriverN2KSerialThread::SetOutMsg(const wxString &msg)
+{
+  if(out_que.size() < OUT_QUEUE_LENGTH){
+    wxCharBuffer buf = msg.ToUTF8();
+    if(buf.data()){
+      char *qmsg = (char *)malloc(strlen(buf.data()) +1);
+      strcpy(qmsg, buf.data());
+      out_que.push(qmsg);
+      return true;
+    }
+  }
+
+    return false;
 }
 
 

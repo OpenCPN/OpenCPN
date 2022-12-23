@@ -8495,3 +8495,29 @@ const std::unordered_map<std::string, std::string> GetAttributes(DriverHandle ha
 
   return found->get()->GetAttributes();
 }
+
+CommDriverResult WriteCommDriverN2K( DriverHandle handle, int PGN,
+                                     int destinationCANAddress, int priority,
+                                     const std::shared_ptr <std::vector<uint8_t>> &payload){
+
+  std::vector<uint8_t> *data = payload.get();
+
+  // Create output message in standard (Actisense compatible) format
+  std::vector<uint8_t> message;
+  message.push_back(0x94);                  // packet prolog, TX
+  message.push_back(0x22);                  // length
+  message.push_back(priority);              // priority
+  message.push_back(PGN && 0xFF);           // PGN
+  message.push_back((PGN >> 8) && 0xFF);
+  message.push_back((PGN >> 16) && 0xFF);
+  message.push_back(destinationCANAddress); // destination
+  message.push_back(data->size());  // payload data length
+  for (size_t i=0; i < data->size(); i++){
+    message.push_back(data->at(i));
+  }
+  message.push_back(0x33);                  // crc
+  message.push_back(0x10);                  // packet postlog
+
+  return RESULT_COMM_NO_ERROR;
+}
+

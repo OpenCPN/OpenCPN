@@ -35,7 +35,8 @@
 #include "serial/serial.h"
 #endif
 
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
+#define OUT_QUEUE_LENGTH                20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH    200
 
 #define ESCAPE 0x10
 #define STARTOFTEXT 0x02
@@ -56,6 +57,9 @@ public:
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
+
+  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                           std::shared_ptr<const NavAddr> addr);
 
   void SetListener(DriverListener& l) override{};
 
