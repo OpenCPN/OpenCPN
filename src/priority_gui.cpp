@@ -119,7 +119,7 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   Populate();
 
-  int n_lines = m_prioTree->GetCount();
+  int n_lines = wxMax(m_prioTree->GetCount(), 15);
 
   stcSizer->SetMinSize(m_maxStringLength * GetCharWidth() * 15 / 10,
                        wxMin(gFrame->GetSize().y * 3 /4 , n_lines * GetCharHeight()));
@@ -167,7 +167,7 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
 void PriorityDlg::Populate() {
 
   m_prioTree->DeleteAllItems();
-  m_maxStringLength = 0;
+  m_maxStringLength = 15;   // default width calculation
 
 //  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"), TRUE);
   wxTreeItemId m_rootId = m_prioTree->AddRoot(_("Priorities"), -1, -1, NULL);
@@ -229,11 +229,11 @@ void PriorityDlg::OnItemSelected(wxCommandEvent& event){
 
   wxTreeItemId id = m_prioTree->GetSelection();
   PriorityEntry *pe = (PriorityEntry *)m_prioTree->GetItemData(id);
-  m_selIndex = pe->m_index;
-  m_selmap_index = pe->m_category;
-
   if (!pe)
     return;
+
+  m_selIndex = pe->m_index;
+  m_selmap_index = pe->m_category;
 
   if (pe->m_index > 0){
     btnMoveUp->Enable();
