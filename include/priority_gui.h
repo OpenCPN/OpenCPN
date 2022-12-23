@@ -42,6 +42,8 @@ public:
 private:
   void OnMoveUpClick(wxCommandEvent& event);
   void OnMoveDownClick(wxCommandEvent& event);
+  void OnRefreshClick(wxCommandEvent& event);
+  void OnClearClick(wxCommandEvent& event);
   void OnItemSelected(wxCommandEvent& event);
 
   void ProcessMove(wxTreeItemId, int dir);
@@ -53,6 +55,7 @@ private:
   void AdjustSatPriority();
 
   wxButton *btnMoveUp, *btnMoveDown;
+  wxButton *btnRefresh, *btnClear;
   wxTreeCtrl *m_prioTree;
   std::vector<std::string> m_map;
 
