@@ -58,13 +58,13 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
-  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                           std::shared_ptr<const NavAddr> addr);
-
   void SetListener(DriverListener& l) override{};
 
   bool Open();
   void Close();
+
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                    std::shared_ptr<const NavAddr> addr) override;
 
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can

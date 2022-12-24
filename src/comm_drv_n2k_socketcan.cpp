@@ -300,6 +300,11 @@ void CommDriverN2KSocketCAN::Activate() {
   // TODO(dave) Finally decide if thread should start here or in CTOR
 }
 
+bool CommDriverN2KSocketCAN::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                        std::shared_ptr<const NavAddr> addr) {
+  return false;
+}
+
 
 // Worker implementation
 
