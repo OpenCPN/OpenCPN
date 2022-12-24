@@ -67,7 +67,6 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   m_selIndex = 0;
   m_selmap_index = 0;
-  m_selID = 0;
 
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
@@ -100,12 +99,6 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   btnEntrySizer->Add(btnRefresh, 0, wxALL, 5);
   btnEntrySizer->Add(btnClear, 0, wxALL, 5);
-
-#ifndef __WXMSW__
-  //FIXME (dave)    gtk crashes on second call to tree->DeleteAllItems()...Why?
-  btnRefresh->Hide();
-  btnClear->Hide();
-#endif
 
   wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
   wxButton* btnOK = new wxButton(this, wxID_OK);
@@ -180,7 +173,7 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
       m_prioTree->SetItemBold(id_tk);
 
     if ((map_index == m_selmap_index) && (index == m_selIndex))
-      m_selID = id_tk;
+      m_selString = item_string;
     index++;
   }
 }
@@ -218,30 +211,27 @@ void PriorityDlg::Populate() {
 
   m_prioTree->ExpandAll();
 
-  if(m_selID)
-    m_prioTree->SelectItem(m_selID);
+  // Restore selection
+  wxTreeItemId rootID = m_prioTree->GetRootItem();
+  wxTreeItemIdValue cookie;
+  int i = m_selmap_index;
+  wxTreeItemId cid = m_prioTree->GetFirstChild(rootID, cookie);
 
-#if 0
-  wxString dirname;
-  int nDir = dir_array.GetCount();
-  for (int i = 0; i < nDir; i++) {
-    wxString dirname = dir_array[i];
-    if (!dirname.IsEmpty()) {
-      wxDirItemData* dir_item = new wxDirItemData(dirname, dirname, TRUE);
-      wxTreeItemId id = ptc->AppendItem(m_rootId, dirname, 0, -1, dir_item);
-
-      // wxWidgets bug workaraound (Ticket #10085)
-      ptc->SetItemText(id, dirname);
-      if (pFont) ptc->SetItemFont(id, *pFont);
-
-        // On MacOS, use the default system dialog color, to honor Dark mode.
-#ifndef __WXOSX__
-      ptc->SetItemTextColour(id, col);
-#endif
-      ptc->SetItemHasChildren(id);
-    }
+  while ((i > 0) && cid.IsOk()){
+    cid = m_prioTree->GetNextChild( rootID, cookie);
+    i--;
   }
-#endif
+
+  wxTreeItemId ccid = m_prioTree->GetFirstChild(cid, cookie);
+
+  int j = m_selIndex;
+  while ((j > 0) && ccid.IsOk()){
+    ccid = m_prioTree->GetNextChild( cid, cookie);
+    j--;
+  }
+
+  if(ccid.IsOk())
+    m_prioTree->SelectItem(ccid);
 
 }
 
@@ -367,6 +357,9 @@ void PriorityDlg::OnClearClick(wxCommandEvent& event) {
   m_map[2].clear();
   m_map[3].clear();
   m_map[4].clear();
+
+  m_selString.Clear();
+  m_selmap_index = m_selIndex = 0;
 
   // Update the priority mechanism
   MyApp& app = wxGetApp();
