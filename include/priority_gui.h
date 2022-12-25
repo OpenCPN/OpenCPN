@@ -53,6 +53,7 @@ private:
                             size_t map_index, std::string map_name,
                             wxTreeItemId leaf_parent);
   void AdjustSatPriority();
+  void AdjustCOGSOGPriority();
 
   wxButton *btnMoveUp, *btnMoveDown;
   wxButton *btnRefresh, *btnClear;
