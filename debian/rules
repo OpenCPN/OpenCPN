@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+include  /usr/share/dpkg/architecture.mk
+
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
