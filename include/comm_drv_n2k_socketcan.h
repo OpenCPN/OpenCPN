@@ -45,7 +45,7 @@ public:
   void SetListener(DriverListener& l) override { m_listener = l; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                    std::shared_ptr<const NavAddr> addr) override;
+                    std::shared_ptr<const NavAddr> addr) = 0; //override;
 
   virtual bool Open() = 0;
   virtual void Close() = 0;
@@ -60,6 +60,7 @@ private:
   bool m_ok;
   std::string m_portstring;
   std::string m_baudrate;
+  unsigned char m_source_address;
 };
 
 #endif  // guard
