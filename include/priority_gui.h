@@ -61,7 +61,7 @@ private:
 
   size_t m_selmap_index;
   size_t m_selIndex;
-  wxTreeItemId m_selID;
+  wxString m_selString;
 
   int m_maxStringLength;
 };
