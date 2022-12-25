@@ -172,8 +172,6 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
     if ( (size_t)(pc.active_priority) == index)
       m_prioTree->SetItemBold(id_tk);
 
-    if ((map_index == m_selmap_index) && (index == m_selIndex))
-      m_selString = item_string;
     index++;
   }
 }
@@ -358,7 +356,6 @@ void PriorityDlg::OnClearClick(wxCommandEvent& event) {
   m_map[3].clear();
   m_map[4].clear();
 
-  m_selString.Clear();
   m_selmap_index = m_selIndex = 0;
 
   // Update the priority mechanism
