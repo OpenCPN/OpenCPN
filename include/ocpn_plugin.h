@@ -1573,6 +1573,11 @@ GetActiveRouteGUID(void);  // if no active route, returns wxEmptyString
 
 // API 1.18
 
+//  Comm Priority query support
+extern DECL_EXP std::vector<std::string> GetPriorityMaps();
+
+
+
 typedef enum _OBJECT_LAYER_REQ {
   OBJECTS_ALL = 0,
   OBJECTS_NO_LAYERS,

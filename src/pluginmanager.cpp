@@ -54,6 +54,7 @@
 #include <wx/zstream.h>
 #include <wx/tarstrm.h>
 #include <wx/textwrapper.h>
+#include <wx/app.h>
 
 #ifndef __WXMSW__
 #include <cxxabi.h>
@@ -149,6 +150,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "comm_drv_n0183_net.h"
 #include "comm_drv_registry.h"
 #include "comm_drv_n2k.h"
+#include "ocpn_app.h"
 
 #ifdef __OCPN__ANDROID__
 #include <dlfcn.h>
@@ -253,6 +255,8 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+
+wxDECLARE_APP(MyApp);
 
 static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
@@ -8466,6 +8470,13 @@ wxString GetActiveRouteGUID(
   else
     return rt->m_GUID;
 }
+
+/** Comm Priority query support methods  */
+std::vector<std::string> GetPriorityMaps() {
+  MyApp& app = wxGetApp();
+  return (app.m_comm_bridge.GetPriorityMaps());
+}
+
 
 /** Comm port plugin TX support methods  */
 
