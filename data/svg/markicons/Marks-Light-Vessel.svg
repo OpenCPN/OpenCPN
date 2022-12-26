@@ -1,20 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_430209088">
-   <line fill="none" stroke="black" stroke-width="20" x1="1209" y1="900" x2="584" y2= "900" />
-   <path fill="none" stroke="black" stroke-width="20" d="M1101 900l55 -164c-174,55 -338,55 -512,0l55 164 402 0z"/>
-   <path fill="#9900CC" d="M329 1220c-100,-176 296,-280 535,-297 -141,194 -439,475 -535,297z"/>
-   <line fill="none" stroke="black" stroke-width="20" x1="900" y1="412" x2="900" y2= "777" />
-   <line fill="none" stroke="black" stroke-width="20" x1="825" y1="547" x2="975" y2= "442" />
-   <line fill="none" stroke="black" stroke-width="20" x1="825" y1="442" x2="975" y2= "547" />
-   <path fill="white" stroke="black" stroke-width="20" d="M900 857c24,0 43,19 43,43 0,24 -19,43 -43,43 -24,0 -43,-19 -43,-43 0,-24 19,-43 43,-43z"/>
-  </g>
-  <rect fill="none" width="1800" height="1800"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" stroke="#000" stroke-width="20" d="M1209 900H584m517 0 55-164c-174 55-338 55-512 0l55 164h402z"/>
+    <path fill="#90C" d="M329 1220c-100-176 296-280 535-297-141 194-439 475-535 297z"/>
+    <path fill="none" stroke="#000" stroke-width="20" d="M900 412v365m-75-230 150-105m-150 0 150 105"/>
+    <path fill="#fff" stroke="#000" stroke-width="20" d="M900 857c24 0 43 19 43 43s-19 43-43 43-43-19-43-43 19-43 43-43z"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
 </svg>

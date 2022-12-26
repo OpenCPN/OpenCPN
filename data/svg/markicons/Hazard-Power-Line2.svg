@@ -1,53 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_527791576">
-   <polygon fill="black" fill-rule="nonzero" points="667,1264 796,965 832,696 832,695 833,695 889,530 911,534 856,699 820,968 820,969 819,970 689,1270 "/>
-   <polygon fill="black" fill-rule="nonzero" points="1111,1270 981,970 980,969 980,968 944,699 889,534 911,530 967,695 968,695 968,696 1004,965 1133,1264 "/>
-   <polygon fill="black" fill-rule="nonzero" points="823,857 596,857 596,846 823,846 "/>
-   <polygon fill="black" fill-rule="nonzero" points="672,1264 818,1090 830,1096 684,1270 "/>
-   <polygon fill="black" fill-rule="nonzero" points="594,846 829,785 834,796 598,857 "/>
-   <polygon fill="black" fill-rule="nonzero" points="844,701 596,701 596,693 844,693 "/>
-   <polygon fill="black" fill-rule="nonzero" points="595,694 864,632 866,639 597,701 "/>
-   <polygon fill="black" fill-rule="nonzero" points="1116,1270 973,1095 985,1090 1128,1264 "/>
-   <polygon fill="black" fill-rule="nonzero" points="753,1088 1046,1087 1046,1098 753,1099 "/>
-   <polygon fill="black" fill-rule="nonzero" points="956,693 1204,693 1204,701 956,701 "/>
-   <polygon fill="black" fill-rule="nonzero" points="1203,701 934,639 936,632 1205,694 "/>
-   <polygon fill="black" fill-rule="nonzero" points="977,846 1204,846 1204,857 977,857 "/>
-   <polygon fill="black" fill-rule="nonzero" points="1202,857 966,796 971,785 1206,846 "/>
-   <polygon fill="black" fill-rule="nonzero" points="823,846 977,845 977,856 823,857 "/>
-   <polygon fill="black" fill-rule="nonzero" points="831,785 968,784 969,795 832,796 "/>
-   <polygon fill="black" fill-rule="nonzero" points="844,692 956,691 956,702 844,703 "/>
-   <polygon fill="black" fill-rule="nonzero" points="865,630 935,629 935,640 865,641 "/>
-   <polygon fill="black" fill-rule="nonzero" points="808,961 992,960 992,971 808,972 "/>
-   <g>
-    <rect fill="black" x="596" y="718" width="29.8825" height="14.3143"/>
-    <rect fill="black" x="596" y="748" width="29.8825" height="14.3143"/>
-   </g>
-   <polygon fill="black" fill-rule="nonzero" points="751,1090 989,964 995,970 756,1096 "/>
-   <polygon fill="black" fill-rule="nonzero" points="828,788 953,694 959,699 835,793 "/>
-   <polygon fill="black" fill-rule="nonzero" points="811,964 1049,1089 1044,1095 805,970 "/>
-   <polygon fill="black" fill-rule="nonzero" points="826,849 995,963 989,968 820,854 "/>
-   <polygon fill="black" fill-rule="nonzero" points="847,694 972,787 965,792 841,700 "/>
-   <polygon fill="black" fill-rule="nonzero" points="980,854 811,969 805,964 974,849 "/>
-   <g>
-    <rect fill="black" x="1174" y="718" width="29.8825" height="14.3143"/>
-    <rect fill="black" x="1174" y="748" width="29.8825" height="14.3143"/>
-   </g>
-   <g>
-    <rect fill="black" x="596" y="874" width="29.8825" height="14.3143"/>
-    <rect fill="black" x="596" y="904" width="29.8825" height="14.3143"/>
-   </g>
-   <g>
-    <rect fill="black" x="1174" y="874" width="29.8825" height="14.3143"/>
-    <rect fill="black" x="1174" y="904" width="29.8825" height="14.3143"/>
-   </g>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill-rule="nonzero" d="m667 1264 129-299 36-269v-1h1l56-165 22 4-55 165-36 269v1l-1 1-130 300z"/>
+    <path fill-rule="nonzero" d="M1111 1270 981 970l-1-1v-1l-36-269-55-165 22-4 56 165h1v1l36 269 129 299zM823 857H596v-11h227zm-151 407 146-174 12 6-146 174z"/>
+    <path fill-rule="nonzero" d="m594 846 235-61 5 11-236 61zm250-145H596v-8h248z"/>
+    <path fill-rule="nonzero" d="m595 694 269-62 2 7-269 62zm521 576-143-175 12-5 143 174z"/>
+    <path fill-rule="nonzero" d="m753 1088 293-1v11l-293 1zm203-395h248v8H956z"/>
+    <path fill-rule="nonzero" d="m1203 701-269-62 2-7 269 62zM977 846h227v11H977z"/>
+    <path fill-rule="nonzero" d="m1202 857-236-61 5-11 235 61zm-379-11 154-1v11l-154 1z"/>
+    <path fill-rule="nonzero" d="m831 785 137-1 1 11-137 1zm13-93 112-1v11l-112 1zm21-62 70-1v11l-70 1zm-57 331 184-1v11l-184 1z"/>
+    <path d="M596 718h29.883v14.314H596zm0 30h29.883v14.314H596z"/>
+    <path fill-rule="nonzero" d="m751 1090 238-126 6 6-239 126zm77-302 125-94 6 5-124 94z"/>
+    <path fill-rule="nonzero" d="m811 964 238 125-5 6-239-125zm15-115 169 114-6 5-169-114zm21-155 125 93-7 5-124-92z"/>
+    <path fill-rule="nonzero" d="M980 854 811 969l-6-5 169-115z"/>
+    <path d="M1174 718h29.883v14.314H1174zm0 30h29.883v14.314H1174zM596 874h29.883v14.314H596zm0 30h29.883v14.314H596zm578-30h29.883v14.314H1174zm0 30h29.883v14.314H1174z"/>
 </svg>

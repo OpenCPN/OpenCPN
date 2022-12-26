@@ -1,35 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-    <mask id="id0">
-      <radialGradient id="id1" gradientUnits="userSpaceOnUse" cx="1871.05" cy="2863.11" r="407.101" fx="1871.05" fy="2863.11">
-       <stop offset="0" stop-opacity="0" stop-color="white"/>
-       <stop offset="1" stop-opacity="1" stop-color="white"/>
-      </radialGradient>
-     <rect fill="url(#id1)" x="878" y="717" width="265" height="209"/>
-    </mask>
-    <mask id="id2">
-      <radialGradient id="id3" gradientUnits="userSpaceOnUse" cx="1747.67" cy="3224.39" r="450.622" fx="1747.67" fy="3224.39">
-       <stop offset="0" stop-opacity="0" stop-color="white"/>
-       <stop offset="1" stop-opacity="1" stop-color="white"/>
-      </radialGradient>
-     <rect fill="url(#id3)" x="597" y="810" width="266" height="189"/>
-    </mask>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_526243632">
-   <path fill="#B4D638" mask="url(#id0)" d="M878 807l240 -89c31,47 28,76 17,117 -20,70 -110,119 -189,73 -36,-21 -58,-47 -68,-101z"/>
-   <path fill="black" d="M880 691c-8,3 -6,9 -7,20 0,51 3,117 32,158 32,44 89,70 150,47 62,-22 90,-80 85,-135 -5,-52 -78,-156 -95,-150l-165 60zm392 422l-256 93c14,-21 76,-67 103,-82l-73 -192c-62,15 -122,-11 -153,-60 -38,-57 -30,-130 -31,-187l192 -70c37,43 91,97 98,165 6,57 -22,114 -79,142l67 195c30,-7 103,-12 132,-4z"/>
-   <polyline fill="none" stroke="#CCCCCC" stroke-width="20" points="931,875 979,596 1134,526 "/>
-   <polyline fill="none" stroke="#CCCCCC" stroke-width="20" points="756,977 709,655 560,613 "/>
-   <path fill="#FFCC99" mask="url(#id2)" d="M863 857l-252 -46c-22,51 -14,80 4,118 32,66 129,99 199,39 31,-27 48,-56 49,-111z"/>
-   <path fill="black" d="M840 743c10,2 9,8 11,19 9,49 18,115 -4,161 -23,49 -76,84 -140,72 -65,-11 -102,-63 -107,-118 -4,-52 51,-167 68,-164l172 30zm-312 484l268 47c-17,-19 -87,-53 -116,-63l39 -202c64,4 118,-32 141,-86 27,-62 7,-133 -3,-189l-201 -36c-29,50 -72,112 -68,180 4,57 42,108 103,126l-33 203c-30,-1 -103,7 -130,20z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <mask id="c">
+            <radialGradient id="a" gradientUnits="userSpaceOnUse" cx="1871.05" cy="2863.11" r="407.101" fx="1871.05" fy="2863.11">
+                <stop offset="0" stop-opacity="0" stop-color="#fff"/>
+                <stop offset="1" stop-color="#fff"/>
+            </radialGradient>
+            <path fill="url(#a)" d="M878 717h265v209H878z"/>
+        </mask>
+        <mask id="d">
+            <radialGradient id="b" gradientUnits="userSpaceOnUse" cx="1747.67" cy="3224.39" r="450.622" fx="1747.67" fy="3224.39">
+                <stop offset="0" stop-opacity="0" stop-color="#fff"/>
+                <stop offset="1" stop-color="#fff"/>
+            </radialGradient>
+            <path fill="url(#b)" d="M597 810h266v189H597z"/>
+        </mask>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#B4D638" mask="url(#c)" d="m878 807 240-89c31 47 28 76 17 117-20 70-110 119-189 73-36-21-58-47-68-101z"/>
+    <path d="M880 691c-8 3-6 9-7 20 0 51 3 117 32 158 32 44 89 70 150 47 62-22 90-80 85-135-5-52-78-156-95-150l-165 60zm392 422-256 93c14-21 76-67 103-82l-73-192c-62 15-122-11-153-60-38-57-30-130-31-187l192-70c37 43 91 97 98 165 6 57-22 114-79 142l67 195c30-7 103-12 132-4z"/>
+    <path fill="none" stroke="#CCC" stroke-width="20" d="m931 875 48-279 155-70M756 977l-47-322-149-42"/>
+    <path fill="#FC9" mask="url(#d)" d="m863 857-252-46c-22 51-14 80 4 118 32 66 129 99 199 39 31-27 48-56 49-111z"/>
+    <path d="M840 743c10 2 9 8 11 19 9 49 18 115-4 161-23 49-76 84-140 72-65-11-102-63-107-118-4-52 51-167 68-164l172 30zm-312 484 268 47c-17-19-87-53-116-63l39-202c64 4 118-32 141-86 27-62 7-133-3-189l-201-36c-29 50-72 112-68 180 4 57 42 108 103 126l-33 203c-30-1-103 7-130 20z"/>
 </svg>

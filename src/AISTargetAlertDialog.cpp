@@ -22,18 +22,29 @@
  ***************************************************************************
  */
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include <wx/html/htmlwin.h>
 
+
+#include "ais_decoder.h"
 #include "AISTargetAlertDialog.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
-#include "FontMgr.h"
-#include "ocpn_types.h"
-#include "Select.h"
-#include "routemanagerdialog.h"
-#include "OCPNPlatform.h"
-#include "RoutePoint.h"
+#include "ais_target_data.h"
 #include "chcanv.h"
+#include "FontMgr.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "ocpn_types.h"
+#include "ocpn_types.h"
+#include "routemanagerdialog.h"
+#include "route_point.h"
+#include "select.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -129,7 +140,7 @@ void AISTargetAlertDialog::Init() {
 }
 
 bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
-                                  AIS_Decoder *pdecoder, bool b_jumpto,
+                                  AisDecoder *pdecoder, bool b_jumpto,
                                   bool b_createWP, bool b_ack, wxWindowID id,
                                   const wxString &caption, const wxPoint &pos,
                                   const wxSize &size, long style)
@@ -180,8 +191,8 @@ void AISTargetAlertDialog::CreateControls() {
 
   topSizer->Add(m_pAlertTextCtl, 1, wxALL | wxEXPAND, 5);
 
-  // A horizontal box sizer to contain Ack
-  wxBoxSizer *AckBox = new wxBoxSizer(wxHORIZONTAL);
+  // A flex sizer to contain Ack and more buttons
+  wxFlexGridSizer *AckBox = new wxFlexGridSizer(2);
   topSizer->Add(AckBox, 0, wxALL, 5);
 
   // The Silence button
@@ -189,13 +200,6 @@ void AISTargetAlertDialog::CreateControls() {
     wxButton *silence = new wxButton(this, ID_SILENCE, _("&Silence Alert"),
                                      wxDefaultPosition, wxDefaultSize, 0);
     AckBox->Add(silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-  }
-
-  // The Ack button
-  if (m_back) {
-    wxButton *ack = new wxButton(this, ID_ACKNOWLEDGE, _("&Acknowledge"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
-    AckBox->Add(ack, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   }
 
   if (m_bjumpto) {
@@ -210,6 +214,19 @@ void AISTargetAlertDialog::CreateControls() {
                      wxDefaultPosition, wxDefaultSize, 0);
     AckBox->Add(createWptBtn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   }
+  // The Ack button
+  // Also used to close a DSC Alert
+  wxString acktext = _("&Acknowledge");
+  bool show_ack_button = false;
+  if (m_bjumpto && m_bcreateWP) { //DSC Alert only
+    acktext = _("&Close Alert");
+    show_ack_button = true;
+  }
+  if (m_back || show_ack_button) {
+    wxButton *ack = new wxButton(this, ID_ACKNOWLEDGE, acktext,
+                                 wxDefaultPosition, wxDefaultSize, 0);
+    AckBox->Add(ack, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+  }
 
   UpdateText();
 
@@ -217,10 +234,9 @@ void AISTargetAlertDialog::CreateControls() {
 }
 
 bool AISTargetAlertDialog::GetAlertText() {
-  //    Search the parent AIS_Decoder's target list for specified mmsi
+  //    Search the parent AisDecoder's target list for specified mmsi
   if (m_pdecoder) {
-    AIS_Target_Data *td_found =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td_found = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
 
     if (td_found) {
       m_alert_text = td_found->BuildQueryResult();
@@ -318,12 +334,17 @@ void AISTargetAlertDialog::SetColorScheme(void) {
 void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
   //    Acknowledge any existing Alert, and dismiss the dialog
   if (m_pdecoder) {
-    AIS_Target_Data *td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       if (AIS_ALERT_SET == td->n_alert_state) {
         td->m_ack_time = wxDateTime::Now();
         td->b_in_ack_timeout = true;
+      }
+      if (td->b_isDSCtarget) {
+        td->b_isDSCtarget = false;
+        if (td->n_alert_state) {
+          td->n_alert_state = AIS_NO_ALERT;
+        }
       }
     }
   }
@@ -335,12 +356,17 @@ void AISTargetAlertDialog::OnClose(wxCloseEvent &event) {
 void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
   //    Acknowledge the Alert, and dismiss the dialog
   if (m_pdecoder) {
-    AIS_Target_Data *td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td =  m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
-      if (AIS_ALERT_SET == td->n_alert_state) {
+      if (AIS_ALERT_SET == td->n_alert_state ) {
         td->m_ack_time = wxDateTime::Now();
         td->b_in_ack_timeout = true;
+      }
+      if (td->b_isDSCtarget) {
+        td->b_isDSCtarget = false;
+        if (td->n_alert_state) {
+          td->n_alert_state = AIS_NO_ALERT;
+        }
       }
     }
   }
@@ -349,8 +375,7 @@ void AISTargetAlertDialog::OnIdAckClick(wxCommandEvent &event) {
 }
 void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AIS_Target_Data *td =
-        m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
+    auto td =  m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) {
       RoutePoint *pWP = new RoutePoint(td->Lat, td->Lon, g_default_wp_icon,
                                        wxEmptyString, wxEmptyString);
@@ -374,7 +399,7 @@ void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
 void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
   //    Set the suppress audio flag
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    auto td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td) td->b_suppress_audio = true;
   }
@@ -382,7 +407,7 @@ void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
 
 void AISTargetAlertDialog::OnIdJumptoClick(wxCommandEvent &event) {
   if (m_pdecoder) {
-    AIS_Target_Data *td =
+    auto td =
         m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
     if (td)
       gFrame->JumpToPosition(gFrame->GetFocusCanvas(), td->Lat, td->Lon,

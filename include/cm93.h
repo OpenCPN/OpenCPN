@@ -30,6 +30,7 @@
 
 #include "s57chart.h"
 #include "cutil.h"  // for types
+#include "poly_math.h"
 
 //    Some constants
 #define INDEX_m_sor 217  // cm93 dictionary index for object type _m_sor
@@ -447,12 +448,12 @@ public:
                                             int selection_mask = MASK_ALL);
   S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
 
-  VE_Hash &Get_ve_hash(void);
-  VC_Hash &Get_vc_hash(void);
+  std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void);
+  std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void);
 
   void UpdateLUPs(s57chart *pOwner);
   void ForceEdgePriorityEvaluate(void);
-  ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
+  std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
   cm93chart *GetCurrentSingleScaleChart() { return m_pcm93chart_current; }
 
   void SetSpecialOutlineCellIndex(int cell_index, int object_id, int subcell) {

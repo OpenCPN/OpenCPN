@@ -44,18 +44,21 @@
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "routeman.h"
+#include "routeman_gui.h"
+#include "route_point_gui.h"
 #include "georef.h"
 #include "chartbase.h"
 #include "Layer.h"
 #include "SendToGpsDlg.h"
 #include "TrackPropDlg.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
-#include "Route.h"
+#include "track.h"
+#include "route.h"
 #include "chcanv.h"
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
+#include "navutil_base.h"
+#include "svg_utils.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -70,7 +73,7 @@ enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
 extern RoutePropDlgImpl *pRoutePropDialog;
@@ -86,7 +89,7 @@ extern double gLat, gLon;
 extern double gCog, gSog;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern bool g_bOverruleScaMin;
 
@@ -262,9 +265,9 @@ void RouteManagerDialog::OnTabSwitch(wxNotebookEvent &event) {
   if (!m_pNotebook) return;
   int current_page = m_pNotebook->GetSelection();
   if (current_page == 3) {
-            if( btnImport ) btnImport->Enable( false );
-            if( btnExport ) btnExport->Enable( false );
-            if( btnExportViz ) btnExportViz->Enable( false );
+    if (btnImport) btnImport->Enable(false);
+    if (btnExport) btnExport->Enable(false);
+    if (btnExportViz) btnExportViz->Enable(false);
   } else {
     if (btnImport) btnImport->Enable(true);
     if (btnExport) btnExport->Enable(true);
@@ -471,10 +474,12 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteExportClick), NULL, this);
 
   btnRteResequence = new wxButton(winr, -1, _("&Resequence Waypoints"));
-  bsRouteButtonsInner->Add(btnRteResequence, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+  bsRouteButtonsInner->Add(btnRteResequence, 0, wxALL | wxEXPAND,
+                           DIALOG_MARGIN);
   btnRteResequence->Connect(
-	  wxEVT_COMMAND_BUTTON_CLICKED,
-	  wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL, this);
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL,
+      this);
 
   btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS"));
   bsRouteButtonsInner->Add(btnRteSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
@@ -905,9 +910,9 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnLayToggleChartClick), NULL,
       this);
 
-  cbLayToggleNames = new wxCheckBox(
-      winl, -1, _("Show WPT names"), wxDefaultPosition, wxDefaultSize,
-      wxCHK_3STATE );
+  cbLayToggleNames =
+      new wxCheckBox(winl, -1, _("Show WPT names"), wxDefaultPosition,
+                     wxDefaultSize, wxCHK_3STATE);
 
   bsLayButtonsInner->Add(cbLayToggleNames, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   cbLayToggleNames->Connect(
@@ -932,22 +937,24 @@ void RouteManagerDialog::Create() {
   wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") +
                           wxFileName::GetPathSeparator();
   wxImage iconSVG =
-      LoadSVGIcon(UserIconPath + _T("eye.svg"), imageRefSize, imageRefSize);
+      LoadSVG(UserIconPath + _T("eye.svg"), imageRefSize, imageRefSize)
+          .ConvertToImage();
   if (iconSVG.IsOk()) {
     iconSVG.Resize(wxSize(imageRefSize, imageRefSize),
                    wxPoint(0, 0));  // Avoid wxImageList size asserts
     imglist->Add(wxBitmap(iconSVG));
   }
 
-  iconSVG =
-      LoadSVGIcon(UserIconPath + _T("eyex.svg"), imageRefSize, imageRefSize);
+  iconSVG = LoadSVG(UserIconPath + _T("eyex.svg"), imageRefSize, imageRefSize)
+                .ConvertToImage();
   if (iconSVG.IsOk()) {
     iconSVG.Resize(wxSize(imageRefSize, imageRefSize), wxPoint(0, 0));
     imglist->Add(wxBitmap(iconSVG));
   }
 
   iconSVG =
-      LoadSVGIcon(UserIconPath + _T("eyeGray.svg"), imageRefSize, imageRefSize);
+      LoadSVG(UserIconPath + _T("eyeGray.svg"), imageRefSize, imageRefSize)
+          .ConvertToImage();
   if (iconSVG.IsOk()) {
     iconSVG.Resize(wxSize(imageRefSize, imageRefSize), wxPoint(0, 0));
     imglist->Add(wxBitmap(iconSVG));
@@ -1104,7 +1111,7 @@ void RouteManagerDialog::OnShowAllWpCBClicked(wxCommandEvent &event) {
     } else
       pRP->SetVisible(true);
 
-    m_pWptListCtrl->SetItemImage(item, pRP->GetIconImageIndex());
+    m_pWptListCtrl->SetItemImage(item, RoutePointGui(*pRP).GetIconImageIndex());
     pConfig->UpdateWayPoint(pRP);
   }
 
@@ -1345,7 +1352,7 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event) {
       Route *route = list.Item(i)->GetData();
       if (route) {
         pConfig->DeleteConfigRoute(route);
-        g_pRouteMan->DeleteRoute(route);
+        g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
       }
     }
 
@@ -1369,7 +1376,7 @@ void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event) {
 
     gFrame->CancelAllMouseRoute();
 
-    g_pRouteMan->DeleteAllRoutes();
+    g_pRouteMan->DeleteAllRoutes(NavObjectChanges::getInstance());
     // TODO Seth
     //            m_pSelectedRoute = NULL;
     //            m_pFoundRoutePoint = NULL;
@@ -1492,16 +1499,16 @@ void RouteManagerDialog::OnRteExportClick(wxCommandEvent &event) {
 }
 
 void RouteManagerDialog::OnRteResequenceClick(wxCommandEvent &event) {
-	long item = -1;
-	item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
-		wxLIST_STATE_SELECTED);
-	if (item == -1) return;
+  long item = -1;
+  item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
+                                       wxLIST_STATE_SELECTED);
+  if (item == -1) return;
 
-	Route *route = (Route *)m_pRouteListCtrl->GetItemData(item);
+  Route *route = (Route *)m_pRouteListCtrl->GetItemData(item);
 
-	if (!route) return;
-	if (route->m_bIsInLayer) return;
-	route->RenameRoutePoints();
+  if (!route) return;
+  if (route->m_bIsInLayer) return;
+  route->RenameRoutePoints();
 }
 
 void RouteManagerDialog::OnRteActivateClick(wxCommandEvent &event) {
@@ -1822,7 +1829,7 @@ void RouteManagerDialog::OnTrkMenuSelected(wxCommandEvent &event) {
       for (auto const &deleteTrack : deleteList) {
         g_pAIS->DeletePersistentTrack(deleteTrack);
         pConfig->DeleteConfigTrack(deleteTrack);
-        g_pRouteMan->DeleteTrack(deleteTrack);
+        RoutemanGui(*g_pRouteMan).DeleteTrack(deleteTrack);
       }
 
       mergeList.clear();
@@ -1861,14 +1868,12 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
   m_pTrkListCtrl->DeleteAllItems();
 
   // then add tracks to the listctrl
-  TrackList::iterator it;
+  std::vector<Track*>::iterator it;
   int index = 0;
   int list_index = 0;
   bool bpartialViz = false;
 
-  for (it = (*pTrackList).begin(); it != (*pTrackList).end(); ++it, ++index) {
-    ;
-    Track *trk = *it;
+  for (Track *trk : g_TrackList) {
     if (!trk->IsVisible()) bpartialViz = true;
 
     if (!trk->IsListed()) continue;
@@ -2011,6 +2016,10 @@ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
 
 void RouteManagerDialog::OnTrkNewClick(wxCommandEvent &event) {
   gFrame->TrackOff();
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   gFrame->TrackOn();
 
   UpdateTrkListCtrl();
@@ -2037,7 +2046,7 @@ void RouteManagerDialog::OnTrkPropertiesClick(wxCommandEvent &event) {
 }
 
 void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
-  TrackList list;
+  std::vector<Track*> list;
 
   int answer = OCPNMessageBox(
       this, _("Are you sure you want to delete the selected object(s)"),
@@ -2059,22 +2068,26 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
 
     Track *ptrack_to_delete = (Track *)m_pTrkListCtrl->GetItemData(item);
 
-    if (ptrack_to_delete) list.Append(ptrack_to_delete);
+    if (ptrack_to_delete) list.push_back(ptrack_to_delete);
   }
 
   if (busy) {
-    for (unsigned int i = 0; i < list.GetCount(); i++) {
-      Track *track = (list.Item(i)->GetData());
+    for (unsigned int i = 0; i < list.size(); i++) {
+      Track *track = list.at(i);
       if (track) {
         g_pAIS->DeletePersistentTrack(track);
         pConfig->DeleteConfigTrack(track);
-        g_pRouteMan->DeleteTrack(track);
+        RoutemanGui(*g_pRouteMan).DeleteTrack(track);
       }
     }
 
     m_lastTrkItem = -1;
     //        UpdateRouteListCtrl();
     UpdateTrkListCtrl();
+
+    if (pConfig && pConfig->IsChangesFileDirty()) {
+      pConfig->UpdateNavObj(true);
+    }
 
     gFrame->InvalidateAllCanvasUndo();
     gFrame->RefreshAllCanvas();
@@ -2083,7 +2096,7 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
 }
 
 void RouteManagerDialog::OnTrkExportClick(wxCommandEvent &event) {
-  TrackList list;
+  std::vector<Track*> list;
   wxString suggested_name = _T("tracks");
 
   long item = -1;
@@ -2095,7 +2108,7 @@ void RouteManagerDialog::OnTrkExportClick(wxCommandEvent &event) {
     Track *ptrack_to_export = (Track *)m_pTrkListCtrl->GetItemData(item);
 
     if (ptrack_to_export) {
-      list.Append(ptrack_to_export);
+      list.push_back(ptrack_to_export);
       if (ptrack_to_export->GetName() != wxEmptyString)
         suggested_name = ptrack_to_export->GetName();
     }
@@ -2146,7 +2159,7 @@ void RouteManagerDialog::OnTrkDeleteAllClick(wxCommandEvent &event) {
                      wxString(_("OpenCPN Alert")), wxYES_NO);
 
   if (dialog_ret == wxID_YES) {
-    g_pRouteMan->DeleteAllTracks();
+    RoutemanGui(*g_pRouteMan).DeleteAllTracks();
   }
 
   m_lastTrkItem = -1;
@@ -2204,7 +2217,7 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
 
       wxListItem li;
       li.SetId(index);
-      li.SetImage(rp->GetIconImageIndex());
+      li.SetImage(RoutePointGui(*rp).GetIconImageIndex());
       li.SetData(rp);
       li.SetText(_T(""));
       long idx = m_pWptListCtrl->InsertItem(li);
@@ -2292,7 +2305,7 @@ void RouteManagerDialog::UpdateWptListCtrlViz() {
     if (item == -1) break;
 
     RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-    int imageIndex = pRP->GetIconImageIndex();
+    int imageIndex = RoutePointGui(*pRP).GetIconImageIndex();
 
     m_pWptListCtrl->SetItemImage(item, imageIndex);
   }
@@ -2375,7 +2388,7 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
 
     if (!wp->IsSharedInVisibleRoute()) {
       wp->SetVisible(!wp->IsVisible());
-      m_pWptListCtrl->SetItemImage(clicked_index, wp->GetIconImageIndex());
+      m_pWptListCtrl->SetItemImage(clicked_index, RoutePointGui(*wp).GetIconImageIndex());
 
       pConfig->UpdateWayPoint(wp);
     }
@@ -2399,19 +2412,19 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
 
     gFrame->RefreshAllCanvas();
   } else  //  clicked on ScaMin column??
-      if (clicked_index > -1 &&
-          event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
-          event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
-                          m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
-          !g_bOverruleScaMin) {
-    RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
-    wp->SetUseSca(!wp->GetUseSca());
-    pConfig->UpdateWayPoint(wp);
-    gFrame->RefreshAllCanvas();
-    wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
-    if (!wp->GetUseSca()) scamin = _("Always");
-    m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE, scamin);
-  }
+    if (clicked_index > -1 &&
+        event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
+        event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
+                        m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
+        !g_bOverruleScaMin) {
+      RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
+      wp->SetUseSca(!wp->GetUseSca());
+      pConfig->UpdateWayPoint(wp);
+      gFrame->RefreshAllCanvas();
+      wxString scamin = wxString::Format(_T("%i"), (int)wp->GetScaMin());
+      if (!wp->GetUseSca()) scamin = _("Always");
+      m_pWptListCtrl->SetItem(clicked_index, colWPTSCALE, scamin);
+    }
 
   // Allow wx to process...
   event.Skip();
@@ -2846,21 +2859,17 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
-      g_pRouteMan->DeleteRoute(pRoute);
+      g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
     }
     node1 = next_node;
   }
 
-  wxTrackListNode *node2 = pTrackList->GetFirst();
-  while (node2) {
-    Track *pTrack = node2->GetData();
-    wxTrackListNode *next_node = node2->GetNext();
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID)) {
       pTrack->m_bIsInLayer = false;
       pTrack->m_LayerID = 0;
-      g_pRouteMan->DeleteTrack(pTrack);
+      RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
     }
-    node2 = next_node;
   }
 
   // Process waypoints in this layer
@@ -2924,12 +2933,9 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
     node1 = node1->GetNext();
   }
 
-  wxTrackListNode *node2 = pTrackList->GetFirst();
-  while (node2) {
-    Track *pTrack = node2->GetData();
+  for (Track* pTrack : g_TrackList) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
       pTrack->SetVisible(layer->IsVisibleOnChart());
-    node2 = node2->GetNext();
   }
 
   // Process waypoints in this layer
@@ -3034,12 +3040,9 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
     node1 = node1->GetNext();
   }
 
-  wxTrackListNode *node2 = pTrackList->GetFirst();
-  while (node2) {
-    Track *pTrack = node2->GetData();
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
       pTrack->SetListed(layer->IsVisibleOnListing());
-    node2 = node2->GetNext();
   }
 
   // Process waypoints in this layer

@@ -1,79 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Creator: CorelDRAW X6 -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xml:space="preserve"
-   width="18mm"
-   height="18mm"
-   version="1.1"
-   shape-rendering="geometricPrecision"
-   text-rendering="geometricPrecision"
-   image-rendering="optimizeQuality"
-   fill-rule="evenodd"
-   clip-rule="evenodd"
-   viewBox="0 0 1800 1800"
-   id="svg21"
-   sodipodi:docname="Marks-Danger-Topmark-Lighted.svg"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"><metadata
-     id="metadata27"><rdf:RDF><cc:Work
-         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
-     id="defs25" /><sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="2444"
-     inkscape:window-height="1453"
-     id="namedview23"
-     showgrid="false"
-     inkscape:zoom="12.273727"
-     inkscape:cx="33.629948"
-     inkscape:cy="24.053571"
-     inkscape:window-x="147"
-     inkscape:window-y="147"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="svg21" /><g
-     id="g8750"><rect
-       width="1693.3334"
-       height="1693.3334"
-       id="rect3"
-       x="-3.5668947e-08"
-       y="106.66668"
-       style="fill:none;stroke-width:0.94074076" /><path
-       style="fill:#ffff00;stroke-width:0.93393499"
-       inkscape:connector-curvature="0"
-       id="path17"
-       d="m 1587.0852,169.28693 c 105,191.89166 -379.9998,272.13727 -668.9997,272.13727 185.9999,-192.76391 567.9997,-465.773414 668.9997,-272.13727 z" /><g
-       transform="translate(-26.864565,-380.12497)"
-       id="g15"><circle
-         style="fill:#000000;stroke:#000000;stroke-width:20"
-         id="circle5"
-         r="60"
-         cy="563"
-         cx="900" /><circle
-         style="fill:#000000;stroke:#000000;stroke-width:20"
-         id="circle7"
-         r="60"
-         cy="708"
-         cx="900" /><polygon
-         style="fill:#000000;stroke:#000000;stroke-width:20"
-         id="polygon9"
-         points="931,836 984,1139 1103,1188 1103,1297 697,1297 697,1188 816,1139 869,836 " /><polygon
-         style="fill:#ff0000;stroke:#000000;stroke-width:20"
-         id="polygon11"
-         points="816,1139 869,836 931,836 984,1139 " /><polygon
-         style="fill:#000000;stroke:#000000;stroke-width:20"
-         id="polygon13"
-         points="844,979 869,836 931,836 956,978 " /></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path style="fill:none;stroke-width:.94074076" d="M0 106.667h1693.333V1800H0z"/>
+    <path style="fill:#ff0;stroke-width:.93393499" d="M1587.085 169.287c105 191.892-380 272.137-669 272.137 186-192.764 568-465.773 669-272.137z"/>
+    <g transform="translate(-26.865 -380.125)">
+        <circle style="fill:#000;stroke:#000;stroke-width:20" r="60" cy="563" cx="900"/>
+        <circle style="fill:#000;stroke:#000;stroke-width:20" r="60" cy="708" cx="900"/>
+        <path style="fill:#000;stroke:#000;stroke-width:20" d="m931 836 53 303 119 49v109H697v-109l119-49 53-303z"/>
+        <path style="fill:red;stroke:#000;stroke-width:20" d="m816 1139 53-303h62l53 303z"/>
+        <path style="fill:#000;stroke:#000;stroke-width:20" d="m844 979 25-143h62l25 142z"/>
+    </g>
+</svg>

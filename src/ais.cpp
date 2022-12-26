@@ -29,9 +29,9 @@
 #include <windows.h>
 #endif
 
-#include "wx/wx.h"
-#include "wx/tokenzr.h"
-#include "wx/datetime.h"
+#include <wx/wx.h>
+#include <wx/tokenzr.h>
+#include <wx/datetime.h>
 #include <wx/wfstream.h>
 #include <wx/imaglist.h>
 
@@ -41,28 +41,27 @@
 
 #include "cutil.h"
 #include "FontMgr.h"
-#include "dychart.h"
 #include "ais.h"
-#include "chart1.h"
 #include "navutil.h"  // for Select
 #include "georef.h"
 #include "styles.h"
-#include "datastream.h"
-#include "Select.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "select.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
+#include "line_clip.h"
 
 extern double gLat, gLon, gSog, gCog;
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 
 int g_ais_cog_predictor_width;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
@@ -94,7 +93,7 @@ int g_ScaledNumWeightRange;
 int g_ScaledNumWeightSizeOfT;
 int g_ScaledSizeMinimal;
 
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern float g_ShipScaleFactorExp;
 
@@ -104,167 +103,6 @@ float AISImportanceSwitchPoint = 0.0;
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
-
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(AISTargetTrackList);
-
-wxString ais_get_status(int index) {
-  static const wxString ais_status[] = {
-      _("Underway using Engine"),
-      _("At Anchor"),
-      _("Not Under Command"),
-      _("Restricted Manoeuvrability"),
-      _("Constrained by draught"),
-      _("Moored"),
-      _("Aground"),
-      _("Engaged in Fishing"),
-      _("Underway Sailing"),
-      _("High Speed Craft"),
-      _("Wing In Ground Effect"),
-      _("Power-driven vessel towing astern (regional use)"),
-      _("Power-driven vessel pushing ahead or towing alongside (regional use)"),
-      _("Reserved 13"),
-      _("Reserved 14"),
-      _("Undefined"),
-      _("AtoN Virtual"),
-      _("AtoN Virtual (On Position)"),
-      _("AtoN Virtual (Off Position)"),
-      _("AtoN Real"),
-      _("AtoN Real (On Position)"),
-      _("AtoN Real(Off Position)")};
-
-  return ais_status[index];
-}
-
-wxString ais_get_type(int index) {
-  static const wxString ais_type[] = {
-      _("Fishing Vessel"),                            // 30        0
-      _("Towing Vessel"),                             // 31        1
-      _("Towing Vessel, Long"),                       // 32        2
-      _("Dredger"),                                   // 33        3
-      _("Diving Ops Vessel"),                         // 34        4
-      _("Military Vessel"),                           // 35        5
-      _("Sailing Vessel"),                            // 36        6
-      _("Pleasure craft"),                            // 37        7
-      _("High Speed Craft"),                          // 4x        8
-      _("Pilot Vessel"),                              // 50        9
-      _("Search and Rescue Vessel"),                  // 51        10
-      _("Tug"),                                       // 52        11
-      _("Port Tender"),                               // 53        12
-      _("Pollution Control Vessel"),                  // 54        13
-      _("Law Enforcement Vessel"),                    // 55        14
-      _("Medical Transport"),                         // 58        15
-      _("Passenger Ship"),                            // 6x        16
-      _("Cargo Ship"),                                // 7x        17
-      _("Tanker"),                                    // 8x        18
-      _("Unknown"),                                   //          19
-      _("Unspecified"),                               // 00        20
-      _("Reference Point"),                           // 01        21
-      _("RACON"),                                     // 02        22
-      _("Fixed Structure"),                           // 03        23
-      _("Spare"),                                     // 04        24
-      _("Light"),                                     // 05        25
-      _("Light w/Sectors"),                           // 06        26
-      _("Leading Light Front"),                       // 07        27
-      _("Leading Light Rear"),                        // 08        28
-      _("Cardinal N Beacon"),                         // 09        29
-      _("Cardinal E Beacon"),                         // 10        30
-      _("Cardinal S Beacon"),                         // 11        31
-      _("Cardinal W Beacon"),                         // 12        32
-      _("Beacon, Port Hand"),                         // 13        33
-      _("Beacon, Starboard Hand"),                    // 14        34
-      _("Beacon, Preferred Channel Port Hand"),       // 15        35
-      _("Beacon, Preferred Channel Starboard Hand"),  // 16        36
-      _("Beacon, Isolated Danger"),                   // 17        37
-      _("Beacon, Safe Water"),                        // 18        38
-      _("Beacon, Special Mark"),                      // 19        39
-      _("Cardinal Mark N"),                           // 20        40
-      _("Cardinal Mark E"),                           // 21        41
-      _("Cardinal Mark S"),                           // 22        42
-      _("Cardinal Mark W"),                           // 23        43
-      _("Port Hand Mark"),                            // 24        44
-      _("Starboard Hand Mark"),                       // 25        45
-      _("Preferred Channel Port Hand"),               // 26        46
-      _("Preferred Channel Starboard Hand"),          // 27        47
-      _("Isolated Danger"),                           // 28        48
-      _("Safe Water"),                                // 29        49
-      _("Special Mark"),                              // 30        50
-      _("Light Vessel/Rig"),                          // 31        51
-      _("GpsGate Buddy"),                             // xx        52
-      _("Position Report"),                           // xx        53
-      _("Distress"),                                  // xx        54
-      _("ARPA radar target"),                         // xx        55
-      _("APRS Position Report")                       // xx        56
-  };
-
-  return ais_type[index];
-}
-
-wxString ais_get_short_type(int index) {
-  static const wxString short_ais_type[] = {
-      _("F/V"),       // 30        0
-      _("Tow"),       // 31        1
-      _("Long Tow"),  // 32        2
-      _("Dredge"),    // 33        3
-      _("D/V"),       // 34        4
-      _("Mil/V"),     // 35        5
-      _("S/V"),       // 36        6
-      _("Yat"),       // 37        7
-      _("HSC"),       // 4x        8
-      _("P/V"),       // 50        9
-      _("SAR/V"),     // 51        10
-      _("Tug"),       // 52        11
-      _("Tender"),    // 53        12
-      _("PC/V"),      // 54        13
-      _("LE/V"),      // 55        14
-      _("Med/V"),     // 58        15
-      _("Pass/V"),    // 6x        16
-      _("M/V"),       // 7x        17
-      _("M/T"),       // 8x        18
-      _("?"),         //          19
-
-      _("AtoN"),          // 00        20
-      _("Ref. Pt"),       // 01        21
-      _("RACON"),         // 02        22
-      _("Fix.Struct."),   // 03        23
-      _("?"),             // 04        24
-      _("Lt"),            // 05        25
-      _("Lt sect."),      // 06        26
-      _("Ldg Lt Front"),  // 07        27
-      _("Ldg Lt Rear"),   // 08        28
-      _("Card. N"),       // 09        29
-      _("Card. E"),       // 10        30
-      _("Card. S"),       // 11        31
-      _("Card. W"),       // 12        32
-      _("Port"),          // 13        33
-      _("Stbd"),          // 14        34
-      _("Pref. Chnl"),    // 15        35
-      _("Pref. Chnl"),    // 16        36
-      _("Isol. Dngr"),    // 17        37
-      _("Safe Water"),    // 18        38
-      _("Special"),       // 19        39
-      _("Card. N"),       // 20        40
-      _("Card. E"),       // 21        41
-      _("Card. S"),       // 22        42
-      _("Card. W"),       // 23        43
-      _("Port Hand"),     // 24        44
-      _("Stbd Hand"),     // 25        45
-      _("Pref. Chnl"),    // 26        46
-      _("Pref. Chnl"),    // 27        47
-      _("Isol. Dngr"),    // 28        48
-      _("Safe Water"),    // 29        49
-      _("Special"),       // 30        50
-      _("LtV/Rig"),       // 31        51
-      _("Buddy"),         // xx        52
-      _("DSC"),           // xx        53
-      _("Distress"),      // xx        54
-      _("ARPA"),          // xx        55
-      _("APRS")           // xx        56
-  };
-
-  return short_ais_type[index];
-}
-
 wxString ais8_001_22_notice_names[] = {
     // 128] = {
     _("Caution Area: Marine mammals habitat (implies whales NOT "
@@ -413,18 +251,6 @@ static bool GetCanvasPointPix(ViewPort &vp, ChartCanvas *cp, double rlat,
   return true;
 }
 
-wxString trimAISField(char *data) {
-  //  Clip any unused characters (@) from data
-
-  wxString field = wxString::From8BitData(data);
-  while (field.Right(1) == '@' || field.Right(1) == ' ') field.RemoveLast();
-
-  //  And remove any leading spaces to properly sort and display
-  field.Trim(false);
-
-  return field;
-}
-
 static wxPoint transrot(wxPoint pt, float sin_theta, float cos_theta,
                         wxPoint offset = wxPoint(0, 0)) {
   wxPoint ret;
@@ -464,13 +290,10 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   ;
   wxBrush *brush;
 
-  AIS_Target_Hash *current_targets = g_pAIS->GetAreaNoticeSourcesList();
-
   float vp_scale = vp.view_scale_ppm;
 
-  for (AIS_Target_Hash::iterator target = current_targets->begin();
-       target != current_targets->end(); ++target) {
-    AIS_Target_Data *target_data = target->second;
+  for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
+    auto target_data = target.second;
     if (!target_data->area_notices.empty()) {
       if (!b_pens_set) {
         pen_save = dc.GetPen();
@@ -494,10 +317,8 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
         b_pens_set = true;
       }
 
-      for (AIS_Area_Notice_Hash::iterator ani =
-               target_data->area_notices.begin();
-           ani != target_data->area_notices.end(); ++ani) {
-        Ais8_001_22 &area_notice = ani->second;
+      for (auto &ani : target_data->area_notices) {
+        Ais8_001_22 &area_notice = ani.second;
 
         if (area_notice.expiry_time > now) {
           std::vector<wxPoint> points;
@@ -581,7 +402,7 @@ static void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
 }
 
 static void AtoN_Diamond(ocpnDC &dc, int x, int y, int radius,
-                         AIS_Target_Data *td) {
+                         AisTargetData *td) {
   //    Constants?
   wxPen pen_save = dc.GetPen();
 
@@ -847,9 +668,13 @@ float AIS_width_interceptline;
 float AIS_width_cogpredictor_base;
 float AIS_width_cogpredictor_line;
 float AIS_width_target_outline;
+float AIS_icon_diameter;
 
 static void AISSetMetrics() {
   AIS_scale_factor = 1.0;
+  // Adapt for possible scaled display (Win)
+  double DPIscale = 1.0;
+  DPIscale = g_Platform->GetDisplayDPIMult(gFrame);
 
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
@@ -867,11 +692,11 @@ static void AISSetMetrics() {
   AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 6.0);
 
   AIS_nominal_icon_size_pixels =
-      wxMax(4.0, floor(g_Platform->GetDisplayDPmm() *
-                       AIS_nominal_target_size_mm));  // nominal size, but not
-                                                      // less than 4 pixel
+               wxMax(4.0, g_Platform->GetDisplayDPmm() *
+               AIS_nominal_target_size_mm);  // nominal size, but not
+                                             // less than 4 pixel
   AIS_pix_factor = AIS_nominal_icon_size_pixels /
-                   30.0;  // generic A/B icons are 30 units in size
+                   30.0; // generic A/B icons are 30 units in size
 
   AIS_scale_factor *= AIS_pix_factor;
 
@@ -885,19 +710,20 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, floor(g_Platform->GetDisplayDPmm() /
-                       5.0));  // 0.4 mm nominal, but not less than 1 pixel
+      wxMax(1.5, g_Platform->GetDisplayDPmm() / (5.0 * DPIscale));
+        // 0.4 mm nominal, but not less than 1 pixel
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
-  AIS_intercept_bar_circle_diameter = 4 * AIS_nominal_line_width_pix;
+  AIS_intercept_bar_circle_diameter = 3.5 * AIS_nominal_line_width_pix;
   AIS_width_interceptline = 2 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
-  AIS_width_cogpredictor_line = 1.5 * AIS_nominal_line_width_pix;
-  AIS_width_target_outline = 1.2 * AIS_nominal_line_width_pix;
+  AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
+  AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
+  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
 }
 
-static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
+static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                           ChartCanvas *cp) {
   //      Target data must be valid
   if (NULL == td) return;
@@ -936,12 +762,11 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
   else
       //  If AIS tracks are shown, is the first point of the track on-screen?
       if (1 /*g_bAISShowTracks*/ && td->b_show_track) {
-    wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-    if (node) {
-      AISTargetTrackPoint *ptrack_point = node->GetData();
-      if (vp.GetBBox().Contains(ptrack_point->m_lat, ptrack_point->m_lon))
-        drawit++;
-    }
+        if (td->m_ptrack.size() > 0) {
+          const AISTargetTrackPoint &ptrack_point = td->m_ptrack.front();
+          if (vp.GetBBox().Contains(ptrack_point.m_lat, ptrack_point.m_lon))
+            drawit++;
+        }
   }
 
   //    Calculate AIS target Position Predictor, using global static variable
@@ -1160,14 +985,19 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
   // and....
   wxColour URED = GetGlobalColor(_T ( "URED" ));
   if (!td->b_nameValid) target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
-  if ((td->Class == AIS_DSC) && (td->ShipType == 12))  // distress
+
+  if ((td->Class == AIS_DSC) && ((td->ShipType == 12) ||
+                    (td->ShipType == 16)) )  // distress(relayed)
     target_brush = wxBrush(URED);
+
   if (td->b_SarAircraftPosnReport) target_brush = wxBrush(UINFG);
 
   if ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid))
     target_brush = wxBrush(URED);
 
-  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) && (td->bCPA_Valid))
+  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) &&
+                            (td->bCPA_Valid) &&
+                            (!td->b_isFollower))
     target_brush = wxBrush(URED);
 
   if (td->b_positionDoubtful)
@@ -1241,9 +1071,7 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
 
       //  Using the true ends, not the clipped ends
       dc.StrokeCircle(tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
-                      AIS_intercept_bar_circle_diameter);
-      dc.StrokeCircle(oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
-                      AIS_intercept_bar_circle_diameter);
+          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
     }
 
     // Draw the intercept line from ownship
@@ -1328,7 +1156,9 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
         } else {
 #ifdef ocpnUSE_GL
 
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
           glPushMatrix();
           glTranslated(PredPoint.x, PredPoint.y, 0);
           glScalef(AIS_scale_factor, AIS_scale_factor, AIS_scale_factor);
@@ -1363,14 +1193,10 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
           glEnd();
           glPopMatrix();
 #else
-          double nominal_circle_size_pixels = wxMax(
-              14.0,
-              floor(g_Platform->GetDisplayDPmm() *
-                    1));  // 1.0 mm nominal diameter, but not less than 4 pixel
+          
           dc.SetBrush(target_brush);
           dc.StrokeCircle(PredPoint.x, PredPoint.y,
-                          nominal_circle_size_pixels / 2);
-
+                          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
 #endif
 #endif
         }
@@ -1403,8 +1229,8 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
 
     dc.SetPen(target_pen);
     dc.SetBrush(target_brush);
-
-    dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 9);
+    dc.StrokeCircle(TargetPoint.x, TargetPoint.y,
+                    1.4 * AIS_icon_diameter);  // 9
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
     //        Draw the inactive cross-out line
     if (!td->b_active) {
@@ -1414,7 +1240,8 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
       dc.SetPen(wxPen(UBLCK, 1));
     }
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
-    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y, 12, td);
+    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
+                 2 * AIS_icon_diameter, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
   } else if (td->Class == AIS_SART) {  // SART Target
@@ -1431,31 +1258,31 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     wxPoint SarRot[15];
 
     if (airtype == 5) {
-      SarIcon[0] = wxPoint(0, 9);
-      SarIcon[1] = wxPoint(1, 1);
-      SarIcon[2] = wxPoint(2, 1);
-      SarIcon[3] = wxPoint(9, 8);
-      SarIcon[4] = wxPoint(9, 7);
-      SarIcon[5] = wxPoint(3, 0);
-      SarIcon[6] = wxPoint(3, -5);
-      SarIcon[7] = wxPoint(9, -12);
-      SarIcon[8] = wxPoint(9, -13);
-      SarIcon[9] = wxPoint(2, -5);
-      SarIcon[10] = wxPoint(1, -15);
-      SarIcon[11] = wxPoint(3, -16);
-      SarIcon[12] = wxPoint(4, -18);
-      SarIcon[13] = wxPoint(1, -18);
-      SarIcon[14] = wxPoint(0, -19);
+      SarIcon[0] = wxPoint(0, 9) * AIS_scale_factor * 1.4;
+      SarIcon[1] = wxPoint(1, 1) * AIS_scale_factor * 1.4;
+      SarIcon[2] = wxPoint(2, 1) * AIS_scale_factor * 1.4;
+      SarIcon[3] = wxPoint(9, 8) * AIS_scale_factor * 1.4;
+      SarIcon[4] = wxPoint(9, 7) * AIS_scale_factor * 1.4;
+      SarIcon[5] = wxPoint(3, 0) * AIS_scale_factor * 1.4;
+      SarIcon[6] = wxPoint(3, -5) * AIS_scale_factor * 1.4;
+      SarIcon[7] = wxPoint(9, -12) * AIS_scale_factor * 1.4;
+      SarIcon[8] = wxPoint(9, -13) * AIS_scale_factor * 1.4;
+      SarIcon[9] = wxPoint(2, -5) * AIS_scale_factor * 1.4;
+      SarIcon[10] = wxPoint(1, -15) * AIS_scale_factor * 1.4;
+      SarIcon[11] = wxPoint(3, -16) * AIS_scale_factor * 1.4;
+      SarIcon[12] = wxPoint(4, -18) * AIS_scale_factor * 1.4;
+      SarIcon[13] = wxPoint(1, -18) * AIS_scale_factor * 1.4;
+      SarIcon[14] = wxPoint(0, -19) * AIS_scale_factor * 1.4;
     } else {
-      SarIcon[0] = wxPoint(0, 12);
-      SarIcon[1] = wxPoint(4, 2);
-      SarIcon[2] = wxPoint(16, -2);
-      SarIcon[3] = wxPoint(16, -8);
-      SarIcon[4] = wxPoint(4, -8);
-      SarIcon[5] = wxPoint(3, -16);
-      SarIcon[6] = wxPoint(10, -18);
-      SarIcon[7] = wxPoint(10, -22);
-      SarIcon[8] = wxPoint(0, -22);
+      SarIcon[0] = wxPoint(0, 12) * AIS_scale_factor;
+      SarIcon[1] = wxPoint(4, 2) * AIS_scale_factor;
+      SarIcon[2] = wxPoint(16, -2) * AIS_scale_factor;
+      SarIcon[3] = wxPoint(16, -8) * AIS_scale_factor;
+      SarIcon[4] = wxPoint(4, -8) * AIS_scale_factor;
+      SarIcon[5] = wxPoint(3, -16) * AIS_scale_factor;
+      SarIcon[6] = wxPoint(10, -18) * AIS_scale_factor;
+      SarIcon[7] = wxPoint(10, -22) * AIS_scale_factor;
+      SarIcon[8] = wxPoint(0, -22) * AIS_scale_factor;
     }
 
     // Draw icon as two halves
@@ -1538,7 +1365,9 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
                        AIS_scale_factor);
     } else {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
       wxColour c = target_brush.GetColour();
       glColor3ub(c.Red(), c.Green(), c.Blue());
 
@@ -1560,25 +1389,8 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
       }
 
       glEnd();
-#else
-      dc.SetPen(target_outline_pen);
-      dc.DrawPolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
-                     AIS_scale_factor);
-#endif
-
-      // Draw target outline, if not already done
-      // Depending on platform  (wx) capabilities, draw the nicest lines
-      // possible
-#if wxUSE_GRAPHICS_CONTEXT
-      glPopMatrix();
-
-      dc.SetPen(target_outline_pen);
-      dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
-      dc.StrokePolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
-                       AIS_scale_factor);
-#else
       glLineWidth(AIS_width_target_outline);
-#ifndef USE_ANDROID_GLES2
+
       glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
 
       glBegin(GL_LINE_LOOP);
@@ -1587,10 +1399,11 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
       glEnd();
       glPopMatrix();
 
+#else
+      dc.SetPen(target_outline_pen);
+      dc.DrawPolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
+                     AIS_scale_factor);
 #endif
-
-#endif
-
 #endif
     }
     // Draw stroke "inverted v" for GPS Follower
@@ -1630,67 +1443,76 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     int navstatus = td->NavStatus;
 
     // HSC usually have correct ShipType but navstatus == 0...
+    // Class B can have (HSC)ShipType but never navstatus.
     if (((td->ShipType >= 40) && (td->ShipType < 50)) &&
-        navstatus == UNDERWAY_USING_ENGINE)
+        (navstatus == UNDERWAY_USING_ENGINE || td->Class == AIS_CLASS_B ))
       navstatus = HSC;
 
     if (targetscale > 90) {
       switch (navstatus) {
         case MOORED:
         case AT_ANCHOR: {
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
           break;
         }
         case RESTRICTED_MANOEUVRABILITY: {
           wxPoint diamond[4];
-          diamond[0] = wxPoint(4, 0);
-          diamond[1] = wxPoint(0, -6);
-          diamond[2] = wxPoint(-4, 0);
-          diamond[3] = wxPoint(0, 6);
-          dc.StrokePolygon(4, diamond, TargetPoint.x, TargetPoint.y - 11);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 22, 4);
+          diamond[0] = wxPoint(4, 0) * AIS_scale_factor;
+          diamond[1] = wxPoint(0, -6) * AIS_scale_factor;
+          diamond[2] = wxPoint(-4, 0) * AIS_scale_factor;
+          diamond[3] = wxPoint(0, 6) * AIS_scale_factor;
+          dc.StrokePolygon(4, diamond, TargetPoint.x, TargetPoint.y - (11 * AIS_scale_factor));
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - ( 22 * AIS_scale_factor ), 4 * AIS_scale_factor);
           break;
           break;
         }
         case CONSTRAINED_BY_DRAFT: {
-          wxPoint can[4] = {wxPoint(-3, 0), wxPoint(3, 0), wxPoint(3, -16),
-                            wxPoint(-3, -16)};
+          wxPoint can[4] = {wxPoint(-3, 0) * AIS_scale_factor,
+                            wxPoint(3, 0) * AIS_scale_factor,
+                            wxPoint(3, -16) * AIS_scale_factor,
+                            wxPoint(-3, -16) * AIS_scale_factor };
           dc.StrokePolygon(4, can, TargetPoint.x, TargetPoint.y);
           break;
         }
         case NOT_UNDER_COMMAND: {
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4 * AIS_scale_factor);
           break;
         }
         case FISHING: {
           wxPoint tri[3];
-          tri[0] = wxPoint(-4, 0);
-          tri[1] = wxPoint(4, 0);
-          tri[2] = wxPoint(0, -9);
+          tri[0] = wxPoint(-4, 0) * AIS_scale_factor;
+          tri[1] = wxPoint(4, 0) * AIS_scale_factor;
+          tri[2] = wxPoint(0, -9) * AIS_scale_factor;
           dc.StrokePolygon(3, tri, TargetPoint.x, TargetPoint.y);
-          tri[0] = wxPoint(0, -9);
-          tri[1] = wxPoint(4, -18);
-          tri[2] = wxPoint(-4, -18);
+          tri[0] = wxPoint(0, -9) * AIS_scale_factor;
+          tri[1] = wxPoint(4, -18) * AIS_scale_factor;
+          tri[2] = wxPoint(-4, -18) * AIS_scale_factor;
           dc.StrokePolygon(3, tri, TargetPoint.x, TargetPoint.y);
           break;
         }
         case AGROUND: {
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 18, 4);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 18, 4 * AIS_scale_factor);
           break;
         }
         case HSC:
         case WIG: {
           dc.SetBrush(target_brush);
 
-          wxPoint arrow1[3] = {wxPoint(-4, 20), wxPoint(0, 27), wxPoint(4, 20)};
+          wxPoint arrow1[3] = {
+            wxPoint(-4, 20) * AIS_scale_factor,
+            wxPoint(0, 27) * AIS_scale_factor,
+            wxPoint(4, 20) * AIS_scale_factor };
           transrot_pts(3, arrow1, sin_theta, cos_theta, TargetPoint);
           dc.StrokePolygon(3, arrow1);
 
-          wxPoint arrow2[3] = {wxPoint(-4, 27), wxPoint(0, 34), wxPoint(4, 27)};
+          wxPoint arrow2[3] = {
+            wxPoint(-4, 27) * AIS_scale_factor,
+            wxPoint(0, 34) * AIS_scale_factor,
+            wxPoint(4, 27) * AIS_scale_factor };
           transrot_pts(3, arrow2, sin_theta, cos_theta, TargetPoint);
           dc.StrokePolygon(3, arrow2);
           break;
@@ -1786,7 +1608,7 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
   bool b_forceshow = false;
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     if (td->MMSI == g_MMSI_Props_Array[i]->MMSI) {
-      MMSIProperties *props = g_MMSI_Props_Array[i];
+      MmsiProperties *props = g_MMSI_Props_Array[i];
       if (TRACKTYPE_NEVER == props->TrackType) {
         b_noshow = true;
         break;
@@ -1798,26 +1620,28 @@ static void AISDrawTarget(AIS_Target_Data *td, ocpnDC &dc, ViewPort &vp,
     }
   }
 
-  int TrackLength = td->m_ptrack->GetCount();
+  int TrackLength = td->m_ptrack.size();
   if (((!b_noshow && td->b_show_track) || b_forceshow) && (TrackLength > 1)) {
     //  create vector of x-y points
     int TrackPointCount;
     wxPoint *TrackPoints = 0;
     TrackPoints = new wxPoint[TrackLength];
-    wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-    for (TrackPointCount = 0; node && (TrackPointCount < TrackLength);
-         TrackPointCount++) {
-      AISTargetTrackPoint *ptrack_point = node->GetData();
-      GetCanvasPointPix(vp, cp, ptrack_point->m_lat, ptrack_point->m_lon,
+    auto it = td->m_ptrack.begin();
+    for (TrackPointCount = 0;
+         it != td->m_ptrack.end() && (TrackPointCount < TrackLength);
+         TrackPointCount++, ++it) {
+      const AISTargetTrackPoint &ptrack_point = *it;
+      GetCanvasPointPix(vp, cp, ptrack_point.m_lat, ptrack_point.m_lon,
                         &TrackPoints[TrackPointCount]);
-      node = node->GetNext();
     }
 
     wxColour c = GetGlobalColor(_T ( "CHMGD" ));
-    dc.SetPen(wxPen(c, 2 * AIS_nominal_line_width_pix));
+    dc.SetPen(wxPen(c, 1.5 * AIS_nominal_line_width_pix));
 
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+//#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+
     if (!dc.GetDC()) {
       glLineWidth(2);
       glColor3ub(c.Red(), c.Green(), c.Blue());
@@ -1858,8 +1682,8 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
 
   AISSetMetrics();
 
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+  const auto &current_targets = g_pAIS->GetTargetList();
+
   //      Iterate over the AIS Target Hashmap but only for the main chartcanvas.
   //      For secundairy canvasses we use the same value for the AIS importance
   bool go = false;
@@ -1871,10 +1695,9 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   }
 
   if (go) {
-    for (it = (*current_targets).begin(); it != (*current_targets).end();
-         ++it) {
+    for (const auto &it : current_targets) {
       // calculate the importancefactor for each target
-      AIS_Target_Data *td = it->second;
+      auto td = it.second;
       double So, Cpa, Rang, Siz = 0.0;
       So = g_ScaledNumWeightSOG / 12 *
            td->SOG;  // 0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
@@ -1909,9 +1732,8 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   int LowestInd = 0;
   if (cp != NULL) {
     if (cp->GetAttenAIS()) {
-      for (it = (*current_targets).begin(); it != (*current_targets).end();
-           ++it) {
-        AIS_Target_Data *td = it->second;
+      for (const auto &it : current_targets) {
+        auto td = it.second;
         if (vp.GetBBox().Contains(td->Lat, td->Lon)) {
           if (td->importance > AISImportanceSwitchPoint) {
             Array[LowestInd] = td->importance;
@@ -1933,27 +1755,27 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
 
   //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on top
   //    This way, fast targets are not obscured by slow/stationary targets
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : current_targets) {
+    auto td = it.second;
     if ((td->SOG < g_ShowMoored_Kts) &&
         !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
-      AISDrawTarget(td, dc, vp, cp);
+      AISDrawTarget(td.get(), dc, vp, cp);
     }
   }
 
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : current_targets) {
+    auto td = it.second;
     if ((td->SOG >= g_ShowMoored_Kts) &&
         !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
-      AISDrawTarget(td, dc, vp, cp);  // yes this is a doubling of code;(
-      if (td->importance > 0) AISDrawTarget(td, dc, vp, cp);
+      AISDrawTarget(td.get(), dc, vp, cp);  // yes this is a doubling of code;(
+      if (td->importance > 0) AISDrawTarget(td.get(), dc, vp, cp);
     }
   }
 
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : current_targets) {
+    auto td = it.second;
     if ((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))
-      AISDrawTarget(td, dc, vp, cp);
+      AISDrawTarget(td.get(), dc, vp, cp);
   }
 }
 
@@ -1963,11 +1785,8 @@ bool AnyAISTargetsOnscreen(ChartCanvas *cc, ViewPort &vp) {
   if (!cc->GetShowAIS()) return false;  //
 
   //      Iterate over the AIS Target Hashmap
-  AIS_Target_Hash::iterator it;
-  AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
-
-  for (it = (*current_targets).begin(); it != (*current_targets).end(); ++it) {
-    AIS_Target_Data *td = it->second;
+  for (const auto &it : g_pAIS->GetTargetList()) {
+    auto td = it.second;
     if (vp.GetBBox().Contains(td->Lat, td->Lon)) return true;  // yep
   }
 

@@ -1,61 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-    <clipPath id="id0">
-     <path d="M503 1176l794 0 -280 -481 -234 0 -280 481z"/>
-    </clipPath>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_527975432">
-   <g>
-    <rect fill="#A45E4D" x="534" y="796" width="63.5" height="394.2"/>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <clipPath id="a">
+            <path d="M503 1176h794l-280-481H783l-280 481z"/>
+        </clipPath>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#A45E4D" d="M534 796h63.5v394.2H534z"/>
     <ellipse fill="#A98F71" cx="565" cy="795" rx="32" ry="9"/>
-   </g>
-   <g>
-    <rect fill="#A45E4D" x="1203" y="796" width="63.5" height="394.2"/>
+    <path fill="#A45E4D" d="M1203 796h63.5v394.2H1203z"/>
     <ellipse fill="#A98F71" cx="1235" cy="795" rx="32" ry="9"/>
-   </g>
-   <g>
-    <rect fill="#A45E4D" x="657" y="691" width="38.8005" height="240.869"/>
+    <path fill="#A45E4D" d="M657 691h38.8v240.869H657z"/>
     <ellipse fill="#A98F71" cx="676" cy="691" rx="19" ry="6"/>
-   </g>
-   <g>
-    <rect fill="#A45E4D" x="755" y="614" width="24.6303" height="152.902"/>
+    <path fill="#A45E4D" d="M755 614h24.63v152.902H755z"/>
     <ellipse fill="#A98F71" cx="768" cy="613" rx="12" ry="4"/>
-   </g>
-   <g>
-    <rect fill="#A45E4D" x="1104" y="691" width="38.8005" height="240.869"/>
+    <path fill="#A45E4D" d="M1104 691h38.8v240.869H1104z"/>
     <ellipse fill="#A98F71" cx="1124" cy="691" rx="19" ry="6"/>
-   </g>
-   <g>
-    <rect fill="#A45E4D" x="1020" y="614" width="24.6303" height="152.902"/>
+    <path fill="#A45E4D" d="M1020 614h24.63v152.902H1020z"/>
     <ellipse fill="#A98F71" cx="1032" cy="613" rx="12" ry="4"/>
-   </g>
-   <g>
-   </g>
-   <g clip-path="url(#id0)">
-    <g id="_527975840">
-     <g>
-      <rect fill="#847059" x="480" y="1120" width="840" height="107"/>
-      <path fill="#663300" d="M508 1071c261,0 523,0 784,0 0,34 0,67 0,101 -261,0 -523,0 -784,0 0,-34 0,-67 0,-101z"/>
-      <path fill="#A98F71" d="M537 1022c242,0 484,0 726,0 0,32 0,63 0,95 -242,0 -484,0 -726,0 0,-32 0,-63 0,-95z"/>
-      <path fill="#847059" d="M565 973c223,0 447,0 670,0 0,30 0,60 0,89 -223,0 -447,0 -670,0 0,-29 0,-59 0,-89z"/>
-      <path fill="#A98F71" d="M593 924c205,0 409,0 614,0 0,28 0,56 0,84 -205,0 -409,0 -614,0 0,-28 0,-56 0,-84z"/>
-      <path fill="#C7B082" d="M622 875c185,0 371,0 556,0 0,26 0,52 0,78 -185,0 -371,0 -556,0 0,-26 0,-52 0,-78z"/>
-      <path fill="#A98F71" d="M650 827c167,0 333,0 500,0 0,23 0,47 0,71 -167,0 -333,0 -500,0 0,-24 0,-48 0,-71z"/>
-      <path fill="#663300" d="M679 778c147,0 295,0 442,0 0,21 0,43 0,65 -147,0 -295,0 -442,0 0,-22 0,-44 0,-65z"/>
-      <path fill="#8C6C44" d="M707 729c129,0 257,0 386,0 0,20 0,40 0,59 -129,0 -257,0 -386,0 0,-19 0,-39 0,-59z"/>
-      <rect fill="#B9A070" x="735" y="680" width="329.41" height="53.58"/>
-     </g>
+    <g clip-path="url(#a)">
+        <path fill="#847059" d="M480 1120h840v107H480z"/>
+        <path fill="#630" d="M508 1071h784v101H508v-101z"/>
+        <path fill="#A98F71" d="M537 1022h726v95H537v-95z"/>
+        <path fill="#847059" d="M565 973h670v89H565v-89z"/>
+        <path fill="#A98F71" d="M593 924h614v84H593v-84z"/>
+        <path fill="#C7B082" d="M622 875h556v78H622v-78z"/>
+        <path fill="#A98F71" d="M650 827h500v71H650v-71z"/>
+        <path fill="#630" d="M679 778h442v65H679v-65z"/>
+        <path fill="#8C6C44" d="M707 729h386v59H707v-59z"/>
+        <path fill="#B9A070" d="M735 680h329.41v53.58H735z"/>
     </g>
-   </g>
-   <polygon fill="none" stroke="#CC9933" stroke-width="7.62" points="503,1176 1297,1176 1017,695 783,695 "/>
-  </g>
- </g>
+    <path fill="none" stroke="#C93" stroke-width="7.62" d="M503 1176h794l-280-481H783z"/>
 </svg>

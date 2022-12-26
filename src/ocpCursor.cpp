@@ -26,7 +26,7 @@
 
 #ifdef __WXX11__
 
-#include "wx/x11/private.h"
+#include <wx/x11/private.h>
 
 class ocpCursorRefData : public wxObjectRefData {
 public:

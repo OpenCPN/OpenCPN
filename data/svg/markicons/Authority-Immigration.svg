@@ -1,21 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_503752128">
-   <path fill="black" d="M848 843l-66 86 -103 -79c-33,-25 -75,29 -46,55l137 107c14,8 35,6 43,-5l85 -111 0 297 279 0 0 -318c-1,-17 -11,-53 -49,-53l-238 0c-20,1 -28,4 -42,21z"/>
-   <polygon fill="black" points="1085,607 887,607 924,664 1085,664 "/>
-   <path fill="black" d="M896 719l30 -37 160 0 0 42c-15,98 -148,98 -156,0l-34 -5z"/>
-   <polygon fill="white" points="897,1106 1099,1106 1099,1067 942,1067 1123,821 1077,821 897,1059 "/>
-   <g>
-    <polygon fill="white" stroke="black" stroke-width="20" points="623,632 752,632 752,794 623,794 "/>
-    <polygon fill="black" stroke="black" stroke-width="20" points="623,632 720,702 720,863 623,794 "/>
-   </g>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="m848 843-66 86-103-79c-33-25-75 29-46 55l137 107c14 8 35 6 43-5l85-111v297h279V875c-1-17-11-53-49-53H890c-20 1-28 4-42 21zm237-236H887l37 57h161zM896 719l30-37h160v42c-15 98-148 98-156 0l-34-5z"/>
+    <path fill="#fff" d="M897 1106h202v-39H942l181-246h-46l-180 238z"/>
+    <g stroke="#000" stroke-width="20">
+        <path fill="#fff" d="M623 632h129v162H623z"/>
+        <path d="m623 632 97 70v161l-97-69z"/>
+    </g>
 </svg>

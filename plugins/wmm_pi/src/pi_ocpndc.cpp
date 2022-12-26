@@ -267,22 +267,22 @@ void pi_ocpnDC::SetGLStipple() const {
 
 #ifndef USE_ANDROID_GLES2
   switch (m_pen.GetStyle()) {
-    case wxDOT: {
+    case wxPENSTYLE_DOT: {
       glLineStipple(1, 0x3333);
       glEnable(GL_LINE_STIPPLE);
       break;
     }
-    case wxLONG_DASH: {
+    case wxPENSTYLE_LONG_DASH: {
       glLineStipple(1, 0xFFF8);
       glEnable(GL_LINE_STIPPLE);
       break;
     }
-    case wxSHORT_DASH: {
+    case wxPENSTYLE_SHORT_DASH: {
       glLineStipple(1, 0x3F3F);
       glEnable(GL_LINE_STIPPLE);
       break;
     }
-    case wxDOT_DASH: {
+    case wxPENSTYLE_DOT_DASH: {
       glLineStipple(1, 0x8FF1);
       glEnable(GL_LINE_STIPPLE);
       break;

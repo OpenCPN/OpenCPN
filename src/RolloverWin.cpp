@@ -22,19 +22,27 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <wx/bitmap.h>
 #include <wx/dcmemory.h>
 #include <wx/dcscreen.h>
 
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
+
 #include "ocpndc.h"
 #include "RolloverWin.h"
 #include "timers.h"
-#include "chart1.h"
 #include "navutil.h"
 #include "FontMgr.h"
 #include "ocpn_plugin.h"
+#include "color_handler.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -45,6 +53,8 @@ extern bool g_bopengl;
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
 #endif
+extern MyFrame *gFrame;
+extern BasePlatform *g_BasePlatform;
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow)
 EVT_PAINT(RolloverWin::OnPaint) EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
@@ -361,7 +371,7 @@ void RolloverWin::Draw(ocpnDC &dc) {
 
     ChartCanvas *pCanvas = wxDynamicCast(GetParent(), ChartCanvas);
     if (pCanvas)
-      pCanvas->GetglCanvas()->RenderTextures(coords, uv, 4, pCanvas->GetpVP());
+      pCanvas->GetglCanvas()->RenderTextures(dc, coords, uv, 4, pCanvas->GetpVP());
 
 #endif
     glDisable(g_texture_rectangle_format);
@@ -417,23 +427,30 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
       font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
       false, dFont->GetFaceName());
 
+  wxSize sizeM;
   if (m_plabelFont && m_plabelFont->IsOk()) {
 #ifdef __WXMAC__
     wxScreenDC sdc;
     sdc.SetFont(*m_plabelFont);
     sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, m_plabelFont);
+    sizeM = sdc.GetTextExtent("M");
 #else
     wxClientDC cdc(GetParent());
     cdc.SetFont(*m_plabelFont);
     cdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, m_plabelFont);
+    sizeM = cdc.GetTextExtent("M");
 #endif
   } else {
     w = 10;
     h = 10;
   }
 
-  m_size.x = w + 8;
-  m_size.y = h + 8;
+  double scaler = g_BasePlatform->GetDisplayDPIMult(this);
+
+  m_size.x = w + 1 * sizeM.x;
+  m_size.y = h + 1 * sizeM.y;
+
+  m_size *= scaler;
 
   int xp, yp;
   if ((x + off_x + m_size.x) > parent_size.x) {

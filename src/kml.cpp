@@ -29,10 +29,10 @@
 
 #include "config.h"
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <vector>
@@ -45,9 +45,9 @@
 #include "navutil.h"
 #include "tinyxml.h"
 #include "kml.h"
-#include "Track.h"
-#include "Route.h"
-#include "chart1.h"
+#include "track.h"
+#include "route.h"
+#include "ocpn_frame.h"
 
 extern MyFrame* gFrame;
 extern double gLat;

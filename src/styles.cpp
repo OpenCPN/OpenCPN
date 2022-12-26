@@ -24,10 +24,10 @@
  **************************************************************************/
 #include "config.h"
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/filename.h>
@@ -36,13 +36,10 @@
 #include "OCPNPlatform.h"
 
 #include "styles.h"
-#include "chart1.h"
 #include "wx28compat.h"
-
-#ifdef ocpnUSE_SVG
-#include "wxSVG/svg.h"
-#endif  // ocpnUSE_SVG
-
+#include "svg_utils.h"
+#include "color_handler.h"
+#include "tinyxml.h"
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
@@ -55,23 +52,6 @@ using namespace ocpnStyle;
 void bmdump(wxBitmap bm, wxString name) {
   wxImage img = bm.ConvertToImage();
   img.SaveFile(name << _T(".png"), wxBITMAP_TYPE_PNG);
-}
-
-static wxBitmap LoadSVG(const wxString filename, unsigned int width,
-                        unsigned int height) {
-#ifdef ocpnUSE_SVG
-#ifdef __OCPN__ANDROID__
-  return loadAndroidSVG(filename, width, height);
-#else
-  wxSVGDocument svgDoc;
-  if (svgDoc.Load(filename))
-    return wxBitmap(svgDoc.Render(width, height, NULL, true, true));
-  else
-    return wxBitmap(width, height);
-#endif
-#else
-  return wxBitmap(width, height);
-#endif  // ocpnUSE_SVG
 }
 
 // This function can be used to create custom bitmap blending for all platforms
@@ -237,7 +217,7 @@ bool Style::NativeToolIconExists(const wxString& name) {
 // Changing color scheme invalidates all loaded bitmaps.
 
 wxBitmap Style::GetIconScaled(const wxString& name, double scaleFactor,
-                        bool bforceReload) {
+                              bool bforceReload) {
   if (iconIndex.find(name) == iconIndex.end()) {
     wxString msg(_T("The requested icon was not found in the style: "));
     msg += name;
@@ -251,10 +231,8 @@ wxBitmap Style::GetIconScaled(const wxString& name, double scaleFactor,
   Icon* icon = (Icon*)icons[index];
   if (icon->size.x == 0) icon->size = toolSize[currentOrientation];
 
-  return GetIcon( name,
-                  icon->size.x * scaleFactor,
-                  icon->size.y * scaleFactor,
-                  bforceReload);
+  return GetIcon(name, icon->size.x * scaleFactor, icon->size.y * scaleFactor,
+                 bforceReload);
 }
 
 wxBitmap Style::GetIcon(const wxString& name, int width, int height,
@@ -721,13 +699,10 @@ void Style::SetColorScheme(ColorScheme cs) {
     wxBitmap bm = graphics->GetSubBitmap(
         wxRect(consoleTextBackgroundLoc, consoleTextBackgroundSize));
 
-    // The background bitmap in the icons file may be too small, so will grow it
-    // arbitrailly
-    wxImage image = bm.ConvertToImage();
-    image.Rescale(consoleTextBackgroundSize.GetX() * 2,
-                  consoleTextBackgroundSize.GetY() * 2, wxIMAGE_QUALITY_NORMAL);
-    wxBitmap bn(image);
-    consoleTextBackground = SetBitmapBrightness(bn, cs);
+    // The background bitmap in the icons file may be too small but it's better to resize it
+    // when we use it
+
+    consoleTextBackground = SetBitmapBrightness(bm, cs);
   }
 }
 

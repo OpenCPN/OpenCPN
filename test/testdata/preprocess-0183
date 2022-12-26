@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+"""
+Preprocess raw NMEA0183 session  so the are legal input format:
+
+"nmea0183" <key> <id> <payload>
+
+<key> formed as n0183-<message id> for example n0183-GPGGA
+<id> is the message, for example GPGGA
+<payload> is the complete message.
+
+Usage:
+    pre-process  <filename>
+
+Writes to stdout
+"""
+import sys
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: pre-process <filename>");
+        sys.exit(1)
+    with open(sys.argv[1]) as f:
+        lines = f.readlines()
+    for line in lines:
+        words = line.split(',')
+        words = [w.strip() for w in words]
+        if words[0].startswith('$'):
+            msg = words[0][1:]
+            print("nmea0183 n0183-" + msg + " " + msg + " " + line.strip());
+        elif words[0].startswith("!"):
+            msg = words[0][1:]
+            print("nmea0183 n0183-" + msg + " " + msg + " " + line.strip());
+        else:
+            print("Cannot parse line: " + line)
+
+
+if __name__ == '__main__':
+    main()
+
+# vim: set expandtab ts=4 sw=4:

@@ -1,26 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_527150240">
-   <polygon fill="black" points="482,741 735,741 735,903 482,903 "/>
-   <polygon fill="white" points="512,779 552,779 552,805 512,805 "/>
-   <polygon fill="white" points="582,779 623,779 623,805 582,805 "/>
-   <polygon fill="white" points="653,779 694,779 694,805 653,805 "/>
-   <polygon fill="white" points="512,850 552,850 552,875 512,875 "/>
-   <polygon fill="white" points="582,850 623,850 623,875 582,875 "/>
-   <polygon fill="white" points="653,850 694,850 694,875 653,875 "/>
-   <polygon fill="black" points="482,901 1159,901 1159,1026 482,1026 "/>
-   <polygon fill="black" points="553,1011 687,1011 687,1270 553,1270 "/>
-   <polygon fill="black" points="954,1011 1088,1011 1088,1270 954,1270 "/>
-   <path fill="black" fill-rule="nonzero" d="M753 907l56 -377 20 1 -56 377 -20 -1zm112 1l-56 -377 20 -1 56 377 -20 1zm-105 -3l99 -45 -84 -58 -3 -2 4 -3 68 -41 -56 -51 -2 -2 2 -2 48 -41 8 5 -45 38 56 51 3 3 -3 2 -68 41 84 58 5 3 -6 2 -104 48 -6 -6zm112 6l-105 -48 -5 -2 5 -3 84 -58 -68 -41 -4 -2 3 -3 57 -51 -45 -38 8 -5 48 41 2 2 -2 2 -56 51 68 41 4 3 -4 2 -83 58 99 45 -6 6z"/>
-   <path fill="black" d="M1030 796l0 0c18,0 32,14 32,32l0 100c0,17 -14,31 -32,31l0 0c-17,0 -31,-14 -31,-31l0 -100c0,-18 14,-32 31,-32z"/>
-   <path fill="black" fill-rule="nonzero" d="M1015 798l301 -213 2 3 -301 213 -2 -3zm46 44l254 -256 3 2 -255 256 -2 -2zm-5 -70l0 47 -3 0 0 -47 3 0zm-1 -2l77 1 0 3 -77 0 0 -4zm28 -20l69 1 0 3 -69 0 0 -4zm2 2l0 71 -4 0 0 -71 4 0zm-30 54l42 0 0 4 -42 -1 0 -3zm57 -73l0 60 -3 0 0 -60 3 0zm30 -22l0 53 -3 0 0 -53 3 0zm30 -21l0 44 -4 0 0 -44 4 0zm25 -17l0 36 -3 0 0 -36 3 0zm30 -22l0 27 -3 0 0 -27 3 0zm-116 80l60 0 0 4 -61 -1 1 -3zm29 -21l52 0 0 4 -52 -1 0 -3zm30 -21l43 0 0 4 -43 -1 0 -3zm25 -18l36 0 0 4 -36 -1 0 -3zm31 -22l27 1 0 3 -27 0 0 -4zm28 -17l0 20 -3 0 0 -20 3 0z"/>
-  </g>
-  <rect fill="none" width="1800" height="1800"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path d="M482 741h253v162H482z"/>
+    <path fill="#fff" d="M512 779h40v26h-40zm70 0h41v26h-41zm71 0h41v26h-41zm-141 71h40v25h-40zm70 0h41v25h-41zm71 0h41v25h-41z"/>
+    <path d="M482 901h677v125H482z"/>
+    <path d="M553 1011h134v259H553zm401 0h134v259H954z"/>
+    <path fill-rule="nonzero" d="m753 907 56-377 20 1-56 377-20-1zm112 1-56-377 20-1 56 377-20 1zm-105-3 99-45-84-58-3-2 4-3 68-41-56-51-2-2 2-2 48-41 8 5-45 38 56 51 3 3-3 2-68 41 84 58 5 3-6 2-104 48-6-6zm112 6-105-48-5-2 5-3 84-58-68-41-4-2 3-3 57-51-45-38 8-5 48 41 2 2-2 2-56 51 68 41 4 3-4 2-83 58 99 45-6 6z"/>
+    <path d="M1030 796c18 0 32 14 32 32v100c0 17-14 31-32 31-17 0-31-14-31-31V828c0-18 14-32 31-32z"/>
+    <path fill-rule="nonzero" d="m1015 798 301-213 2 3-301 213-2-3zm46 44 254-256 3 2-255 256-2-2zm-5-70v47h-3v-47h3zm-1-2 77 1v3h-77v-4zm28-20 69 1v3h-69v-4zm2 2v71h-4v-71h4zm-30 54h42v4l-42-1v-3zm57-73v60h-3v-60h3zm30-22v53h-3v-53h3zm30-21v44h-4v-44h4zm25-17v36h-3v-36h3zm30-22v27h-3v-27h3zm-116 80h60v4l-61-1 1-3zm29-21h52v4l-52-1v-3zm30-21h43v4l-43-1v-3zm25-18h36v4l-36-1v-3zm31-22 27 1v3h-27v-4zm28-17v20h-3v-20h3z"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
 </svg>

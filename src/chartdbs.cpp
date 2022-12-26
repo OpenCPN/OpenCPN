@@ -23,18 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/arrimpl.cpp>
 #include <wx/encconv.h>
 #include <wx/regex.h>
 #include <wx/progdlg.h>
-#include "wx/tokenzr.h"
-#include "wx/dir.h"
+#include <wx/tokenzr.h>
+#include <wx/dir.h>
 
 #include "chartdbs.h"
 #include "chartbase.h"
@@ -42,6 +42,8 @@
 #include "mbtiles.h"
 #include "mygeom.h"  // For DouglasPeucker();
 #include "FlexHash.h"
+#include "LOD_reduce.h"
+
 #ifndef UINT32
 #define UINT32 unsigned int
 #endif
@@ -1439,12 +1441,14 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
       lc++;
 
       line.Empty();
-      line = _(" Updated:  ");
       wxDateTime ed = pc->GetEditionDate();
-      line += ed.FormatISODate();
-      line += _T("\n");
-      max_width = wxMax(max_width, line.Len());
-      r += line;
+      if (ed.IsValid()) {
+        line = _(" Updated:  ");
+        line += ed.FormatISODate();
+        line += _T("\n");
+        max_width = wxMax(max_width, line.Len());
+        r += line;
+      }
       lc++;
     }
 
@@ -2781,8 +2785,8 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray) {
 
     for (unsigned int igroup = 0; igroup < pGroupArray->GetCount(); igroup++) {
       ChartGroup *pGroup = pGroupArray->Item(igroup);
-      for (auto &elem : pGroup->m_element_array) {
-        wxString element_root = elem->m_element_name;
+      for (const auto &elem : pGroup->m_element_array) {
+        wxString element_root = elem.m_element_name;
 
         //  The element may be a full single chart name
         //  If so, add it
@@ -2793,8 +2797,8 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray) {
               separator);  // Prevent comingling similar looking path names
         if (chart_full_path->StartsWith(element_root)) {
           bool b_add = true;
-          for (unsigned int k = 0; k < elem->m_missing_name_array.size(); k++) {
-            wxString missing_item = elem->m_missing_name_array[k];
+          for (unsigned int k = 0; k < elem.m_missing_name_array.size(); k++) {
+            const wxString &missing_item = elem.m_missing_name_array[k];
             if (chart_full_path->StartsWith(missing_item)) {
               if (chart_full_path->IsSameAs(
                       missing_item))  // missing item is full chart name

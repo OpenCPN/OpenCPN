@@ -46,6 +46,7 @@
 
 extern int m_Altitude;
 extern bool g_bpause;
+extern float g_DIPfactor;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -219,17 +220,6 @@ int adjustSpacing(int dialogSetSpacing) {
 //----------------------------------------------------------------------------------------------------------
 GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     : m_dlg(dlg), m_Settings(dlg.m_OverlaySettings) {
-#ifdef __WXQT__
-  wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-  m_dFont_war = new wxFont(fo);
-  m_dFont_map = new wxFont(fo);
-#else
-  m_dFont_map = new wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                           wxFONTWEIGHT_NORMAL);
-  m_dFont_war = new wxFont(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-                           wxFONTWEIGHT_NORMAL);
-
-#endif
 
   if (wxGetDisplaySize().x > 0) {
     //#ifdef __WXGTK__
@@ -248,6 +238,7 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
   m_last_vp_scale = 0.;
 
   m_oDC = NULL;
+  m_Font_Message = NULL;
 
   InitColorsTable();
   for (int i = 0; i < GribOverlaySettings::SETTINGS_COUNT; i++)
@@ -280,16 +271,16 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     LineBuffer &arrow = m_WindArrowCache[i];
 
     arrow.pushLine(dec, 0, dec + windArrowSize, 0);                  // hampe
-    arrow.pushLine(dec, 0, dec + pointerLength, pointerLength / 2);  // flÃ¨che
+    arrow.pushLine(dec, 0, dec + pointerLength, pointerLength / 2);  // flèche
     arrow.pushLine(dec, 0, dec + pointerLength,
-                   -(pointerLength / 2));  // flÃ¨che
+                   -(pointerLength / 2));  // flèche
   }
 
   int featherPosition = windArrowSize / 6;
 
   int b1 =
-      dec + windArrowSize - featherPosition;  // position de la 1Ã¨re barbule
-  int b2 = dec + windArrowSize;  // position de la 1Ã¨re barbule si >= 10 noeuds
+      dec + windArrowSize - featherPosition;  // position de la 1ère barbule
+  int b2 = dec + windArrowSize;  // position de la 1ère barbule si >= 10 noeuds
 
   int lpetite = windArrowSize / 5;
   int lgrande = lpetite * 2;
@@ -361,15 +352,15 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     dec = -arrowSize / 2;
 
     m_SingleArrow[i].pushLine(dec, 0, dec + arrowSize, 0);
-    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flÃ¨che
-    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flÃ¨che
+    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flèche
+    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flèche
     m_SingleArrow[i].Finalize();
 
     m_DoubleArrow[i].pushLine(dec, -dec2, dec + arrowSize, -dec2);
     m_DoubleArrow[i].pushLine(dec, dec2, dec + arrowSize, +dec2);
 
-    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flÃ¨che
-    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flÃ¨che
+    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flèche
+    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flèche
     m_DoubleArrow[i].Finalize();
   }
 }
@@ -380,12 +371,26 @@ GRIBOverlayFactory::~GRIBOverlayFactory() {
   ClearParticles();
 
   if (m_oDC) delete m_oDC;
+  if (m_Font_Message) delete m_Font_Message;
 }
 
 void GRIBOverlayFactory::Reset() {
   m_pGribTimelineRecordSet = NULL;
 
   ClearCachedData();
+}
+
+void GRIBOverlayFactory::SetMessageFont() {
+  wxFont fo;
+#ifdef __WXQT__
+  fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+#else
+  fo = *OCPNGetFont(_("Dialog"), 10);
+  fo.SetPointSize((fo.GetPointSize() / g_DIPfactor));
+#endif
+  if (m_Font_Message)
+    delete m_Font_Message;
+  m_Font_Message = new wxFont(fo);
 }
 
 void GRIBOverlayFactory::SetGribTimelineRecordSet(
@@ -510,22 +515,16 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy,
 
 bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   if (!m_pGribTimelineRecordSet) {
-    DrawMessageWindow((m_Message), vp->pix_width, vp->pix_height, m_dFont_war);
+    DrawMessageWindow((m_Message), vp->pix_width, vp->pix_height, m_Font_Message);
     return false;
   }
 
   // setup numbers texture if needed
   if (!m_pdc) {
-#ifdef __WXQT__
-    wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-#else
-    wxFont font(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                wxFONTWEIGHT_NORMAL);
-#endif
-    m_TexFontNumbers.Build(font);
+    m_TexFontNumbers.Build(*m_Font_Message);
 
     if (m_oDC)
-      m_oDC->SetFont(font);
+      m_oDC->SetFont(*m_Font_Message);
   }
 
   m_Message_Hiden.Empty();
@@ -596,7 +595,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
   m_Message_Hiden.Append(m_Message);
   DrawMessageWindow(m_Message_Hiden, vp->pix_width, vp->pix_height,
-                    m_dFont_map);
+    m_Font_Message);
   return true;
 }
 

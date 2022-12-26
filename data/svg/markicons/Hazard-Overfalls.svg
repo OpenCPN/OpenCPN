@@ -1,27 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_463784192">
-   <g>
-    <path fill="black" d="M555 727c37,65 100,109 146,108 49,1 109,-49 147,-108 -99,69 -189,71 -293,0z"/>
-    <path fill="black" d="M1141 727c-38,65 -100,109 -146,108 -49,1 -109,-49 -147,-108 99,69 189,71 293,0z"/>
-    <path fill="black" d="M555 727c-38,65 -100,109 -146,108 -49,1 -109,-49 -147,-108 99,69 189,71 293,0z"/>
-    <path fill="black" d="M1727 727c-38,65 -100,109 -146,108 -49,1 -109,-49 -147,-108 99,69 189,71 293,0z"/>
-    <path fill="black" d="M1141 727c37,65 100,109 145,108 50,1 110,-49 148,-108 -100,69 -189,71 -293,0z"/>
-   </g>
-   <g>
-    <path fill="black" d="M366 965c38,64 100,108 146,108 49,0 109,-49 147,-108 -99,68 -189,70 -293,0z"/>
-    <path fill="black" d="M952 965c-37,64 -100,108 -145,108 -50,0 -110,-49 -148,-108 100,68 189,70 293,0z"/>
-    <path fill="black" d="M366 965c-37,64 -99,108 -145,108 -50,0 -109,-49 -148,-108 100,68 189,70 293,0z"/>
-    <path fill="black" d="M1538 965c-37,64 -100,108 -146,108 -49,0 -109,-49 -147,-108 99,68 189,70 293,0z"/>
-    <path fill="black" d="M952 965c38,64 100,108 146,108 49,0 109,-49 147,-108 -99,68 -189,70 -293,0z"/>
-   </g>
-  </g>
-  <rect fill="none" width="1800" height="1800"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path d="M555 727c37 65 100 109 146 108 49 1 109-49 147-108-99 69-189 71-293 0zm586 0c-38 65-100 109-146 108-49 1-109-49-147-108 99 69 189 71 293 0zm-586 0c-38 65-100 109-146 108-49 1-109-49-147-108 99 69 189 71 293 0zm1172 0c-38 65-100 109-146 108-49 1-109-49-147-108 99 69 189 71 293 0zm-586 0c37 65 100 109 145 108 50 1 110-49 148-108-100 69-189 71-293 0zM366 965c38 64 100 108 146 108 49 0 109-49 147-108-99 68-189 70-293 0zm586 0c-37 64-100 108-145 108-50 0-110-49-148-108 100 68 189 70 293 0zm-586 0c-37 64-99 108-145 108-50 0-109-49-148-108 100 68 189 70 293 0zm1172 0c-37 64-100 108-146 108-49 0-109-49-147-108 99 68 189 70 293 0zm-586 0c38 64 100 108 146 108 49 0 109-49 147-108-99 68-189 70-293 0z"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
 </svg>

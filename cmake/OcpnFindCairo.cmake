@@ -8,7 +8,7 @@ if (CAIRO_INCLUDE_DIRS)
 endif ()
 
 if (CMAKE_HOST_WIN32)
-  set(CAIRO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
+  set(CAIRO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/cache/buildwin/gtk/include)
 else (CMAKE_HOST_WIN32)
   set(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include)
   if (APPLE)
@@ -28,8 +28,8 @@ message(STATUS " Cairo includes: ${CAIRO_INCLUDE_DIRS}")
 
 if (CMAKE_HOST_WIN32)
   set(CAIRO_LIBRARIES
-    ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
-    ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
+    ${CMAKE_SOURCE_DIR}/cache/buildwin/gtk/cairo.lib
+    ${CMAKE_SOURCE_DIR}/cache/buildwin/archive.lib
   )
   set(CAIRO_FOUND 1)
 else (CMAKE_HOST_WIN32)

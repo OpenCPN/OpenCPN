@@ -25,19 +25,19 @@
 
 #include <iostream>
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include "wx/print.h"
-#include "wx/printdlg.h"
-#include "wx/artprov.h"
-#include "wx/stdpaths.h"
+#include <wx/print.h>
+#include <wx/printdlg.h>
+#include <wx/artprov.h>
+#include <wx/stdpaths.h>
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
@@ -62,14 +62,14 @@
 #include <signal.h>
 #include <setjmp.h>
 #endif
-
-#include "chart1.h"
 #include "routeprintout.h"
+
 #include "printtable.h"
 #include "wx28compat.h"
-#include "Track.h"
-#include "Route.h"
+#include "track.h"
+#include "route.h"
 #include "gui_lib.h"
+#include "navutil_base.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1

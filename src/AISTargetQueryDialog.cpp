@@ -22,34 +22,34 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <wx/html/htmlwin.h>
 
 #include "AISTargetQueryDialog.h"
-#include "chart1.h"
 #include "chcanv.h"
 #include "navutil.h"
 #include "ais.h"
 #include "FontMgr.h"
-#include "AIS_Target_Data.h"
-#include "AIS_Decoder.h"
-#include "Select.h"
+#include "ais_target_data.h"
+#include "ais_decoder.h"
+#include "select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
-#include "RoutePoint.h"
+#include "track.h"
+#include "route_point.h"
+#include "ocpn_frame.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
 extern int g_ais_query_dialog_y;
 extern ColorScheme global_color_scheme;
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern TrackList *pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
 
@@ -106,7 +106,7 @@ void AISTargetQueryDialog::OnKey(wxKeyEvent &ke) {
 
 void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
   if (m_MMSI != 0) {  //  Faulty MMSI could be reported as 0
-    AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+    auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
     if (td) {
       wxString n0 = wxString::Format(wxT("%s"), td->ShipName);
       n0.Replace(_T("@"), _T(" "));
@@ -134,7 +134,7 @@ void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
 
 void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
   if (m_MMSI != 0) {  //  Faulty MMSI could be reported as 0
-    AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+    auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
     if (td) {
       if (td->b_PersistTrack)  // The target was tracked and the user wants to
                                // stop it
@@ -152,20 +152,17 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
                                     td->GetFullName().c_str(), td->MMSI,
                                     wxDateTime::Now().FormatISODate().c_str(),
                                     wxDateTime::Now().FormatISOTime().c_str()));
-        wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-        while (node) {
-          AISTargetTrackPoint *ptrack_point = node->GetData();
-          vector2D point(ptrack_point->m_lon, ptrack_point->m_lat);
-          tp1 = t->AddNewPoint(point, wxDateTime(ptrack_point->m_time).ToUTC());
+        for (const AISTargetTrackPoint &ptrack_point : td->m_ptrack) {
+          vector2D point(ptrack_point.m_lon, ptrack_point.m_lat);
+          tp1 = t->AddNewPoint(point, wxDateTime(ptrack_point.m_time).ToUTC());
           if (tp) {
             pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
                                                tp1->m_lon, tp, tp1, t);
           }
           tp = tp1;
-          node = node->GetNext();
         }
 
-        pTrackList->Append(t);
+        g_TrackList.push_back(t);
         pConfig->AddNewTrack(t);
         //                t->RebuildGUIDList(); // ensure the GUID list is
         //                intact and good
@@ -241,13 +238,13 @@ bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
 void AISTargetQueryDialog::SetMMSI(int mmsi) {
   m_MMSI = mmsi;
 
-  AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
-  AdjustBestSize(td);
+  auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+  AdjustBestSize(td.get());
 }
 
 void AISTargetQueryDialog::RecalculateSize() {
-  AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
-  AdjustBestSize(td);
+  auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+  AdjustBestSize(td.get());
   return;
 }
 
@@ -309,7 +306,7 @@ void AISTargetQueryDialog::UpdateText() {
   int scroll_x, scroll_y;
   m_pQueryTextCtl->GetViewStart(&scroll_x, &scroll_y);
 
-  AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
+  auto td = g_pAIS->Get_Target_Data_From_MMSI(m_MMSI);
   //    AdjustBestSize(td);
 
   DimeControl(this);
@@ -326,7 +323,7 @@ void AISTargetQueryDialog::UpdateText() {
     m_createWptBtn->Enable(td->b_positionOnceValid);
     m_createTrkBtn->Enable(td->b_show_track);
 
-    RenderHTMLQuery(td);
+    RenderHTMLQuery(td.get());
   }
 
 #ifdef __WXQT__
@@ -347,7 +344,7 @@ void AISTargetQueryDialog::OnMove(wxMoveEvent &event) {
 
 void AISTargetQueryDialog::OnSize(wxSizeEvent &event) { event.Skip(); }
 
-void AISTargetQueryDialog::AdjustBestSize(AIS_Target_Data *td) {
+void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
   if (!td) return;
 
   wxSize origSize = GetSize();
@@ -451,7 +448,7 @@ void AISTargetQueryDialog::AdjustBestSize(AIS_Target_Data *td) {
   }
 }
 
-void AISTargetQueryDialog::RenderHTMLQuery(AIS_Target_Data *td) {
+void AISTargetQueryDialog::RenderHTMLQuery(AisTargetData *td) {
   int font_size = m_adjustedFontSize;
   wxFont *fp_font = FontMgr::Get().FindOrCreateFont(
       font_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL,

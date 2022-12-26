@@ -28,7 +28,7 @@
 
 #include <wx/wx.h>
 #include <wx/progdlg.h>
-#include "bbox.h"
+#include "s52s57.h"
 #include "chartbase.h"
 #include "wx/dir.h"
 #include "wx/filename.h"
@@ -44,13 +44,13 @@
 #include "S57ClassRegistrar.h"
 #include "S57Light.h"
 #include "S57Sector.h"
-#include "s52s57.h"  //types
 #include "OCPNRegion.h"
 #include "ocpndc.h"
 #include "viewport.h"
 #include "SencManager.h"
 #include <memory>
 #include "ocpn_plugin.h"
+#include <unordered_map>
 
 // ----------------------------------------------------------------------------
 // Useful Prototypes
@@ -104,9 +104,6 @@ class ChartPlugInWrapper;
 
 // Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
-
-// And also a list
-WX_DECLARE_LIST(S57Obj, ListOfS57Obj);
 
 WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 
@@ -199,10 +196,14 @@ public:
   //    DEPCNT VALDCO array access
   bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
-  virtual ListOfS57Obj *GetAssociatedObjects(S57Obj *obj);
+  virtual std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
 
-  virtual VE_Hash &Get_ve_hash(void) { return m_ve_hash; }
-  virtual VC_Hash &Get_vc_hash(void) { return m_vc_hash; }
+  virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void) {
+    return m_ve_hash;
+  }
+  virtual std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void) {
+    return m_vc_hash;
+  }
 
   virtual void ForceEdgePriorityEvaluate(void);
 
@@ -270,7 +271,7 @@ public:
   bool m_b2lineLUPS;
   bool m_RAZBuilt;
 
-  struct _chart_context *m_this_chart_context;
+  chart_context *m_this_chart_context;
 
   int FindOrCreateSenc(const wxString &name, bool b_progress = true);
   void DisableBackgroundSENC() { m_disableBackgroundSENC = true; }
@@ -333,7 +334,7 @@ private:
                                        ChartPlugInWrapper *target_plugin_chart,
                                        s57chart *Chs57,
                                        ListOfObjRazRules *rule_list,
-                                       ListOfPI_S57Obj *pi_rule_list,
+                                       std::list<S57Obj*> *pi_rule_list,
                                        std::vector<s57Sector_t> &sectorlegs);
 
   // Private Data
@@ -383,8 +384,8 @@ private:
 
   int m_LineVBO_name;
 
-  VE_Hash m_ve_hash;
-  VC_Hash m_vc_hash;
+  std::unordered_map<unsigned, VE_Element *> m_ve_hash;
+  std::unordered_map<unsigned, VC_Element *> m_vc_hash;
   std::vector<connector_segment *> m_pcs_vector;
   std::vector<VE_Element *> m_pve_vector;
 

@@ -31,6 +31,8 @@
 #include <windows.h>
 #endif
 
+#include <memory>
+
 #include <wx/listbook.h>
 #include <wx/dirctrl.h>
 #include <wx/spinctrl.h>
@@ -39,6 +41,7 @@
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
 #include <wx/colourdata.h>
+#include "connections_dialog.h"
 
 #if wxUSE_TIMEPICKCTRL
 #include <wx/timectrl.h>
@@ -58,7 +61,7 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "datastream.h"
+#include "chartdbs.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
 #ifndef __OCPN__ANDROID__
@@ -69,12 +72,12 @@
 class wxGenericDirCtrl;
 class MyConfig;
 class ChartGroupsUI;
-class ConnectionParams;
+//class ConnectionParams;
 class PluginListPanel;
 class ChartGroupArray;
 class ChartGroup;
 class MMSI_Props_Panel;
-class MMSIProperties;
+class MmsiProperties;
 class OCPNCheckedListCtrl;
 class CanvasConfigSelect;
 class OCPNIconCombo;
@@ -99,6 +102,7 @@ enum {
   ID_BUTTONDELETE,
   ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
+  ID_BUTTONECDISHELP,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
   ID_BUTTONREBUILD,
@@ -155,6 +159,7 @@ enum {
   ID_RADARDISTUNIT,
   ID_RASTERCHECKBOX1,
   ID_SCAMINCHECKBOX,
+  ID_SUPERSCAMINCHECKBOX,
   ID_SCANCHECKBOX,
   ID_SDMMFORMATCHOICE,
   ID_DISTANCEUNITSCHOICE,
@@ -203,7 +208,6 @@ enum {
   // LIVE ETA OPTION
   ID_CHECK_LIVEETA,
   ID_DEFAULT_BOAT_SPEED,
-  ID_DARKDECORATIONSBOX,
   ID_SCREENCONFIG1,
   ID_SCREENCONFIG2,
   ID_CONFIGEDIT_OK,
@@ -310,6 +314,7 @@ public:
   void OnButtonParseENC(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
   void OnButtonmigrateClick(wxCommandEvent &event);
+  void OnButtonEcdisHelp(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
@@ -317,6 +322,7 @@ public:
   void OnChooseFont(wxCommandEvent &event);
   void OnFontChoice(wxCommandEvent &event);
   void OnCPAWarnClick(wxCommandEvent &event);
+  void OnSyncCogPredClick(wxCommandEvent &event);
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
 
@@ -351,15 +357,11 @@ public:
   void OnChartsPageChange(wxListbookEvent &event);
   void OnChartDirListSelect(wxCommandEvent &event);
   void OnUnitsChoice(wxCommandEvent &event);
-  void OnScanBTClick(wxCommandEvent &event);
-  void onBTScanTimer(wxTimerEvent &event);
-  void StopBTScan(void);
 
   void UpdateWorkArrayFromDisplayPanel(void);
   ArrayOfCDI GetSelectedChartDirs();
   ArrayOfCDI GetUnSelectedChartDirs();
   void SetDirActionButtons();
-
 
   void OnCreateConfig(wxCommandEvent &event);
   void OnEditConfig(wxCommandEvent &event);
@@ -371,12 +373,13 @@ public:
   void OnConfigMouseSelected(wxMouseEvent &event);
   void OnDialogInit(wxInitDialogEvent& event);
 
-  void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
 
   bool GetNeedNew() { return m_bneedNew; }
   void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
   int GetScrollRate() { return m_scrollRate; }
   void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
+
+  wxArrayString *GetSerialArray(){ return m_pSerialArray; }
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -408,10 +411,7 @@ public:
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
-  //  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis,
-  //  *pRollover;
-  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover,
-      *pDarkDecorations;
+  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pZoomButtons;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
@@ -419,7 +419,7 @@ public:
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
+  wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
       *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
   wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
@@ -431,79 +431,16 @@ public:
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
 
-  // For the GPS page
-  wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
-  wxButton *m_btnOutputStcList, *m_sdbSizerDlgButtonsOK;
-  wxButton *m_sdbSizerDlgButtonsApply, *m_sdbSizerDlgButtonsCancel;
-  wxStaticBoxSizer *sbSizerConnectionProps, *sbSizerInFilter;
-  wxStaticBoxSizer *sbSizerOutFilter;
-  wxRadioButton *m_rbTypeSerial, *m_rbTypeNet, *m_rbTypeInternalGPS;
-  wxRadioButton *m_rbTypeInternalBT, *m_rbNetProtoTCP, *m_rbNetProtoUDP;
-  wxRadioButton *m_rbNetProtoGPSD, *m_rbIAccept, *m_rbIIgnore, *m_rbOAccept;
-  wxRadioButton *m_rbNetProtoSignalK;
-  wxRadioButton *m_rbOIgnore;
-  wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
-  wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
-  wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
-  wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment;
-  wxTextCtrl *m_tNetComment, *m_tSerialComment;
-  wxStaticBox *m_sbConnEdit;
-  wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
-  wxChoice *m_choicePriority, *m_choicePrecision;
-  wxScrolledWindow *m_scrollWinConnections;
-  wxBoxSizer *boxSizerConnections;
-  ConnectionParams *mSelectedConnection;
-
   // For the Display\Units page
   wxStaticText *itemStaticTextUserVar;
   wxStaticText *itemStaticTextUserVar2;
+  wxButton *m_configDeleteButton, *m_configApplyButton;
 
-  wxGridSizer *gSizerNetProps, *gSizerSerProps;
-  wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
-  wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
-  wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
-      *m_cbCheckSKDiscover;
-  wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
-  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
-  wxComboBox *m_comboPort;
-  wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton *m_configDeleteButton, *m_configApplyButton, *m_ButtonSKDiscover;
-  wxStaticText *m_StaticTextSKServerStatus;
-
-  void OnSelectDatasource(wxListEvent &event);
-  void OnAddDatasourceClick(wxCommandEvent &event);
-  void OnRemoveDatasourceClick(wxCommandEvent &event);
-
-  void OnTypeSerialSelected(wxCommandEvent &event);
-  void OnTypeNetSelected(wxCommandEvent &event);
-  void OnTypeGPSSelected(wxCommandEvent &event);
-  void OnTypeBTSelected(wxCommandEvent &event);
-
-  void OnNetProtocolSelected(wxCommandEvent &event);
-  void OnBaudrateChoice(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnProtocolChoice(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnCrcCheck(wxCommandEvent &event) { OnValChange(event); }
-  void OnRbAcceptInput(wxCommandEvent &event);
-  void OnRbIgnoreInput(wxCommandEvent &event);
-  void OnBtnIStcs(wxCommandEvent &event);
-  void OnCbInput(wxCommandEvent &event);
-  void OnCbOutput(wxCommandEvent &event);
-  void OnRbOutput(wxCommandEvent &event);
-  void OnBtnOStcs(wxCommandEvent &event);
-  void OnConnValChange(wxCommandEvent &event);
-  void OnValChange(wxCommandEvent &event);
-  void OnUploadFormatChange(wxCommandEvent &event);
-  void EnableConnection(ConnectionParams *conn, bool value);
-  void OnDiscoverButton(wxCommandEvent &event);
-  void UpdateDiscoverStatus(wxString stat);
   void OnAISRolloverClick(wxCommandEvent &event);
-  void UpdateChartDirList( );
+  void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);
 
-  bool connectionsaved;
-  bool m_connection_enabled;
 
   bool b_haveWMM;
   bool b_oldhaveWMM;
@@ -513,16 +450,13 @@ public:
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;
 
-  // #if defined(__WXMSW__) || defined(__WXOSX__)
-  //   wxCheckListBox *ps57CtlListBox;
-  // #else
   OCPNCheckedListCtrl *ps57CtlListBox;
-  // #endif
 
   wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
   wxButton *itemButtonClearList, *itemButtonSelectList, *itemButtonSetStd;
   wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
-  wxCheckBox *pCheck_SCAMIN, *pCheck_ATONTEXT, *pCheck_LDISTEXT;
+  wxCheckBox *pCheck_SCAMIN, *pCheck_SuperSCAMIN;
+  wxCheckBox *pCheck_ATONTEXT, *pCheck_LDISTEXT;
   wxCheckBox *pCheck_XLSECTTEXT, *pCheck_DECLTEXT, *pCheck_NATIONALTEXT;
   wxCheckBox *pSEnableCM93Offset;
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;
@@ -562,7 +496,8 @@ public:
 
   // For the "AIS" page
   wxCheckBox *m_pCheck_CPA_Max, *m_pCheck_CPA_Warn, *m_pCheck_CPA_WarnT;
-  wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost, *m_pCheck_Show_COG;
+  wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost;
+  wxCheckBox *m_pCheck_Show_COG, *m_pCheck_Sync_OCOG_ACOG;
   wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Hide_Moored,
       *m_pCheck_Scale_Priority;
   wxCheckBox *m_pCheck_AlertDialog, *m_pCheck_AlertAudio;
@@ -679,8 +614,6 @@ private:
   void CreatePanel_Ownship(size_t parent, int border_size,
                            int group_item_spacing);
   void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_NMEA_Compact(size_t parent, int border_size,
-                                int group_item_spacing);
   void CreatePanel_ChartsLoad(size_t parent, int border_size,
                               int group_item_spacing);
   void CreatePanel_VectorCharts(size_t parent, int border_size,
@@ -715,34 +648,9 @@ private:
   wxImageList *m_topImgList;
 
   wxScrolledWindow *m_pNMEAForm;
-  void ShowNMEACommon(bool visible);
-
-  void ShowNMEASerial(bool visible);
-  void ShowNMEANet(bool visible);
-  void ShowNMEAGPS(bool visible);
-  void ShowNMEABT(bool visible);
-
-  void SetNMEAFormToSerial(void);
-  void SetNMEAFormToNet(void);
-  void SetNMEAFormToGPS(void);
-  void SetNMEAFormToBT(void);
-
-  void ClearNMEAForm(void);
-  bool m_bNMEAParams_shown;
-
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
-  void SetConnectionParams(ConnectionParams *cp);
-  void SetDefaultConnectionParams(void);
-  void SetDSFormRWStates();
-  void SetDSFormOptionVizStates();
-  void FillSourceList();
-  void UpdateSourceList(bool bResort);
-  bool SortSourceList(void);
-
-  ConnectionParams *CreateConnectionParamsFromSelectedItem();
-  ConnectionParams *UpdateConnectionParamsFromSelectedItem(
-      ConnectionParams *pConnectionParams);
+  ObservableListener compat_os_listener;
 
   int m_screenConfig;
 
@@ -751,12 +659,9 @@ private:
   wxFont smallFont;
   //  wxFont *dialogFont;
   wxSize m_small_button_size;
-  wxTimer m_BTScanTimer;
-  wxArrayString m_BTscan_results;
 
   bool m_bcompact;
-  int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
-  int m_btlastResultCount;
+  int m_fontHeight, m_scrollRate;
   bool m_bfontChanged;
   bool m_bVectorInit;
 
@@ -767,6 +672,8 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
+
+  std::shared_ptr<ConnectionsDialog>comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
@@ -855,30 +762,6 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class SentenceListDlg : private Uncopyable, public wxDialog {
-public:
-  explicit SentenceListDlg(wxWindow *parent, FilterDirection dir, ListType type,
-                           const wxArrayString &list);
-  wxString GetSentences(void);
-
-private:
-  void OnAddClick(wxCommandEvent &event);
-  void OnDeleteClick(wxCommandEvent &event);
-  void OnCLBSelect(wxCommandEvent &event);
-  void OnCheckAllClick(wxCommandEvent &event);
-  void OnClearAllClick(wxCommandEvent &event);
-
-  void Populate(const wxArrayString &list);
-  wxString GetBoxLabel(void) const;
-
-  wxCheckListBox *m_clbSentences;
-  wxButton *m_btnDel;
-
-  ListType m_type;
-  FilterDirection m_dir;
-  wxArrayString m_sentences;
-};
-
 #ifdef ocpnUSE_GL
 class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
 public:
@@ -949,7 +832,7 @@ public:
 
 class MMSIEditDialog : private Uncopyable, public wxDialog {
 public:
-  explicit MMSIEditDialog(MMSIProperties *props, wxWindow *parent,
+  explicit MMSIEditDialog(MmsiProperties *props, wxWindow *parent,
                           wxWindowID id = wxID_ANY,
                           const wxString &caption = wxEmptyString,
                           const wxPoint &pos = wxDefaultPosition,
@@ -962,7 +845,7 @@ public:
   void OnMMSIEditOKClick(wxCommandEvent &event);
   void OnCtlUpdated(wxCommandEvent &event);
 
-  MMSIProperties *m_props;
+  MmsiProperties *m_props;
   wxTextCtrl *m_MMSICtl, m_ShipNameCtl;  // Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;

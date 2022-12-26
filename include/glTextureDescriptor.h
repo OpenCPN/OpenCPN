@@ -25,14 +25,21 @@
 #ifndef __GLTEXTUREDESCRIPTOR_H__
 #define __GLTEXTUREDESCRIPTOR_H__
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
+
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
 
 #include "dychart.h"
 #include "ocpn_types.h"
+#include "color_types.h"
 
 #define CA_READ 0
 #define CA_WRITE 1

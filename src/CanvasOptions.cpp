@@ -26,13 +26,13 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "wx/artprov.h"
+#include <wx/artprov.h>
 #include <wx/statline.h>
 
 #include "dychart.h"
@@ -41,10 +41,7 @@
 #include "CanvasOptions.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
-
-#ifdef ocpnUSE_SVG
-#include "wxSVG/svg.h"
-#endif  // ocpnUSE_SVG
+#include "s52s57.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

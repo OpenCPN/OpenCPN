@@ -46,7 +46,6 @@
 #else
 class ChartPanel;
 class ChartDldrPanelImpl;
-WX_DECLARE_OBJARRAY(ChartPanel*, ArrayOfChartPanels);
 #endif /* CHART_LIST */
 
 class DLDR_OCPNChartDirPanel : public wxPanel {
@@ -140,7 +139,7 @@ protected:
   wxString m_csTitle;
   wxStaticText* m_chartsLabel;
 #if !defined(CHART_LIST)  // The chart list viewer does not use m_panelArray
-  ArrayOfChartPanels m_panelArray;
+  std::vector<std::unique_ptr<ChartPanel>> m_panelArray;
 #endif /* CHART_LIST */
   wxBoxSizer* m_boxSizerCharts;
 

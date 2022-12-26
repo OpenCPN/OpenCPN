@@ -21,6 +21,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+
+#ifndef _OCPN_UTILS_H__
+#define _OCPN_UTILS_H__
+
 #include <string>
 #include <vector>
 
@@ -53,3 +57,5 @@ bool replace(std::string& str, const std::string& from, const std::string& to);
 void copy_file(const std::string& src_path, const std::string& dest_path);
 
 }  // namespace ocpn
+
+#endif  //  _OCPN_UTILS_H__

@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  CanvasMenuHandler
@@ -24,57 +24,60 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-#include "wx/image.h"
-#include <wx/graphics.h>
-#include <wx/listbook.h>
-#include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-
-#include "config.h"
-#include "dychart.h"
-
+#include <wx/clipbrd.h>
+#include <wx/dynarray.h>
+#include <wx/event.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
+#include <wx/menu.h>
 
-#include "canvasMenu.h"
-
-#include "chcanv.h"
-#include "TCWin.h"
-#include "georef.h"
-#include "styles.h"
-#include "routeman.h"
-#include "navutil.h"
-#include "kml.h"
-#include "chartdb.h"
-#include "chart1.h"
-#include "cutil.h"
-#include "MarkInfo.h"
-#include "RoutePropDlgImpl.h"
-#include "TrackPropDlg.h"
-#include "tcmgr.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
-#include "undo.h"
-#include "tide_time.h"
-#include "Quilt.h"
 #include "FontMgr.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "MarkInfo.h"
+#include "Quilt.h"
+#include "route.h"
+#include "RoutePropDlgImpl.h"
 #include "SendToGpsDlg.h"
-#include "Track.h"
-#include "Route.h"
-
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
+#include "SendToPeerDlg.h"
+#include "TCWin.h"
+#include "track.h"
+#include "TrackPropDlg.h"
 #include "ais.h"
-
-#include <vector>
+#include "ais_decoder.h"
+#include "ais_target_data.h"
+#include "canvasMenu.h"
+#include "chartdb.h"
+#include "chcanv.h"
+#include "cm93.h"      // for chart outline draw
+#include "config.h"
+#include "cutil.h"
+#include "georef.h"
+#include "kml.h"
+#include "navutil.h"
+#include "nav_object_database.h"
+#include "ocpn_frame.h"
+#include "pluginmanager.h"
+#include "route_gui.h"
+#include "route_point_gui.h"
+#include "routeman.h"
+#include "routeman_gui.h"
+#include "routemanagerdialog.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "styles.h"
+#include "tcmgr.h"
+#include "tide_time.h"
+#include "track_gui.h"
+#include "undo.h"
+#include "peer_client.h"
+#include "mDNS_query.h"
+#include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -87,7 +90,7 @@ extern void pupHandler_PasteRoute();
 extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
@@ -111,6 +114,7 @@ extern bool g_bConfirmObjectDelete;
 extern WayPointman *pWayPointMan;
 extern MyConfig *pConfig;
 extern Select *pSelect;
+extern OCPNPlatform* g_Platform;
 
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 
@@ -123,6 +127,8 @@ extern TrackPropDlg *pTrackPropDialog;
 extern double gHdt;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
+extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
+extern wxString g_hostname;
 
 //    Constants for right click menus
 enum {
@@ -165,6 +171,7 @@ enum {
   ID_RT_MENU_SENDTONEWGPS,
   ID_RT_MENU_SHOWNAMES,
   ID_RT_MENU_RESEQUENCE,
+  ID_RT_MENU_SENDTOPEER,
   ID_WP_MENU_SET_ANCHORWATCH,
   ID_WP_MENU_CLEAR_ANCHORWATCH,
   ID_DEF_MENU_AISTARGETLIST,
@@ -213,6 +220,8 @@ int CanvasMenuHandler::GetNextContextMenuId() {
          100;  // Allowing for 100 dynamic menu item identifiers
 }
 
+wxFont CanvasMenuHandler::m_scaledFont;
+
 // Define a constructor for my canvas
 CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                                      Route *selectedRoute, Track *selectedTrack,
@@ -227,6 +236,10 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
   m_pFoundRoutePoint = selectedPoint;
   m_FoundAIS_MMSI = selectedAIS_MMSI;
   m_pIDXCandidate = selectedTCIndex;
+  if (!m_scaledFont.IsOk()){
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+    m_scaledFont = *qFont;
+  }
 }
 
 CanvasMenuHandler::~CanvasMenuHandler() {}
@@ -235,7 +248,7 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-void PrepareMenuItem( wxMenuItem *item ){
+void CanvasMenuHandler::PrepareMenuItem( wxMenuItem *item ){
 #if defined(__WXMSW__)
   wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
   item->SetBackgroundColour(ctrl_back_color);
@@ -244,11 +257,11 @@ void PrepareMenuItem( wxMenuItem *item ){
 #endif
 }
 
-void MenuPrepend1(wxMenu *menu, int id, wxString label) {
+void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-  item->SetFont(*qFont);
+  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    item->SetFont(m_scaledFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -262,12 +275,11 @@ void MenuPrepend1(wxMenu *menu, int id, wxString label) {
   menu->Prepend(item);
 }
 
-void MenuAppend1(wxMenu *menu, int id, wxString label) {
+void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-
-  wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-  item->SetFont(*qFont);
+  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    item->SetFont(m_scaledFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -281,9 +293,13 @@ void MenuAppend1(wxMenu *menu, int id, wxString label) {
   if (g_btouch) menu->AppendSeparator();
 }
 
-void SetMenuItemFont1(wxMenuItem *item) {
-#if defined(__WXMSW__) || defined(__OCPN__ANDROID__)
+void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
+#if defined(__WXMSW__)
+  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    item->SetFont(m_scaledFont);
+#endif
 
+#if defined(__OCPN__ANDROID__)
   wxFont *qFont = GetOCPNScaledFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
@@ -343,19 +359,14 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   bool ais_areanotice = false;
   if (g_pAIS && parent->GetShowAIS() && g_bShowAreaNotices) {
-    AIS_Target_Hash *an_sources = g_pAIS->GetAreaNoticeSourcesList();
-
     float vp_scale = parent->GetVPScale();
 
-    for (AIS_Target_Hash::iterator target = an_sources->begin();
-         target != an_sources->end(); ++target) {
-      AIS_Target_Data *target_data = target->second;
+    for (const auto &target : g_pAIS->GetAreaNoticeSourcesList()) {
+      auto target_data = target.second;
       if (!target_data->area_notices.empty()) {
-        for (AIS_Area_Notice_Hash::iterator ani =
-                 target_data->area_notices.begin();
-             ani != target_data->area_notices.end(); ++ani) {
-          Ais8_001_22 &area_notice = ani->second;
-          wxBoundingBox bbox;
+        for (auto &ani : target_data->area_notices) {
+          Ais8_001_22 &area_notice = ani.second;
+          BoundingBox bbox;
 
           for (Ais8_001_22_SubAreaList::iterator sa =
                    area_notice.sub_areas.begin();
@@ -574,8 +585,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     if (g_pAIS) {
       if (parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET)) {
-        AIS_Target_Data *myptarget =
-            g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
+        auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
           if (name.IsEmpty()) name.Printf(_T("%d"), m_FoundAIS_MMSI);
@@ -711,6 +721,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(menuRoute, ID_RT_MENU_SENDTONEWGPS, item);
       }
       //#endif
+      wxString itemstp = _("Send to...");
+      MenuAppend1(menuRoute, ID_RT_MENU_SENDTOPEER, itemstp);
+
     }
     // Eventually set this menu as the "focused context menu"
     if (menuFocus != menuAIS) menuFocus = menuRoute;
@@ -874,7 +887,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
   int sub_menu = 0;
   if (!g_bBasicMenus && menuFocus != contextMenu) {
-    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK ||
+    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK &&
                    global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT ){
       menuFocus->AppendSeparator();
     }
@@ -959,8 +972,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                          (*it)->GetHelp(), (*it)->GetKind());
 
 #ifdef __WXMSW__
-        wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-        pmi->SetFont( *qFont);
+        if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+          pmi->SetFont(m_scaledFont);
 #endif
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
@@ -977,8 +990,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
-    pmi->SetFont( *qFont);
+    if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+      pmi->SetFont(m_scaledFont);
 #endif
 
     PrepareMenuItem( pmi );
@@ -1114,8 +1127,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       pWP->m_bIsolatedMark = true;  // This is an isolated mark
       pSelect->AddSelectableRoutePoint(zlat, zlon, pWP);
       pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
-      if (!pWP->IsVisibleSelectable(this->parent))
-        pWP->ShowScaleWarningMessage(parent);
+      if (!RoutePointGui(*pWP).IsVisibleSelectable(this->parent))
+        RoutePointGui(*pWP).ShowScaleWarningMessage(parent);
 
       if (RouteManagerDialog::getInstanceFlag()) {
         if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
@@ -1323,15 +1336,13 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_DEF_MENU_AIS_CPA: {
-      AIS_Target_Data *myptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
+      auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->Toggle_AIS_CPA();
       break;
     }
 
     case ID_DEF_MENU_AISSHOWTRACK: {
-      AIS_Target_Data *myptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
+      auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
       if (myptarget) myptarget->ToggleShowTrack();
       break;
     }
@@ -1438,7 +1449,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         if (m_pSelectedRoute->m_bIsInLayer) break;
 
-        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute)) break;
+        if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute,
+                                      NavObjectChanges::getInstance())) break;
 
         if(RouteManagerDialog::getInstanceFlag()){
           if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -1567,7 +1579,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       pSelect->DeleteAllSelectableRoutePoints(m_pSelectedRoute);
       pSelect->DeleteAllSelectableRouteSegments(m_pSelectedRoute);
-      g_pRouteMan->DeleteRoute(m_pSelectedRoute);
+      g_pRouteMan->DeleteRoute(m_pSelectedRoute,
+                               NavObjectChanges::getInstance());
       pSelect->AddAllSelectableRouteSegments(m_pTail);
       pSelect->AddAllSelectableRoutePoints(m_pTail);
       pSelect->AddAllSelectableRouteSegments(m_pHead);
@@ -1597,7 +1610,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_WPT_MENU_SENDTOGPS:
       if (m_pFoundRoutePoint) {
         if (parent->m_active_upload_port.Length())
-          m_pFoundRoutePoint->SendToGPS(
+          RoutePointGui(*m_pFoundRoutePoint).SendToGPS(
               parent->m_active_upload_port.BeforeFirst(' '), NULL);
         else {
           SendToGpsDlg dlg;
@@ -1624,7 +1637,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_RT_MENU_SENDTOGPS:
       if (m_pSelectedRoute) {
         if (parent->m_active_upload_port.Length())
-          m_pSelectedRoute->SendToGPS(
+          RouteGui(*m_pSelectedRoute).SendToGPS(
               parent->m_active_upload_port.BeforeFirst(' '), true, NULL);
         else {
           SendToGpsDlg dlg;
@@ -1642,6 +1655,39 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         dlg.SetRoute(m_pSelectedRoute);
 
         dlg.Create(NULL, -1, _("Send to GPS") + _T( "..." ), _T(""));
+        dlg.ShowModal();
+      }
+      break;
+
+     case ID_RT_MENU_SENDTOPEER:
+      if (m_pSelectedRoute) {
+        g_Platform->ShowBusySpinner();
+        FindAllOCPNServers();
+        g_Platform->HideBusySpinner();
+
+        // Count viable servers.
+        int n_servers = 0;
+        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+          wxString item(g_DNS_cache[i]->hostname.c_str());
+
+          //skip "self"
+          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+            n_servers++;
+          }
+        }
+
+        if(n_servers == 0){
+          OCPNMessageBox(NULL,
+            _("No OpenCPN servers found on this network."),
+            _("OpenCPN Send Route"), wxOK, 5);
+
+          return;
+        }
+
+        SendToPeerDlg dlg;
+        dlg.SetRoute(m_pSelectedRoute);
+
+        dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ), _T(""));
         dlg.ShowModal();
       }
       break;
@@ -1690,7 +1736,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       if (m_pSelectedRoute) {
         if (m_pSelectedRoute->m_bIsInLayer) break;
         g_pRouteMan->RemovePointFromRoute(m_pFoundRoutePoint, m_pSelectedRoute,
-                                          parent);
+                                          parent->m_routeState);
         gFrame->InvalidateAllGL();
         gFrame->RefreshAllCanvas();
       }
@@ -1737,10 +1783,11 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       if (dlg_return == wxID_YES) {
         if (m_pSelectedTrack == g_pActiveTrack)
-          parent->parent_frame->TrackOff();
+            m_pSelectedTrack = parent->parent_frame->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
         pConfig->DeleteConfigTrack(m_pSelectedTrack);
-        g_pRouteMan->DeleteTrack(m_pSelectedTrack);
+
+        RoutemanGui(*g_pRouteMan).DeleteTrack(m_pSelectedTrack);
 
         if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
             (pTrackPropDialog->IsShown()) &&

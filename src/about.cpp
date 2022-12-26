@@ -27,7 +27,7 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -50,6 +50,7 @@
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #endif
+#include "ocpn_frame.h"
 
 extern OCPNPlatform* g_Platform;
 extern MyFrame* gFrame;

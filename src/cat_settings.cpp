@@ -34,10 +34,10 @@
 #include <wx/textctrl.h>
 
 #include "cat_settings.h"
-#include "config_var.h"
+#include "observable_globvar.h"
 #include "ocpn_utils.h"
 #include "plugin_cache.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;
@@ -69,7 +69,7 @@ private:
   wxStaticText* m_selected;
 
   void OnChoice(wxCommandEvent&) {
-    ocpn::GlobalVar<wxString> compat_os(&g_compatOS);
+    GlobalVar<wxString> compat_os(&g_compatOS);
     if (GetSelection() == 0) {
       // "Select new flavour"
       return;
@@ -77,14 +77,14 @@ private:
     if (GetSelection() == 1) {
       // "Default Setting"
       g_compatOsVersion = "";
-      compat_os.set("");
+      compat_os.Set("");
       auto newOS = CompatOs::getInstance();
       m_selected->SetLabel(newOS->name() + ":" + newOS->version());
     } else {
       auto current = GetString(GetSelection());
       auto os = ocpn::split(current, " ")[0];
       m_selected->SetLabel(os);
-      compat_os.set(ocpn::split(os.c_str(), ":")[0]);
+      compat_os.Set(ocpn::split(os.c_str(), ":")[0]);
       g_compatOsVersion = ocpn::split(os.c_str(), ":")[1];
     }
   }
@@ -140,8 +140,8 @@ private:
     } else {
       m_custom_ctrl->Hide();
     }
-    ocpn::GlobalVar<wxString> catalog(&g_catalog_channel);
-    catalog.set(selected);
+    GlobalVar<wxString> catalog(&g_catalog_channel);
+    catalog.Set(selected);
     Layout();
   }
 };
@@ -161,10 +161,9 @@ public:
   CatalogSizer(wxWindow* parent)
       : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Active catalog")) {
     auto flags = wxSizerFlags().Border();
-    Add(new wxStaticText(parent, wxID_ANY, _("Select plugin catalog")),
-        flags.Center());
+    Add(new wxStaticText(parent, wxID_ANY, _("Select plugin catalog")), flags);
     auto custom_ctrl = new CustomCatalogCtrl(parent);
-    Add(new CatalogChoice(parent, custom_ctrl), flags.Expand());
+    Add(new CatalogChoice(parent, custom_ctrl), flags);
     Add(custom_ctrl, flags.Expand().Proportion(1));
     Layout();
   }
@@ -224,7 +223,8 @@ private:
 class ButtonsSizer : public wxStdDialogButtonSizer {
 public:
   ButtonsSizer(wxWindow* parent) : wxStdDialogButtonSizer() {
-    auto button = new wxButton(parent, wxID_OK, "LongLabel", wxDefaultPosition, wxSize(10 * parent->GetCharWidth(), -1));
+    auto button = new wxButton(parent, wxID_OK, "LongLabel", wxDefaultPosition,
+                               wxSize(10 * parent->GetCharWidth(), -1));
     button->SetLabel(_("Done"));
     SetAffirmativeButton(button);
     Realize();
@@ -236,7 +236,6 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Plugin Catalog Settings"),
                wxDefaultPosition, wxDefaultSize,
                wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
-
 #ifdef __OCPN__ANDROID__
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
 #endif

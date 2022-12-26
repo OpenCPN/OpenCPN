@@ -42,20 +42,19 @@
 
 #include "catalog_mgr.h"
 #include "download_mgr.h"
-#include "Downloader.h"
+#include "downloader.h"
 #include "OCPNPlatform.h"
 #include "picosha2.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "plugin_cache.h"
 #include "pluginmanager.h"
 #include "semantic_vers.h"
 #include "styles.h"
+#include "svg_utils.h"
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform* g_Platform;
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 #undef major  // walk around gnu's major() and minor() macros.
 #undef minor
@@ -137,12 +136,6 @@ static void LoadPNGIcon(const char* path, int size, wxBitmap& bitmap) {
   bitmap = wxBitmap(*img);
 }
 
-/** Load a svg icon rescaled to size x size. */
-static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap) {
-  wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-  bitmap = wxBitmap(img);
-}
-
 /**
  * A plugin icon, scaled to about 2/3 of available space
  *
@@ -185,7 +178,7 @@ protected:
     path.SetExt("svg");
     bool ok = false;
     if (path.IsFileReadable()) {
-      LoadSVGIcon(path, size, bitmap);
+      bitmap = LoadSVG(path.GetFullPath(), size, size);
       ok = bitmap.IsOk();
     }
     if (!ok) {
@@ -208,7 +201,8 @@ public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
       : wxPanel(parent), m_metadata(metadata), m_remove(false) {
     PlugInContainer* found =
-        PlugInByName(metadata.name, g_pi_manager->GetPlugInArray());
+        PlugInByName(metadata.name,
+                     PluginLoader::getInstance()->GetPlugInArray());
     std::string label(_("Install"));
     if (found) {
       label = getUpdateLabel(found, metadata);
@@ -237,7 +231,8 @@ public:
     if (!cacheResult) {
       auto downloader = new GuiDownloader(this, m_metadata);
       downloader->run(this, m_remove);
-      auto pic = PlugInByName(m_metadata.name, g_pi_manager->GetPlugInArray());
+      auto loader = PluginLoader::getInstance();
+      auto pic = PlugInByName(m_metadata.name, loader->GetPlugInArray());
       if (!pic) {
         wxLogMessage("Installation of %s failed", m_metadata.name.c_str());
         return;
@@ -248,7 +243,7 @@ public:
       auto listPanels = dynamic_cast<PluginListPanel*>(
           main_window->GetRealParent()->GetPrevSibling());
       wxASSERT(listPanels != 0);
-      listPanels->ReloadPluginPanels(g_pi_manager->GetPlugInArray());
+      listPanels->ReloadPluginPanels();
       auto window = GetSizer()->GetItem((size_t)0)->GetWindow();
       auto btn = dynamic_cast<wxButton*>(window);
       wxASSERT(btn != 0);
@@ -452,7 +447,8 @@ public:
       }
       grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
       auto buttons = new CandidateButtonsPanel(this, &plugin);
-      grid->Add(new PluginTextPanel(this, &plugin, buttons, unique_plugins.size() > 1),
+      grid->Add(new PluginTextPanel(this, &plugin, buttons,
+                                    unique_plugins.size() > 1),
                 flags.Proportion(1).Right());
       grid->Add(buttons, flags.DoubleBorder());
       grid->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());

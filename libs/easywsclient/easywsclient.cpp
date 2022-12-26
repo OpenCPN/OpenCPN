@@ -148,11 +148,38 @@ socket_t hostname_connect(const std::string& hostname, int port) {
         }
 ///
 #else
+        int error = -1;
+        int len = sizeof(int);
+        timeval tm;
+        fd_set set;
 
+        fcntl(sockfd, F_SETFL, O_NONBLOCK);  //set as non-blocking
+        bool ret = false;
 
-        if (connect(sockfd, p->ai_addr, p->ai_addrlen) != SOCKET_ERROR) {
-            break;
+        connect(sockfd, p->ai_addr, p->ai_addrlen);
+
+        tm.tv_sec = 5; // set the timeout. s
+        tm.tv_usec = 0;
+        FD_ZERO(&set);
+        FD_SET(sockfd, &set);
+
+        if (select(sockfd + 1, NULL, &set, NULL, &tm) > 0)
+        {
+          getsockopt(sockfd, SOL_SOCKET, SO_ERROR, (char *)&error, (socklen_t *)&len);
+          if (error == 0)
+            ret = true;
+          else
+            ret = false;
         }
+
+        if (ret == true){
+          int opts;
+          opts = fcntl(sockfd,F_GETFL);
+          opts &= ~O_NONBLOCK;
+          fcntl(sockfd, F_SETFL,opts);  //set back to blocking
+          break;
+        }
+
 #endif
         closesocket(sockfd);
         sockfd = INVALID_SOCKET;

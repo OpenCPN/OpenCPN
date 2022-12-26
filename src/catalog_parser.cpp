@@ -23,6 +23,9 @@
  */
 
 #include <cstring>
+#include <fstream>
+#include <iterator>
+#include <sstream>
 
 #include <wx/log.h>
 
@@ -33,14 +36,10 @@
 #include "catalog_parser.h"
 #include "ocpn_utils.h"
 #include "catalog_handler.h"
-#include "Downloader.h"
 #include "pugixml.hpp"
 
-#include <fstream>
-#include <sstream>
-#include <iterator>
 
-bool ParseCatalog(const std::string xml, catalog_ctx* ctx) {
+bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   bool ok = true;
   PluginMetadata* plugin = 0;
 

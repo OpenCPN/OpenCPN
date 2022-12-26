@@ -1,16 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_302414984">
-   <path fill="black" stroke="black" stroke-width="20" d="M900 843c9,178 63,344 129,407l231 0 -360 -620 -360 620 231 0 129 -407z"/>
-   <line fill="none" stroke="black" stroke-width="20" x1="947" y1="550" x2="577" y2= "1186" />
-   <line fill="none" stroke="black" stroke-width="20" x1="854" y1="550" x2="1223" y2= "1184" />
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <g stroke="#000" stroke-width="20">
+        <path d="M900 843c9 178 63 344 129 407h231L900 630l-360 620h231l129-407z"/>
+        <path fill="none" d="m947 550-370 636m277-636 369 634"/>
+    </g>
 </svg>

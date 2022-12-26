@@ -25,8 +25,6 @@
 #ifndef __EMBOSS_DATA_H__
 #define __EMBOSS_DATA_H__
 
-#include "dychart.h"
-
 class emboss_data {
 public:
   emboss_data() {

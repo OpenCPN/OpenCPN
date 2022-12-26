@@ -23,10 +23,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <vector>
@@ -36,20 +36,18 @@
 #include "navutil.h"
 #include "styles.h"
 #include "toolbar.h"
-#include "chart1.h"
 #include "pluginmanager.h"
 #include "FontMgr.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "svg_utils.h"
+#include "idents.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #endif
-
-#ifdef ocpnUSE_SVG
-#include "wxSVG/svg.h"
-#endif  // ocpnUSE_SVG
 
 extern bool g_bTransparentToolbar;
 extern bool g_bTransparentToolbarInOpenGLOK;
@@ -72,13 +70,12 @@ extern int g_maintoolbar_y;
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(GrabberWin, wxPanel)
-EVT_MOUSE_EVENTS(GrabberWin::MouseEvent) EVT_PAINT(GrabberWin::OnPaint)
-    END_EVENT_TABLE()
+EVT_MOUSE_EVENTS(GrabberWin::MouseEvent)
+EVT_PAINT(GrabberWin::OnPaint)
+END_EVENT_TABLE()
 
-        GrabberWin::GrabberWin(wxWindow *parent,
-                               ocpnFloatingToolbarDialog *toolbar,
-                               float scale_factor, wxString icon_name,
-                               wxPoint position)
+GrabberWin::GrabberWin(wxWindow *parent, ocpnFloatingToolbarDialog *toolbar,
+                       float scale_factor, wxString icon_name, wxPoint position)
     : wxPanel(parent, wxID_ANY, position, wxDefaultSize, wxNO_BORDER) {
   m_icon_name = icon_name;
   m_style = g_StyleManager->GetCurrentStyle();
@@ -1517,10 +1514,10 @@ private:
 BEGIN_EVENT_TABLE(ToolTipWin, wxFrame)
 EVT_PAINT(ToolTipWin::OnPaint)
 
-    END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    // Define a constructor
-    ToolTipWin::ToolTipWin(wxWindow *parent)
+// Define a constructor
+ToolTipWin::ToolTipWin(wxWindow *parent)
     : wxFrame(parent, wxID_ANY, _T(""), wxPoint(0, 0), wxSize(1, 1),
               wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR) {
   m_pbm = NULL;
@@ -1569,12 +1566,18 @@ void ToolTipWin::SetBitmap() {
   int h, w;
 
   wxScreenDC cdc;
+  double scaler = g_Platform->GetDisplayDPIMult(this);
 
   wxFont *plabelFont = FontMgr::Get().GetFont(_("ToolTips"));
-  cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, plabelFont);
+  wxFont sFont = plabelFont->Scaled(1.0 / scaler);
 
-  m_size.x = w + 8;
-  m_size.y = h + 4;
+  cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, &sFont);
+
+  m_size.x = w + GetCharWidth() * 2;
+  m_size.y = h + GetCharHeight() / 2;
+
+  m_size.x *= scaler;
+  m_size.y *= scaler;
 
   wxMemoryDC mdc;
 
@@ -1597,11 +1600,15 @@ void ToolTipWin::SetBitmap() {
   mdc.DrawRectangle(0, 0, m_size.x, m_size.y);
 
   //    Draw the text
-  mdc.SetFont(*plabelFont);
+  mdc.SetFont(sFont);
   mdc.SetTextForeground(m_text_color);
   mdc.SetTextBackground(m_back_color);
 
-  mdc.DrawText(m_string, 4, 2);
+  int offx = GetCharWidth();
+  int offy = GetCharHeight()/4;
+  offx *= scaler;
+  offy *= scaler;
+  mdc.DrawText(m_string, offx, offy);
 
   SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
 }
@@ -1620,27 +1627,27 @@ void ToolTipWin::OnPaint(wxPaintEvent &event) {
 
 // ----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(ocpnToolBarSimple, wxControl)
-EVT_SIZE(ocpnToolBarSimple::OnSize) EVT_PAINT(ocpnToolBarSimple::OnPaint)
-    EVT_KILL_FOCUS(ocpnToolBarSimple::OnKillFocus)
-        EVT_MOUSE_EVENTS(ocpnToolBarSimple::OnMouseEvent)
-            EVT_TIMER(TOOLTIPON_TIMER, ocpnToolBarSimple::OnToolTipTimerEvent)
-                EVT_TIMER(TOOLTIPOFF_TIMER,
-                          ocpnToolBarSimple::OnToolTipOffTimerEvent)
+EVT_SIZE(ocpnToolBarSimple::OnSize)
+EVT_PAINT(ocpnToolBarSimple::OnPaint)
+EVT_KILL_FOCUS(ocpnToolBarSimple::OnKillFocus)
+EVT_MOUSE_EVENTS(ocpnToolBarSimple::OnMouseEvent)
+EVT_TIMER(TOOLTIPON_TIMER, ocpnToolBarSimple::OnToolTipTimerEvent)
+EVT_TIMER(TOOLTIPOFF_TIMER, ocpnToolBarSimple::OnToolTipOffTimerEvent)
 
-                    END_EVENT_TABLE()
+END_EVENT_TABLE()
 
-    // ============================================================================
-    // implementation
-    // ============================================================================
+// ============================================================================
+// implementation
+// ============================================================================
 
-    // ----------------------------------------------------------------------------
-    // tool bar tools creation
-    // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// tool bar tools creation
+// ----------------------------------------------------------------------------
 
-    wxToolBarToolBase *ocpnToolBarSimple::CreateTool(
-        int id, const wxString &label, const wxBitmap &bmpNormal,
-        const wxBitmap &bmpDisabled, wxItemKind kind, wxObject *clientData,
-        const wxString &shortHelp, const wxString &longHelp) {
+wxToolBarToolBase *ocpnToolBarSimple::CreateTool(
+    int id, const wxString &label, const wxBitmap &bmpNormal,
+    const wxBitmap &bmpDisabled, wxItemKind kind, wxObject *clientData,
+    const wxString &shortHelp, const wxString &longHelp) {
   if (m_style->NativeToolIconExists(label)) {
     return new ocpnToolBarTool(this, id, label, bmpNormal, bmpDisabled, kind,
                                clientData, shortHelp, longHelp);
@@ -2464,23 +2471,12 @@ void ocpnToolBarSimple::DrawTool(wxDC &dc, wxToolBarToolBase *toolBase) {
 
       if (!svgFile.IsEmpty()) {  // try SVG
 #ifdef ocpnUSE_SVG
-#ifndef __OCPN__ANDROID__
-        if (wxFileExists(svgFile)) {
-          wxSVGDocument svgDoc;
-          if (svgDoc.Load(svgFile)) {
-            bool square = (tool->m_width == tool->m_height);
-            bmp = wxBitmap(svgDoc.Render(tool->m_width, tool->m_height, NULL,
-                                         !square, true));
-            bmp = m_style->BuildPluginIcon(bmp, toggleFlag, m_sizefactor);
-          } else
-            bmp = m_style->BuildPluginIcon(tool->pluginNormalIcon,
-                                           TOOLICON_NORMAL);
-        }
-#else
-        bmp = loadAndroidSVG(svgFile, tool->m_width, tool->m_height);
-        bmp = m_style->BuildPluginIcon(bmp, TOOLICON_NORMAL);
-#endif
-
+        bmp = LoadSVG(svgFile, tool->m_width, tool->m_height);
+        if (bmp.IsOk()) {
+          bmp = m_style->BuildPluginIcon(bmp, toggleFlag, m_sizefactor);
+        } else
+          bmp =
+              m_style->BuildPluginIcon(tool->pluginNormalIcon, TOOLICON_NORMAL);
 #endif
       }
 

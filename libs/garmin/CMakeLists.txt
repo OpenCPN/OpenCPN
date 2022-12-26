@@ -61,6 +61,12 @@ if (MINGW)
 endif ()
 
 target_compile_definitions(GARMINHOST PRIVATE "-DUSE_WX_LOGGING")
-set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(GARMINHOST PRIVATE -fvisibility=default -fPIC)
+endif ()
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+  target_compile_options(GARMINHOST PRIVATE -x c++)
+endif ()
+
 target_include_directories(GARMINHOST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jeeps)
 target_include_directories(GARMINHOST PRIVATE ${wxWidgets_INCLUDE_DIRS})

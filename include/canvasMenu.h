@@ -30,12 +30,11 @@
 
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
-#include "wx/dirctrl.h"
+#include <wx/dirctrl.h>
 #include <wx/sound.h>
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
-#include "chart1.h"  // for enum types
 #include "ocpndc.h"
 #include "undo.h"
 
@@ -48,7 +47,6 @@
 #include "timers.h"
 #include "emboss_data.h"
 
-//#include "s57chart.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -61,13 +59,13 @@ class Route;
 class TCWin;
 class RoutePoint;
 class SelectItem;
-class wxBoundingBox;
+class BoundingBox;
 class ocpnBitmap;
 class WVSChart;
 class MyFrame;
 class ChartBaseBSB;
 class ChartBase;
-class AIS_Target_Data;
+class AisTargetData;
 class S57ObjectTree;
 class S57ObjectDesc;
 class RolloverWin;
@@ -75,6 +73,7 @@ class Quilt;
 class PixelCache;
 class ChInfoWin;
 class glChartCanvas;
+class Track;
 
 //----------------------------------------------------------------------------
 // CanvasMenuHandler
@@ -90,6 +89,12 @@ public:
   void CanvasPopupMenu(int x, int y, int seltype);
   void PopupMenuHandler(wxCommandEvent &event);
   static int GetNextContextMenuId();
+  void PrepareMenuItem( wxMenuItem *item );
+  void MenuPrepend1(wxMenu *menu, int id, wxString label);
+  void MenuAppend1(wxMenu *menu, int id, wxString label);
+  void SetMenuItemFont1(wxMenuItem *item);
+
+  static wxFont m_scaledFont;
 
 private:
   int popx, popy;

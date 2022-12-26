@@ -23,9 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #include <wx/datetime.h>
 #include <wx/hashmap.h>
@@ -7345,8 +7345,9 @@ NV_U_INT32 bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
 
     /*  For the last byte we mask out anything after the end bit and    */
     /*  then shift to the right (8 - end_bit) bits.                     */
-
-    value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+    if (mask[end_bit]) {
+      value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+    }
   }
 
   return (value);

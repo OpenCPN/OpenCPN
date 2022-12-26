@@ -82,8 +82,8 @@ bool RMB::Parse( const SENTENCE& sentence )
    **  1) Status, V = Navigation receiver warning
    **  2) Cross Track error - nautical miles
    **  3) Direction to Steer, Left or Right
-   **  4) TO Waypoint ID
-   **  5) FROM Waypoint ID
+   **  4) FROM Waypoint ID
+   **  5) TO Waypoint ID
    **  6) Destination Waypoint Latitude
    **  7) N or S
    **  8) Destination Waypoint Longitude
@@ -132,8 +132,8 @@ bool RMB::Parse( const SENTENCE& sentence )
    IsDataValid = mode_valid ? sentence.Boolean( 1 ) : NFalse;
    CrossTrackError                 = sentence.Double( 2 );
    DirectionToSteer                = sentence.LeftOrRight( 3 );
-   To                              = sentence.Field( 4 );
-   From                            = sentence.Field( 5 );
+   From                            = sentence.Field( 4 );
+   To                              = sentence.Field( 5 );
    DestinationPosition.Parse( 6, 7, 8, 9, sentence );
    RangeToDestinationNauticalMiles = sentence.Double( 10 );
    BearingToDestinationDegreesTrue = sentence.Double( 11 );
@@ -159,8 +159,9 @@ bool RMB::Write( SENTENCE& sentence )
    else
        sentence += _T("R");
 
-   sentence += To;
+
    sentence += From;
+   sentence += To;
    sentence += DestinationPosition;
    sentence += RangeToDestinationNauticalMiles;
    sentence += BearingToDestinationDegreesTrue;
@@ -181,8 +182,8 @@ const RMB& RMB::operator = ( const RMB& source )
    IsDataValid                     = source.IsDataValid;
    CrossTrackError                 = source.CrossTrackError;
    DirectionToSteer                = source.DirectionToSteer;
-   To                              = source.To;
    From                            = source.From;
+   To                              = source.To;
    DestinationPosition             = source.DestinationPosition;
    RangeToDestinationNauticalMiles = source.RangeToDestinationNauticalMiles;
    BearingToDestinationDegreesTrue = source.BearingToDestinationDegreesTrue;

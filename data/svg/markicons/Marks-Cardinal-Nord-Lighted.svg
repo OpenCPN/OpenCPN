@@ -1,72 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Creator: CorelDRAW X6 -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xml:space="preserve"
-   width="18mm"
-   height="18mm"
-   version="1.1"
-   shape-rendering="geometricPrecision"
-   text-rendering="geometricPrecision"
-   image-rendering="optimizeQuality"
-   fill-rule="evenodd"
-   clip-rule="evenodd"
-   viewBox="0 0 1800 1800"
-   id="svg21"
-   sodipodi:docname="Marks-Cardinal-Nord-Lighted.svg"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"><metadata
-     id="metadata27"><rdf:RDF><cc:Work
-         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
-     id="defs25" /><sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="2444"
-     inkscape:window-height="1453"
-     id="namedview23"
-     showgrid="false"
-     inkscape:zoom="12.273727"
-     inkscape:cx="93.67731"
-     inkscape:cy="39.184181"
-     inkscape:window-x="147"
-     inkscape:window-y="147"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="svg21" /><g
-     id="g8027"><rect
-       width="1693.3334"
-       height="1693.3334"
-       id="rect3"
-       x="-3.5668947e-08"
-       y="106.66668"
-       style="fill:none;stroke-width:0.94074076" /><path
-       style="fill:#ffff00;stroke-width:0.93395865"
-       inkscape:connector-curvature="0"
-       id="path17"
-       d="m 1580.7058,174.9336 c 106,191.90132 -380,271.2787 -668.99986,272.15097 C 1097.7059,253.43869 1479.7058,-18.712271 1580.7058,174.9336 Z" /><g
-       transform="matrix(0.99999988,0,0,0.99267066,-26.864482,-376.50155)"
-       id="g13"><polygon
-         style="fill:#000000"
-         id="polygon5-9"
-         points="980,620 821,620 900,497 " /><polygon
-         style="fill:#000000"
-         id="polygon7-0"
-         points="980,776 821,776 900,653 " /><polygon
-         style="fill:#fff212;stroke:#000000;stroke-width:20"
-         id="polygon9-2"
-         points="816,1146 869,842 931,842 984,1146 1103,1194 1103,1303 697,1303 697,1194 " /><polygon
-         style="fill:#000000;stroke:#000000;stroke-width:20"
-         id="polygon11-3"
-         points="931,842 984,1146 816,1146 869,842 " /></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path style="fill:none;stroke-width:.94074076" d="M0 106.667h1693.333V1800H0z"/>
+    <path style="fill:#ff0;stroke-width:.93395865" d="M1580.706 174.934c106 191.9-380 271.278-669 272.15 186-193.645 568-465.796 669-272.15Z"/>
+    <path style="fill:#000" d="M980 620H821l79-123zm0 156H821l79-123z" transform="matrix(1 0 0 .99267 -26.864 -376.502)"/>
+    <path style="fill:#fff212;stroke:#000;stroke-width:20" d="m816 1146 53-304h62l53 304 119 48v109H697v-109z" transform="matrix(1 0 0 .99267 -26.864 -376.502)"/>
+    <path style="fill:#000;stroke:#000;stroke-width:20" d="m931 842 53 304H816l53-304z" transform="matrix(1 0 0 .99267 -26.864 -376.502)"/>
+</svg>

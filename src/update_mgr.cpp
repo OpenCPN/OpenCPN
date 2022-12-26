@@ -43,20 +43,20 @@
 
 #include "catalog_mgr.h"
 #include "update_mgr.h"
-#include "Downloader.h"
+#include "plugin_loader.h"
+#include "downloader.h"
 #include "OCPNPlatform.h"
-#include "PluginHandler.h"
+#include "plugin_handler.h"
 #include "pluginmanager.h"
 #include "semantic_vers.h"
 #include "styles.h"
 #include "options.h"
+#include "svg_utils.h"
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform* g_Platform;
 extern options* g_options;
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 #undef major  // walk around gnu's major() and minor() macros.
 #undef minor
@@ -123,12 +123,6 @@ static void LoadPNGIcon(const char* path, int size, wxBitmap& bitmap) {
   bitmap = wxBitmap(*img);
 }
 
-/** Load a svg icon rescaled to size x size. */
-static void LoadSVGIcon(wxFileName path, int size, wxBitmap& bitmap) {
-  wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-  bitmap = wxBitmap(img);
-}
-
 /**
  * A plugin icon, scaled to about 2/3 of available space
  *
@@ -171,8 +165,7 @@ protected:
     bool ok = false;
 
     if (path.IsFileReadable()) {
-      wxImage img = LoadSVGIcon(path.GetFullPath(), size, size);
-      bitmap = wxBitmap(img);
+      bitmap = LoadSVG(path.GetFullPath(), size, size);
       ok = bitmap.IsOk();
     }
 
@@ -204,8 +197,9 @@ class InstallButton : public wxPanel {
 public:
   InstallButton(wxWindow* parent, PluginMetadata metadata)
       : wxPanel(parent), m_metadata(metadata), m_remove(false) {
+    auto loader = PluginLoader::getInstance();
     PlugInContainer* found =
-        PlugInByName(metadata.name, g_pi_manager->GetPlugInArray());
+        PlugInByName(metadata.name, loader->GetPlugInArray());
     std::string label(_("Install"));
     if (found &&
         ((found->m_version_major > 0) || (found->m_version_minor > 0))) {
@@ -280,7 +274,7 @@ public:
     vbox->Add(1, 1, 1, wxEXPAND);  // Expanding, stretchable spacer
     m_info_btn = new UpdateWebsiteButton(this, plugin->info_url.c_str());
     m_info_btn->Hide();
-    vbox->Add(m_info_btn, flags.DoubleBorder().Bottom().Right());
+    vbox->Add(m_info_btn, flags.DoubleBorder().Right());
     SetSizer(vbox);
     Fit();
   }
@@ -408,7 +402,7 @@ public:
     auto butt_box = new wxBoxSizer(wxHORIZONTAL);
     auto cancel_btn = new wxButton(this, wxID_CANCEL, _("Dismiss"));
     butt_box->Add(1, 1, 1, wxEXPAND);  // Expanding, stretchable spacer
-    butt_box->Add(cancel_btn, wxSizerFlags().Right().Border());
+    butt_box->Add(cancel_btn, wxSizerFlags().Border());
     box->Add(butt_box, wxSizerFlags().Proportion(0).Expand());
 
     SetSizer(box);
@@ -431,7 +425,8 @@ public:
     for (auto plugin : m_updates) {
       grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
       auto buttons = new CandidateButtonsPanel(this, &plugin);
-      PluginTextPanel* tpanel = new PluginTextPanel(this, &plugin, buttons, m_updates.size() > 1);
+      PluginTextPanel* tpanel =
+          new PluginTextPanel(this, &plugin, buttons, m_updates.size() > 1);
       tpanel->m_isDesc = true;
       grid->Add(tpanel, flags.Proportion(1).Right());
       grid->Add(buttons, flags.DoubleBorder());

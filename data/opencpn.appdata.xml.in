@@ -10,7 +10,7 @@
   <provides>
     <binary>opencpn</binary>
   </provides>
-  <launchable type="desktop-id">org.opencpn.OpenCPN.desktop</launchable>
+  <launchable type="desktop-id">opencpn.desktop</launchable>
   <description>
     <p>
       A cross-platform ship-borne GUI navigation application made
@@ -33,7 +33,8 @@
     </p>
   </description>
   <releases>
-    <release version="@PACKAGE_VERSION@" date="@VERSION_DATE@">
+      <release version="@PACKAGE_VERSION@" date="@VERSION_DATE@"
+          timestamp="@UNIX_TIMESTAMP@">
       <description>
         <p>The latest upstream commit.</p>
       </description>
