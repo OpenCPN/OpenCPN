@@ -158,7 +158,7 @@ void ConnectionParamsPanel::CreateControls(void) {
 
   // Enable cbox
   wxBoxSizer *enableSizer = new wxBoxSizer(wxVERTICAL);
-  panelSizer->Add(enableSizer, 1, wxLEFT, metric);
+  panelSizer->Add(enableSizer, 1);
 
   m_cbEnable = new wxCheckBox(this, wxID_ANY, _("Enable"));
   m_cbEnable->Connect(
@@ -171,7 +171,7 @@ void ConnectionParamsPanel::CreateControls(void) {
 
   //  Parms
   wxBoxSizer *parmSizer = new wxBoxSizer(wxVERTICAL);
-  panelSizer->Add(parmSizer, 5, wxLEFT, metric);
+  panelSizer->Add(parmSizer, 5);
 
   if (m_pConnectionParams->Type == SERIAL) {
     wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 7, 0, metric / 2);
@@ -216,7 +216,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
     serialGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
     t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -318,7 +318,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
     netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
     t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -455,7 +455,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
     netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
     t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -573,7 +573,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("Priority"));
+    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
     netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
     t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
