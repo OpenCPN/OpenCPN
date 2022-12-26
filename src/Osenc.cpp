@@ -42,9 +42,9 @@
 #include "cutil.h"
 #include "s57RegistrarMgr.h"
 #include "gdal/cpl_csv.h"
-#include "chart1.h"  // for fonts
 #include "ogr_s57.h"
 #include "gdal/cpl_string.h"
+#include "LOD_reduce.h"
 
 #include "mygeom.h"
 #include "georef.h"

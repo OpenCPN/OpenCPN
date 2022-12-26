@@ -72,6 +72,7 @@
 #include "qdebug.h"
 #endif
 
+extern float g_DIPfactor;
 extern float g_piGLMinSymbolLineWidth;
 wxArrayPtrVoid pi_gTesselatorVertices;
 
@@ -274,22 +275,22 @@ void pi_ocpnDC::SetGLStipple() const {
 
 #ifndef USE_ANDROID_GLES2
   switch (m_pen.GetStyle()) {
-    case wxDOT: {
+    case wxPENSTYLE_DOT: {
       glLineStipple(1, 0x3333);
       glEnable(GL_LINE_STIPPLE);
       break;
     }
-    case wxLONG_DASH: {
+    case wxPENSTYLE_LONG_DASH: {
       glLineStipple(1, 0xFFF8);
       glEnable(GL_LINE_STIPPLE);
       break;
     }
-    case wxSHORT_DASH: {
+    case wxPENSTYLE_SHORT_DASH: {
       glLineStipple(1, 0x3F3F);
       glEnable(GL_LINE_STIPPLE);
       break;
     }
-    case wxDOT_DASH: {
+    case wxPENSTYLE_DOT_DASH: {
       glLineStipple(1, 0x8FF1);
       glEnable(GL_LINE_STIPPLE);
       break;
@@ -1892,7 +1893,9 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
     } else {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
-      sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
+      sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
+      w *= g_DIPfactor;
+      h *= g_DIPfactor;
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -2010,14 +2013,14 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       coords[6] = 0;
       coords[7] = h;
 
-      glUseProgram(texture_2D_shader_program);
+      glUseProgram(pi_texture_2D_shader_program);
 
       // Get pointers to the attributes in the program.
-      GLint mPosAttrib = glGetAttribLocation(texture_2D_shader_program, "aPos");
-      GLint mUvAttrib = glGetAttribLocation(texture_2D_shader_program, "aUV");
+      GLint mPosAttrib = glGetAttribLocation(pi_texture_2D_shader_program, "aPos");
+      GLint mUvAttrib = glGetAttribLocation(pi_texture_2D_shader_program, "aUV");
 
       // Set up the texture sampler to texture unit 0
-      GLint texUni = glGetUniformLocation(texture_2D_shader_program, "uTex");
+      GLint texUni = glGetUniformLocation(pi_texture_2D_shader_program, "uTex");
       glUniform1i(texUni, 0);
 
       // Disable VBO's (vertex buffer objects) for attributes.
@@ -2046,7 +2049,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       Q[3][1] = y;
 
       GLint matloc =
-          glGetUniformLocation(texture_2D_shader_program, "TransformMatrix");
+          glGetUniformLocation(pi_texture_2D_shader_program, "TransformMatrix");
       glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
       // Select the active texture unit.
@@ -2105,8 +2108,9 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
   if (w) *w = 100;
   if (h) *h = 100;
 
+  /*we need to handle multiline to get true w & h */
   if (dc)
-    dc->GetTextExtent(string, w, h, descent, externalLeading, font);
+    dc->GetMultiLineTextExtent(string, w, h, NULL, font);
   else {
     wxFont f = m_font;
     if (font) f = *font;
@@ -2117,11 +2121,15 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
       m_texfont.GetTextExtent(string, w, h);
 #else
       wxMemoryDC temp_dc;
-      temp_dc.GetTextExtent(string, w, h, descent, externalLeading, &f);
+      temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
+      if (w) (*w) *= g_DIPfactor;
+      if (h) (*h) *= g_DIPfactor;
 #endif
     } else {
       wxMemoryDC temp_dc;
-      temp_dc.GetTextExtent(string, w, h, descent, externalLeading, &f);
+      temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
+      if (w) (*w) *= g_DIPfactor;
+      if (h) (*h) *= g_DIPfactor;
     }
   }
 

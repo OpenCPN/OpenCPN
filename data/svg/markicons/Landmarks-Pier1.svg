@@ -1,29 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-   <clipPath id="id0">
-    <path d="M642 575l516 0c45,0 82,37 82,81l0 488c0,44 -37,81 -82,81l-516 0c-45,0 -82,-37 -82,-81l0 -488c0,-44 37,-81 82,-81z"/>
-   </clipPath>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <path fill="white" d="M642 575l516 0c45,0 82,37 82,81l0 488c0,44 -37,81 -82,81l-516 0c-45,0 -82,-37 -82,-81l0 -488c0,-44 37,-81 82,-81z"/>
-  <g clip-path="url(#id0)">
-   <g id="_528009712">
-    <g>
-     <rect fill="black" x="814" y="1077" width="34.1271" height="123.499"/>
-     <path fill="black" d="M739 792l0 65 -180 0 0 19 179 0c12,70 -20,159 24,170 20,4 38,-9 39,-26l1 -143 97 -1 1 172 -2 13 -339 -1 0 34 360 1 0 -218 35 -1 0 -20 -150 0c-2,-19 -3,-14 17,-34 14,-14 42,-49 61,-61 42,37 21,37 74,37 72,0 44,-8 56,-28l139 -144 0 -11 -8 0c-8,12 -114,113 -135,135 -13,13 -9,9 -32,9 -54,0 -32,9 -89,-48 -10,-10 -10,-12 -25,-19 -28,-12 -46,19 -79,50 -10,10 -40,36 -44,50z"/>
-     <path fill="#0C85CA" d="M569 1181l20 25 59 19 524 -1 46 -25 14 -20 4 -25c-31,-4 -56,-16 -84,-16 -34,0 -50,16 -85,15 -34,0 -50,-16 -85,-15 -33,1 -49,15 -82,15 -34,0 -51,-15 -85,-15 -34,0 -51,16 -86,15 -34,0 -49,-16 -85,-15 -29,1 -47,13 -81,15l6 28z"/>
-     <path fill="black" d="M894 619c-53,10 -34,89 19,75 42,-11 32,-85 -19,-75z"/>
-     <line fill="none" stroke="black" stroke-width="7.62" x1="1151" y1="615" x2="1151" y2= "1138" />
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <clipPath id="a">
+            <path d="M642 575h516c45 0 82 37 82 81v488c0 44-37 81-82 81H642c-45 0-82-37-82-81V656c0-44 37-81 82-81z"/>
+        </clipPath>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#fff" d="M642 575h516c45 0 82 37 82 81v488c0 44-37 81-82 81H642c-45 0-82-37-82-81V656c0-44 37-81 82-81z"/>
+    <g clip-path="url(#a)">
+        <path d="M814 1077h34.127v123.499H814z"/>
+        <path d="M739 792v65H559v19h179c12 70-20 159 24 170 20 4 38-9 39-26l1-143 97-1 1 172-2 13-339-1v34l360 1V877l35-1v-20H804c-2-19-3-14 17-34 14-14 42-49 61-61 42 37 21 37 74 37 72 0 44-8 56-28l139-144v-11h-8c-8 12-114 113-135 135-13 13-9 9-32 9-54 0-32 9-89-48-10-10-10-12-25-19-28-12-46 19-79 50-10 10-40 36-44 50z"/>
+        <path fill="#0C85CA" d="m569 1181 20 25 59 19 524-1 46-25 14-20 4-25c-31-4-56-16-84-16-34 0-50 16-85 15-34 0-50-16-85-15-33 1-49 15-82 15-34 0-51-15-85-15s-51 16-86 15c-34 0-49-16-85-15-29 1-47 13-81 15l6 28z"/>
+        <path d="M894 619c-53 10-34 89 19 75 42-11 32-85-19-75z"/>
+        <path fill="none" stroke="#000" stroke-width="7.62" d="M1151 615v523"/>
     </g>
-   </g>
-  </g>
-  <path fill="none" stroke="#0C85CA" stroke-width="20" d="M642 575l516 0c45,0 82,37 82,81l0 488c0,44 -37,81 -82,81l-516 0c-45,0 -82,-37 -82,-81l0 -488c0,-44 37,-81 82,-81z"/>
- </g>
+    <path fill="none" stroke="#0C85CA" stroke-width="20" d="M642 575h516c45 0 82 37 82 81v488c0 44-37 81-82 81H642c-45 0-82-37-82-81V656c0-44 37-81 82-81z"/>
 </svg>

@@ -39,6 +39,7 @@
 #include "ocpn_types.h"
 #include "navutil.h"
 #include "printtable.h"
+#include "ocpn_frame.h"
 
 class MyRoutePrintout : public MyPrintout {
 public:
@@ -48,7 +49,7 @@ public:
   void DrawPage(wxDC* dc);
   virtual void OnPreparePrinting();
 
-  virtual bool HasPage(int num) { return num > 0 || num <= 1; };
+  virtual bool HasPage(int num) { return num > 0 && num <= numberOfPages; };
 
   virtual void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
                            int* selPageTo);

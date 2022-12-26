@@ -15,10 +15,10 @@ but it does work, if somewhat slower. OpenGLU is better.
 See the Build Notes section for applicable tesselator configuration options.
 
 
-b.  OpenCPN requires WxWidgets Version 2.8.8 or greater.  It has been tested
+b.  OpenCPN requires WxWidgets Version 3.0.0 or greater.  It has been tested
 with the following wxWidgets hosts:
 
-         GTK2                 (__WXGTK__)
+         GTK3                 (__WXGTK__)
          MSWindows            (__WXMSW__)
          MAC OSx              (__WXOSX__)
 
@@ -27,27 +27,33 @@ with the following wxWidgets hosts:
 3.  Platform Specific Build Notes
 ----------------------------------------------------------------------
 
-For Debian Sid, packages to install:
+Up to date build dependency instructions can be found at
+https://opencpn-manuals.github.io/main/ocpn-dev-manual/, look for
+OpenCPN Development.
 
-         sudo apt install libwxgtk-webview3.0-gtk3-dev libgtk-3-dev libbz2-dev exif libarchive-dev libsndfile1-dev portaudio19-dev
-         sudo apt install cmake gettext sqlite3 libsqlite3-dev libcurl4-openssl-dev libtinyxml-dev libexif-dev liblzma-dev liblz4-dev
+On Debian/Ubuntu the canonical way to install build depencies is:
+
+    $ sudo apt install devscripts equivs
+    $ sudo mk-build-deps -i -r ci/control
+    $ sudo apt-get --allow-unauthenticated install -f
 
 ------------------------
 Build OpenCPN
 ------------------------
 
-Opencpn uses the cmake system, so...
-
-        cd {wherever the opencpn base directory is}
-        mkdir build
-        cd build
-        cmake ../
-
-        make -j 4
-
-        sudo make install
+Opencpn uses the cmake system. On Linux, the build is performed using:
 
 
+    $ cd {wherever the opencpn base directory is}
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+
+    $ make -j 4
+    $ sudo make install
+
+See the manual at https://opencpn-manuals.github.io/main/ocpn-dev-manual/
+for build instructions on other platforms.
 
 
 ----------------------------------------------------------------------
@@ -89,84 +95,5 @@ starting configuration.
 6. Serial Port GPS/AIS Data Input and Autopilot Output
 ----------------------------------------------------------------------
 
-See the file LINUX_DEVICESS.md in the distribution or at
+See the file LINUX_DEVICES.md in the distribution or at
 https://github.com/OpenCPN/OpenCPN/blob/master/LINUX_DEVICES.md
-
----------------------------------------------------------------------
-7. Cross Compiling for windows using mingw
----------------------------------------------------------------------
-
-It is possible to use mingw to cross compile opencpn for windows,
-assuming a debian based linux host system, packages needed:
-
-mingw-w64 - development environment for windows
-nsis - to make installer programs
-wine - to run and verify the windows binary
-
-     sudo apt-get install mingw-w64 nsis wine
-
-Next wxwidgets should be built from source:
-     tar zxvf wxWidgets-2.8.12.tar.gz
-     cd wxWidgets-2.8.12.tar.gz
-     mkdir build
-     cd build
-     ../configure --prefix=/usr/local/i686-w64-mingw32/ --host=i686-w64-mingw32 --with-opengl --enable-unicode
-     make
-     sudo make install
-
-Next build libz from source:
-     tar zxvf zlib-1.2.8.tar.gz
-     cd zlib-1.2.8
-     cmake -DCMAKE_TOOLCHAIN_FILE=../OpenCPN/Toolchain-mingw32.cmake .
-     make
-     sudo cp libzlibstatic.a /usr/local/i686-w64-mingw32/lib/libz.a
-
-Now, edit /usr/share/cmake-2.8/Modules/FindwxWidgets.cmake:
-
---- OldFindwxWidgets	2014-05-17 15:54:10.804384809 +0800
-+++ /usr/share/cmake-2.8/Modules/FindwxWidgets.cmake	2014-05-17 09:32:01.461864587 +0800
-@@ -201,10 +201,10 @@
-
- #=====================================================================
- #=====================================================================
--if(WIN32 AND NOT CYGWIN AND NOT MSYS)
-+if(WIN32 AND NOT CYGWIN AND NOT MSYS AND NOT CMAKE_CROSSCOMPILING)
-   set(wxWidgets_FIND_STYLE "win32")
- else()
--  if(UNIX OR MSYS)
-+  if(UNIX OR MSYS OR CMAKE_CROSSCOMPILING)
-     set(wxWidgets_FIND_STYLE "unix")
-   endif()
- endif()
-
-
-When building opencpn with cmake, use the cross toolchain file:
-Be sure the right wx-config is in the PATH, for example:
-   PATH=~/build/wxWidgets-2.8.12/build_mingw/:$PATH cmake -DCMAKE_TOOLCHAIN_FILE=../buildwin/Toolchain-mingw32.cmake -DCMAKE_BUILD_TYPE=Debug ..
-
-All other steps should work the same as without cross compiling
-
-To set up nsis to build packages (must use nsis-3.0b0, 3.0b2 has a problem)
-
-    cd /usr/local/
-    sudo mkdir nsis
-    mv <Downloads>/nsis-3.0b0* nsis/
-    cd nsis
-    sudo unzip nsis-3.0b0.zip
-    sudo tar xjvf nsis-3.0b0-src.tar.bz2
-    cd nsis-3.0b0-src/
-    sudo scons SKIPSTUBS=all SKIPPLUGINS=all SKIPUTILS=all SKIPMISC=all NSIS_CONFIG_CONST_DATA=no PREFIX=/usr/local/nsis/nsis-3.0b0 install-compiler
-    cd ../nsis-3.0b0
-    sudo mkdir share
-    sudo ln -s /usr/local/nsis/nsis-3.0b0 nsis
-
-    export PATH=/usr/local/nsis/nsis-3.0b0/bin/:$PATH
-
-Now it should be possible to run "make package"
-
-    make package
-
-And install and test it using wine:
-
-    chmod +x *exe
-    ./opencpn_*

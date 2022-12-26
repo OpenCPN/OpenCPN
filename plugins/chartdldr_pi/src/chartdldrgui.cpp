@@ -360,7 +360,9 @@ void AddSourceDlg::OnNbPage(wxNotebookEvent& event) {
     m_buttonChartDirectory->Enable();
   } else {
     wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
-    ChartSource *cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
+    ChartSource* cs = nullptr;
+    if (item.IsOk())
+      cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
     if(!cs)
       m_buttonChartDirectory->Disable();
   }

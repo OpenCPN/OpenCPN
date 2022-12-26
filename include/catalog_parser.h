@@ -77,7 +77,7 @@ struct PluginMetadata {
 /**
  * The result from parsing the xml catalog i. e., ocpn-plugins.xml.
  */
-struct catalog_ctx {
+struct CatalogCtx {
   // list of plugins parsed
   std::vector<PluginMetadata> plugins;
 
@@ -89,13 +89,12 @@ struct catalog_ctx {
   std::string date;
 
   // Internal data used while parsing, undefined on exit.
-  std::unique_ptr<PluginMetadata> plugin;
   std::string buff;
   std::string meta_url;
   int depth;
-  catalog_ctx() : depth(0) {}
+  CatalogCtx() : depth(0) {}
 };
 
-bool ParseCatalog(const std::string xml, catalog_ctx* ctx);
+bool ParseCatalog(const std::string xml, CatalogCtx* ctx);
 
 #endif  // CATALOG_PARSER_H__

@@ -24,16 +24,22 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
-#include "wx/image.h"
+#include <wx/image.h>
 #include <wx/graphics.h>
 #include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
+
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
 
 #include "config.h"
 
@@ -52,7 +58,6 @@
 #include "thumbwin.h"
 #include "chartdb.h"
 #include "chartimg.h"
-#include "chart1.h"
 #include "cutil.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
@@ -67,11 +72,11 @@
 #include "glTextureDescriptor.h"
 #include "ChInfoWin.h"
 #include "Quilt.h"
-#include "SelectItem.h"
-#include "Select.h"
+#include "select_item.h"
+#include "select.h"
 #include "FontMgr.h"
-#include "AIS_Decoder.h"
-#include "AIS_Target_Data.h"
+#include "ais_decoder.h"
+#include "ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
 #include "OCPNRegion.h"
@@ -128,11 +133,17 @@ ViewPort::ViewPort() {
   m_projection_type = PROJECTION_MERCATOR;
 }
 
+void ViewPort::PixelScale(float scale){
+  pix_width *= scale;
+  pix_height *= scale;
+  view_scale_ppm *= scale;
+}
+
 // TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
   wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
   if (wxFinite(p.m_x) && wxFinite(p.m_y)){
-    if( (abs(p.m_x) < 10000) && (abs(p.m_y) < 10000) )
+    if( (abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6) )
       return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   }
   return wxPoint(INVALID_COORD, INVALID_COORD);
@@ -789,7 +800,7 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
 
   float *pfp = llpoints;
 
-  wxBoundingBox point_box;
+  BoundingBox point_box;
   for (unsigned int ip = 0; ip < n; ip++) {
     point_box.Expand(pfp[1], pfp[0]);
     pfp += 2;

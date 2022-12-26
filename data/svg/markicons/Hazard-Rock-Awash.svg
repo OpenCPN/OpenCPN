@@ -1,31 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_330110288">
-   <line fill="none" stroke="black" stroke-width="25" x1="900" y1="697" x2="900" y2= "1103" />
-   <g>
-    <polygon fill="black" points="872,575 928,575 928,630 872,630 "/>
-    <polygon fill="black" points="872,1170 928,1170 928,1225 872,1225 "/>
-   </g>
-   <polygon fill="black" points="651,690 690,651 729,690 690,729 "/>
-   <polygon fill="black" points="1071,1110 1110,1071 1149,1110 1110,1149 "/>
-   <line fill="none" stroke="black" stroke-width="25" x1="697" y1="900" x2="1103" y2= "900" />
-   <g>
-    <polygon fill="black" points="575,928 575,872 630,872 630,928 "/>
-    <polygon fill="black" points="1170,928 1170,872 1225,872 1225,928 "/>
-   </g>
-   <polygon fill="black" points="690,1149 651,1110 690,1071 729,1110 "/>
-   <polygon fill="black" points="1110,729 1071,690 1110,651 1149,690 "/>
-   <polygon fill="black" points="750,789 789,750 828,789 789,828 "/>
-   <polygon fill="black" points="789,1050 750,1011 789,972 828,1011 "/>
-   <polygon fill="black" points="1011,828 972,789 1011,750 1050,789 "/>
-   <polygon fill="black" points="972,1011 1011,972 1050,1011 1011,1050 "/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="25" d="M900 697v406"/>
+    <path d="M872 575h56v55h-56zm0 595h56v55h-56zM651 690l39-39 39 39-39 39zm420 420 39-39 39 39-39 39z"/>
+    <path fill="none" stroke="#000" stroke-width="25" d="M697 900h406"/>
+    <path d="M575 928v-56h55v56zm595 0v-56h55v56zm-480 221-39-39 39-39 39 39zm420-420-39-39 39-39 39 39zm-360 60 39-39 39 39-39 39zm39 261-39-39 39-39 39 39zm222-222-39-39 39-39 39 39zm-39 183 39-39 39 39-39 39z"/>
 </svg>

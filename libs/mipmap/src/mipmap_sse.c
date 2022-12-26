@@ -27,7 +27,7 @@
 #include <string.h>
 #include "mipmap.h"
 
-#if defined(__SSE__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
+#if defined(__SSE__)
 #include <xmmintrin.h>
 
 // typically 4 times faster than generic

@@ -41,40 +41,20 @@
 #include "chartdbs.h"
 // nclude "RoutePoint.h"
 #include "vector2D.h"
-#include "SelectItem.h"
+#include "select_item.h"
 #include "ocpndc.h"
+#include "navutil_base.h"
 
-enum {
-  DISTANCE_NMI = 0,
-  DISTANCE_MI,
-  DISTANCE_KM,
-  DISTANCE_M,
-  DISTANCE_FT,
-  DISTANCE_FA,
-  DISTANCE_IN,
-  DISTANCE_CM
-};
-
-enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 
 enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
 
 
 extern bool LogMessageOnce(const wxString &msg);
-extern double toUsrDistance(double nm_distance, int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
-extern double toUsrSpeed(double kts_speed, int unit = -1);
 extern double fromUsrSpeed(double usr_speed, int unit = -1);
 extern double toUsrTemp(double cel_temp, int unit = -1);
 extern double fromUsrTemp(double usr_temp, int unit = -1);
-extern wxString getUsrDistanceUnit(int unit = -1);
-extern wxString getUsrSpeedUnit(int unit = -1);
 extern wxString getUsrTempUnit(int unit = -1);
-extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
-extern wxString FormatDistanceAdaptive(double distance);
-extern wxString formatTimeDelta(wxTimeSpan span);
-extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
-extern wxString formatTimeDelta(wxLongLong secs);
 extern wxString formatAngle(double angle);
 
 extern void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
@@ -87,7 +67,6 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour col1,
                  wxColour back_color, wxColour text_color, wxColour uitext,
                  wxColour udkrd, wxColour gridline);
 
-extern double fromDMM(wxString sdms);
 
 class Route;
 class NavObjectCollection;
@@ -96,7 +75,6 @@ class ocpnDC;
 class NavObjectCollection1;
 class NavObjectChanges;
 class TrackPoint;
-class TrackList;
 class RouteList;
 class canvasConfig;
 class RoutePointList;
@@ -127,7 +105,6 @@ RoutePoint *WaypointExists(const wxString &guid);
 Route *RouteExists(const wxString &guid);
 Route *RouteExists(Route *pTentRoute);
 Track *TrackExists(const wxString &guid);
-const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime);
 
 void ExportGPX(wxWindow *parent, bool bviz_only = false, bool blayer = false);
 void UI_ImportGPX(wxWindow *parent, bool islayer = false,
@@ -136,7 +113,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer = false,
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
                      const wxString suggestedName = _T("routes"));
-bool ExportGPXTracks(wxWindow *parent, TrackList *pRoutes,
+bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pRoutes,
                      const wxString suggestedName = _T("tracks"));
 bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
                         const wxString suggestedName = _T("waypoints"));
@@ -206,94 +183,9 @@ public:
 
   NavObjectChanges *m_pNavObjectChangesSet;
   NavObjectCollection1 *m_pNavObjectInputSet;
-  bool m_bSkipChangeSetUpdate;
 };
 
 void SwitchInlandEcdisMode(bool Switch);
 
-/*
- * X11FontPicker DIALOG
- */
-#include <wx/fontdlg.h>
-
-class wxChoice;
-class WXDLLEXPORT wxText;
-class wxCheckBox;
-class WXDLLEXPORT MyFontPreviewer;
-
-/*
-enum
-{
-      wxID_FONT_UNDERLINE = 3000,
-      wxID_FONT_STYLE,
-      wxID_FONT_WEIGHT,
-      wxID_FONT_FAMILY,
-      wxID_FONT_COLOUR,
-      wxID_FONT_SIZE
-};
-*/
-
-class WXDLLEXPORT X11FontPicker : public wxFontDialogBase {
-public:
-  X11FontPicker() { Init(); }
-  X11FontPicker(wxWindow *parent, const wxFontData &data)
-      : wxFontDialogBase(parent, data) {
-    Init();
-  }
-  virtual ~X11FontPicker();
-
-  virtual int ShowModal();
-
-  // deprecated, for backwards compatibility only
-  //            X11FontPicker(wxWindow *parent, const wxFontData *data)
-  //      : wxFontDialogBase(parent, data) { Init(); }
-
-  // Internal functions
-  void OnCloseWindow(wxCloseEvent &event);
-
-  virtual void CreateWidgets();
-  virtual void InitializeFont();
-
-  void OnChangeFont(wxCommandEvent &event);
-  void OnChangeFace(wxCommandEvent &event);
-
-protected:
-  // common part of all ctors
-  void Init();
-
-  virtual bool DoCreate(wxWindow *parent);
-  void InitializeAllAvailableFonts();
-  void SetChoiceOptionsFromFacename(const wxString &facename);
-  void DoFontChange(void);
-
-  wxFont dialogFont;
-
-  wxChoice *familyChoice;
-  wxChoice *styleChoice;
-  wxChoice *weightChoice;
-  wxChoice *colourChoice;
-  wxCheckBox *underLineCheckBox;
-  wxChoice *pointSizeChoice;
-
-  MyFontPreviewer *m_previewer;
-  bool m_useEvents;
-
-  wxArrayString *pFaceNameArray;
-
-  wxFont *pPreviewFont;
-
-  //  static bool fontDialogCancelled;
-  DECLARE_EVENT_TABLE()
-  DECLARE_DYNAMIC_CLASS(X11FontPicker)
-};
-
-class GpxDocument {
-public:
-  static wxString GetUUID(void);
-  static void SeedRandom();
-
-private:
-  static int GetRandomNumber(int min, int max);
-};
 
 #endif

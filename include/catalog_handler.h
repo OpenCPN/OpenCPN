@@ -115,7 +115,7 @@ public:
   /** Last error message, free format. */
   std::string LastErrorMsg();
 
-  ServerStatus DoParseCatalog(const std::string xml, catalog_ctx* ctx);
+  ServerStatus DoParseCatalog(const std::string xml, CatalogCtx* ctx);
 
 protected:
   /** Initiate the handler. */

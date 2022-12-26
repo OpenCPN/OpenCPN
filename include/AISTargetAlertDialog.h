@@ -32,7 +32,7 @@
 #define ID_JUMPTO 10004
 #define ID_WPT_CREATE 10005
 
-class AIS_Decoder;
+class AisDecoder;
 class wxHtmlWindow;
 
 class OCPN_AlertDialog : public wxDialog {
@@ -61,7 +61,7 @@ public:
   AISTargetAlertDialog();
 
   ~AISTargetAlertDialog();
-  bool Create(int target_mmsi, wxWindow* parent, AIS_Decoder* pdecoder,
+  bool Create(int target_mmsi, wxWindow* parent, AisDecoder* pdecoder,
               bool b_jumpto, bool b_createWP, bool b_ack,
               wxWindowID id = wxID_ANY,
               const wxString& caption = _("OpenCPN AIS Alert"),
@@ -73,6 +73,8 @@ public:
   int Get_Dialog_MMSI(void) { return m_target_mmsi; }
   void UpdateText();
   void RecalculateSize(void);
+
+  wxDateTime dtAlertExpireTime;
 
 private:
   void CreateControls();
@@ -88,7 +90,7 @@ private:
 
   wxHtmlWindow* m_pAlertTextCtl;
   int m_target_mmsi;
-  AIS_Decoder* m_pdecoder;
+  AisDecoder* m_pdecoder;
   wxFont* m_pFont;
   wxString m_alert_text;
   bool m_bjumpto;

@@ -1,12 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <path fill="black" fill-rule="nonzero" d="M586 937l55 16c-9,31 -23,54 -42,69 -19,14 -44,22 -74,22 -37,0 -67,-13 -91,-38 -24,-25 -36,-60 -36,-104 0,-46 12,-82 36,-107 24,-26 56,-39 95,-39 34,0 61,10 82,30 13,12 23,29 29,52l-56 13c-3,-14 -10,-26 -20,-34 -11,-9 -23,-13 -38,-13 -21,0 -38,8 -50,23 -13,14 -20,38 -20,71 0,35 7,60 19,75 13,15 29,23 50,23 15,0 27,-5 38,-15 11,-9 19,-24 23,-44zm104 102l0 -275 57 0 0 228 139 0 0 47 -196 0zm486 0l-60 0 -24 -63 -112 0 -23 63 -59 0 107 -278 60 0 111 278zm-103 -110l-38 -103 -38 103 76 0zm170 110l0 -117 -101 -161 65 0 66 110 64 -110 65 0 -102 162 0 116 -57 0z"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill-rule="nonzero" d="m586 937 55 16c-9 31-23 54-42 69-19 14-44 22-74 22-37 0-67-13-91-38s-36-60-36-104c0-46 12-82 36-107 24-26 56-39 95-39 34 0 61 10 82 30 13 12 23 29 29 52l-56 13c-3-14-10-26-20-34-11-9-23-13-38-13-21 0-38 8-50 23-13 14-20 38-20 71 0 35 7 60 19 75 13 15 29 23 50 23 15 0 27-5 38-15 11-9 19-24 23-44zm104 102V764h57v228h139v47H690zm486 0h-60l-24-63H980l-23 63h-59l107-278h60l111 278zm-103-110-38-103-38 103h76zm170 110V922l-101-161h65l66 110 64-110h65l-102 162v116h-57z"/>
 </svg>

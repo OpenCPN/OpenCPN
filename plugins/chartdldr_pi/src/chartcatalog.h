@@ -36,6 +36,8 @@
 #endif  // precompiled headers
 
 #include "pugixml.hpp"
+#include <memory>
+#include <vector>
 
 // Forward declarations
 class NoticeToMariners;
@@ -46,10 +48,6 @@ class Location;
 class RiverMiles;
 class Area;
 class ChartFile;
-// WX_DECLARE_OBJARRAY(NoticeToMariners *, wxArrayOfNoticeToMariners);
-WX_DECLARE_OBJARRAY(Vertex, wxArrayOfVertexes);
-WX_DECLARE_OBJARRAY(Panel, wxArrayOfPanels);
-WX_DECLARE_OBJARRAY(Chart, wxArrayOfCharts);
 
 // Declarations
 class ChartCatalog {
@@ -70,7 +68,7 @@ public:
   wxString ref_spec;
   wxString ref_spec_vers;
   wxString s62AgencyCode;
-  wxArrayOfCharts charts;
+  std::vector<std::unique_ptr<Chart>> charts;
 
 private:
   bool ParseNoaaHeader(const pugi::xml_node &xmldata);
@@ -107,7 +105,7 @@ public:
 
   NoticeToMariners *nm;
   NoticeToMariners *lnm;
-  wxArrayOfPanels coverage;
+  std::vector<std::unique_ptr<Panel>> coverage;
 };
 
 class RasterChart : public Chart  //<chart>
@@ -241,7 +239,7 @@ public:
 
   // public properties
   int panel_no;
-  wxArrayOfVertexes vertexes;
+  std::vector<Vertex> vertexes;
 };
 
 class RncPanel : public Panel {

@@ -29,19 +29,19 @@
 #include <vector>
 #include <algorithm>
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include "wx/print.h"
-#include "wx/printdlg.h"
-#include "wx/artprov.h"
-#include "wx/stdpaths.h"
+#include <wx/print.h>
+#include <wx/printdlg.h>
+#include <wx/artprov.h>
+#include <wx/stdpaths.h>
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>

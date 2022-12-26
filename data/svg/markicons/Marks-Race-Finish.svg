@@ -1,39 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_473309568">
-   <rect fill="none" stroke="black" stroke-width="20" x="707" y="650" width="430" height="290"/>
-   <rect fill="black" stroke="black" stroke-width="20" x="663" y="650" width="43.4662" height="499.999"/>
-   <rect fill="white" x="707" y="650" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="707" y="722" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="707" y="867" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="707" y="795" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="778" y="650" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="778" y="722" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="778" y="867" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="778" y="795" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="922" y="650" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="922" y="722" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="922" y="867" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="922" y="795" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="850" y="650" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="850" y="722" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="850" y="867" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="850" y="795" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="993" y="650" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="993" y="722" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="993" y="867" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="993" y="795" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="1065" y="650" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="1065" y="722" width="71.6941" height="72.3848"/>
-   <rect fill="white" x="1065" y="867" width="71.6941" height="72.3848"/>
-   <rect fill="black" x="1065" y="795" width="71.6941" height="72.3848"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="20" d="M707 650h430v290H707z"/>
+    <path stroke="#000" stroke-width="20" d="M663 650h43.466v499.999H663z"/>
+    <path fill="#fff" d="M707 650h71.694v72.385H707z"/>
+    <path d="M707 722h71.694v72.385H707zm0 145h71.694v72.385H707z"/>
+    <path fill="#fff" d="M707 795h71.694v72.385H707z"/>
+    <path d="M778 650h71.694v72.385H778z"/>
+    <path fill="#fff" d="M778 722h71.694v72.385H778zm0 145h71.694v72.385H778z"/>
+    <path d="M778 795h71.694v72.385H778zm144-145h71.694v72.385H922z"/>
+    <path fill="#fff" d="M922 722h71.694v72.385H922zm0 145h71.694v72.385H922z"/>
+    <path d="M922 795h71.694v72.385H922z"/>
+    <path fill="#fff" d="M850 650h71.694v72.385H850z"/>
+    <path d="M850 722h71.694v72.385H850zm0 145h71.694v72.385H850z"/>
+    <path fill="#fff" d="M850 795h71.694v72.385H850zm143-145h71.694v72.385H993z"/>
+    <path d="M993 722h71.694v72.385H993zm0 145h71.694v72.385H993z"/>
+    <path fill="#fff" d="M993 795h71.694v72.385H993z"/>
+    <path d="M1065 650h71.694v72.385H1065z"/>
+    <path fill="#fff" d="M1065 722h71.694v72.385H1065zm0 145h71.694v72.385H1065z"/>
+    <path d="M1065 795h71.694v72.385H1065z"/>
 </svg>

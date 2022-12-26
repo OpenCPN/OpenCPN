@@ -25,20 +25,18 @@
  ***************************************************************************
  */
 
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include "gps.h"
 #include "wx28compat.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
-#include <wx/wxprec.h>
-
 #ifdef __BORLANDC__
 #pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
 #endif
 
 // Required deg2rad
@@ -149,7 +147,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
       if (m_MaxSatCount > m_SatCount) return;
       else m_MaxSatCount = m_SatCount;
       s_gTalker = wxString::Format(_T("Galileo\n%d"), m_SatCount);
-    } else if (talkerID == _T("GB")) {  // BeiDou  BDS
+    } else if (talkerID == _T("GB") || talkerID == _T("BD")) {  // BeiDou  BDS
       m_Gtime[4] = now;
       if (m_iMaster != 4) return;
       // See "GP" above
@@ -298,9 +296,12 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   int pitch = m_refDim;
   int offset = m_refDim * 12 / 100;
   for (int idx = 0; idx < 12; idx++) {
-    if (m_SatInfo[idx].SatNumber)
-      tdc.DrawText(wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber),
-                   idx * pitch + offset, 0);
+    if (m_SatInfo[idx].SatNumber) {
+      wxString satno = wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber);
+      //Avoid three digit sat-number here. Especially for BeiDou(GB/BD)
+      satno = satno.Right(2);
+      tdc.DrawText(satno, idx * pitch + offset, 0);
+    }
     else
       tdc.DrawText(" -", idx * pitch + offset, 0);
   }

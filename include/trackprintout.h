@@ -40,7 +40,7 @@
 #include "navutil.h"
 #include "TrackPropDlg.h"
 #include "printtable.h"
-#include "chart1.h"
+#include "ocpn_frame.h"
 
 class MyTrackPrintout : public MyPrintout {
 public:
@@ -50,7 +50,7 @@ public:
   virtual bool OnPrintPage(int page);
   void DrawPage(wxDC* dc);
   virtual void OnPreparePrinting();
-  virtual bool HasPage(int num) { return num > 0 || num <= 1; };
+  virtual bool HasPage(int num) { return num > 0 && num <= numberOfPages; };
 
   virtual void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
                            int* selPageTo);

@@ -25,28 +25,27 @@
 
 #include "config.h"
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include "toolbar.h"
 #include "iENCToolbar.h"
 
-#include "chart1.h"
 #include "chcanv.h"
 #include "s52s57.h"
 #include "s52plib.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
+#include "svg_utils.h"
+#include "ocpn_frame.h"
 
 extern s52plib *ps52plib;
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
-
-extern wxImage LoadSVGIcon(wxString filename, int width, int height);
 
 //---------------------------------------------------------------------------------------
 //          iENCToolbar Implementation
@@ -114,20 +113,12 @@ void iENCToolbar::LoadToolBitmaps() {
   int h = 32;
 
   if (::wxFileExists(svgDir + _T("iENC_All.svg"))) {
-    wxImage img = LoadSVGIcon(svgDir + _T("iENC_All.svg"), w, h);
-    m_bmAll = wxBitmap(img);
-    img = LoadSVGIcon(svgDir + _T("iENC_Minimum.svg"), w, h);
-    m_bmMinimum = wxBitmap(img);
-    img = LoadSVGIcon(svgDir + _T("iENC_Standard.svg"), w, h);
-    m_bmStandard = wxBitmap(img);
-    img = LoadSVGIcon(svgDir + _T("iENC_UserStd.svg"), w, h);
-    m_bmUStd = wxBitmap(img);
-
-    img = LoadSVGIcon(svgDir + _T("iENC_RPlus.svg"), w, h);
-    m_bmRPlus = wxBitmap(img);
-    img = LoadSVGIcon(svgDir + _T("iENC_RMinus.svg"), w, h);
-    m_bmRMinus = wxBitmap(img);
-
+    m_bmAll = LoadSVG(svgDir + _T("iENC_All.svg"), w, h);
+    m_bmMinimum = LoadSVG(svgDir + _T("iENC_Minimum.svg"), w, h);
+    m_bmStandard = LoadSVG(svgDir + _T("iENC_Standard.svg"), w, h);
+    m_bmUStd = LoadSVG(svgDir + _T("iENC_UserStd.svg"), w, h);
+    m_bmRPlus = LoadSVG(svgDir + _T("iENC_RPlus.svg"), w, h);
+    m_bmRMinus = LoadSVG(svgDir + _T("iENC_RMinus.svg"), w, h);
   } else {
     wxLogMessage(_T("Cannot find iENC icons at: ") + svgDir);
 

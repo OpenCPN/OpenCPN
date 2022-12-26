@@ -1,30 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-    <radialGradient id="id0" gradientUnits="userSpaceOnUse" cx="799.03" cy="1038.03" r="248.28" fx="799.03" fy="1038.03">
-     <stop offset="0" stop-color="#0AECFD"/>
-     <stop offset="1" stop-color="#032788"/>
-    </radialGradient>
-    <radialGradient id="id1" gradientUnits="userSpaceOnUse" cx="1010.57" cy="941.66" r="260.62" fx="1010.57" fy="941.66">
-     <stop offset="0" stop-color="#FEFEFE"/>
-     <stop offset="1" stop-color="#96E7F9"/>
-    </radialGradient>
-    <radialGradient id="id2" gradientUnits="userSpaceOnUse" cx="795.86" cy="958.07" r="249.02" fx="795.86" fy="958.07">
-     <stop offset="0" stop-color="#FEFEFE"/>
-     <stop offset="1" stop-color="#068BC3"/>
-    </radialGradient>
- </defs>
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_655985872">
-   <path fill="url(#id0)" d="M900 1245c-192,0 -252,-151 -210,-304 39,-139 171,-275 210,-386 39,111 171,247 210,386 42,153 -17,304 -210,304z"/>
-   <path fill="url(#id1)" fill-opacity="0.400000" d="M954 1202c-84,0 61,-102 79,-215 17,-104 -106,-207 -104,-306 17,82 141,179 158,283 18,113 -49,238 -133,238z"/>
-   <path fill="url(#id2)" d="M760 947c-5,-105 77,-210 105,-306 -31,54 -133,191 -158,283 -15,53 57,104 53,23z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <radialGradient id="a" gradientUnits="userSpaceOnUse" cx="799.03" cy="1038.03" r="248.28" fx="799.03" fy="1038.03">
+            <stop offset="0" stop-color="#0AECFD"/>
+            <stop offset="1" stop-color="#032788"/>
+        </radialGradient>
+        <radialGradient id="b" gradientUnits="userSpaceOnUse" cx="1010.57" cy="941.66" r="260.62" fx="1010.57" fy="941.66">
+            <stop offset="0" stop-color="#FEFEFE"/>
+            <stop offset="1" stop-color="#96E7F9"/>
+        </radialGradient>
+        <radialGradient id="c" gradientUnits="userSpaceOnUse" cx="795.86" cy="958.07" r="249.02" fx="795.86" fy="958.07">
+            <stop offset="0" stop-color="#FEFEFE"/>
+            <stop offset="1" stop-color="#068BC3"/>
+        </radialGradient>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="url(#a)" d="M900 1245c-192 0-252-151-210-304 39-139 171-275 210-386 39 111 171 247 210 386 42 153-17 304-210 304z"/>
+    <path fill="url(#b)" fill-opacity=".4" d="M954 1202c-84 0 61-102 79-215 17-104-106-207-104-306 17 82 141 179 158 283 18 113-49 238-133 238z"/>
+    <path fill="url(#c)" d="M760 947c-5-105 77-210 105-306-31 54-133 191-158 283-15 53 57 104 53 23z"/>
 </svg>

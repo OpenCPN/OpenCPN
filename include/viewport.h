@@ -100,6 +100,7 @@ public:
   ViewPort BuildExpandedVP(int width, int height);
 
   void SetBoxes(void);
+  void PixelScale(float factor);
 
   //  Accessors
   void Invalidate() { bValid = false; }
@@ -139,11 +140,28 @@ public:
   bool b_MercatorProjectionOverride;
   wxRect rv_rect;
 
-#ifdef USE_ANDROID_GLES2
-  float vp_transform[16];
+//#ifdef USE_ANDROID_GLES2
+  float vp_matrix_transform[16];
   float norm_transform[16];
-#endif
+//#endif
 
+  bool operator==(const ViewPort& rhs) const
+  {
+    return (clat == rhs.clat)
+      && (clon == rhs.clon)
+      && (view_scale_ppm == rhs.view_scale_ppm)
+      && (skew == rhs.skew)
+      && (rotation == rhs.rotation)
+      && (tilt == rhs.tilt)
+      && (chart_scale == rhs.chart_scale)
+      && (ref_scale == rhs.ref_scale)
+      && (pix_width == rhs.pix_width)
+      && (pix_height == rhs.pix_height)
+      && (b_quilt == rhs.b_quilt)
+      && (b_FullScreenQuilt == rhs.b_FullScreenQuilt)
+      && (m_projection_type == rhs.m_projection_type)
+      && (b_MercatorProjectionOverride == rhs.b_MercatorProjectionOverride);
+  }
 private:
   LLBBox vpBBox;  // An un-skewed rectangular lat/lon bounding box
                   // which contains the entire vieport

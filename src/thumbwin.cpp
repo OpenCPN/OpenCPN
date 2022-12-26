@@ -26,10 +26,10 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <stdlib.h>
@@ -39,10 +39,9 @@
 #include "dychart.h"
 
 #include "thumbwin.h"
-#include "chart1.h"
 #include "chartdb.h"
 #include "wx28compat.h"
-
+#include "color_handler.h"
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------

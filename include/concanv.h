@@ -32,7 +32,7 @@
 //   constants
 //----------------------------------------------------------------------------
 
-#include "chart1.h"  // for ColorScheme
+#include "ocpn_frame.h" //FIXME (dave)  Only needed for colorscheme stuff
 
 #define SPEED_VMG 0
 #define SPEED_SOG 1

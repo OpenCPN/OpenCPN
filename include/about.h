@@ -29,7 +29,7 @@
 #ifndef _ABOUT_H_
 #define _ABOUT_H_
 
-#include "wx/notebook.h"
+#include <wx/notebook.h>
 
 //      Constants
 

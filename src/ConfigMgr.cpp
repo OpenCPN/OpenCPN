@@ -46,7 +46,6 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
-#include "chart1.h"
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
@@ -57,20 +56,20 @@
 #include "chartbase.h"
 #include "ocpndc.h"
 #include "geodesic.h"
-#include "datastream.h"
 #include "multiplexer.h"
 #include "ais.h"
-#include "Route.h"
-#include "Select.h"
+#include "route.h"
+#include "select.h"
 #include "FontMgr.h"
 #include "Layer.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "NMEALogWindow.h"
-#include "AIS_Decoder.h"
+#include "ais_decoder.h"
 #include "OCPNPlatform.h"
-#include "Track.h"
+#include "track.h"
 #include "chartdb.h"
 #include "CanvasConfig.h"
+#include "ocpn_frame.h"
 
 #include "s52plib.h"
 #include "cm93.h"
@@ -161,6 +160,7 @@ extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
 extern double g_RemoveLost_Mins;
 extern bool g_bShowCOG;
+extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern bool g_bTrackCarryOver;
@@ -325,9 +325,9 @@ extern bool g_bresponsive;
 extern bool g_bGLexpert;
 
 extern int g_SENC_LOD_pixels;
-extern ArrayOfMMSIProperties g_MMSI_Props_Array;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
@@ -935,7 +935,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
 
-  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier);
+  conf->Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   conf->Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
 
   conf->Write(_T ( "SmoothPanZoom" ), g_bsmoothpanzoom);
@@ -1125,6 +1125,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     conf->Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     conf->Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     conf->Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    conf->Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     conf->Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     conf->Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
     conf->Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
@@ -1383,7 +1384,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "MobileTouch" ), &g_btouch);
   CHECK_INT(_T ( "ResponsiveGraphics" ), &g_bresponsive);
 
-  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
+  CHECK_INT(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
   CHECK_INT(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
 
   CHECK_INT(_T ( "CM93DetailFactor" ), &g_cm93_zoom_factor);
@@ -1519,6 +1520,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "bRemoveLostTargets" ), &g_bRemoveLost);
   CHECK_FLT(_T ( "RemoveLost_Minutes" ), &g_RemoveLost_Mins, 1)
   CHECK_INT(_T ( "bShowCOGArrows" ), &g_bShowCOG);
+  CHECK_INT(_T ( "bSyncCogPredictors" ), &g_bSyncCogPredictors);
   CHECK_FLT(_T ( "CogArrowMinutes" ), &g_ShowCOG_Mins, 1);
   CHECK_INT(_T ( "bShowTargetTracks" ), &g_bAISShowTracks);
   CHECK_FLT(_T ( "TargetTracksMinutes" ), &g_AISShowTracks_Mins, 1)
@@ -1779,6 +1781,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     CHECK_BFN(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     CHECK_BFN(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     CHECK_BFN(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    CHECK_BFN(_T ( "bUseSUPERSCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     CHECK_BFN(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     CHECK_BFN(_T ( "bDeClutterText" ), ps52plib->m_bDeClutterText);
     CHECK_BFN(_T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts);
@@ -1835,7 +1838,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     }
   }
 
-  conf->SetPath(_T ( "/MMSIProperties" ));
+  conf->SetPath(_T ( "/MmsiProperties" ));
   int iPMax = conf->GetNumberOfEntries();
   if (iPMax) {
     wxString str, val;
@@ -1847,7 +1850,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
       bool bfound = false;
       for (unsigned int j = 0; j < g_MMSI_Props_Array.GetCount(); j++) {
-        MMSIProperties *pProps = g_MMSI_Props_Array.Item(j);
+        MmsiProperties *pProps = g_MMSI_Props_Array.Item(j);
         if (pProps->Serialize().IsSameAs(val)) {
           bfound = true;
           break;

@@ -41,7 +41,7 @@
 
 #include "pi_ocpndc.h"
 
-#include "TexFont.h"
+#include "pi_TexFont.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Specification
@@ -166,7 +166,7 @@ public:
     m_bDrawBarbedArrowHead = BarbedArrowHead;
     ClearCachedData();
   }
-
+  void SetMessageFont();
   void SetMessage(wxString message) { m_Message = message; }
   void SetTimeZone(int TimeZone) { m_TimeZone = TimeZone; }
   void SetParentSize(int w, int h) {
@@ -257,8 +257,7 @@ private:
   wxGraphicsContext *m_gdc;
 #endif
 
-  wxFont *m_dFont_map;
-  wxFont *m_dFont_war;
+  wxFont *m_Font_Message;
 
   bool m_hiDefGraphics;
   bool m_bGradualColors;

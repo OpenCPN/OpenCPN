@@ -38,7 +38,6 @@
 #include "dychart.h"
 
 #include "wificlient.h"
-#include "chart1.h"
 #include "statwin.h"
 
 static int wifi_s_dns_test_flag;

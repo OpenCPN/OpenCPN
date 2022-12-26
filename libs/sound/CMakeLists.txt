@@ -42,7 +42,10 @@ endif ()
 add_library(SOUND STATIC ${SRC})
 add_library(ocpn::sound ALIAS SOUND)
 
-set_property(TARGET SOUND PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(SOUND PRIVATE -fvisibility=default -fPIC)
+endif ()
+
 target_include_directories(SOUND
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include

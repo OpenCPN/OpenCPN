@@ -24,26 +24,22 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __CHCANV_H__
-#define __CHCANV_H__
+#ifndef _CHCANV_H__
+#define _CHCANV_H__
 
 #include "bbox.h"
 
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
-#include "wx/dirctrl.h"
+#include <wx/dirctrl.h>
 #include <wx/sound.h>
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
 
-#include "chart1.h"  // for enum types
 #include "ocpndc.h"
 #include "undo.h"
 
 #include "ocpCursor.h"
-#include "GoToPositionDialog.h"
-#include "DetailSlider.h"
-#include "RolloverWin.h"
 #include "timers.h"
 #include "emboss_data.h"
 #include "S57Sector.h"
@@ -53,6 +49,9 @@ class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
 class ocpnCompass;
+class TimedPopupWin;
+class Track;
+class ocpnFloatingToolbarDialog;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -76,13 +75,13 @@ class Route;
 class TCWin;
 class RoutePoint;
 class SelectItem;
-class wxBoundingBox;
+class BoundingBox;
 class ocpnBitmap;
 class WVSChart;
 class MyFrame;
 class ChartBaseBSB;
 class ChartBase;
-class AIS_Target_Data;
+class AisTargetData;
 class S57ObjectTree;
 class S57ObjectDesc;
 class RolloverWin;
@@ -218,7 +217,7 @@ public:
   void SetupCanvasQuiltMode(void);
   void ApplyCanvasConfig(canvasConfig *pcc);
 
-  void SetVPRotation(double angle) { VPoint.rotation = angle; }
+  bool SetVPRotation(double angle);
   double GetVPRotation(void) { return GetVP().rotation; }
   double GetVPSkew(void) { return GetVP().skew; }
   double GetVPTilt(void) { return GetVP().tilt; }
@@ -239,6 +238,7 @@ public:
   void UpdateShips();
   void UpdateAIS();
   void UpdateAlerts();  // pjotrc 2010.02.22
+  void ToggleCPAWarn();
 
   bool IsMeasureActive() { return m_bMeasure_Active; }
   wxBitmap &GetTideBitmap() { return m_cTideBitmap; }
@@ -940,6 +940,7 @@ private:
   double m_sector_glat, m_sector_glon;
   std::vector<s57Sector_t> m_sectorlegsVisible;
   bool m_bShowVisibleSectors;
+  double m_displayScale;
 
   DECLARE_EVENT_TABLE()
 };
@@ -961,4 +962,4 @@ wxString minutesToHoursDays(float timeInMinutes);
 #define wxFIXED_MINSIZE 0
 #endif
 
-#endif
+#endif  //  _CHCANV_H__

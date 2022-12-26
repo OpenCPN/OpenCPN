@@ -1,18 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_456222704">
-   <path fill="black" d="M490 814l0 41c11,99 2,128 31,139 14,5 57,3 74,3l21 3 -112 1c3,58 63,56 117,56l351 0c53,0 124,10 152,-30 -1,-1 -5,-6 -6,-8l-6 -6c-1,-2 -6,-6 -6,-7 -1,-1 -1,-2 -2,-3l-4 -35c-21,9 -20,5 -28,4l-10 -19c-56,14 -109,-46 -129,-76 -35,-49 -35,-86 -107,-100 -33,-6 -61,2 -97,-5 -54,-10 -108,-28 -179,-5 -35,10 -36,20 -60,47z"/>
-   <path fill="black" d="M1070 749c-11,11 -4,-14 -10,19 -2,10 0,24 0,34 35,27 70,31 91,49 3,62 -37,91 -89,102l10 19c8,1 7,5 28,-4l4 35c1,1 1,2 2,3 0,1 5,5 6,7l6 6c1,2 5,7 6,8 14,-3 4,3 16,-8 36,-31 41,-131 46,-173 93,-7 76,-9 119,-74l-7 -8c-29,-1 -49,-7 -72,-8 -26,-2 -35,8 -57,14 -33,-56 -62,-3 -99,-21z"/>
-   <path fill="white" d="M644 936c33,18 19,12 41,0 -16,-38 -35,-44 -41,0z"/>
-   <path fill="black" d="M1060 802c0,-10 -2,-24 0,-34 6,-33 -1,-8 10,-19 -11,-7 9,-8 -13,-5 -5,45 -5,28 -2,45l5 13z"/>
-   <polygon fill="black" points="1305,772 1310,772 1310,756 1298,764 "/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M490 814v41c11 99 2 128 31 139 14 5 57 3 74 3l21 3-112 1c3 58 63 56 117 56h351c53 0 124 10 152-30-1-1-5-6-6-8l-6-6c-1-2-6-6-6-7-1-1-1-2-2-3l-4-35c-21 9-20 5-28 4l-10-19c-56 14-109-46-129-76-35-49-35-86-107-100-33-6-61 2-97-5-54-10-108-28-179-5-35 10-36 20-60 47z"/>
+    <path d="M1070 749c-11 11-4-14-10 19-2 10 0 24 0 34 35 27 70 31 91 49 3 62-37 91-89 102l10 19c8 1 7 5 28-4l4 35c1 1 1 2 2 3 0 1 5 5 6 7l6 6c1 2 5 7 6 8 14-3 4 3 16-8 36-31 41-131 46-173 93-7 76-9 119-74l-7-8c-29-1-49-7-72-8-26-2-35 8-57 14-33-56-62-3-99-21z"/>
+    <path fill="#fff" d="M644 936c33 18 19 12 41 0-16-38-35-44-41 0z"/>
+    <path d="M1060 802c0-10-2-24 0-34 6-33-1-8 10-19-11-7 9-8-13-5-5 45-5 28-2 45l5 13zm245-30h5v-16l-12 8z"/>
 </svg>

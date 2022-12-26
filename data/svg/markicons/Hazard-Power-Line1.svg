@@ -1,12 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <path fill="black" fill-rule="nonzero" d="M1007 1223l-23 -175 -77 76 100 99zm-26 -203l-21 -158 -53 66 74 92zm-23 -176l-9 -72 -98 0 -9 72 116 0zm-12 -94l-11 -82 -28 34 39 48zm-13 -100l-6 -44 -54 0 -6 44 66 0zm5 -43l5 43 213 0 -218 -43zm7 53l13 103 278 82 34 10 -31 0 0 53 -10 0 0 -53 -259 0 23 180 2 2 -1 2 25 197 -5 1 -4 4 -110 -109 -110 109 -4 -4 -5 -1 25 -197 -1 -2 2 -2 23 -180 -259 0 0 53 -10 0 0 -53 -31 0 34 -10 278 -82 13 -103 -259 0 0 53 -10 0 0 -53 -49 0 53 -10 276 -54 30 -33 4 -4 4 4 30 33 276 54 53 10 -49 0 0 53 -10 0 0 -53 -259 0zm14 114l10 70 229 0 -239 -70zm-39 -179l-20 -21 -19 21 39 0zm-55 73l-11 81 39 -47 -28 -34zm-25 194l-21 157 74 -91 -53 -66zm-24 186l-23 175 100 -99 -77 -76zm16 -204l9 -70 -239 70 230 0zm25 -194l5 -43 -217 43 212 0zm96 205l-106 0 53 65 53 -65zm-25 -195l-56 0 28 34 28 -34zm14 102l-42 -52 -42 52 84 0zm-42 175l-81 100 81 80 81 -80 -81 -100z"/>
-  <rect fill="none" width="1800" height="1800"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill-rule="nonzero" d="m1007 1223-23-175-77 76 100 99zm-26-203-21-158-53 66 74 92zm-23-176-9-72h-98l-9 72h116zm-12-94-11-82-28 34 39 48zm-13-100-6-44h-54l-6 44h66zm5-43 5 43h213l-218-43zm7 53 13 103 278 82 34 10h-31v53h-10v-53H970l23 180 2 2-1 2 25 197-5 1-4 4-110-109-110 109-4-4-5-1 25-197-1-2 2-2 23-180H571v53h-10v-53h-31l34-10 278-82 13-103H596v53h-10v-53h-49l53-10 276-54 30-33 4-4 4 4 30 33 276 54 53 10h-49v53h-10v-53H945zm14 114 10 70h229l-239-70zm-39-179-20-21-19 21h39zm-55 73-11 81 39-47-28-34zm-25 194-21 157 74-91-53-66zm-24 186-23 175 100-99-77-76zm16-204 9-70-239 70h230zm25-194 5-43-217 43h212zm96 205H847l53 65 53-65zm-25-195h-56l28 34 28-34zm14 102-42-52-42 52h84zm-42 175-81 100 81 80 81-80-81-100z"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
 </svg>

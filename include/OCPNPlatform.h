@@ -26,41 +26,34 @@
 #ifndef OCPNPLATFORM_H
 #define OCPNPLATFORM_H
 
-#include "wx/wxprec.h"
+#include <cstdio>
+#include <string>
+#include <vector>
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <wx/log.h>
-#include <wx/stdpaths.h>
+#include <wx/bmpbuttn.h>
 #include <wx/clrpicker.h>
-#include <wx/colourdata.h>
 #include <wx/colordlg.h>
+#include <wx/colour.h>
+#include <wx/colourdata.h>
+#include <wx/dirdlg.h>
+#include <wx/filedlg.h>
+#include <wx/gdicmn.h>
+#include <wx/stdpaths.h>
+#include <wx/string.h>
+#include <wx/validate.h>
+#include <wx/window.h>
 
-#include <stdio.h>
-#include <vector>
+#include "base_platform.h"
 
 class MyConfig;
 class ArrayOfCDI;
 
-typedef struct {
-  char tsdk[20];
-  char hn[20];
-  char msdk[20];
-} PlatSpec;
-
-class OCPN_OSDetail {
-public:
-  OCPN_OSDetail(){};
-  ~OCPN_OSDetail(){};
-
-  std::string osd_name;
-  std::string osd_version;
-  std::vector<std::string> osd_names_like;
-  std::string osd_arch;
-  std::string osd_ID;
-};
 
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
@@ -71,10 +64,10 @@ public:
 // extern QString getQtStyleSheet( void );
 // #endif
 
-class OCPNPlatform {
+class OCPNPlatform : public BasePlatform {
 public:
   OCPNPlatform();
-  ~OCPNPlatform();
+  virtual ~OCPNPlatform();
 
   //      Internal Device Support
   static bool hasInternalGPS(wxString profile = _T(""));  // GPS
@@ -106,9 +99,6 @@ public:
   void SetUpgradeOptions(wxString vString, wxString vStringConfig);
 
   void applyExpertMode(bool mode);
-  OCPN_OSDetail *GetOSDetail();
-
-  bool DetectOSDetail(OCPN_OSDetail *detail);
 
   //--------------------------------------------------------------------------
   //      Platform Display Support
@@ -119,9 +109,9 @@ public:
   wxSize getDisplaySize();
   double GetDisplaySizeMM();
   double GetDisplayAreaCM2();
+  virtual double GetDisplayDPmm();
 
   void SetDisplaySizeMM(double size);
-  double GetDisplayDPmm();
   unsigned int GetSelectRadiusPix();
   double GetToolbarScaleFactor(int GUIScaleFactor);
   double GetCompassScaleFactor(int GUIScaleFactor);
@@ -143,43 +133,8 @@ public:
   //      Per-Platform file/directory support
   //--------------------------------------------------------------------------
 
-  wxStandardPaths &GetStdPaths();
-  wxString &GetHomeDir();
-  wxString &GetExePath();
-  wxString &GetSharedDataDir();
-  wxString &GetPrivateDataDir();
-  wxString GetWritableDocumentsDir();
-
-  /** The original in-tree plugin directory, sometimes not user-writable.*/
-  wxString &GetPluginDir();
-
-  /**
-   * Base directory for user writable windows plugins, reflects
-   * winPluginDir option, defaults to %LOCALAPPDATA%/opencpn.
-   **/
-  wxString GetWinPluginBaseDir();
-
-  /**
-   * Return ';'-separated list of base directories for plugin data. The
-   * list always includes the main installation directory. Some platforms
-   * prepends this with user-writable path(s), each of which ending in
-   * "opencpn". All paths are guaranteed to exist.
-   *
-   * For Linux, return paths ending in .../share.
-   */
-  wxString GetPluginDataPath();
-
-  /** Return true if ocpn is running in a flatpak sandbox. */
-  bool isFlatpacked() { return m_isFlatpacked; }
-
-  wxString &GetConfigFileName();
-  wxString *GetPluginDirPtr();
-  wxString *GetSharedDataDirPtr();
-  wxString *GetPrivateDataDirPtr();
-  wxString &GetLogFileName() { return mlog_file; }
-  MyConfig *GetConfigObject();
+    MyConfig *GetConfigObject();
   wxString GetSupplementalLicenseString();
-  wxString NormalizePath(const wxString &full_path);  // Adapt for portable use
 
   int DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                            wxString Title, wxString initDir,
@@ -187,18 +142,12 @@ public:
   int DoDirSelectorDialog(wxWindow *parent, wxString *file_spec, wxString Title,
                           wxString initDir, bool b_addFiles = true);
 
-  bool InitializeLogFile(void);
-  void CloseLogFile(void);
-  wxString &GetLargeLogMessage(void) { return large_log_message; }
-  FILE *GetLogFilePtr() { return flog; }
 
   //--------------------------------------------------------------------------
   //      Per-Platform Utility support
   //--------------------------------------------------------------------------
   void setChartTypeMaskSel(int mask, wxString &indicator);
   bool isPlatformCapable(int flag);
-#define PLATFORM_CAP_PLUGINS 1
-#define PLATFORM_CAP_FASTPAN 2
   void LaunchLocalHelp();
   void DoHelpDialog(void);
 
@@ -222,31 +171,11 @@ public:
   bool IsGLCapable();
 
 private:
-  bool GetWindowsMonitorSize(int *width, int *height);
-
-  wxString m_homeDir;
-  wxString m_exePath;
   wxString m_SData_Dir;
-  wxString m_PrivateDataDir;
-  wxString m_PluginsDir;
-  wxString m_config_file_name;
-  wxString m_pluginDataPath;
 
-  wxString mlog_file;
-  FILE *flog;
-  wxLog *m_Oldlogger;
-  wxString large_log_message;
-  wxSize m_displaySize;
-  wxSize m_displaySizeMM;
-  int m_displaySizeMMOverride;
 
-  int m_monitorWidth, m_monitorHeight;
-  bool m_bdisableWindowsDisplayEnum;
-  bool m_isFlatpacked;
-  OCPN_OSDetail *m_osDetail;
 };
 
-//--------------------------------------------------------------------------
 //      Private colourPicker control
 //--------------------------------------------------------------------------
 

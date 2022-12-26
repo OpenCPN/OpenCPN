@@ -18,15 +18,12 @@
 
 #cmakedefine OCPN_USE_NEWSERIAL
 
+#cmakedefine ENABLE_VCAN_TESTS
+
 // Enable dark mode on modern MacOS.
 #cmakedefine OCPN_USE_DARKMODE
 
 #cmakedefine ocpnUSE_GLES
-
-
-#ifndef TIXML_USE_STL
-#cmakedefine TIXML_USE_STL
-#endif
 
 
 #cmakedefine OPENGL_FOUND

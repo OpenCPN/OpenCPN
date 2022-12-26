@@ -28,11 +28,12 @@
 #include <wx/sizer.h>
 
 #include "ocpn_types.h"
+#include "color_types.h"
 
 #define AIS_TARGET_QUERY_STYLE wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT
 
 class wxHtmlWindow;
-class AIS_Target_Data;
+class AisTargetData;
 
 class AISTargetQueryDialog : public wxFrame {
   DECLARE_CLASS(AISTargetQueryDialog)
@@ -64,9 +65,9 @@ public:
   void OnIdTrkCreateClick(wxCommandEvent& event);
   void OnMove(wxMoveEvent& event);
   void OnSize(wxSizeEvent& event);
-  void AdjustBestSize(AIS_Target_Data* td);
+  void AdjustBestSize(AisTargetData* td);
   void CreateControls();
-  void RenderHTMLQuery(AIS_Target_Data* td);
+  void RenderHTMLQuery(AisTargetData* td);
   void OnKey(wxKeyEvent& ke);
 
   void SetText(const wxString& text_string);

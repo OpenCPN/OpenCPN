@@ -1,21 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_841103088">
-   <line fill="none" stroke="black" stroke-width="20" x1="1348" y1="1200" x2="452" y2= "1200" />
-   <polygon fill="red" points="880,600 1155,600 1155,758 880,758 "/>
-   <g>
-    <path fill="black" d="M763 1161c11,0 19,-10 20,-20 1,-12 0,-28 0,-40l0 -198c0,-13 -3,-25 12,-25l110 0c0,-15 3,-32 -10,-38 -8,-4 -74,-2 -85,-2 -42,0 -125,-9 -152,20 -11,13 -12,21 -12,44l-1 105c2,9 20,6 24,4 17,-5 11,-39 11,-63 0,-22 -3,-33 11,-41l0 253c16,1 38,3 40,-21l0 -90c-1,-19 -3,-26 12,-32l1 143 19 1z"/>
-    <path fill="black" d="M730 755c-12,3 -17,6 -24,14 -19,25 -1,66 39,60 18,-2 33,-21 29,-43 -2,-19 -21,-35 -44,-31z"/>
-   </g>
-   <path fill="white" stroke="black" stroke-width="20" d="M1181 1200l78 -228c-243,77 -435,92 -696,68l60 160 558 0z"/>
-   <line fill="none" stroke="black" stroke-width="10" x1="880" y1="600" x2="880" y2= "896" />
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="20" d="M1348 1200H452"/>
+    <path fill="red" d="M880 600h275v158H880z"/>
+    <path d="M763 1161c11 0 19-10 20-20 1-12 0-28 0-40V903c0-13-3-25 12-25h110c0-15 3-32-10-38-8-4-74-2-85-2-42 0-125-9-152 20-11 13-12 21-12 44l-1 105c2 9 20 6 24 4 17-5 11-39 11-63 0-22-3-33 11-41v253c16 1 38 3 40-21v-90c-1-19-3-26 12-32l1 143 19 1zm-33-406c-12 3-17 6-24 14-19 25-1 66 39 60 18-2 33-21 29-43-2-19-21-35-44-31z"/>
+    <path fill="#fff" stroke="#000" stroke-width="20" d="m1181 1200 78-228c-243 77-435 92-696 68l60 160h558z"/>
+    <path fill="none" stroke="#000" stroke-width="10" d="M880 600v296"/>
 </svg>

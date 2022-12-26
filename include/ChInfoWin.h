@@ -26,8 +26,7 @@
 
 #include <wx/window.h>
 #include <wx/stattext.h>
-
-#include "chart1.h"
+#include <wx/panel.h>
 
 class ChInfoWin : public wxPanel {
 public:
