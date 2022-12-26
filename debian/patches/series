@@ -1,9 +1,2 @@
 0001-build-Handle-missing-doc-files.patch
 0002-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
-0003-Fix-wrong-desktop-filename-in-appdata.patch
-0004-Allow-loading-GPX-TrackPoint-with-unspecified-timest.patch
-0005-Disable-buttons-in-case-no-more-user-defined-chart-g.patch
-0006-Tracking-can-be-started-before-the-main-toolbar-is-c.patch
-0007-Take-out-a-doubled-definition-of-the-serial-Datastre.patch
-0008-Do-not-process-NULL-SignalK-nav-data.patch
-0009-New-patch-drop-files-removed-by-d-copyright.patch

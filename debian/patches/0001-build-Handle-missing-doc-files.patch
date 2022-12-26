@@ -1,6 +1,6 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Sun, 19 Jul 2020 17:42:01 +0200
-Subject: [PATCH] build: Handle missing doc files.
+Date: Mon, 26 Dec 2022 14:32:50 +0100
+Subject: build: Handle missing doc files.
 
 A simple pointer added since the original documentation is
 removed in the package. Users can download the docs from
@@ -16,19 +16,19 @@ Forwarded: not-needed
  create mode 100644 data/help_web.html
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9a60f5c..104c380 100644
+index bf036b7..04eac09 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2016,7 +2016,7 @@ if (APPLE)
+@@ -2125,7 +2125,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
 -    data/doc/help_web.html
 +    data/help_web.html
-     PROPERTIES
-       MACOSX_PACKAGE_LOCATION SharedSupport/doc
+     PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
    )
-@@ -2073,12 +2073,12 @@ if (APPLE)
+ 
+@@ -2177,12 +2177,12 @@ if (APPLE)
    if (OCPN_BUNDLE_DOCS )
      set(
        DOC_FILES
@@ -43,7 +43,7 @@ index 9a60f5c..104c380 100644
    endif (OCPN_BUNDLE_DOCS )
  
    target_sources(
-@@ -2229,7 +2229,7 @@ if (NOT APPLE)
+@@ -2333,7 +2333,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS )
      install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
    else (OCPN_BUNDLE_DOCS )
