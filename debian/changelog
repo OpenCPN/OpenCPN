@@ -1,3 +1,10 @@
+opencpn (5.7.1+dfsg-1) UNRELEASED; urgency=medium
+
+  * local package
+  * test build of new upstream beta release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 26 Dec 2022 14:24:15 +0100
+
 opencpn (5.6.2+dfsg-2) unstable; urgency=medium
 
   * New bugfix release.
