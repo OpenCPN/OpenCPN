@@ -165,8 +165,6 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include <signal.h>
 #include <setjmp.h>
 
-wxDECLARE_APP(MyApp);
-
 struct sigaction sa_all_PIM;
 struct sigaction sa_all_PIM_previous;
 
@@ -257,6 +255,8 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
+
+wxDECLARE_APP(MyApp);
 
 static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
