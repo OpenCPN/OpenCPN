@@ -509,7 +509,7 @@ void ConnectionsDialog::Init(){
   m_choiceSerialProtocol->Enable(TRUE);
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
 
-  m_stPriority = new wxStaticText(m_container, wxID_ANY, _("Priority"),
+  m_stPriority = new wxStaticText(m_container, wxID_ANY, _("List position"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stPriority->Wrap(-1);
   fgSizer1->Add(m_stPriority, 0, wxALL, 5);

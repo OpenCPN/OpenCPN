@@ -71,6 +71,20 @@ static const int kSocketTimeoutSeconds = 2;
 
 typedef struct can_frame CanFrame;
 
+
+unsigned long BuildCanID(int priority, int source, int destination, int pgn) {
+  // build CanID
+  unsigned long cid = 0;
+  unsigned char pf = (unsigned char) (pgn >> 8);
+  if (pf < 240){
+    cid = ((unsigned long)(priority & 0x7))<<26 | pgn<<8 | ((unsigned long)destination)<<8 | (unsigned long)source;
+  }
+  else {
+    cid = ((unsigned long)(priority & 0x7))<<26 | pgn<<8 | (unsigned long)source;
+  }
+  return cid;
+}
+
 /// CAN v2.0 29 bit header as used by NMEA 2000
 class CanHeader {
 public:
@@ -186,6 +200,7 @@ public:
 
   bool StartThread();
   void StopThread();
+  int GetSocket(){return m_socket;}
 
 private:
   void Entry();
@@ -206,6 +221,7 @@ private:
   const wxString m_port_name;
   std::atomic<int> m_run_flag;
   FastMessageMap fast_messages;
+  int m_socket;
 };
 
 /** Local driver implementation, not visible outside this file.*/
@@ -223,8 +239,15 @@ public:
   bool Open();
   void Close();
 
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                    std::shared_ptr<const NavAddr> addr);
+
+
+  Worker& GetWorker(){ return m_worker; }
+
 private:
   Worker m_worker;
+  unsigned int m_source_address;
 };
 
 
@@ -250,7 +273,17 @@ CanHeader::CanHeader(const CanFrame frame) {
   destination = buf[2] < 240 ? buf[1] : 255;
   pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
   priority = (buf[3] & 0x1c) >> 2;
+
+  if (pgn == 59904){
+    unsigned char *d = (unsigned char *)&frame;
+    for (size_t i=0 ; i < sizeof(frame) ; i++){
+      printf("%02X ", *d);
+      d++;
+    }
+    printf("\n\n");
+  }
 }
+
 
 bool CanHeader::IsFastMessage() const {
   static const std::vector<unsigned> haystack = {
@@ -270,7 +303,11 @@ bool CanHeader::IsFastMessage() const {
 
 // CommDriverN2KSocketCanImpl implementation
 
-bool CommDriverN2KSocketCanImpl::Open() { return m_worker.StartThread(); }
+bool CommDriverN2KSocketCanImpl::Open() {
+  m_source_address = 77;  //FIXME
+
+  return m_worker.StartThread();
+}
 
 void CommDriverN2KSocketCanImpl::Close() {
   wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
@@ -281,6 +318,51 @@ void CommDriverN2KSocketCanImpl::Close() {
   auto me = FindDriver(registry.GetDrivers(), iface, bus);
   registry.Deactivate(me);
 }
+
+bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                        std::shared_ptr<const NavAddr> addr) {
+
+  CanFrame frame;
+  memset(&frame, 0, sizeof(frame));
+
+  auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+  std::vector<uint8_t> load = msg_n2k->payload;
+
+  uint64_t _pgn = msg_n2k->name.value;
+
+  unsigned long canId = BuildCanID(6, m_source_address, 255, _pgn);
+
+  frame.can_id = canId | CAN_EFF_FLAG;
+  frame.can_dlc = load.size();
+
+  if (frame.can_dlc > 8)    // skip multiframe
+    return false;
+
+  if (load.size() > 0)
+    memcpy(&frame.data, load.data(), load.size());
+
+  int socket = GetWorker().GetSocket();
+
+  if (socket < 0)
+    return false;
+
+  CanHeader tt(frame);
+
+  unsigned char *d = (unsigned char *)&frame;
+  printf("SendFrame: ");
+  for (size_t i=0 ; i < sizeof(frame) ; i++){
+    printf("%02X ", *d);
+    d++;
+  }
+  printf("\n\n");
+
+  int sentbytes = write(socket, &frame, sizeof(frame));
+
+
+  return false;
+}
+
+
 
 // CommDriverN2KSocketCAN implementation
 
@@ -300,18 +382,14 @@ void CommDriverN2KSocketCAN::Activate() {
   // TODO(dave) Finally decide if thread should start here or in CTOR
 }
 
-bool CommDriverN2KSocketCAN::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                        std::shared_ptr<const NavAddr> addr) {
-  return false;
-}
-
 
 // Worker implementation
 
 Worker::Worker(CommDriverN2KSocketCAN* parent, const wxString& port_name)
     : m_parent_driver(dynamic_cast<CommDriverN2KSocketCanImpl*>(parent)),
       m_port_name(port_name.Clone()),
-      m_run_flag(-1) {
+      m_run_flag(-1),
+      m_socket(-1) {
   assert(m_parent_driver != 0);
 }
 
@@ -477,6 +555,7 @@ void Worker::Entry() {
     ThreadMessage(msg + m_port_name.ToStdString());
     return;
   }
+  m_socket = socket;
 
   // The main loop
   while (m_run_flag > 0) {

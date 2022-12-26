@@ -53,6 +53,7 @@ private:
                             size_t map_index, std::string map_name,
                             wxTreeItemId leaf_parent);
   void AdjustSatPriority();
+  void AdjustCOGSOGPriority();
 
   wxButton *btnMoveUp, *btnMoveDown;
   wxButton *btnRefresh, *btnClear;
@@ -61,7 +62,6 @@ private:
 
   size_t m_selmap_index;
   size_t m_selIndex;
-  wxString m_selString;
 
   int m_maxStringLength;
 };

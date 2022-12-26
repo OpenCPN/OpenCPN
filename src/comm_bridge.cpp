@@ -594,15 +594,8 @@ bool CommBridge::HandleN2K_129026(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   if (!m_decoder.DecodePGN129026(v, temp_data))
     return false;
 
-  if (!N2kIsNA(temp_data.gSog) && !N2kIsNA(temp_data.gCog)){
-
-    // Require COG/SOG to come from the same device as is providing position.
-    //Check the Message Source Address.
-    //If same as Source Address of highest position priority, then accept it.
-
-    unsigned char n_source = n2k_msg->payload.at(7);
-
-    if( n_source == active_priority_position.active_source_address){
+  if (!N2kIsNA(temp_data.gSog)){  // gCog as reported by net may be NaN, but OK
+    if (EvalPriority(n2k_msg, active_priority_velocity, priority_map_velocity)) {
       gSog = MS2KNOTS(temp_data.gSog);
       gCog = GeodesicRadToDeg(temp_data.gCog);
       m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;

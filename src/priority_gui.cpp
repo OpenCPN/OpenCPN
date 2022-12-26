@@ -172,8 +172,6 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
     if ( (size_t)(pc.active_priority) == index)
       m_prioTree->SetItemBold(id_tk);
 
-    if ((map_index == m_selmap_index) && (index == m_selIndex))
-      m_selString = item_string;
     index++;
   }
 }
@@ -333,7 +331,11 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir){
   std::string s_upd(prio_mod.c_str());
   m_map[pe->m_category] = s_upd;
 
-  AdjustSatPriority();
+  // Auto-adjust Sat and COG/SOG priorities if POS has been moved up/down
+  if (pe->m_category == 0){
+    AdjustSatPriority();
+    AdjustCOGSOGPriority();
+  }
 
   // Update the priority mechanism
   MyApp& app = wxGetApp();
@@ -358,7 +360,6 @@ void PriorityDlg::OnClearClick(wxCommandEvent& event) {
   m_map[3].clear();
   m_map[4].clear();
 
-  m_selString.Clear();
   m_selmap_index = m_selIndex = 0;
 
   // Update the priority mechanism
@@ -415,4 +416,50 @@ void PriorityDlg::AdjustSatPriority() {
 
   // Update the maps with the new sat priority string
   m_map[4] = proposed_sat_prio.ToStdString();
+}
+
+void PriorityDlg::AdjustCOGSOGPriority() {
+
+  // Get an array of available COG/SOG sources
+  std::string cogsog_prio = m_map[1];
+  wxArrayString cogsog_sources;
+  wxString cogsog_priority_string(cogsog_prio.c_str());
+  wxStringTokenizer tks(cogsog_priority_string, "|");
+  while (tks.HasMoreTokens()) {
+    wxString item_string = tks.GetNextToken();
+    cogsog_sources.Add(item_string);
+  }
+
+  // Step thru the POS priority map
+  std::string pos_prio = m_map[0];
+  wxString pos_priority_string(pos_prio.c_str());
+  wxStringTokenizer tk(pos_priority_string, "|");
+  wxArrayString new_cogsog_prio;
+  while (tk.HasMoreTokens()) {
+    wxString item_string = tk.GetNextToken();
+    wxString pos_channel = item_string.BeforeFirst(';');
+
+    // search the cogsog sources array for a match
+    // if found, add to proposed new priority array
+    for (size_t i = 0 ; i < cogsog_sources.GetCount(); i++){
+      if (pos_channel.IsSameAs(cogsog_sources[i].BeforeFirst(';'))){
+        new_cogsog_prio.Add(cogsog_sources[i]);
+        // Mark this source as "used"
+        cogsog_sources[i] = "USED";
+        break;
+      }
+      else {      // no match, what to do? //FIXME (dave)
+        int yyp = 4;
+      }
+    }
+  }
+    //  Create a new cog/sog priority string from new_cogsog_prio array
+  wxString proposed_cogsog_prio;
+  for (size_t i = 0 ; i < new_cogsog_prio.GetCount(); i++){
+    proposed_cogsog_prio += new_cogsog_prio[i];
+    proposed_cogsog_prio += wxString("|");
+  }
+
+  // Update the maps with the new cog/sog priority string
+  m_map[1] = proposed_cogsog_prio.ToStdString();
 }

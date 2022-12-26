@@ -3066,7 +3066,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
-    prepareSlider(m_pSlider_Zoom);
+    prepareSlider(m_pSlider_Zoom_Raster);
 #endif
 
     itemBoxSizerUI->Add(m_pSlider_Zoom_Raster, inputFlags);
