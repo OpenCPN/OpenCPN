@@ -36,18 +36,18 @@
 #include <assert.h>
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 //  Why are these not in wx/prec.h?
-#include "wx/dir.h"
-#include "wx/stream.h"
-#include "wx/wfstream.h"
-#include "wx/tokenzr.h"
-#include "wx/filename.h"
+#include <wx/dir.h>
+#include <wx/stream.h>
+#include <wx/wfstream.h>
+#include <wx/tokenzr.h>
+#include <wx/filename.h>
 #include <wx/image.h>
 #include <wx/fileconf.h>
 #include <sys/stat.h>
@@ -55,7 +55,7 @@
 #include "config.h"
 #include "chartimg.h"
 #include "ocpn_pixel.h"
-#include "ChartDataInputStream.h"
+#include "chartdata_input_stream.h"
 
 #ifndef __WXMSW__
 #include <signal.h>
@@ -160,7 +160,7 @@ ChartBase::ChartBase() {
   m_pNoCOVRTable = NULL;
   m_pNoCOVRTablePoints = NULL;
 
-  m_EdDate.Set(1, wxDateTime::Jan, 2000);
+  m_EdDate = wxInvalidDateTime;
 
   m_lon_datum_adjust = 0.;
   m_lat_datum_adjust = 0.;
@@ -3885,7 +3885,7 @@ int ChartBaseBSB::BSBScanScanline(wxInputStream *pinStream) {
 //      using /02 settings
 
 inline void memset_short(unsigned char *dst, unsigned char cbyte, int count) {
-#ifdef __MSVC__
+#if 0 //def __MSVC__
   __asm {
         pushf  // save Direction flag
         cld  // set direction "up"

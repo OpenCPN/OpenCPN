@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/button.h>
@@ -30,10 +30,11 @@
 #include <wx/clipbrd.h>
 
 #include "GoToPositionDialog.h"
-#include "PositionParser.h"
+#include "position_parser.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 extern MyFrame* gFrame;
 

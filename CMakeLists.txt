@@ -54,16 +54,18 @@ else (APPLE)
   set(PACKAGE_NAME opencpn)
 endif (APPLE)
 
+add_definitions("-DRAPIDJSON_HAS_STDSTRING=1") 
+
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
-   message(STATUS "Building for wxQt-Android")
-   set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
-   set(QT_ANDROID "ON")
-   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
-     add_definitions("-DANDROID_ARM64")
-   else ()
-     add_definitions("-DANDROID_ARMHF")
-   endif ()
-   set(PACKAGE_NAME gorp)
+  message(STATUS "Building for wxQt-Android")
+  set( CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
+  set(QT_ANDROID "ON")
+  if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
+    add_definitions("-DANDROID_ARM64")
+  else ()
+    add_definitions("-DANDROID_ARMHF")
+  endif ()
+  set(PACKAGE_NAME gorp)
 endif ()
 
 
@@ -83,7 +85,7 @@ set(
   ${CMAKE_SOURCE_DIR}/cmake
 )
 
-
+set(CMAKE_CXX_VISIBILITY_PRESET=hidden)
 
 include(FindPkgConfig)
 include(CMakeDependentOption)
@@ -174,6 +176,28 @@ cmake_dependent_option(
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
+if (QT_ANDROID OR ${CMAKE_VERSION} VERSION_LESS 3.14)
+  set(OCPN_BUILD_TEST OFF)
+else ()
+  option(OCPN_BUILD_TEST "Enable test subproject build" ON)
+endif ()
+
+execute_process(
+  COMMAND "ip" "address" "show" "vcan0"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  OUTPUT_VARIABLE _VCAN_STDOUT
+  RESULT_VARIABLE _VCAN_RESULT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if ("${_VCAN_RESULT}" EQUAL 0)
+  set(ENABLE_VCAN_TESTS ON)
+  message(STATUS "tests using vcan0 are available.")
+else ()
+  set(ENABLE_VCAN_TESTS OFF)
+  message(STATUS "tests using vcan0 are NOT available: \"${_VCAN_STDERR}\"")
+endif ()
+
 set(
   OCPN_WXWIDGETS_FORCE_VERSION
   CACHE STRING "Force usage of a specific wxWidgets version."
@@ -229,20 +253,23 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 else ()
   set(BUNDLED_LIBS_DEFAULT "OFF")
 endif ()
-set(
-  OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT}
-  CACHE
-    STRING
-    "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
+set(OCPN_USE_BUNDLED_LIBS ${BUNDLED_LIBS_DEFAULT} CACHE STRING
+  "Use bundled libraries instead of system's [ON, OFF or comma-sep list]"
 )
-
+set(OCPN_RELEASE "" CACHE STRING
+  "Hardcoded value for build number when using OCPN_CI_BUILD"
+)
 option(OCPN_USE_NEWSERIAL "Use new serial communication implementation" ON)
 option(OCPN_USE_CURL "Use Curl libraries" ON)
-option(OCPN_USE_SVG "Use SVG graphics" ON)
+option(OCPN_USE_SVG "Use SVG graphics via wxSVG or wxBitmapBundle" ON)
 option(OCPN_USE_WEBVIEW "Use wxWidget's webview addon if available" ON)
 option(OCPN_USE_LZMA "Use LZMA for chart compression" ON)
 option(OCPN_CI_BUILD "Use CI build versioning rules" OFF)
-option(OCPN_USE_SYSTEM_LIBARCHIVE "Use the libarchive version provided by the system on MacOS" ON)
+option(OCPN_USE_SYSTEM_LIBARCHIVE
+  "Use the libarchive version provided by the system on MacOS" ON
+)
+
+add_definitions(-D__OCPN_USE_GLEW__)
 
 if (WIN32)
   set(cmd_snd_default OFF)
@@ -293,7 +320,7 @@ include(GetArch)
 getarch()
 message(STATUS "*** Host Build Architecture is ${ARCH}")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
 if (NOT MSVC)
   set(OBJ_VISIBILITY "-fvisibility=hidden")
@@ -329,13 +356,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.4)
   # ADD_EXECUTABLE)
   set_property(
     CACHE ENABLE_SANITIZER
-    PROPERTY
-      STRINGS
-      none
-      address
-      memory
-      thread
-      undefined
+    PROPERTY STRINGS none address memory thread undefined
   )
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
     add_compile_options(-fsanitize=${ENABLE_SANITIZER})
@@ -407,6 +428,7 @@ if (APPLE)
       "-Wno-deprecated"
       "-Wno-deprecated-declarations"
       "-Wno-unknown-pragmas"
+      "-Wno-unknown-warning-option"
       "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
     )
   endif ()
@@ -430,7 +452,7 @@ if (APPLE)
 
   set(
     CMAKE_EXE_LINKER_FLAGS
-    "-O2 ${OCPN_LIBCPP} -arch ${ARCH} ${CMAKE_EXE_LINKER_FLAGS}"
+    "-O2 ${OCPN_LIBCPP} -arch ${ARCH} ${CMAKE_EXE_LINKER_FLAGS} -framework CoreGraphics"
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   set(CMAKE_MODULE_LINKER_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
@@ -446,11 +468,13 @@ if (MSVC)
   set(CMAKE_C_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1")
   set(CMAKE_C_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /wd8051 /wd4068")
-  set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /wd4068")
   set(CMAKE_CXX_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
-  set(CMAKE_CXX_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa")
+  set(CMAKE_CXX_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa /wd4068")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
+    "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa /wd4068"
+  )
   set(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
 endif (MSVC)
 
@@ -482,16 +506,17 @@ endif (QT_ANDROID)
 # Installation directory setup
 #
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-    if (EXISTS "/usr/lib64")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
-    elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
-    else ()
-        set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
-    endif ()
-    set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
-        CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
-    )
+  if (EXISTS "/usr/lib64")
+    set(_LIBDIRS "~/.local/lib:/usr/local/lib64:/usr/lib64")
+  elseif (EXISTS "/usr/lib/arm-linux-gnueabihf")
+    set(_LIBDIRS
+        "~/.local/lib:/usr/local/lib:/usr/lib/arm-linux-gnueabihf:/usr/lib")
+  else ()
+    set(_LIBDIRS "~/.local/lib:/usr/local/lib:/usr/lib")
+  endif ()
+  set(OCPN_LINUX_LOAD_PATH "${_LIBDIRS}"
+      CACHE STRING "Plugin libraries directories (${_LIBDIRS})"
+  )
 endif ()
 
 
@@ -527,17 +552,20 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
 
+string(TIMESTAMP VERSION_DATE "%Y-%m-%d")
+string(TIMESTAMP UNIX_TIMESTAMP "%s")
 if (OCPN_CI_BUILD)
   include(Utils)
-  today(DATE)
   commit_id(COMMIT)
   build_num(BUILD_NUMBER)
+  if (NOT "${OCPN_RELEASE}" STREQUAL "")
+    set(BUILD_NUMBER ${OCPN_RELEASE})
+  endif ()
   set(VERSION_TAIL "+${COMMIT}")
   if (NOT "${BUILD_NUMBER}" STREQUAL "")
-      set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
+    set(VERSION_TAIL "-${BUILD_NUMBER}${VERSION_TAIL}")
   endif ()
-  set(VERSION_DATE "${DATE}")
-endif (OCPN_CI_BUILD)
+endif ()
 
 set(
   PACKAGE_VERSION
@@ -548,10 +576,7 @@ message(STATUS "Building version ${PACKAGE_VERSION}")
 # Detect the Apple Version of the build machine
 if (APPLE)
   exec_program(uname ARGS -v OUTPUT_VARIABLE DARWIN_VERSION)
-  string(
-    REGEX
-      MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION}
-  )
+  string( REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
   message(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
   if (DARWIN_VERSION GREATER 11)
     set(APPLE_MODERN 1 INTERNAL)
@@ -564,8 +589,6 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 #
 # Bundled data: docs, tcdata
 #
-
-
 if (OCPN_BUNDLE_DOCS)
   message(STATUS "*** Package will include documentation ***")
 else (OCPN_BUNDLE_DOCS)
@@ -585,11 +608,11 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
   add_definitions(-DocpnARM)
   if (ARCH STREQUAL "armhf")
     add_definitions(-DocpnARMHF)
-  endif (ARCH STREQUAL armhf)
-endif (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+  endif ()
+endif ()
 
-IF(DEFINED _wx_selected_config)
-  IF(_wx_selected_config MATCHES "androideabi-qt")
+if(DEFINED _wx_selected_config)
+  if(_wx_selected_config MATCHES "androideabi-qt")
     #MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
     #MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
     #ADD_DEFINITIONS(-DocpnUSE_GLES)
@@ -604,8 +627,8 @@ IF(DEFINED _wx_selected_config)
     #ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
     #ADD_DEFINITIONS(-DUSE_GLSL)
     INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/libs/glshim/include/GLES )
-  ENDIF(_wx_selected_config MATCHES "androideabi-qt")
-ENDIF(DEFINED _wx_selected_config)
+  endif (_wx_selected_config MATCHES "androideabi-qt")
+endif (DEFINED _wx_selected_config)
 
 if (APPLE)
   # Bundle all of wxWidgets as a courtesy for plugins, see #2153
@@ -640,6 +663,7 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
     message(STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     message(STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     add_definitions(-DocpnUSE_GL)
+    add_definitions(-DocpnUSE_GLSL)
 
     # We need to remove GLU from the OPENGL_LIBRARIES list
     foreach (_currentLibFile ${OPENGL_LIBRARIES})
@@ -660,8 +684,28 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   else (OPENGL_FOUND)
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)
-
 endif ()
+
+  # configure GLEW
+if (OPENGL_FOUND)
+  if (CMAKE_HOST_WIN32)
+    # Pull the the required items from local directory for Windows
+    #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
+    #list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
+    #find_package(GLEW REQUIRED)
+    #message(STATUS "+++GLEW: " ${GLEW_INCLUDE_DIRS})
+    include_directories(
+      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include/glew"
+    )
+    link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib )
+  else (CMAKE_HOST_WIN32)
+    if (NOT APPLE)
+      find_package(GLEW REQUIRED)
+      include_directories(${GLEW_INCLUDE_DIRS})
+      link_libraries(${GLEW_LIBRARIES})
+    endif (NOT APPLE)
+  endif (CMAKE_HOST_WIN32)
+endif (OPENGL_FOUND)
 
 if (NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins. These
@@ -679,6 +723,10 @@ if (NOT QT_ANDROID)
     # Exclude wxexpat.lib, since we use our own version. Other things are
     # excluded as well, but we don't need them
     set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+
+    # build only for release/unicode configuration
+    set(wxWidgets_CONFIGURATION mswu)
+
   endif (MSVC)
 
   if (GTK2_FOUND)
@@ -687,6 +735,7 @@ if (NOT QT_ANDROID)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   endif ()
 
+  #find_package(wxWidgets 3.2 COMPONENTS ${wxWidgets_FIND_COMPONENTS} REQUIRED CONFIG)
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
     message(STATUS "Found wxWidgets webview add-on")
@@ -713,19 +762,6 @@ if (NOT QT_ANDROID)
     )
   endif (MSYS)
   include(${wxWidgets_USE_FILE})
-
-  # As of cmake 3.11.2, these libraries are missing in list despite that we
-  # looked for them. This is a nasty fix which might fail miserably. Assumption:
-  # All builds using GTK uses unicode and wxWidgets 3.0
-  if (GTK3_FOUND AND CMAKE_VERSION VERSION_LESS 3.12)
-    if (NOT wxWidgets_VERSION_STRING VERSION_GREATER "3.0")
-      message (STATUS " Patching ${wxWidgets_LIBRARIES}")
-      list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_aui-3.0")
-      if (OPENGL_FOUND)
-        list(APPEND wxWidgets_LIBRARIES "-lwx_gtk3u_gl-3.0")
-      endif ()
-    endif ()
-  endif ()
 
   message(STATUS "Found wxWidgets...")
   message(STATUS " wxWidgets Include: ${wxWidgets_INCLUDE_DIRS}")
@@ -758,7 +794,7 @@ if (GTK3_FOUND)
     }
   ]=])
   set (TRY_COMPILE
-    "echo '${_VERSPROG}' > wx-32.c; cc $(wx-config --cflags) wx-32.c; ./a.out")
+    "echo '${_VERSPROG}' > wx-32.c; cc $(${wxWidgets_CONFIG_EXECUTABLE} --cflags) wx-32.c; ./a.out")
   execute_process(
     COMMAND "/bin/sh" "-c" "${TRY_COMPILE}"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -797,92 +833,117 @@ message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
 set(
   HDRS
-  include/config_var.h
   include/AboutFrame.h
   include/AboutFrameImpl.h
   include/about.h
-  include/AIS_Bitstring.h
-  include/AIS_Decoder.h
+  include/ais_bitstring.h
+  include/ais_decoder.h
   include/ais.h
   include/AISTargetAlertDialog.h
-  include/AIS_Target_Data.h
+  include/ais_target_data.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
-  include/bbox.h
+  include/ais_info_gui.h
+  include/atomic_queue.h
+  include/base_platform.h
   include/canvasMenu.h
   include/catalog_handler.h
   include/catalog_mgr.h
   include/catalog_parser.h
   include/cat_settings.h
-  include/chart1.h
-  include/ChartDataInputStream.h
+  include/chartdata_input_stream.h
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
   include/chcanv.h
   include/ChInfoWin.h
+  include/color_handler.h
+  include/comm_ais.h
+  include/comm_appmsg.h
+  include/comm_bridge.h
+  include/comm_driver.h
+  include/comm_drv_n0183.h
+  include/comm_drv_n0183_net.h
+  include/comm_drv_n0183_serial.h
+  include/comm_drv_n2k.h
+  include/comm_drv_n2k_serial.h
+  include/comm_drv_signalk_net.h
+  include/comm_drv_registry.h
+  include/comm_drv_factory.h
+  include/comm_drv_file.h
+  include/comm_n0183_output.h
+  include/comm_navmsg.h
+  include/comm_navmsg_bus.h
+  include/comm_util.h
   include/compass.h
   include/concanv.h
-  include/ConnectionParams.h
+  include/conn_params.h
+  include/conn_params_panel.h
   include/cutil.h
-  include/datastream.h
-  include/DepthFont.h
   include/DetailSlider.h
-  include/Downloader.h
+  include/downloader.h
   include/download_mgr.h
   include/dsPortType.h
   include/emboss_data.h
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
-  include/GarminProtocolHandler.h
+  include/garmin_wrapper.h
+  include/garmin_protocol_mgr.h
   include/geodesic.h
   include/georef.h
   include/GoToPositionDialog.h
   include/gui_lib.h
   include/gshhs.h
-  include/Hyperlink.h
+  include/hyperlink.h
+  include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
-  include/LLRegion.h
   include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h
   include/multiplexer.h
-  include/NavObjectCollection.h
+  include/nav_object_database.h
   include/navutil.h
-  include/NetworkDataStream.h
+  include/navutil_base.h
   include/NMEALogWindow.h
   include/ocpCursor.h
-  include/OCP_DataStreamInput_Thread.h
-  include/OCPN_DataStreamEvent.h
+  include/ocpn_frame.h
   include/ocpndc.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
   include/OCPNPlatform.h
   include/ocpn_plugin.h
+  include/ocpn_print.h
   include/OCPNRegion.h
-  include/OCPN_SignalKEvent.h
   include/ocpn_types.h
   include/ocpn_utils.h
   include/options.h
   include/piano.h
   include/plugin_cache.h
-  include/PluginHandler.h
+  include/plugin_blacklist.h
+  include/plugin_handler.h
+  include/plugin_loader.h
+  include/plugin_paths.h
   include/pluginmanager.h
-  include/PluginPaths.h
-  include/PositionParser.h
+  include/position_parser.h
   include/printtable.h
+  include/priority_gui.h
   include/Quilt.h
+  include/REST_server.h
+  include/REST_server_gui.h
   include/RolloverWin.h
-  include/Route.h
+  include/route.h
+  include/route_gui.h
   include/routemanagerdialog.h
   include/routeman.h
-  include/RoutePoint.h
+  include/routeman_gui.h
+  include/route_point.h
+  include/route_point_gui.h
   include/routeprintout.h
   include/RoutePropDlg.h
   include/RoutePropDlgImpl.h
@@ -892,13 +953,11 @@ set(
   include/S57QueryDialog.h
   include/S57Sector.h
   include/safe_mode.h
-  include/Select.h
-  include/SelectItem.h
+  include/select.h
+  include/select_item.h
   include/semantic_vers.h
   include/SendToGpsDlg.h
-  include/SerialDataStream.h
-  include/SignalKDataStream.h
-  include/SignalKEventHandler.h
+  include/SendToPeerDlg.h
   include/Station_Data.h
   include/styles.h
   include/TCDataFactory.h
@@ -912,7 +971,8 @@ set(
   include/tide_time.h
   include/timers.h
   include/toolbar.h
-  include/Track.h
+  include/track.h
+  include/track_gui.h
   include/trackprintout.h
   include/TrackPropDlg.h
   include/TTYScroll.h
@@ -920,117 +980,156 @@ set(
   include/undo.h
   include/update_mgr.h
   include/usb_devices.h
-  include/vector2D.h
+  include/waypointman_gui.h
   include/viewport.h
+  include/shaders.h
   include/WindowDestroyListener.h
-  ${CMAKE_BINARY_DIR}/include/config.h
+  include/svg_utils.h
+)
+
+set(MODEL_SRC
+  # Testable sources without GUI dependencies.
+  ${CMAKE_SOURCE_DIR}/src/ais_bitstring.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
+  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_bridge.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_decoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_factory.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_net.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_serial.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_serial.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk_net.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
+  ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
+  ${CMAKE_SOURCE_DIR}/src/cutil.cpp
+  ${CMAKE_SOURCE_DIR}/src/downloader.cpp
+  ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
+  ${CMAKE_SOURCE_DIR}/src/georef.cpp
+  ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
+  ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${CMAKE_SOURCE_DIR}/src/nav_object_database.cpp
+  ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
+  ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
+  ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
+  ${CMAKE_SOURCE_DIR}/src/REST_server.cpp
+  ${CMAKE_SOURCE_DIR}/src/route.cpp
+  ${CMAKE_SOURCE_DIR}/src/route_point.cpp
+  ${CMAKE_SOURCE_DIR}/src/routeman.cpp
+  ${CMAKE_SOURCE_DIR}/src/select.cpp
+  ${CMAKE_SOURCE_DIR}/src/select_item.cpp
+  ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
+  ${CMAKE_SOURCE_DIR}/src/ser_ports.cpp
+  ${CMAKE_SOURCE_DIR}/src/track.cpp
 )
 
 set(
   SRCS
-  src/config_var.cpp
   src/about.cpp
   src/AboutFrame.cpp
   src/AboutFrameImpl.cpp
-  src/AIS_Bitstring.cpp
   src/ais.cpp
-  src/AIS_Decoder.cpp
   src/AISTargetAlertDialog.cpp
-  src/AIS_Target_Data.cpp
   src/AISTargetListDialog.cpp
   src/AISTargetQueryDialog.cpp
-  src/bbox.cpp
+  src/ais_info_gui.cpp
   src/CanvasConfig.cpp
   src/canvasMenu.cpp
   src/CanvasOptions.cpp
-  src/catalog_handler.cpp
   src/catalog_mgr.cpp
-  src/catalog_parser.cpp
   src/cat_settings.cpp
-  src/chart1.cpp
-  src/ChartDataInputStream.cpp
+  src/certificates.cpp
   src/chartdb.cpp
   src/chartdbs.cpp
   src/chartimg.cpp
   src/chcanv.cpp
   src/ChInfoWin.cpp
+  src/color_handler.cpp
   src/compass.cpp
   src/concanv.cpp
   src/ConfigMgr.cpp
-  src/ConnectionParams.cpp
-  src/cutil.cpp
-  src/datastream.cpp
-  src/DepthFont.cpp
+  src/conn_params_panel.cpp
+  src/connections_dialog.cpp
   src/DetailSlider.cpp
-  src/Downloader.cpp
   src/download_mgr.cpp
   src/FlexHash.cpp
   src/FontDesc.cpp
   src/FontMgr.cpp
-  src/GarminProtocolHandler.cpp
-  src/garmin_wrapper.h
-  src/geodesic.cpp
-  src/georef.cpp
   src/GoToPositionDialog.cpp
-  src/gui_lib.cpp
   src/gshhs.cpp
-  src/Hyperlink.cpp
+  src/gui_lib.cpp
   src/IDX_entry.cpp
   src/iENCToolbar.cpp
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
-  src/LLRegion.cpp
   src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
+  src/mDNS_query.cpp
+  src/mDNS_service.cpp
   src/MUIBar.cpp
   src/multiplexer.cpp
-  src/NavObjectCollection.cpp
   src/navutil.cpp
-  src/NetworkDataStream.cpp
   src/NMEALogWindow.cpp
   src/ocpCursor.cpp
-  src/OCP_DataStreamInput_Thread.cpp
+  src/ocpn_app.cpp
   src/OCPN_AUIManager.cpp
-  src/OCPN_DataStreamEvent.cpp
   src/ocpndc.cpp
+  src/ocpn_frame.cpp
   src/OCPNListCtrl.cpp
   src/ocpn_pixel.cpp
   src/OCPNPlatform.cpp
+  src/ocpn_plugin.cpp
+  src/ocpn_print.cpp
   src/OCPNRegion.cpp
-  src/OCPN_SignalKEvent.cpp
-  src/ocpn_utils.cpp
   src/options.cpp
+  src/peer_client.cpp
   src/piano.cpp
-  src/PluginHandler.cpp
   src/pluginmanager.cpp
-  src/PluginPaths.cpp
-  src/PositionParser.cpp
-  src/plugin_cache.cpp
+  src/plugin_paths.cpp
   src/printtable.cpp
-  src/pugixml.cpp
+  src/priority_gui.cpp
   src/Quilt.cpp
+  src/REST_server_gui.cpp
   src/RolloverWin.cpp
-  src/Route.cpp
   src/routemanagerdialog.cpp
-  src/routeman.cpp
-  src/RoutePoint.cpp
+  src/routeman_gui.cpp
+  src/route_gui.cpp
+  src/route_point_gui.cpp
   src/routeprintout.cpp
   src/RoutePropDlg.cpp
   src/RoutePropDlgImpl.cpp
   src/S57QueryDialog.cpp
   src/safe_mode.cpp
-  src/Select.cpp
-  src/SelectItem.cpp
-  src/semantic_vers.cpp
   src/SendToGpsDlg.cpp
-  src/SerialDataStream.cpp
-  src/ser_ports.cpp
-  src/SignalKDataStream.cpp
-  src/SignalKEventHandler.cpp
+  src/SendToPeerDlg.cpp
   src/Station_Data.cpp
   src/styles.cpp
+  src/svg_utils.cpp
   src/TCDataFactory.cpp
   src/TCDataSource.cpp
   src/TCDS_Ascii_Harmonic.cpp
@@ -1039,57 +1138,54 @@ set(
   src/TCWin.cpp
   src/thumbwin.cpp
   src/toolbar.cpp
-  src/Track.cpp
+  src/track_gui.cpp
   src/trackprintout.cpp
   src/TrackPropDlg.cpp
   src/TTYScroll.cpp
   src/TTYWindow.cpp
   src/undo.cpp
   src/update_mgr.cpp
+  src/waypointman_gui.cpp
   src/viewport.cpp
+  src/shaders.cpp
 )
+
+
+if (LINUX)
+  list(APPEND HDRS include/comm_drv_n2k_socketcan.h )
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
+endif ()
+
+SET(HDRS ${HDRS} include/shaders.h)
+SET(SRCS ${SRCS} src/shaders.cpp)
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
-  set(SRCS ${SRCS} src/garmin_wrapper.cpp)
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/garmin_wrapper.cpp)
 endif ()
 
-
-if (APPLE)
-  if (DARWIN_VERSION LESS 16)
-    message(
-      STATUS "DarkMode not included, requires Mac build host Darwin >= 16"
-    )
-  else ()
-    list(APPEND SRCS src/DarkMode.mm src/DarkMode.h)
-    add_definitions(-DOCPN_USE_DARKMODE)
-  endif ()
-endif (APPLE)
-
-if (LINUX AND NOT QT_ANDROID)
+if (LINUX)
   list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
   list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
 
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
+if (APPLE)
+  list(APPEND HDRS include/macutils.h )
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/macutils.c)
+endif ()
+
+if (LINUX AND OCPN_USE_CRASHREPORT)
   list(APPEND HDRS include/crashprint.h)
   list(APPEND SRCS src/crashprint.cpp)
-endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID AND OCPN_USE_CRASHREPORT)
+endif ()
 
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
-  SET(HDRS ${HDRS} include/shaders.h)
-  SET(SRCS ${SRCS} src/shaders.cpp)
 ENDIF(QT_ANDROID)
 
-SET(SRC_TINYXML
-  src/tinyxml.cpp
-  src/tinyxmlerror.cpp
-  src/tinyxmlparser.cpp
-  include/tinyxml.h
-)
+set(SRCS ${SRCS} ${MODEL_SRC})
 
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
@@ -1106,6 +1202,7 @@ if (QT_ANDROID)
   include(libs/AndroidLibs.cmake)
 endif ()
 
+#
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
@@ -1140,11 +1237,20 @@ endif ()
 
 find_package(Gettext REQUIRED)
 
+add_subdirectory(libs/observable)
+target_link_libraries(${PACKAGE_NAME} PRIVATE observable::observable)
+
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
 add_subdirectory(libs/picosha2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
+
+add_subdirectory(libs/mongoose)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
+
+add_subdirectory(libs/mDNS)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mDNS)
 
 find_package(LIBUDEV)
 if (LIBUDEV_FOUND)
@@ -1158,14 +1264,16 @@ endif ()
 
 find_package(LIBUSB)
 if (LIBUSB_FOUND)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
-    set(HAVE_LIBUSB_10 1)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
+  set(HAVE_LIBUSB_10 1)
 endif ()
 
-find_package(PANGO)
-if (PANGO_FOUND)
+if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+  find_package(PANGO)
+  if (PANGO_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
     set(HAVE_PANGO 1)
+  endif ()
 endif ()
 
 # Some of these "find_path" macros generate "false-positives" under Windows, especially if mingw is installed
@@ -1303,14 +1411,18 @@ if (UNIX)
       find_package(TinyXML)
     endif (NOT APPLE)
     if (APPLE)
-      find_package(Freetype REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
-      find_package(Fontconfig REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE Fontconfig::Fontconfig)
-      find_package(PNG REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE PNG::PNG)
-      find_package(Pixman REQUIRED)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE Pixman::Pixman)
+      if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+        #Only needed if we build with wxSVG implementation of SVG support
+        message(STATUS "Building with wxSVG support")
+        find_package(Freetype REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE Freetype::Freetype)
+        find_package(Fontconfig REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE Fontconfig::Fontconfig)
+        find_package(PNG REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE PNG::PNG)
+        find_package(Pixman REQUIRED)
+        target_link_libraries(${PACKAGE_NAME} PRIVATE Pixman::Pixman)
+      endif()
       find_package(ZSTD REQUIRED)
       target_link_libraries(${PACKAGE_NAME} PRIVATE zstd::zstd)
     endif ()
@@ -1319,8 +1431,12 @@ endif (UNIX)
 
 # check for lzma support for reading compressed charts
 if (CMAKE_HOST_WIN32)
-  list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin")
-  list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include")
+  list(APPEND CMAKE_PREFIX_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin"
+  )
+  list(APPEND CMAKE_PREFIX_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include"
+  )
 endif (CMAKE_HOST_WIN32)
 if (OCPN_USE_LZMA)
   find_package(LibLZMA)
@@ -1336,15 +1452,15 @@ if (OCPN_USE_CURL)
   if (CMAKE_HOST_WIN32)
     install(
       FILES
-        "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt"
-        "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll"
-        "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll"
+        "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
+        "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
+        "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll"
       DESTINATION "."
     )
     if (MSVC)
       set(CURL_LIBRARIES "${CMAKE_SOURCE_DIR}/buildwin/libcurl.lib")
-      install(FILES "buildwin/libcurl.dll" DESTINATION ".")
-      install(FILES "buildwin/zlib1.dll" DESTINATION ".")
+      install(FILES "cache/buildwin/libcurl.dll" DESTINATION ".")
+      install(FILES "cache/buildwin/zlib1.dll" DESTINATION ".")
     endif (MSVC)
   else (CMAKE_HOST_WIN32)
     set(OCPN_USE_EXTERN_CURL ON)
@@ -1396,7 +1512,7 @@ if (OCPN_USE_CURL)
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
     target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
+#    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -1406,54 +1522,63 @@ endif (QT_ANDROID)
 
 if (OCPN_USE_SVG)
   message(STATUS "SVG support enabled...")
-  if (NOT QT_ANDROID)
-    include(OcpnFindCairo)
-    include(OcpnFindExpat)
-    if (CMAKE_HOST_WIN32)
-      # On Windows, we have our own expat and cairo
-      file(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
-      install(FILES ${gtkdll_files} DESTINATION ".")
-      file(
-        GLOB
-          expatdll_files
-          "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.2.5/*.dll"
-      )
-      install(FILES ${expatdll_files} DESTINATION ".")
-      message(STATUS "GTK and Expat DLLs bundled into the installer package...")
-    else (CMAKE_HOST_WIN32)
-      # Include(OcpnFindFmpeg)  -- FFMPEG is not enabled currently.
-      # target_link_libraries(${PACKAGE_NAME} ocpn::ffmpeg)
-      include(FindEXIF)
-      target_link_libraries(
-        ${PACKAGE_NAME}
-        PRIVATE ${EXIF_LIBRARIES} ${GTK_LIBRARIES}
-      )
-      target_include_directories(${PACKAGE_NAME} PRIVATE ${EXIF_INCLUDE_DIRS})
-    endif (CMAKE_HOST_WIN32)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
-
+  if (wxWidgets_VERSION_STRING VERSION_GREATER_EQUAL "3.1.6")
+    message(STATUS "wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG")
     add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
+    add_definitions(-DocpnUSE_wxBitmapBundle)
+    set(PKGPROJ_TEMPLATE OpenCPN.newsvg.pkgproj.in)
+  else()
+    message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
+    set(PKGPROJ_TEMPLATE OpenCPN.pkgproj.in)
+    if (NOT QT_ANDROID)
+      include(OcpnFindCairo)
+      include(OcpnFindExpat)
+      if (CMAKE_HOST_WIN32)
+        # On Windows, we have our own expat and cairo
+        file(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/gtk/*.dll")
+        install(FILES ${gtkdll_files} DESTINATION ".")
+        file(
+          GLOB
+            expatdll_files
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/expat-2.2.5/*.dll"
+        )
+        install(FILES ${expatdll_files} DESTINATION ".")
+        message(STATUS "GTK and Expat DLLs bundled into the installer package...")
+      else (CMAKE_HOST_WIN32)
+        # Include(OcpnFindFmpeg)  -- FFMPEG is not enabled currently.
+        # target_link_libraries(${PACKAGE_NAME} ocpn::ffmpeg)
+        include(FindEXIF)
+        target_link_libraries(
+          ${PACKAGE_NAME}
+          PRIVATE ${EXIF_LIBRARIES} ${GTK_LIBRARIES}
+        )
+        target_include_directories(${PACKAGE_NAME} PRIVATE ${EXIF_INCLUDE_DIRS})
+      endif (CMAKE_HOST_WIN32)
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::cairo ocpn::expat)
 
-    pkg_search_module(WXSVG libwxsvg wxsvg)
-    use_bundled_lib(USE_BUNDLED_WXSVG wxsvg)
-    if (WXSVG_FOUND AND NOT USE_BUNDLED_WXSVG)
-      message(STATUS "Building with system wxsvg includes")
-      add_library(WXSVG INTERFACE)
-      add_library(ocpn::wxsvg ALIAS WXSVG)
-      target_include_directories(WXSVG INTERFACE ${WXSVG_INCLUDE_DIR})
-      target_link_libraries(WXSVG INTERFACE ${WXSVG_LIBRARIES})
-    else ()
-      add_subdirectory("libs/wxsvg")
-    endif ()
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+      add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
 
-  else(NOT QT_ANDROID)
-    ADD_DEFINITIONS(-DocpnUSE_SVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/src)
-  endif (NOT QT_ANDROID)
+      pkg_search_module(WXSVG libwxsvg wxsvg)
+      use_bundled_lib(USE_BUNDLED_WXSVG wxsvg)
+      if (WXSVG_FOUND AND NOT USE_BUNDLED_WXSVG)
+        message(STATUS "Building with system wxsvg includes")
+        add_library(WXSVG INTERFACE)
+        add_library(ocpn::wxsvg ALIAS WXSVG)
+        target_include_directories(WXSVG INTERFACE ${WXSVG_INCLUDE_DIR})
+        target_link_libraries(WXSVG INTERFACE ${WXSVG_LIBRARIES})
+      else ()
+        add_subdirectory("libs/wxsvg")
+      endif ()
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+
+    else(NOT QT_ANDROID)
+      ADD_DEFINITIONS(-DocpnUSE_SVG)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVGXML)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/include)
+      INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libs/wxsvg/src)
+    endif (NOT QT_ANDROID)
+  endif()
 endif (OCPN_USE_SVG)
 
 if (OCPN_USE_NEWSERIAL)
@@ -1489,14 +1614,13 @@ if (OPENGL_FOUND)
     include/glTextureDescriptor.h
     include/glTexCache.h
     include/glTextureManager.h
-    include/TexFont.h
     src/glTextureDescriptor.cpp
     src/glTexCache.cpp
     src/glChartCanvas.cpp
     src/glTextureManager.cpp
-    src/TexFont.cpp
   )
 endif ()
+
 
 # Building for QT_ANDROID involves a cross-building environment, So the include
 # directories, flags, etc must be stated explicitly without trying to locate
@@ -1511,7 +1635,7 @@ if (QT_ANDROID)
   #set(OPENGL_FOUND "YES")
 
   # SET(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl )
-  #add_subdirectory(libs/glshim)
+  # add_subdirectory(libs/glshim)
 endif (QT_ANDROID)
 
 message(STATUS "    Adding local GLU")
@@ -1521,30 +1645,17 @@ if (OCPN_VERBOSE)
   message(STATUS "    Revised GL Lib (with local): " ${OPENGL_LIBRARIES})
 endif ()
 
-if (QT_ANDROID)
-  target_include_directories(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include)
-  target_link_libraries(${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a)
-elseif ( APPLE )
-    if (OCPN_USE_SYSTEM_LIBARCHIVE)
-        list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-        find_package(LibArchive REQUIRED)
-        target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-        target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-        # If we use system libarchive, we do not bundel the dylib and need to comment it out from the pkg project file
-        set(LIBARCHIVE_COMMENT_START "<!--")
-        set(LIBARCHIVE_COMMENT_END "-->")
-    else()
-        #  TODO This is a hack, due to the way libarchive is built and installed in CI build environment
-        target_include_directories(${PACKAGE_NAME} PRIVATE /opt/local/include)
-        target_link_libraries(${PACKAGE_NAME} PRIVATE /opt/local/lib/libarchive.dylib)
-    endif()
-else ()
-  find_package(LibArchive REQUIRED)
-  target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-endif (QT_ANDROID)
+find_package(OcpnLibarchive)
+if (NOT TARGET ocpn::libarchive)
+  message(FATAL:_ERROR "No libarchive!!!")
+endif ()
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
+if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+  # If we use system libarchive, we do not bundle the dylib and need to
+  # comment it out from the pkg project file
+  set(LIBARCHIVE_COMMENT_START "<!--")
+  set(LIBARCHIVE_COMMENT_END "-->")
+endif ()
 
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
@@ -1557,40 +1668,36 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
 add_subdirectory(libs/wxJSON)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 
-if (TINYXML_FOUND)
-  message(STATUS "Building with system tinyxml")
-  add_library(TINYXML INTERFACE)
-  target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
-  target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
-  add_library(ocpn::tinyxml ALIAS TINYXML)
-else (TINYXML_FOUND)
-  add_subdirectory(libs/tinyxml)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
-  message(STATUS "Building with bundled tinyxml")
-endif (TINYXML_FOUND)
-set(TIXML_USE_STL 1) # -> config.h
+add_subdirectory(libs/tinyxml)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
+
+add_subdirectory(libs/geoprim)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
+
+add_subdirectory(libs/s52plib)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
+
+add_subdirectory(libs/pugixml)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
+
+if (MSVC)
+  install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
+  install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+endif (MSVC)
 
 message(STATUS "S57 ENC support: enabled")
 set(
   SRC_S57ENC
   include/cm93.h
-  include/mygeom.h
   include/ogr_s57.h
   include/Osenc.h
-  include/s52plib.h
-  include/s52utils.h
   include/s57chart.h
   include/s57RegistrarMgr.h
   include/SencManager.h
-  include/TexFont.h
   src/cm93.cpp
-  src/mygeom.cpp
   src/ogrs57datasource.cpp
   src/ogrs57layer.cpp
   src/Osenc.cpp
-  src/s52cnsy.cpp
-  src/s52plib.cpp
-  src/s52utils.cpp
   src/s57chart.cpp
   src/s57classregistrar.cpp
   src/s57featuredefns.cpp
@@ -1598,7 +1705,6 @@ set(
   src/s57reader.cpp
   src/s57RegistrarMgr.cpp
   src/SencManager.cpp
-  src/TexFont.cpp
 )
 add_library(S57ENC STATIC ${SRC_S57ENC})
 target_link_libraries(
@@ -1610,14 +1716,16 @@ target_link_libraries(
     ocpn::wxjson
     ssl::sha1
     ocpn::tinyxml
+    observable::observable
 )
 
-IF(NOT QT_ANDROID)
-   target_link_libraries(S57ENC PUBLIC
-      ocpn::wxsvg
-    ocpn::wxcurl
-)
-ENDIF(NOT QT_ANDROID)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(S57ENC PRIVATE -fvisibility=default)
+endif ()
+
+if (OCPN_USE_CURL AND NOT QT_ANDROID)
+  target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
+endif ()
 
 add_subdirectory(libs/iso8211)
 target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
@@ -1625,10 +1733,17 @@ target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
 add_subdirectory(libs/gdal)
 target_link_libraries(S57ENC PUBLIC ocpn::gdal)
 
+add_subdirectory(libs/N2KParser)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::N2KParser)
+
 if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
   target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
   target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
 endif ()
+
+target_link_libraries(S57ENC PUBLIC ocpn::pugixml)
+target_link_libraries(S57ENC PUBLIC ocpn::geoprim)
+target_link_libraries(S57ENC PUBLIC ocpn::s52plib)
 
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
@@ -1644,13 +1759,8 @@ else (OCPN_USE_GARMINHOST)
 endif (OCPN_USE_GARMINHOST)
 
 # Chart Symbols library
-set(SRC_SYMBOLS src/chartsymbols.cpp include/chartsymbols.h)
+#set(SRC_SYMBOLS src/chartsymbols.cpp include/chartsymbols.h)
 
-add_library(SYMBOLS STATIC ${SRC_SYMBOLS})
-set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_link_libraries(SYMBOLS PRIVATE ocpn::tinyxml)
-target_include_directories(SYMBOLS PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${PACKAGE_NAME} PRIVATE SYMBOLS)
 
 # Compile texcompression support library
 if (OPENGL_FOUND)
@@ -1704,6 +1814,7 @@ if (UNIX AND NOT APPLE)
     message(STATUS "    ELF Include: ${LIBELF_LIBRARY}")
     target_include_directories(${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}")
     target_link_libraries(${PACKAGE_NAME} PRIVATE "${LIBELF_LIBRARY}")
+
     set(USE_LIBELF ON)   # => config.h
   else ()
     message(
@@ -1717,7 +1828,9 @@ endif (UNIX AND NOT APPLE)
 include(TargetSetup)
 if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   if (${PKG_TARGET_VERSION} VERSION_LESS 22.04)
-    string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
+    if (NOT ${PKG_TARGET} MATCHES "-gtk3")
+      string(REPLACE ubuntu ubuntu-gtk3 PKG_TARGET ${PKG_TARGET})
+    endif ()
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
@@ -1730,16 +1843,12 @@ endif ()
 
 if (CMAKE_HOST_WIN32)
   target_link_libraries(
-    ${PACKAGE_NAME}
-    PRIVATE setupapi.lib "GLU_static" psapi.lib
-    # glu32.lib
+    ${PACKAGE_NAME} PRIVATE setupapi.lib "GLU_static" psapi.lib iphlpapi.lib # glu32.lib
   )
-
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
     target_link_libraries(${PACKAGE_NAME} PRIVATE gdiplus.lib)
   endif ()
-
 endif (CMAKE_HOST_WIN32)
 
 if (MINGW)
@@ -1759,6 +1868,18 @@ if (UNIX)
   endif ()
 endif (UNIX)
 
+if (OCPN_BUILD_TEST)
+  add_subdirectory(libs/gtest)
+  add_subdirectory(test)
+  add_custom_target(run-tests
+    COMMAND ctest  -C $<CONFIG> -E tests
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+  )
+  add_dependencies(run-tests tests)
+else ()
+  add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
+endif ()
+
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
@@ -1766,12 +1887,12 @@ if (MSVC)
 endif ()
 
 if (OCPN_BUNDLE_GSHHS)
-    set(
-        gshhs
-        data/gshhs/poly-c-1.dat
-        data/gshhs/wdb_borders_c.b
-        data/gshhs/wdb_rivers_c.b
-    )
+  set(
+    gshhs
+    data/gshhs/poly-c-1.dat
+    data/gshhs/wdb_borders_c.b
+    data/gshhs/wdb_rivers_c.b
+  )
 endif (OCPN_BUNDLE_GSHHS)
 
 # Various data files
@@ -1825,10 +1946,6 @@ if (OCPN_BUNDLE_TCDATA)
   )
 endif (OCPN_BUNDLE_TCDATA)
 
-if (APPLE)
-  target_sources(${PACKAGE_NAME} PRIVATE include/macutils.h src/macutils.c)
-endif ()
-
 # Mac has trouble finding libgobject-2.0.dylib We look for it explicitely
 if (xAPPLE)
   # Assume pkg-config is available.
@@ -1865,45 +1982,38 @@ if (APPLE)
   )
   set_source_files_properties(
     ${s57data}
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport/s57data
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data
   )
   if (OCPN_BUNDLE_TCDATA)
     set_source_files_properties(
       ${tcData}
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata
     )
   endif (OCPN_BUNDLE_TCDATA)
 
   set_source_files_properties(
     data/license.html
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/authors.html
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/opencpn.png
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     data/CoC-909_2013-InlandECDIS_20170308.pdf
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
 
   set_source_files_properties(
     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
   install(
       FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
@@ -1941,8 +2051,7 @@ if (APPLE)
   foreach (_currentConfigFile ${CONFIG_FILES})
     set_source_files_properties(
       ${_currentConfigFile}
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/configs
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/configs
     )
   endforeach (_currentConfigFile)
 
@@ -2017,15 +2126,13 @@ if (APPLE)
 
   set_source_files_properties(
     data/doc/help_web.html
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION SharedSupport/doc
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
   )
 
   if (OCPN_BUNDLE_DOCS )
     set_source_files_properties(
       data/doc/help_en_US.html
-      PROPERTIES
-        MACOSX_PACKAGE_LOCATION SharedSupport/doc
+      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
     )
 
     file(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
@@ -2044,8 +2151,7 @@ if (APPLE)
       # Destination: "  ${_location})
       set_source_files_properties(
         ${_currentWikiDocFile}
-        PROPERTIES
-          MACOSX_PACKAGE_LOCATION ${_location}
+        PROPERTIES MACOSX_PACKAGE_LOCATION ${_location}
       )
     endforeach (_currentWikiDocFile)
 
@@ -2053,14 +2159,12 @@ if (APPLE)
 
   set_source_files_properties(
     buildosx/opencpn.icns
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION Resources
+    PROPERTIES MACOSX_PACKAGE_LOCATION Resources
   )
 
   set_source_files_properties(
     buildosx/MainMenu.xib
-    PROPERTIES
-      MACOSX_PACKAGE_LOCATION Resources/English.lproj
+    PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj
   )
 
   # These variables get substituted into the Info.plist template file at build
@@ -2405,22 +2509,18 @@ endif (GETTEXT_MSGFMT_EXECUTABLE)
 # Install wxstd.mo in Windows
 #
 if (WIN32)
-
   file(
     GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo
   )
-
   foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
-
     install(
         FILES ${_current_wx_mofile}
         DESTINATION ${PREFIX_DATA}/locale/${_mlang}/LC_MESSAGES
         RENAME wxstd.mo
-          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-      )
-
+        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+    )
   endforeach (_current_wx_mofile)
 
 endif (WIN32)
@@ -2433,7 +2533,6 @@ if (APPLE)
   file(
     GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildosx/wxWidgets/locale/*.mo
   )
-
   foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
     get_filename_component(_mlang ${_absFile} NAME_WE)
@@ -2454,26 +2553,30 @@ endif (APPLE)
 #
 if (WIN32 AND NOT UNIX)
   if (OCPN_BUNDLE_WXDLLS)
-    file(
-      GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll"
+    file(GLOB wxdll_files
+      "${wxWidgets_LIB_DIR}/wxmsw32u_*.dll"
+      "${wxWidgets_LIB_DIR}/wxbase32u_*.dll"
     )
     install(FILES ${wxdll_files} DESTINATION ".")
-    message(STATUS "wxWidgets DLLs bundled into the installer package...")
-  endif (OCPN_BUNDLE_WXDLLS)
+    list(LENGTH "${wxdll_files}" wxdll_count)
+    message(STATUS
+      "${wxdll_count} wxWidgets DLLs bundled into the installer package..."
+    )
+  endif ()
   if (OCPN_BUNDLE_VCDLLS)
-    file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
+    file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/vc/*.dll")
     install(FILES ${vcdll_files} DESTINATION ".")
     message(
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
-  endif (OCPN_BUNDLE_VCDLLS)
+  endif ()
   if (BUNDLE_LIBARCHIVEDLLS)
     file(
       GLOB
         libarchivedll_files
-        "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll"
-        "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"
-        "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
     )
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
@@ -2482,19 +2585,19 @@ endif (WIN32 AND NOT UNIX)
 
 if (MSVC AND OCPN_USE_CRASHREPORT)
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.dll
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/CrashRpt1403.dll
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashSender1403.exe
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/CrashSender1403.exe
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/crashrpt_lang.ini
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/crashrpt_lang.ini
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
-    FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/dbghelp.dll
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/dbghelp.dll
     DESTINATION ${PREFIX_PKGDATA}
   )
   install(
@@ -2503,6 +2606,14 @@ if (MSVC AND OCPN_USE_CRASHREPORT)
   )
   message(STATUS "CrashRpt bundled into the installer package...")
 endif (MSVC AND OCPN_USE_CRASHREPORT)
+
+# Install glew dll
+if (MSVC AND OCPN_USE_GL)
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.dll
+    DESTINATION ${PREFIX_PKGDATA}
+  )
+endif ()
 
 if (MINGW)
   install(SCRIPT ${CMAKE_SOURCE_DIR}/cmake/BundleMingwLibs.cmake)
@@ -2539,6 +2650,7 @@ endif ()
 # Build a CPack driven installer package
 #
 # include (InstallRequiredSystemLibraries)
+set(CPACK_BINDIR "${CMAKE_BINARY_DIR}")
 set(CPACK_PACKAGE_NAME "OpenCPN")
 set(CPACK_PACKAGE_VENDOR "opencpn.org")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenCPN ${PACKAGE_VERSION}")
@@ -2749,29 +2861,35 @@ if (APPLE)
   set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   set(DIRS "/usr/local/lib")
 
-  # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
+  # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/Plugins")
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
-    DESTINATION "bin/OpenCPN.app/Contents/PlugIns"
+    DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
+#  install(
+#    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+#    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+#    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+#      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+#  )
   set(
     LIBS
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
   )
 install(CODE "
   include(BundleUtilities)
@@ -2790,12 +2908,13 @@ install(CODE "
   COMPONENT Runtime
 )
 
-  #Build standard MacOS installer package
-  #  Copy a few generic files so the Packages installer builder can find them relative to ${CMAKE_CURRENT_BINARY_DIR}
-  #  This avoids absolute paths in the XXX.pkgproj file
+  # Build standard MacOS installer package
+  # Copy a few generic files so the Packages installer builder can find them
+  # relative to ${CMAKE_CURRENT_BINARY_DIR}
+  # This avoids absolute paths in the XXX.pkgproj file
 
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/OpenCPN.pkgproj.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/${PKGPROJ_TEMPLATE}
     ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
     )
   configure_file(${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY)
@@ -2853,8 +2972,8 @@ if (MSVC)
   add_custom_command(
     TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND
-    cmake -E copy "${CMAKE_BINARY_DIR}/$<CONFIG>/opencpn.pdb"
-    "${CMAKE_BINARY_DIR}/$<CONFIG>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+    cmake -E copy "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+          "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
 
@@ -2872,4 +2991,102 @@ if (NOT TARGET uninstall)
     uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/uninstall.cmake
   )
+endif ()
+
+#
+# Piggy-back the console application on the main setup.
+# Note that cli apps are not supported on Android
+#
+if (NOT QT_ANDROID AND NOT APPLE)
+  set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
+
+  add_executable(opencpn-cmd ${SRC_CONSOLE})
+
+  if (CMAKE_VERSION VERSION_GREATER 3.4)
+    if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+      target_link_libraries(opencpn-cmd
+        PRIVATE -fsanitize=${ENABLE_SANITIZER}
+      )
+    endif ()
+  endif ()
+
+  target_include_directories(
+    opencpn-cmd
+    PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include
+  )
+
+  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP USE_MOCK_DEFS)
+  if (MSVC)
+    target_link_libraries(opencpn-cmd PRIVATE setupapi.lib psapi.lib)
+  endif ()
+
+  if (TARGET ocpn::wxcurl)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
+  else ()
+    target_link_libraries(opencpn-cmd PRIVATE ${SYS_WXCURL_LIBRARIES})
+  endif ()
+
+  target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
+  if (TARGET ocpn::wxsvg)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
+  endif ()
+  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
+    target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
+    target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  endif ()
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+
+  target_link_libraries(opencpn-cmd PRIVATE observable::observable)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::geoprim)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+
+  target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
+  target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  if (HAVE_LIBUDEV)
+    target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)
+  endif ()
+  if (LIBLZMA_FOUND)
+    if (TARGET LibLZMA::LibLZMA)
+      target_link_libraries(opencpn-cmd PRIVATE LibLZMA::LibLZMA)
+    else ()
+      target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
+    endif ()
+  endif ()
+
+if (NOT WIN32)
+  find_package(OpenSSL)
+  if (OPENSSL_FOUND)
+    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
+    target_link_libraries(opencpn-cmd PRIVATE ${OPENSSL_LIBRARIES})
+    add_definitions(-DMG_ENABLE_OPENSSL)
+  endif (OPENSSL_FOUND)
+else (NOT WIN32)
+    target_include_directories(
+      opencpn-cmd
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
+    )
+    target_link_libraries(
+      opencpn-cmd
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
+    )
+   target_link_libraries(
+      opencpn-cmd
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
+    )
+endif (NOT WIN32)
+
+  install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()

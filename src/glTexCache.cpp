@@ -31,9 +31,9 @@
 
 #include <stdint.h>
 
-#include "config.h"
-
 #include "dychart.h"
+
+#include "config.h"
 
 #include "viewport.h"
 #include "glTexCache.h"
@@ -56,6 +56,50 @@
 #include "lz4.h"
 #include "lz4hc.h"
 
+// Correct some deficincies in MacOS OpenGL include files
+#ifdef __WXOSX__
+typedef void (*PFNGLGENBUFFERSPROC)(GLsizei n, GLuint *buffers);
+typedef void (*PFNGLBINDBUFFERPROC)(GLenum target, GLuint buffer);
+typedef void (*PFNGLDELETEBUFFERSPROC)(GLsizei n, const GLuint *buffers);
+typedef void (*PFNGLGETBUFFERPARAMETERIVPROC)(GLenum target, GLenum pname,
+                                              GLint *params);
+typedef void (*PFNGLDELETERENDERBUFFERSEXTPROC)(GLsizei n,
+                                                const GLuint *renderbuffers);
+typedef void (*PFNGLDELETEFRAMEBUFFERSEXTPROC)(GLsizei n,
+                                               const GLuint *framebuffers);
+typedef void (*PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC)(GLenum target, GLint level,
+                                                 GLint xoffset, GLsizei width,
+                                                 GLenum format,
+                                                 GLsizei imageSize,
+                                                 const GLvoid *data);
+typedef void (*PFNGLGETCOMPRESSEDTEXIMAGEPROC)(GLenum target, GLint level,
+                                               GLvoid *img);
+typedef GLenum (*PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)(GLenum target);
+typedef void (*PFNGLBINDRENDERBUFFEREXTPROC)(GLenum target,
+                                             GLuint renderbuffer);
+typedef void (*PFNGLBUFFERDATAPROC)(GLenum target, GLsizeiptr size,
+                                    const GLvoid *data, GLenum usage);
+typedef void (*PFNGLGENFRAMEBUFFERSEXTPROC)(GLsizei n, GLuint *framebuffers);
+typedef void (*PFNGLGENRENDERBUFFERSEXTPROC)(GLsizei n, GLuint *renderbuffers);
+typedef void (*PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)(GLenum target,
+                                                 GLenum attachment,
+                                                 GLenum textarget,
+                                                 GLuint texture, GLint level);
+typedef void (*PFNGLCOMPRESSEDTEXIMAGE2DPROC)(GLenum target, GLint level,
+                                              GLenum internalformat,
+                                              GLsizei width, GLsizei height,
+                                              GLint border, GLsizei imageSize,
+                                              const GLvoid *data);
+typedef void (*PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)(GLenum target,
+                                                    GLenum attachment,
+                                                    GLenum renderbuffertarget,
+                                                    GLuint renderbuffer);
+typedef void (*PFNGLRENDERBUFFERSTORAGEEXTPROC)(GLenum target,
+                                                GLenum internalformat,
+                                                GLsizei width, GLsizei height);
+typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
+#endif
+
 extern long g_tex_mem_used;
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
@@ -68,8 +112,6 @@ extern ocpnGLOptions g_GLOptions;
 
 extern int g_tile_size;
 
-extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-extern PFNGLGENERATEMIPMAPEXTPROC s_glGenerateMipmap;
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 extern wxString CompressedCachePath(wxString path);
@@ -119,7 +161,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format) {
   n_catalog_entries = 0;
   m_catalog_offset = sizeof(CompressedCacheHeader);
   wxDateTime ed = chart->GetEditionDate();
-  m_chart_date_binary = (uint32_t)ed.GetTicks();
+  m_chart_date_binary = (uint32_t)ed.IsValid() ? ed.GetTicks() : 0;
   m_chartfile_date_binary = ::wxFileModificationTime(chart->GetFullPath());
   m_chartfile_size =
       (uint32_t)wxFileName::GetSize(chart->GetFullPath()).GetLo();
@@ -525,7 +567,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level,
       int size = TextureTileSize(level, true);
       int status = GetTextureLevel(ptd, rect, level, ptd->m_colorscheme);
       int dim = TextureDim(level);
-      s_glCompressedTexImage2D(GL_TEXTURE_2D, texture_level, g_raster_format,
+      glCompressedTexImage2D(GL_TEXTURE_2D, texture_level, g_raster_format,
                                dim, dim, 0, size, ptd->comp_array[level]);
 
       ptd->tex_mem_used += size;

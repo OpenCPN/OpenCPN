@@ -81,9 +81,6 @@
 
 extern bool g_b_EnableVBO;
 
-#ifdef ocpnUSE_GL
-extern PFNGLDELETEBUFFERSPROC s_glDeleteBuffers;
-#endif
 
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR
@@ -114,9 +111,8 @@ S57Obj::~S57Obj() {
       bool b_useVBO = g_b_EnableVBO && !auxParm1;  // VBO allowed?
 
       PolyTriGroup *ppg_vbo = pPolyTessGeo->Get_PolyTriGroup_head();
-      if (b_useVBO && ppg_vbo && auxParm0 > 0 && ppg_vbo->single_buffer &&
-          s_glDeleteBuffers) {
-        s_glDeleteBuffers(1, (GLuint *)&auxParm0);
+      if (b_useVBO && ppg_vbo && auxParm0 > 0 && ppg_vbo->single_buffer) {
+        glDeleteBuffers(1, (GLuint *)&auxParm0);
       }
 #endif
       delete pPolyTessGeo;
@@ -156,7 +152,8 @@ void S57Obj::Init() {
   geoPtz = NULL;
   geoPt = NULL;
   bIsClone = false;
-  Scamin = 10000000;  // ten million enough?
+  Scamin = 1e8+2;  // Default is very large number, effectively unused.
+  SuperScamin = -1;
   nRef = 0;
 
   bIsAton = false;

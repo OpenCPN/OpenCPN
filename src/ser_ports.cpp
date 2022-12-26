@@ -24,31 +24,37 @@
  **************************************************************************/
 
 #ifdef __MSVC__
-#include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <winsock2.h>
+#include <wx/msw/winundef.h>
 #endif
 
 #include "config.h"
 
 #include <iostream>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <regex>
+#pragma GCC diagnostic pop
+
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+#include <wx/arrstr.h>
+#include <wx/log.h>
+#include <wx/utils.h>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
 
-#include <wx/arrstr.h>
-#include <wx/log.h>
-#include <wx/utils.h>
 
 #ifdef OCPN_USE_NEWSERIAL
 #include "serial/serial.h"
@@ -102,7 +108,7 @@
 #endif
 
 #include "gui_lib.h"
-#include "GarminProtocolHandler.h"
+#include "garmin_protocol_mgr.h"
 
 #ifdef __WXMSW__
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
@@ -148,7 +154,12 @@ static std::string device_path(const char* dev) {
     return std::string("/dev") + path.substr(path.rfind('/'));
 }
 
+
 static int isTTYreal(const char* dev) {
+
+// gcc 12 bogus regex warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
   // Drop non-readable devices
   std::string path = device_path(dev);
@@ -186,6 +197,8 @@ static int isTTYreal(const char* dev) {
   }
   close(fd);
   return ok ? 1 : 0;
+
+#pragma GCC diagnostic pop
 }
 
 #else
@@ -289,6 +302,10 @@ static std::string get_device_info(struct udev_device* ud) {
   return info;
 }
 
+// gcc bogus regex warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 /** Return list of device links pointing to dev. */
 static std::vector<struct device_data> get_links(struct udev_device* dev,
                                                  const std::regex& exclude) {
@@ -332,6 +349,7 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
   return items;
 }
 
+#pragma GCC diagnostic pop
 static wxArrayString* EnumerateUdevSerialPorts(void) {
   struct udev* udev = udev_new();
   auto dev_items = enumerate_udev_ports(udev);
@@ -536,7 +554,7 @@ wxArrayString* EnumerateSerialPorts(void) {
 
 wxArrayString* EnumerateSerialPorts(void) { return EnumerateUdevSerialPorts(); }
 
-#elif defined(__OCPN__ANDROID__)
+#elif defined(__ANDROID__)
 
 wxArrayString* EnumerateSerialPorts(void) {
   return androidGetSerialPortsArray();

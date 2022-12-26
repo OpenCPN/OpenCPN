@@ -39,8 +39,10 @@
 #include <wx/regex.h>
 
 #include <algorithm>
+#include <unordered_map>
 
 #include "gdal/ogr_api.h"
+#include "s52s57.h"
 #include "s57chart.h"
 #include "cm93.h"
 #include "s52plib.h"
@@ -53,10 +55,12 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "OCPNPlatform.h"
 #include "wx28compat.h"
-#include "ChartDataInputStream.h"
+#include "chartdata_input_stream.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
+#include "line_clip.h"
 
 #include <stdio.h>
 
@@ -86,7 +90,6 @@ extern PlugInManager *g_pi_manager;
 extern float g_GLMinSymbolLineWidth;
 
 extern bool g_b_EnableVBO;
-extern PFNGLBINDBUFFERPROC s_glBindBuffer;
 
 // TODO  These should be gotten from the ctor
 extern MyFrame *gFrame;
@@ -257,8 +260,6 @@ OCPNRegion M_COVR_Desc::GetRegion(const ViewPort &vp, wxPoint *pwp) {
 // relating to cm93 cell MCOVR objects of a particular scale
 //----------------------------------------------------------------------------
 
-WX_DECLARE_HASH_MAP(int, int, wxIntegerHash, wxIntegerEqual, cm93cell_hash);
-
 char sig_version[] = "COVR1002";
 
 class covr_set {
@@ -281,12 +282,12 @@ public:
 
   wxString m_cachefile;
 
-  Array_Of_M_COVR_Desc
-      m_covr_array_outlines;  // array, for chart outline rendering
+  // array, for chart outline rendering
+  Array_Of_M_COVR_Desc m_covr_array_outlines;
 
-  cm93cell_hash m_cell_hash;  // This is a hash, indexed by cell index, elements
-                              // contain the number of M_COVRs
-                              // found on this particular cell
+  // This is a hash, indexed by cell index, elements
+  // contain the number of M_COVRs found on this particular cell
+  std::unordered_map<int, int> m_cell_hash;
 };
 
 covr_set::covr_set(cm93chart *parent) { m_pParent = parent; }
@@ -1986,8 +1987,10 @@ bool cm93chart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
 //-----------------------------------------------------------------------
 
 void cm93chart::SetVPParms(const ViewPort &vpt) {
+  if (m_vp_current == vpt) {
+    return;
+  }
   //    Save a copy for later reference
-
   m_vp_current = vpt;
 
   //  Set up local SM rendering constants
@@ -2076,12 +2079,14 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       AssembleLineGeometry();
 
       //  Set up the chart context
-      m_this_chart_context->m_pvc_hash = (void *)&Get_vc_hash();
-      m_this_chart_context->m_pve_hash = (void *)&Get_ve_hash();
+      m_this_chart_context->m_pvc_hash = &Get_vc_hash();
+      m_this_chart_context->m_pve_hash = &Get_ve_hash();
 
       m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
       m_this_chart_context->pRigidATONArray = pRigidATONArray;
       m_this_chart_context->chart = this;
+      m_this_chart_context->chart_type = GetChartType();
+
       m_this_chart_context->safety_contour = 1e6;  // to be evaluated later
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
@@ -2171,7 +2176,7 @@ std::vector<int> cm93chart::GetVPCellArray(const ViewPort &vpt) {
 void cm93chart::ProcessVectorEdges(void) {
   //    Create the vector(edge) map for this cell, appending to the existing
   //    member hash map
-  VE_Hash &vehash = Get_ve_hash();
+  auto &vehash = Get_ve_hash();
 
   m_current_cell_vearray_offset =
       vehash.size();  // keys start at the current size
@@ -3160,9 +3165,7 @@ void cm93chart::translate_colmar(const wxString &sclass,
     free(pattValTmp->value);  // free the old int pointer
 
     pattValTmp->valType = OGR_STR;
-    pattValTmp->value =
-        (char *)malloc(lstring.Len() + 1);  // create a new Lstring attribute
-    strcpy((char *)pattValTmp->value, lstring.mb_str());
+    pattValTmp->value = strdup(lstring.mb_str());
   }
 }
 
@@ -3283,19 +3286,13 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         break;
 
       case 'S':
-        nlen = strlen((const char *)aval);
-        pAVS = (char *)malloc(nlen + 1);
-        ;
-        strcpy(pAVS, (char *)aval);
+        pAVS = strdup((char*)aval);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
 
       case 'C':
-        nlen = strlen((const char *)&aval[3]);
-        pAVS = (char *)malloc(nlen + 1);
-        ;
-        strcpy(pAVS, (const char *)&aval[3]);
+        pAVS = strdup((const char*)&aval[3]);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
@@ -3310,10 +3307,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         }
         if (strlen(val)) val[strlen(val) - 1] = 0;  // strip last ","
 
-        int nlen = strlen(val);
-        pAVS = (char *)malloc(nlen + 1);
-        ;
-        strcpy(pAVS, val);
+        pAVS = strdup(val);
         pattValTmp->valType = OGR_STR;
         pattValTmp->value = pAVS;
         break;
@@ -3352,10 +3346,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
       int v = *(int *)pattValTmp->value;
       free(pattValTmp->value);
       sprintf(val, "%d", v);
-      int nlen = strlen(val);
-      pAVS = (char *)malloc(nlen + 1);
-      ;
-      strcpy(pAVS, val);
+      pAVS = strdup(val);
       pattValTmp->valType = OGR_STR;
       pattValTmp->value = pAVS;
     }
@@ -3365,8 +3356,7 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
         sattr.IsSameAs(_T ( "$SCODE" ))) {
       if (!strcmp((char *)pattValTmp->value, "II25")) {
         free(pattValTmp->value);
-        pattValTmp->value = (char *)malloc(strlen("BACKGROUND") + 1);
-        strcpy((char *)pattValTmp->value, "BACKGROUND");
+        pattValTmp->value = strdup("BACKGROUND");
       }
     }
 
@@ -4744,7 +4734,7 @@ void cm93compchart::SetVPParms(const ViewPort &vpt) {
   //    Continuoesly update the composite chart edition date to the latest cell
   //    decoded
   if (m_pcm93chart_array[cmscale]) {
-    if (m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan(m_EdDate))
+    if (!m_EdDate.IsValid() || !m_pcm93chart_array[cmscale]->GetEditionDate().IsValid() || m_pcm93chart_array[cmscale]->GetEditionDate().IsLaterThan(m_EdDate))
       m_EdDate = m_pcm93chart_array[cmscale]->GetEditionDate();
   }
 }
@@ -5735,9 +5725,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
     glDisable(GL_LINE_STIPPLE);
     dc.SetGLStipple();
 
-    if (g_b_EnableVBO) s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    if (g_b_EnableVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
 
-#ifndef USE_ANDROID_GLES2
+#if 1 //!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // use a viewport that allows the vertexes to be reused over many frames
@@ -5818,7 +5808,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
         if (vp.GetBBox().IntersectOut(mcd->m_covr_bbox)) continue;
 #ifdef ocpnUSE_GL
         if (g_bopengl) {
-#ifndef USE_ANDROID_GLES2
+//FIXME (dave) Use DC for rendering
+#if 1//!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
           glColor3ub(col.Red(), col.Green(), col.Blue());
           RenderCellOutlinesOnGL(nvp, mcd);
 #endif
@@ -5828,7 +5819,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
 #define NORM_FACTOR 4096.0
             double ts =
                 40058986 * NORM_FACTOR; /* 360 degrees in normalized viewport */
-#ifndef USE_ANDROID_GLES2
+#if 1 //!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
             glColor3ub(col.Red(), col.Green(), col.Blue());
             glPushMatrix();
             glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
@@ -5851,7 +5842,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
 
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glPopMatrix();
 
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -5988,7 +5979,7 @@ void cm93compchart::RenderCellOutlinesOnGL(ViewPort &vp, M_COVR_Desc *mcd) {
     mcd->gl_screen_projection_type = vp.m_projection_type;
   }
 
-#ifndef USE_ANDROID_GLES2
+#if 1 //!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
 #if 1  // Push array (faster)
   glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), mcd->gl_screen_vertices);
@@ -6024,7 +6015,7 @@ void cm93compchart::UpdateLUPs(s57chart *pOwner) {
   }
 }
 
-ListOfS57Obj *cm93compchart::GetAssociatedObjects(S57Obj *obj) {
+std::list<S57Obj*> *cm93compchart::GetAssociatedObjects(S57Obj *obj) {
   if (m_pcm93chart_current)
     return m_pcm93chart_current->GetAssociatedObjects(obj);
   else
@@ -6095,11 +6086,11 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon(float lat, float lon,
   }
 }
 
-VE_Hash &cm93compchart::Get_ve_hash(void) {
+std::unordered_map<unsigned, VE_Element *> &cm93compchart::Get_ve_hash(void) {
   return m_pcm93chart_current->Get_ve_hash();
 }
 
-VC_Hash &cm93compchart::Get_vc_hash(void) {
+std::unordered_map<unsigned, VC_Element *> &cm93compchart::Get_vc_hash(void) {
   return m_pcm93chart_current->Get_vc_hash();
 }
 

@@ -1,22 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_288685120">
-   <line fill="none" stroke="black" stroke-width="7.62" x1="932" y1="612" x2="1095" y2= "839" />
-   <line fill="none" stroke="black" stroke-width="7.62" x1="697" y1="711" x2="932" y2= "612" />
-   <line fill="none" stroke="black" stroke-width="7.62" x1="858" y1="781" x2="932" y2= "612" />
-   <line fill="none" stroke="black" stroke-width="7.62" x1="962" y1="817" x2="932" y2= "612" />
-   <circle fill="black" cx="932" cy="612" r="33"/>
-   <path fill="red" d="M1185 1130l112 -65c-40,-98 -101,-198 -220,-251 -14,129 42,232 108,316z"/>
-   <path fill="black" d="M910 1220l170 -15c7,-139 -11,-293 -123,-422 -88,147 -79,301 -47,437z"/>
-   <path fill="#FFC90E" d="M698 1104l145 38c48,-113 79,-245 26,-386 -117,95 -156,225 -171,348z"/>
-   <path fill="gray" d="M503 1100l165 44c54,-129 90,-279 29,-439 -133,108 -177,256 -194,395z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="7.62" d="m932 612 163 227M697 711l235-99m-74 169 74-169m30 205-30-205"/>
+    <circle cx="932" cy="612" r="33"/>
+    <path fill="red" d="m1185 1130 112-65c-40-98-101-198-220-251-14 129 42 232 108 316z"/>
+    <path d="m910 1220 170-15c7-139-11-293-123-422-88 147-79 301-47 437z"/>
+    <path fill="#FFC90E" d="m698 1104 145 38c48-113 79-245 26-386-117 95-156 225-171 348z"/>
+    <path fill="gray" d="m503 1100 165 44c54-129 90-279 29-439-133 108-177 256-194 395z"/>
 </svg>

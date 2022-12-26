@@ -22,14 +22,14 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <wx/dcclient.h>
 
 #include "ChInfoWin.h"
-#include "chart1.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
+#include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

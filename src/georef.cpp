@@ -35,6 +35,8 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <wx/debug.h>
+
 #include "georef.h"
 #include "cutil.h"
 
@@ -1344,7 +1346,6 @@ double DistGreatCircle(double slat, double slon, double dlat, double dlon) {
     d = acos(cosd = 1 - L - L);
 
     if (ellipse) {
-      wxASSERT(d != 0.0);
       E = cosd + cosd;
       sind = sin(d);
       Y = sinthm * cosdthm;

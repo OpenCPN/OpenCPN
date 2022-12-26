@@ -1,39 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_527902120">
-   <g>
-    <rect fill="black" x="500" y="813" width="799.994" height="24.8085"/>
-    <rect fill="black" x="606" y="716" width="11.0804" height="106.95"/>
-    <path fill="black" d="M663 665c4,0 8,0 11,0 0,52 0,105 0,158 -3,0 -7,0 -11,0 0,-53 0,-106 0,-158z"/>
-    <path fill="black" d="M721 634c4,0 8,0 11,0 0,63 0,126 0,189 -3,0 -7,0 -11,0 0,-63 0,-126 0,-189z"/>
-    <path fill="black" d="M779 612c4,0 7,0 11,0 0,71 0,141 0,211 -4,0 -7,0 -11,0 0,-70 0,-140 0,-211z"/>
-    <path fill="black" d="M837 601c3,0 7,0 11,0 0,74 0,148 0,222 -4,0 -8,0 -11,0 0,-74 0,-148 0,-222z"/>
-    <path fill="black" d="M894 598c4,0 8,0 12,0 0,75 0,150 0,225 -4,0 -8,0 -12,0 0,-75 0,-150 0,-225z"/>
-    <path fill="black" d="M952 600c4,0 8,0 11,0 0,74 0,148 0,223 -3,0 -7,0 -11,0 0,-75 0,-149 0,-223z"/>
-    <path fill="black" d="M1010 613c4,0 7,0 11,0 0,70 0,140 0,210 -4,0 -7,0 -11,0 0,-70 0,-140 0,-210z"/>
-    <path fill="black" d="M1068 634c3,0 7,0 11,0 0,63 0,126 0,189 -4,0 -8,0 -11,0 0,-63 0,-126 0,-189z"/>
-    <path fill="black" d="M1125 663c4,0 8,0 12,0 0,53 0,107 0,160 -4,0 -8,0 -12,0 0,-53 0,-107 0,-160z"/>
-    <rect fill="black" x="1183" y="712" width="11.0804" height="110.822"/>
-    <rect fill="black" x="500" y="862" width="69.4362" height="228.491"/>
-    <rect fill="black" x="1231" y="862" width="69.4362" height="228.491"/>
-    <g>
-     <rect fill="black" x="514" y="824" width="11.0804" height="44.7628"/>
-     <rect fill="black" x="544" y="824" width="11.0804" height="44.7628"/>
-    </g>
-    <g>
-     <rect fill="black" x="1245" y="824" width="11.0804" height="44.7628"/>
-     <rect fill="black" x="1275" y="824" width="11.0804" height="44.7628"/>
-    </g>
-    <path fill="black" fill-rule="nonzero" d="M528 821c29,-64 72,-114 124,-151 71,-51 159,-76 247,-76 88,-1 176,24 248,75 53,37 98,88 127,152l-12 9c-28,-62 -71,-110 -122,-146 -70,-49 -155,-73 -241,-73 -85,0 -171,25 -240,75 -50,35 -91,83 -118,143l-13 -8z"/>
-   </g>
-   <path fill="#0C85CA" d="M500 1206l800 0 0 -153c-39,3 -33,23 -62,23 -27,0 -32,-23 -61,-23 -54,0 -42,23 -73,23 -27,0 -32,-23 -61,-23 -53,0 -43,23 -73,23 -28,0 -33,-23 -61,-23 -52,0 -45,23 -70,23 -36,0 -31,-23 -69,-23 -43,0 -44,23 -65,23 -37,0 -30,-23 -68,-23 -44,0 -45,23 -66,23 -37,0 -30,-23 -68,-23l-3 0 0 153z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M500 813h799.994v24.808H500z"/>
+    <path d="M606 716h11.08v106.95H606zm57-51h11v158h-11V665zm58-31h11v189h-11V634zm58-22h11v211h-11V612zm58-11h11v222h-11V601zm57-3h12v225h-12V598zm58 2h11v223h-11V600zm58 13h11v210h-11V613zm58 21h11v189h-11V634zm57 29h12v160h-12V663zm58 49h11.08v110.822H1183zM500 862h69.436v228.491H500zm731 0h69.436v228.491H1231z"/>
+    <path d="M514 824h11.08v44.763H514zm30 0h11.08v44.763H544zm701 0h11.08v44.763H1245zm30 0h11.08v44.763H1275z"/>
+    <path fill-rule="nonzero" d="M528 821c29-64 72-114 124-151 71-51 159-76 247-76 88-1 176 24 248 75 53 37 98 88 127 152l-12 9c-28-62-71-110-122-146-70-49-155-73-241-73-85 0-171 25-240 75-50 35-91 83-118 143l-13-8z"/>
+    <path fill="#0C85CA" d="M500 1206h800v-153c-39 3-33 23-62 23-27 0-32-23-61-23-54 0-42 23-73 23-27 0-32-23-61-23-53 0-43 23-73 23-28 0-33-23-61-23-52 0-45 23-70 23-36 0-31-23-69-23-43 0-44 23-65 23-37 0-30-23-68-23-44 0-45 23-66 23-37 0-30-23-68-23h-3v153z"/>
 </svg>

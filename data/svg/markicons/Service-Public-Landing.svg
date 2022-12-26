@@ -1,22 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_431195000">
-   <circle fill="blue" cx="900" cy="900" r="300"/>
-   <g>
-    <path fill="#FEFEFE" d="M792 1064l30 0 0 -117 22 0 0 117 117 0 0 -117c17,0 12,-3 12,52 0,21 0,43 0,65l30 0c0,-27 5,-139 -3,-156 -9,-16 -23,-30 -41,-39 -38,-17 -28,5 -61,6 -35,0 -22,-24 -61,-5 -19,8 -33,22 -41,38 -9,17 -4,129 -4,156z"/>
-    <path fill="#FEFEFE" d="M963 853c7,6 52,26 61,57 3,14 1,96 1,117l65 0 0 -101 14 0 1 101 37 0c0,-33 0,-66 0,-99 0,-18 3,-31 -6,-44 -12,-18 -38,-37 -59,-41 -11,-3 -18,9 -36,11 -47,5 -25,-26 -78,-1z"/>
-    <path fill="#FEFEFE" d="M658 1027l33 0 0 -101 14 0 0 101 70 0c0,-27 -3,-93 1,-115 2,-13 17,-28 24,-35 11,-11 23,-15 34,-24 -52,-25 -30,5 -75,1 -16,-2 -28,-13 -36,-12 -20,4 -47,24 -59,41 -9,13 -6,24 -6,43 0,33 0,67 0,101z"/>
-    <path fill="#FEFEFE" d="M890 736c-75,12 -58,126 19,114 28,-5 52,-32 46,-67 -4,-28 -32,-52 -65,-47z"/>
-    <path fill="#FEFEFE" d="M754 751c-61,14 -39,109 25,91 55,-16 37,-107 -25,-91z"/>
-    <path fill="#FEFEFE" d="M1022 750c-23,6 -42,28 -36,57 5,22 30,43 59,35 59,-16 37,-106 -23,-92z"/>
-   </g>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <circle fill="#00f" cx="900" cy="900" r="300"/>
+    <g fill="#FEFEFE">
+        <path d="M792 1064h30V947h22v117h117V947c17 0 12-3 12 52v65h30c0-27 5-139-3-156-9-16-23-30-41-39-38-17-28 5-61 6-35 0-22-24-61-5-19 8-33 22-41 38-9 17-4 129-4 156z"/>
+        <path d="M963 853c7 6 52 26 61 57 3 14 1 96 1 117h65V926h14l1 101h37v-99c0-18 3-31-6-44-12-18-38-37-59-41-11-3-18 9-36 11-47 5-25-26-78-1zm-305 174h33V926h14v101h70c0-27-3-93 1-115 2-13 17-28 24-35 11-11 23-15 34-24-52-25-30 5-75 1-16-2-28-13-36-12-20 4-47 24-59 41-9 13-6 24-6 43v101zm232-291c-75 12-58 126 19 114 28-5 52-32 46-67-4-28-32-52-65-47z"/>
+        <path d="M754 751c-61 14-39 109 25 91 55-16 37-107-25-91zm268-1c-23 6-42 28-36 57 5 22 30 43 59 35 59-16 37-106-23-92z"/>
+    </g>
 </svg>

@@ -28,10 +28,10 @@
 
 #include "config.h"
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/file.h>
@@ -45,10 +45,12 @@
 #include "routemanagerdialog.h"
 #include "undo.h"
 #include "chcanv.h"
-#include "Route.h"
+#include "ocpn_frame.h"
+#include "route.h"
 
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
+extern MyFrame* gFrame;
 extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern WayPointman* pWayPointMan;
@@ -152,7 +154,8 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   if ((route->GetnPoints() == 2) && (cc->m_routeState == 0))
     noRouteLeftToRedo = true;
 
-  g_pRouteMan->RemovePointFromRoute(point, route, cc);
+  g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
+  gFrame->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
     pConfig->DeleteWayPoint(point);

@@ -1,7 +1,7 @@
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#include "wx/listctrl.h"
+#include <wx/listctrl.h>
 #include <wx/choice.h>
 
 #include "TCWin.h"
@@ -14,8 +14,10 @@
 #include "FontMgr.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "RolloverWin.h"
 #include "navutil.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
@@ -662,7 +664,11 @@ void TCWin::OnPaint(wxPaintEvent &event) {
         if (CURRENT_PLOT == m_plot_type) {
           wxDateTime thx;  // write date
           wxString s, s1;
-          thx.Set((time_t)(tt + (m_stationOffset_mins * 60)));
+
+          thx.Set((time_t)tt - (m_diff_mins * 60));
+          if (m_tzoneDisplay == 0)  // LMT @ Station
+                thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
+
           s.Printf(thx.Format(_T("%H:%M  ")));
           s1.Printf(_T("%05.2f "), fabs(tcv[i]));  // write value
           s.Append(s1);

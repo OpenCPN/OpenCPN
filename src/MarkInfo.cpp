@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  MarkProperties Support
@@ -25,10 +25,10 @@
 #include "config.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/datetime.h>
@@ -39,13 +39,10 @@
 #include <wx/clrpicker.h>
 #include <wx/bmpbuttn.h>
 
-#ifdef ocpnUSE_SVG
-#include <wxSVG/svg.h>
-#endif  // ocpnUSE_SVG
-
 #include "styles.h"
 #include "MarkInfo.h"
 #include "navutil.h"  // for Route
+#include "navutil_base.h"
 #include "georef.h"
 #include "gui_lib.h"
 #include "routeman.h"
@@ -53,12 +50,13 @@
 #include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
 #include "chcanv.h"
-#include "PositionParser.h"
+#include "position_parser.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
-#include "Route.h"
-#include "chart1.h"
+#include "route.h"
 #include "TCWin.h"
+#include "svg_utils.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -94,30 +92,11 @@ extern wxColour g_colourWaypointRangeRingsColour;
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
 
-//  Helper utilities
-static wxBitmap LoadSVG(const wxString filename, unsigned int width,
-                        unsigned int height) {
-#ifdef ocpnUSE_SVG
-#ifdef __OCPN__ANDROID__
-  return loadAndroidSVG(filename, width, height);
-#else
-  wxSVGDocument svgDoc;
-  if (svgDoc.Load(filename))
-    return wxBitmap(svgDoc.Render(width, height, NULL, true, true));
-  else
-    return wxBitmap(width, height);
-#endif
-#else
-  return wxBitmap(width, height);
-#endif  // ocpnUSE_SVG
-}
-
 WX_DECLARE_LIST(wxBitmap, BitmapList);
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(BitmapList);
 
 #include <wx/arrimpl.cpp>
-#include <chart1.h>
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
 #define EXTENDED_PROP_PAGE 2  // Index of the extended properties page
@@ -273,20 +252,18 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
   CenterOnScreen();
 
 #ifdef __WXOSX__
-  Connect(wxEVT_ACTIVATE,
-          wxActivateEventHandler(MarkInfoDlg::OnActivate),
-          NULL, this);
+  Connect(wxEVT_ACTIVATE, wxActivateEventHandler(MarkInfoDlg::OnActivate), NULL,
+          this);
 #endif
-
 }
 
-void MarkInfoDlg::OnActivate(wxActivateEvent& event){
-    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
-    long int style = pWin->GetWindowStyle();
-    if (event.GetActive())
-      pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
-    else
-      pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
+void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
+  wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+  long int style = pWin->GetWindowStyle();
+  if (event.GetActive())
+    pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
+  else
+    pWin->SetWindowStyle(style ^ wxSTAY_ON_TOP);
 }
 
 void MarkInfoDlg::initialize_images(void) {
@@ -635,8 +612,8 @@ void MarkInfoDlg::Create() {
 
   wxString pDistUnitsStrings[] = {_("NMi"), _("km")};
   m_RangeRingUnits =
-      new wxChoice(sbSizerExtProperties->GetStaticBox(), wxID_ANY, wxDefaultPosition,
-                   wxDefaultSize, 2, pDistUnitsStrings);
+      new wxChoice(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
+                   wxDefaultPosition, wxDefaultSize, 2, pDistUnitsStrings);
   gbRRExtProperties->Add(m_RangeRingUnits, 0, wxALIGN_CENTRE_VERTICAL, 0);
 
   m_PickColor = new wxColourPickerCtrl(sbSizerExtProperties->GetStaticBox(),
@@ -1529,7 +1506,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_textArrivalRadius->SetValue(buf);
 
     int nUnits = m_pRoutePoint->GetWaypointRangeRingsStepUnits();
-    m_RangeRingUnits->SetSelection( nUnits );
+    m_RangeRingUnits->SetSelection(nUnits);
 
     wxColour col = m_pRoutePoint->m_wxcWaypointRangeRingsColour;
     m_PickColor->SetColour(col);
@@ -1724,7 +1701,8 @@ bool MarkInfoDlg::SaveChanges() {
       m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
 
     if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
-      m_pRoutePoint->SetWaypointRangeRingsStepUnits( m_RangeRingUnits->GetSelection());
+      m_pRoutePoint->SetWaypointRangeRingsStepUnits(
+          m_RangeRingUnits->GetSelection());
 
     m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
     if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {

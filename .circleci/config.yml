@@ -1,14 +1,14 @@
 ---
 version: 2
 jobs:
-   build-xenial:
+   build-bionic:
      docker:
-       - image: circleci/buildpack-deps:xenial-scm
+       - image: circleci/buildpack-deps:bionic-scm
          auth:
            username: $DOCKER_USER
            password: $DOCKER_PW
      environment:
-       - OCPN_TARGET:  xenial
+       - OCPN_TARGET:  bionic
      steps:
        - checkout
        - run: cat /etc/apt/sources.list
@@ -30,10 +30,9 @@ jobs:
        - run: ci/generic-upload.sh
    build-macos:
      macos:
-       xcode: "11.4.1"
+       xcode: "13.4.1"
      environment:
        - OCPN_TARGET:  macos
-       - TRAVIS_TAG: ON
      steps:
        - checkout
        - restore_cache:
@@ -46,8 +45,6 @@ jobs:
             - /usr/local/bin
             - /usr/local/include
             - /usr/local/lib
-            - /usr/local/opt
-            - opt_local_cache
        - run: ci/generic-upload.sh
    build-flatpak:
      working_directory: ~/OpenCPN
@@ -60,10 +57,10 @@ jobs:
        - run: ci/docker-auth.sh
        - restore_cache:
            keys:
-              - fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+              - fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
        - run: ci/circleci-build-flatpak.sh
        - save_cache:
-           key: fp-cache-v1-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+           key: fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
            paths:
              - build/.flatpak-builder/cache
              - build/.flatpak-builder/ccache
@@ -84,7 +81,7 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - build-xenial:
+      - build-bionic:
           filters:
             branches:
               only:
@@ -100,16 +97,13 @@ workflows:
               only:
                 - flatpak
                 - master
-                - v5.6.x
       - build-macos:
           filters:
             branches:
               only:
                 - master
-                - v5.6.x
       - build-android-armhf:
           filters:
             branches:
               only:
                 - master
-                - v5.6.x

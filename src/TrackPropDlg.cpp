@@ -25,24 +25,27 @@
 #include "config.h"
 
 #include "navutil.h"
+#include "navutil_base.h"
 #include "georef.h"
 #include "routeman.h"
+#include "routeman_gui.h"
 #include "routemanagerdialog.h"
 #include "trackprintout.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
-#include "Track.h"
-#include "Route.h"
+#include "track.h"
+#include "route.h"
 #include "chcanv.h"
 #include "gui_lib.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #endif
 
 extern double gLat, gLon;
-extern TrackList* pTrackList;
+extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern Routeman* g_pRouteMan;
 extern Select* pSelect;
@@ -1250,9 +1253,7 @@ bool TrackPropDlg::IsThisTrackExtendable() {
     return false;
   }
 
-  wxTrackListNode* track_node = pTrackList->GetFirst();
-  while (track_node) {
-    Track* ptrack = track_node->GetData();
+  for (Track* ptrack : g_TrackList) {
     if (ptrack->IsVisible() && (ptrack->m_GUID != m_pTrack->m_GUID)) {
       TrackPoint* track_node = ptrack->GetLastPoint();
       if (track_node) {
@@ -1267,7 +1268,6 @@ bool TrackPropDlg::IsThisTrackExtendable() {
         }
       }
     }
-    track_node = track_node->GetNext();  // next track
   }
   if (m_pExtendTrack) {
     return (!m_pExtendTrack->m_bIsInLayer);
@@ -1288,7 +1288,7 @@ void TrackPropDlg::OnExtendBtnClick(wxCommandEvent& event) {
     m_pExtendTrack->Clone(m_pTrack, begin, m_pTrack->GetnPoints(), _("_plus"));
     pSelect->AddAllSelectableTrackSegments(m_pExtendTrack);
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
-    g_pRouteMan->DeleteTrack(m_pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
 
     SetTrackAndUpdate(m_pExtendTrack);
     UpdateProperties();
@@ -1311,16 +1311,16 @@ void TrackPropDlg::OnSplitBtnClick(wxCommandEvent& event) {
     Track* pTail = new Track();
     pHead->Clone(m_pTrack, 0, m_nSelected - 1, _("_A"));
     pTail->Clone(m_pTrack, m_nSelected - 1, m_pTrack->GetnPoints(), _("_B"));
-    pTrackList->Append(pHead);
+    g_TrackList.push_back(pHead);
     pConfig->AddNewTrack(pHead);
 
-    pTrackList->Append(pTail);
+    g_TrackList.push_back(pTail);
     pConfig->AddNewTrack(pTail);
 
     pConfig->DeleteConfigTrack(m_pTrack);
 
     pSelect->DeleteAllSelectableTrackSegments(m_pTrack);
-    g_pRouteMan->DeleteTrack(m_pTrack);
+    RoutemanGui(*g_pRouteMan).DeleteTrack(m_pTrack);
     pSelect->AddAllSelectableTrackSegments(pTail);
     pSelect->AddAllSelectableTrackSegments(pHead);
 
@@ -1449,8 +1449,7 @@ void TrackPropDlg::OnToRouteBtnClick(wxCommandEvent& event) {
 
 void TrackPropDlg::OnExportBtnClick(wxCommandEvent& event) {
   wxString suggested_name = _("track");
-  TrackList list;
-  list.Append(m_pTrack);
+  std::vector<Track*> list = { m_pTrack };
   if (m_pTrack->GetName() != wxEmptyString)
     suggested_name = m_pTrack->GetName();
   ExportGPXTracks(this, &list, suggested_name);
@@ -1734,17 +1733,9 @@ void TrackPropDlg::OnOKBtnClick(wxCommandEvent& event) {
   //    Look in the track list to be sure the track is still available
   //    (May have been deleted by RouteManagerDialog...)
 
-  bool b_found_track = false;
-  wxTrackListNode* node = pTrackList->GetFirst();
-  while (node) {
-    Track* ptrack = node->GetData();
-
-    if (ptrack == m_pTrack) {
-      b_found_track = true;
-      break;
-    }
-    node = node->GetNext();
-  }
+  bool b_found_track =
+    std::find(g_TrackList.begin(), g_TrackList.end(), m_pTrack) !=
+    g_TrackList.end();
 
   if (b_found_track) {
     SaveChanges();  // write changes to globals and update config
@@ -1764,17 +1755,9 @@ void TrackPropDlg::OnOKBtnClick(wxCommandEvent& event) {
 }
 
 void TrackPropDlg::OnCancelBtnClick(wxCommandEvent& event) {
-  bool b_found_track = false;
-  wxTrackListNode* node = pTrackList->GetFirst();
-  while (node) {
-    Track* ptrack = node->GetData();
-
-    if (ptrack == m_pTrack) {
-      b_found_track = true;
-      break;
-    }
-    node = node->GetNext();
-  }
+  bool b_found_track =
+    std::find(g_TrackList.begin(), g_TrackList.end(), m_pTrack) !=
+    g_TrackList.end();
 
   if (b_found_track) m_pTrack->ClearHighlights();
 

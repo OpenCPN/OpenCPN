@@ -1,29 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_388093000">
-   <path fill="black" d="M772 876c-88,0 -139,-81 -111,-157l222 0c28,76 -23,157 -111,157z"/>
-   <path fill="black" d="M768 703l-107 1c-6,-1 -15,-7 -18,-13l-13 -30c-3,-8 -1,-18 8,-22l69 -28c9,-3 20,-5 31,-5l59 0c11,0 22,2 32,5l69 28c9,4 11,14 7,22l-13 30c-3,6 -11,12 -18,13l-106 -1z"/>
-   <polygon fill="white" points="768,619 777,646 809,646 783,663 793,690 768,674 742,690 752,663 727,646 758,646 "/>
-   <path fill="black" d="M997 1098l0 -160 199 0c20,0 36,16 36,36l0 88c0,19 -16,36 -36,36l-199 0z"/>
-   <path fill="white" d="M1155 982c20,0 36,16 36,36 0,20 -16,36 -36,36 -20,0 -36,-16 -36,-36 0,-20 16,-36 36,-36z"/>
-   <path fill="white" d="M997 1005l81 0c5,0 9,-5 9,-9l0 0c0,-5 -4,-9 -9,-9l-82 0 1 18z"/>
-   <path fill="white" d="M997 1049l81 0c5,0 9,-4 9,-9l0 0c0,-5 -4,-9 -9,-9l-82 0 1 18z"/>
-   <path fill="black" d="M1129 1107l64 0 0 54c0,18 -15,32 -32,32l0 0c-18,0 -32,-14 -32,-32l0 -54z"/>
-   <path fill="black" d="M1039 750c-22,0 -36,22 -36,42 24,0 48,0 72,0 0,-20 -15,-42 -36,-42z"/>
-   <path fill="black" d="M936 806c-24,0 -44,20 -43,49l26 0c0,-14 6,-26 23,-26l192 0c12,0 22,9 24,20l12 82 25 0 -13 -90c-3,-18 -20,-35 -44,-35l-202 0z"/>
-   <path fill="black" d="M1105 726l12 -12c-21,-21 -49,-33 -78,-33 -30,0 -58,12 -79,33l12 12c18,-18 42,-28 67,-28 25,0 48,10 66,28z"/>
-   <path fill="black" d="M1081 750l12 -12c-14,-15 -34,-23 -54,-23 -21,0 -40,8 -55,23l12 12c12,-12 27,-18 43,-18 16,0 31,6 42,18z"/>
-   <g>
-    <rect fill="black" x="568" y="883" width="401" height="311" rx="55" ry="55"/>
-    <path fill="white" d="M965 1157c-5,16 -18,29 -35,34l-359 -271c5,-16 18,-29 35,-34l359 271z"/>
-   </g>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M772 876c-88 0-139-81-111-157h222c28 76-23 157-111 157zm-4-173-107 1c-6-1-15-7-18-13l-13-30c-3-8-1-18 8-22l69-28c9-3 20-5 31-5h59c11 0 22 2 32 5l69 28c9 4 11 14 7 22l-13 30c-3 6-11 12-18 13l-106-1z"/>
+    <path fill="#fff" d="m768 619 9 27h32l-26 17 10 27-25-16-26 16 10-27-25-17h31z"/>
+    <path d="M997 1098V938h199c20 0 36 16 36 36v88c0 19-16 36-36 36H997z"/>
+    <path fill="#fff" d="M1155 982c20 0 36 16 36 36s-16 36-36 36-36-16-36-36 16-36 36-36zm-158 23h81c5 0 9-5 9-9 0-5-4-9-9-9h-82l1 18zm0 44h81c5 0 9-4 9-9s-4-9-9-9h-82l1 18z"/>
+    <path d="M1129 1107h64v54c0 18-15 32-32 32-18 0-32-14-32-32v-54zm-90-357c-22 0-36 22-36 42h72c0-20-15-42-36-42zm-103 56c-24 0-44 20-43 49h26c0-14 6-26 23-26h192c12 0 22 9 24 20l12 82h25l-13-90c-3-18-20-35-44-35H936zm169-80 12-12c-21-21-49-33-78-33-30 0-58 12-79 33l12 12c18-18 42-28 67-28s48 10 66 28z"/>
+    <path d="m1081 750 12-12c-14-15-34-23-54-23-21 0-40 8-55 23l12 12c12-12 27-18 43-18s31 6 42 18z"/>
+    <rect x="568" y="883" width="401" height="311" rx="55" ry="55"/>
+    <path fill="#fff" d="M965 1157c-5 16-18 29-35 34L571 920c5-16 18-29 35-34l359 271z"/>
 </svg>

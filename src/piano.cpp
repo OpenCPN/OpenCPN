@@ -26,23 +26,23 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #include "dychart.h"
 
 #include "chcanv.h"
 #include "piano.h"
 #include "chartdb.h"
-#include "chart1.h"
 #include "chartbase.h"
 #include "styles.h"
 #include "ocpndc.h"
 #include "cutil.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -459,7 +459,7 @@ void Piano::DrawGL(int off) {
 
   glBindTexture(GL_TEXTURE_2D, m_tex);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (style->chartStatusWindowTransparent) {
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glColor4ub(255, 255, 255,
@@ -471,10 +471,11 @@ void Piano::DrawGL(int off) {
 
   glEnable(GL_TEXTURE_2D);
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   glEnable(GL_BLEND);
-  m_parentCanvas->GetglCanvas()->RenderTextures(coords, texcoords, vc / 2,
-                                                m_parentCanvas->GetpVP());
+  m_parentCanvas->GetglCanvas()->RenderTextures(
+    m_parentCanvas->GetglCanvas()->m_gldc,
+    coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
   glDisable(GL_BLEND);
 
 #else
@@ -547,7 +548,7 @@ void Piano::DrawGL(int off) {
 
   glDisable(GL_BLEND);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
 #endif
@@ -800,7 +801,7 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
    Allows us to get rid of global statics...
 
    wxCommandEvent ev(MyPianoEvent);    // Private event
-   ..set up event to specify action...SelectChart, SetChartThumbnail, etc
+   ..set up event to specify action...SelectChart,  etc
    ::PostEvent(pEventReceiver, ev);    // event receiver passed to ctor
 
    */

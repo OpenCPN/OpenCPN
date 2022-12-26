@@ -107,13 +107,13 @@ if (APPLE)
   # with the system-wide one (which in turn does not provide includes...) We do
   # not want the systemwide vrsion as it is too old and misses support for many
   # archive formats
-  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
+  #list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+  #list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
 endif ()
 
 if (CMAKE_HOST_WIN32)
-  list(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
-  list(APPEND CMAKE_PREFIX_PATH "../../buildwin")
+  list(APPEND CMAKE_PREFIX_PATH "../../cache/buildwin/include")
+  list(APPEND CMAKE_PREFIX_PATH "../../cache/buildwin")
 endif ()
 
 option(OCPN_USE_CHART_LIST "Use wxDATAVIEWLISTCTRL for chart downloader" OFF)
@@ -181,8 +181,8 @@ elseif (APPLE)
   else ()
     # TODO This is a hack, due to the way libarchive is built and installed in
     # CI build environment
-    set(LibArchive_INCLUDE_DIRS /opt/local/include)
-    set(LibArchive_LIBRARIES /opt/local/lib/libarchive.dylib)
+    set(LibArchive_INCLUDE_DIRS /usr/local/include )
+    set(LibArchive_LIBRARIES /usr/local/lib/libarchive.13.dylib )
     set(LibArchive_FOUND 1)
   endif ()
 else ()
@@ -246,8 +246,7 @@ endif (LibArchive_FOUND)
 
 if (NOT QT_ANDROID)
   target_link_libraries(
-    ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::wxsvg
-                            ocpn::opencpn
+    ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::opencpn
   )
 else (NOT QT_ANDROID)
   target_link_libraries(

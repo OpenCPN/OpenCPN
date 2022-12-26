@@ -32,6 +32,7 @@
 
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
+#include <wx/config.h>
 #include <wx/fontpicker.h>
 #include <wx/filepicker.h>
 #include <wx/zipstrm.h>
@@ -42,14 +43,14 @@
 #include "config.h"
 #include "dychart.h"
 #include "androidUTIL.h"
-#include "OCPN_DataStreamEvent.h"
-#include "chart1.h"
+//#include "OCPN_DataStreamEvent.h"
 #include "AISTargetQueryDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetListDialog.h"
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
+#include "plugin_loader.h"
 #include "routemanagerdialog.h"
 #include "chartdb.h"
 #include "s52plib.h"
@@ -69,15 +70,16 @@
 #include "RoutePropDlgImpl.h"
 #include "MUIBar.h"
 #include "toolbar.h"
-#include "NavObjectCollection.h"
+#include "nav_object_database.h"
 #include "toolbar.h"
 #include "iENCToolbar.h"
-#include "Select.h"
+#include "select.h"
 #include "routeman.h"
 #include "CanvasOptions.h"
-#include "SerialDataStream.h"
+//#include "SerialDataStream.h"
 #include "gui_lib.h"
 #include "AndroidSound.h"
+#include "idents.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
@@ -104,6 +106,7 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 class androidUtilHandler;
+class PlugInManager;
 
 extern MyFrame *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
@@ -131,6 +134,8 @@ extern OCPNPlatform *g_Platform;
 // Static globals
 extern ChartDB *ChartData;
 extern MyConfig *pConfig;
+extern wxConfigBase *pBaseConfig;
+extern wxConfigBase *pBaseConfig;
 
 //   Preferences globals
 extern bool g_bShowOutlines;
@@ -141,7 +146,7 @@ extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
 extern bool g_bShowMag;
 extern double g_UserVar;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
 
@@ -271,7 +276,7 @@ extern bool g_bUIexpert;
 extern wxArrayString TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
-extern AIS_Decoder *g_pAIS;
+extern AisDecoder *g_pAIS;
 
 extern options *g_pOptions;
 
@@ -1020,6 +1025,8 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 void sendNMEAMessageEvent(wxString &msg) {
+  //FIXME (dave)
+#if 0
   wxCharBuffer abuf = msg.ToUTF8();
   if (abuf.data()) {  // OK conversion?
     std::string s(abuf.data());
@@ -1030,6 +1037,7 @@ void sendNMEAMessageEvent(wxString &msg) {
     if (s_pAndroidNMEAMessageConsumer)
       s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
   }
+#endif
 }
 
 //      OCPNNativeLib
@@ -1220,13 +1228,14 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
   strncpy(tstr, string, 190);
   strcat(tstr, "\r\n");
 
-  if (consumer) {
-    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    Nevent.SetNMEAString(tstr);
-    Nevent.SetStream(NULL);
-
-    consumer->AddPendingEvent(Nevent);
-  }
+  // FIXME (dave)
+//   if (consumer) {
+//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+//     Nevent.SetNMEAString(tstr);
+//     Nevent.SetStream(NULL);
+//
+//     consumer->AddPendingEvent(Nevent);
+//   }
 
   return 66;
 }
@@ -1242,13 +1251,14 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
   strncpy(tstr, string, 190);
   strcat(tstr, "\r\n");
 
-  if (s_pAndroidBTNMEAMessageConsumer) {
-    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    Nevent.SetNMEAString(tstr);
-    Nevent.SetStream(NULL);
-
-    s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
-  }
+//FIXME (dave)
+//   if (s_pAndroidBTNMEAMessageConsumer) {
+//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+//     Nevent.SetNMEAString(tstr);
+//     Nevent.SetStream(NULL);
+//
+//     s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
+//   }
 
   return 77;
 }
@@ -3702,6 +3712,8 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
     }
 
     if (b_action && cp) {  // something to do?
+//FIXME (dave)
+#if 0
 
       // Terminate and remove any existing stream with the same port name
       DataStream *pds_existing = g_pMUX->FindStream(cp->GetDSPort());
@@ -3733,6 +3745,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
         cp->b_IsSetup = true;
       }
+#endif
     }
   }
 
@@ -3810,6 +3823,8 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
           }
 
           if (b_action && cp) {  // something to do?
+//FIXME (dave)
+#if 0
             rr |= NEED_NEW_OPTIONS;
 
             // Terminate and remove any existing stream with the same port name
@@ -3839,9 +3854,9 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
               dstr->SetChecksumCheck(cp->ChecksumCheck);
 
               g_pMUX->AddStream(dstr);
-
               cp->b_IsSetup = true;
             }
+#endif
           }
         }
       }  // found pref
@@ -4624,9 +4639,7 @@ int doAndroidPersistState() {
   }
 
   //    Deactivate the PlugIns, allowing them to save state
-  if (g_pi_manager) {
-    g_pi_manager->DeactivateAllPlugIns();
-  }
+  PluginLoader::getInstance()->DeactivateAllPlugIns();
 
   /*
    Automatically drop an anchorage waypoint, if enabled
@@ -4718,7 +4731,7 @@ int doAndroidPersistState() {
   pConfig->UpdateSettings();
   pConfig->UpdateNavObj();
 
-  delete pConfig->m_pNavObjectChangesSet;
+  pConfig->m_pNavObjectChangesSet->reset();
 
   // Remove any leftover Routes and Waypoints from config file as they were
   // saved to navobj before
@@ -4728,6 +4741,7 @@ int doAndroidPersistState() {
 
   delete pConfig;  // All done
   pConfig = NULL;
+  pBaseConfig = NULL;
 
   //    Unload the PlugIns
   //      Note that we are waiting until after the canvas is destroyed,
@@ -4737,8 +4751,8 @@ int doAndroidPersistState() {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
+  PluginLoader::getInstance()->UnLoadAllPlugIns();
   if (g_pi_manager) {
-    g_pi_manager->UnLoadAllPlugIns();
     delete g_pi_manager;
     g_pi_manager = NULL;
   }
@@ -4808,7 +4822,6 @@ void CheckMigrateCharts()
   g_migrateDialog->Centre();
   g_migrateDialog->Raise();
   g_migrateDialog->ShowModal();
-
 
 
 }
@@ -5403,7 +5416,4 @@ void InProgressIndicator::Stop()
      m_timer.Stop();
 
 }
-
-
-
 

@@ -1,0 +1,24 @@
+---
+# yamllint disable rule:truthy
+
+name: Flatpak
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Flatpak package
+        run: ci/github-build-flatpak.sh

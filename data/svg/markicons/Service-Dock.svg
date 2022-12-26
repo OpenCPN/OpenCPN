@@ -1,20 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="none" points="0,0 1800,0 1800,1800 0,1800 "/>
-  <g id="_434066192">
-   <path fill="black" d="M1311 802c-180,111 -824,192 -822,0 -2,-191 642,-111 822,0z"/>
-   <rect fill="#CC9933" x="269" y="973" width="1262" height="140"/>
-   <line fill="none" stroke="black" stroke-width="20" x1="285" y1="989" x2="524" y2= "752" />
-   <line fill="none" stroke="black" stroke-width="20" x1="1299" y1="805" x2="1515" y2= "989" />
-   <polyline fill="none" stroke="black" stroke-width="20" points="285,989 839,915 1515,989 "/>
-   <circle fill="black" cx="1510" cy="989" r="21"/>
-   <circle fill="black" cx="290" cy="989" r="21"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M1311 802c-180 111-824 192-822 0-2-191 642-111 822 0z"/>
+    <path fill="#C93" d="M269 973h1262v140H269z"/>
+    <path fill="none" stroke="#000" stroke-width="20" d="m285 989 239-237m775 53 216 184m-1230 0 554-74 676 74"/>
+    <circle cx="1510" cy="989" r="21"/>
+    <circle cx="290" cy="989" r="21"/>
 </svg>

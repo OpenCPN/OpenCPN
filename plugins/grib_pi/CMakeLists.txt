@@ -144,7 +144,7 @@ if (NOT UNIX)
   )
   add_library(LIB_BZIP STATIC ${SRC_BZIP})
 
-  include_directories(${CMAKE_SOURCE_DIR}/buildwin/include)
+  include_directories(${CMAKE_SOURCE_DIR}/cache/buildwin/include)
   include_directories(${PLUGIN_SOURCE_DIR}/src/bzip2)
 endif (NOT UNIX)
 
@@ -160,7 +160,7 @@ if (QT_ANDROID)
   )
   set(SRC_GRIB ${SRC_GRIB} ${SRC_BZIP_ANDROID})
 
-  include_directories(${CMAKE_SOURCE_DIR}/buildwin/include)
+  include_directories(${CMAKE_SOURCE_DIR}/cache/buildwin/include)
   include_directories(${PLUGIN_SOURCE_DIR}/src/bzip2)
 
   message(STATUS ${SRC_GRIB})
@@ -191,7 +191,7 @@ endif ()
 if (WIN32)
   if (MSVC)
     target_link_libraries(
-      ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib"
+      ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/cache/buildwin/zlib1.lib"
                               "GLU_static"
     )
   else (MSVC)
@@ -212,7 +212,11 @@ endif (WIN32)
 if (NOT QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES})
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+  if (OCPN_USE_SVG)
+    if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
+    endif()
+  endif()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 else (NOT QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lz")

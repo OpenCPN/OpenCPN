@@ -736,7 +736,7 @@ void RoutePoint::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
+void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
                         bool use_cached_screen_coords, bool bVizOverride) {
   if (!IsVisibleSelectable(canvas, bVizOverride)) return;
 
@@ -855,8 +855,6 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
   //    if(region.Contains(r3) == wxOutRegion)
   //        return;
 
-  ocpnDC dc;
-
   //  Highlite any selected point
   if (m_bPtIsSelected) {
     wxColour hi_colour;
@@ -900,7 +898,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     float ys = r.y - hs / 2.;
     float u = (float)w / glw, v = (float)h / glh;
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
     float coords[8];
     float uv[8];
     // normal uv
@@ -922,7 +920,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     coords[5] = ys + hs;
     coords[6] = xs, coords[7] = ys + hs;
 
-    glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+    glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
 #else
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1054,7 +1052,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       int x = r.x + m_NameLocationOffsetX, y = r.y + m_NameLocationOffsetY;
       float u = (float)w / m_iTextTextureWidth,
             v = (float)h / m_iTextTextureHeight;
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
       glColor3ub(255, 255, 255);
 
       glBegin(GL_QUADS);
@@ -1090,7 +1088,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       coords[5] = y + h;
       coords[6] = x, coords[7] = y + h;
 
-      glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+      glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
 #endif
       glDisable(GL_BLEND);
@@ -1170,7 +1168,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     float u = (float)w / m_dragIconTextureWidth,
           v = (float)h / m_dragIconTextureWidth;
 
-#ifndef USE_ANDROID_GLES2
+#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1211,7 +1209,7 @@ void RoutePoint::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     coords[5] = ys + hs;
     coords[6] = xs, coords[7] = ys + hs;
 
-    glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+    glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
 #endif
     glDisable(GL_BLEND);

@@ -32,8 +32,8 @@
 
 #include "s57chart.h"
 #include "Osenc.h"
-#include "chart1.h"
 #include "chcanv.h"
+#include "ocpn_frame.h"
 
 extern MyFrame *gFrame;
 extern int g_nCPUCount;

@@ -1,21 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X6 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 1800 1800"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <rect fill="none" width="1800" height="1800"/>
-  <g id="_840962848">
-   <g>
-    <polygon fill="black" points="817,614 897,491 976,614 "/>
-    <polygon fill="black" points="817,770 897,647 976,770 "/>
-    <polygon fill="#FFF212" stroke="black" stroke-width="20" points="697,1309 697,1200 816,1151 869,848 931,848 984,1151 1103,1200 1103,1309 "/>
-    <polygon fill="black" stroke="black" stroke-width="20" points="816,1151 869,848 931,848 984,1151 "/>
-   </g>
-   <rect fill="white" x="883" y="881" width="34.9724" height="37.466"/>
-   <path fill="yellow" d="M1600 536c105,220 -380,312 -669,312 186,-221 568,-534 669,-312z"/>
-  </g>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="m817 614 80-123 79 123zm0 156 80-123 79 123z"/>
+    <path fill="#FFF212" stroke="#000" stroke-width="20" d="M697 1309v-109l119-49 53-303h62l53 303 119 49v109z"/>
+    <path stroke="#000" stroke-width="20" d="m816 1151 53-303h62l53 303z"/>
+    <path fill="#fff" d="M883 881h34.972v37.466H883z"/>
+    <path fill="#ff0" d="M1600 536c105 220-380 312-669 312 186-221 568-534 669-312z"/>
 </svg>
