@@ -92,13 +92,13 @@ Files: include/GL/glu.h
 Copyright: 1991-2000, Silicon Graphics, Inc.
 License: SGI-B-1.1
 
-Files: libs/geoprim/LLRegion.h
-  libs/s52plib/include/TexFont.h
+Files: libs/geoprim/src/LLRegion.h
+  libs/s52plib/src/TexFont.h
   include/ocpndc.h
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
-Files: libs/geoprim/include/bbox.h
+Files: libs/geoprim/src/bbox.h
 Copyright: 2000, Klaas Holwerda
 License: wxWidgets
 
@@ -126,8 +126,8 @@ Files: include/ogr_s57.h
 Copyright: 1998-2003, Frank Warmerdam
 License: Expat
 
-Files: libs/pugixml/include/pugiconfig.hpp
-  include/pugixml.hpp
+Files: libs/pugixml/pugiconfig.hpp
+  libs/pugixml/pugixml.hpp
 Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
 License: Expat
 
@@ -135,7 +135,7 @@ Files: include/routemanagerdialog.h
 Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
-Files: libs/s52plib/include/s52utils.h
+Files: libs/s52plib/src/s52utils.h
 Copyright: 2000-2004, Sylvain Duclos sduclos@users.sourceforgue.net
 License: GPL-2+
 
@@ -954,7 +954,7 @@ Files: libs/s52plib/src/DepthFont.cpp
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
-Files: src/Downloader.cpp
+Files: src/downloader.cpp
   src/plugin_handler.cpp
   src/cat_settings.cpp
   src/catalog_handler.cpp
@@ -1033,7 +1033,7 @@ Files: src/routemanagerdialog.cpp
 Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
-Files: libs/s52plib/src/cnsy.cpp
+Files: libs/s52plib/src/s52cnsy.cpp
   libs/s52plib/src/s52utils.cpp
 Copyright: 2010, David S. Register
   2000-2004, Sylvain Duclos
