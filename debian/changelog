@@ -1,4 +1,4 @@
-opencpn (5.7.1+dfsg-1) UNRELEASED; urgency=medium
+opencpn (5.7.1+dfsg2-1) UNRELEASED; urgency=medium
 
   * local package
   * test build of new upstream beta release
