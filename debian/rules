@@ -19,3 +19,6 @@ override_dh_auto_configure:
             -DOCPN_USE_NEWSERIAL=ON \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
             -DOCPN_FORCE_GTK3=ON
+
+override_dh_auto_test:
+	cd obj-*-linux-gnu; make run-tests
