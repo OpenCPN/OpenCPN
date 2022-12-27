@@ -5,5 +5,4 @@
 0005-CMakeLists-tests-Don-t-use-serial-library-if-not-con.patch
 0006-tests-Handle-different-target-when-bulit-froms-sourc.patch
 0007-comm_drv_n2k_serial.h-Handle-different-serial-lib-he.patch
-0008-Re-add-plugin-doc-dir-which-should-not-bne-stripped.patch
-0009-d-copyright-Don-t-remove-chartdldr-runtime-docs.patch
+0008-d-copyright-Don-t-remove-chartdldr-runtime-docs.patch
