@@ -1,0 +1,52 @@
+From 8445a9245ba02a46cb8ed6df54f7b6f737a6ee4d Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@nowhere.net>
+Date: Tue, 27 Dec 2022 12:57:42 +0100
+Subject: [PATCH] Add missing libs/tinyxml Debian work-around
+
+---
+ CMakeLists.txt         | 5 ++---
+ cmake/SystemLibs.cmake | 9 +++++++++
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+ create mode 100644 cmake/SystemLibs.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bf036b7bb..54accb698 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1657,6 +1657,8 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+   set(LIBARCHIVE_COMMENT_END "-->")
+ endif ()
+ 
++include(SystemLibs)
++
+ message(STATUS "    Adding local LIBTESS2")
+ add_subdirectory(libs/libtess2)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
+@@ -1668,9 +1670,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
+ add_subdirectory(libs/wxJSON)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
+ 
+-add_subdirectory(libs/tinyxml)
+-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
+-
+ add_subdirectory(libs/geoprim)
+ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
+ 
+diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
+new file mode 100644
+index 000000000..fe71d1ce9
+--- /dev/null
++++ b/cmake/SystemLibs.cmake
+@@ -0,0 +1,9 @@
++# Dummy definitions for systems like Debian which removes some bundled libs
++# in the packaging
++
++find_package(TinyXML REQUIRED)
++message(STATUS "Building with system tinyxml")
++add_library(TINYXML INTERFACE)
++target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
++target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
++add_library(ocpn::tinyxml ALIAS TINYXML)
+-- 
+2.38.1
+
