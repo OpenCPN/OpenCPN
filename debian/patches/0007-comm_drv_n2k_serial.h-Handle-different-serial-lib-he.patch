@@ -1,0 +1,131 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 27 Dec 2022 20:35:34 +0100
+Subject: sources, headers: Handle different serial lib header location.
+
+---
+ include/comm_drv_n2k_serial.h  |  5 ++++-
+ src/comm_drv_n0183_serial.cpp  |  5 ++++-
+ src/comm_drv_n2k_socketcan.cpp |  9 +++++++--
+ src/ocpn_app.cpp               | 12 +++++++++++-
+ src/ser_ports.cpp              |  4 +++-
+ 5 files changed, 29 insertions(+), 6 deletions(-)
+
+diff --git a/include/comm_drv_n2k_serial.h b/include/comm_drv_n2k_serial.h
+index acabcd7..4159b66 100644
+--- a/include/comm_drv_n2k_serial.h
++++ b/include/comm_drv_n2k_serial.h
+@@ -28,10 +28,13 @@
+ 
+ #include <wx/thread.h>
+ 
++#include "config.h"
+ #include "comm_drv_n2k.h"
+ #include "conn_params.h"
+ 
+-#ifndef __OCPN__ANDROID__
++#ifdef HAVE_SYS_SERIAL_LIB
++#include <serial.h>
++#elif !defined(__ANDROID__)
+ #include "serial/serial.h"
+ #endif
+ 
+diff --git a/src/comm_drv_n0183_serial.cpp b/src/comm_drv_n0183_serial.cpp
+index 513642a..005b27d 100644
+--- a/src/comm_drv_n0183_serial.cpp
++++ b/src/comm_drv_n0183_serial.cpp
+@@ -40,11 +40,14 @@
+ #include <wx/string.h>
+ #include <wx/utils.h>
+ 
++#include "config.h"
+ #include "comm_drv_n0183_serial.h"
+ #include "comm_navmsg_bus.h"
+ #include "comm_drv_registry.h"
+ 
+-#ifndef __ANDROID__
++#ifdef HAVE_SYS_SERIAL_LIB
++#include <serial.h>
++#elif !defined(__ANDROID__)
+ #include "serial/serial.h"
+ #endif
+ 
+diff --git a/src/comm_drv_n2k_socketcan.cpp b/src/comm_drv_n2k_socketcan.cpp
+index bcf4845..64b77e0 100644
+--- a/src/comm_drv_n2k_socketcan.cpp
++++ b/src/comm_drv_n2k_socketcan.cpp
+@@ -26,6 +26,7 @@
+ #if !defined(__linux__) || defined(__ANDROID__)
+ #error "This file can only be compiled on Linux"
+ #endif
++#include "config.h"
+ 
+ #include <algorithm>
+ #include <atomic>
+@@ -33,15 +34,19 @@
+ #include <mutex>
+ #include <thread>
+ #include <vector>
+-
+ #include <linux/can.h>
+ #include <linux/can/raw.h>
+ #include <net/if.h>
+-#include <serial/serial.h>
+ #include <sys/ioctl.h>
+ #include <sys/socket.h>
+ #include <sys/time.h>
+ 
++#ifdef HAVE_SYS_SERIAL_LIB
++#include <serial.h>
++#elif !defined(__ANDROID__)
++#include "serial/serial.h"
++#endif
++
+ #include <wx/log.h>
+ #include <wx/string.h>
+ #include <wx/utils.h>
+diff --git a/src/ocpn_app.cpp b/src/ocpn_app.cpp
+index 2e6c93b..5a257f0 100644
+--- a/src/ocpn_app.cpp
++++ b/src/ocpn_app.cpp
+@@ -24,6 +24,10 @@
+  **************************************************************************/
+ #include "config.h"
+ 
++#ifdef HAVE_STDINT_H
++#define RESTORE_HAVE_STDINT_H
++#endif
++
+ 
+ #ifdef __MINGW32__
+ #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
+@@ -168,8 +172,14 @@ void RedirectIOToConsole();
+ #include "crashprint.h"
+ #endif
+ 
+-#ifdef __OCPN__ANDROID__
++#ifdef RESTORE_HAVE_STDINT_H
++#define HAVE_STDINT_H
++#endif
++
++#ifdef __ANDROID__
+ #include "androidUTIL.h"
++#elif defined(HAVE_SYS_SERIAL_LIB)
++#include <serial.h>
+ #else
+ #include "serial/serial.h"
+ #endif
+diff --git a/src/ser_ports.cpp b/src/ser_ports.cpp
+index 665bc60..04c51fe 100644
+--- a/src/ser_ports.cpp
++++ b/src/ser_ports.cpp
+@@ -56,7 +56,9 @@
+ #endif
+ 
+ 
+-#ifdef OCPN_USE_NEWSERIAL
++#ifdef OCPN_USE_NEWSERIAL && defined(HAVE_SYS_SERIAL_LIB)
++#include <serial.h>
++#elif OCPN_USE_NEWSERIAL
+ #include "serial/serial.h"
+ #endif
+ 

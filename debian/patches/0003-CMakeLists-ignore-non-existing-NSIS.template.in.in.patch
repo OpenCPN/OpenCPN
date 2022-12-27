@@ -1,4 +1,3 @@
-From c952479732229f9036a6d84862f957ecef3423b1 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Mon, 26 Dec 2022 14:46:29 +0100
 Subject: [PATCH] CMakeLists: ignore non-existing NSIS.template.in.in
@@ -9,16 +8,15 @@ references to this windows-only file.
 Not acceptable upstream.
 
 Forwarded: not-needed
-
 ---
  CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0ce63ceb4..b84d12365 100644
+index 9db0630..c6b09b4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2640,7 +2640,7 @@ if (MINGW)
+@@ -2634,7 +2634,7 @@ if (MINGW)
      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
    )
    add_dependencies(${PACKAGE_NAME} NSIS_config)
@@ -27,6 +25,3 @@ index 0ce63ceb4..b84d12365 100644
    configure_file(
      ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
      ${CMAKE_BINARY_DIR}/NSIS.template.in COPYONLY
--- 
-2.38.1
-

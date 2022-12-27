@@ -1,28 +1,39 @@
-From 8445a9245ba02a46cb8ed6df54f7b6f737a6ee4d Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Tue, 27 Dec 2022 12:57:42 +0100
-Subject: [PATCH] Add missing libs/tinyxml Debian work-around
+Subject: [PATCH] Add missing libs like tinyxml Debian work-around
 
 ---
- CMakeLists.txt         | 5 ++---
- cmake/SystemLibs.cmake | 9 +++++++++
- 2 files changed, 11 insertions(+), 3 deletions(-)
+ CMakeLists.txt             |  8 ++++----
+ cmake/SystemLibs.cmake     | 18 ++++++++++++++++++
+ cmake/in-files/config.h.in |  1 +
+ 3 files changed, 23 insertions(+), 4 deletions(-)
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bf036b7bb..54accb698 100644
+index c6b09b4..d6f14e7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1657,6 +1657,8 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+@@ -1581,8 +1581,10 @@ if (OCPN_USE_SVG)
+   endif()
+ endif (OCPN_USE_SVG)
+ 
++include(SystemLibs)
++
+ if (OCPN_USE_NEWSERIAL)
+-  add_subdirectory("libs/serial")
++  # add_subdirectory("libs/serial")
+   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
+   message(STATUS "Using new serial library...")
+ endif (OCPN_USE_NEWSERIAL)
+@@ -1657,6 +1659,7 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
    set(LIBARCHIVE_COMMENT_END "-->")
  endif ()
  
-+include(SystemLibs)
 +
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-@@ -1668,9 +1670,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
+@@ -1668,9 +1671,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
  add_subdirectory(libs/wxJSON)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
  
@@ -34,10 +45,10 @@ index bf036b7bb..54accb698 100644
  
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 000000000..fe71d1ce9
+index 0000000..c53b112
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,18 @@
 +# Dummy definitions for systems like Debian which removes some bundled libs
 +# in the packaging
 +
@@ -47,6 +58,24 @@ index 000000000..fe71d1ce9
 +target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
 +target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
 +add_library(ocpn::tinyxml ALIAS TINYXML)
--- 
-2.38.1
-
++
++message(STATUS "Building with system serial lib")
++add_library(SERIAL_IF INTERFACE)
++find_library(LibSerial cxx-serial REQUIRED)
++find_file(SerialHeader NAME serial.h  REQUIRED)
++target_link_libraries(SERIAL_IF INTERFACE ${LibSerial})
++add_library(ocpn::serial ALIAS SERIAL_IF)
++set(HAVE_SYS_SERIAL_LIB ON CACHE BOOL "")
++add_compile_definitions(HAVE_STDINT_H)   # For external libs missing config.h
+diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
+index 86ccd5b..fb47468 100644
+--- a/cmake/in-files/config.h.in
++++ b/cmake/in-files/config.h.in
+@@ -45,6 +45,7 @@
+ #cmakedefine HAVE_SYS_TYPES_H
+ #cmakedefine HAVE_SYS_FCNTL_H
+ #cmakedefine HAVE_SYS_IOCTL_H
++#cmakedefine HAVE_SYS_SERIAL_LIB
+ 
+ // The os compatible plugins are are built for
+ #define PKG_TARGET "${PKG_TARGET}"
