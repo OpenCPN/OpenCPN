@@ -248,6 +248,7 @@ public:
 private:
   Worker m_worker;
   unsigned int m_source_address;
+  int m_last_TX_sequence;
 };
 
 
@@ -274,14 +275,14 @@ CanHeader::CanHeader(const CanFrame frame) {
   pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
   priority = (buf[3] & 0x1c) >> 2;
 
-  if (pgn == 59904){
-    unsigned char *d = (unsigned char *)&frame;
-    for (size_t i=0 ; i < sizeof(frame) ; i++){
-      printf("%02X ", *d);
-      d++;
-    }
-    printf("\n\n");
-  }
+//   if (pgn == 129029){
+//     unsigned char *d = (unsigned char *)&frame;
+//     for (size_t i=0 ; i < sizeof(frame) ; i++){
+//       printf("%02X ", *d);
+//       d++;
+//     }
+//     printf("\n\n");
+//   }
 }
 
 
@@ -322,6 +323,11 @@ void CommDriverN2KSocketCanImpl::Close() {
 bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
 
+  int socket = GetWorker().GetSocket();
+
+  if (socket < 0)
+      return false;
+
   CanFrame frame;
   memset(&frame, 0, sizeof(frame));
 
@@ -333,33 +339,75 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
   unsigned long canId = BuildCanID(6, m_source_address, 255, _pgn);
 
   frame.can_id = canId | CAN_EFF_FLAG;
-  frame.can_dlc = load.size();
 
-  if (frame.can_dlc > 8)    // skip multiframe
-    return false;
+  if (load.size() <= 8){
+    frame.can_dlc = load.size();
+    if (load.size() > 0)
+      memcpy(&frame.data, load.data(), load.size());
 
-  if (load.size() > 0)
-    memcpy(&frame.data, load.data(), load.size());
 
-  int socket = GetWorker().GetSocket();
+//     unsigned char *d = (unsigned char *)&frame;
+//     printf("SendFrame: ");
+//     for (size_t i=0 ; i < sizeof(frame) ; i++){
+//       printf("%02X ", *d);
+//       d++;
+//     }
+//     printf("\n\n");
 
-  if (socket < 0)
-    return false;
-
-  CanHeader tt(frame);
-
-  unsigned char *d = (unsigned char *)&frame;
-  printf("SendFrame: ");
-  for (size_t i=0 ; i < sizeof(frame) ; i++){
-    printf("%02X ", *d);
-    d++;
+    int sentbytes = write(socket, &frame, sizeof(frame));
   }
-  printf("\n\n");
+  else {                        // Fast Packet
+    int sequence = (m_last_TX_sequence + 0x20) & 0xE0;
+    m_last_TX_sequence = sequence;
+    unsigned char *data_ptr = load.data();
+    int n_remaining = load.size();
 
-  int sentbytes = write(socket, &frame, sizeof(frame));
+    // First packet
+    frame.can_dlc = 8;
+    frame.data[0] = sequence;
+    frame.data[1] = load.size();
+    int data_len_0 = wxMin(load.size(), 6);
+    memcpy(&frame.data[2], load.data(), data_len_0);
+
+//     unsigned char *d = (unsigned char *)&frame;
+//     printf("SendFrame_0: ");
+//     for (size_t i=0 ; i < sizeof(frame) ; i++){
+//       printf("%02X ", *d);
+//       d++;
+//     }
+//     printf("\n\n");
+
+    int sentbytes0 = write(socket, &frame, sizeof(frame));
+
+    data_ptr += data_len_0;
+    n_remaining -= data_len_0;
+    sequence++;
 
 
-  return false;
+    // The rest of the bytes
+    while (n_remaining > 0){
+      frame.data[0] = sequence;
+      int data_len_n = wxMin(n_remaining, 7);
+      memcpy(&frame.data[1], data_ptr, data_len_n);
+
+//       unsigned char *d = (unsigned char *)&frame;
+//       printf("SendFrame_N: ");
+//       for (size_t i=0 ; i < sizeof(frame) ; i++){
+//         printf("%02X ", *d);
+//         d++;
+//       }
+//       printf("\n\n");
+
+      int sentbytesn = write(socket, &frame, sizeof(frame));
+
+      data_ptr += data_len_n;
+      n_remaining -= data_len_n;
+      sequence++;
+    }
+  }
+
+
+  return true;
 }
 
 
