@@ -1575,6 +1575,7 @@ GetActiveRouteGUID(void);  // if no active route, returns wxEmptyString
 
 //  Comm Priority query support
 extern DECL_EXP std::vector<std::string> GetPriorityMaps();
+extern DECL_EXP std::vector<std::string> GetActivePriorityIdentifiers();
 
 
 
