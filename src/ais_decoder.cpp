@@ -382,7 +382,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129794(static_cast<uint64_t>(129794));
   listener_N2K_129794.Listen(n2k_msg_129794, this, EVT_N2K_129794);
   Bind(EVT_N2K_129794, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129794(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
       // AIS static data class B part A PGN 129809
@@ -390,7 +390,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129809(static_cast<uint64_t>(129809));
   listener_N2K_129809.Listen(n2k_msg_129809, this, EVT_N2K_129809);
   Bind(EVT_N2K_129809, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129809(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // AIS static data class B part B PGN 129810
@@ -398,7 +398,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129810(static_cast<uint64_t>(129810));
   listener_N2K_129810.Listen(n2k_msg_129810, this, EVT_N2K_129810);
   Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129810(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // AIS Base Station report PGN 129793
@@ -406,7 +406,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129793(static_cast<uint64_t>(129793));
   listener_N2K_129793.Listen(n2k_msg_129793, this, EVT_N2K_129793);
   Bind(EVT_N2K_129793, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129793(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
 }
