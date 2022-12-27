@@ -1,0 +1,39 @@
+From 08ed180820f85f69bec0c6c826b120921bc943b4 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@nowhere.net>
+Date: Tue, 27 Dec 2022 13:39:09 +0100
+Subject: [PATCH] tests: Handle different target when bulit froms source
+
+---
+ libs/gtest/CMakeLists.txt | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/libs/gtest/CMakeLists.txt b/libs/gtest/CMakeLists.txt
+index 92fd8cb01..ba03d5535 100644
+--- a/libs/gtest/CMakeLists.txt
++++ b/libs/gtest/CMakeLists.txt
+@@ -34,6 +34,10 @@ else ()
+       googletest
+       URL ${GTEST_SRC_LOCATION}
+     )
++    target_include_directories(
++      _OCPN_GTEST_IF
++      INTERFACE ${GTEST_SRC_LOCATION}/googletest/include
++    )
+   else ()
+     message(STATUS "Downloading and building gtest from source")
+     FetchContent_Declare(
+@@ -45,5 +49,10 @@ else ()
+   set(CMAKE_CXX_STANDARD 14)
+   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+   FetchContent_MakeAvailable(googletest)
+-  target_link_libraries(_OCPN_GTEST_IF INTERFACE GTest::gtest_main)
++  if (TARGET GTest::gtest_main)
++    target_link_libraries(_OCPN_GTEST_IF INTERFACE GTest::gtest_main)
++  else ()
++    target_link_libraries(_OCPN_GTEST_IF INTERFACE gtest_main)
++  endif ()
++
+ endif ()
+-- 
+2.38.1
+
