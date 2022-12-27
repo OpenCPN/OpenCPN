@@ -38,16 +38,6 @@ Copyright: 2011, 2014, Pavel Kalian
   1995-1998, Brian Paul
 License: GPL-2+
 
-Files: data/tcdata
-Copyright: No copyright
-License: public-domain
- The information on government servers are in the public domain, unless
- specifically annotated otherwise, and may be used freely by the
- public. Before using information obtained from this server, special
- attention should be given to the date and time of the data and products
- being displayed. This information shall not be modified in content and
- then presented as official government material.
-
 Files: include/*
 Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
@@ -70,12 +60,12 @@ Copyright: 2011, 2014, Pavel Kalian
   1995-1998, Brian Paul
 License: GPL-2+
 
-Files: include/DepthFont.h
+Files: libs/s52plib/src/DepthFont.h
 Copyright: 2020, David Register
 License: GPL-2+
 
-Files: include/Downloader.h
-  include/PluginHandler.h
+Files: include/downloader.h
+  include/plugin_handler.h
   include/cat_settings.h
   include/catalog_handler.h
   include/catalog_mgr.h
@@ -103,13 +93,13 @@ Files: include/GL/glu.h
 Copyright: 1991-2000, Silicon Graphics, Inc.
 License: SGI-B-1.1
 
-Files: include/LLRegion.h
-  include/TexFont.h
+Files: libs/geoprim/LLRegion.h
+  libs/s52plib/include/TexFont.h
   include/ocpndc.h
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
-Files: include/bbox.h
+Files: libs/geoprim/include/bbox.h
 Copyright: 2000, Klaas Holwerda
 License: wxWidgets
 
@@ -137,7 +127,7 @@ Files: include/ogr_s57.h
 Copyright: 1998-2003, Frank Warmerdam
 License: Expat
 
-Files: include/pugiconfig.hpp
+Files: libs/pugixml/include/pugiconfig.hpp
   include/pugixml.hpp
 Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
 License: Expat
@@ -146,7 +136,7 @@ Files: include/routemanagerdialog.h
 Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
-Files: include/s52utils.h
+Files: libs/s52plib/include/s52utils.h
 Copyright: 2000-2004, Sylvain Duclos sduclos@users.sourceforgue.net
 License: GPL-2+
 
@@ -684,10 +674,6 @@ Files: libs/wxservdisc/wxServDisc.cpp
 Copyright: 2008, Christian Beier <dontmind@freeshell.org>
 License: GPL-2+
 
-Files: mingw/*
-Copyright: fedorainfracloud.org/coprs/leamas/opencpn-mingw.
-License: GPL-2+
-
 Files: opencpn.1
 Copyright: 2018, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
@@ -962,15 +948,15 @@ Copyright: 2011, 2014, Pavel Kalian
   1995-1998, Brian Paul
 License: GPL-2+
 
-Files: src/DepthFont.cpp
-  src/LLRegion.cpp
-  src/TexFont.cpp
+Files: libs/s52plib/src/DepthFont.cpp
+  libs/geoprim/src/LLRegion.cpp
+  libs/s52plib/src/TexFont.cpp
   src/ocpndc.cpp
 Copyright: 2011, 2013-2016, Sean DEpagnier
 License: GPL-2+
 
 Files: src/Downloader.cpp
-  src/PluginHandler.cpp
+  src/plugin_handler.cpp
   src/cat_settings.cpp
   src/catalog_handler.cpp
   src/catalog_mgr.cpp
@@ -985,7 +971,7 @@ Files: src/Downloader.cpp
 Copyright: 2011, 2019, 2021, Alec Leamas
 License: GPL-2+
 
-Files: src/bbox.cpp
+Files: libs/geoprim/src/bbox.cpp
 Copyright: 2000, Klaas Holwerda
 License: wxWidgets
 
@@ -1010,7 +996,7 @@ Copyright: 2004, wxCode
 License: wxWidgets
 
 Files: src/garmin_wrapper.cpp
-  src/garmin_wrapper.h
+  include/garmin_wrapper.h
 Copyright: 2010, David S Register
 License: GPL-2+
 
@@ -1040,7 +1026,7 @@ Files: src/ogrs57datasource.cpp
 Copyright: 1998-2003, Frank Warmerdam
 License: Expat
 
-Files: src/pugixml.cpp
+Files: libs/pugixml/pugixml.cpp
 Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
 License: Expat
 
@@ -1048,8 +1034,8 @@ Files: src/routemanagerdialog.cpp
 Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
-Files: src/s52cnsy.cpp
-  src/s52utils.cpp
+Files: libs/s52plib/src/cnsy.cpp
+  libs/s52plib/src/s52utils.cpp
 Copyright: 2010, David S. Register
   2000-2004, Sylvain Duclos
 License: GPL-2+
