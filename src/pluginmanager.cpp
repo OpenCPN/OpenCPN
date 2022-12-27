@@ -8477,6 +8477,24 @@ std::vector<std::string> GetPriorityMaps() {
   return (app.m_comm_bridge.GetPriorityMaps());
 }
 
+std::vector<std::string> GetActivePriorityIdentifiers() {
+  std::vector<std::string> result;
+
+  MyApp& app = wxGetApp();
+
+  std::string id = app.m_comm_bridge.GetPriorityContainer("position").active_source;
+  result.push_back(id);
+  id = app.m_comm_bridge.GetPriorityContainer("velocity").active_source;
+  result.push_back(id);
+  id = app.m_comm_bridge.GetPriorityContainer("heading").active_source;
+  result.push_back(id);
+  id = app.m_comm_bridge.GetPriorityContainer("variation").active_source;
+  result.push_back(id);
+  id = app.m_comm_bridge.GetPriorityContainer("satellites").active_source;
+  result.push_back(id);
+
+  return result;
+}
 
 /** Comm port plugin TX support methods  */
 
