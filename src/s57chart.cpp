@@ -6119,8 +6119,13 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
 
       rangePx = rangePx * rangeScale;
 
+      int penWidth = rangePx / 10;
+      penWidth = wxMin(10, penWidth);
+      penWidth = wxMax(3, penWidth);
+
+
       int legOpacity;
-      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color, 12,
+      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color, penWidth,
                                                     wxPENSTYLE_SOLID);
       arcpen->SetCap(wxCAP_BUTT);
       dc.SetPen(*arcpen);
