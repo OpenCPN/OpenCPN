@@ -1,0 +1,20 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 27 Dec 2022 23:56:24 +0100
+Subject: d/copyright: Don't remove chartdldr runtime docs
+
+---
+ debian/copyright | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/debian/copyright b/debian/copyright
+index ec9f7c3..d149941 100644
+--- a/debian/copyright
++++ b/debian/copyright
+@@ -17,7 +17,6 @@ Files-Excluded:
+  libs/tinyxml
+  libs/wxsvg
+  mingw
+- plugins/chartdldr_pi/data/doc
+  plugins/chartdldr_pi/src/tinyxml
+  plugins/chartdldr_pi/src/unarr
+  plugins/grib_pi/src/bzip2
