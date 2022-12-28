@@ -1340,7 +1340,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       continue;
 #endif
 
-    //if (reference_family != cte.GetChartFamily()) continue;
+    if (reference_family != cte.GetChartFamily()) continue;
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
 
