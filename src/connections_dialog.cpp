@@ -35,6 +35,15 @@
 #include <wx/tokenzr.h>
 #include <wx/regex.h>
 
+#ifndef __WXMSW__
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <net/if.h>
+#include <serial/serial.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#endif
+
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
@@ -71,6 +80,54 @@ wxString StringArrayToString(wxArrayString arr) {
   }
   return ret;
 }
+
+// Check available SocketCAN interfaces
+
+wxArrayString GetAvailableSocketCANInterfaces() {
+  wxArrayString rv;
+#ifndef __WXMSW__
+  wxString candidates[] = {
+    "can0",
+    "can1",
+    "can2",
+    "can3",
+    "slcan0",
+    "slcan1",
+    "vcan0",
+    "vcan1"
+  };
+  size_t ncandidates = sizeof(candidates) / sizeof(wxString);
+
+  for (size_t i=0 ; i < ncandidates; i++){
+    int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (sock < 0) {
+      continue;
+    }
+
+    // Get the interface index
+    struct ifreq if_request;
+    strcpy(if_request.ifr_name, candidates[i].c_str());
+    if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
+      continue;
+    }
+
+    // Check if interface is UP
+    struct sockaddr_can can_address;
+    can_address.can_family = AF_CAN;
+    can_address.can_ifindex = if_request.ifr_ifindex;
+    if (ioctl(sock, SIOCGIFFLAGS, &if_request) < 0) {
+      continue;
+    }
+    if (if_request.ifr_flags & IFF_UP) {
+      rv.Add(candidates[i]);
+    } else {
+      continue;
+    }
+  }
+#endif
+  return rv;
+}
+
 
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation
@@ -529,13 +586,10 @@ void ConnectionsDialog::Init(){
   m_stCANSource->Wrap(-1);
   fgSizer1->Add(m_stCANSource, 0, wxALL, 5);
 
-  // FIXME (dave)  Query actual interfaces available, disable others.
-  wxString choice_CANSource_choices[] = {"can0", "slcan0", "vcan0"};
-  int choice_CANSource_nchoices =
-      sizeof(choice_CANSource_choices) / sizeof(wxString);
+  wxArrayString choices = GetAvailableSocketCANInterfaces();
   m_choiceCANSource = new wxChoice(
       m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-      choice_CANSource_nchoices, choice_CANSource_choices, 0);
+      choices);
   m_choiceCANSource->SetSelection(0);
   m_choiceCANSource->Enable(TRUE);
   fgSizer1->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
