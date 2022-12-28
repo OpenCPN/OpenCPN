@@ -2182,7 +2182,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               if (calc_angle > 180) calc_angle -= 360.0;
               CalculateAndUpdateTWDS(m_awaspeed_kn, calc_angle);
               mPriTWA = 2;
-              //mPriWDN = 2;
+              mPriWDN = 2;
               mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               mWDN_Watchdog = gps_watchdog_timeout_ticks;
             }
