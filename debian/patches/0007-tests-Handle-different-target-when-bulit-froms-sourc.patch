@@ -2,6 +2,8 @@ From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Tue, 27 Dec 2022 13:39:09 +0100
 Subject: [PATCH] tests: Handle different target when built from source
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/2894
+Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2895
 ---
  libs/gtest/CMakeLists.txt | 13 ++++++-------
  test/CMakeLists.txt       |  2 ++
@@ -41,7 +43,7 @@ index 92fd8cb..f42d252 100644
    target_link_libraries(_OCPN_GTEST_IF INTERFACE GTest::gtest_main)
  endif ()
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index c70e639..765839c 100644
+index 3701119..694bb48 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
 @@ -8,6 +8,8 @@ message(STATUS "Building tests")

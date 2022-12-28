@@ -4,9 +4,9 @@ Subject: [PATCH] Add missing libs like tinyxml Debian work-around
 
 ---
  CMakeLists.txt             |  8 ++++----
- cmake/SystemLibs.cmake     | 18 ++++++++++++++++++
- cmake/in-files/config.h.in |  1 +
- 3 files changed, 23 insertions(+), 4 deletions(-)
+ cmake/SystemLibs.cmake     | 28 ++++++++++++++++++++++++++++
+ cmake/in-files/config.h.in |  3 +++
+ 3 files changed, 35 insertions(+), 4 deletions(-)
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -45,10 +45,10 @@ index c6b09b4..d6f14e7 100644
  
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 0000000..c53b112
+index 0000000..473722c
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,28 @@
 +# Dummy definitions for systems like Debian which removes some bundled libs
 +# in the packaging
 +
@@ -66,16 +66,35 @@ index 0000000..c53b112
 +target_link_libraries(SERIAL_IF INTERFACE ${LibSerial})
 +add_library(ocpn::serial ALIAS SERIAL_IF)
 +set(HAVE_SYS_SERIAL_LIB ON CACHE BOOL "")
-+add_compile_definitions(HAVE_STDINT_H)   # For external libs missing config.h
++
++# The system libserial serial.h lives in /usr/include, not
++# /usr/includ/7serial. Create a link which make the source code using
++# "#include serial/serial.h" work.
++if (NOT EXISTS ${CMAKE_BINARY_DIR}/include)
++  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
++endif ()
++execute_process(COMMAND ln -s /usr/include ${CMAKE_BINARY_DIR}/include/serial)
++
++find_path(HAVE_STDINT_H NAMES stdint.h)
++find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 86ccd5b..fb47468 100644
+index 86ccd5b..83b5451 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
-@@ -45,6 +45,7 @@
+@@ -37,6 +37,7 @@
+ #cmakedefine HAVE_PORTAUDIO
+ #cmakedefine HAVE_READLINK
+ #cmakedefine HAVE_SNDFILE
++#cmakedefine HAVE_STDINT_H
+ #cmakedefine HAVE_SYSTEM_CMD_SOUND
+ #cmakedefine HAVE_UNISTD_H
+ #cmakedefine USE_SYSFS_PORTS
+@@ -45,6 +46,8 @@
  #cmakedefine HAVE_SYS_TYPES_H
  #cmakedefine HAVE_SYS_FCNTL_H
  #cmakedefine HAVE_SYS_IOCTL_H
 +#cmakedefine HAVE_SYS_SERIAL_LIB
++
  
  // The os compatible plugins are are built for
  #define PKG_TARGET "${PKG_TARGET}"

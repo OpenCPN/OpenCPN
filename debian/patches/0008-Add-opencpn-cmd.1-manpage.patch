@@ -3,7 +3,6 @@ Date: Wed, 28 Dec 2022 08:40:17 +0100
 Subject: Add opencpn-cmd.1 manpage
 
 Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2898
-
 ---
  CMakeLists.txt |  2 +-
  opencpn-cmd.1  | 26 ++++++++++++++++++++++++++
@@ -11,10 +10,10 @@ Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2898
  create mode 100644 opencpn-cmd.1
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 82cd407..ab3d997 100644
+index d6f14e7..13662b3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2352,7 +2352,7 @@ if (NOT APPLE)
+@@ -2351,7 +2351,7 @@ if (NOT APPLE)
        DESTINATION ${PREFIX_DATA}/metainfo
        RENAME opencpn.appdata.xml
      )

@@ -1,0 +1,52 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 28 Dec 2022 13:27:04 +0100
+Subject: comm_srv_*: Add missing config.h
+
+---
+ include/comm_drv_n2k_serial.h  | 3 ++-
+ src/comm_drv_n0183_serial.cpp  | 1 +
+ src/comm_drv_n2k_socketcan.cpp | 2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/include/comm_drv_n2k_serial.h b/include/comm_drv_n2k_serial.h
+index acabcd7..f7c9e99 100644
+--- a/include/comm_drv_n2k_serial.h
++++ b/include/comm_drv_n2k_serial.h
+@@ -28,10 +28,11 @@
+ 
+ #include <wx/thread.h>
+ 
++#include "config.h"
+ #include "comm_drv_n2k.h"
+ #include "conn_params.h"
+ 
+-#ifndef __OCPN__ANDROID__
++#ifndef __ANDROID__
+ #include "serial/serial.h"
+ #endif
+ 
+diff --git a/src/comm_drv_n0183_serial.cpp b/src/comm_drv_n0183_serial.cpp
+index 513642a..ffa85d2 100644
+--- a/src/comm_drv_n0183_serial.cpp
++++ b/src/comm_drv_n0183_serial.cpp
+@@ -40,6 +40,7 @@
+ #include <wx/string.h>
+ #include <wx/utils.h>
+ 
++#include "config.h"
+ #include "comm_drv_n0183_serial.h"
+ #include "comm_navmsg_bus.h"
+ #include "comm_drv_registry.h"
+diff --git a/src/comm_drv_n2k_socketcan.cpp b/src/comm_drv_n2k_socketcan.cpp
+index bcf4845..b47c5a1 100644
+--- a/src/comm_drv_n2k_socketcan.cpp
++++ b/src/comm_drv_n2k_socketcan.cpp
+@@ -34,6 +34,8 @@
+ #include <thread>
+ #include <vector>
+ 
++#include "config.h"
++
+ #include <linux/can.h>
+ #include <linux/can/raw.h>
+ #include <net/if.h>
