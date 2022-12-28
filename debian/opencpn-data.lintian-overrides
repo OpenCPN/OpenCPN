@@ -1,7 +1,7 @@
 # Used in runtime
-package-contains-documentation-outside-usr-share-doc usr/share/opencpn/doc/help_web.html
-package-contains-documentation-outside-usr-share-doc usr/share/opencpn/license.html
+package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/doc/help_web.html]
+package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/license.html]
 # Used in runtime
-package-contains-documentation-outside-usr-share-doc usr/share/opencpn/plugins/chartdldr_pi/data/doc/advanced.html
-package-contains-documentation-outside-usr-share-doc usr/share/opencpn/plugins/chartdldr_pi/data/doc/basic.html
-package-contains-documentation-outside-usr-share-doc usr/share/opencpn/plugins/chartdldr_pi/data/doc/index.html
+package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/plugins/chartdldr_pi/data/doc/advanced.html]
+package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/plugins/chartdldr_pi/data/doc/basic.html]
+package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/plugins/chartdldr_pi/data/doc/index.html]
