@@ -28,12 +28,13 @@ else ()
     NO_DEFAULT_PATH
   )
   include(FetchContent)
+  set(CMAKE_CXX_STANDARD 14)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(BUILD_GMOCK OFF)
+  set(INSTALL_GTEST OFF)
   if (GTEST_SRC_LOCATION)
     message(STATUS "Building gtest from installed sources")
-    FetchContent_Declare(
-      googletest
-      URL ${GTEST_SRC_LOCATION}
-    )
+    add_subdirectory(${GTEST_SRC_LOCATION} ${CMAKE_BINARY_DIR}/gtest)
   else ()
     message(STATUS "Downloading and building gtest from source")
     FetchContent_Declare(
@@ -41,9 +42,7 @@ else ()
       GIT_REPOSITORY https://github.com/google/googletest.git
       GIT_TAG release-1.12.1
     )
+    FetchContent_MakeAvailable(googletest)
   endif ()
-  set(CMAKE_CXX_STANDARD 14)
-  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-  FetchContent_MakeAvailable(googletest)
   target_link_libraries(_OCPN_GTEST_IF INTERFACE GTest::gtest_main)
 endif ()
