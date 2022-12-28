@@ -3,10 +3,24 @@ Date: Wed, 28 Dec 2022 08:40:17 +0100
 Subject: Add opencpn-cmd.1 manpage
 
 ---
- debian/opencpn.manpages |  1 +
- 3 files changed, 31 insertions(+)
+ CMakeLists.txt |  2 +-
+ opencpn-cmd.1  | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
  create mode 100644 opencpn-cmd.1
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 82cd407..ab3d997 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2352,7 +2352,7 @@ if (NOT APPLE)
+       DESTINATION ${PREFIX_DATA}/metainfo
+       RENAME opencpn.appdata.xml
+     )
+-    install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
++    install(FILES opencpn.1 opencpn-cmd.1 DESTINATION ${PREFIX_DATA}/man/man1)
+   endif (UNIX)
+ 
+   IF(PACKAGE_FORMAT MATCHES "DEB")
 diff --git a/opencpn-cmd.1 b/opencpn-cmd.1
 new file mode 100644
 index 0000000..1ed6d1c

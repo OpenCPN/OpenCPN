@@ -677,6 +677,10 @@ Files: opencpn.1
 Copyright: 2018, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
+Files: opencpn-cmd.1
+Copyright: 2022, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
 Files: plugins/chartdldr_pi/cmake/wxWTranslateCatalog.h.in
 Copyright: 2010, 2012-2019, David S. Register
 License: GPL-2+
