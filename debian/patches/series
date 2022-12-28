@@ -2,6 +2,8 @@
 0002-build-Drop-CoC-909_2013-InlandECDIS_20170308s.pdf.patch
 0003-CMakeLists-ignore-non-existing-NSIS.template.in.in.patch
 0004-Add-missing-libs-tinyxml-Debian-work-around.patch
-0005-CMakeLists-tests-Don-t-use-serial-library-if-not-con.patch
-0006-tests-Handle-different-target-when-bulit-froms-sourc.patch
-0007-comm_drv_n2k_serial.h-Handle-different-serial-lib-he.patch
+0005-libs-gdal-.-cpl_config.h-Don-t-undef-unconfigured-st.patch
+0006-lugins-grib_pi-.-jas_config.h.in-Don-t-undef-unconfi.patch
+0007-CMakeLists-tests-Don-t-use-serial-library-if-not-con.patch
+0008-tests-Handle-different-target-when-bulit-froms-sourc.patch
+0009-comm_drv_n2k_serial.h-Handle-different-serial-lib-he.patch

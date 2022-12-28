@@ -1,0 +1,93 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 28 Dec 2022 07:30:58 +0100
+Subject: plugins/grib_pi/ Don't undef unconfigured stuff (#2896).
+
+The configuration template is actually not used, but let's try to keep
+things consistent.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/2896
+Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2897
+---
+ .../libs/jasper/src/include/jasper/jas_config.h.in | 66 ----------------------
+ 1 file changed, 66 deletions(-)
+
+diff --git a/plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in b/plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
+index a7375de..b4acfc0 100644
+--- a/plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
++++ b/plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
+@@ -27,75 +27,9 @@
+ /* Debugging overflow detection */
+ #undef DEBUG_OVERFLOW
+ 
+-/* Define to 1 if you have the <dlfcn.h> header file. */
+-#undef HAVE_DLFCN_H
+-
+ /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
+ #undef HAVE_DOPRNT
+ 
+-/* Define to 1 if you have the <fcntl.h> header file. */
+-#undef HAVE_FCNTL_H
+-
+-/* Define to 1 if you have the `getrusage' function. */
+-#undef HAVE_GETRUSAGE
+-
+-/* Define to 1 if you have the `gettimeofday' function. */
+-#undef HAVE_GETTIMEOFDAY
+-
+-/* Define to 1 if you have the <inttypes.h> header file. */
+-#undef HAVE_INTTYPES_H
+-
+-/* Define to 1 if you have the <io.h> header file. */
+-#undef HAVE_IO_H
+-
+-/* Define to 1 if you have the `m' library (-lm). */
+-#undef HAVE_LIBM
+-
+-/* Define to 1 if you have the <limits.h> header file. */
+-#undef HAVE_LIMITS_H
+-
+-/* Define to 1 if you have the <memory.h> header file. */
+-#undef HAVE_MEMORY_H
+-
+-/* Define to 1 if you have the <stdbool.h> header file. */
+-#undef HAVE_STDBOOL_H
+-
+-/* Define to 1 if you have the <stddef.h> header file. */
+-#undef HAVE_STDDEF_H
+-
+-/* Define to 1 if you have the <stdint.h> header file. */
+-#undef HAVE_STDINT_H
+-
+-/* Define to 1 if you have the <stdlib.h> header file. */
+-#undef HAVE_STDLIB_H
+-
+-/* Define to 1 if you have the <strings.h> header file. */
+-#undef HAVE_STRINGS_H
+-
+-/* Define to 1 if you have the <string.h> header file. */
+-#undef HAVE_STRING_H
+-
+-/* Define to 1 if you have the <sys/stat.h> header file. */
+-#undef HAVE_SYS_STAT_H
+-
+-/* Define to 1 if you have the <sys/time.h> header file. */
+-#undef HAVE_SYS_TIME_H
+-
+-/* Define to 1 if you have the <sys/types.h> header file. */
+-#undef HAVE_SYS_TYPES_H
+-
+-/* Define to 1 if you have the <unistd.h> header file. */
+-#undef HAVE_UNISTD_H
+-
+-/* Have variable length arrays */
+-#undef HAVE_VLA
+-
+-/* Define to 1 if you have the `vprintf' function. */
+-#undef HAVE_VPRINTF
+-
+-/* Define to 1 if you have the <windows.h> header file. */
+-#undef HAVE_WINDOWS_H
+-
+ /* JasPer configure */
+ #undef JAS_CONFIGURE
+ 

@@ -3,13 +3,60 @@ Date: Tue, 27 Dec 2022 20:35:34 +0100
 Subject: sources, headers: Handle different serial lib header location.
 
 ---
- include/comm_drv_n2k_serial.h  |  5 ++++-
- src/comm_drv_n0183_serial.cpp  |  5 ++++-
- src/comm_drv_n2k_socketcan.cpp |  9 +++++++--
- src/ocpn_app.cpp               | 12 +++++++++++-
- src/ser_ports.cpp              |  4 +++-
- 5 files changed, 29 insertions(+), 6 deletions(-)
+ CMakeLists.txt                 | 1 +
+ cmake/SystemLibs.cmake         | 4 ++--
+ cmake/in-files/config.h.in     | 2 ++
+ include/comm_drv_n2k_serial.h  | 5 ++++-
+ src/comm_drv_n0183_serial.cpp  | 5 ++++-
+ src/comm_drv_n2k_socketcan.cpp | 9 +++++++--
+ src/ocpn_app.cpp               | 5 +++--
+ src/ser_ports.cpp              | 4 +++-
+ 8 files changed, 26 insertions(+), 9 deletions(-)
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 28f1882..82cd407 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1280,6 +1280,7 @@ endif ()
+ # For OpenCPN, these include files and related methods are really only valid in complete linux/unix environments
+ #  So, pending further information, we disable these tests for non-UNIX-like builds.
+ if ( UNIX )
++  find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
+   find_path(HAVE_UNISTD_H NAMES unistd.h)
+   find_path(HAVE_LIBGEN_H NAMES libgen.h)
+   find_path(HAVE_DIRENT_H NAMES dirent.h)
+diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
+index c53b112..f70e10a 100644
+--- a/cmake/SystemLibs.cmake
++++ b/cmake/SystemLibs.cmake
+@@ -14,5 +14,5 @@ find_library(LibSerial cxx-serial REQUIRED)
+ find_file(SerialHeader NAME serial.h  REQUIRED)
+ target_link_libraries(SERIAL_IF INTERFACE ${LibSerial})
+ add_library(ocpn::serial ALIAS SERIAL_IF)
+-set(HAVE_SYS_SERIAL_LIB ON CACHE BOOL "")
+-add_compile_definitions(HAVE_STDINT_H)   # For external libs missing config.h
++
++set(HAVE_STDINT_H ON) 
+diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
+index fb47468..83b5451 100644
+--- a/cmake/in-files/config.h.in
++++ b/cmake/in-files/config.h.in
+@@ -37,6 +37,7 @@
+ #cmakedefine HAVE_PORTAUDIO
+ #cmakedefine HAVE_READLINK
+ #cmakedefine HAVE_SNDFILE
++#cmakedefine HAVE_STDINT_H
+ #cmakedefine HAVE_SYSTEM_CMD_SOUND
+ #cmakedefine HAVE_UNISTD_H
+ #cmakedefine USE_SYSFS_PORTS
+@@ -47,6 +48,7 @@
+ #cmakedefine HAVE_SYS_IOCTL_H
+ #cmakedefine HAVE_SYS_SERIAL_LIB
+ 
++
+ // The os compatible plugins are are built for
+ #define PKG_TARGET "${PKG_TARGET}"
+ 
 diff --git a/include/comm_drv_n2k_serial.h b/include/comm_drv_n2k_serial.h
 index acabcd7..4159b66 100644
 --- a/include/comm_drv_n2k_serial.h
@@ -84,29 +131,22 @@ index bcf4845..64b77e0 100644
  #include <wx/string.h>
  #include <wx/utils.h>
 diff --git a/src/ocpn_app.cpp b/src/ocpn_app.cpp
-index 2e6c93b..5a257f0 100644
+index 2e6c93b..a17fd25 100644
 --- a/src/ocpn_app.cpp
 +++ b/src/ocpn_app.cpp
-@@ -24,6 +24,10 @@
+@@ -24,7 +24,6 @@
   **************************************************************************/
  #include "config.h"
  
-+#ifdef HAVE_STDINT_H
-+#define RESTORE_HAVE_STDINT_H
-+#endif
-+
- 
+-
  #ifdef __MINGW32__
  #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
-@@ -168,8 +172,14 @@ void RedirectIOToConsole();
+ #include <windows.h>
+@@ -168,8 +167,10 @@ void RedirectIOToConsole();
  #include "crashprint.h"
  #endif
  
 -#ifdef __OCPN__ANDROID__
-+#ifdef RESTORE_HAVE_STDINT_H
-+#define HAVE_STDINT_H
-+#endif
-+
 +#ifdef __ANDROID__
  #include "androidUTIL.h"
 +#elif defined(HAVE_SYS_SERIAL_LIB)
