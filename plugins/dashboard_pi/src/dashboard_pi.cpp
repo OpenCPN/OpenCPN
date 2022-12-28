@@ -2157,15 +2157,15 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           break;
         case 2: // N2kWind_Apparent_centerline
           if (mPriAWA >= 1) {
-            double m_awaangle, m_awaspeed_kn;
-            // Angle
+            double m_awaangle, m_awaspeed_kn, calc_angle;
+            // Angle equals 0-360 degr
             m_awaangle = GEODESIC_RAD2DEG(WindAngle);
-            // Should be negative to port
-            if (m_awaangle > 180.0) m_awaangle -= 360.0;
+            calc_angle = m_awaangle;
             wxString m_awaunit = _T("\u00B0R");
-            if (m_awaangle < 0) {
+            // Should be unit "L" and 0-180 to port
+            if (m_awaangle > 180.0) {
+              m_awaangle = 360.0 - m_awaangle;
               m_awaunit = _T("\u00B0L");
-              m_awaangle *= -1.0;
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, m_awaangle, m_awaunit);
             // Speed
@@ -2178,9 +2178,11 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
 
             // If not N2K true wind data are recently received calculate it.
             if (mPriTWA != 1) {
-              CalculateAndUpdateTWDS(m_awaspeed_kn, m_awaangle *=-1.0);
-              mPriTWA = 2;
-              mPriWDN = 2;
+              // Wants -+ angle instead of "L"/"R"
+              if (calc_angle > 180) calc_angle -= 360.0;
+              CalculateAndUpdateTWDS(m_awaspeed_kn, calc_angle);
+              //mPriTWA = 2;
+              //mPriWDN = 2;
               mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               mWDN_Watchdog = gps_watchdog_timeout_ticks;
             }
@@ -2208,13 +2210,12 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
       }
 
       if (sendTrueWind) {
-        // Wind angle
-        // Should be negative to port
-        if (m_twaangle > 180.0) { m_twaangle -= 360.0; }
+        // Wind angle is 0-360 degr
         wxString m_twaunit = _T("\u00B0R");
-        if (m_twaangle < 0) {
+        // Should be unit "L" and 0-180 to port
+        if (m_twaangle > 180.0) {
+          m_twaangle = 360.0 - m_twaangle;
           m_twaunit = _T("\u00B0L");
-          m_twaangle *= -1.0;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
         // Wind speed
@@ -2501,7 +2502,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
               !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.speedOverGround") &&
                g_bDBtrueWindGround )) {
-      if (mPriTWA >= 3) {
+      if (mPriTWA >= 2) {
         double m_twaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_twaspeed_kn)) return;
 
