@@ -1,0 +1,4 @@
+# Can be and is edited using for example OpenOffice; this is the source
+source-is-missing [plugins/chartdldr_pi/data/doc/advanced.html]
+source-is-missing [plugins/chartdldr_pi/data/doc/basic.html]
+source-is-missing [plugins/chartdldr_pi/data/doc/index.html]
