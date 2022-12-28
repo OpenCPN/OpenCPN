@@ -1,0 +1,41 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 28 Dec 2022 08:40:17 +0100
+Subject: Add opencpn-cmd.1 manpage
+
+---
+ debian/opencpn.manpages |  1 +
+ 3 files changed, 31 insertions(+)
+ create mode 100644 opencpn-cmd.1
+
+diff --git a/opencpn-cmd.1 b/opencpn-cmd.1
+new file mode 100644
+index 0000000..1ed6d1c
+--- /dev/null
++++ b/opencpn-cmd.1
+@@ -0,0 +1,26 @@
++.\"
++.\" (C) Copyright 2022 Alec Leamas <leamas.alec@gmail.com>,
++.\"
++.TH Opencpn-cmd 1 "Dec 2022"
++
++.SH NAME
++opencpn-cmd \- Chartplotter and GPS Navigation Software CLI interface
++.SH SYNOPSIS
++.B opencpn-cmd
++.RI [ options ]
++.SH DESCRIPTION
++opencpn-cmd provides command line  access to some basic functionality
++available in opencpn.
++It is in a very preliminart alpha state.
++.P
++Currently, opencpn-cmd supports various functions to load plugins and display
++some configuration information.
++
++.SH OPTIONS
++.TP
++.B \-h, \-\-help
++Show help info.
++
++.SH SEE ALSO
++.br
++opencpn(1)

@@ -4,7 +4,6 @@ Subject: libs/gdal/.../cpl_config.h Don't undef unconfigured stuff (#2896)
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/2896
 Forwarded: https://github.com/OpenCPN/OpenCPN/pull/2897
-
 ---
  libs/gdal/include/gdal/cpl_config.h | 20 --------------------
  1 file changed, 20 deletions(-)

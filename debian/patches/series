@@ -7,3 +7,4 @@
 0007-CMakeLists-tests-Don-t-use-serial-library-if-not-con.patch
 0008-tests-Handle-different-target-when-bulit-froms-sourc.patch
 0009-comm_drv_n2k_serial.h-Handle-different-serial-lib-he.patch
+0010-Add-opencpn-cmd.1-manpage.patch
