@@ -2181,7 +2181,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               // Wants -+ angle instead of "L"/"R"
               if (calc_angle > 180) calc_angle -= 360.0;
               CalculateAndUpdateTWDS(m_awaspeed_kn, calc_angle);
-              //mPriTWA = 2;
+              mPriTWA = 2;
               //mPriWDN = 2;
               mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               mWDN_Watchdog = gps_watchdog_timeout_ticks;
@@ -2462,7 +2462,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
               !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.angleTrueGround") &&
                g_bDBtrueWindGround )) {
-      if (mPriTWA >= 2) {
+      if (mPriTWA >= 3) {
         double m_twaangle = GetJsonDouble(value);
         if (std::isnan(m_twaangle)) return;
 
@@ -2474,7 +2474,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           m_twaangle *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
-        mPriTWA = 2;  // Set prio only here. No need to catch speed if no angle.
+        mPriTWA = 3;  // Set prio only here. No need to catch speed if no angle.
         mMWVT_Watchdog = gps_watchdog_timeout_ticks;
 
         if (mPriWDN >= 5) {
@@ -2502,7 +2502,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
               !g_bDBtrueWindGround ) ||
               ( update_path == _T("environment.wind.speedOverGround") &&
                g_bDBtrueWindGround )) {
-      if (mPriTWA >= 2) {
+      if (mPriTWA >= 3) {
         double m_twaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_twaspeed_kn)) return;
 
