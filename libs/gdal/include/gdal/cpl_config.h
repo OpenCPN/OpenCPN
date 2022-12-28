@@ -53,29 +53,9 @@
 #  define STDC_HEADERS
 #endif
 
-/* Define if you have the <fcntl.h> header file.  */
-#undef HAVE_FCNTL_H
-
-/* Define if you have the <unistd.h> header file.  */
-#undef HAVE_UNISTD_H
-
-/* Define if you have the <stdint.h> header file.  */
-#undef HAVE_STDINT_H
-
-#undef HAVE_LIBDL
-
 /* Define to 1 if you have the <locale.h> header file. */
 #define HAVE_LOCALE_H 1
 
-/* Define to 1 if you have the `localtime_r' function. */
-#undef HAVE_LOCALTIME_R
-
-#undef HAVE_DLFCN_H
-#undef HAVE_DBMALLOC_H
-#undef HAVE_LIBDBMALLOC
-#undef WORDS_BIGENDIAN
-
 #define CPL_DISABLE_DLL
-
 
 #endif
