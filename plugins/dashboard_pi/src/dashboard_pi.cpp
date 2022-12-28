@@ -765,6 +765,22 @@ void dashboard_pi::Notify() {
     mPriSatStatus = 99;
     mSatStatus_Wdog = gps_watchdog_timeout_ticks;
   }
+  // Set Satellite Status data from the same source as OCPN use for position
+  // Get the identifiers
+  std::vector<std::string> PriorityIDs = GetActivePriorityIdentifiers();
+  // Get current satellite identifier = item 4
+  std::string satID = PriorityIDs[4];
+    /*  Possible satID examples:
+     *  satID: nmea0183 COM6:0 (:GPGSV)
+     *  satID: ?? :0 (:signalK)
+     *  satID: nmea2000 COM3:127  (:129029 /129540)
+     */
+  if (satID.find("nmea0183") != std::string::npos)
+    mPriSatStatus = 3; // GSV
+  else if(satID.find("?? ") != std::string::npos)
+    mPriSatStatus = 2; // SignalK
+  else if (satID.find("nmea2000") != std::string::npos)
+    mPriSatStatus = 1; // N2k
 
   mMWVA_Watchdog--;
   if (mMWVA_Watchdog <= 0) {
@@ -1079,7 +1095,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived == _T("GSV")) {
-      if (mPriSatStatus >= 1 || mPriSatUsed >= 5) {
+      if (mPriSatStatus >= 3 || mPriSatUsed >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gsv.MessageNumber == 1) {
             // NMEA0183 recommend to not repeat SatsInView in subsequent
@@ -1092,11 +1108,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
             }
           }
-          if (mPriSatStatus >= 1) {
+          if (mPriSatStatus >= 3) {
             SendSatInfoToAllInstruments(
                 mSatsInView, m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.TalkerID,
                 m_NMEA0183.Gsv.SatInfo);
-            mPriSatStatus = 1;
+            mPriSatStatus = 3;
             mSatStatus_Wdog = gps_watchdog_timeout_ticks;
           }
         }
@@ -2059,7 +2075,7 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
   // Get the GNSS status data
   if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)) {
 
-    if (!N2kIsNA(NumberOfSVs)) {
+    if (!N2kIsNA(NumberOfSVs && mPriSatStatus == 1)) {
       // Step through each satellite, one-by-one
       // Arrange to max three messages with up to 4 sats each like N0183 GSV
       SAT_INFO N2K_SatInfo[4];
@@ -2089,7 +2105,7 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
         // Send to GPS.cpp
         if (idx > 0) {
           SendSatInfoToAllInstruments(NumberOfSVs, iMesNum + 1, talker_N2k, N2K_SatInfo);
-          //mPriSatStatus = 2;
+          //mPriSatStatus = 1;
           mSatStatus_Wdog = gps_watchdog_timeout_ticks;
         }
       }
@@ -2604,7 +2620,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
         }
       }
-      if (mPriSatStatus >= 2) {
+      if (mPriSatStatus == 2) {
         if (value.HasMember("satellites") && value["satellites"].IsArray()) {
           // Update satellites data.
           int iNumSats;
@@ -2652,7 +2668,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                   talkerID = talker; //Origin NMEA0183
                 }
                 SendSatInfoToAllInstruments(iNumSats, iMesNum + 1, talkerID, SK_SatInfo);
-                mPriSatStatus = 2;
+                //mPriSatStatus = 2;
                 mSatStatus_Wdog = gps_watchdog_timeout_ticks;
               }
 
@@ -4858,7 +4874,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
             ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("T %.1f"),
                                   DIAL_POSITION_BOTTOMRIGHT);
         break;
-      case ID_DBP_D_TW:  // True Wind angle +-180° on boat axis
+      case ID_DBP_D_TW:  // True Wind angle +-180 degr on boat axis
         instrument = new DashboardInstrument_TrueWindAngle(
             this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TWA);
         ((DashboardInstrument_Dial *)instrument)
@@ -4867,7 +4883,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list) {
             ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f"),
                                   DIAL_POSITION_INSIDE);
         break;
-      case ID_DBP_D_AWA_TWA:  // App/True Wind angle +-180° on boat axis
+      case ID_DBP_D_AWA_TWA:  // App/True Wind angle +-180 degr on boat axis
         instrument = new DashboardInstrument_AppTrueWindAngle(
             this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWA);
         ((DashboardInstrument_Dial *)instrument)->SetCapFlag(OCPN_DBP_STC_TWA);
