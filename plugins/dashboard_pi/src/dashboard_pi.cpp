@@ -2075,7 +2075,7 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
   // Get the GNSS status data
   if (ParseN2kPGN129540(v, SID, Mode, NumberOfSVs)) {
 
-    if (!N2kIsNA(NumberOfSVs && mPriSatStatus == 1)) {
+    if (!N2kIsNA(NumberOfSVs) && mPriSatStatus == 1) {
       // Step through each satellite, one-by-one
       // Arrange to max three messages with up to 4 sats each like N0183 GSV
       SAT_INFO N2K_SatInfo[4];
