@@ -2356,7 +2356,7 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_DATA}/metainfo
       RENAME opencpn.appdata.xml
     )
-    install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
+    install(FILES opencpn.1 opencpn-cmd.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
 
   IF(PACKAGE_FORMAT MATCHES "DEB")
