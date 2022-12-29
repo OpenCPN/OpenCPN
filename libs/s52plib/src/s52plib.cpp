@@ -5848,7 +5848,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   float arcw = arc_width * canvas_pix_per_mm;
   // On larger screens, make the arc_width 1.0 mm
-  if ( vp_plib.pix_width / canvas_pix_per_mm > 200)     //200 mm, about 8 inches
+  if ( m_display_size_mm > 200)     //200 mm, about 8 inches
     arcw = canvas_pix_per_mm;
 
 
