@@ -6016,7 +6016,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     wxPen thispen = *wxBLACK_PEN;
     thispen.SetDashes(2, dash1);
-    thispen.SetWidth(3);
+    thispen.SetWidth(2);
     thispen.SetStyle(wxPENSTYLE_USER_DASH);
 
     float a = (sectr1 - 90) * PI / 180;
@@ -9478,12 +9478,25 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
                 strncmp(rzRules->obj->FeatureName, "COALNE", 6)) ||
               (!strncmp(rzRules->obj->FeatureName, "LNDARE", 6) && (rzRules->LUP->ruleList->ruleType != RUL_ARE_CO))) {
 
+            double chart_ref_scale = rzRules->obj->m_chart_context->chart_scale;
+
             // Is the ENC cell SCAMIN for this object un-defined?
             if (rzRules->obj->Scamin > 1e8) {   // undefined default value is 1e8+2
               // Get the scale of the ENC, and establish SUPERSCAMIN
-              double chart_ref_scale = rzRules->obj->m_chart_context->chart_scale;
               double super_scamin = chart_ref_scale * 4;
               rzRules->obj->SuperScamin = super_scamin;
+            }
+            if (rzRules->obj->Scamin > 9e6) {   // Presumed undefined value for Greek ENC Lights
+              // Get the scale of the ENC, and establish SUPERSCAMIN
+              double super_scamin = chart_ref_scale * 2;
+              rzRules->obj->SuperScamin = super_scamin;
+            }
+            if (!strncmp(rzRules->obj->FeatureName, "SOUNDG", 6)){
+                if (rzRules->obj->Scamin > 4e6) {   // Presumed undefined value for Greek ENC soundings
+                  // Get the scale of the ENC, and establish SUPERSCAMIN
+                  double super_scamin = chart_ref_scale * 2;
+                  rzRules->obj->SuperScamin = super_scamin;
+              }
             }
           }
         }
