@@ -98,7 +98,9 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
       if (true) {  // Create a separate scope.
         N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-        return make_shared<Nmea2000Msg>(name, payload, src);
+// FIXME (Leamas)
+//        return make_shared<Nmea2000Msg>(name, payload, src);
+        return make_shared<NullNavMsg>();
       }
       break;
     case NavAddr::Bus::N0183:

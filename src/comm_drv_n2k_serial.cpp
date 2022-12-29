@@ -321,7 +321,7 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   std::vector<uint8_t> load = msg_n2k->payload;
 
-  uint64_t _pgn = msg_n2k->name.value;
+  uint64_t _pgn = msg_n2k->PGN.pgn;
 
   tN2kMsg N2kMsg;   // automatically sets destination 255
   N2kMsg.SetPGN(_pgn);

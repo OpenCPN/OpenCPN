@@ -1095,7 +1095,7 @@ std::string CommBridge::GetPriorityKey(std::shared_ptr <const NavMsg> msg){
   else if(msg->bus == NavAddr::Bus::N2000){
     auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
     if (msg_n2k){
-      this_identifier = msg_n2k->name.to_string();
+      this_identifier = msg_n2k->PGN.to_string();
       unsigned char n_source = msg_n2k->payload.at(7);
       char ss[4];
       sprintf(ss,"%d",n_source);
