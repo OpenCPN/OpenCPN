@@ -35,7 +35,7 @@
 #include <wx/tokenzr.h>
 #include <wx/regex.h>
 
-#ifndef __WXMSW__
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <net/if.h>
@@ -43,6 +43,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #endif
+
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -85,7 +86,8 @@ wxString StringArrayToString(wxArrayString arr) {
 
 wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
-#ifndef __WXMSW__
+
+#if defined(__linux__) && !defined(__ANDROID__)
   wxString candidates[] = {
     "can0",
     "can1",
