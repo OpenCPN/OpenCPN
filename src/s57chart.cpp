@@ -3611,6 +3611,8 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
             umdate.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
           umdate.ResetTime();
+          if (!umdate.IsValid())
+              int yyp = 4;
 
           //    Fetch the EDTN(Edition) field
           if (pr) {
@@ -6119,9 +6121,9 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
 
       rangePx = rangePx * rangeScale;
 
-      int penWidth = rangePx / 10;
-      penWidth = wxMin(10, penWidth);
-      penWidth = wxMax(3, penWidth);
+      int penWidth = rangePx / 8;
+      penWidth = wxMin(20, penWidth);
+      penWidth = wxMax(5, penWidth);
 
 
       int legOpacity;

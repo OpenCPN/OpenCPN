@@ -30,7 +30,15 @@
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 
-class OCPNwxFontList : public wxGDIObjListBase {
+struct font_cache_record {
+  wxFont *font;
+  int pointsize_req;
+  wxFontStyle style_req;
+  wxFontWeight weight_req;
+  bool underline_req;
+};
+
+class OCPNwxFontList {
 public:
   wxFont *FindOrCreateFont(int pointSize, wxFontFamily family,
                            wxFontStyle style, wxFontWeight weight,
@@ -40,9 +48,12 @@ public:
   void FreeAll(void);
 
 private:
-  bool isSame(wxFont *font, int pointSize, wxFontFamily family,
-              wxFontStyle style, wxFontWeight weight, bool underline,
-              const wxString &facename, wxFontEncoding encoding);
+  bool isCached(font_cache_record& record, int pointSize, wxFontFamily family,
+                            wxFontStyle style, wxFontWeight weight,
+                            bool underline, const wxString &facename,
+                            wxFontEncoding encoding);
+
+  std::vector<font_cache_record> m_fontVector;
 };
 
 extern wxString g_locale;
@@ -363,14 +374,15 @@ wxFont *FontMgr::FindOrCreateFont(int point_size, wxFontFamily family,
                                          underline, facename, encoding);
 }
 
-bool OCPNwxFontList::isSame(wxFont *font, int pointSize, wxFontFamily family,
+bool OCPNwxFontList::isCached(font_cache_record& record, int pointSize, wxFontFamily family,
                             wxFontStyle style, wxFontWeight weight,
                             bool underline, const wxString &facename,
                             wxFontEncoding encoding) {
-  if (font->GetPointSize() == pointSize && font->GetStyle() == style &&
-      font->GetWeight() == weight && font->GetUnderlined() == underline) {
+  if (record.pointsize_req == pointSize && record.style_req == style &&
+      record.weight_req == weight && record.underline_req == underline) {
     bool same;
 
+    wxFont *font = record.font;
     // empty facename matches anything at all: this is bad because
     // depending on which fonts are already created, we might get back
     // a different font if we create it with empty facename, but it is
@@ -410,12 +422,11 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
 #endif  // !__WXOSX__
 
   wxFont *font;
-  wxList::compatibility_iterator node;
-  for (node = list.GetFirst(); node; node = node->GetNext()) {
-    font = (wxFont *)node->GetData();
-    if (isSame(font, pointSize, family, style, weight, underline, facename,
+  for (size_t i=0; i < m_fontVector.size() ; i++){
+    font_cache_record record = m_fontVector[i];
+    if (isCached(record, pointSize, family, style, weight, underline, facename,
                encoding))
-      return font;
+      return record.font;
   }
 
   // font not found, create the new one
@@ -424,12 +435,13 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
                  encoding);
   if (fontTmp.IsOk()) {
     font = new wxFont(fontTmp);
-    list.Append(font);
-
-    // double check the font really roundtrip
-    //  Removed after verification.
-    // wxASSERT(isSame(font, pointSize, family, style, weight, underline,
-    // facename, encoding));
+    font_cache_record record;
+    record.font = font;
+    record.pointsize_req = pointSize;
+    record.style_req = style;
+    record.weight_req = weight;
+    record.underline_req = underline;
+    m_fontVector.push_back(record);
   }
 
   return font;
@@ -437,11 +449,12 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
 
 void OCPNwxFontList::FreeAll(void) {
   wxFont *font;
-  wxList::compatibility_iterator node;
-  for (node = list.GetFirst(); node; node = node->GetNext()) {
-    font = (wxFont *)node->GetData();
+  for (size_t i=0; i < m_fontVector.size() ; i++){
+    font_cache_record record = m_fontVector[i];
+    font = record.font;
     delete font;
   }
+  m_fontVector.clear();
 }
 
 static wxString FontCandidates[] = {_T("AISTargetAlert"),

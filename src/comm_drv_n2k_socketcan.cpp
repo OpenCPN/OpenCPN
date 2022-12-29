@@ -33,6 +33,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <future>
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -231,6 +232,7 @@ class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN {
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
       : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port) {
+    SetN2K_Name();
     Open();
   }
 
@@ -238,17 +240,21 @@ public:
 
   bool Open();
   void Close();
+  void SetN2K_Name();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                     std::shared_ptr<const NavAddr> addr);
 
+  static int DoAddressClaim();
 
   Worker& GetWorker(){ return m_worker; }
 
 private:
+  N2kName node_name;
   Worker m_worker;
   unsigned int m_source_address;
   int m_last_TX_sequence;
+  std::future<int> m_AddressClaimFuture;
 };
 
 
@@ -304,9 +310,21 @@ bool CanHeader::IsFastMessage() const {
 
 // CommDriverN2KSocketCanImpl implementation
 
-bool CommDriverN2KSocketCanImpl::Open() {
-  m_source_address = 77;  //FIXME
+void CommDriverN2KSocketCanImpl::SetN2K_Name() {
+  // We choose some "benign" values for OCPN socketCan interface
+  node_name.SetManufacturerCode(2046);
+  node_name.SetUniqueNumber(1);
+  node_name.SetDeviceFunction(130); // PC Gateway
+  node_name.SetDeviceClass(25);     // Inter/Intranetwork Device
+  node_name.SetIndustryGroup(4);    // Marine
+}
 
+bool CommDriverN2KSocketCanImpl::Open() {
+
+  // Start the Address Claim async worker here
+  m_AddressClaimFuture = std::async(std::launch::async, DoAddressClaim);
+
+  // Start the RX worker thread
   return m_worker.StartThread();
 }
 
@@ -320,8 +338,41 @@ void CommDriverN2KSocketCanImpl::Close() {
   registry.Deactivate(me);
 }
 
+int CommDriverN2KSocketCanImpl::DoAddressClaim() {
+
+  // Flow chart: //https://copperhilltech.com/blog/sae-j1939-address-claim-procedure-sae-j193981-network-management/
+
+  // ISO Address Claim
+#if 0
+void SetN2kPGN60928(tN2kMsg &N2kMsg, uint64_t Name) {
+    N2kMsg.SetPGN(N2kPGNIsoAddressClaim);
+    N2kMsg.Priority=6;
+
+    N2kMsg.AddUInt64(Name);
+}
+#endif
+
+  std::this_thread::sleep_for(std::chrono::seconds(5));  // Testing
+
+  return 77;
+}
+
+
 bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
+
+  // Check to see if Address Claim worker has finished
+  if (m_source_address < 0) {
+    std::future_status status = m_AddressClaimFuture.wait_for(std::chrono::seconds(1));
+    if (std::future_status::deferred == status ||
+      std::future_status::timeout == status)
+      return false;
+    m_source_address = m_AddressClaimFuture.get();
+  }
+
+  // Verify result is reasonable
+  if ( m_source_address < 0)
+    return false;
 
   int socket = GetWorker().GetSocket();
 
@@ -334,7 +385,7 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   std::vector<uint8_t> load = msg_n2k->payload;
 
-  uint64_t _pgn = msg_n2k->name.value;
+  uint64_t _pgn = msg_n2k->PGN.pgn;
 
   unsigned long canId = BuildCanID(6, m_source_address, 255, _pgn);
 
@@ -584,9 +635,9 @@ void Worker::HandleInput(CanFrame frame) {
       // Single frame message
       vec = PushCompleteMsg(header, position, frame);
     }
-    auto name = N2kName(static_cast<uint64_t>(header.pgn));
-    auto src_addr = m_parent_driver->GetAddress(name);
-    auto msg = std::make_shared<const Nmea2000Msg>(name, vec, src_addr);
+    //auto name = N2kName(static_cast<uint64_t>(header.pgn));
+    auto src_addr = m_parent_driver->GetAddress(m_parent_driver->node_name);
+    auto msg = std::make_shared<const Nmea2000Msg>(header.pgn, vec, src_addr);
     m_parent_driver->m_listener.Notify(std::move(msg));
   }
 }
