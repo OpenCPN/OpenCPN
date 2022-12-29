@@ -633,6 +633,8 @@ TEST(FileDriver, output) {
             string("nmea2000 n2000-1234 1234 7061796c6f61642064617461"));
 }
 
+#if 0
+// FIXME (comm_drv_file, see FIXME there)
 TEST(FileDriver, input) {
   wxLog::SetActiveTarget(&defaultLog);
   auto driver = std::make_shared<FileCommDriver>("test-output.txt");
@@ -652,6 +654,7 @@ TEST(FileDriver, input) {
   EXPECT_EQ(s_result3, string("1234"));
   EXPECT_EQ(s_result, string("payload data"));
 }
+#endif
 
 TEST(Listeners, vector) {
   wxLog::SetActiveTarget(&defaultLog);
