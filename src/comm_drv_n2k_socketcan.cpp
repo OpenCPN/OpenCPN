@@ -46,10 +46,17 @@
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/utils.h>
+#include <wx/thread.h>
 
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+
+extern wxString g_hostname;
+
+#define DEFAULT_N2K_SOURCE_ADDRESS 72
+
+wxDEFINE_EVENT(EVT_N2K_59904, ObservedEvt);
 
 using namespace std::chrono_literals;
 
@@ -211,6 +218,7 @@ private:
   int InitSocket(const std::string port_name);
   void SocketMessage(const std::string& msg, const std::string& device);
   void HandleInput(CanFrame frame);
+  void ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg);
 
   std::vector<unsigned char> PushCompleteMsg(const CanHeader header,
                                              int position,
@@ -231,7 +239,8 @@ class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN {
 
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
-      : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port) {
+      : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port),
+      m_source_address(-1){
     SetN2K_Name();
     Open();
   }
@@ -245,16 +254,22 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                     std::shared_ptr<const NavAddr> addr);
 
-  static int DoAddressClaim();
+  int DoAddressClaim();
+  bool SendAddressClaim(int proposed_source_address);
 
   Worker& GetWorker(){ return m_worker; }
 
 private:
   N2kName node_name;
   Worker m_worker;
-  unsigned int m_source_address;
+  int m_source_address;
   int m_last_TX_sequence;
   std::future<int> m_AddressClaimFuture;
+  wxMutex m_TX_mutex;
+
+  ObservableListener listener_N2K_59904;
+  bool HandleN2K_59904( std::shared_ptr<const Nmea2000Msg> n2k_msg );
+
 };
 
 
@@ -312,8 +327,21 @@ bool CanHeader::IsFastMessage() const {
 
 void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   // We choose some "benign" values for OCPN socketCan interface
+
+  int unique_number = 1;
+#ifndef CLIAPP
+  // Build a simple 16 bit hash of g_hostname, to use as unique "serial number"
+  int hash = 0;
+  std::string str(g_hostname.mb_str());
+  int len = str.size();
+  const char* ch = str.data();
+  for (int i = 0; i < len; i++)
+    hash = hash + ((hash) << 5) + *(ch + i) + ((*(ch + i)) << 7);
+  unique_number = ((hash) ^ (hash >> 16)) & 0xffff;
+#endif
+
   node_name.SetManufacturerCode(2046);
-  node_name.SetUniqueNumber(1);
+  node_name.SetUniqueNumber(unique_number);
   node_name.SetDeviceFunction(130); // PC Gateway
   node_name.SetDeviceClass(25);     // Inter/Intranetwork Device
   node_name.SetIndustryGroup(4);    // Marine
@@ -321,11 +349,10 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
 
 bool CommDriverN2KSocketCanImpl::Open() {
 
-  // Start the Address Claim async worker here
-  m_AddressClaimFuture = std::async(std::launch::async, DoAddressClaim);
-
   // Start the RX worker thread
-  return m_worker.StartThread();
+  bool bws = m_worker.StartThread();
+  return bws;
+
 }
 
 void CommDriverN2KSocketCanImpl::Close() {
@@ -338,39 +365,52 @@ void CommDriverN2KSocketCanImpl::Close() {
   registry.Deactivate(me);
 }
 
-int CommDriverN2KSocketCanImpl::DoAddressClaim() {
 
-  // Flow chart: //https://copperhilltech.com/blog/sae-j1939-address-claim-procedure-sae-j193981-network-management/
+bool CommDriverN2KSocketCanImpl::SendAddressClaim(int proposed_source_address) {
 
-  // ISO Address Claim
-#if 0
-void SetN2kPGN60928(tN2kMsg &N2kMsg, uint64_t Name) {
-    N2kMsg.SetPGN(N2kPGNIsoAddressClaim);
-    N2kMsg.Priority=6;
+  wxMutexLocker lock(m_TX_mutex);
 
-    N2kMsg.AddUInt64(Name);
+  int socket = GetWorker().GetSocket();
+
+  if (socket < 0)
+      return false;
+
+  CanFrame frame;
+  memset(&frame, 0, sizeof(frame));
+
+  uint64_t _pgn = 60928;
+  unsigned long canId = BuildCanID(6, proposed_source_address, 255, _pgn);
+  frame.can_id = canId | CAN_EFF_FLAG;
+
+  // Load the data
+  uint32_t b32_0 = node_name.value.UnicNumberAndManCode;
+  memcpy(&frame.data, &b32_0, 4);
+
+  unsigned char b81 = node_name.value.DeviceInstance;
+  memcpy(&frame.data[4], &b81, 1);
+
+  b81 = node_name.value.DeviceFunction;
+  memcpy(&frame.data[5], &b81, 1);
+
+  b81 = (node_name.value.DeviceClass&0x7f)<<1;
+  memcpy(&frame.data[6], &b81, 1);
+
+  b81 = node_name.value.IndustryGroupAndSystemInstance;
+  memcpy(&frame.data[7], &b81, 1);
+
+  frame.can_dlc = 8;    // data length
+
+  int sentbytes = write(socket, &frame, sizeof(frame));
+
+  return (sentbytes == 16);
 }
-#endif
-
-  std::this_thread::sleep_for(std::chrono::seconds(5));  // Testing
-
-  return 77;
-}
-
 
 bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
 
-  // Check to see if Address Claim worker has finished
-  if (m_source_address < 0) {
-    std::future_status status = m_AddressClaimFuture.wait_for(std::chrono::seconds(1));
-    if (std::future_status::deferred == status ||
-      std::future_status::timeout == status)
-      return false;
-    m_source_address = m_AddressClaimFuture.get();
-  }
+  wxMutexLocker lock(m_TX_mutex);
 
-  // Verify result is reasonable
+  // Verify claimed address is useable
   if ( m_source_address < 0)
     return false;
 
@@ -396,15 +436,6 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
     if (load.size() > 0)
       memcpy(&frame.data, load.data(), load.size());
 
-
-//     unsigned char *d = (unsigned char *)&frame;
-//     printf("SendFrame: ");
-//     for (size_t i=0 ; i < sizeof(frame) ; i++){
-//       printf("%02X ", *d);
-//       d++;
-//     }
-//     printf("\n\n");
-
     int sentbytes = write(socket, &frame, sizeof(frame));
   }
   else {                        // Fast Packet
@@ -420,34 +451,17 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
     int data_len_0 = wxMin(load.size(), 6);
     memcpy(&frame.data[2], load.data(), data_len_0);
 
-//     unsigned char *d = (unsigned char *)&frame;
-//     printf("SendFrame_0: ");
-//     for (size_t i=0 ; i < sizeof(frame) ; i++){
-//       printf("%02X ", *d);
-//       d++;
-//     }
-//     printf("\n\n");
-
     int sentbytes0 = write(socket, &frame, sizeof(frame));
 
     data_ptr += data_len_0;
     n_remaining -= data_len_0;
     sequence++;
 
-
     // The rest of the bytes
     while (n_remaining > 0){
       frame.data[0] = sequence;
       int data_len_n = wxMin(n_remaining, 7);
       memcpy(&frame.data[1], data_ptr, data_len_n);
-
-//       unsigned char *d = (unsigned char *)&frame;
-//       printf("SendFrame_N: ");
-//       for (size_t i=0 ; i < sizeof(frame) ; i++){
-//         printf("%02X ", *d);
-//         d++;
-//       }
-//       printf("\n\n");
 
       int sentbytesn = write(socket, &frame, sizeof(frame));
 
@@ -478,7 +492,6 @@ CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
 void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO(dave) Finally decide if thread should start here or in CTOR
 }
 
 
@@ -638,9 +651,19 @@ void Worker::HandleInput(CanFrame frame) {
     //auto name = N2kName(static_cast<uint64_t>(header.pgn));
     auto src_addr = m_parent_driver->GetAddress(m_parent_driver->node_name);
     auto msg = std::make_shared<const Nmea2000Msg>(header.pgn, vec, src_addr);
+    ProcessRxMessages(msg);
     m_parent_driver->m_listener.Notify(std::move(msg));
   }
 }
+
+/** Worker thread handles some RX messages. */
+void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg){
+
+  if(n2k_msg->PGN.pgn == 59904 ){
+  }
+
+}
+
 
 /** Worker thread main function. */
 void Worker::Entry() {
@@ -655,6 +678,10 @@ void Worker::Entry() {
     return;
   }
   m_socket = socket;
+
+  //  Claim our default address
+  if (m_parent_driver->SendAddressClaim(DEFAULT_N2K_SOURCE_ADDRESS))
+    m_parent_driver->m_source_address = DEFAULT_N2K_SOURCE_ADDRESS;
 
   // The main loop
   while (m_run_flag > 0) {
