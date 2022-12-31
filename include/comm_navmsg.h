@@ -49,7 +49,6 @@ struct N2kPGN {
   }
 };
 
-
 /**
  * N2k uses CAN which defines the basic properties of messages.
  * The NAME is an unique identifier for a node. CAN standardizes
@@ -60,7 +59,7 @@ struct N2kPGN {
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kName {
-  N2kName() {};
+  N2kName(){};
   N2kName(uint64_t name) { value.Name = name; }
 
   std::string to_string() const {
@@ -87,43 +86,49 @@ struct N2kName {
   uint8_t GetIndustryGroup() const;   /**< 4 bits */
 
   typedef union {
-      uint64_t Name;
-      struct {
-        uint32_t UnicNumberAndManCode; // ManufacturerCode 11 bits , UniqueNumber 21 bits
-        unsigned char DeviceInstance;
-        unsigned char DeviceFunction;
-        unsigned char DeviceClass;
-        unsigned char IndustryGroupAndSystemInstance; // 4 bits each
-      };
+    uint64_t Name;
+    struct {
+      uint32_t UnicNumberAndManCode;  // ManufacturerCode 11 bits , UniqueNumber
+                                      // 21 bits
+      unsigned char DeviceInstance;
+      unsigned char DeviceFunction;
+      unsigned char DeviceClass;
+      unsigned char IndustryGroupAndSystemInstance;  // 4 bits each
+    };
   } tUnionDeviceInformation;
 
   tUnionDeviceInformation value;
 
   void SetUniqueNumber(uint32_t _UniqueNumber) {
-     value.UnicNumberAndManCode=(value.UnicNumberAndManCode&0xffe00000)
-     | (_UniqueNumber&0x1fffff);
+    value.UnicNumberAndManCode =
+        (value.UnicNumberAndManCode & 0xffe00000) | (_UniqueNumber & 0x1fffff);
   }
   void SetManufacturerCode(uint16_t _ManufacturerCode) {
-        value.UnicNumberAndManCode=(value.UnicNumberAndManCode&0x1fffff) | (((unsigned long)  (_ManufacturerCode&0x7ff))<<21);
+    value.UnicNumberAndManCode =
+        (value.UnicNumberAndManCode & 0x1fffff) |
+        (((unsigned long)(_ManufacturerCode & 0x7ff)) << 21);
   }
   void SetDeviceInstance(unsigned char _DeviceInstance) {
-    value.DeviceInstance=_DeviceInstance;
+    value.DeviceInstance = _DeviceInstance;
   }
   void SetDeviceFunction(unsigned char _DeviceFunction) {
-    value.DeviceFunction=_DeviceFunction;
+    value.DeviceFunction = _DeviceFunction;
   }
   void SetDeviceClass(unsigned char _DeviceClass) {
-    value.DeviceClass=((_DeviceClass&0x7f)<<1);
+    value.DeviceClass = ((_DeviceClass & 0x7f) << 1);
   }
-  void SetIndustryGroup(unsigned char _IndustryGroup) { value.IndustryGroupAndSystemInstance=
-    (value.IndustryGroupAndSystemInstance&0x0f) | (_IndustryGroup<<4) | 0x80;
+  void SetIndustryGroup(unsigned char _IndustryGroup) {
+    value.IndustryGroupAndSystemInstance =
+        (value.IndustryGroupAndSystemInstance & 0x0f) | (_IndustryGroup << 4) |
+        0x80;
   }
-  void SetSystemInstance(unsigned char _SystemInstance) {   value.IndustryGroupAndSystemInstance=
-    (value.IndustryGroupAndSystemInstance&0xf0) | (_SystemInstance&0x0f);
+  void SetSystemInstance(unsigned char _SystemInstance) {
+    value.IndustryGroupAndSystemInstance =
+        (value.IndustryGroupAndSystemInstance & 0xf0) |
+        (_SystemInstance & 0x0f);
   }
 
   uint64_t GetName() const { return value.Name; }
-
 };
 
 /** Where messages are sent to or received from. */
@@ -158,7 +163,7 @@ public:
       : NavAddr(NavAddr::Bus::N2000, iface), name(_name){};
 
   NavAddr2000(const std::string& iface, unsigned char _address)
-      : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address) {};
+      : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address){};
 
   std::string to_string() const { return name.to_string(); }
 
@@ -217,17 +222,14 @@ public:
               std::shared_ptr<const NavAddr> src)
       : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload) {}
 
-
   virtual ~Nmea2000Msg() = default;
 
-  std::string key() const {
-    return std::string("n2000-") + PGN.to_string();
-  };
+  std::string key() const { return std::string("n2000-") + PGN.to_string(); };
 
   /** Print "bus key id payload" */
   std::string to_string() const;
 
-  N2kPGN PGN;           // For TX message, unparsed
+  N2kPGN PGN;  // For TX message, unparsed
   std::vector<unsigned char> payload;
 };
 
@@ -277,11 +279,11 @@ public:
 class SignalkMsg : public NavMsg {
 public:
   SignalkMsg()
-        : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
+      : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
 
   SignalkMsg(std::string _context_self, std::string _context,
-                  std::string _raw_message)
-        : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
+             std::string _raw_message)
+      : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
         context_self(_context_self),
         context(_context),
         raw_message(_raw_message){};
@@ -290,7 +292,6 @@ public:
 
   struct in_addr dest;
   struct in_addr src;
-  //wxJSONValue* root;
   std::string context_self;
   std::string context;
   std::string raw_message;
