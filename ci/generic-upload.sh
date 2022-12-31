@@ -26,8 +26,8 @@ case "$OCPN_TARGET" in
         ;;
 esac
 
-if [ -n "$TRAVIS_BUILD_NR" ]; then
-    BUILD_NR="$TRAVIS_BUILD_NR"
+if [ -n "$GITHUB_RUN_NUMBER" ]; then
+    BUILD_NR="$GITHUB_RUN_NUMBER"
 elif [ -n "$CIRCLE_BUILD_NUM" ]; then
     BUILD_NR="$CIRCLE_BUILD_NUM"
 else
