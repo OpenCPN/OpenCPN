@@ -624,7 +624,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
     if (b_draw_thick)
       DrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
-#if 0
+#if 0       // Use AA lines
 
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
@@ -887,7 +887,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       workBuf[(i * 2) + 1] = points[i].y + yoffset;
     }
 
-#if 0
+#if 0     // Use AA lines
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
