@@ -34,19 +34,8 @@ jobs:
           #   use_homebrew: 1
           - name: macOS 11 wxOSX
             runner: macos-11
-            cmake_generator: Xcode
-            cmake_defines: >
-              -DCMAKE_CXX_STANDARD=11
-              -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config
-              -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010"
           - name: macOS 10.15 wxOSX
             runner: macos-10.15
-            cmake_generator: Xcode
-            cmake_defines: >
-              -DCMAKE_CXX_STANDARD=11
-              -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx315_opencpn50_macos1010/bin/wx-config
-              -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx315_opencpn50_macos1010"
-              -DOCPN_BUILD_TEST=OFF
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
 
@@ -66,13 +55,8 @@ jobs:
           USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
 
       # required for CMake to find Ninja
-      - name: Configure CMake
-        run: >
-          cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          ${{ matrix.cmake_defines }}
-
-      - name: Build
-        run: cmake --build build --config ${{env.BUILD_TYPE}}
+      - name: Configure and Build
+        run: ci/generic-build-macos.sh
 
       - name: Upload
         env:
