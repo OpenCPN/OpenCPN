@@ -28,24 +28,6 @@ jobs:
        - run: cat /etc/apt/sources.list
        - run: ci/generic-build-debian.sh
        - run: ci/generic-upload.sh
-   build-macos:
-     macos:
-       xcode: "13.4.1"
-     environment:
-       - OCPN_TARGET:  macos
-     steps:
-       - checkout
-       - restore_cache:
-          keys:
-            - macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
-       - run: ci/generic-build-macos.sh
-       - save_cache:
-          key: macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
-          paths:
-            - /usr/local/bin
-            - /usr/local/include
-            - /usr/local/lib
-       - run: ci/generic-upload.sh
    build-flatpak:
      working_directory: ~/OpenCPN
      machine:
@@ -96,11 +78,6 @@ workflows:
             branches:
               only:
                 - flatpak
-                - master
-      - build-macos:
-          filters:
-            branches:
-              only:
                 - master
       - build-android-armhf:
           filters:
