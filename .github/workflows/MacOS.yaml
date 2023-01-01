@@ -1,9 +1,7 @@
 ---
-# yamllint disable rule:line-length
-
 name: MacOS
 
-on:
+'on':
   push:
     branches:
       - master
