@@ -14,9 +14,9 @@ call %SCRIPTDIR%..\cache\wx-config.bat
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
 echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
 
+set "VS_HOME=C:\Program Files\Microsoft Visual Studio\2022"
 where dumpbin.exe >nul 2>&1
 if errorlevel 1 (
-  set "VS_HOME=C:\Program Files\Microsoft Visual Studio\2022"
   call "%VS_HOME%\Community\VC\Auxiliary\Build\vcvars32.bat"
 )
 
