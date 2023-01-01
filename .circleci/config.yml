@@ -1,63 +1,63 @@
 ---
 version: 2
 jobs:
-   build-bionic:
-     docker:
-       - image: circleci/buildpack-deps:bionic-scm
-         auth:
-           username: $DOCKER_USER
-           password: $DOCKER_PW
-     environment:
-       - OCPN_TARGET:  bionic
-     steps:
-       - checkout
-       - run: cat /etc/apt/sources.list
-       - run: ci/generic-build-debian.sh
-       - run: ci/generic-upload.sh
-   build-focal:
-     docker:
-       - image: circleci/buildpack-deps:focal-scm
-         auth:
-           username: $DOCKER_USER
-           password: $DOCKER_PW
-     environment:
-       - OCPN_TARGET:  focal-gtk3
-       - CMAKE_BUILD_PARALLEL_LEVEL: 2
-     steps:
-       - checkout
-       - run: cat /etc/apt/sources.list
-       - run: ci/generic-build-debian.sh
-       - run: ci/generic-upload.sh
-   build-flatpak:
-     working_directory: ~/OpenCPN
-     machine:
-       image: ubuntu-2004:202101-01
-     environment:
-       - OCPN_TARGET:  flatpak
-     steps:
-       - run: cd ~; git clone "$CIRCLE_REPOSITORY_URL" -b "$CIRCLE_BRANCH"
-       - run: ci/docker-auth.sh
-       - restore_cache:
-           keys:
-              - fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
-       - run: ci/circleci-build-flatpak.sh
-       - save_cache:
-           key: fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
-           paths:
-             - build/.flatpak-builder/cache
-             - build/.flatpak-builder/ccache
-             - build/.flatpak-builder/checksums
-             - build/.flatpak-builder/downloads
-             - build/.flatpak-builder/rofiles
+  build-bionic:
+    docker:
+      - image: circleci/buildpack-deps:bionic-scm
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PW
+    environment:
+      - OCPN_TARGET: bionic
+    steps:
+      - checkout
+      - run: cat /etc/apt/sources.list
+      - run: ci/generic-build-debian.sh
+      - run: ci/generic-upload.sh
+  build-focal:
+    docker:
+      - image: circleci/buildpack-deps:focal-scm
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PW
+    environment:
+      - OCPN_TARGET: focal-gtk3
+      - CMAKE_BUILD_PARALLEL_LEVEL: 2
+    steps:
+      - checkout
+      - run: cat /etc/apt/sources.list
+      - run: ci/generic-build-debian.sh
+      - run: ci/generic-upload.sh
+  build-flatpak:
+    working_directory: ~/OpenCPN
+    machine:
+      image: ubuntu-2004:202101-01
+    environment:
+      - OCPN_TARGET: flatpak
+    steps:
+      - run: cd ~; git clone "$CIRCLE_REPOSITORY_URL" -b "$CIRCLE_BRANCH"
+      - run: ci/docker-auth.sh
+      - restore_cache:
+          keys:
+            - fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+      - run: ci/circleci-build-flatpak.sh
+      - save_cache:
+          key: fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+          paths:
+            - build/.flatpak-builder/cache
+            - build/.flatpak-builder/ccache
+            - build/.flatpak-builder/checksums
+            - build/.flatpak-builder/downloads
+            - build/.flatpak-builder/rofiles
 
-   build-android-armhf:
-     docker:
-       - image: circleci/android:api-28-ndk
-     environment:
-       - OCPN_TARGET:  android-armhf
-     steps:
-       - checkout
-       - run: ci/circleci-build-android-corelib-armhf.sh
+  build-android-armhf:
+    docker:
+      - image: circleci/android:api-28-ndk
+    environment:
+      - OCPN_TARGET: android-armhf
+    steps:
+      - checkout
+      - run: ci/circleci-build-android-corelib-armhf.sh
 
 workflows:
   version: 2
