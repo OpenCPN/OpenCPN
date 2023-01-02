@@ -90,6 +90,7 @@
 #include "timers.h"
 #include "comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "comm_util.h"  //FIXME(leamas) perhaps also this?).
+#include "comm_vars.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "color_handler.h"
@@ -244,7 +245,6 @@ extern about *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
 extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-extern wxString gRmcDate, gRmcTime;
 extern double vLat, vLon;
 extern double initial_scale_ppm, initial_rotation;
 extern wxString g_locale;
@@ -425,9 +425,7 @@ extern int gGPS_Watchdog;
 extern int gHDx_Watchdog;
 extern int gHDT_Watchdog;
 extern int gVAR_Watchdog;
-extern bool g_bVAR_Rx;
 extern int gSAT_Watchdog;
-extern int g_priSats;
 extern int g_SatsInView;
 extern bool g_bSatValid;
 extern AisDecoder *g_pAIS;

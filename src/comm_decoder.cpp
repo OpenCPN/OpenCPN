@@ -36,10 +36,8 @@
 
 #include "comm_decoder.h"
 #include "comm_util.h"
+#include "comm_vars.h"
 #include "geodesic.h"
-
-extern wxString gRmcDate, gRmcTime;
-extern bool g_bVAR_Rx;
 
 
 bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,

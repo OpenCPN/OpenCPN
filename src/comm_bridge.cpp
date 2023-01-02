@@ -40,6 +40,7 @@
 #include "comm_bridge.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+#include "comm_vars.h"
 #include "config_vars.h"
 #include "idents.h"
 #include "OCPNPlatform.h"
@@ -67,13 +68,7 @@ wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-extern wxString gRmcDate, gRmcTime;
-extern int g_priSats, g_SatsInView;
-extern bool g_bSatValid;
-extern bool g_bVAR_Rx;
-extern wxString g_ownshipMMSI_SK;
 extern wxConfigBase *pBaseConfig;
-wxString g_ownshipMMSI_SK;
 
 bool debug_priority = 0;
 

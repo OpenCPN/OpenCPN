@@ -84,14 +84,7 @@ double gLat;
 double gLon;
 double gSog;
 double gVar;
-bool g_bSatValid;
-bool g_bVAR_Rx;
 int g_NMEAAPBPrecision;
-int g_SatsInView;
-int g_priSats;
-
-wxString gRmcTime;
-wxString gRmcDate;
 
 wxString g_TalkerIdText;
 

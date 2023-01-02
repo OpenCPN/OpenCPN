@@ -149,10 +149,8 @@ extern double gSog;
 extern double gVar;
 extern bool g_bHDT_Rx;
 extern bool g_bSatValid;
-extern bool g_bVAR_Rx;
 extern int g_NMEAAPBPrecision;
 extern int g_SatsInView;
-extern int g_priSats;
 
 extern Select* pSelectAIS;
 extern Select* pSelect;

@@ -98,7 +98,9 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "comm_navmsg_bus.h"
+#include "comm_vars.h"
 #include "config.h"
+#include "config_vars.h"
 #include "downloader.h"
 #include "download_mgr.h"
 #include "dychart.h"
@@ -234,14 +236,11 @@ wxString g_lastPluginMessage;
 extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;
 extern bool g_bquiting;
-extern wxString g_ownshipMMSI_SK;
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
-extern wxString g_ownshipMMSI_SK;
-extern int gps_watchdog_timeout_ticks;
 
 const char *const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char *const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";

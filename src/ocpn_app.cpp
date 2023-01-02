@@ -141,6 +141,7 @@
 //#include "comm_navmsg_bus.h"
 //#include "N2KParser.h"
 //#include "comm_util.h"
+#include "comm_vars.h"
 
 #include "mDNS_service.h"
 
@@ -259,7 +260,6 @@ RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
 double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-wxString gRmcDate, gRmcTime;
 double vLat, vLon;
 double initial_scale_ppm, initial_rotation;
 
@@ -386,11 +386,11 @@ int gGPS_Watchdog;
 bool bGPSValid;
 bool bVelocityValid;
 
-bool g_bVAR_Rx;
+int gHDx_Watchdog;
+int gHDT_Watchdog;
+int gVAR_Watchdog;
 
-int g_priSats;
-int g_SatsInView;
-bool g_bSatValid;
+int gSAT_Watchdog;
 
 bool g_bDebugCM93;
 bool g_bDebugS57;

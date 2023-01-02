@@ -42,6 +42,7 @@
 #include "base_platform.h"
 #include "chcanv.h"
 #include "comm_n0183_output.h"
+#include "comm_vars.h"
 #include "concanv.h"
 #include "cutil.h"
 #include "dychart.h"
@@ -87,7 +88,6 @@ extern wxRect g_blink_rect;
 
 extern double gLat, gLon, gSog, gCog;
 extern double gVar;
-extern wxString gRmcDate, gRmcTime;
 extern bool g_bMagneticAPB;
 
 extern RoutePoint *pAnchorWatchPoint1;
