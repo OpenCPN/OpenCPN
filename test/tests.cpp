@@ -65,7 +65,6 @@ double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
-bool g_bGarminHostUpload;
 int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
 
@@ -116,7 +115,6 @@ RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
 bool g_bAllowShipToActive;
 wxRect g_blink_rect;
-int g_maxWPNameLength;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;

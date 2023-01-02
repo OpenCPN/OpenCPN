@@ -24,11 +24,16 @@
 
 #include "config_vars.h"
 
-wxString g_hostname;
+bool g_bGarminHostUpload;
+bool g_bWplUsePosition;
+
+double g_UserVar = 0.0;
+
+int g_maxWPNameLength;
+int g_nNMEADebug = 0;
+int gps_watchdog_timeout_ticks = 0;
+int sat_watchdog_timeout_ticks = 12;
 
 wxString g_GPS_Ident;
+wxString g_hostname;
 
-int gps_watchdog_timeout_ticks = 0;
-int g_nNMEADebug = 0;
-int sat_watchdog_timeout_ticks = 12;
-double g_UserVar = 0.0;

@@ -126,7 +126,6 @@ AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
-bool g_bGarminHostUpload;
 
 /* comm_bridge context. */
 
@@ -169,7 +168,6 @@ RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
 bool g_bAllowShipToActive;
 wxRect g_blink_rect;
-int g_maxWPNameLength;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;

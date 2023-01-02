@@ -54,10 +54,7 @@
 #include "garmin_wrapper.h"
 #endif
 
-extern bool g_bGarminHostUpload;
-extern bool g_bWplUsePosition;
 extern wxArrayOfConnPrm *g_pConnectionParams;
-extern int g_maxWPNameLength;
 extern wxString g_TalkerIdText;
 
 //FIXME (dave)  think about GUI feedback, disabled herein

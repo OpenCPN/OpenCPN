@@ -31,6 +31,7 @@
 #include "config.h"
 #include "ocpn_types.h"
 #include "compass.h"
+#include "comm_vars.h"
 #include "chcanv.h"
 #include "styles.h"
 
@@ -39,8 +40,6 @@
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool bGPSValid;
-extern bool g_bSatValid;
-extern int g_SatsInView;
 extern bool g_bopengl;
 
 ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {

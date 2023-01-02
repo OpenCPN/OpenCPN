@@ -237,7 +237,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 extern bool g_benableAISNameCache;
 extern bool g_bUseOnlyConfirmedAISName;
@@ -377,7 +376,6 @@ extern ChartGroupArray *g_pGroupArray;
 
 extern bool g_bDebugOGL;
 extern int g_tcwin_scale;
-extern bool g_bGarminHostUpload;
 extern wxString g_uploadConnection;
 
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -399,8 +397,6 @@ extern int g_NMEAAPBPrecision;
 
 extern wxString g_TalkerIdText;
 extern bool g_bShowTrackPointTime;
-
-extern int g_maxWPNameLength;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;

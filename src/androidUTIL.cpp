@@ -242,7 +242,6 @@ extern double g_AckTimeout_Mins;
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
-extern bool g_bGarminHostUpload;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale *plocale_def_lang;

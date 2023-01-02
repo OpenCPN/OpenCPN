@@ -426,8 +426,6 @@ extern int gHDx_Watchdog;
 extern int gHDT_Watchdog;
 extern int gVAR_Watchdog;
 extern int gSAT_Watchdog;
-extern int g_SatsInView;
-extern bool g_bSatValid;
 extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
 extern bool g_bCPAWarn;

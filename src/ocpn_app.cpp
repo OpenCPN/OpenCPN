@@ -601,7 +601,6 @@ bool g_bDrawAISRealtime;
 double g_AIS_RealtPred_Kts;
 bool g_bShowAISName;
 int g_Show_Target_Name_Scale;
-bool g_bWplUsePosition;
 int g_WplAction;
 
 int g_nAIS_activity_timer;
@@ -688,7 +687,6 @@ wxString g_AisTargetList_column_order;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bGarminHostUpload;
 bool g_bFullscreen;
 
 OCPN_AUIManager *g_pauimgr;
@@ -759,7 +757,6 @@ int g_chart_zoom_modifier_vector;
 int g_NMEAAPBPrecision;
 
 wxString g_TalkerIdText;
-int g_maxWPNameLength;
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 

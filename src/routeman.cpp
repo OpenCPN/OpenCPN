@@ -43,6 +43,7 @@
 #include "chcanv.h"
 #include "comm_n0183_output.h"
 #include "comm_vars.h"
+#include "config_vars.h"
 #include "concanv.h"
 #include "cutil.h"
 #include "dychart.h"
@@ -105,7 +106,6 @@ extern float g_ChartScaleFactorExp;
 
 extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
-extern int g_maxWPNameLength;
 
 bool g_bPluginHandleAutopilotRoute;
 

@@ -210,7 +210,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 
 extern int g_iNavAidRadarRingsNumberVisible;
@@ -284,7 +283,6 @@ extern double g_AckTimeout_Mins;
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
-extern bool g_bGarminHostUpload;
 extern wxString g_compatOS;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)

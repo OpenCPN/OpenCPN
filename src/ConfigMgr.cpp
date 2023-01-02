@@ -194,7 +194,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 extern bool g_benableAISNameCache;
 extern int g_ScaledNumWeightSOG;
@@ -310,7 +309,6 @@ extern wxString g_default_wp_icon;
 extern ChartGroupArray *g_pGroupArray;
 
 extern bool g_bDebugOGL;
-extern bool g_bGarminHostUpload;
 extern wxString g_uploadConnection;
 
 extern wxArrayString TideCurrentDataSet;
@@ -330,7 +328,6 @@ extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
 
 extern wxString g_TalkerIdText;
-extern int g_maxWPNameLength;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;

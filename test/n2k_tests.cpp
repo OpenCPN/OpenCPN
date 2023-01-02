@@ -128,7 +128,6 @@ extern double g_RemoveLost_Mins;
 extern double g_MarkLost_Mins;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
-extern bool g_bGarminHostUpload;
 extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
@@ -148,9 +147,7 @@ extern double gLon;
 extern double gSog;
 extern double gVar;
 extern bool g_bHDT_Rx;
-extern bool g_bSatValid;
 extern int g_NMEAAPBPrecision;
-extern int g_SatsInView;
 
 extern Select* pSelectAIS;
 extern Select* pSelect;
