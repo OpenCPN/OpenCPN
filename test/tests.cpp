@@ -85,8 +85,6 @@ double gSog;
 double gVar;
 int g_NMEAAPBPrecision;
 
-wxString g_TalkerIdText;
-
 Select* pSelect;
 double g_n_arrival_circle_radius;
 double g_PlanSpeed;

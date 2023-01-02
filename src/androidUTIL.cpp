@@ -71,6 +71,7 @@
 #include "MUIBar.h"
 #include "toolbar.h"
 #include "nav_object_database.h"
+#include "nmea0183.h"
 #include "toolbar.h"
 #include "iENCToolbar.h"
 #include "select.h"
@@ -148,7 +149,6 @@ extern bool g_bsmoothpanzoom;
 extern bool g_bShowMag;
 extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
-extern wxString g_TalkerIdText;
 
 extern wxString *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;

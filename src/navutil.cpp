@@ -73,6 +73,7 @@
 #include "nav_object_database.h"
 #include "navutil_base.h"
 #include "navutil.h"
+#include "nmea0183.h"
 #include "NMEALogWindow.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
@@ -395,7 +396,6 @@ extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
 
-extern wxString g_TalkerIdText;
 extern bool g_bShowTrackPointTime;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;

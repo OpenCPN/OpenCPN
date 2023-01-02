@@ -58,6 +58,7 @@
 #include "ocpndc.h"
 #include "geodesic.h"
 #include "multiplexer.h"
+#include "nmea0183.h"
 #include "ais.h"
 #include "route.h"
 #include "select.h"
@@ -326,8 +327,6 @@ extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
-
-extern wxString g_TalkerIdText;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;

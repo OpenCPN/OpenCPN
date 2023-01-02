@@ -55,7 +55,6 @@
 #endif
 
 extern wxArrayOfConnPrm *g_pConnectionParams;
-extern wxString g_TalkerIdText;
 
 //FIXME (dave)  think about GUI feedback, disabled herein
 

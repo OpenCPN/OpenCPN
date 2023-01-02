@@ -756,8 +756,6 @@ int g_chart_zoom_modifier_vector;
 
 int g_NMEAAPBPrecision;
 
-wxString g_TalkerIdText;
-
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 bool g_bSpaceDropMark;

@@ -159,7 +159,6 @@ extern double gVar;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
-extern wxString g_TalkerIdText;
 extern int g_nDepthUnitDisplay;
 extern bool g_bUIexpert;
 

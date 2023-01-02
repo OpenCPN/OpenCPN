@@ -68,7 +68,6 @@ extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 extern int g_NMEAAPBPrecision;
-extern wxString g_TalkerIdText;
 extern wxArrayOfConnPrm* g_pConnectionParams;
 extern OCPNPlatform* g_Platform;
 
