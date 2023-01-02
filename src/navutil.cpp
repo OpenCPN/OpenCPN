@@ -30,62 +30,59 @@
 #include <windows.h>
 #endif
 
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-#include <wx/tokenzr.h>
-#include <wx/sstream.h>
-#include <wx/image.h>
-#include <wx/filename.h>
-#include <wx/graphics.h>
-#include <wx/dir.h>
-#include <wx/listbook.h>
-#include <wx/timectrl.h>
-#include <wx/bmpcbox.h>
-#include <wx/tglbtn.h>
-
-#include "dychart.h"
-#include "idents.h"
-
 #include <stdlib.h>
-//#include <math.h>
 #include <time.h>
 #include <locale>
 #include <list>
 
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <wx/bmpcbox.h>
+#include <wx/dir.h>
+#include <wx/filename.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
+#include <wx/sstream.h>
+#include <wx/tglbtn.h>
+#include <wx/timectrl.h>
+#include <wx/tokenzr.h>
 
-#include "config.h"
-#include "navutil.h"
-#include "navutil_base.h"
+#include "ais_decoder.h"
+#include "ais.h"
+#include "CanvasConfig.h"
+#include "chartbase.h"
+#include "chartdb.h"
 #include "chcanv.h"
-#include "georef.h"
+#include "config.h"
+#include "conn_params.h"
 #include "cutil.h"
-#include "styles.h"
+#include "dychart.h"
+#include "FontMgr.h"
+#include "geodesic.h"
+#include "georef.h"
+#include "idents.h"
+#include "Layer.h"
+#include "multiplexer.h"
+#include "nav_object_database.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "NMEALogWindow.h"
+#include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "OCPN_Sound.h"
+#include "route.h"
 #include "routeman.h"
 #include "s52utils.h"
-#include "chartbase.h"
-#include "ocpndc.h"
-#include "geodesic.h"
-#include "multiplexer.h"
-#include "ais.h"
-#include "route.h"
 #include "select.h"
-#include "FontMgr.h"
-#include "OCPN_Sound.h"
-#include "Layer.h"
-#include "nav_object_database.h"
-#include "NMEALogWindow.h"
-#include "ais_decoder.h"
-#include "OCPNPlatform.h"
+#include "styles.h"
 #include "track.h"
-#include "chartdb.h"
-#include "CanvasConfig.h"
-#include "ocpn_frame.h"
-#include "conn_params.h"
-
 #include "s52plib.h"
 #include "cm93.h"
 
@@ -93,7 +90,7 @@
 #include "glChartCanvas.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
