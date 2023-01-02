@@ -14,10 +14,11 @@ call %SCRIPTDIR%..\cache\wx-config.bat
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
 echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
 
-where dumpbin.exe >nul 2>&1
-if errorlevel 1 (
-  set "VS_HOME=C:\Program Files\Microsoft Visual Studio\2022"
-  call "%VS_HOME%\Community\VC\Auxiliary\Build\vcvars32.bat"
+if not defined VCINSTALLDIR (
+  for /f "tokens=* USEBACKQ" %%p in (
+    `"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" ^
+    -latest -property installationPath`
+  ) do call "%%p\Common7\Tools\vsDevCmd.bat"
 )
 
 where wxmsw32u_qa_vc14x.dll >nul 2>&1
