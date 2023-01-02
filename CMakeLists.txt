@@ -877,6 +877,7 @@ set(
   include/comm_util.h
   include/compass.h
   include/concanv.h
+  include/config_vars.h
   include/conn_params.h
   include/conn_params_panel.h
   include/cutil.h
@@ -1018,6 +1019,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
+  ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp

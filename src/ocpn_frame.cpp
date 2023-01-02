@@ -93,6 +93,7 @@
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "color_handler.h"
+#include "config_vars.h"
 #include "ais_decoder.h"
 #include "ais.h"
 #include "AISTargetAlertDialog.h"
@@ -419,10 +420,7 @@ extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bGPSValid;
 extern bool bVelocityValid;
-extern int g_nNMEADebug;
 extern int g_total_NMEAerror_messages;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
 extern int gGPS_Watchdog;
 extern int gHDx_Watchdog;
 extern int gHDT_Watchdog;
@@ -432,7 +430,6 @@ extern int gSAT_Watchdog;
 extern int g_priSats;
 extern int g_SatsInView;
 extern bool g_bSatValid;
-extern double g_UserVar;
 extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
 extern bool g_bCPAWarn;

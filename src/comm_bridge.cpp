@@ -35,14 +35,15 @@
 #include <wx/tokenzr.h>
 #include <wx/fileconf.h>
 
-#include "comm_bridge.h"
+#include "comm_ais.h"
 #include "comm_appmsg_bus.h"
+#include "comm_bridge.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "idents.h"
-#include "ocpn_types.h"
-#include "comm_ais.h"
 #include "OCPNPlatform.h"
+#include "ocpn_types.h"
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -67,13 +68,9 @@ wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 extern wxString gRmcDate, gRmcTime;
-extern int g_nNMEADebug;
 extern int g_priSats, g_SatsInView;
 extern bool g_bSatValid;
 extern bool g_bVAR_Rx;
-extern double g_UserVar;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
 extern wxString g_ownshipMMSI_SK;
 extern wxConfigBase *pBaseConfig;
 wxString g_ownshipMMSI_SK;

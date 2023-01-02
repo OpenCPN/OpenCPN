@@ -43,6 +43,7 @@
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
+#include "config_vars.h"
 #include "conn_params.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
@@ -53,7 +54,6 @@
 #include "garmin_wrapper.h"
 #endif
 
-extern wxString g_GPS_Ident;
 extern bool g_bGarminHostUpload;
 extern bool g_bWplUsePosition;
 extern wxArrayOfConnPrm *g_pConnectionParams;

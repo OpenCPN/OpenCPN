@@ -96,6 +96,7 @@
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
+#include "config_vars.h"
 #include "ConfigMgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
@@ -303,8 +304,6 @@ int g_mem_total, g_mem_used, g_mem_initial;
 
 bool s_bSetSystemTime;
 
-wxString g_hostname;
-
 static unsigned int malloc_max;
 
 wxArrayOfConnPrm *g_pConnectionParams;
@@ -342,7 +341,6 @@ bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
                       // displayed
 bool g_bShowChartBar;
 bool g_bShowActiveRouteHighway;
-int g_nNMEADebug;
 int g_nAWDefault;
 int g_nAWMax;
 bool g_bPlayShipsBells;
@@ -384,9 +382,7 @@ wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-int gps_watchdog_timeout_ticks;
-int sat_watchdog_timeout_ticks;
-
+int gGPS_Watchdog;
 bool bGPSValid;
 bool bVelocityValid;
 
@@ -541,8 +537,6 @@ bool g_bportable;
 bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
-
-wxString g_GPS_Ident;
 
 S57QueryDialog *g_pObjectQueryDialog;
 
@@ -718,7 +712,6 @@ bool g_benable_rotate;
 bool g_bShowTrue = true;
 bool g_bShowMag;
 
-double g_UserVar;
 bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;

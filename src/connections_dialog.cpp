@@ -51,6 +51,7 @@
 #endif
 
 #include "connections_dialog.h"
+#include "config_vars.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
@@ -64,7 +65,6 @@
 
 extern bool g_bMagneticAPB;
 extern bool g_bGarminHostUpload;
-extern wxString g_GPS_Ident;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;

@@ -27,22 +27,23 @@
 #include <iostream>
 #include <sstream>
 
+#include <curl/curl.h>
+
 #include "peer_client.h"
 
-#include "nav_object_database.h"
+#include <wx/fileconf.h>
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
 #include <wx/tokenzr.h>
-#include <wx/fileconf.h>
 
-#include "REST_server.h"
-#include "gui_lib.h"
-#include <curl/curl.h>
+#include "config_vars.h"
 #include "FontMgr.h"
+#include "gui_lib.h"
+#include "nav_object_database.h"
+#include "REST_server.h"
 
 extern std::string PINtoRandomKeyString(int dpin);
 
-extern wxString g_hostname;
 extern MyFrame *gFrame;
 extern wxConfigBase *pBaseConfig;
 

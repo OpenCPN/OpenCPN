@@ -23,18 +23,18 @@
  */
 #include <memory>
 
+#include "config_vars.h"
+#include "mDNS_query.h"
 #include "OCPNPlatform.h"
+#include "peer_client.h"
 #include "route_gui.h"
 #include "route.h"
 #include "route_point_gui.h"
 #include "route_point.h"
 #include "SendToPeerDlg.h"
-#include "mDNS_query.h"
-#include "peer_client.h"
 
 extern OCPNPlatform* g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxString g_hostname;
 extern bool g_bportable;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)

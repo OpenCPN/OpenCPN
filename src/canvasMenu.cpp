@@ -56,6 +56,7 @@
 #include "chcanv.h"
 #include "cm93.h"      // for chart outline draw
 #include "config.h"
+#include "config_vars.h"
 #include "cutil.h"
 #include "georef.h"
 #include "kml.h"
@@ -128,7 +129,6 @@ extern double gHdt;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxString g_hostname;
 
 //    Constants for right click menus
 enum {

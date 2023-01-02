@@ -60,6 +60,7 @@
 #include "chartdb.h"
 #include "chcanv.h"
 #include "config.h"
+#include "config_vars.h"
 #include "conn_params.h"
 #include "cutil.h"
 #include "dychart.h"
@@ -113,7 +114,6 @@ extern double initial_scale_ppm, initial_rotation;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 extern bool g_bShowTrue, g_bShowMag;
-extern double g_UserVar;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -153,7 +153,6 @@ extern double g_plus_minus_zoom_factor;
 extern bool g_bShowOutlines;
 extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
-extern int g_nNMEADebug;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
@@ -271,7 +270,6 @@ extern bool g_bEnableZoomToCursor;
 extern wxString g_toolbarConfig;
 extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
-extern int gps_watchdog_timeout_ticks;
 
 extern int g_nCacheLimit;
 extern int g_memCacheLimit;
@@ -379,7 +377,6 @@ extern ChartGroupArray *g_pGroupArray;
 
 extern bool g_bDebugOGL;
 extern int g_tcwin_scale;
-extern wxString g_GPS_Ident;
 extern bool g_bGarminHostUpload;
 extern wxString g_uploadConnection;
 

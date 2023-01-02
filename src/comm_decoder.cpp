@@ -38,7 +38,6 @@
 #include "comm_util.h"
 #include "geodesic.h"
 
-extern int gps_watchdog_timeout_ticks;
 extern wxString gRmcDate, gRmcTime;
 extern bool g_bVAR_Rx;
 

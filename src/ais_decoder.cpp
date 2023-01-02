@@ -52,6 +52,7 @@
 #include "ais_decoder.h"
 #include "ais_target_data.h"
 #include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "geodesic.h"
 #include "georef.h"
 #include "idents.h"
@@ -153,7 +154,6 @@ static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern int gps_watchdog_timeout_ticks;
 extern bool g_bquiting;
 extern wxString g_DSC_sound_file;
 extern wxString g_SART_sound_file;

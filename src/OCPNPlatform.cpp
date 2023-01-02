@@ -48,6 +48,7 @@
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "cutil.h"
+#include "config_vars.h"
 #include "logger.h"
 #include "styles.h"
 #include "navutil.h"
@@ -172,7 +173,6 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern bool g_bCPAWarn;
 extern bool g_bAIS_CPA_Alert;
 
-extern int gps_watchdog_timeout_ticks;
 extern wxString *pInit_Chart_Dir;
 
 extern double g_config_display_size_mm;

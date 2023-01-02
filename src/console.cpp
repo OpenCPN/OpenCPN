@@ -58,17 +58,18 @@
 
 #include "base_platform.h"
 #include "catalog_handler.h"
-#include "comm_navmsg_bus.h"
 #include "comm_appmsg_bus.h"
-#include "ocpn_utils.h"
+#include "comm_driver.h"
+#include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "downloader.h"
 #include "observable_evtvar.h"
-#include "comm_driver.h"
-#include "plugin_loader.h"
+#include "ocpn_utils.h"
 #include "plugin_handler.h"
+#include "plugin_loader.h"
 #include "routeman.h"
-#include "track.h"
 #include "select.h"
+#include "track.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -125,7 +126,6 @@ AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
-wxString g_GPS_Ident;
 bool g_bGarminHostUpload;
 
 /* comm_bridge context. */
@@ -137,15 +137,11 @@ double gLat;
 double gLon;
 double gSog;
 double gVar;
-double g_UserVar;
-int gps_watchdog_timeout_ticks;
-int g_nNMEADebug;
 bool g_bSatValid;
 bool g_bVAR_Rx;
 int g_NMEAAPBPrecision;
 int g_SatsInView;
 int g_priSats;
-int sat_watchdog_timeout_ticks = 12;
 
 wxString gRmcTime;
 wxString gRmcDate;

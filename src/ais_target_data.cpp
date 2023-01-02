@@ -27,6 +27,7 @@
 #include <wx/string.h>
 
 #include "ais_target_data.h"
+#include "config_vars.h"
 #include "ocpn_frame.h"
 #include "navutil_base.h"
 
@@ -39,7 +40,6 @@ extern bool g_bShowTrue;
 //extern MyFrame *gFrame;
 extern bool g_bAISShowTracks;
 extern double gVar;
-extern double g_UserVar;
 
 static std::unordered_map<int, wxString> s_ERI_hash;
 
