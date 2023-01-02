@@ -54,7 +54,7 @@ static const double mercator_k0 = 0.9996;
 #include "poly_math.h"
 #include "LOD_reduce.h"
 #include "linmath.h"
-
+#include "Cs52_shaders.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>
@@ -3742,14 +3742,15 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
     glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
   }
 
-  glUseProgram(S52color_tri_shader_program);
+  CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+  shader->Bind();
 
   // Disable VBO's (vertex buffer objects) for attributes.
   if (!b_useVBO) glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  GLint pos = glGetAttribLocation(S52color_tri_shader_program, "position");
-
+  //GLint pos = glGetAttribLocation(shader->programId(), "position");
+  GLint pos = shader->getAttributeLocation("position");
   float angle = 0;
 
   // We cannot use the prepared shader uniforms, as we can (and should for
@@ -3785,9 +3786,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   Q[3][0] += vp_plib.pix_width / 2;
   Q[3][1] += vp_plib.pix_height / 2;
 
-  GLint matloc =
-      glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
 
   float colorv[4];
   colorv[0] = c->R / float(256);
@@ -3795,8 +3794,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   colorv[2] = c->B / float(256);
   colorv[3] = 1.0;
 
-  GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-  glUniform4fv(colloc, 1, colorv);
+  shader->SetUniform4fv("color", colorv);
 
   if (!b_useVBO) {
     unsigned char *buffer = (unsigned char *)vertex_buffer;
@@ -3884,11 +3882,9 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   // Restore shader TransForm Matrix to identity.
   mat4x4 IM;
   mat4x4_identity(IM);
-  GLint matlocf =
-      glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-  glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
-  glDisableVertexAttribArray(pos);
-  glUseProgram(0);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)IM);
+
+  shader->UnBind();
 #endif
 
   glDisable(GL_LINE_STIPPLE);
@@ -4180,10 +4176,11 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
 
     VC_Element *pnode;
 
-    glUseProgram(S52color_tri_shader_program);
+    CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+    shader->Bind();
 
     float fBuf[4];
-    pos = glGetAttribLocation(S52color_tri_shader_program, "position");
+    pos = shader->getAttributeLocation("position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), fBuf);
     glEnableVertexAttribArray(pos);
 
@@ -4193,8 +4190,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
     colorv[2] = c->B / float(256);
     colorv[3] = 1.0;
 
-    GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
+    shader->SetUniform4fv("color", colorv);
 
     for (int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++) {
       int seg_index = iseg * 3;
@@ -4288,7 +4284,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
     }   //for
 
     glDisableVertexAttribArray(pos);
-
+    shader->UnBind();
   }
   if (!m_pdc) {
     glDisable(GL_LINE_STIPPLE);
@@ -4370,7 +4366,8 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
 
   if (rzRules->obj->m_ls_list_legacy) {
 
-    glUseProgram(S52color_tri_shader_program);
+    CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+    shader->Bind();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -4381,12 +4378,9 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
     colorv[2] = color.Blue() / float(256);
     colorv[3] = 1.0;  // transparency;
 
-    GLint colloc =
-         glGetUniformLocation(S52color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
+    shader->SetUniform4fv("color", colorv);
 
-    GLint pos =
-        glGetAttribLocation(S52color_tri_shader_program, "position");
+    GLint pos = shader->getAttributeLocation("position");
     glEnableVertexAttribArray(pos);
 
     float *ppt;
@@ -4454,8 +4448,7 @@ int s52plib::RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules) {
       ls = ls->next;
     }
 
-    glDisableVertexAttribArray(pos);
-    glUseProgram(0);
+    shader->UnBind();
   }
 
   return 1;
@@ -5505,15 +5498,11 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           }
 #endif
 
-          glUseProgram(S52color_tri_shader_program);
+          CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+          shader->Bind();
 
           glBindBuffer(GL_ARRAY_BUFFER, 0);
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-          // GLint matloc =
-          // glGetUniformLocation(S52color_tri_shader_program,"MVMatrix");
-          // glUniformMatrix4fv( matloc, 1, GL_FALSE, (const
-          // GLfloat*)vp->vp_transform);
 
           float colorv[4];
           colorv[0] = color.Red() / float(256);
@@ -5521,9 +5510,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           colorv[2] = color.Blue() / float(256);
           colorv[3] = 1.0;  // transparency;
 
-          GLint colloc =
-              glGetUniformLocation(S52color_tri_shader_program, "color");
-          glUniform4fv(colloc, 1, colorv);
+          shader->SetUniform4fv("color", colorv);
 
           float pts[4];
           pts[0] = xst1;
@@ -5531,15 +5518,14 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           pts[2] = xst2;
           pts[3] = yst2;
 
-          GLint pos =
-              glGetAttribLocation(S52color_tri_shader_program, "position");
+          GLint pos = shader->getAttributeLocation("position");
           glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                                 pts);
           glEnableVertexAttribArray(pos);
 
           glDrawArrays(GL_LINES, 0, 2);
-          glDisableVertexAttribArray(pos);
-          glUseProgram(0);
+
+          shader->UnBind();
 
           glDisable(GL_LINE_SMOOTH);
           glDisable(GL_BLEND);
@@ -5576,7 +5562,8 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           }
 
 #endif
-          glUseProgram(S52color_tri_shader_program);
+          CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+          shader->Bind();
 
           glBindBuffer(GL_ARRAY_BUFFER, 0);
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -5587,9 +5574,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           colorv[2] = color.Blue() / float(256);
           colorv[3] = 1.0;  // transparency;
 
-          GLint colloc =
-              glGetUniformLocation(S52color_tri_shader_program, "color");
-          glUniform4fv(colloc, 1, colorv);
+          shader->SetUniform4fv("color", colorv);
 
           float pts[4];
           pts[0] = xs;
@@ -5597,16 +5582,14 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           pts[2] = ptp[iseg + inc].x;
           pts[3] = ptp[iseg + inc].y;
 
-          GLint pos =
-              glGetAttribLocation(S52color_tri_shader_program, "position");
+          GLint pos = shader->getAttributeLocation("position");
           glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                                 pts);
           glEnableVertexAttribArray(pos);
 
           glDrawArrays(GL_LINES, 0, 2);
           glDisableVertexAttribArray(pos);
-
-          glUseProgram(0);
+          shader->UnBind();
 
           glDisable(GL_LINE_SMOOTH);
           glDisable(GL_BLEND);
@@ -8252,13 +8235,14 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       array_gl_type = GL_SHORT;
     }
 
-    glUseProgram(S52color_tri_shader_program);
+    CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+    shader->Bind();
 
     // Disable VBO's (vertex buffer objects) for attributes.
     if (!b_useVBO) glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    GLint pos = glGetAttribLocation(S52color_tri_shader_program, "position");
+    GLint pos = shader->getAttributeLocation("position");
     glEnableVertexAttribArray(pos);
 
     float angle = 0;
@@ -8315,9 +8299,7 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
     Q[3][0] += vp_plib.pix_width / 2;
     Q[3][1] += vp_plib.pix_height / 2;
 
-    GLint matloc =
-        glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-    glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
 
     float colorv[4];
     colorv[0] = c->R / float(256);
@@ -8325,8 +8307,7 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
     colorv[2] = c->B / float(256);
     colorv[3] = 1.0;
 
-    GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
+    shader->SetUniform4fv("color", colorv);
 
     if (b_useVBO)
       glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
@@ -8344,6 +8325,7 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
         if (b_useVBO) {
           glVertexAttribPointer(pos, 2, array_gl_type, GL_FALSE, 0,
                                 (GLvoid *)(vbo_offset));
+          //shader->SetAttributePointerf( position, float *value )
           glDrawArrays(p_tp->type, 0, p_tp->nVert);
         } else {
           float *bufOffset = (float *)(&ppg->single_buffer[vbo_offset]);
@@ -8368,12 +8350,10 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     mat4x4 IM;
     mat4x4_identity(IM);
-    GLint matlocf =
-        glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-    glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)IM);
 
     glDisableVertexAttribArray(pos);
-    glUseProgram(0);
+    shader->UnBind();
 
     if (b_useVBO && b_temp_vbo) {
       glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
@@ -10139,26 +10119,21 @@ void s52plib::DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2,
                            wxCoord y2) {
   glLineWidth(pen.GetWidth());
 
-  glUseProgram(S52color_tri_shader_program);
+  CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+  shader->Bind();
 
   float fBuf[4];
-  GLint pos = glGetAttribLocation(S52color_tri_shader_program, "position");
+  GLint pos = shader->getAttributeLocation("position");
   glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), fBuf);
   glEnableVertexAttribArray(pos);
 
-  /*   GLint matloc =
-     glGetUniformLocation(S52color_tri_shader_program,"MVMatrix");
-     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const
-     GLfloat*)cc1->GetpVP()->vp_transform);
-  */
   float colorv[4];
   colorv[0] = pen.GetColour().Red() / float(256);
   colorv[1] = pen.GetColour().Green() / float(256);
   colorv[2] = pen.GetColour().Blue() / float(256);
   colorv[3] = 1.0;
 
-  GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-  glUniform4fv(colloc, 1, colorv);
+  shader->SetUniform4fv("color", colorv);
 
   if (fabs(vp_plib.rotation) > 0.01) {
     float cx = vp_plib.pix_width / 2.;
@@ -10227,8 +10202,7 @@ void s52plib::DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2,
     glDrawArrays(GL_LINES, 0, 2);
   }
 
-  glUseProgram(0);
-  glDisableVertexAttribArray(pos);
+  shader->UnBind();
 
 }
 
@@ -10532,7 +10506,8 @@ void RenderFromHPGL::Line(wxPoint from, wxPoint to) {
   }
 #ifdef ocpnUSE_GL
   if (renderToOpenGl) {
-    glUseProgram(S52color_tri_shader_program);
+    CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+    shader->Bind();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -10543,8 +10518,7 @@ void RenderFromHPGL::Line(wxPoint from, wxPoint to) {
     colorv[2] = penColor.Blue() / float(256);
     colorv[3] = transparency / float(256);
 
-    GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-    glUniform4fv(colloc, 1, colorv);
+    shader->SetUniform4fv("color", colorv);
 
     float pts[4];
     pts[0] = from.x;
@@ -10552,13 +10526,13 @@ void RenderFromHPGL::Line(wxPoint from, wxPoint to) {
     pts[2] = to.x;
     pts[3] = to.y;
 
-    GLint pos = glGetAttribLocation(S52color_tri_shader_program, "position");
+    GLint pos = shader->getAttributeLocation("position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), pts);
     glEnableVertexAttribArray(pos);
 
     glDrawArrays(GL_LINES, 0, 2);
-    glUseProgram(0);
-    glDisableVertexAttribArray(pos);
+
+    shader->UnBind();
   }
 #endif
 #if wxUSE_GRAPHICS_CONTEXT
@@ -10896,11 +10870,11 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
       }
 
-      glUseProgram(S52color_tri_shader_program);
+      CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+      shader->Bind();
 
       // Get pointers to the attributes in the program.
-      GLint mPosAttrib =
-          glGetAttribLocation(S52color_tri_shader_program, "position");
+      GLint mPosAttrib = shader->getAttributeLocation("position");
 
       // Disable VBO's (vertex buffer objects) for attributes.
       glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -10916,9 +10890,7 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       bcolorv[2] = pen->GetColour().Blue() / float(256);
       bcolorv[3] = pen->GetColour().Alpha() / float(256);
 
-      GLint bcolloc =
-          glGetUniformLocation(S52color_tri_shader_program, "color");
-      glUniform4fv(bcolloc, 1, bcolorv);
+      shader->SetUniform4fv("color", bcolorv);
 
       // Perform the actual drawing.
       glDrawArrays(GL_LINE_LOOP, 0, n);
@@ -10929,7 +10901,7 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       bcolorv[2] = brush->GetColour().Blue() / float(256);
       bcolorv[3] = brush->GetColour().Alpha() / float(256);
 
-      glUniform4fv(bcolloc, 1, bcolorv);
+      shader->SetUniform4fv("color", bcolorv);
 
       // For the simple common case of a convex rectangle...
       //  swizzle the array points to enable GL_TRIANGLE_STRIP
@@ -10946,7 +10918,7 @@ void RenderFromHPGL::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         glDrawArrays(GL_TRIANGLES, 0, 3);
       }
 
-      glDisableVertexAttribArray(mPosAttrib);
+      shader->UnBind();
 
     }
 
@@ -11023,7 +10995,8 @@ void s52_endCallbackD_GLSL(void *data) {
 // s_odc_tess_vertex_idx << s_odc_tess_vertex_idx_this; End 5 100 10 0
   RenderFromHPGL *plib = (RenderFromHPGL *)data;
 
-  glUseProgram(S52color_tri_shader_program);
+  CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+  shader->Bind();
 
   // Disable VBO's (vertex buffer objects) for attributes.
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -11034,10 +11007,6 @@ void s52_endCallbackD_GLSL(void *data) {
   glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), bufPt);
   glEnableVertexAttribArray(pos);
 
-  /// GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
-  /// glUniformMatrix4fv( matloc, 1, GL_FALSE, (const
-  /// GLfloat*)s_tessVP.vp_transform);
-
   float colorv[4];
   wxColour c = plib->getBrush()->GetColour();
 
@@ -11046,10 +11015,10 @@ void s52_endCallbackD_GLSL(void *data) {
   colorv[2] = c.Blue() / float(256);
   colorv[3] = c.Alpha() / float(256);
 
-  GLint colloc = glGetUniformLocation(S52color_tri_shader_program, "color");
-  glUniform4fv(colloc, 1, colorv);
+  shader->SetUniform4fv("color", colorv);
 
   glDrawArrays(plib->s_odc_tess_mode, 0, plib->s_odc_nvertex);
+  shader->UnBind();
 }
 
 #endif  //#ifdef ocpnUSE_GL
@@ -11139,17 +11108,17 @@ void PrepareS52ShaderUniforms(VPointCompat *vp) {
   mat4x4 I;
   mat4x4_identity(I);
 
-  glUseProgram(S52color_tri_shader_program);
-  GLint matloc = glGetUniformLocation(S52color_tri_shader_program, "MVMatrix");
-  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
-  GLint transloc =
-      glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
-  glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+//   glUseProgram(S52color_tri_shader_program);
+//   GLint matloc = glGetUniformLocation(S52color_tri_shader_program, "MVMatrix");
+//   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+//   GLint transloc =
+//       glGetUniformLocation(S52color_tri_shader_program, "TransformMatrix");
+//   glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
   glUseProgram(S52texture_2D_shader_program);
-  matloc = glGetUniformLocation(S52texture_2D_shader_program, "MVMatrix");
+  GLint matloc = glGetUniformLocation(S52texture_2D_shader_program, "MVMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
-  transloc =
+  GLint transloc =
       glGetUniformLocation(S52texture_2D_shader_program, "TransformMatrix");
   glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
@@ -11187,6 +11156,17 @@ void PrepareS52ShaderUniforms(VPointCompat *vp) {
   glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
 
   glUseProgram(0);
+
+  // Load special shaders
+  loadCShaders(0);
+
+  CGLShaderProgram *shader = pCcolor_tri_shader_program[0];
+  shader->Bind();
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)Q);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+  shader->UnBind();
+
+
 }
 
 //      CRC calculation for a byte buffer
