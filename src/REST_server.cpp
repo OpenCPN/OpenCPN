@@ -195,14 +195,12 @@ void RESTServer::StopServer() {
 
 bool RESTServer::LoadConfig( void )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTServer" ) );
+  if( pBaseConfig ) {
+    pBaseConfig->SetPath("/Settings/RESTServer");
 
     wxString key_string;
 
-    pConf->Read("ServerKeys", &key_string );
+    pBaseConfig->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -211,7 +209,7 @@ bool RESTServer::LoadConfig( void )
 
       m_key_map[client_name.ToStdString()] = client_key.ToStdString();
     }
-    pConf->Read("ServerOverwriteDuplicates", &m_b_overwrite, 0 );
+    pBaseConfig->Read("ServerOverwriteDuplicates", &m_b_overwrite, 0 );
 
   }
   return true;
@@ -219,10 +217,8 @@ bool RESTServer::LoadConfig( void )
 
 bool RESTServer::SaveConfig( void )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTServer" ) );
+  if( pBaseConfig ) {
+    pBaseConfig->SetPath( _T ( "/Settings/RESTServer" ) );
 
     wxString key_string;
     for (auto it : m_key_map){
@@ -230,9 +226,9 @@ bool RESTServer::SaveConfig( void )
       key_string += item;
     }
 
-    pConf->Write("ServerKeys", key_string );
+    pBaseConfig->Write("ServerKeys", key_string );
 
-    pConf->Write("ServerOverwriteDuplicates", m_b_overwrite );
+    pBaseConfig->Write("ServerOverwriteDuplicates", m_b_overwrite );
 
   }
   return true;
