@@ -25,7 +25,7 @@
 
 #include <wx/wx.h>
 
-#include "dychart.h"
+#include "s52plibGL.h"
 
 #include "DepthFont.h"
 

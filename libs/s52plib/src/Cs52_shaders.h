@@ -29,7 +29,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "dychart.h"
+#include "s52plibGL.h"
 
 #include <memory>
 #include <vector>
