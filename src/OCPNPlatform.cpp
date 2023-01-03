@@ -1937,8 +1937,15 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
   double postmult = exp(GUIScaleFactor * (0.693 / 5.0));  //  exp(2)
 
   rv = premult * postmult;
+
   rv = wxMin(rv, 3.0);  //  Clamp at 3.0
   rv = wxMax(rv, 0.5);
+
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  if (gFrame)
+    rv *= gFrame->GetContentScaleFactor();
+#endif
 
 #endif
 
