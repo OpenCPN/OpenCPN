@@ -68,7 +68,6 @@ extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 extern int g_NMEAAPBPrecision;
-extern wxArrayOfConnPrm* g_pConnectionParams;
 extern OCPNPlatform* g_Platform;
 
 wxString StringArrayToString(wxArrayString arr) {
@@ -1517,18 +1516,18 @@ void ConnectionsDialog::SetDefaultConnectionParams(void) {
 }
 
 bool ConnectionsDialog::SortSourceList(void) {
-  if (g_pConnectionParams->Count() < 2) return false;
+  if (TheConnectionParams()->Count() < 2) return false;
 
   std::vector<int> ivec;
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) ivec.push_back(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) ivec.push_back(i);
 
   bool did_sort = false;
   bool did_swap = true;
   while (did_swap) {
     did_swap = false;
     for (size_t j = 1; j < ivec.size(); j++) {
-      ConnectionParams* c1 = g_pConnectionParams->Item(ivec[j]);
-      ConnectionParams* c2 = g_pConnectionParams->Item(ivec[j - 1]);
+      ConnectionParams* c1 = TheConnectionParams()->Item(ivec[j]);
+      ConnectionParams* c2 = TheConnectionParams()->Item(ivec[j - 1]);
 
       if (c1->Priority > c2->Priority) {
         int t = ivec[j - 1];
@@ -1547,7 +1546,7 @@ bool ConnectionsDialog::SortSourceList(void) {
 
     for (size_t i = 0; i < ivec.size(); i++) {
       ConnectionParamsPanel* pPanel =
-          g_pConnectionParams->Item(ivec[i])->m_optionsPanel;
+          TheConnectionParams()->Item(ivec[i])->m_optionsPanel;
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
     }
   }
@@ -1559,17 +1558,17 @@ void ConnectionsDialog::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
 
   // Add new panels as necessary
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    if (!g_pConnectionParams->Item(i)->m_optionsPanel) {
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    if (!TheConnectionParams()->Item(i)->m_optionsPanel) {
       ConnectionParamsPanel* pPanel = new ConnectionParamsPanel(
           m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          g_pConnectionParams->Item(i), this);
+          TheConnectionParams()->Item(i), this);
       pPanel->SetSelected(false);
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
-      g_pConnectionParams->Item(i)->m_optionsPanel = pPanel;
+      TheConnectionParams()->Item(i)->m_optionsPanel = pPanel;
     } else {
-      g_pConnectionParams->Item(i)->m_optionsPanel->Update(
-          g_pConnectionParams->Item(i));
+      TheConnectionParams()->Item(i)->m_optionsPanel->Update(
+          TheConnectionParams()->Item(i));
     }
   }
   SortSourceList();
@@ -1581,10 +1580,10 @@ void ConnectionsDialog::FillSourceList(void) {
 }
 
 void ConnectionsDialog::UpdateSourceList(bool bResort) {
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams* cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams* cp = TheConnectionParams()->Item(i);
     ConnectionParamsPanel* panel = cp->m_optionsPanel;
-    if (panel) panel->Update(g_pConnectionParams->Item(i));
+    if (panel) panel->Update(TheConnectionParams()->Item(i));
   }
 
   if (bResort) {
@@ -1596,8 +1595,8 @@ void ConnectionsDialog::UpdateSourceList(bool bResort) {
 
 void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
   //  Unselect all panels
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
-    g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected(false);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++)
+    TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
 
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
@@ -1622,8 +1621,8 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
     // Find the index
     int index = -1;
     ConnectionParams* cp = NULL;
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      cp = g_pConnectionParams->Item(i);
+    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+      cp = TheConnectionParams()->Item(i);
       if (mSelectedConnection == cp) {
         index = i;
         break;
@@ -1631,8 +1630,8 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
     }
 
     if ((index >= 0) && (cp)) {
-      delete g_pConnectionParams->Item(index)->m_optionsPanel;
-      g_pConnectionParams->RemoveAt(index);
+      delete TheConnectionParams()->Item(index)->m_optionsPanel;
+      TheConnectionParams()->RemoveAt(index);
       StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
       mSelectedConnection = NULL;
     }
@@ -1649,7 +1648,7 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
 }
 
 void ConnectionsDialog::OnSelectDatasource(wxListEvent& event) {
-  SetConnectionParams(g_pConnectionParams->Item(event.GetData()));
+  SetConnectionParams(TheConnectionParams()->Item(event.GetData()));
   m_buttonRemove->Enable();
   m_buttonRemove->Show();
   event.Skip();
@@ -1783,7 +1782,7 @@ void ConnectionsDialog::ApplySettings(){
   }
 
   if (!connectionsaved) {
-    size_t nCurrentPanelCount = g_pConnectionParams->GetCount();
+    size_t nCurrentPanelCount = TheConnectionParams()->GetCount();
     ConnectionParams* cp = NULL;
     int old_priority = -1;
     {
@@ -1796,9 +1795,15 @@ void ConnectionsDialog::ApplySettings(){
         if (cp->m_optionsPanel)
           cp->m_optionsPanel->SetEnableCheckbox(false);
 
+        // delete TheConnectionParams()->Item(itemIndex)->m_optionsPanel;
+        // old_priority = TheConnectionParams()->Item(itemIndex)->Priority;
+        // TheConnectionParams()->RemoveAt(itemIndex);
+        // TheConnectionParams()->Insert(cp, itemIndex);
+        // mSelectedConnection = cp;
+        // cp->m_optionsPanel->SetSelected( true );
       } else {
         cp = CreateConnectionParamsFromSelectedItem();
-        if (cp) g_pConnectionParams->Add(cp);
+        if (cp) TheConnectionParams()->Add(cp);
       }
 
       //  Record the previous parameters, if any
@@ -1808,7 +1813,7 @@ void ConnectionsDialog::ApplySettings(){
         cp->LastNetworkPort = lastPort;
       }
 
-      if (g_pConnectionParams->GetCount() != nCurrentPanelCount)
+      if (TheConnectionParams()->GetCount() != nCurrentPanelCount)
         FillSourceList();
       else if (old_priority >= 0) {
         if (old_priority != cp->Priority)  // need resort
@@ -1828,8 +1833,8 @@ void ConnectionsDialog::ApplySettings(){
   }
 
   // Recreate datastreams that are new, or have been edited
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams* cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams* cp = TheConnectionParams()->Item(i);
 
     if (cp->b_IsSetup) continue;
 

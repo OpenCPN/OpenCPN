@@ -163,7 +163,6 @@ extern int g_nDepthUnitDisplay;
 extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
-extern wxArrayOfConnPrm* g_pConnectionParams;
 extern Multiplexer* g_pMUX;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;

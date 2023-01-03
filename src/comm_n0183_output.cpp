@@ -54,8 +54,6 @@
 #include "garmin_wrapper.h"
 #endif
 
-extern wxArrayOfConnPrm *g_pConnectionParams;
-
 //FIXME (dave)  think about GUI feedback, disabled herein
 
 void LogBroadcastOutputMessageColor(const wxString &msg,

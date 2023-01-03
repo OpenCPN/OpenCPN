@@ -433,7 +433,6 @@ extern bool g_bCPAWarn;
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
 extern int g_MemFootMB;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
 extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
@@ -1896,11 +1895,11 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     delete cp;
   }
-  delete g_pConnectionParams;
+  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -4794,8 +4793,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
+      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+        ConnectionParams *cp = TheConnectionParams()->Item(i);
         if (cp->bEnabled) {
           auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;

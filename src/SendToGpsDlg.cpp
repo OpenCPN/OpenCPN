@@ -45,7 +45,6 @@
 
 extern OCPNPlatform* g_Platform;
 extern wxString g_uploadConnection;
-extern wxArrayOfConnPrm* g_pConnectionParams;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToGpsDlg, wxDialog)
 
@@ -120,25 +119,23 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
 
   // Add any defined Network connections supporting "output"
   wxArrayString netconns;
-  if (g_pConnectionParams) {
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      ConnectionParams* cp = g_pConnectionParams->Item(i);
-      wxString netident;
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams* cp = TheConnectionParams()->Item(i);
+    wxString netident;
 
-      if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
-          (cp->NetProtocol == TCP)) {
-        netident << _T("TCP:") << cp->NetworkAddress << _T(":")
-                 << cp->NetworkPort;
-        m_itemCommListBox->Append(netident);
-        netconns.Add(netident);
-      }
-      if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
-          (cp->NetProtocol == UDP)) {
-        netident << _T("UDP:") << cp->NetworkAddress << _T(":")
-                 << cp->NetworkPort;
-        m_itemCommListBox->Append(netident);
-        netconns.Add(netident);
-      }
+    if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
+        (cp->NetProtocol == TCP)) {
+      netident << _T("TCP:") << cp->NetworkAddress << _T(":")
+               << cp->NetworkPort;
+      m_itemCommListBox->Append(netident);
+      netconns.Add(netident);
+    }
+    if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
+        (cp->NetProtocol == UDP)) {
+      netident << _T("UDP:") << cp->NetworkAddress << _T(":")
+               << cp->NetworkPort;
+      m_itemCommListBox->Append(netident);
+      netconns.Add(netident);
     }
   }
 

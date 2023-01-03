@@ -306,8 +306,6 @@ bool s_bSetSystemTime;
 
 static unsigned int malloc_max;
 
-wxArrayOfConnPrm *g_pConnectionParams;
-
 wxDateTime g_start_time;
 wxDateTime g_loglast_time;
 static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
@@ -1333,9 +1331,6 @@ bool MyApp::OnInit() {
   }
 
 
-  //      Initialize connection parameters array
-  g_pConnectionParams = new wxArrayOfConnPrm();
-
   //      Initialize some lists
   //    Layers
   pLayerList = new LayerList;
@@ -2008,8 +2003,8 @@ bool MyApp::OnInit() {
   g_pauimgr->Update();
 
 #if defined(__linux__) && !defined(__OCPN__ANDROID__)
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
       if (cp->GetDSPort().Contains(_T("Serial"))) {
         std::string port(cp->Port.ToStdString());

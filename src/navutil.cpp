@@ -122,8 +122,6 @@ extern bool g_bFullscreen;
 extern int g_nDepthUnitDisplay;
 extern wxString g_winPluginDir;
 
-extern wxArrayOfConnPrm *g_pConnectionParams;
-
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
 
@@ -1256,7 +1254,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      g_pConnectionParams->Clear();
+      TheConnectionParams()->Clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
@@ -1264,7 +1262,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
           delete prm;
           continue;
         }
-        g_pConnectionParams->Add(prm);
+        TheConnectionParams()->Add(prm);
       }
     }
   }
@@ -2674,9 +2672,9 @@ void MyConfig::UpdateSettings() {
 
   SetPath(_T ( "/Settings/NMEADataSource" ));
   wxString connectionconfigs;
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     if (i > 0) connectionconfigs.Append(_T("|"));
-    connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
+    connectionconfigs.Append(TheConnectionParams()->Item(i)->Serialize());
   }
   Write(_T ( "DataConnections" ), connectionconfigs);
 

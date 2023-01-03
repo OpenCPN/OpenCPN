@@ -152,7 +152,6 @@ extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
 
 extern wxString *pInit_Chart_Dir;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
@@ -3432,8 +3431,8 @@ wxString BuildAndroidSettingsString(void) {
   // Connections
 
   // Internal GPS.
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (INTERNAL_GPS == cp->Type) {
       result += _T("prefb_internalGPS:");
       result += cp->bEnabled ? _T("1;") : _T("0;");
@@ -3679,13 +3678,13 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
   }
 
   // Process Internal GPS Connection
-  if (g_pConnectionParams && bproc_InternalGPS) {
+  if (bproc_InternalGPS) {
     //  Does the connection already exist?
     ConnectionParams *pExistingParams = NULL;
     ConnectionParams *cp = NULL;
 
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      ConnectionParams *xcp = g_pConnectionParams->Item(i);
+    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+      ConnectionParams *xcp = TheConnectionParams()->Item(i);
       if (INTERNAL_GPS == xcp->Type) {
         pExistingParams = xcp;
         cp = xcp;
@@ -3705,7 +3704,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
       ConnectionParams *new_params = new ConnectionParams(sGPS);
 
       new_params->bEnabled = benable_InternalGPS;
-      g_pConnectionParams->Add(new_params);
+      TheConnectionParams()->Add(new_params);
       cp = new_params;
     }
 
@@ -3749,78 +3748,77 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
   // Process USB Serial Connections
   bool b_newGlobalSettings = false;
-  if (g_pConnectionParams) {
-    int i = 0;
-    while (wxNOT_FOUND == AUSBPrefs[i].Find(_T("LASTENTRY"))) {
-      wxStringTokenizer tk(settings, _T(";"));
-      while (tk.HasMoreTokens()) {
-        wxString token = tk.GetNextToken();
-        wxString pref = token.BeforeFirst(':');
-        wxString val = token.AfterFirst(':');
-        wxString extraString;
+  int i = 0;
+  while (wxNOT_FOUND == AUSBPrefs[i].Find(_T("LASTENTRY"))) {
+    wxStringTokenizer tk(settings, _T(";"));
+    while (tk.HasMoreTokens()) {
+      wxString token = tk.GetNextToken();
+      wxString pref = token.BeforeFirst(':');
+      wxString val = token.AfterFirst(':');
+      wxString extraString;
 
-        bool benabled = false;
+      bool benabled = false;
 
-        if (pref.IsSameAs(AUSBPrefs[i])) {
-          wxLogMessage(_T("pref: ") + pref);
-          wxLogMessage(_T("val: ") + val);
+      if (pref.IsSameAs(AUSBPrefs[i])) {
+        wxLogMessage(_T("pref: ") + pref);
+        wxLogMessage(_T("val: ") + val);
 
-          if (pref.Contains(_T("USBDP"))) {
-            extraString = val.AfterFirst(':');
-            wxLogMessage(_T("extra: ") + extraString);
+        if (pref.Contains(_T("USBDP"))) {
+          extraString = val.AfterFirst(':');
+          wxLogMessage(_T("extra: ") + extraString);
+        }
+
+        wxLogMessage(_T("found pref ") + pref);
+
+        //  Does the connection already exist?
+        ConnectionParams *pExistingParams = NULL;
+        ConnectionParams *cp = NULL;
+
+        wxString target = AUSBNames[i] + _T("-") + extraString;
+
+        for (unsigned int j = 0; j < TheConnectionParams()->Count(); j++) {
+          ConnectionParams *xcp = TheConnectionParams()->Item(j);
+          wxLogMessage(_T("    Checking: ") + target + " .. " +
+                       xcp->GetDSPort());
+
+          if ((SERIAL == xcp->Type) &&
+              (target.IsSameAs(xcp->GetDSPort().AfterFirst(':')))) {
+            pExistingParams = xcp;
+            cp = xcp;
+            benabled = val.BeforeFirst(':').IsSameAs(_T("1"));
+            break;
           }
+        }
 
-          wxLogMessage(_T("found pref ") + pref);
+        bool b_action = true;
+        if (pExistingParams) {
+          wxLogMessage(_T("Using existing connection  ") + target);
 
-          //  Does the connection already exist?
-          ConnectionParams *pExistingParams = NULL;
-          ConnectionParams *cp = NULL;
+          if (pExistingParams->bEnabled == benabled) {
+            b_action = false;  // nothing to do...
+          } else
+            cp->bEnabled = benabled;
+        } else if (val.BeforeFirst(':').IsSameAs(
+                       _T("1"))) {  //  Need a new Params
+          // make a generic config string.
+          // 0;1;;0;0;/dev/ttyS0;4800;1;0;0;;0;;1;0;0;0;0        17 parms
 
-          wxString target = AUSBNames[i] + _T("-") + extraString;
+          wxString sSerial = _T("0;1;;0;0;");
+          sSerial += AUSBNames[i];
+          sSerial += _T("-") + extraString;
+          sSerial += _T(";4800;1;0;0;;0;;1;0;0;0;0");
 
-          for (unsigned int j = 0; j < g_pConnectionParams->Count(); j++) {
-            ConnectionParams *xcp = g_pConnectionParams->Item(j);
-            wxLogMessage(_T("    Checking: ") + target + " .. " +
-                         xcp->GetDSPort());
+          wxLogMessage(_T("Adding connection  ") + sSerial);
 
-            if ((SERIAL == xcp->Type) &&
-                (target.IsSameAs(xcp->GetDSPort().AfterFirst(':')))) {
-              pExistingParams = xcp;
-              cp = xcp;
-              benabled = val.BeforeFirst(':').IsSameAs(_T("1"));
-              break;
-            }
-          }
+          ConnectionParams *new_params = new ConnectionParams(sSerial);
 
-          bool b_action = true;
-          if (pExistingParams) {
-            wxLogMessage(_T("Using existing connection  ") + target);
+          new_params->bEnabled = true;
+          TheConnectionParams()->Add(new_params);
+          cp = new_params;
+          rr |= NEED_NEW_OPTIONS;
+        }
 
-            if (pExistingParams->bEnabled == benabled) {
-              b_action = false;  // nothing to do...
-            } else
-              cp->bEnabled = benabled;
-          } else if (val.BeforeFirst(':').IsSameAs(
-                         _T("1"))) {  //  Need a new Params
-            // make a generic config string.
-            // 0;1;;0;0;/dev/ttyS0;4800;1;0;0;;0;;1;0;0;0;0        17 parms
-
-            wxString sSerial = _T("0;1;;0;0;");
-            sSerial += AUSBNames[i];
-            sSerial += _T("-") + extraString;
-            sSerial += _T(";4800;1;0;0;;0;;1;0;0;0;0");
-
-            wxLogMessage(_T("Adding connection  ") + sSerial);
-
-            ConnectionParams *new_params = new ConnectionParams(sSerial);
-
-            new_params->bEnabled = true;
-            g_pConnectionParams->Add(new_params);
-            cp = new_params;
-            rr |= NEED_NEW_OPTIONS;
-          }
-
-          if (b_action && cp) {  // something to do?
+        if (b_action && cp) {  // something to do?
 //FIXME (dave)
 #if 0
             rr |= NEED_NEW_OPTIONS;
@@ -3861,7 +3859,6 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
       i++;
     }  // while
-  }
 
   return rr;
 }

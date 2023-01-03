@@ -286,7 +286,6 @@ extern wxString g_default_routepoint_icon;
 
 extern S57QueryDialog *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern OcpnSound *g_anchorwatch_sound;
 
@@ -12616,11 +12615,11 @@ wxString ChartCanvas::FindValidUploadPort() {
     port = g_uploadConnection;
   }
 
-  else if (g_pConnectionParams) {
+  else if (TheConnectionParams()) {
     // If there is no persistent upload port recorded (yet)
     // then use the first available serial connection which has output defined.
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      ConnectionParams *cp = g_pConnectionParams->Item(i);
+    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+      ConnectionParams *cp = TheConnectionParams()->Item(i);
       if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == SERIAL)
         port << _T("Serial:") << cp->Port;
     }
