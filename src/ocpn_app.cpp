@@ -231,8 +231,6 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
-wxConfigBase *pBaseConfig;   // Always the same as pConfig, handles MS linker
-
 ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
 wxString *pdir_list[20];
@@ -1371,7 +1369,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
-  pBaseConfig = pConfig;
+  InitConfigBase(pConfig);
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was

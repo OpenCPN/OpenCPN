@@ -226,7 +226,6 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 extern OCPN_AUIManager *g_pauimgr;
 extern MyConfig *pConfig;
-extern wxConfigBase *pBaseConfig;
 extern arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
@@ -1879,7 +1878,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   delete pConfig;  // All done
   pConfig = NULL;
-  pBaseConfig = NULL;
+  InitConfigBase(0);
 
 
   if (g_pAIS) {

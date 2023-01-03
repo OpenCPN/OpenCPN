@@ -78,7 +78,6 @@ class Select;
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
 wxString g_winPluginDir;
-wxConfigBase* pBaseConfig = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -245,7 +244,7 @@ public:
 
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
-    pBaseConfig = new wxFileConfig("", "", config_file);
+    InitConfigBase(new wxFileConfig("", "", config_file));
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();

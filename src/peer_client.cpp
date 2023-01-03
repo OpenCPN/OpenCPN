@@ -45,8 +45,6 @@
 extern std::string PINtoRandomKeyString(int dpin);
 
 extern MyFrame *gFrame;
-extern wxConfigBase *pBaseConfig;
-
 
 wxString GetErrorText(int result){
   switch (result) {
@@ -145,12 +143,12 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
 
 std::string GetClientKey( std::string &server_name )
 {
-  if (pBaseConfig) {
-    pBaseConfig->SetPath("/Settings/RESTClient");
+  if (TheConfigBase()) {
+    TheConfigBase()->SetPath("/Settings/RESTClient");
 
     wxString key_string;
 
-    pBaseConfig->Read("ServerKeys", &key_string );
+    TheConfigBase()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -166,12 +164,12 @@ std::string GetClientKey( std::string &server_name )
 
 void SaveClientKey( std::string &server_name, std::string key )
 {
-  if (pBaseConfig) {
-    pBaseConfig->SetPath("/Settings/RESTClient");
+  if (TheConfigBase()) {
+    TheConfigBase()->SetPath("/Settings/RESTClient");
 
     wxArrayString array;
     wxString key_string;
-    pBaseConfig->Read("ServerKeys", &key_string );
+    TheConfigBase()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -202,7 +200,7 @@ void SaveClientKey( std::string &server_name, std::string key )
       key_string_updated += ";";
     }
 
-    pBaseConfig->Write("ServerKeys", key_string_updated );
+    TheConfigBase()->Write("ServerKeys", key_string_updated );
 
   }
   return ;

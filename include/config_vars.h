@@ -26,6 +26,7 @@
 #ifndef CONFIG_VARS_H__
 #define CONFIG_VARS_H__
 
+#include <wx/config.h>
 #include <wx/string.h>
 
 
@@ -41,5 +42,8 @@ extern int sat_watchdog_timeout_ticks;
 
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
+
+wxConfigBase* TheConfigBase();
+void InitConfigBase(wxConfigBase* cfg);
 
 #endif  // CONFIG_VARS_H__

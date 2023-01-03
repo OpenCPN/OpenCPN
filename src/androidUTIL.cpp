@@ -137,8 +137,6 @@ extern OCPNPlatform *g_Platform;
 // Static globals
 extern ChartDB *ChartData;
 extern MyConfig *pConfig;
-extern wxConfigBase *pBaseConfig;
-extern wxConfigBase *pBaseConfig;
 
 //   Preferences globals
 extern bool g_bShowOutlines;
@@ -4736,7 +4734,7 @@ int doAndroidPersistState() {
 
   delete pConfig;  // All done
   pConfig = NULL;
-  pBaseConfig = NULL;
+  InitBaseConfig(0);
 
   //    Unload the PlugIns
   //      Note that we are waiting until after the canvas is destroyed,

@@ -42,6 +42,7 @@
 
 #include "REST_server.h"
 #include "mongoose.h"
+#include "config_vars.h"
 #include "gui_lib.h"
 #include "REST_server_gui.h"
 #include "pugixml.hpp"
@@ -58,7 +59,6 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
 bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj);
 
 extern Routeman *g_pRouteMan;
-extern wxConfigBase *pBaseConfig;
 extern MyFrame *gFrame;
 
 //  Some global variables to handle thread syncronization
@@ -195,12 +195,12 @@ void RESTServer::StopServer() {
 
 bool RESTServer::LoadConfig( void )
 {
-  if( pBaseConfig ) {
-    pBaseConfig->SetPath("/Settings/RESTServer");
+  if( TheConfigBase() ) {
+    TheConfigBase()->SetPath("/Settings/RESTServer");
 
     wxString key_string;
 
-    pBaseConfig->Read("ServerKeys", &key_string );
+    TheConfigBase()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -209,7 +209,7 @@ bool RESTServer::LoadConfig( void )
 
       m_key_map[client_name.ToStdString()] = client_key.ToStdString();
     }
-    pBaseConfig->Read("ServerOverwriteDuplicates", &m_b_overwrite, 0 );
+    TheConfigBase()->Read("ServerOverwriteDuplicates", &m_b_overwrite, 0 );
 
   }
   return true;
@@ -217,8 +217,8 @@ bool RESTServer::LoadConfig( void )
 
 bool RESTServer::SaveConfig( void )
 {
-  if( pBaseConfig ) {
-    pBaseConfig->SetPath( _T ( "/Settings/RESTServer" ) );
+  if( TheConfigBase() ) {
+    TheConfigBase()->SetPath( _T ( "/Settings/RESTServer" ) );
 
     wxString key_string;
     for (auto it : m_key_map){
@@ -226,9 +226,9 @@ bool RESTServer::SaveConfig( void )
       key_string += item;
     }
 
-    pBaseConfig->Write("ServerKeys", key_string );
+    TheConfigBase()->Write("ServerKeys", key_string );
 
-    pBaseConfig->Write("ServerOverwriteDuplicates", m_b_overwrite );
+    TheConfigBase()->Write("ServerOverwriteDuplicates", m_b_overwrite );
 
   }
   return true;

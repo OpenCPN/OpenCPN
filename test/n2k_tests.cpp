@@ -135,7 +135,6 @@ extern bool g_benableUDPNullHeader;
 extern BasePlatform* g_BasePlatform;
 extern bool g_bportable;
 extern wxString g_winPluginDir;
-extern wxConfigBase* pBaseConfig;
 extern void* g_pi_manager;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;

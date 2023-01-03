@@ -3,7 +3,7 @@
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2021 Alec Leamas                                        *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -37,3 +37,10 @@ int sat_watchdog_timeout_ticks = 12;
 wxString g_GPS_Ident;
 wxString g_hostname;
 
+static wxConfigBase* the_base_config = 0;
+
+wxConfigBase* TheConfigBase() {
+  wxASSERT_MSG(the_base_config != 0, "Uninitialized the_base_config");
+  return the_base_config;
+}
+void InitConfigBase(wxConfigBase* cfg) { the_base_config = cfg; }
