@@ -23,6 +23,7 @@
 #include "config_vars.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "select.h"
 
@@ -76,13 +77,6 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
 int g_NMEAAPBPrecision;
 
 Select* pSelect;

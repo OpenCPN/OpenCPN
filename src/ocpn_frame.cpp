@@ -144,6 +144,7 @@
 #include "options.h"
 // #include "piano.h"
 // #include "plugin_handler.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 // #include "Quilt.h"
 // #include "route.h"
@@ -244,7 +245,6 @@ extern S57QueryDialog *g_pObjectQueryDialog;
 extern about *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
-extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 extern double vLat, vLon;
 extern double initial_scale_ppm, initial_rotation;
 extern wxString g_locale;

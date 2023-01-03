@@ -114,6 +114,7 @@
 #include "OCPN_AUIManager.h"
 #include "OCPNPlatform.h"
 #include "options.h"
+#include "own_ship.h"
 #include "plugin_handler.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -259,7 +260,6 @@ TrackPropDlg *pTrackPropDialog;
 RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
-double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 double vLat, vLon;
 double initial_scale_ppm, initial_rotation;
 

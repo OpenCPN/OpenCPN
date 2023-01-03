@@ -45,6 +45,8 @@
 #include "idents.h"
 #include "OCPNPlatform.h"
 #include "ocpn_types.h"
+#include "own_ship.h"
+
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -67,7 +69,6 @@ wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
 
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
 extern wxConfigBase *pBaseConfig;
 
 bool debug_priority = 0;

@@ -63,6 +63,7 @@
 #include "navutil.h"
 #include "nav_object_database.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
@@ -96,7 +97,7 @@ extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
 extern bool g_bskew_comp;
-extern double gLat, gLon, gSog, gCog, vLat, vLon;
+extern double vLat, vLon;
 extern MyFrame *gFrame;
 extern ChartGroupArray *g_pGroupArray;
 extern PlugInManager *g_pi_manager;

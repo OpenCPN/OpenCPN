@@ -29,15 +29,17 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "rapidjson/document.h"
 #include <wx/log.h>
 #include <wx/math.h>
 #include <wx/string.h>
+
+#include "rapidjson/document.h"
 
 #include "comm_decoder.h"
 #include "comm_util.h"
 #include "comm_vars.h"
 #include "geodesic.h"
+#include "own_ship.h"
 
 
 bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,

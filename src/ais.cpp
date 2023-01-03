@@ -50,13 +50,13 @@
 #include "ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
+#include "own_ship.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "line_clip.h"
 
-extern double gLat, gLon, gSog, gCog;
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 

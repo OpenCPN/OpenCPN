@@ -129,13 +129,6 @@ Select* pSelectAIS;
 
 /* comm_bridge context. */
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
 int g_NMEAAPBPrecision;
 
 Select* pSelect;

@@ -79,6 +79,7 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
+#include "own_ship.h"
 #include "route.h"
 #include "routeman.h"
 #include "s52utils.h"
@@ -109,7 +110,7 @@ extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
 extern int g_LayerIdx;
 extern MyConfig *pConfig;
-extern double vLat, vLon, gLat, gLon;
+extern double vLat, vLon;
 extern double kLat, kLon;
 extern double initial_scale_ppm, initial_rotation;
 extern ColorScheme global_color_scheme;

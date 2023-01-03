@@ -50,6 +50,7 @@
 #include "TrackPropDlg.h"
 #include "S57QueryDialog.h"
 #include "options.h"
+#include "own_ship.h"
 #include "plugin_loader.h"
 #include "routemanagerdialog.h"
 #include "chartdb.h"
@@ -230,7 +231,6 @@ extern bool g_bLookAhead;
 
 extern double g_ownship_predictor_minutes;
 extern double g_ownship_HDTpredictor_miles;
-extern double gLat, gLon, gCog, gSog, gHdt, gVar;
 
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;

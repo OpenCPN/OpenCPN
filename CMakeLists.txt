@@ -925,6 +925,7 @@ set(
   include/ocpn_types.h
   include/ocpn_utils.h
   include/options.h
+  include/own_ship.h
   include/piano.h
   include/plugin_cache.h
   include/plugin_blacklist.h
@@ -1033,6 +1034,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp

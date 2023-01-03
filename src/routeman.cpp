@@ -55,6 +55,7 @@
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -87,8 +88,6 @@ extern Routeman *g_pRouteMan;
 
 extern wxRect g_blink_rect;
 
-extern double gLat, gLon, gSog, gCog;
-extern double gVar;
 extern bool g_bMagneticAPB;
 
 extern RoutePoint *pAnchorWatchPoint1;

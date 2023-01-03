@@ -65,6 +65,7 @@
 #include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
+#include "own_ship.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
 #include "pluginmanager.h"

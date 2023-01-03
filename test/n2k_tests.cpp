@@ -21,6 +21,7 @@
 #include "conn_params.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "ais_defs.h"
 #include "ais_decoder.h"
@@ -139,13 +140,6 @@ extern void* g_pi_manager;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
 
-extern double gCog;
-extern double gHdm;
-extern double gHdt;
-extern double gLat;
-extern double gLon;
-extern double gSog;
-extern double gVar;
 extern bool g_bHDT_Rx;
 extern int g_NMEAAPBPrecision;
 

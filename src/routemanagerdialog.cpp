@@ -59,6 +59,7 @@
 #include "navutil_base.h"
 #include "svg_utils.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -85,8 +86,6 @@ extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern MyFrame *gFrame;
 extern Select *pSelect;
-extern double gLat, gLon;
-extern double gCog, gSog;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
 extern AisDecoder *g_pAIS;

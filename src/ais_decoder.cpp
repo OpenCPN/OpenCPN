@@ -58,6 +58,7 @@
 #include "idents.h"
 #include "multiplexer.h"
 #include "navutil_base.h"
+#include "own_ship.h"
 #include "route_point.h"
 #include "select.h"
 #include "SoundFactory.h"
@@ -96,11 +97,6 @@ extern bool g_bAllowShowScaled;
 extern bool g_bShowScaled;
 extern bool g_bInlandEcdis;
 extern int g_WplAction;
-extern double gLat;
-extern double gLon;
-extern double gCog;
-extern double gSog;
-extern double gHdt;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern int g_iDistanceFormat;
