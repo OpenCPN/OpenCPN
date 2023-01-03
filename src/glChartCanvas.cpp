@@ -2670,7 +2670,7 @@ void glChartCanvas::DrawFloatingOverlayObjects(ocpnDC &dc) {
   m_pParentCanvas->RenderRouteLegs(dc);
   m_pParentCanvas->RenderShipToActive(dc, true);
   m_pParentCanvas->ScaleBarDraw(dc);
-  s57_DrawExtendedLightSectors(dc, m_pParentCanvas->VPoint,
+  s57_DrawExtendedLightSectorsGL(dc, m_pParentCanvas->VPoint,
                                m_pParentCanvas->extendedSectorLegs);
   if (g_pi_manager) {
     g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
@@ -5313,6 +5313,12 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader = pAALine_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
+      shader->UnBind();
+
+      shader = pring_shader_program[GetCanvasIndex()];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
+      shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
 
       m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
