@@ -31,6 +31,10 @@
 
 #include "s52plibGL.h"
 
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
 #include <memory>
 #include <vector>
 #include <fstream>
