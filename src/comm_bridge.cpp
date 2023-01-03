@@ -1010,30 +1010,30 @@ void CommBridge::UpdateAndApplyMaps(std::vector<std::string> new_maps){
 
 bool CommBridge::LoadConfig( void )
 {
-  if( TheConfigBase() ) {
-    TheConfigBase()->SetPath("/Settings/CommPriority");
+  if( TheBaseConfig() ) {
+    TheBaseConfig()->SetPath("/Settings/CommPriority");
 
     std::vector<std::string> new_maps;
     std::string s_prio;
     wxString pri_string;
 
-    TheConfigBase()->Read("PriorityPosition", &pri_string );
+    TheBaseConfig()->Read("PriorityPosition", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    TheConfigBase()->Read("PriorityVelocity", &pri_string );
+    TheBaseConfig()->Read("PriorityVelocity", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    TheConfigBase()->Read("PriorityHeading", &pri_string );
+    TheBaseConfig()->Read("PriorityHeading", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    TheConfigBase()->Read("PriorityVariation", &pri_string );
+    TheBaseConfig()->Read("PriorityVariation", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    TheConfigBase()->Read("PrioritySatellites", &pri_string );
+    TheBaseConfig()->Read("PrioritySatellites", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
@@ -1044,24 +1044,24 @@ bool CommBridge::LoadConfig( void )
 
 bool CommBridge::SaveConfig( void )
 {
-  if( TheConfigBase() ) {
-    TheConfigBase()->SetPath("/Settings/CommPriority");
+  if( TheBaseConfig() ) {
+    TheBaseConfig()->SetPath("/Settings/CommPriority");
 
     wxString pri_string;
     pri_string = wxString(GetPriorityMap(priority_map_position).c_str());
-    TheConfigBase()->Write( "PriorityPosition", pri_string );
+    TheBaseConfig()->Write( "PriorityPosition", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_velocity).c_str());
-    TheConfigBase()->Write( "PriorityVelocity", pri_string );
+    TheBaseConfig()->Write( "PriorityVelocity", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_heading).c_str());
-    TheConfigBase()->Write( "PriorityHeading", pri_string );
+    TheBaseConfig()->Write( "PriorityHeading", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_variation).c_str());
-    TheConfigBase()->Write( "PriorityVariation", pri_string );
+    TheBaseConfig()->Write( "PriorityVariation", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_satellites).c_str());
-    TheConfigBase()->Write( "PrioritySatellites", pri_string );
+    TheBaseConfig()->Write( "PrioritySatellites", pri_string );
   }
 
   return true;

@@ -43,7 +43,7 @@ extern int sat_watchdog_timeout_ticks;
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
 
-wxConfigBase* TheConfigBase();
+wxConfigBase* TheBaseConfig();
 void InitConfigBase(wxConfigBase* cfg);
 
 #endif  // CONFIG_VARS_H__

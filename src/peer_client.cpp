@@ -143,12 +143,12 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
 
 std::string GetClientKey( std::string &server_name )
 {
-  if (TheConfigBase()) {
-    TheConfigBase()->SetPath("/Settings/RESTClient");
+  if (TheBaseConfig()) {
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
 
     wxString key_string;
 
-    TheConfigBase()->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -164,12 +164,12 @@ std::string GetClientKey( std::string &server_name )
 
 void SaveClientKey( std::string &server_name, std::string key )
 {
-  if (TheConfigBase()) {
-    TheConfigBase()->SetPath("/Settings/RESTClient");
+  if (TheBaseConfig()) {
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
 
     wxArrayString array;
     wxString key_string;
-    TheConfigBase()->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -200,7 +200,7 @@ void SaveClientKey( std::string &server_name, std::string key )
       key_string_updated += ";";
     }
 
-    TheConfigBase()->Write("ServerKeys", key_string_updated );
+    TheBaseConfig()->Write("ServerKeys", key_string_updated );
 
   }
   return ;

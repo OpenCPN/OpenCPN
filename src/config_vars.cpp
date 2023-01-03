@@ -39,7 +39,7 @@ wxString g_hostname;
 
 static wxConfigBase* the_base_config = 0;
 
-wxConfigBase* TheConfigBase() {
+wxConfigBase* TheBaseConfig() {
   wxASSERT_MSG(the_base_config != 0, "Uninitialized the_base_config");
   return the_base_config;
 }
