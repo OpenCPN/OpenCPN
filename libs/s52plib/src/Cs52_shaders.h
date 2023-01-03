@@ -29,7 +29,11 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "dychart.h"
+#include "s52plibGL.h"
+
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
 
 #include <memory>
 #include <vector>
