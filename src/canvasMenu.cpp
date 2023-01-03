@@ -1050,7 +1050,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
   int splitMode = 0;  // variables for split
   bool dupFirstWpt = true, showRPD;
 
-  parent->GetCanvasPixPoint(popx, popy, zlat, zlon);
+  parent->GetCanvasPixPoint(popx * parent->GetDisplayScale(),
+                            popy* parent->GetDisplayScale(),
+                            zlat, zlon);
 
   switch (event.GetId()) {
     case ID_DEF_MENU_MAX_DETAIL:
