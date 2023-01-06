@@ -3505,7 +3505,11 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     // If the color scheme is DAY or RGB, use the default platform native colour
     // for backgrounds
     if (!darkMode) {
+#ifdef _WIN32
       window_back_color = wxNullColour;
+#else
+      window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+#endif
       col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
       uitext = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
     }

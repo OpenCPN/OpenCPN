@@ -5661,13 +5661,17 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
           ts.Append(/*tk.GetNextToken()).Append(*/ _T("</b><br><table >"));
           int i = -6;
           while (tk.HasMoreTokens()) {  // fill the current table
-            ts.Append(_T("<tr><td>"))
-                .Append(wxString::Format(wxT("%i"), i))
-                .Append(_T("</td><td>"))
-                .Append(tk.GetNextToken())
-                .Append(_T("&#176</td><td>"))
-                .Append(tk.GetNextToken())
-                .Append(_T("</td></tr>"));
+            ts.Append(_T("<tr><td>"));
+            wxString s1; s1.Format(wxT("%i"), i);
+            ts.Append(s1);
+            ts.Append(_T("</td><td>"));
+            s1 = tk.GetNextToken();
+            ts.Append(s1);
+            s1 = "&#176</td><td>";
+            ts.Append(s1);
+            s1 = tk.GetNextToken();
+            ts.Append(s1);
+            ts.Append(_T("</td></tr>"));
             i++;
           }
           ts.Append(_T("</table>"));
