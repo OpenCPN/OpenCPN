@@ -303,13 +303,16 @@ std::string ConnectionParams::GetStrippedDSPort() {
     return "";
 }
 
-wxString ConnectionParams::GetLastDSPort() const {
-  if (Type == SERIAL)
-    return wxString::Format(_T("Serial:%s"), Port.c_str());
+std::string ConnectionParams::GetLastDSPort() const {
+  if (Type == SERIAL){
+    wxString sp = wxString::Format(_T("Serial:%s"), Port.c_str());
+    return sp.ToStdString();
+  }
   else {
     wxString proto = NetworkProtocolToString(LastNetProtocol);
-    return wxString::Format(_T("%s:%s:%d"), proto.c_str(),
+    wxString sp = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
                             LastNetworkAddress.c_str(), LastNetworkPort);
+    return sp.ToStdString();
   }
 }
 
@@ -380,5 +383,18 @@ NavAddr::Bus ConnectionParams::GetCommProtocol(){
   }
 }
 
+NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
+  if ((Type == NETWORK) && (LastNetProtocol == SIGNALK) )
+      return NavAddr::Bus::Signalk;
+
+  switch (LastNetProtocol){
+    case PROTO_NMEA0183:
+      return NavAddr::Bus::N0183;
+    case PROTO_NMEA2000:
+      return NavAddr::Bus::N2000;
+    default:
+      return NavAddr::Bus::Undef;
+  }
+}
 
 
