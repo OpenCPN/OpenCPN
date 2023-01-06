@@ -1794,13 +1794,10 @@ void ConnectionsDialog::ApplySettings(){
         old_priority = cp->Priority;
         UpdateConnectionParamsFromSelectedItem(cp);
         cp->b_IsSetup = false;
+        cp->bEnabled = false;
+        if (cp->m_optionsPanel)
+          cp->m_optionsPanel->SetEnableCheckbox(false);
 
-        // delete g_pConnectionParams->Item(itemIndex)->m_optionsPanel;
-        // old_priority = g_pConnectionParams->Item(itemIndex)->Priority;
-        // g_pConnectionParams->RemoveAt(itemIndex);
-        // g_pConnectionParams->Insert(cp, itemIndex);
-        // mSelectedConnection = cp;
-        // cp->m_optionsPanel->SetSelected( true );
       } else {
         cp = CreateConnectionParamsFromSelectedItem();
         if (cp) g_pConnectionParams->Add(cp);
@@ -1843,21 +1840,12 @@ void ConnectionsDialog::ApplySettings(){
     // Terminate and remove any existing driver, if present in registry
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
 
-#if 0  //FIXME
-    //  Try to stop any previous stream to avoid orphans
-    DataStream* pds_existing = g_pMUX->FindStream(cp->GetLastDSPort());
-    if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-
-    //  This for Bluetooth, which has strange parameters
-    if (cp->Type == INTERNAL_BT) {
-      pds_existing = g_pMUX->FindStream(cp->GetPortStr());
-      if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-    }
+    // Stop and remove  "previous" port, in case other params have changed.
+    StopAndRemoveCommDriver(cp->GetLastDSPort(), cp->GetLastCommProtocol());
 
     // Internal BlueTooth driver stacks commonly need a time delay to purge
     // their buffers, etc. before restating with new parameters...
     if (cp->Type == INTERNAL_BT) wxSleep(1);
-#endif
 
     //Connection has been disabled
     if (!cp->bEnabled) continue;
