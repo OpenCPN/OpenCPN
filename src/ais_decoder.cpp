@@ -468,6 +468,12 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MID = MessageID;
     pTargetData->MMSI = mmsi;
     pTargetData->Class = AIS_CLASS_A;
+    //    Check for SART and friends by looking at first two digits of MMSI
+    if( 97 == pTargetData->MMSI / 10000000) {
+      pTargetData->Class = AIS_SART;
+      // won't get a static report, so fake it here
+      pTargetData->StaticReportTicks = now.GetTicks();  
+    }
     pTargetData->NavStatus = (ais_nav_status)NavStat;
     if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
     if (!N2kIsNA(COG)) pTargetData->COG = GeodesicRadToDeg(COG);
