@@ -260,7 +260,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
             bool bxmit_ok = true;
             if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
                                           FILTER_OUTPUT)) {
-              driver->SendMessage(n0183_msg,
+              bxmit_ok = driver->SendMessage(n0183_msg,
                                 std::make_shared<NavAddr0183>(driver->iface));
               bout_filter = false;
             }
