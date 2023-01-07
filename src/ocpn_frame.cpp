@@ -5611,9 +5611,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     return;
   }
 
-  //      Update the Toolbar Status windows and lower status bar the first time
-  //      watchdog times out
-  if ((gGPS_Watchdog == 0) || (gSAT_Watchdog == 0)) {
+  //  Update the Toolbar Status windows and lower status bar
+  //  just after start of ticks.
+
+  if (g_tick == 2) {
     wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
                     _T(" COG ---\u00B0"));
     if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);

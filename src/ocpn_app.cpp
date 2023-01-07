@@ -387,16 +387,11 @@ wxColorHashMap *pcurrent_user_color_hash;
 int gps_watchdog_timeout_ticks;
 int sat_watchdog_timeout_ticks;
 
-int gGPS_Watchdog;
 bool bGPSValid;
 bool bVelocityValid;
 
-int gHDx_Watchdog;
-int gHDT_Watchdog;
-int gVAR_Watchdog;
 bool g_bVAR_Rx;
 
-int gSAT_Watchdog;
 int g_priSats;
 int g_SatsInView;
 bool g_bSatValid;
@@ -1887,13 +1882,7 @@ bool MyApp::OnInit() {
                 gps_watchdog_timeout_ticks);
   wxLogMessage(dogmsg);
 
-  sat_watchdog_timeout_ticks = 12;
-
-  gGPS_Watchdog = 2;
-  gHDx_Watchdog = 2;
-  gHDT_Watchdog = 2;
-  gSAT_Watchdog = 2;
-  gVAR_Watchdog = 2;
+  sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
 
   g_priSats = 99;
 
