@@ -241,7 +241,7 @@ ${LIBARCHIVE_COMMENT_END}
                                                                          <key>GID</key>
                                                                          <integer>20</integer>
                                                                          <key>PATH</key>
-                                                                         <string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libmp3lame.0.dylib</string>
+                                                                         <string>${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks/libmp3lame.dylib</string>
                                                                          <key>PATH_TYPE</key>
                                                                          <integer>0</integer>
                                                                          <key>PERMISSIONS</key>
