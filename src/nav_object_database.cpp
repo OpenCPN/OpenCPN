@@ -1418,7 +1418,7 @@ bool NavObjectCollection1::AddGPXPointsList(RoutePointList *pRoutePoints) {
 }
 
 void NavObjectCollection1::SetRootGPXNode(void) {
-  if (!strlen(root().name())) {
+  if (!strlen(first_child().name())) {
     pugi::xml_node gpx_root = append_child("gpx");
     gpx_root.append_attribute("version") = "1.1";
     gpx_root.append_attribute("creator") = "OpenCPN";
