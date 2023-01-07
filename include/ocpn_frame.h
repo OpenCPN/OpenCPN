@@ -112,7 +112,7 @@ class ArrayOfCDI;
 #endif
 
 //      Define a constant GPS signal watchdog timeout value
-#define GPS_TIMEOUT_SECONDS 6
+#define GPS_TIMEOUT_SECONDS 10
 
 //    Define a timer value for Tide/Current updates
 //    Note that the underlying data algorithms produce fresh data only every 15

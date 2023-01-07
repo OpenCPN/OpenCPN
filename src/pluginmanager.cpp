@@ -241,6 +241,7 @@ extern wxString g_catalog_custom_url;
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 extern wxString g_ownshipMMSI_SK;
+extern int gps_watchdog_timeout_ticks;
 
 const char *const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char *const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
@@ -8469,6 +8470,11 @@ wxString GetActiveRouteGUID(
     return wxEmptyString;
   else
     return rt->m_GUID;
+}
+
+/** Comm Global Watchdog Query  */
+int GetGlobalWatchdogTimoutSeconds(){
+  return gps_watchdog_timeout_ticks;
 }
 
 /** Comm Priority query support methods  */

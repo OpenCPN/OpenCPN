@@ -150,11 +150,11 @@ bool CommBridge::Initialize() {
 }
 
 void CommBridge::PresetWatchdogs() {
-  m_watchdogs.position_watchdog = 5;
-  m_watchdogs.velocity_watchdog = 5;
-  m_watchdogs.variation_watchdog = 5;
-  m_watchdogs.heading_watchdog = 5;
-  m_watchdogs.satellite_watchdog = 5;
+  m_watchdogs.position_watchdog = 20;   // A bit longer watchdog for startup latency.
+  m_watchdogs.velocity_watchdog = 20;
+  m_watchdogs.variation_watchdog = 20;
+  m_watchdogs.heading_watchdog = 20;
+  m_watchdogs.satellite_watchdog = 20;
 }
 
 void CommBridge::SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,

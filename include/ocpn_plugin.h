@@ -1577,6 +1577,7 @@ GetActiveRouteGUID(void);  // if no active route, returns wxEmptyString
 extern DECL_EXP std::vector<std::string> GetPriorityMaps();
 extern DECL_EXP std::vector<std::string> GetActivePriorityIdentifiers();
 
+extern DECL_EXP int GetGlobalWatchdogTimoutSeconds();
 
 
 typedef enum _OBJECT_LAYER_REQ {
