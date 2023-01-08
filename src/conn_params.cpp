@@ -370,8 +370,16 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDire
 }
 
 NavAddr::Bus ConnectionParams::GetCommProtocol(){
-  if ((Type == NETWORK) && (NetProtocol == SIGNALK) )
+  if (Type == NETWORK){
+    if (NetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
+    else if (NetProtocol == UDP)
+      return NavAddr::Bus::N0183;
+    else if (NetProtocol == TCP)
+      return NavAddr::Bus::N0183;
+    else if (NetProtocol == GPSD)
+      return NavAddr::Bus::N0183;
+  }
 
   switch (Protocol){
     case PROTO_NMEA0183:
@@ -384,10 +392,18 @@ NavAddr::Bus ConnectionParams::GetCommProtocol(){
 }
 
 NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
-  if ((Type == NETWORK) && (LastNetProtocol == SIGNALK) )
+   if (Type == NETWORK){
+    if (LastNetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
+    else if (LastNetProtocol == UDP)
+      return NavAddr::Bus::N0183;
+    else if (LastNetProtocol == TCP)
+      return NavAddr::Bus::N0183;
+    else if (LastNetProtocol == GPSD)
+      return NavAddr::Bus::N0183;
+  }
 
-  switch (LastNetProtocol){
+  switch (LastDataProtocol){
     case PROTO_NMEA0183:
       return NavAddr::Bus::N0183;
     case PROTO_NMEA2000:

@@ -1776,12 +1776,14 @@ void ConnectionsDialog::ApplySettings(){
   wxString lastAddr;
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
+  DataProtocol lastDataProtocol = PROTO_NMEA0183;
 
   if (mSelectedConnection) {
     ConnectionParams* cpo = mSelectedConnection;
     lastAddr = cpo->NetworkAddress;
     lastPort = cpo->NetworkPort;
     lastNetProtocol = cpo->NetProtocol;
+    lastDataProtocol = cpo->Protocol;
   }
 
   if (!connectionsaved) {
@@ -1808,6 +1810,7 @@ void ConnectionsDialog::ApplySettings(){
         cp->LastNetProtocol = lastNetProtocol;
         cp->LastNetworkAddress = lastAddr;
         cp->LastNetworkPort = lastPort;
+        cp->LastDataProtocol = lastDataProtocol;
       }
 
       if (g_pConnectionParams->GetCount() != nCurrentPanelCount)
@@ -1925,6 +1928,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
     pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
     pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
+    pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
     pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
     pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
