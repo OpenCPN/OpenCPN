@@ -44,6 +44,6 @@ extern wxString g_GPS_Ident;
 extern wxString g_hostname;
 
 wxConfigBase* TheBaseConfig();
-void InitConfigBase(wxConfigBase* cfg);
+void InitBaseConfig(wxConfigBase* cfg);
 
 #endif  // CONFIG_VARS_H__
