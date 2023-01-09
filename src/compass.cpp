@@ -31,7 +31,6 @@
 #include "config.h"
 #include "ocpn_types.h"
 #include "compass.h"
-#include "comm_vars.h"
 #include "chcanv.h"
 #include "styles.h"
 
@@ -40,6 +39,8 @@
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool bGPSValid;
+extern bool g_bSatValid;
+extern int g_SatsInView;
 extern bool g_bopengl;
 
 ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
@@ -62,7 +63,7 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
                  style->GetCompassBottomMargin());
 
 #ifdef ocpnUSE_GL
-  texobj = 0;
+  m_texobj = 0;
 #endif
 
   m_scale = 1.0;
@@ -71,9 +72,9 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
 
 ocpnCompass::~ocpnCompass() {
 #ifdef ocpnUSE_GL
-  if (texobj) {
-    glDeleteTextures(1, &texobj);
-    texobj = 0;
+  if (m_texobj) {
+    glDeleteTextures(1, &m_texobj);
+    m_texobj = 0;
   }
 #endif
 
@@ -85,8 +86,8 @@ void ocpnCompass::Paint(ocpnDC& dc) {
 #if defined(ocpnUSE_GLES) || \
     defined(                 \
         ocpnUSE_GL)  // GLES does not do ocpnDC::DrawBitmap(), so use texture
-    if (g_bopengl && texobj) {
-      glBindTexture(GL_TEXTURE_2D, texobj);
+    if (g_bopengl && m_texobj) {
+      glBindTexture(GL_TEXTURE_2D, m_texobj);
       glEnable(GL_TEXTURE_2D);
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -182,22 +183,15 @@ void ocpnCompass::SetColorScheme(ColorScheme cs) {
 }
 
 void ocpnCompass::UpdateStatus(bool bnew) {
-  if (bnew) {
+  if (bnew)
     m_lastgpsIconName.Clear();  // force an update to occur
 
-    //  We clear the texture so that any onPaint method will not use a stale
-    //  texture
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-    if (g_bopengl) {
-      if (texobj) {
-        glDeleteTextures(1, &texobj);
-        texobj = 0;
-      }
-    }
-#endif
-  }
-
   CreateBmp(bnew);
+  if (m_texobj == 0)
+    CreateTexture();
+  else
+    UpdateTexture();
+
 }
 
 void ocpnCompass::SetScaleFactor(float factor) {
@@ -244,7 +238,7 @@ void ocpnCompass::SetScaleFactor(float factor) {
 }
 
 void ocpnCompass::CreateBmp(bool newColorScheme) {
-  if (!m_shown) return;
+  //if (!m_shown) return;
 
   wxString gpsIconName;
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -313,7 +307,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   if (fabs(m_rose_angle - rose_angle) > .1) b_need_refresh = true;
 
-  if (!b_need_refresh) return;
+  //if (!b_need_refresh) return;
 
   int width = compassBg.GetWidth();
   if (m_bshowGPS) width += gpsBg.GetWidth() + leftmargin;
@@ -327,7 +321,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
   m_rect.width = m_StatBmp.GetWidth();
   m_rect.height = m_StatBmp.GetHeight();
 
-  if (!m_StatBmp.IsOk()) return;
+  //if (!m_StatBmp.IsOk()) return;
 
   m_MaskBmp = wxBitmap(m_StatBmp.GetWidth(), m_StatBmp.GetHeight());
   if (style->marginsInvisible) {
@@ -437,7 +431,9 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
     m_lastgpsIconName = gpsIconName;
   }
+}
 
+void ocpnCompass::CreateTexture() {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   // GLES does not do ocpnDC::DrawBitmap(), so use
                            // texture
@@ -501,13 +497,8 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
         }
       }
 
-      if (texobj) {
-        glDeleteTextures(1, &texobj);
-        texobj = 0;
-      }
-
-      glGenTextures(1, &texobj);
-      glBindTexture(GL_TEXTURE_2D, texobj);
+      glGenTextures(1, &m_texobj);
+      glBindTexture(GL_TEXTURE_2D, m_texobj);
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -519,6 +510,83 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
                    format, GL_UNSIGNED_BYTE, teximage);
 
       free(teximage);
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+  }
+#endif
+}
+
+void ocpnCompass::UpdateTexture() {
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+  // GLES does not do ocpnDC::DrawBitmap(), so use
+                           // texture
+  if (g_bopengl) {
+    wxImage image = m_StatBmp.ConvertToImage();
+    unsigned char* imgdata = image.GetData();
+    unsigned char* imgalpha = image.GetAlpha();
+    m_tex_w = image.GetWidth();
+    m_tex_h = image.GetHeight();
+    m_image_width = m_tex_w;
+    m_image_height = m_tex_h;
+
+    // Make it POT
+    int width_pot = m_tex_w;
+    int height_pot = m_tex_h;
+
+    int xp = image.GetWidth();
+    if (((xp != 0) && !(xp & (xp - 1))))  // detect POT
+      width_pot = xp;
+    else {
+      int a = 0;
+      while (xp) {
+        xp = xp >> 1;
+        a++;
+      }
+      width_pot = 1 << a;
+    }
+
+    xp = image.GetHeight();
+    if (((xp != 0) && !(xp & (xp - 1))))
+      height_pot = xp;
+    else {
+      int a = 0;
+      while (xp) {
+        xp = xp >> 1;
+        a++;
+      }
+      height_pot = 1 << a;
+    }
+
+    m_tex_w = width_pot;
+    m_tex_h = height_pot;
+
+    GLuint format = GL_RGBA;
+    GLuint internalformat = format;
+    int stride = 4;
+
+    if (imgdata) {
+      unsigned char* teximage =
+          (unsigned char*)malloc(stride * m_tex_w * m_tex_h);
+
+      for (int i = 0; i < m_image_height; i++) {
+        for (int j = 0; j < m_image_width; j++) {
+          int s = (i * 3 * m_image_width) + (j * 3);
+          int d = (i * stride * m_tex_w) + (j * stride);
+
+          teximage[d + 0] = imgdata[s + 0];
+          teximage[d + 1] = imgdata[s + 1];
+          teximage[d + 2] = imgdata[s + 2];
+          teximage[d + 3] = 255;
+        }
+      }
+
+      glBindTexture(GL_TEXTURE_2D, m_texobj);
+
+
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_tex_w, m_tex_h, format, GL_UNSIGNED_BYTE, teximage);
+
+      free(teximage);
+      glBindTexture(GL_TEXTURE_2D, 0);
     }
   }
 #endif

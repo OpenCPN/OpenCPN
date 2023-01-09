@@ -5006,6 +5006,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
 
+      SendSizeEvent();
+
       break;
     }
   }  // switch
