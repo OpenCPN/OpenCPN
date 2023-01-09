@@ -1369,7 +1369,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
-  InitConfigBase(pConfig);
+  InitBaseConfig(pConfig);
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was

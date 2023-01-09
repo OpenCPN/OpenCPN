@@ -4732,7 +4732,7 @@ int doAndroidPersistState() {
 
   delete pConfig;  // All done
   pConfig = NULL;
-  InitConfigBase(0);
+  InitBaseConfig(0);
 
   //    Unload the PlugIns
   //      Note that we are waiting until after the canvas is destroyed,
