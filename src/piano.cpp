@@ -26,10 +26,10 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #include "dychart.h"
 
@@ -42,7 +42,7 @@
 #include "cutil.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -77,7 +77,6 @@ END_EVENT_TABLE()
 // Define a constructor
 Piano::Piano(ChartCanvas *parent) {
   m_parentCanvas = parent;
-  ;
 
   m_index_last = -1;
   m_iactive = -1;
@@ -359,7 +358,9 @@ void Piano::BuildGLTexture() {
 
 void Piano::DrawGL(int off) {
 #ifdef ocpnUSE_GL
-  unsigned int w = m_parentCanvas->GetClientSize().x, h = GetHeight(), endx = 0;
+  unsigned int w = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
+  int h = GetHeight();
+  int endx = 0;
 
   if (m_tex_piano_height != h) BuildGLTexture();
 
@@ -459,7 +460,7 @@ void Piano::DrawGL(int off) {
 
   glBindTexture(GL_TEXTURE_2D, m_tex);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (style->chartStatusWindowTransparent) {
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glColor4ub(255, 255, 255,
@@ -471,10 +472,11 @@ void Piano::DrawGL(int off) {
 
   glEnable(GL_TEXTURE_2D);
 
-#ifdef USE_ANDROID_GLES2
+#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   glEnable(GL_BLEND);
-  m_parentCanvas->GetglCanvas()->RenderTextures(coords, texcoords, vc / 2,
-                                                m_parentCanvas->GetpVP());
+  m_parentCanvas->GetglCanvas()->RenderTextures(
+    m_parentCanvas->GetglCanvas()->m_gldc,
+    coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
   glDisable(GL_BLEND);
 
 #else
@@ -547,7 +549,7 @@ void Piano::DrawGL(int off) {
 
   glDisable(GL_BLEND);
 
-#ifndef USE_ANDROID_GLES2
+#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
 #endif
@@ -684,7 +686,8 @@ wxString &Piano::GetStoredHash() { return m_hash; }
 
 void Piano::FormatKeys(void) {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  int width = m_parentCanvas->GetClientSize().x, height = GetHeight();
+  int width = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
+  int height = GetHeight();
   width *= g_btouch ? 0.98f : 0.6f;
 
   int nKeys = m_key_array.size();
@@ -692,7 +695,7 @@ void Piano::FormatKeys(void) {
   if (nKeys) {
     if (!kw) kw = width / nKeys;
 
-    kw = wxMin(kw, (m_parentCanvas->GetClientSize().x * 3 / 4) / nKeys);
+    kw = wxMin(kw, (width * 3 / 4) / nKeys);
     kw = wxMax(kw, 6);
 
     //    Build the Key Regions
@@ -814,7 +817,7 @@ void Piano::ResetRollover(void) {
 }
 
 int Piano::GetHeight() {
-  int height = 22;  // default desktop value
+  int height = 22 * m_parentCanvas->GetContentScaleFactor();  // default desktop value
   if (g_btouch) {
     double size_mult = exp(g_GUIScaleFactor * 0.0953101798043);  // ln(1.1)
     height *= size_mult;

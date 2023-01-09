@@ -37,10 +37,10 @@ public:
 
   virtual ~CommDriverN0183();
 
-  virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
+  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) override = 0;
 
-  void SetListener(std::shared_ptr<DriverListener> l) override {}
+  void SetListener(DriverListener& l) override {}
 
   virtual std::shared_ptr<NavAddr> GetAddress() {
       return std::make_shared<NavAddr>(NavAddr0183(iface)); }

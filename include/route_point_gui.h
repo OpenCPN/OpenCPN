@@ -37,7 +37,7 @@ class SendToGpsDlg;
 
 class RoutePointGui {
 public:
-  RoutePointGui(RoutePoint& point) : m_point(point) { ReLoadIcon(); }
+  RoutePointGui(RoutePoint& point) : m_point(point) { /*ReLoadIcon();*/ }
 
   void Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn = 0,
             bool boverride_viz = false);
@@ -59,7 +59,7 @@ public:
   }
 
 #ifdef ocpnUSE_GL
-  void DrawGL(ViewPort &vp, ChartCanvas* canvas,
+  void DrawGL(ViewPort &vp, ChartCanvas* canvas, ocpnDC &dc,
               bool use_cached_screen_coords = false, bool vizOverride = false);
 #endif
 

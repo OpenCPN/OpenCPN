@@ -26,6 +26,7 @@
 #include "nav_object_database.h"
 #include "routeman.h"
 #include "navutil_base.h"
+#include "nav_object_database.h"
 #include "select.h"
 #include "track.h"
 #include "route.h"
@@ -41,7 +42,7 @@ extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 
-NavObjectCollection1::NavObjectCollection1() 
+NavObjectCollection1::NavObjectCollection1()
     : pugi::xml_document(), m_bSkipChangeSetUpdate(false) {}
 
 NavObjectCollection1::~NavObjectCollection1() {}
@@ -441,7 +442,7 @@ static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
   return pTentTrack;
 }
 
-static Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
+Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
                             bool b_change) {
   wxString RouteName;
@@ -1083,7 +1084,7 @@ static bool GPXCreateRoute(pugi::xml_node node, Route *pRoute) {
   return true;
 }
 
-static bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
+bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   if (!pTentRoute) return false;
 
   bool bAddroute = true;
@@ -1188,7 +1189,9 @@ static bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
   return bAddtrack;
 }
 
-static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
+static void UpdateRouteA(Route* pTentRoute,
+                         NavObjectCollection1* navobj,
+                         NavObjectChanges* nav_obj_changes) {
   if (!pTentRoute) return;
   if (pTentRoute->GetnPoints() < 2) return;
 
@@ -1196,7 +1199,7 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   Route *pExisting = ::RouteExists(pTentRoute->m_GUID);
   if (pExisting) {
     navobj->m_bSkipChangeSetUpdate = true;
-    g_pRouteMan->DeleteRoute(pExisting);
+    g_pRouteMan->DeleteRoute(pExisting, nav_obj_changes);
     navobj->m_bSkipChangeSetUpdate = false;
   }
 
@@ -1291,7 +1294,11 @@ bool NavObjectCollection1::CreateNavObjGPXPoints(void) {
     pr = node->GetData();
 
     if ((pr->m_bIsolatedMark) && !(pr->m_bIsInLayer) && !(pr->m_btemp)) {
-      GPXCreateWpt(m_gpx_root.append_child("wpt"), pr, OPT_WPT);
+      pugi::xml_node doc = root();
+      pugi::xml_node gpx = doc.first_child();
+      pugi::xml_node new_node = gpx.append_child("wpt");
+
+      GPXCreateWpt(new_node, pr, OPT_WPT);
     }
     node = node->GetNext();
   }
@@ -1307,8 +1314,14 @@ bool NavObjectCollection1::CreateNavObjGPXRoutes(void) {
   while (node1) {
     Route *pRoute = node1->GetData();
 
-    if (!pRoute->m_bIsInLayer && !pRoute->m_btemp)
-      GPXCreateRoute(m_gpx_root.append_child("rte"), pRoute);
+    if (!pRoute->m_bIsInLayer && !pRoute->m_btemp){
+      pugi::xml_node doc = root();
+      pugi::xml_node gpx = doc.first_child();
+      pugi::xml_node new_node = gpx.append_child("rte");
+
+      GPXCreateRoute(new_node, pRoute);
+    }
+
     node1 = node1->GetNext();
   }
 
@@ -1319,8 +1332,13 @@ bool NavObjectCollection1::CreateNavObjGPXTracks(void) {
   // Tracks
   for (Track *pTrack : g_TrackList) {
     if (pTrack->GetnPoints()) {
-      if (!pTrack->m_bIsInLayer && !pTrack->m_btemp)
-        GPXCreateTrk(m_gpx_root.append_child("trk"), pTrack, 0);
+      if (!pTrack->m_bIsInLayer && !pTrack->m_btemp){
+        pugi::xml_node doc = root();
+        pugi::xml_node gpx = doc.first_child();
+        pugi::xml_node new_node = gpx.append_child("trk");
+
+        GPXCreateTrk(new_node, pTrack, 0);
+      }
     }
   }
 
@@ -1339,19 +1357,31 @@ bool NavObjectCollection1::CreateAllGPXObjects() {
 
 bool NavObjectCollection1::AddGPXRoute(Route *pRoute) {
   SetRootGPXNode();
-  GPXCreateRoute(m_gpx_root.append_child("rte"), pRoute);
+  pugi::xml_node doc = root();
+  pugi::xml_node gpx = doc.first_child();
+  pugi::xml_node new_node = gpx.append_child("rte");
+
+  GPXCreateRoute(new_node, pRoute);
   return true;
 }
 
 bool NavObjectCollection1::AddGPXTrack(Track *pTrk) {
   SetRootGPXNode();
-  GPXCreateTrk(m_gpx_root.append_child("trk"), pTrk, 0);
+  pugi::xml_node doc = root();
+  pugi::xml_node gpx = doc.first_child();
+  pugi::xml_node new_node = gpx.append_child("trk");
+
+  GPXCreateTrk(new_node, pTrk, 0);
   return true;
 }
 
 bool NavObjectCollection1::AddGPXWaypoint(RoutePoint *pWP) {
   SetRootGPXNode();
-  GPXCreateWpt(m_gpx_root.append_child("wpt"), pWP, OPT_WPT);
+  pugi::xml_node doc = root();
+  pugi::xml_node gpx = doc.first_child();
+  pugi::xml_node new_node = gpx.append_child("wpt");
+
+  GPXCreateWpt(new_node, pWP, OPT_WPT);
   return true;
 }
 
@@ -1388,21 +1418,21 @@ bool NavObjectCollection1::AddGPXPointsList(RoutePointList *pRoutePoints) {
 }
 
 void NavObjectCollection1::SetRootGPXNode(void) {
-  if (!strlen(m_gpx_root.name())) {
-    m_gpx_root = append_child("gpx");
-    m_gpx_root.append_attribute("version") = "1.1";
-    m_gpx_root.append_attribute("creator") = "OpenCPN";
-    m_gpx_root.append_attribute("xmlns:xsi") =
+  if (!strlen(first_child().name())) {
+    pugi::xml_node gpx_root = append_child("gpx");
+    gpx_root.append_attribute("version") = "1.1";
+    gpx_root.append_attribute("creator") = "OpenCPN";
+    gpx_root.append_attribute("xmlns:xsi") =
         "http://www.w3.org/2001/XMLSchema-instance";
-    m_gpx_root.append_attribute("xmlns") = "http://www.topografix.com/GPX/1/1";
-    m_gpx_root.append_attribute("xmlns:gpxx") =
+    gpx_root.append_attribute("xmlns") = "http://www.topografix.com/GPX/1/1";
+    gpx_root.append_attribute("xmlns:gpxx") =
         "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
-    m_gpx_root.append_attribute("xsi:schemaLocation") =
+    gpx_root.append_attribute("xsi:schemaLocation") =
         "http://www.topografix.com/GPX/1/1 "
         "http://www.topografix.com/GPX/1/1/gpx.xsd "
         "http://www.garmin.com/xmlschemas/GpxExtensions/v3 "
         "http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd";
-    m_gpx_root.append_attribute("xmlns:opencpn") = "http://www.opencpn.org";
+    gpx_root.append_attribute("xmlns:opencpn") = "http://www.opencpn.org";
   }
 }
 
@@ -1514,7 +1544,7 @@ NavObjectChanges::~NavObjectChanges() {
 void NavObjectChanges::AddRoute(Route *pr, const char *action) {
   SetRootGPXNode();
 
-  pugi::xml_node object = m_gpx_root.append_child("rte");
+  pugi::xml_node object = root().append_child("rte");
   GPXCreateRoute(object, pr);
 
   pugi::xml_node xchild = object.child("extensions");
@@ -1531,7 +1561,7 @@ void NavObjectChanges::AddRoute(Route *pr, const char *action) {
 void NavObjectChanges::AddTrack(Track *pr, const char *action) {
   SetRootGPXNode();
 
-  pugi::xml_node object = m_gpx_root.append_child("trk");
+  pugi::xml_node object = root().append_child("trk");
   GPXCreateTrk(object, pr, RT_OUT_NO_RTPTS);  // emit a void track, no waypoints
 
   pugi::xml_node xchild = object.child("extensions");
@@ -1547,7 +1577,7 @@ void NavObjectChanges::AddTrack(Track *pr, const char *action) {
 void NavObjectChanges::AddWP(RoutePoint *pWP, const char *action) {
   SetRootGPXNode();
 
-  pugi::xml_node object = m_gpx_root.append_child("wpt");
+  pugi::xml_node object = root().append_child("wpt");
   GPXCreateWpt(object, pWP, OPT_WPT);
 
   pugi::xml_node xchild = object.child("extensions");
@@ -1564,7 +1594,7 @@ void NavObjectChanges::AddTrackPoint(TrackPoint *pWP, const char *action,
                                      const wxString &parent_GUID) {
   SetRootGPXNode();
 
-  pugi::xml_node object = m_gpx_root.append_child("tkpt");
+  pugi::xml_node object = root().append_child("tkpt");
   GPXCreateTrkpt(object, pWP, OPT_TRACKPT);
 
   pugi::xml_node xchild = object.append_child("extensions");
@@ -1630,7 +1660,7 @@ bool NavObjectChanges::ApplyChanges(void) {
 
         else if (!strcmp(child.first_child().value(), "delete")) {
           if (pExisting) {
-            evt_delete_track.notify(std::make_shared<Track>(*pExisting), "");
+            evt_delete_track.Notify(std::make_shared<Track>(*pExisting), "");
           }
         }
 
@@ -1651,18 +1681,18 @@ bool NavObjectChanges::ApplyChanges(void) {
         pugi::xml_node child = xchild.child("opencpn:action");
 
         if (!strcmp(child.first_child().value(), "add")) {
-          ::UpdateRouteA(pRoute, this);
+          ::UpdateRouteA(pRoute, this, this);
         }
 
         else if (!strcmp(child.first_child().value(), "update")) {
-          ::UpdateRouteA(pRoute, this);
+          ::UpdateRouteA(pRoute, this, this);
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
           Route *pExisting = RouteExists(pRoute->m_GUID);
           if (pExisting) {
             m_bSkipChangeSetUpdate = true;
-            evt_delete_route.notify(std::make_shared<Route>(*pExisting), "");
+            evt_delete_route.Notify(std::make_shared<Route>(*pExisting), "");
             m_bSkipChangeSetUpdate = false;
           }
         }

@@ -28,10 +28,10 @@
 #ifndef __AIS_H__
 #define __AIS_H__
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/datetime.h>
@@ -42,9 +42,8 @@
 
 #include <vector>
 
-#include "wx/sound.h"
+#include <wx/sound.h>
 
-#include "dychart.h"
 #include "gui_lib.h"
 #include "navutil.h"
 #include "OCPN_Sound.h"

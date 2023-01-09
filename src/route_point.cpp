@@ -29,6 +29,7 @@
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 
+#include "dychart.h"
 #include "base_platform.h"
 #include "cutil.h"
 #include "georef.h"
@@ -232,6 +233,8 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_ScaMax = 0;
   m_HyperlinkList = new HyperlinkList;
   m_IconIsDirty = true;
+
+  m_iTextTexture = 0;
 
   if (!pGUID.IsEmpty())
     m_GUID = pGUID;

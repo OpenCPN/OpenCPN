@@ -31,6 +31,7 @@
 #include <wx/string.h>
 #include <wx/datetime.h>
 #include <unordered_map>
+#include <memory>
 
 #define SHIP_NAME_LEN 35
 #define DESTINATION_LEN 21
@@ -149,6 +150,7 @@ class AisTargetData {
 friend class AisTargetDataMaker;
 
 public:
+  AisTargetData(AisTargetCallbacks callbacks);
   ~AisTargetData();
 
   wxString BuildQueryResult(void);
@@ -260,11 +262,9 @@ public:
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is
                                                 // the max number of chartcanvas
-  wxDateTime dtAlertExpireTime;
   long dsc_NatureOfDistress;
 
 private:
-  AisTargetData(AisTargetCallbacks callbacks);
   AisTargetCallbacks m_callbacks;
 };
 
@@ -284,7 +284,7 @@ public:
   AisTargetDataMaker& operator=(const AisTargetDataMaker&) = delete;
 
 
-  AisTargetData* GetTargetData() { return new AisTargetData(m_callbacks); }
+  std::shared_ptr<AisTargetData> GetTargetData() { return std::make_shared<AisTargetData>(m_callbacks); }
   void SetCallbacks(AisTargetCallbacks callbacks) { m_callbacks = callbacks; }
 
 private:

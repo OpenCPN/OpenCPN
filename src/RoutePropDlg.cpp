@@ -121,6 +121,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_READONLY);
   m_tcDistance->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcDistance->SetMinSize(wxSize(maxFieldSize, -1));
 
   bSizerDistance->Add(m_tcDistance, 0, wxALL | wxEXPAND, 5);
 
@@ -138,6 +139,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_PROCESS_ENTER);
   m_tcPlanSpeed->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcPlanSpeed->SetMinSize(wxSize(maxFieldSize, -1));
 
   bSizerSpeed->Add(m_tcPlanSpeed, 0, wxALL, 5);
 
@@ -155,6 +157,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcEnroute = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
                                wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
   m_tcEnroute->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcEnroute->SetMinSize(wxSize(maxFieldSize, -1));
 
   bSizerEnroute->Add(m_tcEnroute, 0, wxALL, 5);
 
@@ -602,18 +605,18 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   auto navobj = NavObjectChanges::getInstance();
   wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_TRK, ObservedEvt);
-  navobj_del_track_listener =
-    navobj->evt_delete_track.GetListener(this, EVT_ROUTEMAN_DEL_TRK);
+  navobj_del_track_listener.Listen(navobj->evt_delete_track, this,
+                                   EVT_ROUTEMAN_DEL_TRK);
   Bind(EVT_ROUTEMAN_DEL_TRK, [&](ObservedEvt& ev) {
     auto t = std::const_pointer_cast<Track>(UnpackEvtPointer<Track>(ev));
     RoutemanGui(*g_pRouteMan).DeleteTrack(t.get()); });
 
   wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_ROUTE, ObservedEvt);
-  navobj_del_route_listener =
-    navobj->evt_delete_route.GetListener(this, EVT_ROUTEMAN_DEL_ROUTE);
+  navobj_del_route_listener.Listen(navobj->evt_delete_route, this,
+                                   EVT_ROUTEMAN_DEL_ROUTE);
   Bind(EVT_ROUTEMAN_DEL_ROUTE, [&](ObservedEvt& ev) {
     auto r = std::const_pointer_cast<Route>(UnpackEvtPointer<Route>(ev));
-    g_pRouteMan->DeleteRoute(r.get()); });
+    g_pRouteMan->DeleteRoute(r.get(), navobj); });
 }
 
 RoutePropDlg::~RoutePropDlg() {

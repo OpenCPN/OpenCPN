@@ -24,6 +24,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ******************A********************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include <wx/utils.h>
 #include <wx/gdicmn.h>
 
@@ -38,16 +45,16 @@
 #include "vector2D.h"
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 #include "nav_object_database.h"
 #include "track.h"
 #include "TrackPropDlg.h"
+#include "navutil.h"
 
 extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
-extern double gLat;
-extern double gLon;
 extern MyFrame* gFrame;
 extern Select *pSelect;
 extern AisDecoder *g_pAIS;
@@ -57,6 +64,7 @@ extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern TrackPropDlg *pTrackPropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
+extern MyConfig *pConfig;
 
 bool RoutemanGui::UpdateProgress() {
   bool bret_val = false;
@@ -238,7 +246,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
       pTrackPropDialog->Hide();
     }
 
-    if (pTrack == g_pActiveTrack) {
+    if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()){
       pTrack = gFrame->TrackOff();
     }
     //    Remove the track from associated lists
@@ -256,6 +264,8 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
 }
 
 void RoutemanGui::DeleteAllTracks() {
+  gFrame->TrackOff();
+
   ::wxBeginBusyCursor();
 
   // Iterate on the RouteList, we delete from g_TrackList in DeleteTrack,
@@ -272,6 +282,10 @@ void RoutemanGui::DeleteAllTracks() {
     NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
   }
 
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   ::wxEndBusyCursor();
 }
 
@@ -283,7 +297,7 @@ void RoutemanGui::DoAdvance(void) {
 
     if (pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
       NavObjectChanges::getInstance()->DeleteConfigRoute(pthis_route);
-      m_routeman.DeleteRoute(pthis_route);
+      m_routeman.DeleteRoute(pthis_route, NavObjectChanges::getInstance());
     }
 
     if (pRouteManagerDialog) pRouteManagerDialog->UpdateRouteListCtrl();

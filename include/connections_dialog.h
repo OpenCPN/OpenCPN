@@ -85,6 +85,7 @@ public:
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
+  void OnPriorityDialog(wxCommandEvent &event);
 
   void SetConnectionParams(ConnectionParams *cp);
   void SetDefaultConnectionParams(void);
@@ -125,7 +126,7 @@ public:
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton  *m_ButtonSKDiscover;
+  wxButton  *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
   wxStaticText *m_StaticTextSKServerStatus;
 
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;

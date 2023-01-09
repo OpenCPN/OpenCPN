@@ -15,6 +15,7 @@
 #include "glChartCanvas.h"
 #include "viewport.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "route.h"
 #include "waypointman_gui.h"
 #include "svg_utils.h"
@@ -29,9 +30,6 @@ extern wxRect g_blink_rect;
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
-extern double gLat;
-extern double gLon;
-
 extern Routeman* g_pRouteMan;
 
 void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
@@ -45,6 +43,18 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
   if (NULL != rpn) *rpn = r;
 
   if (!RoutePointGui(m_point).IsVisibleSelectable(canvas, boverride_viz)) return;
+
+  // If waypoint is well off screen, skip the drawing
+  if( (abs(r.x) > canvas->GetCanvasWidth() * 4 ) ||
+      (abs(r.y) > canvas->GetCanvasHeight() * 4))
+    return;
+
+  // If waypoint pixel location is invalid, skip the drawing
+  if ((abs(r.x) == INVALID_COORD ) ||
+      (abs(r.y) == INVALID_COORD) )
+  return;
+
+
 
   //    Optimization, especially apparent on tracks in normal cases
   if (m_point.m_IconName == _T("empty") && !m_point.m_bShowName
@@ -191,7 +201,7 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
 }
 
 #ifdef ocpnUSE_GL
-void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
+void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
                            bool use_cached_screen_coords, bool bVizOverride) {
   if (!RoutePointGui(m_point).IsVisibleSelectable(canvas, bVizOverride)) return;
 
@@ -311,7 +321,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
   //    if(region.Contains(r3) == wxOutRegion)
   //        return;
 
-  ocpnDC dc;
+  //ocpnDC dc;
 
   //  Highlite any selected point
   if (m_point.m_bPtIsSelected) {
@@ -356,7 +366,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     float ys = r.y - hs / 2.;
     float u = (float)w / glw, v = (float)h / glh;
 
-#ifdef USE_ANDROID_GLES2
     float coords[8];
     float uv[8];
     // normal uv
@@ -378,25 +387,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     coords[5] = ys + hs;
     coords[6] = xs, coords[7] = ys + hs;
 
-    glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
-
-#else
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    glColor3f(1, 1, 1);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0);
-    glVertex2f(xs, ys);
-    glTexCoord2f(u, 0);
-    glVertex2f(xs + ws, ys);
-    glTexCoord2f(u, v);
-    glVertex2f(xs + ws, ys + hs);
-    glTexCoord2f(0, v);
-    glVertex2f(xs, ys + hs);
-    glEnd();
-
-#endif
+    glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
@@ -511,21 +502,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       int x = r.x + m_point.m_NameLocationOffsetX, y = r.y + m_point.m_NameLocationOffsetY;
       float u = (float)w / m_point.m_iTextTextureWidth,
             v = (float)h / m_point.m_iTextTextureHeight;
-#ifndef USE_ANDROID_GLES2
-      glColor3ub(255, 255, 255);
-
-      glBegin(GL_QUADS);
-      glTexCoord2f(0, 0);
-      glVertex2f(x, y);
-      glTexCoord2f(u, 0);
-      glVertex2f(x + w, y);
-      glTexCoord2f(u, v);
-      glVertex2f(x + w, y + h);
-      glTexCoord2f(0, v);
-      glVertex2f(x, y + h);
-      glEnd();
-
-#else
       float coords[8];
       float uv[8];
       // normal uv
@@ -547,9 +523,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
       coords[5] = y + h;
       coords[6] = x, coords[7] = y + h;
 
-      glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+      glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
-#endif
       glDisable(GL_BLEND);
       glDisable(GL_TEXTURE_2D);
     }
@@ -627,26 +602,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     float u = (float)w / m_point.m_dragIconTextureWidth,
           v = (float)h / m_point.m_dragIconTextureWidth;
 
-#ifndef USE_ANDROID_GLES2
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glColor3f(1, 1, 1);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0);
-    glVertex2f(xs, ys);
-    glTexCoord2f(u, 0);
-    glVertex2f(xs + ws, ys);
-    glTexCoord2f(u, v);
-    glVertex2f(xs + ws, ys + hs);
-    glTexCoord2f(0, v);
-    glVertex2f(xs, ys + hs);
-    glEnd();
-
-#else
     float coords[8];
     float uv[8];
     // normal uv
@@ -668,9 +623,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas,
     coords[5] = ys + hs;
     coords[6] = xs, coords[7] = ys + hs;
 
-    glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+    glChartCanvas::RenderSingleTexture(dc, coords, uv, &vp, 0, 0, 0);
 
-#endif
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   }

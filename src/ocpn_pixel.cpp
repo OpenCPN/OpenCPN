@@ -49,9 +49,9 @@
 // ----------------------------------------------------------------------------
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include "dychart.h"
@@ -60,29 +60,29 @@
 #ifndef WX_PRECOMP
 #include <stdio.h>
 
-#include "wx/list.h"
-#include "wx/utils.h"
-#include "wx/app.h"
-#include "wx/palette.h"
-#include "wx/dcmemory.h"
-#include "wx/bitmap.h"
-#include "wx/icon.h"
+#include <wx/list.h>
+#include <wx/utils.h>
+#include <wx/app.h>
+#include <wx/palette.h>
+#include <wx/dcmemory.h>
+#include <wx/bitmap.h>
+#include <wx/icon.h>
 #endif
 
 #ifdef __WXMSW__
-#include "wx/msw/private.h"
-#include "wx/log.h"
-#include "wx/msw/dib.h"
+#include <wx/msw/private.h>
+#include <wx/log.h>
+#include <wx/msw/dib.h>
 #endif
 
-#include "wx/bitmap.h"
-#include "wx/icon.h"
-#include "wx/log.h"
-#include "wx/image.h"
-#include "wx/app.h"
-#include "wx/math.h"
-#include "wx/gdicmn.h"
-#include "wx/palette.h"
+#include <wx/bitmap.h>
+#include <wx/icon.h>
+#include <wx/log.h>
+#include <wx/image.h>
+#include <wx/app.h>
+#include <wx/math.h>
+#include <wx/gdicmn.h>
+#include <wx/palette.h>
 
 // missing from mingw32 header
 #ifndef CLR_INVALID

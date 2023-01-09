@@ -27,6 +27,8 @@
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 
+#include "rapidjson/document.h"
+
 #include "comm_drv_signalk_net.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
@@ -139,38 +141,49 @@ void *WebSocketThread::Entry() {
   wsAddress << "ws://" << host.mb_str() << ":" << port
             << "/signalk/v1/stream?subscribe=all&sendCachedValues=false";
 
-  WebSocket::pointer ws = WebSocket::from_url(wsAddress.str());
-  if (ws == NULL) {
-    printf("No Connect\n");
-    m_parentStream->SetThreadRunning(false);
-    return 0;
-  }
+  WebSocket::pointer ws = 0;
 
   while ((not_done) && (m_parentStream->m_Thread_run_flag > 0)) {
-    if (TestDestroy()) {
-       //printf("ws receiving delete\n");
-      ws->close();
-      not_done = false;  // smooth exit
-      //break;
+    bool not_connected = true;
+    while ((not_connected) && (m_parentStream->m_Thread_run_flag > 0)) {
+      ws = WebSocket::from_url(wsAddress.str());
+      if (ws == NULL)
+        printf("No Connect\n");
+      else
+        not_connected = false;
+
+      if (m_parentStream->m_Thread_run_flag == 0){
+        m_parentStream->SetThreadRunning(false);
+        return 0;
+      }
     }
 
-    if (ws->getReadyState() == WebSocket::CLOSED) {
-       //printf("ws closed\n");
-      break;
-    }
-    ws->poll(10);
-    if (ws->getReadyState() == WebSocket::OPEN) {
-      ws->dispatch(HandleMessage);
-    }
-    if( m_parentStream->m_Thread_run_flag <= 0){
-      //printf("done\n");
-      ws->close();
-      not_done = false;  // smooth exit
+    while ((not_done) && (m_parentStream->m_Thread_run_flag > 0)) {
+      if (TestDestroy()) {
+        //printf("ws receiving delete\n");
+        ws->close();
+        not_done = false;  // smooth exit
+        //break;
+      }
+
+      if (ws->getReadyState() == WebSocket::CLOSED) {
+        //printf("ws closed\n");
+        break;
+      }
+      ws->poll(10);
+      if (ws->getReadyState() == WebSocket::OPEN) {
+        ws->dispatch(HandleMessage);
+      }
+      if( m_parentStream->m_Thread_run_flag <= 0){
+        //printf("done\n");
+        ws->close();
+        not_done = false;  // smooth exit
+      }
     }
   }
 
    //printf("ws delete\n");
-   delete ws;
+  delete ws;
 
   m_parentStream->SetThreadRunning(false);
   m_parentStream->m_Thread_run_flag = -1;
@@ -220,7 +233,7 @@ CommDriverSignalKNet::~CommDriverSignalKNet() {
 }
 
 void CommDriverSignalKNet::Activate() {
-  CommDriverRegistry::getInstance().Activate(shared_from_this());
+  CommDriverRegistry::GetInstance().Activate(shared_from_this());
 }
 
 void CommDriverSignalKNet::Open(void) {
@@ -320,8 +333,7 @@ void CommDriverSignalKNet::CloseWebSocket() {
 void CommDriverSignalKNet::handle_SK_sentence(
     CommDriverSignalKNetEvent& event) {
 
-  wxJSONReader jsonReader;
-  wxJSONValue root;
+  rapidjson::Document root;
 
   //LOG_DEBUG("%s\n", msg.c_str());
 
@@ -329,33 +341,33 @@ void CommDriverSignalKNet::handle_SK_sentence(
   std::string msgTerminated = *msg;
   msgTerminated.append("\r\n");
 
-  int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors > 0) {
+  root.Parse(*msg);
+  if (root.HasParseError()) {
     wxLogMessage(wxString::Format(
         _T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
-        errors));
+        root.GetParseError()));
     return;
   }
 
   // Decode just enough of string to extract some identifiers
   // such as the sK version, "self" context, and target context
-  if (root.HasMember(_T("version"))) {
+  if (root.HasMember("version")) {
     wxString msg = _T("Connected to Signal K server version: ");
-    msg << (root[_T("version")].AsString());
+    msg << (root["version"].GetString());
     wxLogMessage(msg);
   }
 
   if (root.HasMember("self")) {
-    if (root["self"].AsString().StartsWith(_T("vessels.")))
-      m_self = (root["self"].AsString());  // for java server, and OpenPlotter
+    if (strncmp(root["self"].GetString(), "vessels.", 8) == 0)
+      m_self = (root["self"].GetString());  // for java server, and OpenPlotter
                                            // node.js server 1.20
     else
       m_self =
-          _T("vessels.") + (root["self"].AsString());  // for Node.js server
+          std::string("vessels.").append(root["self"].GetString());  // for Node.js server
   }
 
   if (root.HasMember("context") && root["context"].IsString()) {
-     m_context = root["context"].AsString();
+     m_context = root["context"].GetString();
   }
 
   //Notify all listeners

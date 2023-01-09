@@ -35,7 +35,8 @@
 #include "serial/serial.h"
 #endif
 
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
+#define OUT_QUEUE_LENGTH                20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH    200
 
 #define ESCAPE 0x10
 #define STARTOFTEXT 0x02
@@ -57,10 +58,13 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
-  void SetListener(std::shared_ptr<DriverListener> l) override{};
+  void SetListener(DriverListener& l) override{};
 
   bool Open();
   void Close();
+
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                    std::shared_ptr<const NavAddr> addr) override;
 
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can

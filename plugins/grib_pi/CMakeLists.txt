@@ -60,7 +60,7 @@ endif (APPLE)
 if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
-endif (MSVC)
+endif ()
 
 # QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
 # wxWidgets_USE_FILE are not useful.
@@ -144,7 +144,7 @@ if (NOT UNIX)
   )
   add_library(LIB_BZIP STATIC ${SRC_BZIP})
 
-  include_directories(${CMAKE_SOURCE_DIR}/buildwin/include)
+  include_directories(${CMAKE_SOURCE_DIR}/cache/buildwin/include)
   include_directories(${PLUGIN_SOURCE_DIR}/src/bzip2)
 endif (NOT UNIX)
 
@@ -160,7 +160,7 @@ if (QT_ANDROID)
   )
   set(SRC_GRIB ${SRC_GRIB} ${SRC_BZIP_ANDROID})
 
-  include_directories(${CMAKE_SOURCE_DIR}/buildwin/include)
+  include_directories(${CMAKE_SOURCE_DIR}/cache/buildwin/include)
   include_directories(${PLUGIN_SOURCE_DIR}/src/bzip2)
 
   message(STATUS ${SRC_GRIB})
@@ -168,6 +168,12 @@ if (QT_ANDROID)
 endif (QT_ANDROID)
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_GRIB})
+
+if (MSVC)
+  # Fixme (leamas): Remove when the VS bug is fixed.
+  # https://forum.juce.com/t/juceaide-fails-to-build-on-windows-plugin-demo-master-branch/48007
+  target_compile_features(${PACKAGE_NAME} PRIVATE cxx_std_17)
+endif ()
 
 find_package(Jasper)
 use_bundled_lib(USE_BUNDLED_JASPER jasper)
@@ -191,7 +197,7 @@ endif ()
 if (WIN32)
   if (MSVC)
     target_link_libraries(
-      ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib"
+      ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/cache/buildwin/zlib1.lib"
                               "GLU_static"
     )
   else (MSVC)

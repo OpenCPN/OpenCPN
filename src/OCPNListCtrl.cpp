@@ -63,8 +63,8 @@ wxString OCPNListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
 
   if (m_parent->m_pListCtrlAISTargets) {
-    AisTargetData* pAISTarget = m_parent->GetpTarget(item);
-    if (pAISTarget) ret = GetTargetColumnData(pAISTarget, column);
+    auto pAISTarget = m_parent->GetpTarget(item);
+    if (pAISTarget) ret = GetTargetColumnData(pAISTarget.get(), column);
   }
 
   return ret;

@@ -811,9 +811,6 @@ void GRIBUICtrlBar::OnAltitude(wxCommandEvent &event) {
   amenu->Connect(wxEVT_COMMAND_MENU_SELECTED,
                  wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this);
 
-#ifdef __WXMSW__
-  const wxString l[] = {_T(" "), wxString::Format(_T("\u2022"))};
-#endif
   for (int i = 0; i < 5; i++) {
     if (((m_pTimelineSet &&
           m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) !=
@@ -823,9 +820,7 @@ void GRIBUICtrlBar::OnAltitude(wxCommandEvent &event) {
         i == 0) {
       MenuAppend(
           amenu, ID_CTRLALTITUDE + 1000 + i,
-#ifdef __WXMSW__
-          (i == m_Altitude ? l[1] : l[0]) +
-#endif
+
               m_OverlaySettings.GetAltitudeFromIndex(
                   i, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
                          .m_Units),
@@ -900,11 +895,12 @@ void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
                                wxItemKind kind, wxBitmap bitmap,
                                wxMenu *submenu) {
   wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind, submenu);
-
+/* Menu font do not work properly for MSW (wxWidgets 3.2.1)
 #ifdef __WXMSW__
   wxFont *qFont = OCPNGetFont(_("Menu"), 10);
   item->SetFont(*qFont);
 #endif
+*/
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
   if (!bitmap.IsSameAs(wxNullBitmap)) item->SetBitmap(bitmap);
@@ -926,9 +922,6 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
                      wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL,
                      this);
 
-#ifdef __WXMSW__
-      const wxString l[] = {_T(" "), wxString::Format(_T("\u2022"))};
-#endif
       for (int i = 0; i < 5; i++) {
         if (((m_pTimelineSet &&
               m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) !=
@@ -937,9 +930,6 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
                   wxNOT_FOUND)) ||
             i == 0) {
           MenuAppend(smenu, ID_CTRLALTITUDE + 1000 + i,
-#ifdef __WXMSW__
-                     (i == m_Altitude ? l[1] : l[0]) +
-#endif
                          m_OverlaySettings.GetAltitudeFromIndex(
                              i, m_OverlaySettings
                                     .Settings[GribOverlaySettings::PRESSURE]

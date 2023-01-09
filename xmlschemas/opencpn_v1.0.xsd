@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns="http://opencpn-manuals.github.io/xmlschemas/OpenCPN" elementFormDefault="qualified" targetNamespace="http://opencpn-manuals.github.io/xmlschemas/OpenCPN" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="guid" type="xs:string" />
+    <xs:element name="viz" type="xs:boolean" />
+    <xs:element name="planned_speed" type="xs:double" />
+    <xs:element name="planned_departure" type="xs:string" />
+    <xs:element name="time_display" type="xs:string" />
+    <xs:element name="auto_name" type="xs:boolean" />
+    <xs:element name="shared" type="xs:boolean" />
+    <xs:element name="arrival_radius" type="xs:double" />
+    <xs:element name="waypoint_range_rings">
+        <xs:complexType>
+            <xs:attribute name="number" type="xs:integer" />
+            <xs:attribute name="step" type="xs:integer" />
+            <xs:attribute name="units" type="xs:integer" />
+            <xs:attribute name="visible" type="xs:boolean" />
+            <xs:attribute name="colour" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="scale_min_max">
+        <xs:complexType>
+            <xs:attribute name="UseScale" type="xs:boolean" />
+            <xs:attribute name="ScaleMin" type="xs:integer" />
+            <xs:attribute name="ScaleMax" type="xs:integer" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="start" type="xs:string" />
+    <xs:element name="end" type="xs:string" />
+    <xs:element name="style">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="width" type="xs:integer" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="viz_name" type="xs:boolean" />
+    <xs:element name="tidestation" type="xs:string" />
+    <xs:element name="rte_properties">
+        <xs:complexType>
+            <xs:attribute name="planned_speed" type="xs:string" />
+            <xs:attribute name="etd" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="action" type="xs:boolean" />
+</xs:schema>

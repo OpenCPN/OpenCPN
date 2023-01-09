@@ -26,14 +26,24 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "wx/tokenzr.h"
+#include <wx/tokenzr.h>
 #include <wx/regex.h>
+
+#if defined(__linux__) && !defined(__ANDROID__)
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <net/if.h>
+#include <serial/serial.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#endif
+
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -41,6 +51,7 @@
 #endif
 
 #include "connections_dialog.h"
+#include "config_vars.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
@@ -50,16 +61,13 @@
 #include "comm_drv_factory.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
+#include "priority_gui.h"
 
 extern bool g_bMagneticAPB;
-extern bool g_bGarminHostUpload;
-extern wxString g_GPS_Ident;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 extern int g_NMEAAPBPrecision;
-extern wxString g_TalkerIdText;
-extern wxArrayOfConnPrm* g_pConnectionParams;
 extern OCPNPlatform* g_Platform;
 
 wxString StringArrayToString(wxArrayString arr) {
@@ -70,6 +78,55 @@ wxString StringArrayToString(wxArrayString arr) {
   }
   return ret;
 }
+
+// Check available SocketCAN interfaces
+
+wxArrayString GetAvailableSocketCANInterfaces() {
+  wxArrayString rv;
+
+#if defined(__linux__) && !defined(__ANDROID__)
+  wxString candidates[] = {
+    "can0",
+    "can1",
+    "can2",
+    "can3",
+    "slcan0",
+    "slcan1",
+    "vcan0",
+    "vcan1"
+  };
+  size_t ncandidates = sizeof(candidates) / sizeof(wxString);
+
+  for (size_t i=0 ; i < ncandidates; i++){
+    int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
+    if (sock < 0) {
+      continue;
+    }
+
+    // Get the interface index
+    struct ifreq if_request;
+    strcpy(if_request.ifr_name, candidates[i].c_str());
+    if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
+      continue;
+    }
+
+    // Check if interface is UP
+    struct sockaddr_can can_address;
+    can_address.can_family = AF_CAN;
+    can_address.can_ifindex = if_request.ifr_ifindex;
+    if (ioctl(sock, SIOCGIFFLAGS, &if_request) < 0) {
+      continue;
+    }
+    if (if_request.ifr_flags & IFF_UP) {
+      rv.Add(candidates[i]);
+    } else {
+      continue;
+    }
+  }
+#endif
+  return rv;
+}
+
 
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation
@@ -229,6 +286,12 @@ void ConnectionsDialog::Init(){
                      wxDefaultPosition, wxDefaultSize, 0);
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
+
+  m_ButtonPriorityDialog =
+      new wxButton(m_container, wxID_ANY,
+                     _("Adjust communication priorities..."),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  bSizer161->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
 
   bSizer151->Add(bSizer161, 1, wxEXPAND, 5);
   sbSizerGeneral->Add(bSizer151, 1, wxEXPAND, 5);
@@ -502,7 +565,7 @@ void ConnectionsDialog::Init(){
   m_choiceSerialProtocol->Enable(TRUE);
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
 
-  m_stPriority = new wxStaticText(m_container, wxID_ANY, _("Priority"),
+  m_stPriority = new wxStaticText(m_container, wxID_ANY, _("List position"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stPriority->Wrap(-1);
   fgSizer1->Add(m_stPriority, 0, wxALL, 5);
@@ -522,13 +585,10 @@ void ConnectionsDialog::Init(){
   m_stCANSource->Wrap(-1);
   fgSizer1->Add(m_stCANSource, 0, wxALL, 5);
 
-  // FIXME (dave)  Query actual interfaces available, disable others.
-  wxString choice_CANSource_choices[] = {"can0", "slcan0", "vcan0"};
-  int choice_CANSource_nchoices =
-      sizeof(choice_CANSource_choices) / sizeof(wxString);
+  wxArrayString choices = GetAvailableSocketCANInterfaces();
   m_choiceCANSource = new wxChoice(
       m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-      choice_CANSource_nchoices, choice_CANSource_choices, 0);
+      choices);
   m_choiceCANSource->SetSelection(0);
   m_choiceCANSource->Enable(TRUE);
   fgSizer1->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
@@ -826,6 +886,10 @@ void ConnectionsDialog::Init(){
                         this);
   m_cbAPBMagnetic->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                            wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL,
+                           this);
+
+  m_ButtonPriorityDialog->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                           wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL,
                            this);
 
   m_tNetComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
@@ -1452,18 +1516,18 @@ void ConnectionsDialog::SetDefaultConnectionParams(void) {
 }
 
 bool ConnectionsDialog::SortSourceList(void) {
-  if (g_pConnectionParams->Count() < 2) return false;
+  if (TheConnectionParams()->Count() < 2) return false;
 
   std::vector<int> ivec;
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) ivec.push_back(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) ivec.push_back(i);
 
   bool did_sort = false;
   bool did_swap = true;
   while (did_swap) {
     did_swap = false;
     for (size_t j = 1; j < ivec.size(); j++) {
-      ConnectionParams* c1 = g_pConnectionParams->Item(ivec[j]);
-      ConnectionParams* c2 = g_pConnectionParams->Item(ivec[j - 1]);
+      ConnectionParams* c1 = TheConnectionParams()->Item(ivec[j]);
+      ConnectionParams* c2 = TheConnectionParams()->Item(ivec[j - 1]);
 
       if (c1->Priority > c2->Priority) {
         int t = ivec[j - 1];
@@ -1482,7 +1546,7 @@ bool ConnectionsDialog::SortSourceList(void) {
 
     for (size_t i = 0; i < ivec.size(); i++) {
       ConnectionParamsPanel* pPanel =
-          g_pConnectionParams->Item(ivec[i])->m_optionsPanel;
+          TheConnectionParams()->Item(ivec[i])->m_optionsPanel;
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
     }
   }
@@ -1494,17 +1558,17 @@ void ConnectionsDialog::FillSourceList(void) {
   m_buttonRemove->Enable(FALSE);
 
   // Add new panels as necessary
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    if (!g_pConnectionParams->Item(i)->m_optionsPanel) {
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    if (!TheConnectionParams()->Item(i)->m_optionsPanel) {
       ConnectionParamsPanel* pPanel = new ConnectionParamsPanel(
           m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-          g_pConnectionParams->Item(i), this);
+          TheConnectionParams()->Item(i), this);
       pPanel->SetSelected(false);
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
-      g_pConnectionParams->Item(i)->m_optionsPanel = pPanel;
+      TheConnectionParams()->Item(i)->m_optionsPanel = pPanel;
     } else {
-      g_pConnectionParams->Item(i)->m_optionsPanel->Update(
-          g_pConnectionParams->Item(i));
+      TheConnectionParams()->Item(i)->m_optionsPanel->Update(
+          TheConnectionParams()->Item(i));
     }
   }
   SortSourceList();
@@ -1516,10 +1580,10 @@ void ConnectionsDialog::FillSourceList(void) {
 }
 
 void ConnectionsDialog::UpdateSourceList(bool bResort) {
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams* cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams* cp = TheConnectionParams()->Item(i);
     ConnectionParamsPanel* panel = cp->m_optionsPanel;
-    if (panel) panel->Update(g_pConnectionParams->Item(i));
+    if (panel) panel->Update(TheConnectionParams()->Item(i));
   }
 
   if (bResort) {
@@ -1531,8 +1595,8 @@ void ConnectionsDialog::UpdateSourceList(bool bResort) {
 
 void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
   //  Unselect all panels
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
-    g_pConnectionParams->Item(i)->m_optionsPanel->SetSelected(false);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++)
+    TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
 
   connectionsaved = FALSE;
   SetDefaultConnectionParams();
@@ -1557,8 +1621,8 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
     // Find the index
     int index = -1;
     ConnectionParams* cp = NULL;
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      cp = g_pConnectionParams->Item(i);
+    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+      cp = TheConnectionParams()->Item(i);
       if (mSelectedConnection == cp) {
         index = i;
         break;
@@ -1566,13 +1630,9 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
     }
 
     if ((index >= 0) && (cp)) {
-      delete g_pConnectionParams->Item(index)->m_optionsPanel;
-      g_pConnectionParams->RemoveAt(index);
-
-      //FIXME (dave)
-      //DataStream* pds_existing = g_pMUX->FindStream(cp->GetDSPort());
-      //if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-      // delete mSelectedConnection->m_optionsPanel;
+      delete TheConnectionParams()->Item(index)->m_optionsPanel;
+      TheConnectionParams()->RemoveAt(index);
+      StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
       mSelectedConnection = NULL;
     }
   }
@@ -1588,7 +1648,7 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
 }
 
 void ConnectionsDialog::OnSelectDatasource(wxListEvent& event) {
-  SetConnectionParams(g_pConnectionParams->Item(event.GetData()));
+  SetConnectionParams(TheConnectionParams()->Item(event.GetData()));
   m_buttonRemove->Enable();
   m_buttonRemove->Show();
   event.Skip();
@@ -1713,16 +1773,18 @@ void ConnectionsDialog::ApplySettings(){
   wxString lastAddr;
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
+  DataProtocol lastDataProtocol = PROTO_NMEA0183;
 
   if (mSelectedConnection) {
     ConnectionParams* cpo = mSelectedConnection;
     lastAddr = cpo->NetworkAddress;
     lastPort = cpo->NetworkPort;
     lastNetProtocol = cpo->NetProtocol;
+    lastDataProtocol = cpo->Protocol;
   }
 
   if (!connectionsaved) {
-    size_t nCurrentPanelCount = g_pConnectionParams->GetCount();
+    size_t nCurrentPanelCount = TheConnectionParams()->GetCount();
     ConnectionParams* cp = NULL;
     int old_priority = -1;
     {
@@ -1731,16 +1793,19 @@ void ConnectionsDialog::ApplySettings(){
         old_priority = cp->Priority;
         UpdateConnectionParamsFromSelectedItem(cp);
         cp->b_IsSetup = false;
+        cp->bEnabled = false;
+        if (cp->m_optionsPanel)
+          cp->m_optionsPanel->SetEnableCheckbox(false);
 
-        // delete g_pConnectionParams->Item(itemIndex)->m_optionsPanel;
-        // old_priority = g_pConnectionParams->Item(itemIndex)->Priority;
-        // g_pConnectionParams->RemoveAt(itemIndex);
-        // g_pConnectionParams->Insert(cp, itemIndex);
+        // delete TheConnectionParams()->Item(itemIndex)->m_optionsPanel;
+        // old_priority = TheConnectionParams()->Item(itemIndex)->Priority;
+        // TheConnectionParams()->RemoveAt(itemIndex);
+        // TheConnectionParams()->Insert(cp, itemIndex);
         // mSelectedConnection = cp;
         // cp->m_optionsPanel->SetSelected( true );
       } else {
         cp = CreateConnectionParamsFromSelectedItem();
-        if (cp) g_pConnectionParams->Add(cp);
+        if (cp) TheConnectionParams()->Add(cp);
       }
 
       //  Record the previous parameters, if any
@@ -1748,9 +1813,10 @@ void ConnectionsDialog::ApplySettings(){
         cp->LastNetProtocol = lastNetProtocol;
         cp->LastNetworkAddress = lastAddr;
         cp->LastNetworkPort = lastPort;
+        cp->LastDataProtocol = lastDataProtocol;
       }
 
-      if (g_pConnectionParams->GetCount() != nCurrentPanelCount)
+      if (TheConnectionParams()->GetCount() != nCurrentPanelCount)
         FillSourceList();
       else if (old_priority >= 0) {
         if (old_priority != cp->Priority)  // need resort
@@ -1770,8 +1836,8 @@ void ConnectionsDialog::ApplySettings(){
   }
 
   // Recreate datastreams that are new, or have been edited
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams* cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams* cp = TheConnectionParams()->Item(i);
 
     if (cp->b_IsSetup) continue;
 
@@ -1780,21 +1846,12 @@ void ConnectionsDialog::ApplySettings(){
     // Terminate and remove any existing driver, if present in registry
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
 
-#if 0  //FIXME
-    //  Try to stop any previous stream to avoid orphans
-    DataStream* pds_existing = g_pMUX->FindStream(cp->GetLastDSPort());
-    if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-
-    //  This for Bluetooth, which has strange parameters
-    if (cp->Type == INTERNAL_BT) {
-      pds_existing = g_pMUX->FindStream(cp->GetPortStr());
-      if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
-    }
+    // Stop and remove  "previous" port, in case other params have changed.
+    StopAndRemoveCommDriver(cp->GetLastDSPort(), cp->GetLastCommProtocol());
 
     // Internal BlueTooth driver stacks commonly need a time delay to purge
     // their buffers, etc. before restating with new parameters...
     if (cp->Type == INTERNAL_BT) wxSleep(1);
-#endif
 
     //Connection has been disabled
     if (!cp->bEnabled) continue;
@@ -1874,6 +1931,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
     pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
     pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
+    pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
     pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
     pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
@@ -1922,6 +1980,9 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     CheckSerialAccess(m_parent, pConnectionParams->Port.ToStdString());
 #endif
 
+  if (m_rbTypeCAN && m_rbTypeCAN->GetValue())
+    pConnectionParams->Protocol = PROTO_NMEA2000;
+
   pConnectionParams->bEnabled = m_connection_enabled;
   pConnectionParams->b_IsSetup = FALSE;
 
@@ -1962,6 +2023,14 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
 
   return pConnectionParams;
 }
+
+void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
+
+  PriorityDlg *pdlg = new PriorityDlg(m_parent);
+  pdlg->ShowModal();
+
+}
+
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                                  ListType type, const wxArrayString& list)

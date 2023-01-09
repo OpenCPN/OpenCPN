@@ -24,6 +24,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <memory>
+
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/string.h>
@@ -42,7 +51,7 @@
 #include "undo.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
-wxDEFINE_EVENT(EVT_AIS_INFO, wxCommandEvent);
+wxDEFINE_EVENT(EVT_AIS_INFO, ObservedEvt);
 wxDEFINE_EVENT(EVT_AIS_NEW_TRACK, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
@@ -67,12 +76,13 @@ extern wxString g_SART_sound_file;
 extern MyConfig* pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame* gFrame;
+extern AisInfoGui *g_pAISGUI;
 
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
     wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-    wxPostEvent(g_pAIS, ev);   // FIXME(leamas): Review sound handling.
+    wxPostEvent(g_pAISGUI, ev);   // FIXME(leamas): Review sound handling.
   }
 }
 
@@ -108,33 +118,55 @@ static void OnDeleteTrack(MmsiProperties* props) {
 
 
 AisInfoGui::AisInfoGui() {
-  ais_info_listener = g_pAIS->info_update.GetListener(this, EVT_AIS_INFO);
-  Bind(EVT_AIS_INFO, [&](wxCommandEvent ev) {
-       auto palert_target = static_cast<AisTargetData*>(ev.GetClientData());
-       ShowAisInfo(palert_target); });
+  ais_info_listener.Listen(g_pAIS->info_update, this, EVT_AIS_INFO);
 
-  ais_touch_listener = g_pAIS->touch_state.GetListener(this, EVT_AIS_TOUCH);
+  Bind(EVT_AIS_INFO, [&](ObservedEvt &ev) {
+        auto ptr = ev.GetSharedPtr();
+        auto palert_target = std::static_pointer_cast<const AisTargetData>(ptr);
+        ShowAisInfo(palert_target); }
+       );
+
+  ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
   Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
 
-  ais_wp_listener = g_pAIS->new_ais_wp.GetListener(this, EVT_AIS_WP);
+  ais_wp_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_WP);
   Bind(EVT_AIS_WP, [&](wxCommandEvent ev) {
        auto pWP = static_cast<RoutePoint*>(ev.GetClientData());
        OnNewAisWaypoint(pWP); });
 
-  ais_new_track_listener = g_pAIS->new_ais_wp.GetListener(this, EVT_AIS_NEW_TRACK);
+  ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this,
+                                EVT_AIS_NEW_TRACK);
   Bind(EVT_AIS_NEW_TRACK, [&](wxCommandEvent ev) {
        auto t = static_cast<Track*>(ev.GetClientData());
        pConfig->AddNewTrack(t); });
 
-  ais_del_track_listener = g_pAIS->new_ais_wp.GetListener(this, EVT_AIS_DEL_TRACK);
+  ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this,
+                                EVT_AIS_DEL_TRACK);
   Bind(EVT_AIS_DEL_TRACK, [&](wxCommandEvent ev) {
        auto t = static_cast< MmsiProperties*>(ev.GetClientData());
        OnDeleteTrack(t); });
+
+  Bind(SOUND_PLAYED_EVTYPE, [&](wxCommandEvent ev) {
+       OnSoundFinishedAISAudio(ev); });
+
+  m_AIS_Sound = 0;
+  m_bAIS_Audio_Alert_On = false;
+  m_bAIS_AlertPlaying = false;
+
 }
 
-void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
+void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
+  // By clearing this flag the main event loop will trigger repeated
+  // sounds for as long as the alert condition remains.
+  m_bAIS_AlertPlaying = false;
+}
+
+void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target) {
    int audioType = AISAUDIO_NONE;
-   if (palert_target) {
+   if (!palert_target) return;
+
+   // If no alert dialog shown yet...
+   if (!g_pais_alert_dialog_active) {
       bool b_jumpto = (palert_target->Class == AIS_SART) ||
                       (palert_target->Class == AIS_DSC);
       bool b_createWP = palert_target->Class == AIS_DSC;
@@ -160,12 +192,13 @@ void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
         pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS,
                                 b_jumpto, b_createWP, b_ack, -1,
                                 _("AIS Alert"));
+        g_pais_alert_dialog_active = pAISAlertDialog;
+
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        g_pais_alert_dialog_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
         g_Platform->PositionAISAlert(pAISAlertDialog);
 
-        g_pais_alert_dialog_active = pAISAlertDialog;
         pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
       }
 
@@ -182,14 +215,14 @@ void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
     AisTargetData *palert_target_lowestcpa = NULL;
     const auto& current_targets = g_pAIS->GetTargetList();
     for (auto& it : current_targets) {
-      AisTargetData *td = it.second;
+      auto td = it.second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {
             if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
               if (td->TCPA < tcpa_min) {
                 tcpa_min = td->TCPA;
-                palert_target_lowestcpa = td;
+                palert_target_lowestcpa = td.get();
               }
             }
           }
@@ -221,11 +254,11 @@ void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        palert_target->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        g_pais_alert_dialog_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
       }
       //  In "expiry delay"?
       else if (!palert_target->b_in_ack_timeout &&
-               (now.IsEarlierThan(palert_target->dtAlertExpireTime))) {
+               (now.IsEarlierThan(g_pais_alert_dialog_active->dtAlertExpireTime))) {
         g_pais_alert_dialog_active->UpdateText();
       } else {
         g_pais_alert_dialog_active->Close();
@@ -280,9 +313,9 @@ void AisInfoGui::ShowAisInfo(AisTargetData* palert_target) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)
-          gFrame->UpdateAISMOBRoute(palert_target);
+          gFrame->UpdateAISMOBRoute(palert_target.get());
         else
-          gFrame->ActivateAISMOBRoute(palert_target);
+          gFrame->ActivateAISMOBRoute(palert_target.get());
         break;
       }
     }

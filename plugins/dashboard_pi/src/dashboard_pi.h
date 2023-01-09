@@ -79,12 +79,12 @@ class DashboardWindow;
 class DashboardWindowContainer;
 class DashboardInstrumentContainer;
 
-#define DASHBOARD_TOOL_POSITION \
-  -1  // Request default positioning of toolbar tool
-
-#define gps_watchdog_timeout_ticks 10
-#define no_nav_watchdog_timeout_ticks \
-  40  // SignalK motor & environ instr defaults 30 sec
+// Request default positioning of toolbar tool
+#define DASHBOARD_TOOL_POSITION -1
+// Set watchdog to comply with OCPN WD.
+#define gps_watchdog_timeout_ticks GetGlobalWatchdogTimoutSeconds()
+// SignalK motor & environ instr defaults 30 sec update frequency
+#define no_nav_watchdog_timeout_ticks 40
 #define GEODESIC_RAD2DEG(r) ((r) * (180.0 / M_PI))
 #define MS2KNOTS(r) ((r) * (1.9438444924406))
 #define KELVIN2C(r) ((r) - (273.15))
@@ -210,15 +210,15 @@ private:
   void HandleN2K_129540(ObservedEvt ev);
   void HandleN2K_130306(ObservedEvt ev);
   void HandleN2K_130310(ObservedEvt ev);
-  std::shared_ptr<ObservedVarListener> listener_127245;
-  std::shared_ptr<ObservedVarListener> listener_127257;
-  std::shared_ptr<ObservedVarListener> listener_128259;
-  std::shared_ptr<ObservedVarListener> listener_128267;
-  std::shared_ptr<ObservedVarListener> listener_128275;
-  std::shared_ptr<ObservedVarListener> listener_129029;
-  std::shared_ptr<ObservedVarListener> listener_129540;
-  std::shared_ptr<ObservedVarListener> listener_130306;
-  std::shared_ptr<ObservedVarListener> listener_130310;
+  std::shared_ptr<ObservableListener> listener_127245;
+  std::shared_ptr<ObservableListener> listener_127257;
+  std::shared_ptr<ObservableListener> listener_128259;
+  std::shared_ptr<ObservableListener> listener_128267;
+  std::shared_ptr<ObservableListener> listener_128275;
+  std::shared_ptr<ObservableListener> listener_129029;
+  std::shared_ptr<ObservableListener> listener_129540;
+  std::shared_ptr<ObservableListener> listener_130306;
+  std::shared_ptr<ObservableListener> listener_130310;
 
   wxString m_self;
 
@@ -263,6 +263,8 @@ private:
   int mPITCH_Watchdog;
   int mHEEL_Watchdog;
   int mALT_Watchdog;
+  int mLOG_Watchdog;
+  int mTrLOG_Watchdog;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;

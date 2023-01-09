@@ -31,7 +31,7 @@
 
 #include <wx/datetime.h>
 #include <wx/treectrl.h>
-#include "wx/dirctrl.h"
+#include <wx/dirctrl.h>
 #include <wx/sound.h>
 #include <wx/grid.h>
 #include <wx/wxhtml.h>
@@ -217,7 +217,7 @@ public:
   void SetupCanvasQuiltMode(void);
   void ApplyCanvasConfig(canvasConfig *pcc);
 
-  void SetVPRotation(double angle) { VPoint.rotation = angle; }
+  bool SetVPRotation(double angle);
   double GetVPRotation(void) { return GetVP().rotation; }
   double GetVPSkew(void) { return GetVP().skew; }
   double GetVPTilt(void) { return GetVP().tilt; }
@@ -238,6 +238,7 @@ public:
   void UpdateShips();
   void UpdateAIS();
   void UpdateAlerts();  // pjotrc 2010.02.22
+  void ToggleCPAWarn();
 
   bool IsMeasureActive() { return m_bMeasure_Active; }
   wxBitmap &GetTideBitmap() { return m_cTideBitmap; }
@@ -565,6 +566,7 @@ public:
   std::vector<int> GetQuiltNoshowIindexArray() {
     return m_quilt_noshow_index_array;
   }
+  double GetDisplayScale(){ return m_displayScale; }
 
 private:
   int AdjustQuiltRefChart();
@@ -939,6 +941,7 @@ private:
   double m_sector_glat, m_sector_glon;
   std::vector<s57Sector_t> m_sectorlegsVisible;
   bool m_bShowVisibleSectors;
+  double m_displayScale;
 
   DECLARE_EVENT_TABLE()
 };

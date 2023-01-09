@@ -27,13 +27,12 @@
 
 #include <functional>
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "observable_navmsg.h"
 #include "comm_navmsg.h"
 
 struct MuxLogCallbacks {
@@ -59,7 +58,7 @@ public:
                        bool b_filter, bool b_error = false);
 
 private:
-  ObservedVarListener m_listener_N0183_all;
+  ObservableListener m_listener_N0183_all;
 
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
 

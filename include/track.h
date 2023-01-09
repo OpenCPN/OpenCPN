@@ -56,10 +56,9 @@ public:
 
   wxDateTime GetCreateTime(void);
   void SetCreateTime(wxDateTime dt);
-  const char *GetTimeString() { return m_timestring; }
+  const char *GetTimeString() { return m_stimestring.c_str(); }
   bool HasValidTimestamp() {
-    if (m_timestring == NULL ||
-        strlen(m_timestring) != strlen("YYYY-MM-DDTHH:MM:SSZ"))
+    if (m_stimestring.size() != strlen("YYYY-MM-DDTHH:MM:SSZ"))
       return false;
     return true;
   };
@@ -70,7 +69,7 @@ public:
 
 private:
   void SetCreateTime(wxString ts);
-  char *m_timestring;
+  std::string m_stimestring;
 };
 
 //----------------------------------------------------------------------------

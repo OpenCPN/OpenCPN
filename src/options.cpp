@@ -34,7 +34,7 @@
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -51,10 +51,10 @@
 #include <wx/fontdata.h>
 #include <wx/fontdlg.h>
 #include <wx/stdpaths.h>
-#include "wx/tokenzr.h"
+#include <wx/tokenzr.h>
 #include <wx/mediactrl.h>
-#include "wx/dir.h"
-#include "wx/odcombo.h"
+#include <wx/dir.h>
+#include <wx/odcombo.h>
 #include <wx/statline.h>
 #include <wx/regex.h>
 #include <wx/textwrapper.h>
@@ -72,6 +72,7 @@
 #endif
 
 #include "config.h"
+#include "config_vars.h"
 
 #include "dychart.h"
 #include "ocpn_frame.h"
@@ -154,17 +155,14 @@ extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
 extern bool g_bShowTrue, g_bShowMag;
-extern double g_UserVar;
 extern double gVar;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
-extern wxString g_TalkerIdText;
 extern int g_nDepthUnitDisplay;
 extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
-extern wxArrayOfConnPrm* g_pConnectionParams;
 extern Multiplexer* g_pMUX;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
@@ -210,7 +208,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 
 extern int g_iNavAidRadarRingsNumberVisible;
@@ -284,8 +281,6 @@ extern double g_AckTimeout_Mins;
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
-extern wxString g_GPS_Ident;
-extern bool g_bGarminHostUpload;
 extern wxString g_compatOS;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -1100,8 +1095,7 @@ void MMSIEditDialog::Persist() {
     m_props->m_bFollower = m_FollowerButton->GetValue();
     m_props->m_bPersistentTrack = m_cbTrackPersist->GetValue();
     if (m_props->m_ShipName == wxEmptyString) {
-      AisTargetData* proptarget =
-          g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
+      auto proptarget = g_pAIS->Get_Target_Data_From_MMSI(m_props->MMSI);
       if (proptarget) {
         wxString s = proptarget->GetFullName();
         m_props->m_ShipName = s;
@@ -1563,6 +1557,8 @@ EVT_BUTTON(ID_APPLY, options::OnApplyClick)
 EVT_BUTTON(xID_OK, options::OnXidOkClick)
 EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
+EVT_BUTTON(ID_BUTTONECDISHELP, options::OnButtonEcdisHelp)
+
 EVT_CHOICE(ID_CHOICE_FONTELEMENT, options::OnFontChoice)
 EVT_CLOSE(options::OnClose)
 
@@ -1607,7 +1603,7 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 
   wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
   GlobalVar<wxString> compat_os(&g_compatOS);
-  compat_os_listener = compat_os.GetListener(this, EVT_COMPAT_OS_CHANGE);
+  compat_os_listener.Listen(compat_os, this, EVT_COMPAT_OS_CHANGE);
   Bind(EVT_COMPAT_OS_CHANGE, [&](wxCommandEvent&) {
     PluginLoader::getInstance()->LoadAllPlugIns(false);
     m_pPlugInCtrl->ReloadPluginPanels();
@@ -1984,14 +1980,14 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       itemPanelShip, wxID_ANY, _("COG Predictor Length (min)"));
   dispOptionsGrid->Add(pStatic_OSCOG_Predictor, 0);
 
-  m_pText_OSCOG_Predictor = new wxTextCtrl(itemPanelShip, wxID_ANY);
+  m_pText_OSCOG_Predictor = new wxTextCtrl(itemPanelShip, wxID_ANY, "TEXT");
   dispOptionsGrid->Add(m_pText_OSCOG_Predictor, 0, wxALIGN_RIGHT);
 
   wxStaticText* pStatic_OSHDT_Predictor = new wxStaticText(
       itemPanelShip, wxID_ANY, _("Heading Predictor Length (NMi)"));
   dispOptionsGrid->Add(pStatic_OSHDT_Predictor, 0);
 
-  m_pText_OSHDT_Predictor = new wxTextCtrl(itemPanelShip, wxID_ANY);
+  m_pText_OSHDT_Predictor = new wxTextCtrl(itemPanelShip, wxID_ANY, "TEXT");
   dispOptionsGrid->Add(m_pText_OSHDT_Predictor, 0, wxALIGN_RIGHT);
 
   wxStaticText* iconTypeTxt =
@@ -2202,7 +2198,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
                   border_size);
   wxStaticText* trackColourText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Track Colour"));
+      new wxStaticText(itemPanelShip, wxID_STATIC, _("Highlight Colour"));
   hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL,
                   border_size);
   m_colourTrackLineColour = new OCPNColourPickerCtrl(
@@ -2319,7 +2315,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
       itemPanelRoutes, wxID_STATIC, _("Waypoint Arrival Circle Radius (NMi)"));
   pRouteGrid->Add(raText, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  m_pText_ACRadius = new wxTextCtrl(itemPanelRoutes, -1);
+  m_pText_ACRadius = new wxTextCtrl(itemPanelRoutes, -1, "TEXT  ");
   pRouteGrid->Add(m_pText_ACRadius, 0, wxALL | wxALIGN_RIGHT,
                   group_item_spacing);
 
@@ -2381,7 +2377,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
       new wxCheckBox(itemPanelRoutes, wxID_ANY,
                      _("Show waypoints only at a chartscale greater than 1 :"));
   ScaMinSizer->Add(pScaMinChckB, 0);
-  m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1);
+  m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1, "TEXTTEXTTEXT");
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
                    group_item_spacing);
 
@@ -3007,12 +3003,12 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
-    pOpenGL->Enable(!g_bdisable_opengl);
+    pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
                                      _("OpenGL Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl);
+    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Hide();
@@ -3060,15 +3056,15 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")),
         inputFlags);
 
-    m_pSlider_Zoom =
+    m_pSlider_Zoom_Raster =
         new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
-    prepareSlider(m_pSlider_Zoom);
+    prepareSlider(m_pSlider_Zoom_Raster);
 #endif
 
-    itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
+    itemBoxSizerUI->Add(m_pSlider_Zoom_Raster, inputFlags);
 
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")),
@@ -3233,15 +3229,15 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")),
         labelFlags);
-    m_pSlider_Zoom =
+    m_pSlider_Zoom_Raster =
         new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
-    prepareSlider(m_pSlider_Zoom);
+    prepareSlider(m_pSlider_Zoom_Raster);
 #endif
 
-    itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
+    itemBoxSizerUI->Add(m_pSlider_Zoom_Raster, inputFlags);
 
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")),
@@ -3325,7 +3321,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
-    pOpenGL->Enable(!g_bdisable_opengl);
+    pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Disable();
@@ -3334,7 +3330,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     wxButton* bOpenGL = new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS,
                                      _("Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
-    bOpenGL->Enable(!g_bdisable_opengl);
+    bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
     itemBoxSizerUI->Add(0, border_size * 3);
     /*
@@ -3452,6 +3448,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                                    _("Reduced Detail at Small Scale"));
     pCheck_SCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SCAMIN, inputFlags);
+
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
+                       labelFlags);
+    pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
+                                   _("Additonal detail reduction at Small Scale"));
+    pCheck_SuperSCAMIN->SetValue(FALSE);
+    optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
@@ -3633,6 +3636,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                                    _("Reduced Detail at Small Scale"));
     pCheck_SCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SCAMIN, inputFlags);
+
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
+                       labelFlags);
+    pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
+                                   _("Additonal detail reduction at Small Scale"));
+    pCheck_SuperSCAMIN->SetValue(FALSE);
+    optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
 
     // spacer
     optionsColumn->Add(0, border_size * 4);
@@ -4664,6 +4674,7 @@ BEGIN_EVENT_TABLE(OCPNSoundPanel, wxPanel)
 EVT_BUTTON(ID_SELECTSOUND, OCPNSoundPanel::OnButtonSelectSound)
 EVT_BUTTON(ID_TESTSOUND, OCPNSoundPanel::OnButtonTestSound)
 
+
 END_EVENT_TABLE()
 
 OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size,
@@ -4917,7 +4928,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       _("No (T)CPA Alerts if target range is greater than (NMi)"));
   pCPAGrid->Add(m_pCheck_CPA_Max, 0, wxALL, group_item_spacing);
 
-  m_pText_CPA_Max = new wxTextCtrl(panelAIS, -1);
+  m_pText_CPA_Max = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pCPAGrid->Add(m_pText_CPA_Max, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_CPA_Warn =
@@ -4925,7 +4936,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pCPAGrid->Add(m_pCheck_CPA_Warn, 0, wxALL, group_item_spacing);
 
   m_pText_CPA_Warn =
-      new wxTextCtrl(panelAIS, -1, _T(""), wxDefaultPosition, wxSize(-1, -1));
+      new wxTextCtrl(panelAIS, -1,"TEXT  ", wxDefaultPosition, wxSize(-1, -1));
   pCPAGrid->Add(m_pText_CPA_Warn, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
   m_pCheck_CPA_Warn->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -4936,7 +4947,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxCheckBox(panelAIS, -1, _("...and TCPA is less than (min)"));
   pCPAGrid->Add(m_pCheck_CPA_WarnT, 0, wxALL, group_item_spacing);
 
-  m_pText_CPA_WarnT = new wxTextCtrl(panelAIS, -1);
+  m_pText_CPA_WarnT = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pCPAGrid->Add(m_pText_CPA_WarnT, 0, wxALL | wxALIGN_RIGHT,
                 group_item_spacing);
 
@@ -4953,7 +4964,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxCheckBox(panelAIS, -1, _("Mark targets as lost after (min)"));
   pLostGrid->Add(m_pCheck_Mark_Lost, 1, wxALL, group_item_spacing);
 
-  m_pText_Mark_Lost = new wxTextCtrl(panelAIS, -1);
+  m_pText_Mark_Lost = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pLostGrid->Add(m_pText_Mark_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
@@ -4961,7 +4972,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxCheckBox(panelAIS, -1, _("Remove lost targets after (min)"));
   pLostGrid->Add(m_pCheck_Remove_Lost, 1, wxALL, group_item_spacing);
 
-  m_pText_Remove_Lost = new wxTextCtrl(panelAIS, -1);
+  m_pText_Remove_Lost = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pLostGrid->Add(m_pText_Remove_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
@@ -4980,7 +4991,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       panelAIS, -1, _("Show target COG predictor arrow, length (min)"));
   pDisplayGrid->Add(m_pCheck_Show_COG, 1, wxALL | wxEXPAND, group_item_spacing);
 
-  m_pText_COG_Predictor = new wxTextCtrl(panelAIS, -1);
+  m_pText_COG_Predictor = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pDisplayGrid->Add(m_pText_COG_Predictor, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -4998,7 +5009,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       new wxCheckBox(panelAIS, -1, _("Show target tracks, length (min)"));
   pDisplayGrid->Add(m_pCheck_Show_Tracks, 1, wxALL, group_item_spacing);
 
-  m_pText_Track_Length = new wxTextCtrl(panelAIS, -1);
+  m_pText_Track_Length = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pDisplayGrid->Add(m_pText_Track_Length, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5006,7 +5017,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       panelAIS, -1, _("Suppress anchored/moored targets, speed max (kn)"));
   pDisplayGrid->Add(m_pCheck_Hide_Moored, 1, wxALL, group_item_spacing);
 
-  m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1);
+  m_pText_Moored_Speed = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pDisplayGrid->Add(m_pText_Moored_Speed, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5015,7 +5026,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pDisplayGrid->Add(m_pCheck_Draw_Realtime_Prediction, 1, wxALL,
                     group_item_spacing);
 
-  m_pText_RealtPred_Speed = new wxTextCtrl(panelAIS, -1);
+  m_pText_RealtPred_Speed = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pDisplayGrid->Add(m_pText_RealtPred_Speed, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5024,7 +5035,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       _("Allow attenuation of less critical targets if more than ... targets"));
   pDisplayGrid->Add(m_pCheck_Scale_Priority, 1, wxALL, group_item_spacing);
 
-  m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1);
+  m_pText_Scale_Priority = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pDisplayGrid->Add(m_pText_Scale_Priority, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5046,7 +5057,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       panelAIS, -1, _("Show names with AIS targets at scale greater than 1:"));
   pDisplayGrid->Add(m_pCheck_Show_Target_Name, 1, wxALL, group_item_spacing);
 
-  m_pText_Show_Target_Name_Scale = new wxTextCtrl(panelAIS, -1);
+  m_pText_Show_Target_Name_Scale = new wxTextCtrl(panelAIS, -1, "TEXT     ");
   pDisplayGrid->Add(m_pText_Show_Target_Name_Scale, 1, wxALL | wxALIGN_RIGHT,
                     group_item_spacing);
 
@@ -5056,8 +5067,8 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
 
   wxString Wpl_Action[] = {_("APRS position report"), _("Create mark")};
   m_pWplAction = new wxChoice(panelAIS, wxID_ANY, wxDefaultPosition,
-                              m_pShipIconType->GetSize(), 2, Wpl_Action);
-  pDisplayGrid->Add(m_pWplAction, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
+                              wxDefaultSize, 2, Wpl_Action);
+  pDisplayGrid->Add(m_pWplAction, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   // Rollover
   wxStaticBox* rolloverBox = new wxStaticBox(panelAIS, wxID_ANY, _("Rollover"));
@@ -5145,7 +5156,7 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       panelAIS, -1, _("Enable Target Alert Acknowledge timeout (min)"));
   pAlertGrid->Add(m_pCheck_Ack_Timout, 1, wxALL, group_item_spacing);
 
-  m_pText_ACK_Timeout = new wxTextCtrl(panelAIS, -1);
+  m_pText_ACK_Timeout = new wxTextCtrl(panelAIS, -1, "TEXT  ");
   pAlertGrid->Add(m_pText_ACK_Timeout, 1, wxALL | wxALIGN_RIGHT,
                   group_item_spacing);
 
@@ -5401,11 +5412,17 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #endif
 
   pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,
-                                _("Use Inland ECDIS V2.3"));
+                                _("Use Inland ECDIS"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
+
+  wxButton* itemEcdisHelp =
+      new wxButton(itemPanelFont, ID_BUTTONECDISHELP, _("Inland ECDIS Manual"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+  miscOptions->Add(itemEcdisHelp, 0, wxALL, border_size);
 
 #ifdef __OCPN__ANDROID__
   pInlandEcdis->Hide();
+  itemEcdisHelp->Hide();
 #endif
 
   miscOptions->AddSpacer(10);
@@ -6237,7 +6254,7 @@ void options::SetInitialSettings(void) {
   m_pCheck_Rollover_COG->SetValue(g_bAISRolloverShowCOG);
   m_pCheck_Rollover_CPA->SetValue(g_bAISRolloverShowCPA);
 
-  m_pSlider_Zoom->SetValue(g_chart_zoom_modifier);
+  m_pSlider_Zoom_Raster->SetValue(g_chart_zoom_modifier_raster);
   m_pSlider_Zoom_Vector->SetValue(g_chart_zoom_modifier_vector);
 
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
@@ -6405,6 +6422,8 @@ void options::SetInitialVectorSettings(void) {
     pCheck_META->SetValue(ps52plib->m_bShowMeta);
     pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
     pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
+    pCheck_SuperSCAMIN->SetValue(ps52plib->m_bUseSUPER_SCAMIN);
+
     pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
     pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
 
@@ -7071,7 +7090,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //   Update all the current targets
   if (g_pAIS) {
     for (const auto& it : g_pAIS->GetTargetList()) {
-      AisTargetData* pAISTarget = it.second;
+      auto pAISTarget = it.second;
       if (NULL != pAISTarget) {
         pAISTarget->b_show_track = g_bAISShowTracks;
         // Check for exceptions in MMSI properties
@@ -7127,7 +7146,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAISRolloverShowCOG = m_pCheck_Rollover_COG->GetValue();
   g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
-  g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+  g_chart_zoom_modifier_raster = m_pSlider_Zoom_Raster->GetValue();
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
@@ -7223,6 +7242,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
     ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
     ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
+    ps52plib->m_bUseSUPER_SCAMIN = pCheck_SuperSCAMIN->GetValue();
 
     ps52plib->m_nSymbolStyle =
         pPointStyle->GetSelection() == 0 ? PAPER_CHART : SIMPLIFIED;
@@ -7652,6 +7672,33 @@ void options::OnButtonmigrateClick(wxCommandEvent& event) {
 #endif
 }
 
+void options::OnButtonEcdisHelp(wxCommandEvent& event) {
+
+  wxString testFile = "/doc/iECDIS/index.html";
+
+  if (!::wxFileExists(testFile)) {
+    wxString msg = _("The Inland ECDIS Manual is not available locally.");
+    msg += "\n";
+    msg +=
+        _("Would you like to visit the iECDIS Manual website for more "
+          "information?");
+
+    if (wxID_YES ==
+        OCPNMessageBox(NULL, msg, _("Inland ECDIS Manual"), wxYES_NO | wxCENTER, 60)) {
+      wxLaunchDefaultBrowser("https://opencpn-manuals.github.io/inland-ecdis");
+    }
+  } else {
+#ifdef __WXMSW__
+    wxLaunchDefaultBrowser("file:///" + *GetpSharedDataLocation() +
+                           testFile);
+#else
+    wxLaunchDefaultBrowser("file://" + *GetpSharedDataLocation() +
+                           testFile);
+#endif
+  }
+
+}
+
 void options::OnButtoncompressClick(wxCommandEvent& event) {
 #if 0
   wxArrayInt pListBoxSelections;
@@ -8071,7 +8118,8 @@ void options::DoOnPageChange(size_t page) {
 
           //  Look explicitely to see if .mo is available
           wxString test_dir = lang_dir + lang_suffix;
-          if (!wxDir::Exists(test_dir)) continue;
+          if (!wxDir::Exists(test_dir))
+            continue;
 
           m_itemLangListBox->Append(loc_lang_name);
         }
@@ -8247,100 +8295,117 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   if (lang_canonical == _T("en_US")) {
     dir_suffix = _T("en");
     return_string = wxString("English (U.S.)", wxConvUTF8);
-  } else if (lang_canonical == _T("cs_CZ")) {
+
+  } else if ((lang_canonical == _T("cs_CZ")) || (lang_canonical == _T("cs"))) {
     dir_suffix = _T("cs");
     return_string = wxString("Čeština", wxConvUTF8);
-  } else if (lang_canonical == _T("da_DK")) {
+
+  } else if ((lang_canonical == _T("da_DK")) || (lang_canonical == _T("da"))) {
     dir_suffix = _T("da");
     return_string = wxString("Dansk", wxConvUTF8);
-  } else if (lang_canonical == _T("de_DE")) {
+
+  } else if ((lang_canonical == _T("de_DE")) || (lang_canonical == _T("de"))) {
     dir_suffix = _T("de");
     return_string = wxString("Deutsch", wxConvUTF8);
-  } else if (lang_canonical == _T("et_EE")) {
+
+  } else if ((lang_canonical == _T("et_EE")) || (lang_canonical == _T("et"))) {
     dir_suffix = _T("et");
     return_string = wxString("Eesti", wxConvUTF8);
-  } else if (lang_canonical == _T("es_ES")) {
+
+  } else if ((lang_canonical == _T("es_ES")) || (lang_canonical == _T("es"))) {
     dir_suffix = _T("es");
     return_string = wxString("Español", wxConvUTF8);
-  } else if (lang_canonical == _T("fr_FR")) {
+
+  } else if ((lang_canonical == _T("fr_FR")) || (lang_canonical == _T("fr"))) {
     dir_suffix = _T("fr");
     return_string = wxString("Français", wxConvUTF8);
-  } else if (lang_canonical == _T("it_IT")) {
+
+  } else if ((lang_canonical == _T("it_IT")) || (lang_canonical == _T("it"))) {
     dir_suffix = _T("it");
     return_string = wxString("Italiano", wxConvUTF8);
-  } else if (lang_canonical == _T("nl_NL")) {
+
+  } else if ((lang_canonical == _T("nl_NL")) || (lang_canonical == _T("nl"))) {
     dir_suffix = _T("nl");
     return_string = wxString("Nederlands", wxConvUTF8);
-  } else if (lang_canonical == _T("pl_PL")) {
+
+  } else if ((lang_canonical == _T("pl_PL")) || (lang_canonical == _T("pl"))) {
     dir_suffix = _T("pl");
     return_string = wxString("Polski", wxConvUTF8);
-  } else if (lang_canonical == _T("pt_PT")) {
+
+  } else if ((lang_canonical == _T("pt_PT")) || (lang_canonical == _T("pt"))) {
     dir_suffix = _T("pt_PT");
     return_string = wxString("Português", wxConvUTF8);
-  } else if (lang_canonical == _T("pt_BR")) {
+
+  } else if ((lang_canonical == _T("pt_BR")) || (lang_canonical == _T("pt_BR"))) {
     dir_suffix = _T("pt_BR");
-    return_string = wxString("Português Brasileiro", wxConvUTF8);
-  } else if (lang_canonical == _T("ru_RU")) {
+    return_string = wxString("Português  Brasileiro", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("ru_RU")) || (lang_canonical == _T("ru"))) {
     dir_suffix = _T("ru");
     return_string = wxString("Русский", wxConvUTF8);
-  } else if (lang_canonical == _T("sv_SE")) {
+
+  } else if ((lang_canonical == _T("sv_SE")) || (lang_canonical == _T("sv"))) {
     dir_suffix = _T("sv");
     return_string = wxString("Svenska", wxConvUTF8);
-  } else if (lang_canonical == _T("fi_FI")) {
+
+  } else if ((lang_canonical == _T("fi_FI")) || (lang_canonical == _T("fi"))) {
     dir_suffix = _T("fi_FI");
     return_string = wxString("Suomi", wxConvUTF8);
-  } else if (lang_canonical == _T("nb_NO")) {
+
+  } else if ((lang_canonical == _T("nb_NO")) || (lang_canonical == _T("nb"))) {
     dir_suffix = _T("nb_NO");
     return_string = wxString("Norsk", wxConvUTF8);
-  } else if (lang_canonical == _T("tr_TR")) {
+
+  } else if ((lang_canonical == _T("tr_TR")) || (lang_canonical == _T("tr"))) {
     dir_suffix = _T("tr_TR");
     return_string = wxString("Türkçe", wxConvUTF8);
-  } else if (lang_canonical == _T("el_GR")) {
+
+  } else if ((lang_canonical == _T("el_GR")) || (lang_canonical == _T("el"))) {
     dir_suffix = _T("el_GR");
     return_string = wxString("Ελληνικά", wxConvUTF8);
-  } else if (lang_canonical == _T("hu_HU")) {
+
+  } else if ((lang_canonical == _T("hu_HU")) || (lang_canonical == _T("hu"))) {
     dir_suffix = _T("hu_HU");
     return_string = wxString("Magyar", wxConvUTF8);
-  } else if (lang_canonical == _T("zh_TW")) {
+
+  } else if ((lang_canonical == _T("zh_TW")) || (lang_canonical == _T("zh_TW"))) {
     dir_suffix = _T("zh_TW");
     return_string = wxString("正體字", wxConvUTF8);
-  } else if (lang_canonical == _T("zh_CN")) {
-    dir_suffix = _T("zh_CN");
-    return_string = wxString("Simplified Chinese", wxConvUTF8);
-  } else if (lang_canonical == _T("ca_ES")) {
+
+  } else if ((lang_canonical == _T("zh_CN")) || (lang_canonical == _T("zh_CN"))) {
+      dir_suffix = _T("zh_CN");
+      return_string = wxString("Simplified Chinese", wxConvUTF8);
+
+  } else if ((lang_canonical == _T("ca_ES")) || (lang_canonical == _T("ca"))) {
     dir_suffix = _T("ca_ES");
     return_string = wxString("Catalan", wxConvUTF8);
-  } else if (lang_canonical == _T("gl_ES")) {
+
+  } else if ((lang_canonical == _T("gl_ES")) || (lang_canonical == _T("gl_ES"))) {
     dir_suffix = _T("gl_ES");
     return_string = wxString("Galician", wxConvUTF8);
-  } else if (lang_canonical == _T("ja_JP")) {
+
+  } else if ((lang_canonical == _T("ja_JP")) || (lang_canonical == _T("ja_JP"))) {
     dir_suffix = _T("ja_JP");
     return_string = wxString("Japanese", wxConvUTF8);
-  } else if (lang_canonical == _T("ar_SA")) {
-    dir_suffix = _T("ar_SA");
-    return_string = wxString("Arabic", wxConvUTF8);
-  } else if (lang_canonical == _T("vi_VN")) {
+
+  } else if ((lang_canonical == _T("vi_VN")) || (lang_canonical == _T("vi_VN"))) {
     dir_suffix = _T("vi_VN");
     return_string = wxString("Vietnamese", wxConvUTF8);
-  } else if (lang_canonical == _T("he_IL")) {
-    dir_suffix = _T("he_IL");
-    return_string = wxString("Hebrew", wxConvUTF8);
-  } else if (lang_canonical == _T("en_GB")) {
-    dir_suffix = _T("en_GB");
-    return_string = wxString("English (U.K.)", wxConvUTF8);
+
   } else {
     dir_suffix = lang_canonical;
     const wxLanguageInfo* info = wxLocale::FindLanguageInfo(lang_canonical);
-    if (info)
-      return_string = info->Description;
+    if(info)
+        return_string = info->Description;
     else
-      return_string = lang_canonical;
+        return_string = lang_canonical;
   }
 
   lang_dir = dir_suffix;
 #endif
   return return_string;
 }
+
 
 wxString GetOCPNKnownLanguage(const wxString lang_canonical) {
   wxString lang_dir;
@@ -8984,16 +9049,14 @@ int OpenGLOptionsDlg::GetTextureMemorySize(void) const {
 }
 
 void OpenGLOptionsDlg::Populate(void) {
-  extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-  extern bool b_glEntryPointsSet;
 
   m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
   /* disable caching if unsupported */
-  if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
-    g_GLOptions.m_bTextureCompressionCaching = FALSE;
-    m_cbTextureCompression->Disable();
-    m_cbTextureCompression->SetValue(FALSE);
-  }
+//   if (b_glEntryPointsSet && !s_glCompressedTexImage2D) {
+//     g_GLOptions.m_bTextureCompressionCaching = FALSE;
+//     m_cbTextureCompression->Disable();
+//     m_cbTextureCompression->SetValue(FALSE);
+//   }
 
   m_cbTextureCompressionCaching->Show(g_bGLexpert);
   m_memorySize->Show(g_bGLexpert);

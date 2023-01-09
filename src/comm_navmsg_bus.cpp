@@ -23,27 +23,22 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include "comm_navmsg_bus.h"
-#include "observable_navmsg.h"
 
 // FIXME(leamas) test junk
 #include "conn_params.h"
 
 using namespace std;
 
-ObservedVarListener NavMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
-                                           const NavMsg& msg) {
-  return ObservableMsg(msg.key()).GetListener(eh, et);
-}
-
-ObservedVarListener NavMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
-                                           const std::string& key) {
-  return ObservableMsg(key).GetListener(eh, et);
-}
-
-
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  ObservableMsg(msg->key()).notify(msg);
+  Observable(*msg).Notify(msg);
 }
 
 NavMsgBus& NavMsgBus::GetInstance() {

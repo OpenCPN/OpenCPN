@@ -59,6 +59,7 @@
 #include "navutil_base.h"
 #include "svg_utils.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -85,8 +86,6 @@ extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern MyFrame *gFrame;
 extern Select *pSelect;
-extern double gLat, gLon;
-extern double gCog, gSog;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
 extern AisDecoder *g_pAIS;
@@ -1352,7 +1351,7 @@ void RouteManagerDialog::OnRteDeleteClick(wxCommandEvent &event) {
       Route *route = list.Item(i)->GetData();
       if (route) {
         pConfig->DeleteConfigRoute(route);
-        g_pRouteMan->DeleteRoute(route);
+        g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
       }
     }
 
@@ -1376,7 +1375,7 @@ void RouteManagerDialog::OnRteDeleteAllClick(wxCommandEvent &event) {
 
     gFrame->CancelAllMouseRoute();
 
-    g_pRouteMan->DeleteAllRoutes();
+    g_pRouteMan->DeleteAllRoutes(NavObjectChanges::getInstance());
     // TODO Seth
     //            m_pSelectedRoute = NULL;
     //            m_pFoundRoutePoint = NULL;
@@ -2016,6 +2015,10 @@ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
 
 void RouteManagerDialog::OnTrkNewClick(wxCommandEvent &event) {
   gFrame->TrackOff();
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   gFrame->TrackOn();
 
   UpdateTrkListCtrl();
@@ -2080,6 +2083,10 @@ void RouteManagerDialog::OnTrkDeleteClick(wxCommandEvent &event) {
     m_lastTrkItem = -1;
     //        UpdateRouteListCtrl();
     UpdateTrkListCtrl();
+
+    if (pConfig && pConfig->IsChangesFileDirty()) {
+      pConfig->UpdateNavObj(true);
+    }
 
     gFrame->InvalidateAllCanvasUndo();
     gFrame->RefreshAllCanvas();
@@ -2851,7 +2858,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
-      g_pRouteMan->DeleteRoute(pRoute);
+      g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
     }
     node1 = next_node;
   }

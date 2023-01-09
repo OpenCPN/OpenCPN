@@ -37,7 +37,6 @@
 
 #include "comm_decoder.h"
 #include "comm_navmsg.h"
-#include "observable_navmsg.h"
 
 
 typedef struct{
@@ -87,45 +86,67 @@ public:
   void OnDriverStateChange();
 
   void OnWatchdogTimer(wxTimerEvent& event);
-  void PresetWatchdogs();
-  void MakeHDTFromHDM();
-  void InitializePriorityContainers();
   bool EvalPriority(std::shared_ptr <const NavMsg> msg,
                             PriorityContainer& active_priority,
                             std::unordered_map<std::string, int>& priority_map);
   std::string GetPriorityKey(std::shared_ptr <const NavMsg> msg);
 
+  std::vector<std::string> GetPriorityMaps();
+  PriorityContainer& GetPriorityContainer(const std::string category);
+
+  void UpdateAndApplyMaps(std::vector<std::string> new_maps);
+  bool LoadConfig( void );
+  bool SaveConfig( void );
+
   Watchdogs m_watchdogs;
   wxTimer m_watchdog_timer;
 
   //  comm event listeners
-  ObservedVarListener listener_N2K_129029;
-  ObservedVarListener listener_N2K_129025;
-  ObservedVarListener listener_N2K_129026;
-  ObservedVarListener listener_N2K_127250;
-  ObservedVarListener listener_N2K_129540;
+  ObservableListener listener_N2K_129029;
+  ObservableListener listener_N2K_129025;
+  ObservableListener listener_N2K_129026;
+  ObservableListener listener_N2K_127250;
+  ObservableListener listener_N2K_129540;
 
-  ObservedVarListener listener_N0183_RMC;
-  ObservedVarListener listener_N0183_HDT;
-  ObservedVarListener listener_N0183_HDG;
-  ObservedVarListener listener_N0183_HDM;
-  ObservedVarListener listener_N0183_VTG;
-  ObservedVarListener listener_N0183_GSV;
-  ObservedVarListener listener_N0183_GGA;
-  ObservedVarListener listener_N0183_GLL;
-  ObservedVarListener listener_N0183_AIVDO;
+  ObservableListener listener_N0183_RMC;
+  ObservableListener listener_N0183_HDT;
+  ObservableListener listener_N0183_HDG;
+  ObservableListener listener_N0183_HDM;
+  ObservableListener listener_N0183_VTG;
+  ObservableListener listener_N0183_GSV;
+  ObservableListener listener_N0183_GGA;
+  ObservableListener listener_N0183_GLL;
+  ObservableListener listener_N0183_AIVDO;
 
-  ObservedVarListener listener_SignalK;
+  ObservableListener listener_SignalK;
 
-  ObservedVarListener driver_change_listener;
+  ObservableListener driver_change_listener;
 
   CommDecoder m_decoder;
+
+private:
+  void PresetWatchdogs();
+  void MakeHDTFromHDM();
+  void InitializePriorityContainers();
+  void PresetPriorityContainers();
+
+  std::string GetPriorityMap(std::unordered_map<std::string, int> &map);
+  void ApplyPriorityMap(std::unordered_map<std::string, int>& priority_map,
+                        wxString &new_prio, int category);
+  void ApplyPriorityMaps(std::vector<std::string> new_maps);
+
+  void ClearPriorityMaps();
+  void PresetPriorityContainer(PriorityContainer &pc,
+                        const std::unordered_map<std::string, int> &priority_map);
+  void SelectNextLowerPriority(const std::unordered_map<std::string, int> &map,
+                                         PriorityContainer &pc);
 
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
   PriorityContainer active_priority_heading;
   PriorityContainer active_priority_variation;
   PriorityContainer active_priority_satellites;
+  PriorityContainer active_priority_void;
 
   std::unordered_map<std::string, int> priority_map_position;
   std::unordered_map<std::string, int> priority_map_velocity;

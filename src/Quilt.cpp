@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include "config.h"
 #include "Quilt.h"
@@ -44,7 +44,7 @@ WX_DEFINE_LIST(PatchList);
 extern ChartDB *ChartData;
 extern s52plib *ps52plib;
 extern ColorScheme global_color_scheme;
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -753,6 +753,8 @@ bool Quilt::IsQuiltDelta(ViewPort &vp) {
 
   if (m_vp_quilt.m_projection_type != vp.m_projection_type) return true;
 
+  if (m_vp_quilt.rotation != vp.rotation) return true;
+
   //    Has the quilt shifted by more than one pixel in any direction?
   wxPoint cp_last, cp_this;
 
@@ -829,7 +831,7 @@ int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type,
 
 int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type,
                           ChartFamilyEnum family) {
-  double zoom_mod = (double)g_chart_zoom_modifier;
+  double zoom_mod = (double)g_chart_zoom_modifier_raster;
 
   if (family == CHART_FAMILY_VECTOR)
     zoom_mod = (double)g_chart_zoom_modifier_vector;
@@ -1201,10 +1203,13 @@ const LLRegion &Quilt::GetTilesetRegion(int dbIndex) {
 
 bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
                                                      ViewPort &vp_in) {
+  double zoom_test_val = .002;
+  zoom_test_val *= 2;
+
   EmptyCandidateArray();
   m_extended_stack_array.clear();
 
-  int reference_scale = 1;
+  int reference_scale = 1e8;
   int reference_type = -1;
   int reference_family = -1;
   int quilt_proj =
@@ -1234,9 +1239,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
   //    Walk the current ChartStack...
   //    Building the quilt candidate array
   for (int ics = 0; ics < n_charts; ics++) {
-    int i = m_parent->GetpCurrentStack()->GetDBIndex(ics);
-    if (i < 0) continue;
-    m_extended_stack_array.push_back(i);
+    int istack = m_parent->GetpCurrentStack()->GetDBIndex(ics);
+    if (istack < 0) continue;
+    m_extended_stack_array.push_back(istack);
 
     //  If the reference chart is cm93, we need not add any charts to the
     //  candidate array from the vp center. All required charts will be added
@@ -1244,7 +1249,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     //  later
     if (reference_type == CHART_TYPE_CM93COMP) continue;
 
-    const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(istack);
 
     // only charts of the proper projection and type may be quilted....
     // Also, only unskewed charts if so directed
@@ -1265,15 +1270,26 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
 
+    // Also, check the scale of the proposed chart.  If too small, skip it.
+    int candidate_chart_scale = cte.GetScale();
+    double chart_native_ppm =
+        m_canvas_scale_factor / (double)candidate_chart_scale;
+    double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
+    if (zoom_factor < zoom_test_val){
+        m_extended_stack_array.pop_back();
+        continue;
+    }
+
     double skew_norm = cte.GetChartSkew();
     if (skew_norm > 180.) skew_norm -= 360.;
 
     if ((m_bquiltskew ? 1 : fabs(skew_norm) < 1.0) &&
         (m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj)) {
       QuiltCandidate *qcnew = new QuiltCandidate;
-      qcnew->dbIndex = i;
+      qcnew->dbIndex = istack;
       qcnew->SetScale(cte.GetScale());
       m_pcandidate_array->push_back(qcnew);  // auto-sorted on scale
+
     }
 
     //             if( ( reference_type == cte.GetChartType() ) ||
@@ -1345,6 +1361,19 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
         m_canvas_scale_factor / (double)candidate_chart_scale;
     double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
 
+    double zoom_factor_test = 0.2;
+
+    //    Special case for S57 ENC
+    //    Add the chart only if the chart's fractional area exceeds n%
+    if( CHART_TYPE_S57 == cte.GetChartType() ) {
+      //Get the fractional area of this candidate
+      double chart_area = (cte.GetLonMax() - cte.GetLonMin()) *
+                          (cte.GetLatMax() - cte.GetLatMin());
+      double quilt_area =  viewbox.GetLonRange() * viewbox.GetLatRange();
+      if ((chart_area / quilt_area) < .01)
+        continue;
+    }
+
     //  Try to guarantee that there is one chart added with scale larger than
     //  reference scale
     //    Take note here, and keep track of the smallest scale chart that is
@@ -1360,14 +1389,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     //    and is on-screen somewhere.... Now  add the candidate if its scale is
     //    smaller than the reference scale, or is not excessively underzoomed.
 
-    if (cte.Scale_ge(reference_scale) || (zoom_factor > .2)) {
-      //    Special case for S57 ENC
-      //    Add the chart only if the chart's fractional area exceeds n%
-      /* if( CHART_TYPE_S57 == reference_type ) {
-      //Get the fractional area of this chart
-          double chart_fractional_area = 0.;
-          double quilt_area = vp_local.pix_width * vp_local.pix_height;
-      */
+
+    if ((cte.Scale_ge(reference_scale) && (zoom_factor > zoom_test_val)) || (zoom_factor > zoom_factor_test)) {
+
       LLRegion cell_region = GetChartQuiltRegion(cte, vp_local);
 
       // this is false if the chart has no actual overlap on screen
@@ -1640,6 +1664,27 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
   BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
 
+  // It can happen (in groups switch, or single->quilt mode) that there
+  // is no refchart known, but there are charts available in the piano.
+  // Detect this case, and build the quilt based on the smallest scale chart
+  // anywhere on screen.
+
+//   if ((m_refchart_dbIndex < 0) && m_extended_stack_array.size()){
+//     // Take the smallest scale chart in the array.
+//     int tentative_dbIndex = m_extended_stack_array.back();
+//
+//     // Verify that the zoom scale is acceptable.
+//     const ChartTableEntry &cte = ChartData->GetChartTableEntry(tentative_dbIndex);
+//     int candidate_chart_scale = cte.GetScale();
+//     double chart_native_ppm =
+//         m_canvas_scale_factor / (double)candidate_chart_scale;
+//     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
+//     if (zoom_factor > 0.1){
+//       m_refchart_dbIndex = tentative_dbIndex;
+//       BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
+//     }
+//   }
+
   //    It is possible that the reference chart is not really part of the
   //    visible quilt This can happen when the reference chart is panned
   //    off-screen in full screen quilt mode
@@ -1719,8 +1764,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //    figuratively "draw" charts until the ViewPort window is completely
   //    quilted over Add only those charts whose scale is smaller than the
   //    "reference scale"
+//  const LLRegion cvp_region = vp_local.GetLLRegion(
+//      wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
   const LLRegion cvp_region = vp_local.GetLLRegion(
-      wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
+      vp_local.rv_rect);
   LLRegion vp_region = cvp_region;
   unsigned int ir;
 

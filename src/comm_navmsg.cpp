@@ -23,6 +23,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include <algorithm>
 #include <string>
 #include <iomanip>
@@ -73,5 +80,6 @@ std::string Nmea2000Msg::to_string() const {
   std::string s;
   std::for_each(payload.begin(), payload.end(),
                 [&s](unsigned char c) { s.append(CharToString(c)); });
-  return NavMsg::to_string() + " " + name.to_string() + " " + s;
+
+  return NavMsg::to_string() + " " + PGN.to_string() + " " + s;
 }

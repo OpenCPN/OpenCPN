@@ -25,10 +25,10 @@
 #include "config.h"
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/datetime.h>
@@ -45,6 +45,7 @@
 #include "navutil_base.h"
 #include "georef.h"
 #include "gui_lib.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
@@ -63,7 +64,6 @@
 #include <QtWidgets/QScroller>
 #endif
 
-extern double gLat, gLon, gSog, gCog;
 extern TCMgr* ptcmgr;
 extern MyConfig* pConfig;
 extern WayPointman* pWayPointMan;

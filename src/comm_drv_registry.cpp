@@ -22,6 +22,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include <algorithm>
 #include <memory>
 
@@ -32,14 +39,14 @@ void CommDriverRegistry::Activate(DriverPtr driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);
   if (found != drivers.end()) return;
   drivers.push_back(driver);
-  evt_driverlist_change.notify();
+  evt_driverlist_change.Notify();
 };
 
 void CommDriverRegistry::Deactivate(DriverPtr driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);
   if (found == drivers.end()) return;
   drivers.erase(found);
-  evt_driverlist_change.notify();
+  evt_driverlist_change.Notify();
 }
 
 const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {
@@ -47,10 +54,12 @@ const std::vector<DriverPtr>& CommDriverRegistry::GetDrivers() {
 };
 
 void CommDriverRegistry::CloseAllDrivers() {
-  drivers.clear();
+  while (drivers.size()) {
+    Deactivate(drivers[0]);
+  }
 }
 
-CommDriverRegistry& CommDriverRegistry::getInstance() {
+CommDriverRegistry& CommDriverRegistry::GetInstance() {
   static CommDriverRegistry instance;
   return instance;
 }
@@ -71,4 +80,11 @@ const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
     auto found = std::find_if(drivers.begin(), drivers.end(), func);
     return found != drivers.end() ? *found : kNoDriver;
   }
+}
+
+const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
+                           const std::string& key) {
+  auto func = [key](const DriverPtr d) { return d->Key() == key; };
+  auto found = std::find_if(drivers.begin(), drivers.end(), func);
+  return found != drivers.end() ? *found : kNoDriver;
 }

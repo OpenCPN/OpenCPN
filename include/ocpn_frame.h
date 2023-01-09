@@ -26,12 +26,12 @@
 #ifndef _OFRAME_H
 #define _OFRAME_H
 
-#include "wx/print.h"
+#include <wx/print.h>
 #include <wx/power.h>
 
 #include <memory>
 #ifdef __WXMSW__
-#include "wx/msw/private.h"
+#include <wx/msw/private.h>
 #endif
 
 #include "ocpn_types.h"
@@ -40,7 +40,6 @@
 #include "gui_lib.h"
 #include "s52s57.h"
 #include "SencManager.h"
-#include "observable_navmsg.h"
 #include "comm_appmsg_bus.h"
 #include "bbox.h"
 
@@ -113,7 +112,7 @@ class ArrayOfCDI;
 #endif
 
 //      Define a constant GPS signal watchdog timeout value
-#define GPS_TIMEOUT_SECONDS 6
+#define GPS_TIMEOUT_SECONDS 10
 
 //    Define a timer value for Tide/Current updates
 //    Note that the underlying data algorithms produce fresh data only every 15
@@ -310,8 +309,8 @@ public:
   void TouchAISActive(void);
   void UpdateAISTool(void);
 
-  void ActivateAISMOBRoute(AisTargetData *ptarget);
-  void UpdateAISMOBRoute(AisTargetData *ptarget);
+  void ActivateAISMOBRoute(const AisTargetData *ptarget);
+  void UpdateAISMOBRoute(const AisTargetData *ptarget);
 
   wxStatusBar *m_pStatusBar;
   wxMenuBar *m_pMenuBar;
@@ -414,6 +413,7 @@ private:
   bool m_bpersistent_quilt;
   int m_ChartUpdatePeriod;
   bool m_last_bGPSValid;
+  bool m_last_bVelocityValid;
 
   wxString prev_locale;
   bool bPrevQuilt;
@@ -431,8 +431,8 @@ private:
   wxTimer m_recaptureTimer;
   bool m_b_new_data;
 
-  ObservedVarListener listener_basic_navdata;
-  ObservedVarListener listener_gps_watchdog;
+  ObservableListener listener_basic_navdata;
+  ObservableListener listener_gps_watchdog;
 
   DECLARE_EVENT_TABLE()
 };

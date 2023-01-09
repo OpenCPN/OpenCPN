@@ -100,6 +100,7 @@ public:
   ViewPort BuildExpandedVP(int width, int height);
 
   void SetBoxes(void);
+  void PixelScale(float factor);
 
   //  Accessors
   void Invalidate() { bValid = false; }
@@ -139,10 +140,10 @@ public:
   bool b_MercatorProjectionOverride;
   wxRect rv_rect;
 
-#ifdef USE_ANDROID_GLES2
-  float vp_transform[16];
+//#ifdef USE_ANDROID_GLES2
+  float vp_matrix_transform[16];
   float norm_transform[16];
-#endif
+//#endif
 
   bool operator==(const ViewPort& rhs) const
   {

@@ -22,6 +22,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include <string>
 #include <memory>
 
@@ -35,10 +42,10 @@ CommDriverN2K::CommDriverN2K(const std::string& s)
 
 CommDriverN2K::~CommDriverN2K() {}
 
-void CommDriverN2K::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                std::shared_ptr<const NavAddr> addr) {}
+bool CommDriverN2K::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                std::shared_ptr<const NavAddr> addr) {return false;}
 
-void CommDriverN2K::SetListener(std::shared_ptr<DriverListener> l){};
+void CommDriverN2K::SetListener(DriverListener& l){};
 
 std::shared_ptr<NavAddr> CommDriverN2K::GetAddress(const N2kName& name) {
     return std::make_shared<NavAddr>(NavAddr2000(iface, name));

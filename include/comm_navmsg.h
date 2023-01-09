@@ -23,6 +23,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef _DRIVER_NAVMSG_H
+#define _DRIVER_NAVMSG_H
+
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -32,10 +35,19 @@
 #include <netinet/in.h>
 #endif
 
-#include <wx/jsonval.h>
+#include "observable.h"
 
-#ifndef _DRIVER_NAVMSG_H
-#define _DRIVER_NAVMSG_H
+struct N2kPGN {
+  uint64_t pgn;
+
+  N2kPGN(uint64_t _pgn) { pgn = _pgn; }
+
+  std::string to_string() const {
+    std::stringstream ss;
+    ss << pgn;
+    return ss.str();
+  }
+};
 
 /**
  * N2k uses CAN which defines the basic properties of messages.
@@ -47,11 +59,12 @@
  * https://www.kvaser.com/about-can/higher-layer-protocols/j1939-introduction/
  */
 struct N2kName {
-  N2kName(uint64_t name) : value(name) {}
+  N2kName(){};
+  N2kName(uint64_t name) { value.Name = name; }
 
   std::string to_string() const {
     std::stringstream ss;
-    ss << value;
+    ss << value.Name;
     return ss.str();
   }
 
@@ -63,7 +76,6 @@ struct N2kName {
     return id;
   }
 
-  uint64_t value;
   uint32_t GetNumber() const;         /**< 21 bits */
   uint16_t GetManufacturer() const;   /**< 9 bits */
   uint8_t GetDevInstanceLow() const;  /**< 3 bits */
@@ -72,6 +84,51 @@ struct N2kName {
   uint8_t GetDevClass() const;        /**< 7 bits */
   uint8_t GetSysInstance() const;     /**< 4 bits */
   uint8_t GetIndustryGroup() const;   /**< 4 bits */
+
+  typedef union {
+    uint64_t Name;
+    struct {
+      uint32_t UnicNumberAndManCode;  // ManufacturerCode 11 bits , UniqueNumber
+                                      // 21 bits
+      unsigned char DeviceInstance;
+      unsigned char DeviceFunction;
+      unsigned char DeviceClass;
+      unsigned char IndustryGroupAndSystemInstance;  // 4 bits each
+    };
+  } tUnionDeviceInformation;
+
+  tUnionDeviceInformation value;
+
+  void SetUniqueNumber(uint32_t _UniqueNumber) {
+    value.UnicNumberAndManCode =
+        (value.UnicNumberAndManCode & 0xffe00000) | (_UniqueNumber & 0x1fffff);
+  }
+  void SetManufacturerCode(uint16_t _ManufacturerCode) {
+    value.UnicNumberAndManCode =
+        (value.UnicNumberAndManCode & 0x1fffff) |
+        (((unsigned long)(_ManufacturerCode & 0x7ff)) << 21);
+  }
+  void SetDeviceInstance(unsigned char _DeviceInstance) {
+    value.DeviceInstance = _DeviceInstance;
+  }
+  void SetDeviceFunction(unsigned char _DeviceFunction) {
+    value.DeviceFunction = _DeviceFunction;
+  }
+  void SetDeviceClass(unsigned char _DeviceClass) {
+    value.DeviceClass = ((_DeviceClass & 0x7f) << 1);
+  }
+  void SetIndustryGroup(unsigned char _IndustryGroup) {
+    value.IndustryGroupAndSystemInstance =
+        (value.IndustryGroupAndSystemInstance & 0x0f) | (_IndustryGroup << 4) |
+        0x80;
+  }
+  void SetSystemInstance(unsigned char _SystemInstance) {
+    value.IndustryGroupAndSystemInstance =
+        (value.IndustryGroupAndSystemInstance & 0xf0) |
+        (_SystemInstance & 0x0f);
+  }
+
+  uint64_t GetName() const { return value.Name; }
 };
 
 /** Where messages are sent to or received from. */
@@ -105,9 +162,13 @@ public:
   NavAddr2000(const std::string& iface, const N2kName& _name)
       : NavAddr(NavAddr::Bus::N2000, iface), name(_name){};
 
+  NavAddr2000(const std::string& iface, unsigned char _address)
+      : NavAddr(NavAddr::Bus::N2000, iface), name(0), address(_address){};
+
   std::string to_string() const { return name.to_string(); }
 
   const N2kName name;
+  unsigned char address;
 };
 
 /** There is only support for a single signalK bus. */
@@ -125,7 +186,7 @@ public:
 };
 
 /** Actual data sent between application and transport layer */
-class NavMsg {
+class NavMsg : public KeyProvider {
 public:
   NavMsg() = delete;
 
@@ -134,6 +195,8 @@ public:
   virtual std::string to_string() const {
     return NavAddr::BusToString(bus) + " " + key();
   }
+
+  std::string GetKey() const { return key(); }
 
   const NavAddr::Bus bus;
 
@@ -149,21 +212,24 @@ protected:
  */
 class Nmea2000Msg : public NavMsg {
 public:
-  Nmea2000Msg(const N2kName& n)
-      : NavMsg(NavAddr::Bus::N2000, std::make_shared<NavAddr>()), name(n) {}
-  Nmea2000Msg(const N2kName& n, std::shared_ptr<const NavAddr> src)
-      : NavMsg(NavAddr::Bus::N2000, src), name(n) {}
-  Nmea2000Msg(const N2kName& n, const std::vector<unsigned char>& _payload,
+  Nmea2000Msg(const uint64_t _pgn)
+      : NavMsg(NavAddr::Bus::N2000, std::make_shared<NavAddr>()), PGN(_pgn) {}
+
+  Nmea2000Msg(const uint64_t _pgn, std::shared_ptr<const NavAddr> src)
+      : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn) {}
+
+  Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
               std::shared_ptr<const NavAddr> src)
-      : NavMsg(NavAddr::Bus::N2000, src), name(n), payload(_payload) {}
+      : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload) {}
+
   virtual ~Nmea2000Msg() = default;
 
-  std::string key() const { return std::string("n2000-") + name.to_string(); };
+  std::string key() const { return std::string("n2000-") + PGN.to_string(); };
 
   /** Print "bus key id payload" */
   std::string to_string() const;
 
-  N2kName name;
+  N2kPGN PGN;  // For TX message, unparsed
   std::vector<unsigned char> payload;
 };
 
@@ -213,11 +279,11 @@ public:
 class SignalkMsg : public NavMsg {
 public:
   SignalkMsg()
-        : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
+      : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
 
   SignalkMsg(std::string _context_self, std::string _context,
-                  std::string _raw_message)
-        : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
+             std::string _raw_message)
+      : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
         context_self(_context_self),
         context(_context),
         raw_message(_raw_message){};
@@ -226,7 +292,6 @@ public:
 
   struct in_addr dest;
   struct in_addr src;
-  wxJSONValue* root;
   std::string context_self;
   std::string context;
   std::string raw_message;

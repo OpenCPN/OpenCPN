@@ -26,15 +26,13 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/statline.h>
-
-#include "dychart.h"
 
 #include "chcanv.h"
 #include "MUIBar.h"
@@ -46,7 +44,7 @@
 #include "navutil.h"
 #include "svg_utils.h"
 #include "idents.h"
-#include "ocpn_frame.h"   //FIXME (dave) for color only
+#include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -536,7 +534,11 @@ MUIBar::MUIBar(ChartCanvas* parent, int orientation, float size_factor,
   // wxWindow::Create(parent, id, pos, size, style, name);
   // long mstyle = wxSIMPLE_BORDER;
   long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED |
-                wxFRAME_FLOAT_ON_PARENT | wxFRAME_TOOL_WINDOW;
+                wxFRAME_FLOAT_ON_PARENT;
+
+#ifdef __WXOSX__
+  mstyle |= wxFRAME_TOOL_WINDOW;
+#endif
 
   m_scaleFactor = size_factor;
   m_cs = (ColorScheme)-1;

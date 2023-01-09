@@ -37,7 +37,6 @@
 #include <wx/jsonreader.h>
 
 #include "comm_driver.h"
-#include "observable_navmsg.h"
 
 
 /** The raw message layer, a singleton. */
@@ -51,21 +50,6 @@ public:
 
   void SendMessage(std::shared_ptr<const NavMsg> message,
                    std::shared_ptr<const NavAddr> address);
-
-  /**
-   * Return a listening object which generates wxEventType events sent to
-   * wxEvtHandler when a given message type is received. The events
-   * contains a shared_ptr<NavMsg>, use get_navmsg_ptr(event) to retrieve it.
-   */
-  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
-                                  const NavMsg& msg);
-
-  /**
-   * Overload for listening object generating events when a message with
-   * given key is received.
-   */
-  ObservedVarListener GetListener(wxEventType et, wxEvtHandler* eh,
-                                  const std::string& key);
 
   void Notify(std::shared_ptr<const NavMsg> message);
 

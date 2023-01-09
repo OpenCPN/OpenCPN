@@ -121,7 +121,6 @@ public:
   LLBBox &GetBBox() { return BBox; };
 
   LLBBox BBox;
-  pugi::xml_node m_gpx_root;
   bool m_bSkipChangeSetUpdate;
 };
 

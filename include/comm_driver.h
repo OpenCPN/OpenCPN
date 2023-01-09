@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "observable.h"
 #include "comm_navmsg.h"
@@ -58,7 +59,7 @@ class AbstractCommDriver
 public:
   AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
 
-  virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
+  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) = 0;
 
   /** Register driver in  the driver Registry. */
@@ -68,7 +69,7 @@ public:
    * Set the entity which will receive incoming data. By default, such
    * data is ignored
    */
-  virtual void SetListener(std::shared_ptr<DriverListener> l) {}
+  virtual void SetListener(DriverListener& l) {}
 
   /**
    * Create a new virtual interface using a new instance of this driver.
@@ -82,12 +83,23 @@ public:
     return std::pair<CommStatus, std::string>(CommStatus::NotImplemented, "");
   }
 
+  std::string Key() const { return NavAddr::BusToString(bus) + "!@!" + iface; }
+
   const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
+
+  virtual std::unordered_map<std::string, std::string> GetAttributes() const { return attributes;}
+
+  std::unordered_map<std::string, std::string> attributes;
+
 protected:
-  AbstractCommDriver(NavAddr::Bus b) : bus(b){};
-  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){};
+  AbstractCommDriver(NavAddr::Bus b) : bus(b){
+    attributes["protocol"] = NavAddr::BusToString(bus);
+  };
+  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){
+    attributes["protocol"] = NavAddr::BusToString(bus);
+  };
 };
 
 #endif  // DRIVER_API_H

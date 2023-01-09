@@ -188,13 +188,14 @@ bool ParseN2kPGN129540(std::vector<unsigned char> &v, uint8_t SVIndex, tSatellit
 
 bool ParseN2kPGN129038(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
                         double &Latitude, double &Longitude, bool &Accuracy, bool &RAIM, uint8_t &Seconds,
-                        double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus)
+                        double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus,
+                        tN2kAISTransceiverInformation &AISTransceiverInformation)
 {
     tN2kMsg msg = MakeN2kMsg(v);
 
     return ParseN2kPGN129038(msg, MessageID, Repeat, UserID,
                         Latitude, Longitude, Accuracy, RAIM, Seconds,
-                        COG, SOG, Heading, ROT, NavStatus);
+                        COG, SOG, Heading, ROT, NavStatus, AISTransceiverInformation);
 }
 
 bool ParseN2kPGN129039(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,

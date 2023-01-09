@@ -102,6 +102,7 @@ enum {
   ID_BUTTONDELETE,
   ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
+  ID_BUTTONECDISHELP,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
   ID_BUTTONREBUILD,
@@ -158,6 +159,7 @@ enum {
   ID_RADARDISTUNIT,
   ID_RASTERCHECKBOX1,
   ID_SCAMINCHECKBOX,
+  ID_SUPERSCAMINCHECKBOX,
   ID_SCANCHECKBOX,
   ID_SDMMFORMATCHOICE,
   ID_DISTANCEUNITSCHOICE,
@@ -312,6 +314,7 @@ public:
   void OnButtonParseENC(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
   void OnButtonmigrateClick(wxCommandEvent &event);
+  void OnButtonEcdisHelp(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
@@ -416,7 +419,7 @@ public:
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
+  wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
       *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
   wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
@@ -452,7 +455,8 @@ public:
   wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
   wxButton *itemButtonClearList, *itemButtonSelectList, *itemButtonSetStd;
   wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
-  wxCheckBox *pCheck_SCAMIN, *pCheck_ATONTEXT, *pCheck_LDISTEXT;
+  wxCheckBox *pCheck_SCAMIN, *pCheck_SuperSCAMIN;
+  wxCheckBox *pCheck_ATONTEXT, *pCheck_LDISTEXT;
   wxCheckBox *pCheck_XLSECTTEXT, *pCheck_DECLTEXT, *pCheck_NATIONALTEXT;
   wxCheckBox *pSEnableCM93Offset;
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;
@@ -646,7 +650,7 @@ private:
   wxScrolledWindow *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
-  ObservedVarListener compat_os_listener;
+  ObservableListener compat_os_listener;
 
   int m_screenConfig;
 

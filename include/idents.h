@@ -133,6 +133,7 @@ enum {
   ID_MENU_AIS_CPADIALOG,
   ID_MENU_AIS_CPASOUND,
   ID_MENU_AIS_TARGETLIST,
+  ID_MENU_AIS_CPAWARNING,
 
   ID_MENU_SETTINGS_BASIC,
 
@@ -597,18 +598,18 @@ private:
   SignalKEventHandler m_signalKHandler;
 
   //  comm event listeners
-  ObservedVarListener listener_N2K_129029;
-  ObservedVarListener listener_N2K_129026;
+  ObservableListener listener_N2K_129029;
+  ObservableListener listener_N2K_129026;
 
-  ObservedVarListener listener_N0183_RMC;
-  ObservedVarListener listener_N0183_HDT;
-  ObservedVarListener listener_N0183_HDG;
-  ObservedVarListener listener_N0183_HDM;
-  ObservedVarListener listener_N0183_VTG;
-  ObservedVarListener listener_N0183_GSV;
-  ObservedVarListener listener_N0183_GGA;
-  ObservedVarListener listener_N0183_GLL;
-  ObservedVarListener listener_N0183_AIVDO;
+  ObservableListener listener_N0183_RMC;
+  ObservableListener listener_N0183_HDT;
+  ObservableListener listener_N0183_HDG;
+  ObservableListener listener_N0183_HDM;
+  ObservableListener listener_N0183_VTG;
+  ObservableListener listener_N0183_GSV;
+  ObservableListener listener_N0183_GGA;
+  ObservableListener listener_N0183_GLL;
+  ObservableListener listener_N0183_AIVDO;
 
   DECLARE_EVENT_TABLE()
 };

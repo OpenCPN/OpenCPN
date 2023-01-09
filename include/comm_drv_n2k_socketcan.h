@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:
+ * Purpose:  Low-level driver for socketcan devices (linux only).
  * Author:   David Register, Alec Leamas
  *
  ***************************************************************************
@@ -26,91 +26,41 @@
 #ifndef _COMMDRIVERN2KSOCKETCAN_H
 #define _COMMDRIVERN2KSOCKETCAN_H
 
-// SocketCAN
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <linux/can.h>
-#include <linux/can/raw.h>
-#include <unistd.h>
-
-
-#include <wx/thread.h>
+#include <memory>
+#include <string>
 
 #include "comm_drv_n2k.h"
 #include "conn_params.h"
 
-#ifndef __OCPN__ANDROID__
-#include "serial/serial.h"
-#endif
-
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
-
-#define ESCAPE 0x10
-#define STARTOFTEXT 0x02
-#define ENDOFTEXT 0x03
-
-#define MsgTypeN2kData 0x93
-#define MsgTypeN2kRequest 0x94
-
-// CAN v2.0 29 bit header as used by NMEA 2000
-typedef struct CanHeader {
-  unsigned char priority;
-  unsigned char source;
-  unsigned char destination;
-  int pgn;
-} CanHeader;
-
-
-class CommDriverN2KSocketCANThread;  // fwd
-class CommDriverN2KSocketCANEvent;
-
-class CommDriverN2KSocketCAN : public CommDriverN2K, public wxEvtHandler {
+class CommDriverN2KSocketCAN : public CommDriverN2K {
 public:
-  CommDriverN2KSocketCAN();
-  CommDriverN2KSocketCAN(const ConnectionParams* params, DriverListener& listener);
+  static std::shared_ptr<CommDriverN2KSocketCAN> Create(
+      const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KSocketCAN();
 
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
-  void SetListener(std::shared_ptr<DriverListener> l) override{};
+  void SetListener(DriverListener& l) override { m_listener = l; }
 
-  bool Open();
-  void Close();
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
+                    std::shared_ptr<const NavAddr> addr) = 0; //override;
 
-  //    Secondary thread life toggle
-  //    Used to inform launching object (this) to determine if the thread can
-  //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_bsec_thread_active; }
+  virtual bool Open() = 0;
+  virtual void Close() = 0;
 
-  void SetSecondaryThread(CommDriverN2KSocketCANThread* secondary_Thread) {
-    m_pSecondary_Thread = secondary_Thread;
-  }
-  CommDriverN2KSocketCANThread* GetSecondaryThread() {
-    return m_pSecondary_Thread;
-  }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
-
-  void handle_N2K_SocketCAN_RAW(CommDriverN2KSocketCANEvent& event);
-
-  int m_Thread_run_flag;
-
-private:
-  bool m_bok;
-  std::string m_portstring;
-  std::string m_BaudRate;
-  int m_handshake;
-
-  CommDriverN2KSocketCANThread* m_pSecondary_Thread;
-  bool m_bsec_thread_active;
-
+protected:
+  CommDriverN2KSocketCAN(const ConnectionParams* params,
+                         DriverListener& listener);
   ConnectionParams m_params;
   DriverListener& m_listener;
+
+private:
+  bool m_ok;
+  std::string m_portstring;
+  std::string m_baudrate;
+  unsigned char m_source_address;
 };
 
 #endif  // guard

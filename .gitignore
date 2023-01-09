@@ -1,3 +1,4 @@
+cache
 cscope.files
 tags
 index.sh
@@ -10,14 +11,4 @@ crowdin.yaml
 buildwin/NSIS_Unicode/Include/Langstrings_*.nsh
 buildwin/crashrpt/CrashRpt1402.dll
 buildwin/crashrpt/CrashSender1402.exe
-buildwin/expat*/
-buildwin/gtk*/
-buildwin/libcurl.dll
-buildwin/vc/
-buildwin/wxWidgets/
-buildwin/include/
-buildwin/*.dll
-buildwin/*.lib
-buildwin/*.exe
-buildwin/*.crt
 .DS_Store

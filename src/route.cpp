@@ -21,7 +21,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
 
 #include <wx/arrstr.h>
 #include <wx/datetime.h>
@@ -263,7 +272,6 @@ bool Route::ContainsSharedWP() {
 
 // FIXME (leamas): can this be moved to GUI?
 int s_arrow_icon[] = {0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0};
-
 void Route::ClearHighlights(void) {
   RoutePoint *prp = NULL;
   wxRoutePointListNode *node = pRoutePointList->GetFirst();

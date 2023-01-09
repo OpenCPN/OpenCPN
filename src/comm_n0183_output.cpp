@@ -23,6 +23,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
 
 #include "config.h"
 
@@ -37,27 +43,46 @@
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
+#include "config_vars.h"
 #include "conn_params.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
 #include "route.h"
+#include "NMEALogWindow.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
 #endif
 
-extern wxString g_GPS_Ident;
-extern bool g_bGarminHostUpload;
-extern bool g_bWplUsePosition;
-extern wxArrayOfConnPrm *g_pConnectionParams;
-extern int g_maxWPNameLength;
-extern wxString g_TalkerIdText;
-
 //FIXME (dave)  think about GUI feedback, disabled herein
+
+void LogBroadcastOutputMessageColor(const wxString &msg,
+                                        const wxString &stream_name,
+                                        const wxString &color) {
+#ifndef CLIAPP
+
+  if (NMEALogWindow::Get().Active()) {
+    wxDateTime now = wxDateTime::Now();
+    wxString ss;
+#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
+    ss = now.FormatISOTime();
+#endif
+    ss.Prepend(_T("--> "));
+    ss.Append(_T(" ("));
+    ss.Append(stream_name);
+    ss.Append(_T(") "));
+    ss.Append(msg);
+    ss.Prepend(color);
+
+    NMEALogWindow::Get().Add(ss.ToStdString());
+
+  }
+#endif
+}
 
 void BroadcastNMEA0183Message(const wxString &msg) {
 
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
 
   for (auto& driver : drivers) {
@@ -76,50 +101,30 @@ void BroadcastNMEA0183Message(const wxString &msg) {
 
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
               params.IOSelect == DS_TYPE_OUTPUT) {
-        if (params.SentencePassesFilter(msg, FILTER_OUTPUT)) {
+        bool bout_filter = params.SentencePassesFilter(msg, FILTER_OUTPUT);
+        if (bout_filter) {
           std::string id = msg.ToStdString().substr(1,5);
           auto msg_out = std::make_shared<Nmea0183Msg>(id,
                                              msg.ToStdString(),
                                              std::make_shared<NavAddr0183>(driver->iface));
 
-          driver->SendMessage(msg_out, std::make_shared<NavAddr0183>(driver->iface));
+          bool bxmit_ok = driver->SendMessage(msg_out, std::make_shared<NavAddr0183>(driver->iface));
+
+          if (bxmit_ok)
+            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), _T("<BLUE>"));
+          else
+            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), _T("<RED>"));
         }
+        else
+          LogBroadcastOutputMessageColor(msg, params.GetDSPort(), _T("<CORAL>"));
+
       }
     }
   }
   // Send to plugins
+  //FIXME (dave)
 //  if (g_pi_manager) g_pi_manager->SendNMEASentenceToAllPlugIns(msg);
 }
-
-//FIXME (dave) Implement using comm...
-#if 0
-  // Send to all the outputs
-  for (size_t i = 0; i < m_pdatastreams->Count(); i++) {
-    DataStream *s = m_pdatastreams->Item(i);
-
-    if (s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT ||
-                      s->GetIoSelect() == DS_TYPE_OUTPUT)) {
-      bool bout_filter = true;
-
-      bool bxmit_ok = true;
-      if (s->SentencePassesFilter(msg, FILTER_OUTPUT)) {
-        bxmit_ok = s->SendSentence(msg);
-        bout_filter = false;
-      }
-      // Send to the Debug Window, if open
-      if (!bout_filter) {
-        if (bxmit_ok)
-          LogOutputMessageColor(msg, s->GetPort(), _T("<BLUE>"));
-        else
-          LogOutputMessageColor(msg, s->GetPort(), _T("<RED>"));
-      } else
-        LogOutputMessageColor(msg, s->GetPort(), _T("<CORAL>"));
-    }
-  }
-  // Send to plugins
-  if (g_pi_manager) g_pi_manager->SendNMEASentenceToAllPlugIns(msg);
-#endif
-//}
 
 
 std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_name,
@@ -128,7 +133,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
                                                            bool &btempStream, bool &b_restoreStream){
 
   std::shared_ptr<AbstractCommDriver> driver;
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
 
   if (com_name.Lower().StartsWith("serial")) {
@@ -290,7 +295,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
   bool btempStream = false;
   std::shared_ptr<AbstractCommDriver> old_driver;
   std::shared_ptr<AbstractCommDriver> driver;
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
 
   driver = CreateOutputConnection(com_name, old_driver,
                                   params_save, btempStream, b_restoreStream);
@@ -846,7 +851,7 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
   bool btempStream = false;
   std::shared_ptr<AbstractCommDriver> old_driver;
   std::shared_ptr<AbstractCommDriver> driver;
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
 
   driver = CreateOutputConnection(com_name, old_driver,
                                   params_save, btempStream, b_restoreStream);

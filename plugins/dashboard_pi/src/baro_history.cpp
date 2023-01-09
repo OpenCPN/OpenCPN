@@ -25,21 +25,19 @@
  ***************************************************************************
  */
 
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include "baro_history.h"
 #include "wx28compat.h"
-
-// For compilers that support precompilation, includes "wx/wx.h".
-#include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif
 
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
 
 //************************************************************************************************************************
 // History of barometic pressure
@@ -55,7 +53,11 @@ DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory(
   m_TotalMaxPress = 0;
   m_TotalMinPress = 1200;
   m_Press = 0;
-  m_TopLineHeight = 30;
+  // Set top line height to leave space for pressure data
+  wxClientDC dc(this);
+  int w, h;
+  dc.GetTextExtent("hPa----", &w, &h, 0, 0, g_pFontData);
+  m_TopLineHeight = wxMax(30, h);
   m_SpdRecCnt = 0;
   m_SpdStartVal = -1;
   m_IsRunning = false;
@@ -279,8 +281,10 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   else
     WindSpeed = wxString::Format(_T("hPa ---  "));
   dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, g_pFontData);
-  dc->DrawText(WindSpeed, m_LeftLegend + 3, m_TopLineHeight - degh);
+  dc->DrawText(WindSpeed, m_LeftLegend + 3, 1);
   dc->SetFont(*g_pFontLabel);
+  int labelw, labelh;
+  dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, g_pFontLabel);
   // determine the time range of the available data (=oldest data value)
   int i = 0;
   while (m_ArrayRecTime[i].year == 999 && i < BARO_RECORD_COUNT - 1) i++;
@@ -294,15 +298,11 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
     hour = localTime.GetHour();
   }
   m_ratioW = double(m_DrawAreaRect.width) / (BARO_RECORD_COUNT - 1);
-  // dc->DrawText(wxString::Format(_(" Max %.1f Min %.1f since %02d:%02d Overall
-  // Max %.1f Min %.1f
-  // "),m_MaxPress,m_MinPress,hour,min,m_TotalMaxPress,m_TotalMinPress),
-  // m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5); Cant get the min sice to
-  // work...
+
   dc->DrawText(wxString::Format(
                    _(" Max %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),
                    m_MaxPress, hour, min, m_TotalMaxPress, m_TotalMinPress),
-               m_LeftLegend + 3 + 2 + degw, m_TopLineHeight - degh + 5);
+                   m_LeftLegend + 2 + degw, m_TopLineHeight - 1 - labelh);
   pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(61, 61, 204, 96));  // blue, transparent
   pen.SetWidth(1);

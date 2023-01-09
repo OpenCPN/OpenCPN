@@ -28,10 +28,10 @@
 #ifndef __CONN_PARAMS_PANEL_H__
 #define __CONN_PARAMS_PANEL_H__
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include "conn_params.h"
@@ -53,6 +53,7 @@ public:
   void CreateControls(void);
   void OnEnableCBClick(wxCommandEvent &event);
   void Update(ConnectionParams *ConnectionParams);
+  void SetEnableCheckbox(bool value){ m_cbEnable->SetValue(value); }
 
   bool GetSelected() { return m_bSelected; }
   int GetUnselectedHeight() { return m_unselectedHeight; }

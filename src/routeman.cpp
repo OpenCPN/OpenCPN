@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -42,6 +42,8 @@
 #include "base_platform.h"
 #include "chcanv.h"
 #include "comm_n0183_output.h"
+#include "comm_vars.h"
+#include "config_vars.h"
 #include "concanv.h"
 #include "cutil.h"
 #include "dychart.h"
@@ -53,6 +55,7 @@
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -85,9 +88,6 @@ extern Routeman *g_pRouteMan;
 
 extern wxRect g_blink_rect;
 
-extern double gLat, gLon, gSog, gCog;
-extern double gVar;
-extern wxString gRmcDate, gRmcTime;
 extern bool g_bMagneticAPB;
 
 extern RoutePoint *pAnchorWatchPoint1;
@@ -105,7 +105,6 @@ extern float g_ChartScaleFactorExp;
 
 extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
-extern int g_maxWPNameLength;
 
 bool g_bPluginHandleAutopilotRoute;
 
@@ -232,7 +231,7 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
   //  keep the 1 point.
   if (route->GetnPoints() <= 1 && route_state == 0) {
     NavObjectChanges::getInstance()->DeleteConfigRoute(route);
-    g_pRouteMan->DeleteRoute(route);
+    g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
     route = NULL;
   }
   //  Add this point back into the selectables
@@ -281,7 +280,7 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   wxJSONValue v;
   v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
   v[_T("GUID")] = pRouteToActivate->m_GUID;
-  json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
+  json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
   if (g_bPluginHandleAutopilotRoute) return true;
 
   pActiveRoute = pRouteToActivate;
@@ -316,7 +315,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   v[_T("GUID")] = pRP_target->m_GUID;
   v[_T("WP_activated")] = pRP_target->GetName();
 
-  json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ACTIVATED");
+  json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ACTIVATED");
 
   if (g_bPluginHandleAutopilotRoute) return true;
 
@@ -424,7 +423,7 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     /// }
     m_prop_dlg_ctx.SetEnroutePoint(pr, pActivePoint);
 
-    json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
+    json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
     return true;
   }
 
@@ -445,11 +444,11 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
     if (!b_arrival) {
       v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
       v[_T("GUID")] = pActiveRoute->m_GUID;
-      json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_DEACTIVATED");
+      json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_DEACTIVATED");
     } else {
       v[_T("GUID")] = pActiveRoute->m_GUID;
       v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
-      json_msg.notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ENDED");
+      json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ENDED");
     }
   }
 
@@ -496,7 +495,7 @@ bool Routeman::UpdateAutopilot() {
   leg_info.wp_name = pActivePoint->GetName().Truncate(maxName);
   leg_info.arrival = m_bArrival;
 
-  json_leg_info.notify(std::make_shared<ActiveLegDat>(leg_info), "");
+  json_leg_info.Notify(std::make_shared<ActiveLegDat>(leg_info), "");
 
   // RMB
   {
@@ -724,7 +723,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   return false;
 }
 
-bool Routeman::DeleteRoute(Route *pRoute) {
+bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
 #ifdef CLIAPP
@@ -755,7 +754,7 @@ bool Routeman::DeleteRoute(Route *pRoute) {
     /// }
     m_prop_dlg_ctx.Hide(pRoute);
 
-    NavObjectChanges::getInstance()->DeleteConfigRoute(pRoute);
+    nav_obj_changes->DeleteConfigRoute(pRoute);
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
@@ -812,7 +811,7 @@ bool Routeman::DeleteRoute(Route *pRoute) {
   return true;
 }
 
-void Routeman::DeleteAllRoutes(void) {
+void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
@@ -839,10 +838,10 @@ void Routeman::DeleteAllRoutes(void) {
     node = node->GetNext();
     if (proute->m_bIsInLayer) continue;
 
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-    NavObjectChanges::getInstance()->DeleteConfigRoute(proute);
-    DeleteRoute(proute);
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
+    nav_obj_changes->m_bSkipChangeSetUpdate = true;
+    nav_obj_changes->DeleteConfigRoute(proute);
+    DeleteRoute(proute, nav_obj_changes);
+    nav_obj_changes->m_bSkipChangeSetUpdate = false;
   }
 
   ::wxEndBusyCursor();
@@ -1576,7 +1575,7 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
               NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate;
           NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
           NavObjectChanges::getInstance()->DeleteConfigRoute(pr);
-          g_pRouteMan->DeleteRoute(pr);
+          g_pRouteMan->DeleteRoute(pr, NavObjectChanges::getInstance());
           NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = prev_bskip;
         }
       }

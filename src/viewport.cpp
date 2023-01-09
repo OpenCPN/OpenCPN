@@ -24,16 +24,22 @@
  **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
-#include "wx/image.h"
+#include <wx/image.h>
 #include <wx/graphics.h>
 #include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
+
+#if defined(__OCPN__ANDROID__)
+#include <GLES2/gl2.h>
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#endif
 
 #include "config.h"
 
@@ -125,6 +131,12 @@ ViewPort::ViewPort() {
   b_MercatorProjectionOverride = false;
   lat0_cache = NAN;
   m_projection_type = PROJECTION_MERCATOR;
+}
+
+void ViewPort::PixelScale(float scale){
+  pix_width *= scale;
+  pix_height *= scale;
+  view_scale_ppm *= scale;
 }
 
 // TODO: eliminate the use of this function

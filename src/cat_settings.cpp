@@ -77,14 +77,14 @@ private:
     if (GetSelection() == 1) {
       // "Default Setting"
       g_compatOsVersion = "";
-      compat_os.set("");
+      compat_os.Set("");
       auto newOS = CompatOs::getInstance();
       m_selected->SetLabel(newOS->name() + ":" + newOS->version());
     } else {
       auto current = GetString(GetSelection());
       auto os = ocpn::split(current, " ")[0];
       m_selected->SetLabel(os);
-      compat_os.set(ocpn::split(os.c_str(), ":")[0]);
+      compat_os.Set(ocpn::split(os.c_str(), ":")[0]);
       g_compatOsVersion = ocpn::split(os.c_str(), ":")[1];
     }
   }
@@ -141,7 +141,7 @@ private:
       m_custom_ctrl->Hide();
     }
     GlobalVar<wxString> catalog(&g_catalog_channel);
-    catalog.set(selected);
+    catalog.Set(selected);
     Layout();
   }
 };

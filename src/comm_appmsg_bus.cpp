@@ -23,23 +23,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include "comm_appmsg_bus.h"
 
-ObservedVarListener AppMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
-                                           const AppMsg& msg) {
-  ObservableAppMsg oam(msg.key());
-  return oam.GetListener(eh, et);
-}
-
-ObservedVarListener AppMsgBus::GetListener(wxEventType et, wxEvtHandler* eh,
-                                           AppMsg::Type type) {
-  AppMsg msg(type);
-  return GetListener(et, eh, msg);
-}
-
 void AppMsgBus::Notify(std::shared_ptr<const AppMsg> msg) {
-  ObservableAppMsg om(msg->key());
-  om.notify(msg);
+  Observable(*msg).Notify(msg);
 }
 
 AppMsgBus& AppMsgBus::GetInstance() {

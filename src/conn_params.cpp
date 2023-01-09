@@ -21,6 +21,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBFS fix:  missing struct ip_mreq
 #include <windows.h>
@@ -43,7 +50,13 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
+static wxArrayOfConnPrm* the_connection_params = 0;
 
+wxArrayOfConnPrm* TheConnectionParams() {
+  if (the_connection_params == 0)
+    the_connection_params = new wxArrayOfConnPrm();
+  return the_connection_params;
+}
 
 ConnectionParams::ConnectionParams(const wxString &configStr) {
   m_optionsPanel = NULL;
@@ -296,13 +309,16 @@ std::string ConnectionParams::GetStrippedDSPort() {
     return "";
 }
 
-wxString ConnectionParams::GetLastDSPort() const {
-  if (Type == SERIAL)
-    return wxString::Format(_T("Serial:%s"), Port.c_str());
+std::string ConnectionParams::GetLastDSPort() const {
+  if (Type == SERIAL){
+    wxString sp = wxString::Format(_T("Serial:%s"), Port.c_str());
+    return sp.ToStdString();
+  }
   else {
     wxString proto = NetworkProtocolToString(LastNetProtocol);
-    return wxString::Format(_T("%s:%s:%d"), proto.c_str(),
+    wxString sp = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
                             LastNetworkAddress.c_str(), LastNetworkPort);
+    return sp.ToStdString();
   }
 }
 
@@ -360,8 +376,16 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDire
 }
 
 NavAddr::Bus ConnectionParams::GetCommProtocol(){
-  if ((Type == NETWORK) && (NetProtocol == SIGNALK) )
+  if (Type == NETWORK){
+    if (NetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
+    else if (NetProtocol == UDP)
+      return NavAddr::Bus::N0183;
+    else if (NetProtocol == TCP)
+      return NavAddr::Bus::N0183;
+    else if (NetProtocol == GPSD)
+      return NavAddr::Bus::N0183;
+  }
 
   switch (Protocol){
     case PROTO_NMEA0183:
@@ -373,5 +397,26 @@ NavAddr::Bus ConnectionParams::GetCommProtocol(){
   }
 }
 
+NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
+   if (Type == NETWORK){
+    if (LastNetProtocol == SIGNALK)
+      return NavAddr::Bus::Signalk;
+    else if (LastNetProtocol == UDP)
+      return NavAddr::Bus::N0183;
+    else if (LastNetProtocol == TCP)
+      return NavAddr::Bus::N0183;
+    else if (LastNetProtocol == GPSD)
+      return NavAddr::Bus::N0183;
+  }
+
+  switch (LastDataProtocol){
+    case PROTO_NMEA0183:
+      return NavAddr::Bus::N0183;
+    case PROTO_NMEA2000:
+      return NavAddr::Bus::N2000;
+    default:
+      return NavAddr::Bus::Undef;
+  }
+}
 
 

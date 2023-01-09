@@ -30,7 +30,7 @@ plugin _ShipDriver_pi.h_ header as an example:
             ~ShipDriver_pi(void);
             ...
         private:
-     ②      std::shared_ptr<ObservedVarListener> listener;
+     ②      std::shared_ptr<ObservableListener> listener;
             ...
 
 Then declare a method which handles the message, something like this:
@@ -48,7 +48,7 @@ Then, in the constructor set up the listening:
          ...
      ①   NMEA0183Id id("GPGGA");
      ③   wxDEFINE_EVENT(EVT_SHIPDRIVER, ObservedEvt);
-     ⑤   listener = GetListener(id, EVT_SHIPDRIVER, this);
+     ⑤   listener.Listen(id.key(), EVT_SHIPDRIVER, this);
      ⑥   Bind(EVT_SHIPDRIVER [](ObservedEvt ev) { HandleGPGA(ev); });
 
 Notes:

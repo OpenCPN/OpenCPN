@@ -24,6 +24,12 @@
  ***************************************************************************
  */
 
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "config.h"
 
 #ifdef _WIN32
@@ -52,19 +58,18 @@
 
 #include "base_platform.h"
 #include "catalog_handler.h"
-#include "comm_navmsg_bus.h"
 #include "comm_appmsg_bus.h"
-#include "ocpn_utils.h"
-#include "downloader.h"
-#include "observable_navmsg.h"
-#include "observable_appmsg.h"
-#include "observable_evtvar.h"
 #include "comm_driver.h"
-#include "plugin_loader.h"
+#include "comm_navmsg_bus.h"
+#include "config_vars.h"
+#include "downloader.h"
+#include "observable_evtvar.h"
+#include "ocpn_utils.h"
 #include "plugin_handler.h"
+#include "plugin_loader.h"
 #include "routeman.h"
-#include "track.h"
 #include "select.h"
+#include "track.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -73,7 +78,6 @@ class Select;
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
 wxString g_winPluginDir;
-wxConfigBase* pBaseConfig = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -121,33 +125,10 @@ AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
-wxString g_GPS_Ident;
-bool g_bGarminHostUpload;
 
 /* comm_bridge context. */
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
-double g_UserVar;
-int gps_watchdog_timeout_ticks;
-bool g_bHDT_Rx;
-int g_nNMEADebug;
-bool g_bSatValid;
-bool g_bVAR_Rx;
 int g_NMEAAPBPrecision;
-int g_SatsInView;
-int g_priSats;
-int sat_watchdog_timeout_ticks = 12;
-
-wxString gRmcTime;
-wxString gRmcDate;
-
-wxString g_TalkerIdText;
 
 Select* pSelect;
 double g_n_arrival_circle_radius;
@@ -177,7 +158,6 @@ RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
 bool g_bAllowShipToActive;
 wxRect g_blink_rect;
-int g_maxWPNameLength;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
@@ -264,7 +244,7 @@ public:
 
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
-    pBaseConfig = new wxFileConfig("", "", config_file);
+    InitConfigBase(new wxFileConfig("", "", config_file));
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();
@@ -345,16 +325,17 @@ public:
     wxImage::AddHandler(new wxPNGHandler());
     g_BasePlatform->GetSharedDataDir();   // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);
-    auto file_notfound_listener =
-        loader->evt_unreadable_plugin.GetListener(this, EVT_FILE_NOTFOUND);
+    ObservableListener file_notfound_listener;
+    file_notfound_listener.Listen(loader->evt_unreadable_plugin,
+                                  this, EVT_FILE_NOTFOUND);
     Bind(EVT_FILE_NOTFOUND, [&](wxCommandEvent ev) {
       std::cerr << "Cannot open file: " << ev.GetString() << "\n";
     });
 
     wxDEFINE_EVENT(EVT_BAD_VERSION, wxCommandEvent);
-    auto bad_version_listener =
-        loader->evt_version_incompatible_plugin.GetListener(this,
-                                                             EVT_BAD_VERSION);
+    ObservableListener bad_version_listener;
+    bad_version_listener.Listen(loader->evt_version_incompatible_plugin,
+                                this, EVT_BAD_VERSION);
     Bind(EVT_BAD_VERSION, [&](wxCommandEvent ev) {
       std::cerr << "Incompatible plugin version " << ev.GetString() << "\n";
     });

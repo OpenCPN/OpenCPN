@@ -26,10 +26,10 @@
 #ifndef _COMMDRIVERN0183NET_H
 #define _COMMDRIVERN0183NET_H
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled header
 
 #include "comm_drv_n0183.h"
@@ -42,10 +42,10 @@
 // one instead
 //#include <gtk/gtk.h>
 #define GSocket GlibGSocket
-#include "wx/socket.h"
+#include <wx/socket.h>
 #undef GSocket
 #else
-#include "wx/socket.h"
+#include <wx/socket.h>
 #endif
 
 #ifndef __WXMSW__
@@ -77,7 +77,7 @@ public:
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
 
-  void SendMessage(std::shared_ptr<const NavMsg> msg,
+  bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
   wxSocketBase* GetSock() const { return m_sock; }
 

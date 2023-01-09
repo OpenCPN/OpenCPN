@@ -23,69 +23,69 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include <wx/tokenzr.h>
-#include <wx/sstream.h>
-#include <wx/image.h>
-#include <wx/filename.h>
-#include <wx/graphics.h>
-#include <wx/dir.h>
-#include <wx/listbook.h>
-#include <wx/timectrl.h>
-#include <wx/bmpcbox.h>
-#include <wx/tglbtn.h>
-
-#include "dychart.h"
-#include "idents.h"
-
 #include <stdlib.h>
-//#include <math.h>
 #include <time.h>
 #include <locale>
 #include <list>
 
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <wx/bmpcbox.h>
+#include <wx/dir.h>
+#include <wx/filename.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
+#include <wx/sstream.h>
+#include <wx/tglbtn.h>
+#include <wx/timectrl.h>
+#include <wx/tokenzr.h>
 
-#include "config.h"
-#include "navutil.h"
-#include "navutil_base.h"
+#include "ais_decoder.h"
+#include "ais.h"
+#include "CanvasConfig.h"
+#include "chartbase.h"
+#include "chartdb.h"
 #include "chcanv.h"
-#include "georef.h"
+#include "config.h"
+#include "config_vars.h"
+#include "conn_params.h"
 #include "cutil.h"
-#include "styles.h"
+#include "dychart.h"
+#include "FontMgr.h"
+#include "geodesic.h"
+#include "georef.h"
+#include "idents.h"
+#include "Layer.h"
+#include "multiplexer.h"
+#include "nav_object_database.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "nmea0183.h"
+#include "NMEALogWindow.h"
+#include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "OCPN_Sound.h"
+#include "own_ship.h"
+#include "route.h"
 #include "routeman.h"
 #include "s52utils.h"
-#include "chartbase.h"
-#include "ocpndc.h"
-#include "geodesic.h"
-#include "multiplexer.h"
-#include "ais.h"
-#include "route.h"
 #include "select.h"
-#include "FontMgr.h"
-#include "OCPN_Sound.h"
-#include "Layer.h"
-#include "nav_object_database.h"
-#include "NMEALogWindow.h"
-#include "ais_decoder.h"
-#include "OCPNPlatform.h"
+#include "styles.h"
 #include "track.h"
-#include "chartdb.h"
-#include "CanvasConfig.h"
-#include "ocpn_frame.h"
-#include "conn_params.h"
-
 #include "s52plib.h"
 #include "cm93.h"
 
@@ -93,7 +93,7 @@
 #include "glChartCanvas.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -110,20 +110,17 @@ extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
 extern int g_LayerIdx;
 extern MyConfig *pConfig;
-extern double vLat, vLon, gLat, gLon;
+extern double vLat, vLon;
 extern double kLat, kLon;
 extern double initial_scale_ppm, initial_rotation;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 extern bool g_bShowTrue, g_bShowMag;
-extern double g_UserVar;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
 extern int g_nDepthUnitDisplay;
 extern wxString g_winPluginDir;
-
-extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
@@ -156,7 +153,6 @@ extern double g_plus_minus_zoom_factor;
 extern bool g_bShowOutlines;
 extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
-extern int g_nNMEADebug;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
@@ -241,7 +237,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 extern bool g_benableAISNameCache;
 extern bool g_bUseOnlyConfirmedAISName;
@@ -274,7 +269,6 @@ extern bool g_bEnableZoomToCursor;
 extern wxString g_toolbarConfig;
 extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
-extern int gps_watchdog_timeout_ticks;
 
 extern int g_nCacheLimit;
 extern int g_memCacheLimit;
@@ -382,8 +376,6 @@ extern ChartGroupArray *g_pGroupArray;
 
 extern bool g_bDebugOGL;
 extern int g_tcwin_scale;
-extern wxString g_GPS_Ident;
-extern bool g_bGarminHostUpload;
 extern wxString g_uploadConnection;
 
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -398,15 +390,12 @@ extern bool g_bGLexpert;
 extern int g_SENC_LOD_pixels;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
-extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
 
-extern wxString g_TalkerIdText;
 extern bool g_bShowTrackPointTime;
-
-extern int g_maxWPNameLength;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
@@ -719,8 +708,8 @@ int MyConfig::LoadMyConfig() {
     }
 #endif
 
-    g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier, 5);
-    g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier, -5);
+    g_chart_zoom_modifier_raster = wxMin(g_chart_zoom_modifier_raster, 5);
+    g_chart_zoom_modifier_raster = wxMax(g_chart_zoom_modifier_raster, -5);
     g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector, 5);
     g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector, -5);
     g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor, CM93_ZOOM_FACTOR_MAX_RANGE);
@@ -945,7 +934,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ResponsiveGraphics" ), &g_bresponsive);
   Read(_T ( "EnableRolloverBlock" ), &g_bRollover);
 
-  Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier);
+  Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
   Read(_T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector);
   Read(_T ( "PlusMinusZoomFactor" ), &g_plus_minus_zoom_factor, 2.0);
   Read("MouseZoomSensitivity", &g_mouse_zoom_sensitivity, 1.3);
@@ -1265,7 +1254,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      g_pConnectionParams->Clear();
+      TheConnectionParams()->Clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
@@ -1273,7 +1262,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
           delete prm;
           continue;
         }
-        g_pConnectionParams->Add(prm);
+        TheConnectionParams()->Add(prm);
       }
     }
   }
@@ -1565,6 +1554,9 @@ void MyConfig::LoadS57Config() {
   Read(_T ( "bUseSCAMIN" ), &read_int, 1);
   ps52plib->m_bUseSCAMIN = !(read_int == 0);
 
+  Read(_T ( "bUseSUPER_SCAMIN" ), &read_int, 0);
+  ps52plib->m_bUseSUPER_SCAMIN = !(read_int == 0);
+
   Read(_T ( "bShowAtonText" ), &read_int, 1);
   ps52plib->m_bShowAtonText = !(read_int == 0);
 
@@ -1645,6 +1637,30 @@ void MyConfig::LoadS57Config() {
   }
 }
 
+/** Load changes from a pending changes file path. */
+static bool ReloadPendingChanges(const wxString& changes_path) {
+  wxULongLong size = wxFileName::GetSize(changes_path);
+
+  // We crashed last time :(
+  // That's why this file still exists...
+  // Let's reconstruct the unsaved changes
+  auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
+  pNavObjectChangesSet->Init(changes_path);
+  pNavObjectChangesSet->load_file(changes_path.fn_str());
+
+  //  Remove the file before applying the changes,
+  //  just in case the changes file itself causes a fault.
+  //  If it does fault, at least the next restart will proceed without fault.
+  if (::wxFileExists(changes_path))
+    ::wxRemoveFile(changes_path);
+
+  if (size == 0) return false;
+
+  wxLogMessage(_T("Applying NavObjChanges"));
+  pNavObjectChangesSet->ApplyChanges();
+  return  true;
+}
+
 void MyConfig::LoadNavObjects() {
   //      next thing to do is read tracks, etc from the NavObject XML file,
   wxLogMessage(_T("Loading navobjects from navobj.xml"));
@@ -1662,28 +1678,13 @@ void MyConfig::LoadNavObjects() {
                wpt_dups);
   delete m_pNavObjectInputSet;
 
+  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
+
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
-    wxULongLong size = wxFileName::GetSize(m_sNavObjSetChangesFile);
-
-    // We crashed last time :(
-    // That's why this file still exists...
-    // Let's reconstruct the unsaved changes
-    auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
-    pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
-
-    //  Remove the file before applying the changes,
-    //  just in case the changes file itself causes a fault.
-    //  If it does fault, at least the next restart will proceed without fault.
-    if (::wxFileExists(m_sNavObjSetChangesFile))
-      ::wxRemoveFile(m_sNavObjSetChangesFile);
-
-    if (size != 0) {
-      wxLogMessage(_T("Applying NavObjChanges"));
-      pNavObjectChangesSet->ApplyChanges();
+    if (ReloadPendingChanges(m_sNavObjSetChangesFile)) {
       UpdateNavObj();
     }
   }
-  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
   m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
 }
 
@@ -1833,7 +1834,7 @@ bool MyConfig::LoadChartDirArray(ArrayOfCDI &ChartDirArray) {
   return true;
 }
 
-void MyConfig::AddNewRoute(Route *r) { 
+void MyConfig::AddNewRoute(Route *r) {
   m_pNavObjectChangesSet->AddNewRoute(r);
 }
 
@@ -2336,7 +2337,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
   Write(_T ( "ShowFPS" ), g_bShowFPS);
 
-  Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier);
+  Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
 
   Write(_T ( "FogOnOverzoom" ), g_fog_overzoom);
@@ -2641,6 +2642,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "bShowSoundg" ), ps52plib->m_bShowSoundg);
     Write(_T ( "bShowMeta" ), ps52plib->m_bShowMeta);
     Write(_T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN);
+    Write(_T ( "bUseSUPER_SCAMIN" ), ps52plib->m_bUseSUPER_SCAMIN);
     Write(_T ( "bShowAtonText" ), ps52plib->m_bShowAtonText);
     Write(_T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText);
     Write(_T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors);
@@ -2670,9 +2672,9 @@ void MyConfig::UpdateSettings() {
 
   SetPath(_T ( "/Settings/NMEADataSource" ));
   wxString connectionconfigs;
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     if (i > 0) connectionconfigs.Append(_T("|"));
-    connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
+    connectionconfigs.Append(TheConnectionParams()->Item(i)->Serialize());
   }
   Write(_T ( "DataConnections" ), connectionconfigs);
 
@@ -2794,12 +2796,17 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
 
   delete pNavObjectSet;
 
+  if (m_pNavObjectChangesSet->m_changes_file)
+    fclose(m_pNavObjectChangesSet->m_changes_file);
+
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
     wxLogNull logNo;  // avoid silly log error message.
     wxRemoveFile(m_sNavObjSetChangesFile);
   }
 
   if (bRecreate) {
+    m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
+
     m_pNavObjectChangesSet->reset();
     m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
   }
@@ -3409,7 +3416,6 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
     dc.CalcBoundingBox(x + size_x, y + size_y);
   } else {
 #ifdef ocpnUSE_GL
-#ifdef USE_ANDROID_GLES2
     glEnable(GL_BLEND);
 
     float radMod = wxMax(radius, 2.0);
@@ -3420,25 +3426,6 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
 
     glDisable(GL_BLEND);
 
-#else
-    /* opengl version */
-    glEnable(GL_BLEND);
-
-    if (radius > 1.0f) {
-      wxColour c(color.Red(), color.Green(), color.Blue(), transparency);
-      dc.SetBrush(wxBrush(c));
-      dc.DrawRoundedRectangle(x, y, size_x, size_y, radius);
-    } else {
-      glColor4ub(color.Red(), color.Green(), color.Blue(), transparency);
-      glBegin(GL_QUADS);
-      glVertex2i(x, y);
-      glVertex2i(x + size_x, y);
-      glVertex2i(x + size_x, y + size_y);
-      glVertex2i(x, y + size_y);
-      glEnd();
-    }
-    glDisable(GL_BLEND);
-#endif
 #endif
   }
 }
@@ -3507,7 +3494,11 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     // If the color scheme is DAY or RGB, use the default platform native colour
     // for backgrounds
     if (!darkMode) {
+#ifdef _WIN32
       window_back_color = wxNullColour;
+#else
+      window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+#endif
       col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
       uitext = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
     }

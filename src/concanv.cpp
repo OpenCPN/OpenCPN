@@ -27,18 +27,16 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
-
-#include "dychart.h"
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include "wx/datetime.h"
+#include <wx/datetime.h>
 
 #include "gui_lib.h"
 #include "concanv.h"
@@ -50,6 +48,7 @@
 #include "wx28compat.h"
 #include "route.h"
 #include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 
 extern Routeman* g_pRouteMan;
 extern MyFrame* gFrame;
@@ -57,6 +56,7 @@ extern bool g_bShowActiveRouteHighway;
 extern double gCog;
 extern double gSog;
 extern bool g_bShowTrue, g_bShowMag;
+extern BasePlatform* g_BasePlatform;
 
 bool g_bShowRouteTotal;
 
@@ -519,6 +519,10 @@ void AnnunText::CalculateMinSize(void) {
   if (m_pvalueFont)
     GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
 
+  double pdifactor = g_BasePlatform->GetDisplayDPIMult(gFrame);
+  wl *= pdifactor; hl *= pdifactor;
+  wv *= pdifactor; hv *= pdifactor;
+
   wxSize min;
   min.x = wl + wv;
 
@@ -530,6 +534,13 @@ void AnnunText::CalculateMinSize(void) {
   min.y = (int)((hl + hv) * 1.2);
 
   SetMinSize(min);
+
+  //resize background to the necessary size
+  ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+  if (style->consoleTextBackground.IsOk()) {
+    wxImage img = style->consoleTextBackground.ConvertToImage();
+    style->consoleTextBackground = wxBitmap(img.Rescale(min.x, min.y));
+  }
 }
 
 void AnnunText::SetColorScheme(ColorScheme cs) {

@@ -120,7 +120,7 @@ public:
   virtual double GetDisplaySizeMM();
   virtual double GetDisplayDPmm();
   virtual unsigned int GetSelectRadiusPix();
- 
+  double GetDisplayDPIMult(wxWindow *win);
 
   void ShowBusySpinner();
   void HideBusySpinner();
@@ -147,6 +147,7 @@ protected:
   wxSize m_displaySize;
   wxSize m_displaySizeMM;
   int m_displaySizeMMOverride;
+
 
 #ifdef _MSC_VER
   bool GetWindowsMonitorSize(int *width, int *height);

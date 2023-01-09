@@ -22,20 +22,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include <vector>
-#include <string>
-
+// For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include <wx/string.h>
+#include <wx/wx.h>
 #endif  // precompiled headers
+
+#include <vector>
+#include <string>
 
 #include "comm_util.h"
 #include "comm_drv_registry.h"
 
 bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus _bus) {
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<DriverPtr>& drivers = registry.GetDrivers();
   DriverPtr target_driver = FindDriver(drivers, ident, _bus);
 

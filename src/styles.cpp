@@ -24,10 +24,10 @@
  **************************************************************************/
 #include "config.h"
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <wx/filename.h>
@@ -38,7 +38,8 @@
 #include "styles.h"
 #include "wx28compat.h"
 #include "svg_utils.h"
-#include "ocpn_frame.h"   //FIXME (dave) color
+#include "color_handler.h"
+#include "tinyxml.h"
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
@@ -698,13 +699,10 @@ void Style::SetColorScheme(ColorScheme cs) {
     wxBitmap bm = graphics->GetSubBitmap(
         wxRect(consoleTextBackgroundLoc, consoleTextBackgroundSize));
 
-    // The background bitmap in the icons file may be too small, so will grow it
-    // arbitrailly
-    wxImage image = bm.ConvertToImage();
-    image.Rescale(consoleTextBackgroundSize.GetX() * 2,
-                  consoleTextBackgroundSize.GetY() * 2, wxIMAGE_QUALITY_NORMAL);
-    wxBitmap bn(image);
-    consoleTextBackground = SetBitmapBrightness(bn, cs);
+    // The background bitmap in the icons file may be too small but it's better to resize it
+    // when we use it
+
+    consoleTextBackground = SetBitmapBrightness(bm, cs);
   }
 }
 

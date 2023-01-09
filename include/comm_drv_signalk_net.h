@@ -27,16 +27,17 @@
 #ifndef _SIGNALK_NET_H
 #define _SIGNALK_NET_H
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled header
 
 #include <wx/datetime.h>
 #include <wx/socket.h>
 
 #include <string>
+#include "rapidjson/fwd.h"
 #include "conn_params.h"
 #include "comm_drv_signalk.h"
 
@@ -73,8 +74,8 @@ public:
   void Activate() override;
 
   void handle_SK_sentence(CommDriverSignalKNetEvent& event);
-  void handleUpdate(wxJSONValue &update);
-  void updateItem(wxJSONValue &item, wxString &sfixtime);
+  void handleUpdate(const rapidjson::Value &update);
+  void updateItem(const rapidjson::Value &item, wxString &sfixtime);
 
   void OpenWebSocket();
   void CloseWebSocket();

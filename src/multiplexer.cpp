@@ -25,7 +25,7 @@
 
 #ifdef __MSVC__
 #include "winsock2.h"
-#include "wx/msw/winundef.h"
+#include <wx/msw/winundef.h>
 #endif
 
 #include "config.h"
@@ -38,18 +38,21 @@
 #error Using readlink(3) requires libgen.h which cannot be found.
 #endif
 
-#include "wx/wx.h"
+#include <wx/wx.h>
+
 #include "multiplexer.h"
+
+#include "config_vars.h"
 #include "conn_params.h"
 #include "comm_drv_registry.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
+#include "comm_navmsg_bus.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
 #endif
 
-extern wxString g_GPS_Ident;
 extern bool g_b_legacy_input_filter_behaviour;
 
 wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
@@ -96,8 +99,8 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 Multiplexer::Multiplexer(MuxLogCallbacks cb) : m_log_callbacks(cb) {
   auto &msgbus = NavMsgBus::GetInstance();
 
-  m_listener_N0183_all =
-      msgbus.GetListener(EVT_N0183_MUX, this, Nmea0183Msg::MessageKey("ALL"));
+  m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
+                              EVT_N0183_MUX);
   Bind(EVT_N0183_MUX, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
     auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
@@ -168,8 +171,8 @@ void Multiplexer::LogInputMessage(const wxString &msg,
 void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   // Find the driver that originated this message
 
-  const auto& drivers = CommDriverRegistry::getInstance().GetDrivers();
-  auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
+  const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
+  auto source_driver = FindDriver(drivers, n0183_msg->source->iface);
 
   wxString fmsg;
   bool bpass_input_filter = true;
@@ -183,11 +186,11 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     // Get the params for the driver sending this message
       ConnectionParams params;
       auto drv_serial =
-          std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+          std::dynamic_pointer_cast<CommDriverN0183Serial>(source_driver);
       if (drv_serial) {
         params = drv_serial->GetParams();
       } else {
-        auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(target_driver);
+        auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(source_driver);
         if (drv_net) {
           params = drv_net->GetParams();
         }
@@ -222,12 +225,16 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     LogInputMessage(fmsg, port, !bpass_input_filter, b_error);
   }
 
-  // Do not mux-out anything coming from a "virtual" or plugin stream
-  if (!target_driver)
-    return;
+  // Detect virtual driver, message comes from plugin API
+  // Set such source iface to "" for later test
+  std::string source_iface;
+  if (source_driver)        // NULL for virtual driver
+    source_iface = source_driver->iface;
+
 
   // Perform multiplexer output functions
   for (auto& driver : drivers) {
+
     if (driver->bus == NavAddr::Bus::N0183) {
       ConnectionParams params;
       auto drv_serial =
@@ -246,7 +253,8 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 
       //  Allow re-transmit on same port (if type is SERIAL),
       //  or any any other NMEA0183 port supporting output
-        if (params.Type == SERIAL || driver->iface != target_driver->iface) {
+      //  But, do not echo to the source network interface.  This will likely recurse...
+        if (params.Type == SERIAL || driver->iface != source_iface) {
           if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
               params.IOSelect == DS_TYPE_OUTPUT)
           {
@@ -254,7 +262,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
             bool bxmit_ok = true;
             if (params.SentencePassesFilter(n0183_msg->payload.c_str(),
                                           FILTER_OUTPUT)) {
-              driver->SendMessage(n0183_msg,
+              bxmit_ok = driver->SendMessage(n0183_msg,
                                 std::make_shared<NavAddr0183>(driver->iface));
               bout_filter = false;
             }

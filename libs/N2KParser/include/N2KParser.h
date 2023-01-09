@@ -380,7 +380,7 @@ bool ParseN2kPGN127233(std::vector<unsigned char> &v,
 // Input:
 //  - N2kMsg                NMEA2000 message to decode
 bool ParseN2kPGN129038(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, double &Latitude, double &Longitude,
-                        bool &Accuracy, bool &RAIM, uint8_t &Seconds, double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus);
+                        bool &Accuracy, bool &RAIM, uint8_t &Seconds, double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus, tN2kAISTransceiverInformation &AISTransceiverInformation);
 
 //*****************************************************************************
 // AIS position reports for Class B

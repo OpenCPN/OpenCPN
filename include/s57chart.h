@@ -28,7 +28,7 @@
 
 #include <wx/wx.h>
 #include <wx/progdlg.h>
-#include "bbox.h"
+#include "s52s57.h"
 #include "chartbase.h"
 #include "wx/dir.h"
 #include "wx/filename.h"
@@ -44,7 +44,6 @@
 #include "S57ClassRegistrar.h"
 #include "S57Light.h"
 #include "S57Sector.h"
-#include "s52s57.h"  //types
 #include "OCPNRegion.h"
 #include "ocpndc.h"
 #include "viewport.h"
@@ -64,6 +63,8 @@ class ChartCanvas;
 extern "C" bool s57_GetChartExtent(const wxString &FullPath, Extent *pext);
 
 void s57_DrawExtendedLightSectors(ocpnDC &temp_dc, ViewPort &VPoint,
+                                  std::vector<s57Sector_t> &sectorlegs);
+void s57_DrawExtendedLightSectorsGL(ocpnDC &temp_dc, ViewPort &VPoint,
                                   std::vector<s57Sector_t> &sectorlegs);
 bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
                                    ViewPort &VPoint,

@@ -1366,7 +1366,7 @@ class wxArrayOfS57attVal;
 
 PI_S57Obj::PI_S57Obj() {}
 
-DECL_EXP wxString DECL_EXP PI_GetPLIBColorScheme() { return ""; }
+DECL_EXP wxString PI_GetPLIBColorScheme() { return ""; }
 DECL_EXP int PI_GetPLIBDepthUnitInt() { return 0; }
 DECL_EXP int PI_GetPLIBSymbolStyle() { return 0; }
 DECL_EXP int PI_GetPLIBBoundaryStyle() { return 0; }
@@ -1377,9 +1377,9 @@ DECL_EXP bool PI_GetObjectRenderBox(PI_S57Obj *pObj, double *lat_min,
                                     double *lon_max) {
   return true;
 }
-DECL_EXP void DECL_EXP PI_UpdateContext(PI_S57Obj *pObj) {}
-DECL_EXP bool DECL_EXP PI_PLIBObjectRenderCheck(PI_S57Obj *pObj,
-                                                PlugIn_ViewPort *vp) {
+DECL_EXP void PI_UpdateContext(PI_S57Obj *pObj) {}
+DECL_EXP bool PI_PLIBObjectRenderCheck(PI_S57Obj *pObj,
+                                       PlugIn_ViewPort *vp) {
   return true;
 }
 DECL_EXP PI_LUPname PI_GetObjectLUPName(PI_S57Obj *pObj) {
@@ -1397,13 +1397,13 @@ DECL_EXP void PI_PLIBFreeContext(void *pContext) {}
 DECL_EXP void PI_PLIBSetRenderCaps(unsigned int flags) {}
 
 DECL_EXP bool PI_PLIBSetContext(PI_S57Obj *pObj) { return true; }
-DECL_EXP int DECL_EXP PI_PLIBRenderObjectToDC(wxDC *pdc, PI_S57Obj *pObj,
-                                              PlugIn_ViewPort *vp) {
+DECL_EXP int  PI_PLIBRenderObjectToDC(wxDC *pdc, PI_S57Obj *pObj,
+                                      PlugIn_ViewPort *vp) {
   return 0;
 }
-DECL_EXP int DECL_EXP PI_PLIBRenderAreaToDC(wxDC *pdc, PI_S57Obj *pObj,
-                                            PlugIn_ViewPort *vp, wxRect rect,
-                                            unsigned char *pixbuf) {
+DECL_EXP int PI_PLIBRenderAreaToDC(wxDC *pdc, PI_S57Obj *pObj,
+                                   PlugIn_ViewPort *vp, wxRect rect,
+                                   unsigned char *pixbuf) {
   return 0;
 }
 

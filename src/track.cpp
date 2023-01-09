@@ -87,19 +87,16 @@ millions of points.
 
 #include "track.h"
 
-#include "chartbase.h"
 #include "georef.h"
 #include "json_event.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
-#include "route.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "select.h"
 
 extern WayPointman *pWayPointMan;
-extern Routeman *g_pRouteMan;
 extern Select *pSelect;
-extern double gLat, gLon;
 extern double g_PlanSpeed;
 extern int g_nTrackPrecision;
 extern bool g_bTrackDaily;
@@ -131,12 +128,12 @@ private:
 #endif
 
 TrackPoint::TrackPoint(double lat, double lon, wxString ts)
-    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1), m_timestring(NULL) {
+    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(ts);
 }
 
 TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
-    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1), m_timestring(NULL) {
+    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1) {
   SetCreateTime(dt);
 }
 
@@ -144,20 +141,15 @@ TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
 TrackPoint::TrackPoint(TrackPoint *orig)
     : m_lat(orig->m_lat),
       m_lon(orig->m_lon),
-      m_GPXTrkSegNo(1),
-      m_timestring(NULL) {
+      m_GPXTrkSegNo(1) {
   SetCreateTime(orig->GetCreateTime());
 }
 
-TrackPoint::~TrackPoint() { delete[] m_timestring; }
+TrackPoint::~TrackPoint() { }
 
 wxDateTime TrackPoint::GetCreateTime() {
   wxDateTime CreateTimeX;
-
-  if (m_timestring) {
-    wxString ts = m_timestring;
-    ParseGPXDateTime(CreateTimeX, ts);
-  }
+  ParseGPXDateTime(CreateTimeX, wxString(m_stimestring.c_str()));
   return CreateTimeX;
 }
 
@@ -173,12 +165,10 @@ void TrackPoint::SetCreateTime(wxDateTime dt) {
 }
 
 void TrackPoint::SetCreateTime(wxString ts) {
-  delete[] m_timestring;
   if (ts.Length()) {
-    m_timestring = new char[ts.Length() + 1];
-    strcpy(m_timestring, ts.mb_str());
+    m_stimestring = ts.mb_str();
   } else
-    m_timestring = NULL;
+    m_stimestring = "";
 }
 
 //---------------------------------------------------------------------------------
@@ -521,6 +511,7 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
 
 void Track::ClearHighlights() { m_HighlightedTrackPoint = -1; }
 
+
 TrackPoint *Track::GetPoint(int nWhichPoint) {
   if (nWhichPoint < (int)TrackPoints.size())
     return TrackPoints[nWhichPoint];
@@ -709,7 +700,7 @@ TrackPoint *Track::AddNewPoint(vector2D point, wxDateTime time) {
   v["lon"] = tPoint->m_lon;
   v["Track_ID"] = m_GUID;
   std::string msg_id("OCPN_TRK_POINT_ADDED");
-  JsonEvent::getInstance().notify(msg_id, std::make_shared<wxJSONValue>(v));
+  JsonEvent::getInstance().Notify(msg_id, std::make_shared<wxJSONValue>(v));
 
   return tPoint;
 }

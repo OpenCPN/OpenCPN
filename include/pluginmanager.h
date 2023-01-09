@@ -33,10 +33,6 @@
 
 #include <memory>
 
-#ifdef ocpnUSE_GL
-#include <wx/glcanvas.h>
-#endif
-
 #include "config.h"
 
 #include "ocpn_plugin.h"
@@ -52,15 +48,15 @@
 #include "semantic_vers.h"
 
 // For widgets...
-#include "wx/hyperlink.h"
+#include <wx/hyperlink.h>
 #include <wx/choice.h>
 #include <wx/tglbtn.h>
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
-#include "wx/curl/http.h"
-#include "wx/curl/dialog.h"
+#include <wx/curl/http.h>
+#include <wx/curl/dialog.h>
 #endif
 #endif
 
@@ -190,9 +186,10 @@ public:
   virtual ~PlugInManager();
 
   bool RenderAllCanvasOverlayPlugIns(ocpnDC &dc, const ViewPort &vp,
-                                     int canvasIndex);
+                                     int canvasIndex, int priority);
   bool RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
-                                       const ViewPort &vp, int canvasIndex);
+                                       const ViewPort &vp, int canvasIndex,
+                                       int priority);
   void SendCursorLatLonToAllPlugIns(double lat, double lon);
   void SendViewPortToRequestingPlugIns(ViewPort &vp);
   void PrepareAllPluginContextMenus();
@@ -296,26 +293,26 @@ private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin *plugin);
 
-  ObservedVarListener evt_ais_json_listener;
-  ObservedVarListener evt_blacklisted_plugin_listener;
-  ObservedVarListener evt_deactivate_plugin_listener;
-  ObservedVarListener evt_download_failed_listener;
-  ObservedVarListener evt_download_ok_listener;
-  ObservedVarListener evt_incompatible_plugin_listener;
-  ObservedVarListener evt_load_directory_listener;
-  ObservedVarListener evt_load_plugin_listener;
-  ObservedVarListener evt_plugin_loadall_finalize_listener;
-  ObservedVarListener evt_pluglist_change_listener;
-  ObservedVarListener evt_unreadable_plugin_listener;
-  ObservedVarListener evt_update_chart_types_listener;
-  ObservedVarListener evt_version_incompatible_listener;
-  ObservedVarListener evt_version_incompatible_plugin_listener;
-  ObservedVarListener evt_json_to_all_plugins_listener;
-  ObservedVarListener evt_routeman_json_listener;
-  ObservedVarListener evt_routeman_leginfo_listener;
+  ObservableListener evt_ais_json_listener;
+  ObservableListener evt_blacklisted_plugin_listener;
+  ObservableListener evt_deactivate_plugin_listener;
+  ObservableListener evt_download_failed_listener;
+  ObservableListener evt_download_ok_listener;
+  ObservableListener evt_incompatible_plugin_listener;
+  ObservableListener evt_load_directory_listener;
+  ObservableListener evt_load_plugin_listener;
+  ObservableListener evt_plugin_loadall_finalize_listener;
+  ObservableListener evt_pluglist_change_listener;
+  ObservableListener evt_unreadable_plugin_listener;
+  ObservableListener evt_update_chart_types_listener;
+  ObservableListener evt_version_incompatible_listener;
+  ObservableListener evt_version_incompatible_plugin_listener;
+  ObservableListener evt_json_to_all_plugins_listener;
+  ObservableListener evt_routeman_json_listener;
+  ObservableListener evt_routeman_leginfo_listener;
 
-  ObservedVarListener m_listener_N0183_all;
-  ObservedVarListener m_listener_SignalK;
+  ObservableListener m_listener_N0183_all;
+  ObservableListener m_listener_SignalK;
 
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);
@@ -414,7 +411,7 @@ protected:
   wxStaticText *m_catalogText;
   wxWindow *m_parent;
   PluginListPanel *m_PluginListPanel;
-  ObservedVarListener catalog_listener;
+  ObservableListener catalog_listener;
 };
 
 #define ID_CMD_BUTTON_PERFORM_ACTION 27663

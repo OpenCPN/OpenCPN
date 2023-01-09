@@ -35,9 +35,9 @@ public:
 
   virtual ~CommDriverSignalK();
 
-  virtual void SendMessage(std::shared_ptr<const NavMsg> msg,
+  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) override;
-  virtual void SetListener(std::shared_ptr<DriverListener> l) override;
+  virtual void SetListener(DriverListener& l) override;
   virtual std::shared_ptr<NavAddr> GetAddress(const NavAddrSignalK& name);
 };
 

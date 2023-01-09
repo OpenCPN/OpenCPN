@@ -138,7 +138,7 @@
 //----------------------------------------------------------------------------
 
 #define USE_CPL
-#include "gdal/cpl_port.h"
+//#include "gdal/cpl_port.h"
 
 #ifndef NULL
 #define NULL 0
@@ -163,27 +163,50 @@
 #define __POSIX__
 #endif
 
-#ifndef OCPN_GL_INCLUDES
-#define OCPN_GL_INCLUDES 1
-
-#ifdef __WXMSW__
-#include "GL/gl.h"  // local copy for Windows
-#include "GL/glu.h"
-#else
-#ifndef __OCPN__ANDROID__
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
-#else
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-          // which allows use of gl functions with gles2 headers
-          // to be included as well, and avoids colisions.
+#if defined(__OCPN__ANDROID__)
+ //#include <GLES2/gl2.h>
+ #include <qopengl.h>
+ #include <GL/gl_private.h>  // this is a cut-down version of gl.h
+ #include <GLES2/gl2.h>
+#elif defined(__MSVC__)
+ #include "glew.h"
+#elif defined(__WXOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glu.h>
+ typedef void (*  _GLUfuncptr)();
+ #define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+#elif defined(__WXQT__) || defined(__WXGTK__)
+ #include <GL/glew.h>
+ #include <GL/glu.h>
 #endif
 
+/*
+#if defined(_WIN32) || defined(_WIN64)
+#  include <gl/glew.h>
+#  include <GL/gl.h>
+#  include <GL/glu.h>
+#elif __APPLE__
+#  include "TargetConditionals.h"
+#  if (TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR) || TARGET_OS_IPHONE
+#    include <OpenGLES/ES2/gl.h>
+#    include <OpenGLES/ES2/glext.h>
+#  else
+#    include <OpenGL/gl.h>
+#    include <OpenGL/glu.h>
+#    include <OpenGL/glext.h>
+#  endif
+#elif defined(__ANDROID__) || defined(ANDROID)
+#  include <GLES2/gl2.h>
+#  include <GLES2/gl2ext.h>
+#elif defined(__linux__) || defined(__unix__) || defined(__posix__)
+#  include <GL/gl.h>
+#  include <GL/glu.h>
+#  include <GL/glext.h>
+#else
+#  error platform not supported.
 #endif
+*/
 
-#endif  // OCPN_GL_INCLUDES
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"

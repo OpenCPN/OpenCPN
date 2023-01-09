@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -31,12 +31,12 @@
 #endif
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/app.h>
 #include <wx/apptrait.h>
-#include "wx/stdpaths.h"
+#include <wx/stdpaths.h>
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
@@ -44,10 +44,11 @@
 #include "config.h"
 
 #include "base_platform.h"
-#include "dychart.h"
+//#include "dychart.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "cutil.h"
+#include "config_vars.h"
 #include "logger.h"
 #include "styles.h"
 #include "navutil.h"
@@ -172,7 +173,6 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern bool g_bCPAWarn;
 extern bool g_bAIS_CPA_Alert;
 
-extern int gps_watchdog_timeout_ticks;
 extern wxString *pInit_Chart_Dir;
 
 extern double g_config_display_size_mm;
@@ -193,7 +193,6 @@ extern bool g_bresponsive;
 extern bool g_bShowStatusBar;
 extern int g_cm93_zoom_factor;
 extern int g_GUIScaleFactor;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern bool g_fog_overzoom;
 extern bool g_oz_vector_scale;
 extern int g_nTrackPrecision;
@@ -256,6 +255,10 @@ extern wxString g_gpx_path;
 extern PlatSpec android_plat_spc;
 #endif
 
+OCPN_GLCaps *GL_Caps;
+
+static const char *const DEFAULT_XDG_DATA_DIRS =
+    "~/.local/share:/usr/local/share:/usr/share";
 
 #ifdef __WXMSW__
 static const char PATH_SEP = ';';
@@ -376,7 +379,7 @@ void OCPNPlatform::Initialize_1(void) {
 
   // If this flag is specified, MiniDumpWriteDump function will scan the stack
   // memory of every thread looking for pointers that point to other readable
-  // memory pages in the process’ address space. type |=
+  // memory pages in the process' address space. type |=
   // MiniDumpWithIndirectlyReferencedMemory;
 
   info.uMiniDumpType = (MINIDUMP_TYPE)type;
@@ -572,6 +575,7 @@ void OCPNPlatform::Initialize_1(void) {
 #endif
   androidUtilInit();
 #endif
+
 }
 
 //  Called from MyApp() immediately before creation of MyFrame()
@@ -625,7 +629,7 @@ void OCPNPlatform::Initialize_3(void) {
   bool bcapable = IsGLCapable();
 
 #ifdef ocpnARM  // Boot arm* platforms (meaning rPI) without OpenGL on first run
-  bcapable = false;
+  //bcapable = false;
 #endif
 
   bool bAndroid = false;
@@ -712,15 +716,28 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
 
   char *str = (char *)glGetString(GL_RENDERER);
-  if (str == NULL) {
+  if (str == NULL) {    //No GL at all...
     delete tcanvas;
     delete pctx;
     return false;
   }
 
-  char render_string[80];
-  strncpy(render_string, str, 79);
-  pcaps->Renderer = wxString(render_string, wxConvUTF8);
+  pcaps->Renderer = std::string(str);
+  pcaps->Version = std::string((char *)glGetString(GL_VERSION));
+  pcaps->GLSL_Version = std::string((char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+  pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
+
+  if (pcaps->dGLSL_Version < 1.2){
+    wxString msg;
+    msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
+    msg += wxString(pcaps->GLSL_Version.c_str());
+    msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
+    wxLogMessage(msg);
+    pcaps->bCanDoGLSL = false;
+    return false;
+  }
+
+  pcaps->bCanDoGLSL = true;
 
   if (QueryExtension("GL_ARB_texture_non_power_of_two"))
     pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
@@ -729,20 +746,10 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   else if (QueryExtension("GL_ARB_texture_rectangle"))
     pcaps->TextureRectangleFormat = GL_TEXTURE_RECTANGLE_ARB;
 
-  GetglEntryPoints(pcaps);
-
   pcaps->bOldIntel = false;
-  if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (pcaps->Renderer.Upper().Find(_T("965")) != wxNOT_FOUND) {
-      pcaps->bOldIntel = true;
-    }
-  }
 
   // Can we use VBO?
   pcaps->bCanDoVBO = true;
-  if (!pcaps->m_glBindBuffer || !pcaps->m_glBufferData ||
-      !pcaps->m_glGenBuffers || !pcaps->m_glDeleteBuffers)
-    pcaps->bCanDoVBO = false;
 
 #if defined(__WXMSW__) || defined(__WXOSX__)
   if (pcaps->bOldIntel) pcaps->bCanDoVBO = false;
@@ -763,21 +770,6 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   if (!QueryExtension("GL_EXT_framebuffer_object")) pcaps->bCanDoFBO = false;
 #endif
 
-  if (!pcaps->m_glGenFramebuffers || !pcaps->m_glGenRenderbuffers ||
-      !pcaps->m_glFramebufferTexture2D || !pcaps->m_glBindFramebuffer ||
-      !pcaps->m_glFramebufferRenderbuffer || !pcaps->m_glRenderbufferStorage ||
-      !pcaps->m_glBindRenderbuffer || !pcaps->m_glCheckFramebufferStatus ||
-      !pcaps->m_glDeleteFramebuffers || !pcaps->m_glDeleteRenderbuffers)
-    pcaps->bCanDoFBO = false;
-
-#ifdef __WXMSW__
-  if (pcaps->Renderer.Upper().Find(_T("INTEL")) != wxNOT_FOUND) {
-    if (pcaps->Renderer.Upper().Find(_T("MOBILE")) != wxNOT_FOUND) {
-      pcaps->bCanDoFBO = false;
-    }
-  }
-#endif
-
   delete tcanvas;
   delete pctx;
 
@@ -796,6 +788,10 @@ bool OCPNPlatform::IsGLCapable() {
   BuildGLCaps(pcaps);
 
   // and so we decide....
+
+  // Require a modern GLSL implementation
+  if (!pcaps->bCanDoGLSL) return false;
+
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
@@ -1195,7 +1191,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   ConnectionParams *new_params = new ConnectionParams(sGPS);
 
   new_params->bEnabled = true;
-  g_pConnectionParams->Add(new_params);
+  TheConnectionParams()->Add(new_params);
 
   g_default_font_facename = _T("Roboto");
 
@@ -1940,8 +1936,15 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
   double postmult = exp(GUIScaleFactor * (0.693 / 5.0));  //  exp(2)
 
   rv = premult * postmult;
+
   rv = wxMin(rv, 3.0);  //  Clamp at 3.0
   rv = wxMax(rv, 0.5);
+
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  if (gFrame)
+    rv *= gFrame->GetContentScaleFactor();
+#endif
 
 #endif
 

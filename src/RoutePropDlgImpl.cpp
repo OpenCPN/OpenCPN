@@ -27,6 +27,7 @@
 #include "navutil.h"
 #include "georef.h"
 #include "MarkInfo.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
@@ -47,8 +48,6 @@
 
 extern wxString GetLayerName(int id);
 
-extern double gLat;
-extern double gLon;
 extern WayPointman* pWayPointMan;
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
@@ -1059,7 +1058,7 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
 
     pSelect->DeleteAllSelectableRoutePoints(m_pRoute);
     pSelect->DeleteAllSelectableRouteSegments(m_pRoute);
-    g_pRouteMan->DeleteRoute(m_pRoute);
+    g_pRouteMan->DeleteRoute(m_pRoute, NavObjectChanges::getInstance());
     pSelect->AddAllSelectableRouteSegments(m_pTail);
     pSelect->AddAllSelectableRoutePoints(m_pTail);
     pSelect->AddAllSelectableRouteSegments(m_pHead);

@@ -74,6 +74,8 @@ public:
   void UpdateText();
   void RecalculateSize(void);
 
+  wxDateTime dtAlertExpireTime;
+
 private:
   void CreateControls();
   bool GetAlertText(void);

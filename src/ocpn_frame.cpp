@@ -29,15 +29,16 @@
 #include <windows.h>
 #endif
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
+#include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "idents.h"
 
@@ -77,7 +78,10 @@
 // #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
-//
+
+#include "dychart.h"
+#include "ocpn_frame.h"
+
 #include "OCPN_AUIManager.h"
 #include "chartbase.h"
 #include "georef.h"
@@ -86,15 +90,25 @@
 #include "timers.h"
 #include "comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "comm_util.h"  //FIXME(leamas) perhaps also this?).
+#include "comm_vars.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "color_handler.h"
+#include "config_vars.h"
 #include "ais_decoder.h"
 #include "ais.h"
 #include "AISTargetAlertDialog.h"
 #include "ais_target_data.h"
 #include "AISTargetListDialog.h"
+#include "ais_decoder.h"
+#include "TrackPropDlg.h"
+//#include "gshhs.h"
+#include "cutil.h"
+#include "routemanagerdialog.h"
+#include "pluginmanager.h"
+#include "OCPNPlatform.h"
 #include "AISTargetQueryDialog.h"
+#include "ais_info_gui.h"
 #include "CanvasConfig.h"
 #include "chartdb.h"
 // #include "chartimg.h"  // for ChartBaseBSB
@@ -106,7 +120,6 @@
 #include "ConfigMgr.h"
 // #include "cutil.h"
 // #include "datastream.h"
-// #include "dychart.h"
 #include "FontMgr.h"
 // #include "gdal/cpl_csv.h"
 // #include "glTexCache.h"
@@ -131,6 +144,7 @@
 #include "options.h"
 // #include "piano.h"
 // #include "plugin_handler.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 // #include "Quilt.h"
 // #include "route.h"
@@ -163,6 +177,7 @@
 // #include "comm_util.h"
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
+#include "comm_navmsg_bus.h"
 
 //
 // #ifdef __linux__
@@ -211,7 +226,6 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 extern OCPN_AUIManager *g_pauimgr;
 extern MyConfig *pConfig;
-extern wxConfigBase *pBaseConfig;
 extern arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
@@ -230,8 +244,6 @@ extern S57QueryDialog *g_pObjectQueryDialog;
 extern about *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
-extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-extern wxString gRmcDate, gRmcTime;
 extern double vLat, vLon;
 extern double initial_scale_ppm, initial_rotation;
 extern wxString g_locale;
@@ -406,28 +418,23 @@ extern double last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bGPSValid;
-extern int g_nNMEADebug;
+extern bool bVelocityValid;
 extern int g_total_NMEAerror_messages;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
 extern int gGPS_Watchdog;
 extern int gHDx_Watchdog;
 extern int gHDT_Watchdog;
 extern int gVAR_Watchdog;
-extern bool g_bHDT_Rx;
-extern bool g_bVAR_Rx;
 extern int gSAT_Watchdog;
-extern int g_priSats;
-extern int g_SatsInView;
-extern bool g_bSatValid;
-extern double g_UserVar;
 extern AisDecoder *g_pAIS;
+extern AisInfoGui *g_pAISGUI;
+extern bool g_bCPAWarn;
+
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
 extern int g_MemFootMB;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
 extern int g_memUsed;
+extern int g_chart_zoom_modifier_vector;
 
 
 #ifdef __WXMSW__
@@ -455,401 +462,8 @@ DWORD color_inactiveborder;
 
 #endif
 
-#if 0
-WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
-
-wxString g_vs;
-bool g_bFirstRun;
-bool g_bUpgradeInProcess;
-
-
-wxString g_compatOS;
-wxString g_compatOsVersion;
-
-bool g_start_fullscreen;
-bool g_rebuild_gl_cache;
-bool g_parse_all_enc;
-
-// Files specified on the command line, if any.
-
-
-
-
-ChartBase *Current_Vector_Ch;
-wxString *pdir_list[20];
-int g_restore_stackindex;
-int g_restore_dbindex;
-double g_ChartNotRenderScaleFactor;
-int g_nDepthUnitDisplay;
-
-bool g_bIsNewLayer;
-int g_LayerIdx;
-bool g_bLayerViz;
-
-Select *pSelectTC;
-Select *pSelectAIS;
-
-
-int g_nbrightness = 100;
-
-
-ThumbWin *pthumbwin;
-
-bool g_bexpert = true;
-bool g_bBasicMenus = false;
-;
-
-bool bDrawCurrentValues;
-
-wxString AISTargetNameFileName;
-wxString g_winPluginDir;  // Base plugin directory on Windows.
-wxString g_VisibleLayers;
-wxString g_InvisibleLayers;
-wxString g_VisiNameinLayers;
-wxString g_InVisiNameinLayers;
-
-
-wxString g_uploadConnection;
-
-int user_user_id;
-int file_user_id;
-
-int g_mem_total, g_mem_used, g_mem_initial;
-
-
-wxString *phost_name;
-
-static unsigned int malloc_max;
-
-
-static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
-
-OcpnSound *g_anchorwatch_sound = SoundFactory();
-wxString g_anchorwatch_sound_file;
-wxString g_DSC_sound_file;
-wxString g_SART_sound_file;
-wxString g_AIS_sound_file;
-
-
-ChartDummy *pDummyChart;
-
-
-
-bool g_bShowDepthUnits;
-bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
-                      // displayed
-bool g_bShowActiveRouteHighway;
-bool g_bShowLayers;
-bool g_bTransparentToolbar;
-bool g_bTransparentToolbarInOpenGLOK;
-
-bool g_bPermanentMOBIcon;
-
-int g_iSDMMFormat;
-int g_iDistanceFormat;
-int g_iSpeedFormat;
-int g_iTempFormat;
-
-int g_iNavAidRadarRingsNumberVisible;
-float g_fNavAidRadarRingsStep;
-int g_pNavAidRadarRingsStepUnits;
-int g_iWaypointRangeRingsNumber;
-float g_fWaypointRangeRingsStep;
-int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
-bool g_bWayPointPreventDragging;
-bool g_bConfirmObjectDelete;
-wxColour g_colourOwnshipRangeRingsColour;
-int g_iWpt_ScaMin;
-bool g_bUseWptScaMin;
-bool g_bShowWptName;
-int g_maxzoomin;
-
-// Set default color scheme
-
-
-
-bool g_bDebugCM93;
-bool g_bDebugS57;
-
-
-
-int g_lastClientRectx;
-int g_lastClientRecty;
-int g_lastClientRectw;
-int g_lastClientRecth;
-bool g_config_display_size_manual;
-float g_selection_radius_mm = 2.0;
-float g_selection_radius_touch_mm = 10.0;
-
-
-S57ClassRegistrar *g_poRegistrar;
-
-#ifdef __WXOSX__
-#include "macutils.h"
-#endif
-
-// begin rms
-#ifdef __WXOSX__
-#ifdef __WXMSW__
-#ifdef USE_GLU_TESS
-#ifdef USE_GLU_DLL
-// end rms
-extern bool s_glu_dll_ready;
-extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
-#endif
-#endif
-#endif
-#endif
-
-double g_ownship_predictor_minutes;
-double g_ownship_HDTpredictor_miles;
-
-
-
-int g_iSoundDeviceIndex;
-
-int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-
-int g_S57_dialog_sx, g_S57_dialog_sy;
-
-
-
-double g_PlanSpeed;
-wxDateTime g_StartTime;
-int g_StartTimeTZ;
-IDX_entry *gpIDX;
-int gpIDXn;
-long gStart_LMT_Offset;
-
-wxArrayString *pMessageOnceArray;
-
-FILE *s_fpdebug;
-bool bAutoOpen;
-
-
-int g_nCacheLimit;
-int g_memCacheLimit;
-bool g_bGDAL_Debug;
-
-bool g_bSoftwareGL;
-bool g_bShowFPS;
-bool g_bsmoothpanzoom;
-bool g_fog_overzoom;
-double g_overzoom_emphasis_base;
-bool g_oz_vector_scale;
-
-int g_nCOMPortCheck = 32;
-
-bool g_b_legacy_input_filter_behaviour;  // Support original input filter
-                                         // process or new process
-
-bool g_bbigred;
-
-
-bool g_bAISRolloverShowClass;
-bool g_bAISRolloverShowCOG;
-bool g_bAISRolloverShowCPA;
-
-bool g_bDebugGPSD;
-
-bool g_bQuiltStart;
-
-
-
-
-wxString g_GPS_Ident;
-
-
-
-
-
-bool g_bsimplifiedScalebar;
-
-int g_grad_default;
-wxColour g_border_color_default;
-int g_border_size_default;
-int g_sash_size_default;
-wxColour g_caption_color_default;
-wxColour g_sash_color_default;
-wxColour g_background_color_default;
-
-int osMajor, osMinor;
-
-bool GetMemoryStatus(int *mem_total, int *mem_used);
-
-
-// AIS Global configuration
-bool g_bCPAMax;
-double g_CPAMax_NM;
-bool g_bCPAWarn;
-double g_CPAWarn_NM;
-bool g_bTCPA_Max;
-double g_TCPA_Max;
-bool g_bMarkLost;
-double g_MarkLost_Mins;
-bool g_bRemoveLost;
-double g_RemoveLost_Mins;
-bool g_bShowCOG;
-bool g_bSyncCogPredictors;
-double g_ShowCOG_Mins;
-double g_AISShowTracks_Mins;
-double g_AISShowTracks_Limit;
-double g_ShowMoored_Kts;
-wxString g_sAIS_Alert_Sound_File;
-bool g_bAIS_CPA_Alert_Suppress_Moored;
-bool g_bAIS_ACK_Timeout;
-double g_AckTimeout_Mins;
-bool g_bShowAreaNotices;
-bool g_bDrawAISSize;
-bool g_bDrawAISRealtime;
-double g_AIS_RealtPred_Kts;
-bool g_bShowAISName;
-int g_Show_Target_Name_Scale;
-bool g_bWplUsePosition;
-int g_WplAction;
-
-int g_nAIS_activity_timer;
-
-DummyTextCtrl *g_pDummyTextCtrl;
-
-bool g_bHighliteTracks;
-int g_route_line_width;
-int g_track_line_width;
-wxColour g_colourTrackLineColour;
-wxString g_default_routepoint_icon;
-
-double g_TrackIntervalSeconds;
-double g_TrackDeltaDistance;
-
-
-int g_cm93_zoom_factor;
-PopUpDSlide *pPopupDetailSlider;
-bool g_bShowDetailSlider;
-int g_detailslider_dialog_x, g_detailslider_dialog_y;
-
-bool g_bUseGreenShip;
-
-
-bool g_b_overzoom_x = true;  // Allow high overzoom
-
-int g_OwnShipIconType;
-double g_n_ownship_length_meters;
-double g_n_ownship_beam_meters;
-double g_n_gps_antenna_offset_y;
-double g_n_gps_antenna_offset_x;
-int g_n_ownship_min_mm;
-
-double g_n_arrival_circle_radius;
-
-bool g_bPreserveScaleOnX;
-
-
-
-wxString g_localeOverride;
-bool g_b_assume_azerty;
-
-bool g_bUseRaster;
-bool g_bUseVector;
-bool g_bUseCM93;
-
-
-
-wxStaticBitmap *g_pStatBoxTool;
-
-int g_BSBImgDebug;
-
-int g_AisTargetList_range;
-int g_AisTargetList_sortColumn;
-bool g_bAisTargetList_sortReverse;
-wxString g_AisTargetList_column_spec;
-wxString g_AisTargetList_column_order;
-int g_AisTargetList_count;
-bool g_bAisTargetList_autosort;
-
-bool g_bGarminHostUpload;
-
-
-
-int g_maintoolbar_y;
-
-
-
-bool g_bMagneticAPB;
-
-
-//                        OpenGL Globals
-int g_GPU_MemSize;
-
-wxString g_uiStyle;
-
-//      Values returned from WMM_PI for variation computation request
-//      Initialize to invalid value so we don't use if if WMM hasn't updated yet
-
-
-int portaudio_initialized;
-
-bool g_bAIS_GCPA_Alert_Audio;
-bool g_bAIS_SART_Alert_Audio;
-bool g_bAIS_DSC_Alert_Audio;
-bool g_bAnchor_Alert_Audio;
-
-
-
-bool g_benableUDPNullHeader;
-
-
-int n_NavMessageShown;
-wxString g_config_version_string;
-
-
-bool g_btouch;
-bool g_bresponsive;
-bool g_bRollover;
-
-bool g_bGLexpert;
-
-int g_chart_zoom_modifier;
-int g_chart_zoom_modifier_vector;
-
-int g_NMEAAPBPrecision;
-
-wxString g_TalkerIdText;
-int g_maxWPNameLength;
-
-bool g_bAdvanceRouteWaypointOnArrivalOnly;
-
-bool g_bSpaceDropMark;
-
-wxArrayString g_locale_catalog_array;
-bool g_btrackContinuous;
-
-bool g_useMUI;
-
-int g_AndroidVersionCode;
-
-
-
-
-ChartCanvas *g_overlayCanvas;
-
-#ifdef LINUX_CRASHRPT
-wxCrashPrint g_crashprint;
-#endif
-
-#ifndef __WXMSW__
-sigjmp_buf env;  // the context saved by sigsetjmp();
-#endif
-
-// {2C9C45C2-8E7D-4C08-A12D-816BBAE722C0}
-#ifdef __WXMSW__
-DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
-            0x6b, 0xba, 0xe7, 0x22, 0xc0);
-#endif
-
-#endif
+wxDECLARE_APP(MyApp);
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -1182,6 +796,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
     SOGFilterTable[i] = NAN;
   }
   m_last_bGPSValid = false;
+  m_last_bVelocityValid = false;
 
   gHdt = NAN;
   gHdm = NAN;
@@ -1191,7 +806,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
-  m_fixtime = 0;
+  m_fixtime = -1;
 
   m_bpersistent_quilt = false;
 
@@ -1210,9 +825,11 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
          "A Persistent track recording will therefore be restarted for this target.\n\n"
          "Do you instead want to stop Persistent tracking for this target?"),
        _("OpenCPN Info"), wxYES_NO | wxCENTER, 60);
-    return r == wxID_OK;
+    return r == wxID_YES;
   };
   g_pAIS = new AisDecoder(ais_callbacks);
+
+  g_pAISGUI = new AisInfoGui();
 
   //  Create/connect a dynamic event handler slot
   wxLogMessage(" **** Connect stuff");
@@ -1656,6 +1273,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       // Verify that glCanvas is ready, if necessary
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
+        cc->GetglCanvas()->Show();
       }
 
       g_canvasConfigArray.Item(0)->canvas = cc;
@@ -2083,6 +1701,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   FrameTimer1.Stop();
   FrameCOGTimer.Stop();
+
   TrackOff();
 
   /*
@@ -2254,9 +1873,13 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pi_manager = NULL;
   }
 
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.SaveConfig();
+
   delete pConfig;  // All done
   pConfig = NULL;
-  pBaseConfig = NULL;
+  InitConfigBase(0);
+
 
   if (g_pAIS) {
     delete g_pAIS;
@@ -2267,15 +1890,15 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   g_pMUX = NULL;
 
   // Close and delete all comm drivers
-  auto& registry = CommDriverRegistry::getInstance();
+  auto& registry = CommDriverRegistry::GetInstance();
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     delete cp;
   }
-  delete g_pConnectionParams;
+  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -2870,6 +2493,12 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       break;
     }
 
+    case ID_MENU_AIS_CPAWARNING: {
+      if (GetPrimaryCanvas()) GetPrimaryCanvas()->ToggleCPAWarn();
+      SetMenubarItemState(ID_MENU_AIS_CPAWARNING, g_bCPAWarn);
+      break;
+    }
+
     case wxID_PREFERENCES:
     case ID_SETTINGS: {
       g_MainToolbar->HideTooltip();
@@ -2970,7 +2599,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
         TrackOn();
         g_bTrackCarryOver = true;
       } else {
-        TrackOff(true);
+        TrackOff(true);  // catch the last point
+        if (pConfig && pConfig->IsChangesFileDirty()) {
+          pConfig->UpdateNavObj(true);
+        }
         g_bTrackCarryOver = false;
         RefreshAllCanvas(true);
       }
@@ -3460,9 +3092,8 @@ Track *MyFrame::TrackOff(bool do_add_point) {
         }
       }
     }
+    g_pActiveTrack = NULL;
   }
-
-  g_pActiveTrack = NULL;
 
   g_bTrackActive = false;
 
@@ -3529,6 +3160,10 @@ void MyFrame::TrackDailyRestart(void) {
   if (!g_pActiveTrack) return;
 
   Track *pPreviousTrack = TrackOff(true);
+  if (pConfig && pConfig->IsChangesFileDirty()) {
+    pConfig->UpdateNavObj(true);
+  }
+
   TrackOn();
 
   //  Set the restarted track's current state such that the current track
@@ -3943,6 +3578,7 @@ void MyFrame::RegisterGlobalMenuItems() {
   ais_menu->AppendCheckItem(ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks"));
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs"));
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms"));
+  ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING, _menuText(_("Show CPA Warnings"), _T("W")));
   ais_menu->AppendSeparator();
   ais_menu->Append(ID_MENU_AIS_TARGETLIST, _("AIS target list") + _T("..."));
   m_pMenuBar->Append(ais_menu, _("&AIS"));
@@ -4020,6 +3656,7 @@ void MyFrame::UpdateGlobalMenuItems() {
   m_pMenuBar->FindItem(ID_MENU_AIS_TRACKS)->Check(g_bAISShowTracks);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPADIALOG)->Check(g_bAIS_CPA_Alert);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(g_bAIS_CPA_Alert_Audio);
+  m_pMenuBar->FindItem(ID_MENU_AIS_CPAWARNING)->Check(g_bCPAWarn);
   m_pMenuBar->FindItem(ID_MENU_SHOW_NAVOBJECTS)
       ->Check(GetPrimaryCanvas()->m_bShowNavobjects);
 
@@ -4083,6 +3720,7 @@ void MyFrame::UpdateGlobalMenuItems(ChartCanvas *cc) {
   m_pMenuBar->FindItem(ID_MENU_AIS_TRACKS)->Check(g_bAISShowTracks);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPADIALOG)->Check(g_bAIS_CPA_Alert);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(g_bAIS_CPA_Alert_Audio);
+  m_pMenuBar->FindItem(ID_MENU_AIS_CPAWARNING)->Check(g_bCPAWarn);
   m_pMenuBar->FindItem(ID_MENU_SHOW_NAVOBJECTS)->Check(cc->m_bShowNavobjects);
   m_pMenuBar->FindItem(ID_MENU_SHOW_TIDES)->Check(cc->GetbShowTide());
   m_pMenuBar->FindItem(ID_MENU_SHOW_CURRENTS)->Check(cc->GetbShowCurrent());
@@ -4740,6 +4378,12 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
   }
 
+  // update S52 PLIB scale factors
+  if (ps52plib){
+    ps52plib->SetScaleFactorExp(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor));
+    ps52plib-> SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
+  }
+
   // Apply any needed updates to each canvas
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
@@ -5148,8 +4792,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
+      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+        ConnectionParams *cp = TheConnectionParams()->Item(i);
         if (cp->bEnabled) {
           auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;
@@ -5381,8 +5025,7 @@ void MyFrame::InitAppMsgBusListener() {
 
   //  BasicNavData
   AppMsg msg_basic(AppMsg::Type::BasicNavData);
-  listener_basic_navdata = msgbus.GetListener(EVT_BASIC_NAV_DATA, this,
-                                              msg_basic);
+  listener_basic_navdata.Listen(msg_basic, this, EVT_BASIC_NAV_DATA);
 
   Bind(EVT_BASIC_NAV_DATA, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
@@ -5392,8 +5035,7 @@ void MyFrame::InitAppMsgBusListener() {
 
   //  GPS Watchdog expiry status
   AppMsg msg_watchdog(AppMsg::Type::GPSWatchdog);
-  listener_gps_watchdog = msgbus.GetListener(EVT_GPS_WATCHDOG, this,
-                                             msg_watchdog);
+  listener_gps_watchdog.Listen(msg_watchdog, this, EVT_GPS_WATCHDOG);
 
   Bind(EVT_GPS_WATCHDOG, [&](ObservedEvt ev) {
     auto ptr = ev.GetSharedPtr();
@@ -5413,7 +5055,8 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
       if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
     }
     else if (msg->wd_source == GPSWatchdogMsg::WDSource::velocity){
-      m_b_new_data = true;    // Force update on next tick
+      bool last_bVelocityValid = bVelocityValid;
+      bVelocityValid = false;
     }
 
     UpdateStatusBar();
@@ -5423,45 +5066,41 @@ void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   m_fixtime = msg->time;
 
-#if 0
-  if (cog_valid) {
     //    Maintain average COG for Course Up Mode
-    if (!std::isnan(gCog)) {
-      if (g_COGAvgSec > 0) {
-        //    Make a hole
-        for (int i = g_COGAvgSec - 1; i > 0; i--) COGTable[i] = COGTable[i - 1];
-        COGTable[0] = gCog;
+  if (!std::isnan(gCog)) {
+    if (g_COGAvgSec > 0) {
+      //    Make a hole
+      for (int i = g_COGAvgSec - 1; i > 0; i--) COGTable[i] = COGTable[i - 1];
+      COGTable[0] = gCog;
 
-        double sum = 0., count = 0;
-        for (int i = 0; i < g_COGAvgSec; i++) {
-          double adder = COGTable[i];
-          if (std::isnan(adder)) continue;
+      double sum = 0., count = 0;
+      for (int i = 0; i < g_COGAvgSec; i++) {
+        double adder = COGTable[i];
+        if (std::isnan(adder)) continue;
 
-          if (fabs(adder - g_COGAvg) > 180.) {
-            if ((adder - g_COGAvg) > 0.)
-              adder -= 360.;
-            else
-              adder += 360.;
-          }
-
-          sum += adder;
-          count++;
+        if (fabs(adder - g_COGAvg) > 180.) {
+          if ((adder - g_COGAvg) > 0.)
+            adder -= 360.;
+          else
+            adder += 360.;
         }
-        sum /= count;
 
-        if (sum < 0.)
-          sum += 360.;
-        else if (sum >= 360.)
-          sum -= 360.;
+        sum += adder;
+        count++;
+      }
+      sum /= count;
 
-        g_COGAvg = sum;
-      } else
-        g_COGAvg = gCog;
-    }
+      if (sum < 0.)
+        sum += 360.;
+      else if (sum >= 360.)
+        sum -= 360.;
 
-    FilterCogSog();
+      g_COGAvg = sum;
+    } else
+      g_COGAvg = gCog;
   }
-#endif
+
+  FilterCogSog();
 
   //    If gSog is greater than some threshold, we determine that we are
   //    "cruising"
@@ -5474,6 +5113,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   bGPSValid = true;
   if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
 
+  bVelocityValid = true;
   UpdateStatusBar();
 
 #if 0
@@ -5962,9 +5602,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     return;
   }
 
-  //      Update the Toolbar Status windows and lower status bar the first time
-  //      watchdog times out
-  if ((gGPS_Watchdog == 0) || (gSAT_Watchdog == 0)) {
+  //  Update the Toolbar Status windows and lower status bar
+  //  just after start of ticks.
+
+  if (g_tick == 2) {
     wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
                     _T(" COG ---\u00B0"));
     if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);
@@ -6030,7 +5671,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
       if (!bGPSValid) cc->SetOwnShipState(SHIP_INVALID);
 
-      if ((bGPSValid != m_last_bGPSValid) || m_b_new_data) {
+      if ((bGPSValid != m_last_bGPSValid) ||
+            (bVelocityValid != m_last_bVelocityValid)) {
         if (!g_bopengl) cc->UpdateShips();
 
         bnew_view = true;  // force a full Refresh()
@@ -6039,6 +5681,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   }
 
   m_last_bGPSValid = bGPSValid;
+  m_last_bVelocityValid = bVelocityValid;
 
   //    If any PlugIn requested dynamic overlay callbacks, force a full canvas
   //    refresh thus, ensuring at least 1 Hz. callback.
@@ -6256,7 +5899,7 @@ void MyFrame::OnFrameCOGTimer(wxTimerEvent &event) {
 
   //    Restart the timer, max frequency is 10 hz.
   int period_ms = 100;
-  if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
+  //if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
   FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
 }
 
@@ -7077,7 +6720,7 @@ void MyFrame::LoadHarmonics() {
 
 Route *pAISMOBRoute;
 
-void MyFrame::ActivateAISMOBRoute(AisTargetData *ptarget) {
+void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   if (!ptarget) return;
 
   //    The MOB point
@@ -7154,7 +6797,7 @@ void MyFrame::ActivateAISMOBRoute(AisTargetData *ptarget) {
   wxLogMessage(mob_message);
 }
 
-void MyFrame::UpdateAISMOBRoute(AisTargetData *ptarget) {
+void MyFrame::UpdateAISMOBRoute(const AisTargetData *ptarget) {
   if (pAISMOBRoute && ptarget) {
     //   Update Current Ownship point
     RoutePoint *OwnPoint = pAISMOBRoute->GetPoint(1);
@@ -8846,8 +8489,15 @@ void LoadS57() {
     pConfig->LoadS57Config();
     ps52plib->SetPLIBColorScheme(global_color_scheme);
 
-    if (gFrame->GetPrimaryCanvas())
-      ps52plib->SetPPMM(gFrame->GetPrimaryCanvas()->GetPixPerMM());
+    if (gFrame){
+      ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());
+      double dpi_factor = g_BasePlatform->GetDisplayDPIMult(gFrame);
+      ps52plib->SetDIPFactor(dpi_factor);
+    }
+
+    // preset S52 PLIB scale factors
+    ps52plib->SetScaleFactorExp(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor));
+    ps52plib-> SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
 
 #ifdef ocpnUSE_GL
 
@@ -8858,7 +8508,7 @@ void LoadS57() {
       ps52plib->SetGLOptions(
           glChartCanvas::s_b_useStencil, glChartCanvas::s_b_useStencilAP,
           glChartCanvas::s_b_useScissorTest, glChartCanvas::s_b_useFBO,
-          g_b_EnableVBO, g_texture_rectangle_format);
+          g_b_EnableVBO, g_texture_rectangle_format, 1, 1);
 #endif
 
   } else {

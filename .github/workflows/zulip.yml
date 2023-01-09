@@ -5,7 +5,7 @@ on:
   workflow_run:
     # Must restrict to given workflows:
     # https://github.com/community/community/discussions/16059
-    workflows: [CMake, Flatpak]
+    workflows: [MacOS, Windows]
     types: [completed]
 
 env:

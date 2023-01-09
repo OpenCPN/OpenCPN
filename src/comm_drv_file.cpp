@@ -23,6 +23,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+ // For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -57,16 +64,17 @@ std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
     return std::make_shared<NavAddr>(NavAddrTest(output_path));
 }
 
-void FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
+bool FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
                                  std::shared_ptr<const NavAddr> addr) {
   ofstream f;
   f.open(output_path, ios::app);
   if (!f.is_open()) {
     wxLogWarning("Cannot open file %s for writing", output_path.c_str());
-    return;
+    return false;
   }
   f << msg->to_string();
   f.close();
+  return true;
 }
 
 static vector<unsigned char> HexToChar(string hex) {
@@ -90,7 +98,9 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
       if (true) {  // Create a separate scope.
         N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-        return make_shared<Nmea2000Msg>(name, payload, src);
+// FIXME (Leamas)
+//        return make_shared<Nmea2000Msg>(name, payload, src);
+        return make_shared<NullNavMsg>();
       }
       break;
     case NavAddr::Bus::N0183:
@@ -108,7 +118,7 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
 }
 
 void FileCommDriver::Activate() {
-  CommDriverRegistry::getInstance().Activate(shared_from_this());
+  CommDriverRegistry::GetInstance().Activate(shared_from_this());
   if (input_path != "") {
     ifstream f(input_path);
     string line;

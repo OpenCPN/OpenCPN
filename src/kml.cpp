@@ -29,10 +29,10 @@
 
 #include "config.h"
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <vector>
@@ -48,10 +48,9 @@
 #include "track.h"
 #include "route.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 
 extern MyFrame* gFrame;
-extern double gLat;
-extern double gLon;
 
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;

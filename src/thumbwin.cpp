@@ -26,10 +26,10 @@
  *
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <stdlib.h>
@@ -41,7 +41,7 @@
 #include "thumbwin.h"
 #include "chartdb.h"
 #include "wx28compat.h"
-#include "ocpn_frame.h"  //FIXME (dave)  color
+#include "color_handler.h"
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------

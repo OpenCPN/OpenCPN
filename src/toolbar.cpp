@@ -23,10 +23,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif
 
 #include <vector>
@@ -1566,12 +1566,18 @@ void ToolTipWin::SetBitmap() {
   int h, w;
 
   wxScreenDC cdc;
+  double scaler = g_Platform->GetDisplayDPIMult(this);
 
   wxFont *plabelFont = FontMgr::Get().GetFont(_("ToolTips"));
-  cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, plabelFont);
+  wxFont sFont = plabelFont->Scaled(1.0 / scaler);
 
-  m_size.x = w + 8;
-  m_size.y = h + 4;
+  cdc.GetTextExtent(m_string, &w, &h, NULL, NULL, &sFont);
+
+  m_size.x = w + GetCharWidth() * 2;
+  m_size.y = h + GetCharHeight() / 2;
+
+  m_size.x *= scaler;
+  m_size.y *= scaler;
 
   wxMemoryDC mdc;
 
@@ -1594,11 +1600,15 @@ void ToolTipWin::SetBitmap() {
   mdc.DrawRectangle(0, 0, m_size.x, m_size.y);
 
   //    Draw the text
-  mdc.SetFont(*plabelFont);
+  mdc.SetFont(sFont);
   mdc.SetTextForeground(m_text_color);
   mdc.SetTextBackground(m_back_color);
 
-  mdc.DrawText(m_string, 4, 2);
+  int offx = GetCharWidth();
+  int offy = GetCharHeight()/4;
+  offx *= scaler;
+  offy *= scaler;
+  mdc.DrawText(m_string, offx, offy);
 
   SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
 }

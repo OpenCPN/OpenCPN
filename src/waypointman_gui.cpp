@@ -95,7 +95,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
         SVGDocumentPixelSize(name, w, h);
         w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
                                      // icons, 15px (approx 3mm) be it
-        const unsigned int bm_size = SVGPixelsToDisplay(w);
+        const unsigned int bm_size = w; //SVGPixelsToDisplay(w);
         wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size);
         MarkIcon *pmi = ProcessIcon(iconSVG, iconname, iconname);
         if (pmi) pmi->preScaled = true;
@@ -385,10 +385,13 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
 
     if (fn.GetExt().Lower() == _T("svg")) {
       unsigned int w, h;
+
       SVGDocumentPixelSize(name, w, h);
       w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
                                    // icons, 15px (approx 3mm) be it
-      bm_size = SVGPixelsToDisplay(w);
+
+      bm_size = w * g_ChartScaleFactorExp; //= SVGPixelsToDisplay(w);
+
       wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
       if (bmp.IsOk()) {
         wxImage iconSVG = bmp.ConvertToImage();
@@ -411,7 +414,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
     m_waypoint_man.m_pIconArray->Add(pmi);
   }
 
-  size = m_waypoint_man.m_pLegacyIconArray->GetCount();
+  size = m_waypoint_man.m_pExtendedIconArray->GetCount();
   for (unsigned int i = 0; i < size; i++) {
     pmi = (MarkIcon *) m_waypoint_man.m_pExtendedIconArray->Item(i);
 
@@ -484,7 +487,7 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   SVGDocumentPixelSize(fileName, w, h);
   w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
                                // 15px (approx 3mm) be it
-  bm_size = SVGPixelsToDisplay(w);
+  bm_size = w * g_ChartScaleFactorExp; //SVGPixelsToDisplay(w);
 #endif
 
   wxImage image =

@@ -1,0 +1,59 @@
+---
+
+name: Windows
+
+'on':
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'buildandroid/**'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows VS 2022
+            runner: windows-2022
+    env:
+      wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
+
+    # Use bash as the shell, even under MSW where the default is PowerShell.
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      # required for CMake to find Ninja
+      - name: "Set up MSVC Developer Command Prompt"
+        uses: seanmiddleditch/gha-setup-vsdevenv@v3
+        with:
+          host_arch: x86
+          arch: win32
+
+      - name: "Dependencies, configure, build"
+        shell: cmd
+        run: ci\appveyor.bat
+
+      - name: Upload
+        shell: bash
+        run: ci/generic-upload.sh
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}

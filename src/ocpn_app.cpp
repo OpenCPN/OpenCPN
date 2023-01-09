@@ -30,10 +30,10 @@
 #include <windows.h>
 #endif
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #ifdef __WXMSW__
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
@@ -88,12 +88,15 @@
 #include "about.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
+#include "ais_info_gui.h"
+
 #include "CanvasConfig.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
+#include "config_vars.h"
 #include "ConfigMgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
@@ -111,6 +114,7 @@
 #include "OCPN_AUIManager.h"
 #include "OCPNPlatform.h"
 #include "options.h"
+#include "own_ship.h"
 #include "plugin_handler.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -129,13 +133,18 @@
 #include "TrackPropDlg.h"
 #include "AISTargetListDialog.h"
 #include "comm_n0183_output.h"
-
 #include "comm_bridge.h"
+#include "certificates.h"
+#include "mDNS_query.h"
+
 //#include "usb_devices.h"
 //#include "comm_drv_registry.h"
 //#include "comm_navmsg_bus.h"
 //#include "N2KParser.h"
 //#include "comm_util.h"
+#include "comm_vars.h"
+
+#include "mDNS_service.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -222,8 +231,6 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
-wxConfigBase *pBaseConfig;   // Always the same as pConfig, handles MS linker
-
 ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
 wxString *pdir_list[20];
@@ -251,8 +258,6 @@ TrackPropDlg *pTrackPropDialog;
 RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
-double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-wxString gRmcDate, gRmcTime;
 double vLat, vLon;
 double initial_scale_ppm, initial_rotation;
 
@@ -297,11 +302,7 @@ int g_mem_total, g_mem_used, g_mem_initial;
 
 bool s_bSetSystemTime;
 
-wxString *phost_name;
-
 static unsigned int malloc_max;
-
-wxArrayOfConnPrm *g_pConnectionParams;
 
 wxDateTime g_start_time;
 wxDateTime g_loglast_time;
@@ -336,7 +337,6 @@ bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
                       // displayed
 bool g_bShowChartBar;
 bool g_bShowActiveRouteHighway;
-int g_nNMEADebug;
 int g_nAWDefault;
 int g_nAWMax;
 bool g_bPlayShipsBells;
@@ -378,22 +378,15 @@ wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-int gps_watchdog_timeout_ticks;
-int sat_watchdog_timeout_ticks;
-
 int gGPS_Watchdog;
 bool bGPSValid;
+bool bVelocityValid;
 
 int gHDx_Watchdog;
 int gHDT_Watchdog;
 int gVAR_Watchdog;
-bool g_bHDT_Rx;
-bool g_bVAR_Rx;
 
 int gSAT_Watchdog;
-int g_priSats;
-int g_SatsInView;
-bool g_bSatValid;
 
 bool g_bDebugCM93;
 bool g_bDebugS57;
@@ -460,6 +453,8 @@ double last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 Multiplexer *g_pMUX;
 
 AisDecoder *g_pAIS;
+AisInfoGui *g_pAISGUI;
+
 bool g_bAIS_CPA_Alert;
 bool g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog *g_pais_alert_dialog_active;
@@ -539,8 +534,6 @@ bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
 
-wxString g_GPS_Ident;
-
 S57QueryDialog *g_pObjectQueryDialog;
 
 wxArrayString TideCurrentDataSet;
@@ -604,7 +597,6 @@ bool g_bDrawAISRealtime;
 double g_AIS_RealtPred_Kts;
 bool g_bShowAISName;
 int g_Show_Target_Name_Scale;
-bool g_bWplUsePosition;
 int g_WplAction;
 
 int g_nAIS_activity_timer;
@@ -691,7 +683,6 @@ wxString g_AisTargetList_column_order;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bGarminHostUpload;
 bool g_bFullscreen;
 
 OCPN_AUIManager *g_pauimgr;
@@ -715,7 +706,6 @@ bool g_benable_rotate;
 bool g_bShowTrue = true;
 bool g_bShowMag;
 
-double g_UserVar;
 bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
@@ -757,13 +747,10 @@ bool b_inCompressAllCharts;
 bool g_bGLexpert;
 bool g_bUIexpert;
 
-int g_chart_zoom_modifier;
+int g_chart_zoom_modifier_raster;
 int g_chart_zoom_modifier_vector;
 
 int g_NMEAAPBPrecision;
-
-wxString g_TalkerIdText;
-int g_maxWPNameLength;
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -948,7 +935,7 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
-#include "wx/dynlib.h"
+#include <wx/dynlib.h>
 
 #if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
@@ -1055,6 +1042,16 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
 
 
 static wxStopWatch init_sw;
+
+MyApp::MyApp() {
+#ifdef __linux__
+// Handle e. g., wayland default display -- see #1166.
+
+  if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
+    setenv("GDK_BACKEND", "x11", 1);
+
+#endif   // __linux__
+}
 
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
@@ -1321,10 +1318,16 @@ bool MyApp::OnInit() {
   g_pais_query_dialog_active = NULL;
 
   //      Who am I?
-  phost_name = new wxString(::wxGetHostName());
+  g_hostname = ::wxGetHostName();
+  if(g_hostname.IsEmpty())
+     g_hostname = wxGetUserName();
 
-  //      Initialize connection parameters array
-  g_pConnectionParams = new wxArrayOfConnPrm();
+  //      A Portabel need a unique mDNS data hostname to share routes.
+  if (g_bportable) {
+    wxString p("Portable-");
+    g_hostname = p + g_hostname;
+  }
+
 
   //      Initialize some lists
   //    Layers
@@ -1366,7 +1369,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
-  pBaseConfig = pConfig;
+  InitConfigBase(pConfig);
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was
@@ -1860,18 +1863,11 @@ bool MyApp::OnInit() {
                 gps_watchdog_timeout_ticks);
   wxLogMessage(dogmsg);
 
-  sat_watchdog_timeout_ticks = 12;
-
-  gGPS_Watchdog = 2;
-  gHDx_Watchdog = 2;
-  gHDT_Watchdog = 2;
-  gSAT_Watchdog = 2;
-  gVAR_Watchdog = 2;
+  sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
 
   g_priSats = 99;
 
   //  Most likely installations have no ownship heading information
-  g_bHDT_Rx = false;
   g_bVAR_Rx = false;
 
   //  Start up a new track if enabled in config file
@@ -1935,7 +1931,7 @@ bool MyApp::OnInit() {
   gFrame->FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 
   //      Start up the ViewPort Rotation angle Averaging Timer....
-  gFrame->FrameCOGTimer.Start(10, wxTIMER_CONTINUOUS);
+  gFrame->FrameCOGTimer.Start(2000, wxTIMER_CONTINUOUS);
 
   //    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."),
   //    init_sw.Time() ) );
@@ -2005,8 +2001,8 @@ bool MyApp::OnInit() {
   g_pauimgr->Update();
 
 #if defined(__linux__) && !defined(__OCPN__ANDROID__)
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
       if (cp->GetDSPort().Contains(_T("Serial"))) {
         std::string port(cp->Port.ToStdString());
@@ -2019,6 +2015,23 @@ bool MyApp::OnInit() {
 
   // Initialize the CommBridge
   m_comm_bridge.Initialize();
+
+  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+
+  //If network connection is available, start the server and mDNS client
+  if (ipv4_addrs.size()) {
+    std::string ipAddr = ipv4_addrs[0];
+
+    wxString data_dir = g_Platform->GetPrivateDataDir();
+    if (data_dir.Last() != wxFileName::GetPathSeparator())
+      data_dir.Append(wxFileName::GetPathSeparator());
+
+    make_certificate(ipAddr, data_dir.ToStdString());
+
+    m_RESTserver.StartServer(data_dir.ToStdString());
+
+    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
+  }
 
   return TRUE;
 }
@@ -2085,14 +2098,11 @@ int MyApp::OnExit() {
     delete g_pGroupArray;
   }
 
-  //delete pDummyChart;
-
   wxLogMessage(_T("opencpn::MyApp exiting cleanly...\n"));
   wxLog::FlushActive();
 
   g_Platform->CloseLogFile();
 
-  delete phost_name;
   delete pInit_Chart_Dir;
 
   for (Track* track : g_TrackList) {
