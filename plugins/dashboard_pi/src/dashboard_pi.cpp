@@ -845,7 +845,7 @@ void dashboard_pi::Notify() {
   if (mWDN_Watchdog <= 0) {
     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, NAN, _T("-"));
     mPriWDN = 99;
-    mWDN_Watchdog = gps_watchdog_timeout_ticks;
+    mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
   }
   mMDA_Watchdog--;
   if (mMDA_Watchdog <= 0) {
@@ -1295,7 +1295,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                                     // available, use it ...
             SendSentenceToAllInstruments(
                 OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue, _T("\u00B0"));
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            // MWD can be seldom updated by the sensor. Set prolonged watchdog
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           } else if (!std::isnan(
                          m_NMEA0183.Mwd
                              .WindAngleMagnetic)) {  // otherwise try
@@ -1303,7 +1304,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD,
                                          m_NMEA0183.Mwd.WindAngleMagnetic,
                                          _T("\u00B0M"));
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
 
           SendSentenceToAllInstruments(
@@ -1368,7 +1369,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                     m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor,
                     m_NMEA0183.Mwv.WindAngle);
                 mPriWDN = 8;
-                mWDN_Watchdog = gps_watchdog_timeout_ticks;
+                mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
                 mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               }
             } else if (m_NMEA0183.Mwv.Reference ==
@@ -1405,7 +1406,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
                                                  _T("\u00B0"));
                     mPriWDN = 7;
-                    mWDN_Watchdog = gps_watchdog_timeout_ticks;
+                    mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
                   }
                 }
 
@@ -1632,7 +1633,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             CalculateAndUpdateTWDS(m_NMEA0183.Vwr.WindSpeedKnots, awa);
             mPriWDN = 9;
             mMWVT_Watchdog = gps_watchdog_timeout_ticks;
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
         }
       }
@@ -2134,7 +2135,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
             double m_twdT = GEODESIC_RAD2DEG(WindAngle);
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
             mPriWDN = 1;
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
           break;
         case 1:  // N2kWind direction Magnetic North
@@ -2152,7 +2153,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
             mPriWDN = 1;
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
           break;
         case 2: // N2kWind_Apparent_centerline
@@ -2184,7 +2185,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               mPriTWA = 2;
               mPriWDN = 2;
               mMWVT_Watchdog = gps_watchdog_timeout_ticks;
-              mWDN_Watchdog = gps_watchdog_timeout_ticks;
+              mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
             }
           }
           break;
@@ -2493,7 +2494,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
                                          _T("\u00B0"));
             mPriWDN = 5;
-            mWDN_Watchdog = gps_watchdog_timeout_ticks;
+            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
         }
       }
@@ -2722,7 +2723,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         m_twdT = GEODESIC_RAD2DEG(m_twdT);
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
         mPriWDN = 3;
-        mWDN_Watchdog = gps_watchdog_timeout_ticks;
+        mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
       }
     } else if (update_path == _T("environment.wind.directionMagnetic")) {
       // relative magn north
@@ -2742,7 +2743,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0M"));
         mPriWDN = 4;
-        mWDN_Watchdog = gps_watchdog_timeout_ticks;
+        mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
       }
     } else if (update_path == _T("navigation.trip.log")) {  // m
       double m_tlog = GetJsonDouble(value);
