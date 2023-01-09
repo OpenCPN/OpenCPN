@@ -58,17 +58,18 @@
 
 #include "base_platform.h"
 #include "catalog_handler.h"
-#include "comm_navmsg_bus.h"
 #include "comm_appmsg_bus.h"
-#include "ocpn_utils.h"
+#include "comm_driver.h"
+#include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "downloader.h"
 #include "observable_evtvar.h"
-#include "comm_driver.h"
-#include "plugin_loader.h"
+#include "ocpn_utils.h"
 #include "plugin_handler.h"
+#include "plugin_loader.h"
 #include "routeman.h"
-#include "track.h"
 #include "select.h"
+#include "track.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -77,7 +78,6 @@ class Select;
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
 wxString g_winPluginDir;
-wxConfigBase* pBaseConfig = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -125,32 +125,10 @@ AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
-wxString g_GPS_Ident;
-bool g_bGarminHostUpload;
 
 /* comm_bridge context. */
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
-double g_UserVar;
-int gps_watchdog_timeout_ticks;
-int g_nNMEADebug;
-bool g_bSatValid;
-bool g_bVAR_Rx;
 int g_NMEAAPBPrecision;
-int g_SatsInView;
-int g_priSats;
-int sat_watchdog_timeout_ticks = 12;
-
-wxString gRmcTime;
-wxString gRmcDate;
-
-wxString g_TalkerIdText;
 
 Select* pSelect;
 double g_n_arrival_circle_radius;
@@ -180,7 +158,6 @@ RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
 bool g_bAllowShipToActive;
 wxRect g_blink_rect;
-int g_maxWPNameLength;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
@@ -267,7 +244,7 @@ public:
 
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
-    pBaseConfig = new wxFileConfig("", "", config_file);
+    InitConfigBase(new wxFileConfig("", "", config_file));
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();

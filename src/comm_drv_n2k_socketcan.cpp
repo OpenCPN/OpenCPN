@@ -51,8 +51,7 @@
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
-
-extern wxString g_hostname;
+#include "config_vars.h"
 
 #define DEFAULT_N2K_SOURCE_ADDRESS 72
 

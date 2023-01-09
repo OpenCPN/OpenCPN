@@ -15,6 +15,7 @@
 #include "glChartCanvas.h"
 #include "viewport.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "route.h"
 #include "waypointman_gui.h"
 #include "svg_utils.h"
@@ -28,9 +29,6 @@ extern MyFrame* gFrame;
 extern wxRect g_blink_rect;
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
-
-extern double gLat;
-extern double gLon;
 
 extern Routeman* g_pRouteMan;
 

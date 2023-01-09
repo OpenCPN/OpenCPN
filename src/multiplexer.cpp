@@ -39,7 +39,10 @@
 #endif
 
 #include <wx/wx.h>
+
 #include "multiplexer.h"
+
+#include "config_vars.h"
 #include "conn_params.h"
 #include "comm_drv_registry.h"
 #include "comm_drv_n0183_serial.h"
@@ -50,7 +53,6 @@
 #include "udev_rule_mgr.h"
 #endif
 
-extern wxString g_GPS_Ident;
 extern bool g_b_legacy_input_filter_behaviour;
 
 wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);

@@ -48,6 +48,7 @@
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "cutil.h"
+#include "config_vars.h"
 #include "logger.h"
 #include "styles.h"
 #include "navutil.h"
@@ -172,7 +173,6 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern bool g_bCPAWarn;
 extern bool g_bAIS_CPA_Alert;
 
-extern int gps_watchdog_timeout_ticks;
 extern wxString *pInit_Chart_Dir;
 
 extern double g_config_display_size_mm;
@@ -193,7 +193,6 @@ extern bool g_bresponsive;
 extern bool g_bShowStatusBar;
 extern int g_cm93_zoom_factor;
 extern int g_GUIScaleFactor;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern bool g_fog_overzoom;
 extern bool g_oz_vector_scale;
 extern int g_nTrackPrecision;
@@ -1192,7 +1191,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   ConnectionParams *new_params = new ConnectionParams(sGPS);
 
   new_params->bEnabled = true;
-  g_pConnectionParams->Add(new_params);
+  TheConnectionParams()->Add(new_params);
 
   g_default_font_facename = _T("Roboto");
 

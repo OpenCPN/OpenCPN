@@ -45,6 +45,7 @@
 #include "vector2D.h"
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 #include "nav_object_database.h"
 #include "track.h"
 #include "TrackPropDlg.h"
@@ -54,8 +55,6 @@ extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
-extern double gLat;
-extern double gLon;
 extern MyFrame* gFrame;
 extern Select *pSelect;
 extern AisDecoder *g_pAIS;

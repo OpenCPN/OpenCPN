@@ -17,9 +17,11 @@
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "conn_params.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "ais_defs.h"
 #include "ais_decoder.h"
@@ -127,36 +129,18 @@ extern double g_RemoveLost_Mins;
 extern double g_MarkLost_Mins;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
-extern wxString g_GPS_Ident;
-extern bool g_bGarminHostUpload;
 extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
 extern BasePlatform* g_BasePlatform;
 extern bool g_bportable;
 extern wxString g_winPluginDir;
-extern wxConfigBase* pBaseConfig;
 extern void* g_pi_manager;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
 
-extern double gCog;
-extern double gHdm;
-extern double gHdt;
-extern double gLat;
-extern double gLon;
-extern double gSog;
-extern double gVar;
-extern double g_UserVar;
-extern int gps_watchdog_timeout_ticks;
 extern bool g_bHDT_Rx;
-extern int g_nNMEADebug;
-extern bool g_bSatValid;
-extern bool g_bVAR_Rx;
 extern int g_NMEAAPBPrecision;
-extern int g_SatsInView;
-extern int g_priSats;
-extern int sat_watchdog_timeout_ticks;
 
 extern Select* pSelectAIS;
 extern Select* pSelect;

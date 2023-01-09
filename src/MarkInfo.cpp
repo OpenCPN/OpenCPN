@@ -45,6 +45,7 @@
 #include "navutil_base.h"
 #include "georef.h"
 #include "gui_lib.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
@@ -63,7 +64,6 @@
 #include <QtWidgets/QScroller>
 #endif
 
-extern double gLat, gLon, gSog, gCog;
 extern TCMgr* ptcmgr;
 extern MyConfig* pConfig;
 extern WayPointman* pWayPointMan;

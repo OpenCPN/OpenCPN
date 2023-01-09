@@ -1655,11 +1655,14 @@ struct SignalkId {
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     SignalkId id, wxEventType ev, wxEvtHandler *handler);
 
-/** Return payload in a recieved n2000 message of type id in ev. */
+/** Return payload in a received n2000 message of type id in ev. */
 extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
                                                      ObservedEvt ev);
 
-/** Return payload in a recieved n0183 message of type id in ev. */
+/** Return source identifier (iface) of a received n2000 message of type id in ev. */
+extern DECL_EXP std::string GetN2000Source(NMEA2000Id id, ObservedEvt ev);
+
+/** Return payload in a received n0183 message of type id in ev. */
 extern DECL_EXP std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev);
 
 /** Facade for BasicNavDataMsg. */

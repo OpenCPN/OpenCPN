@@ -71,6 +71,7 @@ typedef enum {
 
 #define CONN_ENABLE_ID 47621
 
+
 class ConnectionParamsPanel;
 
 class ConnectionParams {
@@ -134,5 +135,7 @@ private:
 };
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
+
+wxArrayOfConnPrm* TheConnectionParams();
 
 #endif

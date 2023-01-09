@@ -875,8 +875,10 @@ set(
   include/comm_navmsg.h
   include/comm_navmsg_bus.h
   include/comm_util.h
+  include/comm_vars.h
   include/compass.h
   include/concanv.h
+  include/config_vars.h
   include/conn_params.h
   include/conn_params_panel.h
   include/cutil.h
@@ -923,6 +925,7 @@ set(
   include/ocpn_types.h
   include/ocpn_utils.h
   include/options.h
+  include/own_ship.h
   include/piano.h
   include/plugin_cache.h
   include/plugin_blacklist.h
@@ -1016,8 +1019,10 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
+  ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
@@ -1029,6 +1034,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp

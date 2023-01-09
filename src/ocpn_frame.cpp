@@ -90,9 +90,11 @@
 #include "timers.h"
 #include "comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "comm_util.h"  //FIXME(leamas) perhaps also this?).
+#include "comm_vars.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
 #include "color_handler.h"
+#include "config_vars.h"
 #include "ais_decoder.h"
 #include "ais.h"
 #include "AISTargetAlertDialog.h"
@@ -142,6 +144,7 @@
 #include "options.h"
 // #include "piano.h"
 // #include "plugin_handler.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 // #include "Quilt.h"
 // #include "route.h"
@@ -223,7 +226,6 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
 extern OCPN_AUIManager *g_pauimgr;
 extern MyConfig *pConfig;
-extern wxConfigBase *pBaseConfig;
 extern arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
@@ -242,8 +244,6 @@ extern S57QueryDialog *g_pObjectQueryDialog;
 extern about *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
-extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-extern wxString gRmcDate, gRmcTime;
 extern double vLat, vLon;
 extern double initial_scale_ppm, initial_rotation;
 extern wxString g_locale;
@@ -419,20 +419,12 @@ extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bGPSValid;
 extern bool bVelocityValid;
-extern int g_nNMEADebug;
 extern int g_total_NMEAerror_messages;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
 extern int gGPS_Watchdog;
 extern int gHDx_Watchdog;
 extern int gHDT_Watchdog;
 extern int gVAR_Watchdog;
-extern bool g_bVAR_Rx;
 extern int gSAT_Watchdog;
-extern int g_priSats;
-extern int g_SatsInView;
-extern bool g_bSatValid;
-extern double g_UserVar;
 extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
 extern bool g_bCPAWarn;
@@ -440,7 +432,6 @@ extern bool g_bCPAWarn;
 extern bool g_bUseGLL;
 extern int g_MemFootSec;
 extern int g_MemFootMB;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer *g_pMUX;
 extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
@@ -815,7 +806,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
-  m_fixtime = 0;
+  m_fixtime = -1;
 
   m_bpersistent_quilt = false;
 
@@ -1887,7 +1878,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   delete pConfig;  // All done
   pConfig = NULL;
-  pBaseConfig = NULL;
+  InitConfigBase(0);
 
 
   if (g_pAIS) {
@@ -1903,11 +1894,11 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   registry.CloseAllDrivers();
 
   //  Clear some global arrays, lists, and hash maps...
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     delete cp;
   }
-  delete g_pConnectionParams;
+  delete TheConnectionParams();
 
   if (pLayerList) {
     LayerList::iterator it;
@@ -4801,8 +4792,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     case 1:
       // Connect Datastreams
 
-      for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
+      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+        ConnectionParams *cp = TheConnectionParams()->Item(i);
         if (cp->bEnabled) {
           auto driver = MakeCommDriver(cp);
           cp->b_IsSetup = TRUE;

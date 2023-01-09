@@ -30,6 +30,7 @@
 #endif  // precompiled headers
 #include "ocpn_types.h"
 #include "compasswin.h"
+#include "comm_vars.h"
 #include "chcanv.h"
 #include "styles.h"
 #include "wx28compat.h"
@@ -40,8 +41,6 @@ EVT_PAINT(ocpnFloatingCompassWindow::OnPaint)
 
         extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool bGPSValid;
-extern bool g_bSatValid;
-extern int g_SatsInView;
 extern bool g_bCourseUp;
 extern bool g_bskew_comp;
 extern MyFrame* gFrame;

@@ -30,62 +30,62 @@
 #include <windows.h>
 #endif
 
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-#include <wx/tokenzr.h>
-#include <wx/sstream.h>
-#include <wx/image.h>
-#include <wx/filename.h>
-#include <wx/graphics.h>
-#include <wx/dir.h>
-#include <wx/listbook.h>
-#include <wx/timectrl.h>
-#include <wx/bmpcbox.h>
-#include <wx/tglbtn.h>
-
-#include "dychart.h"
-#include "idents.h"
-
 #include <stdlib.h>
-//#include <math.h>
 #include <time.h>
 #include <locale>
 #include <list>
 
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <wx/bmpcbox.h>
+#include <wx/dir.h>
+#include <wx/filename.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
+#include <wx/sstream.h>
+#include <wx/tglbtn.h>
+#include <wx/timectrl.h>
+#include <wx/tokenzr.h>
 
-#include "config.h"
-#include "navutil.h"
-#include "navutil_base.h"
+#include "ais_decoder.h"
+#include "ais.h"
+#include "CanvasConfig.h"
+#include "chartbase.h"
+#include "chartdb.h"
 #include "chcanv.h"
-#include "georef.h"
+#include "config.h"
+#include "config_vars.h"
+#include "conn_params.h"
 #include "cutil.h"
-#include "styles.h"
+#include "dychart.h"
+#include "FontMgr.h"
+#include "geodesic.h"
+#include "georef.h"
+#include "idents.h"
+#include "Layer.h"
+#include "multiplexer.h"
+#include "nav_object_database.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "nmea0183.h"
+#include "NMEALogWindow.h"
+#include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "OCPN_Sound.h"
+#include "own_ship.h"
+#include "route.h"
 #include "routeman.h"
 #include "s52utils.h"
-#include "chartbase.h"
-#include "ocpndc.h"
-#include "geodesic.h"
-#include "multiplexer.h"
-#include "ais.h"
-#include "route.h"
 #include "select.h"
-#include "FontMgr.h"
-#include "OCPN_Sound.h"
-#include "Layer.h"
-#include "nav_object_database.h"
-#include "NMEALogWindow.h"
-#include "ais_decoder.h"
-#include "OCPNPlatform.h"
+#include "styles.h"
 #include "track.h"
-#include "chartdb.h"
-#include "CanvasConfig.h"
-#include "ocpn_frame.h"
-#include "conn_params.h"
-
 #include "s52plib.h"
 #include "cm93.h"
 
@@ -93,7 +93,7 @@
 #include "glChartCanvas.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -110,20 +110,17 @@ extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
 extern int g_LayerIdx;
 extern MyConfig *pConfig;
-extern double vLat, vLon, gLat, gLon;
+extern double vLat, vLon;
 extern double kLat, kLon;
 extern double initial_scale_ppm, initial_rotation;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 extern bool g_bShowTrue, g_bShowMag;
-extern double g_UserVar;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
 extern int g_nDepthUnitDisplay;
 extern wxString g_winPluginDir;
-
-extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
@@ -156,7 +153,6 @@ extern double g_plus_minus_zoom_factor;
 extern bool g_bShowOutlines;
 extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
-extern int g_nNMEADebug;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
@@ -241,7 +237,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bWplUsePosition;
 extern int g_WplAction;
 extern bool g_benableAISNameCache;
 extern bool g_bUseOnlyConfirmedAISName;
@@ -274,7 +269,6 @@ extern bool g_bEnableZoomToCursor;
 extern wxString g_toolbarConfig;
 extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
-extern int gps_watchdog_timeout_ticks;
 
 extern int g_nCacheLimit;
 extern int g_memCacheLimit;
@@ -382,8 +376,6 @@ extern ChartGroupArray *g_pGroupArray;
 
 extern bool g_bDebugOGL;
 extern int g_tcwin_scale;
-extern wxString g_GPS_Ident;
-extern bool g_bGarminHostUpload;
 extern wxString g_uploadConnection;
 
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -403,10 +395,7 @@ extern int g_chart_zoom_modifier_vector;
 
 extern int g_NMEAAPBPrecision;
 
-extern wxString g_TalkerIdText;
 extern bool g_bShowTrackPointTime;
-
-extern int g_maxWPNameLength;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
@@ -1265,7 +1254,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T( "DataConnections" ), &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
-      g_pConnectionParams->Clear();
+      TheConnectionParams()->Clear();
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) {
@@ -1273,7 +1262,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
           delete prm;
           continue;
         }
-        g_pConnectionParams->Add(prm);
+        TheConnectionParams()->Add(prm);
       }
     }
   }
@@ -2683,9 +2672,9 @@ void MyConfig::UpdateSettings() {
 
   SetPath(_T ( "/Settings/NMEADataSource" ));
   wxString connectionconfigs;
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     if (i > 0) connectionconfigs.Append(_T("|"));
-    connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
+    connectionconfigs.Append(TheConnectionParams()->Item(i)->Serialize());
   }
   Write(_T ( "DataConnections" ), connectionconfigs);
 
