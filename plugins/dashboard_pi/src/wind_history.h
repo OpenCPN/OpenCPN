@@ -97,6 +97,7 @@ protected:
   void SetMinMaxWindScale();
   void DrawWindDirScale(wxGCDC* dc);
   void DrawWindSpeedScale(wxGCDC* dc);
+  void ResetData();
   wxString GetWindDirStr(wxString WindDir);
 };
 

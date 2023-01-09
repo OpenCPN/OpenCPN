@@ -52,7 +52,7 @@ DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory(
   m_WindDir = -1;
   m_WindDirRange = 90;
   m_MaxWindSpd = 0;
-  m_WindSpeedUnit = _("--");
+  m_WindSpeedUnit = _("-");
   m_TotalMaxWindSpd = 0;
   m_WindSpd = 0;
   // Set top line height to leave space for wind data
@@ -94,42 +94,29 @@ wxSize DashboardInstrument_WindDirHistory::GetSize(int orient, wxSize hint) {
                   wxMax(m_TitleHeight + 140, hint.y));
   }
 }
+
 void DashboardInstrument_WindDirHistory::SetData(DASH_CAP st, double data,
                                                  wxString unit) {
   if (st == OCPN_DBP_STC_TWD || st == OCPN_DBP_STC_TWS) {
     if (st == OCPN_DBP_STC_TWD) {
-      m_WindDir = data;
-      if (m_DirRecCnt <= 5) {
-        m_DirStartVal += data;
-        m_DirRecCnt++;
+      if (std::isnan(data)) {
+        // This NAN is from the one Watchdog used to reset wind history graph
+        ResetData();
+        m_WindSpd = m_WindDir = NAN;
+      }
+      else {
+        m_WindDir = data;
+        if (m_DirRecCnt <= 5) {
+          m_DirStartVal += data;
+          m_DirRecCnt++;
+        }
       }
     }
-    if (st == OCPN_DBP_STC_TWS && (std::isnan(data) || data < 200.0)) {
+    if (st == OCPN_DBP_STC_TWS && !std::isnan(data) && data < 200.0) {
       m_WindSpd = data;
       // if unit changes, reset everything ...
-      if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {
-        m_MaxWindDir = -1;
-        m_WindDir = -1;
-        m_WindDirRange = 90;
-        m_MaxWindSpd = 0;
-        m_TotalMaxWindSpd = 0;
-        m_WindSpd = 0;
-        m_SpdRecCnt = 0;
-        m_DirRecCnt = 0;
-        m_SpdStartVal = -1;
-        m_DirStartVal = -1;
-        m_IsRunning = false;
-        m_SampleCount = 0;
-        m_LeftLegend = 3;
-        m_RightLegend = 3;
-        for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
-          m_ArrayWindDirHistory[idx] = -1;
-          m_ArrayWindSpdHistory[idx] = -1;
-          m_ExpSmoothArrayWindSpd[idx] = -1;
-          m_ExpSmoothArrayWindDir[idx] = -1;
-          m_ArrayRecTime[idx] = wxDateTime::Now().GetTm();
-          m_ArrayRecTime[idx].year = 999;
-        }
+      if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("-")) {
+        ResetData();
       }
       m_WindSpeedUnit = unit;
       if (m_SpdRecCnt <= 5) {
@@ -193,10 +180,35 @@ void DashboardInstrument_WindDirHistory::SetData(DASH_CAP st, double data,
       // get the overall max Wind Speed
       m_TotalMaxWindSpd = wxMax(m_WindSpd, m_TotalMaxWindSpd);
 
-      // set wind angle scale to full +/- 90° depending on the real max/min
+      // set wind angle scale to full +/- 90 degr depending on the real max/min
       // value recorded
       SetMinMaxWindScale();
     }
+  }
+}
+
+void DashboardInstrument_WindDirHistory::ResetData() {
+  m_MaxWindDir = -1;
+  m_WindDir = -1;
+  m_WindDirRange = 90;
+  m_MaxWindSpd = 0;
+  m_TotalMaxWindSpd = 0;
+  m_WindSpd = 0;
+  m_SpdRecCnt = 0;
+  m_DirRecCnt = 0;
+  m_SpdStartVal = -1;
+  m_DirStartVal = -1;
+  m_IsRunning = false;
+  m_SampleCount = 0;
+  m_LeftLegend = 3;
+  m_RightLegend = 3;
+  for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
+    m_ArrayWindDirHistory[idx] = -1;
+    m_ArrayWindSpdHistory[idx] = -1;
+    m_ExpSmoothArrayWindSpd[idx] = -1;
+    m_ExpSmoothArrayWindDir[idx] = -1;
+    m_ArrayRecTime[idx] = wxDateTime::Now().GetTm();
+    m_ArrayRecTime[idx].year = 999;
   }
 }
 
@@ -214,9 +226,9 @@ void DashboardInstrument_WindDirHistory::Draw(wxGCDC* dc) {
 // determine and set  min and max values for the direction
 //*********************************************************************************
 void DashboardInstrument_WindDirHistory::SetMinMaxWindScale() {
-  // set wind direction legend to full +/- 90° depending on the real max/min
-  // value recorded example : max wind dir. = 45°  ==> max = 90°
-  //           min wind dir. = 45°  ==> min = 0°
+  // set wind direction legend to full +/- 90 degr depending on the real max/min
+  // value recorded example : max wind dir. = 45 degr  ==> max = 90 degr
+  //           min wind dir. = 45 degr  ==> min = 0 degr
   // first calculate the max wind direction
   int fulldeg = m_MaxWindDir / 90;  // we explicitly chop off the decimals by
                                     // type conversion from double to int !
@@ -233,7 +245,7 @@ void DashboardInstrument_WindDirHistory::SetMinMaxWindScale() {
     fulldeg = m_MinWindDir > 0 ? fulldeg : (fulldeg - 1);
   m_MinWindDir = fulldeg * 90;
 
-  // limit the visible wind dir range to 360°; remove the extra range on the
+  // limit the visible wind dir range to 360  degr remove the extra range on the
   // opposite side of the current wind dir value
   m_WindDirRange = m_MaxWindDir - m_MinWindDir;
   if (m_WindDirRange > 360) {
