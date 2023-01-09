@@ -96,6 +96,7 @@
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
+#include "config_vars.h"
 #include "ConfigMgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
@@ -113,6 +114,7 @@
 #include "OCPN_AUIManager.h"
 #include "OCPNPlatform.h"
 #include "options.h"
+#include "own_ship.h"
 #include "plugin_handler.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -140,6 +142,7 @@
 //#include "comm_navmsg_bus.h"
 //#include "N2KParser.h"
 //#include "comm_util.h"
+#include "comm_vars.h"
 
 #include "mDNS_service.h"
 
@@ -228,8 +231,6 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
-wxConfigBase *pBaseConfig;   // Always the same as pConfig, handles MS linker
-
 ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
 wxString *pdir_list[20];
@@ -257,8 +258,6 @@ TrackPropDlg *pTrackPropDialog;
 RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
-double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-wxString gRmcDate, gRmcTime;
 double vLat, vLon;
 double initial_scale_ppm, initial_rotation;
 
@@ -303,11 +302,7 @@ int g_mem_total, g_mem_used, g_mem_initial;
 
 bool s_bSetSystemTime;
 
-wxString g_hostname;
-
 static unsigned int malloc_max;
-
-wxArrayOfConnPrm *g_pConnectionParams;
 
 wxDateTime g_start_time;
 wxDateTime g_loglast_time;
@@ -342,7 +337,6 @@ bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
                       // displayed
 bool g_bShowChartBar;
 bool g_bShowActiveRouteHighway;
-int g_nNMEADebug;
 int g_nAWDefault;
 int g_nAWMax;
 bool g_bPlayShipsBells;
@@ -384,17 +378,15 @@ wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-int gps_watchdog_timeout_ticks;
-int sat_watchdog_timeout_ticks;
-
+int gGPS_Watchdog;
 bool bGPSValid;
 bool bVelocityValid;
 
-bool g_bVAR_Rx;
+int gHDx_Watchdog;
+int gHDT_Watchdog;
+int gVAR_Watchdog;
 
-int g_priSats;
-int g_SatsInView;
-bool g_bSatValid;
+int gSAT_Watchdog;
 
 bool g_bDebugCM93;
 bool g_bDebugS57;
@@ -542,8 +534,6 @@ bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
 
-wxString g_GPS_Ident;
-
 S57QueryDialog *g_pObjectQueryDialog;
 
 wxArrayString TideCurrentDataSet;
@@ -607,7 +597,6 @@ bool g_bDrawAISRealtime;
 double g_AIS_RealtPred_Kts;
 bool g_bShowAISName;
 int g_Show_Target_Name_Scale;
-bool g_bWplUsePosition;
 int g_WplAction;
 
 int g_nAIS_activity_timer;
@@ -694,7 +683,6 @@ wxString g_AisTargetList_column_order;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bGarminHostUpload;
 bool g_bFullscreen;
 
 OCPN_AUIManager *g_pauimgr;
@@ -718,7 +706,6 @@ bool g_benable_rotate;
 bool g_bShowTrue = true;
 bool g_bShowMag;
 
-double g_UserVar;
 bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
@@ -764,9 +751,6 @@ int g_chart_zoom_modifier_raster;
 int g_chart_zoom_modifier_vector;
 
 int g_NMEAAPBPrecision;
-
-wxString g_TalkerIdText;
-int g_maxWPNameLength;
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -1345,9 +1329,6 @@ bool MyApp::OnInit() {
   }
 
 
-  //      Initialize connection parameters array
-  g_pConnectionParams = new wxArrayOfConnPrm();
-
   //      Initialize some lists
   //    Layers
   pLayerList = new LayerList;
@@ -1388,7 +1369,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
-  pBaseConfig = pConfig;
+  InitConfigBase(pConfig);
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was
@@ -2020,8 +2001,8 @@ bool MyApp::OnInit() {
   g_pauimgr->Update();
 
 #if defined(__linux__) && !defined(__OCPN__ANDROID__)
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
       if (cp->GetDSPort().Contains(_T("Serial"))) {
         std::string port(cp->Port.ToStdString());

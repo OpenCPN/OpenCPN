@@ -1,4 +1,3 @@
-
 #include "config.h"
 
 #include <algorithm>
@@ -12,6 +11,8 @@
 
 #include <gtest/gtest.h>
 
+#include "ais_decoder.h"
+#include "ais_defs.h"
 #include "base_platform.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
@@ -19,11 +20,11 @@
 #include "comm_drv_file.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "own_ship.h"
 #include "routeman.h"
-#include "ais_defs.h"
-#include "ais_decoder.h"
 #include "select.h"
 
 class AISTargetAlertDialog;
@@ -65,40 +66,17 @@ double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
-wxString g_GPS_Ident;
-bool g_bGarminHostUpload;
 int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
 wxString g_winPluginDir;
-wxConfigBase* pBaseConfig = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
-double g_UserVar;
-int gps_watchdog_timeout_ticks;
-int g_nNMEADebug;
-bool g_bSatValid;
-bool g_bVAR_Rx;
 int g_NMEAAPBPrecision;
-int g_SatsInView;
-int g_priSats;
-int sat_watchdog_timeout_ticks = 12;
-
-wxString gRmcTime;
-wxString gRmcDate;
-
-wxString g_TalkerIdText;
 
 Select* pSelect;
 double g_n_arrival_circle_radius;
@@ -128,7 +106,6 @@ RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
 bool g_bAllowShipToActive;
 wxRect g_blink_rect;
-int g_maxWPNameLength;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;

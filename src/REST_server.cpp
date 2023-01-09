@@ -42,6 +42,7 @@
 
 #include "REST_server.h"
 #include "mongoose.h"
+#include "config_vars.h"
 #include "gui_lib.h"
 #include "REST_server_gui.h"
 #include "pugixml.hpp"
@@ -58,7 +59,6 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
 bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj);
 
 extern Routeman *g_pRouteMan;
-extern wxConfigBase *pBaseConfig;
 extern MyFrame *gFrame;
 
 //  Some global variables to handle thread syncronization
@@ -195,14 +195,12 @@ void RESTServer::StopServer() {
 
 bool RESTServer::LoadConfig( void )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTServer" ) );
+  if( TheBaseConfig() ) {
+    TheBaseConfig()->SetPath("/Settings/RESTServer");
 
     wxString key_string;
 
-    pConf->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -211,7 +209,7 @@ bool RESTServer::LoadConfig( void )
 
       m_key_map[client_name.ToStdString()] = client_key.ToStdString();
     }
-    pConf->Read("ServerOverwriteDuplicates", &m_b_overwrite, 0 );
+    TheBaseConfig()->Read("ServerOverwriteDuplicates", &m_b_overwrite, 0 );
 
   }
   return true;
@@ -219,10 +217,8 @@ bool RESTServer::LoadConfig( void )
 
 bool RESTServer::SaveConfig( void )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTServer" ) );
+  if( TheBaseConfig() ) {
+    TheBaseConfig()->SetPath( _T ( "/Settings/RESTServer" ) );
 
     wxString key_string;
     for (auto it : m_key_map){
@@ -230,9 +226,9 @@ bool RESTServer::SaveConfig( void )
       key_string += item;
     }
 
-    pConf->Write("ServerKeys", key_string );
+    TheBaseConfig()->Write("ServerKeys", key_string );
 
-    pConf->Write("ServerOverwriteDuplicates", m_b_overwrite );
+    TheBaseConfig()->Write("ServerOverwriteDuplicates", m_b_overwrite );
 
   }
   return true;

@@ -27,25 +27,24 @@
 #include <iostream>
 #include <sstream>
 
+#include <curl/curl.h>
+
 #include "peer_client.h"
 
-#include "nav_object_database.h"
+#include <wx/fileconf.h>
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
 #include <wx/tokenzr.h>
-#include <wx/fileconf.h>
 
-#include "REST_server.h"
-#include "gui_lib.h"
-#include <curl/curl.h>
+#include "config_vars.h"
 #include "FontMgr.h"
+#include "gui_lib.h"
+#include "nav_object_database.h"
+#include "REST_server.h"
 
 extern std::string PINtoRandomKeyString(int dpin);
 
-extern wxString g_hostname;
 extern MyFrame *gFrame;
-extern wxConfigBase *pBaseConfig;
-
 
 wxString GetErrorText(int result){
   switch (result) {
@@ -144,14 +143,12 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
 
 std::string GetClientKey( std::string &server_name )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTClient" ) );
+  if (TheBaseConfig()) {
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
 
     wxString key_string;
 
-    pConf->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -167,14 +164,12 @@ std::string GetClientKey( std::string &server_name )
 
 void SaveClientKey( std::string &server_name, std::string key )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTClient" ) );
+  if (TheBaseConfig()) {
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
 
     wxArrayString array;
     wxString key_string;
-    pConf->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -205,7 +200,7 @@ void SaveClientKey( std::string &server_name, std::string key )
       key_string_updated += ";";
     }
 
-    pConf->Write("ServerKeys", key_string_updated );
+    TheBaseConfig()->Write("ServerKeys", key_string_updated );
 
   }
   return ;

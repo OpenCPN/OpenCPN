@@ -27,6 +27,7 @@
 #include "navutil.h"
 #include "navutil_base.h"
 #include "georef.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "routeman_gui.h"
 #include "routemanagerdialog.h"
@@ -44,7 +45,6 @@
 #include "androidUTIL.h"
 #endif
 
-extern double gLat, gLon;
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern Routeman* g_pRouteMan;

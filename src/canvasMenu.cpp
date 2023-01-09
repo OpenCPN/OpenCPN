@@ -56,12 +56,14 @@
 #include "chcanv.h"
 #include "cm93.h"      // for chart outline draw
 #include "config.h"
+#include "config_vars.h"
 #include "cutil.h"
 #include "georef.h"
 #include "kml.h"
 #include "navutil.h"
 #include "nav_object_database.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
@@ -95,7 +97,7 @@ extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
 extern bool g_bskew_comp;
-extern double gLat, gLon, gSog, gCog, vLat, vLon;
+extern double vLat, vLon;
 extern MyFrame *gFrame;
 extern ChartGroupArray *g_pGroupArray;
 extern PlugInManager *g_pi_manager;
@@ -128,7 +130,6 @@ extern double gHdt;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-extern wxString g_hostname;
 
 //    Constants for right click menus
 enum {

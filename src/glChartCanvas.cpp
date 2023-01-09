@@ -78,6 +78,7 @@
 #include "navutil.h"
 #include "color_handler.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -192,8 +193,6 @@ extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin *pthumbwin;
 extern int g_mipmap_max_level;
-
-extern double gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_OwnShipIconType;
 

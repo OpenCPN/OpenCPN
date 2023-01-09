@@ -50,7 +50,13 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
+static wxArrayOfConnPrm* the_connection_params = 0;
 
+wxArrayOfConnPrm* TheConnectionParams() {
+  if (the_connection_params == 0)
+    the_connection_params = new wxArrayOfConnPrm();
+  return the_connection_params;
+}
 
 ConnectionParams::ConnectionParams(const wxString &configStr) {
   m_optionsPanel = NULL;

@@ -91,12 +91,12 @@ millions of points.
 #include "json_event.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "select.h"
 
 extern WayPointman *pWayPointMan;
 extern Select *pSelect;
-extern double gLat, gLon;
 extern double g_PlanSpeed;
 extern int g_nTrackPrecision;
 extern bool g_bTrackDaily;

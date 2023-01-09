@@ -58,6 +58,7 @@
 #include "plugin_loader.h"
 
 #include "base_platform.h"
+#include "config_vars.h"
 #include "ocpn_utils.h"
 #include "logger.h"
 #include "observable_confvar.h"
@@ -73,7 +74,6 @@
 #include <dlfcn.h>
 #endif
 
-extern wxConfigBase* pBaseConfig;
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 extern ChartDB* ChartData;
@@ -297,7 +297,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   //    Check the config file to see if this PlugIn is user-enabled
 
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
-  ConfigVar<bool> enabled(path, "bEnabled", pBaseConfig);
+  ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
 
   // only loading enabled plugins? check that it is enabled
   if (load_enabled && !enabled.Get(true)) {

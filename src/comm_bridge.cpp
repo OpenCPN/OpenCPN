@@ -35,14 +35,18 @@
 #include <wx/tokenzr.h>
 #include <wx/fileconf.h>
 
-#include "comm_bridge.h"
+#include "comm_ais.h"
 #include "comm_appmsg_bus.h"
+#include "comm_bridge.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+#include "comm_vars.h"
+#include "config_vars.h"
 #include "idents.h"
-#include "ocpn_types.h"
-#include "comm_ais.h"
 #include "OCPNPlatform.h"
+#include "ocpn_types.h"
+#include "own_ship.h"
+
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -64,19 +68,6 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
 
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
-
-extern double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-extern wxString gRmcDate, gRmcTime;
-extern int g_nNMEADebug;
-extern int g_priSats, g_SatsInView;
-extern bool g_bSatValid;
-extern bool g_bVAR_Rx;
-extern double g_UserVar;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
-extern wxString g_ownshipMMSI_SK;
-extern wxConfigBase *pBaseConfig;
-wxString g_ownshipMMSI_SK;
 
 bool debug_priority = 0;
 
@@ -1019,32 +1010,30 @@ void CommBridge::UpdateAndApplyMaps(std::vector<std::string> new_maps){
 
 bool CommBridge::LoadConfig( void )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/CommPriority" ) );
+  if( TheBaseConfig() ) {
+    TheBaseConfig()->SetPath("/Settings/CommPriority");
 
     std::vector<std::string> new_maps;
     std::string s_prio;
     wxString pri_string;
 
-    pConf->Read("PriorityPosition", &pri_string );
+    TheBaseConfig()->Read("PriorityPosition", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    pConf->Read("PriorityVelocity", &pri_string );
+    TheBaseConfig()->Read("PriorityVelocity", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    pConf->Read("PriorityHeading", &pri_string );
+    TheBaseConfig()->Read("PriorityHeading", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    pConf->Read("PriorityVariation", &pri_string );
+    TheBaseConfig()->Read("PriorityVariation", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
-    pConf->Read("PrioritySatellites", &pri_string );
+    TheBaseConfig()->Read("PrioritySatellites", &pri_string );
     s_prio = std::string(pri_string.c_str());
     new_maps.push_back(s_prio);
 
@@ -1055,26 +1044,24 @@ bool CommBridge::LoadConfig( void )
 
 bool CommBridge::SaveConfig( void )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/CommPriority" ) );
+  if( TheBaseConfig() ) {
+    TheBaseConfig()->SetPath("/Settings/CommPriority");
 
     wxString pri_string;
     pri_string = wxString(GetPriorityMap(priority_map_position).c_str());
-    pConf->Write( "PriorityPosition", pri_string );
+    TheBaseConfig()->Write( "PriorityPosition", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_velocity).c_str());
-    pConf->Write( "PriorityVelocity", pri_string );
+    TheBaseConfig()->Write( "PriorityVelocity", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_heading).c_str());
-    pConf->Write( "PriorityHeading", pri_string );
+    TheBaseConfig()->Write( "PriorityHeading", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_variation).c_str());
-    pConf->Write( "PriorityVariation", pri_string );
+    TheBaseConfig()->Write( "PriorityVariation", pri_string );
 
     pri_string = wxString(GetPriorityMap(priority_map_satellites).c_str());
-    pConf->Write( "PrioritySatellites", pri_string );
+    TheBaseConfig()->Write( "PrioritySatellites", pri_string );
   }
 
   return true;

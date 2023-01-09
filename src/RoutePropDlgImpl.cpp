@@ -27,6 +27,7 @@
 #include "navutil.h"
 #include "georef.h"
 #include "MarkInfo.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
@@ -47,8 +48,6 @@
 
 extern wxString GetLayerName(int id);
 
-extern double gLat;
-extern double gLon;
 extern WayPointman* pWayPointMan;
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
