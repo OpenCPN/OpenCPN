@@ -806,7 +806,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
 
-  m_fixtime = 0;
+  m_fixtime = -1;
 
   m_bpersistent_quilt = false;
 
