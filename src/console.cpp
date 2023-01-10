@@ -244,7 +244,7 @@ public:
 
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
-    InitConfigBase(new wxFileConfig("", "", config_file));
+    InitBaseConfig(new wxFileConfig("", "", config_file));
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();

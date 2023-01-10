@@ -1878,7 +1878,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   delete pConfig;  // All done
   pConfig = NULL;
-  InitConfigBase(0);
+  InitBaseConfig(0);
 
 
   if (g_pAIS) {
