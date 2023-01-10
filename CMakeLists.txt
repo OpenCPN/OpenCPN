@@ -2906,10 +2906,10 @@ install(CODE "
 )
 
 #  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
-#  So, fix that here by grabbing the correct version as installed by macports.
+#  So, fix that here by grabbing the correct version  actually used.
 install(CODE "
   include(BundleUtilities)
-  copy_resolved_item_into_bundle(\"/opt/local/lib/liblzma.5.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
+  copy_resolved_item_into_bundle(\"${LIBLZMA_LIBRARIES}\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
   "
   COMPONENT Runtime
 )
