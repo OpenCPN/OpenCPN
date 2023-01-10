@@ -43,4 +43,4 @@ wxConfigBase* TheBaseConfig() {
   wxASSERT_MSG(the_base_config != 0, "Uninitialized the_base_config");
   return the_base_config;
 }
-void InitConfigBase(wxConfigBase* cfg) { the_base_config = cfg; }
+void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
