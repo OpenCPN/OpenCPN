@@ -220,6 +220,15 @@ private:
   std::shared_ptr<ObservableListener> listener_130306;
   std::shared_ptr<ObservableListener> listener_130310;
 
+
+  std::string prio127245;
+  std::string prio127257;
+  std::string prio128259;
+  std::string prio128267;
+  std::string prio129029;
+  std::string prioN2kPGNsat;
+  std::string prio130306;
+
   wxString m_self;
 
   wxFileConfig *m_pconfig;
