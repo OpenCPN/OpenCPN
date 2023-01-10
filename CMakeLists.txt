@@ -2589,6 +2589,15 @@ if (WIN32 AND NOT UNIX)
   endif (BUNDLE_LIBARCHIVEDLLS)
 endif (WIN32 AND NOT UNIX)
 
+if (APPLE)
+  find_library(MPG123 NAMES mpg123 REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ${MPG123})
+  message(STATUS "MPG123: ${MPG123}")
+  find_library(MP3LAME NAMES mp3lame lame REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ${MP3LAME})
+  message(STATUS "MP3LAME: ${MP3LAME}")
+endif ()
+
 if (MSVC AND OCPN_USE_CRASHREPORT)
   install(
     FILES ${CMAKE_SOURCE_DIR}/cache/buildwin/crashrpt/CrashRpt1403.dll
