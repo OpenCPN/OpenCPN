@@ -291,10 +291,14 @@ Track *ActiveTrack::DoExtendDaily() {
   TrackPoint *pExtendPoint = NULL;
 
   TrackPoint *pLastPoint = GetPoint(0);
+  if (!pLastPoint->GetCreateTime().IsValid())
+    return NULL;
 
   for (Track* ptrack : g_TrackList) {
     if (!ptrack->m_bIsInLayer && ptrack->m_GUID != m_GUID) {
       TrackPoint *track_node = ptrack->GetLastPoint();
+      if (!track_node->GetCreateTime().IsValid())
+        continue;     // Skip this bad track
       if (track_node->GetCreateTime() <= pLastPoint->GetCreateTime()) {
         if (!pExtendPoint ||
             track_node->GetCreateTime() > pExtendPoint->GetCreateTime()) {
