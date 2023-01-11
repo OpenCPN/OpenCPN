@@ -769,16 +769,11 @@ void dashboard_pi::Notify() {
   // Set Satellite Status data from the same source as OCPN use for position
   // Get the identifiers
   std::vector<std::string> PriorityIDs = GetActivePriorityIdentifiers();
-  // Get current satellite identifier = item 4
+  // Get current satellite priority identifier = item 4
   std::string satID = PriorityIDs[4];
-    /*  Possible satID examples:
-     *  satID: nmea0183 COM6:0 (:GPGSV)
-     *  satID: ?? :0 (:signalK)
-     *  satID: nmea2000 COM3:127  (:129029 /129540)
-     */
   if (satID.find("nmea0183") != std::string::npos)
     mPriSatStatus = 3; // GSV
-  else if (satID.find("?? ") != std::string::npos)
+  else if (satID.find("SignalK") != std::string::npos)
     mPriSatStatus = 2; // SignalK
   else if (satID.find("nmea2000") != std::string::npos) {
     prioN2kPGNsat = satID;
