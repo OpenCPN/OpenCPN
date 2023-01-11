@@ -283,7 +283,8 @@ public:
 
   SignalkMsg(std::string _context_self, std::string _context,
              std::string _raw_message)
-      : NavMsg(NavAddr::Bus::Signalk, std::make_shared<const NavAddr>()),
+      : NavMsg(NavAddr::Bus::Signalk,
+               std::make_shared<const NavAddr>(NavAddr::Bus::Signalk, "")),
         context_self(_context_self),
         context(_context),
         raw_message(_raw_message){};
