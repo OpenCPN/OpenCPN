@@ -4332,8 +4332,9 @@ void glChartCanvas::Render() {
       wxBrush ppBrush(colour);
       gldc.SetPen(ppBlue);
       gldc.SetBrush(ppBrush);
-      int xw = m_pParentCanvas->GetClientSize().x;
-      float rect_pix = m_pParentCanvas->m_focus_indicator_pix;
+      int xw = m_pParentCanvas->GetClientSize().x * m_displayScale;
+      float rect_pix = m_pParentCanvas->m_focus_indicator_pix
+                            * m_displayScale;
       wxPoint barPoints[4];
       barPoints[0].x = 0;
       barPoints[0].y = 0;
