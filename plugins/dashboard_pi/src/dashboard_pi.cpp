@@ -585,6 +585,7 @@ int dashboard_pi::Init(void) {
     HandleN2K_127245(ev);
   });
 
+
   // Roll Pitch   PGN 127257
   wxDEFINE_EVENT(EVT_N2K_127257, ObservedEvt);
   NMEA2000Id id_127257 = NMEA2000Id(127257);
@@ -777,10 +778,12 @@ void dashboard_pi::Notify() {
      */
   if (satID.find("nmea0183") != std::string::npos)
     mPriSatStatus = 3; // GSV
-  else if(satID.find("?? ") != std::string::npos)
+  else if (satID.find("?? ") != std::string::npos)
     mPriSatStatus = 2; // SignalK
-  else if (satID.find("nmea2000") != std::string::npos)
+  else if (satID.find("nmea2000") != std::string::npos) {
+    prioN2kPGNsat = satID;
     mPriSatStatus = 1; // N2k
+  }
 
   mMWVA_Watchdog--;
   if (mMWVA_Watchdog <= 0) {
@@ -1890,12 +1893,30 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
 void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
   NMEA2000Id id_127245(127245);
   std::vector<uint8_t>v = GetN2000Payload(id_127245, ev);
-  double RudderPosition, AngleOrder;
-  unsigned char Instance;
-  tN2kRudderDirectionOrder RudderDirectionOrder;
+
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_127245, ev);
+  source += ":" + ident;
 
   if (mPriRSA >= 1) {
-    // Get rudder position
+    if (mPriRSA == 1) {
+      // We favor first received after last WD
+      if (source != prio127245) return;
+    }
+    else {
+      // First time use after WD time out.
+      prio127245 = source;
+    }
+
+    double RudderPosition, AngleOrder;
+    unsigned char Instance;
+    tN2kRudderDirectionOrder RudderDirectionOrder;
+
+      // Get rudder position
     if (ParseN2kPGN127245(v, RudderPosition, Instance, RudderDirectionOrder, AngleOrder)) {
       if (!N2kIsNA(RudderPosition)) {
         double m_rudangle = GEODESIC_RAD2DEG(RudderPosition);
@@ -1911,12 +1932,30 @@ void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
 void dashboard_pi::HandleN2K_127257(ObservedEvt ev) {
   NMEA2000Id id_127257(127257);
   std::vector<uint8_t>v = GetN2000Payload(id_127257, ev);
-  unsigned char SID;
-  double Yaw, Pitch, Roll;
 
-  // Get roll and pitch
-  if (ParseN2kPGN127257(v, SID, Yaw, Pitch, Roll)) {
-    if (mPriPitchRoll >= 1) {
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_127257, ev);
+  source += ":" + ident;
+
+  if (mPriPitchRoll >= 1) {
+    if (mPriPitchRoll == 1) {
+      // We favor first received after last WD
+      if (source != prio127257) return;
+    }
+    else {
+      // First time use after WD time out.
+      prio127257 = source;
+    }
+
+    unsigned char SID;
+    double Yaw, Pitch, Roll;
+
+    // Get roll and pitch
+    if (ParseN2kPGN127257(v, SID, Yaw, Pitch, Roll)) {
       if (!N2kIsNA(Pitch)) {
         double m_pitch = GEODESIC_RAD2DEG(Pitch);
         wxString p_unit = _T("\u00B0\u2191") + _("Up");
@@ -1947,10 +1986,25 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
   NMEA2000Id id_128267(128267);
   std::vector<uint8_t>v = GetN2000Payload(id_128267, ev);
 
-  unsigned char SID;
-  double DepthBelowTransducer, Offset, Range;
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_128267, ev);
+  source += ":" + ident;
 
   if (mPriDepth >= 1) {
+    if (mPriDepth == 1) {
+      if (source != prio128267) return;
+    }
+    else {
+      prio128267 = source;
+    }
+
+    unsigned char SID;
+    double DepthBelowTransducer, Offset, Range;
+
     // Get water depth
     if (ParseN2kPGN128267(v, SID, DepthBelowTransducer, Offset, Range)) {
       if (!N2kIsNA(DepthBelowTransducer)) {
@@ -2000,21 +2054,37 @@ void dashboard_pi::HandleN2K_128275(ObservedEvt ev) {
 void dashboard_pi::HandleN2K_128259(ObservedEvt ev) {
   NMEA2000Id id_128259(128259);
   std::vector<uint8_t>v = GetN2000Payload(id_128259, ev);
-  unsigned char SID;
-  double WaterReferenced, GroundReferenced ;
-  tN2kSpeedWaterReferenceType SWRT;
 
-  // Get speed through water
-  if (ParseN2kPGN128259( v, SID, WaterReferenced, GroundReferenced, SWRT)) {
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_128259, ev);
+  source += ":" + ident;
 
-    if (!N2kIsNA(WaterReferenced)) {
-      if (mPriSTW >= 1) {
+  if (mPriSTW >= 1) {
+    if (mPriSTW == 1) {
+      if (source != prio128259) return;
+    }
+    else {
+      prio128259 = source;
+    }
+
+    unsigned char SID;
+    double WaterReferenced, GroundReferenced;
+    tN2kSpeedWaterReferenceType SWRT;
+
+    // Get speed through water
+    if (ParseN2kPGN128259(v, SID, WaterReferenced, GroundReferenced, SWRT)) {
+
+      if (!N2kIsNA(WaterReferenced)) {
         double stw_knots = MS2KNOTS(WaterReferenced);
-          SendSentenceToAllInstruments(
-            OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
-            getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-          mPriSTW = 1;
-          mSTW_Watchdog = gps_watchdog_timeout_ticks;
+        SendSentenceToAllInstruments(
+          OCPN_DBP_STC_STW, toUsrSpeed_Plugin(stw_knots, g_iDashSpeedUnit),
+          getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+        mPriSTW = 1;
+        mSTW_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
   }
@@ -2024,6 +2094,15 @@ wxString talker_N2k = wxEmptyString;
 void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
   NMEA2000Id id_129029(129029);
   std::vector<uint8_t>v = GetN2000Payload(id_129029, ev);
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_129029, ev);
+  source += ":" + ident;
+  //Use the source prioritized by OCPN only
+  if (source != prioN2kPGNsat) return;
 
   unsigned char SID;
   uint16_t DaysSince1970;
@@ -2068,6 +2147,16 @@ void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
 void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
   NMEA2000Id id_129540(129540);
   std::vector<uint8_t>v = GetN2000Payload(id_129540, ev);
+
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_129540, ev);
+  source += ":" + ident;
+  //Use the source prioritized by OCPN only
+  if (source != prioN2kPGNsat) return;
 
   unsigned char SID;
   tN2kRangeResidualMode Mode;
@@ -2118,18 +2207,35 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
 void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
   NMEA2000Id id_130306(130306);
   std::vector<uint8_t>v = GetN2000Payload(id_130306, ev);
-  unsigned char SID;
-  double WindSpeed, WindAngle;
-  tN2kWindReference WindReference;
 
-  // Get wind data
-  if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
+  // Get a uniqe ID to prioritize source(s)
+  unsigned char source_id = v.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+  std::string source = GetN2000Source(id_130306, ev);
+  source += ":" + ident;
 
-    if (!N2kIsNA(WindSpeed) && !N2kIsNA(WindAngle)) {
-      double m_twaangle, m_twaspeed_kn;
-      bool sendTrueWind = false;
+  if (mPriWDN >= 1) {
+    if (mPriWDN == 1) {
+      if (source != prio130306) return;
+    }
+    else {
+      prio130306 = source;
+    }
 
-      switch (WindReference) {
+    unsigned char SID;
+    double WindSpeed, WindAngle;
+    tN2kWindReference WindReference;
+
+    // Get wind data
+    if (ParseN2kPGN130306(v, SID, WindSpeed, WindAngle, WindReference)) {
+
+      if (!N2kIsNA(WindSpeed) && !N2kIsNA(WindAngle)) {
+        double m_twaangle, m_twaspeed_kn;
+        bool sendTrueWind = false;
+
+        switch (WindReference) {
         case 0: // N2kWind direction True North
           if (mPriWDN >= 1) {
             double m_twdT = GEODESIC_RAD2DEG(WindAngle);
@@ -2143,7 +2249,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
             double m_twdT = GEODESIC_RAD2DEG(WindAngle);
             // Make it true if variation is available
             if (!std::isnan(mVar)) {
-              m_twdT = (m_twdT) + mVar;
+              m_twdT = (m_twdT)+mVar;
               if (m_twdT > 360.) {
                 m_twdT -= 360;
               }
@@ -2208,26 +2314,28 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
         case 7: // N2kWind_Unavailable
           break;
         default: break;
-      }
-
-      if (sendTrueWind) {
-        // Wind angle is 0-360 degr
-        wxString m_twaunit = _T("\u00B0R");
-        // Should be unit "L" and 0-180 to port
-        if (m_twaangle > 180.0) {
-          m_twaangle = 360.0 - m_twaangle;
-          m_twaunit = _T("\u00B0L");
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
-        // Wind speed
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
-                                      toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
-                                      getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2,
-                                      toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
-                                      getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-        mPriTWA = 1;
-        mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+
+        if (sendTrueWind) {
+          // Wind angle is 0-360 degr
+          wxString m_twaunit = _T("\u00B0R");
+          // Should be unit "L" and 0-180 to port
+          if (m_twaangle > 180.0) {
+            m_twaangle = 360.0 - m_twaangle;
+            m_twaunit = _T("\u00B0L");
+          }
+          SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
+          // Wind speed
+          SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
+            toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
+            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+          SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2,
+            toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
+            getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+          mPriTWA = 1;
+          mPriWDN = 1; // For source prio
+          mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+        }
       }
     }
   }
@@ -2274,7 +2382,8 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
   }
 }
 
-// Signal K.......
+
+/****** Signal K *******/
 void dashboard_pi::ParseSignalK(wxString &msg) {
   wxJSONValue root;
   wxJSONReader jsonReader;
@@ -2799,7 +2908,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
   }
 }
 
-
+/*******Nav data from OCPN core *******/
 void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
 
   if (mPriPosition >= 1) {
