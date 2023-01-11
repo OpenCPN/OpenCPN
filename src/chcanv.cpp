@@ -772,8 +772,14 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   if (!g_bdisable_opengl) m_pQuilt->EnableHighDefinitionZoom(true);
 #endif
 
+  int gridFontSize = 8;
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  gridFontSize *= GetContentScaleFactor();
+#endif
+
   m_pgridFont = FontMgr::Get().FindOrCreateFont(
-      8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE,
+      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE,
       wxString(_T ( "Arial" )));
 
   m_Piano = new Piano(this);
