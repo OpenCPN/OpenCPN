@@ -54,7 +54,7 @@ else (APPLE)
   set(PACKAGE_NAME opencpn)
 endif (APPLE)
 
-add_definitions("-DRAPIDJSON_HAS_STDSTRING=1") 
+add_definitions("-DRAPIDJSON_HAS_STDSTRING=1")
 
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
@@ -2910,6 +2910,14 @@ install(CODE "
 install(CODE "
   include(BundleUtilities)
   copy_resolved_item_into_bundle(\"/opt/local/lib/liblzma.5.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
+  "
+  COMPONENT Runtime
+)
+
+#  fixup_bundle also misses other files
+install(CODE "
+  include(BundleUtilities)
+  copy_resolved_item_into_bundle(\"/usr/local/opt/mpg123/lib/libmpg123.0.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
   "
   COMPONENT Runtime
 )
