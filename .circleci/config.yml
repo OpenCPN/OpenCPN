@@ -59,6 +59,25 @@ jobs:
       - checkout
       - run: ci/circleci-build-android-corelib-armhf.sh
 
+  build-macos:
+    macos:
+      xcode: "14.2.0"
+    environment:
+      - OCPN_TARGET:  macos
+    steps:
+      - checkout
+      - restore_cache:
+         keys:
+           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+      - run: ci/generic-build-macos.sh
+      - save_cache:
+         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+         paths:
+           - /usr/local/bin
+           - /usr/local/include
+           - /usr/local/lib
+      - run: ci/generic-upload.sh
+
 workflows:
   version: 2
   build_all:
