@@ -2861,7 +2861,8 @@ endif (UNIX AND NOT APPLE)
 # Apple application bundle
 #
 if (APPLE)
-  message(STATUS "MacOS PKG_MOD: $ENV{PKG_MOD} ")
+  set(APKG_MOD $ENV{PKG_MOD})
+  message(STATUS "MacOS PKG_MOD: ${APKG_MOD} ")
 
   # -- Run the BundleUtilities cmake code
   set(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
