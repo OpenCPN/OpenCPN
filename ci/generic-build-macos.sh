@@ -93,7 +93,18 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
-sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
+ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
+pkgbuild \
+    --root /tmp/opencpn/bin/OpenCPN.app \
+    --identifier org.opencpn \
+    --install-location /Applications/OpenCPN.app \
+    --min-os-version 10.15.0 \
+    OpenCPN.app.pkg
+productbuild \
+    --distribution ../buildosx/distro.plist --identifier org.opencpn \
+   OpenCPN.pkg
+
+exit 1
 
 make create-pkg
 make create-dmg

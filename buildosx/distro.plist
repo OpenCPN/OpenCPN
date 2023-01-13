@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <pkg-ref id="org.opencpn"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="org.opencpn"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.opencpn" visible="false">
+        <pkg-ref id="org.opencpn"/>
+    </choice>
+    <allowed-os-versions>
+        <os-version min="10.15"/>
+    </allowed-os-versions>
+    <pkg-ref id="org.opencpn" version="0" onConclusion="none">OpenCPN.app.pkg</pkg-ref>
+</installer-gui-script>
+
