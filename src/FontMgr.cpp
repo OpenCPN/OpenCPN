@@ -214,6 +214,11 @@ wxColour FontMgr::GetDefaultFontColor( const wxString &TextElement ){
   if(TextElement.IsSameAs( "Console Value") )
     defaultColor = wxColour( 0, 255, 0);
 
+#ifdef __WXMAC__
+  // Override, to adjust for light/dark mode
+  return wxColour(0,0,0);
+#endif
+
   return defaultColor;
 }
 
