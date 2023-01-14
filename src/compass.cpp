@@ -187,11 +187,11 @@ void ocpnCompass::UpdateStatus(bool bnew) {
     m_lastgpsIconName.Clear();  // force an update to occur
 
   CreateBmp(bnew);
-  if (m_texobj == 0)
-    CreateTexture();
-  else
-    UpdateTexture();
 
+  unsigned int old_texture = m_texobj;
+  m_texobj = 0;
+  CreateTexture();
+  glDeleteTextures(1, &old_texture);
 }
 
 void ocpnCompass::SetScaleFactor(float factor) {
@@ -478,7 +478,7 @@ void ocpnCompass::CreateTexture() {
     m_tex_h = height_pot;
 
     GLuint format = GL_RGBA;
-    GLuint internalformat = format;
+    GLuint internalformat = GL_RGBA8; //format;
     int stride = 4;
 
     if (imgdata) {
@@ -561,7 +561,7 @@ void ocpnCompass::UpdateTexture() {
     m_tex_h = height_pot;
 
     GLuint format = GL_RGBA;
-    GLuint internalformat = format;
+    GLuint internalformat = GL_RGBA8; //format;
     int stride = 4;
 
     if (imgdata) {
@@ -581,7 +581,7 @@ void ocpnCompass::UpdateTexture() {
       }
 
       glBindTexture(GL_TEXTURE_2D, m_texobj);
-
+      glEnable(GL_TEXTURE_2D);
 
       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_tex_w, m_tex_h, format, GL_UNSIGNED_BYTE, teximage);
 

@@ -1532,7 +1532,7 @@ if (OCPN_USE_SVG)
     message(STATUS "wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG")
     add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
     add_definitions(-DocpnUSE_wxBitmapBundle)
-    set(PKGPROJ_TEMPLATE OpenCPN.newsvg.pkgproj.in)
+    set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
   else()
     message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
     set(PKGPROJ_TEMPLATE OpenCPN.pkgproj.in)
@@ -2861,6 +2861,9 @@ endif (UNIX AND NOT APPLE)
 # Apple application bundle
 #
 if (APPLE)
+  set(APKG_MOD $ENV{PKG_MOD})
+  message(STATUS "MacOS PKG_MOD: ${APKG_MOD} ")
+
   # -- Run the BundleUtilities cmake code
   set(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 
@@ -2941,8 +2944,10 @@ install(CODE "
    COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg file: ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg."
    )
 
- ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
- DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
+ if ("${APKG_MOD}" MATCHES "10")
+  ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
+ endif()
 
   #Build standard MacOS .dmg
   add_custom_command(
