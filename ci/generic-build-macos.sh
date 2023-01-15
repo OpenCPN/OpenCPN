@@ -47,11 +47,10 @@ brew install freetype
 brew install lame
 brew install lz4
 brew install mpg123
-brew install openssl
 brew install xz
 brew install zstd
 
-for pkg in python3  cmake ; do
+for pkg in openssl python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
