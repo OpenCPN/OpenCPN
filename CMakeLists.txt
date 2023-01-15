@@ -2996,9 +2996,18 @@ install(CODE "
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
   )
 
+  execute_process(
+    COMMAND sw_vers -productVersion
+    OUTPUT_VARIABLE _product_version
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  # Only use main version nr
+  string(REGEX REPLACE "\..*" "" OS_VERS ${_product_version})
+
   # Build standard installer using pkgbuild/productbuild
-  set(MACOS_PKG
-    "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg"
+  string(CONCAT MACOS_PKG
+    "${CMAKE_CURRENT_BINARY_DIR}"
+    "/${PACKAGE_NAME}}_${PACKAGE_VERSION}-${OS_VERS}.pkg"
   )
 
   add_custom_target(pkg-tmp)
