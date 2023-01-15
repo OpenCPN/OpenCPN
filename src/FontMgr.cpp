@@ -435,9 +435,11 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
   }
 
   // font not found, create the new one
+  // Support scaled HDPI displays automatically
+
   font = NULL;
-  wxFont fontTmp(pointSize, family, style, weight, underline, facename,
-                 encoding);
+  wxFont fontTmp(OCPN_GetDisplayScaleFactor() * pointSize,
+                 family, style, weight, underline, facename, encoding);
   if (fontTmp.IsOk()) {
     font = new wxFont(fontTmp);
     font_cache_record record;
