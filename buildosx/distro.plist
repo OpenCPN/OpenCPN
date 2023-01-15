@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
     <title>OpenCPN</title>
+    <background mime-type="image/png">
+       ../buildosx/opencpn418x620.png
+    </background>
     <pkg-ref id="org.opencpn"/>
     <options customize="never" require-scripts="false"/>
     <choices-outline>
