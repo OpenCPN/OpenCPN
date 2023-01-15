@@ -3021,7 +3021,9 @@ install(CODE "
     TARGET macos-pkg
     COMMAND
       productbuild
-      --distribution ../buildosx/distro.plist --identifier org.opencpn
+      --distribution ../buildosx/distro.plist
+      --version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+      --identifier org.opencpn
      ${MACOS_PKG}
   )
   add_dependencies(macos-pkg  component-pkg)
