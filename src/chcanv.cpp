@@ -10326,7 +10326,12 @@ void ChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
 static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
                          const wxString &second) {
   wxFont *dFont = FontMgr::Get().GetFont(_("RouteLegInfoRollover"));
-  dc.SetFont(*dFont);
+
+  wxFont *psRLI_font = FontMgr::Get().FindOrCreateFont(
+        dFont->GetPointSize(), dFont->GetFamily(), dFont->GetStyle(),
+        dFont->GetWeight(), false, dFont->GetFaceName());
+
+  dc.SetFont(*psRLI_font);
 
   int w1, h1;
   int w2 = 0;
@@ -10337,8 +10342,8 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   int hilite_offset = 3;
 #ifdef __WXMAC__
   wxScreenDC sdc;
-  sdc.GetTextExtent(first, &w1, &h1, NULL, NULL, dFont);
-  if (second.Len()) sdc.GetTextExtent(second, &w2, &h2, NULL, NULL, dFont);
+  sdc.GetTextExtent(first, &w1, &h1, NULL, NULL, psRLI_font);
+  if (second.Len()) sdc.GetTextExtent(second, &w2, &h2, NULL, NULL, psRLI_font);
 #else
   dc.GetTextExtent(first, &w1, &h1);
   if (second.Len()) dc.GetTextExtent(second, &w2, &h2);
