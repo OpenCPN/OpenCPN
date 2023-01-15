@@ -3015,7 +3015,6 @@ if (APPLE)
       --root /tmp/opencpn/bin/OpenCPN.app
       --identifier org.opencpn
       --install-location /Applications/OpenCPN.app
-      --min-os-version 11
       pkg_tmp/OpenCPN.app.pkg
   )
   add_dependencies(component-pkg show-bundled-libs pkg-tmp)
