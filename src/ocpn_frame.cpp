@@ -2175,6 +2175,9 @@ void MyFrame::ODoSetSize(void) {
     font_size = statusBarFont->GetPointSize();
 #endif
 
+    // Accomodate HDPI displays
+    font_size /= OCPN_GetDisplayScaleFactor();
+
     wxFont *pstat_font = FontMgr::Get().FindOrCreateFont(
         font_size, statusBarFont->GetFamily(), statusBarFont->GetStyle(),
         statusBarFont->GetWeight(), false, statusBarFont->GetFaceName());

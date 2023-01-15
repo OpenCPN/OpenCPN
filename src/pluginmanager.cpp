@@ -8501,6 +8501,16 @@ std::vector<std::string> GetActivePriorityIdentifiers() {
   return result;
 }
 
+double OCPN_GetDisplayScaleFactor() {
+  double rv = 1.0;
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  if (gFrame)
+    rv = gFrame->GetContentScaleFactor();
+#endif
+  return rv;
+}
+
 /** Comm port plugin TX support methods  */
 
 std::vector<DriverHandle> GetActiveDrivers() {
