@@ -2870,7 +2870,7 @@ endif (UNIX AND NOT APPLE)
 # Apple application bundle
 #
 if (APPLE)
-  set(APKG_MOD $ENV{PKG_MOD})
+  set(APKG_MOD $ENV{pkg_mod})
   message(STATUS "MacOS PKG_MOD: ${APKG_MOD} ")
 
   # -- Run the BundleUtilities cmake code
