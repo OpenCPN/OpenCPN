@@ -40,7 +40,7 @@ jobs:
             MACOSX_DEPLOYMENT_TARGET: 10.13
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
-      PKG_MOD: ${{ matrix.pkg_mod }}
+      pkg_mod: ${{ matrix.pkg_mod }}
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.MACOSX_DEPLOYMENT_TARGET }}
 
     # Use bash as shell
