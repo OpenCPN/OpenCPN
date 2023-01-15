@@ -370,12 +370,12 @@ public:
   void PositionIENCToolbar();
 
   void InitAppMsgBusListener();
+  void UpdateStatusBar(void);
 
 private:
   void CheckToolbarPosition();
   void ODoSetSize(void);
   void DoCOGSet(void);
-  void UpdateStatusBar(void);
 
   void UpdateAllToolbars(ColorScheme cs);
 
