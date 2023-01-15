@@ -2999,6 +2999,12 @@ if (APPLE)
     "/${PACKAGE_NAME}_${PACKAGE_VERSION}-${OS_VERS}.pkg"
   )
 
+  add_custom_target(show-bundled-libs)
+  add_custom_command(
+    TARGET show-bundled-libs
+    COMMAND ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
+  )
+
   add_custom_target(pkg-tmp)
   add_custom_command(TARGET pkg-tmp COMMAND cmake -E make_directory pkg_tmp)
 
@@ -3012,7 +3018,7 @@ if (APPLE)
       --min-os-version 11
       pkg_tmp/OpenCPN.app.pkg
   )
-  add_dependencies(component-pkg pkg-tmp)
+  add_dependencies(component-pkg show-bundled-libs pkg-tmp)
 
   add_custom_target(macos-pkg)
   add_custom_command(
