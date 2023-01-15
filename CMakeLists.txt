@@ -2942,47 +2942,35 @@ install(CODE "
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/${PKGPROJ_TEMPLATE}
     ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
-    )
-  configure_file(${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY)
-
-  set(TEMP_PKG  "${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.app.pkg")
-  set(MACOS_PKG "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg")
-
-  add_custom_target(component-pkg)
-  add_custom_command(
-    TARGET component-pkg
-    COMMAND pkgbuild
-      --root /tmp/opencpn/bin/OpenCPN.app
-      --identifier org.opencpn
-      --install-location /Applications/OpenCPN.app
-      --min-os-version 10.15.0
-      ${TEMP_PKG}
   )
-  add_custom_target(macos-pkg)
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/COPYING.gplv2
+    ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY
+  )
+
+  set(OSX_PKG_FILE
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
+  )
   add_custom_command(
-    TARGET macos-pkg
+    OUTPUT ${OSX_PKG_FILE}
     COMMAND
-      productbuild
-      --distribution ../buildosx/distro.plist --identifier org.opencpn
-     ${MACOS_PKG}
+      /usr/local/bin/packagesbuild
+      -F ${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS ${OSX_PKG_FILE}
+    COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg: ${OSX_PKG_FILE}"
   )
-  add_dependencies(macos-pkg  component-pkg)
 
-  ADD_CUSTOM_COMMAND(
-   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
-   COMMAND /usr/local/bin/packagesbuild -F ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
-   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
-   COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg file: ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg."
-   COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg file: ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg."
-   )
+  if ("${APKG_MOD}" MATCHES "10")
+    add_custom_target(
+      create-pkg
+      COMMENT "create-pkg: Done."
+      DEPENDS ${OSX_PKG_FILE}
+    )
+  endif ()
 
- if ("${APKG_MOD}" MATCHES "10")
-  ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
- endif()
-
-  #Build standard MacOS .dmg
+  # Build standard MacOS .dmg
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
@@ -3007,6 +2995,33 @@ install(CODE "
     COMMENT "create-dmg: Done."
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
   )
+
+  # Build standard installer using pkgbuild/productbuild
+  set(TEMP_PKG  "${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.app.pkg")
+  set(MACOS_PKG
+    "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg"
+  )
+
+  add_custom_target(component-pkg)
+  add_custom_command(
+    TARGET component-pkg
+    COMMAND pkgbuild
+      --root /tmp/opencpn/bin/OpenCPN.app
+      --identifier org.opencpn
+      --install-location /Applications/OpenCPN.app
+      --min-os-version 10.15.0
+      ${TEMP_PKG}
+  )
+  add_custom_target(macos-pkg)
+  add_custom_command(
+    TARGET macos-pkg
+    COMMAND
+      productbuild
+      --distribution ../buildosx/distro.plist --identifier org.opencpn
+     ${MACOS_PKG}
+  )
+  add_dependencies(macos-pkg  component-pkg)
+
 endif (APPLE)
 
 include(CPack)
