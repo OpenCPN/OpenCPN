@@ -72,6 +72,7 @@ private:
   bool m_shown;
   bool m_bshowGPS;
   ColorScheme m_cs;
+  bool m_texOK;
 
 #ifdef ocpnUSE_GL
   unsigned int m_texobj;

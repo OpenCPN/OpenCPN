@@ -214,6 +214,11 @@ wxColour FontMgr::GetDefaultFontColor( const wxString &TextElement ){
   if(TextElement.IsSameAs( "Console Value") )
     defaultColor = wxColour( 0, 255, 0);
 
+#ifdef __WXMAC__
+  // Override, to adjust for light/dark mode
+  return wxColour(0,0,0);
+#endif
+
   return defaultColor;
 }
 
@@ -430,9 +435,11 @@ wxFont *OCPNwxFontList::FindOrCreateFont(int pointSize, wxFontFamily family,
   }
 
   // font not found, create the new one
+  // Support scaled HDPI displays automatically
+
   font = NULL;
-  wxFont fontTmp(pointSize, family, style, weight, underline, facename,
-                 encoding);
+  wxFont fontTmp(OCPN_GetDisplayScaleFactor() * pointSize,
+                 family, style, weight, underline, facename, encoding);
   if (fontTmp.IsOk()) {
     font = new wxFont(fontTmp);
     font_cache_record record;

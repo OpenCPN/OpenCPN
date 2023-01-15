@@ -65,6 +65,7 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
 #ifdef ocpnUSE_GL
   m_texobj = 0;
 #endif
+  m_texOK = false;
 
   m_scale = 1.0;
   m_cs = GLOBAL_COLOR_SCHEME_RGB;
@@ -83,10 +84,15 @@ ocpnCompass::~ocpnCompass() {
 
 void ocpnCompass::Paint(ocpnDC& dc) {
   if (m_shown && m_StatBmp.IsOk()) {
-#if defined(ocpnUSE_GLES) || \
-    defined(                 \
-        ocpnUSE_GL)  // GLES does not do ocpnDC::DrawBitmap(), so use texture
-    if (g_bopengl && m_texobj) {
+#if defined(ocpnUSE_GLES) || defined(ocpnUSE_GL)
+    if (!m_texobj){
+      // The glContext is known active here,
+      // so safe to create a texture.
+      glGenTextures(1, &m_texobj);
+      CreateTexture();
+    }
+
+    if (g_bopengl && m_texobj /*&& m_texOK*/) {
       glBindTexture(GL_TEXTURE_2D, m_texobj);
       glEnable(GL_TEXTURE_2D);
 
@@ -188,10 +194,11 @@ void ocpnCompass::UpdateStatus(bool bnew) {
 
   CreateBmp(bnew);
 
-  unsigned int old_texture = m_texobj;
-  m_texobj = 0;
-  CreateTexture();
-  glDeleteTextures(1, &old_texture);
+#ifdef ocpnUSE_GL
+  if (g_bopengl && m_texobj)
+    CreateTexture();
+#endif
+
 }
 
 void ocpnCompass::SetScaleFactor(float factor) {
@@ -497,7 +504,6 @@ void ocpnCompass::CreateTexture() {
         }
       }
 
-      glGenTextures(1, &m_texobj);
       glBindTexture(GL_TEXTURE_2D, m_texobj);
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -511,6 +517,7 @@ void ocpnCompass::CreateTexture() {
 
       free(teximage);
       glBindTexture(GL_TEXTURE_2D, 0);
+      m_texOK = true;
     }
   }
 #endif
