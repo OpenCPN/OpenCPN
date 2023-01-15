@@ -91,8 +91,7 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
-make macos-pkg
-#make create-pkg
+make create-pkg
 make create-dmg
 
 # Install the stuff needed by upload.

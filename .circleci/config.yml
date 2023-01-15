@@ -64,6 +64,7 @@ jobs:
       xcode: "13.3.1"
     environment:
       - OCPN_TARGET:  macos
+      - pkg_mod: 11
     steps:
       - checkout
       - restore_cache:

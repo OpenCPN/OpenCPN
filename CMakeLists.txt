@@ -2962,14 +2962,6 @@ install(CODE "
     COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg: ${OSX_PKG_FILE}"
   )
 
-  if ("${APKG_MOD}" MATCHES "10")
-    add_custom_target(
-      create-pkg
-      COMMENT "create-pkg: Done."
-      DEPENDS ${OSX_PKG_FILE}
-    )
-  endif ()
-
   # Build standard MacOS .dmg
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
@@ -3008,7 +3000,7 @@ install(CODE "
   # Build standard installer using pkgbuild/productbuild
   string(CONCAT MACOS_PKG
     "${CMAKE_CURRENT_BINARY_DIR}"
-    "/${PACKAGE_NAME}}_${PACKAGE_VERSION}-${OS_VERS}.pkg"
+    "/${PACKAGE_NAME}_${PACKAGE_VERSION}-${OS_VERS}.pkg"
   )
 
   add_custom_target(pkg-tmp)
@@ -3037,6 +3029,21 @@ install(CODE "
      ${MACOS_PKG}
   )
   add_dependencies(macos-pkg  component-pkg)
+
+  # Select what to do for the "create-pkg" target
+  if ("${APKG_MOD}" EQUAL 10)
+    add_custom_target(
+      create-pkg
+      COMMENT "create-pkg: Done."
+      DEPENDS ${OSX_PKG_FILE}
+    )
+  elseif ("${APKG_MOD}" EQUAL 11)
+    add_custom_target(create-pkg)
+    add_dependencies(create-pkg macos-pkg)
+  else ()
+    message(FATAL_ERROR "Illegal value for pkg_mod environ var: ${APKG_MOD}")
+  endif ()
+
 
 endif (APPLE)
 
