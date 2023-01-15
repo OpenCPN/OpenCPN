@@ -2590,7 +2590,11 @@ if (WIN32 AND NOT UNIX)
 endif (WIN32 AND NOT UNIX)
 
 if (APPLE)
-  find_library(MPG123 NAMES mpg123 REQUIRED)
+  find_library(
+    MPG123 NAMES mpg123
+    PATHS /usr/local/opt/mpg123/lib NO_DEFAULT_PATH
+    REQUIRED
+  )
   target_link_libraries(${PACKAGE_NAME} PUBLIC ${MPG123})
   message(STATUS "MPG123: ${MPG123}")
   find_library(MP3LAME NAMES mp3lame lame REQUIRED)
@@ -2926,14 +2930,6 @@ if (APPLE)
     COMPONENT Runtime
   )
   
-  #  fixup_bundle also misses other files
-  install(CODE "
-    include(BundleUtilities)
-    copy_resolved_item_into_bundle(\"/usr/local/opt/mpg123/lib/libmpg123.0.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
-    "
-    COMPONENT Runtime
-  )
-
   # Build standard MacOS installer package
   # Copy a few generic files so the Packages installer builder can find them
   # relative to ${CMAKE_CURRENT_BINARY_DIR}
