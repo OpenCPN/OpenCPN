@@ -65,6 +65,7 @@ jobs:
     environment:
       - OCPN_TARGET:  macos
       - pkg_mod: 11
+      - MACOSX_DEPLOYMENT_TARGET: 11.0
     steps:
       - checkout
       - restore_cache:

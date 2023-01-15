@@ -5,12 +5,7 @@
 #
 set -xe
 
-# Build for legacy Mac machines
-export MACOSX_DEPLOYMENT_TARGET=10.13
-
-# Required to build libcurl for legacy machines
-export macosx_deployment_target=10.13
-
+export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
