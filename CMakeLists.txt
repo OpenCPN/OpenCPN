@@ -2997,10 +2997,12 @@ install(CODE "
   )
 
   # Build standard installer using pkgbuild/productbuild
-  set(TEMP_PKG  "${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.app.pkg")
   set(MACOS_PKG
     "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg"
   )
+
+  add_custom_target(pkg-tmp)
+  add_custom_command(TARGET pkg-tmp COMMAND cmake -E make_directory pkg_tmp)
 
   add_custom_target(component-pkg)
   add_custom_command(
@@ -3010,8 +3012,10 @@ install(CODE "
       --identifier org.opencpn
       --install-location /Applications/OpenCPN.app
       --min-os-version 10.15.0
-      ${TEMP_PKG}
+      pkg_tmp/OpenCPN.app.pkg
   )
+  add_dependencies(component-pkg pkg-tmp)
+
   add_custom_target(macos-pkg)
   add_custom_command(
     TARGET macos-pkg
