@@ -3002,7 +3002,8 @@ install(CODE "
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   # Only use main version nr
-  string(REGEX REPLACE "\..*" "" OS_VERS ${_product_version})
+  string(REGEX REPLACE "\\..*" "" OS_VERS ${_product_version})
+  message(STATUS "OS_VERS: ${OS_VERS}, _product_version: ${_product_version}")
 
   # Build standard installer using pkgbuild/productbuild
   string(CONCAT MACOS_PKG
