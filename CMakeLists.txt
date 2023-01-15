@@ -2896,43 +2896,43 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-#  install(
-#    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-#    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-#    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-#      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
-#  )
-  set(
-    LIBS
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
+  #  install(
+  #    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+  #    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+  #    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+  #      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+  #  )
+    set(
+      LIBS
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
+    )
+  install(CODE "
+    include(BundleUtilities)
+    set(BU_CHMOD_BUNDLE_ITEMS TRUE)
+    fixup_bundle(\"${APPS}\"  \"${LIBS}\"  \"${DIRS}\")
+    "
+    COMPONENT Runtime
   )
-install(CODE "
-  include(BundleUtilities)
-  set(BU_CHMOD_BUNDLE_ITEMS TRUE)
-  fixup_bundle(\"${APPS}\"  \"${LIBS}\"  \"${DIRS}\")
-  "
-  COMPONENT Runtime
-)
-
-#  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
-#  So, fix that here by grabbing the correct version  actually used.
-install(CODE "
-  include(BundleUtilities)
-  copy_resolved_item_into_bundle(\"${LIBLZMA_LIBRARIES}\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
-  "
-  COMPONENT Runtime
-)
-
-#  fixup_bundle also misses other files
-install(CODE "
-  include(BundleUtilities)
-  copy_resolved_item_into_bundle(\"/usr/local/opt/mpg123/lib/libmpg123.0.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
-  "
-  COMPONENT Runtime
-)
+  
+  #  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
+  #  So, fix that here by grabbing the correct version  actually used.
+  install(CODE "
+    include(BundleUtilities)
+    copy_resolved_item_into_bundle(\"${LIBLZMA_LIBRARIES}\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
+    "
+    COMPONENT Runtime
+  )
+  
+  #  fixup_bundle also misses other files
+  install(CODE "
+    include(BundleUtilities)
+    copy_resolved_item_into_bundle(\"/usr/local/opt/mpg123/lib/libmpg123.0.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
+    "
+    COMPONENT Runtime
+  )
 
   # Build standard MacOS installer package
   # Copy a few generic files so the Packages installer builder can find them
