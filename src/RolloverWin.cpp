@@ -423,6 +423,8 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
   }
 
   int font_size = wxMax(8, dFont->GetPointSize());
+  font_size *= OCPN_GetWinDIPScaleFactor();
+
   m_plabelFont = FontMgr::Get().FindOrCreateFont(
       font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
       false, dFont->GetFaceName());
@@ -445,12 +447,11 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
     h = 10;
   }
 
-  double scaler = g_BasePlatform->GetDisplayDPIMult(this);
 
-  m_size.x = w + 1 * sizeM.x;
-  m_size.y = h + 1 * sizeM.y;
+  m_size.x = w + sizeM.x;
+  m_size.y = h + sizeM.y;
 
-  m_size *= scaler;
+  m_size /= OCPN_GetWinDIPScaleFactor(); //g_BasePlatform->GetDisplayDPIMult(this);
 
   int xp, yp;
   if ((x + off_x + m_size.x) > parent_size.x) {

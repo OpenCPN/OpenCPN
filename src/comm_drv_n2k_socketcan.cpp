@@ -674,6 +674,7 @@ void Worker::Entry() {
   if (socket < 0) {
     std::string msg("SocketCAN socket create failed: ");
     ThreadMessage(msg + m_port_name.ToStdString());
+    m_run_flag = -1;
     return;
   }
   m_socket = socket;

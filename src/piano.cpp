@@ -43,6 +43,7 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "color_handler.h"
+#include "ocpn_plugin.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -283,9 +284,10 @@ void Piano::BuildGLTexture() {
   dc.SetBrush(tbackBrush);
   dc.DrawRectangle(0, 0, m_texw, m_texh);
 
-  double nominal_line_width_pix =
-      wxMax(1.0, floor(g_Platform->GetDisplayDPmm() /
-                       2.0));  // 0.5 mm nominal, but not less than 1 pixel
+  // 0.5 mm nominal, but not less than 1 pixel
+  double nominal_line_width_pix = floor(g_Platform->GetDisplayDPmm() / 2.0);
+  nominal_line_width_pix /= OCPN_GetWinDIPScaleFactor();
+  nominal_line_width_pix = wxMax(1.0, nominal_line_width_pix);
 
   // draw the needed rectangles
   wxPen ppPen(GetGlobalColor(_T("CHBLK")), nominal_line_width_pix,

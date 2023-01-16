@@ -1090,6 +1090,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_DEF_MENU_MOVE_BOAT_HERE:
       gLat = zlat;
       gLon = zlon;
+      gFrame->UpdateStatusBar();
       break;
 
     case ID_DEF_MENU_GOTO_HERE: {

@@ -8510,6 +8510,14 @@ double OCPN_GetDisplayScaleFactor() {
 #endif
   return rv;
 }
+double OCPN_GetWinDIPScaleFactor() {
+  double scaler = 1.0;
+#ifdef __WXMSW__
+  if (gFrame)
+    scaler = (double)(gFrame->FromDIP(100))/100.;
+#endif
+  return scaler;
+}
 
 /** Comm port plugin TX support methods  */
 

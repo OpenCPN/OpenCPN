@@ -61,17 +61,19 @@ jobs:
 
   build-macos:
     macos:
-      xcode: "13.4.1"
+      xcode: "13.3.1"
     environment:
       - OCPN_TARGET:  macos
+      - pkg_mod: 11
+      - MACOSX_DEPLOYMENT_TARGET: 11.0
     steps:
       - checkout
       - restore_cache:
          keys:
-           - macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
+           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
       - run: ci/generic-build-macos.sh
       - save_cache:
-         key: macos-cache-v1-{{checksum "ci/generic-build-macos.sh"}}
+         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
          paths:
            - /usr/local/bin
            - /usr/local/include
@@ -97,11 +99,6 @@ workflows:
             branches:
               only:
                 - flatpak
-                - master
-      - build-macos:
-          filters:
-            branches:
-              only:
                 - master
       - build-android-armhf:
           filters:
