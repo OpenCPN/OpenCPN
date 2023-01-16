@@ -3015,19 +3015,25 @@ if (APPLE)
       --root /tmp/opencpn/bin/OpenCPN.app
       --identifier org.opencpn
       --install-location /Applications/OpenCPN.app
-      pkg_tmp/OpenCPN.app.pkg
+      OpenCPN.app.pkg
   )
   add_dependencies(component-pkg show-bundled-libs pkg-tmp)
 
   add_custom_target(
-    macos-pkg
+    build-macos-pkg
     COMMAND productbuild
       --distribution ../buildosx/distro.plist
       --version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
       --identifier org.opencpn
      ${MACOS_PKG}
   )
-  add_dependencies(macos-pkg component-pkg)
+  add_dependencies(build-macos-pkg component-pkg)
+
+  add_custom_target(remove-tmp-pkg COMMAND cmake -E rm -f OpenCPN.app.pkg)
+  add_dependencies(remove-tmp-pkg build-macos-pkg)
+
+  add_custom_target(macos-pkg)
+  add_dependencies(macos-pkg remove-tmp-pkg)
 
   # Select what to do for the "create-pkg" target
   if ("${APKG_MOD}" EQUAL 10)

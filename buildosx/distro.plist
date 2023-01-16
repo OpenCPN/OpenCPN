@@ -19,7 +19,7 @@
         <os-version min="10.15"/>
     </allowed-os-versions>
     <pkg-ref id="org.opencpn" version="0" onConclusion="none">
-        pkg_tmp/OpenCPN.app.pkg
+        OpenCPN.app.pkg
     </pkg-ref>
 </installer-gui-script>
 
