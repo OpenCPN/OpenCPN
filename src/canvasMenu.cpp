@@ -316,6 +316,13 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   wxMenu *menuAIS = NULL;
 
   wxMenu *subMenuChart = new wxMenu;
+  wxMenu *subMenuUndo = new wxMenu("Undo...Ctrl-Z");
+
+#ifdef __WXOSX__
+  wxMenu *subMenuRedo = new wxMenu("Redo...Shift-Ctrl-Z");
+#else
+  wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
+#endif
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 
@@ -323,23 +330,53 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   popy = y;
 
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
-    if (parent->undo->AnythingToUndo()) {
-      wxString undoItem;
-      undoItem << _("Undo") << _T(" ")
-               << parent->undo->GetNextUndoableAction()->Description();
-      MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
-    }
 
-    if (parent->undo->AnythingToRedo()) {
-      wxString redoItem;
-      redoItem << _("Redo") << _T(" ")
+    bool bsubMenus = false;
+#ifdef __WXMSW__
+    if (OCPN_GetWinDIPScaleFactor() > 1.)
+      bsubMenus = true;
+#endif
+
+    if (bsubMenus){
+      if (parent->undo->AnythingToUndo()) {
+          //  Undo SubMenu
+        wxMenuItem *subMenuItemundo =
+          contextMenu->AppendSubMenu(subMenuUndo, _("Undo"));
+
+        wxString undoItem;
+        undoItem << _("Undo") << _T(" ")
+                << parent->undo->GetNextUndoableAction()->Description();
+        MenuAppend1(subMenuUndo, ID_UNDO, undoItem);
+      }
+      if (parent->undo->AnythingToRedo()) {
+          //  Redo SubMenu
+        wxMenuItem *subMenuItemRedo =
+          contextMenu->AppendSubMenu(subMenuRedo, _("Redo"));
+
+        wxString redoItem;
+        redoItem << _("Redo") << _T(" ")
+                << parent->undo->GetNextRedoableAction()->Description();
+        MenuAppend1(subMenuRedo, ID_REDO, redoItem);
+      }
+    }
+    else {
+      if (parent->undo->AnythingToUndo()) {
+        wxString undoItem;
+        undoItem << _("Undo") << _T(" ")
+               << parent->undo->GetNextUndoableAction()->Description();
+        MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
+      }
+
+      if (parent->undo->AnythingToRedo()) {
+        wxString redoItem;
+        redoItem << _("Redo") << _T(" ")
                << parent->undo->GetNextRedoableAction()->Description();
 #ifdef __WXOSX__
-      MenuAppend1(contextMenu, ID_REDO,
-                   _menuText(redoItem, _T("Shift-Ctrl-Z")));
+        MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Shift-Ctrl-Z")));
 #else
-      MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Ctrl-Y")));
+        MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Ctrl-Y")));
 #endif
+      }
     }
   }
 
