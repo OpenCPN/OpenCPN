@@ -2844,6 +2844,11 @@ configure_file(
 #
 # Debian package setup
 #
+set(PKG_DESCR [=[
+OpenCPN is a concise ChartPlotter/Navigator. The application supports:
+GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart
+Display, AIS Input Decoding, Waypoint Autopilot Navigation. ]=])
+
 if (UNIX AND NOT APPLE)
   set(CPACK_STRIP_FILES ON)
   set(CPACK_GENERATOR ${PACKAGE_FORMAT})
@@ -2861,10 +2866,7 @@ if (UNIX AND NOT APPLE)
   set(CPACK_DEBIAN_PACKAGE_SECTION "misc")
   set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSource Chart Plotter/Navigator")
-  set(
-    CPACK_PACKAGE_DESCRIPTION
-    "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation ."
-  )
+  set(CPACK_PACKAGE_DESCRIPTION ${PKG_DESCR})
   set(CPACK_PACKAGE_RELOCATABLE OFF)
   set(CPACK_SET_DESTDIR ON)
   set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
@@ -2900,12 +2902,12 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-  #  install(
-  #    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-  #    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-  #    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-  #      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
-  #  )
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+  )
     set(
       LIBS
       "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
@@ -2921,8 +2923,9 @@ if (APPLE)
     COMPONENT Runtime
   )
   
-  #  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
-  #  So, fix that here by grabbing the correct version  actually used.
+  # For unknown reasons, fixup_bundle copies the wrong version of
+  # liblzma.5.dylib into the bundle.
+  # So, fix that here by grabbing the correct version  actually used.
   install(CODE "
     include(BundleUtilities)
     copy_resolved_item_into_bundle(\"${LIBLZMA_LIBRARIES}\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
@@ -2999,77 +3002,60 @@ if (APPLE)
     "/${PACKAGE_NAME}_${PACKAGE_VERSION}-${OS_VERS}.pkg"
   )
 
-  add_custom_target(show-bundled-libs)
-  add_custom_command(
-    TARGET show-bundled-libs
+  add_custom_target(
+    show-bundled-libs
     COMMAND ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
   )
 
-  add_custom_target(pkg-tmp)
-  add_custom_command(TARGET pkg-tmp COMMAND cmake -E make_directory pkg_tmp)
+  add_custom_target(pkg-tmp COMMAND cmake -E make_directory pkg_tmp)
 
-  add_custom_target(component-pkg)
-  add_custom_command(
-    TARGET component-pkg
+  add_custom_target(
+    component-pkg
     COMMAND pkgbuild
       --root /tmp/opencpn/bin/OpenCPN.app
       --identifier org.opencpn
       --install-location /Applications/OpenCPN.app
-      pkg_tmp/OpenCPN.app.pkg
+      OpenCPN.app.pkg
   )
   add_dependencies(component-pkg show-bundled-libs pkg-tmp)
 
-  add_custom_target(macos-pkg)
-  add_custom_command(
-    TARGET macos-pkg
-    COMMAND
-      productbuild
+  add_custom_target(
+    build-macos-pkg
+    COMMAND productbuild
       --distribution ../buildosx/distro.plist
       --version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
       --identifier org.opencpn
      ${MACOS_PKG}
   )
-  add_dependencies(macos-pkg  component-pkg)
+  add_dependencies(build-macos-pkg component-pkg)
+
+  add_custom_target(remove-tmp-pkg COMMAND cmake -E rm -f OpenCPN.app.pkg)
+  add_dependencies(remove-tmp-pkg build-macos-pkg)
+
+  add_custom_target(macos-pkg)
+  add_dependencies(macos-pkg remove-tmp-pkg)
 
   # Select what to do for the "create-pkg" target
   if ("${APKG_MOD}" EQUAL 10)
-    add_custom_target(
-      create-pkg
-      COMMENT "create-pkg: Done."
-      DEPENDS ${OSX_PKG_FILE}
-    )
+    add_custom_target(create-pkg DEPENDS ${OSX_PKG_FILE})
   elseif ("${APKG_MOD}" EQUAL 11)
     add_custom_target(create-pkg)
     add_dependencies(create-pkg macos-pkg)
   else ()
     message(FATAL_ERROR "Illegal value for pkg_mod environ var: ${APKG_MOD}")
   endif ()
-
-
 endif (APPLE)
 
 include(CPack)
-
-# Dummy target necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive
-# is executed. Apparently, the base CMakeLists.txt file must have "some" target
-# to activate all the clean steps.
-add_custom_target(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
-
-set_directory_properties(
-  dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h
-)
 
 if (MSVC)
   add_custom_command(
     TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND
     cmake -E copy "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
-          "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+      "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
-
-# Repack tarball using tar if available
-include(dist_target)
 
 # uninstall target
 if (NOT TARGET uninstall)
@@ -3088,7 +3074,7 @@ endif ()
 # Piggy-back the console application on the main setup.
 # Note that cli apps are not supported on Android
 #
-if (NOT QT_ANDROID AND NOT APPLE)
+if (NOT QT_ANDROID)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
@@ -3157,14 +3143,16 @@ if (NOT QT_ANDROID AND NOT APPLE)
     endif ()
   endif ()
 
-if (NOT WIN32)
-  find_package(OpenSSL)
-  if (OPENSSL_FOUND)
-    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
-    target_link_libraries(opencpn-cmd PRIVATE ${OPENSSL_LIBRARIES})
-    add_definitions(-DMG_ENABLE_OPENSSL)
-  endif (OPENSSL_FOUND)
-else (NOT WIN32)
+  if (NOT WIN32)
+    find_package(OpenSSL)
+    if (OPENSSL_FOUND)
+      message(STATUS
+        "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}"
+      )
+      target_link_libraries(opencpn-cmd PRIVATE ${OPENSSL_LIBRARIES})
+      add_definitions(-DMG_ENABLE_OPENSSL)
+    endif ()
+  else ()
     target_include_directories(
       opencpn-cmd
       PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
@@ -3177,7 +3165,7 @@ else (NOT WIN32)
       opencpn-cmd
       PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
     )
-endif (NOT WIN32)
+  endif ()
 
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()
