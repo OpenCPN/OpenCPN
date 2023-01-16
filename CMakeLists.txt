@@ -3048,15 +3048,6 @@ endif (APPLE)
 
 include(CPack)
 
-# Dummy target necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive
-# is executed. Apparently, the base CMakeLists.txt file must have "some" target
-# to activate all the clean steps.
-add_custom_target(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
-
-set_directory_properties(
-  dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h
-)
-
 if (MSVC)
   add_custom_command(
     TARGET ${PACKAGE_NAME} POST_BUILD
