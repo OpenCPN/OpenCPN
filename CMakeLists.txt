@@ -2902,12 +2902,12 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-  #  install(
-  #    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-  #    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-  #    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-  #      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
-  #  )
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+  )
     set(
       LIBS
       "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
@@ -3074,7 +3074,7 @@ endif ()
 # Piggy-back the console application on the main setup.
 # Note that cli apps are not supported on Android
 #
-if (NOT QT_ANDROID AND NOT APPLE)
+if (NOT QT_ANDROID)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
