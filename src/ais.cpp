@@ -674,7 +674,7 @@ static void AISSetMetrics() {
   AIS_scale_factor = 1.0;
   // Adapt for possible scaled display (Win)
   double DPIscale = 1.0;
-  DPIscale = g_Platform->GetDisplayDPIMult(gFrame);
+  DPIscale = g_Platform->GetDisplayDIPMult(gFrame);
 
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
@@ -1193,7 +1193,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           glEnd();
           glPopMatrix();
 #else
-          
+
           dc.SetBrush(target_brush);
           dc.StrokeCircle(PredPoint.x, PredPoint.y,
                           AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);

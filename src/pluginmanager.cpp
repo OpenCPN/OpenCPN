@@ -4945,7 +4945,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
   double iconSize = GetCharWidth() * 4;
-  double dpi_mult = g_Platform->GetDisplayDPIMult(this);
+  double dpi_mult = g_Platform->GetDisplayDIPMult(this);
   int icon_scale = iconSize * dpi_mult;
 
   wxImage plugin_icon;
@@ -8501,7 +8501,7 @@ std::vector<std::string> GetActivePriorityIdentifiers() {
   return result;
 }
 
-double OCPN_GetDisplayScaleFactor() {
+double OCPN_GetDisplayContentScaleFactor() {
   double rv = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
   // Support scaled HDPI displays.

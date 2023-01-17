@@ -1566,7 +1566,7 @@ void ToolTipWin::SetBitmap() {
   int h, w;
 
   wxScreenDC cdc;
-  double scaler = g_Platform->GetDisplayDPIMult(this);
+  double scaler = g_Platform->GetDisplayDIPMult(this);
 
   wxFont *plabelFont = FontMgr::Get().GetFont(_("ToolTips"));
   wxFont sFont = plabelFont->Scaled(1.0 / scaler);
