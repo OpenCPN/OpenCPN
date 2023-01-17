@@ -20,6 +20,7 @@
 #include "waypointman_gui.h"
 #include "svg_utils.h"
 #include "styles.h"
+#include "ocpn_plugin.h"
 
 extern ocpnGLOptions g_GLOptions;
 extern float g_ChartScaleFactorExp;
@@ -98,7 +99,14 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
 
   if (m_point.m_bShowName) {
     if (0 == m_point.m_pMarkFont) {
-      m_point.m_pMarkFont = FontMgr::Get().GetFont(_("Marks"));
+      wxFont *dFont = FontMgr::Get().GetFont(_("Marks"));
+      int font_size = wxMax(8, dFont->GetPointSize());
+      font_size *= OCPN_GetWinDIPScaleFactor();
+
+      m_point.m_pMarkFont = FontMgr::Get().FindOrCreateFont(
+        font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
+        false, dFont->GetFaceName());
+
       m_point.m_FontColor = FontMgr::Get().GetFontColor(_("Marks"));
       m_point.CalculateNameExtents();
     }
@@ -263,7 +271,14 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   wxRect r3 = r1;
   if (m_point.m_bShowName) {
     if (!m_point.m_pMarkFont) {
-      m_point.m_pMarkFont = FontMgr::Get().GetFont(_("Marks"));
+      wxFont *dFont = FontMgr::Get().GetFont(_("Marks"));
+      int font_size = wxMax(8, dFont->GetPointSize());
+      font_size *= OCPN_GetWinDIPScaleFactor();
+
+      m_point.m_pMarkFont = FontMgr::Get().FindOrCreateFont(
+        font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
+        false, dFont->GetFaceName());
+
       m_point.m_FontColor = FontMgr::Get().GetFontColor(_("Marks"));
       if (m_point.m_iTextTexture) {
         glDeleteTextures(1, &m_point.m_iTextTexture);

@@ -519,7 +519,7 @@ void AnnunText::CalculateMinSize(void) {
   if (m_pvalueFont)
     GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
 
-  double pdifactor = g_BasePlatform->GetDisplayDPIMult(gFrame);
+  double pdifactor = g_BasePlatform->GetDisplayDIPMult(gFrame);
   wl *= pdifactor; hl *= pdifactor;
   wv *= pdifactor; hv *= pdifactor;
 
