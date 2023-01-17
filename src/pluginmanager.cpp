@@ -2561,6 +2561,8 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
   v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
   v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
+  v[_T("OpenCPN Content Scale Factor")] = OCPN_GetDisplayContentScaleFactor();
+  v[_T("OpenCPN Display DIP Scale Factor")] = OCPN_GetWinDIPScaleFactor();
 
   wxJSONWriter w;
   wxString out;
