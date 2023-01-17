@@ -43,6 +43,10 @@ extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bopengl;
 
+#ifndef GL_RGBA8
+#define GL_RGBA8 0x8058
+#endif
+
 ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
   m_parent = parent;
   m_bshowGPS = bShowGPS;

@@ -5,12 +5,7 @@
 #
 set -xe
 
-# Build for legacy Mac machines
-export MACOSX_DEPLOYMENT_TARGET=10.13
-
-# Required to build libcurl for legacy machines
-export macosx_deployment_target=10.13
-
+export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
@@ -42,17 +37,15 @@ sudo rm -f /usr/local/include/archive_entry.h
 sudo make install
 cd ..
 
-
-
-brew install freetype
 brew install cairo
-brew install zstd
-brew install xz
+brew install freetype
+brew install lame
 brew install lz4
-brew install openssl
 brew install mpg123
+brew install xz
+brew install zstd
 
-for pkg in python3  cmake ; do
+for pkg in openssl python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
@@ -92,8 +85,6 @@ mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
 make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
-
-sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
 
 make create-pkg
 make create-dmg
