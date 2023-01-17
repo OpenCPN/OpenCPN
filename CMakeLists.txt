@@ -1447,7 +1447,7 @@ endif (CMAKE_HOST_WIN32)
 if (OCPN_USE_LZMA)
   find_package(LibLZMA)
   if (LIBLZMA_FOUND)
-    message(STATUS "Building with lzma support")
+    message(STATUS "Building with lzma support: ${LIBLZMA_LIBRARIES}")
     target_include_directories(${PACKAGE_NAME} PUBLIC ${LIBLZMA_INCLUDE_DIRS})
   else (LIBLZMA_FOUND)
     message(STATUS "lzma library not found")
@@ -2922,7 +2922,7 @@ if (APPLE)
     "
     COMPONENT Runtime
   )
-  
+
   # For unknown reasons, fixup_bundle copies the wrong version of
   # liblzma.5.dylib into the bundle.
   # So, fix that here by grabbing the correct version  actually used.
@@ -2932,7 +2932,7 @@ if (APPLE)
     "
     COMPONENT Runtime
   )
-  
+
   # Build standard MacOS installer package
   # Copy a few generic files so the Packages installer builder can find them
   # relative to ${CMAKE_CURRENT_BINARY_DIR}
