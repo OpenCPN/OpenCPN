@@ -2561,6 +2561,8 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
   v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
   v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
+  v[_T("OpenCPN Content Scale Factor")] = OCPN_GetDisplayContentScaleFactor();
+  v[_T("OpenCPN Display DIP Scale Factor")] = OCPN_GetWinDIPScaleFactor();
 
   wxJSONWriter w;
   wxString out;
@@ -4945,7 +4947,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
   double iconSize = GetCharWidth() * 4;
-  double dpi_mult = g_Platform->GetDisplayDPIMult(this);
+  double dpi_mult = g_Platform->GetDisplayDIPMult(this);
   int icon_scale = iconSize * dpi_mult;
 
   wxImage plugin_icon;
@@ -8501,7 +8503,7 @@ std::vector<std::string> GetActivePriorityIdentifiers() {
   return result;
 }
 
-double OCPN_GetDisplayScaleFactor() {
+double OCPN_GetDisplayContentScaleFactor() {
   double rv = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
   // Support scaled HDPI displays.
@@ -8514,7 +8516,7 @@ double OCPN_GetWinDIPScaleFactor() {
   double scaler = 1.0;
 #ifdef __WXMSW__
   if (gFrame)
-    scaler = (double)(gFrame->FromDIP(100))/100.;
+    scaler = (double)(gFrame->ToDIP(100))/100.;
 #endif
   return scaler;
 }

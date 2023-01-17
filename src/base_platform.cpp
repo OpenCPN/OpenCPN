@@ -797,7 +797,7 @@ double BasePlatform::GetDisplayDPmm() {
 #endif
 
 
-double BasePlatform::GetDisplayDPIMult(wxWindow *win) {
+double BasePlatform::GetDisplayDIPMult(wxWindow *win) {
   double rv = 1.0;
 #ifdef __WXMSW__
   if (win)
