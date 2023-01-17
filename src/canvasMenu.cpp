@@ -261,7 +261,7 @@ void CanvasMenuHandler::PrepareMenuItem( wxMenuItem *item ){
 void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+  if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
     item->SetFont(m_scaledFont);
 #endif
 
@@ -279,7 +279,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
 void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+  if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
     item->SetFont(m_scaledFont);
 #endif
 
@@ -296,7 +296,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 
 void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
 #if defined(__WXMSW__)
-  if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+  if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
     item->SetFont(m_scaledFont);
 #endif
 
@@ -1010,7 +1010,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                          (*it)->GetHelp(), (*it)->GetKind());
 
 #ifdef __WXMSW__
-        if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+        if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
           pmi->SetFont(m_scaledFont);
 #endif
         PrepareMenuItem( pmi );
@@ -1028,7 +1028,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    if (g_Platform->GetDisplayDPIMult(gFrame) == 1.0)
+    if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
       pmi->SetFont(m_scaledFont);
 #endif
 
