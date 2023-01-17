@@ -2923,16 +2923,6 @@ if (APPLE)
     COMPONENT Runtime
   )
 
-  # For unknown reasons, fixup_bundle copies the wrong version of
-  # liblzma.5.dylib into the bundle.
-  # So, fix that here by grabbing the correct version  actually used.
-  install(CODE "
-    include(BundleUtilities)
-    copy_resolved_item_into_bundle(\"${LIBLZMA_LIBRARIES}\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
-    "
-    COMPONENT Runtime
-  )
-
   # Build standard MacOS installer package
   # Copy a few generic files so the Packages installer builder can find them
   # relative to ${CMAKE_CURRENT_BINARY_DIR}
