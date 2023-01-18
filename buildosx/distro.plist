@@ -16,7 +16,7 @@
         <pkg-ref id="org.opencpn"/>
     </choice>
     <allowed-os-versions>
-        <os-version min="10.15"/>
+        <os-version min="10.13"/>
     </allowed-os-versions>
     <pkg-ref id="org.opencpn" version="0" onConclusion="none">
         OpenCPN.app.pkg
