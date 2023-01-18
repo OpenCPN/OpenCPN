@@ -9228,6 +9228,9 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
 
+  x *= m_displayScale;
+  y *= m_displayScale;
+
   //        Check for wheel rotation
   // ideally, should be just longer than the time between
   // processing accumulated mouse events from the event queue
