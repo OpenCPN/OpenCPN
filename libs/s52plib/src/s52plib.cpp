@@ -9441,6 +9441,9 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
           if ( (strncmp(rzRules->obj->FeatureName, "LNDARE", 6) &&
                 strncmp(rzRules->obj->FeatureName, "DEPARE", 6) &&
                 strncmp(rzRules->obj->FeatureName, "SWPARE", 6) &&
+                strncmp(rzRules->obj->FeatureName, "RECTRK", 6) &&
+                strncmp(rzRules->obj->FeatureName, "TSS",    3) &&
+                strncmp(rzRules->obj->FeatureName, "TSEZNE", 6) &&
                 strncmp(rzRules->obj->FeatureName, "DRGARE", 6) &&
                 strncmp(rzRules->obj->FeatureName, "COALNE", 6)) ||
               (!strncmp(rzRules->obj->FeatureName, "LNDARE", 6) && (rzRules->LUP->ruleList->ruleType != RUL_ARE_CO))) {

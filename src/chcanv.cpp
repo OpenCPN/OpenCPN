@@ -3724,6 +3724,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
   bool b_need_refresh = false;
 
+  wxSize win_size = GetSize() * m_displayScale;
+  if (console && console->IsShown()) win_size.x -= console->GetSize().x;
+
   //  Handle the AIS Rollover Window first
   bool showAISRollover = false;
   if (g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS) {
@@ -3761,12 +3764,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           wxString s = ptarget->GetRolloverString();
           m_pAISRolloverWin->SetString(s);
 
-          wxSize win_size = GetSize();
-          if (console && console->IsShown()) win_size.x -= console->GetSize().x;
-
           m_pAISRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
                                              AIS_ROLLOVER, win_size);
-
           m_pAISRolloverWin->SetBitmap(AIS_ROLLOVER);
           m_pAISRolloverWin->IsActive(true);
           b_need_refresh = true;
@@ -3918,8 +3917,6 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           }
           m_pRouteRolloverWin->SetString(s);
 
-          wxSize win_size = GetSize();
-          if (console && console->IsShown()) win_size.x -= console->GetSize().x;
           m_pRouteRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
                                                LEG_ROLLOVER, win_size);
           m_pRouteRolloverWin->SetBitmap(LEG_ROLLOVER);
@@ -4058,8 +4055,6 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           m_pTrackRolloverWin->SetString(s);
 
-          wxSize win_size = GetSize();
-          if (console && console->IsShown()) win_size.x -= console->GetSize().x;
           m_pTrackRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
                                                LEG_ROLLOVER, win_size);
           m_pTrackRolloverWin->SetBitmap(LEG_ROLLOVER);
@@ -9227,6 +9222,9 @@ bool panleftIsDown;
 bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
+
+  x *= m_displayScale;
+  y *= m_displayScale;
 
   //        Check for wheel rotation
   // ideally, should be just longer than the time between
