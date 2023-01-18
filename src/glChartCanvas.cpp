@@ -5362,6 +5362,8 @@ void glChartCanvas::RenderSingleTexture(ocpnDC &dc, float *coords, float *uvCoor
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     GLShaderProgram *shader = ptexture_2D_shader_program[dc.m_canvasIndex];
+    if(!shader) return;
+
     shader->Bind();
 
    // Set up the texture sampler to texture unit 0
