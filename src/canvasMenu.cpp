@@ -333,7 +333,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
     bool bsubMenus = false;
 #ifdef __WXMSW__
-    if (OCPN_GetWinDIPScaleFactor() > 1.)
+    if (OCPN_GetWinDIPScaleFactor() < 1.)
       bsubMenus = true;
 #endif
 

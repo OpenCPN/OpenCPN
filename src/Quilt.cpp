@@ -880,11 +880,13 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
   bool b_allow_fullscreen_ref =
       (family == CHART_FAMILY_VECTOR) || b_zin || g_bopengl;
 
-  // Get the scale of the smallest scale chart in the quilt
+  // Get the scale of the smallest scale
+  // chart, of the current type, in the quilt
   int smallest_scale = 1;
   for (size_t i = 0; i < m_extended_stack_array.size(); i++) {
     int index = m_extended_stack_array[i];
-    smallest_scale = wxMax(smallest_scale, ChartData->GetDBChartScale(index));
+    if (ChartData->GetDBChartType(index) == type)
+      smallest_scale = wxMax(smallest_scale, ChartData->GetDBChartScale(index));
   }
 
   //  Walk the extended chart array, capturing data
@@ -909,7 +911,7 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
 
         // Allow RNC quilt to zoom far out and still show smallest scale chart.
         if((type == CHART_TYPE_KAP) && (nscale == smallest_scale))
-          nmin_scale *= 16;
+          nmin_scale *= 24;
 
         if (CHART_TYPE_MBTILES == ChartData->GetDBChartType(test_db_index))
           scales_mbtiles.push_back(

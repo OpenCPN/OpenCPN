@@ -101,7 +101,7 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
     if (0 == m_point.m_pMarkFont) {
       wxFont *dFont = FontMgr::Get().GetFont(_("Marks"));
       int font_size = wxMax(8, dFont->GetPointSize());
-      font_size *= OCPN_GetWinDIPScaleFactor();
+      font_size /= OCPN_GetWinDIPScaleFactor();
 
       m_point.m_pMarkFont = FontMgr::Get().FindOrCreateFont(
         font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
@@ -273,7 +273,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
     if (!m_point.m_pMarkFont) {
       wxFont *dFont = FontMgr::Get().GetFont(_("Marks"));
       int font_size = wxMax(8, dFont->GetPointSize());
-      font_size *= OCPN_GetWinDIPScaleFactor();
+      font_size /= OCPN_GetWinDIPScaleFactor();
 
       m_point.m_pMarkFont = FontMgr::Get().FindOrCreateFont(
         font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
