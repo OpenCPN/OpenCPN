@@ -50,6 +50,10 @@ cd ..
 curl -k -o lame-3.100.tar.gz https://sourceforge.net/projects/lame/files/latest/download/lame-3.100.tar.gz -L
 tar xf lame-3.100.tar.gz
 cd lame-3.100
+
+#inreplace "include/libmp3lame.sym", "lame_init_old\n", ""    // Brew formula command
+sed -i '' -e "s/lame_init_old\n//g" include/libmp3lame.sym
+
 export MACOSX_DEPLOYMENT_TARGET=10.13
 ./configure --disable-dependency-tracking --disable-debug --prefix=/usr/local --enable-nasm
 make
