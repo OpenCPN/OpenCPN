@@ -37,8 +37,7 @@ sudo rm -f /usr/local/include/archive_entry.h
 sudo make install
 cd ..
 
-#curl -k -o libmpg123.zip https://github.com/gypified/libmpg123/archive/refs/heads/master.zip
-#tar zxf libmpg123.zip
+# build libmpg123, for legacy compatibility.
 git clone https://github.com/gypified/libmpg123.git
 cd libmpg123
 export MACOSX_DEPLOYMENT_TARGET=10.13
@@ -47,19 +46,19 @@ make
 sudo make install
 cd ..
 
+# build libmp3lame, for legacy compatibility.
 curl -k -o lame-3.100.tar.gz https://sourceforge.net/projects/lame/files/latest/download/lame-3.100.tar.gz -L
 tar xf lame-3.100.tar.gz
 cd lame-3.100
-
 #inreplace "include/libmp3lame.sym", "lame_init_old\n", ""    // Brew formula command
 sed -i.bak -e "/lame_init_old/d" include/libmp3lame.sym
-
 export MACOSX_DEPLOYMENT_TARGET=10.13
 ./configure --disable-dependency-tracking --disable-debug --prefix=/usr/local --enable-nasm
 make
 sudo make install
 cd ..
 
+# build openssl, for legacy compatibility.
 
 brew install cairo
 brew install freetype
