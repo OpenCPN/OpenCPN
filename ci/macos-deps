@@ -1,9 +1,9 @@
 # brew packages installed in macos ci build
 cmake
 gettext
-lame
+#lame
 libexif
-mpg123
+#mpg123
 python
 wget
 libarchive
