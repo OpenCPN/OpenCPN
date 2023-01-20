@@ -5,6 +5,7 @@ name: MacOS
   push:
     branches:
       - master
+      - mpg
     paths-ignore:
       - 'buildandroid/**'
   pull_request:

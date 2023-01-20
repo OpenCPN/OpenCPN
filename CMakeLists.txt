@@ -2592,7 +2592,7 @@ endif (WIN32 AND NOT UNIX)
 if (APPLE)
   find_library(
     MPG123 NAMES mpg123
-    PATHS /usr/local/opt/mpg123/lib NO_DEFAULT_PATH
+    PATHS /usr/local/lib NO_DEFAULT_PATH
     REQUIRED
   )
   target_link_libraries(${PACKAGE_NAME} PUBLIC ${MPG123})

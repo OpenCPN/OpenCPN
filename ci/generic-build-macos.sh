@@ -37,6 +37,17 @@ sudo rm -f /usr/local/include/archive_entry.h
 sudo make install
 cd ..
 
+#curl -k -o libmpg123.zip https://github.com/gypified/libmpg123/archive/refs/heads/master.zip
+#tar zxf libmpg123.zip
+git clone https://github.com/gypified/libmpg123.git
+cd libmpg123
+export MACOSX_DEPLOYMENT_TARGET=10.13
+./configure --disable-debug --disable-dependency-tracking --prefix=/usr/local --with-module-suffix=.so --with-default-audio=coreaudio --with-cpu=x86-64
+make
+sudo make install
+cd ..
+
+
 brew install cairo
 brew install freetype
 brew install lame
