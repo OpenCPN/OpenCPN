@@ -47,8 +47,8 @@ make
 sudo make install
 cd ..
 
-curl -k -o lame-3.100.tar.gz https://sourceforge.net/projects/lame/files/latest/download/lame-3.100.tar.gz
-tar zxf lame-3.100.tar.gz
+curl -k -o lame-3.100.tar.gz https://sourceforge.net/projects/lame/files/latest/download/lame-3.100.tar.gz -L
+tar xf lame-3.100.tar.gz
 cd lame-3.100
 export MACOSX_DEPLOYMENT_TARGET=10.13
 ./configure --disable-dependency-tracking --disable-debug --prefix=/usr/local --enable-nasm
