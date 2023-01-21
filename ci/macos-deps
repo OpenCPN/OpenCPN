@@ -8,4 +8,4 @@ python
 wget
 libarchive
 cairo
-openssl
+#openssl
