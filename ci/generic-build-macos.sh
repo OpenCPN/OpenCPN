@@ -60,7 +60,7 @@ cd ..
 
 # build openssl, for legacy compatibility.
 curl -k -o openssl-3.0.1.tar.gz  \
-    https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.1.tar.gz
+    https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.1.tar.gz -L
 tar zxf openssl-3.0.1.tar.gz
 cd openssl-3.0.1.tar.gz
 ./configure
