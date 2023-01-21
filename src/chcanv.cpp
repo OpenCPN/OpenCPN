@@ -10326,7 +10326,7 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   wxFont *dFont = FontMgr::Get().GetFont(_("RouteLegInfoRollover"));
 
   int pointsize = dFont->GetPointSize();
-  pointsize *= OCPN_GetWinDIPScaleFactor();
+  pointsize /= OCPN_GetWinDIPScaleFactor();
 
   wxFont *psRLI_font = FontMgr::Get().FindOrCreateFont(
         pointsize, dFont->GetFamily(), dFont->GetStyle(),

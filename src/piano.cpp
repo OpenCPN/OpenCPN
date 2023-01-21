@@ -724,6 +724,8 @@ wxPoint Piano::GetKeyOrigin(int key_index) {
 bool Piano::MouseEvent(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
+  x *= OCPN_GetDisplayContentScaleFactor();
+  y *= OCPN_GetDisplayContentScaleFactor();
 
   if (event.Leaving() || y < m_parentCanvas->GetCanvasHeight() - GetHeight()) {
     if (m_bleaving) return false;

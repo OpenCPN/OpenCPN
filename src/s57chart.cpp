@@ -1484,6 +1484,7 @@ bool s57chart::RenderViewOnGLTextOnly(const wxGLContext &glc,
   if (!ps52plib) return false;
 
   SetVPParms(VPoint);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   glChartCanvas::DisableClipRegion();
   DoRenderOnGLText(glc, VPoint);
@@ -1792,6 +1793,7 @@ bool s57chart::RenderRegionViewOnDCTextOnly(wxMemoryDC &dc,
   if (!dc.IsOk()) return false;
 
   SetVPParms(VPoint);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   //  If the viewport is rotated, there will only be one rectangle in the region
   //  so we can take a shortcut...
