@@ -2012,31 +2012,31 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   realSizes->Add(
       new wxStaticText(itemPanelShip, wxID_ANY, _("Length Over All (m)")), 1,
       wxALIGN_LEFT);
-  m_pOSLength = new wxTextCtrl(itemPanelShip, 1);
+  m_pOSLength = new wxTextCtrl(itemPanelShip, 1, "TEXT  ");
   realSizes->Add(m_pOSLength, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   realSizes->Add(
       new wxStaticText(itemPanelShip, wxID_ANY, _("Width Over All (m)")), 1,
       wxALIGN_LEFT);
-  m_pOSWidth = new wxTextCtrl(itemPanelShip, wxID_ANY);
+  m_pOSWidth = new wxTextCtrl(itemPanelShip, wxID_ANY, "TEXT  ");
   realSizes->Add(m_pOSWidth, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   realSizes->Add(
       new wxStaticText(itemPanelShip, wxID_ANY, _("GPS Offset from Bow (m)")),
       1, wxALIGN_LEFT);
-  m_pOSGPSOffsetY = new wxTextCtrl(itemPanelShip, wxID_ANY);
+  m_pOSGPSOffsetY = new wxTextCtrl(itemPanelShip, wxID_ANY, "TEXT  ");
   realSizes->Add(m_pOSGPSOffsetY, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   realSizes->Add(new wxStaticText(itemPanelShip, wxID_ANY,
                                   _("GPS Offset from Midship (m)")),
                  1, wxALIGN_LEFT);
-  m_pOSGPSOffsetX = new wxTextCtrl(itemPanelShip, wxID_ANY);
+  m_pOSGPSOffsetX = new wxTextCtrl(itemPanelShip, wxID_ANY, "TEXT  ");
   realSizes->Add(m_pOSGPSOffsetX, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   realSizes->Add(
       new wxStaticText(itemPanelShip, wxID_ANY, _("Minimum Screen Size (mm)")),
       1, wxALIGN_LEFT);
-  m_pOSMinSize = new wxTextCtrl(itemPanelShip, wxID_ANY);
+  m_pOSMinSize = new wxTextCtrl(itemPanelShip, wxID_ANY, "TEXT  ");
   realSizes->Add(m_pOSMinSize, 1, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   // Radar rings
