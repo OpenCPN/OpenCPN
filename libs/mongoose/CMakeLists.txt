@@ -24,12 +24,12 @@ if (NOT WIN32)
     message(STATUS "Mongoose: APPLE: Setting OpenSSL...")
     target_include_directories(
       MONGOOSE
-      PUBLIC  /usr/local/opt/openssl@3/include
+      PUBLIC  /usr/local/include/openssl
     )
     target_link_libraries(
       MONGOOSE
-      PRIVATE /usr/local/opt/openssl@3/lib/libcrypto.3.dylib
-      /usr/local/opt/openssl@3/lib/libssl.3.dylib
+      PRIVATE /usr/local/lib/libcrypto.3.dylib
+      /usr/local/lib/libssl.3.dylib
     )
  endif (NOT APPLE)
 else (NOT WIN32)
