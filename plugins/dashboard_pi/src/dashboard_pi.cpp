@@ -3038,28 +3038,22 @@ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
 
   if (dialog->ShowModal() == wxID_OK) {
     double scaler = 1.0;
-#ifdef __WXMSW__
-    scaler = (double)(GetOCPNCanvasWindow()->FromDIP(100))/100.;
-    scaler = (scaler - 1.0) / 3 +1.0;     // soften scale factor for fonts
+    if (OCPN_GetWinDIPScaleFactor() < 1.0)
+      scaler = 1.0 + OCPN_GetWinDIPScaleFactor() / 4;
     scaler = wxMax(1.0, scaler);
-#endif
 
-    //delete g_pFontTitle;
     g_pUSFontTitle = new wxFont(dialog->m_pFontPickerTitle->GetSelectedFont());
     g_FontTitle = g_pUSFontTitle->Scaled(scaler);
     g_USFontTitle = *g_pUSFontTitle;
 
-    //delete g_pFontData;
     g_pUSFontData = new wxFont(dialog->m_pFontPickerData->GetSelectedFont());
     g_FontData = g_pUSFontData->Scaled(scaler);
     g_USFontData = *g_pUSFontData;
 
-    //delete g_pFontLabel;
     g_pUSFontLabel = new wxFont(dialog->m_pFontPickerLabel->GetSelectedFont());
     g_FontLabel = g_pUSFontLabel->Scaled(scaler);
     g_USFontLabel = *g_pUSFontLabel;
 
-    //delete g_pFontSmall;
     g_pUSFontSmall = new wxFont(dialog->m_pFontPickerSmall->GetSelectedFont());
     g_FontSmall = g_pUSFontSmall->Scaled(scaler);
     g_USFontSmall = *g_pUSFontSmall;
@@ -3257,11 +3251,9 @@ bool dashboard_pi::LoadConfig(void) {
 #endif
 
     double scaler = 1.0;
-#ifdef __WXMSW__
-    scaler = (double)(GetOCPNCanvasWindow()->FromDIP(100))/100.;
-    scaler = (scaler - 1.0) / 3 +1.0;
+    if (OCPN_GetWinDIPScaleFactor() < 1.0)
+      scaler = 1.0 + OCPN_GetWinDIPScaleFactor()/4;
     scaler = wxMax(1.0, scaler);
-#endif
 
     pConf->Read(_T("FontTitle"), &config, TitleFont);
     LoadFont(&g_pUSFontTitle, config);
