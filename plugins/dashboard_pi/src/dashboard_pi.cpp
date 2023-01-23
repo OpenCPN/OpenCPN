@@ -459,6 +459,7 @@ dashboard_pi::dashboard_pi(void *ppimgr)
     : wxTimer(this), opencpn_plugin_18(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
+  mCOGFilter.setType(IIRFILTER_TYPE_DEG);
 }
 
 dashboard_pi::~dashboard_pi(void) {
@@ -3500,9 +3501,12 @@ void dashboard_pi::ApplyConfig(void) {
     }
   }
   m_pauimgr->Update();
-  mSOGFilter.setFC(g_iDashSOGDamp ? 1.0 / (2.0 * g_iDashSOGDamp) : 0.0);
-  mCOGFilter.setFC(g_iDashCOGDamp ? 1.0 / (2.0 * g_iDashCOGDamp) : 0.0);
-  mCOGFilter.setType(IIRFILTER_TYPE_DEG);
+
+  double sogFC = g_iDashSOGDamp ? 1.0 / (2.0 * g_iDashSOGDamp) : 0.0;
+  double cogFC = g_iDashCOGDamp ? 1.0 / (2.0 * g_iDashCOGDamp) : 0.0;
+
+  if (abs(sogFC - mSOGFilter.getFc()) > 1e-6) mSOGFilter.setFC(sogFC);
+  if (abs(cogFC - mCOGFilter.getFc()) > 1e-6) mCOGFilter.setFC(cogFC);
 }
 
 void dashboard_pi::PopulateContextMenu(wxMenu *menu) {
