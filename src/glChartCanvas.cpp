@@ -4478,9 +4478,9 @@ void glChartCanvas::Render() {
       // Simple low pass filter
       g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) +
                           ((double)(g_glstopwatch.Time()) * filter);
-      //            if(g_gl_ms_per_frame > 0)
-      //                printf(" OpenGL frame time: %3.0f  %3.0f\n",
-      //                g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
+                  if(g_gl_ms_per_frame > 0)
+                      printf(" OpenGL frame time: %3.0f ms-->  %3.0fFPS\n",
+                      g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
     }
   }
 
