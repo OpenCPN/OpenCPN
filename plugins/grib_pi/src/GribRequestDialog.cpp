@@ -50,7 +50,6 @@ wxString toMailFormat(int NEflag,
 
 extern int m_SavedZoneSelMode;
 extern int m_ZoneSelMode;
-extern float g_DIPfactor;
 
 //----------------------------------------------------------------------------------------------------------
 //          GRIB Request Implementation
@@ -520,7 +519,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   center.y = y + (zh / 2);
 
   wxFont fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() / g_DIPfactor));
+  fo.SetPointSize((fo.GetPointSize() / OCPN_GetWinDIPScaleFactor()));
   wxFont* font = &fo;
   wxColour pen_color, back_color;
   GetGlobalColor(_T ( "DASHR" ), &pen_color);
@@ -552,8 +551,8 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
     sdc.GetMultiLineTextExtent(label, &w, &h, &sl, font);
 #else
     m_pdc->GetMultiLineTextExtent(label, &w, &h, &sl, font);
-    w *= g_DIPfactor;
-    h *= g_DIPfactor;
+    w *= OCPN_GetWinDIPScaleFactor();
+    h *= OCPN_GetWinDIPScaleFactor();
 #endif
     w += 2 * label_offsetx, h += 2 * label_offsety;
     x = center.x - (w / 2);
