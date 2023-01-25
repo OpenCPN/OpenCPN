@@ -695,7 +695,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   wxPoint pointTime;
   for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
     if (m_ArrayRecTime[idx].year != 999) {
-      wxDateTime localTime(m_ArrayRecTime[i]);
+      wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
       sec = localTime.GetSecond();
       min = localTime.GetMinute();

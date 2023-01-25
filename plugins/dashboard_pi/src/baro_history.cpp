@@ -378,7 +378,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   wxPoint pointTime;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
     if (m_ArrayRecTime[idx].year != 999) {
-      wxDateTime localTime(m_ArrayRecTime[i]);
+      wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
       sec = localTime.GetSecond();
       min = localTime.GetMinute();
