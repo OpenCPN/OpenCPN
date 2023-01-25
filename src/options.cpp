@@ -7152,9 +7152,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
   g_ChartScaleFactorExp =
-      g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+      g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
   g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
-  g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
+  g_ShipScaleFactorExp = g_Platform->GetChartScaleFactorExp(g_ShipScaleFactor);
   g_ENCSoundingScaleFactor = m_pSlider_Text_Factor->GetValue();
   g_mouse_zoom_sensitivity_ui = m_pMouse_Zoom_Slider->GetValue();
   g_mouse_zoom_sensitivity =

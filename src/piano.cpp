@@ -44,6 +44,7 @@
 #include "OCPNPlatform.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -67,6 +68,8 @@ extern int g_GUIScaleFactor;
 extern bool g_bopengl;
 
 extern OCPNPlatform *g_Platform;
+extern MyFrame *gFrame;
+extern BasePlatform *g_BasePlatform;
 
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
@@ -286,7 +289,7 @@ void Piano::BuildGLTexture() {
 
   // 0.5 mm nominal, but not less than 1 pixel
   double nominal_line_width_pix = floor(g_Platform->GetDisplayDPmm() / 2.0);
-  nominal_line_width_pix /= OCPN_GetWinDIPScaleFactor();
+  nominal_line_width_pix *= OCPN_GetWinDIPScaleFactor();
   nominal_line_width_pix = wxMax(1.0, nominal_line_width_pix);
 
   // draw the needed rectangles
@@ -833,6 +836,8 @@ int Piano::GetHeight() {
 #ifdef __OCPN__ANDROID__
   height = wxMax(height, 4 * g_Platform->GetDisplayDPmm());
 #endif
+
+  height /= g_BasePlatform->GetDisplayDIPMult(gFrame);
 
   return height;
 }

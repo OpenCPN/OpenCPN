@@ -2559,7 +2559,7 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Some rendering parameters
   v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
   v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
-  v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+  v[_T("OpenCPN Scale Factor Exp")] = g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
   v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
   v[_T("OpenCPN Content Scale Factor")] = OCPN_GetDisplayContentScaleFactor();
   v[_T("OpenCPN Display DIP Scale Factor")] = OCPN_GetWinDIPScaleFactor();
@@ -3111,7 +3111,7 @@ double GetOCPNGUIToolScaleFactor_PlugIn() {
 }
 
 float GetOCPNChartScaleFactor_Plugin() {
-  return g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+  return g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
 }
 
 wxFont GetOCPNGUIScaledFont_PlugIn(wxString item) {

@@ -39,7 +39,7 @@
 #include "styles.h"
 #include "svg_utils.h"
 #include "waypointman_gui.h"
-
+#include "ocpn_plugin.h"
 
 extern BasePlatform* g_BasePlatform;
 extern float g_ChartScaleFactorExp;
@@ -370,6 +370,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   wxArrayString FileList;
   // nominal size, but not less than 4 pixel
   double bm_size = wxMax(4.0, floor(displayDPmm * 12.0));
+  bm_size /= OCPN_GetWinDIPScaleFactor();
   bm_size *= g_ChartScaleFactorExp;
 
   int n_files = wxDir::GetAllFiles(iconDir, &FileList);
@@ -391,6 +392,8 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
                                    // icons, 15px (approx 3mm) be it
 
       bm_size = w * g_ChartScaleFactorExp; //= SVGPixelsToDisplay(w);
+      bm_size /= OCPN_GetWinDIPScaleFactor();
+
 
       wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
       if (bmp.IsOk()) {
@@ -466,6 +469,7 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   if (fabs(g_ChartScaleFactorExp - 1.0) > 0.1) {
     wxBitmap img = LoadSVG(fileName, -1, -1);
     bm_size = img.GetWidth() * g_ChartScaleFactorExp;
+    bm_size /= OCPN_GetWinDIPScaleFactor();
   }
 #else
   //  Set the onscreen size of the symbol
@@ -488,6 +492,7 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
                                // 15px (approx 3mm) be it
   bm_size = w * g_ChartScaleFactorExp; //SVGPixelsToDisplay(w);
+  bm_size /= OCPN_GetWinDIPScaleFactor();
 #endif
 
   wxImage image =

@@ -250,6 +250,7 @@ extern wxArrayString TideCurrentDataSet;
 extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
+extern BasePlatform *g_BasePlatform;
 
 #ifdef __ANDROID__
 extern PlatSpec android_plat_spc;
@@ -1885,6 +1886,8 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   rv = wxMin(rv, 3.0);  //  Clamp at 3.0
   rv = wxMax(rv, 0.5);  //  and at 0.5
 
+  rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
+
 #endif
 
   return rv;
@@ -1946,12 +1949,14 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
     rv *= gFrame->GetContentScaleFactor();
 #endif
 
+  rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
+
 #endif
 
   return rv;
 }
 
-float OCPNPlatform::getChartScaleFactorExp(float scale_linear) {
+float OCPNPlatform::GetChartScaleFactorExp(float scale_linear) {
   double factor = 1.0;
 #ifndef __OCPN__ANDROID__
   factor = exp(scale_linear * (log(3.0) / 5.0));
@@ -1968,6 +1973,16 @@ float OCPNPlatform::getChartScaleFactorExp(float scale_linear) {
 
   return factor;
 }
+
+// float OCPNPlatform::GetDIPScaleFactor() {
+//   float rv = 1.0;
+// #ifdef __WXMSW__
+//   if (gFrame)
+//     rv = (double)(gFrame->FromDIP(100))/100.;
+// #endif
+//
+//     return rv;
+// }
 
 //--------------------------------------------------------------------------
 //      Internal Bluetooth Support

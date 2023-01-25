@@ -9651,13 +9651,13 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
   if (1 /*g_bresponsive*/) {
     wxSize canvas_size = GetSize();
 
-    g_pMarkInfoDialog->SetMinSize(wxSize(-1, wxMin(600, canvas_size.y)));
+    int best_size_y = wxMin(400 / OCPN_GetWinDIPScaleFactor(), canvas_size.y);
+    g_pMarkInfoDialog->SetMinSize(wxSize(-1, best_size_y));
 
     g_pMarkInfoDialog->Layout();
 
     wxPoint canvas_pos = GetPosition();
     wxSize fitted_size = g_pMarkInfoDialog->GetSize();
-    ;
 
     bool newFit = false;
     if (canvas_size.x < fitted_size.x) {
@@ -10625,7 +10625,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     // Some global GUI parameters, for completeness
     v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
     v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
-    v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+    v[_T("OpenCPN Scale Factor Exp")] = g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
     v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
 
     wxJSONWriter w;

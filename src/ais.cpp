@@ -689,7 +689,7 @@ static void AISSetMetrics() {
   // / 60.0;
 
   AIS_nominal_target_size_mm = wxMin(AIS_nominal_target_size_mm, 10.0);
-  AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 6.0);
+  AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 5.0);
 
   AIS_nominal_icon_size_pixels =
                wxMax(4.0, g_Platform->GetDisplayDPmm() *
@@ -710,7 +710,7 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, g_Platform->GetDisplayDPmm() / (5.0 * DPIscale));
+      wxMax(1.5, g_Platform->GetDisplayDPmm() / (2.0 / DPIscale));
         // 0.4 mm nominal, but not less than 1 pixel
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
