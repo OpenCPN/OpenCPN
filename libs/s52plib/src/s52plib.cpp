@@ -3734,7 +3734,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   if (!b_useVBO) glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  //GLint pos = glGetAttribLocation(shader->programId(), "position");
   GLint pos = shader->getAttributeLocation("position");
   float angle = 0;
 
@@ -3788,6 +3787,11 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
                           bufBase);
     glEnableVertexAttribArray(pos);
   }
+  else {
+    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                                (GLvoid *)(0));
+    glEnableVertexAttribArray(pos);
+  }
 
   // from above ls_list is the first drawable segment
   while (ls_list) {
@@ -3838,13 +3842,8 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
       if (b_drawit) {
         // render the segment
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#else
         if (b_useVBO) {
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                                (GLvoid *)(seg_vbo_offset));
-          glEnableVertexAttribArray(pos);
-          glDrawArrays(GL_LINE_STRIP, 0, point_count);
+          glDrawArrays(GL_LINE_STRIP, seg_vbo_offset / (2 * sizeof(float)) , point_count);
         } else {
           unsigned char *buffer = (unsigned char *)vertex_buffer;
           buffer += seg_vbo_offset;
@@ -3854,23 +3853,18 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
           glEnableVertexAttribArray(pos);
           glDrawArrays(GL_LINE_STRIP, 0, point_count);
         }
-#endif
       }
     }
     ls_list = ls_list->next;
   }
 
-  if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+  if (b_useVBO) glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#else
   // Restore shader TransForm Matrix to identity.
   mat4x4 IM;
   mat4x4_identity(IM);
   shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)IM);
-
   shader->UnBind();
-#endif
 
   glDisable(GL_LINE_STIPPLE);
   glDisable(GL_LINE_SMOOTH);
@@ -8294,8 +8288,12 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     shader->SetUniform4fv("color", colorv);
 
-    if (b_useVBO)
+    if (b_useVBO){
       glBindBuffer(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
+      glVertexAttribPointer(pos, 2, array_gl_type, GL_FALSE, 0,
+                                (GLvoid *)(0));
+    }
+    int VBO_offset_index = 0;
 
     while (p_tp) {
       LLBBox box;
@@ -8308,10 +8306,7 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       if (!BBView.IntersectOut(box)) {
 
         if (b_useVBO) {
-          glVertexAttribPointer(pos, 2, array_gl_type, GL_FALSE, 0,
-                                (GLvoid *)(vbo_offset));
-          //shader->SetAttributePointerf( position, float *value )
-          glDrawArrays(p_tp->type, 0, p_tp->nVert);
+          glDrawArrays(p_tp->type, VBO_offset_index, p_tp->nVert);
         } else {
           float *bufOffset = (float *)(&ppg->single_buffer[vbo_offset]);
           glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, bufOffset);
@@ -8319,7 +8314,8 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
         }
       }
 
-      vbo_offset += p_tp->nVert * 2 * array_data_size;
+      //vbo_offset += p_tp->nVert * 2 * array_data_size;
+      VBO_offset_index += p_tp->nVert;
 
       // pick up the next in chain
       if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
