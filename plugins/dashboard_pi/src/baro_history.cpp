@@ -368,7 +368,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   //---------------------------------------------------------------------------------
   // draw vertical timelines every 5 minutes
   //---------------------------------------------------------------------------------
-  GetGlobalColor(_T("UBLCK"), &col);
+  GetGlobalColor(_T("GREY1"), &col);
   pen.SetColour(col);
   pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
@@ -380,10 +380,8 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
     if (m_ArrayRecTime[idx].year != 999) {
       wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
-      sec = localTime.GetSecond();
       min = localTime.GetMinute();
-      if ((hour * 100 + min) != done && (min % 5 == 0) &&
-          (sec == 0 || sec == 1)) {
+      if ((hour * 100 + min) != done && (min % 5 == 0)) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));
