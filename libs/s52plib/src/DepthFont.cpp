@@ -28,6 +28,7 @@
 #include "s52plibGL.h"
 
 #include "DepthFont.h"
+#include "ocpn_plugin.h"
 
 DepthFont::DepthFont() {
   texobj = 0;
@@ -47,9 +48,15 @@ void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
   m_maxglyphw = 0;
   m_maxglyphh = 0;
 
-  wxScreenDC sdc;
+  double scaler = OCPN_GetDisplayContentScaleFactor() * dip_factor;
 
-  sdc.SetFont(*font);
+  wxFont *scaled_font =
+          FindOrCreateFont_PlugIn(font->GetPointSize() / scaler,
+                                  font->GetFamily(), font->GetStyle(),
+                                  font->GetWeight(), false,
+                                  font->GetFaceName());
+  wxScreenDC sdc;
+  sdc.SetFont(*scaled_font);
 
   for (int i = 0; i < 10; i++) {
     wxCoord gw, gh;
@@ -57,13 +64,12 @@ void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
     text = wxString::Format(_T("%d"), i);
     wxCoord descent, exlead;
     sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
-                      font);  // measure the text
+                      scaled_font);  // measure the text
 
     tgi[i].width = gw;
     tgi[i].height = gh;  // - descent;
 
     tgi[i].advance = gw;
-    tgi[i].advance *= dip_factor;
 
     m_maxglyphw = wxMax(tgi[i].width, m_maxglyphw);
     m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
@@ -82,7 +88,7 @@ void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
   wxBitmap tbmp(tex_w, tex_h);
   wxMemoryDC dc;
   dc.SelectObject(tbmp);
-  dc.SetFont(*font);
+  dc.SetFont(*scaled_font);
 
   /* fill bitmap with black */
   dc.SetBackground(wxBrush(wxColour(0, 0, 0)));

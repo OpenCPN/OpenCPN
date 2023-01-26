@@ -1950,7 +1950,8 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
     wxFont f = m_font;
     if (font) f = *font;
 
-    if (m_buseTex) {
+    //FIXME Dave Re-enable, and fix rotation logic.
+    if (0/*m_buseTex*/) {
 #ifdef ocpnUSE_GL
       m_texfont.Build(f, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(string, w, h);
