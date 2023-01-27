@@ -1761,7 +1761,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
 
     //FIXME Dave Re-enable, and fix rotation logic.
     if (0/*m_buseTex*/) {
-      m_texfont.Build(m_font, m_dpi_factor);  // make sure the font is ready
+      m_texfont.Build(m_font, 1.0, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(text, &w, &h);
       m_texfont.SetColor(m_textforegroundcolour);
 
@@ -1953,7 +1953,7 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
     //FIXME Dave Re-enable, and fix rotation logic.
     if (0/*m_buseTex*/) {
 #ifdef ocpnUSE_GL
-      m_texfont.Build(f, m_dpi_factor);  // make sure the font is ready
+      m_texfont.Build(f, 1.0, m_dpi_factor);  // make sure the font is ready
       m_texfont.GetTextExtent(string, w, h);
 #else
       wxMemoryDC temp_dc;

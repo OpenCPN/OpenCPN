@@ -229,6 +229,7 @@ extern bool g_bEnableZoomToCursor;
 extern bool g_bShowChartBar;
 extern bool g_bInlandEcdis;
 extern int g_ENCSoundingScaleFactor;
+extern int g_ENCTextScaleFactor;
 extern int g_maxzoomin;
 
 extern float g_GLMinSymbolLineWidth;
@@ -10609,6 +10610,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
 
     v[_T("OpenCPN S52PLIB SoundingsFactor")] = g_ENCSoundingScaleFactor;
+    v[_T("OpenCPN S52PLIB TextFactor")] = g_ENCTextScaleFactor;
 
     // Global S52 options
 

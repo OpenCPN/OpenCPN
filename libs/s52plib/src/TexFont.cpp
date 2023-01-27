@@ -77,7 +77,7 @@ TexFont::TexFont() {
 
 TexFont::~TexFont() { Delete(); }
 
-void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
+void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool blur) {
   /* avoid rebuilding if the parameters are the same */
   if (m_built && (font == m_font) && (blur == m_blur)) return;
 
@@ -87,10 +87,11 @@ void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
   m_maxglyphw = 0;
   m_maxglyphh = 0;
 
-  double scaler = OCPN_GetDisplayContentScaleFactor() * dpi_factor;
+  double scaler = scale_factor / dpi_factor;
+  scaler /= OCPN_GetDisplayContentScaleFactor();
 
   wxFont *scaled_font =
-          FindOrCreateFont_PlugIn(font.GetPointSize() / scaler,
+          FindOrCreateFont_PlugIn(font.GetPointSize() * scaler,
                                   font.GetFamily(), font.GetStyle(),
                                   font.GetWeight(), false,
                                   font.GetFaceName());

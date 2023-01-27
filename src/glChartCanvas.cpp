@@ -1915,7 +1915,7 @@ void glChartCanvas::GridDraw() {
     font.SetWeight(wxFONTWEIGHT_NORMAL);
     font.Scale( 1.0 / dpi_factor);
 
-    m_gridfont.Build(font, dpi_factor);
+    m_gridfont.Build(font, 1, dpi_factor);
   }
   m_gridfont.SetColor(GridColor);
 
@@ -2739,7 +2739,7 @@ void glChartCanvas::DrawCloseMessage(wxString msg) {
 
     TexFont texfont;
 
-    texfont.Build(*pfont, 1);
+    texfont.Build(*pfont, 1, 1);
     int w, h;
     texfont.GetTextExtent(msg, &w, &h);
     h += 2;

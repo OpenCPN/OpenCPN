@@ -287,6 +287,7 @@ extern int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
 extern int g_ENCSoundingScaleFactor;
+extern int g_ENCTextScaleFactor;
 
 extern bool g_bShowTide;
 extern bool g_bShowCurrent;

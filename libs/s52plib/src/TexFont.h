@@ -50,7 +50,7 @@ public:
   TexFont();
   ~TexFont();
 
-  void Build(wxFont &font, double dpi_factor, bool blur = false);
+  void Build(wxFont &font, double scale_factor, double dpi_factor, bool blur = false);
   void Delete();
 
   void GetTextExtent(const wxString &string, int *width, int *height);

@@ -347,14 +347,13 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_displayScale = 1.0;
 
   // Clear the TexFont cache
-  TexFont *f_cache = 0;
   unsigned int i;
   for (i = 0; i < TXF_CACHE; i++) {
      s_txf[i].key = 0;
      s_txf[i].cache = 0;
   }
   m_dipfactor = 1.0;
-
+  m_FinalTextScaleFactor = 0;
 }
 
 s52plib::~s52plib() {
@@ -690,6 +689,10 @@ void s52plib::GenerateStateHash() {
     offset += sizeof(int);
   }
 
+  if (offset + sizeof(bool) < sizeof(state_buffer)) {
+    memcpy(&state_buffer[offset], &m_nTextFactor, sizeof(int));
+    offset += sizeof(int);
+  }
   m_state_hash = crc32buf(state_buffer, offset);
 }
 
@@ -1737,6 +1740,19 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
   scale_factor = wxMin(scale_factor, 4);
 
   scale_factor /= m_dipfactor;
+  scale_factor *= m_TextScaleFactor;
+
+  // Has there been a change in scale factor by UI?
+  if (scale_factor != m_FinalTextScaleFactor){
+    ptext->texobj = 0;    // This will leak, but only a little
+    m_FinalTextScaleFactor = scale_factor;
+
+    for (unsigned int i = 0; i < TXF_CACHE; i++) {
+     s_txf[i].key = 0;
+     s_txf[i].cache = 0;
+    }
+  }
+
 
   if (!pdc)  // OpenGL
   {
@@ -2027,6 +2043,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
       // rebuild font if needed
       TexFont *f_cache = 0;
       unsigned int i;
+
       for (i = 0; i < TXF_CACHE; i++) {
         if (s_txf[i].key == ptext->pFont) {
           f_cache = s_txf[i].cache;
@@ -2045,7 +2062,8 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
           delete s_txf[i].cache;
         s_txf[i].cache = new TexFont();
         f_cache = s_txf[i].cache;
-        f_cache->Build(*ptext->pFont, m_dipfactor);
+        f_cache->Build(*ptext->pFont, m_TextScaleFactor, m_dipfactor);
+
         int wac;
         f_cache->GetTextExtent(_T("M"), &wac, 0);
         ptext->avgCharWidth = wac * m_dipfactor;
@@ -9883,8 +9901,9 @@ void s52plib::PrepareForRender(VPointCompat *vp) {
   lastLightLat = 0;
   lastLightLon = 0;
 
-  // Precalulate the ENC Soundings scale factor
+  // Precalulate the ENC scale factors
   m_SoundingsScaleFactor = exp(m_nSoundingFactor * (log(2.0) / 5.0));
+  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0));
 }
 
 void s52plib::SetAnchorOn(bool val) {
