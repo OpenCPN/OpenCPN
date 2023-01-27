@@ -60,6 +60,7 @@
 
 #include "TexFont.h"
 #include "linmath.h"
+#include "ocpn_plugin.h"
 
 GLint m_TexFontShader;
 
@@ -76,7 +77,7 @@ TexFont::TexFont() {
 
 TexFont::~TexFont() { Delete(); }
 
-void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
+void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool blur) {
   /* avoid rebuilding if the parameters are the same */
   if (m_built && (font == m_font) && (blur == m_blur)) return;
 
@@ -86,9 +87,16 @@ void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
   m_maxglyphw = 0;
   m_maxglyphh = 0;
 
-  wxScreenDC sdc;
+  double scaler = scale_factor / dpi_factor;
+  scaler /= OCPN_GetDisplayContentScaleFactor();
 
-  sdc.SetFont(font);
+  wxFont *scaled_font =
+          FindOrCreateFont_PlugIn(font.GetPointSize() * scaler,
+                                  font.GetFamily(), font.GetStyle(),
+                                  font.GetWeight(), false,
+                                  font.GetFaceName());
+  wxScreenDC sdc;
+  sdc.SetFont(*scaled_font);
 
   for (int i = MIN_GLYPH; i < MAX_GLYPH; i++) {
     wxCoord gw, gh;
@@ -99,7 +107,7 @@ void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
       text = wxString::Format(_T("%c"), i);
     wxCoord descent, exlead;
     sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
-                      &font);  // measure the text
+                      scaled_font);  // measure the text
 
     tgi[i].width = gw;
     tgi[i].height = gh;
@@ -131,7 +139,7 @@ void TexFont::Build(wxFont &font, double dpi_factor, bool blur) {
   wxBitmap tbmp(tex_w, tex_h);
   wxMemoryDC dc;
   dc.SelectObject(tbmp);
-  dc.SetFont(font);
+  dc.SetFont(*scaled_font);
 
   /* fill bitmap with black */
   dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
@@ -257,23 +265,6 @@ void TexFont::RenderGlyph(int c) {
   float ty1 = (float)y / (float)tex_h;
   float ty2 = (float)(y + h) / (float)tex_h;
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-  glBegin(GL_QUADS);
-
-  glTexCoord2f(tx1, ty1);
-  glVertex2i(0, 0);
-  glTexCoord2f(tx2, ty1);
-  glVertex2i(w, 0);
-  glTexCoord2f(tx2, ty2);
-  glVertex2i(w, h);
-  glTexCoord2f(tx1, ty2);
-  glVertex2i(0, h);
-
-  glEnd();
-  glTranslatef(tgic.advance, 0.0, 0.0);
-#else
-
   if(!m_TexFontShader)
     return;
 
@@ -388,8 +379,6 @@ void TexFont::RenderGlyph(int c) {
 
   m_dx += tgic.advance; // * cos(m_angle); // + tgic.advance * sin(m_angle);
   //m_dy += tgic.advance * sin(m_angle); // - tgic.advance * cos(m_angle);
-
-#endif
 }
 
 void TexFont::RenderString(const char *string, int x, int y, float angle) {

@@ -287,6 +287,7 @@ extern int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
 extern int g_ENCSoundingScaleFactor;
+extern int g_ENCTextScaleFactor;
 
 extern bool g_bShowTide;
 extern bool g_bShowCurrent;
@@ -2286,17 +2287,20 @@ void MyFrame::PositionConsole(void) {
   } else {
     GetPrimaryCanvas()->GetSize(&ccsx, &ccsy);
     GetPrimaryCanvas()->GetPosition(&ccx, &ccy);
+    consoleHost = GetPrimaryCanvas();
+  }
+
+  int yOffset = 60;
+  if (consoleHost) {
+    if(consoleHost->GetCompass()){
+      wxRect compass_rect = consoleHost->GetCompass()->GetRect();
+    // Compass is is normal upper right position.
+      if(compass_rect.y < 100)
+        yOffset = compass_rect.y + compass_rect.height + 45;
+    }
   }
 
   console->GetSize(&consx, &consy);
-
-  int yOffset = 60;
-  //  TODO    if(g_Compass){
-  //         if(g_Compass->GetRect().y < 100)        // Compass is is normal
-  //         upper right position.
-  //             yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height
-  //             + 45;
-  //     }
 
   wxPoint screen_pos =
       ClientToScreen(wxPoint(ccx + ccsx - consx - 2, ccy + yOffset));
@@ -4383,7 +4387,7 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   // update S52 PLIB scale factors
   if (ps52plib){
-    ps52plib->SetScaleFactorExp(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor));
+    ps52plib->SetScaleFactorExp(g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor));
     ps52plib-> SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
   }
 
@@ -8503,7 +8507,7 @@ void LoadS57() {
     }
 
     // preset S52 PLIB scale factors
-    ps52plib->SetScaleFactorExp(g_Platform->getChartScaleFactorExp(g_ChartScaleFactor));
+    ps52plib->SetScaleFactorExp(g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor));
     ps52plib-> SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
 
 #ifdef ocpnUSE_GL

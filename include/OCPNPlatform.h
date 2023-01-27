@@ -120,7 +120,8 @@ public:
   wxDirDialog *AdjustDirDialogFont(wxWindow *container, wxDirDialog *dlg);
 
   void PositionAISAlert(wxWindow *alert_window);
-  float getChartScaleFactorExp(float scale_linear);
+  float GetChartScaleFactorExp(float scale_linear);
+  //float GetDIPScaleFactor();
   int GetStatusBarFieldCount();
   bool GetFullscreen();
   bool SetFullscreen(bool bFull);

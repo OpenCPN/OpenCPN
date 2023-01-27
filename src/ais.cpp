@@ -56,6 +56,7 @@
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "line_clip.h"
+#include "ocpn_plugin.h"
 
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
@@ -669,6 +670,7 @@ float AIS_width_cogpredictor_base;
 float AIS_width_cogpredictor_line;
 float AIS_width_target_outline;
 float AIS_icon_diameter;
+wxFont *AIS_NameFont;
 
 static void AISSetMetrics() {
   AIS_scale_factor = 1.0;
@@ -689,7 +691,7 @@ static void AISSetMetrics() {
   // / 60.0;
 
   AIS_nominal_target_size_mm = wxMin(AIS_nominal_target_size_mm, 10.0);
-  AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 6.0);
+  AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 5.0);
 
   AIS_nominal_icon_size_pixels =
                wxMax(4.0, g_Platform->GetDisplayDPmm() *
@@ -710,7 +712,7 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, g_Platform->GetDisplayDPmm() / (5.0 * DPIscale));
+      wxMax(1.5, g_Platform->GetDisplayDPmm() / (2.0 / DPIscale));
         // 0.4 mm nominal, but not less than 1 pixel
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
@@ -721,6 +723,17 @@ static void AISSetMetrics() {
   AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
   AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
+
+  wxFont *font =FontMgr::Get().GetFont(_("AIS Target Name"), 12);
+  double scaler = DPIscale;
+
+  AIS_NameFont =
+           FindOrCreateFont_PlugIn(font->GetPointSize() / scaler,
+                                   font->GetFamily(), font->GetStyle(),
+                                   font->GetWeight(), false,
+                                   font->GetFaceName());
+
+
 }
 
 static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
@@ -1587,16 +1600,18 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       tgt_name = tgt_name.substr(0, tgt_name.find(_T ( "Unknown" ), 0));
 
       if (tgt_name != wxEmptyString) {
-        dc.SetFont(*FontMgr::Get().GetFont(_("AIS Target Name"), 12));
+        dc.SetFont(*AIS_NameFont);
         dc.SetTextForeground(FontMgr::Get().GetFontColor(_("AIS Target Name")));
 
         int w, h;
-        dc.GetTextExtent(tgt_name, &w, &h);
+        dc.GetTextExtent(_T("W"), &w, &h);
+        h *= g_Platform->GetDisplayDIPMult(gFrame);
+        w *= g_Platform->GetDisplayDIPMult(gFrame);
 
         if ((td->COG > 90) && (td->COG < 180))
-          dc.DrawText(tgt_name, TargetPoint.x + 10, TargetPoint.y - h);
+          dc.DrawText(tgt_name, TargetPoint.x + w, TargetPoint.y - h);
         else
-          dc.DrawText(tgt_name, TargetPoint.x + 10, TargetPoint.y + 0.5 * h);
+          dc.DrawText(tgt_name, TargetPoint.x + w, TargetPoint.y /*+ (0.5 * h)*/);
 
       }  // If name do not empty
     }    // if scale

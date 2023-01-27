@@ -79,6 +79,8 @@ wxFont *FindOrCreateFont_PlugIn(
 wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size = 0);
 float GetOCPNChartScaleFactor_Plugin();
 extern "C" wxString *GetpSharedDataLocation();
+extern double OCPN_GetDisplayContentScaleFactor();
+
 #endif
 
 
@@ -345,14 +347,13 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_displayScale = 1.0;
 
   // Clear the TexFont cache
-  TexFont *f_cache = 0;
   unsigned int i;
   for (i = 0; i < TXF_CACHE; i++) {
      s_txf[i].key = 0;
      s_txf[i].cache = 0;
   }
   m_dipfactor = 1.0;
-
+  m_FinalTextScaleFactor = 0;
 }
 
 s52plib::~s52plib() {
@@ -688,6 +689,10 @@ void s52plib::GenerateStateHash() {
     offset += sizeof(int);
   }
 
+  if (offset + sizeof(bool) < sizeof(state_buffer)) {
+    memcpy(&state_buffer[offset], &m_nTextFactor, sizeof(int));
+    offset += sizeof(int);
+  }
   m_state_hash = crc32buf(state_buffer, offset);
 }
 
@@ -1731,74 +1736,64 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
   double sfactor = 1; //vp_plib.ref_scale / vp_plib.chart_scale;
   double scale_factor = wxMax((sfactor) / 4., 1.);
 
-  //FIXME (plib)
-  //if (true/*!g_oz_vector_scale*/ || !vp_plib.b_quilt) scale_factor = 1.0;
-
   //  Place an upper bound on the scaled text size
   scale_factor = wxMin(scale_factor, 4);
+
+  scale_factor /= m_dipfactor;
+  scale_factor *= m_TextScaleFactor;
+
+  // Has there been a change in scale factor by UI?
+  if (scale_factor != m_FinalTextScaleFactor){
+    ptext->texobj = 0;    // This will leak, but only a little
+    m_FinalTextScaleFactor = scale_factor;
+
+    for (unsigned int i = 0; i < TXF_CACHE; i++) {
+     s_txf[i].key = 0;
+     s_txf[i].cache = 0;
+    }
+  }
+
 
   if (!pdc)  // OpenGL
   {
 #ifdef ocpnUSE_GL
 
-    bool b_force_no_texture = false;
-    if (scale_factor > 1.) {
-      b_force_no_texture = true;
+    bool b_force_no_texfont = false;
+    if (ptext->bspecial_char)
+      b_force_no_texfont = true;
 
-      int old_size = ptext->pFont->GetPointSize();
-      int new_size = old_size * scale_factor;
-      scaled_font = FindOrCreateFont_PlugIn(
-          new_size, ptext->pFont->GetFamily(), ptext->pFont->GetStyle(),
-          ptext->pFont->GetWeight(), false, ptext->pFont->GetFaceName());
-      wxScreenDC sdc;
-      sdc.GetTextExtent(ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead,
-                        scaled_font);  // measure the text
-
-      // Has font size changed?  If so, clear the cached bitmap, and rebuild it
-      if ((h_scaled - descent) != ptext->rendered_char_height) {
-        glDeleteTextures(1, (GLuint *)&ptext->texobj);
-        ptext->texobj = 0;
-      }
-
-      // We cannot get the font ascent value to remove the interline spacing
-      // from the font "height". So we have to estimate based on conventional
-      // Arial metrics
-      ptext->rendered_char_height = (h_scaled - descent) * 8 / 10;
-    }
-    // We render string with "special" characters the old, hard way, since we
-    // don't necessarily have the glyphs in our font, or if we do we would need
-    // a hashmap to cache and extract them And we also do this if the text is to
-    // be scaled up artificially.
-
-    //Fixme (dave)
+     //Fixme (dave)
     // We also do this the hard way for rotation of strings.  Very slow.
 //#ifdef __OCPN__ANDROID__
-    if (fabs(vp_plib.rotation) > .01) b_force_no_texture = true;
+    if (fabs(vp_plib.rotation) > .01)
+      b_force_no_texfont = true;
 //#endif
-    if ((ptext->bspecial_char) || b_force_no_texture) {
-      if (!ptext->texobj)  // is texture ready?
-      {
+
+    if (b_force_no_texfont) {
+      if (!ptext->texobj){  // is texture ready?
+
+        int old_size = ptext->pFont->GetPointSize();
+        int new_size = old_size * scale_factor / OCPN_GetDisplayContentScaleFactor();
+
+        scaled_font = FindOrCreateFont_PlugIn(
+          new_size, ptext->pFont->GetFamily(), ptext->pFont->GetStyle(),
+          ptext->pFont->GetWeight(), false, ptext->pFont->GetFaceName());
         wxScreenDC sdc;
+        sdc.GetTextExtent(ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead,
+                        scaled_font);  // measure the text
 
-        if (scale_factor <= 1.) {
-          sdc.GetTextExtent(ptext->frmtd, &w_scaled, &h_scaled, &descent,
-                            &exlead, scaled_font);  // measure the text
+        // We cannot get the font ascent value to remove the interline spacing
+        // from the font "height". So we have to estimate based on conventional
+        // Arial metrics
+        ptext->rendered_char_height = (h_scaled - descent) * 8 / 10 * m_dipfactor;
 
-          // We cannot get the font ascent value to remove the interline spacing
-          // from the font "height". So we have to estimate based on
-          // conventional Arial metrics
-          ptext->rendered_char_height = (h_scaled - descent) * 8 / 10;
-        }
-
-        ptext->text_width = w_scaled;
-        ptext->text_height = h_scaled;
+        ptext->text_width = w_scaled * m_dipfactor;
+        ptext->text_height = h_scaled * m_dipfactor;
 
         /* make power of 2 */
         int tex_w, tex_h;
-        for (tex_w = 1; tex_w < ptext->text_width; tex_w *= 2)
-          ;
-        for (tex_h = 1; tex_h < ptext->text_height; tex_h *= 2)
-          ;
+        for (tex_w = 1; tex_w < w_scaled; tex_w *= 2);
+        for (tex_h = 1; tex_h < h_scaled; tex_h *= 2);
 
         wxMemoryDC mdc;
         wxBitmap bmp(tex_w, tex_h);
@@ -1964,9 +1959,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
           uv[4] = 0;
           uv[5] = 1;
 
-          // w *= scale_factor;
-          // h *= scale_factor;
-
           // pixels
           coords[0] = 0;
           coords[1] = 0;
@@ -2051,6 +2043,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
       // rebuild font if needed
       TexFont *f_cache = 0;
       unsigned int i;
+
       for (i = 0; i < TXF_CACHE; i++) {
         if (s_txf[i].key == ptext->pFont) {
           f_cache = s_txf[i].cache;
@@ -2069,11 +2062,16 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
           delete s_txf[i].cache;
         s_txf[i].cache = new TexFont();
         f_cache = s_txf[i].cache;
-        f_cache->Build(*ptext->pFont, m_dipfactor);
+        f_cache->Build(*ptext->pFont, m_TextScaleFactor, m_dipfactor);
+
+        int wac;
+        f_cache->GetTextExtent(_T("M"), &wac, 0);
+        ptext->avgCharWidth = wac * m_dipfactor;
       }
 
       int w, h;
       f_cache->GetTextExtent(ptext->frmtd, &w, &h);
+      h *= m_dipfactor;
 
       // We don't store descent/ascent info for font texture cache
       // So we have to estimate based on conventional Arial metrics
@@ -2200,7 +2198,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
     yadjust += ptext->yoffs * (rendered_text_height);
 
     //  X offset specified in units of average char width
-    xadjust += ptext->xoffs * ptext->avgCharWidth;
+    xadjust += ptext->xoffs * ptext->avgCharWidth * m_dipfactor;
 
     // adjust for text justification
     switch (ptext->hjust) {
@@ -2379,7 +2377,7 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules,
 
     //    Establish a font
     if (!text->pFont) {
-      // Process the font specifications from the LUP symbolizatio rule
+      // Process the font specifications from the LUP symbolization rule
       int spec_weight = text->weight - 0x30;
       wxFontWeight fontweight;
       if (spec_weight < 5)
@@ -2791,6 +2789,7 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
   scale_factor *= m_ChartScaleFactorExp;
   scale_factor *= g_scaminScale;
+  scale_factor /= m_dipfactor;
 
   if (m_display_size_mm <
       200) {  // about 8 inches, implying some sort of smaller mobile device
@@ -9898,8 +9897,9 @@ void s52plib::PrepareForRender(VPointCompat *vp) {
   lastLightLat = 0;
   lastLightLon = 0;
 
-  // Precalulate the ENC Soundings scale factor
+  // Precalulate the ENC scale factors
   m_SoundingsScaleFactor = exp(m_nSoundingFactor * (log(2.0) / 5.0));
+  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0));
 }
 
 void s52plib::SetAnchorOn(bool val) {

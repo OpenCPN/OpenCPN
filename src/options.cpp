@@ -344,6 +344,7 @@ extern bool g_bRollover;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
 extern int g_ENCSoundingScaleFactor;
+extern int g_ENCTextScaleFactor;
 extern bool g_bShowMuiZoomButtons;
 
 extern double g_config_display_size_mm;
@@ -5489,6 +5490,20 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
+  m_pSlider_ENCText_Factor =
+      new wxSlider(itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
+                   m_sliderSize, SLIDER_STYLE);
+  m_pSlider_ENCText_Factor->Hide();
+  sliderSizer->Add(
+      new wxStaticText(itemPanelFont, wxID_ANY, _("ENC Text Scale")),
+      inputFlags);
+  sliderSizer->Add(m_pSlider_ENCText_Factor, 0, wxALL, border_size);
+  m_pSlider_ENCText_Factor->Show();
+
+#ifdef __OCPN__ANDROID__
+  m_pSlider_ENCText_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+
   sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, "Mouse wheel zoom sensitivity"),
       inputFlags);
@@ -6261,6 +6276,7 @@ void options::SetInitialSettings(void) {
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
   m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
   m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
+  m_pSlider_ENCText_Factor->SetValue(g_ENCTextScaleFactor);
   m_pMouse_Zoom_Slider->SetValue(g_mouse_zoom_sensitivity_ui);
   wxString screenmm;
 
@@ -7152,10 +7168,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
   g_ChartScaleFactorExp =
-      g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+      g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
   g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
-  g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
+  g_ShipScaleFactorExp = g_Platform->GetChartScaleFactorExp(g_ShipScaleFactor);
   g_ENCSoundingScaleFactor = m_pSlider_Text_Factor->GetValue();
+  g_ENCTextScaleFactor = m_pSlider_ENCText_Factor->GetValue();
+
   g_mouse_zoom_sensitivity_ui = m_pMouse_Zoom_Slider->GetValue();
   g_mouse_zoom_sensitivity =
       MouseZoom::ui_to_config(g_mouse_zoom_sensitivity_ui);
@@ -7251,6 +7269,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
                                      ? PLAIN_BOUNDARIES
                                      : SYMBOLIZED_BOUNDARIES;
     ps52plib->m_nSoundingFactor = m_pSlider_Text_Factor->GetValue();
+    ps52plib->m_nTextFactor = m_pSlider_ENCText_Factor->GetValue();
 
     S52_setMarinerParam(S52_MAR_TWO_SHADES,
                         (p24Color->GetSelection() == 0) ? 1.0 : 0.0);
