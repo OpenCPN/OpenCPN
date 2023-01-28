@@ -70,6 +70,7 @@ TexFont::TexFont() {
   m_built = false;
   m_color = wxColor(0, 0, 0);
   m_angle = 0;
+  m_ContentScaleFactor = 1.0;
 
   m_shadersLoaded = false;
 
@@ -88,7 +89,7 @@ void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool b
   m_maxglyphh = 0;
 
   double scaler = scale_factor / dpi_factor;
-  scaler /= OCPN_GetDisplayContentScaleFactor();
+  scaler /= m_ContentScaleFactor;
 
   wxFont *scaled_font =
           FindOrCreateFont_PlugIn(font.GetPointSize() * scaler,

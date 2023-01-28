@@ -1915,6 +1915,7 @@ void glChartCanvas::GridDraw() {
     font.SetWeight(wxFONTWEIGHT_NORMAL);
     font.Scale( 1.0 / dpi_factor);
 
+    m_gridfont.SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
     m_gridfont.Build(font, 1, dpi_factor);
   }
   m_gridfont.SetColor(GridColor);

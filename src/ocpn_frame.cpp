@@ -8504,6 +8504,7 @@ void LoadS57() {
       ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());
       double dip_factor = g_BasePlatform->GetDisplayDIPMult(gFrame);
       ps52plib->SetDIPFactor(dip_factor);
+      ps52plib->SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
     }
 
     // preset S52 PLIB scale factors

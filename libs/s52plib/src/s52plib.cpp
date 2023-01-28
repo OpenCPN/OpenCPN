@@ -79,7 +79,6 @@ wxFont *FindOrCreateFont_PlugIn(
 wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size = 0);
 float GetOCPNChartScaleFactor_Plugin();
 extern "C" wxString *GetpSharedDataLocation();
-extern double OCPN_GetDisplayContentScaleFactor();
 
 #endif
 
@@ -353,6 +352,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
      s_txf[i].cache = 0;
   }
   m_dipfactor = 1.0;
+  m_ContentScaleFactor = 1.0;
   m_FinalTextScaleFactor = 0;
 }
 
@@ -450,12 +450,11 @@ void s52plib::SetDIPFactor( double factor) {
   m_dipfactor = factor;
 }
 
-void s52plib::SetPPMM(float ppmm) {
+void s52plib::SetContentScaleFactor( double factor) {
+  m_ContentScaleFactor = factor;
+}
 
-// #ifdef __WXOSX__
-//   // Support Mac Retina displays.
-//   m_displayScale = GetOCPNCanvasWindow()->GetContentScaleFactor();
-// #endif
+void s52plib::SetPPMM(float ppmm) {
 
   canvas_pix_per_mm = ppmm;
 
@@ -1773,7 +1772,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
       if (!ptext->texobj){  // is texture ready?
 
         int old_size = ptext->pFont->GetPointSize();
-        int new_size = old_size * scale_factor / OCPN_GetDisplayContentScaleFactor();
+        int new_size = old_size * scale_factor / m_ContentScaleFactor;
 
         scaled_font = FindOrCreateFont_PlugIn(
           new_size, ptext->pFont->GetFamily(), ptext->pFont->GetStyle(),
@@ -2061,6 +2060,8 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
         if(s_txf[i].cache)
           delete s_txf[i].cache;
         s_txf[i].cache = new TexFont();
+        s_txf[i].cache->SetContentScaleFactor(m_ContentScaleFactor);
+
         f_cache = s_txf[i].cache;
         f_cache->Build(*ptext->pFont, m_TextScaleFactor, m_dipfactor);
 
@@ -3382,6 +3383,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
     if (!m_texSoundings.IsBuilt() ||
         (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1)) {
       m_texSoundings.Delete();
+      m_texSoundings.SetContentScaleFactor(m_ContentScaleFactor);
 
        m_soundFont = FindOrCreateFont_PlugIn(point_size, wxFONTFAMILY_SWISS,
                                              wxFONTSTYLE_NORMAL, fontWeight,

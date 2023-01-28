@@ -59,6 +59,7 @@ public:
   bool IsBuilt() { return m_built; }
   void SetColor(wxColor &color) { m_color = color; }
   void PrepareShader(int width, int height, double rotation);
+  void SetContentScaleFactor(double s){m_ContentScaleFactor = s;}
 
 private:
   void GetTextExtent(const char *string, int *width, int *height);
@@ -83,6 +84,7 @@ private:
   wxColor m_color;
 
   bool m_shadersLoaded;
+  double m_ContentScaleFactor;
 
 };
 

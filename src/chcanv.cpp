@@ -10356,6 +10356,8 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   h2 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
 
   w = wxMax(w1, w2) + (h1 / 2); // Add a little right pad
+  w *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+
   h = h1 + h2;
 
   xp = ref_point.x - w;
