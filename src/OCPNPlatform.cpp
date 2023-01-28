@@ -1082,6 +1082,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
   g_n_ownship_min_mm = 8;
   g_bShowMuiZoomButtons = true;
+  g_bresponsive = false;
 
   // Initial S52/S57 options
   if (pConfig) {

@@ -5399,11 +5399,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                                _("Enable Scaled Graphics interface"));
   miscOptions->Add(pResponsive, 0, wxALL, border_size);
 
-  //  This two options are always needed for Android
+  //  These two options are always needed ON for Android
 #ifdef __OCPN__ANDROID__
   pMobile->Hide();
   pResponsive->Hide();
 #endif
+
+  //  "Responsive graphics" option deprecated in O58+
+  pResponsive->Hide();
 
   pZoomButtons =
       new wxCheckBox(itemPanelFont, ID_ZOOMBUTTONS, _("Show Zoom buttons"));

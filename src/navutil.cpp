@@ -933,7 +933,15 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor);
 
   Read(_T ( "MobileTouch" ), &g_btouch);
-  Read(_T ( "ResponsiveGraphics" ), &g_bresponsive);
+
+//  "Responsive graphics" option deprecated in O58+
+//  Read(_T ( "ResponsiveGraphics" ), &g_bresponsive);
+#ifdef __OCPN__ANDROID__
+  g_bresponsive = true;
+#else
+  g_bresponsive = false;
+#endif
+
   Read(_T ( "EnableRolloverBlock" ), &g_bRollover);
 
   Read(_T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier_raster);
