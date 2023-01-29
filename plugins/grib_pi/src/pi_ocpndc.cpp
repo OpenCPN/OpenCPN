@@ -72,7 +72,6 @@
 #include "qdebug.h"
 #endif
 
-extern float g_DIPfactor;
 extern float g_piGLMinSymbolLineWidth;
 wxArrayPtrVoid pi_gTesselatorVertices;
 
@@ -1894,8 +1893,8 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
-      w *= g_DIPfactor;
-      h *= g_DIPfactor;
+      w *= OCPN_GetWinDIPScaleFactor();
+      h *= OCPN_GetWinDIPScaleFactor();
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -2122,14 +2121,14 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
 #else
       wxMemoryDC temp_dc;
       temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
-      if (w) (*w) *= g_DIPfactor;
-      if (h) (*h) *= g_DIPfactor;
+      if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
+      if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
 #endif
     } else {
       wxMemoryDC temp_dc;
       temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
-      if (w) (*w) *= g_DIPfactor;
-      if (h) (*h) *= g_DIPfactor;
+      if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
+      if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
     }
   }
 

@@ -46,7 +46,6 @@
 
 extern int m_Altitude;
 extern bool g_bpause;
-extern float g_DIPfactor;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -386,7 +385,7 @@ void GRIBOverlayFactory::SetMessageFont() {
   fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
 #else
   fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() / g_DIPfactor));
+  fo.SetPointSize((fo.GetPointSize() / OCPN_GetWinDIPScaleFactor()));
 #endif
   if (m_Font_Message)
     delete m_Font_Message;
