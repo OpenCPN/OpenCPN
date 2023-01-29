@@ -241,6 +241,9 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     m_scaledFont = *qFont;
   }
+
+  m_DIPFactor =g_Platform->GetDisplayDIPMult(gFrame);
+
 }
 
 CanvasMenuHandler::~CanvasMenuHandler() {}
@@ -251,17 +254,19 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 
 void CanvasMenuHandler::PrepareMenuItem( wxMenuItem *item ){
 #if defined(__WXMSW__)
-  wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
-  item->SetBackgroundColour(ctrl_back_color);
-  wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
-  item->SetTextColour(menu_text_color);
+  if (m_DIPFactor == 1.0){
+    wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
+    item->SetBackgroundColour(ctrl_back_color);
+    wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
+    item->SetTextColour(menu_text_color);
+  }
 #endif
 }
 
 void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
+  if (m_DIPFactor == 1.0)
     item->SetFont(m_scaledFont);
 #endif
 
@@ -279,7 +284,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
 void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
+  if (m_DIPFactor == 1.0)
     item->SetFont(m_scaledFont);
 #endif
 
@@ -296,7 +301,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 
 void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
 #if defined(__WXMSW__)
-  if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
+  if (m_DIPFactor == 1.0)
     item->SetFont(m_scaledFont);
 #endif
 
@@ -332,10 +337,6 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
 
     bool bsubMenus = false;
-#ifdef __WXMSW__
-    if (OCPN_GetWinDIPScaleFactor() < 1.)
-      bsubMenus = true;
-#endif
 
     if (bsubMenus){
       if (parent->undo->AnythingToUndo()) {
@@ -1010,7 +1011,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                          (*it)->GetHelp(), (*it)->GetKind());
 
 #ifdef __WXMSW__
-        if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
+        if (m_DIPFactor == 1.0)
           pmi->SetFont(m_scaledFont);
 #endif
         PrepareMenuItem( pmi );
@@ -1028,7 +1029,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    if (g_Platform->GetDisplayDIPMult(gFrame) == 1.0)
+    if (m_DIPFactor == 1.0)
       pmi->SetFont(m_scaledFont);
 #endif
 
