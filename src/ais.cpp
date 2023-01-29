@@ -1162,10 +1162,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
         if (dc.GetDC()) {
           dc.SetBrush(target_brush);
-          if (targetscale >= 75)
-            dc.StrokeCircle(PredPoint.x, PredPoint.y, 5);
-          else
-            dc.StrokeCircle(PredPoint.x, PredPoint.y, 2);
+          dc.StrokeCircle(PredPoint.x, PredPoint.y, 5* targetscale / 100);
         } else {
 #ifdef ocpnUSE_GL
 
@@ -1209,7 +1206,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
           dc.SetBrush(target_brush);
           dc.StrokeCircle(PredPoint.x, PredPoint.y,
-                          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+                          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor* targetscale / 100);
 #endif
 #endif
         }
