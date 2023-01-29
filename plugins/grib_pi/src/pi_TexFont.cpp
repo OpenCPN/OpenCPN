@@ -34,14 +34,13 @@
 #endif
 
 #include "pi_TexFont.h"
+#include "pi_ocpndc.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
 #include "linmath.h"
 #include "pi_shaders.h"
 #endif
-
-extern float g_DIPfactor;
 
 TexFont::TexFont() {
   texobj = 0;
@@ -76,8 +75,8 @@ void TexFont::Build(wxFont &font, bool blur) {
     wxCoord descent, exlead;
     sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
                       &font);  // measure the text
-    gw *= g_DIPfactor;
-    gh *= g_DIPfactor;
+    gw *= OCPN_GetWinDIPScaleFactor();
+    gh *= OCPN_GetWinDIPScaleFactor();
     tgi[i].width = gw;
     tgi[i].height = gh;
 

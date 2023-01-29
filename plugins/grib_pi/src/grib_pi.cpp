@@ -55,7 +55,6 @@ extern int m_DialogStyle;
 grib_pi *g_pi;
 bool g_bpause;
 float g_piGLMinSymbolLineWidth;
-float g_DIPfactor;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -120,13 +119,6 @@ int grib_pi::Init(void) {
   // Get a pointer to the opencpn display canvas, to use as a parent for the
   // GRIB dialog
   m_parent_window = GetOCPNCanvasWindow();
-
-  //Get dip factor for MSW et xWidgets 3.2.1
-  g_DIPfactor = 1;
-#ifdef __WXMSW__
-  if (m_parent_window)
-    g_DIPfactor = (double)(m_parent_window->ToDIP(100)) / 100.;
-#endif
 
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
@@ -384,7 +376,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
 
   bool starting = false;
 
-  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * g_DIPfactor;
+  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * OCPN_GetWinDIPScaleFactor();
   if (scale_factor != m_GUIScaleFactor) starting = true;
 
   if (!m_pGribCtrlBar) {
