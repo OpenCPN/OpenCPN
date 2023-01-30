@@ -1975,6 +1975,13 @@ float OCPNPlatform::GetChartScaleFactorExp(float scale_linear) {
   return factor;
 }
 
+float OCPNPlatform::GetMarkScaleFactorExp(float scale_linear) {
+  if(scale_linear <= 0)
+    return GetChartScaleFactorExp(scale_linear);
+  else
+    return GetChartScaleFactorExp(scale_linear-1);
+}
+
 // float OCPNPlatform::GetDIPScaleFactor() {
 //   float rv = 1.0;
 // #ifdef __WXMSW__

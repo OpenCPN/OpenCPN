@@ -83,6 +83,8 @@ extern wxString g_default_wp_icon;
 // Global page setup data
 
 extern float g_ChartScaleFactorExp;
+extern float g_MarkScaleFactorExp;
+
 extern MarkInfoDlg* g_pMarkInfoDialog;
 extern double g_n_arrival_circle_radius;
 extern int g_iWaypointRangeRingsNumber;
@@ -391,7 +393,7 @@ void MarkInfoDlg::Create() {
 
   //  Accomodate scaling of icon
   int min_size = m_sizeMetric * 2;
-  min_size = wxMax(min_size, (32 * g_ChartScaleFactorExp) + 4);
+  min_size = wxMax(min_size, (32 * g_MarkScaleFactorExp) + 4);
   m_bcomboBoxIcon->SetMinSize(wxSize(-1, min_size));
 
   bSizer8->Add(m_bcomboBoxIcon, 1, wxALL, 5);

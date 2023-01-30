@@ -121,6 +121,7 @@ public:
 
   void PositionAISAlert(wxWindow *alert_window);
   float GetChartScaleFactorExp(float scale_linear);
+  float GetMarkScaleFactorExp(float scale_linear);
   //float GetDIPScaleFactor();
   int GetStatusBarFieldCount();
   bool GetFullscreen();

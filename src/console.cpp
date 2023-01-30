@@ -139,6 +139,7 @@ wxString g_default_routepoint_icon;
 double g_TrackDeltaDistance;
 float g_fWaypointRangeRingsStep;
 float g_ChartScaleFactorExp;
+float g_MarkScaleFactorExp;
 wxString g_default_wp_icon;
 bool g_btouch;
 int g_iWaypointRangeRingsNumber;

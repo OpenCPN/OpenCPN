@@ -411,6 +411,7 @@ float g_selection_radius_touch_mm = 10.0;
 int g_GUIScaleFactor;
 int g_ChartScaleFactor;
 float g_ChartScaleFactorExp;
+float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 int g_ShipScaleFactor;
 float g_ShipScaleFactorExp;

@@ -23,7 +23,7 @@
 #include "ocpn_plugin.h"
 
 extern ocpnGLOptions g_GLOptions;
-extern float g_ChartScaleFactorExp;
+extern float g_MarkScaleFactorExp;
 extern bool g_btouch;
 extern WayPointman* pWayPointMan;
 extern MyFrame* gFrame;
@@ -78,15 +78,15 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
     pbm = m_point.m_pbmIcon;
 
   wxBitmap *pbms = NULL;
-  if ((g_ChartScaleFactorExp > 1.0) && !m_point.m_bPreScaled) {
-    if (m_point.m_IconScaleFactor != g_ChartScaleFactorExp) {
+  if ((g_MarkScaleFactorExp > 1.0) && !m_point.m_bPreScaled) {
+    if (m_point.m_IconScaleFactor != g_MarkScaleFactorExp) {
       wxImage scaled_image = pbm->ConvertToImage();
-      int new_width = pbm->GetWidth() * g_ChartScaleFactorExp;
-      int new_height = pbm->GetHeight() * g_ChartScaleFactorExp;
+      int new_width = pbm->GetWidth() * g_MarkScaleFactorExp;
+      int new_height = pbm->GetHeight() * g_MarkScaleFactorExp;
       m_point.m_ScaledBMP = wxBitmap(
           scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
 
-      m_point.m_IconScaleFactor = g_ChartScaleFactorExp;
+      m_point.m_IconScaleFactor = g_MarkScaleFactorExp;
     }
     if (m_point.m_ScaledBMP.IsOk()) pbm = &m_point.m_ScaledBMP;
   }
@@ -300,10 +300,10 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   hilitebox.y -= r.y;
 
   if (!m_point.m_bPreScaled) {
-    hilitebox.x *= g_ChartScaleFactorExp;
-    hilitebox.y *= g_ChartScaleFactorExp;
-    hilitebox.width *= g_ChartScaleFactorExp;
-    hilitebox.height *= g_ChartScaleFactorExp;
+    hilitebox.x *= g_MarkScaleFactorExp;
+    hilitebox.y *= g_MarkScaleFactorExp;
+    hilitebox.width *= g_MarkScaleFactorExp;
+    hilitebox.height *= g_MarkScaleFactorExp;
   }
 
   float radius;
@@ -372,7 +372,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
     float scale = 1.0;
     if (!m_point.m_bPreScaled) {
-      scale = g_ChartScaleFactorExp;
+      scale = g_MarkScaleFactorExp;
     }
 
     float ws = r1.width * scale;

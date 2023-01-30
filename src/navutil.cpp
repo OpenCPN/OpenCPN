@@ -416,6 +416,8 @@ extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern float g_ChartScaleFactorExp;
+extern float g_MarkScaleFactorExp;
+
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
 extern int g_ENCSoundingScaleFactor;
@@ -687,6 +689,8 @@ int MyConfig::LoadMyConfig() {
         g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
     g_ShipScaleFactorExp =
         g_Platform->GetChartScaleFactorExp(g_ShipScaleFactor);
+    g_MarkScaleFactorExp =
+        g_Platform->GetMarkScaleFactorExp(g_ChartScaleFactor);
 
     g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);

@@ -42,7 +42,7 @@
 #include "ocpn_plugin.h"
 
 extern BasePlatform* g_BasePlatform;
-extern float g_ChartScaleFactorExp;
+extern float g_MarkScaleFactorExp;
 extern ocpnStyle::StyleManager *g_StyleManager;
 
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
@@ -54,7 +54,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
                                       double displayDPmm) {
   wxString msg;
   msg.Printf(_T("DPMM: %g   ScaleFactorExp: %g"), displayDPmm,
-             g_ChartScaleFactorExp);
+             g_MarkScaleFactorExp);
   wxLogMessage(msg);
 
   wxString UserIconPath = g_BasePlatform->GetPrivateDataDir();
@@ -371,7 +371,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   // nominal size, but not less than 4 pixel
   double bm_size = wxMax(4.0, floor(displayDPmm * 12.0));
   bm_size /= OCPN_GetWinDIPScaleFactor();
-  bm_size *= g_ChartScaleFactorExp;
+  bm_size *= g_MarkScaleFactorExp;
 
   int n_files = wxDir::GetAllFiles(iconDir, &FileList);
 
@@ -391,7 +391,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
       w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
                                    // icons, 15px (approx 3mm) be it
 
-      bm_size = w * g_ChartScaleFactorExp; //= SVGPixelsToDisplay(w);
+      bm_size = w * g_MarkScaleFactorExp; //= SVGPixelsToDisplay(w);
       bm_size /= OCPN_GetWinDIPScaleFactor();
 
 
@@ -466,9 +466,9 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
 
 #ifndef ocpnUSE_wxBitmapBundle
 #ifndef __ANDROID__
-  if (fabs(g_ChartScaleFactorExp - 1.0) > 0.1) {
+  if (fabs(g_MarkScaleFactorExp - 1.0) > 0.1) {
     wxBitmap img = LoadSVG(fileName, -1, -1);
-    bm_size = img.GetWidth() * g_ChartScaleFactorExp;
+    bm_size = img.GetWidth() * g_MarkScaleFactorExp;
     bm_size /= OCPN_GetWinDIPScaleFactor();
   }
 #else
@@ -484,14 +484,14 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   float pix_factor = nominal_legacy_icon_size_pixels / 68.0;
 
   wxBitmap img = LoadSVG(fileName, -1, -1);
-  bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
+  bm_size = img.GetWidth() * pix_factor * g_MarkScaleFactorExp;
 #endif
 #else
   unsigned int w, h;
   SVGDocumentPixelSize(fileName, w, h);
   w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the icons,
                                // 15px (approx 3mm) be it
-  bm_size = w * g_ChartScaleFactorExp; //SVGPixelsToDisplay(w);
+  bm_size = w * g_MarkScaleFactorExp; //SVGPixelsToDisplay(w);
   bm_size /= OCPN_GetWinDIPScaleFactor();
 #endif
 
