@@ -8260,6 +8260,8 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypointex, bool b_permanent) {
 
   RoutePoint *pWP = CreateNewPoint(pwaypointex, b_permanent);
 
+  pWP->SetShowWaypointRangeRings(pwaypointex->nrange_rings > 0);
+
   pSelect->AddSelectableRoutePoint(pWP->m_lat, pWP->m_lon, pWP);
   if (b_permanent) pConfig->AddNewWayPoint(pWP, -1);
 
@@ -8309,15 +8311,17 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
           linknode = linknode->GetNext();
         }
       }
-
-      // Extended fields
-      prp->SetWaypointRangeRingsNumber(pwaypoint->nrange_rings);
-      prp->SetWaypointRangeRingsStep(pwaypoint->RangeRingSpace);
-      prp->SetWaypointRangeRingsColour(pwaypoint->RangeRingColor);
-      prp->SetScaMin(pwaypoint->scamin);
-      prp->SetUseSca(pwaypoint->b_useScamin);
-      prp->SetNameShown(pwaypoint->IsNameVisible);
     }
+
+    // Extended fields
+    prp->SetWaypointRangeRingsNumber(pwaypoint->nrange_rings);
+    prp->SetWaypointRangeRingsStep(pwaypoint->RangeRingSpace);
+    prp->SetWaypointRangeRingsColour(pwaypoint->RangeRingColor);
+    prp->SetScaMin(pwaypoint->scamin);
+    prp->SetUseSca(pwaypoint->b_useScamin);
+    prp->SetNameShown(pwaypoint->IsNameVisible);
+
+    pWP->SetShowWaypointRangeRings(pwaypoint->nrange_rings > 0);
 
     if (prp) prp->ReLoadIcon();
 
