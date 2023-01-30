@@ -5549,15 +5549,17 @@ void options::CreateListbookIcons() {
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
   if (!g_bresponsive) {
-    m_topImgList = new wxImageList(40, 40, TRUE, 1);
+    int sx = 40;
+    int sy = 40;
+    m_topImgList = new wxImageList(sx, sy, TRUE, 0);
 
 #if wxCHECK_VERSION(2, 8, 12)
-    m_topImgList->Add(style->GetIcon(_T("Display")));
-    m_topImgList->Add(style->GetIcon(_T("Charts")));
-    m_topImgList->Add(style->GetIcon(_T("Connections")));
-    m_topImgList->Add(style->GetIcon(_T("Ship")));
-    m_topImgList->Add(style->GetIcon(_T("UI")));
-    m_topImgList->Add(style->GetIcon(_T("Plugins")));
+    m_topImgList->Add(style->GetIcon(_T("Display"), sx, sy));
+    m_topImgList->Add(style->GetIcon(_T("Charts"), sx, sy));
+    m_topImgList->Add(style->GetIcon(_T("Connections"), sx, sy));
+    m_topImgList->Add(style->GetIcon(_T("Ship"), sx, sy));
+    m_topImgList->Add(style->GetIcon(_T("UI"), sx, sy));
+    m_topImgList->Add(style->GetIcon(_T("Plugins"), sx, sy));
 #else
     wxBitmap bmp;
     wxImage img;
@@ -5755,33 +5757,10 @@ void options::CreateControls(void) {
 
 #endif
 
-#ifdef __WXMSW__
-  //  Windows clips the width of listbook selectors to about twice icon size
-  //  This makes the text render with ellipses if too large
-
-  //  So, Measure and reduce the Font size on ListBook(ListView) selectors
-  //  to allow text layout without ellipsis...
-  wxBitmap tbmp = g_StyleManager->GetCurrentStyle()->GetIcon(_T("Display"));
-  wxScreenDC sdc;
-  int text_width = tbmp.GetWidth();
-  if (sdc.IsOk())
-    sdc.GetTextExtent(_("Connections"), &text_width, NULL, NULL, NULL,
-                      dialogFont);
-
-  if (text_width > tbmp.GetWidth() * 2) {
-    wxListView* lv = m_pListbook->GetListView();
-    wxFont* qFont = dialogFont;  // to get type, weight, etc...
-
-    wxFont* sFont = FontMgr::Get().FindOrCreateFont(
-        10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
-    lv->SetFont(*sFont);
-  }
-#endif
-
   CreateListbookIcons();
 
   m_pListbook->SetImageList(m_topImgList);
-  itemBoxSizer2->Add(m_pListbook, 1, wxALL | wxEXPAND, border_size);
+  itemBoxSizer2->Add(m_pListbook, 0, wxALL | wxEXPAND, border_size);
 
   wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
   itemBoxSizer2->Add(buttons, 0, wxALIGN_RIGHT | wxALL, border_size);
@@ -5825,7 +5804,11 @@ void options::CreateControls(void) {
 #endif
   }
 
-  m_pageConnections = CreatePanel(_("Connections"));
+  wxString ConnTab = _("Connections");
+  if (g_Platform->GetDisplayDIPMult(gFrame) < 1)
+    ConnTab = _("Connect");
+
+  m_pageConnections = CreatePanel(ConnTab);
 #ifndef __OCPN__ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
 #else
@@ -5844,7 +5827,11 @@ void options::CreateControls(void) {
 
   CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 
-  m_pageUI = CreatePanel(_("User Interface"));
+  wxString UITab = _("User Interface");
+  if (g_Platform->GetDisplayDIPMult(gFrame) < 1)
+    UITab = _("User");
+
+  m_pageUI = CreatePanel(UITab);
   CreatePanel_UI(m_pageUI, border_size, group_item_spacing);
   CreatePanel_Sounds(m_pageUI, border_size, group_item_spacing);
 
