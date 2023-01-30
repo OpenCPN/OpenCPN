@@ -8321,7 +8321,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
     prp->SetUseSca(pwaypoint->b_useScamin);
     prp->SetNameShown(pwaypoint->IsNameVisible);
 
-    pWP->SetShowWaypointRangeRings(pwaypoint->nrange_rings > 0);
+    prp->SetShowWaypointRangeRings(pwaypoint->nrange_rings > 0);
 
     if (prp) prp->ReLoadIcon();
 
