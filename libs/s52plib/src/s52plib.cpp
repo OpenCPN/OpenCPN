@@ -3285,8 +3285,8 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                                    float rot_angle) {
   double scale_factor = 1.0;
 
-  scale_factor *= m_ChartScaleFactorExp;
-  scale_factor *= g_scaminScale;
+  //scale_factor *= m_ChartScaleFactorExp;
+  //scale_factor *= g_scaminScale;
 
   if (m_display_size_mm <
       200) {  // about 8 inches, implying some sort of smaller mobile device
