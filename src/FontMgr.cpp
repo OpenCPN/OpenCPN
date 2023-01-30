@@ -481,6 +481,7 @@ static wxString FontCandidates[] = {_T("AISTargetAlert"),
                                     _T("ToolTips"),
                                     _T("Dialog"),
                                     _T("Menu"),
+                                    _T("GridText"),
                                     _T("END_OF_LIST")};
 
 void FontMgr::ScrubList() {

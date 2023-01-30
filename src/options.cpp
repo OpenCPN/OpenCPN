@@ -6867,7 +6867,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bOverruleScaMin = pScaMinOverruleChckB->GetValue();
 
   //  Any Font changes?
-  if (m_bfontChanged) m_returnChanges |= FONT_CHANGED;
+  if (m_bfontChanged){
+    if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
+    }
+    m_returnChanges |= FONT_CHANGED;
+  }
 
   // Handle Chart Tab
   UpdateWorkArrayFromDisplayPanel();

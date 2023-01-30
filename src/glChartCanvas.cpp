@@ -1909,11 +1909,11 @@ void glChartCanvas::GridDraw() {
 
   if (!m_gridfont.IsBuilt()) {
     double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
-    wxFont *dFont = FontMgr::Get().GetFont(_("ChartTexts"), 0);
+    wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
     wxFont font = *dFont;
-    font.SetPointSize(10 * m_displayScale);
+    int font_size = wxMax(10, dFont->GetPointSize());
+    font.SetPointSize(font_size * m_displayScale);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
-    font.Scale( 1.0 / dpi_factor);
 
     m_gridfont.SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
     m_gridfont.Build(font, 1, dpi_factor);
