@@ -3543,7 +3543,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
       if (val.ToDouble(&a)) {
         g_ChartScaleFactor = wxRound((a / 10.) - 5.);
         g_ChartScaleFactorExp =
-            g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+            g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
       }
     }
 
