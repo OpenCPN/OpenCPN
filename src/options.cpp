@@ -5760,7 +5760,7 @@ void options::CreateControls(void) {
   CreateListbookIcons();
 
   m_pListbook->SetImageList(m_topImgList);
-  itemBoxSizer2->Add(m_pListbook, 0, wxALL | wxEXPAND, border_size);
+  itemBoxSizer2->Add(m_pListbook, 1, wxALL | wxEXPAND, border_size);
 
   wxBoxSizer* buttons = new wxBoxSizer(wxHORIZONTAL);
   itemBoxSizer2->Add(buttons, 0, wxALIGN_RIGHT | wxALL, border_size);
