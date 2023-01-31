@@ -8010,7 +8010,12 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   double margin = BBView.GetLonRange() * .05;
   BBView.EnLarge(margin);
 
-  bool b_useVBO = m_useVBO && !rzRules->obj->auxParm1;
+  // No chart type in current use requires VBO for GLAC rendering
+  // Experimentation has shown that VBO is slower for GLAC rendering,
+  //  since the per-object state change of glBindBuffer() is slow
+  //  on most hardware, especially RPi.
+
+  bool b_useVBO = false; //m_useVBO && !rzRules->obj->auxParm1;
 
   if (rzRules->obj->pPolyTessGeo) {
     bool b_temp_vbo = false;
@@ -8294,7 +8299,10 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       glVertexAttribPointer(pos, 2, array_gl_type, GL_FALSE, 0,
                                 (GLvoid *)(0));
     }
-    int VBO_offset_index = 0;
+    else
+      glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0,
+                            (GLvoid *)(ppg->single_buffer));
+   int VBO_offset_index = 0;
 
     while (p_tp) {
       LLBBox box;
@@ -8309,13 +8317,10 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
         if (b_useVBO) {
           glDrawArrays(p_tp->type, VBO_offset_index, p_tp->nVert);
         } else {
-          float *bufOffset = (float *)(&ppg->single_buffer[vbo_offset]);
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, bufOffset);
-          glDrawArrays(p_tp->type, 0, p_tp->nVert);
+          glDrawArrays(p_tp->type, VBO_offset_index, p_tp->nVert);
         }
       }
 
-      //vbo_offset += p_tp->nVert * 2 * array_data_size;
       VBO_offset_index += p_tp->nVert;
 
       // pick up the next in chain
