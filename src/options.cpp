@@ -3815,6 +3815,7 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
 
   tcDataSelected->InsertColumn(0, col0);
 
+  int w = 400, w1, h;
   for (unsigned int id = 0; id < TideCurrentDataSet.Count(); id++) {
     wxListItem li;
     li.SetId(id);
@@ -3822,7 +3823,10 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
 
     wxString setName = TideCurrentDataSet[id];
     tcDataSelected->SetItem(id, 0, setName);
+    GetTextExtent(setName, &w1, &h);
+    w = w1 > w ? w1 : w;
   }
+  tcDataSelected->SetColumnWidth(0, 20 + w);
 
   //    Add the "Insert/Remove" buttons
   wxButton* insertButton =
