@@ -12138,9 +12138,13 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   wxFont *dFont = FontMgr::Get().GetFont(_("ExtendedTideIcon"));
   dc.SetTextForeground(FontMgr::Get().GetFontColor(_("ExtendedTideIcon")));
-  int font_size = wxMax(8, dFont->GetPointSize());
-  wxFont *plabelFont = FontMgr::Get().FindOrCreateFont(
-      font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
+  int font_size = wxMax(10, dFont->GetPointSize());
+  font_size /= g_Platform->GetDisplayDIPMult(this);
+  wxFont *plabelFont =
+          FontMgr::Get().FindOrCreateFont(font_size,
+                                  dFont->GetFamily(), dFont->GetStyle(),
+                                  dFont->GetWeight(), false,
+                                  dFont->GetFaceName());
 
   dc.SetPen(*pblack_pen);
   dc.SetBrush(*pgreen_brush);
@@ -12435,7 +12439,15 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   double skew_angle = GetVPRotation();
 
-  pTCFont = FontMgr::Get().GetFont(_("CurrentValue"));
+  wxFont *dFont = FontMgr::Get().GetFont(_("CurrentValue"));
+  int font_size = wxMax(10, dFont->GetPointSize());
+  font_size /= g_Platform->GetDisplayDIPMult(this);
+  pTCFont =
+          FontMgr::Get().FindOrCreateFont(font_size,
+                                  dFont->GetFamily(), dFont->GetStyle(),
+                                  dFont->GetWeight(), false,
+                                  dFont->GetFaceName());
+
 
   float scale_factor = 1.0;
 
