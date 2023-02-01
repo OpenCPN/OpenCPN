@@ -2600,8 +2600,10 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
     v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
     v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
-    v[_T("OpenCPN S52PLIB ColorShades")] =
-        S52_getMarinerParam(S52_MAR_TWO_SHADES);
+    v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam(S52_MAR_TWO_SHADES);
+    v[_T("OpenCPN S52PLIB Safety Depth")] = (double)S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
+    v[_T("OpenCPN S52PLIB Shallow Contour")] = (double)S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR);
+    v[_T("OpenCPN S52PLIB Deep Contour")] = (double)S52_getMarinerParam(S52_MAR_DEEP_CONTOUR);
   }
 
   // Notify plugins that S52PLIB may have reconfigured global options
