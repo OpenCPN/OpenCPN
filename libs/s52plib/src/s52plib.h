@@ -464,7 +464,7 @@ private:
                     Rule *draw_rule);
 
   bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
-                  float rot_angle = 0.);
+                  float rot_angle = 0., double uScale = 1.0);
   bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                           float rot_angle = 0.);
   bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,

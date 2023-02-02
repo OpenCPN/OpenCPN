@@ -2526,7 +2526,7 @@ int s52plib::RenderTE(ObjRazRules *rzRules, Rules *rules) {
 }
 
 bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-                         float rot_angle) {
+                         float rot_angle, double uScale) {
   float fsf = 100 / canvas_pix_per_mm;
 
   float xscale = 1.0;
@@ -2554,7 +2554,7 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     fsf *= xscale;
   }
 
-  xscale *= m_ChartScaleFactorExp;
+  xscale *= uScale;
 
   //  Special case for GEO_AREA objects with centred symbols
   if (rzRules->obj->Primitive_type == GEO_AREA) {
@@ -3270,7 +3270,7 @@ int s52plib::RenderSY(ObjRazRules *rzRules, Rules *rules) {
 
     //  Render a raster or vector symbol, as specified by LUP rules
     if (rules->razRule->definition.SYDF == 'V') {
-      RenderHPGL(rzRules, rules->razRule, r, angle);
+      RenderHPGL(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
     } else {
       if (rules->razRule->definition.SYDF == 'R')
         RenderRasterSymbol(rzRules, rules->razRule, r, angle);
@@ -5704,8 +5704,12 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
         if (!m_pdc && !strncmp(rules->razRule->name.SYNM, "SOUNDSA1", 8))
           dryAngle = -vp_plib.rotation * 180. / PI;
         // FIXME (dave) drying height symbol should be wider/bolder.
-        // Also does not rotate correctly
-        RenderHPGL(rzRules, rules->razRule, r, dryAngle);
+
+        //FIXME (dave) Patch to chartsymbols.xml
+        // Remove on Release of 5.8.0
+        rules->razRule->pos.symb.pivot_x.SYCL = 750;
+
+        RenderHPGL(rzRules, rules->razRule, r, dryAngle, m_SoundingsScaleFactor);
       } else if (rules->razRule->definition.SYDF == 'R') {
         // Parse the first rule to determine the color
         if (!bColorSet) {
