@@ -355,7 +355,7 @@ LLRegion ViewPort::GetLLRegion(const OCPNRegion &region) {
 
     int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
     int p[8] = {x1, y1, x2, y1, x2, y2, x1, y2};
-    double pll[540];
+    double pll[2896];     //  Max splits is 180, ((180 *  2)  + 2) * 8 = 2896.
     int j;
 
     /* if the viewport is rotated, we must split the segments as straight lines
