@@ -3133,7 +3133,17 @@ wxString GetActiveStyleName() {
 
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
                               unsigned int height) {
-  return LoadSVG(filename, width, height);
+  wxBitmap bmp = LoadSVG(filename, width, height);
+
+  if(bmp.IsOk())
+    return bmp;
+  else {
+  // On error in requested width/height parameters,
+  // try to find and use dimensions embedded in the SVG file
+    unsigned int w, h;
+    SVGDocumentPixelSize(filename, w, h);
+    return LoadSVG(filename, w, h);
+  }
 }
 
 bool IsTouchInterface_PlugIn(void) { return g_btouch; }
