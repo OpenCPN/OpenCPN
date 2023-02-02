@@ -6743,12 +6743,14 @@ void ChartCanvas::ShowChartInfoWindow(int x, int dbIndex) {
       m_pCIWin->FitToChars(char_width, char_height);
 
       wxPoint p;
-      p.x = x;
-      if ((p.x + m_pCIWin->GetWinSize().x) > m_canvas_width)
-        p.x = (m_canvas_width - m_pCIWin->GetWinSize().x) / 2;  // centered
+      p.x = x / GetContentScaleFactor();
+      if ((p.x + m_pCIWin->GetWinSize().x) > (m_canvas_width / GetContentScaleFactor()))
+        p.x = ((m_canvas_width / GetContentScaleFactor())
+                - m_pCIWin->GetWinSize().x) / 2;  // centered
 
       p.y =
-          m_canvas_height - m_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
+          (m_canvas_height - m_Piano->GetHeight()) / GetContentScaleFactor()
+                - 4 - m_pCIWin->GetWinSize().y;
 
       m_pCIWin->dbIndex = dbIndex;
       m_pCIWin->SetPosition(p);
