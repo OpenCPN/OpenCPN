@@ -1,0 +1,6 @@
+name: opencpn-dev
+title: OpenCPN Programming Manual
+version: ~
+nav:
+- modules/ROOT/nav.adoc
+

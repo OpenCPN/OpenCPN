@@ -1,0 +1,165 @@
+= Compiling on Linux
+image::opencpn_dev_linux_0.png[width=50]
+
+== Documented platforms
+
+The documentation here covers Debian/Ubuntu and Flatpak. Debian .deb
+packages and Flatpaks are the primary deployment platforms for Linux.
+It is certainly possible to compile OpenCPN on other Linux distributions
+by adapting these instructions.
+
+The instructions are based on the files in the _ci/_ directory, at the
+time of writing _ci/generic_build_debian.sh_ and
+_ci/generic_build_flatpak.sh_. These files which are continously tested
+is the ultimate source for how to build on Linux.
+
+[[build_debian]]
+== Debian/Ubuntu
+
+=== 1. Download source code
+    $ git clone git://github.com/OpenCPN/OpenCPN.git
+    $ cd OpenCPN
+
+=== 2. Install build dependencies
+
+    $ sudo apt install devscripts equivs
+    $ sudo mk-build-deps -i -r ci/control
+    $ sudo apt-get --allow-unauthenticated install -f
+
+Notes:
+
+  * On Debian Buster and Ubuntu Bionic it is possible to build OpenCPN linked
+    against gtk2 or gtk3. The default alternative is to use gtk2.
+  * The build setup is generally updated for Debian and Ubuntu LTS
+    releases.
+
+=== 3. Optional: Remove old installation
+
+    $ sudo apt-get remove opencpn
+
+
+=== 4. Build it
+
+We'll build everything in a subdirectory to keep the codebase clean
+(easier to catch changes).
+
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+
+Notes:
+
+Default install dir is /usr/local, this can be changed by providing
+the appropriate option to cmake:
+
+    $ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+
+_cmake_ is only required when building source code for the first time,
+then running _make_ is enough even if the source code is updated.
+
+=== 5. Install it or create a package
+
+    $ sudo make install
+
+Or, to create a .deb package:
+
+    $ make package
+
+
+== Flatpak
+
+=== 1. Install flatpak
+
+Install flatpak and flatpak-builder as described in https://flatpak.org/setup/[].
+
+=== 2. Install runtime and SDK
+
+At the time of writing version 20.08 is used. Check
+_flatpak/org.opencpn.OpenCPN.yaml_ for the version actually used, look for
+_runtime-version:_. Install the proper runtime and Sdk, for example:
+
+    $ sudo flatpak install flathub org.freedesktop.Platform//20.08
+    $ sudo flatpak install flathub org.freedesktop.Sdk//20.08
+
+=== 3. Build and install:
+
+    $ cd build
+    $ make -f ../flatpak/Makefile build
+
+The makefile will build the flatpak version and also install it.
+
+=== 4. Run
+
+    $ flatpak run org.opencpn.OpenCPN
+
+=== 5. Debugging
+
+The flatpak'ed OpenCPN runs in a sandbox, so specialized debugging techniques
+must be applied.
+See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
+
+== Compiling for Raspberry Pie (RPi)
+
+From RPi 4 the board has resources enough to run a native build, which is
+performed according to the instructions for xref:#build_debian[Debian].
+At the time of writing, it is unclear if this is possible on a rPI 3
+with 1MB of RAM.
+
+NOTE: Fixme
+
+
+
+== IDEs
+
+=== http://eclipse.org/cdt/[Eclipse]
+
+The current version 2021-06 (4.20.0) has native support for cmake projects.
+It is thus possible to just create a new CMake project based on current
+sources out of the box. There is thus no need to use the
+unmaintained `cmake -G "Eclipse CDT4 - Unix Makefiles" ../` cmake
+project generation.
+
+However, this version suffers from
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=400073[] which makes it
+impossible to index the sources. Without indexing, eclipse does not
+add that much value.
+
+=== https://www.kdevelop.org/[KDevelop]
+
+Current version  5.6.2 has native support for CMake project. There
+is thus no need to use the unmaintained
+`cmake -G "KDevelop3 - Unix Makefiles" ../` cmake project generation
+tools.
+
+=== https://www.jetbrains.com/clion/[CLion]
+
+There are some reports without details from users using CLion for OpenCPN
+development. CLion is commercial software, but are giving out
+free licenses for open source development in certain cases.
+
+=== https://sourceforge.net/projects/wxformbuilder/[wxFormBuilder]
+
+Initially, many of the dialogs was developed using
+https://sourceforge.net/projects/wxformbuilder/[wxFormBuilder].
+However, the sources has since long been patched "manually" and it is
+not possible to maintain them using this tool which basically has
+been abandoned in the project.
+
+=== Running inside an IDE
+
+In order to be able to run OpenCPN from inside the IDE
+installed data needs to be copied to the build/ folder according to
+
+  $ cd build
+  $ for d in gshhs s57data tcdata; do; cp -ar ../data/$d .; done
+  $ mkdir uidata
+  $ cp ../src/bitmaps/*.xml ../src/bitmaps/*.png ../src/bitmaps/*.svg uidata
+  $ cp ../data/authors.html ../data/license.html .
+
+opencpn should be run with the -p options which sets it into 'portable'
+mode and therefore looks in the location the 'opencpn' executable is run
+from, i.e. the 'build' directory.
+
+Creating a working IDE setup is somewhat complex, and the details varies
+between different IDEs.

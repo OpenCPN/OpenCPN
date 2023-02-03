@@ -1,0 +1,246 @@
+= Compiling on Windows
+
+== 5.8.0 Fast Track
+
+From version 5.8.0 the windows build system has been revised.
+The fast track described here is simplified and without all the options
+provided by the procedure described from next section.
+
+Steps to to make a build:
+
+. Get Visual Studio Community 2022,  either the command line tools or the
+  complete environment, from https://visualstudio.microsoft.com/vs/community/
+. Install the choco package manager, https://chocolatey.org/install
+. Clone the sources and move into them: +
+
+       > git clone https://github.com/OpenCPN/OpenCPN.git
+       > cd OpenCPN
+
+. Run the script _buildwin\win_deps.bat_. First time script installs programs
+  and should be invoked with administrative privileges using the Visual Studio
+  Command Line Interface. Following runs can (i. e., should) be run as a
+  regular user.
+. Run the script _ci\appveyor.bat_. This will configure the project using
+  cmake and make an initial build.
+
+After the first build, new builds can be done using in the _build_ directory
+using:
+```
+    > cmake --build . --target opencpn --config Release
+```
+
+*Notes:*
+
+* `--target opencpn` creates the main executable. Other targets which can be
+  built includes
+
+** `--target opencpn-cmd` -- Command line tool
+** `--target tests` -- Command line unit tests
+** `--target package` -- NSIS installer
+
+* It is perfectly possible to use `--config Debug` to create an executable with
+  debugging symbols etc. However, doing so might make the plugins in the
+  catalog incompatible if it is not possible to load optimized libraries into
+  a opencpn debug build. FIXME(leamas): what is the situation?
+* _win_deps.bat_ stores files in the _cache_ directory. This can be removed
+  safely,  it is re-created from scratch by _win_deps.bat_
+* The correct options to invoke cmake manually can be found  in
+  _ci\appveyor.bat_
+* Both _win_deps.bat_ and _appveyor.bat_ are used in the ci builds and should
+  thus be reasonably tested. However, user environment (in particular PATH))
+  can make them fail.
+
+== Prerequisities
+
+NOTE: These instructions has yet not been updated for using VS 2022  and
+wxWidgets 3.2, tools used to  build from 5.8.0.
+
+* for OpenCPN v5.0.0
+* with wxWidgets v3.1.2
+* xref:pm-plugin-api-versions.adoc[Plugin
+API] starts with API 1.16 (Supports plugins with earlier API but they
+must be compiled again for OpenCPN v5.0 due to the change in wxWidgets.)
+* Highest chance of success if these steps are followed exactly.
+
+=== Visual Studio 2017
+
+* Get Visual Studio Community 2017. Go to this microsoft web page
+https://visualstudio.microsoft.com/vs/older-downloads/[Older Visual
+Studio] and scroll down.
+* Install and select the workload *Desktop development with C++* and
+include component *Windows XP support for C++*.
+* Also include the appropriate **Windows x SDK **component. Generally
+install the most current version, Windows 10 preferred.
+
+=== Git
+
+* Get Git for Windows from
+https://gitforwindows.org/[https://gitforwindows.org]
+* Install and let the installer register git in your PATH and select
+*Checkout as-is, commit Unix-style line endings*
+
+=== CMake
+
+* Get the latest CMake installation packages from
+https://cmake.org/[https://cmake.org]
+* Install and let the installer register in the PATH environment
+variable
+
+=== POedit
+
+* Get the latest POedit installation package from
+https://poedit.net/[https://poedit.net]
+* Install
+* Add *C:\Program Files (x86)\Poedit\GettextTools\bin* to your PATH
+
+=== NSIS
+
+* Download NSIS (Nullsoft Scriptabe Install System) from
+https://nsis.sourceforge.io/Download
+* Install
+
+=== GNU gettext
+
+* Download the setup package from http://gnuwin32.sourceforge.net/packages/gettext.htm
+* Install
+* Add *C:\Program Files (x86)\GnuWin32\bin* to your PATH
+
+=== 7-Zip
+
+* Download 7-Zip from https://www.7-zip.org/download.html
+* Install
+
+== Get the wxWidgets 3.1.2 sources and built them
+
+* Open a **x86 Native Tools Command Prompt for VS 2017 ** (In Windows 10
+by typing in the search box next to the Windows start button **x86
+Native…**etc) and execute the following commands:
+
+....
+cd C:\Users\myname\Sources
+git clone -b v3.1.2 https://github.com/wxWidgets/wxWidgets
+cd wxWidgets
+git submodule init
+git submodule update
+
+cd build\msw
+nmake /f makefile.vc BUILD=release SHARED=1 CXXFLAGS=/D_USING_V141_SDK71_ CFLAGS=/D_USING_V141_SDK71_ LDFLAGS=/SUBSYSTEM:WINDOWS,5.01
+nmake /f makefile.vc BUILD=debug SHARED=1 CXXFLAGS=/D_USING_V141_SDK71_ CFLAGS=/D_USING_V141_SDK71_ LDFLAGS=/SUBSYSTEM:WINDOWS,5.01
+
+....
+
+* Set the environment variable *wxWIDGETS_ROOT_DIR* with a value of the
+top level directory of your wxWidgets source tree.
+
+=== Alternatives:
+
+* The commands on this page refers to C:\users\myname\Sources as the
+directory for all sources. Obviously one can use other directories.
+* The commands above download the sources from GitHub and then build the
+release and the debug version. Instead of using git clone, you can
+download the wxWidgets sources manually from
+https://github.com/wxWidgets/wxWidgets/releases/tag/v3.1.2[https:__github.com/wxWidgets/wxWidgets/releases/tag/v3.1.2].
+* Alternatively there is a faster way to get started, by just getting
+wxWidgets prebuilt from https://download.opencpn.org/s/E2p4nLDzeqx4SdX[wxWidgets-3.1.2.7z].
+This however is not suitable for serious development or debugging as
+only release configuration libraries are included.
+* Video: https://www.youtube.com/watch?v=sRhoZcNpMb4[wxWidgets with Visual Studio 2019/2017]  Getting Visual Studio setup to use wxWidgets can sometimes be difficult, this video uses the Visual Studio Interface.
+
+=== Getting and building OpenCPN source
+
+==== Get the OpenCPN sources
+
+In the open **x86 Native Tools Command Prompt for VS 2017 **execute the
+following commands:
+
+....
+cd \Users\myname\Sources
+git clone https://github.com/OpenCPN/OpenCPN
+
+....
+
+==== Get prebuilt Windows dependencies
+
+* Download the dependencies bundle from github repo
+(https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.1.zip)
+
+* Extract the embedded "buildwin" directory as
+c:\Users\myname\Sources\OpenCPN\buildwin using 7-Zip
+
+==== Building OpenCPN
+
+* In the open *x86 Native Tools Command Prompt for VS 2017* execute the
+following commands to create the build directory, generate the solutions
+files and build the debug version, the release version and the setup
+package.
+
+....
+*
+....
+
+[source,level1]
+----
+cd C:\Users\myname\Sources\OpenCPN
+mkdir build
+cd build
+cmake -G "Visual Studio 15 2017" -T v141_xp ..
+cmake --build .
+cmake --build . --config release
+cmake --build . --config release --target package
+
+
+----
+
+* These commands should generate an OpenCPN install package in
+*c:\Users\username\Sources\OpenCPN\build\opencpn_5.0.0_setup.exe*
+* Excecute this program to install OpenCPN. Choose c:\Program Files
+(x86)\OpenCPN\ as installation directory to avoid unnecessary issues
+when installing plugins.
+
+==== Alternatives:
+
+* Instead of running the last 3 cmake-commands, one could also start
+Visual Studio, open the generated solutionfile `+OpenCPN.sln+` and build
+from there.
+* Obviously other directories can be used as well, just as multiple
+opencpn installation. The instructions above are meant for those setting
+up a new development environment for just OpenCPN 5.0.
+
+==== Setup Copyfiles.bat - Last step to Debug
+
+Copyfiles.bat is a useful single batch file to copy all the needed files
+to the various directories. This batch file does not execute any cmake
+commands.
+
+* Download link:{attachmentsdir}/Copyfiles.bat[here]
+* Move the file to <Your OpenCPN source tree> (for example:
+C:\Compile\Github\Opencpn)
+* Execute copyfiles.bat
+* Start Visual Studio 2017 and the OpenCPN-solution file. (For Example:
+C:\Compile\Github\Opencpn\build\opencpn.sln)
+* If the Solution Explorer is not visible, open the Solution Explorer
+(Via the view-menu, or Ctrl+Alt+L)
+* Select the project "Opencpn" from the list, right click and pick "Set
+as Startup Project"
+
+Now Opencpn should be ready to debug.
+
+==== BatchUTILS
+
+https://github.com/transmitterdan/BatchUTILS[BatchUTILS] is another
+alternative that is a more complete set of batch files to assist
+building OpenCPN. Osetup.bat is intended to be modified by an individual
+user based on their own system. Git clone
+https://github.com/transmitterdan/BatchUTILS[]
+to your github directory, next to the OpenCPN local repository.
+Discussion about
+https:__github.com/transmitterdan/BatchUTILS/issues/1[the use and
+development of BatchUtils]
+
+It’s nearly impossible to guess all the possible wxWidgets versions
+someone might have on their system. Also, other tools sometimes change
+paths as new versions are released. So it is expected that each user
+will customize Osetup.bat. The latest of Transmitter Dan's batchutils is
+in git. If you want to use some other environment variable other than
+WXDIR that is ok. The Cmake tool will accept a number of possible
+environment names as the root of the wxWidgets toolkit.

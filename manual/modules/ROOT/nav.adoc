@@ -1,0 +1,13 @@
+.Core Developer Manual
+* Compiling
+** xref:cmake.adoc[CMake]
+** xref:linux.adoc[Linux]
+** xref:linux.adoc#_flatpak[Flatpak]
+** xref:windows.adoc[Windows]
+** xref:mac-osx.adoc[MacOS]
+* xref:odraw-messaging.adoc[Odraw Messaging]
+* xref:plugin-messaging.adoc[New Message Plugin API]
+* xref:comm-overview.adoc[Communication Overview]
+* xref:code-formatting.adoc[Code Formatting]
+* xref:user-interface-styling.adoc[User Interface Styling]
+* xref:troubleshooting.adoc[Troubleshooting]
