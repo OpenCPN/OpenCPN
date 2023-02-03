@@ -21,7 +21,7 @@
   "homepage": "https://github.com/leamas/manuals-v2#readme",
   "devDependencies": {
     "@antora/cli": "3.0.0",
-    "npm": "8.5.1"
+    "npm": "8.11.0"
   },
   "dependencies": {
     "@antora/logger": "^3.0.1",
