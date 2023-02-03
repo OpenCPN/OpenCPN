@@ -46,6 +46,7 @@ enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER };
 
 class Route;
 class RoutePoint;
+class Track;
 
 /**
  * Route "Send to Peer..." Dialog Definition
@@ -67,8 +68,9 @@ public:
               const wxPoint& pos = SYMBOL_STP_POSITION,
               const wxSize& size = SYMBOL_STP_SIZE,
               long style = SYMBOL_STP_STYLE);
-  void SetRoute(Route* pRoute) { m_pRoute = pRoute; }
-  void SetWaypoint(RoutePoint* pRoutePoint) { m_pRoutePoint = pRoutePoint; }
+  void SetRoute(Route* pRoute) { m_RouteList.push_back(pRoute); }
+  void SetWaypoint(RoutePoint* pRoutePoint) { m_RoutePointList.push_back(pRoutePoint); }
+  void SetTrack(Track* pTrack) { m_TrackList.push_back(pTrack); }
   wxGauge* GetProgressGauge() { return m_pgauge; }
   void SetMessage(wxString message);
 
@@ -78,8 +80,9 @@ private:
   void OnCancelClick(wxCommandEvent& event);
   void OnSendClick(wxCommandEvent& event);
 
-  Route* m_pRoute;
-  RoutePoint* m_pRoutePoint;
+  std::vector<Route*> m_RouteList;
+  std::vector<RoutePoint*> m_RoutePointList;
+  std::vector<Track*> m_TrackList;
   wxComboBox* m_PeerListBox;
   wxGauge* m_pgauge;
   wxButton* m_CancelButton;

@@ -47,16 +47,26 @@
 #include "REST_server_gui.h"
 #include "pugixml.hpp"
 #include "route.h"
+#include "track.h"
 #include "routeman.h"
 #include "nav_object_database.h"
 
 extern bool g_bportable;
+extern std::vector<Track*> g_TrackList;
 
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
                             bool b_change);
+Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
+                            bool b_layer, bool b_layerviz, int layer_id);
+RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node,
+                                    wxString def_symbol_name, wxString GUID,
+                                    bool b_fullviz, bool b_layer,
+                                    bool b_layerviz, int layer_id);
 
 bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj);
+bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false);
+bool InsertWpt(RoutePoint *pWp, bool overwrite);
 
 extern Routeman *g_pRouteMan;
 extern MyFrame *gFrame;
@@ -332,9 +342,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   b_cont = true;
 #endif
 
-  if (b_cont) {
-    Route *pRoute = NULL;
-
+  if (b_cont) {\
       // Load the GPX file
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_buffer(payload->c_str(), payload->size());
@@ -343,6 +351,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
       for (pugi::xml_node object = objects.first_child(); object;
         object = object.next_sibling()) {
         if (!strcmp(object.name(), "rte")) {
+          Route *pRoute = NULL;
           pRoute = GPXLoadRoute1(object, true, false, false, 0, true);
           // Check for duplicate GUID
           if (g_pRouteMan){
@@ -354,7 +363,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
 
-                dialog2.SetMessage("The received route route already exists on this system.\nReplace?");
+                dialog2.SetMessage("The received route already exists on this system.\nReplace?");
                 dialog2.SetCheck1Message(_("Always replace objects from this source?"));
 
                 int result = dialog2.ShowModal();
@@ -385,6 +394,100 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
               NavObjectCollection1 pSet;
 
               if (InsertRouteA(pRoute, &pSet))
+                return_stat = RESTServerResult::RESULT_NO_ERROR;
+              else
+                return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;
+              ((wxWindow *)gFrame)->Refresh();
+            }
+          }
+        } else if (!strcmp(object.name(), "trk")) {
+          Track *pRoute = NULL;
+          pRoute = GPXLoadTrack1(object, true, false, false, 0);
+          // Check for duplicate GUID
+          if (g_pRouteMan){
+            bool b_add = true;
+            bool b_overwrite_one = false;
+            
+            Track *duplicate = g_pRouteMan->FindTrackByGUID(pRoute->m_GUID);
+            if (duplicate){
+              if (!m_b_overwrite){
+                AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
+                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+
+                dialog2.SetMessage("The received track already exists on this system.\nReplace?");
+                dialog2.SetCheck1Message(_("Always replace objects from this source?"));
+
+                int result = dialog2.ShowModal();
+                bool b_always = dialog2.GetCheck1Value();
+
+                if (result != ID_STG_OK){
+                  b_add = false;
+                  return_stat = RESTServerResult::RESULT_DUPLICATE_REJECTED;
+                }
+                else{
+                  m_b_overwrite = b_always;
+                  b_overwrite_one = true;
+                  SaveConfig();
+                }
+              }
+
+              if (m_b_overwrite || b_overwrite_one){
+                auto it = std::find(g_TrackList.begin(), g_TrackList.end(), duplicate);
+                if (it != g_TrackList.end()) {
+                  g_TrackList.erase(it);
+                }
+                delete duplicate;
+              }
+            }
+
+            if (b_add)  {
+              // And here is the payoff....
+
+              // Add the route to the global list
+              NavObjectCollection1 pSet;
+
+              if (InsertTrack(pRoute, false))
+                return_stat = RESTServerResult::RESULT_NO_ERROR;
+              else
+                return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;
+              ((wxWindow *)gFrame)->Refresh();
+            }
+          }
+        } else if (!strcmp(object.name(), "wpt")) {
+          RoutePoint *pWp = NULL;
+          pWp = GPXLoadWaypoint1(object, "circle", "", false, false, false, 0);
+          // Check for duplicate GUID
+          if (g_pRouteMan){
+            bool b_add = true;
+            bool b_overwrite_one = false;
+            
+            RoutePoint *duplicate = WaypointExists(pWp->GetName(), pWp->m_lat, pWp->m_lon);
+            if (duplicate){
+              if (!m_b_overwrite){
+                AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
+                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+
+                dialog2.SetMessage("The received waypoint already exists on this system.\nReplace?");
+                dialog2.SetCheck1Message(_("Always replace objects from this source?"));
+
+                int result = dialog2.ShowModal();
+                bool b_always = dialog2.GetCheck1Value();
+
+                if (result != ID_STG_OK){
+                  b_add = false;
+                  return_stat = RESTServerResult::RESULT_DUPLICATE_REJECTED;
+                }
+                else{
+                  m_b_overwrite = b_always;
+                  b_overwrite_one = true;
+                  SaveConfig();
+                }
+              }
+            }
+
+            if (b_add)  {
+              // And here is the payoff....
+              if (InsertWpt(pWp, m_b_overwrite || b_overwrite_one))
                 return_stat = RESTServerResult::RESULT_NO_ERROR;
               else
                 return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;

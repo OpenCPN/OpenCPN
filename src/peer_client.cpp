@@ -208,14 +208,22 @@ void SaveClientKey( std::string &server_name, std::string key )
 
 
 
-int SendRoute(std::string dest_ip_address, std::string server_name, Route *route, bool overwrite)
+int SendRoute(std::string dest_ip_address, std::string server_name, std::vector<Route*> route, std::vector<RoutePoint*> routepoint, std::vector<Track*> track, bool overwrite)
 {
-  if(!route)
+  if(route.empty() && routepoint.empty() && track.empty())
     return -1;
 
   // Get XML representation of object.
   NavObjectCollection1 *pgpx = new NavObjectCollection1;
-  pgpx->AddGPXRoute(route);
+  for (auto r : route) {
+    pgpx->AddGPXRoute(r);
+  }
+  for (auto r : routepoint) {
+    pgpx->AddGPXWaypoint(r);
+  }
+  for (auto r : track) {
+    pgpx->AddGPXTrack(r);
+  }
   std::ostringstream stream;
   pgpx->save(stream, PUGIXML_TEXT(" "));
 
