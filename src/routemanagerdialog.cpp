@@ -60,6 +60,9 @@
 #include "svg_utils.h"
 #include "ocpn_frame.h"
 #include "own_ship.h"
+#include "config_vars.h"
+#include "mDNS_query.h"
+#include "SendToPeerDlg.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -91,6 +94,7 @@ extern wxString g_default_wp_icon;
 extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern bool g_bOverruleScaMin;
+extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 
 // Helper for conditional file name separator
 void appendOSDirSlash(wxString *pString);
@@ -480,6 +484,14 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL,
       this);
 
+  btnRteSendToPeer = new wxButton(winr, -1, _("Send to &Peer"));
+  bsRouteButtonsInner->Add(btnRteSendToPeer, 0, wxALL | wxEXPAND,
+                           DIALOG_MARGIN);
+  btnRteSendToPeer->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(RouteManagerDialog::OnRteSendToPeerClick), NULL,
+      this);
+
   btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS"));
   bsRouteButtonsInner->Add(btnRteSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   btnRteSendToGPS->Connect(
@@ -621,6 +633,14 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnTrkRouteFromTrackClick), NULL,
       this);
 
+  btnTrkSendToPeer = new wxButton(wint, -1, _("Send to &Peer"));
+  bsTrkButtonsInner->Add(btnTrkSendToPeer, 0, wxALL | wxEXPAND,
+                           DIALOG_MARGIN);
+  btnTrkSendToPeer->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(RouteManagerDialog::OnTrkSendToPeerClick), NULL,
+      this);
+
   bsTrkButtonsInner->AddSpacer(10);
 
   btnTrkDeleteAll = new wxButton(wint, -1, _("&Delete All"));
@@ -759,6 +779,14 @@ void RouteManagerDialog::Create() {
   btnWptSendToGPS->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RouteManagerDialog::OnWptSendToGPSClick), NULL,
+      this);
+
+  btnWptSendToPeer = new wxButton(winw, -1, _("Send to &Peer"));
+  bsWptButtonsInner->Add(btnWptSendToPeer, 0, wxALL | wxEXPAND,
+                           DIALOG_MARGIN);
+  btnWptSendToPeer->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(RouteManagerDialog::OnWptSendToPeerClick), NULL,
       this);
 
   bsWptButtonsInner->AddSpacer(10);
@@ -1256,6 +1284,7 @@ void RouteManagerDialog::UpdateRteButtons() {
   btnRteResequence->Enable(enable1);
   btnRteSendToGPS->Enable(enable1);
   btnRteDeleteAll->Enable(m_pRouteListCtrl->GetItemCount() > 0);
+  btnRteSendToPeer->Enable(enablemultiple);
 
   // set activate button text
   Route *route = NULL;
@@ -1508,6 +1537,150 @@ void RouteManagerDialog::OnRteResequenceClick(wxCommandEvent &event) {
   if (!route) return;
   if (route->m_bIsInLayer) return;
   route->RenameRoutePoints();
+}
+
+void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
+  std::vector<Route*> list;
+  long item = -1;
+  for (;;) {
+    item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
+                                         wxLIST_STATE_SELECTED);
+    if (item == -1) break;
+
+    Route *proute = (Route *)m_pRouteListCtrl->GetItemData(item);
+
+    if (proute) {
+      list.push_back(proute);
+    }
+  }
+  if (!list.empty()) {
+        g_Platform->ShowBusySpinner();
+        FindAllOCPNServers();
+        g_Platform->HideBusySpinner();
+
+        // Count viable servers.
+        int n_servers = 0;
+        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+          wxString item(g_DNS_cache[i]->hostname.c_str());
+
+          //skip "self"
+          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+            n_servers++;
+          }
+        }
+
+        if(n_servers == 0){
+          OCPNMessageBox(NULL,
+            _("No OpenCPN servers found on this network."),
+            _("OpenCPN Send Route(s)"), wxOK, 5);
+
+          return;
+        }
+
+        SendToPeerDlg dlg;
+        for (auto r : list) {
+          dlg.SetRoute(r);
+        }
+
+        dlg.Create(NULL, -1, _("Send Route(s) to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.ShowModal();
+  }
+}
+
+void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
+  std::vector<RoutePoint*> list;
+  long item = -1;
+  for (;;) {
+    item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
+                                         wxLIST_STATE_SELECTED);
+    if (item == -1) break;
+
+    RoutePoint *proutep = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+
+    if (proutep) {
+      list.push_back(proutep);
+    }
+  }
+  if (!list.empty()) {
+        g_Platform->ShowBusySpinner();
+        FindAllOCPNServers();
+        g_Platform->HideBusySpinner();
+
+        // Count viable servers.
+        int n_servers = 0;
+        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+          wxString item(g_DNS_cache[i]->hostname.c_str());
+
+          //skip "self"
+          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+            n_servers++;
+          }
+        }
+
+        if(n_servers == 0){
+          OCPNMessageBox(NULL,
+            _("No OpenCPN servers found on this network."),
+            _("OpenCPN Send Waypoint(s)"), wxOK, 5);
+
+          return;
+        }
+
+        SendToPeerDlg dlg;
+        for (auto r : list) {
+          dlg.SetWaypoint(r);
+        }
+
+        dlg.Create(NULL, -1, _("Send Waypoint(s) to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.ShowModal();
+  }
+}
+
+void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
+  std::vector<Track*> list;
+  long item = -1;
+  for (;;) {
+    item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL,
+                                         wxLIST_STATE_SELECTED);
+    if (item == -1) break;
+
+    Track *ptrk = (Track *)m_pTrkListCtrl->GetItemData(item);
+
+    if (ptrk) {
+      list.push_back(ptrk);
+    }
+  }
+  if (!list.empty()) {
+        g_Platform->ShowBusySpinner();
+        FindAllOCPNServers();
+        g_Platform->HideBusySpinner();
+
+        // Count viable servers.
+        int n_servers = 0;
+        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+          wxString item(g_DNS_cache[i]->hostname.c_str());
+
+          //skip "self"
+          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+            n_servers++;
+          }
+        }
+
+        if(n_servers == 0){
+          OCPNMessageBox(NULL,
+            _("No OpenCPN servers found on this network."),
+            _("OpenCPN Send Track(s)"), wxOK, 5);
+
+          return;
+        }
+
+        SendToPeerDlg dlg;
+        for (auto r : list) {
+          dlg.SetTrack(r);
+        }
+
+        dlg.Create(NULL, -1, _("Send Track(s) to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.ShowModal();
+  }
 }
 
 void RouteManagerDialog::OnRteActivateClick(wxCommandEvent &event) {
@@ -1972,6 +2145,7 @@ void RouteManagerDialog::UpdateTrkButtons() {
   btnTrkExport->Enable(items >= 1);
   btnTrkRouteFromTrack->Enable(items == 1);
   btnTrkDeleteAll->Enable(m_pTrkListCtrl->GetItemCount() > 0);
+  btnTrkSendToPeer->Enable(items >= 1);
 }
 
 void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
@@ -2372,6 +2546,7 @@ void RouteManagerDialog::UpdateWptButtons() {
   btnWptGoTo->Enable(enable1);
   btnWptExport->Enable(enablemultiple);
   btnWptSendToGPS->Enable(enable1);
+  btnWptSendToPeer->Enable(enablemultiple);
 }
 
 void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {

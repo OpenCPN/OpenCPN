@@ -49,8 +49,6 @@ SendToPeerDlg::SendToPeerDlg() {
   m_pgauge = NULL;
   m_SendButton = NULL;
   m_CancelButton = NULL;
-  m_pRoute = NULL;
-  m_pRoutePoint = NULL;
   premtext = NULL;
 }
 
@@ -173,7 +171,7 @@ void SendToPeerDlg::SetMessage(wxString msg) {
 }
 
 void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
-  if (!m_pRoute)
+  if (m_RouteList.empty() && m_TrackList.empty() && m_RoutePointList.empty())
     Close();
 
   //    Get the selected peer information
@@ -200,9 +198,10 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
 
 
   //    And send it out
-  int return_code = SendRoute(server_address, server_name.ToStdString(), m_pRoute, true);
-
-  //if (m_pRoutePoint) RoutePointGui(*m_pRoutePoint).SendToGPS(destPort, this);
+  if (!m_RouteList.empty() || !m_RoutePointList.empty() || !m_TrackList.empty())
+  {
+    int return_code = SendRoute(server_address, server_name.ToStdString(), m_RouteList, m_RoutePointList, m_TrackList, true);
+  }
 
   //    Show( false );
   //    event.Skip();
