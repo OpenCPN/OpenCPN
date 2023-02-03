@@ -8596,3 +8596,40 @@ CommDriverResult WriteCommDriverN2K( DriverHandle handle, int PGN,
   return RESULT_COMM_NO_ERROR;
 }
 
+CommDriverResult RegisterTXPGNs( DriverHandle handle, std::vector<int> &pgn_list) {
+  if (!pgn_list.size())
+    return RESULT_COMM_INVALID_PARMS;
+
+  // Find the driver from the handle
+  auto& registry = CommDriverRegistry::GetInstance();
+  auto drivers = registry.GetDrivers();
+  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
+  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
+
+  if (driver == drivers.end()){
+    return RESULT_COMM_INVALID_HANDLE;
+  }
+
+  std::shared_ptr<CommDriverN2K> dn2k = std::dynamic_pointer_cast<CommDriverN2K>(*driver);
+
+  int nloop;
+  for (size_t i=0 ; i < pgn_list.size() ;  i++){
+    int nTry = 5;
+    int iresult = -1;
+    nloop = 0;
+    while (nTry && iresult < 0) {
+      iresult = dn2k->SetTXPGN( pgn_list[i]);
+      nTry--;
+      nloop++;
+    }
+
+    if (iresult < 0){
+      printf("####TXPGN Fail\n");
+      return RESULT_COMM_REGISTER_PGN_ERROR;
+    }
+  }
+
+  printf("----TXPGN PASS  nloop: %d \n", nloop);
+  return RESULT_COMM_NO_ERROR;
+}
+
