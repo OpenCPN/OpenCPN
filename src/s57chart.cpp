@@ -6301,19 +6301,6 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         //      Enable anti-aliased lines, at best quality
         glEnable(GL_BLEND);
 
-        // Rotate the center point about vp center
-        wxPoint point = r;
-        double sin_rot = sin(viewport.rotation);
-        double cos_rot = cos(viewport.rotation);
-
-        double xp = ((point.x - viewport.pix_width / 2) * cos_rot) -
-                    ((point.y - viewport.pix_height / 2) * sin_rot);
-        double yp = ((point.x - viewport.pix_width / 2) * sin_rot) +
-                    ((point.y - viewport.pix_height / 2) * cos_rot);
-
-        point.x = (int)xp + viewport.pix_width / 2;
-        point.y = (int)yp + viewport.pix_height / 2;
-
         float coords[8];
         coords[0] = -rad;
         coords[1] = rad;
@@ -6346,8 +6333,8 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         GLint centerloc =
             glGetUniformLocation(shader->programId(), "circle_center");
         float ctrv[2];
-        ctrv[0] = point.x;
-        ctrv[1] = viewport.pix_height - point.y;
+        ctrv[0] = r.x;
+        ctrv[1] = viewport.pix_height - r.y;
         glUniform2fv(centerloc, 1, ctrv);
 
         //  Circle color
@@ -6410,7 +6397,6 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         // Rotate and translate
         mat4x4 I;
         mat4x4_identity(I);
-
         mat4x4_translate_in_place(I, r.x, r.y, 0);
 
         GLint matloc =
@@ -6431,7 +6417,6 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
         shader->UnBind();
 
       }
-
 
 #if 1
 
