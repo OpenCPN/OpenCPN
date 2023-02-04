@@ -890,12 +890,12 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     tnode = tnode->GetNext();
   }
 
-  delete ticket;
-
   if (g_raster_format != GL_COMPRESSED_RGB_FXT1_3DFX) {
     running_list.DeleteObject(ticket);
     StartTopJob();
   }
+
+  delete ticket;
 }
 
 void glTextureManager::OnTimer(wxTimerEvent &event) {
