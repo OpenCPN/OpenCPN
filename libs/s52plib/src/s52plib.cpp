@@ -2789,6 +2789,15 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   double scale_factor = 1.0;
 
   scale_factor *= m_ChartScaleFactorExp;
+
+    // Correct scale factor for symbolized soundings,
+    //  as sometimes found in objects OBSTRN, WRECKS, UWTROC
+  if (!strncmp(prule->name.SYNM, "SOUND", 5)) {
+      scale_factor /= m_ChartScaleFactorExp;
+      scale_factor *= m_SoundingsScaleFactor;
+  }
+
+
   scale_factor *= g_scaminScale;
   scale_factor /= m_dipfactor;
 
@@ -6431,8 +6440,8 @@ int s52plib::RenderObjectToGLText(const wxGLContext &glcc, ObjRazRules *rzRules)
 
 int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
   // TODO  Debugging
-  //      if(rzRules->obj->Index != 6118)
-  //        return 0; //int yyp = 0;
+        //if(rzRules->obj->Index == 6775)
+        //  int yyp = 0;
 
   //        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
   //            int yyp = 0;
