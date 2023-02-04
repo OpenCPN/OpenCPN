@@ -228,9 +228,15 @@ wxString& BasePlatform::GetExePath() {
   return m_exePath;
 }
 
-wxString* BasePlatform::GetSharedDataDirPtr() { return &m_SData_Dir; }
+wxString* BasePlatform::GetSharedDataDirPtr() {
+  if (m_SData_Dir.IsEmpty()) GetSharedDataDir();
+  return &m_SData_Dir;
+}
 
-wxString* BasePlatform::GetPrivateDataDirPtr() { return &m_PrivateDataDir; }
+wxString* BasePlatform::GetPrivateDataDirPtr() {
+  if (m_PrivateDataDir.IsEmpty()) GetPrivateDataDir();
+  return &m_PrivateDataDir;
+}
 
 wxString& BasePlatform::GetSharedDataDir() {
   if (m_SData_Dir.IsEmpty()) {
@@ -409,7 +415,10 @@ wxString& BasePlatform::GetPluginDir() {
   return m_PluginsDir;
 }
 
-wxString* BasePlatform::GetPluginDirPtr() { return &m_PluginsDir; }
+wxString* BasePlatform::GetPluginDirPtr() {
+  if (m_PluginsDir.IsEmpty()) GetPluginDir();
+  return &m_PluginsDir;
+}
 
 bool BasePlatform::isPlatformCapable(int flag) {
 #ifndef __ANDROID__
