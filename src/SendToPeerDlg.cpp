@@ -42,6 +42,7 @@ IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
 BEGIN_EVENT_TABLE(SendToPeerDlg, wxDialog)
   EVT_BUTTON(ID_STP_CANCEL, SendToPeerDlg::OnCancelClick)
   EVT_BUTTON(ID_STP_OK, SendToPeerDlg::OnSendClick)
+  EVT_BUTTON(ID_STP_SCAN, SendToPeerDlg::OnScanClick)
 END_EVENT_TABLE()
 
 SendToPeerDlg::SendToPeerDlg() {
@@ -131,6 +132,10 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
 
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
+  m_RescanButton = new wxButton(itemDialog1, ID_STP_SCAN, _("Scan"),
+                                wxDefaultPosition, wxDefaultSize, 0);
+  itemBoxSizer2->Add(m_RescanButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
   //    Add a reminder text box
   itemBoxSizer2->AddSpacer(20);
 
@@ -206,6 +211,31 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
   //    Show( false );
   //    event.Skip();
   Close();
+}
+
+void SendToPeerDlg::OnScanClick(wxCommandEvent& event) {
+   g_Platform->ShowBusySpinner();
+   FindAllOCPNServers(2);
+   g_Platform->HideBusySpinner();
+
+   // Clear the combo box
+   m_PeerListBox->Clear();
+
+   //    Fill in the wxComboBox with all detected peers
+  for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+    wxString item(g_DNS_cache[i]->hostname.c_str());
+
+    //skip "self"
+    if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+      item += " {";
+      item += g_DNS_cache[i]->ip.c_str();
+      item += "}";
+      m_PeerListBox->Append(item);
+    }
+  }
+  if (m_PeerListBox->GetCount())
+    m_PeerListBox->SetSelection(0);
+
 }
 
 void SendToPeerDlg::OnCancelClick(wxCommandEvent& event) {

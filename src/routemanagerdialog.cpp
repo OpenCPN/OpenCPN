@@ -1555,7 +1555,7 @@ void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
   }
   if (!list.empty()) {
         g_Platform->ShowBusySpinner();
-        FindAllOCPNServers();
+        FindAllOCPNServers(2);
         g_Platform->HideBusySpinner();
 
         // Count viable servers.
@@ -1603,7 +1603,7 @@ void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
   }
   if (!list.empty()) {
         g_Platform->ShowBusySpinner();
-        FindAllOCPNServers();
+        FindAllOCPNServers(2);
         g_Platform->HideBusySpinner();
 
         // Count viable servers.
@@ -1651,7 +1651,7 @@ void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
   }
   if (!list.empty()) {
         g_Platform->ShowBusySpinner();
-        FindAllOCPNServers();
+        FindAllOCPNServers(2);
         g_Platform->HideBusySpinner();
 
         // Count viable servers.

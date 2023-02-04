@@ -1703,9 +1703,12 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
      case ID_RT_MENU_SENDTOPEER:
       if (m_pSelectedRoute) {
-        g_Platform->ShowBusySpinner();
-        FindAllOCPNServers();
-        g_Platform->HideBusySpinner();
+
+        if (g_DNS_cache.size() == 0) {
+          g_Platform->ShowBusySpinner();
+          FindAllOCPNServers(2);
+          g_Platform->HideBusySpinner();
+        }
 
         // Count viable servers.
         int n_servers = 0;

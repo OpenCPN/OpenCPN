@@ -42,7 +42,7 @@
 #define SYMBOL_STP_SIZE wxSize(500, 500)
 #define SYMBOL_STP_POSITION wxDefaultPosition
 
-enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER };
+enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER, ID_STP_SCAN };
 
 class Route;
 class RoutePoint;
@@ -79,6 +79,7 @@ private:
 
   void OnCancelClick(wxCommandEvent& event);
   void OnSendClick(wxCommandEvent& event);
+  void OnScanClick(wxCommandEvent& event);
 
   std::vector<Route*> m_RouteList;
   std::vector<RoutePoint*> m_RoutePointList;
@@ -88,6 +89,7 @@ private:
   wxButton* m_CancelButton;
   wxButton* m_SendButton;
   wxStaticText* premtext;
+  wxButton *m_RescanButton;
 };
 
 #endif

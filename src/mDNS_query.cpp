@@ -125,7 +125,7 @@ ocpn_query_callback(int sock, const struct sockaddr* from, size_t addrlen, mdns_
     entry->port = "8000";
     // Is the destination a portable?  Detect by string inspection.
     std::string p ("Portable");
-    std::size_t port = hostname.find(p);;   
+    std::size_t port = hostname.find(p);;
     if (port != std::string::npos)
       entry->port = "8001";
   }
@@ -181,7 +181,7 @@ ocpn_query_callback(int sock, const struct sockaddr* from, size_t addrlen, mdns_
 
 // Send a mDNS query
 int
-send_mdns_query(mdns_query_t* query, size_t count) {
+send_mdns_query(mdns_query_t* query, size_t count, size_t timeout_secs) {
 	int sockets[32];
 	int query_id[32];
 	int num_sockets = open_client_sockets(sockets, sizeof(sockets) / sizeof(sockets[0]), 0);
@@ -216,13 +216,13 @@ send_mdns_query(mdns_query_t* query, size_t count) {
 			printf("Failed to send mDNS query: %s\n", strerror(errno));
 	}
 
-	// This is a simple implementation that loops for 4 seconds or as long as we get replies
+	// This is a simple implementation that loops for timeout_secs or as long as we get replies
 	int res;
 	printf("Reading mDNS query replies\n");
 	int records = 0;
 	do {
 		struct timeval timeout;
-		timeout.tv_sec = 4;
+		timeout.tv_sec = timeout_secs;
 		timeout.tv_usec = 0;
 
 		int nfds = 0;
@@ -260,13 +260,13 @@ send_mdns_query(mdns_query_t* query, size_t count) {
 }
 
 
-void FindAllOCPNServers() {
+void FindAllOCPNServers(size_t timeout_secs) {
   mdns_query_t query;
   query.name = "opencpn-object-control-service";
   query.type = MDNS_RECORDTYPE_PTR;
   query.length = strlen(query.name);
 
-  send_mdns_query(&query, 1);
+  send_mdns_query(&query, 1, timeout_secs);
 
 
 }
