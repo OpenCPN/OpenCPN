@@ -69,7 +69,7 @@ public:
 
   void OnNetProtocolSelected(wxCommandEvent &event);
   void OnBaudrateChoice(wxCommandEvent &event) { OnConnValChange(event); }
-  void OnProtocolChoice(wxCommandEvent &event) { OnConnValChange(event); }
+  void OnProtocolChoice(wxCommandEvent &event);
   void OnCrcCheck(wxCommandEvent &event) { OnConnValChange(event); }
   void OnRbAcceptInput(wxCommandEvent &event);
   void OnRbIgnoreInput(wxCommandEvent &event);
@@ -101,6 +101,7 @@ public:
   void SetNMEAFormToGPS(void);
   void SetNMEAFormToBT(void);
   void SetNMEAFormToCAN(void);
+  void SetNMEAFormForProtocol();
 
   void ShowNMEACommon(bool visible);
   void ShowNMEASerial(bool visible);

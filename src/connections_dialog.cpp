@@ -1100,6 +1100,8 @@ void ConnectionsDialog::ShowNMEACommon(bool visible) {
     sbSizerConnectionProps->SetDimension(0, 0, 0, 0);
     m_sbConnEdit->SetLabel(_T(""));
   }
+  sbSizerInFilter->Show(visible);
+  sbSizerOutFilter->Show(visible);
   m_bNMEAParams_shown = visible;
 }
 
@@ -1428,6 +1430,7 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
   if (cp->Type == SERIAL) {
     m_rbTypeSerial->SetValue(TRUE);
     SetNMEAFormToSerial();
+    SetNMEAFormForProtocol();
   } else if (cp->Type == NETWORK) {
     m_rbTypeNet->SetValue(TRUE);
     SetNMEAFormToNet();
@@ -2207,3 +2210,16 @@ void SentenceListDlg::OnCheckAllClick(wxCommandEvent& event) {
     m_clbSentences->Check(i, TRUE);
 }
 
+void ConnectionsDialog::SetNMEAFormForProtocol() {
+  bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() == DataProtocol::PROTO_NMEA0183;
+  ShowNMEACommon(n0183ctlenabled);
+  m_cbGarminHost->Show(n0183ctlenabled);
+  m_stPriority->Show(true);
+  m_choicePriority->Show(true);
+  m_scrollWinConnections->Layout();
+}
+
+void ConnectionsDialog::OnProtocolChoice(wxCommandEvent &event) {
+  SetNMEAFormForProtocol();
+  OnConnValChange(event);
+}
