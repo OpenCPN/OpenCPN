@@ -1192,6 +1192,9 @@ void ConnectionsDialog::SetNMEAFormToCAN(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEACAN(TRUE);
+  sbSizerInFilter->Show(false);
+  sbSizerOutFilter->Show(false);
+
   m_container->FitInside();
   // Fit();
   RecalculateSize();
@@ -1267,6 +1270,29 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     m_cbCheckSKDiscover->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
+    bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() == DataProtocol::PROTO_NMEA0183;
+    if (!n0183ctlenabled) {
+      m_cbInput->Hide();
+      m_cbOutput->Hide();
+      sbSizerOutFilter->GetStaticBox()->Hide();
+      m_rbOAccept->Hide();
+      m_rbOIgnore->Hide();
+      m_tcOutputStc->Hide();
+      m_tcInputStc->Hide();
+      m_btnOutputStcList->Hide();
+      m_btnInputStcList->Hide();
+      m_stPrecision->Hide();
+      m_choicePrecision->Hide();
+      m_stTalkerIdText->Hide();
+      m_TalkerIdText->Hide();
+      m_cbCheckCRC->Hide();
+      sbSizerInFilter->GetStaticBox()->Hide();
+      m_rbIAccept->Hide();
+      m_rbIIgnore->Hide();
+      sbSizerOutFilter->GetStaticBox()->Hide();
+      m_rbOAccept->Hide();
+      m_rbOIgnore->Hide();
+    }
   }
 
   if (m_rbTypeCAN->GetValue()) {
@@ -1279,7 +1305,9 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     m_rbOAccept->Hide();
     m_rbOIgnore->Hide();
     m_tcOutputStc->Hide();
+    m_tcInputStc->Hide();
     m_btnOutputStcList->Hide();
+    m_btnInputStcList->Hide();
     m_stPrecision->Hide();
     m_choicePrecision->Hide();
     m_stTalkerIdText->Hide();
@@ -2216,7 +2244,9 @@ void ConnectionsDialog::SetNMEAFormForProtocol() {
   m_cbGarminHost->Show(n0183ctlenabled);
   m_stPriority->Show(true);
   m_choicePriority->Show(true);
-  m_scrollWinConnections->Layout();
+  m_container->FitInside();
+  RecalculateSize();
+  SetDSFormRWStates();
 }
 
 void ConnectionsDialog::OnProtocolChoice(wxCommandEvent &event) {
