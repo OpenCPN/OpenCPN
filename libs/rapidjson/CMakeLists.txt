@@ -1,12 +1,39 @@
+#
+# Add linkage to the rapidjson header-only library
+#
+# On hosts having the package installed in system locations found by
+# cmake use the system code. If not, download sources from rapidjson
+# github site.
+#
+# Exports: ocpn::rapidjson link target
+
 cmake_minimum_required(VERSION 3.1.20)
+
+set(src_url "https://github.com/Tencent/rapidjson/archive/refs/tags/v1.1.0.tar.gz")
+set(src_hash MD5=badd12c511e081fec6c89c43a7027bce)
 
 if (TARGET ocpn::rapidjson)
     return ()
 endif ()
 
-file(GLOB SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/rapidjson-[1-9].[0-9]*")
-
-
+find_path(RAPIDJSON_BASE NAME rapidjson.h PATH_SUFFIXES rapidjson)
+if (RAPIDJSON_BASE)
+  cmake_path(GET RAPIDJSON_BASE PARENT_PATH RAPIDJSON_BASE)   # drop rapidjson/
+  message(STATUS "Using system rapidjson at ${RAPIDJSON_BASE}")
+  cmake_path(GET RAPIDJSON_BASE PARENT_PATH RAPIDJSON_BASE)   # drop include/
+  set(SRC_DIR ${RAPIDJSON_BASE})
+else ()
+  include(FetchContent)
+  FetchContent_Declare(
+    rapidjson
+    URL  ${src_url}
+    URL_HASH ${src_hash}
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  )
+  FetchContent_Populate(rapidjson)
+  FetchContent_GetProperties(rapidjson SOURCE_DIR SRC_DIR)
+  message(STATUS "Using downloaded rapidjson at ${SRC_DIR}/include")
+endif ()
 
 set(SRC
   ${SRC_DIR}/include/rapidjson
@@ -52,22 +79,12 @@ set(SRC
 
 add_library(_RAPIDJSON STATIC ${SRC})
 add_library(ocpn::rapidjson ALIAS _RAPIDJSON)
+
+target_include_directories(_RAPIDJSON PUBLIC "${SRC_DIR}/include")
+
 set_target_properties(_RAPIDJSON PROPERTIES LINKER_LANGUAGE CXX)
-
-find_path(RAPIDJSON_BASE NAME rapidjson.h PATH_SUFFIXES rapidjson)
-if (RAPIDJSON_BASE) 
-  cmake_path(GET RAPIDJSON_BASE  PARENT_PATH  RAPIDJSON_BASE)
-  message(STATUS "Using system rapidjson at ${RAPIDJSON_BASE}")
-  target_include_directories(_RAPIDJSON PUBLIC ${RAPIDJSON_BASE})
-else ()
-  message(STATUS "Using bundled rapidjson at ${SRC_DIR}/include")
-  target_include_directories(_RAPIDJSON PUBLIC "${SRC_DIR}/include")
-endif ()
-
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
   target_compile_options(
-    _RAPIDJSON PRIVATE
-      -fvisibility=default -Wno-unknown-pragmas -fPIC
+    _RAPIDJSON PRIVATE -fvisibility=default -Wno-unknown-pragmas -fPIC
   )
 endif ()
-
