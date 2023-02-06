@@ -12227,6 +12227,8 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                         1.2;  // soften the scale factor a bit
 
   scale_factor *= user_scale_factor;
+  scale_factor *= GetContentScaleFactor();
+
 
   {
     double lon_last = 0.;
@@ -12465,7 +12467,6 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
-  float icon_pixelRefDim = 5;
 
 #if 0
     float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *3 / 1000; // Intended physical rendered size onscreen
@@ -12481,10 +12482,22 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
 #endif
 
+#ifndef __OCPN__ANDROID__
+  // or, x times size of text font
+  wxScreenDC sdc;
+  int height;
+  sdc.GetTextExtent("M", NULL, &height, NULL, NULL, pTCFont);
+  height *= g_Platform->GetDisplayDIPMult(this);
+  float nominal_icon_size_pixels = 15;
+  float pix_factor = (1 * height) / nominal_icon_size_pixels;
+
+#else
   //  Yet another method goes like this:
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
-  //  Develop empirically, making a symbol about 16 mm tall
+  //  Develop empirically....
+  float icon_pixelRefDim = 5;
+
   double symHeight =
       icon_pixelRefDim /
       GetPixPerMM();  // from draw instructions, symbol is xx pix high
@@ -12496,6 +12509,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   float targetHeight = wxMin(targetHeight0, displaySize / 50);
   double pix_factor = targetHeight / symHeight;
+#endif
 
   scale_factor *= pix_factor;
 
@@ -12506,11 +12520,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   scale_factor *= user_scale_factor;
 
-  //  TODO  Convert this method to "DPI-Pixel aware"
-#ifdef __WXMSW__
-  double csf = GetContentScaleFactor();
-  scale_factor /= csf;
-#endif
+  scale_factor *= GetContentScaleFactor();
 
   {
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
