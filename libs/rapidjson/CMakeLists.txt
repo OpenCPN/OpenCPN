@@ -16,25 +16,59 @@ if (TARGET ocpn::rapidjson)
     return ()
 endif ()
 
+if (POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif ()
+
+# Use system or downloaded sources.
+#
 find_path(RAPIDJSON_BASE NAME rapidjson.h PATH_SUFFIXES rapidjson)
 if (RAPIDJSON_BASE)
-  cmake_path(GET RAPIDJSON_BASE PARENT_PATH RAPIDJSON_BASE)   # drop rapidjson/
+  # Drop include/rapidjson
+  if (${CMAKE_VERSION} VERSION_LESS 3.20.0)
+    get_filename_component(RAPIDJSON_BASE ${RAPIDJSON_BASE} DIRECTORY)
+    get_filename_component(RAPIDJSON_BASE ${RAPIDJSON_BASE} DIRECTORY)
+  else ()
+    cmake_path(GET RAPIDJSON_BASE PARENT_PATH RAPIDJSON_BASE)
+    cmake_path(GET RAPIDJSON_BASE PARENT_PATH RAPIDJSON_BASE)
+  endif ()
   message(STATUS "Using system rapidjson at ${RAPIDJSON_BASE}")
-  cmake_path(GET RAPIDJSON_BASE PARENT_PATH RAPIDJSON_BASE)   # drop include/
   set(SRC_DIR ${RAPIDJSON_BASE})
 else ()
   include(FetchContent)
-  FetchContent_Declare(
-    rapidjson
-    URL  ${src_url}
-    URL_HASH ${src_hash}
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-  )
+  FetchContent_Declare(rapidjson URL ${src_url} URL_HASH ${src_hash})
   FetchContent_Populate(rapidjson)
   FetchContent_GetProperties(rapidjson SOURCE_DIR SRC_DIR)
   message(STATUS "Using downloaded rapidjson at ${SRC_DIR}/include")
 endif ()
 
+if (NOT RAPIDJSON_BASE)
+  # Patches setup, creates targets patch1, patch2, patch3, ...
+  #
+  list(APPEND patches
+    0010-rapidjson-1.1.0-c++20.patch
+    0011-do_not_include_gtest_src_dir.patch
+    0012-Fix-Wclass-memaccess-warnings-errors.patch
+    0013-gcc7.patch
+  )
+  set(num 0)
+  foreach (patch ${patches})
+    math(EXPR num "${num} + 1")
+    add_custom_target(patch${num})
+    add_custom_command(
+      TARGET patch${num}
+      COMMAND ${CMAKE_COMMAND}
+        -Dpatch_file=${CMAKE_CURRENT_SOURCE_DIR}/patches/${patch}
+        -Dpatch_dir=${SRC_DIR}
+        -Dpatch_stamp="${CMAKE_BINARY_DIR}/patch${num}.stamp"
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchFile.cmake
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  endforeach ()
+endif ()
+
+# sources definition, not strictly required
+#
 set(SRC
   ${SRC_DIR}/include/rapidjson
   ${SRC_DIR}/include/rapidjson/allocators.h
@@ -77,8 +111,15 @@ set(SRC
   ${SRC_DIR}/include/rapidjson/msinttypes/stdint.h
 )
 
+# main targets, properties and linkage.
+#
 add_library(_RAPIDJSON STATIC ${SRC})
 add_library(ocpn::rapidjson ALIAS _RAPIDJSON)
+
+if (TARGET patch1)
+  # No ordering, problematic if patches depends on each other
+  add_dependencies(_RAPIDJSON patch1 patch2 patch3 patch4)
+endif ()
 
 target_include_directories(_RAPIDJSON PUBLIC "${SRC_DIR}/include")
 
