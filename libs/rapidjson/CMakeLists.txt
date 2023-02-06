@@ -9,12 +9,19 @@
 
 cmake_minimum_required(VERSION 3.1.20)
 
-set(src_url "https://github.com/Tencent/rapidjson/archive/refs/tags/v1.1.0.tar.gz")
-set(src_hash MD5=badd12c511e081fec6c89c43a7027bce)
-
 if (TARGET ocpn::rapidjson)
     return ()
 endif ()
+
+set(src_url "https://github.com/Tencent/rapidjson/archive/refs/tags/v1.1.0.tar.gz")
+set(src_hash MD5=badd12c511e081fec6c89c43a7027bce)
+
+list(APPEND patches
+  0010-rapidjson-1.1.0-c++20.patch
+  0011-do_not_include_gtest_src_dir.patch
+  0012-Fix-Wclass-memaccess-warnings-errors.patch
+  0013-gcc7.patch
+)
 
 if (POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
@@ -45,12 +52,6 @@ endif ()
 if (NOT RAPIDJSON_BASE)
   # Patches setup, creates targets patch1, patch2, patch3, ...
   #
-  list(APPEND patches
-    0010-rapidjson-1.1.0-c++20.patch
-    0011-do_not_include_gtest_src_dir.patch
-    0012-Fix-Wclass-memaccess-warnings-errors.patch
-    0013-gcc7.patch
-  )
   set(num 0)
   foreach (patch ${patches})
     math(EXPR num "${num} + 1")
@@ -67,65 +68,18 @@ if (NOT RAPIDJSON_BASE)
   endforeach ()
 endif ()
 
-# sources definition, not strictly required
+# main target and linkage.
 #
-set(SRC
-  ${SRC_DIR}/include/rapidjson
-  ${SRC_DIR}/include/rapidjson/allocators.h
-  ${SRC_DIR}/include/rapidjson/document.h
-  ${SRC_DIR}/include/rapidjson/encodedstream.h
-  ${SRC_DIR}/include/rapidjson/encodings.h
-  ${SRC_DIR}/include/rapidjson/error
-  ${SRC_DIR}/include/rapidjson/filereadstream.h
-  ${SRC_DIR}/include/rapidjson/filewritestream.h
-  ${SRC_DIR}/include/rapidjson/fwd.h
-  ${SRC_DIR}/include/rapidjson/internal
-  ${SRC_DIR}/include/rapidjson/istreamwrapper.h
-  ${SRC_DIR}/include/rapidjson/memorybuffer.h
-  ${SRC_DIR}/include/rapidjson/memorystream.h
-  ${SRC_DIR}/include/rapidjson/msinttypes
-  ${SRC_DIR}/include/rapidjson/ostreamwrapper.h
-  ${SRC_DIR}/include/rapidjson/pointer.h
-  ${SRC_DIR}/include/rapidjson/prettywriter.h
-  ${SRC_DIR}/include/rapidjson/rapidjson.h
-  ${SRC_DIR}/include/rapidjson/reader.h
-  ${SRC_DIR}/include/rapidjson/schema.h
-  ${SRC_DIR}/include/rapidjson/stream.h
-  ${SRC_DIR}/include/rapidjson/stringbuffer.h
-  ${SRC_DIR}/include/rapidjson/writer.h
-  ${SRC_DIR}/include/rapidjson/error/en.h
-  ${SRC_DIR}/include/rapidjson/error/error.h
-  ${SRC_DIR}/include/rapidjson/internal/biginteger.h
-  ${SRC_DIR}/include/rapidjson/internal/diyfp.h
-  ${SRC_DIR}/include/rapidjson/internal/dtoa.h
-  ${SRC_DIR}/include/rapidjson/internal/ieee754.h
-  ${SRC_DIR}/include/rapidjson/internal/itoa.h
-  ${SRC_DIR}/include/rapidjson/internal/meta.h
-  ${SRC_DIR}/include/rapidjson/internal/pow10.h
-  ${SRC_DIR}/include/rapidjson/internal/regex.h
-  ${SRC_DIR}/include/rapidjson/internal/stack.h
-  ${SRC_DIR}/include/rapidjson/internal/strfunc.h
-  ${SRC_DIR}/include/rapidjson/internal/strtod.h
-  ${SRC_DIR}/include/rapidjson/internal/swap.h
-  ${SRC_DIR}/include/rapidjson/msinttypes/inttypes.h
-  ${SRC_DIR}/include/rapidjson/msinttypes/stdint.h
-)
-
-# main targets, properties and linkage.
-#
-add_library(_RAPIDJSON STATIC ${SRC})
+add_library(_RAPIDJSON INTERFACE)
 add_library(ocpn::rapidjson ALIAS _RAPIDJSON)
+target_include_directories(_RAPIDJSON INTERFACE "${SRC_DIR}/include")
 
-if (TARGET patch1)
-  # No ordering, problematic if patches depends on each other
-  add_dependencies(_RAPIDJSON patch1 patch2 patch3 patch4)
-endif ()
 
-target_include_directories(_RAPIDJSON PUBLIC "${SRC_DIR}/include")
+# Apply all defined patches. No ordering, problematic if patches
+# depends on each other
+foreach(num RANGE 10)
+  if (TARGET patch${num})
+    add_dependencies(_RAPIDJSON patch${num})
+  endif ()
+endforeach ()
 
-set_target_properties(_RAPIDJSON PROPERTIES LINKER_LANGUAGE CXX)
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
-  target_compile_options(
-    _RAPIDJSON PRIVATE -fvisibility=default -Wno-unknown-pragmas -fPIC
-  )
-endif ()

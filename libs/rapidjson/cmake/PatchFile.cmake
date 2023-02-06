@@ -14,7 +14,7 @@ endif ()
 
 find_program(PATCH NAMES patch HINTS ${GIT_DIR} PATH_SUFFIXES usr/bin)
 
-if(NOT PATCH)
+if (NOT PATCH)
   message(FATAL_ERROR "Did not find GNU Patch")
 endif()
 
@@ -29,7 +29,7 @@ if (NOT EXISTS ${patch_stamp})
   if (NOT ret EQUAL 0)
     message(
       FATAL_ERROR
-      "Failed to apply patch apply ${patch_file} in ${patch_dir} using ${PATCH}"
+      "Failed to apply ${patch_file} in ${patch_dir} using ${PATCH}"
     )
   endif()
   execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${patch_stamp})
