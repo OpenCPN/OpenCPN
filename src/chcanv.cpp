@@ -656,7 +656,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   //    Build icons for tide/current points
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  m_bmTideDay = style->GetIcon(_T("tidesml"));
+  m_bmTideDay = style->GetIconScaled(_T("tidesml"), 1. / g_Platform->GetDisplayDIPMult(this));
 
   //    Dusk
   m_bmTideDusk = CreateDimBitmap(m_bmTideDay, .50);
@@ -12188,8 +12188,17 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   // of a raster symbol (e.g.BOYLAT)
   //  This is a bit of a hack that will suffice until until we get fully
   //  scalable ENC symbol sets
+  //   float nominal_icon_size_pixels = 48;  // 3 x 16
+  //   float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
+
+  // or, x times size of text font
+  wxScreenDC sdc;
+  int height;
+  sdc.GetTextExtent("M", NULL, &height, NULL, NULL, plabelFont);
+  height *= g_Platform->GetDisplayDIPMult(this);
   float nominal_icon_size_pixels = 48;  // 3 x 16
-  float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
+  float pix_factor = (2 * height) / nominal_icon_size_pixels;
+
 
 #else
   //  Yet another method goes like this:
@@ -12373,6 +12382,7 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                   if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
                   int wx1;
                   dc.GetTextExtent(s, &wx1, NULL);
+                  wx1 *= g_Platform->GetDisplayDIPMult(this);
                   dc.DrawText(s, r.x - (wx1 / 2), yDraw + height);
                 }
               }
