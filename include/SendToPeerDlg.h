@@ -73,6 +73,8 @@ public:
   void SetTrack(Track* pTrack) { m_TrackList.push_back(pTrack); }
   wxGauge* GetProgressGauge() { return m_pgauge; }
   void SetMessage(wxString message);
+  void SetScanOnCreate(bool s){ m_bScanOnCreate = s;}
+  void SetScanTime(int t){ m_scanTime = t;}
 
 private:
   void CreateControls(const wxString& hint);
@@ -80,6 +82,9 @@ private:
   void OnCancelClick(wxCommandEvent& event);
   void OnSendClick(wxCommandEvent& event);
   void OnScanClick(wxCommandEvent& event);
+  void OnTimerAutoscan(wxTimerEvent &event);
+  void OnTimerScanTick(wxTimerEvent &event);
+  void DoScan();
 
   std::vector<Route*> m_RouteList;
   std::vector<RoutePoint*> m_RoutePointList;
@@ -90,6 +95,13 @@ private:
   wxButton* m_SendButton;
   wxStaticText* premtext;
   wxButton *m_RescanButton;
+
+  wxTimer m_autoScanTimer;
+  wxTimer m_ScanTickTimer;
+  int m_tick;
+  int m_scanTime;
+  bool m_bScanOnCreate;
+
 };
 
 #endif

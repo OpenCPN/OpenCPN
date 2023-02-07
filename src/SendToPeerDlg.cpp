@@ -33,8 +33,12 @@
 #include "route_point.h"
 #include "SendToPeerDlg.h"
 
+#define TIMER_AUTOSCAN  94522
+#define TIMER_SCANTICK  94523
+
 extern OCPNPlatform* g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
+extern wxDateTime g_DNS_cache_time;
 extern bool g_bportable;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
@@ -43,6 +47,8 @@ BEGIN_EVENT_TABLE(SendToPeerDlg, wxDialog)
   EVT_BUTTON(ID_STP_CANCEL, SendToPeerDlg::OnCancelClick)
   EVT_BUTTON(ID_STP_OK, SendToPeerDlg::OnSendClick)
   EVT_BUTTON(ID_STP_SCAN, SendToPeerDlg::OnScanClick)
+  EVT_TIMER(TIMER_AUTOSCAN, SendToPeerDlg::OnTimerAutoscan)
+  EVT_TIMER(TIMER_SCANTICK, SendToPeerDlg::OnTimerScanTick)
 END_EVENT_TABLE()
 
 SendToPeerDlg::SendToPeerDlg() {
@@ -51,6 +57,8 @@ SendToPeerDlg::SendToPeerDlg() {
   m_SendButton = NULL;
   m_CancelButton = NULL;
   premtext = NULL;
+  m_scanTime = 5;  //default, seconds
+  m_bScanOnCreate = false;
 }
 
 SendToPeerDlg::SendToPeerDlg(wxWindow* parent, wxWindowID id,
@@ -76,6 +84,14 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
   Centre();
+  m_pgauge->Hide();
+
+  if (m_bScanOnCreate){
+    m_autoScanTimer.SetOwner(this, TIMER_AUTOSCAN);
+    m_autoScanTimer.Start(500, wxTIMER_ONE_SHOT);
+  }
+
+  m_ScanTickTimer.SetOwner(this, TIMER_SCANTICK);
 
   return TRUE;
 }
@@ -109,35 +125,20 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
     }
   }
 
-
-#if 0
-  //    Make the proper initial selection
-  if (!g_uploadConnection.IsEmpty()) {
-    if (g_uploadConnection.Lower().StartsWith("tcp") ||
-        g_uploadConnection.Lower().StartsWith("udp")) {
-      bool b_connExists = false;
-      for (unsigned int i = 0; i < netconns.GetCount(); i++) {
-        if (g_uploadConnection.IsSameAs(netconns[i])) {
-          b_connExists = true;
-          break;
-        }
-      }
-      if (b_connExists) m_PeerListBox->SetValue(g_uploadConnection);
-    } else
-      m_PeerListBox->SetValue(g_uploadConnection);
-  } else
-#endif
-
-  m_PeerListBox->SetSelection(0);
+  if (m_PeerListBox->GetCount())
+    m_PeerListBox->SetSelection(0);
 
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
-  m_RescanButton = new wxButton(itemDialog1, ID_STP_SCAN, _("Scan"),
+  m_RescanButton = new wxButton(itemDialog1, ID_STP_SCAN, _("Scan again"),
                                 wxDefaultPosition, wxDefaultSize, 0);
   itemBoxSizer2->Add(m_RescanButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
+  m_pgauge = new wxGauge(this, -1, m_scanTime);
+  itemBoxSizer2->Add(m_pgauge, 0, wxEXPAND | wxALL, 5);
+
   //    Add a reminder text box
-  itemBoxSizer2->AddSpacer(20);
+  itemBoxSizer2->AddSpacer(30);
 
 #if 0
   premtext = new wxStaticText(
@@ -214,28 +215,61 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
 }
 
 void SendToPeerDlg::OnScanClick(wxCommandEvent& event) {
-   g_Platform->ShowBusySpinner();
-   FindAllOCPNServers(2);
-   g_Platform->HideBusySpinner();
+  DoScan();
+}
 
-   // Clear the combo box
+void SendToPeerDlg::OnTimerAutoscan(wxTimerEvent &event) {
+  DoScan();
+}
+
+void SendToPeerDlg::OnTimerScanTick(wxTimerEvent &event) {
+  m_tick--;
+  if(m_pgauge) {
+    int v = m_pgauge->GetValue();
+    m_pgauge->SetValue(v+1);
+  }
+
+  if (m_tick == 0){
+    // Housekeeping
+   m_ScanTickTimer.Stop();
+   g_Platform->HideBusySpinner();
+   m_RescanButton->Enable();
+   m_pgauge->Hide();
+   m_bScanOnCreate = false;
+
+      // Clear the combo box
    m_PeerListBox->Clear();
 
    //    Fill in the wxComboBox with all detected peers
-  for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-    wxString item(g_DNS_cache[i]->hostname.c_str());
+   for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+     wxString item(g_DNS_cache[i]->hostname.c_str());
 
     //skip "self"
-    if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
-      item += " {";
-      item += g_DNS_cache[i]->ip.c_str();
-      item += "}";
-      m_PeerListBox->Append(item);
-    }
-  }
-  if (m_PeerListBox->GetCount())
+     if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+       item += " {";
+       item += g_DNS_cache[i]->ip.c_str();
+       item += "}";
+       m_PeerListBox->Append(item);
+     }
+   }
+   if (m_PeerListBox->GetCount())
     m_PeerListBox->SetSelection(0);
 
+   g_DNS_cache_time = wxDateTime::Now();
+  }
+}
+
+void SendToPeerDlg::DoScan() {
+  m_RescanButton->Disable();
+  g_Platform->ShowBusySpinner();
+  m_pgauge->SetRange(m_scanTime);
+  m_pgauge->SetValue(0);
+  m_pgauge->Show();
+
+  FindAllOCPNServers(m_scanTime);
+
+  m_tick = m_scanTime;
+  m_ScanTickTimer.Start(1000, wxTIMER_CONTINUOUS);
 }
 
 void SendToPeerDlg::OnCancelClick(wxCommandEvent& event) {

@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <thread>
 
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS 1
@@ -45,6 +46,7 @@
 #include <net/if.h>
 #endif
 
+#include <wx/datetime.h>
 
 #include "mdns_util.h"
 #include "mDNS_query.h"
@@ -53,7 +55,7 @@ extern bool g_bportable;
 
 // Static data structs
 std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
-
+wxDateTime g_DNS_cache_time;
 
 
 static char addrbuffer[64];
@@ -260,15 +262,17 @@ send_mdns_query(mdns_query_t* query, size_t count, size_t timeout_secs) {
 }
 
 
+// Static query definition,
+// be careful with thread sync if multiple querries used simultaneously
+mdns_query_t s_query;
+
 void FindAllOCPNServers(size_t timeout_secs) {
-  mdns_query_t query;
-  query.name = "opencpn-object-control-service";
-  query.type = MDNS_RECORDTYPE_PTR;
-  query.length = strlen(query.name);
+  s_query.name = "opencpn-object-control-service";
+  s_query.type = MDNS_RECORDTYPE_PTR;
+  s_query.length = strlen(s_query.name);
 
-  send_mdns_query(&query, 1, timeout_secs);
-
-
+  std::thread{ send_mdns_query, &s_query, 1, timeout_secs}.detach();
+  //send_mdns_query(&query, 1, timeout_secs);
 }
 
 std::vector<std::string> get_local_ipv4_addresses() {

@@ -130,6 +130,7 @@ extern double gHdt;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
+extern wxDateTime g_DNS_cache_time;
 
 //    Constants for right click menus
 enum {
@@ -1704,36 +1705,24 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
      case ID_RT_MENU_SENDTOPEER:
       if (m_pSelectedRoute) {
 
-        // Perform initial scan, if necessary
-        if (g_DNS_cache.size() == 0) {
-          g_Platform->ShowBusySpinner();
-          FindAllOCPNServers(2);
-          g_Platform->HideBusySpinner();
-        }
-
-#if 0
-        // Count viable servers.
-        int n_servers = 0;
-        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-          wxString item(g_DNS_cache[i]->hostname.c_str());
-
-          //skip "self"
-          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
-            n_servers++;
-          }
-        }
-
-        if(n_servers == 0){
-          OCPNMessageBox(NULL,
-            _("No OpenCPN servers found on this network."),
-            _("OpenCPN Send Route"), wxOK, 5);
-
-          return;
-        }
-#endif
         SendToPeerDlg dlg;
         dlg.SetRoute(m_pSelectedRoute);
 
+        // Perform initial scan, if necessary
+
+        // Check for stale cache...
+        bool bDNScacheStale = true;
+        wxDateTime tnow = wxDateTime::Now();
+        if (g_DNS_cache_time.IsValid()){
+          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
+          if (delta.GetMinutes() < 5)
+            bDNScacheStale = false;
+        }
+
+         if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+           dlg.SetScanOnCreate(true);
+
+        dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ), _T(""));
         dlg.ShowModal();
       }
