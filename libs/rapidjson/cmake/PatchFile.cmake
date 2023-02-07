@@ -18,19 +18,15 @@ if (NOT PATCH)
   message(FATAL_ERROR "Did not find GNU Patch")
 endif()
 
-if (NOT EXISTS ${patch_stamp})
-  execute_process(
-    COMMAND ${PATCH} -p1 --ignore-whitespace
-    INPUT_FILE ${patch_file}
-    WORKING_DIRECTORY ${patch_dir}
-    TIMEOUT 15
-    RESULT_VARIABLE ret
+execute_process(
+  COMMAND ${PATCH} -p1 --ignore-whitespace
+  INPUT_FILE ${patch_file}
+  WORKING_DIRECTORY ${patch_dir}
+  TIMEOUT 15
+  RESULT_VARIABLE ret
+)
+if (NOT ret EQUAL 0)
+  message(
+    FATAL_ERROR "Failed to apply ${patch_file} in ${patch_dir} using ${PATCH}"
   )
-  if (NOT ret EQUAL 0)
-    message(
-      FATAL_ERROR
-      "Failed to apply ${patch_file} in ${patch_dir} using ${PATCH}"
-    )
-  endif()
-  execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${patch_stamp})
-endif ()
+endif()

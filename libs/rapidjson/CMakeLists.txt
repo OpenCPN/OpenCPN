@@ -47,39 +47,23 @@ else ()
   FetchContent_Populate(rapidjson)
   FetchContent_GetProperties(rapidjson SOURCE_DIR SRC_DIR)
   message(STATUS "Using downloaded rapidjson at ${SRC_DIR}/include")
-endif ()
 
-if (NOT RAPIDJSON_BASE)
-  # Patches setup, creates targets patch1, patch2, patch3, ...
+  # Apply patches
   #
-  set(num 0)
   foreach (patch ${patches})
-    math(EXPR num "${num} + 1")
-    add_custom_target(patch${num})
-    add_custom_command(
-      TARGET patch${num}
+    execute_process(
       COMMAND ${CMAKE_COMMAND}
         -Dpatch_file=${CMAKE_CURRENT_SOURCE_DIR}/patches/${patch}
         -Dpatch_dir=${SRC_DIR}
-        -Dpatch_stamp="${CMAKE_BINARY_DIR}/patch${num}.stamp"
         -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchFile.cmake
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND ${CMAKE_COMMAND} -E echo "-- Applying patch ${patch}"
     )
   endforeach ()
 endif ()
+
 
 # main target and linkage.
 #
 add_library(_RAPIDJSON INTERFACE)
 add_library(ocpn::rapidjson ALIAS _RAPIDJSON)
 target_include_directories(_RAPIDJSON INTERFACE "${SRC_DIR}/include")
-
-
-# Apply all defined patches. No ordering, problematic if patches
-# depends on each other
-foreach(num RANGE 10)
-  if (TARGET patch${num})
-    add_dependencies(_RAPIDJSON patch${num})
-  endif ()
-endforeach ()
-
