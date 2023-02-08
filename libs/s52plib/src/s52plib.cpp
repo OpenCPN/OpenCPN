@@ -333,6 +333,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_useStencilAP = false;
   m_useScissors = false;
   m_useFBO = false;
+  m_GLAC_VBO = false;
   m_useVBO = false;
   m_useGLSL = false;
   m_TextureFormat = -1;
@@ -598,7 +599,21 @@ bool s52plib::GetQualityOfData() {
   return (old_vis != 0);
 }
 
-void s52plib::SetGLRendererString(const wxString &renderer) {}
+void s52plib::SetGLRendererString(const wxString &renderer) {
+  m_renderer_string = renderer;
+
+  // No chart type in current use requires VBO for GLAC rendering
+  // Experimentation has shown that VBO is slower for GLAC rendering,
+  //  since the per-object state change of glBindBuffer() is slow
+  //  on most hardware, especially RPi.
+  // However, we have found that NVidea GPUs
+  //  perform much better with VBO on GLAC operations, so set that up.
+
+  if ((renderer.Upper().Contains("NVIDIA")) ||
+      (renderer.Upper().Contains("GeForce")))
+    m_GLAC_VBO = true;
+
+}
 
 /*
  Update the S52 Conditional Symbology Parameter Set to reflect the
@@ -8023,12 +8038,8 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   double margin = BBView.GetLonRange() * .05;
   BBView.EnLarge(margin);
 
-  // No chart type in current use requires VBO for GLAC rendering
-  // Experimentation has shown that VBO is slower for GLAC rendering,
-  //  since the per-object state change of glBindBuffer() is slow
-  //  on most hardware, especially RPi.
-
-  bool b_useVBO = false; //m_useVBO && !rzRules->obj->auxParm1;
+  //  Use VBO if instructed by hardware renderer specification
+  bool b_useVBO = m_GLAC_VBO && !rzRules->obj->auxParm1;
 
   if (rzRules->obj->pPolyTessGeo) {
     bool b_temp_vbo = false;

@@ -8517,11 +8517,20 @@ void LoadS57() {
     // Setup PLIB OpenGL options, if enabled
     extern bool g_b_EnableVBO;
     extern GLenum g_texture_rectangle_format;
-    if (g_bopengl)
+    extern OCPN_GLCaps *GL_Caps;
+
+    if (g_bopengl){
+      if(GL_Caps){
+        wxString renderer = wxString(GL_Caps->Renderer.c_str());
+        ps52plib->SetGLRendererString(renderer);
+      }
+
       ps52plib->SetGLOptions(
           glChartCanvas::s_b_useStencil, glChartCanvas::s_b_useStencilAP,
           glChartCanvas::s_b_useScissorTest, glChartCanvas::s_b_useFBO,
           g_b_EnableVBO, g_texture_rectangle_format, 1, 1);
+
+    }
 #endif
 
   } else {

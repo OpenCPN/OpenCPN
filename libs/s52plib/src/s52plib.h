@@ -210,6 +210,7 @@ public:
   wxString GetPLIBColorScheme(void) { return m_ColorScheme; }
 
   void SetGLRendererString(const wxString &renderer);
+  wxString GetGLRendererString() {return m_renderer_string;}
   void SetGLOptions(bool b_useStencil, bool b_useStencilAP, bool b_useScissors,
                     bool b_useFBO, bool b_useVBO, int nTextureFormat,
                     float MinCartographicLineWidth,
@@ -579,6 +580,7 @@ private:
   bool m_useScissors;
   bool m_useFBO;
   bool m_useVBO;
+  bool m_GLAC_VBO;
   int m_TextureFormat;
   bool m_GLLineSmoothing;
   bool m_GLPolygonSmoothing;
@@ -591,7 +593,7 @@ private:
   LLBBox BBox;
   #define TXF_CACHE 8
   TexFontCache s_txf[TXF_CACHE];
-
+  wxString m_renderer_string;
 
 
 };

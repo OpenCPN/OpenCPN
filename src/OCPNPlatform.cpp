@@ -784,19 +784,19 @@ bool OCPNPlatform::IsGLCapable() {
 #elif defined(CLI)
   return false;
 #else
-  OCPN_GLCaps *pcaps = new OCPN_GLCaps;
+  GL_Caps = new OCPN_GLCaps;
 
-  BuildGLCaps(pcaps);
+  BuildGLCaps(GL_Caps);
 
   // and so we decide....
 
   // Require a modern GLSL implementation
-  if (!pcaps->bCanDoGLSL) return false;
+  if (!GL_Caps->bCanDoGLSL) return false;
 
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!pcaps->bCanDoFBO) return false;
+  if (!GL_Caps->bCanDoFBO) return false;
 
   return true;
 #endif
