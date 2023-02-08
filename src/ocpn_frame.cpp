@@ -7357,7 +7357,7 @@ static const char *usercolors[] = {
     "UIBCK; 212; 234; 238;",
 
     "DASHB; 255;255;255;",  // Dashboard Instr background
-    "DASHL; 190;190;190;",  // Dashboard Instr Label
+    "DASHL; 175;175;175;",  // Dashboard Instr Label
     "DASHF;  50; 50; 50;",  // Dashboard Foreground
     "DASHR; 200;  0;  0;",  // Dashboard Red
     "DASHG;   0;200;  0;",  // Dashboard Green
