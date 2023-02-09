@@ -61,8 +61,9 @@
 #include "TexFont.h"
 #include "linmath.h"
 #include "ocpn_plugin.h"
+#include "Cs52_shaders.h"
 
-GLint m_TexFontShader;
+CGLShaderProgram *m_TexFontShader;
 
 TexFont::TexFont() {
   texobj = 0;
@@ -292,12 +293,10 @@ void TexFont::RenderGlyph(int c) {
   coords[6] = 0;
   coords[7] = h;
 
-  glUseProgram(m_TexFontShader);
+  m_TexFontShader->Bind();
 
    // Set up the texture sampler to texture unit 0
-  GLint texUni =
-          glGetUniformLocation(m_TexFontShader, "uTex");
-  glUniform1i(texUni, 0);
+  m_TexFontShader->SetUniform1i( "uTex", 0);
 
   float colorv[4];
   colorv[0] = m_color.Red() / float(256);
@@ -305,9 +304,7 @@ void TexFont::RenderGlyph(int c) {
   colorv[2] = m_color.Blue() / float(256);
   colorv[3] = 0;
 
-  GLint colloc =
-          glGetUniformLocation(m_TexFontShader, "color");
-  glUniform4fv(colloc, 1, colorv);
+  m_TexFontShader->SetUniformMatrix4fv( "color", colorv);
 
   // Rotate
   //float angle = 0;
@@ -324,9 +321,7 @@ void TexFont::RenderGlyph(int c) {
  // mat4x4_rotate_Z(Q, I, m_angle);
   //mat4x4_translate_in_place(Q, -m_dx, -m_dy, 0);
 
-  GLint matloc = glGetUniformLocation(m_TexFontShader,
-                                          "TransformMatrix");
-  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+  m_TexFontShader->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)Q);
 
 // For some reason, glDrawElements is busted on Android
 // So we do this a hard ugly way, drawing two triangles...
@@ -355,26 +350,12 @@ void TexFont::RenderGlyph(int c) {
   tco1[6] = uv[4];
   tco1[7] = uv[5];
 
-  //shader->SetAttributePointerf("aPos", co1);
-  //shader->SetAttributePointerf("aUV", tco1);
-
-  GLint mPosAttrib = glGetAttribLocation(
-          m_TexFontShader, "position");
-  GLint mUvAttrib =
-          glGetAttribLocation(m_TexFontShader, "aUV");
-
-  glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1);
-      // ... and enable it.
-  glEnableVertexAttribArray(mPosAttrib);
-
-  glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
-      // ... and enable it.
-  glEnableVertexAttribArray(mUvAttrib);
+  m_TexFontShader->SetAttributePointerf( "position", co1);
+  m_TexFontShader->SetAttributePointerf( "aUV", tco1);
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  glDisableVertexAttribArray(0);
-  glUseProgram(0);
+  m_TexFontShader->UnBind();
 
 #endif
 
@@ -467,12 +448,10 @@ void TexFont::PrepareShader(int width, int height, double rotation){
   mat4x4 I;
   mat4x4_identity(I);
 
-  glUseProgram(m_TexFontShader);
-  GLint matloc = glGetUniformLocation(m_TexFontShader, "MVMatrix");
-  glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
-  GLint transloc =
-      glGetUniformLocation(m_TexFontShader, "TransformMatrix");
-  glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+  m_TexFontShader->Bind();
+  m_TexFontShader->SetUniformMatrix4fv( "MVMatrix", (GLfloat *)Q);
+  m_TexFontShader->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)I);
+
 }
 
 
@@ -518,14 +497,10 @@ static const GLchar *TexFont_fragment_shader_source =
 
 
 
-
-#include "s52shaders.h"
+#if 1
 
 bool TexFont::LoadTexFontShaders() {
   bool ret_val = true;
-
-  enum Consts { INFOLOG_LEN = 512 };
-  GLchar infoLog[INFOLOG_LEN];
 
   int success;
 
@@ -533,72 +508,16 @@ bool TexFont::LoadTexFontShaders() {
   if(m_TexFontShader)
     return true;
 
-
+ // Simple colored triangle shader
   if (!m_TexFontShader) {
+    CGLShaderProgram *shaderProgram = new CGLShaderProgram;
+    shaderProgram->addShaderFromSource(TexFont_vertex_shader_source, GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(TexFont_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->linkProgram();
 
-    auto shaderProgram = S52_GLShaderProgram::Builder()
-     .addShaderFromSource(TexFont_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(TexFont_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
-
-    m_TexFontShader = shaderProgram.programId();
-
+    if (shaderProgram->isOK())
+      m_TexFontShader = shaderProgram;
   }
-
-#if 0
-  if (!m_TexFontVertexShader) {
-    /* Vertex shader */
-    m_TexFontVertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(m_TexFontVertexShader, 1,
-                   &TexFont_vertex_shader_source, NULL);
-    glCompileShader(m_TexFontVertexShader);
-    glGetShaderiv(m_TexFontVertexShader, GL_COMPILE_STATUS,
-                  &success);
-    if (!success) {
-      glGetShaderInfoLog(m_TexFontVertexShader, INFOLOG_LEN,
-                         NULL, infoLog);
-      //        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n",
-      //        infoLog);
-      ret_val = false;
-    }
-  }
-
-
-  if (!m_TexFontFragmentShader) {
-    /* Fragment shader */
-    m_TexFontFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(m_TexFontFragmentShader, 1,
-                   &TexFont_fragment_shader_source, NULL);
-    glCompileShader(m_TexFontFragmentShader);
-    glGetShaderiv(m_TexFontFragmentShader, GL_COMPILE_STATUS,
-                  &success);
-    if (!success) {
-      glGetShaderInfoLog(m_TexFontFragmentShader, INFOLOG_LEN,
-                         NULL, infoLog);
-      //        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n",
-      //        infoLog);
-      ret_val = false;
-    }
-  }
-
-  if (!m_TexFontShader) {
-    /* Link shaders */
-    m_TexFontShader = glCreateProgram();
-    glAttachShader(m_TexFontShader,
-                   m_TexFontVertexShader);
-    glAttachShader(m_TexFontShader,
-                   m_TexFontFragmentShader);
-    glLinkProgram(m_TexFontShader);
-    glGetProgramiv(m_TexFontShader, GL_LINK_STATUS,
-                   &success);
-    if (!success) {
-      glGetProgramInfoLog(m_TexFontShader, INFOLOG_LEN,
-                          NULL, infoLog);
-      //        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-      ret_val = false;
-    }
-  }
-#endif
 
   m_shadersLoaded = true;
 
@@ -607,8 +526,4 @@ bool TexFont::LoadTexFontShaders() {
 
 
 #endif
-
-
-
-
-//#endif     //#ifdef ocpnUSE_GL
+#endif
