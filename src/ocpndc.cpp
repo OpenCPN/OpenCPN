@@ -1779,159 +1779,158 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
+      if(w && h){
+        /* create bitmap of appropriate size and select it */
+        wxBitmap bmp(w, h);
+        wxMemoryDC temp_dc;
+        temp_dc.SelectObject(bmp);
 
-      /* create bitmap of appropriate size and select it */
-      wxBitmap bmp(w, h);
-      wxMemoryDC temp_dc;
-      temp_dc.SelectObject(bmp);
+        /* fill bitmap with black */
+        temp_dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
+        temp_dc.Clear();
 
-      /* fill bitmap with black */
-      temp_dc.SetBackground(wxBrush(wxColour(0, 0, 0)));
-      temp_dc.Clear();
+        /* draw the text white */
+        temp_dc.SetFont(m_font);
+        temp_dc.SetTextForeground(wxColour(255, 255, 255));
+        temp_dc.DrawText(text, 0, 0);
+        temp_dc.SelectObject(wxNullBitmap);
 
-      /* draw the text white */
-      temp_dc.SetFont(m_font);
-      temp_dc.SetTextForeground(wxColour(255, 255, 255));
-      temp_dc.DrawText(text, 0, 0);
-      temp_dc.SelectObject(wxNullBitmap);
+        /* use the data in the bitmap for alpha channel,
+        and set the color to text foreground */
+        wxImage image = bmp.ConvertToImage();
+        if (x < 0 ||
+            y < 0) {  // Allow Drawing text which is offset to start off screen
+          int dx = (x < 0 ? -x : 0);
+          int dy = (y < 0 ? -y : 0);
+          w = bmp.GetWidth() - dx;
+          h = bmp.GetHeight() - dy;
+          /* picture is out of viewport */
+          if (w <= 0 || h <= 0) return;
+          image = image.GetSubImage(wxRect(dx, dy, w, h));
+          x += dx;
+          y += dy;
+        }
 
-      /* use the data in the bitmap for alpha channel,
-       and set the color to text foreground */
-      wxImage image = bmp.ConvertToImage();
-      if (x < 0 ||
-          y < 0) {  // Allow Drawing text which is offset to start off screen
-        int dx = (x < 0 ? -x : 0);
-        int dy = (y < 0 ? -y : 0);
-        w = bmp.GetWidth() - dx;
-        h = bmp.GetHeight() - dy;
-        /* picture is out of viewport */
-        if (w <= 0 || h <= 0) return;
-        image = image.GetSubImage(wxRect(dx, dy, w, h));
-        x += dx;
-        y += dy;
-      }
+        unsigned char *data = new unsigned char[w * h * 4];
+        unsigned char *im = image.GetData();
 
-      unsigned char *data = new unsigned char[w * h * 4];
-      unsigned char *im = image.GetData();
-
-      if (im) {
-        unsigned int r = m_textforegroundcolour.Red();
-        unsigned int g = m_textforegroundcolour.Green();
-        unsigned int b = m_textforegroundcolour.Blue();
-        for (int i = 0; i < h; i++) {
-          for (int j = 0; j < w; j++) {
-            unsigned int index = ((i * w) + j) * 4;
-            data[index] = r;
-            data[index + 1] = g;
-            data[index + 2] = b;
-            data[index + 3] = im[((i * w) + j) * 3];
+        if (im) {
+          unsigned int r = m_textforegroundcolour.Red();
+          unsigned int g = m_textforegroundcolour.Green();
+          unsigned int b = m_textforegroundcolour.Blue();
+          for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+              unsigned int index = ((i * w) + j) * 4;
+              data[index] = r;
+              data[index + 1] = g;
+              data[index + 2] = b;
+              data[index + 3] = im[((i * w) + j) * 3];
+            }
           }
         }
+
+        unsigned int texobj;
+
+        glGenTextures(1, &texobj);
+        glBindTexture(GL_TEXTURE_2D, texobj);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        int TextureWidth = NextPow2(w);
+        int TextureHeight = NextPow2(h);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureWidth, TextureHeight, 0,
+                    GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
+                        data);
+
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
+
+        float uv[8];
+        float coords[8];
+
+        // normal uv
+        uv[0] = 0;
+        uv[1] = 0;
+        uv[2] = u;
+        uv[3] = 0;
+        uv[4] = u;
+        uv[5] = v;
+        uv[6] = 0;
+        uv[7] = v;
+
+        // pixels
+        coords[0] = 0;
+        coords[1] = 0;
+        coords[2] = w;
+        coords[3] = 0;
+        coords[4] = w;
+        coords[5] = h;
+        coords[6] = 0;
+        coords[7] = h;
+
+        GLShaderProgram *shader = ptexture_2D_shader_program[m_canvasIndex];
+        shader->Bind();
+
+      // Set up the texture sampler to texture unit 0
+        shader->SetUniform1i("uTex", 0);
+
+        // Rotate
+        mat4x4 I, Q;
+        mat4x4_identity(I);
+        mat4x4_rotate_Z(Q, I, 0);
+
+        // Translate
+        Q[3][0] = x;
+        Q[3][1] = y;
+
+        shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
+
+        float co1[8];
+        float tco1[8];
+
+
+
+    // Perform the actual drawing.
+
+    // For some reason, glDrawElements is busted on Android
+    // So we do this a hard ugly way, drawing two triangles...
+        co1[0] = coords[0];
+        co1[1] = coords[1];
+        co1[2] = coords[2];
+        co1[3] = coords[3];
+        co1[4] = coords[6];
+        co1[5] = coords[7];
+        co1[6] = coords[4];
+        co1[7] = coords[5];
+
+        tco1[0] = uv[0];
+        tco1[1] = uv[1];
+        tco1[2] = uv[2];
+        tco1[3] = uv[3];
+        tco1[4] = uv[6];
+        tco1[5] = uv[7];
+        tco1[6] = uv[4];
+        tco1[7] = uv[5];
+
+        shader->SetAttributePointerf("aPos", co1);
+        shader->SetAttributePointerf("aUV", tco1);
+
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        shader->UnBind();
+
+
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+
+        glDeleteTextures(1, &texobj);
+        delete[] data;
       }
-#if 0
-#else
-      unsigned int texobj;
-
-      glGenTextures(1, &texobj);
-      glBindTexture(GL_TEXTURE_2D, texobj);
-
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-      int TextureWidth = NextPow2(w);
-      int TextureHeight = NextPow2(h);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureWidth, TextureHeight, 0,
-                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
-                      data);
-
-      glEnable(GL_TEXTURE_2D);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-      float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
-
-      float uv[8];
-      float coords[8];
-
-      // normal uv
-      uv[0] = 0;
-      uv[1] = 0;
-      uv[2] = u;
-      uv[3] = 0;
-      uv[4] = u;
-      uv[5] = v;
-      uv[6] = 0;
-      uv[7] = v;
-
-      // pixels
-      coords[0] = 0;
-      coords[1] = 0;
-      coords[2] = w;
-      coords[3] = 0;
-      coords[4] = w;
-      coords[5] = h;
-      coords[6] = 0;
-      coords[7] = h;
-
-    GLShaderProgram *shader = ptexture_2D_shader_program[m_canvasIndex];
-    shader->Bind();
-
-   // Set up the texture sampler to texture unit 0
-    shader->SetUniform1i("uTex", 0);
-
-    // Rotate
-    mat4x4 I, Q;
-    mat4x4_identity(I);
-    mat4x4_rotate_Z(Q, I, 0);
-
-    // Translate
-    Q[3][0] = x;
-    Q[3][1] = y;
-
-    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)Q);
-
-    float co1[8];
-    float tco1[8];
-
-
-
-// Perform the actual drawing.
-
-// For some reason, glDrawElements is busted on Android
-// So we do this a hard ugly way, drawing two triangles...
-    co1[0] = coords[0];
-    co1[1] = coords[1];
-    co1[2] = coords[2];
-    co1[3] = coords[3];
-    co1[4] = coords[6];
-    co1[5] = coords[7];
-    co1[6] = coords[4];
-    co1[7] = coords[5];
-
-    tco1[0] = uv[0];
-    tco1[1] = uv[1];
-    tco1[2] = uv[2];
-    tco1[3] = uv[3];
-    tco1[4] = uv[6];
-    tco1[5] = uv[7];
-    tco1[6] = uv[4];
-    tco1[7] = uv[5];
-
-    shader->SetAttributePointerf("aPos", co1);
-    shader->SetAttributePointerf("aUV", tco1);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    shader->UnBind();
-
-
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
-
-    glDeleteTextures(1, &texobj);
-#endif
-      delete[] data;
     }
   }
 #endif

@@ -155,7 +155,7 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
     dc.CalcBoundingBox(r.x + sx2, r.y + sy2);
   }
 
-  if (m_point.m_bShowName) {
+  if (m_point.m_bShowName && m_point.m_MarkName.Length()) {
     if (m_point.m_pMarkFont) {
       dc.SetFont(*m_point.m_pMarkFont);
       dc.SetTextForeground(m_point.m_FontColor);
