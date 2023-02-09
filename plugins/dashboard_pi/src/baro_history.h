@@ -42,7 +42,7 @@
 #endif
 
 // Warn: div by 0 if count == 1
-#define BARO_RECORD_COUNT 3000
+#define BARO_RECORD_COUNT 2000
 
 #include "instrument.h"
 #include "dial.h"
@@ -81,7 +81,7 @@ protected:
 
   bool m_IsRunning;
   int m_SampleCount;
-
+  int m_SetNewData;
   wxRect m_WindowRect;
   wxRect m_DrawAreaRect;  // the coordinates of the real darwing area
   int m_DrawingWidth, m_TopLineHeight, m_DrawingHeight;
