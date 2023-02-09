@@ -3106,65 +3106,45 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
       coords[4] = 0;
       coords[5] = h;
 
-      glUseProgram(S52texture_2D_shader_program);
+      if (pCtexture_2D_shader_program[0]){
+        pCtexture_2D_shader_program[0]->Bind();
 
-      // Get pointers to the attributes in the program.
-      GLint mPosAttrib =
-          glGetAttribLocation(S52texture_2D_shader_program, "position");
-      GLint mUvAttrib =
-          glGetAttribLocation(S52texture_2D_shader_program, "aUV");
+        // Select the active texture unit.
+        glActiveTexture(GL_TEXTURE0);
 
-      // Select the active texture unit.
-      glActiveTexture(GL_TEXTURE0);
+        pCtexture_2D_shader_program[0]->SetUniform1i( "uTex", 0);
 
-      // Bind our texture to the texturing target.
-      glBindTexture(GL_TEXTURE_2D, texture);
+        // Disable VBO's (vertex buffer objects) for attributes.
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-      // Set up the texture sampler to texture unit 0
-      GLint texUni = glGetUniformLocation(S52texture_2D_shader_program, "uTex");
-      glUniform1i(texUni, 0);
+        pCtexture_2D_shader_program[0]->SetAttributePointerf( "position", coords);
+        pCtexture_2D_shader_program[0]->SetAttributePointerf( "aUV", uv);
 
-      // Disable VBO's (vertex buffer objects) for attributes.
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        // Rotate
+        mat4x4 I, Q;
+        mat4x4_identity(I);
 
-      // Set the attribute mPosAttrib with the vertices in the screen
-      // coordinates...
-      glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-      // ... and enable it.
-      glEnableVertexAttribArray(mPosAttrib);
+        mat4x4_translate_in_place(I, r.x, r.y, 0);
+        if (abs(vp_plib.rotation) > 0)
+          mat4x4_rotate_Z(Q, I, -vp_plib.rotation);
+        else
+          mat4x4_dup(Q, I);
+        mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
 
-      // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-      glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv);
-      // ... and enable it.
-      glEnableVertexAttribArray(mUvAttrib);
+        pCtexture_2D_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)Q);
 
-      // Rotate
-      mat4x4 I, Q;
-      mat4x4_identity(I);
+        // Perform the actual drawing.
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-      mat4x4_translate_in_place(I, r.x, r.y, 0);
-      mat4x4_rotate_Z(Q, I, -vp_plib.rotation);
-      mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
+        // Restore the per-object transform to Identity Matrix
+        mat4x4 IM;
+        mat4x4_identity(IM);
+        pCtexture_2D_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)IM);
 
-      GLint matloc =
-          glGetUniformLocation(S52texture_2D_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
-
-      // Perform the actual drawing.
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-      // Restore the per-object transform to Identity Matrix
-      mat4x4 IM;
-      mat4x4_identity(IM);
-      GLint matlocf =
-          glGetUniformLocation(S52texture_2D_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
-
-      // Clean up the GL state
-      glDisableVertexAttribArray(mPosAttrib);
-      glDisableVertexAttribArray(mUvAttrib);
-      glUseProgram(0);
+        // Clean up the GL state
+        pCtexture_2D_shader_program[0]->UnBind();
+      }
 
 #endif  // GLES2
       glDisable(m_TextureFormat);
@@ -11181,6 +11161,12 @@ void PrepareS52ShaderUniforms(VPointCompat *vp) {
   loadCShaders(0);
 
   CGLShaderProgram *shader = pCcolor_tri_shader_program[0];
+  shader->Bind();
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)Q);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+  shader->UnBind();
+
+  shader = pCtexture_2D_shader_program[0];
   shader->Bind();
   shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)Q);
   shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);

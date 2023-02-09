@@ -31,10 +31,10 @@
 #endif
 
 #ifdef USE_ANDROID_GLES2
-const GLchar* Xpreamble =
+const GLchar* Cpreamble =
 "\n";
 #else
-const GLchar* Xpreamble =
+const GLchar* Cpreamble =
 "#version 120\n"
 "#define precision\n"
 "#define lowp\n"
@@ -65,13 +65,13 @@ static const GLchar* xcolor_tri_fragment_shader_source =
 
 // Simple 2D texture shader
 static const GLchar* xtexture_2D_vertex_shader_source =
-    "attribute vec2 aPos;\n"
+    "attribute vec2 position;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
     "varying vec2 varCoord;\n"
     "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
     "   varCoord = aUV;\n"
     "}\n";
 
@@ -110,13 +110,13 @@ static const GLchar* xcircle_filled_fragment_shader_source =
 
 // Alpha 2D texture shader
 static const GLchar* xtexture_2DA_vertex_shader_source =
-    "attribute vec2 aPos;\n"
+    "attribute vec2 position;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
     "varying vec2 varCoord;\n"
     "void main() {\n"
-    "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
     "   varCoord = aUV;\n"
     "}\n";
 
@@ -200,16 +200,17 @@ bool loadCShaders(int index) {
       pCcolor_tri_shader_program[index] = shaderProgram;
   }
 
-#if 0
-  if (!ptexture_2D_shader_program[index]) {
-    GLShaderProgram *shaderProgram = new GLShaderProgram;
-    shaderProgram->addShaderFromSource(texture_2D_vertex_shader_source, GL_VERTEX_SHADER);
-    shaderProgram->addShaderFromSource(texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER);
+  if (!pCtexture_2D_shader_program[index]) {
+    CGLShaderProgram *shaderProgram = new CGLShaderProgram;
+    shaderProgram->addShaderFromSource(xtexture_2D_vertex_shader_source, GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(xtexture_2D_fragment_shader_source, GL_FRAGMENT_SHADER);
     shaderProgram->linkProgram();
 
     if (shaderProgram->isOK())
-      ptexture_2D_shader_program[index] = shaderProgram;
+      pCtexture_2D_shader_program[index] = shaderProgram;
   }
+
+#if 0
 
   if (!pcircle_filled_shader_program[index]) {
     GLShaderProgram *shaderProgram = new GLShaderProgram;
