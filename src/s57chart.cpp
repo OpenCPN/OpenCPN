@@ -4319,6 +4319,9 @@ void s57chart::ResetPointBBoxes(const ViewPort &vp_last,
   ObjRazRules *top;
   ObjRazRules *nxx;
 
+  if (vp_last.view_scale_ppm == 1.0)    // Skip the startup case
+    return;
+
   double d = vp_last.view_scale_ppm / vp_this.view_scale_ppm;
 
   for (int i = 0; i < PRIO_NUM; ++i) {
@@ -4635,7 +4638,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
           }
         }
 
-        
+
 
         //    Check the child branch, if any.
         //    This is where Multipoint soundings are captured individually
@@ -4693,7 +4696,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
   auto sortObjs = [lat, lon, this] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
   {
     double br1, dd1, br2, dd2;
-    
+
     if(obj1->obj->Primitive_type == GEO_POINT && obj2->obj->Primitive_type == GEO_POINT){
       double lat1, lat2, lon1, lon2;
       fromSM((obj1->obj->x * obj1->obj->x_rate) + obj1->obj->x_origin,
@@ -4713,9 +4716,9 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       return dd1>dd2;
     }
     return false;
-    
+
   };
-  
+
   // Sort the selected rules by using the lambda sort function defined above
   std::sort(selected_rules.begin(), selected_rules.end(), sortObjs);
 

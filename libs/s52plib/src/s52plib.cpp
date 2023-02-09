@@ -355,6 +355,8 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_dipfactor = 1.0;
   m_ContentScaleFactor = 1.0;
   m_FinalTextScaleFactor = 0;
+  m_TextScaleFactor = 1;
+  m_nTextFactor = 0;
 }
 
 s52plib::~s52plib() {
@@ -638,8 +640,8 @@ void s52plib::GenerateStateHash() {
   unsigned char state_buffer[512];  // Needs to be at least this big...
   memset(state_buffer, 0, sizeof(state_buffer));
 
-  int time = ::wxGetUTCTime();
-  memcpy(state_buffer, &time, sizeof(int));
+//  int time = ::wxGetUTCTime();
+//  memcpy(state_buffer, &time, sizeof(int));
 
   size_t offset = sizeof(int);  // skipping the time int, first element
 
@@ -2801,6 +2803,7 @@ wxImage s52plib::RuleXBMToImage(Rule *prule) {
 //
 bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                                  float rot_angle) {
+
   double scale_factor = 1.0;
 
   scale_factor *= m_ChartScaleFactorExp;
