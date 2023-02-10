@@ -1033,7 +1033,7 @@ END_EVENT_TABLE()
 
 static void event_message_box(const wxString& msg) {
   OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
-                 wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
+                 wxICON_INFORMATION | wxOK, 0);  // no timeout
 }
 
 static void event_message_box(const wxString& msg, wxCommandEvent ev) {
