@@ -91,7 +91,7 @@ wxSize DashboardInstrument_BaroHistory::GetSize(int orient, wxSize hint) {
 }
 void DashboardInstrument_BaroHistory::SetData(DASH_CAP st, double data,
                                               wxString unit) {
-  if (st == OCPN_DBP_STC_MDA && (700.0 > data < 2000.0)) {
+  if (st == OCPN_DBP_STC_MDA && data > 700.0 && data < 2000.0 ) {
     if (m_SetNewData < 1) {
       m_Press = data;
       if (m_SpdRecCnt++ <= 5) m_SpdStartVal += data;
