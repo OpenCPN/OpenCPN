@@ -800,12 +800,13 @@ void PluginLoader::UpdateManagedPlugins() {
 }
 
 bool PluginLoader::UnLoadAllPlugIns() {
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    if (!UnLoadPlugIn(i)) {
-      return false;
+  bool rv = true;
+  while (plugin_array.GetCount()) {
+    if (!UnLoadPlugIn(0)) {
+      rv = false;;
     }
   }
-  return true;
+  return rv;
 }
 
 bool PluginLoader::DeactivateAllPlugIns() {
