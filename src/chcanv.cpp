@@ -583,7 +583,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   SetCursor(*pCursorArrow);
 
-  pPanTimer = new wxTimer(this, PAN_TIMER);
+  pPanTimer = new wxTimer(this, m_MouseDragging);
   pPanTimer->Stop();
 
   pMovementTimer = new wxTimer(this, MOVEMENT_TIMER);
@@ -9327,12 +9327,15 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     }
 
     if ((last_drag.x != x) || (last_drag.y != y)) {
-      m_bChartDragging = true;
-      StartTimedMovement();
-      m_pan_drag.x += last_drag.x - x;
-      m_pan_drag.y += last_drag.y - y;
+      if(!m_routeState){        // Correct fault on wx32/gtk3, uncommanded dragging on route create.
+                                //   github #2994
+        m_bChartDragging = true;
+        StartTimedMovement();
+        m_pan_drag.x += last_drag.x - x;
+        m_pan_drag.y += last_drag.y - y;
 
-      last_drag.x = x, last_drag.y = y;
+        last_drag.x = x, last_drag.y = y;
+      }
 
       if (g_btouch) {
         if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
