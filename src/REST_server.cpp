@@ -77,7 +77,6 @@ std::condition_variable return_status_condition;
 std::mutex mx;
 
 
-
 class RESTServerThread : public wxThread {
 public:
   RESTServerThread(RESTServer* Launcher);
@@ -261,20 +260,49 @@ std::string PINtoRandomKeyString( int dpin) {
 
 void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
-  // Cancel existing dialog
-  if(m_PINCreateDialog){
-    m_PINCreateDialog->Close();
-    m_PINCreateDialog->Destroy();
-    m_PINCreateDialog = NULL;
+  int return_stat = RESTServerResult::RESULT_GENERIC_ERROR;
+
+  if (event.GetId() == ORS_START_OF_SESSION){
+    // Prepare a temp file to catch chuncks that might follow
+    m_tempUploadFilePath = wxFileName::CreateTempFileName("ocpn_tul").ToStdString();
+
+    m_ul_stream.open(m_tempUploadFilePath.c_str(), std::ios::out | std::ios::trunc);
+    if (!m_ul_stream.is_open()) {
+      wxLogMessage("REST_server: Cannot open %s for write", m_tempUploadFilePath);
+      m_tempUploadFilePath.clear();   // reset for next time.
+      return;
+    }
+    return;
   }
 
-  auto p = event.GetPayload();
-  std::string *payload = p.get();
+  if (event.GetId() == ORS_CHUNK_N){
+    auto p = event.GetPayload();
+    std::string *payload = p.get();
 
-  //printf("%s\n", payload->c_str());
+    printf("%s\n", payload->c_str());
+    // Stream out to temp file
+    if (m_tempUploadFilePath.size() && m_ul_stream.is_open()) {
+      m_ul_stream.write( payload->c_str(), payload->size());
+    }
+    return;
+  }
 
-  // Server thread is waiting for (return_status >= 0) on notify_one()
-  int return_stat = RESTServerResult::RESULT_GENERIC_ERROR;      // generic error
+  if (event.GetId() == ORS_CHUNK_LAST){
+    // Cancel existing dialog
+    if(m_PINCreateDialog){
+      m_PINCreateDialog->Close();
+      m_PINCreateDialog->Destroy();
+      m_PINCreateDialog = NULL;
+    }
+
+    // Close the temp file.
+    if (m_tempUploadFilePath.size() && m_ul_stream.is_open())
+      m_ul_stream.close();
+
+    // Server thread might be waiting for (return_status >= 0) on notify_one()
+    return_stat = RESTServerResult::RESULT_GENERIC_ERROR;      // generic error
+
+  }
 
 #ifndef CLIAPP
 
@@ -328,25 +356,16 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
   // GUI dialogs can go here....
   bool b_cont;
-#if 0
-  AcceptObjectDialog dialog1(NULL, wxID_ANY, _("OpenCPN Server Message"),
-    "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
-
-  wxString hmsg(event.m_source_peer.c_str());
-  hmsg += " has sent you a new route.\nAccept?";
-
-  dialog1.SetMessage(hmsg);
-  dialog1.SetCheck1Message(_("Always accept objects from this source?"));
-  b_cont = dialog1.ShowModal() == ID_STG_OK;
-#else
   b_cont = true;
-#endif
 
+#if 1
   if (b_cont) {\
       // Load the GPX file
     pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_buffer(payload->c_str(), payload->size());
+    pugi::xml_parse_result result = doc.load_file(m_tempUploadFilePath.c_str());
     if (result.status == pugi::status_ok){
+      m_tempUploadFilePath.clear();             // empty for next time
+
       pugi::xml_node objects = doc.child("gpx");
       for (pugi::xml_node object = objects.first_child(); object;
         object = object.next_sibling()) {
@@ -407,7 +426,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
           if (g_pRouteMan){
             bool b_add = true;
             bool b_overwrite_one = false;
-            
+
             Track *duplicate = g_pRouteMan->FindTrackByGUID(pRoute->m_GUID);
             if (duplicate){
               if (!m_b_overwrite){
@@ -460,7 +479,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
           if (g_pRouteMan){
             bool b_add = true;
             bool b_overwrite_one = false;
-            
+
             RoutePoint *duplicate = WaypointExists(pWp->GetName(), pWp->m_lat, pWp->m_lon);
             if (duplicate){
               if (!m_b_overwrite){
@@ -508,6 +527,8 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
     return_stat = RESTServerResult::RESULT_GENERIC_ERROR;
 #endif
 
+#endif    //0
+
   return_status = return_stat;
 
   std::lock_guard<std::mutex> lock{mx};
@@ -520,7 +541,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   // Is this host a portable?  Must use another port to avoid equal IP addres conflicts.
   static const char* s_http_addr_portable = "http://0.0.0.0:8001";    // HTTP port
   static const char* s_https_addr_portable = "https://0.0.0.0:8444";  // HTTPS port
-  
+
 
 
 // We use the same event handler function for HTTP and HTTPS connections
@@ -537,6 +558,69 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
      opts.certkey = parent->m_key_file.c_str();     // The key PEM file
      opts.ciphers = NULL;
      mg_tls_init(c, &opts);
+  } else if(ev == MG_EV_TLS_HS){          // Think of this as "start of session"
+     if (parent){
+       RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, ORS_START_OF_SESSION);
+       parent->AddPendingEvent(Nevent);
+     }
+  } else if (ev == MG_EV_HTTP_CHUNK){
+    struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+    if (mg_http_match_uri(hm, "/api/rx_object")) {
+      int MID = ORS_CHUNK_N;
+
+      std::string api_key;
+      struct mg_str api_key_parm = mg_http_var(hm->query, mg_str("apikey"));
+      if(api_key_parm.len && api_key_parm.ptr){
+        api_key = std::string(api_key_parm.ptr, api_key_parm.len);
+      }
+
+      struct mg_str source = mg_http_var(hm->query, mg_str("source"));
+
+      std::string xml_content;
+      if (hm->chunk.len)
+        xml_content = std::string(hm->chunk.ptr, hm->chunk.len);
+      else {
+        MID = ORS_CHUNK_LAST;
+      }
+
+      mg_http_delete_chunk(c, hm);
+
+      return_status = -1;
+
+      if(source.len)
+      {
+        std::string source_peer(source.ptr, source.len);
+        //printf("%s\n", xml_content.c_str());
+
+       //std::ofstream b_stream("bodyfile",  std::fstream::out | std::fstream::binary);
+       //b_stream.write(hm->body.ptr, hm->body.len);
+
+
+        if (parent){
+          RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, MID);
+          if (xml_content.size()) {
+            auto buffer = std::make_shared<std::string>(xml_content);
+            Nevent.SetPayload(buffer);
+          }
+          Nevent.SetSource(source_peer);
+          Nevent.SetAPIKey(api_key);
+          parent->AddPendingEvent(Nevent);
+        }
+
+        if (MID == ORS_CHUNK_LAST) {
+          std::unique_lock<std::mutex> lock{mx};
+          while (return_status < 0) { // !predicate
+            std::this_thread::sleep_for (std::chrono::milliseconds(100));
+            return_status_condition.wait(lock);
+          }
+          lock.unlock();
+
+          printf("Reply: %d\n", return_status);
+          mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
+        }
+      }
+    }
+
   } else if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
     if (mg_http_match_uri(hm, "/api/rx_object")) {
