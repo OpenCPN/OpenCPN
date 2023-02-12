@@ -612,7 +612,7 @@ void s52plib::SetGLRendererString(const wxString &renderer) {
   //  perform much better with VBO on GLAC operations, so set that up.
 
   if ((renderer.Upper().Contains("NVIDIA")) ||
-      (renderer.Upper().Contains("GeForce")))
+      (renderer.Upper().Contains("GEFORCE")))
     m_GLAC_VBO = true;
 
 }
