@@ -66,6 +66,8 @@ public:
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                     std::shared_ptr<const NavAddr> addr) override;
 
+  int SetTXPGN(int pgn) override;
+
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
@@ -86,6 +88,11 @@ public:
   int m_Thread_run_flag;
 
 private:
+  void ProcessManagementPacket(std::vector<unsigned char> *payload);
+  int SendMgmtMsg( unsigned char *string, size_t string_size,
+                   unsigned char cmd_code,
+                   int timeout_msec, bool *response_flag);
+
   bool m_bok;
   std::string m_portstring;
   std::string m_BaudRate;
@@ -96,6 +103,18 @@ private:
 
   ConnectionParams m_params;
   DriverListener& m_listener;
+
+  bool m_bmg47_resp;
+  bool m_bmg01_resp;
+  bool m_bmg4B_resp;
+  bool m_bmg41_resp;
+  bool m_bmg42_resp;
+
+  std::string m_device_common_name;
+  uint64_t NAME;
+  int m_manufacturers_code;
+  bool m_got_mfg_code;
+
 };
 
 #endif  // guard
