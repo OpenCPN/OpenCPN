@@ -134,7 +134,8 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
                                 wxDefaultPosition, wxDefaultSize, 0);
   itemBoxSizer2->Add(m_RescanButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_pgauge = new wxGauge(this, -1, m_scanTime);
+  m_pgauge = new wxGauge(this, -1, m_scanTime * 2,
+                          wxDefaultPosition, wxSize(-1, GetCharHeight()));
   itemBoxSizer2->Add(m_pgauge, 0, wxEXPAND | wxALL, 5);
 
   //    Add a reminder text box
@@ -234,6 +235,8 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent &event) {
    m_ScanTickTimer.Stop();
    g_Platform->HideBusySpinner();
    m_RescanButton->Enable();
+   m_SendButton->Enable();
+   m_SendButton->SetDefault();
    m_pgauge->Hide();
    m_bScanOnCreate = false;
 
@@ -261,6 +264,7 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent &event) {
 
 void SendToPeerDlg::DoScan() {
   m_RescanButton->Disable();
+  m_SendButton->Disable();
   g_Platform->ShowBusySpinner();
   m_pgauge->SetRange(m_scanTime);
   m_pgauge->SetValue(0);
@@ -268,8 +272,8 @@ void SendToPeerDlg::DoScan() {
 
   FindAllOCPNServers(m_scanTime);
 
-  m_tick = m_scanTime;
-  m_ScanTickTimer.Start(1000, wxTIMER_CONTINUOUS);
+  m_tick = m_scanTime * 2;
+  m_ScanTickTimer.Start(500, wxTIMER_CONTINUOUS);
 }
 
 void SendToPeerDlg::OnCancelClick(wxCommandEvent& event) {
