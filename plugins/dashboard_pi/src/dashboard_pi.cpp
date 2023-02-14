@@ -4324,7 +4324,8 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
   imglist->Add(wxBitmap(dial1s));
 
-  int vsize = 180;
+  wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
+  int vsize = dsize.y * 50 / 100;
 
 #ifdef __OCPN__ANDROID__
   int dw, dh;
