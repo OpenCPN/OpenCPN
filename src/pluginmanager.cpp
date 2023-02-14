@@ -1220,11 +1220,6 @@ void PlugInManager::HandlePluginLoaderEvents() {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnPluginDeactivate(pic); });
 
-  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin,
-                                          this, EVT_INCOMPATIBLE_PLUGIN);
-  Bind(EVT_INCOMPATIBLE_PLUGIN,
-       [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
-
   evt_pluglist_change_listener.Listen(loader->evt_pluglist_change,
                                       this, EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
@@ -1261,8 +1256,12 @@ void PlugInManager::HandlePluginLoaderEvents() {
 
   evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin,
                                           this, EVT_INCOMPATIBLE_PLUGIN);
-  Bind(EVT_INCOMPATIBLE_PLUGIN,
-       [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
+
+  // FIXME (Dave)
+  // Temporarily block "incompatible plugin" message box.
+  // Unworkable solution for wx upgrade from wx31 to wx32 on Windows
+  //Bind(EVT_INCOMPATIBLE_PLUGIN,
+  //     [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
   evt_update_chart_types_listener.Listen(loader->evt_update_chart_types,
                                          this, EVT_UPDATE_CHART_TYPES);
