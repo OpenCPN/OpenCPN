@@ -227,7 +227,8 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent &event) {
   m_tick--;
   if(m_pgauge) {
     int v = m_pgauge->GetValue();
-    m_pgauge->SetValue(v+1);
+    if( v + 1 <= m_pgauge->GetRange())
+      m_pgauge->SetValue(v+1);
   }
 
   if (m_tick == 0){
