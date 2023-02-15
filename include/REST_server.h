@@ -28,6 +28,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <fstream>
 
 #include <wx/event.h>
 
@@ -40,6 +41,11 @@ typedef enum RESTServerResult {
   RESULT_NEW_PIN_REQUESTED
 } _RESTServerResult;
 
+enum {
+  ORS_START_OF_SESSION,
+  ORS_CHUNK_N,
+  ORS_CHUNK_LAST
+};
 
 class RESTServerThread;  // Internal
 class RESTServerEvent;  // Internal
@@ -89,6 +95,9 @@ private:
   wxString m_sPIN;
   int m_dPIN;
   bool m_b_overwrite;
+  std::string m_tempUploadFilePath;
+  std::ofstream m_ul_stream;
+
 
 };
 

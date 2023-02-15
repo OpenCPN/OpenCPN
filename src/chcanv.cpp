@@ -4003,15 +4003,19 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
             << FormatDistanceAdaptive(tlenght);
           if (pt->GetLastPoint()->GetTimeString() &&
               pt->GetPoint(0)->GetTimeString()) {
-            wxTimeSpan ttime = pt->GetLastPoint()->GetCreateTime() -
-                               pt->GetPoint(0)->GetCreateTime();
-            double htime = ttime.GetSeconds().ToDouble() / 3600.;
-            s << wxString::Format(_T("  %.1f "), (float)(tlenght / htime))
-              << getUsrSpeedUnit();
-            s << wxString(htime > 24. ? ttime.Format(_T("  %Dd %H:%M"))
+            wxDateTime lastPointTime = pt->GetLastPoint()->GetCreateTime();
+            wxDateTime zeroPointTime = pt->GetPoint(0)->GetCreateTime();
+            if (lastPointTime.IsValid() && zeroPointTime.IsValid()){
+              wxTimeSpan ttime = lastPointTime - zeroPointTime;
+              double htime = ttime.GetSeconds().ToDouble() / 3600.;
+              s << wxString::Format(_T("  %.1f "), (float)(tlenght / htime))
+                << getUsrSpeedUnit();
+              s << wxString(htime > 24. ? ttime.Format(_T("  %Dd %H:%M"))
                                       : ttime.Format(_T("  %H:%M")));
+            }
           }
-          if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
+
+          if (g_bShowTrackPointTime && strlen(segShow_point_b->GetTimeString()))
             s << _T("\n") << _("Segment Created: ")
               << segShow_point_b->GetTimeString();
 
@@ -4035,14 +4039,16 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           if (segShow_point_a->GetTimeString() &&
               segShow_point_b->GetTimeString()) {
-            double segmentSpeed =
-                toUsrSpeed(dist / ((segShow_point_b->GetCreateTime() -
-                                    segShow_point_a->GetCreateTime())
-                                       .GetSeconds()
+            wxDateTime apoint = segShow_point_a->GetCreateTime();
+            wxDateTime bpoint = segShow_point_b->GetCreateTime();
+            if (apoint.IsValid() && bpoint.IsValid()){
+              double segmentSpeed =
+                toUsrSpeed(dist / ((bpoint - apoint).GetSeconds()
                                        .ToDouble() /
                                    3600.));
-            s << wxString::Format(_T("  %.1f "), (float)segmentSpeed)
-              << getUsrSpeedUnit();
+              s << wxString::Format(_T("  %.1f "), (float)segmentSpeed)
+                << getUsrSpeedUnit();
+            }
           }
 
           m_pTrackRolloverWin->SetString(s);

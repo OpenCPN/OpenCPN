@@ -95,6 +95,7 @@ extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern bool g_bOverruleScaMin;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
+extern wxDateTime g_DNS_cache_time;
 
 // Helper for conditional file name separator
 void appendOSDirSlash(wxString *pString);
@@ -1554,34 +1555,26 @@ void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
     }
   }
   if (!list.empty()) {
-        g_Platform->ShowBusySpinner();
-        FindAllOCPNServers(2);
-        g_Platform->HideBusySpinner();
-
-        // Count viable servers.
-        int n_servers = 0;
-        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-          wxString item(g_DNS_cache[i]->hostname.c_str());
-
-          //skip "self"
-          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
-            n_servers++;
-          }
-        }
-
-        if(n_servers == 0){
-          OCPNMessageBox(NULL,
-            _("No OpenCPN servers found on this network."),
-            _("OpenCPN Send Route(s)"), wxOK, 5);
-
-          return;
-        }
-
         SendToPeerDlg dlg;
         for (auto r : list) {
           dlg.SetRoute(r);
         }
 
+        // Perform initial scan, if necessary
+
+        // Check for stale cache...
+        bool bDNScacheStale = true;
+        wxDateTime tnow = wxDateTime::Now();
+        if (g_DNS_cache_time.IsValid()){
+          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
+          if (delta.GetMinutes() < 5)
+            bDNScacheStale = false;
+        }
+
+        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+           dlg.SetScanOnCreate(true);
+
+        dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Route(s) to OpenCPN Peer") + _T( "..." ), _T(""));
         dlg.ShowModal();
   }
@@ -1602,34 +1595,26 @@ void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
     }
   }
   if (!list.empty()) {
-        g_Platform->ShowBusySpinner();
-        FindAllOCPNServers(2);
-        g_Platform->HideBusySpinner();
-
-        // Count viable servers.
-        int n_servers = 0;
-        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-          wxString item(g_DNS_cache[i]->hostname.c_str());
-
-          //skip "self"
-          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
-            n_servers++;
-          }
-        }
-
-        if(n_servers == 0){
-          OCPNMessageBox(NULL,
-            _("No OpenCPN servers found on this network."),
-            _("OpenCPN Send Waypoint(s)"), wxOK, 5);
-
-          return;
-        }
-
         SendToPeerDlg dlg;
         for (auto r : list) {
           dlg.SetWaypoint(r);
         }
 
+        // Perform initial scan, if necessary
+
+        // Check for stale cache...
+        bool bDNScacheStale = true;
+        wxDateTime tnow = wxDateTime::Now();
+        if (g_DNS_cache_time.IsValid()){
+          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
+          if (delta.GetMinutes() < 5)
+            bDNScacheStale = false;
+        }
+
+        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+           dlg.SetScanOnCreate(true);
+
+        dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Waypoint(s) to OpenCPN Peer") + _T( "..." ), _T(""));
         dlg.ShowModal();
   }
@@ -1650,34 +1635,26 @@ void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
     }
   }
   if (!list.empty()) {
-        g_Platform->ShowBusySpinner();
-        FindAllOCPNServers(2);
-        g_Platform->HideBusySpinner();
-
-        // Count viable servers.
-        int n_servers = 0;
-        for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-          wxString item(g_DNS_cache[i]->hostname.c_str());
-
-          //skip "self"
-          if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
-            n_servers++;
-          }
-        }
-
-        if(n_servers == 0){
-          OCPNMessageBox(NULL,
-            _("No OpenCPN servers found on this network."),
-            _("OpenCPN Send Track(s)"), wxOK, 5);
-
-          return;
-        }
-
         SendToPeerDlg dlg;
         for (auto r : list) {
           dlg.SetTrack(r);
         }
 
+        // Perform initial scan, if necessary
+
+        // Check for stale cache...
+        bool bDNScacheStale = true;
+        wxDateTime tnow = wxDateTime::Now();
+        if (g_DNS_cache_time.IsValid()){
+          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
+          if (delta.GetMinutes() < 5)
+            bDNScacheStale = false;
+        }
+
+        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+           dlg.SetScanOnCreate(true);
+
+        dlg.SetScanTime(5);     // seconds
         dlg.Create(NULL, -1, _("Send Track(s) to OpenCPN Peer") + _T( "..." ), _T(""));
         dlg.ShowModal();
   }

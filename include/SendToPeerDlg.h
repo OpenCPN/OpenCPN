@@ -74,7 +74,7 @@ public:
   wxGauge* GetProgressGauge() { return m_pgauge; }
   void SetMessage(wxString message);
   void SetScanOnCreate(bool s){ m_bScanOnCreate = s;}
-  void SetScanTime(int t){ m_scanTime = t;}
+  void SetScanTime(int t){ m_scanTime = t * 2;}
 
 private:
   void CreateControls(const wxString& hint);
