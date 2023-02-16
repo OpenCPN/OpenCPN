@@ -151,6 +151,16 @@ public:
   EventVar evt_plugin_unload;
   EventVar evt_pluglist_change;
   EventVar evt_unreadable_plugin;
+
+  /**
+   * An unloadable library, not part of of any plugin is detected.
+   * Event carries library name
+   */
+  EventVar evt_unloadable_lib;
+
+  /** An unloadable plugin is detected, event carries plugin name. */
+  EventVar evt_unloadable_plugin;
+
   EventVar evt_update_chart_types;
   EventVar evt_plugin_loadall_finalize;
   EventVar evt_version_incompatible_plugin;

@@ -314,8 +314,14 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
     auto msg = std::string(_("Incompatible plugin detected: ")
                            + file_name.ToStdString());
     wxLogMessage(msg.c_str());
+    auto plugin = PluginHandler::getInstance()->getPluginByLibrary(
+             file_name.ToStdString());
     if (m_blacklist->mark_unloadable(file_name.ToStdString())) {
-      evt_incompatible_plugin.Notify(msg);
+      if (plugin == "") {
+        evt_unloadable_lib.Notify(file_name.ToStdString());
+      } else {
+        evt_unloadable_plugin.Notify(plugin);
+      }
     }
   }
 

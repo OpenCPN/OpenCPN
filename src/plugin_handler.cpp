@@ -43,6 +43,7 @@
 #include <wx/dir.h>
 #include <wx/file.h>
 #include <wx/string.h>
+#include <wx/tokenzr.h>
 #include <wx/window.h>
 #include <wx/uri.h>
 
@@ -149,6 +150,10 @@ static std::string pluginsConfigDir() {
 static std::string dirListPath(std::string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return pluginsConfigDir() + SEP + name + ".dirs";
+}
+
+std::string PluginHandler::pluginsInstallDataPath() {
+    return pluginsConfigDir();
 }
 
 /** Plugin ABI encapsulation. */
@@ -1073,6 +1078,111 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   remove(PluginHandler::versionPath(plugin_name).c_str());
 
   return true;
+}
+
+using PluginMap = std::unordered_map<std::string, std::vector<std::string>>;
+
+/** Best effort to return plugin name with correct case. */
+static std::string PluginNameCase(const std::string& name) {
+  using namespace std;
+  const string lc_name = ocpn::tolower(name);
+  regex name_re(lc_name, regex_constants::icase | regex_constants::ECMAScript);
+
+  // Look for matching plugin in list of installed and available.
+  // This often fails since the lists are not yet available when
+  // plugins are loaded, but is otherwise a safe bet.
+  for (const auto& plugin : PluginHandler::getInstance()->getInstalled()) {
+    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
+  }
+  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
+    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
+  }
+
+  // Look in plugin data paths for a matching directory. Safe bet if
+  // existing, but all plugins does not have a data directory.
+  wxString data_dirs(g_BasePlatform->GetPluginDataPath());
+  wxStringTokenizer tokens(data_dirs, ";");
+  while (tokens.HasMoreTokens()) {
+    auto token = tokens.GetNextToken();
+    wxFileName path(token);
+    wxDir dir(path.GetFullPath());
+    wxString filename;
+    bool cont = dir.GetFirst(&filename, "", wxDIR_DIRS);
+    while (cont) {
+      smatch sm;
+      string s(filename);
+      if (regex_search(s, sm, name_re)) {
+	stringstream ss;
+	for (auto c : sm) ss << c;
+	return ss.str();
+      }
+      cont = dir.GetNext(&filename);
+    }
+  }
+
+  // Look in library dirs for matching .dll/.so/.dylib and use matched name.
+  for (const auto& lib : PluginPaths::getInstance()->Libdirs()) {
+    wxDir dir(lib);
+    wxString filename;
+    bool cont = dir.GetFirst(&filename, "", wxDIR_FILES);
+    while (cont) {
+      smatch sm;
+      string s(filename);
+      if (regex_search(s, sm, name_re)) {
+        stringstream ss;
+        for (auto c : sm) ss << c;
+        return ss.str();
+      }
+      cont = dir.GetNext(&filename);
+    }
+  }
+  return name;   // nothing worked, returning input value.
+}
+
+/**  map[key] = list-of-files given path to file containing paths. */
+static void LoadPluginMapFile(PluginMap& map, const std::string& path) {
+  std::ifstream f;
+  f.open(path);
+  if (f.fail()) {
+    wxLogWarning("Cannot open %s: %s", path.c_str(), strerror(errno));
+    return;
+  }
+  std::stringstream buf;
+  buf <<  f.rdbuf();
+  auto filelist = ocpn::split(buf.str().c_str(), "\n");
+  for (auto& file: filelist) {
+    file = wxFileName(file).GetFullName().ToStdString();
+  }
+
+  // key is basename with removed .files suffix and correct case.
+  auto key = wxFileName(path).GetFullName().ToStdString();
+  key = ocpn::split(key.c_str(), ".")[0];
+  key = PluginNameCase(key);
+  map[key] = filelist;
+}
+
+/** For each installed plugin: map[plugin name] = list of files. */
+static void LoadPluginMap(PluginMap& map) {
+  map.clear();
+  wxDir root(PluginHandler::pluginsInstallDataPath());
+  if (!root.IsOpened()) return;
+  wxString filename;
+  bool cont = root.GetFirst(&filename, "*.files", wxDIR_FILES);
+  while (cont) {
+    auto path = root.GetNameWithSep() + filename;
+    LoadPluginMapFile(map, path.ToStdString());
+    cont = root.GetNext(&filename);
+  }
+}
+
+std::string PluginHandler::getPluginByLibrary(const std::string& filename) {
+  auto basename = wxFileName(filename).GetFullName().ToStdString();
+  if (files_by_plugin.size() == 0) LoadPluginMap(files_by_plugin);
+  for (const auto& it : files_by_plugin) {
+    auto found = std::find(it.second.begin(), it.second.end(), basename);
+    if (found != it.second.end()) return it.first;
+  }
+  return "";
 }
 
 bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {

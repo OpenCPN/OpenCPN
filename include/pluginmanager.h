@@ -343,6 +343,7 @@ private:
   pluginUtilHandler *m_utilHandler;
   PluginListPanel *m_listPanel;
   std::unique_ptr<AbstractBlacklist> m_blacklist;
+  std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
