@@ -1078,7 +1078,7 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     ConfigurePen();
 
     //  Grow the work buffer as necessary
-    size_t bufReq = steps * 8 * 2 * sizeof(float);  // large, to be sure
+    size_t bufReq = (steps+1) * 8 * 2 * sizeof(float);  // large, to be sure
 
     if (workBufSize < bufReq) {
       workBuf = (float *)realloc(workBuf, bufReq);
