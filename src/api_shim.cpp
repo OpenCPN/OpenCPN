@@ -1666,3 +1666,32 @@ DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &) {
 
 DECL_EXP wxString GetActiveWaypointGUID(void) { return wxString(""); }
 DECL_EXP wxString GetActiveRouteGUID(void) { return wxString(""); }
+
+// API 1.18
+
+//  Scaled display support, as on some GTK3 and Mac Retina devices
+DECL_EXP double OCPN_GetDisplayContentScaleFactor() { return 0; }
+
+//  Scaled display support, on Windows devices
+DECL_EXP double OCPN_GetWinDIPScaleFactor() { return 0; }
+
+//  Comm Priority query support
+DECL_EXP std::vector<std::string> GetPriorityMaps() {
+    std::vector<std::string> v; return v;
+}
+DECL_EXP std::vector<std::string> GetActivePriorityIdentifiers() {
+    std::vector<std::string> v; return v;
+}
+
+extern DECL_EXP int GetGlobalWatchdogTimoutSeconds() { return 0; }
+
+DECL_EXP wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
+    wxArrayString was; return was; 
+}
+DECL_EXP wxArrayString GetTrackGUIDArray(OBJECT_LAYER_REQ req) {
+    wxArrayString was; return was; 
+}
+DECL_EXP wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
+    wxArrayString was; return was; 
+}
+
