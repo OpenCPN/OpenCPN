@@ -178,6 +178,7 @@ private:
  * The action function is in most use cases a lambda expression.
  *
  * Controller/GUI example usage, listening to the EventVar model.change:
+ * \code
  *
  *       class Gui: public SomeBaseClass {
  *       public:
@@ -191,8 +192,10 @@ private:
  *       private:
  *         EvtVarListener change_listener;
  *       }
+ * \endcode
  *
  * Or, using Init():
+ * \code
  *
  *       Gui:Gui(Model& model)  {
  *         auto action = [&](ObservableEvt& ev) {
@@ -202,6 +205,7 @@ private:
  *         change_listener.Init(model.change, action);
  *       }
  *
+ * \endcode
  */
 class ObsListener : public wxEvtHandler {
 public:
