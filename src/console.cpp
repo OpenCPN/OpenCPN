@@ -214,6 +214,9 @@ Commands:
   update-catalog:
      Download latest master catalog.
 
+  plugin-by-file <filename>
+     Print name of a plugin containing file or "not found"
+
 )""";
 
 static const char *const DOWNLOAD_REPO_PROTO =
@@ -321,6 +324,11 @@ public:
     exit(0);
   }
 
+  void plugin_by_file(const std::string& filename) {
+    auto plugin = PluginHandler::getInstance()->getPluginByLibrary(filename);
+    std::cout << (plugin != "" ? plugin : "Not found") << "\n";
+  }
+
   bool load_plugin(const std::string& plugin) {
     auto loader = PluginLoader::getInstance();
     wxImage::AddHandler(new wxPNGHandler());
@@ -423,6 +431,10 @@ public:
     else if (command == "update-catalog") {
       check_param_count(parser, 1);
       update_catalog();
+    }
+    else if (command == "plugin-by-file") {
+      check_param_count(parser, 2);
+      plugin_by_file(parser.GetParam(1).ToStdString());
     }
     else {
       std::cerr << USAGE << "\n";

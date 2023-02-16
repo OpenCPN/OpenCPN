@@ -43,22 +43,28 @@
 
 
 typedef struct {
-  wxString name;      // name of the plugin
-  int version_major;  // major version
-  int version_minor;  // minor version
-  bool hard;  // hard blacklist - if true, don't load it at all, if false, load
-              // it and just warn the user
-  bool all_lower;  // if true, blacklist also all the lower versions of the
-                   // plugin
-  bool mute_dialog;  // if true, don't warn the user by dialog.
+  wxString name;      //!< name of the plugin
+  int version_major;  //!< major version
+  int version_minor;  //!< minor version
+  /**
+   * hard blacklist - if true, don't load it at all, if false, load
+   * it and just warn the user
+   */
+  bool hard;
+  /**
+   * if true, blacklist also all the lower versions of the
+   * plugin
+   */
+  bool all_lower;
+  bool mute_dialog;  //!< if true, don't warn the user by dialog.
 } BlackListedPlugin;
 
 
 enum class PluginStatus {
-  System,     // One of the four system plugins, unmanaged.
-  Managed,    // Managed by installer.
-  Unmanaged,  // Unmanaged, probably a package.
-  Ghost,      // Managed, shadowing another (packaged?) plugin.
+  System,     //!< One of the four system plugins, unmanaged.
+  Managed,    //!< Managed by installer.
+  Unmanaged,  //!< Unmanaged, probably a package.
+  Ghost,      //!< Managed, shadowing another (packaged?) plugin.
   Unknown,
   LegacyUpdateAvailable,
   ManagedInstallAvailable,
@@ -83,13 +89,13 @@ public:
   bool m_bEnabled;
   bool m_bInitState;
   bool m_bToolboxPanel;
-  int m_cap_flag;                    // PlugIn Capabilities descriptor
-  wxString m_plugin_file;            // The full file path
-  wxString m_plugin_filename;        // The short file path
-  wxDateTime m_plugin_modification;  // used to detect upgraded plugins
+  int m_cap_flag;                    //!< PlugIn Capabilities descriptor
+  wxString m_plugin_file;            //!< The full file path
+  wxString m_plugin_filename;        //!< The short file path
+  wxDateTime m_plugin_modification;  //!< used to detect upgraded plugins
   destroy_t* m_destroy_fn;
   wxDynamicLibrary m_library;
-  wxString m_common_name;  // A common name string for the plugin
+  wxString m_common_name;        //!< A common name string for the plugin
   wxString m_short_description;
   wxString m_long_description;
   int m_api_version;
@@ -104,19 +110,40 @@ public:
    * complete semantic version data.
    */
   SemanticVersion GetVersion();
-  wxString m_version_str;  // Complete version as of
-                           // semantic_vers
-  std::string m_InstalledManagedVersion;  // As detected from manifest
+
+  wxString m_version_str;  //!< Complete version as of semantic_vers
+  std::string m_InstalledManagedVersion;  //!< As detected from manifest
 };
+
+
+class LoadError {
+public:
+  enum class Type { Unloadable,  //<! wrong magic, wrong type of binary...
+                    Unreadable,
+	            Incompatible,
+		    NoCreate,    //<! Missing linkage (is this a plugin?)
+		    NoDestroy,   //<! Missing linkage (is this a plugin?)
+	            Blacklisted }
+     type;
+  const std::string lib_path;   //<! Complete path to failing library
+  const int api_version;        //<! As determined from plugin API
+  const SemanticVersion plugin_version;  //<! As determined from plugin API
+
+  LoadError(Type t, const std::string& l, int av, SemanticVersion pv)
+    : type(t), lib_path(l), api_version(av), plugin_version(pv) {}
+
+  LoadError(Type t, const std::string& l, int av)
+    : type(t),  lib_path(l), api_version(av),
+      plugin_version(SemanticVersion()) {}
+
+  LoadError(Type t, const std::string& l)
+    : type(t),  lib_path(l), api_version(0),
+      plugin_version(SemanticVersion()) {}
+};
+
 
 //    Declare an array of PlugIn Containers
 WX_DEFINE_ARRAY_PTR(PlugInContainer* , ArrayOfPlugIns);
-
-//-----------------------------------------------------------------------------------------------------
-//
-//          The PlugIn Manager Specification
-//
-//-----------------------------------------------------------------------------------------------------
 
 /**
  * PluginLoader is a backend module without any direct GUI functionality.
@@ -126,48 +153,43 @@ WX_DEFINE_ARRAY_PTR(PlugInContainer* , ArrayOfPlugIns);
  * The general usage pattern to process events, here using EVT_LOAD_PLUGIN:
  *
  *   PluginLoader::getInstance()->evt_load_plugin.listen(this, EVT_LOAD_PLUGIN)
- *   Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent ev) {
+ *   Bind(EVT_LOAD_PLUGIN, [&](ObservedEvt ev) {
  *          code to run on event...
  *   });
  *
- * The code in plugin_loader uses evt_load_plugin.notify() to trigger the
- * event. notify() might have a string or void* argument; these are
+ * The code in plugin_loader uses evt_load_plugin.Notify() to trigger the
+ * event. Notify() might have a string or void* argument; these are
  * available as ev.GetString() or ev.GetClientData() in the Bind() lambda
- * function.
+ * function. There is a also a generic std::shared_ptr available as using
+ * GetSharedPtr();
  *
  * Examples: PlugInManager::PlugInManager() in pluginmanager.cpp
  */
-
 class PluginLoader {
 public:
+  static PluginLoader* getInstance();
+  virtual ~PluginLoader() {}
+
   EventVar evt_blacklisted_plugin;
 
-  /** Receives a malloc'ed copy of a PlugInContainer owned by listener. */
-  EventVar evt_deactivate_plugin;
-
-  EventVar evt_incompatible_plugin;
   EventVar evt_load_directory;
   EventVar evt_load_plugin;
   EventVar evt_plugin_unload;
   EventVar evt_pluglist_change;
   EventVar evt_unreadable_plugin;
-
-  /**
-   * An unloadable library, not part of of any plugin is detected.
-   * Event carries library name
-   */
-  EventVar evt_unloadable_lib;
-
-  /** An unloadable plugin is detected, event carries plugin name. */
-  EventVar evt_unloadable_plugin;
+  EventVar evt_deactivate_plugin;
 
   EventVar evt_update_chart_types;
+
+  /**
+   * Emitted after all plugins are loaded. Event carries
+   * a std::vector<LoadError> available though GetSharedPtr()
+   */
   EventVar evt_plugin_loadall_finalize;
+
   EventVar evt_version_incompatible_plugin;
 
 
-  static PluginLoader* getInstance();
-  virtual ~PluginLoader() {}
 
   bool LoadAllPlugIns(bool enabled_plugins);
 
@@ -197,6 +219,9 @@ private:
   wxString m_last_error_string;
   wxString m_plugin_location;
   const wxBitmap* m_default_plugin_icon;
+  bool delay_notifications;
+
+  std::vector<LoadError> load_errors;
 };
 
 #endif  // _PLUGIN_LOADER_H_

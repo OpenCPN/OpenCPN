@@ -281,11 +281,6 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
   _version = ocpn::tolower(_version);
 }
 
-std::string PluginHandler::fileListPath(std::string name) {
-  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-  return pluginsConfigDir() + SEP + name + ".files";
-}
-
 PluginHandler::PluginHandler() {}
 
 bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
@@ -316,6 +311,11 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
+}
+
+std::string PluginHandler::fileListPath(std::string name) {
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return pluginsConfigDir() + SEP + name + ".files";
 }
 
 std::string PluginHandler::versionPath(std::string name) {
@@ -870,23 +870,23 @@ void PluginHandler::cleanupFiles(const std::string& manifestFile,
   }
 }
 
-/** Remove all empty dirs found below root + also (empty) root. */
+/** Remove all empty dirs found from root containing string "opencpn". */
 static void PurgeEmptyDirs(const std::string& root) {
   if (!wxFileName::IsDirWritable(root)) return;
+  if (ocpn::tolower(root).find("opencpn") == std::string::npos) return;
   wxDir rootdir(root);
   if (!rootdir.IsOpened()) return;
   wxString dirname;
   bool cont = rootdir.GetFirst(&dirname, "", wxDIR_DIRS);
   while (cont) {
-    std::string subdir_path(rootdir.GetNameWithSep() + dirname);
-    PurgeEmptyDirs(subdir_path);
-    wxDir subdir(subdir_path);
-    if (!subdir.HasFiles()) wxFileName::Rmdir(subdir.GetName());
+    PurgeEmptyDirs((rootdir.GetNameWithSep() + dirname).ToStdString());
     cont = rootdir.GetNext(&dirname);
   }
   rootdir.Close();
   rootdir.Open(root);
-  if (!rootdir.HasFiles()) wxFileName::Rmdir(rootdir.GetName());
+  if (!(rootdir.HasFiles() || rootdir.HasSubDirs())) {
+    wxFileName::Rmdir(rootdir.GetName());
+  }
 }
 
 void PluginHandler::cleanup(const std::string& filelist,
@@ -922,9 +922,6 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable() {
 
   auto catalogHandler = CatalogHandler::getInstance();
 
-  // std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
-  // path += SEP;
-  // path += "ocpn-plugins.xml";
   std::string path = getMetadataPath();
   if (!ocpn::exists(path)) {
     return ctx.plugins;
@@ -1082,24 +1079,13 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
 
 using PluginMap = std::unordered_map<std::string, std::vector<std::string>>;
 
-/** Best effort to return plugin name with correct case. */
-static std::string PluginNameCase(const std::string& name) {
+/**
+ * Look in plugin data paths for a matching directory. Safe bet if
+ * existing, but all plugins does not have a data directory.
+ * @return Matched directory name or "" if not found.
+ */
+static std::string FindMatchingDataDir(std::regex name_re) {
   using namespace std;
-  const string lc_name = ocpn::tolower(name);
-  regex name_re(lc_name, regex_constants::icase | regex_constants::ECMAScript);
-
-  // Look for matching plugin in list of installed and available.
-  // This often fails since the lists are not yet available when
-  // plugins are loaded, but is otherwise a safe bet.
-  for (const auto& plugin : PluginHandler::getInstance()->getInstalled()) {
-    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
-  }
-  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
-    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
-  }
-
-  // Look in plugin data paths for a matching directory. Safe bet if
-  // existing, but all plugins does not have a data directory.
   wxString data_dirs(g_BasePlatform->GetPluginDataPath());
   wxStringTokenizer tokens(data_dirs, ";");
   while (tokens.HasMoreTokens()) {
@@ -1119,8 +1105,15 @@ static std::string PluginNameCase(const std::string& name) {
       cont = dir.GetNext(&filename);
     }
   }
+  return "";
+}
 
-  // Look in library dirs for matching .dll/.so/.dylib and use matched name.
+/**
+ * Look in library dirs for matching .dll/.so/.dylib and use matched name.
+ * @return matched part of found library name or "" if not found
+ */
+static std::string FindMatchingLibFile(std::regex name_re) {
+  using namespace std;
   for (const auto& lib : PluginPaths::getInstance()->Libdirs()) {
     wxDir dir(lib);
     wxString filename;
@@ -1136,7 +1129,30 @@ static std::string PluginNameCase(const std::string& name) {
       cont = dir.GetNext(&filename);
     }
   }
-  return name;   // nothing worked, returning input value.
+  return "";
+}
+
+/** Best effort to return plugin name with correct case. */
+static std::string PluginNameCase(const std::string& name) {
+  using namespace std;
+  const string lc_name = ocpn::tolower(name);
+  regex name_re(lc_name, regex_constants::icase | regex_constants::ECMAScript);
+
+  // Look for matching plugin in list of installed and available.
+  // This often fails since the lists are not yet available when
+  // plugins are loaded, but is otherwise a safe bet.
+  for (const auto& plugin : PluginHandler::getInstance()->getInstalled()) {
+    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
+  }
+  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
+    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
+  }
+
+  string match = FindMatchingDataDir(name_re);
+  if (match != "") return match;
+
+  match = FindMatchingLibFile(name_re);
+  return match != "" ?  match : name;
 }
 
 /**  map[key] = list-of-files given path to file containing paths. */

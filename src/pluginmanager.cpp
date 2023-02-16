@@ -1195,15 +1195,12 @@ wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_PLUGMGR_ROUTEMAN_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
-wxDEFINE_EVENT(EVT_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LOAD_DIRECTORY, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LOAD_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_UNLOAD, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGLIST_CHANGE, wxCommandEvent);
-wxDEFINE_EVENT(EVT_UNREADABLE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UPDATE_CHART_TYPES, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
-wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 
 
 void PlugInManager::HandlePluginLoaderEvents() {
@@ -1237,31 +1234,6 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent& ev) {
     auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
     OnLoadPlugin(pic); });
-
-  evt_version_incompatible_plugin_listener.Listen(
-          loader->evt_version_incompatible_plugin, this,
-          EVT_VERSION_INCOMPATIBLE_PLUGIN);
-  Bind(EVT_VERSION_INCOMPATIBLE_PLUGIN, [&](wxCommandEvent& ev) {
-    static const wxString msg =
-      _("The plugin %s is not compatible with this version "
-        "of OpenCPN, please get an updated version.");
-    event_message_box(msg, ev); });
-
-  evt_unreadable_plugin_listener.Listen(loader->evt_blacklisted_plugin,
-                                        this, EVT_UNREADABLE_PLUGIN);
-  Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
-    static const wxString msg =
-      _("Unreadable Plugin library %s detected, check file permissions:\n\n");
-    event_message_box(msg, ev); });
-
-  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin,
-                                          this, EVT_INCOMPATIBLE_PLUGIN);
-
-  // FIXME (Dave)
-  // Temporarily block "incompatible plugin" message box.
-  // Unworkable solution for wx upgrade from wx31 to wx32 on Windows
-  //Bind(EVT_INCOMPATIBLE_PLUGIN,
-  //     [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
 
   evt_update_chart_types_listener.Listen(loader->evt_update_chart_types,
                                          this, EVT_UPDATE_CHART_TYPES);
