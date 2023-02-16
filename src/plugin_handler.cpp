@@ -865,52 +865,50 @@ void PluginHandler::cleanupFiles(const std::string& manifestFile,
   }
 }
 
+/** Remove all empty dirs found below root + also (empty) root. */
+static void PurgeEmptyDirs(const std::string& root) {
+  if (!wxFileName::IsDirWritable(root)) return;
+  wxDir rootdir(root);
+  if (!rootdir.IsOpened()) return;
+  wxString dirname;
+  bool cont = rootdir.GetFirst(&dirname, "", wxDIR_DIRS);
+  while (cont) {
+    std::string subdir_path(rootdir.GetNameWithSep() + dirname);
+    PurgeEmptyDirs(subdir_path);
+    wxDir subdir(subdir_path);
+    if (!subdir.HasFiles()) wxFileName::Rmdir(subdir.GetName());
+    cont = rootdir.GetNext(&dirname);
+  }
+  rootdir.Close();
+  rootdir.Open(root);
+  if (!rootdir.HasFiles()) wxFileName::Rmdir(rootdir.GetName());
+}
+
 void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname) {
   wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
 
-  std::istringstream files(filelist);
-  while (!files.eof()) {
+  std::istringstream iss(filelist);
+  std::vector<std::string> paths;
+  while (!iss.eof()) {
     char line[256];
-    files.getline(line, sizeof(line));
-    if (isRegularFile(line)) {
-      int r = remove(line);
-      if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
-      }
+    iss.getline(line, sizeof(line));
+    paths.push_back(line);
+  }
+  for (const auto& path : paths) {
+    if (isRegularFile(path.c_str())) {
+      int r = remove(path.c_str());
+      if (r != 0) wxLogWarning("Cannot remove file %s: %s", path, strerror(r));
     }
   }
-
-  // Make another limited recursive pass, and remove any empty directories
-  bool done = false;
-  int iloop = 0;
-  while (!done && (iloop < 6)) {
-    done = true;
-    std::istringstream dirs(filelist);
-    while (!dirs.eof()) {
-      char line[256];
-      dirs.getline(line, sizeof(line));
-
-      wxFileName wxFile(line);
-      if (wxFile.IsDir() && wxFile.DirExists()) {
-        wxDir dir(wxFile.GetFullPath());
-        if (dir.IsOpened()) {
-          if (!dir.HasFiles() && !dir.HasSubDirs()) {
-            wxFile.Rmdir(wxPATH_RMDIR_RECURSIVE);
-            done = false;
-          }
-        }
-      }
-    }
-    iloop++;
-  }
+  for (const auto& path : paths) PurgeEmptyDirs(path);
 
   std::string path = PluginHandler::fileListPath(plugname);
-  if (ocpn::exists(path)) {
-    remove(path.c_str());
-  }
-  remove(dirListPath(plugname).c_str());  // Best effort try, failures
-  remove(PluginHandler::versionPath(plugname).c_str());  // are non-critical.
+  if (ocpn::exists(path)) remove(path.c_str());
+
+  // Best effort tries, failures are non-critical
+  remove(dirListPath(plugname).c_str());
+  remove(PluginHandler::versionPath(plugname).c_str());
 }
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
@@ -1049,52 +1047,30 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
                  plugin_name.c_str(), path);
     return false;
   }
+  vector<string> plug_paths;
   ifstream files(path);
   while (!files.eof()) {
     char line[256];
     files.getline(line, sizeof(line));
-    if (isRegularFile(line)) {
-      int r = remove(line);
+    plug_paths.push_back(line);
+  }
+  for (const auto& p : plug_paths) {
+    if (isRegularFile(p.c_str())) {
+      int r = remove(p.c_str());
       if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
+        wxLogWarning("Cannot remove file %s: %s", p.c_str(), strerror(r));
       }
     }
   }
-  files.close();
-
-  // Make another limited recursive pass, and remove any empty directories
-  bool done = false;
-  int iloop = 0;
-  while (!done && (iloop < 6)) {
-    done = true;
-    ifstream dirs(path);
-    while (!dirs.eof()) {
-      char line[256];
-      dirs.getline(line, sizeof(line));
-      string dirc(line);
-
-      wxFileName wxFile(line);
-      if (wxFile.IsDir() && wxFile.DirExists()) {
-        wxDir dir(wxFile.GetFullPath());
-        if (dir.IsOpened()) {
-          if (!dir.HasFiles() && !dir.HasSubDirs()) {
-            wxFile.Rmdir(wxPATH_RMDIR_RECURSIVE);
-            done = false;
-          }
-        }
-      }
-    }
-    dirs.close();
-
-    iloop++;
-  }
-
+  for (const auto& p : plug_paths) PurgeEmptyDirs(p);
   int r = remove(path.c_str());
   if (r != 0) {
     wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
   }
-  remove(dirListPath(plugin_name).c_str());  // Best effort try, failures
-  remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
+
+  // Best effort tries, failures are OK.
+  remove(dirListPath(plugin_name).c_str());
+  remove(PluginHandler::versionPath(plugin_name).c_str());
 
   return true;
 }
