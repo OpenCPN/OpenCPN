@@ -50,10 +50,15 @@
 #include "track.h"
 #include "routeman.h"
 #include "nav_object_database.h"
+#ifndef CLIAPP
+#include "routemanagerdialog.h"
+#endif
 
 extern bool g_bportable;
 extern std::vector<Track*> g_TrackList;
-
+#ifndef CLIAPP
+extern RouteManagerDialog* pRouteManagerDialog;
+#endif
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
                             bool b_change);
@@ -171,7 +176,7 @@ bool RESTServer::StartServer(std::string certificate_location) {
 
 void RESTServer::StopServer() {
   wxLogMessage(
-      wxString::Format(_T("Stopping REST service")));
+      wxString::Format("Stopping REST service"));
 
   Unbind(wxEVT_RESTFUL_SERVER, &RESTServer::HandleServerMessage,
        this);
@@ -182,7 +187,7 @@ void RESTServer::StopServer() {
 
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
-      wxLogMessage(_T("Stopping Secondary Thread"));
+      wxLogMessage("Stopping Secondary Thread");
 
       m_Thread_run_flag = 0;
 
@@ -191,9 +196,9 @@ void RESTServer::StopServer() {
 
       wxString msg;
       if (m_Thread_run_flag < 0)
-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+        msg.Printf("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf(_T("Not Stopped after 10 sec."));
+        msg.Printf("Not Stopped after 10 sec.");
       wxLogMessage(msg);
     }
 
@@ -210,7 +215,7 @@ bool RESTServer::LoadConfig( void )
     wxString key_string;
 
     TheBaseConfig()->Read("ServerKeys", &key_string );
-    wxStringTokenizer st(key_string, _T(";"));
+    wxStringTokenizer st(key_string, ";");
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
       wxString client_name = s1.BeforeFirst(':');
@@ -227,7 +232,7 @@ bool RESTServer::LoadConfig( void )
 bool RESTServer::SaveConfig( void )
 {
   if( TheBaseConfig() ) {
-    TheBaseConfig()->SetPath( _T ( "/Settings/RESTServer" ) );
+    TheBaseConfig()->SetPath( "/Settings/RESTServer" );
 
     wxString key_string;
     for (auto it : m_key_map){
@@ -334,7 +339,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
     wxString hmsg(event.m_source_peer.c_str());
     hmsg += " ";
-    hmsg +=  "wants to sent you a new route.\nPlease enter the following PIN number on ";
+    hmsg +=  "wants to send you new data.\nPlease enter the following PIN number on ";
     hmsg += wxString(event.m_source_peer.c_str());
     hmsg += " to pair with this device.\n";
 
@@ -349,6 +354,8 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
     return;
 
+  } else {
+    return_status = RESTServerResult::RESULT_NO_ERROR;
   }
 
 
@@ -565,7 +572,37 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
      }
   } else if (ev == MG_EV_HTTP_CHUNK){
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-    if (mg_http_match_uri(hm, "/api/rx_object")) {
+    if (mg_http_match_uri(hm, "/api/ping")) {
+      std::string api_key;
+      struct mg_str api_key_parm = mg_http_var(hm->query, mg_str("apikey"));
+      if(api_key_parm.len && api_key_parm.ptr){
+        api_key = std::string(api_key_parm.ptr, api_key_parm.len);
+      }
+
+
+      struct mg_str source = mg_http_var(hm->query, mg_str("source"));
+
+      if(source.len)
+      {
+        std::string source_peer(source.ptr, source.len);
+
+        return_status = -1;
+        if (parent){
+          RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, ORS_CHUNK_LAST);
+          Nevent.SetSource(source_peer);
+          Nevent.SetAPIKey(api_key);
+          parent->AddPendingEvent(Nevent);
+        }
+
+        std::unique_lock<std::mutex> lock{mx};
+        while (return_status < 0) { // !predicate
+          std::this_thread::sleep_for (std::chrono::milliseconds(100));
+          return_status_condition.wait(lock);
+        }
+        lock.unlock();
+      }
+      mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
+    } else if (mg_http_match_uri(hm, "/api/rx_object")) {
       int MID = ORS_CHUNK_N;
 
       std::string api_key;
@@ -617,13 +654,53 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 
           printf("Reply: %d\n", return_status);
           mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
+#ifndef CLIAPP
+          if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            pRouteManagerDialog->UpdateTrkListCtrl();
+            pRouteManagerDialog->UpdateWptListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+          }
+#endif
         }
       }
     }
 
   } else if (ev == MG_EV_HTTP_MSG) {
+    #if 0
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-    if (mg_http_match_uri(hm, "/api/rx_object")) {
+    if (mg_http_match_uri(hm, "/api/ping")) {
+      std::string api_key;
+      struct mg_str api_key_parm = mg_http_var(hm->query, mg_str("apikey"));
+      if(api_key_parm.len && api_key_parm.ptr){
+        api_key = std::string(api_key_parm.ptr, api_key_parm.len);
+      }
+
+
+      struct mg_str source = mg_http_var(hm->query, mg_str("source"));
+
+      if(source.len)
+      {
+        std::string source_peer(source.ptr, source.len);
+
+        return_status = -1;
+
+        if (parent){
+          RESTServerEvent Nevent(wxEVT_RESTFUL_SERVER, 0);
+          Nevent.SetSource(source_peer);
+          Nevent.SetAPIKey(api_key);
+          parent->AddPendingEvent(Nevent);
+        }
+
+        std::unique_lock<std::mutex> lock{mx};
+        while (return_status < 0) { // !predicate
+          std::this_thread::sleep_for (std::chrono::milliseconds(100));
+          return_status_condition.wait(lock);
+        }
+        lock.unlock();
+      }
+
+      mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
+    } else if (mg_http_match_uri(hm, "/api/rx_object")) {
 
       std::string api_key;
       struct mg_str api_key_parm = mg_http_var(hm->query, mg_str("apikey"));
@@ -638,10 +715,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
       {
         std::string xml_content(hm->body.ptr, hm->body.len);
         std::string source_peer(source.ptr, source.len);
-        //printf("%s\n", xml_content.c_str());
-
-       //std::ofstream b_stream("bodyfile",  std::fstream::out | std::fstream::binary);
-       //b_stream.write(hm->body.ptr, hm->body.len);
 
         return_status = -1;
 
@@ -664,6 +737,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 
       mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
     }
+    #endif
   }
   (void) fn_data;
 }

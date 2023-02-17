@@ -84,6 +84,7 @@ private:
   void OnScanClick(wxCommandEvent& event);
   void OnTimerAutoscan(wxTimerEvent &event);
   void OnTimerScanTick(wxTimerEvent &event);
+  void OnTimerTransferTick(wxTimerEvent &event);
   void DoScan();
 
   std::vector<Route*> m_RouteList;
@@ -98,6 +99,7 @@ private:
 
   wxTimer m_autoScanTimer;
   wxTimer m_ScanTickTimer;
+  wxTimer m_TransferTimer;
   int m_tick;
   int m_scanTime;
   bool m_bScanOnCreate;
