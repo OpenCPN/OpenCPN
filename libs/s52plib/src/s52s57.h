@@ -325,6 +325,7 @@ struct chart_context {
   void *chart;
   double safety_contour;
   float *vertex_buffer;
+  int vboID;
   int chart_type;
   int chart_scale;
 };

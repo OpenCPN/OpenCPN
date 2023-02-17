@@ -418,6 +418,7 @@ void s52plib::SetVPointCompat(int pix_width,int pix_height,
   vp_plib.chart_scale = chart_scale;
   vp_plib.rv_rect = rv_rect;
   BBox = bbox;
+  reducedBBox = bbox;
   vp_plib.ref_scale = ref_scale;
   m_displayScale = display_scale;
 }
@@ -2333,6 +2334,9 @@ bool s52plib::TextRenderCheck(ObjRazRules *rzRules) {
   //    An optimization for CM93 charts.
   //    Don't show the text associated with some objects, since CM93 database
   //    includes _texto objects aplenty
+  // FIXME VBO Dave
+  // chart type is available in member m_chart_context
+  //  Do not use auxParm3
   if (((int)rzRules->obj->auxParm3 == (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93) ||
       ((int)rzRules->obj->auxParm3 == (int)S52_ChartTypeEnum::S52_CHART_TYPE_CM93COMP)) {
     if (!strncmp(rzRules->obj->FeatureName, "BUAARE", 6))
@@ -3636,22 +3640,18 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
 //   if (vp->m_projection_type != PROJECTION_MERCATOR)
 //     return RenderLS(rzRules, rules, vp);
 
-  //if(rzRules->obj->Index != 1779)
-    //return 0;
+  if (!ObjectRenderCheckPosReduced(rzRules))
+    return false;
 
-  if (!m_benableGLLS)  // root chart cannot support VBO model, for whatever
-                       // reason
+  if (!m_benableGLLS)  // root chart cannot support VBO model
     return RenderLS(rzRules, rules);
-
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#endif
 
   if (!rzRules->obj->m_chart_context->chart)
     return RenderLS(rzRules, rules);  // this is where S63 PlugIn gets caught
 
   if ((GetBBox().GetMaxLon() >= 180.) ||
       (GetBBox().GetMinLon() <= -180.))
-    return RenderLS(rzRules, rules);  // cm03 has trouble at IDL
+    return RenderLS(rzRules, rules);  // cm93 has trouble at IDL
 
   bool b_useVBO = false;
   float *vertex_buffer = 0;
@@ -3670,7 +3670,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
   if ((!strncmp(str, "DASH", 4)) || (!strncmp(str, "DOTT", 4)))
     return RenderLS_Dash_GLSL(rzRules, rules);
 
-  LLBBox BBView = GetBBox();
+  LLBBox BBView = GetReducedBBox();
 
   //  Allow a little slop in calculating whether a segment
   //  is within the requested VPointCompat
@@ -3686,7 +3686,6 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
 
   S52color *c = getColor(str + 7);  // Colour
   int w = atoi(str + 5);            // Width
-  if (w > 1) int yyp = 4;
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 #endif
@@ -3793,13 +3792,12 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
     float *bufBase = (float *)buffer;
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           bufBase);
-    glEnableVertexAttribArray(pos);
   }
   else {
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                                 (GLvoid *)(0));
-    glEnableVertexAttribArray(pos);
   }
+  glEnableVertexAttribArray(pos);
 
   // from above ls_list is the first drawable segment
   while (ls_list) {
@@ -3810,18 +3808,10 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
       //  Check visibility of the segment
       bool b_drawit = false;
       if ((ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV)) {
-        //                 if((BBView.GetMinLat() <
-        //                 ls_list->pedge->edgeBBox.GetMaxLat() &&
-        //                 BBView.GetMaxLat() >
-        //                 ls_list->pedge->edgeBBox.GetMinLat()) &&
-        //                     ((BBView.GetMinLon() <=
-        //                     ls_list->pedge->edgeBBox.GetMaxLon() &&
-        //                     BBView.GetMaxLon() >=
-        //                     ls_list->pedge->edgeBBox.GetMinLon()) ||
-        //                     (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon()
-        //                     - 360 > ls_list->pedge->edgeBBox.GetMinLon()) ||
-        //                     (BBView.GetMinLon() <= -180 && BBView.GetMinLon()
-        //                     + 360 < ls_list->pedge->edgeBBox.GetMaxLon())))
+        if(BBView.GetMinLat() < ls_list->pedge->edgeBBox.GetMaxLat() &&
+           BBView.GetMaxLat() > ls_list->pedge->edgeBBox.GetMinLat() &&
+           BBView.GetMinLon() <= ls_list->pedge->edgeBBox.GetMaxLon() &&
+           BBView.GetMaxLon() >= ls_list->pedge->edgeBBox.GetMinLon())
         {
           // render the segment
           b_drawit = true;
@@ -3830,15 +3820,10 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
         }
 
       } else {
-        //                 if((BBView.GetMinLat() < ls_list->pcs->cs_lat_avg &&
-        //                 BBView.GetMaxLat() > ls_list->pcs->cs_lat_avg) &&
-        //                     ((BBView.GetMinLon() <= ls_list->pcs->cs_lon_avg
-        //                     && BBView.GetMaxLon() >=
-        //                     ls_list->pcs->cs_lon_avg) || (BBView.GetMaxLon()
-        //                     >=  180 && BBView.GetMaxLon() - 360 >
-        //                     ls_list->pcs->cs_lon_avg) || (BBView.GetMinLon()
-        //                     <= -180 && BBView.GetMinLon() + 360 <
-        //                     ls_list->pcs->cs_lon_avg)))
+        if(BBView.GetMinLat() < ls_list->pcs->cs_lat_avg &&
+           BBView.GetMaxLat() > ls_list->pcs->cs_lat_avg &&
+           BBView.GetMinLon() <= ls_list->pcs->cs_lon_avg &&
+           BBView.GetMaxLon() >= ls_list->pcs->cs_lon_avg)
         {
           // render the segment
           b_drawit = true;
@@ -3849,18 +3834,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
 
       if (b_drawit) {
         // render the segment
-
-        if (b_useVBO) {
-          glDrawArrays(GL_LINE_STRIP, seg_vbo_offset / (2 * sizeof(float)) , point_count);
-        } else {
-          unsigned char *buffer = (unsigned char *)vertex_buffer;
-          buffer += seg_vbo_offset;
-          float *bufBase = (float *)buffer;
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                                bufBase);
-          glEnableVertexAttribArray(pos);
-          glDrawArrays(GL_LINE_STRIP, 0, point_count);
-        }
+        glDrawArrays(GL_LINE_STRIP, seg_vbo_offset / (2 * sizeof(float)) , point_count);
       }
     }
     ls_list = ls_list->next;
@@ -7996,8 +7970,15 @@ int s52plib::RenderToGLAC(ObjRazRules *rzRules, Rules *rules) {
   return RenderToGLAC_GLSL(rzRules, rules);
 }
 
+int n_areaObjs;
+int n_areaTris;
+
 
 int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
+  if (!ObjectRenderCheckPosReduced(rzRules))
+    return false;
+
+  n_areaObjs++;
 
   GLenum reset_err = glGetError();
 
@@ -8313,19 +8294,14 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
     while (p_tp) {
       LLBBox box;
-      if (!rzRules->obj->m_chart_context->chart) {  // This is a PlugIn Chart
+      if (!rzRules->obj->m_chart_context->chart) {  // This is s63 PlugIn Chart
         LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
         box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
       } else
         box = p_tp->tri_box;
 
       if (!BBView.IntersectOut(box)) {
-
-        if (b_useVBO) {
-          glDrawArrays(p_tp->type, VBO_offset_index, p_tp->nVert);
-        } else {
-          glDrawArrays(p_tp->type, VBO_offset_index, p_tp->nVert);
-        }
+        glDrawArrays(p_tp->type, VBO_offset_index, p_tp->nVert);
       }
 
       VBO_offset_index += p_tp->nVert;
@@ -8360,8 +8336,6 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 }
 
 
-
-
 void s52plib::SetGLClipRect(const VPointCompat &vp, const wxRect &rect) {
 }
 
@@ -8394,6 +8368,8 @@ int s52plib::RenderToGLAP(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
+  if (!ObjectRenderCheckPosReduced(rzRules))
+    return false;
 
   //    Get the pattern definition
   if ((rules->razRule->pixelPtr == NULL) ||
@@ -8447,7 +8423,7 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
   float xOff = pr.x;
   float yOff = pr.y;
 
-  LLBBox BBView = GetBBox();
+  LLBBox BBView = GetReducedBBox();
   // please untangle this logic with the logic below
   if (BBView.GetMaxLon() + 180 < vp_plib.clon)
     BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() + 360, BBView.GetMaxLat(),
@@ -8461,7 +8437,7 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
   double margin = BBView.GetLonRange() * .05;
   BBView.EnLarge(margin);
 
-  bool b_useVBO = m_useVBO && !rzRules->obj->auxParm1;
+  bool b_useVBO = m_GLAC_VBO && !rzRules->obj->auxParm1;
 
   if (rzRules->obj->pPolyTessGeo) {
     //bool b_temp_vbo = false;
@@ -9310,6 +9286,32 @@ bool s52plib::ObjectRenderCheckPos(ObjRazRules *rzRules) {
 
   // Of course, the object must be at least partly visible in the VPointCompat
   const LLBBox &vpBox = GetBBox();
+  const LLBBox &testBox = rzRules->obj->BBObj;
+
+  if (vpBox.GetMaxLat() < testBox.GetMinLat() ||
+      vpBox.GetMinLat() > testBox.GetMaxLat())
+    return false;
+
+  if (vpBox.GetMaxLon() >= testBox.GetMinLon() &&
+      vpBox.GetMinLon() <= testBox.GetMaxLon())
+    return true;
+
+  if (vpBox.GetMaxLon() >= testBox.GetMinLon() + 360 &&
+      vpBox.GetMinLon() <= testBox.GetMaxLon() + 360)
+    return true;
+
+  if (vpBox.GetMaxLon() >= testBox.GetMinLon() - 360 &&
+      vpBox.GetMinLon() <= testBox.GetMaxLon() - 360)
+    return true;
+
+  return false;
+}
+
+bool s52plib::ObjectRenderCheckPosReduced(ObjRazRules *rzRules) {
+  if (rzRules->obj == NULL) return false;
+
+  // Of course, the object must be at least partly visible in the VPointCompat
+  LLBBox vpBox = GetReducedBBox();
   const LLBBox &testBox = rzRules->obj->BBObj;
 
   if (vpBox.GetMaxLat() < testBox.GetMinLat() ||

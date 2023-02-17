@@ -221,6 +221,7 @@ public:
   bool ObjectRenderCheckRules(ObjRazRules *rzRules,
                               bool check_noshow = false);
   bool ObjectRenderCheckPos(ObjRazRules *rzRules);
+  bool ObjectRenderCheckPosReduced(ObjRazRules *rzRules);
   bool ObjectRenderCheckCat(ObjRazRules *rzRules);
   bool ObjectRenderCheckCS(ObjRazRules *rzRules);
   bool ObjectRenderCheckDates(ObjRazRules *rzRules);
@@ -395,6 +396,7 @@ public:
 
   void PLIB_LoadS57GlobalConfig();
   void PLIB_LoadS57ObjectConfig();
+  void SetReducedBBox(LLBBox box){ reducedBBox = box;}
 
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
@@ -521,6 +523,7 @@ private:
   wxPoint2DDouble GetDoublePixFromLLROT(double lat, double lon, double rotation);
 
   LLBBox &GetBBox() { return BBox; }
+  LLBBox GetReducedBBox() { return reducedBBox; }
 
   wxString m_plib_file;
 
@@ -595,6 +598,7 @@ private:
   TexFontCache s_txf[TXF_CACHE];
   wxString m_renderer_string;
 
+  LLBBox reducedBBox;
 
 };
 
