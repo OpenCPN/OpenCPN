@@ -339,9 +339,9 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
     wxString hmsg(event.m_source_peer.c_str());
     hmsg += " ";
-    hmsg +=  "wants to send you new data.\nPlease enter the following PIN number on ";
+    hmsg +=  _("wants to send you new data.\nPlease enter the following PIN number on ");
     hmsg += wxString(event.m_source_peer.c_str());
-    hmsg += " to pair with this device.\n";
+    hmsg += _(" to pair with this device.\n");
 
     m_PINCreateDialog->SetMessage(hmsg);
     m_PINCreateDialog->SetText1Message(m_sPIN);
@@ -389,7 +389,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
 
-                dialog2.SetMessage("The received route already exists on this system.\nReplace?");
+                dialog2.SetMessage(_("The received route already exists on this system.\nReplace?"));
                 dialog2.SetCheck1Message(_("Always replace objects from this source?"));
 
                 int result = dialog2.ShowModal();
@@ -440,7 +440,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
 
-                dialog2.SetMessage("The received track already exists on this system.\nReplace?");
+                dialog2.SetMessage(_("The received track already exists on this system.\nReplace?"));
                 dialog2.SetCheck1Message(_("Always replace objects from this source?"));
 
                 int result = dialog2.ShowModal();
@@ -493,7 +493,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
 
-                dialog2.SetMessage("The received waypoint already exists on this system.\nReplace?");
+                dialog2.SetMessage(_("The received waypoint already exists on this system.\nReplace?"));
                 dialog2.SetCheck1Message(_("Always replace objects from this source?"));
 
                 int result = dialog2.ShowModal();
