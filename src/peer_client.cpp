@@ -262,9 +262,9 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name, std::ve
           PINConfirmDialog dlg((wxWindow *)gFrame, wxID_ANY, _("OpenCPN Server Message"),
             "", wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE );
 
-          wxString hmsg("The server ");
-          hmsg += "needs a PIN.\nPlease enter the PIN number from ";
-          hmsg += "the server to pair with this device.\n";
+          wxString hmsg(_("The server "));
+          hmsg += _("needs a PIN.\nPlease enter the PIN number from ");
+          hmsg += _("the server to pair with this device.\n");
 
           dlg.SetMessage(hmsg);
           dlg.SetText1Message("");
