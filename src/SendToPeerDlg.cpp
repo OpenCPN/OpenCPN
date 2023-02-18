@@ -35,11 +35,13 @@
 
 #define TIMER_AUTOSCAN  94522
 #define TIMER_SCANTICK  94523
+#define TIMER_TRANSFER  94524
 
 extern OCPNPlatform* g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxDateTime g_DNS_cache_time;
 extern bool g_bportable;
+extern int navobj_transfer_progress;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
 
@@ -49,6 +51,7 @@ BEGIN_EVENT_TABLE(SendToPeerDlg, wxDialog)
   EVT_BUTTON(ID_STP_SCAN, SendToPeerDlg::OnScanClick)
   EVT_TIMER(TIMER_AUTOSCAN, SendToPeerDlg::OnTimerAutoscan)
   EVT_TIMER(TIMER_SCANTICK, SendToPeerDlg::OnTimerScanTick)
+  EVT_TIMER(TIMER_TRANSFER, SendToPeerDlg::OnTimerTransferTick)
 END_EVENT_TABLE()
 
 SendToPeerDlg::SendToPeerDlg() {
@@ -92,6 +95,7 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
   }
 
   m_ScanTickTimer.SetOwner(this, TIMER_SCANTICK);
+  m_TransferTimer.SetOwner(this, TIMER_TRANSFER);
 
   return TRUE;
 }
@@ -205,11 +209,16 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
 
 
   //    And send it out
+  m_pgauge->SetRange(100);
+  m_pgauge->SetValue(0);
+  m_TransferTimer.Start(50);
+  m_pgauge->Show();
   if (!m_RouteList.empty() || !m_RoutePointList.empty() || !m_TrackList.empty())
   {
-    int return_code = SendRoute(server_address, server_name.ToStdString(), m_RouteList, m_RoutePointList, m_TrackList, true);
+    int return_code = SendNavobjects(server_address, server_name.ToStdString(), m_RouteList, m_RoutePointList, m_TrackList, true);
   }
-
+  m_TransferTimer.Stop();
+  m_pgauge->Hide();
   //    Show( false );
   //    event.Skip();
   Close();
@@ -261,6 +270,11 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent &event) {
 
    g_DNS_cache_time = wxDateTime::Now();
   }
+}
+
+void SendToPeerDlg::OnTimerTransferTick(wxTimerEvent &event) {
+  m_pgauge->SetValue(navobj_transfer_progress);
+  event.Skip();
 }
 
 void SendToPeerDlg::DoScan() {
