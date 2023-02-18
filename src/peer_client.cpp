@@ -279,10 +279,12 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name, std::ve
           else
             b_cancel = true;
         }
+        else if (result == RESULT_GENERIC_ERROR)
+          apikey_ok = true;
       }
       else
-          apikey_ok = true;
-    }
+        apikey_ok = true;
+     }
     else{
       wxString err_msg;
       err_msg.Printf("Server HTTP response is: %ld", response_code);
