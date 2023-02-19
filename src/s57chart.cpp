@@ -5802,17 +5802,26 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (curAttrName == _T("TS_TSP")) {  // Tidal current applet
           wxArrayString as;
           wxString ts, ts1;
+          // value does look like: , 310, 310, 44, 44, 116, 116, 119, 119, 122,
+          // 122, 125, 125, 130, 130, 270, 270, 299, 299, 300, 300, 301, 301,
+          // 303, 303, 307,307509A,Helgoland,HW,310,0.9,044,0.2,116,1.5,
+          // 119,2.2,122,1.9,125,1.5,130,0.9,270,0.1,299,1.4,300,2.1,301,2.0,303,1.7,307,1.2
           wxStringTokenizer tk(value, wxT(","));
-          ts = tk.GetNextToken();  // we don't show this part (the TT entry
-                                   // number)'
-          ts1 = tk.GetNextToken();  // Now has the tidal reference port name'
+          ts1 =
+          tk.GetNextToken();  // get first token this will be skipped always
+          long l;
+          do {  // Skip up upto the first non number. This is Port Name
+            ts1 = tk.GetNextToken().Trim(false);
+            // some harbourID do have an alpha extension, therefore only check
+            // the left(2)
+          } while ((ts1.Left(2).ToLong(&l)));
           ts = _T("Tidal Streams referred to<br><b>");
           ts.Append(tk.GetNextToken()).Append(_T("</b> at <b>")).Append(ts1);
-          ts.Append(/*tk.GetNextToken()).Append(*/ _T("</b><br><table >"));
+          ts.Append(_T("</b><br><table >"));
           int i = -6;
           while (tk.HasMoreTokens()) {  // fill the current table
             ts.Append(_T("<tr><td>"));
-            wxString s1; s1.Format(wxT("%i"), i);
+            wxString s1(wxString::Format(_T("%+dh "), i));
             ts.Append(s1);
             ts.Append(_T("</td><td>"));
             s1 = tk.GetNextToken();
