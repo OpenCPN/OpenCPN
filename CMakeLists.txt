@@ -2018,6 +2018,11 @@ if (APPLE)
   )
 
   set_source_files_properties(
+    data/CoC-1973_2018-InlandECDIS_20220912.pdf
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+  )
+
+  set_source_files_properties(
     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
     PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
@@ -2203,6 +2208,7 @@ if (APPLE)
     data/opencpn.png
     data/ocpn-plugins.xml
     data/CoC-909_2013-InlandECDIS_20170308s.pdf
+    data/CoC-1973_2018-InlandECDIS_20220912.pdf
     ${SOUND_FILES}
     buildosx/opencpn.icns
     buildosx/MainMenu.xib
@@ -2316,9 +2322,12 @@ if (NOT APPLE)
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
 
   install(
-    FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf
+    FILES
+      data/CoC-909_2013-InlandECDIS_20170308s.pdf
+      data/CoC-1973_2018-InlandECDIS_20220912.pdf
     DESTINATION ${PREFIX_PKGDATA}
   )
+
   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
 
   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
