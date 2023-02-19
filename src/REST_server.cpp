@@ -284,7 +284,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
     auto p = event.GetPayload();
     std::string *payload = p.get();
 
-    printf("%s\n", payload->c_str());
+    //printf("%s\n", payload->c_str());
     // Stream out to temp file
     if (m_tempUploadFilePath.size() && m_ul_stream.is_open()) {
       m_ul_stream.write( payload->c_str(), payload->size());
