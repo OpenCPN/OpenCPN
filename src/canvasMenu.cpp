@@ -792,7 +792,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(menuTrack, ID_TK_MENU_DELETE, _("Delete") + _T( "..." ));
     }
 
-    wxString itemstp = _("Send to...");
+    wxString itemstp = SYMBOL_STP_TITLE; // Send to Peer
     MenuAppend1(menuTrack, ID_TK_MENU_SENDTOPEER, itemstp);
 
     // Eventually set this menu as the "focused context menu"
@@ -864,7 +864,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item);
       }
 
-      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, _("SendTo..."));
+      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, SYMBOL_STP_TITLE); //Send to Peer
     }
 
     // Eventually set this menu as the "focused context menu"
@@ -909,7 +909,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
       MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOGPS, item);
 
-      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, _("SendTo..."));
+      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, SYMBOL_STP_TITLE); //Send to Peer
       //#endif
 
       if ((m_pFoundRoutePoint == pAnchorWatchPoint1) ||
