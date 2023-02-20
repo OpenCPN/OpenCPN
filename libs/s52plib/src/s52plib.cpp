@@ -5727,64 +5727,44 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   //    extract the parameters from the string
   //    And creating a unique string hash as we go
   wxString inst(str, wxConvUTF8);
-  wxString carc_hash;
 
   wxStringTokenizer tkz(inst, _T ( ",;" ));
 
   //    outline color
   wxString outline_color = tkz.GetNextToken();
-  carc_hash += outline_color;
-  carc_hash += _T(".");
 
   //    outline width
   wxString slong = tkz.GetNextToken();
   long outline_width;
   slong.ToLong(&outline_width);
-  carc_hash += slong;
-  carc_hash += _T(".");
 
   //    arc color
   wxString arc_color = tkz.GetNextToken();
-  carc_hash += arc_color;
-  carc_hash += _T(".");
 
   //    arc width
   slong = tkz.GetNextToken();
   long arc_width;
   slong.ToLong(&arc_width);
-  carc_hash += slong;
-  carc_hash += _T(".");
 
   //    sectr1
   slong = tkz.GetNextToken();
   double sectr1;
   slong.ToDouble(&sectr1);
-  carc_hash += slong;
-  carc_hash += _T(".");
 
   //    sectr2
   slong = tkz.GetNextToken();
   double sectr2;
   slong.ToDouble(&sectr2);
-  carc_hash += slong;
-  carc_hash += _T(".");
 
   //    arc radius
   slong = tkz.GetNextToken();
   long radius;
   slong.ToLong(&radius);
-  carc_hash += slong;
-  carc_hash += _T(".");
 
   //    sector radius
   slong = tkz.GetNextToken();
   long sector_radius;
   slong.ToLong(&sector_radius);
-  carc_hash += slong;
-  carc_hash += _T(".");
-
-  slong.Printf(_T("%d"), m_colortable_index);
-  carc_hash += slong;
 
   // Center point
   wxPoint r;
@@ -5839,15 +5819,16 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   point.x = (int)xp + vp_plib.pix_width / 2;
   point.y = (int)yp + vp_plib.pix_height / 2;
 
+  float rad_fluff = rad + 10;
   float coords[8];
-  coords[0] = -rad;
-  coords[1] = rad;
-  coords[2] = rad;
-  coords[3] = rad;
-  coords[4] = -rad;
-  coords[5] = -rad;
-  coords[6] = rad;
-  coords[7] = -rad;
+  coords[0] = -rad_fluff;
+  coords[1] = rad_fluff;
+  coords[2] = rad_fluff;
+  coords[3] = rad_fluff;
+  coords[4] = -rad_fluff;
+  coords[5] = -rad_fluff;
+  coords[6] = rad_fluff;
+  coords[7] = -rad_fluff;
 
   glUseProgram(S52ring_shader_program);
 
@@ -5874,17 +5855,6 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   ctrv[1] = vp_plib.pix_height - point.y;
   glUniform2fv(centerloc, 1, ctrv);
 
-  //  Circle color
-  wxColour colorb = getwxColour(arc_color);
-  float colorv[4];
-  colorv[0] = colorb.Red() / float(256);
-  colorv[1] = colorb.Green() / float(256);
-  colorv[2] = colorb.Blue() / float(256);
-  colorv[3] = 1.0;
-
-  GLint colloc = glGetUniformLocation(S52ring_shader_program, "circle_color");
-  glUniform4fv(colloc, 1, colorv);
-
   //  Border color
   float bcolorv[4];
   bcolorv[0] = 0;
@@ -5892,18 +5862,13 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   bcolorv[2] = 0;
   bcolorv[3] = 1.0;
 
-  GLint bcolloc = glGetUniformLocation(S52ring_shader_program, "border_color");
-  glUniform4fv(bcolloc, 1, bcolorv);
+  GLint ring_colloc = glGetUniformLocation(S52ring_shader_program, "ring_color");
+  glUniform4fv(ring_colloc, 1, bcolorv);
 
   //  Border Width
-  GLint borderWidthloc =
-      glGetUniformLocation(S52ring_shader_program, "border_width");
-  glUniform1f(borderWidthloc, 2);
-
-  //  Ring width
   GLint ringWidthloc =
       glGetUniformLocation(S52ring_shader_program, "ring_width");
-  glUniform1f(ringWidthloc, arcw);
+  glUniform1f(ringWidthloc, arcw + (1 * outline_width));
 
   //  Visible sectors, rotated to vp orientation
   float sr1 = sectr1 + (vp_plib.rotation * 180 / PI);
@@ -5943,6 +5908,23 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   // Perform the actual drawing.
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  // Now draw color ring
+  //  Circle color
+  wxColour colorb = getwxColour(arc_color);
+  float colorv[4];
+  colorv[0] = colorb.Red() / float(256);
+  colorv[1] = colorb.Green() / float(256);
+  colorv[2] = colorb.Blue() / float(256);
+  colorv[3] = 1.0;
+  glUniform4fv(ring_colloc, 1, colorv);
+
+  //  arc Width
+  glUniform1f(ringWidthloc, arcw);
+
+   // Perform the actual drawing.
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 
   // Restore the per-object transform to Identity Matrix
   mat4x4 IM;
