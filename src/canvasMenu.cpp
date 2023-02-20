@@ -763,7 +763,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(menuRoute, ID_RT_MENU_SENDTONEWGPS, item);
       }
       //#endif
-      wxString itemstp = _("Send to...");
+      wxString itemstp = SYMBOL_STP_TITLE; // Send to Peer
       MenuAppend1(menuRoute, ID_RT_MENU_SENDTOPEER, itemstp);
 
     }
