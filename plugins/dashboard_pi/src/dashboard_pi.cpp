@@ -3612,20 +3612,26 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemBoxSizer01->Add(itemBoxSizer02);
 
   wxBitmap bmPlus, bmMinus;
+  int bmSize = imageRefSize * 100 / 275;
+
+#ifdef __OCPN__ANDROID__
+  bmSize = imageRefSize / 2;
+#endif
+
 #ifdef ocpnUSE_SVG
-  bmPlus = GetBitmapFromSVGFile(shareLocn + _T("plus.svg"), imageRefSize / 2,
-                                imageRefSize / 2);
-  bmMinus = GetBitmapFromSVGFile(shareLocn + _T("minus.svg"), imageRefSize / 2,
-                                 imageRefSize / 2);
+  bmPlus = GetBitmapFromSVGFile(shareLocn + _T("plus.svg"), bmSize,
+                                bmSize);
+  bmMinus = GetBitmapFromSVGFile(shareLocn + _T("minus.svg"), bmSize,
+                                 bmSize);
 #else
   wxImage plus1 = wxBitmap(*_img_plus).ConvertToImage();
   wxImage plus1s =
-      plus1.Scale(imageRefSize / 2, imageRefSize / 2, wxIMAGE_QUALITY_HIGH);
+      plus1.Scale(bmSize, bmSize, wxIMAGE_QUALITY_HIGH);
   bmPlus = wxBitmap(plus1s);
 
   wxImage minus1 = wxBitmap(*_img_minus).ConvertToImage();
   wxImage minus1s =
-      minus1.Scale(imageRefSize / 2, imageRefSize / 2, wxIMAGE_QUALITY_HIGH);
+      minus1.Scale(bmSize, bmSize, wxIMAGE_QUALITY_HIGH);
   bmMinus = wxBitmap(minus1s);
 #endif
 
@@ -3729,7 +3735,8 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       new wxStaticBoxSizer(itemStaticBox03, wxHORIZONTAL);
   itemBoxSizer03->Add(itemStaticBoxSizer03, 1, wxEXPAND | wxALL, border_size);
 
-  int vsize = 200;
+  wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
+  int vsize = dsize.y * 35 / 100;
 
 #ifdef __OCPN__ANDROID__
   int dw, dh;
@@ -4324,7 +4331,8 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
   imglist->Add(wxBitmap(dial1s));
 
-  int vsize = 180;
+  wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
+  int vsize = dsize.y * 50 / 100;
 
 #ifdef __OCPN__ANDROID__
   int dw, dh;
