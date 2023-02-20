@@ -158,6 +158,7 @@ enum {
   ID_WPT_MENU_COPY,
   ID_WPT_MENU_SENDTOGPS,
   ID_WPT_MENU_SENDTONEWGPS,
+  ID_WPT_MENU_SENDTOPEER,
   ID_PASTE_WAYPOINT,
   ID_PASTE_ROUTE,
   ID_PASTE_TRACK,
@@ -197,6 +198,7 @@ enum {
 
   ID_TK_MENU_PROPERTIES,
   ID_TK_MENU_DELETE,
+  ID_TK_MENU_SENDTOPEER,
   ID_WP_MENU_ADDITIONAL_INFO,
 
   ID_DEF_MENU_QUILTREMOVE,
@@ -789,6 +791,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(menuTrack, ID_TK_MENU_COPY, _("Copy as KML"));
       MenuAppend1(menuTrack, ID_TK_MENU_DELETE, _("Delete") + _T( "..." ));
     }
+
+    wxString itemstp = _("Send to...");
+    MenuAppend1(menuTrack, ID_TK_MENU_SENDTOPEER, itemstp);
+
     // Eventually set this menu as the "focused context menu"
     if (menuFocus != menuAIS) menuFocus = menuTrack;
   }
@@ -857,8 +863,10 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         wxString item = _("Send to new GPS");
         MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item);
       }
-      //#endif
+
+      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, _("SendTo..."));
     }
+
     // Eventually set this menu as the "focused context menu"
     if (menuFocus != menuAIS) menuFocus = menuWaypoint;
   }
@@ -900,6 +908,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         item.Append(_T(" )"));
       }
       MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOGPS, item);
+
+      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, _("SendTo..."));
       //#endif
 
       if ((m_pFoundRoutePoint == pAnchorWatchPoint1) ||
@@ -1677,6 +1687,34 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       }
       break;
 
+    case ID_WPT_MENU_SENDTOPEER:
+       if (m_pFoundRoutePoint) {
+
+        SendToPeerDlg dlg;
+        dlg.SetWaypoint(m_pFoundRoutePoint);
+
+        // Perform initial scan, if necessary
+
+        // Check for stale cache...
+        bool bDNScacheStale = true;
+        wxDateTime tnow = wxDateTime::Now();
+        if (g_DNS_cache_time.IsValid()){
+          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
+          if (delta.GetMinutes() < 5)
+            bDNScacheStale = false;
+        }
+
+         if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+           dlg.SetScanOnCreate(true);
+
+        dlg.SetScanTime(5);     // seconds
+        dlg.Create(NULL, -1, _("Send Waypoint to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.ShowModal();
+      }
+      break;
+
+
+
     case ID_RT_MENU_SENDTOGPS:
       if (m_pSelectedRoute) {
         if (parent->m_active_upload_port.Length())
@@ -1841,6 +1879,33 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       }
       break;
     }
+
+    case ID_TK_MENU_SENDTOPEER:
+      if (m_pSelectedTrack) {
+
+        SendToPeerDlg dlg;
+        dlg.SetTrack(m_pSelectedTrack);
+
+        // Perform initial scan, if necessary
+
+        // Check for stale cache...
+        bool bDNScacheStale = true;
+        wxDateTime tnow = wxDateTime::Now();
+        if (g_DNS_cache_time.IsValid()){
+          wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
+          if (delta.GetMinutes() < 5)
+            bDNScacheStale = false;
+        }
+
+         if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+           dlg.SetScanOnCreate(true);
+
+        dlg.SetScanTime(5);     // seconds
+        dlg.Create(NULL, -1, _("Send Track to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.ShowModal();
+      }
+      break;
+
 
     case ID_RC_MENU_SCALE_IN:
       parent->parent_frame->DoStackDown(parent);
