@@ -26,6 +26,7 @@ extern TCMgr *ptcmgr;
 extern wxString g_locale;
 extern OCPNPlatform *g_Platform;
 extern MyConfig *pConfig;
+extern OCPNPlatform *g_Platform;
 
 int g_tcwin_scale;
 
@@ -155,9 +156,10 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   int m_choiceTimezoneNChoices =
       sizeof(m_choiceTimezoneChoices) / sizeof(wxString);
   m_choiceTimezone = new wxChoice(
-      this, wxID_ANY, wxPoint((sx - (bsx * 2)) / 2, sy - (m_tsy + 10)),
+      this, wxID_ANY, wxPoint((sx - (bsx * 2)) / 2, sy - (m_tsy * 12 / 10)),
       wxSize(2 * bsx, bsy), m_choiceTimezoneNChoices, m_choiceTimezoneChoices,
       0);
+  m_choiceSize_x = bsx * 2;
 
   m_choiceTimezone->SetSelection(m_tzoneDisplay);
   m_choiceTimezone->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
@@ -168,13 +170,19 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   wxScreenDC dc;
   int text_height;
+  dc.SetFont(*qFont);
   dc.GetTextExtent(_T("W"), NULL, &text_height);
-  m_button_height = m_tsy;  // text_height + 20;
+  m_refTextHeight = text_height;
+  m_button_height =  m_tsy;
 
   // Build graphics tools
 
   wxFont *dlg_font = FontMgr::Get().GetFont(_("Dialog"));
   int dlg_font_size = dlg_font->GetPointSize();
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  dlg_font_size /= GetContentScaleFactor();
+#endif
 
   pSFont = FontMgr::Get().FindOrCreateFont(
       dlg_font_size - 2, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
@@ -210,7 +218,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   //  Fill in some static text control information
 
-  //  Tidi station information
+  //  Tide station information
   m_ptextctrl->Clear();
 
   wxString locn(pIDX->IDX_station_name, wxConvUTF8);
@@ -811,7 +819,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     int h;
     dc.SetFont(*pSFont);
     dc.GetTextExtent(m_stz, &w, &h);
-    dc.DrawText(m_stz, x / 2 - w / 2, y - 2.5 * m_button_height);
+    dc.DrawText(m_stz, x / 2 - w / 2, y - (m_button_height * 15/10) - (m_refTextHeight * 2));
 
     wxString sdate;
     if (g_locale == _T("en_US"))
@@ -821,7 +829,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
     dc.SetFont(*pMFont);
     dc.GetTextExtent(sdate, &w, &h);
-    dc.DrawText(sdate, x / 2 - w / 2, y - 2.0 * m_button_height);
+    dc.DrawText(sdate, x / 2 - w / 2, y - (m_button_height * 15/10) - (m_refTextHeight * 1));
 
     Station_Data *pmsd = pIDX->pref_sta_data;
     if (pmsd) {
@@ -863,7 +871,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
       dc.SetFont(*pSFont);
       dc.GetTextExtent(sday, &w, &h);
-      dc.DrawText(sday, 55 - w / 2, y - 2 * m_button_height);
+      dc.DrawText(sday, 55 - w / 2, y - (m_button_height * 15/10) - (m_refTextHeight * 1));
     }
 
     //  Render "Spot of interest"
@@ -896,7 +904,7 @@ void TCWin::OnSize(wxSizeEvent &event) {
   int x_graph = x * 1 / 10;
   int y_graph = y * 32 / 100;
   int x_graph_w = x * 8 / 10;
-  int y_graph_h = (y * .7) - (7 * m_button_height / 2);
+  int y_graph_h = (y * 65 / 100) - (m_button_height * 15/10) - (m_refTextHeight * 2);
   y_graph_h =
       wxMax(y_graph_h, 2);  // ensure minimum size is positive, at least.
 
@@ -919,17 +927,19 @@ void TCWin::OnSize(wxSizeEvent &event) {
   m_ptextctrl->SetSize(texc_size);
 
 #ifdef __WXOSX__
-  OK_button->Move(wxPoint(x - (4 * m_tsy + 10), y - (m_tsy + 10)));
+  OK_button->Move(wxPoint(x - (4 * m_button_height + 10), y - (m_button_height * 12 / 10)));
 #else
-  OK_button->Move(wxPoint(x - (3 * m_tsy + 10), y - (m_tsy + 10)));
+  OK_button->Move(wxPoint(x - (3 * m_button_height + 10), y - (m_button_height * 12 / 10)));
 #endif
-  PR_button->Move(wxPoint(10, y - (m_tsy + 10)));
+  PR_button->Move(wxPoint(10, y - (m_button_height + 10)));
+
+  m_choiceTimezone->Move(wxPoint(x/2 - m_choiceSize_x/2, y - (m_button_height * 12 / 10)));
 
   int bsx, bsy, bpx, bpy;
   PR_button->GetSize(&bsx, &bsy);
   PR_button->GetPosition(&bpx, &bpy);
 
-  NX_button->Move(wxPoint(bpx + bsx + 5, y - (m_tsy + 10)));
+  NX_button->Move(wxPoint(bpx + bsx + 5, y - (m_button_height + 10)));
 
   btc_valid = false;
 
