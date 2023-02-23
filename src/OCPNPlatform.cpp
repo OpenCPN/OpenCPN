@@ -722,10 +722,25 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     delete pctx;
     return false;
   }
-
   pcaps->Renderer = std::string(str);
-  pcaps->Version = std::string((char *)glGetString(GL_VERSION));
-  pcaps->GLSL_Version = std::string((char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+  char *stv = (char *)glGetString(GL_VERSION);
+  if (stv == NULL) {    //No GL Version...
+    delete tcanvas;
+    delete pctx;
+    return false;
+  }
+  pcaps->Version = std::string(stv);
+
+  char *stsv = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+  if (stsv == NULL) {    //No GLSL...
+    delete tcanvas;
+    delete pctx;
+    return false;
+  }
+  pcaps->GLSL_Version = std::string(stsv);
+
+  pcaps->dGLSL_Version = 0;
   pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
 
   if (pcaps->dGLSL_Version < 1.2){
