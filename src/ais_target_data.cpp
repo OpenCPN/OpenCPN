@@ -985,7 +985,7 @@ wxString AisTargetData::GetNatureofDistress(int dscnature) {
   // Natures of distress from: Rec. ITU-R M.493-10.
   wxString dscDistressType[] = { _("Fire, explosion"), _("Floding"),
                                      _("Collision"), _("Grounding"),
-                 _("Listing, in danger of capsazing"), _("Sinking"),
+                 _("Listing, in danger of capsizing"), _("Sinking"),
                _("Disabled and adrift"), _("Undesignated distress"),
              _("Abandoning ship"), _("Pirazy/armed robbery attack"),
                  _("Man overboard"), _T("-"), _("EPIRB emission") };

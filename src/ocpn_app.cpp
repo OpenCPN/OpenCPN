@@ -1132,7 +1132,7 @@ bool MyApp::OnInit() {
         if (wxFileExists(lockFile)) wxRemoveFile(lockFile);
 
         wxMessageBox(_("Sorry, an existing instance of OpenCPN may be too busy "
-                       "too respond.\nPlease retry."),
+                       "to respond.\nPlease retry."),
                      wxT("OpenCPN"), wxICON_INFORMATION | wxOK);
       }
       delete client;
