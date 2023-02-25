@@ -987,7 +987,7 @@ wxString AisTargetData::GetNatureofDistress(int dscnature) {
                                      _("Collision"), _("Grounding"),
                  _("Listing, in danger of capsizing"), _("Sinking"),
                _("Disabled and adrift"), _("Undesignated distress"),
-             _("Abandoning ship"), _("Pirazy/armed robbery attack"),
+             _("Abandoning ship"), _("Piracy/armed robbery attack"),
                  _("Man overboard"), _T("-"), _("EPIRB emission") };
   if (dscnature >= 0 && dscnature < 13)
     return dscDistressType[dscnature];
