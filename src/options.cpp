@@ -132,10 +132,14 @@ extern GLuint g_raster_format;
 #include "svg_utils.h"
 #include "waypointman_gui.h"
 
-#if !defined(__WXOSX__)
-#define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
+#ifdef __WXOSX__
+  #if wxCHECK_VERSION(3,2,0)
+    #define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
+  #else
+    #define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS
+  #endif
 #else
-#define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS
+  #define SLIDER_STYLE wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
 #endif
 
 wxString GetOCPNKnownLanguage(const wxString lang_canonical,
