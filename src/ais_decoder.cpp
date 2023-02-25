@@ -468,7 +468,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     if( 97 == pTargetData->MMSI / 10000000) {
       pTargetData->Class = AIS_SART;
       // won't get a static report, so fake it here
-      pTargetData->StaticReportTicks = now.GetTicks();  
+      pTargetData->StaticReportTicks = now.GetTicks();
     }
     pTargetData->NavStatus = (ais_nav_status)NavStat;
     if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
@@ -498,6 +498,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_positionOnceValid = true;
     pTargetData->PositionReportTicks = now.GetTicks();
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -579,6 +580,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_OwnShip =
         AISTransceiverInformation == tN2kAISTransceiverInformation::N2kaisown_information_not_broadcast;
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -673,6 +675,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //FIXME (dave) Populate more fiddly static data
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -763,6 +766,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
       }
     }
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -806,7 +810,9 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_nameValid = true;
     pTargetData->MID = 124;  // Indicates a name from n2k
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
+
     touch_state.Notify();
     return true;
 
@@ -862,6 +868,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
     pTargetData->ShipType = (unsigned char)VesselType;
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -920,6 +927,7 @@ bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
       //FIXME (dave) Populate more fiddly static data
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
