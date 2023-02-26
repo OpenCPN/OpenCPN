@@ -153,7 +153,7 @@ static std::string dirListPath(std::string name) {
 }
 
 std::string PluginHandler::pluginsInstallDataPath() {
-    return pluginsConfigDir();
+  return pluginsConfigDir();
 }
 
 /** Plugin ABI encapsulation. */
@@ -209,12 +209,12 @@ public:
         "debian-x86_64;12;ubuntu-x86_64;23.04",
         "debian-x86_64;12;ubuntu-x86_64;23.10",
         "debian-x86_64;12;ubuntu-x86_64;24.04",
-        "debian-x86_64;sid;ubuntu-x86_64;24.04"
-     };  // clang-format: on
+        "debian-x86_64;sid;ubuntu-x86_64;24.04"};  // clang-format: on
     if (ocpn::startswith(plugin.abi(), "debian")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
-      const std::string compat_version =
-      plugin.abi() + ";" + plugin.major_version() + ";" + m_abi + ";" + m_abi_version;
+      const std::string compat_version = plugin.abi() + ";" +
+                                         plugin.major_version() + ";" + m_abi +
+                                         ";" + m_abi_version;
       for (auto& cv : compat_versions) {
         if (compat_version == cv) {
           return true;
@@ -271,7 +271,7 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     }
   } else if (ocpn::startswith(_name, "ubuntu") && (_version == "22.04")) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
-    if(wxv >= 32){
+    if (wxv >= 32) {
       auto tokens = ocpn::split(_name.c_str(), "-");
       _name = std::string(tokens[0]) + std::string("-wx32-") + tokens[1];
     }
@@ -285,9 +285,9 @@ PluginHandler::PluginHandler() {}
 
 bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
-
-  static const std::vector<std::string> simple_abis = {"msvc", "msvc-wx32",
-  "darwin", "darwin-wx32", "android-armhf", "android-arm64"};
+  static const std::vector<std::string> simple_abis = {
+      "msvc",        "msvc-wx32",     "darwin",
+      "darwin-wx32", "android-armhf", "android-arm64"};
 
   auto compatOS = CompatOs::getInstance();
   Host host(compatOS);
@@ -531,15 +531,15 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
       slashpos = suffix.find_first_of("opencpn/plugins/");
       suffix = suffix.substr(16);
 
-      dest =
-          g_BasePlatform->GetPrivateDataDir().ToStdString() + "/plugins/" + suffix;
+      dest = g_BasePlatform->GetPrivateDataDir().ToStdString() + "/plugins/" +
+             suffix;
     }
     if (ocpn::startswith(location, "lib") &&
         ocpn::startswith(suffix, "opencpn/")) {
       suffix = suffix.substr(8);
 
-      dest = g_BasePlatform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" +
-             suffix;
+      dest = g_BasePlatform->GetPrivateDataDir().ToStdString() +
+             "/plugins/lib/" + suffix;
     }
   }
 
@@ -701,8 +701,8 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
     if (is_metadata) {
       if (metadata_path == "") continue;
       archive_entry_set_pathname(entry, metadata_path.c_str());
-    }
-    else if (!entry_set_install_path(entry, pathmap)) continue;
+    } else if (!entry_set_install_path(entry, pathmap))
+      continue;
     if (strlen(archive_entry_pathname(entry)) == 0) {
       continue;
     }
@@ -1098,9 +1098,9 @@ static std::string FindMatchingDataDir(std::regex name_re) {
       smatch sm;
       string s(filename);
       if (regex_search(s, sm, name_re)) {
-	stringstream ss;
-	for (auto c : sm) ss << c;
-	return ss.str();
+        stringstream ss;
+        for (auto c : sm) ss << c;
+        return ss.str();
       }
       cont = dir.GetNext(&filename);
     }
@@ -1152,7 +1152,7 @@ static std::string PluginNameCase(const std::string& name) {
   if (match != "") return match;
 
   match = FindMatchingLibFile(name_re);
-  return match != "" ?  match : name;
+  return match != "" ? match : name;
 }
 
 /**  map[key] = list-of-files given path to file containing paths. */
@@ -1164,9 +1164,9 @@ static void LoadPluginMapFile(PluginMap& map, const std::string& path) {
     return;
   }
   std::stringstream buf;
-  buf <<  f.rdbuf();
+  buf << f.rdbuf();
   auto filelist = ocpn::split(buf.str().c_str(), "\n");
-  for (auto& file: filelist) {
+  for (auto& file : filelist) {
     file = wxFileName(file).GetFullName().ToStdString();
   }
 

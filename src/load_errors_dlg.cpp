@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -53,7 +53,6 @@ The following plugin has encountered errors during startup:
 
 )""");
 
-
 static const char* const kBadLibsIntro = _(R"""(
 The following libraries  have encountered errors during startup:
 
@@ -75,7 +74,6 @@ This plugin will be uninstalled. You might want to reinstall
 it after updating  the catalog.
 )""");
 
-
 static const char* const kBadLibsFooter = _(R"""(
 
 These libraries  will be removed. You might want to reinstall them
@@ -90,7 +88,6 @@ after updating  the catalog. However, I don't know which actual
 plugin to install in this case.
 )""");
 
-
 /** Message box for incompatible plugin with known name and version. */
 class LoadErrorsDlg : public OCPNMessageDialog {
 public:
@@ -101,7 +98,7 @@ public:
 
     FormatCtx(const std::vector<LoadError> errors) {
       auto handler = PluginHandler::getInstance();
-      for (const auto& e :  errors) {
+      for (const auto& e : errors) {
         auto plugin = handler->getPluginByLibrary(e.lib_path);
         if (plugin != "")
           plugins.push_back(plugin);
@@ -113,22 +110,22 @@ public:
 
 private:
   std::string FormatMsg(const FormatCtx& ctx) {
-    auto handler =  PluginHandler::getInstance();
+    auto handler = PluginHandler::getInstance();
     std::stringstream ss;
     if (ctx.plugins.size() > 0) {
-       ss << (ctx.plugins.size() == 1 ?  kBadPluginIntro : kBadPluginsIntro);
-       for (const auto& p : ctx.plugins) {
-          ss << "    " << p << "\n";
-       }
-       ss << (ctx.plugins.size() == 1 ? kBadPluginFooter: kBadPluginsFooter);
+      ss << (ctx.plugins.size() == 1 ? kBadPluginIntro : kBadPluginsIntro);
+      for (const auto& p : ctx.plugins) {
+        ss << "    " << p << "\n";
+      }
+      ss << (ctx.plugins.size() == 1 ? kBadPluginFooter : kBadPluginsFooter);
     }
-    if (ctx.libs.size() > 0 ) {
-       ss << (ctx.libs.size() == 1 ?  kBadLibIntro : kBadLibsIntro);
-       for (const auto& lib : ctx.libs) {
-          ss << "    " << lib << "\n";
-       }
-       ss << (ctx.libs.size() == 1 ?  kBadLibFooter : kBadLibsFooter);
-    }	
+    if (ctx.libs.size() > 0) {
+      ss << (ctx.libs.size() == 1 ? kBadLibIntro : kBadLibsIntro);
+      for (const auto& lib : ctx.libs) {
+        ss << "    " << lib << "\n";
+      }
+      ss << (ctx.libs.size() == 1 ? kBadLibFooter : kBadLibsFooter);
+    }
     return ss.str();
   }
 
@@ -146,7 +143,7 @@ public:
       for (const auto& plugin : format_ctx.plugins) {
         PluginHandler::getInstance()->uninstall(plugin);
       }
-      for (const auto& lib : format_ctx.libs)  remove(lib.c_str());
+      for (const auto& lib : format_ctx.libs) remove(lib.c_str());
     }
   }
 };

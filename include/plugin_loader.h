@@ -40,8 +40,6 @@
 #include "plugin_blacklist.h"
 #include "semantic_vers.h"
 
-
-
 typedef struct {
   wxString name;      //!< name of the plugin
   int version_major;  //!< major version
@@ -59,7 +57,6 @@ typedef struct {
   bool mute_dialog;  //!< if true, don't warn the user by dialog.
 } BlackListedPlugin;
 
-
 enum class PluginStatus {
   System,     //!< One of the four system plugins, unmanaged.
   Managed,    //!< Managed by installer.
@@ -73,8 +70,6 @@ enum class PluginStatus {
   ManagedInstalledDowngradeAvailable,
   PendingListRemoval
 };
-
-
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -95,7 +90,7 @@ public:
   wxDateTime m_plugin_modification;  //!< used to detect upgraded plugins
   destroy_t* m_destroy_fn;
   wxDynamicLibrary m_library;
-  wxString m_common_name;        //!< A common name string for the plugin
+  wxString m_common_name;  //!< A common name string for the plugin
   wxString m_short_description;
   wxString m_long_description;
   int m_api_version;
@@ -115,35 +110,38 @@ public:
   std::string m_InstalledManagedVersion;  //!< As detected from manifest
 };
 
-
 class LoadError {
 public:
-  enum class Type { Unloadable,  //<! wrong magic, wrong type of binary...
-                    Unreadable,
-	            Incompatible,
-		    NoCreate,    //<! Missing linkage (is this a plugin?)
-		    NoDestroy,   //<! Missing linkage (is this a plugin?)
-	            Blacklisted }
-     type;
-  const std::string lib_path;   //<! Complete path to failing library
-  const int api_version;        //<! As determined from plugin API
+  enum class Type {
+    Unloadable,  //<! wrong magic, wrong type of binary...
+    Unreadable,
+    Incompatible,
+    NoCreate,   //<! Missing linkage (is this a plugin?)
+    NoDestroy,  //<! Missing linkage (is this a plugin?)
+    Blacklisted
+  } type;
+  const std::string lib_path;            //<! Complete path to failing library
+  const int api_version;                 //<! As determined from plugin API
   const SemanticVersion plugin_version;  //<! As determined from plugin API
 
   LoadError(Type t, const std::string& l, int av, SemanticVersion pv)
-    : type(t), lib_path(l), api_version(av), plugin_version(pv) {}
+      : type(t), lib_path(l), api_version(av), plugin_version(pv) {}
 
   LoadError(Type t, const std::string& l, int av)
-    : type(t),  lib_path(l), api_version(av),
-      plugin_version(SemanticVersion()) {}
+      : type(t),
+        lib_path(l),
+        api_version(av),
+        plugin_version(SemanticVersion()) {}
 
   LoadError(Type t, const std::string& l)
-    : type(t),  lib_path(l), api_version(0),
-      plugin_version(SemanticVersion()) {}
+      : type(t),
+        lib_path(l),
+        api_version(0),
+        plugin_version(SemanticVersion()) {}
 };
 
-
 //    Declare an array of PlugIn Containers
-WX_DEFINE_ARRAY_PTR(PlugInContainer* , ArrayOfPlugIns);
+WX_DEFINE_ARRAY_PTR(PlugInContainer*, ArrayOfPlugIns);
 
 /**
  * PluginLoader is a backend module without any direct GUI functionality.
@@ -189,8 +187,6 @@ public:
 
   EventVar evt_version_incompatible_plugin;
 
-
-
   bool LoadAllPlugIns(bool enabled_plugins);
 
   void SetPluginDefaultIcon(const wxBitmap* bitmap);
@@ -212,7 +208,7 @@ public:
 
 private:
   PluginLoader();
-  bool LoadPlugInDirectory(const wxString &plugin_dir, bool load_enabled);
+  bool LoadPlugInDirectory(const wxString& plugin_dir, bool load_enabled);
   bool LoadPluginCandidate(wxString file_name, bool load_enabled);
   std::unique_ptr<AbstractBlacklist> m_blacklist;
   ArrayOfPlugIns plugin_array;

@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,12 +20,12 @@
 #ifndef _LOAD_ERRORS_DLG_H__
 #define _LOAD_ERRORS_DLG_H__
 
-#include  <wx/event.h>
-#include  <wx/window.h>
+#include <wx/event.h>
+#include <wx/window.h>
 
 #include "observable_evtvar.h"
 
-/** 
+/**
  * Run a dialog if there are load errors encountered in plugin_loader
  */
 class LoadErrorsDlgCtrl : public wxEvtHandler {
@@ -37,4 +37,4 @@ private:
   wxWindow* m_parent;
 };
 
-#endif //  _LOAD_ERRORS_DLG_H__
+#endif  //  _LOAD_ERRORS_DLG_H__
