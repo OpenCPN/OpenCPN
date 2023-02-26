@@ -22,7 +22,7 @@
  * \brief Handle dialog reporting plugin load errors.
  *
  * PluginLoader emits an event containing a list of all plugins which cannot
- * be loaded for various reasons whne loading is complete. If this list is
+ * be loaded for various reasons when loading is complete. If this list is
  * non-empty, run an informational dialog and remove involved plugins and
  * libraries.
  */
@@ -88,7 +88,7 @@ after updating  the catalog. However, I don't know which actual
 plugin to install in this case.
 )""");
 
-/** Message box for incompatible plugin with known name and version. */
+/** Unloadable plugins report message box. */
 class LoadErrorsDlg : public OCPNMessageDialog {
 public:
   class FormatCtx {
@@ -108,7 +108,9 @@ public:
     }
   };
 
-private:
+  LoadErrorsDlg(wxWindow* parent, const FormatCtx& format_ctx)
+      : OCPNMessageDialog(parent, wxString(FormatMsg(format_ctx))) {}
+
   std::string FormatMsg(const FormatCtx& ctx) {
     auto handler = PluginHandler::getInstance();
     std::stringstream ss;
@@ -128,25 +130,21 @@ private:
     }
     return ss.str();
   }
-
-  LoadErrorsDlg(wxWindow* parent, const FormatCtx& format_ctx)
-      : OCPNMessageDialog(parent, wxString(FormatMsg(format_ctx))) {}
-
-public:
-  static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
-    if (errors.size() == 0) return;
-    LoadErrorsDlg::FormatCtx format_ctx(errors);
-    LoadErrorsDlg dlg(parent, format_ctx);
-
-    int sts = dlg.ShowModal();
-    if (sts == wxID_YES || sts == wxID_OK) {
-      for (const auto& plugin : format_ctx.plugins) {
-        PluginHandler::getInstance()->uninstall(plugin);
-      }
-      for (const auto& lib : format_ctx.libs) remove(lib.c_str());
-    }
-  }
 };
+
+/** Run dialog and remove plugins/libraries as required. */
+static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
+  LoadErrorsDlg::FormatCtx format_ctx(errors);
+  LoadErrorsDlg dlg(parent, format_ctx);
+
+  int sts = dlg.ShowModal();
+  if (sts == wxID_YES || sts == wxID_OK) {
+    for (const auto& plugin : format_ctx.plugins) {
+      PluginHandler::getInstance()->uninstall(plugin);
+    }
+    for (const auto& lib : format_ctx.libs) remove(lib.c_str());
+  }
+}
 
 LoadErrorsDlgCtrl::LoadErrorsDlgCtrl(wxWindow* parent) : m_parent(parent) {
   auto loader = PluginLoader::getInstance();
@@ -155,6 +153,6 @@ LoadErrorsDlgCtrl::LoadErrorsDlgCtrl(wxWindow* parent) : m_parent(parent) {
                                 EVT_LOAD_COMPLETE);
   Bind(EVT_LOAD_COMPLETE, [&](ObservedEvt& ev) {
     auto errors = UnpackEvtPointer<std::vector<LoadError>>(ev);
-    LoadErrorsDlg::Run(m_parent, *errors);
+    if (errors->size() != 0) Run(m_parent, *errors);
   });
 }

@@ -202,9 +202,7 @@ PluginLoader* PluginLoader::getInstance() {
 }
 
 PluginLoader::PluginLoader()
-    : m_blacklist(blacklist_factory()),
-      m_default_plugin_icon(0),
-      delay_notifications(true) {}
+    : m_blacklist(blacklist_factory()), m_default_plugin_icon(0) {}
 
 bool PluginLoader::IsPlugInAvailable(wxString commonName) {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {

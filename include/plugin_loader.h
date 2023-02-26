@@ -175,6 +175,10 @@ public:
   EventVar evt_plugin_unload;
   EventVar evt_pluglist_change;
   EventVar evt_unreadable_plugin;
+
+  /**
+   *  Carries a malloc'ed read-only copy of a PlugInContainer owned by listener.
+   */
   EventVar evt_deactivate_plugin;
 
   EventVar evt_update_chart_types;
@@ -215,7 +219,6 @@ private:
   wxString m_last_error_string;
   wxString m_plugin_location;
   const wxBitmap* m_default_plugin_icon;
-  bool delay_notifications;
 
   std::vector<LoadError> load_errors;
 };
