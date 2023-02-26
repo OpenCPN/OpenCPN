@@ -65,6 +65,7 @@
 #include "garmin_wrapper.h"
 #include "garmin_protocol_mgr.h"
 #include "nmea0183.h"
+#include "comm_drv_n0183_serial.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -284,10 +285,9 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent &event) {
         gusb_cmd_send((const garmin_usb_packet *)pvt_on, sizeof(pvt_on));
 
         //    Start the pump
-        // FIXME (dave)
-        //m_garmin_usb_thread =
-        //    new GARMIN_USB_Thread(this, m_pparent, m_pMainEventHandler,
-        //                          (wxIntPtr)m_usb_handle, m_max_tx_size);
+        m_garmin_usb_thread =
+            new GARMIN_USB_Thread(this, m_pparent, m_pMainEventHandler,
+                                  (wxIntPtr)m_usb_handle, m_max_tx_size);
         m_Thread_run_flag = 1;
         m_garmin_usb_thread->Run();
       }
@@ -870,15 +870,14 @@ thread_exit:
 //-------------------------------------------------------------------------------------------------------------
 //    GARMIN_USB_Thread Implementation
 //-------------------------------------------------------------------------------------------------------------
-// FIXME (dave) implement using comm
-#if 0
+#if 1
 GARMIN_USB_Thread::GARMIN_USB_Thread(GarminProtocolHandler *parent,
-                                     DataStream *GParentStream,
+                                     void *GParentStream,
                                      wxEvtHandler *MessageTarget,
                                      unsigned int device_handle,
                                      size_t max_tx_size) {
   m_parent = parent;  // This thread's immediate "parent"
-  m_parent_stream = GParentStream;
+  //m_parent_stream = GParentStream;
   m_pMessageTarget = MessageTarget;
   m_max_tx_size = max_tx_size;
 
@@ -931,15 +930,16 @@ void *GARMIN_USB_Thread::Entry() {
       oNMEA0183.Gsv.Write(snt);
       wxString message = snt.Sentence;
 
+      //    Copy the message into a vector for tranmittal upstream
+      auto buffer = std::make_shared<std::vector<unsigned char>>();
+      std::vector<unsigned char>* vec = buffer.get();
+      for (unsigned int i=0 ; i < message.Length() ; i++){
+        vec->push_back(message[i]);
+      }
       if (m_pMessageTarget) {
-        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-        wxCharBuffer buffer = message.ToUTF8();
-        if (buffer.data()) {
-          Nevent.SetNMEAString(buffer.data());
-          Nevent.SetStream(m_parent_stream);
-
-          m_pMessageTarget->AddPendingEvent(Nevent);
-        }
+        CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+        Nevent.SetPayload(buffer);
+        m_pMessageTarget->AddPendingEvent(Nevent);
       }
     }
 
@@ -984,15 +984,16 @@ void *GARMIN_USB_Thread::Entry() {
         oNMEA0183.Rmc.Write(snt);
         wxString message = snt.Sentence;
 
+        //    Copy the message into a vector for tranmittal upstream
+        auto buffer = std::make_shared<std::vector<unsigned char>>();
+        std::vector<unsigned char>* vec = buffer.get();
+        for (unsigned int i=0 ; i < message.Length() ; i++){
+          vec->push_back(message[i]);
+        }
         if (m_pMessageTarget) {
-          OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-          wxCharBuffer buffer = message.ToUTF8();
-          if (buffer.data()) {
-            Nevent.SetNMEAString(buffer.data());
-            Nevent.SetStream(m_parent_stream);
-
-            m_pMessageTarget->AddPendingEvent(Nevent);
-          }
+          CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+          Nevent.SetPayload(buffer);
+          m_pMessageTarget->AddPendingEvent(Nevent);
         }
       }
     }
