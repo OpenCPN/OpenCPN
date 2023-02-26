@@ -5518,7 +5518,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #endif
 
   sliderSizer->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, "Mouse wheel zoom sensitivity"),
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Mouse wheel zoom sensitivity")),
       inputFlags);
   m_pMouse_Zoom_Slider = new MouseZoomSlider(itemPanelFont, m_sliderSize);
   sliderSizer->Add(m_pMouse_Zoom_Slider, 0, wxALL, border_size);
