@@ -1169,6 +1169,11 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
                                           PlugInContainer* pic) {
   wxLogMessage(wxString("PluginLoader: Loading PlugIn: ") + plugin_file);
 
+  if (plugin_file == "") {
+      wxLogMessage("Ignoring loading of empty path");
+      return 0;
+  }
+
   if (!wxIsReadable(plugin_file)) {
     wxLogMessage("Ignoring unreadable plugin %s",
                  plugin_file.ToStdString().c_str());
