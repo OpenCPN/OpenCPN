@@ -294,17 +294,6 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
 
   if (loaded) return true;
 
-  //    Check the config file to see if this PlugIn is user-enabled
-
-  const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
-  ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
-
-  // only loading enabled plugins? check that it is enabled
-  if (load_enabled && !enabled.Get(true)) {
-    wxLogMessage("Skipping not enabled candidate.");
-    return true;
-  }
-
   bool b_compat = CheckPluginCompatibility(file_name);
 
   if (!b_compat) {
@@ -319,6 +308,18 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   }
 
   PlugInContainer* pic = LoadPlugIn(file_name);
+
+  // Check the config file to see if this PlugIn is user-enabled,
+  // only loading enabled plugins.
+  // Make the check late enough to pick up incompatible plugins anyway
+  const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
+  ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
+  if (load_enabled && !enabled.Get(true)) {
+    if (pic) delete pic;
+    wxLogMessage("Skipping not enabled candidate.");
+    return true;
+  }
+
 
   if (pic) {
     if (pic->m_pplugin) {
