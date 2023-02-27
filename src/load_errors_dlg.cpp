@@ -43,50 +43,50 @@
 
 wxDEFINE_EVENT(EVT_LOAD_COMPLETE, ObservedEvt);
 
-static const char* const kBadPluginsIntro = _(R"""(
+static const char* const kBadPluginsIntro = _(R"(
 The following  plugins have encountered errors during startup:
 
-)""");
+)");
 
-static const char* const kBadPluginIntro = _(R"""(
+static const char* const kBadPluginIntro = _(R"(
 The following plugin has encountered errors during startup:
 
-)""");
+)");
 
-static const char* const kBadLibsIntro = _(R"""(
+static const char* const kBadLibsIntro = _(R"(
 The following libraries  have encountered errors during startup:
 
-)""");
+)");
 
-static const char* const kBadLibIntro = _(R"""(
+static const char* const kBadLibIntro = _(R"(
 The following library has encountered errors during startup:
 
-)""");
-static const char* const kBadPluginsFooter = _(R"""(
+)");
+static const char* const kBadPluginsFooter = _(R"(
 
 These plugins will be uninstalled. You might want to reinstall
 them after updating  the catalog.
-)""");
+)");
 
-static const char* const kBadPluginFooter = _(R"""(
+static const char* const kBadPluginFooter = _(R"(
 
 This plugin will be uninstalled. You might want to reinstall
 it after updating  the catalog.
-)""");
+)");
 
-static const char* const kBadLibsFooter = _(R"""(
+static const char* const kBadLibsFooter = _(R"(
 
 These libraries  will be removed. You might want to reinstall them
 after updating  the catalog. However, I don't know which actual
 plugins to install in this case.
-)""");
+)");
 
-static const char* const kBadLibFooter = _(R"""(
+static const char* const kBadLibFooter = _(R"(
 
 The library  will be removed. You might want to reinstall it
 after updating  the catalog. However, I don't know which actual
 plugin to install in this case.
-)""");
+)");
 
 /** Unloadable plugins report message box. */
 class LoadErrorsDlg : public OCPNMessageDialog {
