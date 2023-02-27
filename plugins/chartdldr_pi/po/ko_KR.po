@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-14 21:37-0400\n"
-"PO-Revision-Date: 2022-04-15 01:43\n"
+"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"PO-Revision-Date: 2023-02-24 14:31\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -17,29 +17,29 @@ msgstr ""
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
 "X-Crowdin-File-ID: 160\n"
 
-#: src/chartcatalog.cpp:44
+#: src/chartcatalog.cpp:39
 msgid "Catalog is not valid."
 msgstr "목록이 유효하지 않습니다."
 
-#: src/chartcatalog.cpp:392
+#: src/chartcatalog.cpp:385
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
 msgstr "%s (%s to %s), river miles %3.1f - %3.1f"
 
-#: src/chartcatalog.cpp:400
+#: src/chartcatalog.cpp:393
 #, c-format
 msgid "%s"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:260
+#: src/chartdldr_pi.cpp:248
 msgid "ChartDownloader"
 msgstr "해도다운로더"
 
-#: src/chartdldr_pi.cpp:263
+#: src/chartdldr_pi.cpp:251
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "OpenCPN을 위한 해도다운로더 플러그인"
 
-#: src/chartdldr_pi.cpp:268
+#: src/chartdldr_pi.cpp:256
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
@@ -47,240 +47,240 @@ msgstr "OpenCPN용 해도 내려받기 플러그인\n"
 "NOAA 해도 범주 형식을 지원하는 소스에서 해도 내려받기 및 업데이트를 관리합니다.\n"
 "  "
 
-#: src/chartdldr_pi.cpp:275 src/chartdldr_pi.cpp:893 src/chartdldr_pi.cpp:900
-#: src/chartdldr_pi.cpp:907 src/chartdldr_pi.cpp:934 src/chartdldr_pi.cpp:968
-#: src/chartdldr_pi.cpp:1035 src/chartdldr_pi.cpp:1044 src/chartdldr_pi.cpp:1369
-#: src/chartdldr_pi.cpp:1479 src/chartdldr_pi.cpp:1483 src/chartdldr_pi.cpp:1570
-#: src/chartdldr_pi.cpp:1684 src/chartdldr_pi.cpp:2415
+#: src/chartdldr_pi.cpp:263 src/chartdldr_pi.cpp:878 src/chartdldr_pi.cpp:885
+#: src/chartdldr_pi.cpp:892 src/chartdldr_pi.cpp:919 src/chartdldr_pi.cpp:954
+#: src/chartdldr_pi.cpp:1021 src/chartdldr_pi.cpp:1030 src/chartdldr_pi.cpp:1358
+#: src/chartdldr_pi.cpp:1466 src/chartdldr_pi.cpp:1470 src/chartdldr_pi.cpp:1551
+#: src/chartdldr_pi.cpp:1666 src/chartdldr_pi.cpp:2397
 msgid "Chart Downloader"
 msgstr "해도 다운로더"
 
-#: src/chartdldr_pi.cpp:588 src/chartdldr_pi.cpp:611
+#: src/chartdldr_pi.cpp:576 src/chartdldr_pi.cpp:599
 msgid "Select all"
 msgstr "모두 선택"
 
-#: src/chartdldr_pi.cpp:592 src/chartdldr_pi.cpp:612
+#: src/chartdldr_pi.cpp:580 src/chartdldr_pi.cpp:600
 msgid "Deselect all"
 msgstr "모두 삭제"
 
-#: src/chartdldr_pi.cpp:597 src/chartdldr_pi.cpp:613
+#: src/chartdldr_pi.cpp:585 src/chartdldr_pi.cpp:601
 msgid "Invert selection"
 msgstr "선택 반전"
 
-#: src/chartdldr_pi.cpp:601 src/chartdldr_pi.cpp:614
+#: src/chartdldr_pi.cpp:589 src/chartdldr_pi.cpp:602
 msgid "Select updated"
 msgstr "업데이트된 항목 선택"
 
-#: src/chartdldr_pi.cpp:605 src/chartdldr_pi.cpp:615
+#: src/chartdldr_pi.cpp:593 src/chartdldr_pi.cpp:603
 msgid "Select new"
 msgstr "신규 해도 선택"
 
-#: src/chartdldr_pi.cpp:663
+#: src/chartdldr_pi.cpp:651
 #, c-format
 msgid "Charts: %s"
 msgstr "해도: %s"
 
-#: src/chartdldr_pi.cpp:663
+#: src/chartdldr_pi.cpp:651
 msgid " from "
 msgstr "에서"
 
-#: src/chartdldr_pi.cpp:669 src/chartdldrgui.cpp:497
+#: src/chartdldr_pi.cpp:657 src/chartdldrgui.cpp:499
 msgid "Charts"
 msgstr "해도"
 
-#: src/chartdldr_pi.cpp:733 src/chartdldrgui.h:171 src/chartdldrgui.h:242
+#: src/chartdldr_pi.cpp:718 src/chartdldrgui.h:170 src/chartdldrgui.h:241
 msgid "New"
 msgstr "신규"
 
-#: src/chartdldr_pi.cpp:740 src/chartdldrgui.h:174 src/chartdldrgui.h:243
+#: src/chartdldr_pi.cpp:725 src/chartdldrgui.h:173 src/chartdldrgui.h:242
 msgid "Out of date"
 msgstr "오래된"
 
-#: src/chartdldr_pi.cpp:743
+#: src/chartdldr_pi.cpp:728
 msgid "Up to date"
 msgstr "최신"
 
-#: src/chartdldr_pi.cpp:778
+#: src/chartdldr_pi.cpp:763
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr "총 %lu개의 해도, %lu개 업데이트됨, %lu개 신규"
 
-#: src/chartdldr_pi.cpp:783 src/chartdldr_pi.cpp:1181 src/chartdldr_pi.cpp:1264
-#: src/chartdldr_pi.cpp:1282 src/chartdldr_pi.cpp:1299 src/chartdldr_pi.cpp:1318
+#: src/chartdldr_pi.cpp:768 src/chartdldr_pi.cpp:1169 src/chartdldr_pi.cpp:1252
+#: src/chartdldr_pi.cpp:1270 src/chartdldr_pi.cpp:1287 src/chartdldr_pi.cpp:1306
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
 msgstr "총 %lu개의 해도, %lu개 업데이트됨, %lu개 신규, %lu개 선택됨"
 
-#: src/chartdldr_pi.cpp:856 src/chartdldr_pi.cpp:1651
+#: src/chartdldr_pi.cpp:841 src/chartdldr_pi.cpp:1633
 msgid "(Please update first)"
 msgstr "(먼저 업데이트 해주세요)"
 
-#: src/chartdldr_pi.cpp:861 src/chartdldr_pi.cpp:949
+#: src/chartdldr_pi.cpp:846 src/chartdldr_pi.cpp:935
 msgid "Error, the URL to the chart source data seems wrong."
 msgstr "오류, 해도 소스 데이터의 URL이 잘못된 것 같습니다."
 
-#: src/chartdldr_pi.cpp:862 src/chartdldr_pi.cpp:950 src/chartdldr_pi.cpp:1385
+#: src/chartdldr_pi.cpp:847 src/chartdldr_pi.cpp:936 src/chartdldr_pi.cpp:1373
 msgid "Error"
 msgstr "오류"
 
-#: src/chartdldr_pi.cpp:891
+#: src/chartdldr_pi.cpp:876
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
 msgstr "모든 해도 목록을 업데이트하도록 선택했습니다.\\그런 다음 신규 해도와 업데이트된 모든 해도를 다운로드합니다.\\시간이 오래 걸릴 수 있습니다."
 
-#: src/chartdldr_pi.cpp:898
+#: src/chartdldr_pi.cpp:883
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
 msgstr "모든 해도 목록을 업데이트하도록 선택했습니다.\\그런 다음 업데이트되지 않은 신규 해도만 다운로드합니다.\\시간이 오래 걸릴 수 있습니다."
 
-#: src/chartdldr_pi.cpp:905
+#: src/chartdldr_pi.cpp:890
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
 msgstr "모든 해도 목록을 업데이트하도록 선택했습니다.\\그런 다음 업데이트된(신규는 아님) 해도만 다운로드합니다.\\시간이 오래 걸릴 수 있습니다."
 
-#: src/chartdldr_pi.cpp:930 src/chartdldr_pi.cpp:1475
+#: src/chartdldr_pi.cpp:915 src/chartdldr_pi.cpp:1462
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr "%d/%d 해도를 다운로드하지 못했습니다.\n"
 "목록을 확인하고 인터넷 연결이 작동하는지 확인한 다음 필요한 경우 작업을 반복하십시오."
 
-#: src/chartdldr_pi.cpp:966 src/chartdldr_pi.cpp:2388 src/chartdldr_pi.cpp:2413
+#: src/chartdldr_pi.cpp:952 src/chartdldr_pi.cpp:2370 src/chartdldr_pi.cpp:2395
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "디렉토리 %s을(를) 만들 수 없습니다."
 
-#: src/chartdldr_pi.cpp:988 src/chartdldr_pi.cpp:1002
+#: src/chartdldr_pi.cpp:974 src/chartdldr_pi.cpp:988
 msgid "Downloading file"
 msgstr "파일 다운로드 중"
 
-#: src/chartdldr_pi.cpp:989 src/chartdldr_pi.cpp:1003
+#: src/chartdldr_pi.cpp:975 src/chartdldr_pi.cpp:989
 msgid "Reading Headers: "
 msgstr "헤더 읽기:"
 
-#: src/chartdldr_pi.cpp:1033
+#: src/chartdldr_pi.cpp:1019
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr "새 목록을 찾지 못했습니다: %s"
 
-#: src/chartdldr_pi.cpp:1041
+#: src/chartdldr_pi.cpp:1027
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
 msgstr "목록 다운로드 실패: %s \n"
 "인터넷 연결이 작동하는지 확인하십시오."
 
-#: src/chartdldr_pi.cpp:1202 src/chartdldr_pi.cpp:1208 src/chartdldrgui.cpp:564
+#: src/chartdldr_pi.cpp:1190 src/chartdldr_pi.cpp:1196 src/chartdldrgui.cpp:566
 msgid "Select All"
 msgstr "모두 선택"
 
-#: src/chartdldr_pi.cpp:1204 src/chartdldrgui.cpp:568 src/chartdldrgui.cpp:622
+#: src/chartdldr_pi.cpp:1192 src/chartdldrgui.cpp:570 src/chartdldrgui.cpp:624
 msgid "Select None"
 msgstr "선택 없음"
 
-#: src/chartdldr_pi.cpp:1205
+#: src/chartdldr_pi.cpp:1193
 msgid "De-select all charts in the list."
 msgstr "목록의 모든 해도를 선택 취소합니다."
 
-#: src/chartdldr_pi.cpp:1209 src/chartdldrgui.cpp:569
+#: src/chartdldr_pi.cpp:1197 src/chartdldrgui.cpp:571
 msgid "Select all charts in the list."
 msgstr "목록에서 모든 해도를 선택합니다."
 
-#: src/chartdldr_pi.cpp:1333
+#: src/chartdldr_pi.cpp:1321
 msgid "No charts selected for download."
 msgstr "다운로드를 위해 선택된 해도가 없습니다."
 
-#: src/chartdldr_pi.cpp:1344
+#: src/chartdldr_pi.cpp:1333
 msgid "Abort download"
 msgstr "다운로드 중단"
 
-#: src/chartdldr_pi.cpp:1357
+#: src/chartdldr_pi.cpp:1346
 msgid "Unknown"
 msgstr "알 수 없는"
 
-#: src/chartdldr_pi.cpp:1365
+#: src/chartdldr_pi.cpp:1354
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
 msgstr "선택한 해도 '%s'을(를) 자동으로 다운로드할 수 없습니다. 브라우저 창을 열고 수동으로 다운로드하시겠습니까?\n\n"
 " 해도를 다운로드한 후 해도를 %s에 합축헤제하십시오."
 
-#: src/chartdldr_pi.cpp:1383
+#: src/chartdldr_pi.cpp:1371
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
 msgstr "오류, 해도(%s) 데이터의 URL이 잘못된 것 같습니다."
 
-#: src/chartdldr_pi.cpp:1428
+#: src/chartdldr_pi.cpp:1415
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr "%u/%u 해도 다운로드 실패, %u 다운로드 실패(%s / %s)"
 
-#: src/chartdldr_pi.cpp:1433
+#: src/chartdldr_pi.cpp:1420
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
 msgstr "해도 %u/%u(%s / %s) 다운로드 중"
 
-#: src/chartdldr_pi.cpp:1469 src/chartdldrgui.cpp:548 src/chartdldrgui.cpp:580
+#: src/chartdldr_pi.cpp:1456 src/chartdldrgui.cpp:550 src/chartdldrgui.cpp:582
 msgid "Download selected charts"
 msgstr "선택한 해도 다운로드"
 
-#: src/chartdldr_pi.cpp:1482
+#: src/chartdldr_pi.cpp:1469
 msgid "Chart download cancelled."
 msgstr "해도 다운로드가 취소되었습니다."
 
-#: src/chartdldr_pi.cpp:1517 src/chartdldrgui.cpp:240
+#: src/chartdldr_pi.cpp:1498 src/chartdldrgui.cpp:240
 msgid "Catalog"
 msgstr "목록"
 
-#: src/chartdldr_pi.cpp:1519
+#: src/chartdldr_pi.cpp:1500
 msgid "Released"
 msgstr "출시된"
 
-#: src/chartdldr_pi.cpp:1521
+#: src/chartdldr_pi.cpp:1502
 msgid "Local path"
 msgstr "로컬 경로"
 
-#: src/chartdldr_pi.cpp:1567
+#: src/chartdldr_pi.cpp:1548
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
 msgstr "해도 소스를 제거하시겠습니까?\\로컬 해도 파일은 제거되지 않지만\\하지만 해도를 더 이상 업데이트할 수 없습니다."
 
-#: src/chartdldr_pi.cpp:1636
+#: src/chartdldr_pi.cpp:1618
 msgid "Edit Chart Source"
 msgstr "해도 소스 편집"
 
-#: src/chartdldr_pi.cpp:1680
+#: src/chartdldr_pi.cpp:1662
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "경로 %s은(는) 환경구성된 해도 디렉토리에 포함되지 않는 것 같습니다.\n"
 "해도를 보려면 '해도 파일' 탭에서 환경구성을 조정해야 합니다."
 
-#: src/chartdldr_pi.cpp:1775
+#: src/chartdldr_pi.cpp:1757
 msgid "Installing charts."
 msgstr "해도 설치 중."
 
-#: src/chartdldr_pi.cpp:2368 src/chartdldr_pi.cpp:2372
+#: src/chartdldr_pi.cpp:2350 src/chartdldr_pi.cpp:2354
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "사전 정의된 해도 소스 중 하나를 선택하거나 직접 생성해야 합니다.\n"
 
-#: src/chartdldr_pi.cpp:2377
+#: src/chartdldr_pi.cpp:2359
 msgid "The chart source must have a name.\n"
 msgstr "해도 소스에는 이름이 있어야 합니다.\n"
 
-#: src/chartdldr_pi.cpp:2382
+#: src/chartdldr_pi.cpp:2364
 msgid "The chart source must have a valid URL.\n"
 msgstr "해도 소스에는 유효한 URL이 있어야 합니다.\n"
 
-#: src/chartdldr_pi.cpp:2384
+#: src/chartdldr_pi.cpp:2366
 msgid "You must select a local folder to store the charts.\n"
 msgstr "해도를 저장할 로컬 폴더를 선택해야 합니다.\n"
 
-#: src/chartdldr_pi.cpp:2393
+#: src/chartdldr_pi.cpp:2375
 msgid "Chart source definition problem"
 msgstr "해도 소스 정의 문제"
 
@@ -316,157 +316,157 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:908
+#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:910
 msgid "Cancel"
 msgstr "취소"
 
-#: src/chartdldrgui.cpp:391 src/chartdldrgui.cpp:992
+#: src/chartdldrgui.cpp:393 src/chartdldrgui.cpp:994
 msgid "Choose Chart File Directory"
 msgstr "해도 파일 디렉토리 선택"
 
-#: src/chartdldrgui.cpp:426
+#: src/chartdldrgui.cpp:428
 msgid "Select Catalog..."
 msgstr "목록 선택..."
 
-#: src/chartdldrgui.cpp:432
+#: src/chartdldrgui.cpp:434
 msgid "Chart Catalogs Available"
 msgstr "해도 목록 사용 가능"
 
-#: src/chartdldrgui.cpp:453
+#: src/chartdldrgui.cpp:455
 msgid "Add Catalog"
 msgstr "목록 추가"
 
-#: src/chartdldrgui.cpp:455
+#: src/chartdldrgui.cpp:457
 msgid "Add a new chart catalog."
 msgstr "신규 해도 목록 추가"
 
-#: src/chartdldrgui.cpp:459
+#: src/chartdldrgui.cpp:461
 msgid "Delete"
 msgstr "삭제"
 
-#: src/chartdldrgui.cpp:462
+#: src/chartdldrgui.cpp:464
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
 msgstr "해도 목록을 삭제합니다. 다운로드한 해도는 삭제되지 않습니다."
 
-#: src/chartdldrgui.cpp:466
+#: src/chartdldrgui.cpp:468
 msgid "Edit..."
 msgstr "편집..."
 
-#: src/chartdldrgui.cpp:474
+#: src/chartdldrgui.cpp:476
 msgid "Update"
 msgstr "업데이트"
 
-#: src/chartdldrgui.cpp:478
+#: src/chartdldrgui.cpp:480
 msgid "Download the current chart catalog and update the data."
 msgstr "현재 해도 목록을 다운로드하고 데이터를 업데이트하십시오."
 
-#: src/chartdldrgui.cpp:482
+#: src/chartdldrgui.cpp:484
 msgid "Update All"
 msgstr "모두 업데이트"
 
-#: src/chartdldrgui.cpp:485
+#: src/chartdldrgui.cpp:487
 msgid "Download all chart catalogs, and then update charts."
 msgstr "모든 해도 목록을 다운로드한 다음 해도를 업데이트합니다."
 
-#: src/chartdldrgui.cpp:491
+#: src/chartdldrgui.cpp:493
 msgid "Download Charts..."
 msgstr "해도 다운로드..."
 
-#: src/chartdldrgui.cpp:516
+#: src/chartdldrgui.cpp:518
 msgid "Status"
 msgstr "상태"
 
-#: src/chartdldrgui.cpp:520
+#: src/chartdldrgui.cpp:522
 msgid "Date"
 msgstr "날짜"
 
-#: src/chartdldrgui.cpp:524
+#: src/chartdldrgui.cpp:526
 msgid "Chart Description"
 msgstr "해도 설명"
 
-#: src/chartdldrgui.cpp:552
+#: src/chartdldrgui.cpp:554
 msgid "Select New"
 msgstr "신규 해도 선택"
 
-#: src/chartdldrgui.cpp:554
+#: src/chartdldrgui.cpp:556
 msgid "Check all charts that are 'New' in the list."
 msgstr "목록에서 '신규'인 모든 해도를 확인하십시오."
 
-#: src/chartdldrgui.cpp:557
+#: src/chartdldrgui.cpp:559
 msgid "Select Updated"
 msgstr "업데이트된 해도 선택"
 
-#: src/chartdldrgui.cpp:560
+#: src/chartdldrgui.cpp:562
 msgid "Select all charts that are 'Out of Date' in the list."
 msgstr "목록에서 '오래된' 해도를 모두 선택하십시오."
 
-#: src/chartdldrgui.cpp:574
+#: src/chartdldrgui.cpp:576
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
 msgstr "%u 해도 총계, %u 업데이트됨, %u 신규, %u 선택됨"
 
-#: src/chartdldrgui.cpp:585
+#: src/chartdldrgui.cpp:587
 #, c-format
 msgid "%u charts total, %u updated, %u new"
 msgstr "%u 해도 총계, %u 업데이트됨, %u 신규"
 
-#: src/chartdldrgui.cpp:850
+#: src/chartdldrgui.cpp:852
 msgid "Default Path to Charts"
 msgstr "해도의 기본 경로"
 
-#: src/chartdldrgui.cpp:861
+#: src/chartdldrgui.cpp:863
 msgid "Select a folder"
 msgstr "폴더 선택"
 
-#: src/chartdldrgui.cpp:868
+#: src/chartdldrgui.cpp:870
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: src/chartdldrgui.cpp:873
+#: src/chartdldrgui.cpp:875
 msgid "After catalog update select for download"
 msgstr "카탈로그 업데이트 후 다운로드 선택"
 
-#: src/chartdldrgui.cpp:878
+#: src/chartdldrgui.cpp:880
 msgid "All updated charts"
 msgstr "모든 업데이트된 해도"
 
-#: src/chartdldrgui.cpp:883
+#: src/chartdldrgui.cpp:885
 msgid "All new charts"
 msgstr "모든 신규 차트"
 
-#: src/chartdldrgui.cpp:893
+#: src/chartdldrgui.cpp:895
 msgid "Allow bulk update of all configured chart sources and charts"
 msgstr "환경구성된 모든 해도 소스 및 해도의 일괄 업데이트 허용"
 
-#: src/chartdldrgui.cpp:898
+#: src/chartdldrgui.cpp:900
 msgid "Update chart source catalog"
 msgstr "해도 소스 목록 업데이트"
 
-#: src/chartdldrgui.cpp:943 src/chartdldrgui.cpp:944
+#: src/chartdldrgui.cpp:945 src/chartdldrgui.cpp:946
 msgid "Downloading chart sources"
 msgstr "해도 소스 다운로드"
 
-#: src/chartdldrgui.cpp:958
+#: src/chartdldrgui.cpp:960
 #, c-format
 msgid "Failed to save: %s "
 msgstr "저장 실패: %s"
 
-#: src/chartdldrgui.cpp:960 src/chartdldrgui.cpp:970
+#: src/chartdldrgui.cpp:962 src/chartdldrgui.cpp:972
 msgid "Chart downloader"
 msgstr "해도 다운로더"
 
-#: src/chartdldrgui.cpp:967
+#: src/chartdldrgui.cpp:969
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."
 msgstr "다운로드 실패: %s \n"
 "인터넷 연결이 작동하는지 확인하십시오."
 
-#: src/chartdldrgui.h:108
+#: src/chartdldrgui.h:107
 msgid "New chart source"
 msgstr "신규 차트 소스"
 
-#: src/chartdldrgui.h:224
+#: src/chartdldrgui.h:223
 msgid "Chart Downloader Preferences"
 msgstr "해도 다운로더 기본 설정"
 

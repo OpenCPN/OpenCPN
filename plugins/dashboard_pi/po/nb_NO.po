@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-21 20:19-0400\n"
-"PO-Revision-Date: 2022-04-10 02:29\n"
+"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"PO-Revision-Date: 2023-02-27 02:12\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -17,482 +17,494 @@ msgstr ""
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 "X-Crowdin-File-ID: 111\n"
 
-#: src/clock.cpp:169 src/dial.cpp:529 src/gps.cpp:225 src/wind.cpp:66
-#: src/wind_history.cpp:435
+#: src/clock.cpp:169 src/dial.cpp:455 src/dial.cpp:456 src/gps.cpp:238
+#: src/wind.cpp:68 src/wind_history.cpp:486
 msgid "N"
 msgstr "N"
 
-#: src/dashboard_pi.cpp:183
+#: src/dashboard_pi.cpp:244
 msgid "Position"
 msgstr "Posisjon"
 
-#: src/dashboard_pi.cpp:185
+#: src/dashboard_pi.cpp:246
 msgid "SOG"
 msgstr "SOG"
 
-#: src/dashboard_pi.cpp:187
+#: src/dashboard_pi.cpp:248
 msgid "Speedometer"
 msgstr "Logg"
 
-#: src/dashboard_pi.cpp:189
+#: src/dashboard_pi.cpp:250
 msgid "COG"
 msgstr "COG"
 
-#: src/dashboard_pi.cpp:191
+#: src/dashboard_pi.cpp:252
 msgid "Mag COG"
 msgstr "Mag COG"
 
-#: src/dashboard_pi.cpp:193
+#: src/dashboard_pi.cpp:254
 msgid "GNSS Compass"
 msgstr "GNSS kompass"
 
-#: src/dashboard_pi.cpp:195
+#: src/dashboard_pi.cpp:256
 msgid "True Compass"
 msgstr "Sann kompass"
 
-#: src/dashboard_pi.cpp:197
+#: src/dashboard_pi.cpp:258
 msgid "STW"
 msgstr "STW"
 
-#: src/dashboard_pi.cpp:199
+#: src/dashboard_pi.cpp:260
 msgid "True HDG"
 msgstr "Sann HDG"
 
-#: src/dashboard_pi.cpp:201
+#: src/dashboard_pi.cpp:262
 msgid "Mag HDG"
 msgstr "Mag. HDG"
 
-#: src/dashboard_pi.cpp:204
+#: src/dashboard_pi.cpp:265
 msgid "App. Wind Angle & Speed"
 msgstr "Tils. vind vinkel & fart"
 
-#: src/dashboard_pi.cpp:206
+#: src/dashboard_pi.cpp:267
 msgid "App & True Wind Angle"
 msgstr "Tils. & sann vindvinkel"
 
-#: src/dashboard_pi.cpp:208 src/dashboard_pi.cpp:210
+#: src/dashboard_pi.cpp:269 src/dashboard_pi.cpp:271
 msgid "App. Wind Speed"
 msgstr "Tils. Vindhastighet"
 
-#: src/dashboard_pi.cpp:212
+#: src/dashboard_pi.cpp:273
 msgid "True Wind Angle & Speed"
 msgstr "Sann Vindvinkel & fart"
 
-#: src/dashboard_pi.cpp:214 src/dashboard_pi.cpp:216
+#: src/dashboard_pi.cpp:275
+msgid "Altitude"
+msgstr "Høyde"
+
+#: src/dashboard_pi.cpp:277
+msgid "Altitude Trace"
+msgstr "Høydespor"
+
+#: src/dashboard_pi.cpp:279 src/dashboard_pi.cpp:281
 msgid "Depth"
 msgstr "Dybde"
 
-#: src/dashboard_pi.cpp:218 src/dashboard_pi.cpp:220
+#: src/dashboard_pi.cpp:283 src/dashboard_pi.cpp:285
 msgid "Barometric pressure"
 msgstr "Lufttrykk"
 
-#: src/dashboard_pi.cpp:222
+#: src/dashboard_pi.cpp:287
 msgid "Water Temp."
 msgstr "Vanntemp."
 
-#: src/dashboard_pi.cpp:224
+#: src/dashboard_pi.cpp:289
 msgid "Air Temp."
 msgstr "Luft temp."
 
-#: src/dashboard_pi.cpp:226
+#: src/dashboard_pi.cpp:291
 msgid "App. Wind Angle"
 msgstr "Tils. Vindvinkel"
 
-#: src/dashboard_pi.cpp:228
+#: src/dashboard_pi.cpp:293
 msgid "True Wind Angle"
 msgstr "Sann Vindvinkel"
 
-#: src/dashboard_pi.cpp:230
+#: src/dashboard_pi.cpp:295
 msgid "True Wind Direction"
 msgstr "Sann Vindretning"
 
-#: src/dashboard_pi.cpp:232
+#: src/dashboard_pi.cpp:297
 msgid "True Wind Speed"
 msgstr "Sann Vindhastighet"
 
-#: src/dashboard_pi.cpp:234
+#: src/dashboard_pi.cpp:299
 msgid "True Wind Dir. & Speed"
 msgstr "Sann Vindretning & fart"
 
-#: src/dashboard_pi.cpp:236 src/dashboard_pi.cpp:238
+#: src/dashboard_pi.cpp:301 src/dashboard_pi.cpp:303
 msgid "VMG"
 msgstr "VMG"
 
-#: src/dashboard_pi.cpp:240 src/dashboard_pi.cpp:242
+#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
 msgid "Rudder Angle"
 msgstr "Rorvinkel"
 
-#: src/dashboard_pi.cpp:244
+#: src/dashboard_pi.cpp:309
 msgid "GNSS in use"
 msgstr "GNSS i bruk"
 
-#: src/dashboard_pi.cpp:246
+#: src/dashboard_pi.cpp:311
 msgid "GNSS Status"
 msgstr "GNSS Status"
 
-#: src/dashboard_pi.cpp:248
+#: src/dashboard_pi.cpp:313
 msgid "Cursor"
 msgstr "Kursor"
 
-#: src/dashboard_pi.cpp:250
+#: src/dashboard_pi.cpp:315
 msgid "GNSS Clock"
 msgstr "GNSS Klokke"
 
-#: src/dashboard_pi.cpp:252
+#: src/dashboard_pi.cpp:317
 msgid "Sunrise/Sunset"
 msgstr "Sol opp/ned"
 
-#: src/dashboard_pi.cpp:254
+#: src/dashboard_pi.cpp:319
 msgid "Moon phase"
 msgstr "Månefase"
 
-#: src/dashboard_pi.cpp:256
+#: src/dashboard_pi.cpp:321
 msgid "Wind history"
 msgstr "Vind histogram"
 
-#: src/dashboard_pi.cpp:258
+#: src/dashboard_pi.cpp:323
 msgid "Barometric history"
 msgstr "Barometer histogram"
 
-#: src/dashboard_pi.cpp:260
+#: src/dashboard_pi.cpp:325
 msgid "Trip Log"
 msgstr "Turlogg"
 
-#: src/dashboard_pi.cpp:262
+#: src/dashboard_pi.cpp:327
 msgid "Sum Log"
 msgstr "Sumlogg"
 
-#: src/dashboard_pi.cpp:264
+#: src/dashboard_pi.cpp:329
 msgid "From Ownship"
 msgstr "Fra eget skip"
 
-#: src/dashboard_pi.cpp:266
+#: src/dashboard_pi.cpp:331
 msgid "Pitch"
 msgstr "Stamp"
 
-#: src/dashboard_pi.cpp:268
+#: src/dashboard_pi.cpp:333
 msgid "Heel"
 msgstr "Helling"
 
-#: src/dashboard_pi.cpp:270
+#: src/dashboard_pi.cpp:335
 msgid "Local GNSS Clock"
 msgstr "Lokal GNSS klokke"
 
-#: src/dashboard_pi.cpp:272
+#: src/dashboard_pi.cpp:337
 msgid "Local CPU Clock"
 msgstr "Lokal CPU klokke"
 
-#: src/dashboard_pi.cpp:274
+#: src/dashboard_pi.cpp:339
 msgid "Local Sunrise/Sunset"
 msgstr "Lokal sol opp/ned"
 
-#: src/dashboard_pi.cpp:491 src/dashboard_pi.cpp:728 src/dashboard_pi.cpp:2429
-#: src/dashboard_pi.cpp:2442 src/dashboard_pi.cpp:2660 src/dashboard_pi.cpp:2730
-#: src/dashboard_pi.cpp:3141
+#: src/dashboard_pi.cpp:569 src/dashboard_pi.cpp:895 src/dashboard_pi.cpp:3326
+#: src/dashboard_pi.cpp:3340 src/dashboard_pi.cpp:3570 src/dashboard_pi.cpp:3664
+#: src/dashboard_pi.cpp:4182
 msgid "Dashboard"
 msgstr "Instrumentpanel"
 
-#: src/dashboard_pi.cpp:733
+#: src/dashboard_pi.cpp:898
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Instrumentutvidelse for OpenCPN"
 
-#: src/dashboard_pi.cpp:738
+#: src/dashboard_pi.cpp:903
 msgid "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr "Instrument utvidelse for OpenCPN\n"
 "Tilfører navigasjons instrument visning fra NMEA kilder."
 
-#: src/dashboard_pi.cpp:1446 src/dashboard_pi.cpp:2039 src/dashboard_pi.cpp:2829
+#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:1957 src/dashboard_pi.cpp:2893
+#: src/dashboard_pi.cpp:3791
 msgid "Up"
 msgstr "Opp"
 
-#: src/dashboard_pi.cpp:1449 src/dashboard_pi.cpp:2041 src/dashboard_pi.cpp:2834
+#: src/dashboard_pi.cpp:1727 src/dashboard_pi.cpp:1959 src/dashboard_pi.cpp:2895
+#: src/dashboard_pi.cpp:3798
 msgid "Down"
 msgstr "Ned"
 
-#: src/dashboard_pi.cpp:1461 src/dashboard_pi.cpp:2029
+#: src/dashboard_pi.cpp:1744 src/dashboard_pi.cpp:1968 src/dashboard_pi.cpp:2882
 msgid "Stbd"
 msgstr "Stbd"
 
-#: src/dashboard_pi.cpp:1464 src/dashboard_pi.cpp:2031
+#: src/dashboard_pi.cpp:1747 src/dashboard_pi.cpp:1970 src/dashboard_pi.cpp:2884
 msgid "Port"
 msgstr "B.Bord"
 
-#: src/dashboard_pi.cpp:2627
+#: src/dashboard_pi.cpp:3536
 msgid "Dashboard preferences"
 msgstr "Dashbord alternativer"
 
-#: src/dashboard_pi.cpp:2737
+#: src/dashboard_pi.cpp:3673
 msgid "show this dashboard"
 msgstr "vis dette instrumentpanel"
 
-#: src/dashboard_pi.cpp:2743
+#: src/dashboard_pi.cpp:3682
 msgid "Caption:"
 msgstr "Overskrift:"
 
-#: src/dashboard_pi.cpp:2756
+#: src/dashboard_pi.cpp:3696
 msgid "Orientation:"
 msgstr "Retning:"
 
-#: src/dashboard_pi.cpp:2760 src/dashboard_pi.cpp:3715
+#: src/dashboard_pi.cpp:3701 src/dashboard_pi.cpp:4738
 msgid "Vertical"
 msgstr "Vertikal"
 
-#: src/dashboard_pi.cpp:2761 src/dashboard_pi.cpp:3717
+#: src/dashboard_pi.cpp:3702 src/dashboard_pi.cpp:4741
 msgid "Horizontal"
 msgstr "Horisontal"
 
-#: src/dashboard_pi.cpp:2785 src/dashboard_pi.cpp:2802 src/dashboard_pi.cpp:3305
+#: src/dashboard_pi.cpp:3733 src/dashboard_pi.cpp:3754 src/dashboard_pi.cpp:4348
 msgid "Instruments"
 msgstr "Instrumenter"
 
-#: src/dashboard_pi.cpp:2810
+#: src/dashboard_pi.cpp:3767
 msgid "Add"
 msgstr "Legg til"
 
-#: src/dashboard_pi.cpp:2823
+#: src/dashboard_pi.cpp:3783
 msgid "Delete"
 msgstr "Slett"
 
-#: src/dashboard_pi.cpp:2844
+#: src/dashboard_pi.cpp:3811
 msgid "Appearance"
 msgstr "Utseende"
 
-#: src/dashboard_pi.cpp:2846
+#: src/dashboard_pi.cpp:3814
 msgid "Fonts"
 msgstr "Skrift"
 
-#: src/dashboard_pi.cpp:2853
+#: src/dashboard_pi.cpp:3823
 msgid "Title:"
 msgstr "Tittel:"
 
-#: src/dashboard_pi.cpp:2860
+#: src/dashboard_pi.cpp:3832
 msgid "Data:"
 msgstr "Data:"
 
-#: src/dashboard_pi.cpp:2867
+#: src/dashboard_pi.cpp:3841
 msgid "Label:"
 msgstr "Etikett:"
 
-#: src/dashboard_pi.cpp:2874
+#: src/dashboard_pi.cpp:3850
 msgid "Small:"
 msgstr "Liten:"
 
-#: src/dashboard_pi.cpp:2882
+#: src/dashboard_pi.cpp:3860
 msgid "Units, Ranges, Formats"
 msgstr "Enheter, Avstander, Formater"
 
-#: src/dashboard_pi.cpp:2888
+#: src/dashboard_pi.cpp:3868
 msgid "Speedometer max value:"
 msgstr "Speedometer maks verdi:"
 
-#: src/dashboard_pi.cpp:2894
+#: src/dashboard_pi.cpp:3877
 msgid "Speed Over Ground Damping Factor:"
 msgstr "Fart over grunn dempefaktor:"
 
-#: src/dashboard_pi.cpp:2900
+#: src/dashboard_pi.cpp:3886
 msgid "COG Damping Factor:"
 msgstr "COG dempefaktor:"
 
-#: src/dashboard_pi.cpp:2906
+#: src/dashboard_pi.cpp:3895
 msgid "Local Time Offset From UTC:"
 msgstr "Lokal tidsforskyvning fra UTC:"
 
-#: src/dashboard_pi.cpp:2925
+#: src/dashboard_pi.cpp:3920
 msgid "Boat speed units:"
 msgstr "Båtens fartenheter:"
 
-#: src/dashboard_pi.cpp:2928 src/dashboard_pi.cpp:2969
+#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:3987
 msgid "Honor OpenCPN settings"
 msgstr "OpenCPN ære innstillinger"
 
-#: src/dashboard_pi.cpp:2928 src/dashboard_pi.cpp:2978
+#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:4006
 msgid "Kts"
 msgstr "Knop"
 
-#: src/dashboard_pi.cpp:2928 src/dashboard_pi.cpp:2978
+#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
 msgid "mph"
 msgstr "mph"
 
-#: src/dashboard_pi.cpp:2928 src/dashboard_pi.cpp:2978
+#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
 msgid "km/h"
 msgstr "km/t"
 
-#: src/dashboard_pi.cpp:2928 src/dashboard_pi.cpp:2978
+#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
 msgid "m/s"
 msgstr "m/s"
 
-#: src/dashboard_pi.cpp:2934
+#: src/dashboard_pi.cpp:3938
 msgid "Depth units:"
 msgstr "Dybde enheter:"
 
-#: src/dashboard_pi.cpp:2937 src/dashboard_pi.cpp:2969
+#: src/dashboard_pi.cpp:3942 src/dashboard_pi.cpp:3989
 msgid "Meters"
 msgstr "Meter"
 
-#: src/dashboard_pi.cpp:2937
+#: src/dashboard_pi.cpp:3942
 msgid "Feet"
 msgstr "Fot"
 
-#: src/dashboard_pi.cpp:2937
+#: src/dashboard_pi.cpp:3942
 msgid "Fathoms"
 msgstr "Favner"
 
-#: src/dashboard_pi.cpp:2937
+#: src/dashboard_pi.cpp:3943
 msgid "Inches"
 msgstr "Tommer"
 
-#: src/dashboard_pi.cpp:2937
+#: src/dashboard_pi.cpp:3943
 msgid "Centimeters"
 msgstr "Centimeter"
 
-#: src/dashboard_pi.cpp:2942
+#: src/dashboard_pi.cpp:3955
 #, c-format
 msgid "Depth Offset (%s):"
 msgstr "Dybde forskyvning (%s):"
 
-#: src/dashboard_pi.cpp:2966
+#: src/dashboard_pi.cpp:3984
 msgid "Distance units:"
 msgstr "Distanseenheter:"
 
-#: src/dashboard_pi.cpp:2969
+#: src/dashboard_pi.cpp:3988
 msgid "Nautical miles"
 msgstr "Nautiske mil"
 
-#: src/dashboard_pi.cpp:2969
+#: src/dashboard_pi.cpp:3988
 msgid "Statute miles"
 msgstr "Statute mil"
 
-#: src/dashboard_pi.cpp:2969
+#: src/dashboard_pi.cpp:3989
 msgid "Kilometers"
 msgstr "Kilometer"
 
-#: src/dashboard_pi.cpp:2975
+#: src/dashboard_pi.cpp:4003
 msgid "Wind speed units:"
 msgstr "Fartsenheter for vind:"
 
-#: src/dashboard_pi.cpp:2984
+#: src/dashboard_pi.cpp:4020
 msgid "Temperature units:"
 msgstr "Temperaturenheter"
 
-#: src/dashboard_pi.cpp:2987
+#: src/dashboard_pi.cpp:4023
 msgid "Celsius"
 msgstr "Celcius"
 
-#: src/dashboard_pi.cpp:2987
+#: src/dashboard_pi.cpp:4023
 msgid "Fahrenheit"
 msgstr "Fahrenheit"
 
-#: src/dashboard_pi.cpp:2987
+#: src/dashboard_pi.cpp:4023
 msgid "Kelvin"
 msgstr "Kelvin"
 
-#: src/dashboard_pi.cpp:2994
-msgid "Use SignalK true wind data over ground. (Instead of through water)"
-msgstr "Bruk SignalK sanne vinddata over grunn (i stedet for gjennom vann)."
+#: src/dashboard_pi.cpp:4038
+msgid "Use N2K & SignalK true wind data over ground.\n"
+"(Instead of through water)"
+msgstr "Bruk N2K & SignalK sanne vinddata over grunn.\n"
+"(I stedet for gjennom vann)"
 
-#: src/dashboard_pi.cpp:3269
+#: src/dashboard_pi.cpp:4310
 msgid "Add instrument"
 msgstr "Legg til instrument"
 
-#: src/dashboard_pi.cpp:3275
+#: src/dashboard_pi.cpp:4315
 msgid "Select instrument to add:"
 msgstr "Velg instrument:"
 
-#: src/dashboard_pi.cpp:3699 src/dashboard_pi.cpp:3724
+#: src/dashboard_pi.cpp:4722 src/dashboard_pi.cpp:4748
 msgid "Preferences..."
 msgstr "Alternativer..."
 
-#: src/dashboard_pi.cpp:3703
+#: src/dashboard_pi.cpp:4727
 msgid "Resize..."
 msgstr "Endre størrelse..."
 
-#: src/dashboard_pi.cpp:3713
+#: src/dashboard_pi.cpp:4735
 msgid "Undock"
 msgstr "Løsne"
 
-#: src/dashboard_pi.cpp:4192
+#: src/dashboard_pi.cpp:5272
 msgid "Choose font"
 msgstr "Velg skrifttype"
 
-#: src/dial.cpp:529 src/wind.cpp:66 src/wind_history.cpp:441
+#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:490
 msgid "NE"
 msgstr "NØ"
 
-#: src/dial.cpp:529 src/gps.cpp:229 src/wind.cpp:66 src/wind_history.cpp:447
+#: src/dial.cpp:455 src/gps.cpp:242 src/wind.cpp:68 src/wind_history.cpp:494
 msgid "E"
 msgstr "Ø"
 
-#: src/dial.cpp:529 src/wind.cpp:66 src/wind_history.cpp:453
+#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:498
 msgid "SE"
 msgstr "SØ"
 
-#: src/dial.cpp:529 src/gps.cpp:233 src/wind.cpp:66 src/wind_history.cpp:459
+#: src/dial.cpp:455 src/gps.cpp:246 src/wind.cpp:69 src/wind_history.cpp:502
 msgid "S"
 msgstr "S"
 
-#: src/dial.cpp:529 src/wind.cpp:66 src/wind_history.cpp:465
+#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:506
 msgid "SW"
 msgstr "SV"
 
-#: src/dial.cpp:529 src/gps.cpp:237 src/wind.cpp:66 src/wind_history.cpp:471
+#: src/dial.cpp:456 src/gps.cpp:250 src/wind.cpp:69 src/wind_history.cpp:510
 msgid "W"
 msgstr "V"
 
-#: src/dial.cpp:529 src/wind.cpp:66 src/wind_history.cpp:477
+#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:514
 msgid "NW"
 msgstr "NW"
 
-#: src/instrument.cpp:247
+#: src/instrument.cpp:191
 msgid " true"
 msgstr " sann"
 
-#: src/instrument.cpp:249
+#: src/instrument.cpp:193
 msgid " mag"
 msgstr " mag"
 
-#: src/wind_history.cpp:58 src/wind_history.cpp:109
-msgid "--"
-msgstr ""
+#: src/wind_history.cpp:55 src/wind_history.cpp:120
+msgid "-"
+msgstr "-"
 
-#: src/wind_history.cpp:333
+#: src/wind_history.cpp:367
 #, c-format
 msgid "--- %s"
 msgstr ""
 
-#: src/wind_history.cpp:438
+#: src/wind_history.cpp:488
 msgid "NNE"
 msgstr "NNØ"
 
-#: src/wind_history.cpp:444
+#: src/wind_history.cpp:492
 msgid "ENE"
 msgstr "ØNØ"
 
-#: src/wind_history.cpp:450
+#: src/wind_history.cpp:496
 msgid "ESE"
 msgstr "ØSØ"
 
-#: src/wind_history.cpp:456
+#: src/wind_history.cpp:500
 msgid "SSE"
 msgstr "SSØ"
 
-#: src/wind_history.cpp:462
+#: src/wind_history.cpp:504
 msgid "SSW"
 msgstr "SSV"
 
-#: src/wind_history.cpp:468
+#: src/wind_history.cpp:508
 msgid "WSW"
 msgstr "VSV"
 
-#: src/wind_history.cpp:474
+#: src/wind_history.cpp:512
 msgid "WNW"
 msgstr "VNV"
 
-#: src/wind_history.cpp:480
+#: src/wind_history.cpp:516
 msgid "NNW"
 msgstr "NNV"
 
-#: src/wind_history.cpp:585
+#: src/wind_history.cpp:640
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "Maks %.1f %s siden %02d:%02d Sammenlagt %.1f %s"
