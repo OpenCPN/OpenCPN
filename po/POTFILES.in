@@ -123,6 +123,7 @@ src/iENCToolbar.cpp
 src/kml.cpp
 src/Layer.cpp
 src/LinkPropDlg.cpp
+src/load_errors_dlg.cpp
 src/logger.cpp
 src/macutils.c
 src/MarkInfo.cpp
