@@ -156,6 +156,17 @@ std::string PluginHandler::pluginsInstallDataPath() {
   return pluginsConfigDir();
 }
 
+static std::vector<std::string> LoadLinesFromFile(const std::string& path) {
+  std::vector<std::string> lines;
+  std::ifstream src(path);
+  while (!src.eof()) {
+    char line[256];
+    src.getline(line, sizeof(line));
+    lines.push_back(line);
+  }
+  return lines;
+}
+
 /** Plugin ABI encapsulation. */
 class Plugin {
 public:
@@ -893,13 +904,7 @@ void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname) {
   wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
 
-  std::istringstream iss(filelist);
-  std::vector<std::string> paths;
-  while (!iss.eof()) {
-    char line[256];
-    iss.getline(line, sizeof(line));
-    paths.push_back(line);
-  }
+  std::vector<std::string> paths = LoadLinesFromFile(filelist);
   for (const auto& path : paths) {
     if (isRegularFile(path.c_str())) {
       int r = remove(path.c_str());
@@ -1049,13 +1054,7 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
                  plugin_name.c_str(), path);
     return false;
   }
-  vector<string> plug_paths;
-  ifstream files(path);
-  while (!files.eof()) {
-    char line[256];
-    files.getline(line, sizeof(line));
-    plug_paths.push_back(line);
-  }
+  vector<string> plug_paths = LoadLinesFromFile(path);
   for (const auto& p : plug_paths) {
     if (isRegularFile(p.c_str())) {
       int r = remove(p.c_str());
