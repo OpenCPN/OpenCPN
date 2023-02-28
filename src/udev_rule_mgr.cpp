@@ -44,19 +44,19 @@
 static bool hide_dongle_dialog;
 static bool hide_device_dialog;
 
-static const char* const DONGLE_INTRO = _(R"""(
+static const char* const DONGLE_INTRO = _(R"(
 An OpenCPN dongle is detected but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. Once installed,
 it will ensure that the dongle permissions are OK.
-)""");
+)");
 
-static const char* const FLATPAK_INTRO_TRAILER = _(R"""(
+static const char* const FLATPAK_INTRO_TRAILER = _(R"(
 
 On flatpak, this must be done using the manual command instructions below
-)""");
+)");
 
-static const char* const DEVICE_INTRO = _(R"""(
+static const char* const DEVICE_INTRO = _(R"(
 The device @DEVICE@ exists but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. Once installed,
@@ -65,24 +65,24 @@ the rules file will fix the permissions problem.
 It will also create a new device called @SYMLINK@. It is recommended to use
 @SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,
 in particular on laptops.
-)""");
+)");
 
 static const char* const HIDE_DIALOG_LABEL =
     _("Do not show this dialog next time");
 
-static const char* const RULE_SUCCESS_MSG = _(R"""(
+static const char* const RULE_SUCCESS_MSG = _(R"(
 Rule successfully installed. To activate the new rule:
 - Exit opencpn.
 - Unplug and re-insert the USB device.
 - Restart opencpn
-)""");
+)");
 
-static const char* const FLATPAK_INSTALL_MSG = _(R"""(
+static const char* const FLATPAK_INSTALL_MSG = _(R"(
 To do after installing the rule according to instructions:
 - Exit opencpn.
 - Unplug and re-insert the USB device.
 - Restart opencpn
-)""");
+)");
 
 static const char* const DEVICE_NOT_FOUND =
     _("The device @device@ can not be found (disconnected?)");
