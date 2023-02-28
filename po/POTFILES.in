@@ -1,4 +1,3 @@
-
 include/AboutFrame.h
 include/AboutFrameImpl.h
 include/about.h
