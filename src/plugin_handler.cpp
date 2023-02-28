@@ -677,7 +677,7 @@ static bool entry_set_install_path(struct archive_entry* entry,
   const std::string dest = archive_entry_pathname(entry);
   if (rv) {
     if (dest.size()) {
-      MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
+      DEBUG_LOG << "Installing " << src << " into " << dest << std::endl;
     }
   }
   return rv;
