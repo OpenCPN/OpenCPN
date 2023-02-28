@@ -100,12 +100,12 @@ static void OnNewAisWaypoint(RoutePoint* pWP) {
 }
 
 const static char* const kDeleteTrackPrompt =
-R"""(
+_(R"(
 This AIS target has Persistent Tracking selected by MMSI properties
 A Persistent track recording will therefore be restarted for this target.
 
 Do you instead want to stop Persistent Tracking for this target?
-)""";
+)");
 
 
 static void OnDeleteTrack(MmsiProperties* props) {

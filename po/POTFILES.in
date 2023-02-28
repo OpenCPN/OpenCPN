@@ -160,6 +160,7 @@ src/plugin_cache.cpp
 src/plugin_handler.cpp
 src/plugin_loader.cpp
 src/pluginmanager.cpp
+src/plugin_blacklist.cpp
 src/plugin_paths.cpp
 src/position_parser.cpp
 src/printtable.cpp
@@ -215,6 +216,7 @@ src/trackprintout.cpp
 src/TrackPropDlg.cpp
 src/TTYScroll.cpp
 src/TTYWindow.cpp
+src/udev_rule_mgr.cpp
 src/undo.cpp
 src/update_mgr.cpp
 src/viewport.cpp
