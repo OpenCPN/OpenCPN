@@ -5186,9 +5186,35 @@ public:
   }
 };
 
+void options::OnPanelScroll(wxScrollWinEvent& event) {
+  if (m_pSlider_GUI_Factor){
+    int x_position = 30 * GetCharWidth();
+    //m_pSlider_GUI_Factor->SetSize(m_sliderSize);
+    m_pSlider_GUI_Factor->SetSize(x_position, -1, m_sliderSize.x, m_sliderSize.y);
+    m_pSlider_Chart_Factor->SetSize(x_position, -1, m_sliderSize.x, m_sliderSize.y);
+    m_pSlider_Ship_Factor->SetSize(x_position, -1, m_sliderSize.x, m_sliderSize.y);
+    m_pSlider_Text_Factor->SetSize(x_position, -1, m_sliderSize.x, m_sliderSize.y);
+    m_pSlider_ENCText_Factor->SetSize(x_position, -1, m_sliderSize.x, m_sliderSize.y);
+    m_pMouse_Zoom_Slider->SetSize(x_position, -1, m_sliderSize.x, m_sliderSize.y);
+  }
+  event.Skip();
+}
+
 void options::CreatePanel_UI(size_t parent, int border_size,
                              int group_item_spacing) {
-  wxScrolledWindow* itemPanelFont = AddPage(parent, _("General Options"));
+  itemPanelFont = AddPage(parent, _("General Options"));
+
+#ifdef __WXMAC__
+  // Work around a bug in wxWidgets on MacOS involving sliders with value shown.
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_THUMBTRACK, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_THUMBRELEASE, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_LINEUP, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_LINEDOWN, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_TOP, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_BOTTOM, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_PAGEUP, &options::OnPanelScroll, this);
+  itemPanelFont->Bind(wxEVT_SCROLLWIN_PAGEDOWN, &options::OnPanelScroll, this);
+#endif
 
   m_itemBoxSizerFontPanel = new wxBoxSizer(wxVERTICAL);
   itemPanelFont->SetSizer(m_itemBoxSizerFontPanel);
@@ -5443,9 +5469,9 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   wxFlexGridSizer* sliderSizer;
   sliderSizer = new wxFlexGridSizer(0, 2, 0, 0);
-  sliderSizer->AddGrowableCol(1);
-  sliderSizer->SetFlexibleDirection(wxBOTH);
-  sliderSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+//   sliderSizer->AddGrowableCol(1);
+//   sliderSizer->SetFlexibleDirection(wxBOTH);
+//   sliderSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
   m_pSlider_GUI_Factor =
       new wxSlider(itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,

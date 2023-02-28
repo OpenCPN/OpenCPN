@@ -638,6 +638,7 @@ private:
 
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
+  void OnPanelScroll(wxScrollWinEvent& event);
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
@@ -649,6 +650,7 @@ private:
 
   wxScrolledWindow *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
+  wxScrolledWindow *itemPanelFont;
 
   ObservableListener compat_os_listener;
 
