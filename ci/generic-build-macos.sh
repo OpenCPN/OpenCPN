@@ -68,6 +68,7 @@ curl -k -o /tmp/wx322-2_opencpn50_macos1010.tar.bz2  \
 tar -C /tmp -xJf /tmp/wx322-2_opencpn50_macos1010.tar.bz2
 
 ls -l /tmp
+ls -l private/tmp
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
