@@ -59,9 +59,14 @@ else
     brew install --cask packages
 fi
 
-curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
-    https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
-tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
+#curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
+#    https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
+#tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
+
+curl -k -o /tmp/wx322-2_opencpn50_macos1010.tar.bz2  \
+    https://download.opencpn.org/s/N7WP2yjNYZ7qsZp/download
+tar -C /tmp -xJf /tmp/wx322-2_opencpn50_macos1010.tar.bz2
+
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
@@ -74,7 +79,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
-  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx321_opencpn50_macos1010/lib/wx/config/osx_cocoa-unicode-3.2 \
+  -DwxWidgets_CONFIG_EXECUTABLE=tmp/wx322.2/lib/wx/config/osx_cocoa-unicode-3.2 \
   -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx321_opencpn50_macos1010" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
   -DOCPN_BUILD_TEST=OFF \
