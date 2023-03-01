@@ -37,6 +37,24 @@ add-extensions:
         autodelete: false
 
 modules:
+    - name: rapidjson
+      buildsystem: cmake
+      builddir: true
+      config-opts:
+        - -DRAPIDJSON_BUILD_DOC=OFF
+        - -DRAPIDJSON_BUILD_EXAMPLES=OFF
+        - -DRAPIDJSON_BUILD_TESTS=OFF
+      sources:
+        - type: archive
+          url: https://github.com/Tencent/rapidjson/archive/refs/tags/v1.1.0.tar.gz
+          sha256: bf7ced29704a1e696fbccf2a2b4ea068e7774fa37f6d7dd4039d0787f8bed98e
+        - type: patch
+          paths:
+            - src/0010-rapidjson-1.1.0-c++20.patch
+            - src/0011-rapidjson-1.1.0-do_not_include_gtest_src_dir.patch
+            - src/0012-Fix-Wclass-memaccess-warnings-errors.patch
+            - src/0013-gcc7.patch
+ 
     - name: glew
       no-autogen: true
       make-args:
@@ -52,9 +70,9 @@ modules:
           url: https://downloads.sourceforge.net/project/glew/glew/2.1.0/glew-2.1.0.tgz
           sha256: 04de91e7e6763039bc11940095cd9c7f880baba82196a7765f727ac05a993c95
       cleanup:
-        - /include"
-        - /lib/pkgconfig"
-        - /lib/*.a"
+        - /include
+        - /lib/pkgconfig
+        - /lib/*.a
 
     - name: glu
       config-opts:
