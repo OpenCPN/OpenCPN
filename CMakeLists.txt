@@ -904,6 +904,7 @@ set(
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
+  include/load_errors_dlg.h
   include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
@@ -1092,6 +1093,7 @@ set(
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
+  src/load_errors_dlg.cpp
   src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
