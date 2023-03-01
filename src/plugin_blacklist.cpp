@@ -59,24 +59,24 @@ typedef struct config_block {
   const char* message;
 } config_block;
 
-static const char* const STD_HARD_MSG = _(R"""(
+static const char* const STD_HARD_MSG = _(R"(
 PlugIn %s, version %i.%i was detected.
 This version is known to be unstable and will not be loaded.
 Please update this PlugIn using the PlugIn manager master catalog.
-)""");
+)");
 
-static const char* const STD_SOFT_MSG = _(R"""(
+static const char* const STD_SOFT_MSG = _(R"(
 PlugIn %s, version %i.%i was detected.
 This version is known to be unstable.
 Please update this PlugIn using the PlugIn manager master catalog.
-)""");
+)");
 
-static const char* const OCHART_OBSOLETED_MSG = _(R"""(
+static const char* const OCHART_OBSOLETED_MSG = _(R"(
 PlugIn %s, version %i.%i was detected.
 This plugin is obsolete, the o-charts plugin should be used
 instead. Please uninstall this plugin and install o-charts
 using the PlugIn manager master catalog.
-)""");
+)");
 
 
 static const config_block plugin_blacklist[] = {
