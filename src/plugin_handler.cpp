@@ -300,9 +300,13 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
       "msvc",        "msvc-wx32",     "darwin",
       "darwin-wx32", "android-armhf", "android-arm64"};
 
+  Plugin plugin(metadata);
+  if (plugin.abi() == "all") {
+    wxLogDebug("Returning true for plugin abi \"all\"");
+    return true;
+  }
   auto compatOS = CompatOs::getInstance();
   Host host(compatOS);
-  Plugin plugin(metadata);
 
   auto found = std::find(simple_abis.begin(), simple_abis.end(), plugin.abi());
   if (found != simple_abis.end()) {
