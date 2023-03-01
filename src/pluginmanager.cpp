@@ -60,7 +60,6 @@
 #include <cxxabi.h>
 #endif  // __WXMSW__
 
-
 #include <algorithm>
 #include <archive.h>
 #include <cstdio>
@@ -85,7 +84,6 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include <libelf.h>
 #include <gelf.h>
 #endif
-
 
 #include "ais_decoder.h"
 #include "ais.h"
@@ -205,7 +203,7 @@ extern WayPointman *pWayPointMan;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList *pRouteList;
-extern std::vector<Track*> g_TrackList;
+extern std::vector<Track *> g_TrackList;
 extern PlugInManager *g_pi_manager;
 extern s52plib *ps52plib;
 extern wxString ChartListFileName;
@@ -295,15 +293,13 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
 }
 
-
 /**
  * Handle messages for blacklisted plugins. Messages are deferred until
  * show_deferred_messages() is invoked, signaling that the UI is ready.
  */
 class BlacklistUI {
 public:
-
-  void message(const std::string& message) {
+  void message(const std::string &message) {
     if (m_defer)
       m_deferred_messages.push_back(message);
     else
@@ -315,7 +311,7 @@ public:
     m_defer = false;
   }
 
-  BlacklistUI() : m_defer(true) {};
+  BlacklistUI() : m_defer(true){};
 
 private:
   void show_msg(wxString msg) {
@@ -323,8 +319,8 @@ private:
                    wxICON_INFORMATION | wxOK, 10);  // 10 second timeout
   }
 
-  bool m_defer;            // defer dialogs until setup completed
-  std::vector<wxString>  m_deferred_messages;
+  bool m_defer;  // defer dialogs until setup completed
+  std::vector<wxString> m_deferred_messages;
 };
 
 class PanelHardBreakWrapper : public wxTextWrapper {
@@ -670,8 +666,7 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
   if (g_options) {
     bool b_newOptions = false;
     auto loader = PluginLoader::getInstance();
-    for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount();
-         i++) {
+    for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount(); i++) {
       PlugInContainer *pic = loader->GetPlugInArray()->Item(i);
       wxString cname = pic->m_common_name;
       if (pic->m_bInitState && (pluginName == cname)) {
@@ -788,12 +783,9 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
       std::string manifestPath = PluginHandler::fileListPath(pluginName);
       if (isRegularFile(manifestPath.c_str())) {
         // dynamically deactivate the legacy plugin, making way for the upgrade.
-        for (unsigned i = 0; i < loader->GetPlugInArray()->GetCount();
-             i += 1) {
+        for (unsigned i = 0; i < loader->GetPlugInArray()->GetCount(); i += 1) {
           if (actionPIC->m_ManagedMetadata.name ==
-              loader->GetPlugInArray()
-                  ->Item(i)
-                  ->m_common_name.ToStdString()) {
+              loader->GetPlugInArray()->Item(i)->m_common_name.ToStdString()) {
             loader->UnLoadPlugIn(i);
             break;
           }
@@ -843,7 +835,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
           actionPIC->m_ManagedMetadata.name);
 
       //  Reload all plugins, which will bring in the action results.
-      auto loader =  PluginLoader::getInstance();
+      auto loader = PluginLoader::getInstance();
       LoadAllPlugIns(false);
       plugin_list_panel->ReloadPluginPanels();
 
@@ -1031,24 +1023,23 @@ EVT_CURL_DOWNLOAD(CurlThreadId, PlugInManager::OnCurlDownload)
 #endif
 END_EVENT_TABLE()
 
-static void event_message_box(const wxString& msg) {
+static void event_message_box(const wxString &msg) {
   OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
                  wxICON_INFORMATION | wxOK, 0);  // no timeout
 }
 
-static void event_message_box(const wxString& msg, wxCommandEvent ev) {
+static void event_message_box(const wxString &msg, wxCommandEvent ev) {
   auto s = wxString::Format(msg, ev.GetString());
   event_message_box(s);
 }
 
-static void OnLoadPlugin(const PlugInContainer* pic) {
+static void OnLoadPlugin(const PlugInContainer *pic) {
   if (g_options) {
     if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)) {
       if (!pic->m_bToolboxPanel) NotifySetupOptionsPlugin(pic);
     }
   }
 }
-
 
 PlugInManager::PlugInManager(MyFrame *parent) {
 #if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
@@ -1080,7 +1071,7 @@ PlugInManager::PlugInManager(MyFrame *parent) {
 
 #endif
 
-#if !defined(__OCPN__ANDROID__) && defined (OCPN_USE_CURL)
+#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
   wxCurlBase::Init();
   m_last_online = false;
   m_last_online_chk = -1;
@@ -1094,39 +1085,41 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
   evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg, this,
                                           EVT_JSON_TO_ALL_PLUGINS);
-  Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
+  Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt &ev) {
     auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
-    SendJSONMessageToAllPlugins(ev.GetString(), *json); });
+    SendJSONMessageToAllPlugins(ev.GetString(), *json);
+  });
 
   wxDEFINE_EVENT(EVT_LEGINFO_TO_ALL_PLUGINS, ObservedEvt);
   evt_routeman_leginfo_listener.Listen(g_pRouteMan->json_leg_info, this,
                                        EVT_LEGINFO_TO_ALL_PLUGINS);
-  Bind(EVT_LEGINFO_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
+  Bind(EVT_LEGINFO_TO_ALL_PLUGINS, [&](ObservedEvt &ev) {
     auto ptr = UnpackEvtPointer<ActiveLegDat>(ev);
-    SendActiveLegInfoToAllPlugIns(ptr.get());  });
+    SendActiveLegInfoToAllPlugIns(ptr.get());
+  });
 
   HandlePluginLoaderEvents();
   InitCommListeners();
 }
 PlugInManager::~PlugInManager() {
-#if !defined(__OCPN__ANDROID__) && defined (OCPN_USE_CURL)
+#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
   wxCurlBase::Shutdown();
 #endif
 }
 
 void PlugInManager::InitCommListeners(void) {
-
   // Initialize the comm listener to support
   // void SetNMEASentence(wxString &sentence);
 
-  auto& msgbus = NavMsgBus::GetInstance();
+  auto &msgbus = NavMsgBus::GetInstance();
 
   m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
                               EVT_N0183_PLUGIN);
   Bind(EVT_N0183_PLUGIN, [&](ObservedEvt ev) {
-        auto ptr = ev.GetSharedPtr();
-        auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
-        HandleN0183(n0183_msg); });
+    auto ptr = ev.GetSharedPtr();
+    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+    HandleN0183(n0183_msg);
+  });
 
   SignalkMsg sk_msg;
   m_listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
@@ -1134,16 +1127,14 @@ void PlugInManager::InitCommListeners(void) {
   Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
     HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
   });
-
 }
 
-void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg ) {
-
+void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   std::string s = n0183_msg->payload;
   wxString sentence(s.c_str());
 
   if (s[0] == '$') {
-    const auto& drivers = CommDriverRegistry::GetInstance().GetDrivers();
+    const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
     auto target_driver = FindDriver(drivers, n0183_msg->source->iface);
 
     bool bpass_input_filter = true;
@@ -1155,36 +1146,33 @@ void PlugInManager::HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg )
     if (drv_serial) {
       params = drv_serial->GetParams();
     } else {
-      auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(target_driver);
+      auto drv_net =
+          std::dynamic_pointer_cast<CommDriverN0183Net>(target_driver);
       if (drv_net) {
         params = drv_net->GetParams();
       }
     }
 
     // Check to see if the message passes the source's input filter
-    bpass_input_filter = params.SentencePassesFilter(sentence,
-                                        FILTER_INPUT);
+    bpass_input_filter = params.SentencePassesFilter(sentence, FILTER_INPUT);
 
-    if (bpass_input_filter)
-      SendNMEASentenceToAllPlugIns(sentence);
-  }
-  else if (s[0] == '!'){
-    //printf("AIS to all: %s", s.c_str());
+    if (bpass_input_filter) SendNMEASentenceToAllPlugIns(sentence);
+  } else if (s[0] == '!') {
+    // printf("AIS to all: %s", s.c_str());
     SendAISSentenceToAllPlugIns(sentence);
   }
 }
 
-void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
+void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   wxJSONReader jsonReader;
   wxJSONValue root;
 
-  std::string msgTerminated = sK_msg->raw_message;;
+  std::string msgTerminated = sK_msg->raw_message;
+  ;
 
   int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors == 0)
-    SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
+  if (errors == 0) SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
 }
-
 
 /**
  * Set up actions to perform for messages generated by PluginLoader's
@@ -1195,95 +1183,71 @@ wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_PLUGMGR_ROUTEMAN_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
-wxDEFINE_EVENT(EVT_INCOMPATIBLE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LOAD_DIRECTORY, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LOAD_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_UNLOAD, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGLIST_CHANGE, wxCommandEvent);
-wxDEFINE_EVENT(EVT_UNREADABLE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UPDATE_CHART_TYPES, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
-wxDEFINE_EVENT(EVT_VERSION_INCOMPATIBLE_PLUGIN, wxCommandEvent);
-
 
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::getInstance();
 
-  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin,
-                                         this, EVT_BLACKLISTED_PLUGIN);
-  Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent& ev) {
-    m_blacklist_ui->message(ev.GetString().ToStdString()); });
+  evt_blacklisted_plugin_listener.Listen(loader->evt_blacklisted_plugin, this,
+                                         EVT_BLACKLISTED_PLUGIN);
+  Bind(EVT_BLACKLISTED_PLUGIN, [&](wxCommandEvent &ev) {
+    m_blacklist_ui->message(ev.GetString().ToStdString());
+  });
 
-  evt_deactivate_plugin_listener.Listen(loader->evt_deactivate_plugin,
-                                        this, EVT_DEACTIVATE_PLUGIN);
-  Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent& ev) {
-    auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
-    OnPluginDeactivate(pic); });
+  evt_deactivate_plugin_listener.Listen(loader->evt_deactivate_plugin, this,
+                                        EVT_DEACTIVATE_PLUGIN);
+  Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent &ev) {
+    auto pic = static_cast<const PlugInContainer *>(ev.GetClientData());
+    OnPluginDeactivate(pic);
+  });
 
-  evt_pluglist_change_listener.Listen(loader->evt_pluglist_change,
-                                      this, EVT_PLUGLIST_CHANGE);
-  Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
+  evt_pluglist_change_listener.Listen(loader->evt_pluglist_change, this,
+                                      EVT_PLUGLIST_CHANGE);
+  Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent &) {
     if (m_listPanel) m_listPanel->ReloadPluginPanels();
-    g_options->itemBoxSizerPanelPlugins->Layout(); });
+    g_options->itemBoxSizerPanelPlugins->Layout();
+  });
 
   evt_load_directory_listener.Listen(loader->evt_load_directory, this,
                                      EVT_LOAD_DIRECTORY);
-  Bind(EVT_LOAD_DIRECTORY, [&](wxCommandEvent&) {
+  Bind(EVT_LOAD_DIRECTORY, [&](wxCommandEvent &) {
     pConfig->SetPath("/PlugIns/");
-    SetPluginOrder(pConfig->Read("PluginOrder", wxEmptyString)); });
+    SetPluginOrder(pConfig->Read("PluginOrder", wxEmptyString));
+  });
 
   evt_load_plugin_listener.Listen(loader->evt_load_plugin, this,
                                   EVT_LOAD_PLUGIN);
-  Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent& ev) {
-    auto pic = static_cast<const PlugInContainer*>(ev.GetClientData());
-    OnLoadPlugin(pic); });
+  Bind(EVT_LOAD_PLUGIN, [&](wxCommandEvent &ev) {
+    auto pic = static_cast<const PlugInContainer *>(ev.GetClientData());
+    OnLoadPlugin(pic);
+  });
 
-  evt_version_incompatible_plugin_listener.Listen(
-          loader->evt_version_incompatible_plugin, this,
-          EVT_VERSION_INCOMPATIBLE_PLUGIN);
-  Bind(EVT_VERSION_INCOMPATIBLE_PLUGIN, [&](wxCommandEvent& ev) {
-    static const wxString msg =
-      _("The plugin %s is not compatible with this version "
-        "of OpenCPN, please get an updated version.");
-    event_message_box(msg, ev); });
-
-  evt_unreadable_plugin_listener.Listen(loader->evt_blacklisted_plugin,
-                                        this, EVT_UNREADABLE_PLUGIN);
-  Bind(EVT_UNREADABLE_PLUGIN, [&](wxCommandEvent& ev) {
-    static const wxString msg =
-      _("Unreadable Plugin library %s detected, check file permissions:\n\n");
-    event_message_box(msg, ev); });
-
-  evt_incompatible_plugin_listener.Listen(loader->evt_incompatible_plugin,
-                                          this, EVT_INCOMPATIBLE_PLUGIN);
-
-  // FIXME (Dave)
-  // Temporarily block "incompatible plugin" message box.
-  // Unworkable solution for wx upgrade from wx31 to wx32 on Windows
-  //Bind(EVT_INCOMPATIBLE_PLUGIN,
-  //     [&](wxCommandEvent& ev) { event_message_box(ev.GetString()); });
-
-  evt_update_chart_types_listener.Listen(loader->evt_update_chart_types,
-                                         this, EVT_UPDATE_CHART_TYPES);
+  evt_update_chart_types_listener.Listen(loader->evt_update_chart_types, this,
+                                         EVT_UPDATE_CHART_TYPES);
   Bind(EVT_UPDATE_CHART_TYPES,
-       [&](wxCommandEvent& ev) { UpDateChartDataTypes(); });
+       [&](wxCommandEvent &ev) { UpDateChartDataTypes(); });
 
   evt_plugin_loadall_finalize_listener.Listen(
-          loader->evt_plugin_loadall_finalize, this,
-          EVT_PLUGIN_LOADALL_FINALIZE);
+      loader->evt_plugin_loadall_finalize, this, EVT_PLUGIN_LOADALL_FINALIZE);
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
-       [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
+       [&](wxCommandEvent &ev) { FinalizePluginLoadall(); });
 
-  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this,
-                               EVT_PLUGMGR_AIS_MSG);
+  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this, EVT_PLUGMGR_AIS_MSG);
   evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this,
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt &ev) {
     auto pTarget = UnpackEvtPointer<AisTargetData>(ev);
-    SendAisJsonMessage(pTarget); });
-  Bind(EVT_PLUGMGR_ROUTEMAN_MSG,  [&](ObservedEvt& ev) {
+    SendAisJsonMessage(pTarget);
+  });
+  Bind(EVT_PLUGMGR_ROUTEMAN_MSG, [&](ObservedEvt &ev) {
     auto msg = UnpackEvtPointer<wxJSONValue>(ev);
-    SendJSONMessageToAllPlugins(ev.GetString(), *msg); });
+    SendJSONMessageToAllPlugins(ev.GetString(), *msg);
+  });
 }
 
 /**
@@ -1296,20 +1260,22 @@ wxDEFINE_EVENT(EVT_DOWNLOAD_OK, wxCommandEvent);
 void PlugInManager::HandlePluginHandlerEvents() {
   auto loader = PluginLoader::getInstance();
 
-  evt_download_failed_listener.Listen(loader->evt_update_chart_types,
-                                      this, EVT_DOWNLOAD_FAILED);
-  Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
-      wxString message = _("Please check system log for more info.");
-      OCPNMessageBox(gFrame, message, _("Installation error"),
-                     wxICON_ERROR | wxOK | wxCENTRE); });
+  evt_download_failed_listener.Listen(loader->evt_update_chart_types, this,
+                                      EVT_DOWNLOAD_FAILED);
+  Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent &ev) {
+    wxString message = _("Please check system log for more info.");
+    OCPNMessageBox(gFrame, message, _("Installation error"),
+                   wxICON_ERROR | wxOK | wxCENTRE);
+  });
 
   evt_download_ok_listener.Listen(loader->evt_update_chart_types, this,
                                   EVT_DOWNLOAD_OK);
-  Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
+  Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent &ev) {
     wxString message(ev.GetString());
     message += _(" successfully installed from cache");
     OCPNMessageBox(gFrame, message, _("Installation complete"),
-                   wxICON_INFORMATION | wxOK | wxCENTRE); });
+                   wxICON_INFORMATION | wxOK | wxCENTRE);
+  });
 }
 
 /**
@@ -1404,17 +1370,16 @@ void PlugInManager::ProcessLateInit(PlugInContainer *pic) {
   }
 }
 
-void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
+void PlugInManager::OnPluginDeactivate(const PlugInContainer *pic) {
   // Unload chart cache if this plugin is responsible for any charts
   if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
       (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
     ChartData->PurgeCachePlugins();
     gFrame->InvalidateAllQuilts();
-
   }
   //    Deactivate (Remove) any ToolbarTools added by this PlugIn
   for (unsigned int i = 0; i < m_PlugInToolbarTools.GetCount(); i++) {
-    PlugInToolbarToolContainer* pttc = m_PlugInToolbarTools[i];
+    PlugInToolbarToolContainer *pttc = m_PlugInToolbarTools[i];
 
     if (pttc->m_pplugin == pic->m_pplugin) {
       m_PlugInToolbarTools.Remove(pttc);
@@ -1424,16 +1389,15 @@ void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
 
   //    Deactivate (Remove) any ContextMenu items addded by this PlugIn
   for (unsigned int i = 0; i < m_PlugInMenuItems.GetCount(); i++) {
-    PlugInMenuItemContainer* pimis = m_PlugInMenuItems[i];
+    PlugInMenuItemContainer *pimis = m_PlugInMenuItems[i];
     if (pimis->m_pplugin == pic->m_pplugin) {
       m_PlugInMenuItems.Remove(pimis);
       delete pimis;
     }
   }
   // *pic is a malloc'ed copy of the original *pic, owned by us.
-  free(const_cast<PlugInContainer*>(pic));
+  free(const_cast<PlugInContainer *>(pic));
 }
-
 
 void PlugInManager::SendVectorChartObjectInfo(const wxString &chart,
                                               const wxString &feature,
@@ -1690,26 +1654,24 @@ bool PlugInManager::UpDateChartDataTypes() {
 }
 
 void PlugInManager::FinalizePluginLoadall() {
-
-  //FIXME
-  //  Maybe this does not need to be done for CLI instance?
-  // Inform plugins of the current color scheme
-  SetColorSchemeForAllPlugIns( global_color_scheme );
+  // FIXME
+  //   Maybe this does not need to be done for CLI instance?
+  //  Inform plugins of the current color scheme
+  SetColorSchemeForAllPlugIns(global_color_scheme);
 
   // Tell all the PlugIns about the current OCPN configuration
   SendBaseConfigToAllPlugIns();
-  SendS52ConfigToAllPlugIns( true );
+  SendS52ConfigToAllPlugIns(true);
   SendSKConfigToAllPlugIns();
 
   // Inform Plugins of OpenGL configuration, if enabled
-  if(g_bopengl){
-      if(gFrame->GetPrimaryCanvas()->GetglCanvas())
-          gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+  if (g_bopengl) {
+    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
   }
 
   //  And then reload all catalogs.
   ReloadLocale();
-
 }
 
 void PlugInManager::SetPluginOrder(wxString serialized_names) {
@@ -1775,7 +1737,8 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin *plugin) {
   return CheckBlacklistedPlugin(name, major, minor);
 }
 
-bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major, int minor) {
+bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major,
+                                           int minor) {
   auto block_status = m_blacklist->get_status(name.ToStdString(), major, minor);
   if (block_status == plug_status::unblocked) return true;
   plug_data data(name.ToStdString(), major, minor);
@@ -1786,7 +1749,8 @@ bool PlugInManager::CheckBlacklistedPlugin(wxString name, int major, int minor) 
 
 bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
                                                   const ViewPort &vp,
-                                                  int canvasIndex, int priority) {
+                                                  int canvasIndex,
+                                                  int priority) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer *pic = plugin_array->Item(i);
@@ -1799,16 +1763,14 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
         {
           switch (pic->m_api_version) {
             case 106: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_16 *ppi =
                   dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
               if (ppi) ppi->RenderOverlay(*pdc, &pivp);
               break;
             }
             case 107: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_17 *ppi =
                   dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
               if (ppi) ppi->RenderOverlay(*pdc, &pivp);
@@ -1822,8 +1784,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             case 113:
             case 114:
             case 115: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) ppi->RenderOverlay(*pdc, &pivp);
@@ -1831,8 +1792,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             }
             case 116:
             case 117: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) {
@@ -1855,7 +1815,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
               opencpn_plugin_118 *ppi118 =
                   dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
               if (ppi118)
-                ppi118->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex, priority);
+                ppi118->RenderOverlayMultiCanvas(*pdc, &pivp, canvasIndex,
+                                                 priority);
               break;
             }
             default:
@@ -1879,16 +1840,14 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
 
           switch (pic->m_api_version) {
             case 106: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_16 *ppi =
                   dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
               if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
               break;
             }
             case 107: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_17 *ppi =
                   dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
               if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
@@ -1902,8 +1861,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             case 113:
             case 114:
             case 115: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) b_rendered = ppi->RenderOverlay(*pdc, &pivp);
@@ -1911,8 +1869,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
             }
             case 116:
             case 117: {
-              if (priority > 0)
-                break;
+              if (priority > 0) break;
               opencpn_plugin_18 *ppi =
                   dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) {
@@ -1936,9 +1893,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
               opencpn_plugin_118 *ppi118 =
                   dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
               if (ppi118)
-                b_rendered = ppi118->RenderOverlayMultiCanvas(*pdc, &pivp,
-                                                              g_canvasConfig,
-                                                              priority);
+                b_rendered = ppi118->RenderOverlayMultiCanvas(
+                    *pdc, &pivp, g_canvasConfig, priority);
               break;
             }
             default: {
@@ -1966,7 +1922,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC &dc,
 
 bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
                                                     const ViewPort &vp,
-                                                    int canvasIndex, int priority) {
+                                                    int canvasIndex,
+                                                    int priority) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer *pic = plugin_array->Item(i);
@@ -1976,8 +1933,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
 
         switch (pic->m_api_version) {
           case 107: {
-            if (priority > 0)
-                break;
+            if (priority > 0) break;
             opencpn_plugin_17 *ppi =
                 dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
             if (ppi) ppi->RenderGLOverlay(pcontext, &pivp);
@@ -1992,8 +1948,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
           case 113:
           case 114:
           case 115: {
-            if (priority > 0)
-                break;
+            if (priority > 0) break;
             opencpn_plugin_18 *ppi =
                 dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
             if (ppi) ppi->RenderGLOverlay(pcontext, &pivp);
@@ -2001,8 +1956,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
           }
           case 116:
           case 117: {
-            if (priority > 0)
-                break;
+            if (priority > 0) break;
             opencpn_plugin_18 *ppi =
                 dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
             if (ppi) {
@@ -2018,7 +1972,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
           case 118: {
             if (priority <= 0) {
               opencpn_plugin_18 *ppi =
-                dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
+                  dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
               if (ppi) {
                 ppi->RenderGLOverlay(pcontext, &pivp);
               }
@@ -2026,7 +1980,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
             opencpn_plugin_118 *ppi118 =
                 dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
             if (ppi118) {
-              ppi118->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex, priority);
+              ppi118->RenderGLOverlayMultiCanvas(pcontext, &pivp, canvasIndex,
+                                                 priority);
             }
             break;
           }
@@ -2145,7 +2100,7 @@ void NotifySetupOptionsPlugin(const PlugInContainer *pic) {
               dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
           if (ppi) {
             ppi->OnSetupOptions();
-            const_cast<PlugInContainer*>(pic)->m_bToolboxPanel = true;
+            const_cast<PlugInContainer *>(pic)->m_bToolboxPanel = true;
           }
           break;
         }
@@ -2444,7 +2399,8 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos) {
   }
 }
 
-void PlugInManager::SendActiveLegInfoToAllPlugIns(const ActiveLegDat *leg_info) {
+void PlugInManager::SendActiveLegInfoToAllPlugIns(
+    const ActiveLegDat *leg_info) {
   Plugin_Active_Leg_Info leg;
   leg.Btw = leg_info->Btw;
   leg.Dtw = leg_info->Dtw;
@@ -2526,8 +2482,7 @@ void PlugInManager::PrepareAllPluginContextMenus() {
   }
 }
 
-
-//FIXME (dave) unused?
+// FIXME (dave) unused?
 void PlugInManager::SendSKConfigToAllPlugIns() {
   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
   wxJSONValue v;
@@ -2558,7 +2513,8 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Some rendering parameters
   v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
   v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
-  v[_T("OpenCPN Scale Factor Exp")] = g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
+  v[_T("OpenCPN Scale Factor Exp")] =
+      g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
   v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
   v[_T("OpenCPN Content Scale Factor")] = OCPN_GetDisplayContentScaleFactor();
   v[_T("OpenCPN Display DIP Scale Factor")] = OCPN_GetWinDIPScaleFactor();
@@ -2599,10 +2555,14 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
     v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
     v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
-    v[_T("OpenCPN S52PLIB ColorShades")] = S52_getMarinerParam(S52_MAR_TWO_SHADES);
-    v[_T("OpenCPN S52PLIB Safety Depth")] = (double)S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
-    v[_T("OpenCPN S52PLIB Shallow Contour")] = (double)S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR);
-    v[_T("OpenCPN S52PLIB Deep Contour")] = (double)S52_getMarinerParam(S52_MAR_DEEP_CONTOUR);
+    v[_T("OpenCPN S52PLIB ColorShades")] =
+        S52_getMarinerParam(S52_MAR_TWO_SHADES);
+    v[_T("OpenCPN S52PLIB Safety Depth")] =
+        (double)S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
+    v[_T("OpenCPN S52PLIB Shallow Contour")] =
+        (double)S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR);
+    v[_T("OpenCPN S52PLIB Deep Contour")] =
+        (double)S52_getMarinerParam(S52_MAR_DEEP_CONTOUR);
   }
 
   // Notify plugins that S52PLIB may have reconfigured global options
@@ -3134,11 +3094,11 @@ wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
                               unsigned int height) {
   wxBitmap bmp = LoadSVG(filename, width, height);
 
-  if(bmp.IsOk())
+  if (bmp.IsOk())
     return bmp;
   else {
-  // On error in requested width/height parameters,
-  // try to find and use dimensions embedded in the SVG file
+    // On error in requested width/height parameters,
+    // try to find and use dimensions embedded in the SVG file
     unsigned int w, h;
     SVGDocumentPixelSize(filename, w, h);
     return LoadSVG(filename, w, h);
@@ -3197,10 +3157,9 @@ bool AddLocaleCatalog(wxString catalog) {
 }
 
 void PushNMEABuffer(wxString buf) {
-
   std::string full_sentence = buf.ToStdString();
 
-   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
     std::string identifier;
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
@@ -3208,11 +3167,11 @@ void PushNMEABuffer(wxString buf) {
     // notify message listener and also "ALL" N0183 messages, to support plugin
     // API using original talker id
     auto address = std::make_shared<NavAddr0183>("virtual");
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
-                                                   address);
+    auto msg =
+        std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
     auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
 
-    auto& msgbus = NavMsgBus::GetInstance();
+    auto &msgbus = NavMsgBus::GetInstance();
 
     msgbus.Notify(std::move(msg));
     msgbus.Notify(std::move(msg_all));
@@ -3720,8 +3679,8 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint *pwaypoint) {
 
     auto canvas = gFrame->GetPrimaryCanvas();
     SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
-    SelectItem *pFind = pSelect->FindSelection(ctx, lat_save, lon_save,
-                                               SELTYPE_ROUTEPOINT);
+    SelectItem *pFind =
+        pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {
       pFind->m_slat = pwaypoint->m_lat;  // update the SelectList entry
       pFind->m_slon = pwaypoint->m_lon;
@@ -4361,8 +4320,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
 #ifndef __OCPN__ANDROID__
   m_catalogText->SetLabel(GetCatalogText(true));
 #endif
-  if (m_PluginListPanel)
-    m_PluginListPanel->ReloadPluginPanels();
+  if (m_PluginListPanel) m_PluginListPanel->ReloadPluginPanels();
   OCPNMessageBox(this, _("Catalog update successful"),
                  _("OpenCPN Catalog update"), wxICON_INFORMATION | wxOK);
 }
@@ -6104,7 +6062,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
 
           glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
 
-          //ps52plib->m_last_clip_rect = upd.GetRect();
+          // ps52plib->m_last_clip_rect = upd.GetRect();
 
 #ifndef USE_ANDROID_GLES2
 //          glPushMatrix();  //    Adjust for rotation
@@ -6149,7 +6107,6 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(
         dynamic_cast<PlugInChartBaseExtended *>(m_ppicb);
     PlugInChartBaseGL *ppicb = dynamic_cast<PlugInChartBaseGL *>(m_ppicb);
     if (!Region.Empty() && ppicb_x) {
-
       // Start with a clean slate
       glChartCanvas::SetClipRect(VPoint, VPoint.rv_rect, false);
       glChartCanvas::DisableClipRegion();
@@ -6552,25 +6509,15 @@ bool PI_PLIBObjectRenderCheck(PI_S57Obj *pObj, PlugIn_ViewPort *vp) {
     rzRules.child = NULL;
     rzRules.next = NULL;
 
-    if (pContext->LUP){
+    if (pContext->LUP) {
       ps52plib->SetVPointCompat(
-                    cvp.pix_width,
-                    cvp.pix_height,
-                    cvp.view_scale_ppm,
-                    cvp.rotation,
-                    cvp.clat,
-                    cvp.clon,
-                    cvp.chart_scale,
-                    cvp.rv_rect,
-                    cvp.GetBBox(),
-                    cvp.ref_scale,
-                    GetOCPNCanvasWindow()->GetContentScaleFactor()
-                      );
+          cvp.pix_width, cvp.pix_height, cvp.view_scale_ppm, cvp.rotation,
+          cvp.clat, cvp.clon, cvp.chart_scale, cvp.rv_rect, cvp.GetBBox(),
+          cvp.ref_scale, GetOCPNCanvasWindow()->GetContentScaleFactor());
       ps52plib->PrepareForRender();
 
       return ps52plib->ObjectRenderCheck(&rzRules);
-    }
-    else
+    } else
       return false;
   } else
     return false;
@@ -6689,7 +6636,6 @@ void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
     cobj->m_chart_context->chart =
         0;  // note bene, this is always NULL for a PlugIn chart
     cobj->m_chart_context->chart_type = S52_CHART_TYPE_PLUGIN;
-
   }
 }
 
@@ -6785,7 +6731,7 @@ void UpdatePIObjectPlibContext(PI_S57Obj *pObj, S57Obj *cobj,
     // ugly as plugins still use BoundingBox
     pContext->BBObj =
         BoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
-                      cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
+                    cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
     pContext->bBBObj_valid = true;
   }
 
@@ -6944,20 +6890,11 @@ int PI_PLIBRenderObjectToDC(wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp) {
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    //FIXME (plib)
-    ps52plib->SetVPointCompat(
-                    cvp.pix_width,
-                    cvp.pix_height,
-                    cvp.view_scale_ppm,
-                    cvp.rotation,
-                    cvp.clat,
-                    cvp.clon,
-                    cvp.chart_scale,
-                    cvp.rv_rect,
-                    cvp.GetBBox(),
-                    cvp.ref_scale,
-                    GetOCPNCanvasWindow()->GetContentScaleFactor()
-                      );
+    // FIXME (plib)
+    ps52plib->SetVPointCompat(cvp.pix_width, cvp.pix_height, cvp.view_scale_ppm,
+                              cvp.rotation, cvp.clat, cvp.clon, cvp.chart_scale,
+                              cvp.rv_rect, cvp.GetBBox(), cvp.ref_scale,
+                              GetOCPNCanvasWindow()->GetContentScaleFactor());
     ps52plib->PrepareForRender();
 
     ps52plib->RenderObjectToDC(pdc, &rzRules);
@@ -7036,20 +6973,11 @@ int PI_PLIBRenderAreaToDC(wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp,
 
   if (pContext->LUP) {
     //  Do the render
-    //FIXME (plib)
-    ps52plib->SetVPointCompat(
-                    cvp.pix_width,
-                    cvp.pix_height,
-                    cvp.view_scale_ppm,
-                    cvp.rotation,
-                    cvp.clat,
-                    cvp.clon,
-                    cvp.chart_scale,
-                    cvp.rv_rect,
-                    cvp.GetBBox(),
-                    cvp.ref_scale,
-                    GetOCPNCanvasWindow()->GetContentScaleFactor()
-                      );
+    // FIXME (plib)
+    ps52plib->SetVPointCompat(cvp.pix_width, cvp.pix_height, cvp.view_scale_ppm,
+                              cvp.rotation, cvp.clat, cvp.clon, cvp.chart_scale,
+                              cvp.rv_rect, cvp.GetBBox(), cvp.ref_scale,
+                              GetOCPNCanvasWindow()->GetContentScaleFactor());
     ps52plib->PrepareForRender();
 
     ps52plib->RenderAreaToDC(pdc, &rzRules, &pb_spec);
@@ -7121,20 +7049,11 @@ int PI_PLIBRenderAreaToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    //FIXME (plib)
-    ps52plib->SetVPointCompat(
-                    cvp.pix_width,
-                    cvp.pix_height,
-                    cvp.view_scale_ppm,
-                    cvp.rotation,
-                    cvp.clat,
-                    cvp.clon,
-                    cvp.chart_scale,
-                    cvp.rv_rect,
-                    cvp.GetBBox(),
-                    cvp.ref_scale,
-                    GetOCPNCanvasWindow()->GetContentScaleFactor()
-                      );
+    // FIXME (plib)
+    ps52plib->SetVPointCompat(cvp.pix_width, cvp.pix_height, cvp.view_scale_ppm,
+                              cvp.rotation, cvp.clat, cvp.clon, cvp.chart_scale,
+                              cvp.rv_rect, cvp.GetBBox(), cvp.ref_scale,
+                              GetOCPNCanvasWindow()->GetContentScaleFactor());
     ps52plib->PrepareForRender();
 
     ps52plib->RenderAreaToGL(glcc, &rzRules);
@@ -7174,20 +7093,11 @@ int PI_PLIBRenderObjectToGL(const wxGLContext &glcc, PI_S57Obj *pObj,
     ViewPort cvp = CreateCompatibleViewport(*vp);
 
     //  Do the render
-    //FIXME (plib)
-    ps52plib->SetVPointCompat(
-                    cvp.pix_width,
-                    cvp.pix_height,
-                    cvp.view_scale_ppm,
-                    cvp.rotation,
-                    cvp.clat,
-                    cvp.clon,
-                    cvp.chart_scale,
-                    cvp.rv_rect,
-                    cvp.GetBBox(),
-                    cvp.ref_scale,
-                    GetOCPNCanvasWindow()->GetContentScaleFactor()
-                      );
+    // FIXME (plib)
+    ps52plib->SetVPointCompat(cvp.pix_width, cvp.pix_height, cvp.view_scale_ppm,
+                              cvp.rotation, cvp.clat, cvp.clon, cvp.chart_scale,
+                              cvp.rv_rect, cvp.GetBBox(), cvp.ref_scale,
+                              GetOCPNCanvasWindow()->GetContentScaleFactor());
     ps52plib->PrepareForRender();
 
     ps52plib->RenderObjectToGL(glcc, &rzRules);
@@ -7733,7 +7643,6 @@ void OCPN_cancelDownloadFileBackground(long handle) {
 _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
                                  const wxString &parameters, wxString &result,
                                  int timeout_secs) {
-
 #ifdef __OCPN__ANDROID__
   wxString lparms = parameters;
   wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
@@ -7742,7 +7651,7 @@ _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
   result = postResult;
   return OCPN_DL_NO_ERROR;
 
-#elif  defined(OCPN_USE_CURL)
+#elif defined(OCPN_USE_CURL)
   wxCurlHTTP post;
   post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
   size_t res = post.Post(parameters.ToAscii(), parameters.Len(), url);
@@ -8414,8 +8323,8 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex *pwaypoint) {
 
     auto canvas = gFrame->GetPrimaryCanvas();
     SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
-    SelectItem *pFind = pSelect->FindSelection(ctx, lat_save, lon_save,
-                                               SELTYPE_ROUTEPOINT);
+    SelectItem *pFind =
+        pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {
       pFind->m_slat = pwaypoint->m_lat;  // update the SelectList entry
       pFind->m_slon = pwaypoint->m_lon;
@@ -8565,22 +8474,21 @@ wxString GetActiveRouteGUID(
 }
 
 /** Comm Global Watchdog Query  */
-int GetGlobalWatchdogTimoutSeconds(){
-  return gps_watchdog_timeout_ticks;
-}
+int GetGlobalWatchdogTimoutSeconds() { return gps_watchdog_timeout_ticks; }
 
 /** Comm Priority query support methods  */
 std::vector<std::string> GetPriorityMaps() {
-  MyApp& app = wxGetApp();
+  MyApp &app = wxGetApp();
   return (app.m_comm_bridge.GetPriorityMaps());
 }
 
 std::vector<std::string> GetActivePriorityIdentifiers() {
   std::vector<std::string> result;
 
-  MyApp& app = wxGetApp();
+  MyApp &app = wxGetApp();
 
-  std::string id = app.m_comm_bridge.GetPriorityContainer("position").active_source;
+  std::string id =
+      app.m_comm_bridge.GetPriorityContainer("position").active_source;
   result.push_back(id);
   id = app.m_comm_bridge.GetPriorityContainer("velocity").active_source;
   result.push_back(id);
@@ -8598,16 +8506,14 @@ double OCPN_GetDisplayContentScaleFactor() {
   double rv = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
   // Support scaled HDPI displays.
-  if (gFrame)
-    rv = gFrame->GetContentScaleFactor();
+  if (gFrame) rv = gFrame->GetContentScaleFactor();
 #endif
   return rv;
 }
 double OCPN_GetWinDIPScaleFactor() {
   double scaler = 1.0;
 #ifdef __WXMSW__
-  if (gFrame)
-    scaler = (double)(gFrame->ToDIP(100))/100.;
+  if (gFrame) scaler = (double)(gFrame->ToDIP(100)) / 100.;
 #endif
   return scaler;
 }
@@ -8615,51 +8521,50 @@ double OCPN_GetWinDIPScaleFactor() {
 /** Comm port plugin TX support methods  */
 
 std::vector<DriverHandle> GetActiveDrivers() {
-
   std::vector<DriverHandle> result;
 
-  auto& registry = CommDriverRegistry::GetInstance();
-  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
+  auto &registry = CommDriverRegistry::GetInstance();
+  const std::vector<std::shared_ptr<AbstractCommDriver>> &drivers =
+      registry.GetDrivers();
 
-  for (auto& driver : drivers)
-    result.push_back(driver->Key());
+  for (auto &driver : drivers) result.push_back(driver->Key());
 
   return result;
 }
 
-
-const std::unordered_map<std::string, std::string> GetAttributes(DriverHandle handle) {
-  auto& registry = CommDriverRegistry::GetInstance();
+const std::unordered_map<std::string, std::string> GetAttributes(
+    DriverHandle handle) {
+  auto &registry = CommDriverRegistry::GetInstance();
   auto drivers = registry.GetDrivers();
   auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
   auto found = std::find_if(drivers.begin(), drivers.end(), func);
 
   std::unordered_map<std::string, std::string> rv;
-  if (found == drivers.end()){
+  if (found == drivers.end()) {
     return rv;
   }
 
   return found->get()->GetAttributes();
 }
 
-CommDriverResult WriteCommDriverN2K( DriverHandle handle, int PGN,
-                                     int destinationCANAddress, int priority,
-                                     const std::shared_ptr <std::vector<uint8_t>> &payload){
-
+CommDriverResult WriteCommDriverN2K(
+    DriverHandle handle, int PGN, int destinationCANAddress, int priority,
+    const std::shared_ptr<std::vector<uint8_t>> &payload) {
   uint64_t _PGN;
   _PGN = PGN;
 
   // Find the driver from the handle
-  auto& registry = CommDriverRegistry::GetInstance();
+  auto &registry = CommDriverRegistry::GetInstance();
   auto drivers = registry.GetDrivers();
   auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
   auto driver = std::find_if(drivers.begin(), drivers.end(), func);
 
-  if (driver == drivers.end()){
+  if (driver == drivers.end()) {
     return RESULT_COMM_INVALID_HANDLE;
   }
 
-  auto dest_addr = std::make_shared<const NavAddr2000>(driver->get()->iface, destinationCANAddress);
+  auto dest_addr = std::make_shared<const NavAddr2000>(driver->get()->iface,
+                                                       destinationCANAddress);
 
   const std::vector<uint8_t> load;
   size_t data_len = payload.get()->size();
@@ -8671,34 +8576,35 @@ CommDriverResult WriteCommDriverN2K( DriverHandle handle, int PGN,
   return RESULT_COMM_NO_ERROR;
 }
 
-CommDriverResult RegisterTXPGNs( DriverHandle handle, std::vector<int> &pgn_list) {
-  if (!pgn_list.size())
-    return RESULT_COMM_INVALID_PARMS;
+CommDriverResult RegisterTXPGNs(DriverHandle handle,
+                                std::vector<int> &pgn_list) {
+  if (!pgn_list.size()) return RESULT_COMM_INVALID_PARMS;
 
   // Find the driver from the handle
-  auto& registry = CommDriverRegistry::GetInstance();
+  auto &registry = CommDriverRegistry::GetInstance();
   auto drivers = registry.GetDrivers();
   auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
   auto driver = std::find_if(drivers.begin(), drivers.end(), func);
 
-  if (driver == drivers.end()){
+  if (driver == drivers.end()) {
     return RESULT_COMM_INVALID_HANDLE;
   }
 
-  std::shared_ptr<CommDriverN2K> dn2k = std::dynamic_pointer_cast<CommDriverN2K>(*driver);
+  std::shared_ptr<CommDriverN2K> dn2k =
+      std::dynamic_pointer_cast<CommDriverN2K>(*driver);
 
   int nloop;
-  for (size_t i=0 ; i < pgn_list.size() ;  i++){
+  for (size_t i = 0; i < pgn_list.size(); i++) {
     int nTry = 5;
     int iresult = -1;
     nloop = 0;
     while (nTry && iresult < 0) {
-      iresult = dn2k->SetTXPGN( pgn_list[i]);
+      iresult = dn2k->SetTXPGN(pgn_list[i]);
       nTry--;
       nloop++;
     }
 
-    if (iresult < 0){
+    if (iresult < 0) {
       printf("####TXPGN Fail\n");
       return RESULT_COMM_REGISTER_PGN_ERROR;
     }
@@ -8707,4 +8613,3 @@ CommDriverResult RegisterTXPGNs( DriverHandle handle, std::vector<int> &pgn_list
   printf("----TXPGN PASS  nloop: %d \n", nloop);
   return RESULT_COMM_NO_ERROR;
 }
-

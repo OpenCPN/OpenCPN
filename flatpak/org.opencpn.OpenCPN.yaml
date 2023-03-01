@@ -85,19 +85,21 @@ modules:
             sha256: 5af29ba58bbdbb7bbcefaaecc77ec8fc413f0db6f4c4e286c40c3e1b83174fa0
       config-opts:
           - --disable-static
+
     - name: wxGTK3
       sources:
           - type: archive
-            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.0.4/wxWidgets-3.0.4.tar.bz2
-            sha256: 96157f988d261b7368e5340afa1a0cad943768f35929c22841f62c25b17bf7f0
+            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxWidgets-3.2.1.tar.bz2
+            sha256: c229976bb413eb88e45cb5dfb68b27890d450149c09b331abd751e7ae0f5fa66
+          - type: patch
+            paths:
+              - patches/0101-Add-wxDEPRECATED_EXPORT_CORE-macro-for-wxTransformMa.patch
       config-opts:
           - --with-gtk=3
           - --with-opengl
           - --with-sdl
-          - --with-gnomeprint
           - --with-libmspack
           - --enable-intl
-          - --enable-no_deps
           - --disable-rpath
           - --enable-ipv6
       cleanup:
@@ -119,7 +121,7 @@ modules:
           - -DOCPN_FLATPAK=ON
           - -DOCPN_USE_SYSFS_PORTS=ON
           - -DBUILD_SHARED_LIBS=OFF
-          - -DOCPN_TARGET_TUPLE=flatpak-x86_64-wx32;22.08;x86_64
+          - -DOCPN_TARGET_TUPLE=flatpak-x86_64;22.08;x86_64
           - -DCMAKE_FIND_ROOT_PATH=/app
           - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
