@@ -3823,6 +3823,82 @@ wxArrayString GetTrackGUIDArray(void) {
   return result;
 }
 
+wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
+  wxArrayString result;
+  RoutePointList *list = pWayPointMan->GetWaypointList();
+
+  wxRoutePointListNode *prpnode = list->GetFirst();
+  while (prpnode) {
+    RoutePoint *prp = prpnode->GetData();
+    switch(req){
+      case OBJECTS_ALL:
+        result.Add(prp->m_GUID);
+        break;
+      case OBJECTS_NO_LAYERS:
+        if (!prp->m_bIsInLayer)
+          result.Add(prp->m_GUID);
+        break;
+      case OBJECTS_ONLY_LAYERS:
+        if (prp->m_bIsInLayer)
+          result.Add(prp->m_GUID);
+        break;
+    }
+
+
+    prpnode = prpnode->GetNext();  // RoutePoint
+  }
+
+  return result;
+}
+
+wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
+  wxArrayString result;
+  RouteList *list = pRouteList;
+
+  wxRouteListNode *prpnode = list->GetFirst();
+  while (prpnode) {
+    Route *proute = prpnode->GetData();
+    switch(req){
+      case OBJECTS_ALL:
+        result.Add(proute->m_GUID);
+        break;
+      case OBJECTS_NO_LAYERS:
+        if (!proute->m_bIsInLayer)
+          result.Add(proute->m_GUID);
+        break;
+      case OBJECTS_ONLY_LAYERS:
+        if (proute->m_bIsInLayer)
+          result.Add(proute->m_GUID);
+        break;
+    }
+
+    prpnode = prpnode->GetNext();  // Route
+  }
+
+  return result;
+}
+
+wxArrayString GetTrackGUIDArray(OBJECT_LAYER_REQ req) {
+  wxArrayString result;
+  for (Track *ptrack : g_TrackList) {
+    switch(req){
+      case OBJECTS_ALL:
+        result.Add(ptrack->m_GUID);
+        break;
+      case OBJECTS_NO_LAYERS:
+        if (!ptrack->m_bIsInLayer)
+          result.Add(ptrack->m_GUID);
+        break;
+      case OBJECTS_ONLY_LAYERS:
+        if (ptrack->m_bIsInLayer)
+          result.Add(ptrack->m_GUID);
+        break;
+    }
+  }
+
+  return result;
+}
+
 wxArrayString GetIconNameArray(void) {
   wxArrayString result;
 
