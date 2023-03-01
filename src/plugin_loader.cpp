@@ -98,6 +98,18 @@ PlugInContainer::PlugInContainer() {
   m_api_version = 0;
 }
 
+/** Return true if path "seems" to contain a system plugin */
+static bool IsSystemPlugin(const std::string& path) {
+  static const std::vector<std::string> SysPlugins = {
+    "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi" };
+
+  const std::string lc_path = ocpn::tolower(path);
+  for (const auto& p : SysPlugins) {
+    if (lc_path.find(p) != std::string::npos) return true;
+  }
+  return false;
+}
+
 SemanticVersion PlugInContainer::GetVersion() {
   if (m_ManagedMetadata.version.size()) {
     return SemanticVersion::parse(m_ManagedMetadata.version);
@@ -293,6 +305,10 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   }
 
   if (loaded) return true;
+  if (!IsSystemPlugin(file_name.ToStdString()) && safe_mode::get_mode()) {
+    DEBUG_LOG << "Skipping plugin " <<  file_name << " in safe mode";
+    return false;
+  }
 
   bool b_compat = CheckPluginCompatibility(file_name);
 
