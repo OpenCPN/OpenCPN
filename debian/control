@@ -32,6 +32,7 @@ Build-Depends: debhelper (>= 9),
  base-files (<< 12) | libwxgtk3.2-dev,
  base-files (<< 12) | libwxgtk-webview3.2-dev,
  portaudio19-dev,
+ rapidjson-dev,
  git
 #For the ARM build, perhaps add: , libdri2-dev [armhf],libgles1-mesa-dev [armhf]
 Standards-Version: 3.9.3
