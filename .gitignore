@@ -6,7 +6,6 @@ build
 cscope.out
 *~
 *.kdev*
-*.patch
 crowdin.yaml
 buildwin/NSIS_Unicode/Include/Langstrings_*.nsh
 buildwin/crashrpt/CrashRpt1402.dll
