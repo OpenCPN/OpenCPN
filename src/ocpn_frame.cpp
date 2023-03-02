@@ -5122,8 +5122,10 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   //      Maintain the validity flags
   m_b_new_data = true;
   bool last_bGPSValid = bGPSValid;
-  bGPSValid = true;
-  if (last_bGPSValid != bGPSValid) UpdateGPSCompassStatusBoxes(true);
+  if ((msg->vflag && POS_UPDATE) == POS_UPDATE)
+    bGPSValid = true;
+  if (last_bGPSValid != bGPSValid)
+    UpdateGPSCompassStatusBoxes(true);
 
   bVelocityValid = true;
   UpdateStatusBar();
