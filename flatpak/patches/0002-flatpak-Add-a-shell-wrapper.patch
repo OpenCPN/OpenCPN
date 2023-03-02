@@ -1,0 +1,25 @@
+From 0ef7d9ef5f4ce1d8c03294ea198f54a18f826e63 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas@nowhere.net>
+Date: Fri, 3 Aug 2018 18:50:08 +0200
+Subject: [PATCH] flatpak: Add a shell wrapper.
+
+---
+data/opencpn.sh | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 data/opencpn.sh
+
+diff --git a/data/opencpn.sh b/data/opencpn.sh
+new file mode 100644
+index 000000000..fca02ad9c
+--- /dev/null
++++ b/data/opencpn.sh
+@@ -0,0 +1,7 @@
++#!/bin/sh
++
++export XDG_DATA_DIRS=$XDG_DATA_DIRS:/app/extensions/share
++export GDK_BACKEND=x11
++export OPENCPN_PLUGIN_DIRS=/app/extensions/lib/opencpn:/app/lib/opencpn
++
++exec opencpn $@
+-- 
+2.38.1
