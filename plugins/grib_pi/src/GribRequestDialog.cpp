@@ -473,7 +473,7 @@ void GribRequestSetting::OnTopChange(wxCommandEvent &event) {
   //deactivate momentary ZyGrib option
   if(m_pMailTo->GetCurrentSelection() == ZYGRIB) {
     m_pMailTo->SetSelection(0);
-    int mes = OCPNMessageBox_PlugIn(this, _("Sorry.../nZyGrib momentary stopped providing this service.../nOnly Saildoc option is available"), _("Warning"),wxOK);
+    int mes = OCPNMessageBox_PlugIn(this, _("Sorry...\nZyGrib momentary stopped providing this service...\nOnly Saildocs option is available"), _("Warning"),wxOK);
   }
   ApplyRequestConfig(m_pResolution->GetCurrentSelection(),
                      m_pInterval->GetCurrentSelection(),
