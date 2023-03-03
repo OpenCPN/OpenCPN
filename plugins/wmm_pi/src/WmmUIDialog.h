@@ -8,6 +8,7 @@
 #ifndef __WMMUIDIALOG_H__
 #define __WMMUIDIALOG_H__
 
+#include <wx/frame.h>
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
@@ -34,7 +35,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class WmmUIDialogBase
 ///////////////////////////////////////////////////////////////////////////////
-class WmmUIDialogBase : public wxDialog {
+class WmmUIDialogBase : public wxFrame {
 private:
 protected:
   wxStaticText* m_staticText8;
@@ -80,14 +81,15 @@ public:
   wxCheckBox* m_cbEnablePlot;
   wxButton* m_bPlotSettings;
 
-  WmmUIDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY,
+    WmmUIDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY,
                   const wxString& title = _("WMM"),
                   const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxSize(250, 485),
-                  long style = wxCAPTION | wxDEFAULT_DIALOG_STYLE |
-                               wxTAB_TRAVERSAL);
+                  long style = wxCAPTION | wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR);
   ~WmmUIDialogBase();
   void OnKey(wxKeyEvent& ke);
+  void OnClose(wxCloseEvent& event);
+  void OnClose(wxCommandEvent& event);
 
   DECLARE_EVENT_TABLE()
 };

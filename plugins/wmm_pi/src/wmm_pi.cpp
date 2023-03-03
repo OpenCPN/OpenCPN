@@ -869,66 +869,12 @@ bool wmm_pi::SaveConfig(void) {
     return false;
 }
 
-void SetBackColor(wxWindow *ctrl, wxColour col) {
-  static int depth = 0;  // recursion count
-  if (depth == 0) {      // only for the window root, not for every child
-
-    ctrl->SetBackgroundColour(col);
-  }
-
-  wxWindowList kids = ctrl->GetChildren();
-  for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode *node = kids.Item(i);
-    wxWindow *win = node->GetData();
-
-    if (win->IsKindOf(CLASSINFO(wxListBox)))
-      ((wxListBox *)win)->SetBackgroundColour(col);
-
-    else if (win->IsKindOf(CLASSINFO(wxTextCtrl)))
-      ((wxTextCtrl *)win)->SetBackgroundColour(col);
-
-    //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
-    //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
-
-    else if (win->IsKindOf(CLASSINFO(wxChoice)))
-      ((wxChoice *)win)->SetBackgroundColour(col);
-
-    else if (win->IsKindOf(CLASSINFO(wxComboBox)))
-      ((wxComboBox *)win)->SetBackgroundColour(col);
-
-    else if (win->IsKindOf(CLASSINFO(wxRadioButton)))
-      ((wxRadioButton *)win)->SetBackgroundColour(col);
-
-    else if (win->IsKindOf(CLASSINFO(wxScrolledWindow))) {
-      ((wxScrolledWindow *)win)->SetBackgroundColour(col);
-    }
-
-    else if (win->IsKindOf(CLASSINFO(wxButton))) {
-      ((wxButton *)win)->SetBackgroundColour(col);
-    }
-
-    else {
-      ;
-    }
-
-    if (win->GetChildren().GetCount() > 0) {
-      depth++;
-      wxWindow *w = win;
-      SetBackColor(w, col);
-      depth--;
-    }
-  }
-}
-
 void wmm_pi::ShowPreferencesDialog(wxWindow *parent) {
   WmmPrefsDialog *dialog =
       new WmmPrefsDialog(parent, wxID_ANY, _("WMM Preferences"),
                          wxPoint(m_wmm_dialog_x, m_wmm_dialog_y), wxDefaultSize,
                          wxDEFAULT_DIALOG_STYLE);
   dialog->Fit();
-  wxColour cl;
-  GetGlobalColor(_T("DILG1"), &cl);
-  dialog->SetBackgroundColour(cl);
 
   dialog->m_rbViewType->SetSelection(m_iViewType);
   dialog->m_cbShowPlotOptions->SetValue(m_bShowPlotOptions);
@@ -959,9 +905,6 @@ void wmm_pi::ShowPlotSettings() {
   dialog->SetFont(*pFont);
 
   dialog->Fit();
-  wxColour cl;
-  GetGlobalColor(_T("DILG1"), &cl);
-  dialog->SetBackgroundColour(cl);
 
   dialog->m_cbDeclination->SetValue(m_DeclinationMap.m_bEnabled);
   dialog->m_scDeclinationSpacing->SetValue(m_DeclinationMap.m_Spacing);
