@@ -365,7 +365,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
       {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},        // RTOFS
       {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString},        // HRRR
       {_T("0.0625"), _T("0.125"), wxEmptyString, wxEmptyString},  // ICON
-      {_T("0.4"), wxEmptyString, wxEmptyString, wxEmptyString}    //ECMWF
+      {_T("0.4"), _T("1.0"), _T("2.0"), wxEmptyString}    //ECMWF
   };
 
   IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
@@ -402,7 +402,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pInterval->SetSelection(wxMin(it, m_pInterval->GetCount() - 1));
 
   // populate time range choice
-  l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS|| IsECMWF ? 6 : IsICON ? 7 : IsHRRR ? 2 : 3;
+  l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsECMWF ? 10 : IsICON ? 7 : IsHRRR ? 2 : 3;
   m_pTimeRange->Clear();
   for (unsigned i = 2; i < l + 1; i++)
     m_pTimeRange->Append(wxString::Format(_T("%d"), i));
@@ -832,11 +832,11 @@ wxString GribRequestSetting::WriteMail() {
       //parametres ICON
       {_T(""), _T(""), _T("AIRTMP"), _T(""),
       _T("SFCTMP"), _T("GUST"), _T(""), _T(""), _T(""),
-      _T("HTG500"), _T("")},
+      _T("WIND500,HGT500"), _T("")},
       //parametres ECMWF
       {_T(""), _T(""), _T("TEMP"), _T(""),
       _T(""), _T(""), _T(""), _T(""), _T(""),
-      _T("HGT500"), _T("")},
+      _T("WIND500,HGT500"), _T("")},
       // parameters GFS from zygrib
       {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString,
        _T("GUST"),
