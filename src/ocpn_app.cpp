@@ -538,7 +538,7 @@ ChartGroupArray *g_pGroupArray;
 
 S57QueryDialog *g_pObjectQueryDialog;
 
-wxArrayString TideCurrentDataSet;
+std::vector<std::string> TideCurrentDataSet;
 wxString g_TCData_Dir;
 
 bool g_boptionsactive;
@@ -1574,16 +1574,17 @@ bool MyApp::OnInit() {
       (g_Platform->GetSharedDataDir() + _T("tcdata") +
        wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
-  if (!TideCurrentDataSet.GetCount()) {
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata0));
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
+//TODO: What are we trying to do here?
+  if (TideCurrentDataSet.empty()) {
+    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
+    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
   } else {
     wxString first_tide = TideCurrentDataSet[0];
     wxFileName ft(first_tide);
     if (!ft.FileExists()) {
-      TideCurrentDataSet.RemoveAt(0);
-      TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata0), 0);
-      TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
+      TideCurrentDataSet.erase(TideCurrentDataSet.begin());
+      TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
+      TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
     }
   }
 

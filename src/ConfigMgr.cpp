@@ -312,7 +312,7 @@ extern ChartGroupArray *g_pGroupArray;
 extern bool g_bDebugOGL;
 extern wxString g_uploadConnection;
 
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern bool g_btouch;
@@ -1615,81 +1615,6 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
 #ifdef __WXQT__
   conf->SetPath(_T ( "/Settings/QTFonts" ));
-#endif
-
-#if 0
-    if(conf->GetNumberOfEntries() != (unsigned int)FontMgr::Get().GetNumFonts() )
-        return false;
-
-    wxString str;
-    long dummy;
-    wxString pval;
-
-    bool bCont = conf->GetFirstEntry( str, dummy );
-    while( bCont ) {
-        conf->Read( str, &pval );
-        if(!FontMgr::Get().FindFontByConfigString(str))
-            return false;
-
-        bCont = conf->GetNextEntry( str, dummy );
-    }
-
-
-//  Tide/Current Data Sources
-    conf->SetPath( _T ( "/TideCurrentDataSources" ) );
-    if( conf->GetNumberOfEntries() != TideCurrentDataSet.GetCount())
-        return false;
-
-    if( conf->GetNumberOfEntries()){
-        wxString str, val;
-        long dummy;
-        bool bCont = conf->GetFirstEntry( str, dummy );
-        while( bCont ) {
-            conf->Read( str, &val );              // Get a file name
-            if( TideCurrentDataSet.Index(val) == wxNOT_FOUND)
-                return false;
-            bCont = conf->GetNextEntry( str, dummy );
-        }
-    }
-
-#endif
-
-#if 0
-    //    Groups
-    conf->SetPath( _T ( "/Groups" ) );
-    unsigned int group_count;
-    conf->Read( _T ( "GroupCount" ), (int *) &group_count, 0 );
-
-    if(group_count != g_pGroupArray->GetCount())
-        return false;
-
-    // Walk the array of groups in the target template
-    for( unsigned int i = 0; i < group_count; i++ ) {
-        wxString s;
-        s.Printf( _T("Group%d"), i + 1 );
-        s.Prepend( _T ( "/Groups/" ) );
-        conf->SetPath( s );
-
-        wxString t;
-        conf->Read( _T ( "GroupName" ), &t );
-
-        // Look for this group name int the active array
-        bool bfound = false;
-        ChartGroup *pGroup;
-        for(unsigned int j = 0 ; j < g_pGroupArray->GetCount() ; j++){
-            pGroup = g_pGroupArray->Item(i);
-            if(pGroup && (pGroup->m_group_name.IsSameAs(t))){
-                bfound = true;
-                break;
-            }
-        }
-
-        if(!bfound)
-            return false;
-        //TODO
-        // Here we could further check the contents of the found group.
-    }
-
 #endif
 
   conf->SetPath(_T ( "/Settings/Others" ));
