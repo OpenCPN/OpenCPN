@@ -40,6 +40,12 @@ bool SndfileSoundLoader::Load(const char* path)
     return true;
 }
 
+void SndfileSoundLoader::UnLoad()
+{
+    if (m_sndfile) sf_close(m_sndfile);
+    m_sndfile = 0;
+}
+
 bool SndfileSoundLoader::Reset()
 {
     if (!m_sndfile) {
