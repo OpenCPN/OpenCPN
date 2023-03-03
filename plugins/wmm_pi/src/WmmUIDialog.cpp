@@ -9,14 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(WmmUIDialogBase, wxDialog)
+BEGIN_EVENT_TABLE(WmmUIDialogBase, wxFrame)
 EVT_CHAR_HOOK(WmmUIDialogBase::OnKey)
+EVT_CLOSE(WmmUIDialogBase::OnClose)
+EVT_BUTTON(wxID_OK, WmmUIDialogBase::OnClose)
 END_EVENT_TABLE()
 
 WmmUIDialogBase::WmmUIDialogBase(wxWindow* parent, wxWindowID id,
                                  const wxString& title, const wxPoint& pos,
                                  const wxSize& size, long style)
-    : wxDialog(parent, id, title, pos, size, style) {
+    : wxFrame(parent, id, title, pos, size, style) {
   this->SetSizeHints(wxSize(-1, -1), wxSize(-1, -1));
 
   wxFlexGridSizer* fgSizer6;
@@ -306,10 +308,25 @@ WmmUIDialogBase::~WmmUIDialogBase() {
       wxCommandEventHandler(WmmUIDialogBase::PlotSettings), NULL, this);
 }
 void WmmUIDialogBase::OnKey(wxKeyEvent& ke) {
-  if (ke.GetKeyCode() == WXK_ESCAPE)
-    Close(true);
-  else
+  if (ke.GetKeyCode() == WXK_ESCAPE) {
+    Hide();
+  } else {
     ke.Skip();
+  }
+}
+
+void WmmUIDialogBase::OnClose( wxCloseEvent& event ) {
+  if (event.CanVeto()) {
+    Hide();
+    event.Veto();
+  } else {
+    event.Skip();
+  }
+}
+
+void WmmUIDialogBase::OnClose( wxCommandEvent& event ) {
+  Hide();
+  event.Skip();
 }
 
 WmmPrefsDialog::WmmPrefsDialog(wxWindow* parent, wxWindowID id,
