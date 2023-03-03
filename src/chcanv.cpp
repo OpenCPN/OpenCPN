@@ -12270,7 +12270,7 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
 
             LLBBox this_box;
             this_box.Set(lat, lon, lat, lon);
-            this_box.EnLarge(.05);
+            this_box.EnLarge(.005);
             drawn_boxes.push_back(this_box);
           }
 
