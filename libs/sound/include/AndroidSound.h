@@ -41,6 +41,7 @@ class AndroidSound: public OcpnSound
         ~AndroidSound();
 
         bool Load(const char*, int deviceIndex = -1) override;
+        void UnLoad() override {};
         bool Reset() /*override*/ { return true; };
         bool Play() override;
         bool Stop() override;
