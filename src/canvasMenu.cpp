@@ -1317,19 +1317,33 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
 
     case ID_WP_MENU_CLEAR_ANCHORWATCH:
+    {
+      wxString guid = wxEmptyString;
       if (pAnchorWatchPoint1 == m_pFoundRoutePoint) {
         pAnchorWatchPoint1 = NULL;
+        guid = g_AW1GUID;
         g_AW1GUID.Clear();
       } else if (pAnchorWatchPoint2 == m_pFoundRoutePoint) {
         pAnchorWatchPoint2 = NULL;
+        guid = g_AW2GUID;
         g_AW2GUID.Clear();
       }
+      if(!guid.IsEmpty()) {
+        wxJSONValue v;
+        v[_T("GUID")] = guid;
+        wxString msg_id(_T("OCPN_ANCHOR_WATCH_CLEARED"));
+        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      }
       break;
+    }
 
     case ID_WP_MENU_SET_ANCHORWATCH:
+    {
+      wxString guid = wxEmptyString;
       if (pAnchorWatchPoint1 == NULL) {
         pAnchorWatchPoint1 = m_pFoundRoutePoint;
         g_AW1GUID = pAnchorWatchPoint1->m_GUID;
+        guid = g_AW1GUID;
         wxString nn;
         nn = m_pFoundRoutePoint->GetName();
         if (nn.IsNull()) {
@@ -1339,6 +1353,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       } else if (pAnchorWatchPoint2 == NULL) {
         pAnchorWatchPoint2 = m_pFoundRoutePoint;
         g_AW2GUID = pAnchorWatchPoint2->m_GUID;
+        guid = g_AW2GUID;
         wxString nn;
         nn = m_pFoundRoutePoint->GetName();
         if (nn.IsNull()) {
@@ -1346,8 +1361,15 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           m_pFoundRoutePoint->SetName(nn);
         }
       }
+      if(!guid.IsEmpty()) {
+        wxJSONValue v;
+        v[_T("GUID")] = guid;
+        wxString msg_id(_T("OCPN_ANCHOR_WATCH_SET"));
+        g_pi_manager->SendJSONMessageToAllPlugins(msg_id, v);
+      }
       break;
-
+    }
+    
     case ID_DEF_MENU_ACTIVATE_MEASURE:
       parent->StartMeasureRoute();
       break;
