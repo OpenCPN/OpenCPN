@@ -832,7 +832,7 @@ wxString GribRequestSetting::WriteMail() {
       //parametres ICON
       {_T(""), _T(""), _T("AIRTMP"), _T(""),
       _T("SFCTMP"), _T("GUST"), _T(""), _T(""), _T(""),
-      _T("HTG500"), _T("")},
+      _T("WIND500,HGT500"), _T("")},
       //parametres ECMWF
       {_T(""), _T(""), _T("TEMP"), _T(""),
       _T(""), _T(""), _T(""), _T(""), _T(""),
