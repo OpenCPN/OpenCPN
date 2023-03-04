@@ -5830,6 +5830,7 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
             ts.Append(s1);
             s1 = tk.GetNextToken();
             ts.Append(s1);
+            ts.Append(" kn");
             ts.Append(_T("</td></tr>"));
             i++;
           }
