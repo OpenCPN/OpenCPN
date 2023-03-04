@@ -6365,7 +6365,7 @@ static void onAnchorSoundFinished(void *ptr) {
 }
 
 void ChartCanvas::AlertDraw(ocpnDC &dc) {
-  // Just for prototyping, visual alert for anchorwatch goes here
+  // Visual and audio alert for anchorwatch goes here
   bool play_sound = false;
   if (pAnchorWatchPoint1 && AnchorAlertOn1) {
     if (AnchorAlertOn1) {
@@ -6391,20 +6391,19 @@ void ChartCanvas::AlertDraw(ocpnDC &dc) {
   } else
     AnchorAlertOn2 = false;
 
-  if (play_sound && !bAnchorSoundPlaying) {
-    auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
-    if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
-    g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
-    if (g_anchorwatch_sound->IsOk()) {
-      bAnchorSoundPlaying = true;
-      g_anchorwatch_sound->SetFinishedCallback(onAnchorSoundFinished, NULL);
-      g_anchorwatch_sound->Play();
+  if (play_sound) {
+    if(!bAnchorSoundPlaying) {
+      auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
+      if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+      g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
+      if (g_anchorwatch_sound->IsOk()) {
+        bAnchorSoundPlaying = true;
+        g_anchorwatch_sound->SetFinishedCallback(onAnchorSoundFinished, NULL);
+        g_anchorwatch_sound->Play();
+      }
     }
-  } else if (g_anchorwatch_sound->IsOk()) {
-    g_anchorwatch_sound->Stop();
   }
 }
-// End of prototype anchor watch alerting-----------------------
 
 void ChartCanvas::UpdateShips() {
   //  Get the rectangle in the current dc which bounds the "ownship" symbol
