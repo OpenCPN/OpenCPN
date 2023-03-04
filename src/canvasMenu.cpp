@@ -257,20 +257,17 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 
 void CanvasMenuHandler::PrepareMenuItem( wxMenuItem *item ){
 #if defined(__WXMSW__)
-  if (m_DIPFactor == 1.0){
-    wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
-    item->SetBackgroundColour(ctrl_back_color);
-    wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
-    item->SetTextColour(menu_text_color);
-  }
+  wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
+  item->SetBackgroundColour(ctrl_back_color);
+  wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
+  item->SetTextColour(menu_text_color);
 #endif
 }
 
 void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  if (m_DIPFactor == 1.0)
-    item->SetFont(m_scaledFont);
+  item->SetFont(m_scaledFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -287,8 +284,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
 void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   wxMenuItem *item = new wxMenuItem(menu, id, label);
 #if defined(__WXMSW__)
-  if (m_DIPFactor == 1.0)
-    item->SetFont(m_scaledFont);
+  item->SetFont(m_scaledFont);
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -304,8 +300,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
 
 void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
 #if defined(__WXMSW__)
-  if (m_DIPFactor == 1.0)
-    item->SetFont(m_scaledFont);
+  item->SetFont(m_scaledFont);
 #endif
 
 #if defined(__OCPN__ANDROID__)
@@ -1022,8 +1017,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                          (*it)->GetHelp(), (*it)->GetKind());
 
 #ifdef __WXMSW__
-        if (m_DIPFactor == 1.0)
-          pmi->SetFont(m_scaledFont);
+        pmi->SetFont(m_scaledFont);
 #endif
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
@@ -1040,8 +1034,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetHelp(),
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
-    if (m_DIPFactor == 1.0)
-      pmi->SetFont(m_scaledFont);
+    pmi->SetFont(m_scaledFont);
 #endif
 
     PrepareMenuItem( pmi );
@@ -1369,7 +1362,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       }
       break;
     }
-    
+
     case ID_DEF_MENU_ACTIVATE_MEASURE:
       parent->StartMeasureRoute();
       break;
