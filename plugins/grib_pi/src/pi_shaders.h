@@ -29,7 +29,13 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
+#endif
+
+#include <GL/glew.h>
+#include <GL/gl.h>
+//#include <GL/glu.h>
 
 extern GLint pi_color_tri_shader_program;
 extern GLint pi_colorv_tri_shader_program;

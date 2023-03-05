@@ -27,8 +27,8 @@
 
 #ifdef USE_ANDROID_GLES2
 #include "qdebug.h"
-
 #include <GLES2/gl2.h>
+#endif
 
 // Simple colored triangle shader
 
@@ -392,7 +392,7 @@ bool pi_loadShaders() {
       glGetShaderInfoLog(pi_circle_filled_vertex_shader, INFOLOG_LEN, NULL,
                          infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -409,7 +409,7 @@ bool pi_loadShaders() {
       glGetShaderInfoLog(pi_circle_filled_fragment_shader, INFOLOG_LEN, NULL,
                          infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -427,7 +427,7 @@ bool pi_loadShaders() {
       glGetProgramInfoLog(pi_circle_filled_shader_program, INFOLOG_LEN, NULL,
                           infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-      qDebug() << infoLog;
+      //qDebug() << infoLog;
       ret_val = false;
     }
   }
@@ -528,4 +528,3 @@ void configureShaders(float width, float height) {
   glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat*)I);
 }
 
-#endif

@@ -30,7 +30,7 @@
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
 #else
-#include <GL/gl.h>
+//#include <GL/gl.h>
 #endif
 
 #include "pi_TexFont.h"

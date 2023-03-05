@@ -31,9 +31,12 @@
 #include "wx/wx.h"
 #endif
 
+#include <list>
+
 #ifndef __OCPN__ANDROID__
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <GL/glew.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 #endif
 
 #include "ocpn_plugin.h"
@@ -60,11 +63,11 @@
 #include <qopengl.h>
 #include "GL/gl_private.h"
 #else
-#include "GL/gl.h"
+//#include "GL/gl.h"
 #endif
 
-#ifdef USE_ANDROID_GLES2
 #include "pi_shaders.h"
+#ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
 #endif
 
@@ -115,7 +118,7 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
   s_odc_tess_work_buf = (GLfloat *)malloc(100 * sizeof(GLfloat));
   s_odc_tess_buf_len = 100;
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
   pi_loadShaders();
 #endif
 #endif
@@ -151,7 +154,7 @@ pi_ocpnDC::pi_ocpnDC()
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
   pi_loadShaders();
 #endif
 }
@@ -166,9 +169,9 @@ pi_ocpnDC::~pi_ocpnDC() {
 }
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
-#ifdef __OCPN__ANDROID__
+//#ifdef __OCPN__ANDROID__
   configureShaders(vp->pix_width, vp->pix_height);
-#endif
+//#endif
   m_vpSize = wxSize(vp->pix_width, vp->pix_height);
 }
 
@@ -1537,7 +1540,7 @@ typedef union {
   } info;
 } GLvertex;
 
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 void APIENTRY pi_ocpnDCcombineCallback(GLdouble coords[3],
                                        GLdouble *vertex_data[4],
                                        GLfloat weight[4], GLdouble **dataOut) {
@@ -1577,7 +1580,7 @@ void APIENTRY ocpnDCendCallback() { glEnd(); }
 
 // GLSL callbacks
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
 
 static std::list<double *> odc_combine_work_data;
 static void pi_odc_combineCallbackD(GLdouble coords[3],
@@ -1675,7 +1678,7 @@ void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
     m_tobj = gluNewTess();
     s_odc_tess_vertex_idx = 0;
 

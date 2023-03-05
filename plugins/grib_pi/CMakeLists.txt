@@ -127,10 +127,10 @@ if (WIN32)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
 endif (WIN32)
 
-if (QT_ANDROID)
+#if (QT_ANDROID)
   set(SRC_GRIB ${SRC_GRIB} src/pi_shaders.h)
   set(SRC_GRIB ${SRC_GRIB} src/pi_shaders.cpp)
-endif (QT_ANDROID)
+#endif (QT_ANDROID)
 
 if (NOT UNIX)
   set(SRC_BZIP

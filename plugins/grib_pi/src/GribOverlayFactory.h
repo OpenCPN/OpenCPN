@@ -32,7 +32,7 @@
 #include <qopengl.h>
 #include "GL/gl_private.h"
 #else
-#include "GL/gl.h"
+ #include <GL/gl.h>
 #endif
 
 #ifdef USE_ANDROID_GLES2
