@@ -225,17 +225,17 @@ CommDriverN0183Serial::~CommDriverN0183Serial() { Close(); }
 
 bool CommDriverN0183Serial::Open() {
   wxString comx;
+  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
   if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
-    m_GarminHandler = new GarminProtocolHandler(this, this,  true);
+    m_GarminHandler = new GarminProtocolHandler( comx, this,  true);
   }
   else if( m_params.Garmin ) {
-    m_GarminHandler = new GarminProtocolHandler(this, this,  false);
+    m_GarminHandler = new GarminProtocolHandler( comx, this,  false);
   }
   else {
-    comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');

@@ -149,10 +149,10 @@ BEGIN_EVENT_TABLE(GarminProtocolHandler, wxEvtHandler)
 EVT_TIMER(TIMER_GARMIN1, GarminProtocolHandler::OnTimerGarmin1)
 END_EVENT_TABLE()
 
-GarminProtocolHandler::GarminProtocolHandler(void *parent,
+GarminProtocolHandler::GarminProtocolHandler(wxString port,
                                              wxEvtHandler *MessageTarget,
                                              bool bsel_usb) {
-  m_pparent = parent;
+  //m_pparent = parent;
   m_pMainEventHandler = MessageTarget;
   m_garmin_serial_thread = NULL;
   m_garmin_usb_thread = NULL;
@@ -187,17 +187,14 @@ GarminProtocolHandler::GarminProtocolHandler(void *parent,
 
   //  Not using USB, so try a Garmin port open and device ident
   if (!m_busb) {
-
-    //FIXME (dave)
-    //m_port = m_pparent->GetPort().AfterFirst(':');  // strip "Serial:"
+    m_port = port;
 
     // Start handler thread
+    m_garmin_serial_thread =
+        new GARMIN_Serial_Thread(this, m_pMainEventHandler, m_port);
 
-    // FIXME (dave)
-    //m_garmin_serial_thread =
-      //  new GARMIN_Serial_Thread(this, m_pparent, m_pMainEventHandler, m_port);
-    //m_Thread_run_flag = 1;
-    //m_garmin_serial_thread->Run();
+    m_Thread_run_flag = 1;
+    m_garmin_serial_thread->Run();
   }
 
   TimerGarmin1.SetOwner(this, TIMER_GARMIN1);
@@ -286,7 +283,7 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent &event) {
 
         //    Start the pump
         m_garmin_usb_thread =
-            new GARMIN_USB_Thread(this, m_pparent, m_pMainEventHandler,
+            new GARMIN_USB_Thread(this, m_pMainEventHandler,
                                   (wxIntPtr)m_usb_handle, m_max_tx_size);
         m_Thread_run_flag = 1;
         m_garmin_usb_thread->Run();
@@ -721,14 +718,10 @@ D800_Pvt_Data_Type_Aligned mypvt;
 //    Garmin GRMN Mode serial device
 //
 //-------------------------------------------------------------------------------------------------------------
-//FIXME (dave) implement using comm
-#if 0
 GARMIN_Serial_Thread::GARMIN_Serial_Thread(GarminProtocolHandler *parent,
-                                           DataStream *GParentStream,
                                            wxEvtHandler *MessageTarget,
                                            wxString port) {
   m_parent = parent;  // This thread's immediate "parent"
-  m_parent_stream = GParentStream;
   m_pMessageTarget = MessageTarget;
   m_port = port;
 
@@ -752,7 +745,7 @@ void *GARMIN_Serial_Thread::Entry() {
   while ((not_done) && (m_parent->m_Thread_run_flag > 0)) {
     if (TestDestroy()) {
       not_done = false;  // smooth exit
-      goto thread_exit;
+      goto thread_exit_2;
     }
 
     while (!m_bdetected) {
@@ -816,15 +809,16 @@ void *GARMIN_Serial_Thread::Entry() {
           oNMEA0183.Rmc.Write(snt);
           wxString message = snt.Sentence;
 
+          //    Copy the message into a vector for tranmittal upstream
+          auto buffer = std::make_shared<std::vector<unsigned char>>();
+          std::vector<unsigned char>* vec = buffer.get();
+          for (unsigned int i=0 ; i < message.Length() ; i++){
+            vec->push_back(message[i]);
+          }
           if (m_pMessageTarget) {
-            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-            wxCharBuffer buffer = message.ToUTF8();
-            if (buffer.data()) {
-              Nevent.SetNMEAString(buffer.data());
-              Nevent.SetStream(m_parent_stream);
-
-              m_pMessageTarget->AddPendingEvent(Nevent);
-            }
+            CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+            Nevent.SetPayload(buffer);
+            m_pMessageTarget->AddPendingEvent(Nevent);
           }
 
           last_rx_time = wxDateTime::Now();
@@ -843,12 +837,10 @@ void *GARMIN_Serial_Thread::Entry() {
     }
   }  // the big while...
 
-thread_exit:
+thread_exit_2:
 
   Garmin_GPS_PVT_Off(m_port);
   Garmin_GPS_ClosePortVerify();
-
-#else  //#ifdef USE_GARMINHOST
 
   while ((not_done) && (m_parent->m_Thread_run_flag > 0)) {
     wxSleep(1);
@@ -865,19 +857,16 @@ thread_exit:
   m_parent->m_Thread_run_flag = -1;  // in GarminProtocolHandler
   return 0;
 }
-#endif
 
 //-------------------------------------------------------------------------------------------------------------
 //    GARMIN_USB_Thread Implementation
 //-------------------------------------------------------------------------------------------------------------
 #if 1
 GARMIN_USB_Thread::GARMIN_USB_Thread(GarminProtocolHandler *parent,
-                                     void *GParentStream,
                                      wxEvtHandler *MessageTarget,
                                      unsigned int device_handle,
                                      size_t max_tx_size) {
   m_parent = parent;  // This thread's immediate "parent"
-  //m_parent_stream = GParentStream;
   m_pMessageTarget = MessageTarget;
   m_max_tx_size = max_tx_size;
 
