@@ -1095,17 +1095,19 @@ static std::string FindMatchingDataDir(std::regex name_re) {
     auto token = tokens.GetNextToken();
     wxFileName path(token);
     wxDir dir(path.GetFullPath());
-    wxString filename;
-    bool cont = dir.GetFirst(&filename, "", wxDIR_DIRS);
-    while (cont) {
-      smatch sm;
-      string s(filename);
-      if (regex_search(s, sm, name_re)) {
-        stringstream ss;
-        for (auto c : sm) ss << c;
-        return ss.str();
+    if (dir.IsOpened()){
+      wxString filename;
+      bool cont = dir.GetFirst(&filename, "", wxDIR_DIRS);
+      while (cont) {
+        smatch sm;
+        string s(filename);
+        if (regex_search(s, sm, name_re)) {
+          stringstream ss;
+          for (auto c : sm) ss << c;
+          return ss.str();
+        }
+        cont = dir.GetNext(&filename);
       }
-      cont = dir.GetNext(&filename);
     }
   }
   return "";
