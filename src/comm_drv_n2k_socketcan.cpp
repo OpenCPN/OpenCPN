@@ -485,7 +485,10 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       m_listener(listener),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_baudrate(wxString::Format("%i", params->Baudrate)) {}
+      m_baudrate(wxString::Format("%i", params->Baudrate))
+      {
+      this->attributes["canPort"] = params->socketCAN_port.ToStdString();
+      }
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 

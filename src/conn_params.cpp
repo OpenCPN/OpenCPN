@@ -296,13 +296,9 @@ std::string ConnectionParams::GetStrippedDSPort() {
     return t.ToStdString();
 
   } else if (Type == SOCKETCAN) {
-    return "socketCAN";
-    //FIXME (dave)
-    //wxString proto = NetworkProtocolToString(NetProtocol);
-    //wxString t = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
-    //                        NetworkAddress.c_str(), NetworkPort);
-    //return t.ToStdString();
-
+    std::string rv = "socketCAN-";
+    rv += socketCAN_port.ToStdString();
+    return rv;
   } else if (Type == INTERNAL_BT) {
     return Port.ToStdString();
   } else
