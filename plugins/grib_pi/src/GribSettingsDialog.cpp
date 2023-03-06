@@ -25,6 +25,8 @@
  *
  */
 
+#include "pi_gl.h"
+
 #include "grib_pi.h"
 #include "folder.xpm"
 

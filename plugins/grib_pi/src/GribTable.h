@@ -32,6 +32,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include "pi_gl.h"
+
 #include <wx/grid.h>
 
 #include "GribUIDialogBase.h"

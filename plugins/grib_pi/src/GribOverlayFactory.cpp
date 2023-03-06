@@ -31,13 +31,15 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include "pi_gl.h"
+
 #include <wx/glcanvas.h>
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
 #include "pi_ocpndc.h"
 
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
+#if 1//def __OCPN__ANDROID__
+//#include "qdebug.h"
 #include "pi_shaders.h"
 #endif
 
@@ -541,7 +543,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
     for (int i = 0; i < GribOverlaySettings::SETTINGS_COUNT; i++) {
       if (i == GribOverlaySettings::WIND) {
         if (overlay) { /* render overlays first */
-          if (m_dlg.m_bDataPlot[i]) RenderGribOverlayMap(i, pGR, vp);
+          if (m_dlg.m_bDataPlot[i])
+            RenderGribOverlayMap(i, pGR, vp);
         } else {
           if (m_dlg.m_bDataPlot[i]) {
             RenderGribBarbedArrows(i, pGR, vp);
@@ -624,19 +627,10 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in,
   } else
     r = 255, g = 255, b = 255, a = 0;
 
-    /* for some reason r g b values are inverted, but not alpha,
-       this fixes it, but I would like to find the actual cause */
-#ifndef __OCPN__ANDROID__
-  data[0] = 255 - r;
-  data[1] = 255 - g;
-  data[2] = 255 - b;
-  data[3] = a;
-#else
   data[0] = r;
   data[1] = g;
   data[2] = b;
   data[3] = a;
-#endif
 }
 
 bool GRIBOverlayFactory::CreateGribGLTexture(GribOverlay *pGO, int settings,
@@ -826,7 +820,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture(GribOverlay *pGO, int settings,
   glTexParameteri(texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
   glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1881,7 +1875,7 @@ void GRIBOverlayFactory::DrawNumbers(wxPoint p, double value, int settings,
     m_pdc->DrawBitmap(label, p.x, p.y, true);
   } else {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2547,7 +2541,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y,
 void GRIBOverlayFactory::DrawSingleGLTexture(GribOverlay *pGO, GribRecord *pGR,
                                              double uv[], double x, double y,
                                              double width, double height) {
-#ifdef __OCPN__ANDROID__
+#if 1//def __OCPN__ANDROID__
 
   glEnable(texture_format);
 

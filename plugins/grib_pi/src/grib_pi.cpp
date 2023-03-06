@@ -28,10 +28,14 @@
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
+
+#include "pi_gl.h"
+
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
 #endif
 #endif  // precompiled headers
+
 
 #include <wx/fileconf.h>
 #include <wx/stdpaths.h>
