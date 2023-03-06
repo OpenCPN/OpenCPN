@@ -29,6 +29,8 @@
 
 #include "email.h"
 
+#include "pi_gl.h"
+
 #include "GribRequestDialog.h"
 #include "GribOverlayFactory.h"
 

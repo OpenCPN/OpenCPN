@@ -28,19 +28,9 @@
 
 #include <wx/geometry.h>
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
- #include <GL/gl.h>
-#endif
-
-#ifdef USE_ANDROID_GLES2
-#include <GLES2/gl2.h>
-#endif
+#include "pi_gl.h"
 
 #include "pi_ocpndc.h"
-
 #include "pi_TexFont.h"
 
 //----------------------------------------------------------------------------------------------------------

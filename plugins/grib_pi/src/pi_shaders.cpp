@@ -30,6 +30,20 @@
 #include <GLES2/gl2.h>
 #endif
 
+
+
+#ifdef USE_ANDROID_GLES2
+const GLchar* PI_shader_preamble =
+"\n";
+#else
+const GLchar* PI_shader_preamble =
+"#version 120\n"
+"#define precision\n"
+"#define lowp\n"
+"#define mediump\n"
+"#define highp\n";
+#endif
+
 // Simple colored triangle shader
 
 static const GLchar* color_tri_vertex_shader_source =
@@ -197,6 +211,16 @@ bool pi_loadShaders() {
 
   // Simple colored triangle shader
 
+  if (!pi_color_tri_shader_program) {
+    auto shaderProgram = PI_GLShaderProgram::Builder()
+     .addShaderFromSource(color_tri_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(color_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
+
+    pi_color_tri_shader_program = shaderProgram.programId();
+  }
+
+#if 0
   if (!pi_color_tri_vertex_shader) {
     /* Vertex shader */
     pi_color_tri_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -241,9 +265,19 @@ bool pi_loadShaders() {
       ret_val = false;
     }
   }
+#endif
 
   // Array colored triangle shader
+  if (!pi_colorv_tri_shader_program) {
+    auto shaderProgram = PI_GLShaderProgram::Builder()
+     .addShaderFromSource(colorv_tri_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(colorv_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
 
+    pi_colorv_tri_shader_program = shaderProgram.programId();
+  }
+
+#if 0
   if (!pi_colorv_tri_vertex_shader) {
     /* Vertex shader */
     pi_colorv_tri_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -288,9 +322,19 @@ bool pi_loadShaders() {
       ret_val = false;
     }
   }
+#endif
 
   // Simple 2D texture shader
+  if (!pi_texture_2D_shader_program) {
+    auto shaderProgram = PI_GLShaderProgram::Builder()
+     .addShaderFromSource(texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
 
+    pi_texture_2D_shader_program = shaderProgram.programId();
+  }
+
+#if 0
   if (!pi_texture_2D_vertex_shader) {
     /* Vertex shader */
     pi_texture_2D_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -335,6 +379,7 @@ bool pi_loadShaders() {
       ret_val = false;
     }
   }
+#endif
 
 #if 0
 
@@ -380,7 +425,18 @@ bool pi_loadShaders() {
     }
 
 #endif
+
   // Circle shader
+  if (!pi_circle_filled_shader_program) {
+    auto shaderProgram = PI_GLShaderProgram::Builder()
+     .addShaderFromSource(circle_filled_vertex_shader_source, GL_VERTEX_SHADER)
+     .addShaderFromSource(circle_filled_fragment_shader_source, GL_FRAGMENT_SHADER)
+     .linkProgram();
+
+    pi_circle_filled_shader_program = shaderProgram.programId();
+  }
+
+#if 0
   if (!pi_circle_filled_vertex_shader) {
     /* Vertex shader */
     pi_circle_filled_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -431,6 +487,7 @@ bool pi_loadShaders() {
       ret_val = false;
     }
   }
+#endif
 
 #if 0
     // FBO 2D texture shader

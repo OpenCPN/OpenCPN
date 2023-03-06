@@ -42,6 +42,8 @@
 #include <math.h>
 #include <time.h>
 
+#include "pi_gl.h"
+
 #include "grib_pi.h"
 #include "GribTable.h"
 #include "email.h"

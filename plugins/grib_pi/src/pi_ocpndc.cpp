@@ -33,8 +33,10 @@
 
 #include <list>
 
+#include "pi_gl.h"
+
 #ifndef __OCPN__ANDROID__
-#include <GL/glew.h>
+//#include <GL/glew.h>
 //#include <GL/gl.h>
 //#include <GL/glu.h>
 #endif
@@ -58,13 +60,6 @@
 #include "pi_ocpndc.h"
 #include "wx28compat.h"
 #include "cutil.h"
-
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-//#include "GL/gl.h"
-#endif
 
 #include "pi_shaders.h"
 #ifdef USE_ANDROID_GLES2
@@ -105,7 +100,7 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
 #ifdef ocpnUSE_GL
   m_textforegroundcolour = wxColour(0, 0, 0);
 #endif
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -137,7 +132,7 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
   }
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -149,7 +144,7 @@ pi_ocpnDC::pi_ocpnDC()
   pgc = NULL;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -585,7 +580,7 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glLineWidth(pen_width);
     }
 
-#ifdef USE_ANDROID_GLES2
+#if 1//def USE_ANDROID_GLES2
     if (b_draw_thick)
       piDrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
@@ -975,6 +970,9 @@ void pi_ocpnDC::StrokeLines(int n, wxPoint *points) {
 
 void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
                                 unsigned char *color_array_ub, bool b_hiqual) {
+  if(!n)
+      return;
+
 #ifdef ocpnUSE_GL
   if (ConfigurePen()) {
 #ifdef __WXQT__
@@ -1009,7 +1007,7 @@ void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
         glLineWidth(wxMax(g_piGLMinSymbolLineWidth, 1));
     }
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -1058,7 +1056,7 @@ void pi_ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
   if (dc) dc->DrawRectangle(x, y, w, h);
 #ifdef ocpnUSE_GL
   else {
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
     if (ConfigureBrush()) {
       glBegin(GL_QUADS);
       glVertex2i(x, y);
@@ -1164,7 +1162,7 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     wxCoord x1 = x + r, x2 = x + w - r;
     wxCoord y1 = y + r, y2 = y + h - r;
 
-#ifdef USE_ANDROID_GLES2
+#if 1//def USE_ANDROID_GLES2
 
     //  Grow the work buffer as necessary
     size_t bufReq = steps * 8 * 2 * sizeof(float);  // large, to be sure
@@ -1877,7 +1875,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
         glPushMatrix();
         glTranslatef(x, y, 0);
 
@@ -1978,7 +1976,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
 
       float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
       glColor3ub(0, 0, 0);
 
       glBegin(GL_QUADS);
