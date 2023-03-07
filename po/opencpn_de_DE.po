@@ -2572,7 +2572,7 @@ msgstr "Kard. W"
 
 #: src/ais_target_data.cpp:1676
 msgid "Port"
-msgstr "Hafen"
+msgstr "Bbord"
 
 #: src/ais_target_data.cpp:1677
 msgid "Stbd"
