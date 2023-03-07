@@ -125,6 +125,8 @@ bool CommBridge::Initialize() {
 
   m_watchdog_timer.SetOwner(this, WATCHDOG_TIMER);
   m_watchdog_timer.Start(1000, wxTIMER_CONTINUOUS);
+  n_LogWatchdogPeriod = 3600;  //every 60 minutes,
+                               //reduced after first position Rx
 
   // Initialize the comm listeners
   InitCommListeners();
@@ -175,10 +177,12 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
       auto& msgbus = AppMsgBus::GetInstance();
       msgbus.Notify(std::move(msg));
 
-      wxString logmsg;
-      logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
+      if (m_watchdogs.position_watchdog % n_LogWatchdogPeriod == 0) {
+        wxString logmsg;
+        logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
                     gLon);
-      wxLogMessage(logmsg);
+        wxLogMessage(logmsg);
+      }
     }
 
     gSog = NAN;
@@ -537,6 +541,7 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
       gLon = temp_data.gLon;
       valid_flag += POS_UPDATE;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
     }
   }
 
@@ -569,6 +574,7 @@ bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
       gLon = temp_data.gLon;
       valid_flag += POS_UPDATE;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
     }
   }
   //FIXME (dave) How to notify user of errors?
@@ -688,6 +694,7 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
     gLon = temp_data.gLon;
     valid_flag += POS_UPDATE;
     m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+    n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
   }
 
   if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
@@ -838,6 +845,7 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
      gLon = temp_data.gLon;
      valid_flag += POS_UPDATE;
      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+     n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
   }
 
   if (EvalPriority(n0183_msg, active_priority_satellites, priority_map_satellites)) {
@@ -867,6 +875,7 @@ bool CommBridge::HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
      gLon = temp_data.gLon;
      valid_flag += POS_UPDATE;
      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+     n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
   }
 
   SendBasicNavdata(valid_flag);
@@ -893,6 +902,7 @@ bool CommBridge::HandleN0183_AIVDO(
         gLon = gpd.kLon;
         valid_flag += POS_UPDATE;
         m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+        n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
       }
     }
 
@@ -941,6 +951,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
       gLon = temp_data.gLon;
       valid_flag += POS_UPDATE;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = 5;    // allow faster logging of position dog events
     }
   }
 
