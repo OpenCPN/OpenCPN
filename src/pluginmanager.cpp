@@ -8547,6 +8547,50 @@ const std::unordered_map<std::string, std::string> GetAttributes(
   return found->get()->GetAttributes();
 }
 
+CommDriverResult WriteCommDriver( DriverHandle handle,
+                                     const std::shared_ptr <std::vector<uint8_t>> &payload) {
+    // Find the driver from the handle
+  auto &registry = CommDriverRegistry::GetInstance();
+  auto drivers = registry.GetDrivers();
+  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
+  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
+
+  if (driver == drivers.end()) {
+    return RESULT_COMM_INVALID_HANDLE;
+  }
+
+  // Determine protocol
+  std::unordered_map<std::string, std::string> attributes = GetAttributes(
+                                                 handle);
+  auto protocol_it = attributes.find("protocol");
+  if (protocol_it == attributes.end())
+    return RESULT_COMM_INVALID_PARMS;
+  std::string protocol = protocol_it->second;
+
+  if (!protocol.compare("nmea0183")){
+    std::shared_ptr<CommDriverN0183> d0183 =
+      std::dynamic_pointer_cast<CommDriverN0183>(*driver);
+
+    std::string msg;
+    size_t data_len = payload.get()->size();
+    for (size_t i=0; i < data_len; i++) {
+        msg += payload.get()->at(i);
+    }
+
+    std::string id = msg.substr(1,5);
+    auto msg_out = std::make_shared<Nmea0183Msg>(id, msg,
+                             std::make_shared<NavAddr0183>(d0183->iface));
+
+    bool bxmit_ok = d0183->SendMessage(msg_out, std::make_shared<NavAddr0183>(d0183->iface));
+    if (bxmit_ok)
+      return RESULT_COMM_NO_ERROR;
+    else
+      return RESULT_COMM_TX_ERROR;
+  }
+  else
+    return RESULT_COMM_INVALID_PARMS;
+}
+
 CommDriverResult WriteCommDriverN2K(
     DriverHandle handle, int PGN, int destinationCANAddress, int priority,
     const std::shared_ptr<std::vector<uint8_t>> &payload) {

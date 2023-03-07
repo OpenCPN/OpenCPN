@@ -161,6 +161,10 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
 
   m_socket_timer.SetOwner(this, TIMER_SOCKET);
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+  this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
+  char port_char[10];
+  sprintf(port_char, "%d",params->NetworkPort);
+  this->attributes["netPort"] = std::string(port_char);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);

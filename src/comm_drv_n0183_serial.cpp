@@ -213,6 +213,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_listener(listener) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
   m_GarminHandler = NULL;
+  this->attributes["commPort"] = params->Port.ToStdString();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
