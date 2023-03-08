@@ -305,6 +305,21 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   }
 
   if (loaded) return true;
+
+  // Avoid loading/testing legacy plugins installed in base plugin path.
+  wxFileName fn_plugin_file(file_name);
+  wxString plugin_file_path = fn_plugin_file.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
+  wxString base_plugin_path = g_BasePlatform->GetPluginDir();
+  if (!base_plugin_path.EndsWith(wxFileName::GetPathSeparator()))
+    base_plugin_path += wxFileName::GetPathSeparator();
+
+  if (base_plugin_path.IsSameAs(plugin_file_path)){
+    if (!IsSystemPlugin(file_name.ToStdString())){
+      DEBUG_LOG << "Skipping plugin " <<  file_name << " in " << g_BasePlatform->GetPluginDir();
+      return false;
+    }
+  }
+
   if (!IsSystemPlugin(file_name.ToStdString()) && safe_mode::get_mode()) {
     DEBUG_LOG << "Skipping plugin " <<  file_name << " in safe mode";
     return false;
