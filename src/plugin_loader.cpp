@@ -1249,7 +1249,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
         LoadError le(LoadError::Type::Unloadable, name, 0, v);
         load_errors.push_back(le);
       } else {
-        LoadError le(LoadError::Type::Unloadable, name);
+        LoadError le(LoadError::Type::Unloadable, plugin_file.ToStdString());
         load_errors.push_back(le);
       }
     }
