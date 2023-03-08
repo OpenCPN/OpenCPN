@@ -295,7 +295,6 @@ private:
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
-  ObservableListener evt_deactivate_plugin_listener;
   ObservableListener evt_download_failed_listener;
   ObservableListener evt_download_ok_listener;
   ObservableListener evt_load_directory_listener;

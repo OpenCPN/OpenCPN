@@ -1182,7 +1182,6 @@ void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
 wxDEFINE_EVENT(EVT_PLUGMGR_AIS_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_PLUGMGR_ROUTEMAN_MSG, ObservedEvt);
 wxDEFINE_EVENT(EVT_BLACKLISTED_PLUGIN, wxCommandEvent);
-wxDEFINE_EVENT(EVT_DEACTIVATE_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LOAD_DIRECTORY, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LOAD_PLUGIN, wxCommandEvent);
 wxDEFINE_EVENT(EVT_PLUGIN_UNLOAD, wxCommandEvent);
@@ -1199,13 +1198,8 @@ void PlugInManager::HandlePluginLoaderEvents() {
     m_blacklist_ui->message(ev.GetString().ToStdString());
   });
 
-  evt_deactivate_plugin_listener.Listen(loader->evt_deactivate_plugin, this,
-                                        EVT_DEACTIVATE_PLUGIN);
-  Bind(EVT_DEACTIVATE_PLUGIN, [&](wxCommandEvent &ev) {
-    auto pic = static_cast<const PlugInContainer *>(ev.GetClientData());
-    OnPluginDeactivate(pic);
-  });
-
+  loader->SetOnDeactivateCb(
+          [&](const PlugInContainer* pic){ OnPluginDeactivate(pic); });
   evt_pluglist_change_listener.Listen(loader->evt_pluglist_change, this,
                                       EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent &) {
@@ -1395,8 +1389,6 @@ void PlugInManager::OnPluginDeactivate(const PlugInContainer *pic) {
       delete pimis;
     }
   }
-  // *pic is a malloc'ed copy of the original *pic, owned by us.
-  free(const_cast<PlugInContainer *>(pic));
 }
 
 void PlugInManager::SendVectorChartObjectInfo(const wxString &chart,

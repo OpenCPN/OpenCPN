@@ -27,6 +27,8 @@
 #ifndef _PLUGIN_LOADER_H_
 #define _PLUGIN_LOADER_H_
 
+#include <functional>
+
 #include <wx/wx.h>
 #include <wx/bitmap.h>
 #include <wx/dynarray.h>
@@ -194,7 +196,14 @@ public:
   bool LoadAllPlugIns(bool enabled_plugins);
 
   void SetPluginDefaultIcon(const wxBitmap* bitmap);
+
+  /** Callback invoked in late stage on deactivating a plugin. */
+  void SetOnDeactivateCb(std::function<void(const PlugInContainer*)> cb) {
+    m_on_deactivate_cb = cb;
+  }
+
   const wxBitmap* GetPluginDefaultIcon();
+
   /** Unload, delete and remove item ix in GetPlugInArray(). */
   bool UnLoadPlugIn(size_t ix);
 
@@ -219,6 +228,7 @@ private:
   wxString m_last_error_string;
   wxString m_plugin_location;
   const wxBitmap* m_default_plugin_icon;
+  std::function<void(const PlugInContainer*)> m_on_deactivate_cb;
 
   std::vector<LoadError> load_errors;
 };

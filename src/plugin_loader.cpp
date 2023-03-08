@@ -214,7 +214,9 @@ PluginLoader* PluginLoader::getInstance() {
 }
 
 PluginLoader::PluginLoader()
-    : m_blacklist(blacklist_factory()), m_default_plugin_icon(0) {}
+    : m_blacklist(blacklist_factory()),
+      m_default_plugin_icon(0),
+      m_on_deactivate_cb([](const PlugInContainer* pic) {}) {}
 
 bool PluginLoader::IsPlugInAvailable(wxString commonName) {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
@@ -579,25 +581,9 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
   if (pic->m_bInitState) {
     wxString msg("PluginLoader: Deactivating PlugIn: ");
     wxLogMessage(msg + pic->m_plugin_file);
-
-#ifndef CLIAPP
-    // if this plugin is responsible for any charts, then unload chart cache
-    if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
-        (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-      ChartData->PurgeCachePlugins();
-    }
-#endif
-
+    m_on_deactivate_cb(pic);
     pic->m_bInitState = false;
     pic->m_pplugin->DeInit();
-    // pic is doomed and will be deleted. Make a copy to handler which
-    // can be used to look up items in toolbar etc.
-    // FIXME (leamas): Correct solution is to use a shared_ptr instead,
-    // expanding to a large patch covering many areas.
-    auto pic_copy =
-        static_cast<PlugInContainer*>(malloc(sizeof(PlugInContainer)));
-    memcpy(pic_copy, pic, sizeof(PlugInContainer));
-    evt_deactivate_plugin.Notify(pic_copy);
   }
   return true;
 }
