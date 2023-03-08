@@ -106,6 +106,7 @@ Plugin API supporting direct access to comm drivers for output purposes
 Plugins may access comm ports for direct output.
 The general program flow for a plugin may look something like this
 pseudo-code:
+
 .  Plugin will query OCPN core for a list of active comm drivers.
 .  Plugin will inspect the list, and query OCPN core for driver attributes.
 .  Plugin will select a comm driver with appropriate attributes for output.
