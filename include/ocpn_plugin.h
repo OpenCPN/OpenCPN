@@ -586,8 +586,8 @@ public:
   /// \param vp Pointer to the Viewport
   /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
   /// \param priority Priority, plugins only upgrading from older API versions
-  /// should draw only when priority is OVERLAY_LEGACY (0) \return true if
-  /// overlay was rendered, false otherwise
+  ///        should draw only when priority is OVERLAY_LEGACY (0)
+  /// \return true if overlay was rendered, false otherwise
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex,
                                           int priority = -1);
@@ -597,8 +597,8 @@ public:
   /// \param vp Pointer to the Viewport
   /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
   /// \param priority Priority, plugins only upgrading from older API versions
-  /// should draw only when priority is OVERLAY_LEGACY (0) \return true if
-  /// overlay was rendered, false otherwise
+  /// should draw only when priority is OVERLAY_LEGACY (0)
+  /// \return true if overlay was rendered, false otherwise
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex, int priority = -1);
 };
