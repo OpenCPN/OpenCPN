@@ -581,16 +581,7 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
   if (pic->m_bInitState) {
     wxString msg("PluginLoader: Deactivating PlugIn: ");
     wxLogMessage(msg + pic->m_plugin_file);
-
     m_on_deactivate_cb(pic);
-#ifndef CLIAPP
-    // if this plugin is responsible for any charts, then unload chart cache
-    if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
-        (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-      ChartData->PurgeCachePlugins();
-    }
-#endif
-
     pic->m_bInitState = false;
     pic->m_pplugin->DeInit();
   }
