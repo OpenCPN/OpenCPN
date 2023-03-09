@@ -2219,22 +2219,23 @@ void MyFrame::ODoSetSize(void) {
   if (g_MainToolbar) {
     bool bShow = g_MainToolbar->IsShown();
     wxSize szBefore = g_MainToolbar->GetSize();
-#ifdef __WXGTK__
+
     // For large vertical size changes on some platforms, it is necessary to
     // hide the toolbar in order to correctly set its rounded-rectangle shape It
     // will be shown again before exit of this method.
     double deltay = g_nframewin_y - GetSize().y;
     if ((fabs(deltay) > (g_Platform->getDisplaySize().y / 5)))
       g_MainToolbar->Hide();
-#endif
+
     g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x, g_maintoolbar_y);
-    // g_MainToolbar->SetGeometry(false, wxRect());
     g_MainToolbar->SetGeometry(GetPrimaryCanvas()->GetCompass()->IsShown(),
                                GetPrimaryCanvas()->GetCompass()->GetRect());
 
-    g_MainToolbar->Realize();
+    if (fabs(deltay))
+      g_MainToolbar->Realize();
 
-    if (szBefore != g_MainToolbar->GetSize()) g_MainToolbar->Refresh(true);
+    if (szBefore != g_MainToolbar->GetSize())
+      g_MainToolbar->Refresh(true);
     g_MainToolbar->Show(bShow);
   }
 
