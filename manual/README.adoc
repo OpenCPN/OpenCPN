@@ -4,4 +4,4 @@ Sources for the OpenCPN developer manual, published at
 https://opencpn-manuals/main
 
 The manual can be rebuilt locally on all platforms, see
-INSTALL.md
+INSTALL.adoc
