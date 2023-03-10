@@ -6,7 +6,7 @@ site:
 content:
   sources:
     - url: ..
-      branches: [manual] 
+      branches: [master] 
       start_path: manual
 
 ui:   

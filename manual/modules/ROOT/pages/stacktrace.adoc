@@ -1,0 +1,56 @@
+= DRAFT: Creating a stack trace
+
+NOTE: This is preliminary docs, a work in progress.
+
+Occasionally, if OpenCPN crashes a stack trace carries valuable information 
+about the crash which often is needed to find out the reason. The procedure
+to create a stack trace is depends on platform, but the general steps are
+
+. Install necessary tools
+. Download or install debug symbols.
+. Start opencpn controlled by a debugger and make it crash
+. Display the stack trace in the debugger and submit it in a bug report
+
+
+== Windows
+
+=== Install windbg
+The tool to use in windbg. It is part of a large set of debugging tools,
+but can be installed separately as described in
+https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-download-tools
+
+=== Download pdb file
+Debugging symbols in Windows are contained in a pdb file. Pdb files for
+OpenCPN can be downloaded from TBD. This file should be downloaded and
+installed in the same directory as OpenCPN, by default
+`C:\Program Files (x86)\OpenCPN\`.
+
+=== Start OpenCPN and make it crash
+After installing windbg, start it after typing _windbg_ in the bottom-left
+Windows search bar. Use the 32-bit x86 variant if there are alternatives.
+
+In windbg, use _File_ | _Open Executable_ to open the opencpn program. The
+program starts executing, but stops at an very early stage. This is normal.
+
+The pane at the bottom of windbg is a command window. Here, give the command
+_g_ followed by a return. OpenCPN then resumes execution. Make the actions
+which triggers a crash.
+
+=== Display stack trace and submit it.
+
+After the crash put focus on windbg again. In the command window, give the
+command _kp_ followed by a return. The stack trace in printed in the main
+window, like this:
+:image:windows-trace.png[Stack trace]
+
+Copy the first 10 or twenty lines of the stacktrace and submit it in
+a bug report.
+
+=== Note for developers:
+
+The paths in the pdb file is rooted in a virtual N: drive, for example
+_N:\src\catalog_mgr.cpp_. If there is a need to map the paths on the pdb
+file to the developer's complete source, this can be done using the MSDOS
+_subst_ command. For example, it the developer's clone lives in
+_\Users\foo\src\OpenCPN it can be mapped to the paths in the pdb file using
+_subst N: \Users\foo\src\OpenCPN_.
