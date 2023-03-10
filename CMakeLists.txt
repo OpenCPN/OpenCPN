@@ -1226,7 +1226,7 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-  message(STATUS "PackageNem debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
+  message(STATUS "PackageName debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
   ${PACKAGE_NAME}
@@ -2578,7 +2578,7 @@ if (WIN32 AND NOT UNIX)
       "${wxWidgets_LIB_DIR}/wxbase32u_*.dll"
     )
     install(FILES ${wxdll_files} DESTINATION ".")
-    list(LENGTH "${wxdll_files}" wxdll_count)
+    list(LENGTH wxdll_files wxdll_count)
     message(STATUS
       "${wxdll_count} wxWidgets DLLs bundled into the installer package..."
     )
