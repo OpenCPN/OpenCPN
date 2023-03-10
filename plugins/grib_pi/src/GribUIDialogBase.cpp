@@ -2131,6 +2131,21 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbTimeFormat->SetSelection(1);
   fgSizer6->Add(m_rbTimeFormat, 0, wxALL | wxEXPAND, 5);
 
+#ifdef __WXMSW__
+  wxFlexGridSizer * fgSizer47;
+  fgSizer47 = new wxFlexGridSizer(0, 2, 0, 0);
+  fgSizer47->SetFlexibleDirection(wxBOTH);
+  fgSizer47->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+  wxStaticText * text = new wxStaticText(this, wxID_ANY, _("Icons Size Factor")
+    , wxDefaultPosition, wxDefaultSize);
+  fgSizer47->Add(text, 0, wxALL | wxEXPAND, 5);
+  m_sIconSizeFactor =
+    new wxSlider(this, wxID_ANY, 0, -8, 8, wxDefaultPosition,
+      wxDefaultSize, wxSL_BOTTOM | wxSL_HORIZONTAL | wxSL_LABELS);
+  fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
+  fgSizer6->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
+#endif
+
   wxStdDialogButtonSizer* m_sdbSizer2;
   wxButton* m_sdbSizer2OK;
   wxButton* m_sdbSizer2Cancel;

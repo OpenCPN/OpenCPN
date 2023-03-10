@@ -244,6 +244,10 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_rbTimeFormat->SetSelection(m_bTimeZone);
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
+#ifdef __WXMSW__
+  int val = (m_GribIconsScaleFactor * 10.) - 10;
+  Pref->m_sIconSizeFactor->SetValue(val);
+#endif
 
 #ifdef __OCPN__ANDROID__
   if (m_parent_window) {
@@ -267,6 +271,10 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
   m_bLoadLastOpenFile = Pref->m_rbLoadOptions->GetSelection();
   m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
   m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
+#ifdef __WXMSW__
+  double val = Pref->m_sIconSizeFactor->GetValue();
+  m_GribIconsScaleFactor = 1. + (val / 10);
+#endif
 
   if (m_pGRIBOverlayFactory)
     m_pGRIBOverlayFactory->SetSettings(m_bGRIBUseHiDef, m_bGRIBUseGradualColors,
@@ -381,6 +389,9 @@ void grib_pi::OnToolbarToolCallback(int id) {
   bool starting = false;
 
   double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * OCPN_GetWinDIPScaleFactor();
+#ifdef __WXMSW__
+  scale_factor *= m_GribIconsScaleFactor;
+#endif
   if (scale_factor != m_GUIScaleFactor) starting = true;
 
   if (!m_pGribCtrlBar) {
@@ -723,6 +734,9 @@ bool grib_pi::LoadConfig(void) {
   pConf->Read(_T( "GRIBTimeZone" ), &m_bTimeZone, 1);
   pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
   pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
+#ifdef __WXMSW__
+  pConf->Read(_T("GribIconsScaleFactor"), &m_GribIconsScaleFactor, 1);
+#endif
 
   m_CtrlBar_Sizexy.x = pConf->Read(_T ( "GRIBCtrlBarSizeX" ), 1400L);
   m_CtrlBar_Sizexy.y = pConf->Read(_T ( "GRIBCtrlBarSizeY" ), 800L);
@@ -755,6 +769,9 @@ bool grib_pi::SaveConfig(void) {
   pConf->Write(_T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec);
   pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);
   pConf->Write(_T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
+#ifdef __WXMSW__
+  pConf->Write(_T("GribIconsScaleFactor"), m_GribIconsScaleFactor);
+#endif
 
   pConf->Write(_T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x);
   pConf->Write(_T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y);
