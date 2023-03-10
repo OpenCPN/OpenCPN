@@ -1443,6 +1443,8 @@ void RouteManagerDialog::OnRtePropertiesClick(wxCommandEvent &event) {
 
   if (!pRoutePropDialog->IsShown()) pRoutePropDialog->Show();
 
+  pRoutePropDialog->Raise();
+
   m_bNeedConfigFlush = true;
 }
 
