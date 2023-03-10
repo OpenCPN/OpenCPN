@@ -59,10 +59,16 @@ extern int m_ZoneSelMode;
 GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
     : GribRequestSettingBase(&parent), m_parent(parent) {
   m_Vp = 0;
+
+  m_oDC = new pi_ocpnDC();
+
   InitRequestConfig();
 }
 
-GribRequestSetting::~GribRequestSetting() { delete m_Vp; }
+GribRequestSetting::~GribRequestSetting() {
+  delete m_Vp;
+  delete m_oDC;
+}
 
 void GribRequestSetting::InitRequestConfig() {
   wxFileConfig *pConf = GetOCPNConfigObject();
@@ -591,57 +597,43 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   } else {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
-    TexFont m_TexFontlabel;
-    m_TexFontlabel.Build(*font);
 
-    glColor3ub(pen_color.Red(), pen_color.Green(), pen_color.Blue());
+    m_oDC->SetVP(m_Vp);
+    m_oDC->SetPen(wxPen(pen_color, 3));
 
-    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT |
-                 GL_POLYGON_BIT | GL_HINT_BIT);
+    wxPoint outline[5];
+    outline[0] = wxPoint(x, y);
+    outline[1] = wxPoint(x + zw, y);
+    outline[2] = wxPoint(x + zw, y + zh);
+    outline[3] = wxPoint(x, y + zh);
+    outline[4] = wxPoint(x, y);
+    m_oDC->DrawLines(5, outline);
 
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glLineWidth(3.f);
+    m_oDC->SetFont(*font);
+    int w, h, ww, hw;
+    m_oDC->GetTextExtent(label, &w, &h);
+    m_oDC->GetTextExtent("W", &ww, &hw);
 
-    glBegin(GL_LINES);
-    glVertex2d(x, y);
-    glVertex2d(x + zw, y);
-    glVertex2d(x + zw, y);
-    glVertex2d(x + zw, y + zh);
-    glVertex2d(x + zw, y + zh);
-    glVertex2d(x, y + zh);
-    glVertex2d(x, y + zh);
-    glVertex2d(x, y);
-    glEnd();
-
-    int w, h;
-    glColor4ub(back_color.Red(), back_color.Green(), back_color.Blue(), 155);
-    m_TexFontlabel.GetTextExtent(label, &w, &h);
+    int label_offsetx = ww, label_offsety = 1;
+    int x = center.x - w/2;
+    int y = center.y - h/2;
 
     w += 2 * label_offsetx, h += 2 * label_offsety;
-    x = center.x - (w / 2);
-    y = center.y - (h / 2);
 
-    /* draw text background */
-    glBegin(GL_QUADS);
-    glVertex2i(x, y);
-    glVertex2i(x + w, y);
-    glVertex2i(x + w, y + h);
-    glVertex2i(x, y + h);
-    glEnd();
+    m_oDC->SetBrush(wxBrush(back_color));
+    m_oDC->DrawRoundedRectangle(x, y, w, h, 0);
 
-    /* draw text */
-    glColor3ub(0, 0, 0);
+    /* draw bounding rectangle */
+    m_oDC->SetPen(wxPen(wxColour(0, 0, 0), 1));
 
-    glEnable(GL_TEXTURE_2D);
-    m_TexFontlabel.RenderString(label, x + label_offsetx, y + label_offsety);
-    glDisable(GL_TEXTURE_2D);
+    outline[0] = wxPoint(x, y);
+    outline[1] = wxPoint(x + w, y);
+    outline[2] = wxPoint(x + w, y + h);
+    outline[3] = wxPoint(x, y + h);
+    outline[4] = wxPoint(x, y);
+    m_oDC->DrawLines(5, outline);
 
-    glDisable(GL_BLEND);
-
-    glPopAttrib();
+    m_oDC->DrawText(label, x + label_offsetx, y + label_offsety);
 
 #endif
 #endif

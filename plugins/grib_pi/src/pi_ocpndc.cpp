@@ -881,7 +881,7 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 
     glBegin(GL_LINE_STRIP);
     for (int i = 0; i < n; i++)
@@ -1894,6 +1894,9 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
+      int ww, hw;
+      sdc.GetTextExtent("W", &ww, &hw); // metric
+      w += ww;    // RHS padding.
       w *= OCPN_GetWinDIPScaleFactor();
       h *= OCPN_GetWinDIPScaleFactor();
 

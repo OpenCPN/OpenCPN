@@ -33,6 +33,7 @@
 
 #include "GribUIDialogBase.h"
 #include "GribUIDialog.h"
+#include "pi_ocpndc.h"
 
 #include "ocpn_plugin.h"
 
@@ -100,6 +101,8 @@ private:
   GRIBUICtrlBar &m_parent;
 
   wxDC *m_pdc;
+  pi_ocpnDC *m_oDC;   // Used for selection overlay on GL
+
   wxTimer m_tMouseEventTimer;
   wxTimer m_tMouseClickTimer;
   wxMouseEvent m_SingleClickEvent;
