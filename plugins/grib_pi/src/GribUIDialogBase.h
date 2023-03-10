@@ -342,6 +342,9 @@ public:
   wxRadioBox* m_rbLoadOptions;
   wxRadioBox* m_rbStartOptions;
   wxRadioBox* m_rbTimeFormat;
+#ifdef __WXMSW__
+  wxSlider* m_sIconSizeFactor;
+#endif
 
   GribPreferencesDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY,
                             const wxString& title = _("Preferences"),

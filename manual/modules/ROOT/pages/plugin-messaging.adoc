@@ -10,7 +10,9 @@ as earlier.
 However, the new system can be used also for nmea0183 where it offers more
 flexibility and performance.
 
-Handling of messages consists of six steps:
+== Receiving messages
+
+Receiving messages is done in six steps:
 
 . Define the type of message to work with
 . Declare a listening object.
@@ -77,7 +79,7 @@ Notes:
     messages will land in the `HandleGPGGA()` method and be processed.
 
 
-== Epilog: Using the lambda
+=== Epilog: Using the lambda
 
 The last step above was
 `Bind(EVT_SHIPDRIVER [](wxCommandEvent ev) { HandleGPGA(ev); })`.
@@ -96,3 +98,46 @@ something which otherwise is a problem.
 To get the feeling one need to experiment.
 But then again, C++ lambdas is a complex step which is not necessary
 to get something running.
+
+== Sending messages
+
+Plugin API supporting direct access to comm drivers for output purposes
+
+Plugins may access comm ports for direct output.
+The general program flow for a plugin may look something like this
+pseudo-code:
+
+.  Plugin will query OCPN core for a list of active comm drivers.
+.  Plugin will inspect the list, and query OCPN core for driver attributes.
+.  Plugin will select a comm driver with appropriate attributes for output.
+.  Plugin will register a list of PGNs expected to be transmitted (N2K
+   specific)
+.  Plugin may then send a payload buffer to a specific comm driver for
+   output as soon as possible.
+
+The mechanism for specifying a particular comm driver uses the notion of
+"handles". Each active comm driver has an associated opaque handle, managed
+by OCPN core. All references by a plugin to a driver are by means of its
+handle. Handles should be considered to be "opaque", meaning that the exact
+contents of the handle are of no specific value to the plugin, and only have
+meaning to the OCPN core management of drivers.
+
+Some example code sending `payload_msg` to the */dev/ttyUSB0* port:
+
+    using namespace std;
+    string payload_msg("$GPRMC, some data \r\n");
+    string my_port("/dev/ttyUSB0");
+
+    for (const auto& handle : GetActiveDrivers()) {
+      const auto& attributes = GetAttributes(handle);
+      if (attributes.find("protocol") == attributes.end()) continue;
+      if (attributes.at("protocol") != "nmea0183") continue;
+      if (attributes.find("commPort") == attributes.end()) continue;
+      if (attributes.at("commPort").find(my_port) == string::npos) continue;
+
+      auto payload = make_shared<std::vector<uint8_t>>();
+      for (const auto& ch : payload_msg) payload->push_back(ch);
+      CommDriverResult result = WriteCommDriver(handle, payload);
+      return result;
+    }
+    return RESULT_COMM_INVALID_PARMS;   // no such driver
