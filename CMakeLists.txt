@@ -1226,7 +1226,7 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-  message(STATUS "PackageNem debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
+  message(STATUS "PackageName debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
   ${PACKAGE_NAME}
