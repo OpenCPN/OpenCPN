@@ -9,6 +9,17 @@ set "SCRIPTDIR=%~dp0"
 :: %CONFIGURATION% comes from environment, set a default if invoked elsewise.
 if "%CONFIGURATION%" == "" set "CONFIGURATION=Release"
 
+:: On GA, set up N:, see below
+if exist D:\a\OpenCPN\OpenCPN (subst N: D:\a\OpenCPN\OpenCPN)
+
+:: If N: exists it is used as base dir to sanitize source file paths
+:: in pdb.
+if exist N:\ (
+  n:
+  cd \
+  echo "Using virtual drive N: as base path"
+)
+
 call %SCRIPTDIR%..\buildwin\win_deps.bat wx32
 call %SCRIPTDIR%..\cache\wx-config.bat
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
