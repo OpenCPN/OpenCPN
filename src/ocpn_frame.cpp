@@ -1511,11 +1511,11 @@ int MyFrame::GetCanvasIndexUnderMouse() {
 
 bool MyFrame::DropMarker(bool atOwnShip) {
   double lat, lon;
+  ChartCanvas *canvas = GetCanvasUnderMouse();
   if (atOwnShip) {
     lat = gLat;
     lon = gLon;
   } else {
-    ChartCanvas *canvas = GetCanvasUnderMouse();
     if (!canvas) return false;
 
     lat = canvas->m_cursor_lat;
@@ -1527,8 +1527,9 @@ bool MyFrame::DropMarker(bool atOwnShip) {
   pWP->m_bIsolatedMark = true;  // This is an isolated mark
   pSelect->AddSelectableRoutePoint(lat, lon, pWP);
   pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
-  if (!RoutePointGui(*pWP).IsVisibleSelectable(GetCanvasUnderMouse()))
-    RoutePointGui(*pWP).ShowScaleWarningMessage(GetCanvasUnderMouse());
+  if (canvas)
+    if (!RoutePointGui(*pWP).IsVisibleSelectable(canvas))
+      RoutePointGui(*pWP).ShowScaleWarningMessage(canvas);
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
   //     undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent,
