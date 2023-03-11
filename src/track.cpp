@@ -413,9 +413,9 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
 
   // Calculate the distance between two points of the track based on georef lib
     if (g_trackFilterMax){
-      if (trackPointState != firstPoint)
+      if (trackPointState == potentialPoint)
       {
-        double distToLastGpsPoint = DistGreatCircle(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLon, gLat);
+        double distToLastGpsPoint = DistLoxodrome(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon);
         if (distToLastGpsPoint > g_trackFilterMax) return;
       }
     }
