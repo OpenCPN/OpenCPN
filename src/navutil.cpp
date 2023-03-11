@@ -867,7 +867,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T ( "UseNMEA_GLL" ), &g_bUseGLL);
     Read(_T ( "UseMagAPB" ), &g_bMagneticAPB);
     Read(_T ( "TrackContinuous" ), &g_btrackContinuous, false);
-    Read(_T ( "FilterTrackDropLargeJump" ), &g_trackFilterMax, 0);
+    Read(_T ( "FilterTrackDropLargeJump" ), &g_trackFilterMax, 1000);
   }
 
   Read(_T ( "ShowTrue" ), &g_bShowTrue);
