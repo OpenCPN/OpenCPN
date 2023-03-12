@@ -360,10 +360,10 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 void CommDriverN2KSerial::ProcessManagementPacket(std::vector<unsigned char> *payload) {
 
    if (payload->at(2) != 0xF2) {   // hearbeat
-     printf("    pl ");
-     for (unsigned int i = 0; i < payload->size(); i++)
-     printf("%02X ", payload->at(i));
-     printf("\n");
+     //printf("    pl ");
+     //for (unsigned int i = 0; i < payload->size(); i++)
+     // printf("%02X ", payload->at(i));
+     //printf("\n");
    }
 
   switch (payload->at(2)){
