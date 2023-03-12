@@ -259,13 +259,25 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
     if (lonmin > 180.) lonmin -= 360.;
   }
 
-  m_spMaxLat->SetValue((int)ceil(vp->lat_max));
-  m_spMinLon->SetValue((int)floor(lonmin));
-  m_spMinLat->SetValue((int)floor(vp->lat_min));
-  m_spMaxLon->SetValue((int)ceil(lonmax));
+  bool bnew_val = false;
+  if (m_spMaxLat->GetValue() != (int)ceil(vp->lat_max))
+    bnew_val = true;
+  if (m_spMinLon->GetValue() != (int)floor(lonmin))
+    bnew_val = true;
+  if (m_spMinLat->GetValue() != (int)floor(vp->lat_min))
+    bnew_val = true;
+  if (m_spMaxLon->GetValue() != (int)ceil(lonmax))
+    bnew_val = true;
 
-  SetCoordinatesText();
-  m_MailImage->SetValue(WriteMail());
+  if (bnew_val){
+    m_spMaxLat->SetValue((int)ceil(vp->lat_max));
+    m_spMinLon->SetValue((int)floor(lonmin));
+    m_spMinLat->SetValue((int)floor(vp->lat_min));
+    m_spMaxLon->SetValue((int)ceil(lonmax));
+
+    SetCoordinatesText();
+    m_MailImage->SetValue(WriteMail());
+  }
 }
 
 bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
