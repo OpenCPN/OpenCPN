@@ -9930,12 +9930,10 @@ void s52plib::SetAnchorOn(bool val) {
 }
 
 void s52plib::SetQualityOfData(bool val) {
-  int old_vis = GetQualityOfData();
-  if (old_vis == (int)val) return;
 
-  if (old_vis && !val) {  // On, going off
+  if (!val) {  // going off
     AddObjNoshow("M_QUAL");
-  } else if (!old_vis && val) {  // Off, going on
+  } else {  // Off, going on
     RemoveObjNoshow("M_QUAL");
 
     for (unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++) {
