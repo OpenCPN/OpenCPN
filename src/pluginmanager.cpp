@@ -662,26 +662,7 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
   //  Reload all plugins, which will bring in the action results.
   LoadAllPlugIns(false);
 
-  // Check to see if this plugin needs an options instance reload
-  if (g_options) {
-    bool b_newOptions = false;
-    auto loader = PluginLoader::getInstance();
-    for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount(); i++) {
-      PlugInContainer *pic = loader->GetPlugInArray()->Item(i);
-      wxString cname = pic->m_common_name;
-      if (pic->m_bInitState && (pluginName == cname)) {
-        if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)) {
-          g_options->SetNeedNew(true);
-
-          NotifySetupOptionsPlugin(pic);
-        }
-      }
-    }
-  }
-
   parent->ReloadPluginPanels();
-  // wxString name(plugin);
-  // g_pi_manager->GetListPanelPtr()->SelectByName(name);
 }
 
 //    Some static helper funtions
