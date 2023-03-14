@@ -306,6 +306,14 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(CanvasOptions::OnOptionChange), NULL, this);
 
+  pCBENCDataQuality =
+  new wxCheckBox(pDisplayPanel, IDCO_ENCDATAQUALITY_CHECKBOX,
+                 _("Show chart data quality"));
+  boxENC->Add(pCBENCDataQuality, verticalInputFlags);
+  pCBENCDataQuality->Connect(
+    wxEVT_COMMAND_CHECKBOX_CLICKED,
+    wxCommandEventHandler(CanvasOptions::OnOptionChange), NULL, this);
+
   // spacer
   boxENC->Add(0, interGroupSpace);
 
@@ -384,6 +392,7 @@ void CanvasOptions::RefreshControlValues(void) {
   pCBENCLights->SetValue(parentCanvas->GetShowENCLights());
   pCBENCAnchorDetails->SetValue(parentCanvas->GetShowENCAnchor());
   pCBENCVisibleSectors->SetValue(parentCanvas->GetShowVisibleSectors());
+  pCBENCDataQuality->SetValue(parentCanvas->GetShowENCDataQual());
 
   // pCBENCLightDesc->Enable(parentCanvas->GetShowENCLights());
 
@@ -524,6 +533,12 @@ void CanvasOptions::UpdateCanvasOptions(void) {
     parentCanvas->SetShowVisibleSectors(pCBENCVisibleSectors->GetValue());
     b_needReLoad = true;
   }
+
+  if (pCBENCDataQuality->GetValue() !=
+    parentCanvas->GetShowENCDataQual()) {
+    parentCanvas->SetShowENCDataQual(pCBENCDataQuality->GetValue());
+  b_needReLoad = true;
+    }
 
   int newMode = NORTH_UP_MODE;
   if (pCBCourseUp->GetValue())

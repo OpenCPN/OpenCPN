@@ -3387,7 +3387,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
     // display options
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Display")),
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("")),
                        groupLabelFlags);
 
     wxBoxSizer* miscSizer = new wxBoxSizer(wxVERTICAL);
@@ -3400,10 +3400,10 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
       miscSizer->Add(pCheck_SOUNDG, verticleInputFlags);
     }
 
-    pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
-                                 _("Chart Information Objects"));
-    pCheck_META->SetValue(FALSE);
-    miscSizer->Add(pCheck_META, verticleInputFlags);
+//     pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
+//                                  _("Chart Information Objects"));
+//     pCheck_META->SetValue(FALSE);
+//     miscSizer->Add(pCheck_META, verticleInputFlags);
 
     if (!g_useMUI) {
       optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")),
@@ -3598,10 +3598,10 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_SOUNDG->SetValue(FALSE);
     miscSizer->Add(pCheck_SOUNDG, inputFlags);
 
-    pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
-                                 _("Chart Information Objects"));
-    pCheck_META->SetValue(FALSE);
-    miscSizer->Add(pCheck_META, inputFlags);
+//     pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
+//                                  _("Chart Information Objects"));
+//     pCheck_META->SetValue(FALSE);
+//     miscSizer->Add(pCheck_META, inputFlags);
 
     wxBoxSizer* lightSizer = new wxBoxSizer(wxVERTICAL);
     optionsColumn->Add(lightSizer, groupInputFlags);
@@ -6435,7 +6435,7 @@ void options::SetInitialVectorSettings(void) {
     if (pCheck_XLSECTTEXT)
       pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
 
-    pCheck_META->SetValue(ps52plib->m_bShowMeta);
+    //pCheck_META->SetValue(ps52plib->m_bShowMeta);
     pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
     pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
     pCheck_SuperSCAMIN->SetValue(ps52plib->m_bUseSUPER_SCAMIN);
@@ -7263,7 +7263,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (pCheck_XLSECTTEXT)
       ps52plib->m_bExtendLightSectors = pCheck_XLSECTTEXT->GetValue();
 
-    ps52plib->m_bShowMeta = pCheck_META->GetValue();
+    //ps52plib->m_bShowMeta = pCheck_META->GetValue();
     ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
     ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
     ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
