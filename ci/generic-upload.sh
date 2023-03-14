@@ -51,7 +51,7 @@ else
         $SUDO python3 -m pip install -q cloudsmith-cli
     fi
     if test -f Release/opencpn.pdb; then cp Release/opencpn.pdb .; fi
-    for src in $(expand *.dmg *setup.exe *.deb *.pkg opencpn.pdb); do
+    for src in $(expand *.dmg *setup.exe *.deb *.pkg *.pdb *.dSYM.tar.gz); do
         old=$(basename $src)
         new=$(echo $old | sed "s/+/+${BUILD_NR}./")
         if [ "$old" != "$new" ]; then $SUDO mv "$old" "$new"; fi
