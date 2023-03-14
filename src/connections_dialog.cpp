@@ -518,6 +518,7 @@ void ConnectionsDialog::Init(){
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
   gSizerSerProps = new wxGridSizer(0, 1, 0, 0);
+  sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
 
   wxFlexGridSizer* fgSizer1;
   fgSizer1 = new wxFlexGridSizer(0, 4, 0, 0);
@@ -595,20 +596,26 @@ void ConnectionsDialog::Init(){
 
   gSizerSerProps->Add(fgSizer1, 0, wxEXPAND, 5);
 
+   //  User Comments
+  wxBoxSizer* commentSizer = new wxBoxSizer(wxHORIZONTAL);
+  sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
+
+  m_stSerialComment = new wxStaticText(m_container, wxID_ANY, _("User Comment"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stSerialComment->Wrap(-1);
+  commentSizer->Add(m_stSerialComment, 0, wxALL, 5);
+
+  m_tSerialComment = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  m_tSerialComment->SetMaxSize(wxSize(40 * m_container->GetCharWidth(), -1));
+  m_tSerialComment->SetMinSize(wxSize(40 * m_container->GetCharWidth(), -1));
+
+  commentSizer->Add(m_tSerialComment, 1, wxEXPAND | wxTOP, 5);
+
   wxFlexGridSizer* fgSizer5;
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer5->SetFlexibleDirection(wxBOTH);
   fgSizer5->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-  //  User Comments
-  m_stSerialComment = new wxStaticText(m_container, wxID_ANY, _("User Comment"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
-  m_stSerialComment->Wrap(-1);
-  fgSizer5->Add(m_stSerialComment, 0, wxALL, 5);
-
-  m_tSerialComment = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
-                                    wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer5->Add(m_tSerialComment, 1, wxEXPAND | wxTOP, 5);
 
   m_cbCheckCRC = new wxCheckBox(m_container, wxID_ANY, _("Control checksum"),
                                 wxDefaultPosition, wxDefaultSize, 0);
@@ -689,7 +696,6 @@ void ConnectionsDialog::Init(){
       m_container, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 5);
 
-  sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
   sbSizerInFilter = new wxStaticBoxSizer(
