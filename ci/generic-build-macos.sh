@@ -90,6 +90,9 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
+dsymutil -o OpenCPN.dSYM /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/OpenCPN
+tar czf OpenCPN.dSYM.tar.gz OpenCPN.dSYM
+
 make create-pkg
 make create-dmg
 
