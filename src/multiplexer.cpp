@@ -318,6 +318,15 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   pgn += n2k_msg.get()->payload.at(4) << 8;
   pgn += n2k_msg.get()->payload.at(5) << 16;
 
+  // extract data source
+  std::string source = n2k_msg.get()->source->to_string();
+
+  // extract source ID
+  unsigned char source_id = n2k_msg.get()->payload.at(7);
+  char ss[4];
+  sprintf(ss, "%d", source_id);
+  std::string ident = std::string(ss);
+
   if (pgn == last_pgn_logged) {
     n_N2K_repeat++;
     return false;
@@ -332,7 +341,8 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   }
 
   wxString log_msg;
-  log_msg.Printf("%d : %s\n", pgn, N2K_LogMessage_Detail(pgn, n2k_msg).c_str());
+  log_msg.Printf("PGN: %d Source: %s ID: %s  Desc: %s\n", pgn, source,
+                 ident,N2K_LogMessage_Detail(pgn, n2k_msg).c_str());
 
   LogInputMessage(log_msg, "N2000", false, false);
 
@@ -342,10 +352,11 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
 
 std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn, std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+  std::string notused = "Not used by OCPN, maybe by Plugins";
 
   switch (pgn){
     case 129029:
-      return "GNSS Position";
+      return "GNSS Position & DBoard: SAT System";
       break;
     case 129025:
       return "Position rapid";
@@ -353,13 +364,162 @@ std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn, std::shared_ptr
     case 129026:
       return "COG/SOG rapid";
       break;
+    case 129038:
+      return "AIS Class A position report";
+      break;
+    case 129039:
+      return "AIS Class B position report";
+      break;
+    case 129041:
+      return "AIS Aids to Navigation (AtoN) Report";
+      break;
+    case 129793:
+      return "AIS Base Station report";
+      break;
+    case 129794:
+      return "AIS static data class A";
+      break;
+    case 129809:
+      return "AIS static data class B part A";
+      break;
+    case 129810:
+      return "AIS static data class B part B";
+      break;
     case 127250:
       return "Heading rapid";
       break;
     case 129540:
-      return "GNSS Sats";
+      return "GNSS Sats & DBoard: SAT Status";
+      break;
+    //>> Dashboard
+    case 127245:
+      return "DBoard: Rudder data";
+      break;
+    case 127257:
+      return "DBoard: Roll Pitch";
+      break;
+    case 128259:
+      return "DBoard: Speed through water";
+      break;
+    case 128267:
+      return "DBoard: Depth Data";
+      break;
+    case 128275:
+      return "DBoard: Distance log";
+      break;
+    case 130306:
+      return "DBoard: Wind data";
+      break;
+    case 130310:
+      return "DBoard: Envorinment data";
+      break;
+    // Not used PGNs
+    case 126992:
+      return "System time. " + notused;
+      break;
+    case 127233:
+      return "Man Overboard Notification. " + notused;
+      break;
+    case 127237:
+      return "Heading/Track control. " + notused;
+      break;
+    case 127251:
+      return "Rate of turn. " + notused;
+      break;
+    case 127258:
+      return "Magnetic variation. " + notused;
+      break;
+    case 127488:
+      return "Engine rapid param. " + notused;
+      break;
+    case 127489:
+      return "Engine parameters dynamic. " + notused;
+      break;
+    case 127493:
+      return "Transmission parameters dynamic. " + notused;
+      break;
+    case 127497:
+      return "Trip Parameters, Engine. " + notused;
+      break;
+    case 127501:
+      return "Binary status report. " + notused;
+      break;
+    case 127505:
+      return "Fluid level. " + notused;
+      break;
+    case 127506:
+      return "DC Detailed Status. " + notused;
+      break;
+    case 127507:
+      return "Charger Status. " + notused;
+      break;
+    case 127508:
+      return "Battery Status. " + notused;
+      break;
+    case 127513:
+      return "Battery Configuration Status. " + notused;
+      break;
+    case 128000:
+      return "Leeway. " + notused;
+      break;
+    case 128776:
+      return "Windlass Control Status. " + notused;
+      break;
+    case 128777:
+      return "Windlass Operating Status. " + notused;
+      break;
+    case 128778:
+      return "Windlass Monitoring Status. " + notused;
+      break;
+    case 129033:
+      return "Date,Time & Local offset. " + notused;
+      break;
+    case 129539:
+      return "GNSS DOP data. " + notused;
+      break;
+    case 129283:
+      return "Cross Track Error. " + notused;
+      break;
+    case 129284:
+      return "Navigation info. " + notused;
+      break;
+    case 129285:
+      return "Waypoint list. " + notused;
+      break;
+    case 129802:
+      return "AIS Safety Related Broadcast Message. " + notused;
+      break;
+    case 130074:
+      return "Waypoint list. " + notused;
+      break;
+    case 130311:
+      return "Environmental parameters. " + notused;
+      break;
+    case 130312:
+      return "Temperature. " + notused;
+      break;
+    case 130313:
+      return "Humidity. " + notused;
+      break;
+    case 130314:
+      return "Actual Pressure. " + notused;
+      break;
+    case 130315:
+      return "Set Pressure. " + notused;
+      break;
+    case 130316:
+      return "Temperature extended range. " + notused;
+      break;
+    case 130323:
+      return "Meteorological Station Data. " + notused;
+      break;
+    case 130576:
+      return "Trim Tab Position. " + notused;
+      break;
+    case 130577:
+      return "Direction Data. " + notused;
       break;
     default:
-      return "";
+      return "No description. Not used by OCPN, maybe passed to plugins";
   }
 }
