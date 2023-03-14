@@ -3400,11 +3400,6 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
       miscSizer->Add(pCheck_SOUNDG, verticleInputFlags);
     }
 
-//     pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
-//                                  _("Chart Information Objects"));
-//     pCheck_META->SetValue(FALSE);
-//     miscSizer->Add(pCheck_META, verticleInputFlags);
-
     if (!g_useMUI) {
       optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")),
                          groupLabelFlags);

@@ -426,8 +426,9 @@ void CanvasOptions::RefreshControlValues(void) {
   pCBENCLights->Enable(m_ENCAvail);
   pCBENCVisibleSectors->Enable(m_ENCAvail);
 
-  //  Anchor conditions are only available if display category is "All" or "User
-  //  Standard"
+  //  Anchor conditions  and dateQuality are only available if display category
+  //  is "All" or "User Standard"
+  pCBENCDataQuality->Enable(m_ENCAvail && (nset > 1));
   pCBENCAnchorDetails->Enable(m_ENCAvail && (nset > 1));
 
   //  Many options are not valid if display category is "Base"
@@ -438,6 +439,7 @@ void CanvasOptions::RefreshControlValues(void) {
     pCBENCBuoyLabels->Disable();
     pCBENCLights->Disable();
     pCBENCVisibleSectors->Disable();
+    pCBENCDataQuality->Disable();
   }
 
   m_pDispCat->Enable(m_ENCAvail);
