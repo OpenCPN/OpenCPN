@@ -59,13 +59,7 @@ public:
 
 private:
     //  comm event listeners
-  ObservableListener listener_N2K_129029;
-  ObservableListener listener_N2K_129025;
-  ObservableListener listener_N2K_129026;
-  ObservableListener listener_N2K_127250;
-  ObservableListener listener_N2K_129540;
   ObservableListener listener_N2K_All;
-
   ObservableListener m_listener_N0183_all;
 
   void InitN2KCommListeners();
