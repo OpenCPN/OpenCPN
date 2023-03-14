@@ -445,10 +445,10 @@ if (APPLE)
     set(OCPN_LIBCPP "-stdlib=libc++")
   endif (OCPN_USE_LIBCPP)
   set(CMAKE_CXX_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -gdwarf-2 -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${OCPN_LIBCPP} -arch ${ARCH}")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -gdwarf-2 -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
 
   set(
     CMAKE_EXE_LINKER_FLAGS
