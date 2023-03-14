@@ -15,7 +15,7 @@ to create a stack trace is depends on platform, but the general steps are
 == Windows
 
 === Install windbg
-The tool to use in windbg. It is part of a large set of debugging tools,
+The tool to use is windbg. It is part of a large set of debugging tools,
 but can be installed separately as described in
 https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-download-tools
 
@@ -68,7 +68,7 @@ WARNING: Stack unwind information not available. Following frames may be wrong.
 
 ----
 
-Copy the first 10 or twenty lines like above of the stacktrace and submit
+Copy the first 10-20 lines like above from the stacktrace and submit
 it in a bug report.
 
 === Note for developers:
@@ -199,3 +199,50 @@ then install the debug symbols using
         #10 0x00007ffff77cd550 in wxWindowBase
                ::HandleWindowEvent(wxEvent&) const (this=this@entry=0x55555b0abc50, event=...)
                at ./src/common/wincmn.cpp:1553
+
+== MacOS
+
+=== Install the lldb debugger
+
+If Xcode is installed lldb is already in place. Otherwise, see for
+example https://stackoverflow.com/questions/34680789
+
+=== Download and install debug symbols
+
+On MacOS, debug symbols lives in a dSYM bundle. dSYM bundles for released
+OpenCPN versions can be downloaded from TBD.
+
+Download and uncompress that file and store it in _/Applications/OpenCPN/Contents/MacOS_
+something like:
+----
+   $ wget https://dl.cloudsmith.io/public/alec-leamas/opencpn/raw/files/OpenCPN-deadbeef.dSYM.tar.gz
+   $ tar xf OpenCPN-deadbeef.dSYM.tar.gz
+   $ sudo mv OpenCPN.dSYM Applications/OpenCPN/Contents/MacOS
+----
+
+=== Start debugging
+Easiest is to start from the installation directory, YMMV:
+----
+    $ cd /Applications/OpenCPN/Contents/MacOS
+    $ lldb  OpenCPN
+    (lldb) target symbols add OpenCPN.dSYM
+    (lldb) run
+---- 
+
+After starting OpenCPN, make it crash.
+
+Notes:
+
+* If OpenCPN hasn't been started before (fresh installation) one needs to first 
+  open it using ctrl-right-click in order to work around unsigned developer
+  checks.
+* Watch out for error messages when loading symbol file (`target symbols add`).
+* If possible, resize OpenCPN so it does not cover the command window -- the
+  command window does **not** become on top  after the crash causing an 
+  interesting situation.
+
+=== Display the stack trace
+
+After the crash, control returns to the debugger. Here, give the command _bt_
+which displays the trace. Copy the first 10-20 lines and submit in a bug report.
+:image:macos-stacktrace.png[Stack trace]
