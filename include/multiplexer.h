@@ -64,6 +64,7 @@ private:
   ObservableListener listener_N2K_129026;
   ObservableListener listener_N2K_127250;
   ObservableListener listener_N2K_129540;
+  ObservableListener listener_N2K_All;
 
   ObservableListener m_listener_N0183_all;
 
@@ -71,11 +72,11 @@ private:
 
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
   bool HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg);
-  std::string N2K_LogMessage_Detail(std::shared_ptr<const Nmea2000Msg> n2k_msg);
+  std::string N2K_LogMessage_Detail(unsigned int pgn, std::shared_ptr<const Nmea2000Msg> n2k_msg);
 
 
   MuxLogCallbacks m_log_callbacks;
-  uint64_t last_pgn_logged;
+  unsigned int last_pgn_logged;
   int n_N2K_repeat;
 
 

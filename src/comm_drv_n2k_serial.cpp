@@ -437,9 +437,11 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
   //printf("          %ld\n", pgn);
 
   auto name = PayloadToName(*payload);
-  auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload,
-                                                 GetAddress(name));
+  auto msg = std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
+  auto msg_all = std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
+
   m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_all));
 
 #if 0  // Debug output
   size_t packetLength = (size_t)payload->at(1);

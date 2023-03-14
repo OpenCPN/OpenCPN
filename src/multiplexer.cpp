@@ -62,6 +62,7 @@ wxDEFINE_EVENT(EVT_N2K_129025, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129026, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
+wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
 
 #ifdef HAVE_READLINK
 
@@ -298,50 +299,26 @@ void Multiplexer::InitN2KCommListeners() {
   // Create a series of N2K listeners
   // to allow minimal N2K Debug window logging
 
-  // GNSS Position Data PGN  129029
+  // All N2K
   //----------------------------------
-  Nmea2000Msg n2k_msg_129029(static_cast<uint64_t>(129029));
-  listener_N2K_129029.Listen(n2k_msg_129029, this, EVT_N2K_129029);
-  Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
-    HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
-
-  // Position rapid   PGN 129025
-  //-----------------------------
-  Nmea2000Msg n2k_msg_129025(static_cast<uint64_t>(129025));
-  listener_N2K_129025.Listen(n2k_msg_129025, this, EVT_N2K_129025);
-  Bind(EVT_N2K_129025, [&](ObservedEvt ev) {
-    HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
-
-  // COG SOG rapid   PGN 129026
-  //-----------------------------
-  Nmea2000Msg n2k_msg_129026(static_cast<uint64_t>(129026));
-  listener_N2K_129026.Listen(n2k_msg_129026, this, EVT_N2K_129026);
-  Bind(EVT_N2K_129026, [&](ObservedEvt ev) {
-    HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
-
-  // Heading rapid   PGN 127250
-  //-----------------------------
-  Nmea2000Msg n2k_msg_127250(static_cast<uint64_t>(127250));
-  listener_N2K_127250.Listen(n2k_msg_127250, this, EVT_N2K_127250);
-  Bind(EVT_N2K_127250, [&](ObservedEvt ev) {
-    HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
-  });
-
-  // GNSS Satellites in View   PGN 129540
-  //-----------------------------
-  Nmea2000Msg n2k_msg_129540(static_cast<uint64_t>(129540));
-  listener_N2K_129540.Listen(n2k_msg_129540, this, EVT_N2K_129540);
-  Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
+  Nmea2000Msg n2k_msg_All(static_cast<uint64_t>(1));
+  listener_N2K_All.Listen(n2k_msg_All, this, EVT_N2K_ALL);
+  Bind(EVT_N2K_ALL, [&](ObservedEvt ev) {
     HandleN2K_Log(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 }
 
 bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+  if (!m_log_callbacks.log_is_active())
+    return false;
 
-  if (n2k_msg->PGN.pgn == last_pgn_logged) {
+  // extract PGN
+  unsigned int pgn = 0;
+  pgn += n2k_msg.get()->payload.at(3);
+  pgn += n2k_msg.get()->payload.at(4) << 8;
+  pgn += n2k_msg.get()->payload.at(5) << 16;
+
+  if (pgn == last_pgn_logged) {
     n_N2K_repeat++;
     return false;
   }
@@ -355,18 +332,18 @@ bool Multiplexer::HandleN2K_Log(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
   }
 
   wxString log_msg;
-  log_msg.Printf("%s : %s\n", n2k_msg->PGN.to_string().c_str(), N2K_LogMessage_Detail(n2k_msg).c_str());
+  log_msg.Printf("%d : %s\n", pgn, N2K_LogMessage_Detail(pgn, n2k_msg).c_str());
 
   LogInputMessage(log_msg, "N2000", false, false);
 
-  last_pgn_logged = n2k_msg->PGN.pgn;
+  last_pgn_logged = pgn;
   return true;
 }
 
 
-std::string Multiplexer::N2K_LogMessage_Detail(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
+std::string Multiplexer::N2K_LogMessage_Detail(unsigned int pgn, std::shared_ptr<const Nmea2000Msg> n2k_msg) {
 
-  switch (n2k_msg->PGN.pgn){
+  switch (pgn){
     case 129029:
       return "GNSS Position";
       break;
