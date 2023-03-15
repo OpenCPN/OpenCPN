@@ -3387,7 +3387,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
     // display options
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("")),
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
                        groupLabelFlags);
 
     wxBoxSizer* miscSizer = new wxBoxSizer(wxVERTICAL);
