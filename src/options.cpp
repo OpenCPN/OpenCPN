@@ -328,7 +328,7 @@ extern bool g_bGLexpert;
 //    Some constants
 #define ID_CHOICE_NMEA wxID_HIGHEST + 1
 
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern AisDecoder* g_pAIS;
@@ -3820,15 +3820,17 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   tcDataSelected->InsertColumn(0, col0);
 
   int w = 400, w1, h;
-  for (unsigned int id = 0; id < TideCurrentDataSet.Count(); id++) {
+  unsigned int id = 0;
+  for (auto ds : TideCurrentDataSet) {
     wxListItem li;
     li.SetId(id);
-    long idx = tcDataSelected->InsertItem(li);
+    tcDataSelected->InsertItem(li);
 
-    wxString setName = TideCurrentDataSet[id];
+    wxString setName = ds;
     tcDataSelected->SetItem(id, 0, setName);
     GetTextExtent(setName, &w1, &h);
     w = w1 > w ? w1 : w;
+    ++id;
   }
   tcDataSelected->SetColumnWidth(0, 20 + w);
 
@@ -7371,11 +7373,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   // Pick up all the entries in the Tide/current DataSelected control
   // and update the global static array
-  TideCurrentDataSet.Clear();
+  TideCurrentDataSet.clear();
   int nEntry = tcDataSelected->GetItemCount();
   for (int i = 0; i < nEntry; i++) {
     wxString setName = tcDataSelected->GetItemText(i);
-    TideCurrentDataSet.Add(setName);
+    TideCurrentDataSet.push_back(setName.ToStdString());
   }
 
   if (event.GetId() != ID_APPLY)  // only on ID_OK

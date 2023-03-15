@@ -266,7 +266,7 @@ extern bool g_bUIexpert;
 
 // extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
 
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern AisDecoder *g_pAIS;

@@ -246,7 +246,7 @@ extern int g_FlushNavobjChangesTimeout;
 extern wxString g_CmdSoundString;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
@@ -1364,7 +1364,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     g_maintoolbar_x = -1;
 
     // Force a reload of updated default tide/current datasets
-    TideCurrentDataSet.Clear();
+    TideCurrentDataSet.clear();
   }
 }
 
