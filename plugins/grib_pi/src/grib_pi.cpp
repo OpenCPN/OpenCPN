@@ -46,6 +46,8 @@
 #include "qdebug.h"
 #endif
 
+double g_ContentScaleFactor;
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
@@ -123,6 +125,8 @@ int grib_pi::Init(void) {
   // Get a pointer to the opencpn display canvas, to use as a parent for the
   // GRIB dialog
   m_parent_window = GetOCPNCanvasWindow();
+
+  g_ContentScaleFactor = m_parent_window->GetContentScaleFactor();
 
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled

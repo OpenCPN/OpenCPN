@@ -62,6 +62,13 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
 
   m_oDC = new pi_ocpnDC();
 
+  m_displayScale = 1.0;
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
+
   InitRequestConfig();
 }
 
@@ -288,6 +295,11 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
   if (event.Moving())
     return false;  // maintain status bar and tracking dialog updated
 
+  int xm, ym;
+  event.GetPosition(&xm, &ym);
+  xm *= m_displayScale;
+  ym *= m_displayScale;
+
   // This does not work, but something like it should
   //     wxObject *obj = event.GetEventObject();
   //     wxWindow *win = wxDynamicCast(obj, wxWindow);
@@ -313,13 +325,13 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
 
   if (event.Dragging()) {
     if (m_RenderZoneOverlay < 2) {
-      m_StartPoint = event.GetPosition();  // starting selection point
+      m_StartPoint = wxPoint(xm,ym);  //event.GetPosition();  // starting selection point
       m_RenderZoneOverlay = 2;
     }
-    m_IsMaxLong = m_StartPoint.x > event.GetPosition().x
+    m_IsMaxLong = m_StartPoint.x > xm
                       ? true
                       : false;  // find if startpoint is max longitude
-    GetCanvasLLPix(m_Vp, event.GetPosition(), &m_Lat,
+    GetCanvasLLPix(m_Vp, wxPoint (xm, ym) /*event.GetPosition()*/, &m_Lat,
                    &m_Lon);  // extend selection
     if (!m_tMouseEventTimer.IsRunning())
       m_tMouseEventTimer.Start(20, wxTIMER_ONE_SHOT);
@@ -548,7 +560,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   center.y = y + (zh / 2);
 
   wxFont fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() / OCPN_GetWinDIPScaleFactor()));
+  fo.SetPointSize((fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
   wxFont* font = &fo;
   wxColour pen_color, back_color;
   GetGlobalColor(_T ( "DASHR" ), &pen_color);
@@ -587,6 +599,9 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
     x = center.x - (w / 2);
     y = center.y - (h / 2);
 
+    h *= m_displayScale;
+    w *= m_displayScale;
+
     wxBitmap bm(w, h);
     wxMemoryDC mdc(bm);
     mdc.Clear();
@@ -624,6 +639,9 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
     m_oDC->SetFont(*font);
     int w, h, ww, hw;
     m_oDC->GetTextExtent(label, &w, &h);
+    h *= m_displayScale;
+    w *= m_displayScale;
+
     m_oDC->GetTextExtent("W", &ww, &hw);
 
     int label_offsetx = ww, label_offsety = 1;

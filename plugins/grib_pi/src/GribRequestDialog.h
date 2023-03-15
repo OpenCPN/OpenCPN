@@ -113,6 +113,7 @@ private:
   int m_SendMethod;
   bool m_AllowSend;
   bool m_IsMaxLong;
+  double m_displayScale;
 };
 
 #endif

@@ -48,6 +48,7 @@
 
 extern int m_Altitude;
 extern bool g_bpause;
+extern double g_ContentScaleFactor;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -387,7 +388,7 @@ void GRIBOverlayFactory::SetMessageFont() {
   fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
 #else
   fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() / OCPN_GetWinDIPScaleFactor()));
+  fo.SetPointSize((fo.GetPointSize()  * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor()));
 #endif
   if (m_Font_Message)
     delete m_Font_Message;
@@ -2350,10 +2351,13 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
       int w, h;
       m_oDC->GetTextExtent(msg, &w, &h);
       h += 2;
-      int yp = y - (2 * GetChartbarHeight() + h);
 
       int label_offset = 10;
       int wdraw = w + (label_offset * 2);
+      wdraw *= g_ContentScaleFactor;
+      h *= g_ContentScaleFactor;
+      int yp = y - (2 * GetChartbarHeight() + h);
+
       m_oDC->DrawRectangle(0, yp, wdraw, h);
       m_oDC->DrawText(msg, label_offset, yp);
     }
