@@ -1213,6 +1213,7 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
   m_encShowLights = pcc->bShowENCLights;
   m_bShowVisibleSectors = pcc->bShowENCVisibleSectorLights;
   m_encShowAnchor = pcc->bShowENCAnchorInfo;
+  m_encShowDataQual = pcc->bShowENCDataQuality;
 
   bool courseUp = pcc->bCourseUp;
   bool headUp = pcc->bHeadUp;
