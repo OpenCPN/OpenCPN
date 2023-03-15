@@ -5917,26 +5917,30 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       attrIndex = thisLight->attributeNames.Index(_T("COLOUR"));
       if (attrIndex != wxNOT_FOUND) {
         wxString color = thisLight->attributeValues.Item(attrIndex);
-        if (color == _T("red (3)"))
+        if (color == _T("red (3)") || color == _T("red(3)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("green (4)"))
+        else if (color == _T("green (4)") || color == _T("green(4)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("white (1)"))
+        else if (color == _T("white (1)") || color == _T("white(1)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("yellow (6)"))
+        else if (color == _T("yellow (6)") || color == _T("yellow(6)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("blue (5)"))
+        else if (color == _T("blue (5)") || color == _T("blue(5)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("magenta (12)") || color == _T("magenta(12)"))
+          colorStr =
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=magenta>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
         else
           colorStr =
               _T("<table border=0><tr><td ")
@@ -5949,15 +5953,15 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (vis.Contains(_T("8"))) {
           if (attrIndex != wxNOT_FOUND) {
             wxString color = thisLight->attributeValues.Item(attrIndex);
-            if (color == _T("red (3)"))
+            if (( color == _T("red (3)") || color == _T("red(3)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (color == _T("green (4)"))
+            if (( color == _T("green (4)") || color == _T("green(4)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (color == _T("white (1)"))
+            if (( color == _T("white (1)") || color == _T("white(1)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
@@ -5978,6 +5982,12 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       attrIndex = thisLight->attributeNames.Index(_T("SIGGRP"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
+        lightsHtml << _T(" ");
+      }
+
+      attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
+      if( attrIndex != wxNOT_FOUND ) {
+        lightsHtml << _T(" ") << thisLight->attributeValues.Item( attrIndex ).Upper()[0];
         lightsHtml << _T(" ");
       }
 
