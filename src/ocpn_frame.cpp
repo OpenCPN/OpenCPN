@@ -296,7 +296,7 @@ extern bool g_bUIexpert;
 extern Select *pSelect;
 extern RouteList *pRouteList;
 extern wxString g_default_wp_icon;
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 extern TCMgr *ptcmgr;
 extern bool g_bShowTrue;
@@ -6702,11 +6702,10 @@ void MyFrame::LoadHarmonics() {
     bool b_newdataset = false;
 
     //      Test both ways
-    wxArrayString test = ptcmgr->GetDataSet();
-    for (unsigned int i = 0; i < test.GetCount(); i++) {
+    for (auto a : ptcmgr->GetDataSet()) {
       bool b_foundi = false;
-      for (unsigned int j = 0; j < TideCurrentDataSet.GetCount(); j++) {
-        if (TideCurrentDataSet[j] == test[i]) {
+      for (auto b : TideCurrentDataSet) {
+        if (a == b) {
           b_foundi = true;
           break;  // j loop
         }
@@ -6717,11 +6716,10 @@ void MyFrame::LoadHarmonics() {
       }
     }
 
-    test = TideCurrentDataSet;
-    for (unsigned int i = 0; i < test.GetCount(); i++) {
+    for (auto a : TideCurrentDataSet) {
       bool b_foundi = false;
-      for (unsigned int j = 0; j < ptcmgr->GetDataSet().GetCount(); j++) {
-        if (ptcmgr->GetDataSet()[j] == test[i]) {
+      for (auto b : ptcmgr->GetDataSet()) {
+        if (a == b) {
           b_foundi = true;
           break;  // j loop
         }

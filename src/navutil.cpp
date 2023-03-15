@@ -379,7 +379,7 @@ extern int g_tcwin_scale;
 extern wxString g_uploadConnection;
 
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern bool g_btouch;
@@ -1414,13 +1414,17 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   //  Tide/Current Data Sources
   SetPath(_T ( "/TideCurrentDataSources" ));
   if (GetNumberOfEntries()) {
-    TideCurrentDataSet.Clear();
+    TideCurrentDataSet.clear();
     wxString str, val;
     long dummy;
     bool bCont = GetFirstEntry(str, dummy);
     while (bCont) {
-      Read(str, &val);  // Get a file name
-      TideCurrentDataSet.Add(val);
+      Read(str, &val);  // Get a file name and add it to the list just in case it is not repeated
+      // We have seen duplication of dataset entries in https://github.com/OpenCPN/OpenCPN/issues/3042, this
+      // effectively gets rid of them. 
+      if (std::find(TideCurrentDataSet.begin(), TideCurrentDataSet.end(), val.ToStdString()) == TideCurrentDataSet.end()) {
+        TideCurrentDataSet.push_back(val.ToStdString());
+      }
       bCont = GetNextEntry(str, dummy);
     }
   }
@@ -2748,11 +2752,12 @@ void MyConfig::UpdateSettings() {
   //  Tide/Current Data Sources
   DeleteGroup(_T ( "/TideCurrentDataSources" ));
   SetPath(_T ( "/TideCurrentDataSources" ));
-  unsigned int iDirMax = TideCurrentDataSet.Count();
-  for (unsigned int id = 0; id < iDirMax; id++) {
+  unsigned int id = 0;
+  for (auto val : TideCurrentDataSet) {
     wxString key;
     key.Printf(_T("tcds%d"), id);
-    Write(key, TideCurrentDataSet[id]);
+    Write(key, wxString(val));
+    ++id;
   }
 
   SetPath(_T ( "/Settings/Others" ));
