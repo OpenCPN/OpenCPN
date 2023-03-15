@@ -11,4 +11,4 @@
 * xref:code-formatting.adoc[Code Formatting]
 * xref:user-interface-styling.adoc[User Interface Styling]
 * xref:troubleshooting.adoc[Troubleshooting]
-* xref:stacktrace.adoc[DRAFT: Creating a stack trace]
+* xref:stacktrace.adoc[Creating a stack trace]
