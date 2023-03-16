@@ -9332,9 +9332,14 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
   // only for objects whose decoded S52 display category (by LUP) is also OTHER
   if (m_nDisplayCategory == OTHER) {
     if (OTHER == obj_cat) {
-      if (!strncmp(rzRules->LUP->OBCL, "M_", 2))
-        if (!m_bShowMeta && strncmp(rzRules->LUP->OBCL, "M_QUAL", 6))
+      if (!strncmp(rzRules->LUP->OBCL, "M_", 2)){
+        if (!m_bShowMeta)
           return false;
+        else {
+          if (!strncmp(rzRules->LUP->OBCL, "M_QUAL", 6) && !m_qualityOfDataOn)
+            return false;
+        }
+      }
     }
   } else {
     // We want to filter out M_NSYS objects everywhere except "OTHER" category
