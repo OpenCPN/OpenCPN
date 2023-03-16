@@ -580,7 +580,8 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ld++;
     }
   }
-  dc->DrawLines(ld, wdDraw);
+  if (ld)
+    dc->DrawLines(ld, wdDraw);
 
   //---------------------------------------------------------------------------------
   // exponential smoothing of direction
@@ -604,9 +605,10 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       points[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
       wdDraw[ld] = points[idx];
       ld++;
-    } 
+    }
   }
-  dc->DrawLines(ld, wdDraw);
+  if (ld)
+    dc->DrawLines(ld, wdDraw);
 
   //---------------------------------------------------------------------------------
   // wind speed
@@ -669,7 +671,8 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  dc->DrawLines(ls, spdDraw);
+  if (ld)
+    dc->DrawLines(ls, spdDraw);
 
   //---------------------------------------------------------------------------------
   // exponential smoothing of speed
@@ -694,7 +697,8 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  dc->DrawLines(ls, spdDraw);
+  if (ld)
+    dc->DrawLines(ls, spdDraw);
 
   //---------------------------------------------------------------------------------
   // draw vertical timelines every 10 minutes
