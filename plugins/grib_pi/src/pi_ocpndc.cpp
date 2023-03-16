@@ -93,7 +93,7 @@ int NextPow2(int size) {
 //----------------------------------------------------------------------------
 /* pass the dc to the constructor, or NULL to use opengl */
 pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
-    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -120,7 +120,7 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
 }
 
 pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
-    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(false) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
   wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -139,7 +139,7 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
 }
 
 pi_ocpnDC::pi_ocpnDC()
-    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -165,7 +165,9 @@ pi_ocpnDC::~pi_ocpnDC() {
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
 //#ifdef __OCPN__ANDROID__
-  configureShaders(vp->pix_width, vp->pix_height);
+  if ( m_buseGL ) {
+    configureShaders(vp->pix_width, vp->pix_height);
+  }
 //#endif
   m_vpSize = wxSize(vp->pix_width, vp->pix_height);
 }
