@@ -117,7 +117,6 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "observable_globvar.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
-#include "ocpn_pixel.h"
 #include "OCPNPlatform.h"
 #include "OCPNRegion.h"
 #include "model/ocpn_utils.h"

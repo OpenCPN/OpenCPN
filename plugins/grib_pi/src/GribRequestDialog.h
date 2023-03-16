@@ -34,8 +34,19 @@
 #include "GribUIDialogBase.h"
 #include "GribUIDialog.h"
 #include "pi_ocpndc.h"
+#include "wx/jsonreader.h"
 
 #include "ocpn_plugin.h"
+
+enum GribDownloadType
+{
+  WORLD,
+  LOCAL,
+  LOCAL_CATALOG,
+  NONE
+};
+
+const std::string CATALOG_URL = "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/sources.json";
 
 //----------------------------------------------------------------------------------------------------------
 //    Request setting Specification
@@ -46,7 +57,7 @@ public:
 
   ~GribRequestSetting();
 
-  void OnClose(wxCloseEvent &event);
+  void OnClose(wxCloseEvent &event) override;
   void SetVpSize(PlugIn_ViewPort *vp);
   void OnVpChange(PlugIn_ViewPort *vp);
   bool MouseEventHook(wxMouseEvent &event);
@@ -70,6 +81,8 @@ public:
   double m_Lon;
 
 private:
+  void ReadLocalCatalog();
+  void FillTreeCtrl(wxJSONValue & data);
   void ApplyRequestConfig(unsigned rs, unsigned it, unsigned tr);
   wxString WriteMail();
   int EstimateFileSize(double *size);
@@ -79,24 +92,32 @@ private:
     wxCloseEvent evt;
     OnClose(evt);
   }
-  void OnTopChange(wxCommandEvent &event);
-  void OnMovingClick(wxCommandEvent &event);
-  void OnAnyChange(wxCommandEvent &event);
-  void OnAnySpinChange(wxSpinEvent &event) {
+  void OnTopChange(wxCommandEvent &event) override;
+  void OnMovingClick(wxCommandEvent &event) override;
+  void OnAnyChange(wxCommandEvent &event) override;
+  void OnAnySpinChange(wxSpinEvent &event) override {
     wxCommandEvent evt;
     OnAnyChange(evt);
   }
-  void OnTimeRangeChange(wxCommandEvent &event);
-  void OnSendMaiL(wxCommandEvent &event);
-  void OnSaveMail(wxCommandEvent &event);
-  void OnZoneSelectionModeChange(wxCommandEvent &event);
-  void OnCancel(wxCommandEvent &event) {
+  void OnTimeRangeChange(wxCommandEvent &event) override;
+  void OnSendMaiL(wxCommandEvent &event) override;
+  void OnSaveMail(wxCommandEvent &event) override;
+  void OnZoneSelectionModeChange(wxCommandEvent &event) override;
+  void OnCancel(wxCommandEvent &event) override {
     wxCloseEvent evt;
     OnClose(evt);
   }
-  void OnCoordinatesChange(wxSpinEvent &event);
+  void OnCoordinatesChange(wxSpinEvent &event) override;
   void OnMouseEventTimer(wxTimerEvent &event);
   void SetCoordinatesText();
+  void OnWorldLengthChoice(wxCommandEvent& event) override { event.Skip(); }
+  void OnWorldDownload(wxCommandEvent& event) override;
+  void OnLocalTreeItemExpanded(wxTreeEvent& event) override { event.Skip(); }
+  void OnLocalTreeSelChanged(wxTreeEvent& event) override;
+  void OnUpdateLocalCatalog(wxCommandEvent& event) override;
+  void OnDownloadLocal(wxCommandEvent& event) override;
+  void onDLEvent(OCPN_downloadEvent& ev);
+  void EnableDownloadButtons();
 
   GRIBUICtrlBar &m_parent;
 
@@ -114,6 +135,13 @@ private:
   bool m_AllowSend;
   bool m_IsMaxLong;
   double m_displayScale;
+  bool m_connected;
+  bool m_downloading;
+  long m_download_handle;
+  bool m_bTransferSuccess;
+  bool m_canceled;
+  bool m_bLocal_source_selected;
+  GribDownloadType m_downloadType;
 };
 
 #endif

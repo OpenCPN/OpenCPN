@@ -34,8 +34,8 @@
 #include <wx/glcanvas.h>
 #endif  // precompiled headers
 
-#define PLUGIN_VERSION_MAJOR 4
-#define PLUGIN_VERSION_MINOR 2
+#define PLUGIN_VERSION_MAJOR 5
+#define PLUGIN_VERSION_MINOR 0
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 16
@@ -99,6 +99,7 @@ public:
   void OnToolbarToolCallback(int id);
   bool QualifyCtrlBarPosition(wxPoint position, wxSize size);
   void MoveDialog(wxDialog *dialog, wxPoint position);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
   // Other public methods
   void SetCtrlBarXY(wxPoint p) { m_CtrlBarxy = p; }
@@ -131,6 +132,10 @@ public:
   wxSize m_coreToolbarSize;
   wxPoint m_coreToolbarPosn;
   bool m_bZoomToCenterAtInit;
+  wxString m_local_sources_catalog;
+  double m_boat_lat, m_boat_lon;
+  double m_boat_cog, m_boat_sog;
+  time_t m_boat_time;
 
 private:
   bool LoadConfig(void);

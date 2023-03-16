@@ -242,6 +242,7 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
   m_last_vp_scale = 0.;
 
   m_oDC = NULL;
+  m_gdc = NULL;
   m_Font_Message = NULL;
 
   InitColorsTable();
@@ -611,6 +612,11 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
         .Append(_T(" "))
         .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
         .Append(_T(" ! "));
+  }
+  if(m_dlg.ProjectionEnabled()) {
+    int x, y;
+    m_dlg.GetProjectedLatLon(x, y);
+    DrawProjectedPosition(x, y);
   }
   if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
   m_Message_Hiden.Append(m_Message);
@@ -2353,6 +2359,25 @@ void GRIBOverlayFactory::OnParticleTimer(wxTimerEvent &event) {
     GetCanvasByIndex(1)->Refresh(false);  // update the last rendered canvas
   else
     GetOCPNCanvasWindow()->Refresh(false);
+}
+
+void GRIBOverlayFactory::DrawProjectedPosition(int x, int y) {
+  if (m_pdc) {
+    wxDC &dc = *m_pdc;
+    dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    dc.DrawRectangle(x,y,20,20);
+    dc.DrawLine(x,y,x+20,y+20);
+    dc.DrawLine(x,y+20,x+20,y);
+  } else {
+    if (m_oDC) {
+      m_oDC->SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+      m_oDC->SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+      m_oDC->DrawRectangle(x-10,y-10,20,20);
+      m_oDC->StrokeLine(x-10,y-10,x+10,y+10);
+      m_oDC->StrokeLine(x-10,y+10,x+10,y-10);
+    }
+  }
 }
 
 void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,

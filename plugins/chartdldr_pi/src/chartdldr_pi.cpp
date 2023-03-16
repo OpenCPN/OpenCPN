@@ -1425,8 +1425,6 @@ After downloading the charts, please extract them to %s"),
 
       // if(g_pi && g_pi->m_dldrpanel)
       // g_pi->m_dldrpanel->Raise();
-      wxYield();
-      wxMilliSleep(30);
     }
 
     if (cancelled) {
