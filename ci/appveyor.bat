@@ -56,6 +56,12 @@ cmake -A Win32 -G "Visual Studio 17 2022" ^
 
 cmake --build . --target package --config %CONFIGURATION%
 
+:: Compress pdb and mark with git hash
+@echo on
+"C:\Program Files\Git\bin\bash" -c ^
+  "tar czf opencpn+%GITHUB_SHA:~0,8%.pdb.tar.gz %CONFIGURATION%/opencpn.pdb"
+@echo off
+
 :: Display dependencies debug info
 echo import glob; import subprocess > ldd.py
 echo lib = glob.glob("%CONFIGURATION%/opencpn.exe")[0] >> ldd.py
