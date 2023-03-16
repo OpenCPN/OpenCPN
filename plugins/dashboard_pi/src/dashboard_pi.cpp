@@ -3249,6 +3249,11 @@ bool dashboard_pi::LoadConfig(void) {
     DataFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
     LabelFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
     SmallFont = _T("Roboto,14,-1,5,50,0,0,0,0,0");
+#else
+    TitleFont = g_pFontTitle->GetNativeFontInfoDesc();
+    DataFont = g_pFontData->GetNativeFontInfoDesc();
+    LabelFont = g_pFontLabel->GetNativeFontInfoDesc();
+    SmallFont = g_pFontSmall->GetNativeFontInfoDesc();
 #endif
 
     double scaler = 1.0;
