@@ -331,9 +331,16 @@ void CommDriverN0183Net::OpenNetworkGPSD() {
 void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   m_dog_value--;
   if (m_dog_value <= 0) {  // No receive in n seconds, assume connection lost
-    wxLogMessage(
-        wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s"),
-                         GetPort().c_str()));
+    wxString log = wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s."),
+      GetPort().c_str());
+    if (!GetParams().NoDataReconnect) {
+      log.Append(wxString::Format(_T(" Reconnection is disabled, waiting another %d seconds."),
+        N_DOG_TIMEOUT));
+      m_dog_value = N_DOG_TIMEOUT;
+      wxLogMessage(log);
+      return;
+    }
+    wxLogMessage(log);
 
     if (GetProtocol() == TCP) {
       wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
