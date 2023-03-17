@@ -108,7 +108,15 @@ with 1MB of RAM.
 
 NOTE: Fixme
 
+== Fedora
 
+To install the dependencies required to build OpenCPN from source on Fedora (Tested on 38), run the following command 
+
+```
+sudo dnf install wxGTK-devel cmake gcc-c++ git glew-devel openssl-devel libcurl-devel libarchive-devel elfutils-libelf-devel redhat-lsb-core libusb1-devel
+```
+
+Then use whichever build method you prefer.
 
 == IDEs
 
