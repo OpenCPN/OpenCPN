@@ -273,16 +273,16 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     LineBuffer &arrow = m_WindArrowCache[i];
 
     arrow.pushLine(dec, 0, dec + windArrowSize, 0);                  // hampe
-    arrow.pushLine(dec, 0, dec + pointerLength, pointerLength / 2);  // flèche
+    arrow.pushLine(dec, 0, dec + pointerLength, pointerLength / 2);  // fleche
     arrow.pushLine(dec, 0, dec + pointerLength,
-                   -(pointerLength / 2));  // flèche
+                   -(pointerLength / 2));  // fleche
   }
 
   int featherPosition = windArrowSize / 6;
 
   int b1 =
-      dec + windArrowSize - featherPosition;  // position de la 1ère barbule
-  int b2 = dec + windArrowSize;  // position de la 1ère barbule si >= 10 noeuds
+      dec + windArrowSize - featherPosition;  // position de la 1ere barbule
+  int b2 = dec + windArrowSize;  // position de la 1ere barbule si >= 10 noeuds
 
   int lpetite = windArrowSize / 5;
   int lgrande = lpetite * 2;
@@ -354,15 +354,15 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     dec = -arrowSize / 2;
 
     m_SingleArrow[i].pushLine(dec, 0, dec + arrowSize, 0);
-    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flèche
-    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flèche
+    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // fleche
+    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // fleche
     m_SingleArrow[i].Finalize();
 
     m_DoubleArrow[i].pushLine(dec, -dec2, dec + arrowSize, -dec2);
     m_DoubleArrow[i].pushLine(dec, dec2, dec + arrowSize, +dec2);
 
-    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flèche
-    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flèche
+    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // fleche
+    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // fleche
     m_DoubleArrow[i].Finalize();
   }
 }
@@ -419,7 +419,12 @@ bool GRIBOverlayFactory::RenderGLGribOverlay(wxGLContext *pcontext,
 
   // qDebug() << "RenderGLGribOverlay" << sw.GetTime();
 
-  if (!m_oDC) m_oDC = new pi_ocpnDC();
+  if (!m_oDC || !m_oDC->UsesGL()) {
+    if (m_oDC) {
+      delete m_oDC;
+    }
+    m_oDC = new pi_ocpnDC();
+  }
 
   m_oDC->SetVP(vp);
   m_oDC->SetDC(NULL);
@@ -434,12 +439,17 @@ bool GRIBOverlayFactory::RenderGLGribOverlay(wxGLContext *pcontext,
 }
 
 bool GRIBOverlayFactory::RenderGribOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
-  if (!m_oDC) m_oDC = new pi_ocpnDC();
+  if (!m_oDC || m_oDC->UsesGL()) {
+    if (m_oDC) {
+      delete m_oDC;
+    }
+    m_oDC = new pi_ocpnDC(dc);
+  }
 
   m_oDC->SetVP(vp);
   m_oDC->SetDC(&dc);
 
-  m_pdc = NULL;
+  m_pdc = &dc;
 #if 0
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;

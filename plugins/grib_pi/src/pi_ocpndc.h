@@ -135,6 +135,7 @@ public:
   GLUtesselator *m_tobj;
 
 #endif
+  bool UsesGL() { return m_buseGL; };
 
 protected:
   bool ConfigurePen();
@@ -167,6 +168,7 @@ protected:
   unsigned int workBufIndex;
 
   wxSize m_vpSize;
+  bool m_buseGL;
 };
 
 #endif
