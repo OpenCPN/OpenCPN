@@ -9,7 +9,7 @@ cd build
 
 if sudo -H echo foo &>/dev/null; then SUDO="sudo -H"; else SUDO=""; fi
 case "$OCPN_TARGET" in
-    xenial|trusty|bionic*|focal*)
+    bionic*|focal*|jammy*)
         for src in $(expand *.deb); do
             old=$(basename $src)
             new=$(echo $old | sed "s/opencpn/opencpn-${OCPN_TARGET}/")
