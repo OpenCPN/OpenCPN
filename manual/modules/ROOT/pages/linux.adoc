@@ -99,7 +99,7 @@ The flatpak'ed OpenCPN runs in a sandbox, so specialized debugging techniques
 must be applied.
 See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
 
-== Compiling for Raspberry Pie (RPi)
+== Compiling for Raspberry Pi (RPi)
 
 From RPi 4 the board has resources enough to run a native build, which is
 performed according to the instructions for xref:#build_debian[Debian].
@@ -112,7 +112,13 @@ NOTE: Fixme
 
 == IDEs
 
-=== http://eclipse.org/cdt/[Eclipse]
+=== https://code.visualstudio.com[Visual Studio Code]
+
+Visual Studio Code provides very decent support for C++ development.
+Install the language support for C++, cmake and Git and open the root
+folder of the OpenCPN source tree.
+
+=== https://github.com/eclipse-cdt/[Eclipse]
 
 The current version 2021-06 (4.20.0) has native support for cmake projects.
 It is thus possible to just create a new CMake project based on current
