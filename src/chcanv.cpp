@@ -4105,7 +4105,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::OnCursorTrackTimerEvent(wxTimerEvent &event) {
-  if (s57_CheckExtendedLightSectors(this, mouse_x, mouse_y, VPoint,
+  if ((GetShowENCLights() || m_bsectors_shown ) &&
+      s57_CheckExtendedLightSectors( this, mouse_x, mouse_y, VPoint,
                                     extendedSectorLegs)) {
     if (!m_bsectors_shown) {
       ReloadVP(false);
