@@ -61,22 +61,21 @@ extern s52plib *ps52plib;
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
-//FIXME (dave)
-// wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
-//   S57Obj *obj = rzRules->obj;
-//   if (obj->m_chart_context->chart)
-//     return obj->m_chart_context->chart->pFloatingATONArray;
-//   else
-//     return obj->m_chart_context->pFloatingATONArray;
-// }
+wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
+  S57Obj *obj = rzRules->obj;
+  if (obj->m_chart_context)
+    return obj->m_chart_context->pFloatingATONArray;
+  else
+    return NULL;
+}
 
-// wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
-//   S57Obj *obj = rzRules->obj;
-//   if (obj->m_chart_context->chart)
-//     return obj->m_chart_context->chart->pRigidATONArray;
-//   else
-//     return obj->m_chart_context->pRigidATONArray;
-// }
+wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
+  S57Obj *obj = rzRules->obj;
+  if (obj->m_chart_context->chart)
+    return obj->m_chart_context->pRigidATONArray;
+  else
+    NULL;
+}
 
 static void *CLRLIN01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
@@ -2989,13 +2988,8 @@ static void *TOPMAR01(void *param)
     int floating = FALSE;  // not a floating platform
     int topshp = (!battr) ? 0 : top_int;
 
-    //FIXME plib
-//     if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
-//       floating = TRUE;
-//     else
-//         // FIXME: this test is wierd since it doesn't affect 'floating'
-//         if (TRUE == _atPtPos(obj, GetChartRigidATONArray(rzRules), false))
-//       floating = FALSE;
+    if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
+       floating = TRUE;
 
     if (floating) {
       // floating platform
