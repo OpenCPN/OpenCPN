@@ -71,8 +71,11 @@ void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
     tgi[i].height = gh;  // - descent;
 
     tgi[i].advance = gw;
+    tgi[i].advance *= dip_factor;
+    if (i == 1)
+      m_width_one = gw;
 
-    m_maxglyphw = wxMax(tgi[i].width, m_maxglyphw);
+    m_maxglyphw = wxMax(tgi[i].width + tgi[i].advance, m_maxglyphw);
     m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
   }
 
@@ -167,7 +170,7 @@ bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex) {
   if (symIndex < 10) {
     texrect.x = tgi[symIndex].x;
     texrect.y = tgi[symIndex].y;
-    texrect.width = tgi[symIndex].width;
+    texrect.width = tgi[symIndex].width + m_width_one/4;
     texrect.height = tgi[symIndex].height;
     return true;
   } else {

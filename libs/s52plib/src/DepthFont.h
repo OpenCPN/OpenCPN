@@ -65,6 +65,7 @@ private:
   float m_dy;
   double m_scaleFactor;
   double m_ContentScaleFactor;
+  int m_width_one;
 };
 
 #endif  // guard

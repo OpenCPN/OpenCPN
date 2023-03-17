@@ -3393,7 +3393,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   // Build the texDepth object, if required
   if (!m_pdc) {  // OpenGL
     if (!m_texSoundings.IsBuilt() ||
-        (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1)) {
+        (fabs(m_texSoundings.GetScale() - scale_factor) > 0.05)) {
       m_texSoundings.Delete();
       m_texSoundings.SetContentScaleFactor(m_ContentScaleFactor);
 
@@ -3445,13 +3445,13 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   }
 
   if (symPivot < 4) {
-    pivot_x = (pivotWidth * symPivot) - (pivotWidth / 4);
+    pivot_x = (pivotWidth * symPivot); // - (pivotWidth / 4);
     pivot_y = pivotHeight / 2;
-  } else if (symPivot == 4) {
-    pivot_x = -pivotWidth - (pivotWidth / 4);
+  } else if (symPivot == 4){
+    pivot_x = -pivotWidth; // - (pivotWidth / 4);
     pivot_y = pivotHeight / 2;
   } else {
-    pivot_x = -(pivotWidth / 4);
+    pivot_x = 0; //-(pivotWidth / 4);
     pivot_y = pivotHeight / 5;
   }
   pivot_x *= m_dipfactor;
@@ -9902,7 +9902,7 @@ void s52plib::PrepareForRender(VPointCompat *vp) {
   lastLightLon = 0;
 
   // Precalulate the ENC scale factors
-  m_SoundingsScaleFactor = exp(m_nSoundingFactor * (log(2.0) / 5.0));
+  m_SoundingsScaleFactor = (m_nSoundingFactor * .1) + 1; //exp(m_nSoundingFactor * (log(2.0) / 5.0));
   m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0));
 }
 
