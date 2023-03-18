@@ -357,6 +357,8 @@ void DrawEndCap(float x1, float y1, float t1, float angle) {
 void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
                      bool b_hiqual) {
 #ifdef ocpnUSE_GL
+  if (!m_glchartCanvas)
+    return;
 
   float angle = atan2f(y2 - y1, x2 - x1);
   float t1 = pen.GetWidth();
@@ -629,9 +631,8 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
+      // Assuming here that transform matrix for this shader is preset for canvas.
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-      shader->SetUniform1f("uLineWidth", pen_width);
-      shader->SetUniform1f("uBlendFactor", 1.5);
 
       float vpx[2];
       int width = 0;
@@ -709,9 +710,8 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       GLShaderProgram *shader = pcolor_tri_shader_program[m_canvasIndex];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-      //shader->SetUniform1f("uLineWidth", pen_width);
-      //shader->SetUniform1f("uBlendFactor", 1.5);
+      // Assuming here that transform matrix for this shader is preset for canvas.
+      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       float vpx[2];
       int width = 0;
@@ -891,9 +891,8 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
-      shader->SetUniform1f("uLineWidth", m_pen.GetWidth());
-      shader->SetUniform1f("uBlendFactor", 2.0);
+      // Assuming here that transform matrix for this shader is preset for canvas.
+      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       float vpx[2];
       int width = 0;
@@ -921,7 +920,8 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       GLShaderProgram *shader = pcolor_tri_shader_program[m_canvasIndex];
       shader->Bind();
 
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      // Assuming here that transform matrix for this shader is preset for canvas.
+      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       float colorv[4];
       colorv[0] = m_pen.GetColour().Red() / float(256);
@@ -1068,6 +1068,9 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
   if (dc) dc->DrawRoundedRectangle(x, y, w, h, r);
 #ifdef ocpnUSE_GL
   else {
+    if (!m_glchartCanvas)
+      return;
+
     r++;
     int steps = ceil(sqrt((float)r));
 
@@ -1243,6 +1246,9 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
   if (dc) dc->DrawPolygon(n, points, xoffset, yoffset);
 #ifdef ocpnUSE_GL
   else {
+    if (!m_glchartCanvas)
+      return;
+
 #ifdef __WXQT__
     SetGLAttrs(false);  // Some QT platforms (Android) have trouble with
                         // GL_BLEND / GL_LINE_SMOOTH
@@ -1321,7 +1327,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Restore the default matrix
       //TODO  This will not work for multicanvas
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       shader->UnBind();
 
@@ -1404,7 +1410,7 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Restore the default matrix
       //TODO  This will not work for multicanvas
-      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
       shader->UnBind();
     }
@@ -1541,6 +1547,9 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
   if (dc) dc->DrawPolygon(n, points, xoffset, yoffset);
 #ifdef ocpnUSE_GL
   else {
+    if (!m_glchartCanvas)
+      return;
+
 #if !defined(ocpnUSE_GLES) || \
     defined(USE_ANDROID_GLES2)  // tessalator in glues is broken
     if (n < 5)
