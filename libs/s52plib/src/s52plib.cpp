@@ -82,7 +82,6 @@ extern "C" wxString *GetpSharedDataLocation();
 
 #endif
 
-
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
 #endif
@@ -9766,12 +9765,10 @@ void s52plib::PLIB_LoadS57Config() {
     }
   }
 }
+#endif
 
-void s52plib::PLIB_LoadS57GlobalConfig()
+void s52plib::PLIB_LoadS57GlobalConfig(wxFileConfig *pconfig)
 {
-    //    Get a pointer to the opencpn configuration object
-    wxFileConfig *pconfig = GetOCPNConfigObject();
-
     int read_int;
     double dval;
 
@@ -9825,14 +9822,8 @@ void s52plib::PLIB_LoadS57GlobalConfig()
 }
 
 
-void s52plib::PLIB_LoadS57ObjectConfig()
+void s52plib::PLIB_LoadS57ObjectConfig(wxFileConfig *pconfig)
 {
-    //    Get a pointer to the opencpn configuration object
-    wxFileConfig *pconfig = GetOCPNConfigObject();
-
-    //int read_int;
-    //double dval;
-
     //    S57 Object Class Visibility
 
     OBJLElement *pOLE;
@@ -9876,7 +9867,6 @@ void s52plib::PLIB_LoadS57ObjectConfig()
         }
     }
 }
-#endif
 
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender(void) { PrepareForRender( &vp_plib); }
@@ -11097,6 +11087,7 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
     //         odc_combine_work_data.clear();
   }
 }
+
 
 void PrepareS52ShaderUniforms(VPointCompat *vp) {
 
