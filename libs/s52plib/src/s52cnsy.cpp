@@ -74,7 +74,7 @@ wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
   if (obj->m_chart_context->chart)
     return obj->m_chart_context->pRigidATONArray;
   else
-    NULL;
+    return NULL;
 }
 
 static void *CLRLIN01(void *param) {
