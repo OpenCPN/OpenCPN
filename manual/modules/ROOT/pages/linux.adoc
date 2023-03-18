@@ -99,7 +99,7 @@ The flatpak'ed OpenCPN runs in a sandbox, so specialized debugging techniques
 must be applied.
 See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
 
-== Compiling for Raspberry Pie (RPi)
+== Compiling for Raspberry Pi (RPi)
 
 From RPi 4 the board has resources enough to run a native build, which is
 performed according to the instructions for xref:#build_debian[Debian].
@@ -108,11 +108,25 @@ with 1MB of RAM.
 
 NOTE: Fixme
 
+== Fedora
 
+To install the dependencies required to build OpenCPN from source on Fedora (Tested on 38), run the following command 
+
+```
+sudo dnf install wxGTK-devel cmake gcc-c++ git glew-devel openssl-devel libcurl-devel libarchive-devel elfutils-libelf-devel redhat-lsb-core libusb1-devel
+```
+
+Then use whichever build method you prefer.
 
 == IDEs
 
-=== http://eclipse.org/cdt/[Eclipse]
+=== https://code.visualstudio.com[Visual Studio Code]
+
+Visual Studio Code provides very decent support for C++ development.
+Install the language support for C++, cmake and Git and open the root
+folder of the OpenCPN source tree.
+
+=== https://github.com/eclipse-cdt/[Eclipse]
 
 The current version 2021-06 (4.20.0) has native support for cmake projects.
 It is thus possible to just create a new CMake project based on current
