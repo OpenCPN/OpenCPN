@@ -10642,10 +10642,10 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     wxString out;
     w.Write(v, out);
 
-    if (!g_lastPluginMessage.IsSameAs(out)) {
-      // printf("message %d  %d\n", s_msg++, m_canvasIndex);
+    if (!m_lastS52PLIBPluginMessage.IsSameAs(out)) {
       g_pi_manager->SendMessageToAllPlugins(wxString(_T("OpenCPN Config")),
                                             out);
+      m_lastS52PLIBPluginMessage = out;
     }
   }
 }
