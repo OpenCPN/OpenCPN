@@ -47,7 +47,8 @@ struct MuxLogCallbacks {
 
 class Multiplexer : public wxEvtHandler {
 public:
-  Multiplexer(MuxLogCallbacks log_callbacks);
+  Multiplexer(MuxLogCallbacks log_callbacks,
+              bool& legacy_input_filter_behaviour );
   ~Multiplexer();
 
   void LogOutputMessage(const wxString &msg, wxString stream_name,
@@ -72,5 +73,6 @@ private:
   MuxLogCallbacks m_log_callbacks;
   unsigned int last_pgn_logged;
   int n_N2K_repeat;
+  bool&  m_legacy_input_filter_behaviour;
 };
 #endif  // _MULTIPLEXER_H__

@@ -54,8 +54,6 @@
 #include "udev_rule_mgr.h"
 #endif
 
-extern bool g_b_legacy_input_filter_behaviour;
-
 wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
 
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
@@ -104,7 +102,8 @@ static bool inline is_same_device(const char *port1, const char *port2) {
 
 #endif  // HAVE_READLINK
 
-Multiplexer::Multiplexer(MuxLogCallbacks cb) : m_log_callbacks(cb) {
+Multiplexer::Multiplexer(MuxLogCallbacks cb, bool& filter_behaviour)
+    : m_log_callbacks(cb), m_legacy_input_filter_behaviour(filter_behaviour) {
   auto &msgbus = NavMsgBus::GetInstance();
 
   m_listener_N0183_all.Listen(Nmea0183Msg::MessageKey("ALL"), this,
@@ -168,7 +167,7 @@ void Multiplexer::LogInputMessage(const wxString &msg,
       ss.Prepend(_T("<RED>"));
     } else {
       if (b_filter)
-        if (g_b_legacy_input_filter_behaviour)
+        if (m_legacy_input_filter_behaviour)
           ss.Prepend(_T("<CORAL>"));
         else
           ss.Prepend(_T("<MAROON>"));
@@ -275,7 +274,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 #endif
       }
 
-      if ((g_b_legacy_input_filter_behaviour && !bpass_input_filter) ||
+      if ((m_legacy_input_filter_behaviour && !bpass_input_filter) ||
            bpass_input_filter) {
 
       //  Allow re-transmit on same port (if type is SERIAL),

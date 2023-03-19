@@ -140,7 +140,7 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 //------------------------------------------------------------------------------
 //      Static variable definition
 //------------------------------------------------------------------------------
-
+//
 extern OCPN_AUIManager *g_pauimgr;
 extern MyConfig *pConfig;
 extern arrayofCanvasPtr g_canvasArray;
@@ -184,6 +184,7 @@ extern s52plib *ps52plib;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern PlugInManager *g_pi_manager;
 
+extern bool g_b_legacy_input_filter_behaviour;
 extern bool g_bTrackActive;
 extern ocpnStyle::StyleManager *g_StyleManager;
 extern bool g_bmasterToolbarFull;
@@ -733,7 +734,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   struct MuxLogCallbacks log_callbacks;
   log_callbacks.log_is_active = []() { return NMEALogWindow::Get().Active(); };
   log_callbacks.log_message = [](const std::string& s) { NMEALogWindow::Get().Add(s); };
-  g_pMUX = new Multiplexer(log_callbacks);
+  g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
   struct AisDecoderCallbacks  ais_callbacks;
   ais_callbacks.confirm_stop_track = []() {
