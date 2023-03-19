@@ -710,6 +710,12 @@ void s52plib::GenerateStateHash() {
     memcpy(&state_buffer[offset], &m_nTextFactor, sizeof(int));
     offset += sizeof(int);
   }
+
+  if (offset + sizeof(bool) < sizeof(state_buffer)) {
+    memcpy(&state_buffer[offset], &m_nDisplayCategory, sizeof(int));
+    offset += sizeof(int);
+  }
+
   m_state_hash = crc32buf(state_buffer, offset);
 }
 
