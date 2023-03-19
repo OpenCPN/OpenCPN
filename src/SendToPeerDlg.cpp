@@ -294,5 +294,6 @@ void SendToPeerDlg::DoScan() {
 void SendToPeerDlg::OnCancelClick(wxCommandEvent& event) {
   //    Show( false );
   //    event.Skip();
+  g_Platform->HideBusySpinner();
   Close();
 }
