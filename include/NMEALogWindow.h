@@ -26,6 +26,7 @@
 #define __NMEALOGWINDOW_H__
 
 #include "WindowDestroyListener.h"
+#include "nmea_log.h"
 
 class wxWindow;
 class wxString;
@@ -44,7 +45,7 @@ class TTYWindow;
  * inside this class. This is used to store them permanently in
  * the configuration file.
  */
-class NMEALogWindow : public WindowDestroyListener {
+class NMEALogWindow : public NmeaLog, public WindowDestroyListener {
 public:
   static NMEALogWindow &Get();
   bool Active() const;
