@@ -1,3 +1,4 @@
+#include <string>
 
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
@@ -10,6 +11,7 @@
 #include "comm_n0183_output.h"
 #include "georef.h"
 #include "gui_lib.h"
+#include "multiplexer.h"
 #include "navutil.h"
 #include "own_ship.h"
 #include "routeman.h"
@@ -22,6 +24,7 @@
 extern Routeman* g_pRouteMan;
 extern wxColour g_colourTrackLineColour;
 extern int g_route_line_width;
+extern Multiplexer *g_pMUX;
 
 extern wxColor GetDimColor(wxColor c);
 extern bool g_bHighliteTracks;
@@ -577,13 +580,33 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
   *prect = update_rect;
 }
 
+static  N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
+  N0183DlgCtx dlg_ctx;
+  dlg_ctx.set_value = [dialog](int v) {
+      if (!dialog || !dialog->GetProgressGauge()) return;
+      dialog->GetProgressGauge()->SetValue(v);
+      dialog->GetProgressGauge()->Refresh();
+      dialog->GetProgressGauge()->Update();
+  };
+  dlg_ctx.set_range = [dialog](int r) {
+      if (!dialog || !dialog->GetProgressGauge()) return;
+      dialog->GetProgressGauge()->SetRange(r); };
+  dlg_ctx.pulse = [dialog](void) {
+      if (!dialog || !dialog->GetProgressGauge()) return;
+      dialog->GetProgressGauge()->Pulse(); };
+  dlg_ctx.set_message =
+      [dialog](const std::string& s) { dialog->SetMessage(wxString(s)); };
+  return dlg_ctx;
+}
 
 int RouteGui::SendToGPS(const wxString& com_name, bool bsend_waypoints,
                         SendToGpsDlg* dialog) {
   int result = 0;
 
+  N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);
   ::wxBeginBusyCursor();
-  result = SendRouteToGPS_N0183(&m_route, com_name, bsend_waypoints);
+  result = SendRouteToGPS_N0183(&m_route, com_name, bsend_waypoints, *g_pMUX,
+                                dlg_ctx);
   ::wxEndBusyCursor();
 
   wxString msg;

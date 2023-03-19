@@ -31,9 +31,8 @@
 #include "chcanv.h"
 #include "ocpndc.h"
 #include "route_point.h"
+#include "SendToGpsDlg.h"
 #include "viewport.h"
-
-class SendToGpsDlg;
 
 class RoutePointGui {
 public:

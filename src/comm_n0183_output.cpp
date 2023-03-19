@@ -156,7 +156,8 @@ void BroadcastNMEA0183Message(const wxString &msg, NmeaLog& nmea_log) {
 std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_name,
                                                            ConnectionParams &params_save,
                                                            bool &btempStream,
-                                                           bool &b_restoreStream) {
+                                                           bool &b_restoreStream,
+                                                           N0183DlgCtx dlg_ctx) {
 
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
@@ -297,11 +298,10 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
 
       if (com_name.Lower().StartsWith("tcp")) {
         // new tcp connections must wait for connect
-//         wxString msg = _("Connecting to ");
-//         msg += com_name;
-//         dialog->SetMessage(msg);
-//         dialog->GetProgressGauge()->Pulse();
-
+        std::string msg(_("Connecting to "));
+        msg += com_name;
+        dlg_ctx.set_message(msg);
+        dlg_ctx.pulse();
 
         if (drv_net_n0183) {
           int loopCount = 10;  // seconds
@@ -311,16 +311,16 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
               bconnected = true;
               break;
             }
-//           dialog->GetProgressGauge()->Pulse();
-//           wxYield();
+            dlg_ctx.pulse();
+            wxYield();
             wxSleep(1);
             loopCount--;
           }
 
           if (bconnected) {
-//           msg = _("Connected to ");
-//           msg += com_name;
-//           dialog->SetMessage(msg);
+            msg = _("Connected to ");
+            msg += com_name;
+            dlg_ctx.set_message(msg);
           } else {
             if (btempStream) {
               registry.Deactivate(driver);
@@ -334,7 +334,8 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
 }
 
 int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
-                                bool bsend_waypoints/*, SendToGpsDlg *dialog*/) {
+                         bool bsend_waypoints, Multiplexer& multiplexer,
+                         N0183DlgCtx dlg_ctx) {
   int ret_val = 0;
 
   ConnectionParams params_save;
@@ -343,8 +344,8 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
 
-  driver = CreateOutputConnection(com_name,
-                                  params_save, btempStream, b_restoreStream);
+  driver = CreateOutputConnection(com_name, params_save, btempStream,
+                                  b_restoreStream, dlg_ctx);
   if (!driver)
     return 1;
 
@@ -402,8 +403,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
       }
 
       wxLogMessage(_T("Sending Routes..."));
-      int ret1 = Garmin_GPS_SendRoute(wxString(_T("usb:")), pr,
-                                      0/*dialog->GetProgressGauge()*/);
+      int ret1 = Garmin_GPS_SendRoute(wxString("usb:"), pr, dlg_ctx);
 
       if (ret1 != 1) {
         wxLogMessage(_T(" Error Sending Routes"));
@@ -426,11 +426,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
 
   if (g_bGarminHostUpload) {
     int lret_val;
-//     if (dialog && dialog->GetProgressGauge()) {
-//       dialog->GetProgressGauge()->SetValue(20);
-//       dialog->GetProgressGauge()->Refresh();
-//       dialog->GetProgressGauge()->Update();
-//     }
+    dlg_ctx.set_value(20);
 
     wxString short_com = com_name.Mid(7);
     // Initialize the Garmin receiver, build required Jeeps internal data
@@ -460,11 +456,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
       wxLogMessage(msg);
     }
 
-//     if (dialog && dialog->GetProgressGauge()) {
-//       dialog->GetProgressGauge()->SetValue(40);
-//       dialog->GetProgressGauge()->Refresh();
-//       dialog->GetProgressGauge()->Update();
-//     }
+    dlg_ctx.set_value(40);
 
     lret_val = Garmin_GPS_SendRoute(short_com, pr, 0/*dialog->GetProgressGauge()*/);
     if (lret_val != 1) {
@@ -486,11 +478,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
 
   ret_point:
 
-//     if (dialog && dialog->GetProgressGauge()) {
-//       dialog->GetProgressGauge()->SetValue(100);
-//       dialog->GetProgressGauge()->Refresh();
-//       dialog->GetProgressGauge()->Update();
-//     }
+    dlg_ctx.set_value(100);
 
     wxMilliSleep(500);
 
@@ -505,8 +493,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
       oNMEA0183.TalkerID = _T ( "EC" );
 
       int nProg = pr->pRoutePointList->GetCount() + 1;
-//       if (dialog && dialog->GetProgressGauge())
-//         dialog->GetProgressGauge()->SetRange(100);
+      dlg_ctx.set_range(100);
 
       int progress_stall = 500;
       if (pr->pRoutePointList->GetCount() > 10) progress_stall = 200;
@@ -584,22 +571,15 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
           if (g_GPS_Ident != _T("FurunoGP3X"))
             drv_n0183->SendMessage(msg_out, address);
 
-          wxString fmsg = FormatPrintableMessage(payload);
-          LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
-          wxYield();
-
+          multiplexer.LogOutputMessage(snt.Sentence, com_name.ToStdString(),
+                                       false);
           wxString msg(_T("-->GPS Port:"));
           msg += com_name;
           msg += _T(" Sentence: ");
           msg += snt.Sentence;
           msg.Trim();
           wxLogMessage(msg);
-
-//           if (dialog && dialog->GetProgressGauge()) {
-//             dialog->GetProgressGauge()->SetValue((ip * 100) / nProg);
-//             dialog->GetProgressGauge()->Refresh();
-//             dialog->GetProgressGauge()->Update();
-//           }
+          dlg_ctx.set_value((ip * 100) / nProg);
 
           wxMilliSleep(progress_stall);
 
@@ -802,7 +782,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
           drv_n0183->SendMessage(msg_out, address);
 
           wxString fmsg = FormatPrintableMessage(sentence);
-          LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+          multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
           wxYield();
 
           wxString msg(_T("-->GPS Port:"));
@@ -822,7 +802,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
         drv_n0183->SendMessage(msg_out, address);
 
         wxString fmsg = FormatPrintableMessage(snt.Sentence);
-        LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+        multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
         wxYield();
 
         wxString msg(_T("-->GPS Port:"));
@@ -847,10 +827,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                              rte.ToStdString(),
                                              address);
         drv_n0183->SendMessage(msg_out, address);
-
-        wxString fmsg = FormatPrintableMessage(rte);
-        LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
-        wxYield();
+        multiplexer.LogOutputMessage(rte, com_name.ToStdString(), false);
 
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
@@ -867,9 +844,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                              address);
         drv_n0183->SendMessage(msg_outf, address);
 
-        wxString fmsg1 = FormatPrintableMessage(term);
-        LogBroadcastOutputMessageColor(fmsg1, com_name, _T("<BLUE>"));
-        wxYield();
+        multiplexer.LogOutputMessage(term, com_name.ToStdString(), false);
 
         msg = wxString(_T("-->GPS Port:"));
         msg += com_name;
@@ -878,12 +853,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
         msg.Trim();
         wxLogMessage(msg);
       }
-
-//       if (dialog && dialog->GetProgressGauge()) {
-//         dialog->GetProgressGauge()->SetValue(100);
-//         dialog->GetProgressGauge()->Refresh();
-//         dialog->GetProgressGauge()->Update();
-//       }
+      dlg_ctx.set_value(100);
 
       wxMilliSleep(progress_stall);
 
@@ -906,7 +876,8 @@ ret_point_1:
   return ret_val;
 }
 
-int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGpsDlg *dialog*/) {
+int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name,
+                            Multiplexer& multiplexer, N0183DlgCtx dlg_ctx) {
   int ret_val = 0;
 
   ConnectionParams params_save;
@@ -915,8 +886,8 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
 
-  driver = CreateOutputConnection(com_name,
-                                  params_save, btempStream, b_restoreStream);
+  driver = CreateOutputConnection(com_name, params_save, btempStream,
+                                  b_restoreStream, dlg_ctx);
   if (!driver)
     return 1;
 
@@ -1043,9 +1014,7 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
-
-//FIXME     if (dialog && dialog->GetProgressGauge())
-//       dialog->GetProgressGauge()->SetRange(100);
+    dlg_ctx.set_range(100);
 
     if (g_GPS_Ident == _T("Generic")) {
       if (prp->m_lat < 0.)
@@ -1088,9 +1057,7 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
                                              address);
     drv_n0183->SendMessage(msg_out, address);
 
-    wxString fmsg = FormatPrintableMessage(snt.Sentence);
-    LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
-    wxYield();
+    multiplexer.LogOutputMessage(snt.Sentence, com_name, false);
 
     wxString msg(_T("-->GPS Port:"));
     msg += com_name;
@@ -1113,12 +1080,7 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
       msg.Trim();
       wxLogMessage(msg);
     }
-
-//     if (dialog && dialog->GetProgressGauge()) {
-//       dialog->GetProgressGauge()->SetValue(100);
-//       dialog->GetProgressGauge()->Refresh();
-//       dialog->GetProgressGauge()->Update();
-//     }
+    dlg_ctx.set_value(100);
 
     wxMilliSleep(500);
 

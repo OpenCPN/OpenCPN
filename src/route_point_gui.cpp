@@ -11,6 +11,7 @@
 #include "georef.h"
 #include "route_point_gui.h"
 #include "ocpn_frame.h"
+#include "multiplexer.h"
 #include "FontMgr.h"
 #include "glChartCanvas.h"
 #include "viewport.h"
@@ -22,6 +23,8 @@
 #include "styles.h"
 #include "ocpn_plugin.h"
 
+
+extern Multiplexer* g_pMUX;
 extern ocpnGLOptions g_GLOptions;
 extern float g_MarkScaleFactorExp;
 extern bool g_btouch;
@@ -865,8 +868,29 @@ void RoutePointGui::ReLoadIcon(void) {
   m_point.m_IconIsDirty = false;
 }
 
+static  N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
+  N0183DlgCtx dlg_ctx;
+  dlg_ctx.set_value = [dialog](int v) {
+      if (!dialog || !dialog->GetProgressGauge()) return;
+      dialog->GetProgressGauge()->SetValue(v);
+      dialog->GetProgressGauge()->Refresh();
+      dialog->GetProgressGauge()->Update();
+  };
+  dlg_ctx.set_range = [dialog](int r) {
+      if (!dialog || !dialog->GetProgressGauge()) return;
+      dialog->GetProgressGauge()->SetRange(r); };
+  dlg_ctx.pulse = [dialog](void) {
+      if (!dialog || !dialog->GetProgressGauge()) return;
+      dialog->GetProgressGauge()->Pulse(); };
+  dlg_ctx.set_message =
+      [dialog](const std::string& s) { dialog->SetMessage(wxString(s)); };
+  return dlg_ctx;
+}
+
 bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
-  int result = SendWaypointToGPS_N0183(&m_point, com_name);
+
+  N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);
+  int result = SendWaypointToGPS_N0183(&m_point, com_name, *g_pMUX, dlg_ctx);
 
   wxString msg;
   if (0 == result)
