@@ -64,6 +64,7 @@
 #include "comm_navmsg_bus.h"
 #include "config_vars.h"
 #include "downloader.h"
+#include "nmea_log.h"
 #include "observable_evtvar.h"
 #include "ocpn_utils.h"
 #include "plugin_handler.h"
@@ -161,10 +162,16 @@ bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
 
+class NmeaLogDummy: public NmeaLog {
+  bool Active() const { return false; }
+  void Add(const wxString& s) {};
+};
+
 static void InitRouteman() {
   struct RoutePropDlgCtx ctx;
   auto RouteMgrDlgUpdateListCtrl = [&]() {};
-  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl);
+  static  NmeaLogDummy dummy_log;
+  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl, dummy_log);
 }
 
 // navutil_base context

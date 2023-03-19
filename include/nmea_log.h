@@ -4,6 +4,7 @@
 #include <wx/string.h>
 
 class NmeaLog {
+public:
 
   /** Add an formatted string to log output. */
   virtual void Add(const wxString& s) = 0;

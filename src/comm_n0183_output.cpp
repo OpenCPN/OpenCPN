@@ -49,7 +49,7 @@
 #include "nmea0183.h"
 #include "nmea_ctx_factory.h"
 #include "route.h"
-#include "NMEALogWindow.h"
+#include "nmea_log.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -75,10 +75,11 @@ wxString FormatPrintableMessage(wxString msg_raw){
 
 void LogBroadcastOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
-                                        const wxString &color) {
+                                        const wxString &color,
+                                        NmeaLog& nmea_log) {
 #ifndef CLIAPP
 
-  if (NMEALogWindow::Get().Active()) {
+  if (nmea_log.Active()) {
     wxDateTime now = wxDateTime::Now();
     wxString ss;
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
@@ -91,13 +92,13 @@ void LogBroadcastOutputMessageColor(const wxString &msg,
     ss.Append(msg);
     ss.Prepend(color);
 
-    NMEALogWindow::Get().Add(ss.ToStdString());
+    nmea_log.Add(ss.ToStdString());
 
   }
 #endif
 }
 
-void BroadcastNMEA0183Message(const wxString &msg) {
+void BroadcastNMEA0183Message(const wxString &msg, NmeaLog& nmea_log) {
 
   auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
@@ -136,12 +137,12 @@ void BroadcastNMEA0183Message(const wxString &msg) {
           bool bxmit_ok = driver->SendMessage(msg_out, std::make_shared<NavAddr0183>(driver->iface));
 
           if (bxmit_ok)
-            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), _T("<BLUE>"));
+            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<BLUE>", nmea_log);
           else
-            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), _T("<RED>"));
+            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<RED>", nmea_log);
         }
         else
-          LogBroadcastOutputMessageColor(msg, params.GetDSPort(), _T("<CORAL>"));
+          LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<CORAL>", nmea_log);
 
       }
     }
@@ -154,7 +155,8 @@ void BroadcastNMEA0183Message(const wxString &msg) {
 
 std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_name,
                                                            ConnectionParams &params_save,
-                                                           bool &btempStream, bool &b_restoreStream){
+                                                           bool &btempStream,
+                                                           bool &b_restoreStream) {
 
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
