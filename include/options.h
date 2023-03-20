@@ -701,9 +701,9 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
+class ChartGroupsUI :  public wxScrolledWindow {
 public:
-  explicit ChartGroupsUI(wxWindow *parent);
+  ChartGroupsUI(wxWindow *parent);
   ~ChartGroupsUI(void);
 
   void CreatePanel(size_t parent, int border_size, int group_item_spacing);
