@@ -26,9 +26,10 @@
 #ifndef _RESTSERVER_H
 #define _RESTSERVER_H
 
+#include <fstream>
+#include <functional>
 #include <string>
 #include <unordered_map>
-#include <fstream>
 
 #include <wx/event.h>
 
@@ -49,9 +50,43 @@ class RESTServerThread;  // Internal
 class RESTServerEvent;  // Internal
 class PINCreateDialog;
 
+/** Abstract base class visible in callbacks. */
+class PinDialog {
+public:
+  /** Create and show the dialog */
+  virtual PinDialog* Initiate(const std::string& msg,
+                              const std::string& text1) = 0;
+
+  /** Close and destroy */
+  virtual void DeInit() = 0;
+};
+
+
+/** Callbacks invoked from PinDialog implementations. */
+class RestServerDlgCtx {
+public:
+  std::function<PinDialog*(const std::string& msg,
+                           const std::string& text1)> show_dialog;
+  std::function<void(PinDialog*)> close_dialog;
+  std::function<void(void)> update_route_mgr;
+
+  /** Run the "Accept Object" dialog, returns value from ShowModal(). */
+  std::function<int (const std::string& msg,
+                     const std::string& check1msg)> run_accept_object_dlg;
+
+  RestServerDlgCtx()
+      : show_dialog([](
+           const std::string&, const std::string&)->PinDialog* { return 0; } ),
+        close_dialog([](PinDialog*) {}),
+        update_route_mgr([](){ }),
+        run_accept_object_dlg(
+          [](const std::string&, const std::string&) { return 0; }) {}
+};
+
+
 class RESTServer : public wxEvtHandler {
 public:
-  RESTServer();
+  RESTServer(RestServerDlgCtx ctx);
 
   virtual ~RESTServer();
 
@@ -74,6 +109,7 @@ public:
     return m_pSecondary_Thread;
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
+  void UpdateRouteMgr() { m_dlg_ctx.update_route_mgr(); }
 
   std::string GetCertificateDirectory(){ return m_certificate_directory; }
   int m_Thread_run_flag;
@@ -85,6 +121,7 @@ private:
   bool LoadConfig( void );
   bool SaveConfig( void );
 
+  RestServerDlgCtx m_dlg_ctx;
   RESTServerThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
   std::string m_certificate_directory;

@@ -25,9 +25,16 @@
 #ifndef __RESTSERVERGUI_H__
 #define __RESTSERVERGUI_H__
 
+#include <functional>
+#include <string>
+
+#include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/stattext.h>
 #include <wx/checkbox.h>
+
+#include "ocpn_frame.h"
+#include "REST_server.h"
 
 //    Constants for  Dialog
 #define ID_STGDIALOG 10005
@@ -80,7 +87,8 @@ private:
   wxString m_checkbox1_msg;
 };
 
-class PINCreateDialog : public wxDialog {
+
+class PINCreateDialog : public PinDialog, public wxDialog {
   DECLARE_DYNAMIC_CLASS(PINCreateDialog)
   DECLARE_EVENT_TABLE()
 
@@ -90,6 +98,12 @@ public:
                const wxString& hint, const wxPoint& pos, const wxSize& size,
                long style);
   ~PINCreateDialog();
+
+  static RestServerDlgCtx GetDlgCtx();
+
+
+  PinDialog* Initiate(const std::string& msg, const std::string& text1);
+  void DeInit();
 
   bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME,
               const wxString& caption = SYMBOL_STG_TITLE,
