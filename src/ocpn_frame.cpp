@@ -3589,7 +3589,15 @@ void MyFrame::RegisterGlobalMenuItems() {
   ais_menu->AppendCheckItem(ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks"));
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs"));
   ais_menu->AppendCheckItem(ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms"));
-  ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING, _menuText(_("Show CPA Warnings"), _T("W")));
+
+#ifndef __WXOSX__
+  ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING,
+                    _menuText(_("Show CPA Warnings"), _T("W")));
+#else
+  ais_menu->AppendCheckItem(ID_MENU_AIS_CPAWARNING,
+                    _menuText(_("Show CPA Warnings"), _T("Alt-W")));
+#endif
+
   ais_menu->AppendSeparator();
   ais_menu->Append(ID_MENU_AIS_TARGETLIST, _("AIS target list") + _T("..."));
   m_pMenuBar->Append(ais_menu, _("&AIS"));
