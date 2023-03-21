@@ -3835,6 +3835,23 @@ void MyFrame::UpdateCanvasConfigDescriptors() {
         cc->DBindex = chart->GetQuiltReferenceChartIndex();
         cc->GroupID = chart->m_groupIndex;
         cc->canvasSize = chart->GetSize();
+
+        cc->bQuilt = chart->GetQuiltMode();
+        cc->bShowTides = chart->GetbShowTide();
+        cc->bShowCurrents = chart->GetbShowCurrent();
+        cc->bShowGrid = chart->GetShowGrid();
+        cc->bShowOutlines = chart->GetShowOutlines();
+        cc->bShowDepthUnits = chart->GetShowDepthUnits();
+
+        cc->bFollow = chart->m_bFollow;
+        cc->bLookahead = chart->m_bLookAhead;
+        cc->bCourseUp = false;
+        cc->bHeadUp = false;;
+        int upmode = chart->GetUpMode();
+        if (upmode == COURSE_UP_MODE)
+          cc->bCourseUp = true;
+        else if (upmode == HEAD_UP_MODE)
+          cc->bHeadUp = true;
       }
     }
   }
