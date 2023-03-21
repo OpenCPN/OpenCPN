@@ -1626,7 +1626,6 @@ options::~options(void) {
                    this);
 
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
-  delete groupsPanel;
 
   delete m_pSerialArray;
   delete m_pGroupArray;
