@@ -5861,7 +5861,7 @@ void options::CreateControls(void) {
 #ifndef __WXGTK__
   //  The s57 chart panel is the one which controls the minimum width required
   //  to avoid horizontal scroll bars
-  vectorPanel->SetSizeHints(ps57Ctl);
+  //vectorPanel->SetSizeHints(ps57Ctl);
 #endif
 }
 
