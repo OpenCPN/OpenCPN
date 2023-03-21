@@ -61,6 +61,7 @@ TCDS_Ascii_Harmonic::TCDS_Ascii_Harmonic() {
   m_cst_speeds = NULL;
   m_cst_nodes = NULL;
   m_cst_epochs = NULL;
+  m_work_buffer = NULL;
 
   num_IDX = 0;
   num_nodes = 0;
@@ -655,6 +656,8 @@ void TCDS_Ascii_Harmonic::free_epochs() {
 
 /* free harmonics data */
 void TCDS_Ascii_Harmonic::free_data() {
+  free(m_work_buffer);
+  m_work_buffer = NULL;
   free_nodes();
   free_epochs();
   free_cst();

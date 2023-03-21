@@ -379,6 +379,11 @@ s52plib::~s52plib() {
   m_chartSymbols.DeleteGlobals();
 
   delete HPGL;
+  for(int i = 0; i < TXF_CACHE; i++) {
+    if(s_txf[i].cache) {
+      delete(s_txf[i].cache);
+    }
+  }
 }
 
 void s52plib::InitializeNatsurHash() {
