@@ -1086,6 +1086,7 @@ PlugInManager::~PlugInManager() {
 #if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
   wxCurlBase::Shutdown();
 #endif
+  delete m_utilHandler;
 }
 
 void PlugInManager::InitCommListeners(void) {

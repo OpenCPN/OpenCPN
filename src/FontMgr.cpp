@@ -40,6 +40,7 @@ struct font_cache_record {
 
 class OCPNwxFontList {
 public:
+  ~OCPNwxFontList() { FreeAll(); }
   wxFont *FindOrCreateFont(int pointSize, wxFontFamily family,
                            wxFontStyle style, wxFontWeight weight,
                            bool underline = false,

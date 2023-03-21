@@ -2057,8 +2057,10 @@ end:
 
   // This is a specialization, to print OBJNAM for obstructions, if available
   // Seen in NZ ENCs, e.g. "Horn Rock"
-  if (objName)
+  if (objName) {
     obstrn04str.Append(_T(";TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26)"));
+    delete objName;
+  }
 
   obstrn04str.Append('\037');
 
@@ -2489,7 +2491,6 @@ static void *RESARE02(void *param)
         //  Todo more for s57 3.1  Look at caris catalog ATTR::RESARE
       }
     }
-
   } else {
     // Continuation D
     if (NULL != catreastr) {

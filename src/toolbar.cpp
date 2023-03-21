@@ -1122,7 +1122,9 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
     m_destroyTimer.Start(
         5, wxTIMER_ONE_SHOT);  //  Destor the unneeded recovery grabber
   }
-
+  for (auto it = m_Items.cbegin(); it != m_Items.cend(); it++) {
+    delete *it;
+  }
   m_Items.clear();
 }
 
