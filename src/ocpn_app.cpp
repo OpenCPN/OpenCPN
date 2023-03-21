@@ -132,6 +132,7 @@
 #include "routemanagerdialog.h"
 #include "routeman.h"
 #include "RoutePropDlgImpl.h"
+#include "REST_server_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
@@ -1020,11 +1021,12 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
   event.Skip();
 }
 
+
 static wxStopWatch init_sw;
 
-MyApp::MyApp() {
+MyApp::MyApp() : m_RESTserver(PINCreateDialog::GetDlgCtx()) {
 #ifdef __linux__
-// Handle e. g., wayland default display -- see #1166.
+  // Handle e. g., wayland default display -- see #1166.
 
   if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
     setenv("GDK_BACKEND", "x11", 1);

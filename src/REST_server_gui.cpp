@@ -34,9 +34,64 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "FontMgr.h"
+#include "ocpn_frame.h"
 #include "REST_server.h"
 #include "REST_server_gui.h"
-#include "FontMgr.h"
+#include "routemanagerdialog.h"
+
+extern RouteManagerDialog *pRouteManagerDialog;
+extern MyFrame* gFrame;
+
+static PinDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
+  auto dlg = new PINCreateDialog(dynamic_cast<wxWindow*>(gFrame), wxID_ANY,
+                                 _("OpenCPN Server Message"),
+                                 "", wxDefaultPosition, wxDefaultSize,
+                                 SYMBOL_STG_STYLE );
+  dlg->SetMessage(msg);
+  dlg->SetText1Message(txt1);
+  dlg->Show();
+  return dlg;
+}
+
+static void CloseDlg(PinDialog* pin_dlg) {
+  if (pin_dlg) {
+    auto dlg = dynamic_cast<PINCreateDialog*>(pin_dlg);
+    dlg->Close();
+    dlg->Destroy();
+  }
+}
+
+static void UpdateRouteMgr() {
+  if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+    pRouteManagerDialog->UpdateTrkListCtrl();
+    pRouteManagerDialog->UpdateWptListCtrl();
+    pRouteManagerDialog->UpdateRouteListCtrl();
+  }
+}
+
+static int RunAcceptObjectDlg(const std::string& msg,
+                              const std::string& check1msg) {
+  AcceptObjectDialog dlg(NULL, wxID_ANY, _("OpenCPN Server Message"),
+        "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
+        msg, check1msg);
+  int result = dlg.ShowModal();
+  return result;
+}
+
+RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
+  RestServerDlgCtx ctx;
+  ctx.show_dialog =
+      [](const std::string& msg, const std::string& text1) {
+          return DisplayDlg(msg, text1); };
+  ctx.close_dialog = [](PinDialog* pin_dlg) { CloseDlg(pin_dlg); };
+  ctx.update_route_mgr = []() { UpdateRouteMgr(); };
+  ctx.run_accept_object_dlg =
+      [](const std::string& msg, const std::string& check1msg) {
+          return RunAcceptObjectDlg(msg, check1msg); };
+  return ctx;
+}
+
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -183,6 +238,22 @@ PINCreateDialog::~PINCreateDialog() {
     androidEnableRotation();
 #endif
 
+}
+
+PinDialog* PINCreateDialog::Initiate(const std::string& msg,
+                                     const std::string& text1) {
+  auto dlg =  new PINCreateDialog(dynamic_cast<wxWindow*>(gFrame),
+                                  wxID_ANY, _("OpenCPN Server Message"), "",
+                                  wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+  dlg->SetMessage(msg);
+  dlg->SetText1Message(text1);
+  dlg->Show();
+  return dlg;
+}
+
+void PINCreateDialog::DeInit(){
+  Close();
+  Destroy();
 }
 
 bool PINCreateDialog::Create(wxWindow* parent, wxWindowID id,

@@ -142,8 +142,8 @@ wxDEFINE_EVENT(wxEVT_RESTFUL_SERVER, RESTServerEvent);
 /*    RESTServer implementation
  * */
 
-RESTServer::RESTServer()
-    :  m_Thread_run_flag(-1)
+RESTServer::RESTServer(RestServerDlgCtx ctx)
+    :  m_Thread_run_flag(-1), m_dlg_ctx(ctx)
 {
 
   m_PINCreateDialog = NULL;
