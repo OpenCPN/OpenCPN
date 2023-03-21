@@ -746,6 +746,10 @@ glTextureManager::glTextureManager() {
 glTextureManager::~glTextureManager() {
   //    ClearAllRasterTextures();
   ClearJobList();
+  for (int i = 0; i < m_max_jobs; i++) {
+    delete(progList[i]);
+  }
+  progList.Clear();
 }
 
 #define NBAR_LENGTH 40
