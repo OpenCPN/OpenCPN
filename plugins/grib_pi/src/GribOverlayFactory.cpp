@@ -2709,8 +2709,9 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
   int xsquares = ceil(vp->pix_width / pw), ysquares = ceil(vp->pix_height / pw);
 
   // optimization for non-rotated mercator, since longitude is linear
-  //if (vp->rotation == 0 && vp->m_projection_type == PI_PROJECTION_MERCATOR)
-  //  xsquares = 1;
+  // not include the extem zoom out to ovoid artifact
+  if (vp->rotation == 0 && vp->m_projection_type == PI_PROJECTION_MERCATOR)
+    xsquares = vp->lon_max - vp->lon_min >= 180 ? xsquares : 1;
 
   // It is possible to have only 1 square when the viewport covers more than
   // 180 longitudes but there is more logic needed.  This is simpler.
