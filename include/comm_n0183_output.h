@@ -54,12 +54,14 @@ public:
   std::function<void(int)> set_range;
   std::function<void(void)> pulse;
   std::function<void(const std::string&)> set_message;
+  std::function<bool()> confirm_overwrite;
 
   N0183DlgCtx()
       : set_value([](int) {}),
         set_range([](int) {}),
         pulse([](void) {}),
-        set_message([](const std::string&) {}) {}
+        set_message([](const std::string&) {}),
+        confirm_overwrite([]() { return true; }) {}
 };
 
 
