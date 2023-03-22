@@ -44,21 +44,15 @@
 #include "mongoose.h"
 #include "config_vars.h"
 #include "cmdline.h"
-#include "gui_lib.h"
-#include "REST_server_gui.h"
 #include "pugixml.hpp"
 #include "route.h"
 #include "track.h"
 #include "routeman.h"
 #include "nav_object_database.h"
-#ifndef CLIAPP
-#include "routemanagerdialog.h"
-#endif
 
 extern std::vector<Track*> g_TrackList;
-#ifndef CLIAPP
-extern RouteManagerDialog* pRouteManagerDialog;
-#endif
+extern Routeman *g_pRouteMan;
+
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
                             bool b_change);
@@ -73,8 +67,6 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj);
 bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false);
 bool InsertWpt(RoutePoint *pWp, bool overwrite);
 
-extern Routeman *g_pRouteMan;
-extern MyFrame *gFrame;
 
 //  Some global variables to handle thread syncronization
 int return_status;
@@ -146,7 +138,7 @@ RESTServer::RESTServer(RestServerDlgCtx ctx)
     :  m_Thread_run_flag(-1), m_dlg_ctx(ctx)
 {
 
-  m_PINCreateDialog = NULL;
+  m_pin_dialog = 0;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_RESTFUL_SERVER, &RESTServer::HandleServerMessage,
@@ -294,11 +286,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
 
   if (event.GetId() == ORS_CHUNK_LAST){
     // Cancel existing dialog
-    if(m_PINCreateDialog){
-      m_PINCreateDialog->Close();
-      m_PINCreateDialog->Destroy();
-      m_PINCreateDialog = NULL;
-    }
+    m_dlg_ctx.close_dialog(m_pin_dialog);
 
     // Close the temp file.
     if (m_tempUploadFilePath.size() && m_ul_stream.is_open())
@@ -308,8 +296,6 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
     return_stat = RESTServerResult::RESULT_GENERIC_ERROR;      // generic error
 
   }
-
-#ifndef CLIAPP
 
   // Look up the api key in the hash map.
   std::string api_found;
@@ -334,19 +320,14 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
     SaveConfig();
 
 
-    m_PINCreateDialog = new PINCreateDialog((wxWindow *)gFrame, wxID_ANY, _("OpenCPN Server Message"),
-          "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
-
     wxString hmsg(event.m_source_peer.c_str());
     hmsg += " ";
     hmsg +=  _("wants to send you new data.\nPlease enter the following PIN number on ");
     hmsg += wxString(event.m_source_peer.c_str());
     hmsg += _(" to pair with this device.\n");
+    m_pin_dialog = m_dlg_ctx.show_dialog(hmsg.ToStdString(),
+                                         m_sPIN.ToStdString());
 
-    m_PINCreateDialog->SetMessage(hmsg);
-    m_PINCreateDialog->SetText1Message(m_sPIN);
-
-    m_PINCreateDialog->Show();
     return_status = RESTServerResult::RESULT_NEW_PIN_REQUESTED;
 
     std::lock_guard<std::mutex> lock{mx};
@@ -365,7 +346,6 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
   bool b_cont;
   b_cont = true;
 
-#if 1
   if (b_cont) {\
       // Load the GPX file
     pugi::xml_document doc;
@@ -386,21 +366,16 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
             Route *duplicate = g_pRouteMan->FindRouteByGUID(pRoute->GetGUID());
             if (duplicate){
               if (!m_b_overwrite){
-                AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
-                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
-                      _("The received route already exists on this system.\nReplace?"),
-                      _("Always replace objects?"));
+                auto result = m_dlg_ctx.run_accept_object_dlg(
+                  _("The received route already exists on this system.\nReplace?"),
+                  _("Always replace objects from this source?"));
 
-                dialog2.ShowModal();
-                bool b_always = dialog2.GetCheck1Value();
-                int result = dialog2.GetReturnCode();
-
-                if (result != ID_STG_OK){
+                if (result.status != ID_STG_OK){
                   b_add = false;
                   return_stat = RESTServerResult::RESULT_DUPLICATE_REJECTED;
                 }
                 else{
-                  m_b_overwrite = b_always;
+                  m_b_overwrite = result.check1_value;
                   b_overwrite_one = true;
                   SaveConfig();
                 }
@@ -423,7 +398,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 return_stat = RESTServerResult::RESULT_NO_ERROR;
               else
                 return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;
-              ((wxWindow *)gFrame)->Refresh();
+              m_dlg_ctx.top_level_refresh();
             }
           }
         } else if (!strcmp(object.name(), "trk")) {
@@ -437,21 +412,16 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
             Track *duplicate = g_pRouteMan->FindTrackByGUID(pRoute->m_GUID);
             if (duplicate){
               if (!m_b_overwrite){
-                AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
-                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
-                      _("The received track already exists on this system.\nReplace?"),
-                      _("Always replace objects?"));
+                auto result = m_dlg_ctx.run_accept_object_dlg(
+                  _("The received track already exists on this system.\nReplace?"),
+                  _("Always replace objects from this source?"));
 
-                dialog2.ShowModal();
-                bool b_always = dialog2.GetCheck1Value();
-                int result = dialog2.GetReturnCode();
-
-                if (result != ID_STG_OK){
+                if (result.status != ID_STG_OK){
                   b_add = false;
                   return_stat = RESTServerResult::RESULT_DUPLICATE_REJECTED;
                 }
                 else{
-                  m_b_overwrite = b_always;
+                  m_b_overwrite = result.check1_value;
                   b_overwrite_one = true;
                   SaveConfig();
                 }
@@ -476,7 +446,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 return_stat = RESTServerResult::RESULT_NO_ERROR;
               else
                 return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;
-              ((wxWindow *)gFrame)->Refresh();
+              m_dlg_ctx.top_level_refresh();
             }
           }
         } else if (!strcmp(object.name(), "wpt")) {
@@ -492,22 +462,16 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
             RoutePoint *duplicate = WaypointExists(pWp->GetName(), pWp->m_lat, pWp->m_lon);
             if (duplicate){
               if (!m_b_overwrite){
-                AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
-                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
-                      _("The received waypoint already exists on this system.\nReplace?"),
-                      _("Always replace objects?"));
+                auto result = m_dlg_ctx.run_accept_object_dlg(
+                  _("The received waypoint already exists on this system.\nReplace?"),
+                  _("Always replace objects from this source?"));
 
-
-                dialog2.ShowModal();
-                bool b_always = dialog2.GetCheck1Value();
-                int result = dialog2.GetReturnCode();
-
-                if (result != ID_STG_OK){
+                if (result.status != ID_STG_OK){
                   b_add = false;
                   return_stat = RESTServerResult::RESULT_DUPLICATE_REJECTED;
                 }
                 else{
-                  m_b_overwrite = b_always;
+                  m_b_overwrite = result.check1_value;
                   b_overwrite_one = true;
                   SaveConfig();
                 }
@@ -520,24 +484,18 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 return_stat = RESTServerResult::RESULT_NO_ERROR;
               else
                 return_stat = RESTServerResult::RESULT_ROUTE_INSERT_ERROR;
-              ((wxWindow *)gFrame)->Refresh();
+
+              m_dlg_ctx.top_level_refresh();
             }
           }
         }
       }
     }
   }
-  else{
+  else {
     return_stat = RESTServerResult::RESULT_OBJECT_REJECTED;
-
   }
-#else
-    // FIXME (leamas?)
-    // What should the CLI app do here?
-    return_stat = RESTServerResult::RESULT_GENERIC_ERROR;
-#endif
 
-#endif    //0
 
   return_status = return_stat;
 
@@ -657,13 +615,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 
           printf("Reply: %d\n", return_status);
           mg_http_reply(c, 200, "", "{\"result\": %d}\n", return_status);
-#ifndef CLIAPP
-          if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-            pRouteManagerDialog->UpdateTrkListCtrl();
-            pRouteManagerDialog->UpdateWptListCtrl();
-            pRouteManagerDialog->UpdateRouteListCtrl();
-          }
-#endif
+          parent->UpdateRouteMgr();
         }
       }
     }
