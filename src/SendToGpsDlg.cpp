@@ -36,6 +36,7 @@
 
 #include "conn_params.h"
 #include "OCPNPlatform.h"
+#include "REST_server.h"
 #include "route_gui.h"
 #include "route.h"
 #include "route_point_gui.h"

@@ -34,6 +34,7 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "REST_server.h"
 #include "REST_server_gui.h"
 #include "FontMgr.h"
 

@@ -77,8 +77,6 @@ void LogBroadcastOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
                                         const wxString &color,
                                         NmeaLog& nmea_log) {
-#ifndef CLIAPP
-
   if (nmea_log.Active()) {
     wxDateTime now = wxDateTime::Now();
     wxString ss;
@@ -93,9 +91,7 @@ void LogBroadcastOutputMessageColor(const wxString &msg,
     ss.Prepend(color);
 
     nmea_log.Add(ss.ToStdString());
-
   }
-#endif
 }
 
 void BroadcastNMEA0183Message(const wxString &msg, NmeaLog& nmea_log) {

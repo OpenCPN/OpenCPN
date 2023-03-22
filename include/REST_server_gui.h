@@ -39,12 +39,6 @@
 #define SYMBOL_STG_SIZE wxSize(500, 500)
 #define SYMBOL_STG_POSITION wxDefaultPosition
 
-enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1 };
-
-// class wxButton;
-// class wxGauge;
-// class wxComboBox;
-
 /**
  * "Accept Object" Dialog Definition
  */

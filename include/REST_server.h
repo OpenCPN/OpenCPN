@@ -41,11 +41,9 @@ typedef enum RESTServerResult {
   RESULT_NEW_PIN_REQUESTED
 } _RESTServerResult;
 
-enum {
-  ORS_START_OF_SESSION,
-  ORS_CHUNK_N,
-  ORS_CHUNK_LAST
-};
+enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
+
+enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
 
 class RESTServerThread;  // Internal
 class RESTServerEvent;  // Internal
