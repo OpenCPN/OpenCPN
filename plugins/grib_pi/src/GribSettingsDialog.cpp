@@ -163,6 +163,7 @@ height: 30px;\
 #endif
 
 extern int m_DialogStyle;
+extern int g_gribPrefWidth, g_gribPrefHeight;
 
 wxString GribOverlaySettings::GetAltitudeFromIndex(int index, int unit) {
   return wxGetTranslation(altitude_from_index[unit][index]);
@@ -704,6 +705,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   if (pConf) {
     pConf->SetPath(_T ( "/Settings/GRIB" ));
     pConf->Read(_T ( "GribSettingsBookPageIndex" ), &m_SetBookpageIndex, 0);
+    if (m_SetBookpageIndex > 2) m_SetBookpageIndex = 0;
   }
 
   m_cInterpolate->SetValue(m_Settings.m_bInterpolate);
@@ -797,15 +799,18 @@ void GribSettingsDialog::SetSettingsDialogSize() {
 #ifdef __WXGTK__
   SetMinSize(wxSize(0, 0));
 #endif
+
+
+#if 1
   for (size_t i = 0; i < m_nSettingsBook->GetPageCount();
        i++) {  // compute and set scrolled windows size
     wxScrolledWindow *sc = ((wxScrolledWindow *)m_nSettingsBook->GetPage(i));
     sc->SetMinSize(wxSize(0, 0));
     wxSize scr;
-    if ((int)i == m_SetBookpageIndex) {
+    if (1/*(int)i == m_SetBookpageIndex*/) {
       switch (i) {
         case 0:
-          scr = m_fgSetDataSizer->Fit(sc);
+          //scr = m_fgSetDataSizer->Fit(sc);
           break;
         case 1:
           // set a reasonable speed slider's width
@@ -822,19 +827,43 @@ void GribSettingsDialog::SetSettingsDialogSize() {
 #endif
     }
   }  // end compute
+#endif
 
 #ifdef __OCPN__ANDROID__
   m_nSettingsBook->SetSize(wt, -1);
 #endif
 
-  Layout();
   Fit();
+
+   // Constrain size on small displays
+  int display_width, display_height;
+  wxDisplaySize(&display_width, &display_height);
+
+  wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
+  if(display_height < 600){
+    SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    if(g_gribPrefWidth > 0 && g_gribPrefHeight > 0)
+      SetSize(wxSize(g_gribPrefWidth, g_gribPrefHeight));
+    else
+      SetSize(wxSize(70 * GetCharWidth(), canvas_size.y * 8 / 10));
+  }
+  else {
+    SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    if(g_gribPrefWidth > 0 && g_gribPrefHeight > 0)
+      SetSize(wxSize(g_gribPrefWidth, g_gribPrefHeight));
+    else
+      SetSize(wxSize(70 * GetCharWidth(), canvas_size.y * 8 / 10));
+  }
+
+  //CentreOnScreen();
+
 #ifdef __WXGTK__
-  wxSize sd = GetSize();
-  if (sd.y == GetClientSize().y) sd.y += 30;
-  SetSize(wxSize(sd.x, sd.y));
-  SetMinSize(wxSize(sd.x, sd.y));
+//   wxSize sd = GetSize();
+//   if (sd.y == GetClientSize().y) sd.y += 30;
+//   SetSize(wxSize(sd.x, sd.y));
+//   SetMinSize(wxSize(sd.x, sd.y));
 #endif
+//  SetSize(wxSize(w, h));
   Refresh();
 }
 

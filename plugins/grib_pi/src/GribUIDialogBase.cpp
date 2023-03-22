@@ -1104,33 +1104,60 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
     : wxDialog(parent, id, title, pos, size, style) {
   this->SetSizeHints(wxDefaultSize, wxSize(-1, -1));
 
-  wxFlexGridSizer* fgSizer53;
-  fgSizer53 = new wxFlexGridSizer(0, 1, 0, 0);
-  fgSizer53->SetFlexibleDirection(wxBOTH);
-  fgSizer53->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+  wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
+  SetSizer(topSizer);
 
   m_nSettingsBook =
       new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
-  wxScrolledWindow* m_scSetDataPanel;
-  m_scSetDataPanel =
+  topSizer->Add(m_nSettingsBook, 1, wxEXPAND | wxALL, 5);
+
+  m_sButton = new wxStdDialogButtonSizer();
+  m_sButtonOK = new wxButton(this, wxID_OK);
+  m_sButton->AddButton(m_sButtonOK);
+  m_sButtonApply = new wxButton(this, wxID_APPLY);
+  m_sButton->AddButton(m_sButtonApply);
+  m_sButtonCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
+  m_sButton->AddButton(m_sButtonCancel);
+  m_sButton->Realize();
+  topSizer->Add(m_sButton, 0, wxEXPAND, 5);
+
+
+  wxScrolledWindow* m_scSetDataPanel =
       new wxScrolledWindow(m_nSettingsBook, wxID_ANY, wxDefaultPosition,
                            wxDefaultSize, wxHSCROLL | wxVSCROLL);
   m_scSetDataPanel->SetScrollRate(5, 5);
-  m_fgSetDataSizer = new wxFlexGridSizer(0, 1, 0, 0);
-  m_fgSetDataSizer->AddGrowableCol(0);
-  m_fgSetDataSizer->AddGrowableRow(1);
-  m_fgSetDataSizer->SetFlexibleDirection(wxBOTH);
-  m_fgSetDataSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+
+  wxBoxSizer *scBox = new wxBoxSizer(wxVERTICAL);
+  m_scSetDataPanel->SetSizer(scBox);
+
+//   m_fgSetDataSizer = new wxFlexGridSizer(0, 1, 0, 0);
+//   m_fgSetDataSizer->AddGrowableCol(0);
+//   m_fgSetDataSizer->AddGrowableRow(1);
+//   m_fgSetDataSizer->SetFlexibleDirection(wxBOTH);
+//   m_fgSetDataSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+//
+//   scBox->Add(m_fgSetDataSizer, 1, wxEXPAND | wxTOP, 10);
+
+  //m_scSetDataPanel->SetSizer(m_fgSetDataSizer);
+  //m_scSetDataPanel->Layout();
+  //m_fgSetDataSizer->Fit(m_scSetDataPanel);
+  m_nSettingsBook->AddPage(m_scSetDataPanel, _("Data"), false);
+
+
+
 
   wxStaticBoxSizer* sbSizer101;
   sbSizer101 = new wxStaticBoxSizer(
       new wxStaticBox(m_scSetDataPanel, wxID_ANY, _("Data Display Options")),
       wxVERTICAL);
+  scBox->Add(sbSizer101, 1, wxEXPAND | wxTOP, 10);
 
   wxFlexGridSizer* fgSizer15;
   fgSizer15 = new wxFlexGridSizer(0, 3, 0, 0);
   fgSizer15->SetFlexibleDirection(wxBOTH);
   fgSizer15->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+
+  sbSizer101->Add(fgSizer15, 1, wxEXPAND, 5);
 
   wxArrayString m_cDataTypeChoices;
   m_cDataTypeChoices.Add(_T("Item0"));
@@ -1398,12 +1425,6 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 #endif
   fgSizer15->Add(m_sParticleDensity, 0, wxALL | wxEXPAND, 5);
 
-  sbSizer101->Add(fgSizer15, 1, wxEXPAND, 5);
-
-  m_fgSetDataSizer->Add(sbSizer101, 1, wxEXPAND | wxTOP, 10);
-
-  m_fgSetDataSizer->Add(0, 0, 1, wxEXPAND, 5);
-
   wxStaticBoxSizer* sbSizer12;
   sbSizer12 = new wxStaticBoxSizer(
       new wxStaticBox(m_scSetDataPanel, wxID_ANY,
@@ -1430,12 +1451,10 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   sbSizer12->Add(fgSizer34, 1, wxEXPAND | wxLEFT, 5);
 
-  m_fgSetDataSizer->Add(sbSizer12, 1, wxEXPAND | wxTOP, 10);
+  scBox->Add(sbSizer12, 0, wxEXPAND | wxTOP, 10);
 
-  m_scSetDataPanel->SetSizer(m_fgSetDataSizer);
-  m_scSetDataPanel->Layout();
-  m_fgSetDataSizer->Fit(m_scSetDataPanel);
-  m_nSettingsBook->AddPage(m_scSetDataPanel, _("Data"), false);
+  // Playback Panel
+
   wxScrolledWindow* m_scSetPlaybackPanel;
   m_scSetPlaybackPanel =
       new wxScrolledWindow(m_nSettingsBook, wxID_ANY, wxDefaultPosition,
@@ -1478,7 +1497,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   m_sUpdatesPerSecond =
       new wxSlider(m_scSetPlaybackPanel, wxID_ANY, 4, 2, 12, wxDefaultPosition,
-                   wxSize(-1, -1), wxSL_HORIZONTAL);
+                   wxSize(20 * GetCharWidth(), -1), wxSL_HORIZONTAL);
   fgSizer480->Add(m_sUpdatesPerSecond, 0, wxEXPAND | wxBOTTOM, 5);
 
   wxStaticText* m_staticText401;
@@ -1553,6 +1572,10 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
   m_scSetPlaybackPanel->Layout();
   m_fgSetPlaybackSizer->Fit(m_scSetPlaybackPanel);
   m_nSettingsBook->AddPage(m_scSetPlaybackPanel, _("Playback"), false);
+
+
+#if 1
+  // GUI Panel
   wxScrolledWindow* m_scSetGuiPanel;
   m_scSetGuiPanel =
       new wxScrolledWindow(m_nSettingsBook, wxID_ANY, wxDefaultPosition,
@@ -1826,25 +1849,16 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
   m_fgSetGuiSizer->Fit(m_scSetGuiPanel);
   m_nSettingsBook->AddPage(m_scSetGuiPanel, _("GUI"), true);
 
-  fgSizer53->Add(m_nSettingsBook, 1, wxEXPAND | wxALL, 5);
 
-  m_sButton = new wxStdDialogButtonSizer();
-  m_sButtonOK = new wxButton(this, wxID_OK);
-  m_sButton->AddButton(m_sButtonOK);
-  m_sButtonApply = new wxButton(this, wxID_APPLY);
-  m_sButton->AddButton(m_sButtonApply);
-  m_sButtonCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-  m_sButton->AddButton(m_sButtonCancel);
-  m_sButton->Realize();
 
-  fgSizer53->Add(m_sButton, 1, wxEXPAND, 5);
+#endif
+  //this->Layout();
+  //fgSizer53->Fit(this);
 
-  this->SetSizer(fgSizer53);
-  this->Layout();
-  fgSizer53->Fit(this);
-
+  Fit();
   this->Centre(wxBOTH);
 
+#if 0
   // Connect Events
   m_nSettingsBook->Connect(
       wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
@@ -1943,6 +1957,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
   m_sButtonApply->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribSettingsDialogBase::OnApply), NULL, this);
+#endif
 }
 
 GribSettingsDialogBase::~GribSettingsDialogBase() {
