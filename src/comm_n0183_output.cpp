@@ -460,6 +460,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     }
 
     dlg_ctx.set_value(40);
+
     lret_val = Garmin_GPS_SendRoute(short_com, pr, dlg_ctx);
     if (lret_val != 1) {
       MESSAGE_LOG << "Error Sending Route to Garmin GPS on port: " << short_com

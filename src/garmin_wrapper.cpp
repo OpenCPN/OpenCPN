@@ -27,10 +27,6 @@
 #include "garmin_gps.h"
 #include "gpsserial.h"
 
-#ifndef CLIAPP
-#include "gui_lib.h"
-#endif
-
 #define GPS_DEBUG
 
 extern char last_error[];
@@ -259,62 +255,57 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
     GPS_PWay *pprouteway;
     int32 npacks = GPS_A200_Get(port_name.mb_str(), &pprouteway);
     if (npacks < 0) return npacks;
-
     dlg_ctx.set_value(40);
 
-    //  Iterate on the packets, finding the first route number from [0..9] that
-    //  is not present
+//  Iterate on the packets, finding the first route number from [0..9] that
+//  is not present
 
-    //    An array of route numbers, set element to true as encountered
-    bool brn[10];
-    for (int i = 0; i < 10; i++) brn[i] = false;
+//    An array of route numbers, set element to true as encountered
+bool brn[10];
+for (int i = 0; i < 10; i++) brn[i] = false;
 
-    for (int ip = 0; ip < npacks; ip++) {
-      GPS_PWay pway = pprouteway[ip];
-      if (pway->isrte) {
-        if ((pway->rte_num < 10)) brn[pway->rte_num] = true;
-      }
-    }
-
-    //    Find the first candidate within [1..9] that is unused
-    bool bfound_empty = false;
-    for (int i = 1; i < 10; i++) {
-      if (brn[i] == false) {
-        route_number = i;
-        bfound_empty = true;
-        break;
-      }
-    }
-    GPS_Diag("Using route number: %d", route_number);
-
-#ifndef CLIAPP   // FIXME (leamas) Use a callback
-    //  Ask the user if it is all right to overwrite
-    if (!bfound_empty) {
-      int rv = OCPNMessageBox(
-          NULL, _("Overwrite Garmin device route number 1?"),
-          _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
-      if (rv != wxID_OK) return 0;
-    }
-#endif
+for (int ip = 0; ip < npacks; ip++) {
+  GPS_PWay pway = pprouteway[ip];
+  if (pway->isrte) {
+    if ((pway->rte_num < 10)) brn[pway->rte_num] = true;
   }
+}
 
-  // Based on the route transfer protocol create the array of transfer packets
-  GPS_SWay **ppway;
-  int elements = 0;
-  if (gps_route_transfer == pA201)
-    ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
-  else
-    ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
+//    Find the first candidate within [1..9] that is unused
+bool bfound_empty = false;
+for (int i = 1; i < 10; i++) {
+  if (brn[i] == false) {
+    route_number = i;
+    bfound_empty = true;
+    break;
+  }
+}
+GPS_Diag("Using route number: %d", route_number);
 
-  //    Transmit the Route to the GPS receiver
-  int xfer_result = GPS_Command_Send_Route(port_name.mb_str(), ppway, elements);
-  ret_val = xfer_result;
+//  Ask the user if it is all right to overwrite
+if (!bfound_empty) {
+  if (!dlg_ctx.confirm_overwrite()) {
+    return 0;
+  }
+}
+}
 
-  //  Free all the memory
-  for (int i = 0; i < elements; i++) GPS_Way_Del(&ppway[i]);
+// Based on the route transfer protocol create the array of transfer packets
+GPS_SWay **ppway;
+int elements = 0;
+if (gps_route_transfer == pA201)
+ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
+else
+ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
 
-  free(ppway);
+//    Transmit the Route to the GPS receiver
+int xfer_result = GPS_Command_Send_Route(port_name.mb_str(), ppway, elements);
+ret_val = xfer_result;
 
+//  Free all the memory
+for (int i = 0; i < elements; i++) GPS_Way_Del(&ppway[i]);
+
+free(ppway);
   dlg_ctx.set_value(80);
 
   VerifyPortClosed();
