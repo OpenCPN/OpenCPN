@@ -206,8 +206,8 @@ void PINCreateDialog::CreateControls(const wxString& hint) {
 
   m_pText1 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
                                 wxDefaultPosition, wxDefaultSize, wxTE_READONLY | wxTE_CENTRE);
-  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
-  m_pText1->SetMinSize(wxSize(6 * GetCharWidth(), -1));
+  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+  m_pText1->SetMinSize(wxSize(7 * GetCharWidth(), -1));
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
