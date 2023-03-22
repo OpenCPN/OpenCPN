@@ -70,13 +70,14 @@ static void UpdateRouteMgr() {
   }
 }
 
-static int RunAcceptObjectDlg(const std::string& msg,
-                              const std::string& check1msg) {
+static AcceptObjectDlgResult RunAcceptObjectDlg(const wxString& msg,
+                                                const wxString& check1msg) {
   AcceptObjectDialog dlg(NULL, wxID_ANY, _("OpenCPN Server Message"),
         "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
         msg, check1msg);
   int result = dlg.ShowModal();
-  return result;
+  bool check1 = dlg.GetCheck1Value();
+  return AcceptObjectDlgResult(result, check1);
 }
 
 RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
@@ -87,8 +88,9 @@ RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
   ctx.close_dialog = [](PinDialog* pin_dlg) { CloseDlg(pin_dlg); };
   ctx.update_route_mgr = []() { UpdateRouteMgr(); };
   ctx.run_accept_object_dlg =
-      [](const std::string& msg, const std::string& check1msg) {
+      [](const wxString& msg, const wxString& check1msg) {
           return RunAcceptObjectDlg(msg, check1msg); };
+  ctx.top_level_refresh = []()  { dynamic_cast<wxWindow*>(gFrame)->Refresh(); };
   return ctx;
 }
 

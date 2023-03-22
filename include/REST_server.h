@@ -32,6 +32,7 @@
 #include <unordered_map>
 
 #include <wx/event.h>
+#include <wx/string.h>
 
 typedef enum RESTServerResult {
   RESULT_NO_ERROR = 0,
@@ -61,6 +62,15 @@ public:
   virtual void DeInit() = 0;
 };
 
+/** Returned status from  RunAcceptObjectDlg. */
+struct AcceptObjectDlgResult {
+  int status;  ///< return value from ShowModal()
+  bool check1_value;   ///< As of GetCheck1Value()
+
+  AcceptObjectDlgResult(): status(0), check1_value(false) {}
+  AcceptObjectDlgResult(int s, bool b): status(s), check1_value(b) {}
+};
+
 
 /** Callbacks invoked from PinDialog implementations. */
 class RestServerDlgCtx {
@@ -71,8 +81,10 @@ public:
   std::function<void(void)> update_route_mgr;
 
   /** Run the "Accept Object" dialog, returns value from ShowModal(). */
-  std::function<int (const std::string& msg,
-                     const std::string& check1msg)> run_accept_object_dlg;
+  std::function<AcceptObjectDlgResult(const wxString& msg,
+                                      const wxString& check1msg)>
+          run_accept_object_dlg;
+  std::function<void()> top_level_refresh;
 
   RestServerDlgCtx()
       : show_dialog([](
@@ -80,7 +92,10 @@ public:
         close_dialog([](PinDialog*) {}),
         update_route_mgr([](){ }),
         run_accept_object_dlg(
-          [](const std::string&, const std::string&) { return 0; }) {}
+          [](const wxString&, const wxString&) {
+               return AcceptObjectDlgResult(); }),
+        top_level_refresh([](){ })
+        {}
 };
 
 
@@ -126,7 +141,7 @@ private:
   bool m_bsec_thread_active;
   std::string m_certificate_directory;
   std::unordered_map<std::string, std::string> m_key_map;
-  PINCreateDialog *m_PINCreateDialog;
+  PinDialog* m_pin_dialog;
   wxString m_sPIN;
   int m_dPIN;
   bool m_b_overwrite;
