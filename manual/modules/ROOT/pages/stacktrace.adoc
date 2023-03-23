@@ -1,6 +1,8 @@
-= DRAFT: Creating a stack trace
+= Creating a stack trace
 
-NOTE: This is preliminary docs, a work in progress.
+NOTE: Fow Windows and MacOS these docs are not useful until after the 5.8
+release and related download urls for pdb and dSYM files. OTOH, the
+descriptions for Debian/Ubuntu and Flatpak are usable at the time of writing.
 
 Occasionally, if OpenCPN crashes a stack trace carries valuable information
 about the crash which often is needed to find out the reason. The procedure
@@ -42,7 +44,7 @@ which triggers a crash.
 === Display stack trace and submit it.
 
 After the crash put focus on windbg again. In the command window, give the
-command _kp_ followed by a return. The stack trace in printed in the main
+command _kp_ followed by a return. The stack trace is printed in the main
 window, like this:
 :image:windows-trace.png[Stack trace]
 
@@ -80,18 +82,12 @@ _subst_ command. For example, if the developer's clone lives in
 _\Users\foo\src\OpenCPN_ it can be mapped to the paths in the pdb file using
 `subst N: \Users\foo\src\OpenCPN`.
 
+[#debian-trace]
 == Debian/Ubuntu
+1. Either use debuginfod or install a debug package, see
+   xref:debian-debugsyms[below]
 
-1. Install gdb using  `sudo apt update; sudo apt install gdb`.
-2. Install the debug symbols. On Debian, add to _/etc/apt/sources.list_
-   a line like below, adjusting "bullseye" to the actual distribution: +
-+
-      deb http://deb.debian.org/debian-debug/ bullseye-debug main
-+
-then install the debug symbols using
-
-       $ sudo apt update
-       $ sudo apt install opencpn-dbgsym
+2. Install gdb using  `sudo apt update; sudo apt install gdb`.
 
 3. Start the debugger
 
@@ -135,35 +131,39 @@ then install the debug symbols using
        #9  0x00007ffff755e3d7 in  () at /lib/x86_64-linux-gnu/libwx_gtk3u_core-3.0.so.0
        #10 0x00007ffff53662ee in  () at /lib/x86_64-linux-gnu/libgobject-2.0.so.0
 
-    Copy the stacktrace and submit it  in a bug report.
+Copy the stacktrace and submit it  in a bug report.
 
 == Flatpak
 
 1. Install development tools: `flatpak install --user org.freedesktop.Sdk`
 2. Install debug symbols: `flatpak install --user org.opencpn.OpenCPN.Debug`
-3. Start the debugger in the flatpak sandbox (note that opencpn lives in
+3. Start the flatpak sandbox:
+
+        $ flatpak run --devel --command=bash org.opencpn.OpenCPN
+        [📦 org.opencpn.OpenCPN]$
+
+4. Start the debugger in the sandbox (note that opencpn lives in
    /app/bin). Gdb prints a lot of text. In the end the debug symbols are
    loaded and a _(gdb)_ prompt is written:
 
-        $ flatpak run --devel --command=bash org.opencpn.OpenCPN
-        [📦 org.opencpn.OpenCPN build]$ gdb /app/bin/opencpn
-        [...]   (lot's  of text]
+        [📦 org.opencpn.OpenCPN]$ gdb /app/bin/opencpn
+        [...]
         Reading symbols from /app/bin/opencpn...
         Reading symbols from /usr/lib/debug//app/bin/opencpn.debug...
         (gdb)
 
-4. Start opencpn in the debugger using the command _run_:
+5. Start opencpn in the debugger using the command _run_:
 
         (gdb) run
         Starting program: /app/bin/opencpn
         [...]
 
-5. Make opencpn crash. The debugger prints a lot of text and a new prompt:
+6. Make opencpn crash. The debugger prints a lot of text and a new prompt:
 
         [....]
         (gdb)
 
-6. In gdb, create the stacktrace using the command _bt_. This is copied and
+7. In gdb, create the stacktrace using the command _bt_. This is copied and
    submitted in a bug:
 
         (gdb) bt
@@ -212,8 +212,8 @@ example https://stackoverflow.com/questions/34680789
 On MacOS, debug symbols lives in a dSYM bundle. dSYM bundles for released
 OpenCPN versions can be downloaded from TBD.
 
-Download and uncompress that file and store it in _/Applications/OpenCPN/Contents/MacOS_
-something like:
+Download and uncompress that file and store it in
+_/Applications/OpenCPN/Contents/MacOS_, something like:
 ----
    $ wget https://dl.cloudsmith.io/public/alec-leamas/opencpn/raw/files/OpenCPN-deadbeef.dSYM.tar.gz
    $ tar xf OpenCPN-deadbeef.dSYM.tar.gz
@@ -227,22 +227,93 @@ Easiest is to start from the installation directory, YMMV:
     $ lldb  OpenCPN
     (lldb) target symbols add OpenCPN.dSYM
     (lldb) run
----- 
+----
 
 After starting OpenCPN, make it crash.
 
 Notes:
 
-* If OpenCPN hasn't been started before (fresh installation) one needs to first 
+* If OpenCPN hasn't been started before (fresh installation) one needs to first
   open it using ctrl-right-click in order to work around unsigned developer
   checks.
 * Watch out for error messages when loading symbol file (`target symbols add`).
 * If possible, resize OpenCPN so it does not cover the command window -- the
-  command window does **not** become on top  after the crash causing an 
+  command window does **not** become on top  after the crash causing an
   interesting situation.
 
 === Display the stack trace
 
 After the crash, control returns to the debugger. Here, give the command _bt_
 which displays the trace. Copy the first 10-20 lines and submit in a bug report.
+
 :image:macos-stacktrace.png[Stack trace]
+
+
+[#debian-debugsyms]
+== Debian/Ubuntu debug symbols
+
+The first step on Debian and Ubuntu is to install debug symbols, see
+xref:#debian-trace[above].
+This can be done using  either using _debuginfod_ or by installing the
+opencpn-dbgsym package.
+
+Using _debuginfod_ is simple and works almost the same way in Ubuntu and
+Debian.
+It creates a stacktrace with symbols for all files involved (for example
+wxWidgets), not only opencpn.
+The drawback is a large, gigabyte download.
+
+Installing a debug package is somewhat more complicated, but avoids the
+large debuginfod download.
+It only provides debug symbols for openpcn, but this is usually all that
+is required.
+The package installation differs between Ubuntu and Debian
+
+=== Using debuginfod.
+
+To use debuginfod on Debian run before invoking gdb:
+----
+    $ export DEBUGINFOD_URLS="https://debuginfod.debian.net"
+----
+
+On Ubuntu, use:
+----
+    $ export DEBUGINFOD_URLS="https://debuginfod.ubuntu.com"
+----
+
+See also: https://wiki.debian.org/Debuginfod
+
+=== Installing debug package on Debian
+
+Add to _/etc/apt/sources.list_ a line like below, adjusting bullseye
+to the actual distribution used :
+----
+      deb http://deb.debian.org/debian-debug/ bullseye-debug main
+----
+Then install the package using
+----
+      $ sudo apt update
+      $ sudo apt install opencpn-dbgsym
+----
+
+=== Installing debug package  on Ubuntu
+
+Create a file named _/etc/apt/sources.list.d/ddebs.list_ like below,
+substituting jammy with the actual distribution like bionic or focal.
+----
+deb http://ddebs.ubuntu.com jammy main restricted universe multiverse
+deb http://ddebs.ubuntu.com jammy-updates main restricted universe multiverse
+deb http://ddebs.ubuntu.com jammy-proposed main restricted universe multiverse
+----
+
+Import the debug symbol archive signing key from the Ubuntu server using
+----
+    $ sudo apt install ubuntu-dbgsym-keyring
+----
+and install package using
+----
+    $ sudo apt update
+    $ sudo apt install opencpn-dbgsym
+----
+
+See also: https://wiki.ubuntu.com/Debug%20Symbol%20Packages
