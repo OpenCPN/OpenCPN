@@ -960,8 +960,8 @@ set(
   include/printtable.h
   include/priority_gui.h
   include/Quilt.h
-  include/REST_server.h
-  include/REST_server_gui.h
+  include/rest_server.h
+  include/rest_server_gui.h
   include/RolloverWin.h
   include/route.h
   include/route_gui.h
@@ -1066,7 +1066,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
-  ${CMAKE_SOURCE_DIR}/src/REST_server.cpp
+  ${CMAKE_SOURCE_DIR}/src/rest_server.cpp
   ${CMAKE_SOURCE_DIR}/src/route.cpp
   ${CMAKE_SOURCE_DIR}/src/route_point.cpp
   ${CMAKE_SOURCE_DIR}/src/routeman.cpp
@@ -1145,7 +1145,7 @@ set(
   src/printtable.cpp
   src/priority_gui.cpp
   src/Quilt.cpp
-  src/REST_server_gui.cpp
+  src/rest_server_gui.cpp
   src/RolloverWin.cpp
   src/routemanagerdialog.cpp
   src/routeman_gui.cpp

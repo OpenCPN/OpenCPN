@@ -132,7 +132,7 @@
 #include "routemanagerdialog.h"
 #include "routeman.h"
 #include "RoutePropDlgImpl.h"
-#include "REST_server_gui.h"
+#include "rest_server_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"

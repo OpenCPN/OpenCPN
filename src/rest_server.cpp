@@ -40,7 +40,7 @@
 #include <fstream>
 #include <string>
 
-#include "REST_server.h"
+#include "rest_server.h"
 #include "mongoose.h"
 #include "config_vars.h"
 #include "cmdline.h"

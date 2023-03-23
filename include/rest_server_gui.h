@@ -34,7 +34,7 @@
 #include <wx/checkbox.h>
 
 #include "ocpn_frame.h"
-#include "REST_server.h"
+#include "rest_server.h"
 
 //    Constants for  Dialog
 #define ID_STGDIALOG 10005

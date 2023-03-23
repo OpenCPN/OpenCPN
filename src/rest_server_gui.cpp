@@ -35,9 +35,7 @@
 #include <wx/window.h>
 
 #include "FontMgr.h"
-#include "ocpn_frame.h"
-#include "REST_server.h"
-#include "REST_server_gui.h"
+#include "rest_server_gui.h"
 #include "routemanagerdialog.h"
 
 extern RouteManagerDialog *pRouteManagerDialog;
