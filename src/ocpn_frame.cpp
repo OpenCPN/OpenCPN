@@ -936,6 +936,7 @@ void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
       }
 
       ReloadAllVP();
+      delete event.m_ticket;
       break;
     case SENC_BUILD_DONE_ERROR:
       // printf("Myframe SENC build done ERROR\n");

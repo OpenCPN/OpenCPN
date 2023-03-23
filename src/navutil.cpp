@@ -510,6 +510,12 @@ MyConfig::MyConfig(const wxString &LocalFileName)
 
 }
 
+MyConfig::~MyConfig() {
+  for (size_t i = 0; i < g_canvasConfigArray.GetCount(); i++) {
+    delete g_canvasConfigArray.Item(i);
+  }
+}
+
 void MyConfig::CreateRotatingNavObjBackup() {
   // Avoid nonsense log errors...
 #ifdef __OCPN__ANDROID__

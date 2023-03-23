@@ -81,6 +81,7 @@ enum class PluginStatus {
 class PlugInContainer {
 public:
   PlugInContainer();
+  ~PlugInContainer() { delete m_bitmap; }
 
   opencpn_plugin* m_pplugin;
   bool m_bEnabled;

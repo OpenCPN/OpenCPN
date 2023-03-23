@@ -1768,12 +1768,6 @@ void options::Init(void) {
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
 
-  dialogFontPlus = new wxFont(
-      *dialogFont);  // we can't use Smaller() because wx2.8 doesn't support it
-  dialogFontPlus->SetPointSize((dialogFontPlus->GetPointSize() * 1.2) +
-                               0.5);  // + 0.5 to round instead of truncate
-  dialogFontPlus->SetWeight(wxFONTWEIGHT_BOLD);
-
   m_bVectorInit = false;
 
   // This variable is used by plugin callback function AddOptionsPage
