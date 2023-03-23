@@ -2053,98 +2053,16 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
     : wxDialog(parent, id, title, pos, size, style) {
   this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-  wxFlexGridSizer* fgSizer6;
-  fgSizer6 = new wxFlexGridSizer(0, 1, 0, 0);
-  fgSizer6->SetFlexibleDirection(wxBOTH);
-  fgSizer6->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+  wxBoxSizer *itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
+  SetSizer(itemBoxSizerMainPanel);
 
-  wxStaticBoxSizer* sbSizer9;
-  sbSizer9 = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("General Options")), wxVERTICAL);
+  wxScrolledWindow *scrollWin = new wxScrolledWindow(
+     this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
+  scrollWin->SetScrollRate(1, 1);
+  itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
-  wxFlexGridSizer* fgSizer46;
-  fgSizer46 = new wxFlexGridSizer(0, 1, 0, 0);
-  fgSizer46->SetFlexibleDirection(wxBOTH);
-  fgSizer46->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-  m_cbUseHiDef =
-      new wxCheckBox(this, wxID_ANY, _("Use High Definition Graphics"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer46->Add(m_cbUseHiDef, 0, wxALL, 5);
-
-  m_cbUseGradualColors = new wxCheckBox(this, wxID_ANY, _("Use Gradual Colors"),
-                                        wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer46->Add(m_cbUseGradualColors, 0, wxALL, 5);
-
-  m_cbCopyFirstCumulativeRecord =
-      new wxCheckBox(this, wxID_ANY, _("Copy First Cumulative Missing Record"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer46->Add(m_cbCopyFirstCumulativeRecord, 0, wxALL, 5);
-
-  m_cbCopyMissingWaveRecord =
-      new wxCheckBox(this, wxID_ANY, _("Copy Missing Wave Records"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer46->Add(m_cbCopyMissingWaveRecord, 0, wxALL, 5);
-
-  m_cbDrawBarbedArrowHead =
-      new wxCheckBox(this, wxID_ANY, _("Draw Barbed Arrows Head"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer46->Add(m_cbDrawBarbedArrowHead, 0, wxALL, 5);
-
-  m_cZoomToCenterAtInit =
-      new wxCheckBox(this, wxID_ANY, _("Zoom to file center when opened"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer46->Add(m_cZoomToCenterAtInit, 0, wxALL, 5);
-
-  sbSizer9->Add(fgSizer46, 1, wxEXPAND, 5);
-
-  fgSizer6->Add(sbSizer9, 1, wxEXPAND, 5);
-
-  wxString m_rbLoadOptionsChoices[] = {
-      _("Load the More Recent File in Directory"),
-      _("Load the Last Opened File")};
-  int m_rbLoadOptionsNChoices =
-      sizeof(m_rbLoadOptionsChoices) / sizeof(wxString);
-  m_rbLoadOptions = new wxRadioBox(
-      this, wxID_ANY, _("Load File Options"), wxDefaultPosition, wxDefaultSize,
-      m_rbLoadOptionsNChoices, m_rbLoadOptionsChoices, 1, wxRA_SPECIFY_COLS);
-  m_rbLoadOptions->SetSelection(0);
-  fgSizer6->Add(m_rbLoadOptions, 0, wxALL | wxEXPAND, 5);
-
-  wxString m_rbStartOptionsChoices[] = {
-      _("Start at the first forecast in GRIB file"),
-      _("Start at the nearest forecast to current time"),
-      _("Authorize Interpolation to start at current time")};
-  int m_rbStartOptionsNChoices =
-      sizeof(m_rbStartOptionsChoices) / sizeof(wxString);
-  m_rbStartOptions = new wxRadioBox(
-      this, wxID_ANY, _("Start Options"), wxDefaultPosition, wxDefaultSize,
-      m_rbStartOptionsNChoices, m_rbStartOptionsChoices, 1, wxRA_SPECIFY_COLS);
-  m_rbStartOptions->SetSelection(0);
-  fgSizer6->Add(m_rbStartOptions, 0, wxALL | wxEXPAND, 5);
-
-  wxString m_rbTimeFormatChoices[] = {_("Local Time"), _("UTC")};
-  int m_rbTimeFormatNChoices = sizeof(m_rbTimeFormatChoices) / sizeof(wxString);
-  m_rbTimeFormat = new wxRadioBox(
-      this, wxID_ANY, _("Time Options"), wxDefaultPosition, wxDefaultSize,
-      m_rbTimeFormatNChoices, m_rbTimeFormatChoices, 1, wxRA_SPECIFY_COLS);
-  m_rbTimeFormat->SetSelection(1);
-  fgSizer6->Add(m_rbTimeFormat, 0, wxALL | wxEXPAND, 5);
-
-#ifdef __WXMSW__
-  wxFlexGridSizer * fgSizer47;
-  fgSizer47 = new wxFlexGridSizer(0, 2, 0, 0);
-  fgSizer47->SetFlexibleDirection(wxBOTH);
-  fgSizer47->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-  wxStaticText * text = new wxStaticText(this, wxID_ANY, _("Icons Size Factor")
-    , wxDefaultPosition, wxDefaultSize);
-  fgSizer47->Add(text, 0, wxALL | wxEXPAND, 5);
-  m_sIconSizeFactor =
-    new wxSlider(this, wxID_ANY, 0, -8, 8, wxDefaultPosition,
-      wxDefaultSize, wxSL_BOTTOM | wxSL_HORIZONTAL | wxSL_LABELS);
-  fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
-  fgSizer6->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
-#endif
+  wxBoxSizer *bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
+  scrollWin->SetSizer(bSizerPrefsMain);
 
   wxStdDialogButtonSizer* m_sdbSizer2;
   wxButton* m_sdbSizer2OK;
@@ -2156,13 +2074,97 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_sdbSizer2->AddButton(m_sdbSizer2Cancel);
   m_sdbSizer2->Realize();
 
-  fgSizer6->Add(m_sdbSizer2, 1, wxEXPAND, 5);
+  itemBoxSizerMainPanel->Add(m_sdbSizer2, 0, wxEXPAND, 5);
 
-  this->SetSizer(fgSizer6);
-  this->Layout();
-  fgSizer6->Fit(this);
+  wxStaticBoxSizer* sbSizer9;
+  sbSizer9 = new wxStaticBoxSizer(
+      new wxStaticBox(scrollWin, wxID_ANY, _("General Options")), wxVERTICAL);
 
-  this->Centre(wxBOTH);
+  wxFlexGridSizer* fgSizer46;
+  fgSizer46 = new wxFlexGridSizer(0, 1, 0, 0);
+  fgSizer46->SetFlexibleDirection(wxBOTH);
+  fgSizer46->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+
+  m_cbUseHiDef =
+      new wxCheckBox(scrollWin, wxID_ANY, _("Use High Definition Graphics"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer46->Add(m_cbUseHiDef, 0, wxALL, 5);
+
+  m_cbUseGradualColors = new wxCheckBox(scrollWin, wxID_ANY, _("Use Gradual Colors"),
+                                        wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer46->Add(m_cbUseGradualColors, 0, wxALL, 5);
+
+  m_cbCopyFirstCumulativeRecord =
+      new wxCheckBox(scrollWin, wxID_ANY, _("Copy First Cumulative Missing Record"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer46->Add(m_cbCopyFirstCumulativeRecord, 0, wxALL, 5);
+
+  m_cbCopyMissingWaveRecord =
+      new wxCheckBox(scrollWin, wxID_ANY, _("Copy Missing Wave Records"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer46->Add(m_cbCopyMissingWaveRecord, 0, wxALL, 5);
+
+  m_cbDrawBarbedArrowHead =
+      new wxCheckBox(scrollWin, wxID_ANY, _("Draw Barbed Arrows Head"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer46->Add(m_cbDrawBarbedArrowHead, 0, wxALL, 5);
+
+  m_cZoomToCenterAtInit =
+      new wxCheckBox(scrollWin, wxID_ANY, _("Zoom to file center when opened"),
+                     wxDefaultPosition, wxDefaultSize, 0);
+  fgSizer46->Add(m_cZoomToCenterAtInit, 0, wxALL, 5);
+
+  sbSizer9->Add(fgSizer46, 1, wxEXPAND, 5);
+
+  bSizerPrefsMain->Add(sbSizer9, 1, wxEXPAND, 5);
+
+  wxString m_rbLoadOptionsChoices[] = {
+      _("Load the More Recent File in Directory"),
+      _("Load the Last Opened File")};
+  int m_rbLoadOptionsNChoices =
+      sizeof(m_rbLoadOptionsChoices) / sizeof(wxString);
+  m_rbLoadOptions = new wxRadioBox(
+      scrollWin, wxID_ANY, _("Load File Options"), wxDefaultPosition, wxDefaultSize,
+      m_rbLoadOptionsNChoices, m_rbLoadOptionsChoices, 1, wxRA_SPECIFY_COLS);
+  m_rbLoadOptions->SetSelection(0);
+  bSizerPrefsMain->Add(m_rbLoadOptions, 0, wxALL | wxEXPAND, 5);
+
+  wxString m_rbStartOptionsChoices[] = {
+      _("Start at the first forecast in GRIB file"),
+      _("Start at the nearest forecast to current time"),
+      _("Authorize Interpolation to start at current time")};
+  int m_rbStartOptionsNChoices =
+      sizeof(m_rbStartOptionsChoices) / sizeof(wxString);
+  m_rbStartOptions = new wxRadioBox(
+      scrollWin, wxID_ANY, _("Start Options"), wxDefaultPosition, wxDefaultSize,
+      m_rbStartOptionsNChoices, m_rbStartOptionsChoices, 1, wxRA_SPECIFY_COLS);
+  m_rbStartOptions->SetSelection(0);
+  bSizerPrefsMain->Add(m_rbStartOptions, 0, wxALL | wxEXPAND, 5);
+
+  wxString m_rbTimeFormatChoices[] = {_("Local Time"), _("UTC")};
+  int m_rbTimeFormatNChoices = sizeof(m_rbTimeFormatChoices) / sizeof(wxString);
+  m_rbTimeFormat = new wxRadioBox(
+      scrollWin, wxID_ANY, _("Time Options"), wxDefaultPosition, wxDefaultSize,
+      m_rbTimeFormatNChoices, m_rbTimeFormatChoices, 1, wxRA_SPECIFY_COLS);
+  m_rbTimeFormat->SetSelection(1);
+  bSizerPrefsMain->Add(m_rbTimeFormat, 0, wxALL | wxEXPAND, 5);
+
+#ifdef __WXMSW__
+  wxFlexGridSizer * fgSizer47;
+  fgSizer47 = new wxFlexGridSizer(0, 2, 0, 0);
+  fgSizer47->SetFlexibleDirection(wxBOTH);
+  fgSizer47->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+  wxStaticText * text = new wxStaticText(scrollWin, wxID_ANY, _("Icons Size Factor")
+    , wxDefaultPosition, wxDefaultSize);
+  fgSizer47->Add(text, 0, wxALL | wxEXPAND, 5);
+  m_sIconSizeFactor =
+    new wxSlider(scrollWin, wxID_ANY, 0, -8, 8, wxDefaultPosition,
+      wxDefaultSize, wxSL_BOTTOM | wxSL_HORIZONTAL | wxSL_LABELS);
+  fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
+  bSizerPrefsMain->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
+#endif
+  Layout();
+  Fit();
 
   // Connect Events
   m_rbStartOptions->Connect(

@@ -265,6 +265,23 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   }
   Pref->Show();
 #else
+  // Constrain size on small displays
+
+  int display_width, display_height;
+  wxDisplaySize(&display_width, &display_height);
+  int char_width = GetOCPNCanvasWindow()->GetCharWidth();
+  int char_height = GetOCPNCanvasWindow()->GetCharHeight();
+  if(display_height < 600){
+    wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
+    Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    Pref->SetSize(wxSize(60 * char_width, canvas_size.x * 8 / 10));
+    Pref->CentreOnScreen();
+  }
+  else {
+    Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    Pref->SetSize(wxSize(60 * char_width, 29 * char_height));
+  }
+
   Pref->ShowModal();
 #endif
 }
