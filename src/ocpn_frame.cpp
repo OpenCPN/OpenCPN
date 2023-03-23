@@ -66,8 +66,8 @@
 #include "AISTargetQueryDialog.h"
 #include "CanvasConfig.h"
 #include "chartbase.h"
-#include "chartdb.h"
 #include "chart_ctx_factory.h"
+#include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"
 #include "cmdline.h"
@@ -4715,7 +4715,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       // Load the waypoints.. both of these routines are very slow to execute
       // which is why they have been to defered until here
-      pWayPointMan = new WayPointman();
+      auto colour_func = [](wxString c) { return GetGlobalColor(c); };
+      pWayPointMan = new WayPointman(colour_func);
       WayPointmanGui(*pWayPointMan).SetColorScheme(global_color_scheme,
                                                    g_Platform->GetDisplayDPmm());
       // Reload the ownship icon from UserIcons, if present
