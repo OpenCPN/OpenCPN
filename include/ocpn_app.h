@@ -37,7 +37,7 @@
 #include <wx/snglinst.h>
 
 #include "comm_bridge.h"
-#include "REST_server.h"
+#include "rest_server.h"
 
 class Track;
 

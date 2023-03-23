@@ -40,7 +40,7 @@
 #include "FontMgr.h"
 #include "gui_lib.h"
 #include "nav_object_database.h"
-#include "REST_server.h"
+#include "rest_server.h"
 
 extern std::string PINtoRandomKeyString(int dpin);
 
