@@ -964,6 +964,7 @@ set(
   include/rest_server_gui.h
   include/RolloverWin.h
   include/route.h
+  include/route_ctx_factory.h
   include/route_gui.h
   include/routemanagerdialog.h
   include/routeman.h

@@ -131,6 +131,8 @@
 #include "route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
+#include "routeman_gui.h"
+#include "route_ctx_factory.h"
 #include "RoutePropDlgImpl.h"
 #include "rest_server_gui.h"
 #include "s52plib.h"
@@ -1024,7 +1026,8 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
 
 static wxStopWatch init_sw;
 
-MyApp::MyApp() : m_RESTserver(PINCreateDialog::GetDlgCtx()) {
+MyApp::MyApp() : m_RESTserver(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
+                              g_bportable) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
 
