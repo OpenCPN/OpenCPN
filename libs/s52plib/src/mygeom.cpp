@@ -361,6 +361,10 @@ int PolyTessGeo::BuildDeferredTess(void) {
     delete m_pxgeom;
     m_pxgeom = NULL;
 
+    // Free the working memory
+    free(m_vertexPtrArray);
+    m_vertexPtrArray = nullptr;
+
     return rv;
 
   } else
