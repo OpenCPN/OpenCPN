@@ -26,18 +26,15 @@
 #include <memory>
 #include <vector>
 
-#include <wx/wxprec.h>
-
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include <wx/apptrait.h>
-#include <wx/dir.h>
+#include <wx/wxprec.h>
+
 #include <wx/image.h>
 #include <wx/jsonval.h>
 #include <wx/listimpl.cpp>
-#include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
 #include "ais_decoder.h"
@@ -46,7 +43,6 @@
 #include "comm_vars.h"
 #include "config_vars.h"
 #include "cutil.h"
-#include "dychart.h"
 #include "georef.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
