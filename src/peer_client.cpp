@@ -42,8 +42,6 @@
 #include "nav_object_database.h"
 #include "rest_server.h"
 
-extern std::string PINtoRandomKeyString(int dpin);
-
 extern MyFrame *gFrame;
 
 wxString GetErrorText(int result){

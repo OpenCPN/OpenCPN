@@ -34,6 +34,9 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
+#include "route.h"
+#include "track.h"
+
 typedef enum RESTServerResult {
   RESULT_NO_ERROR = 0,
   RESULT_GENERIC_ERROR,
@@ -48,8 +51,10 @@ enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
 enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
 
 class RESTServerThread;  // Internal
-class RESTServerEvent;  // Internal
+class RESTServerEvent;   // Internal
 class PINCreateDialog;
+
+std::string PINtoRandomKeyString(int dpin);
 
 /** Abstract base class visible in callbacks. */
 class PinDialog {
@@ -64,44 +69,56 @@ public:
 
 /** Returned status from  RunAcceptObjectDlg. */
 struct AcceptObjectDlgResult {
-  int status;  ///< return value from ShowModal()
-  bool check1_value;   ///< As of GetCheck1Value()
+  int status;         ///< return value from ShowModal()
+  bool check1_value;  ///< As of GetCheck1Value()
 
-  AcceptObjectDlgResult(): status(0), check1_value(false) {}
-  AcceptObjectDlgResult(int s, bool b): status(s), check1_value(b) {}
+  AcceptObjectDlgResult() : status(0), check1_value(false) {}
+  AcceptObjectDlgResult(int s, bool b) : status(s), check1_value(b) {}
 };
-
 
 /** Callbacks invoked from PinDialog implementations. */
 class RestServerDlgCtx {
 public:
-  std::function<PinDialog*(const std::string& msg,
-                           const std::string& text1)> show_dialog;
+  std::function<PinDialog*(const std::string& msg, const std::string& text1)>
+      show_dialog;
   std::function<void(PinDialog*)> close_dialog;
   std::function<void(void)> update_route_mgr;
 
   /** Run the "Accept Object" dialog, returns value from ShowModal(). */
   std::function<AcceptObjectDlgResult(const wxString& msg,
                                       const wxString& check1msg)>
-          run_accept_object_dlg;
+      run_accept_object_dlg;
   std::function<void()> top_level_refresh;
 
   RestServerDlgCtx()
-      : show_dialog([](
-           const std::string&, const std::string&)->PinDialog* { return 0; } ),
+      : show_dialog([](const std::string&, const std::string&) -> PinDialog* {
+          return 0;
+        }),
         close_dialog([](PinDialog*) {}),
-        update_route_mgr([](){ }),
-        run_accept_object_dlg(
-          [](const wxString&, const wxString&) {
-               return AcceptObjectDlgResult(); }),
-        top_level_refresh([](){ })
-        {}
+        update_route_mgr([]() {}),
+        run_accept_object_dlg([](const wxString&, const wxString&) {
+          return AcceptObjectDlgResult();
+        }),
+        top_level_refresh([]() {}) {}
 };
 
+/** Callbacks for handling routes and tracks. */
+class RouteCtx {
+public:
+  std::function<Route*(wxString)> find_route_by_guid;
+  std::function<Track*(wxString)> find_track_by_guid;
+  std::function<void(Route*)> delete_route;
+  std::function<void(Track*)> delete_track;
+  RouteCtx()
+      : find_route_by_guid([](wxString) { return static_cast<Route*>(0); }),
+        find_track_by_guid([](wxString) { return static_cast<Track*>(0); }),
+        delete_route([](Route*) -> void {}),
+        delete_track([](Track*) -> void {}) {}
+};
 
 class RESTServer : public wxEvtHandler {
 public:
-  RESTServer(RestServerDlgCtx ctx);
+  RESTServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
 
   virtual ~RESTServer();
 
@@ -120,23 +137,23 @@ public:
   void SetSecondaryThread(RESTServerThread* secondary_Thread) {
     m_pSecondary_Thread = secondary_Thread;
   }
-  RESTServerThread* GetSecondaryThread() {
-    return m_pSecondary_Thread;
-  }
+  RESTServerThread* GetSecondaryThread() { return m_pSecondary_Thread; }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
   void UpdateRouteMgr() { m_dlg_ctx.update_route_mgr(); }
 
-  std::string GetCertificateDirectory(){ return m_certificate_directory; }
+  std::string GetCertificateDirectory() { return m_certificate_directory; }
   int m_Thread_run_flag;
 
   std::string m_cert_file;
   std::string m_key_file;
 
 private:
-  bool LoadConfig( void );
-  bool SaveConfig( void );
+  bool LoadConfig(void);
+  bool SaveConfig(void);
 
   RestServerDlgCtx m_dlg_ctx;
+  RouteCtx m_route_ctx;
+  bool& m_portable;
   RESTServerThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
   std::string m_certificate_directory;
@@ -147,8 +164,6 @@ private:
   bool m_b_overwrite;
   std::string m_tempUploadFilePath;
   std::ofstream m_ul_stream;
-
-
 };
 
 #endif  // guard
