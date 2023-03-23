@@ -63,7 +63,7 @@ class markicon_description_list_type;
 WX_DEFINE_SORTED_ARRAY(MarkIcon *, SortedArrayOfMarkIcon);
 WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
 
-// Callbacks for RoutePropDlg
+/** Callbacks for RoutePropDlg */
 struct RoutePropDlgCtx {
   std::function<void(Route*)> SetRouteAndUpdate;
   std::function<void(Route*, RoutePoint*)> SetEnroutePoint;
@@ -75,6 +75,25 @@ struct RoutePropDlgCtx {
       { }
 };
 
+/** Routeman callbacks. */
+
+struct RoutemanDlgCtx {
+  std::function<bool()> confirm_delete_ais_mob;
+  std::function<wxColour(wxString)> get_global_colour;
+  std::function<void()> show_with_fresh_fonts;
+  std::function<void()> clear_console_background;
+  std::function<void()> route_mgr_dlg_update_list_ctrl;
+
+  RoutemanDlgCtx()
+     : confirm_delete_ais_mob([]() { return true; }),
+       get_global_colour([](wxString c) { return *wxBLACK; }),
+       show_with_fresh_fonts([]() { }),
+       clear_console_background([]() { }),
+       route_mgr_dlg_update_list_ctrl([]() { })
+       {}
+};
+
+
 //----------------------------------------------------------------------------
 //   Routeman
 //----------------------------------------------------------------------------
@@ -84,8 +103,8 @@ class Routeman {
 friend class RoutemanGui;
 
 public:
-  Routeman(struct RoutePropDlgCtx ctx,
-           std::function<void()> RouteMgrDlgUpdateListCtrl,
+  Routeman(struct RoutePropDlgCtx prop_dlg_ctx,
+           struct RoutemanDlgCtx route_dlg_ctx,
            NmeaLog& nmea_log);
   ~Routeman();
 
@@ -189,7 +208,7 @@ private:
   double m_arrival_min;
   int m_arrival_test;
   struct RoutePropDlgCtx m_prop_dlg_ctx;
-  std::function<void()> m_route_mgr_dlg_update_list_ctrl;
+  struct RoutemanDlgCtx m_route_dlg_ctx;
   NmeaLog& m_nmea_log;
 
   ObsListener msg_sent_listener;
