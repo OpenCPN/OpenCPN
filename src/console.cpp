@@ -170,7 +170,7 @@ static void InitRouteman() {
   struct RoutePropDlgCtx ctx;
   auto RouteMgrDlgUpdateListCtrl = [&]() {};
   static  NmeaLogDummy dummy_log;
-  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl, dummy_log);
+  g_pRouteMan = new Routeman(ctx, RoutemanDlgCtx(), dummy_log);
 }
 
 namespace safe_mode {

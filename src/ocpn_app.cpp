@@ -1281,7 +1281,7 @@ bool MyApp::OnInit() {
       pRouteManagerDialog->UpdateRouteListCtrl();
   };
 
-  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl,
+  g_pRouteMan = new Routeman(ctx, RoutemanGui::GetDlgCtx(),
                              NMEALogWindow::Get());
 
   //      Init the Selectable Route Items List

@@ -36,6 +36,7 @@
 
 #include "ais_decoder.h"
 #include "chcanv.h"
+#include "concanv.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "route_point.h"
@@ -59,12 +60,38 @@ extern MyFrame* gFrame;
 extern Select *pSelect;
 extern AisDecoder *g_pAIS;
 
+extern ConsoleCanvas *console;
 
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern TrackPropDlg *pTrackPropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyConfig *pConfig;
+
+static bool ConfirmDeleteAisMob() {
+  int r = OCPNMessageBox(NULL,
+                         _("You are trying to delete an active AIS MOB "
+                         "route, are you REALLY sure?"),
+                         _("OpenCPN Warning"), wxYES_NO);
+
+  return r == wxID_YES;
+}
+
+RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
+   RoutemanDlgCtx ctx;
+   ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
+   ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
+   ctx.show_with_fresh_fonts = []() { console->ShowWithFreshFonts(); };
+   ctx.clear_console_background = [] () {
+        console->pCDI->ClearBackground();
+        console->Show(false); };
+   ctx.route_mgr_dlg_update_list_ctrl = []() {
+     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+       pRouteManagerDialog->UpdateRouteListCtrl();
+   };
+   return ctx;
+}
+
 
 bool RoutemanGui::UpdateProgress() {
   bool bret_val = false;
