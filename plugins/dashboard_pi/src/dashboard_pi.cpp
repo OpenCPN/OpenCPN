@@ -4092,16 +4092,16 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   Fit();
 
   // Constrain size on small displays
+  SetMaxSize(wxSize(display_width, display_height));
+
   wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
   if(display_height < 600){
-    SetMaxSize(GetOCPNCanvasWindow()->GetSize());
     if(g_dashPrefWidth > 0 && g_dashPrefHeight > 0)
       SetSize(wxSize(g_dashPrefWidth, g_dashPrefHeight));
     else
       SetSize(wxSize(canvas_size.x * 8/10, canvas_size.y * 8 / 10));
   }
   else {
-    SetMaxSize(GetOCPNCanvasWindow()->GetSize());
     if(g_dashPrefWidth > 0 && g_dashPrefHeight > 0)
       SetSize(wxSize(g_dashPrefWidth, g_dashPrefHeight));
     else
