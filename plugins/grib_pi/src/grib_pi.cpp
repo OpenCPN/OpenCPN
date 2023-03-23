@@ -61,7 +61,6 @@ extern int m_DialogStyle;
 grib_pi *g_pi;
 bool g_bpause;
 float g_piGLMinSymbolLineWidth;
-int g_gribPrefWidth, g_gribPrefHeight;
 
 //---------------------------------------------------------------------------------------------------------
 //

@@ -1137,10 +1137,8 @@ void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
     pPlugIn->SetDialogFont(sc);
   }  // end set font
 
-   dialog->m_nSettingsBook->ChangeSelection(dialog->GetPageIndex());
-   dialog->SetSettingsDialogSize();
-//  dialog->SetSize(wxSize(700, 440));
-
+  dialog->m_nSettingsBook->ChangeSelection(dialog->GetPageIndex());
+  dialog->SetSettingsDialogSize();
   // need to set a position at start
   int w;
   ::wxDisplaySize(&w, NULL);
