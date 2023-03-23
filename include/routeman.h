@@ -65,13 +65,13 @@ WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
 
 /** Callbacks for RoutePropDlg */
 struct RoutePropDlgCtx {
-  std::function<void(Route*)> SetRouteAndUpdate;
-  std::function<void(Route*, RoutePoint*)> SetEnroutePoint;
-  std::function<void(Route*)> Hide;
+  std::function<void(Route*)> set_route_and_update;
+  std::function<void(Route*, RoutePoint*)> set_enroute_point;
+  std::function<void(Route*)> hide;
   RoutePropDlgCtx() :
-      SetRouteAndUpdate([&](Route* r) {}),
-      SetEnroutePoint([&](Route* r, RoutePoint* rt) {}),
-      Hide([&](Route* r) {})
+      set_route_and_update([&](Route* r) {}),
+      set_enroute_point([&](Route* r, RoutePoint* rt) {}),
+      hide([&](Route* r) {})
       { }
 };
 
@@ -218,12 +218,14 @@ private:
 //   WayPointman
 //----------------------------------------------------------------------------
 
+typedef std::function<wxColour(wxString)> GlobalColourFunc;
+
 class WayPointman {
 
 friend class WayPointmanGui;
 
 public:
-  WayPointman();
+  WayPointman(GlobalColourFunc colour_func);
   ~WayPointman();
   wxBitmap *GetIconBitmap(const wxString &icon_key);
   bool GetIconPrescaled(const wxString &icon_key);
@@ -278,6 +280,7 @@ private:
   int m_bitmapSizeForList;
   int m_iconListHeight;
   ColorScheme m_cs;
+  GlobalColourFunc m_get_global_colour;
 };
 
 #endif // _ROUTEMAN_H__

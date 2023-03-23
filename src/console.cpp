@@ -251,7 +251,8 @@ public:
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();
-    pWayPointMan = new WayPointman();
+    auto colour_func = [] (wxString c) { return *wxBLACK; };
+    pWayPointMan = new WayPointman(colour_func);
   }
 
   void list_plugins() {

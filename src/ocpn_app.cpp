@@ -1257,32 +1257,8 @@ bool MyApp::OnInit() {
 
   //      Init the Route Manager
 
-  struct RoutePropDlgCtx ctx;
-  ctx.SetRouteAndUpdate = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
-      pRoutePropDialog->SetRouteAndUpdate(r, true);
-    }
-  };
-  ctx.SetEnroutePoint = [&](Route* r, RoutePoint* rt) {
-    if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
-      if (pRoutePropDialog->GetRoute() == r) {
-        pRoutePropDialog->SetEnroutePoint(rt);
-      }
-    }
-  };
-  ctx.Hide = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
-        (r == pRoutePropDialog->GetRoute())) {
-      pRoutePropDialog->Hide();
-    }
-  };
-  auto RouteMgrDlgUpdateListCtrl = [&]() {
-    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-      pRouteManagerDialog->UpdateRouteListCtrl();
-  };
-
-  g_pRouteMan = new Routeman(ctx, RoutemanGui::GetDlgCtx(),
-                             NMEALogWindow::Get());
+ g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
+                            NMEALogWindow::Get());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
