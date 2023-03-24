@@ -46,7 +46,7 @@ class GribGrabberWin : public wxPanel {
 public:
   GribGrabberWin(wxWindow* parent);
   void OnPaint(wxPaintEvent& event);
-  void Size(double factor);
+  void Size();
 
 private:
   void OnMouseEvent(wxMouseEvent& event);
