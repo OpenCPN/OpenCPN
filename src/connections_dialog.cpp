@@ -1401,7 +1401,6 @@ void ConnectionsDialog::SetDSFormRWStates(void) {
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
     UpdateDiscoverStatus(wxEmptyString);
-
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(_T("10110"));
