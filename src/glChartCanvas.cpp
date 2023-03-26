@@ -1173,7 +1173,10 @@ void glChartCanvas::SetupOpenGL() {
     //m_b_DisableFBO = true;
 #endif
 
-  //m_b_DisableFBO = true;
+  // Accelerated pan is not used for MacOS Retina display
+  // So there is no advantage to using FBO
+  if (m_displayScale > 1)
+    m_b_DisableFBO = true;
 
   //      Maybe build FBO(s)
   BuildFBO();
