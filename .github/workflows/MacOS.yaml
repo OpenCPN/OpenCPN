@@ -30,10 +30,10 @@ jobs:
           #   cmake_generator: Xcode
           #   cmake_defines: -DCMAKE_CXX_STANDARD=11
           #   use_homebrew: 1
-          - name: macOS 11 wxOSX
-            runner: macos-12
-            pkg_mod: 11
-            MACOSX_DEPLOYMENT_TARGET: 10.13
+          #- name: macOS 11 wxOSX
+          #  runner: macos-12
+          #  pkg_mod: 11
+          #  MACOSX_DEPLOYMENT_TARGET: 10.13
           - name: macOS 10.15 wxOSX
             runner: macos-10.15
             pkg_mod: 10
