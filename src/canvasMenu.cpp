@@ -93,6 +93,7 @@ extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
 extern AisDecoder *g_pAIS;
+extern bool g_bCPAWarn;
 extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
@@ -178,6 +179,7 @@ enum {
   ID_WP_MENU_SET_ANCHORWATCH,
   ID_WP_MENU_CLEAR_ANCHORWATCH,
   ID_DEF_MENU_AISTARGETLIST,
+  ID_DEF_MENU_AIS_CPAWARNING,
 
   ID_RC_MENU_SCALE_IN,
   ID_RC_MENU_SCALE_OUT,
@@ -668,9 +670,14 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         }
 
         menuFocus = menuAIS;
-      } else
+      } else {
         MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST,
                     _("AIS target list") + _T("..."));
+
+        wxString nextCPAstatus = g_bCPAWarn ? _("OFF") : _("ON");
+        MenuAppend1(contextMenu, ID_DEF_MENU_AIS_CPAWARNING,
+                    _menuText(_("CPA alarm ") + "--> " + nextCPAstatus, "W"));
+      }
     }
   }
 
@@ -1198,6 +1205,10 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_DEF_MENU_AISTARGETLIST:
       parent->ShowAISTargetList();
+      break;
+
+    case ID_DEF_MENU_AIS_CPAWARNING:
+      parent->ToggleCPAWarn();
       break;
 
     case ID_WP_MENU_GOTO: {
