@@ -1587,7 +1587,7 @@ EVT_CHAR_HOOK(options::OnCharHook)
 
 END_EVENT_TABLE()
 
-options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
+options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style) {
   Init();
 
@@ -1651,6 +1651,7 @@ bool options::SendIdleEvents(wxIdleEvent& event) {
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
     m_nCharWidthMax = GetSize().x / GetCharWidth();
+    CenterOnScreen();
     return;
   }
 
@@ -7945,7 +7946,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     wxFont* psfont = new wxFont(font);
     wxColor color = font_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
-    pParent->UpdateAllFonts();
+    gFrame->UpdateAllFonts();
     m_bfontChanged = true;
     OnFontChoice(event);
   }
@@ -8008,7 +8009,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     wxColor color = colour_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, pif, color);
 
-    pParent->UpdateAllFonts();
+    gFrame->UpdateAllFonts();
     m_bfontChanged = true;
     OnFontChoice(event);
   }

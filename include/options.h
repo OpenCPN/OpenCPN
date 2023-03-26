@@ -270,7 +270,7 @@ class options : private Uncopyable,
 #endif
 {
 public:
-  explicit options(MyFrame *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+  explicit options(wxWindow *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
                    const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
                    const wxSize &size = SYMBOL_OPTIONS_SIZE,
@@ -595,7 +595,7 @@ public:
 
   ArrayOfCDI m_CurrentDirList, *m_pWorkDirList;
   MyConfig *m_pConfig;
-  MyFrame *pParent;
+  wxWindow *pParent;
 
   int k_plugins;
   bool m_bForceNewToolbaronCancel;
