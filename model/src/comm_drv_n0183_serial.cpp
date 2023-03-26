@@ -45,12 +45,10 @@
 #include "model/wait_continue.h"
 #include "observable.h"
 
-#ifndef __ANDROID__
-#include "serial/serial.h"
-#endif
-
 #ifdef __ANDROID__
 #include "androidUTIL.h"
+#else
+#include "serial/serial.h"
 #endif
 
 typedef enum DS_ENUM_BUFFER_STATE {
