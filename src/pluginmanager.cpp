@@ -8356,6 +8356,8 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex *proute, bool b_permanent) {
     route->m_GUID = proute->m_GUID;
   }
   route->m_btemp = (b_permanent == false);
+  route->SetVisible(proute->m_isVisible);
+  route->m_RouteDescription = proute->m_Description;
 
   pRouteList->Append(route);
 
@@ -8425,6 +8427,8 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString &GUID) {
   dst_route->m_EndString = route->m_RouteEndString;
   dst_route->m_GUID = route->m_GUID;
   dst_route->m_isActive = g_pRouteMan->GetpActiveRoute() == route;
+  dst_route->m_isVisible = route->IsVisible();
+  dst_route->m_Description = route->m_RouteDescription;
 
   return r;
 }
