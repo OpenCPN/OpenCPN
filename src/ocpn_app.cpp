@@ -80,6 +80,7 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 #include <wx/cmdline.h>
+#include <wx/display.h>
 
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
@@ -1651,7 +1652,7 @@ bool MyApp::OnInit() {
     position = wxPoint(g_nframewin_posx, g_nframewin_posy);
 
 #ifdef __WXMSW__
-  //  Support MultiMonitor setups which an allow negative window positions.
+  //  Support MultiMonitor setups which can allow negative window positions.
   RECT frame_rect;
   frame_rect.left = position.x;
   frame_rect.top = position.y;
@@ -1663,6 +1664,18 @@ bool MyApp::OnInit() {
   if (NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
     position = wxPoint(10, 10);
 #endif
+
+#ifdef __WXOSX__
+  //  Support MultiMonitor setups which can allow negative window positions.
+  const wxPoint ptScreen(position.x, position.y);
+  const int displayIndex = wxDisplay::GetFromPoint(ptScreen);
+
+  if (displayIndex == wxNOT_FOUND)
+    position = wxPoint(10, 30);
+#endif
+
+  g_nframewin_posx = position.x;
+  g_nframewin_posy = position.y;
 
 #ifdef __OCPN__ANDROID__
   wxSize asz = getAndroidDisplayDimensions();
