@@ -43,6 +43,7 @@ set(
   ${MODEL_HDR_DIR}/comm_appmsg_bus.h
   ${MODEL_HDR_DIR}/comm_appmsg.h
   ${MODEL_HDR_DIR}/comm_bridge.h
+  ${MODEL_HDR_DIR}/comm_buffers.h
   ${MODEL_HDR_DIR}/comm_can_util.h
   ${MODEL_HDR_DIR}/comm_decoder.h
   ${MODEL_HDR_DIR}/comm_driver.h
@@ -137,6 +138,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_appmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_appmsg.cpp
   ${MODEL_SRC_DIR}/comm_bridge.cpp
+  ${MODEL_SRC_DIR}/comm_buffers.cpp
   ${MODEL_SRC_DIR}/comm_can_util.cpp
   ${MODEL_SRC_DIR}/comm_decoder.cpp
   #${MODEL_SRC_DIR}/comm_driver.cpp
