@@ -674,9 +674,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST,
                     _("AIS target list") + _T("..."));
 
-        wxString nextCPAstatus = g_bCPAWarn ? _("OFF") : _("ON");
+        wxString nextCPAstatus = g_bCPAWarn ? _("Hide") : _("Show");
         MenuAppend1(contextMenu, ID_DEF_MENU_AIS_CPAWARNING,
-                    _menuText(_("CPA alarm ") + "--> " + nextCPAstatus, "W"));
+                    _menuText(nextCPAstatus + " " + _("CPA alarm "), "W"));
       }
     }
   }
