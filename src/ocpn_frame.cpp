@@ -1977,6 +1977,10 @@ void MyFrame::OnMove(wxMoveEvent &event) {
     if (cc) cc->SetMUIBarPosition();
   }
 
+#ifdef __WXOSX__
+  SendSizeEvent();
+#endif
+
   UpdateGPSCompassStatusBoxes();
 
   if (console && console->IsShown()) PositionConsole();

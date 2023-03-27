@@ -3822,6 +3822,11 @@ void glChartCanvas::Render() {
 
 #endif
 
+#ifdef __WXOSX__
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
   m_last_render_time = wxDateTime::Now().GetTicks();
 
   // we don't care about jobs that are now off screen
