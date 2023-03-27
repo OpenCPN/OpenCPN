@@ -37,6 +37,7 @@
 #include <wx/utils.h>
 
 #include "config.h"
+#include "model/comm_buffers.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
@@ -57,44 +58,6 @@ typedef enum DS_ENUM_BUFFER_STATE {
 } _DS_ENUM_BUFFER_STATE;
 
 class CommDriverN0183Serial;  // fwd
-
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
-
-template <typename T>
-class n0183_atomic_queue {
-public:
-  size_t size() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.size();
-  }
-
-  bool empty() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.empty();
-  }
-
-  const T& front() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.front();
-  }
-
-  void push(const T& value) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.push(value);
-  }
-
-  void pop() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.pop();
-  }
-
-private:
-  std::queue<T> m_queque;
-  mutable std::mutex m_mutex;
-};
-
-#define OUT_QUEUE_LENGTH 20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
@@ -146,7 +109,7 @@ private:
   int m_baud;
   size_t m_send_retries;
 
-  n0183_atomic_queue<char*> out_que;
+  OutputBuffer m_out_que;
   WaitContinue device_waiter;
   ObsListener resume_listener;
   ObsListener new_device_listener;
@@ -453,17 +416,8 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
 }
 
 bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
-  if (out_que.size() < OUT_QUEUE_LENGTH) {
-    wxCharBuffer buf = msg.ToUTF8();
-    if (buf.data()) {
-      char* qmsg = (char*)malloc(strlen(buf.data()) + 1);
-      strcpy(qmsg, buf.data());
-      out_que.push(qmsg);
-      return true;
-    }
-  }
-
-  return false;
+  m_out_que.Put(msg.ToStdString());
+  return true;
 }
 
 void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
@@ -600,29 +554,17 @@ void* CommDriverN0183SerialThread::Entry() {
       }
     }  // while
 
-    //      Check for any pending output message
-
-    bool b_qdata = !out_que.empty();
-
-    while (b_qdata) {
-      //  Take a copy of message
-      char* qmsg = out_que.front();
-      out_que.pop();
-      // m_outCritical.Leave();
-      char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
-      strncpy(msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH - 1);
-      free(qmsg);
-
-      if (-1 == WriteComPortPhysical(msg) && 10 < m_send_retries++) {
+    //  Handle pending output messages
+    std::string qmsg;
+    while (m_out_que.Get(qmsg)) {
+      if (-1 == WriteComPortPhysical(qmsg.c_str()) && 10 < m_send_retries++) {
         // We failed to write the port 10 times, let's close the port so that
         // the reconnection logic kicks in and tries to fix our connection.
         m_send_retries = 0;
         CloseComPortPhysical();
       }
-
-      b_qdata = !out_que.empty();
-    }  // while b_qdata
-  }  // while not done.
+    }
+  }
 
 thread_exit:
   CloseComPortPhysical();
