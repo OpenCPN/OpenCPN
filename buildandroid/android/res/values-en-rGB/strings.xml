@@ -1,10 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="DOWNLOADING_FILE">Downloading file…</string>
+    <string name="DEFAULT">Default</string>
+    <string name="CUSTOM">Custom</string>
+    <string name="ocpn_GRIB_activity_Display">GRIB Display Settings</string>
+    <string name="ocpn_GRIB_activity_Choose">Choose local GRIB file</string>
+    <string name="ocpn_GRIB_activity_Request">Request new GRIB file download</string>
+    <string name="ocpn_GRIB_download_dialog_Request">Request GRIB Download...</string>
+    <string name="ocpn_GRIB_download_dialog_OK">GRIB file downloaded OK</string>
+    <string name="ocpn_GRIB_download_dialog_NO_INTERNET">No Internet available\n Please check your device Mobile Data or WiFi settings.</string>
+    <string name="ocpn_GRIB_download_dialog_NO_CONNECTION">Connection Failed</string>
+    <string name="ocpn_GRIB_download_dialog_DOWN_FAIL">Download Failed\n Please check logs.</string>
+    <string name="ocpn_action_follow">Auto-Follow Boat</string>
+    <string name="ocpn_action_mob">Mark Man Overboard</string>
+    <string name="ocpn_action_routemanager">Show Route Manager</string>
+    <string name="ocpn_action_tracktoggle_on">Start tracking</string>
+    <string name="ocpn_action_tracktoggle_off">Stop tracking</string>
+    <string name="ocpn_action_createroute">Create a new route</string>
+    <string name="ocpn_action_endroute">Finish new route</string>
+    <string name="ocpn_action_tides">Show/Hide Tides</string>
+    <string name="ocpn_action_currents">Show/Hide Currents</string>
+    <string name="ocpn_action_settings_basic">OpenCPN Settings</string>
+    <string name="ocpn_action_encText">Toggle ENC text</string>
+    <string name="ocpn_action_encSoundings">Toggle ENC soundings</string>
+    <string name="ocpn_action_encLights">Toggle ENC lights</string>
+    <string name="ocpn_action_googlemaps">Switch to Google Maps</string>
+    <string name="ocpn_action_toggle_fullscreen">Toggle Fullscreen</string>
     <!-- Preferences Headers -->
+    <string name="ocpn_prefs_header_display">Display</string>
+    <string name="ocpn_prefs_header_charts">Charts</string>
+    <string name="ocpn_prefs_header_connections">Connections</string>
+    <string name="ocpn_prefs_header_summary_display">Chart display options</string>
+    <string name="ocpn_prefs_header_summary_charts">Chart sources and options</string>
+    <string name="ocpn_prefs_header_summary_connections">GPS/AIS location options</string>
     <!-- Display Preferences -->
+    <string name="ocpn_prefs_display_navigation_mode">Navigation Mode</string>
+    <string name="ocpn_prefs_display_lookahead_mode">Look Ahead mode</string>
+    <string name="ocpn_prefs_display_enablequilt">Enable Chart Quilting</string>
+    <string name="ocpn_prefs_display_showgrid">Show Grid</string>
+    <string name="ocpn_prefs_display_showoutlines">Show Chart Outlines</string>
+    <string name="ocpn_prefs_display_lockwaypoints">Lock Waypoints</string>
+    <string name="ocpn_prefs_display_confirmdelete">Confirm Delete Actions</string>
+    <string name="ocpn_prefs_display_showdepthunits">Show Depth Units</string>
+    <string name="ocpn_prefs_display_uiscalefactor">User Interface Scale Factor</string>
+    <string name="ocpn_prefs_display_chartscalefactor">Chart Display Scale Factor</string>
+    <string name="ocpn_prefs_display_expertmode">Expert Mode</string>
+    <string name="ocpn_prefs_display_summary_nav_mode">Show more of the chart ahead of the ship\'s course</string>
+    <string name="ocpn_prefs_display_summary_quilt">Display multiple charts at your location</string>
+    <string name="ocpn_prefs_display_summary_grid">Show Latitude/Longitude grid overlay</string>
+    <string name="ocpn_prefs_display_summary_outlines">Individual chart outlines shown as contrasting overlay</string>
+    <string name="ocpn_prefs_display_summary_lockwpt">Unless Property Dialogue is shown</string>
+    <string name="ocpn_prefs_display_summary_confirmdelete">On Routes and Tracks</string>
+    <string name="ocpn_prefs_display_summary_depthunits">Depth units displayed as emboss on chart surface</string>
+    <string name="ocpn_prefs_display_summary_uiscalefactor">Affects toolbars, dialogues, and GUI fonts.</string>
+    <string name="ocpn_prefs_display_summary_chartscalefactor">Affects chart objects like marks, buoys, text, etc.</string>
+    <string name="ocpn_prefs_display_summary_expertmode">Showing toolbar and extended menus</string>
     <!-- Charts Preferences -->
     <!-- Connections Preferences -->
     <!-- Grib Display Headers -->
+    <string name="ocpn_grib_display_head_airtemp">Air temperature</string>
+    <string name="ocpn_grib_display_head_seatemp">Sea temperature</string>
+    <string name="ocpn_grib_display_head_cape">CAPE</string>
+    <string name="ocpn_grib_display_head_summary_general">Set General Display Options</string>
+    <string name="ocpn_grib_display_head_summary_wind">Set Wind Display Options</string>
+    <string name="ocpn_grib_display_head_summary_pressure">Set Pressure Display Options</string>
+    <string name="ocpn_grib_display_head_summary_windgust">Set Wind Gust Display Options</string>
+    <string name="ocpn_grib_display_head_summary_waves">Set Wave Display Options</string>
+    <string name="ocpn_grib_display_head_summary_current">Set Current Display Options</string>
+    <string name="ocpn_grib_display_head_summary_rain">Set Rainfall Display Options</string>
+    <string name="ocpn_grib_display_head_summary_cloud">Set Cloudcover Display Options</string>
+    <string name="ocpn_grib_display_head_summary_airtemp">Set Air Temperature Display Options</string>
+    <string name="ocpn_grib_display_head_summary_seatemp">Set Sea Temperature Display Options</string>
+    <string name="ocpn_grib_display_head_summary_cape">Set CAPE Display Options</string>
+    <string name="ocpn_grib_download_model">Model</string>
+    <string name="ocpn_grib_download_timestep">Time step</string>
+    <string name="ocpn_grib_download_days">Days</string>
+    <string name="ocpn_grib_download_cat_general">General</string>
+    <string name="ocpn_grib_download_item_wind">Wind</string>
+    <string name="ocpn_grib_download_item_pressure">Pressure</string>
+    <string name="ocpn_grib_download_item_windgust">WindGust</string>
+    <string name="ocpn_grib_download_item_rain">Rainfall</string>
+    <string name="ocpn_grib_download_item_cloud">CloudCover</string>
     <!-- Grib Fragment prefs -->
     <!--  Grib Arrays   -->
 </resources>

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-26 21:37-0500\n"
-"PO-Revision-Date: 2023-02-27 02:40\n"
+"POT-Creation-Date: 2023-03-14 22:11-0400\n"
+"PO-Revision-Date: 2023-03-27 01:58\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -17,16 +17,16 @@ msgstr ""
 "X-Crowdin-File: /po/opencpn.pot\n"
 "X-Crowdin-File-ID: 102\n"
 
-#: include/about.h:38 include/AboutFrame.h:87 include/AboutFrameImpl.h:68
-#: src/ocpn_frame.cpp:3636 src/ocpn_frame.cpp:7149 src/toolbar.cpp:1276
+#: include/AboutFrame.h:87 include/AboutFrameImpl.h:68 include/about.h:38
+#: src/ocpn_frame.cpp:3640 src/ocpn_frame.cpp:7155 src/toolbar.cpp:1274
 msgid "About OpenCPN"
 msgstr "Über OpenCPN"
 
 #: include/AISTargetAlertDialog.h:48 src/routemanagerdialog.cpp:1357
-#: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2203
-#: src/routemanagerdialog.cpp:2309 src/routemanagerdialog.cpp:2658
-#: src/routemanagerdialog.cpp:2690 src/routemanagerdialog.cpp:2826
-#: src/routemanagerdialog.cpp:2991 src/toolbar.cpp:3048
+#: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2205
+#: src/routemanagerdialog.cpp:2311 src/routemanagerdialog.cpp:2660
+#: src/routemanagerdialog.cpp:2692 src/routemanagerdialog.cpp:2828
+#: src/routemanagerdialog.cpp:2993 src/toolbar.cpp:3046
 msgid "OpenCPN Alert"
 msgstr "OpenCPN Alarm"
 
@@ -36,12 +36,12 @@ msgstr "OpenCPN AIS Warnung"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:57
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
-#: src/canvasMenu.cpp:466 src/canvasMenu.cpp:475 src/chcanv.cpp:9526
+#: src/canvasMenu.cpp:461 src/canvasMenu.cpp:470 src/chcanv.cpp:9529
 msgid "Object Query"
 msgstr "Objekt-Abfrage"
 
 #: include/GoToPositionDialog.h:44 src/AISTargetListDialog.cpp:703
-#: src/canvasMenu.cpp:504
+#: src/canvasMenu.cpp:499
 msgid "Center view"
 msgstr "Ansicht zentrieren"
 
@@ -49,15 +49,15 @@ msgstr "Ansicht zentrieren"
 msgid "Link Properties"
 msgstr "Link-Eigenschaften"
 
-#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9689
-#: src/chcanv.cpp:9693 src/routemanagerdialog.cpp:2629
-#: src/routemanagerdialog.cpp:2633 src/RoutePropDlgImpl.cpp:928
+#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9692
+#: src/chcanv.cpp:9696 src/routemanagerdialog.cpp:2631
+#: src/routemanagerdialog.cpp:2635 src/RoutePropDlgImpl.cpp:928
 msgid "Waypoint Properties"
 msgstr "Wegpunkt-Eigenschaften"
 
-#: include/options.h:91 src/ocpn_frame.cpp:3626 src/ocpn_frame.cpp:3886
-#: src/ocpn_frame.cpp:4940 src/ocpn_frame.cpp:7108 src/options.cpp:3338
-#: src/toolbar.cpp:1205
+#: include/options.h:91 src/ocpn_frame.cpp:3630 src/ocpn_frame.cpp:3890
+#: src/ocpn_frame.cpp:4944 src/ocpn_frame.cpp:7114 src/options.cpp:3338
+#: src/toolbar.cpp:1203
 msgid "Options"
 msgstr "Optionen"
 
@@ -66,7 +66,7 @@ msgid "Print Route Selection"
 msgstr "Gewählte Route drucken"
 
 #: include/RoutePropDlg.h:165 include/RoutePropDlgImpl.h:97
-#: src/canvasMenu.cpp:1839 src/chcanv.cpp:7594 src/RoutePropDlgImpl.cpp:515
+#: src/canvasMenu.cpp:1854 src/chcanv.cpp:7597 src/RoutePropDlgImpl.cpp:515
 msgid "Route Properties"
 msgstr "Routen-Eigenschaften"
 
@@ -75,15 +75,15 @@ msgstr "Routen-Eigenschaften"
 msgid "Extra Object Info"
 msgstr "Zusätzliche Objektinfos"
 
-#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:753 src/canvasMenu.cpp:854
-#: src/canvasMenu.cpp:904 src/canvasMenu.cpp:1674 src/canvasMenu.cpp:1685
-#: src/canvasMenu.cpp:1727 src/canvasMenu.cpp:1738
-#: src/routemanagerdialog.cpp:1798 src/routemanagerdialog.cpp:2796
+#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:748 src/canvasMenu.cpp:849
+#: src/canvasMenu.cpp:899 src/canvasMenu.cpp:1689 src/canvasMenu.cpp:1700
+#: src/canvasMenu.cpp:1742 src/canvasMenu.cpp:1753
+#: src/routemanagerdialog.cpp:1800 src/routemanagerdialog.cpp:2798
 msgid "Send to GPS"
 msgstr "An GPS senden"
 
-#: include/track.h:122 src/ocpn_frame.cpp:3069 src/ocpn_frame.cpp:6430
-#: src/ocpn_frame.cpp:6548
+#: include/track.h:122 src/ocpn_frame.cpp:3073 src/ocpn_frame.cpp:6436
+#: src/ocpn_frame.cpp:6554
 msgid "(Unnamed Track)"
 msgstr "(unbenannter Track)"
 
@@ -96,21 +96,136 @@ msgstr "Gewählten Track drucken"
 msgid "Track properties"
 msgstr "Track Eigenschaften"
 
+#: libs/s52plib/src/s52plib.cpp:2171 libs/s52plib/src/s52plib.cpp:2275
+#: libs/s52plib/src/s52plib.cpp:2444
+msgid "ChartTexts"
+msgstr "Kartentexte"
+
+#: libs/wxcurl/src/dialog.cpp:137
+msgid "Not available"
+msgstr "Nicht verfügbar"
+
+#: libs/wxcurl/src/dialog.cpp:168
+msgid "URL:"
+msgstr "URL:"
+
+#: libs/wxcurl/src/dialog.cpp:187
+msgid "Speed:"
+msgstr "Geschw:"
+
+#: libs/wxcurl/src/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "Verstrichene Zeit:"
+
+#: libs/wxcurl/src/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "Voraussichtliche Gesamtdauer:"
+
+#: libs/wxcurl/src/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "Geschätzte verbleibende Zeit:"
+
+#: libs/wxcurl/src/dialog.cpp:243 libs/wxcurl/src/dialog.cpp:399
+msgid "Abort"
+msgstr "Abbrechen"
+
+#: libs/wxcurl/src/dialog.cpp:245
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: libs/wxcurl/src/dialog.cpp:250 libs/wxcurl/src/dialog.cpp:420
+#: src/TTYWindow.cpp:84 src/TTYWindow.cpp:184
+msgid "Pause"
+msgstr "Pause"
+
+#: libs/wxcurl/src/dialog.cpp:252
+msgid "Start"
+msgstr "Start"
+
+#: libs/wxcurl/src/dialog.cpp:399 src/about.cpp:497
+#: src/AISTargetListDialog.cpp:798
+msgid "Close"
+msgstr "Schließen"
+
+#: libs/wxcurl/src/dialog.cpp:410 src/TTYWindow.cpp:179
+msgid "Resume"
+msgstr "Fortsetzen"
+
+#: libs/wxcurl/src/dialog.cpp:413
+msgid "0 (transfer paused)"
+msgstr "0 (Download angehalten)"
+
+#: libs/wxcurl/src/dialog.cpp:461
+msgid "Connection settings"
+msgstr "Verbindungseinstellungen"
+
+#: libs/wxcurl/src/dialog.cpp:461
+msgid "Connection settings used for the transfer:"
+msgstr "Verbindungseinstellungen dieses Transfers:"
+
+#: libs/wxcurl/src/dialog.cpp:516
+msgid "0 (transfer completed)"
+msgstr "0 (Download abgeschlossen)"
+
+#: libs/wxcurl/src/dialog.cpp:537
+msgid "Downloaded:"
+msgstr "Heruntergeladen:"
+
+#: libs/wxcurl/src/dialog.cpp:585
+msgid "Uploaded:"
+msgstr "Hochgeladen:"
+
+#: libs/wxcurl/src/panel.cpp:111
+msgid "Username:"
+msgstr "Benutzername:"
+
+#: libs/wxcurl/src/panel.cpp:112
+msgid "Password:"
+msgstr "Paßwort:"
+
+#: libs/wxcurl/src/panel.cpp:120
+msgid "Port:"
+msgstr "Port: :"
+
+#: libs/wxcurl/src/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Proxy-Einstellungen"
+
+#: libs/wxcurl/src/panel.cpp:136
+msgid "Use proxy"
+msgstr "Proxy-Server verwenden"
+
+#: libs/wxcurl/src/panel.cpp:141
+msgid "Proxy host:"
+msgstr "Proxy Host:"
+
+#: libs/wxcurl/src/panel.cpp:142
+msgid "Proxy username:"
+msgstr "Proxy-Benutzername:"
+
+#: libs/wxcurl/src/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Proxy Paßwort:"
+
+#: libs/wxcurl/src/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Proxy-Port:"
+
 #: src/about.cpp:220 src/about.cpp:264 src/about.cpp:398 src/about.cpp:516
 #: src/AISTargetListDialog.cpp:329 src/androidUTIL.cpp:4881
-#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11757 src/chcanv.cpp:11790
+#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11760 src/chcanv.cpp:11793
 #: src/ChInfoWin.cpp:53 src/cm93.cpp:6427 src/concanv.cpp:104
 #: src/connections_dialog.cpp:350 src/conn_params_panel.cpp:86
 #: src/conn_params_panel.cpp:144 src/conn_params_panel.cpp:860
 #: src/glChartCanvas.cpp:3737 src/glTextureManager.cpp:1439 src/gui_lib.cpp:149
 #: src/gui_lib.cpp:286 src/LinkPropDlg.cpp:37 src/MarkInfo.cpp:235
-#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4581 src/ocpn_frame.cpp:8689
+#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4585 src/ocpn_frame.cpp:8695
 #: src/OCPNPlatform.cpp:1476 src/OCPNPlatform.cpp:1786 src/OCPNPlatform.cpp:1825
 #: src/options.cpp:736 src/options.cpp:762 src/options.cpp:1291
 #: src/options.cpp:1783 src/options.cpp:8491 src/options.cpp:8728
 #: src/options.cpp:8968 src/options.cpp:9113 src/Osenc.cpp:1675
 #: src/routemanagerdialog.cpp:305 src/RoutePropDlg.cpp:53 src/TCWin.cpp:84
-#: src/TCWin.cpp:180 src/toolbar.cpp:3140 src/TrackPropDlg.cpp:110
+#: src/TCWin.cpp:180 src/toolbar.cpp:3138 src/TrackPropDlg.cpp:110
 #: src/TrackPropDlg.cpp:324 src/TrackPropDlg.cpp:651 src/TTYWindow.cpp:114
 msgid "Dialog"
 msgstr "Dialog"
@@ -143,22 +258,17 @@ msgstr "Lizenz"
 msgid "Help"
 msgstr "Hilfe"
 
-#: src/about.cpp:497 src/AISTargetListDialog.cpp:798
-#: libs/wxcurl/src/dialog.cpp:399
-msgid "Close"
-msgstr "Schließen"
-
 #: src/AboutFrame.cpp:36
 msgid "< Back"
 msgstr "< Zurück"
 
-#: src/AboutFrame.cpp:52
+#: src/AboutFrame.cpp:52 src/udev_rule_mgr.cpp:273
 msgid "OpenCPN"
 msgstr "OpenCPN"
 
 #: src/AboutFrame.cpp:74
 msgid "(c) 2000-2023"
-msgstr ""
+msgstr "(c) 2000-2023"
 
 #: src/AboutFrame.cpp:81
 msgid "The OpenCPN Authors"
@@ -215,15 +325,15 @@ msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr "Möchten Sie die opencpn.org Webseite für weitere Informationen besuchen?"
 
 #: src/AboutFrameImpl.cpp:96 src/ais_info_gui.cpp:112
-#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2208
-#: src/connections_dialog.cpp:2221 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
-#: src/navutil.cpp:3173 src/ocpn_frame.cpp:828 src/ocpn_frame.cpp:961
-#: src/ocpn_frame.cpp:4270 src/options.cpp:1130 src/options.cpp:2908
+#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2214
+#: src/connections_dialog.cpp:2227 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
+#: src/navutil.cpp:3175 src/ocpn_frame.cpp:830 src/ocpn_frame.cpp:963
+#: src/ocpn_frame.cpp:4274 src/options.cpp:1130 src/options.cpp:2908
 #: src/options.cpp:7799 src/options.cpp:7836 src/peer_client.cpp:291
 #: src/peer_client.cpp:349 src/peer_client.cpp:354 src/peer_client.cpp:363
-#: src/pluginmanager.cpp:322 src/pluginmanager.cpp:646
-#: src/pluginmanager.cpp:1035 src/route_gui.cpp:597 src/RoutePoint.cpp:1278
-#: src/route_point_gui.cpp:876 src/tcmgr.cpp:692
+#: src/pluginmanager.cpp:318 src/pluginmanager.cpp:642
+#: src/pluginmanager.cpp:1008 src/route_gui.cpp:597 src/RoutePoint.cpp:1278
+#: src/route_point_gui.cpp:876 src/tcmgr.cpp:692 src/udev_rule_mgr.cpp:294
 msgid "OpenCPN Info"
 msgstr "OpenCPN Info"
 
@@ -892,7 +1002,17 @@ msgstr "Tragflügelboot"
 msgid "%02X"
 msgstr "%02X"
 
-#: src/ais_info_gui.cpp:194 src/options.cpp:4867
+#: src/ais_info_gui.cpp:103
+msgid "\n"
+"This AIS target has Persistent Tracking selected by MMSI properties\n"
+"A Persistent track recording will therefore be restarted for this target.\n\n"
+"Do you instead want to stop Persistent Tracking for this target?\n"
+msgstr "\n"
+"Für dieses AIS-Ziel ist \"Immer Tracken\" in den  MMSI-Eigenschaften aktiviertt\n"
+"Das Tracken wird daher für dieses Ziel neu gestartet.\n\n"
+"Wollen Sie das \"Immer tracken\" für dieses Ziel beenden?\n"
+
+#: src/ais_info_gui.cpp:198 src/options.cpp:4867
 msgid "AIS Alert"
 msgstr "AIS-Alarm"
 
@@ -1146,7 +1266,7 @@ msgid "in "
 msgstr "in"
 
 #: src/ais_target_data.cpp:719 src/ais_target_data.cpp:869
-#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6579
+#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6582
 msgid "CPA"
 msgstr "Ort bei größter Näherung"
 
@@ -1194,7 +1314,7 @@ msgstr "AtoN"
 msgid "Aid to Navigation"
 msgstr "Navigationshilfe"
 
-#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:315 src/options.cpp:3378
+#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:323 src/options.cpp:3378
 #: src/options.cpp:3581
 msgid "Base"
 msgstr "Basis"
@@ -1250,7 +1370,7 @@ msgstr "Feuer, Explosion"
 
 #: src/ais_target_data.cpp:986
 msgid "Flooding"
-msgstr ""
+msgstr "Wassereinbruch"
 
 #: src/ais_target_data.cpp:987
 msgid "Collision"
@@ -1262,7 +1382,7 @@ msgstr "Aufgelaufen"
 
 #: src/ais_target_data.cpp:988
 msgid "Listing, in danger of capsizing"
-msgstr ""
+msgstr "Schlagseite, Kentergefahr"
 
 #: src/ais_target_data.cpp:988
 msgid "Sinking"
@@ -1282,7 +1402,7 @@ msgstr "Schiff wird aufgegeben"
 
 #: src/ais_target_data.cpp:990
 msgid "Piracy/armed robbery attack"
-msgstr ""
+msgstr "Piraterie/Raubüberfall"
 
 #: src/ais_target_data.cpp:991
 msgid "Man overboard"
@@ -2611,8 +2731,8 @@ msgstr "FeuSch/Plattf"
 msgid "-"
 msgstr "-"
 
-#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:678
-#: src/ocpn_frame.cpp:3590
+#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:673
+#: src/ocpn_frame.cpp:3594
 msgid "AIS target list"
 msgstr "Liste AIS-Ziele"
 
@@ -2721,7 +2841,7 @@ msgstr "AIS-Zielabfrage"
 #: src/cm93.cpp:6512 src/GoToPositionDialog.cpp:150 src/MUIBar.cpp:179
 #: src/options.cpp:950 src/options.cpp:1052 src/options.cpp:5776
 #: src/routeprintout.cpp:428 src/TCWin.cpp:123 src/TCWin.cpp:132
-#: src/toolbar.cpp:3207 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
+#: src/toolbar.cpp:3205 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
 #: src/TrackPropDlg.cpp:997
 msgid "OK"
 msgstr "OK"
@@ -2746,7 +2866,7 @@ msgstr "Ihr Android Gerät hat ein internes GPS, das abgestellt ist.\n"
 msgid "Nothing found"
 msgstr "Nicht gefunden"
 
-#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1757
+#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1760
 msgid "Anchorage created "
 msgstr "Ankerplatz erzeugt"
 
@@ -2792,14 +2912,14 @@ msgid "Status"
 msgstr "Status"
 
 #: src/androidUTIL.cpp:5015 src/catalog_mgr.cpp:604
-#: src/connections_dialog.cpp:2087 src/GoToPositionDialog.cpp:146
+#: src/connections_dialog.cpp:2093 src/GoToPositionDialog.cpp:146
 #: src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:754 src/MarkInfo.cpp:1856
 #: src/MUIBar.cpp:175 src/options.cpp:947 src/options.cpp:1049
 #: src/options.cpp:5780 src/options.cpp:9031 src/peer_client.cpp:435
 #: src/priority_gui.cpp:105 src/REST_server_gui.cpp:121
 #: src/REST_server_gui.cpp:216 src/routeprintout.cpp:424
 #: src/RoutePropDlg.cpp:511 src/SendToGpsDlg.cpp:202 src/SendToPeerDlg.cpp:167
-#: src/toolbar.cpp:3203 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
+#: src/toolbar.cpp:3201 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
 #: src/TrackPropDlg.cpp:992
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -2874,338 +2994,338 @@ msgstr "OpenCPN wird nun neu gestartet, um die Änderungen zu übernehmen."
 msgid "Finishing migration"
 msgstr "Migration wird beendet"
 
-#: src/canvasMenu.cpp:244 src/canvasMenu.cpp:277 src/canvasMenu.cpp:312
+#: src/canvasMenu.cpp:244 src/canvasMenu.cpp:274 src/canvasMenu.cpp:307
 #: src/options.cpp:1243
 msgid "Menu"
 msgstr "Menü"
 
-#: src/canvasMenu.cpp:348 src/canvasMenu.cpp:351 src/canvasMenu.cpp:369
+#: src/canvasMenu.cpp:343 src/canvasMenu.cpp:346 src/canvasMenu.cpp:364
 msgid "Undo"
 msgstr "Rückgängig"
 
-#: src/canvasMenu.cpp:358 src/canvasMenu.cpp:361 src/canvasMenu.cpp:376
+#: src/canvasMenu.cpp:353 src/canvasMenu.cpp:356 src/canvasMenu.cpp:371
 msgid "Redo"
 msgstr "Wiederholen"
 
-#: src/canvasMenu.cpp:389
+#: src/canvasMenu.cpp:384
 msgid "End Route"
 msgstr "Routenerstellung beenden"
 
-#: src/canvasMenu.cpp:395
+#: src/canvasMenu.cpp:390
 msgid "Measure Off"
 msgstr "Mess-Werkzeug ausschalten"
 
-#: src/canvasMenu.cpp:398
+#: src/canvasMenu.cpp:393
 msgid "Measure"
 msgstr "Mess-Werkzeug"
 
-#: src/canvasMenu.cpp:455
+#: src/canvasMenu.cpp:450
 msgid "Max Detail Here"
 msgstr "max. Vergrößerung hier"
 
-#: src/canvasMenu.cpp:457 src/canvasMenu.cpp:480
+#: src/canvasMenu.cpp:452 src/canvasMenu.cpp:475
 msgid "Scale In"
 msgstr "Maßstab verkleinern"
 
-#: src/canvasMenu.cpp:459 src/canvasMenu.cpp:482
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:477
 msgid "Scale Out"
 msgstr "Maßstab vergrößern"
 
-#: src/canvasMenu.cpp:490
+#: src/canvasMenu.cpp:485
 msgid "Drop Mark"
 msgstr "Neue Markierung"
 
-#: src/canvasMenu.cpp:492
+#: src/canvasMenu.cpp:487
 msgid "New Route..."
 msgstr "Neue Route..."
 
-#: src/canvasMenu.cpp:495
+#: src/canvasMenu.cpp:490
 msgid "Move Boat Here"
 msgstr "Bootsposition hierhin verschieben"
 
-#: src/canvasMenu.cpp:500
+#: src/canvasMenu.cpp:495
 msgid "Navigate To Here"
 msgstr "Navigiere hierhin"
 
-#: src/canvasMenu.cpp:509 src/ocpn_frame.cpp:3493
+#: src/canvasMenu.cpp:504 src/ocpn_frame.cpp:3497
 msgid "Course Up Mode"
 msgstr "Kurs-Voraus Modus"
 
-#: src/canvasMenu.cpp:511
+#: src/canvasMenu.cpp:506
 msgid "Heading Up Mode"
 msgstr "Steuerkurs Oben Modus"
 
-#: src/canvasMenu.cpp:513 src/canvasMenu.cpp:520 src/ocpn_frame.cpp:3202
-#: src/ocpn_frame.cpp:3492 src/ocpn_frame.cpp:5965
+#: src/canvasMenu.cpp:508 src/canvasMenu.cpp:515 src/ocpn_frame.cpp:3206
+#: src/ocpn_frame.cpp:3496 src/ocpn_frame.cpp:5971
 msgid "North Up Mode"
 msgstr "Genordeter Modus"
 
-#: src/canvasMenu.cpp:518
+#: src/canvasMenu.cpp:513
 msgid "Chart Up Mode"
 msgstr "Karte Oben Modus"
 
-#: src/canvasMenu.cpp:529 src/canvasMenu.cpp:536 src/ocpn_frame.cpp:3574
+#: src/canvasMenu.cpp:524 src/canvasMenu.cpp:531 src/ocpn_frame.cpp:3578
 msgid "Toggle Full Screen"
 msgstr "Umschalten auf Vollbild"
 
-#: src/canvasMenu.cpp:542 src/canvasMenu.cpp:705 src/canvasMenu.cpp:723
+#: src/canvasMenu.cpp:537 src/canvasMenu.cpp:700 src/canvasMenu.cpp:718
 msgid "Zero XTE"
 msgstr "XTE zurücksetzen"
 
-#: src/canvasMenu.cpp:549
+#: src/canvasMenu.cpp:544
 msgid "Paste Waypoint"
 msgstr "Wegpunkt einfügen"
 
-#: src/canvasMenu.cpp:553 src/canvasMenu.cpp:561
+#: src/canvasMenu.cpp:548 src/canvasMenu.cpp:556
 msgid "Paste Route"
 msgstr "Route einfügen"
 
-#: src/canvasMenu.cpp:557 src/canvasMenu.cpp:562
+#: src/canvasMenu.cpp:552 src/canvasMenu.cpp:557
 msgid "Paste Track"
 msgstr "Track einfügen"
 
-#: src/canvasMenu.cpp:572
+#: src/canvasMenu.cpp:567
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 Offset Dialog..."
 
-#: src/canvasMenu.cpp:597 src/options.cpp:3857 src/options.cpp:3919
+#: src/canvasMenu.cpp:592 src/options.cpp:3857 src/options.cpp:3919
 msgid "Chart Groups"
 msgstr "Karten-Gruppen"
 
-#: src/canvasMenu.cpp:604
+#: src/canvasMenu.cpp:599
 msgid "temporary"
 msgstr "temporär"
 
-#: src/canvasMenu.cpp:607
+#: src/canvasMenu.cpp:602
 msgid "All Active Charts"
 msgstr "Alle aktiven Karten"
 
-#: src/canvasMenu.cpp:637 src/CanvasOptions.cpp:211
+#: src/canvasMenu.cpp:632 src/CanvasOptions.cpp:211
 msgid "AIS"
 msgstr "AIS"
 
-#: src/canvasMenu.cpp:638
+#: src/canvasMenu.cpp:633
 msgid "Target Query..."
 msgstr "AIS-Zielabfrage..."
 
-#: src/canvasMenu.cpp:642
+#: src/canvasMenu.cpp:637
 msgid "Hide Target CPA"
 msgstr "Verstecke Ziel CPA"
 
-#: src/canvasMenu.cpp:644
+#: src/canvasMenu.cpp:639
 msgid "Show Target CPA"
 msgstr "Zeige Ziel CPA"
 
-#: src/canvasMenu.cpp:646
+#: src/canvasMenu.cpp:641
 msgid "Target List..."
 msgstr "Liste AIS-Ziele..."
 
-#: src/canvasMenu.cpp:650
+#: src/canvasMenu.cpp:645
 msgid "Hide Target Track"
 msgstr "Verstecke Ziel Track"
 
-#: src/canvasMenu.cpp:653
+#: src/canvasMenu.cpp:648
 msgid "Show Target Track"
 msgstr "Zeige Ziel Track"
 
-#: src/canvasMenu.cpp:656
+#: src/canvasMenu.cpp:651
 msgid "Copy Target MMSI"
 msgstr "MMSI des Ziels kopieren"
 
-#: src/canvasMenu.cpp:663 src/canvasMenu.cpp:671
+#: src/canvasMenu.cpp:658 src/canvasMenu.cpp:666
 msgid "Object Query..."
 msgstr "Objekt-Abfrage..."
 
-#: src/canvasMenu.cpp:685
+#: src/canvasMenu.cpp:680
 msgid "Unnamed Route"
 msgstr "Unbenannte Route"
 
-#: src/canvasMenu.cpp:693
+#: src/canvasMenu.cpp:688
 msgid "Layer Route"
 msgstr "Layer Route"
 
-#: src/canvasMenu.cpp:695 src/canvasMenu.cpp:713 src/canvasMenu.cpp:786
-#: src/canvasMenu.cpp:790 src/canvasMenu.cpp:815 src/canvasMenu.cpp:822
-#: src/canvasMenu.cpp:887 src/canvasMenu.cpp:891 src/MarkInfo.cpp:335
+#: src/canvasMenu.cpp:690 src/canvasMenu.cpp:708 src/canvasMenu.cpp:781
+#: src/canvasMenu.cpp:785 src/canvasMenu.cpp:810 src/canvasMenu.cpp:817
+#: src/canvasMenu.cpp:882 src/canvasMenu.cpp:886 src/MarkInfo.cpp:335
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:720 src/canvasMenu.cpp:834
+#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:715 src/canvasMenu.cpp:829
 msgid "Activate Next Waypoint"
 msgstr "Nächsten WP aktivieren"
 
-#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:722 src/routemanagerdialog.cpp:1303
+#: src/canvasMenu.cpp:699 src/canvasMenu.cpp:717 src/routemanagerdialog.cpp:1303
 msgid "Deactivate"
 msgstr "Deaktivieren"
 
-#: src/canvasMenu.cpp:707 src/canvasMenu.cpp:725 src/canvasMenu.cpp:818
-#: src/canvasMenu.cpp:825 src/routemanagerdialog.cpp:1297
+#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:720 src/canvasMenu.cpp:813
+#: src/canvasMenu.cpp:820 src/routemanagerdialog.cpp:1297
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: src/canvasMenu.cpp:711 src/chcanv.cpp:3818 src/chcanv.cpp:10529
+#: src/canvasMenu.cpp:706 src/chcanv.cpp:3819 src/chcanv.cpp:10532
 #: src/concanv.cpp:143 src/concanv.cpp:158 src/concanv.cpp:197
 msgid "Route"
 msgstr "Route"
 
-#: src/canvasMenu.cpp:728
+#: src/canvasMenu.cpp:723
 msgid "Insert Waypoint"
 msgstr "Wegpunkt einfügen"
 
-#: src/canvasMenu.cpp:729 src/undo.cpp:90
+#: src/canvasMenu.cpp:724 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "Wegpunkt anhängen"
 
-#: src/canvasMenu.cpp:734
+#: src/canvasMenu.cpp:729
 msgid "Split around Leg"
 msgstr "Route am Abschnitt teilen"
 
-#: src/canvasMenu.cpp:736 src/canvasMenu.cpp:791 src/canvasMenu.cpp:846
-#: src/canvasMenu.cpp:896
+#: src/canvasMenu.cpp:731 src/canvasMenu.cpp:786 src/canvasMenu.cpp:841
+#: src/canvasMenu.cpp:891
 msgid "Copy as KML"
 msgstr "Kopiere als KML"
 
-#: src/canvasMenu.cpp:737 src/canvasMenu.cpp:792 src/canvasMenu.cpp:849
-#: src/canvasMenu.cpp:899 src/connections_dialog.cpp:2083 src/MarkInfo.cpp:488
+#: src/canvasMenu.cpp:732 src/canvasMenu.cpp:787 src/canvasMenu.cpp:844
+#: src/canvasMenu.cpp:894 src/connections_dialog.cpp:2089 src/MarkInfo.cpp:488
 #: src/MarkInfo.cpp:1145 src/MarkInfo.cpp:1186 src/options.cpp:1239
 #: src/RoutePropDlg.cpp:428 src/TrackPropDlg.cpp:901
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/canvasMenu.cpp:738
+#: src/canvasMenu.cpp:733
 msgid "Reverse..."
 msgstr "Umkehren..."
 
-#: src/canvasMenu.cpp:742
+#: src/canvasMenu.cpp:737
 msgid "Hide Waypoint Names"
 msgstr "Wegpunktnamen ausblenden"
 
-#: src/canvasMenu.cpp:745
+#: src/canvasMenu.cpp:740
 msgid "Show Waypoint Names"
 msgstr "Zeige Wegpunkt-Name"
 
-#: src/canvasMenu.cpp:748
+#: src/canvasMenu.cpp:743
 msgid "Resequence Waypoints..."
 msgstr "Wegpunkte neu numerieren"
 
-#: src/canvasMenu.cpp:762 src/canvasMenu.cpp:863
+#: src/canvasMenu.cpp:757 src/canvasMenu.cpp:858
 msgid "Send to new GPS"
 msgstr "An neues GPS senden"
 
-#: src/canvasMenu.cpp:784
+#: src/canvasMenu.cpp:779
 msgid "Layer Track"
 msgstr "Layer Track"
 
-#: src/canvasMenu.cpp:788 src/chcanv.cpp:3993
+#: src/canvasMenu.cpp:783 src/chcanv.cpp:3994
 msgid "Track"
 msgstr "Track"
 
-#: src/canvasMenu.cpp:805 src/canvasMenu.cpp:877
+#: src/canvasMenu.cpp:800 src/canvasMenu.cpp:872
 msgid "Unnamed Waypoint"
 msgstr "Unbenannter Wegpunkt"
 
-#: src/canvasMenu.cpp:813 src/canvasMenu.cpp:885
+#: src/canvasMenu.cpp:808 src/canvasMenu.cpp:880
 msgid "Layer Waypoint"
 msgstr "Layer Wegpunkt"
 
-#: src/canvasMenu.cpp:820 src/canvasMenu.cpp:889
+#: src/canvasMenu.cpp:815 src/canvasMenu.cpp:884
 msgid "Waypoint"
 msgstr "Wegpunkt"
 
-#: src/canvasMenu.cpp:838
+#: src/canvasMenu.cpp:833
 msgid "Remove from Route"
 msgstr "Wegpunkt aus Route entfernen"
 
-#: src/canvasMenu.cpp:843
+#: src/canvasMenu.cpp:838
 msgid "Split Route at Waypoint"
 msgstr "Route am Wegpunkt auftrennen"
 
-#: src/canvasMenu.cpp:894
+#: src/canvasMenu.cpp:889
 msgid "Navigate To This"
 msgstr "Navigiere dahin"
 
-#: src/canvasMenu.cpp:918
+#: src/canvasMenu.cpp:913
 msgid "Clear Anchor Watch"
 msgstr "Ankerwache aufheben"
 
-#: src/canvasMenu.cpp:929
+#: src/canvasMenu.cpp:924
 msgid "Set Anchor Watch"
 msgstr "Ankerwache einstellen"
 
-#: src/canvasMenu.cpp:970
+#: src/canvasMenu.cpp:965
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/canvasMenu.cpp:983
+#: src/canvasMenu.cpp:978
 msgid "Show Tide Information"
 msgstr "Zeige Tiden-Informationen"
 
-#: src/canvasMenu.cpp:989
+#: src/canvasMenu.cpp:984
 msgid "Show Current Information"
 msgstr "Zeige Gezeiten-Informationen"
 
-#: src/canvasMenu.cpp:1163
+#: src/canvasMenu.cpp:1156
 msgid "Temporary GOTO Route"
 msgstr "temporäre Zielpunkt-Route"
 
-#: src/canvasMenu.cpp:1164 src/canvasMenu.cpp:1231
-#: src/routemanagerdialog.cpp:2748
+#: src/canvasMenu.cpp:1157 src/canvasMenu.cpp:1224
+#: src/routemanagerdialog.cpp:2750
 msgid "Here"
 msgstr "urspr. Position"
 
-#: src/canvasMenu.cpp:1166
+#: src/canvasMenu.cpp:1159
 msgid "There"
 msgstr "Zielpunkt"
 
-#: src/canvasMenu.cpp:1227 src/routemanagerdialog.cpp:2381
-#: src/routemanagerdialog.cpp:2744
+#: src/canvasMenu.cpp:1220 src/routemanagerdialog.cpp:2383
+#: src/routemanagerdialog.cpp:2746
 msgid "(Unnamed Waypoint)"
 msgstr "(Unbenannter Wegpunkt)"
 
-#: src/canvasMenu.cpp:1228 src/routemanagerdialog.cpp:2745
+#: src/canvasMenu.cpp:1221 src/routemanagerdialog.cpp:2747
 msgid "Go to "
 msgstr "Gehe zu"
 
-#: src/canvasMenu.cpp:1443 src/canvasMenu.cpp:1477
-#: src/routemanagerdialog.cpp:1486
+#: src/canvasMenu.cpp:1458 src/canvasMenu.cpp:1492
+#: src/routemanagerdialog.cpp:1488
 msgid "Rename Waypoints?"
 msgstr "Wegpunkte umbenennen?"
 
-#: src/canvasMenu.cpp:1494
+#: src/canvasMenu.cpp:1509
 msgid "Are you sure you want to delete this route?"
 msgstr "Sind Sie sicher, dass Sie diese Route löschen wollen?"
 
-#: src/canvasMenu.cpp:1495
+#: src/canvasMenu.cpp:1510
 msgid "OpenCPN Route Delete"
 msgstr "OpenCPN Route löschen"
 
-#: src/canvasMenu.cpp:1622 src/RoutePropDlgImpl.cpp:1048
+#: src/canvasMenu.cpp:1637 src/RoutePropDlgImpl.cpp:1048
 #: src/TrackPropDlg.cpp:1312
 msgid "_A"
 msgstr "_A"
 
-#: src/canvasMenu.cpp:1624 src/RoutePropDlgImpl.cpp:1049
+#: src/canvasMenu.cpp:1639 src/RoutePropDlgImpl.cpp:1049
 #: src/TrackPropDlg.cpp:1313
 msgid "_B"
 msgstr "_B"
 
-#: src/canvasMenu.cpp:1711
+#: src/canvasMenu.cpp:1726
 msgid "Send Waypoint to OpenCPN Peer"
 msgstr "Wegpunkt an OpenCPN Gegenstelle senden"
 
-#: src/canvasMenu.cpp:1764
+#: src/canvasMenu.cpp:1779
 msgid "Send Route to OpenCPN Peer"
 msgstr "Route an OpenCPN Gegenstelle senden"
 
-#: src/canvasMenu.cpp:1853
+#: src/canvasMenu.cpp:1868
 msgid "Are you sure you want to delete this track?"
 msgstr "Sind Sie sicher, dass Sie diesen Track löschen möchten?"
 
-#: src/canvasMenu.cpp:1854 src/routeman_gui.cpp:237
+#: src/canvasMenu.cpp:1869 src/routeman_gui.cpp:237
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN Track löschen"
 
-#: src/canvasMenu.cpp:1904
+#: src/canvasMenu.cpp:1919
 msgid "Send Track to OpenCPN Peer"
 msgstr "Track an OpenCPN Gegenstelle senden"
 
@@ -3237,7 +3357,7 @@ msgstr "Kurs-Voraus Modus"
 msgid "Display Options"
 msgstr "Anzeige-Optionen"
 
-#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3517 src/ocpn_frame.cpp:3523
+#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3521 src/ocpn_frame.cpp:3527
 #: src/options.cpp:4049 src/options.cpp:4230
 msgid "Enable Chart Quilting"
 msgstr "\"Patchwork\" Kartenanzeige aktivieren"
@@ -3246,7 +3366,7 @@ msgstr "\"Patchwork\" Kartenanzeige aktivieren"
 msgid "Show Grid"
 msgstr "Gitter zeigen"
 
-#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3519 src/ocpn_frame.cpp:3525
+#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3523 src/ocpn_frame.cpp:3529
 #: src/options.cpp:4094 src/options.cpp:4279
 msgid "Show Chart Outlines"
 msgstr "Kartenumrisse anzeigen"
@@ -3271,8 +3391,8 @@ msgstr "Tiden + Strömungen"
 msgid "Show Tide stations"
 msgstr "Pegelstation anzeigen"
 
-#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1333 src/ocpn_frame.cpp:3561
-#: src/toolbar.cpp:1234
+#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1334 src/ocpn_frame.cpp:3565
+#: src/toolbar.cpp:1232
 msgid "Show Currents"
 msgstr "Gezeitenströme anzeigen"
 
@@ -3308,19 +3428,23 @@ msgstr "Anker-Info"
 msgid "Show visible sector lights"
 msgstr "Sichtbare Sektorenlichter anzeigen"
 
-#: src/CanvasOptions.cpp:313 src/options.cpp:3376 src/options.cpp:3579
+#: src/CanvasOptions.cpp:311
+msgid "Show chart data quality"
+msgstr "Qualität der Kartendaten anzeigen "
+
+#: src/CanvasOptions.cpp:321 src/options.cpp:3376 src/options.cpp:3579
 msgid "Display Category"
 msgstr "Anzeigekategorie"
 
-#: src/CanvasOptions.cpp:315 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
 msgid "Standard"
 msgstr "Standard"
 
-#: src/CanvasOptions.cpp:315 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
 msgid "All"
 msgstr "Alle"
 
-#: src/CanvasOptions.cpp:316
+#: src/CanvasOptions.cpp:324
 msgid "User Standard"
 msgstr "Benutzerdefiniert"
 
@@ -3364,7 +3488,7 @@ msgstr "Als aktiven Katalog verwenden"
 msgid "Latest available catalog:"
 msgstr "Neuester verfügbarer Katalog:"
 
-#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4233
+#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4241
 msgid "Cannot download data from url"
 msgstr "Daten von url (Adresse) können nicht heruntergeladen werden"
 
@@ -3469,9 +3593,9 @@ msgstr " Seekarten-Datei:  "
 msgid " Name:  "
 msgstr " Name:             "
 
-#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5402
-#: src/chcanv.cpp:5405 src/chcanv.cpp:5409 src/chcanv.cpp:5412
-#: src/chcanv.cpp:5415 src/chcanv.cpp:5453 src/routemanagerdialog.cpp:721
+#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5403
+#: src/chcanv.cpp:5406 src/chcanv.cpp:5410 src/chcanv.cpp:5413
+#: src/chcanv.cpp:5416 src/chcanv.cpp:5454 src/routemanagerdialog.cpp:721
 msgid "Scale"
 msgstr "Maßstab"
 
@@ -3531,259 +3655,259 @@ msgstr "OpenCPN Verzeichnis-Scan..."
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN Karte(n) hinzufügen..."
 
-#: src/chcanv.cpp:1303 src/ocpn_frame.cpp:3560 src/toolbar.cpp:1240
+#: src/chcanv.cpp:1304 src/ocpn_frame.cpp:3564 src/toolbar.cpp:1238
 msgid "Show Tides"
 msgstr "Tiden-Referenzorte anzeigen"
 
-#: src/chcanv.cpp:1304
+#: src/chcanv.cpp:1305
 msgid "Hide Tides"
 msgstr "Gezeiten ausblenden"
 
-#: src/chcanv.cpp:1334
+#: src/chcanv.cpp:1335
 msgid "Hide Currents"
 msgstr "Strömungen ausblenden"
 
-#: src/chcanv.cpp:1424 src/chcanv.cpp:1439
+#: src/chcanv.cpp:1425 src/chcanv.cpp:1440
 msgid "Group \""
 msgstr "Gruppe \""
 
-#: src/chcanv.cpp:1429
+#: src/chcanv.cpp:1430
 msgid "\" is empty."
 msgstr "¨ist leer."
 
-#: src/chcanv.cpp:1431 src/chcanv.cpp:1446
+#: src/chcanv.cpp:1432 src/chcanv.cpp:1447
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN Gruppen Notiz"
 
-#: src/chcanv.cpp:1444
+#: src/chcanv.cpp:1445
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" ist leer, wechsle zu \"Alle aktive Karten\" Gruppe."
 
-#: src/chcanv.cpp:3820 src/chcanv.cpp:10531
+#: src/chcanv.cpp:3821 src/chcanv.cpp:10534
 msgid "Layer Route: "
 msgstr "Layer Route: "
 
-#: src/chcanv.cpp:3823 src/chcanv.cpp:3998
+#: src/chcanv.cpp:3824 src/chcanv.cpp:3999
 msgid "(unnamed)"
 msgstr "(unbenannt)"
 
-#: src/chcanv.cpp:3827
+#: src/chcanv.cpp:3828
 msgid "Total Length: "
 msgstr "Ganze Länge:"
 
-#: src/chcanv.cpp:3829
+#: src/chcanv.cpp:3830
 msgid "Leg: from "
 msgstr "Abschnitt: von "
 
-#: src/chcanv.cpp:3829
+#: src/chcanv.cpp:3830
 msgid " to "
 msgstr " nach "
 
-#: src/chcanv.cpp:3879
+#: src/chcanv.cpp:3880
 msgid "From Ship To"
 msgstr "Von Schiff zu"
 
-#: src/chcanv.cpp:3901 src/concanv.cpp:389
+#: src/chcanv.cpp:3902 src/concanv.cpp:389
 msgid "%Dd %H:%M"
 msgstr "%Dd %H:%M"
 
-#: src/chcanv.cpp:3902
+#: src/chcanv.cpp:3903
 msgid "%H:%M"
 msgstr "% H %M"
 
-#: src/chcanv.cpp:3995
+#: src/chcanv.cpp:3996
 msgid "Layer Track: "
 msgstr "Layer Track: "
 
-#: src/chcanv.cpp:4002
+#: src/chcanv.cpp:4003
 msgid "Total Track: "
 msgstr "Gesamt Track: "
 
-#: src/chcanv.cpp:4019
+#: src/chcanv.cpp:4020
 msgid "Segment Created: "
 msgstr "Segment erstellt: "
 
-#: src/chcanv.cpp:5444 src/ocpn_frame.cpp:2167 src/ocpn_frame.cpp:2190
+#: src/chcanv.cpp:5445 src/ocpn_frame.cpp:2170 src/ocpn_frame.cpp:2193
 #: src/OCPNPlatform.cpp:1578
 msgid "StatusBar"
 msgstr "Statusleiste"
 
-#: src/chcanv.cpp:6566
+#: src/chcanv.cpp:6569
 msgid "ON"
 msgstr "EIN"
 
-#: src/chcanv.cpp:6569
+#: src/chcanv.cpp:6572
 msgid "OFF"
 msgstr "AUS"
 
-#: src/chcanv.cpp:6574
+#: src/chcanv.cpp:6577
 msgid "CPA alarm "
 msgstr "CPA alarm "
 
-#: src/chcanv.cpp:6578
+#: src/chcanv.cpp:6581
 msgid "CPA Alarm is switched"
 msgstr "CPA-Alarm ist"
 
-#: src/chcanv.cpp:7686 src/chcanv.cpp:8252
+#: src/chcanv.cpp:7689 src/chcanv.cpp:8255
 msgid "Use nearby waypoint?"
 msgstr "Nächstgelegenen Wegpunkt benutzen?"
 
-#: src/chcanv.cpp:7686 src/chcanv.cpp:7724 src/chcanv.cpp:7745
-#: src/chcanv.cpp:7807 src/chcanv.cpp:8252 src/chcanv.cpp:8290
-#: src/chcanv.cpp:8310 src/chcanv.cpp:8368 src/chcanv.cpp:8761
-#: src/chcanv.cpp:8779 src/chcanv.cpp:9013 src/chcanv.cpp:9031
+#: src/chcanv.cpp:7689 src/chcanv.cpp:7727 src/chcanv.cpp:7748
+#: src/chcanv.cpp:7810 src/chcanv.cpp:8255 src/chcanv.cpp:8293
+#: src/chcanv.cpp:8313 src/chcanv.cpp:8371 src/chcanv.cpp:8764
+#: src/chcanv.cpp:8782 src/chcanv.cpp:9016 src/chcanv.cpp:9034
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN Routenerstellung"
 
-#: src/chcanv.cpp:7716 src/chcanv.cpp:8282
+#: src/chcanv.cpp:7719 src/chcanv.cpp:8285
 msgid "Insert first part of this route in the new route?"
 msgstr "Den vorderen Teil der Route an die neue Route anhängen?"
 
-#: src/chcanv.cpp:7720 src/chcanv.cpp:8286
+#: src/chcanv.cpp:7723 src/chcanv.cpp:8289
 msgid "Insert this route in the new route?"
 msgstr "Diese Route in die neue Route einfügen?"
 
-#: src/chcanv.cpp:7735 src/chcanv.cpp:8301
+#: src/chcanv.cpp:7738 src/chcanv.cpp:8304
 msgid "Append last part of this route to the new route?"
 msgstr "Den hinteren Teil der Route an die neue Route anhängen?"
 
-#: src/chcanv.cpp:7738 src/chcanv.cpp:8304
+#: src/chcanv.cpp:7741 src/chcanv.cpp:8307
 msgid "Append this route to the new route?"
 msgstr "Diese Route an die neue Route anfügen?"
 
-#: src/chcanv.cpp:7797 src/chcanv.cpp:8360
+#: src/chcanv.cpp:7800 src/chcanv.cpp:8363
 msgid "For this leg the Great Circle route is "
 msgstr "Für diesen Abschnitt ist die Großkreis-Route "
 
-#: src/chcanv.cpp:7799 src/chcanv.cpp:8362
+#: src/chcanv.cpp:7802 src/chcanv.cpp:8365
 msgid " shorter than rhumbline.\n\n"
 msgstr " kürzer als die Normal-Linie.\n\n"
 
-#: src/chcanv.cpp:7800 src/chcanv.cpp:8363
+#: src/chcanv.cpp:7803 src/chcanv.cpp:8366
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Sollen Großkreis-Wegpunkte zu diesem Abschnitt zugefügt werden?"
 
-#: src/chcanv.cpp:8727 src/chcanv.cpp:8980
+#: src/chcanv.cpp:8730 src/chcanv.cpp:8983
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr "Diesen Wegpunkt durch den nahe gelegenen WP ersetzen?"
 
-#: src/chcanv.cpp:8729 src/chcanv.cpp:8982
+#: src/chcanv.cpp:8732 src/chcanv.cpp:8985
 msgid "OpenCPN RoutePoint change"
 msgstr "OpenCPN WegPunkt-Änderung"
 
-#: src/chcanv.cpp:8754 src/chcanv.cpp:9006
+#: src/chcanv.cpp:8757 src/chcanv.cpp:9009
 msgid "Last part of route to be appended to dragged route?"
 msgstr "Den hinteren Teil der Route an die herangezogene Route anhängen?"
 
-#: src/chcanv.cpp:8758 src/chcanv.cpp:9010
+#: src/chcanv.cpp:8761 src/chcanv.cpp:9013
 msgid "Full route to be appended to dragged route?"
 msgstr "Die gesamte Route an die herangezogene Route anhängen?"
 
-#: src/chcanv.cpp:8772 src/chcanv.cpp:9024
+#: src/chcanv.cpp:8775 src/chcanv.cpp:9027
 msgid "First part of route to be inserted into dragged route?"
 msgstr "Den vorderen Teil der Route an die herangezogene Route anhängen?"
 
-#: src/chcanv.cpp:8776 src/chcanv.cpp:9028
+#: src/chcanv.cpp:8779 src/chcanv.cpp:9031
 msgid "Full route to be inserted into dragged route?"
 msgstr "Die gesamte Route in die herangezogene Route einfügen?"
 
-#: src/chcanv.cpp:8792 src/chcanv.cpp:9044
+#: src/chcanv.cpp:8795 src/chcanv.cpp:9047
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr "Möchten Sie diesen Wegpunkt wirklich löschen und ersetzen"
 
-#: src/chcanv.cpp:8794 src/chcanv.cpp:9046
+#: src/chcanv.cpp:8797 src/chcanv.cpp:9049
 msgid "which has been created manually?"
 msgstr "- er wurde manuell erstellt."
 
-#: src/chcanv.cpp:9521 src/chcanv.cpp:9531 src/S57QueryDialog.cpp:115
+#: src/chcanv.cpp:9524 src/chcanv.cpp:9534 src/S57QueryDialog.cpp:115
 #: src/S57QueryDialog.cpp:302
 msgid "ObjectQuery"
 msgstr "Objekt-Abfrage"
 
-#: src/chcanv.cpp:9689 src/routemanagerdialog.cpp:2629
+#: src/chcanv.cpp:9692 src/routemanagerdialog.cpp:2631
 #: src/RoutePropDlgImpl.cpp:519
 msgid "Layer"
 msgstr "Ebene"
 
-#: src/chcanv.cpp:9775
+#: src/chcanv.cpp:9778
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Es gibt einen Wegpunkt an der gleichen Stelle des einzufügenden WPs. Sollen die eingefügten Daten damit verbunden werden?\n\n"
 
-#: src/chcanv.cpp:9777
+#: src/chcanv.cpp:9780
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Antwort 'Nein' erzeugt neuen Wegpunkt am gleichen Ort."
 
-#: src/chcanv.cpp:9778
+#: src/chcanv.cpp:9781
 msgid "Merge waypoint?"
 msgstr "Wegpunkt verbinden?"
 
-#: src/chcanv.cpp:9843
+#: src/chcanv.cpp:9846
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Es gibt Wegpunkte am gleichen Ort, wo neue WPs eingefügt werden sollen. Sollen die eingefügten Daten damit verbunden werden?\n\n"
 
-#: src/chcanv.cpp:9846
+#: src/chcanv.cpp:9849
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Antwort 'Nein' erzeugt alle Wegpunkte neu für diese Route."
 
-#: src/chcanv.cpp:9847
+#: src/chcanv.cpp:9850
 msgid "Merge waypoints?"
 msgstr "Wegpunkte verbinden?"
 
-#: src/chcanv.cpp:10329 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
+#: src/chcanv.cpp:10332 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
 msgid "RouteLegInfoRollover"
 msgstr "Kurzinfo Route/Routenabschnitt"
 
-#: src/chcanv.cpp:11128 src/mbtiles.cpp:1261
+#: src/chcanv.cpp:11131 src/mbtiles.cpp:1261
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "MBTile benötigt ein aktiviertes OpenGL"
 
-#: src/chcanv.cpp:11775 src/options.cpp:4416 src/options.cpp:4555
+#: src/chcanv.cpp:11778 src/options.cpp:4416 src/options.cpp:4555
 msgid "Feet"
 msgstr "Fuß"
 
-#: src/chcanv.cpp:11777 src/options.cpp:4388 src/options.cpp:4417
+#: src/chcanv.cpp:11780 src/options.cpp:4388 src/options.cpp:4417
 #: src/options.cpp:4534 src/options.cpp:4556
 msgid "Meters"
 msgstr "Meter"
 
-#: src/chcanv.cpp:11779 src/options.cpp:4418 src/options.cpp:4557
+#: src/chcanv.cpp:11782 src/options.cpp:4418 src/options.cpp:4557
 msgid "Fathoms"
 msgstr "Faden"
 
-#: src/chcanv.cpp:11782
+#: src/chcanv.cpp:11785
 msgid "OverZoom"
 msgstr "Übervergrößerung"
 
-#: src/chcanv.cpp:12150 src/chcanv.cpp:12151
+#: src/chcanv.cpp:12153 src/chcanv.cpp:12154
 msgid "ExtendedTideIcon"
 msgstr "Beschriftung Gezeitenstand Anzeige"
 
-#: src/chcanv.cpp:12481
+#: src/chcanv.cpp:12484
 msgid "CurrentValue"
 msgstr "Gezeitenstrom"
 
-#: src/chcanv.cpp:12714 src/ocpn_frame.cpp:1164
+#: src/chcanv.cpp:12717 src/ocpn_frame.cpp:1166
 msgid "AIS Target Query"
 msgstr "AIS-Zielabfrage"
 
-#: src/chcanv.cpp:13050
+#: src/chcanv.cpp:13053
 msgid "Show all AIS Targets"
 msgstr "Zeige alle AIS-Ziele"
 
-#: src/chcanv.cpp:13051 src/ocpn_frame.cpp:3581 src/toolbar.cpp:1313
+#: src/chcanv.cpp:13054 src/ocpn_frame.cpp:3585 src/toolbar.cpp:1311
 msgid "Attenuate less critical AIS targets"
 msgstr "Weniger kritische AIS-Ziele optisch dämpfen"
 
-#: src/chcanv.cpp:13052 src/toolbar.cpp:1227 src/toolbar.cpp:1315
-#: src/toolbar.cpp:1318
+#: src/chcanv.cpp:13055 src/toolbar.cpp:1225 src/toolbar.cpp:1313
+#: src/toolbar.cpp:1316
 msgid "Hide AIS Targets"
 msgstr "AIS-Ziele verstecken"
 
-#: src/chcanv.cpp:13703
+#: src/chcanv.cpp:13706
 msgid "Show This Chart"
 msgstr "Zeige diese Karte"
 
-#: src/chcanv.cpp:13708
+#: src/chcanv.cpp:13711
 msgid "Hide This Chart"
 msgstr "Diese Karte ausblenden"
 
@@ -3825,7 +3949,7 @@ msgstr "Benutzer Y Offset"
 msgid "meters"
 msgstr "Meter"
 
-#: src/comm_n0183_output.cpp:318
+#: src/comm_n0183_output.cpp:331
 msgid "Route Upload"
 msgstr "Route hochladen"
 
@@ -3938,7 +4062,7 @@ msgstr "Verbindung hinzufügen"
 msgid "Remove Connection"
 msgstr "Verbindung löschen"
 
-#: src/connections_dialog.cpp:362 src/connections_dialog.cpp:929
+#: src/connections_dialog.cpp:362 src/connections_dialog.cpp:935
 msgid "Edit Selected Connection"
 msgstr "Ausgewählte Verbindung bearbeiten"
 
@@ -3960,7 +4084,7 @@ msgstr "Eingebautes GPS"
 msgid "Built-in Bluetooth SPP"
 msgstr "Integrierter Bluetooth SPP"
 
-#: src/connections_dialog.cpp:406 src/connections_dialog.cpp:1017
+#: src/connections_dialog.cpp:406 src/connections_dialog.cpp:1023
 msgid "BT Scan"
 msgstr "BT-Scan"
 
@@ -3968,7 +4092,7 @@ msgstr "BT-Scan"
 msgid "Bluetooth Data Sources"
 msgstr "Bluetooth-Datenquellen"
 
-#: src/connections_dialog.cpp:457 src/connections_dialog.cpp:553
+#: src/connections_dialog.cpp:457 src/connections_dialog.cpp:554
 #: src/conn_params_panel.cpp:201 src/conn_params_panel.cpp:303
 msgid "Protocol"
 msgstr "Protokoll"
@@ -3993,269 +4117,269 @@ msgstr "Signal K"
 msgid "Address"
 msgstr "Adresse"
 
-#: src/connections_dialog.cpp:499 src/connections_dialog.cpp:527
+#: src/connections_dialog.cpp:499 src/connections_dialog.cpp:528
 msgid "DataPort"
 msgstr "Daten-Port"
 
-#: src/connections_dialog.cpp:509 src/connections_dialog.cpp:604
+#: src/connections_dialog.cpp:509 src/connections_dialog.cpp:603
 msgid "User Comment"
 msgstr "Benutzerkommentar"
 
-#: src/connections_dialog.cpp:536 src/conn_params_panel.cpp:213
+#: src/connections_dialog.cpp:537 src/conn_params_panel.cpp:213
 msgid "Baudrate"
 msgstr "Baudrate"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "150"
 msgstr "150"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "300"
 msgstr "300"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "600"
 msgstr "600"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "1200"
 msgstr "1200"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "2400"
 msgstr "2400"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "4800"
 msgstr "4800"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "9600"
 msgstr "9600"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "19200"
 msgstr "19200"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "38400"
 msgstr "38400"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "57600"
 msgstr "57600"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "115200"
 msgstr "115200"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "230400"
 msgstr "230400"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "460800"
 msgstr "460800"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "921600"
 msgstr "921600"
 
-#: src/connections_dialog.cpp:558
+#: src/connections_dialog.cpp:559
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/connections_dialog.cpp:558
+#: src/connections_dialog.cpp:559
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/connections_dialog.cpp:568 src/conn_params_panel.cpp:219
+#: src/connections_dialog.cpp:569 src/conn_params_panel.cpp:219
 #: src/conn_params_panel.cpp:321 src/conn_params_panel.cpp:458
 #: src/conn_params_panel.cpp:576
 msgid "List position"
 msgstr "Position in Liste"
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "0"
 msgstr "0"
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "1"
 msgstr "1"
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "2"
 msgstr "2"
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "3"
 msgstr "3"
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "4"
 msgstr "4"
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "5"
 msgstr "5"
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "6"
 msgstr "6"
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "7"
 msgstr "7"
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "8"
 msgstr "8"
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "9"
 msgstr "9"
 
-#: src/connections_dialog.cpp:583
+#: src/connections_dialog.cpp:584
 msgid "socketCAN Source"
 msgstr "socketCAN Quelle"
 
-#: src/connections_dialog.cpp:613
+#: src/connections_dialog.cpp:620
 msgid "Control checksum"
 msgstr "Prüfe Checksumme"
 
-#: src/connections_dialog.cpp:617
+#: src/connections_dialog.cpp:624
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "Wenn aktiv, passieren nur Sequenzen mit gültiger Prüfsumme"
 
-#: src/connections_dialog.cpp:622
+#: src/connections_dialog.cpp:629
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Verwende Garmin (GRMN) Modus für Eingang"
 
-#: src/connections_dialog.cpp:631
+#: src/connections_dialog.cpp:638
 msgid "Receive Input on this Port"
 msgstr "Eingabe auf diesem Port empfangen"
 
-#: src/connections_dialog.cpp:637
+#: src/connections_dialog.cpp:644
 msgid "Output on this port"
 msgstr "Ausgabe auf diesem Port"
 
-#: src/connections_dialog.cpp:638
+#: src/connections_dialog.cpp:645
 msgid "as autopilot or NMEA repeater"
 msgstr "als Autopilot oder NMEA-repeater"
 
-#: src/connections_dialog.cpp:644
+#: src/connections_dialog.cpp:651
 msgid "Talker ID"
 msgstr "Talker ID"
 
-#: src/connections_dialog.cpp:644
+#: src/connections_dialog.cpp:651
 msgid "blank = default ID"
 msgstr "leer = Standard-ID"
 
-#: src/connections_dialog.cpp:656
+#: src/connections_dialog.cpp:663
 msgid "APB bearing precision"
 msgstr "APB Peilung Nachkommagenauigkeit"
 
-#: src/connections_dialog.cpp:662
+#: src/connections_dialog.cpp:669
 msgid "x"
 msgstr "х"
 
-#: src/connections_dialog.cpp:662
+#: src/connections_dialog.cpp:669
 msgid "x.x"
 msgstr "x.x"
 
-#: src/connections_dialog.cpp:662
+#: src/connections_dialog.cpp:669
 msgid "x.xx"
 msgstr "x.xx"
 
-#: src/connections_dialog.cpp:663
+#: src/connections_dialog.cpp:670
 msgid "x.xxx"
 msgstr "x.xxx"
 
-#: src/connections_dialog.cpp:663
+#: src/connections_dialog.cpp:670
 msgid "x.xxxx"
 msgstr "x.xxxx"
 
-#: src/connections_dialog.cpp:674
+#: src/connections_dialog.cpp:681
 msgid "Automatic server discovery"
 msgstr "Server automatisch erkennen"
 
-#: src/connections_dialog.cpp:678
+#: src/connections_dialog.cpp:685
 msgid "If checked, signal K server will be discovered automatically"
 msgstr "Wenn aktiviert, wird der SK-Server automatisch erkannt"
 
-#: src/connections_dialog.cpp:682
+#: src/connections_dialog.cpp:689
 msgid "Discover now..."
 msgstr "Jetzt entdecken..."
 
-#: src/connections_dialog.cpp:696
+#: src/connections_dialog.cpp:702
 msgid "Input filtering"
 msgstr "Eingang Filter"
 
-#: src/connections_dialog.cpp:702 src/connections_dialog.cpp:2131
+#: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2137
 msgid "Accept only sentences"
 msgstr "Akzeptierte Sequenzen"
 
-#: src/connections_dialog.cpp:706 src/connections_dialog.cpp:2132
+#: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2138
 msgid "Ignore sentences"
 msgstr "Abgewiesene Sequenzen"
 
-#: src/connections_dialog.cpp:730
+#: src/connections_dialog.cpp:736
 msgid "Output filtering"
 msgstr "Ausgang Filter"
 
-#: src/connections_dialog.cpp:737 src/connections_dialog.cpp:2129
+#: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2135
 msgid "Transmit sentences"
 msgstr "Sequenzen senden"
 
-#: src/connections_dialog.cpp:741 src/connections_dialog.cpp:2129
+#: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2135
 msgid "Drop sentences"
 msgstr "Sequenzen nicht senden"
 
-#: src/connections_dialog.cpp:963
+#: src/connections_dialog.cpp:969
 msgid "Stop Scan"
 msgstr "Scan abbrechen"
 
-#: src/connections_dialog.cpp:1635
+#: src/connections_dialog.cpp:1641
 msgid "Configure new connection"
 msgstr "Neue Verbindung konfigurieren"
 
-#: src/connections_dialog.cpp:1702
+#: src/connections_dialog.cpp:1708
 msgid "Signal K server available."
 msgstr "Signal K Server verfügbar."
 
-#: src/connections_dialog.cpp:1704
+#: src/connections_dialog.cpp:1710
 msgid "Signal K server not found."
 msgstr "Signal K Server nicht gefunden."
 
-#: src/connections_dialog.cpp:2068
+#: src/connections_dialog.cpp:2074
 msgid "Sentence Filter"
 msgstr "Sequenz-Filter"
 
-#: src/connections_dialog.cpp:2080 src/options.cpp:3553 src/options.cpp:3766
+#: src/connections_dialog.cpp:2086 src/options.cpp:3553 src/options.cpp:3766
 msgid "Select All"
 msgstr "Alle auswählen"
 
-#: src/connections_dialog.cpp:2081 src/options.cpp:3555 src/options.cpp:3768
+#: src/connections_dialog.cpp:2087 src/options.cpp:3555 src/options.cpp:3768
 #: src/priority_gui.cpp:98
 msgid "Clear All"
 msgstr "Alle abwählen"
 
-#: src/connections_dialog.cpp:2082 src/options.cpp:3899 src/RoutePropDlg.cpp:443
+#: src/connections_dialog.cpp:2088 src/options.cpp:3899 src/RoutePropDlg.cpp:443
 #: src/TrackPropDlg.cpp:920
 msgid "Add"
 msgstr "Hinzu"
 
-#: src/connections_dialog.cpp:2182
+#: src/connections_dialog.cpp:2188
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
 msgstr "Geben Sie den NMEA-Datensatz (2, 3 oder 5 Zeichen)\n"
 "  oder einen gültigen REGEX-Ausdruck (6 Zeichen oder länger) ein"
 
-#: src/connections_dialog.cpp:2184
+#: src/connections_dialog.cpp:2190
 msgid "Enter the NMEA sentence"
 msgstr "Die NMEA Sequenz eingeben"
 
-#: src/connections_dialog.cpp:2203
+#: src/connections_dialog.cpp:2209
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -4267,7 +4391,7 @@ msgstr "Eine NMEA Nachricht ist in der Regel 3 Zeichen lang (wie RMC, GGA etc..)
 " Sie können alle Nachrichten mit einem bestimmten TALKER-ID (wie GP, AI etc..) herausfiltern. \n"
 " Der Filter akzeptiert auch Regular Expressions (REGEX) aus 6 oder mehr Zeichen. \n\n"
 
-#: src/connections_dialog.cpp:2220
+#: src/connections_dialog.cpp:2226
 msgid "REGEX syntax error: \n"
 msgstr "REGEX Syntaxfehler: \n"
 
@@ -4380,7 +4504,7 @@ msgstr "Wichtung Vektorkarten Zoom/Skalierung"
 msgid "Install"
 msgstr "Installieren"
 
-#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5311
+#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5318
 #: src/update_mgr.cpp:239
 msgid "Reinstall"
 msgstr "Erneut installieren"
@@ -4389,7 +4513,7 @@ msgstr "Erneut installieren"
 msgid "Update"
 msgstr "Aktualisieren"
 
-#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5317 src/update_mgr.cpp:241
+#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5324 src/update_mgr.cpp:241
 msgid "Downgrade"
 msgstr "Auf Vorversion zurück"
 
@@ -4425,11 +4549,11 @@ msgstr "Wird heruntergeladen"
 msgid " successfully installed"
 msgstr " erfolgreich installiert"
 
-#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1311
+#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1251
 msgid "Installation complete"
 msgstr "Installation beendet"
 
-#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1303
+#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1242
 msgid "Installation error"
 msgstr "Fehler bei der Installation"
 
@@ -4445,7 +4569,7 @@ msgstr "OpenCPN Nachricht"
 msgid "GridText"
 msgstr "Text Gitter"
 
-#: src/glChartCanvas.cpp:4465
+#: src/glChartCanvas.cpp:4480
 msgid "Waiting for raster chart compression thread exit."
 msgstr "Warten auf Beendigung des Rasterkomprimierungsprozesses."
 
@@ -4453,7 +4577,7 @@ msgstr "Warten auf Beendigung des Rasterkomprimierungsprozesses."
 msgid "OpenCPN Compressed Cache Update"
 msgstr "OpenCPN Update Komprimierter Cache"
 
-#: src/glTextureManager.cpp:1497 src/ocpn_frame.cpp:8723
+#: src/glTextureManager.cpp:1497 src/ocpn_frame.cpp:8729
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Entfernung von Ownship: %4.0f NMi"
@@ -4515,6 +4639,62 @@ msgstr "Wähle Datei"
 #: src/LinkPropDlg.cpp:133
 msgid "Link not complete, can't be saved."
 msgstr "Link nicht komplett, kann nicht speichern."
+
+#: src/load_errors_dlg.cpp:46
+msgid "\n"
+"The following  plugins have encountered errors during startup:\n\n"
+msgstr "\n"
+"Bei folgenden Plug-ins sind Fehler beim Starten aufgetreten:\n\n"
+
+#: src/load_errors_dlg.cpp:51
+msgid "\n"
+"The following plugin has encountered errors during startup:\n\n"
+msgstr "\n"
+"Bei diesem Plug-in sind Fehler beim Starten aufgetreten:\n\n"
+
+#: src/load_errors_dlg.cpp:56
+msgid "\n"
+"The following libraries  have encountered errors during startup:\n\n"
+msgstr "\n"
+"Bei folgenden Bibliotheken sind Fehler beim Starten aufgetreten:\n\n"
+
+#: src/load_errors_dlg.cpp:61
+msgid "\n"
+"The following library has encountered errors during startup:\n\n"
+msgstr "\n"
+"Bei dieser Bibliothek sind Fehler beim Starten aufgetreten:\n\n"
+
+#: src/load_errors_dlg.cpp:65
+msgid "\n\n"
+"These plugins will be uninstalled. You might want to reinstall\n"
+"them after updating the catalog.\n"
+msgstr "\n\n"
+"Diese Plugins werden deinstalliert. Eventuell möchten Sie diese \n"
+"nach Aktualisierung des Katalogs neu installieren.\n"
+
+#: src/load_errors_dlg.cpp:71
+msgid "\n\n"
+"This plugin will be uninstalled. You might want to reinstall\n"
+"it after updating the catalog.\n"
+msgstr "\n\n"
+"Diese Plugin wird deinstalliert. Eventuell möchten Sie es \n"
+"nach Aktualisierung des Katalogs neu installieren.\n"
+
+#: src/load_errors_dlg.cpp:77
+msgid "\n\n"
+"These libraries will be removed. You might want to reinstall their\n"
+"associated plugin after updating the catalog."
+msgstr "\n\n"
+"Diese Bibliotheken werden entfernt. Möglicherweise könnten Sie\n"
+"das zugeordnete Plugin nach Aktualisierung des Katalogs neu installieren."
+
+#: src/load_errors_dlg.cpp:82
+msgid "\n\n"
+"The library will be removed. You might want to reinstall it's\n"
+"associated plugin after updating the catalog."
+msgstr "\n\n"
+"Diese Bibliothek wird entfernt. Möglicherweise könnten Sie\n"
+"das zugeordnete Plugin nach Aktualisierung des Katalogs neu installieren."
 
 #: src/MarkInfo.cpp:328 src/RoutePropDlg.cpp:380 src/TrackPropDlg.cpp:637
 msgid "Basic"
@@ -4756,40 +4936,40 @@ msgstr "%2dM %2dS"
 msgid "N/A"
 msgstr "N/V"
 
-#: src/navutil.cpp:1776 src/navutil.cpp:3135 src/options.cpp:1025
+#: src/navutil.cpp:1776 src/navutil.cpp:3137 src/options.cpp:1025
 #: src/options.cpp:1187
 msgid "Persistent"
 msgstr "Dauerhaft"
 
-#: src/navutil.cpp:2844 src/navutil.cpp:2952
+#: src/navutil.cpp:2846 src/navutil.cpp:2954
 msgid "Export GPX file"
 msgstr "GPX-Datei exportieren"
 
-#: src/navutil.cpp:2854
+#: src/navutil.cpp:2856
 msgid "Overwrite existing file?"
 msgstr "Existierende Datei überschreiben?"
 
-#: src/navutil.cpp:3042 src/navutil.cpp:3074
+#: src/navutil.cpp:3044 src/navutil.cpp:3076
 msgid "Import GPX file"
 msgstr "GPX-Datei importieren"
 
-#: src/navutil.cpp:3135
+#: src/navutil.cpp:3137
 msgid "Temporary"
 msgstr "Temporär"
 
-#: src/navutil.cpp:3170
+#: src/navutil.cpp:3172
 msgid "duplicate waypoints detected during import and ignored."
 msgstr "doppelte Wegpunkte während des Imports erkannt und ignoriert."
 
-#: src/navutil.cpp:3349
+#: src/navutil.cpp:3351
 msgid "C"
 msgstr "C"
 
-#: src/navutil.cpp:3352
+#: src/navutil.cpp:3354
 msgid "F"
 msgstr "F"
 
-#: src/navutil.cpp:3355
+#: src/navutil.cpp:3357
 msgid "K"
 msgstr "K"
 
@@ -4821,45 +5001,46 @@ msgstr "Tiefe der Protokollierung: Fehler, Warnung, Nachricht, Info, Debug oder 
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr "Eine Diashow der <num> Charts anzeigen und beenden. Null oder eine negative Zahle für <num> gibt keine Grenzen an."
 
-#: src/ocpn_app.cpp:1134
+#: src/ocpn_app.cpp:1132
 msgid "Sorry, an existing instance of OpenCPN may be too busy to respond.\n"
 "Please retry."
-msgstr ""
+msgstr "Es tut uns leid, eine aktive OpenCPN Instanz könnte zu beschäftigt zum Antworten zu sein.\n"
+"Bitte versuchen Sie es erneut."
 
-#: src/ocpn_app.cpp:1391 src/ocpn_app.cpp:1398
+#: src/ocpn_app.cpp:1389 src/ocpn_app.cpp:1396
 msgid "Failed to initialize the user interface. "
 msgstr "Fehler Initialisierung Oberfläche."
 
-#: src/ocpn_app.cpp:1392
+#: src/ocpn_app.cpp:1390
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN kann nicht starten"
 
-#: src/ocpn_app.cpp:1393
+#: src/ocpn_app.cpp:1391
 msgid "The necessary configuration files were not found. "
 msgstr "Erforderliche Einstellungsdateien nicht gefunden."
 
-#: src/ocpn_app.cpp:1394
+#: src/ocpn_app.cpp:1392
 msgid "See the log file at "
 msgstr "Siehe Log-Datei unter "
 
-#: src/ocpn_app.cpp:1395
+#: src/ocpn_app.cpp:1393
 msgid " for details."
 msgstr " für Details."
 
-#: src/ocpn_app.cpp:1689
+#: src/ocpn_app.cpp:1687
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portabel(-p) ausgeführt von "
 
-#: src/ocpn_app.cpp:1776
+#: src/ocpn_app.cpp:1774
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Rufe die ursprünglichen Kartenverzeichnisse aus der Windows Registrierung ab"
 
-#: src/ocpn_app.cpp:1947
+#: src/ocpn_app.cpp:1945
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN in %ld ms initialisiert."
 
-#: src/ocpn_frame.cpp:569
+#: src/ocpn_frame.cpp:570
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
 "See the GNU General Public License for more details.\n\n"
@@ -4873,15 +5054,15 @@ msgstr "\n"
 "Verlassen Sie sich nicht auf OpenCPN im Bezug auf die Sicherheit von Leben und Ausrüstung.\n\n"
 "Bitte klicken Sie zum Akzeptieren und Fortfahren auf \"OK\" oder auf \"Abbrechen\" zum Beenden.\n"
 
-#: src/ocpn_frame.cpp:583
+#: src/ocpn_frame.cpp:584
 msgid "OpenCPN for Android"
 msgstr "OpenCPN für Android"
 
-#: src/ocpn_frame.cpp:601
+#: src/ocpn_frame.cpp:602
 msgid "Welcome to OpenCPN"
 msgstr "Willkommen bei OpenCPN"
 
-#: src/ocpn_frame.cpp:825
+#: src/ocpn_frame.cpp:827
 msgid "This AIS target has Persistent tracking selected by MMSI properties\n"
 "A Persistent track recording will therefore be restarted for this target.\n\n"
 "Do you instead want to stop Persistent tracking for this target?"
@@ -4889,289 +5070,289 @@ msgstr "Für dieses AIS-Ziel ist \"Immer Tracken\" in den  MMSI-Eigenschaften ak
 "Das Tracken wird daher für dieses Ziel neu gestartet.\n\n"
 "Wollen Sie das \"Immer tracken\" für dieses Ziel beenden?"
 
-#: src/ocpn_frame.cpp:958
+#: src/ocpn_frame.cpp:960
 msgid "OpenCPN needs to update the chart database from config file entries...."
 msgstr "OpenCPN muss die Kartendatenbank auf Basis der Einträge in der Konfigurationsdatei aktualisieren...."
 
-#: src/ocpn_frame.cpp:970
+#: src/ocpn_frame.cpp:972
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "OpenCPN aktualisiert die Kartendatenbank aus den Einstellungen der Konfigurationsdatei..."
 
-#: src/ocpn_frame.cpp:974
+#: src/ocpn_frame.cpp:976
 msgid "Elapsed time : "
 msgstr "Vergangene Zeit:"
 
-#: src/ocpn_frame.cpp:975
+#: src/ocpn_frame.cpp:977
 msgid "Estimated time : "
 msgstr "Geschätzte Gesamtzeit:"
 
-#: src/ocpn_frame.cpp:976
+#: src/ocpn_frame.cpp:978
 msgid "Remaining time : "
 msgstr "Verbleibende Zeit : "
 
-#: src/ocpn_frame.cpp:978 src/ocpn_frame.cpp:4574 src/ocpn_frame.cpp:4584
+#: src/ocpn_frame.cpp:980 src/ocpn_frame.cpp:4578 src/ocpn_frame.cpp:4588
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN Karten-Aktualisierung"
 
-#: src/ocpn_frame.cpp:2640 src/ocpn_frame.cpp:2753
+#: src/ocpn_frame.cpp:2644 src/ocpn_frame.cpp:2757
 msgid "Show Toolbar"
 msgstr "Zeige Werkzeugleiste"
 
-#: src/ocpn_frame.cpp:2641 src/ocpn_frame.cpp:2755 src/ocpn_frame.cpp:7101
+#: src/ocpn_frame.cpp:2645 src/ocpn_frame.cpp:2759 src/ocpn_frame.cpp:7107
 msgid "Hide Toolbar"
 msgstr "Werkzeugleiste ausblenden"
 
-#: src/ocpn_frame.cpp:2960 src/ocpn_frame.cpp:3023
+#: src/ocpn_frame.cpp:2964 src/ocpn_frame.cpp:3027
 msgid "MAN OVERBOARD"
 msgstr "MANN ÜBER BORD"
 
-#: src/ocpn_frame.cpp:2961 src/ocpn_frame.cpp:6741
+#: src/ocpn_frame.cpp:2965 src/ocpn_frame.cpp:6747
 msgid " at "
 msgstr " bei "
 
-#: src/ocpn_frame.cpp:2963 src/ocpn_frame.cpp:6743
+#: src/ocpn_frame.cpp:2967 src/ocpn_frame.cpp:6749
 msgid " on "
 msgstr " an "
 
-#: src/ocpn_frame.cpp:2983
+#: src/ocpn_frame.cpp:2987
 msgid "1.0 NM along COG"
 msgstr "1,0 Sm entlang COG"
 
-#: src/ocpn_frame.cpp:2995
+#: src/ocpn_frame.cpp:2999
 msgid "Temporary MOB Route"
 msgstr "Temporäre MOB Route"
 
-#: src/ocpn_frame.cpp:2996
+#: src/ocpn_frame.cpp:3000
 msgid "Assumed 1 Mile Point"
 msgstr "Angenommener 1 Meilen-Punkt"
 
-#: src/ocpn_frame.cpp:3024 src/ocpn_frame.cpp:6799 src/ocpn_frame.cpp:6840
+#: src/ocpn_frame.cpp:3028 src/ocpn_frame.cpp:6805 src/ocpn_frame.cpp:6846
 msgid " Time: "
 msgstr " Zeit: "
 
-#: src/ocpn_frame.cpp:3026
+#: src/ocpn_frame.cpp:3030
 msgid "  Position: "
 msgstr "  Position: "
 
-#: src/ocpn_frame.cpp:3044 src/ocpn_frame.cpp:7180
+#: src/ocpn_frame.cpp:3048 src/ocpn_frame.cpp:7186
 msgid "Disable Tracking"
 msgstr "Tracking deaktivieren"
 
-#: src/ocpn_frame.cpp:3116 src/ocpn_frame.cpp:3490 src/ocpn_frame.cpp:7126
-#: src/toolbar.cpp:1259
+#: src/ocpn_frame.cpp:3120 src/ocpn_frame.cpp:3494 src/ocpn_frame.cpp:7132
+#: src/toolbar.cpp:1257
 msgid "Enable Tracking"
 msgstr "Tracking aktivieren"
 
-#: src/ocpn_frame.cpp:3489 src/toolbar.cpp:1198
+#: src/ocpn_frame.cpp:3493 src/toolbar.cpp:1196
 msgid "Auto Follow"
 msgstr "Schiff autom. zentriert"
 
-#: src/ocpn_frame.cpp:3494
+#: src/ocpn_frame.cpp:3498
 msgid "Head Up Mode"
 msgstr "Steuerkurs Oben"
 
-#: src/ocpn_frame.cpp:3497 src/ocpn_frame.cpp:3500 src/toolbar.cpp:1163
+#: src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:3504 src/toolbar.cpp:1161
 msgid "Zoom In"
 msgstr "Hineinzoomen"
 
-#: src/ocpn_frame.cpp:3498 src/ocpn_frame.cpp:3501 src/toolbar.cpp:1169
+#: src/ocpn_frame.cpp:3502 src/ocpn_frame.cpp:3505 src/toolbar.cpp:1167
 msgid "Zoom Out"
 msgstr "Herauszoomen"
 
-#: src/ocpn_frame.cpp:3505
+#: src/ocpn_frame.cpp:3509
 msgid "Larger Scale Chart"
 msgstr "Karte mit größerem Maßstab"
 
-#: src/ocpn_frame.cpp:3507
+#: src/ocpn_frame.cpp:3511
 msgid "Smaller Scale Chart"
 msgstr "Karte mit kleinerem Maßstab"
 
-#: src/ocpn_frame.cpp:3510
+#: src/ocpn_frame.cpp:3514
 msgid "Exit OpenCPN"
 msgstr "OpenCPN beenden"
 
-#: src/ocpn_frame.cpp:3512
+#: src/ocpn_frame.cpp:3516
 msgid "&Navigate"
 msgstr "& Navigieren"
 
-#: src/ocpn_frame.cpp:3528 src/options.cpp:5306
+#: src/ocpn_frame.cpp:3532 src/options.cpp:5306
 msgid "Show Chart Bar"
 msgstr "Zeige die Karten Leiste"
 
-#: src/ocpn_frame.cpp:3533 src/ocpn_frame.cpp:3546 src/toolbar.cpp:1218
+#: src/ocpn_frame.cpp:3537 src/ocpn_frame.cpp:3550 src/toolbar.cpp:1216
 msgid "Show ENC text"
 msgstr "ENC-Text anzeigen"
 
-#: src/ocpn_frame.cpp:3535 src/ocpn_frame.cpp:3548
+#: src/ocpn_frame.cpp:3539 src/ocpn_frame.cpp:3552
 msgid "Show ENC Lights"
 msgstr "Leuchtfeuer der Seekarte anzeigen"
 
-#: src/ocpn_frame.cpp:3537 src/ocpn_frame.cpp:3550
+#: src/ocpn_frame.cpp:3541 src/ocpn_frame.cpp:3554
 msgid "Show ENC Soundings"
 msgstr "Tiefenangaben der Seekarte anzeigen"
 
-#: src/ocpn_frame.cpp:3539 src/ocpn_frame.cpp:3552
+#: src/ocpn_frame.cpp:3543 src/ocpn_frame.cpp:3556
 msgid "Show ENC Anchoring Info"
 msgstr "Ankerinformationen der Seekarte anzeigen"
 
-#: src/ocpn_frame.cpp:3541 src/ocpn_frame.cpp:3555
+#: src/ocpn_frame.cpp:3545 src/ocpn_frame.cpp:3559
 msgid "Show ENC Data Quality"
 msgstr "ENC-Datenqualität anzeigen"
 
-#: src/ocpn_frame.cpp:3543 src/ocpn_frame.cpp:3557
+#: src/ocpn_frame.cpp:3547 src/ocpn_frame.cpp:3561
 msgid "Show Navobjects"
 msgstr "Navobjects anzeigen"
 
-#: src/ocpn_frame.cpp:3565 src/ocpn_frame.cpp:3568 src/ocpn_frame.cpp:7131
-#: src/toolbar.cpp:1266
+#: src/ocpn_frame.cpp:3569 src/ocpn_frame.cpp:3572 src/ocpn_frame.cpp:7137
+#: src/toolbar.cpp:1264
 msgid "Change Color Scheme"
 msgstr "Farbschema wechseln"
 
-#: src/ocpn_frame.cpp:3576
+#: src/ocpn_frame.cpp:3580
 msgid "&View"
 msgstr "A&nzeige"
 
-#: src/ocpn_frame.cpp:3579 src/toolbar.cpp:1322
+#: src/ocpn_frame.cpp:3583 src/toolbar.cpp:1320
 msgid "Show AIS Targets"
 msgstr "AIS-Ziele anzeigen"
 
-#: src/ocpn_frame.cpp:3584
+#: src/ocpn_frame.cpp:3588
 msgid "Hide Moored AIS Targets"
 msgstr "Ausblenden liegender AIS-Ziele"
 
-#: src/ocpn_frame.cpp:3585
+#: src/ocpn_frame.cpp:3589
 msgid "Show AIS Target Tracks"
 msgstr "Track von AIS Zielen zeigen"
 
-#: src/ocpn_frame.cpp:3586
+#: src/ocpn_frame.cpp:3590
 msgid "Show CPA Alert Dialogs"
 msgstr "AIS CPA Dialog zeigen"
 
-#: src/ocpn_frame.cpp:3587
+#: src/ocpn_frame.cpp:3591
 msgid "Sound CPA Alarms"
 msgstr "Akustischer CPA Alarm"
 
-#: src/ocpn_frame.cpp:3588
+#: src/ocpn_frame.cpp:3592
 msgid "Show CPA Warnings"
 msgstr "CPA Warnungen zeigen"
 
-#: src/ocpn_frame.cpp:3591
+#: src/ocpn_frame.cpp:3595
 msgid "&AIS"
 msgstr "&AIS"
 
-#: src/ocpn_frame.cpp:3596 src/ocpn_frame.cpp:3599
+#: src/ocpn_frame.cpp:3600 src/ocpn_frame.cpp:3603
 msgid "Measure Distance"
 msgstr "Distanz messen"
 
-#: src/ocpn_frame.cpp:3603
+#: src/ocpn_frame.cpp:3607
 msgid "Route && Mark Manager..."
 msgstr "Route && Mark-Manager..."
 
-#: src/ocpn_frame.cpp:3605 src/ocpn_frame.cpp:7114 src/toolbar.cpp:1191
+#: src/ocpn_frame.cpp:3609 src/ocpn_frame.cpp:7120 src/toolbar.cpp:1189
 msgid "Create Route"
 msgstr "Route erstellen"
 
-#: src/ocpn_frame.cpp:3608
+#: src/ocpn_frame.cpp:3612
 msgid "Drop Mark at Boat"
 msgstr "Setze Marke an Bootposition"
 
-#: src/ocpn_frame.cpp:3610
+#: src/ocpn_frame.cpp:3614
 msgid "Drop Mark at Cursor"
 msgstr "Setze marke an Zeigerposition"
 
-#: src/ocpn_frame.cpp:3616 src/ocpn_frame.cpp:3623 src/ocpn_frame.cpp:7158
-#: src/toolbar.cpp:1285
+#: src/ocpn_frame.cpp:3620 src/ocpn_frame.cpp:3627 src/ocpn_frame.cpp:7164
+#: src/toolbar.cpp:1283
 msgid "Drop MOB Marker"
 msgstr "MüB Markierung setzen"
 
-#: src/ocpn_frame.cpp:3620 src/pluginmanager.cpp:5099 src/pluginmanager.cpp:5120
+#: src/ocpn_frame.cpp:3624 src/pluginmanager.cpp:5106 src/pluginmanager.cpp:5127
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/ocpn_frame.cpp:3628
+#: src/ocpn_frame.cpp:3632
 msgid "&Tools"
 msgstr "&Werkzeuge"
 
-#: src/ocpn_frame.cpp:3632
+#: src/ocpn_frame.cpp:3636
 msgid "&Window"
 msgstr "&Fenster"
 
-#: src/ocpn_frame.cpp:3637
+#: src/ocpn_frame.cpp:3641
 msgid "OpenCPN Help"
 msgstr "OpenCPN Hilfe"
 
-#: src/ocpn_frame.cpp:3638
+#: src/ocpn_frame.cpp:3642
 msgid "&Help"
 msgstr "&Hilfe"
 
-#: src/ocpn_frame.cpp:4269
+#: src/ocpn_frame.cpp:4273
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Bitte starten Sie OpenCPN neu zur Aktivierung der Sprach- oder Stil-Änderung."
 
-#: src/ocpn_frame.cpp:5249
+#: src/ocpn_frame.cpp:5255
 msgid " Ship "
 msgstr " Schiff "
 
-#: src/ocpn_frame.cpp:5959
+#: src/ocpn_frame.cpp:5965
 msgid "Rotated Mode"
 msgstr "Rotierter Modus"
 
-#: src/ocpn_frame.cpp:6305 src/routeprintout.cpp:477 src/trackprintout.cpp:409
+#: src/ocpn_frame.cpp:6311 src/routeprintout.cpp:477 src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Beim Drucken ist ein Fehler aufgetreten.\n"
 "Vielleicht ist der Drucker nicht richtig konfiguriert?"
 
-#: src/ocpn_frame.cpp:6474 src/ocpn_frame.cpp:6531
+#: src/ocpn_frame.cpp:6480 src/ocpn_frame.cpp:6537
 #: src/routemanagerdialog.cpp:1225
 msgid "(Unnamed Route)"
 msgstr "(unbenannte Route)"
 
-#: src/ocpn_frame.cpp:6740 src/ocpn_frame.cpp:6798
+#: src/ocpn_frame.cpp:6746 src/ocpn_frame.cpp:6804
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS-MANN ÜBER BORD"
 
-#: src/ocpn_frame.cpp:6760 src/options.cpp:1970
+#: src/ocpn_frame.cpp:6766 src/options.cpp:1970
 msgid "Own ship"
 msgstr "Eigenes Schiff"
 
-#: src/ocpn_frame.cpp:6772
+#: src/ocpn_frame.cpp:6778
 msgid "Temporary AISMOB Route"
 msgstr "Temporäre AISMOB Route"
 
-#: src/ocpn_frame.cpp:6773
+#: src/ocpn_frame.cpp:6779
 msgid "Present own ship"
 msgstr "Aktuelles eigenes Schiff"
 
-#: src/ocpn_frame.cpp:6801 src/ocpn_frame.cpp:6842
+#: src/ocpn_frame.cpp:6807 src/ocpn_frame.cpp:6848
 msgid "  Ownship Position: "
 msgstr "  Eigene Position: "
 
-#: src/ocpn_frame.cpp:6805 src/ocpn_frame.cpp:6846
+#: src/ocpn_frame.cpp:6811 src/ocpn_frame.cpp:6852
 msgid "  MOB Position: "
 msgstr "  Mann ü.B.-Position: "
 
-#: src/ocpn_frame.cpp:6839
+#: src/ocpn_frame.cpp:6845
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS-MANN ÜBER BORD AKTUALISIEREN"
 
-#: src/ocpn_frame.cpp:7120 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1252
+#: src/ocpn_frame.cpp:7126 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1250
 msgid "Route & Mark Manager"
 msgstr "Routen & Waypoint Manager"
 
-#: src/ocpn_frame.cpp:7144 src/toolbar.cpp:1246
+#: src/ocpn_frame.cpp:7150 src/toolbar.cpp:1244
 msgid "Print Chart"
 msgstr "Karte drucken"
 
-#: src/ocpn_frame.cpp:7158 src/toolbar.cpp:1285
+#: src/ocpn_frame.cpp:7164 src/toolbar.cpp:1283
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Leertaste)"
 
-#: src/ocpn_frame.cpp:8692
+#: src/ocpn_frame.cpp:8698
 msgid "OpenCPN ENC Prepare"
 msgstr "OpenCPN ENC vorbereiten"
 
-#: src/ocpn_frame.cpp:8754
+#: src/ocpn_frame.cpp:8760
 msgid "ENC Completed."
 msgstr "ENC vollständig."
 
@@ -5239,8 +5420,8 @@ msgstr "Eine MMSI besteht in der Regel aus neun Ziffern. \n"
 msgid "Default"
 msgstr "Normal"
 
-#: src/options.cpp:1178 src/routemanagerdialog.cpp:2376
-#: src/routemanagerdialog.cpp:2576
+#: src/options.cpp:1178 src/routemanagerdialog.cpp:2378
+#: src/routemanagerdialog.cpp:2578
 msgid "Always"
 msgstr "Immer"
 
@@ -5797,10 +5978,6 @@ msgstr "Vektor Karten Display"
 msgid "Mariner's Standard"
 msgstr "Benutzerdef. Auswahl"
 
-#: src/options.cpp:3390 src/options.cpp:4993 src/options.cpp:5786
-msgid "Display"
-msgstr "Anzeige"
-
 #: src/options.cpp:3398 src/options.cpp:3597
 msgid "Depth Soundings"
 msgstr "Tiefenangaben"
@@ -6156,6 +6333,10 @@ msgstr "Ziele als verloren markieren nach (Minuten)"
 msgid "Remove lost targets after (min)"
 msgstr "Verlorene Ziele entfernen nach (Minuten)"
 
+#: src/options.cpp:4993 src/options.cpp:5786
+msgid "Display"
+msgstr "Anzeige"
+
 #: src/options.cpp:5002
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "Zeige KüG-Pfeil für Ziel, Länge (Minuten)"
@@ -6358,7 +6539,7 @@ msgstr "ENC-Textmaßstab"
 
 #: src/options.cpp:5521
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Empfindlichkeit Zoom via Mausrad"
 
 #: src/options.cpp:5783
 msgid "Apply"
@@ -6442,7 +6623,7 @@ msgstr "\n"
 msgid "The settings for own ship real size are not correct:"
 msgstr "Einstellungen für eigene Bootsgröße sind falsch:"
 
-#: src/options.cpp:6834 src/routemanagerdialog.cpp:1900
+#: src/options.cpp:6834 src/routemanagerdialog.cpp:1902
 msgid "OpenCPN info"
 msgstr "OpenCPN Info"
 
@@ -6626,245 +6807,248 @@ msgstr "vom Server, der mit diesem Gerät verbunden werden soll.\n"
 msgid "Objects successfully sent to peer OpenCPN instance."
 msgstr "Objekte wurden erfolgreich an die lokale OpenCPN Gegenstelle gesendet."
 
-#: src/plugin_blacklist.cpp:62 src/plugin_blacklist.cpp:68
+#: src/plugin_blacklist.cpp:62
+#, c-format
+msgid "\n"
+"PlugIn %s, version %i.%i was detected.\n"
+"This version is known to be unstable and will not be loaded.\n"
+"Please update this PlugIn using the PlugIn manager master catalog.\n"
+msgstr "\n"
+"PlugIn %s, Version %i.%i wurde entdeckt.\n"
+" Diese Version ist bekanntermaßen instabil und wird nicht geladen.\n"
+" Bitte das Plugin über den Plug-in Manager (\"Master\" Katalog)  in OpenCPN aktualisieren.\n"
+
+#: src/plugin_blacklist.cpp:68
+#, c-format
+msgid "\n"
+"PlugIn %s, version %i.%i was detected.\n"
+"This version is known to be unstable.\n"
+"Please update this PlugIn using the PlugIn manager master catalog.\n"
+msgstr "\n"
+"PlugIn %s, Version %i.%i wurde entdeckt.\n"
+" Diese Version ist bekanntermaßen instabil. \n"
+" Bitte das Plugin über den Plug-in Manager (\"Master\" Katalog)  in OpenCPN aktualisieren.\n"
+
 #: src/plugin_blacklist.cpp:74
-msgid "("
-msgstr "("
+#, c-format
+msgid "\n"
+"PlugIn %s, version %i.%i was detected.\n"
+"This plugin is obsolete, the o-charts plugin should be used\n"
+"instead. Please uninstall this plugin and install o-charts\n"
+"using the PlugIn manager master catalog.\n"
+msgstr "\n"
+"PlugIn %s, Version %i.%i wurde entdeckt.\n"
+" Diese Version ist veraltet, stattdessen sollte das o-charts Plug-in\n"
+"verwendent werden. Bitte deinstallieren Sie das Plug-in und installieren\n"
+" das o-charts Plug-in über den Plug-in Manager (\"Master\" Katalog).\n"
 
 #: src/plugin_blacklist.cpp:249
 #, c-format
 msgid "Plugin library %s can not be loaded"
 msgstr "Plugin-Bibliothek %s kann nicht geladen werden"
 
-#: src/plugin_loader.cpp:314 src/plugin_loader.cpp:1359
-msgid "Incompatible plugin detected: "
-msgstr "Inkompatibeles PlugIn gefunden: "
-
-#: src/plugin_loader.cpp:1211
-msgid "Incompatible plugin detected"
-msgstr "Inkompatibeles PlugIn gefunden"
-
-#: src/plugin_loader.cpp:1215
-#, c-format
-msgid "PlugIn [ %s ] version %i.%i"
-msgstr "PlugIn [%s] Version %i.%i"
-
-#: src/plugin_loader.cpp:1219
-msgid " is incompatible with this version of OpenCPN."
-msgstr " ist nicht kompatibel mit dieser Version von OpenCPN."
-
-#: src/plugin_loader.cpp:1233
+#: src/plugin_loader.cpp:1249
 msgid "\n"
 "    Install/uninstall plugin or remove file to mute message"
 msgstr "\n"
 "    Das Plugin installieren/deinstallieren oder Datei entfernen, um Nachricht zu stumm zu schalten"
 
-#: src/plugin_loader.cpp:1236
-msgid "   PlugInManager: Cannot load symbol create_pi: "
+#: src/plugin_loader.cpp:1252
+msgid "   PluginLoader: Cannot load symbol create_pi: "
 msgstr "   PlugInManager: Cannot load symbol create_pi"
 
-#: src/plugin_loader.cpp:1248
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr "PlugInManager: Cannot load symbol destroy_pi: "
+#: src/plugin_loader.cpp:1376
+msgid "Incompatible plugin detected: "
+msgstr "Inkompatibeles PlugIn gefunden: "
 
-#: src/plugin_loader.cpp:1360
+#: src/plugin_loader.cpp:1377
 msgid "        API Version detected: "
 msgstr "        Erkannte API-Version: "
 
-#: src/plugin_loader.cpp:1362
+#: src/plugin_loader.cpp:1379
 msgid "        PlugIn Version detected: "
 msgstr "        Erkannte PlugIn-Version: "
 
-#: src/pluginmanager.cpp:369
+#: src/pluginmanager.cpp:365
 msgid "Plugin is a standard system plugin"
 msgstr "Plugin ist ein Standard-System-Plugin"
 
-#: src/pluginmanager.cpp:371
+#: src/pluginmanager.cpp:367
 msgid "Plugin is managed by OpenCPN"
 msgstr "Plugin wird von OpenCPN verwaltet"
 
-#: src/pluginmanager.cpp:373
+#: src/pluginmanager.cpp:369
 msgid "Plugin is not managed by OpenCPN"
 msgstr "Plugin wird nicht von OpenCPN verwaltet"
 
-#: src/pluginmanager.cpp:377
+#: src/pluginmanager.cpp:373
 msgid "Plugin status unknown"
 msgstr "Plugin-Status unbekannt"
 
-#: src/pluginmanager.cpp:379
+#: src/pluginmanager.cpp:375
 msgid "Update to managed Plugin is available"
 msgstr "Update auf ein verwaltetes Plugin ist verfügbar"
 
-#: src/pluginmanager.cpp:381
+#: src/pluginmanager.cpp:377
 msgid "New managed Plugin installation available"
 msgstr "Neue verwaltete Plugin-Installation verfügbar"
 
-#: src/pluginmanager.cpp:383
+#: src/pluginmanager.cpp:379
 msgid "Update to installed Plugin is available"
 msgstr "Update für installiertes Plugin ist verfügbar"
 
-#: src/pluginmanager.cpp:385
+#: src/pluginmanager.cpp:381
 msgid "Plugin is latest available"
 msgstr "Plugin ist aktuell"
 
-#: src/pluginmanager.cpp:644
+#: src/pluginmanager.cpp:640
 msgid "The plugin is not compatible with this version of OpenCPN, and will be uninstalled."
 msgstr "Das Plugin ist nicht mit dieser Version von OpenCPN kompatibel und wird deinstalliert."
 
-#: src/pluginmanager.cpp:837
+#: src/pluginmanager.cpp:810
 msgid "successfully un-installed"
 msgstr "erfolgreich deinstalliert"
 
-#: src/pluginmanager.cpp:850
+#: src/pluginmanager.cpp:823
 msgid "Un-Installation complete"
 msgstr "Deinstallation abgeschlossen"
 
-#: src/pluginmanager.cpp:1246
-#, c-format
-msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr "Das Plugin %s ist nicht mit dieser Version von OpenCPN kompatibel, benutzen Sie bitte eine aktualisierte Version."
-
-#: src/pluginmanager.cpp:1254
-#, c-format
-msgid "Unreadable Plugin library %s detected, check file permissions:\n\n"
-msgstr "Plug-in-Bibliothek %s ist nicht lesbar, überprüfen Sie die Dateiberechtigungen: \n\n"
-
-#: src/pluginmanager.cpp:1302
+#: src/pluginmanager.cpp:1241
 msgid "Please check system log for more info."
 msgstr "Bitte überprüfen Sie das Systemlog für weitere Informationen."
 
-#: src/pluginmanager.cpp:1310
+#: src/pluginmanager.cpp:1250
 msgid " successfully installed from cache"
 msgstr " erfolgreich aus dem Cache installiert"
 
-#: src/pluginmanager.cpp:4080
+#: src/pluginmanager.cpp:4088
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr "Diese Einstellungen können OpenCPN instabil machen und sind standardmässig inaktiv. Um sie dennoch zu aktivieren, füegen Sie die Zeile CatalogExpert=1 im  [PlugIns] Abschnitt der OpenCPN Konfigurationsdatei ein."
 
-#: src/pluginmanager.cpp:4096
+#: src/pluginmanager.cpp:4104
 msgid "Plugin Catalog"
 msgstr "Plugin-Katalog"
 
-#: src/pluginmanager.cpp:4113 src/pluginmanager.cpp:4703
+#: src/pluginmanager.cpp:4121 src/pluginmanager.cpp:4710
 msgid "Update Plugin Catalog"
 msgstr "Plugin-Katalog aktualisieren"
 
-#: src/pluginmanager.cpp:4119 src/pluginmanager.cpp:4190
+#: src/pluginmanager.cpp:4127 src/pluginmanager.cpp:4198
 msgid "Import plugin..."
 msgstr "Plugin importieren..."
 
-#: src/pluginmanager.cpp:4126 src/pluginmanager.cpp:4183
+#: src/pluginmanager.cpp:4134 src/pluginmanager.cpp:4191
 msgid "Settings..."
 msgstr "Einstellungen..."
 
-#: src/pluginmanager.cpp:4134
+#: src/pluginmanager.cpp:4142
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: src/pluginmanager.cpp:4159
+#: src/pluginmanager.cpp:4167
 msgid "Update Plugin Catalog: master"
 msgstr "Plugin-Katalog aktualisieren: Master"
 
-#: src/pluginmanager.cpp:4175
+#: src/pluginmanager.cpp:4183
 msgid "Update Plugin Catalog:master"
 msgstr "Plugin-Katalog aktualisieren: Master"
 
-#: src/pluginmanager.cpp:4234 src/pluginmanager.cpp:4246
-#: src/pluginmanager.cpp:4256 src/pluginmanager.cpp:4265
-#: src/pluginmanager.cpp:4291
+#: src/pluginmanager.cpp:4242 src/pluginmanager.cpp:4254
+#: src/pluginmanager.cpp:4264 src/pluginmanager.cpp:4273
+#: src/pluginmanager.cpp:4298
 msgid "OpenCPN Catalog update"
 msgstr "OpenCPN Katalog Aktualisierung"
 
-#: src/pluginmanager.cpp:4245 src/pluginmanager.cpp:4255
+#: src/pluginmanager.cpp:4253 src/pluginmanager.cpp:4263
 msgid "Unable to copy catalog file"
 msgstr "Katalogdatei konnte nicht kopiert werden"
 
-#: src/pluginmanager.cpp:4264
+#: src/pluginmanager.cpp:4272
 msgid "Unable to copy catalog file to cache"
 msgstr "Katalogdatei kann nicht in den Cache kopiert werden"
 
-#: src/pluginmanager.cpp:4290
+#: src/pluginmanager.cpp:4297
 msgid "Catalog update successful"
 msgstr "Katalogaktualisierung erfolgreich"
 
-#: src/pluginmanager.cpp:4413
+#: src/pluginmanager.cpp:4420
 msgid "Select tarball file"
 msgstr "Tarball Datei auswählen"
 
-#: src/pluginmanager.cpp:4508
+#: src/pluginmanager.cpp:4515
 msgid "Error extracting import plugin tarball."
 msgstr "Fehler beim Entpacken des Import-Plugin Tarball."
 
-#: src/pluginmanager.cpp:4509 src/pluginmanager.cpp:4518
-#: src/pluginmanager.cpp:4532 src/pluginmanager.cpp:4540
+#: src/pluginmanager.cpp:4516 src/pluginmanager.cpp:4525
+#: src/pluginmanager.cpp:4539 src/pluginmanager.cpp:4547
 msgid "OpenCPN Plugin Import Error"
 msgstr "OpenCPN Fehler beim Plugin Import"
 
-#: src/pluginmanager.cpp:4517
+#: src/pluginmanager.cpp:4524
 msgid "Error, import plugin tarball does not contain required metadata."
 msgstr "Fehler, Import-Plugin-Tarball enthält nicht die erforderlichen Metadaten."
 
-#: src/pluginmanager.cpp:4531
+#: src/pluginmanager.cpp:4538
 msgid "Error processing import plugin metadata."
 msgstr "Fehler bei der Verarbeitung der Metadaten des Import-Plugins."
 
-#: src/pluginmanager.cpp:4539
+#: src/pluginmanager.cpp:4546
 msgid "Incompatible import plugin detected."
 msgstr "Inkompatible Import-Plugin erkannt."
 
-#: src/pluginmanager.cpp:4671
+#: src/pluginmanager.cpp:4678
 msgid "Plugin imported successfully"
 msgstr "Plugin erfolgreich importiert"
 
-#: src/pluginmanager.cpp:4673
+#: src/pluginmanager.cpp:4680
 msgid "Active catalog updated."
 msgstr "Aktiver Katalog aktualisiert."
 
-#: src/pluginmanager.cpp:4675
+#: src/pluginmanager.cpp:4682
 msgid "Plugin may be installed or updated now."
 msgstr "Plugin kann jetzt installiert oder aktualisiert werden."
 
-#: src/pluginmanager.cpp:4676
+#: src/pluginmanager.cpp:4683
 msgid "OpenCPN Plugin Import Successful"
 msgstr "OpenCPN Plugin erfolgreich importiert"
 
-#: src/pluginmanager.cpp:4682
+#: src/pluginmanager.cpp:4689
 msgid "Active Catalog"
 msgstr "Aktiver Katalog"
 
-#: src/pluginmanager.cpp:4682
+#: src/pluginmanager.cpp:4689
 msgid "Last Catalog"
 msgstr "Letzter Katalog"
 
-#: src/pluginmanager.cpp:4696
+#: src/pluginmanager.cpp:4703
 msgid "Last change: "
 msgstr "Letzte Änderung:"
 
-#: src/pluginmanager.cpp:4697
+#: src/pluginmanager.cpp:4704
 msgid "Please Update Plugin Catalog."
 msgstr "Bitte Plugin Katalog aktualisieren."
 
-#: src/pluginmanager.cpp:5028 src/pluginmanager.cpp:5078
+#: src/pluginmanager.cpp:5035 src/pluginmanager.cpp:5085
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: src/pluginmanager.cpp:5110 src/pluginmanager.cpp:5135
+#: src/pluginmanager.cpp:5117 src/pluginmanager.cpp:5142
 msgid "Uninstall"
 msgstr "Deinstalliere"
 
-#: src/pluginmanager.cpp:5291
+#: src/pluginmanager.cpp:5298
 msgid "Upgrade to Version "
 msgstr "Aktualisieren Sie auf Version"
 
-#: src/pluginmanager.cpp:5298
+#: src/pluginmanager.cpp:5305
 msgid "Install..."
 msgstr "Installiere..."
 
-#: src/pluginmanager.cpp:5304
+#: src/pluginmanager.cpp:5311
 msgid "Update to "
 msgstr "Update auf"
 
-#: src/pluginmanager.cpp:5527 src/update_mgr.cpp:252
+#: src/pluginmanager.cpp:5534 src/update_mgr.cpp:252
 msgid "Website"
 msgstr "Webseite"
 
@@ -7118,12 +7302,12 @@ msgstr "Wegpkt. Namen anz."
 msgid "List contents"
 msgstr "Elemente auflisten"
 
-#: src/routemanagerdialog.cpp:1230 src/routemanagerdialog.cpp:1497
+#: src/routemanagerdialog.cpp:1230 src/routemanagerdialog.cpp:1499
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1356 src/routemanagerdialog.cpp:2202
-#: src/routemanagerdialog.cpp:2657
+#: src/routemanagerdialog.cpp:1356 src/routemanagerdialog.cpp:2204
+#: src/routemanagerdialog.cpp:2659
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Sind Sie sicher, dass Sie die gewählten Objekte löschen wollen?"
 
@@ -7131,82 +7315,82 @@ msgstr "Sind Sie sicher, dass Sie die gewählten Objekte löschen wollen?"
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "Sind Sie sicher, dass Sie <ALLE> Routen löschen wollen?"
 
-#: src/routemanagerdialog.cpp:1578
+#: src/routemanagerdialog.cpp:1580
 msgid "Send Route(s) to OpenCPN Peer"
 msgstr "Route(s) an OpenCPN Gegenstelle senden"
 
-#: src/routemanagerdialog.cpp:1618
+#: src/routemanagerdialog.cpp:1620
 msgid "Send Waypoint(s) to OpenCPN Peer"
 msgstr "Wegpunkt(e) an OpenCPN Gegenstelle senden"
 
-#: src/routemanagerdialog.cpp:1658
+#: src/routemanagerdialog.cpp:1660
 msgid "Send Track(s) to OpenCPN Peer"
 msgstr "Track(s) an OpenCPN Gegenstelle senden"
 
-#: src/routemanagerdialog.cpp:1825
+#: src/routemanagerdialog.cpp:1827
 msgid "&Merge Selected Tracks"
 msgstr "Gewählte Tracks verbinden"
 
-#: src/routemanagerdialog.cpp:1827
+#: src/routemanagerdialog.cpp:1829
 msgid "Reduce Data..."
 msgstr "Daten reduzieren..."
 
-#: src/routemanagerdialog.cpp:1829
+#: src/routemanagerdialog.cpp:1831
 msgid "&Copy as text"
 msgstr "Kopiere als Text"
 
-#: src/routemanagerdialog.cpp:1858
+#: src/routemanagerdialog.cpp:1860
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr "Wähle maximal erlaubten Fehler (in Metern)\n"
 "nach Daten-Reduzierung:"
 
-#: src/routemanagerdialog.cpp:1860
+#: src/routemanagerdialog.cpp:1862
 msgid "Reduce Data Precision"
 msgstr "Verringere Daten-Genauigkeit"
 
-#: src/routemanagerdialog.cpp:1898
+#: src/routemanagerdialog.cpp:1900
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr "Datenanzahl dieses Tracks wurde\n"
 " reduziert um %d%%."
 
-#: src/routemanagerdialog.cpp:1996
+#: src/routemanagerdialog.cpp:1998
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr "Der aktuell laufende Track wurde nicht verbunden.\n"
 "Er kann später nach Beendigung verbunden werden."
 
-#: src/routemanagerdialog.cpp:2274
+#: src/routemanagerdialog.cpp:2276
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN konvertiert Track zu Route..."
 
-#: src/routemanagerdialog.cpp:2275
+#: src/routemanagerdialog.cpp:2277
 msgid "Processing Waypoints..."
 msgstr "Verarbeite Wegpunkte..."
 
-#: src/routemanagerdialog.cpp:2286
+#: src/routemanagerdialog.cpp:2288
 msgid "Done."
 msgstr "Fertig."
 
-#: src/routemanagerdialog.cpp:2308
+#: src/routemanagerdialog.cpp:2310
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "Sind Sie sicher, dass Sie <ALLE> Tracks löschen möchten?"
 
-#: src/routemanagerdialog.cpp:2377
+#: src/routemanagerdialog.cpp:2379
 msgid "Overruled"
 msgstr "Außer Kraft gesetzt"
 
-#: src/routemanagerdialog.cpp:2688
+#: src/routemanagerdialog.cpp:2690
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr "Der zu löschende WP gehört zu einer Route. Soll er wirklich gelöscht werden?"
 
-#: src/routemanagerdialog.cpp:2813
+#: src/routemanagerdialog.cpp:2815
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Sind Sie sicher, dass Sie <ALLE> Wegpunkte löschen wollen?"
 
-#: src/routemanagerdialog.cpp:2818
+#: src/routemanagerdialog.cpp:2820
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
@@ -7216,15 +7400,15 @@ msgstr "Es gibt einige Wegpunkte in Routen oder Ankeralarmen.\n"
 "Damit werden die Routen geändert oder Ankeralarme gelöscht.\n"
 "Antwort Nein erhält die Wegpunkte in Routen oder Alarmen."
 
-#: src/routemanagerdialog.cpp:2982
+#: src/routemanagerdialog.cpp:2984
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr "Sind Sie sicher, dass Sie diesen Layer und <ALLEN> Inhalt löschen wollen?"
 
-#: src/routemanagerdialog.cpp:2986
+#: src/routemanagerdialog.cpp:2988
 msgid "The file will also be deleted from OpenCPN's layer directory."
 msgstr "Die Datei wird auch aus dem Layer-Verzeichnis von OpenCPN gelöscht."
 
-#: src/routemanagerdialog.cpp:3265
+#: src/routemanagerdialog.cpp:3267
 msgid "(Unnamed Layer)"
 msgstr "(unbenannter Layer)"
 
@@ -7567,7 +7751,7 @@ msgstr "Enddatum: "
 msgid "Date starting: "
 msgstr "Anfangsdatum: "
 
-#: src/s57chart.cpp:5906
+#: src/s57chart.cpp:5907
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2>(Sektorwinkel sind Wahre Richtungen von seewärts)</font><br>"
 
@@ -7655,41 +7839,41 @@ msgstr "Heute"
 msgid "Tomorrow"
 msgstr "Morgen"
 
-#: src/toolbar.cpp:1175
+#: src/toolbar.cpp:1173
 msgid "Shift to Larger Scale Chart"
 msgstr "Auf Karte mit größerem Maßstab wechseln"
 
-#: src/toolbar.cpp:1183
+#: src/toolbar.cpp:1181
 msgid "Shift to Smaller Scale Chart"
 msgstr "Auf Karte mit kleinerem Maßstab wechseln"
 
-#: src/toolbar.cpp:1216
+#: src/toolbar.cpp:1214
 msgid "Hide ENC text"
 msgstr "ENC-Text ausblenden"
 
-#: src/toolbar.cpp:1542 src/toolbar.cpp:1556 src/toolbar.cpp:1571
+#: src/toolbar.cpp:1540 src/toolbar.cpp:1554 src/toolbar.cpp:1569
 msgid "ToolTips"
 msgstr "Tool Tipps"
 
-#: src/toolbar.cpp:3056
+#: src/toolbar.cpp:3054
 msgid "No, I don't want to hide it."
 msgstr "Nein, soll nicht versteckt werden."
 
-#: src/toolbar.cpp:3060
+#: src/toolbar.cpp:3058
 msgid "No, and permanently remove the option to hide it."
 msgstr "Nein, und Verstecken-Option dauerhaft entfernen."
 
-#: src/toolbar.cpp:3064
+#: src/toolbar.cpp:3062
 msgid "Yes, hide it."
 msgstr "Ja, verstecken."
 
-#: src/toolbar.cpp:3071
+#: src/toolbar.cpp:3069
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "Der Mann-über-Bord Button ist eine wichtige Sicherheitsfunktion.\n"
 "Soll er wirklich versteckt werden?"
 
-#: src/toolbar.cpp:3157
+#: src/toolbar.cpp:3155
 msgid "Choose Toolbar Icons"
 msgstr "Wählen Sie die Toolbar Icons"
 
@@ -7813,11 +7997,6 @@ msgstr "--"
 msgid "Legend"
 msgstr "Legende"
 
-#: src/TTYWindow.cpp:84 src/TTYWindow.cpp:184 libs/wxcurl/src/dialog.cpp:250
-#: libs/wxcurl/src/dialog.cpp:420
-msgid "Pause"
-msgstr "Pause"
-
 #: src/TTYWindow.cpp:88
 msgid "Copy NMEA Debug window to clipboard."
 msgstr "Kopiere NMEA Debug Fenster in die Zwischenablage."
@@ -7842,9 +8021,101 @@ msgstr "Ausgabe-Message"
 msgid "Information Message or Message with errors"
 msgstr "Informations-Message oder fehlerhafte Message"
 
-#: src/TTYWindow.cpp:179 libs/wxcurl/src/dialog.cpp:410
-msgid "Resume"
-msgstr "Fortsetzen"
+#: src/udev_rule_mgr.cpp:47
+msgid "\n"
+"An OpenCPN dongle is detected but cannot be used due to missing permissions.\n\n"
+"This problem can be fixed by installing a udev rules file. Once installed,\n"
+"it will ensure that the dongle permissions are OK.\n"
+msgstr "\n"
+"Ein OpenCPN-Dongle wurde erkannt, kann aber wegen fehlender Berechtigungen nicht verwendet werden.\n\n"
+"Dieses Problem kann durch die Installation einer udev-Regeldatei behoben werden. Einmal installiert, stellt\n"
+"diese sicher, dass die Dongle-Berechtigungen adäquat sind.\n"
+
+#: src/udev_rule_mgr.cpp:54
+msgid "\n\n"
+"On flatpak, this must be done using the manual command instructions below\n"
+msgstr "\n\n"
+"Bei flatpack muss dies manuell, wie unten beschrieben, erfolgen.\n"
+
+#: src/udev_rule_mgr.cpp:59
+msgid "\n"
+"The device @DEVICE@ exists but cannot be used due to missing permissions.\n\n"
+"This problem can be fixed by installing a udev rules file. Once installed,\n"
+"the rules file will fix the permissions problem.\n\n"
+"It will also create a new device called @SYMLINK@. It is recommended to use\n"
+"@SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,\n"
+"in particular on laptops.\n"
+msgstr "\n"
+"Das Gerät @DEVICE@ wurde gefunden, kann aber wegen fehlender Berechtigungen nicht genutzt werden.\n\n"
+"Die Lösung besteht in der Installation einer udev Regeldatei. Danach\n"
+"sind die korrekten Berechtigungen vorhanden.\n\n"
+"Dabei wird eine neues Gerät namens @SYMLINK@ angelegt. Wir empfehlen @SYMLINK@ statt\n"
+"@DEVICE@ zu verwenden, um Problemen mit sich ändernden Gerätenamen vorzubeugen,\n"
+"was speziell bei Laptops auftreten kann.\n"
+
+#: src/udev_rule_mgr.cpp:71
+msgid "Do not show this dialog next time"
+msgstr "Diesen Dialog nicht mehr anzeigen"
+
+#: src/udev_rule_mgr.cpp:73
+msgid "\n"
+"Rule successfully installed. To activate the new rule:\n"
+"- Exit opencpn.\n"
+"- Unplug and re-insert the USB device.\n"
+"- Restart opencpn\n"
+msgstr "\n"
+"Regel erfolgreich installiert. Um die neue Regel zu aktivieren:\n"
+"- OpenCPN beenden.\n"
+"- Stecken Sie das USB-Gerät ab und neu ein.\n"
+"- Starten Sie OpenCPN neu.\n"
+
+#: src/udev_rule_mgr.cpp:80
+msgid "\n"
+"To do after installing the rule according to instructions:\n"
+"- Exit opencpn.\n"
+"- Unplug and re-insert the USB device.\n"
+"- Restart opencpn\n"
+msgstr "\n"
+"Nach Installation der Regel wie erklärt:\n"
+"- OpenCPN beenden.\n"
+"- Stecken Sie das USB-Gerät ab und neu ein.\n"
+"- Starten Sie OpenCPN neu.\n"
+
+#: src/udev_rule_mgr.cpp:88
+msgid "The device @device@ can not be found (disconnected?)"
+msgstr "Das Gerät @device@ wurde nicht gefunden (nicht verbunden?)"
+
+#: src/udev_rule_mgr.cpp:159
+msgid "Manual command line instructions"
+msgstr "Befehlszeilenanweisungen"
+
+#: src/udev_rule_mgr.cpp:197
+msgid "Review rule"
+msgstr "Regel überprüfen"
+
+#: src/udev_rule_mgr.cpp:263
+msgid "Install rule"
+msgstr "Regel installieren"
+
+#: src/udev_rule_mgr.cpp:268
+msgid "Quit"
+msgstr "Beenden"
+
+#: src/udev_rule_mgr.cpp:289
+msgid "Errors encountered installing rule."
+msgstr "Fehler beim Installieren der Regel."
+
+#: src/udev_rule_mgr.cpp:304
+msgid "Manage dongle udev rule"
+msgstr "Dongle udev-Regel verwalten"
+
+#: src/udev_rule_mgr.cpp:346
+msgid "Manage device udev rule"
+msgstr "Geräte udev-Regel verwalten"
+
+#: src/udev_rule_mgr.cpp:374
+msgid "OpenCPN device error"
+msgstr "OpenCPN Geräte Fehler"
 
 #: src/undo.cpp:84
 msgid "Delete Waypoint"
@@ -7857,105 +8128,4 @@ msgstr "Verschiebe Wegpunkt"
 #: src/update_mgr.cpp:403
 msgid "Dismiss"
 msgstr "Verwerfen"
-
-#: libs/wxcurl/src/dialog.cpp:137
-msgid "Not available"
-msgstr "Nicht verfügbar"
-
-#: libs/wxcurl/src/dialog.cpp:168
-msgid "URL:"
-msgstr "URL:"
-
-#: libs/wxcurl/src/dialog.cpp:187
-msgid "Speed:"
-msgstr "Geschw:"
-
-#: libs/wxcurl/src/dialog.cpp:196
-msgid "Elapsed time:"
-msgstr "Verstrichene Zeit:"
-
-#: libs/wxcurl/src/dialog.cpp:198
-msgid "Estimated total time:"
-msgstr "Voraussichtliche Gesamtdauer:"
-
-#: libs/wxcurl/src/dialog.cpp:200
-msgid "Estimated remaining time:"
-msgstr "Geschätzte verbleibende Zeit:"
-
-#: libs/wxcurl/src/dialog.cpp:243 libs/wxcurl/src/dialog.cpp:399
-msgid "Abort"
-msgstr "Abbrechen"
-
-#: libs/wxcurl/src/dialog.cpp:245
-msgid "Settings"
-msgstr "Einstellungen"
-
-#: libs/wxcurl/src/dialog.cpp:252
-msgid "Start"
-msgstr "Start"
-
-#: libs/wxcurl/src/dialog.cpp:413
-msgid "0 (transfer paused)"
-msgstr "0 (Download angehalten)"
-
-#: libs/wxcurl/src/dialog.cpp:461
-msgid "Connection settings"
-msgstr "Verbindungseinstellungen"
-
-#: libs/wxcurl/src/dialog.cpp:461
-msgid "Connection settings used for the transfer:"
-msgstr "Verbindungseinstellungen dieses Transfers:"
-
-#: libs/wxcurl/src/dialog.cpp:516
-msgid "0 (transfer completed)"
-msgstr "0 (Download abgeschlossen)"
-
-#: libs/wxcurl/src/dialog.cpp:537
-msgid "Downloaded:"
-msgstr "Heruntergeladen:"
-
-#: libs/wxcurl/src/dialog.cpp:585
-msgid "Uploaded:"
-msgstr "Hochgeladen:"
-
-#: libs/wxcurl/src/panel.cpp:111
-msgid "Username:"
-msgstr "Benutzername:"
-
-#: libs/wxcurl/src/panel.cpp:112
-msgid "Password:"
-msgstr "Paßwort:"
-
-#: libs/wxcurl/src/panel.cpp:120
-msgid "Port:"
-msgstr "Port: :"
-
-#: libs/wxcurl/src/panel.cpp:134
-msgid "Proxy settings"
-msgstr "Proxy-Einstellungen"
-
-#: libs/wxcurl/src/panel.cpp:136
-msgid "Use proxy"
-msgstr "Proxy-Server verwenden"
-
-#: libs/wxcurl/src/panel.cpp:141
-msgid "Proxy host:"
-msgstr "Proxy Host:"
-
-#: libs/wxcurl/src/panel.cpp:142
-msgid "Proxy username:"
-msgstr "Proxy-Benutzername:"
-
-#: libs/wxcurl/src/panel.cpp:143
-msgid "Proxy password:"
-msgstr "Proxy Paßwort:"
-
-#: libs/wxcurl/src/panel.cpp:144
-msgid "Proxy port:"
-msgstr "Proxy-Port:"
-
-#: libs/s52plib/src/s52plib.cpp:2170 libs/s52plib/src/s52plib.cpp:2274
-#: libs/s52plib/src/s52plib.cpp:2443
-msgid "ChartTexts"
-msgstr "Kartentexte"
 

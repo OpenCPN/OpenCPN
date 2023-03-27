@@ -50,7 +50,7 @@
     <string name="ocpn_prefs_display_summary_grid">Mostrar quadrícula de Latitude/Longitude</string>
     <string name="ocpn_prefs_display_summary_outlines">Limites de cartas individuais mostrados com sobreposições contrastantes</string>
     <string name="ocpn_prefs_display_summary_lockwpt">A menos que o painel de Propriedades seja mostrado</string>
-    <string name="ocpn_prefs_display_summary_confirmdelete">Em Rotas e Rastos</string>
+    <string name="ocpn_prefs_display_summary_confirmdelete">Em Rotas e Percursos</string>
     <string name="ocpn_prefs_display_summary_depthunits">Mostrar unidades de profundidade em relevo na carta</string>
     <string name="ocpn_prefs_display_summary_uiscalefactor">Afeta barras de ferramentas, caixas de diálogo e fontes do GUI.</string>
     <string name="ocpn_prefs_display_summary_chartscalefactor">Afeta objetos da carta como marcas, bóias, texto, etc.</string>

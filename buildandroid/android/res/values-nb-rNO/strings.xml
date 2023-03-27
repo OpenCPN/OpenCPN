@@ -28,7 +28,7 @@
     <string name="ocpn_action_toggle_fullscreen">Aktiver/deaktiver fullskjerm</string>
     <!-- Preferences Headers -->
     <string name="ocpn_prefs_header_display">Visning</string>
-    <string name="ocpn_prefs_header_charts">Karter</string>
+    <string name="ocpn_prefs_header_charts">Kart</string>
     <string name="ocpn_prefs_header_connections">Tilkoblinger</string>
     <string name="ocpn_prefs_header_summary_display">Kartvisnings valg</string>
     <string name="ocpn_prefs_header_summary_charts">Kartkilder og -alternativer</string>

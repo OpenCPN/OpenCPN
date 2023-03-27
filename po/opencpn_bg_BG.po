@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-26 21:37-0500\n"
-"PO-Revision-Date: 2023-02-27 02:40\n"
+"POT-Creation-Date: 2023-03-14 22:11-0400\n"
+"PO-Revision-Date: 2023-03-27 01:58\n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
 "Language: bg_BG\n"
@@ -17,16 +17,16 @@ msgstr ""
 "X-Crowdin-File: /po/opencpn.pot\n"
 "X-Crowdin-File-ID: 102\n"
 
-#: include/about.h:38 include/AboutFrame.h:87 include/AboutFrameImpl.h:68
-#: src/ocpn_frame.cpp:3636 src/ocpn_frame.cpp:7149 src/toolbar.cpp:1276
+#: include/AboutFrame.h:87 include/AboutFrameImpl.h:68 include/about.h:38
+#: src/ocpn_frame.cpp:3640 src/ocpn_frame.cpp:7155 src/toolbar.cpp:1274
 msgid "About OpenCPN"
 msgstr "За програмата OpenCPN"
 
 #: include/AISTargetAlertDialog.h:48 src/routemanagerdialog.cpp:1357
-#: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2203
-#: src/routemanagerdialog.cpp:2309 src/routemanagerdialog.cpp:2658
-#: src/routemanagerdialog.cpp:2690 src/routemanagerdialog.cpp:2826
-#: src/routemanagerdialog.cpp:2991 src/toolbar.cpp:3048
+#: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2205
+#: src/routemanagerdialog.cpp:2311 src/routemanagerdialog.cpp:2660
+#: src/routemanagerdialog.cpp:2692 src/routemanagerdialog.cpp:2828
+#: src/routemanagerdialog.cpp:2993 src/toolbar.cpp:3046
 msgid "OpenCPN Alert"
 msgstr "OpenCPN Предупреждава"
 
@@ -36,12 +36,12 @@ msgstr "OpenCPN AIS Предупреждава"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:57
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
-#: src/canvasMenu.cpp:466 src/canvasMenu.cpp:475 src/chcanv.cpp:9526
+#: src/canvasMenu.cpp:461 src/canvasMenu.cpp:470 src/chcanv.cpp:9529
 msgid "Object Query"
 msgstr "Информация за обекта"
 
 #: include/GoToPositionDialog.h:44 src/AISTargetListDialog.cpp:703
-#: src/canvasMenu.cpp:504
+#: src/canvasMenu.cpp:499
 msgid "Center view"
 msgstr "Центриране на изгледа"
 
@@ -49,15 +49,15 @@ msgstr "Центриране на изгледа"
 msgid "Link Properties"
 msgstr "Свойства на връзка"
 
-#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9689
-#: src/chcanv.cpp:9693 src/routemanagerdialog.cpp:2629
-#: src/routemanagerdialog.cpp:2633 src/RoutePropDlgImpl.cpp:928
+#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9692
+#: src/chcanv.cpp:9696 src/routemanagerdialog.cpp:2631
+#: src/routemanagerdialog.cpp:2635 src/RoutePropDlgImpl.cpp:928
 msgid "Waypoint Properties"
 msgstr ""
 
-#: include/options.h:91 src/ocpn_frame.cpp:3626 src/ocpn_frame.cpp:3886
-#: src/ocpn_frame.cpp:4940 src/ocpn_frame.cpp:7108 src/options.cpp:3338
-#: src/toolbar.cpp:1205
+#: include/options.h:91 src/ocpn_frame.cpp:3630 src/ocpn_frame.cpp:3890
+#: src/ocpn_frame.cpp:4944 src/ocpn_frame.cpp:7114 src/options.cpp:3338
+#: src/toolbar.cpp:1203
 msgid "Options"
 msgstr "Настройки"
 
@@ -66,7 +66,7 @@ msgid "Print Route Selection"
 msgstr ""
 
 #: include/RoutePropDlg.h:165 include/RoutePropDlgImpl.h:97
-#: src/canvasMenu.cpp:1839 src/chcanv.cpp:7594 src/RoutePropDlgImpl.cpp:515
+#: src/canvasMenu.cpp:1854 src/chcanv.cpp:7597 src/RoutePropDlgImpl.cpp:515
 msgid "Route Properties"
 msgstr "Параметри на маршрута"
 
@@ -75,15 +75,15 @@ msgstr "Параметри на маршрута"
 msgid "Extra Object Info"
 msgstr "Допълнителна информация за обекта"
 
-#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:753 src/canvasMenu.cpp:854
-#: src/canvasMenu.cpp:904 src/canvasMenu.cpp:1674 src/canvasMenu.cpp:1685
-#: src/canvasMenu.cpp:1727 src/canvasMenu.cpp:1738
-#: src/routemanagerdialog.cpp:1798 src/routemanagerdialog.cpp:2796
+#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:748 src/canvasMenu.cpp:849
+#: src/canvasMenu.cpp:899 src/canvasMenu.cpp:1689 src/canvasMenu.cpp:1700
+#: src/canvasMenu.cpp:1742 src/canvasMenu.cpp:1753
+#: src/routemanagerdialog.cpp:1800 src/routemanagerdialog.cpp:2798
 msgid "Send to GPS"
 msgstr "Изпрати на GPS"
 
-#: include/track.h:122 src/ocpn_frame.cpp:3069 src/ocpn_frame.cpp:6430
-#: src/ocpn_frame.cpp:6548
+#: include/track.h:122 src/ocpn_frame.cpp:3073 src/ocpn_frame.cpp:6436
+#: src/ocpn_frame.cpp:6554
 msgid "(Unnamed Track)"
 msgstr ""
 
@@ -96,24 +96,139 @@ msgstr ""
 msgid "Track properties"
 msgstr "Параметри на маршрута"
 
+#: libs/s52plib/src/s52plib.cpp:2171 libs/s52plib/src/s52plib.cpp:2275
+#: libs/s52plib/src/s52plib.cpp:2444
+msgid "ChartTexts"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:137
+msgid "Not available"
+msgstr "Не е налично"
+
+#: libs/wxcurl/src/dialog.cpp:168
+msgid "URL:"
+msgstr "URL адрес:"
+
+#: libs/wxcurl/src/dialog.cpp:187
+msgid "Speed:"
+msgstr "Бързина:"
+
+#: libs/wxcurl/src/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr ""
+
+#: libs/wxcurl/src/dialog.cpp:243 libs/wxcurl/src/dialog.cpp:399
+msgid "Abort"
+msgstr "Изоставяне"
+
+#: libs/wxcurl/src/dialog.cpp:245
+msgid "Settings"
+msgstr "Настройки"
+
+#: libs/wxcurl/src/dialog.cpp:250 libs/wxcurl/src/dialog.cpp:420
+#: src/TTYWindow.cpp:84 src/TTYWindow.cpp:184
+msgid "Pause"
+msgstr "Пауза"
+
+#: libs/wxcurl/src/dialog.cpp:252
+msgid "Start"
+msgstr "Начало"
+
+#: libs/wxcurl/src/dialog.cpp:399 src/about.cpp:497
+#: src/AISTargetListDialog.cpp:798
+msgid "Close"
+msgstr "Затваряне"
+
+#: libs/wxcurl/src/dialog.cpp:410 src/TTYWindow.cpp:179
+msgid "Resume"
+msgstr "Възобновяване"
+
+#: libs/wxcurl/src/dialog.cpp:413
+msgid "0 (transfer paused)"
+msgstr "0 (прехвърляне на пауза)"
+
+#: libs/wxcurl/src/dialog.cpp:461
+msgid "Connection settings"
+msgstr "Настройки на свързване"
+
+#: libs/wxcurl/src/dialog.cpp:461
+msgid "Connection settings used for the transfer:"
+msgstr "Настройки на свързване, използвани за прехвърляне:"
+
+#: libs/wxcurl/src/dialog.cpp:516
+msgid "0 (transfer completed)"
+msgstr "0 (прехвърляне завършено)"
+
+#: libs/wxcurl/src/dialog.cpp:537
+msgid "Downloaded:"
+msgstr "Изтеглено:"
+
+#: libs/wxcurl/src/dialog.cpp:585
+msgid "Uploaded:"
+msgstr "Качено:"
+
+#: libs/wxcurl/src/panel.cpp:111
+msgid "Username:"
+msgstr "Потребителско име:"
+
+#: libs/wxcurl/src/panel.cpp:112
+msgid "Password:"
+msgstr "Парола:"
+
+#: libs/wxcurl/src/panel.cpp:120
+msgid "Port:"
+msgstr "Порт:"
+
+#: libs/wxcurl/src/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Настройки за прокси"
+
+#: libs/wxcurl/src/panel.cpp:136
+msgid "Use proxy"
+msgstr "Употреба на прокси"
+
+#: libs/wxcurl/src/panel.cpp:141
+msgid "Proxy host:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:142
+msgid "Proxy username:"
+msgstr ""
+
+#: libs/wxcurl/src/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Парола на проксито:"
+
+#: libs/wxcurl/src/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Порт на проксито:"
+
 #: src/about.cpp:220 src/about.cpp:264 src/about.cpp:398 src/about.cpp:516
 #: src/AISTargetListDialog.cpp:329 src/androidUTIL.cpp:4881
-#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11757 src/chcanv.cpp:11790
+#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11760 src/chcanv.cpp:11793
 #: src/ChInfoWin.cpp:53 src/cm93.cpp:6427 src/concanv.cpp:104
 #: src/connections_dialog.cpp:350 src/conn_params_panel.cpp:86
 #: src/conn_params_panel.cpp:144 src/conn_params_panel.cpp:860
 #: src/glChartCanvas.cpp:3737 src/glTextureManager.cpp:1439 src/gui_lib.cpp:149
 #: src/gui_lib.cpp:286 src/LinkPropDlg.cpp:37 src/MarkInfo.cpp:235
-#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4581 src/ocpn_frame.cpp:8689
+#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4585 src/ocpn_frame.cpp:8695
 #: src/OCPNPlatform.cpp:1476 src/OCPNPlatform.cpp:1786 src/OCPNPlatform.cpp:1825
 #: src/options.cpp:736 src/options.cpp:762 src/options.cpp:1291
 #: src/options.cpp:1783 src/options.cpp:8491 src/options.cpp:8728
 #: src/options.cpp:8968 src/options.cpp:9113 src/Osenc.cpp:1675
 #: src/routemanagerdialog.cpp:305 src/RoutePropDlg.cpp:53 src/TCWin.cpp:84
-#: src/TCWin.cpp:180 src/toolbar.cpp:3140 src/TrackPropDlg.cpp:110
+#: src/TCWin.cpp:180 src/toolbar.cpp:3138 src/TrackPropDlg.cpp:110
 #: src/TrackPropDlg.cpp:324 src/TrackPropDlg.cpp:651 src/TTYWindow.cpp:114
 msgid "Dialog"
-msgstr ""
+msgstr "Диалогов прозорец"
 
 #: src/about.cpp:394
 msgid "The Open Source Chart Plotter/Navigator"
@@ -129,11 +244,11 @@ msgstr ""
 
 #: src/about.cpp:443
 msgid "About"
-msgstr ""
+msgstr "Относно"
 
 #: src/about.cpp:460
 msgid "Authors"
-msgstr ""
+msgstr "Автори"
 
 #: src/about.cpp:476 src/AboutFrame.cpp:249
 msgid "License"
@@ -143,22 +258,17 @@ msgstr "Лицензи"
 msgid "Help"
 msgstr "Помощ"
 
-#: src/about.cpp:497 src/AISTargetListDialog.cpp:798
-#: libs/wxcurl/src/dialog.cpp:399
-msgid "Close"
-msgstr ""
-
 #: src/AboutFrame.cpp:36
 msgid "< Back"
 msgstr "< Назад"
 
-#: src/AboutFrame.cpp:52
+#: src/AboutFrame.cpp:52 src/udev_rule_mgr.cpp:273
 msgid "OpenCPN"
 msgstr "OpenCPN"
 
 #: src/AboutFrame.cpp:74
 msgid "(c) 2000-2023"
-msgstr ""
+msgstr "(c) 2000-2023"
 
 #: src/AboutFrame.cpp:81
 msgid "The OpenCPN Authors"
@@ -196,7 +306,7 @@ msgstr "Конфигурационен файл:"
 
 #: src/AboutFrame.cpp:174
 msgid "Copy to clipboard"
-msgstr "Копирай в клипборда"
+msgstr "Копиране в клипборда"
 
 #: src/AboutFrame.cpp:182
 msgid "Plugin API: "
@@ -215,17 +325,17 @@ msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr "Искате ли да посетите сайта на opencpn.org за повече информация?"
 
 #: src/AboutFrameImpl.cpp:96 src/ais_info_gui.cpp:112
-#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2208
-#: src/connections_dialog.cpp:2221 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
-#: src/navutil.cpp:3173 src/ocpn_frame.cpp:828 src/ocpn_frame.cpp:961
-#: src/ocpn_frame.cpp:4270 src/options.cpp:1130 src/options.cpp:2908
+#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2214
+#: src/connections_dialog.cpp:2227 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
+#: src/navutil.cpp:3175 src/ocpn_frame.cpp:830 src/ocpn_frame.cpp:963
+#: src/ocpn_frame.cpp:4274 src/options.cpp:1130 src/options.cpp:2908
 #: src/options.cpp:7799 src/options.cpp:7836 src/peer_client.cpp:291
 #: src/peer_client.cpp:349 src/peer_client.cpp:354 src/peer_client.cpp:363
-#: src/pluginmanager.cpp:322 src/pluginmanager.cpp:646
-#: src/pluginmanager.cpp:1035 src/route_gui.cpp:597 src/RoutePoint.cpp:1278
-#: src/route_point_gui.cpp:876 src/tcmgr.cpp:692
+#: src/pluginmanager.cpp:318 src/pluginmanager.cpp:642
+#: src/pluginmanager.cpp:1008 src/route_gui.cpp:597 src/RoutePoint.cpp:1278
+#: src/route_point_gui.cpp:876 src/tcmgr.cpp:692 src/udev_rule_mgr.cpp:294
 msgid "OpenCPN Info"
-msgstr "OpenCPN информация"
+msgstr "Инфо за OpenCPN"
 
 #: src/ais.cpp:110
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
@@ -361,7 +471,7 @@ msgstr ""
 
 #: src/ais.cpp:145
 msgid "Restricted Area: Fishing prohibited"
-msgstr ""
+msgstr "Ограничена зона: риболовът забранен"
 
 #: src/ais.cpp:146
 msgid "Restricted Area: No anchoring."
@@ -657,11 +767,11 @@ msgstr ""
 
 #: src/ais_decoder.cpp:958
 msgid "Motor freighter"
-msgstr ""
+msgstr "Моторен товарен кораб"
 
 #: src/ais_decoder.cpp:959
 msgid "Motor tanker"
-msgstr ""
+msgstr "Моторен танкер"
 
 #: src/ais_decoder.cpp:960
 msgid "Motor tanker, liquid cargo, type N"
@@ -677,11 +787,11 @@ msgstr ""
 
 #: src/ais_decoder.cpp:963
 msgid "Container vessel"
-msgstr ""
+msgstr "Контейнеровоз"
 
 #: src/ais_decoder.cpp:964
 msgid "Gas tanker"
-msgstr ""
+msgstr "Газовоз"
 
 #: src/ais_decoder.cpp:965
 msgid "Motor freighter, tug"
@@ -697,7 +807,7 @@ msgstr ""
 
 #: src/ais_decoder.cpp:968
 msgid "Motor freighter with tanker"
-msgstr ""
+msgstr "Моторен товарен кораб с танкер"
 
 #: src/ais_decoder.cpp:969
 msgid "Motor freighter pushing one or more freighters"
@@ -829,15 +939,15 @@ msgstr ""
 
 #: src/ais_decoder.cpp:1010
 msgid "Ferry"
-msgstr ""
+msgstr "Ферибот"
 
 #: src/ais_decoder.cpp:1011
 msgid "Red cross ship"
-msgstr ""
+msgstr "Кораб на червения кръст"
 
 #: src/ais_decoder.cpp:1012
 msgid "Cruise ship"
-msgstr ""
+msgstr "Круизен коръб"
 
 #: src/ais_decoder.cpp:1013
 msgid "Passenger ship without accommodation"
@@ -849,7 +959,7 @@ msgstr ""
 
 #: src/ais_decoder.cpp:1016
 msgid "Fishing boat"
-msgstr ""
+msgstr "Рибарска лодка"
 
 #: src/ais_decoder.cpp:1017
 msgid "Barge, tanker, chemical"
@@ -892,7 +1002,14 @@ msgstr ""
 msgid "%02X"
 msgstr ""
 
-#: src/ais_info_gui.cpp:194 src/options.cpp:4867
+#: src/ais_info_gui.cpp:103
+msgid "\n"
+"This AIS target has Persistent Tracking selected by MMSI properties\n"
+"A Persistent track recording will therefore be restarted for this target.\n\n"
+"Do you instead want to stop Persistent Tracking for this target?\n"
+msgstr ""
+
+#: src/ais_info_gui.cpp:198 src/options.cpp:4867
 msgid "AIS Alert"
 msgstr "AIS предупреждение"
 
@@ -1015,17 +1132,17 @@ msgstr ""
 #: src/ais_target_data.cpp:367 src/ais_target_data.cpp:780
 #: src/OCPNListCtrl.cpp:122
 msgid "SAR Helicopter"
-msgstr ""
+msgstr "Хеликоптер за търсене и спасяване"
 
 #: src/ais_target_data.cpp:367 src/ais_target_data.cpp:780
 #: src/OCPNListCtrl.cpp:122
 msgid "SAR Aircraft"
-msgstr ""
+msgstr "Самолет за търсене и спасяване"
 
 #: src/ais_target_data.cpp:373 src/ais_target_data.cpp:384
 #: src/AISTargetListDialog.cpp:573 src/options.cpp:1000 src/options.cpp:1322
 msgid "MMSI"
-msgstr ""
+msgstr "Идентификационен код на морската мобилна комуникационна услуга"
 
 #: src/ais_target_data.cpp:374 src/ais_target_data.cpp:386
 #: src/AISTargetListDialog.cpp:582
@@ -1038,7 +1155,7 @@ msgstr "IMO"
 
 #: src/ais_target_data.cpp:394
 msgid "Nation"
-msgstr ""
+msgstr "Нация"
 
 #: src/ais_target_data.cpp:394
 msgid "Flag"
@@ -1054,7 +1171,7 @@ msgstr ""
 #: src/AISTargetListDialog.cpp:150 src/AISTargetListDialog.cpp:165
 #: src/OCPNListCtrl.cpp:141
 msgid "Testing"
-msgstr ""
+msgstr "Тестване"
 
 #: src/ais_target_data.cpp:425 src/ais_target_data.cpp:739
 #: src/ais_target_data.cpp:798 src/ais_target_data.cpp:980
@@ -1072,7 +1189,7 @@ msgstr ""
 
 #: src/ais_target_data.cpp:523
 msgid "by:"
-msgstr ""
+msgstr "от:"
 
 #: src/ais_target_data.cpp:527
 msgid "Nature of distress: "
@@ -1080,13 +1197,13 @@ msgstr ""
 
 #: src/ais_target_data.cpp:545
 msgid " (Last Known)"
-msgstr ""
+msgstr " (последно известно)"
 
 #: src/ais_target_data.cpp:553 src/GoToPositionDialog.cpp:113
 #: src/priority_gui.cpp:190 src/routeprintout.cpp:107 src/routeprintout.cpp:376
 #: src/trackprintout.cpp:88 src/trackprintout.cpp:298
 msgid "Position"
-msgstr ""
+msgstr "Позиция"
 
 #: src/ais_target_data.cpp:554
 msgid "Report Age"
@@ -1099,7 +1216,7 @@ msgstr ""
 #: src/ais_target_data.cpp:581 src/RoutePropDlgImpl.cpp:806
 #: src/TrackPropDlg.cpp:365 src/TrackPropDlg.cpp:1343
 msgid "Destination"
-msgstr ""
+msgstr "Местопредназначение"
 
 #: src/ais_target_data.cpp:582
 msgid "ETA (UTC)"
@@ -1107,11 +1224,11 @@ msgstr ""
 
 #: src/ais_target_data.cpp:645 src/ais_target_data.cpp:651
 msgid "Right"
-msgstr ""
+msgstr "Вдясно"
 
 #: src/ais_target_data.cpp:647 src/ais_target_data.cpp:654
 msgid "Left"
-msgstr ""
+msgstr "Вляво"
 
 #: src/ais_target_data.cpp:689 src/options.cpp:4400 src/options.cpp:4542
 #: src/RoutePropDlg.cpp:353 src/trackprintout.cpp:100 src/trackprintout.cpp:339
@@ -1135,7 +1252,7 @@ msgstr "Скорост на завиване"
 
 #: src/ais_target_data.cpp:704 src/AISTargetListDialog.cpp:618
 msgid "Range"
-msgstr ""
+msgstr "Обхват"
 
 #: src/ais_target_data.cpp:705 src/RoutePropDlg.cpp:328 src/TrackPropDlg.cpp:304
 msgid "Bearing"
@@ -1146,7 +1263,7 @@ msgid "in "
 msgstr ""
 
 #: src/ais_target_data.cpp:719 src/ais_target_data.cpp:869
-#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6579
+#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6582
 msgid "CPA"
 msgstr ""
 
@@ -1156,11 +1273,11 @@ msgstr ""
 
 #: src/ais_target_data.cpp:727 src/catalog_mgr.cpp:340
 msgid "Clear"
-msgstr ""
+msgstr "Изчистване"
 
 #: src/ais_target_data.cpp:730
 msgid "Set"
-msgstr ""
+msgstr "Задаване"
 
 #: src/ais_target_data.cpp:741
 msgid "Altitude"
@@ -1192,9 +1309,9 @@ msgstr "навигационни съоръжения"
 
 #: src/ais_target_data.cpp:962
 msgid "Aid to Navigation"
-msgstr ""
+msgstr "Помощ за навигиране"
 
-#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:315 src/options.cpp:3378
+#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:323 src/options.cpp:3378
 #: src/options.cpp:3581
 msgid "Base"
 msgstr "База"
@@ -1205,7 +1322,7 @@ msgstr "Базова станция"
 
 #: src/ais_target_data.cpp:966 src/ais_target_data.cpp:1695
 msgid "Buddy"
-msgstr ""
+msgstr "Приятел"
 
 #: src/ais_target_data.cpp:966
 msgid "GPSGate Buddy"
@@ -1214,7 +1331,7 @@ msgstr ""
 #: src/ais_target_data.cpp:969 src/ais_target_data.cpp:971
 #: src/ais_target_data.cpp:1696
 msgid "DSC"
-msgstr ""
+msgstr "Цифрово селективно избиране (DSC)"
 
 #: src/ais_target_data.cpp:969
 msgid "DSC Distress"
@@ -1230,11 +1347,11 @@ msgstr "SART"
 
 #: src/ais_target_data.cpp:975 src/ais_target_data.cpp:1698
 msgid "ARPA"
-msgstr ""
+msgstr "Система за автоматично радиолокационно съпровождане (ARPA)"
 
 #: src/ais_target_data.cpp:977 src/ais_target_data.cpp:1699
 msgid "APRS"
-msgstr ""
+msgstr "Радиосистема за обмен на данни в реално време (APRS)"
 
 #: src/ais_target_data.cpp:977 src/ais_target_data.cpp:1634
 msgid "APRS Position Report"
@@ -1242,19 +1359,19 @@ msgstr "APRS Позиция"
 
 #: src/ais_target_data.cpp:980
 msgid "Unk"
-msgstr ""
+msgstr "Неизв."
 
 #: src/ais_target_data.cpp:986
 msgid "Fire, explosion"
-msgstr ""
+msgstr "Огън, взрив"
 
 #: src/ais_target_data.cpp:986
 msgid "Flooding"
-msgstr ""
+msgstr "Наводняване"
 
 #: src/ais_target_data.cpp:987
 msgid "Collision"
-msgstr ""
+msgstr "Сблъсъци"
 
 #: src/ais_target_data.cpp:987
 msgid "Grounding"
@@ -1266,7 +1383,7 @@ msgstr ""
 
 #: src/ais_target_data.cpp:988
 msgid "Sinking"
-msgstr ""
+msgstr "Потъване"
 
 #: src/ais_target_data.cpp:989
 msgid "Disabled and adrift"
@@ -1278,7 +1395,7 @@ msgstr ""
 
 #: src/ais_target_data.cpp:990
 msgid "Abandoning ship"
-msgstr ""
+msgstr "Изоставяне на кораб"
 
 #: src/ais_target_data.cpp:990
 msgid "Piracy/armed robbery attack"
@@ -1595,115 +1712,115 @@ msgstr "Ямайка"
 
 #: src/ais_target_data.cpp:1209
 msgid "Saint Kitts and Nevis"
-msgstr ""
+msgstr "Сейнт Китс и Невис"
 
 #: src/ais_target_data.cpp:1211
 msgid "Saint Lucia"
-msgstr ""
+msgstr "Сейнт Лусия"
 
 #: src/ais_target_data.cpp:1213
 msgid "Mexico"
-msgstr ""
+msgstr "Мексико"
 
 #: src/ais_target_data.cpp:1215
 msgid "Martinique"
-msgstr ""
+msgstr "Мартиника"
 
 #: src/ais_target_data.cpp:1217
 msgid "Montserrat"
-msgstr ""
+msgstr "Монсерат"
 
 #: src/ais_target_data.cpp:1219
 msgid "Nicaragua"
-msgstr ""
+msgstr "Никарагуа"
 
 #: src/ais_target_data.cpp:1227 src/ais_target_data.cpp:1248
 msgid "Panama"
-msgstr ""
+msgstr "Панама"
 
 #: src/ais_target_data.cpp:1229
 msgid "Puerto Rico"
-msgstr ""
+msgstr "Пуерто Рико"
 
 #: src/ais_target_data.cpp:1231
 msgid "El Salvador"
-msgstr ""
+msgstr "Салвадор"
 
 #: src/ais_target_data.cpp:1233
 msgid "Saint Pierre and Miquelon"
-msgstr ""
+msgstr "Сен Пиер и Микелон"
 
 #: src/ais_target_data.cpp:1235
 msgid "Trinidad and Tobago"
-msgstr ""
+msgstr "Тринидад и Тобаго"
 
 #: src/ais_target_data.cpp:1237
 msgid "Turks and Caicos Islands"
-msgstr ""
+msgstr "Острови Търкс и Кайкос"
 
 #: src/ais_target_data.cpp:1252
 msgid "Saint Vincent and the Grenadines"
-msgstr ""
+msgstr "Сейнт Винсент и Гренадини"
 
 #: src/ais_target_data.cpp:1254
 msgid "British Virgin Islands"
-msgstr ""
+msgstr "Британски Вирджински острови"
 
 #: src/ais_target_data.cpp:1256
 msgid "United States Virgin Islands"
-msgstr ""
+msgstr "Американски Вирджински острови"
 
 #: src/ais_target_data.cpp:1258
 msgid "Afghanistan"
-msgstr ""
+msgstr "Афганистан"
 
 #: src/ais_target_data.cpp:1260
 msgid "Saudi Arabia"
-msgstr ""
+msgstr "Саудитска Арабия"
 
 #: src/ais_target_data.cpp:1262
 msgid "Bangladesh"
-msgstr ""
+msgstr "Бангладеш"
 
 #: src/ais_target_data.cpp:1264
 msgid "Bahrain"
-msgstr ""
+msgstr "Бахрейн"
 
 #: src/ais_target_data.cpp:1266
 msgid "Bhutan"
-msgstr ""
+msgstr "Бутан"
 
 #: src/ais_target_data.cpp:1270
 msgid "China"
-msgstr ""
+msgstr "Китай"
 
 #: src/ais_target_data.cpp:1272
 msgid "Taiwan"
-msgstr ""
+msgstr "Тайван"
 
 #: src/ais_target_data.cpp:1274
 msgid "Sri Lanka"
-msgstr ""
+msgstr "Шри Ланка"
 
 #: src/ais_target_data.cpp:1276
 msgid "India"
-msgstr ""
+msgstr "Индия"
 
 #: src/ais_target_data.cpp:1278
 msgid "Iran"
-msgstr ""
+msgstr "Иран"
 
 #: src/ais_target_data.cpp:1280
 msgid "Azerbaijani Republic"
-msgstr ""
+msgstr "Азербайджан"
 
 #: src/ais_target_data.cpp:1282
 msgid "Iraq"
-msgstr ""
+msgstr "Ирак"
 
 #: src/ais_target_data.cpp:1284
 msgid "Israel"
-msgstr ""
+msgstr "Израел"
 
 #: src/ais_target_data.cpp:1286 src/ais_target_data.cpp:1288
 msgid "Japan"
@@ -1803,7 +1920,7 @@ msgstr "Босна и Херцеговина"
 
 #: src/ais_target_data.cpp:1339
 msgid "Adelie Land"
-msgstr ""
+msgstr "Земя Адели"
 
 #: src/ais_target_data.cpp:1341
 msgid "Australia"
@@ -1835,7 +1952,7 @@ msgstr "Камбоджа"
 
 #: src/ais_target_data.cpp:1356
 msgid "Christmas Island"
-msgstr ""
+msgstr "Остров Рождество"
 
 #: src/ais_target_data.cpp:1358
 msgid "Cook Islands"
@@ -1847,7 +1964,7 @@ msgstr "Фиджи"
 
 #: src/ais_target_data.cpp:1362
 msgid "Cocos (Keeling) Islands"
-msgstr ""
+msgstr "Кокосови острови"
 
 #: src/ais_target_data.cpp:1364
 msgid "Indonesia"
@@ -1895,7 +2012,7 @@ msgstr "Филипини"
 
 #: src/ais_target_data.cpp:1386
 msgid "East Timor"
-msgstr ""
+msgstr "Източен Тимор"
 
 #: src/ais_target_data.cpp:1388
 msgid "Papua New Guinea"
@@ -1911,31 +2028,31 @@ msgstr "Соломонови острови"
 
 #: src/ais_target_data.cpp:1394
 msgid "American Samoa"
-msgstr ""
+msgstr "Американска Самоа"
 
 #: src/ais_target_data.cpp:1396
 msgid "Samoa"
-msgstr ""
+msgstr "Самоа"
 
 #: src/ais_target_data.cpp:1401
 msgid "Singapore"
-msgstr ""
+msgstr "Сингапур"
 
 #: src/ais_target_data.cpp:1403
 msgid "Thailand"
-msgstr ""
+msgstr "Тайланд"
 
 #: src/ais_target_data.cpp:1405
 msgid "Tonga"
-msgstr ""
+msgstr "Тонга"
 
 #: src/ais_target_data.cpp:1407
 msgid "Tuvalu"
-msgstr ""
+msgstr "Тувалу"
 
 #: src/ais_target_data.cpp:1409
 msgid "Viet Nam"
-msgstr ""
+msgstr "Виетнам"
 
 #: src/ais_target_data.cpp:1412
 msgid "Vanuatu"
@@ -1995,7 +2112,7 @@ msgstr "Коморски острови"
 
 #: src/ais_target_data.cpp:1440
 msgid "Capo Verde"
-msgstr ""
+msgstr "Кабо Верде"
 
 #: src/ais_target_data.cpp:1442
 msgid "Crozet Archipelago"
@@ -2139,7 +2256,7 @@ msgstr "Света Елена"
 
 #: src/ais_target_data.cpp:1513
 msgid "Somalia"
-msgstr ""
+msgstr "Сомалия"
 
 #: src/ais_target_data.cpp:1515
 msgid "Sierra Leone"
@@ -2151,7 +2268,7 @@ msgstr "Сао Томе и Принсипи"
 
 #: src/ais_target_data.cpp:1519
 msgid "Eswatini"
-msgstr ""
+msgstr "Есватини"
 
 #: src/ais_target_data.cpp:1521
 msgid "Chad"
@@ -2215,7 +2332,7 @@ msgstr "Фолкландски острови"
 
 #: src/ais_target_data.cpp:1553
 msgid "France - Guiana"
-msgstr ""
+msgstr "Френска Гвиана"
 
 #: src/ais_target_data.cpp:1555
 msgid "Guyana"
@@ -2243,7 +2360,7 @@ msgstr "Венецуела"
 
 #: src/ais_target_data.cpp:1578
 msgid "Fishing Vessel"
-msgstr ""
+msgstr "Риболовен кораб"
 
 #: src/ais_target_data.cpp:1579
 msgid "Towing Vessel"
@@ -2611,8 +2728,8 @@ msgstr ""
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:678
-#: src/ocpn_frame.cpp:3590
+#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:673
+#: src/ocpn_frame.cpp:3594
 msgid "AIS target list"
 msgstr "AIS списък на целите"
 
@@ -2655,7 +2772,7 @@ msgstr "Скорост"
 
 #: src/AISTargetListDialog.cpp:652
 msgid "TCPA"
-msgstr ""
+msgstr "Време на най-близко приближение"
 
 #: src/AISTargetListDialog.cpp:694
 msgid "Target info"
@@ -2704,7 +2821,7 @@ msgstr ""
 #: src/AISTargetQueryDialog.cpp:144 src/AISTargetQueryDialog.cpp:290
 #: src/AISTargetQueryDialog.cpp:321
 msgid "Record Track"
-msgstr ""
+msgstr "Запазване на трасето"
 
 #: src/AISTargetQueryDialog.cpp:177
 msgid "The recently captured track of this target has been recorded.\n"
@@ -2720,14 +2837,14 @@ msgstr ""
 #: src/cm93.cpp:6512 src/GoToPositionDialog.cpp:150 src/MUIBar.cpp:179
 #: src/options.cpp:950 src/options.cpp:1052 src/options.cpp:5776
 #: src/routeprintout.cpp:428 src/TCWin.cpp:123 src/TCWin.cpp:132
-#: src/toolbar.cpp:3207 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
+#: src/toolbar.cpp:3205 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
 #: src/TrackPropDlg.cpp:997
 msgid "OK"
-msgstr ""
+msgstr "Добре"
 
 #: src/AISTargetQueryDialog.cpp:319
 msgid "Stop Tracking"
-msgstr ""
+msgstr "Спиране на проследяването"
 
 #: src/androidUTIL.cpp:2200
 msgid "OpenCPN Help is not installed.\n"
@@ -2741,9 +2858,9 @@ msgstr ""
 
 #: src/androidUTIL.cpp:3160
 msgid "Nothing found"
-msgstr ""
+msgstr "Нищо открито"
 
-#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1757
+#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1760
 msgid "Anchorage created "
 msgstr ""
 
@@ -2786,20 +2903,20 @@ msgstr ""
 
 #: src/androidUTIL.cpp:4998
 msgid "Status"
-msgstr ""
+msgstr "Състояние"
 
 #: src/androidUTIL.cpp:5015 src/catalog_mgr.cpp:604
-#: src/connections_dialog.cpp:2087 src/GoToPositionDialog.cpp:146
+#: src/connections_dialog.cpp:2093 src/GoToPositionDialog.cpp:146
 #: src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:754 src/MarkInfo.cpp:1856
 #: src/MUIBar.cpp:175 src/options.cpp:947 src/options.cpp:1049
 #: src/options.cpp:5780 src/options.cpp:9031 src/peer_client.cpp:435
 #: src/priority_gui.cpp:105 src/REST_server_gui.cpp:121
 #: src/REST_server_gui.cpp:216 src/routeprintout.cpp:424
 #: src/RoutePropDlg.cpp:511 src/SendToGpsDlg.cpp:202 src/SendToPeerDlg.cpp:167
-#: src/toolbar.cpp:3203 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
+#: src/toolbar.cpp:3201 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
 #: src/TrackPropDlg.cpp:992
 msgid "Cancel"
-msgstr ""
+msgstr "Отказ"
 
 #: src/androidUTIL.cpp:5041
 msgid "On the next page, find and choose the root folder containing chart files to migrate\n\n"
@@ -2812,15 +2929,15 @@ msgstr ""
 
 #: src/androidUTIL.cpp:5044
 msgid "Proceed?"
-msgstr ""
+msgstr "Продължавате ли?"
 
 #: src/androidUTIL.cpp:5056
 msgid "Waiting for permission grant...."
-msgstr ""
+msgstr "Чака се за предоставяне на разрешение...."
 
 #: src/androidUTIL.cpp:5090
 msgid "Migration started..."
-msgstr ""
+msgstr "Мигрирането започна..."
 
 #: src/androidUTIL.cpp:5106
 msgid "Permission granted to "
@@ -2836,7 +2953,7 @@ msgstr ""
 
 #: src/androidUTIL.cpp:5122
 msgid "Source: "
-msgstr ""
+msgstr "Източник: "
 
 #: src/androidUTIL.cpp:5126
 msgid "Destination: OpenCPN Internal Storage"
@@ -2870,338 +2987,338 @@ msgstr ""
 msgid "Finishing migration"
 msgstr ""
 
-#: src/canvasMenu.cpp:244 src/canvasMenu.cpp:277 src/canvasMenu.cpp:312
+#: src/canvasMenu.cpp:244 src/canvasMenu.cpp:274 src/canvasMenu.cpp:307
 #: src/options.cpp:1243
 msgid "Menu"
-msgstr ""
+msgstr "Меню"
 
-#: src/canvasMenu.cpp:348 src/canvasMenu.cpp:351 src/canvasMenu.cpp:369
+#: src/canvasMenu.cpp:343 src/canvasMenu.cpp:346 src/canvasMenu.cpp:364
 msgid "Undo"
-msgstr ""
+msgstr "Отмяна"
 
-#: src/canvasMenu.cpp:358 src/canvasMenu.cpp:361 src/canvasMenu.cpp:376
+#: src/canvasMenu.cpp:353 src/canvasMenu.cpp:356 src/canvasMenu.cpp:371
 msgid "Redo"
-msgstr ""
+msgstr "Връщане"
 
-#: src/canvasMenu.cpp:389
+#: src/canvasMenu.cpp:384
 msgid "End Route"
-msgstr ""
+msgstr "Край на маршрута"
 
-#: src/canvasMenu.cpp:395
+#: src/canvasMenu.cpp:390
 msgid "Measure Off"
 msgstr ""
 
-#: src/canvasMenu.cpp:398
+#: src/canvasMenu.cpp:393
 msgid "Measure"
 msgstr ""
 
-#: src/canvasMenu.cpp:455
+#: src/canvasMenu.cpp:450
 msgid "Max Detail Here"
 msgstr ""
 
-#: src/canvasMenu.cpp:457 src/canvasMenu.cpp:480
+#: src/canvasMenu.cpp:452 src/canvasMenu.cpp:475
 msgid "Scale In"
 msgstr ""
 
-#: src/canvasMenu.cpp:459 src/canvasMenu.cpp:482
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:477
 msgid "Scale Out"
 msgstr ""
 
-#: src/canvasMenu.cpp:490
+#: src/canvasMenu.cpp:485
 msgid "Drop Mark"
 msgstr ""
 
-#: src/canvasMenu.cpp:492
+#: src/canvasMenu.cpp:487
 msgid "New Route..."
 msgstr ""
 
-#: src/canvasMenu.cpp:495
+#: src/canvasMenu.cpp:490
 msgid "Move Boat Here"
 msgstr ""
 
-#: src/canvasMenu.cpp:500
+#: src/canvasMenu.cpp:495
 msgid "Navigate To Here"
 msgstr ""
 
-#: src/canvasMenu.cpp:509 src/ocpn_frame.cpp:3493
+#: src/canvasMenu.cpp:504 src/ocpn_frame.cpp:3497
 msgid "Course Up Mode"
 msgstr ""
 
-#: src/canvasMenu.cpp:511
+#: src/canvasMenu.cpp:506
 msgid "Heading Up Mode"
 msgstr ""
 
-#: src/canvasMenu.cpp:513 src/canvasMenu.cpp:520 src/ocpn_frame.cpp:3202
-#: src/ocpn_frame.cpp:3492 src/ocpn_frame.cpp:5965
+#: src/canvasMenu.cpp:508 src/canvasMenu.cpp:515 src/ocpn_frame.cpp:3206
+#: src/ocpn_frame.cpp:3496 src/ocpn_frame.cpp:5971
 msgid "North Up Mode"
 msgstr ""
 
-#: src/canvasMenu.cpp:518
+#: src/canvasMenu.cpp:513
 msgid "Chart Up Mode"
 msgstr ""
 
-#: src/canvasMenu.cpp:529 src/canvasMenu.cpp:536 src/ocpn_frame.cpp:3574
+#: src/canvasMenu.cpp:524 src/canvasMenu.cpp:531 src/ocpn_frame.cpp:3578
 msgid "Toggle Full Screen"
 msgstr ""
 
-#: src/canvasMenu.cpp:542 src/canvasMenu.cpp:705 src/canvasMenu.cpp:723
+#: src/canvasMenu.cpp:537 src/canvasMenu.cpp:700 src/canvasMenu.cpp:718
 msgid "Zero XTE"
 msgstr ""
 
-#: src/canvasMenu.cpp:549
+#: src/canvasMenu.cpp:544
 msgid "Paste Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:553 src/canvasMenu.cpp:561
+#: src/canvasMenu.cpp:548 src/canvasMenu.cpp:556
 msgid "Paste Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:557 src/canvasMenu.cpp:562
+#: src/canvasMenu.cpp:552 src/canvasMenu.cpp:557
 msgid "Paste Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:572
+#: src/canvasMenu.cpp:567
 msgid "CM93 Offset Dialog..."
 msgstr ""
 
-#: src/canvasMenu.cpp:597 src/options.cpp:3857 src/options.cpp:3919
+#: src/canvasMenu.cpp:592 src/options.cpp:3857 src/options.cpp:3919
 msgid "Chart Groups"
 msgstr ""
 
-#: src/canvasMenu.cpp:604
+#: src/canvasMenu.cpp:599
 msgid "temporary"
 msgstr ""
 
-#: src/canvasMenu.cpp:607
+#: src/canvasMenu.cpp:602
 msgid "All Active Charts"
 msgstr ""
 
-#: src/canvasMenu.cpp:637 src/CanvasOptions.cpp:211
+#: src/canvasMenu.cpp:632 src/CanvasOptions.cpp:211
 msgid "AIS"
 msgstr ""
 
-#: src/canvasMenu.cpp:638
+#: src/canvasMenu.cpp:633
 msgid "Target Query..."
 msgstr ""
 
-#: src/canvasMenu.cpp:642
+#: src/canvasMenu.cpp:637
 msgid "Hide Target CPA"
 msgstr ""
 
-#: src/canvasMenu.cpp:644
+#: src/canvasMenu.cpp:639
 msgid "Show Target CPA"
 msgstr ""
 
-#: src/canvasMenu.cpp:646
+#: src/canvasMenu.cpp:641
 msgid "Target List..."
 msgstr ""
 
-#: src/canvasMenu.cpp:650
+#: src/canvasMenu.cpp:645
 msgid "Hide Target Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:653
+#: src/canvasMenu.cpp:648
 msgid "Show Target Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:656
+#: src/canvasMenu.cpp:651
 msgid "Copy Target MMSI"
 msgstr ""
 
-#: src/canvasMenu.cpp:663 src/canvasMenu.cpp:671
+#: src/canvasMenu.cpp:658 src/canvasMenu.cpp:666
 msgid "Object Query..."
 msgstr "Информация за обекта..."
 
-#: src/canvasMenu.cpp:685
+#: src/canvasMenu.cpp:680
 msgid "Unnamed Route"
 msgstr "Неназован маршрут"
 
-#: src/canvasMenu.cpp:693
+#: src/canvasMenu.cpp:688
 msgid "Layer Route"
 msgstr "Слой маршрути"
 
-#: src/canvasMenu.cpp:695 src/canvasMenu.cpp:713 src/canvasMenu.cpp:786
-#: src/canvasMenu.cpp:790 src/canvasMenu.cpp:815 src/canvasMenu.cpp:822
-#: src/canvasMenu.cpp:887 src/canvasMenu.cpp:891 src/MarkInfo.cpp:335
+#: src/canvasMenu.cpp:690 src/canvasMenu.cpp:708 src/canvasMenu.cpp:781
+#: src/canvasMenu.cpp:785 src/canvasMenu.cpp:810 src/canvasMenu.cpp:817
+#: src/canvasMenu.cpp:882 src/canvasMenu.cpp:886 src/MarkInfo.cpp:335
 msgid "Properties"
 msgstr "Свойства"
 
-#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:720 src/canvasMenu.cpp:834
+#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:715 src/canvasMenu.cpp:829
 msgid "Activate Next Waypoint"
 msgstr "Активирайте следващата точка от маршрута"
 
-#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:722 src/routemanagerdialog.cpp:1303
+#: src/canvasMenu.cpp:699 src/canvasMenu.cpp:717 src/routemanagerdialog.cpp:1303
 msgid "Deactivate"
 msgstr "Деактивирай"
 
-#: src/canvasMenu.cpp:707 src/canvasMenu.cpp:725 src/canvasMenu.cpp:818
-#: src/canvasMenu.cpp:825 src/routemanagerdialog.cpp:1297
+#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:720 src/canvasMenu.cpp:813
+#: src/canvasMenu.cpp:820 src/routemanagerdialog.cpp:1297
 msgid "Activate"
 msgstr "Активиране"
 
-#: src/canvasMenu.cpp:711 src/chcanv.cpp:3818 src/chcanv.cpp:10529
+#: src/canvasMenu.cpp:706 src/chcanv.cpp:3819 src/chcanv.cpp:10532
 #: src/concanv.cpp:143 src/concanv.cpp:158 src/concanv.cpp:197
 msgid "Route"
 msgstr "Маршрут"
 
-#: src/canvasMenu.cpp:728
+#: src/canvasMenu.cpp:723
 msgid "Insert Waypoint"
 msgstr "Вмъкване на точката"
 
-#: src/canvasMenu.cpp:729 src/undo.cpp:90
+#: src/canvasMenu.cpp:724 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "Добавяне на точката"
 
-#: src/canvasMenu.cpp:734
+#: src/canvasMenu.cpp:729
 msgid "Split around Leg"
 msgstr ""
 
-#: src/canvasMenu.cpp:736 src/canvasMenu.cpp:791 src/canvasMenu.cpp:846
-#: src/canvasMenu.cpp:896
+#: src/canvasMenu.cpp:731 src/canvasMenu.cpp:786 src/canvasMenu.cpp:841
+#: src/canvasMenu.cpp:891
 msgid "Copy as KML"
 msgstr ""
 
-#: src/canvasMenu.cpp:737 src/canvasMenu.cpp:792 src/canvasMenu.cpp:849
-#: src/canvasMenu.cpp:899 src/connections_dialog.cpp:2083 src/MarkInfo.cpp:488
+#: src/canvasMenu.cpp:732 src/canvasMenu.cpp:787 src/canvasMenu.cpp:844
+#: src/canvasMenu.cpp:894 src/connections_dialog.cpp:2089 src/MarkInfo.cpp:488
 #: src/MarkInfo.cpp:1145 src/MarkInfo.cpp:1186 src/options.cpp:1239
 #: src/RoutePropDlg.cpp:428 src/TrackPropDlg.cpp:901
 msgid "Delete"
 msgstr "Изтриване"
 
-#: src/canvasMenu.cpp:738
+#: src/canvasMenu.cpp:733
 msgid "Reverse..."
 msgstr "Обратно..."
 
-#: src/canvasMenu.cpp:742
+#: src/canvasMenu.cpp:737
 msgid "Hide Waypoint Names"
 msgstr ""
 
-#: src/canvasMenu.cpp:745
+#: src/canvasMenu.cpp:740
 msgid "Show Waypoint Names"
 msgstr ""
 
-#: src/canvasMenu.cpp:748
+#: src/canvasMenu.cpp:743
 msgid "Resequence Waypoints..."
 msgstr ""
 
-#: src/canvasMenu.cpp:762 src/canvasMenu.cpp:863
+#: src/canvasMenu.cpp:757 src/canvasMenu.cpp:858
 msgid "Send to new GPS"
 msgstr ""
 
-#: src/canvasMenu.cpp:784
+#: src/canvasMenu.cpp:779
 msgid "Layer Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:788 src/chcanv.cpp:3993
+#: src/canvasMenu.cpp:783 src/chcanv.cpp:3994
 msgid "Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:805 src/canvasMenu.cpp:877
+#: src/canvasMenu.cpp:800 src/canvasMenu.cpp:872
 msgid "Unnamed Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:813 src/canvasMenu.cpp:885
+#: src/canvasMenu.cpp:808 src/canvasMenu.cpp:880
 msgid "Layer Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:820 src/canvasMenu.cpp:889
+#: src/canvasMenu.cpp:815 src/canvasMenu.cpp:884
 msgid "Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:838
+#: src/canvasMenu.cpp:833
 msgid "Remove from Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:843
+#: src/canvasMenu.cpp:838
 msgid "Split Route at Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:894
+#: src/canvasMenu.cpp:889
 msgid "Navigate To This"
 msgstr ""
 
-#: src/canvasMenu.cpp:918
+#: src/canvasMenu.cpp:913
 msgid "Clear Anchor Watch"
 msgstr ""
 
-#: src/canvasMenu.cpp:929
+#: src/canvasMenu.cpp:924
 msgid "Set Anchor Watch"
 msgstr ""
 
-#: src/canvasMenu.cpp:970
+#: src/canvasMenu.cpp:965
 msgid "Main Menu"
 msgstr "Главно меню"
 
-#: src/canvasMenu.cpp:983
+#: src/canvasMenu.cpp:978
 msgid "Show Tide Information"
 msgstr "Показване на информация за приливите"
 
-#: src/canvasMenu.cpp:989
+#: src/canvasMenu.cpp:984
 msgid "Show Current Information"
 msgstr "Показване на информация за теченията"
 
-#: src/canvasMenu.cpp:1163
+#: src/canvasMenu.cpp:1156
 msgid "Temporary GOTO Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:1164 src/canvasMenu.cpp:1231
-#: src/routemanagerdialog.cpp:2748
+#: src/canvasMenu.cpp:1157 src/canvasMenu.cpp:1224
+#: src/routemanagerdialog.cpp:2750
 msgid "Here"
 msgstr "Тук"
 
-#: src/canvasMenu.cpp:1166
+#: src/canvasMenu.cpp:1159
 msgid "There"
 msgstr "Там"
 
-#: src/canvasMenu.cpp:1227 src/routemanagerdialog.cpp:2381
-#: src/routemanagerdialog.cpp:2744
+#: src/canvasMenu.cpp:1220 src/routemanagerdialog.cpp:2383
+#: src/routemanagerdialog.cpp:2746
 msgid "(Unnamed Waypoint)"
 msgstr ""
 
-#: src/canvasMenu.cpp:1228 src/routemanagerdialog.cpp:2745
+#: src/canvasMenu.cpp:1221 src/routemanagerdialog.cpp:2747
 msgid "Go to "
 msgstr ""
 
-#: src/canvasMenu.cpp:1443 src/canvasMenu.cpp:1477
-#: src/routemanagerdialog.cpp:1486
+#: src/canvasMenu.cpp:1458 src/canvasMenu.cpp:1492
+#: src/routemanagerdialog.cpp:1488
 msgid "Rename Waypoints?"
 msgstr ""
 
-#: src/canvasMenu.cpp:1494
+#: src/canvasMenu.cpp:1509
 msgid "Are you sure you want to delete this route?"
 msgstr ""
 
-#: src/canvasMenu.cpp:1495
+#: src/canvasMenu.cpp:1510
 msgid "OpenCPN Route Delete"
 msgstr ""
 
-#: src/canvasMenu.cpp:1622 src/RoutePropDlgImpl.cpp:1048
+#: src/canvasMenu.cpp:1637 src/RoutePropDlgImpl.cpp:1048
 #: src/TrackPropDlg.cpp:1312
 msgid "_A"
 msgstr ""
 
-#: src/canvasMenu.cpp:1624 src/RoutePropDlgImpl.cpp:1049
+#: src/canvasMenu.cpp:1639 src/RoutePropDlgImpl.cpp:1049
 #: src/TrackPropDlg.cpp:1313
 msgid "_B"
 msgstr ""
 
-#: src/canvasMenu.cpp:1711
+#: src/canvasMenu.cpp:1726
 msgid "Send Waypoint to OpenCPN Peer"
 msgstr ""
 
-#: src/canvasMenu.cpp:1764
+#: src/canvasMenu.cpp:1779
 msgid "Send Route to OpenCPN Peer"
 msgstr ""
 
-#: src/canvasMenu.cpp:1853
+#: src/canvasMenu.cpp:1868
 msgid "Are you sure you want to delete this track?"
 msgstr ""
 
-#: src/canvasMenu.cpp:1854 src/routeman_gui.cpp:237
+#: src/canvasMenu.cpp:1869 src/routeman_gui.cpp:237
 msgid "OpenCPN Track Delete"
 msgstr ""
 
-#: src/canvasMenu.cpp:1904
+#: src/canvasMenu.cpp:1919
 msgid "Send Track to OpenCPN Peer"
 msgstr ""
 
@@ -3211,7 +3328,7 @@ msgstr ""
 
 #: src/CanvasOptions.cpp:133 src/options.cpp:4016 src/options.cpp:4197
 msgid "Navigation Mode"
-msgstr ""
+msgstr "Режим „Навигация“"
 
 #: src/CanvasOptions.cpp:140 src/options.cpp:4024 src/options.cpp:4205
 msgid "North Up"
@@ -3233,16 +3350,16 @@ msgstr ""
 msgid "Display Options"
 msgstr ""
 
-#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3517 src/ocpn_frame.cpp:3523
+#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3521 src/ocpn_frame.cpp:3527
 #: src/options.cpp:4049 src/options.cpp:4230
 msgid "Enable Chart Quilting"
 msgstr ""
 
 #: src/CanvasOptions.cpp:189 src/options.cpp:4090 src/options.cpp:4275
 msgid "Show Grid"
-msgstr ""
+msgstr "Показване на омрежване"
 
-#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3519 src/ocpn_frame.cpp:3525
+#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3523 src/ocpn_frame.cpp:3529
 #: src/options.cpp:4094 src/options.cpp:4279
 msgid "Show Chart Outlines"
 msgstr ""
@@ -3267,8 +3384,8 @@ msgstr ""
 msgid "Show Tide stations"
 msgstr ""
 
-#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1333 src/ocpn_frame.cpp:3561
-#: src/toolbar.cpp:1234
+#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1334 src/ocpn_frame.cpp:3565
+#: src/toolbar.cpp:1232
 msgid "Show Currents"
 msgstr "Течения"
 
@@ -3304,21 +3421,25 @@ msgstr ""
 msgid "Show visible sector lights"
 msgstr ""
 
-#: src/CanvasOptions.cpp:313 src/options.cpp:3376 src/options.cpp:3579
+#: src/CanvasOptions.cpp:311
+msgid "Show chart data quality"
+msgstr ""
+
+#: src/CanvasOptions.cpp:321 src/options.cpp:3376 src/options.cpp:3579
 msgid "Display Category"
-msgstr ""
+msgstr "Категория на показ"
 
-#: src/CanvasOptions.cpp:315 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
 msgid "Standard"
-msgstr ""
+msgstr "Стандарт"
 
-#: src/CanvasOptions.cpp:315 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
 msgid "All"
-msgstr ""
+msgstr "Всичко"
 
-#: src/CanvasOptions.cpp:316
+#: src/CanvasOptions.cpp:324
 msgid "User Standard"
-msgstr ""
+msgstr "Потребителски стандарт"
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
@@ -3326,15 +3447,15 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:99
 msgid "Hide"
-msgstr ""
+msgstr "Скриване"
 
 #: src/catalog_mgr.cpp:102
 msgid "Ultra advanced"
-msgstr ""
+msgstr "Свръх разширениo"
 
 #: src/catalog_mgr.cpp:129 src/cat_settings.cpp:228 src/download_mgr.cpp:377
 msgid "Done"
-msgstr ""
+msgstr "Готово"
 
 #: src/catalog_mgr.cpp:190
 msgid "Catalog URL status: "
@@ -3342,7 +3463,7 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:193
 msgid "Error"
-msgstr ""
+msgstr "Грешка"
 
 #: src/catalog_mgr.cpp:222
 msgid "Current active plugin catalog"
@@ -3360,7 +3481,7 @@ msgstr ""
 msgid "Latest available catalog:"
 msgstr ""
 
-#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4233
+#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4241
 msgid "Cannot download data from url"
 msgstr ""
 
@@ -3378,7 +3499,7 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:350
 msgid "Save"
-msgstr ""
+msgstr "Запазване"
 
 #: src/catalog_mgr.cpp:384
 msgid "Catalog channel: "
@@ -3394,15 +3515,15 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:497
 msgid "Catalog updated"
-msgstr ""
+msgstr "Каталогът обновен"
 
 #: src/catalog_mgr.cpp:561
 msgid "Server is reachable..."
-msgstr ""
+msgstr "Сървърът е достъпен..."
 
 #: src/catalog_mgr.cpp:563
 msgid "Check channel..."
-msgstr ""
+msgstr "Проверка на канала..."
 
 #: src/catalog_mgr.cpp:571
 msgid "Custom URL"
@@ -3410,7 +3531,7 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:589
 msgid "Fail: "
-msgstr ""
+msgstr "Грешка: "
 
 #: src/catalog_mgr.cpp:630 src/catalog_mgr.cpp:655
 msgid "Catalog Manager"
@@ -3422,7 +3543,7 @@ msgstr ""
 
 #: src/cat_settings.cpp:96
 msgid "Default setting"
-msgstr ""
+msgstr "Настройка по подразбиране"
 
 #: src/cat_settings.cpp:162
 msgid "Active catalog"
@@ -3434,7 +3555,7 @@ msgstr ""
 
 #: src/cat_settings.cpp:176
 msgid "Compatibility"
-msgstr ""
+msgstr "Съвместимост"
 
 #: src/cat_settings.cpp:178
 msgid "Active setting:"
@@ -3442,16 +3563,16 @@ msgstr ""
 
 #: src/cat_settings.cpp:190
 msgid "Cache"
-msgstr ""
+msgstr "Кеш"
 
 #: src/cat_settings.cpp:199
 msgid "Clear cache"
-msgstr ""
+msgstr "Изчистване на кеша"
 
 #: src/cat_settings.cpp:216
 #, c-format
 msgid "Size: %d MB in %d files"
-msgstr ""
+msgstr "Размер: %d MB в %d файла"
 
 #: src/cat_settings.cpp:236
 msgid "Plugin Catalog Settings"
@@ -3463,11 +3584,11 @@ msgstr ""
 
 #: src/chartdbs.cpp:1351
 msgid " Name:  "
-msgstr ""
+msgstr " Име:  "
 
-#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5402
-#: src/chcanv.cpp:5405 src/chcanv.cpp:5409 src/chcanv.cpp:5412
-#: src/chcanv.cpp:5415 src/chcanv.cpp:5453 src/routemanagerdialog.cpp:721
+#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5403
+#: src/chcanv.cpp:5406 src/chcanv.cpp:5410 src/chcanv.cpp:5413
+#: src/chcanv.cpp:5416 src/chcanv.cpp:5454 src/routemanagerdialog.cpp:721
 msgid "Scale"
 msgstr "Мащаб"
 
@@ -3481,11 +3602,11 @@ msgstr " Единици за дълбочина:  "
 
 #: src/chartdbs.cpp:1402
 msgid " Soundings:  "
-msgstr ""
+msgstr " Измерване на водни дълбочини:  "
 
 #: src/chartdbs.cpp:1410
 msgid " Datum:  "
-msgstr ""
+msgstr " Координатна система:  "
 
 #: src/chartdbs.cpp:1418
 msgid " Projection:  "
@@ -3513,7 +3634,7 @@ msgstr ""
 
 #: src/chartdbs.cpp:1446
 msgid " Updated:  "
-msgstr ""
+msgstr " Обновено:  "
 
 #: src/chartdbs.cpp:1674
 msgid "OpenCPN Chart Scan...."
@@ -3527,259 +3648,259 @@ msgstr ""
 msgid "OpenCPN Chart Add...."
 msgstr ""
 
-#: src/chcanv.cpp:1303 src/ocpn_frame.cpp:3560 src/toolbar.cpp:1240
+#: src/chcanv.cpp:1304 src/ocpn_frame.cpp:3564 src/toolbar.cpp:1238
 msgid "Show Tides"
 msgstr "Приливи и отливи"
 
-#: src/chcanv.cpp:1304
+#: src/chcanv.cpp:1305
 msgid "Hide Tides"
-msgstr ""
+msgstr "Скриване на приливи/отливи"
 
-#: src/chcanv.cpp:1334
+#: src/chcanv.cpp:1335
 msgid "Hide Currents"
-msgstr ""
+msgstr "Скриване на теченията"
 
-#: src/chcanv.cpp:1424 src/chcanv.cpp:1439
+#: src/chcanv.cpp:1425 src/chcanv.cpp:1440
 msgid "Group \""
-msgstr ""
+msgstr "Група \""
 
-#: src/chcanv.cpp:1429
+#: src/chcanv.cpp:1430
 msgid "\" is empty."
-msgstr ""
+msgstr "\" е празно."
 
-#: src/chcanv.cpp:1431 src/chcanv.cpp:1446
+#: src/chcanv.cpp:1432 src/chcanv.cpp:1447
 msgid "OpenCPN Group Notice"
 msgstr ""
 
-#: src/chcanv.cpp:1444
+#: src/chcanv.cpp:1445
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 
-#: src/chcanv.cpp:3820 src/chcanv.cpp:10531
+#: src/chcanv.cpp:3821 src/chcanv.cpp:10534
 msgid "Layer Route: "
 msgstr ""
 
-#: src/chcanv.cpp:3823 src/chcanv.cpp:3998
+#: src/chcanv.cpp:3824 src/chcanv.cpp:3999
 msgid "(unnamed)"
-msgstr ""
+msgstr "(безименно)"
 
-#: src/chcanv.cpp:3827
+#: src/chcanv.cpp:3828
 msgid "Total Length: "
-msgstr ""
+msgstr "Обща дължина: "
 
-#: src/chcanv.cpp:3829
+#: src/chcanv.cpp:3830
 msgid "Leg: from "
 msgstr ""
 
-#: src/chcanv.cpp:3829
+#: src/chcanv.cpp:3830
 msgid " to "
-msgstr ""
+msgstr " до "
 
-#: src/chcanv.cpp:3879
+#: src/chcanv.cpp:3880
 msgid "From Ship To"
-msgstr ""
+msgstr "От кораба до"
 
-#: src/chcanv.cpp:3901 src/concanv.cpp:389
+#: src/chcanv.cpp:3902 src/concanv.cpp:389
 msgid "%Dd %H:%M"
 msgstr ""
 
-#: src/chcanv.cpp:3902
+#: src/chcanv.cpp:3903
 msgid "%H:%M"
 msgstr ""
 
-#: src/chcanv.cpp:3995
+#: src/chcanv.cpp:3996
 msgid "Layer Track: "
 msgstr ""
 
-#: src/chcanv.cpp:4002
+#: src/chcanv.cpp:4003
 msgid "Total Track: "
 msgstr ""
 
-#: src/chcanv.cpp:4019
+#: src/chcanv.cpp:4020
 msgid "Segment Created: "
 msgstr ""
 
-#: src/chcanv.cpp:5444 src/ocpn_frame.cpp:2167 src/ocpn_frame.cpp:2190
+#: src/chcanv.cpp:5445 src/ocpn_frame.cpp:2170 src/ocpn_frame.cpp:2193
 #: src/OCPNPlatform.cpp:1578
 msgid "StatusBar"
 msgstr "Лентата на състоянието"
 
-#: src/chcanv.cpp:6566
-msgid "ON"
-msgstr ""
-
 #: src/chcanv.cpp:6569
-msgid "OFF"
-msgstr ""
+msgid "ON"
+msgstr "ВКЛ."
 
-#: src/chcanv.cpp:6574
+#: src/chcanv.cpp:6572
+msgid "OFF"
+msgstr "ИЗКЛ."
+
+#: src/chcanv.cpp:6577
 msgid "CPA alarm "
 msgstr ""
 
-#: src/chcanv.cpp:6578
+#: src/chcanv.cpp:6581
 msgid "CPA Alarm is switched"
 msgstr ""
 
-#: src/chcanv.cpp:7686 src/chcanv.cpp:8252
+#: src/chcanv.cpp:7689 src/chcanv.cpp:8255
 msgid "Use nearby waypoint?"
 msgstr ""
 
-#: src/chcanv.cpp:7686 src/chcanv.cpp:7724 src/chcanv.cpp:7745
-#: src/chcanv.cpp:7807 src/chcanv.cpp:8252 src/chcanv.cpp:8290
-#: src/chcanv.cpp:8310 src/chcanv.cpp:8368 src/chcanv.cpp:8761
-#: src/chcanv.cpp:8779 src/chcanv.cpp:9013 src/chcanv.cpp:9031
+#: src/chcanv.cpp:7689 src/chcanv.cpp:7727 src/chcanv.cpp:7748
+#: src/chcanv.cpp:7810 src/chcanv.cpp:8255 src/chcanv.cpp:8293
+#: src/chcanv.cpp:8313 src/chcanv.cpp:8371 src/chcanv.cpp:8764
+#: src/chcanv.cpp:8782 src/chcanv.cpp:9016 src/chcanv.cpp:9034
 msgid "OpenCPN Route Create"
 msgstr ""
 
-#: src/chcanv.cpp:7716 src/chcanv.cpp:8282
+#: src/chcanv.cpp:7719 src/chcanv.cpp:8285
 msgid "Insert first part of this route in the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7720 src/chcanv.cpp:8286
+#: src/chcanv.cpp:7723 src/chcanv.cpp:8289
 msgid "Insert this route in the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7735 src/chcanv.cpp:8301
+#: src/chcanv.cpp:7738 src/chcanv.cpp:8304
 msgid "Append last part of this route to the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7738 src/chcanv.cpp:8304
+#: src/chcanv.cpp:7741 src/chcanv.cpp:8307
 msgid "Append this route to the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7797 src/chcanv.cpp:8360
+#: src/chcanv.cpp:7800 src/chcanv.cpp:8363
 msgid "For this leg the Great Circle route is "
 msgstr ""
 
-#: src/chcanv.cpp:7799 src/chcanv.cpp:8362
+#: src/chcanv.cpp:7802 src/chcanv.cpp:8365
 msgid " shorter than rhumbline.\n\n"
 msgstr ""
 
-#: src/chcanv.cpp:7800 src/chcanv.cpp:8363
+#: src/chcanv.cpp:7803 src/chcanv.cpp:8366
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr ""
 
-#: src/chcanv.cpp:8727 src/chcanv.cpp:8980
+#: src/chcanv.cpp:8730 src/chcanv.cpp:8983
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr ""
 
-#: src/chcanv.cpp:8729 src/chcanv.cpp:8982
+#: src/chcanv.cpp:8732 src/chcanv.cpp:8985
 msgid "OpenCPN RoutePoint change"
 msgstr ""
 
-#: src/chcanv.cpp:8754 src/chcanv.cpp:9006
+#: src/chcanv.cpp:8757 src/chcanv.cpp:9009
 msgid "Last part of route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8758 src/chcanv.cpp:9010
+#: src/chcanv.cpp:8761 src/chcanv.cpp:9013
 msgid "Full route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8772 src/chcanv.cpp:9024
+#: src/chcanv.cpp:8775 src/chcanv.cpp:9027
 msgid "First part of route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8776 src/chcanv.cpp:9028
+#: src/chcanv.cpp:8779 src/chcanv.cpp:9031
 msgid "Full route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8792 src/chcanv.cpp:9044
+#: src/chcanv.cpp:8795 src/chcanv.cpp:9047
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr ""
 
-#: src/chcanv.cpp:8794 src/chcanv.cpp:9046
+#: src/chcanv.cpp:8797 src/chcanv.cpp:9049
 msgid "which has been created manually?"
 msgstr ""
 
-#: src/chcanv.cpp:9521 src/chcanv.cpp:9531 src/S57QueryDialog.cpp:115
+#: src/chcanv.cpp:9524 src/chcanv.cpp:9534 src/S57QueryDialog.cpp:115
 #: src/S57QueryDialog.cpp:302
 msgid "ObjectQuery"
 msgstr ""
 
-#: src/chcanv.cpp:9689 src/routemanagerdialog.cpp:2629
+#: src/chcanv.cpp:9692 src/routemanagerdialog.cpp:2631
 #: src/RoutePropDlgImpl.cpp:519
 msgid "Layer"
 msgstr "Слой"
 
-#: src/chcanv.cpp:9775
+#: src/chcanv.cpp:9778
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Има съществуваща точка на същото място като таза, която поставяте. Искате ли да обедините поставените данни с нея?\n\n"
 
-#: src/chcanv.cpp:9777
+#: src/chcanv.cpp:9780
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Ако отговорите с \"Не\" ще създадете нова точка на същото място."
 
-#: src/chcanv.cpp:9778
+#: src/chcanv.cpp:9781
 msgid "Merge waypoint?"
 msgstr "Обединяване на точките?"
 
-#: src/chcanv.cpp:9843
+#: src/chcanv.cpp:9846
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Има съществуваща точка на същото място като тази, която поставяте. Искате ли да обедините поставените данни с нея?\n\n"
 
-#: src/chcanv.cpp:9846
+#: src/chcanv.cpp:9849
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Ако отговорите с \"Не\" ще създадете нови точки за този маршрут."
 
-#: src/chcanv.cpp:9847
+#: src/chcanv.cpp:9850
 msgid "Merge waypoints?"
 msgstr "Обединяване на точките?"
 
-#: src/chcanv.cpp:10329 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
+#: src/chcanv.cpp:10332 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
 msgid "RouteLegInfoRollover"
 msgstr ""
 
-#: src/chcanv.cpp:11128 src/mbtiles.cpp:1261
+#: src/chcanv.cpp:11131 src/mbtiles.cpp:1261
 msgid "MBTile requires OpenGL to be enabled"
 msgstr ""
 
-#: src/chcanv.cpp:11775 src/options.cpp:4416 src/options.cpp:4555
+#: src/chcanv.cpp:11778 src/options.cpp:4416 src/options.cpp:4555
 msgid "Feet"
 msgstr "Фута"
 
-#: src/chcanv.cpp:11777 src/options.cpp:4388 src/options.cpp:4417
+#: src/chcanv.cpp:11780 src/options.cpp:4388 src/options.cpp:4417
 #: src/options.cpp:4534 src/options.cpp:4556
 msgid "Meters"
 msgstr "Метри"
 
-#: src/chcanv.cpp:11779 src/options.cpp:4418 src/options.cpp:4557
+#: src/chcanv.cpp:11782 src/options.cpp:4418 src/options.cpp:4557
 msgid "Fathoms"
 msgstr "Сажени"
 
-#: src/chcanv.cpp:11782
+#: src/chcanv.cpp:11785
 msgid "OverZoom"
 msgstr ""
 
-#: src/chcanv.cpp:12150 src/chcanv.cpp:12151
+#: src/chcanv.cpp:12153 src/chcanv.cpp:12154
 msgid "ExtendedTideIcon"
 msgstr ""
 
-#: src/chcanv.cpp:12481
+#: src/chcanv.cpp:12484
 msgid "CurrentValue"
 msgstr ""
 
-#: src/chcanv.cpp:12714 src/ocpn_frame.cpp:1164
+#: src/chcanv.cpp:12717 src/ocpn_frame.cpp:1166
 msgid "AIS Target Query"
 msgstr ""
 
-#: src/chcanv.cpp:13050
+#: src/chcanv.cpp:13053
 msgid "Show all AIS Targets"
 msgstr "Покажи всички AIS цели"
 
-#: src/chcanv.cpp:13051 src/ocpn_frame.cpp:3581 src/toolbar.cpp:1313
+#: src/chcanv.cpp:13054 src/ocpn_frame.cpp:3585 src/toolbar.cpp:1311
 msgid "Attenuate less critical AIS targets"
 msgstr ""
 
-#: src/chcanv.cpp:13052 src/toolbar.cpp:1227 src/toolbar.cpp:1315
-#: src/toolbar.cpp:1318
+#: src/chcanv.cpp:13055 src/toolbar.cpp:1225 src/toolbar.cpp:1313
+#: src/toolbar.cpp:1316
 msgid "Hide AIS Targets"
 msgstr "Скрий AIS цели"
 
-#: src/chcanv.cpp:13703
+#: src/chcanv.cpp:13706
 msgid "Show This Chart"
 msgstr "Покажи тази карта"
 
-#: src/chcanv.cpp:13708
+#: src/chcanv.cpp:13711
 msgid "Hide This Chart"
 msgstr "Скрий тази карта"
 
@@ -3821,7 +3942,7 @@ msgstr "Отместване по Y"
 msgid "meters"
 msgstr "метри"
 
-#: src/comm_n0183_output.cpp:318
+#: src/comm_n0183_output.cpp:331
 msgid "Route Upload"
 msgstr ""
 
@@ -3874,13 +3995,13 @@ msgstr ""
 
 #: src/ConfigMgr.cpp:534 src/options.cpp:913
 msgid "Title"
-msgstr ""
+msgstr "Заглавие"
 
 #: src/ConfigMgr.cpp:539 src/MarkInfo.cpp:431 src/MarkInfo.cpp:529
 #: src/options.cpp:923 src/routeprintout.cpp:116 src/routeprintout.cpp:409
 #: src/RoutePropDlg.cpp:361 src/RoutePropDlg.cpp:386 src/TrackPropDlg.cpp:866
 msgid "Description"
-msgstr ""
+msgstr "Опис"
 
 #: src/ConfigMgr.cpp:616
 msgid "Recovery Template"
@@ -3892,7 +4013,7 @@ msgstr ""
 
 #: src/connections_dialog.cpp:228 src/options.cpp:3994
 msgid "General"
-msgstr ""
+msgstr "Общи"
 
 #: src/connections_dialog.cpp:240
 msgid "Filter NMEA Course and Speed data"
@@ -3920,7 +4041,7 @@ msgstr ""
 
 #: src/connections_dialog.cpp:292
 msgid "Adjust communication priorities..."
-msgstr ""
+msgstr "Настройване на комуникационните приоритети..."
 
 #: src/connections_dialog.cpp:303
 msgid "Data Connections"
@@ -3934,7 +4055,7 @@ msgstr ""
 msgid "Remove Connection"
 msgstr ""
 
-#: src/connections_dialog.cpp:362 src/connections_dialog.cpp:929
+#: src/connections_dialog.cpp:362 src/connections_dialog.cpp:935
 msgid "Edit Selected Connection"
 msgstr ""
 
@@ -3946,7 +4067,7 @@ msgstr ""
 #: src/connections_dialog.cpp:378 src/conn_params.cpp:162
 #: src/conn_params_panel.cpp:328 src/conn_params_panel.cpp:821
 msgid "Network"
-msgstr ""
+msgstr "Мрежа"
 
 #: src/connections_dialog.cpp:393 src/conn_params_panel.cpp:465
 msgid "Built-in GPS"
@@ -3956,30 +4077,30 @@ msgstr ""
 msgid "Built-in Bluetooth SPP"
 msgstr ""
 
-#: src/connections_dialog.cpp:406 src/connections_dialog.cpp:1017
+#: src/connections_dialog.cpp:406 src/connections_dialog.cpp:1023
 msgid "BT Scan"
 msgstr ""
 
 #: src/connections_dialog.cpp:416
 msgid "Bluetooth Data Sources"
-msgstr ""
+msgstr "Източници на данни за блутут"
 
-#: src/connections_dialog.cpp:457 src/connections_dialog.cpp:553
+#: src/connections_dialog.cpp:457 src/connections_dialog.cpp:554
 #: src/conn_params_panel.cpp:201 src/conn_params_panel.cpp:303
 msgid "Protocol"
-msgstr ""
+msgstr "Протокол"
 
 #: src/connections_dialog.cpp:466 src/conn_params.cpp:189
 msgid "TCP"
-msgstr ""
+msgstr "TCP"
 
 #: src/connections_dialog.cpp:472 src/conn_params.cpp:191
 msgid "UDP"
-msgstr ""
+msgstr "UDP"
 
 #: src/connections_dialog.cpp:478 src/conn_params.cpp:193
 msgid "GPSD"
-msgstr ""
+msgstr "GPSD"
 
 #: src/connections_dialog.cpp:483 src/conn_params.cpp:195
 msgid "Signal K"
@@ -3987,270 +4108,270 @@ msgstr ""
 
 #: src/connections_dialog.cpp:490
 msgid "Address"
-msgstr ""
+msgstr "Адрес"
 
-#: src/connections_dialog.cpp:499 src/connections_dialog.cpp:527
+#: src/connections_dialog.cpp:499 src/connections_dialog.cpp:528
 msgid "DataPort"
 msgstr ""
 
-#: src/connections_dialog.cpp:509 src/connections_dialog.cpp:604
+#: src/connections_dialog.cpp:509 src/connections_dialog.cpp:603
 msgid "User Comment"
-msgstr ""
+msgstr "Потребителски коментар"
 
-#: src/connections_dialog.cpp:536 src/conn_params_panel.cpp:213
+#: src/connections_dialog.cpp:537 src/conn_params_panel.cpp:213
 msgid "Baudrate"
-msgstr ""
+msgstr "Скорост на предаване на данни"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "150"
-msgstr ""
+msgstr "150"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "300"
-msgstr ""
+msgstr "300"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "600"
-msgstr ""
+msgstr "600"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "1200"
-msgstr ""
+msgstr "1200"
 
-#: src/connections_dialog.cpp:542
+#: src/connections_dialog.cpp:543
 msgid "2400"
-msgstr ""
+msgstr "2400"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "4800"
-msgstr ""
+msgstr "4800"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "9600"
-msgstr ""
+msgstr "9600"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "19200"
-msgstr ""
+msgstr "19200"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "38400"
-msgstr ""
+msgstr "38400"
 
-#: src/connections_dialog.cpp:543
+#: src/connections_dialog.cpp:544
 msgid "57600"
-msgstr ""
+msgstr "57600"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "115200"
-msgstr ""
+msgstr "115200"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "230400"
-msgstr ""
+msgstr "230400"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "460800"
-msgstr ""
+msgstr "460800"
 
-#: src/connections_dialog.cpp:544
+#: src/connections_dialog.cpp:545
 msgid "921600"
-msgstr ""
+msgstr "921600"
 
-#: src/connections_dialog.cpp:558
+#: src/connections_dialog.cpp:559
 msgid "NMEA 0183"
-msgstr ""
+msgstr "NMEA 0183"
 
-#: src/connections_dialog.cpp:558
+#: src/connections_dialog.cpp:559
 msgid "NMEA 2000"
 msgstr ""
 
-#: src/connections_dialog.cpp:568 src/conn_params_panel.cpp:219
+#: src/connections_dialog.cpp:569 src/conn_params_panel.cpp:219
 #: src/conn_params_panel.cpp:321 src/conn_params_panel.cpp:458
 #: src/conn_params_panel.cpp:576
 msgid "List position"
 msgstr ""
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "0"
 msgstr ""
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "1"
 msgstr ""
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "2"
 msgstr ""
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "3"
 msgstr ""
 
-#: src/connections_dialog.cpp:573
+#: src/connections_dialog.cpp:574
 msgid "4"
 msgstr ""
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "5"
 msgstr ""
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "6"
 msgstr ""
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "7"
 msgstr ""
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "8"
 msgstr ""
 
-#: src/connections_dialog.cpp:574
+#: src/connections_dialog.cpp:575
 msgid "9"
 msgstr ""
 
-#: src/connections_dialog.cpp:583
+#: src/connections_dialog.cpp:584
 msgid "socketCAN Source"
 msgstr ""
 
-#: src/connections_dialog.cpp:613
+#: src/connections_dialog.cpp:620
 msgid "Control checksum"
 msgstr ""
 
-#: src/connections_dialog.cpp:617
+#: src/connections_dialog.cpp:624
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr ""
 
-#: src/connections_dialog.cpp:622
+#: src/connections_dialog.cpp:629
 msgid "Use Garmin (GRMN) mode for input"
 msgstr ""
 
-#: src/connections_dialog.cpp:631
+#: src/connections_dialog.cpp:638
 msgid "Receive Input on this Port"
 msgstr ""
 
-#: src/connections_dialog.cpp:637
+#: src/connections_dialog.cpp:644
 msgid "Output on this port"
 msgstr ""
 
-#: src/connections_dialog.cpp:638
+#: src/connections_dialog.cpp:645
 msgid "as autopilot or NMEA repeater"
 msgstr ""
 
-#: src/connections_dialog.cpp:644
+#: src/connections_dialog.cpp:651
 msgid "Talker ID"
 msgstr ""
 
-#: src/connections_dialog.cpp:644
+#: src/connections_dialog.cpp:651
 msgid "blank = default ID"
 msgstr ""
 
-#: src/connections_dialog.cpp:656
+#: src/connections_dialog.cpp:663
 msgid "APB bearing precision"
 msgstr ""
 
-#: src/connections_dialog.cpp:662
+#: src/connections_dialog.cpp:669
 msgid "x"
 msgstr ""
 
-#: src/connections_dialog.cpp:662
+#: src/connections_dialog.cpp:669
 msgid "x.x"
 msgstr ""
 
-#: src/connections_dialog.cpp:662
+#: src/connections_dialog.cpp:669
 msgid "x.xx"
 msgstr ""
 
-#: src/connections_dialog.cpp:663
+#: src/connections_dialog.cpp:670
 msgid "x.xxx"
 msgstr ""
 
-#: src/connections_dialog.cpp:663
+#: src/connections_dialog.cpp:670
 msgid "x.xxxx"
 msgstr ""
 
-#: src/connections_dialog.cpp:674
+#: src/connections_dialog.cpp:681
 msgid "Automatic server discovery"
-msgstr ""
+msgstr "Автоматично намиране на сървър"
 
-#: src/connections_dialog.cpp:678
+#: src/connections_dialog.cpp:685
 msgid "If checked, signal K server will be discovered automatically"
 msgstr ""
 
-#: src/connections_dialog.cpp:682
+#: src/connections_dialog.cpp:689
 msgid "Discover now..."
-msgstr ""
+msgstr "Открийте сега..."
 
-#: src/connections_dialog.cpp:696
+#: src/connections_dialog.cpp:702
 msgid "Input filtering"
 msgstr ""
 
-#: src/connections_dialog.cpp:702 src/connections_dialog.cpp:2131
+#: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2137
 msgid "Accept only sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:706 src/connections_dialog.cpp:2132
+#: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2138
 msgid "Ignore sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:730
+#: src/connections_dialog.cpp:736
 msgid "Output filtering"
 msgstr ""
 
-#: src/connections_dialog.cpp:737 src/connections_dialog.cpp:2129
+#: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2135
 msgid "Transmit sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:741 src/connections_dialog.cpp:2129
+#: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2135
 msgid "Drop sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:963
+#: src/connections_dialog.cpp:969
 msgid "Stop Scan"
-msgstr ""
+msgstr "Спиране на сканирането"
 
-#: src/connections_dialog.cpp:1635
+#: src/connections_dialog.cpp:1641
 msgid "Configure new connection"
-msgstr ""
+msgstr "Конфигуриране на ново свързване"
 
-#: src/connections_dialog.cpp:1702
+#: src/connections_dialog.cpp:1708
 msgid "Signal K server available."
 msgstr ""
 
-#: src/connections_dialog.cpp:1704
+#: src/connections_dialog.cpp:1710
 msgid "Signal K server not found."
 msgstr ""
 
-#: src/connections_dialog.cpp:2068
+#: src/connections_dialog.cpp:2074
 msgid "Sentence Filter"
 msgstr ""
 
-#: src/connections_dialog.cpp:2080 src/options.cpp:3553 src/options.cpp:3766
+#: src/connections_dialog.cpp:2086 src/options.cpp:3553 src/options.cpp:3766
 msgid "Select All"
-msgstr ""
+msgstr "Избор на всичко"
 
-#: src/connections_dialog.cpp:2081 src/options.cpp:3555 src/options.cpp:3768
+#: src/connections_dialog.cpp:2087 src/options.cpp:3555 src/options.cpp:3768
 #: src/priority_gui.cpp:98
 msgid "Clear All"
-msgstr ""
+msgstr "Изчистване на всичко"
 
-#: src/connections_dialog.cpp:2082 src/options.cpp:3899 src/RoutePropDlg.cpp:443
+#: src/connections_dialog.cpp:2088 src/options.cpp:3899 src/RoutePropDlg.cpp:443
 #: src/TrackPropDlg.cpp:920
 msgid "Add"
 msgstr "Добави"
 
-#: src/connections_dialog.cpp:2182
+#: src/connections_dialog.cpp:2188
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
 msgstr ""
 
-#: src/connections_dialog.cpp:2184
+#: src/connections_dialog.cpp:2190
 msgid "Enter the NMEA sentence"
 msgstr ""
 
-#: src/connections_dialog.cpp:2203
+#: src/connections_dialog.cpp:2209
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -4258,21 +4379,21 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
 msgstr ""
 
-#: src/connections_dialog.cpp:2220
+#: src/connections_dialog.cpp:2226
 msgid "REGEX syntax error: \n"
 msgstr ""
 
 #: src/conn_params.cpp:164
 msgid "GPS"
-msgstr ""
+msgstr "GPS"
 
 #: src/conn_params.cpp:166
 msgid "BT"
-msgstr ""
+msgstr "BT"
 
 #: src/conn_params.cpp:178
 msgid "Internal"
-msgstr ""
+msgstr "Вътрешно"
 
 #: src/conn_params.cpp:218
 msgid "Input"
@@ -4288,11 +4409,11 @@ msgstr ""
 
 #: src/conn_params.cpp:229
 msgid "Reject"
-msgstr ""
+msgstr "Отхвърляне"
 
 #: src/conn_params.cpp:231
 msgid "Accept"
-msgstr ""
+msgstr "Приемам"
 
 #: src/conn_params.cpp:234
 msgid "Drop"
@@ -4300,7 +4421,7 @@ msgstr ""
 
 #: src/conn_params.cpp:236 src/SendToGpsDlg.cpp:206 src/SendToPeerDlg.cpp:171
 msgid "Send"
-msgstr ""
+msgstr "Изпращане"
 
 #: src/conn_params.cpp:253
 msgid "In"
@@ -4320,16 +4441,16 @@ msgstr ""
 
 #: src/conn_params_panel.cpp:163
 msgid "Enable"
-msgstr ""
+msgstr "Включване"
 
 #: src/conn_params_panel.cpp:195 src/conn_params_panel.cpp:297
 #: src/conn_params_panel.cpp:434 src/conn_params_panel.cpp:552
 msgid "Direction"
-msgstr ""
+msgstr "Посока"
 
 #: src/conn_params_panel.cpp:207
 msgid "Serial Port"
-msgstr ""
+msgstr "Сериен порт"
 
 #: src/conn_params_panel.cpp:270 src/conn_params_panel.cpp:408
 #: src/conn_params_panel.cpp:527 src/conn_params_panel.cpp:645
@@ -4337,15 +4458,15 @@ msgstr ""
 #: src/conn_params_panel.cpp:828 src/conn_params_panel.cpp:830
 #: src/conn_params_panel.cpp:834 src/conn_params_panel.cpp:838
 msgid "Comment: "
-msgstr ""
+msgstr "Коментар: "
 
 #: src/conn_params_panel.cpp:309
 msgid "Network Address"
-msgstr ""
+msgstr "Мрежови адрес"
 
 #: src/conn_params_panel.cpp:315
 msgid "Network Port"
-msgstr ""
+msgstr "Мрежови порт"
 
 #: src/conn_params_panel.cpp:583
 msgid "Built-in Bluetooth"
@@ -4353,7 +4474,7 @@ msgstr ""
 
 #: src/conn_params_panel.cpp:667
 msgid "Driver"
-msgstr ""
+msgstr "Драйвер"
 
 #: src/DetailSlider.cpp:88
 msgid "CM93 Detail Level"
@@ -4369,28 +4490,28 @@ msgstr ""
 
 #: src/download_mgr.cpp:206 src/update_mgr.cpp:203
 msgid "Install"
-msgstr ""
+msgstr "Инсталиране"
 
-#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5311
+#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5318
 #: src/update_mgr.cpp:239
 msgid "Reinstall"
-msgstr ""
+msgstr "Преинсталиране"
 
 #: src/download_mgr.cpp:265 src/update_mgr.cpp:237
 msgid "Update"
-msgstr ""
+msgstr "Обновяване"
 
-#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5317 src/update_mgr.cpp:241
+#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5324 src/update_mgr.cpp:241
 msgid "Downgrade"
-msgstr ""
+msgstr "Понижаване на версията"
 
 #: src/download_mgr.cpp:310 src/update_mgr.cpp:301
 msgid "More"
-msgstr ""
+msgstr "Още"
 
 #: src/download_mgr.cpp:313 src/update_mgr.cpp:304
 msgid "Less"
-msgstr ""
+msgstr "По-малко"
 
 #: src/download_mgr.cpp:386
 msgid "Update plugin catalog"
@@ -4402,27 +4523,27 @@ msgstr ""
 
 #: src/download_mgr.cpp:478 src/update_mgr.cpp:449
 msgid "Plugin Manager"
-msgstr ""
+msgstr "Управление на приставката"
 
 #: src/download_mgr.cpp:512
 msgid "Downloading "
-msgstr ""
+msgstr "Изтегляне "
 
 #: src/download_mgr.cpp:515
 msgid "Downloading"
-msgstr ""
+msgstr "Изтегляне"
 
 #: src/download_mgr.cpp:571
 msgid " successfully installed"
-msgstr ""
+msgstr " успешно инсталирано"
 
-#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1311
+#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1251
 msgid "Installation complete"
-msgstr ""
+msgstr "Инсталирането завърши"
 
-#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1303
+#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1242
 msgid "Installation error"
-msgstr ""
+msgstr "Грешка при инсталиране"
 
 #: src/garmin_wrapper.cpp:299
 msgid "Overwrite Garmin device route number 1?"
@@ -4436,7 +4557,7 @@ msgstr ""
 msgid "GridText"
 msgstr ""
 
-#: src/glChartCanvas.cpp:4465
+#: src/glChartCanvas.cpp:4480
 msgid "Waiting for raster chart compression thread exit."
 msgstr ""
 
@@ -4444,7 +4565,7 @@ msgstr ""
 msgid "OpenCPN Compressed Cache Update"
 msgstr ""
 
-#: src/glTextureManager.cpp:1497 src/ocpn_frame.cpp:8723
+#: src/glTextureManager.cpp:1497 src/ocpn_frame.cpp:8729
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr ""
@@ -4485,11 +4606,11 @@ msgstr ""
 
 #: src/LinkPropDlg.cpp:47
 msgid "Link"
-msgstr ""
+msgstr "Връзка"
 
 #: src/LinkPropDlg.cpp:49
 msgid "Link description"
-msgstr ""
+msgstr "Опис на връзката"
 
 #: src/LinkPropDlg.cpp:58
 msgid "URL"
@@ -4507,6 +4628,50 @@ msgstr "Изберете файл"
 msgid "Link not complete, can't be saved."
 msgstr ""
 
+#: src/load_errors_dlg.cpp:46
+msgid "\n"
+"The following  plugins have encountered errors during startup:\n\n"
+msgstr ""
+
+#: src/load_errors_dlg.cpp:51
+msgid "\n"
+"The following plugin has encountered errors during startup:\n\n"
+msgstr ""
+
+#: src/load_errors_dlg.cpp:56
+msgid "\n"
+"The following libraries  have encountered errors during startup:\n\n"
+msgstr ""
+
+#: src/load_errors_dlg.cpp:61
+msgid "\n"
+"The following library has encountered errors during startup:\n\n"
+msgstr ""
+
+#: src/load_errors_dlg.cpp:65
+msgid "\n\n"
+"These plugins will be uninstalled. You might want to reinstall\n"
+"them after updating the catalog.\n"
+msgstr ""
+
+#: src/load_errors_dlg.cpp:71
+msgid "\n\n"
+"This plugin will be uninstalled. You might want to reinstall\n"
+"it after updating the catalog.\n"
+msgstr ""
+
+#: src/load_errors_dlg.cpp:77
+msgid "\n\n"
+"These libraries will be removed. You might want to reinstall their\n"
+"associated plugin after updating the catalog."
+msgstr ""
+
+#: src/load_errors_dlg.cpp:82
+msgid "\n\n"
+"The library will be removed. You might want to reinstall it's\n"
+"associated plugin after updating the catalog."
+msgstr ""
+
 #: src/MarkInfo.cpp:328 src/RoutePropDlg.cpp:380 src/TrackPropDlg.cpp:637
 msgid "Basic"
 msgstr ""
@@ -4517,11 +4682,11 @@ msgstr ""
 
 #: src/MarkInfo.cpp:375
 msgid "Show name"
-msgstr ""
+msgstr "Показване на името"
 
 #: src/MarkInfo.cpp:384 src/MarkInfo.cpp:1808 src/routemanagerdialog.cpp:719
 msgid "Icon"
-msgstr ""
+msgstr "Икона"
 
 #: src/MarkInfo.cpp:389 src/options.cpp:2301 src/options.cpp:2364
 msgid "Combo!"
@@ -4530,31 +4695,31 @@ msgstr ""
 #: src/MarkInfo.cpp:459 src/MarkInfo.cpp:472 src/RoutePropDlg.cpp:398
 #: src/TrackPropDlg.cpp:877
 msgid "Links"
-msgstr ""
+msgstr "Връзки"
 
 #: src/MarkInfo.cpp:493 src/MarkInfo.cpp:1146 src/MarkInfo.cpp:1194
 #: src/options.cpp:1236 src/RoutePropDlg.cpp:418 src/RoutePropDlg.cpp:448
 #: src/TrackPropDlg.cpp:891 src/TrackPropDlg.cpp:924
 msgid "Edit"
-msgstr ""
+msgstr "Редактиране"
 
 #: src/MarkInfo.cpp:498 src/MarkInfo.cpp:505 src/RoutePropDlg.cpp:423
 #: src/RoutePropDlg.cpp:467 src/TrackPropDlg.cpp:896
 msgid "Add new"
-msgstr ""
+msgstr "Добавяне на ново"
 
 #: src/MarkInfo.cpp:546
 msgid "Extended"
-msgstr ""
+msgstr "Разширено"
 
 #: src/MarkInfo.cpp:550
 msgid "Extended Properties"
-msgstr ""
+msgstr "Разширени свойства"
 
 #: src/MarkInfo.cpp:560 src/routemanagerdialog.cpp:934 src/TrackPropDlg.cpp:378
 #: src/TrackPropDlg.cpp:714
 msgid "Show on chart"
-msgstr ""
+msgstr "Показване на картата"
 
 #: src/MarkInfo.cpp:569
 msgid "Show at scale > 1 :"
@@ -4577,21 +4742,21 @@ msgstr ""
 #: src/RoutePropDlg.cpp:324 src/trackprintout.cpp:94 src/trackprintout.cpp:319
 #: src/TrackPropDlg.cpp:303
 msgid "Distance"
-msgstr ""
+msgstr "Разстояние"
 
 #: src/MarkInfo.cpp:598 src/options.cpp:2127 src/RoutePropDlg.cpp:223
 #: src/TrackPropDlg.cpp:474 src/TrackPropDlg.cpp:718
 msgid "Color"
-msgstr ""
+msgstr "Цвят"
 
 #: src/MarkInfo.cpp:601 src/options.cpp:2059 src/options.cpp:2276
 #: src/options.cpp:2693
 msgid "None"
-msgstr ""
+msgstr "Нищо"
 
 #: src/MarkInfo.cpp:611
 msgid "0.05"
-msgstr ""
+msgstr "0.05"
 
 #: src/MarkInfo.cpp:615 src/navutil_base.cpp:215
 msgid "NMi"
@@ -4615,7 +4780,7 @@ msgstr ""
 
 #: src/MarkInfo.cpp:693
 msgid "Planned Speed"
-msgstr ""
+msgstr "Планирана скорост"
 
 #: src/MarkInfo.cpp:707
 msgid "ETD (UTC)"
@@ -4627,7 +4792,7 @@ msgstr ""
 
 #: src/MarkInfo.cpp:1304 src/TTYWindow.cpp:86
 msgid "Copy"
-msgstr ""
+msgstr "Копиране"
 
 #: src/MarkInfo.cpp:1305
 msgid "Copy lat/long"
@@ -4635,7 +4800,7 @@ msgstr ""
 
 #: src/MarkInfo.cpp:1306
 msgid "Paste"
-msgstr ""
+msgstr "Поставяне"
 
 #: src/MarkInfo.cpp:1307
 msgid "Paste lat/long"
@@ -4652,11 +4817,11 @@ msgstr ""
 
 #: src/MarkInfo.cpp:1796 src/MarkInfo.cpp:1816
 msgid "Do use"
-msgstr ""
+msgstr "Да се използва"
 
 #: src/MarkInfo.cpp:1797 src/MarkInfo.cpp:1821
 msgid "Don't use"
-msgstr ""
+msgstr "Да не се използва"
 
 #: src/MarkInfo.cpp:1799
 msgid "Show Waypoint Name"
@@ -4746,42 +4911,42 @@ msgstr ""
 msgid "N/A"
 msgstr "не е налично"
 
-#: src/navutil.cpp:1776 src/navutil.cpp:3135 src/options.cpp:1025
+#: src/navutil.cpp:1776 src/navutil.cpp:3137 src/options.cpp:1025
 #: src/options.cpp:1187
 msgid "Persistent"
-msgstr ""
+msgstr "Постоянно"
 
-#: src/navutil.cpp:2844 src/navutil.cpp:2952
+#: src/navutil.cpp:2846 src/navutil.cpp:2954
 msgid "Export GPX file"
-msgstr ""
+msgstr "Изнасяне на файл във формат GPX"
 
-#: src/navutil.cpp:2854
+#: src/navutil.cpp:2856
 msgid "Overwrite existing file?"
 msgstr "Да презапиша ли съществуващия файл?"
 
-#: src/navutil.cpp:3042 src/navutil.cpp:3074
+#: src/navutil.cpp:3044 src/navutil.cpp:3076
 msgid "Import GPX file"
-msgstr ""
+msgstr "Внасяне на файл във формат GPX"
 
-#: src/navutil.cpp:3135
+#: src/navutil.cpp:3137
 msgid "Temporary"
 msgstr "Временни"
 
-#: src/navutil.cpp:3170
+#: src/navutil.cpp:3172
 msgid "duplicate waypoints detected during import and ignored."
 msgstr ""
 
-#: src/navutil.cpp:3349
+#: src/navutil.cpp:3351
 msgid "C"
-msgstr ""
+msgstr "С"
 
-#: src/navutil.cpp:3352
+#: src/navutil.cpp:3354
 msgid "F"
-msgstr ""
+msgstr "F"
 
-#: src/navutil.cpp:3355
+#: src/navutil.cpp:3357
 msgid "K"
-msgstr ""
+msgstr "K"
 
 #: src/NMEALogWindow.cpp:59
 msgid "NMEA Debug Window"
@@ -4811,45 +4976,45 @@ msgstr ""
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr ""
 
-#: src/ocpn_app.cpp:1134
+#: src/ocpn_app.cpp:1132
 msgid "Sorry, an existing instance of OpenCPN may be too busy to respond.\n"
 "Please retry."
 msgstr ""
 
-#: src/ocpn_app.cpp:1391 src/ocpn_app.cpp:1398
+#: src/ocpn_app.cpp:1389 src/ocpn_app.cpp:1396
 msgid "Failed to initialize the user interface. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1392
+#: src/ocpn_app.cpp:1390
 msgid "OpenCPN cannot start. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1393
+#: src/ocpn_app.cpp:1391
 msgid "The necessary configuration files were not found. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1394
+#: src/ocpn_app.cpp:1392
 msgid "See the log file at "
 msgstr ""
 
-#: src/ocpn_app.cpp:1395
+#: src/ocpn_app.cpp:1393
 msgid " for details."
 msgstr ""
 
-#: src/ocpn_app.cpp:1689
+#: src/ocpn_app.cpp:1687
 msgid " -- [Portable(-p) executing from "
 msgstr ""
 
-#: src/ocpn_app.cpp:1776
+#: src/ocpn_app.cpp:1774
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/ocpn_app.cpp:1947
+#: src/ocpn_app.cpp:1945
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr ""
 
-#: src/ocpn_frame.cpp:569
+#: src/ocpn_frame.cpp:570
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
 "See the GNU General Public License for more details.\n\n"
@@ -4858,303 +5023,303 @@ msgid "\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
 msgstr ""
 
-#: src/ocpn_frame.cpp:583
+#: src/ocpn_frame.cpp:584
 msgid "OpenCPN for Android"
-msgstr ""
+msgstr "OpenCPN за Android"
 
-#: src/ocpn_frame.cpp:601
+#: src/ocpn_frame.cpp:602
 msgid "Welcome to OpenCPN"
-msgstr ""
+msgstr "Добре дошли в OpenCPN"
 
-#: src/ocpn_frame.cpp:825
+#: src/ocpn_frame.cpp:827
 msgid "This AIS target has Persistent tracking selected by MMSI properties\n"
 "A Persistent track recording will therefore be restarted for this target.\n\n"
 "Do you instead want to stop Persistent tracking for this target?"
 msgstr ""
 
-#: src/ocpn_frame.cpp:958
+#: src/ocpn_frame.cpp:960
 msgid "OpenCPN needs to update the chart database from config file entries...."
 msgstr ""
 
-#: src/ocpn_frame.cpp:970
+#: src/ocpn_frame.cpp:972
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/ocpn_frame.cpp:974
-msgid "Elapsed time : "
-msgstr ""
-
-#: src/ocpn_frame.cpp:975
-msgid "Estimated time : "
-msgstr ""
-
 #: src/ocpn_frame.cpp:976
-msgid "Remaining time : "
-msgstr ""
+msgid "Elapsed time : "
+msgstr "Изтекло време: "
 
-#: src/ocpn_frame.cpp:978 src/ocpn_frame.cpp:4574 src/ocpn_frame.cpp:4584
+#: src/ocpn_frame.cpp:977
+msgid "Estimated time : "
+msgstr "Приблизително време: "
+
+#: src/ocpn_frame.cpp:978
+msgid "Remaining time : "
+msgstr "Оставащо време: "
+
+#: src/ocpn_frame.cpp:980 src/ocpn_frame.cpp:4578 src/ocpn_frame.cpp:4588
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2640 src/ocpn_frame.cpp:2753
+#: src/ocpn_frame.cpp:2644 src/ocpn_frame.cpp:2757
 msgid "Show Toolbar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2641 src/ocpn_frame.cpp:2755 src/ocpn_frame.cpp:7101
+#: src/ocpn_frame.cpp:2645 src/ocpn_frame.cpp:2759 src/ocpn_frame.cpp:7107
 msgid "Hide Toolbar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2960 src/ocpn_frame.cpp:3023
+#: src/ocpn_frame.cpp:2964 src/ocpn_frame.cpp:3027
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2961 src/ocpn_frame.cpp:6741
+#: src/ocpn_frame.cpp:2965 src/ocpn_frame.cpp:6747
 msgid " at "
 msgstr ""
 
-#: src/ocpn_frame.cpp:2963 src/ocpn_frame.cpp:6743
+#: src/ocpn_frame.cpp:2967 src/ocpn_frame.cpp:6749
 msgid " on "
 msgstr ""
 
-#: src/ocpn_frame.cpp:2983
+#: src/ocpn_frame.cpp:2987
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2995
+#: src/ocpn_frame.cpp:2999
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2996
+#: src/ocpn_frame.cpp:3000
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3024 src/ocpn_frame.cpp:6799 src/ocpn_frame.cpp:6840
+#: src/ocpn_frame.cpp:3028 src/ocpn_frame.cpp:6805 src/ocpn_frame.cpp:6846
 msgid " Time: "
-msgstr ""
+msgstr " Време: "
 
-#: src/ocpn_frame.cpp:3026
+#: src/ocpn_frame.cpp:3030
 msgid "  Position: "
-msgstr ""
+msgstr "  Положение: "
 
-#: src/ocpn_frame.cpp:3044 src/ocpn_frame.cpp:7180
+#: src/ocpn_frame.cpp:3048 src/ocpn_frame.cpp:7186
 msgid "Disable Tracking"
-msgstr ""
+msgstr "Изключване на проследяването"
 
-#: src/ocpn_frame.cpp:3116 src/ocpn_frame.cpp:3490 src/ocpn_frame.cpp:7126
-#: src/toolbar.cpp:1259
+#: src/ocpn_frame.cpp:3120 src/ocpn_frame.cpp:3494 src/ocpn_frame.cpp:7132
+#: src/toolbar.cpp:1257
 msgid "Enable Tracking"
-msgstr ""
+msgstr "Включване на проследяването"
 
-#: src/ocpn_frame.cpp:3489 src/toolbar.cpp:1198
+#: src/ocpn_frame.cpp:3493 src/toolbar.cpp:1196
 msgid "Auto Follow"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3494
+#: src/ocpn_frame.cpp:3498
 msgid "Head Up Mode"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3497 src/ocpn_frame.cpp:3500 src/toolbar.cpp:1163
+#: src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:3504 src/toolbar.cpp:1161
 msgid "Zoom In"
-msgstr ""
+msgstr "Увеличаване"
 
-#: src/ocpn_frame.cpp:3498 src/ocpn_frame.cpp:3501 src/toolbar.cpp:1169
+#: src/ocpn_frame.cpp:3502 src/ocpn_frame.cpp:3505 src/toolbar.cpp:1167
 msgid "Zoom Out"
-msgstr ""
+msgstr "Отдалечаване"
 
-#: src/ocpn_frame.cpp:3505
+#: src/ocpn_frame.cpp:3509
 msgid "Larger Scale Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3507
+#: src/ocpn_frame.cpp:3511
 msgid "Smaller Scale Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3510
+#: src/ocpn_frame.cpp:3514
 msgid "Exit OpenCPN"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3512
+#: src/ocpn_frame.cpp:3516
 msgid "&Navigate"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3528 src/options.cpp:5306
+#: src/ocpn_frame.cpp:3532 src/options.cpp:5306
 msgid "Show Chart Bar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3533 src/ocpn_frame.cpp:3546 src/toolbar.cpp:1218
+#: src/ocpn_frame.cpp:3537 src/ocpn_frame.cpp:3550 src/toolbar.cpp:1216
 msgid "Show ENC text"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3535 src/ocpn_frame.cpp:3548
+#: src/ocpn_frame.cpp:3539 src/ocpn_frame.cpp:3552
 msgid "Show ENC Lights"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3537 src/ocpn_frame.cpp:3550
+#: src/ocpn_frame.cpp:3541 src/ocpn_frame.cpp:3554
 msgid "Show ENC Soundings"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3539 src/ocpn_frame.cpp:3552
+#: src/ocpn_frame.cpp:3543 src/ocpn_frame.cpp:3556
 msgid "Show ENC Anchoring Info"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3541 src/ocpn_frame.cpp:3555
+#: src/ocpn_frame.cpp:3545 src/ocpn_frame.cpp:3559
 msgid "Show ENC Data Quality"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3543 src/ocpn_frame.cpp:3557
+#: src/ocpn_frame.cpp:3547 src/ocpn_frame.cpp:3561
 msgid "Show Navobjects"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3565 src/ocpn_frame.cpp:3568 src/ocpn_frame.cpp:7131
-#: src/toolbar.cpp:1266
+#: src/ocpn_frame.cpp:3569 src/ocpn_frame.cpp:3572 src/ocpn_frame.cpp:7137
+#: src/toolbar.cpp:1264
 msgid "Change Color Scheme"
 msgstr "Смяна на цветовата схема"
 
-#: src/ocpn_frame.cpp:3576
+#: src/ocpn_frame.cpp:3580
 msgid "&View"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3579 src/toolbar.cpp:1322
+#: src/ocpn_frame.cpp:3583 src/toolbar.cpp:1320
 msgid "Show AIS Targets"
 msgstr "AIS-цели"
 
-#: src/ocpn_frame.cpp:3584
+#: src/ocpn_frame.cpp:3588
 msgid "Hide Moored AIS Targets"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3585
+#: src/ocpn_frame.cpp:3589
 msgid "Show AIS Target Tracks"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3586
+#: src/ocpn_frame.cpp:3590
 msgid "Show CPA Alert Dialogs"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3587
+#: src/ocpn_frame.cpp:3591
 msgid "Sound CPA Alarms"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3588
+#: src/ocpn_frame.cpp:3592
 msgid "Show CPA Warnings"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3591
+#: src/ocpn_frame.cpp:3595
 msgid "&AIS"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3596 src/ocpn_frame.cpp:3599
+#: src/ocpn_frame.cpp:3600 src/ocpn_frame.cpp:3603
 msgid "Measure Distance"
-msgstr ""
+msgstr "Измерване на разстоянието"
 
-#: src/ocpn_frame.cpp:3603
+#: src/ocpn_frame.cpp:3607
 msgid "Route && Mark Manager..."
 msgstr ""
 
-#: src/ocpn_frame.cpp:3605 src/ocpn_frame.cpp:7114 src/toolbar.cpp:1191
+#: src/ocpn_frame.cpp:3609 src/ocpn_frame.cpp:7120 src/toolbar.cpp:1189
 msgid "Create Route"
-msgstr ""
+msgstr "Създаване на маршрут"
 
-#: src/ocpn_frame.cpp:3608
+#: src/ocpn_frame.cpp:3612
 msgid "Drop Mark at Boat"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3610
+#: src/ocpn_frame.cpp:3614
 msgid "Drop Mark at Cursor"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3616 src/ocpn_frame.cpp:3623 src/ocpn_frame.cpp:7158
-#: src/toolbar.cpp:1285
+#: src/ocpn_frame.cpp:3620 src/ocpn_frame.cpp:3627 src/ocpn_frame.cpp:7164
+#: src/toolbar.cpp:1283
 msgid "Drop MOB Marker"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3620 src/pluginmanager.cpp:5099 src/pluginmanager.cpp:5120
+#: src/ocpn_frame.cpp:3624 src/pluginmanager.cpp:5106 src/pluginmanager.cpp:5127
 msgid "Preferences"
 msgstr "Предпочитания"
 
-#: src/ocpn_frame.cpp:3628
-msgid "&Tools"
-msgstr ""
-
 #: src/ocpn_frame.cpp:3632
+msgid "&Tools"
+msgstr "&Инструменти"
+
+#: src/ocpn_frame.cpp:3636
 msgid "&Window"
-msgstr ""
+msgstr "&Прозорец"
 
-#: src/ocpn_frame.cpp:3637
+#: src/ocpn_frame.cpp:3641
 msgid "OpenCPN Help"
-msgstr ""
+msgstr "Помощ за OpenCPN"
 
-#: src/ocpn_frame.cpp:3638
+#: src/ocpn_frame.cpp:3642
 msgid "&Help"
-msgstr ""
+msgstr "&Помощ"
 
-#: src/ocpn_frame.cpp:4269
+#: src/ocpn_frame.cpp:4273
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
 
-#: src/ocpn_frame.cpp:5249
+#: src/ocpn_frame.cpp:5255
 msgid " Ship "
-msgstr ""
+msgstr " Кораб "
 
-#: src/ocpn_frame.cpp:5959
+#: src/ocpn_frame.cpp:5965
 msgid "Rotated Mode"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6305 src/routeprintout.cpp:477 src/trackprintout.cpp:409
+#: src/ocpn_frame.cpp:6311 src/routeprintout.cpp:477 src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Грешка при печат.\n"
 "Възможно е принтерът да не е конфигуриран."
 
-#: src/ocpn_frame.cpp:6474 src/ocpn_frame.cpp:6531
+#: src/ocpn_frame.cpp:6480 src/ocpn_frame.cpp:6537
 #: src/routemanagerdialog.cpp:1225
 msgid "(Unnamed Route)"
 msgstr "(Неназован маршрут)"
 
-#: src/ocpn_frame.cpp:6740 src/ocpn_frame.cpp:6798
+#: src/ocpn_frame.cpp:6746 src/ocpn_frame.cpp:6804
 msgid "AIS MAN OVERBOARD"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6760 src/options.cpp:1970
+#: src/ocpn_frame.cpp:6766 src/options.cpp:1970
 msgid "Own ship"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6772
+#: src/ocpn_frame.cpp:6778
 msgid "Temporary AISMOB Route"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6773
+#: src/ocpn_frame.cpp:6779
 msgid "Present own ship"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6801 src/ocpn_frame.cpp:6842
+#: src/ocpn_frame.cpp:6807 src/ocpn_frame.cpp:6848
 msgid "  Ownship Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:6805 src/ocpn_frame.cpp:6846
+#: src/ocpn_frame.cpp:6811 src/ocpn_frame.cpp:6852
 msgid "  MOB Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:6839
+#: src/ocpn_frame.cpp:6845
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr ""
 
-#: src/ocpn_frame.cpp:7120 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1252
+#: src/ocpn_frame.cpp:7126 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1250
 msgid "Route & Mark Manager"
 msgstr ""
 
-#: src/ocpn_frame.cpp:7144 src/toolbar.cpp:1246
+#: src/ocpn_frame.cpp:7150 src/toolbar.cpp:1244
 msgid "Print Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:7158 src/toolbar.cpp:1285
+#: src/ocpn_frame.cpp:7164 src/toolbar.cpp:1283
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: src/ocpn_frame.cpp:8692
+#: src/ocpn_frame.cpp:8698
 msgid "OpenCPN ENC Prepare"
 msgstr ""
 
-#: src/ocpn_frame.cpp:8754
+#: src/ocpn_frame.cpp:8760
 msgid "ENC Completed."
 msgstr ""
 
@@ -5178,7 +5343,7 @@ msgstr ""
 
 #: src/options.cpp:1009
 msgid "Tracking"
-msgstr ""
+msgstr "Проследяване"
 
 #: src/options.cpp:1014
 msgid "Default tracking"
@@ -5217,16 +5382,16 @@ msgstr ""
 #: src/RoutePropDlg.cpp:251 src/RoutePropDlg.cpp:272 src/TrackPropDlg.cpp:498
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:740 src/TrackPropDlg.cpp:753
 msgid "Default"
-msgstr ""
+msgstr "По подразбиране"
 
-#: src/options.cpp:1178 src/routemanagerdialog.cpp:2376
-#: src/routemanagerdialog.cpp:2576
+#: src/options.cpp:1178 src/routemanagerdialog.cpp:2378
+#: src/routemanagerdialog.cpp:2578
 msgid "Always"
-msgstr ""
+msgstr "Винаги"
 
 #: src/options.cpp:1181
 msgid "Never"
-msgstr ""
+msgstr "Никога"
 
 #: src/options.cpp:1218 src/options.cpp:1265
 msgid "Edit MMSI Properties"
@@ -5242,7 +5407,7 @@ msgstr ""
 
 #: src/options.cpp:1339
 msgid "Ignore"
-msgstr ""
+msgstr "Игнориране"
 
 #: src/options.cpp:1348
 msgid "MOB"
@@ -5258,7 +5423,7 @@ msgstr "Име на кораба"
 
 #: src/options.cpp:1374
 msgid "Follower"
-msgstr ""
+msgstr "Последовател"
 
 #: src/options.cpp:1379
 msgid "New..."
@@ -5368,7 +5533,7 @@ msgstr ""
 #: src/options.cpp:2112 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:493
 #: src/TrackPropDlg.cpp:735
 msgid "Style"
-msgstr ""
+msgstr "Стил"
 
 #: src/options.cpp:2116 src/RoutePropDlg.cpp:251 src/TrackPropDlg.cpp:498
 #: src/TrackPropDlg.cpp:740
@@ -5398,86 +5563,86 @@ msgstr ""
 #: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Black"
-msgstr ""
+msgstr "Черно"
 
 #: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Dark Red"
-msgstr ""
+msgstr "Тъмночервено"
 
 #: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Dark Green"
-msgstr ""
+msgstr "Тъмнозелено"
 
 #: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Yellow"
-msgstr ""
+msgstr "Тъмножълто"
 
 #: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Blue"
-msgstr ""
+msgstr "Тъмносиньо"
 
 #: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Magenta"
-msgstr ""
+msgstr "Тъмнолилаво"
 
 #: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Cyan"
-msgstr ""
+msgstr "Тъмносиньо-зелено"
 
 #: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Light Gray"
-msgstr ""
+msgstr "Светлосиво"
 
 #: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Dark Gray"
-msgstr ""
+msgstr "Тъмносиво"
 
 #: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Red"
-msgstr ""
+msgstr "Червено"
 
 #: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Green"
-msgstr ""
+msgstr "Зелено"
 
 #: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Yellow"
-msgstr ""
+msgstr "Жълто"
 
 #: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Blue"
-msgstr ""
+msgstr "Синьо"
 
 #: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Magenta"
-msgstr ""
+msgstr "Лилаво"
 
 #: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Cyan"
-msgstr ""
+msgstr "Синьо-зелено"
 
 #: src/options.cpp:2136 src/RoutePropDlg.cpp:233 src/TrackPropDlg.cpp:484
 #: src/TrackPropDlg.cpp:728
 msgid "White"
-msgstr ""
+msgstr "Бяло"
 
 #: src/options.cpp:2146 src/routemanagerdialog.cpp:517
 msgid "Tracks"
-msgstr ""
+msgstr "Писти"
 
 #: src/options.cpp:2152
 msgid "Automatic Daily Tracks at midnight"
@@ -5526,7 +5691,7 @@ msgstr ""
 
 #: src/options.cpp:2234
 msgid "Calculate values"
-msgstr ""
+msgstr "Изчисляване на стойностите"
 
 #: src/options.cpp:2248
 msgid "Calculate SOG and COG from position changes"
@@ -5534,15 +5699,15 @@ msgstr ""
 
 #: src/options.cpp:2253
 msgid "Min seconds between updates"
-msgstr ""
+msgstr "Минимум секунди между обновяванията"
 
 #: src/options.cpp:2269
 msgid "Routes/Points"
-msgstr ""
+msgstr "Маршрути/точки"
 
 #: src/options.cpp:2282
 msgid "New Routes"
-msgstr ""
+msgstr "Нови маршрути"
 
 #: src/options.cpp:2296 src/options.cpp:2359
 msgid "Waypoint default icon"
@@ -5602,7 +5767,7 @@ msgstr ""
 
 #: src/options.cpp:2567 src/options.cpp:3839 src/RoutePropDlgImpl.cpp:934
 msgid "Remove Selected"
-msgstr ""
+msgstr "Премахване на избраното"
 
 #: src/options.cpp:2568
 msgid "Compress Selected"
@@ -5610,7 +5775,7 @@ msgstr ""
 
 #: src/options.cpp:2571
 msgid "Add.."
-msgstr ""
+msgstr "Добавяне..."
 
 #: src/options.cpp:2572
 msgid "Remove"
@@ -5642,15 +5807,15 @@ msgstr ""
 
 #: src/options.cpp:2690
 msgid " [Modified]"
-msgstr ""
+msgstr " [Modified]"
 
 #: src/options.cpp:2698
 msgid "Templates"
-msgstr ""
+msgstr "Шаблони"
 
 #: src/options.cpp:2710
 msgid "Template Status"
-msgstr ""
+msgstr "Състояние на шаблона"
 
 #: src/options.cpp:2720
 msgid "Last Applied Template Title:"
@@ -5658,31 +5823,31 @@ msgstr ""
 
 #: src/options.cpp:2733
 msgid "Saved Templates"
-msgstr ""
+msgstr "Запазени шаблони"
 
 #: src/options.cpp:2760
 msgid "Create Config..."
-msgstr ""
+msgstr "Създаване на конфигуриране..."
 
 #: src/options.cpp:2772
 msgid "Delete Selected Config..."
-msgstr ""
+msgstr "Изтриване на избраното конфигуриране..."
 
 #: src/options.cpp:2780
 msgid "Apply Selected Config"
-msgstr ""
+msgstr "Прилагане на избраното конфигуриране"
 
 #: src/options.cpp:2853
 msgid "Create Config"
-msgstr ""
+msgstr "Създаване на конфигуриране"
 
 #: src/options.cpp:2907
 msgid "Problem applying selected configuration."
-msgstr ""
+msgstr "Проблем, прилагайки избраната конфигурация."
 
 #: src/options.cpp:2980 src/RoutePropDlg.cpp:483 src/TrackPropDlg.cpp:940
 msgid "Advanced"
-msgstr ""
+msgstr "Усъвършенстване"
 
 #: src/options.cpp:3000
 msgid "De-skew Raster Charts"
@@ -5690,11 +5855,11 @@ msgstr ""
 
 #: src/options.cpp:3011 src/options.cpp:3329
 msgid "Use Accelerated Graphics (OpenGL)"
-msgstr ""
+msgstr "Употреба на видеоускорението за OpenGL"
 
 #: src/options.cpp:3016
 msgid "OpenGL Options"
-msgstr ""
+msgstr "Настройки на OpenGL"
 
 #: src/options.cpp:3030 src/options.cpp:3191
 msgid "Chart Rotation Averaging Time"
@@ -5702,7 +5867,7 @@ msgstr ""
 
 #: src/options.cpp:3046 src/options.cpp:3203 src/options.cpp:5327
 msgid "seconds"
-msgstr ""
+msgstr "секунди"
 
 #: src/options.cpp:3054 src/options.cpp:3212
 msgid "Chart Zoom/Scale Weighting"
@@ -5722,15 +5887,15 @@ msgstr ""
 
 #: src/options.cpp:3110 src/options.cpp:3290
 msgid "Physical Screen Width"
-msgstr ""
+msgstr "Физична ширина на екрана"
 
 #: src/options.cpp:3115 src/options.cpp:3295
 msgid "Auto"
-msgstr ""
+msgstr "Автоматично"
 
 #: src/options.cpp:3119 src/options.cpp:3299
 msgid "Manual:"
-msgstr ""
+msgstr "Ръчно:"
 
 #: src/options.cpp:3130 src/options.cpp:3307
 msgid "mm"
@@ -5751,7 +5916,7 @@ msgstr ""
 
 #: src/options.cpp:3323
 msgid "Graphics"
-msgstr ""
+msgstr "Графика"
 
 #: src/options.cpp:3356
 msgid "Vector Chart Display"
@@ -5759,10 +5924,6 @@ msgstr ""
 
 #: src/options.cpp:3379 src/options.cpp:3582
 msgid "Mariner's Standard"
-msgstr ""
-
-#: src/options.cpp:3390 src/options.cpp:4993 src/options.cpp:5786
-msgid "Display"
 msgstr ""
 
 #: src/options.cpp:3398 src/options.cpp:3597
@@ -5819,11 +5980,11 @@ msgstr ""
 
 #: src/options.cpp:3475 src/options.cpp:3670
 msgid "Simplified"
-msgstr ""
+msgstr "Опростено"
 
 #: src/options.cpp:3481 src/options.cpp:3681
 msgid "Boundaries"
-msgstr ""
+msgstr "Граници"
 
 #: src/options.cpp:3484 src/options.cpp:3684
 msgid "Plain"
@@ -5831,19 +5992,19 @@ msgstr ""
 
 #: src/options.cpp:3485 src/options.cpp:3685
 msgid "Symbolized"
-msgstr ""
+msgstr "Символно"
 
 #: src/options.cpp:3491 src/options.cpp:3696
 msgid "Colors"
-msgstr ""
+msgstr "Цветове"
 
 #: src/options.cpp:3494 src/options.cpp:3700
 msgid "2 Color"
-msgstr ""
+msgstr "2 цвята"
 
 #: src/options.cpp:3495 src/options.cpp:3701
 msgid "4 Color"
-msgstr ""
+msgstr "4 цвята"
 
 #: src/options.cpp:3506 src/options.cpp:3723
 msgid "Shallow Depth"
@@ -5859,7 +6020,7 @@ msgstr ""
 
 #: src/options.cpp:3542 src/options.cpp:3759
 msgid "User Standard Objects"
-msgstr ""
+msgstr "Потребителски стандартни предмети"
 
 #: src/options.cpp:3561 src/options.cpp:3774
 msgid "Reset to STANDARD"
@@ -5891,11 +6052,11 @@ msgstr ""
 
 #: src/options.cpp:3957
 msgid "New Group..."
-msgstr ""
+msgstr "Нова група…"
 
 #: src/options.cpp:3959
 msgid "Delete Group"
-msgstr ""
+msgstr "Изтриване на група"
 
 #: src/options.cpp:4054 src/options.cpp:4235
 msgid "Preserve scale when switching charts"
@@ -5903,15 +6064,15 @@ msgstr ""
 
 #: src/options.cpp:4063 src/options.cpp:4244
 msgid "Controls"
-msgstr ""
+msgstr "Управления"
 
 #: src/options.cpp:4069 src/options.cpp:4250
 msgid "Smooth Panning / Zooming"
-msgstr ""
+msgstr "Плавно панорамиране / мащабиране"
 
 #: src/options.cpp:4073 src/options.cpp:4253
 msgid "Zoom to Cursor"
-msgstr ""
+msgstr "Мащабиране до показалеца"
 
 #: src/options.cpp:4084 src/options.cpp:4269
 msgid "Display Features"
@@ -5955,23 +6116,23 @@ msgstr ""
 
 #: src/options.cpp:4413 src/options.cpp:4552
 msgid "Depth"
-msgstr ""
+msgstr "Дълбочина"
 
 #: src/options.cpp:4429 src/options.cpp:4565
 msgid "Temperature"
-msgstr ""
+msgstr "Температура"
 
 #: src/options.cpp:4432 src/options.cpp:4568
 msgid "Celsius"
-msgstr ""
+msgstr "Целзий"
 
 #: src/options.cpp:4433 src/options.cpp:4569
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Фаренхайт"
 
 #: src/options.cpp:4434 src/options.cpp:4570
 msgid "Kelvin"
-msgstr ""
+msgstr "Келвин"
 
 #: src/options.cpp:4449 src/options.cpp:4582
 msgid "Lat/Long"
@@ -5999,7 +6160,7 @@ msgstr ""
 
 #: src/options.cpp:4478
 msgid "Show magnetic"
-msgstr ""
+msgstr "Показване на магнетизма"
 
 #: src/options.cpp:4494
 msgid "Assumed magnetic variation"
@@ -6028,20 +6189,20 @@ msgstr ""
 
 #: src/options.cpp:4759
 msgid "Test"
-msgstr ""
+msgstr "Тестване"
 
 #: src/options.cpp:4768
 msgid "Audio file name:"
-msgstr ""
+msgstr "Име на звуковия файл:"
 
 #: src/options.cpp:4796 src/options.cpp:4807 src/options.cpp:8278
 #: src/options.cpp:8289
 msgid "Select Sound File"
-msgstr ""
+msgstr "Изберете звуков файл"
 
 #: src/options.cpp:4848
 msgid "Sounds"
-msgstr ""
+msgstr "Звуци"
 
 #: src/options.cpp:4856
 msgid "Anchor Alarm"
@@ -6109,7 +6270,7 @@ msgstr ""
 
 #: src/options.cpp:4966
 msgid "Lost Targets"
-msgstr ""
+msgstr "Изгубени цели"
 
 #: src/options.cpp:4975
 msgid "Mark targets as lost after (min)"
@@ -6117,6 +6278,10 @@ msgstr ""
 
 #: src/options.cpp:4983
 msgid "Remove lost targets after (min)"
+msgstr ""
+
+#: src/options.cpp:4993 src/options.cpp:5786
+msgid "Display"
 msgstr ""
 
 #: src/options.cpp:5002
@@ -6213,23 +6378,23 @@ msgstr ""
 
 #: src/options.cpp:5191
 msgid "General Options"
-msgstr ""
+msgstr "Основни настройки"
 
 #: src/options.cpp:5200
 msgid "Language"
-msgstr ""
+msgstr "Език"
 
 #: src/options.cpp:5215
 msgid "Fonts"
-msgstr ""
+msgstr "Шрифтове"
 
 #: src/options.cpp:5251
 msgid "Choose Font..."
-msgstr ""
+msgstr "Избор на шрифт..."
 
 #: src/options.cpp:5256
 msgid "Choose Font Color..."
-msgstr ""
+msgstr "Избор на цвят на шрифта..."
 
 #: src/options.cpp:5260
 msgid "Sample"
@@ -6241,7 +6406,7 @@ msgstr ""
 
 #: src/options.cpp:5286
 msgid "Interface Options"
-msgstr ""
+msgstr "Възможности на интерфейса"
 
 #: src/options.cpp:5292
 msgid "Show Status Bar"
@@ -6265,11 +6430,11 @@ msgstr ""
 
 #: src/options.cpp:5345
 msgid "Audio Play command:"
-msgstr ""
+msgstr "Команда за звуковъзпроизвеждане:"
 
 #: src/options.cpp:5361
 msgid "Unknown device :"
-msgstr ""
+msgstr "Неизвестно устройство :"
 
 #: src/options.cpp:5366
 msgid "Input device :"
@@ -6277,11 +6442,11 @@ msgstr ""
 
 #: src/options.cpp:5393
 msgid "Sound Device"
-msgstr ""
+msgstr "Звуково устройство"
 
 #: src/options.cpp:5405
 msgid "Enable Touchscreen interface"
-msgstr ""
+msgstr "Включване на интерфейс за сензорни екрани"
 
 #: src/options.cpp:5409
 msgid "Enable Scaled Graphics interface"
@@ -6289,7 +6454,7 @@ msgstr ""
 
 #: src/options.cpp:5422
 msgid "Show Zoom buttons"
-msgstr ""
+msgstr "Показване на копчета за мащабиране"
 
 #: src/options.cpp:5429
 msgid "Use Inland ECDIS"
@@ -6321,11 +6486,11 @@ msgstr ""
 
 #: src/options.cpp:5521
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Чувстит. мащаб. на колелцето на мишката"
 
 #: src/options.cpp:5783
 msgid "Apply"
-msgstr ""
+msgstr "Прилагане"
 
 #: src/options.cpp:5792
 msgid "Charts"
@@ -6333,27 +6498,27 @@ msgstr ""
 
 #: src/options.cpp:5815
 msgid "Connections"
-msgstr ""
+msgstr "Свързвания"
 
 #: src/options.cpp:5817
 msgid "Connect"
-msgstr ""
+msgstr "Свързване"
 
 #: src/options.cpp:5829
 msgid "Ships"
-msgstr ""
+msgstr "Кораби"
 
 #: src/options.cpp:5838
 msgid "User Interface"
-msgstr ""
+msgstr "Потребителски интерфейс"
 
 #: src/options.cpp:5840
 msgid "User"
-msgstr ""
+msgstr "Потребител"
 
 #: src/options.cpp:5846 src/options.cpp:5847
 msgid "Plugins"
-msgstr ""
+msgstr "Приставки"
 
 #: src/options.cpp:6026
 msgid "User set magnetic variation"
@@ -6361,7 +6526,7 @@ msgstr ""
 
 #: src/options.cpp:6482
 msgid "feet"
-msgstr ""
+msgstr "фута"
 
 #: src/options.cpp:6482
 msgid "fathoms"
@@ -6400,7 +6565,7 @@ msgstr ""
 msgid "The settings for own ship real size are not correct:"
 msgstr ""
 
-#: src/options.cpp:6834 src/routemanagerdialog.cpp:1900
+#: src/options.cpp:6834 src/routemanagerdialog.cpp:1902
 msgid "OpenCPN info"
 msgstr ""
 
@@ -6440,7 +6605,7 @@ msgstr ""
 
 #: src/options.cpp:8731
 msgid "Enter Group Name"
-msgstr ""
+msgstr "Въведете име на групата"
 
 #: src/options.cpp:8731
 msgid "New Chart Group"
@@ -6448,51 +6613,51 @@ msgstr ""
 
 #: src/options.cpp:8904 src/options.cpp:8918
 msgid "Select Tide/Current Data"
-msgstr ""
+msgstr "Избор на данни за приливи/течения"
 
 #: src/options.cpp:8976
 msgid "Texture Compression"
-msgstr ""
+msgstr "Компресия на текстурата"
 
 #: src/options.cpp:8977
 msgid "Texture Compression with Caching"
-msgstr ""
+msgstr "Компресия на текстурата с кеширане"
 
 #: src/options.cpp:8979
 msgid "Texture Compression Caching"
-msgstr ""
+msgstr "Кеширане на компресията на текстурата"
 
 #: src/options.cpp:8981
 msgid "Texture Memory Size (MB)"
-msgstr ""
+msgstr "Размер на паметта на текстурата (MB)"
 
 #: src/options.cpp:8985 src/options.cpp:9158
 msgid "Size: "
-msgstr ""
+msgstr "Размер: "
 
 #: src/options.cpp:8987
 msgid "Rebuild Texture Cache"
-msgstr ""
+msgstr "Изграждане пак на кеша на текстурата"
 
 #: src/options.cpp:8989
 msgid "Clear Texture Cache"
-msgstr ""
+msgstr "Изчистване на кеша на текстурата"
 
 #: src/options.cpp:8993
 msgid "Show FPS"
-msgstr ""
+msgstr "Показване на кадрите в секунда"
 
 #: src/options.cpp:8994
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "Изглаждане на многоъгълника"
 
 #: src/options.cpp:8995
 msgid "Line Smoothing"
-msgstr ""
+msgstr "Изглаждане на линията"
 
 #: src/options.cpp:8997
 msgid "Software OpenGL (restart OpenCPN)"
-msgstr ""
+msgstr "Софтуер OpenGL (рестарт на OpenCPN)"
 
 #: src/options.cpp:8999
 msgid "Use Accelerated Panning"
@@ -6500,15 +6665,15 @@ msgstr ""
 
 #: src/options.cpp:9001
 msgid "Texture Settings"
-msgstr ""
+msgstr "Настройки на текстурата"
 
 #: src/options.cpp:9008
 msgid "Texture Cache"
-msgstr ""
+msgstr "Кеш на текстурата"
 
 #: src/options.cpp:9015
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Разни"
 
 #: src/Osenc.cpp:1173
 msgid "S57 Cell Update failed.\n"
@@ -6533,7 +6698,7 @@ msgstr ""
 
 #: src/peer_client.cpp:52
 msgid "Server Generic Error"
-msgstr ""
+msgstr "Обща грешка на сървъра"
 
 #: src/peer_client.cpp:54
 msgid "Peer rejected object"
@@ -6549,7 +6714,7 @@ msgstr ""
 
 #: src/peer_client.cpp:60
 msgid "Server Unknown Error"
-msgstr ""
+msgstr "Неизвестна грешка на сървъра"
 
 #: src/peer_client.cpp:262 src/REST_server.cpp:337 src/REST_server.cpp:389
 #: src/REST_server.cpp:440 src/REST_server.cpp:493
@@ -6558,7 +6723,7 @@ msgstr ""
 
 #: src/peer_client.cpp:265
 msgid "The server "
-msgstr ""
+msgstr "Сървърът "
 
 #: src/peer_client.cpp:266
 msgid "needs a PIN.\n"
@@ -6573,9 +6738,29 @@ msgstr ""
 msgid "Objects successfully sent to peer OpenCPN instance."
 msgstr ""
 
-#: src/plugin_blacklist.cpp:62 src/plugin_blacklist.cpp:68
+#: src/plugin_blacklist.cpp:62
+#, c-format
+msgid "\n"
+"PlugIn %s, version %i.%i was detected.\n"
+"This version is known to be unstable and will not be loaded.\n"
+"Please update this PlugIn using the PlugIn manager master catalog.\n"
+msgstr ""
+
+#: src/plugin_blacklist.cpp:68
+#, c-format
+msgid "\n"
+"PlugIn %s, version %i.%i was detected.\n"
+"This version is known to be unstable.\n"
+"Please update this PlugIn using the PlugIn manager master catalog.\n"
+msgstr ""
+
 #: src/plugin_blacklist.cpp:74
-msgid "("
+#, c-format
+msgid "\n"
+"PlugIn %s, version %i.%i was detected.\n"
+"This plugin is obsolete, the o-charts plugin should be used\n"
+"instead. Please uninstall this plugin and install o-charts\n"
+"using the PlugIn manager master catalog.\n"
 msgstr ""
 
 #: src/plugin_blacklist.cpp:249
@@ -6583,236 +6768,209 @@ msgstr ""
 msgid "Plugin library %s can not be loaded"
 msgstr ""
 
-#: src/plugin_loader.cpp:314 src/plugin_loader.cpp:1359
-msgid "Incompatible plugin detected: "
-msgstr ""
-
-#: src/plugin_loader.cpp:1211
-msgid "Incompatible plugin detected"
-msgstr ""
-
-#: src/plugin_loader.cpp:1215
-#, c-format
-msgid "PlugIn [ %s ] version %i.%i"
-msgstr ""
-
-#: src/plugin_loader.cpp:1219
-msgid " is incompatible with this version of OpenCPN."
-msgstr ""
-
-#: src/plugin_loader.cpp:1233
+#: src/plugin_loader.cpp:1249
 msgid "\n"
 "    Install/uninstall plugin or remove file to mute message"
 msgstr ""
 
-#: src/plugin_loader.cpp:1236
-msgid "   PlugInManager: Cannot load symbol create_pi: "
-msgstr ""
+#: src/plugin_loader.cpp:1252
+msgid "   PluginLoader: Cannot load symbol create_pi: "
+msgstr "   Зареждачката на приставки: Невъзможно зареждане на символ create_pi: "
 
-#: src/plugin_loader.cpp:1248
-msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-msgstr ""
+#: src/plugin_loader.cpp:1376
+msgid "Incompatible plugin detected: "
+msgstr "Засечена несъвместима приставка: "
 
-#: src/plugin_loader.cpp:1360
+#: src/plugin_loader.cpp:1377
 msgid "        API Version detected: "
-msgstr ""
+msgstr "        Засечена версия на API: "
 
-#: src/plugin_loader.cpp:1362
+#: src/plugin_loader.cpp:1379
 msgid "        PlugIn Version detected: "
-msgstr ""
+msgstr "        Засечена версия на приставката: "
+
+#: src/pluginmanager.cpp:365
+msgid "Plugin is a standard system plugin"
+msgstr "Приставката се явява стандартна системна приставка"
+
+#: src/pluginmanager.cpp:367
+msgid "Plugin is managed by OpenCPN"
+msgstr "Приставката се управлява от OpenCPN"
 
 #: src/pluginmanager.cpp:369
-msgid "Plugin is a standard system plugin"
-msgstr ""
-
-#: src/pluginmanager.cpp:371
-msgid "Plugin is managed by OpenCPN"
-msgstr ""
+msgid "Plugin is not managed by OpenCPN"
+msgstr "Приставката не се управлява от OpenCPN"
 
 #: src/pluginmanager.cpp:373
-msgid "Plugin is not managed by OpenCPN"
-msgstr ""
-
-#: src/pluginmanager.cpp:377
 msgid "Plugin status unknown"
-msgstr ""
+msgstr "Неизвестно състояние на приставката"
 
-#: src/pluginmanager.cpp:379
+#: src/pluginmanager.cpp:375
 msgid "Update to managed Plugin is available"
 msgstr ""
 
-#: src/pluginmanager.cpp:381
+#: src/pluginmanager.cpp:377
 msgid "New managed Plugin installation available"
 msgstr ""
 
-#: src/pluginmanager.cpp:383
+#: src/pluginmanager.cpp:379
 msgid "Update to installed Plugin is available"
 msgstr ""
 
-#: src/pluginmanager.cpp:385
+#: src/pluginmanager.cpp:381
 msgid "Plugin is latest available"
 msgstr ""
 
-#: src/pluginmanager.cpp:644
+#: src/pluginmanager.cpp:640
 msgid "The plugin is not compatible with this version of OpenCPN, and will be uninstalled."
 msgstr ""
 
-#: src/pluginmanager.cpp:837
+#: src/pluginmanager.cpp:810
 msgid "successfully un-installed"
 msgstr ""
 
-#: src/pluginmanager.cpp:850
+#: src/pluginmanager.cpp:823
 msgid "Un-Installation complete"
 msgstr ""
 
-#: src/pluginmanager.cpp:1246
-#, c-format
-msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr ""
-
-#: src/pluginmanager.cpp:1254
-#, c-format
-msgid "Unreadable Plugin library %s detected, check file permissions:\n\n"
-msgstr ""
-
-#: src/pluginmanager.cpp:1302
+#: src/pluginmanager.cpp:1241
 msgid "Please check system log for more info."
 msgstr ""
 
-#: src/pluginmanager.cpp:1310
+#: src/pluginmanager.cpp:1250
 msgid " successfully installed from cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:4080
+#: src/pluginmanager.cpp:4088
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr ""
 
-#: src/pluginmanager.cpp:4096
+#: src/pluginmanager.cpp:4104
 msgid "Plugin Catalog"
-msgstr ""
+msgstr "Каталог приставки"
 
-#: src/pluginmanager.cpp:4113 src/pluginmanager.cpp:4703
+#: src/pluginmanager.cpp:4121 src/pluginmanager.cpp:4710
 msgid "Update Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4119 src/pluginmanager.cpp:4190
+#: src/pluginmanager.cpp:4127 src/pluginmanager.cpp:4198
 msgid "Import plugin..."
-msgstr ""
+msgstr "Внасяне на приставка..."
 
-#: src/pluginmanager.cpp:4126 src/pluginmanager.cpp:4183
+#: src/pluginmanager.cpp:4134 src/pluginmanager.cpp:4191
 msgid "Settings..."
-msgstr ""
+msgstr "Настройки..."
 
-#: src/pluginmanager.cpp:4134
+#: src/pluginmanager.cpp:4142
 msgid "Disabled"
-msgstr ""
+msgstr "Изключено"
 
-#: src/pluginmanager.cpp:4159
+#: src/pluginmanager.cpp:4167
 msgid "Update Plugin Catalog: master"
 msgstr ""
 
-#: src/pluginmanager.cpp:4175
+#: src/pluginmanager.cpp:4183
 msgid "Update Plugin Catalog:master"
 msgstr ""
 
-#: src/pluginmanager.cpp:4234 src/pluginmanager.cpp:4246
-#: src/pluginmanager.cpp:4256 src/pluginmanager.cpp:4265
-#: src/pluginmanager.cpp:4291
+#: src/pluginmanager.cpp:4242 src/pluginmanager.cpp:4254
+#: src/pluginmanager.cpp:4264 src/pluginmanager.cpp:4273
+#: src/pluginmanager.cpp:4298
 msgid "OpenCPN Catalog update"
 msgstr ""
 
-#: src/pluginmanager.cpp:4245 src/pluginmanager.cpp:4255
+#: src/pluginmanager.cpp:4253 src/pluginmanager.cpp:4263
 msgid "Unable to copy catalog file"
 msgstr ""
 
-#: src/pluginmanager.cpp:4264
+#: src/pluginmanager.cpp:4272
 msgid "Unable to copy catalog file to cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:4290
+#: src/pluginmanager.cpp:4297
 msgid "Catalog update successful"
-msgstr ""
+msgstr "Успешно обновен каталог"
 
-#: src/pluginmanager.cpp:4413
+#: src/pluginmanager.cpp:4420
 msgid "Select tarball file"
 msgstr ""
 
-#: src/pluginmanager.cpp:4508
+#: src/pluginmanager.cpp:4515
 msgid "Error extracting import plugin tarball."
 msgstr ""
 
-#: src/pluginmanager.cpp:4509 src/pluginmanager.cpp:4518
-#: src/pluginmanager.cpp:4532 src/pluginmanager.cpp:4540
+#: src/pluginmanager.cpp:4516 src/pluginmanager.cpp:4525
+#: src/pluginmanager.cpp:4539 src/pluginmanager.cpp:4547
 msgid "OpenCPN Plugin Import Error"
 msgstr ""
 
-#: src/pluginmanager.cpp:4517
+#: src/pluginmanager.cpp:4524
 msgid "Error, import plugin tarball does not contain required metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:4531
+#: src/pluginmanager.cpp:4538
 msgid "Error processing import plugin metadata."
-msgstr ""
+msgstr "Грешка, обработвайки внесените метаданни на приставката."
 
-#: src/pluginmanager.cpp:4539
+#: src/pluginmanager.cpp:4546
 msgid "Incompatible import plugin detected."
-msgstr ""
+msgstr "Засечено несъвместимо внасяне на приставка."
 
-#: src/pluginmanager.cpp:4671
+#: src/pluginmanager.cpp:4678
 msgid "Plugin imported successfully"
-msgstr ""
+msgstr "Приставката внесена успешно"
 
-#: src/pluginmanager.cpp:4673
+#: src/pluginmanager.cpp:4680
 msgid "Active catalog updated."
-msgstr ""
+msgstr "Дейният каталог обновен."
 
-#: src/pluginmanager.cpp:4675
+#: src/pluginmanager.cpp:4682
 msgid "Plugin may be installed or updated now."
-msgstr ""
+msgstr "Приставката може да се инсталира или обнови сега."
 
-#: src/pluginmanager.cpp:4676
+#: src/pluginmanager.cpp:4683
 msgid "OpenCPN Plugin Import Successful"
-msgstr ""
+msgstr "Успешно внесена приставка OpenCPN"
 
-#: src/pluginmanager.cpp:4682
+#: src/pluginmanager.cpp:4689
 msgid "Active Catalog"
-msgstr ""
+msgstr "Деен каталог"
 
-#: src/pluginmanager.cpp:4682
+#: src/pluginmanager.cpp:4689
 msgid "Last Catalog"
-msgstr ""
+msgstr "Последен каталог"
 
-#: src/pluginmanager.cpp:4696
+#: src/pluginmanager.cpp:4703
 msgid "Last change: "
-msgstr ""
+msgstr "Последна промяна: "
 
-#: src/pluginmanager.cpp:4697
+#: src/pluginmanager.cpp:4704
 msgid "Please Update Plugin Catalog."
-msgstr ""
+msgstr "Обновете каталога на приставката."
 
-#: src/pluginmanager.cpp:5028 src/pluginmanager.cpp:5078
+#: src/pluginmanager.cpp:5035 src/pluginmanager.cpp:5085
 msgid "Enabled"
-msgstr ""
+msgstr "Включено"
 
-#: src/pluginmanager.cpp:5110 src/pluginmanager.cpp:5135
+#: src/pluginmanager.cpp:5117 src/pluginmanager.cpp:5142
 msgid "Uninstall"
-msgstr ""
-
-#: src/pluginmanager.cpp:5291
-msgid "Upgrade to Version "
-msgstr ""
+msgstr "Деинсталиране"
 
 #: src/pluginmanager.cpp:5298
+msgid "Upgrade to Version "
+msgstr "Надграждане до версия "
+
+#: src/pluginmanager.cpp:5305
 msgid "Install..."
-msgstr ""
+msgstr "Инсталиране..."
 
-#: src/pluginmanager.cpp:5304
+#: src/pluginmanager.cpp:5311
 msgid "Update to "
-msgstr ""
+msgstr "Надграждане до "
 
-#: src/pluginmanager.cpp:5527 src/update_mgr.cpp:252
+#: src/pluginmanager.cpp:5534 src/update_mgr.cpp:252
 msgid "Website"
-msgstr ""
+msgstr "Уебсайт"
 
 #: src/priority_gui.cpp:64
 msgid "Adjust Comm Priorities"
@@ -6820,27 +6978,27 @@ msgstr ""
 
 #: src/priority_gui.cpp:77
 msgid "Priority List"
-msgstr ""
+msgstr "Списък с приоритет"
 
 #: src/priority_gui.cpp:87 src/RoutePropDlgImpl.cpp:930
 msgid "Move Up"
-msgstr ""
+msgstr "Преместване нагоре"
 
 #: src/priority_gui.cpp:88 src/RoutePropDlgImpl.cpp:932
 msgid "Move Down"
-msgstr ""
+msgstr "Преместване надолу"
 
 #: src/priority_gui.cpp:97
 msgid "Refresh"
-msgstr ""
+msgstr "Опресняване"
 
 #: src/priority_gui.cpp:187
 msgid "Priorities"
-msgstr ""
+msgstr "Приоритети"
 
 #: src/priority_gui.cpp:194
 msgid "Speed/Course"
-msgstr ""
+msgstr "Скорост/курс"
 
 #: src/priority_gui.cpp:202
 msgid "Mag Variation"
@@ -6848,7 +7006,7 @@ msgstr ""
 
 #: src/priority_gui.cpp:206
 msgid "Satellites"
-msgstr ""
+msgstr "Спътници"
 
 #: src/REST_server.cpp:342
 msgid "wants to send you new data.\n"
@@ -6900,42 +7058,42 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:340
 msgid "Routes"
-msgstr ""
+msgstr "Маршрути"
 
 #: src/routemanagerdialog.cpp:363 src/routemanagerdialog.cpp:528
 #: src/routemanagerdialog.cpp:670 src/routemanagerdialog.cpp:846
 #: src/TTYWindow.cpp:65
 msgid "Filter"
-msgstr ""
+msgstr "Филтър"
 
 #: src/routemanagerdialog.cpp:377
 msgid "Show all routes"
-msgstr ""
+msgstr "Показване на всички маршрути"
 
 #: src/routemanagerdialog.cpp:414 src/routemanagerdialog.cpp:584
 msgid "Show"
-msgstr ""
+msgstr "Показване"
 
 #: src/routemanagerdialog.cpp:416
 msgid "Route Name"
-msgstr ""
+msgstr "Име на маршрута"
 
 #: src/routemanagerdialog.cpp:418
 msgid "From <-> To"
-msgstr ""
+msgstr "От <-> до"
 
 #: src/routemanagerdialog.cpp:435 src/routemanagerdialog.cpp:610
 #: src/routemanagerdialog.cpp:747
 msgid "&Properties"
-msgstr ""
+msgstr "&Свойства"
 
 #: src/routemanagerdialog.cpp:443
 msgid "&Activate"
-msgstr ""
+msgstr "&Задействане"
 
 #: src/routemanagerdialog.cpp:453 src/routemanagerdialog.cpp:754
 msgid "&Center View"
-msgstr ""
+msgstr "&Центриране на изгледа"
 
 #: src/routemanagerdialog.cpp:462
 msgid "&Reverse"
@@ -6944,12 +7102,12 @@ msgstr ""
 #: src/routemanagerdialog.cpp:468 src/routemanagerdialog.cpp:617
 #: src/routemanagerdialog.cpp:760 src/routemanagerdialog.cpp:928
 msgid "&Delete"
-msgstr ""
+msgstr "&Изтриване"
 
 #: src/routemanagerdialog.cpp:474 src/routemanagerdialog.cpp:623
 #: src/routemanagerdialog.cpp:772
 msgid "&Export selected..."
-msgstr ""
+msgstr "&Изнасяне на избраното…"
 
 #: src/routemanagerdialog.cpp:480
 msgid "&Resequence Waypoints"
@@ -6978,7 +7136,7 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:588
 msgid "Length"
-msgstr ""
+msgstr "Дължина"
 
 #: src/routemanagerdialog.cpp:604
 msgid "&Start Track"
@@ -7002,7 +7160,7 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:725
 msgid "Distance from own ship"
-msgstr ""
+msgstr "Разстояние от собствения кораб"
 
 #: src/routemanagerdialog.cpp:741
 msgid "&New"
@@ -7014,7 +7172,7 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:795
 msgid "Delete All"
-msgstr ""
+msgstr "Изтриване на всичко"
 
 #: src/routemanagerdialog.cpp:808
 msgid "I&mport GPX..."
@@ -7022,19 +7180,19 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:820
 msgid "Export All Visible..."
-msgstr ""
+msgstr "Износ на всичко видимо..."
 
 #: src/routemanagerdialog.cpp:835
 msgid "Layers"
-msgstr ""
+msgstr "Слоеве"
 
 #: src/routemanagerdialog.cpp:860
 msgid "Show all layers"
-msgstr ""
+msgstr "Показване на всички слоеве"
 
 #: src/routemanagerdialog.cpp:896
 msgid "Layer Name"
-msgstr ""
+msgstr "Име на слоя"
 
 #: src/routemanagerdialog.cpp:898
 msgid "No. of items"
@@ -7042,15 +7200,15 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:900
 msgid "Layer type"
-msgstr ""
+msgstr "Вид слой"
 
 #: src/routemanagerdialog.cpp:916
 msgid "Create Temporary layer"
-msgstr ""
+msgstr "Създаване на временен слой"
 
 #: src/routemanagerdialog.cpp:922
 msgid "Create Persistent layer"
-msgstr ""
+msgstr "Създаване на постоянен слой"
 
 #: src/routemanagerdialog.cpp:942
 msgid "Show WPT names"
@@ -7060,12 +7218,12 @@ msgstr ""
 msgid "List contents"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1230 src/routemanagerdialog.cpp:1497
+#: src/routemanagerdialog.cpp:1230 src/routemanagerdialog.cpp:1499
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1356 src/routemanagerdialog.cpp:2202
-#: src/routemanagerdialog.cpp:2657
+#: src/routemanagerdialog.cpp:1356 src/routemanagerdialog.cpp:2204
+#: src/routemanagerdialog.cpp:2659
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr ""
 
@@ -7073,96 +7231,96 @@ msgstr ""
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1578
+#: src/routemanagerdialog.cpp:1580
 msgid "Send Route(s) to OpenCPN Peer"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1618
+#: src/routemanagerdialog.cpp:1620
 msgid "Send Waypoint(s) to OpenCPN Peer"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1658
+#: src/routemanagerdialog.cpp:1660
 msgid "Send Track(s) to OpenCPN Peer"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1825
+#: src/routemanagerdialog.cpp:1827
 msgid "&Merge Selected Tracks"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1827
-msgid "Reduce Data..."
-msgstr ""
-
 #: src/routemanagerdialog.cpp:1829
+msgid "Reduce Data..."
+msgstr "Намаляване на данните..."
+
+#: src/routemanagerdialog.cpp:1831
 msgid "&Copy as text"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1858
+#: src/routemanagerdialog.cpp:1860
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1860
+#: src/routemanagerdialog.cpp:1862
 msgid "Reduce Data Precision"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1898
+#: src/routemanagerdialog.cpp:1900
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1996
+#: src/routemanagerdialog.cpp:1998
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2274
+#: src/routemanagerdialog.cpp:2276
 msgid "OpenCPN Converting Track to Route...."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2275
+#: src/routemanagerdialog.cpp:2277
 msgid "Processing Waypoints..."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2286
+#: src/routemanagerdialog.cpp:2288
 msgid "Done."
-msgstr ""
+msgstr "Готово."
 
-#: src/routemanagerdialog.cpp:2308
+#: src/routemanagerdialog.cpp:2310
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2377
+#: src/routemanagerdialog.cpp:2379
 msgid "Overruled"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2688
+#: src/routemanagerdialog.cpp:2690
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2813
+#: src/routemanagerdialog.cpp:2815
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2818
+#: src/routemanagerdialog.cpp:2820
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2982
+#: src/routemanagerdialog.cpp:2984
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2986
+#: src/routemanagerdialog.cpp:2988
 msgid "The file will also be deleted from OpenCPN's layer directory."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:3265
+#: src/routemanagerdialog.cpp:3267
 msgid "(Unnamed Layer)"
-msgstr ""
+msgstr "(безименен слой)"
 
 #: src/routeman.cpp:733 src/routeman.cpp:827
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
@@ -7220,7 +7378,7 @@ msgstr ""
 
 #: src/routeprintout.cpp:355 src/trackprintout.cpp:289
 msgid "Elements to print..."
-msgstr ""
+msgstr "Елементи за отпечатване"
 
 #: src/routeprintout.cpp:371
 msgid "Show Waypoint name."
@@ -7248,15 +7406,15 @@ msgstr ""
 
 #: src/RoutePropDlg.cpp:85 src/TrackPropDlg.cpp:690
 msgid "From"
-msgstr ""
+msgstr "От"
 
 #: src/RoutePropDlg.cpp:94 src/TrackPropDlg.cpp:699
 msgid "To"
-msgstr ""
+msgstr "До"
 
 #: src/RoutePropDlg.cpp:133
 msgid "Plan speed"
-msgstr ""
+msgstr "Планирана бързина"
 
 #: src/RoutePropDlg.cpp:152
 msgid "Enroute"
@@ -7264,11 +7422,11 @@ msgstr ""
 
 #: src/RoutePropDlg.cpp:170
 msgid "Departure"
-msgstr ""
+msgstr "Заминаване"
 
 #: src/RoutePropDlg.cpp:201 src/trackprintout.cpp:97 src/trackprintout.cpp:330
 msgid "Time"
-msgstr ""
+msgstr "Време"
 
 #: src/RoutePropDlg.cpp:206
 msgid "Local@PC"
@@ -7284,47 +7442,47 @@ msgstr ""
 
 #: src/RoutePropDlg.cpp:266 src/TrackPropDlg.cpp:514 src/TrackPropDlg.cpp:748
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: src/RoutePropDlg.cpp:272
 msgid "1 px"
-msgstr ""
+msgstr "1 пиксел"
 
 #: src/RoutePropDlg.cpp:272
 msgid "2px"
-msgstr ""
+msgstr "2 пиксела"
 
 #: src/RoutePropDlg.cpp:272
 msgid "3 px"
-msgstr ""
+msgstr "3 пиксела"
 
 #: src/RoutePropDlg.cpp:272
 msgid "4 px"
-msgstr ""
+msgstr "4 пиксела"
 
 #: src/RoutePropDlg.cpp:272
 msgid "5 px"
-msgstr ""
+msgstr "5 пиксела"
 
 #: src/RoutePropDlg.cpp:273
 msgid "6 px"
-msgstr ""
+msgstr "6 пиксела"
 
 #: src/RoutePropDlg.cpp:273
 msgid "7 px"
-msgstr ""
+msgstr "7 пиксела"
 
 #: src/RoutePropDlg.cpp:273
 msgid "8 px"
-msgstr ""
+msgstr "8 пиксела"
 
 #: src/RoutePropDlg.cpp:273
 msgid "9 px"
-msgstr ""
+msgstr "9 пиксела"
 
 #: src/RoutePropDlg.cpp:273
 msgid "10 px"
-msgstr ""
+msgstr "10 пиксела"
 
 #: src/RoutePropDlg.cpp:286
 msgid "To waypoint"
@@ -7336,7 +7494,7 @@ msgstr ""
 
 #: src/RoutePropDlg.cpp:332
 msgid "Total Distance"
-msgstr ""
+msgstr "Общо разстояние"
 
 #: src/RoutePropDlg.cpp:345
 msgid "ETE"
@@ -7361,11 +7519,11 @@ msgstr ""
 #: src/RoutePropDlg.cpp:454 src/RoutePropDlgImpl.cpp:1354
 #: src/TrackPropDlg.cpp:929 src/TrackPropDlg.cpp:1634
 msgid "Links are opened in the default browser."
-msgstr ""
+msgstr "Връзките са отворени в стандартния браузър."
 
 #: src/RoutePropDlg.cpp:490 src/TrackPropDlg.cpp:573 src/TrackPropDlg.cpp:959
 msgid "Print"
-msgstr ""
+msgstr "Отпечатване"
 
 #: src/RoutePropDlg.cpp:498 src/TrackPropDlg.cpp:588
 msgid "Extend"
@@ -7373,7 +7531,7 @@ msgstr ""
 
 #: src/RoutePropDlg.cpp:502 src/TrackPropDlg.cpp:582 src/TrackPropDlg.cpp:968
 msgid "Split"
-msgstr ""
+msgstr "Разделяне"
 
 #: src/RoutePropDlgImpl.cpp:90
 msgid "MoTwilight"
@@ -7381,15 +7539,15 @@ msgstr ""
 
 #: src/RoutePropDlgImpl.cpp:92
 msgid "Sunrise"
-msgstr ""
+msgstr "Изгрев"
 
 #: src/RoutePropDlgImpl.cpp:94
 msgid "Daytime"
-msgstr ""
+msgstr "Денем"
 
 #: src/RoutePropDlgImpl.cpp:96
 msgid "Sunset"
-msgstr ""
+msgstr "Залез"
 
 #: src/RoutePropDlgImpl.cpp:98
 msgid "EvTwilight"
@@ -7397,34 +7555,34 @@ msgstr ""
 
 #: src/RoutePropDlgImpl.cpp:100
 msgid "Nighttime"
-msgstr ""
+msgstr "Нощем"
 
 #: src/RoutePropDlgImpl.cpp:408
 msgid "Arrived"
-msgstr ""
+msgstr "Пристигнало"
 
 #: src/RoutePropDlgImpl.cpp:805 src/TrackPropDlg.cpp:351
 #: src/TrackPropDlg.cpp:1342
 msgid "Depart From"
-msgstr ""
+msgstr "Отпътуване от"
 
 #: src/RoutePropDlgImpl.cpp:807 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:772 src/TrackPropDlg.cpp:1344
 msgid "Total distance"
-msgstr ""
+msgstr "Общо разстояние"
 
 #: src/RoutePropDlgImpl.cpp:808
 msgid "Speed (Kts)"
-msgstr ""
+msgstr "Скорост (възли)"
 
 #: src/RoutePropDlgImpl.cpp:810 src/TrackPropDlg.cpp:1347
 msgid "Departure Time"
-msgstr ""
+msgstr "Час на отпътуване"
 
 #: src/RoutePropDlgImpl.cpp:812 src/TrackPropDlg.cpp:791
 #: src/TrackPropDlg.cpp:1349
 msgid "Time enroute"
-msgstr ""
+msgstr "Време на пътя"
 
 #: src/RoutePropDlgImpl.cpp:857
 msgid "Are you sure you want to move Up this waypoint?"
@@ -7456,15 +7614,15 @@ msgstr ""
 
 #: src/RoutePropDlgImpl.cpp:1167
 msgid "Invalid date/time!"
-msgstr ""
+msgstr "Невалиден дата или час!"
 
 #: src/RoutePropDlgImpl.cpp:1171
 msgid "Unknown station!"
-msgstr ""
+msgstr "Незнайна станция!"
 
 #: src/RoutePropDlgImpl.cpp:1186
 msgid "Unavailable: "
-msgstr ""
+msgstr "Неналично: "
 
 #: src/RoutePropDlgImpl.cpp:1195
 msgid "Local"
@@ -7472,7 +7630,7 @@ msgstr ""
 
 #: src/RoutePropDlgImpl.cpp:1352 src/TrackPropDlg.cpp:1631
 msgid "Links are opened for editing."
-msgstr ""
+msgstr "Връзките са отворени за редактиране."
 
 #: src/s57chart.cpp:3839
 msgid "S57 Cell Update chain incomplete.\n"
@@ -7482,7 +7640,7 @@ msgstr ""
 
 #: src/s57chart.cpp:5761
 msgid "this file is not available"
-msgstr ""
+msgstr "този файл не е наличен"
 
 #: src/s57chart.cpp:5792
 msgid "Period ends: "
@@ -7500,7 +7658,7 @@ msgstr ""
 msgid "Date starting: "
 msgstr ""
 
-#: src/s57chart.cpp:5906
+#: src/s57chart.cpp:5907
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
 
@@ -7512,7 +7670,7 @@ msgstr ""
 
 #: src/safe_mode.cpp:63
 msgid "Safe restart"
-msgstr ""
+msgstr "Безопасен рестарт"
 
 #: src/SencManager.cpp:158 src/SencManager.cpp:190
 msgid "Preparing vector chart  "
@@ -7528,7 +7686,7 @@ msgstr ""
 
 #: src/SendToGpsDlg.cpp:190 src/SendToPeerDlg.cpp:154
 msgid "Progress..."
-msgstr ""
+msgstr "Напредък..."
 
 #: src/SendToPeerDlg.cpp:112
 msgid "Detected OpenCPN peer instances"
@@ -7536,7 +7694,7 @@ msgstr ""
 
 #: src/SendToPeerDlg.cpp:137
 msgid "Scan again"
-msgstr ""
+msgstr "Повторно сканиране"
 
 #: src/tcmgr.cpp:691
 msgid "It seems you have no tide/current harmonic data installed."
@@ -7556,7 +7714,7 @@ msgstr ""
 
 #: src/TCWin.cpp:152
 msgid "Next"
-msgstr ""
+msgstr "Напред"
 
 #: src/TCWin.cpp:155
 msgid "LMT@Station"
@@ -7568,7 +7726,7 @@ msgstr ""
 
 #: src/TCWin.cpp:267
 msgid "Data Source :"
-msgstr ""
+msgstr "Източник на данните :"
 
 #: src/TCWin.cpp:658
 msgid "HW"
@@ -7580,56 +7738,56 @@ msgstr ""
 
 #: src/TCWin.cpp:863
 msgid "Today"
-msgstr ""
+msgstr "днес"
 
 #: src/TCWin.cpp:865 src/TCWin.cpp:870
 msgid "Tomorrow"
-msgstr ""
+msgstr "утре"
 
-#: src/toolbar.cpp:1175
+#: src/toolbar.cpp:1173
 msgid "Shift to Larger Scale Chart"
 msgstr ""
 
-#: src/toolbar.cpp:1183
+#: src/toolbar.cpp:1181
 msgid "Shift to Smaller Scale Chart"
 msgstr ""
 
-#: src/toolbar.cpp:1216
+#: src/toolbar.cpp:1214
 msgid "Hide ENC text"
 msgstr ""
 
-#: src/toolbar.cpp:1542 src/toolbar.cpp:1556 src/toolbar.cpp:1571
+#: src/toolbar.cpp:1540 src/toolbar.cpp:1554 src/toolbar.cpp:1569
 msgid "ToolTips"
-msgstr ""
+msgstr "Подсказки"
 
-#: src/toolbar.cpp:3056
+#: src/toolbar.cpp:3054
 msgid "No, I don't want to hide it."
-msgstr ""
+msgstr "Не, не желая да го скривам."
 
-#: src/toolbar.cpp:3060
+#: src/toolbar.cpp:3058
 msgid "No, and permanently remove the option to hide it."
-msgstr ""
+msgstr "Не, а и премахнете за постоянно възможността за скриване."
 
-#: src/toolbar.cpp:3064
+#: src/toolbar.cpp:3062
 msgid "Yes, hide it."
-msgstr ""
+msgstr "Да, скрийте го."
 
-#: src/toolbar.cpp:3071
+#: src/toolbar.cpp:3069
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 
-#: src/toolbar.cpp:3157
+#: src/toolbar.cpp:3155
 msgid "Choose Toolbar Icons"
 msgstr ""
 
 #: src/trackprintout.cpp:335
 msgid "Show Time."
-msgstr ""
+msgstr "Показване на времето."
 
 #: src/trackprintout.cpp:344
 msgid "Show Speed."
-msgstr ""
+msgstr "Показване на бързината."
 
 #: src/trackprintout.cpp:400
 msgid "Track Print"
@@ -7637,11 +7795,11 @@ msgstr ""
 
 #: src/TrackPropDlg.cpp:308
 msgid "Timestamp"
-msgstr ""
+msgstr "Времево клеймо"
 
 #: src/TrackPropDlg.cpp:403 src/TrackPropDlg.cpp:782
 msgid "Avg. speed"
-msgstr ""
+msgstr "Средна скорост"
 
 #: src/TrackPropDlg.cpp:416
 msgid "Time Enroute"
@@ -7657,63 +7815,63 @@ msgstr ""
 
 #: src/TrackPropDlg.cpp:447 src/TrackPropDlg.cpp:811
 msgid "Time shown as"
-msgstr ""
+msgstr "Показвано време като"
 
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:753
 msgid "1 pixel"
-msgstr ""
+msgstr "1 пиксел"
 
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:753
 msgid "2 pixels"
-msgstr ""
+msgstr "2 пиксела"
 
 #: src/TrackPropDlg.cpp:519 src/TrackPropDlg.cpp:754
 msgid "3 pixels"
-msgstr ""
+msgstr "3 пиксела"
 
 #: src/TrackPropDlg.cpp:519 src/TrackPropDlg.cpp:754
 msgid "4 pixels"
-msgstr ""
+msgstr "4 пиксела"
 
 #: src/TrackPropDlg.cpp:519 src/TrackPropDlg.cpp:754
 msgid "5 pixels"
-msgstr ""
+msgstr "5 пиксела"
 
 #: src/TrackPropDlg.cpp:520 src/TrackPropDlg.cpp:755
 msgid "6 pixels"
-msgstr ""
+msgstr "6 пиксела"
 
 #: src/TrackPropDlg.cpp:520 src/TrackPropDlg.cpp:755
 msgid "7 pixels"
-msgstr ""
+msgstr "7 пиксела"
 
 #: src/TrackPropDlg.cpp:520 src/TrackPropDlg.cpp:755
 msgid "8 pixels"
-msgstr ""
+msgstr "8 пиксела"
 
 #: src/TrackPropDlg.cpp:521 src/TrackPropDlg.cpp:756
 msgid "9 pixels"
-msgstr ""
+msgstr "9 пиксела"
 
 #: src/TrackPropDlg.cpp:521 src/TrackPropDlg.cpp:756
 msgid "10 pixels"
-msgstr ""
+msgstr "10 пиксела"
 
 #: src/TrackPropDlg.cpp:593 src/TrackPropDlg.cpp:979
 msgid "To route"
-msgstr ""
+msgstr "Към маршрута"
 
 #: src/TrackPropDlg.cpp:710
 msgid "Display parameters"
-msgstr ""
+msgstr "Параметри на показ"
 
 #: src/TrackPropDlg.cpp:765
 msgid "Statistics"
-msgstr ""
+msgstr "Статистика"
 
 #: src/TrackPropDlg.cpp:805
 msgid "Recorded points"
-msgstr ""
+msgstr "Записани точки"
 
 #: src/TrackPropDlg.cpp:825
 msgid "LMT @ Track Start"
@@ -7725,11 +7883,11 @@ msgstr ""
 
 #: src/TrackPropDlg.cpp:984
 msgid "Export"
-msgstr ""
+msgstr "Изнасяне"
 
 #: src/TrackPropDlg.cpp:1347
 msgid "(m/d/y h:m)"
-msgstr ""
+msgstr "(м/д/г час:мин)"
 
 #: src/TrackPropDlg.cpp:1451
 msgid "track"
@@ -7741,12 +7899,7 @@ msgstr ""
 
 #: src/TTYWindow.cpp:73
 msgid "Legend"
-msgstr ""
-
-#: src/TTYWindow.cpp:84 src/TTYWindow.cpp:184 libs/wxcurl/src/dialog.cpp:250
-#: libs/wxcurl/src/dialog.cpp:420
-msgid "Pause"
-msgstr ""
+msgstr "Легенда"
 
 #: src/TTYWindow.cpp:88
 msgid "Copy NMEA Debug window to clipboard."
@@ -7754,7 +7907,7 @@ msgstr ""
 
 #: src/TTYWindow.cpp:140
 msgid "Message accepted"
-msgstr ""
+msgstr "Съобщението прието"
 
 #: src/TTYWindow.cpp:148
 msgid "Input message filtered, output message filtered and dropped"
@@ -7772,9 +7925,83 @@ msgstr ""
 msgid "Information Message or Message with errors"
 msgstr ""
 
-#: src/TTYWindow.cpp:179 libs/wxcurl/src/dialog.cpp:410
-msgid "Resume"
+#: src/udev_rule_mgr.cpp:47
+msgid "\n"
+"An OpenCPN dongle is detected but cannot be used due to missing permissions.\n\n"
+"This problem can be fixed by installing a udev rules file. Once installed,\n"
+"it will ensure that the dongle permissions are OK.\n"
 msgstr ""
+
+#: src/udev_rule_mgr.cpp:54
+msgid "\n\n"
+"On flatpak, this must be done using the manual command instructions below\n"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:59
+msgid "\n"
+"The device @DEVICE@ exists but cannot be used due to missing permissions.\n\n"
+"This problem can be fixed by installing a udev rules file. Once installed,\n"
+"the rules file will fix the permissions problem.\n\n"
+"It will also create a new device called @SYMLINK@. It is recommended to use\n"
+"@SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,\n"
+"in particular on laptops.\n"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:71
+msgid "Do not show this dialog next time"
+msgstr "Без ново показване на този диалогов прозорец"
+
+#: src/udev_rule_mgr.cpp:73
+msgid "\n"
+"Rule successfully installed. To activate the new rule:\n"
+"- Exit opencpn.\n"
+"- Unplug and re-insert the USB device.\n"
+"- Restart opencpn\n"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:80
+msgid "\n"
+"To do after installing the rule according to instructions:\n"
+"- Exit opencpn.\n"
+"- Unplug and re-insert the USB device.\n"
+"- Restart opencpn\n"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:88
+msgid "The device @device@ can not be found (disconnected?)"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:159
+msgid "Manual command line instructions"
+msgstr "Указания за ръчен комаден ред"
+
+#: src/udev_rule_mgr.cpp:197
+msgid "Review rule"
+msgstr "Преглед на правило"
+
+#: src/udev_rule_mgr.cpp:263
+msgid "Install rule"
+msgstr "Нагласяване на правило"
+
+#: src/udev_rule_mgr.cpp:268
+msgid "Quit"
+msgstr "Изход"
+
+#: src/udev_rule_mgr.cpp:289
+msgid "Errors encountered installing rule."
+msgstr "Възникнаха грешки нагласяйки правило."
+
+#: src/udev_rule_mgr.cpp:304
+msgid "Manage dongle udev rule"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:346
+msgid "Manage device udev rule"
+msgstr ""
+
+#: src/udev_rule_mgr.cpp:374
+msgid "OpenCPN device error"
+msgstr "Грешка на устройството OpenCPN"
 
 #: src/undo.cpp:84
 msgid "Delete Waypoint"
@@ -7786,106 +8013,5 @@ msgstr ""
 
 #: src/update_mgr.cpp:403
 msgid "Dismiss"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:137
-msgid "Not available"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:168
-msgid "URL:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:187
-msgid "Speed:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:196
-msgid "Elapsed time:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:198
-msgid "Estimated total time:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:200
-msgid "Estimated remaining time:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:243 libs/wxcurl/src/dialog.cpp:399
-msgid "Abort"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:245
-msgid "Settings"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:252
-msgid "Start"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:413
-msgid "0 (transfer paused)"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:461
-msgid "Connection settings"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:461
-msgid "Connection settings used for the transfer:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:516
-msgid "0 (transfer completed)"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:537
-msgid "Downloaded:"
-msgstr ""
-
-#: libs/wxcurl/src/dialog.cpp:585
-msgid "Uploaded:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:111
-msgid "Username:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:112
-msgid "Password:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:120
-msgid "Port:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:134
-msgid "Proxy settings"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:136
-msgid "Use proxy"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:141
-msgid "Proxy host:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:142
-msgid "Proxy username:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:143
-msgid "Proxy password:"
-msgstr ""
-
-#: libs/wxcurl/src/panel.cpp:144
-msgid "Proxy port:"
-msgstr ""
-
-#: libs/s52plib/src/s52plib.cpp:2170 libs/s52plib/src/s52plib.cpp:2274
-#: libs/s52plib/src/s52plib.cpp:2443
-msgid "ChartTexts"
-msgstr ""
+msgstr "Отхвърляне"
 
