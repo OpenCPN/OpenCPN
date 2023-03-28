@@ -135,8 +135,10 @@ bool CommDriverN0183Serial::Open() {
 
 #ifndef __ANDROID__
     //    Kick off the  RX thread
-    SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_baudrate));
-    std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
+    m_secondary_thread = new CommDriverN0183SerialThread(this);
+    m_secondary_thread->SetParams(comx, m_baudrate);
+
+    std::thread t(&CommDriverN0183SerialThread::Entry, m_secondary_thread);
     t.detach();
 #else
     androidStartUSBSerial(comx, m_baudrate, this);
@@ -232,11 +234,11 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   androidWriteSerial(port, payload);
   return true;
 #else
-  if (GetSecondaryThread()) {
+  if (m_secondary_thread) {
     if (IsSecThreadActive()) {
       int retry = 10;
       while (retry) {
-        if (GetSecondaryThread()->SetOutMsg(sentence))
+        if (m_secondary_thread->SetOutMsg(sentence))
           return true;
         else
           retry--;

@@ -40,9 +40,9 @@ class CommDriverN0183Serial;
 /** Nmea0183 serial IO thread. */
 class CommDriverN0183SerialThread {
 public:
-  CommDriverN0183SerialThread(CommDriverN0183Serial* Launcher,
-                              const wxString& PortName,
-                              const wxString& strBaudRate);
+  CommDriverN0183SerialThread(CommDriverN0183Serial* Launcher);
+
+  void SetParams(const wxString& PortName, const wxString& strBaudRate);
 
   ~CommDriverN0183SerialThread(void);
   void* Entry();
