@@ -116,58 +116,6 @@ private:
 };
 #endif
 
-template <class T>
-class circular_buffer {
-public:
-  explicit circular_buffer(size_t size)
-      : buf_(std::unique_ptr<T[]>(new T[size])), max_size_(size) {}
-
-  void reset();
-  size_t capacity() const;
-  size_t size() const;
-
-  bool empty() const {
-    // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
-  }
-
-  bool full() const {
-    // If tail is ahead the head by 1, we are full
-    return full_;
-  }
-
-  void put(T item) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    buf_[head_] = item;
-    if (full_) tail_ = (tail_ + 1) % max_size_;
-
-    head_ = (head_ + 1) % max_size_;
-
-    full_ = head_ == tail_;
-  }
-
-  T get() {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (empty()) return T();
-
-    // Read data and advance the tail (we now have a free space)
-    auto val = buf_[tail_];
-    full_ = false;
-    tail_ = (tail_ + 1) % max_size_;
-
-    return val;
-  }
-
-private:
-  std::mutex mutex_;
-  std::unique_ptr<T[]> buf_;
-  size_t head_ = 0;
-  size_t tail_ = 0;
-  const size_t max_size_;
-  bool full_ = 0;
-};
-
 CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
@@ -459,8 +407,7 @@ void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   m_parent_driver->SetSecThreadActive();  // I am alive
   wxString msg;
-  circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
-  std::vector<uint8_t> tmp_vec;
+  LineBuffer line_buf;
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_port_name, m_baud)) {
@@ -478,7 +425,7 @@ void* CommDriverN0183SerialThread::Entry() {
   m_send_retries = 0;
 
   while ((not_done) && (m_parent_driver->m_Thread_run_flag > 0)) {
-    if (m_parent_driver->m_Thread_run_flag == 0) goto thread_exit;
+    if (m_parent_driver->m_Thread_run_flag == 0) break;
 
     uint8_t next_byte = 0;
     unsigned int newdata = 0;
@@ -486,10 +433,9 @@ void* CommDriverN0183SerialThread::Entry() {
 
     if (m_serial.isOpen()) {
       try {
-        newdata = m_serial.read(rdata, 200);
-      } catch (std::exception&) {
-        //        std::cerr << "Serial read exception: " << e.what() <<
-        //        std::endl;
+        newdata = m_serial.read(rdata, sizeof(rdata));
+      } catch (std::exception& e) {
+        DEBUG_LOG << "Serial read exception: " << e.what();
         if (10 < m_send_retries++) {
           // We timed out waiting for the next character 10 times, let's close
           // the port so that the reconnection logic kicks in and tries to fix
@@ -510,49 +456,22 @@ void* CommDriverN0183SerialThread::Entry() {
         m_send_retries++;
     }
 
-    if (newdata > 0) {
-      for (unsigned int i = 0; i < newdata; i++) circle.put(rdata[i]);
+    // Handle received data
+    for (unsigned i = 0; i < newdata; i++) line_buf.Put(rdata[i]);
+    while (line_buf.HasLine()) {
+      auto payload = std::make_shared<std::vector<uint8_t>>(line_buf.GetLine());
+      //    Message is ready to parse and send out
+      //    Messages may be coming in as <blah blah><lf><cr>.
+      //    One example device is KVH1000 heading sensor.
+      //    If that happens, the first character of a new captured message
+      //    will the <cr>, and we need to discard it. This is out of spec,
+      //    but we should handle it anyway
+      if (payload->at(0) == '\r') payload->erase(payload->begin());
+
+      CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+      Nevent.SetPayload(payload);
+      m_parent_driver->AddPendingEvent(Nevent);
     }
-
-    // Process the queue until empty
-    while (!circle.empty()) {
-      if (m_parent_driver->m_Thread_run_flag == 0) goto thread_exit;
-
-      uint8_t take_byte = circle.get();
-      while ((take_byte != 0x0a) && !circle.empty()) {
-        tmp_vec.push_back(take_byte);
-        take_byte = circle.get();
-      }
-
-      if (circle.empty() && take_byte != 0x0a) {
-        tmp_vec.push_back(take_byte);
-        break;
-      }
-
-      if (take_byte == 0x0a) {
-        tmp_vec.push_back(take_byte);
-
-        //    Copy the message into a vector for transmittal upstream
-        auto buffer = std::make_shared<std::vector<unsigned char>>();
-        std::vector<unsigned char>* vec = buffer.get();
-
-        for (size_t i = 0; i < tmp_vec.size(); i++)
-          vec->push_back(tmp_vec.at(i));
-
-        //    Message is ready to parse and send out
-        //    Messages may be coming in as <blah blah><lf><cr>.
-        //    One example device is KVH1000 heading sensor.
-        //    If that happens, the first character of a new captured message
-        //    will the <cr>, and we need to discard it. This is out of spec,
-        //    but we should handle it anyway
-        if (vec->at(0) == '\r') vec->erase(vec->begin());
-
-        CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-        Nevent.SetPayload(buffer);
-        m_parent_driver->AddPendingEvent(Nevent);
-        tmp_vec.clear();
-      }
-    }  // while
 
     //  Handle pending output messages
     std::string qmsg;
@@ -566,7 +485,6 @@ void* CommDriverN0183SerialThread::Entry() {
     }
   }
 
-thread_exit:
   CloseComPortPhysical();
   m_parent_driver->SetSecThreadInActive();  // I am dead
   m_parent_driver->m_Thread_run_flag = -1;
