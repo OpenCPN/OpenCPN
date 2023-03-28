@@ -40,9 +40,9 @@ class CommDriverN0183Serial;
 /** Nmea0183 serial IO thread. */
 class CommDriverN0183SerialThread {
 public:
-  CommDriverN0183SerialThread(CommDriverN0183Serial* Launcher);
+  CommDriverN0183SerialThread(CommDriverN0183Serial* launcher);
 
-  void SetParams(const wxString& PortName, const wxString& strBaudRate);
+  void SetParams(const wxString& portname, const wxString& str_baudrate);
 
   ~CommDriverN0183SerialThread(void);
   void* Entry();
@@ -65,12 +65,9 @@ private:
   void CloseComPortPhysical();
   ssize_t WriteComPortPhysical(const char* msg);
 
-  CommDriverN0183Serial* m_pParentDriver;
-  wxString m_PortName;
-  wxString m_FullPortName;
-
+  CommDriverN0183Serial* m_parent_driver;
+  wxString m_portname;
   int m_baud;
-
   OutputBuffer m_out_que;
 };
 

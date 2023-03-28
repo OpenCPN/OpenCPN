@@ -76,7 +76,7 @@ public:
                    std::shared_ptr<const NavAddr> addr) override;
 
 private:
-  void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
+  void HandleN0183Msg(CommDriverN0183SerialEvent& event);
 
   std::string m_portstring;
   std::string m_baudrate;
