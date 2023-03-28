@@ -171,6 +171,7 @@ set(SRC
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
+  ${MODEL_SRC_DIR}/ipc_factories.cpp
   ${MODEL_SRC_DIR}/local_api.cpp
   ${MODEL_SRC_DIR}/logger.cpp
   ${MODEL_SRC_DIR}/mDNS_query.cpp
@@ -210,9 +211,10 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-#if (NOT QT_ANDROID)
-  list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
-#endif ()
+if (NOT QT_ANDROID)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/n0183_comm_mgr.h)
+  list(APPEND SRC ${MODEL_SRC_DIR}/n0183_comm_mgr.cpp)
+endif ()
 
 if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
