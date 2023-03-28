@@ -106,7 +106,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
   this->attributes["ioDirection"] = s_iosel;
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
+  Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::HandleN0183Msg,
        this);
 
   Open();
@@ -153,8 +153,8 @@ void CommDriverN0183Serial::Close() {
   // the secondary thread may not stop quickly enough.
   // It can then crash trying to send an event to its "parent".
 
-  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL,
-         &CommDriverN0183Serial::handle_N0183_MSG, this);
+  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::HandleN0183Msg,
+         this);
 
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
@@ -237,8 +237,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 #endif
 }
 
-void CommDriverN0183Serial::handle_N0183_MSG(
-    CommDriverN0183SerialEvent& event) {
+void CommDriverN0183Serial::HandleN0183Msg(CommDriverN0183SerialEvent& event) {
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
   if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
