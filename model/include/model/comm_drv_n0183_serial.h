@@ -74,13 +74,6 @@ public:
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
 
-  void SetSecondaryThread(CommDriverN0183SerialThread* secondary_Thread) {
-    m_secondary_thread = secondary_Thread;
-  }
-  CommDriverN0183SerialThread* GetSecondaryThread() {
-    return m_secondary_thread;
-  }
-
   ConnectionParams GetParams() const { return m_params; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,

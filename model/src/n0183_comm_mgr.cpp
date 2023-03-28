@@ -49,16 +49,19 @@
 #include "serial/serial.h"
 
 CommDriverN0183SerialThread::CommDriverN0183SerialThread(
-    CommDriverN0183Serial* Launcher, const wxString& PortName,
-    const wxString& strBaudRate) {
+    CommDriverN0183Serial* Launcher) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
+  m_PortName = "undefined";
+  m_FullPortName = "Serial:" + m_PortName;
+  m_baud = 4800;
+}
 
+void CommDriverN0183SerialThread::SetParams(const wxString& PortName,
+                                            const wxString& strBaudRate) {
   m_PortName = PortName;
   m_FullPortName = "Serial:" + PortName;
-
-  m_baud = 4800;  // default
   long lbaud;
-  if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
+  if (strBaudRate.ToLong(&lbaud)) m_baud = static_cast<int>(lbaud);
 }
 
 CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
