@@ -50,16 +50,14 @@
 
 CommDriverN0183SerialThread::CommDriverN0183SerialThread(
     CommDriverN0183Serial* Launcher) {
-  m_pParentDriver = Launcher;  // This thread's immediate "parent"
-  m_PortName = "undefined";
-  m_FullPortName = "Serial:" + m_PortName;
+  m_parent_driver = Launcher;  // This thread's immediate "parent"
+  m_portname = "undefined";
   m_baud = 4800;
 }
 
-void CommDriverN0183SerialThread::SetParams(const wxString& PortName,
+void CommDriverN0183SerialThread::SetParams(const wxString& portname,
                                             const wxString& strBaudRate) {
-  m_PortName = PortName;
-  m_FullPortName = "Serial:" + PortName;
+  m_portname = portname;
   long lbaud;
   if (strBaudRate.ToLong(&lbaud)) m_baud = static_cast<int>(lbaud);
 }
@@ -123,9 +121,9 @@ void* CommDriverN0183SerialThread::Entry() {
   LineBuffer line_buf;
 
   //    Request the com port from the comm manager
-  if (!OpenComPortPhysical(m_PortName, m_baud)) {
+  if (!OpenComPortPhysical(m_portname, m_baud)) {
     wxString msg("NMEA input device open failed: ");
-    msg.Append(m_PortName);
+    msg.Append(m_portname);
     ThreadMessage(msg);
     // goto thread_exit; // This means we will not be trying to connect = The
     // device must be connected when the thread is created. Does not seem to be
@@ -160,7 +158,7 @@ void* CommDriverN0183SerialThread::Entry() {
       // std::cerr << "Serial port seems closed." << std::endl;
       wxMilliSleep(250 * retries);
       CloseComPortPhysical();
-      if (OpenComPortPhysical(m_PortName, m_baud))
+      if (OpenComPortPhysical(m_portname, m_baud))
         retries = 0;
       else if (retries < 10)
         retries++;
@@ -172,7 +170,7 @@ void* CommDriverN0183SerialThread::Entry() {
       auto payload = std::make_shared<std::vector<uint8_t>>(line_buf.GetLine());
       CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
       Nevent.SetPayload(payload);
-      m_pParentDriver->AddPendingEvent(Nevent);
+      m_parent_driver->AddPendingEvent(Nevent);
     }
 
     //  Handle pending output messages
