@@ -31,6 +31,7 @@
 #include "model/comm_out_queue.h"
 #include "model/conn_params.h"
 #include "model/garmin_protocol_mgr.h"
+#include "model/n0183_comm_mgr.h"
 
 class CommDriverN0183SerialThread;  // Internal
 
@@ -67,9 +68,9 @@ public:
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_sec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_sec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_sec_thread_active; }
+  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
+  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
+  bool IsSecThreadActive() const { return m_bsec_thread_active; }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
@@ -85,8 +86,8 @@ private:
   std::string m_baudrate;
   int m_handshake;
 
-  CommDriverN0183SerialThread* m_secondary_thread;
-  bool m_sec_thread_active;
+  CommDriverN0183SerialThread m_secondary_thread;
+  bool m_bsec_thread_active;
 
   GarminProtocolHandler* m_garmin_handler;
 
