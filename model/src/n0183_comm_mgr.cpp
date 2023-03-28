@@ -64,8 +64,6 @@ void CommDriverN0183SerialThread::SetParams(const wxString& portname,
 
 CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
 
-void CommDriverN0183SerialThread::OnExit(void) {}
-
 bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
                                                       int baud_rate) {
   try {

@@ -45,9 +45,12 @@ public:
   void SetParams(const wxString& portname, const wxString& str_baudrate);
 
   ~CommDriverN0183SerialThread(void);
+
+  /** Thread main function. */
   void* Entry();
+
+  /** Send a message to remote peer. */
   bool SetOutMsg(const wxString& msg);
-  void OnExit(void);
 
   /** Unset thread "keep going" flag i. e., initiate stop sequence. */
   void Stop() { keep_going = 0; }
