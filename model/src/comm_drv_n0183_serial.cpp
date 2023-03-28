@@ -88,14 +88,11 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
-      m_ok(false),
       m_portstring(params->GetDSPort()),
       m_secondary_thread(this),
       m_params(*params),
-      m_listener(listener),
-      m_out_queue(std::unique_ptr<CommOutQueue>(new MeasuredCommOutQueue(12))) {
+      m_listener(listener) {
   m_baudrate = wxString::Format("%i", params->Baudrate);
-  SetSecThreadInActive();
   m_garmin_handler = NULL;
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
@@ -175,8 +172,6 @@ void CommDriverN0183Serial::Close() {
       wxLogMessage("Not Stopped after 10 sec.");
   }
 
-  m_bsec_thread_active = false;
-
   //  Kill off the Garmin handler, if alive
   if (m_garmin_handler) {
     m_garmin_handler->Close();
@@ -229,7 +224,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   androidWriteSerial(port, payload);
   return true;
 #else
-  if (IsSecThreadActive()) {
+  if (!m_secondary_thread.IsStopped()) {
     for (int retries = 0; retries < 10; retries += 1) {
       if (m_secondary_thread.SetOutMsg(sentence)) {
         return true;

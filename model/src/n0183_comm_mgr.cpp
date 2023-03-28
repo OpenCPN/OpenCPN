@@ -120,7 +120,6 @@ ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(const char* msg) {
 }
 
 void* CommDriverN0183SerialThread::Entry() {
-  m_pParentDriver->SetSecThreadActive();  // I am alive
   LineBuffer line_buf;
 
   //    Request the com port from the comm manager
@@ -190,7 +189,6 @@ void* CommDriverN0183SerialThread::Entry() {
   }
 
   CloseComPortPhysical();
-  m_pParentDriver->SetSecThreadInActive();
   keep_going = -1;  // I am dead
   return 0;
 }
