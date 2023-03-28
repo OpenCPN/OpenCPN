@@ -80,9 +80,6 @@ public:
   CommDriverN0183SerialThread* GetSecondaryThread() {
     return m_secondary_thread;
   }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
-
-  std::atomic_int m_Thread_run_flag;
 
   ConnectionParams GetParams() const { return m_params; }
 

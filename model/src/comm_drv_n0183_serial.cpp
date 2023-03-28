@@ -88,7 +88,6 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
-      m_Thread_run_flag(-1),
       m_ok(false),
       m_portstring(params->GetDSPort()),
       m_secondary_thread(NULL),
@@ -137,7 +136,6 @@ bool CommDriverN0183Serial::Open() {
 #ifndef __ANDROID__
     //    Kick off the  RX thread
     SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_baudrate));
-    SetThreadRunFlag(1);
     std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
     t.detach();
 #else
@@ -163,21 +161,18 @@ void CommDriverN0183Serial::Close() {
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
   if (m_secondary_thread) {
-    if (m_sec_thread_active)  // Try to be sure thread object is still alive
-    {
+    if (!m_secondary_thread->IsStopped()) {
       wxLogMessage("Stopping Secondary Thread");
 
-      m_Thread_run_flag = 0;
+      m_secondary_thread->Stop();
 
       int tsec = 10;
-      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+      while (!m_secondary_thread->IsStopped() && (tsec--)) wxSleep(1);
 
-      wxString msg;
-      if (m_Thread_run_flag < 0)
-        msg.Printf("Stopped in %d sec.", 10 - tsec);
+      if (m_secondary_thread->IsStopped())
+        wxLogMessage("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf("Not Stopped after 10 sec.");
-      wxLogMessage(msg);
+        wxLogMessage("Not Stopped after 10 sec.");
     }
 
     delete m_secondary_thread;
