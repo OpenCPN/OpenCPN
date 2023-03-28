@@ -12,6 +12,7 @@ include/RoutePropDlg.h
 include/RoutePropDlgImpl.h
 include/S57QueryDialog.h
 include/SendToGpsDlg.h
+include/SendToPeerDlg.h
 include/track.h
 include/trackprintout.h
 include/TrackPropDlg.h
