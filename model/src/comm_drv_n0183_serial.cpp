@@ -90,7 +90,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_secondary_thread(NULL),
+      m_secondary_thread(this),
       m_params(*params),
       m_listener(listener),
       m_out_queue(std::unique_ptr<CommOutQueue>(new MeasuredCommOutQueue(12))) {
@@ -135,10 +135,9 @@ bool CommDriverN0183Serial::Open() {
 
 #ifndef __ANDROID__
     //    Kick off the  RX thread
-    m_secondary_thread = new CommDriverN0183SerialThread(this);
-    m_secondary_thread->SetParams(comx, m_baudrate);
+    m_secondary_thread.SetParams(comx, m_baudrate);
 
-    std::thread t(&CommDriverN0183SerialThread::Entry, m_secondary_thread);
+    std::thread t(&CommDriverN0183SerialThread::Entry, &m_secondary_thread);
     t.detach();
 #else
     androidStartUSBSerial(comx, m_baudrate, this);
@@ -162,25 +161,21 @@ void CommDriverN0183Serial::Close() {
 
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
-  if (m_secondary_thread) {
-    if (!m_secondary_thread->IsStopped()) {
-      wxLogMessage("Stopping Secondary Thread");
+  if (!m_secondary_thread.IsStopped()) {
+    wxLogMessage("Stopping Secondary Thread");
 
-      m_secondary_thread->Stop();
+    m_secondary_thread.Stop();
 
-      int tsec = 10;
-      while (!m_secondary_thread->IsStopped() && (tsec--)) wxSleep(1);
+    int tsec = 10;
+    while (!m_secondary_thread.IsStopped() && (tsec--)) wxSleep(1);
 
-      if (m_secondary_thread->IsStopped())
-        wxLogMessage("Stopped in %d sec.", 10 - tsec);
-      else
-        wxLogMessage("Not Stopped after 10 sec.");
-    }
-
-    delete m_secondary_thread;
-    m_secondary_thread = NULL;
-    m_sec_thread_active = false;
+    if (m_secondary_thread.IsStopped())
+      wxLogMessage("Stopped in %d sec.", 10 - tsec);
+    else
+      wxLogMessage("Not Stopped after 10 sec.");
   }
+
+  m_bsec_thread_active = false;
 
   //  Kill off the Garmin handler, if alive
   if (m_garmin_handler) {
@@ -234,20 +229,16 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   androidWriteSerial(port, payload);
   return true;
 #else
-  if (m_secondary_thread) {
-    if (IsSecThreadActive()) {
-      int retry = 10;
-      while (retry) {
-        if (m_secondary_thread->SetOutMsg(sentence))
-          return true;
-        else
-          retry--;
+  if (IsSecThreadActive()) {
+    for (int retries = 0; retries < 10; retries += 1) {
+      if (m_secondary_thread.SetOutMsg(sentence)) {
+        return true;
       }
-      return false;  // could not send after several tries....
-    } else
-      return false;
+    }
+    return false;  // could not send after several tries....
+  } else {
+    return false;
   }
-  return true;
 #endif
 }
 
