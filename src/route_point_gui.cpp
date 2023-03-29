@@ -447,7 +447,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 #else
       wxScreenDC sdc;
       sdc.SetFont(*m_point.m_pMarkFont);
-      sdc.GetTextExtent(m_point.m_MarkName, &w, &h, NULL, NULL, m_point.m_pMarkFont);
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -499,6 +498,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
                    m_point.m_iTextTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
                       data);
+
+      delete[] data;
 
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
