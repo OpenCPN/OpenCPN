@@ -291,7 +291,7 @@ public:
   wxScrolledWindow *AddPage(size_t parent, const wxString &title);
   bool DeletePluginPage(wxScrolledWindow *page);
   void SetColorScheme(ColorScheme cs);
-  void RecalculateSize(void);
+  void RecalculateSize(int hint_x, int hint_y);
 
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
   void SetInitialSettings(void);
