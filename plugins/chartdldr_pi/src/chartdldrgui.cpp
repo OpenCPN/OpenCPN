@@ -890,7 +890,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   sbSizerBehavior->SetMinSize(-1, 200);
 
   m_stPreselect = new wxStaticText(
-      this, wxID_ANY, _("After catalog update select for download"),
+      scrollWin, wxID_ANY, _("After catalog update select for download"),
       wxDefaultPosition, wxDefaultSize, 0);
   m_stPreselect->Wrap(-1);
   sbSizerBehavior->Add(m_stPreselect, 0, wxALL, 5);
