@@ -341,7 +341,8 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  dc->DrawLines(ls, bdDraw);
+  if (ls > 1)
+    dc->DrawLines(ls, bdDraw);
 
   //---------------------------------------------------------------------------------
   // exponential smoothing of barometric pressure

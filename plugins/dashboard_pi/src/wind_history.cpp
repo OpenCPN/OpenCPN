@@ -580,7 +580,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ld++;
     }
   }
-  if (ld)
+  if (ld > 1)
     dc->DrawLines(ld, wdDraw);
 
   //---------------------------------------------------------------------------------
@@ -607,7 +607,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ld++;
     }
   }
-  if (ld)
+  if (ld > 1)
     dc->DrawLines(ld, wdDraw);
 
   //---------------------------------------------------------------------------------
@@ -671,7 +671,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  if (ld)
+  if (ls > 1)
     dc->DrawLines(ls, spdDraw);
 
   //---------------------------------------------------------------------------------
@@ -697,7 +697,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  if (ld)
+  if (ls > 1)
     dc->DrawLines(ls, spdDraw);
 
   //---------------------------------------------------------------------------------
