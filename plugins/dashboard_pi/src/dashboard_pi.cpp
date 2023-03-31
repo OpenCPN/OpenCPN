@@ -2396,9 +2396,10 @@ void dashboard_pi::ParseSignalK(wxString &msg) {
     if (root["self"].AsString().StartsWith(_T("vessels.")))
       m_self = (root["self"].AsString());  // for java server, and OpenPlotter
                                            // node.js server 1.20
-    else
+    else if (root["self"].AsString().Length())
       m_self =
           _T("vessels.") + (root["self"].AsString());  // for Node.js server
+
   }
 
   if (root.HasMember("context") && root["context"].IsString()) {
