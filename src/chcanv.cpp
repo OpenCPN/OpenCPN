@@ -6262,6 +6262,10 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     //         if (style->chartStatusWindowTransparent)
     //             chartbar_height = 0;
     int y_origin = m_canvas_height - chartbar_height - 5;
+#ifdef __WXOSX__
+    if (!g_bopengl)
+      y_origin = m_canvas_height/GetContentScaleFactor() - chartbar_height - 5;
+#endif
 
     GetCanvasPixPoint(x_origin, y_origin, blat, blon);
     GetCanvasPixPoint(x_origin + m_canvas_width, y_origin, tlat, tlon);
@@ -11155,10 +11159,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   }
 
   if (m_brepaint_piano && g_bShowChartBar) {
-    int canvas_height = GetClientSize().y;
-    canvas_height *= m_displayScale;
-    m_Piano->Paint(canvas_height - m_Piano->GetHeight(), mscratch_dc);
-    // m_brepaint_piano = false;
+    m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
   }
 
   if (m_Compass) m_Compass->Paint(scratch_dc);

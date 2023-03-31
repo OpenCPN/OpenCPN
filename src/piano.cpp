@@ -807,7 +807,11 @@ wxString &Piano::GetStoredHash() { return m_hash; }
 
 void Piano::FormatKeys(void) {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  int width = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
+  int width = m_parentCanvas->GetClientSize().x;
+#ifdef __WXOSX__
+  if(g_bopengl)
+    width *= m_parentCanvas->GetContentScaleFactor();
+#endif
   int height = GetHeight();
   width *= g_btouch ? 0.98f : 0.6f;
 
@@ -843,10 +847,20 @@ wxPoint Piano::GetKeyOrigin(int key_index) {
 bool Piano::MouseEvent(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
-  x *= OCPN_GetDisplayContentScaleFactor();
-  y *= OCPN_GetDisplayContentScaleFactor();
+#ifdef __WXOSX__
+  if (g_bopengl){
+    x *= OCPN_GetDisplayContentScaleFactor();
+    y *= OCPN_GetDisplayContentScaleFactor();
+  }
+#endif
 
-  if (event.Leaving() || y < m_parentCanvas->GetCanvasHeight() - GetHeight()) {
+  int ytop = m_parentCanvas->GetCanvasHeight() - GetHeight();
+#ifdef __WXOSX__
+  if (!g_bopengl)
+    ytop = m_parentCanvas->GetClientSize().y - GetHeight();
+#endif
+
+  if (event.Leaving() || y < ytop) {
     if (m_bleaving) return false;
     m_bleaving = true;
   } else
@@ -940,7 +954,11 @@ void Piano::ResetRollover(void) {
 }
 
 int Piano::GetHeight() {
-  int height = 22 * m_parentCanvas->GetContentScaleFactor();  // default desktop value
+  int height = 22 ;
+#ifdef __WXOSX__
+  if (g_bopengl)
+    height *= m_parentCanvas->GetContentScaleFactor();
+#endif
   if (g_btouch) {
     double size_mult = exp(g_GUIScaleFactor * 0.0953101798043);  // ln(1.1)
     height *= size_mult;
