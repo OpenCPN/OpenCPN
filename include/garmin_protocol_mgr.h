@@ -31,6 +31,7 @@
 #ifndef _GARMINPROTOCOLHANDLER_H__
 #define _GARMINPROTOCOLHANDLER_H__
 
+#include <atomic>
 #include <string>
 
 #ifndef __WXMSW__
@@ -228,7 +229,7 @@ public:
   int m_nSats;
   wxTimer TimerGarmin1;
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
   GARMIN_Serial_Thread *m_garmin_serial_thread;
   GARMIN_USB_Thread *m_garmin_usb_thread;
   bool m_bneed_int_reset;

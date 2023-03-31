@@ -26,6 +26,8 @@
 #ifndef _COMMDRIVERN2KSERIAL_H
 #define _COMMDRIVERN2KSERIAL_H
 
+#include <atomic>
+
 #include <wx/thread.h>
 
 #include "comm_drv_n2k.h"
@@ -85,7 +87,7 @@ public:
 
   void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent& event);
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
 
 private:
   void ProcessManagementPacket(std::vector<unsigned char> *payload);
