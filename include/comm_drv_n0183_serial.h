@@ -26,6 +26,7 @@
 #ifndef _COMMDRIVERN0183SERIAL_H
 #define _COMMDRIVERN0183SERIAL_H
 
+#include <atomic>
 #include <string>
 
 #include <wx/event.h>
@@ -84,7 +85,7 @@ public:
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
 
   ConnectionParams GetParams() const { return m_params; }
 
