@@ -3969,13 +3969,6 @@ void glChartCanvas::Render() {
 #endif
 
     if (b_newview) {
-      bool busy = false;
-      if (VPoint.b_quilt && m_pParentCanvas->m_pQuilt->IsQuiltVector() &&
-          (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm ||
-           m_cache_vp.rotation != VPoint.rotation)) {
-        OCPNPlatform::ShowBusySpinner();
-        busy = true;
-      }
 
       float dx = 0;
       float dy = 0;
@@ -4218,7 +4211,6 @@ void glChartCanvas::Render() {
 
 #endif  // gles2 for accpan
 
-      if (busy) OCPNPlatform::HideBusySpinner();
 
     }  // newview
 
