@@ -255,8 +255,10 @@ public:
 
   int DoAddressClaim();
   bool SendAddressClaim(int proposed_source_address);
+  bool SendProductInfo();
 
   Worker& GetWorker(){ return m_worker; }
+  void UpdateAttrCanAddress();
 
 private:
   N2kName node_name;
@@ -265,6 +267,7 @@ private:
   int m_last_TX_sequence;
   std::future<int> m_AddressClaimFuture;
   wxMutex m_TX_mutex;
+  int m_unique_number;
 
   ObservableListener listener_N2K_59904;
   bool HandleN2K_59904( std::shared_ptr<const Nmea2000Msg> n2k_msg );
@@ -327,7 +330,7 @@ bool CanHeader::IsFastMessage() const {
 void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   // We choose some "benign" values for OCPN socketCan interface
 
-  int unique_number = 1;
+  m_unique_number = 1;
 #ifndef CLIAPP
   // Build a simple 16 bit hash of g_hostname, to use as unique "serial number"
   int hash = 0;
@@ -336,15 +339,20 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   const char* ch = str.data();
   for (int i = 0; i < len; i++)
     hash = hash + ((hash) << 5) + *(ch + i) + ((*(ch + i)) << 7);
-  unique_number = ((hash) ^ (hash >> 16)) & 0xffff;
+  m_unique_number = ((hash) ^ (hash >> 16)) & 0xffff;
 #endif
 
   node_name.SetManufacturerCode(2046);
-  node_name.SetUniqueNumber(unique_number);
+  node_name.SetUniqueNumber(m_unique_number);
   node_name.SetDeviceFunction(130); // PC Gateway
   node_name.SetDeviceClass(25);     // Inter/Intranetwork Device
   node_name.SetIndustryGroup(4);    // Marine
 }
+
+void CommDriverN2KSocketCanImpl::UpdateAttrCanAddress() {
+  this->attributes["canAddress"] = std::to_string(m_source_address);
+}
+
 
 bool CommDriverN2KSocketCanImpl::Open() {
 
@@ -402,6 +410,51 @@ bool CommDriverN2KSocketCanImpl::SendAddressClaim(int proposed_source_address) {
   int sentbytes = write(socket, &frame, sizeof(frame));
 
   return (sentbytes == 16);
+}
+
+void AddStr( std::vector<uint8_t> &vec, std::string str, size_t max_len) {
+  size_t i;
+  for (i = 0; i<str.size(); i++) {
+    vec.push_back(str[i]);;
+  }
+  for (; i<max_len; i++) {
+    vec.push_back(0);
+  }
+}
+
+bool CommDriverN2KSocketCanImpl::SendProductInfo() {
+
+  // Create the payload
+  std::vector<uint8_t> payload;
+
+  payload.push_back(2100 & 0xFF);     //N2KVersion
+  payload.push_back(2100 >> 8);
+  payload.push_back(0);             //Product Version
+  payload.push_back(0);
+
+  std::string ModelID("OpenCPN");  // Model ID
+  AddStr(payload, ModelID, 32);
+
+  std::string ModelSWCode("5.8.0");  // SwCode
+  AddStr(payload, ModelSWCode, 32);
+
+  std::string ModelVersion("5.8.0");  // Model Version
+  AddStr(payload, ModelVersion, 32);
+
+  std::string ModelSerialCode(std::to_string(m_unique_number));  // Model Serial Code
+  AddStr(payload, ModelSerialCode, 32);
+
+  payload.push_back(0);               // CertificationLevel
+  payload.push_back(0);               // LoadEquivalency
+
+  auto dest_addr = std::make_shared<const NavAddr2000>(iface, 255);
+  uint64_t _PGN;
+  _PGN = 126996;
+
+  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, payload, dest_addr);
+  SendMessage(msg, dest_addr);
+
+  return true;
 }
 
 bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
@@ -497,10 +550,6 @@ void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
 }
 
-
-void CommDriverN2KSocketCAN::UpdateAttrCanAddress() {
-  this->attributes["canAddress"] = std::to_string(m_source_address);
-}
 
 // Worker implementation
 
@@ -672,13 +721,16 @@ void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg){
 
   if(n2k_msg->PGN.pgn == 59904 ){
     unsigned long RequestedPGN = 0;
-    RequestedPGN = n2k_msg->payload.at(13) << 16;
+    RequestedPGN = n2k_msg->payload.at(15) << 16;
     RequestedPGN += n2k_msg->payload.at(14) << 8;
-    RequestedPGN += n2k_msg->payload.at(15);
+    RequestedPGN += n2k_msg->payload.at(13);
 
     switch (RequestedPGN){
       case 60928:
         m_parent_driver->SendAddressClaim(m_parent_driver->m_source_address);
+        break;
+      case 126996:
+        m_parent_driver->SendProductInfo();
         break;
       default:
         break;

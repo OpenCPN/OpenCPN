@@ -62,7 +62,6 @@ private:
   bool m_ok;
   std::string m_portstring;
   std::string m_baudrate;
-  unsigned char m_source_address;
 };
 
 #endif  // guard
