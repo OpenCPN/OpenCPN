@@ -466,6 +466,9 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
   if ( m_source_address < 0)
     return false;
 
+  if ( m_source_address > 253)   // Could not claim...
+    return false;
+
   int socket = GetWorker().GetSocket();
 
   if (socket < 0)
@@ -753,8 +756,9 @@ void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg){
       if (his_name < my_name){
         //  I lose, so select a new address
         m_parent_driver->m_source_address++;
-        if ( m_parent_driver->m_source_address > 127)
-          m_parent_driver->m_source_address = 5;  // arbitrary
+        if ( m_parent_driver->m_source_address > 253)
+          // Could not claim an address
+          m_parent_driver->m_source_address = 254;
         m_parent_driver->UpdateAttrCanAddress();
       }
 
