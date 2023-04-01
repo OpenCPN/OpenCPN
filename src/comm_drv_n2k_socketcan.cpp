@@ -488,6 +488,7 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       m_baudrate(wxString::Format("%i", params->Baudrate))
       {
       this->attributes["canPort"] = params->socketCAN_port.ToStdString();
+      this->attributes["canAddress"] = std::to_string(DEFAULT_N2K_SOURCE_ADDRESS);
       }
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
@@ -496,6 +497,10 @@ void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
 }
 
+
+void CommDriverN2KSocketCAN::UpdateAttrCanAddress() {
+  this->attributes["canAddress"] = std::to_string(m_source_address);
+}
 
 // Worker implementation
 
@@ -698,6 +703,7 @@ void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg){
         m_parent_driver->m_source_address++;
         if ( m_parent_driver->m_source_address > 127)
           m_parent_driver->m_source_address = 5;  // arbitrary
+        m_parent_driver->UpdateAttrCanAddress();
       }
 
       // Claim the existing or modified address
@@ -723,8 +729,11 @@ void Worker::Entry() {
   m_socket = socket;
 
   //  Claim our default address
-  if (m_parent_driver->SendAddressClaim(DEFAULT_N2K_SOURCE_ADDRESS))
+  if (m_parent_driver->SendAddressClaim(DEFAULT_N2K_SOURCE_ADDRESS)){
     m_parent_driver->m_source_address = DEFAULT_N2K_SOURCE_ADDRESS;
+    m_parent_driver->UpdateAttrCanAddress();
+  }
+
 
   // The main loop
   while (m_run_flag > 0) {

@@ -50,6 +50,8 @@ public:
   virtual bool Open() = 0;
   virtual void Close() = 0;
 
+  void UpdateAttrCanAddress();
+
 protected:
   CommDriverN2KSocketCAN(const ConnectionParams* params,
                          DriverListener& listener);
