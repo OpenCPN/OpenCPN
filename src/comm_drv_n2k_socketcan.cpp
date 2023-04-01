@@ -295,14 +295,14 @@ CanHeader::CanHeader(const CanFrame frame) {
   pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
   priority = (buf[3] & 0x1c) >> 2;
 
-//   if (pgn == 129029){
-//     unsigned char *d = (unsigned char *)&frame;
-//     for (size_t i=0 ; i < sizeof(frame) ; i++){
-//       printf("%02X ", *d);
-//       d++;
-//     }
-//     printf("\n\n");
-//   }
+//    if ((pgn == 60928) /*&& (source == 3)*/){
+//      unsigned char *d = (unsigned char *)&frame;
+//      for (size_t i=0 ; i < sizeof(frame) ; i++){
+//        printf("%02X ", *d);
+//        d++;
+//      }
+//      printf(" %d\n\n", cf++);
+//    }
 }
 
 
@@ -666,8 +666,44 @@ void Worker::HandleInput(CanFrame frame) {
 void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg){
 
   if(n2k_msg->PGN.pgn == 59904 ){
+    unsigned long RequestedPGN = 0;
+    RequestedPGN = n2k_msg->payload.at(13) << 16;
+    RequestedPGN += n2k_msg->payload.at(14) << 8;
+    RequestedPGN += n2k_msg->payload.at(15);
+
+    switch (RequestedPGN){
+      case 60928:
+        m_parent_driver->SendAddressClaim(m_parent_driver->m_source_address);
+        break;
+      default:
+        break;
+    }
   }
 
+  else if(n2k_msg->PGN.pgn == 60928 ){
+    // Watch for conflicting source address
+    if (n2k_msg->payload.at(7) == m_parent_driver->m_source_address){
+      // My name
+      uint64_t my_name = m_parent_driver->node_name.GetName();
+
+      // His name
+      uint64_t his_name = 0;
+      unsigned char *p = (unsigned char *)&his_name;
+      for (unsigned int i=0 ; i < 8 ; i++)
+        *p++ = n2k_msg->payload.at(13 + i);
+
+      // Compare literally the NAME values
+      if (his_name < my_name){
+        //  I lose, so select a new address
+        m_parent_driver->m_source_address++;
+        if ( m_parent_driver->m_source_address > 127)
+          m_parent_driver->m_source_address = 5;  // arbitrary
+      }
+
+      // Claim the existing or modified address
+      m_parent_driver->SendAddressClaim(m_parent_driver->m_source_address);
+    }
+  }
 }
 
 
