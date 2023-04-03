@@ -217,6 +217,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
   m_manufacturers_code = 0;
   m_got_mfg_code = false;
+  this->attributes["canAddress"] = std::string("-1");
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &CommDriverN2KSerial::handle_N2K_SERIAL_RAW,
