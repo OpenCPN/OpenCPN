@@ -239,7 +239,7 @@ class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN {
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
       : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port),
-      m_source_address(-1){
+      m_source_address(-1), m_last_TX_sequence(0){
     SetN2K_Name();
     Open();
   }
@@ -429,8 +429,8 @@ bool CommDriverN2KSocketCanImpl::SendProductInfo() {
 
   payload.push_back(2100 & 0xFF);     //N2KVersion
   payload.push_back(2100 >> 8);
-  payload.push_back(0);             //Product Version
-  payload.push_back(0);
+  payload.push_back(0xEA);            //Product Version
+  payload.push_back(0x06);
 
   std::string ModelID("OpenCPN");  // Model ID
   AddStr(payload, ModelID, 32);
@@ -514,6 +514,7 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
 
     // The rest of the bytes
     while (n_remaining > 0){
+      wxMilliSleep(10);
       frame.data[0] = sequence;
       int data_len_n = wxMin(n_remaining, 7);
       memcpy(&frame.data[1], data_ptr, data_len_n);
