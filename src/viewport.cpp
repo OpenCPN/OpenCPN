@@ -973,3 +973,14 @@ ViewPort ViewPort::BuildExpandedVP(int width, int height) {
 
   return new_vp;
 }
+
+void ViewPort::SetVPTransformMatrix() {
+   mat4x4 m;
+   mat4x4_identity(m);
+   mat4x4_scale_aniso((float(*)[4])vp_matrix_transform, m,
+                      2.0 / (float)pix_width, -2.0 / (float)pix_height,
+                      1.0);
+   mat4x4_translate_in_place((float(*)[4])vp_matrix_transform, -pix_width / 2,
+                             -pix_height / 2, 0);
+
+}

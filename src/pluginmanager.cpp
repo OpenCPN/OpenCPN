@@ -7765,6 +7765,7 @@ void PlugInAISDrawGL(wxGLCanvas *glcanvas, const PlugIn_ViewPort &vp) {
   ViewPort ocpn_vp = CreateCompatibleViewport(vp);
 
   ocpnDC dc(*glcanvas);
+  dc.SetVP(ocpn_vp);
 
   AISDraw(dc, ocpn_vp, NULL);
 }
