@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-03-27 01:58\n"
+"PO-Revision-Date: 2023-04-05 00:42\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -80,11 +80,11 @@ msgstr "Tosituulikulma ja -tuulen nopeus"
 
 #: src/dashboard_pi.cpp:275
 msgid "Altitude"
-msgstr ""
+msgstr "Korkeus"
 
 #: src/dashboard_pi.cpp:277
 msgid "Altitude Trace"
-msgstr ""
+msgstr "Korkeuden Jäljitys"
 
 #: src/dashboard_pi.cpp:279 src/dashboard_pi.cpp:281
 msgid "Depth"
@@ -400,7 +400,8 @@ msgstr "Kelvin"
 #: src/dashboard_pi.cpp:4038
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
-msgstr ""
+msgstr "Käytä N2K & SignalK tosi tuulen tietoja pohjan suhteen.\n"
+"(veden sijasta )"
 
 #: src/dashboard_pi.cpp:4310
 msgid "Add instrument"
@@ -464,7 +465,7 @@ msgstr " magneettinen"
 
 #: src/wind_history.cpp:55 src/wind_history.cpp:120
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: src/wind_history.cpp:367
 #, c-format

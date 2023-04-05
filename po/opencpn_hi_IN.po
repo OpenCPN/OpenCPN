@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-14 22:11-0400\n"
-"PO-Revision-Date: 2023-03-27 01:59\n"
+"POT-Creation-Date: 2023-03-28 10:26-0400\n"
+"PO-Revision-Date: 2023-04-05 00:43\n"
 "Last-Translator: \n"
 "Language-Team: Hindi\n"
 "Language: hi_IN\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 102\n"
 
 #: include/AboutFrame.h:87 include/AboutFrameImpl.h:68 include/about.h:38
-#: src/ocpn_frame.cpp:3640 src/ocpn_frame.cpp:7155 src/toolbar.cpp:1274
+#: src/ocpn_frame.cpp:3655 src/ocpn_frame.cpp:7197 src/toolbar.cpp:1276
 msgid "About OpenCPN"
 msgstr "ओपनसीपीएन के बारे में"
 
@@ -26,7 +26,7 @@ msgstr "ओपनसीपीएन के बारे में"
 #: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2205
 #: src/routemanagerdialog.cpp:2311 src/routemanagerdialog.cpp:2660
 #: src/routemanagerdialog.cpp:2692 src/routemanagerdialog.cpp:2828
-#: src/routemanagerdialog.cpp:2993 src/toolbar.cpp:3046
+#: src/routemanagerdialog.cpp:2993 src/toolbar.cpp:3048
 msgid "OpenCPN Alert"
 msgstr "ओपनसीपीएन अलर्ट"
 
@@ -36,12 +36,12 @@ msgstr "ओपनसीपीएन एआईएस अलर्ट"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:57
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
-#: src/canvasMenu.cpp:461 src/canvasMenu.cpp:470 src/chcanv.cpp:9529
+#: src/canvasMenu.cpp:463 src/canvasMenu.cpp:472 src/chcanv.cpp:9538
 msgid "Object Query"
 msgstr "ऑब्जेक्ट क्वेरी"
 
 #: include/GoToPositionDialog.h:44 src/AISTargetListDialog.cpp:703
-#: src/canvasMenu.cpp:499
+#: src/canvasMenu.cpp:501
 msgid "Center view"
 msgstr "केंद्रीय दृश्य"
 
@@ -49,15 +49,15 @@ msgstr "केंद्रीय दृश्य"
 msgid "Link Properties"
 msgstr "लिंक गुण"
 
-#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9692
-#: src/chcanv.cpp:9696 src/routemanagerdialog.cpp:2631
+#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9701
+#: src/chcanv.cpp:9705 src/routemanagerdialog.cpp:2631
 #: src/routemanagerdialog.cpp:2635 src/RoutePropDlgImpl.cpp:928
 msgid "Waypoint Properties"
 msgstr "वैपोइन्ट गुण"
 
-#: include/options.h:91 src/ocpn_frame.cpp:3630 src/ocpn_frame.cpp:3890
-#: src/ocpn_frame.cpp:4944 src/ocpn_frame.cpp:7114 src/options.cpp:3338
-#: src/toolbar.cpp:1203
+#: include/options.h:91 src/ocpn_frame.cpp:3645 src/ocpn_frame.cpp:3926
+#: src/ocpn_frame.cpp:4984 src/ocpn_frame.cpp:7156 src/options.cpp:3320
+#: src/toolbar.cpp:1205
 msgid "Options"
 msgstr "विकल्प"
 
@@ -66,7 +66,7 @@ msgid "Print Route Selection"
 msgstr "छाप रूट चयन करें"
 
 #: include/RoutePropDlg.h:165 include/RoutePropDlgImpl.h:97
-#: src/canvasMenu.cpp:1854 src/chcanv.cpp:7597 src/RoutePropDlgImpl.cpp:515
+#: src/canvasMenu.cpp:1865 src/chcanv.cpp:7606 src/RoutePropDlgImpl.cpp:515
 msgid "Route Properties"
 msgstr "रूट गुण"
 
@@ -75,15 +75,19 @@ msgstr "रूट गुण"
 msgid "Extra Object Info"
 msgstr "अतिरिक्त वस्तु की जानकारी"
 
-#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:748 src/canvasMenu.cpp:849
-#: src/canvasMenu.cpp:899 src/canvasMenu.cpp:1689 src/canvasMenu.cpp:1700
-#: src/canvasMenu.cpp:1742 src/canvasMenu.cpp:1753
+#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:755 src/canvasMenu.cpp:856
+#: src/canvasMenu.cpp:906 src/canvasMenu.cpp:1700 src/canvasMenu.cpp:1711
+#: src/canvasMenu.cpp:1753 src/canvasMenu.cpp:1764
 #: src/routemanagerdialog.cpp:1800 src/routemanagerdialog.cpp:2798
 msgid "Send to GPS"
 msgstr "जीपीएस पर भेजें"
 
-#: include/track.h:122 src/ocpn_frame.cpp:3073 src/ocpn_frame.cpp:6436
-#: src/ocpn_frame.cpp:6554
+#: include/SendToPeerDlg.h:40
+msgid "Send to Peer"
+msgstr ""
+
+#: include/track.h:122 src/ocpn_frame.cpp:3080 src/ocpn_frame.cpp:6476
+#: src/ocpn_frame.cpp:6594
 msgid "(Unnamed Track)"
 msgstr "(अनाम ट्रैक)"
 
@@ -96,8 +100,8 @@ msgstr ""
 msgid "Track properties"
 msgstr "ट्रैक गुण"
 
-#: libs/s52plib/src/s52plib.cpp:2171 libs/s52plib/src/s52plib.cpp:2275
-#: libs/s52plib/src/s52plib.cpp:2444
+#: libs/s52plib/src/s52plib.cpp:2181 libs/s52plib/src/s52plib.cpp:2285
+#: libs/s52plib/src/s52plib.cpp:2454
 msgid "ChartTexts"
 msgstr ""
 
@@ -213,19 +217,19 @@ msgstr ""
 
 #: src/about.cpp:220 src/about.cpp:264 src/about.cpp:398 src/about.cpp:516
 #: src/AISTargetListDialog.cpp:329 src/androidUTIL.cpp:4881
-#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11760 src/chcanv.cpp:11793
+#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11769 src/chcanv.cpp:11802
 #: src/ChInfoWin.cpp:53 src/cm93.cpp:6427 src/concanv.cpp:104
 #: src/connections_dialog.cpp:350 src/conn_params_panel.cpp:86
 #: src/conn_params_panel.cpp:144 src/conn_params_panel.cpp:860
-#: src/glChartCanvas.cpp:3737 src/glTextureManager.cpp:1439 src/gui_lib.cpp:149
+#: src/glChartCanvas.cpp:3740 src/glTextureManager.cpp:1443 src/gui_lib.cpp:149
 #: src/gui_lib.cpp:286 src/LinkPropDlg.cpp:37 src/MarkInfo.cpp:235
-#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4585 src/ocpn_frame.cpp:8695
-#: src/OCPNPlatform.cpp:1476 src/OCPNPlatform.cpp:1786 src/OCPNPlatform.cpp:1825
+#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4621 src/ocpn_frame.cpp:8737
+#: src/OCPNPlatform.cpp:1479 src/OCPNPlatform.cpp:1789 src/OCPNPlatform.cpp:1828
 #: src/options.cpp:736 src/options.cpp:762 src/options.cpp:1291
-#: src/options.cpp:1783 src/options.cpp:8491 src/options.cpp:8728
-#: src/options.cpp:8968 src/options.cpp:9113 src/Osenc.cpp:1675
+#: src/options.cpp:1770 src/options.cpp:8482 src/options.cpp:8719
+#: src/options.cpp:8959 src/options.cpp:9104 src/Osenc.cpp:1688
 #: src/routemanagerdialog.cpp:305 src/RoutePropDlg.cpp:53 src/TCWin.cpp:84
-#: src/TCWin.cpp:180 src/toolbar.cpp:3138 src/TrackPropDlg.cpp:110
+#: src/TCWin.cpp:180 src/toolbar.cpp:3140 src/TrackPropDlg.cpp:110
 #: src/TrackPropDlg.cpp:324 src/TrackPropDlg.cpp:651 src/TTYWindow.cpp:114
 msgid "Dialog"
 msgstr "संवाद"
@@ -324,15 +328,15 @@ msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr ""
 
 #: src/AboutFrameImpl.cpp:96 src/ais_info_gui.cpp:112
-#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2214
-#: src/connections_dialog.cpp:2227 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
-#: src/navutil.cpp:3175 src/ocpn_frame.cpp:830 src/ocpn_frame.cpp:963
-#: src/ocpn_frame.cpp:4274 src/options.cpp:1130 src/options.cpp:2908
-#: src/options.cpp:7799 src/options.cpp:7836 src/peer_client.cpp:291
+#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2213
+#: src/connections_dialog.cpp:2226 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
+#: src/navutil.cpp:3186 src/ocpn_frame.cpp:830 src/ocpn_frame.cpp:964
+#: src/ocpn_frame.cpp:4310 src/options.cpp:1130 src/options.cpp:2890
+#: src/options.cpp:7789 src/options.cpp:7826 src/peer_client.cpp:291
 #: src/peer_client.cpp:349 src/peer_client.cpp:354 src/peer_client.cpp:363
 #: src/pluginmanager.cpp:318 src/pluginmanager.cpp:642
 #: src/pluginmanager.cpp:1008 src/route_gui.cpp:597 src/RoutePoint.cpp:1278
-#: src/route_point_gui.cpp:876 src/tcmgr.cpp:692 src/udev_rule_mgr.cpp:294
+#: src/route_point_gui.cpp:876 src/tcmgr.cpp:685 src/udev_rule_mgr.cpp:294
 msgid "OpenCPN Info"
 msgstr "ओपनसीपीएन जानकारी"
 
@@ -1008,7 +1012,7 @@ msgid "\n"
 "Do you instead want to stop Persistent Tracking for this target?\n"
 msgstr ""
 
-#: src/ais_info_gui.cpp:198 src/options.cpp:4867
+#: src/ais_info_gui.cpp:198 src/options.cpp:4854
 msgid "AIS Alert"
 msgstr "एआईएस अलर्ट"
 
@@ -1098,7 +1102,7 @@ msgid "Reserved 14"
 msgstr "आरक्षित १४"
 
 #: src/ais_target_data.cpp:113 src/ais_target_data.cpp:439
-#: src/conn_params.cpp:197 src/conn_params_panel.cpp:244
+#: src/conn_params.cpp:202 src/conn_params_panel.cpp:244
 #: src/conn_params_panel.cpp:363 src/conn_params_panel.cpp:787
 #: src/conn_params_panel.cpp:815
 msgid "Undefined"
@@ -1229,7 +1233,7 @@ msgstr ""
 msgid "Left"
 msgstr ""
 
-#: src/ais_target_data.cpp:689 src/options.cpp:4400 src/options.cpp:4542
+#: src/ais_target_data.cpp:689 src/options.cpp:4387 src/options.cpp:4529
 #: src/RoutePropDlg.cpp:353 src/trackprintout.cpp:100 src/trackprintout.cpp:339
 #: src/TrackPropDlg.cpp:309 src/TrackPropDlg.cpp:1345
 msgid "Speed"
@@ -1262,7 +1266,7 @@ msgid "in "
 msgstr ""
 
 #: src/ais_target_data.cpp:719 src/ais_target_data.cpp:869
-#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6582
+#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6586
 msgid "CPA"
 msgstr ""
 
@@ -1310,8 +1314,8 @@ msgstr ""
 msgid "Aid to Navigation"
 msgstr "नेविगेशन के लिए सहायता"
 
-#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:323 src/options.cpp:3378
-#: src/options.cpp:3581
+#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:323 src/options.cpp:3360
+#: src/options.cpp:3563
 msgid "Base"
 msgstr "आधार"
 
@@ -2727,8 +2731,8 @@ msgstr ""
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:673
-#: src/ocpn_frame.cpp:3594
+#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:675
+#: src/ocpn_frame.cpp:3609
 msgid "AIS target list"
 msgstr "एआईएस लक्ष्य सूची"
 
@@ -2835,9 +2839,9 @@ msgstr "एआईएसलक्ष्यसवाल"
 #: src/AISTargetQueryDialog.cpp:295 src/androidUTIL.cpp:5019
 #: src/catalog_mgr.cpp:193 src/catalog_mgr.cpp:585 src/catalog_mgr.cpp:606
 #: src/cm93.cpp:6512 src/GoToPositionDialog.cpp:150 src/MUIBar.cpp:179
-#: src/options.cpp:950 src/options.cpp:1052 src/options.cpp:5776
+#: src/options.cpp:950 src/options.cpp:1052 src/options.cpp:5763
 #: src/routeprintout.cpp:428 src/TCWin.cpp:123 src/TCWin.cpp:132
-#: src/toolbar.cpp:3205 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
+#: src/toolbar.cpp:3207 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
 #: src/TrackPropDlg.cpp:997
 msgid "OK"
 msgstr ""
@@ -2861,7 +2865,7 @@ msgstr "आपके एंड्रॉइड डिवाइस में ए�
 msgid "Nothing found"
 msgstr "कुछ नहीं मिला"
 
-#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1760
+#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1763
 msgid "Anchorage created "
 msgstr "लंगर शुल्क बनाया "
 
@@ -2907,14 +2911,14 @@ msgid "Status"
 msgstr ""
 
 #: src/androidUTIL.cpp:5015 src/catalog_mgr.cpp:604
-#: src/connections_dialog.cpp:2093 src/GoToPositionDialog.cpp:146
+#: src/connections_dialog.cpp:2092 src/GoToPositionDialog.cpp:146
 #: src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:754 src/MarkInfo.cpp:1856
 #: src/MUIBar.cpp:175 src/options.cpp:947 src/options.cpp:1049
-#: src/options.cpp:5780 src/options.cpp:9031 src/peer_client.cpp:435
+#: src/options.cpp:5767 src/options.cpp:9022 src/peer_client.cpp:435
 #: src/priority_gui.cpp:105 src/REST_server_gui.cpp:121
 #: src/REST_server_gui.cpp:216 src/routeprintout.cpp:424
 #: src/RoutePropDlg.cpp:511 src/SendToGpsDlg.cpp:202 src/SendToPeerDlg.cpp:167
-#: src/toolbar.cpp:3201 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
+#: src/toolbar.cpp:3203 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
 #: src/TrackPropDlg.cpp:992
 msgid "Cancel"
 msgstr ""
@@ -2988,338 +2992,351 @@ msgstr ""
 msgid "Finishing migration"
 msgstr ""
 
-#: src/canvasMenu.cpp:244 src/canvasMenu.cpp:274 src/canvasMenu.cpp:307
+#: src/canvasMenu.cpp:246 src/canvasMenu.cpp:276 src/canvasMenu.cpp:309
 #: src/options.cpp:1243
 msgid "Menu"
 msgstr ""
 
-#: src/canvasMenu.cpp:343 src/canvasMenu.cpp:346 src/canvasMenu.cpp:364
+#: src/canvasMenu.cpp:345 src/canvasMenu.cpp:348 src/canvasMenu.cpp:366
 msgid "Undo"
 msgstr ""
 
-#: src/canvasMenu.cpp:353 src/canvasMenu.cpp:356 src/canvasMenu.cpp:371
+#: src/canvasMenu.cpp:355 src/canvasMenu.cpp:358 src/canvasMenu.cpp:373
 msgid "Redo"
 msgstr ""
 
-#: src/canvasMenu.cpp:384
+#: src/canvasMenu.cpp:386
 msgid "End Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:390
+#: src/canvasMenu.cpp:392
 msgid "Measure Off"
 msgstr "उपाय बंद करें"
 
-#: src/canvasMenu.cpp:393
+#: src/canvasMenu.cpp:395
 msgid "Measure"
 msgstr ""
 
-#: src/canvasMenu.cpp:450
+#: src/canvasMenu.cpp:452
 msgid "Max Detail Here"
 msgstr ""
 
-#: src/canvasMenu.cpp:452 src/canvasMenu.cpp:475
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:477
 msgid "Scale In"
 msgstr ""
 
-#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:477
+#: src/canvasMenu.cpp:456 src/canvasMenu.cpp:479
 msgid "Scale Out"
 msgstr ""
 
-#: src/canvasMenu.cpp:485
+#: src/canvasMenu.cpp:487
 msgid "Drop Mark"
 msgstr ""
 
-#: src/canvasMenu.cpp:487
+#: src/canvasMenu.cpp:489
 msgid "New Route..."
 msgstr ""
 
-#: src/canvasMenu.cpp:490
+#: src/canvasMenu.cpp:492
 msgid "Move Boat Here"
 msgstr "नाव यहाँ ले जाएँ"
 
-#: src/canvasMenu.cpp:495
+#: src/canvasMenu.cpp:497
 msgid "Navigate To Here"
 msgstr "यहां पर नेविगेट करें"
 
-#: src/canvasMenu.cpp:504 src/ocpn_frame.cpp:3497
+#: src/canvasMenu.cpp:506 src/ocpn_frame.cpp:3504
 msgid "Course Up Mode"
 msgstr "कोर्स अप मोड"
 
-#: src/canvasMenu.cpp:506
+#: src/canvasMenu.cpp:508
 msgid "Heading Up Mode"
 msgstr ""
 
-#: src/canvasMenu.cpp:508 src/canvasMenu.cpp:515 src/ocpn_frame.cpp:3206
-#: src/ocpn_frame.cpp:3496 src/ocpn_frame.cpp:5971
+#: src/canvasMenu.cpp:510 src/canvasMenu.cpp:517 src/ocpn_frame.cpp:3213
+#: src/ocpn_frame.cpp:3503 src/ocpn_frame.cpp:6011
 msgid "North Up Mode"
 msgstr "उत्तर अप मोड"
 
-#: src/canvasMenu.cpp:513
+#: src/canvasMenu.cpp:515
 msgid "Chart Up Mode"
 msgstr "चार्ट अप मोड"
 
-#: src/canvasMenu.cpp:524 src/canvasMenu.cpp:531 src/ocpn_frame.cpp:3578
+#: src/canvasMenu.cpp:526 src/canvasMenu.cpp:533 src/ocpn_frame.cpp:3585
 msgid "Toggle Full Screen"
 msgstr "पूर्णस्क्रीन चालू करें"
 
-#: src/canvasMenu.cpp:537 src/canvasMenu.cpp:700 src/canvasMenu.cpp:718
+#: src/canvasMenu.cpp:539 src/canvasMenu.cpp:707 src/canvasMenu.cpp:725
 msgid "Zero XTE"
 msgstr ""
 
-#: src/canvasMenu.cpp:544
+#: src/canvasMenu.cpp:546
 msgid "Paste Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:548 src/canvasMenu.cpp:556
+#: src/canvasMenu.cpp:550 src/canvasMenu.cpp:558
 msgid "Paste Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:552 src/canvasMenu.cpp:557
+#: src/canvasMenu.cpp:554 src/canvasMenu.cpp:559
 msgid "Paste Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:567
+#: src/canvasMenu.cpp:569
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 ऑफ़सेट डायलॉग..."
 
-#: src/canvasMenu.cpp:592 src/options.cpp:3857 src/options.cpp:3919
+#: src/canvasMenu.cpp:594 src/options.cpp:3841 src/options.cpp:3905
 msgid "Chart Groups"
 msgstr ""
 
-#: src/canvasMenu.cpp:599
+#: src/canvasMenu.cpp:601
 msgid "temporary"
 msgstr ""
 
-#: src/canvasMenu.cpp:602
+#: src/canvasMenu.cpp:604
 msgid "All Active Charts"
 msgstr "सभी सक्रिय चार्ट"
 
-#: src/canvasMenu.cpp:632 src/CanvasOptions.cpp:211
+#: src/canvasMenu.cpp:634 src/CanvasOptions.cpp:211
 msgid "AIS"
 msgstr ""
 
-#: src/canvasMenu.cpp:633
+#: src/canvasMenu.cpp:635
 msgid "Target Query..."
 msgstr ""
 
-#: src/canvasMenu.cpp:637
+#: src/canvasMenu.cpp:639
 msgid "Hide Target CPA"
 msgstr "लक्ष्य सीपीए छुपाएं"
 
-#: src/canvasMenu.cpp:639
+#: src/canvasMenu.cpp:641
 msgid "Show Target CPA"
 msgstr "Show Target CPA"
 
-#: src/canvasMenu.cpp:641
+#: src/canvasMenu.cpp:643
 msgid "Target List..."
 msgstr "लक्ष्य सूची..."
 
-#: src/canvasMenu.cpp:645
+#: src/canvasMenu.cpp:647
 msgid "Hide Target Track"
 msgstr "लक्ष्य ट्रैक छिपाएं"
 
-#: src/canvasMenu.cpp:648
+#: src/canvasMenu.cpp:650
 msgid "Show Target Track"
 msgstr "लक्ष्य ट्रैक दिखाएं"
 
-#: src/canvasMenu.cpp:651
+#: src/canvasMenu.cpp:653
 msgid "Copy Target MMSI"
 msgstr "प्रतिलिपि लक्ष्य एमएमएसआई"
 
-#: src/canvasMenu.cpp:658 src/canvasMenu.cpp:666
+#: src/canvasMenu.cpp:660 src/canvasMenu.cpp:668
 msgid "Object Query..."
 msgstr "ऑब्जेक्ट क्वेरी..."
 
-#: src/canvasMenu.cpp:680
+#: src/canvasMenu.cpp:677 src/catalog_mgr.cpp:99
+msgid "Hide"
+msgstr ""
+
+#: src/canvasMenu.cpp:677 src/routemanagerdialog.cpp:414
+#: src/routemanagerdialog.cpp:584
+msgid "Show"
+msgstr ""
+
+#: src/canvasMenu.cpp:679 src/chcanv.cpp:6581
+msgid "CPA alarm "
+msgstr ""
+
+#: src/canvasMenu.cpp:687
 msgid "Unnamed Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:688
+#: src/canvasMenu.cpp:695
 msgid "Layer Route"
 msgstr "परत मार्ग"
 
-#: src/canvasMenu.cpp:690 src/canvasMenu.cpp:708 src/canvasMenu.cpp:781
-#: src/canvasMenu.cpp:785 src/canvasMenu.cpp:810 src/canvasMenu.cpp:817
-#: src/canvasMenu.cpp:882 src/canvasMenu.cpp:886 src/MarkInfo.cpp:335
+#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:715 src/canvasMenu.cpp:788
+#: src/canvasMenu.cpp:792 src/canvasMenu.cpp:817 src/canvasMenu.cpp:824
+#: src/canvasMenu.cpp:889 src/canvasMenu.cpp:893 src/MarkInfo.cpp:335
 msgid "Properties"
 msgstr ""
 
-#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:715 src/canvasMenu.cpp:829
+#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:722 src/canvasMenu.cpp:836
 msgid "Activate Next Waypoint"
 msgstr "अगले वेपॉइंट को सक्रिय करें"
 
-#: src/canvasMenu.cpp:699 src/canvasMenu.cpp:717 src/routemanagerdialog.cpp:1303
+#: src/canvasMenu.cpp:706 src/canvasMenu.cpp:724 src/routemanagerdialog.cpp:1303
 msgid "Deactivate"
 msgstr ""
 
-#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:720 src/canvasMenu.cpp:813
-#: src/canvasMenu.cpp:820 src/routemanagerdialog.cpp:1297
+#: src/canvasMenu.cpp:709 src/canvasMenu.cpp:727 src/canvasMenu.cpp:820
+#: src/canvasMenu.cpp:827 src/routemanagerdialog.cpp:1297
 msgid "Activate"
 msgstr ""
 
-#: src/canvasMenu.cpp:706 src/chcanv.cpp:3819 src/chcanv.cpp:10532
+#: src/canvasMenu.cpp:713 src/chcanv.cpp:3823 src/chcanv.cpp:10541
 #: src/concanv.cpp:143 src/concanv.cpp:158 src/concanv.cpp:197
 msgid "Route"
 msgstr ""
 
-#: src/canvasMenu.cpp:723
+#: src/canvasMenu.cpp:730
 msgid "Insert Waypoint"
 msgstr "वेपॉइंट सम्मिलित करें"
 
-#: src/canvasMenu.cpp:724 src/undo.cpp:90
+#: src/canvasMenu.cpp:731 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "वेपेंड जोड़ें"
 
-#: src/canvasMenu.cpp:729
+#: src/canvasMenu.cpp:736
 msgid "Split around Leg"
 msgstr ""
 
-#: src/canvasMenu.cpp:731 src/canvasMenu.cpp:786 src/canvasMenu.cpp:841
-#: src/canvasMenu.cpp:891
+#: src/canvasMenu.cpp:738 src/canvasMenu.cpp:793 src/canvasMenu.cpp:848
+#: src/canvasMenu.cpp:898
 msgid "Copy as KML"
 msgstr "केएमएल के रूप में कॉपी करें"
 
-#: src/canvasMenu.cpp:732 src/canvasMenu.cpp:787 src/canvasMenu.cpp:844
-#: src/canvasMenu.cpp:894 src/connections_dialog.cpp:2089 src/MarkInfo.cpp:488
+#: src/canvasMenu.cpp:739 src/canvasMenu.cpp:794 src/canvasMenu.cpp:851
+#: src/canvasMenu.cpp:901 src/connections_dialog.cpp:2088 src/MarkInfo.cpp:488
 #: src/MarkInfo.cpp:1145 src/MarkInfo.cpp:1186 src/options.cpp:1239
 #: src/RoutePropDlg.cpp:428 src/TrackPropDlg.cpp:901
 msgid "Delete"
 msgstr ""
 
-#: src/canvasMenu.cpp:733
+#: src/canvasMenu.cpp:740
 msgid "Reverse..."
 msgstr ""
 
-#: src/canvasMenu.cpp:737
+#: src/canvasMenu.cpp:744
 msgid "Hide Waypoint Names"
 msgstr ""
 
-#: src/canvasMenu.cpp:740
+#: src/canvasMenu.cpp:747
 msgid "Show Waypoint Names"
 msgstr ""
 
-#: src/canvasMenu.cpp:743
+#: src/canvasMenu.cpp:750
 msgid "Resequence Waypoints..."
 msgstr ""
 
-#: src/canvasMenu.cpp:757 src/canvasMenu.cpp:858
+#: src/canvasMenu.cpp:764 src/canvasMenu.cpp:865
 msgid "Send to new GPS"
 msgstr "नए जीपीएस को भेजें"
 
-#: src/canvasMenu.cpp:779
+#: src/canvasMenu.cpp:786
 msgid "Layer Track"
 msgstr "परत ट्रैक"
 
-#: src/canvasMenu.cpp:783 src/chcanv.cpp:3994
+#: src/canvasMenu.cpp:790 src/chcanv.cpp:3998
 msgid "Track"
 msgstr ""
 
-#: src/canvasMenu.cpp:800 src/canvasMenu.cpp:872
+#: src/canvasMenu.cpp:807 src/canvasMenu.cpp:879
 msgid "Unnamed Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:808 src/canvasMenu.cpp:880
+#: src/canvasMenu.cpp:815 src/canvasMenu.cpp:887
 msgid "Layer Waypoint"
 msgstr "परत वेपॉइंट"
 
-#: src/canvasMenu.cpp:815 src/canvasMenu.cpp:884
+#: src/canvasMenu.cpp:822 src/canvasMenu.cpp:891
 msgid "Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:833
+#: src/canvasMenu.cpp:840
 msgid "Remove from Route"
 msgstr "रूट से निकालें"
 
-#: src/canvasMenu.cpp:838
+#: src/canvasMenu.cpp:845
 msgid "Split Route at Waypoint"
 msgstr ""
 
-#: src/canvasMenu.cpp:889
+#: src/canvasMenu.cpp:896
 msgid "Navigate To This"
 msgstr "इस पर नेविगेट करें"
 
-#: src/canvasMenu.cpp:913
+#: src/canvasMenu.cpp:920
 msgid "Clear Anchor Watch"
 msgstr "एंकर वॉच साफ़ करें"
 
-#: src/canvasMenu.cpp:924
+#: src/canvasMenu.cpp:931
 msgid "Set Anchor Watch"
 msgstr "एंकर वॉच सेट करें"
 
-#: src/canvasMenu.cpp:965
+#: src/canvasMenu.cpp:972
 msgid "Main Menu"
 msgstr ""
 
-#: src/canvasMenu.cpp:978
+#: src/canvasMenu.cpp:985
 msgid "Show Tide Information"
 msgstr "ज्वार जानकारी दिखाएं"
 
-#: src/canvasMenu.cpp:984
+#: src/canvasMenu.cpp:991
 msgid "Show Current Information"
 msgstr "वर्तमान जानकारी दिखाएं"
 
-#: src/canvasMenu.cpp:1156
+#: src/canvasMenu.cpp:1163
 msgid "Temporary GOTO Route"
 msgstr "अस्थायी गोटो मार्ग"
 
-#: src/canvasMenu.cpp:1157 src/canvasMenu.cpp:1224
+#: src/canvasMenu.cpp:1164 src/canvasMenu.cpp:1235
 #: src/routemanagerdialog.cpp:2750
 msgid "Here"
 msgstr ""
 
-#: src/canvasMenu.cpp:1159
+#: src/canvasMenu.cpp:1166
 msgid "There"
 msgstr ""
 
-#: src/canvasMenu.cpp:1220 src/routemanagerdialog.cpp:2383
+#: src/canvasMenu.cpp:1231 src/routemanagerdialog.cpp:2383
 #: src/routemanagerdialog.cpp:2746
 msgid "(Unnamed Waypoint)"
 msgstr "(अनाम मार्ग)"
 
-#: src/canvasMenu.cpp:1221 src/routemanagerdialog.cpp:2747
+#: src/canvasMenu.cpp:1232 src/routemanagerdialog.cpp:2747
 msgid "Go to "
 msgstr ""
 
-#: src/canvasMenu.cpp:1458 src/canvasMenu.cpp:1492
+#: src/canvasMenu.cpp:1469 src/canvasMenu.cpp:1503
 #: src/routemanagerdialog.cpp:1488
 msgid "Rename Waypoints?"
 msgstr "मार्ग का नाम बदलें?"
 
-#: src/canvasMenu.cpp:1509
+#: src/canvasMenu.cpp:1520
 msgid "Are you sure you want to delete this route?"
 msgstr "क्या आप वाकई इस मार्ग को हटाना चाहते हैं?"
 
-#: src/canvasMenu.cpp:1510
+#: src/canvasMenu.cpp:1521
 msgid "OpenCPN Route Delete"
 msgstr "ओपनसीपीएन रूट हटाएं"
 
-#: src/canvasMenu.cpp:1637 src/RoutePropDlgImpl.cpp:1048
+#: src/canvasMenu.cpp:1648 src/RoutePropDlgImpl.cpp:1048
 #: src/TrackPropDlg.cpp:1312
 msgid "_A"
 msgstr ""
 
-#: src/canvasMenu.cpp:1639 src/RoutePropDlgImpl.cpp:1049
+#: src/canvasMenu.cpp:1650 src/RoutePropDlgImpl.cpp:1049
 #: src/TrackPropDlg.cpp:1313
 msgid "_B"
 msgstr ""
 
-#: src/canvasMenu.cpp:1726
+#: src/canvasMenu.cpp:1737
 msgid "Send Waypoint to OpenCPN Peer"
 msgstr ""
 
-#: src/canvasMenu.cpp:1779
+#: src/canvasMenu.cpp:1790
 msgid "Send Route to OpenCPN Peer"
 msgstr ""
 
-#: src/canvasMenu.cpp:1868
+#: src/canvasMenu.cpp:1879
 msgid "Are you sure you want to delete this track?"
 msgstr "क्या आप वाकई इस ट्रैक को हटाना चाहते हैं?"
 
-#: src/canvasMenu.cpp:1869 src/routeman_gui.cpp:237
+#: src/canvasMenu.cpp:1880 src/routeman_gui.cpp:237
 msgid "OpenCPN Track Delete"
 msgstr "ओपनसीपीएन ट्रैक हटाएं"
 
-#: src/canvasMenu.cpp:1919
+#: src/canvasMenu.cpp:1930
 msgid "Send Track to OpenCPN Peer"
 msgstr ""
 
@@ -3327,15 +3344,15 @@ msgstr ""
 msgid "Chart Panel Options"
 msgstr ""
 
-#: src/CanvasOptions.cpp:133 src/options.cpp:4016 src/options.cpp:4197
+#: src/CanvasOptions.cpp:133 src/options.cpp:4003 src/options.cpp:4184
 msgid "Navigation Mode"
 msgstr "नेविगेशन मोड"
 
-#: src/CanvasOptions.cpp:140 src/options.cpp:4024 src/options.cpp:4205
+#: src/CanvasOptions.cpp:140 src/options.cpp:4011 src/options.cpp:4192
 msgid "North Up"
 msgstr "उत्तर ऊपर"
 
-#: src/CanvasOptions.cpp:148 src/options.cpp:4027 src/options.cpp:4208
+#: src/CanvasOptions.cpp:148 src/options.cpp:4014 src/options.cpp:4195
 msgid "Course Up"
 msgstr "कोर्स अप"
 
@@ -3343,29 +3360,29 @@ msgstr "कोर्स अप"
 msgid "Heading Up"
 msgstr ""
 
-#: src/CanvasOptions.cpp:166 src/options.cpp:4034 src/options.cpp:4215
+#: src/CanvasOptions.cpp:166 src/options.cpp:4021 src/options.cpp:4202
 msgid "Look Ahead Mode"
 msgstr "आगे मोड देखें"
 
-#: src/CanvasOptions.cpp:177 src/options.cpp:1977
+#: src/CanvasOptions.cpp:177 src/options.cpp:1958
 msgid "Display Options"
 msgstr "प्रदर्शित विकल्प"
 
-#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3521 src/ocpn_frame.cpp:3527
-#: src/options.cpp:4049 src/options.cpp:4230
+#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3528 src/ocpn_frame.cpp:3534
+#: src/options.cpp:4036 src/options.cpp:4217
 msgid "Enable Chart Quilting"
 msgstr "चार्ट क्विंटिंग सक्षम करें"
 
-#: src/CanvasOptions.cpp:189 src/options.cpp:4090 src/options.cpp:4275
+#: src/CanvasOptions.cpp:189 src/options.cpp:4077 src/options.cpp:4262
 msgid "Show Grid"
 msgstr "ग्रिड दिखाएं"
 
-#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3523 src/ocpn_frame.cpp:3529
-#: src/options.cpp:4094 src/options.cpp:4279
+#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3530 src/ocpn_frame.cpp:3536
+#: src/options.cpp:4081 src/options.cpp:4266
 msgid "Show Chart Outlines"
 msgstr "चार्ट आउटलाइन दिखाएं"
 
-#: src/CanvasOptions.cpp:203 src/options.cpp:4098 src/options.cpp:4283
+#: src/CanvasOptions.cpp:203 src/options.cpp:4085 src/options.cpp:4270
 msgid "Show Depth Units"
 msgstr "गहराई इकाइयां दिखाएं"
 
@@ -3385,8 +3402,8 @@ msgstr ""
 msgid "Show Tide stations"
 msgstr ""
 
-#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1334 src/ocpn_frame.cpp:3565
-#: src/toolbar.cpp:1232
+#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1338 src/ocpn_frame.cpp:3572
+#: src/toolbar.cpp:1234
 msgid "Show Currents"
 msgstr "धाराएं दिखाएं"
 
@@ -3402,7 +3419,7 @@ msgstr ""
 msgid "Show depths"
 msgstr ""
 
-#: src/CanvasOptions.cpp:274 src/options.cpp:3416 src/options.cpp:3610
+#: src/CanvasOptions.cpp:274 src/options.cpp:3398 src/options.cpp:3592
 msgid "Buoy/Light Labels"
 msgstr "बांधना / हल्के रंगों केलेबल"
 
@@ -3410,7 +3427,7 @@ msgstr "बांधना / हल्के रंगों केलेबल"
 msgid "Lights"
 msgstr ""
 
-#: src/CanvasOptions.cpp:288 src/options.cpp:3421 src/options.cpp:3615
+#: src/CanvasOptions.cpp:288 src/options.cpp:3403 src/options.cpp:3597
 msgid "Light Descriptions"
 msgstr "लाइट वर्णन"
 
@@ -3426,15 +3443,15 @@ msgstr ""
 msgid "Show chart data quality"
 msgstr ""
 
-#: src/CanvasOptions.cpp:321 src/options.cpp:3376 src/options.cpp:3579
+#: src/CanvasOptions.cpp:321 src/options.cpp:3358 src/options.cpp:3561
 msgid "Display Category"
 msgstr "प्रदर्शन श्रेणी"
 
-#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3360 src/options.cpp:3563
 msgid "Standard"
 msgstr ""
 
-#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3360 src/options.cpp:3563
 msgid "All"
 msgstr ""
 
@@ -3444,10 +3461,6 @@ msgstr ""
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
-msgstr ""
-
-#: src/catalog_mgr.cpp:99
-msgid "Hide"
 msgstr ""
 
 #: src/catalog_mgr.cpp:102
@@ -3482,7 +3495,7 @@ msgstr ""
 msgid "Latest available catalog:"
 msgstr ""
 
-#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4241
+#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4242
 msgid "Cannot download data from url"
 msgstr ""
 
@@ -3587,9 +3600,9 @@ msgstr ""
 msgid " Name:  "
 msgstr ""
 
-#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5403
-#: src/chcanv.cpp:5406 src/chcanv.cpp:5410 src/chcanv.cpp:5413
-#: src/chcanv.cpp:5416 src/chcanv.cpp:5454 src/routemanagerdialog.cpp:721
+#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5407
+#: src/chcanv.cpp:5410 src/chcanv.cpp:5414 src/chcanv.cpp:5417
+#: src/chcanv.cpp:5420 src/chcanv.cpp:5458 src/routemanagerdialog.cpp:721
 msgid "Scale"
 msgstr ""
 
@@ -3649,259 +3662,255 @@ msgstr "ओपनसीपीएन निर्देशिका स्कै�
 msgid "OpenCPN Chart Add...."
 msgstr "ओपनसीपीएन चार्ट जोड़ें...."
 
-#: src/chcanv.cpp:1304 src/ocpn_frame.cpp:3564 src/toolbar.cpp:1238
+#: src/chcanv.cpp:1308 src/ocpn_frame.cpp:3571 src/toolbar.cpp:1240
 msgid "Show Tides"
 msgstr "ज्वार दिखाएँ"
 
-#: src/chcanv.cpp:1305
+#: src/chcanv.cpp:1309
 msgid "Hide Tides"
 msgstr ""
 
-#: src/chcanv.cpp:1335
+#: src/chcanv.cpp:1339
 msgid "Hide Currents"
 msgstr ""
 
-#: src/chcanv.cpp:1425 src/chcanv.cpp:1440
+#: src/chcanv.cpp:1429 src/chcanv.cpp:1444
 msgid "Group \""
 msgstr "समूह\""
 
-#: src/chcanv.cpp:1430
+#: src/chcanv.cpp:1434
 msgid "\" is empty."
 msgstr ""
 
-#: src/chcanv.cpp:1432 src/chcanv.cpp:1447
+#: src/chcanv.cpp:1436 src/chcanv.cpp:1451
 msgid "OpenCPN Group Notice"
 msgstr "ओपनसीपीएन समूह नोटिस"
 
-#: src/chcanv.cpp:1445
+#: src/chcanv.cpp:1449
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "खाली है, \"सभी सक्रिय चार्ट\" समूह पर स्विच करना।"
 
-#: src/chcanv.cpp:3821 src/chcanv.cpp:10534
+#: src/chcanv.cpp:3825 src/chcanv.cpp:10543
 msgid "Layer Route: "
 msgstr "परत मार्ग: "
 
-#: src/chcanv.cpp:3824 src/chcanv.cpp:3999
+#: src/chcanv.cpp:3828 src/chcanv.cpp:4003
 msgid "(unnamed)"
 msgstr "(बेनाम)"
 
-#: src/chcanv.cpp:3828
+#: src/chcanv.cpp:3832
 msgid "Total Length: "
 msgstr "कुल लंबाई: "
 
-#: src/chcanv.cpp:3830
+#: src/chcanv.cpp:3834
 msgid "Leg: from "
 msgstr "लेग: से "
 
-#: src/chcanv.cpp:3830
+#: src/chcanv.cpp:3834
 msgid " to "
 msgstr " तक "
 
-#: src/chcanv.cpp:3880
+#: src/chcanv.cpp:3884
 msgid "From Ship To"
 msgstr ""
 
-#: src/chcanv.cpp:3902 src/concanv.cpp:389
+#: src/chcanv.cpp:3906 src/concanv.cpp:389
 msgid "%Dd %H:%M"
 msgstr ""
 
-#: src/chcanv.cpp:3903
+#: src/chcanv.cpp:3907
 msgid "%H:%M"
 msgstr ""
 
-#: src/chcanv.cpp:3996
+#: src/chcanv.cpp:4000
 msgid "Layer Track: "
 msgstr "परत ट्रैक: "
 
-#: src/chcanv.cpp:4003
+#: src/chcanv.cpp:4007
 msgid "Total Track: "
 msgstr ""
 
-#: src/chcanv.cpp:4020
+#: src/chcanv.cpp:4024
 msgid "Segment Created: "
 msgstr ""
 
-#: src/chcanv.cpp:5445 src/ocpn_frame.cpp:2170 src/ocpn_frame.cpp:2193
-#: src/OCPNPlatform.cpp:1578
+#: src/chcanv.cpp:5449 src/ocpn_frame.cpp:2177 src/ocpn_frame.cpp:2200
+#: src/OCPNPlatform.cpp:1581
 msgid "StatusBar"
 msgstr "स्थिति पट्टी"
 
-#: src/chcanv.cpp:6569
+#: src/chcanv.cpp:6573
 msgid "ON"
 msgstr ""
 
-#: src/chcanv.cpp:6572
+#: src/chcanv.cpp:6576
 msgid "OFF"
 msgstr ""
 
-#: src/chcanv.cpp:6577
-msgid "CPA alarm "
-msgstr ""
-
-#: src/chcanv.cpp:6581
+#: src/chcanv.cpp:6585
 msgid "CPA Alarm is switched"
 msgstr ""
 
-#: src/chcanv.cpp:7689 src/chcanv.cpp:8255
+#: src/chcanv.cpp:7698 src/chcanv.cpp:8264
 msgid "Use nearby waypoint?"
 msgstr "पास के रास्ते का उपयोग करें?"
 
-#: src/chcanv.cpp:7689 src/chcanv.cpp:7727 src/chcanv.cpp:7748
-#: src/chcanv.cpp:7810 src/chcanv.cpp:8255 src/chcanv.cpp:8293
-#: src/chcanv.cpp:8313 src/chcanv.cpp:8371 src/chcanv.cpp:8764
-#: src/chcanv.cpp:8782 src/chcanv.cpp:9016 src/chcanv.cpp:9034
+#: src/chcanv.cpp:7698 src/chcanv.cpp:7736 src/chcanv.cpp:7757
+#: src/chcanv.cpp:7819 src/chcanv.cpp:8264 src/chcanv.cpp:8302
+#: src/chcanv.cpp:8322 src/chcanv.cpp:8380 src/chcanv.cpp:8773
+#: src/chcanv.cpp:8791 src/chcanv.cpp:9025 src/chcanv.cpp:9043
 msgid "OpenCPN Route Create"
 msgstr "ओपनसीपीएन मार्ग बनाएं"
 
-#: src/chcanv.cpp:7719 src/chcanv.cpp:8285
+#: src/chcanv.cpp:7728 src/chcanv.cpp:8294
 msgid "Insert first part of this route in the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7723 src/chcanv.cpp:8289
+#: src/chcanv.cpp:7732 src/chcanv.cpp:8298
 msgid "Insert this route in the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7738 src/chcanv.cpp:8304
+#: src/chcanv.cpp:7747 src/chcanv.cpp:8313
 msgid "Append last part of this route to the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7741 src/chcanv.cpp:8307
+#: src/chcanv.cpp:7750 src/chcanv.cpp:8316
 msgid "Append this route to the new route?"
 msgstr ""
 
-#: src/chcanv.cpp:7800 src/chcanv.cpp:8363
+#: src/chcanv.cpp:7809 src/chcanv.cpp:8372
 msgid "For this leg the Great Circle route is "
 msgstr "इस चरण के लिए ग्रेट सर्कल मार्ग है "
 
-#: src/chcanv.cpp:7802 src/chcanv.cpp:8365
+#: src/chcanv.cpp:7811 src/chcanv.cpp:8374
 msgid " shorter than rhumbline.\n\n"
 msgstr " रूंबलाइन से कम.\n\n"
 
-#: src/chcanv.cpp:7803 src/chcanv.cpp:8366
+#: src/chcanv.cpp:7812 src/chcanv.cpp:8375
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "क्या आप चाहते हैं कि इस चरण के लिए ग्रेट सर्कल रूटिंग पॉइंट्स शामिल हों?"
 
-#: src/chcanv.cpp:8730 src/chcanv.cpp:8983
+#: src/chcanv.cpp:8739 src/chcanv.cpp:8992
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr ""
 
-#: src/chcanv.cpp:8732 src/chcanv.cpp:8985
+#: src/chcanv.cpp:8741 src/chcanv.cpp:8994
 msgid "OpenCPN RoutePoint change"
 msgstr ""
 
-#: src/chcanv.cpp:8757 src/chcanv.cpp:9009
+#: src/chcanv.cpp:8766 src/chcanv.cpp:9018
 msgid "Last part of route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8761 src/chcanv.cpp:9013
+#: src/chcanv.cpp:8770 src/chcanv.cpp:9022
 msgid "Full route to be appended to dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8775 src/chcanv.cpp:9027
+#: src/chcanv.cpp:8784 src/chcanv.cpp:9036
 msgid "First part of route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8779 src/chcanv.cpp:9031
+#: src/chcanv.cpp:8788 src/chcanv.cpp:9040
 msgid "Full route to be inserted into dragged route?"
 msgstr ""
 
-#: src/chcanv.cpp:8795 src/chcanv.cpp:9047
+#: src/chcanv.cpp:8804 src/chcanv.cpp:9056
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr ""
 
-#: src/chcanv.cpp:8797 src/chcanv.cpp:9049
+#: src/chcanv.cpp:8806 src/chcanv.cpp:9058
 msgid "which has been created manually?"
 msgstr ""
 
-#: src/chcanv.cpp:9524 src/chcanv.cpp:9534 src/S57QueryDialog.cpp:115
+#: src/chcanv.cpp:9533 src/chcanv.cpp:9543 src/S57QueryDialog.cpp:115
 #: src/S57QueryDialog.cpp:302
 msgid "ObjectQuery"
 msgstr "ऑब्जेक्ट क्वेरी"
 
-#: src/chcanv.cpp:9692 src/routemanagerdialog.cpp:2631
+#: src/chcanv.cpp:9701 src/routemanagerdialog.cpp:2631
 #: src/RoutePropDlgImpl.cpp:519
 msgid "Layer"
 msgstr "परत"
 
-#: src/chcanv.cpp:9778
+#: src/chcanv.cpp:9787
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "उसी स्थान पर मौजूद एक मौजूदा तरीका है जो आप पेस्ट कर रहे हैं। क्या आप इसके साथ चिपकाए गए डेटा को मर्ज करना चाहते हैं?\n\n"
 
-#: src/chcanv.cpp:9780
+#: src/chcanv.cpp:9789
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "जवाब 'नहीं' एक ही स्थान पर एक नया रास्ता बना देगा।"
 
-#: src/chcanv.cpp:9781
+#: src/chcanv.cpp:9790
 msgid "Merge waypoint?"
 msgstr "वेपेंट मर्ज करें?"
 
-#: src/chcanv.cpp:9846
+#: src/chcanv.cpp:9855
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "आपके पास चिपकाने वाले कुछ लोगों के समान स्थान पर मौजूद मौजूदा बिंदु बिंदु हैं। क्या आप उसमें चिपकाए गए डेटा को मर्ज करना चाहते हैं?\n\n"
 
-#: src/chcanv.cpp:9849
+#: src/chcanv.cpp:9858
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "जवाब 'नहीं' इस मार्ग के लिए सभी नए मार्ग बिंदु बनाएगा।"
 
-#: src/chcanv.cpp:9850
+#: src/chcanv.cpp:9859
 msgid "Merge waypoints?"
 msgstr "मार्गों को मिलाएं?"
 
-#: src/chcanv.cpp:10332 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
+#: src/chcanv.cpp:10341 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
 msgid "RouteLegInfoRollover"
 msgstr "रूट लेगएन्फो रोलओवर"
 
-#: src/chcanv.cpp:11131 src/mbtiles.cpp:1261
+#: src/chcanv.cpp:11140 src/mbtiles.cpp:1256
 msgid "MBTile requires OpenGL to be enabled"
 msgstr ""
 
-#: src/chcanv.cpp:11778 src/options.cpp:4416 src/options.cpp:4555
+#: src/chcanv.cpp:11787 src/options.cpp:4403 src/options.cpp:4542
 msgid "Feet"
 msgstr ""
 
-#: src/chcanv.cpp:11780 src/options.cpp:4388 src/options.cpp:4417
-#: src/options.cpp:4534 src/options.cpp:4556
+#: src/chcanv.cpp:11789 src/options.cpp:4375 src/options.cpp:4404
+#: src/options.cpp:4521 src/options.cpp:4543
 msgid "Meters"
 msgstr ""
 
-#: src/chcanv.cpp:11782 src/options.cpp:4418 src/options.cpp:4557
+#: src/chcanv.cpp:11791 src/options.cpp:4405 src/options.cpp:4544
 msgid "Fathoms"
 msgstr ""
 
-#: src/chcanv.cpp:11785
+#: src/chcanv.cpp:11794
 msgid "OverZoom"
 msgstr ""
 
-#: src/chcanv.cpp:12153 src/chcanv.cpp:12154
+#: src/chcanv.cpp:12162 src/chcanv.cpp:12163
 msgid "ExtendedTideIcon"
 msgstr ""
 
-#: src/chcanv.cpp:12484
+#: src/chcanv.cpp:12493
 msgid "CurrentValue"
 msgstr ""
 
-#: src/chcanv.cpp:12717 src/ocpn_frame.cpp:1166
+#: src/chcanv.cpp:12726 src/ocpn_frame.cpp:1167
 msgid "AIS Target Query"
 msgstr "एआईएस लक्ष्य प्रश्न"
 
-#: src/chcanv.cpp:13053
+#: src/chcanv.cpp:13062
 msgid "Show all AIS Targets"
 msgstr "सभी एआईएस लक्ष्य दिखाएं"
 
-#: src/chcanv.cpp:13054 src/ocpn_frame.cpp:3585 src/toolbar.cpp:1311
+#: src/chcanv.cpp:13063 src/ocpn_frame.cpp:3592 src/toolbar.cpp:1313
 msgid "Attenuate less critical AIS targets"
 msgstr "कम महत्वपूर्ण एआईएस लक्ष्यों को कमजोर करना"
 
-#: src/chcanv.cpp:13055 src/toolbar.cpp:1225 src/toolbar.cpp:1313
-#: src/toolbar.cpp:1316
+#: src/chcanv.cpp:13064 src/toolbar.cpp:1227 src/toolbar.cpp:1315
+#: src/toolbar.cpp:1318
 msgid "Hide AIS Targets"
 msgstr "एआईएस लक्ष्य को छिपाएं"
 
-#: src/chcanv.cpp:13706
+#: src/chcanv.cpp:13715
 msgid "Show This Chart"
 msgstr "यह चार्ट दिखाएं"
 
-#: src/chcanv.cpp:13711
+#: src/chcanv.cpp:13720
 msgid "Hide This Chart"
 msgstr ""
 
@@ -3937,9 +3946,9 @@ msgstr ""
 msgid "User Y Offset"
 msgstr ""
 
-#: src/cm93.cpp:6486 src/cm93.cpp:6500 src/options.cpp:3514 src/options.cpp:3524
-#: src/options.cpp:3534 src/options.cpp:3729 src/options.cpp:3738
-#: src/options.cpp:3747 src/options.cpp:6482
+#: src/cm93.cpp:6486 src/cm93.cpp:6500 src/options.cpp:3496 src/options.cpp:3506
+#: src/options.cpp:3516 src/options.cpp:3711 src/options.cpp:3720
+#: src/options.cpp:3729 src/options.cpp:6472
 msgid "meters"
 msgstr ""
 
@@ -4012,7 +4021,7 @@ msgstr ""
 msgid "Apply this template to return to a known safe configuration"
 msgstr ""
 
-#: src/connections_dialog.cpp:228 src/options.cpp:3994
+#: src/connections_dialog.cpp:228 src/options.cpp:3981
 msgid "General"
 msgstr ""
 
@@ -4060,12 +4069,12 @@ msgstr ""
 msgid "Edit Selected Connection"
 msgstr ""
 
-#: src/connections_dialog.cpp:373 src/conn_params.cpp:160
+#: src/connections_dialog.cpp:373 src/conn_params.cpp:165
 #: src/conn_params_panel.cpp:226 src/conn_params_panel.cpp:791
 msgid "Serial"
 msgstr ""
 
-#: src/connections_dialog.cpp:378 src/conn_params.cpp:162
+#: src/connections_dialog.cpp:378 src/conn_params.cpp:167
 #: src/conn_params_panel.cpp:328 src/conn_params_panel.cpp:821
 msgid "Network"
 msgstr ""
@@ -4091,19 +4100,19 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
-#: src/connections_dialog.cpp:466 src/conn_params.cpp:189
+#: src/connections_dialog.cpp:466 src/conn_params.cpp:194
 msgid "TCP"
 msgstr ""
 
-#: src/connections_dialog.cpp:472 src/conn_params.cpp:191
+#: src/connections_dialog.cpp:472 src/conn_params.cpp:196
 msgid "UDP"
 msgstr ""
 
-#: src/connections_dialog.cpp:478 src/conn_params.cpp:193
+#: src/connections_dialog.cpp:478 src/conn_params.cpp:198
 msgid "GPSD"
 msgstr ""
 
-#: src/connections_dialog.cpp:483 src/conn_params.cpp:195
+#: src/connections_dialog.cpp:483 src/conn_params.cpp:200
 msgid "Signal K"
 msgstr ""
 
@@ -4309,11 +4318,11 @@ msgstr ""
 msgid "Input filtering"
 msgstr ""
 
-#: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2137
+#: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2136
 msgid "Accept only sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2138
+#: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2137
 msgid "Ignore sentences"
 msgstr ""
 
@@ -4321,11 +4330,11 @@ msgstr ""
 msgid "Output filtering"
 msgstr ""
 
-#: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2135
+#: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2134
 msgid "Transmit sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2135
+#: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2134
 msgid "Drop sentences"
 msgstr ""
 
@@ -4333,46 +4342,46 @@ msgstr ""
 msgid "Stop Scan"
 msgstr ""
 
-#: src/connections_dialog.cpp:1641
+#: src/connections_dialog.cpp:1640
 msgid "Configure new connection"
 msgstr ""
 
-#: src/connections_dialog.cpp:1708
+#: src/connections_dialog.cpp:1707
 msgid "Signal K server available."
 msgstr ""
 
-#: src/connections_dialog.cpp:1710
+#: src/connections_dialog.cpp:1709
 msgid "Signal K server not found."
 msgstr ""
 
-#: src/connections_dialog.cpp:2074
+#: src/connections_dialog.cpp:2073
 msgid "Sentence Filter"
 msgstr ""
 
-#: src/connections_dialog.cpp:2086 src/options.cpp:3553 src/options.cpp:3766
+#: src/connections_dialog.cpp:2085 src/options.cpp:3535 src/options.cpp:3748
 msgid "Select All"
 msgstr "सभी का चयन करे"
 
-#: src/connections_dialog.cpp:2087 src/options.cpp:3555 src/options.cpp:3768
+#: src/connections_dialog.cpp:2086 src/options.cpp:3537 src/options.cpp:3750
 #: src/priority_gui.cpp:98
 msgid "Clear All"
 msgstr "सभी साफ करें"
 
-#: src/connections_dialog.cpp:2088 src/options.cpp:3899 src/RoutePropDlg.cpp:443
+#: src/connections_dialog.cpp:2087 src/options.cpp:3885 src/RoutePropDlg.cpp:443
 #: src/TrackPropDlg.cpp:920
 msgid "Add"
 msgstr ""
 
-#: src/connections_dialog.cpp:2188
+#: src/connections_dialog.cpp:2187
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
 msgstr ""
 
-#: src/connections_dialog.cpp:2190
+#: src/connections_dialog.cpp:2189
 msgid "Enter the NMEA sentence"
 msgstr ""
 
-#: src/connections_dialog.cpp:2209
+#: src/connections_dialog.cpp:2208
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -4380,63 +4389,63 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
 msgstr ""
 
-#: src/connections_dialog.cpp:2226
+#: src/connections_dialog.cpp:2225
 msgid "REGEX syntax error: \n"
 msgstr ""
 
-#: src/conn_params.cpp:164
+#: src/conn_params.cpp:169
 msgid "GPS"
 msgstr ""
 
-#: src/conn_params.cpp:166
+#: src/conn_params.cpp:171
 msgid "BT"
 msgstr ""
 
-#: src/conn_params.cpp:178
+#: src/conn_params.cpp:183
 msgid "Internal"
 msgstr ""
 
-#: src/conn_params.cpp:218
+#: src/conn_params.cpp:223
 msgid "Input"
 msgstr ""
 
-#: src/conn_params.cpp:220
+#: src/conn_params.cpp:225
 msgid "Output"
 msgstr ""
 
-#: src/conn_params.cpp:222
+#: src/conn_params.cpp:227
 msgid "In/Out"
 msgstr ""
 
-#: src/conn_params.cpp:229
+#: src/conn_params.cpp:234
 msgid "Reject"
 msgstr ""
 
-#: src/conn_params.cpp:231
+#: src/conn_params.cpp:236
 msgid "Accept"
 msgstr ""
 
-#: src/conn_params.cpp:234
+#: src/conn_params.cpp:239
 msgid "Drop"
 msgstr ""
 
-#: src/conn_params.cpp:236 src/SendToGpsDlg.cpp:206 src/SendToPeerDlg.cpp:171
+#: src/conn_params.cpp:241 src/SendToGpsDlg.cpp:206 src/SendToPeerDlg.cpp:171
 msgid "Send"
 msgstr "भेजना"
 
-#: src/conn_params.cpp:253
+#: src/conn_params.cpp:258
 msgid "In"
 msgstr ""
 
-#: src/conn_params.cpp:259
+#: src/conn_params.cpp:264
 msgid "In: None"
 msgstr ""
 
-#: src/conn_params.cpp:263
+#: src/conn_params.cpp:268
 msgid "Out"
 msgstr ""
 
-#: src/conn_params.cpp:269
+#: src/conn_params.cpp:274
 msgid ", Out: None"
 msgstr ""
 
@@ -4493,7 +4502,7 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
-#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5318
+#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5319
 #: src/update_mgr.cpp:239
 msgid "Reinstall"
 msgstr ""
@@ -4502,7 +4511,7 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5324 src/update_mgr.cpp:241
+#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5325 src/update_mgr.cpp:241
 msgid "Downgrade"
 msgstr ""
 
@@ -4538,11 +4547,11 @@ msgstr ""
 msgid " successfully installed"
 msgstr ""
 
-#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1251
+#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1252
 msgid "Installation complete"
 msgstr ""
 
-#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1242
+#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1243
 msgid "Installation error"
 msgstr ""
 
@@ -4554,19 +4563,19 @@ msgstr ""
 msgid "OpenCPN Message"
 msgstr ""
 
-#: src/glChartCanvas.cpp:1912
+#: src/glChartCanvas.cpp:1915
 msgid "GridText"
 msgstr ""
 
-#: src/glChartCanvas.cpp:4480
+#: src/glChartCanvas.cpp:4488
 msgid "Waiting for raster chart compression thread exit."
 msgstr "रास्टर चार्ट संपीड़न धागा निकास के लिए प्रतीक्षा कर रहा है"
 
-#: src/glTextureManager.cpp:1460
+#: src/glTextureManager.cpp:1464
 msgid "OpenCPN Compressed Cache Update"
 msgstr ""
 
-#: src/glTextureManager.cpp:1497 src/ocpn_frame.cpp:8729
+#: src/glTextureManager.cpp:1501 src/ocpn_frame.cpp:8771
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "स्वैच्छिक से दूरी:  %4.0f एनएमऑय"
@@ -4689,7 +4698,7 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/MarkInfo.cpp:389 src/options.cpp:2301 src/options.cpp:2364
+#: src/MarkInfo.cpp:389 src/options.cpp:2282 src/options.cpp:2345
 msgid "Combo!"
 msgstr ""
 
@@ -4738,20 +4747,20 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
-#: src/MarkInfo.cpp:594 src/options.cpp:4385 src/options.cpp:4531
+#: src/MarkInfo.cpp:594 src/options.cpp:4372 src/options.cpp:4518
 #: src/routeprintout.cpp:113 src/routeprintout.cpp:397 src/RoutePropDlg.cpp:115
 #: src/RoutePropDlg.cpp:324 src/trackprintout.cpp:94 src/trackprintout.cpp:319
 #: src/TrackPropDlg.cpp:303
 msgid "Distance"
 msgstr ""
 
-#: src/MarkInfo.cpp:598 src/options.cpp:2127 src/RoutePropDlg.cpp:223
+#: src/MarkInfo.cpp:598 src/options.cpp:2108 src/RoutePropDlg.cpp:223
 #: src/TrackPropDlg.cpp:474 src/TrackPropDlg.cpp:718
 msgid "Color"
 msgstr ""
 
-#: src/MarkInfo.cpp:601 src/options.cpp:2059 src/options.cpp:2276
-#: src/options.cpp:2693
+#: src/MarkInfo.cpp:601 src/options.cpp:2040 src/options.cpp:2257
+#: src/options.cpp:2675
 msgid "None"
 msgstr ""
 
@@ -4884,11 +4893,11 @@ msgstr ""
 msgid "mph"
 msgstr ""
 
-#: src/navutil_base.cpp:257 src/options.cpp:4402 src/options.cpp:4544
+#: src/navutil_base.cpp:257 src/options.cpp:4389 src/options.cpp:4531
 msgid "km/h"
 msgstr ""
 
-#: src/navutil_base.cpp:260 src/options.cpp:4402 src/options.cpp:4544
+#: src/navutil_base.cpp:260 src/options.cpp:4389 src/options.cpp:4531
 msgid "m/s"
 msgstr ""
 
@@ -4912,40 +4921,40 @@ msgstr ""
 msgid "N/A"
 msgstr ""
 
-#: src/navutil.cpp:1776 src/navutil.cpp:3137 src/options.cpp:1025
+#: src/navutil.cpp:1786 src/navutil.cpp:3148 src/options.cpp:1025
 #: src/options.cpp:1187
 msgid "Persistent"
 msgstr ""
 
-#: src/navutil.cpp:2846 src/navutil.cpp:2954
+#: src/navutil.cpp:2857 src/navutil.cpp:2965
 msgid "Export GPX file"
 msgstr "निर्यात जीपीएक्स फ़ाइल"
 
-#: src/navutil.cpp:2856
+#: src/navutil.cpp:2867
 msgid "Overwrite existing file?"
 msgstr "मौजूदा लिखी फाइल के ऊपर लिखना?"
 
-#: src/navutil.cpp:3044 src/navutil.cpp:3076
+#: src/navutil.cpp:3055 src/navutil.cpp:3087
 msgid "Import GPX file"
 msgstr "जीपीएक्स फ़ाइल आयात करें"
 
-#: src/navutil.cpp:3137
+#: src/navutil.cpp:3148
 msgid "Temporary"
 msgstr ""
 
-#: src/navutil.cpp:3172
+#: src/navutil.cpp:3183
 msgid "duplicate waypoints detected during import and ignored."
 msgstr ""
 
-#: src/navutil.cpp:3351
+#: src/navutil.cpp:3362
 msgid "C"
 msgstr ""
 
-#: src/navutil.cpp:3354
+#: src/navutil.cpp:3365
 msgid "F"
 msgstr ""
 
-#: src/navutil.cpp:3357
+#: src/navutil.cpp:3368
 msgid "K"
 msgstr ""
 
@@ -4953,64 +4962,64 @@ msgstr ""
 msgid "NMEA Debug Window"
 msgstr "एनएमईए डिबग विंडो"
 
-#: src/ocpn_app.cpp:945
+#: src/ocpn_app.cpp:946
 msgid "Show usage syntax."
 msgstr ""
 
-#: src/ocpn_app.cpp:947
+#: src/ocpn_app.cpp:948
 msgid "Run in portable mode."
 msgstr ""
 
-#: src/ocpn_app.cpp:949
+#: src/ocpn_app.cpp:950
 msgid "Switch to full screen mode on start."
 msgstr ""
 
-#: src/ocpn_app.cpp:952
+#: src/ocpn_app.cpp:953
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
 msgstr ""
 
-#: src/ocpn_app.cpp:960
+#: src/ocpn_app.cpp:961
 msgid "Amount of logging: error, warning, message, info, debug or trace"
 msgstr ""
 
-#: src/ocpn_app.cpp:962
+#: src/ocpn_app.cpp:963
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr ""
 
-#: src/ocpn_app.cpp:1132
+#: src/ocpn_app.cpp:1133
 msgid "Sorry, an existing instance of OpenCPN may be too busy to respond.\n"
 "Please retry."
 msgstr ""
 
-#: src/ocpn_app.cpp:1389 src/ocpn_app.cpp:1396
+#: src/ocpn_app.cpp:1390 src/ocpn_app.cpp:1397
 msgid "Failed to initialize the user interface. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1390
+#: src/ocpn_app.cpp:1391
 msgid "OpenCPN cannot start. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1391
+#: src/ocpn_app.cpp:1392
 msgid "The necessary configuration files were not found. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1392
+#: src/ocpn_app.cpp:1393
 msgid "See the log file at "
 msgstr ""
 
-#: src/ocpn_app.cpp:1393
+#: src/ocpn_app.cpp:1394
 msgid " for details."
 msgstr ""
 
-#: src/ocpn_app.cpp:1687
+#: src/ocpn_app.cpp:1701
 msgid " -- [Portable(-p) executing from "
 msgstr ""
 
-#: src/ocpn_app.cpp:1774
+#: src/ocpn_app.cpp:1788
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/ocpn_app.cpp:1945
+#: src/ocpn_app.cpp:1959
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr ""
@@ -5038,289 +5047,289 @@ msgid "This AIS target has Persistent tracking selected by MMSI properties\n"
 "Do you instead want to stop Persistent tracking for this target?"
 msgstr ""
 
-#: src/ocpn_frame.cpp:960
+#: src/ocpn_frame.cpp:961
 msgid "OpenCPN needs to update the chart database from config file entries...."
 msgstr ""
 
-#: src/ocpn_frame.cpp:972
+#: src/ocpn_frame.cpp:973
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/ocpn_frame.cpp:976
+#: src/ocpn_frame.cpp:977
 msgid "Elapsed time : "
 msgstr ""
 
-#: src/ocpn_frame.cpp:977
+#: src/ocpn_frame.cpp:978
 msgid "Estimated time : "
 msgstr ""
 
-#: src/ocpn_frame.cpp:978
+#: src/ocpn_frame.cpp:979
 msgid "Remaining time : "
 msgstr ""
 
-#: src/ocpn_frame.cpp:980 src/ocpn_frame.cpp:4578 src/ocpn_frame.cpp:4588
+#: src/ocpn_frame.cpp:981 src/ocpn_frame.cpp:4614 src/ocpn_frame.cpp:4624
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2644 src/ocpn_frame.cpp:2757
+#: src/ocpn_frame.cpp:2651 src/ocpn_frame.cpp:2764
 msgid "Show Toolbar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2645 src/ocpn_frame.cpp:2759 src/ocpn_frame.cpp:7107
+#: src/ocpn_frame.cpp:2652 src/ocpn_frame.cpp:2766 src/ocpn_frame.cpp:7149
 msgid "Hide Toolbar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2964 src/ocpn_frame.cpp:3027
+#: src/ocpn_frame.cpp:2971 src/ocpn_frame.cpp:3034
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2965 src/ocpn_frame.cpp:6747
+#: src/ocpn_frame.cpp:2972 src/ocpn_frame.cpp:6785
 msgid " at "
 msgstr ""
 
-#: src/ocpn_frame.cpp:2967 src/ocpn_frame.cpp:6749
+#: src/ocpn_frame.cpp:2974 src/ocpn_frame.cpp:6787
 msgid " on "
 msgstr ""
 
-#: src/ocpn_frame.cpp:2987
+#: src/ocpn_frame.cpp:2994
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2999
+#: src/ocpn_frame.cpp:3006
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3000
+#: src/ocpn_frame.cpp:3007
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3028 src/ocpn_frame.cpp:6805 src/ocpn_frame.cpp:6846
+#: src/ocpn_frame.cpp:3035 src/ocpn_frame.cpp:6843 src/ocpn_frame.cpp:6884
 msgid " Time: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:3030
+#: src/ocpn_frame.cpp:3037
 msgid "  Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:3048 src/ocpn_frame.cpp:7186
+#: src/ocpn_frame.cpp:3055 src/ocpn_frame.cpp:7228
 msgid "Disable Tracking"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3120 src/ocpn_frame.cpp:3494 src/ocpn_frame.cpp:7132
-#: src/toolbar.cpp:1257
+#: src/ocpn_frame.cpp:3127 src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:7174
+#: src/toolbar.cpp:1259
 msgid "Enable Tracking"
 msgstr "ट्रैकिंग सक्षम करें"
 
-#: src/ocpn_frame.cpp:3493 src/toolbar.cpp:1196
+#: src/ocpn_frame.cpp:3500 src/toolbar.cpp:1198
 msgid "Auto Follow"
 msgstr "स्वत: का पालन करें"
 
-#: src/ocpn_frame.cpp:3498
+#: src/ocpn_frame.cpp:3505
 msgid "Head Up Mode"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:3504 src/toolbar.cpp:1161
+#: src/ocpn_frame.cpp:3508 src/ocpn_frame.cpp:3511 src/toolbar.cpp:1163
 msgid "Zoom In"
 msgstr "ज़ूम इन"
 
-#: src/ocpn_frame.cpp:3502 src/ocpn_frame.cpp:3505 src/toolbar.cpp:1167
+#: src/ocpn_frame.cpp:3509 src/ocpn_frame.cpp:3512 src/toolbar.cpp:1169
 msgid "Zoom Out"
 msgstr "ज़ूम आउट"
 
-#: src/ocpn_frame.cpp:3509
+#: src/ocpn_frame.cpp:3516
 msgid "Larger Scale Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3511
+#: src/ocpn_frame.cpp:3518
 msgid "Smaller Scale Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3514
+#: src/ocpn_frame.cpp:3521
 msgid "Exit OpenCPN"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3516
+#: src/ocpn_frame.cpp:3523
 msgid "&Navigate"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3532 src/options.cpp:5306
+#: src/ocpn_frame.cpp:3539 src/options.cpp:5293
 msgid "Show Chart Bar"
 msgstr "चार्ट बार दिखाएं"
 
-#: src/ocpn_frame.cpp:3537 src/ocpn_frame.cpp:3550 src/toolbar.cpp:1216
+#: src/ocpn_frame.cpp:3544 src/ocpn_frame.cpp:3557 src/toolbar.cpp:1218
 msgid "Show ENC text"
 msgstr "एनएसी पाठ दिखाएं"
 
-#: src/ocpn_frame.cpp:3539 src/ocpn_frame.cpp:3552
+#: src/ocpn_frame.cpp:3546 src/ocpn_frame.cpp:3559
 msgid "Show ENC Lights"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3541 src/ocpn_frame.cpp:3554
+#: src/ocpn_frame.cpp:3548 src/ocpn_frame.cpp:3561
 msgid "Show ENC Soundings"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3543 src/ocpn_frame.cpp:3556
+#: src/ocpn_frame.cpp:3550 src/ocpn_frame.cpp:3563
 msgid "Show ENC Anchoring Info"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3545 src/ocpn_frame.cpp:3559
+#: src/ocpn_frame.cpp:3552 src/ocpn_frame.cpp:3566
 msgid "Show ENC Data Quality"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3547 src/ocpn_frame.cpp:3561
+#: src/ocpn_frame.cpp:3554 src/ocpn_frame.cpp:3568
 msgid "Show Navobjects"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3569 src/ocpn_frame.cpp:3572 src/ocpn_frame.cpp:7137
-#: src/toolbar.cpp:1264
+#: src/ocpn_frame.cpp:3576 src/ocpn_frame.cpp:3579 src/ocpn_frame.cpp:7179
+#: src/toolbar.cpp:1266
 msgid "Change Color Scheme"
 msgstr "रंग योजना बदलें"
 
-#: src/ocpn_frame.cpp:3580
+#: src/ocpn_frame.cpp:3587
 msgid "&View"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3583 src/toolbar.cpp:1320
+#: src/ocpn_frame.cpp:3590 src/toolbar.cpp:1322
 msgid "Show AIS Targets"
 msgstr "एआईएस लक्ष्य दिखाएं"
 
-#: src/ocpn_frame.cpp:3588
+#: src/ocpn_frame.cpp:3595
 msgid "Hide Moored AIS Targets"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3589
+#: src/ocpn_frame.cpp:3596
 msgid "Show AIS Target Tracks"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3590
+#: src/ocpn_frame.cpp:3597
 msgid "Show CPA Alert Dialogs"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3591
+#: src/ocpn_frame.cpp:3598
 msgid "Sound CPA Alarms"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3592
+#: src/ocpn_frame.cpp:3602 src/ocpn_frame.cpp:3605
 msgid "Show CPA Warnings"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3595
+#: src/ocpn_frame.cpp:3610
 msgid "&AIS"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3600 src/ocpn_frame.cpp:3603
+#: src/ocpn_frame.cpp:3615 src/ocpn_frame.cpp:3618
 msgid "Measure Distance"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3607
+#: src/ocpn_frame.cpp:3622
 msgid "Route && Mark Manager..."
 msgstr ""
 
-#: src/ocpn_frame.cpp:3609 src/ocpn_frame.cpp:7120 src/toolbar.cpp:1189
+#: src/ocpn_frame.cpp:3624 src/ocpn_frame.cpp:7162 src/toolbar.cpp:1191
 msgid "Create Route"
 msgstr "मार्ग बनाएं"
 
-#: src/ocpn_frame.cpp:3612
+#: src/ocpn_frame.cpp:3627
 msgid "Drop Mark at Boat"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3614
+#: src/ocpn_frame.cpp:3629
 msgid "Drop Mark at Cursor"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3620 src/ocpn_frame.cpp:3627 src/ocpn_frame.cpp:7164
-#: src/toolbar.cpp:1283
+#: src/ocpn_frame.cpp:3635 src/ocpn_frame.cpp:3642 src/ocpn_frame.cpp:7206
+#: src/toolbar.cpp:1285
 msgid "Drop MOB Marker"
 msgstr "मोब मार्कर गिराना"
 
-#: src/ocpn_frame.cpp:3624 src/pluginmanager.cpp:5106 src/pluginmanager.cpp:5127
+#: src/ocpn_frame.cpp:3639 src/pluginmanager.cpp:5107 src/pluginmanager.cpp:5128
 msgid "Preferences"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3632
+#: src/ocpn_frame.cpp:3647
 msgid "&Tools"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3636
+#: src/ocpn_frame.cpp:3651
 msgid "&Window"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3641
+#: src/ocpn_frame.cpp:3656
 msgid "OpenCPN Help"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3642
+#: src/ocpn_frame.cpp:3657
 msgid "&Help"
 msgstr ""
 
-#: src/ocpn_frame.cpp:4273
+#: src/ocpn_frame.cpp:4309
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
 
-#: src/ocpn_frame.cpp:5255
+#: src/ocpn_frame.cpp:5295
 msgid " Ship "
 msgstr ""
 
-#: src/ocpn_frame.cpp:5965
+#: src/ocpn_frame.cpp:6005
 msgid "Rotated Mode"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6311 src/routeprintout.cpp:477 src/trackprintout.cpp:409
+#: src/ocpn_frame.cpp:6351 src/routeprintout.cpp:477 src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "प्रिंट करने में कोई समस्या थी\n"
 " क्या शायद आपका वर्तमान प्रिंटर ठीक से सेट नहीं है?"
 
-#: src/ocpn_frame.cpp:6480 src/ocpn_frame.cpp:6537
+#: src/ocpn_frame.cpp:6520 src/ocpn_frame.cpp:6577
 #: src/routemanagerdialog.cpp:1225
 msgid "(Unnamed Route)"
 msgstr "(अनाम मार्ग)"
 
-#: src/ocpn_frame.cpp:6746 src/ocpn_frame.cpp:6804
+#: src/ocpn_frame.cpp:6784 src/ocpn_frame.cpp:6842
 msgid "AIS MAN OVERBOARD"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6766 src/options.cpp:1970
+#: src/ocpn_frame.cpp:6804 src/options.cpp:1951
 msgid "Own ship"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6778
+#: src/ocpn_frame.cpp:6816
 msgid "Temporary AISMOB Route"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6779
+#: src/ocpn_frame.cpp:6817
 msgid "Present own ship"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6807 src/ocpn_frame.cpp:6848
+#: src/ocpn_frame.cpp:6845 src/ocpn_frame.cpp:6886
 msgid "  Ownship Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:6811 src/ocpn_frame.cpp:6852
+#: src/ocpn_frame.cpp:6849 src/ocpn_frame.cpp:6890
 msgid "  MOB Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:6845
+#: src/ocpn_frame.cpp:6883
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr ""
 
-#: src/ocpn_frame.cpp:7126 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1250
+#: src/ocpn_frame.cpp:7168 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1252
 msgid "Route & Mark Manager"
 msgstr "रूट और मार्क प्रबंधक"
 
-#: src/ocpn_frame.cpp:7150 src/toolbar.cpp:1244
+#: src/ocpn_frame.cpp:7192 src/toolbar.cpp:1246
 msgid "Print Chart"
 msgstr "प्रिंट चार्ट"
 
-#: src/ocpn_frame.cpp:7164 src/toolbar.cpp:1283
+#: src/ocpn_frame.cpp:7206 src/toolbar.cpp:1285
 msgid " (Ctrl-Space)"
 msgstr " (स्टर्ल -स्पेस)"
 
-#: src/ocpn_frame.cpp:8698
+#: src/ocpn_frame.cpp:8740
 msgid "OpenCPN ENC Prepare"
 msgstr ""
 
-#: src/ocpn_frame.cpp:8760
+#: src/ocpn_frame.cpp:8802
 msgid "ENC Completed."
 msgstr ""
 
@@ -5380,7 +5389,7 @@ msgid "An MMSI Id is generally a number of nine digits.\n"
 msgstr "एक एमएमएसआई आईडी आमतौर पर नौ अंकों की संख्या है.\n"
 "कृपया अपनी प्रविष्टियां जांचें और यदि आवश्यक हो तो रद्द करें।"
 
-#: src/options.cpp:1175 src/options.cpp:2004 src/options.cpp:2116
+#: src/options.cpp:1175 src/options.cpp:1985 src/options.cpp:2097
 #: src/RoutePropDlg.cpp:251 src/RoutePropDlg.cpp:272 src/TrackPropDlg.cpp:498
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:740 src/TrackPropDlg.cpp:753
 msgid "Default"
@@ -5399,7 +5408,7 @@ msgstr ""
 msgid "Edit MMSI Properties"
 msgstr "एमएमएसआई गुण संपादित करें"
 
-#: src/options.cpp:1234 src/options.cpp:4898 src/options.cpp:4905
+#: src/options.cpp:1234 src/options.cpp:4885 src/options.cpp:4892
 msgid "MMSI Properties"
 msgstr "एमएमएसआई गुण"
 
@@ -5435,7 +5444,7 @@ msgstr ""
 msgid "Add MMSI Properties"
 msgstr "एमएमएसआई गुण जोड़ें"
 
-#: src/options.cpp:1823
+#: src/options.cpp:1804
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -5446,7 +5455,7 @@ msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1834
+#: src/options.cpp:1815
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -5458,1135 +5467,1135 @@ msgid "\n"
 "For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"
 msgstr ""
 
-#: src/options.cpp:1956
+#: src/options.cpp:1937
 msgid "NMEA"
 msgstr ""
 
-#: src/options.cpp:1987
+#: src/options.cpp:1968
 msgid "COG Predictor Length (min)"
 msgstr "कॉग्गिक प्रोजेक्टर लंबाई (मिनट)"
 
-#: src/options.cpp:1994
+#: src/options.cpp:1975
 msgid "Heading Predictor Length (NMi)"
 msgstr "हेडिंग प्रेडिक्टर लम्बाई (एनएमआई)"
 
-#: src/options.cpp:2001
+#: src/options.cpp:1982
 msgid "Ship Icon Type"
 msgstr "शिप आइकन प्रकार"
 
-#: src/options.cpp:2004
+#: src/options.cpp:1985
 msgid "Real Scale Bitmap"
 msgstr "रियल स्केल बिटमैप"
 
-#: src/options.cpp:2005
+#: src/options.cpp:1986
 msgid "Real Scale Vector"
 msgstr "असली स्केल वेक्टर"
 
-#: src/options.cpp:2020
+#: src/options.cpp:2001
 msgid "Length Over All (m)"
 msgstr "सभी की लंबाई (मी)"
 
-#: src/options.cpp:2026
+#: src/options.cpp:2007
 msgid "Width Over All (m)"
 msgstr "सभी की चौड़ाई (मी)"
 
-#: src/options.cpp:2032
+#: src/options.cpp:2013
 msgid "GPS Offset from Bow (m)"
 msgstr "बो (एम) से जीपीएस ऑफ़सेट"
 
-#: src/options.cpp:2038
+#: src/options.cpp:2019
 msgid "GPS Offset from Midship (m)"
 msgstr "मिडशिप से जीपीएस ऑफ़सेट (मी)"
 
-#: src/options.cpp:2044
+#: src/options.cpp:2025
 msgid "Minimum Screen Size (mm)"
 msgstr "न्यूनतम स्क्रीन आकार (मिमी)"
 
-#: src/options.cpp:2056
+#: src/options.cpp:2037
 msgid "Show range rings"
 msgstr "रेंज रिंग दिखाएं"
 
-#: src/options.cpp:2073 src/options.cpp:2422
+#: src/options.cpp:2054 src/options.cpp:2403
 msgid "Distance between rings"
 msgstr "रिंगों के बीच की दूरी"
 
-#: src/options.cpp:2082 src/options.cpp:2433
+#: src/options.cpp:2063 src/options.cpp:2414
 msgid "Distance Unit"
 msgstr "दूरी इकाई"
 
-#: src/options.cpp:2085 src/options.cpp:2274 src/options.cpp:4387
-#: src/options.cpp:4533
+#: src/options.cpp:2066 src/options.cpp:2255 src/options.cpp:4374
+#: src/options.cpp:4520
 msgid "Nautical miles"
 msgstr "नॉटिकल माइल"
 
-#: src/options.cpp:2085 src/options.cpp:2274 src/options.cpp:4388
-#: src/options.cpp:4534
+#: src/options.cpp:2066 src/options.cpp:2255 src/options.cpp:4375
+#: src/options.cpp:4521
 msgid "Kilometers"
 msgstr "किलोमीटर"
 
-#: src/options.cpp:2092
+#: src/options.cpp:2073
 msgid "Range Ring Colour"
 msgstr "रेंज रिंग रंग"
 
-#: src/options.cpp:2107
+#: src/options.cpp:2088
 msgid "Show direction to Active Waypoint"
 msgstr ""
 
-#: src/options.cpp:2112 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:493
+#: src/options.cpp:2093 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:493
 #: src/TrackPropDlg.cpp:735
 msgid "Style"
 msgstr ""
 
-#: src/options.cpp:2116 src/RoutePropDlg.cpp:251 src/TrackPropDlg.cpp:498
+#: src/options.cpp:2097 src/RoutePropDlg.cpp:251 src/TrackPropDlg.cpp:498
 #: src/TrackPropDlg.cpp:740
 msgid "Solid"
 msgstr ""
 
-#: src/options.cpp:2117 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
+#: src/options.cpp:2098 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
 #: src/TrackPropDlg.cpp:740
 msgid "Dot"
 msgstr ""
 
-#: src/options.cpp:2117 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
+#: src/options.cpp:2098 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
 #: src/TrackPropDlg.cpp:741
 msgid "Long dash"
 msgstr ""
 
-#: src/options.cpp:2118 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
+#: src/options.cpp:2099 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
 #: src/TrackPropDlg.cpp:741
 msgid "Short dash"
 msgstr ""
 
-#: src/options.cpp:2118 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
+#: src/options.cpp:2099 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
 #: src/TrackPropDlg.cpp:741
 msgid "Dot dash"
 msgstr ""
 
-#: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
+#: src/options.cpp:2113 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Black"
 msgstr ""
 
-#: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
+#: src/options.cpp:2113 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Dark Red"
 msgstr ""
 
-#: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
+#: src/options.cpp:2113 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Dark Green"
 msgstr ""
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Yellow"
 msgstr ""
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Blue"
 msgstr ""
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Magenta"
 msgstr ""
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Cyan"
 msgstr ""
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Light Gray"
 msgstr ""
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Dark Gray"
 msgstr ""
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Red"
 msgstr ""
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Green"
 msgstr ""
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Yellow"
 msgstr ""
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Blue"
 msgstr ""
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Magenta"
 msgstr ""
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Cyan"
 msgstr ""
 
-#: src/options.cpp:2136 src/RoutePropDlg.cpp:233 src/TrackPropDlg.cpp:484
+#: src/options.cpp:2117 src/RoutePropDlg.cpp:233 src/TrackPropDlg.cpp:484
 #: src/TrackPropDlg.cpp:728
 msgid "White"
 msgstr ""
 
-#: src/options.cpp:2146 src/routemanagerdialog.cpp:517
+#: src/options.cpp:2127 src/routemanagerdialog.cpp:517
 msgid "Tracks"
 msgstr "पथ मार्ग"
 
-#: src/options.cpp:2152
+#: src/options.cpp:2133
 msgid "Automatic Daily Tracks at midnight"
 msgstr "आधी रात को स्वचालित दैनिक ट्रैक"
 
-#: src/options.cpp:2161
+#: src/options.cpp:2142
 msgid "Automatic Daily Tracks at"
 msgstr "स्वचालित दैनिक ट्रैक पर"
 
-#: src/options.cpp:2179
+#: src/options.cpp:2160
 msgid "Computer"
 msgstr "कंप्यूटर"
 
-#: src/options.cpp:2185 src/RoutePropDlg.cpp:206 src/TCWin.cpp:155
+#: src/options.cpp:2166 src/RoutePropDlg.cpp:206 src/TCWin.cpp:155
 #: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:452 src/TrackPropDlg.cpp:816
 msgid "UTC"
 msgstr "यु. टी. सी"
 
-#: src/options.cpp:2191
+#: src/options.cpp:2172
 msgid "LMT"
 msgstr ""
 
-#: src/options.cpp:2204
+#: src/options.cpp:2185
 msgid "Highlight Tracks"
 msgstr "हाइलाइट ट्रैक"
 
-#: src/options.cpp:2208
+#: src/options.cpp:2189
 msgid "Highlight Colour"
 msgstr ""
 
-#: src/options.cpp:2223
+#: src/options.cpp:2204
 msgid "Tracking Precision"
 msgstr "ट्रैकिंग प्रेसिजन"
 
-#: src/options.cpp:2226
+#: src/options.cpp:2207
 msgid "Low"
 msgstr ""
 
-#: src/options.cpp:2226
+#: src/options.cpp:2207
 msgid "Medium"
 msgstr ""
 
-#: src/options.cpp:2226
+#: src/options.cpp:2207
 msgid "High"
 msgstr ""
 
-#: src/options.cpp:2234
+#: src/options.cpp:2215
 msgid "Calculate values"
 msgstr "मूल्यों की गणना करें"
 
-#: src/options.cpp:2248
+#: src/options.cpp:2229
 msgid "Calculate SOG and COG from position changes"
 msgstr "स्थान परिवर्तन से सओजी और सीओजी की गणना करें"
 
-#: src/options.cpp:2253
+#: src/options.cpp:2234
 msgid "Min seconds between updates"
 msgstr "अपडेट के बीच मिनट सेकंड"
 
-#: src/options.cpp:2269
+#: src/options.cpp:2250
 msgid "Routes/Points"
 msgstr ""
 
-#: src/options.cpp:2282
+#: src/options.cpp:2263
 msgid "New Routes"
 msgstr ""
 
-#: src/options.cpp:2296 src/options.cpp:2359
+#: src/options.cpp:2277 src/options.cpp:2340
 msgid "Waypoint default icon"
 msgstr ""
 
-#: src/options.cpp:2322
+#: src/options.cpp:2303
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "वेपॉइंट आगमन सर्कल रेडियस (एनएमआई)"
 
-#: src/options.cpp:2331
+#: src/options.cpp:2312
 msgid "Advance route waypoint on arrival only"
 msgstr "आगमन पर अग्रिम मार्ग का रास्ता केवल"
 
-#: src/options.cpp:2344
+#: src/options.cpp:2325
 msgid "New Waypoints"
 msgstr ""
 
-#: src/options.cpp:2385
+#: src/options.cpp:2366
 msgid "Show waypoints only at a chartscale greater than 1 :"
 msgstr ""
 
-#: src/options.cpp:2394
+#: src/options.cpp:2375
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr ""
 
-#: src/options.cpp:2407
+#: src/options.cpp:2388
 msgid "Waypoint range rings"
 msgstr "वेपॉइंट रेंज रिंग्स"
 
-#: src/options.cpp:2444
+#: src/options.cpp:2425
 msgid "Waypoint Range Ring Colours"
 msgstr "वेपॉइंट रेंज अंगूठी रंग"
 
-#: src/options.cpp:2465
+#: src/options.cpp:2446
 msgid "Control Options"
 msgstr ""
 
-#: src/options.cpp:2474
+#: src/options.cpp:2455
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "लॉक वेपॉइंट्स (जब तक कि प्वाइंट प्रॉपर्टी डायलॉग दिखाई नहीं दे रहा है)"
 
-#: src/options.cpp:2480
+#: src/options.cpp:2461
 msgid "Confirm deletion of tracks and routes"
 msgstr "पटरियों और मार्गों को हटाने की पुष्टि करें"
 
-#: src/options.cpp:2538
+#: src/options.cpp:2519
 msgid "Chart Files"
 msgstr "चार्ट फ़ाइलें"
 
-#: src/options.cpp:2543
+#: src/options.cpp:2524
 msgid "Directories"
 msgstr ""
 
-#: src/options.cpp:2566
+#: src/options.cpp:2547
 msgid "Add Directory..."
 msgstr "निर्देशिका जोड़ें..."
 
-#: src/options.cpp:2567 src/options.cpp:3839 src/RoutePropDlgImpl.cpp:934
+#: src/options.cpp:2548 src/options.cpp:3823 src/RoutePropDlgImpl.cpp:934
 msgid "Remove Selected"
 msgstr "चुना हुआ हटाओ"
 
-#: src/options.cpp:2568
+#: src/options.cpp:2549
 msgid "Compress Selected"
 msgstr "चयनित संकुचित करें"
 
-#: src/options.cpp:2571
+#: src/options.cpp:2552
 msgid "Add.."
 msgstr ""
 
-#: src/options.cpp:2572
+#: src/options.cpp:2553
 msgid "Remove"
 msgstr ""
 
-#: src/options.cpp:2573
+#: src/options.cpp:2554
 msgid "Compress"
 msgstr ""
 
-#: src/options.cpp:2598
+#: src/options.cpp:2579
 msgid "Migrate Charts.."
 msgstr ""
 
-#: src/options.cpp:2606
+#: src/options.cpp:2587
 msgid "Update Control"
 msgstr "अद्यतन करें नियंत्रण"
 
-#: src/options.cpp:2615
+#: src/options.cpp:2596
 msgid "Scan Charts and Update Database"
 msgstr "स्कैन चार्ट और अपडेट डाटाबेस"
 
-#: src/options.cpp:2619
+#: src/options.cpp:2600
 msgid "Force Full Database Rebuild"
 msgstr "बल पूर्ण डेटाबेस पुनर्निर्माण"
 
-#: src/options.cpp:2623
+#: src/options.cpp:2604
 msgid "Prepare all ENC Charts"
 msgstr "सभी एनएसी चार्ट तैयार करें"
 
-#: src/options.cpp:2690
+#: src/options.cpp:2672
 msgid " [Modified]"
 msgstr ""
 
-#: src/options.cpp:2698
+#: src/options.cpp:2680
 msgid "Templates"
 msgstr ""
 
-#: src/options.cpp:2710
+#: src/options.cpp:2692
 msgid "Template Status"
 msgstr ""
 
-#: src/options.cpp:2720
+#: src/options.cpp:2702
 msgid "Last Applied Template Title:"
 msgstr ""
 
-#: src/options.cpp:2733
+#: src/options.cpp:2715
 msgid "Saved Templates"
 msgstr ""
 
-#: src/options.cpp:2760
+#: src/options.cpp:2742
 msgid "Create Config..."
 msgstr ""
 
-#: src/options.cpp:2772
+#: src/options.cpp:2754
 msgid "Delete Selected Config..."
 msgstr ""
 
-#: src/options.cpp:2780
+#: src/options.cpp:2762
 msgid "Apply Selected Config"
 msgstr ""
 
-#: src/options.cpp:2853
+#: src/options.cpp:2835
 msgid "Create Config"
 msgstr ""
 
-#: src/options.cpp:2907
+#: src/options.cpp:2889
 msgid "Problem applying selected configuration."
 msgstr ""
 
-#: src/options.cpp:2980 src/RoutePropDlg.cpp:483 src/TrackPropDlg.cpp:940
+#: src/options.cpp:2962 src/RoutePropDlg.cpp:483 src/TrackPropDlg.cpp:940
 msgid "Advanced"
 msgstr ""
 
-#: src/options.cpp:3000
+#: src/options.cpp:2982
 msgid "De-skew Raster Charts"
 msgstr "डे-स्क्वॉ रास्टर चार्ट्स"
 
-#: src/options.cpp:3011 src/options.cpp:3329
+#: src/options.cpp:2993 src/options.cpp:3311
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "त्वरित ग्राफिक्स का उपयोग करें (ओपनजीएल)"
 
-#: src/options.cpp:3016
+#: src/options.cpp:2998
 msgid "OpenGL Options"
 msgstr ""
 
-#: src/options.cpp:3030 src/options.cpp:3191
+#: src/options.cpp:3012 src/options.cpp:3173
 msgid "Chart Rotation Averaging Time"
 msgstr "चार्ट रोटेशन औसत समय"
 
-#: src/options.cpp:3046 src/options.cpp:3203 src/options.cpp:5327
+#: src/options.cpp:3028 src/options.cpp:3185 src/options.cpp:5314
 msgid "seconds"
 msgstr ""
 
-#: src/options.cpp:3054 src/options.cpp:3212
+#: src/options.cpp:3036 src/options.cpp:3194
 msgid "Chart Zoom/Scale Weighting"
 msgstr "चार्ट ज़ूम / स्केल भार"
 
-#: src/options.cpp:3063 src/options.cpp:3237
+#: src/options.cpp:3045 src/options.cpp:3219
 msgid "Raster"
 msgstr ""
 
-#: src/options.cpp:3077 src/options.cpp:3250
+#: src/options.cpp:3059 src/options.cpp:3232
 msgid "Vector"
 msgstr ""
 
-#: src/options.cpp:3091 src/options.cpp:3267
+#: src/options.cpp:3073 src/options.cpp:3249
 msgid "CM93 Detail level"
 msgstr ""
 
-#: src/options.cpp:3110 src/options.cpp:3290
+#: src/options.cpp:3092 src/options.cpp:3272
 msgid "Physical Screen Width"
 msgstr "भौतिक स्क्रीन चौड़ाई"
 
-#: src/options.cpp:3115 src/options.cpp:3295
+#: src/options.cpp:3097 src/options.cpp:3277
 msgid "Auto"
 msgstr ""
 
-#: src/options.cpp:3119 src/options.cpp:3299
+#: src/options.cpp:3101 src/options.cpp:3281
 msgid "Manual:"
 msgstr ""
 
-#: src/options.cpp:3130 src/options.cpp:3307
+#: src/options.cpp:3112 src/options.cpp:3289
 msgid "mm"
 msgstr ""
 
-#: src/options.cpp:3161 src/options.cpp:4043 src/options.cpp:4224
+#: src/options.cpp:3143 src/options.cpp:4030 src/options.cpp:4211
 msgid "Chart Display"
 msgstr "चार्ट प्रदर्शन"
 
-#: src/options.cpp:3167
+#: src/options.cpp:3149
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "विषम रास्टर चार्ट को उत्तर-अप के रूप में दिखाएं"
 
-#: src/options.cpp:3220
+#: src/options.cpp:3202
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "कम मूल्य के साथ, एक समान ज़ूम स्तर कम विस्तृत चार्ट दिखाता है.\n"
 " उच्च मूल्य के साथ, एक ही ज़ूम स्तर अधिक विस्तृत चार्ट दिखाता है."
 
-#: src/options.cpp:3323
+#: src/options.cpp:3305
 msgid "Graphics"
 msgstr ""
 
-#: src/options.cpp:3356
+#: src/options.cpp:3338
 msgid "Vector Chart Display"
 msgstr "वेक्टर चार्ट प्रदर्शन"
 
-#: src/options.cpp:3379 src/options.cpp:3582
+#: src/options.cpp:3361 src/options.cpp:3564
 msgid "Mariner's Standard"
 msgstr "मरिनर स्टैंडर्ड"
 
-#: src/options.cpp:3398 src/options.cpp:3597
+#: src/options.cpp:3380 src/options.cpp:3579
 msgid "Depth Soundings"
 msgstr "गहराई ध्वनि"
 
-#: src/options.cpp:3404 src/options.cpp:3602
+#: src/options.cpp:3386 src/options.cpp:3584
 msgid "Chart Information Objects"
 msgstr "चार्ट सूचना वस्तुएं"
 
-#: src/options.cpp:3409
+#: src/options.cpp:3391
 msgid "Buoys/Lights"
 msgstr "बांधना / हल्के रंगों के"
 
-#: src/options.cpp:3426 src/options.cpp:3620
+#: src/options.cpp:3408 src/options.cpp:3602
 msgid "Extended Light Sectors"
 msgstr "विस्तारित प्रकाश क्षेत्र"
 
-#: src/options.cpp:3431
+#: src/options.cpp:3413
 msgid "Chart Texts"
 msgstr "चार्ट ग्रंथों"
 
-#: src/options.cpp:3438 src/options.cpp:3628
+#: src/options.cpp:3420 src/options.cpp:3610
 msgid "National text on chart"
 msgstr "चार्ट पर राष्ट्रीय पाठ"
 
-#: src/options.cpp:3443 src/options.cpp:3633
+#: src/options.cpp:3425 src/options.cpp:3615
 msgid "Important Text Only"
 msgstr "महत्वपूर्ण पाठ केवल"
 
-#: src/options.cpp:3448 src/options.cpp:3638
+#: src/options.cpp:3430 src/options.cpp:3620
 msgid "De-Cluttered Text"
 msgstr "डे-क्लेटेड टेक्स्ट"
 
-#: src/options.cpp:3452
+#: src/options.cpp:3434
 msgid "Chart Detail"
 msgstr "चार्ट विवरण"
 
-#: src/options.cpp:3455 src/options.cpp:3643
+#: src/options.cpp:3437 src/options.cpp:3625
 msgid "Reduced Detail at Small Scale"
 msgstr "छोटे पैमाने पर विस्तारित विवरण"
 
-#: src/options.cpp:3462 src/options.cpp:3650
+#: src/options.cpp:3444 src/options.cpp:3632
 msgid "Additonal detail reduction at Small Scale"
 msgstr ""
 
-#: src/options.cpp:3471 src/options.cpp:3666
+#: src/options.cpp:3453 src/options.cpp:3648
 msgid "Graphics Style"
 msgstr "ग्राफिक्स शैली"
 
-#: src/options.cpp:3474 src/options.cpp:3669
+#: src/options.cpp:3456 src/options.cpp:3651
 msgid "Paper Chart"
 msgstr "पेपर चार्ट"
 
-#: src/options.cpp:3475 src/options.cpp:3670
+#: src/options.cpp:3457 src/options.cpp:3652
 msgid "Simplified"
 msgstr ""
 
-#: src/options.cpp:3481 src/options.cpp:3681
+#: src/options.cpp:3463 src/options.cpp:3663
 msgid "Boundaries"
 msgstr ""
 
-#: src/options.cpp:3484 src/options.cpp:3684
+#: src/options.cpp:3466 src/options.cpp:3666
 msgid "Plain"
 msgstr ""
 
-#: src/options.cpp:3485 src/options.cpp:3685
+#: src/options.cpp:3467 src/options.cpp:3667
 msgid "Symbolized"
 msgstr ""
 
-#: src/options.cpp:3491 src/options.cpp:3696
+#: src/options.cpp:3473 src/options.cpp:3678
 msgid "Colors"
 msgstr ""
 
-#: src/options.cpp:3494 src/options.cpp:3700
+#: src/options.cpp:3476 src/options.cpp:3682
 msgid "2 Color"
 msgstr ""
 
-#: src/options.cpp:3495 src/options.cpp:3701
+#: src/options.cpp:3477 src/options.cpp:3683
 msgid "4 Color"
 msgstr ""
 
-#: src/options.cpp:3506 src/options.cpp:3723
+#: src/options.cpp:3488 src/options.cpp:3705
 msgid "Shallow Depth"
 msgstr "कम गहराई"
 
-#: src/options.cpp:3517 src/options.cpp:3732
+#: src/options.cpp:3499 src/options.cpp:3714
 msgid "Safety Depth"
 msgstr "सुरक्षा गहराई"
 
-#: src/options.cpp:3527 src/options.cpp:3741
+#: src/options.cpp:3509 src/options.cpp:3723
 msgid "Deep Depth"
 msgstr "दीप की गहराई"
 
-#: src/options.cpp:3542 src/options.cpp:3759
+#: src/options.cpp:3524 src/options.cpp:3741
 msgid "User Standard Objects"
 msgstr ""
 
-#: src/options.cpp:3561 src/options.cpp:3774
+#: src/options.cpp:3543 src/options.cpp:3756
 msgid "Reset to STANDARD"
 msgstr "स्तरपर रीसेट करें"
 
-#: src/options.cpp:3794
+#: src/options.cpp:3776
 msgid "Tides && Currents"
 msgstr "ज्वार && धाराओं"
 
-#: src/options.cpp:3799
+#: src/options.cpp:3781
 msgid "Active Datasets"
 msgstr "सक्रिय डेटासेट"
 
-#: src/options.cpp:3837
+#: src/options.cpp:3821
 msgid "Add Dataset..."
 msgstr "डेटासेट जोड़ें..."
 
-#: src/options.cpp:3879
+#: src/options.cpp:3865
 msgid "All Available Charts"
 msgstr "सभी उपलब्ध चार्ट"
 
-#: src/options.cpp:3901
+#: src/options.cpp:3887
 msgid "Remove Chart"
 msgstr "चार्ट निकालें"
 
-#: src/options.cpp:3938
+#: src/options.cpp:3924
 msgid "All Charts"
 msgstr "सभी चार्ट"
 
-#: src/options.cpp:3957
+#: src/options.cpp:3943
 msgid "New Group..."
 msgstr "नया समूह..."
 
-#: src/options.cpp:3959
+#: src/options.cpp:3945
 msgid "Delete Group"
 msgstr "समूह हटाएं"
 
-#: src/options.cpp:4054 src/options.cpp:4235
+#: src/options.cpp:4041 src/options.cpp:4222
 msgid "Preserve scale when switching charts"
 msgstr "चार्ट स्विच करते समय पैमाने को संरक्षित करें"
 
-#: src/options.cpp:4063 src/options.cpp:4244
+#: src/options.cpp:4050 src/options.cpp:4231
 msgid "Controls"
 msgstr ""
 
-#: src/options.cpp:4069 src/options.cpp:4250
+#: src/options.cpp:4056 src/options.cpp:4237
 msgid "Smooth Panning / Zooming"
 msgstr "चिकनी पैनिंग / ज़ूमिंग"
 
-#: src/options.cpp:4073 src/options.cpp:4253
+#: src/options.cpp:4060 src/options.cpp:4240
 msgid "Zoom to Cursor"
 msgstr "कर्सर को ज़ूम करें"
 
-#: src/options.cpp:4084 src/options.cpp:4269
+#: src/options.cpp:4071 src/options.cpp:4256
 msgid "Display Features"
 msgstr "प्रदर्शन सुविधाएँ"
 
-#: src/options.cpp:4114
+#: src/options.cpp:4101
 msgid "Status Bar Option"
 msgstr "स्थिति बार विकल्प"
 
-#: src/options.cpp:4121 src/options.cpp:4306
+#: src/options.cpp:4108 src/options.cpp:4293
 msgid "Live ETA at Cursor"
 msgstr "कर्सर पर लाइव ईटीए"
 
-#: src/options.cpp:4129 src/options.cpp:4314
+#: src/options.cpp:4116 src/options.cpp:4301
 msgid "Default Boat Speed "
 msgstr "डिफ़ॉल्ट नाव स्पीड "
 
-#: src/options.cpp:4144 src/options.cpp:4329
+#: src/options.cpp:4131 src/options.cpp:4316
 msgid "Canvas Layout"
 msgstr ""
 
-#: src/options.cpp:4299
+#: src/options.cpp:4286
 msgid "Status Bar"
 msgstr ""
 
-#: src/options.cpp:4366
+#: src/options.cpp:4353
 msgid "Units"
 msgstr ""
 
-#: src/options.cpp:4387 src/options.cpp:4533
+#: src/options.cpp:4374 src/options.cpp:4520
 msgid "Statute miles"
 msgstr "संविधि मील"
 
-#: src/options.cpp:4402 src/options.cpp:4544
+#: src/options.cpp:4389 src/options.cpp:4531
 msgid "Knots"
 msgstr ""
 
-#: src/options.cpp:4402 src/options.cpp:4544
+#: src/options.cpp:4389 src/options.cpp:4531
 msgid "Mph"
 msgstr ""
 
-#: src/options.cpp:4413 src/options.cpp:4552
+#: src/options.cpp:4400 src/options.cpp:4539
 msgid "Depth"
 msgstr ""
 
-#: src/options.cpp:4429 src/options.cpp:4565
+#: src/options.cpp:4416 src/options.cpp:4552
 msgid "Temperature"
 msgstr ""
 
-#: src/options.cpp:4432 src/options.cpp:4568
+#: src/options.cpp:4419 src/options.cpp:4555
 msgid "Celsius"
 msgstr ""
 
-#: src/options.cpp:4433 src/options.cpp:4569
+#: src/options.cpp:4420 src/options.cpp:4556
 msgid "Fahrenheit"
 msgstr ""
 
-#: src/options.cpp:4434 src/options.cpp:4570
+#: src/options.cpp:4421 src/options.cpp:4557
 msgid "Kelvin"
 msgstr ""
 
-#: src/options.cpp:4449 src/options.cpp:4582
+#: src/options.cpp:4436 src/options.cpp:4569
 msgid "Lat/Long"
 msgstr ""
 
-#: src/options.cpp:4451 src/options.cpp:4584
+#: src/options.cpp:4438 src/options.cpp:4571
 msgid "Degrees, Decimal Minutes"
 msgstr "डिग्री, दशमलव मिनट"
 
-#: src/options.cpp:4452 src/options.cpp:4585
+#: src/options.cpp:4439 src/options.cpp:4572
 msgid "Decimal Degrees"
 msgstr "दशमलव डिग्री"
 
-#: src/options.cpp:4453 src/options.cpp:4586
+#: src/options.cpp:4440 src/options.cpp:4573
 msgid "Degrees, Minutes, Seconds"
 msgstr "डिग्री, मिनट, सेकंड"
 
-#: src/options.cpp:4468 src/options.cpp:4598
+#: src/options.cpp:4455 src/options.cpp:4585
 msgid "Bearings"
 msgstr ""
 
-#: src/options.cpp:4473
+#: src/options.cpp:4460
 msgid "Show true"
 msgstr ""
 
-#: src/options.cpp:4478
+#: src/options.cpp:4465
 msgid "Show magnetic"
 msgstr ""
 
-#: src/options.cpp:4494
+#: src/options.cpp:4481
 msgid "Assumed magnetic variation"
 msgstr "मान लिया गया चुंबकीय भिन्नता"
 
-#: src/options.cpp:4509 src/options.cpp:4631
+#: src/options.cpp:4496 src/options.cpp:4618
 msgid "deg (-W, +E)"
 msgstr ""
 
-#: src/options.cpp:4606
+#: src/options.cpp:4593
 msgid "Show true bearings and headings"
 msgstr "सच बियरिंग्स और शीर्षकों दिखाएं"
 
-#: src/options.cpp:4609
+#: src/options.cpp:4596
 msgid "Show magnetic bearings and headings."
 msgstr "चुंबकीय बीयरिंग और शीर्षकों को दिखाएं"
 
-#: src/options.cpp:4621 src/options.cpp:6021
+#: src/options.cpp:4608 src/options.cpp:6011
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "वमम प्लगइन की गणना चुंबकीय भिन्नता है"
 
-#: src/options.cpp:4639
+#: src/options.cpp:4626
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " मैन्युअल रूप से चुंबकीय भिन्नता को सेट करने के लिए,\n"
 " आपको वमम प्लगइन अक्षम करना होगा"
 
-#: src/options.cpp:4759
+#: src/options.cpp:4746
 msgid "Test"
 msgstr ""
 
-#: src/options.cpp:4768
+#: src/options.cpp:4755
 msgid "Audio file name:"
 msgstr ""
 
-#: src/options.cpp:4796 src/options.cpp:4807 src/options.cpp:8278
-#: src/options.cpp:8289
+#: src/options.cpp:4783 src/options.cpp:4794 src/options.cpp:8268
+#: src/options.cpp:8279
 msgid "Select Sound File"
 msgstr "ध्वनि फ़ाइल चुनें"
 
-#: src/options.cpp:4848
+#: src/options.cpp:4835
 msgid "Sounds"
 msgstr ""
 
-#: src/options.cpp:4856
+#: src/options.cpp:4843
 msgid "Anchor Alarm"
 msgstr ""
 
-#: src/options.cpp:4857
+#: src/options.cpp:4844
 msgid "Play Sound on Anchor Alarm."
 msgstr ""
 
-#: src/options.cpp:4858
+#: src/options.cpp:4845
 msgid "Select Anchor Alarm Sound"
 msgstr ""
 
-#: src/options.cpp:4868
+#: src/options.cpp:4855
 msgid "Play Sound on AIS Alert."
 msgstr ""
 
-#: src/options.cpp:4869
+#: src/options.cpp:4856
 msgid "Select AIS Alert Sound"
 msgstr ""
 
-#: src/options.cpp:4878
+#: src/options.cpp:4865
 msgid "SART Alert"
 msgstr ""
 
-#: src/options.cpp:4879
+#: src/options.cpp:4866
 msgid "Play Sound on AIS SART Alert."
 msgstr ""
 
-#: src/options.cpp:4880
+#: src/options.cpp:4867
 msgid "Select AIS SART Alert Sound"
 msgstr ""
 
-#: src/options.cpp:4888
+#: src/options.cpp:4875
 msgid "DSC Alert"
 msgstr ""
 
-#: src/options.cpp:4889
+#: src/options.cpp:4876
 msgid "Play Sound on DSC notification."
 msgstr ""
 
-#: src/options.cpp:4890
+#: src/options.cpp:4877
 msgid "Select DSC notification Sound"
 msgstr ""
 
-#: src/options.cpp:4921
+#: src/options.cpp:4908
 msgid "AIS Targets"
 msgstr "एआईएस लक्ष्य"
 
-#: src/options.cpp:4928
+#: src/options.cpp:4915
 msgid "CPA Calculation"
 msgstr "सीपीए गणना"
 
-#: src/options.cpp:4939
+#: src/options.cpp:4926
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "नहीं (टी) सीपीए अलर्ट यदि लक्ष्य श्रेणी (एनएमआई) से अधिक है"
 
-#: src/options.cpp:4946
+#: src/options.cpp:4933
 msgid "Warn if CPA less than (NMi)"
 msgstr "चेतावनी दें कि सीपीए (एनएमआई) से कम है"
 
-#: src/options.cpp:4958
+#: src/options.cpp:4945
 msgid "...and TCPA is less than (min)"
 msgstr "...और टीसीपीए (मिनट) से कम है"
 
-#: src/options.cpp:4966
+#: src/options.cpp:4953
 msgid "Lost Targets"
 msgstr ""
 
-#: src/options.cpp:4975
+#: src/options.cpp:4962
 msgid "Mark targets as lost after (min)"
 msgstr "(मिनट) के बाद खो गए लक्ष्यों को चिह्नित करें"
 
-#: src/options.cpp:4983
+#: src/options.cpp:4970
 msgid "Remove lost targets after (min)"
 msgstr "(मिनट) के बाद खो गए लक्ष्य हटाएं"
 
-#: src/options.cpp:4993 src/options.cpp:5786
+#: src/options.cpp:4980 src/options.cpp:5773
 msgid "Display"
 msgstr ""
 
-#: src/options.cpp:5002
+#: src/options.cpp:4989
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "लक्ष्य कोग भविष्यवक्ता तीर, लंबाई (मिनट) दिखाएं"
 
-#: src/options.cpp:5010
+#: src/options.cpp:4997
 msgid "Sync AIS arrow length with own ship's COG predictor"
 msgstr ""
 
-#: src/options.cpp:5020
+#: src/options.cpp:5007
 msgid "Show target tracks, length (min)"
 msgstr "लक्ष्य ट्रैक, लंबाई (मिनट) दिखाएं"
 
-#: src/options.cpp:5028
+#: src/options.cpp:5015
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "लंगर /बंधा हुआलक्ष्य को दबाएं, गति अधिकतम (kn)"
 
-#: src/options.cpp:5036
+#: src/options.cpp:5023
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr ""
 
-#: src/options.cpp:5046
+#: src/options.cpp:5033
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "कम महत्वपूर्ण लक्ष्यों के क्षीणन की अनुमति दें अगर लक्ष्य ... से अधिक"
 
-#: src/options.cpp:5054
+#: src/options.cpp:5041
 msgid "Show area notices (from AIS binary messages)"
 msgstr "क्षेत्र नोटिस दिखाएं (एआईएस बाइनरी संदेश से)"
 
-#: src/options.cpp:5061
+#: src/options.cpp:5048
 msgid "Show AIS targets real size"
 msgstr "एआईएस लक्ष्य वास्तविक आकार दिखाएं"
 
-#: src/options.cpp:5068
+#: src/options.cpp:5055
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "1 से अधिक पैमाने पर एआईएस लक्ष्यों के साथ नाम दिखाएँ:"
 
-#: src/options.cpp:5076
+#: src/options.cpp:5063
 msgid "Use WPL position messages. Action when received:"
 msgstr ""
 
-#: src/options.cpp:5079
+#: src/options.cpp:5066
 msgid "APRS position report"
 msgstr ""
 
-#: src/options.cpp:5079
+#: src/options.cpp:5066
 msgid "Create mark"
 msgstr ""
 
-#: src/options.cpp:5085
+#: src/options.cpp:5072
 msgid "Rollover"
 msgstr "रोल ओवर"
 
-#: src/options.cpp:5091
+#: src/options.cpp:5078
 msgid "Enable route/AIS info block"
 msgstr ""
 
-#: src/options.cpp:5099
+#: src/options.cpp:5086
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"शिप का नाम\" एमएमएसआई (कॉल साइन)"
 
-#: src/options.cpp:5103
+#: src/options.cpp:5090
 msgid "[Class] Type (Status)"
 msgstr "[Class] प्रकार (स्थिति)"
 
-#: src/options.cpp:5106
+#: src/options.cpp:5093
 msgid "SOG COG"
 msgstr ""
 
-#: src/options.cpp:5109
+#: src/options.cpp:5096
 msgid "CPA TCPA"
 msgstr "सीपीए टीसीपीए"
 
-#: src/options.cpp:5114
+#: src/options.cpp:5101
 msgid "CPA/TCPA Alerts"
 msgstr "सीपीए / टीसीपीए अलर्ट"
 
-#: src/options.cpp:5123
+#: src/options.cpp:5110
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "सीपीए / टीसीपीए चेतावनी संवाद दिखाएं"
 
-#: src/options.cpp:5142
+#: src/options.cpp:5129
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "सीपीए / टीसीपीए अलर्ट और डीएससी / एसआरएटी आपात स्थिति पर ध्वनि चलायें"
 
-#: src/options.cpp:5160
+#: src/options.cpp:5147
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr ""
 
-#: src/options.cpp:5167
+#: src/options.cpp:5154
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "लक्ष्य चेतावनी को सक्षम करें स्वीकार करें समय समाप्ति (न्यूनतम)"
 
-#: src/options.cpp:5191
+#: src/options.cpp:5178
 msgid "General Options"
 msgstr "आम विकल्प"
 
-#: src/options.cpp:5200
+#: src/options.cpp:5187
 msgid "Language"
 msgstr ""
 
-#: src/options.cpp:5215
+#: src/options.cpp:5202
 msgid "Fonts"
 msgstr "फोंट्स"
 
-#: src/options.cpp:5251
+#: src/options.cpp:5238
 msgid "Choose Font..."
 msgstr "फ़ॉन्ट चुनें..."
 
-#: src/options.cpp:5256
+#: src/options.cpp:5243
 msgid "Choose Font Color..."
 msgstr "फ़ॉन्ट रंग चुनें..."
 
-#: src/options.cpp:5260
+#: src/options.cpp:5247
 msgid "Sample"
 msgstr ""
 
-#: src/options.cpp:5268
+#: src/options.cpp:5255
 msgid "Toolbar and Window Style"
 msgstr "टूलबार और विंडो शैली"
 
-#: src/options.cpp:5286
+#: src/options.cpp:5273
 msgid "Interface Options"
 msgstr "इंटरफ़ेस विकल्प"
 
-#: src/options.cpp:5292
+#: src/options.cpp:5279
 msgid "Show Status Bar"
 msgstr "स्थिति बार दिखाएं"
 
-#: src/options.cpp:5297
+#: src/options.cpp:5284
 msgid "Show Menu Bar"
 msgstr "मेनू बार दिखाएं"
 
-#: src/options.cpp:5311
+#: src/options.cpp:5298
 msgid "Show Compass/GPS Status Window"
 msgstr "कम्पास / जीपीएस स्थिति विंडो दिखाएं"
 
-#: src/options.cpp:5319
+#: src/options.cpp:5306
 msgid "Enable Toolbar auto-hide"
 msgstr "टूलबार स्वतःछिपाना सक्षम करें"
 
-#: src/options.cpp:5334
+#: src/options.cpp:5321
 msgid "Play Ships Bells"
 msgstr "शिप बैल्स चलायें"
 
-#: src/options.cpp:5345
+#: src/options.cpp:5332
 msgid "Audio Play command:"
 msgstr ""
 
-#: src/options.cpp:5361
+#: src/options.cpp:5348
 msgid "Unknown device :"
 msgstr ""
 
-#: src/options.cpp:5366
+#: src/options.cpp:5353
 msgid "Input device :"
 msgstr ""
 
-#: src/options.cpp:5393
+#: src/options.cpp:5380
 msgid "Sound Device"
 msgstr ""
 
-#: src/options.cpp:5405
+#: src/options.cpp:5392
 msgid "Enable Touchscreen interface"
 msgstr "टचस्क्रीन इंटरफ़ेस सक्षम करें"
 
-#: src/options.cpp:5409
+#: src/options.cpp:5396
 msgid "Enable Scaled Graphics interface"
 msgstr "स्केल किए गए ग्राफ़िक्स इंटरफ़ेस सक्षम करें"
 
-#: src/options.cpp:5422
+#: src/options.cpp:5409
 msgid "Show Zoom buttons"
 msgstr ""
 
-#: src/options.cpp:5429
+#: src/options.cpp:5416
 msgid "Use Inland ECDIS"
 msgstr ""
 
-#: src/options.cpp:5433 src/options.cpp:7714
+#: src/options.cpp:5420 src/options.cpp:7704
 msgid "Inland ECDIS Manual"
 msgstr ""
 
-#: src/options.cpp:5455
+#: src/options.cpp:5442
 msgid "User Interface scale factor"
 msgstr "उपयोगकर्ता इंटरफ़ेस स्केल फैक्टर"
 
-#: src/options.cpp:5469
+#: src/options.cpp:5456
 msgid "Chart Object scale factor"
 msgstr "चार्ट ऑब्जेक्ट स्केल फ़ैक्टर"
 
-#: src/options.cpp:5483
+#: src/options.cpp:5470
 msgid "Ship scale factor"
 msgstr "शिप स्केल फैक्टर"
 
-#: src/options.cpp:5497
+#: src/options.cpp:5484
 msgid "ENC Sounding factor"
 msgstr ""
 
-#: src/options.cpp:5511
+#: src/options.cpp:5498
 msgid "ENC Text Scale"
 msgstr ""
 
-#: src/options.cpp:5521
+#: src/options.cpp:5508
 msgid "Mouse wheel zoom sensitivity"
 msgstr ""
 
-#: src/options.cpp:5783
+#: src/options.cpp:5770
 msgid "Apply"
 msgstr "लागू करें"
 
-#: src/options.cpp:5792
+#: src/options.cpp:5779
 msgid "Charts"
 msgstr "रेखा-चित्र"
 
-#: src/options.cpp:5815
+#: src/options.cpp:5803
 msgid "Connections"
 msgstr "संपर्क"
 
-#: src/options.cpp:5817
+#: src/options.cpp:5805
 msgid "Connect"
 msgstr ""
 
-#: src/options.cpp:5829
+#: src/options.cpp:5817
 msgid "Ships"
 msgstr "जहाजों"
 
-#: src/options.cpp:5838
+#: src/options.cpp:5826
 msgid "User Interface"
 msgstr "प्रयोक्ता इंटरफ़ेस"
 
-#: src/options.cpp:5840
+#: src/options.cpp:5828
 msgid "User"
 msgstr ""
 
-#: src/options.cpp:5846 src/options.cpp:5847
+#: src/options.cpp:5834 src/options.cpp:5835
 msgid "Plugins"
 msgstr "प्लगइन्स"
 
-#: src/options.cpp:6026
+#: src/options.cpp:6016
 msgid "User set magnetic variation"
 msgstr "उपयोगकर्ता सेट चुंबकीय विविधता"
 
-#: src/options.cpp:6482
+#: src/options.cpp:6472
 msgid "feet"
 msgstr "पैर का पंजा"
 
-#: src/options.cpp:6482
+#: src/options.cpp:6472
 msgid "fathoms"
 msgstr "गहराई का माप"
 
-#: src/options.cpp:6714
+#: src/options.cpp:6704
 msgid "Add a directory containing chart files"
 msgstr "चार्ट फ़ाइलों वाले निर्देशिका जोड़ें"
 
-#: src/options.cpp:6820
+#: src/options.cpp:6810
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " -आपके जहाज की लंबाई होना चाहिए > 0"
 
-#: src/options.cpp:6822
+#: src/options.cpp:6812
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " -आपके जहाज की किरणहोना चाहिए > 0"
 
-#: src/options.cpp:6825
+#: src/options.cpp:6815
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - मिडशिप से ऑफसेट आपके जीपीएस को आपके जहाज के किरण के भीतर होना चाहिए"
 
-#: src/options.cpp:6829
+#: src/options.cpp:6819
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - धनुष से आपके जीपीएस ऑफसेट आपके जहाज की लंबाई के भीतर होना चाहिए"
 
-#: src/options.cpp:6831
+#: src/options.cpp:6821
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - आपका न्यूनतम जहाज चिह्न आकार 1 और 100 मिमी के बीच होना चाहिए"
 
-#: src/options.cpp:6833
+#: src/options.cpp:6823
 msgid "The settings for own ship real size are not correct:"
 msgstr "स्वयं जहाज के आकार की सेटिंग्स सही नहीं हैं:"
 
-#: src/options.cpp:6834 src/routemanagerdialog.cpp:1902
+#: src/options.cpp:6824 src/routemanagerdialog.cpp:1902
 msgid "OpenCPN info"
 msgstr "ओपनसीपीएन जानकारी"
 
-#: src/options.cpp:7707
+#: src/options.cpp:7697
 msgid "The Inland ECDIS Manual is not available locally."
 msgstr ""
 
-#: src/options.cpp:7710
+#: src/options.cpp:7700
 msgid "Would you like to visit the iECDIS Manual website for more information?"
 msgstr ""
 
-#: src/options.cpp:7741
+#: src/options.cpp:7731
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -6596,94 +6605,94 @@ msgstr "संपीड़न डिस्क पर चार्ट फाइ�
 "संकुचित चार्ट कुछ सिस्टम लोड करने और प्रदर्शित करने में थोड़ी अधिक समय लग सकता है\n"
 "वे unxz या 7 zip प्रोग्रामों का उपयोग करके फिर से असंपीड़ित हो सकते हैं ।"
 
-#: src/options.cpp:7745 src/routeman.cpp:735 src/routeman.cpp:829
+#: src/options.cpp:7735 src/routeman.cpp:735 src/routeman.cpp:829
 msgid "OpenCPN Warning"
 msgstr "ओपनसीपीएन चेतावनी"
 
-#: src/options.cpp:7762 src/options.cpp:7806
+#: src/options.cpp:7752 src/options.cpp:7796
 msgid "OpenCPN Compress Charts"
 msgstr "ओपनसीपीएन संपीड़न चार्ट"
 
-#: src/options.cpp:7799
+#: src/options.cpp:7789
 msgid "No charts found to compress."
 msgstr "संकुचित करने के लिए कोई चार्ट नहीं मिला"
 
-#: src/options.cpp:7831
+#: src/options.cpp:7821
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
 msgstr "संकुचित % ld चार्ट% से%.1fMB से %.1fMB \\ n सहेजे गए %.1fMB (%.1f %%)"
 
-#: src/options.cpp:8731
+#: src/options.cpp:8722
 msgid "Enter Group Name"
 msgstr "समूह नाम दर्ज करें"
 
-#: src/options.cpp:8731
+#: src/options.cpp:8722
 msgid "New Chart Group"
 msgstr "नया चार्ट समूह"
 
-#: src/options.cpp:8904 src/options.cpp:8918
+#: src/options.cpp:8895 src/options.cpp:8909
 msgid "Select Tide/Current Data"
 msgstr "टाइड / वर्तमान डेटा का चयन करें"
 
-#: src/options.cpp:8976
+#: src/options.cpp:8967
 msgid "Texture Compression"
 msgstr "बनावट संपीड़न"
 
-#: src/options.cpp:8977
+#: src/options.cpp:8968
 msgid "Texture Compression with Caching"
 msgstr "कैशिंग के साथ बनावट संपीड़न"
 
-#: src/options.cpp:8979
+#: src/options.cpp:8970
 msgid "Texture Compression Caching"
 msgstr "बनावट संपीड़न कैशिंग"
 
-#: src/options.cpp:8981
+#: src/options.cpp:8972
 msgid "Texture Memory Size (MB)"
 msgstr "बनावट मेमोरी आकार (एमबी)"
 
-#: src/options.cpp:8985 src/options.cpp:9158
+#: src/options.cpp:8976 src/options.cpp:9149
 msgid "Size: "
 msgstr "आकार: "
 
-#: src/options.cpp:8987
+#: src/options.cpp:8978
 msgid "Rebuild Texture Cache"
 msgstr "बनावट कैश के पुनर्निर्माण"
 
-#: src/options.cpp:8989
+#: src/options.cpp:8980
 msgid "Clear Texture Cache"
 msgstr "साफ़ बनावट कैश"
 
-#: src/options.cpp:8993
+#: src/options.cpp:8984
 msgid "Show FPS"
 msgstr "शो एफपीएस"
 
-#: src/options.cpp:8994
+#: src/options.cpp:8985
 msgid "Polygon Smoothing"
 msgstr "बहुभुज चिकनाई"
 
-#: src/options.cpp:8995
+#: src/options.cpp:8986
 msgid "Line Smoothing"
 msgstr "लाइन चिकनाई"
 
-#: src/options.cpp:8997
+#: src/options.cpp:8988
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "सॉफ्टवेयर ओपनजीएल (ओपनसीपीएन को पुनरारंभ करें)"
 
-#: src/options.cpp:8999
+#: src/options.cpp:8990
 msgid "Use Accelerated Panning"
 msgstr "त्वरित पैनिंग का उपयोग करें"
 
-#: src/options.cpp:9001
+#: src/options.cpp:8992
 msgid "Texture Settings"
 msgstr "बनावट सेटिंग्स"
 
-#: src/options.cpp:9008
+#: src/options.cpp:8999
 msgid "Texture Cache"
 msgstr "बनावट कैश"
 
-#: src/options.cpp:9015
+#: src/options.cpp:9006
 msgid "Miscellaneous"
 msgstr "कई तरह का"
 
@@ -6709,7 +6718,7 @@ msgstr "S57 सेल अपडेट विफल हुआ.\n"
 "ENC विशेषताएं अपूर्ण या गलत हो सकती हैं.\n\n"
 "विवरणों के लिए लॉगफ़ाइल की जांच करें"
 
-#: src/Osenc.cpp:1664
+#: src/Osenc.cpp:1677
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "ओपनसीपीएन S57 सेनसी फ़ाइल बनाएँ..."
 
@@ -6850,142 +6859,142 @@ msgstr ""
 msgid "Un-Installation complete"
 msgstr ""
 
-#: src/pluginmanager.cpp:1241
+#: src/pluginmanager.cpp:1242
 msgid "Please check system log for more info."
 msgstr ""
 
-#: src/pluginmanager.cpp:1250
+#: src/pluginmanager.cpp:1251
 msgid " successfully installed from cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:4088
+#: src/pluginmanager.cpp:4089
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr ""
 
-#: src/pluginmanager.cpp:4104
+#: src/pluginmanager.cpp:4105
 msgid "Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4121 src/pluginmanager.cpp:4710
+#: src/pluginmanager.cpp:4122 src/pluginmanager.cpp:4711
 msgid "Update Plugin Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4127 src/pluginmanager.cpp:4198
+#: src/pluginmanager.cpp:4128 src/pluginmanager.cpp:4199
 msgid "Import plugin..."
 msgstr ""
 
-#: src/pluginmanager.cpp:4134 src/pluginmanager.cpp:4191
+#: src/pluginmanager.cpp:4135 src/pluginmanager.cpp:4192
 msgid "Settings..."
 msgstr ""
 
-#: src/pluginmanager.cpp:4142
+#: src/pluginmanager.cpp:4143
 msgid "Disabled"
 msgstr ""
 
-#: src/pluginmanager.cpp:4167
+#: src/pluginmanager.cpp:4168
 msgid "Update Plugin Catalog: master"
 msgstr ""
 
-#: src/pluginmanager.cpp:4183
+#: src/pluginmanager.cpp:4184
 msgid "Update Plugin Catalog:master"
 msgstr ""
 
-#: src/pluginmanager.cpp:4242 src/pluginmanager.cpp:4254
-#: src/pluginmanager.cpp:4264 src/pluginmanager.cpp:4273
-#: src/pluginmanager.cpp:4298
+#: src/pluginmanager.cpp:4243 src/pluginmanager.cpp:4255
+#: src/pluginmanager.cpp:4265 src/pluginmanager.cpp:4274
+#: src/pluginmanager.cpp:4299
 msgid "OpenCPN Catalog update"
 msgstr ""
 
-#: src/pluginmanager.cpp:4253 src/pluginmanager.cpp:4263
+#: src/pluginmanager.cpp:4254 src/pluginmanager.cpp:4264
 msgid "Unable to copy catalog file"
 msgstr ""
 
-#: src/pluginmanager.cpp:4272
+#: src/pluginmanager.cpp:4273
 msgid "Unable to copy catalog file to cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:4297
+#: src/pluginmanager.cpp:4298
 msgid "Catalog update successful"
 msgstr ""
 
-#: src/pluginmanager.cpp:4420
+#: src/pluginmanager.cpp:4421
 msgid "Select tarball file"
 msgstr ""
 
-#: src/pluginmanager.cpp:4515
+#: src/pluginmanager.cpp:4516
 msgid "Error extracting import plugin tarball."
 msgstr ""
 
-#: src/pluginmanager.cpp:4516 src/pluginmanager.cpp:4525
-#: src/pluginmanager.cpp:4539 src/pluginmanager.cpp:4547
+#: src/pluginmanager.cpp:4517 src/pluginmanager.cpp:4526
+#: src/pluginmanager.cpp:4540 src/pluginmanager.cpp:4548
 msgid "OpenCPN Plugin Import Error"
 msgstr ""
 
-#: src/pluginmanager.cpp:4524
+#: src/pluginmanager.cpp:4525
 msgid "Error, import plugin tarball does not contain required metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:4538
+#: src/pluginmanager.cpp:4539
 msgid "Error processing import plugin metadata."
 msgstr ""
 
-#: src/pluginmanager.cpp:4546
+#: src/pluginmanager.cpp:4547
 msgid "Incompatible import plugin detected."
 msgstr ""
 
-#: src/pluginmanager.cpp:4678
+#: src/pluginmanager.cpp:4679
 msgid "Plugin imported successfully"
 msgstr ""
 
-#: src/pluginmanager.cpp:4680
+#: src/pluginmanager.cpp:4681
 msgid "Active catalog updated."
 msgstr ""
 
-#: src/pluginmanager.cpp:4682
+#: src/pluginmanager.cpp:4683
 msgid "Plugin may be installed or updated now."
 msgstr ""
 
-#: src/pluginmanager.cpp:4683
+#: src/pluginmanager.cpp:4684
 msgid "OpenCPN Plugin Import Successful"
 msgstr ""
 
-#: src/pluginmanager.cpp:4689
+#: src/pluginmanager.cpp:4690
 msgid "Active Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4689
+#: src/pluginmanager.cpp:4690
 msgid "Last Catalog"
 msgstr ""
 
-#: src/pluginmanager.cpp:4703
+#: src/pluginmanager.cpp:4704
 msgid "Last change: "
 msgstr ""
 
-#: src/pluginmanager.cpp:4704
+#: src/pluginmanager.cpp:4705
 msgid "Please Update Plugin Catalog."
 msgstr ""
 
-#: src/pluginmanager.cpp:5035 src/pluginmanager.cpp:5085
+#: src/pluginmanager.cpp:5036 src/pluginmanager.cpp:5086
 msgid "Enabled"
 msgstr ""
 
-#: src/pluginmanager.cpp:5117 src/pluginmanager.cpp:5142
+#: src/pluginmanager.cpp:5118 src/pluginmanager.cpp:5143
 msgid "Uninstall"
 msgstr ""
 
-#: src/pluginmanager.cpp:5298
+#: src/pluginmanager.cpp:5299
 msgid "Upgrade to Version "
 msgstr ""
 
-#: src/pluginmanager.cpp:5305
+#: src/pluginmanager.cpp:5306
 msgid "Install..."
 msgstr ""
 
-#: src/pluginmanager.cpp:5311
+#: src/pluginmanager.cpp:5312
 msgid "Update to "
 msgstr ""
 
-#: src/pluginmanager.cpp:5534 src/update_mgr.cpp:252
+#: src/pluginmanager.cpp:5535 src/update_mgr.cpp:252
 msgid "Website"
 msgstr ""
 
@@ -7085,10 +7094,6 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:377
 msgid "Show all routes"
-msgstr ""
-
-#: src/routemanagerdialog.cpp:414 src/routemanagerdialog.cpp:584
-msgid "Show"
 msgstr ""
 
 #: src/routemanagerdialog.cpp:416
@@ -7664,27 +7669,27 @@ msgstr "S57 सेल अद्यतन श्रृंखला अपूर�
 "ENCविशेषताएं अपूर्ण या गलत हो सकती हैं.\n"
 "विवरणों के लिए लॉगफ़ाइल की जाँच करें"
 
-#: src/s57chart.cpp:5761
+#: src/s57chart.cpp:5764
 msgid "this file is not available"
 msgstr ""
 
-#: src/s57chart.cpp:5792
+#: src/s57chart.cpp:5795
 msgid "Period ends: "
 msgstr ""
 
-#: src/s57chart.cpp:5794
+#: src/s57chart.cpp:5797
 msgid "Period starts: "
 msgstr ""
 
-#: src/s57chart.cpp:5796
+#: src/s57chart.cpp:5799
 msgid "Date ending: "
 msgstr ""
 
-#: src/s57chart.cpp:5798
+#: src/s57chart.cpp:5801
 msgid "Date starting: "
 msgstr ""
 
-#: src/s57chart.cpp:5907
+#: src/s57chart.cpp:5910
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2>(सेक्टर के सच बियरिंग्स सेवायर हैं)</font><br>"
 
@@ -7722,7 +7727,7 @@ msgstr ""
 msgid "Scan again"
 msgstr ""
 
-#: src/tcmgr.cpp:691
+#: src/tcmgr.cpp:684
 msgid "It seems you have no tide/current harmonic data installed."
 msgstr "ऐसा लगता है कि आपके पास कोई ज्वार नहीं है / वर्तमान हार्मोनिक डेटा स्थापित है।"
 
@@ -7770,41 +7775,41 @@ msgstr ""
 msgid "Tomorrow"
 msgstr ""
 
-#: src/toolbar.cpp:1173
+#: src/toolbar.cpp:1175
 msgid "Shift to Larger Scale Chart"
 msgstr "बड़ी स्केल चार्ट को शिफ्ट करें"
 
-#: src/toolbar.cpp:1181
+#: src/toolbar.cpp:1183
 msgid "Shift to Smaller Scale Chart"
 msgstr "शिफ्ट टू स्कायर स्केल चार्ट"
 
-#: src/toolbar.cpp:1214
+#: src/toolbar.cpp:1216
 msgid "Hide ENC text"
 msgstr "एनएसी पाठ छुपाएं"
 
-#: src/toolbar.cpp:1540 src/toolbar.cpp:1554 src/toolbar.cpp:1569
+#: src/toolbar.cpp:1542 src/toolbar.cpp:1556 src/toolbar.cpp:1571
 msgid "ToolTips"
 msgstr ""
 
-#: src/toolbar.cpp:3054
+#: src/toolbar.cpp:3056
 msgid "No, I don't want to hide it."
 msgstr "नहीं, मैं इसे छिपाना नहीं चाहता।"
 
-#: src/toolbar.cpp:3058
+#: src/toolbar.cpp:3060
 msgid "No, and permanently remove the option to hide it."
 msgstr "नहीं, और स्थायी रूप से इसे छिपाने के विकल्प को निकाल दें"
 
-#: src/toolbar.cpp:3062
+#: src/toolbar.cpp:3064
 msgid "Yes, hide it."
 msgstr "हां, इसे छिपाएं"
 
-#: src/toolbar.cpp:3069
+#: src/toolbar.cpp:3071
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "मैन ओवर बोर्ड बटन एक महत्वपूर्ण सुरक्षा सुविधा हो सकती है.\n"
 "क्या आप वाकई इसे छिपाना चाहते हैं?"
 
-#: src/toolbar.cpp:3155
+#: src/toolbar.cpp:3157
 msgid "Choose Toolbar Icons"
 msgstr "टूलबार प्रतीक चुनें"
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-14 22:11-0400\n"
-"PO-Revision-Date: 2023-03-27 01:59\n"
+"POT-Creation-Date: 2023-03-28 10:26-0400\n"
+"PO-Revision-Date: 2023-04-05 00:42\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File-ID: 102\n"
 
 #: include/AboutFrame.h:87 include/AboutFrameImpl.h:68 include/about.h:38
-#: src/ocpn_frame.cpp:3640 src/ocpn_frame.cpp:7155 src/toolbar.cpp:1274
+#: src/ocpn_frame.cpp:3655 src/ocpn_frame.cpp:7197 src/toolbar.cpp:1276
 msgid "About OpenCPN"
 msgstr "OpenCPN에 대하여"
 
@@ -26,7 +26,7 @@ msgstr "OpenCPN에 대하여"
 #: src/routemanagerdialog.cpp:1401 src/routemanagerdialog.cpp:2205
 #: src/routemanagerdialog.cpp:2311 src/routemanagerdialog.cpp:2660
 #: src/routemanagerdialog.cpp:2692 src/routemanagerdialog.cpp:2828
-#: src/routemanagerdialog.cpp:2993 src/toolbar.cpp:3046
+#: src/routemanagerdialog.cpp:2993 src/toolbar.cpp:3048
 msgid "OpenCPN Alert"
 msgstr "OpenCPN 경보"
 
@@ -36,12 +36,12 @@ msgstr "OpenCPN AIS 경보"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:57
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
-#: src/canvasMenu.cpp:461 src/canvasMenu.cpp:470 src/chcanv.cpp:9529
+#: src/canvasMenu.cpp:463 src/canvasMenu.cpp:472 src/chcanv.cpp:9538
 msgid "Object Query"
 msgstr "객체 쿼리"
 
 #: include/GoToPositionDialog.h:44 src/AISTargetListDialog.cpp:703
-#: src/canvasMenu.cpp:499
+#: src/canvasMenu.cpp:501
 msgid "Center view"
 msgstr "중앙시점보기"
 
@@ -49,15 +49,15 @@ msgstr "중앙시점보기"
 msgid "Link Properties"
 msgstr "연결 속성"
 
-#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9692
-#: src/chcanv.cpp:9696 src/routemanagerdialog.cpp:2631
+#: include/MarkInfo.h:94 include/MarkInfo.h:353 src/chcanv.cpp:9701
+#: src/chcanv.cpp:9705 src/routemanagerdialog.cpp:2631
 #: src/routemanagerdialog.cpp:2635 src/RoutePropDlgImpl.cpp:928
 msgid "Waypoint Properties"
 msgstr "경유지 속성"
 
-#: include/options.h:91 src/ocpn_frame.cpp:3630 src/ocpn_frame.cpp:3890
-#: src/ocpn_frame.cpp:4944 src/ocpn_frame.cpp:7114 src/options.cpp:3338
-#: src/toolbar.cpp:1203
+#: include/options.h:91 src/ocpn_frame.cpp:3645 src/ocpn_frame.cpp:3926
+#: src/ocpn_frame.cpp:4984 src/ocpn_frame.cpp:7156 src/options.cpp:3320
+#: src/toolbar.cpp:1205
 msgid "Options"
 msgstr "옵션"
 
@@ -66,7 +66,7 @@ msgid "Print Route Selection"
 msgstr "경로 선택 인쇄"
 
 #: include/RoutePropDlg.h:165 include/RoutePropDlgImpl.h:97
-#: src/canvasMenu.cpp:1854 src/chcanv.cpp:7597 src/RoutePropDlgImpl.cpp:515
+#: src/canvasMenu.cpp:1865 src/chcanv.cpp:7606 src/RoutePropDlgImpl.cpp:515
 msgid "Route Properties"
 msgstr "경로 속성"
 
@@ -75,15 +75,19 @@ msgstr "경로 속성"
 msgid "Extra Object Info"
 msgstr "추가 객체 정보"
 
-#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:748 src/canvasMenu.cpp:849
-#: src/canvasMenu.cpp:899 src/canvasMenu.cpp:1689 src/canvasMenu.cpp:1700
-#: src/canvasMenu.cpp:1742 src/canvasMenu.cpp:1753
+#: include/SendToGpsDlg.h:40 src/canvasMenu.cpp:755 src/canvasMenu.cpp:856
+#: src/canvasMenu.cpp:906 src/canvasMenu.cpp:1700 src/canvasMenu.cpp:1711
+#: src/canvasMenu.cpp:1753 src/canvasMenu.cpp:1764
 #: src/routemanagerdialog.cpp:1800 src/routemanagerdialog.cpp:2798
 msgid "Send to GPS"
 msgstr "GPS로 보내기"
 
-#: include/track.h:122 src/ocpn_frame.cpp:3073 src/ocpn_frame.cpp:6436
-#: src/ocpn_frame.cpp:6554
+#: include/SendToPeerDlg.h:40
+msgid "Send to Peer"
+msgstr ""
+
+#: include/track.h:122 src/ocpn_frame.cpp:3080 src/ocpn_frame.cpp:6476
+#: src/ocpn_frame.cpp:6594
 msgid "(Unnamed Track)"
 msgstr "(이름 없는 트랙)"
 
@@ -96,8 +100,8 @@ msgstr ""
 msgid "Track properties"
 msgstr "트랙 속성"
 
-#: libs/s52plib/src/s52plib.cpp:2171 libs/s52plib/src/s52plib.cpp:2275
-#: libs/s52plib/src/s52plib.cpp:2444
+#: libs/s52plib/src/s52plib.cpp:2181 libs/s52plib/src/s52plib.cpp:2285
+#: libs/s52plib/src/s52plib.cpp:2454
 msgid "ChartTexts"
 msgstr ""
 
@@ -213,19 +217,19 @@ msgstr "프록시 포트:"
 
 #: src/about.cpp:220 src/about.cpp:264 src/about.cpp:398 src/about.cpp:516
 #: src/AISTargetListDialog.cpp:329 src/androidUTIL.cpp:4881
-#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11760 src/chcanv.cpp:11793
+#: src/CanvasOptions.cpp:73 src/chcanv.cpp:11769 src/chcanv.cpp:11802
 #: src/ChInfoWin.cpp:53 src/cm93.cpp:6427 src/concanv.cpp:104
 #: src/connections_dialog.cpp:350 src/conn_params_panel.cpp:86
 #: src/conn_params_panel.cpp:144 src/conn_params_panel.cpp:860
-#: src/glChartCanvas.cpp:3737 src/glTextureManager.cpp:1439 src/gui_lib.cpp:149
+#: src/glChartCanvas.cpp:3740 src/glTextureManager.cpp:1443 src/gui_lib.cpp:149
 #: src/gui_lib.cpp:286 src/LinkPropDlg.cpp:37 src/MarkInfo.cpp:235
-#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4585 src/ocpn_frame.cpp:8695
-#: src/OCPNPlatform.cpp:1476 src/OCPNPlatform.cpp:1786 src/OCPNPlatform.cpp:1825
+#: src/MarkInfo.cpp:287 src/ocpn_frame.cpp:4621 src/ocpn_frame.cpp:8737
+#: src/OCPNPlatform.cpp:1479 src/OCPNPlatform.cpp:1789 src/OCPNPlatform.cpp:1828
 #: src/options.cpp:736 src/options.cpp:762 src/options.cpp:1291
-#: src/options.cpp:1783 src/options.cpp:8491 src/options.cpp:8728
-#: src/options.cpp:8968 src/options.cpp:9113 src/Osenc.cpp:1675
+#: src/options.cpp:1770 src/options.cpp:8482 src/options.cpp:8719
+#: src/options.cpp:8959 src/options.cpp:9104 src/Osenc.cpp:1688
 #: src/routemanagerdialog.cpp:305 src/RoutePropDlg.cpp:53 src/TCWin.cpp:84
-#: src/TCWin.cpp:180 src/toolbar.cpp:3138 src/TrackPropDlg.cpp:110
+#: src/TCWin.cpp:180 src/toolbar.cpp:3140 src/TrackPropDlg.cpp:110
 #: src/TrackPropDlg.cpp:324 src/TrackPropDlg.cpp:651 src/TTYWindow.cpp:114
 msgid "Dialog"
 msgstr "대화상자"
@@ -324,15 +328,15 @@ msgid "Would you like to visit the opencpn.org website for more information?"
 msgstr "더 많은 정보를 위해 opencpn.org 웹사이트를 방문하시겠습니까?"
 
 #: src/AboutFrameImpl.cpp:96 src/ais_info_gui.cpp:112
-#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2214
-#: src/connections_dialog.cpp:2227 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
-#: src/navutil.cpp:3175 src/ocpn_frame.cpp:830 src/ocpn_frame.cpp:963
-#: src/ocpn_frame.cpp:4274 src/options.cpp:1130 src/options.cpp:2908
-#: src/options.cpp:7799 src/options.cpp:7836 src/peer_client.cpp:291
+#: src/AISTargetQueryDialog.cpp:180 src/connections_dialog.cpp:2213
+#: src/connections_dialog.cpp:2226 src/LinkPropDlg.cpp:134 src/MarkInfo.cpp:1886
+#: src/navutil.cpp:3186 src/ocpn_frame.cpp:830 src/ocpn_frame.cpp:964
+#: src/ocpn_frame.cpp:4310 src/options.cpp:1130 src/options.cpp:2890
+#: src/options.cpp:7789 src/options.cpp:7826 src/peer_client.cpp:291
 #: src/peer_client.cpp:349 src/peer_client.cpp:354 src/peer_client.cpp:363
 #: src/pluginmanager.cpp:318 src/pluginmanager.cpp:642
 #: src/pluginmanager.cpp:1008 src/route_gui.cpp:597 src/RoutePoint.cpp:1278
-#: src/route_point_gui.cpp:876 src/tcmgr.cpp:692 src/udev_rule_mgr.cpp:294
+#: src/route_point_gui.cpp:876 src/tcmgr.cpp:685 src/udev_rule_mgr.cpp:294
 msgid "OpenCPN Info"
 msgstr "OpenCPN 정보"
 
@@ -1008,7 +1012,7 @@ msgid "\n"
 "Do you instead want to stop Persistent Tracking for this target?\n"
 msgstr ""
 
-#: src/ais_info_gui.cpp:198 src/options.cpp:4867
+#: src/ais_info_gui.cpp:198 src/options.cpp:4854
 msgid "AIS Alert"
 msgstr "선박자동식별장치(AIS) 경보"
 
@@ -1098,7 +1102,7 @@ msgid "Reserved 14"
 msgstr "예약 14"
 
 #: src/ais_target_data.cpp:113 src/ais_target_data.cpp:439
-#: src/conn_params.cpp:197 src/conn_params_panel.cpp:244
+#: src/conn_params.cpp:202 src/conn_params_panel.cpp:244
 #: src/conn_params_panel.cpp:363 src/conn_params_panel.cpp:787
 #: src/conn_params_panel.cpp:815
 msgid "Undefined"
@@ -1229,7 +1233,7 @@ msgstr "우측"
 msgid "Left"
 msgstr "좌측"
 
-#: src/ais_target_data.cpp:689 src/options.cpp:4400 src/options.cpp:4542
+#: src/ais_target_data.cpp:689 src/options.cpp:4387 src/options.cpp:4529
 #: src/RoutePropDlg.cpp:353 src/trackprintout.cpp:100 src/trackprintout.cpp:339
 #: src/TrackPropDlg.cpp:309 src/TrackPropDlg.cpp:1345
 msgid "Speed"
@@ -1262,7 +1266,7 @@ msgid "in "
 msgstr "에"
 
 #: src/ais_target_data.cpp:719 src/ais_target_data.cpp:869
-#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6582
+#: src/AISTargetListDialog.cpp:644 src/chcanv.cpp:6586
 msgid "CPA"
 msgstr "가장 가까운 접근 위치(CPA)"
 
@@ -1310,8 +1314,8 @@ msgstr "A에서N까지"
 msgid "Aid to Navigation"
 msgstr "항법장치"
 
-#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:323 src/options.cpp:3378
-#: src/options.cpp:3581
+#: src/ais_target_data.cpp:964 src/CanvasOptions.cpp:323 src/options.cpp:3360
+#: src/options.cpp:3563
 msgid "Base"
 msgstr "기지"
 
@@ -2727,8 +2731,8 @@ msgstr "경량 선박"
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:673
-#: src/ocpn_frame.cpp:3594
+#: src/AISTargetListDialog.cpp:354 src/canvasMenu.cpp:675
+#: src/ocpn_frame.cpp:3609
 msgid "AIS target list"
 msgstr "선박자동식별장치(AIS) 표적 목록"
 
@@ -2835,9 +2839,9 @@ msgstr "선박자동식별장치(AIS)표적쿼리"
 #: src/AISTargetQueryDialog.cpp:295 src/androidUTIL.cpp:5019
 #: src/catalog_mgr.cpp:193 src/catalog_mgr.cpp:585 src/catalog_mgr.cpp:606
 #: src/cm93.cpp:6512 src/GoToPositionDialog.cpp:150 src/MUIBar.cpp:179
-#: src/options.cpp:950 src/options.cpp:1052 src/options.cpp:5776
+#: src/options.cpp:950 src/options.cpp:1052 src/options.cpp:5763
 #: src/routeprintout.cpp:428 src/TCWin.cpp:123 src/TCWin.cpp:132
-#: src/toolbar.cpp:3205 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
+#: src/toolbar.cpp:3207 src/trackprintout.cpp:359 src/TrackPropDlg.cpp:613
 #: src/TrackPropDlg.cpp:997
 msgid "OK"
 msgstr "확인"
@@ -2862,7 +2866,7 @@ msgstr "Android 기기에 내부 GPS가 있지만 비활성화되어 있습니�
 msgid "Nothing found"
 msgstr "아무것도 찾을 수 없음"
 
-#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1760
+#: src/androidUTIL.cpp:4685 src/ocpn_frame.cpp:1763
 msgid "Anchorage created "
 msgstr "정박지 생성 "
 
@@ -2908,14 +2912,14 @@ msgid "Status"
 msgstr ""
 
 #: src/androidUTIL.cpp:5015 src/catalog_mgr.cpp:604
-#: src/connections_dialog.cpp:2093 src/GoToPositionDialog.cpp:146
+#: src/connections_dialog.cpp:2092 src/GoToPositionDialog.cpp:146
 #: src/LinkPropDlg.cpp:76 src/MarkInfo.cpp:754 src/MarkInfo.cpp:1856
 #: src/MUIBar.cpp:175 src/options.cpp:947 src/options.cpp:1049
-#: src/options.cpp:5780 src/options.cpp:9031 src/peer_client.cpp:435
+#: src/options.cpp:5767 src/options.cpp:9022 src/peer_client.cpp:435
 #: src/priority_gui.cpp:105 src/REST_server_gui.cpp:121
 #: src/REST_server_gui.cpp:216 src/routeprintout.cpp:424
 #: src/RoutePropDlg.cpp:511 src/SendToGpsDlg.cpp:202 src/SendToPeerDlg.cpp:167
-#: src/toolbar.cpp:3201 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
+#: src/toolbar.cpp:3203 src/trackprintout.cpp:354 src/TrackPropDlg.cpp:607
 #: src/TrackPropDlg.cpp:992
 msgid "Cancel"
 msgstr "취소"
@@ -2989,338 +2993,351 @@ msgstr ""
 msgid "Finishing migration"
 msgstr ""
 
-#: src/canvasMenu.cpp:244 src/canvasMenu.cpp:274 src/canvasMenu.cpp:307
+#: src/canvasMenu.cpp:246 src/canvasMenu.cpp:276 src/canvasMenu.cpp:309
 #: src/options.cpp:1243
 msgid "Menu"
 msgstr "메뉴"
 
-#: src/canvasMenu.cpp:343 src/canvasMenu.cpp:346 src/canvasMenu.cpp:364
+#: src/canvasMenu.cpp:345 src/canvasMenu.cpp:348 src/canvasMenu.cpp:366
 msgid "Undo"
 msgstr "실행취소"
 
-#: src/canvasMenu.cpp:353 src/canvasMenu.cpp:356 src/canvasMenu.cpp:371
+#: src/canvasMenu.cpp:355 src/canvasMenu.cpp:358 src/canvasMenu.cpp:373
 msgid "Redo"
 msgstr "다시 실행"
 
-#: src/canvasMenu.cpp:384
+#: src/canvasMenu.cpp:386
 msgid "End Route"
 msgstr "경로 종료"
 
-#: src/canvasMenu.cpp:390
+#: src/canvasMenu.cpp:392
 msgid "Measure Off"
 msgstr "측정 끄기"
 
-#: src/canvasMenu.cpp:393
+#: src/canvasMenu.cpp:395
 msgid "Measure"
 msgstr "측정"
 
-#: src/canvasMenu.cpp:450
+#: src/canvasMenu.cpp:452
 msgid "Max Detail Here"
 msgstr "이곳의 최대 상세정보"
 
-#: src/canvasMenu.cpp:452 src/canvasMenu.cpp:475
+#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:477
 msgid "Scale In"
 msgstr "축척 축소"
 
-#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:477
+#: src/canvasMenu.cpp:456 src/canvasMenu.cpp:479
 msgid "Scale Out"
 msgstr "축척 확대"
 
-#: src/canvasMenu.cpp:485
+#: src/canvasMenu.cpp:487
 msgid "Drop Mark"
 msgstr "표시 지우기"
 
-#: src/canvasMenu.cpp:487
+#: src/canvasMenu.cpp:489
 msgid "New Route..."
 msgstr "새 경로..."
 
-#: src/canvasMenu.cpp:490
+#: src/canvasMenu.cpp:492
 msgid "Move Boat Here"
 msgstr "선박을 여기로 이동"
 
-#: src/canvasMenu.cpp:495
+#: src/canvasMenu.cpp:497
 msgid "Navigate To Here"
 msgstr "여기로 항해"
 
-#: src/canvasMenu.cpp:504 src/ocpn_frame.cpp:3497
+#: src/canvasMenu.cpp:506 src/ocpn_frame.cpp:3504
 msgid "Course Up Mode"
 msgstr "행해코스가 화면 위로 향하는 모드"
 
-#: src/canvasMenu.cpp:506
+#: src/canvasMenu.cpp:508
 msgid "Heading Up Mode"
 msgstr "선수가 화면 위로 향하는 모드"
 
-#: src/canvasMenu.cpp:508 src/canvasMenu.cpp:515 src/ocpn_frame.cpp:3206
-#: src/ocpn_frame.cpp:3496 src/ocpn_frame.cpp:5971
+#: src/canvasMenu.cpp:510 src/canvasMenu.cpp:517 src/ocpn_frame.cpp:3213
+#: src/ocpn_frame.cpp:3503 src/ocpn_frame.cpp:6011
 msgid "North Up Mode"
 msgstr "북쪽이 화면 위로 향하는 모드"
 
-#: src/canvasMenu.cpp:513
+#: src/canvasMenu.cpp:515
 msgid "Chart Up Mode"
 msgstr "해도가 화면에 바르게 보이는 모드"
 
-#: src/canvasMenu.cpp:524 src/canvasMenu.cpp:531 src/ocpn_frame.cpp:3578
+#: src/canvasMenu.cpp:526 src/canvasMenu.cpp:533 src/ocpn_frame.cpp:3585
 msgid "Toggle Full Screen"
 msgstr "전체화면 켜기/끄기"
 
-#: src/canvasMenu.cpp:537 src/canvasMenu.cpp:700 src/canvasMenu.cpp:718
+#: src/canvasMenu.cpp:539 src/canvasMenu.cpp:707 src/canvasMenu.cpp:725
 msgid "Zero XTE"
 msgstr "트랙으로부터 선박이 이탈한 수직 거리오차(XTE) 0"
 
-#: src/canvasMenu.cpp:544
+#: src/canvasMenu.cpp:546
 msgid "Paste Waypoint"
 msgstr "경유지 붙여넣기"
 
-#: src/canvasMenu.cpp:548 src/canvasMenu.cpp:556
+#: src/canvasMenu.cpp:550 src/canvasMenu.cpp:558
 msgid "Paste Route"
 msgstr "경로 붙여넣기"
 
-#: src/canvasMenu.cpp:552 src/canvasMenu.cpp:557
+#: src/canvasMenu.cpp:554 src/canvasMenu.cpp:559
 msgid "Paste Track"
 msgstr "트랙 붙여넣기"
 
-#: src/canvasMenu.cpp:567
+#: src/canvasMenu.cpp:569
 msgid "CM93 Offset Dialog..."
 msgstr "CM93(벡터 해도) 오프셋 대화 상자.."
 
-#: src/canvasMenu.cpp:592 src/options.cpp:3857 src/options.cpp:3919
+#: src/canvasMenu.cpp:594 src/options.cpp:3841 src/options.cpp:3905
 msgid "Chart Groups"
 msgstr "해도 그룹"
 
-#: src/canvasMenu.cpp:599
+#: src/canvasMenu.cpp:601
 msgid "temporary"
 msgstr "임시"
 
-#: src/canvasMenu.cpp:602
+#: src/canvasMenu.cpp:604
 msgid "All Active Charts"
 msgstr "모든 활성 해도"
 
-#: src/canvasMenu.cpp:632 src/CanvasOptions.cpp:211
+#: src/canvasMenu.cpp:634 src/CanvasOptions.cpp:211
 msgid "AIS"
 msgstr "선박자동식별장치(AIS)"
 
-#: src/canvasMenu.cpp:633
+#: src/canvasMenu.cpp:635
 msgid "Target Query..."
 msgstr "표적 쿼리..."
 
-#: src/canvasMenu.cpp:637
+#: src/canvasMenu.cpp:639
 msgid "Hide Target CPA"
 msgstr "표적 최근접점(CPA) 숨기기"
 
-#: src/canvasMenu.cpp:639
+#: src/canvasMenu.cpp:641
 msgid "Show Target CPA"
 msgstr "표적 최근접점(CPA) 보이기"
 
-#: src/canvasMenu.cpp:641
+#: src/canvasMenu.cpp:643
 msgid "Target List..."
 msgstr "표적 목록..."
 
-#: src/canvasMenu.cpp:645
+#: src/canvasMenu.cpp:647
 msgid "Hide Target Track"
 msgstr "표적 트랙 숨기기"
 
-#: src/canvasMenu.cpp:648
+#: src/canvasMenu.cpp:650
 msgid "Show Target Track"
 msgstr "표적 트랙 보이기"
 
-#: src/canvasMenu.cpp:651
+#: src/canvasMenu.cpp:653
 msgid "Copy Target MMSI"
 msgstr "대상 해상이동통시서비스식별부호(MMSI) 복사"
 
-#: src/canvasMenu.cpp:658 src/canvasMenu.cpp:666
+#: src/canvasMenu.cpp:660 src/canvasMenu.cpp:668
 msgid "Object Query..."
 msgstr "객체 쿼리..."
 
-#: src/canvasMenu.cpp:680
+#: src/canvasMenu.cpp:677 src/catalog_mgr.cpp:99
+msgid "Hide"
+msgstr ""
+
+#: src/canvasMenu.cpp:677 src/routemanagerdialog.cpp:414
+#: src/routemanagerdialog.cpp:584
+msgid "Show"
+msgstr "보이기"
+
+#: src/canvasMenu.cpp:679 src/chcanv.cpp:6581
+msgid "CPA alarm "
+msgstr ""
+
+#: src/canvasMenu.cpp:687
 msgid "Unnamed Route"
 msgstr "이름 없는 경로"
 
-#: src/canvasMenu.cpp:688
+#: src/canvasMenu.cpp:695
 msgid "Layer Route"
 msgstr "경로 레이어"
 
-#: src/canvasMenu.cpp:690 src/canvasMenu.cpp:708 src/canvasMenu.cpp:781
-#: src/canvasMenu.cpp:785 src/canvasMenu.cpp:810 src/canvasMenu.cpp:817
-#: src/canvasMenu.cpp:882 src/canvasMenu.cpp:886 src/MarkInfo.cpp:335
+#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:715 src/canvasMenu.cpp:788
+#: src/canvasMenu.cpp:792 src/canvasMenu.cpp:817 src/canvasMenu.cpp:824
+#: src/canvasMenu.cpp:889 src/canvasMenu.cpp:893 src/MarkInfo.cpp:335
 msgid "Properties"
 msgstr "속성"
 
-#: src/canvasMenu.cpp:697 src/canvasMenu.cpp:715 src/canvasMenu.cpp:829
+#: src/canvasMenu.cpp:704 src/canvasMenu.cpp:722 src/canvasMenu.cpp:836
 msgid "Activate Next Waypoint"
 msgstr "다음 경유지 활성화"
 
-#: src/canvasMenu.cpp:699 src/canvasMenu.cpp:717 src/routemanagerdialog.cpp:1303
+#: src/canvasMenu.cpp:706 src/canvasMenu.cpp:724 src/routemanagerdialog.cpp:1303
 msgid "Deactivate"
 msgstr "비활성화"
 
-#: src/canvasMenu.cpp:702 src/canvasMenu.cpp:720 src/canvasMenu.cpp:813
-#: src/canvasMenu.cpp:820 src/routemanagerdialog.cpp:1297
+#: src/canvasMenu.cpp:709 src/canvasMenu.cpp:727 src/canvasMenu.cpp:820
+#: src/canvasMenu.cpp:827 src/routemanagerdialog.cpp:1297
 msgid "Activate"
 msgstr "활성화"
 
-#: src/canvasMenu.cpp:706 src/chcanv.cpp:3819 src/chcanv.cpp:10532
+#: src/canvasMenu.cpp:713 src/chcanv.cpp:3823 src/chcanv.cpp:10541
 #: src/concanv.cpp:143 src/concanv.cpp:158 src/concanv.cpp:197
 msgid "Route"
 msgstr "경로"
 
-#: src/canvasMenu.cpp:723
+#: src/canvasMenu.cpp:730
 msgid "Insert Waypoint"
 msgstr "경유지 삽입"
 
-#: src/canvasMenu.cpp:724 src/undo.cpp:90
+#: src/canvasMenu.cpp:731 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "경유지 추가"
 
-#: src/canvasMenu.cpp:729
+#: src/canvasMenu.cpp:736
 msgid "Split around Leg"
 msgstr "구간 분할"
 
-#: src/canvasMenu.cpp:731 src/canvasMenu.cpp:786 src/canvasMenu.cpp:841
-#: src/canvasMenu.cpp:891
+#: src/canvasMenu.cpp:738 src/canvasMenu.cpp:793 src/canvasMenu.cpp:848
+#: src/canvasMenu.cpp:898
 msgid "Copy as KML"
 msgstr "KML로 복사"
 
-#: src/canvasMenu.cpp:732 src/canvasMenu.cpp:787 src/canvasMenu.cpp:844
-#: src/canvasMenu.cpp:894 src/connections_dialog.cpp:2089 src/MarkInfo.cpp:488
+#: src/canvasMenu.cpp:739 src/canvasMenu.cpp:794 src/canvasMenu.cpp:851
+#: src/canvasMenu.cpp:901 src/connections_dialog.cpp:2088 src/MarkInfo.cpp:488
 #: src/MarkInfo.cpp:1145 src/MarkInfo.cpp:1186 src/options.cpp:1239
 #: src/RoutePropDlg.cpp:428 src/TrackPropDlg.cpp:901
 msgid "Delete"
 msgstr "삭제"
 
-#: src/canvasMenu.cpp:733
+#: src/canvasMenu.cpp:740
 msgid "Reverse..."
 msgstr "반전"
 
-#: src/canvasMenu.cpp:737
+#: src/canvasMenu.cpp:744
 msgid "Hide Waypoint Names"
 msgstr "경유지명 숨기기"
 
-#: src/canvasMenu.cpp:740
+#: src/canvasMenu.cpp:747
 msgid "Show Waypoint Names"
 msgstr "경유지명 보이기"
 
-#: src/canvasMenu.cpp:743
+#: src/canvasMenu.cpp:750
 msgid "Resequence Waypoints..."
 msgstr "경유지 재배열..."
 
-#: src/canvasMenu.cpp:757 src/canvasMenu.cpp:858
+#: src/canvasMenu.cpp:764 src/canvasMenu.cpp:865
 msgid "Send to new GPS"
 msgstr "새 GPS로 보내기"
 
-#: src/canvasMenu.cpp:779
+#: src/canvasMenu.cpp:786
 msgid "Layer Track"
 msgstr "트랙 레이어"
 
-#: src/canvasMenu.cpp:783 src/chcanv.cpp:3994
+#: src/canvasMenu.cpp:790 src/chcanv.cpp:3998
 msgid "Track"
 msgstr "트랙"
 
-#: src/canvasMenu.cpp:800 src/canvasMenu.cpp:872
+#: src/canvasMenu.cpp:807 src/canvasMenu.cpp:879
 msgid "Unnamed Waypoint"
 msgstr "이름 없는 경유지"
 
-#: src/canvasMenu.cpp:808 src/canvasMenu.cpp:880
+#: src/canvasMenu.cpp:815 src/canvasMenu.cpp:887
 msgid "Layer Waypoint"
 msgstr "경유지 레이어"
 
-#: src/canvasMenu.cpp:815 src/canvasMenu.cpp:884
+#: src/canvasMenu.cpp:822 src/canvasMenu.cpp:891
 msgid "Waypoint"
 msgstr "경과점"
 
-#: src/canvasMenu.cpp:833
+#: src/canvasMenu.cpp:840
 msgid "Remove from Route"
 msgstr "경로에서 제거"
 
-#: src/canvasMenu.cpp:838
+#: src/canvasMenu.cpp:845
 msgid "Split Route at Waypoint"
 msgstr "경유지에서 경로 분할"
 
-#: src/canvasMenu.cpp:889
+#: src/canvasMenu.cpp:896
 msgid "Navigate To This"
 msgstr "이곳으로 항해"
 
-#: src/canvasMenu.cpp:913
+#: src/canvasMenu.cpp:920
 msgid "Clear Anchor Watch"
 msgstr "앵커 관찰 지우기"
 
-#: src/canvasMenu.cpp:924
+#: src/canvasMenu.cpp:931
 msgid "Set Anchor Watch"
 msgstr "앵커 관찰 설정"
 
-#: src/canvasMenu.cpp:965
+#: src/canvasMenu.cpp:972
 msgid "Main Menu"
 msgstr "주메뉴"
 
-#: src/canvasMenu.cpp:978
+#: src/canvasMenu.cpp:985
 msgid "Show Tide Information"
 msgstr "조류 정보 보이기"
 
-#: src/canvasMenu.cpp:984
+#: src/canvasMenu.cpp:991
 msgid "Show Current Information"
 msgstr "해류 정보 보이기"
 
-#: src/canvasMenu.cpp:1156
+#: src/canvasMenu.cpp:1163
 msgid "Temporary GOTO Route"
 msgstr "임시 이동 경로"
 
-#: src/canvasMenu.cpp:1157 src/canvasMenu.cpp:1224
+#: src/canvasMenu.cpp:1164 src/canvasMenu.cpp:1235
 #: src/routemanagerdialog.cpp:2750
 msgid "Here"
 msgstr "여기"
 
-#: src/canvasMenu.cpp:1159
+#: src/canvasMenu.cpp:1166
 msgid "There"
 msgstr "거기"
 
-#: src/canvasMenu.cpp:1220 src/routemanagerdialog.cpp:2383
+#: src/canvasMenu.cpp:1231 src/routemanagerdialog.cpp:2383
 #: src/routemanagerdialog.cpp:2746
 msgid "(Unnamed Waypoint)"
 msgstr "(이름 없는 경유지)"
 
-#: src/canvasMenu.cpp:1221 src/routemanagerdialog.cpp:2747
+#: src/canvasMenu.cpp:1232 src/routemanagerdialog.cpp:2747
 msgid "Go to "
 msgstr " (으)로 이동"
 
-#: src/canvasMenu.cpp:1458 src/canvasMenu.cpp:1492
+#: src/canvasMenu.cpp:1469 src/canvasMenu.cpp:1503
 #: src/routemanagerdialog.cpp:1488
 msgid "Rename Waypoints?"
 msgstr "경유지명 변경"
 
-#: src/canvasMenu.cpp:1509
+#: src/canvasMenu.cpp:1520
 msgid "Are you sure you want to delete this route?"
 msgstr "정말 이 경로를 삭제할까요?"
 
-#: src/canvasMenu.cpp:1510
+#: src/canvasMenu.cpp:1521
 msgid "OpenCPN Route Delete"
 msgstr "OpenCPN 경로 삭제"
 
-#: src/canvasMenu.cpp:1637 src/RoutePropDlgImpl.cpp:1048
+#: src/canvasMenu.cpp:1648 src/RoutePropDlgImpl.cpp:1048
 #: src/TrackPropDlg.cpp:1312
 msgid "_A"
 msgstr ""
 
-#: src/canvasMenu.cpp:1639 src/RoutePropDlgImpl.cpp:1049
+#: src/canvasMenu.cpp:1650 src/RoutePropDlgImpl.cpp:1049
 #: src/TrackPropDlg.cpp:1313
 msgid "_B"
 msgstr ""
 
-#: src/canvasMenu.cpp:1726
+#: src/canvasMenu.cpp:1737
 msgid "Send Waypoint to OpenCPN Peer"
 msgstr ""
 
-#: src/canvasMenu.cpp:1779
+#: src/canvasMenu.cpp:1790
 msgid "Send Route to OpenCPN Peer"
 msgstr ""
 
-#: src/canvasMenu.cpp:1868
+#: src/canvasMenu.cpp:1879
 msgid "Are you sure you want to delete this track?"
 msgstr "이 트랙을 삭제하시겠습니까?"
 
-#: src/canvasMenu.cpp:1869 src/routeman_gui.cpp:237
+#: src/canvasMenu.cpp:1880 src/routeman_gui.cpp:237
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 트랙 삭제"
 
-#: src/canvasMenu.cpp:1919
+#: src/canvasMenu.cpp:1930
 msgid "Send Track to OpenCPN Peer"
 msgstr ""
 
@@ -3328,15 +3345,15 @@ msgstr ""
 msgid "Chart Panel Options"
 msgstr "해도 패널 옵션"
 
-#: src/CanvasOptions.cpp:133 src/options.cpp:4016 src/options.cpp:4197
+#: src/CanvasOptions.cpp:133 src/options.cpp:4003 src/options.cpp:4184
 msgid "Navigation Mode"
 msgstr "항해 모드"
 
-#: src/CanvasOptions.cpp:140 src/options.cpp:4024 src/options.cpp:4205
+#: src/CanvasOptions.cpp:140 src/options.cpp:4011 src/options.cpp:4192
 msgid "North Up"
 msgstr "북쪽이 화면의 위쪽"
 
-#: src/CanvasOptions.cpp:148 src/options.cpp:4027 src/options.cpp:4208
+#: src/CanvasOptions.cpp:148 src/options.cpp:4014 src/options.cpp:4195
 msgid "Course Up"
 msgstr "코스의 진행방향이 화면의 위쪽"
 
@@ -3344,29 +3361,29 @@ msgstr "코스의 진행방향이 화면의 위쪽"
 msgid "Heading Up"
 msgstr "선수방향 화면 위쪽"
 
-#: src/CanvasOptions.cpp:166 src/options.cpp:4034 src/options.cpp:4215
+#: src/CanvasOptions.cpp:166 src/options.cpp:4021 src/options.cpp:4202
 msgid "Look Ahead Mode"
 msgstr "미리보기 모드"
 
-#: src/CanvasOptions.cpp:177 src/options.cpp:1977
+#: src/CanvasOptions.cpp:177 src/options.cpp:1958
 msgid "Display Options"
 msgstr "표시 형식"
 
-#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3521 src/ocpn_frame.cpp:3527
-#: src/options.cpp:4049 src/options.cpp:4230
+#: src/CanvasOptions.cpp:182 src/ocpn_frame.cpp:3528 src/ocpn_frame.cpp:3534
+#: src/options.cpp:4036 src/options.cpp:4217
 msgid "Enable Chart Quilting"
 msgstr "해도 누비기 활성화"
 
-#: src/CanvasOptions.cpp:189 src/options.cpp:4090 src/options.cpp:4275
+#: src/CanvasOptions.cpp:189 src/options.cpp:4077 src/options.cpp:4262
 msgid "Show Grid"
 msgstr "격자 보이기"
 
-#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3523 src/ocpn_frame.cpp:3529
-#: src/options.cpp:4094 src/options.cpp:4279
+#: src/CanvasOptions.cpp:196 src/ocpn_frame.cpp:3530 src/ocpn_frame.cpp:3536
+#: src/options.cpp:4081 src/options.cpp:4266
 msgid "Show Chart Outlines"
 msgstr "해도 윤관선 보이기"
 
-#: src/CanvasOptions.cpp:203 src/options.cpp:4098 src/options.cpp:4283
+#: src/CanvasOptions.cpp:203 src/options.cpp:4085 src/options.cpp:4270
 msgid "Show Depth Units"
 msgstr "수심 단위 보이기"
 
@@ -3386,8 +3403,8 @@ msgstr "조류와 해류"
 msgid "Show Tide stations"
 msgstr "조류 관측소 보이기"
 
-#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1334 src/ocpn_frame.cpp:3565
-#: src/toolbar.cpp:1232
+#: src/CanvasOptions.cpp:245 src/chcanv.cpp:1338 src/ocpn_frame.cpp:3572
+#: src/toolbar.cpp:1234
 msgid "Show Currents"
 msgstr "해류 표시하기"
 
@@ -3403,7 +3420,7 @@ msgstr "텍스트 보이기"
 msgid "Show depths"
 msgstr "수심 보이기"
 
-#: src/CanvasOptions.cpp:274 src/options.cpp:3416 src/options.cpp:3610
+#: src/CanvasOptions.cpp:274 src/options.cpp:3398 src/options.cpp:3592
 msgid "Buoy/Light Labels"
 msgstr "부표/등표 이름"
 
@@ -3411,7 +3428,7 @@ msgstr "부표/등표 이름"
 msgid "Lights"
 msgstr "등화"
 
-#: src/CanvasOptions.cpp:288 src/options.cpp:3421 src/options.cpp:3615
+#: src/CanvasOptions.cpp:288 src/options.cpp:3403 src/options.cpp:3597
 msgid "Light Descriptions"
 msgstr "등표 설명"
 
@@ -3427,15 +3444,15 @@ msgstr "보이는 섹터 등화 보이기"
 msgid "Show chart data quality"
 msgstr ""
 
-#: src/CanvasOptions.cpp:321 src/options.cpp:3376 src/options.cpp:3579
+#: src/CanvasOptions.cpp:321 src/options.cpp:3358 src/options.cpp:3561
 msgid "Display Category"
 msgstr "분류 표시"
 
-#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3360 src/options.cpp:3563
 msgid "Standard"
 msgstr "표준"
 
-#: src/CanvasOptions.cpp:323 src/options.cpp:3378 src/options.cpp:3581
+#: src/CanvasOptions.cpp:323 src/options.cpp:3360 src/options.cpp:3563
 msgid "All"
 msgstr "전부"
 
@@ -3445,10 +3462,6 @@ msgstr "사용자 표준"
 
 #: src/catalog_mgr.cpp:92
 msgid "Manage Plugin Catalog"
-msgstr ""
-
-#: src/catalog_mgr.cpp:99
-msgid "Hide"
 msgstr ""
 
 #: src/catalog_mgr.cpp:102
@@ -3483,7 +3496,7 @@ msgstr ""
 msgid "Latest available catalog:"
 msgstr ""
 
-#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4241
+#: src/catalog_mgr.cpp:292 src/pluginmanager.cpp:4242
 msgid "Cannot download data from url"
 msgstr "URL에서 데이터를 다운로드할 수 없습니다."
 
@@ -3588,9 +3601,9 @@ msgstr " 해도파일: "
 msgid " Name:  "
 msgstr " 이름: "
 
-#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5403
-#: src/chcanv.cpp:5406 src/chcanv.cpp:5410 src/chcanv.cpp:5413
-#: src/chcanv.cpp:5416 src/chcanv.cpp:5454 src/routemanagerdialog.cpp:721
+#: src/chartdbs.cpp:1375 src/chartdbs.cpp:1377 src/chcanv.cpp:5407
+#: src/chcanv.cpp:5410 src/chcanv.cpp:5414 src/chcanv.cpp:5417
+#: src/chcanv.cpp:5420 src/chcanv.cpp:5458 src/routemanagerdialog.cpp:721
 msgid "Scale"
 msgstr "축척"
 
@@ -3650,259 +3663,255 @@ msgstr "OpenCPN 디렉토리 스캔..."
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN 해도 추가...."
 
-#: src/chcanv.cpp:1304 src/ocpn_frame.cpp:3564 src/toolbar.cpp:1238
+#: src/chcanv.cpp:1308 src/ocpn_frame.cpp:3571 src/toolbar.cpp:1240
 msgid "Show Tides"
 msgstr "조석 표시하기"
 
-#: src/chcanv.cpp:1305
+#: src/chcanv.cpp:1309
 msgid "Hide Tides"
 msgstr "조류 숨기기"
 
-#: src/chcanv.cpp:1335
+#: src/chcanv.cpp:1339
 msgid "Hide Currents"
 msgstr "해류 숨기기"
 
-#: src/chcanv.cpp:1425 src/chcanv.cpp:1440
+#: src/chcanv.cpp:1429 src/chcanv.cpp:1444
 msgid "Group \""
 msgstr "그룹 \""
 
-#: src/chcanv.cpp:1430
+#: src/chcanv.cpp:1434
 msgid "\" is empty."
 msgstr "\" 비어있음"
 
-#: src/chcanv.cpp:1432 src/chcanv.cpp:1447
+#: src/chcanv.cpp:1436 src/chcanv.cpp:1451
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN 그룹 통지"
 
-#: src/chcanv.cpp:1445
+#: src/chcanv.cpp:1449
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" 비었음, \"모든 활성 해도\" 그룹으로 전환함."
 
-#: src/chcanv.cpp:3821 src/chcanv.cpp:10534
+#: src/chcanv.cpp:3825 src/chcanv.cpp:10543
 msgid "Layer Route: "
 msgstr "경로 레이어: "
 
-#: src/chcanv.cpp:3824 src/chcanv.cpp:3999
+#: src/chcanv.cpp:3828 src/chcanv.cpp:4003
 msgid "(unnamed)"
 msgstr "(이름 없는)"
 
-#: src/chcanv.cpp:3828
+#: src/chcanv.cpp:3832
 msgid "Total Length: "
 msgstr "총 길이:"
 
-#: src/chcanv.cpp:3830
+#: src/chcanv.cpp:3834
 msgid "Leg: from "
 msgstr "구간: 로부터"
 
-#: src/chcanv.cpp:3830
+#: src/chcanv.cpp:3834
 msgid " to "
 msgstr "로"
 
-#: src/chcanv.cpp:3880
+#: src/chcanv.cpp:3884
 msgid "From Ship To"
 msgstr "선박에서 로"
 
-#: src/chcanv.cpp:3902 src/concanv.cpp:389
+#: src/chcanv.cpp:3906 src/concanv.cpp:389
 msgid "%Dd %H:%M"
 msgstr "%Dd %H:%M"
 
-#: src/chcanv.cpp:3903
+#: src/chcanv.cpp:3907
 msgid "%H:%M"
 msgstr "%H:%M"
 
-#: src/chcanv.cpp:3996
+#: src/chcanv.cpp:4000
 msgid "Layer Track: "
 msgstr "트랙 레이어: "
 
-#: src/chcanv.cpp:4003
+#: src/chcanv.cpp:4007
 msgid "Total Track: "
 msgstr "총 트랙:"
 
-#: src/chcanv.cpp:4020
+#: src/chcanv.cpp:4024
 msgid "Segment Created: "
 msgstr "생성된 세그먼트:"
 
-#: src/chcanv.cpp:5445 src/ocpn_frame.cpp:2170 src/ocpn_frame.cpp:2193
-#: src/OCPNPlatform.cpp:1578
+#: src/chcanv.cpp:5449 src/ocpn_frame.cpp:2177 src/ocpn_frame.cpp:2200
+#: src/OCPNPlatform.cpp:1581
 msgid "StatusBar"
 msgstr "상태 표시줄"
 
-#: src/chcanv.cpp:6569
+#: src/chcanv.cpp:6573
 msgid "ON"
 msgstr ""
 
-#: src/chcanv.cpp:6572
+#: src/chcanv.cpp:6576
 msgid "OFF"
 msgstr ""
 
-#: src/chcanv.cpp:6577
-msgid "CPA alarm "
-msgstr ""
-
-#: src/chcanv.cpp:6581
+#: src/chcanv.cpp:6585
 msgid "CPA Alarm is switched"
 msgstr ""
 
-#: src/chcanv.cpp:7689 src/chcanv.cpp:8255
+#: src/chcanv.cpp:7698 src/chcanv.cpp:8264
 msgid "Use nearby waypoint?"
 msgstr "가까운 경유지를 사용하시겠습니까?"
 
-#: src/chcanv.cpp:7689 src/chcanv.cpp:7727 src/chcanv.cpp:7748
-#: src/chcanv.cpp:7810 src/chcanv.cpp:8255 src/chcanv.cpp:8293
-#: src/chcanv.cpp:8313 src/chcanv.cpp:8371 src/chcanv.cpp:8764
-#: src/chcanv.cpp:8782 src/chcanv.cpp:9016 src/chcanv.cpp:9034
+#: src/chcanv.cpp:7698 src/chcanv.cpp:7736 src/chcanv.cpp:7757
+#: src/chcanv.cpp:7819 src/chcanv.cpp:8264 src/chcanv.cpp:8302
+#: src/chcanv.cpp:8322 src/chcanv.cpp:8380 src/chcanv.cpp:8773
+#: src/chcanv.cpp:8791 src/chcanv.cpp:9025 src/chcanv.cpp:9043
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN 경로 생성"
 
-#: src/chcanv.cpp:7719 src/chcanv.cpp:8285
+#: src/chcanv.cpp:7728 src/chcanv.cpp:8294
 msgid "Insert first part of this route in the new route?"
 msgstr "이 경로의 첫 번째 부분을 새 경로에 삽입하시겠습니까?"
 
-#: src/chcanv.cpp:7723 src/chcanv.cpp:8289
+#: src/chcanv.cpp:7732 src/chcanv.cpp:8298
 msgid "Insert this route in the new route?"
 msgstr "이 경로를 새 경로에 삽입하시겠습니까?"
 
-#: src/chcanv.cpp:7738 src/chcanv.cpp:8304
+#: src/chcanv.cpp:7747 src/chcanv.cpp:8313
 msgid "Append last part of this route to the new route?"
 msgstr "이 경로의 마지막 부분을 새 경로에 추가하시겠습니까?"
 
-#: src/chcanv.cpp:7741 src/chcanv.cpp:8307
+#: src/chcanv.cpp:7750 src/chcanv.cpp:8316
 msgid "Append this route to the new route?"
 msgstr "이 경로를 새 경로에 추가하시겠습니까?"
 
-#: src/chcanv.cpp:7800 src/chcanv.cpp:8363
+#: src/chcanv.cpp:7809 src/chcanv.cpp:8372
 msgid "For this leg the Great Circle route is "
 msgstr "이 구간의 대권 루트는"
 
-#: src/chcanv.cpp:7802 src/chcanv.cpp:8365
+#: src/chcanv.cpp:7811 src/chcanv.cpp:8374
 msgid " shorter than rhumbline.\n\n"
 msgstr "항정선보다 짧습니다.\n\n"
 
-#: src/chcanv.cpp:7803 src/chcanv.cpp:8366
+#: src/chcanv.cpp:7812 src/chcanv.cpp:8375
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "이 구간에 대한 대권경로점을 포함하시겠습니까?"
 
-#: src/chcanv.cpp:8730 src/chcanv.cpp:8983
+#: src/chcanv.cpp:8739 src/chcanv.cpp:8992
 msgid "Replace this RoutePoint by the nearby Waypoint?"
 msgstr "이 경로점을 가까운 경유지로 바꾸시겠습니까?"
 
-#: src/chcanv.cpp:8732 src/chcanv.cpp:8985
+#: src/chcanv.cpp:8741 src/chcanv.cpp:8994
 msgid "OpenCPN RoutePoint change"
 msgstr "OpenCPN 경로점 변경"
 
-#: src/chcanv.cpp:8757 src/chcanv.cpp:9009
+#: src/chcanv.cpp:8766 src/chcanv.cpp:9018
 msgid "Last part of route to be appended to dragged route?"
 msgstr "드래그한 경로에 추가할 경로의 마지막 부분은?"
 
-#: src/chcanv.cpp:8761 src/chcanv.cpp:9013
+#: src/chcanv.cpp:8770 src/chcanv.cpp:9022
 msgid "Full route to be appended to dragged route?"
 msgstr "드래그한 경로에 전체 경로를 추가하시겠습니까?"
 
-#: src/chcanv.cpp:8775 src/chcanv.cpp:9027
+#: src/chcanv.cpp:8784 src/chcanv.cpp:9036
 msgid "First part of route to be inserted into dragged route?"
 msgstr "드래그한 경로에 삽입할 경로의 첫 부분은?"
 
-#: src/chcanv.cpp:8779 src/chcanv.cpp:9031
+#: src/chcanv.cpp:8788 src/chcanv.cpp:9040
 msgid "Full route to be inserted into dragged route?"
 msgstr "드래그한 경로에 전체 경로를 삽입하시겠습니까?"
 
-#: src/chcanv.cpp:8795 src/chcanv.cpp:9047
+#: src/chcanv.cpp:8804 src/chcanv.cpp:9056
 msgid "Do you really want to delete and replace this WayPoint"
 msgstr "이 경유지를 삭제하고 교체하시겠습니까?"
 
-#: src/chcanv.cpp:8797 src/chcanv.cpp:9049
+#: src/chcanv.cpp:8806 src/chcanv.cpp:9058
 msgid "which has been created manually?"
 msgstr "수동으로 만든 것은 무엇입니까?"
 
-#: src/chcanv.cpp:9524 src/chcanv.cpp:9534 src/S57QueryDialog.cpp:115
+#: src/chcanv.cpp:9533 src/chcanv.cpp:9543 src/S57QueryDialog.cpp:115
 #: src/S57QueryDialog.cpp:302
 msgid "ObjectQuery"
 msgstr "객체쿼리"
 
-#: src/chcanv.cpp:9692 src/routemanagerdialog.cpp:2631
+#: src/chcanv.cpp:9701 src/routemanagerdialog.cpp:2631
 #: src/RoutePropDlgImpl.cpp:519
 msgid "Layer"
 msgstr "레이어"
 
-#: src/chcanv.cpp:9778
+#: src/chcanv.cpp:9787
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "붙여넣으려고 하는 동일한 위치에 기존 경유지가 있습니다. 붙여넣은 데이터를 병합하시겠습니까?\n\n"
 
-#: src/chcanv.cpp:9780
+#: src/chcanv.cpp:9789
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "'아니오'라고 답하면 같은 위치에 새로운 경유지가 생성됩니다."
 
-#: src/chcanv.cpp:9781
+#: src/chcanv.cpp:9790
 msgid "Merge waypoint?"
 msgstr "경유지를 병합하시겠습니까?"
 
-#: src/chcanv.cpp:9846
+#: src/chcanv.cpp:9855
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "붙여넣으려는 것 중 일부와 동일한 위치에 기존 경유지가 있습니다. 붙여넣은 데이터를 병합하시겠습니까?\n\n"
 
-#: src/chcanv.cpp:9849
+#: src/chcanv.cpp:9858
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "'아니요'라고 답하면 이 경로에 대한 모든 새로운 경유지가 생성됩니다."
 
-#: src/chcanv.cpp:9850
+#: src/chcanv.cpp:9859
 msgid "Merge waypoints?"
 msgstr "경유지를 병합하시겠습니까?"
 
-#: src/chcanv.cpp:10332 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
+#: src/chcanv.cpp:10341 src/RolloverWin.cpp:139 src/RolloverWin.cpp:311
 msgid "RouteLegInfoRollover"
 msgstr "경로 구간 정보 지연출항"
 
-#: src/chcanv.cpp:11131 src/mbtiles.cpp:1261
+#: src/chcanv.cpp:11140 src/mbtiles.cpp:1256
 msgid "MBTile requires OpenGL to be enabled"
 msgstr "MBTile 지도는 OpenGL을 활성화해야 합니다."
 
-#: src/chcanv.cpp:11778 src/options.cpp:4416 src/options.cpp:4555
+#: src/chcanv.cpp:11787 src/options.cpp:4403 src/options.cpp:4542
 msgid "Feet"
 msgstr "피트"
 
-#: src/chcanv.cpp:11780 src/options.cpp:4388 src/options.cpp:4417
-#: src/options.cpp:4534 src/options.cpp:4556
+#: src/chcanv.cpp:11789 src/options.cpp:4375 src/options.cpp:4404
+#: src/options.cpp:4521 src/options.cpp:4543
 msgid "Meters"
 msgstr "미터"
 
-#: src/chcanv.cpp:11782 src/options.cpp:4418 src/options.cpp:4557
+#: src/chcanv.cpp:11791 src/options.cpp:4405 src/options.cpp:4544
 msgid "Fathoms"
 msgstr "길"
 
-#: src/chcanv.cpp:11785
+#: src/chcanv.cpp:11794
 msgid "OverZoom"
 msgstr "과도확대"
 
-#: src/chcanv.cpp:12153 src/chcanv.cpp:12154
+#: src/chcanv.cpp:12162 src/chcanv.cpp:12163
 msgid "ExtendedTideIcon"
 msgstr "확장된 조석 아이콘"
 
-#: src/chcanv.cpp:12484
+#: src/chcanv.cpp:12493
 msgid "CurrentValue"
 msgstr "해류값"
 
-#: src/chcanv.cpp:12717 src/ocpn_frame.cpp:1166
+#: src/chcanv.cpp:12726 src/ocpn_frame.cpp:1167
 msgid "AIS Target Query"
 msgstr "선박자동식별장치(AIS) 표적 문의"
 
-#: src/chcanv.cpp:13053
+#: src/chcanv.cpp:13062
 msgid "Show all AIS Targets"
 msgstr "모든 선박자동식별시스템(AIS) 표적 보이기"
 
-#: src/chcanv.cpp:13054 src/ocpn_frame.cpp:3585 src/toolbar.cpp:1311
+#: src/chcanv.cpp:13063 src/ocpn_frame.cpp:3592 src/toolbar.cpp:1313
 msgid "Attenuate less critical AIS targets"
 msgstr "덜 위협적인 선박자동식별시스템(AIS) 표적 흐리기"
 
-#: src/chcanv.cpp:13055 src/toolbar.cpp:1225 src/toolbar.cpp:1313
-#: src/toolbar.cpp:1316
+#: src/chcanv.cpp:13064 src/toolbar.cpp:1227 src/toolbar.cpp:1315
+#: src/toolbar.cpp:1318
 msgid "Hide AIS Targets"
 msgstr "선박자동식별시스템(AIS) 표적 숨기기"
 
-#: src/chcanv.cpp:13706
+#: src/chcanv.cpp:13715
 msgid "Show This Chart"
 msgstr "이 해도 보이기"
 
-#: src/chcanv.cpp:13711
+#: src/chcanv.cpp:13720
 msgid "Hide This Chart"
 msgstr "이 해도 숨기기"
 
@@ -3938,9 +3947,9 @@ msgstr "사용자 X 오프셋"
 msgid "User Y Offset"
 msgstr "사용자 Y 오프셋"
 
-#: src/cm93.cpp:6486 src/cm93.cpp:6500 src/options.cpp:3514 src/options.cpp:3524
-#: src/options.cpp:3534 src/options.cpp:3729 src/options.cpp:3738
-#: src/options.cpp:3747 src/options.cpp:6482
+#: src/cm93.cpp:6486 src/cm93.cpp:6500 src/options.cpp:3496 src/options.cpp:3506
+#: src/options.cpp:3516 src/options.cpp:3711 src/options.cpp:3720
+#: src/options.cpp:3729 src/options.cpp:6472
 msgid "meters"
 msgstr "미터"
 
@@ -4013,7 +4022,7 @@ msgstr "템플릿 복구"
 msgid "Apply this template to return to a known safe configuration"
 msgstr "알려진 안전한 환경구성으로 돌아가려면 이 템플릿을 적용하십시오."
 
-#: src/connections_dialog.cpp:228 src/options.cpp:3994
+#: src/connections_dialog.cpp:228 src/options.cpp:3981
 msgid "General"
 msgstr "일반 사항"
 
@@ -4061,12 +4070,12 @@ msgstr ""
 msgid "Edit Selected Connection"
 msgstr ""
 
-#: src/connections_dialog.cpp:373 src/conn_params.cpp:160
+#: src/connections_dialog.cpp:373 src/conn_params.cpp:165
 #: src/conn_params_panel.cpp:226 src/conn_params_panel.cpp:791
 msgid "Serial"
 msgstr ""
 
-#: src/connections_dialog.cpp:378 src/conn_params.cpp:162
+#: src/connections_dialog.cpp:378 src/conn_params.cpp:167
 #: src/conn_params_panel.cpp:328 src/conn_params_panel.cpp:821
 msgid "Network"
 msgstr ""
@@ -4092,19 +4101,19 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
-#: src/connections_dialog.cpp:466 src/conn_params.cpp:189
+#: src/connections_dialog.cpp:466 src/conn_params.cpp:194
 msgid "TCP"
 msgstr ""
 
-#: src/connections_dialog.cpp:472 src/conn_params.cpp:191
+#: src/connections_dialog.cpp:472 src/conn_params.cpp:196
 msgid "UDP"
 msgstr ""
 
-#: src/connections_dialog.cpp:478 src/conn_params.cpp:193
+#: src/connections_dialog.cpp:478 src/conn_params.cpp:198
 msgid "GPSD"
 msgstr ""
 
-#: src/connections_dialog.cpp:483 src/conn_params.cpp:195
+#: src/connections_dialog.cpp:483 src/conn_params.cpp:200
 msgid "Signal K"
 msgstr ""
 
@@ -4310,11 +4319,11 @@ msgstr ""
 msgid "Input filtering"
 msgstr ""
 
-#: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2137
+#: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2136
 msgid "Accept only sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2138
+#: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2137
 msgid "Ignore sentences"
 msgstr ""
 
@@ -4322,11 +4331,11 @@ msgstr ""
 msgid "Output filtering"
 msgstr ""
 
-#: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2135
+#: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2134
 msgid "Transmit sentences"
 msgstr ""
 
-#: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2135
+#: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2134
 msgid "Drop sentences"
 msgstr ""
 
@@ -4334,46 +4343,46 @@ msgstr ""
 msgid "Stop Scan"
 msgstr ""
 
-#: src/connections_dialog.cpp:1641
+#: src/connections_dialog.cpp:1640
 msgid "Configure new connection"
 msgstr ""
 
-#: src/connections_dialog.cpp:1708
+#: src/connections_dialog.cpp:1707
 msgid "Signal K server available."
 msgstr ""
 
-#: src/connections_dialog.cpp:1710
+#: src/connections_dialog.cpp:1709
 msgid "Signal K server not found."
 msgstr ""
 
-#: src/connections_dialog.cpp:2074
+#: src/connections_dialog.cpp:2073
 msgid "Sentence Filter"
 msgstr ""
 
-#: src/connections_dialog.cpp:2086 src/options.cpp:3553 src/options.cpp:3766
+#: src/connections_dialog.cpp:2085 src/options.cpp:3535 src/options.cpp:3748
 msgid "Select All"
 msgstr "모두 선택"
 
-#: src/connections_dialog.cpp:2087 src/options.cpp:3555 src/options.cpp:3768
+#: src/connections_dialog.cpp:2086 src/options.cpp:3537 src/options.cpp:3750
 #: src/priority_gui.cpp:98
 msgid "Clear All"
 msgstr "모두 지우기"
 
-#: src/connections_dialog.cpp:2088 src/options.cpp:3899 src/RoutePropDlg.cpp:443
+#: src/connections_dialog.cpp:2087 src/options.cpp:3885 src/RoutePropDlg.cpp:443
 #: src/TrackPropDlg.cpp:920
 msgid "Add"
 msgstr "추가"
 
-#: src/connections_dialog.cpp:2188
+#: src/connections_dialog.cpp:2187
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
 msgstr ""
 
-#: src/connections_dialog.cpp:2190
+#: src/connections_dialog.cpp:2189
 msgid "Enter the NMEA sentence"
 msgstr ""
 
-#: src/connections_dialog.cpp:2209
+#: src/connections_dialog.cpp:2208
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -4381,63 +4390,63 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
 msgstr ""
 
-#: src/connections_dialog.cpp:2226
+#: src/connections_dialog.cpp:2225
 msgid "REGEX syntax error: \n"
 msgstr ""
 
-#: src/conn_params.cpp:164
+#: src/conn_params.cpp:169
 msgid "GPS"
 msgstr ""
 
-#: src/conn_params.cpp:166
+#: src/conn_params.cpp:171
 msgid "BT"
 msgstr ""
 
-#: src/conn_params.cpp:178
+#: src/conn_params.cpp:183
 msgid "Internal"
 msgstr ""
 
-#: src/conn_params.cpp:218
+#: src/conn_params.cpp:223
 msgid "Input"
 msgstr ""
 
-#: src/conn_params.cpp:220
+#: src/conn_params.cpp:225
 msgid "Output"
 msgstr ""
 
-#: src/conn_params.cpp:222
+#: src/conn_params.cpp:227
 msgid "In/Out"
 msgstr ""
 
-#: src/conn_params.cpp:229
+#: src/conn_params.cpp:234
 msgid "Reject"
 msgstr ""
 
-#: src/conn_params.cpp:231
+#: src/conn_params.cpp:236
 msgid "Accept"
 msgstr ""
 
-#: src/conn_params.cpp:234
+#: src/conn_params.cpp:239
 msgid "Drop"
 msgstr ""
 
-#: src/conn_params.cpp:236 src/SendToGpsDlg.cpp:206 src/SendToPeerDlg.cpp:171
+#: src/conn_params.cpp:241 src/SendToGpsDlg.cpp:206 src/SendToPeerDlg.cpp:171
 msgid "Send"
 msgstr "보내기"
 
-#: src/conn_params.cpp:253
+#: src/conn_params.cpp:258
 msgid "In"
 msgstr ""
 
-#: src/conn_params.cpp:259
+#: src/conn_params.cpp:264
 msgid "In: None"
 msgstr ""
 
-#: src/conn_params.cpp:263
+#: src/conn_params.cpp:268
 msgid "Out"
 msgstr ""
 
-#: src/conn_params.cpp:269
+#: src/conn_params.cpp:274
 msgid ", Out: None"
 msgstr ""
 
@@ -4494,7 +4503,7 @@ msgstr "벡터해도 확대/축소 가중치"
 msgid "Install"
 msgstr ""
 
-#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5318
+#: src/download_mgr.cpp:250 src/download_mgr.cpp:267 src/pluginmanager.cpp:5319
 #: src/update_mgr.cpp:239
 msgid "Reinstall"
 msgstr "재설치"
@@ -4503,7 +4512,7 @@ msgstr "재설치"
 msgid "Update"
 msgstr ""
 
-#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5324 src/update_mgr.cpp:241
+#: src/download_mgr.cpp:269 src/pluginmanager.cpp:5325 src/update_mgr.cpp:241
 msgid "Downgrade"
 msgstr "이전 버전으로 되돌리기"
 
@@ -4539,11 +4548,11 @@ msgstr ""
 msgid " successfully installed"
 msgstr ""
 
-#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1251
+#: src/download_mgr.cpp:572 src/pluginmanager.cpp:1252
 msgid "Installation complete"
 msgstr ""
 
-#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1242
+#: src/download_mgr.cpp:588 src/pluginmanager.cpp:1243
 msgid "Installation error"
 msgstr ""
 
@@ -4555,19 +4564,19 @@ msgstr ""
 msgid "OpenCPN Message"
 msgstr ""
 
-#: src/glChartCanvas.cpp:1912
+#: src/glChartCanvas.cpp:1915
 msgid "GridText"
 msgstr ""
 
-#: src/glChartCanvas.cpp:4480
+#: src/glChartCanvas.cpp:4488
 msgid "Waiting for raster chart compression thread exit."
 msgstr "래스터 해도 압축 스레드 종료를 기다리는 중입니다."
 
-#: src/glTextureManager.cpp:1460
+#: src/glTextureManager.cpp:1464
 msgid "OpenCPN Compressed Cache Update"
 msgstr ""
 
-#: src/glTextureManager.cpp:1497 src/ocpn_frame.cpp:8729
+#: src/glTextureManager.cpp:1501 src/ocpn_frame.cpp:8771
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "자선으로 부터의 거리: %4.0f 해리"
@@ -4690,7 +4699,7 @@ msgstr "이름 보이기"
 msgid "Icon"
 msgstr "아이콘"
 
-#: src/MarkInfo.cpp:389 src/options.cpp:2301 src/options.cpp:2364
+#: src/MarkInfo.cpp:389 src/options.cpp:2282 src/options.cpp:2345
 msgid "Combo!"
 msgstr ""
 
@@ -4739,20 +4748,20 @@ msgstr "거리환"
 msgid "Number"
 msgstr "번호"
 
-#: src/MarkInfo.cpp:594 src/options.cpp:4385 src/options.cpp:4531
+#: src/MarkInfo.cpp:594 src/options.cpp:4372 src/options.cpp:4518
 #: src/routeprintout.cpp:113 src/routeprintout.cpp:397 src/RoutePropDlg.cpp:115
 #: src/RoutePropDlg.cpp:324 src/trackprintout.cpp:94 src/trackprintout.cpp:319
 #: src/TrackPropDlg.cpp:303
 msgid "Distance"
 msgstr "거리"
 
-#: src/MarkInfo.cpp:598 src/options.cpp:2127 src/RoutePropDlg.cpp:223
+#: src/MarkInfo.cpp:598 src/options.cpp:2108 src/RoutePropDlg.cpp:223
 #: src/TrackPropDlg.cpp:474 src/TrackPropDlg.cpp:718
 msgid "Color"
 msgstr "색상"
 
-#: src/MarkInfo.cpp:601 src/options.cpp:2059 src/options.cpp:2276
-#: src/options.cpp:2693
+#: src/MarkInfo.cpp:601 src/options.cpp:2040 src/options.cpp:2257
+#: src/options.cpp:2675
 msgid "None"
 msgstr "없음"
 
@@ -4886,11 +4895,11 @@ msgstr ""
 msgid "mph"
 msgstr ""
 
-#: src/navutil_base.cpp:257 src/options.cpp:4402 src/options.cpp:4544
+#: src/navutil_base.cpp:257 src/options.cpp:4389 src/options.cpp:4531
 msgid "km/h"
 msgstr "킬로미터/시간"
 
-#: src/navutil_base.cpp:260 src/options.cpp:4402 src/options.cpp:4544
+#: src/navutil_base.cpp:260 src/options.cpp:4389 src/options.cpp:4531
 msgid "m/s"
 msgstr "미터/초"
 
@@ -4914,40 +4923,40 @@ msgstr ""
 msgid "N/A"
 msgstr "해당 없음"
 
-#: src/navutil.cpp:1776 src/navutil.cpp:3137 src/options.cpp:1025
+#: src/navutil.cpp:1786 src/navutil.cpp:3148 src/options.cpp:1025
 #: src/options.cpp:1187
 msgid "Persistent"
 msgstr "지속되는"
 
-#: src/navutil.cpp:2846 src/navutil.cpp:2954
+#: src/navutil.cpp:2857 src/navutil.cpp:2965
 msgid "Export GPX file"
 msgstr "GPX 파일 내보내기"
 
-#: src/navutil.cpp:2856
+#: src/navutil.cpp:2867
 msgid "Overwrite existing file?"
 msgstr "기존 파일에 덮어 쓸까요?"
 
-#: src/navutil.cpp:3044 src/navutil.cpp:3076
+#: src/navutil.cpp:3055 src/navutil.cpp:3087
 msgid "Import GPX file"
 msgstr "GPX 파일 가져오기"
 
-#: src/navutil.cpp:3137
+#: src/navutil.cpp:3148
 msgid "Temporary"
 msgstr "임시"
 
-#: src/navutil.cpp:3172
+#: src/navutil.cpp:3183
 msgid "duplicate waypoints detected during import and ignored."
 msgstr "가져오기 중 중복 경유지가 감지되고 무시됩니다."
 
-#: src/navutil.cpp:3351
+#: src/navutil.cpp:3362
 msgid "C"
 msgstr "섭씨"
 
-#: src/navutil.cpp:3354
+#: src/navutil.cpp:3365
 msgid "F"
 msgstr "화씨"
 
-#: src/navutil.cpp:3357
+#: src/navutil.cpp:3368
 msgid "K"
 msgstr "절대온도"
 
@@ -4955,64 +4964,64 @@ msgstr "절대온도"
 msgid "NMEA Debug Window"
 msgstr "망관리부가장치(NMEA) 디버그 창"
 
-#: src/ocpn_app.cpp:945
+#: src/ocpn_app.cpp:946
 msgid "Show usage syntax."
 msgstr ""
 
-#: src/ocpn_app.cpp:947
+#: src/ocpn_app.cpp:948
 msgid "Run in portable mode."
 msgstr ""
 
-#: src/ocpn_app.cpp:949
+#: src/ocpn_app.cpp:950
 msgid "Switch to full screen mode on start."
 msgstr ""
 
-#: src/ocpn_app.cpp:952
+#: src/ocpn_app.cpp:953
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
 msgstr ""
 
-#: src/ocpn_app.cpp:960
+#: src/ocpn_app.cpp:961
 msgid "Amount of logging: error, warning, message, info, debug or trace"
 msgstr ""
 
-#: src/ocpn_app.cpp:962
+#: src/ocpn_app.cpp:963
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr ""
 
-#: src/ocpn_app.cpp:1132
+#: src/ocpn_app.cpp:1133
 msgid "Sorry, an existing instance of OpenCPN may be too busy to respond.\n"
 "Please retry."
 msgstr ""
 
-#: src/ocpn_app.cpp:1389 src/ocpn_app.cpp:1396
+#: src/ocpn_app.cpp:1390 src/ocpn_app.cpp:1397
 msgid "Failed to initialize the user interface. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1390
+#: src/ocpn_app.cpp:1391
 msgid "OpenCPN cannot start. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1391
+#: src/ocpn_app.cpp:1392
 msgid "The necessary configuration files were not found. "
 msgstr ""
 
-#: src/ocpn_app.cpp:1392
+#: src/ocpn_app.cpp:1393
 msgid "See the log file at "
 msgstr ""
 
-#: src/ocpn_app.cpp:1393
+#: src/ocpn_app.cpp:1394
 msgid " for details."
 msgstr ""
 
-#: src/ocpn_app.cpp:1687
+#: src/ocpn_app.cpp:1701
 msgid " -- [Portable(-p) executing from "
 msgstr ""
 
-#: src/ocpn_app.cpp:1774
+#: src/ocpn_app.cpp:1788
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/ocpn_app.cpp:1945
+#: src/ocpn_app.cpp:1959
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr ""
@@ -5040,289 +5049,289 @@ msgid "This AIS target has Persistent tracking selected by MMSI properties\n"
 "Do you instead want to stop Persistent tracking for this target?"
 msgstr ""
 
-#: src/ocpn_frame.cpp:960
+#: src/ocpn_frame.cpp:961
 msgid "OpenCPN needs to update the chart database from config file entries...."
 msgstr ""
 
-#: src/ocpn_frame.cpp:972
+#: src/ocpn_frame.cpp:973
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/ocpn_frame.cpp:976
+#: src/ocpn_frame.cpp:977
 msgid "Elapsed time : "
 msgstr ""
 
-#: src/ocpn_frame.cpp:977
+#: src/ocpn_frame.cpp:978
 msgid "Estimated time : "
 msgstr ""
 
-#: src/ocpn_frame.cpp:978
+#: src/ocpn_frame.cpp:979
 msgid "Remaining time : "
 msgstr ""
 
-#: src/ocpn_frame.cpp:980 src/ocpn_frame.cpp:4578 src/ocpn_frame.cpp:4588
+#: src/ocpn_frame.cpp:981 src/ocpn_frame.cpp:4614 src/ocpn_frame.cpp:4624
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2644 src/ocpn_frame.cpp:2757
+#: src/ocpn_frame.cpp:2651 src/ocpn_frame.cpp:2764
 msgid "Show Toolbar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2645 src/ocpn_frame.cpp:2759 src/ocpn_frame.cpp:7107
+#: src/ocpn_frame.cpp:2652 src/ocpn_frame.cpp:2766 src/ocpn_frame.cpp:7149
 msgid "Hide Toolbar"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2964 src/ocpn_frame.cpp:3027
+#: src/ocpn_frame.cpp:2971 src/ocpn_frame.cpp:3034
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2965 src/ocpn_frame.cpp:6747
+#: src/ocpn_frame.cpp:2972 src/ocpn_frame.cpp:6785
 msgid " at "
 msgstr ""
 
-#: src/ocpn_frame.cpp:2967 src/ocpn_frame.cpp:6749
+#: src/ocpn_frame.cpp:2974 src/ocpn_frame.cpp:6787
 msgid " on "
 msgstr ""
 
-#: src/ocpn_frame.cpp:2987
+#: src/ocpn_frame.cpp:2994
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/ocpn_frame.cpp:2999
+#: src/ocpn_frame.cpp:3006
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3000
+#: src/ocpn_frame.cpp:3007
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3028 src/ocpn_frame.cpp:6805 src/ocpn_frame.cpp:6846
+#: src/ocpn_frame.cpp:3035 src/ocpn_frame.cpp:6843 src/ocpn_frame.cpp:6884
 msgid " Time: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:3030
+#: src/ocpn_frame.cpp:3037
 msgid "  Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:3048 src/ocpn_frame.cpp:7186
+#: src/ocpn_frame.cpp:3055 src/ocpn_frame.cpp:7228
 msgid "Disable Tracking"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3120 src/ocpn_frame.cpp:3494 src/ocpn_frame.cpp:7132
-#: src/toolbar.cpp:1257
+#: src/ocpn_frame.cpp:3127 src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:7174
+#: src/toolbar.cpp:1259
 msgid "Enable Tracking"
 msgstr "추적 활성화"
 
-#: src/ocpn_frame.cpp:3493 src/toolbar.cpp:1196
+#: src/ocpn_frame.cpp:3500 src/toolbar.cpp:1198
 msgid "Auto Follow"
 msgstr "자동 추종"
 
-#: src/ocpn_frame.cpp:3498
+#: src/ocpn_frame.cpp:3505
 msgid "Head Up Mode"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:3504 src/toolbar.cpp:1161
+#: src/ocpn_frame.cpp:3508 src/ocpn_frame.cpp:3511 src/toolbar.cpp:1163
 msgid "Zoom In"
 msgstr "확대"
 
-#: src/ocpn_frame.cpp:3502 src/ocpn_frame.cpp:3505 src/toolbar.cpp:1167
+#: src/ocpn_frame.cpp:3509 src/ocpn_frame.cpp:3512 src/toolbar.cpp:1169
 msgid "Zoom Out"
 msgstr "축소"
 
-#: src/ocpn_frame.cpp:3509
+#: src/ocpn_frame.cpp:3516
 msgid "Larger Scale Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3511
+#: src/ocpn_frame.cpp:3518
 msgid "Smaller Scale Chart"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3514
+#: src/ocpn_frame.cpp:3521
 msgid "Exit OpenCPN"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3516
+#: src/ocpn_frame.cpp:3523
 msgid "&Navigate"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3532 src/options.cpp:5306
+#: src/ocpn_frame.cpp:3539 src/options.cpp:5293
 msgid "Show Chart Bar"
 msgstr "해도 스크롤바 보이기"
 
-#: src/ocpn_frame.cpp:3537 src/ocpn_frame.cpp:3550 src/toolbar.cpp:1216
+#: src/ocpn_frame.cpp:3544 src/ocpn_frame.cpp:3557 src/toolbar.cpp:1218
 msgid "Show ENC text"
 msgstr "전자해도 텍스트 보이기"
 
-#: src/ocpn_frame.cpp:3539 src/ocpn_frame.cpp:3552
+#: src/ocpn_frame.cpp:3546 src/ocpn_frame.cpp:3559
 msgid "Show ENC Lights"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3541 src/ocpn_frame.cpp:3554
+#: src/ocpn_frame.cpp:3548 src/ocpn_frame.cpp:3561
 msgid "Show ENC Soundings"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3543 src/ocpn_frame.cpp:3556
+#: src/ocpn_frame.cpp:3550 src/ocpn_frame.cpp:3563
 msgid "Show ENC Anchoring Info"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3545 src/ocpn_frame.cpp:3559
+#: src/ocpn_frame.cpp:3552 src/ocpn_frame.cpp:3566
 msgid "Show ENC Data Quality"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3547 src/ocpn_frame.cpp:3561
+#: src/ocpn_frame.cpp:3554 src/ocpn_frame.cpp:3568
 msgid "Show Navobjects"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3569 src/ocpn_frame.cpp:3572 src/ocpn_frame.cpp:7137
-#: src/toolbar.cpp:1264
+#: src/ocpn_frame.cpp:3576 src/ocpn_frame.cpp:3579 src/ocpn_frame.cpp:7179
+#: src/toolbar.cpp:1266
 msgid "Change Color Scheme"
 msgstr "색 구성 변경"
 
-#: src/ocpn_frame.cpp:3580
+#: src/ocpn_frame.cpp:3587
 msgid "&View"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3583 src/toolbar.cpp:1320
+#: src/ocpn_frame.cpp:3590 src/toolbar.cpp:1322
 msgid "Show AIS Targets"
 msgstr "선박자동식별시스템(AIS) 표적 보이기"
 
-#: src/ocpn_frame.cpp:3588
+#: src/ocpn_frame.cpp:3595
 msgid "Hide Moored AIS Targets"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3589
+#: src/ocpn_frame.cpp:3596
 msgid "Show AIS Target Tracks"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3590
+#: src/ocpn_frame.cpp:3597
 msgid "Show CPA Alert Dialogs"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3591
+#: src/ocpn_frame.cpp:3598
 msgid "Sound CPA Alarms"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3592
+#: src/ocpn_frame.cpp:3602 src/ocpn_frame.cpp:3605
 msgid "Show CPA Warnings"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3595
+#: src/ocpn_frame.cpp:3610
 msgid "&AIS"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3600 src/ocpn_frame.cpp:3603
+#: src/ocpn_frame.cpp:3615 src/ocpn_frame.cpp:3618
 msgid "Measure Distance"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3607
+#: src/ocpn_frame.cpp:3622
 msgid "Route && Mark Manager..."
 msgstr ""
 
-#: src/ocpn_frame.cpp:3609 src/ocpn_frame.cpp:7120 src/toolbar.cpp:1189
+#: src/ocpn_frame.cpp:3624 src/ocpn_frame.cpp:7162 src/toolbar.cpp:1191
 msgid "Create Route"
 msgstr "경로 생성"
 
-#: src/ocpn_frame.cpp:3612
+#: src/ocpn_frame.cpp:3627
 msgid "Drop Mark at Boat"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3614
+#: src/ocpn_frame.cpp:3629
 msgid "Drop Mark at Cursor"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3620 src/ocpn_frame.cpp:3627 src/ocpn_frame.cpp:7164
-#: src/toolbar.cpp:1283
+#: src/ocpn_frame.cpp:3635 src/ocpn_frame.cpp:3642 src/ocpn_frame.cpp:7206
+#: src/toolbar.cpp:1285
 msgid "Drop MOB Marker"
 msgstr "익수자 표시 지우기"
 
-#: src/ocpn_frame.cpp:3624 src/pluginmanager.cpp:5106 src/pluginmanager.cpp:5127
+#: src/ocpn_frame.cpp:3639 src/pluginmanager.cpp:5107 src/pluginmanager.cpp:5128
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: src/ocpn_frame.cpp:3632
+#: src/ocpn_frame.cpp:3647
 msgid "&Tools"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3636
+#: src/ocpn_frame.cpp:3651
 msgid "&Window"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3641
+#: src/ocpn_frame.cpp:3656
 msgid "OpenCPN Help"
 msgstr ""
 
-#: src/ocpn_frame.cpp:3642
+#: src/ocpn_frame.cpp:3657
 msgid "&Help"
 msgstr ""
 
-#: src/ocpn_frame.cpp:4273
+#: src/ocpn_frame.cpp:4309
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
 
-#: src/ocpn_frame.cpp:5255
+#: src/ocpn_frame.cpp:5295
 msgid " Ship "
 msgstr ""
 
-#: src/ocpn_frame.cpp:5965
+#: src/ocpn_frame.cpp:6005
 msgid "Rotated Mode"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6311 src/routeprintout.cpp:477 src/trackprintout.cpp:409
+#: src/ocpn_frame.cpp:6351 src/routeprintout.cpp:477 src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "인쇄하는 동안 문제가 발생했습니다.\n"
 "현재 프린터가 올바르게 설정되어 있지 않습니까?"
 
-#: src/ocpn_frame.cpp:6480 src/ocpn_frame.cpp:6537
+#: src/ocpn_frame.cpp:6520 src/ocpn_frame.cpp:6577
 #: src/routemanagerdialog.cpp:1225
 msgid "(Unnamed Route)"
 msgstr "(이름 없는 경로)"
 
-#: src/ocpn_frame.cpp:6746 src/ocpn_frame.cpp:6804
+#: src/ocpn_frame.cpp:6784 src/ocpn_frame.cpp:6842
 msgid "AIS MAN OVERBOARD"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6766 src/options.cpp:1970
+#: src/ocpn_frame.cpp:6804 src/options.cpp:1951
 msgid "Own ship"
 msgstr "자선"
 
-#: src/ocpn_frame.cpp:6778
+#: src/ocpn_frame.cpp:6816
 msgid "Temporary AISMOB Route"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6779
+#: src/ocpn_frame.cpp:6817
 msgid "Present own ship"
 msgstr ""
 
-#: src/ocpn_frame.cpp:6807 src/ocpn_frame.cpp:6848
+#: src/ocpn_frame.cpp:6845 src/ocpn_frame.cpp:6886
 msgid "  Ownship Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:6811 src/ocpn_frame.cpp:6852
+#: src/ocpn_frame.cpp:6849 src/ocpn_frame.cpp:6890
 msgid "  MOB Position: "
 msgstr ""
 
-#: src/ocpn_frame.cpp:6845
+#: src/ocpn_frame.cpp:6883
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr ""
 
-#: src/ocpn_frame.cpp:7126 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1250
+#: src/ocpn_frame.cpp:7168 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1252
 msgid "Route & Mark Manager"
 msgstr "경로 및 표시 관리자"
 
-#: src/ocpn_frame.cpp:7150 src/toolbar.cpp:1244
+#: src/ocpn_frame.cpp:7192 src/toolbar.cpp:1246
 msgid "Print Chart"
 msgstr "해도 인쇄하기"
 
-#: src/ocpn_frame.cpp:7164 src/toolbar.cpp:1283
+#: src/ocpn_frame.cpp:7206 src/toolbar.cpp:1285
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: src/ocpn_frame.cpp:8698
+#: src/ocpn_frame.cpp:8740
 msgid "OpenCPN ENC Prepare"
 msgstr ""
 
-#: src/ocpn_frame.cpp:8760
+#: src/ocpn_frame.cpp:8802
 msgid "ENC Completed."
 msgstr ""
 
@@ -5384,7 +5393,7 @@ msgid "An MMSI Id is generally a number of nine digits.\n"
 msgstr "해상이동통신서비스식별부호(MMSI) ID는 일반적으로 9자리 숫자입니다.\n"
 "입력 사항을 확인하고 필요한 경우 취소하십시오."
 
-#: src/options.cpp:1175 src/options.cpp:2004 src/options.cpp:2116
+#: src/options.cpp:1175 src/options.cpp:1985 src/options.cpp:2097
 #: src/RoutePropDlg.cpp:251 src/RoutePropDlg.cpp:272 src/TrackPropDlg.cpp:498
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:740 src/TrackPropDlg.cpp:753
 msgid "Default"
@@ -5403,7 +5412,7 @@ msgstr "절대 아님"
 msgid "Edit MMSI Properties"
 msgstr "해상이동통신서비스식별부호(MMSI) 속성 편집"
 
-#: src/options.cpp:1234 src/options.cpp:4898 src/options.cpp:4905
+#: src/options.cpp:1234 src/options.cpp:4885 src/options.cpp:4892
 msgid "MMSI Properties"
 msgstr "해상이동통신서비스식별부호(MMSI) 속성"
 
@@ -5439,7 +5448,7 @@ msgstr "신규..."
 msgid "Add MMSI Properties"
 msgstr "해상무선통신서비스식별부호(MMSI) 속성 추가"
 
-#: src/options.cpp:1823
+#: src/options.cpp:1804
 msgid "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
 "retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"
@@ -5457,7 +5466,7 @@ msgstr "선택한 장치에 액세스할 수 없습니다. opencpn은\n"
 " KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "자세한 내용은 배포 문서에서 LINUX_DEVICES.md 파일을 참조하십시오. .\n"
 
-#: src/options.cpp:1834
+#: src/options.cpp:1815
 msgid "\n"
 "The device selected is not accessible; opencpn will likely not be able\n"
 "to use this device as-is. You might want to exit OpenCPN, reboot and\n"
@@ -5477,1134 +5486,1134 @@ msgstr "\n"
 " KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"
 "자세한 내용은 배포 문서에서 LINUX_DEVICES.md 파일을 참조하십시오. .\n"
 
-#: src/options.cpp:1956
+#: src/options.cpp:1937
 msgid "NMEA"
 msgstr "망관리부가장치(NMEA)"
 
-#: src/options.cpp:1987
+#: src/options.cpp:1968
 msgid "COG Predictor Length (min)"
 msgstr "실침로(COG) 예측변수 길이 (분)"
 
-#: src/options.cpp:1994
+#: src/options.cpp:1975
 msgid "Heading Predictor Length (NMi)"
 msgstr "선수방향 예측변수 길이 (해리)"
 
-#: src/options.cpp:2001
+#: src/options.cpp:1982
 msgid "Ship Icon Type"
 msgstr "선박 아이콘 종류"
 
-#: src/options.cpp:2004
+#: src/options.cpp:1985
 msgid "Real Scale Bitmap"
 msgstr "실 축척 비트맵"
 
-#: src/options.cpp:2005
+#: src/options.cpp:1986
 msgid "Real Scale Vector"
 msgstr "실 축척 벡터"
 
-#: src/options.cpp:2020
+#: src/options.cpp:2001
 msgid "Length Over All (m)"
 msgstr "전체 길이 (m)"
 
-#: src/options.cpp:2026
+#: src/options.cpp:2007
 msgid "Width Over All (m)"
 msgstr "전체 폭 (m)"
 
-#: src/options.cpp:2032
+#: src/options.cpp:2013
 msgid "GPS Offset from Bow (m)"
 msgstr "선수로부터 GPS 오프셋 (미터)"
 
-#: src/options.cpp:2038
+#: src/options.cpp:2019
 msgid "GPS Offset from Midship (m)"
 msgstr "선박중앙으로 부터 GPS 오프셋 (미터)"
 
-#: src/options.cpp:2044
+#: src/options.cpp:2025
 msgid "Minimum Screen Size (mm)"
 msgstr "최소 화면 크기 (mm)"
 
-#: src/options.cpp:2056
+#: src/options.cpp:2037
 msgid "Show range rings"
 msgstr "범위 링 보이기"
 
-#: src/options.cpp:2073 src/options.cpp:2422
+#: src/options.cpp:2054 src/options.cpp:2403
 msgid "Distance between rings"
 msgstr "링 간의 거리"
 
-#: src/options.cpp:2082 src/options.cpp:2433
+#: src/options.cpp:2063 src/options.cpp:2414
 msgid "Distance Unit"
 msgstr "거리 단위"
 
-#: src/options.cpp:2085 src/options.cpp:2274 src/options.cpp:4387
-#: src/options.cpp:4533
+#: src/options.cpp:2066 src/options.cpp:2255 src/options.cpp:4374
+#: src/options.cpp:4520
 msgid "Nautical miles"
 msgstr "해리"
 
-#: src/options.cpp:2085 src/options.cpp:2274 src/options.cpp:4388
-#: src/options.cpp:4534
+#: src/options.cpp:2066 src/options.cpp:2255 src/options.cpp:4375
+#: src/options.cpp:4521
 msgid "Kilometers"
 msgstr "킬로미터"
 
-#: src/options.cpp:2092
+#: src/options.cpp:2073
 msgid "Range Ring Colour"
 msgstr "범위 링 색상"
 
-#: src/options.cpp:2107
+#: src/options.cpp:2088
 msgid "Show direction to Active Waypoint"
 msgstr "활성 경유지 방향 보이기"
 
-#: src/options.cpp:2112 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:493
+#: src/options.cpp:2093 src/RoutePropDlg.cpp:246 src/TrackPropDlg.cpp:493
 #: src/TrackPropDlg.cpp:735
 msgid "Style"
 msgstr "모양"
 
-#: src/options.cpp:2116 src/RoutePropDlg.cpp:251 src/TrackPropDlg.cpp:498
+#: src/options.cpp:2097 src/RoutePropDlg.cpp:251 src/TrackPropDlg.cpp:498
 #: src/TrackPropDlg.cpp:740
 msgid "Solid"
 msgstr "실선"
 
-#: src/options.cpp:2117 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
+#: src/options.cpp:2098 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
 #: src/TrackPropDlg.cpp:740
 msgid "Dot"
 msgstr "점"
 
-#: src/options.cpp:2117 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
+#: src/options.cpp:2098 src/RoutePropDlg.cpp:252 src/TrackPropDlg.cpp:499
 #: src/TrackPropDlg.cpp:741
 msgid "Long dash"
 msgstr "긴 줄표"
 
-#: src/options.cpp:2118 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
+#: src/options.cpp:2099 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
 #: src/TrackPropDlg.cpp:741
 msgid "Short dash"
 msgstr "짧은 줄표"
 
-#: src/options.cpp:2118 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
+#: src/options.cpp:2099 src/RoutePropDlg.cpp:253 src/TrackPropDlg.cpp:500
 #: src/TrackPropDlg.cpp:741
 msgid "Dot dash"
 msgstr "점 줄표"
 
-#: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
+#: src/options.cpp:2113 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Black"
 msgstr "검정"
 
-#: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
+#: src/options.cpp:2113 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Dark Red"
 msgstr "어두운 빨강"
 
-#: src/options.cpp:2132 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
+#: src/options.cpp:2113 src/RoutePropDlg.cpp:229 src/TrackPropDlg.cpp:480
 #: src/TrackPropDlg.cpp:724
 msgid "Dark Green"
 msgstr "어두운 초록"
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Yellow"
 msgstr "어두운 노랑"
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Blue"
 msgstr "어두운 파랑"
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Magenta"
 msgstr "어두운 자홍"
 
-#: src/options.cpp:2133 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
+#: src/options.cpp:2114 src/RoutePropDlg.cpp:230 src/TrackPropDlg.cpp:481
 #: src/TrackPropDlg.cpp:725
 msgid "Dark Cyan"
 msgstr "어두운 청록"
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Light Gray"
 msgstr "밝은 재"
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Dark Gray"
 msgstr "어두운 재"
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Red"
 msgstr "빨강"
 
-#: src/options.cpp:2134 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
+#: src/options.cpp:2115 src/RoutePropDlg.cpp:231 src/TrackPropDlg.cpp:482
 #: src/TrackPropDlg.cpp:726
 msgid "Green"
 msgstr "초록"
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Yellow"
 msgstr "노랑"
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Blue"
 msgstr "파랑"
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Magenta"
 msgstr "자홍"
 
-#: src/options.cpp:2135 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
+#: src/options.cpp:2116 src/RoutePropDlg.cpp:232 src/TrackPropDlg.cpp:483
 #: src/TrackPropDlg.cpp:727
 msgid "Cyan"
 msgstr "청록"
 
-#: src/options.cpp:2136 src/RoutePropDlg.cpp:233 src/TrackPropDlg.cpp:484
+#: src/options.cpp:2117 src/RoutePropDlg.cpp:233 src/TrackPropDlg.cpp:484
 #: src/TrackPropDlg.cpp:728
 msgid "White"
 msgstr "흰"
 
-#: src/options.cpp:2146 src/routemanagerdialog.cpp:517
+#: src/options.cpp:2127 src/routemanagerdialog.cpp:517
 msgid "Tracks"
 msgstr "트랙"
 
-#: src/options.cpp:2152
+#: src/options.cpp:2133
 msgid "Automatic Daily Tracks at midnight"
 msgstr "자정에 자동 일일 추적"
 
-#: src/options.cpp:2161
+#: src/options.cpp:2142
 msgid "Automatic Daily Tracks at"
 msgstr "에 자동 일일 추적"
 
-#: src/options.cpp:2179
+#: src/options.cpp:2160
 msgid "Computer"
 msgstr "컴퓨터"
 
-#: src/options.cpp:2185 src/RoutePropDlg.cpp:206 src/TCWin.cpp:155
+#: src/options.cpp:2166 src/RoutePropDlg.cpp:206 src/TCWin.cpp:155
 #: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:452 src/TrackPropDlg.cpp:816
 msgid "UTC"
 msgstr "협정세계시(UTC)"
 
-#: src/options.cpp:2191
+#: src/options.cpp:2172
 msgid "LMT"
 msgstr "지역평균시(LMT)"
 
-#: src/options.cpp:2204
+#: src/options.cpp:2185
 msgid "Highlight Tracks"
 msgstr "강조 트랙"
 
-#: src/options.cpp:2208
+#: src/options.cpp:2189
 msgid "Highlight Colour"
 msgstr ""
 
-#: src/options.cpp:2223
+#: src/options.cpp:2204
 msgid "Tracking Precision"
 msgstr "추적 정밀도"
 
-#: src/options.cpp:2226
+#: src/options.cpp:2207
 msgid "Low"
 msgstr "하"
 
-#: src/options.cpp:2226
+#: src/options.cpp:2207
 msgid "Medium"
 msgstr "중"
 
-#: src/options.cpp:2226
+#: src/options.cpp:2207
 msgid "High"
 msgstr "고"
 
-#: src/options.cpp:2234
+#: src/options.cpp:2215
 msgid "Calculate values"
 msgstr "계산 값"
 
-#: src/options.cpp:2248
+#: src/options.cpp:2229
 msgid "Calculate SOG and COG from position changes"
 msgstr "변경 위치에서 실속력(SOG) 및 실침로(COG) 계산"
 
-#: src/options.cpp:2253
+#: src/options.cpp:2234
 msgid "Min seconds between updates"
 msgstr "업데이트 사이의 시간"
 
-#: src/options.cpp:2269
+#: src/options.cpp:2250
 msgid "Routes/Points"
 msgstr "경로/지점"
 
-#: src/options.cpp:2282
+#: src/options.cpp:2263
 msgid "New Routes"
 msgstr "새 경로"
 
-#: src/options.cpp:2296 src/options.cpp:2359
+#: src/options.cpp:2277 src/options.cpp:2340
 msgid "Waypoint default icon"
 msgstr "경유지 기본 아이콘"
 
-#: src/options.cpp:2322
+#: src/options.cpp:2303
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "경유지 도착 원 반경 (해리)"
 
-#: src/options.cpp:2331
+#: src/options.cpp:2312
 msgid "Advance route waypoint on arrival only"
 msgstr "도착지만 있는 전진 경로"
 
-#: src/options.cpp:2344
+#: src/options.cpp:2325
 msgid "New Waypoints"
 msgstr "새 경유지"
 
-#: src/options.cpp:2385
+#: src/options.cpp:2366
 msgid "Show waypoints only at a chartscale greater than 1 :"
 msgstr "1보다 큰 해도 축척에서만 경유지 보이기"
 
-#: src/options.cpp:2394
+#: src/options.cpp:2375
 msgid "Override the settings for chartscale based visibility and show always"
 msgstr "해도축척 기반 가시성에 대한 설정을 재정의하고 항상 보이기"
 
-#: src/options.cpp:2407
+#: src/options.cpp:2388
 msgid "Waypoint range rings"
 msgstr "경유지 법위 원"
 
-#: src/options.cpp:2444
+#: src/options.cpp:2425
 msgid "Waypoint Range Ring Colours"
 msgstr "경유지 범위 원 색상"
 
-#: src/options.cpp:2465
+#: src/options.cpp:2446
 msgid "Control Options"
 msgstr "제어 옵션"
 
-#: src/options.cpp:2474
+#: src/options.cpp:2455
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "경유지 잠금(경유지 속성 대화 상자가 표시되지 않는 경우)"
 
-#: src/options.cpp:2480
+#: src/options.cpp:2461
 msgid "Confirm deletion of tracks and routes"
 msgstr "트랙 및 경로 삭제 확인"
 
-#: src/options.cpp:2538
+#: src/options.cpp:2519
 msgid "Chart Files"
 msgstr "해도 파일"
 
-#: src/options.cpp:2543
+#: src/options.cpp:2524
 msgid "Directories"
 msgstr "디렉토리"
 
-#: src/options.cpp:2566
+#: src/options.cpp:2547
 msgid "Add Directory..."
 msgstr "디렉토리 추가"
 
-#: src/options.cpp:2567 src/options.cpp:3839 src/RoutePropDlgImpl.cpp:934
+#: src/options.cpp:2548 src/options.cpp:3823 src/RoutePropDlgImpl.cpp:934
 msgid "Remove Selected"
 msgstr "선택항목 제거"
 
-#: src/options.cpp:2568
+#: src/options.cpp:2549
 msgid "Compress Selected"
 msgstr "선택항목 압축"
 
-#: src/options.cpp:2571
+#: src/options.cpp:2552
 msgid "Add.."
 msgstr ""
 
-#: src/options.cpp:2572
+#: src/options.cpp:2553
 msgid "Remove"
 msgstr "제거"
 
-#: src/options.cpp:2573
+#: src/options.cpp:2554
 msgid "Compress"
 msgstr ""
 
-#: src/options.cpp:2598
+#: src/options.cpp:2579
 msgid "Migrate Charts.."
 msgstr ""
 
-#: src/options.cpp:2606
+#: src/options.cpp:2587
 msgid "Update Control"
 msgstr "업데이트 제어"
 
-#: src/options.cpp:2615
+#: src/options.cpp:2596
 msgid "Scan Charts and Update Database"
 msgstr "해도 스캔 및 데이터베이스 업데이트"
 
-#: src/options.cpp:2619
+#: src/options.cpp:2600
 msgid "Force Full Database Rebuild"
 msgstr "전체 데이터베이스를 다시 만들기"
 
-#: src/options.cpp:2623
+#: src/options.cpp:2604
 msgid "Prepare all ENC Charts"
 msgstr "모든 해도를 준비하기"
 
-#: src/options.cpp:2690
+#: src/options.cpp:2672
 msgid " [Modified]"
 msgstr "[수정됨] "
 
-#: src/options.cpp:2698
+#: src/options.cpp:2680
 msgid "Templates"
 msgstr "서식파일"
 
-#: src/options.cpp:2710
+#: src/options.cpp:2692
 msgid "Template Status"
 msgstr "서식파일  등급"
 
-#: src/options.cpp:2720
+#: src/options.cpp:2702
 msgid "Last Applied Template Title:"
 msgstr "마지막으로 적용된 서식파일 제목:"
 
-#: src/options.cpp:2733
+#: src/options.cpp:2715
 msgid "Saved Templates"
 msgstr "저장된 서식파일"
 
-#: src/options.cpp:2760
+#: src/options.cpp:2742
 msgid "Create Config..."
 msgstr "환경설정 생성..."
 
-#: src/options.cpp:2772
+#: src/options.cpp:2754
 msgid "Delete Selected Config..."
 msgstr "선택한 환경설정 삭제..."
 
-#: src/options.cpp:2780
+#: src/options.cpp:2762
 msgid "Apply Selected Config"
 msgstr "선택한 환경설정 적용"
 
-#: src/options.cpp:2853
+#: src/options.cpp:2835
 msgid "Create Config"
 msgstr "환경설정 생성"
 
-#: src/options.cpp:2907
+#: src/options.cpp:2889
 msgid "Problem applying selected configuration."
 msgstr "선택한 환경설정을 적용하는 중에 문제가 발생했습니다."
 
-#: src/options.cpp:2980 src/RoutePropDlg.cpp:483 src/TrackPropDlg.cpp:940
+#: src/options.cpp:2962 src/RoutePropDlg.cpp:483 src/TrackPropDlg.cpp:940
 msgid "Advanced"
 msgstr "고급"
 
-#: src/options.cpp:3000
+#: src/options.cpp:2982
 msgid "De-skew Raster Charts"
 msgstr "기울기 보정 래스터 해도"
 
-#: src/options.cpp:3011 src/options.cpp:3329
+#: src/options.cpp:2993 src/options.cpp:3311
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "그래픽 (OpenGL) 가속기능을 사용"
 
-#: src/options.cpp:3016
+#: src/options.cpp:2998
 msgid "OpenGL Options"
 msgstr "OpenGL 옵션"
 
-#: src/options.cpp:3030 src/options.cpp:3191
+#: src/options.cpp:3012 src/options.cpp:3173
 msgid "Chart Rotation Averaging Time"
 msgstr "해도 회전 평균 시간"
 
-#: src/options.cpp:3046 src/options.cpp:3203 src/options.cpp:5327
+#: src/options.cpp:3028 src/options.cpp:3185 src/options.cpp:5314
 msgid "seconds"
 msgstr "초"
 
-#: src/options.cpp:3054 src/options.cpp:3212
+#: src/options.cpp:3036 src/options.cpp:3194
 msgid "Chart Zoom/Scale Weighting"
 msgstr "해도 확대/축소 가중치"
 
-#: src/options.cpp:3063 src/options.cpp:3237
+#: src/options.cpp:3045 src/options.cpp:3219
 msgid "Raster"
 msgstr "래스터"
 
-#: src/options.cpp:3077 src/options.cpp:3250
+#: src/options.cpp:3059 src/options.cpp:3232
 msgid "Vector"
 msgstr "벡터"
 
-#: src/options.cpp:3091 src/options.cpp:3267
+#: src/options.cpp:3073 src/options.cpp:3249
 msgid "CM93 Detail level"
 msgstr "CM93 상세 수준"
 
-#: src/options.cpp:3110 src/options.cpp:3290
+#: src/options.cpp:3092 src/options.cpp:3272
 msgid "Physical Screen Width"
 msgstr "실제 화면 폭"
 
-#: src/options.cpp:3115 src/options.cpp:3295
+#: src/options.cpp:3097 src/options.cpp:3277
 msgid "Auto"
 msgstr "자동"
 
-#: src/options.cpp:3119 src/options.cpp:3299
+#: src/options.cpp:3101 src/options.cpp:3281
 msgid "Manual:"
 msgstr "수동:"
 
-#: src/options.cpp:3130 src/options.cpp:3307
+#: src/options.cpp:3112 src/options.cpp:3289
 msgid "mm"
 msgstr "mm"
 
-#: src/options.cpp:3161 src/options.cpp:4043 src/options.cpp:4224
+#: src/options.cpp:3143 src/options.cpp:4030 src/options.cpp:4211
 msgid "Chart Display"
 msgstr "해도 표시"
 
-#: src/options.cpp:3167
+#: src/options.cpp:3149
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "기울어진 래스터 해도를 북쪽을 위쪽으로 보이기"
 
-#: src/options.cpp:3220
+#: src/options.cpp:3202
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr "값이 낮을수록 동일한 확대/축소 수준은 덜 상세한 해도를 표시합니다.\\값이 높을수록 동일한 확대/축소 수준이 더 자세한 해도를 표시합니다."
 
-#: src/options.cpp:3323
+#: src/options.cpp:3305
 msgid "Graphics"
 msgstr "그래픽"
 
-#: src/options.cpp:3356
+#: src/options.cpp:3338
 msgid "Vector Chart Display"
 msgstr "벡터 해도 표시"
 
-#: src/options.cpp:3379 src/options.cpp:3582
+#: src/options.cpp:3361 src/options.cpp:3564
 msgid "Mariner's Standard"
 msgstr "뱃사람 표준"
 
-#: src/options.cpp:3398 src/options.cpp:3597
+#: src/options.cpp:3380 src/options.cpp:3579
 msgid "Depth Soundings"
 msgstr "수심"
 
-#: src/options.cpp:3404 src/options.cpp:3602
+#: src/options.cpp:3386 src/options.cpp:3584
 msgid "Chart Information Objects"
 msgstr "해도정보 객체"
 
-#: src/options.cpp:3409
+#: src/options.cpp:3391
 msgid "Buoys/Lights"
 msgstr "부표/등표"
 
-#: src/options.cpp:3426 src/options.cpp:3620
+#: src/options.cpp:3408 src/options.cpp:3602
 msgid "Extended Light Sectors"
 msgstr "확장 등표 영역"
 
-#: src/options.cpp:3431
+#: src/options.cpp:3413
 msgid "Chart Texts"
 msgstr "해도 글자"
 
-#: src/options.cpp:3438 src/options.cpp:3628
+#: src/options.cpp:3420 src/options.cpp:3610
 msgid "National text on chart"
 msgstr "한글 표시"
 
-#: src/options.cpp:3443 src/options.cpp:3633
+#: src/options.cpp:3425 src/options.cpp:3615
 msgid "Important Text Only"
 msgstr "중요 글자만 표시"
 
-#: src/options.cpp:3448 src/options.cpp:3638
+#: src/options.cpp:3430 src/options.cpp:3620
 msgid "De-Cluttered Text"
 msgstr "중복되지 않게 글자 표시"
 
-#: src/options.cpp:3452
+#: src/options.cpp:3434
 msgid "Chart Detail"
 msgstr "해도 상세 사항"
 
-#: src/options.cpp:3455 src/options.cpp:3643
+#: src/options.cpp:3437 src/options.cpp:3625
 msgid "Reduced Detail at Small Scale"
 msgstr "소축척에서는 덜 상세하게"
 
-#: src/options.cpp:3462 src/options.cpp:3650
+#: src/options.cpp:3444 src/options.cpp:3632
 msgid "Additonal detail reduction at Small Scale"
 msgstr ""
 
-#: src/options.cpp:3471 src/options.cpp:3666
+#: src/options.cpp:3453 src/options.cpp:3648
 msgid "Graphics Style"
 msgstr "그래픽 스타일"
 
-#: src/options.cpp:3474 src/options.cpp:3669
+#: src/options.cpp:3456 src/options.cpp:3651
 msgid "Paper Chart"
 msgstr "종이 해도"
 
-#: src/options.cpp:3475 src/options.cpp:3670
+#: src/options.cpp:3457 src/options.cpp:3652
 msgid "Simplified"
 msgstr "단순화"
 
-#: src/options.cpp:3481 src/options.cpp:3681
+#: src/options.cpp:3463 src/options.cpp:3663
 msgid "Boundaries"
 msgstr "경계"
 
-#: src/options.cpp:3484 src/options.cpp:3684
+#: src/options.cpp:3466 src/options.cpp:3666
 msgid "Plain"
 msgstr "있는 대로"
 
-#: src/options.cpp:3485 src/options.cpp:3685
+#: src/options.cpp:3467 src/options.cpp:3667
 msgid "Symbolized"
 msgstr "기호화"
 
-#: src/options.cpp:3491 src/options.cpp:3696
+#: src/options.cpp:3473 src/options.cpp:3678
 msgid "Colors"
 msgstr "색상"
 
-#: src/options.cpp:3494 src/options.cpp:3700
+#: src/options.cpp:3476 src/options.cpp:3682
 msgid "2 Color"
 msgstr "2 색상"
 
-#: src/options.cpp:3495 src/options.cpp:3701
+#: src/options.cpp:3477 src/options.cpp:3683
 msgid "4 Color"
 msgstr "4 색상"
 
-#: src/options.cpp:3506 src/options.cpp:3723
+#: src/options.cpp:3488 src/options.cpp:3705
 msgid "Shallow Depth"
 msgstr "얕은 수심"
 
-#: src/options.cpp:3517 src/options.cpp:3732
+#: src/options.cpp:3499 src/options.cpp:3714
 msgid "Safety Depth"
 msgstr "안전 수심"
 
-#: src/options.cpp:3527 src/options.cpp:3741
+#: src/options.cpp:3509 src/options.cpp:3723
 msgid "Deep Depth"
 msgstr "깊은 수심"
 
-#: src/options.cpp:3542 src/options.cpp:3759
+#: src/options.cpp:3524 src/options.cpp:3741
 msgid "User Standard Objects"
 msgstr "사용자 표준 객체"
 
-#: src/options.cpp:3561 src/options.cpp:3774
+#: src/options.cpp:3543 src/options.cpp:3756
 msgid "Reset to STANDARD"
 msgstr "표준으로 재설정"
 
-#: src/options.cpp:3794
+#: src/options.cpp:3776
 msgid "Tides && Currents"
 msgstr "조류와 해류"
 
-#: src/options.cpp:3799
+#: src/options.cpp:3781
 msgid "Active Datasets"
 msgstr "활성 데이터 세트"
 
-#: src/options.cpp:3837
+#: src/options.cpp:3821
 msgid "Add Dataset..."
 msgstr "데이터 세트 추가..."
 
-#: src/options.cpp:3879
+#: src/options.cpp:3865
 msgid "All Available Charts"
 msgstr "사용 가능한 모든 해도"
 
-#: src/options.cpp:3901
+#: src/options.cpp:3887
 msgid "Remove Chart"
 msgstr "해도 제거"
 
-#: src/options.cpp:3938
+#: src/options.cpp:3924
 msgid "All Charts"
 msgstr "모든 해도"
 
-#: src/options.cpp:3957
+#: src/options.cpp:3943
 msgid "New Group..."
 msgstr "새 그룹..."
 
-#: src/options.cpp:3959
+#: src/options.cpp:3945
 msgid "Delete Group"
 msgstr "그룹 삭제"
 
-#: src/options.cpp:4054 src/options.cpp:4235
+#: src/options.cpp:4041 src/options.cpp:4222
 msgid "Preserve scale when switching charts"
 msgstr "해도 전환 시 축척 유지"
 
-#: src/options.cpp:4063 src/options.cpp:4244
+#: src/options.cpp:4050 src/options.cpp:4231
 msgid "Controls"
 msgstr "컨트롤"
 
-#: src/options.cpp:4069 src/options.cpp:4250
+#: src/options.cpp:4056 src/options.cpp:4237
 msgid "Smooth Panning / Zooming"
 msgstr "부드러운 이동과 확대"
 
-#: src/options.cpp:4073 src/options.cpp:4253
+#: src/options.cpp:4060 src/options.cpp:4240
 msgid "Zoom to Cursor"
 msgstr "커서로 확대"
 
-#: src/options.cpp:4084 src/options.cpp:4269
+#: src/options.cpp:4071 src/options.cpp:4256
 msgid "Display Features"
 msgstr "특성 표시"
 
-#: src/options.cpp:4114
+#: src/options.cpp:4101
 msgid "Status Bar Option"
 msgstr "상태 표시줄 옵션"
 
-#: src/options.cpp:4121 src/options.cpp:4306
+#: src/options.cpp:4108 src/options.cpp:4293
 msgid "Live ETA at Cursor"
 msgstr "커서 지점에 실시간 예상도착시간(ETA)"
 
-#: src/options.cpp:4129 src/options.cpp:4314
+#: src/options.cpp:4116 src/options.cpp:4301
 msgid "Default Boat Speed "
 msgstr "기본 보트 속도"
 
-#: src/options.cpp:4144 src/options.cpp:4329
+#: src/options.cpp:4131 src/options.cpp:4316
 msgid "Canvas Layout"
 msgstr "화폭 배치행태"
 
-#: src/options.cpp:4299
+#: src/options.cpp:4286
 msgid "Status Bar"
 msgstr "상태 표시줄"
 
-#: src/options.cpp:4366
+#: src/options.cpp:4353
 msgid "Units"
 msgstr "단위"
 
-#: src/options.cpp:4387 src/options.cpp:4533
+#: src/options.cpp:4374 src/options.cpp:4520
 msgid "Statute miles"
 msgstr "법령 마일"
 
-#: src/options.cpp:4402 src/options.cpp:4544
+#: src/options.cpp:4389 src/options.cpp:4531
 msgid "Knots"
 msgstr "노트"
 
-#: src/options.cpp:4402 src/options.cpp:4544
+#: src/options.cpp:4389 src/options.cpp:4531
 msgid "Mph"
 msgstr "마일/시간"
 
-#: src/options.cpp:4413 src/options.cpp:4552
+#: src/options.cpp:4400 src/options.cpp:4539
 msgid "Depth"
 msgstr "깊이"
 
-#: src/options.cpp:4429 src/options.cpp:4565
+#: src/options.cpp:4416 src/options.cpp:4552
 msgid "Temperature"
 msgstr "온도"
 
-#: src/options.cpp:4432 src/options.cpp:4568
+#: src/options.cpp:4419 src/options.cpp:4555
 msgid "Celsius"
 msgstr "섭씨"
 
-#: src/options.cpp:4433 src/options.cpp:4569
+#: src/options.cpp:4420 src/options.cpp:4556
 msgid "Fahrenheit"
 msgstr "화씨"
 
-#: src/options.cpp:4434 src/options.cpp:4570
+#: src/options.cpp:4421 src/options.cpp:4557
 msgid "Kelvin"
 msgstr "절대온도"
 
-#: src/options.cpp:4449 src/options.cpp:4582
+#: src/options.cpp:4436 src/options.cpp:4569
 msgid "Lat/Long"
 msgstr "위도/경도"
 
-#: src/options.cpp:4451 src/options.cpp:4584
+#: src/options.cpp:4438 src/options.cpp:4571
 msgid "Degrees, Decimal Minutes"
 msgstr "도, 십진수 분"
 
-#: src/options.cpp:4452 src/options.cpp:4585
+#: src/options.cpp:4439 src/options.cpp:4572
 msgid "Decimal Degrees"
 msgstr "십진수 도"
 
-#: src/options.cpp:4453 src/options.cpp:4586
+#: src/options.cpp:4440 src/options.cpp:4573
 msgid "Degrees, Minutes, Seconds"
 msgstr "도, 분, 초"
 
-#: src/options.cpp:4468 src/options.cpp:4598
+#: src/options.cpp:4455 src/options.cpp:4585
 msgid "Bearings"
 msgstr "방위각"
 
-#: src/options.cpp:4473
+#: src/options.cpp:4460
 msgid "Show true"
 msgstr "진북 보기"
 
-#: src/options.cpp:4478
+#: src/options.cpp:4465
 msgid "Show magnetic"
 msgstr "자기 보이기"
 
-#: src/options.cpp:4494
+#: src/options.cpp:4481
 msgid "Assumed magnetic variation"
 msgstr "추정된 자기 변화"
 
-#: src/options.cpp:4509 src/options.cpp:4631
+#: src/options.cpp:4496 src/options.cpp:4618
 msgid "deg (-W, +E)"
 msgstr "도 (-서 + 동)"
 
-#: src/options.cpp:4606
+#: src/options.cpp:4593
 msgid "Show true bearings and headings"
 msgstr "실제 방위와 선수방위 보이기"
 
-#: src/options.cpp:4609
+#: src/options.cpp:4596
 msgid "Show magnetic bearings and headings."
 msgstr "자기 방위와 선수방위 보이기"
 
-#: src/options.cpp:4621 src/options.cpp:6021
+#: src/options.cpp:4608 src/options.cpp:6011
 msgid "WMM Plugin calculated magnetic variation"
 msgstr "세계자기장모델(WMM) 플러그인이 계산한 자기 값"
 
-#: src/options.cpp:4639
+#: src/options.cpp:4626
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr "자기 값을 수동으로 설정하려면\n"
 " 세계자기장모델(WMM) 플러그인을 비활성화해야 합니다."
 
-#: src/options.cpp:4759
+#: src/options.cpp:4746
 msgid "Test"
 msgstr ""
 
-#: src/options.cpp:4768
+#: src/options.cpp:4755
 msgid "Audio file name:"
 msgstr "오디오 파일 이름:"
 
-#: src/options.cpp:4796 src/options.cpp:4807 src/options.cpp:8278
-#: src/options.cpp:8289
+#: src/options.cpp:4783 src/options.cpp:4794 src/options.cpp:8268
+#: src/options.cpp:8279
 msgid "Select Sound File"
 msgstr "소리 파일 선택"
 
-#: src/options.cpp:4848
+#: src/options.cpp:4835
 msgid "Sounds"
 msgstr "음향"
 
-#: src/options.cpp:4856
+#: src/options.cpp:4843
 msgid "Anchor Alarm"
 msgstr "정박 경고"
 
-#: src/options.cpp:4857
+#: src/options.cpp:4844
 msgid "Play Sound on Anchor Alarm."
 msgstr "정박 경고시 소리 재생"
 
-#: src/options.cpp:4858
+#: src/options.cpp:4845
 msgid "Select Anchor Alarm Sound"
 msgstr "정박 경고 소리 선택"
 
-#: src/options.cpp:4868
+#: src/options.cpp:4855
 msgid "Play Sound on AIS Alert."
 msgstr "선박자동식별시스템(AIS) 경보시 소리 재생"
 
-#: src/options.cpp:4869
+#: src/options.cpp:4856
 msgid "Select AIS Alert Sound"
 msgstr "선박자동식별시스템(AIS) 경보음 선택"
 
-#: src/options.cpp:4878
+#: src/options.cpp:4865
 msgid "SART Alert"
 msgstr "수색및구조응답기(SART) 경보"
 
-#: src/options.cpp:4879
+#: src/options.cpp:4866
 msgid "Play Sound on AIS SART Alert."
 msgstr "선박자동식별시스템(AIS) 수색및구조응답기(SART) 경보음 재생"
 
-#: src/options.cpp:4880
+#: src/options.cpp:4867
 msgid "Select AIS SART Alert Sound"
 msgstr "선박자동식별시스템(AIS) 수색및구조응답기(SART) 경보음 선택"
 
-#: src/options.cpp:4888
+#: src/options.cpp:4875
 msgid "DSC Alert"
 msgstr "디지털선택호출장치(DSC) 경보"
 
-#: src/options.cpp:4889
+#: src/options.cpp:4876
 msgid "Play Sound on DSC notification."
 msgstr "디지털선택호출장치(DSC) 알림시 소리 재생"
 
-#: src/options.cpp:4890
+#: src/options.cpp:4877
 msgid "Select DSC notification Sound"
 msgstr "디지털선택호출장치(DSC) 알림음 선택"
 
-#: src/options.cpp:4921
+#: src/options.cpp:4908
 msgid "AIS Targets"
 msgstr "선박자동식별시스템(AIS) 표적"
 
-#: src/options.cpp:4928
+#: src/options.cpp:4915
 msgid "CPA Calculation"
 msgstr "최근접점(CPA) 계산"
 
-#: src/options.cpp:4939
+#: src/options.cpp:4926
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "(해리) 보다 표적 범위가 큰 경우 최근접점(시간)((T)CPA) 경보 없음"
 
-#: src/options.cpp:4946
+#: src/options.cpp:4933
 msgid "Warn if CPA less than (NMi)"
 msgstr "(해리) 보다 CPA가 작은 경우 경고 "
 
-#: src/options.cpp:4958
+#: src/options.cpp:4945
 msgid "...and TCPA is less than (min)"
 msgstr "... 및 최근접점시간(TCPA)이 (분)  보다 작다"
 
-#: src/options.cpp:4966
+#: src/options.cpp:4953
 msgid "Lost Targets"
 msgstr "잃어버린 표적"
 
-#: src/options.cpp:4975
+#: src/options.cpp:4962
 msgid "Mark targets as lost after (min)"
 msgstr "(분) 후에 표적을 잃어버린 것으로 표시"
 
-#: src/options.cpp:4983
+#: src/options.cpp:4970
 msgid "Remove lost targets after (min)"
 msgstr "(분) 후 잃어버린 표적 제거"
 
-#: src/options.cpp:4993 src/options.cpp:5786
+#: src/options.cpp:4980 src/options.cpp:5773
 msgid "Display"
 msgstr "화면"
 
-#: src/options.cpp:5002
+#: src/options.cpp:4989
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "표적 실침로(COG) 예측자 화살표, 길이 (분) 보이기"
 
-#: src/options.cpp:5010
+#: src/options.cpp:4997
 msgid "Sync AIS arrow length with own ship's COG predictor"
 msgstr ""
 
-#: src/options.cpp:5020
+#: src/options.cpp:5007
 msgid "Show target tracks, length (min)"
 msgstr "표적 트랙, 길이 (분) 보이기"
 
-#: src/options.cpp:5028
+#: src/options.cpp:5015
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "정박/계류된 표적, 최대 속도(노트) 표시금지"
 
-#: src/options.cpp:5036
+#: src/options.cpp:5023
 msgid "Draw AIS realtime prediction, target speed min (kn)"
 msgstr "선박자동식별시스템(AIS) 실시간 예측, 표적 최저 속도 (노트) 얻기"
 
-#: src/options.cpp:5046
+#: src/options.cpp:5033
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "표적이 ... 보다 많은 경우 덜 위험한 표적의 흐리게 보이도록 허용하기"
 
-#: src/options.cpp:5054
+#: src/options.cpp:5041
 msgid "Show area notices (from AIS binary messages)"
 msgstr "지역 공지사항 보이기 (선박자동식별시스템(AIS) 바이너리 메시지에서)"
 
-#: src/options.cpp:5061
+#: src/options.cpp:5048
 msgid "Show AIS targets real size"
 msgstr "선박자동식별시스템(AIS) 표적 실제 크기 보이기"
 
-#: src/options.cpp:5068
+#: src/options.cpp:5055
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "1보다 큰 축척에서 선박자동식별시스템(AIS) 표적과 함께 이름 보이기:"
 
-#: src/options.cpp:5076
+#: src/options.cpp:5063
 msgid "Use WPL position messages. Action when received:"
 msgstr "WPL 위치 메시지 사용. 수신 시 조치:"
 
-#: src/options.cpp:5079
+#: src/options.cpp:5066
 msgid "APRS position report"
 msgstr "자동위치발신시스템(APRS) 위치 보고"
 
-#: src/options.cpp:5079
+#: src/options.cpp:5066
 msgid "Create mark"
 msgstr "표시 생성"
 
-#: src/options.cpp:5085
+#: src/options.cpp:5072
 msgid "Rollover"
 msgstr "지연"
 
-#: src/options.cpp:5091
+#: src/options.cpp:5078
 msgid "Enable route/AIS info block"
 msgstr "경로/AIS정보 블럭 활성화"
 
-#: src/options.cpp:5099
+#: src/options.cpp:5086
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"선박명\" MMSI (호출 부호)"
 
-#: src/options.cpp:5103
+#: src/options.cpp:5090
 msgid "[Class] Type (Status)"
 msgstr "[등급] 유형 (상태)"
 
-#: src/options.cpp:5106
+#: src/options.cpp:5093
 msgid "SOG COG"
 msgstr "실속력(SOG) 실침로(COG)"
 
-#: src/options.cpp:5109
+#: src/options.cpp:5096
 msgid "CPA TCPA"
 msgstr "최근접점(CPA) 최금접점시간(TCPA)"
 
-#: src/options.cpp:5114
+#: src/options.cpp:5101
 msgid "CPA/TCPA Alerts"
 msgstr "최근접점(CPA)/최근접점시간(TCPA) 경보"
 
-#: src/options.cpp:5123
+#: src/options.cpp:5110
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "최근접점(CPA)/최근접점시간(TCPA) 경보 대화상자 보이기"
 
-#: src/options.cpp:5142
+#: src/options.cpp:5129
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "최근접점(CPA)/최근접점시간(TCPA) 경보 및 디지털선택호출(DSC)/수색과구조응답기(SART) 긴급 상황에서 소리 재생"
 
-#: src/options.cpp:5160
+#: src/options.cpp:5147
 msgid "Suppress Alerts for anchored/moored targets"
 msgstr "정박/계류된 표적에 대한 경보 금지"
 
-#: src/options.cpp:5167
+#: src/options.cpp:5154
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "표적 경보 확인 시간 초과 활성화 (분)"
 
-#: src/options.cpp:5191
+#: src/options.cpp:5178
 msgid "General Options"
 msgstr "일반 옵션"
 
-#: src/options.cpp:5200
+#: src/options.cpp:5187
 msgid "Language"
 msgstr "언어"
 
-#: src/options.cpp:5215
+#: src/options.cpp:5202
 msgid "Fonts"
 msgstr "글꼴"
 
-#: src/options.cpp:5251
+#: src/options.cpp:5238
 msgid "Choose Font..."
 msgstr "글꼴 선택"
 
-#: src/options.cpp:5256
+#: src/options.cpp:5243
 msgid "Choose Font Color..."
 msgstr "글꼴 색상 선택..."
 
-#: src/options.cpp:5260
+#: src/options.cpp:5247
 msgid "Sample"
 msgstr "예시"
 
-#: src/options.cpp:5268
+#: src/options.cpp:5255
 msgid "Toolbar and Window Style"
 msgstr "도구 모음 및 창 모양"
 
-#: src/options.cpp:5286
+#: src/options.cpp:5273
 msgid "Interface Options"
 msgstr "사용환경 옵션"
 
-#: src/options.cpp:5292
+#: src/options.cpp:5279
 msgid "Show Status Bar"
 msgstr "상태 표시줄 보이기"
 
-#: src/options.cpp:5297
+#: src/options.cpp:5284
 msgid "Show Menu Bar"
 msgstr "메뉴 표시줄 보이기"
 
-#: src/options.cpp:5311
+#: src/options.cpp:5298
 msgid "Show Compass/GPS Status Window"
 msgstr "나침판/GPS 상태 창 보이기"
 
-#: src/options.cpp:5319
+#: src/options.cpp:5306
 msgid "Enable Toolbar auto-hide"
 msgstr "도구모음 자동 숨기기 활성화"
 
-#: src/options.cpp:5334
+#: src/options.cpp:5321
 msgid "Play Ships Bells"
 msgstr "선박의 시간알림 종 재생"
 
-#: src/options.cpp:5345
+#: src/options.cpp:5332
 msgid "Audio Play command:"
 msgstr "오디오 재생 명령:"
 
-#: src/options.cpp:5361
+#: src/options.cpp:5348
 msgid "Unknown device :"
 msgstr "알 수 없는 장치:"
 
-#: src/options.cpp:5366
+#: src/options.cpp:5353
 msgid "Input device :"
 msgstr ""
 
-#: src/options.cpp:5393
+#: src/options.cpp:5380
 msgid "Sound Device"
 msgstr "소리 장치"
 
-#: src/options.cpp:5405
+#: src/options.cpp:5392
 msgid "Enable Touchscreen interface"
 msgstr "터치스크린 사용환경 활성화"
 
-#: src/options.cpp:5409
+#: src/options.cpp:5396
 msgid "Enable Scaled Graphics interface"
 msgstr "축척에 따른 그래픽 사용환경 활성화"
 
-#: src/options.cpp:5422
+#: src/options.cpp:5409
 msgid "Show Zoom buttons"
 msgstr "확대/축소 버튼 보이기"
 
-#: src/options.cpp:5429
+#: src/options.cpp:5416
 msgid "Use Inland ECDIS"
 msgstr ""
 
-#: src/options.cpp:5433 src/options.cpp:7714
+#: src/options.cpp:5420 src/options.cpp:7704
 msgid "Inland ECDIS Manual"
 msgstr ""
 
-#: src/options.cpp:5455
+#: src/options.cpp:5442
 msgid "User Interface scale factor"
 msgstr "사용자 사용환경 축척 인수"
 
-#: src/options.cpp:5469
+#: src/options.cpp:5456
 msgid "Chart Object scale factor"
 msgstr "해도 객체 축척 인수"
 
-#: src/options.cpp:5483
+#: src/options.cpp:5470
 msgid "Ship scale factor"
 msgstr "선박 축척 인수"
 
-#: src/options.cpp:5497
+#: src/options.cpp:5484
 msgid "ENC Sounding factor"
 msgstr "전자해도 수심측정 인수"
 
-#: src/options.cpp:5511
+#: src/options.cpp:5498
 msgid "ENC Text Scale"
 msgstr ""
 
-#: src/options.cpp:5521
+#: src/options.cpp:5508
 msgid "Mouse wheel zoom sensitivity"
 msgstr ""
 
-#: src/options.cpp:5783
+#: src/options.cpp:5770
 msgid "Apply"
 msgstr "적용"
 
-#: src/options.cpp:5792
+#: src/options.cpp:5779
 msgid "Charts"
 msgstr "해도"
 
-#: src/options.cpp:5815
+#: src/options.cpp:5803
 msgid "Connections"
 msgstr "접속"
 
-#: src/options.cpp:5817
+#: src/options.cpp:5805
 msgid "Connect"
 msgstr ""
 
-#: src/options.cpp:5829
+#: src/options.cpp:5817
 msgid "Ships"
 msgstr "선박"
 
-#: src/options.cpp:5838
+#: src/options.cpp:5826
 msgid "User Interface"
 msgstr "사용자 사용환경"
 
-#: src/options.cpp:5840
+#: src/options.cpp:5828
 msgid "User"
 msgstr ""
 
-#: src/options.cpp:5846 src/options.cpp:5847
+#: src/options.cpp:5834 src/options.cpp:5835
 msgid "Plugins"
 msgstr "플러그인"
 
-#: src/options.cpp:6026
+#: src/options.cpp:6016
 msgid "User set magnetic variation"
 msgstr "사용자 설정 자기 편차"
 
-#: src/options.cpp:6482
+#: src/options.cpp:6472
 msgid "feet"
 msgstr "피트"
 
-#: src/options.cpp:6482
+#: src/options.cpp:6472
 msgid "fathoms"
 msgstr "패덤(수심축정단위, 6피트 또는 1.8미터)"
 
-#: src/options.cpp:6714
+#: src/options.cpp:6704
 msgid "Add a directory containing chart files"
 msgstr "해도 파일이 포함된 디렉토리 추가"
 
-#: src/options.cpp:6820
+#: src/options.cpp:6810
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - 선박의 길이는 0보다 커야 합니다."
 
-#: src/options.cpp:6822
+#: src/options.cpp:6812
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - 선박의 폭은 0보다 커야 합니다."
 
-#: src/options.cpp:6825
+#: src/options.cpp:6815
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - 선박 중앙으로 부터의 GPS 오프셋은 선박 폭 내에 있어야 합니다."
 
-#: src/options.cpp:6829
+#: src/options.cpp:6819
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - 선수로부터의 GPS 오프셋은 선박 길이 내에 있어야 합니다."
 
-#: src/options.cpp:6831
+#: src/options.cpp:6821
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - 선박 아이콘 최소 크기는 1에서 100 mm 사이여야 합니다."
 
-#: src/options.cpp:6833
+#: src/options.cpp:6823
 msgid "The settings for own ship real size are not correct:"
 msgstr "자선 실제 크기에 대한 설정이 올바르지 않습니다."
 
-#: src/options.cpp:6834 src/routemanagerdialog.cpp:1902
+#: src/options.cpp:6824 src/routemanagerdialog.cpp:1902
 msgid "OpenCPN info"
 msgstr "OpenCPN 정보"
 
-#: src/options.cpp:7707
+#: src/options.cpp:7697
 msgid "The Inland ECDIS Manual is not available locally."
 msgstr ""
 
-#: src/options.cpp:7710
+#: src/options.cpp:7700
 msgid "Would you like to visit the iECDIS Manual website for more information?"
 msgstr ""
 
-#: src/options.cpp:7741
+#: src/options.cpp:7731
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
@@ -6614,19 +6623,19 @@ msgstr "압축은 디스크의 모든 해도 파일을 변경하게 됩니다.\n
 "압축된 차트는 로드 및 일부 시스템에서 표시하는 데 약간 더 오래 걸릴 수 있습니다.\n"
 "unxz 또는 7 zip 프로그램을 사용하여 다시 압축을 풀 수 있습니다."
 
-#: src/options.cpp:7745 src/routeman.cpp:735 src/routeman.cpp:829
+#: src/options.cpp:7735 src/routeman.cpp:735 src/routeman.cpp:829
 msgid "OpenCPN Warning"
 msgstr "OpenCPN 경고"
 
-#: src/options.cpp:7762 src/options.cpp:7806
+#: src/options.cpp:7752 src/options.cpp:7796
 msgid "OpenCPN Compress Charts"
 msgstr "OpenCPN 압축 해도"
 
-#: src/options.cpp:7799
+#: src/options.cpp:7789
 msgid "No charts found to compress."
 msgstr "압축할 해도가 없습니다."
 
-#: src/options.cpp:7831
+#: src/options.cpp:7821
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
@@ -6635,75 +6644,75 @@ msgstr "압축된 %ld 해도\n"
 "%.1fMB에서 %.1fMB로\n"
 "%.1fMB(%.1f%%)로 저장"
 
-#: src/options.cpp:8731
+#: src/options.cpp:8722
 msgid "Enter Group Name"
 msgstr "그룹명 입력"
 
-#: src/options.cpp:8731
+#: src/options.cpp:8722
 msgid "New Chart Group"
 msgstr "새 해도 그룹"
 
-#: src/options.cpp:8904 src/options.cpp:8918
+#: src/options.cpp:8895 src/options.cpp:8909
 msgid "Select Tide/Current Data"
 msgstr "조류/해류 데이터 선택"
 
-#: src/options.cpp:8976
+#: src/options.cpp:8967
 msgid "Texture Compression"
 msgstr "텍스처 압축"
 
-#: src/options.cpp:8977
+#: src/options.cpp:8968
 msgid "Texture Compression with Caching"
 msgstr "캐싱을 통한 텍스처 압축"
 
-#: src/options.cpp:8979
+#: src/options.cpp:8970
 msgid "Texture Compression Caching"
 msgstr "텍스처 압축 캐싱"
 
-#: src/options.cpp:8981
+#: src/options.cpp:8972
 msgid "Texture Memory Size (MB)"
 msgstr "텍스처 메모리 크기 (MB)"
 
-#: src/options.cpp:8985 src/options.cpp:9158
+#: src/options.cpp:8976 src/options.cpp:9149
 msgid "Size: "
 msgstr "크기:"
 
-#: src/options.cpp:8987
+#: src/options.cpp:8978
 msgid "Rebuild Texture Cache"
 msgstr "텍스처 캐시 재구축"
 
-#: src/options.cpp:8989
+#: src/options.cpp:8980
 msgid "Clear Texture Cache"
 msgstr "텍스처 캐시 지우기"
 
-#: src/options.cpp:8993
+#: src/options.cpp:8984
 msgid "Show FPS"
 msgstr "초당프레임수(FPS) 보이기"
 
-#: src/options.cpp:8994
+#: src/options.cpp:8985
 msgid "Polygon Smoothing"
 msgstr "다각형 평활화"
 
-#: src/options.cpp:8995
+#: src/options.cpp:8986
 msgid "Line Smoothing"
 msgstr "선 평활화"
 
-#: src/options.cpp:8997
+#: src/options.cpp:8988
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "소프트웨어 OpenGL (OpenCPN 다시 시작)"
 
-#: src/options.cpp:8999
+#: src/options.cpp:8990
 msgid "Use Accelerated Panning"
 msgstr "가속 표적따라가기 사용"
 
-#: src/options.cpp:9001
+#: src/options.cpp:8992
 msgid "Texture Settings"
 msgstr "텍스처 설정"
 
-#: src/options.cpp:9008
+#: src/options.cpp:8999
 msgid "Texture Cache"
 msgstr "텍스처 캐시"
 
-#: src/options.cpp:9015
+#: src/options.cpp:9006
 msgid "Miscellaneous"
 msgstr "기타"
 
@@ -6729,7 +6738,7 @@ msgstr "S57 셀 업데이트에 실패했습니다.\n"
 "ENC 기능이 불완전하거나 정확하지 않을 수 있습니다.\n\n"
 "자세한 내용은 로그 파일을 확인하십시오."
 
-#: src/Osenc.cpp:1664
+#: src/Osenc.cpp:1677
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC 파일 생성..."
 
@@ -6870,142 +6879,142 @@ msgstr "성공적으로 제거되었습니다"
 msgid "Un-Installation complete"
 msgstr "설치 해제 완료"
 
-#: src/pluginmanager.cpp:1241
+#: src/pluginmanager.cpp:1242
 msgid "Please check system log for more info."
 msgstr ""
 
-#: src/pluginmanager.cpp:1250
+#: src/pluginmanager.cpp:1251
 msgid " successfully installed from cache"
 msgstr ""
 
-#: src/pluginmanager.cpp:4088
+#: src/pluginmanager.cpp:4089
 msgid "These settings might destabilize OpenCPN and are by default disabled. To despite the dangers enable them manually add a CatalogExpert=1 line in the [PlugIns] section in the configuration file."
 msgstr "이러한 설정은 OpenCPN을 불안정하게 할 수 있으며 기본적으로 비활성화되어 있습니다. 위험에도 불구하고 환경구성 파일의 [PlugIns] 섹션에 CatalogExpert=1 행을 수동으로 추가할 수 있습니다."
 
-#: src/pluginmanager.cpp:4104
+#: src/pluginmanager.cpp:4105
 msgid "Plugin Catalog"
 msgstr "플러그인 목록"
 
-#: src/pluginmanager.cpp:4121 src/pluginmanager.cpp:4710
+#: src/pluginmanager.cpp:4122 src/pluginmanager.cpp:4711
 msgid "Update Plugin Catalog"
 msgstr "플러그인 목록 업데이트"
 
-#: src/pluginmanager.cpp:4127 src/pluginmanager.cpp:4198
+#: src/pluginmanager.cpp:4128 src/pluginmanager.cpp:4199
 msgid "Import plugin..."
 msgstr "플러그인 가져오기..."
 
-#: src/pluginmanager.cpp:4134 src/pluginmanager.cpp:4191
+#: src/pluginmanager.cpp:4135 src/pluginmanager.cpp:4192
 msgid "Settings..."
 msgstr "설정..."
 
-#: src/pluginmanager.cpp:4142
+#: src/pluginmanager.cpp:4143
 msgid "Disabled"
 msgstr "비활성화"
 
-#: src/pluginmanager.cpp:4167
+#: src/pluginmanager.cpp:4168
 msgid "Update Plugin Catalog: master"
 msgstr ""
 
-#: src/pluginmanager.cpp:4183
+#: src/pluginmanager.cpp:4184
 msgid "Update Plugin Catalog:master"
 msgstr ""
 
-#: src/pluginmanager.cpp:4242 src/pluginmanager.cpp:4254
-#: src/pluginmanager.cpp:4264 src/pluginmanager.cpp:4273
-#: src/pluginmanager.cpp:4298
+#: src/pluginmanager.cpp:4243 src/pluginmanager.cpp:4255
+#: src/pluginmanager.cpp:4265 src/pluginmanager.cpp:4274
+#: src/pluginmanager.cpp:4299
 msgid "OpenCPN Catalog update"
 msgstr "OpenCPN 목록 업데이트"
 
-#: src/pluginmanager.cpp:4253 src/pluginmanager.cpp:4263
+#: src/pluginmanager.cpp:4254 src/pluginmanager.cpp:4264
 msgid "Unable to copy catalog file"
 msgstr "목록 파일을 복사할 수 없습니다."
 
-#: src/pluginmanager.cpp:4272
+#: src/pluginmanager.cpp:4273
 msgid "Unable to copy catalog file to cache"
 msgstr "목록 파일을 캐시에 복사할 수 없습니다."
 
-#: src/pluginmanager.cpp:4297
+#: src/pluginmanager.cpp:4298
 msgid "Catalog update successful"
 msgstr "목록 업데이트 성공"
 
-#: src/pluginmanager.cpp:4420
+#: src/pluginmanager.cpp:4421
 msgid "Select tarball file"
 msgstr "tarball압축 파일 선택"
 
-#: src/pluginmanager.cpp:4515
+#: src/pluginmanager.cpp:4516
 msgid "Error extracting import plugin tarball."
 msgstr "tarball플러그인을 가져와 압축을 푸는 동안 오류"
 
-#: src/pluginmanager.cpp:4516 src/pluginmanager.cpp:4525
-#: src/pluginmanager.cpp:4539 src/pluginmanager.cpp:4547
+#: src/pluginmanager.cpp:4517 src/pluginmanager.cpp:4526
+#: src/pluginmanager.cpp:4540 src/pluginmanager.cpp:4548
 msgid "OpenCPN Plugin Import Error"
 msgstr "OpenCPN 플러그인 가져오기 오류"
 
-#: src/pluginmanager.cpp:4524
+#: src/pluginmanager.cpp:4525
 msgid "Error, import plugin tarball does not contain required metadata."
 msgstr "오류, 플러그인 tarball 가져오기가 필수 메타데이터를 포함하고 있지 않습니다."
 
-#: src/pluginmanager.cpp:4538
+#: src/pluginmanager.cpp:4539
 msgid "Error processing import plugin metadata."
 msgstr "플러그인 메타데이터를 가져와 처리하는 동안 오류"
 
-#: src/pluginmanager.cpp:4546
+#: src/pluginmanager.cpp:4547
 msgid "Incompatible import plugin detected."
 msgstr "호환되지 않는 플러그인 가져오기 발견"
 
-#: src/pluginmanager.cpp:4678
+#: src/pluginmanager.cpp:4679
 msgid "Plugin imported successfully"
 msgstr "플러그인을 성공적으로 가져왔습니다."
 
-#: src/pluginmanager.cpp:4680
+#: src/pluginmanager.cpp:4681
 msgid "Active catalog updated."
 msgstr "활성 목록이 업데이트되었습니다."
 
-#: src/pluginmanager.cpp:4682
+#: src/pluginmanager.cpp:4683
 msgid "Plugin may be installed or updated now."
 msgstr "플러그인을 지금 설치하거나 업데이트할 수 있습니다."
 
-#: src/pluginmanager.cpp:4683
+#: src/pluginmanager.cpp:4684
 msgid "OpenCPN Plugin Import Successful"
 msgstr "OpenCPN 플러그인 가져오기 성공"
 
-#: src/pluginmanager.cpp:4689
+#: src/pluginmanager.cpp:4690
 msgid "Active Catalog"
 msgstr "활성 목록"
 
-#: src/pluginmanager.cpp:4689
+#: src/pluginmanager.cpp:4690
 msgid "Last Catalog"
 msgstr "최종 목록"
 
-#: src/pluginmanager.cpp:4703
+#: src/pluginmanager.cpp:4704
 msgid "Last change: "
 msgstr "최종 변경: "
 
-#: src/pluginmanager.cpp:4704
+#: src/pluginmanager.cpp:4705
 msgid "Please Update Plugin Catalog."
 msgstr "플러그인 목록을업데이트하십시오."
 
-#: src/pluginmanager.cpp:5035 src/pluginmanager.cpp:5085
+#: src/pluginmanager.cpp:5036 src/pluginmanager.cpp:5086
 msgid "Enabled"
 msgstr "활성화"
 
-#: src/pluginmanager.cpp:5117 src/pluginmanager.cpp:5142
+#: src/pluginmanager.cpp:5118 src/pluginmanager.cpp:5143
 msgid "Uninstall"
 msgstr "제거"
 
-#: src/pluginmanager.cpp:5298
+#: src/pluginmanager.cpp:5299
 msgid "Upgrade to Version "
 msgstr "버전으로 업그레이드"
 
-#: src/pluginmanager.cpp:5305
+#: src/pluginmanager.cpp:5306
 msgid "Install..."
 msgstr "설치..."
 
-#: src/pluginmanager.cpp:5311
+#: src/pluginmanager.cpp:5312
 msgid "Update to "
 msgstr "로 업데이트"
 
-#: src/pluginmanager.cpp:5534 src/update_mgr.cpp:252
+#: src/pluginmanager.cpp:5535 src/update_mgr.cpp:252
 msgid "Website"
 msgstr "웹사이트"
 
@@ -7106,10 +7115,6 @@ msgstr "필터"
 #: src/routemanagerdialog.cpp:377
 msgid "Show all routes"
 msgstr "모든 경로  보이기"
-
-#: src/routemanagerdialog.cpp:414 src/routemanagerdialog.cpp:584
-msgid "Show"
-msgstr "보이기"
 
 #: src/routemanagerdialog.cpp:416
 msgid "Route Name"
@@ -7685,27 +7690,27 @@ msgstr "S57 셀 업데이트 체인이 불완전합니다.\n"
 "ENC 기능이 불완전하거나 정확하지 않을 수 있습니다.\n"
 "자세한 내용은 로그 파일을 확인하십시오."
 
-#: src/s57chart.cpp:5761
+#: src/s57chart.cpp:5764
 msgid "this file is not available"
 msgstr "이 파일은 사용할 수 없습니다"
 
-#: src/s57chart.cpp:5792
+#: src/s57chart.cpp:5795
 msgid "Period ends: "
 msgstr "기간 종료:"
 
-#: src/s57chart.cpp:5794
+#: src/s57chart.cpp:5797
 msgid "Period starts: "
 msgstr "기간 시작:"
 
-#: src/s57chart.cpp:5796
+#: src/s57chart.cpp:5799
 msgid "Date ending: "
 msgstr "종료 날짜:"
 
-#: src/s57chart.cpp:5798
+#: src/s57chart.cpp:5801
 msgid "Date starting: "
 msgstr "시작 날짜:"
 
-#: src/s57chart.cpp:5907
+#: src/s57chart.cpp:5910
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2>(섹터 각도는 바다쪽방향으로 부터 실제 방위각입니다.)</font><br>"
 
@@ -7743,7 +7748,7 @@ msgstr ""
 msgid "Scan again"
 msgstr ""
 
-#: src/tcmgr.cpp:691
+#: src/tcmgr.cpp:684
 msgid "It seems you have no tide/current harmonic data installed."
 msgstr "조류/해류 조파 데이터가 설치되어 있지 않은 것 같습니다."
 
@@ -7791,41 +7796,41 @@ msgstr "오늘"
 msgid "Tomorrow"
 msgstr "내일"
 
-#: src/toolbar.cpp:1173
+#: src/toolbar.cpp:1175
 msgid "Shift to Larger Scale Chart"
 msgstr "더 큰 축척의 해도로 이동"
 
-#: src/toolbar.cpp:1181
+#: src/toolbar.cpp:1183
 msgid "Shift to Smaller Scale Chart"
 msgstr "더 작은 축척의 해도로 이동"
 
-#: src/toolbar.cpp:1214
+#: src/toolbar.cpp:1216
 msgid "Hide ENC text"
 msgstr "전자해도(ENC) 텍스트 숨기기"
 
-#: src/toolbar.cpp:1540 src/toolbar.cpp:1554 src/toolbar.cpp:1569
+#: src/toolbar.cpp:1542 src/toolbar.cpp:1556 src/toolbar.cpp:1571
 msgid "ToolTips"
 msgstr "도구 설명"
 
-#: src/toolbar.cpp:3054
+#: src/toolbar.cpp:3056
 msgid "No, I don't want to hide it."
 msgstr "아니오, 숨기지 않겠습니다."
 
-#: src/toolbar.cpp:3058
+#: src/toolbar.cpp:3060
 msgid "No, and permanently remove the option to hide it."
 msgstr "아니요, 숨기는 옵션을 영구적으로 제거합니다."
 
-#: src/toolbar.cpp:3062
+#: src/toolbar.cpp:3064
 msgid "Yes, hide it."
 msgstr "네, 숨기겠습니다."
 
-#: src/toolbar.cpp:3069
+#: src/toolbar.cpp:3071
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "익수자(Man Over Board) 버튼은 중요한 안전 기능일 수 있습니다.\n"
 "정말로 숨기시겠습니까?"
 
-#: src/toolbar.cpp:3155
+#: src/toolbar.cpp:3157
 msgid "Choose Toolbar Icons"
 msgstr "도구 모음 아이콘 선택"
 
