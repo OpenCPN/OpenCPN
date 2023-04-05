@@ -344,9 +344,9 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
 
   node_name.SetManufacturerCode(2046);
   node_name.SetUniqueNumber(m_unique_number);
-  node_name.SetDeviceFunction(130); // PC Gateway
-  node_name.SetDeviceClass(25);     // Inter/Intranetwork Device
-  node_name.SetIndustryGroup(4);    // Marine
+  node_name.SetDeviceFunction(130);  // Display
+  node_name.SetDeviceClass(120);     // Display
+  node_name.SetIndustryGroup(4);     // Marine
 }
 
 void CommDriverN2KSocketCanImpl::UpdateAttrCanAddress() {
