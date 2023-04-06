@@ -1829,9 +1829,9 @@ void ConnectionsDialog::ApplySettings(){
         old_priority = cp->Priority;
         UpdateConnectionParamsFromSelectedItem(cp);
         cp->b_IsSetup = false;
-        cp->bEnabled = false;
-        if (cp->m_optionsPanel)
-          cp->m_optionsPanel->SetEnableCheckbox(false);
+        //cp->bEnabled = false;
+        //if (cp->m_optionsPanel)
+        //  cp->m_optionsPanel->SetEnableCheckbox(false);
 
         // delete TheConnectionParams()->Item(itemIndex)->m_optionsPanel;
         // old_priority = TheConnectionParams()->Item(itemIndex)->Priority;
