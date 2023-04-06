@@ -399,7 +399,7 @@ bool CommDriverN2KSocketCanImpl::SendAddressClaim(int proposed_source_address) {
   b81 = node_name.value.DeviceFunction;
   memcpy(&frame.data[5], &b81, 1);
 
-  b81 = (node_name.value.DeviceClass&0x7f)<<1;
+  b81 = (node_name.value.DeviceClass);
   memcpy(&frame.data[6], &b81, 1);
 
   b81 = node_name.value.IndustryGroupAndSystemInstance;
