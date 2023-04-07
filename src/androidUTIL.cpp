@@ -579,7 +579,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
 
       if (g_options) {
         g_options->RecalculateSize(
-          g_options.GetSize().x, g_options.GetSize().y );
+          g_options->GetSize().x, g_options->GetSize().y );
       }
 
       bInConfigChange = false;
