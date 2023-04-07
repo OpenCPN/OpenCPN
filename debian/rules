@@ -33,7 +33,6 @@ else
 	dh_auto_configure -- \
 	    -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
-            -DDEB_SOURCE=$(DEB_SOURCE)                 \
             -DDEB_VERSION=$(DEB_VERSION)               \
             -DOCPN_BUILD_TEST=OFF
 
