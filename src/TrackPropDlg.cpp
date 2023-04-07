@@ -815,16 +815,19 @@ void TrackPropDlg::CreateControls(void) {
 
   m_rbShowTimeUTC = new wxRadioButton(m_panel0, wxID_ANY, _("UTC"),
                                       wxDefaultPosition, wxDefaultSize, 0);
-  bSizerShowTime->Add(m_rbShowTimeUTC, 0, 0, 5);
+  bSizerShowTime->Add(m_rbShowTimeUTC, 0,
+       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
 
   m_rbShowTimePC = new wxRadioButton(m_panel0, wxID_ANY, _("Local @ PC"),
                                      wxDefaultPosition, wxDefaultSize, 0);
-  bSizerShowTime->Add(m_rbShowTimePC, 0, 0, 5);
+  bSizerShowTime->Add(m_rbShowTimePC, 0,
+       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
 
   m_rbShowTimeLocal =
       new wxRadioButton(m_panel0, wxID_ANY, _("LMT @ Track Start"),
                         wxDefaultPosition, wxDefaultSize, 0);
-  bSizerShowTime->Add(m_rbShowTimeLocal, 0, 0, 5);
+  bSizerShowTime->Add(m_rbShowTimeLocal, 0,
+       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
 
   m_rbShowTimePC->SetValue(true);
 
