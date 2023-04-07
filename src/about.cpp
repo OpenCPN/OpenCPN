@@ -59,7 +59,7 @@ extern about* g_pAboutDlgLegacy;
 extern bool g_bresponsive;
 
 wxString OpenCPNVersion =
-    wxString::Format(wxT("\n      Version %s"), VERSION_FULL);
+    wxString::Format(wxT("\n      Version %s"), PACKAGE_VERSION);
 
 #define xID_OK 10009
 

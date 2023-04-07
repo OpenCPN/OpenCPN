@@ -1696,7 +1696,7 @@ bool MyApp::OnInit() {
   // Create the main frame window
 
   // Strip the commit SHA number from the string to be shown in frame title.
-  wxString short_version_name = wxString(VERSION_FULL).BeforeFirst('+');
+  wxString short_version_name = wxString(PACKAGE_VERSION).BeforeFirst('+');
   wxString myframe_window_title = wxString(wxT("OpenCPN ") + short_version_name);
 
   if (g_bportable) {

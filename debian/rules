@@ -14,6 +14,7 @@ ifeq ($(DEB_BUILD_ARCH_CPU), arm)
             -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
+            -DOCPN_CI_BUILD:BOOL=ON		       \
             -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), aarch64)
 	dh_auto_configure -- \
@@ -21,6 +22,7 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), aarch64)
             -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
+            -DOCPN_CI_BUILD:BOOL=ON		       \
             -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
 	dh_auto_configure -- \
@@ -28,11 +30,13 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
             -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
+            -DOCPN_CI_BUILD:BOOL=ON		       \
             -DOCPN_BUILD_TEST=OFF
 else
 	dh_auto_configure -- \
 	    -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
+            -DOCPN_CI_BUILD:BOOL=ON		       \
             -DOCPN_BUILD_TEST=OFF
 
 endif
