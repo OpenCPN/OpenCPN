@@ -8001,7 +8001,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
   FontMgr::Get().SetFont(sel_text_element, pif, cn);
 
-  pParent->UpdateAllFonts();
+  gFrame->UpdateAllFonts();
   m_bfontChanged = true;
 
   androidEnableRotation();
