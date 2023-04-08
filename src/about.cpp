@@ -58,8 +58,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern about* g_pAboutDlgLegacy;
 extern bool g_bresponsive;
 
-wxString OpenCPNVersion =
-    wxString::Format(wxT("\n      Version %s"), PACKAGE_VERSION);
+wxString OpenCPNVersion("\n      Version ");
 
 #define xID_OK 10009
 
@@ -204,6 +203,11 @@ about::about(wxWindow* parent, wxString Data_Locn, wxWindowID id,
   pLicenseHTMLCtl = NULL;
   pAuthorHTMLCtl = NULL;
   m_blicensePageSet = false;
+
+  if(strlen(DEBIAN_PPA_VERSION))
+   OpenCPNVersion += wxString(DEBIAN_PPA_VERSION);
+  else
+   OpenCPNVersion += wxString(PACKAGE_VERSION);
 
   Create(parent, id, caption, pos, size, style);
 }

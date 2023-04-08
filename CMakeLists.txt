@@ -71,6 +71,11 @@ endif ()
 
 project(OpenCPN)
 
+# Capture $DEB_VERSION on PPA build
+if (DEFINED DEB_VERSION)
+  add_definitions("-DDEB_VERSION=${DEB_VERSION}")
+endif (DEFINED DEB_VERSION)
+
 if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
   set(CMAKE_VERBOSE_MAKEFILE ON)
 endif ()
