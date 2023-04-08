@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-28 10:26-0400\n"
-"PO-Revision-Date: 2023-04-05 00:42\n"
+"PO-Revision-Date: 2023-04-08 16:00\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -84,7 +84,7 @@ msgstr "Lähetä GPS:lle"
 
 #: include/SendToPeerDlg.h:40
 msgid "Send to Peer"
-msgstr "Lähetä käyttäjälle"
+msgstr "Lähetä laitteelle"
 
 #: include/track.h:122 src/ocpn_frame.cpp:3080 src/ocpn_frame.cpp:6476
 #: src/ocpn_frame.cpp:6594
@@ -503,7 +503,7 @@ msgstr "Rajoitettu alue: Ajelehtivia miinoja"
 
 #: src/ais.cpp:153
 msgid "Anchorage Area: Anchorage open"
-msgstr "Anchorage alue: Ankkurointi sallittu"
+msgstr "Ankkurointialue: Ankkurointi sallittu"
 
 #: src/ais.cpp:154
 msgid "Anchorage Area: Anchorage closed"
@@ -611,7 +611,7 @@ msgstr "Siirry tähän paikkaan - odota ohjeita"
 
 #: src/ais.cpp:200
 msgid "Clearance granted - proceed to berth"
-msgstr "Selvitys hyväksytty - Siirry laituriin"
+msgstr "Selvitys hyväksytty - siirry laituriin"
 
 #: src/ais.cpp:203
 msgid "Information: Pilot boarding position"
@@ -1162,7 +1162,7 @@ msgstr "IMO"
 
 #: src/ais_target_data.cpp:394
 msgid "Nation"
-msgstr "Kotimaa"
+msgstr "Kansallisuus"
 
 #: src/ais_target_data.cpp:394
 msgid "Flag"
@@ -5823,7 +5823,7 @@ msgstr "Karttatiedostot"
 
 #: src/options.cpp:2524
 msgid "Directories"
-msgstr "Hakemistot"
+msgstr "Kansiot"
 
 #: src/options.cpp:2547
 msgid "Add Directory..."
@@ -6089,7 +6089,7 @@ msgstr "Käyttäjän valitsemat kohteet"
 
 #: src/options.cpp:3543 src/options.cpp:3756
 msgid "Reset to STANDARD"
-msgstr "Palautetaan standardi"
+msgstr "Palauta standardi"
 
 #: src/options.cpp:3776
 msgid "Tides && Currents"
@@ -6408,7 +6408,7 @@ msgstr "Näytä reitti-/AIS-tiedot"
 
 #: src/options.cpp:5086
 msgid "\"Ship Name\" MMSI (Call Sign)"
-msgstr "\"Aluksen nimi\" MMSI (Soittotunnus)"
+msgstr "\"Aluksen nimi\" MMSI (Radiotunnus)"
 
 #: src/options.cpp:5090
 msgid "[Class] Type (Status)"
@@ -7913,11 +7913,11 @@ msgstr "Matka-aika"
 
 #: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:458 src/TrackPropDlg.cpp:820
 msgid "Local @ PC"
-msgstr "Paikallinen @ PC"
+msgstr "PC:n aika"
 
 #: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:464
 msgid "LMT @ Location"
-msgstr "LMT @ kohteen sijainti"
+msgstr "LMT sijainnissa"
 
 #: src/TrackPropDlg.cpp:447 src/TrackPropDlg.cpp:811
 msgid "Time shown as"

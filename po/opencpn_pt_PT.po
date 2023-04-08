@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-28 10:26-0400\n"
-"PO-Revision-Date: 2023-04-05 00:42\n"
+"PO-Revision-Date: 2023-04-08 19:02\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -84,7 +84,7 @@ msgstr "Enviar para o GPS"
 
 #: include/SendToPeerDlg.h:40
 msgid "Send to Peer"
-msgstr ""
+msgstr "Enviar para Emparelhado"
 
 #: include/track.h:122 src/ocpn_frame.cpp:3080 src/ocpn_frame.cpp:6476
 #: src/ocpn_frame.cpp:6594
@@ -103,7 +103,7 @@ msgstr "Propriedades do rasto"
 #: libs/s52plib/src/s52plib.cpp:2181 libs/s52plib/src/s52plib.cpp:2285
 #: libs/s52plib/src/s52plib.cpp:2454
 msgid "ChartTexts"
-msgstr ""
+msgstr "ChartTexts"
 
 #: libs/wxcurl/src/dialog.cpp:137
 msgid "Not available"
@@ -795,191 +795,191 @@ msgstr "Navio porta contentores"
 
 #: src/ais_decoder.cpp:964
 msgid "Gas tanker"
-msgstr ""
+msgstr "Navio-tanque de gás"
 
 #: src/ais_decoder.cpp:965
 msgid "Motor freighter, tug"
-msgstr ""
+msgstr "Cargueiro a motor, rebocador"
 
 #: src/ais_decoder.cpp:966
 msgid "Motor tanker, tug"
-msgstr ""
+msgstr "Navio-tanque a motor, rebocador"
 
 #: src/ais_decoder.cpp:967
 msgid "Motor freighter with one or more ships alongside"
-msgstr ""
+msgstr "Cargueiro a motor com um ou mais navios ao lado"
 
 #: src/ais_decoder.cpp:968
 msgid "Motor freighter with tanker"
-msgstr ""
+msgstr "Cargueiro a Motor com tanque"
 
 #: src/ais_decoder.cpp:969
 msgid "Motor freighter pushing one or more freighters"
-msgstr ""
+msgstr "Cargueiro a motor empurrando um ou mais cargueiros"
 
 #: src/ais_decoder.cpp:970
 msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
+msgstr "Cargueiro a motor empurrando pelo menos um navio-tanque"
 
 #: src/ais_decoder.cpp:971
 msgid "Tug, freighter"
-msgstr ""
+msgstr "Rebocador, cargueiro"
 
 #: src/ais_decoder.cpp:972
 msgid "Tug, tanker"
-msgstr ""
+msgstr "Rebocador, navio cisterna"
 
 #: src/ais_decoder.cpp:973
 msgid "Tug freighter, coupled"
-msgstr ""
+msgstr "Cargueiro rebocador, acoplado"
 
 #: src/ais_decoder.cpp:974
 msgid "Tug, freighter/tanker, coupled"
-msgstr ""
+msgstr "Rebocador, cargueiro/tanque, acoplados"
 
 #: src/ais_decoder.cpp:975
 msgid "Tankbarge, liquid cargo, type N"
-msgstr ""
+msgstr "Batelão Tanque, carga líquida, tipo N"
 
 #: src/ais_decoder.cpp:976
 msgid "Tankbarge, liquid cargo, type C"
-msgstr ""
+msgstr "Batelão Tanque, carga líquida, tipo C"
 
 #: src/ais_decoder.cpp:977
 msgid "Freightbarge with containers"
-msgstr ""
+msgstr "Batelão frete com contentores"
 
 #: src/ais_decoder.cpp:978
 msgid "Tankbarge, gas"
-msgstr ""
+msgstr "Batelão Tanque, gás"
 
 #: src/ais_decoder.cpp:979
 msgid "Pushtow, one cargo barge"
-msgstr ""
+msgstr "Rebocador empurrando, um batelão de carga"
 
 #: src/ais_decoder.cpp:980
 msgid "Pushtow, two cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, dois batelões de carga"
 
 #: src/ais_decoder.cpp:981
 msgid "Pushtow, three cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, três batelões de carga"
 
 #: src/ais_decoder.cpp:982
 msgid "Pushtow, four cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, quatro batelões de carga"
 
 #: src/ais_decoder.cpp:983
 msgid "Pushtow, five cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, cinco batelões de carga"
 
 #: src/ais_decoder.cpp:984
 msgid "Pushtow, six cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, seis batelões de carga"
 
 #: src/ais_decoder.cpp:985
 msgid "Pushtow, seven cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, sete batelões de carga"
 
 #: src/ais_decoder.cpp:986
 msgid "Pushtow, eight cargo barges"
-msgstr ""
+msgstr "Rebocador empurrando, oito batelões de carga"
 
 #: src/ais_decoder.cpp:987
 msgid "Pushtow, nine or more barges"
-msgstr ""
+msgstr "Rebocador empurrando, nove batelões de carga"
 
 #: src/ais_decoder.cpp:988
 msgid "Pushtow, one tank/gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, um batelões tanque/gás"
 
 #: src/ais_decoder.cpp:990
 msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, dois batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:992
 msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, três batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:994
 msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, quatro batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:996
 msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, cinco batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:998
 msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, seis batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:1000
 msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, sete batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:1002
 msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, oito batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:1004
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Rebocador empurrando, nove batelões pelo menos um batelão tanque ou de gás"
 
 #: src/ais_decoder.cpp:1005
 msgid "Tug, single"
-msgstr ""
+msgstr "Rebocador, único"
 
 #: src/ais_decoder.cpp:1006
 msgid "Tug, one or more tows"
-msgstr ""
+msgstr "Rebocador, um ou mais reboques"
 
 #: src/ais_decoder.cpp:1007
 msgid "Tug, assisting a vessel or linked combination"
-msgstr ""
+msgstr "Rebocador, auxiliando uma embarcação ou combinação ligada"
 
 #: src/ais_decoder.cpp:1009
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr ""
+msgstr "Navio de passageiros, balsa, navio de cruzeiro, Cruz Vermelha"
 
 #: src/ais_decoder.cpp:1010
 msgid "Ferry"
-msgstr ""
+msgstr "Ferryboat"
 
 #: src/ais_decoder.cpp:1011
 msgid "Red cross ship"
-msgstr ""
+msgstr "Navio da Cruz Vermelha"
 
 #: src/ais_decoder.cpp:1012
 msgid "Cruise ship"
-msgstr ""
+msgstr "Navio de cruzeiro"
 
 #: src/ais_decoder.cpp:1013
 msgid "Passenger ship without accommodation"
-msgstr ""
+msgstr "Navio de passageiros sem acomodações"
 
 #: src/ais_decoder.cpp:1014
 msgid "Vessel, work maintenance craft, floating derrick, cable-ship, buoy-ship, dredge"
-msgstr ""
+msgstr "Barco, barco de manutenção, grua flutuante, navio lança-cabos, navio lança-boias, draga"
 
 #: src/ais_decoder.cpp:1016
 msgid "Fishing boat"
-msgstr ""
+msgstr "Barco de pesca"
 
 #: src/ais_decoder.cpp:1017
 msgid "Barge, tanker, chemical"
-msgstr ""
+msgstr "Batelão, navio-tanque, produtos químicos"
 
 #: src/ais_decoder.cpp:1018
 msgid "General cargo Vessel maritime"
-msgstr ""
+msgstr "Navio de carga geral marítima"
 
 #: src/ais_decoder.cpp:1019
 msgid "Unit carrier maritime"
-msgstr ""
+msgstr "Porta contentores, marítimo"
 
 #: src/ais_decoder.cpp:1020
 msgid "Bulk carrier maritime"
-msgstr ""
+msgstr "Graneleiro marítimo"
 
 #: src/ais_decoder.cpp:1021 src/ais_target_data.cpp:1596
 msgid "Tanker"
@@ -987,19 +987,19 @@ msgstr "Navio tanque"
 
 #: src/ais_decoder.cpp:1022
 msgid "Liquified gas tanker"
-msgstr ""
+msgstr "Navio cisterna de gás liquefeito"
 
 #: src/ais_decoder.cpp:1023
 msgid "Pleasure craft, longer than 20 metres"
-msgstr ""
+msgstr "Embarcação de recreio, mais de 20 metros"
 
 #: src/ais_decoder.cpp:1024
 msgid "Fast ship"
-msgstr ""
+msgstr "Navio rápido"
 
 #: src/ais_decoder.cpp:1025
 msgid "Hydrofoil"
-msgstr ""
+msgstr "Hidrofólio"
 
 #: src/ais_decoder.cpp:1966
 #, c-format
@@ -1011,7 +1011,10 @@ msgid "\n"
 "This AIS target has Persistent Tracking selected by MMSI properties\n"
 "A Persistent track recording will therefore be restarted for this target.\n\n"
 "Do you instead want to stop Persistent Tracking for this target?\n"
-msgstr ""
+msgstr "\n"
+"Este alvo AIS tem gravação de percurso ativada por propriedades MMSI\n"
+"Uma gravação de percurso será, portanto, reiniciada para este alvo.\n\n"
+"Em vez disso, quer parar a gravação de percurso para este alvo?\n"
 
 #: src/ais_info_gui.cpp:198 src/options.cpp:4854
 msgid "AIS Alert"
@@ -1040,7 +1043,7 @@ msgstr "&Reconhecer"
 
 #: src/AISTargetAlertDialog.cpp:222
 msgid "&Close Alert"
-msgstr ""
+msgstr "&Fechar Alerta"
 
 #: src/ais_target_data.cpp:98
 msgid "Underway using Engine"
@@ -1189,15 +1192,15 @@ msgstr "Emissão de Mensagem de Segurança"
 
 #: src/ais_target_data.cpp:520
 msgid "Distress relay"
-msgstr ""
+msgstr "Repetição de emergência"
 
 #: src/ais_target_data.cpp:523
 msgid "by:"
-msgstr ""
+msgstr "por:"
 
 #: src/ais_target_data.cpp:527
 msgid "Nature of distress: "
-msgstr ""
+msgstr "Natureza da emergência: "
 
 #: src/ais_target_data.cpp:545
 msgid " (Last Known)"
@@ -1367,51 +1370,51 @@ msgstr "Desc"
 
 #: src/ais_target_data.cpp:986
 msgid "Fire, explosion"
-msgstr ""
+msgstr "Fogo, explosão"
 
 #: src/ais_target_data.cpp:986
 msgid "Flooding"
-msgstr ""
+msgstr "Inundação"
 
 #: src/ais_target_data.cpp:987
 msgid "Collision"
-msgstr ""
+msgstr "Colisão"
 
 #: src/ais_target_data.cpp:987
 msgid "Grounding"
-msgstr ""
+msgstr "Encalhe"
 
 #: src/ais_target_data.cpp:988
 msgid "Listing, in danger of capsizing"
-msgstr ""
+msgstr "Adornando, em perigo de capotamento"
 
 #: src/ais_target_data.cpp:988
 msgid "Sinking"
-msgstr ""
+msgstr "Afundamento"
 
 #: src/ais_target_data.cpp:989
 msgid "Disabled and adrift"
-msgstr ""
+msgstr "Desabilitado e à deriva"
 
 #: src/ais_target_data.cpp:989
 msgid "Undesignated distress"
-msgstr ""
+msgstr "Emergência não especificada"
 
 #: src/ais_target_data.cpp:990
 msgid "Abandoning ship"
-msgstr ""
+msgstr "Abandonar navio"
 
 #: src/ais_target_data.cpp:990
 msgid "Piracy/armed robbery attack"
-msgstr ""
+msgstr "Ataque pirata ou assalto à mão armada"
 
 #: src/ais_target_data.cpp:991
 msgid "Man overboard"
-msgstr ""
+msgstr "Homem ao mar"
 
 #: src/ais_target_data.cpp:991
 msgid "EPIRB emission"
-msgstr ""
+msgstr "Emissão EPIRB"
 
 #: src/ais_target_data.cpp:1026
 msgid "Albania"
@@ -2784,7 +2787,7 @@ msgstr "Consulta Destino AIS"
 
 #: src/AISTargetListDialog.cpp:711
 msgid "Center-Info-Close"
-msgstr ""
+msgstr "Fecho do centro de informação"
 
 #: src/AISTargetListDialog.cpp:719
 msgid "Create WPT"
@@ -3148,7 +3151,7 @@ msgstr "Mostrar"
 
 #: src/canvasMenu.cpp:679 src/chcanv.cpp:6581
 msgid "CPA alarm "
-msgstr ""
+msgstr "Alarme CPA"
 
 #: src/canvasMenu.cpp:687
 msgid "Unnamed Route"
@@ -3325,11 +3328,11 @@ msgstr "_B"
 
 #: src/canvasMenu.cpp:1737
 msgid "Send Waypoint to OpenCPN Peer"
-msgstr ""
+msgstr "Enviar Ponto de passagem para OpenCPN Emparelhado"
 
 #: src/canvasMenu.cpp:1790
 msgid "Send Route to OpenCPN Peer"
-msgstr ""
+msgstr "Enviar Rota para OpenCPN Emparelhado"
 
 #: src/canvasMenu.cpp:1879
 msgid "Are you sure you want to delete this track?"
@@ -3341,7 +3344,7 @@ msgstr "Apagar Percurso OpenCPN"
 
 #: src/canvasMenu.cpp:1930
 msgid "Send Track to OpenCPN Peer"
-msgstr ""
+msgstr "Enviar Percurso para OpenCPN Emparelhado"
 
 #: src/CanvasOptions.cpp:108
 msgid "Chart Panel Options"
@@ -3444,7 +3447,7 @@ msgstr "Mostrar luzes do setor visíveis"
 
 #: src/CanvasOptions.cpp:311
 msgid "Show chart data quality"
-msgstr ""
+msgstr "Mostrar qualidade de dados da carta"
 
 #: src/CanvasOptions.cpp:321 src/options.cpp:3358 src/options.cpp:3561
 msgid "Display Category"
@@ -3744,15 +3747,15 @@ msgstr "Barra de Estados"
 
 #: src/chcanv.cpp:6573
 msgid "ON"
-msgstr ""
+msgstr "ON"
 
 #: src/chcanv.cpp:6576
 msgid "OFF"
-msgstr ""
+msgstr "OFF"
 
 #: src/chcanv.cpp:6585
 msgid "CPA Alarm is switched"
-msgstr ""
+msgstr "Alarme CPA alterado"
 
 #: src/chcanv.cpp:7698 src/chcanv.cpp:8264
 msgid "Use nearby waypoint?"
@@ -3957,7 +3960,7 @@ msgstr "metros"
 
 #: src/comm_n0183_output.cpp:331
 msgid "Route Upload"
-msgstr ""
+msgstr "Carregamento da rota"
 
 #: src/concanv.cpp:100 src/concanv.cpp:145 src/concanv.cpp:160
 #: src/concanv.cpp:199 src/concanv.cpp:207
@@ -4030,78 +4033,78 @@ msgstr "Geral"
 
 #: src/connections_dialog.cpp:240
 msgid "Filter NMEA Course and Speed data"
-msgstr ""
+msgstr "Filtrar dados NMEA de rumo e velocidade"
 
 #: src/connections_dialog.cpp:246
 msgid "Filter period (sec)"
-msgstr ""
+msgstr "Período de filtro (sec)"
 
 #: src/connections_dialog.cpp:266
 msgid "Show NMEA Debug Window"
-msgstr ""
+msgstr "Mostrar janela de depuração NMEA"
 
 #: src/connections_dialog.cpp:272
 msgid "Format uploads for Furuno GP3X"
-msgstr ""
+msgstr "Formatar uploads para Furuno GP3X"
 
 #: src/connections_dialog.cpp:278
 msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr ""
+msgstr "Usar o modo de Garmin GRMN (Host) para uploads"
 
 #: src/connections_dialog.cpp:285
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr ""
+msgstr "Usar azimutes magnéticos nos dados de saída ECAPB"
 
 #: src/connections_dialog.cpp:292
 msgid "Adjust communication priorities..."
-msgstr ""
+msgstr "Ajustar prioridades de comunicação..."
 
 #: src/connections_dialog.cpp:303
 msgid "Data Connections"
-msgstr ""
+msgstr "Ligações de dados"
 
 #: src/connections_dialog.cpp:338
 msgid "Add Connection"
-msgstr ""
+msgstr "Adicionar Ligação"
 
 #: src/connections_dialog.cpp:342
 msgid "Remove Connection"
-msgstr ""
+msgstr "Remover ligação"
 
 #: src/connections_dialog.cpp:362 src/connections_dialog.cpp:935
 msgid "Edit Selected Connection"
-msgstr ""
+msgstr "Selecione a Ligação selecionada"
 
 #: src/connections_dialog.cpp:373 src/conn_params.cpp:165
 #: src/conn_params_panel.cpp:226 src/conn_params_panel.cpp:791
 msgid "Serial"
-msgstr ""
+msgstr "Série"
 
 #: src/connections_dialog.cpp:378 src/conn_params.cpp:167
 #: src/conn_params_panel.cpp:328 src/conn_params_panel.cpp:821
 msgid "Network"
-msgstr ""
+msgstr "Rede"
 
 #: src/connections_dialog.cpp:393 src/conn_params_panel.cpp:465
 msgid "Built-in GPS"
-msgstr ""
+msgstr "GPS integrado"
 
 #: src/connections_dialog.cpp:402
 msgid "Built-in Bluetooth SPP"
-msgstr ""
+msgstr "Bluetooth SPP integrado"
 
 #: src/connections_dialog.cpp:406 src/connections_dialog.cpp:1023
 msgid "BT Scan"
-msgstr ""
+msgstr "Procura de BT"
 
 #: src/connections_dialog.cpp:416
 msgid "Bluetooth Data Sources"
-msgstr ""
+msgstr "Fontes de dados Bluetooth"
 
 #: src/connections_dialog.cpp:457 src/connections_dialog.cpp:554
 #: src/conn_params_panel.cpp:201 src/conn_params_panel.cpp:303
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
 #: src/connections_dialog.cpp:466 src/conn_params.cpp:194
 msgid "TCP"
@@ -4113,7 +4116,7 @@ msgstr "UDP"
 
 #: src/connections_dialog.cpp:478 src/conn_params.cpp:198
 msgid "GPSD"
-msgstr ""
+msgstr "GPSD"
 
 #: src/connections_dialog.cpp:483 src/conn_params.cpp:200
 msgid "Signal K"
@@ -4121,19 +4124,19 @@ msgstr "Signal K"
 
 #: src/connections_dialog.cpp:490
 msgid "Address"
-msgstr ""
+msgstr "Endereço"
 
 #: src/connections_dialog.cpp:499 src/connections_dialog.cpp:528
 msgid "DataPort"
-msgstr ""
+msgstr "Porta de dados"
 
 #: src/connections_dialog.cpp:509 src/connections_dialog.cpp:603
 msgid "User Comment"
-msgstr ""
+msgstr "Comentário do utilizador"
 
 #: src/connections_dialog.cpp:537 src/conn_params_panel.cpp:213
 msgid "Baudrate"
-msgstr ""
+msgstr "Baudrate"
 
 #: src/connections_dialog.cpp:543
 msgid "150"
@@ -4203,7 +4206,7 @@ msgstr "NMEA 2000"
 #: src/conn_params_panel.cpp:321 src/conn_params_panel.cpp:458
 #: src/conn_params_panel.cpp:576
 msgid "List position"
-msgstr ""
+msgstr "Posição"
 
 #: src/connections_dialog.cpp:574
 msgid "0"
@@ -4247,43 +4250,43 @@ msgstr "9"
 
 #: src/connections_dialog.cpp:584
 msgid "socketCAN Source"
-msgstr ""
+msgstr "fonte socketCAN"
 
 #: src/connections_dialog.cpp:620
 msgid "Control checksum"
-msgstr ""
+msgstr "Controle de checksum"
 
 #: src/connections_dialog.cpp:624
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr ""
+msgstr "Se selecionado, apenas as frases com uma checksum válido são aceites"
 
 #: src/connections_dialog.cpp:629
 msgid "Use Garmin (GRMN) mode for input"
-msgstr ""
+msgstr "Usar modo Garmin (GRMN) para entrada"
 
 #: src/connections_dialog.cpp:638
 msgid "Receive Input on this Port"
-msgstr ""
+msgstr "Receber dados nesta porta"
 
 #: src/connections_dialog.cpp:644
 msgid "Output on this port"
-msgstr ""
+msgstr "Saída nesta porta"
 
 #: src/connections_dialog.cpp:645
 msgid "as autopilot or NMEA repeater"
-msgstr ""
+msgstr "como piloto automático ou repetidor NMEA"
 
 #: src/connections_dialog.cpp:651
 msgid "Talker ID"
-msgstr ""
+msgstr "ID de Emissor"
 
 #: src/connections_dialog.cpp:651
 msgid "blank = default ID"
-msgstr ""
+msgstr "em branco = ID padrão"
 
 #: src/connections_dialog.cpp:663
 msgid "APB bearing precision"
-msgstr ""
+msgstr "Precisão de rumo APB"
 
 #: src/connections_dialog.cpp:669
 msgid "x"
@@ -4307,59 +4310,59 @@ msgstr "x.xxxx"
 
 #: src/connections_dialog.cpp:681
 msgid "Automatic server discovery"
-msgstr ""
+msgstr "Procura automática do servidor"
 
 #: src/connections_dialog.cpp:685
 msgid "If checked, signal K server will be discovered automatically"
-msgstr ""
+msgstr "Se marcado, o servidor de sinal K será procurado automaticamente"
 
 #: src/connections_dialog.cpp:689
 msgid "Discover now..."
-msgstr ""
+msgstr "Procurar agora..."
 
 #: src/connections_dialog.cpp:702
 msgid "Input filtering"
-msgstr ""
+msgstr "Filtro de entrada"
 
 #: src/connections_dialog.cpp:708 src/connections_dialog.cpp:2136
 msgid "Accept only sentences"
-msgstr ""
+msgstr "Aceitar apenas frases"
 
 #: src/connections_dialog.cpp:712 src/connections_dialog.cpp:2137
 msgid "Ignore sentences"
-msgstr ""
+msgstr "Ignorar frases"
 
 #: src/connections_dialog.cpp:736
 msgid "Output filtering"
-msgstr ""
+msgstr "Filtro de saída"
 
 #: src/connections_dialog.cpp:743 src/connections_dialog.cpp:2134
 msgid "Transmit sentences"
-msgstr ""
+msgstr "Transmitir frases"
 
 #: src/connections_dialog.cpp:747 src/connections_dialog.cpp:2134
 msgid "Drop sentences"
-msgstr ""
+msgstr "Ignorar frases"
 
 #: src/connections_dialog.cpp:969
 msgid "Stop Scan"
-msgstr ""
+msgstr "Parar a verificação"
 
 #: src/connections_dialog.cpp:1640
 msgid "Configure new connection"
-msgstr ""
+msgstr "Configurar nova conexão"
 
 #: src/connections_dialog.cpp:1707
 msgid "Signal K server available."
-msgstr ""
+msgstr "Servidor de sinal K disponível."
 
 #: src/connections_dialog.cpp:1709
 msgid "Signal K server not found."
-msgstr ""
+msgstr "Servidor de sinal K não encontrado."
 
 #: src/connections_dialog.cpp:2073
 msgid "Sentence Filter"
-msgstr ""
+msgstr "Filtro de frase"
 
 #: src/connections_dialog.cpp:2085 src/options.cpp:3535 src/options.cpp:3748
 msgid "Select All"
@@ -4378,11 +4381,12 @@ msgstr "Adicionar"
 #: src/connections_dialog.cpp:2187
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)\n"
 "  or a valid REGEX expression (6 characters or longer)"
-msgstr ""
+msgstr "Insira a mensagem NMEA (2, 3 ou 5 caracteres)\n"
+"  ou uma expressão REGEX válida (6 caracteres ou mais)"
 
 #: src/connections_dialog.cpp:2189
 msgid "Enter the NMEA sentence"
-msgstr ""
+msgstr "Insira a frase NMEA"
 
 #: src/connections_dialog.cpp:2208
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
@@ -4390,11 +4394,15 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
 "           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n"
 "           The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"
-msgstr ""
+msgstr "Uma mensagem NMEA é geralmente de 3 caracteres de comprimento (como RMC, GGA etc.) \n"
+"	também pode ter um prefixo de duas letras, identificando a origem, ou TALKER, da mensagem. \n"
+"	as mensagens inteiras então parecem GPGGA ou AITXT.\n"
+"	Pode filtrar todas as frases com determinado prefixo emissor (como GP, AI etc.). \n"
+"	O filtro também aceita Expressões Regulares (REGEXP) com 6 ou mais caracteres.\n\n"
 
 #: src/connections_dialog.cpp:2225
 msgid "REGEX syntax error: \n"
-msgstr ""
+msgstr "Erro de sintaxe REGEX: \n"
 
 #: src/conn_params.cpp:169
 msgid "GPS"
@@ -4402,35 +4410,35 @@ msgstr "GPS"
 
 #: src/conn_params.cpp:171
 msgid "BT"
-msgstr ""
+msgstr "BT"
 
 #: src/conn_params.cpp:183
 msgid "Internal"
-msgstr ""
+msgstr "Interno"
 
 #: src/conn_params.cpp:223
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: src/conn_params.cpp:225
 msgid "Output"
-msgstr ""
+msgstr "Saída"
 
 #: src/conn_params.cpp:227
 msgid "In/Out"
-msgstr ""
+msgstr "Entrada/Saída"
 
 #: src/conn_params.cpp:234
 msgid "Reject"
-msgstr ""
+msgstr "Rejeitar"
 
 #: src/conn_params.cpp:236
 msgid "Accept"
-msgstr ""
+msgstr "Aceitar"
 
 #: src/conn_params.cpp:239
 msgid "Drop"
-msgstr ""
+msgstr "Ignorar"
 
 #: src/conn_params.cpp:241 src/SendToGpsDlg.cpp:206 src/SendToPeerDlg.cpp:171
 msgid "Send"
@@ -4438,32 +4446,32 @@ msgstr "Enviar"
 
 #: src/conn_params.cpp:258
 msgid "In"
-msgstr ""
+msgstr "Entrada"
 
 #: src/conn_params.cpp:264
 msgid "In: None"
-msgstr ""
+msgstr "Entrada: nada"
 
 #: src/conn_params.cpp:268
 msgid "Out"
-msgstr ""
+msgstr "Saída"
 
 #: src/conn_params.cpp:274
 msgid ", Out: None"
-msgstr ""
+msgstr ", Saída: nada"
 
 #: src/conn_params_panel.cpp:163
 msgid "Enable"
-msgstr ""
+msgstr "Ativar"
 
 #: src/conn_params_panel.cpp:195 src/conn_params_panel.cpp:297
 #: src/conn_params_panel.cpp:434 src/conn_params_panel.cpp:552
 msgid "Direction"
-msgstr ""
+msgstr "Direção"
 
 #: src/conn_params_panel.cpp:207
 msgid "Serial Port"
-msgstr ""
+msgstr "Porta Série"
 
 #: src/conn_params_panel.cpp:270 src/conn_params_panel.cpp:408
 #: src/conn_params_panel.cpp:527 src/conn_params_panel.cpp:645
@@ -4471,23 +4479,23 @@ msgstr ""
 #: src/conn_params_panel.cpp:828 src/conn_params_panel.cpp:830
 #: src/conn_params_panel.cpp:834 src/conn_params_panel.cpp:838
 msgid "Comment: "
-msgstr ""
+msgstr "Comentário: "
 
 #: src/conn_params_panel.cpp:309
 msgid "Network Address"
-msgstr ""
+msgstr "Endereço de rede"
 
 #: src/conn_params_panel.cpp:315
 msgid "Network Port"
-msgstr ""
+msgstr "Porta de rede"
 
 #: src/conn_params_panel.cpp:583
 msgid "Built-in Bluetooth"
-msgstr ""
+msgstr "Bluetooth integrado"
 
 #: src/conn_params_panel.cpp:667
 msgid "Driver"
-msgstr ""
+msgstr "Controlador"
 
 #: src/DetailSlider.cpp:88
 msgid "CM93 Detail Level"
@@ -4568,7 +4576,7 @@ msgstr "Mensagem OpenCPN"
 
 #: src/glChartCanvas.cpp:1915
 msgid "GridText"
-msgstr ""
+msgstr "GridText"
 
 #: src/glChartCanvas.cpp:4488
 msgid "Waiting for raster chart compression thread exit."
@@ -4644,46 +4652,58 @@ msgstr "Ligação incompleta, não pode ser salvo."
 #: src/load_errors_dlg.cpp:46
 msgid "\n"
 "The following  plugins have encountered errors during startup:\n\n"
-msgstr ""
+msgstr "\n"
+"As seguintes extensões encontraram erros durante a inicialização:\n\n"
 
 #: src/load_errors_dlg.cpp:51
 msgid "\n"
 "The following plugin has encountered errors during startup:\n\n"
-msgstr ""
+msgstr "\n"
+"A seguinte extensão encontrou erros durante a inicialização:\n\n"
 
 #: src/load_errors_dlg.cpp:56
 msgid "\n"
 "The following libraries  have encountered errors during startup:\n\n"
-msgstr ""
+msgstr "\n"
+"As seguintes livrarias encontraram erros durante a inicialização:\n\n"
 
 #: src/load_errors_dlg.cpp:61
 msgid "\n"
 "The following library has encountered errors during startup:\n\n"
-msgstr ""
+msgstr "\n"
+"A seguinte livraria encontrou erros durante a inicialização:\n\n"
 
 #: src/load_errors_dlg.cpp:65
 msgid "\n\n"
 "These plugins will be uninstalled. You might want to reinstall\n"
 "them after updating the catalog.\n"
-msgstr ""
+msgstr "\n\n"
+"Essas extensões serão desinstalados. Talvez queira reinstalá-los\n"
+"depois de atualizar o catálogo.\n"
 
 #: src/load_errors_dlg.cpp:71
 msgid "\n\n"
 "This plugin will be uninstalled. You might want to reinstall\n"
 "it after updating the catalog.\n"
-msgstr ""
+msgstr "\n\n"
+"Esta extensão será desinstalada. Talvez queira reinstalá-la\n"
+"depois de atualizar o catálogo.\n"
 
 #: src/load_errors_dlg.cpp:77
 msgid "\n\n"
 "These libraries will be removed. You might want to reinstall their\n"
 "associated plugin after updating the catalog."
-msgstr ""
+msgstr "\n\n"
+"Estas livrarias serão removidas. Talvez queira reinstalar a extensão\n"
+"associada após atualizar o catálogo."
 
 #: src/load_errors_dlg.cpp:82
 msgid "\n\n"
 "The library will be removed. You might want to reinstall it's\n"
 "associated plugin after updating the catalog."
-msgstr ""
+msgstr "\n\n"
+"Esta livraria será removida. Talvez queira reinstalar a extensão\n"
+"associada após atualizar o catálogo."
 
 #: src/MarkInfo.cpp:328 src/RoutePropDlg.cpp:380 src/TrackPropDlg.cpp:637
 msgid "Basic"
@@ -4871,31 +4891,31 @@ msgstr "Escala da Carta"
 
 #: src/navutil_base.cpp:218
 msgid "mi"
-msgstr ""
+msgstr "mi"
 
 #: src/navutil_base.cpp:224
 msgid "m"
-msgstr ""
+msgstr "m"
 
 #: src/navutil_base.cpp:227
 msgid "ft"
-msgstr ""
+msgstr "ft"
 
 #: src/navutil_base.cpp:230
 msgid "fa"
-msgstr ""
+msgstr "fa"
 
 #: src/navutil_base.cpp:236
 msgid "cm"
-msgstr ""
+msgstr "cm"
 
 #: src/navutil_base.cpp:251
 msgid "kts"
-msgstr ""
+msgstr "nós"
 
 #: src/navutil_base.cpp:254
 msgid "mph"
-msgstr ""
+msgstr "mph"
 
 #: src/navutil_base.cpp:257 src/options.cpp:4389 src/options.cpp:4531
 msgid "km/h"
@@ -4908,17 +4928,17 @@ msgstr "m/s"
 #: src/navutil_base.cpp:506
 #, c-format
 msgid "%dd "
-msgstr ""
+msgstr "%dd "
 
 #: src/navutil_base.cpp:508
 #, c-format
 msgid "%2dH %2dM"
-msgstr ""
+msgstr "%2dH %2dM"
 
 #: src/navutil_base.cpp:509
 #, c-format
 msgid "%2dM %2dS"
-msgstr ""
+msgstr "%2dM %2dS"
 
 #: src/navutil_base.cpp:520 src/RoutePropDlgImpl.cpp:356
 #: src/RoutePropDlgImpl.cpp:361
@@ -4968,65 +4988,66 @@ msgstr "Janela de depuração NMEA"
 
 #: src/ocpn_app.cpp:946
 msgid "Show usage syntax."
-msgstr ""
+msgstr "Mostrar sintaxe de utilização."
 
 #: src/ocpn_app.cpp:948
 msgid "Run in portable mode."
-msgstr ""
+msgstr "Executar em modo portátil."
 
 #: src/ocpn_app.cpp:950
 msgid "Switch to full screen mode on start."
-msgstr ""
+msgstr "Mudar para o modo de ecrã completo ao arrancar."
 
 #: src/ocpn_app.cpp:953
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr ""
+msgstr "Desactivar aceleração video OpenGL. Esta configuração será memorizada."
 
 #: src/ocpn_app.cpp:961
 msgid "Amount of logging: error, warning, message, info, debug or trace"
-msgstr ""
+msgstr "Nível de registo: erro, aviso, mensagem, informação, depuração ou rastreamento"
 
 #: src/ocpn_app.cpp:963
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr ""
+msgstr "Exibir uma apresentação de slides de <num> cartas e depois sair. Zero ou negativo <num> especifica sem limite."
 
 #: src/ocpn_app.cpp:1133
 msgid "Sorry, an existing instance of OpenCPN may be too busy to respond.\n"
 "Please retry."
-msgstr ""
+msgstr "Desculpe, uma instância existente do OpenCPN pode estar muito ocupada para responder.\n"
+"Por favor, tente novamente."
 
 #: src/ocpn_app.cpp:1390 src/ocpn_app.cpp:1397
 msgid "Failed to initialize the user interface. "
-msgstr ""
+msgstr "Falha ao inicializar a interface do utilizador. "
 
 #: src/ocpn_app.cpp:1391
 msgid "OpenCPN cannot start. "
-msgstr ""
+msgstr "OpenCPN não pode arrancar. "
 
 #: src/ocpn_app.cpp:1392
 msgid "The necessary configuration files were not found. "
-msgstr ""
+msgstr "Os ficheiros de configuração necessários não foram encontrados. "
 
 #: src/ocpn_app.cpp:1393
 msgid "See the log file at "
-msgstr ""
+msgstr "Veja o ficheiro de log em "
 
 #: src/ocpn_app.cpp:1394
 msgid " for details."
-msgstr ""
+msgstr " para detalhes."
 
 #: src/ocpn_app.cpp:1701
 msgid " -- [Portable(-p) executing from "
-msgstr ""
+msgstr " -[Executar versão Portátil(-p) de "
 
 #: src/ocpn_app.cpp:1788
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr ""
+msgstr "Recuperar o diretório do conjunto inicial cartas do registo do Windows"
 
 #: src/ocpn_app.cpp:1959
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
-msgstr ""
+msgstr "OpenCPN Inicializado em %ld ms."
 
 #: src/ocpn_frame.cpp:570
 msgid "\n"
@@ -5035,89 +5056,96 @@ msgid "\n"
 "OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr ""
+msgstr "\n"
+"OpenCPN é distribuído na esperança de que seja útil, mas SEM QUALQUER GARANTIA; nem sequer implícita garantia de COMERCIABILIDADE ou APTIDÃO PARA UM PROPÓSITO PARTICULAR.\n\n"
+"Veja o GNU General Public License para mais detalhes.\n\n"
+"O OpenCPN só deve ser usado em conjunto com cartas em papel aprovadas e métodos de navegação tradicionais.\n\n"
+"NÃO confiar no OpenCPN para a segurança de vida ou propriedade.\n\n"
+"Por favor, clique em \"OK\" para concordar e prosseguir, \"Cancelar\" para sair.\n"
 
 #: src/ocpn_frame.cpp:584
 msgid "OpenCPN for Android"
-msgstr ""
+msgstr "OpenCPN para Android"
 
 #: src/ocpn_frame.cpp:602
 msgid "Welcome to OpenCPN"
-msgstr ""
+msgstr "Bem-vindo ao OpenCPN"
 
 #: src/ocpn_frame.cpp:827
 msgid "This AIS target has Persistent tracking selected by MMSI properties\n"
 "A Persistent track recording will therefore be restarted for this target.\n\n"
 "Do you instead want to stop Persistent tracking for this target?"
-msgstr ""
+msgstr "Este alvo AIS tem gravação de percurso ativada por propriedades MMSI\n"
+"Uma gravação de percurso será, portanto, reiniciada para este alvo.\n\n"
+"Em vez disso, quer parar a gravação de percurso para este alvo?"
 
 #: src/ocpn_frame.cpp:961
 msgid "OpenCPN needs to update the chart database from config file entries...."
-msgstr ""
+msgstr "OpenCPN precisa atualizar a base de dados de cartas a partir do ficheiro de configuração...."
 
 #: src/ocpn_frame.cpp:973
 msgid "Rebuilding chart database from configuration file entries..."
-msgstr ""
+msgstr "A atualizar a base de dados de cartas a partir dos registos nos ficheiros de configuração...."
 
 #: src/ocpn_frame.cpp:977
 msgid "Elapsed time : "
-msgstr ""
+msgstr "Tempo decorrido: "
 
 #: src/ocpn_frame.cpp:978
 msgid "Estimated time : "
-msgstr ""
+msgstr "Tempo estimado : "
 
 #: src/ocpn_frame.cpp:979
 msgid "Remaining time : "
-msgstr ""
+msgstr "Tempo restante: "
 
 #: src/ocpn_frame.cpp:981 src/ocpn_frame.cpp:4614 src/ocpn_frame.cpp:4624
 msgid "OpenCPN Chart Update"
-msgstr ""
+msgstr "Actualização Cartas OpenCPN"
 
 #: src/ocpn_frame.cpp:2651 src/ocpn_frame.cpp:2764
 msgid "Show Toolbar"
-msgstr ""
+msgstr "Mostrar barra de ferramentas"
 
 #: src/ocpn_frame.cpp:2652 src/ocpn_frame.cpp:2766 src/ocpn_frame.cpp:7149
 msgid "Hide Toolbar"
-msgstr ""
+msgstr "Ocultar Barra de Ferramentas"
 
 #: src/ocpn_frame.cpp:2971 src/ocpn_frame.cpp:3034
 msgid "MAN OVERBOARD"
-msgstr ""
+msgstr "HOMEM AO MAR"
 
 #: src/ocpn_frame.cpp:2972 src/ocpn_frame.cpp:6785
 msgid " at "
-msgstr ""
+msgstr " em"
 
 #: src/ocpn_frame.cpp:2974 src/ocpn_frame.cpp:6787
 msgid " on "
-msgstr ""
+msgstr "em"
 
 #: src/ocpn_frame.cpp:2994
 msgid "1.0 NM along COG"
-msgstr ""
+msgstr "1.0 NM ao longo do COG"
 
 #: src/ocpn_frame.cpp:3006
 msgid "Temporary MOB Route"
-msgstr ""
+msgstr "Rota MOB temporária"
 
 #: src/ocpn_frame.cpp:3007
 msgid "Assumed 1 Mile Point"
-msgstr ""
+msgstr "Ponto assumido 1 milha"
 
 #: src/ocpn_frame.cpp:3035 src/ocpn_frame.cpp:6843 src/ocpn_frame.cpp:6884
 msgid " Time: "
-msgstr ""
+msgstr " Tempo: "
 
 #: src/ocpn_frame.cpp:3037
 msgid "  Position: "
-msgstr ""
+msgstr "  Posição: "
 
 #: src/ocpn_frame.cpp:3055 src/ocpn_frame.cpp:7228
 msgid "Disable Tracking"
-msgstr ""
+msgstr "Desativar o Rasto"
 
 #: src/ocpn_frame.cpp:3127 src/ocpn_frame.cpp:3501 src/ocpn_frame.cpp:7174
 #: src/toolbar.cpp:1259
@@ -5130,7 +5158,7 @@ msgstr "Acompanhar Automaticamente"
 
 #: src/ocpn_frame.cpp:3505
 msgid "Head Up Mode"
-msgstr ""
+msgstr "Modo Proa Acima"
 
 #: src/ocpn_frame.cpp:3508 src/ocpn_frame.cpp:3511 src/toolbar.cpp:1163
 msgid "Zoom In"
@@ -5142,19 +5170,19 @@ msgstr "Reduzir"
 
 #: src/ocpn_frame.cpp:3516
 msgid "Larger Scale Chart"
-msgstr ""
+msgstr "Carta de escala maior"
 
 #: src/ocpn_frame.cpp:3518
 msgid "Smaller Scale Chart"
-msgstr ""
+msgstr "Carta de escala menor"
 
 #: src/ocpn_frame.cpp:3521
 msgid "Exit OpenCPN"
-msgstr ""
+msgstr "Sair do OpenCPN"
 
 #: src/ocpn_frame.cpp:3523
 msgid "&Navigate"
-msgstr ""
+msgstr "&Navegar"
 
 #: src/ocpn_frame.cpp:3539 src/options.cpp:5293
 msgid "Show Chart Bar"
@@ -5166,23 +5194,23 @@ msgstr "Mostrar texto ENC"
 
 #: src/ocpn_frame.cpp:3546 src/ocpn_frame.cpp:3559
 msgid "Show ENC Lights"
-msgstr ""
+msgstr "Mostrar faróis ENC"
 
 #: src/ocpn_frame.cpp:3548 src/ocpn_frame.cpp:3561
 msgid "Show ENC Soundings"
-msgstr ""
+msgstr "Mostrar Batimetria ENC"
 
 #: src/ocpn_frame.cpp:3550 src/ocpn_frame.cpp:3563
 msgid "Show ENC Anchoring Info"
-msgstr ""
+msgstr "Mostrar informação de fundeio ENC"
 
 #: src/ocpn_frame.cpp:3552 src/ocpn_frame.cpp:3566
 msgid "Show ENC Data Quality"
-msgstr ""
+msgstr "Mostrar Qualidade dos Dados ENC"
 
 #: src/ocpn_frame.cpp:3554 src/ocpn_frame.cpp:3568
 msgid "Show Navobjects"
-msgstr ""
+msgstr "Mostrar objetos de navegação"
 
 #: src/ocpn_frame.cpp:3576 src/ocpn_frame.cpp:3579 src/ocpn_frame.cpp:7179
 #: src/toolbar.cpp:1266
@@ -5191,7 +5219,7 @@ msgstr "Mudar Esquema de Cores"
 
 #: src/ocpn_frame.cpp:3587
 msgid "&View"
-msgstr ""
+msgstr "&Ver"
 
 #: src/ocpn_frame.cpp:3590 src/toolbar.cpp:1322
 msgid "Show AIS Targets"
@@ -5199,35 +5227,35 @@ msgstr "Mostrar Alvos AIS"
 
 #: src/ocpn_frame.cpp:3595
 msgid "Hide Moored AIS Targets"
-msgstr ""
+msgstr "Ocultar alvos AIS atracados"
 
 #: src/ocpn_frame.cpp:3596
 msgid "Show AIS Target Tracks"
-msgstr ""
+msgstr "Mostra rasto dos alvos AIS"
 
 #: src/ocpn_frame.cpp:3597
 msgid "Show CPA Alert Dialogs"
-msgstr ""
+msgstr "Mostrar diálogos de alerta do CPA"
 
 #: src/ocpn_frame.cpp:3598
 msgid "Sound CPA Alarms"
-msgstr ""
+msgstr "Soar alarmes CPA"
 
 #: src/ocpn_frame.cpp:3602 src/ocpn_frame.cpp:3605
 msgid "Show CPA Warnings"
-msgstr ""
+msgstr "Mostrar avisos do CPA"
 
 #: src/ocpn_frame.cpp:3610
 msgid "&AIS"
-msgstr ""
+msgstr "&AIS"
 
 #: src/ocpn_frame.cpp:3615 src/ocpn_frame.cpp:3618
 msgid "Measure Distance"
-msgstr ""
+msgstr "Medida de distância"
 
 #: src/ocpn_frame.cpp:3622
 msgid "Route && Mark Manager..."
-msgstr ""
+msgstr "Rota && Gestor de Marcas..."
 
 #: src/ocpn_frame.cpp:3624 src/ocpn_frame.cpp:7162 src/toolbar.cpp:1191
 msgid "Create Route"
@@ -5235,11 +5263,11 @@ msgstr "Criar Rota"
 
 #: src/ocpn_frame.cpp:3627
 msgid "Drop Mark at Boat"
-msgstr ""
+msgstr "Lançar Marca na Posição do Barco"
 
 #: src/ocpn_frame.cpp:3629
 msgid "Drop Mark at Cursor"
-msgstr ""
+msgstr "Lançar Marca na Posição do Cursor"
 
 #: src/ocpn_frame.cpp:3635 src/ocpn_frame.cpp:3642 src/ocpn_frame.cpp:7206
 #: src/toolbar.cpp:1285
@@ -5252,31 +5280,31 @@ msgstr "Preferências"
 
 #: src/ocpn_frame.cpp:3647
 msgid "&Tools"
-msgstr ""
+msgstr "&Ferramentas"
 
 #: src/ocpn_frame.cpp:3651
 msgid "&Window"
-msgstr ""
+msgstr "&Janela"
 
 #: src/ocpn_frame.cpp:3656
 msgid "OpenCPN Help"
-msgstr ""
+msgstr "Ajuda do OpenCPN"
 
 #: src/ocpn_frame.cpp:3657
 msgid "&Help"
-msgstr ""
+msgstr "&Ajuda"
 
 #: src/ocpn_frame.cpp:4309
 msgid "Please restart OpenCPN to activate language or style changes."
-msgstr ""
+msgstr "Por Favor, Reinicie OpenCPN para ativar linguagem ou alterações de estilo."
 
 #: src/ocpn_frame.cpp:5295
 msgid " Ship "
-msgstr ""
+msgstr " Navio "
 
 #: src/ocpn_frame.cpp:6005
 msgid "Rotated Mode"
-msgstr ""
+msgstr "Modo de rotação"
 
 #: src/ocpn_frame.cpp:6351 src/routeprintout.cpp:477 src/trackprintout.cpp:409
 msgid "There was a problem printing.\n"
@@ -5291,7 +5319,7 @@ msgstr "(Rota sem nome)"
 
 #: src/ocpn_frame.cpp:6784 src/ocpn_frame.cpp:6842
 msgid "AIS MAN OVERBOARD"
-msgstr ""
+msgstr "AIS DE HOMEM AO MAR"
 
 #: src/ocpn_frame.cpp:6804 src/options.cpp:1951
 msgid "Own ship"
@@ -5299,23 +5327,23 @@ msgstr "Nosso Navio"
 
 #: src/ocpn_frame.cpp:6816
 msgid "Temporary AISMOB Route"
-msgstr ""
+msgstr "Rota de AISMOB temporária"
 
 #: src/ocpn_frame.cpp:6817
 msgid "Present own ship"
-msgstr ""
+msgstr "Mostrar o nosso navio"
 
 #: src/ocpn_frame.cpp:6845 src/ocpn_frame.cpp:6886
 msgid "  Ownship Position: "
-msgstr ""
+msgstr "  Posição deste Barco: "
 
 #: src/ocpn_frame.cpp:6849 src/ocpn_frame.cpp:6890
 msgid "  MOB Position: "
-msgstr ""
+msgstr "  Posição do MOB: "
 
 #: src/ocpn_frame.cpp:6883
 msgid "AIS MAN OVERBOARD UPDATE"
-msgstr ""
+msgstr "ATUALIZAÇÃO HOMEM AO MAR DO AIS"
 
 #: src/ocpn_frame.cpp:7168 src/routemanagerdialog.cpp:302 src/toolbar.cpp:1252
 msgid "Route & Mark Manager"
@@ -5331,11 +5359,11 @@ msgstr " (Ctrl-espaço)"
 
 #: src/ocpn_frame.cpp:8740
 msgid "OpenCPN ENC Prepare"
-msgstr ""
+msgstr "Preparar OpenCPN ENC"
 
 #: src/ocpn_frame.cpp:8802
 msgid "ENC Completed."
-msgstr ""
+msgstr "ENC Completo."
 
 #: src/OCPNListCtrl.cpp:87
 msgid "Yes"
@@ -5703,7 +5731,7 @@ msgstr "Destacar Percursos"
 
 #: src/options.cpp:2189
 msgid "Highlight Colour"
-msgstr ""
+msgstr "Cor de realce"
 
 #: src/options.cpp:2204
 msgid "Tracking Precision"
@@ -6001,7 +6029,7 @@ msgstr "Detalhe reduzido em escala pequena"
 
 #: src/options.cpp:3444 src/options.cpp:3632
 msgid "Additonal detail reduction at Small Scale"
-msgstr ""
+msgstr "Redução de detalhes adicional em escala pequena"
 
 #: src/options.cpp:3453 src/options.cpp:3648
 msgid "Graphics Style"
@@ -6324,7 +6352,7 @@ msgstr "Mostrar seta de previsão COG da embarcação alvo (min)"
 
 #: src/options.cpp:4997
 msgid "Sync AIS arrow length with own ship's COG predictor"
-msgstr ""
+msgstr "Sincronizar o comprimento da seta AIS com o previsão de COG do próprio navio"
 
 #: src/options.cpp:5007
 msgid "Show target tracks, length (min)"
@@ -6492,11 +6520,11 @@ msgstr "Botões de zoom visíveis"
 
 #: src/options.cpp:5416
 msgid "Use Inland ECDIS"
-msgstr ""
+msgstr "Usar sistema Inland ECDIS"
 
 #: src/options.cpp:5420 src/options.cpp:7704
 msgid "Inland ECDIS Manual"
-msgstr ""
+msgstr "Manual Inland ECDIS"
 
 #: src/options.cpp:5442
 msgid "User Interface scale factor"
@@ -6516,11 +6544,11 @@ msgstr "Fator de Sondagem ENC"
 
 #: src/options.cpp:5498
 msgid "ENC Text Scale"
-msgstr ""
+msgstr "Escala de Texto ENC"
 
 #: src/options.cpp:5508
 msgid "Mouse wheel zoom sensitivity"
-msgstr ""
+msgstr "Sensibilidade de zoom da roda do rato"
 
 #: src/options.cpp:5770
 msgid "Apply"
@@ -6536,7 +6564,7 @@ msgstr "Conexões"
 
 #: src/options.cpp:5805
 msgid "Connect"
-msgstr ""
+msgstr "Conectar"
 
 #: src/options.cpp:5817
 msgid "Ships"
@@ -6548,7 +6576,7 @@ msgstr "Interface de utilizador"
 
 #: src/options.cpp:5828
 msgid "User"
-msgstr ""
+msgstr "Utilizador"
 
 #: src/options.cpp:5834 src/options.cpp:5835
 msgid "Plugins"
@@ -6610,11 +6638,11 @@ msgstr "Informação OpenCPN"
 
 #: src/options.cpp:7697
 msgid "The Inland ECDIS Manual is not available locally."
-msgstr ""
+msgstr "O Manual Inland de ECDIS não está disponível localmente."
 
 #: src/options.cpp:7700
 msgid "Would you like to visit the iECDIS Manual website for more information?"
-msgstr ""
+msgstr "Gostaria de visitar o site Manual iECDIS para mais informação?"
 
 #: src/options.cpp:7731
 msgid "Compression will alter chart files on disk.\n"
@@ -6747,45 +6775,46 @@ msgstr "OpenCPN Criação De Rota"
 
 #: src/peer_client.cpp:52
 msgid "Server Generic Error"
-msgstr ""
+msgstr "Erro Genérico do Servidor"
 
 #: src/peer_client.cpp:54
 msgid "Peer rejected object"
-msgstr ""
+msgstr "Objeto rejeitado pelo sistema emparelhado"
 
 #: src/peer_client.cpp:56
 msgid "Peer rejected duplicate object"
-msgstr ""
+msgstr "Objeto duplicado rejeitado pelo sistema emparelhado"
 
 #: src/peer_client.cpp:58
 msgid "Peer internal error (insert)"
-msgstr ""
+msgstr "Erro interno do sistema emparelhado (inserção)"
 
 #: src/peer_client.cpp:60
 msgid "Server Unknown Error"
-msgstr ""
+msgstr "Erro desconhecido no servidor"
 
 #: src/peer_client.cpp:262 src/REST_server.cpp:337 src/REST_server.cpp:389
 #: src/REST_server.cpp:440 src/REST_server.cpp:493
 msgid "OpenCPN Server Message"
-msgstr ""
+msgstr "Mensagem do servidor OpenCPN"
 
 #: src/peer_client.cpp:265
 msgid "The server "
-msgstr ""
+msgstr "O servidor "
 
 #: src/peer_client.cpp:266
 msgid "needs a PIN.\n"
 "Please enter the PIN number from "
-msgstr ""
+msgstr "precisa de um PIN.\n"
+"Insira o número do PIN de "
 
 #: src/peer_client.cpp:267
 msgid "the server to pair with this device.\n"
-msgstr ""
+msgstr "o servidor para emparelhar com este dispositivo.\n"
 
 #: src/peer_client.cpp:354
 msgid "Objects successfully sent to peer OpenCPN instance."
-msgstr ""
+msgstr "Objetos enviados com sucesso para instância OpenCPN emparelhada."
 
 #: src/plugin_blacklist.cpp:62
 #, c-format
@@ -6793,7 +6822,10 @@ msgid "\n"
 "PlugIn %s, version %i.%i was detected.\n"
 "This version is known to be unstable and will not be loaded.\n"
 "Please update this PlugIn using the PlugIn manager master catalog.\n"
-msgstr ""
+msgstr "\n"
+"Extensão %s, versão %i.%i foi detectada.\n"
+"Esta versão é conhecida por ser instável e não será carregada.\n"
+"Por favor atualize esta Extensão utilizando o catálogo principal do gestor de extensões.\n"
 
 #: src/plugin_blacklist.cpp:68
 #, c-format
@@ -6801,7 +6833,10 @@ msgid "\n"
 "PlugIn %s, version %i.%i was detected.\n"
 "This version is known to be unstable.\n"
 "Please update this PlugIn using the PlugIn manager master catalog.\n"
-msgstr ""
+msgstr "\n"
+"Extensão %s, versão %i.%i foi detectada.\n"
+"Esta versão é conhecida por ser instável.\n"
+"Por favor atualize esta Extensão utilizando o catálogo principal do gestor de extensões.\n"
 
 #: src/plugin_blacklist.cpp:74
 #, c-format
@@ -6810,33 +6845,38 @@ msgid "\n"
 "This plugin is obsolete, the o-charts plugin should be used\n"
 "instead. Please uninstall this plugin and install o-charts\n"
 "using the PlugIn manager master catalog.\n"
-msgstr ""
+msgstr "\n"
+"A extensão %s, versão %i.%i foi detectada.\n"
+"Esta extensão está obsoleta, a extensão o-charts deve ser usado\n"
+"em vez disso. Por favor, desinstale esta extensão e instale o o-charts\n"
+"usando o catálogo do gestor de extensões.\n"
 
 #: src/plugin_blacklist.cpp:249
 #, c-format
 msgid "Plugin library %s can not be loaded"
-msgstr ""
+msgstr "Livraria de extensões %s não pode ser carregada"
 
 #: src/plugin_loader.cpp:1249
 msgid "\n"
 "    Install/uninstall plugin or remove file to mute message"
-msgstr ""
+msgstr "\n"
+"    Instalar/desinstalar extensão ou remover ficheiro para silenciar mensagem"
 
 #: src/plugin_loader.cpp:1252
 msgid "   PluginLoader: Cannot load symbol create_pi: "
-msgstr ""
+msgstr "   PluginLoader: Não é possível carregar símbolo create_pi: "
 
 #: src/plugin_loader.cpp:1376
 msgid "Incompatible plugin detected: "
-msgstr ""
+msgstr "Extensão incompatível detectada: "
 
 #: src/plugin_loader.cpp:1377
 msgid "        API Version detected: "
-msgstr ""
+msgstr "        Versão da API detetada: "
 
 #: src/plugin_loader.cpp:1379
 msgid "        PlugIn Version detected: "
-msgstr ""
+msgstr "        Versão da Extensão detetada: "
 
 #: src/pluginmanager.cpp:365
 msgid "Plugin is a standard system plugin"
@@ -7023,11 +7063,11 @@ msgstr "Website"
 
 #: src/priority_gui.cpp:64
 msgid "Adjust Comm Priorities"
-msgstr ""
+msgstr "Ajustar prioridades de comunicação"
 
 #: src/priority_gui.cpp:77
 msgid "Priority List"
-msgstr ""
+msgstr "Lista de prioridades"
 
 #: src/priority_gui.cpp:87 src/RoutePropDlgImpl.cpp:930
 msgid "Move Up"
@@ -7039,51 +7079,55 @@ msgstr "Mover para Baixo"
 
 #: src/priority_gui.cpp:97
 msgid "Refresh"
-msgstr ""
+msgstr "Atualizar"
 
 #: src/priority_gui.cpp:187
 msgid "Priorities"
-msgstr ""
+msgstr "Prioridades"
 
 #: src/priority_gui.cpp:194
 msgid "Speed/Course"
-msgstr ""
+msgstr "Velocidade/Rumo"
 
 #: src/priority_gui.cpp:202
 msgid "Mag Variation"
-msgstr ""
+msgstr "Declinação magnética"
 
 #: src/priority_gui.cpp:206
 msgid "Satellites"
-msgstr ""
+msgstr "Satélites"
 
 #: src/REST_server.cpp:342
 msgid "wants to send you new data.\n"
 "Please enter the following PIN number on "
-msgstr ""
+msgstr "quer enviar-lhe novos dados.\n"
+"Por favor, digite o seguinte PIN em "
 
 #: src/REST_server.cpp:344
 msgid " to pair with this device.\n"
-msgstr ""
+msgstr "Emparelhar com este dispositivo?\n"
 
 #: src/REST_server.cpp:392
 msgid "The received route already exists on this system.\n"
 "Replace?"
-msgstr ""
+msgstr "A rota recebida já existe neste sistema.\n"
+"Substituir?"
 
 #: src/REST_server.cpp:393 src/REST_server.cpp:444 src/REST_server.cpp:497
 msgid "Always replace objects from this source?"
-msgstr ""
+msgstr "Substituir sempre objetos desta fonte?"
 
 #: src/REST_server.cpp:443
 msgid "The received track already exists on this system.\n"
 "Replace?"
-msgstr ""
+msgstr "O percurso recebido já existe neste sistema.\n"
+"Substituir?"
 
 #: src/REST_server.cpp:496
 msgid "The received waypoint already exists on this system.\n"
 "Replace?"
-msgstr ""
+msgstr "O ponto de passagem recebido já existe neste sistema.\n"
+"Substituir?"
 
 #: src/RolloverWin.cpp:132 src/RolloverWin.cpp:302
 msgid "AISRollover"
@@ -7095,15 +7139,15 @@ msgstr "TideCurrentGraphRollover"
 
 #: src/route_gui.cpp:590
 msgid "Route Transmitted."
-msgstr ""
+msgstr "Rota transmitida."
 
 #: src/route_gui.cpp:593
 msgid "Error on Route Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "Erro na transmissão da rota.  GPS Garmin não conectado"
 
 #: src/route_gui.cpp:595
 msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
+msgstr "Erro na transmissão da rota.  Por favor, verifique os ficheiros de log..."
 
 #: src/routemanagerdialog.cpp:340
 msgid "Routes"
@@ -7161,7 +7205,7 @@ msgstr "&Renumerar Pontos de passagem"
 #: src/routemanagerdialog.cpp:488 src/routemanagerdialog.cpp:637
 #: src/routemanagerdialog.cpp:785
 msgid "Send to &Peer"
-msgstr ""
+msgstr "Enviar para &Emparelhado"
 
 #: src/routemanagerdialog.cpp:496 src/routemanagerdialog.cpp:778
 msgid "&Send to GPS"
@@ -7278,15 +7322,15 @@ msgstr "Tem certeza que quer apagar <TODAS> as Rotas?"
 
 #: src/routemanagerdialog.cpp:1580
 msgid "Send Route(s) to OpenCPN Peer"
-msgstr ""
+msgstr "Enviar Rota(s) para OpenCPN Emparelhado"
 
 #: src/routemanagerdialog.cpp:1620
 msgid "Send Waypoint(s) to OpenCPN Peer"
-msgstr ""
+msgstr "Enviar Ponto de passagem para OpenCPN Emparelhado"
 
 #: src/routemanagerdialog.cpp:1660
 msgid "Send Track(s) to OpenCPN Peer"
-msgstr ""
+msgstr "Enviar Percurso(s) para OpenCPN Emparelhado"
 
 #: src/routemanagerdialog.cpp:1827
 msgid "&Merge Selected Tracks"
@@ -7394,31 +7438,31 @@ msgstr "Os pontos de passagem serão renomeados para refletir a ordem natural. O
 #: src/route_point_gui.cpp:110 src/route_point_gui.cpp:274
 #: src/route_point_gui.cpp:282
 msgid "Marks"
-msgstr ""
+msgstr "Marcas"
 
 #: src/RoutePoint.cpp:1270 src/route_point_gui.cpp:868
 msgid "Waypoint(s) Transmitted."
-msgstr ""
+msgstr "Ponto(s) de passagem transmitido(s)."
 
 #: src/RoutePoint.cpp:1273 src/route_point_gui.cpp:871
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "Erro na transmissão do Ponto de Passagem. GPS Garmin não conectado"
 
 #: src/RoutePoint.cpp:1275 src/route_point_gui.cpp:873
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr ""
+msgstr "Erro na Transmissão do Ponto de Passagem. Por favor verifique o ficheiro de log..."
 
 #: src/RoutePoint.cpp:1345 src/route_point_gui.cpp:731
 msgid "The ScaMin value for new waypoints is set to"
-msgstr ""
+msgstr "O valor de ScaMin para novos pontos de passagem está definido para"
 
 #: src/RoutePoint.cpp:1346 src/route_point_gui.cpp:732
 msgid "but current chartscale is"
-msgstr ""
+msgstr "mas a escala atual da carta é"
 
 #: src/RoutePoint.cpp:1348 src/route_point_gui.cpp:734
 msgid "Therefore the new waypoint will not be visible at this zoom level."
-msgstr ""
+msgstr "Portanto, o novo ponto de passagem não será visível a este nível de ampliação."
 
 #: src/routeprintout.cpp:101 src/RoutePropDlg.cpp:316 src/trackprintout.cpp:85
 #: src/TrackPropDlg.cpp:302
@@ -7747,11 +7791,11 @@ msgstr "Progresso..."
 
 #: src/SendToPeerDlg.cpp:112
 msgid "Detected OpenCPN peer instances"
-msgstr ""
+msgstr "Instâncias de OpenCPN emparelhados detectadas"
 
 #: src/SendToPeerDlg.cpp:137
 msgid "Scan again"
-msgstr ""
+msgstr "Pesquisar novamente"
 
 #: src/tcmgr.cpp:684
 msgid "It seems you have no tide/current harmonic data installed."
@@ -7988,12 +8032,16 @@ msgid "\n"
 "An OpenCPN dongle is detected but cannot be used due to missing permissions.\n\n"
 "This problem can be fixed by installing a udev rules file. Once installed,\n"
 "it will ensure that the dongle permissions are OK.\n"
-msgstr ""
+msgstr "\n"
+"Um dongle OpenCPN foi detectado, mas não pode ser usado por falta de permissões.\n\n"
+"Este problema pode ser corrigido instalando um ficheiro de regras udev. Uma vez instalado,\n"
+"garantirá que as permissões do dongle estão OK.\n"
 
 #: src/udev_rule_mgr.cpp:54
 msgid "\n\n"
 "On flatpak, this must be done using the manual command instructions below\n"
-msgstr ""
+msgstr "\n\n"
+"Em flatpak, isso deve ser feito usando as instruções de comando manual abaixo\n"
 
 #: src/udev_rule_mgr.cpp:59
 msgid "\n"
@@ -8003,11 +8051,17 @@ msgid "\n"
 "It will also create a new device called @SYMLINK@. It is recommended to use\n"
 "@SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,\n"
 "in particular on laptops.\n"
-msgstr ""
+msgstr "\n"
+"O dispositivo @DEVICE@ existe mas não pode ser utilizado devido à falta de permissões.\n\n"
+"Este problema pode ser corrigido instalando um ficheiro de regras udev. Uma vez instalado,\n"
+"o arquivo de regras irá corrigir o problema de permissões.\n\n"
+"Também criará um novo dispositivo chamado @SYMLINK@. Recomenda-se usar\n"
+"@SYMLINK@ em vez de @DEVICE@ para evitar problemas com a mudança de nomes de dispositivo,\n"
+"em particular em laptops.\n"
 
 #: src/udev_rule_mgr.cpp:71
 msgid "Do not show this dialog next time"
-msgstr ""
+msgstr "Não voltar a mostrar esta informação."
 
 #: src/udev_rule_mgr.cpp:73
 msgid "\n"
@@ -8015,7 +8069,11 @@ msgid "\n"
 "- Exit opencpn.\n"
 "- Unplug and re-insert the USB device.\n"
 "- Restart opencpn\n"
-msgstr ""
+msgstr "\n"
+"Regra instalada com sucesso. Para ativar a nova regra:\n"
+"- Sair do opencpn.\n"
+"- Desconecte e insira novamente o dispositivo USB.\n"
+"- Reinicie o opencpn\n"
 
 #: src/udev_rule_mgr.cpp:80
 msgid "\n"
@@ -8023,23 +8081,27 @@ msgid "\n"
 "- Exit opencpn.\n"
 "- Unplug and re-insert the USB device.\n"
 "- Restart opencpn\n"
-msgstr ""
+msgstr "\n"
+"Para fazer após instalar a regra conforme as instruções:\n"
+"- Sair da opencpn.\n"
+"- Desconecte e insira novamente o dispositivo USB.\n"
+"- Reinicie o opencpn\n"
 
 #: src/udev_rule_mgr.cpp:88
 msgid "The device @device@ can not be found (disconnected?)"
-msgstr ""
+msgstr "O dispositivo @device@ não foi encontrado (desconectado?)"
 
 #: src/udev_rule_mgr.cpp:159
 msgid "Manual command line instructions"
-msgstr ""
+msgstr "Instruções manuais da linha de comando"
 
 #: src/udev_rule_mgr.cpp:197
 msgid "Review rule"
-msgstr ""
+msgstr "Rever regra"
 
 #: src/udev_rule_mgr.cpp:263
 msgid "Install rule"
-msgstr ""
+msgstr "Instalar regra"
 
 #: src/udev_rule_mgr.cpp:268
 msgid "Quit"
@@ -8047,19 +8109,19 @@ msgstr "Sair"
 
 #: src/udev_rule_mgr.cpp:289
 msgid "Errors encountered installing rule."
-msgstr ""
+msgstr "Encontrados erros a instalar a regra."
 
 #: src/udev_rule_mgr.cpp:304
 msgid "Manage dongle udev rule"
-msgstr ""
+msgstr "Gerir regra de dongl udev"
 
 #: src/udev_rule_mgr.cpp:346
 msgid "Manage device udev rule"
-msgstr ""
+msgstr "Gerir regra de dispositivo udev"
 
 #: src/udev_rule_mgr.cpp:374
 msgid "OpenCPN device error"
-msgstr ""
+msgstr "Erro no dispositivo OpenCPN"
 
 #: src/undo.cpp:84
 msgid "Delete Waypoint"

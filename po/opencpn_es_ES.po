@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-28 10:26-0400\n"
-"PO-Revision-Date: 2023-04-05 00:42\n"
+"PO-Revision-Date: 2023-04-08 16:00\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -983,7 +983,7 @@ msgstr "Buque de carga a granel"
 
 #: src/ais_decoder.cpp:1021 src/ais_target_data.cpp:1596
 msgid "Tanker"
-msgstr "Petrolero"
+msgstr "Buque Tanque"
 
 #: src/ais_decoder.cpp:1022
 msgid "Liquified gas tanker"

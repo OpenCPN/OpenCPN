@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-28 10:26-0400\n"
-"PO-Revision-Date: 2023-04-05 00:43\n"
+"PO-Revision-Date: 2023-04-08 16:00\n"
 "Last-Translator: \n"
 "Language-Team: English, United Kingdom\n"
 "Language: en_GB\n"
@@ -84,7 +84,7 @@ msgstr "Send to GPS"
 
 #: include/SendToPeerDlg.h:40
 msgid "Send to Peer"
-msgstr ""
+msgstr "Send to Peer"
 
 #: include/track.h:122 src/ocpn_frame.cpp:3080 src/ocpn_frame.cpp:6476
 #: src/ocpn_frame.cpp:6594
@@ -587,51 +587,51 @@ msgstr "Distress Area: SAR area"
 
 #: src/ais.cpp:189
 msgid "Distress Area: Pollution response area"
-msgstr ""
+msgstr "Distress Area: Pollution response area"
 
 #: src/ais.cpp:193
 msgid "Instruction: Contact VTS at this point/juncture"
-msgstr ""
+msgstr "Instruction: Contact VTS at this point/juncture"
 
 #: src/ais.cpp:194
 msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr ""
+msgstr "Instruction: Contact Port Administration at this point/juncture"
 
 #: src/ais.cpp:196
 msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr ""
+msgstr "Instruction: Do not proceed beyond this point/juncture"
 
 #: src/ais.cpp:197
 msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
-msgstr ""
+msgstr "Instruction: Await instructions prior to proceeding beyond this point/juncture"
 
 #: src/ais.cpp:199
 msgid "Proceed to this location - await instructions"
-msgstr ""
+msgstr "Proceed to this location - await instructions"
 
 #: src/ais.cpp:200
 msgid "Clearance granted - proceed to berth"
-msgstr ""
+msgstr "Clearance granted - proceed to berth"
 
 #: src/ais.cpp:203
 msgid "Information: Pilot boarding position"
-msgstr ""
+msgstr "Information: Pilot boarding position"
 
 #: src/ais.cpp:204
 msgid "Information: Icebreaker waiting area"
-msgstr ""
+msgstr "Information: Icebreaker waiting area"
 
 #: src/ais.cpp:205
 msgid "Information: Places of refuge"
-msgstr ""
+msgstr "Information: Places of refuge"
 
 #: src/ais.cpp:206
 msgid "Information: Position of icebreakers"
-msgstr ""
+msgstr "Information: Position of icebreakers"
 
 #: src/ais.cpp:207
 msgid "Information: Location of response units"
-msgstr ""
+msgstr "Information: Location of response units"
 
 #: src/ais.cpp:208
 msgid "VTS active target"
@@ -639,51 +639,51 @@ msgstr "VTS active target"
 
 #: src/ais.cpp:209
 msgid "Rogue or suspicious vessel"
-msgstr ""
+msgstr "Rogue or suspicious vessel"
 
 #: src/ais.cpp:210
 msgid "Vessel requesting non-distress assistance"
-msgstr ""
+msgstr "Vessel requesting non-distress assistance"
 
 #: src/ais.cpp:211
 msgid "Chart Feature: Sunken vessel"
-msgstr ""
+msgstr "Chart Feature: Sunken vessel"
 
 #: src/ais.cpp:212
 msgid "Chart Feature: Submerged object"
-msgstr ""
+msgstr "Chart Feature: Submerged object"
 
 #: src/ais.cpp:213
 msgid "Chart Feature: Semi-submerged object"
-msgstr ""
+msgstr "Chart Feature: Semi-submerged object"
 
 #: src/ais.cpp:214
 msgid "Chart Feature: Shoal area"
-msgstr ""
+msgstr "Chart Feature: Shoal area"
 
 #: src/ais.cpp:215
 msgid "Chart Feature: Shoal area due north"
-msgstr ""
+msgstr "Chart Feature: Shoal area due north"
 
 #: src/ais.cpp:216
 msgid "Chart Feature: Shoal area due east"
-msgstr ""
+msgstr "Chart Feature: Shoal area due east"
 
 #: src/ais.cpp:217
 msgid "Chart Feature: Shoal area due south"
-msgstr ""
+msgstr "Chart Feature: Shoal area due south"
 
 #: src/ais.cpp:218
 msgid "Chart Feature: Shoal area due west"
-msgstr ""
+msgstr "Chart Feature: Shoal area due west"
 
 #: src/ais.cpp:219
 msgid "Chart Feature: Channel obstruction"
-msgstr ""
+msgstr "Chart Feature: Channel obstruction"
 
 #: src/ais.cpp:220
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr ""
+msgstr "Chart Feature: Reduced vertical clearance"
 
 #: src/ais.cpp:221
 msgid "Chart Feature: Bridge closed"
