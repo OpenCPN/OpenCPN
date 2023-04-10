@@ -85,6 +85,10 @@ class MyConfig;
 extern MyConfig *pConfig;
 #endif
 
+// Raster Zoom Modifier value from advanced display preference pane
+// Physically located in ocpn_app.cpp
+extern int g_chart_zoom_modifier_raster;
+
 #define LON_UNDEF NAN
 #define LAT_UNDEF NAN
 
@@ -1073,8 +1077,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   glEnable(GL_TEXTURE_2D);
 
   int viewZoom = m_maxZoom;
-  double zoomMod =
-      2.0;  // decrease to get more detail, nominal 4?, 2 works OK for NOAA.
+  // Modify zoom value according to Raster Zoom Modifier settings from display preference pane
+  double zoomMod = 2 * pow(2, g_chart_zoom_modifier_raster / 3.0);
 
   for (int kz = m_minZoom; kz <= 19; kz++) {
     double db_mpp = OSM_zoomMPP[kz];
