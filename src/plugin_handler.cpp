@@ -220,7 +220,22 @@ public:
         "debian-x86_64;12;ubuntu-x86_64;23.04",
         "debian-x86_64;12;ubuntu-x86_64;23.10",
         "debian-x86_64;12;ubuntu-x86_64;24.04",
-        "debian-x86_64;sid;ubuntu-x86_64;24.04"};  // clang-format: on
+        "debian-x86_64;sid;ubuntu-x86_64;24.04",
+
+        "debian-arm64;11;ubuntu-gtk3-arm64;20.04",
+        "debian-wx32-arm64;11;ubuntu-wx32-arm64;22.04",
+        "debian-arm64;12;ubuntu-arm64;23.04",
+        "debian-arm64;12;ubuntu-arm64;23.10",
+        "debian-arm64;12;ubuntu-arm64;24.04",
+        "debian-arm64;sid;ubuntu-arm64;24.04",
+
+        "debian-armhf;11;ubuntu-gtk3-armhf;20.04",
+        "debian-wx32-armhf;11;ubuntu-wx32-armhf;22.04",
+        "debian-armhf;12;ubuntu-armhf;23.04",
+        "debian-armhf;12;ubuntu-armhf;23.10",
+        "debian-armhf;12;ubuntu-armhf;24.04",
+        "debian-armhf;sid;ubuntu-armhf;24.04"}; //clang-format: on
+
     if (ocpn::startswith(plugin.abi(), "debian")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
       const std::string compat_version = plugin.abi() + ";" +
