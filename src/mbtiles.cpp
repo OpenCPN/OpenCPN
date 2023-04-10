@@ -1077,7 +1077,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   glEnable(GL_TEXTURE_2D);
 
   int viewZoom = m_maxZoom;
-  // Modify zoom value according to Raster Zoom Modifier settings from display preference pane
+  // Set zoom modifier according to Raster Zoom Modifier settings from display preference pane
   double zoomMod = 2 * pow(2, g_chart_zoom_modifier_raster / 3.0);
 
   for (int kz = m_minZoom; kz <= 19; kz++) {
