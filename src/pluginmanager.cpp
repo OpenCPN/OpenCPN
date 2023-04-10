@@ -2459,10 +2459,7 @@ void PlugInManager::PrepareAllPluginContextMenus() {
   }
 }
 
-// FIXME (dave) unused?
 void PlugInManager::SendSKConfigToAllPlugIns() {
-  printf("SSKTAP: %s\n", g_ownshipMMSI_SK.ToUTF8().data());
-
   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
   wxJSONValue v;
   v[_T("self")] = g_ownshipMMSI_SK;

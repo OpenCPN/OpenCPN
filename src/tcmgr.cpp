@@ -697,9 +697,8 @@ void TCMgr::ScrubCurrentDepths() {
 
   currentDepth_index_hash hash1;
 
-  unsigned int i = 0;
-  for (auto a : m_Combined_IDX_array) {
-    ++i;
+  for (int i = 1; i < Get_max_IDX() + 1; i++) {
+    IDX_entry *a = (IDX_entry *)GetIDX_entry(i);
     if (a->IDX_type == 'C') {
       if (a->current_depth > 0) {
         int depth_a = a->current_depth;
