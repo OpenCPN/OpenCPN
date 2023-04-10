@@ -7173,7 +7173,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
+
+  bool bchange_scale = false;
+  if (g_ChartScaleFactor != m_pSlider_Chart_Factor->GetValue())
+    bchange_scale = true;
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
+
   g_ChartScaleFactorExp =
       g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
   g_MarkScaleFactorExp =
@@ -7313,6 +7318,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     // Detect a change to S52 library config
     if ((stateHash != ps52plib->GetStateHash()) || bUserStdChange)
+      m_returnChanges |= S52_CHANGED;
+
+    if (bchange_scale)
       m_returnChanges |= S52_CHANGED;
   }
 
