@@ -51,6 +51,7 @@ cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
     -DOCPN_CI_BUILD=ON ^
     -DOCPN_BUNDLE_WXDLLS=ON ^
+    -DOCPN_RELEASE=0 ^
     -DOCPN_BUILD_TEST=OFF ^
     ..
 
