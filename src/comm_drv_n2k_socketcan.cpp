@@ -429,7 +429,7 @@ bool CommDriverN2KSocketCanImpl::SendProductInfo() {
 
   payload.push_back(2100 & 0xFF);     //N2KVersion
   payload.push_back(2100 >> 8);
-  payload.push_back(0xEA);            //Product Version
+  payload.push_back(0xEC);            //Product Code, 1772
   payload.push_back(0x06);
 
   std::string ModelID("OpenCPN");  // Model ID
