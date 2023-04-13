@@ -329,6 +329,7 @@ bool CanHeader::IsFastMessage() const {
 
 void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   // We choose some "benign" values for OCPN socketCan interface
+  node_name.value.Name = 0;
 
   m_unique_number = 1;
 #ifndef CLIAPP
@@ -347,6 +348,7 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   node_name.SetDeviceFunction(130);  // Display
   node_name.SetDeviceClass(120);     // Display
   node_name.SetIndustryGroup(4);     // Marine
+  node_name.SetSystemInstance(0);
 }
 
 void CommDriverN2KSocketCanImpl::UpdateAttrCanAddress() {
