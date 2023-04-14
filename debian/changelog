@@ -1,3 +1,10 @@
+opencpn (5.8.0+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Drop upstreamed patches, rebase remaining
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 14 Apr 2023 09:37:20 +0200
+
 opencpn (5.6.2+dfsg-2) unstable; urgency=medium
 
   * New bugfix release.
