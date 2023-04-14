@@ -4,6 +4,7 @@ Section: misc
 Priority: optional
 Build-Depends: debhelper-compat (= 13),
  cmake,
+ googletest,
  libarchive-dev,
  libbz2-dev,
  libcurl4-gnutls-dev | libcurl4-openssl-dev,
