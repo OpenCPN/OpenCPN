@@ -40,6 +40,7 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "config.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
