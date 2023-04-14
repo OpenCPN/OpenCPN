@@ -48,10 +48,9 @@
 #include "track.h"
 #include "route.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 
 extern MyFrame* gFrame;
-extern double gLat;
-extern double gLon;
 
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;

@@ -295,18 +295,13 @@ private:
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
-  ObservableListener evt_deactivate_plugin_listener;
   ObservableListener evt_download_failed_listener;
   ObservableListener evt_download_ok_listener;
-  ObservableListener evt_incompatible_plugin_listener;
   ObservableListener evt_load_directory_listener;
   ObservableListener evt_load_plugin_listener;
   ObservableListener evt_plugin_loadall_finalize_listener;
   ObservableListener evt_pluglist_change_listener;
-  ObservableListener evt_unreadable_plugin_listener;
   ObservableListener evt_update_chart_types_listener;
-  ObservableListener evt_version_incompatible_listener;
-  ObservableListener evt_version_incompatible_plugin_listener;
   ObservableListener evt_json_to_all_plugins_listener;
   ObservableListener evt_routeman_json_listener;
   ObservableListener evt_routeman_leginfo_listener;

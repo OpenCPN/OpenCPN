@@ -47,7 +47,7 @@ NavObjectCollection1::NavObjectCollection1()
 
 NavObjectCollection1::~NavObjectCollection1() {}
 
-static RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node,
+RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node,
                                     wxString def_symbol_name, wxString GUID,
                                     bool b_fullviz, bool b_layer,
                                     bool b_layerviz, int layer_id) {
@@ -304,7 +304,7 @@ static TrackPoint *GPXLoadTrackPoint1(pugi::xml_node &wpt_node) {
   return new TrackPoint(rlat, rlon, TimeString);
 }
 
-static Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
+Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id) {
   wxString TrackName;
   wxString DescString;
@@ -1150,7 +1150,7 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   return bAddroute;
 }
 
-static bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
+bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
   if (!pTentTrack) return false;
 
   bool bAddtrack = true;
@@ -1187,6 +1187,23 @@ static bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
     delete pTentTrack;
 
   return bAddtrack;
+}
+
+bool InsertWpt(RoutePoint *pWp, bool overwrite) {
+  bool res = false;
+  RoutePoint *pExisting =
+      WaypointExists(pWp->GetName(), pWp->m_lat, pWp->m_lon);
+  if (!pExisting || overwrite) {
+    if (NULL != pWayPointMan) {
+      if (pExisting) {
+        pWayPointMan->DestroyWaypoint(pExisting);
+      }
+      pWayPointMan->AddRoutePoint(pWp);
+      res = true;
+    }
+    pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
+  }
+  return res;
 }
 
 static void UpdateRouteA(Route* pTentRoute,
@@ -1418,7 +1435,7 @@ bool NavObjectCollection1::AddGPXPointsList(RoutePointList *pRoutePoints) {
 }
 
 void NavObjectCollection1::SetRootGPXNode(void) {
-  if (!strlen(root().name())) {
+  if (!strlen(first_child().name())) {
     pugi::xml_node gpx_root = append_child("gpx");
     gpx_root.append_attribute("version") = "1.1";
     gpx_root.append_attribute("creator") = "OpenCPN";

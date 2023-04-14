@@ -61,22 +61,21 @@ extern s52plib *ps52plib;
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
-//FIXME (dave)
-// wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
-//   S57Obj *obj = rzRules->obj;
-//   if (obj->m_chart_context->chart)
-//     return obj->m_chart_context->chart->pFloatingATONArray;
-//   else
-//     return obj->m_chart_context->pFloatingATONArray;
-// }
+wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
+  S57Obj *obj = rzRules->obj;
+  if (obj->m_chart_context)
+    return obj->m_chart_context->pFloatingATONArray;
+  else
+    return NULL;
+}
 
-// wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
-//   S57Obj *obj = rzRules->obj;
-//   if (obj->m_chart_context->chart)
-//     return obj->m_chart_context->chart->pRigidATONArray;
-//   else
-//     return obj->m_chart_context->pRigidATONArray;
-// }
+wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
+  S57Obj *obj = rzRules->obj;
+  if (obj->m_chart_context->chart)
+    return obj->m_chart_context->pRigidATONArray;
+  else
+    return NULL;
+}
 
 static void *CLRLIN01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
@@ -2058,8 +2057,10 @@ end:
 
   // This is a specialization, to print OBJNAM for obstructions, if available
   // Seen in NZ ENCs, e.g. "Horn Rock"
-  if (objName)
+  if (objName) {
     obstrn04str.Append(_T(";TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26)"));
+    delete objName;
+  }
 
   obstrn04str.Append('\037');
 
@@ -2490,7 +2491,6 @@ static void *RESARE02(void *param)
         //  Todo more for s57 3.1  Look at caris catalog ATTR::RESARE
       }
     }
-
   } else {
     // Continuation D
     if (NULL != catreastr) {
@@ -2989,13 +2989,8 @@ static void *TOPMAR01(void *param)
     int floating = FALSE;  // not a floating platform
     int topshp = (!battr) ? 0 : top_int;
 
-    //FIXME plib
-//     if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
-//       floating = TRUE;
-//     else
-//         // FIXME: this test is wierd since it doesn't affect 'floating'
-//         if (TRUE == _atPtPos(obj, GetChartRigidATONArray(rzRules), false))
-//       floating = FALSE;
+    if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
+       floating = TRUE;
 
     if (floating) {
       // floating platform

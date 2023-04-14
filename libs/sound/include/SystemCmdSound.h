@@ -44,6 +44,7 @@ class SystemCmdSound: public OcpnSound
         ~SystemCmdSound() {};
 
         bool Load(const char* path, int deviceIndex = -1) override;
+        void UnLoad() override {};
         bool Play() override;
         bool Stop() override;
         /**

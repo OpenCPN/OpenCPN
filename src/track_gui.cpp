@@ -6,6 +6,7 @@
 
 #include "color_handler.h"
 #include "navutil.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "track_gui.h"
 #include "glChartCanvas.h"
@@ -18,9 +19,6 @@ extern bool g_bHighliteTracks;
 extern float g_GLMinSymbolLineWidth;
 
 extern ocpnGLOptions g_GLOptions;
-
-extern double gLat;
-extern double gLon;
 
 void TrackPointGui::Draw(ChartCanvas* cc, ocpnDC& dc) {
   wxPoint r;

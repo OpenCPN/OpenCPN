@@ -566,6 +566,7 @@ public:
   std::vector<int> GetQuiltNoshowIindexArray() {
     return m_quilt_noshow_index_array;
   }
+  double GetDisplayScale(){ return m_displayScale; }
 
 private:
   int AdjustQuiltRefChart();

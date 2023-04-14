@@ -121,6 +121,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_READONLY);
   m_tcDistance->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcDistance->SetMinSize(wxSize(maxFieldSize, -1));
 
   bSizerDistance->Add(m_tcDistance, 0, wxALL | wxEXPAND, 5);
 
@@ -138,6 +139,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_PROCESS_ENTER);
   m_tcPlanSpeed->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcPlanSpeed->SetMinSize(wxSize(maxFieldSize, -1));
 
   bSizerSpeed->Add(m_tcPlanSpeed, 0, wxALL, 5);
 
@@ -155,6 +157,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcEnroute = new wxTextCtrl(m_pnlBasic, wxID_ANY, wxEmptyString,
                                wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
   m_tcEnroute->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcEnroute->SetMinSize(wxSize(maxFieldSize, -1));
 
   bSizerEnroute->Add(m_tcEnroute, 0, wxALL, 5);
 

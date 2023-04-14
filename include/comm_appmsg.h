@@ -153,16 +153,24 @@ public:
   int satellites_used;
 };
 
+// bitmask defining update validity of BasicNavDataMsg members
+#define POS_UPDATE     (int)(1)
+#define COG_UPDATE     (int)(1 << 1)
+#define SOG_UPDATE     (int)(1 << 2)
+#define VAR_UPDATE     (int)(1 << 3)
+#define HDT_UPDATE     (int)(1 << 4)
+
 class BasicNavDataMsg : public AppMsg {
 public:
   BasicNavDataMsg(double lat, double lon, double SOG, double COG, double VAR,
-                  double HDT, time_t t)
+                  double HDT, int valid_flag, time_t t)
       : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
         pos(lat, lon),
         sog(SOG),
         cog(COG),
         var(VAR),
         hdt(HDT),
+        vflag(valid_flag),
         time(t){};
 
   BasicNavDataMsg()
@@ -171,6 +179,7 @@ public:
         cog(0),
         var(0),
         hdt(0),
+        vflag(0),
         time(0){};
 
   virtual ~BasicNavDataMsg() = default;
@@ -180,6 +189,7 @@ public:
   const double cog;
   const double var;
   const double hdt;
+  const int vflag;
   const time_t time;
 };
 

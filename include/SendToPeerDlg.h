@@ -42,10 +42,11 @@
 #define SYMBOL_STP_SIZE wxSize(500, 500)
 #define SYMBOL_STP_POSITION wxDefaultPosition
 
-enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER };
+enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER, ID_STP_SCAN };
 
 class Route;
 class RoutePoint;
+class Track;
 
 /**
  * Route "Send to Peer..." Dialog Definition
@@ -67,24 +68,42 @@ public:
               const wxPoint& pos = SYMBOL_STP_POSITION,
               const wxSize& size = SYMBOL_STP_SIZE,
               long style = SYMBOL_STP_STYLE);
-  void SetRoute(Route* pRoute) { m_pRoute = pRoute; }
-  void SetWaypoint(RoutePoint* pRoutePoint) { m_pRoutePoint = pRoutePoint; }
+  void SetRoute(Route* pRoute) { m_RouteList.push_back(pRoute); }
+  void SetWaypoint(RoutePoint* pRoutePoint) { m_RoutePointList.push_back(pRoutePoint); }
+  void SetTrack(Track* pTrack) { m_TrackList.push_back(pTrack); }
   wxGauge* GetProgressGauge() { return m_pgauge; }
   void SetMessage(wxString message);
+  void SetScanOnCreate(bool s){ m_bScanOnCreate = s;}
+  void SetScanTime(int t){ m_scanTime = t * 2;}
 
 private:
   void CreateControls(const wxString& hint);
 
   void OnCancelClick(wxCommandEvent& event);
   void OnSendClick(wxCommandEvent& event);
+  void OnScanClick(wxCommandEvent& event);
+  void OnTimerAutoscan(wxTimerEvent &event);
+  void OnTimerScanTick(wxTimerEvent &event);
+  void OnTimerTransferTick(wxTimerEvent &event);
+  void DoScan();
 
-  Route* m_pRoute;
-  RoutePoint* m_pRoutePoint;
+  std::vector<Route*> m_RouteList;
+  std::vector<RoutePoint*> m_RoutePointList;
+  std::vector<Track*> m_TrackList;
   wxComboBox* m_PeerListBox;
   wxGauge* m_pgauge;
   wxButton* m_CancelButton;
   wxButton* m_SendButton;
   wxStaticText* premtext;
+  wxButton *m_RescanButton;
+
+  wxTimer m_autoScanTimer;
+  wxTimer m_ScanTickTimer;
+  wxTimer m_TransferTimer;
+  int m_tick;
+  int m_scanTime;
+  bool m_bScanOnCreate;
+
 };
 
 #endif

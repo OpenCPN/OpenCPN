@@ -41,7 +41,7 @@ struct ocpn_DNS_record_t {
 
 
 extern  int send_dns_sd(void);
-extern  void FindAllOCPNServers();
+extern  void FindAllOCPNServers(size_t timeout_secs);
 extern std::vector<std::string> get_local_ipv4_addresses();
 
 #endif  // guard

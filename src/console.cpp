@@ -58,17 +58,18 @@
 
 #include "base_platform.h"
 #include "catalog_handler.h"
-#include "comm_navmsg_bus.h"
 #include "comm_appmsg_bus.h"
-#include "ocpn_utils.h"
+#include "comm_driver.h"
+#include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "downloader.h"
 #include "observable_evtvar.h"
-#include "comm_driver.h"
-#include "plugin_loader.h"
+#include "ocpn_utils.h"
 #include "plugin_handler.h"
+#include "plugin_loader.h"
 #include "routeman.h"
-#include "track.h"
 #include "select.h"
+#include "track.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -77,7 +78,6 @@ class Select;
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable = false;
 wxString g_winPluginDir;
-wxConfigBase* pBaseConfig = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -118,39 +118,16 @@ float g_selection_radius_touch_mm;
 int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
 
-
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
 AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
-wxString g_GPS_Ident;
-bool g_bGarminHostUpload;
 
 /* comm_bridge context. */
 
-double gCog;
-double gHdm;
-double gHdt;
-double gLat;
-double gLon;
-double gSog;
-double gVar;
-double g_UserVar;
-int gps_watchdog_timeout_ticks;
-int g_nNMEADebug;
-bool g_bSatValid;
-bool g_bVAR_Rx;
 int g_NMEAAPBPrecision;
-int g_SatsInView;
-int g_priSats;
-int sat_watchdog_timeout_ticks = 12;
-
-wxString gRmcTime;
-wxString gRmcDate;
-
-wxString g_TalkerIdText;
 
 Select* pSelect;
 double g_n_arrival_circle_radius;
@@ -161,6 +138,7 @@ wxString g_default_routepoint_icon;
 double g_TrackDeltaDistance;
 float g_fWaypointRangeRingsStep;
 float g_ChartScaleFactorExp;
+float g_MarkScaleFactorExp;
 wxString g_default_wp_icon;
 bool g_btouch;
 int g_iWaypointRangeRingsNumber;
@@ -172,7 +150,7 @@ int g_LayerIdx;
 bool g_bOverruleScaMin;
 int g_nTrackPrecision;
 bool g_bIsNewLayer;
-RouteList *pRouteList;
+RouteList* pRouteList;
 WayPointman* pWayPointMan;
 int g_route_line_width;
 int g_track_line_width;
@@ -180,11 +158,9 @@ RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
 bool g_bAllowShipToActive;
 wxRect g_blink_rect;
-int g_maxWPNameLength;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
-
 
 static void InitRouteman() {
   struct RoutePropDlgCtx ctx;
@@ -197,7 +173,9 @@ int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;
 int g_iSpeedFormat = 0;
 
-namespace safe_mode { bool get_mode() { return false; } }
+namespace safe_mode {
+bool get_mode() { return false; }
+}  // namespace safe_mode
 
 static const char* USAGE = R"""(
 Usage: opencpn-cli [options] <command>
@@ -236,15 +214,17 @@ Commands:
   update-catalog:
      Download latest master catalog.
 
+  plugin-by-file <filename>
+     Print name of a plugin containing file or "not found"
+
 )""";
 
-static const char *const DOWNLOAD_REPO_PROTO =
+static const char* const DOWNLOAD_REPO_PROTO =
     "https://raw.githubusercontent.com/OpenCPN/plugins/@branch@/"
     "ocpn-plugins.xml";
 
 wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
 wxDEFINE_EVENT(EVT_BAR, wxCommandEvent);
-
 
 class CliApp : public wxAppConsole {
 public:
@@ -257,8 +237,8 @@ public:
     parser.AddOption("a", "abi", "abi:version e. g., \"ubuntu-x86_64:20.04\"");
     parser.AddSwitch("v", "verbose", "Verbose logging");
     parser.AddSwitch("h", "help", "Print help");
-    parser.AddParam("<command>",
-      wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
+    parser.AddParam("<command>", wxCMD_LINE_VAL_STRING,
+                    wxCMD_LINE_PARAM_OPTIONAL);
     parser.AddParam("[arg]", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 
     wxLog::SetActiveTarget(new wxLogStderr);
@@ -267,7 +247,7 @@ public:
 
     g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
-    pBaseConfig = new wxFileConfig("", "", config_file);
+    InitBaseConfig(new wxFileConfig("", "", config_file));
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();
@@ -277,7 +257,7 @@ public:
   void list_plugins() {
     using namespace std;
     wxImage::AddHandler(new wxPNGHandler());
-    g_BasePlatform->GetSharedDataDir();    // See #2619
+    g_BasePlatform->GetSharedDataDir();  // See #2619
     PluginLoader::getInstance()->LoadAllPlugIns(false);
     auto plugins = PluginHandler::getInstance()->getInstalled();
     for (const auto& p : plugins) {
@@ -291,15 +271,15 @@ public:
     auto handler = PluginHandler::getInstance();
     auto plugins = handler->getAvailable();
     for (const auto& p : plugins) {
-        if (handler->isCompatible(p)) {
-            cout << left << setw(25) << p.name << p.version << "\n";
-        }
+      if (handler->isCompatible(p)) {
+        cout << left << setw(25) << p.name << p.version << "\n";
+      }
     }
   }
 
   void uninstall_plugin(const std::string& plugin) {
     using namespace std;
-    g_BasePlatform->GetSharedDataDir();    // See #2619
+    g_BasePlatform->GetSharedDataDir();  // See #2619
     PluginLoader::getInstance()->LoadAllPlugIns(false);
     auto plugins = PluginHandler::getInstance()->getInstalled();
     vector<PluginMetadata> found;
@@ -319,14 +299,15 @@ public:
 
   void install_plugin(const std::string& plugin) {
     using namespace std;
-    g_BasePlatform->GetSharedDataDir();   // See #2619
+    g_BasePlatform->GetSharedDataDir();  // See #2619
     wxImage::AddHandler(new wxPNGHandler());
     auto handler = PluginHandler::getInstance();
     auto plugins = handler->getAvailable();
     vector<PluginMetadata> found;
     copy_if(plugins.begin(), plugins.end(), back_inserter(found),
             [plugin, handler](const PluginMetadata& m) {
-                return m.name == plugin && handler->isCompatible(m); });
+              return m.name == plugin && handler->isCompatible(m);
+            });
     if (found.size() == 0) {
       cerr << "No such plugin available\n";
       exit(2);
@@ -334,7 +315,7 @@ public:
     Downloader downloader(found[0].tarball_url);
     string path;
     bool ok = downloader.download(path);
-    if (!ok)  {
+    if (!ok) {
       cerr << "Cannot download data from " << found[0].tarball_url << "\n";
       exit(1);
     }
@@ -343,22 +324,27 @@ public:
     exit(0);
   }
 
+  void plugin_by_file(const std::string& filename) {
+    auto plugin = PluginHandler::getInstance()->getPluginByLibrary(filename);
+    std::cout << (plugin != "" ? plugin : "Not found") << "\n";
+  }
+
   bool load_plugin(const std::string& plugin) {
     auto loader = PluginLoader::getInstance();
     wxImage::AddHandler(new wxPNGHandler());
-    g_BasePlatform->GetSharedDataDir();   // See #2619
+    g_BasePlatform->GetSharedDataDir();  // See #2619
     wxDEFINE_EVENT(EVT_FILE_NOTFOUND, wxCommandEvent);
     ObservableListener file_notfound_listener;
-    file_notfound_listener.Listen(loader->evt_unreadable_plugin,
-                                  this, EVT_FILE_NOTFOUND);
+    file_notfound_listener.Listen(loader->evt_unreadable_plugin, this,
+                                  EVT_FILE_NOTFOUND);
     Bind(EVT_FILE_NOTFOUND, [&](wxCommandEvent ev) {
       std::cerr << "Cannot open file: " << ev.GetString() << "\n";
     });
 
     wxDEFINE_EVENT(EVT_BAD_VERSION, wxCommandEvent);
     ObservableListener bad_version_listener;
-    bad_version_listener.Listen(loader->evt_version_incompatible_plugin,
-                                this, EVT_BAD_VERSION);
+    bad_version_listener.Listen(loader->evt_version_incompatible_plugin, this,
+                                EVT_BAD_VERSION);
     Bind(EVT_BAD_VERSION, [&](wxCommandEvent ev) {
       std::cerr << "Incompatible plugin version " << ev.GetString() << "\n";
     });
@@ -395,8 +381,8 @@ public:
   bool OnCmdLineParsed(wxCmdLineParser& parser) {
     wxAppConsole::OnCmdLineParsed(parser);
     if (argc == 1) {
-        std::cout << "OpenCPN CLI application. Use -h for help\n";
-        exit(0);
+      std::cout << "OpenCPN CLI application. Use -h for help\n";
+      exit(0);
     }
     wxString option_val;
     if (parser.Found("help")) {
@@ -417,36 +403,31 @@ public:
     if (command == "load-plugin") {
       check_param_count(parser, 2);
       load_plugin(parser.GetParam(1).ToStdString());
-    }
-    else if (command == "uninstall-plugin") {
+    } else if (command == "uninstall-plugin") {
       check_param_count(parser, 2);
       uninstall_plugin(parser.GetParam(1).ToStdString());
-    }
-    else if (command == "import-plugin") {
+    } else if (command == "import-plugin") {
       check_param_count(parser, 2);
       import_plugin(parser.GetParam(1).ToStdString());
-    }
-    else if (command == "install-plugin") {
+    } else if (command == "install-plugin") {
       check_param_count(parser, 2);
       install_plugin(parser.GetParam(1).ToStdString());
-    }
-    else if (command == "list-plugins") {
+    } else if (command == "list-plugins") {
       check_param_count(parser, 1);
       list_plugins();
-    }
-    else if (command == "list-available") {
+    } else if (command == "list-available") {
       check_param_count(parser, 1);
       list_available();
-    }
-    else if (command == "print-abi") {
+    } else if (command == "print-abi") {
       check_param_count(parser, 1);
       std::cout << PKG_TARGET << ":" << PKG_TARGET_VERSION "\n";
-    }
-    else if (command == "update-catalog") {
+    } else if (command == "update-catalog") {
       check_param_count(parser, 1);
       update_catalog();
-    }
-    else {
+    } else if (command == "plugin-by-file") {
+      check_param_count(parser, 2);
+      plugin_by_file(parser.GetParam(1).ToStdString());
+    } else {
       std::cerr << USAGE << "\n";
       exit(2);
     }

@@ -183,7 +183,7 @@ public:
   bool UsingFBO() { return m_b_BuiltFBO; }
 
   bool isInGesture() { return m_binGesture; }
-
+  void ResetGridFont() { m_gridfont.Delete(); }
   time_t m_last_render_time;
 
   int viewport[4];

@@ -48,6 +48,7 @@ class OcpnWxSound: public OcpnSound
         ~OcpnWxSound() { Stop(); };
 
         bool Load(const char* path, int deviceIndex = -1) override;
+        void UnLoad() override {};
         bool Play() override;
         bool Stop() override;
 

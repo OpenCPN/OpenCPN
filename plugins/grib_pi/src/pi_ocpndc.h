@@ -124,7 +124,7 @@ public:
   GLfloat *s_odc_tess_work_buf;
 #endif
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
   int s_odc_tess_vertex_idx;
   int s_odc_tess_vertex_idx_this;
   int s_odc_tess_buf_len;
@@ -135,6 +135,7 @@ public:
   GLUtesselator *m_tobj;
 
 #endif
+  bool UsesGL() { return m_buseGL; };
 
 protected:
   bool ConfigurePen();
@@ -167,6 +168,7 @@ protected:
   unsigned int workBufIndex;
 
   wxSize m_vpSize;
+  bool m_buseGL;
 };
 
 #endif

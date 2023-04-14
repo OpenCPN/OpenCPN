@@ -5,12 +5,7 @@
 #
 set -xe
 
-# Build for legacy Mac machines
-export MACOSX_DEPLOYMENT_TARGET=10.13
-
-# Required to build libcurl for legacy machines
-export macosx_deployment_target=10.13
-
+export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
@@ -42,16 +37,15 @@ sudo rm -f /usr/local/include/archive_entry.h
 sudo make install
 cd ..
 
-
-
-brew install freetype
 brew install cairo
-brew install zstd
-brew install xz
+brew install freetype
+brew install lame
 brew install lz4
-brew install openssl
+brew install mpg123
+brew install xz
+brew install zstd
 
-for pkg in python3  cmake ; do
+for pkg in openssl python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
@@ -65,9 +59,13 @@ else
     brew install --cask packages
 fi
 
-curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
-    https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
-tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
+#curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
+#    https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
+#tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
+
+curl -k -o /tmp/wx322-2_opencpn50_macos1010.tar.bz2  \
+    https://download.opencpn.org/s/8xYPFAqTR8ZGXXb/download
+tar -C /tmp -xJf /tmp/wx322-2_opencpn50_macos1010.tar.bz2
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
@@ -80,9 +78,10 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
-  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx321_opencpn50_macos1010/lib/wx/config/osx_cocoa-unicode-3.2 \
-  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx321_opencpn50_macos1010" \
+  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx322-2_opencpn50_macos1010/lib/wx/config/osx_cocoa-unicode-3.2 \
+  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx322-2_opencpn50_macos1010" \
   -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
+  -DOCPN_RELEASE=0 \
   -DOCPN_BUILD_TEST=OFF \
   ..
 make -sj$(sysctl -n hw.physicalcpu)
@@ -92,7 +91,8 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
-sudo ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
+dsymutil -o OpenCPN.dSYM /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/OpenCPN
+tar czf OpenCPN-$(git rev-parse --short HEAD).dSYM.tar.gz OpenCPN.dSYM
 
 make create-pkg
 make create-dmg

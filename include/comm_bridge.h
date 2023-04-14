@@ -154,6 +154,8 @@ private:
   std::unordered_map<std::string, int> priority_map_variation;
   std::unordered_map<std::string, int> priority_map_satellites;
 
+  int n_LogWatchdogPeriod;
+
   DECLARE_EVENT_TABLE()
 };
 

@@ -43,6 +43,7 @@
 #include <wx/dir.h>
 #include <wx/file.h>
 #include <wx/string.h>
+#include <wx/tokenzr.h>
 #include <wx/window.h>
 #include <wx/uri.h>
 
@@ -151,6 +152,21 @@ static std::string dirListPath(std::string name) {
   return pluginsConfigDir() + SEP + name + ".dirs";
 }
 
+std::string PluginHandler::pluginsInstallDataPath() {
+  return pluginsConfigDir();
+}
+
+static std::vector<std::string> LoadLinesFromFile(const std::string& path) {
+  std::vector<std::string> lines;
+  std::ifstream src(path);
+  while (!src.eof()) {
+    char line[256];
+    src.getline(line, sizeof(line));
+    lines.push_back(line);
+  }
+  return lines;
+}
+
 /** Plugin ABI encapsulation. */
 class Plugin {
 public:
@@ -204,12 +220,27 @@ public:
         "debian-x86_64;12;ubuntu-x86_64;23.04",
         "debian-x86_64;12;ubuntu-x86_64;23.10",
         "debian-x86_64;12;ubuntu-x86_64;24.04",
-        "debian-x86_64;sid;ubuntu-x86_64;24.04"
-     };  // clang-format: on
+        "debian-x86_64;sid;ubuntu-x86_64;24.04",
+
+        "debian-arm64;11;ubuntu-gtk3-arm64;20.04",
+        "debian-wx32-arm64;11;ubuntu-wx32-arm64;22.04",
+        "debian-arm64;12;ubuntu-arm64;23.04",
+        "debian-arm64;12;ubuntu-arm64;23.10",
+        "debian-arm64;12;ubuntu-arm64;24.04",
+        "debian-arm64;sid;ubuntu-arm64;24.04",
+
+        "debian-armhf;11;ubuntu-gtk3-armhf;20.04",
+        "debian-wx32-armhf;11;ubuntu-wx32-armhf;22.04",
+        "debian-armhf;12;ubuntu-armhf;23.04",
+        "debian-armhf;12;ubuntu-armhf;23.10",
+        "debian-armhf;12;ubuntu-armhf;24.04",
+        "debian-armhf;sid;ubuntu-armhf;24.04"}; //clang-format: on
+
     if (ocpn::startswith(plugin.abi(), "debian")) {
       wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
-      const std::string compat_version =
-      plugin.abi() + ";" + plugin.major_version() + ";" + m_abi + ";" + m_abi_version;
+      const std::string compat_version = plugin.abi() + ";" +
+                                         plugin.major_version() + ";" + m_abi +
+                                         ";" + m_abi_version;
       for (auto& cv : compat_versions) {
         if (compat_version == cv) {
           return true;
@@ -266,7 +297,7 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     }
   } else if (ocpn::startswith(_name, "ubuntu") && (_version == "22.04")) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
-    if(wxv >= 32){
+    if (wxv >= 32) {
       auto tokens = ocpn::split(_name.c_str(), "-");
       _name = std::string(tokens[0]) + std::string("-wx32-") + tokens[1];
     }
@@ -276,22 +307,21 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
   _version = ocpn::tolower(_version);
 }
 
-std::string PluginHandler::fileListPath(std::string name) {
-  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-  return pluginsConfigDir() + SEP + name + ".files";
-}
-
 PluginHandler::PluginHandler() {}
 
 bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
+  static const std::vector<std::string> simple_abis = {
+      "msvc",        "msvc-wx32",     "darwin",
+      "darwin-wx32", "android-armhf", "android-arm64"};
 
-  static const std::vector<std::string> simple_abis = {"msvc", "msvc-wx32",
-  "darwin", "darwin-wx32", "android-armhf", "android-arm64"};
-
+  Plugin plugin(metadata);
+  if (plugin.abi() == "all") {
+    wxLogDebug("Returning true for plugin abi \"all\"");
+    return true;
+  }
   auto compatOS = CompatOs::getInstance();
   Host host(compatOS);
-  Plugin plugin(metadata);
 
   auto found = std::find(simple_abis.begin(), simple_abis.end(), plugin.abi());
   if (found != simple_abis.end()) {
@@ -311,6 +341,11 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   DEBUG_LOG << "Plugin compatibility check Final: "
             << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
+}
+
+std::string PluginHandler::fileListPath(std::string name) {
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return pluginsConfigDir() + SEP + name + ".files";
 }
 
 std::string PluginHandler::versionPath(std::string name) {
@@ -526,15 +561,15 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
       slashpos = suffix.find_first_of("opencpn/plugins/");
       suffix = suffix.substr(16);
 
-      dest =
-          g_BasePlatform->GetPrivateDataDir().ToStdString() + "/plugins/" + suffix;
+      dest = g_BasePlatform->GetPrivateDataDir().ToStdString() + "/plugins/" +
+             suffix;
     }
     if (ocpn::startswith(location, "lib") &&
         ocpn::startswith(suffix, "opencpn/")) {
       suffix = suffix.substr(8);
 
-      dest = g_BasePlatform->GetPrivateDataDir().ToStdString() + "/plugins/lib/" +
-             suffix;
+      dest = g_BasePlatform->GetPrivateDataDir().ToStdString() +
+             "/plugins/lib/" + suffix;
     }
   }
 
@@ -661,7 +696,7 @@ static bool entry_set_install_path(struct archive_entry* entry,
   const std::string dest = archive_entry_pathname(entry);
   if (rv) {
     if (dest.size()) {
-      MESSAGE_LOG << "Installing " << src << " into " << dest << std::endl;
+      DEBUG_LOG << "Installing " << src << " into " << dest << std::endl;
     }
   }
   return rv;
@@ -696,8 +731,8 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
     if (is_metadata) {
       if (metadata_path == "") continue;
       archive_entry_set_pathname(entry, metadata_path.c_str());
-    }
-    else if (!entry_set_install_path(entry, pathmap)) continue;
+    } else if (!entry_set_install_path(entry, pathmap))
+      continue;
     if (strlen(archive_entry_pathname(entry)) == 0) {
       continue;
     }
@@ -865,52 +900,44 @@ void PluginHandler::cleanupFiles(const std::string& manifestFile,
   }
 }
 
+/** Remove all empty dirs found from root containing string "opencpn". */
+static void PurgeEmptyDirs(const std::string& root) {
+  if (!wxFileName::IsDirWritable(root)) return;
+  if (ocpn::tolower(root).find("opencpn") == std::string::npos) return;
+  wxDir rootdir(root);
+  if (!rootdir.IsOpened()) return;
+  wxString dirname;
+  bool cont = rootdir.GetFirst(&dirname, "", wxDIR_DIRS);
+  while (cont) {
+    PurgeEmptyDirs((rootdir.GetNameWithSep() + dirname).ToStdString());
+    cont = rootdir.GetNext(&dirname);
+  }
+  rootdir.Close();
+  rootdir.Open(root);
+  if (!(rootdir.HasFiles() || rootdir.HasSubDirs())) {
+    wxFileName::Rmdir(rootdir.GetName());
+  }
+}
+
 void PluginHandler::cleanup(const std::string& filelist,
                             const std::string& plugname) {
   wxLogMessage("Cleaning up failed install of %s", plugname.c_str());
 
-  std::istringstream files(filelist);
-  while (!files.eof()) {
-    char line[256];
-    files.getline(line, sizeof(line));
-    if (isRegularFile(line)) {
-      int r = remove(line);
-      if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
-      }
+  std::vector<std::string> paths = LoadLinesFromFile(filelist);
+  for (const auto& path : paths) {
+    if (isRegularFile(path.c_str())) {
+      int r = remove(path.c_str());
+      if (r != 0) wxLogWarning("Cannot remove file %s: %s", path, strerror(r));
     }
   }
-
-  // Make another limited recursive pass, and remove any empty directories
-  bool done = false;
-  int iloop = 0;
-  while (!done && (iloop < 6)) {
-    done = true;
-    std::istringstream dirs(filelist);
-    while (!dirs.eof()) {
-      char line[256];
-      dirs.getline(line, sizeof(line));
-
-      wxFileName wxFile(line);
-      if (wxFile.IsDir() && wxFile.DirExists()) {
-        wxDir dir(wxFile.GetFullPath());
-        if (dir.IsOpened()) {
-          if (!dir.HasFiles() && !dir.HasSubDirs()) {
-            wxFile.Rmdir(wxPATH_RMDIR_RECURSIVE);
-            done = false;
-          }
-        }
-      }
-    }
-    iloop++;
-  }
+  for (const auto& path : paths) PurgeEmptyDirs(path);
 
   std::string path = PluginHandler::fileListPath(plugname);
-  if (ocpn::exists(path)) {
-    remove(path.c_str());
-  }
-  remove(dirListPath(plugname).c_str());  // Best effort try, failures
-  remove(PluginHandler::versionPath(plugname).c_str());  // are non-critical.
+  if (ocpn::exists(path)) remove(path.c_str());
+
+  // Best effort tries, failures are non-critical
+  remove(dirListPath(plugname).c_str());
+  remove(PluginHandler::versionPath(plugname).c_str());
 }
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
@@ -919,9 +946,6 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable() {
 
   auto catalogHandler = CatalogHandler::getInstance();
 
-  // std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
-  // path += SEP;
-  // path += "ocpn-plugins.xml";
   std::string path = getMetadataPath();
   if (!ocpn::exists(path)) {
     return ctx.plugins;
@@ -1049,54 +1073,152 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
                  plugin_name.c_str(), path);
     return false;
   }
-  ifstream files(path);
-  while (!files.eof()) {
-    char line[256];
-    files.getline(line, sizeof(line));
-    if (isRegularFile(line)) {
-      int r = remove(line);
+  vector<string> plug_paths = LoadLinesFromFile(path);
+  for (const auto& p : plug_paths) {
+    if (isRegularFile(p.c_str())) {
+      int r = remove(p.c_str());
       if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", line, strerror(r));
+        wxLogWarning("Cannot remove file %s: %s", p.c_str(), strerror(r));
       }
     }
   }
-  files.close();
-
-  // Make another limited recursive pass, and remove any empty directories
-  bool done = false;
-  int iloop = 0;
-  while (!done && (iloop < 6)) {
-    done = true;
-    ifstream dirs(path);
-    while (!dirs.eof()) {
-      char line[256];
-      dirs.getline(line, sizeof(line));
-      string dirc(line);
-
-      wxFileName wxFile(line);
-      if (wxFile.IsDir() && wxFile.DirExists()) {
-        wxDir dir(wxFile.GetFullPath());
-        if (dir.IsOpened()) {
-          if (!dir.HasFiles() && !dir.HasSubDirs()) {
-            wxFile.Rmdir(wxPATH_RMDIR_RECURSIVE);
-            done = false;
-          }
-        }
-      }
-    }
-    dirs.close();
-
-    iloop++;
-  }
-
+  for (const auto& p : plug_paths) PurgeEmptyDirs(p);
   int r = remove(path.c_str());
   if (r != 0) {
     wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
   }
-  remove(dirListPath(plugin_name).c_str());  // Best effort try, failures
-  remove(PluginHandler::versionPath(plugin_name).c_str());  // are OK.
+
+  // Best effort tries, failures are OK.
+  remove(dirListPath(plugin_name).c_str());
+  remove(PluginHandler::versionPath(plugin_name).c_str());
 
   return true;
+}
+
+using PluginMap = std::unordered_map<std::string, std::vector<std::string>>;
+
+/**
+ * Look in plugin data paths for a matching directory. Safe bet if
+ * existing, but all plugins does not have a data directory.
+ * @return Matched directory name or "" if not found.
+ */
+static std::string FindMatchingDataDir(std::regex name_re) {
+  using namespace std;
+  wxString data_dirs(g_BasePlatform->GetPluginDataPath());
+  wxStringTokenizer tokens(data_dirs, ";");
+  while (tokens.HasMoreTokens()) {
+    auto token = tokens.GetNextToken();
+    wxFileName path(token);
+    wxDir dir(path.GetFullPath());
+    if (dir.IsOpened()){
+      wxString filename;
+      bool cont = dir.GetFirst(&filename, "", wxDIR_DIRS);
+      while (cont) {
+        smatch sm;
+        string s(filename);
+        if (regex_search(s, sm, name_re)) {
+          stringstream ss;
+          for (auto c : sm) ss << c;
+          return ss.str();
+        }
+        cont = dir.GetNext(&filename);
+      }
+    }
+  }
+  return "";
+}
+
+/**
+ * Look in library dirs for matching .dll/.so/.dylib and use matched name.
+ * @return matched part of found library name or "" if not found
+ */
+static std::string FindMatchingLibFile(std::regex name_re) {
+  using namespace std;
+  for (const auto& lib : PluginPaths::getInstance()->Libdirs()) {
+    wxDir dir(lib);
+    wxString filename;
+    bool cont = dir.GetFirst(&filename, "", wxDIR_FILES);
+    while (cont) {
+      smatch sm;
+      string s(filename);
+      if (regex_search(s, sm, name_re)) {
+        stringstream ss;
+        for (auto c : sm) ss << c;
+        return ss.str();
+      }
+      cont = dir.GetNext(&filename);
+    }
+  }
+  return "";
+}
+
+/** Best effort to return plugin name with correct case. */
+static std::string PluginNameCase(const std::string& name) {
+  using namespace std;
+  const string lc_name = ocpn::tolower(name);
+  regex name_re(lc_name, regex_constants::icase | regex_constants::ECMAScript);
+
+  // Look for matching plugin in list of installed and available.
+  // This often fails since the lists are not yet available when
+  // plugins are loaded, but is otherwise a safe bet.
+  for (const auto& plugin : PluginHandler::getInstance()->getInstalled()) {
+    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
+  }
+  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
+    if (ocpn::tolower(plugin.name) == lc_name) return plugin.name;
+  }
+
+  string match = FindMatchingDataDir(name_re);
+  if (match != "") return match;
+
+  match = FindMatchingLibFile(name_re);
+  return match != "" ? match : name;
+}
+
+/**  map[key] = list-of-files given path to file containing paths. */
+static void LoadPluginMapFile(PluginMap& map, const std::string& path) {
+  std::ifstream f;
+  f.open(path);
+  if (f.fail()) {
+    wxLogWarning("Cannot open %s: %s", path.c_str(), strerror(errno));
+    return;
+  }
+  std::stringstream buf;
+  buf << f.rdbuf();
+  auto filelist = ocpn::split(buf.str().c_str(), "\n");
+  for (auto& file : filelist) {
+    file = wxFileName(file).GetFullName().ToStdString();
+  }
+
+  // key is basename with removed .files suffix and correct case.
+  auto key = wxFileName(path).GetFullName().ToStdString();
+  key = ocpn::split(key.c_str(), ".")[0];
+  key = PluginNameCase(key);
+  map[key] = filelist;
+}
+
+/** For each installed plugin: map[plugin name] = list of files. */
+static void LoadPluginMap(PluginMap& map) {
+  map.clear();
+  wxDir root(PluginHandler::pluginsInstallDataPath());
+  if (!root.IsOpened()) return;
+  wxString filename;
+  bool cont = root.GetFirst(&filename, "*.files", wxDIR_FILES);
+  while (cont) {
+    auto path = root.GetNameWithSep() + filename;
+    LoadPluginMapFile(map, path.ToStdString());
+    cont = root.GetNext(&filename);
+  }
+}
+
+std::string PluginHandler::getPluginByLibrary(const std::string& filename) {
+  auto basename = wxFileName(filename).GetFullName().ToStdString();
+  if (files_by_plugin.size() == 0) LoadPluginMap(files_by_plugin);
+  for (const auto& it : files_by_plugin) {
+    auto found = std::find(it.second.begin(), it.second.end(), basename);
+    if (found != it.second.end()) return it.first;
+  }
+  return "";
 }
 
 bool PluginHandler::installPluginFromCache(PluginMetadata plugin) {

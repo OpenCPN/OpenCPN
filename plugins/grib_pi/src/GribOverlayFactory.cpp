@@ -31,13 +31,15 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include "pi_gl.h"
+
 #include <wx/glcanvas.h>
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
 #include "pi_ocpndc.h"
 
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
+#if 1//def __OCPN__ANDROID__
+//#include "qdebug.h"
 #include "pi_shaders.h"
 #endif
 
@@ -46,7 +48,7 @@
 
 extern int m_Altitude;
 extern bool g_bpause;
-extern float g_DIPfactor;
+extern double g_ContentScaleFactor;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -271,16 +273,16 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     LineBuffer &arrow = m_WindArrowCache[i];
 
     arrow.pushLine(dec, 0, dec + windArrowSize, 0);                  // hampe
-    arrow.pushLine(dec, 0, dec + pointerLength, pointerLength / 2);  // flèche
+    arrow.pushLine(dec, 0, dec + pointerLength, pointerLength / 2);  // fleche
     arrow.pushLine(dec, 0, dec + pointerLength,
-                   -(pointerLength / 2));  // flèche
+                   -(pointerLength / 2));  // fleche
   }
 
   int featherPosition = windArrowSize / 6;
 
   int b1 =
-      dec + windArrowSize - featherPosition;  // position de la 1ère barbule
-  int b2 = dec + windArrowSize;  // position de la 1ère barbule si >= 10 noeuds
+      dec + windArrowSize - featherPosition;  // position de la 1ere barbule
+  int b2 = dec + windArrowSize;  // position de la 1ere barbule si >= 10 noeuds
 
   int lpetite = windArrowSize / 5;
   int lgrande = lpetite * 2;
@@ -352,15 +354,15 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     dec = -arrowSize / 2;
 
     m_SingleArrow[i].pushLine(dec, 0, dec + arrowSize, 0);
-    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flèche
-    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flèche
+    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // fleche
+    m_SingleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // fleche
     m_SingleArrow[i].Finalize();
 
     m_DoubleArrow[i].pushLine(dec, -dec2, dec + arrowSize, -dec2);
     m_DoubleArrow[i].pushLine(dec, dec2, dec + arrowSize, +dec2);
 
-    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // flèche
-    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // flèche
+    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, dec1 + 1);     // fleche
+    m_DoubleArrow[i].pushLine(dec - 2, 0, dec + dec1, -(dec1 + 1));  // fleche
     m_DoubleArrow[i].Finalize();
   }
 }
@@ -386,7 +388,7 @@ void GRIBOverlayFactory::SetMessageFont() {
   fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
 #else
   fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() / g_DIPfactor));
+  fo.SetPointSize((fo.GetPointSize()  * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor()));
 #endif
   if (m_Font_Message)
     delete m_Font_Message;
@@ -417,7 +419,12 @@ bool GRIBOverlayFactory::RenderGLGribOverlay(wxGLContext *pcontext,
 
   // qDebug() << "RenderGLGribOverlay" << sw.GetTime();
 
-  if (!m_oDC) m_oDC = new pi_ocpnDC();
+  if (!m_oDC || !m_oDC->UsesGL()) {
+    if (m_oDC) {
+      delete m_oDC;
+    }
+    m_oDC = new pi_ocpnDC();
+  }
 
   m_oDC->SetVP(vp);
   m_oDC->SetDC(NULL);
@@ -432,12 +439,17 @@ bool GRIBOverlayFactory::RenderGLGribOverlay(wxGLContext *pcontext,
 }
 
 bool GRIBOverlayFactory::RenderGribOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
-  if (!m_oDC) m_oDC = new pi_ocpnDC();
+  if (!m_oDC || m_oDC->UsesGL()) {
+    if (m_oDC) {
+      delete m_oDC;
+    }
+    m_oDC = new pi_ocpnDC(dc);
+  }
 
   m_oDC->SetVP(vp);
   m_oDC->SetDC(&dc);
 
-  m_pdc = NULL;
+  m_pdc = &dc;
 #if 0
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;
@@ -542,7 +554,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
     for (int i = 0; i < GribOverlaySettings::SETTINGS_COUNT; i++) {
       if (i == GribOverlaySettings::WIND) {
         if (overlay) { /* render overlays first */
-          if (m_dlg.m_bDataPlot[i]) RenderGribOverlayMap(i, pGR, vp);
+          if (m_dlg.m_bDataPlot[i])
+            RenderGribOverlayMap(i, pGR, vp);
         } else {
           if (m_dlg.m_bDataPlot[i]) {
             RenderGribBarbedArrows(i, pGR, vp);
@@ -625,19 +638,10 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in,
   } else
     r = 255, g = 255, b = 255, a = 0;
 
-    /* for some reason r g b values are inverted, but not alpha,
-       this fixes it, but I would like to find the actual cause */
-#ifndef __OCPN__ANDROID__
-  data[0] = 255 - r;
-  data[1] = 255 - g;
-  data[2] = 255 - b;
-  data[3] = a;
-#else
   data[0] = r;
   data[1] = g;
   data[2] = b;
   data[3] = a;
-#endif
 }
 
 bool GRIBOverlayFactory::CreateGribGLTexture(GribOverlay *pGO, int settings,
@@ -827,7 +831,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture(GribOverlay *pGO, int settings,
   glTexParameteri(texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
   glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1882,7 +1886,7 @@ void GRIBOverlayFactory::DrawNumbers(wxPoint p, double value, int settings,
     m_pdc->DrawBitmap(label, p.x, p.y, true);
   } else {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2357,10 +2361,13 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
       int w, h;
       m_oDC->GetTextExtent(msg, &w, &h);
       h += 2;
-      int yp = y - (2 * GetChartbarHeight() + h);
 
       int label_offset = 10;
       int wdraw = w + (label_offset * 2);
+      wdraw *= g_ContentScaleFactor;
+      h *= g_ContentScaleFactor;
+      int yp = y - (2 * GetChartbarHeight() + h);
+
       m_oDC->DrawRectangle(0, yp, wdraw, h);
       m_oDC->DrawText(msg, label_offset, yp);
     }
@@ -2548,7 +2555,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y,
 void GRIBOverlayFactory::DrawSingleGLTexture(GribOverlay *pGO, GribRecord *pGR,
                                              double uv[], double x, double y,
                                              double width, double height) {
-#ifdef __OCPN__ANDROID__
+#if 1//def __OCPN__ANDROID__
 
   glEnable(texture_format);
 
@@ -2703,7 +2710,7 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
 
   // optimization for non-rotated mercator, since longitude is linear
   if (vp->rotation == 0 && vp->m_projection_type == PI_PROJECTION_MERCATOR)
-    xsquares = 1;
+     xsquares = 1;
 
   // It is possible to have only 1 square when the viewport covers more than
   // 180 longitudes but there is more logic needed.  This is simpler.
@@ -2729,6 +2736,7 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
 
   for (double y = 0; y < vp->pix_height + ys / 2; y += ys) {
     i = 0;
+
     for (double x = 0; x < vp->pix_width + xs / 2; x += xs) {
       double lat, lon;
       wxPoint p(x, y);
@@ -2783,7 +2791,9 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
           uv[6] = u3;
           uv[7] = v3;
 
-          DrawSingleGLTexture(pGO, pGR, uv, x, y, xs, ys);
+          if(u1 > u0){
+            DrawSingleGLTexture(pGO, pGR, uv, x, y, xs, ys);
+          }
         }
       }
 

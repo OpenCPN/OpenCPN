@@ -27,6 +27,7 @@
 #include <wx/string.h>
 
 #include "ais_target_data.h"
+#include "config_vars.h"
 #include "ocpn_frame.h"
 #include "navutil_base.h"
 
@@ -39,7 +40,6 @@ extern bool g_bShowTrue;
 //extern MyFrame *gFrame;
 extern bool g_bAISShowTracks;
 extern double gVar;
-extern double g_UserVar;
 
 static std::unordered_map<int, wxString> s_ERI_hash;
 
@@ -983,11 +983,11 @@ wxString AisTargetData::Get_class_string(bool b_short) {
 
 wxString AisTargetData::GetNatureofDistress(int dscnature) {
   // Natures of distress from: Rec. ITU-R M.493-10.
-  wxString dscDistressType[] = { _("Fire, explosion"), _("Floding"),
+  wxString dscDistressType[] = { _("Fire, explosion"), _("Flooding"),
                                      _("Collision"), _("Grounding"),
-                 _("Listing, in danger of capsazing"), _("Sinking"),
+                 _("Listing, in danger of capsizing"), _("Sinking"),
                _("Disabled and adrift"), _("Undesignated distress"),
-             _("Abandoning ship"), _("Pirazy/armed robbery attack"),
+             _("Abandoning ship"), _("Piracy/armed robbery attack"),
                  _("Man overboard"), _T("-"), _("EPIRB emission") };
   if (dscnature >= 0 && dscnature < 13)
     return dscDistressType[dscnature];

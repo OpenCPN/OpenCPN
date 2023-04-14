@@ -78,6 +78,7 @@
 #include "navutil.h"
 #include "color_handler.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
@@ -192,8 +193,6 @@ extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin *pthumbwin;
 extern int g_mipmap_max_level;
-
-extern double gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_OwnShipIconType;
 
@@ -427,7 +426,7 @@ void glChartCanvas::Init() {
   m_currentTex = 0;
 
   m_gldc.SetGLCanvas(this);
-  m_gldc.SetDPIFactor(g_BasePlatform->GetDisplayDPIMult(GetParent()));
+  m_gldc.SetDPIFactor(g_BasePlatform->GetDisplayDIPMult(GetParent()));
 
   m_displayScale = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
@@ -1174,7 +1173,10 @@ void glChartCanvas::SetupOpenGL() {
     //m_b_DisableFBO = true;
 #endif
 
-  //m_b_DisableFBO = true;
+  // Accelerated pan is not used for MacOS Retina display
+  // So there is no advantage to using FBO
+  if (m_displayScale > 1)
+    m_b_DisableFBO = true;
 
   //      Maybe build FBO(s)
   BuildFBO();
@@ -1909,14 +1911,15 @@ void glChartCanvas::GridDraw() {
   wxColour GridColor = GetGlobalColor(_T ( "SNDG1" ));
 
   if (!m_gridfont.IsBuilt()) {
-    double dpi_factor = g_BasePlatform->GetDisplayDPIMult(this);
-    wxFont *dFont = FontMgr::Get().GetFont(_("ChartTexts"), 0);
+    double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
+    wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
     wxFont font = *dFont;
-    font.SetPointSize(10 * m_displayScale);
+    int font_size = wxMax(10, dFont->GetPointSize());
+    font.SetPointSize(font_size * m_displayScale);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
-    font.Scale( 1.0 / dpi_factor);
 
-    m_gridfont.Build(font, dpi_factor);
+    m_gridfont.SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
+    m_gridfont.Build(font, 1, dpi_factor);
   }
   m_gridfont.SetColor(GridColor);
 
@@ -2294,10 +2297,14 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
                                                      // less than 20 pixel
       float v = (nominal_ownship_size_pixels * scale_factor) / 3;
 
-      wxPen ppPen1(GetGlobalColor(_T ( "YELO1" )), v / 10, wxPENSTYLE_SOLID);
-      dc.SetPen(ppPen1);
-      dc.SetBrush(
-          wxBrush(GetGlobalColor(_T ( "URED" )), wxBRUSHSTYLE_TRANSPARENT));
+      wxPen ppSmallScaleShip;
+      if (SHIP_NORMAL == m_pParentCanvas->m_ownship_state)
+        ppSmallScaleShip = wxPen(GetGlobalColor(_T ( "URED" )), v / 5, wxPENSTYLE_SOLID);
+      else
+        ppSmallScaleShip = wxPen(GetGlobalColor(_T ( "YELO1" )), v / 5, wxPENSTYLE_SOLID);
+      dc.SetPen(ppSmallScaleShip);
+
+      dc.SetBrush(wxBrush(GetGlobalColor(_T ( "URED" )), wxBRUSHSTYLE_TRANSPARENT));
 
       // start with cross
       dc.DrawLine((-v * 1.2) + lShipMidPoint.x, lShipMidPoint.y,
@@ -2670,7 +2677,7 @@ void glChartCanvas::DrawFloatingOverlayObjects(ocpnDC &dc) {
   m_pParentCanvas->RenderRouteLegs(dc);
   m_pParentCanvas->RenderShipToActive(dc, true);
   m_pParentCanvas->ScaleBarDraw(dc);
-  s57_DrawExtendedLightSectors(dc, m_pParentCanvas->VPoint,
+  s57_DrawExtendedLightSectorsGL(dc, m_pParentCanvas->VPoint,
                                m_pParentCanvas->extendedSectorLegs);
   if (g_pi_manager) {
     g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
@@ -2736,7 +2743,7 @@ void glChartCanvas::DrawCloseMessage(wxString msg) {
 
     TexFont texfont;
 
-    texfont.Build(*pfont, 1);
+    texfont.Build(*pfont, 1, 1);
     int w, h;
     texfont.GetTextExtent(msg, &w, &h);
     h += 2;
@@ -3815,6 +3822,11 @@ void glChartCanvas::Render() {
 
 #endif
 
+#ifdef __WXOSX__
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
   m_last_render_time = wxDateTime::Now().GetTicks();
 
   // we don't care about jobs that are now off screen
@@ -3841,15 +3853,26 @@ void glChartCanvas::Render() {
   m_glcanvas_width = gl_width;
   m_glcanvas_height = gl_height;
 
-#if 1
+  // Avoid some harmonic difficulties with odd-size glCanvas
+  bool b_odd = false;
   if (gl_height & 1){
     gl_height -= 1;
-    // Adjust the Viewport height
     ViewPort *vp = m_pParentCanvas->GetpVP();
     vp->pix_height = gl_height;
+    b_odd = true;
+  }
+
+  if (gl_width & 1){
+    gl_width -= 1;
+    ViewPort *vp = m_pParentCanvas->GetpVP();
+    vp->pix_width = gl_width;
+    b_odd = true;
+  }
 
    //  Set the shader viewport transform matrix
-   //  Using the adjusted height
+   //  Using the adjusted dimensions
+  if(b_odd){
+    ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4 m;
     mat4x4_identity(m);
     mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
@@ -3858,7 +3881,6 @@ void glChartCanvas::Render() {
     mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
                              -vp->pix_height / 2, 0);
   }
-#endif
 
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
@@ -3947,13 +3969,6 @@ void glChartCanvas::Render() {
 #endif
 
     if (b_newview) {
-      bool busy = false;
-      if (VPoint.b_quilt && m_pParentCanvas->m_pQuilt->IsQuiltVector() &&
-          (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm ||
-           m_cache_vp.rotation != VPoint.rotation)) {
-        OCPNPlatform::ShowBusySpinner();
-        busy = true;
-      }
 
       float dx = 0;
       float dy = 0;
@@ -4196,7 +4211,6 @@ void glChartCanvas::Render() {
 
 #endif  // gles2 for accpan
 
-      if (busy) OCPNPlatform::HideBusySpinner();
 
     }  // newview
 
@@ -4275,6 +4289,11 @@ void glChartCanvas::Render() {
     coords[6] = 0;
     coords[7] = sy;
 
+    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+    glClearColor( color.Red() / 256., color.Green() / 256. ,
+         color.Blue()/ 256. ,1.0 );
+    glClear(GL_COLOR_BUFFER_BIT);
+
     RenderTextures(gldc, coords, uv, 4, m_pParentCanvas->GetpVP());
 #endif
 
@@ -4333,8 +4352,9 @@ void glChartCanvas::Render() {
       wxBrush ppBrush(colour);
       gldc.SetPen(ppBlue);
       gldc.SetBrush(ppBrush);
-      int xw = m_pParentCanvas->GetClientSize().x;
-      float rect_pix = m_pParentCanvas->m_focus_indicator_pix;
+      int xw = m_pParentCanvas->GetClientSize().x * m_displayScale;
+      float rect_pix = m_pParentCanvas->m_focus_indicator_pix
+                            * m_displayScale;
       wxPoint barPoints[4];
       barPoints[0].x = 0;
       barPoints[0].y = 0;
@@ -4474,9 +4494,9 @@ void glChartCanvas::Render() {
       // Simple low pass filter
       g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) +
                           ((double)(g_glstopwatch.Time()) * filter);
-      //            if(g_gl_ms_per_frame > 0)
-      //                printf(" OpenGL frame time: %3.0f  %3.0f\n",
-      //                g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
+                  if(g_gl_ms_per_frame > 0)
+                      printf(" OpenGL frame time: %3.0f ms-->  %3.0fFPS\n",
+                      g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
     }
   }
 
@@ -5315,6 +5335,12 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->UnBind();
 
+      shader = pring_shader_program[GetCanvasIndex()];
+      shader->Bind();
+      shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
+      shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+      shader->UnBind();
+
       m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
 
 #endif
@@ -5356,6 +5382,8 @@ void glChartCanvas::RenderSingleTexture(ocpnDC &dc, float *coords, float *uvCoor
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
     GLShaderProgram *shader = ptexture_2D_shader_program[dc.m_canvasIndex];
+    if(!shader) return;
+
     shader->Bind();
 
    // Set up the texture sampler to texture unit 0

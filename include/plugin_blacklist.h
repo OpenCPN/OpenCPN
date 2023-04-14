@@ -77,10 +77,20 @@ public:
   virtual plug_status get_status(const plug_data pd)  = 0;
 
   /** Best effort attempt to get data for a library file. */
-  virtual plug_data get_library_data(const std::string library_file) = 0;
+  virtual plug_data get_library_data(const std::string& library_file) = 0;
 
-  /** Given a path, mark filename as unloadable. */
-  virtual void mark_unloadable(const std::string& path) = 0;
+  /**
+   *  Given a path, mark filename as unloadable.
+   *  @return true if filename was already marked, else false.
+   */
+  virtual bool mark_unloadable(const std::string& path) = 0;
+
+  /**
+   *  Given plugin name and version mark it as unloadable.
+   *  @return true if plugin was already marked, else false.
+   **/
+  virtual bool mark_unloadable(const std::string& name,
+		               int major, int minor) = 0;
 
   /** Return true iff plugin (a path) is loadable. */
   virtual bool is_loadable(const std::string path) = 0;

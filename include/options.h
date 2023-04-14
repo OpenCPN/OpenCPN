@@ -270,7 +270,7 @@ class options : private Uncopyable,
 #endif
 {
 public:
-  explicit options(MyFrame *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+  explicit options(wxWindow *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
                    const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
                    const wxSize &size = SYMBOL_OPTIONS_SIZE,
@@ -291,7 +291,7 @@ public:
   wxScrolledWindow *AddPage(size_t parent, const wxString &title);
   bool DeletePluginPage(wxScrolledWindow *page);
   void SetColorScheme(ColorScheme cs);
-  void RecalculateSize(void);
+  void RecalculateSize(int hint_x, int hint_y);
 
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
   void SetInitialSettings(void);
@@ -420,7 +420,7 @@ public:
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
-      *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor;
+      *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor, *m_pSlider_ENCText_Factor;
   wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
@@ -595,7 +595,7 @@ public:
 
   ArrayOfCDI m_CurrentDirList, *m_pWorkDirList;
   MyConfig *m_pConfig;
-  MyFrame *pParent;
+  wxWindow *pParent;
 
   int k_plugins;
   bool m_bForceNewToolbaronCancel;
@@ -655,7 +655,7 @@ private:
   int m_screenConfig;
 
   wxNotebookPage *m_groupsPage;
-  wxFont *dialogFont, *dialogFontPlus;
+  wxFont *dialogFont;
   wxFont smallFont;
   //  wxFont *dialogFont;
   wxSize m_small_button_size;
@@ -701,9 +701,9 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
+class ChartGroupsUI :  public wxScrolledWindow {
 public:
-  explicit ChartGroupsUI(wxWindow *parent);
+  ChartGroupsUI(wxWindow *parent);
   ~ChartGroupsUI(void);
 
   void CreatePanel(size_t parent, int border_size, int group_item_spacing);

@@ -139,6 +139,8 @@ typedef enum
       WorkingRoute
 } ROUTE_TYPE;
 
+extern wxString g_TalkerIdText;   /* FIXME(leamas) pesky global. */
+
 /*
 ** Misc Function Prototypes
 */

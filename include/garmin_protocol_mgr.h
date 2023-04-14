@@ -31,6 +31,7 @@
 #ifndef _GARMINPROTOCOLHANDLER_H__
 #define _GARMINPROTOCOLHANDLER_H__
 
+#include <atomic>
 #include <string>
 
 #ifndef __WXMSW__
@@ -203,7 +204,7 @@ class GARMIN_USB_Thread;
 
 class GarminProtocolHandler : public wxEvtHandler {
 public:
-  GarminProtocolHandler(/*FIXME dave DataStream*/void *parent, wxEvtHandler *MessageTarget,
+  GarminProtocolHandler(wxString port, wxEvtHandler *MessageTarget,
                         bool bsel_usb);
   ~GarminProtocolHandler();
 
@@ -228,7 +229,7 @@ public:
   int m_nSats;
   wxTimer TimerGarmin1;
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
   GARMIN_Serial_Thread *m_garmin_serial_thread;
   GARMIN_USB_Thread *m_garmin_usb_thread;
   bool m_bneed_int_reset;
@@ -268,7 +269,7 @@ public:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_Serial_Thread : public wxThread {
 public:
-  GARMIN_Serial_Thread(GarminProtocolHandler *parent, void *GParentStream,
+  GARMIN_Serial_Thread(GarminProtocolHandler *parent,
                        wxEvtHandler *MessageTarget, wxString port);
   ~GARMIN_Serial_Thread(void);
   void *Entry();
@@ -277,7 +278,6 @@ public:
 private:
   wxEvtHandler *m_pMessageTarget;
   GarminProtocolHandler *m_parent;
-  void *m_parent_stream;
 
   wxString m_port;
   bool m_bconnected;
@@ -294,15 +294,13 @@ private:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_USB_Thread : public wxThread {
 public:
-  GARMIN_USB_Thread(GarminProtocolHandler *parent, void *GParentStream,
+  GARMIN_USB_Thread(GarminProtocolHandler *parent,
                     wxEvtHandler *MessageTarget, unsigned int device_handle,
                     size_t max_tx_size);
   ~GARMIN_USB_Thread(void);
   void *Entry();
 
 private:
-  void *m_parent_stream;
-
   int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);
   int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);
   int gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz);

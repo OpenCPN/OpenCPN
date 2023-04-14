@@ -1,0 +1,17 @@
+= Building the development manual
+
+This document describes the basic steps to build the manual locally.
+The official, published version is available at
+https://github.com/opencpn-manuals/main/
+
+Local builds requires Nodejs installed. See for example
+https://nodejs.org/en/download/ or use package managers
+like apt or dnf on linux.
+
+With nodejs in place, build using
+
+    $ npm install
+    $ npm run build
+
+The resulting website is placed in the directory _docs_. Check the
+results by pointing the browser to the _docs/index.html_ file.

@@ -25,6 +25,8 @@
  *
  */
 
+#include "pi_gl.h"
+
 #include "grib_pi.h"
 #include "folder.xpm"
 
@@ -795,6 +797,10 @@ void GribSettingsDialog::SetSettingsDialogSize() {
 #ifdef __WXGTK__
   SetMinSize(wxSize(0, 0));
 #endif
+
+  int display_width, display_height;
+  wxDisplaySize(&display_width, &display_height);
+
   for (size_t i = 0; i < m_nSettingsBook->GetPageCount();
        i++) {  // compute and set scrolled windows size
     wxScrolledWindow *sc = ((wxScrolledWindow *)m_nSettingsBook->GetPage(i));
@@ -815,6 +821,12 @@ void GribSettingsDialog::SetSettingsDialogSize() {
           scr = m_fgSetGuiSizer->Fit(sc);
       }
       sc->SetMinSize(wxSize(wxMin(scr.x, w), wxMin(scr.y, h)));
+
+      // Constrain size on small displays
+      if(display_height < 600){
+        sc->SetSize(scr.x, h);
+      }
+
 #if defined __WXMSW__ || defined(__WXOSX__)
       sc->Show();
 #endif

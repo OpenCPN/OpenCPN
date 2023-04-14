@@ -1,0 +1,19 @@
+commit e61866f098098422462e8bc220506443e76c3bb0
+Author: Björn Esser <me@besser82.io>
+Date:   Sun Apr 3 11:21:47 2016 +0200
+
+    do not include gtest_src_dir
+
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 11c1b04..43377db 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -8,7 +8,7 @@ IF(GTESTSRC_FOUND)
+         set(gtest_force_shared_crt ON)
+     endif()
+ 
+-    add_subdirectory(${GTEST_SOURCE_DIR} ${CMAKE_BINARY_DIR}/googletest)
++#   add_subdirectory(${GTEST_SOURCE_DIR} ${CMAKE_BINARY_DIR}/googletest)
+     include_directories(SYSTEM ${GTEST_INCLUDE_DIR})
+ 
+     set(TEST_LIBRARIES gtest gtest_main)

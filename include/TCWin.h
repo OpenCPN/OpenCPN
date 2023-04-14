@@ -80,6 +80,7 @@ private:
   int m_tsx;             // test button width
   int m_tsy;             // test button height
   float m_tcwin_scaler;  // factor to scale TCWin and contents by
+  int m_choiceSize_x;
 
   IDX_entry *pIDX;
   wxButton *OK_button;
@@ -124,6 +125,7 @@ private:
   wxBrush *pltgray2;
 
   int m_button_height;
+  int m_refTextHeight;
 
   int xSpot;
   int ySpot;

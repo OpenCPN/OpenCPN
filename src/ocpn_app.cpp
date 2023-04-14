@@ -80,6 +80,7 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 #include <wx/cmdline.h>
+#include <wx/display.h>
 
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
@@ -96,6 +97,7 @@
 #include "cm93.h"
 #include "concanv.h"
 #include "config.h"
+#include "config_vars.h"
 #include "ConfigMgr.h"
 #include "DetailSlider.h"
 #include "dychart.h"
@@ -113,6 +115,7 @@
 #include "OCPN_AUIManager.h"
 #include "OCPNPlatform.h"
 #include "options.h"
+#include "own_ship.h"
 #include "plugin_handler.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -140,6 +143,7 @@
 //#include "comm_navmsg_bus.h"
 //#include "N2KParser.h"
 //#include "comm_util.h"
+#include "comm_vars.h"
 
 #include "mDNS_service.h"
 
@@ -228,8 +232,6 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
-wxConfigBase *pBaseConfig;   // Always the same as pConfig, handles MS linker
-
 ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
 wxString *pdir_list[20];
@@ -257,8 +259,6 @@ TrackPropDlg *pTrackPropDialog;
 RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
-double gLat, gLon, gCog, gSog, gHdt, gHdm, gVar;
-wxString gRmcDate, gRmcTime;
 double vLat, vLon;
 double initial_scale_ppm, initial_rotation;
 
@@ -303,11 +303,7 @@ int g_mem_total, g_mem_used, g_mem_initial;
 
 bool s_bSetSystemTime;
 
-wxString g_hostname;
-
 static unsigned int malloc_max;
-
-wxArrayOfConnPrm *g_pConnectionParams;
 
 wxDateTime g_start_time;
 wxDateTime g_loglast_time;
@@ -342,7 +338,6 @@ bool g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be
                       // displayed
 bool g_bShowChartBar;
 bool g_bShowActiveRouteHighway;
-int g_nNMEADebug;
 int g_nAWDefault;
 int g_nAWMax;
 bool g_bPlayShipsBells;
@@ -384,9 +379,6 @@ wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-int gps_watchdog_timeout_ticks;
-int sat_watchdog_timeout_ticks;
-
 int gGPS_Watchdog;
 bool bGPSValid;
 bool bVelocityValid;
@@ -394,12 +386,8 @@ bool bVelocityValid;
 int gHDx_Watchdog;
 int gHDT_Watchdog;
 int gVAR_Watchdog;
-bool g_bVAR_Rx;
 
 int gSAT_Watchdog;
-int g_priSats;
-int g_SatsInView;
-bool g_bSatValid;
 
 bool g_bDebugCM93;
 bool g_bDebugS57;
@@ -424,10 +412,12 @@ float g_selection_radius_touch_mm = 10.0;
 int g_GUIScaleFactor;
 int g_ChartScaleFactor;
 float g_ChartScaleFactorExp;
+float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 int g_ShipScaleFactor;
 float g_ShipScaleFactorExp;
 int g_ENCSoundingScaleFactor;
+int g_ENCTextScaleFactor;
 
 bool g_bShowTide;
 bool g_bShowCurrent;
@@ -547,11 +537,9 @@ bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
 
-wxString g_GPS_Ident;
-
 S57QueryDialog *g_pObjectQueryDialog;
 
-wxArrayString TideCurrentDataSet;
+std::vector<std::string> TideCurrentDataSet;
 wxString g_TCData_Dir;
 
 bool g_boptionsactive;
@@ -612,7 +600,6 @@ bool g_bDrawAISRealtime;
 double g_AIS_RealtPred_Kts;
 bool g_bShowAISName;
 int g_Show_Target_Name_Scale;
-bool g_bWplUsePosition;
 int g_WplAction;
 
 int g_nAIS_activity_timer;
@@ -699,7 +686,6 @@ wxString g_AisTargetList_column_order;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
-bool g_bGarminHostUpload;
 bool g_bFullscreen;
 
 OCPN_AUIManager *g_pauimgr;
@@ -723,7 +709,6 @@ bool g_benable_rotate;
 bool g_bShowTrue = true;
 bool g_bShowMag;
 
-double g_UserVar;
 bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
@@ -769,9 +754,6 @@ int g_chart_zoom_modifier_raster;
 int g_chart_zoom_modifier_vector;
 
 int g_NMEAAPBPrecision;
-
-wxString g_TalkerIdText;
-int g_maxWPNameLength;
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -1082,8 +1064,6 @@ bool MyApp::OnInit() {
 #endif
 
   GpxDocument::SeedRandom();
-  safe_mode::set_mode(false);
-
   last_own_ship_sog_cog_calc_ts = wxInvalidDateTime;
 
 #if defined(__WXGTK__) && defined(ocpnUSE_GLES) && defined(__ARM_ARCH)
@@ -1151,7 +1131,7 @@ bool MyApp::OnInit() {
         if (wxFileExists(lockFile)) wxRemoveFile(lockFile);
 
         wxMessageBox(_("Sorry, an existing instance of OpenCPN may be too busy "
-                       "too respond.\nPlease retry."),
+                       "to respond.\nPlease retry."),
                      wxT("OpenCPN"), wxICON_INFORMATION | wxOK);
       }
       delete client;
@@ -1350,9 +1330,6 @@ bool MyApp::OnInit() {
   }
 
 
-  //      Initialize connection parameters array
-  g_pConnectionParams = new wxArrayOfConnPrm();
-
   //      Initialize some lists
   //    Layers
   pLayerList = new LayerList;
@@ -1393,7 +1370,7 @@ bool MyApp::OnInit() {
 
   //      Open/Create the Config Object
   pConfig = g_Platform->GetConfigObject();
-  pBaseConfig = pConfig;
+  InitBaseConfig(pConfig);
   pConfig->LoadMyConfig();
 
   //  Override for some safe and nice default values if the config file was
@@ -1598,16 +1575,17 @@ bool MyApp::OnInit() {
       (g_Platform->GetSharedDataDir() + _T("tcdata") +
        wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
-  if (!TideCurrentDataSet.GetCount()) {
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata0));
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
+//TODO: What are we trying to do here?
+  if (TideCurrentDataSet.empty()) {
+    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
+    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
   } else {
     wxString first_tide = TideCurrentDataSet[0];
     wxFileName ft(first_tide);
     if (!ft.FileExists()) {
-      TideCurrentDataSet.RemoveAt(0);
-      TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata0), 0);
-      TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
+      TideCurrentDataSet.erase(TideCurrentDataSet.begin());
+      TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
+      TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
     }
   }
 
@@ -1674,7 +1652,7 @@ bool MyApp::OnInit() {
     position = wxPoint(g_nframewin_posx, g_nframewin_posy);
 
 #ifdef __WXMSW__
-  //  Support MultiMonitor setups which an allow negative window positions.
+  //  Support MultiMonitor setups which can allow negative window positions.
   RECT frame_rect;
   frame_rect.left = position.x;
   frame_rect.top = position.y;
@@ -1686,6 +1664,18 @@ bool MyApp::OnInit() {
   if (NULL == MonitorFromRect(&frame_rect, MONITOR_DEFAULTTONULL))
     position = wxPoint(10, 10);
 #endif
+
+#ifdef __WXOSX__
+  //  Support MultiMonitor setups which can allow negative window positions.
+  const wxPoint ptScreen(position.x, position.y);
+  const int displayIndex = wxDisplay::GetFromPoint(ptScreen);
+
+  if (displayIndex == wxNOT_FOUND)
+    position = wxPoint(10, 30);
+#endif
+
+  g_nframewin_posx = position.x;
+  g_nframewin_posy = position.y;
 
 #ifdef __OCPN__ANDROID__
   wxSize asz = getAndroidDisplayDimensions();
@@ -1704,8 +1694,10 @@ bool MyApp::OnInit() {
   app_style |= wxWANTS_CHARS;
 
   // Create the main frame window
-  wxString myframe_window_title = wxString::Format(wxT("OpenCPN %s"),
-                                                   VERSION_FULL);  // Gunther
+
+  // Strip the commit SHA number from the string to be shown in frame title.
+  wxString short_version_name = wxString(PACKAGE_VERSION).BeforeFirst('+');
+  wxString myframe_window_title = wxString(wxT("OpenCPN ") + short_version_name);
 
   if (g_bportable) {
     myframe_window_title += _(" -- [Portable(-p) executing from ");
@@ -1887,13 +1879,7 @@ bool MyApp::OnInit() {
                 gps_watchdog_timeout_ticks);
   wxLogMessage(dogmsg);
 
-  sat_watchdog_timeout_ticks = 12;
-
-  gGPS_Watchdog = 2;
-  gHDx_Watchdog = 2;
-  gHDT_Watchdog = 2;
-  gSAT_Watchdog = 2;
-  gVAR_Watchdog = 2;
+  sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
 
   g_priSats = 99;
 
@@ -2031,8 +2017,8 @@ bool MyApp::OnInit() {
   g_pauimgr->Update();
 
 #if defined(__linux__) && !defined(__OCPN__ANDROID__)
-  for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-    ConnectionParams *cp = g_pConnectionParams->Item(i);
+  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+    ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
       if (cp->GetDSPort().Contains(_T("Serial"))) {
         std::string port(cp->Port.ToStdString());

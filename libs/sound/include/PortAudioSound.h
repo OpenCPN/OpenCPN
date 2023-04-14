@@ -51,6 +51,7 @@ class PortAudioSound: public OcpnSound
         std::string GetDeviceInfo(int deviceIndex) override;
         bool IsOutputDevice(int deviceIndex) const override;
         bool Load(const char* path, int deviceIndex = -1) override;
+        void UnLoad() override;
         bool Play() override;
         bool Stop() override;
         void SetFinishedCallback(AudioDoneCallback cb, void* userData = 0);

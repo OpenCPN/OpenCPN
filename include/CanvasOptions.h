@@ -53,6 +53,7 @@ enum {
   IDCO_SHOW_AIS_CHECKBOX,
   IDCO_ATTEN_AIS_CHECKBOX,
   IDCO_ENCVISIBLESECTORS_CHECKBOX1,
+  IDCO_ENCDATAQUALITY_CHECKBOX,
 };
 
 class MyFrame;
@@ -100,7 +101,7 @@ private:
   wxChoice *m_pDispCat;
   wxCheckBox *pCBENCDepth, *pCBENCLightDesc, *pCBENCBuoyLabels, *pCBENCLights,
       *pCBENCAnchorDetails;
-  wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors;
+      wxCheckBox *pCBShowAIS, *pCBAttenAIS, *pCBENCVisibleSectors, *pCBENCDataQuality;
 
   DECLARE_EVENT_TABLE()
 };

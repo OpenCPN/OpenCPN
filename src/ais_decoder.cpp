@@ -52,11 +52,13 @@
 #include "ais_decoder.h"
 #include "ais_target_data.h"
 #include "comm_navmsg_bus.h"
+#include "config_vars.h"
 #include "geodesic.h"
 #include "georef.h"
 #include "idents.h"
 #include "multiplexer.h"
 #include "navutil_base.h"
+#include "own_ship.h"
 #include "route_point.h"
 #include "select.h"
 #include "SoundFactory.h"
@@ -95,11 +97,6 @@ extern bool g_bAllowShowScaled;
 extern bool g_bShowScaled;
 extern bool g_bInlandEcdis;
 extern int g_WplAction;
-extern double gLat;
-extern double gLon;
-extern double gCog;
-extern double gSog;
-extern double gHdt;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern int g_iDistanceFormat;
@@ -153,7 +150,6 @@ static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern int gps_watchdog_timeout_ticks;
 extern bool g_bquiting;
 extern wxString g_DSC_sound_file;
 extern wxString g_SART_sound_file;
@@ -382,7 +378,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129794(static_cast<uint64_t>(129794));
   listener_N2K_129794.Listen(n2k_msg_129794, this, EVT_N2K_129794);
   Bind(EVT_N2K_129794, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129794(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
       // AIS static data class B part A PGN 129809
@@ -390,7 +386,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129809(static_cast<uint64_t>(129809));
   listener_N2K_129809.Listen(n2k_msg_129809, this, EVT_N2K_129809);
   Bind(EVT_N2K_129809, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129809(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // AIS static data class B part B PGN 129810
@@ -398,7 +394,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129810(static_cast<uint64_t>(129810));
   listener_N2K_129810.Listen(n2k_msg_129810, this, EVT_N2K_129810);
   Bind(EVT_N2K_129810, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129810(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
   // AIS Base Station report PGN 129793
@@ -406,7 +402,7 @@ void AisDecoder::InitCommListeners(void) {
   Nmea2000Msg n2k_msg_129793(static_cast<uint64_t>(129793));
   listener_N2K_129793.Listen(n2k_msg_129793, this, EVT_N2K_129793);
   Bind(EVT_N2K_129793, [&](ObservedEvt ev) {
-    HandleN2K_129041(UnpackEvtPointer<Nmea2000Msg>(ev));
+    HandleN2K_129793(UnpackEvtPointer<Nmea2000Msg>(ev));
   });
 
 }
@@ -468,6 +464,12 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->MID = MessageID;
     pTargetData->MMSI = mmsi;
     pTargetData->Class = AIS_CLASS_A;
+    //    Check for SART and friends by looking at first two digits of MMSI
+    if( 97 == pTargetData->MMSI / 10000000) {
+      pTargetData->Class = AIS_SART;
+      // won't get a static report, so fake it here
+      pTargetData->StaticReportTicks = now.GetTicks();
+    }
     pTargetData->NavStatus = (ais_nav_status)NavStat;
     if (!N2kIsNA(SOG)) pTargetData->SOG = MS2KNOTS(SOG);
     if (!N2kIsNA(COG)) pTargetData->COG = GeodesicRadToDeg(COG);
@@ -496,6 +498,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_positionOnceValid = true;
     pTargetData->PositionReportTicks = now.GetTicks();
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -577,6 +580,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_OwnShip =
         AISTransceiverInformation == tN2kAISTransceiverInformation::N2kaisown_information_not_broadcast;
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -671,6 +675,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //FIXME (dave) Populate more fiddly static data
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -761,6 +766,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
       }
     }
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -804,7 +810,9 @@ bool AisDecoder::HandleN2K_129809( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_nameValid = true;
     pTargetData->MID = 124;  // Indicates a name from n2k
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
+
     touch_state.Notify();
     return true;
 
@@ -860,6 +868,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
     pTargetData->ShipType = (unsigned char)VesselType;
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();
@@ -918,6 +927,7 @@ bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
       //FIXME (dave) Populate more fiddly static data
 
+    pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
     CommitAISTarget(pTargetData, "", true, bnewtarget);
 
     touch_state.Notify();

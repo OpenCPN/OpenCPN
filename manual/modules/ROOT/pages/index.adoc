@@ -1,0 +1,7 @@
+= Programmer manual
+
+Very little of the OpenCPN internals is documented, the docs here are
+just some sporadic notes on various spots in the code.
+This makes this manual to a Work In progress in the true sense.
+
+Expand left sidebar to navigate.

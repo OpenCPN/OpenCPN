@@ -91,12 +91,12 @@ millions of points.
 #include "json_event.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "select.h"
 
 extern WayPointman *pWayPointMan;
 extern Select *pSelect;
-extern double gLat, gLon;
 extern double g_PlanSpeed;
 extern int g_nTrackPrecision;
 extern bool g_bTrackDaily;
@@ -291,10 +291,14 @@ Track *ActiveTrack::DoExtendDaily() {
   TrackPoint *pExtendPoint = NULL;
 
   TrackPoint *pLastPoint = GetPoint(0);
+  if (!pLastPoint->GetCreateTime().IsValid())
+    return NULL;
 
   for (Track* ptrack : g_TrackList) {
     if (!ptrack->m_bIsInLayer && ptrack->m_GUID != m_GUID) {
       TrackPoint *track_node = ptrack->GetLastPoint();
+      if (!track_node->GetCreateTime().IsValid())
+        continue;     // Skip this bad track
       if (track_node->GetCreateTime() <= pLastPoint->GetCreateTime()) {
         if (!pExtendPoint ||
             track_node->GetCreateTime() > pExtendPoint->GetCreateTime()) {
@@ -409,9 +413,9 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
 
   // Calculate the distance between two points of the track based on georef lib
     if (g_trackFilterMax){
-      if (trackPointState != firstPoint)
+      if (trackPointState == potentialPoint)
       {
-        double distToLastGpsPoint = DistGreatCircle(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLon, gLat);
+        double distToLastGpsPoint = DistLoxodrome(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon);
         if (distToLastGpsPoint > g_trackFilterMax) return;
       }
     }
@@ -767,6 +771,7 @@ int Track::Simplify(double maxDelta) {
   DouglasPeuckerReducer(pointlist, keeplist, 0, pointlist.size() - 1, maxDelta);
 
   pSelect->DeleteAllSelectableTrackSegments(this);
+  SubTracks.clear();
   TrackPoints.clear();
 
   for (size_t i = 0; i < pointlist.size(); i++) {
@@ -777,6 +782,7 @@ int Track::Simplify(double maxDelta) {
       reduction++;
     }
   }
+  Finalize();
 
   pSelect->AddAllSelectableTrackSegments(this);
 

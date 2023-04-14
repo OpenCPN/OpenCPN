@@ -42,7 +42,7 @@
 #endif
 
 // Warn: div by 0 if count == 1
-#define WIND_RECORD_COUNT 3000
+#define WIND_RECORD_COUNT 2000
 
 #include "instrument.h"
 #include "dial.h"
@@ -82,6 +82,7 @@ protected:
   bool m_IsRunning;
   int m_SampleCount;
   wxString m_WindSpeedUnit;
+  int m_SetNewData;        // No need for data every second
 
   wxRect m_WindowRect;
   wxRect m_DrawAreaRect;  // the coordinates of the real darwing area
@@ -97,6 +98,7 @@ protected:
   void SetMinMaxWindScale();
   void DrawWindDirScale(wxGCDC* dc);
   void DrawWindSpeedScale(wxGCDC* dc);
+  void ResetData();
   wxString GetWindDirStr(wxString WindDir);
 };
 

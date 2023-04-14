@@ -26,16 +26,34 @@
 #ifndef _COMMDRIVERN0183SERIAL_H
 #define _COMMDRIVERN0183SERIAL_H
 
+#include <atomic>
 #include <string>
 
 #include <wx/event.h>
 
 #include "comm_drv_n0183.h"
 #include "conn_params.h"
+#include "garmin_protocol_mgr.h"
 
 class CommDriverN0183SerialThread;  // Internal
 
-class CommDriverN0183SerialEvent;  // Internal
+class CommDriverN0183SerialEvent : public wxEvent {
+public:
+  CommDriverN0183SerialEvent( wxEventType commandType, int id);
+  ~CommDriverN0183SerialEvent();
+
+  // accessors
+  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data);
+  std::shared_ptr<std::vector<unsigned char>> GetPayload();
+
+  // required for sending with wxPostEvent()
+  wxEvent* Clone() const;
+private:
+  std::shared_ptr<std::vector<unsigned char>> m_payload;
+};
+
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
+
 
 class CommDriverN0183Serial : public CommDriverN0183, public wxEvtHandler {
 public:
@@ -56,6 +74,9 @@ public:
   void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
   bool IsSecThreadActive() const { return m_bsec_thread_active; }
 
+  bool IsGarminThreadActive();
+  void StopGarminUSBIOThread(bool bPause);
+
   void SetSecondaryThread(CommDriverN0183SerialThread* secondary_Thread) {
     m_pSecondary_Thread = secondary_Thread;
   }
@@ -64,7 +85,7 @@ public:
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
 
   ConnectionParams GetParams() const { return m_params; }
 
@@ -79,6 +100,8 @@ private:
 
   CommDriverN0183SerialThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
+
+  GarminProtocolHandler *m_GarminHandler;
 
   ConnectionParams m_params;
   DriverListener& m_listener;

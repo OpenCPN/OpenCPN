@@ -27,8 +27,8 @@
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
 
-#include <wx/arrstr.h>
 #include <map>
+#include <vector>
 
 #include "Station_Data.h"
 #include "IDX_entry.h"
@@ -88,8 +88,8 @@ public:
   TCMgr();
   ~TCMgr();
 
-  TC_Error_Code LoadDataSources(wxArrayString &sources);
-  wxArrayString GetDataSet(void) { return m_sourcefile_array; }
+  TC_Error_Code LoadDataSources(std::vector<std::string> &sources);
+  std::vector<std::string> GetDataSet(void) { return m_sourcefile_array; }
 
   bool IsReady(void) { return bTCMReady; }
 
@@ -109,7 +109,7 @@ public:
 
   const IDX_entry *GetIDX_entry(int index) const;
 
-  int Get_max_IDX() const { return m_Combined_IDX_array.GetCount() - 1; }
+  int Get_max_IDX() const { return m_Combined_IDX_array.size() - 1; }
 
   std::map<double, const IDX_entry *> GetStationsForLL(double xlat,
                                                        double xlon) const;
@@ -132,9 +132,9 @@ private:
   wxString pmru_file_name;
 
   ArrayOfTCDSources m_source_array;
-  wxArrayString m_sourcefile_array;
+  std::vector<std::string> m_sourcefile_array;
 
-  ArrayOfIDXEntry m_Combined_IDX_array;
+  std::vector<IDX_entry *> m_Combined_IDX_array;
 };
 
 /* $Id: tcd.h.in 3744 2010-08-17 22:34:46Z flaterco $ */
