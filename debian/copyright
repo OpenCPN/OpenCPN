@@ -16,7 +16,6 @@ Files-Excluded:
  libs/serial
  libs/tinyxml
  libs/wxsvg
- mingw
  plugins/chartdldr_pi/src/tinyxml
  plugins/chartdldr_pi/src/unarr
  plugins/grib_pi/src/bzip2
