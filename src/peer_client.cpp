@@ -27,25 +27,24 @@
 #include <iostream>
 #include <sstream>
 
+#include <curl/curl.h>
+
 #include "peer_client.h"
 
-#include "nav_object_database.h"
+#include <wx/fileconf.h>
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
 #include <wx/tokenzr.h>
-#include <wx/fileconf.h>
 
-#include "REST_server.h"
-#include "gui_lib.h"
-#include <curl/curl.h>
+#include "config_vars.h"
 #include "FontMgr.h"
+#include "gui_lib.h"
+#include "nav_object_database.h"
+#include "REST_server.h"
 
 extern std::string PINtoRandomKeyString(int dpin);
 
-extern wxString g_hostname;
 extern MyFrame *gFrame;
-extern wxConfigBase *pBaseConfig;
-
 
 wxString GetErrorText(int result){
   switch (result) {
@@ -109,10 +108,24 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
+int navobj_transfer_progress;
+
+int xfer_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow,
+                  curl_off_t ultotal, curl_off_t ulnow) {
+                    if (ultotal == 0) {
+                      navobj_transfer_progress = 0;
+                    } else {
+                      navobj_transfer_progress = 100 * ulnow / ultotal;
+                    }
+                    wxYield();
+                    return 0;
+                  }
+
 long PostSendObjectMessage( std::string url, std::ostringstream &body,
                             MemoryStruct *response){
 
   long response_code = -1;
+  navobj_transfer_progress = 0;
 
 #ifdef ANDROID
 //FIXME (dave)
@@ -130,9 +143,11 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
 
   curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(c, CURLOPT_WRITEDATA, (void *)response);
+  curl_easy_setopt(c, CURLOPT_NOPROGRESS, 0);
+  curl_easy_setopt(c, CURLOPT_XFERINFOFUNCTION, xfer_callback);
 
   CURLcode result = curl_easy_perform(c);
-
+  navobj_transfer_progress = 0;
   if(result == CURLE_OK)
     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
 
@@ -144,14 +159,12 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
 
 std::string GetClientKey( std::string &server_name )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTClient" ) );
+  if (TheBaseConfig()) {
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
 
     wxString key_string;
 
-    pConf->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -167,14 +180,12 @@ std::string GetClientKey( std::string &server_name )
 
 void SaveClientKey( std::string &server_name, std::string key )
 {
-  wxFileConfig *pConf = (wxFileConfig *) pBaseConfig;
-
-  if( pConf ) {
-    pConf->SetPath( _T ( "/Settings/RESTClient" ) );
+  if (TheBaseConfig()) {
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
 
     wxArrayString array;
     wxString key_string;
-    pConf->Read("ServerKeys", &key_string );
+    TheBaseConfig()->Read("ServerKeys", &key_string );
     wxStringTokenizer st(key_string, _T(";"));
     while (st.HasMoreTokens()) {
       wxString s1 = st.GetNextToken();
@@ -205,7 +216,7 @@ void SaveClientKey( std::string &server_name, std::string key )
       key_string_updated += ";";
     }
 
-    pConf->Write("ServerKeys", key_string_updated );
+    TheBaseConfig()->Write("ServerKeys", key_string_updated );
 
   }
   return ;
@@ -213,25 +224,20 @@ void SaveClientKey( std::string &server_name, std::string key )
 
 
 
-int SendRoute(std::string dest_ip_address, std::string server_name, Route *route, bool overwrite)
+int SendNavobjects(std::string dest_ip_address, std::string server_name, std::vector<Route*> route, std::vector<RoutePoint*> routepoint, std::vector<Track*> track, bool overwrite)
 {
-  if(!route)
+  if(route.empty() && routepoint.empty() && track.empty())
     return -1;
-
-  // Get XML representation of object.
-  NavObjectCollection1 *pgpx = new NavObjectCollection1;
-  pgpx->AddGPXRoute(route);
-  std::ostringstream stream;
-  pgpx->save(stream, PUGIXML_TEXT(" "));
-
   bool apikey_ok = false;
   bool b_cancel = false;
+  std::ostringstream stream;
+  std::string api_key;
 
-  while (!apikey_ok && b_cancel == false){
-    std::string api_key = GetClientKey(server_name);
+  while (!apikey_ok && b_cancel == false) {
+    api_key = GetClientKey(server_name);
 
     std::string url(dest_ip_address);
-    url += "/api/rx_object";
+    url += "/api/ping";
     url += std::string("?source=") + g_hostname;
     url += std::string("&apikey=") + api_key;
 
@@ -249,17 +255,16 @@ int SendRoute(std::string dest_ip_address, std::string server_name, Route *route
       int numErrors = reader.Parse( body, &root );
       // Capture the result
       int result = root["result"].AsInt();
-      if (result > 0){
-        if (result == RESULT_NEW_PIN_REQUESTED){
+      if (result > 0) {
+        if (result == RESULT_NEW_PIN_REQUESTED) {
 
           // Show the dialog asking for PIN
           PINConfirmDialog dlg((wxWindow *)gFrame, wxID_ANY, _("OpenCPN Server Message"),
             "", wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE );
 
-          wxString hmsg("The server ");
-          hmsg +=  "needs a PIN.\nPlease enter the PIN number from ";
-          hmsg += wxString("the server ");
-          hmsg += " to pair with this device.\n";
+          wxString hmsg(_("The server "));
+          hmsg += _("needs a PIN.\nPlease enter the PIN number from ");
+          hmsg += _("the server to pair with this device.\n");
 
           dlg.SetMessage(hmsg);
           dlg.SetText1Message("");
@@ -274,16 +279,83 @@ int SendRoute(std::string dest_ip_address, std::string server_name, Route *route
           else
             b_cancel = true;
         }
-        else{
-          wxString error_text = GetErrorText(result);
-          OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
-                          wxICON_ERROR | wxOK);
-          mdlg.ShowModal();
-          b_cancel = true;
-        }
+        else if (result == RESULT_GENERIC_ERROR)
+          apikey_ok = true;
       }
       else
-          apikey_ok = true;
+        apikey_ok = true;
+     }
+    else{
+      wxString err_msg;
+      err_msg.Printf("Server HTTP response is: %ld", response_code);
+      OCPNMessageDialog mdlg(NULL, err_msg, wxString(_("OpenCPN Info")),
+                          wxICON_ERROR | wxOK);
+      mdlg.ShowModal();
+
+      b_cancel = true;
+    }
+  }
+  if (!apikey_ok || b_cancel) {
+    return false;
+  }
+  // Get XML representation of object.
+  NavObjectCollection1 *pgpx = new NavObjectCollection1;
+  navobj_transfer_progress = 0;
+  int total = route.size() + track.size() + routepoint.size();
+  int gpxgen = 0;
+  for (auto r : route) {
+    gpxgen++;
+    pgpx->AddGPXRoute(r);
+    navobj_transfer_progress = 100 * gpxgen / total;
+    wxYield();
+  }
+  for (auto r : routepoint) {
+    gpxgen++;
+    pgpx->AddGPXWaypoint(r);
+    navobj_transfer_progress = 100 * gpxgen / total;
+    wxYield();
+  }
+  for (auto r : track) {
+    gpxgen++;
+    pgpx->AddGPXTrack(r);
+    navobj_transfer_progress = 100 * gpxgen / total;
+    wxYield();
+  }
+  pgpx->save(stream, PUGIXML_TEXT(" "));
+
+  while (b_cancel == false) {
+    std::string api_key = GetClientKey(server_name);
+
+    std::string url(dest_ip_address);
+    url += "/api/rx_object";
+    url += std::string("?source=") + g_hostname;
+    url += std::string("&apikey=") + api_key;
+
+    struct MemoryStruct chunk;
+    chunk.memory = (char *)malloc(1);
+    chunk.size = 0;
+    long response_code = PostSendObjectMessage( url, stream, &chunk);
+
+    if(response_code == 200){
+      wxString body(chunk.memory);
+      wxJSONValue  root;
+      wxJSONReader reader;
+
+      int numErrors = reader.Parse( body, &root );
+      // Capture the result
+      int result = root["result"].AsInt();
+      if (result > 0) {
+        wxString error_text = GetErrorText(result);
+        OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
+                        wxICON_ERROR | wxOK);
+        mdlg.ShowModal();
+        b_cancel = true;
+      } else {
+        OCPNMessageDialog mdlg(NULL, _("Objects successfully sent to peer OpenCPN instance."), wxString(_("OpenCPN Info")),
+                        wxICON_INFORMATION | wxOK);
+        mdlg.ShowModal();
+        b_cancel = true;
+      }
     }
     else{
       wxString err_msg;

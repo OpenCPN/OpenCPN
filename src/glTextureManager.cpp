@@ -51,6 +51,7 @@
 #include "mipmap/mipmap.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"
+#include "own_ship.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64
@@ -65,8 +66,6 @@ WX_DEFINE_LIST(JobList);
 WX_DEFINE_LIST(ProgressInfoList);
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
-
-extern double gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
@@ -747,6 +746,10 @@ glTextureManager::glTextureManager() {
 glTextureManager::~glTextureManager() {
   //    ClearAllRasterTextures();
   ClearJobList();
+  for (int i = 0; i < m_max_jobs; i++) {
+    delete(progList[i]);
+  }
+  progList.Clear();
 }
 
 #define NBAR_LENGTH 40

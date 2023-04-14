@@ -54,7 +54,7 @@ else (APPLE)
   set(PACKAGE_NAME opencpn)
 endif (APPLE)
 
-add_definitions("-DRAPIDJSON_HAS_STDSTRING=1") 
+add_definitions("-DRAPIDJSON_HAS_STDSTRING=1")
 
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
@@ -70,6 +70,11 @@ endif ()
 
 
 project(OpenCPN)
+
+# Capture $DEB_VERSION on PPA build
+if (DEFINED DEB_VERSION)
+  add_definitions("-DDEB_VERSION=${DEB_VERSION}")
+endif (DEFINED DEB_VERSION)
 
 if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
   set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -445,10 +450,10 @@ if (APPLE)
     set(OCPN_LIBCPP "-stdlib=libc++")
   endif (OCPN_USE_LIBCPP)
   set(CMAKE_CXX_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
-  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g -gdwarf-2 -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${OCPN_LIBCPP} -arch ${ARCH}")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -gdwarf-2 -O3 ${OCPN_LIBCPP} -arch ${ARCH}")
 
   set(
     CMAKE_EXE_LINKER_FLAGS
@@ -467,7 +472,7 @@ endif (MSVC)
 if (MSVC)
   set(CMAKE_C_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1")
   set(CMAKE_C_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG")
-  set(CMAKE_C_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /wd8051 /wd4068")
+  set(CMAKE_C_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /wd4068")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /wd4068")
   set(CMAKE_CXX_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
@@ -475,7 +480,7 @@ if (MSVC)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
     "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa /wd4068"
   )
-  set(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS "/DEBUG /Release ${CMAKE_EXE_LINKER_FLAGS}")
 endif (MSVC)
 
 
@@ -875,8 +880,10 @@ set(
   include/comm_navmsg.h
   include/comm_navmsg_bus.h
   include/comm_util.h
+  include/comm_vars.h
   include/compass.h
   include/concanv.h
+  include/config_vars.h
   include/conn_params.h
   include/conn_params_panel.h
   include/cutil.h
@@ -902,6 +909,7 @@ set(
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
+  include/load_errors_dlg.h
   include/logger.h
   include/MarkIcon.h
   include/MarkInfo.h
@@ -923,6 +931,7 @@ set(
   include/ocpn_types.h
   include/ocpn_utils.h
   include/options.h
+  include/own_ship.h
   include/piano.h
   include/plugin_cache.h
   include/plugin_blacklist.h
@@ -1016,8 +1025,10 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
+  ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
@@ -1029,6 +1040,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
@@ -1086,6 +1098,7 @@ set(
   src/kml.cpp
   src/Layer.cpp
   src/LinkPropDlg.cpp
+  src/load_errors_dlg.cpp
   src/logger.cpp
   src/MarkInfo.cpp
   src/mbtiles.cpp
@@ -1218,7 +1231,7 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-  message(STATUS "PackageNem debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
+  message(STATUS "PackageName debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
   ${PACKAGE_NAME}
@@ -1248,6 +1261,9 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
 
 add_subdirectory(libs/mongoose)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
+
+add_subdirectory(libs/rapidjson)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::rapidjson)
 
 add_subdirectory(libs/mDNS)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mDNS)
@@ -1376,7 +1392,7 @@ if (OCPN_USE_CRASHREPORT)
       ${PACKAGE_NAME}
       PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib
     )
-    set(CMAKE_EXE_LINKER_FLAGS "/DEBUG ${CMAKE_EXE_LINKER_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "/DEBUG /Release ${CMAKE_EXE_LINKER_FLAGS}")
   else (MSVC)
     if (NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
       if (CMAKE_BUILD_TYPE MATCHES "Rel*")
@@ -1441,7 +1457,7 @@ endif (CMAKE_HOST_WIN32)
 if (OCPN_USE_LZMA)
   find_package(LibLZMA)
   if (LIBLZMA_FOUND)
-    message(STATUS "Building with lzma support")
+    message(STATUS "Building with lzma support: ${LIBLZMA_LIBRARIES}")
     target_include_directories(${PACKAGE_NAME} PUBLIC ${LIBLZMA_INCLUDE_DIRS})
   else (LIBLZMA_FOUND)
     message(STATUS "lzma library not found")
@@ -1526,7 +1542,7 @@ if (OCPN_USE_SVG)
     message(STATUS "wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG")
     add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
     add_definitions(-DocpnUSE_wxBitmapBundle)
-    set(PKGPROJ_TEMPLATE OpenCPN.newsvg.pkgproj.in)
+    set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
   else()
     message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
     set(PKGPROJ_TEMPLATE OpenCPN.pkgproj.in)
@@ -2012,6 +2028,11 @@ if (APPLE)
   )
 
   set_source_files_properties(
+    data/CoC-1973_2018-InlandECDIS_20220912.pdf
+    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+  )
+
+  set_source_files_properties(
     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
     PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
   )
@@ -2197,6 +2218,7 @@ if (APPLE)
     data/opencpn.png
     data/ocpn-plugins.xml
     data/CoC-909_2013-InlandECDIS_20170308s.pdf
+    data/CoC-1973_2018-InlandECDIS_20220912.pdf
     ${SOUND_FILES}
     buildosx/opencpn.icns
     buildosx/MainMenu.xib
@@ -2310,9 +2332,12 @@ if (NOT APPLE)
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
 
   install(
-    FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf
+    FILES
+      data/CoC-909_2013-InlandECDIS_20170308s.pdf
+      data/CoC-1973_2018-InlandECDIS_20220912.pdf
     DESTINATION ${PREFIX_PKGDATA}
   )
+
   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
 
   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
@@ -2356,7 +2381,7 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_DATA}/metainfo
       RENAME opencpn.appdata.xml
     )
-    install(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1)
+    install(FILES opencpn.1 opencpn-cmd.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif (UNIX)
 
   IF(PACKAGE_FORMAT MATCHES "DEB")
@@ -2558,7 +2583,7 @@ if (WIN32 AND NOT UNIX)
       "${wxWidgets_LIB_DIR}/wxbase32u_*.dll"
     )
     install(FILES ${wxdll_files} DESTINATION ".")
-    list(LENGTH "${wxdll_files}" wxdll_count)
+    list(LENGTH wxdll_files wxdll_count)
     message(STATUS
       "${wxdll_count} wxWidgets DLLs bundled into the installer package..."
     )
@@ -2582,6 +2607,19 @@ if (WIN32 AND NOT UNIX)
     message(STATUS "LibArchive DLLs bundled into the installer package...")
   endif (BUNDLE_LIBARCHIVEDLLS)
 endif (WIN32 AND NOT UNIX)
+
+if (APPLE)
+  find_library(
+    MPG123 NAMES mpg123
+    PATHS /usr/local/opt/mpg123/lib NO_DEFAULT_PATH
+    REQUIRED
+  )
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ${MPG123})
+  message(STATUS "MPG123: ${MPG123}")
+  find_library(MP3LAME NAMES mp3lame lame REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ${MP3LAME})
+  message(STATUS "MP3LAME: ${MP3LAME}")
+endif ()
 
 if (MSVC AND OCPN_USE_CRASHREPORT)
   install(
@@ -2825,6 +2863,11 @@ configure_file(
 #
 # Debian package setup
 #
+set(PKG_DESCR [=[
+OpenCPN is a concise ChartPlotter/Navigator. The application supports:
+GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart
+Display, AIS Input Decoding, Waypoint Autopilot Navigation. ]=])
+
 if (UNIX AND NOT APPLE)
   set(CPACK_STRIP_FILES ON)
   set(CPACK_GENERATOR ${PACKAGE_FORMAT})
@@ -2842,10 +2885,7 @@ if (UNIX AND NOT APPLE)
   set(CPACK_DEBIAN_PACKAGE_SECTION "misc")
   set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSource Chart Plotter/Navigator")
-  set(
-    CPACK_PACKAGE_DESCRIPTION
-    "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation ."
-  )
+  set(CPACK_PACKAGE_DESCRIPTION ${PKG_DESCR})
   set(CPACK_PACKAGE_RELOCATABLE OFF)
   set(CPACK_SET_DESTDIR ON)
   set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
@@ -2855,6 +2895,13 @@ endif (UNIX AND NOT APPLE)
 # Apple application bundle
 #
 if (APPLE)
+  if($ENV{pkg_mod})
+    set(APKG_MOD $ENV{pkg_mod})
+  else()
+    set(APKG_MOD 11)
+  endif()
+  message(STATUS "MacOS PKG_MOD: ${APKG_MOD} ")
+
   # -- Run the BundleUtilities cmake code
   set(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist.in")
 
@@ -2878,35 +2925,26 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-#  install(
-#    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-#    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-#    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-#      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
-#  )
-  set(
-    LIBS
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
-    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
+    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
+    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
   )
-install(CODE "
-  include(BundleUtilities)
-  set(BU_CHMOD_BUNDLE_ITEMS TRUE)
-  fixup_bundle(\"${APPS}\"  \"${LIBS}\"  \"${DIRS}\")
-  "
-  COMPONENT Runtime
-)
-
-#  For unknown reasons, fixup_bundle copies the wrong version of liblzma.5.dylib into the bundle.
-#  So, fix that here by grabbing the correct version as installed by macports.
-install(CODE "
-  include(BundleUtilities)
-  copy_resolved_item_into_bundle(\"/opt/local/lib/liblzma.5.dylib\" \"\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Frameworks\")
-  "
-  COMPONENT Runtime
-)
+    set(
+      LIBS
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
+      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
+    )
+  install(CODE "
+    include(BundleUtilities)
+    set(BU_CHMOD_BUNDLE_ITEMS TRUE)
+    fixup_bundle(\"${APPS}\"  \"${LIBS}\"  \"${DIRS}\")
+    "
+    COMPONENT Runtime
+  )
 
   # Build standard MacOS installer package
   # Copy a few generic files so the Packages installer builder can find them
@@ -2916,21 +2954,27 @@ install(CODE "
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/${PKGPROJ_TEMPLATE}
     ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
-    )
-  configure_file(${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY)
+  )
+  configure_file(
+    ${PROJECT_SOURCE_DIR}/COPYING.gplv2
+    ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt COPYONLY
+  )
 
-  ADD_CUSTOM_COMMAND(
-   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
-   COMMAND /usr/local/bin/packagesbuild -F ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
-   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
-   COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg file: ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg."
-   )
+  set(OSX_PKG_FILE
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
+  )
+  add_custom_command(
+    OUTPUT ${OSX_PKG_FILE}
+    COMMAND
+      /usr/local/bin/packagesbuild
+      -F ${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS ${OSX_PKG_FILE}
+    COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg: ${OSX_PKG_FILE}"
+  )
 
- ADD_CUSTOM_TARGET(create-pkg COMMENT "create-pkg: Done."
- DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg )
-
-  #Build standard MacOS .dmg
+  # Build standard MacOS .dmg
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
@@ -2955,30 +2999,77 @@ install(CODE "
     COMMENT "create-dmg: Done."
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
   )
+
+  execute_process(
+    COMMAND sw_vers -productVersion
+    OUTPUT_VARIABLE _product_version
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  # Only use main version nr
+  string(REGEX REPLACE "\\..*" "" OS_VERS ${_product_version})
+  message(STATUS "OS_VERS: ${OS_VERS}, _product_version: ${_product_version}")
+
+  # Build standard installer using pkgbuild/productbuild
+  string(CONCAT MACOS_PKG
+    "${CMAKE_CURRENT_BINARY_DIR}"
+    "/${PACKAGE_NAME}_${PACKAGE_VERSION}-${OS_VERS}.pkg"
+  )
+
+  add_custom_target(
+    show-bundled-libs
+    COMMAND ls -l /tmp/opencpn/bin/OpenCPN.app/Contents/Frameworks
+  )
+
+  add_custom_target(pkg-tmp COMMAND cmake -E make_directory pkg_tmp)
+
+  add_custom_target(
+    component-pkg
+    COMMAND pkgbuild
+      --root /tmp/opencpn/bin/OpenCPN.app
+      --identifier org.opencpn
+      --install-location /Applications/OpenCPN.app
+      --min-os-version 10.13
+      OpenCPN.app.pkg
+  )
+  add_dependencies(component-pkg show-bundled-libs pkg-tmp)
+
+  add_custom_target(
+    build-macos-pkg
+    COMMAND productbuild
+      --distribution ../buildosx/distro.plist
+      --version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+      --identifier org.opencpn
+     ${MACOS_PKG}
+  )
+  add_dependencies(build-macos-pkg component-pkg)
+
+  add_custom_target(remove-tmp-pkg COMMAND cmake -E rm -f OpenCPN.app.pkg)
+  add_dependencies(remove-tmp-pkg build-macos-pkg)
+
+  add_custom_target(macos-pkg)
+  add_dependencies(macos-pkg remove-tmp-pkg)
+
+  # Select what to do for the "create-pkg" target
+  if ("${APKG_MOD}" EQUAL 10)
+    add_custom_target(create-pkg DEPENDS ${OSX_PKG_FILE})
+  elseif ("${APKG_MOD}" EQUAL 11)
+    add_custom_target(create-pkg)
+    add_dependencies(create-pkg macos-pkg)
+  else ()
+    message(FATAL_ERROR "Illegal value for pkg_mod environ var: ${APKG_MOD}")
+  endif ()
 endif (APPLE)
 
 include(CPack)
-
-# Dummy target necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive
-# is executed. Apparently, the base CMakeLists.txt file must have "some" target
-# to activate all the clean steps.
-add_custom_target(dummy COMMENT "dummy: Done." DEPENDS ${PACKAGE_NAME})
-
-set_directory_properties(
-  dummy ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_SOURCE_DIR}/include/config.h
-)
 
 if (MSVC)
   add_custom_command(
     TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND
     cmake -E copy "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
-          "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+      "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
   )
 endif (MSVC)
-
-# Repack tarball using tar if available
-include(dist_target)
 
 # uninstall target
 if (NOT TARGET uninstall)
@@ -2997,7 +3088,7 @@ endif ()
 # Piggy-back the console application on the main setup.
 # Note that cli apps are not supported on Android
 #
-if (NOT QT_ANDROID AND NOT APPLE)
+if (NOT QT_ANDROID)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
@@ -3047,6 +3138,7 @@ if (NOT QT_ANDROID AND NOT APPLE)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::rapidjson)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
@@ -3066,14 +3158,18 @@ if (NOT QT_ANDROID AND NOT APPLE)
     endif ()
   endif ()
 
-if (NOT WIN32)
-  find_package(OpenSSL)
-  if (OPENSSL_FOUND)
-    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
-    target_link_libraries(opencpn-cmd PRIVATE ${OPENSSL_LIBRARIES})
-    add_definitions(-DMG_ENABLE_OPENSSL)
-  endif (OPENSSL_FOUND)
-else (NOT WIN32)
+  if (NOT WIN32)
+    find_package(OpenSSL)
+    if (OPENSSL_FOUND)
+      message(STATUS
+        "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}"
+      )
+      target_include_directories(opencpn-cmd PRIVATE ${OPENSSL_INCLUDE_DIR})
+      target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENSSL_INCLUDE_DIR})
+      target_link_libraries(opencpn-cmd PRIVATE ${OPENSSL_LIBRARIES})
+      add_definitions(-DMG_ENABLE_OPENSSL)
+    endif ()
+  else ()
     target_include_directories(
       opencpn-cmd
       PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
@@ -3086,7 +3182,7 @@ else (NOT WIN32)
       opencpn-cmd
       PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
     )
-endif (NOT WIN32)
+  endif ()
 
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()

@@ -634,35 +634,28 @@ TCMgr::TCMgr() {}
 TCMgr::~TCMgr() { PurgeData(); }
 
 void TCMgr::PurgeData() {
-  //  Index entries are owned by the data sources
-  //  so we need to clear them from the combined list without
-  //  deleting them
-  while (m_Combined_IDX_array.GetCount()) {
-    m_Combined_IDX_array.Detach(0);
-  }
+  m_Combined_IDX_array.clear();
 
   //  Delete all the data sources
   m_source_array.Clear();
 }
 
-TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources) {
+TC_Error_Code TCMgr::LoadDataSources(std::vector<std::string> &sources) {
   PurgeData();
 
   //  Take a copy of dataset file name array
-  m_sourcefile_array.Clear();
+  m_sourcefile_array.clear();
   m_sourcefile_array = sources;
 
-  //  Arrange for the index array to begin counting at "one"
-  m_Combined_IDX_array.Add((IDX_entry *)(NULL));
-  int num_IDX = 1;
+  int num_IDX = 0;
 
-  for (unsigned int i = 0; i < sources.GetCount(); i++) {
+  for (auto src : sources) {
     TCDataSource *s = new TCDataSource;
-    TC_Error_Code r = s->LoadData(sources[i]);
+    TC_Error_Code r = s->LoadData(src);
     if (r != TC_NO_ERROR) {
       wxString msg;
       msg.Printf(_T("   Error loading Tide/Currect data source %s "),
-                 sources[i].c_str());
+                 src.c_str());
       if (r == TC_FILE_NOT_FOUND)
         msg += _T("Error Code: TC_FILE_NOT_FOUND");
       else {
@@ -679,14 +672,14 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources) {
         IDX_entry *pIDX = s->GetIndexEntry(k);
         pIDX->IDX_rec_num = num_IDX;
         num_IDX++;
-        m_Combined_IDX_array.Add(pIDX);
+        m_Combined_IDX_array.push_back(pIDX);
       }
     }
   }
 
   bTCMReady = true;
 
-  if (m_Combined_IDX_array.Count() <= 1)
+  if (m_Combined_IDX_array.empty())
     OCPNMessageBox(
         NULL, _("It seems you have no tide/current harmonic data installed."),
         _("OpenCPN Info"), wxOK | wxCENTER);
@@ -704,9 +697,8 @@ void TCMgr::ScrubCurrentDepths() {
 
   currentDepth_index_hash hash1;
 
-  for (unsigned int i = 1; i < m_Combined_IDX_array.Count(); i++) {
+  for (int i = 1; i < Get_max_IDX() + 1; i++) {
     IDX_entry *a = (IDX_entry *)GetIDX_entry(i);
-
     if (a->IDX_type == 'C') {
       if (a->current_depth > 0) {
         int depth_a = a->current_depth;
@@ -743,8 +735,8 @@ void TCMgr::ScrubCurrentDepths() {
 }
 
 const IDX_entry *TCMgr::GetIDX_entry(int index) const {
-  if ((unsigned int)index < m_Combined_IDX_array.GetCount())
-    return &m_Combined_IDX_array[index];
+  if ((unsigned int)index < m_Combined_IDX_array.size())
+    return m_Combined_IDX_array[index];
   else
     return NULL;
 }
@@ -755,7 +747,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float &dir) {
   tcvalue = 0;
 
   //    Load up this location data
-  IDX_entry *pIDX = &m_Combined_IDX_array[idx];  // point to the index entry
+  IDX_entry *pIDX = m_Combined_IDX_array[idx];  // point to the index entry
 
   if (!pIDX) {
     dir = 0;
@@ -796,7 +788,7 @@ extern wxDateTime gTimeSource;
 bool TCMgr::GetTideOrCurrent15(time_t t_d, int idx, float &tcvalue, float &dir,
                                bool &bnew_val) {
   int ret;
-  IDX_entry *pIDX = &m_Combined_IDX_array[idx];  // point to the index entry
+  IDX_entry *pIDX = m_Combined_IDX_array[idx];  // point to the index entry
 
   if (!pIDX) {
     dir = 0;
@@ -870,7 +862,7 @@ bool TCMgr::GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now,
   w_t = false;
 
   //    Load up this location data
-  IDX_entry *pIDX = &m_Combined_IDX_array[idx];  // point to the index entry
+  IDX_entry *pIDX = m_Combined_IDX_array[idx];  // point to the index entry
 
   if (!pIDX) return false;
 
@@ -903,7 +895,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2,
   tctime = t;
 
   //    Load up this location data
-  IDX_entry *pIDX = &m_Combined_IDX_array[idx];  // point to the index entry
+  IDX_entry *pIDX = m_Combined_IDX_array[idx];  // point to the index entry
 
   if (!pIDX) return;
 

@@ -33,6 +33,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <future>
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -45,10 +46,16 @@
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/utils.h>
+#include <wx/thread.h>
 
 #include "comm_drv_n2k_socketcan.h"
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
+#include "config_vars.h"
+
+#define DEFAULT_N2K_SOURCE_ADDRESS 72
+
+wxDEFINE_EVENT(EVT_N2K_59904, ObservedEvt);
 
 using namespace std::chrono_literals;
 
@@ -210,6 +217,7 @@ private:
   int InitSocket(const std::string port_name);
   void SocketMessage(const std::string& msg, const std::string& device);
   void HandleInput(CanFrame frame);
+  void ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg);
 
   std::vector<unsigned char> PushCompleteMsg(const CanHeader header,
                                              int position,
@@ -230,7 +238,9 @@ class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN {
 
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
-      : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port) {
+      : CommDriverN2KSocketCAN(p, l), m_worker(this, p->socketCAN_port),
+      m_source_address(-1), m_last_TX_sequence(0){
+    SetN2K_Name();
     Open();
   }
 
@@ -238,16 +248,30 @@ public:
 
   bool Open();
   void Close();
+  void SetN2K_Name();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                     std::shared_ptr<const NavAddr> addr);
 
+  int DoAddressClaim();
+  bool SendAddressClaim(int proposed_source_address);
+  bool SendProductInfo();
 
   Worker& GetWorker(){ return m_worker; }
+  void UpdateAttrCanAddress();
 
 private:
+  N2kName node_name;
   Worker m_worker;
-  unsigned int m_source_address;
+  int m_source_address;
+  int m_last_TX_sequence;
+  std::future<int> m_AddressClaimFuture;
+  wxMutex m_TX_mutex;
+  int m_unique_number;
+
+  ObservableListener listener_N2K_59904;
+  bool HandleN2K_59904( std::shared_ptr<const Nmea2000Msg> n2k_msg );
+
 };
 
 
@@ -274,14 +298,14 @@ CanHeader::CanHeader(const CanFrame frame) {
   pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
   priority = (buf[3] & 0x1c) >> 2;
 
-  if (pgn == 59904){
-    unsigned char *d = (unsigned char *)&frame;
-    for (size_t i=0 ; i < sizeof(frame) ; i++){
-      printf("%02X ", *d);
-      d++;
-    }
-    printf("\n\n");
-  }
+//    if ((pgn == 60928) /*&& (source == 3)*/){
+//      unsigned char *d = (unsigned char *)&frame;
+//      for (size_t i=0 ; i < sizeof(frame) ; i++){
+//        printf("%02X ", *d);
+//        d++;
+//      }
+//      printf(" %d\n\n", cf++);
+//    }
 }
 
 
@@ -303,10 +327,41 @@ bool CanHeader::IsFastMessage() const {
 
 // CommDriverN2KSocketCanImpl implementation
 
-bool CommDriverN2KSocketCanImpl::Open() {
-  m_source_address = 77;  //FIXME
+void CommDriverN2KSocketCanImpl::SetN2K_Name() {
+  // We choose some "benign" values for OCPN socketCan interface
+  node_name.value.Name = 0;
 
-  return m_worker.StartThread();
+  m_unique_number = 1;
+#ifndef CLIAPP
+  // Build a simple 16 bit hash of g_hostname, to use as unique "serial number"
+  int hash = 0;
+  std::string str(g_hostname.mb_str());
+  int len = str.size();
+  const char* ch = str.data();
+  for (int i = 0; i < len; i++)
+    hash = hash + ((hash) << 5) + *(ch + i) + ((*(ch + i)) << 7);
+  m_unique_number = ((hash) ^ (hash >> 16)) & 0xffff;
+#endif
+
+  node_name.SetManufacturerCode(2046);
+  node_name.SetUniqueNumber(m_unique_number);
+  node_name.SetDeviceFunction(130);  // Display
+  node_name.SetDeviceClass(120);     // Display
+  node_name.SetIndustryGroup(4);     // Marine
+  node_name.SetSystemInstance(0);
+}
+
+void CommDriverN2KSocketCanImpl::UpdateAttrCanAddress() {
+  this->attributes["canAddress"] = std::to_string(m_source_address);
+}
+
+
+bool CommDriverN2KSocketCanImpl::Open() {
+
+  // Start the RX worker thread
+  bool bws = m_worker.StartThread();
+  return bws;
+
 }
 
 void CommDriverN2KSocketCanImpl::Close() {
@@ -319,8 +374,107 @@ void CommDriverN2KSocketCanImpl::Close() {
   registry.Deactivate(me);
 }
 
+
+bool CommDriverN2KSocketCanImpl::SendAddressClaim(int proposed_source_address) {
+
+  wxMutexLocker lock(m_TX_mutex);
+
+  int socket = GetWorker().GetSocket();
+
+  if (socket < 0)
+      return false;
+
+  CanFrame frame;
+  memset(&frame, 0, sizeof(frame));
+
+  uint64_t _pgn = 60928;
+  unsigned long canId = BuildCanID(6, proposed_source_address, 255, _pgn);
+  frame.can_id = canId | CAN_EFF_FLAG;
+
+  // Load the data
+  uint32_t b32_0 = node_name.value.UnicNumberAndManCode;
+  memcpy(&frame.data, &b32_0, 4);
+
+  unsigned char b81 = node_name.value.DeviceInstance;
+  memcpy(&frame.data[4], &b81, 1);
+
+  b81 = node_name.value.DeviceFunction;
+  memcpy(&frame.data[5], &b81, 1);
+
+  b81 = (node_name.value.DeviceClass);
+  memcpy(&frame.data[6], &b81, 1);
+
+  b81 = node_name.value.IndustryGroupAndSystemInstance;
+  memcpy(&frame.data[7], &b81, 1);
+
+  frame.can_dlc = 8;    // data length
+
+  int sentbytes = write(socket, &frame, sizeof(frame));
+
+  return (sentbytes == 16);
+}
+
+void AddStr( std::vector<uint8_t> &vec, std::string str, size_t max_len) {
+  size_t i;
+  for (i = 0; i<str.size(); i++) {
+    vec.push_back(str[i]);;
+  }
+  for (; i<max_len; i++) {
+    vec.push_back(0);
+  }
+}
+
+bool CommDriverN2KSocketCanImpl::SendProductInfo() {
+
+  // Create the payload
+  std::vector<uint8_t> payload;
+
+  payload.push_back(2100 & 0xFF);     //N2KVersion
+  payload.push_back(2100 >> 8);
+  payload.push_back(0xEC);            //Product Code, 1772
+  payload.push_back(0x06);
+
+  std::string ModelID("OpenCPN");  // Model ID
+  AddStr(payload, ModelID, 32);
+
+  std::string ModelSWCode("5.8.0");  // SwCode
+  AddStr(payload, ModelSWCode, 32);
+
+  std::string ModelVersion("5.8.0");  // Model Version
+  AddStr(payload, ModelVersion, 32);
+
+  std::string ModelSerialCode(std::to_string(m_unique_number));  // Model Serial Code
+  AddStr(payload, ModelSerialCode, 32);
+
+  payload.push_back(0);               // CertificationLevel
+  payload.push_back(0);               // LoadEquivalency
+
+  auto dest_addr = std::make_shared<const NavAddr2000>(iface, 255);
+  uint64_t _PGN;
+  _PGN = 126996;
+
+  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, payload, dest_addr);
+  SendMessage(msg, dest_addr);
+
+  return true;
+}
+
 bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
+
+  wxMutexLocker lock(m_TX_mutex);
+
+  // Verify claimed address is useable
+  if ( m_source_address < 0)
+    return false;
+
+  if ( m_source_address > 253)   // Could not claim...
+    return false;
+
+  int socket = GetWorker().GetSocket();
+
+  if (socket < 0)
+      return false;
 
   CanFrame frame;
   memset(&frame, 0, sizeof(frame));
@@ -328,38 +482,55 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   std::vector<uint8_t> load = msg_n2k->payload;
 
-  uint64_t _pgn = msg_n2k->name.value;
+  uint64_t _pgn = msg_n2k->PGN.pgn;
 
   unsigned long canId = BuildCanID(6, m_source_address, 255, _pgn);
 
   frame.can_id = canId | CAN_EFF_FLAG;
-  frame.can_dlc = load.size();
 
-  if (frame.can_dlc > 8)    // skip multiframe
-    return false;
+  if (load.size() <= 8){
+    frame.can_dlc = load.size();
+    if (load.size() > 0)
+      memcpy(&frame.data, load.data(), load.size());
 
-  if (load.size() > 0)
-    memcpy(&frame.data, load.data(), load.size());
-
-  int socket = GetWorker().GetSocket();
-
-  if (socket < 0)
-    return false;
-
-  CanHeader tt(frame);
-
-  unsigned char *d = (unsigned char *)&frame;
-  printf("SendFrame: ");
-  for (size_t i=0 ; i < sizeof(frame) ; i++){
-    printf("%02X ", *d);
-    d++;
+    int sentbytes = write(socket, &frame, sizeof(frame));
   }
-  printf("\n\n");
+  else {                        // Fast Packet
+    int sequence = (m_last_TX_sequence + 0x20) & 0xE0;
+    m_last_TX_sequence = sequence;
+    unsigned char *data_ptr = load.data();
+    int n_remaining = load.size();
 
-  int sentbytes = write(socket, &frame, sizeof(frame));
+    // First packet
+    frame.can_dlc = 8;
+    frame.data[0] = sequence;
+    frame.data[1] = load.size();
+    int data_len_0 = wxMin(load.size(), 6);
+    memcpy(&frame.data[2], load.data(), data_len_0);
+
+    int sentbytes0 = write(socket, &frame, sizeof(frame));
+
+    data_ptr += data_len_0;
+    n_remaining -= data_len_0;
+    sequence++;
+
+    // The rest of the bytes
+    while (n_remaining > 0){
+      wxMilliSleep(10);
+      frame.data[0] = sequence;
+      int data_len_n = wxMin(n_remaining, 7);
+      memcpy(&frame.data[1], data_ptr, data_len_n);
+
+      int sentbytesn = write(socket, &frame, sizeof(frame));
+
+      data_ptr += data_len_n;
+      n_remaining -= data_len_n;
+      sequence++;
+    }
+  }
 
 
-  return false;
+  return true;
 }
 
 
@@ -373,13 +544,16 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       m_listener(listener),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_baudrate(wxString::Format("%i", params->Baudrate)) {}
+      m_baudrate(wxString::Format("%i", params->Baudrate))
+      {
+      this->attributes["canPort"] = params->socketCAN_port.ToStdString();
+      this->attributes["canAddress"] = std::to_string(DEFAULT_N2K_SOURCE_ADDRESS);
+      }
 
 CommDriverN2KSocketCAN::~CommDriverN2KSocketCAN() {}
 
 void CommDriverN2KSocketCAN::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO(dave) Finally decide if thread should start here or in CTOR
 }
 
 
@@ -536,12 +710,67 @@ void Worker::HandleInput(CanFrame frame) {
       // Single frame message
       vec = PushCompleteMsg(header, position, frame);
     }
-    auto name = N2kName(static_cast<uint64_t>(header.pgn));
-    auto src_addr = m_parent_driver->GetAddress(name);
-    auto msg = std::make_shared<const Nmea2000Msg>(name, vec, src_addr);
+    //auto name = N2kName(static_cast<uint64_t>(header.pgn));
+    auto src_addr = m_parent_driver->GetAddress(m_parent_driver->node_name);
+    auto msg = std::make_shared<const Nmea2000Msg>(header.pgn, vec, src_addr);
+    auto msg_all = std::make_shared<const Nmea2000Msg>(1, vec, src_addr);
+
+    ProcessRxMessages(msg);
     m_parent_driver->m_listener.Notify(std::move(msg));
+    m_parent_driver->m_listener.Notify(std::move(msg_all));
+
   }
 }
+
+/** Worker thread handles some RX messages. */
+void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg){
+
+  if(n2k_msg->PGN.pgn == 59904 ){
+    unsigned long RequestedPGN = 0;
+    RequestedPGN = n2k_msg->payload.at(15) << 16;
+    RequestedPGN += n2k_msg->payload.at(14) << 8;
+    RequestedPGN += n2k_msg->payload.at(13);
+
+    switch (RequestedPGN){
+      case 60928:
+        m_parent_driver->SendAddressClaim(m_parent_driver->m_source_address);
+        break;
+      case 126996:
+        m_parent_driver->SendProductInfo();
+        break;
+      default:
+        break;
+    }
+  }
+
+  else if(n2k_msg->PGN.pgn == 60928 ){
+    // Watch for conflicting source address
+    if (n2k_msg->payload.at(7) == m_parent_driver->m_source_address){
+      // My name
+      uint64_t my_name = m_parent_driver->node_name.GetName();
+
+      // His name
+      uint64_t his_name = 0;
+      unsigned char *p = (unsigned char *)&his_name;
+      for (unsigned int i=0 ; i < 8 ; i++)
+        *p++ = n2k_msg->payload.at(13 + i);
+
+      // Compare literally the NAME values
+      if (his_name < my_name){
+        //  I lose, so select a new address
+        m_parent_driver->m_source_address++;
+        if ( m_parent_driver->m_source_address > 253)
+          // Could not claim an address
+          m_parent_driver->m_source_address = 254;
+        m_parent_driver->UpdateAttrCanAddress();
+      }
+
+      // Claim the existing or modified address
+      m_parent_driver->SendAddressClaim(m_parent_driver->m_source_address);
+    }
+  }
+}
+
 
 /** Worker thread main function. */
 void Worker::Entry() {
@@ -553,9 +782,17 @@ void Worker::Entry() {
   if (socket < 0) {
     std::string msg("SocketCAN socket create failed: ");
     ThreadMessage(msg + m_port_name.ToStdString());
+    m_run_flag = -1;
     return;
   }
   m_socket = socket;
+
+  //  Claim our default address
+  if (m_parent_driver->SendAddressClaim(DEFAULT_N2K_SOURCE_ADDRESS)){
+    m_parent_driver->m_source_address = DEFAULT_N2K_SOURCE_ADDRESS;
+    m_parent_driver->UpdateAttrCanAddress();
+  }
+
 
   // The main loop
   while (m_run_flag > 0) {

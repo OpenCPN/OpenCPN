@@ -37,7 +37,8 @@
 #include "linmath.h"
 
 #include "TexFont.h"
-
+#include "viewport.h"
+#include "shaders.h"
 
 class ViewPort;
 class GLUtesselator;
@@ -60,6 +61,8 @@ public:
   ocpnDC();
 
   ~ocpnDC();
+
+  void Init();
 
   void SetGLCanvas(glChartCanvas *canvas);
   void SetBackground(const wxBrush &brush);
@@ -121,6 +124,7 @@ public:
 
   wxDC *GetDC() const { return dc; }
   void SetDPIFactor(double factor){ m_dpi_factor = factor; }
+  void SetVP(ViewPort vp);
 
 #ifdef ocpnUSE_GL
   GLfloat *s_odc_tess_work_buf;
@@ -152,6 +156,8 @@ protected:
   void drawrrhelperGLES2(wxCoord x0, wxCoord y0, wxCoord r, int quadrant,
                          int steps);
 
+  void BuildShaders();
+
   glChartCanvas *m_glchartCanvas;
   wxGLCanvas *m_glcanvas;
 
@@ -171,7 +177,11 @@ protected:
   size_t workBufSize;
   unsigned int workBufIndex;
   double m_dpi_factor;
-
+  ViewPort m_vp;
+  GLShaderProgram *m_pcolor_tri_shader_program;
+  GLShaderProgram *m_pAALine_shader_program;
+  GLShaderProgram *m_pcircle_filled_shader_program;
+  GLShaderProgram *m_ptexture_2D_shader_program;
 };
 
 #endif

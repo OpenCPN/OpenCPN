@@ -11,6 +11,7 @@
 #include "georef.h"
 #include "gui_lib.h"
 #include "navutil.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
@@ -28,10 +29,6 @@ extern float g_GLMinSymbolLineWidth;
 extern bool g_bAllowShipToActive;
 
 extern ocpnGLOptions g_GLOptions;
-
-extern double gLat;
-extern double gLon;
-
 
 extern int s_arrow_icon[];
 

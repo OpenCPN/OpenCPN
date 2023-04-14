@@ -168,12 +168,75 @@ static const GLchar* AALine_fragment_shader_source =
     "    gl_FragColor = col;\n"
     "}\n";
 
+//  Ring shader
+
+static const GLchar *ring_vertex_shader_source =
+    "precision highp float;\n"
+    "attribute vec2 aPos;\n"
+    "uniform mat4 MVMatrix;\n"
+    "uniform mat4 TransformMatrix;\n"
+    "void main() {\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
+    "}\n";
+
+static const GLchar *ring_fragment_shader_source =
+    "precision highp float;\n"
+    "uniform float border_width;\n"
+    "uniform float circle_radius;\n"
+    "uniform float ring_width;\n"
+    "uniform vec4 circle_color;\n"
+    "uniform vec4 border_color;\n"
+    "uniform vec2 circle_center;\n"
+    "uniform float sector_1;\n"
+    "uniform float sector_2;\n"
+
+    "void main(){\n"
+    "const float PI = 3.14159265358979323846264;\n"
+    "bool bdraw = false;\n"
+
+    "float angle = atan(gl_FragCoord.y-circle_center.y, "
+    "gl_FragCoord.x-circle_center.x);\n"
+    "angle = PI/2.0 - angle;\n"
+    "if(angle < 0.0) angle += PI * 2.0;\n"
+
+    "if(sector_2 > PI * 2.0){\n"
+    "    if((angle > sector_1) && (angle < (PI * 2.0) )){\n"
+    "        bdraw = true;\n"
+    "    }\n"
+    "    if(angle < sector_2 - (PI * 2.0)){\n"
+    "        bdraw = true;\n"
+    "    }\n"
+    "} else {\n"
+    "    if((angle > sector_1) && (angle < sector_2)){\n"
+    "        bdraw = true;\n"
+    "    }\n"
+    "}\n"
+
+    "if(bdraw){\n"
+    "   float d = distance(gl_FragCoord.xy, circle_center);\n"
+    "   if (d > circle_radius) {\n"
+    "       discard;\n"
+    "   } else if( d > (circle_radius - border_width)) {\n"
+    "       gl_FragColor = border_color;\n"
+    "   } else if( d > (circle_radius - border_width - ring_width)) {\n"
+    "       gl_FragColor = circle_color;\n"
+    "   } else if( d > (circle_radius - border_width - ring_width - "
+    "border_width)) {\n"
+    "       gl_FragColor = border_color;\n"
+    "   } else  {\n"
+    "       discard;\n"
+    "   }\n"
+    "} else{\n"
+    "   discard;\n"
+    "}\n"
+    "}\n";
 
 GLShaderProgram *pAALine_shader_program[2];
 GLShaderProgram *pcolor_tri_shader_program[2];
 GLShaderProgram *ptexture_2D_shader_program[2];
 GLShaderProgram *pcircle_filled_shader_program[2];
 GLShaderProgram *ptexture_2DA_shader_program[2];
+GLShaderProgram *pring_shader_program[2];
 
 
 bool bShadersLoaded[2];
@@ -240,7 +303,16 @@ bool loadShaders(int index) {
       pAALine_shader_program[index] = shaderProgram;
   }
 
+  // ring shader
+  if (!pring_shader_program[index]) {
+    GLShaderProgram *shaderProgram = new GLShaderProgram;
+    shaderProgram->addShaderFromSource(ring_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->addShaderFromSource(ring_vertex_shader_source, GL_VERTEX_SHADER);
+    shaderProgram->linkProgram();
 
+    if (shaderProgram->isOK())
+      pring_shader_program[index] = shaderProgram;
+  }
 
   bShadersLoaded[index] = true;
   reConfigureShaders(index);

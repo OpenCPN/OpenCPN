@@ -1,0 +1,120 @@
+= Troubleshooting
+
+For trouble shooting and lower level nitty gritty details, the command
+line, configuration files and debuggers are your friends.
+
+== OpenCPN has a minimal command line interface (CLI)
+  Usage: opencpn [-h] [-p] [-fullscreen] [-no_opengl] [-rebuild_gl_raster_cache] [-parse_all_enc] [-l <str>] [-unit_test_1 <num>] [-unit_test_2] [--unit_test_2] [-safe_mode] [import GPX files...]
+    -h, --help              	Show usage syntax.
+    -p                      	Run in portable mode.
+    -fullscreen             	Switch to full screen mode on start.
+    -no_opengl              	Disable OpenGL video acceleration. This setting will be remembered.
+    -rebuild_gl_raster_cache	Rebuild OpenGL raster cache on start.
+    -parse_all_enc          	Convert all S-57 charts to OpenCPN's internal format on start.
+    -l, --loglevel=<str>    	Amount of logging: error, warning, message, info, debug or trace
+    -unit_test_1:<num>      	Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit.
+    -unit_test_2
+    --unit_test_2
+    -safe_mode
+
+=== -l, --loglevel=<str>
+
+Set the amount of logged information. The source code contains
+wxLogInfo(), wxLogDebug() and wxLogTrace() statements. Setting the loglevel
+to `info`, the default, only prints wxLogInfo() messages in the log.
+Setting it to `debug` makes the wxLogDebug() messages appear,
+and likewise for `trace` and wxLogTrace()
+
+=== -unit_test_1
+
+This command test cycles through all possible charts in the currently
+loaded chart database, adjusting the viewport to show the loaded chart
+automatically. The value of this test is clear: it provide an unattended
+stress test of OpenCPN, It is most fun to watch in quilt mode…
+
+The test runs until all charts in the database have been visited once.
+Lets think of this as a Beta test tool.
+
+A side-effect of this switch is that it can be used to process a set of
+ENC charts into SENC files. The first, time consuming processing of ENC
+charts, can this way be done unattended.
+
+=== -p
+
+The portable option is explained in.
+https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:opencpn_user_manual:advanced_features:portable_opencpn_v2/
+Basically, it allows OpenCPN to run just using local data directories for
+example on a USB stick.
+
+=== -no_opengl
+
+A total switch-off of OpenGL, in a more thorough way than in "Options".
+
+=== -fullscreen
+
+Starts OpenCPN in FullScreen mode
+
+===  -safe_mode
+
+Start OpenCPN without OpenGL and without loading any plugins.
+
+== Debugging Output Settings for Logfile
+
+The _config or ini_ file contains a lot of settings that are saved
+between sessions.
+*Debug statements can be added to produce a lot of output when problems
+arises in certain areas.*
+The following statement are recognized and can be added to the config
+file before a session starts.
+
+  [Settings] ...
+  DebugNMEA=500   Writes 500 NMEA sentences to the log file\\
+  DebugCM93=1     Writes volumes of debug info relating to CM93 to the logfile.\\
+  DebugS57        Add logfile debug output for S57\\
+  DebugGDAL       Add logfile debug output for GDAL\\
+
+== Using a FIFO for ais debugging.
+
+See the code in _ais.cpp_:
+
+   A special test for a user defined FIFO
+   To use this method, do the following:
+   a.  Create a fifo            $mkfifo /tmp/aisfifo
+   b.  netcat into the fifo     $nc $ip $port> /tmp/aisfifo
+                   sample ip port could be  nc 82.182.117.51 6401 > /tmp/aisfifo
+   c.  hand edit opencpn.conf and make AIS data source like this:
+        [Settings/AISPort]
+        Port=Serial:/tmp/aisfifo
+
+  This also works if you have an ascii ais log
+  for which you can simply $cat ais.log> /tmp/aisfifo
+
+You may see that if the port name contains the string "fifo", then the
+requirement for the port to be a TTY is relaxed.
+
+== wxWidgets
+
+OpenCPN uses wxWidgets, currently version 3.0.2 on Linux packages,
+and 3.1.2 for other platforms. See
+https://www.wxwidgets.org/docs/[wxWidgets Reference Manuals]
+
+wxWidgets uses a tick-tock release schedule where even-numbered versions
+are stable including a stable ABI. Odd-numbered version are unstable,
+development versions.
+
+On Linux platforms OpenCPN normally uses the current stable version,
+at the time of writing 3.0. This is partly a practical issue since
+conservative distributions like Debian don't package unstable, odd
+versions.
+
+One other platforms unstable, odd versions are occasionally used. At
+the time of writing pre-built 3.1.2 binaries for MacOS and Windows are
+distributed and used by OpenCPN builds.
+
+Changing wxWidgets version leads to a ABI break for plugins, which
+must be re-compiled against the new version.
+
+
+This PDF
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=0ahUKEwi864Ce3ZXXAhVMtxQKHbCMCscQFgguMAE&url=https%3A%2F%2Fptgmedia.pearsoncmg.com%2Fimages%2F0131473816%2Fdownloads%2F0131473816_book.pdf&usg=AOvVaw2cPYxEF2DKGrkc5mVx1FMF/[wxWidgets
+History document] might help with wxWidgets issues.

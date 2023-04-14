@@ -29,7 +29,7 @@
 #include <string>
 #include "route.h"
 
-int SendRoute(std::string dest_ip_address, std::string server_name, Route *route, bool overwrite = false);
+int SendNavobjects(std::string dest_ip_address, std::string server_name, std::vector<Route*> route, std::vector<RoutePoint*> routepoint, std::vector<Track*> track, bool overwrite = false);
 
 
  #define ID_PCDDIALOG 10005

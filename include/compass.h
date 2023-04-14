@@ -50,6 +50,9 @@ public:
 
 private:
   void CreateBmp(bool bnew = false);
+  void CreateTexture();
+  void UpdateTexture();
+
 
   ChartCanvas *m_parent;
   wxBitmap m_StatBmp;
@@ -69,9 +72,10 @@ private:
   bool m_shown;
   bool m_bshowGPS;
   ColorScheme m_cs;
+  bool m_texOK;
 
 #ifdef ocpnUSE_GL
-  unsigned int texobj;
+  unsigned int m_texobj;
   int m_tex_w, m_tex_h;
   int m_image_width, m_image_height;
 #endif

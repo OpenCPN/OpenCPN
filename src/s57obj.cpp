@@ -267,8 +267,9 @@ bool S57Obj::SetPointGeometry(double lat, double lon, double ref_lat,
   m_lon = lon;
   m_lat = lat;
 
-  //  Set initial BoundingBox limits fairly large...
-  BBObj.Set(m_lat - .25, m_lon - .25, m_lat + .25, m_lon + .25);
+  //  Set initial BoundingBox limits to 1 NM
+  double bound = 1. / 60.;    // 1 NM, nominal
+  BBObj.Set(m_lat - bound, m_lon - bound, m_lat + bound, m_lon + bound);
   bBBObj_valid = false;
 
   //  Calculate SM from chart common reference point

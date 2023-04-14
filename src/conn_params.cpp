@@ -50,7 +50,13 @@
 #define wxAtoi(arg) atoi(arg)
 #endif
 
+static wxArrayOfConnPrm* the_connection_params = 0;
 
+wxArrayOfConnPrm* TheConnectionParams() {
+  if (the_connection_params == 0)
+    the_connection_params = new wxArrayOfConnPrm();
+  return the_connection_params;
+}
 
 ConnectionParams::ConnectionParams(const wxString &configStr) {
   m_optionsPanel = NULL;
@@ -99,6 +105,9 @@ void ConnectionParams::Deserialize(const wxString &configStr) {
   if (prms.Count() >= 21) {
     socketCAN_port = prms[20];
   }
+  if (prms.Count() >= 22) {
+    NoDataReconnect = wxAtoi(prms[21]);
+  }
 }
 
 wxString ConnectionParams::Serialize() const {
@@ -113,11 +122,12 @@ wxString ConnectionParams::Serialize() const {
     ostcs.Append(OutputSentenceList[i]);
   }
   wxString ret = wxString::Format(
-      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s"), Type,
+      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d"), Type,
       NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(),
       Baudrate, ChecksumCheck, IOSelect, InputSentenceListType, istcs.c_str(),
       OutputSentenceListType, ostcs.c_str(), Priority, Garmin, GarminUpload,
-      FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover, socketCAN_port.c_str());
+      FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover, socketCAN_port.c_str(),
+      NoDataReconnect);
 
   return ret;
 }
@@ -142,6 +152,7 @@ ConnectionParams::ConnectionParams() {
   b_IsSetup = false;
   m_optionsPanel = NULL;
   AutoSKDiscover = false;
+  NoDataReconnect = false;
 }
 
 ConnectionParams::~ConnectionParams() {
@@ -290,26 +301,25 @@ std::string ConnectionParams::GetStrippedDSPort() {
     return t.ToStdString();
 
   } else if (Type == SOCKETCAN) {
-    return "socketCAN";
-    //FIXME (dave)
-    //wxString proto = NetworkProtocolToString(NetProtocol);
-    //wxString t = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
-    //                        NetworkAddress.c_str(), NetworkPort);
-    //return t.ToStdString();
-
+    std::string rv = "socketCAN-";
+    rv += socketCAN_port.ToStdString();
+    return rv;
   } else if (Type == INTERNAL_BT) {
     return Port.ToStdString();
   } else
     return "";
 }
 
-wxString ConnectionParams::GetLastDSPort() const {
-  if (Type == SERIAL)
-    return wxString::Format(_T("Serial:%s"), Port.c_str());
+std::string ConnectionParams::GetLastDSPort() const {
+  if (Type == SERIAL){
+    wxString sp = wxString::Format(_T("Serial:%s"), Port.c_str());
+    return sp.ToStdString();
+  }
   else {
     wxString proto = NetworkProtocolToString(LastNetProtocol);
-    return wxString::Format(_T("%s:%s:%d"), proto.c_str(),
+    wxString sp = wxString::Format(_T("%s:%s:%d"), proto.c_str(),
                             LastNetworkAddress.c_str(), LastNetworkPort);
+    return sp.ToStdString();
   }
 }
 
@@ -367,8 +377,16 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence, FilterDire
 }
 
 NavAddr::Bus ConnectionParams::GetCommProtocol(){
-  if ((Type == NETWORK) && (NetProtocol == SIGNALK) )
+  if (Type == NETWORK){
+    if (NetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
+    else if (NetProtocol == UDP)
+      return NavAddr::Bus::N0183;
+    else if (NetProtocol == TCP)
+      return NavAddr::Bus::N0183;
+    else if (NetProtocol == GPSD)
+      return NavAddr::Bus::N0183;
+  }
 
   switch (Protocol){
     case PROTO_NMEA0183:
@@ -380,5 +398,26 @@ NavAddr::Bus ConnectionParams::GetCommProtocol(){
   }
 }
 
+NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
+   if (Type == NETWORK){
+    if (LastNetProtocol == SIGNALK)
+      return NavAddr::Bus::Signalk;
+    else if (LastNetProtocol == UDP)
+      return NavAddr::Bus::N0183;
+    else if (LastNetProtocol == TCP)
+      return NavAddr::Bus::N0183;
+    else if (LastNetProtocol == GPSD)
+      return NavAddr::Bus::N0183;
+  }
+
+  switch (LastDataProtocol){
+    case PROTO_NMEA0183:
+      return NavAddr::Bus::N0183;
+    case PROTO_NMEA2000:
+      return NavAddr::Bus::N2000;
+    default:
+      return NavAddr::Bus::Undef;
+  }
+}
 
 

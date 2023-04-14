@@ -97,6 +97,7 @@ private:
   void OnRteReverseClick(wxCommandEvent &event);
   void OnRteExportClick(wxCommandEvent &event);
   void OnRteResequenceClick(wxCommandEvent &event);
+  void OnRteSendToPeerClick(wxCommandEvent &event);
   void OnRteToggleVisibility(wxMouseEvent &event);
   void OnRteBtnLeftDown(
       wxMouseEvent &event);  // record control key state for some action buttons
@@ -117,6 +118,7 @@ private:
   void OnTrkColumnClicked(wxListEvent &event);
   void OnTrkRightClick(wxListEvent &event);
   void OnTrkMenuSelected(wxCommandEvent &event);
+  void OnTrkSendToPeerClick(wxCommandEvent &event);
   void OnWptDefaultAction(wxListEvent &event);
   void OnWptNewClick(wxCommandEvent &event);
   void OnWptPropertiesClick(wxCommandEvent &event);
@@ -129,6 +131,7 @@ private:
   void OnWptSelected(wxListEvent &event);
   void OnWptToggleVisibility(wxMouseEvent &event);
   void OnWptColumnClicked(wxListEvent &event);
+  void OnWptSendToPeerClick(wxCommandEvent &event);
   void OnLayDefaultAction(wxListEvent &event);
   void OnLayNewClick(wxCommandEvent &event);
   void OnPerLayNewClick(wxCommandEvent &event);
@@ -177,12 +180,14 @@ private:
   wxButton *btnRteExport;
   wxButton *btnRteResequence;
   wxButton *btnRteSendToGPS;
+  wxButton *btnRteSendToPeer;
   wxButton *btnRteDeleteAll;
   wxButton *btnTrkNew;
   wxButton *btnTrkProperties;
   wxButton *btnTrkDelete;
   wxButton *btnTrkExport;
   wxButton *btnTrkRouteFromTrack;
+  wxButton *btnTrkSendToPeer;
   wxButton *btnTrkDeleteAll;
   wxButton *btnWptNew;
   wxButton *btnWptProperties;
@@ -191,6 +196,7 @@ private:
   wxButton *btnWptGoTo;
   wxButton *btnWptExport;
   wxButton *btnWptSendToGPS;
+  wxButton *btnWptSendToPeer;
   wxButton *btnWptDeleteAll;
   wxButton *btnLayNew;
   wxButton *btnPerLayNew;

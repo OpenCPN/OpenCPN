@@ -28,11 +28,14 @@
 #include <wx/dcmemory.h>
 #include <wx/dialog.h>
 #include <wx/settings.h>
+#include <wx/dcscreen.h>
 
 #include "TTYWindow.h"
 #include "TTYScroll.h"
 #include "WindowDestroyListener.h"
 #include "color_handler.h"
+#include "ocpn_plugin.h"
+#include "FontMgr.h"
 
 IMPLEMENT_DYNAMIC_CLASS(TTYWindow, wxFrame)
 
@@ -106,54 +109,65 @@ TTYWindow::~TTYWindow() {
 }
 
 void TTYWindow::CreateLegendBitmap() {
-  m_bm_legend.Create(400, 130);
+  double dip_factor = OCPN_GetWinDIPScaleFactor();
+  wxScreenDC dcs;
+  wxFont *pmetricFont = FontMgr::Get().GetFont(_("Dialog"));
+
+  int width, height;
+  dcs.GetTextExtent("M", &width, &height, NULL, NULL, pmetricFont);
+  double ref_dim = height * dip_factor;
+
+  m_bm_legend.Create(25 * ref_dim, 6.5 * ref_dim);
   wxMemoryDC dc;
   dc.SelectObject(m_bm_legend);
   if (m_bm_legend.IsOk()) {
     dc.SetBackground(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW)));
     dc.Clear();
 
-    wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+    wxFont f(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     dc.SetFont(f);
 
-    int yp = 25;
-    int y = 5;
+    int yp = ref_dim * 1.25;
+    int y = ref_dim * .25;
+    int bsize = ref_dim;
+    int text_x = ref_dim * 1.5;
+    int boff = ref_dim *.25;
 
     wxBrush b1(wxColour(_T("DARK GREEN")));
     dc.SetBrush(b1);
-    dc.DrawRectangle(5, y, 20, 20);
+    dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("DARK GREEN")));
-    dc.DrawText(_("Message accepted"), 30, y);
+    dc.DrawText(_("Message accepted"), text_x, y);
 
     y += yp;
     wxBrush b2(wxColour(_T("CORAL")));
     dc.SetBrush(b2);
-    dc.DrawRectangle(5, y, 20, 20);
+    dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("CORAL")));
     dc.DrawText(
-        _("Input message filtered, output message filtered and dropped"), 30,
+        _("Input message filtered, output message filtered and dropped"), text_x,
         y);
 
     y += yp;
     wxBrush b3(wxColour(_T("MAROON")));
     dc.SetBrush(b3);
-    dc.DrawRectangle(5, y, 20, 20);
+    dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("MAROON")));
-    dc.DrawText(_("Input Message filtered and dropped"), 30, y);
+    dc.DrawText(_("Input Message filtered and dropped"), text_x, y);
 
     y += yp;
     wxBrush b4(wxColour(_T("BLUE")));
     dc.SetBrush(b4);
-    dc.DrawRectangle(5, y, 20, 20);
+    dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("BLUE")));
-    dc.DrawText(_("Output Message"), 30, y);
+    dc.DrawText(_("Output Message"), text_x, y);
 
     y += yp;
     wxBrush b5(wxColour(_T("RED")));
     dc.SetBrush(b5);
-    dc.DrawRectangle(5, y, 20, 20);
+    dc.DrawRectangle(boff, y, bsize, bsize);
     dc.SetTextForeground(wxColour(_T("RED")));
-    dc.DrawText(_("Information Message or Message with errors"), 30, y);
+    dc.DrawText(_("Information Message or Message with errors"), text_x, y);
   }
   dc.SelectObject(wxNullBitmap);
 }

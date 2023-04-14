@@ -215,6 +215,9 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
       m_params(*params),
       m_listener(listener) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+  m_manufacturers_code = 0;
+  m_got_mfg_code = false;
+  this->attributes["canAddress"] = std::string("-1");
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_SERIAL, &CommDriverN2KSerial::handle_N2K_SERIAL_RAW,
@@ -321,7 +324,7 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   std::vector<uint8_t> load = msg_n2k->payload;
 
-  uint64_t _pgn = msg_n2k->name.value;
+  uint64_t _pgn = msg_n2k->PGN.pgn;
 
   tN2kMsg N2kMsg;   // automatically sets destination 255
   N2kMsg.SetPGN(_pgn);
@@ -355,6 +358,56 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
     return true;
 }
 
+void CommDriverN2KSerial::ProcessManagementPacket(std::vector<unsigned char> *payload) {
+
+   if (payload->at(2) != 0xF2) {   // hearbeat
+     //printf("    pl ");
+     //for (unsigned int i = 0; i < payload->size(); i++)
+     // printf("%02X ", payload->at(i));
+     //printf("\n");
+   }
+
+  switch (payload->at(2)){
+    case 0x47:
+      m_bmg47_resp = true;
+      break;
+    case 0x01:
+      m_bmg01_resp = true;
+      break;
+    case 0x4B:
+      m_bmg4B_resp = true;
+      break;
+    case 0x041: {
+      m_bmg41_resp = true;
+      if (payload->at(3) == 0x02) {     // ASCII device_common_name
+        std::string device_common_name;
+        for (unsigned int i = 0; i < 32; i++) {
+          device_common_name += payload->at(i + 14);
+        }
+        device_common_name += '\0';
+        m_device_common_name = device_common_name;
+      }
+      break;
+    }
+    case 0x042: {
+      m_bmg42_resp = true;
+      unsigned char name[8];
+      for (unsigned int i = 0; i < 8; i++)
+        name[i] = payload->at(i + 15);
+
+      memcpy( (void *)&NAME, name, 8);
+      // Extract the manufacturers code
+      int *f1 = (int *)&NAME;
+      int f1d = *f1;
+      m_manufacturers_code = f1d >> 21;
+      break;
+    }
+
+    default:
+      break;
+
+  }
+}
 
 
 static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
@@ -370,6 +423,11 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
 
   std::vector<unsigned char>* payload = p.get();
 
+  if (payload->at(0) == 0xA0) {
+    ProcessManagementPacket(payload);
+    return;
+  }
+
   // extract PGN
   uint64_t pgn = 0;
   unsigned char* c = (unsigned char*)&pgn;
@@ -377,11 +435,14 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
   *c++ = payload->at(4);
   *c++ = payload->at(5);
   // memcpy(&v, &data[3], 1);
+  //printf("          %ld\n", pgn);
 
   auto name = PayloadToName(*payload);
-  auto msg = std::make_unique<const Nmea2000Msg>(pgn, *payload,
-                                                 GetAddress(name));
+  auto msg = std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
+  auto msg_all = std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
+
   m_listener.Notify(std::move(msg));
+  m_listener.Notify(std::move(msg_all));
 
 #if 0  // Debug output
   size_t packetLength = (size_t)payload->at(1);
@@ -400,6 +461,135 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
     printf("\n\n");
   }
 #endif
+}
+
+int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
+                                      unsigned char cmd_code,
+                                      int timeout_msec, bool *response_flag) {
+    // Make a message
+  int byteSum = 0;
+  uint8_t CheckSum;
+  std::vector <unsigned char> msg;
+
+  msg.push_back(ESCAPE);
+  msg.push_back(STARTOFTEXT);
+  msg.push_back(0xA1);
+  byteSum += 0xA1;
+  msg.push_back(string_size);      // payload length
+  byteSum += string_size;
+
+  for (unsigned int i=0; i < string_size; i++){
+    if (string[i] == ESCAPE)
+      msg.push_back(string[i]);
+    msg.push_back(string[i]);
+    byteSum += string[i];
+  }
+
+  // checksum
+  byteSum %= 256;
+  CheckSum = (uint8_t)((byteSum == 0) ? 0 : (256 - byteSum));
+  msg.push_back(CheckSum);
+
+  msg.push_back(ESCAPE);
+  msg.push_back(ENDOFTEXT);
+
+  // send it out
+
+  *response_flag = false;  // prime the response detector
+  // Send the msg
+  bool bsent = false;
+  if( GetSecondaryThread() ) {
+    if( IsSecThreadActive() ) {
+      int retry = 10;
+      while( retry ) {
+        if( GetSecondaryThread()->SetOutMsg( msg )){
+          bsent = true;
+          break;
+        }
+        else
+          retry--;
+      }
+    }
+  }
+
+  if (!bsent)
+    return 1;
+
+  int timeout = timeout_msec;
+  bool bOK = false;
+  while (timeout > 0) {
+    wxYieldIfNeeded();
+    wxMilliSleep(100);
+    if (*response_flag){
+      bOK = true;
+      break;
+    }
+    timeout -= 100;
+  }
+
+  if(!bOK){
+    //printf( "***Err-1\n");
+    return 1;
+  }
+  //else
+    //printf("***OK-1  %d\n", timeout);
+
+  return 0;
+}
+
+int CommDriverN2KSerial::SetTXPGN(int pgn) {
+
+  // Info, includeing string "NGT-1"
+//   unsigned char request_info[] = { 0x41,0x02};
+//   int ri = SendMgmtMsg( request_info, sizeof(request_info), 0x41, 2000, &m_bmg41_resp);
+
+  // Try to detect Actisense NGT-xx, has Mfg_code == 273
+  if (m_got_mfg_code) {
+    if (m_manufacturers_code != 273)
+      return 0;  // Not Actisense, no error
+  }
+  else {
+    unsigned char request_name[] = { 0x42};
+    int ni = SendMgmtMsg( request_name, sizeof(request_name), 0x41, 2000, &m_bmg42_resp);
+    if (ni)
+      return ni;     // Not responding, return error so upper retries.
+    m_got_mfg_code = true;
+    if (m_manufacturers_code != 273)  // Not Actisense, no error
+      return 0;
+  }
+
+  //  Enable PGN message
+  unsigned char request_enable[] = { 0x47,
+                      0x00, 0x00, 0x00,           //pgn
+                      0x00, 0x01,
+                      0xFF, 0xFF, 0xFF, 0xFF};
+
+  int PGN = 0;
+  unsigned char* c = (unsigned char*)&pgn;
+  request_enable[1] = c[0];
+  request_enable[2] = c[1];
+  request_enable[3] = c[2];
+
+  int aa = SendMgmtMsg( request_enable, sizeof(request_enable), 0x47, 2000, &m_bmg47_resp);
+  if (aa)
+    return -1;
+
+  //  Commit message
+  unsigned char request_commit[] = { 0x01 };
+  int bb = SendMgmtMsg( request_commit, sizeof(request_commit), 0x01, 2000, &m_bmg01_resp);
+  if (bb)
+    return -2;
+
+
+  // Activate message
+  unsigned char request_activate[] = { 0x4B };
+  int cc = SendMgmtMsg( request_activate, sizeof(request_activate), 0x4B, 2000, &m_bmg4B_resp);
+  if (cc)
+    return -3;
+
+
+
+  return 0;
 }
 
 #ifndef __ANDROID__
@@ -506,9 +696,10 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(std::vector<unsigned char
   if (m_serial.isOpen()) {
     ssize_t status = 0;
     try {
-//       for (size_t i = 0; i < msg.size(); i++)
-//         printf("%02X ", msg.at(i));
-//       printf("\n");
+        printf("X                ");
+        for (size_t i = 0; i < msg.size(); i++)
+          printf("%02X ", msg.at(i));
+        printf("\n");
 
       status = m_serial.write((uint8_t*)msg.data(), msg.size());
     } catch (std::exception& e) {
@@ -645,9 +836,10 @@ void* CommDriverN2KSerialThread::Entry() {
           bInMsg = false;
           bGotESC = false;
 
-//             for (unsigned int i = 0; i < vec->size(); i++)
-//               printf("%02X ", vec->at(i));
-//             printf("\n");
+//           printf("raw ");
+//              for (unsigned int i = 0; i < vec->size(); i++)
+//                printf("%02X ", vec->at(i));
+//              printf("\n");
 
           // Message is finished
           // Send the captured raw data vector pointer to the thread's "parent"

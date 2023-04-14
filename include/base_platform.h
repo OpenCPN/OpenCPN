@@ -120,7 +120,7 @@ public:
   virtual double GetDisplaySizeMM();
   virtual double GetDisplayDPmm();
   virtual unsigned int GetSelectRadiusPix();
-  double GetDisplayDPIMult(wxWindow *win);
+  double GetDisplayDIPMult(wxWindow *win);
 
   void ShowBusySpinner();
   void HideBusySpinner();

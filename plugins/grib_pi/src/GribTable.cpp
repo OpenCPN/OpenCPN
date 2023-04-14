@@ -31,6 +31,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include "pi_gl.h"
+
 #include <wx/glcanvas.h>
 #include <wx/graphics.h>
 #include <wx/progdlg.h>

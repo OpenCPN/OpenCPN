@@ -216,6 +216,7 @@ typedef struct _Rules {
 
 class LUPrec {
 public:
+  ~LUPrec() { ATTArray.clear(); };
   int RCID;                      // record identifier
   char OBCL[7];                  // Name (6 char) '\0' terminated
   Object_t FTYP;                 // 'A' Area, 'L' Line, 'P' Point
@@ -325,6 +326,7 @@ struct chart_context {
   void *chart;
   double safety_contour;
   float *vertex_buffer;
+  int vboID;
   int chart_type;
   int chart_scale;
 };

@@ -45,7 +45,9 @@
 DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
                                                  wxWindowID id, wxString title)
     : DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS) {
-  m_refDim = GetCharHeight() * 90 / 100;
+  m_refDim = GetCharHeight() * 80 / 100;
+  m_refDim *= OCPN_GetWinDIPScaleFactor() < 1.0 ?
+              2.0 * OCPN_GetWinDIPScaleFactor() : 1.0; //1.5
 
   m_cx = 35;
   m_cy = m_refDim * 35 / 10;
@@ -99,11 +101,11 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
   if (talkerID != wxEmptyString) {
     /* Switch view between the six GNSS system
        mentioned in NMEA0183, when available.
-       Show each system for 30 seconds.
+       Show each system for 20 seconds.
        Time to shift now? */
     wxDateTime now = wxDateTime::Now();
     wxTimeSpan sinceLastShift = now - m_lastShift;
-    if (sinceLastShift.GetSeconds() > 30) {
+    if (sinceLastShift.GetSeconds() > 20) {
       b_shift = true;
       m_lastShift = now;
     }
@@ -294,7 +296,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   tdc.SetTextForeground(cl);
 
   int pitch = m_refDim;
-  int offset = m_refDim * 12 / 100;
+  int offset = m_refDim * 15 / 100;
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SatNumber) {
       wxString satno = wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber);
@@ -333,7 +335,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   int m_scaleDelta = m_refDim / 2;
   int m_scaleBase = (m_radius * 2) + (2 * m_refDim);
   int pitch = m_refDim;
-  int offset = m_refDim * 25 / 100;
+  int offset = m_refDim * 12 / 100;
 
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
@@ -364,18 +366,14 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
       tdc.DrawText(label, 0, 0);
       tdc.SelectObject(wxNullBitmap);
 
-      int posx =
-          m_cx +
-          m_radius *
+      int posx = m_cx + m_radius *
               cos(deg2rad(m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET)) *
               sin(deg2rad(ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees)) -
-          width / 2;
-      int posy =
-          m_cy +
-          m_radius *
+              width / 2.0;
+      int posy = m_cy + m_radius *
               sin(deg2rad(m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET)) *
               sin(deg2rad(ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees)) -
-          height / 2;
+              height / 2.0;
       dc->DrawBitmap(tbm, posx, posy, false);
     }
   }

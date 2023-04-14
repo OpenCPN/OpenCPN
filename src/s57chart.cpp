@@ -86,6 +86,7 @@
 #include <map>
 
 #include "ssl/sha1.h"
+#include "shaders.h"
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
@@ -1401,11 +1402,97 @@ void s57chart::BuildLineVBO(void) {
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
     // upload data to VBO
+    // Choice:  Line VBO only, or full VBO with areas.
+
+#if 1
 #ifndef USE_ANDROID_GLES2
     glEnableClientState(GL_VERTEX_ARRAY);  // activate vertex coords array
 #endif
     glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer,
-                 GL_STATIC_DRAW);
+                  GL_STATIC_DRAW);
+
+#else
+    // get the size of VBO data block needed for all AREA objects
+    ObjRazRules *top, *crnt;
+    int vbo_area_size_bytes = 0;
+    for (int i = 0; i < PRIO_NUM; ++i) {
+      if (ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES)
+        top = razRules[i][4];  // Area Symbolized Boundaries
+      else
+        top = razRules[i][3];  // Area Plain Boundaries
+
+      while (top != NULL) {
+        crnt = top;
+        top = top->next;  // next object
+
+        //  Get the vertex data for this object
+        PolyTriGroup *ppg_vbo = crnt->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+        //add the byte length
+        vbo_area_size_bytes += ppg_vbo->single_buffer_size;
+      }
+    }
+
+    glGetError();     //clear it
+
+    // Allocate the VBO
+    glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length + vbo_area_size_bytes,
+                 NULL, GL_STATIC_DRAW);
+
+    GLenum err = glGetError();
+          if (err) {
+            wxString msg;
+            msg.Printf(_T("S57 VBO Error 1: %d"), err);
+            wxLogMessage(msg);
+            printf("S57 VBO Error 1: %d", err);
+          }
+
+    // Upload the line vertex data
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_vbo_byte_length, m_line_vertex_buffer);
+
+    err = glGetError();
+          if (err) {
+            wxString msg;
+            msg.Printf(_T("S57 VBO Error 2: %d"), err);
+            wxLogMessage(msg);
+            printf("S57 VBO Error 2: %d", err);
+          }
+
+
+    // Get the Area Object vertices, and add to the VBO, one by one
+    int vbo_load_offset = m_vbo_byte_length;
+
+    for (int i = 0; i < PRIO_NUM; ++i) {
+      if (ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES)
+        top = razRules[i][4];  // Area Symbolized Boundaries
+      else
+        top = razRules[i][3];  // Area Plain Boundaries
+
+      while (top != NULL) {
+        crnt = top;
+        top = top->next;  // next object
+
+        //  Get the vertex data for this object
+        PolyTriGroup *ppg_vbo = crnt->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+
+        // append  data to VBO
+        glBufferSubData(GL_ARRAY_BUFFER, vbo_load_offset,
+                        ppg_vbo->single_buffer_size,
+                        ppg_vbo->single_buffer);
+        // store the VBO offset in the object
+        crnt->obj->vboAreaOffset = vbo_load_offset;
+        vbo_load_offset += ppg_vbo->single_buffer_size;
+      }
+    }
+
+    err = glGetError();
+          if (err) {
+            wxString msg;
+            msg.Printf(_T("S57 VBO Error 3: %d"), err);
+            wxLogMessage(msg);
+            printf("S57 VBO Error 3: %d", err);
+          }
+
+#endif
 
 #ifndef USE_ANDROID_GLES2
     glDisableClientState(GL_VERTEX_ARRAY);  // deactivate vertex array
@@ -1413,6 +1500,7 @@ void s57chart::BuildLineVBO(void) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //  Loop and populate all the objects
+    //  with the name of the line/area vertex VBO
     for (int i = 0; i < PRIO_NUM; ++i) {
       for (int j = 0; j < LUPNAME_NUM; j++) {
         ObjRazRules *top = razRules[i][j];
@@ -1425,6 +1513,7 @@ void s57chart::BuildLineVBO(void) {
     }
 
     m_LineVBO_name = vboId;
+    m_this_chart_context->vboID = vboId;
   }
 #endif
 }
@@ -1483,6 +1572,7 @@ bool s57chart::RenderViewOnGLTextOnly(const wxGLContext &glc,
   if (!ps52plib) return false;
 
   SetVPParms(VPoint);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   glChartCanvas::DisableClipRegion();
   DoRenderOnGLText(glc, VPoint);
@@ -1530,6 +1620,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
 
   ViewPort vp = VPoint;
 
+// printf("\n");
   // region always has either 1 or 2 rectangles (full screen or panning
   // rectangles)
   for (OCPNRegionIterator upd(RectRegion); upd.HaveRects(); upd.NextRect()) {
@@ -1544,6 +1635,11 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
       //  cm93 vpoint crossing Greenwich, panning east, was rendering areas
       //  incorrectly.
       ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
+//  printf("CVP:  %g %g       %g %g\n",
+//         cvp.GetBBox().GetMinLat(),
+//         cvp.GetBBox().GetMaxLat(),
+//         cvp.GetBBox().GetMinLon(),
+//         cvp.GetBBox().GetMaxLon());
 
       if (CHART_TYPE_CM93 == GetChartType()) {
         // for now I will revert to the faster rectangle clipping now that
@@ -1586,8 +1682,8 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
         mat4x4_dup((float(*)[4])vp->vp_transform, Q);
 
 #else
+        ps52plib->SetReducedBBox(cvp.GetBBox());
         glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
-        //glChartCanvas::SetClipRegion(cvp, chart_region);
 
 #endif
       }
@@ -1607,6 +1703,7 @@ bool s57chart::DoRenderRegionViewOnGL(const wxGLContext &glc,
   return true;
 }
 
+
 bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
 #ifdef ocpnUSE_GL
 
@@ -1616,7 +1713,10 @@ bool s57chart::DoRenderOnGL(const wxGLContext &glc, const ViewPort &VPoint) {
   ViewPort tvp = VPoint;  // undo const  TODO fix this in PLIB
 
 #if 1
+
   //      Render the areas quickly
+  // bind VBO in order to use
+
   for (i = 0; i < PRIO_NUM; ++i) {
     if (ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES)
       top = razRules[i][4];  // Area Symbolized Boundaries
@@ -1791,6 +1891,7 @@ bool s57chart::RenderRegionViewOnDCTextOnly(wxMemoryDC &dc,
   if (!dc.IsOk()) return false;
 
   SetVPParms(VPoint);
+  PrepareForRender((ViewPort *)&VPoint, ps52plib);
 
   //  If the viewport is rotated, there will only be one rectangle in the region
   //  so we can take a shortcut...
@@ -3611,6 +3712,8 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
             umdate.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
           umdate.ResetTime();
+          if (!umdate.IsValid())
+              int yyp = 4;
 
           //    Fetch the EDTN(Edition) field
           if (pr) {
@@ -4189,6 +4292,9 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   m_this_chart_context->chart_type = GetChartType();
   m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
   m_this_chart_context->chart_scale = GetNativeScale();
+  m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+  m_this_chart_context->pRigidATONArray = pRigidATONArray;
+
 
   //  Loop and populate all the objects
   for (int i = 0; i < PRIO_NUM; ++i) {
@@ -4313,6 +4419,9 @@ void s57chart::ResetPointBBoxes(const ViewPort &vp_last,
                                 const ViewPort &vp_this) {
   ObjRazRules *top;
   ObjRazRules *nxx;
+
+  if (vp_last.view_scale_ppm == 1.0)    // Skip the startup case
+    return;
 
   double d = vp_last.view_scale_ppm / vp_this.view_scale_ppm;
 
@@ -4498,6 +4607,7 @@ void s57chart::UpdateLUPs(s57chart *pOwner) {
 ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
     float lat, float lon, ViewPort *VPoint) {
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+  std::vector<ObjRazRules *> selected_rules;
 
   //    Iterate thru the razRules array, by object/rule type
 
@@ -4577,7 +4687,7 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
                       double br, dd;
                       DistanceBearingMercator(lat, lon, olat, olon, &br, &dd);
                       if (dd < valnmr) {
-                        ret_ptr->Append(top);
+                        selected_rules.push_back(top);
                       }
                     }
                   }
@@ -4592,6 +4702,11 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
     }
   }
 
+  // Copy the rules in order into a wxList so the function returns the correct type
+  for(std::size_t i = 0; i < selected_rules.size(); ++i) {
+    ret_ptr->Append(selected_rules[i]);
+  }
+
   return ret_ptr;
 }
 
@@ -4599,7 +4714,9 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
                                                     float select_radius,
                                                     ViewPort *VPoint,
                                                     int selection_mask) {
+
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+  std::vector<ObjRazRules *> selected_rules;
 
   //    Iterate thru the razRules array, by object/rule type
 
@@ -4618,9 +4735,11 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
         {
           if (ps52plib->ObjectRenderCheck(top)) {
             if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-              ret_ptr->Append(top);
+              selected_rules.push_back(top);
           }
         }
+
+
 
         //    Check the child branch, if any.
         //    This is where Multipoint soundings are captured individually
@@ -4630,7 +4749,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
             if (ps52plib->ObjectRenderCheck(child_item)) {
               if (DoesLatLonSelectObject(lat, lon, select_radius,
                                          child_item->obj))
-                ret_ptr->Append(child_item);
+                selected_rules.push_back(child_item);
             }
 
             child_item = child_item->next;
@@ -4650,7 +4769,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       while (top != NULL) {
         if (ps52plib->ObjectRenderCheck(top)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-            ret_ptr->Append(top);
+            selected_rules.push_back(top);
         }
 
         top = top->next;
@@ -4664,12 +4783,49 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
       while (top != NULL) {
         if (ps52plib->ObjectRenderCheck(top)) {
           if (DoesLatLonSelectObject(lat, lon, select_radius, top->obj))
-            ret_ptr->Append(top);
+            selected_rules.push_back(top);
         }
 
         top = top->next;
       }
     }
+  }
+
+
+  // Sort Point objects by distance to searched lat/lon
+  // This lambda function could be modified to also sort GEO_LINES and GEO_AREAS if needed
+  auto sortObjs = [lat, lon, this] (const ObjRazRules* obj1, const ObjRazRules* obj2) -> bool
+  {
+    double br1, dd1, br2, dd2;
+
+    if(obj1->obj->Primitive_type == GEO_POINT && obj2->obj->Primitive_type == GEO_POINT){
+      double lat1, lat2, lon1, lon2;
+      fromSM((obj1->obj->x * obj1->obj->x_rate) + obj1->obj->x_origin,
+        (obj1->obj->y * obj1->obj->y_rate) + obj1->obj->y_origin,
+        ref_lat, ref_lon, &lat1, &lon1);
+
+      if (lon1 > 180.0) lon1 -= 360.;
+
+      fromSM((obj2->obj->x * obj2->obj->x_rate) + obj2->obj->x_origin,
+        (obj2->obj->y * obj2->obj->y_rate) + obj2->obj->y_origin,
+        ref_lat, ref_lon, &lat2, &lon2);
+
+      if (lon2 > 180.0) lon2 -= 360.;
+
+      DistanceBearingMercator(lat, lon, lat1, lon1, &br1, &dd1);
+      DistanceBearingMercator(lat, lon, lat2, lon2, &br2, &dd2);
+      return dd1>dd2;
+    }
+    return false;
+
+  };
+
+  // Sort the selected rules by using the lambda sort function defined above
+  std::sort(selected_rules.begin(), selected_rules.end(), sortObjs);
+
+  // Copy the rules in order into a wxList so the function returns the correct type
+  for(std::size_t i = 0; i < selected_rules.size(); ++i) {
+    ret_ptr->Append(selected_rules[i]);
   }
 
   return ret_ptr;
@@ -5378,7 +5534,7 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
 
 bool s57chart::CompareLights(const S57Light *l1, const S57Light *l2) {
   int positionDiff = l1->position.Cmp(l2->position);
-  if (positionDiff < 0) return true;
+  if (positionDiff < 0) return false;
 
   int attrIndex1 = l1->attributeNames.Index(_T("SECTR1"));
   int attrIndex2 = l2->attributeNames.Index(_T("SECTR1"));
@@ -5649,22 +5805,36 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (curAttrName == _T("TS_TSP")) {  // Tidal current applet
           wxArrayString as;
           wxString ts, ts1;
+          // value does look like: , 310, 310, 44, 44, 116, 116, 119, 119, 122,
+          // 122, 125, 125, 130, 130, 270, 270, 299, 299, 300, 300, 301, 301,
+          // 303, 303, 307,307509A,Helgoland,HW,310,0.9,044,0.2,116,1.5,
+          // 119,2.2,122,1.9,125,1.5,130,0.9,270,0.1,299,1.4,300,2.1,301,2.0,303,1.7,307,1.2
           wxStringTokenizer tk(value, wxT(","));
-          ts = tk.GetNextToken();  // we don't show this part (the TT entry
-                                   // number)'
-          ts1 = tk.GetNextToken();  // Now has the tidal reference port name'
+          ts1 =
+          tk.GetNextToken();  // get first token this will be skipped always
+          long l;
+          do {  // Skip up upto the first non number. This is Port Name
+            ts1 = tk.GetNextToken().Trim(false);
+            // some harbourID do have an alpha extension, therefore only check
+            // the left(2)
+          } while ((ts1.Left(2).ToLong(&l)));
           ts = _T("Tidal Streams referred to<br><b>");
           ts.Append(tk.GetNextToken()).Append(_T("</b> at <b>")).Append(ts1);
-          ts.Append(/*tk.GetNextToken()).Append(*/ _T("</b><br><table >"));
+          ts.Append(_T("</b><br><table >"));
           int i = -6;
           while (tk.HasMoreTokens()) {  // fill the current table
-            ts.Append(_T("<tr><td>"))
-                .Append(wxString::Format(wxT("%i"), i))
-                .Append(_T("</td><td>"))
-                .Append(tk.GetNextToken())
-                .Append(_T("&#176</td><td>"))
-                .Append(tk.GetNextToken())
-                .Append(_T("</td></tr>"));
+            ts.Append(_T("<tr><td>"));
+            wxString s1(wxString::Format(_T("%+dh "), i));
+            ts.Append(s1);
+            ts.Append(_T("</td><td>"));
+            s1 = tk.GetNextToken();
+            ts.Append(s1);
+            s1 = "&#176</td><td>";
+            ts.Append(s1);
+            s1 = tk.GetNextToken();
+            ts.Append(s1);
+            ts.Append(" kn");
+            ts.Append(_T("</td></tr>"));
             i++;
           }
           ts.Append(_T("</table>"));
@@ -5750,26 +5920,30 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       attrIndex = thisLight->attributeNames.Index(_T("COLOUR"));
       if (attrIndex != wxNOT_FOUND) {
         wxString color = thisLight->attributeValues.Item(attrIndex);
-        if (color == _T("red (3)"))
+        if (color == _T("red (3)") || color == _T("red(3)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("green (4)"))
+        else if (color == _T("green (4)") || color == _T("green(4)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("white (1)"))
+        else if (color == _T("white (1)") || color == _T("white(1)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("yellow (6)"))
+        else if (color == _T("yellow (6)") || color == _T("yellow(6)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("blue (5)"))
+        else if (color == _T("blue (5)") || color == _T("blue(5)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("magenta (12)") || color == _T("magenta(12)"))
+          colorStr =
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=magenta>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
         else
           colorStr =
               _T("<table border=0><tr><td ")
@@ -5782,15 +5956,15 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (vis.Contains(_T("8"))) {
           if (attrIndex != wxNOT_FOUND) {
             wxString color = thisLight->attributeValues.Item(attrIndex);
-            if (color == _T("red (3)"))
+            if (( color == _T("red (3)") || color == _T("red(3)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (color == _T("green (4)"))
+            if (( color == _T("green (4)") || color == _T("green(4)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (color == _T("white (1)"))
+            if (( color == _T("white (1)") || color == _T("white(1)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
@@ -5811,6 +5985,12 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       attrIndex = thisLight->attributeNames.Index(_T("SIGGRP"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
+        lightsHtml << _T(" ");
+      }
+
+      attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
+      if( attrIndex != wxNOT_FOUND ) {
+        lightsHtml << _T(" ") << thisLight->attributeValues.Item( attrIndex ).Upper()[0];
         lightsHtml << _T(" ");
       }
 
@@ -6119,8 +6299,13 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
 
       rangePx = rangePx * rangeScale;
 
+      int penWidth = rangePx / 8;
+      penWidth = wxMin(20, penWidth);
+      penWidth = wxMax(5, penWidth);
+
+
       int legOpacity;
-      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color, 12,
+      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color, penWidth,
                                                     wxPENSTYLE_SOLID);
       arcpen->SetCap(wxCAP_BUTT);
       dc.SetPen(*arcpen);
@@ -6200,6 +6385,242 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
         dc.StrokeLine(lightPos, end2);
         sectorangles.push_back(sec2);
       }
+    }
+  }
+}
+
+void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
+                                  std::vector<s57Sector_t> &sectorlegs) {
+  float rangeScale = 0.0;
+
+  if (sectorlegs.size() > 0) {
+    std::vector<int> sectorangles;
+    for (unsigned int i = 0; i < sectorlegs.size(); i++) {
+      if (fabs(sectorlegs[i].sector1 - sectorlegs[i].sector2) < 0.3) continue;
+
+      double endx, endy;
+      ll_gc_ll(sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x,
+               sectorlegs[i].sector1 + 180.0, sectorlegs[i].range, &endy,
+               &endx);
+
+      wxPoint end1 = viewport.GetPixFromLL(endy, endx);
+
+      ll_gc_ll(sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x,
+               sectorlegs[i].sector2 + 180.0, sectorlegs[i].range, &endy,
+               &endx);
+
+      wxPoint end2 = viewport.GetPixFromLL(endy, endx);
+
+      wxPoint lightPos =
+          viewport.GetPixFromLL(sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x);
+
+
+      // Make sure arcs are well inside viewport.
+      float rangePx = sqrtf(powf((float)(lightPos.x - end1.x), 2) +
+                            powf((float)(lightPos.y - end1.y), 2));
+      rangePx /= 3.0;
+      if (rangeScale == 0.0) {
+        rangeScale = 1.0;
+        if (rangePx > viewport.pix_height / 3) {
+          rangeScale *= (viewport.pix_height / 3) / rangePx;
+        }
+      }
+
+      rangePx = rangePx * rangeScale;
+
+      float arcw = rangePx / 10;
+      arcw = wxMin(20, arcw);
+      arcw = wxMax(5, arcw);
+
+      int legOpacity;
+
+      float angle1, angle2;
+      angle1 = -(sectorlegs[i].sector2 + 90.0) - viewport.rotation * 180.0 / PI;
+      angle2 = -(sectorlegs[i].sector1 + 90.0) - viewport.rotation * 180.0 / PI;
+      if (angle1 > angle2) {
+        angle2 += 360.0;
+      }
+      int lpx = lightPos.x;
+      int lpy = lightPos.y;
+
+      if (sectorlegs[i].isleading && (angle2 - angle1 < 60)) {
+         wxPoint yellowCone[3];
+         yellowCone[0] = lightPos;
+         yellowCone[1] = end1;
+         yellowCone[2] = end2;
+         wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
+                                                wxPENSTYLE_SOLID);
+         dc.SetPen(*arcpen);
+         wxColor c = sectorlegs[i].color;
+         c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
+         dc.SetBrush(wxBrush(c));
+         dc.StrokePolygon(3, yellowCone, 0, 0);
+         legOpacity = 50;
+      } else {
+         // Center point
+        wxPoint r(lpx, lpy);
+
+        //  radius scaled to display
+        float rad = rangePx;
+
+        //float arcw = arc_width * canvas_pix_per_mm;
+        // On larger screens, make the arc_width 1.0 mm
+        //if ( m_display_size_mm > 200)     //200 mm, about 8 inches
+          //arcw = canvas_pix_per_mm;
+
+
+        //      Enable anti-aliased lines, at best quality
+        glEnable(GL_BLEND);
+
+        float coords[8];
+        coords[0] = -rad;
+        coords[1] = rad;
+        coords[2] = rad;
+        coords[3] = rad;
+        coords[4] = -rad;
+        coords[5] = -rad;
+        coords[6] = rad;
+        coords[7] = -rad;
+
+        GLShaderProgram *shader = pring_shader_program[0/*GetCanvasIndex()*/];
+        shader->Bind();
+
+        // Get pointers to the attributes in the program.
+        GLint mPosAttrib = glGetAttribLocation(shader->programId(), "aPos");
+
+        // Disable VBO's (vertex buffer objects) for attributes.
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
+        glEnableVertexAttribArray(mPosAttrib);
+
+        //  Circle radius
+        GLint radiusloc =
+            glGetUniformLocation(shader->programId(), "circle_radius");
+        glUniform1f(radiusloc, rad);
+
+        //  Circle center point, physical
+        GLint centerloc =
+            glGetUniformLocation(shader->programId(), "circle_center");
+        float ctrv[2];
+        ctrv[0] = r.x;
+        ctrv[1] = viewport.pix_height - r.y;
+        glUniform2fv(centerloc, 1, ctrv);
+
+        //  Circle color
+        wxColour colorb = sectorlegs[i].color;
+        float colorv[4];
+        colorv[0] = colorb.Red() / float(256);
+        colorv[1] = colorb.Green() / float(256);
+        colorv[2] = colorb.Blue() / float(256);
+        colorv[3] = colorb.Alpha() / float(256);
+
+        GLint colloc = glGetUniformLocation(shader->programId(), "circle_color");
+        glUniform4fv(colloc, 1, colorv);
+
+        //  Border color
+        float bcolorv[4];
+        bcolorv[0] = 0;
+        bcolorv[1] = 0;
+        bcolorv[2] = 0;
+        bcolorv[3] = 0;
+
+        GLint bcolloc = glGetUniformLocation(shader->programId(), "border_color");
+        glUniform4fv(bcolloc, 1, bcolorv);
+
+        //  Border Width
+        GLint borderWidthloc =
+            glGetUniformLocation(shader->programId(), "border_width");
+        glUniform1f(borderWidthloc, 2);
+
+        //  Ring width
+        GLint ringWidthloc =
+            glGetUniformLocation(shader->programId(), "ring_width");
+        glUniform1f(ringWidthloc, arcw);
+
+        //  Visible sectors, rotated to vp orientation
+        float sr1 = sectorlegs[i].sector1 + (viewport.rotation * 180 / PI) + 180;
+        if (sr1 > 360.) sr1 -= 360.;
+        float sr2 = sectorlegs[i].sector2 + (viewport.rotation * 180 / PI) + 180;
+        if (sr2 > 360.) sr2 -= 360.;
+
+        float sb, se;
+        if (sr2 > sr1) {
+          sb = sr1;
+          se = sr2;
+        } else {
+          sb = sr1;
+          se = sr2 + 360;
+        }
+
+        //  Shader can handle angles > 360.
+        if ((sb < 0) || (se < 0)) {
+          sb += 360.;
+          se += 360.;
+        }
+
+        GLint sector1loc = glGetUniformLocation(shader->programId(), "sector_1");
+        glUniform1f(sector1loc, (sb * PI / 180.));
+        GLint sector2loc = glGetUniformLocation(shader->programId(), "sector_2");
+        glUniform1f(sector2loc, (se * PI / 180.));
+
+        // Rotate and translate
+        mat4x4 I;
+        mat4x4_identity(I);
+        mat4x4_translate_in_place(I, r.x, r.y, 0);
+
+        GLint matloc =
+            glGetUniformLocation(shader->programId(), "TransformMatrix");
+        glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)I);
+
+        // Perform the actual drawing.
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // Restore the per-object transform to Identity Matrix
+        mat4x4 IM;
+        mat4x4_identity(IM);
+        GLint matlocf =
+            glGetUniformLocation(shader->programId(), "TransformMatrix");
+        glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+
+        glDisableVertexAttribArray(mPosAttrib);
+        shader->UnBind();
+
+      }
+
+#if 1
+
+      wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 128), 1,
+                                             wxPENSTYLE_SOLID);
+      dc.SetPen(*arcpen);
+
+      // Only draw each leg line once.
+      bool haveAngle1 = false;
+      bool haveAngle2 = false;
+      int sec1 = (int)sectorlegs[i].sector1;
+      int sec2 = (int)sectorlegs[i].sector2;
+      if (sec1 > 360) sec1 -= 360;
+      if (sec2 > 360) sec2 -= 360;
+
+      if ((sec2 == 360) && (sec1 == 0))  // FS#1437
+        continue;
+
+      for (unsigned int j = 0; j < sectorangles.size(); j++) {
+        if (sectorangles[j] == sec1) haveAngle1 = true;
+        if (sectorangles[j] == sec2) haveAngle2 = true;
+      }
+
+      if (!haveAngle1) {
+        dc.StrokeLine(lightPos, end1);
+        sectorangles.push_back(sec1);
+      }
+
+      if (!haveAngle2) {
+        dc.StrokeLine(lightPos, end2);
+        sectorangles.push_back(sec2);
+      }
+#endif
     }
   }
 }

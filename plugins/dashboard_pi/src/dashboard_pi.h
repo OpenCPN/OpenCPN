@@ -79,12 +79,12 @@ class DashboardWindow;
 class DashboardWindowContainer;
 class DashboardInstrumentContainer;
 
-#define DASHBOARD_TOOL_POSITION \
-  -1  // Request default positioning of toolbar tool
-
-#define gps_watchdog_timeout_ticks 10
-#define no_nav_watchdog_timeout_ticks \
-  40  // SignalK motor & environ instr defaults 30 sec
+// Request default positioning of toolbar tool
+#define DASHBOARD_TOOL_POSITION -1
+// Set watchdog to comply with OCPN WD.
+#define gps_watchdog_timeout_ticks GetGlobalWatchdogTimoutSeconds()
+// SignalK motor & environ instr defaults 30 sec update frequency
+#define no_nav_watchdog_timeout_ticks 40
 #define GEODESIC_RAD2DEG(r) ((r) * (180.0 / M_PI))
 #define MS2KNOTS(r) ((r) * (1.9438444924406))
 #define KELVIN2C(r) ((r) - (273.15))
@@ -219,6 +219,15 @@ private:
   std::shared_ptr<ObservableListener> listener_129540;
   std::shared_ptr<ObservableListener> listener_130306;
   std::shared_ptr<ObservableListener> listener_130310;
+
+
+  std::string prio127245;
+  std::string prio127257;
+  std::string prio128259;
+  std::string prio128267;
+  std::string prio129029;
+  std::string prioN2kPGNsat;
+  std::string prio130306;
 
   wxString m_self;
 

@@ -49,6 +49,7 @@
 #include "route.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "ocpn_plugin.h"
 
 extern Routeman* g_pRouteMan;
 extern MyFrame* gFrame;
@@ -519,9 +520,9 @@ void AnnunText::CalculateMinSize(void) {
   if (m_pvalueFont)
     GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
 
-  double pdifactor = g_BasePlatform->GetDisplayDPIMult(gFrame);
-  wl *= pdifactor; hl *= pdifactor;
-  wv *= pdifactor; hv *= pdifactor;
+   double pdifactor = g_BasePlatform->GetDisplayDIPMult(gFrame);
+   wl *= pdifactor; hl *= pdifactor;
+   wv *= pdifactor; hv *= pdifactor;
 
   wxSize min;
   min.x = wl + wv;
@@ -553,8 +554,19 @@ void AnnunText::SetColorScheme(ColorScheme cs) {
 }
 
 void AnnunText::RefreshFonts() {
-  m_plabelFont = FontMgr::Get().GetFont(m_LegendTextElement);
-  m_pvalueFont = FontMgr::Get().GetFont(m_ValueTextElement);
+  wxFont *pl = FontMgr::Get().GetFont(m_LegendTextElement);
+  m_plabelFont = FontMgr::Get().FindOrCreateFont(
+      pl->GetPointSize() / OCPN_GetWinDIPScaleFactor(),
+      pl->GetFamily(), pl->GetStyle(),
+      pl->GetWeight(), FALSE,
+      pl->GetFaceName());
+
+  wxFont *pv = FontMgr::Get().GetFont(m_ValueTextElement);
+  m_pvalueFont = FontMgr::Get().FindOrCreateFont(
+      pv->GetPointSize() / OCPN_GetWinDIPScaleFactor(),
+      pv->GetFamily(), pv->GetStyle(),
+      pv->GetWeight(), FALSE,
+      pv->GetFaceName());
 
   m_legend_color = FontMgr::Get().GetFontColor(_("Console Legend"));
   m_val_color = FontMgr::Get().GetFontColor(_("Console Value"));

@@ -27,6 +27,9 @@
 #ifndef _SIGNALK_NET_H
 #define _SIGNALK_NET_H
 
+#include <atomic>
+#include <string>
+
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -36,7 +39,6 @@
 #include <wx/datetime.h>
 #include <wx/socket.h>
 
-#include <string>
 #include "rapidjson/fwd.h"
 #include "conn_params.h"
 #include "comm_drv_signalk.h"
@@ -86,7 +88,7 @@ public:
 
   bool m_bsec_thread_active;
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
   ConnectionParams m_params;
   DriverListener& m_listener;
 

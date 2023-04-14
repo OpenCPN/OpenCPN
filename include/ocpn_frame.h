@@ -42,6 +42,7 @@
 #include "SencManager.h"
 #include "comm_appmsg_bus.h"
 #include "bbox.h"
+#include "load_errors_dlg.h"
 
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
@@ -112,7 +113,7 @@ class ArrayOfCDI;
 #endif
 
 //      Define a constant GPS signal watchdog timeout value
-#define GPS_TIMEOUT_SECONDS 6
+#define GPS_TIMEOUT_SECONDS 10
 
 //    Define a timer value for Tide/Current updates
 //    Note that the underlying data algorithms produce fresh data only every 15
@@ -370,12 +371,12 @@ public:
   void PositionIENCToolbar();
 
   void InitAppMsgBusListener();
+  void UpdateStatusBar(void);
 
 private:
   void CheckToolbarPosition();
   void ODoSetSize(void);
   void DoCOGSet(void);
-  void UpdateStatusBar(void);
 
   void UpdateAllToolbars(ColorScheme cs);
 
@@ -430,6 +431,8 @@ private:
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
   bool m_b_new_data;
+
+  std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
 
   ObservableListener listener_basic_navdata;
   ObservableListener listener_gps_watchdog;

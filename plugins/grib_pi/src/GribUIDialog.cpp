@@ -42,6 +42,8 @@
 #include <math.h>
 #include <time.h>
 
+#include "pi_gl.h"
+
 #include "grib_pi.h"
 #include "GribTable.h"
 #include "email.h"
@@ -713,7 +715,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
   if ((m_DialogStyle >> 1 == SEPARATED || !m_CDataIsShown) &&
       !m_HasCaption) {  // Size and show grabber if necessary
     Fit();              // each time CtrlData dialog will be alone
-    m_gGrabber->Size(m_ScaledFactor);  // or separated
+    m_gGrabber->Size();  // or separated
     m_gGrabber->Show();
   }
 
@@ -894,7 +896,11 @@ void GRIBUICtrlBar::OnMenuEvent(wxMenuEvent &event) {
 void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
                                wxItemKind kind, wxBitmap bitmap,
                                wxMenu *submenu) {
-  wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind, submenu);
+  wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind);
+  //add a submenu to this item if necessary
+  if (submenu)
+    item->SetSubMenu(submenu);
+
 /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
 #ifdef __WXMSW__
   wxFont *qFont = OCPNGetFont(_("Menu"), 10);
@@ -940,7 +946,7 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
       smenu->Check(ID_CTRLALTITUDE + 1000 + m_Altitude, true);
       MenuAppend(
           xmenu, wxID_ANY, _("Select geopotential altitude"), wxITEM_NORMAL,
-          GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor));
+          GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor),smenu);
     }
     MenuAppend(xmenu, ID_BTNNOW, _("Now"), wxITEM_NORMAL,
                GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));

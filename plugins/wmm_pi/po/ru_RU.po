@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 22:20-0400\n"
-"PO-Revision-Date: 2022-04-18 17:54\n"
+"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"PO-Revision-Date: 2023-04-08 16:00\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
 
-#: src/wmm_pi.cpp:92
+#: src/wmm_pi.cpp:85
 msgid "\n"
 "World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
 "Variation is the angle between true and magnetic north.\n"
@@ -30,23 +30,23 @@ msgid "\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr ""
 
-#: src/wmm_pi.cpp:108
+#: src/wmm_pi.cpp:101
 msgid "WMM Plugin"
 msgstr "Модуль \"Магнитной Модели Земли\""
 
-#: src/wmm_pi.cpp:167
+#: src/wmm_pi.cpp:162
 msgid "WMM_Live_Overlay"
 msgstr ""
 
-#: src/wmm_pi.cpp:225 src/wmm_pi.cpp:313 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:219 src/wmm_pi.cpp:288 src/WmmUIDialog.h:84
 msgid "WMM"
 msgstr "ММЗ"
 
-#: src/wmm_pi.cpp:319
+#: src/wmm_pi.cpp:291
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Модуль \"Магнитной Модели Земли\" для OpenCPN"
 
-#: src/wmm_pi.cpp:324
+#: src/wmm_pi.cpp:296
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
@@ -55,169 +55,173 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "Модуль \"Магнитной Модели Земли\" для OpenCPN\n"
+"Реализует модель магнитных склонений земли.\n"
+"Подробнее:\n"
+"https://www.gdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
+"Обложка модели WMM2020 истекает 31 декабря 2025."
 
-#: src/wmm_pi.cpp:535 src/wmm_pi.cpp:675
+#: src/wmm_pi.cpp:476 src/wmm_pi.cpp:642
 msgid "Error, see log."
 msgstr "Ошибка, см. журнал."
 
-#: src/wmm_pi.cpp:958 src/WmmUIDialog.h:115
+#: src/wmm_pi.cpp:925 src/WmmUIDialog.h:114
 msgid "WMM Preferences"
 msgstr "Настройки ММЗ"
 
-#: src/wmm_pi.h:80 src/WmmUIDialog.h:155
+#: src/wmm_pi.h:85 src/WmmUIDialog.h:154
 msgid "Magnetic Plot Settings"
 msgstr "Параметры Диаграмм ММЗ"
 
-#: src/WmmUIDialog.cpp:30
+#: src/WmmUIDialog.cpp:32
 msgid "Boat"
 msgstr "Судно"
 
-#: src/WmmUIDialog.cpp:37 src/WmmUIDialog.cpp:133
+#: src/WmmUIDialog.cpp:40 src/WmmUIDialog.cpp:150
 msgid "F "
 msgstr ""
 
-#: src/WmmUIDialog.cpp:39 src/WmmUIDialog.cpp:135
+#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:153
 msgid "Total Intensity"
 msgstr "Общая Интенсивность"
 
-#: src/WmmUIDialog.cpp:47 src/WmmUIDialog.cpp:143
+#: src/WmmUIDialog.cpp:52 src/WmmUIDialog.cpp:162
 msgid "H "
 msgstr ""
 
-#: src/WmmUIDialog.cpp:49 src/WmmUIDialog.cpp:145
+#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:165
 msgid "Horizontal Intensity"
 msgstr "Горизонтальная Интенсивность"
 
-#: src/WmmUIDialog.cpp:57 src/WmmUIDialog.cpp:153
+#: src/WmmUIDialog.cpp:64 src/WmmUIDialog.cpp:174
 msgid "X "
 msgstr ""
 
-#: src/WmmUIDialog.cpp:59 src/WmmUIDialog.cpp:155
+#: src/WmmUIDialog.cpp:67 src/WmmUIDialog.cpp:177
 msgid "North Component"
 msgstr "Северный Компонент"
 
-#: src/WmmUIDialog.cpp:67 src/WmmUIDialog.cpp:163
+#: src/WmmUIDialog.cpp:76 src/WmmUIDialog.cpp:186
 msgid "Y "
 msgstr ""
 
-#: src/WmmUIDialog.cpp:69 src/WmmUIDialog.cpp:165
+#: src/WmmUIDialog.cpp:79 src/WmmUIDialog.cpp:189
 msgid "East Component"
 msgstr "Восточный Компонент"
 
-#: src/WmmUIDialog.cpp:77 src/WmmUIDialog.cpp:173
+#: src/WmmUIDialog.cpp:88 src/WmmUIDialog.cpp:198
 msgid "Z "
 msgstr ""
 
-#: src/WmmUIDialog.cpp:79 src/WmmUIDialog.cpp:175
+#: src/WmmUIDialog.cpp:91 src/WmmUIDialog.cpp:201
 msgid "Vertical Component"
 msgstr "Вертикальная составляющая"
 
-#: src/WmmUIDialog.cpp:87 src/WmmUIDialog.cpp:183
+#: src/WmmUIDialog.cpp:100 src/WmmUIDialog.cpp:210
 msgid "Incl"
 msgstr "Вкл"
 
-#: src/WmmUIDialog.cpp:89 src/WmmUIDialog.cpp:185
+#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:213
 msgid "(DIP) - Geomagnetic Inclination "
 msgstr "(ДИП) - Геомагнитного наклонения "
 
-#: src/WmmUIDialog.cpp:107 src/WmmUIDialog.cpp:203
+#: src/WmmUIDialog.cpp:121 src/WmmUIDialog.cpp:231
 msgid "Vari"
 msgstr "Склонение"
 
-#: src/WmmUIDialog.cpp:109 src/WmmUIDialog.cpp:205
+#: src/WmmUIDialog.cpp:124 src/WmmUIDialog.cpp:234
 msgid "Magnetic Variation"
 msgstr "Магнитное склонение"
 
-#: src/WmmUIDialog.cpp:126
+#: src/WmmUIDialog.cpp:142
 msgid "Cursor"
 msgstr "Курсор"
 
-#: src/WmmUIDialog.cpp:226
+#: src/WmmUIDialog.cpp:256
 msgid "Plot"
 msgstr "Диаграмма"
 
-#: src/WmmUIDialog.cpp:235
+#: src/WmmUIDialog.cpp:265
 msgid "Enable plot"
 msgstr "Включить Диаграмму"
 
-#: src/WmmUIDialog.cpp:239
+#: src/WmmUIDialog.cpp:270
 msgid "Settings..."
 msgstr "Настройки..."
 
-#: src/WmmUIDialog.cpp:286
+#: src/WmmUIDialog.cpp:324
 msgid "Extended"
 msgstr "Расширенный"
 
-#: src/WmmUIDialog.cpp:286
+#: src/WmmUIDialog.cpp:324
 msgid "Variation only"
 msgstr "Только склонения"
 
-#: src/WmmUIDialog.cpp:288
+#: src/WmmUIDialog.cpp:326
 msgid "View"
 msgstr "Вид"
 
-#: src/WmmUIDialog.cpp:292
+#: src/WmmUIDialog.cpp:332
 msgid "Show Plot Options"
 msgstr "Показать Параметры Диаграмм"
 
-#: src/WmmUIDialog.cpp:295
+#: src/WmmUIDialog.cpp:337
 msgid "Show also data at cursor position"
 msgstr "Показывать данные в позиции курсора"
 
-#: src/WmmUIDialog.cpp:298
+#: src/WmmUIDialog.cpp:341
 msgid "Show toolbar icon"
 msgstr "Показывать значок на панели инструментов"
 
-#: src/WmmUIDialog.cpp:301
+#: src/WmmUIDialog.cpp:345
 msgid "Show data in toolbar icon"
 msgstr "Показывать данные на панели инструментов"
 
-#: src/WmmUIDialog.cpp:305
+#: src/WmmUIDialog.cpp:351
 msgid "Window transparency"
 msgstr "Прозрачность окна"
 
-#: src/WmmUIDialog.cpp:316 src/WmmUIDialog.cpp:399
+#: src/WmmUIDialog.cpp:362 src/WmmUIDialog.cpp:464
 msgid "Cancel"
 msgstr "Отмена"
 
-#: src/WmmUIDialog.cpp:341 src/MagneticPlotMap.cpp:359
+#: src/WmmUIDialog.cpp:386 src/MagneticPlotMap.cpp:399
 msgid "Variation"
 msgstr "Склонение"
 
-#: src/WmmUIDialog.cpp:348 src/WmmUIDialog.cpp:358
+#: src/WmmUIDialog.cpp:396 src/WmmUIDialog.cpp:410
 msgid "Degrees"
 msgstr "Градусов"
 
-#: src/WmmUIDialog.cpp:352 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:401 src/MagneticPlotMap.cpp:400
 msgid "Inclination"
 msgstr "Наклон"
 
-#: src/WmmUIDialog.cpp:362 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:415 src/MagneticPlotMap.cpp:401
 msgid "Field Strength"
 msgstr "Напряженность поля"
 
-#: src/WmmUIDialog.cpp:368
+#: src/WmmUIDialog.cpp:424
 msgid "Nano Tesla"
 msgstr "Нано Тесла"
 
-#: src/WmmUIDialog.cpp:378
+#: src/WmmUIDialog.cpp:437
 msgid "Step Size"
 msgstr "Размер шага"
 
-#: src/WmmUIDialog.cpp:389
+#: src/WmmUIDialog.cpp:451
 msgid "Pole Accuracy"
 msgstr "Точность поля"
 
-#: src/WmmUIDialog.cpp:393
+#: src/WmmUIDialog.cpp:456
 msgid "About"
 msgstr "О программе"
 
-#: src/WmmUIDialog.cpp:396
+#: src/WmmUIDialog.cpp:460
 msgid "Save"
 msgstr "Сохранить"
 
-#: src/MagneticPlotMap.cpp:358
+#: src/MagneticPlotMap.cpp:398
 msgid "Building Magnetic Map"
 msgstr "Построение Магнитной Карты"
 

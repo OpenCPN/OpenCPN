@@ -43,6 +43,7 @@ extern GLShaderProgram *pcolor_tri_shader_program[2];
 extern GLShaderProgram *ptexture_2D_shader_program[2];
 extern GLShaderProgram *pcircle_filled_shader_program[2];
 extern GLShaderProgram *ptexture_2DA_shader_program[2];
+extern GLShaderProgram *pring_shader_program[2];
 
 extern const GLchar* preamble;
 

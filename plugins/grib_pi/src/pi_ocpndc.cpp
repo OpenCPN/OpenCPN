@@ -31,9 +31,14 @@
 #include "wx/wx.h"
 #endif
 
+#include <list>
+
+#include "pi_gl.h"
+
 #ifndef __OCPN__ANDROID__
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/glew.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 #endif
 
 #include "ocpn_plugin.h"
@@ -56,15 +61,8 @@
 #include "wx28compat.h"
 #include "cutil.h"
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-#include "GL/gl.h"
-#endif
-
-#ifdef USE_ANDROID_GLES2
 #include "pi_shaders.h"
+#ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
 #endif
 
@@ -72,7 +70,6 @@
 #include "qdebug.h"
 #endif
 
-extern float g_DIPfactor;
 extern float g_piGLMinSymbolLineWidth;
 wxArrayPtrVoid pi_gTesselatorVertices;
 
@@ -96,14 +93,14 @@ int NextPow2(int size) {
 //----------------------------------------------------------------------------
 /* pass the dc to the constructor, or NULL to use opengl */
 pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
-    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
 #ifdef ocpnUSE_GL
   m_textforegroundcolour = wxColour(0, 0, 0);
 #endif
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -116,14 +113,14 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
   s_odc_tess_work_buf = (GLfloat *)malloc(100 * sizeof(GLfloat));
   s_odc_tess_buf_len = 100;
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
   pi_loadShaders();
 #endif
 #endif
 }
 
 pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
-    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(false) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
   wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -135,24 +132,24 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
   }
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
 }
 
 pi_ocpnDC::pi_ocpnDC()
-    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
   pi_loadShaders();
 #endif
 }
@@ -167,9 +164,11 @@ pi_ocpnDC::~pi_ocpnDC() {
 }
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
-#ifdef __OCPN__ANDROID__
-  configureShaders(vp->pix_width, vp->pix_height);
-#endif
+//#ifdef __OCPN__ANDROID__
+  if ( m_buseGL ) {
+    configureShaders(vp->pix_width, vp->pix_height);
+  }
+//#endif
   m_vpSize = wxSize(vp->pix_width, vp->pix_height);
 }
 
@@ -583,7 +582,7 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glLineWidth(pen_width);
     }
 
-#ifdef USE_ANDROID_GLES2
+#if 1//def USE_ANDROID_GLES2
     if (b_draw_thick)
       piDrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
@@ -884,7 +883,7 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 
     glBegin(GL_LINE_STRIP);
     for (int i = 0; i < n; i++)
@@ -973,6 +972,9 @@ void pi_ocpnDC::StrokeLines(int n, wxPoint *points) {
 
 void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
                                 unsigned char *color_array_ub, bool b_hiqual) {
+  if(!n)
+      return;
+
 #ifdef ocpnUSE_GL
   if (ConfigurePen()) {
 #ifdef __WXQT__
@@ -1007,7 +1009,7 @@ void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
         glLineWidth(wxMax(g_piGLMinSymbolLineWidth, 1));
     }
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -1056,7 +1058,7 @@ void pi_ocpnDC::DrawRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h) {
   if (dc) dc->DrawRectangle(x, y, w, h);
 #ifdef ocpnUSE_GL
   else {
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
     if (ConfigureBrush()) {
       glBegin(GL_QUADS);
       glVertex2i(x, y);
@@ -1162,7 +1164,7 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     wxCoord x1 = x + r, x2 = x + w - r;
     wxCoord y1 = y + r, y2 = y + h - r;
 
-#ifdef USE_ANDROID_GLES2
+#if 1//def USE_ANDROID_GLES2
 
     //  Grow the work buffer as necessary
     size_t bufReq = steps * 8 * 2 * sizeof(float);  // large, to be sure
@@ -1538,7 +1540,7 @@ typedef union {
   } info;
 } GLvertex;
 
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 void APIENTRY pi_ocpnDCcombineCallback(GLdouble coords[3],
                                        GLdouble *vertex_data[4],
                                        GLfloat weight[4], GLdouble **dataOut) {
@@ -1578,7 +1580,7 @@ void APIENTRY ocpnDCendCallback() { glEnd(); }
 
 // GLSL callbacks
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
 
 static std::list<double *> odc_combine_work_data;
 static void pi_odc_combineCallbackD(GLdouble coords[3],
@@ -1676,7 +1678,7 @@ void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifdef USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
     m_tobj = gluNewTess();
     s_odc_tess_vertex_idx = 0;
 
@@ -1875,7 +1877,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
         glPushMatrix();
         glTranslatef(x, y, 0);
 
@@ -1894,8 +1896,11 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
-      w *= g_DIPfactor;
-      h *= g_DIPfactor;
+      int ww, hw;
+      sdc.GetTextExtent("W", &ww, &hw); // metric
+      w += ww;    // RHS padding.
+      w *= OCPN_GetWinDIPScaleFactor();
+      h *= OCPN_GetWinDIPScaleFactor();
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -1976,7 +1981,7 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
 
       float u = (float)w / TextureWidth, v = (float)h / TextureHeight;
 
-#ifndef USE_ANDROID_GLES2
+#if 0//ndef USE_ANDROID_GLES2
       glColor3ub(0, 0, 0);
 
       glBegin(GL_QUADS);
@@ -2122,14 +2127,14 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
 #else
       wxMemoryDC temp_dc;
       temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
-      if (w) (*w) *= g_DIPfactor;
-      if (h) (*h) *= g_DIPfactor;
+      if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
+      if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
 #endif
     } else {
       wxMemoryDC temp_dc;
       temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
-      if (w) (*w) *= g_DIPfactor;
-      if (h) (*h) *= g_DIPfactor;
+      if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
+      if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
     }
   }
 

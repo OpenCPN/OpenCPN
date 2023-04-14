@@ -15,22 +15,21 @@
 #include "glChartCanvas.h"
 #include "viewport.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "route.h"
 #include "waypointman_gui.h"
 #include "svg_utils.h"
 #include "styles.h"
+#include "ocpn_plugin.h"
 
 extern ocpnGLOptions g_GLOptions;
-extern float g_ChartScaleFactorExp;
+extern float g_MarkScaleFactorExp;
 extern bool g_btouch;
 extern WayPointman* pWayPointMan;
 extern MyFrame* gFrame;
 extern wxRect g_blink_rect;
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
-
-extern double gLat;
-extern double gLon;
 
 extern Routeman* g_pRouteMan;
 
@@ -79,15 +78,15 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
     pbm = m_point.m_pbmIcon;
 
   wxBitmap *pbms = NULL;
-  if ((g_ChartScaleFactorExp > 1.0) && !m_point.m_bPreScaled) {
-    if (m_point.m_IconScaleFactor != g_ChartScaleFactorExp) {
+  if ((g_MarkScaleFactorExp > 1.0) && !m_point.m_bPreScaled) {
+    if (m_point.m_IconScaleFactor != g_MarkScaleFactorExp) {
       wxImage scaled_image = pbm->ConvertToImage();
-      int new_width = pbm->GetWidth() * g_ChartScaleFactorExp;
-      int new_height = pbm->GetHeight() * g_ChartScaleFactorExp;
+      int new_width = pbm->GetWidth() * g_MarkScaleFactorExp;
+      int new_height = pbm->GetHeight() * g_MarkScaleFactorExp;
       m_point.m_ScaledBMP = wxBitmap(
           scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
 
-      m_point.m_IconScaleFactor = g_ChartScaleFactorExp;
+      m_point.m_IconScaleFactor = g_MarkScaleFactorExp;
     }
     if (m_point.m_ScaledBMP.IsOk()) pbm = &m_point.m_ScaledBMP;
   }
@@ -100,7 +99,14 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
 
   if (m_point.m_bShowName) {
     if (0 == m_point.m_pMarkFont) {
-      m_point.m_pMarkFont = FontMgr::Get().GetFont(_("Marks"));
+      wxFont *dFont = FontMgr::Get().GetFont(_("Marks"));
+      int font_size = wxMax(8, dFont->GetPointSize());
+      font_size /= OCPN_GetWinDIPScaleFactor();
+
+      m_point.m_pMarkFont = FontMgr::Get().FindOrCreateFont(
+        font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
+        false, dFont->GetFaceName());
+
       m_point.m_FontColor = FontMgr::Get().GetFontColor(_("Marks"));
       m_point.CalculateNameExtents();
     }
@@ -149,7 +155,7 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
     dc.CalcBoundingBox(r.x + sx2, r.y + sy2);
   }
 
-  if (m_point.m_bShowName) {
+  if (m_point.m_bShowName && m_point.m_MarkName.Length()) {
     if (m_point.m_pMarkFont) {
       dc.SetFont(*m_point.m_pMarkFont);
       dc.SetTextForeground(m_point.m_FontColor);
@@ -265,7 +271,14 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   wxRect r3 = r1;
   if (m_point.m_bShowName) {
     if (!m_point.m_pMarkFont) {
-      m_point.m_pMarkFont = FontMgr::Get().GetFont(_("Marks"));
+      wxFont *dFont = FontMgr::Get().GetFont(_("Marks"));
+      int font_size = wxMax(8, dFont->GetPointSize());
+      font_size /= OCPN_GetWinDIPScaleFactor();
+
+      m_point.m_pMarkFont = FontMgr::Get().FindOrCreateFont(
+        font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight(),
+        false, dFont->GetFaceName());
+
       m_point.m_FontColor = FontMgr::Get().GetFontColor(_("Marks"));
       if (m_point.m_iTextTexture) {
         glDeleteTextures(1, &m_point.m_iTextTexture);
@@ -287,10 +300,10 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   hilitebox.y -= r.y;
 
   if (!m_point.m_bPreScaled) {
-    hilitebox.x *= g_ChartScaleFactorExp;
-    hilitebox.y *= g_ChartScaleFactorExp;
-    hilitebox.width *= g_ChartScaleFactorExp;
-    hilitebox.height *= g_ChartScaleFactorExp;
+    hilitebox.x *= g_MarkScaleFactorExp;
+    hilitebox.y *= g_MarkScaleFactorExp;
+    hilitebox.width *= g_MarkScaleFactorExp;
+    hilitebox.height *= g_MarkScaleFactorExp;
   }
 
   float radius;
@@ -352,14 +365,14 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     int w = r1.width, h = r1.height;
 
     float scale = 1.0;
     if (!m_point.m_bPreScaled) {
-      scale = g_ChartScaleFactorExp;
+      scale = g_MarkScaleFactorExp;
     }
 
     float ws = r1.width * scale;
@@ -434,7 +447,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 #else
       wxScreenDC sdc;
       sdc.SetFont(*m_point.m_pMarkFont);
-      sdc.GetTextExtent(m_point.m_MarkName, &w, &h, NULL, NULL, m_point.m_pMarkFont);
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -486,6 +498,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
                    m_point.m_iTextTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
                       data);
+
+      delete[] data;
 
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);

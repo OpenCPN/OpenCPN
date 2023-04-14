@@ -107,6 +107,7 @@ private:
   int m_SelectedIdx;
   int m_FoundAIS_MMSI;
   void *m_pIDXCandidate;
+  double m_DIPFactor;
 };
 
 #endif

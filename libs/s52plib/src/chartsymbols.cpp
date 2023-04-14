@@ -71,6 +71,7 @@ ChartSymbols::~ChartSymbols(void) {}
 void ChartSymbols::InitializeTables(void) {
   rasterSymbolsLoadedColorMapNumber = -1;
   ColorTableIndex = 0;
+  rasterSymbolsTexture = 0;
 }
 
 void ChartSymbols::DeleteGlobals(void) {

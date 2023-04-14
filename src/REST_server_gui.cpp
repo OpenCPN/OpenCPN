@@ -204,19 +204,10 @@ void PINCreateDialog::CreateControls(const wxString& hint) {
   premtext = new wxStaticText( this, -1, "A loooooooooooooooooooooooooooooooooooooooooooooong line\n");
   itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
 
-  //    Create a progress gauge
-//   wxStaticBox* prog_box = new wxStaticBox(this, wxID_ANY, _("Progress..."));
-//
-//   wxStaticBoxSizer* prog_box_sizer = new wxStaticBoxSizer(prog_box, wxVERTICAL);
-//   itemBoxSizer2->Add(prog_box_sizer, 0, wxEXPAND | wxALL, 5);
-//
-//   m_pgauge = new wxGauge(this, -1, 100);
-//   prog_box_sizer->Add(m_pgauge, 0, wxEXPAND | wxALL, 5);
-
   m_pText1 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
                                 wxDefaultPosition, wxDefaultSize, wxTE_READONLY | wxTE_CENTRE);
-  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
-
+  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+  m_pText1->SetMinSize(wxSize(7 * GetCharWidth(), -1));
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);

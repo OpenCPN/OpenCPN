@@ -97,7 +97,26 @@ private:
 #define OUT_QUEUE_LENGTH                20
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
 
-class CommDriverN0183SerialEvent;  // fwd
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
+
+CommDriverN0183SerialEvent::CommDriverN0183SerialEvent( wxEventType commandType, int id = 0)
+      : wxEvent(id, commandType){};
+
+CommDriverN0183SerialEvent::~CommDriverN0183SerialEvent(){};
+
+void CommDriverN0183SerialEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
+    m_payload = data;
+}
+std::shared_ptr<std::vector<unsigned char>> CommDriverN0183SerialEvent::GetPayload() { return m_payload; }
+
+  // required for sending with wxPostEvent()
+wxEvent* CommDriverN0183SerialEvent::Clone() const {
+    CommDriverN0183SerialEvent* newevent =
+        new CommDriverN0183SerialEvent(*this);
+    newevent->m_payload = this->m_payload;
+    return newevent;
+};
+
 
 class CommDriverN0183SerialThread {
 public:
@@ -182,39 +201,6 @@ private:
   bool full_ = 0;
 };
 
-class CommDriverN0183SerialEvent;
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
-
-class CommDriverN0183SerialEvent : public wxEvent {
-public:
-  CommDriverN0183SerialEvent(
-      wxEventType commandType = wxEVT_COMMDRIVER_N0183_SERIAL, int id = 0)
-      : wxEvent(id, commandType){};
-  ~CommDriverN0183SerialEvent(){};
-
-  // accessors
-  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
-  }
-  std::shared_ptr<std::vector<unsigned char>> GetPayload() { return m_payload; }
-
-  // required for sending with wxPostEvent()
-  wxEvent* Clone() const {
-    CommDriverN0183SerialEvent* newevent =
-        new CommDriverN0183SerialEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
-  };
-
-private:
-  std::shared_ptr<std::vector<unsigned char>> m_payload;
-};
-
-//========================================================================
-/*    commdriverN0183Serial implementation
- * */
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
-
 CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183,
@@ -226,6 +212,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_params(*params),
       m_listener(listener) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+  m_GarminHandler = NULL;
+  this->attributes["commPort"] = params->Port.ToStdString();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
@@ -240,14 +228,26 @@ bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
 
-  // strip off any description provided by Windows
-  comx = comx.BeforeFirst(' ');
+  wxString port_uc = m_params.GetDSPort().Upper();
 
-  //    Kick off the  RX thread
-  SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
-  SetThreadRunFlag(1);
-  std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
-  t.detach();
+  if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
+    m_GarminHandler = new GarminProtocolHandler( comx, this,  true);
+  }
+  else if( m_params.Garmin ) {
+    m_GarminHandler = new GarminProtocolHandler( comx, this,  false);
+  }
+  else {
+
+    // strip off any description provided by Windows
+    comx = comx.BeforeFirst(' ');
+
+    //    Kick off the  RX thread
+    SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
+    SetThreadRunFlag(1);
+    std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
+    t.detach();
+  }
+
   return true;
 }
 
@@ -288,12 +288,34 @@ void CommDriverN0183Serial::Close() {
     m_bsec_thread_active = false;
   }
 
-  //  FIXME Kill off the Garmin handler, if alive
-  //  if (m_GarminHandler) {
-  //   m_GarminHandler->Close();
-  //   delete m_GarminHandler;
-  //  }
+  //  Kill off the Garmin handler, if alive
+  if (m_GarminHandler) {
+    m_GarminHandler->Close();
+    delete m_GarminHandler;
+    m_GarminHandler = NULL;
+  }
 }
+
+bool CommDriverN0183Serial::IsGarminThreadActive() {
+  if (m_GarminHandler){
+    // TODO expand for serial
+#ifdef __WXMSW__
+    if (m_GarminHandler->m_usb_handle != INVALID_HANDLE_VALUE)
+      return true;
+    else
+      return false;
+#endif
+  }
+
+  return false;
+}
+
+void CommDriverN0183Serial::StopGarminUSBIOThread(bool b_pause){
+  if (m_GarminHandler){
+    m_GarminHandler->StopIOThread(b_pause);
+  }
+}
+
 
 void CommDriverN0183Serial::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());

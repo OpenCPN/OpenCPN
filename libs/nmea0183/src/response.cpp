@@ -40,7 +40,7 @@
 ** You can use it any way you like.
 */
 
-extern wxString g_TalkerIdText;
+wxString g_TalkerIdText;
 
 RESPONSE::RESPONSE()
 {

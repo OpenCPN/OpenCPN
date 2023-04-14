@@ -58,9 +58,10 @@
 
 #include "config.h"
 
-#include <string>
 #include <map>
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <wx/cmdline.h>
@@ -97,6 +98,9 @@ public:
   static void cleanupFiles(const std::string& manifestFile,
                            const std::string& plugname);
 
+  /** Return base directory for installation data. */
+  static std::string pluginsInstallDataPath();
+
   /** Return path to installation manifest for given plugin. */
   static std::string fileListPath(std::string name);
 
@@ -119,6 +123,9 @@ public:
 
   /** Map of available plugin targets -> number of occurences. */
   const std::map<std::string, int> getCountByTarget();
+
+  /** Return plugin containing given filename or "" if not found. */
+  std::string getPluginByLibrary(const std::string& filename);
 
   /** Return path to metadata XML file. */
   std::string getMetadataPath();
@@ -159,6 +166,7 @@ private:
   bool extractTarball(const std::string path, std::string& filelist,
                       const std::string metadata_path = "");
   bool archive_check(int r, const char* msg, struct archive* a);
+  std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
 };
 
 #endif  // PLUGIN_HANDLER_H__

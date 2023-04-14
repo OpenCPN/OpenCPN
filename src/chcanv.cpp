@@ -65,6 +65,7 @@
 #include "RoutePropDlgImpl.h"
 #include "TrackPropDlg.h"
 #include "tcmgr.h"
+#include "own_ship.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
 #include "pluginmanager.h"
@@ -228,6 +229,7 @@ extern bool g_bEnableZoomToCursor;
 extern bool g_bShowChartBar;
 extern bool g_bInlandEcdis;
 extern int g_ENCSoundingScaleFactor;
+extern int g_ENCTextScaleFactor;
 extern int g_maxzoomin;
 
 extern float g_GLMinSymbolLineWidth;
@@ -285,7 +287,6 @@ extern wxString g_default_routepoint_icon;
 
 extern S57QueryDialog *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern OcpnSound *g_anchorwatch_sound;
 
@@ -367,6 +368,7 @@ extern double gLat, gLat;
 extern int g_GUIScaleFactor;
 // Win DPI scale factor
 double g_scaler;
+wxString g_lastS52PLIBPluginMessage;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -582,7 +584,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   SetCursor(*pCursorArrow);
 
-  pPanTimer = new wxTimer(this, PAN_TIMER);
+  pPanTimer = new wxTimer(this, m_MouseDragging);
   pPanTimer->Stop();
 
   pMovementTimer = new wxTimer(this, MOVEMENT_TIMER);
@@ -655,7 +657,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   //    Build icons for tide/current points
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  m_bmTideDay = style->GetIcon(_T("tidesml"));
+  m_bmTideDay = style->GetIconScaled(_T("tidesml"), 1. / g_Platform->GetDisplayDIPMult(this));
 
   //    Dusk
   m_bmTideDusk = CreateDimBitmap(m_bmTideDay, .50);
@@ -772,8 +774,14 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   if (!g_bdisable_opengl) m_pQuilt->EnableHighDefinitionZoom(true);
 #endif
 
+  int gridFontSize = 8;
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  gridFontSize *= GetContentScaleFactor();
+#endif
+
   m_pgridFont = FontMgr::Get().FindOrCreateFont(
-      8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE,
+      gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, FALSE,
       wxString(_T ( "Arial" )));
 
   m_Piano = new Piano(this);
@@ -888,6 +896,9 @@ ChartCanvas::~ChartCanvas() {
   m_muiBar = 0;
   delete muiBar;
   delete m_pQuilt;
+  delete m_pCurrentStack;
+  delete m_Compass;
+  delete m_Piano;
 }
 
 void ChartCanvas::RebuildCursors() {
@@ -902,22 +913,13 @@ void ChartCanvas::RebuildCursors() {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   double cursorScale = exp(g_GUIScaleFactor * (0.693 / 5.0));
 
-  // On MSW, custom cursors created from images are automatically scaled to maximum size of 32x32.
-  // On a high def display, this renders the "pencil" cursor too small to easily use.
-  // Detect this configuration, and avoid using "pencil" cursor in this case.
-  // TODO  Investigate alternative means of defining custom cursors on MSW
-  bool bUsePencil = true;
-#ifdef __WXMSW__
-  wxSize ds = g_Platform->getDisplaySize();
-  if (ds.x > 3000)        // somewhat arbitrary detection of hi-def display
-    bUsePencil = false;
-#endif
+  double pencilScale = 1.0 / g_Platform->GetDisplayDIPMult(gFrame);
 
   wxImage ICursorLeft = style->GetIcon(_T("left")).ConvertToImage();
   wxImage ICursorRight = style->GetIcon(_T("right")).ConvertToImage();
   wxImage ICursorUp = style->GetIcon(_T("up")).ConvertToImage();
   wxImage ICursorDown = style->GetIcon(_T("down")).ConvertToImage();
-  wxImage ICursorPencil = style->GetIconScaled(_T("pencil"), cursorScale).ConvertToImage();
+  wxImage ICursorPencil = style->GetIconScaled(_T("pencil"), pencilScale).ConvertToImage();
   wxImage ICursorCross = style->GetIcon(_T("cross")).ConvertToImage();
 
 #if !defined(__WXMSW__) && !defined(__WXQT__)
@@ -957,9 +959,9 @@ void ChartCanvas::RebuildCursors() {
   } else
     pCursorDown = new wxCursor(wxCURSOR_ARROW);
 
-  if (ICursorPencil.Ok() && bUsePencil) {
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 * cursorScale);
-    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16 * cursorScale);
+  if (ICursorPencil.Ok()) {
+    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 * pencilScale);
+    ICursorPencil.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, 16 * pencilScale);
     pCursorPencil = new wxCursor(ICursorPencil);
   } else
     pCursorPencil = new wxCursor(wxCURSOR_ARROW);
@@ -1215,6 +1217,7 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
   m_encShowLights = pcc->bShowENCLights;
   m_bShowVisibleSectors = pcc->bShowENCVisibleSectorLights;
   m_encShowAnchor = pcc->bShowENCAnchorInfo;
+  m_encShowDataQual = pcc->bShowENCDataQuality;
 
   bool courseUp = pcc->bCourseUp;
   bool headUp = pcc->bHeadUp;
@@ -2380,7 +2383,7 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   wxSize sd = g_Platform->getDisplaySize();
   double max_physical = wxMax(sd.x, sd.y);
   // Set DPI (Win) scale factor
-  g_scaler = g_Platform->GetDisplayDPIMult(this);
+  g_scaler = g_Platform->GetDisplayDIPMult(this);
 
   m_pix_per_mm = (max_physical) / ((double)m_display_size_mm);
   m_canvas_scale_factor = (max_physical) / (m_display_size_mm / 1000.);
@@ -3718,6 +3721,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
   bool b_need_refresh = false;
 
+  wxSize win_size = GetSize() * m_displayScale;
+  if (console && console->IsShown()) win_size.x -= console->GetSize().x;
+
   //  Handle the AIS Rollover Window first
   bool showAISRollover = false;
   if (g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS) {
@@ -3755,12 +3761,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           wxString s = ptarget->GetRolloverString();
           m_pAISRolloverWin->SetString(s);
 
-          wxSize win_size = GetSize();
-          if (console && console->IsShown()) win_size.x -= console->GetSize().x;
-
           m_pAISRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
                                              AIS_ROLLOVER, win_size);
-
           m_pAISRolloverWin->SetBitmap(AIS_ROLLOVER);
           m_pAISRolloverWin->IsActive(true);
           b_need_refresh = true;
@@ -3912,8 +3914,6 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           }
           m_pRouteRolloverWin->SetString(s);
 
-          wxSize win_size = GetSize();
-          if (console && console->IsShown()) win_size.x -= console->GetSize().x;
           m_pRouteRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
                                                LEG_ROLLOVER, win_size);
           m_pRouteRolloverWin->SetBitmap(LEG_ROLLOVER);
@@ -4008,15 +4008,19 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
             << FormatDistanceAdaptive(tlenght);
           if (pt->GetLastPoint()->GetTimeString() &&
               pt->GetPoint(0)->GetTimeString()) {
-            wxTimeSpan ttime = pt->GetLastPoint()->GetCreateTime() -
-                               pt->GetPoint(0)->GetCreateTime();
-            double htime = ttime.GetSeconds().ToDouble() / 3600.;
-            s << wxString::Format(_T("  %.1f "), (float)(tlenght / htime))
-              << getUsrSpeedUnit();
-            s << wxString(htime > 24. ? ttime.Format(_T("  %Dd %H:%M"))
+            wxDateTime lastPointTime = pt->GetLastPoint()->GetCreateTime();
+            wxDateTime zeroPointTime = pt->GetPoint(0)->GetCreateTime();
+            if (lastPointTime.IsValid() && zeroPointTime.IsValid()){
+              wxTimeSpan ttime = lastPointTime - zeroPointTime;
+              double htime = ttime.GetSeconds().ToDouble() / 3600.;
+              s << wxString::Format(_T("  %.1f "), (float)(tlenght / htime))
+                << getUsrSpeedUnit();
+              s << wxString(htime > 24. ? ttime.Format(_T("  %Dd %H:%M"))
                                       : ttime.Format(_T("  %H:%M")));
+            }
           }
-          if (g_bShowTrackPointTime && segShow_point_b->GetTimeString())
+
+          if (g_bShowTrackPointTime && strlen(segShow_point_b->GetTimeString()))
             s << _T("\n") << _("Segment Created: ")
               << segShow_point_b->GetTimeString();
 
@@ -4040,20 +4044,20 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           if (segShow_point_a->GetTimeString() &&
               segShow_point_b->GetTimeString()) {
-            double segmentSpeed =
-                toUsrSpeed(dist / ((segShow_point_b->GetCreateTime() -
-                                    segShow_point_a->GetCreateTime())
-                                       .GetSeconds()
+            wxDateTime apoint = segShow_point_a->GetCreateTime();
+            wxDateTime bpoint = segShow_point_b->GetCreateTime();
+            if (apoint.IsValid() && bpoint.IsValid()){
+              double segmentSpeed =
+                toUsrSpeed(dist / ((bpoint - apoint).GetSeconds()
                                        .ToDouble() /
                                    3600.));
-            s << wxString::Format(_T("  %.1f "), (float)segmentSpeed)
-              << getUsrSpeedUnit();
+              s << wxString::Format(_T("  %.1f "), (float)segmentSpeed)
+                << getUsrSpeedUnit();
+            }
           }
 
           m_pTrackRolloverWin->SetString(s);
 
-          wxSize win_size = GetSize();
-          if (console && console->IsShown()) win_size.x -= console->GetSize().x;
           m_pTrackRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
                                                LEG_ROLLOVER, win_size);
           m_pTrackRolloverWin->SetBitmap(LEG_ROLLOVER);
@@ -4105,7 +4109,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::OnCursorTrackTimerEvent(wxTimerEvent &event) {
-  if (s57_CheckExtendedLightSectors(this, mouse_x, mouse_y, VPoint,
+  if ((GetShowENCLights() || m_bsectors_shown ) &&
+      s57_CheckExtendedLightSectors( this, mouse_x, mouse_y, VPoint,
                                     extendedSectorLegs)) {
     if (!m_bsectors_shown) {
       ReloadVP(false);
@@ -4938,7 +4943,6 @@ int ChartCanvas::AdjustQuiltRefChart() {
 
 void ChartCanvas::UpdateCanvasOnGroupChange(void) {
   delete m_pCurrentStack;
-  m_pCurrentStack = NULL;
   m_pCurrentStack = new ChartStack;
   wxASSERT(ChartData);
   ChartData->BuildChartStack(m_pCurrentStack, VPoint.clat, VPoint.clon,
@@ -6258,6 +6262,10 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     //         if (style->chartStatusWindowTransparent)
     //             chartbar_height = 0;
     int y_origin = m_canvas_height - chartbar_height - 5;
+#ifdef __WXOSX__
+    if (!g_bopengl)
+      y_origin = m_canvas_height/GetContentScaleFactor() - chartbar_height - 5;
+#endif
 
     GetCanvasPixPoint(x_origin, y_origin, blat, blon);
     GetCanvasPixPoint(x_origin + m_canvas_width, y_origin, tlat, tlon);
@@ -6360,10 +6368,13 @@ void ChartCanvas::JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
 
 static bool bAnchorSoundPlaying = false;
 
-static void onSoundFinished(void *ptr) { bAnchorSoundPlaying = false; }
+static void onAnchorSoundFinished(void *ptr) {
+  g_anchorwatch_sound->UnLoad();
+  bAnchorSoundPlaying = false;
+}
 
 void ChartCanvas::AlertDraw(ocpnDC &dc) {
-  // Just for prototyping, visual alert for anchorwatch goes here
+  // Visual and audio alert for anchorwatch goes here
   bool play_sound = false;
   if (pAnchorWatchPoint1 && AnchorAlertOn1) {
     if (AnchorAlertOn1) {
@@ -6389,20 +6400,19 @@ void ChartCanvas::AlertDraw(ocpnDC &dc) {
   } else
     AnchorAlertOn2 = false;
 
-  if (play_sound && !bAnchorSoundPlaying) {
-    auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
-    if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
-    g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
-    if (g_anchorwatch_sound->IsOk()) {
-      bAnchorSoundPlaying = true;
-      g_anchorwatch_sound->SetFinishedCallback(onSoundFinished, NULL);
-      g_anchorwatch_sound->Play();
+  if (play_sound) {
+    if(!bAnchorSoundPlaying) {
+      auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_anchorwatch_sound);
+      if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
+      g_anchorwatch_sound->Load(g_anchorwatch_sound_file);
+      if (g_anchorwatch_sound->IsOk()) {
+        bAnchorSoundPlaying = true;
+        g_anchorwatch_sound->SetFinishedCallback(onAnchorSoundFinished, NULL);
+        g_anchorwatch_sound->Play();
+      }
     }
-  } else if (g_anchorwatch_sound->IsOk()) {
-    g_anchorwatch_sound->Stop();
   }
 }
-// End of prototype anchor watch alerting-----------------------
 
 void ChartCanvas::UpdateShips() {
   //  Get the rectangle in the current dc which bounds the "ownship" symbol
@@ -6586,6 +6596,11 @@ void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
 void ChartCanvas::OnSize(wxSizeEvent &event) {
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
+#ifdef __WXOSX__
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
 
   m_canvas_width *= m_displayScale;
   m_canvas_height *= m_displayScale;
@@ -6750,12 +6765,14 @@ void ChartCanvas::ShowChartInfoWindow(int x, int dbIndex) {
       m_pCIWin->FitToChars(char_width, char_height);
 
       wxPoint p;
-      p.x = x;
-      if ((p.x + m_pCIWin->GetWinSize().x) > m_canvas_width)
-        p.x = (m_canvas_width - m_pCIWin->GetWinSize().x) / 2;  // centered
+      p.x = x / GetContentScaleFactor();
+      if ((p.x + m_pCIWin->GetWinSize().x) > (m_canvas_width / GetContentScaleFactor()))
+        p.x = ((m_canvas_width / GetContentScaleFactor())
+                - m_pCIWin->GetWinSize().x) / 2;  // centered
 
       p.y =
-          m_canvas_height - m_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
+          (m_canvas_height - m_Piano->GetHeight()) / GetContentScaleFactor()
+                - 4 - m_pCIWin->GetWinSize().y;
 
       m_pCIWin->dbIndex = dbIndex;
       m_pCIWin->SetPosition(p);
@@ -9222,6 +9239,9 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
 
+  x *= m_displayScale;
+  y *= m_displayScale;
+
   //        Check for wheel rotation
   // ideally, should be just longer than the time between
   // processing accumulated mouse events from the event queue
@@ -9329,12 +9349,15 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     }
 
     if ((last_drag.x != x) || (last_drag.y != y)) {
-      m_bChartDragging = true;
-      StartTimedMovement();
-      m_pan_drag.x += last_drag.x - x;
-      m_pan_drag.y += last_drag.y - y;
+      if(!m_routeState){        // Correct fault on wx32/gtk3, uncommanded dragging on route create.
+                                //   github #2994
+        m_bChartDragging = true;
+        StartTimedMovement();
+        m_pan_drag.x += last_drag.x - x;
+        m_pan_drag.y += last_drag.y - y;
 
-      last_drag.x = x, last_drag.y = y;
+        last_drag.x = x, last_drag.y = y;
+      }
 
       if (g_btouch) {
         if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
@@ -9647,13 +9670,13 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
   if (1 /*g_bresponsive*/) {
     wxSize canvas_size = GetSize();
 
-    g_pMarkInfoDialog->SetMinSize(wxSize(-1, wxMin(600, canvas_size.y)));
+    int best_size_y = wxMin(400 / OCPN_GetWinDIPScaleFactor(), canvas_size.y);
+    g_pMarkInfoDialog->SetMinSize(wxSize(-1, best_size_y));
 
     g_pMarkInfoDialog->Layout();
 
     wxPoint canvas_pos = GetPosition();
     wxSize fitted_size = g_pMarkInfoDialog->GetSize();
-    ;
 
     bool newFit = false;
     if (canvas_size.x < fitted_size.x) {
@@ -10320,7 +10343,16 @@ void ChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
 static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
                          const wxString &second) {
   wxFont *dFont = FontMgr::Get().GetFont(_("RouteLegInfoRollover"));
-  dc.SetFont(*dFont);
+
+  int pointsize = dFont->GetPointSize();
+  pointsize /= OCPN_GetWinDIPScaleFactor();
+
+  wxFont *psRLI_font = FontMgr::Get().FindOrCreateFont(
+        pointsize, dFont->GetFamily(), dFont->GetStyle(),
+        dFont->GetWeight(), false, dFont->GetFaceName());
+
+
+  dc.SetFont(*psRLI_font);
 
   int w1, h1;
   int w2 = 0;
@@ -10331,14 +10363,19 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   int hilite_offset = 3;
 #ifdef __WXMAC__
   wxScreenDC sdc;
-  sdc.GetTextExtent(first, &w1, &h1, NULL, NULL, dFont);
-  if (second.Len()) sdc.GetTextExtent(second, &w2, &h2, NULL, NULL, dFont);
+  sdc.GetTextExtent(first, &w1, &h1, NULL, NULL, psRLI_font);
+  if (second.Len()) sdc.GetTextExtent(second, &w2, &h2, NULL, NULL, psRLI_font);
 #else
   dc.GetTextExtent(first, &w1, &h1);
   if (second.Len()) dc.GetTextExtent(second, &w2, &h2);
 #endif
 
-  w = wxMax(w1, w2);
+  h1 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+  h2 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+
+  w = wxMax(w1, w2) + (h1 / 2); // Add a little right pad
+  w *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+
   h = h1 + h2;
 
   xp = ref_point.x - w;
@@ -10584,15 +10621,16 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     v[_T("OpenCPN S52PLIB ShowSoundings")] = GetShowENCDepth();
     v[_T("OpenCPN S52PLIB ShowLights")] = GetShowENCLights();
     v[_T("OpenCPN S52PLIB ShowAnchorConditions")] =
-        m_encShowAnchor;  // ps52plib->GetAnchorOn();
+        m_encShowAnchor;
     v[_T("OpenCPN S52PLIB ShowQualityOfData")] =
-        GetShowENCDataQual();  // ps52plib->GetQualityOfDataOn();
+        GetShowENCDataQual();
     v[_T("OpenCPN S52PLIB ShowATONLabel")] = GetShowENCBuoyLabels();
     v[_T("OpenCPN S52PLIB ShowLightDescription")] = GetShowENCLightDesc();
 
     v[_T("OpenCPN S52PLIB DisplayCategory")] = GetENCDisplayCategory();
 
     v[_T("OpenCPN S52PLIB SoundingsFactor")] = g_ENCSoundingScaleFactor;
+    v[_T("OpenCPN S52PLIB TextFactor")] = g_ENCTextScaleFactor;
 
     // Global S52 options
 
@@ -10609,17 +10647,17 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
     // Some global GUI parameters, for completeness
     v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
     v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
-    v[_T("OpenCPN Scale Factor Exp")] = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+    v[_T("OpenCPN Scale Factor Exp")] = g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
     v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
 
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);
 
-    if (!g_lastPluginMessage.IsSameAs(out)) {
-      // printf("message %d  %d\n", s_msg++, m_canvasIndex);
+    if (!g_lastS52PLIBPluginMessage.IsSameAs(out)) {
       g_pi_manager->SendMessageToAllPlugins(wxString(_T("OpenCPN Config")),
                                             out);
+      g_lastS52PLIBPluginMessage = out;
     }
   }
 }
@@ -11121,10 +11159,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   }
 
   if (m_brepaint_piano && g_bShowChartBar) {
-    int canvas_height = GetClientSize().y;
-    canvas_height *= m_displayScale;
-    m_Piano->Paint(canvas_height - m_Piano->GetHeight(), mscratch_dc);
-    // m_brepaint_piano = false;
+    m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
   }
 
   if (m_Compass) m_Compass->Paint(scratch_dc);
@@ -12127,9 +12162,13 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   wxFont *dFont = FontMgr::Get().GetFont(_("ExtendedTideIcon"));
   dc.SetTextForeground(FontMgr::Get().GetFontColor(_("ExtendedTideIcon")));
-  int font_size = wxMax(8, dFont->GetPointSize());
-  wxFont *plabelFont = FontMgr::Get().FindOrCreateFont(
-      font_size, dFont->GetFamily(), dFont->GetStyle(), dFont->GetWeight());
+  int font_size = wxMax(10, dFont->GetPointSize());
+  font_size /= g_Platform->GetDisplayDIPMult(this);
+  wxFont *plabelFont =
+          FontMgr::Get().FindOrCreateFont(font_size,
+                                  dFont->GetFamily(), dFont->GetStyle(),
+                                  dFont->GetWeight(), false,
+                                  dFont->GetFaceName());
 
   dc.SetPen(*pblack_pen);
   dc.SetBrush(*pgreen_brush);
@@ -12171,8 +12210,17 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   // of a raster symbol (e.g.BOYLAT)
   //  This is a bit of a hack that will suffice until until we get fully
   //  scalable ENC symbol sets
+  //   float nominal_icon_size_pixels = 48;  // 3 x 16
+  //   float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
+
+  // or, x times size of text font
+  wxScreenDC sdc;
+  int height;
+  sdc.GetTextExtent("M", NULL, &height, NULL, NULL, plabelFont);
+  height *= g_Platform->GetDisplayDIPMult(this);
   float nominal_icon_size_pixels = 48;  // 3 x 16
-  float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
+  float pix_factor = (2 * height) / nominal_icon_size_pixels;
+
 
 #else
   //  Yet another method goes like this:
@@ -12201,11 +12249,12 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                         1.2;  // soften the scale factor a bit
 
   scale_factor *= user_scale_factor;
+  scale_factor *= GetContentScaleFactor();
+
 
   {
-    double lon_last = 0.;
-    double lat_last = 0.;
     double marge = 0.05;
+    std::vector<LLBBox> drawn_boxes;
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
       const IDX_entry *pIDX = ptcmgr->GetIDX_entry(i);
 
@@ -12216,6 +12265,25 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
         double lat = pIDX->IDX_lat;
 
         if (BBox.ContainsMarge(lat, lon, marge)) {
+
+          // Avoid drawing detailed graphic for duplicate tide stations
+          if (GetVP().chart_scale < 500000){
+            bool bdrawn = false;
+            for (size_t i = 0; i < drawn_boxes.size(); i++){
+              if (drawn_boxes[i].Contains(lat, lon)){
+                bdrawn = true;
+                break;
+              }
+            }
+            if (bdrawn)
+              continue;   // the station loop
+
+            LLBBox this_box;
+            this_box.Set(lat, lon, lat, lon);
+            this_box.EnLarge(.005);
+            drawn_boxes.push_back(this_box);
+          }
+
           wxPoint r;
           GetCanvasPointPix(lat, lon, &r);
           // draw standard icons
@@ -12356,14 +12424,13 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                   if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
                   int wx1;
                   dc.GetTextExtent(s, &wx1, NULL);
+                  wx1 *= g_Platform->GetDisplayDIPMult(this);
                   dc.DrawText(s, r.x - (wx1 / 2), yDraw + height);
                 }
               }
             }
           }
         }
-        lon_last = lon;
-        lat_last = lat;
       }
     }
   }
@@ -12424,13 +12491,20 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   double skew_angle = GetVPRotation();
 
-  pTCFont = FontMgr::Get().GetFont(_("CurrentValue"));
+  wxFont *dFont = FontMgr::Get().GetFont(_("CurrentValue"));
+  int font_size = wxMax(10, dFont->GetPointSize());
+  font_size /= g_Platform->GetDisplayDIPMult(this);
+  pTCFont =
+          FontMgr::Get().FindOrCreateFont(font_size,
+                                  dFont->GetFamily(), dFont->GetStyle(),
+                                  dFont->GetWeight(), false,
+                                  dFont->GetFaceName());
+
 
   float scale_factor = 1.0;
 
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
-  float icon_pixelRefDim = 5;
 
 #if 0
     float nominal_icon_size_mm = g_Platform->GetDisplaySizeMM() *3 / 1000; // Intended physical rendered size onscreen
@@ -12446,10 +12520,22 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
 #endif
 
+#ifndef __OCPN__ANDROID__
+  // or, x times size of text font
+  wxScreenDC sdc;
+  int height;
+  sdc.GetTextExtent("M", NULL, &height, NULL, NULL, pTCFont);
+  height *= g_Platform->GetDisplayDIPMult(this);
+  float nominal_icon_size_pixels = 15;
+  float pix_factor = (1 * height) / nominal_icon_size_pixels;
+
+#else
   //  Yet another method goes like this:
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
-  //  Develop empirically, making a symbol about 16 mm tall
+  //  Develop empirically....
+  float icon_pixelRefDim = 5;
+
   double symHeight =
       icon_pixelRefDim /
       GetPixPerMM();  // from draw instructions, symbol is xx pix high
@@ -12461,6 +12547,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   float targetHeight = wxMin(targetHeight0, displaySize / 50);
   double pix_factor = targetHeight / symHeight;
+#endif
 
   scale_factor *= pix_factor;
 
@@ -12471,11 +12558,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
   scale_factor *= user_scale_factor;
 
-  //  TODO  Convert this method to "DPI-Pixel aware"
-#ifdef __WXMSW__
-  double csf = GetContentScaleFactor();
-  scale_factor /= csf;
-#endif
+  scale_factor *= GetContentScaleFactor();
 
   {
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
@@ -12615,11 +12698,11 @@ wxString ChartCanvas::FindValidUploadPort() {
     port = g_uploadConnection;
   }
 
-  else if (g_pConnectionParams) {
+  else if (TheConnectionParams()) {
     // If there is no persistent upload port recorded (yet)
     // then use the first available serial connection which has output defined.
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
-      ConnectionParams *cp = g_pConnectionParams->Item(i);
+    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+      ConnectionParams *cp = TheConnectionParams()->Item(i);
       if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == SERIAL)
         port << _T("Serial:") << cp->Port;
     }
