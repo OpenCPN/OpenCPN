@@ -2,3 +2,5 @@ usr/share/common-licenses/GPL-2 usr/share/opencpn/COPYING.gplv2
 usr/share/common-licenses/GPL-3 usr/share/opencpn/COPYING.gplv3
 usr/share/common-licenses/LGPL-2 usr/share/opencpn/COPYING.lgplv2
 usr/share/common-licenses/LGPL-3 usr/share/opencpn/COPYING.lgplv3
+usr/share/javascript/mathjax/MathJax.js usr/share/opencpn/plugins/chartdldr_pi/data/doc/MathJax.js
+usr/share/javascript/highlight.js/highlight.min.js usr/share/opencpn/plugins/chartdldr_pi/data/doc/highlight.min.js
