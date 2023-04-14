@@ -18,6 +18,8 @@ Files-Excluded:
  libs/wxsvg
  plugins/chartdldr_pi/src/tinyxml
  plugins/chartdldr_pi/src/unarr
+ plugins/chartdldr_pi/data/doc/MathJax.js
+ plugins/chartdldr_pi/data/doc/highlight.min.js
  plugins/grib_pi/src/bzip2
 
 Files: *
