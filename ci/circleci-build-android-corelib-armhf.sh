@@ -5,6 +5,10 @@
 #
 set -xe
 
+# Update possibly outdated google package signing key
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    | sudo apt-key add -
+
 sudo apt -q update
 sudo apt install cmake git gettext
 

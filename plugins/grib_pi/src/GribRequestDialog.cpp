@@ -29,6 +29,8 @@
 
 #include "email.h"
 
+#include "pi_gl.h"
+
 #include "GribRequestDialog.h"
 #include "GribOverlayFactory.h"
 
@@ -37,7 +39,7 @@
 #define RESOLUTIONS 4
 
 enum { SAILDOCS, ZYGRIB };                // grib providers
-enum { GFS, COAMPS, RTOFS, HRRR, ICON };  // forecast models
+enum { GFS, COAMPS, RTOFS, HRRR, ICON, ECMWF };  // forecast models
 
 wxString toMailFormat(int NEflag,
                       int a)  // convert position to mail necessary format
@@ -50,7 +52,6 @@ wxString toMailFormat(int NEflag,
 
 extern int m_SavedZoneSelMode;
 extern int m_ZoneSelMode;
-extern float g_DIPfactor;
 
 //----------------------------------------------------------------------------------------------------------
 //          GRIB Request Implementation
@@ -58,10 +59,23 @@ extern float g_DIPfactor;
 GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
     : GribRequestSettingBase(&parent), m_parent(parent) {
   m_Vp = 0;
+
+  m_oDC = new pi_ocpnDC();
+
+  m_displayScale = 1.0;
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
+
   InitRequestConfig();
 }
 
-GribRequestSetting::~GribRequestSetting() { delete m_Vp; }
+GribRequestSetting::~GribRequestSetting() {
+  delete m_Vp;
+  delete m_oDC;
+}
 
 void GribRequestSetting::InitRequestConfig() {
   wxFileConfig *pConf = GetOCPNConfigObject();
@@ -112,7 +126,7 @@ void GribRequestSetting::InitRequestConfig() {
   }
   // populate model, mail to, waves model choices
   wxString s1[] = {_T("GFS"), _T("COAMPS"), _T("RTOFS"), _T("HRRR"),
-                   _T("ICON")};
+                   _T("ICON"), _T("ECMWF")};
   for (unsigned int i = 0; i < (sizeof(s1) / sizeof(wxString)); i++)
     m_pModel->Append(s1[i]);
   wxString s2[] = {_T("Saildocs"), _T("zyGrib")};
@@ -252,13 +266,25 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
     if (lonmin > 180.) lonmin -= 360.;
   }
 
-  m_spMaxLat->SetValue((int)ceil(vp->lat_max));
-  m_spMinLon->SetValue((int)floor(lonmin));
-  m_spMinLat->SetValue((int)floor(vp->lat_min));
-  m_spMaxLon->SetValue((int)ceil(lonmax));
+  bool bnew_val = false;
+  if (m_spMaxLat->GetValue() != (int)ceil(vp->lat_max))
+    bnew_val = true;
+  if (m_spMinLon->GetValue() != (int)floor(lonmin))
+    bnew_val = true;
+  if (m_spMinLat->GetValue() != (int)floor(vp->lat_min))
+    bnew_val = true;
+  if (m_spMaxLon->GetValue() != (int)ceil(lonmax))
+    bnew_val = true;
 
-  SetCoordinatesText();
-  m_MailImage->SetValue(WriteMail());
+  if (bnew_val){
+    m_spMaxLat->SetValue((int)ceil(vp->lat_max));
+    m_spMinLon->SetValue((int)floor(lonmin));
+    m_spMinLat->SetValue((int)floor(vp->lat_min));
+    m_spMaxLon->SetValue((int)ceil(lonmax));
+
+    SetCoordinatesText();
+    m_MailImage->SetValue(WriteMail());
+  }
 }
 
 bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
@@ -268,6 +294,11 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
 
   if (event.Moving())
     return false;  // maintain status bar and tracking dialog updated
+
+  int xm, ym;
+  event.GetPosition(&xm, &ym);
+  xm *= m_displayScale;
+  ym *= m_displayScale;
 
   // This does not work, but something like it should
   //     wxObject *obj = event.GetEventObject();
@@ -294,13 +325,13 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
 
   if (event.Dragging()) {
     if (m_RenderZoneOverlay < 2) {
-      m_StartPoint = event.GetPosition();  // starting selection point
+      m_StartPoint = wxPoint(xm,ym);  //event.GetPosition();  // starting selection point
       m_RenderZoneOverlay = 2;
     }
-    m_IsMaxLong = m_StartPoint.x > event.GetPosition().x
+    m_IsMaxLong = m_StartPoint.x > xm
                       ? true
                       : false;  // find if startpoint is max longitude
-    GetCanvasLLPix(m_Vp, event.GetPosition(), &m_Lat,
+    GetCanvasLLPix(m_Vp, wxPoint (xm, ym) /*event.GetPosition()*/, &m_Lat,
                    &m_Lon);  // extend selection
     if (!m_tMouseEventTimer.IsRunning())
       m_tMouseEventTimer.Start(20, wxTIMER_ONE_SHOT);
@@ -365,7 +396,8 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
       {_T("0.2"), _T("0.8"), _T("1.6"), wxEmptyString},
       {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},        // RTOFS
       {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString},        // HRRR
-      {_T("0.0625"), _T("0.125"), wxEmptyString, wxEmptyString}  // ICON
+      {_T("0.0625"), _T("0.125"), wxEmptyString, wxEmptyString},  // ICON
+      {_T("0.4"), _T("1.0"), _T("2.0"), wxEmptyString}    //ECMWF
   };
 
   IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
@@ -375,6 +407,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
   bool IsHRRR = m_pModel->GetCurrentSelection() == HRRR;
   bool IsICON = m_pModel->GetCurrentSelection() == ICON;
+  bool IsECMWF = m_pModel->GetCurrentSelection() == ECMWF;
 
   // populate resolution choice
   m_pResolution->Clear();
@@ -390,7 +423,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 
   unsigned l;
   // populate time interval choice
-  l = (IsGFS || IsRTOFS || IsICON) ? 3 : IsHRRR ? 1 : 6;
+  l = (IsGFS || IsRTOFS || IsICON || IsECMWF ) ? 3 : IsHRRR ? 1 : 6;
 
   unsigned m;
   m = IsHRRR ? 2 : 25;
@@ -401,7 +434,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pInterval->SetSelection(wxMin(it, m_pInterval->GetCount() - 1));
 
   // populate time range choice
-  l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsICON ? 7 : IsHRRR ? 2 : 3;
+  l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsECMWF ? 10 : IsICON ? 7 : IsHRRR ? 2 : 3;
   m_pTimeRange->Clear();
   for (unsigned i = 2; i < l + 1; i++)
     m_pTimeRange->Append(wxString::Format(_T("%d"), i));
@@ -419,8 +452,8 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pCloudCover->SetValue(m_RequestConfigBase.GetChar(10) == 'X' && IsGFS);
   m_pCloudCover->Enable(IsGFS);
   m_pAirTemp->SetValue(m_RequestConfigBase.GetChar(11) == 'X' &&
-                       (IsGFS || IsHRRR || IsICON));
-  m_pAirTemp->Enable(IsGFS || IsHRRR || IsICON);
+                       (IsGFS || IsHRRR || IsICON || IsECMWF));
+  m_pAirTemp->Enable(IsGFS || IsHRRR || IsICON || IsECMWF);
   m_pSeaTemp->SetValue(m_RequestConfigBase.GetChar(12) == 'X' &&
                        ((!IsZYGRIB && IsGFS) || IsRTOFS || IsHRRR || IsICON));
   m_pSeaTemp->Enable(!IsZYGRIB && (IsGFS || IsHRRR || IsICON));
@@ -433,19 +466,20 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pReflectivity->Enable(false);
 
   m_pAltitudeData->SetValue(
-      (IsGFS || IsICON)
+      (IsGFS || IsICON || IsECMWF)
           ? m_RequestConfigBase.GetChar(17) == 'X'
           : false);  // altitude data zigrib + saildocs GFS and ICON
-  m_pAltitudeData->Enable(IsGFS || IsICON);
+  m_pAltitudeData->Enable(IsGFS || IsICON || IsECMWF);
   m_p850hpa->SetValue(IsZYGRIB ? m_RequestConfigBase.GetChar(18) == 'X'
                                : false);  // only zygrib
   m_p850hpa->Enable(IsZYGRIB);
   m_p700hpa->SetValue(IsZYGRIB ? m_RequestConfigBase.GetChar(19) == 'X'
                                : false);  // only zigrib
   m_p700hpa->Enable(IsZYGRIB);
-  m_p500hpa->SetValue((IsGFS || IsICON)
+  m_p500hpa->SetValue((IsGFS || IsICON || IsECMWF)
                           ? m_RequestConfigBase.GetChar(20) == 'X'
-                          : false);  // zigrib + saildocs GFS and ICON
+                          : false);  // zigrib + saildocs GFS ICON ECMWF
+  m_p500hpa->Enable(IsGFS || IsICON || IsECMWF);
   m_p300hpa->SetValue(IsZYGRIB ? m_RequestConfigBase.GetChar(21) == 'X'
                                : false);  // only zigrib
   m_p300hpa->Enable(IsZYGRIB);
@@ -467,6 +501,12 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 }
 
 void GribRequestSetting::OnTopChange(wxCommandEvent &event) {
+
+  //deactivate momentary ZyGrib option
+  if(m_pMailTo->GetCurrentSelection() == ZYGRIB) {
+    m_pMailTo->SetSelection(0);
+    int mes = OCPNMessageBox_PlugIn(this, _("Sorry...\nZyGrib momentary stopped providing this service...\nOnly Saildocs option is available"), _("Warning"),wxOK);
+  }
   ApplyRequestConfig(m_pResolution->GetCurrentSelection(),
                      m_pInterval->GetCurrentSelection(),
                      m_pTimeRange->GetCurrentSelection());
@@ -520,7 +560,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   center.y = y + (zh / 2);
 
   wxFont fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() / g_DIPfactor));
+  fo.SetPointSize((fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
   wxFont* font = &fo;
   wxColour pen_color, back_color;
   GetGlobalColor(_T ( "DASHR" ), &pen_color);
@@ -552,12 +592,15 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
     sdc.GetMultiLineTextExtent(label, &w, &h, &sl, font);
 #else
     m_pdc->GetMultiLineTextExtent(label, &w, &h, &sl, font);
-    w *= g_DIPfactor;
-    h *= g_DIPfactor;
+    w *= OCPN_GetWinDIPScaleFactor();
+    h *= OCPN_GetWinDIPScaleFactor();
 #endif
     w += 2 * label_offsetx, h += 2 * label_offsety;
     x = center.x - (w / 2);
     y = center.y - (h / 2);
+
+    h *= m_displayScale;
+    w *= m_displayScale;
 
     wxBitmap bm(w, h);
     wxMemoryDC mdc(bm);
@@ -581,57 +624,46 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   } else {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
-    TexFont m_TexFontlabel;
-    m_TexFontlabel.Build(*font);
 
-    glColor3ub(pen_color.Red(), pen_color.Green(), pen_color.Blue());
+    m_oDC->SetVP(m_Vp);
+    m_oDC->SetPen(wxPen(pen_color, 3));
 
-    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT |
-                 GL_POLYGON_BIT | GL_HINT_BIT);
+    wxPoint outline[5];
+    outline[0] = wxPoint(x, y);
+    outline[1] = wxPoint(x + zw, y);
+    outline[2] = wxPoint(x + zw, y + zh);
+    outline[3] = wxPoint(x, y + zh);
+    outline[4] = wxPoint(x, y);
+    m_oDC->DrawLines(5, outline);
 
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glLineWidth(3.f);
+    m_oDC->SetFont(*font);
+    int w, h, ww, hw;
+    m_oDC->GetTextExtent(label, &w, &h);
+    h *= m_displayScale;
+    w *= m_displayScale;
 
-    glBegin(GL_LINES);
-    glVertex2d(x, y);
-    glVertex2d(x + zw, y);
-    glVertex2d(x + zw, y);
-    glVertex2d(x + zw, y + zh);
-    glVertex2d(x + zw, y + zh);
-    glVertex2d(x, y + zh);
-    glVertex2d(x, y + zh);
-    glVertex2d(x, y);
-    glEnd();
+    m_oDC->GetTextExtent("W", &ww, &hw);
 
-    int w, h;
-    glColor4ub(back_color.Red(), back_color.Green(), back_color.Blue(), 155);
-    m_TexFontlabel.GetTextExtent(label, &w, &h);
+    int label_offsetx = ww, label_offsety = 1;
+    int x = center.x - w/2;
+    int y = center.y - h/2;
 
     w += 2 * label_offsetx, h += 2 * label_offsety;
-    x = center.x - (w / 2);
-    y = center.y - (h / 2);
 
-    /* draw text background */
-    glBegin(GL_QUADS);
-    glVertex2i(x, y);
-    glVertex2i(x + w, y);
-    glVertex2i(x + w, y + h);
-    glVertex2i(x, y + h);
-    glEnd();
+    m_oDC->SetBrush(wxBrush(back_color));
+    m_oDC->DrawRoundedRectangle(x, y, w, h, 0);
 
-    /* draw text */
-    glColor3ub(0, 0, 0);
+    /* draw bounding rectangle */
+    m_oDC->SetPen(wxPen(wxColour(0, 0, 0), 1));
 
-    glEnable(GL_TEXTURE_2D);
-    m_TexFontlabel.RenderString(label, x + label_offsetx, y + label_offsety);
-    glDisable(GL_TEXTURE_2D);
+    outline[0] = wxPoint(x, y);
+    outline[1] = wxPoint(x + w, y);
+    outline[2] = wxPoint(x + w, y + h);
+    outline[3] = wxPoint(x, y + h);
+    outline[4] = wxPoint(x, y);
+    m_oDC->DrawLines(5, outline);
 
-    glDisable(GL_BLEND);
-
-    glPopAttrib();
+    m_oDC->DrawText(label, x + label_offsetx, y + label_offsety);
 
 #endif
 #endif
@@ -707,6 +739,10 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event) {
 }
 
 void GribRequestSetting::OnSaveMail(wxCommandEvent &event) {
+  bool IsCOAMPS = m_pModel->GetCurrentSelection() == COAMPS;
+  bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
+  bool IsICON = m_pModel->GetCurrentSelection() == ICON;
+  bool IsECMWF = m_pModel->GetCurrentSelection() == ECMWF;
   m_RequestConfigBase.SetChar(
       0, (char)(m_pMailTo->GetCurrentSelection() + '0'));  // recipient
   m_cMovingGribEnabled->IsChecked()
@@ -716,8 +752,7 @@ void GribRequestSetting::OnSaveMail(wxCommandEvent &event) {
   if (!IsZYGRIB)
     m_RequestConfigBase.SetChar(
         1, (char)(m_pModel->GetCurrentSelection() + '0'));  // model
-
-  if (m_pModel->GetCurrentSelection() != RTOFS)
+  if (!IsECMWF)
     m_RequestConfigBase.SetChar(
         2, (char)(m_pResolution->GetCurrentSelection() + '0'));  // resolution
 
@@ -738,7 +773,7 @@ void GribRequestSetting::OnSaveMail(wxCommandEvent &event) {
   m_RequestConfigBase.SetChar(
       7, 'X');  // pressure must be always selected as a default
 
-  if (m_pModel->GetCurrentSelection() != COAMPS) {
+  if (!IsCOAMPS && !IsRTOFS) {
     m_pWindGust->IsChecked() ? m_RequestConfigBase.SetChar(14, 'X')  // Gust
                              : m_RequestConfigBase.SetChar(14, '.');
     m_pWaves->IsChecked() ? m_RequestConfigBase.SetChar(8, 'X')  // waves
@@ -754,12 +789,11 @@ void GribRequestSetting::OnSaveMail(wxCommandEvent &event) {
     m_pCAPE->IsChecked() ? m_RequestConfigBase.SetChar(15, 'X')  // cape
                          : m_RequestConfigBase.SetChar(15, '.');
   }
-  if (m_pModel->GetCurrentSelection() != ZYGRIB &&
-      m_pModel->GetCurrentSelection() != COAMPS)  // current
+  if (IsRTOFS)  // current
     m_pCurrent->IsChecked() ? m_RequestConfigBase.SetChar(13, 'X')
                             : m_RequestConfigBase.SetChar(13, '.');
 
-  if (IsGFS) {
+  if (IsGFS || IsICON || IsECMWF) {
     m_pAltitudeData->IsChecked()
         ? m_RequestConfigBase.SetChar(17, 'X')  // altitude data
         : m_RequestConfigBase.SetChar(17, '.');
@@ -811,13 +845,27 @@ wxString GribRequestSetting::WriteMail() {
   // some useful strings
   const wxString s[] = {_T(","), _T(" ")};  // separators
   const wxString p[][11] = {
+    // parameters GFS from Saildocs
       {_T("APCP"), _T("TCDC"), _T("AIRTMP"),
-       _T("HTSGW,WVPER,WVDIR"),  // parameters Saildocs
+       _T("HTSGW,WVPER,WVDIR"),
        _T("SEATMP"), _T("GUST"), _T("CAPE"), wxEmptyString, wxEmptyString,
        _T("WIND500,HGT500"), wxEmptyString},
+      {}, //COAMPS
+      {}, //RTOFS
+      {}, //HRRR = same parameters as GFS
+      //parametres ICON
+      {_T(""), _T(""), _T("AIRTMP"), _T(""),
+      _T("SFCTMP"), _T("GUST"), _T(""), _T(""), _T(""),
+      _T("WIND500,HGT500"), _T("")},
+      //parametres ECMWF
+      {_T(""), _T(""), _T("TEMP"), _T(""),
+      _T(""), _T(""), _T(""), _T(""), _T(""),
+      _T("WIND500,HGT500"), _T("")},
+      // parameters GFS from zygrib
       {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString,
-       _T("GUST"),  // parameters zigrib
-       _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")}};
+       _T("GUST"),
+       _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")}
+  };
 
   wxString r_topmess, r_parameters, r_zone;
   // write the top part of the mail
@@ -872,44 +920,45 @@ wxString GribRequestSetting::WriteMail() {
       break;
   }
   // write the parameters part of the mail
+  int GFSZ = IsZYGRIB ? 6 : 0;
   switch (m_pModel->GetCurrentSelection()) {
     case GFS:  // GFS
       r_parameters = wxT("WIND") + s[m_pMailTo->GetCurrentSelection()] +
                      wxT("PRESS");  // the default minimum request parameters
       if (m_pRainfall->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][0]);
+                            p[GFS + GFSZ][0]);
       if (m_pCloudCover->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][1]);
+                            p[GFS + GFSZ][1]);
       if (m_pAirTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][2]);
+                            p[GFS + GFSZ][2]);
       if (m_pWaves->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][3]);
+                            p[GFS + GFSZ][3]);
       if (m_pSeaTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][4]);
+                            p[GFS + GFSZ][4]);
       if (m_pWindGust->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][5]);
+                            p[GFS + GFSZ][5]);
       if (m_pCAPE->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][6]);
+                            p[GFS + GFSZ][6]);
       if (m_pAltitudeData->IsChecked()) {
         if (m_p850hpa->IsChecked())
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                              p[m_pMailTo->GetCurrentSelection()][7]);
+                              p[GFS + GFSZ][7]);
         if (m_p700hpa->IsChecked())
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                              p[m_pMailTo->GetCurrentSelection()][8]);
+                              p[GFS + GFSZ][8]);
         if (m_p500hpa->IsChecked())
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                              p[m_pMailTo->GetCurrentSelection()][9]);
+                              p[GFS + GFSZ][9]);
         if (m_p300hpa->IsChecked())
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                              p[m_pMailTo->GetCurrentSelection()][10]);
+                              p[GFS + GFSZ][10]);
       }
       break;
     case COAMPS:                         // COAMPS
@@ -924,36 +973,48 @@ wxString GribRequestSetting::WriteMail() {
                                          // model
       if (m_pRainfall->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][0]);
+                            p[GFS][0]);
       if (m_pAirTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][2]);
+                            p[GFS][2]);
       if (m_pSeaTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][4]);
+                            p[GFS][4]);
       if (m_pWindGust->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][5]);
+                            p[GFS][5]);
       if (m_pCAPE->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][6]);
+                            p[GFS][6]);
       break;
-    case ICON:                           // ICON
+    case ICON:
       r_parameters = wxT("WIND,PRMSL");  // the default parameters for this
                                          // model
       if (m_pAirTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][2]);
+                            p[ICON][2]);
       if (m_pSeaTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][4]);
+                            p[ICON][4]);
       if (m_pWindGust->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[m_pMailTo->GetCurrentSelection()][5]);
+                            p[ICON][5]);
       if (m_pAltitudeData->IsChecked()) {
         if (m_p500hpa->IsChecked())
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                              p[m_pMailTo->GetCurrentSelection()][9]);
+                              p[ICON][9]);
+      }
+      break;
+    case ECMWF:
+      r_parameters = wxT("WIND,MSLP");  // the default parameters for this
+      // model
+      if (m_pAirTemp->IsChecked())
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
+          p[ECMWF][2]);
+      if (m_pAltitudeData->IsChecked()) {
+        if (m_p500hpa->IsChecked())
+          r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
+            p[ECMWF][9]);
       }
       break;
   }

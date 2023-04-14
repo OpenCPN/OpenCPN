@@ -118,7 +118,7 @@ static bool openStream(PaStream** stream,
                                 portAudioSound);
     if( err != paNoError ) {
         wxLogWarning("PortAudio Create() error: %s", Pa_GetErrorText(err));
-	return false;
+        return false;
     }
     return true;
 }
@@ -236,6 +236,13 @@ bool PortAudioSound::Load(const char* path, int deviceIndex)
     return true;
 }
 
+void PortAudioSound::UnLoad()
+{
+    lock();
+    m_soundLoader->UnLoad();
+    m_OK = false;
+    unlock();
+}
 
 bool PortAudioSound::SetDeviceIndex(int deviceIndex)
 {

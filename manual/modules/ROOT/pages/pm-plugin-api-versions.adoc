@@ -1,0 +1,48 @@
+= Plugin API and ABI
+
+== API
+
+The plugin API is defined by
+
+On Linux and MacOS::
+  The file  ocpn_plugin.h
+
+On MSVC Windows::
+  ocpn_plugin.h and the opencpn.lib import lib
+
+On mingw Windows builds::
+  ocpn_plugin.h and the libopencpn.dll.a import lib
+
+The  API Designation is found in the ocpn_plugin.h file:
+
+    #define     MY_API_VERSION_MAJOR    1
+    #define     MY_API_VERSION_MINOR    16
+
+The API is intended to be backwards compatible, and has stayed so since
+at least 10 years.
+
+Unfortunately, the API is more or less undocumented.
+
+There is no formal distribution of the API files. An attempt to
+distribute the latest versions is available at
+https://github.com/leamas/opencpn-api[]
+
+== ABI
+
+The ABI isn not only affected by the API but also by underlying libraries.
+In particular, updates to wxWidgets has created ABI breaks which has
+required plugins to be re-compiled
+
+Even if the wxWidgets version has not been changed, the GTK2 -> GTK3
+transition has also caused ABI breaks on Linux.
+
+On Flatpak, runtime updates will inevitably also create ABI breaks.
+
+== Lead Developer: About Plugins & API
+
+The Main program API number is distinct and independent from the OpenCPN
+Version number. Each released version of OCPN will support a certain
+PlugIn API. As we progress, we expect the API eventually to stabilize,
+or at least to evolve more slowly than the main program. This will
+happen naturally as we fill out the API to include the commonly required
+Plugin functions.

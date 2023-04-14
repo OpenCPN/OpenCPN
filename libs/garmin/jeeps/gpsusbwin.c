@@ -143,14 +143,14 @@ HANDLE garmin_usb_start(HDEVINFO* hdevinfo, SP_DEVICE_INTERFACE_DATA *infodata)
 	PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
 	SP_DEVINFO_DATA devinfo;
 
-	SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
+	SetupDiGetDeviceInterfaceDetail(*hdevinfo, infodata,
 			NULL, 0, &size, NULL);
 
 	pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA) malloc(size);
 	pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
 
 	devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
-	if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, infodata,
+	if (!SetupDiGetDeviceInterfaceDetail(*hdevinfo, infodata,
 		pdd, size, NULL, &devinfo)) {
 			GPS_Serial_Error("SetupDiGetDeviceInterfaceDetail");
 			return NULL;

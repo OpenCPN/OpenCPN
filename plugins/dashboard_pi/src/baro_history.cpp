@@ -62,8 +62,9 @@ DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory(
   m_SpdStartVal = -1;
   m_IsRunning = false;
   m_SampleCount = 0;
+  m_SetNewData = 0;
   m_LeftLegend = 3;
-  m_RightLegend = 3;
+  m_RightLegend = 20;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
     m_ArrayPressHistory[idx] = -1;
     m_ExpSmoothArrayPressure[idx] = -1;
@@ -90,48 +91,54 @@ wxSize DashboardInstrument_BaroHistory::GetSize(int orient, wxSize hint) {
 }
 void DashboardInstrument_BaroHistory::SetData(DASH_CAP st, double data,
                                               wxString unit) {
-  if (st == OCPN_DBP_STC_MDA) {
-    m_Press = data;
-    if (m_SpdRecCnt++ <= 5) m_SpdStartVal += data;
-  }
-  if (m_SpdRecCnt == 5) {
-    m_Press = m_SpdStartVal / 5;
-  }
-  // start working after we collected 5 records each, as start values for the
-  // smoothed curves
-  if (m_SpdRecCnt > 5) {
-    m_IsRunning = true;
-    m_SampleCount = m_SampleCount < BARO_RECORD_COUNT ? m_SampleCount + 1
-                                                      : BARO_RECORD_COUNT;
-    m_MaxPress = 0;
-    ;
-    // data shifting
-    for (int idx = 1; idx < BARO_RECORD_COUNT; idx++) {
-      if (BARO_RECORD_COUNT - m_SampleCount <= idx)
-        m_MaxPress = wxMax(m_ArrayPressHistory[idx - 1], m_MaxPress);
-      m_MinPress = wxMin(m_ArrayPressHistory[idx - 1], m_MinPress);
-      m_ArrayPressHistory[idx - 1] = m_ArrayPressHistory[idx];
-      m_ExpSmoothArrayPressure[idx - 1] = m_ExpSmoothArrayPressure[idx];
-      m_ArrayRecTime[idx - 1] = m_ArrayRecTime[idx];
-    }
-    m_ArrayPressHistory[BARO_RECORD_COUNT - 1] = m_Press;
-    if (m_SampleCount < 2) {
-      m_ArrayPressHistory[BARO_RECORD_COUNT - 2] = m_Press;
-      m_ExpSmoothArrayPressure[BARO_RECORD_COUNT - 2] = m_Press;
-    }
-    m_ExpSmoothArrayPressure[BARO_RECORD_COUNT - 1] =
-        alpha * m_ArrayPressHistory[BARO_RECORD_COUNT - 2] +
-        (1 - alpha) * m_ExpSmoothArrayPressure[BARO_RECORD_COUNT - 2];
-    m_ArrayRecTime[BARO_RECORD_COUNT - 1] = wxDateTime::Now().GetTm();
-    m_MaxPress = wxMax(m_Press, m_MaxPress);
+  if (st == OCPN_DBP_STC_MDA && data > 700.0 && data < 2000.0 ) {
+    if (m_SetNewData < 1) {
+      m_Press = data;
+      if (m_SpdRecCnt++ <= 5) m_SpdStartVal += data;
 
-    m_MinPress = wxMin(m_MinPress, m_Press);
-    if (wxMin(m_Press, m_MinPress) == -1) {
-      m_MinPress = wxMin(m_Press, 1200);  // to make a OK inital value
+      if (m_SpdRecCnt == 5) {
+        m_Press = m_SpdStartVal / 5;
+      }
+      // start working after we collected 5 records each, as start values for the
+      // smoothed curves
+      if (m_SpdRecCnt > 5) {
+        m_IsRunning = true;
+        m_SampleCount = m_SampleCount < BARO_RECORD_COUNT ? m_SampleCount + 1
+          : BARO_RECORD_COUNT;
+        m_MaxPress = 0;
+        ;
+        // data shifting
+        for (int idx = 1; idx < BARO_RECORD_COUNT; idx++) {
+          if (BARO_RECORD_COUNT - m_SampleCount <= idx)
+            m_MaxPress = wxMax(m_ArrayPressHistory[idx - 1], m_MaxPress);
+          m_MinPress = wxMin(m_ArrayPressHistory[idx - 1], m_MinPress);
+          m_ArrayPressHistory[idx - 1] = m_ArrayPressHistory[idx];
+          m_ExpSmoothArrayPressure[idx - 1] = m_ExpSmoothArrayPressure[idx];
+          m_ArrayRecTime[idx - 1] = m_ArrayRecTime[idx];
+        }
+        m_ArrayPressHistory[BARO_RECORD_COUNT - 1] = m_Press;
+        if (m_SampleCount < 2) {
+          m_ArrayPressHistory[BARO_RECORD_COUNT - 2] = m_Press;
+          m_ExpSmoothArrayPressure[BARO_RECORD_COUNT - 2] = m_Press;
+        }
+        m_ExpSmoothArrayPressure[BARO_RECORD_COUNT - 1] =
+          alpha * m_ArrayPressHistory[BARO_RECORD_COUNT - 2] +
+          (1 - alpha) * m_ExpSmoothArrayPressure[BARO_RECORD_COUNT - 2];
+        m_ArrayRecTime[BARO_RECORD_COUNT - 1] = wxDateTime::Now().GetTm();
+        m_MaxPress = wxMax(m_Press, m_MaxPress);
+
+        m_MinPress = wxMin(m_MinPress, m_Press);
+        if (wxMin(m_Press, m_MinPress) == -1) {
+          m_MinPress = wxMin(m_Press, 1200);  // to make a OK inital value
+        }
+        // get the overall max min pressure
+        m_TotalMaxPress = wxMax(m_Press, m_TotalMaxPress);
+        m_TotalMinPress = wxMin(m_Press, m_TotalMinPress);
+        // Wait two turns until new data.
+        m_SetNewData = 2;
+      }
     }
-    // get the overall max min pressure
-    m_TotalMaxPress = wxMax(m_Press, m_TotalMaxPress);
-    m_TotalMinPress = wxMin(m_Press, m_TotalMinPress);
+    else m_SetNewData--;
   }
 }
 
@@ -297,6 +304,8 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
     min = localTime.GetMinute();
     hour = localTime.GetHour();
   }
+  m_DrawAreaRect.SetWidth(m_WindowRect.width - 3 - m_LeftLegend -
+    m_RightLegend);
   m_ratioW = double(m_DrawAreaRect.width) / (BARO_RECORD_COUNT - 1);
 
   dc->DrawText(wxString::Format(
@@ -304,42 +313,36 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
                    m_MaxPress, hour, min, m_TotalMaxPress, m_TotalMinPress),
                    m_LeftLegend + 2 + degw, m_TopLineHeight - 1 - labelh);
   pen.SetStyle(wxPENSTYLE_SOLID);
-  pen.SetColour(wxColour(61, 61, 204, 96));  // blue, transparent
-  pen.SetWidth(1);
+  pen.SetColour(wxColour(61, 61, 204, 255));  // blue, opaque
+  pen.SetWidth(3);
   dc->SetPen(pen);
   ratioH = (double)m_DrawAreaRect.height / (double)m_MaxPressScale;
 
-  wxPoint pointsSpd[BARO_RECORD_COUNT + 2], pointSpeed_old;
-  pointSpeed_old.x = m_LeftLegend + 3;
-  pointSpeed_old.y =
-      m_TopLineHeight + m_DrawAreaRect.height - m_ArrayPressHistory[0] * ratioH;
+  wxPoint pointsSpd[BARO_RECORD_COUNT + 2];
+  wxPoint bdDraw[BARO_RECORD_COUNT + 2];
+  int ls = 0;
+  bdDraw[ls].x = 1 * m_ratioW + 3 + m_LeftLegend;
+  bdDraw[ls].y = m_TopLineHeight + m_DrawAreaRect.height -
+    ((m_ArrayPressHistory[1] - (double)m_TotalMinPress + 18) * ratioH);
 
   //---------------------------------------------------------------------------------
   // live pressure data
   //---------------------------------------------------------------------------------
 
   for (int idx = 1; idx < BARO_RECORD_COUNT; idx++) {
-    // pointsSpd[idx].x = idx  + 3 + m_LeftLegend;
-    // pointsSpd[idx].y = m_TopLineHeight+m_DrawAreaRect.height -
-    // m_ArrayPressHistory[idx] * ratioH;
-    pointsSpd[idx].y =
-        m_TopLineHeight + m_DrawAreaRect.height -
-        ((m_ArrayPressHistory[idx] - (double)m_TotalMinPress + 18) * ratioH);
-    pointsSpd[idx].x = idx * m_ratioW - 3;  //- 30 + m_LeftLegend;
-    // pointsSpd[idx].x = idx + m_DrawAreaRect.x;
-    // pointsSpd[idx].y= m_ArrayPressHistory[idx] * ratioH;
+    pointsSpd[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
+    // Print the smoothed value to avoid jumps in the single line.
+    pointsSpd[idx].y = m_TopLineHeight + m_DrawAreaRect.height -
+        ((m_ExpSmoothArrayPressure[idx] - m_TotalMinPress + 18.0) * ratioH);
     if (BARO_RECORD_COUNT - m_SampleCount <= idx &&
-        pointsSpd[idx].y > m_TopLineHeight &&
-        pointSpeed_old.y > m_TopLineHeight &&
-        pointsSpd[idx].y <= m_TopLineHeight + m_DrawAreaRect.height &&
-        pointSpeed_old.y <= m_TopLineHeight + m_DrawAreaRect.height)
-      dc->DrawLine(pointSpeed_old.x, pointSpeed_old.y, pointsSpd[idx].x,
-                   pointsSpd[idx].y);
-    // dc->DrawLine( pointSpeed_old.x, pointSpeed_old.y,
-    // pointsSpd[idx].x,pointsSpd[idx].y );
-    pointSpeed_old.x = pointsSpd[idx].x;
-    pointSpeed_old.y = pointsSpd[idx].y;
+      pointsSpd[idx].y > m_TopLineHeight &&
+      pointsSpd[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
+      bdDraw[ls] = pointsSpd[idx];
+      ls++;
+    }
   }
+  if (ls > 1)
+    dc->DrawLines(ls, bdDraw);
 
   //---------------------------------------------------------------------------------
   // exponential smoothing of barometric pressure
@@ -366,9 +369,9 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
 
   */
   //---------------------------------------------------------------------------------
-  // draw vertical timelines every 5 minutes
+  // Draw vertical timelines every 15 minutes
   //---------------------------------------------------------------------------------
-  GetGlobalColor(_T("UBLCK"), &col);
+  GetGlobalColor("DASHL", &col);
   pen.SetColour(col);
   pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
@@ -378,12 +381,10 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   wxPoint pointTime;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
     if (m_ArrayRecTime[idx].year != 999) {
-      wxDateTime localTime(m_ArrayRecTime[i]);
+      wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
-      sec = localTime.GetSecond();
       min = localTime.GetMinute();
-      if ((hour * 100 + min) != done && (min % 5 == 0) &&
-          (sec == 0 || sec == 1)) {
+      if ((hour * 100 + min) != done && (min == 0 || min % 15 == 0)) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));

@@ -43,6 +43,7 @@ class SndfileSoundLoader: public AbstractSoundLoader
         virtual ~SndfileSoundLoader();
 
         virtual bool Load(const char* path);
+        virtual void UnLoad();
 
         virtual bool Reset();
 

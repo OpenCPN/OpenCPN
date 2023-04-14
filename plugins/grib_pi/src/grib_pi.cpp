@@ -28,10 +28,14 @@
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
+
+#include "pi_gl.h"
+
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
 #endif
 #endif  // precompiled headers
+
 
 #include <wx/fileconf.h>
 #include <wx/stdpaths.h>
@@ -41,6 +45,8 @@
 #ifdef __WXQT__
 #include "qdebug.h"
 #endif
+
+double g_ContentScaleFactor;
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -55,7 +61,6 @@ extern int m_DialogStyle;
 grib_pi *g_pi;
 bool g_bpause;
 float g_piGLMinSymbolLineWidth;
-float g_DIPfactor;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -121,12 +126,7 @@ int grib_pi::Init(void) {
   // GRIB dialog
   m_parent_window = GetOCPNCanvasWindow();
 
-  //Get dip factor for MSW et xWidgets 3.2.1
-  g_DIPfactor = 1;
-#ifdef __WXMSW__
-  if (m_parent_window)
-    g_DIPfactor = (double)(m_parent_window->ToDIP(100)) / 100.;
-#endif
+  g_ContentScaleFactor = m_parent_window->GetContentScaleFactor();
 
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
@@ -248,6 +248,10 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_rbTimeFormat->SetSelection(m_bTimeZone);
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
+#ifdef __WXMSW__
+  int val = (m_GribIconsScaleFactor * 10.) - 10;
+  Pref->m_sIconSizeFactor->SetValue(val);
+#endif
 
 #ifdef __OCPN__ANDROID__
   if (m_parent_window) {
@@ -261,6 +265,23 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   }
   Pref->Show();
 #else
+  // Constrain size on small displays
+
+  int display_width, display_height;
+  wxDisplaySize(&display_width, &display_height);
+  int char_width = GetOCPNCanvasWindow()->GetCharWidth();
+  int char_height = GetOCPNCanvasWindow()->GetCharHeight();
+  if(display_height < 600){
+    wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
+    Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    Pref->SetSize(wxSize(60 * char_width, canvas_size.x * 8 / 10));
+    Pref->CentreOnScreen();
+  }
+  else {
+    Pref->SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    Pref->SetSize(wxSize(60 * char_width, 29 * char_height));
+  }
+
   Pref->ShowModal();
 #endif
 }
@@ -271,6 +292,10 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
   m_bLoadLastOpenFile = Pref->m_rbLoadOptions->GetSelection();
   m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
   m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
+#ifdef __WXMSW__
+  double val = Pref->m_sIconSizeFactor->GetValue();
+  m_GribIconsScaleFactor = 1. + (val / 10);
+#endif
 
   if (m_pGRIBOverlayFactory)
     m_pGRIBOverlayFactory->SetSettings(m_bGRIBUseHiDef, m_bGRIBUseGradualColors,
@@ -384,7 +409,10 @@ void grib_pi::OnToolbarToolCallback(int id) {
 
   bool starting = false;
 
-  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * g_DIPfactor;
+  double scale_factor = GetOCPNGUIToolScaleFactor_PlugIn() * OCPN_GetWinDIPScaleFactor();
+#ifdef __WXMSW__
+  scale_factor *= m_GribIconsScaleFactor;
+#endif
   if (scale_factor != m_GUIScaleFactor) starting = true;
 
   if (!m_pGribCtrlBar) {
@@ -424,14 +452,19 @@ void grib_pi::OnToolbarToolCallback(int id) {
     m_pGribCtrlBar->OpenFile(m_bLoadLastOpenFile == 0);
   }
 
-  if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"), 10))
-    starting = true;
-
   // Toggle GRIB overlay display
   m_bShowGrib = !m_bShowGrib;
 
   //    Toggle dialog?
   if (m_bShowGrib) {
+    //A new file could have been added since grib plugin opened
+    if (!starting && m_bLoadLastOpenFile == 0) {
+      m_pGribCtrlBar->OpenFile(true);
+      starting = true;
+    }
+    //the dialog font could have been changed since grib plugin opened
+    if (m_pGribCtrlBar->GetFont() != *OCPNGetFont(_("Dialog"), 10))
+      starting = true;
     if (starting) {
       m_pGRIBOverlayFactory->SetMessageFont();
       SetDialogFont(m_pGribCtrlBar);
@@ -722,6 +755,9 @@ bool grib_pi::LoadConfig(void) {
   pConf->Read(_T( "GRIBTimeZone" ), &m_bTimeZone, 1);
   pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
   pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
+#ifdef __WXMSW__
+  pConf->Read(_T("GribIconsScaleFactor"), &m_GribIconsScaleFactor, 1);
+#endif
 
   m_CtrlBar_Sizexy.x = pConf->Read(_T ( "GRIBCtrlBarSizeX" ), 1400L);
   m_CtrlBar_Sizexy.y = pConf->Read(_T ( "GRIBCtrlBarSizeY" ), 800L);
@@ -754,6 +790,9 @@ bool grib_pi::SaveConfig(void) {
   pConf->Write(_T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec);
   pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);
   pConf->Write(_T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
+#ifdef __WXMSW__
+  pConf->Write(_T("GribIconsScaleFactor"), m_GribIconsScaleFactor);
+#endif
 
   pConf->Write(_T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x);
   pConf->Write(_T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y);

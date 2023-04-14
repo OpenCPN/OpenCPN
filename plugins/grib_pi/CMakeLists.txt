@@ -60,7 +60,7 @@ endif (APPLE)
 if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
-endif (MSVC)
+endif ()
 
 # QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
 # wxWidgets_USE_FILE are not useful.
@@ -127,10 +127,10 @@ if (WIN32)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
 endif (WIN32)
 
-if (QT_ANDROID)
+#if (QT_ANDROID)
   set(SRC_GRIB ${SRC_GRIB} src/pi_shaders.h)
   set(SRC_GRIB ${SRC_GRIB} src/pi_shaders.cpp)
-endif (QT_ANDROID)
+#endif (QT_ANDROID)
 
 if (NOT UNIX)
   set(SRC_BZIP
@@ -168,6 +168,12 @@ if (QT_ANDROID)
 endif (QT_ANDROID)
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_GRIB})
+
+if (MSVC)
+  # Fixme (leamas): Remove when the VS bug is fixed.
+  # https://forum.juce.com/t/juceaide-fails-to-build-on-windows-plugin-demo-master-branch/48007
+  target_compile_features(${PACKAGE_NAME} PRIVATE cxx_std_17)
+endif ()
 
 find_package(Jasper)
 use_bundled_lib(USE_BUNDLED_JASPER jasper)

@@ -1,19 +1,36 @@
-:: Build and upload OpenCPN artifacts
-@echo on
+:: Build script for appveyor, https://www.appveyor.com
+:: Builds one version linked against wxWidgets 3.2
 
+@echo off
 setlocal enabledelayedexpansion
 
-if "%CONFIGURATION%" == "" (set CONFIGURATION=Release)
-if "%APPVEYOR_BUILD_FOLDER%" == "" (set "APPVEYOR_BUILD_FOLDER=%~dp0..")
+set "SCRIPTDIR=%~dp0"
 
-where dumpbin.exe >nul 2>&1
-if errorlevel 1 (
-  set "VS_BASE=C:\Program Files\Microsoft Visual Studio\2022"
-  call "%VS_BASE%\Community\VC\Auxiliary\Build\vcvars32.bat"
+:: %CONFIGURATION% comes from environment, set a default if invoked elsewise.
+if "%CONFIGURATION%" == "" set "CONFIGURATION=Release"
+
+:: On GA, set up N:, see below
+if exist D:\a\OpenCPN\OpenCPN (subst N: D:\a\OpenCPN\OpenCPN)
+
+:: If N: exists it is used as base dir to sanitize source file paths
+:: in pdb.
+if exist N:\ (
+  n:
+  cd \
+  echo "Using virtual drive N: as base path"
 )
 
-call %APPVEYOR_BUILD_FOLDER%\buildwin\win_deps.bat
-call %APPVEYOR_BUILD_FOLDER%\cache\wx-config.bat
+call %SCRIPTDIR%..\buildwin\win_deps.bat wx32
+call %SCRIPTDIR%..\cache\wx-config.bat
+echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
+echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
+
+if not defined VCINSTALLDIR (
+  for /f "tokens=* USEBACKQ" %%p in (
+    `"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" ^
+    -latest -property installationPath`
+  ) do call "%%p\Common7\Tools\vsDevCmd.bat"
+)
 
 where wxmsw32u_qa_vc14x.dll >nul 2>&1
 if errorlevel 1 (
@@ -21,23 +38,33 @@ if errorlevel 1 (
   echo Appending %wxWidgets_LIB_DIR% to PATH
 )
 
-cd %APPVEYOR_BUILD_FOLDER%
 
-if exist build (rmdir /q /s build)
+if exist build (rmdir /s /q build)
 mkdir build && cd build
 
-cmake -T v143 ^
+cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DCMAKE_GENERATOR_PLATFORM=Win32 ^
-    -A Win32 -G "Visual Studio 17 2022" ^
-    -DwxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR% ^
-    -DwxWidgets_LIB_DIR=%wxWidgets_LIB_DIR% ^
-    -DwxWidgets_CONFIGURATION=mswu ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
-    -DCMAKE_LIBRARY_PATH=%~dp0..\cache\buildwin ^
-    -DCMAKE_INCLUDE_PATH=%~dp0..\cache\buildwin\include ^
+    -DwxWidgets_LIB_DIR=!wxWidgets_LIB_DIR! ^
+    -DwxWidgets_ROOT_DIR=!wxWidgets_ROOT_DIR! ^
+    -DwxWidgets_CONFIGURATION=mswu ^
+    -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
     -DOCPN_CI_BUILD=ON ^
     -DOCPN_BUNDLE_WXDLLS=ON ^
+    -DOCPN_RELEASE=0 ^
     -DOCPN_BUILD_TEST=OFF ^
     ..
 
 cmake --build . --target package --config %CONFIGURATION%
+
+:: Compress pdb and mark with git hash
+@echo on
+"C:\Program Files\Git\bin\bash" -c ^
+  "tar czf opencpn+%GITHUB_SHA:~0,8%.pdb.tar.gz %CONFIGURATION%/opencpn.pdb"
+@echo off
+
+:: Display dependencies debug info
+echo import glob; import subprocess > ldd.py
+echo lib = glob.glob("%CONFIGURATION%/opencpn.exe")[0] >> ldd.py
+echo subprocess.call(['dumpbin', '/dependents', lib], shell=True) >> ldd.py
+python ldd.py

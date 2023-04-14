@@ -43,6 +43,8 @@
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
 #include "color_handler.h"
+#include "ocpn_plugin.h"
+#include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -66,6 +68,8 @@ extern int g_GUIScaleFactor;
 extern bool g_bopengl;
 
 extern OCPNPlatform *g_Platform;
+extern MyFrame *gFrame;
+extern BasePlatform *g_BasePlatform;
 
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
@@ -77,7 +81,6 @@ END_EVENT_TABLE()
 // Define a constructor
 Piano::Piano(ChartCanvas *parent) {
   m_parentCanvas = parent;
-  ;
 
   m_index_last = -1;
   m_iactive = -1;
@@ -284,9 +287,10 @@ void Piano::BuildGLTexture() {
   dc.SetBrush(tbackBrush);
   dc.DrawRectangle(0, 0, m_texw, m_texh);
 
-  double nominal_line_width_pix =
-      wxMax(1.0, floor(g_Platform->GetDisplayDPmm() /
-                       2.0));  // 0.5 mm nominal, but not less than 1 pixel
+  // 0.5 mm nominal, but not less than 1 pixel
+  double nominal_line_width_pix = floor(g_Platform->GetDisplayDPmm() / 2.0);
+  nominal_line_width_pix *= OCPN_GetWinDIPScaleFactor();
+  nominal_line_width_pix = wxMax(1.0, nominal_line_width_pix);
 
   // draw the needed rectangles
   wxPen ppPen(GetGlobalColor(_T("CHBLK")), nominal_line_width_pix,
@@ -358,8 +362,18 @@ void Piano::BuildGLTexture() {
 }
 
 void Piano::DrawGL(int off) {
+//#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
+    return DrawGLDirect(off);
+//#else
+//    return DrawGLSL(off);
+//#endif
+}
+
+void Piano::DrawGLDirect(int off) {
 #ifdef ocpnUSE_GL
-  unsigned int w = m_parentCanvas->GetClientSize().x, h = GetHeight(), endx = 0;
+  unsigned int w = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
+  int h = GetHeight();
+  int endx = 0;
 
   if (m_tex_piano_height != h) BuildGLTexture();
 
@@ -459,7 +473,6 @@ void Piano::DrawGL(int off) {
 
   glBindTexture(GL_TEXTURE_2D, m_tex);
 
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   if (style->chartStatusWindowTransparent) {
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glColor4ub(255, 255, 255,
@@ -467,18 +480,9 @@ void Piano::DrawGL(int off) {
     glEnable(GL_BLEND);
   } else
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-#endif
 
   glEnable(GL_TEXTURE_2D);
 
-#if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-  glEnable(GL_BLEND);
-  m_parentCanvas->GetglCanvas()->RenderTextures(
-    m_parentCanvas->GetglCanvas()->m_gldc,
-    coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
-  glDisable(GL_BLEND);
-
-#else
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -544,14 +548,132 @@ void Piano::DrawGL(int off) {
   glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
   glVertexPointer(2, GL_FLOAT, 0, coords);
   glDrawArrays(GL_QUADS, 0, vc / 2);
-#endif
 
   glDisable(GL_BLEND);
 
-#if not defined(USE_ANDROID_GLES2) && not defined(ocpnUSE_GLSL)
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
+  delete[] texcoords;
+  delete[] coords;
+
+  glDisable(GL_TEXTURE_2D);
 #endif
+}
+
+void Piano::DrawGLSL(int off) {
+#ifdef ocpnUSE_GL
+  unsigned int w = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
+  int h = GetHeight();
+  int endx = 0;
+
+  if (m_tex_piano_height != h) BuildGLTexture();
+
+  if (m_tex_piano_height != h) return;
+
+  int y1 = off, y2 = y1 + h;
+
+  int nKeys = m_key_array.size();
+
+  // we could cache the coordinates and recompute only when the piano hash
+  // changes, but the performance is already fast enough at this point
+  float *texcoords = new float[(nKeys * 3 + 1) * 4 * 2],
+        *coords = new float[(nKeys * 3 + 1) * 4 * 2];
+
+  int tc = 0, vc = 0;
+
+  // draw the keys
+  for (int i = 0; i < nKeys; i++) {
+    int key_db_index = m_key_array[i];
+
+    int b;
+    if (ChartData->GetDBChartType(key_db_index) == CHART_TYPE_CM93 ||
+        ChartData->GetDBChartType(key_db_index) == CHART_TYPE_CM93COMP)
+      b = 0;
+    else if (ChartData->GetDBChartType(key_db_index) == CHART_TYPE_MBTILES)
+      b = 6;
+    else if (ChartData->GetDBChartFamily(key_db_index) == CHART_FAMILY_VECTOR)
+      b = 2;
+    else  // Raster Chart
+      b = 4;
+
+    if (!InArray(m_active_index_array, key_db_index)) b++;
+
+    wxRect box = KeyRect[i];
+    float y = h * b, v1 = (y + .5) / m_texh, v2 = (y + h - .5) / m_texh;
+
+    // texcord contains the texture pixel coordinates in the texture for the
+    // three rectangle parts
+    const float texcord[6] = {0,
+                              (float)m_ref - 1,
+                              (float)m_ref,
+                              (float)m_ref,
+                              (float)m_ref + 1,
+                              (float)m_texPitch - 1};
+    int uindex;
+    if (m_brounded) {
+      if (InArray(m_eclipsed_index_array, key_db_index))
+        uindex = 2;
+      else
+        uindex = 1;
+    } else
+      uindex = 0;
+
+    // if the chart is too narrow.. we maybe render the "wrong" rectangle
+    // because it can be thinner
+    int x1 = box.x, x2 = x1 + box.width, w = 2 * uindex + 1;
+    while (x1 + w > x2 - w && uindex > 0) uindex--, w -= 2;
+
+    // the minimal width rectangles are texture mapped to the
+    // width needed by mapping 3 quads: left middle and right
+    int x[6] = {x1 - 3, x1 + m_ref, x2 - m_ref, x2 + 3};
+
+    // adjust for very narrow keys
+    if (x[1] > x[2]) {
+      int avg = (x[1] + x[2]) / 2;
+      x[1] = x[2] = avg;
+    }
+
+    for (int i = 0; i < 3; i++) {
+      float u1 = ((uindex * m_texPitch) + texcord[2 * i] + .5) / m_texw,
+            u2 = ((uindex * m_texPitch) + texcord[2 * i + 1] + .5) / m_texw;
+      int x1 = x[i], x2 = x[i + 1];
+      texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1,
+      coords[vc++] = y1;
+      texcoords[tc++] = u2, texcoords[tc++] = v1, coords[vc++] = x2,
+      coords[vc++] = y1;
+      texcoords[tc++] = u2, texcoords[tc++] = v2, coords[vc++] = x2,
+      coords[vc++] = y2;
+      texcoords[tc++] = u1, texcoords[tc++] = v2, coords[vc++] = x1,
+      coords[vc++] = y2;
+    }
+    endx = x[3];
+  }
+
+  // if not transparent, fill the rest of the chart bar with the background
+  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  if (!style->chartStatusWindowTransparent && endx < w) {
+    texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = endx,
+    coords[vc++] = y1;
+    texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = w,
+    coords[vc++] = y1;
+    texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = w,
+    coords[vc++] = y2;
+    texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = endx,
+    coords[vc++] = y2;
+  }
+
+  glBindTexture(GL_TEXTURE_2D, m_tex);
+
+  glEnable(GL_TEXTURE_2D);
+
+  glEnable(GL_BLEND);
+  m_parentCanvas->GetglCanvas()->RenderTextures(
+    m_parentCanvas->GetglCanvas()->m_gldc,
+    coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
+  glDisable(GL_BLEND);
+
+  glDisable(GL_BLEND);
+
   delete[] texcoords;
   delete[] coords;
 
@@ -685,7 +807,12 @@ wxString &Piano::GetStoredHash() { return m_hash; }
 
 void Piano::FormatKeys(void) {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  int width = m_parentCanvas->GetClientSize().x, height = GetHeight();
+  int width = m_parentCanvas->GetClientSize().x;
+#ifdef __WXOSX__
+  if(g_bopengl)
+    width *= m_parentCanvas->GetContentScaleFactor();
+#endif
+  int height = GetHeight();
   width *= g_btouch ? 0.98f : 0.6f;
 
   int nKeys = m_key_array.size();
@@ -693,7 +820,7 @@ void Piano::FormatKeys(void) {
   if (nKeys) {
     if (!kw) kw = width / nKeys;
 
-    kw = wxMin(kw, (m_parentCanvas->GetClientSize().x * 3 / 4) / nKeys);
+    kw = wxMin(kw, (width * 3 / 4) / nKeys);
     kw = wxMax(kw, 6);
 
     //    Build the Key Regions
@@ -720,8 +847,20 @@ wxPoint Piano::GetKeyOrigin(int key_index) {
 bool Piano::MouseEvent(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
+#ifdef __WXOSX__
+  if (g_bopengl){
+    x *= OCPN_GetDisplayContentScaleFactor();
+    y *= OCPN_GetDisplayContentScaleFactor();
+  }
+#endif
 
-  if (event.Leaving() || y < m_parentCanvas->GetCanvasHeight() - GetHeight()) {
+  int ytop = m_parentCanvas->GetCanvasHeight() - GetHeight();
+#ifdef __WXOSX__
+  if (!g_bopengl)
+    ytop = m_parentCanvas->GetClientSize().y - GetHeight();
+#endif
+
+  if (event.Leaving() || y < ytop) {
     if (m_bleaving) return false;
     m_bleaving = true;
   } else
@@ -815,7 +954,11 @@ void Piano::ResetRollover(void) {
 }
 
 int Piano::GetHeight() {
-  int height = 22;  // default desktop value
+  int height = 22 ;
+#ifdef __WXOSX__
+  if (g_bopengl)
+    height *= m_parentCanvas->GetContentScaleFactor();
+#endif
   if (g_btouch) {
     double size_mult = exp(g_GUIScaleFactor * 0.0953101798043);  // ln(1.1)
     height *= size_mult;
@@ -827,6 +970,8 @@ int Piano::GetHeight() {
 #ifdef __OCPN__ANDROID__
   height = wxMax(height, 4 * g_Platform->GetDisplayDPmm());
 #endif
+
+  height /= g_BasePlatform->GetDisplayDIPMult(gFrame);
 
   return height;
 }

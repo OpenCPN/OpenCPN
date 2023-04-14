@@ -59,24 +59,24 @@ typedef struct config_block {
   const char* message;
 } config_block;
 
-static const char* const STD_HARD_MSG = _(R"""(
+static const char* const STD_HARD_MSG = _(R"(
 PlugIn %s, version %i.%i was detected.
 This version is known to be unstable and will not be loaded.
 Please update this PlugIn using the PlugIn manager master catalog.
-)""");
+)");
 
-static const char* const STD_SOFT_MSG = _(R"""(
+static const char* const STD_SOFT_MSG = _(R"(
 PlugIn %s, version %i.%i was detected.
 This version is known to be unstable.
 Please update this PlugIn using the PlugIn manager master catalog.
-)""");
+)");
 
-static const char* const OCHART_OBSOLETED_MSG = _(R"""(
+static const char* const OCHART_OBSOLETED_MSG = _(R"(
 PlugIn %s, version %i.%i was detected.
 This plugin is obsolete, the o-charts plugin should be used
 instead. Please uninstall this plugin and install o-charts
 using the PlugIn manager master catalog.
-)""");
+)");
 
 
 static const config_block plugin_blacklist[] = {
@@ -173,12 +173,16 @@ private:
     return m_blocks.end();
   }
 
-  void update_block(const std::string& name, int major, int minor) {
-    if (m_blocks.find(name) == m_blocks.end())
+  bool update_block(const std::string& name, int major, int minor) {
+    bool  new_block = false;
+    if (m_blocks.find(name) == m_blocks.end()) {
       m_blocks[name] = block(major, minor);
+      new_block = true;
+    }
     m_blocks[name].status = plug_status::unloadable;
     m_blocks[name].major = major;
     m_blocks[name].minor = minor;
+    return new_block;
   }
 
   /** Avoid pulling in wx libraries in low-level model code. */
@@ -197,7 +201,7 @@ private:
 
 public:
 
-  virtual plug_data get_library_data(const std::string library_file) {
+  virtual plug_data get_library_data(const std::string& library_file) {
     std::string filename(normalize_lib(library_file));
     auto found = find_block(filename);
     if (found == m_blocks.end()) return plug_data("", -1, -1);
@@ -214,12 +218,18 @@ public:
     return get_status(pd.name, pd.major, pd.minor);
   }
 
-  void mark_unloadable(const std::string& path) {
+  virtual bool mark_unloadable(const std::string& name,
+		               int major, int minor) {
+    return update_block(name, major, minor);
+  }
+
+  /** Given a path, mark filename as unloadable. */
+  bool mark_unloadable(const std::string& path) {
     auto filename(path);
     auto slashpos = filename.rfind(SEP);
     if (slashpos != std::string::npos)
       filename = filename.substr(slashpos + 1);
-    update_block(filename, -1, -1);
+    return update_block(filename, -1, -1);
   }
 
   bool is_loadable(const std::string path) {

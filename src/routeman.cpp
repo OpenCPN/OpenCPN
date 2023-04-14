@@ -42,6 +42,8 @@
 #include "base_platform.h"
 #include "chcanv.h"
 #include "comm_n0183_output.h"
+#include "comm_vars.h"
+#include "config_vars.h"
 #include "concanv.h"
 #include "cutil.h"
 #include "dychart.h"
@@ -53,6 +55,7 @@
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
+#include "own_ship.h"
 #include "pluginmanager.h"
 #include "route.h"
 #include "routemanagerdialog.h"
@@ -85,9 +88,6 @@ extern Routeman *g_pRouteMan;
 
 extern wxRect g_blink_rect;
 
-extern double gLat, gLon, gSog, gCog;
-extern double gVar;
-extern wxString gRmcDate, gRmcTime;
 extern bool g_bMagneticAPB;
 
 extern RoutePoint *pAnchorWatchPoint1;
@@ -105,7 +105,6 @@ extern float g_ChartScaleFactorExp;
 
 extern bool g_bShowShipToActive;
 extern bool g_bAllowShipToActive;
-extern int g_maxWPNameLength;
 
 bool g_bPluginHandleAutopilotRoute;
 
@@ -992,6 +991,8 @@ WayPointman::~WayPointman() {
 
   if (pmarkicon_image_list) pmarkicon_image_list->RemoveAll();
   delete pmarkicon_image_list;
+  delete m_pLegacyIconArray;
+  delete m_pExtendedIconArray;
 }
 
 bool WayPointman::AddRoutePoint(RoutePoint *prp) {

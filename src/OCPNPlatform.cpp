@@ -48,6 +48,7 @@
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "cutil.h"
+#include "config_vars.h"
 #include "logger.h"
 #include "styles.h"
 #include "navutil.h"
@@ -172,7 +173,6 @@ extern bool g_bAIS_CPA_Alert_Audio;
 extern bool g_bCPAWarn;
 extern bool g_bAIS_CPA_Alert;
 
-extern int gps_watchdog_timeout_ticks;
 extern wxString *pInit_Chart_Dir;
 
 extern double g_config_display_size_mm;
@@ -193,7 +193,6 @@ extern bool g_bresponsive;
 extern bool g_bShowStatusBar;
 extern int g_cm93_zoom_factor;
 extern int g_GUIScaleFactor;
-extern wxArrayOfConnPrm *g_pConnectionParams;
 extern bool g_fog_overzoom;
 extern bool g_oz_vector_scale;
 extern int g_nTrackPrecision;
@@ -247,10 +246,11 @@ extern int g_FlushNavobjChangesTimeout;
 extern wxString g_CmdSoundString;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
+extern BasePlatform *g_BasePlatform;
 
 #ifdef __ANDROID__
 extern PlatSpec android_plat_spc;
@@ -722,10 +722,25 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     delete pctx;
     return false;
   }
-
   pcaps->Renderer = std::string(str);
-  pcaps->Version = std::string((char *)glGetString(GL_VERSION));
-  pcaps->GLSL_Version = std::string((char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+  char *stv = (char *)glGetString(GL_VERSION);
+  if (stv == NULL) {    //No GL Version...
+    delete tcanvas;
+    delete pctx;
+    return false;
+  }
+  pcaps->Version = std::string(stv);
+
+  char *stsv = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+  if (stsv == NULL) {    //No GLSL...
+    delete tcanvas;
+    delete pctx;
+    return false;
+  }
+  pcaps->GLSL_Version = std::string(stsv);
+
+  pcaps->dGLSL_Version = 0;
   pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
 
   if (pcaps->dGLSL_Version < 1.2){
@@ -784,19 +799,22 @@ bool OCPNPlatform::IsGLCapable() {
 #elif defined(CLI)
   return false;
 #else
-  OCPN_GLCaps *pcaps = new OCPN_GLCaps;
+  OCPN_GLCaps GL_Caps;
 
-  BuildGLCaps(pcaps);
+  BuildGLCaps(&GL_Caps);
 
   // and so we decide....
 
   // Require a modern GLSL implementation
-  if (!pcaps->bCanDoGLSL) return false;
-
+  if (!GL_Caps.bCanDoGLSL) {
+    return false;
+  }
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!pcaps->bCanDoFBO) return false;
+  if (!GL_Caps.bCanDoFBO)  {
+    return false;
+  }
 
   return true;
 #endif
@@ -1082,6 +1100,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
   g_n_ownship_min_mm = 8;
   g_bShowMuiZoomButtons = true;
+  g_bresponsive = false;
 
   // Initial S52/S57 options
   if (pConfig) {
@@ -1192,7 +1211,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   ConnectionParams *new_params = new ConnectionParams(sGPS);
 
   new_params->bEnabled = true;
-  g_pConnectionParams->Add(new_params);
+  TheConnectionParams()->Add(new_params);
 
   g_default_font_facename = _T("Roboto");
 
@@ -1348,7 +1367,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     g_maintoolbar_x = -1;
 
     // Force a reload of updated default tide/current datasets
-    TideCurrentDataSet.Clear();
+    TideCurrentDataSet.clear();
   }
 }
 
@@ -1886,6 +1905,8 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   rv = wxMin(rv, 3.0);  //  Clamp at 3.0
   rv = wxMax(rv, 0.5);  //  and at 0.5
 
+  rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
+
 #endif
 
   return rv;
@@ -1937,15 +1958,24 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
   double postmult = exp(GUIScaleFactor * (0.693 / 5.0));  //  exp(2)
 
   rv = premult * postmult;
+
   rv = wxMin(rv, 3.0);  //  Clamp at 3.0
   rv = wxMax(rv, 0.5);
+
+#if defined(__WXOSX__) || defined(__WXGTK3__)
+  // Support scaled HDPI displays.
+  if (gFrame)
+    rv *= gFrame->GetContentScaleFactor();
+#endif
+
+  rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
 
 #endif
 
   return rv;
 }
 
-float OCPNPlatform::getChartScaleFactorExp(float scale_linear) {
+float OCPNPlatform::GetChartScaleFactorExp(float scale_linear) {
   double factor = 1.0;
 #ifndef __OCPN__ANDROID__
   factor = exp(scale_linear * (log(3.0) / 5.0));
@@ -1962,6 +1992,23 @@ float OCPNPlatform::getChartScaleFactorExp(float scale_linear) {
 
   return factor;
 }
+
+float OCPNPlatform::GetMarkScaleFactorExp(float scale_linear) {
+  if(scale_linear <= 0)
+    return GetChartScaleFactorExp(scale_linear);
+  else
+    return GetChartScaleFactorExp(scale_linear-1);
+}
+
+// float OCPNPlatform::GetDIPScaleFactor() {
+//   float rv = 1.0;
+// #ifdef __WXMSW__
+//   if (gFrame)
+//     rv = (double)(gFrame->FromDIP(100))/100.;
+// #endif
+//
+//     return rv;
+// }
 
 //--------------------------------------------------------------------------
 //      Internal Bluetooth Support

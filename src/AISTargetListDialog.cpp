@@ -334,7 +334,10 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
 
   CreateControls();
 
+  // Set default color for panel, respecting Dark mode if enabled
+  SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
   SetColorScheme();
+
   UpdateButtons();
 
   if (m_pAuiManager) {
@@ -693,7 +696,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonInfo->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnTargetQuery), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonInfo, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonInfo, 0, wxEXPAND | wxALL, 2);
   bsRouteButtonsInner->AddSpacer(5);
 
   m_pButtonJumpTo =
@@ -702,7 +705,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonJumpTo->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnTargetScrollTo), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonJumpTo, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonJumpTo, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonJumpTo_Close =
     new wxButton(winr, wxID_ANY, _("Center-Info-Close"), wxDefaultPosition,
@@ -710,7 +713,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonJumpTo_Close->Connect(
     wxEVT_COMMAND_BUTTON_CLICKED,
     wxCommandEventHandler(AISTargetListDialog::OnTargetScrollToClose), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonJumpTo_Close, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonJumpTo_Close, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonCreateWpt =
       new wxButton(winr, wxID_ANY, _("Create WPT"), wxDefaultPosition,
@@ -727,7 +730,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonHideAllTracks->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnHideAllTracks), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonHideAllTracks, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonHideAllTracks, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonShowAllTracks =
       new wxButton(winr, wxID_ANY, _("Show All Tracks"), wxDefaultPosition,
@@ -735,7 +738,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonShowAllTracks->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnShowAllTracks), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonShowAllTracks, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonShowAllTracks, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonToggleTrack =
       new wxButton(winr, wxID_ANY, _("Toggle track"), wxDefaultPosition,
@@ -743,7 +746,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonToggleTrack->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnToggleTrack), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 2);
 
   m_pButtonCopyMMSI =
       new wxButton(winr, wxID_ANY, _("Copy MMSI"), wxDefaultPosition,
@@ -751,7 +754,7 @@ void AISTargetListDialog::CreateControls() {
   m_pButtonCopyMMSI->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnCopyMMSI), NULL, this);
-  bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 2);
 
   m_pCBAutosort =
       new wxCheckBox(winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
@@ -759,7 +762,7 @@ void AISTargetListDialog::CreateControls() {
   m_pCBAutosort->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(AISTargetListDialog::OnAutosortCB), NULL, this);
-  bsRouteButtonsInner->Add(m_pCBAutosort, 0, wxEXPAND | wxALL, 0);
+  bsRouteButtonsInner->Add(m_pCBAutosort, 0, wxEXPAND | wxALL, 2);
   g_bAisTargetList_autosort = true;
   m_pCBAutosort->SetValue(g_bAisTargetList_autosort);
 
@@ -767,7 +770,7 @@ void AISTargetListDialog::CreateControls() {
 
   m_pStaticTextRange = new wxStaticText(winr, wxID_ANY, _("Limit range: NM"),
                                         wxDefaultPosition, wxDefaultSize, 0);
-  bsRouteButtonsInner->Add(m_pStaticTextRange, 0, wxALL, 0);
+  bsRouteButtonsInner->Add(m_pStaticTextRange, 0, wxALL, 2);
   bsRouteButtonsInner->AddSpacer(2);
   m_pSpinCtrlRange = new wxSpinCtrl(
       winr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(50, -1),
@@ -783,12 +786,13 @@ void AISTargetListDialog::CreateControls() {
   bsRouteButtonsInner->AddSpacer(10);
   m_pStaticTextCount = new wxStaticText(winr, wxID_ANY, _("Target Count"),
                                         wxDefaultPosition, wxDefaultSize, 0);
-  bsRouteButtonsInner->Add(m_pStaticTextCount, 0, wxALL, 0);
+  bsRouteButtonsInner->Add(m_pStaticTextCount, 0, wxALL, 2);
 
   bsRouteButtonsInner->AddSpacer(2);
   m_pTextTargetCount = new wxTextCtrl(winr, wxID_ANY, _T(""), wxDefaultPosition,
                                       wxDefaultSize, wxTE_READONLY);
-  bsRouteButtonsInner->Add(m_pTextTargetCount, 0, wxALL, 0);
+  m_pTextTargetCount->SetMinSize(wxSize(6 * GetCharWidth(), -1));
+  bsRouteButtonsInner->Add(m_pTextTargetCount, 0, wxALL, 2);
 
   bsRouteButtonsInner->AddSpacer(10);
   m_pButtonOK = new wxButton(winr, wxID_ANY, _("Close"), wxDefaultPosition,

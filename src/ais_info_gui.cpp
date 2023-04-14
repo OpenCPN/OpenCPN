@@ -100,12 +100,12 @@ static void OnNewAisWaypoint(RoutePoint* pWP) {
 }
 
 const static char* const kDeleteTrackPrompt =
-R"""(
+_(R"(
 This AIS target has Persistent Tracking selected by MMSI properties
 A Persistent track recording will therefore be restarted for this target.
 
 Do you instead want to stop Persistent Tracking for this target?
-)""";
+)");
 
 
 static void OnDeleteTrack(MmsiProperties* props) {
@@ -158,6 +158,10 @@ AisInfoGui::AisInfoGui() {
 void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
   // By clearing this flag the main event loop will trigger repeated
   // sounds for as long as the alert condition remains.
+
+  // Unload/reset OcpnSound object.
+  m_AIS_Sound->UnLoad();
+
   m_bAIS_AlertPlaying = false;
 }
 
@@ -302,9 +306,16 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
       if (m_AIS_Sound->IsOk()) {
         m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        if (!m_AIS_Sound->Play()) m_bAIS_AlertPlaying = false;
-      } else
+        if (!m_AIS_Sound->Play()){
+          delete m_AIS_Sound;
+          m_AIS_Sound = 0;
+          m_bAIS_AlertPlaying = false;
+        }
+      } else {
+        delete m_AIS_Sound;
+        m_AIS_Sound = 0;
         m_bAIS_AlertPlaying = false;
+      }
     }
   }
   //  If a SART Alert is active, check to see if the MMSI has special properties

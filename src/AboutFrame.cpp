@@ -71,7 +71,7 @@ AboutFrame::AboutFrame(wxWindow* parent, wxWindowID id, const wxString& title,
   bSizerAuthors1 = new wxBoxSizer(wxHORIZONTAL);
 
   m_staticTextCopyYears =
-      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _("(c) 2000-2021"),
+      new wxStaticText(m_scrolledWindowAbout, wxID_ANY, _("(c) 2000-2023"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_staticTextCopyYears->Wrap(-1);
   bSizerAuthors1->Add(m_staticTextCopyYears, 0, wxALL, 5);

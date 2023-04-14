@@ -161,6 +161,10 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
 
   m_socket_timer.SetOwner(this, TIMER_SOCKET);
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+  this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
+  char port_char[10];
+  sprintf(port_char, "%d",params->NetworkPort);
+  this->attributes["netPort"] = std::string(port_char);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);
@@ -327,9 +331,16 @@ void CommDriverN0183Net::OpenNetworkGPSD() {
 void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   m_dog_value--;
   if (m_dog_value <= 0) {  // No receive in n seconds, assume connection lost
-    wxLogMessage(
-        wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s"),
-                         GetPort().c_str()));
+    wxString log = wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s."),
+      GetPort().c_str());
+    if (!GetParams().NoDataReconnect) {
+      log.Append(wxString::Format(_T(" Reconnection is disabled, waiting another %d seconds."),
+        N_DOG_TIMEOUT));
+      m_dog_value = N_DOG_TIMEOUT;
+      wxLogMessage(log);
+      return;
+    }
+    wxLogMessage(log);
 
     if (GetProtocol() == TCP) {
       wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());

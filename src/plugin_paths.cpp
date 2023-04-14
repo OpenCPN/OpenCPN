@@ -163,7 +163,7 @@ void PluginPaths::initApplePaths() {
   fn_exe.RemoveLastDir();
   string exeLibDir =
       fn_exe.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() +
-      "Plugins";
+      "PlugIns";
   m_libdirs.push_back(exeLibDir);
   // m_libdirs.push_back("/Applications/OpenCPN.app/Contents/Plugins");
   m_bindirs = m_libdirs;

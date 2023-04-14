@@ -48,7 +48,7 @@ After a local build followed by `sudo make install` opencpn-cmd is available in
 The installer installs it under Applications. Run using:
 
     $ /Applications/OpenCPN.app/Contents/MacOS/opencpn-cmd --help
-  
+
 Windows
 -------
 

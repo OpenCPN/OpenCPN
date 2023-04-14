@@ -71,6 +71,7 @@ typedef enum {
 
 #define CONN_ENABLE_ID 47621
 
+
 class ConnectionParamsPanel;
 
 class ConnectionParams {
@@ -87,11 +88,13 @@ public:
   wxString LastNetworkAddress;
   int LastNetworkPort;
   NetworkProtocol LastNetProtocol;
+  DataProtocol LastDataProtocol;
 
   DataProtocol Protocol;
   wxString Port;
   wxString socketCAN_port;
   int Baudrate;
+  bool NoDataReconnect;
   bool ChecksumCheck;
   bool Garmin;
   bool GarminUpload;
@@ -115,7 +118,8 @@ public:
   wxString GetIOTypeValueStr() const;
   wxString GetFiltersStr() const;
   wxString GetDSPort() const;
-  wxString GetLastDSPort() const;
+  std::string GetLastDSPort() const;
+  NavAddr::Bus GetLastCommProtocol();
   wxString GetPortStr() const { return Port; }
   void SetPortStr(wxString str) { Port = str; }
   std::string GetStrippedDSPort();
@@ -132,5 +136,7 @@ private:
 };
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
+
+wxArrayOfConnPrm* TheConnectionParams();
 
 #endif

@@ -27,6 +27,7 @@
 #include "navutil.h"
 #include "navutil_base.h"
 #include "georef.h"
+#include "own_ship.h"
 #include "routeman.h"
 #include "routeman_gui.h"
 #include "routemanagerdialog.h"
@@ -44,7 +45,6 @@
 #include "androidUTIL.h"
 #endif
 
-extern double gLat, gLon;
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern Routeman* g_pRouteMan;
@@ -808,23 +808,26 @@ void TrackPropDlg::CreateControls(void) {
   wxBoxSizer* bSizerShowTime;
   bSizerShowTime = new wxBoxSizer(wxHORIZONTAL);
 
-  m_stShowTime = new wxStaticText(m_panelBasic, wxID_ANY, _("Time shown as"),
+  m_stShowTime = new wxStaticText(m_panel0, wxID_ANY, _("Time shown as"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   // m_stShowTime->Wrap( -1 );
   bSizerShowTime->Add(m_stShowTime, 0, wxALL, 5);
 
-  m_rbShowTimeUTC = new wxRadioButton(m_panelBasic, wxID_ANY, _("UTC"),
+  m_rbShowTimeUTC = new wxRadioButton(m_panel0, wxID_ANY, _("UTC"),
                                       wxDefaultPosition, wxDefaultSize, 0);
-  bSizerShowTime->Add(m_rbShowTimeUTC, 0, 0, 5);
+  bSizerShowTime->Add(m_rbShowTimeUTC, 0,
+       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
 
-  m_rbShowTimePC = new wxRadioButton(m_panelBasic, wxID_ANY, _("Local @ PC"),
+  m_rbShowTimePC = new wxRadioButton(m_panel0, wxID_ANY, _("Local @ PC"),
                                      wxDefaultPosition, wxDefaultSize, 0);
-  bSizerShowTime->Add(m_rbShowTimePC, 0, 0, 5);
+  bSizerShowTime->Add(m_rbShowTimePC, 0,
+       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
 
   m_rbShowTimeLocal =
-      new wxRadioButton(m_panelBasic, wxID_ANY, _("LMT @ Track Start"),
+      new wxRadioButton(m_panel0, wxID_ANY, _("LMT @ Track Start"),
                         wxDefaultPosition, wxDefaultSize, 0);
-  bSizerShowTime->Add(m_rbShowTimeLocal, 0, 0, 5);
+  bSizerShowTime->Add(m_rbShowTimeLocal, 0,
+       wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, 5);
 
   m_rbShowTimePC->SetValue(true);
 

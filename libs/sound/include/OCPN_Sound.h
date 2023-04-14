@@ -75,6 +75,12 @@ class OcpnSound
          */
         virtual bool Load(const char* path, int deviceIx = -1) = 0;
 
+         /**
+         * De-Initiate the class, closing any open sound file,
+         * preparing for a new Load() using the same OcpnSound instance
+         */
+        virtual void UnLoad() = 0;
+
         /**
          * Plays the file loaded by Load(). If a callback is defined using
          * SetFinishedCallback() the playback is asynchronous, otherwise the

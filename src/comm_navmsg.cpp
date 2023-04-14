@@ -80,5 +80,6 @@ std::string Nmea2000Msg::to_string() const {
   std::string s;
   std::for_each(payload.begin(), payload.end(),
                 [&s](unsigned char c) { s.append(CharToString(c)); });
-  return NavMsg::to_string() + " " + name.to_string() + " " + s;
+
+  return NavMsg::to_string() + " " + PGN.to_string() + " " + s;
 }

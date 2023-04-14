@@ -32,6 +32,9 @@
 
 #include "SoundFileLoader.h"
 
+SoundFileLoader::~SoundFileLoader()
+{
+}
 
 bool SoundFileLoader::Load(const char* path)
 {
@@ -62,6 +65,8 @@ bool SoundFileLoader::Load(const char* path)
     return true;
 }
 
+void SoundFileLoader::UnLoad(){
+}
 
 typedef struct
 {

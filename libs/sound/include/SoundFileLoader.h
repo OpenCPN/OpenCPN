@@ -36,10 +36,15 @@
  */
 class AbstractSoundLoader {
 
-    public:
+     public:
+
+        virtual ~AbstractSoundLoader() {};
 
         /** Load data from sound file at given path. */
         virtual bool Load(const char* path) = 0;
+
+        /** Unload and close any open sound file. */
+        virtual void UnLoad() = 0;
 
         /** Reset internal pointers to file start, like seek(0, SEEK_SET) */
         virtual bool Reset() = 0;
@@ -69,9 +74,10 @@ class SoundFileLoader: public AbstractSoundLoader
     public:
 
         SoundFileLoader() {};
-        virtual ~SoundFileLoader() {};
+        virtual ~SoundFileLoader();
 
         virtual bool Load(const char* path) override;
+        virtual void UnLoad() override;
         virtual bool Reset() override;
         virtual size_t Get(void* samples, size_t length) override;
         unsigned GetBytesPerSample() const override;

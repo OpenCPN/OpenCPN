@@ -27,7 +27,8 @@ Build-Depends: debhelper (>= 9),
  base-files (>=10) | libwxgtk-webview3.0-dev,
  libwxgtk-webview3.0-gtk3-dev | base-files (<< 11),
  libwxsvg-dev | base-files (<< 11),
- portaudio19-dev
+ portaudio19-dev,
+ rapidjson-dev
 
 Standards-Version: 4.3.0
 Homepage: https://opencpn.org

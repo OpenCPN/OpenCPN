@@ -49079,7 +49079,7 @@
                     <definition>V</definition>
                     <vector width="205" height="1">
                       <distance min="0" max="0" />
-                      <pivot x="1000" y="750" />
+                      <pivot x="750" y="750" />
                       <origin x="730" y="750" />
                       <HPGL>SPZ;SW1;PU525,970;PD730,970;</HPGL>
                     </vector>

@@ -68,7 +68,7 @@ public:
               const wxString &title = _T("WMM"),
               const wxPoint &pos = wxDefaultPosition,
               const wxSize &size = wxSize(250, 495),
-              long style = wxCAPTION | wxDEFAULT_DIALOG_STYLE | wxTAB_TRAVERSAL)
+              long style = wxCAPTION | wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR)
       : WmmUIDialogBase(parent, id, title, pos, size, style),
         m_wmm_pi(_wmm_pi) {}
 
