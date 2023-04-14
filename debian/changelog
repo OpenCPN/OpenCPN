@@ -2,6 +2,17 @@ opencpn (5.8.0+dfsg-1) unstable; urgency=medium
 
   * New upstream release
   * Drop upstreamed patches, rebase remaining
+  * Exclude MathJax and highlight js libraries, use packages instead.
+  * Add new build deps:
+     - libssl-dev
+     - googletest
+     - libglew-dev
+     - repidjson-dev
+     - libjs-highlight.js
+     - libjs-mathjax
+  * Update deprecated libpixbuf-dev build dep
+  * Update d/copyright using cme.
+
 
  -- Alec Leamas <leamas.alec@gmail.com>  Fri, 14 Apr 2023 09:37:20 +0200
 
