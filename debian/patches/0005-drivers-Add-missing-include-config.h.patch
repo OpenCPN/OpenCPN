@@ -2,6 +2,9 @@ From: Alec Leamas <leamas.alec@gmail.com>
 Date: Fri, 14 Apr 2023 10:05:08 +0200
 Subject: drivers: Add missing #include config.h
 
+Bug: https://github.com/OpenCPN/OpenCPN/issues/3138 
+Forwarded: https://github.com/OpenCPN/OpenCPN/pull/3139
+
 ---
  include/comm_drv_n2k_serial.h  | 3 ++-
  src/comm_drv_n0183_serial.cpp  | 1 +
