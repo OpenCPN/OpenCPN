@@ -10,10 +10,10 @@ Subject: [PATCH] Add missing libs like tinyxml Debian work-around
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c6b09b4..d6f14e7 100644
+index 981d72f..d256033 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1581,8 +1581,10 @@ if (OCPN_USE_SVG)
+@@ -1597,8 +1597,10 @@ if (OCPN_USE_SVG)
    endif()
  endif (OCPN_USE_SVG)
  
@@ -25,7 +25,7 @@ index c6b09b4..d6f14e7 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif (OCPN_USE_NEWSERIAL)
-@@ -1657,6 +1659,7 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+@@ -1673,6 +1675,7 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
    set(LIBARCHIVE_COMMENT_END "-->")
  endif ()
  
@@ -33,7 +33,7 @@ index c6b09b4..d6f14e7 100644
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-@@ -1668,9 +1671,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
+@@ -1684,9 +1687,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
  add_subdirectory(libs/wxJSON)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
  
@@ -78,7 +78,7 @@ index 0000000..473722c
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 86ccd5b..83b5451 100644
+index 835bbc4..22778d4 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
 @@ -37,6 +37,7 @@

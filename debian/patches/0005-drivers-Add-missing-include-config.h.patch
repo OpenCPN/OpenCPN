@@ -1,18 +1,19 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Wed, 28 Dec 2022 13:27:04 +0100
-Subject: comm_srv_*: Add missing config.h
+Date: Fri, 14 Apr 2023 10:05:08 +0200
+Subject: drivers: Add missing #include config.h
 
 ---
  include/comm_drv_n2k_serial.h  | 3 ++-
  src/comm_drv_n0183_serial.cpp  | 1 +
  src/comm_drv_n2k_socketcan.cpp | 2 ++
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ src/connections_dialog.cpp     | 2 ++
+ 4 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/include/comm_drv_n2k_serial.h b/include/comm_drv_n2k_serial.h
-index acabcd7..f7c9e99 100644
+index 93e6d84..8962b8d 100644
 --- a/include/comm_drv_n2k_serial.h
 +++ b/include/comm_drv_n2k_serial.h
-@@ -28,10 +28,11 @@
+@@ -30,10 +30,11 @@
  
  #include <wx/thread.h>
  
@@ -26,7 +27,7 @@ index acabcd7..f7c9e99 100644
  #endif
  
 diff --git a/src/comm_drv_n0183_serial.cpp b/src/comm_drv_n0183_serial.cpp
-index 513642a..ffa85d2 100644
+index 0cfe917..2c8e7f0 100644
 --- a/src/comm_drv_n0183_serial.cpp
 +++ b/src/comm_drv_n0183_serial.cpp
 @@ -40,6 +40,7 @@
@@ -38,15 +39,28 @@ index 513642a..ffa85d2 100644
  #include "comm_navmsg_bus.h"
  #include "comm_drv_registry.h"
 diff --git a/src/comm_drv_n2k_socketcan.cpp b/src/comm_drv_n2k_socketcan.cpp
-index bcf4845..b47c5a1 100644
+index 83cc7e4..ddf50b9 100644
 --- a/src/comm_drv_n2k_socketcan.cpp
 +++ b/src/comm_drv_n2k_socketcan.cpp
-@@ -34,6 +34,8 @@
- #include <thread>
+@@ -35,6 +35,8 @@
  #include <vector>
+ #include <future>
  
 +#include "config.h"
 +
  #include <linux/can.h>
  #include <linux/can/raw.h>
  #include <net/if.h>
+diff --git a/src/connections_dialog.cpp b/src/connections_dialog.cpp
+index 8f94e58..6e56751 100755
+--- a/src/connections_dialog.cpp
++++ b/src/connections_dialog.cpp
+@@ -32,6 +32,8 @@
+ #include <wx/wx.h>
+ #endif  // precompiled headers
+ 
++#include "config.h"
++
+ #include <wx/tokenzr.h>
+ #include <wx/regex.h>
+ 
