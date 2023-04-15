@@ -53,10 +53,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Before build
-        run: ./ci/github-pre-build.sh
-        env:
-          USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
+      #- name: Before build
+      #  run: ./ci/github-pre-build.sh
+      #  env:
+      #    USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
 
       # required for CMake to find Ninja
       - name: Configure and Build
