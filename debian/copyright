@@ -44,7 +44,7 @@ License: GPL-2+
 
 Files: data/copyright
 Copyright: 2008-2018, David S Register <bdbcat@yahoo.com>
-License: CC0 and/or Expat and/or GPL-2 and/or GPL-3 and/or LGPL-2 and/or SGI-B-2.0 and/or public-domain
+License: GPL-2
 
 Files: data/opencpn.appdata.xml.in
 Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
@@ -200,11 +200,11 @@ License: Expat
 
 Files: libs/N2KParser/include/N2KParser.h
 Copyright: 2022, David S. Register
-License: Expat and/or GPL-2+
+License: Expat
 
 Files: libs/N2KParser/src/N2KParser.cpp
 Copyright: 2022, David S. Register
-License: Expat and/or GPL-2+
+License: Expat
 
 Files: libs/SQLiteCpp/*
 Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
@@ -649,24 +649,17 @@ Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
 License: GPL-2+
 
 Files: libs/mDNS/*
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: public-domain
+Copyright: 2023, David S Register
+License:  GPL-2+
 
 Files: libs/mDNS/src/*
+ libs/mDNS/include/*
 Copyright: 2022, David Register
-License: GPL-2+ and/or public-domain
+  2017 Mattias Jansson
+License:  public-domain
+ This library is put in the public domain; you can redistribute it and/or
+ modify it without any restrictions.
+
 
 Files: libs/mipmap/*
 Copyright: 2011, 2013-2016, Sean DEpagnier
@@ -847,6 +840,7 @@ Copyright: 2011, 2014, Pavel Kalian
  2000-2018, The OpenCPN Authors
  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
  1995-1998, Brian Paul
+License: GPL-2+
 
 License: BSD-2-clause
  Redistribution and use in source and binary forms, with or without
@@ -1099,8 +1093,15 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/GeomagnetismLibrary.c
-Copyright: protection.
+Copyright: no-copyright
 License: public-domain
+ The WMM source code is in the public domain and not licensed or under
+ copyright. The information and software may be used freely by the public.
+ As required by 17 U.S.C. 403, third parties producing copyrighted works
+ consisting predominantly of the material produced by U.S. government
+ agencies must provide notice with such work(s) identifying the
+ U.S. Government material incorporated and stating that such material is not
+ subject to copyright protection.
 
 Files: plugins/wmm_pi/src/MagneticPlotMap.cpp
   plugins/wmm_pi/src/MagneticPlotMap.h
