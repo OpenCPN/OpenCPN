@@ -329,6 +329,7 @@ bool CanHeader::IsFastMessage() const {
 
 void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   // We choose some "benign" values for OCPN socketCan interface
+  node_name.value.Name = 0;
 
   m_unique_number = 1;
 #ifndef CLIAPP
@@ -347,6 +348,7 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   node_name.SetDeviceFunction(130);  // Display
   node_name.SetDeviceClass(120);     // Display
   node_name.SetIndustryGroup(4);     // Marine
+  node_name.SetSystemInstance(0);
 }
 
 void CommDriverN2KSocketCanImpl::UpdateAttrCanAddress() {
@@ -429,7 +431,7 @@ bool CommDriverN2KSocketCanImpl::SendProductInfo() {
 
   payload.push_back(2100 & 0xFF);     //N2KVersion
   payload.push_back(2100 >> 8);
-  payload.push_back(0xEA);            //Product Version
+  payload.push_back(0xEC);            //Product Code, 1772
   payload.push_back(0x06);
 
   std::string ModelID("OpenCPN");  // Model ID

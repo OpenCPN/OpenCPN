@@ -31893,7 +31893,7 @@
 				</dict>
 			</array>
 			<key>NAME</key>
-			<string>OpenCPN_5.7.1</string>
+			<string>OpenCPN_${PACKAGE_VERSION}</string>
 			<key>PAYLOAD_ONLY</key>
 			<false/>
 			<key>REFERENCE_FOLDER_PATH</key>
