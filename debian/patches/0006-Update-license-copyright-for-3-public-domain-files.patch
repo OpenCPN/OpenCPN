@@ -1,0 +1,130 @@
+From 3b3fb2703275b03e4069347baa1053740699e71f Mon Sep 17 00:00:00 2001
+From: dsr <bdbcat@yahoo.com>
+Date: Mon, 17 Apr 2023 20:43:36 -0400
+Subject: [PATCH] Update license/copyright for 3 Expat/Public Domain files.
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/3b3fb27
+
+---
+ libs/N2KParser/include/N2KParser.h | 24 ++----------------------
+ libs/N2KParser/src/N2KParser.cpp   | 24 ++----------------------
+ libs/mDNS/src/mdns_util.cpp        | 23 +++--------------------
+ 3 files changed, 7 insertions(+), 64 deletions(-)
+
+diff --git a/libs/N2KParser/include/N2KParser.h b/libs/N2KParser/include/N2KParser.h
+index ade44132a..b6963bfce 100644
+--- a/libs/N2KParser/include/N2KParser.h
++++ b/libs/N2KParser/include/N2KParser.h
+@@ -2,32 +2,12 @@
+  *
+  * Project:  N2KParser.h
+  * Purpose:  Common OpenCPN core and plugin N2K parser library
+- * Author:   David Register
+- *
+- ***************************************************************************
+- *   Copyright (C) 2022 by David S. Register                               *
+- *                                                                         *
+- *   This program is free software; you can redistribute it and/or modify  *
+- *   it under the terms of the GNU General Public License as published by  *
+- *   the Free Software Foundation; either version 2 of the License, or     *
+- *   (at your option) any later version.                                   *
+- *                                                                         *
+- *   This program is distributed in the hope that it will be useful,       *
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+- *   GNU General Public License for more details.                          *
+- *                                                                         *
+- *   You should have received a copy of the GNU General Public License     *
+- *   along with this program; if not, write to the                         *
+- *   Free Software Foundation, Inc.,                                       *
+- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+- ***************************************************************************
++ * Author:   David Register,  Timo Lappalainen, Kave Oy, www.kave.fi
+  */
+ 
+-/*  Some elements of this combined work are covered by the following license. */
+-
+ /*
+ Copyright (c) 2015-2022 Timo Lappalainen, Kave Oy, www.kave.fi
++Copyright (C) 2022 by David S. Register                               *
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+diff --git a/libs/N2KParser/src/N2KParser.cpp b/libs/N2KParser/src/N2KParser.cpp
+index 467d16da2..889bb3b0b 100644
+--- a/libs/N2KParser/src/N2KParser.cpp
++++ b/libs/N2KParser/src/N2KParser.cpp
+@@ -2,32 +2,12 @@
+  *
+  * Project:  N2KParser.cpp
+  * Purpose:  Common OpenCPN core and plugin N2K parser library
+- * Author:   David Register
+- *
+- ***************************************************************************
+- *   Copyright (C) 2022 by David S. Register                               *
+- *                                                                         *
+- *   This program is free software; you can redistribute it and/or modify  *
+- *   it under the terms of the GNU General Public License as published by  *
+- *   the Free Software Foundation; either version 2 of the License, or     *
+- *   (at your option) any later version.                                   *
+- *                                                                         *
+- *   This program is distributed in the hope that it will be useful,       *
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+- *   GNU General Public License for more details.                          *
+- *                                                                         *
+- *   You should have received a copy of the GNU General Public License     *
+- *   along with this program; if not, write to the                         *
+- *   Free Software Foundation, Inc.,                                       *
+- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+- ***************************************************************************
++ * Author:   David Register,  Timo Lappalainen, Kave Oy, www.kave.f
+  */
+ 
+-/*  Some elements of this combined work are covered by the following license. */
+-
+ /*
+ Copyright (c) 2015-2022 Timo Lappalainen, Kave Oy, www.kave.fi
++Copyright (C) 2022 by David S. Register                               *
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+diff --git a/libs/mDNS/src/mdns_util.cpp b/libs/mDNS/src/mdns_util.cpp
+index 66638e5d2..078b55a51 100644
+--- a/libs/mDNS/src/mdns_util.cpp
++++ b/libs/mDNS/src/mdns_util.cpp
+@@ -2,28 +2,11 @@
+  *
+  * Project:  OpenCPN
+  * Purpose:  mDNS Utilities.
+- * Author:   David Register
+- *
+- ***************************************************************************
+- *   Copyright (C) 2022 by David Register                                  *
+- *                                                                         *
+- *   This program is free software; you can redistribute it and/or modify  *
+- *   it under the terms of the GNU General Public License as published by  *
+- *   the Free Software Foundation; either version 2 of the License, or     *
+- *   (at your option) any later version.                                   *
+- *                                                                         *
+- *   This program is distributed in the hope that it will be useful,       *
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+- *   GNU General Public License for more details.                          *
+- *                                                                         *
+- *   You should have received a copy of the GNU General Public License     *
+- *   along with this program; if not, write to the                         *
+- *   Free Software Foundation, Inc.,                                       *
+- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+- **************************************************************************/
++ * Author:   Mattias Jansson, David Register
++ */
+ 
+ /* mDNS/DNS-SD library  -  Public Domain  -  2017 Mattias Jansson
++ *   Copyright (C) 2022 by David Register                                  *
+  *
+  * This library provides a cross-platform mDNS and DNS-SD library in C.
+  * The implementation is based on RFC 6762 and RFC 6763.
+-- 
+2.39.2
+
