@@ -296,7 +296,9 @@ Then install the package using
       $ sudo apt install opencpn-dbgsym
 ----
 
-=== Installing debug package  on Ubuntu
+=== Installing debug package on Ubuntu
+
+If you installed the `opencpn` package from the official Ubuntu repositories, use these instructions
 
 Create a file named _/etc/apt/sources.list.d/ddebs.list_ like below,
 substituting jammy with the actual distribution like bionic or focal.
@@ -317,3 +319,18 @@ and install package using
 ----
 
 See also: https://wiki.ubuntu.com/Debug%20Symbol%20Packages
+
+=== Installing debug package from the Launchpad PPA
+
+If you installed the `opencpn` package from the Launchpad PPA of the OpenCPN development team, use these instructions
+
+Add the following line to `/etc/apt/sources.list.d/opencpn-ubuntu-opencpn-jammy.list`
+----
+deb https://ppa.launchpadcontent.net/opencpn/opencpn/ubuntu/ jammy main/debug
+----
+and install package using
+----
+    $ sudo apt update
+    $ sudo apt install opencpn-dbgsym
+----
+
