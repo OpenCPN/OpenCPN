@@ -42,7 +42,7 @@ Homepage: http://www.opencpn.org
 
 Package: opencpn
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, wx3.0-i18n, libglew (>= 2.0)
+Depends: ${shlibs:Depends}, ${misc:Depends}, wx3.0-i18n, libglew (>= 2.1)
 Breaks: opencpn-gshhs-crude (<< ${source:Version}),
  opencpn-tcdata (<< ${source:Version})
 Provides: opencpn-plugin-wmm, opencpn-plugin-chartdldr
