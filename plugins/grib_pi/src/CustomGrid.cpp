@@ -64,17 +64,21 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   // init labels attr
   wxFont labelfont = GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold();
   SetLabelFont(labelfont);
-  wxColour colour;
-  GetGlobalColor(_T("DILG0"), &colour);
+  wxColour colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+  if(colour.Red() > 128) {
+    GetGlobalColor(_T("DILG0"), &colour);
+    GetGlobalColor(_T("GREEN1"), &m_greenColour);
+    GetGlobalColor(_T("DILG1"), &m_greyColour);
+  } else {
+    GetGlobalColor(_T("GREEN2"), &m_greenColour);
+    m_greyColour = colour;
+  }
   SetLabelBackgroundColour(colour);
   // set row label size
   int w;
   GetTextExtent(_T("Ab"), &w, NULL, 0, 0, &labelfont);
   double x = (double)w * 6.5;
   SetRowLabelSize((int)x);
-  // colour settings
-  GetGlobalColor(_T("GREEN1"), &m_greenColour);
-  GetGlobalColor(_T("DILG1"), &m_greyColour);
 
 #ifdef __WXOSX__
   m_bLeftDown = false;
