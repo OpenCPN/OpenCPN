@@ -391,16 +391,14 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-
-      wxBitmap* pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
-          wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-      pic->m_bitmap = pbm;
+      wxBitmap * pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       if (!pic->m_bEnabled && pic->m_destroy_fn) {
-        wxBitmap* pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-        pic->m_bitmap = pbm;
+        wxBitmap * pbm0 = pic->m_pplugin->GetPlugInBitmap();
+        pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
         pic->m_destroy_fn(pic->m_pplugin);
         pic->m_destroy_fn = NULL;
         pic->m_pplugin = NULL;
@@ -557,13 +555,15 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+      wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
       bret = true;
     } else if (!pic->m_bEnabled && pic->m_bInitState) {
       // Save a local copy of the plugin icon before unloading
-      wxBitmap* pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
-          wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-      pic->m_bitmap = pbm;
+      wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);

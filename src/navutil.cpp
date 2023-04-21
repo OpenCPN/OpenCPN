@@ -787,6 +787,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (wxIsEmpty(g_CmdSoundString))
     g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
+  Read(_T ( "DisableOpenGL" ), &g_bdisable_opengl);
 
   Read(_T ( "AndroidVersionCode" ), &g_AndroidVersionCode);
 
@@ -1427,7 +1428,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     while (bCont) {
       Read(str, &val);  // Get a file name and add it to the list just in case it is not repeated
       // We have seen duplication of dataset entries in https://github.com/OpenCPN/OpenCPN/issues/3042, this
-      // effectively gets rid of them. 
+      // effectively gets rid of them.
       if (std::find(TideCurrentDataSet.begin(), TideCurrentDataSet.end(), val.ToStdString()) == TideCurrentDataSet.end()) {
         TideCurrentDataSet.push_back(val.ToStdString());
       }
