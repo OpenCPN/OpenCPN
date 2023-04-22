@@ -80,6 +80,7 @@
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 extern ChartDB* ChartData;
+extern bool g_bportable;
 
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
@@ -315,10 +316,12 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   if (!base_plugin_path.EndsWith(wxFileName::GetPathSeparator()))
     base_plugin_path += wxFileName::GetPathSeparator();
 
-  if (base_plugin_path.IsSameAs(plugin_file_path)){
-    if (!IsSystemPlugin(file_name.ToStdString())){
-      DEBUG_LOG << "Skipping plugin " <<  file_name << " in " << g_BasePlatform->GetPluginDir();
-      return false;
+  if (!g_bportable){
+    if (base_plugin_path.IsSameAs(plugin_file_path)){
+      if (!IsSystemPlugin(file_name.ToStdString())){
+        DEBUG_LOG << "Skipping plugin " <<  file_name << " in " << g_BasePlatform->GetPluginDir();
+        return false;
+      }
     }
   }
 
