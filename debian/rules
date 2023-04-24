@@ -6,6 +6,7 @@ include /usr/share/dpkg/pkg-info.mk
 %:
 	dh $@
 
+	echo $(DEB_DISTRIBUTION)
 
 override_dh_auto_configure:
 ifeq ($(DEB_BUILD_ARCH_CPU), arm)
@@ -15,6 +16,7 @@ ifeq ($(DEB_BUILD_ARCH_CPU), arm)
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
             -DDEB_VERSION=$(DEB_VERSION)               \
+            -DDEB_DISTRIBUTION=$(DEB_DISTRIBUTION)     \
             -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), aarch64)
 	dh_auto_configure -- \
@@ -23,6 +25,7 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), aarch64)
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
             -DDEB_VERSION=$(DEB_VERSION)               \
+            -DDEB_DISTRIBUTION=$(DEB_DISTRIBUTION)     \
             -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
 	dh_auto_configure -- \
@@ -31,12 +34,14 @@ else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
             -DDEB_VERSION=$(DEB_VERSION)               \
+            -DDEB_DISTRIBUTION=$(DEB_DISTRIBUTION)     \
             -DOCPN_BUILD_TEST=OFF
 else
 	dh_auto_configure -- \
 	    -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
             -DDEB_VERSION=$(DEB_VERSION)               \
+            -DDEB_DISTRIBUTION=$(DEB_DISTRIBUTION)     \
             -DOCPN_BUILD_TEST=OFF
 
 endif
