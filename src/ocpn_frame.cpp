@@ -1109,7 +1109,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
     }
   }
 
-  if (ps52plib) ps52plib->SetPLIBColorScheme(SchemeName);
+  if (ps52plib) ps52plib->SetPLIBColorScheme(SchemeName, g_bopengl);
 
   //    Set up a pointer to the proper hash table
   pcurrent_user_color_hash =
@@ -6914,7 +6914,7 @@ void MyFrame::applySettingsString(wxString settings) {
 
   if (rr & S52_CHANGED) {
     if (ps52plib) {
-      ps52plib->FlushSymbolCaches();
+      ps52plib->FlushSymbolCaches(g_bopengl);
       ps52plib
           ->ClearCNSYLUPArray();  // some CNSY depends on renderer (e.g. CARC)
       ps52plib->GenerateStateHash();
@@ -8547,7 +8547,7 @@ void LoadS57() {
     }
 
     pConfig->LoadS57Config();
-    ps52plib->SetPLIBColorScheme(global_color_scheme);
+    ps52plib->SetPLIBColorScheme(global_color_scheme, g_bopengl);
 
     if (gFrame){
       ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());

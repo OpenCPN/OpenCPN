@@ -1396,7 +1396,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
   if (!m_bsetup) {
     SetupOpenGL();
 
-    if (ps52plib) ps52plib->FlushSymbolCaches();
+    if (ps52plib) ps52plib->FlushSymbolCaches(g_bopengl);
 
     m_bsetup = true;
     //        g_bDebugOGL = true;

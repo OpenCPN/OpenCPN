@@ -385,16 +385,16 @@ void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
 
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
-      ps52plib->SetPLIBColorScheme(_T("DAY"));
+      ps52plib->SetPLIBColorScheme("DAY", g_bopengl);
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
-      ps52plib->SetPLIBColorScheme(_T("DUSK"));
+      ps52plib->SetPLIBColorScheme("DUSK", g_bopengl);
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
-      ps52plib->SetPLIBColorScheme(_T("NIGHT"));
+      ps52plib->SetPLIBColorScheme("NIGHT", g_bopengl);
       break;
     default:
-      ps52plib->SetPLIBColorScheme(_T("DAY"));
+      ps52plib->SetPLIBColorScheme("DAY", g_bopengl);
       break;
   }
 
@@ -3069,7 +3069,7 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
 
   //      set the color scheme
   ps52plib->SaveColorScheme();
-  ps52plib->SetPLIBColorScheme(_T("DAY"));
+  ps52plib->SetPLIBColorScheme("DAY", g_bopengl);
   //      Do the render
   DoRenderViewOnDC(memdc, vp, DC_RENDER_ONLY, true);
 

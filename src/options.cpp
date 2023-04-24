@@ -7237,7 +7237,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
-      ps52plib->FlushSymbolCaches();
+      ps52plib->FlushSymbolCaches(g_bopengl);
       // some CNSY depends on renderer (e.g. CARC)
       ps52plib->ClearCNSYLUPArray();
       ps52plib->GenerateStateHash();

@@ -56,8 +56,6 @@
 
 #include "s52plib.h"
 
-extern bool g_bopengl;
-
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
 #endif
@@ -728,14 +726,15 @@ bool ChartSymbols::LoadConfigFile(s52plib *plibArg,
 
   return true;
 }
-void ChartSymbols::SetColorTableIndex(int index) {
+void ChartSymbols::SetColorTableIndex(int index, bool flush, bool use_opengl) {
   ColorTableIndex = index;
-  LoadRasterFileForColorTable(ColorTableIndex);
+  LoadRasterFileForColorTable(ColorTableIndex, flush, use_opengl);
 }
 
-int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
+int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush,
+                                              bool use_opengl) {
   if (tableNo == rasterSymbolsLoadedColorMapNumber && !flush) {
-    if (g_bopengl) {
+    if (use_opengl) {
       if (rasterSymbolsTexture) return true;
 #ifdef ocpnUSE_GL
       else if (!g_texture_rectangle_format && rasterSymbols.IsOk())
@@ -754,7 +753,7 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
   if (rasterFileImg.LoadFile(filename, wxBITMAP_TYPE_PNG)) {
 #ifdef ocpnUSE_GL
     /* for opengl mode, load the symbols into a texture */
-    if (g_bopengl && g_texture_rectangle_format) {
+    if (use_opengl && g_texture_rectangle_format) {
       int w = rasterFileImg.GetWidth();
       int h = rasterFileImg.GetHeight();
 
