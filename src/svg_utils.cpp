@@ -163,7 +163,7 @@ unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
 
 SVGBitmapCache::SVGBitmapCache() {
   wxFileName iconcachedir;
-  iconcachedir.SetName("iconCache");
+  iconcachedir.SetName("iconCacheSVG");
   iconcachedir.SetPath(g_BasePlatform->GetPrivateDataDir());
   //  Create the cache dir here if necessary
   if (!wxDir::Exists(iconcachedir.GetFullPath())) {
