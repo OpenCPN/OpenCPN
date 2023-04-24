@@ -25,7 +25,6 @@ Build-Depends: debhelper (>= 9),
  libudev-dev,
  libunarr-dev | base-files (<< 11),
  libusb-1.0-0-dev,
- libglew-dev,
  base-files (>=12) | libwxgtk3.0-gtk3-dev,
  base-files (>=12) | libwxgtk3.0-gtk3-0v5,
  base-files (>=12) | libwxgtk-webview3.0-gtk3-dev,
@@ -33,6 +32,8 @@ Build-Depends: debhelper (>= 9),
  base-files (<< 12) | libwxgtk-webview3.2-dev,
  portaudio19-dev,
  rapidjson-dev,
+ libglew-dev,
+ base-files (>=11) | libglew2.1-static,
  git
 #For the ARM build, perhaps add: , libdri2-dev [armhf],libgles1-mesa-dev [armhf]
 Standards-Version: 3.9.3
