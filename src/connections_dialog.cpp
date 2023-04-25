@@ -69,6 +69,7 @@ extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 extern int g_NMEAAPBPrecision;
 extern OCPNPlatform* g_Platform;
+extern wxString g_TalkerIdText;
 
 wxString StringArrayToString(wxArrayString arr) {
   wxString ret = wxEmptyString;

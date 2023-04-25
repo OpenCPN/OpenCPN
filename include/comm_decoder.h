@@ -34,8 +34,10 @@
 #include <wx/string.h>
 
 #include "comm_appmsg.h"
+#include "config_vars.h"
 #include "nmea0183.h"
 #include "N2KParser.h"
+
 
 
 

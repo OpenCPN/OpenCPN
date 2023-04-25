@@ -37,6 +37,7 @@ int sat_watchdog_timeout_ticks = 12;
 
 wxString g_GPS_Ident;
 wxString g_hostname;
+wxString g_TalkerIdText;
 
 static wxConfigBase* the_base_config = 0;
 

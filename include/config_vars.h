@@ -43,6 +43,7 @@ extern int sat_watchdog_timeout_ticks;
 
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
+extern wxString g_TalkerIdText;
 
 wxConfigBase* TheBaseConfig();
 void InitBaseConfig(wxConfigBase* cfg);

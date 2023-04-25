@@ -124,6 +124,7 @@ extern wxString g_winPluginDir;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
+extern wxString g_TalkerIdText;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;

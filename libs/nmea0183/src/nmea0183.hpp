@@ -146,12 +146,13 @@ class NMEA0183
 
       void set_container_pointers( void );
       void sort_response_table( void );
-      const NmeaContext context;
 
    public:
 
       NMEA0183(const NmeaContext& ctx);
       virtual ~NMEA0183();
+
+      const NmeaContext context;
 
       wxArrayString GetRecognizedArray(void);
 

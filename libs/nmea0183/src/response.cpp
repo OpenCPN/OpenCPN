@@ -40,8 +40,6 @@
 ** You can use it any way you like.
 */
 
-wxString g_TalkerIdText;
-
 RESPONSE::RESPONSE()
 {
    Talker.Empty();
@@ -75,14 +73,15 @@ bool RESPONSE::Write( SENTENCE& sentence )
 
     sentence  = _T("$");
 
-    if(NULL == container_p)
-          sentence.Sentence.Append(_T("--"));
+    if (NULL == container_p)
+        sentence.Sentence.Append("--");
     else {
-        if ( g_TalkerIdText.length() == 0) {
-          sentence.Sentence.Append(container_p->TalkerID);
+        wxString talker_id = container_p->context.get_talker_id();
+        if ( talker_id.length() == 0) {
+            sentence.Sentence.Append(container_p->TalkerID);
         }
         else {
-            sentence.Sentence.Append( g_TalkerIdText );
+            sentence.Sentence.Append( talker_id );
         }
     }
 
