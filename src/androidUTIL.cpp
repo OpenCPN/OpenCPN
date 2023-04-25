@@ -64,6 +64,7 @@
 #include "nav_object_database.h"
 #include "navutil.h"
 #include "nmea0183.h"
+#include "nmea_ctx_factory.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 #include "options.h"
@@ -1149,7 +1150,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
       // true_windSpeed << true_windDirection;
 
       if (s_pAndroidNMEAMessageConsumer) {
-        NMEA0183 parser;
+        NMEA0183 parser(NmeaCtxFactory());
 
         // Now make some NMEA messages
         // We dont want to pass the incoming MWD message thru directly, since it

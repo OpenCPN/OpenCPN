@@ -37,8 +37,7 @@
 #include "config_vars.h"
 #include "nmea0183.h"
 #include "N2KParser.h"
-
-
+#include "nmea_ctx_factory.h"
 
 
 typedef struct{
@@ -53,14 +52,6 @@ typedef struct{
   int SID;
 } NavData;
 
-extern int g_NMEAAPBPrecision;
-
-static NmeaContext NmeaCtxFactory() {
-  NmeaContext ctx;
-  ctx.get_talker_id = []() { return  g_TalkerIdText; };
-  ctx.get_apb_precision = []() {return g_NMEAAPBPrecision; };
-  return ctx;
-}
 
 class CommDecoder {
 public:

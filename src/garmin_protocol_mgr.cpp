@@ -61,12 +61,13 @@
 #include <setupapi.h>
 #endif
 
+#include "comm_drv_n0183_serial.h"
 #include "config_vars.h"
 #include "dychart.h"
 #include "garmin_wrapper.h"
 #include "garmin_protocol_mgr.h"
 #include "nmea0183.h"
-#include "comm_drv_n0183_serial.h"
+#include "nmea_ctx_factory.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -87,14 +88,6 @@ extern bool g_benableUDPNullHeader;
 DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b,
             0xba, 0xe7, 0x22, 0xc0);
 #endif
-
-
-static NmeaContext  NmeaCtxFactory() {
-  NmeaContext ctx;
-  ctx.get_talker_id = []() { return  g_TalkerIdText; };
-  ctx.get_apb_precision = []() {return g_NMEAAPBPrecision; };
-  return ctx;
-}
 
 
 //----------------------------------------------------------------------------

@@ -47,6 +47,7 @@
 #include "conn_params.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
+#include "nmea_ctx_factory.h"
 #include "route.h"
 #include "NMEALogWindow.h"
 
@@ -297,13 +298,6 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
       }
   }
   return driver;
-}
-
-static NmeaContext  NmeaCtxFactory() {
-  NmeaContext ctx;
-  ctx.get_talker_id = []() { return  g_TalkerIdText; };
-  ctx.get_apb_precision = []() {return g_NMEAAPBPrecision; };
-  return ctx;
 }
 
 int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
