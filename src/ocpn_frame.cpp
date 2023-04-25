@@ -84,6 +84,7 @@
 
 #include "OCPN_AUIManager.h"
 #include "chartbase.h"
+#include "chart_ctx_factory.h"
 #include "georef.h"
 #include "glChartCanvas.h"
 #include "plugin_loader.h"
@@ -490,16 +491,6 @@ void appendOSDirSlash(wxString *pString);
 void InitializeUserColors(void);
 void DeInitializeUserColors(void);
 void SetSystemColors(ColorScheme cs);
-
-#ifdef ocpnUSE_GL
-static ChartCtx ChartCtxFactory() {
-   return ChartCtx(g_bopengl, g_texture_rectangle_format);
-}
-#else
-
-static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
-#endif
-
 
 static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->ShowBusySpinner();

@@ -62,6 +62,7 @@
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chartimg.h"
+#include "chart_ctx_factory.h"
 #include "chcanv.h"
 #include "ChInfoWin.h"
 #include "cm93.h"  // for chart outline draw
@@ -330,14 +331,6 @@ static void print_region(OCPNRegion &Region)
     }
 }
 
-#endif
-
-#ifdef ocpnUSE_GL
-static ChartCtx ChartCtxFactory() {
-   return ChartCtx(g_bopengl, g_texture_rectangle_format);
-}
-#else
-static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
 #endif
 
 GLboolean QueryExtension(const char *extName) {

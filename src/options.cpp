@@ -81,7 +81,6 @@
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 extern GLuint g_raster_format;
-extern GLenum g_texture_rectangle_format;
 #endif
 
 #include "chartdbs.h"
@@ -99,6 +98,7 @@ extern GLenum g_texture_rectangle_format;
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"
+#include "chart_ctx_factory.h"
 #include "MarkInfo.h"
 
 #include "ais.h"
@@ -469,14 +469,6 @@ static int lang_list[] = {
     wxLANGUAGE_UZBEK_CYRILLIC, wxLANGUAGE_UZBEK_LATIN, wxLANGUAGE_VIETNAMESE,
     wxLANGUAGE_VOLAPUK, wxLANGUAGE_WELSH, wxLANGUAGE_WOLOF, wxLANGUAGE_XHOSA,
     wxLANGUAGE_YIDDISH, wxLANGUAGE_YORUBA, wxLANGUAGE_ZHUANG, wxLANGUAGE_ZULU};
-#endif
-
-#ifdef ocpnUSE_GL
-static ChartCtx ChartCtxFactory() {
-   return ChartCtx(g_bopengl, g_texture_rectangle_format);
-}
-#else
-static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
 #endif
 
 #ifdef __ANDROID__

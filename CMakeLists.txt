@@ -874,6 +874,7 @@ set(
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
+  include/chart_ctx_factory.h
   include/chcanv.h
   include/ChInfoWin.h
   include/color_handler.h

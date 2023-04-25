@@ -120,20 +120,18 @@ public:
   wxString HPGL;
 };
 
-#ifdef ocpnUSE_GL
+/** Generic method argument wrapping differences using opengl or not */
 struct ChartCtx {
+#ifdef ocpnUSE_GL
   const  bool m_use_opengl;
   const GLenum m_texture_rectangle_format;
   ChartCtx(bool use_opengl, GLenum rect_format)
     : m_use_opengl(use_opengl), m_texture_rectangle_format(rect_format) {}
-};
-
 #else
-struct ChartCtx {
   const  bool m_use_opengl;
   ChartCtx(bool use_opengl) : m_use_opengl(use_opengl) {}
-};
 #endif
+};
 
 
 

@@ -87,6 +87,7 @@
 
 #include "ssl/sha1.h"
 #include "shaders.h"
+#include "chart_ctx_factory.h"
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
@@ -112,10 +113,6 @@ extern bool g_b_overzoom_x;
 extern bool g_b_EnableVBO;
 extern OCPNPlatform *g_Platform;
 extern SENCThreadManager *g_SencThreadManager;
-
-#ifdef ocpnUSE_GL
-extern GLenum g_texture_rectangle_format;
-#endif
 
 int g_SENC_LOD_pixels;
 
@@ -192,16 +189,6 @@ static unsigned int hash_fast32(const void *buf, size_t len,
 unsigned long connector_key::hash() const {
   return hash_fast32(k, sizeof k, 0);
 }
-
-#ifdef ocpnUSE_GL
-static ChartCtx ChartCtxFactory() {
-   return ChartCtx(g_bopengl, g_texture_rectangle_format);
-}
-#else
-
-static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
-#endif
-
 
 
 //----------------------------------------------------------------------------------
