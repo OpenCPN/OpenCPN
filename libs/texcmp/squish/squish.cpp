@@ -38,8 +38,6 @@
 #include "twocolourfitfast.h"
 #include <wx/thread.h>
 
-extern bool g_throttle_squish;
-
 namespace squish {
 
 static int FixFlags( int flags )
