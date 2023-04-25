@@ -61,6 +61,7 @@
 #include <setupapi.h>
 #endif
 
+#include "config_vars.h"
 #include "dychart.h"
 #include "garmin_wrapper.h"
 #include "garmin_protocol_mgr.h"
@@ -86,6 +87,15 @@ extern bool g_benableUDPNullHeader;
 DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b,
             0xba, 0xe7, 0x22, 0xc0);
 #endif
+
+
+static NmeaContext  NmeaCtxFactory() {
+  NmeaContext ctx;
+  ctx.get_talker_id = []() { return  g_TalkerIdText; };
+  ctx.get_apb_precision = []() {return g_NMEAAPBPrecision; };
+  return ctx;
+}
+
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
@@ -779,7 +789,7 @@ void *GARMIN_Serial_Thread::Entry() {
         if ((mypvt.fix) >= 2 && (mypvt.fix <= 5)) {
           // Synthesize an NMEA GMRMC message
           SENTENCE snt;
-          NMEA0183 oNMEA0183;
+          NMEA0183 oNMEA0183(NmeaCtxFactory());
           oNMEA0183.TalkerID = _T ( "GM" );
 
           if (mypvt.lat < 0.)
@@ -912,7 +922,7 @@ void *GARMIN_USB_Thread::Entry() {
 
       // Synthesize an NMEA GMGSV message
       SENTENCE snt;
-      NMEA0183 oNMEA0183;
+      NMEA0183 oNMEA0183(NmeaCtxFactory());
       oNMEA0183.TalkerID = _T ( "GM" );
       oNMEA0183.Gsv.SatsInView = m_nSats;
 
@@ -940,7 +950,7 @@ void *GARMIN_USB_Thread::Entry() {
       if ((ppvt->fix) >= 2 && (ppvt->fix <= 5)) {
         // Synthesize an NMEA GMRMC message
         SENTENCE snt;
-        NMEA0183 oNMEA0183;
+        NMEA0183 oNMEA0183(NmeaCtxFactory());
         oNMEA0183.TalkerID = _T ( "GM" );
 
         if (ppvt->lat < 0.)

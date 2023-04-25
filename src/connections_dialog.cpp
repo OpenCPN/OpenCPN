@@ -2067,6 +2067,13 @@ void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
 
 }
 
+static NmeaContext  NmeaCtxFactory() {
+  NmeaContext ctx;
+  ctx.get_talker_id = []() { return  g_TalkerIdText; };
+  ctx.get_apb_precision = []() {return g_NMEAAPBPrecision; };
+  return ctx;
+}
+
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                                  ListType type, const wxArrayString& list)
@@ -2074,7 +2081,7 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                wxSize(280, 420)),
       m_type(type),
       m_dir(dir),
-      m_sentences(NMEA0183().GetRecognizedArray()) {
+      m_sentences(NMEA0183(NmeaCtxFactory()).GetRecognizedArray()) {
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxBoxSizer* secondSizer = new wxBoxSizer(wxHORIZONTAL);
   wxStaticBox* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());

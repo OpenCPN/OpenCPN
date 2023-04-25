@@ -44,7 +44,7 @@
 WX_DEFINE_LIST(MRL);
 
 
-NMEA0183::NMEA0183()
+NMEA0183::NMEA0183(const NmeaContext& ctx) : context(ctx)
 {
    initialize();
 
