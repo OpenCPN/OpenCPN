@@ -1253,9 +1253,8 @@ void s52plib::DestroyRules(RuleHash *rh) {
   delete rh;
 }
 
-void s52plib::FlushSymbolCaches(bool use_opengl) {
-  m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true, use_opengl);
-
+void s52plib::FlushSymbolCaches(const ChartCtx& ctx) {
+  m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true, ctx);
   RuleHash *rh = _symb_sym;
 
   if (!rh) return;
@@ -1373,7 +1372,7 @@ LUPrec *s52plib::S52_LUPLookup(LUPname LUP_Name, const char *objectName,
   return LUP;
 }
 
-void s52plib::SetPLIBColorScheme(ColorScheme cs, bool use_opengl) {
+void s52plib::SetPLIBColorScheme(ColorScheme cs, const ChartCtx& ctx) {
   wxString SchemeName;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
@@ -1390,10 +1389,10 @@ void s52plib::SetPLIBColorScheme(ColorScheme cs, bool use_opengl) {
       break;
   }
 
-  SetPLIBColorScheme(SchemeName, use_opengl);
+  SetPLIBColorScheme(SchemeName, ctx);
 }
 
-void s52plib::SetPLIBColorScheme(wxString scheme, bool use_opengl) {
+void s52plib::SetPLIBColorScheme(wxString scheme, const ChartCtx& ctx) {
   wxString str_find;
   str_find = scheme;
   m_colortable_index = 0;  // default is the first color in the table
@@ -1406,7 +1405,7 @@ void s52plib::SetPLIBColorScheme(wxString scheme, bool use_opengl) {
   }
   m_colortable_index = m_chartSymbols.FindColorTable(scheme);
 
-  m_chartSymbols.SetColorTableIndex(m_colortable_index, false, use_opengl);
+  m_chartSymbols.SetColorTableIndex(m_colortable_index, false, ctx);
 
   m_ColorScheme = scheme;
 }

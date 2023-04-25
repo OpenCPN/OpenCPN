@@ -252,6 +252,10 @@ extern ColorScheme global_color_scheme;
 extern options *g_pOptions;
 extern options *g_options;
 
+#ifdef ocpnUSE_GL
+GLenum g_texture_rectangle_format;
+#endif
+
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale *plocale_def_lang;
 #endif
@@ -486,6 +490,16 @@ void appendOSDirSlash(wxString *pString);
 void InitializeUserColors(void);
 void DeInitializeUserColors(void);
 void SetSystemColors(ColorScheme cs);
+
+#ifdef ocpnUSE_GL
+static ChartCtx ChartCtxFactory() {
+   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+}
+#else
+
+static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
+#endif
+
 
 static bool LoadAllPlugIns(bool load_enabled) {
   g_Platform->ShowBusySpinner();
@@ -1109,7 +1123,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
     }
   }
 
-  if (ps52plib) ps52plib->SetPLIBColorScheme(SchemeName, g_bopengl);
+  if (ps52plib) ps52plib->SetPLIBColorScheme(SchemeName, ChartCtxFactory());
 
   //    Set up a pointer to the proper hash table
   pcurrent_user_color_hash =
@@ -6914,7 +6928,7 @@ void MyFrame::applySettingsString(wxString settings) {
 
   if (rr & S52_CHANGED) {
     if (ps52plib) {
-      ps52plib->FlushSymbolCaches(g_bopengl);
+      ps52plib->FlushSymbolCaches(ChartCtxFactory());
       ps52plib
           ->ClearCNSYLUPArray();  // some CNSY depends on renderer (e.g. CARC)
       ps52plib->GenerateStateHash();
@@ -8547,7 +8561,7 @@ void LoadS57() {
     }
 
     pConfig->LoadS57Config();
-    ps52plib->SetPLIBColorScheme(global_color_scheme, g_bopengl);
+    ps52plib->SetPLIBColorScheme(global_color_scheme, ChartCtxFactory());
 
     if (gFrame){
       ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());

@@ -113,6 +113,10 @@ extern bool g_b_EnableVBO;
 extern OCPNPlatform *g_Platform;
 extern SENCThreadManager *g_SencThreadManager;
 
+#ifdef ocpnUSE_GL
+extern GLenum g_texture_rectangle_format;
+#endif
+
 int g_SENC_LOD_pixels;
 
 static jmp_buf env_ogrf;  // the context saved by setjmp();
@@ -188,6 +192,17 @@ static unsigned int hash_fast32(const void *buf, size_t len,
 unsigned long connector_key::hash() const {
   return hash_fast32(k, sizeof k, 0);
 }
+
+#ifdef ocpnUSE_GL
+static ChartCtx ChartCtxFactory() {
+   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+}
+#else
+
+static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
+#endif
+
+
 
 //----------------------------------------------------------------------------------
 //      render_canvas_parms Implementation
@@ -385,16 +400,16 @@ void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
 
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
-      ps52plib->SetPLIBColorScheme("DAY", g_bopengl);
+      ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
-      ps52plib->SetPLIBColorScheme("DUSK", g_bopengl);
+      ps52plib->SetPLIBColorScheme("DUSK", ChartCtxFactory());
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
-      ps52plib->SetPLIBColorScheme("NIGHT", g_bopengl);
+      ps52plib->SetPLIBColorScheme("NIGHT", ChartCtxFactory());
       break;
     default:
-      ps52plib->SetPLIBColorScheme("DAY", g_bopengl);
+      ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
   }
 
@@ -3069,7 +3084,7 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
 
   //      set the color scheme
   ps52plib->SaveColorScheme();
-  ps52plib->SetPLIBColorScheme("DAY", g_bopengl);
+  ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
   //      Do the render
   DoRenderViewOnDC(memdc, vp, DC_RENDER_ONLY, true);
 

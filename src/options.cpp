@@ -81,6 +81,7 @@
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 extern GLuint g_raster_format;
+extern GLenum g_texture_rectangle_format;
 #endif
 
 #include "chartdbs.h"
@@ -470,7 +471,15 @@ static int lang_list[] = {
     wxLANGUAGE_YIDDISH, wxLANGUAGE_YORUBA, wxLANGUAGE_ZHUANG, wxLANGUAGE_ZULU};
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef ocpnUSE_GL
+static ChartCtx ChartCtxFactory() {
+   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+}
+#else
+static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
+#endif
+
+#ifdef __ANDROID__
 void prepareSlider(wxSlider* slider) {
   slider->GetHandle()->setStyleSheet(
       prepareAndroidSliderStyleSheet(slider->GetSize().x));
@@ -7237,7 +7246,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
-      ps52plib->FlushSymbolCaches(g_bopengl);
+      ps52plib->FlushSymbolCaches(ChartCtxFactory());
       // some CNSY depends on renderer (e.g. CARC)
       ps52plib->ClearCNSYLUPArray();
       ps52plib->GenerateStateHash();

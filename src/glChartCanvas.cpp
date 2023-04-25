@@ -186,7 +186,7 @@ extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
 
-GLenum g_texture_rectangle_format;
+extern GLenum g_texture_rectangle_format;
 
 extern int g_memCacheLimit;
 extern ColorScheme global_color_scheme;
@@ -329,6 +329,15 @@ static void print_region(OCPNRegion &Region)
         upd.NextRect();
     }
 }
+
+#endif
+
+#ifdef ocpnUSE_GL
+static ChartCtx ChartCtxFactory() {
+   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+}
+#else
+static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
 #endif
 
 GLboolean QueryExtension(const char *extName) {
@@ -1396,7 +1405,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
   if (!m_bsetup) {
     SetupOpenGL();
 
-    if (ps52plib) ps52plib->FlushSymbolCaches(g_bopengl);
+    if (ps52plib) ps52plib->FlushSymbolCaches(ChartCtxFactory());
 
     m_bsetup = true;
     //        g_bDebugOGL = true;
