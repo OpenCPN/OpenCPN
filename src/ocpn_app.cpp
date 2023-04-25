@@ -178,6 +178,8 @@ void RedirectIOToConsole();
 #include "serial/serial.h"
 #endif
 
+extern int ShowNavWarning();
+
 static void UpdatePositionCalculatedSogCog();
 
 
@@ -1970,15 +1972,14 @@ bool MyApp::OnInit() {
       (g_AndroidVersionCode != androidGetVersionCode())) {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
-    //FIXME (dave)  Move to frame
-/*
+
     if (wxID_CANCEL == ShowNavWarning()) {
       qDebug() << "Closing due to NavWarning Cancel";
       gFrame->Close();
       androidTerminate();
       return true;
     }
-*/
+
     n_NavMessageShown = 1;
   }
 
@@ -1990,8 +1991,7 @@ bool MyApp::OnInit() {
   //  or if the version string has changed at all
   //  We defer until here to allow for localization of the message
   if (!n_NavMessageShown || (vs != g_config_version_string)) {
-    //FIXME (dave)  Move to frame
-    //if (wxID_CANCEL == ShowNavWarning()) return false;
+    if (wxID_CANCEL == ShowNavWarning()) return false;
     n_NavMessageShown = 1;
   }
 #endif
