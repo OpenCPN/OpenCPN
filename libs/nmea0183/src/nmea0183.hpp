@@ -152,7 +152,7 @@ class NMEA0183
       NMEA0183(const NmeaContext& ctx);
       virtual ~NMEA0183();
 
-      const NmeaContext context;
+      const NmeaContext caller_ctx;
 
       wxArrayString GetRecognizedArray(void);
 

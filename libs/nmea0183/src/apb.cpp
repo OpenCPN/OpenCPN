@@ -148,7 +148,7 @@ bool APB::Write( SENTENCE& sentence )
 
    int NmeaApbPrecision = 3;
    if (container_p) {
-     NmeaApbPrecision = container_p->context.get_apb_precision();
+     NmeaApbPrecision = container_p->caller_ctx.get_apb_precision();
    }
 
    sentence += IsLoranBlinkOK;
