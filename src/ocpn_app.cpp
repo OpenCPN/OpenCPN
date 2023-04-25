@@ -753,7 +753,6 @@ bool g_bUIexpert;
 int g_chart_zoom_modifier_raster;
 int g_chart_zoom_modifier_vector;
 
-int g_NMEAAPBPrecision;
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
