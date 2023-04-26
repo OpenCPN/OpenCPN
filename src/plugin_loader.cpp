@@ -270,6 +270,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   wxString plugin_file = wxFileName(file_name).GetFullName();
   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
+  wxLog::FlushActive();
 
   // this gets called every time we switch to the plugins tab.
   // this allows plugins to be installed and enabled without restarting
@@ -329,6 +330,11 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
     DEBUG_LOG << "Skipping plugin " <<  file_name << " in safe mode";
     return false;
   }
+
+  auto msg =
+        std::string("Checking plugin compatibility: ") + file_name.ToStdString();
+  wxLogMessage(msg.c_str());
+  wxLog::FlushActive();
 
   bool b_compat = CheckPluginCompatibility(file_name);
 
@@ -1073,7 +1079,7 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
       b_own_info_usable =
           ReadModuleInfoFromELF(app_path, dependencies, own_info);
     } else {
-      wxLogError("Cannot get own executable path.");
+      wxLogMessage("Cannot get own executable path.");
     }
     b_own_info_queried = true;
   }
@@ -1093,11 +1099,11 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
       }
       if (!b_compat) {
         pi_info.dependencies.clear();
-        wxLogError(
+        wxLogMessage(
             wxString::Format("    Plugin \"%s\" is of another binary "
                              "flavor than the main module.",
                              plugin_file));
-        wxLogDebug("host magic: %.8x, plugin magic: %.8x", own_info.type_magic,
+        wxLogMessage("host magic: %.8x, plugin magic: %.8x", own_info.type_magic,
                    pi_info.type_magic);
       }
       for (ModuleInfo::DependencyMap::const_iterator own_dependency =
@@ -1108,7 +1114,7 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
         if ((pi_dependency != pi_info.dependencies.end()) &&
             (pi_dependency->second != own_dependency->second)) {
           b_compat = false;
-          wxLogError(
+          wxLogMessage(
               "    Plugin \"%s\" depends on library \"%s\", but the main "
               "module was built for \"%s\".",
               plugin_file, pi_dependency->second, own_dependency->second);
@@ -1129,6 +1135,8 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
 
   wxLogMessage("Plugin is compatible by elf library scan: %s",
                b_compat ? "true" : "false");
+
+  wxLog::FlushActive();
   return b_compat;
 
 #endif  // LIBELF
