@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-28 10:26-0400\n"
-"PO-Revision-Date: 2023-04-08 16:00\n"
+"PO-Revision-Date: 2023-04-26 14:38\n"
 "Last-Translator: \n"
 "Language-Team: English, United Kingdom\n"
 "Language: en_GB\n"
@@ -687,43 +687,43 @@ msgstr "Chart Feature: Reduced vertical clearance"
 
 #: src/ais.cpp:221
 msgid "Chart Feature: Bridge closed"
-msgstr ""
+msgstr "Chart Feature: Bridge closed"
 
 #: src/ais.cpp:222
 msgid "Chart Feature: Bridge partially open"
-msgstr ""
+msgstr "Chart Feature: Bridge partially open"
 
 #: src/ais.cpp:223
 msgid "Chart Feature: Bridge fully open"
-msgstr ""
+msgstr "Chart Feature: Bridge fully open"
 
 #: src/ais.cpp:227
 msgid "Report from ship: Icing info"
-msgstr ""
+msgstr "Report from ship: Icing info"
 
 #: src/ais.cpp:229
 msgid "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr ""
+msgstr "Report from ship: Miscellaneous information - define in Associated text field"
 
 #: src/ais.cpp:236
 msgid "Route: Recommended route"
-msgstr ""
+msgstr "Route: Recommended route"
 
 #: src/ais.cpp:237
 msgid "Route: Alternative route"
-msgstr ""
+msgstr "Route: Alternative route"
 
 #: src/ais.cpp:238
 msgid "Route: Recommended route through ice"
-msgstr ""
+msgstr "Route: Recommended route through ice"
 
 #: src/ais.cpp:241
 msgid "Other - Define in associated text field"
-msgstr ""
+msgstr "Other - Define in associated text field"
 
 #: src/ais.cpp:242
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr ""
+msgstr "Cancellation - cancel area as identified by Message Linkage ID"
 
 #: src/ais.cpp:244
 msgid "Undefined (default)"
@@ -743,187 +743,187 @@ msgstr "Freightbarge"
 
 #: src/ais_decoder.cpp:951
 msgid "Tankbarge"
-msgstr ""
+msgstr "Tankbarge"
 
 #: src/ais_decoder.cpp:952
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr ""
+msgstr "Tankbarge, dry cargo as if liquid (e.g. cement)"
 
 #: src/ais_decoder.cpp:953
 msgid "Service vessel, police patrol, port service"
-msgstr ""
+msgstr "Service vessel, police patrol, port service"
 
 #: src/ais_decoder.cpp:954 src/ais_decoder.cpp:1008
 msgid "Pushboat, single"
-msgstr ""
+msgstr "Pushboat, single"
 
 #: src/ais_decoder.cpp:955
 msgid "Object, not otherwise specified"
-msgstr ""
+msgstr "Object, not otherwise specified"
 
 #: src/ais_decoder.cpp:956
 msgid "Object, towed, not otherwise specified"
-msgstr ""
+msgstr "Object, towed, not otherwise specified"
 
 #: src/ais_decoder.cpp:957
 msgid "Bunkership"
-msgstr ""
+msgstr "Bunkership"
 
 #: src/ais_decoder.cpp:958
 msgid "Motor freighter"
-msgstr ""
+msgstr "Motor freighter"
 
 #: src/ais_decoder.cpp:959
 msgid "Motor tanker"
-msgstr ""
+msgstr "Motor tanker"
 
 #: src/ais_decoder.cpp:960
 msgid "Motor tanker, liquid cargo, type N"
-msgstr ""
+msgstr "Motor tanker, liquid cargo, type N"
 
 #: src/ais_decoder.cpp:961
 msgid "Motor tanker, liquid cargo, type C"
-msgstr ""
+msgstr "Motor tanker, liquid cargo, type C"
 
 #: src/ais_decoder.cpp:962
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr ""
+msgstr "Motor tanker, dry cargo as if liquid (e.g. cement)"
 
 #: src/ais_decoder.cpp:963
 msgid "Container vessel"
-msgstr ""
+msgstr "Container vessel"
 
 #: src/ais_decoder.cpp:964
 msgid "Gas tanker"
-msgstr ""
+msgstr "Gas tanker"
 
 #: src/ais_decoder.cpp:965
 msgid "Motor freighter, tug"
-msgstr ""
+msgstr "Motor freighter, tug"
 
 #: src/ais_decoder.cpp:966
 msgid "Motor tanker, tug"
-msgstr ""
+msgstr "Motor tanker, tug"
 
 #: src/ais_decoder.cpp:967
 msgid "Motor freighter with one or more ships alongside"
-msgstr ""
+msgstr "Motor freighter with one or more ships alongside"
 
 #: src/ais_decoder.cpp:968
 msgid "Motor freighter with tanker"
-msgstr ""
+msgstr "Motor freighter with tanker"
 
 #: src/ais_decoder.cpp:969
 msgid "Motor freighter pushing one or more freighters"
-msgstr ""
+msgstr "Motor freighter pushing one or more freighters"
 
 #: src/ais_decoder.cpp:970
 msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
+msgstr "Motor freighter pushing at least one tank-ship"
 
 #: src/ais_decoder.cpp:971
 msgid "Tug, freighter"
-msgstr ""
+msgstr "Tug, freighter"
 
 #: src/ais_decoder.cpp:972
 msgid "Tug, tanker"
-msgstr ""
+msgstr "Tug, tanker"
 
 #: src/ais_decoder.cpp:973
 msgid "Tug freighter, coupled"
-msgstr ""
+msgstr "Tug freighter, coupled"
 
 #: src/ais_decoder.cpp:974
 msgid "Tug, freighter/tanker, coupled"
-msgstr ""
+msgstr "Tug, freighter/tanker, coupled"
 
 #: src/ais_decoder.cpp:975
 msgid "Tankbarge, liquid cargo, type N"
-msgstr ""
+msgstr "Tankbarge, liquid cargo, type N"
 
 #: src/ais_decoder.cpp:976
 msgid "Tankbarge, liquid cargo, type C"
-msgstr ""
+msgstr "Tankbarge, liquid cargo, type C"
 
 #: src/ais_decoder.cpp:977
 msgid "Freightbarge with containers"
-msgstr ""
+msgstr "Freightbarge with containers"
 
 #: src/ais_decoder.cpp:978
 msgid "Tankbarge, gas"
-msgstr ""
+msgstr "Tankbarge, gas"
 
 #: src/ais_decoder.cpp:979
 msgid "Pushtow, one cargo barge"
-msgstr ""
+msgstr "Pushtow, one cargo barge"
 
 #: src/ais_decoder.cpp:980
 msgid "Pushtow, two cargo barges"
-msgstr ""
+msgstr "Pushtow, two cargo barges"
 
 #: src/ais_decoder.cpp:981
 msgid "Pushtow, three cargo barges"
-msgstr ""
+msgstr "Pushtow, three cargo barges"
 
 #: src/ais_decoder.cpp:982
 msgid "Pushtow, four cargo barges"
-msgstr ""
+msgstr "Pushtow, four cargo barges"
 
 #: src/ais_decoder.cpp:983
 msgid "Pushtow, five cargo barges"
-msgstr ""
+msgstr "Pushtow, five cargo barges"
 
 #: src/ais_decoder.cpp:984
 msgid "Pushtow, six cargo barges"
-msgstr ""
+msgstr "Pushtow, six cargo barges"
 
 #: src/ais_decoder.cpp:985
 msgid "Pushtow, seven cargo barges"
-msgstr ""
+msgstr "Pushtow, seven cargo barges"
 
 #: src/ais_decoder.cpp:986
 msgid "Pushtow, eight cargo barges"
-msgstr ""
+msgstr "Pushtow, eight cargo barges"
 
 #: src/ais_decoder.cpp:987
 msgid "Pushtow, nine or more barges"
-msgstr ""
+msgstr "Pushtow, nine or more barges"
 
 #: src/ais_decoder.cpp:988
 msgid "Pushtow, one tank/gas barge"
-msgstr ""
+msgstr "Pushtow, one tank/gas barge"
 
 #: src/ais_decoder.cpp:990
 msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, two barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:992
 msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, three barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:994
 msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, four barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:996
 msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, five barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:998
 msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, six barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:1000
 msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, seven barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:1002
 msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, eight barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:1004
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
+msgstr "Pushtow, nine or more barges at least one tanker or gas barge"
 
 #: src/ais_decoder.cpp:1005
 msgid "Tug, single"
@@ -7826,47 +7826,47 @@ msgstr ""
 
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:753
 msgid "1 pixel"
-msgstr ""
+msgstr "1 pixel"
 
 #: src/TrackPropDlg.cpp:518 src/TrackPropDlg.cpp:753
 msgid "2 pixels"
-msgstr ""
+msgstr "2 pixels"
 
 #: src/TrackPropDlg.cpp:519 src/TrackPropDlg.cpp:754
 msgid "3 pixels"
-msgstr ""
+msgstr "3 pixels"
 
 #: src/TrackPropDlg.cpp:519 src/TrackPropDlg.cpp:754
 msgid "4 pixels"
-msgstr ""
+msgstr "4 pixels"
 
 #: src/TrackPropDlg.cpp:519 src/TrackPropDlg.cpp:754
 msgid "5 pixels"
-msgstr ""
+msgstr "5 pixels"
 
 #: src/TrackPropDlg.cpp:520 src/TrackPropDlg.cpp:755
 msgid "6 pixels"
-msgstr ""
+msgstr "6 pixels"
 
 #: src/TrackPropDlg.cpp:520 src/TrackPropDlg.cpp:755
 msgid "7 pixels"
-msgstr ""
+msgstr "7 pixels"
 
 #: src/TrackPropDlg.cpp:520 src/TrackPropDlg.cpp:755
 msgid "8 pixels"
-msgstr ""
+msgstr "8 pixels"
 
 #: src/TrackPropDlg.cpp:521 src/TrackPropDlg.cpp:756
 msgid "9 pixels"
-msgstr ""
+msgstr "9 pixels"
 
 #: src/TrackPropDlg.cpp:521 src/TrackPropDlg.cpp:756
 msgid "10 pixels"
-msgstr ""
+msgstr "10 pixels"
 
 #: src/TrackPropDlg.cpp:593 src/TrackPropDlg.cpp:979
 msgid "To route"
-msgstr ""
+msgstr "To route"
 
 #: src/TrackPropDlg.cpp:710
 msgid "Display parameters"

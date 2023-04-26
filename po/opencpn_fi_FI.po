@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-28 10:26-0400\n"
-"PO-Revision-Date: 2023-04-08 16:00\n"
+"PO-Revision-Date: 2023-04-26 14:38\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -5855,7 +5855,7 @@ msgstr "Kopioidaan karttoja..."
 
 #: src/options.cpp:2587
 msgid "Update Control"
-msgstr "Päivitysohjaus"
+msgstr "Päivityksen hallinta"
 
 #: src/options.cpp:2596
 msgid "Scan Charts and Update Database"
@@ -6805,17 +6805,17 @@ msgstr "OpenCPN-laitteen viesti"
 
 #: src/peer_client.cpp:265
 msgid "The server "
-msgstr "Palvelin"
+msgstr "Tämä laite "
 
 #: src/peer_client.cpp:266
 msgid "needs a PIN.\n"
 "Please enter the PIN number from "
 msgstr "tarvitsee PIN-koodin.\n"
-"Syötä PIN-koodi laitteelta "
+"Syötä toisella OpenCPN-laitteella näkyvä PIN-koodi "
 
 #: src/peer_client.cpp:267
 msgid "the server to pair with this device.\n"
-msgstr "palvelin, joka muodostaa parin tämän laitteen kanssa.\n"
+msgstr "luodaksesi laitepari sen ja tämän laitteen kanssa.\n"
 
 #: src/peer_client.cpp:354
 msgid "Objects successfully sent to peer OpenCPN instance."
@@ -7109,7 +7109,7 @@ msgstr "haluaa lähettää sinulle uusia tietoja.\n"
 
 #: src/REST_server.cpp:344
 msgid " to pair with this device.\n"
-msgstr " luodaksesi laitepari tämän laitteen kanssa.\n"
+msgstr ":een luodaksesi laitepari tämän laitteen kanssa.\n"
 
 #: src/REST_server.cpp:392
 msgid "The received route already exists on this system.\n"
