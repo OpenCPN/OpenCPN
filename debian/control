@@ -43,7 +43,7 @@ Homepage: http://www.opencpn.org
 
 Package: opencpn
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, wx3.0-i18n
+Depends: ${shlibs:Depends}, ${misc:Depends}, wx-i18n
 Breaks: opencpn-gshhs-crude (<< ${source:Version}),
  opencpn-tcdata (<< ${source:Version})
 Provides: opencpn-plugin-wmm, opencpn-plugin-chartdldr
