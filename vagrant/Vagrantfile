@@ -5,7 +5,14 @@ Vagrant.configure(2) do |config|
   config.vm.box = "debian/bullseye64"
 
   config.ssh.forward_x11 = true
-  config.vm.synced_folder "../", "/src", type: "nfs", nfs_version: 4.2, nfs_udp: false
+
+  config.vm.provider :virtualbox do |virtualbox|
+    config.vm.synced_folder "../", "/src"
+  end
+
+  config.vm.provider :libvirt do |libvirt|
+    config.vm.synced_folder "../", "/src", type: "nfs", nfs_version: 4.2, nfs_udp: false
+  end if Vagrant.has_plugin?('vagrant-libvirt')
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "2048"
