@@ -2,13 +2,13 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "debian/jessie64"
+  config.vm.box = "debian/bullseye64"
 
   config.ssh.forward_x11 = true
-  config.vm.synced_folder "../", "/src"
+  config.vm.synced_folder "../", "/src", type: "nfs", nfs_version: 4.2, nfs_udp: false
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "1048"
+    vb.memory = "2048"
     vb.customize [
       "modifyvm", :id,
       "--ioapic", "on",
@@ -16,49 +16,14 @@ Vagrant.configure(2) do |config|
       "--audiocontroller", "ac97"
     ]
   end
+  config.vm.provider "libvirt" do |domain|
+    domain.memory = "2048"
+#    domain.video_accel3d = true
+  end
 
   config.vm.provision "shell", name: "deps", inline: <<-SHELL
-    sudo apt-get install -y software-properties-common
-    sudo apt-add-repository 'deb http://repos.codelite.org/wx3.0.2/ubuntu/ trusty universe'
-    sudo apt-get install -y \
-         libwxbase3.0-0 \
-         libwxbase3.0-dev \
-         libwxgtk3.0-0 \
-         libwxgtk3.0-dev \
-         wx3.0-headers \
-         wx-common \
-         libwxbase3.0-0-dbg \
-         libwxgtk3.0-0-dbg \
-         wx3.0-i18n \
-         wx3.0-examples \
-         build-essential \
-         cmake \
-         gettext \
-         git-core \
-         gpsd \
-         gpsd-clients \
-         libgps-dev \
-         libglu1-mesa-dev \
-         libbz2-dev \
-         libtinyxml-dev \
-         libportaudio2 \
-         portaudio19-dev \
-         libcurl4-openssl-dev \
-         libexpat1-dev \
-         libcairo2-dev \
-         libgtk2.0-dev \
-         liblzma-dev \
-         libelf-dev \
-         libpango1.0-dev \
-         libexif-dev \
-         libsqlite3-dev
+    /src/ci/generic-build-debian.sh
   SHELL
-  config.vm.provision "shell",
-                      name: "cmake",
-                      inline: "sudo bash -c 'mkdir -p /src/build; cd /src/build; cmake -DOCPN_BUNDLE_DOCS=ON -DOCPN_BUNDLE_TCDATA=ON -DOCPN_BUNDLE_GSHHS=CRUDE ../'"
-  config.vm.provision "shell",
-                      name: "make",
-                      inline: "sudo bash -c 'cd /src/build; make'"
   config.vm.provision "shell",
                       name: "install",
                       inline: "sudo bash -c 'cd /src/build; make install'"
