@@ -2336,6 +2336,8 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
                                            wxFont *mfont) {
   if (msg.empty()) return;
 
+  int ScaleBare_H = 30;//futur : get the position/size from API?
+
   if (m_pdc) {
     wxDC &dc = *m_pdc;
     dc.SetFont(*mfont);
@@ -2345,7 +2347,7 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
     int w, h;
     dc.GetMultiLineTextExtent(msg, &w, &h);
     h += 2;
-    int yp = y - (2 * GetChartbarHeight() + h);
+    int yp = y - (ScaleBare_H + GetChartbarHeight() + h);
 
     int label_offset = 10;
     int wdraw = w + (label_offset * 2);
@@ -2366,7 +2368,7 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
       int wdraw = w + (label_offset * 2);
       wdraw *= g_ContentScaleFactor;
       h *= g_ContentScaleFactor;
-      int yp = y - (2 * GetChartbarHeight() + h);
+      int yp = y - (ScaleBare_H + GetChartbarHeight() + h);
 
       m_oDC->DrawRectangle(0, yp, wdraw, h);
       m_oDC->DrawText(msg, label_offset, yp);
