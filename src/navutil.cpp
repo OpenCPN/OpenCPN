@@ -3487,6 +3487,11 @@ void DimeControl(wxWindow *ctrl) {
   return;  // this is seriously broken on wxqt
 #endif
 
+  if(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW).Red() < 128) {
+    // Dark system color themes usually do better job than we do on diming UI controls, do not fight with them
+    return;
+  }
+
   if (NULL == ctrl) return;
 
   wxColour col, window_back_color, gridline, uitext, udkrd, ctrl_back_color,
