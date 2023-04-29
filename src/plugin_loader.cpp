@@ -1073,11 +1073,18 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
 
   if (!b_own_info_queried) {
     dependencies.insert("libwx_baseu");
-    const wxApp& app = *wxTheApp;
-    if (app.argc && !app.argv[0].IsEmpty()) {
-      wxString app_path(app.argv[0]);
+
+    char exe_buf[100] = {0};
+    ssize_t len = readlink("/proc/self/exe", exe_buf, 99);
+    if (len > 0){
+      exe_buf[len] = '\0';
+      wxString app_path(exe_buf);
+      wxLogMessage("Executable path: %s", exe_buf);
       b_own_info_usable =
           ReadModuleInfoFromELF(app_path, dependencies, own_info);
+      if (!b_own_info_usable){
+        wxLogMessage("Cannot get own info from: %s", exe_buf);
+      }
     } else {
       wxLogMessage("Cannot get own executable path.");
     }
