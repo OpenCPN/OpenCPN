@@ -380,6 +380,9 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   for (int ifile = 0; ifile < n_files; ifile++) {
     wxString name = FileList[ifile];
 
+    if(name.Contains("oral"))
+      int yyp = 4;
+
     wxFileName fn(name);
     wxString iconname = fn.GetName();
     wxBitmap icon1;
@@ -561,7 +564,7 @@ MarkIcon *WayPointmanGui::ProcessExtendedIcon(wxImage &image,
 
   pmi->icon_name = key;
   pmi->icon_description = description;
-  pmi->piconBitmap = NULL;
+  pmi->piconBitmap = new wxBitmap(imageClip);
   pmi->icon_texture = 0; /* invalidate */
   pmi->preScaled = false;
   pmi->iconImage = imageClip;
