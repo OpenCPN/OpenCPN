@@ -137,6 +137,8 @@ unsigned int get_px_length(const char* val) {
 
 bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
                           unsigned int& height) {
+  width = 0;
+  height = 0;
   pugi::xml_document svgDoc;
   if (svgDoc.load_file(filename.fn_str())) {
     pugi::xml_node svgNode = svgDoc.child("svg");
