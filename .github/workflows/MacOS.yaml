@@ -5,11 +5,13 @@ name: MacOS
   push:
     branches:
       - master
+      - v5.8.x
     paths-ignore:
       - 'buildandroid/**'
   pull_request:
     branches:
       - master
+      - v5.8.x
     paths-ignore:
       - 'buildandroid/**'
 
