@@ -2,5 +2,3 @@
 0002-CMakeLists-ignore-non-existing-NSIS.template.in.in.patch
 0003-Add-missing-libs-tinyxml-Debian-work-around.patch
 0004-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch
-0005-drivers-Add-missing-include-config.h.patch
-0006-Update-license-copyright-for-3-public-domain-files.patch
