@@ -8747,7 +8747,11 @@ void ParseAllENC(wxWindow *parent) {
     // prog->SetSize( sz );
 
     DimeControl(prog);
+    #ifdef __WXOSX__
+    prog->ShowWindowModal();
+    #else
     prog->Show();
+    #endif
   }
 
   // parse targets

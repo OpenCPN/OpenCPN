@@ -3835,7 +3835,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
             << segShow_point_b->GetName() << _T("\n");
 
           if (g_bShowTrue)
-            s << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)brg,
+            s << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)floor(brg+0.5),
                                   0x00B0);
           if (g_bShowMag) {
             double latAverage =
@@ -3844,7 +3844,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                 (segShow_point_b->m_lon + segShow_point_a->m_lon) / 2;
             double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
-            s << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)varBrg,
+            s << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)floor(varBrg+0.5),
                                   0x00B0);
           }
 
@@ -5397,8 +5397,18 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     else if (VPoint.chart_scale <= 100000.)
       round_factor = 1000.;
 
+    // Fixme: Workaround the wrongly calculated scale on Retina displays (#3117)
+    double retina_coef = 1;
+    #ifdef ocpnUSE_GL
+    #ifdef __WXOSX__
+    if (g_bopengl) {
+      retina_coef = GetContentScaleFactor();;
+    }
+    #endif
+    #endif
+
     double true_scale_display =
-        wxRound(VPoint.chart_scale / round_factor) * round_factor;
+        wxRound(VPoint.chart_scale / round_factor) * round_factor * retina_coef;
     wxString text;
 
     m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;

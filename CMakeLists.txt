@@ -705,6 +705,20 @@ if (OPENGL_FOUND)
     link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib )
   else (CMAKE_HOST_WIN32)
     if (NOT APPLE)
+
+    # Use a static linkage of libGLEW on Buster and Bionic
+    # This is required, since buster and bionic offer different versions
+    # of libGLEW in their repositories, thereby making a PPA bionic build
+    # of OCPN un-installable on generic debian systems.
+    # The static build of libGLEW (a backport from focal to bionic) is
+    # available from a private PPA
+    # https://launchpad.net/~leamas-alec/+archive/ubuntu/glew-bionic
+
+      if ("${DEB_DISTRIBUTION}" STREQUAL "bionic")
+        message(STATUS "Using GLEW_STATIC")
+        set(GLEW_USE_STATIC_LIBS ON)
+      endif ("${DEB_DISTRIBUTION}" STREQUAL "bionic")
+
       find_package(GLEW REQUIRED)
       include_directories(${GLEW_INCLUDE_DIRS})
       link_libraries(${GLEW_LIBRARIES})

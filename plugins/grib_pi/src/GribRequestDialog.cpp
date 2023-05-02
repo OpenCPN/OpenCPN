@@ -444,7 +444,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pWind->SetValue(!IsRTOFS);
   m_pPress->SetValue(!IsRTOFS);
   m_pWaves->SetValue(m_RequestConfigBase.GetChar(8) == 'X' && IsGFS);
-  m_pWaves->Enable(IsGFS && m_pTimeRange->GetCurrentSelection() <
+  m_pWaves->Enable(IsECMWF || IsGFS && m_pTimeRange->GetCurrentSelection() <
                                 7);  // gfs & time range less than 8 days
   m_pRainfall->SetValue(m_RequestConfigBase.GetChar(9) == 'X' &&
                         (IsGFS || IsHRRR));
@@ -858,7 +858,7 @@ wxString GribRequestSetting::WriteMail() {
       _T("SFCTMP"), _T("GUST"), _T(""), _T(""), _T(""),
       _T("WIND500,HGT500"), _T("")},
       //parametres ECMWF
-      {_T(""), _T(""), _T("TEMP"), _T(""),
+      {_T(""), _T(""), _T("TEMP"), _T("WAVES"),
       _T(""), _T(""), _T(""), _T(""), _T(""),
       _T("WIND500,HGT500"), _T("")},
       // parameters GFS from zygrib
@@ -1016,6 +1016,9 @@ wxString GribRequestSetting::WriteMail() {
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
             p[ECMWF][9]);
       }
+      if (m_pWaves->IsChecked())
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
+                            p[ECMWF][3]);
       break;
   }
   if (!IsZYGRIB && m_cMovingGribEnabled->IsChecked())  // moving grib

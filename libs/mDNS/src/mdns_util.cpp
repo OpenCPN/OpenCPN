@@ -2,28 +2,11 @@
  *
  * Project:  OpenCPN
  * Purpose:  mDNS Utilities.
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ * Author:   Mattias Jansson, David Register
+ */
 
 /* mDNS/DNS-SD library  -  Public Domain  -  2017 Mattias Jansson
+ *   Copyright (C) 2022 by David Register                                  *
  *
  * This library provides a cross-platform mDNS and DNS-SD library in C.
  * The implementation is based on RFC 6762 and RFC 6763.
