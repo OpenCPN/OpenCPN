@@ -80,6 +80,7 @@
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 extern ChartDB* ChartData;
+extern bool g_bportable;
 
 const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
 const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
@@ -269,6 +270,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   wxString plugin_file = wxFileName(file_name).GetFullName();
   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
+  wxLog::FlushActive();
 
   // this gets called every time we switch to the plugins tab.
   // this allows plugins to be installed and enabled without restarting
@@ -315,10 +317,12 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   if (!base_plugin_path.EndsWith(wxFileName::GetPathSeparator()))
     base_plugin_path += wxFileName::GetPathSeparator();
 
-  if (base_plugin_path.IsSameAs(plugin_file_path)){
-    if (!IsSystemPlugin(file_name.ToStdString())){
-      DEBUG_LOG << "Skipping plugin " <<  file_name << " in " << g_BasePlatform->GetPluginDir();
-      return false;
+  if (!g_bportable){
+    if (base_plugin_path.IsSameAs(plugin_file_path)){
+      if (!IsSystemPlugin(file_name.ToStdString())){
+        DEBUG_LOG << "Skipping plugin " <<  file_name << " in " << g_BasePlatform->GetPluginDir();
+        return false;
+      }
     }
   }
 
@@ -326,6 +330,11 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
     DEBUG_LOG << "Skipping plugin " <<  file_name << " in safe mode";
     return false;
   }
+
+  auto msg =
+        std::string("Checking plugin compatibility: ") + file_name.ToStdString();
+  wxLogMessage(msg.c_str());
+  wxLog::FlushActive();
 
   bool b_compat = CheckPluginCompatibility(file_name);
 
@@ -391,16 +400,14 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-
-      wxBitmap* pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
-          wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-      pic->m_bitmap = pbm;
+      wxBitmap * pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       if (!pic->m_bEnabled && pic->m_destroy_fn) {
-        wxBitmap* pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(wxRect(
-            0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-        pic->m_bitmap = pbm;
+        wxBitmap * pbm0 = pic->m_pplugin->GetPlugInBitmap();
+        pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
         pic->m_destroy_fn(pic->m_pplugin);
         pic->m_destroy_fn = NULL;
         pic->m_pplugin = NULL;
@@ -557,13 +564,15 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
+      wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
       bret = true;
     } else if (!pic->m_bEnabled && pic->m_bInitState) {
       // Save a local copy of the plugin icon before unloading
-      wxBitmap* pbm = new wxBitmap(pic->m_bitmap->GetSubBitmap(
-          wxRect(0, 0, pic->m_bitmap->GetWidth(), pic->m_bitmap->GetHeight())));
-      pic->m_bitmap = pbm;
+      wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
@@ -889,19 +898,19 @@ bool ReadModuleInfoFromELF(const wxString& file,
 
   file_handle = open(file, O_RDONLY);
   if (file_handle == -1) {
-    wxLogError("Could not open file \"%s\" for reading: %s", file,
+    wxLogMessage("Could not open file \"%s\" for reading: %s", file,
                strerror(errno));
     goto FailureEpilogue;
   }
 
   elf_handle = elf_begin(file_handle, ELF_C_READ, NULL);
   if (elf_handle == NULL) {
-    wxLogError("Could not get ELF structures from \"%s\".", file);
+    wxLogMessage("Could not get ELF structures from \"%s\".", file);
     goto FailureEpilogue;
   }
 
   if (gelf_getehdr(elf_handle, &elf_file_header) != &elf_file_header) {
-    wxLogError("Could not get ELF file header from \"%s\".", file);
+    wxLogMessage("Could not get ELF file header from \"%s\".", file);
     goto FailureEpilogue;
   }
 
@@ -910,7 +919,7 @@ bool ReadModuleInfoFromELF(const wxString& file,
     case ET_DYN:
       break;
     default:
-      wxLogError(wxString::Format(
+      wxLogMessage(wxString::Format(
           "Module \"%s\" is not an executable or shared library.", file));
       goto FailureEpilogue;
   }
@@ -936,7 +945,7 @@ bool ReadModuleInfoFromELF(const wxString& file,
 
     if (gelf_getshdr(elf_section_handle, &elf_section_header) !=
         &elf_section_header) {
-      wxLogError("Could not get ELF section header from \"%s\".", file);
+      wxLogMessage("Could not get ELF section header from \"%s\".", file);
       goto FailureEpilogue;
     } else if (elf_section_header.sh_type != SHT_DYNAMIC) {
       continue;
@@ -944,13 +953,13 @@ bool ReadModuleInfoFromELF(const wxString& file,
 
     elf_section_data = elf_getdata(elf_section_handle, NULL);
     if (elf_section_data == NULL) {
-      wxLogError("Could not get ELF section data from \"%s\".", file);
+      wxLogMessage("Could not get ELF section data from \"%s\".", file);
       goto FailureEpilogue;
     }
 
     if ((elf_section_data->d_size == 0) ||
         (elf_section_header.sh_entsize == 0)) {
-      wxLogError("Got malformed ELF section metadata from \"%s\".", file);
+      wxLogMessage("Got malformed ELF section metadata from \"%s\".", file);
       goto FailureEpilogue;
     }
 
@@ -963,7 +972,7 @@ bool ReadModuleInfoFromELF(const wxString& file,
       const char* elf_dynamic_entry_name = NULL;
       if (gelf_getdyn(elf_section_data, elf_section_entry_index,
                       &elf_dynamic_entry) != &elf_dynamic_entry) {
-        wxLogError("Could not get ELF dynamic_section entry from \"%s\".",
+        wxLogMessage("Could not get ELF dynamic_section entry from \"%s\".",
                    file);
         goto FailureEpilogue;
       } else if (elf_dynamic_entry.d_tag != DT_NEEDED) {
@@ -972,7 +981,7 @@ bool ReadModuleInfoFromELF(const wxString& file,
       elf_dynamic_entry_name = elf_strptr(
           elf_handle, elf_section_header.sh_link, elf_dynamic_entry.d_un.d_val);
       if (elf_dynamic_entry_name == NULL) {
-        wxLogError(wxString::Format("Could not get %s %s from \"%s\".", "ELF",
+        wxLogMessage(wxString::Format("Could not get %s %s from \"%s\".", "ELF",
                                     "string entry", file));
         goto FailureEpilogue;
       }
@@ -996,6 +1005,7 @@ SuccessEpilogue:
 FailureEpilogue:
   if (elf_handle != NULL) elf_end(elf_handle);
   if (file_handle >= 0) close(file_handle);
+  wxLog::FlushActive();
   return false;
 }
 #endif  // USE_LIBELF
@@ -1063,13 +1073,20 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
 
   if (!b_own_info_queried) {
     dependencies.insert("libwx_baseu");
-    const wxApp& app = *wxTheApp;
-    if (app.argc && !app.argv[0].IsEmpty()) {
-      wxString app_path(app.argv[0]);
+
+    char exe_buf[100] = {0};
+    ssize_t len = readlink("/proc/self/exe", exe_buf, 99);
+    if (len > 0){
+      exe_buf[len] = '\0';
+      wxString app_path(exe_buf);
+      wxLogMessage("Executable path: %s", exe_buf);
       b_own_info_usable =
           ReadModuleInfoFromELF(app_path, dependencies, own_info);
+      if (!b_own_info_usable){
+        wxLogMessage("Cannot get own info from: %s", exe_buf);
+      }
     } else {
-      wxLogError("Cannot get own executable path.");
+      wxLogMessage("Cannot get own executable path.");
     }
     b_own_info_queried = true;
   }
@@ -1089,11 +1106,11 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
       }
       if (!b_compat) {
         pi_info.dependencies.clear();
-        wxLogError(
+        wxLogMessage(
             wxString::Format("    Plugin \"%s\" is of another binary "
                              "flavor than the main module.",
                              plugin_file));
-        wxLogDebug("host magic: %.8x, plugin magic: %.8x", own_info.type_magic,
+        wxLogMessage("host magic: %.8x, plugin magic: %.8x", own_info.type_magic,
                    pi_info.type_magic);
       }
       for (ModuleInfo::DependencyMap::const_iterator own_dependency =
@@ -1104,7 +1121,7 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
         if ((pi_dependency != pi_info.dependencies.end()) &&
             (pi_dependency->second != own_dependency->second)) {
           b_compat = false;
-          wxLogError(
+          wxLogMessage(
               "    Plugin \"%s\" depends on library \"%s\", but the main "
               "module was built for \"%s\".",
               plugin_file, pi_dependency->second, own_dependency->second);
@@ -1125,6 +1142,8 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
 
   wxLogMessage("Plugin is compatible by elf library scan: %s",
                b_compat ? "true" : "false");
+
+  wxLog::FlushActive();
   return b_compat;
 
 #endif  // LIBELF

@@ -1275,6 +1275,8 @@ void s57chart::AssembleLineGeometry(void) {
   unsigned char *buffer_offset;
   size_t offset;
 
+  bool grow_buffer = false;
+
   if (0 == m_vbo_byte_length) {
     m_line_vertex_buffer = (float *)malloc(vbo_byte_length);
     m_vbo_byte_length = vbo_byte_length;
@@ -1286,6 +1288,7 @@ void s57chart::AssembleLineGeometry(void) {
     buffer_offset = (unsigned char *)m_line_vertex_buffer + m_vbo_byte_length;
     offset = m_vbo_byte_length;
     m_vbo_byte_length = m_vbo_byte_length + vbo_byte_length;
+    grow_buffer = true;
   }
 
   float *lvr = (float *)buffer_offset;
@@ -1381,16 +1384,23 @@ void s57chart::AssembleLineGeometry(void) {
     delete pcs;
   }
   m_vc_hash.clear();
-}
+
+#ifdef ocpnUSE_GL
+  if (g_b_EnableVBO) {
+    if (grow_buffer) {
+      if (m_LineVBO_name > 0){
+          glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+          m_LineVBO_name = -1;
+      }
+    }
+  }
+#endif
+
+
+ }
 
 void s57chart::BuildLineVBO(void) {
 #ifdef ocpnUSE_GL
-  // cm93 cannot efficiently use VBO, since the edge list is discovered
-  // incrementally, and this would require rebuilding the VBO for each new cell
-  // that is loaded.
-
-  if (CHART_TYPE_CM93 == GetChartType()) return;
-
   if (!g_b_EnableVBO) return;
 
   if (m_LineVBO_name == -1) {
@@ -1515,6 +1525,7 @@ void s57chart::BuildLineVBO(void) {
     m_LineVBO_name = vboId;
     m_this_chart_context->vboID = vboId;
   }
+
 #endif
 }
 

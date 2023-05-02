@@ -251,6 +251,7 @@ extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
 extern BasePlatform *g_BasePlatform;
+extern bool g_bdisable_opengl;
 
 #ifdef __ANDROID__
 extern PlatSpec android_plat_spc;
@@ -799,6 +800,10 @@ bool OCPNPlatform::IsGLCapable() {
 #elif defined(CLI)
   return false;
 #else
+
+  if(g_bdisable_opengl)
+    return false;
+
   OCPN_GLCaps GL_Caps;
 
   BuildGLCaps(&GL_Caps);
