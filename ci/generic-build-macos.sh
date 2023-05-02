@@ -3,8 +3,11 @@
 #
 # Build the OSX artifacts
 #
-set -xe
 
+
+# OpenCPN needs to support even older macOS releases than the system
+# it is being built on, set MACOSX_DEPLOYMENT_TARGET environment
+# variable to use the respective SDK version.
 export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
 
 # Return latest installed brew version of given package
@@ -25,20 +28,34 @@ brew list --versions python3 || {
 
 
 
-# build libarchive, for legacy compatibility.
-curl -k -o libarchive-3.3.3.tar.gz  \
-    https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
+# Build libarchive, for legacy compatibility.
+# The libarchive version from Homebrew is built with the newest SDK
+# relevant for the machine we build on and is not compatible with
+# older macOS versions, we need to build our own against the older SDK
+# Note: For local builds it is completely OK to build against any other version of libarchive,
+# for example installed from Homebrew, just keep in mind that such products should not be distributed
+# as they will cause interoperability problems with plugins
+if [ ! -f libarchive-3.3.3.tar.gz ]; then
+    # Download only if we do not have the archive yet
+    curl -k -o libarchive-3.3.3.tar.gz  \
+        https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
+fi
 tar zxf libarchive-3.3.3.tar.gz
 cd libarchive-3.3.3
-./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
-# installs to /usr/local
-sudo rm -f /usr/local/include/archive.h
-sudo rm -f /usr/local/include/archive_entry.h
-sudo make install
+if [ "$(shasum /usr/local/lib/libarchive.13.dylib | cut -d' ' -f1)" != "$(shasum .libs/libarchive.13.dylib | cut -d' ' -f1)" ]; then
+    # Build only if we didn't before
+    ./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
+    make
+    # install to /usr/local
+    sudo rm -f /usr/local/include/archive.h
+    sudo rm -f /usr/local/include/archive_entry.h
+    sudo make install
+fi
 cd ..
 
-brew install cairo
-brew install freetype
+# Install the build dependencies for OpenCPN
+brew install cmake
+brew install gettext
 brew install lame
 brew install lz4
 brew install mpg123
@@ -59,21 +76,27 @@ else
     brew install --cask packages
 fi
 
-#curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
-#    https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
-#tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
-
-curl -k -o /tmp/wx322-2_opencpn50_macos1010.tar.bz2  \
-    https://download.opencpn.org/s/8xYPFAqTR8ZGXXb/download
+# OpenCPN can be built against any wxWidgets version newer than 3.2.0
+# but the resulting binary will (almost certainly) not be ABI compatible with 3rd party plugins
+# For convenience and to save build time, we distribute a bundled build of wxWidgets.
+# Note: For local builds it is completely OK to build against any other version of wxWidgets 3.2,
+# for example installed from Homebrew, just keep in mind that such products should not be distributed
+# as they will cause interoperability problems with plugins
+if [ ! -f /tmp/wx322-2_opencpn50_macos1010.tar.bz2 ]; then
+    # Download only if we do not have the archive yet
+    curl -k -o /tmp/wx322-2_opencpn50_macos1010.tar.bz2  \
+        https://download.opencpn.org/s/8xYPFAqTR8ZGXXb/download
+fi
 tar -C /tmp -xJf /tmp/wx322-2_opencpn50_macos1010.tar.bz2
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
 
 # Build, install and make package
-mkdir build
+mkdir -p build
 cd build
 test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
+# Configure the build
 cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
@@ -84,7 +107,9 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_RELEASE=0 \
   -DOCPN_BUILD_TEST=OFF \
   ..
+# Compile OpenCPN
 make -sj$(sysctl -n hw.physicalcpu)
+# Create the package artifacts
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
 make install
@@ -97,5 +122,5 @@ tar czf OpenCPN-$(git rev-parse --short HEAD).dSYM.tar.gz OpenCPN.dSYM
 make create-pkg
 make create-dmg
 
-# Install the stuff needed by upload.
+# Install the stuff needed for upload to the Cloudsmith repository
 pip3 install --user  -q cloudsmith-cli
