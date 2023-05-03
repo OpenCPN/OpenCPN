@@ -116,6 +116,7 @@
 #include "nav_object_database.h"
 #include "navutil_base.h"
 #include "navutil.h"
+#include "observable.h"
 #include "ocpn_app.h"
 #include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
