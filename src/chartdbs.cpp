@@ -98,6 +98,9 @@ static ChartFamilyEnum GetChartFamily(int charttype) {
     case CHART_TYPE_UNKNOWN:
       cf = CHART_FAMILY_UNKNOWN;
       break;
+    case CHART_TYPE_GEOTIFF:
+      cf = CHART_FAMILY_RASTER;
+      break;
     default:
       cf = CHART_FAMILY_UNKNOWN;
       break;
@@ -1104,6 +1107,9 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void) {
   m_ChartClassDescriptorArray.Add(pcd);
   pcd = new ChartClassDescriptor(_T("ChartMBTiles"), _T("*.mbtiles"),
                                  BUILTIN_DESCRIPTOR);
+  m_ChartClassDescriptorArray.Add(pcd);
+  pcd =
+      new ChartClassDescriptor(_T("ChartGeoTIFF"), _T("*.tif"), BUILTIN_DESCRIPTOR);
   m_ChartClassDescriptorArray.Add(pcd);
 
   //    If the PlugIn Manager exists, get the array of dynamically loadable

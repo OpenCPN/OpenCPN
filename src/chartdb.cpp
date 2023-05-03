@@ -40,6 +40,7 @@
 #include "config.h"
 #include "chartdb.h"
 #include "chartimg.h"
+#include "chartgeotiff.h"
 #include "thumbwin.h"
 #include "mbtiles.h"
 #include "CanvasConfig.h"
@@ -419,6 +420,8 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath,
     pch = new ChartKAP;
   } else if (chartExt == wxT("GEO")) {
     pch = new ChartGEO;
+  } else if (chartExt == wxT("TIF")) {
+    pch = new ChartGeoTIFF;
   } else if (chartExt == wxT("MBTILES")) {
     pch = new ChartMBTiles;
   } else if (chartExt == wxT("000") || chartExt == wxT("S57")) {
@@ -1173,6 +1176,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
 
     else if (chart_type == CHART_TYPE_GEO)
       Ch = new ChartGEO();
+
+    else if (chart_type == CHART_TYPE_GEOTIFF)
+      Ch = new ChartGeoTIFF();
 
     else if (chart_type == CHART_TYPE_MBTILES)
       Ch = new ChartMBTiles();

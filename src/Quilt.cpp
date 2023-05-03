@@ -910,7 +910,7 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
         int nmin_scale = GetNomScaleMin(nscale, type, family);
 
         // Allow RNC quilt to zoom far out and still show smallest scale chart.
-        if((type == CHART_TYPE_KAP) && (nscale == smallest_scale))
+        if((type == CHART_TYPE_KAP || type == CHART_TYPE_GEOTIFF) && (nscale == smallest_scale))
           nmin_scale *= 24;
 
          // Allow MBTiles quilt to zoom far out and still show smallest scale chart.

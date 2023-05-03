@@ -933,6 +933,7 @@ set(
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
+  include/chartgeotiff.h
   include/chart_ctx_factory.h
   include/chcanv.h
   include/ChInfoWin.h
@@ -1121,6 +1122,7 @@ set(
   ${CMAKE_SOURCE_DIR}/src/chartdb.cpp
   ${CMAKE_SOURCE_DIR}/src/chartdbs.cpp
   ${CMAKE_SOURCE_DIR}/src/chartimg.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartgeotiff.cpp
   ${CMAKE_SOURCE_DIR}/src/chcanv.cpp
   ${CMAKE_SOURCE_DIR}/src/ChInfoWin.cpp
   ${CMAKE_SOURCE_DIR}/src/cm93.cpp
@@ -3289,6 +3291,10 @@ if (NOT QT_ANDROID)
       target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
     endif ()
   endif ()
+  find_package(TIFF REQUIRED) 
+  find_package(GeoTIFF REQUIRED)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${GeoTIFF_INCLUDE_DIRS})
+  target_link_libraries(${PACKAGE_NAME} PRIVATE  ${GeoTIFF_LIBRARIES})
 
   if(APPLE AND OCPN_USE_DEPS_BUNDLE)
     target_include_directories(
