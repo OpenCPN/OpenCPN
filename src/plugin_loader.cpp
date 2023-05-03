@@ -421,9 +421,9 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
           pic->m_api_version);
       pic->m_destroy_fn(pic->m_pplugin);
 
-      delete pic;
       LoadError le(LoadError::Type::Unloadable, file_name.ToStdString(),
                    pic->m_api_version);
+      delete pic;
       load_errors.push_back(le);
       return false;
     }

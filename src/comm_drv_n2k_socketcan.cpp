@@ -334,7 +334,6 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   node_name.value.Name = 0;
 
   m_unique_number = 1;
-#ifndef CLIAPP
   // Build a simple 16 bit hash of g_hostname, to use as unique "serial number"
   int hash = 0;
   std::string str(g_hostname.mb_str());
@@ -343,7 +342,6 @@ void CommDriverN2KSocketCanImpl::SetN2K_Name() {
   for (int i = 0; i < len; i++)
     hash = hash + ((hash) << 5) + *(ch + i) + ((*(ch + i)) << 7);
   m_unique_number = ((hash) ^ (hash >> 16)) & 0xffff;
-#endif
 
   node_name.SetManufacturerCode(2046);
   node_name.SetUniqueNumber(m_unique_number);

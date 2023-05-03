@@ -45,7 +45,6 @@
 #include "comm_n0183_output.h"
 #include "config_vars.h"
 #include "conn_params.h"
-#include "gui_lib.h"
 #include "nmea0183.h"
 #include "nmea_ctx_factory.h"
 #include "route.h"

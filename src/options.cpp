@@ -94,7 +94,6 @@ extern GLuint g_raster_format;
 
 #include "SystemCmdSound.h"
 
-#include "NMEALogWindow.h"
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"

@@ -8624,7 +8624,7 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
   std::shared_ptr<CommDriverN2K> dn2k =
       std::dynamic_pointer_cast<CommDriverN2K>(*driver);
 
-  int nloop;
+  int nloop = 0;
   for (size_t i = 0; i < pgn_list.size(); i++) {
     int nTry = 5;
     int iresult = -1;

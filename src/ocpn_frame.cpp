@@ -34,13 +34,11 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
+
 #ifdef __WXMSW__
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include "ocpn_app.h"
-#include "ocpn_frame.h"
-#include "idents.h"
 
 #ifdef __WXMSW__
 #include <math.h>
@@ -48,173 +46,89 @@
 #include <stdlib.h>
 #include <time.h>
 #endif
-//
-// #ifndef __WXMSW__
-// #include <setjmp.h>
-// #include <signal.h>
-// #endif
-//
+
 #ifdef OCPN_HAVE_X11
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #endif
-//
-// #include <wx/apptrait.h>
-// #include <wx/arrimpl.cpp>
-// #include <wx/artprov.h>
-// #include <wx/aui/aui.h>
-// #include <wx/clrpicker.h>
-// #include <wx/dialog.h>
-// #include <wx/dialog.h>
-// #include <wx/dir.h>
-// #include <wx/image.h>
-// #include <wx/intl.h>
-// #include <wx/ipc.h>
-// #include <wx/jsonreader.h>
-// #include <wx/listctrl.h>
-// #include <wx/printdlg.h>
-// #include <wx/print.h>
-// #include <wx/progdlg.h>
-// #include <wx/settings.h>
+
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
-#include "dychart.h"
-#include "ocpn_frame.h"
-
-#include "OCPN_AUIManager.h"
-#include "chartbase.h"
-#include "chart_ctx_factory.h"
-#include "georef.h"
-#include "glChartCanvas.h"
-#include "plugin_loader.h"
-#include "timers.h"
-#include "comm_drv_factory.h"  //FIXME(dave) this one goes away
-#include "comm_util.h"  //FIXME(leamas) perhaps also this?).
-#include "comm_vars.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "color_handler.h"
-#include "config_vars.h"
 #include "ais_decoder.h"
 #include "ais.h"
+#include "ais_info_gui.h"
 #include "AISTargetAlertDialog.h"
 #include "ais_target_data.h"
 #include "AISTargetListDialog.h"
-#include "ais_decoder.h"
-#include "TrackPropDlg.h"
-//#include "gshhs.h"
-#include "cutil.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
-#include "OCPNPlatform.h"
 #include "AISTargetQueryDialog.h"
-#include "ais_info_gui.h"
 #include "CanvasConfig.h"
+#include "chartbase.h"
 #include "chartdb.h"
-// #include "chartimg.h"  // for ChartBaseBSB
+#include "chart_ctx_factory.h"
 #include "chcanv.h"
 #include "cm93.h"
-#include "compass.h"
-#include "concanv.h"
-// #include "config.h"
-#include "ConfigMgr.h"
-// #include "cutil.h"
-// #include "datastream.h"
-#include "FontMgr.h"
-// #include "gdal/cpl_csv.h"
-// #include "glTexCache.h"
-// #include "gshhs.h"
-#include "GoToPositionDialog.h"
-#include "gui_lib.h"
-#include "iENCToolbar.h"
-#include "Layer.h"
-// #include "logger.h"
-#include "MarkInfo.h"
-#include "MUIBar.h"
-#include "multiplexer.h"
-#include "load_errors_dlg.h"
-#include "nav_object_database.h"
-#include "navutil.h"
-#include "navutil_base.h"
-#include "NMEALogWindow.h"
-// #include "OCP_DataStreamInput_Thread.h"
-// #include "OCPN_AUIManager.h"
-// #include "OCPN_DataStreamEvent.h"
-#include "OCPNPlatform.h"
-#include "OCPN_Sound.h"
-#include "options.h"
-// #include "piano.h"
-// #include "plugin_handler.h"
-#include "own_ship.h"
-#include "pluginmanager.h"
-// #include "Quilt.h"
-// #include "route.h"
-#include "routemanagerdialog.h"
-#include "routeman.h"
-#include "route_point_gui.h"
-// #include "routeprintout.h"
-#include "RoutePropDlgImpl.h"
-#include "s52plib.h"
-// #include "s52utils.h"
-#include "s57chart.h"
-#include "S57QueryDialog.h"
-// #include "safe_mode.h"
-#include "select.h"
-// #include "SignalKEventHandler.h"
-// #include "SoundFactory.h"
-// #include "styles.h"
-#include "SystemCmdSound.h"
-#include "tcmgr.h"
-// #include "thumbwin.h"
-#include "toolbar.h"
-#include "routeman_gui.h"
-#include "track.h"
-#include "TrackPropDlg.h"
-// #include "usb_devices.h"
-#include "waypointman_gui.h"
-// #include "comm_drv_registry.h"
-// #include "comm_navmsg_bus.h"
-#include "N2KParser.h"
-// #include "comm_util.h"
+#include "color_handler.h"
+#include "comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
 #include "comm_navmsg_bus.h"
+#include "comm_vars.h"
+#include "compass.h"
+#include "concanv.h"
+#include "ConfigMgr.h"
+#include "config_vars.h"
+#include "cutil.h"
+#include "dychart.h"
+#include "FontMgr.h"
+#include "georef.h"
+#include "glChartCanvas.h"
+#include "GoToPositionDialog.h"
+#include "gui_lib.h"
+#include "idents.h"
+#include "iENCToolbar.h"
+#include "Layer.h"
+#include "load_errors_dlg.h"
+#include "MarkInfo.h"
+#include "MUIBar.h"
+#include "multiplexer.h"
+#include "N2KParser.h"
+#include "nav_object_database.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "NMEALogWindow.h"
+#include "ocpn_app.h"
+#include "OCPN_AUIManager.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "OCPN_Sound.h"
+#include "options.h"
+#include "own_ship.h"
+#include "plugin_loader.h"
+#include "pluginmanager.h"
+#include "routemanagerdialog.h"
+#include "routeman_gui.h"
+#include "routeman.h"
+#include "route_point_gui.h"
+#include "RoutePropDlgImpl.h"
+#include "s52plib.h"
+#include "s57chart.h"
+#include "S57QueryDialog.h"
+#include "select.h"
+#include "SystemCmdSound.h"
+#include "tcmgr.h"
+#include "timers.h"
+#include "toolbar.h"
+#include "track.h"
+#include "TrackPropDlg.h"
+#include "waypointman_gui.h"
 
-//
-// #ifdef __linux__
-// #include "udev_rule_mgr.h"
-// #endif
-//
-// #ifdef ocpnUSE_GL
-// #include "glChartCanvas.h"
-// #endif
-//
-// #ifdef __WXOSX__
-// #include "macutils.h"
-// #endif
-//
-// #ifdef __WXMSW__
-// #include "garmin_protocol_mgr.h"  // Used for port probing on Windows
-// void RedirectIOToConsole();
-// #endif
-//
-// #if defined(__WXMSW__) && defined (__MSVC__LEAK)
-// #include "Stackwalker.h"
-// #endif
-//
-// #ifdef LINUX_CRASHRPT
-// #include "crashprint.h"
-// #endif
-//
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-//
-// #ifdef OCPN_USE_NEWSERIAL
-// #include "serial/serial.h"
-// #endif
-//
+
 static void UpdatePositionCalculatedSogCog();
 
 //------------------------------------------------------------------------------
