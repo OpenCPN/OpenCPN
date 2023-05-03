@@ -127,8 +127,6 @@ Select* pSelectAIS;
 
 /* comm_bridge context. */
 
-int g_NMEAAPBPrecision;
-
 Select* pSelect;
 double g_n_arrival_circle_radius;
 double g_PlanSpeed;

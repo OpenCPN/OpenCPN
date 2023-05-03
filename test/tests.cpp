@@ -76,8 +76,6 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
-int g_NMEAAPBPrecision;
-
 Select* pSelect;
 double g_n_arrival_circle_radius;
 double g_PlanSpeed;

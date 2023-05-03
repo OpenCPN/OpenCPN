@@ -47,6 +47,7 @@
 #include "conn_params.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
+#include "nmea_ctx_factory.h"
 #include "route.h"
 #include "NMEALogWindow.h"
 
@@ -299,7 +300,6 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
   return driver;
 }
 
-
 int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                 bool bsend_waypoints/*, SendToGpsDlg *dialog*/) {
   int ret_val = 0;
@@ -468,7 +468,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
 #if 1
   {
     SENTENCE snt;
-      NMEA0183 oNMEA0183;
+      NMEA0183 oNMEA0183(NmeaCtxFactory());
       oNMEA0183.TalkerID = _T ( "EC" );
 
       int nProg = pr->pRoutePointList->GetCount() + 1;
@@ -634,7 +634,7 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
            max_wp))  // Do we need split sentences?
       {
         // Make a route with zero waypoints to get tare load.
-        NMEA0183 tNMEA0183;
+        NMEA0183 tNMEA0183(NmeaCtxFactory());
         SENTENCE tsnt;
         tNMEA0183.TalkerID = _T ( "EC" );
 
@@ -996,7 +996,7 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
   {  // Standard NMEA mode
 
     SENTENCE snt;
-    NMEA0183 oNMEA0183;
+    NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
 
 //FIXME     if (dialog && dialog->GetProgressGauge())

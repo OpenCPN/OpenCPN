@@ -1,10 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
- * Project: OpenCPN
- * Purpose: Variables defined in config file, command line etc.
+ * Project:  OpenCPN
+ * Purpose:  Wrapper for creating an NmeaContext based on global vars
+ * Author:   Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2019 Alec Leamas                                        *
+ *   Copyright (C) 2023 by Alec Leamas
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,32 +21,19 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
-#ifndef CONFIG_VARS_H__
-#define CONFIG_VARS_H__
+#ifndef _NMEA_CTX_FACTORY_H__
+#define _NMEA_CTX_FACTORY_H__
 
-#include <wx/config.h>
-#include <wx/string.h>
+#include "nmea0183.h"
+#include "config_vars.h"
 
+static NmeaContext NmeaCtxFactory() {
+  NmeaContext ctx;
+  ctx.get_talker_id = []() { return  g_TalkerIdText; };
+  ctx.get_apb_precision = []() { return g_NMEAAPBPrecision; };
+  return ctx;
+}
 
-extern bool g_bGarminHostUpload;
-extern bool g_bWplUsePosition;
-
-extern double g_UserVar;
-
-extern int g_maxWPNameLength;
-extern int g_NMEAAPBPrecision;
-extern int g_nNMEADebug;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
-
-extern wxString g_GPS_Ident;
-extern wxString g_hostname;
-extern wxString g_TalkerIdText;
-
-wxConfigBase* TheBaseConfig();
-void InitBaseConfig(wxConfigBase* cfg);
-
-#endif  // CONFIG_VARS_H__
+#endif

@@ -62,6 +62,7 @@
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chartimg.h"
+#include "chart_ctx_factory.h"
 #include "chcanv.h"
 #include "ChInfoWin.h"
 #include "cm93.h"  // for chart outline draw
@@ -186,7 +187,7 @@ extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
 
-GLenum g_texture_rectangle_format;
+extern GLenum g_texture_rectangle_format;
 
 extern int g_memCacheLimit;
 extern ColorScheme global_color_scheme;
@@ -329,6 +330,7 @@ static void print_region(OCPNRegion &Region)
         upd.NextRect();
     }
 }
+
 #endif
 
 GLboolean QueryExtension(const char *extName) {
@@ -1396,7 +1398,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
   if (!m_bsetup) {
     SetupOpenGL();
 
-    if (ps52plib) ps52plib->FlushSymbolCaches();
+    if (ps52plib) ps52plib->FlushSymbolCaches(ChartCtxFactory());
 
     m_bsetup = true;
     //        g_bDebugOGL = true;

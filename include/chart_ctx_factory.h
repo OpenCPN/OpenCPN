@@ -1,10 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
- * Project: OpenCPN
- * Purpose: Variables defined in config file, command line etc.
+ * Project:  OpenCPN
+ * Purpose:  Wrapper for creating a ChartCtx based on global vars
+ * Author:   Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2019 Alec Leamas                                        *
+ *   Copyright (C) 2023 by Alec Leamas
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,32 +21,25 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
+#ifndef _CHART_CTX_FACTORY_H__
+#define _CHART_CTX_FACTORY_H__
 
-#ifndef CONFIG_VARS_H__
-#define CONFIG_VARS_H__
+#include "s52plib.h"
 
-#include <wx/config.h>
-#include <wx/string.h>
+extern bool g_bopengl;
 
+#ifdef ocpnUSE_GL
+extern GLenum g_texture_rectangle_format;
 
-extern bool g_bGarminHostUpload;
-extern bool g_bWplUsePosition;
+/** Return a ChartCtx reflecting caller's opengl context */
+static ChartCtx ChartCtxFactory() {
+   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+}
+#else
 
-extern double g_UserVar;
+/** Return a ChartCtx reflecting caller's context not using opengl */
+static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
+#endif
 
-extern int g_maxWPNameLength;
-extern int g_NMEAAPBPrecision;
-extern int g_nNMEADebug;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
-
-extern wxString g_GPS_Ident;
-extern wxString g_hostname;
-extern wxString g_TalkerIdText;
-
-wxConfigBase* TheBaseConfig();
-void InitBaseConfig(wxConfigBase* cfg);
-
-#endif  // CONFIG_VARS_H__
+#endif   //  _CHART_CTX_FACTORY_H__

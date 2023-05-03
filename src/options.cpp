@@ -98,6 +98,7 @@ extern GLuint g_raster_format;
 #include "wx28compat.h"
 #include "routeman.h"
 #include "chcanv.h"
+#include "chart_ctx_factory.h"
 #include "MarkInfo.h"
 
 #include "ais.h"
@@ -470,7 +471,7 @@ static int lang_list[] = {
     wxLANGUAGE_YIDDISH, wxLANGUAGE_YORUBA, wxLANGUAGE_ZHUANG, wxLANGUAGE_ZULU};
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 void prepareSlider(wxSlider* slider) {
   slider->GetHandle()->setStyleSheet(
       prepareAndroidSliderStyleSheet(slider->GetSize().x));
@@ -7237,7 +7238,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
-      ps52plib->FlushSymbolCaches();
+      ps52plib->FlushSymbolCaches(ChartCtxFactory());
       // some CNSY depends on renderer (e.g. CARC)
       ps52plib->ClearCNSYLUPArray();
       ps52plib->GenerateStateHash();

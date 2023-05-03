@@ -206,8 +206,8 @@ public:
   void GenerateStateHash();
   long GetStateHash() { return m_state_hash; }
 
-  void SetPLIBColorScheme(wxString scheme);
-  void SetPLIBColorScheme(ColorScheme cs);
+  void SetPLIBColorScheme(wxString scheme, const ChartCtx& ctx);
+  void SetPLIBColorScheme(ColorScheme cs, const ChartCtx& ctx);
   wxString GetPLIBColorScheme(void) { return m_ColorScheme; }
 
   void SetGLRendererString(const wxString &renderer);
@@ -242,7 +242,7 @@ public:
   void AdjustTextList(int dx, int dy, int screenw, int screenh);
   void ClearTextList(void);
   int SetLineFeaturePriority(ObjRazRules *rzRules, int npriority);
-  void FlushSymbolCaches();
+  void FlushSymbolCaches(const ChartCtx& ctx);
 
   //    For DC's
   int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules);

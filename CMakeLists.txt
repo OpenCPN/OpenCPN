@@ -874,6 +874,7 @@ set(
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
+  include/chart_ctx_factory.h
   include/chcanv.h
   include/ChInfoWin.h
   include/color_handler.h
@@ -933,6 +934,7 @@ set(
   include/navutil.h
   include/navutil_base.h
   include/NMEALogWindow.h
+  include/nmea_ctx_factory.h
   include/ocpCursor.h
   include/ocpn_frame.h
   include/ocpndc.h

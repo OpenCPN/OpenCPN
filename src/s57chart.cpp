@@ -87,6 +87,7 @@
 
 #include "ssl/sha1.h"
 #include "shaders.h"
+#include "chart_ctx_factory.h"
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
@@ -188,6 +189,7 @@ static unsigned int hash_fast32(const void *buf, size_t len,
 unsigned long connector_key::hash() const {
   return hash_fast32(k, sizeof k, 0);
 }
+
 
 //----------------------------------------------------------------------------------
 //      render_canvas_parms Implementation
@@ -385,16 +387,16 @@ void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
 
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
-      ps52plib->SetPLIBColorScheme(_T("DAY"));
+      ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
-      ps52plib->SetPLIBColorScheme(_T("DUSK"));
+      ps52plib->SetPLIBColorScheme("DUSK", ChartCtxFactory());
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
-      ps52plib->SetPLIBColorScheme(_T("NIGHT"));
+      ps52plib->SetPLIBColorScheme("NIGHT", ChartCtxFactory());
       break;
     default:
-      ps52plib->SetPLIBColorScheme(_T("DAY"));
+      ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
   }
 
@@ -3069,7 +3071,7 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
 
   //      set the color scheme
   ps52plib->SaveColorScheme();
-  ps52plib->SetPLIBColorScheme(_T("DAY"));
+  ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
   //      Do the render
   DoRenderViewOnDC(memdc, vp, DC_RENDER_ONLY, true);
 

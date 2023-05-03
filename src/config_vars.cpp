@@ -30,12 +30,14 @@ bool g_bWplUsePosition;
 double g_UserVar = 0.0;
 
 int g_maxWPNameLength;
+int g_NMEAAPBPrecision = 3;
 int g_nNMEADebug = 0;
 int gps_watchdog_timeout_ticks = 0;
 int sat_watchdog_timeout_ticks = 12;
 
 wxString g_GPS_Ident;
 wxString g_hostname;
+wxString g_TalkerIdText;
 
 static wxConfigBase* the_base_config = 0;
 

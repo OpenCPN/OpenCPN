@@ -120,6 +120,21 @@ public:
   wxString HPGL;
 };
 
+/** Generic method argument wrapping differences using opengl or not */
+struct ChartCtx {
+#ifdef ocpnUSE_GL
+  const  bool m_use_opengl;
+  const GLenum m_texture_rectangle_format;
+  ChartCtx(bool use_opengl, GLenum rect_format)
+    : m_use_opengl(use_opengl), m_texture_rectangle_format(rect_format) {}
+#else
+  const  bool m_use_opengl;
+  ChartCtx(bool use_opengl) : m_use_opengl(use_opengl) {}
+#endif
+};
+
+
+
 class ChartSymbol {
 public:
   wxString name;
@@ -142,7 +157,6 @@ public:
 
   void InitializeTables(void);
   void DeleteGlobals(void);
-  int LoadRasterFileForColorTable(int tableNo, bool flush = false);
   int FindColorTable(const wxString &tableName);
   S52color *GetColor(const char *colorName, int fromTable);
   wxColor GetwxColor(const wxString &colorName, int fromTable);
@@ -151,8 +165,10 @@ public:
   wxImage GetImage(const char *symbolName);
   unsigned int GetGLTextureRect(wxRect &rect, const char *symbolName);
   wxSize GLTextureSize();
-  void SetColorTableIndex(int index);
   void SetTextureFormat( int format){ m_texture_rectangle_format = format; }
+  int LoadRasterFileForColorTable(int table_nr, bool flush,
+                                  const ChartCtx& ctx);
+  void SetColorTableIndex(int index, bool flush, const ChartCtx& ctx);
 
   wxArrayPtrVoid m_colorTables;
   unsigned int rasterSymbolsTexture;
