@@ -75,7 +75,6 @@
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
 #include "comm_navmsg_bus.h"
-#include "comm_util.h"  //FIXME(leamas) perhaps also this?).
 #include "comm_vars.h"
 #include "compass.h"
 #include "concanv.h"
