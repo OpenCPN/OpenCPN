@@ -12,6 +12,7 @@
 #include "route_point_gui.h"
 #include "ocpn_frame.h"
 #include "multiplexer.h"
+#include "n0183_ctx_factory.h"
 #include "FontMgr.h"
 #include "glChartCanvas.h"
 #include "viewport.h"
@@ -866,25 +867,6 @@ void RoutePointGui::ReLoadIcon(void) {
   m_point.m_IconScaleFactor = -1;  // Force scaled icon reload
   m_point.m_pMarkFont = 0;         // Force Font color reload
   m_point.m_IconIsDirty = false;
-}
-
-static  N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
-  N0183DlgCtx dlg_ctx;
-  dlg_ctx.set_value = [dialog](int v) {
-      if (!dialog || !dialog->GetProgressGauge()) return;
-      dialog->GetProgressGauge()->SetValue(v);
-      dialog->GetProgressGauge()->Refresh();
-      dialog->GetProgressGauge()->Update();
-  };
-  dlg_ctx.set_range = [dialog](int r) {
-      if (!dialog || !dialog->GetProgressGauge()) return;
-      dialog->GetProgressGauge()->SetRange(r); };
-  dlg_ctx.pulse = [dialog](void) {
-      if (!dialog || !dialog->GetProgressGauge()) return;
-      dialog->GetProgressGauge()->Pulse(); };
-  dlg_ctx.set_message =
-      [dialog](const std::string& s) { dialog->SetMessage(wxString(s)); };
-  return dlg_ctx;
 }
 
 bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {

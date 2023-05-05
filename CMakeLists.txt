@@ -928,6 +928,7 @@ set(
   include/mbtiles.h
   include/multiplexer.h
   include/nav_object_database.h
+  include/n0183_ctx_factory.h
   include/navutil.h
   include/navutil_base.h
   include/NMEALogWindow.h
