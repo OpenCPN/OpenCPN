@@ -55,8 +55,6 @@
 #include "garmin_wrapper.h"
 #endif
 
-//FIXME (dave)  think about GUI feedback, disabled herein
-
 wxString FormatPrintableMessage(wxString msg_raw){
     std::string fmsg;
     std::string str = msg_raw.ToStdString();
@@ -73,10 +71,9 @@ wxString FormatPrintableMessage(wxString msg_raw){
     return wxString(fmsg.c_str());
 }
 
-void LogBroadcastOutputMessageColor(const wxString &msg,
-                                        const wxString &stream_name,
-                                        const wxString &color,
-                                        NmeaLog& nmea_log) {
+void LogBroadcastOutputMessageColor(const wxString& msg,
+                                    const wxString& stream_name,
+                                    const wxString& color, NmeaLog& nmea_log) {
   if (nmea_log.Active()) {
     wxDateTime now = wxDateTime::Now();
     wxString ss;
