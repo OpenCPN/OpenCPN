@@ -42,6 +42,8 @@ Package: opencpn
 Architecture: any
 Depends: opencpn-data (>= ${source:Version}),
  bzip2,
+ libjs-mathjax,
+ libjs-highlight.js,
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends: wx3.0-i18n
