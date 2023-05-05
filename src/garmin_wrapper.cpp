@@ -26,7 +26,6 @@
 #include "gpsapp.h"
 #include "garmin_gps.h"
 #include "gpsserial.h"
-#include "route.h"
 
 #ifndef CLIAPP
 #include "gui_lib.h"
@@ -247,7 +246,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
 }
 
 int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
-                         wxGauge *pProgress) {
+                         N0183DlgCtx dlg_ctx) {
   int ret_val = 0;
 
   int route_number = 1;
@@ -261,11 +260,7 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
     int32 npacks = GPS_A200_Get(port_name.mb_str(), &pprouteway);
     if (npacks < 0) return npacks;
 
-    if (pProgress) {
-      pProgress->SetValue(60);
-      pProgress->Refresh();
-      pProgress->Update();
-    }
+    dlg_ctx.set_value(40);
 
     //  Iterate on the packets, finding the first route number from [0..9] that
     //  is not present
@@ -320,11 +315,7 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
 
   free(ppway);
 
-  if (pProgress) {
-    pProgress->SetValue(80);
-    pProgress->Refresh();
-    pProgress->Update();
-  }
+  dlg_ctx.set_value(80);
 
   VerifyPortClosed();
   return ret_val;
