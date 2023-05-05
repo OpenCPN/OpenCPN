@@ -1,3 +1,10 @@
+opencpn (5.8.2+dfsg-2) unstable; urgency=medium
+
+  * Add Depends: for jslib packages. Closes: #1034582.
+  * opencpn uses wxWidgets 3.2 since 5.8.2+dfsg-1. Closes: #1019769
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 May 2023 15:11:38 +0200
+
 opencpn (5.8.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
