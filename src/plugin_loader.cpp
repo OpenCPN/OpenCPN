@@ -1044,14 +1044,21 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
                                        pSech, ntheaders));
     LPSTR libname[256];
     size_t i = 0;
+#ifdef _DEBUG
+    std::string wxDLLtype = std::string(strver) + "ud_";
+#else
+    std::string wxDLLtype = std::string(strver) + "u_";
+#endif
     // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR
     while (pImportDescriptor->Name != 0) {
       // Get the name of each DLL
       libname[i] =
           (PCHAR)((DWORD_PTR)virtualpointer +
                   Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
-      if (strstr(libname[i], "wx") != NULL) {
-        if (strstr(libname[i], strver) == NULL) b_compat = false;
+      // Check if the plugin DLL dependencey is wxWidgets
+      if (strstr(libname[i], "wxmsw") != NULL) {
+        // Check if the DLL is compatible with the as-built version of wxWidgets
+        if (strstr(libname[i], wxDLLtype.c_str()) == NULL) b_compat = false;
         break;
       }
       pImportDescriptor++;  // advance to next IMAGE_IMPORT_DESCRIPTOR
