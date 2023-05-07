@@ -38,8 +38,7 @@ msgstr "แจ้งเตือน OpenCPN AIS"
 #: include/S57QueryDialog.h:42 include/S57QueryDialog.h:51
 #: src/canvasMenu.cpp:463 src/canvasMenu.cpp:472 src/chcanv.cpp:9538
 msgid "Object Query"
-msgstr "\n"
-""
+msgstr ""
 
 #: include/GoToPositionDialog.h:44 src/AISTargetListDialog.cpp:703
 #: src/canvasMenu.cpp:501
