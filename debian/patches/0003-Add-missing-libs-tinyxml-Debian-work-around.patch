@@ -2,6 +2,14 @@ From: Alec Leamas <leamas.alec@nowhere.net>
 Date: Tue, 27 Dec 2022 12:57:42 +0100
 Subject: [PATCH] Add missing libs like tinyxml Debian work-around
 
+Since we remove some bundled libs when repacking the sources,
+references to these libs causes build problems which must
+be patched in the cmake files.
+
+Not acceptable upstream, it's our problem that we remove stuff from
+the sources.
+
+Forwarded: not-needed
 ---
  CMakeLists.txt             |  8 ++++----
  cmake/SystemLibs.cmake     | 28 ++++++++++++++++++++++++++++
