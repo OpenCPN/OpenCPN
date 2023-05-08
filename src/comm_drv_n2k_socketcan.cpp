@@ -437,10 +437,10 @@ bool CommDriverN2KSocketCanImpl::SendProductInfo() {
   std::string ModelID("OpenCPN");  // Model ID
   AddStr(payload, ModelID, 32);
 
-  std::string ModelSWCode("5.8.0");  // SwCode
+  std::string ModelSWCode(PACKAGE_VERSION);  // SwCode
   AddStr(payload, ModelSWCode, 32);
 
-  std::string ModelVersion("5.8.0");  // Model Version
+  std::string ModelVersion(PACKAGE_VERSION);  // Model Version
   AddStr(payload, ModelVersion, 32);
 
   std::string ModelSerialCode(std::to_string(m_unique_number));  // Model Serial Code
