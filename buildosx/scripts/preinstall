@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -d "$DSTROOT" ]; then
+  rm -f ${DSTROOT}/Contents/Frameworks/libwx_baseu-3.*dylib
+  rm -f ${DSTROOT}/Contents/MacOS/libwx_baseu-3.*dylib
+fi
+exit 0
