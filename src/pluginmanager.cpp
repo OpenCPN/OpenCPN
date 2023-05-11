@@ -2834,7 +2834,7 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray(void) {
   auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer *pic = plugin_array->Item(i);
-    if (pic->m_bEnabled && pic->m_bInitState &&
+    if (pic && pic->m_bEnabled && pic->m_bInitState &&
         ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
          (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))) {
       wxArrayString carray = pic->m_pplugin->GetDynamicChartClassNameArray();
