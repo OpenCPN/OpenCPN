@@ -78,7 +78,7 @@
 #include <dlfcn.h>
 #endif
 
-#ifdef WIN32
+#ifdef __WXMSW__
 #include <DbgHelp.h>
 #pragma comment(lib, "Dbghelp.lib")
 #include <Psapi.h>
