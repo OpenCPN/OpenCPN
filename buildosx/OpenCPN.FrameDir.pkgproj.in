@@ -31548,6 +31548,23 @@
 				<key>VERSION</key>
 				<integer>5</integer>
 			</dict>
+            <key>PACKAGE_SCRIPTS</key>
+			<dict>
+				<key>POSTINSTALL_PATH</key>
+				<dict>
+					<key>PATH_TYPE</key>
+					<integer>1</integer>
+				</dict>
+				<key>PREINSTALL_PATH</key>
+				<dict>
+                    <key>PATH</key>
+                    <string>${CMAKE_SOURCE_DIR}/buildosx/scripts/preinstall</string>
+					<key>PATH_TYPE</key>
+					<integer>0</integer>
+				</dict>
+				<key>RESOURCES</key>
+				<array/>
+			</dict>
 			<key>PACKAGE_SETTINGS</key>
 			<dict>
 				<key>AUTHENTICATION</key>
@@ -31573,7 +31590,7 @@
 				<key>USE_HFS+_COMPRESSION</key>
 				<false/>
 				<key>VERSION</key>
-				<string>1.0.0</string>
+				<string>${PACKAGE_VERSION}</string>
 			</dict>
 			<key>TYPE</key>
 			<integer>0</integer>
@@ -31897,7 +31914,7 @@
 			<key>PAYLOAD_ONLY</key>
 			<false/>
 			<key>REFERENCE_FOLDER_PATH</key>
-			<string>/Users/macmini/Projects/OpenCPN</string>
+			<string>${CMAKE_SOURCE_DIR}</string>
 			<key>TREAT_MISSING_PRESENTATION_DOCUMENTS_AS_WARNING</key>
 			<false/>
 		</dict>

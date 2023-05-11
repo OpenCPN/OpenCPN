@@ -176,7 +176,6 @@ src/routemanagerdialog.cpp
 src/routeman.cpp
 src/routeman_gui.cpp
 src/route_point.cpp
-src/RoutePoint.cpp
 src/route_point_gui.cpp
 src/routeprintout.cpp
 src/RoutePropDlg.cpp
