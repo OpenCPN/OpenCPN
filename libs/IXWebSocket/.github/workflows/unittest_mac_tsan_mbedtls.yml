@@ -1,0 +1,17 @@
+name: mac_tsan_mbedtls
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+  pull_request:
+
+jobs:
+  mac_tsan_mbedtls:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - name: install mbedtls
+      run: brew install mbedtls
+    - name: make test
+      run: make -f makefile.dev test_tsan_mbedtls
