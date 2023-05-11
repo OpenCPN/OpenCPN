@@ -1405,7 +1405,7 @@ bool MyApp::OnInit() {
   //      Init the WayPoint Manager
   pWayPointMan = NULL;
 
-  g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
+  g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   wxString msg;
   msg.Printf(_T("Detected display size (horizontal): %d mm"),
              (int)g_display_size_mm);
@@ -1421,7 +1421,7 @@ bool MyApp::OnInit() {
     g_Platform->SetDisplaySizeMM(g_display_size_mm);
   }
 
-  g_display_size_mm = wxMax(80, g_display_size_mm);
+  g_display_size_mm = wxMax(50, g_display_size_mm);
 
   if (g_btouch) {
     int SelectPixelRadius = 50;
