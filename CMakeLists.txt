@@ -1857,7 +1857,7 @@ endif ()
 
 # Add targets used elsewhere, notably by model
 
-add_subdirectory(libs/easywsclient)
+add_subdirectory(libs/IXWebSocket)
 add_subdirectory(libs/gdal)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
