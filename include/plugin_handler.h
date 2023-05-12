@@ -139,8 +139,14 @@ public:
   /** Install a new, downloaded but not installed plugin tarball. */
   bool installPlugin(PluginMetadata plugin, std::string path);
 
-  /** Install a new, downloaded but not installed plugin tarball. */
-  bool installPlugin(std::string path);
+  /**
+   * Install a new, downloaded but not installed plugin tarball,
+   * returning metadata for installed plugin.
+   */
+  bool installPlugin(const std::string& path, PluginMetadata& metadata);
+
+  /* Install a new, downloaded but not installed plugin tarball. */
+  bool installPlugin(const std::string& path);
 
   /** Uninstall an installed plugin. */
   bool uninstall(const std::string plugin);

@@ -1032,7 +1032,13 @@ bool PluginHandler::installPlugin(PluginMetadata plugin) {
   return installPlugin(plugin, path);
 }
 
-bool PluginHandler::installPlugin(std::string path) {
+bool PluginHandler::installPlugin(const std::string& path) {
+  PluginMetadata unused;
+  return installPlugin(path, unused);
+}
+
+bool PluginHandler::installPlugin(const std::string& path,
+                                  PluginMetadata& metadata) {
   std::string filelist;
   std::string temp_path(tmpnam(0));
   if (!extractTarball(path, filelist, temp_path)) {
@@ -1058,6 +1064,7 @@ bool PluginHandler::installPlugin(std::string path) {
   saveDirlist(name);
   saveVersion(name, version);
 
+  metadata = ctx.plugins[0];
   return true;
 }
 
