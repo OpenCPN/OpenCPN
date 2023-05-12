@@ -24,7 +24,6 @@
 #ifndef CATALOG_PARSER_H__
 #define CATALOG_PARSER_H__
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -64,12 +63,14 @@ struct PluginMetadata {
 
   bool openSource;
 
-  bool readonly;  // Can plugin be removed?
-  int ix;         // Index in list of installed or available.
+  bool readonly;  ///< Can plugin be removed?
+  int ix;         ///< Index in list of installed or available.
   void clear() { *this = PluginMetadata(); }
   std::string key() const {
     return std::string(name) + version + release + target + target_version;
   }
+
+  std::string to_string(); ///< Return printable XML representation.
 
   PluginMetadata() : openSource(true), readonly(true), ix(-1) {}
 };

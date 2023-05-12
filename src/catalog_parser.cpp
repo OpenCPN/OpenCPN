@@ -22,9 +22,6 @@
  ***************************************************************************
  */
 
-#include <cstring>
-#include <fstream>
-#include <iterator>
 #include <sstream>
 
 #include <wx/log.h>
@@ -38,6 +35,38 @@
 #include "catalog_handler.h"
 #include "pugixml.hpp"
 
+static void add_node(pugi::xml_node root, const std::string& name,
+                     const std::string& value) {
+  auto child = root.append_child(name.c_str());
+  child.append_child(pugi::node_pcdata).set_value(value.c_str());
+}
+    
+
+std::string  PluginMetadata::to_string() {
+  pugi::xml_document doc;
+  auto root = doc.append_child("plugin");
+  root.append_attribute("version").set_value("1");
+
+  add_node(root, "name", name);
+  add_node(root, "version", version);
+  add_node(root, "release", release);
+  add_node(root, "summary", summary);
+  add_node(root, "api-version", api_version);
+  add_node(root, "open-source", openSource ? "true" : "false");
+  add_node(root, "author", author);
+  add_node(root, "source", author);
+  add_node(root, "info-url", info_url);
+  add_node(root, "description", description);
+  add_node(root, "target", target);
+  add_node(root, "target-version", target_version);
+  add_node(root, "target-arch", target_arch);
+  add_node(root, "tarball-url", tarball_url);
+  add_node(root, "tarball-checksum", checksum);
+
+  std::ostringstream ss;
+  doc.save(ss, "    ");
+  return ss.str();
+}
 
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   bool ok = true;
