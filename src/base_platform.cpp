@@ -150,6 +150,11 @@ BasePlatform::BasePlatform() {
   m_isFlatpacked = checkIfFlatpacked();
   m_osDetail = new OCPN_OSDetail;
   DetectOSDetail(m_osDetail);
+
+#ifdef __ANDROID__
+  androidUtilInit();
+#endif
+
   InitializeLogFile();
 }
 
@@ -656,10 +661,11 @@ bool BasePlatform::InitializeLogFile(void) {
     // TODO Remove this behaviour on Release
     ::wxRemoveFile(mlog_file);
   }
+#endif
 
   if (wxLog::GetLogLevel() > wxLOG_User) wxLog::SetLogLevel(wxLOG_Info);
 
-#elif CLIAPP
+#if CLIAPP
   wxLog::SetActiveTarget(new wxLogStderr);
   wxLog::SetTimestamp("");
   wxLog::SetLogLevel(wxLOG_Warning);
