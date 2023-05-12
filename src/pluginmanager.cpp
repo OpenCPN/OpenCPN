@@ -4424,272 +4424,34 @@ void CatalogMgrPanel::OnPluginSettingsButton(wxCommandEvent &event) {
 
 void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
   // Present a file selector dialog to get the file name..
-  wxString tarballPath;
+  wxString path;
   int response = g_Platform->DoFileSelectorDialog(
-      this, &tarballPath, _("Select tarball file"), GetImportInitDir(),
-      wxEmptyString, wxT("tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*"));
+      this, &path, _("Select tarball file"), GetImportInitDir(),
+      "", "tar files (*.tar.gz)|*.tar.gz|All Files (*.*)|*.*");
 
-  if (response == wxID_OK) {
-    // Record the path to the last import file for next time
-    wxFileName f = tarballPath;
-    wxString used_path = f.GetPath(wxPATH_GET_VOLUME | wxPATH_NO_SEPARATOR);
-    if (used_path != wxEmptyString) {
-      pConfig->SetPath(_T("/PlugIns/"));
-      pConfig->Write("LatestImportDir", used_path);
-      pConfig->Flush();
-    }
-
-    // Traverse the tarball to find the required "metadata.xml file
-
-    // Store the metadata file in temp location
-    wxString tmpMetadata = wxFileName::CreateTempFileName("meta");
-
-    struct archive *src = archive_read_new();
-    archive_read_support_filter_gzip(src);
-    archive_read_support_format_tar(src);
-    int r = archive_read_open_filename(src, tarballPath.ToStdString().c_str(),
-                                       10240);
-    if (r != ARCHIVE_OK) {
-      std::ostringstream os;
-      // os << "Cannot read installation tarball: " << path;
-      wxLogWarning(os.str().c_str());
-      // last_error_msg = os.str();
-      return;
-    }
-
-    struct archive *dest = archive_write_disk_new();
-    archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
-
-    bool bFoundMetadata = false;
-    struct archive_entry *entry = 0;
-    while (true) {
-      int r = archive_read_next_header(src, &entry);
-      if (r == ARCHIVE_EOF) {
-        break;
-      }
-      if (r < ARCHIVE_OK) {
-        break;
-      }
-
-      //  Find the file "metadata.xml"
-      std::string path = archive_entry_pathname(entry);
-      if (std::string::npos != path.find("metadata.xml")) {
-        bFoundMetadata = true;
-        archive_entry_set_pathname(entry, tmpMetadata.mb_str());
-
-        if (r >= ARCHIVE_OK && archive_entry_size(entry) > 0) {
-          const void *buff;
-          size_t size;
-          la_int64_t offset;
-
-          r = archive_write_header(dest, entry);
-          if (r < ARCHIVE_OK) {
-            break;
-          }
-
-          while (true) {
-            r = archive_read_data_block(src, &buff, &size, &offset);
-            if (r == ARCHIVE_EOF) {
-              break;
-            }
-            if (r < ARCHIVE_OK) {
-              break;
-            }
-            r = archive_write_data_block(dest, buff, size, offset);
-            if (r < ARCHIVE_OK) {
-              wxLogWarning("Error copying install data: %s",
-                           archive_error_string(dest));
-
-              break;
-            }
-          }
-          if (r < ARCHIVE_OK) {
-            break;
-          }
-
-          r = archive_write_finish_entry(dest);
-          if (r < ARCHIVE_OK) {
-            break;
-          }
-        }
-      } else {
-        continue;
-      }
-    }
-    archive_read_free(src);
-    archive_write_free(dest);
-
-    // Any tarball extraction problem?
-    if (r < ARCHIVE_OK) {
-      OCPNMessageBox(this, _("Error extracting import plugin tarball."),
-                     _("OpenCPN Plugin Import Error"));
-      return;
-    }
-
-    // Found the metadata?
-    if (!bFoundMetadata) {
-      OCPNMessageBox(
-          this,
-          _("Error, import plugin tarball does not contain required metadata."),
-          _("OpenCPN Plugin Import Error"));
-      return;
-    }
-
-    // Parse the import metadata
-    PluginMetadata importPlugin;
-
-    pugi::xml_document doc;
-    bool ret = doc.load_file(tmpMetadata.mb_str());
-    if (ret) {
-      pugi::xml_node pluginRoot = doc.first_child();
-
-      if (!parsePluginNode(pluginRoot, importPlugin)) {
-        OCPNMessageBox(this, _("Error processing import plugin metadata."),
-                       _("OpenCPN Plugin Import Error"));
-        return;
-      }
-    }
-
-    //  TODO Validate the metadata, in some simplistic way...
-    if (!PluginHandler::isCompatible(importPlugin)) {
-      OCPNMessageBox(this, _("Incompatible import plugin detected."),
-                     _("OpenCPN Plugin Import Error"));
-      return;
-    }
-
-    // Load and parse a working copy of the currently active catalog...
-    std::vector<PluginMetadata> pluginArray;
-
-    pugi::xml_document catalog;
-    wxString currentCatalog = g_Platform->GetPrivateDataDir() +
-                              wxFileName::GetPathSeparator() +
-                              _T("ocpn-plugins.xml");
-    bool badCatalog = false;
-    if (!wxFileExists(currentCatalog)) {
-      badCatalog = true;
-    } else {
-      ret = catalog.load_file(currentCatalog.mb_str());
-      if (!ret) {
-        badCatalog = true;
-      }
-    }
-
-    // If current default catalog is corrupt, or missing,
-    // then create a new "stub" catalog
-
-    if (badCatalog) {
-      if (wxFileExists(currentCatalog)) wxRemoveFile(currentCatalog);
-
-      wxTextFile stubCatalog(currentCatalog);
-      stubCatalog.Create();
-      stubCatalog.AddLine(_T("<?xml version=\"1.0\" ?>"));
-      stubCatalog.AddLine(_T("<plugins>"));
-      stubCatalog.AddLine(_T("<version>0.0.0</version>"));
-      stubCatalog.AddLine(_T("<date>2021-06-01 00:01</date>"));
-      stubCatalog.AddLine(_T("</plugins>"));
-      stubCatalog.Write();
-      stubCatalog.Close();
-
-      catalog.load_file(currentCatalog.mb_str());
-    }
-
-    pugi::xml_node catalogRoot = catalog.first_child();
-    for (pugi::xml_node element = catalogRoot.first_child(); element;
-         element = element.next_sibling()) {
-      if (!strcmp(element.name(), "plugin")) {
-        PluginMetadata catalogPlugin;
-        parsePluginNode(element, catalogPlugin);
-        pluginArray.push_back(catalogPlugin);
-      }
-    }
-
-    //  Merge the import plugin metadata with the current catalog
-    //  By merge, we mean this:
-    //  1.  If the import metadata does not exist in the catalog, append it
-    //  2.  If the import metadata does exist (name, target, and target-version
-    //  match), then..
-    //      update the catalog version with the import version
-    bool bmerge = false;
-    for (size_t i = 0; i < pluginArray.size(); i++) {
-      PluginMetadata candidate = pluginArray[i];
-      if (importPlugin.name == candidate.name) {
-        if (importPlugin.target == candidate.target) {
-          if (importPlugin.target_version == candidate.target_version) {
-            bmerge = true;
-            pluginArray[i].version = importPlugin.version;
-            pluginArray[i].release = importPlugin.release;
-            pluginArray[i].summary = importPlugin.summary;
-            pluginArray[i].description = importPlugin.description;
-            pluginArray[i].tarball_url = importPlugin.tarball_url;
-            break;
-          }
-        }
-      }
-    }
-    // If there was no exact merge, then simply add the importPlugin metadata
-    // (case 1)
-    if (!bmerge) pluginArray.push_back(importPlugin);
-
-    // Write out the newly merged catalog, replacing the currently active
-    // catalog
-    pugi::xml_document newCatalog;
-    pugi::xml_node pluginsNode = newCatalog.append_child("plugins");
-
-    pugi::xml_node childT = pluginsNode.append_child("version");
-    childT.append_child(pugi::node_pcdata).set_value("0.0.0");
-    childT = pluginsNode.append_child("date");
-    wxDateTime now = wxDateTime::GetTimeNow();
-    wxString timeFormat = now.FormatISOCombined(' ');
-    childT.append_child(pugi::node_pcdata).set_value(timeFormat.mb_str());
-
-    for (size_t i = 0; i < pluginArray.size(); i++) {
-      PluginMetadata workingMetadata = pluginArray[i];
-
-      pugi::xml_node pluginNode = pluginsNode.append_child("plugin");
-      pugi::xml_attribute version = pluginNode.append_attribute("version");
-      version.set_value("1");
-
-      populatePluginNode(pluginNode, workingMetadata);
-    }
-
-    wxString catalogName = g_Platform->GetPrivateDataDir() +
-                           wxFileName::GetPathSeparator() +
-                           _T("ocpn-plugins.xml");
-    newCatalog.save_file(catalogName.mb_str(), "  ");
-
-    // Copy the metadata to the tarball cache
-
-    wxFileName fn(tarballPath);
-    if (ocpn::store_tarball(tarballPath.ToStdString().c_str(),
-                            fn.GetFullName().ToStdString().c_str())) {
-      wxLogMessage("Copied %s to local cache",
-                   tarballPath.ToStdString().c_str());
-    }
-
-    // Ready to load and process the merged catalog...
-
-    // Reset the PluginHandler catalog file source.
-    // This will cause the Handler to find, load, and parse the just-merged
-    // catalog as copied to g_Platform->GetPrivateDataDir()...
-    auto pluginHandler = PluginHandler::getInstance();
-    pluginHandler->setMetadata("");
-
-    //  Reload all plugins, which will also update the status fields
-    LoadAllPlugIns(false);
-
-    // Update this Panel, and the entire list.
-    if (m_PluginListPanel) {
-      auto loader = PluginLoader::getInstance();
-      m_PluginListPanel->ReloadPluginPanels();
-    }
-
-    // Success!
-    wxString msg = _("Plugin imported successfully");
-    msg += _T("\n");
-    msg += _("Active catalog updated.");
-    msg += _T("\n");
-    msg += _("Plugin may be installed or updated now.");
-    OCPNMessageBox(this, msg, _("OpenCPN Plugin Import Successful"));
+  if (response != wxID_OK) {
+    return;
+  }
+  auto handler = PluginHandler::getInstance();
+  PluginMetadata metadata;
+  bool ok = handler->installPlugin(path.ToStdString(), metadata);
+  if (!ok) { 
+    OCPNMessageBox(this, _("Error extracting import plugin tarball."),
+                   _("OpenCPN Plugin Import Error"));
+    return;
+  }
+  if (!PluginHandler::isCompatible(metadata)) {
+    OCPNMessageBox(this, _("Incompatible import plugin detected."),
+                   _("OpenCPN Plugin Import Error"));
+    handler->uninstall(metadata.name);
+    return;
+  }
+  auto metadata_path = PluginHandler::ImportedMetadataPath(metadata.name);
+  std::ofstream file(metadata_path);
+  file << metadata.to_string();
+  if (!file.good()) {
+    WARNING_LOG << "Error saving metadata file: " << metadata_path <<
+        " for imported plugin: " << metadata.name;
   }
 }
 
