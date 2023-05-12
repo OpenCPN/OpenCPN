@@ -93,6 +93,7 @@ extern wxColour g_colourWaypointRangeRingsColour;
 
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
+extern bool g_bShowWptName;
 
 WX_DECLARE_LIST(wxBitmap, BitmapList);
 #include <wx/listimpl.cpp>
@@ -1395,7 +1396,7 @@ void MarkInfoDlg::DefautlBtnClicked(wxCommandEvent& event) {
         g_bUseWptScaMin = m_checkBoxScaMin->GetValue();
       }
       if (m_SaveDefaultDlg->NameCB->GetValue()) {
-        g_iWpt_ScaMin = m_checkBoxShowName->GetValue();
+        g_bShowWptName = m_checkBoxShowName->GetValue();
       }
     }
     m_SaveDefaultDlg = NULL;
