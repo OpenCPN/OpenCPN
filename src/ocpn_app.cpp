@@ -2048,7 +2048,6 @@ bool MyApp::OnInit() {
 
     StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
   }
-
   return TRUE;
 }
 

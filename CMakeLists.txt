@@ -1541,8 +1541,8 @@ if (OCPN_USE_CURL)
       install(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
-    target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-#    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
+    target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -3201,3 +3201,15 @@ if (NOT QT_ANDROID)
 
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()
+
+if (QT_ANDROID)
+    target_include_directories( ${PACKAGE_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include)
+
+    target_link_libraries(${PACKAGE_NAME} PRIVATE
+      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
+      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
+      )
+
+    add_definitions(-DMG_ENABLE_OPENSSL)
+endif (QT_ANDROID)

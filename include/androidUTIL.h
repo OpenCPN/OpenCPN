@@ -191,6 +191,7 @@ int androidGetScreenOrientation();
 
 void androidEnableMulticast(bool benable);
 void androidLastCall();
+wxString androidGetIpV4Address(void);
 
 //      SVG Support
 wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
