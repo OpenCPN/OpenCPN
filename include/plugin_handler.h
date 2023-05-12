@@ -110,6 +110,9 @@ public:
   /** Return path to imported metadata for given plugin. */
   static std::string ImportedMetadataPath(std::string name);
 
+  /** List of paths for imported plugins metadata. */
+  static std::vector<std::string> GetImportPaths();
+
   /** Return true if given plugin is loadable on given os/version. */
   static bool isCompatible(const PluginMetadata& metadata,
                            const char* os = PKG_TARGET,
@@ -126,6 +129,7 @@ public:
 
   /** Map of available plugin targets -> number of occurences. */
   const std::map<std::string, int> getCountByTarget();
+
 
   /** Return plugin containing given filename or "" if not found. */
   std::string getPluginByLibrary(const std::string& filename);

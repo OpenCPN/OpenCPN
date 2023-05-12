@@ -121,6 +121,21 @@ static void mkdir(const std::string path) {
 #endif
 }
 
+static std::vector<std::string> glob_dir(const std::string& dir_path,
+                                         const std::string& pattern) {
+  std::vector<std::string> found;
+  wxString s;
+  wxDir dir(dir_path);
+  auto match = dir.GetFirst(&s, pattern);
+  while (match) {
+    static const std::string SEP
+        = wxString(wxFileName::GetPathSeparator()).ToStdString();
+    found.push_back(dir_path + SEP + s.ToStdString());
+    match = dir.GetNext(&s);
+  }
+  return found;
+}
+
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
  * or -1 if not found
@@ -905,6 +920,12 @@ const std::map<std::string, int> PluginHandler::getCountByTarget() {
   }
   return count_by_target;
 }
+
+
+std::vector<std::string> PluginHandler::GetImportPaths() {
+  return glob_dir(importsDir(), "*.xml");
+}
+
 
 void PluginHandler::cleanupFiles(const std::string& manifestFile,
                                  const std::string& plugname) {
