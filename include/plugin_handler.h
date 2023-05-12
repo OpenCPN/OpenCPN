@@ -107,6 +107,9 @@ public:
   /** Return path to file containing version for given plugin. */
   static std::string versionPath(std::string name);
 
+  /** Return path to imported metadata for given plugin. */
+  static std::string ImportedMetadataPath(std::string name);
+
   /** Return true if given plugin is loadable on given os/version. */
   static bool isCompatible(const PluginMetadata& metadata,
                            const char* os = PKG_TARGET,

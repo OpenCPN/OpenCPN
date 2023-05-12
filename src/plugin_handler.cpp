@@ -147,6 +147,15 @@ static std::string pluginsConfigDir() {
   return pluginDataDir;
 }
 
+static std::string importsDir() {
+  auto path = pluginsConfigDir();
+  path = path + SEP + "imports";
+  if (!ocpn::exists(path)) {
+    mkdir(path);
+  }
+  return path;
+}
+
 static std::string dirListPath(std::string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return pluginsConfigDir() + SEP + name + ".dirs";
@@ -353,6 +362,11 @@ std::string PluginHandler::fileListPath(std::string name) {
 std::string PluginHandler::versionPath(std::string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return pluginsConfigDir() + SEP + name + ".version";
+}
+
+std::string PluginHandler::ImportedMetadataPath(std::string name) {;
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return importsDir() + SEP + name + ".xml";
 }
 
 typedef std::unordered_map<std::string, std::string> pathmap_t;
