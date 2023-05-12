@@ -2071,7 +2071,7 @@ void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
 
   PriorityDlg *pdlg = new PriorityDlg(m_parent);
   pdlg->ShowModal();
-
+  delete pdlg;
 }
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
