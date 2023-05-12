@@ -996,6 +996,10 @@ bool androidUtilInit(void) {
   return true;
 }
 
+wxString androidGetIpV4Address(void) {
+  wxString ipa = callActivityMethod_vs("getIpAddress");
+  return ipa;
+}
 
 wxSize getAndroidConfigSize() { return config_size; }
 
