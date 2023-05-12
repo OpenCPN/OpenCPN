@@ -143,8 +143,17 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   Layout();
   mainSizer->Fit(this);
   Centre();
+
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
 }
 
+PriorityDlg::~PriorityDlg() {
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
+}
 
 void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
                             size_t map_index, std::string map_name,

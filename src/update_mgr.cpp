@@ -53,6 +53,10 @@
 #include "options.h"
 #include "svg_utils.h"
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform* g_Platform;
@@ -472,6 +476,15 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
   RecalculateSize();
 
   Center();
+#ifdef __ANDROID__
+    androidDisableRotation();
+#endif
+}
+
+UpdateDialog::~UpdateDialog() {
+#ifdef __ANDROID__
+    androidEnableRotation();
+#endif
 }
 
 void UpdateDialog::RecalculateSize() {
