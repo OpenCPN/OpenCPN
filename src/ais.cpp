@@ -713,8 +713,8 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, g_Platform->GetDisplayDPmm() / (2.0 / DPIscale));
-        // 0.4 mm nominal, but not less than 1 pixel
+      wxMax(2, g_Platform->GetDisplayDPmm() / (4.0 / DPIscale));
+        // 0.25 mm nominal, but not less than 2 pixels
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
