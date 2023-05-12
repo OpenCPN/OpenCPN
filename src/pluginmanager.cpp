@@ -6007,17 +6007,21 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor,
 
 // Render helpers
 void RenderRotateToViewPort(const ViewPort &VPoint) {
+#ifndef USE_ANDROID_GLES2
   float xt = VPoint.pix_width / 2.0, yt = VPoint.pix_height / 2.0;
   glTranslatef(xt, yt, 0);
   glRotatef(VPoint.rotation * 180. / PI, 0, 0, 1);
   glTranslatef(-xt, -yt, 0);
+#endif
 }
 
 void UndoRenderRotateToViewPort(const ViewPort &VPoint) {
+#ifndef USE_ANDROID_GLES2
   float xt = VPoint.pix_width / 2.0, yt = VPoint.pix_height / 2.0;
   glTranslatef(xt, yt, 0);
   glRotatef(-VPoint.rotation * 180. / PI, 0, 0, 1);
   glTranslatef(-xt, -yt, 0);
+#endif
 }
 
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
