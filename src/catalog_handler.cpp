@@ -150,24 +150,19 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     ctx->meta_urls.pop_back();
 
     // already parsed this meta file?
-    bool bdone = false;
-    for (std::vector<std::string>::iterator it = ctx->parsed_metas.begin();
-         it != ctx->parsed_metas.end(); it++) {
-      if (*it == url) {
-        bdone = true;
-        break;
-      }
+    auto found =
+        std::find(ctx->parsed_metas.begin(), ctx->parsed_metas.end(), url);
+    if (found != ctx->parsed_metas.end()) {
+        continue;
     }
 
-    if (!bdone) {
-      ctx->parsed_metas.push_back(url);
-      if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
-        wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
-                     url.c_str());
-      } else {
-        ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
-        if (!ok) break;
-      }
+    ctx->parsed_metas.push_back(url);
+    if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
+      wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
+                   url.c_str());
+    } else {
+      ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
+      if (!ok) break;
     }
   }
   if (!ok) {
