@@ -92,6 +92,7 @@ int g_iWaypointRangeRingsStepUnits;
 wxColour g_colourWaypointRangeRingsColour;
 bool g_bUseWptScaMin;
 int g_iWpt_ScaMin;
+bool g_bShowWptName;
 int g_LayerIdx;
 bool g_bOverruleScaMin;
 int g_nTrackPrecision;
