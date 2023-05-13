@@ -78,7 +78,6 @@ bool ChartGeoTIFF::CornerLatLon(GTIF *gtif, GTIFDefn *defn, double &x,
   if (!GTIFImageToPCS(gtif, &x_, &y_)) {
     return false;
   }
-  std::cout << x << " " << y << " -> ";
   if (defn->Model == ModelTypeGeographic) {
     lat = y_;
     lon = x_;
