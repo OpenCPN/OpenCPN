@@ -2612,13 +2612,16 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   //  Very special case for ATON flare lights at 135 degrees, the standard
   //  render angle. We don't want them to rotate with the viewport.
   if (rzRules->obj->bIsAton &&
-      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6)) &&
-      (fabs(rot_angle - 135.0) < 1.)) {
-    render_angle -= vp_plib.rotation * 180. / PI;
+      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6))){
 
-    //  And, due to popular request, we make the flare lights a little bit
-    //  smaller than S52 specifications
-    xscale = xscale * 6. / 7.;
+#ifdef __OCPN__ANDROID__
+      //  Due to popular request, we make the flare lights a little bit
+      //  smaller than S52 specifications
+      xscale = xscale * 5. / 7.;
+#endif
+
+      if( fabs(rot_angle - 135.0) < 1.)
+        render_angle -= vp_plib.rotation * 180. / PI;
   }
 
   int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
