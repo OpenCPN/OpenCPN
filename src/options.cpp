@@ -1775,10 +1775,6 @@ void options::Init(void) {
   m_scrollRate = 15;
 #endif
 
-  //FIXME (dave) move
-  //m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
-  //m_BTscanning = 0;
-
   dialogFont = GetOCPNScaledFont(_("Dialog"));
 
   m_bVectorInit = false;

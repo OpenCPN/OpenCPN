@@ -82,6 +82,7 @@
 #include "toolbar.h"
 #include "TrackPropDlg.h"
 #include "comm_drv_n0183_android_int.h"
+#include "comm_drv_n0183_android_bt.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
@@ -1238,21 +1239,26 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
+
+  wxEvtHandler *consumer = s_pAndroidBTNMEAMessageConsumer;
+
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
-  wxString wstring = wxString(string, wxConvUTF8);
 
-  char tstr[200];
-  strncpy(tstr, string, 190);
-  strcat(tstr, "\r\n");
+  // qDebug() << "ProcessBT: " << string;
 
-//FIXME (dave)
-//   if (s_pAndroidBTNMEAMessageConsumer) {
-//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-//     Nevent.SetNMEAString(tstr);
-//     Nevent.SetStream(NULL);
-//
-//     s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
-//   }
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+    vec->push_back('\r');
+    vec->push_back('\n');
+
+    CommDriverN0183AndroidBTEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_BT, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
 
   return 77;
 }

@@ -216,6 +216,9 @@ void ConnectionsDialog::Init(){
   m_stBTPairs = 0;
   m_choiceBTDataSources = 0;
 
+  m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
+  m_BTscanning = 0;
+
   //Create the UI
   int group_item_spacing = 2;
 
