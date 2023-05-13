@@ -486,8 +486,7 @@ void s52plib::SetPPMM(float ppmm) {
 
   int ww, hh;
   ::wxDisplaySize(&ww, &hh);
-  m_display_size_mm =
-      wxMax(ww, hh) / GetPPMM();  // accurate enough for internal use
+  m_display_size_mm = hh / GetPPMM();  // accurate enough for internal use
 
   m_display_size_mm /= m_displayScale;
 
@@ -5789,6 +5788,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
     radius /= fact;
     sector_radius /= fact;
     arc_width /= fact;
+    arc_width = wxMax(arc_width, 1);
   }
 
   //  radius scaled to display
