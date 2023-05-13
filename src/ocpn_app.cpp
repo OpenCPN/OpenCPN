@@ -1145,10 +1145,13 @@ bool MyApp::OnInit() {
   if (getenv("OPENCPN_FATAL_ERROR") != 0) {
     wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
   }
+
+#ifndef __ANDROID__
   // Check if last run failed, set up safe_mode.
   if (!safe_mode::get_mode()) {
     safe_mode::check_last_start();
   }
+#endif
 
   //  Perform first stage initialization
   OCPNPlatform::Initialize_1();
