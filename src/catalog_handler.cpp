@@ -144,6 +144,14 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
   std::string url;
 
   bool ok = ::ParseCatalog(xml, ctx);
+  for (auto path : PluginHandler::getInstance()->GetImportPaths()) {
+    std::ifstream plugin_xml(path);
+    std::stringstream ss;
+    ss << plugin_xml.rdbuf();
+    PluginMetadata metadata;
+    ::ParsePlugin(ss.str().c_str(), metadata);
+    ctx->plugins.push_back(metadata);
+  }
   while (ctx->meta_urls.size() > 0) {
     std::ostringstream xml;
     url = ctx->meta_urls.back();
@@ -155,7 +163,6 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     if (found != ctx->parsed_metas.end()) {
         continue;
     }
-
     ctx->parsed_metas.push_back(url);
     if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
       wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
