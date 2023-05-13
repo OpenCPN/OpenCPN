@@ -81,6 +81,7 @@
 #include "toolbar.h"
 #include "toolbar.h"
 #include "TrackPropDlg.h"
+#include "comm_drv_n0183_android_int.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
@@ -1211,29 +1212,24 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
   //  The NMEA message target handler may not be setup yet, if no connections
   //  are defined or enabled. But we may get synthesized messages from the Java
-  //  app, even without a definite connection, and we want to process these
-  //  messages too. So assume that the global MUX, if present, will handle these
-  //  messages.
+  //  app, even without a definite connection.  We ignore these messages.
   wxEvtHandler *consumer = s_pAndroidNMEAMessageConsumer;
-
-  if (!consumer && g_pMUX) consumer = g_pMUX;
 
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
 
   // qDebug() << "ProcessNMEA: " << string;
 
-  char tstr[200];
-  strncpy(tstr, string, 190);
-  strcat(tstr, "\r\n");
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
 
-  // FIXME (dave)
-//   if (consumer) {
-//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-//     Nevent.SetNMEAString(tstr);
-//     Nevent.SetStream(NULL);
-//
-//     consumer->AddPendingEvent(Nevent);
-//   }
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+
+    CommDriverN0183AndroidIntEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_INT, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
 
   return 66;
 }
