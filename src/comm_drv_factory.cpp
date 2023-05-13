@@ -40,6 +40,7 @@
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
 #include "comm_drv_signalk_net.h"
+#include "comm_drv_n0183_android_int.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
@@ -97,13 +98,18 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     }
 #endif
 
-#if 0  // FIXME (dave)
-    case INTERNAL_GPS:
-      return new InternalGPSDataStream(input_consumer, params);
-    case INTERNAL_BT:
-      return new InternalBTDataStream(input_consumer, params);
+#ifdef __ANDROID__
+    case INTERNAL_GPS: {
+      auto driver = std::make_shared<CommDriverN0183AndroidInt>(params, msgbus);
+      registry.Activate(driver);
+      return driver;
+      break;
+    }
 
+//    case INTERNAL_BT:
+//      return new InternalBTDataStream(input_consumer, params);
 #endif
+
     default:
       break;
   }

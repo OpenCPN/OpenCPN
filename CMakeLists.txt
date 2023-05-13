@@ -485,7 +485,7 @@ endif (MSVC)
 
 
 if (QT_ANDROID)
-  #set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
@@ -883,6 +883,8 @@ set(
   include/comm_bridge.h
   include/comm_driver.h
   include/comm_drv_n0183.h
+  include/comm_drv_n0183_android_bt.h
+  include/comm_drv_n0183_android_int.h
   include/comm_drv_n0183_net.h
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
@@ -1212,6 +1214,8 @@ endif ()
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
+  SET(SRCS ${SRCS} src/comm_drv_n0183_android_int.cpp)
+  SET(SRCS ${SRCS} src/comm_drv_n0183_android_bt.cpp)
 ENDIF(QT_ANDROID)
 
 set(SRCS ${SRCS} ${MODEL_SRC})
