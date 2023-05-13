@@ -28,7 +28,8 @@
 #include <vector>
 
 /**
- *  Datatypes and a single method to parse ocpn-plugins.xml XML data.
+ *  Datatypes and  methods to parse ocpn-plugins.xml XML data,
+ *  either complete catalog or a single plugin.
  */
 
 /** Overall metadata for the set of plugins used. */
@@ -97,5 +98,7 @@ struct CatalogCtx {
 };
 
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx);
+
+bool ParsePlugin(const std::string& xml, PluginMetadata& metadata);
 
 #endif  // CATALOG_PARSER_H__
