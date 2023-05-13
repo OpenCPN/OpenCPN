@@ -242,12 +242,14 @@ bool CommDriverN0183Serial::Open() {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
 
-#ifndef ANDROID
+#ifndef __ANDROID__
    //    Kick off the  RX thread
     SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
     SetThreadRunFlag(1);
     std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
     t.detach();
+#else
+    androidStartUSBSerial(comx, m_BaudRate, this);
 #endif
   }
 
@@ -297,6 +299,13 @@ void CommDriverN0183Serial::Close() {
     delete m_GarminHandler;
     m_GarminHandler = NULL;
   }
+
+#ifdef __ANDROID__
+  wxString comx;
+  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
+  androidStopUSBSerial(comx);
+#endif
+
 }
 
 bool CommDriverN0183Serial::IsGarminThreadActive() {

@@ -186,7 +186,7 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(const ConnectionParams* par
 CommDriverN0183AndroidInt::~CommDriverN0183AndroidInt() { Close(); }
 
 bool CommDriverN0183AndroidInt::Open() {
-  androidStartNMEA( this );
+  androidStartGPS( this );
   return true;
 }
 
@@ -194,7 +194,7 @@ void CommDriverN0183AndroidInt::Close() {
   wxLogMessage(
       wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
 
-  androidStopNMEA();
+  androidStopGPS();
 
   Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_INT, &CommDriverN0183AndroidInt::handle_N0183_MSG,
        this);

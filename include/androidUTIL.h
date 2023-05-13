@@ -88,8 +88,8 @@ extern void androidEnableOptionItems(bool benable);
 
 extern wxString androidGetSupplementalLicense(void);
 
-extern bool androidStartNMEA(wxEvtHandler *consumer);
-extern bool androidStopNMEA();
+extern bool androidStartGPS(wxEvtHandler *consumer);
+extern bool androidStopGPS();
 extern wxString androidGPSService(int parm);
 extern bool androidDeviceHasGPS();
 
