@@ -53,7 +53,7 @@ typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
-class CommDriverN0183AndroidInt;  // fwd
+class CommDriverN0183AndroidBT;  // fwd
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
@@ -192,18 +192,6 @@ bool CommDriverN0183AndroidBT::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-//   if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
-//     m_GarminHandler = new GarminProtocolHandler( comx, this,  true);
-//   }
-//   else if( m_params.Garmin ) {
-//     m_GarminHandler = new GarminProtocolHandler( comx, this,  false);
-//   }
-//   else {
-//
-//     // strip off any description provided by Windows
-//     comx = comx.BeforeFirst(' ');
-//   }
-
   androidStartBT( this, port_uc );
   return true;
 }
@@ -221,7 +209,6 @@ void CommDriverN0183AndroidBT::Close() {
 
 void CommDriverN0183AndroidBT::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
-  // TODO: Read input data.
 }
 
 bool CommDriverN0183AndroidBT::SendMessage(std::shared_ptr<const NavMsg> msg,
@@ -234,8 +221,7 @@ bool CommDriverN0183AndroidBT::SendMessage(std::shared_ptr<const NavMsg> msg,
   if( !sentence.EndsWith(_T("\r\n")) )
         payload += _T("\r\n");
 
-  wxString port = m_params.GetStrippedDSPort(); //GetPort().AfterFirst(':');
-  //androidWriteSerial( port, payload );
+  androidSendBTMessage(payload);
   return true;
 }
 
@@ -266,9 +252,5 @@ void CommDriverN0183AndroidBT::handle_N0183_MSG(
     m_listener.Notify(std::move(msg_all));
   }
 }
-
-
-
-#define DS_RX_BUFFER_SIZE 4096
 
 

@@ -41,6 +41,7 @@
 #include "comm_drv_n0183_net.h"
 #include "comm_drv_signalk_net.h"
 #include "comm_drv_n0183_android_int.h"
+#include "comm_drv_n0183_android_bt.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
 
@@ -106,8 +107,12 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
       break;
     }
 
-//    case INTERNAL_BT:
-//      return new InternalBTDataStream(input_consumer, params);
+    case INTERNAL_BT: {
+      auto driver = std::make_shared<CommDriverN0183AndroidBT>(params, msgbus);
+      registry.Activate(driver);
+      return driver;
+      break;
+    }
 #endif
 
     default:
