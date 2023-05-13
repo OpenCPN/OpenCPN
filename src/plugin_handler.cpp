@@ -1135,6 +1135,7 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   // Best effort tries, failures are OK.
   remove(dirListPath(plugin_name).c_str());
   remove(PluginHandler::versionPath(plugin_name).c_str());
+  remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
 
   return true;
 }
