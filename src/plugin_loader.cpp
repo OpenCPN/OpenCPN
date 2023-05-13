@@ -666,8 +666,8 @@ void PluginLoader::UpdateManagedPlugins() {
   // catalog back to master
   for (size_t i = 0; i < plugin_array.GetCount(); i++) {
     pict = plugin_array.Item(i);
-    if (pict->m_ManagedMetadata.name
-            .size()) {  // If metadata is good, must be a managed plugin
+    if (pict->m_ManagedMetadata.name .size()) {
+      // Metadata is good, must be a managed plugin
       bool bfound = false;
       for (auto plugin : available) {
         if (pict->m_common_name.IsSameAs(wxString(plugin.name.c_str()))) {
@@ -695,11 +695,6 @@ void PluginLoader::UpdateManagedPlugins() {
       i++;
   }
 
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    pict = plugin_array.Item(i);
-    int yyp = 4;
-  }
-
   //  Now merge and update from the catalog
   for (auto plugin : available) {
     PlugInContainer* pic = NULL;
@@ -707,8 +702,7 @@ void PluginLoader::UpdateManagedPlugins() {
     bool bfound = false;
     for (size_t i = 0; i < plugin_array.GetCount(); i++) {
       pic = plugin_array.Item(i);
-      if (plugin_array.Item(i)->m_common_name.IsSameAs(
-              wxString(plugin.name.c_str()))) {
+      if (plugin_array.Item(i)->m_common_name.ToStdString() == plugin.name) {
         bfound = true;
         break;
       }
@@ -778,10 +772,9 @@ void PluginLoader::UpdateManagedPlugins() {
 
       // If the new plugin is not installed....
       else {
-        // If the plugin is actually loaded, but the new plugin is known not to
-        // be installed,
-        //  then there must be a legacy plugin loaded.
-        //  and the new status must be "PluginStatus::LegacyUpdateAvailable"
+        // If the plugin is actually loaded, but the new plugin is known not
+        // to be installed, then there must be a legacy plugin loaded.
+        // and the new status must be "PluginStatus::LegacyUpdateAvailable"
         if (pic->m_api_version) {
           pic->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
           pic->m_ManagedMetadata = plugin;
@@ -813,10 +806,8 @@ void PluginLoader::UpdateManagedPlugins() {
 
   // Add the detached plugins back at the top of the list.
   //  Later, the list will be populated in reverse order...Why??
-  for (std::map<std::string, PlugInContainer*>::iterator i = sortmap.begin();
-       i != sortmap.end(); i++) {
-    PlugInContainer* pic = i->second;
-    plugin_array.Insert(pic, 0);
+  for (auto it = sortmap.begin(); it != sortmap.end(); it++) {
+    plugin_array.Insert(it->second, 0);
   }
   evt_pluglist_change.Notify();
 }
