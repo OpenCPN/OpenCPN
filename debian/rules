@@ -8,8 +8,8 @@ include /usr/share/dpkg/pkg-info.mk
 
 	echo $(DEB_DISTRIBUTION)
 
-	sudo dpkg  --force -r libglew2.2
-	sudo rm  /usr/lib/*/libGLEW.so
+	dpkg  --force -r libglew2.2
+	rm  /usr/lib/*/libGLEW.so
 
 override_dh_auto_configure:
 ifeq ($(DEB_BUILD_ARCH_CPU), arm)
