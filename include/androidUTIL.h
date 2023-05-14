@@ -37,6 +37,7 @@
 class ArrayOfCDI;
 
 #include <QString>
+#include <string>
 
 // Enumerators for OCPN menu actions requested by Android UI
 #define OCPN_ACTION_FOLLOW 0x1000
@@ -161,7 +162,7 @@ int androidGetTZOffsetMins();
 int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI);
 
 bool androidShowDisclaimer(wxString title, wxString msg);
-bool androidShowSimpleOKDialog(wxString title, wxString msg);
+bool androidShowSimpleOKDialog(std::string title, std::string msg);
 bool androidShowSimpleYesNoDialog(wxString title, wxString msg);
 bool androidInstallPlaystoreHelp();
 
