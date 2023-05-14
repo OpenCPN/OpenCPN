@@ -2308,7 +2308,7 @@ bool androidShowDisclaimer(wxString title, wxString msg) {
   return (return_string == _T("OK"));
 }
 
-bool androidShowSimpleOKDialog(wxString title, wxString msg) {
+bool androidShowSimpleOKDialog(std::string title, std::string msg) {
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2324,12 +2324,9 @@ bool androidShowSimpleOKDialog(wxString title, wxString msg) {
   //  Need a Java environment to decode the resulting string
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) return false;
 
-  wxCharBuffer p1b = title.ToUTF8();
-  jstring p1 = (jenv)->NewStringUTF(p1b.data());
+  jstring p1 = (jenv)->NewStringUTF(title.c_str());
 
-  // Convert for wxString-UTF8  to jstring-UTF16
-  wxWCharBuffer b = msg.wc_str();
-  jstring p2 = (jenv)->NewString((jchar *)b.data(), msg.Len() * 2);
+  jstring p2 = (jenv)->NewStringUTF(msg.c_str());
 
   QAndroidJniObject data = activity.callObjectMethod(
       "simpleOKDialog",
