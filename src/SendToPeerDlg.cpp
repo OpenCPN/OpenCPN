@@ -33,7 +33,10 @@
 #include "route_point.h"
 #include "SendToPeerDlg.h"
 #include "ocpn_plugin.h"
+
+#ifdef __ANDROID__
 #include "androidUTIL.h"
+#endif
 
 #define TIMER_AUTOSCAN  94522
 #define TIMER_SCANTICK  94523
