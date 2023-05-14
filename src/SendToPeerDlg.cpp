@@ -32,6 +32,8 @@
 #include "route_point_gui.h"
 #include "route_point.h"
 #include "SendToPeerDlg.h"
+#include "ocpn_plugin.h"
+#include "androidUTIL.h"
 
 #define TIMER_AUTOSCAN  94522
 #define TIMER_SCANTICK  94523
@@ -62,11 +64,18 @@ SendToPeerDlg::SendToPeerDlg() {
   premtext = NULL;
   m_scanTime = 5;  //default, seconds
   m_bScanOnCreate = false;
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
+
 }
 
 SendToPeerDlg::SendToPeerDlg(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
                            const wxPoint& pos, const wxSize& size, long style) {
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
   Create(parent, id, caption, hint, pos, size, style);
 }
 
@@ -75,19 +84,25 @@ SendToPeerDlg::~SendToPeerDlg() {
   delete m_pgauge;
   delete m_SendButton;
   delete m_CancelButton;
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
 }
 
 bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
                           const wxString& caption, const wxString& hint,
                           const wxPoint& pos, const wxSize& size, long style) {
   SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
+
+  wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+  SetFont(*pF);
+
   wxDialog::Create(parent, id, caption, pos, size, style);
 
   CreateControls(hint);
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
   Centre();
-  m_pgauge->Hide();
 
   if (m_bScanOnCreate){
     m_autoScanTimer.SetOwner(this, TIMER_AUTOSCAN);
@@ -134,31 +149,19 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
 
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
+  wxBoxSizer* itemBoxSizer3 = new wxBoxSizer(wxVERTICAL);
+  itemBoxSizer2->Add(itemBoxSizer3, 0, wxEXPAND | wxALL, 5);
+
   m_RescanButton = new wxButton(itemDialog1, ID_STP_SCAN, _("Scan again"),
                                 wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer2->Add(m_RescanButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+  itemBoxSizer3->Add(m_RescanButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_pgauge = new wxGauge(this, -1, m_scanTime * 2,
+  m_pgauge = new wxGauge(itemDialog1, -1, m_scanTime * 2,
                           wxDefaultPosition, wxSize(-1, GetCharHeight()));
-  itemBoxSizer2->Add(m_pgauge, 0, wxEXPAND | wxALL, 5);
+  itemBoxSizer3->Add(m_pgauge, 0, wxEXPAND | wxALL, 20);
 
   //    Add a reminder text box
   itemBoxSizer2->AddSpacer(30);
-
-#if 0
-  premtext = new wxStaticText(
-      this, -1, _("Prepare GPS for Route/Waypoint upload and press Send..."));
-  itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
-
-  //    Create a progress gauge
-  wxStaticBox* prog_box = new wxStaticBox(this, wxID_ANY, _("Progress..."));
-
-  wxStaticBoxSizer* prog_box_sizer = new wxStaticBoxSizer(prog_box, wxVERTICAL);
-  itemBoxSizer2->Add(prog_box_sizer, 0, wxEXPAND | wxALL, 5);
-
-  m_pgauge = new wxGauge(this, -1, 100);
-  prog_box_sizer->Add(m_pgauge, 0, wxEXPAND | wxALL, 5);
-#endif
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
@@ -219,8 +222,6 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
   }
   m_TransferTimer.Stop();
   m_pgauge->Hide();
-  //    Show( false );
-  //    event.Skip();
   Close();
 }
 
@@ -292,8 +293,6 @@ void SendToPeerDlg::DoScan() {
 }
 
 void SendToPeerDlg::OnCancelClick(wxCommandEvent& event) {
-  //    Show( false );
-  //    event.Skip();
   g_Platform->HideBusySpinner();
   Close();
 }
