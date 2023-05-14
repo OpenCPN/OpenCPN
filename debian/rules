@@ -8,7 +8,7 @@ include /usr/share/dpkg/pkg-info.mk
 
 	echo $(DEB_DISTRIBUTION)
 
-	dpkg --purge --force-all libglew2.2
+	#dpkg --purge --force-all libglew2.2	dpkg: error: operation requires read/write access to dpkg status area
 	rm  /usr/lib/*/libGLEW.so
 
 override_dh_auto_configure:
