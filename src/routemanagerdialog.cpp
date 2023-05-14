@@ -68,7 +68,7 @@
 #include "androidUTIL.h"
 #endif
 
-#define DIALOG_MARGIN 3
+#define DIALOG_MARGIN 10
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
@@ -471,13 +471,25 @@ void RouteManagerDialog::Create() {
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RouteManagerDialog::OnRteDeleteClick), NULL, this);
 
-  btnRteExport = new wxButton(winr, -1, _("&Export selected..."));
+  wxString reseq_label(_("&Resequence Waypoints"));
+  wxString export_label(_("&Export selected..."));
+
+#ifdef __ANDROID__
+  wxSize frame_size = gFrame->GetSize();
+  if (frame_size.x < frame_size.y){
+    reseq_label = wxString(_("&Resequence"));
+    export_label = wxString(_("&Export..."));
+  }
+#endif
+
+  btnRteExport = new wxButton(winr, -1, export_label);
   bsRouteButtonsInner->Add(btnRteExport, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   btnRteExport->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RouteManagerDialog::OnRteExportClick), NULL, this);
 
-  btnRteResequence = new wxButton(winr, -1, _("&Resequence Waypoints"));
+
+  btnRteResequence = new wxButton(winr, -1, reseq_label);
   bsRouteButtonsInner->Add(btnRteResequence, 0, wxALL | wxEXPAND,
                            DIALOG_MARGIN);
   btnRteResequence->Connect(
@@ -485,7 +497,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL,
       this);
 
-  btnRteSendToPeer = new wxButton(winr, -1, _("Send to &Peer"));
+  btnRteSendToPeer = new wxButton(winr, -1, _("Send to &Peer..."));
   bsRouteButtonsInner->Add(btnRteSendToPeer, 0, wxALL | wxEXPAND,
                            DIALOG_MARGIN);
   btnRteSendToPeer->Connect(
@@ -493,7 +505,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteSendToPeerClick), NULL,
       this);
 
-  btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS"));
+  btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS..."));
   bsRouteButtonsInner->Add(btnRteSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   btnRteSendToGPS->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
