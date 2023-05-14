@@ -4453,6 +4453,8 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
     WARNING_LOG << "Error saving metadata file: " << metadata_path <<
         " for imported plugin: " << metadata.name;
   }
+  LoadAllPlugIns(false);
+  m_PluginListPanel->ReloadPluginPanels();
 }
 
 wxString CatalogMgrPanel::GetCatalogText(bool updated) {

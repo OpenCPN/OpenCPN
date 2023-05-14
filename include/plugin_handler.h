@@ -124,7 +124,7 @@ public:
   /** Return list of all installed plugins. */
   const std::vector<PluginMetadata> getInstalled();
 
-  /** Return list of available, not installed plugins. */
+  /** Update catalog and return list of available, not installed plugins. */
   const std::vector<PluginMetadata> getAvailable();
 
   /** Map of available plugin targets -> number of occurences. */

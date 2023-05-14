@@ -194,6 +194,12 @@ public:
 
   EventVar evt_version_incompatible_plugin;
 
+  /**
+   * Update catalog with imported metadata and load all plugin library files.
+   *
+   * @param enabled_plugins If true, only load enabled plugins
+   * @return false on load errors, else true.
+   */
   bool LoadAllPlugIns(bool enabled_plugins);
 
   void SetPluginDefaultIcon(const wxBitmap* bitmap);
