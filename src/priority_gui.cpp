@@ -44,6 +44,7 @@
 #include "ocpn_app.h"
 #include "comm_bridge.h"
 #include "ocpn_frame.h"
+#include "ocpn_plugin.h"
 
 extern MyFrame *gFrame;
 
@@ -64,7 +65,6 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Adjust Comm Priorities"), wxDefaultPosition,
                wxSize(480, 420), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
-
   m_selIndex = 0;
   m_selmap_index = 0;
 
@@ -81,6 +81,9 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   m_prioTree = new wxTreeCtrl(this,wxID_ANY, wxDefaultPosition,
                                        wxDefaultSize);
   stcSizer->Add(m_prioTree, 1, wxALL | wxEXPAND, 5);
+  wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+  m_prioTree->SetFont(*pF);
+
 
   wxBoxSizer* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
   secondSizer->Add(btnEntrySizer, 0, wxALL | wxEXPAND, 5);
@@ -136,15 +139,27 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   int n_lines = wxMax(m_prioTree->GetCount(), 15);
 
-  stcSizer->SetMinSize(m_maxStringLength * GetCharWidth() * 15 / 10,
-                       wxMin(gFrame->GetSize().y * 3 /4 , n_lines * GetCharHeight()));
+  wxSize min_size = wxSize(m_maxStringLength * GetCharWidth() * 20 / 10,
+                       wxMin(gFrame->GetSize().y * 2 /4 , n_lines * GetCharHeight()));
 
+  stcSizer->SetMinSize(min_size);
+
+  SetMaxSize(gFrame->GetSize());
 
   Layout();
-  mainSizer->Fit(this);
+  Fit(); //mainSizer->Fit(this);
   Centre();
+
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
 }
 
+PriorityDlg::~PriorityDlg() {
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
+}
 
 void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
                             size_t map_index, std::string map_name,

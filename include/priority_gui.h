@@ -38,6 +38,7 @@
 class PriorityDlg : public wxDialog {
 public:
   PriorityDlg(wxWindow *parent);
+  virtual ~PriorityDlg();
 
 private:
   void OnMoveUpClick(wxCommandEvent& event);

@@ -242,11 +242,15 @@ bool CommDriverN0183Serial::Open() {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
 
-    //    Kick off the  RX thread
+#ifndef __ANDROID__
+   //    Kick off the  RX thread
     SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
     SetThreadRunFlag(1);
     std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
     t.detach();
+#else
+    androidStartUSBSerial(comx, m_BaudRate, this);
+#endif
   }
 
   return true;
@@ -295,6 +299,13 @@ void CommDriverN0183Serial::Close() {
     delete m_GarminHandler;
     m_GarminHandler = NULL;
   }
+
+#ifdef __ANDROID__
+  wxString comx;
+  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
+  androidStopUSBSerial(comx);
+#endif
+
 }
 
 bool CommDriverN0183Serial::IsGarminThreadActive() {
@@ -385,7 +396,7 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   }
 }
 
-#ifndef __ANDROID__
+
 
 #define DS_RX_BUFFER_SIZE 4096
 
@@ -408,25 +419,26 @@ void CommDriverN0183SerialThread::OnExit(void) {}
 
 bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
                                                       int baud_rate) {
-  try {
-    m_serial.setPort(com_name.ToStdString());
-    m_serial.setBaudrate(baud_rate);
-    m_serial.open();
-    m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception& e) {
-    //      std::cerr << "Unhandled Exception while opening serial port: " <<
-    //      e.what() << std::endl;
-  }
-  return m_serial.isOpen();
+//   try {
+//     m_serial.setPort(com_name.ToStdString());
+//     m_serial.setBaudrate(baud_rate);
+//     m_serial.open();
+//     m_serial.setTimeout(250, 250, 0, 250, 0);
+//   } catch (std::exception& e) {
+//     //      std::cerr << "Unhandled Exception while opening serial port: " <<
+//     //      e.what() << std::endl;
+//   }
+//   return m_serial.isOpen();
+  return false;
 }
 
 void CommDriverN0183SerialThread::CloseComPortPhysical() {
-  try {
-    m_serial.close();
-  } catch (std::exception& e) {
-    //      std::cerr << "Unhandled Exception while closing serial port: " <<
-    //      e.what() << std::endl;
-  }
+//   try {
+//     m_serial.close();
+//   } catch (std::exception& e) {
+//     //      std::cerr << "Unhandled Exception while closing serial port: " <<
+//     //      e.what() << std::endl;
+//   }
 }
 
 bool CommDriverN0183SerialThread::SetOutMsg(const wxString &msg)
@@ -452,19 +464,20 @@ void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
 }
 
 size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
-  if (m_serial.isOpen()) {
-    ssize_t status;
-    try {
-      status = m_serial.write((uint8_t*)msg, strlen(msg));
-    } catch (std::exception& e) {
-      //       std::cerr << "Unhandled Exception while writing to serial port: "
-      //       << e.what() << std::endl;
-      return -1;
-    }
-    return status;
-  } else {
-    return -1;
-  }
+//   if (m_serial.isOpen()) {
+//     ssize_t status;
+//     try {
+//       status = m_serial.write((uint8_t*)msg, strlen(msg));
+//     } catch (std::exception& e) {
+//       //       std::cerr << "Unhandled Exception while writing to serial port: "
+//       //       << e.what() << std::endl;
+//       return -1;
+//     }
+//     return status;
+//   } else {
+//     return -1;
+//   }
+  return -1;
 }
 
 void* CommDriverN0183SerialThread::Entry() {
@@ -486,7 +499,7 @@ void* CommDriverN0183SerialThread::Entry() {
     // expected device name).
   }
 
-
+#ifndef ANDROID
   //    The main loop
   static size_t retries = 0;
 
@@ -602,8 +615,7 @@ thread_exit:
   CloseComPortPhysical();
   m_pParentDriver->SetSecThreadInActive();  // I am dead
   m_pParentDriver->m_Thread_run_flag = -1;
+#endif
 
   return 0;
 }
-
-#endif  // Android

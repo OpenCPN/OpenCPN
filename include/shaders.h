@@ -75,6 +75,7 @@ public:
           printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", log.get());
 #ifdef USE_ANDROID_GLES2
           qDebug() << "SHADER COMPILE ERROR  " << log.get();
+          qDebug() << shaderCStr;
 #endif
         }
          return false;

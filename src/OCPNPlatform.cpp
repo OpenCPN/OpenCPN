@@ -572,10 +572,9 @@ void OCPNPlatform::Initialize_1(void) {
 
 #ifdef __OCPN__ANDROID__
   qDebug() << "Initialize_1()";
-#ifdef NOASSERT
+//#ifdef NOASSERT
   wxDisableAsserts( );      // No asserts at all in Release mode
-#endif
-  androidUtilInit();
+//#endif
 #endif
 
 }

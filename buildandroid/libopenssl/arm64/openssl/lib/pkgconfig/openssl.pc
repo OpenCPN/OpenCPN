@@ -1,0 +1,9 @@
+prefix=/Users/leenjewel/workspaces/openssl_for_ios_and_android/tools/../output/android/openssl-android-arm64-v8a
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenSSL
+Description: Secure Sockets Layer and cryptography libraries and tools
+Version: 1.1.0c
+Requires: libssl libcrypto

@@ -380,9 +380,6 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   for (int ifile = 0; ifile < n_files; ifile++) {
     wxString name = FileList[ifile];
 
-    if(name.Contains("oral"))
-      int yyp = 4;
-
     wxFileName fn(name);
     wxString iconname = fn.GetName();
     wxBitmap icon1;
@@ -391,12 +388,15 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
       unsigned int w, h;
 
       SVGDocumentPixelSize(name, w, h);
-      w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
-                                   // icons, 15px (approx 3mm) be it
 
-      bm_size = w * g_MarkScaleFactorExp; //= SVGPixelsToDisplay(w);
+      // We want certain minimal size for the icons
+      float nominal_icon_size_pixels = wxMax(4.0,
+                                      floor(displayDPmm * 12.0));
+
+      w = wxMax(wxMax(w, h), nominal_icon_size_pixels);
+
+      bm_size = w * g_MarkScaleFactorExp;
       bm_size /= OCPN_GetWinDIPScaleFactor();
-
 
       wxBitmap bmp = LoadSVG(name, (int)bm_size, (int)bm_size);
       if (bmp.IsOk()) {

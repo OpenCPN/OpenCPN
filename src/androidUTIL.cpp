@@ -82,6 +82,9 @@
 #include "toolbar.h"
 #include "toolbar.h"
 #include "TrackPropDlg.h"
+#include "comm_drv_n0183_android_int.h"
+#include "comm_drv_n0183_android_bt.h"
+#include "comm_drv_n0183_serial.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
@@ -115,6 +118,7 @@ extern const wxEventType wxEVT_OCPN_DATASTREAM;
 // extern const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 wxEvtHandler *s_pAndroidNMEAMessageConsumer;
+wxEvtHandler *s_pAndroidGPSIntMessageConsumer;
 wxEvtHandler *s_pAndroidBTNMEAMessageConsumer;
 
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
@@ -996,6 +1000,10 @@ bool androidUtilInit(void) {
   return true;
 }
 
+wxString androidGetIpV4Address(void) {
+  wxString ipa = callActivityMethod_vs("getIpAddress");
+  return ipa;
+}
 
 wxSize getAndroidConfigSize() { return config_size; }
 
@@ -1208,29 +1216,52 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
   //  The NMEA message target handler may not be setup yet, if no connections
   //  are defined or enabled. But we may get synthesized messages from the Java
-  //  app, even without a definite connection, and we want to process these
-  //  messages too. So assume that the global MUX, if present, will handle these
-  //  messages.
+  //  app, even without a definite connection.  We ignore these messages.
   wxEvtHandler *consumer = s_pAndroidNMEAMessageConsumer;
-
-  if (!consumer && g_pMUX) consumer = g_pMUX;
 
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
 
   // qDebug() << "ProcessNMEA: " << string;
 
-  char tstr[200];
-  strncpy(tstr, string, 190);
-  strcat(tstr, "\r\n");
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
 
-  // FIXME (dave)
-//   if (consumer) {
-//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-//     Nevent.SetNMEAString(tstr);
-//     Nevent.SetStream(NULL);
-//
-//     consumer->AddPendingEvent(Nevent);
-//   }
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+
+    CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
+
+  return 66;
+}
+}
+
+extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEAInt(
+    JNIEnv *env, jobject obj, jstring nmea_string) {
+  //  The NMEA message target handler may not be setup yet, if no connections
+  //  are defined or enabled. But we may get synthesized messages from the Java
+  //  app, even without a definite connection.  We ignore these messages.
+  wxEvtHandler *consumer = s_pAndroidGPSIntMessageConsumer;
+
+  const char *string = env->GetStringUTFChars(nmea_string, NULL);
+
+  // qDebug() << "ProcessNMEA: " << string;
+
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+
+    CommDriverN0183AndroidIntEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_INT, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
 
   return 66;
 }
@@ -1239,21 +1270,26 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
+
+  wxEvtHandler *consumer = s_pAndroidBTNMEAMessageConsumer;
+
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
-  wxString wstring = wxString(string, wxConvUTF8);
 
-  char tstr[200];
-  strncpy(tstr, string, 190);
-  strcat(tstr, "\r\n");
+  // qDebug() << "ProcessBT: " << string;
 
-//FIXME (dave)
-//   if (s_pAndroidBTNMEAMessageConsumer) {
-//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-//     Nevent.SetNMEAString(tstr);
-//     Nevent.SetStream(NULL);
-//
-//     s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
-//   }
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+    vec->push_back('\r');
+    vec->push_back('\n');
+
+    CommDriverN0183AndroidBTEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_BT, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
 
   return 77;
 }
@@ -2272,7 +2308,7 @@ bool androidShowDisclaimer(wxString title, wxString msg) {
   return (return_string == _T("OK"));
 }
 
-bool androidShowSimpleOKDialog(wxString title, wxString msg) {
+bool androidShowSimpleOKDialog(std::string title, std::string msg) {
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2288,12 +2324,9 @@ bool androidShowSimpleOKDialog(wxString title, wxString msg) {
   //  Need a Java environment to decode the resulting string
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) return false;
 
-  wxCharBuffer p1b = title.ToUTF8();
-  jstring p1 = (jenv)->NewStringUTF(p1b.data());
+  jstring p1 = (jenv)->NewStringUTF(title.c_str());
 
-  // Convert for wxString-UTF8  to jstring-UTF16
-  wxWCharBuffer b = msg.wc_str();
-  jstring p2 = (jenv)->NewString((jchar *)b.data(), msg.Len() * 2);
+  jstring p2 = (jenv)->NewStringUTF(msg.c_str());
 
   QAndroidJniObject data = activity.callObjectMethod(
       "simpleOKDialog",
@@ -3012,8 +3045,8 @@ bool androidDeviceHasGPS() {
   return result;
 }
 
-bool androidStartNMEA(wxEvtHandler *consumer) {
-  s_pAndroidNMEAMessageConsumer = consumer;
+bool androidStartGPS(wxEvtHandler *consumer) {
+  s_pAndroidGPSIntMessageConsumer = consumer;
 
   // qDebug() << "androidStartNMEA";
   wxString s;
@@ -3026,7 +3059,7 @@ bool androidStartNMEA(wxEvtHandler *consumer) {
                        Please visit android Settings/Location dialog to enable GPS"),
         _T("OpenCPN"), wxOK);
 
-    androidStopNMEA();
+    androidStopGPS();
     return false;
   } else
     bGPSEnabled = true;
@@ -3034,8 +3067,8 @@ bool androidStartNMEA(wxEvtHandler *consumer) {
   return true;
 }
 
-bool androidStopNMEA() {
-  s_pAndroidNMEAMessageConsumer = NULL;
+bool androidStopGPS() {
+  s_pAndroidGPSIntMessageConsumer = NULL;
 
   wxString s = androidGPSService(GPS_OFF);
 

@@ -53,6 +53,10 @@
 #include "options.h"
 #include "svg_utils.h"
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern OCPNPlatform* g_Platform;
@@ -304,8 +308,12 @@ public:
     LESS += _("Less");
     LESS += "...</span>";
 
+    //  For small displays, skip the "More" text.
+    if (g_Platform->getDisplaySize().x < 80 * GetCharWidth())
+      MORE = "";
+
     auto sum_hbox = new wxBoxSizer(wxHORIZONTAL);
-    m_widthDescription = g_options->GetSize().x / 2;
+    m_widthDescription = g_options->GetSize().x *4 / 10;
 
     // m_summary = staticText(plugin->summary);
     m_summary = new wxStaticText(
@@ -320,14 +328,22 @@ public:
 
     sum_hbox->Add(m_summary);
     sum_hbox->AddSpacer(10);
-    m_more = staticText("");
+    m_more = staticText("4 Chars");
     m_more->SetLabelMarkup(MORE);
     sum_hbox->Add(m_more, wxSizerFlags());
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
 
-    wxString nameText(plugin->name + "    " + plugin->version);
+    std::string name_reduced = plugin->name;
+    if(plugin->name.size() * GetCharWidth() > (size_t)m_widthDescription * 7 / 10){
+      int nc = (m_widthDescription *7 / 10) / GetCharWidth();
+      if (nc > 3){
+        name_reduced = plugin->name.substr(0, nc-3) + "...";
+      }
+    }
+
+    wxString nameText(name_reduced + "  " + plugin->version);
     if (bshowTuple) nameText += "   " + plugin->target;
 
     auto name = staticText(nameText);
@@ -425,8 +441,11 @@ public:
     for (auto plugin : m_updates) {
       grid->Add(new PluginIconPanel(this, plugin.name), flags.Expand());
       auto buttons = new CandidateButtonsPanel(this, &plugin);
+      bool b_show_tuple = false;
+      if (g_Platform->getDisplaySize().x > 80 * GetCharWidth())
+        b_show_tuple = m_updates.size() > 1;
       PluginTextPanel* tpanel =
-          new PluginTextPanel(this, &plugin, buttons, m_updates.size() > 1);
+          new PluginTextPanel(this, &plugin, buttons, b_show_tuple);
       tpanel->m_isDesc = true;
       grid->Add(tpanel, flags.Proportion(1).Right());
       grid->Add(buttons, flags.DoubleBorder());
@@ -457,6 +476,15 @@ UpdateDialog::UpdateDialog(wxWindow* parent,
   RecalculateSize();
 
   Center();
+#ifdef __ANDROID__
+    androidDisableRotation();
+#endif
+}
+
+UpdateDialog::~UpdateDialog() {
+#ifdef __ANDROID__
+    androidEnableRotation();
+#endif
 }
 
 void UpdateDialog::RecalculateSize() {
@@ -486,8 +514,8 @@ void UpdateDialog::RecalculateSize() {
   SetMinSize(g_Platform->getDisplaySize());
 #endif
 
-  SetMaxSize(g_Platform->getDisplaySize());
 
   Fit();
+  SetMaxSize(g_Platform->getDisplaySize());
   Layout();
 }

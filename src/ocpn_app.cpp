@@ -1137,10 +1137,13 @@ bool MyApp::OnInit() {
   if (getenv("OPENCPN_FATAL_ERROR") != 0) {
     wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
   }
+
+#ifndef __ANDROID__
   // Check if last run failed, set up safe_mode.
   if (!safe_mode::get_mode()) {
     safe_mode::check_last_start();
   }
+#endif
 
   //  Perform first stage initialization
   OCPNPlatform::Initialize_1();
@@ -1402,7 +1405,7 @@ bool MyApp::OnInit() {
   //      Init the WayPoint Manager
   pWayPointMan = NULL;
 
-  g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
+  g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   wxString msg;
   msg.Printf(_T("Detected display size (horizontal): %d mm"),
              (int)g_display_size_mm);
@@ -1418,7 +1421,7 @@ bool MyApp::OnInit() {
     g_Platform->SetDisplaySizeMM(g_display_size_mm);
   }
 
-  g_display_size_mm = wxMax(80, g_display_size_mm);
+  g_display_size_mm = wxMax(50, g_display_size_mm);
 
   if (g_btouch) {
     int SelectPixelRadius = 50;
@@ -2040,7 +2043,6 @@ bool MyApp::OnInit() {
 
     StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
   }
-
   return TRUE;
 }
 

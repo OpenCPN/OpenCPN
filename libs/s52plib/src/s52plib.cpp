@@ -486,8 +486,7 @@ void s52plib::SetPPMM(float ppmm) {
 
   int ww, hh;
   ::wxDisplaySize(&ww, &hh);
-  m_display_size_mm =
-      wxMax(ww, hh) / GetPPMM();  // accurate enough for internal use
+  m_display_size_mm = ww / GetPPMM();  // accurate enough for internal use
 
   m_display_size_mm /= m_displayScale;
 
@@ -2611,13 +2610,16 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   //  Very special case for ATON flare lights at 135 degrees, the standard
   //  render angle. We don't want them to rotate with the viewport.
   if (rzRules->obj->bIsAton &&
-      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6)) &&
-      (fabs(rot_angle - 135.0) < 1.)) {
-    render_angle -= vp_plib.rotation * 180. / PI;
+      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6))){
 
-    //  And, due to popular request, we make the flare lights a little bit
-    //  smaller than S52 specifications
-    xscale = xscale * 6. / 7.;
+#ifdef __OCPN__ANDROID__
+      //  Due to popular request, we make the flare lights a little bit
+      //  smaller than S52 specifications
+      xscale = xscale * 5. / 7.;
+#endif
+
+      if( fabs(rot_angle - 135.0) < 1.)
+        render_angle -= vp_plib.rotation * 180. / PI;
   }
 
   int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
@@ -5780,6 +5782,14 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   wxPoint r;
   GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r);
 
+  if (radius > m_display_size_mm / 10){
+    double fact = radius / (m_display_size_mm / 10);
+    radius /= fact;
+    sector_radius /= fact;
+    arc_width /= fact;
+    arc_width = wxMax(arc_width, 1);
+  }
+
   //  radius scaled to display
   float rad = radius * canvas_pix_per_mm;
   float sec_rad = sector_radius * canvas_pix_per_mm;
@@ -5791,7 +5801,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
 
   // Adjust size
-  //  Some plain lights have no SCAMIN attribute.
+  //  Some lights have no SCAMIN attribute. e.g. cm93
   //  This causes display congestion at small viewing scales, since the objects
   //  are rendered at fixed pixel dimensions from the LUP rules. As a
   //  correction, the idea is to not allow the rendered symbol to be larger than
@@ -5800,19 +5810,20 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   float xscale = 1.0;
   if (rzRules->obj->Scamin > 1e8) {  // huge (unset) SCAMIN)
-    float radius_meters_target = 200;
+    float radius_meters_target = 1000;
 
     float radius_meters = (radius * canvas_pix_per_mm) / vp_plib.view_scale_ppm;
 
     xscale = radius_meters_target / radius_meters;
     xscale = wxMin(xscale, 1.0);
-    xscale = wxMax(.4, xscale);
+    xscale = wxMax(.5, xscale);
 
     rad *= xscale;
     arcw *= xscale;
     arcw = wxMin(arcw, rad / 10);
     sec_rad *= xscale;
   }
+
   //      Enable anti-aliased lines, at best quality
   glEnable(GL_BLEND);
 
@@ -5829,7 +5840,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   point.x = (int)xp + vp_plib.pix_width / 2;
   point.y = (int)yp + vp_plib.pix_height / 2;
 
-  float rad_fluff = rad + 10;
+  float rad_fluff = rad + 20;
   float coords[8];
   coords[0] = -rad_fluff;
   coords[1] = rad_fluff;

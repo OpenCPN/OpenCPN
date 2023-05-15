@@ -37,9 +37,14 @@
 #define sleep(x) Sleep(x * 1000)
 #else
 #include <netdb.h>
-#include <ifaddrs.h>
+ #ifdef __ANDROID__
+    #include "ifaddrs-android.h"
+  #else
+    #include <ifaddrs.h>
+ #endif
 #include <net/if.h>
 #endif
+
 
 // Alias some things to simulate recieving data to fuzz library
 #if defined(MDNS_FUZZING)
@@ -474,7 +479,6 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 	// Thus we need to open one socket for each interface and address family
 	int num_sockets = 0;
 
-#ifndef ANDROID
 #ifdef _WIN32
 
 	IP_ADAPTER_ADDRESSES* adapter_address = 0;
@@ -668,7 +672,6 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 	freeifaddrs(ifaddr);
 
 #endif
-#endif //ANDROID
 
 	return num_sockets;
 }

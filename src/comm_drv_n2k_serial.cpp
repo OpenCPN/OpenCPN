@@ -278,10 +278,12 @@ bool CommDriverN2KSerial::Open() {
   comx =
       comx.BeforeFirst(' ');  // strip off any description provided by Windows
 
+#ifndef ANDROID
   //    Kick off the  RX thread
   SetSecondaryThread(new CommDriverN2KSerialThread(this, comx, m_BaudRate));
   SetThreadRunFlag(1);
   GetSecondaryThread()->Run();
+#endif
 
   return true;
 }
@@ -320,6 +322,7 @@ void CommDriverN2KSerial::Activate() {
 
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
+#ifndef ANDROID
 
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   std::vector<uint8_t> load = msg_n2k->payload;
@@ -355,6 +358,7 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
         else
             return false;
     }
+#endif
     return true;
 }
 
@@ -466,6 +470,7 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
 int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
                                       unsigned char cmd_code,
                                       int timeout_msec, bool *response_flag) {
+#ifndef ANDROID
     // Make a message
   int byteSum = 0;
   uint8_t CheckSum;
@@ -533,7 +538,7 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
   }
   //else
     //printf("***OK-1  %d\n", timeout);
-
+#endif
   return 0;
 }
 
