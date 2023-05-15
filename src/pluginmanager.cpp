@@ -2020,7 +2020,7 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_SENTENCES) {
 #ifndef __WXMSW__
-        if (sigsetjmp(env_PIM, 1)) { 
+        if (sigsetjmp(env_PIM, 1)) {
           //  Something in the "else" code block faulted.
           // Probably safest to assume that all variables in this method are
           // trash.. So, simply clean up and return.
@@ -4247,7 +4247,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
   auto handler = PluginHandler::getInstance();
   PluginMetadata metadata;
   bool ok = handler->installPlugin(path.ToStdString(), metadata);
-  if (!ok) { 
+  if (!ok) {
     OCPNMessageBox(this, _("Error extracting import plugin tarball."),
                    _("OpenCPN Plugin Import Error"));
     return;
@@ -4258,6 +4258,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
     handler->uninstall(metadata.name);
     return;
   }
+  metadata.is_imported = true;
   auto metadata_path = PluginHandler::ImportedMetadataPath(metadata.name);
   std::ofstream file(metadata_path);
   file << metadata.to_string();
@@ -4836,26 +4837,58 @@ void PluginPanel::DoPluginSelect() {
   }
 }
 
+
+/**
+ * Return metadata for installed plugin with given name or default,
+ * empty PluginMetadata() if not found.
+ */
+static PluginMetadata GetMetadataByName(const std::string& name) {
+  auto plugins = PluginHandler::getInstance()->getInstalled();
+  auto predicate = [name](const PluginMetadata& pm) { return pm.name == name; };
+  auto found = std::find_if(plugins.begin(), plugins.end(), predicate);
+  if (found == plugins.end()) {
+    wxLogDebug("Cannot find metadata for %s", name.c_str());
+  }
+  return found != plugins.end() ? *found : PluginMetadata();
+}
+
+/** Return version string for a plugin, possibly with an "Imported" suffix. */
+static std::string GetPluginVersion(const PlugInContainer* pic) {
+  auto metadata(pic->m_ManagedMetadata);
+  if (metadata.version == "")
+    metadata = GetMetadataByName(pic->m_common_name.ToStdString());
+  std::string import_suffix(metadata.is_imported ? _(" [Imported]") : "");
+
+  int v_major(0);
+  int v_minor(0);
+
+  if (!pic) {
+    wxLogMessage("Attempt to get version for empty pic pointer");
+    return SemanticVersion(0, 0, -1).to_string() + import_suffix;
+  }
+  if (pic->m_pplugin)  {
+    v_major = pic->m_pplugin->GetPlugInVersionMajor();
+    v_minor = pic->m_pplugin->GetPlugInVersionMinor();
+  }
+  auto p = dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
+  if (p) {
+    // New style plugin, trust version available in the API.
+    auto v = SemanticVersion(v_major, v_minor, p->GetPlugInVersionPatch(),
+                             p->GetPlugInVersionPost(),
+                             p->GetPlugInVersionPre(),
+                             p->GetPlugInVersionBuild());
+    return v.to_string() + import_suffix;
+  } else if (metadata.version != "") {
+    return metadata.version + import_suffix;
+  } else {
+    return SemanticVersion(v_major, v_minor, -1).to_string() + import_suffix;
+  }
+}
+
 void PluginPanel::SetSelected(bool selected) {
   m_bSelected = selected;
 
-  m_pVersion->SetLabel(m_pPlugin->GetVersion().to_string());
-
-  if (m_pPlugin->m_ManagedMetadata.version.size()) {
-    // Is this a fully managed and current plugin?
-    // If so, as a special case...
-    //  We show the version from the metadata, thus handling managed plugins
-    //  with API < 117
-
-    if (m_pPlugin->m_pluginStatus ==
-        PluginStatus::ManagedInstalledCurrentVersion)
-      m_pVersion->SetLabel(m_pPlugin->m_ManagedMetadata.version);
-
-    if (m_pPlugin->m_pluginStatus ==
-        PluginStatus::ManagedInstalledUpdateAvailable)
-      m_pVersion->SetLabel(wxString(m_pPlugin->m_InstalledManagedVersion));
-  }
-
+  m_pVersion->SetLabel(GetPluginVersion(m_pPlugin));
   if (selected) {
     SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
     m_pButtons->Show(true);
@@ -5019,7 +5052,7 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent &event) {
   SetEnabled(!m_pPlugin->m_bEnabled);
   if (m_pVersion->GetLabel().IsEmpty())
-    m_pVersion->SetLabel(m_pPlugin->GetVersion().to_string());
+    m_pVersion->SetLabel(GetPluginVersion(m_pPlugin));
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent &event) {
