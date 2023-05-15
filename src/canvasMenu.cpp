@@ -483,10 +483,16 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   }
 
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
-    MenuAppend1(contextMenu, ID_DEF_MENU_DROP_WP,
+    bool b_dm_add = true;
+    if (g_btouch && parent->IsMeasureActive())
+      b_dm_add = false;
+
+    if (b_dm_add) {
+      MenuAppend1(contextMenu, ID_DEF_MENU_DROP_WP,
                 _menuText(_("Drop Mark"), _T("Ctrl-M")));
-    MenuAppend1(contextMenu, ID_DEF_MENU_NEW_RT,
+      MenuAppend1(contextMenu, ID_DEF_MENU_NEW_RT,
                 _menuText(_("New Route..."), _T("Ctrl-R")));
+    }
 
     if (!bGPSValid)
       MenuAppend1(contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _("Move Boat Here"));
