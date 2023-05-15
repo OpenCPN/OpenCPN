@@ -40,7 +40,7 @@ static void add_node(pugi::xml_node root, const std::string& name,
   auto child = root.append_child(name.c_str());
   child.append_child(pugi::node_pcdata).set_value(value.c_str());
 }
-    
+
 
 std::string PluginMetadata::to_string() {
   pugi::xml_document doc;
@@ -53,6 +53,7 @@ std::string PluginMetadata::to_string() {
   add_node(root, "summary", summary);
   add_node(root, "api-version", api_version);
   add_node(root, "open-source", openSource ? "true" : "false");
+  add_node(root, "is-imported", is_imported ? "true" : "false");
   add_node(root, "author", author);
   add_node(root, "source", author);
   add_node(root, "info-url", info_url);
@@ -99,6 +100,7 @@ bool ParsePlugin(pugi::xml_node root, PluginMetadata& plugin) {
     ParseValue(root, "target-arch", plugin.target_arch);
     ParseValue(root, "target-checksum", plugin.checksum);
     ParseBool(root, "open-source", plugin.openSource);
+    ParseBool(root, "is-imported", plugin.is_imported);
     return root.child("name") ? true : false;
 }
 

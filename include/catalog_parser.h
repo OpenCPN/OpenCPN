@@ -61,6 +61,7 @@ struct PluginMetadata {
   std::string info_url;
   std::string meta_url;
   std::string checksum;
+  bool is_imported;
 
   bool openSource;
 
@@ -73,7 +74,8 @@ struct PluginMetadata {
 
   std::string to_string(); ///< Return printable XML representation.
 
-  PluginMetadata() : openSource(true), readonly(true), ix(-1) {}
+  PluginMetadata()
+      : is_imported(false), openSource(true), readonly(true), ix(-1) {}
 };
 
 /**
