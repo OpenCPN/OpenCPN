@@ -152,7 +152,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "comm_drv_n2k.h"
 #include "ocpn_app.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <dlfcn.h>
 #include "androidUTIL.h"
 #endif
@@ -239,9 +239,6 @@ extern wxString g_catalog_custom_url;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
-
-const char *const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
-const char *const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
 void NotifySetupOptionsPlugin(const PlugInContainer *pic);
 
@@ -388,7 +385,7 @@ wxString message_by_status(PluginStatus stat) {
   }
 }
 
-static std::unordered_map<PluginStatus, const char *, EnumClassHash>
+static const std::unordered_map<PluginStatus, const char *, EnumClassHash>
     icon_by_status(
         {{PluginStatus::System, "emblem-system.svg"},
          {PluginStatus::Managed, "emblem-default.svg"},
@@ -406,7 +403,7 @@ static std::unordered_map<PluginStatus, const char *, EnumClassHash>
 
         });
 
-static std::unordered_map<PluginStatus, const char *, EnumClassHash>
+static const std::unordered_map<PluginStatus, const char *, EnumClassHash>
     literalstatus_by_status(
         {{PluginStatus::System, "System"},
          {PluginStatus::Managed, "Managed"},
@@ -665,10 +662,7 @@ static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
   parent->ReloadPluginPanels();
 }
 
-//    Some static helper funtions
-//    Scope is local to this module
-
-PlugIn_ViewPort CreatePlugInViewport(const ViewPort &vp) {
+static PlugIn_ViewPort CreatePlugInViewport(const ViewPort &vp) {
   //    Create a PlugIn Viewport
   ViewPort tvp = vp;
   PlugIn_ViewPort pivp;
@@ -695,7 +689,7 @@ PlugIn_ViewPort CreatePlugInViewport(const ViewPort &vp) {
   return pivp;
 }
 
-ViewPort CreateCompatibleViewport(const PlugIn_ViewPort &pivp) {
+static ViewPort CreateCompatibleViewport(const PlugIn_ViewPort &pivp) {
   //    Create a system ViewPort
   ViewPort vp;
 
@@ -832,119 +826,6 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
   }
 }
 
-#if 0
-/**
- * A svg status icon, scaled to about 1/3 of available space
- *
- * Load icons from .../uidata/.
- *
- * Dont unbind in destructor:
- *      https://forums.wxwidgets.org/viewtopic.php?t=36399
- */
-class StatusIconPanel: public wxPanel
-{
-    public:
-        StatusIconPanel(wxWindow* parent, const PlugInContainer* pic)
-            :wxPanel(parent)
-        {
-            m_parent = wxDynamicCast(parent, PluginPanel);
-
-            m_stat = pic->m_pluginStatus; //::Unknown;
-            SetToolTip(message_by_status[m_stat]);
-            m_icon_name = icon_by_status[m_stat];
-
-            m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
-            m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
-
-            //SetBackgroundColour(GetGlobalColor(_T("DILG0")));
-            //auto minsize = wxSize(GetCharWidth() * 5, GetCharWidth() * 10);
-            //SetSize(minsize);
-            SetMinSize(wxSize(GetCharWidth() * 5, -1));
-            Bind(wxEVT_PAINT, &StatusIconPanel::OnPaint, this);
-            Bind(wxEVT_LEFT_DOWN, &StatusIconPanel::OnIconSelected, this);
-
-
-       }
-
-        void OnPaint(wxPaintEvent& event)
-        {
-            auto size = GetClientSize();
-            int minsize = GetCharWidth() * 3;
-            auto offset = minsize / 4;
-
-            LoadIcon(m_icon_name.c_str(), m_bitmap,   wxMax(1, minsize));
-            wxPaintDC dc(this);
-            if (!m_bitmap.IsOk()) {
-                wxLogMessage("StatusPluginPanel: bitmap is not OK!");
-                return;
-            }
-
-            int penWidth = m_penWidthUnselected;
-            wxColour border = GetDialogColor(DLG_UNSELECTED_ACCENT);
-
-            if(m_parent->GetSelected()){
-                penWidth = m_penWidthSelected;
-                border = GetDialogColor(DLG_SELECTED_ACCENT);
-            }
-
-            wxBrush b(m_parent->GetBackgroundColour(), wxSOLID);
-            dc.SetBrush(b);
-            dc.SetPen( wxPen(border, penWidth) );
-
-            dc.DrawRoundedRectangle(-20, 5, 20 + GetSize().x-10, GetSize().y-10, 5);
-            //dc.DrawRectangle(0, 0, GetSize().x, GetSize().y);
-            dc.DrawBitmap(m_bitmap, offset * 3 / 4, offset*3, true);
-
-
-            //dc.DrawText(_T("PluginStatus"), 0, 0);
-            //dc.DrawText(literalstatus_by_status[m_stat], 4 * GetCharWidth(), GetCharHeight());
-         }
-
-         void SetStatus(PluginStatus stat)
-         {
-            m_stat = stat;
-            SetToolTip(message_by_status[m_stat]);
-            m_icon_name = icon_by_status[m_stat];
-            Refresh();
-         }
-
-         void OnIconSelected( wxMouseEvent &event )
-         {
-             if(m_parent){
-                 m_parent->OnPluginSelected(event);
-             }
-         }
-
-
-    protected:
-        wxBitmap m_bitmap;
-        std::string m_icon_name;
-        PluginStatus m_stat;
-        PluginPanel *m_parent;
-        int m_penWidthUnselected;
-        int m_penWidthSelected;
-
-        void LoadIcon(const char* icon_name, wxBitmap& bitmap, int size=32)
-        {
-            wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
-            path.AppendDir("uidata");
-            path.AppendDir("traditional");
-            bool ok = false;
-
-
-            if (path.IsFileReadable()) {
-                bitmap = LoadSVG(path.GetFullPath(), size, size);
-                ok = bitmap.IsOk();
-            }
-
-            if (!ok) {
-                auto style = g_StyleManager->GetCurrentStyle();
-                bitmap = wxBitmap(style->GetIcon( _T("default_pi"), size, size));
-                wxLogMessage("Icon: %s not found.", path.GetFullPath());
-            }
-        }
-};
-#endif
 
 //------------------------------------------------------------------------------
 //    NMEA Event Implementation
@@ -998,7 +879,7 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer() {
 PlugInManager *s_ppim;
 
 BEGIN_EVENT_TABLE(PlugInManager, wxEvtHandler)
-#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
+#if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
 EVT_CURL_END_PERFORM(CurlThreadId, PlugInManager::OnEndPerformCurlDownload)
 EVT_CURL_DOWNLOAD(CurlThreadId, PlugInManager::OnCurlDownload)
 #endif
@@ -1023,7 +904,7 @@ static void OnLoadPlugin(const PlugInContainer *pic) {
 }
 
 PlugInManager::PlugInManager(MyFrame *parent) {
-#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
+#if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
   m_pCurlThread = NULL;
   m_pCurl = 0;
 #endif
@@ -1036,7 +917,7 @@ PlugInManager::PlugInManager(MyFrame *parent) {
     m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Due to the oddball mixed static/dynamic linking model used in the Android
   //  architecture, all classes used in PlugIns must be present in the core,
   //  even if stubs.
@@ -1052,7 +933,7 @@ PlugInManager::PlugInManager(MyFrame *parent) {
 
 #endif
 
-#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
+#if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
   wxCurlBase::Init();
   m_last_online = false;
   m_last_online_chk = -1;
@@ -1083,7 +964,7 @@ PlugInManager::PlugInManager(MyFrame *parent) {
   InitCommListeners();
 }
 PlugInManager::~PlugInManager() {
-#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
+#if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
   wxCurlBase::Shutdown();
 #endif
   delete m_utilHandler;
@@ -1257,61 +1138,6 @@ void PlugInManager::HandlePluginHandlerEvents() {
   });
 }
 
-/**
- *
- * For linux, set up LD_LIBRARY_PATH to the same value as the path used
- * to load plugins, assuring helper binaries can load libraries installed
- * in the same directory as the plugin.mac is handled the same way using
- * DYLD_LIBRARY_PATH. For windows, setup PATH in the likewise.
- */
-static void setLoadPath() {
-  using namespace std;
-
-  auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
-  vector<string> dirs = PluginPaths::getInstance()->Libdirs();
-  if (osSystemId & wxOS_UNIX_LINUX) {
-    string path = ocpn::join(dirs, ':');
-    wxString envPath;
-    if (wxGetEnv("LD_LIBRARY_PATH", &envPath)) {
-      path = path + ":" + envPath.ToStdString();
-    }
-    wxLogMessage("Using LD_LIBRARY_PATH: %s", path.c_str());
-    wxSetEnv("LD_LIBRARY_PATH", path.c_str());
-  } else if (osSystemId & wxOS_WINDOWS) {
-    // On windows, Libdirs() and Bindirs() are the same.
-    string path = ocpn::join(dirs, ';');
-    wxString envPath;
-    if (wxGetEnv("PATH", &envPath)) {
-      path = path + ";" + envPath.ToStdString();
-    }
-    wxLogMessage("Using PATH: %s", path);
-    wxSetEnv("PATH", path);
-  } else if (osSystemId & wxOS_MAC) {
-    string path = ocpn::join(dirs, ':');
-    wxString envPath;
-    if (wxGetEnv("DYLD_LIBRARY_PATH", &envPath)) {
-      path = path + ":" + envPath.ToStdString();
-    }
-    wxLogMessage("Using DYLD_LIBRARY_PATH: %s", path.c_str());
-    wxSetEnv("DYLD_LIBRARY_PATH", path.c_str());
-  } else {
-    wxString os_name = wxPlatformInfo::Get().GetPortIdName();
-    if (os_name.Contains(_T("wxQT"))) {
-      wxLogMessage(_T("setLoadPath() using Android library path"));
-    } else
-      wxLogWarning("SetLoadPath: Unsupported platform.");
-  }
-  if (osSystemId & wxOS_MAC || osSystemId & wxOS_UNIX_LINUX) {
-    vector<string> dirs = PluginPaths::getInstance()->Bindirs();
-    string path = ocpn::join(dirs, ':');
-    wxString envPath;
-    wxGetEnv("PATH", &envPath);
-    path = path + ":" + envPath.ToStdString();
-    wxLogMessage("Using PATH: %s", path);
-    wxSetEnv("PATH", path);
-  }
-}
-
 bool PlugInManager::CallLateInit(void) {
   bool bret = true;
 
@@ -1339,7 +1165,7 @@ bool PlugInManager::CallLateInit(void) {
 
 void PlugInManager::ProcessLateInit(PlugInContainer *pic) {
   if (pic->m_cap_flag & WANTS_LATE_INIT) {
-    wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
+    wxString msg("PlugInManager: Calling LateInit PlugIn: ");
     msg += pic->m_plugin_file;
     wxLogMessage(msg);
 
@@ -1479,11 +1305,6 @@ void PlugInManager::UpdateManagedPlugins() {
       i = 0;
     } else
       i++;
-  }
-
-  for (size_t i = 0; i < plugin_array->GetCount(); i++) {
-    pict = plugin_array->Item(i);
-    int yyp = 4;
   }
 
   //  Now merge and update from the catalog
@@ -1653,7 +1474,7 @@ void PlugInManager::FinalizePluginLoadall() {
 
 void PlugInManager::SetPluginOrder(wxString serialized_names) {
   m_plugin_order.Empty();
-  wxStringTokenizer tokenizer(serialized_names, _T(";"));
+  wxStringTokenizer tokenizer(serialized_names, ";");
   while (tokenizer.HasMoreTokens()) {
     m_plugin_order.Add(tokenizer.GetNextToken());
   }
@@ -2199,13 +2020,12 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
     if (pic->m_bEnabled && pic->m_bInitState) {
       if (pic->m_cap_flag & WANTS_NMEA_SENTENCES) {
 #ifndef __WXMSW__
-        if (sigsetjmp(env_PIM,
-                      1)) {  //  Something in the "else" code block faulted.
-
+        if (sigsetjmp(env_PIM, 1)) { 
+          //  Something in the "else" code block faulted.
           // Probably safest to assume that all variables in this method are
           // trash.. So, simply clean up and return.
-          sigaction(SIGSEGV, &sa_all_PIM_previous,
-                    NULL);  // reset signal handler
+          sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);
+              // reset signal handler
           return;
         } else
 #endif
@@ -2667,7 +2487,6 @@ void PlugInManager::RemoveToolbarTool(int tool_id) {
       }
     }
   }
-
   pParent->RequestNewToolbars();
 }
 
@@ -2677,10 +2496,7 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz) {
     {
       if (pttc->id == item) {
         pttc->b_viz = viz;
-
-        //      Apply the change
-        pParent->RequestNewToolbars();
-
+        pParent->RequestNewToolbars();  //      Apply the change
         break;
       }
     }
@@ -2811,7 +2627,6 @@ wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
       }
     }
   }
-
   //  Make a bitmap
   wxBitmap *ptoolBarBitmap;
 
@@ -3078,8 +2893,9 @@ wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
     unsigned int w, h;
     SVGDocumentPixelSize(filename, w, h);
     if (w == 0 || h == 0) {
-      // We did not succeed in deducing the size from SVG (svg element misses width, height or both attributes)
-      // let's use some "safe" default
+      // We did not succeed in deducing the size from SVG (svg element
+      // x misses width, height or both attributes), let's use some "safe"
+      // default
       w = 32;
       h = 32;
     }
@@ -3177,13 +2993,10 @@ bool UpdateChartDBInplace(wxArrayString dir_array, bool b_force_update,
     cdi.magic_number = _T("");
     ChartDirArray.Add(cdi);
   }
-
   bool b_ret = gFrame->UpdateChartDatabaseInplace(ChartDirArray, b_force_update,
                                                   b_ProgressDialog,
                                                   ChartData->GetDBFileName());
-
   gFrame->ChartsRefresh();
-
   return b_ret;
 }
 
@@ -4254,7 +4067,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
   }
 
   // TODO Validate xml using xsd here....
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (!AndroidSecureCopyFile(wxString(filePath.c_str()),
                              g_Platform->GetPrivateDataDir() +
                                  wxFileName::GetPathSeparator() +
@@ -4299,7 +4112,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
   LoadAllPlugIns(false);
 
   // Update this Panel, and the entire list.
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   m_catalogText->SetLabel(GetCatalogText(true));
 #endif
   if (m_PluginListPanel) m_PluginListPanel->ReloadPluginPanels();
@@ -4343,7 +4156,6 @@ static bool parsePluginNode(pugi::xml_node &pluginRoot,
       plugin.build_gtk = element.first_child().value();
     }
   }
-
   return true;
 }
 
@@ -4411,13 +4223,13 @@ static void populatePluginNode(pugi::xml_node &pluginNode,
 void CatalogMgrPanel::OnPluginSettingsButton(wxCommandEvent &event) {
   auto dialog = new CatalogSettingsDialog(this);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
 #endif
 
   dialog->ShowModal();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 }
@@ -4920,8 +4732,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   }
 
   wxBitmap statusBitmap;
-  auto stat = p_plugin->m_pluginStatus;
-  auto icon_name = icon_by_status[stat];
+  const auto stat = p_plugin->m_pluginStatus;
+  auto icon_name = icon_by_status.at(stat);
 
   wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
   path.AppendDir("uidata");
@@ -4984,7 +4796,7 @@ static wxStopWatch swclick;
 static int downx, downy;
 
 void PluginPanel::OnPluginSelected(wxMouseEvent &event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   swclick.Start();
   event.GetPosition(&downx, &downy);
 #else
@@ -4993,7 +4805,7 @@ void PluginPanel::OnPluginSelected(wxMouseEvent &event) {
 }
 
 void PluginPanel::OnPluginSelectedUp(wxMouseEvent &event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   qDebug() << swclick.Time();
   if (swclick.Time() < 200) {
     int upx, upy;
@@ -5140,7 +4952,7 @@ void PluginPanel::SetSelected(bool selected) {
 
   // m_pButtons->Show(selected);   // For most platforms, show buttons if
   // selected m_pButtonsUpDown->Show(selected);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
   // m_pButtonsUpDown->Show(false);
   // m_pButtons->Show(true);     // Always enable buttons for Android
@@ -5156,7 +4968,7 @@ void PluginPanel::SetSelected(bool selected) {
 
   SetEnabled(m_pPlugin->m_bEnabled);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // Android (wxQT) sizers have troubles...
   // So we set some layout factors to avoid re-sizing on select/deselect.
   //    m_rgSizer->Show(true);
@@ -5192,7 +5004,7 @@ void PluginPanel::OnPaint(wxPaintEvent &event) {
 void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
   if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState &&
       (m_pPlugin->m_cap_flag & WANTS_PREFERENCES)) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     androidDisableRotation();
     m_pPlugin->m_pplugin->ShowPreferencesDialog(
         GetGrandParent());  // GrandParent will be the entire list panel, not
@@ -5243,7 +5055,7 @@ void PluginPanel::SetEnabled(bool enabled) {
         wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
     m_pDescription->SetForegroundColour(
         wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-#ifdef x__OCPN__ANDROID__
+#ifdef x__ANDROID__
     m_pName->Disable();
     m_pVersion->Disable();
     m_pDescription->Disable();
@@ -5255,14 +5067,14 @@ void PluginPanel::SetEnabled(bool enabled) {
         wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
     m_pDescription->SetForegroundColour(
         wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-#ifdef x__OCPN__ANDROID__
+#ifdef x__ANDROID__
     m_pName->Enable();
     m_pVersion->Enable();
     m_pDescription->Enable();
 #endif
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pName->Enable(enabled || m_bSelected);
   m_pVersion->Enable(enabled || m_bSelected);
   m_pDescription->Enable(enabled || m_bSelected);
@@ -7039,7 +6851,7 @@ void PI_DLEvtHandler::onDLEvent(OCPN_downloadEvent &event) {
 
     m_download_evHandler->AddPendingEvent(ev);
     m_eventTimer.Stop();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     finishAndroidFileDownload();
 #endif
   }
@@ -7065,7 +6877,7 @@ void PI_DLEvtHandler::clearBackgroundMode() {
 }
 
 void PI_DLEvtHandler::onTimerEvent(wxTimerEvent &event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //   Query the download status, and post to the original requestor
   //   This method only happens on Background file downloads
 
@@ -7145,7 +6957,7 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString &url,
                                  const wxString &title, const wxString &message,
                                  const wxBitmap &bitmap, wxWindow *parent,
                                  long style, int timeout_secs) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   wxString msg = _T("Downloading file synchronously: ");
   msg += url;
@@ -7281,7 +7093,7 @@ _OCPN_DLStatus OCPN_downloadFileBackground(const wxString &url,
                                            const wxString &outputFile,
                                            wxEvtHandler *handler,
                                            long *handle) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxString msg = _T("Downloading file asynchronously: ");
   msg += url;
   msg += _T(" to: ");
@@ -7375,7 +7187,7 @@ _OCPN_DLStatus OCPN_downloadFileBackground(const wxString &url,
 void OCPN_cancelDownloadFileBackground(long handle) {
 #ifdef OCPN_USE_CURL
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   cancelAndroidFileDownload(handle);
   finishAndroidFileDownload();
   if (g_piEventHandler) g_piEventHandler->clearBackgroundMode();
@@ -7395,7 +7207,7 @@ void OCPN_cancelDownloadFileBackground(long handle) {
 _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
                                  const wxString &parameters, wxString &result,
                                  int timeout_secs) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxString lparms = parameters;
   wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
   if (postResult.IsSameAs(_T("NOK"))) return OCPN_DL_FAILED;
@@ -7422,11 +7234,11 @@ _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
 }
 
 bool OCPN_isOnline() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidCheckOnline();
 #endif
 
-#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
+#if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
   if (wxDateTime::GetTimeNow() >
       g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY) {
     wxCurlHTTP get;
@@ -7441,7 +7253,7 @@ bool OCPN_isOnline() {
 #endif
 }
 
-#if !defined(__OCPN__ANDROID__) && defined(OCPN_USE_CURL)
+#if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
 void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev) {
   OCPN_downloadEvent event(wxEVT_DOWNLOAD_EVENT, 0);
   if (ev.IsSuccessful()) {
