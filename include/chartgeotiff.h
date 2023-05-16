@@ -53,6 +53,9 @@ public:
                                 int sub_samp) override;
 
 private:
+  std::string TraceOutlineN(uint8_t *image, int x0, int y0);
+  bool IsPixelTransparent(uint8_t* image, const int &x, const int &y, bool fix_borders = false);
+  bool FindEdge(uint8_t* image, int &x, int &y);
   bool CornerLatLon(GTIF *gtif, GTIFDefn *defn, double &x, double &y,
                     float &lat, float &lon);
   TIFF *tif;
