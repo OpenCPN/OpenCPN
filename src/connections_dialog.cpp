@@ -56,7 +56,6 @@
 #include "config_vars.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"
-#include "nmea_ctx_factory.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"    // FIXME for GetOCPNScaledFont_PlugIn
 #include "options.h"
@@ -72,7 +71,6 @@ extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 extern int g_NMEAAPBPrecision;
 extern OCPNPlatform* g_Platform;
-extern wxString g_TalkerIdText;
 
 wxString StringArrayToString(wxArrayString arr) {
   wxString ret = wxEmptyString;
@@ -1976,8 +1974,8 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
     pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
-    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
-    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue().Trim(false).Trim(true);
+    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
     if (m_rbNetProtoTCP->GetValue())
       pConnectionParams->NetProtocol = TCP;
     else if (m_rbNetProtoUDP->GetValue())
@@ -2074,13 +2072,14 @@ void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
   delete pdlg;
 }
 
+
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                                  ListType type, const wxArrayString& list)
     : wxDialog(parent, wxID_ANY, _("Sentence Filter"), wxDefaultPosition,
                wxSize(280, 420)),
       m_type(type),
       m_dir(dir),
-      m_sentences(NMEA0183(NmeaCtxFactory()).GetRecognizedArray()) {
+      m_sentences(NMEA0183().GetRecognizedArray()) {
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxBoxSizer* secondSizer = new wxBoxSizer(wxHORIZONTAL);
   wxStaticBox* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());
