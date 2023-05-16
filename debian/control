@@ -32,7 +32,7 @@ Build-Depends: debhelper (>= 9),
  base-files (<< 12) | libwxgtk-webview3.2-dev,
  portaudio19-dev,
  rapidjson-dev,
- libglew-dev,
+ base-files (<< 11) | libglew-dev,
  base-files (>=11) | libglew2.1-static,
  git
 #For the ARM build, perhaps add: , libdri2-dev [armhf],libgles1-mesa-dev [armhf]
