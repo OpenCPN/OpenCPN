@@ -399,6 +399,12 @@ wxFontPickerEvent g_dummy_wxfpe;
 
 #define SCHEDULED_EVENT_CLEAN_EXIT 5498
 
+// Implement a small function missing from Android API 16, or so.
+// FIXME This can go away when Android MIN_SDK is raised to 19 (KitKat)
+int futimens(int fd, const struct timespec times[2]) {
+  return utimensat(fd, nullptr, times, 0);
+}
+
 class androidUtilHandler : public wxEvtHandler {
 public:
   androidUtilHandler();
