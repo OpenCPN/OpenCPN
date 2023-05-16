@@ -1974,8 +1974,8 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
     pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
-    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
-    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue().Trim(false).Trim(true);
+    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
     if (m_rbNetProtoTCP->GetValue())
       pConnectionParams->NetProtocol = TCP;
     else if (m_rbNetProtoUDP->GetValue())
