@@ -3477,7 +3477,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
 
     if (!background_region.Empty()) {
       ViewPort cvp = ClippedViewport(vp, background_region);
+      SetClipRect(cvp, rect, false);
       RenderWorldChart(dc, cvp, rect, world_view);
+      DisableClipRegion();
     }
   }
 
