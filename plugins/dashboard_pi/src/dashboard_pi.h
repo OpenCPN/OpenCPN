@@ -248,6 +248,7 @@ private:
   short mPriSatUsed, mPriAlt, mPriRSA, mPriPitchRoll;
   double mVar;
   // FFU
+  int mSatsInUse;
   int mSatsInView;
   double mHdm;
   wxDateTime mUTCDateTime;
