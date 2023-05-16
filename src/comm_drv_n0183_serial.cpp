@@ -484,9 +484,9 @@ size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
 void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   m_pParentDriver->SetSecThreadActive();  // I am alive
-  int nl_found = 0;
   wxString msg;
   circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+  std::vector<uint8_t> tmp_vec;
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
@@ -537,35 +537,32 @@ void* CommDriverN0183SerialThread::Entry() {
     }
 
     if (newdata > 0) {
-      nl_found = 0;
-      for (unsigned int i = 0; i < newdata; i++) {
+      for (unsigned int i = 0; i < newdata; i++)
         circle.put(rdata[i]);
-        if (0x0a == rdata[i]) nl_found++;
+    }
+
+    // Process the queue until empty
+    while (!circle.empty()) {
+      if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+
+      uint8_t take_byte = circle.get();
+      while ((take_byte != 0x0a) && !circle.empty()) {
+        tmp_vec.push_back(take_byte);
+        take_byte = circle.get();
       }
 
-      //    Found a NL char, thus end of message?
-      if (nl_found) {
-        bool done = false;
-        while (!done) {
-          if (circle.empty()) {
-            done = true;
-            break;
-          }
+      if (circle.empty() && take_byte != 0x0a)
+        break;
 
-          //    Copy the message into a vector for tranmittal upstream
-          auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char>* vec = buffer.get();
+      if (take_byte == 0x0a){
+        tmp_vec.push_back(take_byte);
 
-          uint8_t take_byte = circle.get();
-          while ((take_byte != 0x0a) && !circle.empty()) {
-            vec->push_back(take_byte);
-            take_byte = circle.get();
-          }
+        //    Copy the message into a vector for transmittal upstream
+        auto buffer = std::make_shared<std::vector<unsigned char>>();
+        std::vector<unsigned char>* vec = buffer.get();
 
-          if (take_byte == 0x0a) {
-            vec->push_back(take_byte);
-
-            if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+        for (size_t i=0; i < tmp_vec.size() ; i++)
+          vec->push_back(tmp_vec.at(i));
 
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
@@ -573,18 +570,15 @@ void* CommDriverN0183SerialThread::Entry() {
             //    If that happens, the first character of a new captured message
             //    will the <cr>, and we need to discard it. This is out of spec,
             //    but we should handle it anyway
-            if (vec->at(0) == '\r') vec->erase(vec->begin());
+        if (vec->at(0) == '\r') vec->erase(vec->begin());
 
-            CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-            Nevent.SetPayload(buffer);
-            m_pParentDriver->AddPendingEvent(Nevent);
+        CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+        Nevent.SetPayload(buffer);
+        m_pParentDriver->AddPendingEvent(Nevent);
+        tmp_vec.clear();
 
-          } else {
-            done = true;
-          }
-        }
-      }  // if nl
-    }    // if newdata > 0
+      }
+    } //while
 
     //      Check for any pending output message
 
@@ -609,7 +603,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
       b_qdata = !out_que.empty();
     }  // while b_qdata
-  }
+  }   // while not done.
 
 thread_exit:
   CloseComPortPhysical();
