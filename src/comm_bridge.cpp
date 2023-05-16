@@ -961,7 +961,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     if (EvalPriority(sK_msg, active_priority_velocity, priority_map_velocity)) {
       gSog = temp_data.gSog;
       valid_flag += SOG_UPDATE;
-      if((gSog > 0) && !std::isnan(temp_data.gCog)){
+      if((gSog > 0.05) && !std::isnan(temp_data.gCog)){
         gCog = temp_data.gCog;
         valid_flag += COG_UPDATE;
       }
