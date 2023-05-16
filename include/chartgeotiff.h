@@ -49,18 +49,20 @@ public:
   InitReturn Init(const wxString &name, ChartInitFlag init_flags) override;
   InitReturn PostInit();
 
-  bool GetChartBits(wxRect &source, unsigned char *pPix,
-                                int sub_samp) override;
+  bool GetChartBits(wxRect &source, unsigned char *pPix, int sub_samp) override;
 
 private:
-  std::string TraceOutlineN(uint8_t *image, int x0, int y0);
-  bool IsPixelTransparent(uint8_t* image, const int &x, const int &y, bool fix_borders = false);
-  bool FindEdge(uint8_t* image, int &x, int &y);
+  void AppendPoint(const int &x, const int &y, const int &dir);
+  bool TraceOutline(uint8_t *image, int x0, int y0);
+  bool IsPixelTransparent(uint8_t *image, const int &x, const int &y,
+                          bool fix_borders = false);
+  bool FindEdge(uint8_t *image, int &x, int &y);
   bool CornerLatLon(GTIF *gtif, GTIFDefn *defn, double &x, double &y,
                     float &lat, float &lon);
   TIFF *tif;
   GTIF *gtif;
-  uint8_t* im;
+  uint8_t *im;
+  std::vector<std::pair<int, int>> ply_points;
 };
 
 #endif

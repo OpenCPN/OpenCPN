@@ -134,7 +134,7 @@ InitReturn ChartGeoTIFF::Init(const wxString &name, ChartInitFlag init_flags) {
 // shape is defined by the alpha channel and we would have to trace it
 // ourselves
 // We do have always the 4 points as REFs as it seems though
-#define PLY_POINTS 4
+#define REF_POINTS 4
   TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &Size_X);
   TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &Size_Y);
 
@@ -152,7 +152,8 @@ InitReturn ChartGeoTIFF::Init(const wxString &name, ChartInitFlag init_flags) {
     return INIT_FAIL_REMOVE;
   }
 
-  Plypoint PlyTable[PLY_POINTS];
+  Plypoint PlyTable[REF_POINTS];  // By default we define the polygon around the
+                                  // whole image
   if (!CornerLatLon(gtif, &defn, xmin, ymin, PlyTable[0].ltp,
                     PlyTable[0].lnp)) {  // Upper Left
     return INIT_FAIL_REMOVE;
@@ -177,14 +178,14 @@ InitReturn ChartGeoTIFF::Init(const wxString &name, ChartInitFlag init_flags) {
 
   m_nCOVREntries = 1;
   m_pCOVRTablePoints = (int *)malloc(sizeof(int));
-  *m_pCOVRTablePoints = PLY_POINTS;
+  *m_pCOVRTablePoints = REF_POINTS;
   m_pCOVRTable = (float **)malloc(sizeof(float *));
-  *m_pCOVRTable = (float *)malloc(PLY_POINTS * 2 * sizeof(float));
-  memcpy(*m_pCOVRTable, &PlyTable, PLY_POINTS * 2 * sizeof(float));
+  *m_pCOVRTable = (float *)malloc(REF_POINTS * 2 * sizeof(float));
+  memcpy(*m_pCOVRTable, &PlyTable, REF_POINTS * 2 * sizeof(float));
 
-  nRefpoint = PLY_POINTS;
-  pRefTable = (Refpoint *)realloc(pRefTable, sizeof(Refpoint) * (PLY_POINTS));
-  for (size_t nRefpoint = 0; nRefpoint < PLY_POINTS; nRefpoint++) {
+  nRefpoint = REF_POINTS;
+  pRefTable = (Refpoint *)realloc(pRefTable, sizeof(Refpoint) * (REF_POINTS));
+  for (size_t nRefpoint = 0; nRefpoint < REF_POINTS; nRefpoint++) {
     pRefTable[nRefpoint].xr = nRefpoint <= 1 ? xmin : xmax;
     pRefTable[nRefpoint].yr = nRefpoint == 0 || nRefpoint == 3 ? ymin : ymax;
     pRefTable[nRefpoint].latr = PlyTable[nRefpoint].ltp;
@@ -202,21 +203,19 @@ InitReturn ChartGeoTIFF::Init(const wxString &name, ChartInitFlag init_flags) {
 
 bool ChartGeoTIFF::IsPixelTransparent(uint8_t *image, const int &x,
                                       const int &y, bool fix_borders) {
-  if(fix_borders) {
-    if(x < 0 || y < 0) {
+  if (fix_borders) {
+    if (x < 0 || y < 0) {
       return false;
     }
-    if(x>=Size_X || y >= Size_X) {
+    if (x >= Size_X || y >= Size_Y) {
       return false;
     }
-    if(x == 0 || y == 0 || x == Size_X -1 || y == Size_Y - 1) {
+    if (x == 0 || y == 0 || x == Size_X - 1 || y == Size_Y - 1) {
       return true;
     }
-
   }
-  //std::cout << std::hex << (int)image[4 * (y * Size_X + x)] << " "<< (int)image[4 * (y * Size_X + x)+1] << " " << (int)image[4 * (y * Size_X + x)+2] << " " << (int)image[4 * (y * Size_X + x)+3] <<std::endl;
   size_t pos = 4 * y * Size_X + 4 * x;
-  return image[pos+3] == 0;
+  return image[pos + 3] == 0;
 }
 
 bool ChartGeoTIFF::FindEdge(uint8_t *image, int &x, int &y) {
@@ -226,7 +225,7 @@ bool ChartGeoTIFF::FindEdge(uint8_t *image, int &x, int &y) {
   for (int xi = 0; xi < Size_X; xi += Size_X / STEPS) {
     x = xi;
     for (int yi = 0; yi < Size_Y; yi++) {
-      if(IsPixelTransparent(image, xi, yi)) {
+      if (IsPixelTransparent(image, xi, yi)) {
         y = yi;
       } else {
         if (y > 0 && y < Size_Y - 1) {
@@ -249,7 +248,7 @@ bool ChartGeoTIFF::FindEdge(uint8_t *image, int &x, int &y) {
     }
   }
   // TODO: Top->bottom & Right->Left (Can be done in the same loop in case we do
-  // not find first pizel to be transparent, but it will probably be faster to
+  // not find first pixel to be transparent, but it will probably be faster to
   // start independently in the other direction most of the time?)
   // TODO: Another possible optimization is to remember shich sample was
   // completely transparent not to have to scan it in the other direction
@@ -277,8 +276,31 @@ InitReturn ChartGeoTIFF::PostInit() {
   int x, y;
   if (FindEdge(im, x, y)) {
     // Found edge, let's trace the outline
-    std::cout << m_FullPath << " - Start at " << x << ", " << y << std::endl;
-    std::cout << TraceOutlineN(im, x,y) << std::endl;
+    if (TraceOutline(im, x, y) && !ply_points.empty()) {
+      *m_pCOVRTablePoints = ply_points.size();
+      Plypoint PlyTable[*m_pCOVRTablePoints];  // By default we define the
+                                               // polygon around the whole image
+      GTIFDefn defn;
+
+      if (!GTIFGetDefn(gtif, &defn)) {
+        return INIT_FAIL_REMOVE;
+      }
+      size_t cnt{0};
+      for (auto p : ply_points) {
+        double dx = p.first;
+        double dy = p.second;
+        if (!CornerLatLon(gtif, &defn, dx, dy, PlyTable[cnt].ltp,
+                          PlyTable[cnt].lnp)) {
+          return INIT_FAIL_NOERROR;  // TODO: Is it OK to return this here or
+                                     // should it be INIT_OK as we simply keep
+                                     // the simple default table?
+        }
+        cnt++;
+      }
+      m_pCOVRTable = (float **)malloc(sizeof(float *));
+      *m_pCOVRTable = (float *)malloc(*m_pCOVRTablePoints * 2 * sizeof(float));
+      memcpy(*m_pCOVRTable, &PlyTable, *m_pCOVRTablePoints * 2 * sizeof(float));
+    }
   }
 
   bReadyToRender = true;
@@ -310,7 +332,36 @@ bool ChartGeoTIFF::GetChartBits(wxRect &source, unsigned char *pPix,
   return true;
 }
 
-std::string ChartGeoTIFF::TraceOutlineN(uint8_t *image, int x0, int y0) {
+void ChartGeoTIFF::AppendPoint(const int &x, const int &y, const int &dir) {
+  if (ply_points.empty()) {
+    ply_points.push_back({x, Size_Y - y});
+  } else {
+    int ex_x = ply_points.back().first;
+    int ex_y = ply_points.back().second;
+    if (abs(ex_x - x) == 1 && abs(ex_y - y) == 1) {
+      switch (dir) {
+        case 1:
+          ply_points.back() = {ex_x, Size_Y - y};
+          break;
+        case 3:
+          ply_points.back() = {ex_x, Size_Y - y};
+          break;
+        case 5:
+          ply_points.back() = {x, Size_Y - ex_y};
+          break;
+        case 7:
+          ply_points.back() = {x, Size_Y - ex_y};
+          break;
+        default:
+          break;
+      }
+    } else {
+      ply_points.push_back({x, Size_Y - y});
+    }
+  }
+}
+
+bool ChartGeoTIFF::TraceOutline(uint8_t *image, int x0, int y0) {
   /*
  image: an RGBA image buffer
  x0, y0, coordinates of a point on the edge of the transparent area
@@ -322,17 +373,18 @@ std::string ChartGeoTIFF::TraceOutlineN(uint8_t *image, int x0, int y0) {
     ┗━━━━━━━━━━━┛
           S
 */
-  int x = x0;
-  int y = y0;
+  ply_points.clear();
+  int x{x0};
+  int y{y0};
   bool hitstart{false};
   size_t count{0};
-  size_t countlimit = 4 * (Size_X + Size_Y);  // Artificial limit
+  size_t countlimit =
+      (Size_X + Size_Y) /
+      5;  // Artificial limit for the number of points in the outline
   const size_t indices[8] = {2, 3, 4, 5, 6, 7, 0, 1};
   bool neighbors[8];
-  int newdir = -1;
-  int olddir = -1;
-  std::ostringstream os;
-  os << x << "," << y << ";"; //First point
+  int newdir{-1};
+  int olddir{-1};
   while (!hitstart) {
     neighbors[2] = IsPixelTransparent(image, x + 1, y, true);
     neighbors[3] = IsPixelTransparent(image, x + 1, y - 1, true);
@@ -342,18 +394,24 @@ std::string ChartGeoTIFF::TraceOutlineN(uint8_t *image, int x0, int y0) {
     neighbors[7] = IsPixelTransparent(image, x - 1, y + 1, true);
     neighbors[0] = IsPixelTransparent(image, x, y + 1, true);
     neighbors[1] = IsPixelTransparent(image, x + 1, y + 1, true);
-    for(int idx : indices) {
+    for (int idx : indices) {
       if (neighbors[idx]) {
-        if (std::abs(idx - newdir) != 4) { // We do not ever want to go back the same way we got here (And the difference between opposite directions is always 4)
-          if((newdir==7 || newdir==0 || newdir==1) // If we are going up
-          && (neighbors[7] || neighbors[0] || neighbors[1]) // and can continue in that general direction
-          && (idx == 3 || idx ==4 || idx ==5) // avoid going down
+        if (std::abs(idx - newdir) !=
+            4) {  // We do not ever want to go back the same way we got here
+                  // (And the difference between opposite directions is always
+                  // 4)
+          if ((newdir == 7 || newdir == 0 || newdir == 1)  // If we are going up
+              && (neighbors[7] || neighbors[0] ||
+                  neighbors[1])  // and can continue in that general direction
+              && (idx == 3 || idx == 4 || idx == 5)  // avoid going down
           ) {
             continue;
-          }
-          else if((newdir==7 || newdir==6 || newdir==5) // If we are going left
-          && (neighbors[7] || neighbors[6] || neighbors[5]) // and can continue in that general direction
-          && (idx == 3 || idx ==2 || idx ==1) // avoid going right
+          } else if ((newdir == 7 || newdir == 6 ||
+                      newdir == 5)  // If we are going left
+                     && (neighbors[7] || neighbors[6] ||
+                         neighbors[5])  // and can continue in that general
+                                        // direction
+                     && (idx == 3 || idx == 2 || idx == 1)  // avoid going right
           ) {
             continue;
           }
@@ -363,56 +421,53 @@ std::string ChartGeoTIFF::TraceOutlineN(uint8_t *image, int x0, int y0) {
       }
     }
     if (newdir != olddir) {
-      std::cout << x << "," << y << ";" << std::flush;
-      os << x << "," << y << ";"; //Changing direction, let's add corner (TODO: This is going to be too sensitive to work fine with anything but 45/90 degree angels)
+      // We are changing the direction of movement, need to record the corner
+      AppendPoint(x, y, newdir);
       olddir = newdir;
       count++;
     }
-    switch (newdir)
-    {
-    case 2:
-      x++;
-      break;
-    case 3:
-      x++;
-      y--;
-      break;
-    case 4:
-      y--;
-      break;
-    case 5:
-      x--;
-      y--;
-      break;
-    case 6:
-      x--;
-      break;
-    case 7:
-      x--;
-      y++;
-      break;
-    case 0:
-      y++;
-      break;
-    case 1:
-      x++;
-      y++;
-      break;
-    default:
-      std::cerr << "Ouch, we got stuck!" << std::endl;
-      //TODO: Bomb out
-      break;
+    switch (newdir) {
+      case 2:
+        x++;
+        break;
+      case 3:
+        x++;
+        y--;
+        break;
+      case 4:
+        y--;
+        break;
+      case 5:
+        x--;
+        y--;
+        break;
+      case 6:
+        x--;
+        break;
+      case 7:
+        x--;
+        y++;
+        break;
+      case 0:
+        y++;
+        break;
+      case 1:
+        x++;
+        y++;
+        break;
+      default:
+        std::cerr << "Ouch, we got stuck!" << std::endl;
+        return false;
+        break;
     }
-    
-    if(count >= 4 && abs(x-x0) < 2 && abs(y-y0) < 2) {
+
+    if (count >= 4 && abs(x - x0) < 2 && abs(y - y0) < 2) {
       hitstart = true;
     }
-    if (count==countlimit) {
+    if (count == countlimit) {
       std::cerr << "Ouch, the path seems to be too long!" << std::endl;
-      break;
+      return false;
     }
   }
-  std::cout << "Traced to " << count << " corners." << std::endl;
-  std::cout << os.str() << std::endl;
-  return os.str();
+  return true;
 }
