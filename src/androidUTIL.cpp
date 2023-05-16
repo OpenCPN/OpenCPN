@@ -548,7 +548,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
       }
 
       // Tide/Current window
-      if (gFrame->GetPrimaryCanvas()->getTCWin()) {
+      if (gFrame->GetPrimaryCanvas() && gFrame->GetPrimaryCanvas()->getTCWin()) {
         bool bshown = gFrame->GetPrimaryCanvas()->getTCWin()->IsShown();
         gFrame->GetPrimaryCanvas()->getTCWin()->Hide();
         gFrame->GetPrimaryCanvas()->getTCWin()->RecalculateSize();
