@@ -44,27 +44,27 @@ class Route;
 #define ERR_GARMIN_INITIALIZE -1
 #define ERR_GARMIN_GENERAL -2
 
-void BroadcastNMEA0183Message(const wxString &msg, NmeaLog& nmea_log);
+void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log);
 
-class  N0183DlgCtx {
+class N0183DlgCtx {
 public:
-   std::function<void(int)> set_value;
-   std::function<void(int)> set_range;
-   std::function<void(void)> pulse;
-   std::function<void(const std::string&)> set_message;
+  std::function<void(int)> set_value;
+  std::function<void(int)> set_range;
+  std::function<void(void)> pulse;
+  std::function<void(const std::string&)> set_message;
 
-   N0183DlgCtx () :set_value([](int) {}),
-                   set_range([](int) {}),
-                   pulse([](void) {}),
-                   set_message([](const std::string&) {}) {}
+  N0183DlgCtx()
+      : set_value([](int) {}),
+        set_range([](int) {}),
+        pulse([](void) {}),
+        set_message([](const std::string&) {}) {}
 };
 
-
-int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
+int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
                          bool bsend_waypoints, Multiplexer& multiplexer,
                          N0183DlgCtx ctx);
 
-int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name,
-                            Multiplexer& multiplexer,  N0183DlgCtx ctx);
+int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
+                            Multiplexer& multiplexer, N0183DlgCtx ctx);
 
 #endif  // _COMMN0183>>UT_H
