@@ -4267,6 +4267,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
         " for imported plugin: " << metadata.name;
   }
   LoadAllPlugIns(false);
+  PluginHandler::getInstance()->SetInstalledMetadata(metadata);
   m_PluginListPanel->ReloadPluginPanels();
 }
 
@@ -5051,8 +5052,7 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent &event) {
   SetEnabled(!m_pPlugin->m_bEnabled);
-  if (m_pVersion->GetLabel().IsEmpty())
-    m_pVersion->SetLabel(GetPluginVersion(m_pPlugin));
+  m_pVersion->SetLabel(GetPluginVersion(m_pPlugin));
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent &event) {

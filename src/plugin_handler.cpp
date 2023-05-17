@@ -1031,6 +1031,16 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   return plugins;
 }
 
+void PluginHandler::SetInstalledMetadata(const PluginMetadata& pm) {
+   auto loader = PluginLoader::getInstance();
+   ssize_t ix =  PlugInIxByName(pm.name, loader->GetPlugInArray());
+   if (ix == -1) return;  // no such plugin
+
+   auto plugins = *loader->GetPlugInArray();
+   plugins[ix]->m_ManagedMetadata = pm;
+}
+
+
 bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
   std::string filelist;
   if (!extractTarball(path, filelist)) {
