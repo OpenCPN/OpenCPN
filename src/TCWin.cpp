@@ -554,7 +554,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
           dc.SetPen(*pblack_2);
           dc.DrawLine(xd, m_graph_rect.y, xd,
                       m_graph_rect.y + m_graph_rect.height + 5);
-          char sbuf[5];
+          char sbuf[16];
           int hour_show = hour_start + i;
           if (hour_show >= 24) hour_show -= 24;
           sprintf(sbuf, "%02d", hour_show);
