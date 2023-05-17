@@ -240,7 +240,9 @@ void CommDriverSignalKNet::Activate() {
 
 void CommDriverSignalKNet::Open(void) {
   wxString discoveredIP;
+#if 0
   int discoveredPort;
+#endif
 
   //if (m_useWebSocket)
   {

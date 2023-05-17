@@ -186,8 +186,6 @@ bool loadCShaders(int index) {
   }
 
   bool ret_val = true;
-  GLint success;
-
 
   // Simple colored triangle shader
   if (!pCcolor_tri_shader_program[index]) {

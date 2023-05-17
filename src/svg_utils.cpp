@@ -114,9 +114,9 @@ unsigned int get_px_length(const char* val) {
   int num;
   try {
     num = std::stoi(val);
-  } catch (std::invalid_argument const& ex) {
+  } catch (std::invalid_argument&) {
     return 0;
-  } catch (std::out_of_range const& ex) {
+  } catch (std::out_of_range& ) {
     return 0;
   }
   if (num < 0) {

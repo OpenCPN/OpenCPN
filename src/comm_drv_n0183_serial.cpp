@@ -427,7 +427,7 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
     m_serial.setBaudrate(baud_rate);
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     //      std::cerr << "Unhandled Exception while opening serial port: " <<
     //      e.what() << std::endl;
   }
@@ -437,7 +437,7 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
 void CommDriverN0183SerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     //      std::cerr << "Unhandled Exception while closing serial port: " <<
     //      e.what() << std::endl;
   }
@@ -513,7 +513,7 @@ void* CommDriverN0183SerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(rdata, 200);
-      } catch (std::exception& e) {
+      } catch (std::exception&) {
         //        std::cerr << "Serial read exception: " << e.what() <<
         //        std::endl;
         if (10 < retries++) {
