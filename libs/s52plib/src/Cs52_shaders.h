@@ -73,7 +73,8 @@ public:
         GLint logLength = 0;
         glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
         if (logLength > 0) {
-          auto log = std::unique_ptr<char>(new char[logLength]);
+          auto log = std::unique_ptr<char>(
+                  reinterpret_cast<char*>(new char[logLength]));
           glGetShaderInfoLog(shaderId, logLength, &logLength, log.get());
           printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", log.get());
 #ifdef USE_ANDROID_GLES2
@@ -94,7 +95,8 @@ public:
         GLint logLength = 0;
         glGetShaderiv(programId_, GL_INFO_LOG_LENGTH, &logLength);
         if (logLength > 0) {
-          auto log = std::unique_ptr<char>(new char[logLength]);
+          auto log = std::unique_ptr<char>(
+             reinterpret_cast<char*>(new char[logLength]));
           glGetShaderInfoLog(programId_, logLength, &logLength, log.get());
           printf("ERROR::SHADER::LINK_FAILED\n%s\n", log.get());
         }
