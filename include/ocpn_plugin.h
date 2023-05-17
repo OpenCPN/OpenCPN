@@ -455,6 +455,8 @@ typedef void destroy_t(opencpn_plugin *);
 class DECL_EXP opencpn_plugin_16 : public opencpn_plugin {
 public:
   opencpn_plugin_16(void *pmgr);
+
+  using opencpn_plugin::RenderOverlay;
   virtual ~opencpn_plugin_16();
 
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
@@ -467,6 +469,7 @@ public:
   opencpn_plugin_17(void *pmgr);
   virtual ~opencpn_plugin_17();
 
+  using opencpn_plugin::RenderOverlay;
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
@@ -477,7 +480,7 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin {
 public:
   opencpn_plugin_18(void *pmgr);
   virtual ~opencpn_plugin_18();
-
+  using opencpn_plugin::RenderOverlay;
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
@@ -580,6 +583,7 @@ public:
 class DECL_EXP opencpn_plugin_118 : public opencpn_plugin_117 {
 public:
   opencpn_plugin_118(void *pmgr);
+  using opencpn_plugin_116::RenderGLOverlayMultiCanvas;
   /// Render plugin overlay over chart canvas in OpenGL mode
   ///
   /// \param pcontext Pointer to the OpenGL context
@@ -591,6 +595,7 @@ public:
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex,
                                           int priority = -1);
+  using opencpn_plugin_116::RenderOverlayMultiCanvas;
   /// Render plugin overlay over chart canvas in non-OpenGL mode
   ///
   /// \param dc Reference to the "device context"
