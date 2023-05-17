@@ -10,7 +10,7 @@ excluded from upstream sources in d/copyright
 
 Not acceptable upstream.
 
-Forwarded: not-ńeeded
+Forwarded: not-needed
 ---
  CMakeLists.txt | 19 -------------------
  1 file changed, 19 deletions(-)
