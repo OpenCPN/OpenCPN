@@ -3512,9 +3512,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       float tx1 = texrect.x, ty1 = texrect.y;
       float tx2 = tx1 + w, ty2 = ty1 + h;
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#else
-
       if (m_TextureFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
@@ -3550,61 +3547,38 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       coords[4] = 0;
       coords[5] = h;
 
-      glUseProgram(S52texture_2D_ColorMod_shader_program);
-
       float colorv[4];
       colorv[0] = symColor.Red() / float(256);
       colorv[1] = symColor.Green() / float(256);
       colorv[2] = symColor.Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc =
-          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "color");
-      glUniform4fv(colloc, 1, colorv);
+      pCtexture_2D_Color_shader_program[0]->Bind();
 
-      // Get pointers to the attributes in the program.
-      GLint mPosAttrib = glGetAttribLocation(
-          S52texture_2D_ColorMod_shader_program, "position");
-      GLint mUvAttrib =
-          glGetAttribLocation(S52texture_2D_ColorMod_shader_program, "aUV");
-
-      // Select the active texture unit.
+        // Select the active texture unit.
       glActiveTexture(GL_TEXTURE0);
 
-      // Bind our texture to the texturing target.
-      glBindTexture(GL_TEXTURE_2D, texture);
+      pCtexture_2D_Color_shader_program[0]->SetUniform4fv( "color", colorv);
 
-      // Set up the texture sampler to texture unit 0
-      GLint texUni =
-          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "uTex");
-      glUniform1i(texUni, 0);
+      pCtexture_2D_Color_shader_program[0]->SetUniform1i( "uTex", 0);
 
-      // Disable VBO's (vertex buffer objects) for attributes.
+        // Disable VBO's (vertex buffer objects) for attributes.
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-      // Set the attribute mPosAttrib with the vertices in the screen
-      // coordinates...
-      glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-      // ... and enable it.
-      glEnableVertexAttribArray(mPosAttrib);
-
-      // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-      glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv);
-      // ... and enable it.
-      glEnableVertexAttribArray(mUvAttrib);
+      pCtexture_2D_Color_shader_program[0]->SetAttributePointerf( "position", coords);
+      pCtexture_2D_Color_shader_program[0]->SetAttributePointerf( "aUV", uv);
 
       // Rotate
-      mat4x4 I, Q;
-      mat4x4_identity(I);
+       mat4x4 I, Q;
+       mat4x4_identity(I);
+       mat4x4_identity(Q);
 
       mat4x4_translate_in_place(I, r.x, r.y, 0);
       mat4x4_rotate_Z(Q, I, -vp_plib.rotation);
       mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
 
-      GLint matloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,
-                                          "TransformMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+      pCtexture_2D_Color_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)Q);
 
       // Perform the actual drawing.
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -3612,16 +3586,8 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       // Restore the per-object transform to Identity Matrix
       mat4x4 IM;
       mat4x4_identity(IM);
-      GLint matlocf = glGetUniformLocation(
-          S52texture_2D_ColorMod_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
-
-      // Restore GL state
-      glDisableVertexAttribArray(mPosAttrib);
-      glDisableVertexAttribArray(mUvAttrib);
-      glUseProgram(0);
-
-#endif  // GLES2
+      pCtexture_2D_Color_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)IM);
+      pCtexture_2D_Color_shader_program[0]->UnBind();
       glDisable(m_TextureFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
               */
@@ -5659,11 +5625,15 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
   // Very important for partial screen renders, as with dc mode pans or OpenGL
   // FBO operation.
 
-  wxPoint cr0 = GetPixFromLLROT(GetBBox().GetMaxLat(),
-                                      GetBBox().GetMinLon(), 0);
-  wxPoint cr1 = GetPixFromLLROT(GetBBox().GetMinLat(),
-                                      GetBBox().GetMaxLon(), 0);
+  wxPoint cr0 = GetPixFromLLROT(GetReducedBBox().GetMaxLat(),
+                                      GetReducedBBox().GetMinLon(), 0);
+  wxPoint cr1 = GetPixFromLLROT(GetReducedBBox().GetMinLat(),
+                                      GetReducedBBox().GetMaxLon(), 0);
   wxRect clip_rect(cr0, cr1);
+
+  double box_margin = wxMax(fabs(GetBBox().GetMaxLon() - GetBBox().GetMinLon()),
+                              fabs(GetBBox().GetMaxLat() - GetBBox().GetMinLat()));
+  LLBBox screen_box = GetBBox();
 
   for (int ip = 0; ip < npt; ip++) {
     double lon = *pdl++;
@@ -5673,7 +5643,19 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
     double nort = *pd++;
     double depth = *pd++;
 
+    // Make a rough inclusion test from lat/lon
+    // onto the screen coordinates, enlarged a bit
+    if (!screen_box.ContainsMarge(lat, lon, box_margin))
+      continue;
+
     wxPoint r = GetPixFromLLROT(lat, lon, 0);
+
+    // Some simple inclusion tests
+    if((r.x < 0) || (r.y < 0))
+      continue;
+    if ((r.x == INVALID_COORD) || (r.y == INVALID_COORD))
+      continue;
+
     //      Use estimated symbol size
     wxRect rr(r.x - (box_dim / 2), r.y - (box_dim / 2), box_dim, box_dim);
 
@@ -5720,7 +5702,6 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
       rules = rules->next;
     }
   }
-
   return 1;
 }
 
@@ -11191,6 +11172,11 @@ void PrepareS52ShaderUniforms(VPointCompat *vp) {
   shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
   shader->UnBind();
 
+  shader = pCtexture_2D_Color_shader_program[0];
+  shader->Bind();
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)Q);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+  shader->UnBind();
 
 }
 

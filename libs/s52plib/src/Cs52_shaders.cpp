@@ -83,6 +83,30 @@ static const GLchar* xtexture_2D_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord);\n"
     "}\n";
 
+// 2D texture shader with color modulation, used for colored text
+static const GLchar * xtexture_2D_ColorMod_vertex_shader_source =
+    "precision highp float;\n"
+    "attribute vec2 position;\n"
+    "attribute vec2 aUV;\n"
+    "uniform mat4 MVMatrix;\n"
+    "uniform mat4 TransformMatrix;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
+    "   varCoord = aUV;\n"
+    "}\n";
+
+static const GLchar * xtexture_2D_ColorMod_fragment_shader_source =
+    "precision highp float;\n"
+    "uniform sampler2D uTex;\n"
+    "uniform vec4 color;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   vec4 col=texture2D(uTex, varCoord);\n"
+    "   gl_FragColor = color;\n"
+    "   gl_FragColor.a = col.a;\n"
+    "}\n";
+
 //  Circle shader
 
 static const GLchar* xcircle_filled_vertex_shader_source =
@@ -174,7 +198,7 @@ CGLShaderProgram *pCcolor_tri_shader_program[2];
 CGLShaderProgram *pCtexture_2D_shader_program[2];
 CGLShaderProgram *pCcircle_filled_shader_program[2];
 CGLShaderProgram *pCtexture_2DA_shader_program[2];
-
+CGLShaderProgram *pCtexture_2D_Color_shader_program[2];
 
 bool bCShadersLoaded[2];
 
@@ -208,6 +232,16 @@ bool loadCShaders(int index) {
 
     if (shaderProgram->isOK())
       pCtexture_2D_shader_program[index] = shaderProgram;
+  }
+
+   if (!pCtexture_2D_Color_shader_program[index]) {
+    CGLShaderProgram *shaderProgram = new CGLShaderProgram;
+    shaderProgram->addShaderFromSource(xtexture_2D_ColorMod_vertex_shader_source, GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(xtexture_2D_ColorMod_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->linkProgram();
+
+    if (shaderProgram->isOK())
+      pCtexture_2D_Color_shader_program[index] = shaderProgram;
   }
 
 #if 0
