@@ -491,6 +491,7 @@ int dashboard_pi::Init(void) {
   mPriATMP = 99; // Air temp
   mPriSatStatus = 99;
   mPriSatUsed = 99;
+  mSatsInView = 0;
   mPriAlt = 99;
   mPriRSA = 99;  //Rudder angle
   mPriPitchRoll = 99; //Pitch and roll
@@ -750,7 +751,7 @@ void dashboard_pi::Notify() {
   mSatsUsed_Wdog--;
   if (mSatsUsed_Wdog <= 0) {
     mPriSatUsed = 99;
-    mSatsInView = 0;
+    mSatsInUse = 0;
     SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, _T(""));
     mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
   }
@@ -1042,9 +1043,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
             }
             if (mPriSatUsed >= 3) {
-              mSatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, mSatsInView,
-                                           _T (""));
+              mSatsInUse = m_NMEA0183.Gga.NumberOfSatellitesInUse;
+              SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, mSatsInUse, _T (""));
               mPriSatUsed = 3;
               mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
             }
@@ -1098,9 +1098,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       if (mPriSatStatus >= 3 || mPriSatUsed >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gsv.MessageNumber == 1) {
-            // NMEA0183 recommend to not repeat SatsInView in subsequent
-            // messages
+            // NMEA0183 recommend to not repeat SatsInView
+            // in subsequent messages
             mSatsInView = m_NMEA0183.Gsv.SatsInView;
+
             if (mPriSatUsed >= 5) {
               SendSentenceToAllInstruments(OCPN_DBP_STC_SAT,
                                            m_NMEA0183.Gsv.SatsInView, _T (""));
@@ -1108,10 +1109,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
             }
           }
+
           if (mPriSatStatus >= 3) {
             SendSatInfoToAllInstruments(
-                mSatsInView, m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.TalkerID,
-                m_NMEA0183.Gsv.SatInfo);
+                mSatsInView, m_NMEA0183.Gsv.MessageNumber,
+                m_NMEA0183.TalkerID, m_NMEA0183.Gsv.SatInfo);
             mPriSatStatus = 3;
             mSatStatus_Wdog = gps_watchdog_timeout_ticks;
           }
@@ -2947,9 +2949,9 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
     }
   }
   if (mPriSatUsed >= 1) {
-    mSatsInView = pfix.nSats;
-    if (mSatsInView > 0) {
-      SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, mSatsInView, _T(""));
+    mSatsInUse = pfix.nSats;
+    if (mSatsInUse > 0) {
+      SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, mSatsInUse, _T(""));
       mPriSatUsed = 1;
       mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
     }

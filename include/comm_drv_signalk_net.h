@@ -47,8 +47,6 @@
 #define N_DOG_TIMEOUT 5             // seconds
 #define N_DOG_TIMEOUT_RECONNECT 10  // seconds
 
-#define TIMER_SOCKET 9006
-
 static const double ms_to_knot_factor = 1.9438444924406;
 
 class WebSocketThread;

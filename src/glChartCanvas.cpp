@@ -1692,10 +1692,8 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
   // chart is outside of viewport lat/lon bounding box
   if (box.IntersectOutGetBias(vp.GetBBox(), lon_bias)) return;
 
-  float plylat, plylon;
 
   wxColour color;
-
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
     color = GetGlobalColor(_T ( "YELO1" ));
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
@@ -1704,6 +1702,8 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
     color = GetGlobalColor(_T ( "UINFR" ));
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+  float plylat, plylon;
+
   if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
 
   glColor3ub(color.Red(), color.Green(), color.Blue());

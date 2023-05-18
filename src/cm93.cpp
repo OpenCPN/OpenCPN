@@ -3246,7 +3246,6 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
     int *pAVI;
     char *pAVS;
     double *pAVR;
-    int nlen;
     double dival;
     int ival;
 

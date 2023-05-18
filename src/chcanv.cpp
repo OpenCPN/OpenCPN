@@ -31,16 +31,8 @@
 #endif  // precompiled headers
 #include <wx/image.h>
 #include <wx/graphics.h>
-#include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
-#include <wx/progdlg.h>
-
-// #if defined(__OCPN__ANDROID__)
-// #include <GLES2/gl2.h>
-// #elif defined(__WXQT__) || defined(__WXGTK__)
-// #include <GL/glew.h>
-// #endif
 
 #include "config.h"
 
@@ -106,7 +98,7 @@
 #include "route_gui.h"
 #include "line_clip.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -8960,10 +8952,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
     else {                    // !g_btouch
       if (m_bRouteEditing) {  // End of RoutePoint drag
-        Route *tail, *current;
+        Route *tail = 0;
+        Route *current = 0;
         bool appending = false;
         bool inserting = false;
-        int connect;
+        int connect = 0;
         int index_last;
         if (m_pRoutePointEditTarget) {
           m_pRoutePointEditTarget->m_bBlink = false;

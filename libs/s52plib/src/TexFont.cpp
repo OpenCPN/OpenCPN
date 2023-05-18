@@ -502,8 +502,6 @@ static const GLchar *TexFont_fragment_shader_source =
 bool TexFont::LoadTexFontShaders() {
   bool ret_val = true;
 
-  int success;
-
   // Are the shaders ready?
   if(m_TexFontShader)
     return true;

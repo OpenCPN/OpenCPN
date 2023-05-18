@@ -660,7 +660,7 @@ bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString& com_name,
     m_serial.setBaudrate(baud_rate);
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     // std::cerr << "Unhandled Exception while opening serial port: " <<
     // e.what() << std::endl;
   }
@@ -670,7 +670,7 @@ bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString& com_name,
 void CommDriverN2KSerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     // std::cerr << "Unhandled Exception while closing serial port: " <<
     // e.what() << std::endl;
   }
@@ -723,7 +723,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char *msg, size_
     ssize_t status;
     try {
       status = m_serial.write((uint8_t*)msg, length);
-    } catch (std::exception& e) {
+    } catch (std::exception&) {
 //       std::cerr << "Unhandled Exception while writing to serial port: " <<
 //       e.what() << std::endl;
       return -1;

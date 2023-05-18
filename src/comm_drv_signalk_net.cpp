@@ -36,6 +36,8 @@
 #include "easywsclient.hpp"
 #include "geodesic.h"
 
+const int kTimerSocket = 9006;
+
 class CommDriverSignalKNetEvent;  // fwd
 
 class CommDriverSignalKNetThread : public wxThread {
@@ -221,7 +223,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
 
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
-  m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET);
+  m_socketread_watchdog_timer.SetOwner(this, kTimerSocket);
   m_wsThread = NULL;
   m_threadActive = false;
 
@@ -238,7 +240,9 @@ void CommDriverSignalKNet::Activate() {
 
 void CommDriverSignalKNet::Open(void) {
   wxString discoveredIP;
+#if 0
   int discoveredPort;
+#endif
 
   //if (m_useWebSocket)
   {

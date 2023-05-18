@@ -444,8 +444,8 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pWind->SetValue(!IsRTOFS);
   m_pPress->SetValue(!IsRTOFS);
   m_pWaves->SetValue(m_RequestConfigBase.GetChar(8) == 'X' && IsGFS);
-  m_pWaves->Enable(IsECMWF || IsGFS && m_pTimeRange->GetCurrentSelection() <
-                                7);  // gfs & time range less than 8 days
+  m_pWaves->Enable(IsECMWF || (IsGFS && m_pTimeRange->GetCurrentSelection() <7));
+     // gfs & time range less than 8 days
   m_pRainfall->SetValue(m_RequestConfigBase.GetChar(9) == 'X' &&
                         (IsGFS || IsHRRR));
   m_pRainfall->Enable(IsGFS || IsHRRR);

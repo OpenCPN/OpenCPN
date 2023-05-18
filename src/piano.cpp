@@ -368,11 +368,11 @@ void Piano::DrawGLSL(int off) {
 #ifdef ocpnUSE_GL
   unsigned int w = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
   int h = GetHeight();
-  int endx = 0;
+  unsigned int endx = 0;
 
-  if (m_tex_piano_height != h) BuildGLTexture();
+  if (static_cast<int>(m_tex_piano_height) != h) BuildGLTexture();
 
-  if (m_tex_piano_height != h) return;
+  if (static_cast<int>(m_tex_piano_height) != h) return;
 
   int y1 = off, y2 = y1 + h;
 
