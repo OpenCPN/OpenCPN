@@ -5681,10 +5681,6 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
           dryAngle = -vp_plib.rotation * 180. / PI;
         // FIXME (dave) drying height symbol should be wider/bolder.
 
-        //FIXME (dave) Patch to chartsymbols.xml
-        // Remove on Release of 5.8.0
-        rules->razRule->pos.symb.pivot_x.SYCL = 750;
-
         RenderHPGL(rzRules, rules->razRule, r, dryAngle, m_SoundingsScaleFactor);
       } else if (rules->razRule->definition.SYDF == 'R') {
         // Parse the first rule to determine the color
