@@ -2366,6 +2366,7 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
   Write(_T ( "OpenGL" ), g_bopengl);
+  Write(_T ( "DisableOpenGL" ), g_bdisable_opengl);
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
   Write(_T ( "ShowFPS" ), g_bShowFPS);
 
