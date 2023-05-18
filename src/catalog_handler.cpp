@@ -24,6 +24,7 @@
 
 #include "config.h"
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 
@@ -158,9 +159,10 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     ctx->meta_urls.pop_back();
 
     // already parsed this meta file?
-    auto found =
-        std::find(ctx->parsed_metas.begin(), ctx->parsed_metas.end(), url);
-    if (found != ctx->parsed_metas.end()) {
+    auto match = [url](const std::string& s) { return url == s; };
+    const auto& haystack = ctx->parsed_metas;
+    auto found = std::find_if(haystack.begin(), haystack.end(), match);
+    if (found != haystack.end()) {
         continue;
     }
     ctx->parsed_metas.push_back(url);
