@@ -127,10 +127,9 @@ void PluginPaths::initLinuxPaths() {
   }
 
   const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
-  string dirlist = envdirs ? envdirs : "~/.local/lib";
+  string dirlist = envdirs ? envdirs : "~/.local/lib/opencpn";
   m_libdirs = split(dirlist, ':');
   for (auto& dir : m_libdirs) {
-    dir += "/opencpn";
     dir = expand(dir);
   }
   if (envdirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
