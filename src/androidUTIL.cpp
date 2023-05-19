@@ -85,6 +85,7 @@
 #include "comm_drv_n0183_android_int.h"
 #include "comm_drv_n0183_android_bt.h"
 #include "comm_drv_n0183_serial.h"
+#include "comm_navmsg_bus.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
@@ -405,15 +406,58 @@ int futimens(int fd, const struct timespec times[2]) {
   return utimensat(fd, nullptr, times, 0);
 }
 
+// Event handler for Raw NMEA messages coming from Java upstream
+class AndroidNMEAEvent : public wxEvent {
+public:
+  AndroidNMEAEvent( wxEventType commandType, int id);
+  ~AndroidNMEAEvent();
+
+  // accessors
+  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data);
+  std::shared_ptr<std::vector<unsigned char>> GetPayload();
+
+  // required for sending with wxPostEvent()
+  wxEvent* Clone() const;
+private:
+  std::shared_ptr<std::vector<unsigned char>> m_payload;
+};
+
+wxDECLARE_EVENT(wxEVT_ANDROID_NMEA_RAW, AndroidNMEAEvent);
+
+
+wxDEFINE_EVENT(wxEVT_ANDROID_NMEA_RAW, AndroidNMEAEvent);
+
+AndroidNMEAEvent::AndroidNMEAEvent( wxEventType commandType, int id = 0)
+      : wxEvent(id, commandType){};
+
+AndroidNMEAEvent::~AndroidNMEAEvent(){};
+
+void AndroidNMEAEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
+    m_payload = data;
+}
+std::shared_ptr<std::vector<unsigned char>> AndroidNMEAEvent::GetPayload() { return m_payload; }
+
+  // required for sending with wxPostEvent()
+wxEvent* AndroidNMEAEvent::Clone() const {
+    AndroidNMEAEvent* newevent =
+        new AndroidNMEAEvent(*this);
+    newevent->m_payload = this->m_payload;
+    return newevent;
+};
+
+
+
 class androidUtilHandler : public wxEvtHandler {
 public:
-  androidUtilHandler();
-  ~androidUtilHandler() {}
+  androidUtilHandler(DriverListener& listener);
+  ~androidUtilHandler();
 
   void onTimerEvent(wxTimerEvent &event);
   void onStressTimer(wxTimerEvent &event);
   void OnResizeTimer(wxTimerEvent &event);
   void OnScheduledEvent(wxCommandEvent &event);
+
+  void handle_N0183_MSG(AndroidNMEAEvent& event);
 
   wxString GetStringResult() { return m_stringResult; }
   void LoadAuxClasses();
@@ -428,6 +472,8 @@ public:
   int m_bskipConfirm;
   bool m_migratePermissionSetDone;
 
+  DriverListener& m_listener;
+
   DECLARE_EVENT_TABLE()
 };
 
@@ -441,7 +487,9 @@ EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
 
 END_EVENT_TABLE()
 
-androidUtilHandler::androidUtilHandler() {
+androidUtilHandler::androidUtilHandler(DriverListener& listener)
+  : m_listener(listener)
+{
   m_eventTimer.SetOwner(this, ANDROID_EVENT_TIMER);
   m_stressTimer.SetOwner(this, ANDROID_STRESS_TIMER);
   m_resizeTimer.SetOwner(this, ANDROID_RESIZE_TIMER);
@@ -449,6 +497,42 @@ androidUtilHandler::androidUtilHandler() {
   m_bskipConfirm = false;
 
   LoadAuxClasses();
+
+    // Prepare the wxEventHandler to accept events from upstream
+  Bind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG,
+       this);
+
+}
+
+androidUtilHandler::~androidUtilHandler() {
+  Unbind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG,
+       this);
+}
+
+void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent& event) {
+  auto p = event.GetPayload();
+  std::vector<unsigned char>* payload = p.get();
+
+  // Extract the NMEA0183 sentence
+  std::string full_sentence = std::string(payload->begin(), payload->end());
+
+  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+    std::string identifier;
+    // We notify based on full message, including the Talker ID
+    identifier = full_sentence.substr(1, 5);
+
+    // notify message listener and also "ALL" N0183 messages, to support plugin
+    // API using original talker id
+
+    auto address = std::make_shared<NavAddr>(NavAddr0183("Android_RAW"));
+
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
+                                                   address);
+    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
+
+    m_listener.Notify(std::move(msg));
+    m_listener.Notify(std::move(msg_all));
+  }
 }
 
 void androidUtilHandler::LoadAuxClasses()
@@ -943,7 +1027,8 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
 bool androidUtilInit(void) {
   qDebug() << "androidUtilInit()";
 
-  g_androidUtilHandler = new androidUtilHandler();
+  auto& msgbus = NavMsgBus::GetInstance();
+  g_androidUtilHandler = new androidUtilHandler(msgbus);
 
   //  Initialize some globals
 
@@ -1298,6 +1383,35 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
   }
 
   return 77;
+}
+}
+
+extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processARBNMEA(
+    JNIEnv *env, jobject obj, jstring nmea_string) {
+  //  The NMEA message target handler may not be setup yet, if no connections
+  //  are defined or enabled. But we may get synthesized messages from the Java
+  //  app, even without a definite connection.  We ignore these messages.
+  wxEvtHandler *consumer = g_androidUtilHandler;
+
+  const char *string = env->GetStringUTFChars(nmea_string, NULL);
+
+  qDebug() << "processARBNMEA: " << string;
+
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+    vec->push_back('\r');
+    vec->push_back('\n');
+
+    AndroidNMEAEvent Nevent(wxEVT_ANDROID_NMEA_RAW, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
+  return 62;
 }
 }
 
