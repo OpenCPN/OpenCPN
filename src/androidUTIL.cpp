@@ -1118,19 +1118,18 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 void sendNMEAMessageEvent(wxString &msg) {
-  //FIXME (dave)
-#if 0
-  wxCharBuffer abuf = msg.ToUTF8();
-  if (abuf.data()) {  // OK conversion?
-    std::string s(abuf.data());
-    //    qDebug() << tstr;
-    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    Nevent.SetNMEAString(s);
-    Nevent.SetStream(NULL);
-    if (s_pAndroidNMEAMessageConsumer)
-      s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
-  }
-#endif
+
+  std::string string = msg.ToStdString();
+  auto buffer = std::make_shared<std::vector<unsigned char>>();
+  std::vector<unsigned char>* vec = buffer.get();
+
+  for (int i=0; i < string.size(); i++)
+    vec->push_back(string[i]);
+
+  AndroidNMEAEvent Nevent(wxEVT_ANDROID_NMEA_RAW, 0);
+  Nevent.SetPayload(buffer);
+  g_androidUtilHandler->AddPendingEvent(Nevent);
+
 }
 
 //      OCPNNativeLib
