@@ -3576,23 +3576,29 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   wxBoxSizer *itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
   SetSizer(itemBoxSizerMainPanel);
 
+  wxWindow *dparent = this;
+#ifndef __ANDROID__
   wxScrolledWindow *scrollWin = new wxScrolledWindow(
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL | wxHSCROLL);
 
   scrollWin->SetScrollRate(1, 1);
   itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
-    wxStdDialogButtonSizer *DialogButtonSizer =
-      CreateStdDialogButtonSizer(wxOK | wxCANCEL);
-  itemBoxSizerMainPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5);
-
-
+  dparent = scrollWin;
 
   wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(itemBoxSizer2);
+#else
+  wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
+  itemBoxSizerMainPanel->Add(itemBoxSizer2, 1, wxEXPAND);
+#endif
+
+  wxStdDialogButtonSizer *DialogButtonSizer =
+  CreateStdDialogButtonSizer(wxOK | wxCANCEL);
+  itemBoxSizerMainPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5);
 
 
-  wxNotebook *itemNotebook = new wxNotebook(scrollWin, wxID_ANY, wxDefaultPosition,
+  wxNotebook *itemNotebook = new wxNotebook(dparent, wxID_ANY, wxDefaultPosition,
                                             wxDefaultSize, wxNB_TOP);
   itemBoxSizer2->Add(itemNotebook, 0, wxALL | wxEXPAND, border_size);
 
@@ -4109,6 +4115,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       SetSize(wxSize(canvas_size.x * 3 /4, canvas_size.y * 8 / 10));
   }
 
+  Layout();
   CentreOnScreen();
 
 }
