@@ -339,7 +339,7 @@ wxString g_androidExtStorageDir;
 wxString g_androidGetFilesDirs0;
 wxString g_androidGetFilesDirs1;
 wxString g_androidDownloadDirectory;
-
+wxString g_android_Device_Model;
 
 int g_mask;
 int g_sel;
@@ -2459,6 +2459,11 @@ wxString androidGetDeviceInfo() {
     }
     if (wxNOT_FOUND != s1.Find(_T("opencpn"))) {
       strcpy(&android_plat_spc.hn[0], s1.c_str());
+    }
+    if (wxNOT_FOUND != s1.Find(_T("Model (and Product): "))) {    //Model (and Product): LML413DL (cv3_lao_com)
+      wxString smp = s1.Mid(21);
+      wxString smp1 = smp.BeforeFirst('(');
+      g_android_Device_Model = smp1.Trim(false).Trim(true).Truncate(8);
     }
 
     // Look for some specific device identifiers, for special processing as
