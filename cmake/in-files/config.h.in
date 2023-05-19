@@ -61,9 +61,6 @@
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11
 
-#define OCPN_LINUX_LOAD_PATH  "${OCPN_LINUX_LOAD_PATH}"
-
-
 #define VERSION_MAJOR ${VERSION_MAJOR}
 #define VERSION_MINOR ${VERSION_MINOR}
 #define VERSION_PATCH ${VERSION_PATCH}
