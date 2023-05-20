@@ -56,22 +56,25 @@ public:
   AcceptObjectDialog();
   AcceptObjectDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
                const wxString& hint, const wxPoint& pos, const wxSize& size,
-               long style);
+               long style, const wxString& msg1, const wxString& msg2);
   ~AcceptObjectDialog();
 
-  bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME,
-              const wxString& caption = SYMBOL_STG_TITLE,
-              const wxString& hint = SYMBOL_STG_TITLE,
-              const wxPoint& pos = SYMBOL_STG_POSITION,
-              const wxSize& size = SYMBOL_STG_SIZE,
-              long style = SYMBOL_STG_STYLE);
+  bool Create(wxWindow* parent, wxWindowID id,
+              const wxString& caption,
+              const wxString& hint,
+              const wxPoint& pos,
+              const wxSize& size,
+              long style,
+              const wxString& msg1, const wxString& msg2);
+
   void SetMessage(const wxString &message);
   void SetCheck1Message(const wxString &message);
 
   bool GetCheck1Value(){ return m_pCheck1->GetValue(); }
 
 private:
-  void CreateControls(const wxString& hint);
+  void CreateControls(const wxString& hint,
+                      const wxString& msg1, const wxString& msg);
 
   void OnCancelClick(wxCommandEvent& event);
   void OnOKClick(wxCommandEvent& event);
