@@ -120,10 +120,10 @@ void PluginPaths::initLinuxPaths() {
 
   const string platform_dir = g_BasePlatform->GetPluginDir().ToStdString();
   const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
-  string dirlist = envdirs ? envdirs : OCPN_LINUX_LOAD_PATH;
+  string dirlist = envdirs ? envdirs : "~/.local/lib/opencpn";
+
   m_libdirs = split(dirlist, ':');
   for (auto& dir : m_libdirs) {
-    dir += "/opencpn";
     dir = expand(dir);
   }
   if (envdirs == 0 && dirlist.find(platform_dir) == string::npos) {
