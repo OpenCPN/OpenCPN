@@ -387,13 +387,13 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
             if (duplicate){
               if (!m_b_overwrite){
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
-                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
+                      _("The received route already exists on this system.\nReplace?"),
+                      _("Always replace objects from this source?"));
 
-                dialog2.SetMessage(_("The received route already exists on this system.\nReplace?"));
-                dialog2.SetCheck1Message(_("Always replace objects from this source?"));
-
-                int result = dialog2.ShowModal();
+                dialog2.ShowModal();
                 bool b_always = dialog2.GetCheck1Value();
+                int result = dialog2.GetReturnCode();
 
                 if (result != ID_STG_OK){
                   b_add = false;
@@ -438,13 +438,13 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
             if (duplicate){
               if (!m_b_overwrite){
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
-                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
+                      _("The received track already exists on this system.\nReplace?"),
+                      _("Always replace objects from this source?"));
 
-                dialog2.SetMessage(_("The received track already exists on this system.\nReplace?"));
-                dialog2.SetCheck1Message(_("Always replace objects from this source?"));
-
-                int result = dialog2.ShowModal();
+                dialog2.ShowModal();
                 bool b_always = dialog2.GetCheck1Value();
+                int result = dialog2.GetReturnCode();
 
                 if (result != ID_STG_OK){
                   b_add = false;
@@ -491,13 +491,14 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
             if (duplicate){
               if (!m_b_overwrite){
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
-                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+                      "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
+                      _("The received waypoint already exists on this system.\nReplace?"),
+                      _("Always replace objects from this source?"));
 
-                dialog2.SetMessage(_("The received waypoint already exists on this system.\nReplace?"));
-                dialog2.SetCheck1Message(_("Always replace objects from this source?"));
 
-                int result = dialog2.ShowModal();
+                dialog2.ShowModal();
                 bool b_always = dialog2.GetCheck1Value();
+                int result = dialog2.GetReturnCode();
 
                 if (result != ID_STG_OK){
                   b_add = false;
