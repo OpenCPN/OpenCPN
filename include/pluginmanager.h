@@ -416,7 +416,7 @@ class PluginListPanel : public wxScrolledWindow {
 
 public:
   PluginListPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos,
-                  const wxSize &size, ArrayOfPlugIns *pPluginArray);
+                  const wxSize &size, const ArrayOfPlugIns *pPluginArray);
   ~PluginListPanel();
 
   void SelectPlugin(PluginPanel *pi);
@@ -434,7 +434,6 @@ private:
   int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer *sizer);
   // void Clear();
 
-  ArrayOfPlugIns *m_pPluginArray;
   ArrayOfPluginPanel m_PluginItems;
   PluginPanel *m_PluginSelected;
   wxString m_selectedName;
@@ -457,7 +456,7 @@ class PluginPanel : public wxPanel {
 
 public:
   PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
-              const wxSize &size, PlugInContainer *p_plugin);
+              const wxSize &size, PlugInData plugin);
   ~PluginPanel();
 
   void OnPluginSelected(wxMouseEvent &event);
@@ -473,16 +472,16 @@ public:
   void OnPluginDown(wxCommandEvent &event);
   void SetEnabled(bool enabled);
   bool GetSelected() { return m_bSelected; }
-  PlugInContainer *GetPluginPtr() { return m_pPlugin; };
+  PlugInData *GetPluginPtr() { return &m_plugin; };
   void SetActionLabel(wxString &label);
   ActionVerb GetAction() { return m_action; }
-  PlugInContainer *GetPlugin() { return m_pPlugin; }
+  PlugInData *GetPlugin() { return &m_plugin; }
   void OnPaint(wxPaintEvent &event);
 
 private:
   PluginListPanel *m_PluginListPanel;
   bool m_bSelected;
-  PlugInContainer *m_pPlugin;
+  PlugInData m_plugin;
   wxStaticText *m_pName;
   wxStaticText *m_pVersion;
   wxStaticText *m_pDescription;

@@ -7366,7 +7366,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     m_returnChanges |= TOOLBAR_CHANGED;
 
   // And keep config in sync
-  if (m_pPlugInCtrl) m_pPlugInCtrl->UpdatePluginsOrder();
+  //if (m_pPlugInCtrl) m_pPlugInCtrl->UpdatePluginsOrder(); FIXME(leamas)
   g_pi_manager->UpdateConfig();
 
   // PlugIns may have added panels

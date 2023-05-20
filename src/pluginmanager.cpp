@@ -240,7 +240,7 @@ extern wxString g_catalog_custom_url;
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
-void NotifySetupOptionsPlugin(const PlugInContainer *pic);
+void NotifySetupOptionsPlugin(const PlugInData *pic);
 
 enum { CurlThreadId = wxID_HIGHEST + 1 };
 
@@ -288,6 +288,10 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   jMsg[wxS("callsign")] = l_CallSign;
   jMsg[wxS("removed")] = pTarget->b_removed;
   g_pi_manager->SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
+}
+
+static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
+  return (*p1)->Key().compare((*p2)->Key());
 }
 
 /**
@@ -527,9 +531,9 @@ static PluginMetadata getLatestUpdate() {
 }
 
 /** Remove plugin and update GUI elements. */
-static void gui_uninstall(PlugInContainer *pic, const char *plugin) {
+static void gui_uninstall(PlugInData *pic, const char *plugin) {
   g_Platform->ShowBusySpinner();
-  PluginLoader::getInstance()->DeactivatePlugIn(pic);
+  PluginLoader::getInstance()->DeactivatePlugIn(*pic);
   pic->m_bEnabled = false;
   PluginLoader::getInstance()->UpdatePlugIns();
 
@@ -546,7 +550,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
-static void run_update_dialog(PluginListPanel *parent, PlugInContainer *pic,
+static void run_update_dialog(PluginListPanel *parent, PlugInData *pic,
                               bool uninstall, const char *name = 0,
                               bool b_forceEnable = false) {
   wxString pluginName = pic->m_common_name;
@@ -795,7 +799,7 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent &event) {
     }
 
     case ActionVerb::UNINSTALL_MANAGED_VERSION: {
-      PluginLoader::getInstance()->DeactivatePlugIn(actionPIC);
+      PluginLoader::getInstance()->DeactivatePlugIn(*actionPIC);
 
       // Capture the confirmation dialog contents before the plugin goes away
       wxString message;
@@ -1298,13 +1302,9 @@ void PlugInManager::UpdateManagedPlugins() {
 
   //  Remove any list items marked
   size_t i = 0;
-  while ((i >= 0) && (i < plugin_array->GetCount())) {
-    pict = plugin_array->Item(i);
-    if (pict->m_pluginStatus == PluginStatus::PendingListRemoval) {
-      plugin_array->RemoveAt(i);
-      i = 0;
-    } else
-      i++;
+  for (size_t i = 0; i < plugin_array->GetCount(); i += 1) {
+    auto p = plugin_array->Item(i);
+    PluginLoader::getInstance()->RemovePlugin(*p);
   }
 
   //  Now merge and update from the catalog
@@ -1323,12 +1323,12 @@ void PlugInManager::UpdateManagedPlugins() {
 
     //  No match found, so add a container, and populate it
     if (!bfound) {
-      PlugInContainer *new_pic = new PlugInContainer;
-      new_pic->m_common_name = wxString(plugin.name.c_str());
-      new_pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
-      new_pic->m_ManagedMetadata = plugin;
-      new_pic->m_version_major = 0;
-      new_pic->m_version_minor = 0;
+      PlugInData new_pic;
+      new_pic.m_common_name = wxString(plugin.name.c_str());
+      new_pic.m_pluginStatus = PluginStatus::ManagedInstallAvailable;
+      new_pic.m_ManagedMetadata = plugin;
+      new_pic.m_version_major = 0;
+      new_pic.m_version_minor = 0;
 
       // In safe mode, check to see if the plugin appears to be installed
       // If so, set the status to "ManagedInstalledCurrentVersion", thus
@@ -1345,14 +1345,12 @@ void PlugInManager::UpdateManagedPlugins() {
           }
         }
         if (!installed.empty())
-          new_pic->m_pluginStatus =
+          new_pic.m_pluginStatus =
               PluginStatus::ManagedInstalledCurrentVersion;
         else
-          new_pic->m_pluginStatus = PluginStatus::Unknown;
+          new_pic.m_pluginStatus = PluginStatus::Unknown;
       }
-
-      plugin_array->Add(new_pic);
-
+      PluginLoader::getInstance()->AddCatalogEntry(new_pic);
     }
     // Match found, so merge the info and determine the plugin status
     else {
@@ -1402,29 +1400,9 @@ void PlugInManager::UpdateManagedPlugins() {
   }
 
   // Sort the list
-
-  // Detach and hold the uninstalled, managed plugins
-  std::map<std::string, PlugInContainer *> sortmap;
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer *pic = plugin_array->Item(i);
-    if (pic->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
-      plugin_array->Remove(pic);
-
-      // Sort by name, lower cased.
-      std::string name = pic->m_ManagedMetadata.name;
-      std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-      sortmap[name] = pic;
-      i = 0;  // Restart the list
-    }
-  }
-
-  // Add the detached plugins back at the top of the list.
-  //  Later, the list will be populated in reverse order...Why??
-  for (std::map<std::string, PlugInContainer *>::iterator i = sortmap.begin();
-       i != sortmap.end(); i++) {
-    PlugInContainer *pic = i->second;
-    plugin_array->Insert(pic, 0);
-  }
+  auto cmp_func = [](PlugInContainer* p1, PlugInContainer* p2) {
+    return p1->Key().compare(p2->Key()); };
+  PluginLoader::getInstance()->SortPlugins(ComparePlugins);
 
   if (m_listPanel) m_listPanel->ReloadPluginPanels();
 
@@ -1880,7 +1858,7 @@ void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
   }
 }
 
-void NotifySetupOptionsPlugin(const PlugInContainer *pic) {
+void NotifySetupOptionsPlugin(const PlugInData *pic) {
   if (pic->m_bEnabled && pic->m_bInitState) {
     if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) {
       switch (pic->m_api_version) {
@@ -1898,7 +1876,7 @@ void NotifySetupOptionsPlugin(const PlugInContainer *pic) {
               dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
           if (ppi) {
             ppi->OnSetupOptions();
-            const_cast<PlugInContainer *>(pic)->m_bToolboxPanel = true;
+            const_cast<PlugInData *>(pic)->m_bToolboxPanel = true;
           }
           break;
         }
@@ -4322,7 +4300,7 @@ END_EVENT_TABLE()
 
 PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
                                  const wxPoint &pos, const wxSize &size,
-                                 ArrayOfPlugIns *pPluginArray)
+                                 const ArrayOfPlugIns *pPluginArray)
     : wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL | wxVSCROLL),
       m_PluginSelected(0) {
   SetSizer(new wxBoxSizer(wxVERTICAL));
@@ -4346,7 +4324,6 @@ void PluginListPanel::SelectByName(wxString &name) {
 
 void PluginListPanel::ReloadPluginPanels() {
   auto plugins = PluginLoader::getInstance()->GetPlugInArray();
-  m_pPluginArray = plugins;
   m_PluginItems.Clear();
 
   wxWindowList kids = GetChildren();
@@ -4361,8 +4338,9 @@ void PluginListPanel::ReloadPluginPanels() {
 
   Hide();
   m_PluginSelected = 0;
-  for (size_t i = m_pPluginArray->GetCount(); i > 0; i -= 1) {
-    PlugInContainer *pic = m_pPluginArray->Item(i - 1);
+  auto loader = PluginLoader::getInstance();
+  for (size_t i = loader->GetPlugInArray()->GetCount(); i > 0; i -= 1) {
+    PlugInContainer *pic = loader->GetPlugInArray()->Item(i - 1);
     AddPlugin(pic);
   }
   Show();
@@ -4374,7 +4352,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
 void PluginListPanel::AddPlugin(PlugInContainer *pic) {
   auto pPluginPanel =
-      new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
+      new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, *pic);
   pPluginPanel->SetSelected(false);
   GetSizer()->Add(pPluginPanel, 0, wxEXPAND);
   m_PluginItems.Add(pPluginPanel);
@@ -4414,12 +4392,14 @@ int PluginListPanel::ComputePluginSpace(ArrayOfPluginPanel plugins,
   return max_dy;
 }
 
+/**
 void PluginListPanel::UpdatePluginsOrder() {
   m_pPluginArray->Clear();
   for (unsigned int i = 0; i < m_PluginItems.GetCount(); i++) {
-    m_pPluginArray->Insert(m_PluginItems[i]->GetPluginPtr(), 0);
+    m_pPluginArray->Insert(*(m_PluginItems[i]->GetPluginPtr()), 0);
   }
 }
+FIXME (leamas) **/
 
 PluginListPanel::~PluginListPanel() {}
 
@@ -4534,13 +4514,13 @@ EVT_PAINT(PluginPanel::OnPaint)
 END_EVENT_TABLE()
 
 PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
-                         const wxSize &size, PlugInContainer *p_plugin)
+                         const wxSize &size, PlugInData plugin)
     : wxPanel(parent, id, pos, size, wxBORDER_NONE) {
   m_PluginListPanel = (PluginListPanel *)parent;  //->GetParent();
   m_PluginListPanel = dynamic_cast<PluginListPanel *>(parent /*->GetParent()*/);
   wxASSERT(m_PluginListPanel != 0);
 
-  m_pPlugin = p_plugin;
+  m_plugin = plugin;
   m_bSelected = false;
   m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
   m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
@@ -4559,15 +4539,15 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
 
   wxImage plugin_icon;
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  if (m_pPlugin->m_bitmap && m_pPlugin->m_bitmap->IsOk()) {
-    plugin_icon = m_pPlugin->m_bitmap->ConvertToImage();
+  if (m_plugin.m_bitmap && m_plugin.m_bitmap->IsOk()) {
+    plugin_icon = m_plugin.m_bitmap->ConvertToImage();
   }
   wxBitmap bitmap;
   if (plugin_icon.IsOk()) {
     int nowSize = plugin_icon.GetWidth();
     plugin_icon.Rescale(icon_scale, icon_scale, wxIMAGE_QUALITY_HIGH);
     bitmap = wxBitmap(plugin_icon);
-  } else if (m_pPlugin->m_pluginStatus ==
+  } else if (m_plugin.m_pluginStatus ==
              PluginStatus::ManagedInstallAvailable) {
     wxFileName path(g_Platform->GetSharedDataDir(), "packageBox.svg");
     path.AppendDir("uidata");
@@ -4595,13 +4575,13 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
 
   if (bCompact) {
     // Might need to shorten the Plugin name string
-    wxString nameString = m_pPlugin->m_common_name;
+    wxString nameString = m_plugin.m_common_name;
     int maxWidth = g_Platform->getDisplaySize().x * 3 / 10;
     wxScreenDC dc;
     int nameWidth;
-    dc.GetTextExtent(m_pPlugin->m_common_name, &nameWidth, NULL);
+    dc.GetTextExtent(m_plugin.m_common_name, &nameWidth, NULL);
     if (nameWidth > maxWidth) {
-      nameString = wxControl::Ellipsize(m_pPlugin->m_common_name, dc,
+      nameString = wxControl::Ellipsize(m_plugin.m_common_name, dc,
                                         wxELLIPSIZE_END, maxWidth);
     }
     m_pName = new wxStaticText(this, wxID_ANY, nameString);
@@ -4615,7 +4595,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
 
     m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
     sl1->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
-    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+    if (m_plugin.m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
       m_pVersion->Hide();
     }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4626,13 +4606,13 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
     m_cbEnable->Bind(wxEVT_CHECKBOX, &PluginPanel::OnPluginEnableToggle, this);
 
     // Might need to shorten the Plugin description string
-    wxString descriptionString = m_pPlugin->m_short_description;
+    wxString descriptionString = m_plugin.m_short_description;
     int maxDescriptionWidth = g_Platform->getDisplaySize().x - (iconSize * 4);
     int descriptionWidth;
-    dc.GetTextExtent(m_pPlugin->m_short_description, &descriptionWidth, NULL);
+    dc.GetTextExtent(m_plugin.m_short_description, &descriptionWidth, NULL);
     if (descriptionWidth > maxDescriptionWidth)
       descriptionString =
-          wxControl::Ellipsize(m_pPlugin->m_short_description, dc,
+          wxControl::Ellipsize(m_plugin.m_short_description, dc,
                                wxELLIPSIZE_END, maxDescriptionWidth);
 
     // This invocation has the effect of setting the minimum width of the
@@ -4649,7 +4629,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
     itemBoxSizer03->AddGrowableCol(2);
     itemBoxSizer02->Add(itemBoxSizer03, 0, wxEXPAND);
 
-    wxString nameString = m_pPlugin->m_common_name;
+    wxString nameString = m_plugin.m_common_name;
     m_pName = new wxStaticText(this, wxID_ANY, nameString);
     m_pName->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
     m_pName->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
@@ -4665,7 +4645,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
 
     m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
     itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
-    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+    if (m_plugin.m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
       m_pVersion->Hide();
     }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4678,7 +4658,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
     itemBoxSizer03->Add(5 * GetCharWidth(), 1, 0, wxALIGN_RIGHT | wxTOP, 10);
 
     m_pDescription = new wxStaticText(
-        this, wxID_ANY, m_pPlugin->m_short_description, wxDefaultPosition,
+        this, wxID_ANY, m_plugin.m_short_description, wxDefaultPosition,
         wxSize(-1, -1) /*, wxST_NO_AUTORESIZE*/);
     itemBoxSizer02->Add(m_pDescription, 1, wxEXPAND | wxALL, 5);
     m_pDescription->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4734,7 +4714,7 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
   }
 
   wxBitmap statusBitmap;
-  const auto stat = p_plugin->m_pluginStatus;
+  const auto stat = m_plugin.m_pluginStatus;
   auto icon_name = icon_by_status.at(stat);
 
   wxFileName path(g_Platform->GetSharedDataDir(), icon_name);
@@ -4822,13 +4802,13 @@ void PluginPanel::OnPluginSelectedUp(wxMouseEvent &event) {
 }
 
 void PluginPanel::DoPluginSelect() {
-  if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
+  if (m_plugin.m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
     // auto dialog = dynamic_cast<PluginListPanel*>(GetParent());
     // auto dialog = dynamic_cast<PluginListPanel*>(m_parent);
     // wxASSERT(dialog != 0);
 
     // Install the new plugin, auto-enabling as a convenience measure.
-    run_update_dialog(m_PluginListPanel, m_pPlugin, false, 0, true);
+    run_update_dialog(m_PluginListPanel, &m_plugin, false, 0, true);
   } else if (m_bSelected) {
     SetSelected(false);
     m_PluginListPanel->SelectPlugin(NULL);
@@ -4854,7 +4834,7 @@ static PluginMetadata GetMetadataByName(const std::string& name) {
 }
 
 /** Return version string for a plugin, possibly with an "Imported" suffix. */
-static std::string GetPluginVersion(const PlugInContainer* pic) {
+static std::string GetPluginVersion(const PlugInData* pic) {
   auto metadata(pic->m_ManagedMetadata);
   if (metadata.version == "")
     metadata = GetMetadataByName(pic->m_common_name.ToStdString());
@@ -4889,23 +4869,23 @@ static std::string GetPluginVersion(const PlugInContainer* pic) {
 void PluginPanel::SetSelected(bool selected) {
   m_bSelected = selected;
 
-  m_pVersion->SetLabel(GetPluginVersion(m_pPlugin));
+  m_pVersion->SetLabel(GetPluginVersion(&m_plugin));
   if (selected) {
     SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
     m_pButtons->Show(true);
     bool unInstallPossible =
-        canUninstall(m_pPlugin->m_common_name.ToStdString());
+        canUninstall(m_plugin.m_common_name.ToStdString());
 
     // Directly mark Legacy and system plugins as "not uninstallable"
-    if (m_pPlugin->m_pluginStatus == PluginStatus::LegacyUpdateAvailable ||
-        m_pPlugin->m_pluginStatus == PluginStatus::Unmanaged ||
-        m_pPlugin->m_pluginStatus == PluginStatus::System)
+    if (m_plugin.m_pluginStatus == PluginStatus::LegacyUpdateAvailable ||
+        m_plugin.m_pluginStatus == PluginStatus::Unmanaged ||
+        m_plugin.m_pluginStatus == PluginStatus::System)
       unInstallPossible = false;
 
     m_pButtonUninstall->Show(unInstallPossible);
 
-    if (m_pPlugin->m_ManagedMetadata.info_url.size()) {
-      m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
+    if (m_plugin.m_ManagedMetadata.info_url.size()) {
+      m_info_btn->SetURL(m_plugin.m_ManagedMetadata.info_url.c_str());
       m_info_btn->Show();
     }
 
@@ -4914,10 +4894,10 @@ void PluginPanel::SetSelected(bool selected) {
     // Configure the "Action" button
     wxString label;
     SemanticVersion newVersion;
-    switch (m_pPlugin->m_pluginStatus) {
+    switch (m_plugin.m_pluginStatus) {
       case PluginStatus::LegacyUpdateAvailable:
         label = _("Upgrade to Version ");
-        label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
+        label += wxString(m_plugin.m_ManagedMetadata.version.c_str());
         m_action = ActionVerb::UPGRADE_TO_MANAGED_VERSION;
         m_pButtonAction->Enable();
         break;
@@ -4930,7 +4910,7 @@ void PluginPanel::SetSelected(bool selected) {
 
       case PluginStatus::ManagedInstalledUpdateAvailable:
         label = _("Update to ");
-        label += wxString(m_pPlugin->m_ManagedMetadata.version.c_str());
+        label += wxString(m_plugin.m_ManagedMetadata.version.c_str());
         m_action = ActionVerb::UPGRADE_INSTALLED_MANAGED_VERSION;
         m_pButtonAction->Enable();
         break;
@@ -4978,7 +4958,7 @@ void PluginPanel::SetSelected(bool selected) {
     m_pButtons->Show(false);
     m_info_btn->Hide();
 
-    if (m_pPlugin->m_pluginStatus == PluginStatus::ManagedInstallAvailable)
+    if (m_plugin.m_pluginStatus == PluginStatus::ManagedInstallAvailable)
       m_cbEnable->Show(false);
 
     Layout();
@@ -5000,7 +4980,7 @@ void PluginPanel::SetSelected(bool selected) {
     SetBackgroundColour(GetDialogColor(DLG_UNSELECTED_BACKGROUND));
   }
 
-  SetEnabled(m_pPlugin->m_bEnabled);
+  SetEnabled(m_plugin.m_bEnabled);
 
 #ifdef __ANDROID__
   // Android (wxQT) sizers have troubles...
@@ -5036,23 +5016,23 @@ void PluginPanel::OnPaint(wxPaintEvent &event) {
 }
 
 void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
-  if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState &&
-      (m_pPlugin->m_cap_flag & WANTS_PREFERENCES)) {
+  if (m_plugin.m_bEnabled && m_plugin.m_bInitState &&
+      (m_plugin.m_cap_flag & WANTS_PREFERENCES)) {
 #ifdef __ANDROID__
     androidDisableRotation();
-    m_pPlugin->m_pplugin->ShowPreferencesDialog(
+    m_plugin.m_pplugin->ShowPreferencesDialog(
         GetGrandParent());  // GrandParent will be the entire list panel, not
                             // the plugin panel Ensures better centering on
                             // small screens
 #else
-    m_pPlugin->m_pplugin->ShowPreferencesDialog(this);
+    m_plugin.m_pplugin->ShowPreferencesDialog(this);
 #endif
   }
 }
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent &event) {
-  SetEnabled(!m_pPlugin->m_bEnabled);
-  m_pVersion->SetLabel(GetPluginVersion(m_pPlugin));
+  SetEnabled(!m_plugin.m_bEnabled);
+  m_pVersion->SetLabel(GetPluginVersion(&m_plugin));
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent &event) {
@@ -5076,10 +5056,10 @@ void PluginPanel::OnPluginAction(wxCommandEvent &event) {
 }
 
 void PluginPanel::SetEnabled(bool enabled) {
-  if (m_pPlugin->m_bEnabled != enabled) {
-    m_pPlugin->m_bEnabled = enabled;
+  if (m_plugin.m_bEnabled != enabled) {
+    m_plugin.m_bEnabled = enabled;
     PluginLoader::getInstance()->UpdatePlugIns();
-    NotifySetupOptionsPlugin(m_pPlugin);
+    NotifySetupOptionsPlugin(&m_plugin);
   }
   if (!enabled && !m_bSelected) {
     m_pName->SetForegroundColour(
@@ -5114,28 +5094,28 @@ void PluginPanel::SetEnabled(bool enabled) {
 #endif
 
   if (m_bSelected) {
-    wxString description = m_pPlugin->m_long_description;
+    wxString description = m_plugin.m_long_description;
     if (description.IsEmpty())
-      description = wxString(m_pPlugin->m_ManagedMetadata.description.c_str());
+      description = wxString(m_plugin.m_ManagedMetadata.description.c_str());
 
     PanelHardBreakWrapper wrapper(this, description,
                                   g_options->GetSize().x * 7 / 10);
     m_pDescription->SetLabel(wrapper.GetWrapped());
-    if (m_pPlugin->m_ManagedMetadata.info_url.size()) {
-      m_info_btn->SetURL(m_pPlugin->m_ManagedMetadata.info_url.c_str());
+    if (m_plugin.m_ManagedMetadata.info_url.size()) {
+      m_info_btn->SetURL(m_plugin.m_ManagedMetadata.info_url.c_str());
       m_info_btn->Show();
     }
   } else {
-    wxString description = m_pPlugin->m_short_description;
+    wxString description = m_plugin.m_short_description;
     if (description.IsEmpty())
-      description = wxString(m_pPlugin->m_ManagedMetadata.summary.c_str());
+      description = wxString(m_plugin.m_ManagedMetadata.summary.c_str());
     PanelHardBreakWrapper wrapper(this, description,
                                   g_options->GetSize().x * 7 / 10);
     m_pDescription->SetLabel(wrapper.GetWrapped());
   }
 
   m_pButtonPreferences->Enable(enabled &&
-                               (m_pPlugin->m_cap_flag & WANTS_PREFERENCES));
+                               (m_plugin.m_cap_flag & WANTS_PREFERENCES));
   m_cbEnable->SetValue(enabled);
 }
 
@@ -6002,15 +5982,14 @@ wxString GetWritableDocumentsDir(void) {
 
 wxString GetPlugInPath(opencpn_plugin *pplugin) {
   wxString ret_val;
-  ArrayOfPlugIns *pi_array = PluginLoader::getInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < pi_array->GetCount(); i++) {
-    PlugInContainer *pic = pi_array->Item(i);
+  auto loader = PluginLoader::getInstance();
+  for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount(); i++) {
+    PlugInContainer *pic = loader->GetPlugInArray()->Item(i);
     if (pic->m_pplugin == pplugin) {
       ret_val = pic->m_plugin_file;
       break;
     }
   }
-
   return ret_val;
 }
 

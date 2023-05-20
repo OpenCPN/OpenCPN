@@ -87,7 +87,17 @@ const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"};
-//          Helper and interface classes
+
+/** Return complete PlugInContainer matching pic. */
+static PlugInContainer* GetContainer(const PlugInData& pd,
+                                     ArrayOfPlugIns plugin_array) {
+  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+    const auto& p = plugin_array.Item(i);
+    if (p->m_common_name == pd.m_common_name) return p;
+  }
+  return 0;
+}
+
 
 PlugInContainer::PlugInContainer() {
   m_pplugin = NULL;
@@ -109,6 +119,11 @@ static bool IsSystemPlugin(const std::string& path) {
     if (lc_path.find(p) != std::string::npos) return true;
   }
   return false;
+}
+
+std::string PlugInData::Key() {
+  return std::string(m_pluginStatus == PluginStatus::Managed ? "1" : "0")
+      + m_common_name.ToStdString();
 }
 
 SemanticVersion PlugInData::GetVersion() {
@@ -236,6 +251,35 @@ const wxBitmap* PluginLoader::GetPluginDefaultIcon() {
 void PluginLoader::SetPluginDefaultIcon(const wxBitmap* bitmap) {
   delete m_default_plugin_icon;
   m_default_plugin_icon = bitmap;
+}
+
+void PluginLoader::RemovePlugin(const PlugInData& pd) {
+  auto pic = GetContainer(pd, plugin_array);
+  if (!pic) {
+    wxLogMessage("Attempt to remove non-existing plugin %s",
+                 pd.m_common_name.ToStdString().c_str());
+    return;
+  }
+  plugin_array.Remove(pic);
+}
+
+void PluginLoader::AddCatalogEntry(const PlugInData& pd) {
+  auto pic = new PlugInContainer;
+  pic->m_common_name = pd.m_common_name;
+  pic->m_pluginStatus = pd.m_pluginStatus;
+  pic->m_ManagedMetadata = pd.m_ManagedMetadata;
+  pic->m_version_major = pd.m_version_major;
+  pic->m_version_minor = pd.m_version_minor;
+  plugin_array.Add(pic);
+}
+
+static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
+  return (*p1)->Key().compare((*p2)->Key());
+}
+
+void PluginLoader::SortPlugins(
+        int (*cmp_func)(PlugInContainer**, PlugInContainer**)) {
+  plugin_array.Sort(ComparePlugins);
 }
 
 bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
@@ -596,6 +640,17 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
   }
   return true;
 }
+
+bool PluginLoader::DeactivatePlugIn(const PlugInData& pd) {
+   auto pic = GetContainer(pd, plugin_array);
+   if (!pic) {
+     wxLogError("Attempt to deactivate non-existing plugin %s",
+                pd.m_common_name.ToStdString());
+     return false;
+   }
+   return DeactivatePlugIn(pic);
+}
+
 
 /**
  * Return list of available, unique and compatible plugins from

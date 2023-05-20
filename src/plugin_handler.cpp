@@ -140,7 +140,8 @@ static std::vector<std::string> glob_dir(const std::string& dir_path,
  * Return index in ArrayOfPlugins for plugin with given name,
  * or -1 if not found
  */
-static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins) {
+static ssize_t PlugInIxByName(const std::string name,
+                              const ArrayOfPlugIns* plugins) {
   for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
     if (name == plugins->Item(i)->m_common_name.ToStdString()) {
       return i;
@@ -1009,9 +1010,8 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   vector<PluginMetadata> plugins;
 
   auto loader = PluginLoader::getInstance();
-  ArrayOfPlugIns* mgr_plugins = loader->GetPlugInArray();
-  for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
-    PlugInContainer* p = mgr_plugins->Item(i);
+  for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount(); i += 1) {
+    const PlugInContainer* p = loader->GetPlugInArray()->Item(i);
     PluginMetadata plugin;
     auto name = string(p->m_common_name);
     // std::transform(name.begin(), name.end(), name.begin(), ::tolower);

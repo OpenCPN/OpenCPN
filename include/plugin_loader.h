@@ -103,6 +103,9 @@ public:
    * complete semantic version data.
    */
   SemanticVersion GetVersion();
+
+  /** sort key. */
+  std::string Key();
 };
 
 /**
@@ -216,18 +219,28 @@ public:
 
   const wxBitmap* GetPluginDefaultIcon();
 
+  /** Remove a plugin from *GetPluginArray().  */
+  void RemovePlugin(const PlugInData& pd );
+
+  /** Add a catalog entry to  *GetPluginArray(). */
+  void AddCatalogEntry(const PlugInData& pd);
+
+  /** Sort GetPluginArray(). */
+  void SortPlugins(int (*cmp_func)(PlugInContainer**, PlugInContainer**));
+
   /** Unload, delete and remove item ix in GetPlugInArray(). */
   bool UnLoadPlugIn(size_t ix);
 
   bool UnLoadAllPlugIns();
   bool DeactivateAllPlugIns();
   bool DeactivatePlugIn(PlugInContainer* pic);
+  bool DeactivatePlugIn(const PlugInData& pic);
   bool UpdatePlugIns();
   void UpdateManagedPlugins();
   PlugInContainer* LoadPlugIn(wxString plugin_file);
   PlugInContainer* LoadPlugIn(wxString plugin_file, PlugInContainer* pic);
 
-  ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
+  const ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
   bool IsPlugInAvailable(wxString commonName);
   bool CheckPluginCompatibility(wxString plugin_file);
 
