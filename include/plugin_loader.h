@@ -73,17 +73,10 @@ enum class PluginStatus {
   PendingListRemoval
 };
 
-//-----------------------------------------------------------------------------------------------------
-//
-//          The PlugIn Container Specification
-//
-//-----------------------------------------------------------------------------------------------------
-class PlugInContainer {
-public:
-  PlugInContainer();
-  ~PlugInContainer() { delete m_bitmap; }
+/** Basic data for a loaded plugin, trivially copyable */
 
-  opencpn_plugin* m_pplugin;
+class PlugInData {
+public:
   bool m_bEnabled;
   bool m_bInitState;
   bool m_bToolboxPanel;
@@ -91,8 +84,6 @@ public:
   wxString m_plugin_file;            //!< The full file path
   wxString m_plugin_filename;        //!< The short file path
   wxDateTime m_plugin_modification;  //!< used to detect upgraded plugins
-  destroy_t* m_destroy_fn;
-  wxDynamicLibrary m_library;
   wxString m_common_name;  //!< A common name string for the plugin
   wxString m_short_description;
   wxString m_long_description;
@@ -102,15 +93,29 @@ public:
   PluginStatus m_pluginStatus;
   PluginMetadata m_ManagedMetadata;
   wxBitmap* m_bitmap;
+  wxString m_version_str;  //!< Complete version as of semantic_vers
+  std::string m_InstalledManagedVersion;  //!< As detected from manifest
+  opencpn_plugin* m_pplugin;
+
   /**
    * Return version from plugin API. Older pre-117 plugins just
    * support major and minor version, newer plugins have
    * complete semantic version data.
    */
   SemanticVersion GetVersion();
+};
 
-  wxString m_version_str;  //!< Complete version as of semantic_vers
-  std::string m_InstalledManagedVersion;  //!< As detected from manifest
+/**
+ * Data for a loaded plugin, including dl-loaded library. 
+ * Due to the library it is not copyable.
+ */
+class PlugInContainer : public PlugInData {
+public:
+  PlugInContainer();
+  ~PlugInContainer() { delete m_bitmap; }
+
+  wxDynamicLibrary m_library;
+  destroy_t* m_destroy_fn;
 };
 
 class LoadError {

@@ -111,7 +111,7 @@ static bool IsSystemPlugin(const std::string& path) {
   return false;
 }
 
-SemanticVersion PlugInContainer::GetVersion() {
+SemanticVersion PlugInData::GetVersion() {
   if (m_ManagedMetadata.version.size()) {
     return SemanticVersion::parse(m_ManagedMetadata.version);
   }
