@@ -33,6 +33,7 @@
 #include <wx/stdpaths.h>
 #include <wx/progdlg.h>
 #include <wx/clipbrd.h>
+#include <wx/statline.h>
 
 #include <iostream>
 #include <vector>
@@ -836,8 +837,24 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this);
 
   // Dialog OK button
-  itemBoxSizer6->Add(0, 0, 1, wxEXPAND, 5);  // Spacer
-  itemBoxSizer6->Add(new wxButton(this, wxID_OK), 0, wxALL, DIALOG_MARGIN);
+  wxSize sz = ::wxGetDisplaySize();
+  if (sz.y < sz.x) {     // landscape
+    itemBoxSizer6->Add(0, 0, 1, wxEXPAND, 5);  // Spacer
+    itemBoxSizer6->Add(new wxButton(this, wxID_OK), 0, wxALL, DIALOG_MARGIN);
+  }
+  else {
+    wxStaticLine* staticLine121 =
+      new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
+                       wxDefaultSize, wxLI_HORIZONTAL);
+    itemBoxSizer1->Add(staticLine121, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+
+    wxBoxSizer *itemBoxSizer7 = new wxBoxSizer(wxVERTICAL);
+    itemBoxSizer1->Add(itemBoxSizer7, 1, wxEXPAND);
+    wxBoxSizer *itemBoxSizer7a = new wxBoxSizer(wxHORIZONTAL);
+    itemBoxSizer7->Add(itemBoxSizer7a, 1, wxEXPAND);
+    itemBoxSizer7a->AddStretchSpacer();
+    itemBoxSizer7a->Add(new wxButton(this, wxID_OK), 0, wxALL | wxALIGN_RIGHT, DIALOG_MARGIN / 2);
+  }
 
   //  Create "Layers" panel
   m_pPanelLay = new wxPanel(m_pNotebook, wxID_ANY, wxDefaultPosition,
