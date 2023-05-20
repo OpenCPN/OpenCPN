@@ -115,9 +115,10 @@ void PluginPaths::initLinuxPaths() {
   m_userBindir = m_home + "/.local/bin";
   m_userDatadir = m_home + "/.local/share";
 
+  std::string base_plugin_path;
+#if defined(__WXGTK__) || defined(__WXQT__)
   char exe_buf[100] = {0};
   ssize_t len = readlink("/proc/self/exe", exe_buf, 99);
-  std::string base_plugin_path;
   if (len > 0){
     exe_buf[len] = '\0';
     wxFileName fn(exe_buf);
@@ -125,6 +126,7 @@ void PluginPaths::initLinuxPaths() {
     base_plugin_path = (path + wxString("/../lib/opencpn")).ToStdString();
     base_plugin_path = expand(base_plugin_path);
   }
+#endif
 
   const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
   string dirlist = envdirs ? envdirs : "~/.local/lib/opencpn";
