@@ -178,6 +178,8 @@ void prepareAndroidStyleSheets();
 QString getAdjustedDialogStyleSheet();
 QString getListBookStyleSheet();
 QString getScrollBarsStyleSheet();
+QString getWideScrollBarsStyleSheet();
+
 void setChoiceStyleSheet(wxChoice *win, int refDim);
 void setMenuStyleSheet(wxMenu *win, const wxFont &font);
 QString prepareAndroidSliderStyleSheet(int sliderWidth);

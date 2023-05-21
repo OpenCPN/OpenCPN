@@ -38,6 +38,7 @@
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
+#include <QtWidgets/QScroller>
 #endif
 
 #include "priority_gui.h"
@@ -82,8 +83,12 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
                                        wxDefaultSize);
   stcSizer->Add(m_prioTree, 1, wxALL | wxEXPAND, 5);
   wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+  m_pF = pF;
   m_prioTree->SetFont(*pF);
-
+#ifdef __ANDROID__
+    m_prioTree->GetHandle()->setStyleSheet(getWideScrollBarsStyleSheet()/*getScrollBarsStyleSheet()*/);
+    QScroller::ungrabGesture(m_prioTree->GetHandle());
+#endif
 
   wxBoxSizer* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
   secondSizer->Add(btnEntrySizer, 0, wxALL | wxEXPAND, 5);
@@ -139,7 +144,12 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   int n_lines = wxMax(m_prioTree->GetCount(), 15);
 
-  wxSize min_size = wxSize(m_maxStringLength * GetCharWidth() * 20 / 10,
+  wxScreenDC dc;
+  int char_width, char_height;
+  dc.GetTextExtent("W", &char_width, &char_height, NULL, NULL, m_pF);
+
+  int stcw = wxMax(m_maxStringLength * 15 / 10,  15 * char_width);
+  wxSize min_size = wxSize(stcw,
                        wxMin(gFrame->GetSize().y * 2 /4 , n_lines * GetCharHeight()));
 
   stcSizer->SetMinSize(min_size);
@@ -147,7 +157,7 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   SetMaxSize(gFrame->GetSize());
 
   Layout();
-  Fit(); //mainSizer->Fit(this);
+  Fit();
   Centre();
 
 #ifdef __ANDROID__
@@ -177,8 +187,15 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
   while (tk.HasMoreTokens()) {
     wxString item_string = tk.GetNextToken();
 
+    wxScreenDC dc;
+    int char_width, char_height;
+    dc.GetTextExtent(item_string, &char_width, &char_height, NULL, NULL, m_pF);
+
     // Record the maximum display string length, for use in dialog sizing.
-    m_maxStringLength = wxMax(m_maxStringLength, item_string.Length());
+    if (char_width > m_maxStringLength){
+      m_maxStringLength = char_width;
+      m_max_string = item_string;
+    }
 
     PriorityEntry *pe = new PriorityEntry(map_index, index);
     wxTreeItemId id_tk = m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
