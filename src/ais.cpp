@@ -1089,6 +1089,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       //  Using the true ends, not the clipped ends
       dc.StrokeCircle(tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
           AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+      dc.StrokeCircle(oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
+          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+
     }
 
     // Draw the intercept line from ownship
