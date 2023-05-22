@@ -1259,153 +1259,11 @@ bool PlugInManager::IsAnyPlugInChartEnabled() {
 }
 
 void PlugInManager::UpdateManagedPlugins() {
-  PlugInContainer *pict;
-  auto plugin_array = PluginLoader::getInstance()->GetPlugInArray();
-  // Clear the status (to "unmanaged") on all plugins
-  for (size_t i = 0; i < plugin_array->GetCount(); i++) {
-    pict = plugin_array->Item(i);
-    plugin_array->Item(i)->m_pluginStatus = PluginStatus::Unmanaged;
 
-    // Pre-mark the default "system" plugins
-    auto r =
-        std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
-                  plugin_array->Item(i)->m_common_name.Lower().ToStdString());
-    if (r != SYSTEM_PLUGINS.end())
-      plugin_array->Item(i)->m_pluginStatus = PluginStatus::System;
-  }
-
-  std::vector<PluginMetadata> available = getCompatiblePlugins();
-
-  // Traverse the list again
-  // Remove any inactive/uninstalled managed plugins that are no longer
-  // available in the current catalog Usually due to reverting from Alpha/Beta
-  // catalog back to master
-  for (size_t i = 0; i < plugin_array->GetCount(); i++) {
-    pict = plugin_array->Item(i);
-    if (pict->m_ManagedMetadata.name
-            .size()) {  // If metadata is good, must be a managed plugin
-      bool bfound = false;
-      for (auto plugin : available) {
-        if (pict->m_common_name.IsSameAs(wxString(plugin.name.c_str()))) {
-          bfound = true;
-          break;
-        }
-      }
-      if (!bfound) {
-        if (!pict->m_pplugin) {  // Only remove inactive plugins
-          plugin_array->Item(i)->m_pluginStatus =
-              PluginStatus::PendingListRemoval;
-        }
-      }
-    }
-  }
-
-  //  Remove any list items marked
-  size_t i = 0;
-  for (size_t i = 0; i < plugin_array->GetCount(); i += 1) {
-    auto p = plugin_array->Item(i);
-    PluginLoader::getInstance()->RemovePlugin(*p);
-  }
-
-  //  Now merge and update from the catalog
-  for (auto plugin : available) {
-    PlugInContainer *pic = NULL;
-    // Search for an exact name match in the existing plugin array
-    bool bfound = false;
-    for (size_t i = 0; i < plugin_array->GetCount(); i++) {
-      pic = plugin_array->Item(i);
-      if (plugin_array->Item(i)->m_common_name.IsSameAs(
-              wxString(plugin.name.c_str()))) {
-        bfound = true;
-        break;
-      }
-    }
-
-    //  No match found, so add a container, and populate it
-    if (!bfound) {
-      PlugInData new_pic;
-      new_pic.m_common_name = wxString(plugin.name.c_str());
-      new_pic.m_pluginStatus = PluginStatus::ManagedInstallAvailable;
-      new_pic.m_ManagedMetadata = plugin;
-      new_pic.m_version_major = 0;
-      new_pic.m_version_minor = 0;
-
-      // In safe mode, check to see if the plugin appears to be installed
-      // If so, set the status to "ManagedInstalledCurrentVersion", thus
-      // enabling the "uninstall" button.
-      if (safe_mode::get_mode()) {
-        std::string installed;
-        if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
-          // Get the installed version from the manifest
-          std::string path = PluginHandler::versionPath(plugin.name);
-          if (path != "" && wxFileName::IsFileReadable(path)) {
-            std::ifstream stream;
-            stream.open(path, std::ifstream::in);
-            stream >> installed;
-          }
-        }
-        if (!installed.empty())
-          new_pic.m_pluginStatus =
-              PluginStatus::ManagedInstalledCurrentVersion;
-        else
-          new_pic.m_pluginStatus = PluginStatus::Unknown;
-      }
-      PluginLoader::getInstance()->AddCatalogEntry(new_pic);
-    }
-    // Match found, so merge the info and determine the plugin status
-    else {
-      // If the managed plugin is installed, the fileList (manifest) will be
-      // present
-      if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
-        // Get the installed version from the manifest
-        std::string installed;
-        std::string path = PluginHandler::versionPath(plugin.name);
-        if (path != "" && wxFileName::IsFileReadable(path)) {
-          std::ifstream stream;
-          stream.open(path, std::ifstream::in);
-          stream >> installed;
-        }
-        pic->m_InstalledManagedVersion = installed;
-        auto installedVersion = SemanticVersion::parse(installed);
-
-        // Compare to the version reported in metadata
-        auto metaVersion = SemanticVersion::parse(plugin.version);
-        if (installedVersion < metaVersion)
-          pic->m_pluginStatus = PluginStatus::ManagedInstalledUpdateAvailable;
-        else if (installedVersion == metaVersion)
-          pic->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
-        else if (installedVersion > metaVersion)
-          pic->m_pluginStatus =
-              PluginStatus::ManagedInstalledDowngradeAvailable;
-
-        pic->m_ManagedMetadata = plugin;
-      }
-
-      // If the new plugin is not installed....
-      else {
-        // If the plugin is actually loaded, but the new plugin is known not to
-        // be installed,
-        //  then there must be a legacy plugin loaded.
-        //  and the new status must be "PluginStatus::LegacyUpdateAvailable"
-        if (pic->m_api_version) {
-          pic->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
-          pic->m_ManagedMetadata = plugin;
-        }
-        // Otherwise, this is an uninstalled managed plugin.
-        else {
-          pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
-        }
-      }
-    }
-  }
-
-  // Sort the list
-  auto cmp_func = [](PlugInContainer* p1, PlugInContainer* p2) {
-    return p1->Key().compare(p2->Key()); };
+  PluginLoader::getInstance()->UpdateManagedPlugins();
   PluginLoader::getInstance()->SortPlugins(ComparePlugins);
 
   if (m_listPanel) m_listPanel->ReloadPluginPanels();
-
   g_options->itemBoxSizerPanelPlugins->Layout();
 }
 
@@ -4322,6 +4180,15 @@ void PluginListPanel::SelectByName(wxString &name) {
   }
 }
 
+/* Is plugin with given name present in loaded? */
+static bool IsPluginLoaded(const std::string& name) {
+  auto loaded = PluginLoader::getInstance()->GetPlugInArray();
+  for (size_t i = 0; i < loaded->GetCount(); i++) {
+    if (loaded->Item(i)->m_common_name.ToStdString() == name) return true;
+  }
+  return false;
+}
+
 void PluginListPanel::ReloadPluginPanels() {
   auto plugins = PluginLoader::getInstance()->GetPlugInArray();
   m_PluginItems.Clear();
@@ -4338,11 +4205,33 @@ void PluginListPanel::ReloadPluginPanels() {
 
   Hide();
   m_PluginSelected = 0;
+
+
+  /* The catalog entries. */
+  auto available = getCompatiblePlugins();
+
+  /* Remove those which are loaded. */
+  auto predicate =
+      [](const PluginMetadata& md) { return IsPluginLoaded(md.name); };
+  auto end = std::remove_if(available.begin(), available.end(), predicate);
+  available.erase(end, available.end());
+
+  /* Remove duplicates. */
+  struct Comp {
+    bool operator() (const PluginMetadata& lhs,
+                     const PluginMetadata rhs) const {
+      return lhs.name.compare(rhs.name) < 0; }
+  } comp;
+  std::set<PluginMetadata, Comp> unique_entries(comp);
+  for (auto p: available) unique_entries.insert(p);
+
+  /* Add panels for first loaded plugins and then catalog entries. */
   auto loader = PluginLoader::getInstance();
-  for (size_t i = loader->GetPlugInArray()->GetCount(); i > 0; i -= 1) {
-    PlugInContainer *pic = loader->GetPlugInArray()->Item(i - 1);
-    AddPlugin(pic);
+  for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
+    AddPlugin(PlugInData(*(loader->GetPlugInArray()->Item(i))));
   }
+  for (auto p : unique_entries) AddPlugin(PlugInData(p));
+
   Show();
   Layout();
   Refresh(true);
@@ -4350,9 +4239,9 @@ void PluginListPanel::ReloadPluginPanels() {
   Scroll(0, 0);
 }
 
-void PluginListPanel::AddPlugin(PlugInContainer *pic) {
+void PluginListPanel::AddPlugin(PlugInData pic) {
   auto pPluginPanel =
-      new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, *pic);
+      new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
   pPluginPanel->SetSelected(false);
   GetSizer()->Add(pPluginPanel, 0, wxEXPAND);
   m_PluginItems.Add(pPluginPanel);
@@ -4391,15 +4280,6 @@ int PluginListPanel::ComputePluginSpace(ArrayOfPluginPanel plugins,
   }
   return max_dy;
 }
-
-/**
-void PluginListPanel::UpdatePluginsOrder() {
-  m_pPluginArray->Clear();
-  for (unsigned int i = 0; i < m_PluginItems.GetCount(); i++) {
-    m_pPluginArray->Insert(*(m_PluginItems[i]->GetPluginPtr()), 0);
-  }
-}
-FIXME (leamas) **/
 
 PluginListPanel::~PluginListPanel() {}
 
@@ -4543,18 +4423,18 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
     plugin_icon = m_plugin.m_bitmap->ConvertToImage();
   }
   wxBitmap bitmap;
-  if (plugin_icon.IsOk()) {
-    int nowSize = plugin_icon.GetWidth();
-    plugin_icon.Rescale(icon_scale, icon_scale, wxIMAGE_QUALITY_HIGH);
-    bitmap = wxBitmap(plugin_icon);
-  } else if (m_plugin.m_pluginStatus ==
+  if (m_plugin.m_pluginStatus ==
              PluginStatus::ManagedInstallAvailable) {
     wxFileName path(g_Platform->GetSharedDataDir(), "packageBox.svg");
     path.AppendDir("uidata");
-    path.AppendDir("traditional");
+    path.AppendDir("traditional");          //  FIXME(leamas) cache it.
     bitmap = LoadSVG(path.GetFullPath(), icon_scale, icon_scale);
+  } else if (plugin_icon.IsOk()) {
+    int nowSize = plugin_icon.GetWidth();
+    plugin_icon.Rescale(icon_scale, icon_scale, wxIMAGE_QUALITY_HIGH);
+    bitmap = wxBitmap(plugin_icon);
   } else {
-    bitmap = wxBitmap(style->GetIcon(_T("default_pi"), icon_scale, icon_scale));
+    bitmap = wxBitmap(style->GetIcon("default_pi", icon_scale, icon_scale));
   }
   m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
 
@@ -4748,9 +4628,12 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
 
   SetSelected(m_bSelected);
   SetAutoLayout(true);
-  // FitInside();
   Fit();
 }
+
+PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
+                         const wxSize &size, PluginMetadata md)
+   : PluginPanel(parent, id, pos, size, PlugInData(md)) {};
 
 PluginPanel::~PluginPanel() {
   Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);

@@ -73,10 +73,25 @@ enum class PluginStatus {
   PendingListRemoval
 };
 
-/** Basic data for a loaded plugin, trivially copyable */
+class PlugInContainer;  // forward
 
+/** Basic data for a loaded plugin, trivially copyable */
 class PlugInData {
 public:
+  /** Create a container with applicable fields defined from metadata. */
+  PlugInData(const PluginMetadata& md);
+
+  /** "Downcast" a PlugInContainer to a PlugInData. */
+  PlugInData(const PlugInContainer& pic);
+  PlugInData() = default;
+
+  /**
+   * Return version from plugin API. Older pre-117 plugins just
+   * support major and minor version, newer plugins have
+   * complete semantic version data.
+   */
+  SemanticVersion GetVersion();
+
   bool m_bEnabled;
   bool m_bInitState;
   bool m_bToolboxPanel;
@@ -84,7 +99,7 @@ public:
   wxString m_plugin_file;            //!< The full file path
   wxString m_plugin_filename;        //!< The short file path
   wxDateTime m_plugin_modification;  //!< used to detect upgraded plugins
-  wxString m_common_name;  //!< A common name string for the plugin
+  wxString m_common_name;            //!< A common name string for the plugin
   wxString m_short_description;
   wxString m_long_description;
   int m_api_version;
@@ -97,24 +112,18 @@ public:
   std::string m_InstalledManagedVersion;  //!< As detected from manifest
   opencpn_plugin* m_pplugin;
 
-  /**
-   * Return version from plugin API. Older pre-117 plugins just
-   * support major and minor version, newer plugins have
-   * complete semantic version data.
-   */
-  SemanticVersion GetVersion();
-
   /** sort key. */
   std::string Key();
 };
 
 /**
- * Data for a loaded plugin, including dl-loaded library. 
+ * Data for a loaded plugin, including dl-loaded library.
  * Due to the library it is not copyable.
  */
 class PlugInContainer : public PlugInData {
 public:
   PlugInContainer();
+
   ~PlugInContainer() { delete m_bitmap; }
 
   wxDynamicLibrary m_library;
@@ -220,10 +229,7 @@ public:
   const wxBitmap* GetPluginDefaultIcon();
 
   /** Remove a plugin from *GetPluginArray().  */
-  void RemovePlugin(const PlugInData& pd );
-
-  /** Add a catalog entry to  *GetPluginArray(). */
-  void AddCatalogEntry(const PlugInData& pd);
+  void RemovePlugin(const PlugInData& pd);
 
   /** Sort GetPluginArray(). */
   void SortPlugins(int (*cmp_func)(PlugInContainer**, PlugInContainer**));

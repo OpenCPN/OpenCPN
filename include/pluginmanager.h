@@ -430,7 +430,7 @@ public:
   void SelectByName(wxString &name);
 
 private:
-  void AddPlugin(PlugInContainer *pic);
+  void AddPlugin(PlugInData pd);
   int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer *sizer);
   // void Clear();
 
@@ -454,9 +454,16 @@ protected:
 class PluginPanel : public wxPanel {
   DECLARE_EVENT_TABLE()
 
+/** An entry in the list of plugins presented by Options | Plugins. */
 public:
+  /** Construct an entry for a loaded plugin. */
   PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
               const wxSize &size, PlugInData plugin);
+
+  /** Construct an entry reflecting a plugin available in the catalog. */
+  PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
+              const wxSize &size, PluginMetadata plugin);
+
   ~PluginPanel();
 
   void OnPluginSelected(wxMouseEvent &event);

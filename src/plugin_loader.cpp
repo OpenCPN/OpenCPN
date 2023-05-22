@@ -31,6 +31,7 @@
 #include <sstream>
 #include <typeinfo>
 #include <unordered_map>
+#include <vector>
 
 #ifdef USE_LIBELF
 #include <elf.h>
@@ -107,6 +108,22 @@ PlugInContainer::PlugInContainer() {
   m_bitmap = NULL;
   m_pluginStatus = PluginStatus::Unknown;
   m_api_version = 0;
+}
+
+PlugInData::PlugInData(const PlugInContainer& pic) {
+  const PlugInData* data_ptr = &pic;
+  *this = *data_ptr;
+}
+
+PlugInData::PlugInData(const PluginMetadata& md)
+    : PlugInData() {
+  m_common_name = wxString(md.name);
+  auto v = SemanticVersion::parse(md.version);
+  m_version_major = v.major;
+  m_version_minor = v.minor;
+  m_ManagedMetadata = md;
+  m_pluginStatus = PluginStatus::ManagedInstallAvailable;
+  m_bEnabled = false;
 }
 
 /** Return true if path "seems" to contain a system plugin */
@@ -261,16 +278,6 @@ void PluginLoader::RemovePlugin(const PlugInData& pd) {
     return;
   }
   plugin_array.Remove(pic);
-}
-
-void PluginLoader::AddCatalogEntry(const PlugInData& pd) {
-  auto pic = new PlugInContainer;
-  pic->m_common_name = pd.m_common_name;
-  pic->m_pluginStatus = pd.m_pluginStatus;
-  pic->m_ManagedMetadata = pd.m_ManagedMetadata;
-  pic->m_version_major = pd.m_version_major;
-  pic->m_version_minor = pd.m_version_minor;
-  plugin_array.Add(pic);
 }
 
 static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
@@ -698,172 +705,96 @@ bool PluginLoader::UnLoadPlugIn(size_t ix) {
   return true;
 }
 
-void PluginLoader::UpdateManagedPlugins() {
-  PlugInContainer* pict;
-  // Clear the status (to "unmanaged") on all plugins
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    pict = plugin_array.Item(i);
-    plugin_array.Item(i)->m_pluginStatus = PluginStatus::Unmanaged;
+static PluginMetadata MetadataByName(const std::string& name) {
+  if (name == "") return PluginMetadata();
+  const auto available = PluginHandler::getInstance()->getAvailable();
+  auto predicate =
+    [name] (const PluginMetadata& md) { return md.name == name; };
+  auto found = std::find_if(available.begin(), available.end(), predicate);
+  return found != available.end() ? *found : PluginMetadata();
+}
 
-    // Pre-mark the default "system" plugins
-    auto r =
-        std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
-                  plugin_array.Item(i)->m_common_name.Lower().ToStdString());
-    if (r != SYSTEM_PLUGINS.end())
-      plugin_array.Item(i)->m_pluginStatus = PluginStatus::System;
+
+static std::string VersionFromManifest(std::string plugin_name) {
+  std::string version;
+  std::string path = PluginHandler::versionPath(plugin_name);
+  if (path != "" && wxFileName::IsFileReadable(path)) {
+    std::ifstream stream;
+    stream.open(path, std::ifstream::in);
+    stream >> version;
+  }
+  return version;
+}
+
+
+/** Update PlugInContainer using data from PluginMetadata and manifest. */
+static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata md) {
+
+  std::string installed = VersionFromManifest(md.name);
+  plugin->m_InstalledManagedVersion = installed;
+  auto installedVersion = SemanticVersion::parse(installed);
+
+  auto metaVersion = SemanticVersion::parse(md.version);
+  if (installedVersion < metaVersion)
+    plugin->m_pluginStatus = PluginStatus::ManagedInstalledUpdateAvailable;
+  else if (installedVersion == metaVersion)
+    plugin->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
+  else
+    plugin->m_pluginStatus = PluginStatus::ManagedInstalledDowngradeAvailable;
+
+  plugin->m_ManagedMetadata = md;
+}
+ 
+void PluginLoader::UpdateManagedPlugins() {
+
+  std::vector<PlugInContainer*> loaded_plugins;
+  for (size_t i = 0; i < plugin_array.GetCount(); i++)
+    loaded_plugins.push_back( plugin_array.Item(i));
+
+  // Initiate status to "unmanaged" or "system" on all plugins
+  for (auto& p : loaded_plugins) {
+    auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
+                           p->m_common_name.Lower().ToStdString());
+    bool is_system = found != SYSTEM_PLUGINS.end();
+    p->m_pluginStatus =
+        is_system ? PluginStatus::System : PluginStatus::Unmanaged;
   }
 
-  std::vector<PluginMetadata> available = getCompatiblePlugins();
-
-  // Traverse the list again
   // Remove any inactive/uninstalled managed plugins that are no longer
   // available in the current catalog Usually due to reverting from Alpha/Beta
   // catalog back to master
-  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-    pict = plugin_array.Item(i);
-    if (pict->m_ManagedMetadata.name .size()) {
-      // Metadata is good, must be a managed plugin
-      bool bfound = false;
-      for (auto plugin : available) {
-        if (pict->m_common_name.IsSameAs(wxString(plugin.name.c_str()))) {
-          bfound = true;
-          break;
-        }
-      }
-      if (!bfound) {
-        if (!pict->m_pplugin) {  // Only remove inactive plugins
-          plugin_array.Item(i)->m_pluginStatus =
-              PluginStatus::PendingListRemoval;
-        }
-      }
-    }
-  }
+  auto predicate = [] (const PlugInContainer* pd) -> bool {
+    const auto md(MetadataByName(pd->m_common_name.ToStdString()));
+    return md.name.size() == 0 && !pd->m_pplugin; };
 
-  //  Remove any list items marked
-  size_t i = 0;
-  while ((i >= 0) && (i < plugin_array.GetCount())) {
-    pict = plugin_array.Item(i);
-    if (pict->m_pluginStatus == PluginStatus::PendingListRemoval) {
-      plugin_array.RemoveAt(i);
-      i = 0;
-    } else
-      i++;
-  }
+  auto end = std::remove_if(loaded_plugins.begin(), loaded_plugins.end(),
+                            predicate);
+  loaded_plugins.erase(end, loaded_plugins.end());
 
-  //  Now merge and update from the catalog
-  for (auto plugin : available) {
-    PlugInContainer* pic = NULL;
-    // Search for an exact name match in the existing plugin array
-    bool bfound = false;
-    for (size_t i = 0; i < plugin_array.GetCount(); i++) {
-      pic = plugin_array.Item(i);
-      if (plugin_array.Item(i)->m_common_name.ToStdString() == plugin.name) {
-        bfound = true;
-        break;
-      }
-    }
-
-    //  No match found, so add a container, and populate it
-    if (!bfound) {
-      PlugInContainer* new_pic = new PlugInContainer;
-      new_pic->m_common_name = wxString(plugin.name.c_str());
-      new_pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
-      new_pic->m_ManagedMetadata = plugin;
-      new_pic->m_version_major = 0;
-      new_pic->m_version_minor = 0;
-
-      // In safe mode, check to see if the plugin appears to be installed
-      // If so, set the status to "ManagedInstalledCurrentVersion", thus
-      // enabling the "uninstall" button.
-      if (safe_mode::get_mode()) {
-        std::string installed;
-        if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
-          // Get the installed version from the manifest
-          std::string path = PluginHandler::versionPath(plugin.name);
-          if (path != "" && wxFileName::IsFileReadable(path)) {
-            std::ifstream stream;
-            stream.open(path, std::ifstream::in);
-            stream >> installed;
-          }
-        }
-        if (!installed.empty())
-          new_pic->m_pluginStatus =
-              PluginStatus::ManagedInstalledCurrentVersion;
-        else
-          new_pic->m_pluginStatus = PluginStatus::Unknown;
-      }
-
-      plugin_array.Add(new_pic);
-
-    }
-    // Match found, so merge the info and determine the plugin status
-    else {
-      // If the managed plugin is installed, the fileList (manifest) will be
-      // present
-      if (isRegularFile(PluginHandler::fileListPath(plugin.name).c_str())) {
-        // Get the installed version from the manifest
-        std::string installed;
-        std::string path = PluginHandler::versionPath(plugin.name);
-        if (path != "" && wxFileName::IsFileReadable(path)) {
-          std::ifstream stream;
-          stream.open(path, std::ifstream::in);
-          stream >> installed;
-        }
-        pic->m_InstalledManagedVersion = installed;
-        auto installedVersion = SemanticVersion::parse(installed);
-
-        // Compare to the version reported in metadata
-        auto metaVersion = SemanticVersion::parse(plugin.version);
-        if (installedVersion < metaVersion)
-          pic->m_pluginStatus = PluginStatus::ManagedInstalledUpdateAvailable;
-        else if (installedVersion == metaVersion)
-          pic->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
-        else if (installedVersion > metaVersion)
-          pic->m_pluginStatus =
-              PluginStatus::ManagedInstalledDowngradeAvailable;
-
-        pic->m_ManagedMetadata = plugin;
-      }
-
-      // If the new plugin is not installed....
-      else {
+  //  Update from the catalog metadata
+  for (auto& plugin : loaded_plugins) {
+    auto md = MetadataByName(plugin->m_common_name.ToStdString());
+    if (!md.name.empty()) {
+      auto import_path = PluginHandler::ImportedMetadataPath(md.name.c_str());
+      md.is_imported = isRegularFile(import_path.c_str());
+      if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
+        // This is an installed plugin
+        UpdatePlugin(plugin, md);
+      } else if (plugin->m_api_version) {
         // If the plugin is actually loaded, but the new plugin is known not
-        // to be installed, then there must be a legacy plugin loaded.
-        // and the new status must be "PluginStatus::LegacyUpdateAvailable"
-        if (pic->m_api_version) {
-          pic->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
-          pic->m_ManagedMetadata = plugin;
-        }
+        // to be installed, then it must be a legacy plugin loaded.
+        plugin->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
+        plugin->m_ManagedMetadata = md;
+      }
+      else {
         // Otherwise, this is an uninstalled managed plugin.
-        else {
-          pic->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
-        }
+        plugin->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
       }
     }
   }
 
-  // Sort the list
-
-  // Detach and hold the uninstalled, managed plugins
-  std::map<std::string, PlugInContainer*> sortmap;
-  for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
-    PlugInContainer* pic = plugin_array[i];
-    if (pic->m_pluginStatus == PluginStatus::ManagedInstallAvailable) {
-      plugin_array.Remove(pic);
-
-      // Sort by name, lower cased.
-      std::string name = pic->m_ManagedMetadata.name;
-      std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-      sortmap[name] = pic;
-      i = 0;  // Restart the list
-    }
-  }
-
-  // Add the detached plugins back at the top of the list.
-  //  Later, the list will be populated in reverse order...Why??
-  for (auto it = sortmap.begin(); it != sortmap.end(); it++) {
-    plugin_array.Insert(it->second, 0);
-  }
+  plugin_array.Clear();
+  for (const auto& p : loaded_plugins) plugin_array.Add(p);
   evt_pluglist_change.Notify();
 }
 
