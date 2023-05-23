@@ -71,9 +71,9 @@ public:
 
   PlugInData();
 
-  bool m_bEnabled;
-  bool m_bInitState;
-  bool m_bToolboxPanel;
+  bool m_enabled;
+  bool m_init_state;
+  bool m_toolbox_panel;
   int m_cap_flag;                    //!< PlugIn Capabilities descriptor
   wxString m_plugin_file;            //!< The full file path
   wxString m_plugin_filename;        //!< The short file path
@@ -84,11 +84,11 @@ public:
   int m_api_version;
   int m_version_major;
   int m_version_minor;
-  PluginStatus m_pluginStatus;
-  PluginMetadata m_ManagedMetadata;
+  PluginStatus m_status;
+  PluginMetadata m_managed_metadata;
   wxBitmap* m_bitmap;
-  wxString m_version_str;  //!< Complete version as of semantic_vers
-  std::string m_InstalledManagedVersion;  //!< As detected from manifest
+  wxString m_version_str;           //!< Complete version as of semantic_vers
+  std::string m_manifest_version;   //!< As detected from manifest
   opencpn_plugin* m_pplugin;
 
   /** sort key. */

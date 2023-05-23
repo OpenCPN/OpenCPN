@@ -1037,7 +1037,7 @@ void PluginHandler::SetInstalledMetadata(const PluginMetadata& pm) {
    if (ix == -1) return;  // no such plugin
 
    auto plugins = *loader->GetPlugInArray();
-   plugins[ix]->m_ManagedMetadata = pm;
+   plugins[ix]->m_managed_metadata = pm;
 }
 
 

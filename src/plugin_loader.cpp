@@ -96,14 +96,14 @@ PlugInContainer::PlugInContainer()
     : PlugInData(), m_library(), m_destroy_fn(nullptr) {}
 
 PlugInData::PlugInData()
-    : m_bEnabled(false),
-      m_bInitState(false),
-      m_bToolboxPanel(false),
+    : m_enabled(false),
+      m_init_state(false),
+      m_toolbox_panel(false),
       m_cap_flag(0),
       m_api_version(0),
       m_version_major(0),
       m_version_minor(0),
-      m_pluginStatus(PluginStatus::Unknown),
+      m_status(PluginStatus::Unknown),
       m_bitmap(nullptr),
       m_pplugin(nullptr)
 {}
@@ -113,9 +113,9 @@ PlugInData::PlugInData(const PluginMetadata& md) : PlugInData() {
   auto v = SemanticVersion::parse(md.version);
   m_version_major = v.major;
   m_version_minor = v.minor;
-  m_ManagedMetadata = md;
-  m_pluginStatus = PluginStatus::ManagedInstallAvailable;
-  m_bEnabled = false;
+  m_managed_metadata = md;
+  m_status = PluginStatus::ManagedInstallAvailable;
+  m_enabled = false;
 }
 
 PlugInData::PlugInData(const PlugInContainer& pic)  { *this = pic; }
@@ -133,7 +133,7 @@ static bool IsSystemPlugin(const std::string& path) {
 }
 
 std::string PlugInData::Key() const {
-  return std::string(m_pluginStatus == PluginStatus::Managed ? "1" : "0")
+  return std::string(m_status == PluginStatus::Managed ? "1" : "0")
       + m_common_name.ToStdString();
 }
 
@@ -227,7 +227,7 @@ PluginLoader::PluginLoader()
 bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic = plugin_array[i];
-    if (pic && pic->m_bEnabled && (pic->m_common_name == commonName))
+    if (pic && pic->m_enabled && (pic->m_common_name == commonName))
       return true;
   }
   return false;
@@ -392,17 +392,17 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_common_name = pic->m_pplugin->GetCommonName();
       pic->m_plugin_filename = plugin_file;
       pic->m_plugin_modification = plugin_modification;
-      pic->m_bEnabled = enabled.Get(false);
+      pic->m_enabled = enabled.Get(false);
 
       if (safe_mode::get_mode()) {
-        pic->m_bEnabled = false;
+        pic->m_enabled = false;
         enabled.Set(false);
       }
 #ifndef CLIAPP
       // The CLI has no graphics context, but plugins assumes there is.
-      if (pic->m_bEnabled) {
+      if (pic->m_enabled) {
         pic->m_cap_flag = pic->m_pplugin->Init();
-        pic->m_bInitState = true;
+        pic->m_init_state = true;
         evt_load_plugin.Notify(pic);
       }
 #endif
@@ -424,14 +424,14 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
-      if (!pic->m_bEnabled && pic->m_destroy_fn) {
+      if (!pic->m_enabled && pic->m_destroy_fn) {
         auto pbm1 = pic->m_pplugin->GetPlugInBitmap();
         pic->m_bitmap = new wxBitmap(pbm1->GetSubBitmap(
           wxRect(0, 0, pbm1->GetWidth(), pbm1->GetHeight())));
         pic->m_destroy_fn(pic->m_pplugin);
         pic->m_destroy_fn = nullptr;
         pic->m_pplugin = nullptr;
-        pic->m_bInitState = false;
+        pic->m_init_state = false;
         if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       }
 
@@ -518,10 +518,10 @@ bool PluginLoader::LoadPlugInDirectory(const wxString& plugin_dir,
 
       if (pic->m_common_name == pict->m_common_name) {
         if (pic->m_plugin_file.IsEmpty())
-          plugin_array.Item(i)->m_pluginStatus =
+          plugin_array.Item(i)->m_status =
               PluginStatus::PendingListRemoval;
         else
-          plugin_array.Item(j)->m_pluginStatus =
+          plugin_array.Item(j)->m_status =
               PluginStatus::PendingListRemoval;
       }
     }
@@ -531,7 +531,7 @@ bool PluginLoader::LoadPlugInDirectory(const wxString& plugin_dir,
   size_t i = 0;
   while ((i >= 0) && (i < plugin_array.GetCount())) {
     PlugInContainer* pict = plugin_array.Item(i);
-    if (pict->m_pluginStatus == PluginStatus::PendingListRemoval) {
+    if (pict->m_status == PluginStatus::PendingListRemoval) {
       plugin_array.RemoveAt(i);
       i = 0;
     } else
@@ -553,31 +553,31 @@ bool PluginLoader::UpdatePlugIns() {
       auto ppl = dynamic_cast<opencpn_plugin*>(pic->m_pplugin);
       if (!ppl) {
         pic->m_pplugin = nullptr;
-        pic->m_bInitState = false;
+        pic->m_init_state = false;
       }
     }
 
     // Installed and loaded?
     if (!pic->m_pplugin) {  // Needs a reload?
-      if (pic->m_bEnabled) {
-        PluginStatus stat = pic->m_pluginStatus;
+      if (pic->m_enabled) {
+        PluginStatus stat = pic->m_status;
         PlugInContainer* newpic = LoadPlugIn(pic->m_plugin_file, pic);
         if (newpic) {
-          pic->m_pluginStatus = stat;
-          pic->m_bEnabled = true;
+          pic->m_status = stat;
+          pic->m_enabled = true;
         }
       } else
         continue;
     }
 
-    if (pic->m_bEnabled && !pic->m_bInitState && pic->m_pplugin) {
+    if (pic->m_enabled && !pic->m_init_state && pic->m_pplugin) {
       wxString msg("PluginLoader: Initializing PlugIn: ");
       msg += pic->m_plugin_file;
       wxLogMessage(msg);
 
       pic->m_cap_flag = pic->m_pplugin->Init();
       pic->m_pplugin->SetDefaults();
-      pic->m_bInitState = true;
+      pic->m_init_state = true;
       ProcessLateInit(pic);
       pic->m_short_description = pic->m_pplugin->GetShortDescription();
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
@@ -587,7 +587,7 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
       bret = true;
-    } else if (!pic->m_bEnabled && pic->m_bInitState) {
+    } else if (!pic->m_enabled && pic->m_init_state) {
       // Save a local copy of the plugin icon before unloading
       wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
       pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
@@ -597,7 +597,7 @@ bool PluginLoader::UpdatePlugIns() {
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       pic->m_pplugin = nullptr;
-      pic->m_bInitState = false;
+      pic->m_init_state = false;
     }
   }
   evt_update_chart_types.Notify();
@@ -606,11 +606,11 @@ bool PluginLoader::UpdatePlugIns() {
 
 bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
   if (!pic) return false;
-  if (pic->m_bInitState) {
+  if (pic->m_init_state) {
     wxString msg("PluginLoader: Deactivating PlugIn: ");
     wxLogMessage(msg + pic->m_plugin_file);
     m_on_deactivate_cb(pic);
-    pic->m_bInitState = false;
+    pic->m_init_state = false;
     pic->m_pplugin->DeInit();
   }
   return true;
@@ -699,18 +699,18 @@ static std::string VersionFromManifest(const std::string& plugin_name) {
 static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata& md) {
 
   std::string installed = VersionFromManifest(md.name);
-  plugin->m_InstalledManagedVersion = installed;
+  plugin->m_manifest_version = installed;
   auto installedVersion = SemanticVersion::parse(installed);
 
   auto metaVersion = SemanticVersion::parse(md.version);
   if (installedVersion < metaVersion)
-    plugin->m_pluginStatus = PluginStatus::ManagedInstalledUpdateAvailable;
+    plugin->m_status = PluginStatus::ManagedInstalledUpdateAvailable;
   else if (installedVersion == metaVersion)
-    plugin->m_pluginStatus = PluginStatus::ManagedInstalledCurrentVersion;
+    plugin->m_status = PluginStatus::ManagedInstalledCurrentVersion;
   else
-    plugin->m_pluginStatus = PluginStatus::ManagedInstalledDowngradeAvailable;
+    plugin->m_status = PluginStatus::ManagedInstalledDowngradeAvailable;
 
-  plugin->m_ManagedMetadata = md;
+  plugin->m_managed_metadata = md;
 }
  
 void PluginLoader::UpdateManagedPlugins() {
@@ -724,7 +724,7 @@ void PluginLoader::UpdateManagedPlugins() {
     auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
                            p->m_common_name.Lower().ToStdString());
     bool is_system = found != SYSTEM_PLUGINS.end();
-    p->m_pluginStatus =
+    p->m_status =
         is_system ? PluginStatus::System : PluginStatus::Unmanaged;
   }
 
@@ -751,12 +751,12 @@ void PluginLoader::UpdateManagedPlugins() {
       } else if (plugin->m_api_version) {
         // If the plugin is actually loaded, but the new plugin is known not
         // to be installed, then it must be a legacy plugin loaded.
-        plugin->m_pluginStatus = PluginStatus::LegacyUpdateAvailable;
-        plugin->m_ManagedMetadata = md;
+        plugin->m_status = PluginStatus::LegacyUpdateAvailable;
+        plugin->m_managed_metadata = md;
       }
       else {
         // Otherwise, this is an uninstalled managed plugin.
-        plugin->m_pluginStatus = PluginStatus::ManagedInstallAvailable;
+        plugin->m_status = PluginStatus::ManagedInstallAvailable;
       }
     }
   }
@@ -779,7 +779,7 @@ bool PluginLoader::UnLoadAllPlugIns() {
 bool PluginLoader::DeactivateAllPlugIns() {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic = plugin_array[i];
-    if (pic && pic->m_bEnabled && pic->m_bInitState) DeactivatePlugIn(pic);
+    if (pic && pic->m_enabled && pic->m_init_state) DeactivatePlugIn(pic);
   }
   return true;
 }
@@ -1181,7 +1181,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
     return nullptr;
   }
   pic->m_plugin_file = plugin_file;
-  pic->m_pluginStatus =
+  pic->m_status =
       PluginStatus::Unmanaged;  // Status is updated later, if necessary
 
   // load the library
