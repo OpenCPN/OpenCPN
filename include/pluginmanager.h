@@ -416,7 +416,7 @@ class PluginListPanel : public wxScrolledWindow {
 
 public:
   PluginListPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos,
-                  const wxSize &size, const ArrayOfPlugIns *pPluginArray);
+                  const wxSize &size);
   ~PluginListPanel();
 
   void SelectPlugin(PluginPanel *pi);

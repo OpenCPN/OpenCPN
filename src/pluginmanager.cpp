@@ -4024,13 +4024,12 @@ BEGIN_EVENT_TABLE(PluginListPanel, wxScrolledWindow)
 END_EVENT_TABLE()
 
 PluginListPanel::PluginListPanel(wxWindow *parent, wxWindowID id,
-                                 const wxPoint &pos, const wxSize &size,
-                                 const ArrayOfPlugIns *pPluginArray)
+                                 const wxPoint &pos, const wxSize &size)
     : wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL | wxVSCROLL),
       m_PluginSelected(0) {
+
   SetSizer(new wxBoxSizer(wxVERTICAL));
   ReloadPluginPanels();
-  // SetScrollRate(0, 1);
 }
 
 void PluginListPanel::SelectByName(wxString &name) {

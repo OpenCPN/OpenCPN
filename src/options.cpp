@@ -57,60 +57,57 @@
 #include <wx/odcombo.h>
 #include <wx/statline.h>
 #include <wx/regex.h>
+#include <wx/renderer.h>
 #include <wx/textwrapper.h>
 
 #include "comm_drv_factory.h"
 #include "comm_util.h"
 #include "conn_params_panel.h"
 
-#if wxCHECK_VERSION(2, 9, \
-                    4) /* does this work in 2.8 too.. do we need a test? */
-#include <wx/renderer.h>
-#endif
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
 
 #include "config.h"
-#include "config_vars.h"
 
+#include "ais_decoder.h"
+#include "ais.h"
+#include "ais_target_data.h"
+#include "chart_ctx_factory.h"
+#include "chartdbs.h"
+#include "chcanv.h"
+#include "cm93.h"
+#include "ConfigMgr.h"
+#include "config_vars.h"
 #include "dychart.h"
-#include "ocpn_frame.h"
+#include "FontMgr.h"
 #include "idents.h"
+#include "MarkInfo.h"
+#include "multiplexer.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "observable_globvar.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "OCPN_Sound.h"
+#include "options.h"
+#include "routeman.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "ser_ports.h"
+#include "SoundFactory.h"
+#include "styles.h"
+#include "svg_utils.h"
+#include "SystemCmdSound.h"
+#include "usb_devices.h"
+#include "waypointman_gui.h"
+#include "wx28compat.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 extern GLuint g_raster_format;
 #endif
 
-#include "chartdbs.h"
-#include "options.h"
-#include "styles.h"
-#include "multiplexer.h"
-#include "FontMgr.h"
-#include "OCPN_Sound.h"
-#include "SoundFactory.h"
-#include "SystemCmdSound.h"
-
-#include "SystemCmdSound.h"
-
-#include "wx28compat.h"
-#include "routeman.h"
-#include "chcanv.h"
-#include "chart_ctx_factory.h"
-#include "MarkInfo.h"
-
-#include "ais.h"
-#include "ais_decoder.h"
-#include "ais_target_data.h"
-
-#include "usb_devices.h"
-#include "navutil.h"
-#include "navutil_base.h"
-
-#include "s52plib.h"
-#include "s52utils.h"
-#include "cm93.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -123,14 +120,6 @@ extern GLuint g_raster_format;
 #ifdef __OCPN__ANDROID__
 #include <QtWidgets/QScroller>
 #endif
-
-#include "OCPNPlatform.h"
-#include "ConfigMgr.h"
-
-#include "observable_globvar.h"
-#include "ser_ports.h"
-#include "svg_utils.h"
-#include "waypointman_gui.h"
 
 #ifdef __WXOSX__
   #if wxCHECK_VERSION(3,2,0)
@@ -8247,8 +8236,7 @@ void options::DoOnPageChange(size_t page) {
 
       m_pPlugInCtrl =
           new PluginListPanel(itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
-                              wxDefaultSize,
-                              PluginLoader::getInstance()->GetPlugInArray());
+                              wxDefaultSize);
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 01,
                                     wxEXPAND | wxGROW | wxALL, 4);
