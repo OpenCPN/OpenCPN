@@ -3968,6 +3968,10 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
   LoadAllPlugIns(false);
   PluginHandler::getInstance()->SetInstalledMetadata(metadata);
   m_PluginListPanel->ReloadPluginPanels();
+  wxString ws(_("Plugin"));
+  ws += metadata.name + _(" successfully imported");
+  OCPNMessageBox(gFrame, ws, _("Installation complete"),
+                 wxICON_INFORMATION | wxOK | wxCENTRE);
 }
 
 wxString CatalogMgrPanel::GetCatalogText(bool updated) {
