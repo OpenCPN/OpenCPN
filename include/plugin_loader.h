@@ -6,7 +6,8 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010-2023 by David S. Register                          *
+ *   Copyright (C) 2023 Alec Leamas
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,8 +25,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _PLUGIN_LOADER_H_
-#define _PLUGIN_LOADER_H_
+#ifndef PLUGIN_LOADER_H_GUARD
+#define PLUGIN_LOADER_H_GUARD
 
 #include <functional>
 
@@ -42,22 +43,6 @@
 #include "plugin_blacklist.h"
 #include "semantic_vers.h"
 
-typedef struct {
-  wxString name;      //!< name of the plugin
-  int version_major;  //!< major version
-  int version_minor;  //!< minor version
-  /**
-   * hard blacklist - if true, don't load it at all, if false, load
-   * it and just warn the user
-   */
-  bool hard;
-  /**
-   * if true, blacklist also all the lower versions of the
-   * plugin
-   */
-  bool all_lower;
-  bool mute_dialog;  //!< if true, don't warn the user by dialog.
-} BlackListedPlugin;
 
 enum class PluginStatus {
   System,     //!< One of the four system plugins, unmanaged.
@@ -79,18 +64,12 @@ class PlugInContainer;  // forward
 class PlugInData {
 public:
   /** Create a container with applicable fields defined from metadata. */
-  PlugInData(const PluginMetadata& md);
+  explicit PlugInData(const PluginMetadata& md);
 
   /** "Downcast" a PlugInContainer to a PlugInData. */
-  PlugInData(const PlugInContainer& pic);
-  PlugInData() = default;
+  explicit PlugInData(const PlugInContainer& pic);
 
-  /**
-   * Return version from plugin API. Older pre-117 plugins just
-   * support major and minor version, newer plugins have
-   * complete semantic version data.
-   */
-  SemanticVersion GetVersion();
+  PlugInData();
 
   bool m_bEnabled;
   bool m_bInitState;
@@ -113,7 +92,7 @@ public:
   opencpn_plugin* m_pplugin;
 
   /** sort key. */
-  std::string Key();
+  std::string Key() const;
 };
 
 /**
@@ -141,22 +120,16 @@ public:
     Blacklisted
   } type;
   const std::string lib_path;            //<! Complete path to failing library
-  const int api_version;                 //<! As determined from plugin API
+  //<! As determined from plugin API
   const SemanticVersion plugin_version;  //<! As determined from plugin API
 
-  LoadError(Type t, const std::string& l, int av, SemanticVersion pv)
-      : type(t), lib_path(l), api_version(av), plugin_version(pv) {}
+  LoadError(Type t, const std::string& l, SemanticVersion pv)
+      : type(t), lib_path(l),  plugin_version(pv) {}
 
-  LoadError(Type t, const std::string& l, int av)
-      : type(t),
-        lib_path(l),
-        api_version(av),
-        plugin_version(SemanticVersion()) {}
 
-  LoadError(Type t, const std::string& l)
+  LoadError(Type t, std::string l)
       : type(t),
-        lib_path(l),
-        api_version(0),
+        lib_path(std::move(l)),
         plugin_version(SemanticVersion()) {}
 };
 
@@ -186,7 +159,7 @@ WX_DEFINE_ARRAY_PTR(PlugInContainer*, ArrayOfPlugIns);
 class PluginLoader {
 public:
   static PluginLoader* getInstance();
-  virtual ~PluginLoader() {}
+  virtual ~PluginLoader() = default;
 
   EventVar evt_blacklisted_plugin;
 
@@ -226,7 +199,6 @@ public:
     m_on_deactivate_cb = cb;
   }
 
-  const wxBitmap* GetPluginDefaultIcon();
 
   /** Remove a plugin from *GetPluginArray().  */
   void RemovePlugin(const PlugInData& pd);
@@ -243,17 +215,17 @@ public:
   bool DeactivatePlugIn(const PlugInData& pic);
   bool UpdatePlugIns();
   void UpdateManagedPlugins();
-  PlugInContainer* LoadPlugIn(wxString plugin_file);
-  PlugInContainer* LoadPlugIn(wxString plugin_file, PlugInContainer* pic);
+  PlugInContainer* LoadPlugIn(const wxString& plugin_file);
+  PlugInContainer* LoadPlugIn(const wxString& plugin_file, PlugInContainer* pic);
 
   const ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
-  bool IsPlugInAvailable(wxString commonName);
-  bool CheckPluginCompatibility(wxString plugin_file);
+  bool IsPlugInAvailable(const wxString& commonName);
+  bool CheckPluginCompatibility(const wxString& plugin_file);
 
 private:
   PluginLoader();
   bool LoadPlugInDirectory(const wxString& plugin_dir, bool load_enabled);
-  bool LoadPluginCandidate(wxString file_name, bool load_enabled);
+  bool LoadPluginCandidate(const wxString& file_name, bool load_enabled);
   std::unique_ptr<AbstractBlacklist> m_blacklist;
   ArrayOfPlugIns plugin_array;
   wxString m_last_error_string;
@@ -264,4 +236,4 @@ private:
   std::vector<LoadError> load_errors;
 };
 
-#endif  // _PLUGIN_LOADER_H_
+#endif  // PLUGIN_LOADER_H_GUARD

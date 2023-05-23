@@ -29,8 +29,6 @@
 #include <algorithm>
 #include <set>
 #include <sstream>
-#include <typeinfo>
-#include <unordered_map>
 #include <vector>
 
 #ifdef USE_LIBELF
@@ -47,9 +45,8 @@
 #include <cxxabi.h>
 #endif
 
-#include <wx/wx.h>
+#include <wx/wx.h>                                            //  NOLINT
 #include <wx/bitmap.h>
-#include <wx/config.h>
 #include <wx/dir.h>
 #include <wx/event.h>
 #include <wx/hashset.h>
@@ -58,17 +55,15 @@
 #include <wx/tokenzr.h>
 #include <wx/window.h>
 
-#include "plugin_loader.h"
-
 #include "base_platform.h"
 #include "config_vars.h"
 #include "ocpn_utils.h"
 #include "logger.h"
 #include "observable_confvar.h"
-#include "observable_evtvar.h"
 #include "plugin_blacklist.h"
 #include "plugin_cache.h"
 #include "plugin_handler.h"
+#include "plugin_loader.h"
 #include "plugin_paths.h"
 #include "safe_mode.h"
 #include "chartdb.h"
@@ -83,40 +78,37 @@ extern wxWindow* gFrame;
 extern ChartDB* ChartData;
 extern bool g_bportable;
 
-const char* const LINUX_LOAD_PATH = "~/.local/lib:/usr/local/lib:/usr/lib";
-const char* const FLATPAK_LOAD_PATH = "~/.var/app/org.opencpn.OpenCPN/lib";
-
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"};
 
 /** Return complete PlugInContainer matching pic. */
 static PlugInContainer* GetContainer(const PlugInData& pd,
-                                     ArrayOfPlugIns plugin_array) {
+                                     const ArrayOfPlugIns& plugin_array) {
   for (size_t i = 0; i < plugin_array.GetCount(); i++) {
     const auto& p = plugin_array.Item(i);
     if (p->m_common_name == pd.m_common_name) return p;
   }
-  return 0;
+  return nullptr;
 }
 
 
-PlugInContainer::PlugInContainer() {
-  m_pplugin = NULL;
-  m_bEnabled = false;
-  m_bInitState = false;
-  m_bToolboxPanel = false;
-  m_bitmap = NULL;
-  m_pluginStatus = PluginStatus::Unknown;
-  m_api_version = 0;
-}
+PlugInContainer::PlugInContainer()
+    : PlugInData(), m_library(), m_destroy_fn(nullptr) {}
 
-PlugInData::PlugInData(const PlugInContainer& pic) {
-  const PlugInData* data_ptr = &pic;
-  *this = *data_ptr;
-}
+PlugInData::PlugInData()
+    : m_bEnabled(false),
+      m_bInitState(false),
+      m_bToolboxPanel(false),
+      m_cap_flag(0),
+      m_api_version(0),
+      m_version_major(0),
+      m_version_minor(0),
+      m_pluginStatus(PluginStatus::Unknown),
+      m_bitmap(nullptr),
+      m_pplugin(nullptr)
+{}
 
-PlugInData::PlugInData(const PluginMetadata& md)
-    : PlugInData() {
+PlugInData::PlugInData(const PluginMetadata& md) : PlugInData() {
   m_common_name = wxString(md.name);
   auto v = SemanticVersion::parse(md.version);
   m_version_major = v.major;
@@ -126,44 +118,25 @@ PlugInData::PlugInData(const PluginMetadata& md)
   m_bEnabled = false;
 }
 
+PlugInData::PlugInData(const PlugInContainer& pic)  { *this = pic; }
+
+
 /** Return true if path "seems" to contain a system plugin */
 static bool IsSystemPlugin(const std::string& path) {
   static const std::vector<std::string> SysPlugins = {
     "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi" };
 
   const std::string lc_path = ocpn::tolower(path);
-  for (const auto& p : SysPlugins) {
+  for (const auto& p : SysPlugins)
     if (lc_path.find(p) != std::string::npos) return true;
-  }
   return false;
 }
 
-std::string PlugInData::Key() {
+std::string PlugInData::Key() const {
   return std::string(m_pluginStatus == PluginStatus::Managed ? "1" : "0")
       + m_common_name.ToStdString();
 }
 
-SemanticVersion PlugInData::GetVersion() {
-  if (m_ManagedMetadata.version.size()) {
-    return SemanticVersion::parse(m_ManagedMetadata.version);
-  }
-
-  if (!m_pplugin) {
-    return SemanticVersion(0, 0, 0);
-  }
-  auto plugin_117 = dynamic_cast<opencpn_plugin_117*>(m_pplugin);
-  if (plugin_117) {
-    return SemanticVersion(
-        plugin_117->GetPlugInVersionMajor(),
-        plugin_117->GetPlugInVersionMinor(),
-        plugin_117->GetPlugInVersionPatch(), plugin_117->GetPlugInVersionPost(),
-        plugin_117->GetPlugInVersionPre(), plugin_117->GetPlugInVersionBuild());
-  } else {
-    return SemanticVersion(m_pplugin->GetPlugInVersionMajor(),
-                           m_pplugin->GetPlugInVersionMinor(),
-                           -1);  // Don't print .patch. It's unknown
-  }
-}
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -184,7 +157,7 @@ static void setLoadPath() {
   using namespace std;
 
   auto const osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
-  vector<string> dirs = PluginPaths::getInstance()->Libdirs();
+  auto dirs = PluginPaths::getInstance()->Libdirs();
   if (osSystemId & wxOS_UNIX_LINUX) {
     string path = ocpn::join(dirs, ':');
     wxString envPath;
@@ -218,7 +191,7 @@ static void setLoadPath() {
       wxLogWarning("SetLoadPath: Unsupported platform.");
   }
   if (osSystemId & wxOS_MAC || osSystemId & wxOS_UNIX_LINUX) {
-    vector<string> dirs = PluginPaths::getInstance()->Bindirs();
+    dirs = PluginPaths::getInstance()->Bindirs();
     string path = ocpn::join(dirs, ':');
     wxString envPath;
     wxGetEnv("PATH", &envPath);
@@ -234,13 +207,13 @@ static void ProcessLateInit(PlugInContainer* pic) {
     msg += pic->m_plugin_file;
     wxLogMessage(msg);
 
-    opencpn_plugin_110* ppi = dynamic_cast<opencpn_plugin_110*>(pic->m_pplugin);
+    auto ppi = dynamic_cast<opencpn_plugin_110*>(pic->m_pplugin);
     if (ppi) ppi->LateInit();
   }
 }
 
 PluginLoader* PluginLoader::getInstance() {
-  static PluginLoader* instance = 0;
+  static PluginLoader* instance = nullptr;
 
   if (!instance) instance = new PluginLoader();
   return instance;
@@ -248,21 +221,16 @@ PluginLoader* PluginLoader::getInstance() {
 
 PluginLoader::PluginLoader()
     : m_blacklist(blacklist_factory()),
-      m_default_plugin_icon(0),
+      m_default_plugin_icon(nullptr),
       m_on_deactivate_cb([](const PlugInContainer* pic) {}) {}
 
-bool PluginLoader::IsPlugInAvailable(wxString commonName) {
+bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic = plugin_array[i];
     if (pic && pic->m_bEnabled && (pic->m_common_name == commonName))
       return true;
   }
   return false;
-}
-
-const wxBitmap* PluginLoader::GetPluginDefaultIcon() {
-  if (!m_default_plugin_icon) m_default_plugin_icon = new wxBitmap(32, 32);
-  return m_default_plugin_icon;
 }
 
 void PluginLoader::SetPluginDefaultIcon(const wxBitmap* bitmap) {
@@ -297,7 +265,7 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
   wxLogMessage("PluginLoader: loading plugins from %s", ocpn::join(dirs, ';'));
   setLoadPath();
   bool any_dir_loaded = false;
-  for (auto dir : dirs) {
+  for (const auto& dir : dirs) {
     wxString wxdir(dir);
     wxLogMessage("Loading plugins from dir: %s", wxdir.mb_str().data());
     if (LoadPlugInDirectory(wxdir, load_enabled)) any_dir_loaded = true;
@@ -317,7 +285,8 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
   return any_dir_loaded;
 }
 
-bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
+bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
+                                       bool load_enabled) {
   wxString plugin_file = wxFileName(file_name).GetFullName();
   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
   wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
@@ -328,7 +297,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   // opencpn. For this reason we must check that we didn't already load this
   // plugin
   bool loaded = false;
-  PlugInContainer* loaded_pic = 0;
+  PlugInContainer* loaded_pic = nullptr;
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic_test = plugin_array[i];
 
@@ -390,7 +359,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   bool b_compat = CheckPluginCompatibility(file_name);
 
   if (!b_compat) {
-    auto msg =
+    msg =
         std::string("Incompatible plugin detected: ") + file_name.ToStdString();
     wxLogMessage(msg.c_str());
     if (m_blacklist->mark_unloadable(file_name.ToStdString())) {
@@ -408,7 +377,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
   ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
   if (load_enabled && !enabled.Get(true)) {
-    if (pic) delete pic;
+    delete pic;
     wxLogMessage("Skipping not enabled candidate.");
     return true;
   }
@@ -440,7 +409,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       wxLog::FlushActive();
 
       std::string found_version;
-      for (auto p : PluginHandler::getInstance()->getInstalled()) {
+      for (const auto& p : PluginHandler::getInstance()->getInstalled()) {
         if (p.name == pic->m_common_name.Lower()) {
           found_version = p.readonly ? "" : p.version;
           break;
@@ -451,17 +420,17 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
-      wxBitmap * pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
       pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       if (!pic->m_bEnabled && pic->m_destroy_fn) {
-        wxBitmap * pbm0 = pic->m_pplugin->GetPlugInBitmap();
-        pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
-          wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
+        auto pbm1 = pic->m_pplugin->GetPlugInBitmap();
+        pic->m_bitmap = new wxBitmap(pbm1->GetSubBitmap(
+          wxRect(0, 0, pbm1->GetWidth(), pbm1->GetHeight())));
         pic->m_destroy_fn(pic->m_pplugin);
-        pic->m_destroy_fn = NULL;
-        pic->m_pplugin = NULL;
+        pic->m_destroy_fn = nullptr;
+        pic->m_pplugin = nullptr;
         pic->m_bInitState = false;
         if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       }
@@ -470,10 +439,9 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       wxLogMessage(
           "    PluginLoader: Unloading invalid PlugIn, API version %d ",
           pic->m_api_version);
-      pic->m_destroy_fn(pic->m_pplugin);
+          pic->m_destroy_fn(pic->m_pplugin);
 
-      LoadError le(LoadError::Type::Unloadable, file_name.ToStdString(),
-                   pic->m_api_version);
+      LoadError le(LoadError::Type::Unloadable, file_name.ToStdString());
       delete pic;
       load_errors.push_back(le);
       return false;
@@ -582,9 +550,9 @@ bool PluginLoader::UpdatePlugIns() {
     // Try to confirm that the m_pplugin member points to a valid plugin
     // image...
     if (pic->m_pplugin) {
-      opencpn_plugin* ppl = dynamic_cast<opencpn_plugin*>(pic->m_pplugin);
+      auto ppl = dynamic_cast<opencpn_plugin*>(pic->m_pplugin);
       if (!ppl) {
-        pic->m_pplugin = NULL;
+        pic->m_pplugin = nullptr;
         pic->m_bInitState = false;
       }
     }
@@ -628,7 +596,7 @@ bool PluginLoader::UpdatePlugIns() {
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
-      pic->m_pplugin = NULL;
+      pic->m_pplugin = nullptr;
       pic->m_bInitState = false;
     }
   }
@@ -676,10 +644,10 @@ static std::vector<PluginMetadata> getCompatiblePlugins() {
   std::vector<PluginMetadata> returnArray;
 
   std::set<PluginMetadata, metadata_compare> unique_plugins;
-  for (auto plugin : PluginHandler::getInstance()->getAvailable()) {
+  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
     unique_plugins.insert(plugin);
   }
-  for (auto plugin : unique_plugins) {
+  for (const auto& plugin : unique_plugins) {
     if (PluginHandler::isCompatible(plugin)) {
       returnArray.push_back(plugin);
     }
@@ -706,7 +674,7 @@ bool PluginLoader::UnLoadPlugIn(size_t ix) {
 }
 
 static PluginMetadata MetadataByName(const std::string& name) {
-  if (name == "") return PluginMetadata();
+  if (name.empty()) return {};
   const auto available = PluginHandler::getInstance()->getAvailable();
   auto predicate =
     [name] (const PluginMetadata& md) { return md.name == name; };
@@ -715,10 +683,10 @@ static PluginMetadata MetadataByName(const std::string& name) {
 }
 
 
-static std::string VersionFromManifest(std::string plugin_name) {
+static std::string VersionFromManifest(const std::string& plugin_name) {
   std::string version;
   std::string path = PluginHandler::versionPath(plugin_name);
-  if (path != "" && wxFileName::IsFileReadable(path)) {
+  if (!path.empty() && wxFileName::IsFileReadable(path)) {
     std::ifstream stream;
     stream.open(path, std::ifstream::in);
     stream >> version;
@@ -728,7 +696,7 @@ static std::string VersionFromManifest(std::string plugin_name) {
 
 
 /** Update PlugInContainer using data from PluginMetadata and manifest. */
-static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata md) {
+static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata& md) {
 
   std::string installed = VersionFromManifest(md.name);
   plugin->m_InstalledManagedVersion = installed;
@@ -765,7 +733,7 @@ void PluginLoader::UpdateManagedPlugins() {
   // catalog back to master
   auto predicate = [] (const PlugInContainer* pd) -> bool {
     const auto md(MetadataByName(pd->m_common_name.ToStdString()));
-    return md.name.size() == 0 && !pd->m_pplugin; };
+    return md.name.empty() && !pd->m_pplugin; };
 
   auto end = std::remove_if(loaded_plugins.begin(), loaded_plugins.end(),
                             predicate);
@@ -803,7 +771,6 @@ bool PluginLoader::UnLoadAllPlugIns() {
   while (plugin_array.GetCount()) {
     if (!UnLoadPlugIn(0)) {
       rv = false;
-      ;
     }
   }
   return rv;
@@ -839,6 +806,7 @@ DWORD Rva2Offset(DWORD rva, PIMAGE_SECTION_HEADER psh, PIMAGE_NT_HEADERS pnt) {
 
 class ModuleInfo {
 public:
+  ModuleInfo() : type_magic(0) {}
   WX_DECLARE_HASH_SET(wxString, wxStringHash, wxStringEqual, DependencySet);
   WX_DECLARE_HASH_MAP(wxString, wxString, wxStringHash, wxStringEqual,
                       DependencyMap);
@@ -869,9 +837,9 @@ bool ReadModuleInfoFromELF(const wxString& file,
   }
 
   int file_handle;
-  Elf* elf_handle = NULL;
+  Elf* elf_handle = nullptr;
   GElf_Ehdr elf_file_header;
-  Elf_Scn* elf_section_handle = NULL;
+  Elf_Scn* elf_section_handle = nullptr;
 
   file_handle = open(file, O_RDONLY);
   if (file_handle == -1) {
@@ -880,8 +848,8 @@ bool ReadModuleInfoFromELF(const wxString& file,
     goto FailureEpilogue;
   }
 
-  elf_handle = elf_begin(file_handle, ELF_C_READ, NULL);
-  if (elf_handle == NULL) {
+  elf_handle = elf_begin(file_handle, ELF_C_READ, nullptr);
+  if (elf_handle == nullptr) {
     wxLogMessage("Could not get ELF structures from \"%s\".", file);
     goto FailureEpilogue;
   }
@@ -915,9 +883,9 @@ bool ReadModuleInfoFromELF(const wxString& file,
       0;
 
   while ((elf_section_handle = elf_nextscn(elf_handle, elf_section_handle)) !=
-         NULL) {
+         nullptr) {
     GElf_Shdr elf_section_header;
-    Elf_Data* elf_section_data = NULL;
+    Elf_Data* elf_section_data = nullptr;
     size_t elf_section_entry_count = 0;
 
     if (gelf_getshdr(elf_section_handle, &elf_section_header) !=
@@ -928,8 +896,8 @@ bool ReadModuleInfoFromELF(const wxString& file,
       continue;
     }
 
-    elf_section_data = elf_getdata(elf_section_handle, NULL);
-    if (elf_section_data == NULL) {
+    elf_section_data = elf_getdata(elf_section_handle, nullptr);
+    if (elf_section_data == nullptr) {
       wxLogMessage("Could not get ELF section data from \"%s\".", file);
       goto FailureEpilogue;
     }
@@ -946,8 +914,9 @@ bool ReadModuleInfoFromELF(const wxString& file,
          elf_section_entry_index < elf_section_entry_count;
          ++elf_section_entry_index) {
       GElf_Dyn elf_dynamic_entry;
-      const char* elf_dynamic_entry_name = NULL;
-      if (gelf_getdyn(elf_section_data, elf_section_entry_index,
+      const char* elf_dynamic_entry_name = nullptr;
+      if (gelf_getdyn(elf_section_data,
+                      static_cast<int>(elf_section_entry_index),
                       &elf_dynamic_entry) != &elf_dynamic_entry) {
         wxLogMessage("Could not get ELF dynamic_section entry from \"%s\".",
                    file);
@@ -957,7 +926,7 @@ bool ReadModuleInfoFromELF(const wxString& file,
       }
       elf_dynamic_entry_name = elf_strptr(
           elf_handle, elf_section_header.sh_link, elf_dynamic_entry.d_un.d_val);
-      if (elf_dynamic_entry_name == NULL) {
+      if (elf_dynamic_entry_name == nullptr) {
         wxLogMessage(wxString::Format("Could not get %s %s from \"%s\".", "ELF",
                                     "string entry", file));
         goto FailureEpilogue;
@@ -970,7 +939,7 @@ bool ReadModuleInfoFromELF(const wxString& file,
             ModuleInfo::DependencyMap::value_type(name_part, name_full));
       }
     }
-  };
+  }
 
   goto SuccessEpilogue;
 
@@ -980,14 +949,14 @@ SuccessEpilogue:
   return true;
 
 FailureEpilogue:
-  if (elf_handle != NULL) elf_end(elf_handle);
+  if (elf_handle != nullptr) elf_end(elf_handle);
   if (file_handle >= 0) close(file_handle);
   wxLog::FlushActive();
   return false;
 }
 #endif  // USE_LIBELF
 
-bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
+bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
   bool b_compat = true;
 
 #ifdef __WXMSW__
@@ -1075,12 +1044,12 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
         ReadModuleInfoFromELF(plugin_file, dependencies, pi_info);
     if (b_pi_info_usable) {
       b_compat = (pi_info.type_magic == own_info.type_magic);
-      if (1 /*g_BasePlatform->isFlatpacked()*/) {  // Ignore specific difference
-                                                   // in
-        // OSABI field on flatpak builds
-        if ((pi_info.type_magic ^ own_info.type_magic) == 0x00030000)
-          b_compat = true;
+
+      // OSABI field on flatpak builds
+      if ((pi_info.type_magic ^ own_info.type_magic) == 0x00030000) {
+        b_compat = true;
       }
+
       if (!b_compat) {
         pi_info.dependencies.clear();
         wxLogMessage(
@@ -1090,18 +1059,16 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
         wxLogMessage("host magic: %.8x, plugin magic: %.8x", own_info.type_magic,
                    pi_info.type_magic);
       }
-      for (ModuleInfo::DependencyMap::const_iterator own_dependency =
-               own_info.dependencies.begin();
-           own_dependency != own_info.dependencies.end(); ++own_dependency) {
+      for (const auto& own_dependency : own_info.dependencies) {
         ModuleInfo::DependencyMap::const_iterator pi_dependency =
-            pi_info.dependencies.find(own_dependency->first);
+            pi_info.dependencies.find(own_dependency.first);
         if ((pi_dependency != pi_info.dependencies.end()) &&
-            (pi_dependency->second != own_dependency->second)) {
+            (pi_dependency->second != own_dependency.second)) {
           b_compat = false;
           wxLogMessage(
               "    Plugin \"%s\" depends on library \"%s\", but the main "
               "module was built for \"%s\".",
-              plugin_file, pi_dependency->second, own_dependency->second);
+              plugin_file, pi_dependency->second, own_dependency.second);
           break;
         }
       }
@@ -1152,7 +1119,9 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
           wxMAJOR_VERSION, wxMINOR_VERSION);
   b_compat = false;
 
-  int pos = 0, len = strlen(strver), c;
+  size_t pos(0);
+  size_t len(strlen(strver));
+  int c;
   while ((c = fgetc(f)) != EOF) {
     if (c == strver[pos]) {
       if (++pos == len) {
@@ -1169,22 +1138,23 @@ bool PluginLoader::CheckPluginCompatibility(wxString plugin_file) {
   return b_compat;
 }
 
-PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file) {
-  PlugInContainer* pic = new PlugInContainer;
+PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file) {
+  auto pic = new PlugInContainer;
   if (!LoadPlugIn(plugin_file, pic)) {
     delete pic;
-    return 0;
-  } else
+    return nullptr;
+  } else {
     return pic;
+  }
 }
 
-PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
+PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
                                           PlugInContainer* pic) {
   wxLogMessage(wxString("PluginLoader: Loading PlugIn: ") + plugin_file);
 
-  if (plugin_file == "") {
+  if (plugin_file.empty()) {
       wxLogMessage("Ignoring loading of empty path");
-      return 0;
+      return nullptr;
   }
 
   if (!wxIsReadable(plugin_file)) {
@@ -1192,7 +1162,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
                  plugin_file.ToStdString().c_str());
     LoadError le(LoadError::Type::Unreadable, plugin_file.ToStdString());
     load_errors.push_back(le);
-    return 0;
+    return nullptr;
   }
 
   // Check if blacklisted, exit if so.
@@ -1202,13 +1172,13 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
   if (sts != plug_status::unblocked) {
     wxLogDebug("Refusing to load blacklisted plugin: %s",
                pic->m_common_name.ToStdString().c_str());
-    return 0;
+    return nullptr;
   }
   auto data = m_blacklist->get_library_data(plugin_file.ToStdString());
-  if (data.name != "") {
+  if (!data.name.empty()) {
     wxLogDebug("Refusing to load blacklisted library: %s",
                plugin_file.ToStdString().c_str());
-    return 0;
+    return nullptr;
   }
   pic->m_plugin_file = plugin_file;
   pic->m_pluginStatus =
@@ -1226,9 +1196,9 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
     auto found = m_blacklist->get_library_data(name);
     if (m_blacklist->mark_unloadable(plugin_file.ToStdString())) {
       wxLogMessage("Ignoring blacklisted plugin %s", name.c_str());
-      if (found.name != "") {
+      if (!found.name.empty()) {
         SemanticVersion v(found.major, found.minor);
-        LoadError le(LoadError::Type::Unloadable, name, 0, v);
+        LoadError le(LoadError::Type::Unloadable, name, v);
         load_errors.push_back(le);
       } else {
         LoadError le(LoadError::Type::Unloadable, plugin_file.ToStdString());
@@ -1237,34 +1207,34 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
     }
     wxLogMessage(wxString("   PluginLoader: Cannot load library: ") +
                  plugin_file);
-    return 0;
+    return nullptr;
   }
 
   // load the factory symbols
   const char* const FIX_LOADING =
       _("\n    Install/uninstall plugin or remove file to mute message");
   create_t* create_plugin = (create_t*)pic->m_library.GetSymbol("create_pi");
-  if (NULL == create_plugin) {
+  if (nullptr == create_plugin) {
     std::string msg(_("   PluginLoader: Cannot load symbol create_pi: "));
     wxLogMessage(msg + plugin_file);
     if (m_blacklist->mark_unloadable(plugin_file.ToStdString())) {
       LoadError le(LoadError::Type::NoCreate, plugin_file.ToStdString());
       load_errors.push_back(le);
     }
-    return 0;
+    return nullptr;
   }
 
   destroy_t* destroy_plugin =
       (destroy_t*)pic->m_library.GetSymbol("destroy_pi");
   pic->m_destroy_fn = destroy_plugin;
-  if (NULL == destroy_plugin) {
+  if (nullptr == destroy_plugin) {
     wxLogMessage("   PluginLoader: Cannot load symbol destroy_pi: " +
                  plugin_file);
     if (m_blacklist->mark_unloadable(plugin_file.ToStdString())) {
       LoadError le(LoadError::Type::NoDestroy, plugin_file.ToStdString());
       load_errors.push_back(le);
     }
-    return 0;
+    return nullptr;
   }
 
   // create an instance of the plugin class
@@ -1289,10 +1259,10 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
     wxLogDebug("Ignoring blacklisted plugin.");
     if (status != plug_status::unloadable) {
       SemanticVersion v(pi_major, pi_minor);
-      LoadError le(LoadError::Type::Blacklisted, pi_name.ToStdString(), 0, v);
+      LoadError le(LoadError::Type::Blacklisted, pi_name.ToStdString(), v);
       load_errors.push_back(le);
     }
-    return 0;
+    return nullptr;
   }
 
   switch (api_ver) {
@@ -1351,7 +1321,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
             SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
                             p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
                             p->GetPlugInVersionBuild());
-      } while (false);
+      } while (false);                                                // NOLINT
       break;
     case 118:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_118*>(plug_in);
@@ -1361,7 +1331,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
             SemanticVersion(pi_major, pi_minor, p->GetPlugInVersionPatch(),
                             p->GetPlugInVersionPost(), p->GetPlugInVersionPre(),
                             p->GetPlugInVersionBuild());
-      } while (false);
+      } while (false);                                                // NOLINT
       break;
 
     default:
@@ -1376,10 +1346,10 @@ PlugInContainer* PluginLoader::LoadPlugIn(wxString plugin_file,
     if (m_blacklist->mark_unloadable(pi_name.ToStdString(), pi_ver.major,
                                      pi_ver.minor)) {
       LoadError le(LoadError::Type::Incompatible, pi_name.ToStdString(),
-                   api_major * 100 + api_minor, pi_ver);
+                   pi_ver);
       load_errors.push_back(le);
     }
-    return 0;
+    return nullptr;
   }
   return pic;
 }
