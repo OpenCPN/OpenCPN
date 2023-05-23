@@ -350,9 +350,6 @@ private:
   wxArrayString m_array;
 };
 
-static const std::vector<std::string> SYSTEM_PLUGINS = {
-    "chartdownloader", "wmm", "dashboard", "grib"};
-
 struct EnumClassHash {
   template <typename T>
   std::size_t operator()(T t) const {
@@ -498,36 +495,6 @@ static std::vector<PluginMetadata> getUpdates(const char *name) {
                                }),
                 updates.end());
   return updates;
-}
-
-/**
- * Return number of existing files named filename in the list of
- * dirs.
- */
-static int count_files_in_dirs(const char *filename,
-                               const std::vector<std::string> dirs) {
-  int count = 0;
-  for (auto dir : dirs) {
-    const std::string sep(1, wxFileName::GetPathSeparator());
-    auto path = dir + sep + filename;
-    if (ocpn::exists(path)) {
-      count += 1;
-    }
-  }
-  return count;
-}
-
-static PluginMetadata getLatestUpdate() {
-  auto updates = getCompatiblePlugins();
-  if (updates.size() == 0) {
-    PluginMetadata metadata;
-    return metadata;
-  }
-  std::sort(updates.begin(), updates.end(),
-            [](PluginMetadata m1, PluginMetadata m2) {
-              return !(m1.version < m2.version);
-            });
-  return updates[0];
 }
 
 /** Remove plugin and update GUI elements. */
@@ -892,11 +859,6 @@ END_EVENT_TABLE()
 static void event_message_box(const wxString &msg) {
   OCPNMessageBox(NULL, msg, wxString(_("OpenCPN Info")),
                  wxICON_INFORMATION | wxOK, 0);  // no timeout
-}
-
-static void event_message_box(const wxString &msg, wxCommandEvent ev) {
-  auto s = wxString::Format(msg, ev.GetString());
-  event_message_box(s);
 }
 
 static void OnLoadPlugin(const PlugInContainer *pic) {
@@ -1689,7 +1651,6 @@ bool PlugInManager::SendKeyEventToPlugins(wxKeyEvent &event) {
   }
 
   return bret;
-  ;
 }
 
 void PlugInManager::SendViewPortToRequestingPlugIns(ViewPort &vp) {
@@ -1859,7 +1820,7 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence) {
         if (sigsetjmp(env_PIM, 1)) {
           //  Something in the "else" code block faulted.
           // Probably safest to assume that all variables in this method are
-          // trash.. So, simply clean up and return.
+          // trash... So, simply clean up and return.
           sigaction(SIGSEGV, &sa_all_PIM_previous, NULL);
               // reset signal handler
           return;
@@ -3956,105 +3917,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent &event) {
                  _("OpenCPN Catalog update"), wxICON_INFORMATION | wxOK);
 }
 
-static bool parsePluginNode(pugi::xml_node &pluginRoot,
-                            PluginMetadata &plugin) {
-  for (pugi::xml_node element = pluginRoot.first_child(); element;
-       element = element.next_sibling()) {
-    if (!strcmp(element.name(), "name")) {
-      plugin.name = element.first_child().value();
-    } else if (!strcmp(element.name(), "version")) {
-      plugin.version = element.first_child().value();
-    } else if (!strcmp(element.name(), "release")) {
-      plugin.release = element.first_child().value();
-    } else if (!strcmp(element.name(), "summary")) {
-      plugin.summary = element.first_child().value();
-    } else if (!strcmp(element.name(), "api-version")) {
-      plugin.api_version = element.first_child().value();
-    } else if (!strcmp(element.name(), "open-source")) {
-      plugin.openSource = element.first_child().value();
-    } else if (!strcmp(element.name(), "author")) {
-      plugin.author = element.first_child().value();
-    } else if (!strcmp(element.name(), "source")) {
-      plugin.source = element.first_child().value();
-    } else if (!strcmp(element.name(), "info-url")) {
-      plugin.info_url = element.first_child().value();
-    } else if (!strcmp(element.name(), "description")) {
-      plugin.description = element.first_child().value();
-    } else if (!strcmp(element.name(), "target")) {
-      plugin.target = element.first_child().value();
-    } else if (!strcmp(element.name(), "target-version")) {
-      plugin.target_version = element.first_child().value();
-    } else if (!strcmp(element.name(), "target-arch")) {
-      plugin.target_arch = element.first_child().value();
-    } else if (!strcmp(element.name(), "tarball-url")) {
-      plugin.tarball_url = element.first_child().value();
-    } else if (!strcmp(element.name(), "build-gtk")) {
-      plugin.build_gtk = element.first_child().value();
-    }
-  }
-  return true;
-}
 
-static void populatePluginNode(pugi::xml_node &pluginNode,
-                               PluginMetadata &workingMetadata) {
-  pugi::xml_node child;
-
-  child = pluginNode.append_child("name");
-  child.append_child(pugi::node_pcdata).set_value(workingMetadata.name.c_str());
-
-  child = pluginNode.append_child("version");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.version.c_str());
-
-  child = pluginNode.append_child("release");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.release.c_str());
-
-  child = pluginNode.append_child("summary");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.summary.c_str());
-
-  child = pluginNode.append_child("api-version");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.api_version.c_str());
-
-  child = pluginNode.append_child("open-source");
-  char b[2];
-  sprintf(b, "%1d", workingMetadata.openSource);
-  child.append_child(pugi::node_pcdata).set_value(b);
-
-  child = pluginNode.append_child("author");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.author.c_str());
-
-  child = pluginNode.append_child("source");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.source.c_str());
-
-  child = pluginNode.append_child("info-url");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.info_url.c_str());
-
-  child = pluginNode.append_child("description");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.description.c_str());
-
-  child = pluginNode.append_child("target");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.target.c_str());
-
-  child = pluginNode.append_child("target-version");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.target_version.c_str());
-
-  child = pluginNode.append_child("target-arch");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.target_arch.c_str());
-
-  child = pluginNode.append_child("tarball-url");
-  child.append_child(pugi::node_pcdata)
-      .set_value(workingMetadata.tarball_url.c_str());
-}
 
 void CatalogMgrPanel::OnPluginSettingsButton(wxCommandEvent &event) {
   auto dialog = new CatalogSettingsDialog(this);
@@ -7217,11 +7080,11 @@ bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err,
       return true;  // ignore this
 
     case wxCTE_CURL_ERROR: {
-      wxString err = wxS("unknown");
+      wxString ws = wxS("unknown");
       if (p->GetCurlSession())
-        err =
+        ws =
             wxString(p->GetCurlSession()->GetErrorString().c_str(), wxConvUTF8);
-      wxLogError(wxS("Network error: %s"), err.c_str());
+      wxLogError(wxS("Network error: %s"), ws.c_str());
     } break;
   }
 
@@ -7492,7 +7355,7 @@ ListOfPI_S57Obj *PlugInManager::GetLightsObjRuleListVisibleAtLatLon(
 }
 
 //      PlugInWaypointEx implementation
-WX_DEFINE_LIST(Plugin_WaypointExList);
+WX_DEFINE_LIST(Plugin_WaypointExList)
 
 //  The class implementations
 PlugIn_Waypoint_Ex::PlugIn_Waypoint_Ex() { InitDefaults(); }
@@ -7863,7 +7726,7 @@ bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute) {
   if (pRoute) b_found = true;
 
   if (b_found) {
-    bool b_permanent = (pRoute->m_btemp == false);
+    bool b_permanent = !pRoute->m_btemp;
     g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
 
     b_found = AddPlugInRouteEx(proute, b_permanent);

@@ -43,7 +43,6 @@
 #include "plugin_blacklist.h"
 #include "semantic_vers.h"
 
-
 enum class PluginStatus {
   System,     //!< One of the four system plugins, unmanaged.
   Managed,    //!< Managed by installer.
@@ -87,8 +86,8 @@ public:
   PluginStatus m_status;
   PluginMetadata m_managed_metadata;
   wxBitmap m_bitmap;
-  wxString m_version_str;           //!< Complete version as of semantic_vers
-  std::string m_manifest_version;   //!< As detected from manifest
+  wxString m_version_str;          //!< Complete version as of semantic_vers
+  std::string m_manifest_version;  //!< As detected from manifest
   opencpn_plugin* m_pplugin;
 
   /** sort key. */
@@ -103,7 +102,7 @@ class PlugInContainer : public PlugInData {
 public:
   PlugInContainer();
 
-  ~PlugInContainer()  = default;
+  ~PlugInContainer() = default;
 
   wxDynamicLibrary m_library;
   destroy_t* m_destroy_fn;
@@ -119,18 +118,15 @@ public:
     NoDestroy,  //<! Missing linkage (is this a plugin?)
     Blacklisted
   } type;
-  const std::string lib_path;            //<! Complete path to failing library
+  const std::string lib_path;  //<! Complete path to failing library
   //<! As determined from plugin API
   const SemanticVersion plugin_version;  //<! As determined from plugin API
 
   LoadError(Type t, const std::string& l, SemanticVersion pv)
-      : type(t), lib_path(l),  plugin_version(pv) {}
-
+      : type(t), lib_path(l), plugin_version(pv) {}
 
   LoadError(Type t, std::string l)
-      : type(t),
-        lib_path(std::move(l)),
-        plugin_version(SemanticVersion()) {}
+      : type(t), lib_path(std::move(l)), plugin_version(SemanticVersion()) {}
 };
 
 //    Declare an array of PlugIn Containers
@@ -199,7 +195,6 @@ public:
     m_on_deactivate_cb = cb;
   }
 
-
   /** Remove a plugin from *GetPluginArray().  */
   void RemovePlugin(const PlugInData& pd);
 
@@ -216,7 +211,8 @@ public:
   bool UpdatePlugIns();
   void UpdateManagedPlugins();
   PlugInContainer* LoadPlugIn(const wxString& plugin_file);
-  PlugInContainer* LoadPlugIn(const wxString& plugin_file, PlugInContainer* pic);
+  PlugInContainer* LoadPlugIn(const wxString& plugin_file,
+                              PlugInContainer* pic);
 
   const ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
   bool IsPlugInAvailable(const wxString& commonName);
