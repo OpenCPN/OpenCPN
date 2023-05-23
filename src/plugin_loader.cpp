@@ -104,7 +104,6 @@ PlugInData::PlugInData()
       m_version_major(0),
       m_version_minor(0),
       m_status(PluginStatus::Unknown),
-      m_bitmap(nullptr),
       m_pplugin(nullptr)
 {}
 
@@ -421,12 +420,12 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
       auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
-      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+      pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       if (!pic->m_enabled && pic->m_destroy_fn) {
         auto pbm1 = pic->m_pplugin->GetPlugInBitmap();
-        pic->m_bitmap = new wxBitmap(pbm1->GetSubBitmap(
+        pic->m_bitmap = wxBitmap(pbm1->GetSubBitmap(
           wxRect(0, 0, pbm1->GetWidth(), pbm1->GetHeight())));
         pic->m_destroy_fn(pic->m_pplugin);
         pic->m_destroy_fn = nullptr;
@@ -584,13 +583,13 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
       wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
-      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+      pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
       bret = true;
     } else if (!pic->m_enabled && pic->m_init_state) {
       // Save a local copy of the plugin icon before unloading
       wxBitmap *pbm0 = pic->m_pplugin->GetPlugInBitmap();
-      pic->m_bitmap = new wxBitmap(pbm0->GetSubBitmap(
+      pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       bret = DeactivatePlugIn(pic);

@@ -86,7 +86,7 @@ public:
   int m_version_minor;
   PluginStatus m_status;
   PluginMetadata m_managed_metadata;
-  wxBitmap* m_bitmap;
+  wxBitmap m_bitmap;
   wxString m_version_str;           //!< Complete version as of semantic_vers
   std::string m_manifest_version;   //!< As detected from manifest
   opencpn_plugin* m_pplugin;
@@ -103,7 +103,7 @@ class PlugInContainer : public PlugInData {
 public:
   PlugInContainer();
 
-  ~PlugInContainer() { delete m_bitmap; }
+  ~PlugInContainer()  = default;
 
   wxDynamicLibrary m_library;
   destroy_t* m_destroy_fn;

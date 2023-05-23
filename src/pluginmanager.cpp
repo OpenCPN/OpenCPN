@@ -4419,8 +4419,8 @@ PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
 
   wxImage plugin_icon;
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-  if (m_plugin.m_bitmap && m_plugin.m_bitmap->IsOk()) {
-    plugin_icon = m_plugin.m_bitmap->ConvertToImage();
+  if (m_plugin.m_bitmap.IsOk()) {
+    plugin_icon = m_plugin.m_bitmap.ConvertToImage();
   }
   wxBitmap bitmap;
   if (m_plugin.m_status ==
