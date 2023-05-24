@@ -1032,6 +1032,12 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #ifdef __WXMSW__
         pmi->SetFont(m_scaledFont);
 #endif
+
+#ifdef __OCPN__ANDROID__
+        wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+        pmi->SetFont(sFont);
+#endif
+
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
@@ -1048,6 +1054,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
     pmi->SetFont(m_scaledFont);
+#endif
+
+#ifdef __OCPN__ANDROID__
+    wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+    pmi->SetFont(sFont);
 #endif
 
     PrepareMenuItem( pmi );

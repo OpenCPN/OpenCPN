@@ -560,7 +560,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp,
 #if 1
           prev = r;
           if (pof->m_oDC) {
-            // m_oDC->SetFont( *mfont );
+            //pof->m_oDC->SetFont( *mfont );
             pof->m_oDC->SetPen(*wxBLACK_PEN);
             pof->m_oDC->SetBrush(color);
             pof->m_oDC->DrawRectangle(x, y, w, h);
@@ -769,7 +769,7 @@ static bool ocpn_wx_spline_add_point(double x, double y);
 
 void ocpn_wx_quadratic_spline(double a1, double b1, double a2, double b2,
                               double a3, double b3, double a4, double b4) {
-  register double xmid, ymid;
+  double xmid, ymid;
   double x1, y1, x2, y2, x3, y3, x4, y4;
 
   ocpn_wx_clear_stack();
