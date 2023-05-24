@@ -26,9 +26,9 @@
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
-#ifndef WX_PRECOMP
+#ifndef WX_PRECOMP  // precompiled headers
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "config.h"
 
@@ -46,6 +46,7 @@
 #include "comm_n0183_output.h"
 #include "config_vars.h"
 #include "conn_params.h"
+#include "logger.h"
 #include "nmea0183.h"
 #include "nmea_ctx_factory.h"
 #include "route.h"
@@ -63,7 +64,7 @@ wxString FormatPrintableMessage(wxString msg_raw) {
       fmsg += *it;
     else {
       wxString bin_print;
-      bin_print.Printf(_T("<0x%02X>"), *it);
+      bin_print.Printf("<0x%02X>", *it);
       fmsg += bin_print;
     }
   }
@@ -80,10 +81,10 @@ void LogBroadcastOutputMessageColor(const wxString& msg,
 #ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
     ss = now.FormatISOTime();
 #endif
-    ss.Prepend(_T("--> "));
-    ss.Append(_T(" ("));
+    ss.Prepend("--> ");
+    ss.Append(" (");
     ss.Append(stream_name);
-    ss.Append(_T(") "));
+    ss.Append(") ");
     ss.Append(msg);
     ss.Prepend(color);
 
@@ -196,8 +197,8 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     auto drv_serial_n0183 =
         std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
     if (drv_serial_n0183) {
-      if ((wxNOT_FOUND != com_name.Upper().Find(_T("USB"))) &&
-          (wxNOT_FOUND != com_name.Upper().Find(_T("GARMIN")))) {
+      if ((wxNOT_FOUND != com_name.Upper().Find("USB")) &&
+          (wxNOT_FOUND != com_name.Upper().Find("GARMIN"))) {
         //  Wait up to 1 seconds for serial Driver secondary thread to come up
         int timeout = 0;
         while (!drv_serial_n0183->IsGarminThreadActive() && (timeout < 50)) {
@@ -207,10 +208,8 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
         }
 
         if (!drv_serial_n0183->IsGarminThreadActive()) {
-          wxString msg(_T("-->GPS Port:"));
-          msg += com_name;
-          msg += _T(" ...Could not be opened for writing");
-          wxLogMessage(msg);
+          MESSAGE_LOG << "-->GPS Port:" << com_name
+                      << " ...Could not be opened for writing";
         }
       } else {
         //  Wait up to 1 seconds for serial Driver secondary thread to come up
@@ -221,10 +220,8 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
         }
 
         if (!drv_serial_n0183->IsSecThreadActive()) {
-          wxString msg(_T("-->GPS Port:"));
-          msg += com_name;
-          msg += _T(" ...Could not be opened for writing");
-          wxLogMessage(msg);
+          MESSAGE_LOG << "-->GPS Port:" << com_name
+                      << " ...Could not be opened for writing";
         }
       }
     }
@@ -242,7 +239,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
 
       ConnectionParams ConnectionParams;
       ConnectionParams.Type = INTERNAL_BT;
-      wxStringTokenizer tkz(com_name, _T(";"));
+      wxStringTokenizer tkz(com_name, ";");
       wxString name = tkz.GetNextToken();
       wxString mac = tkz.GetNextToken();
 
@@ -263,7 +260,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     if (!driver) {
       NetworkProtocol protocol = UDP;
       if (com_name.Lower().StartsWith("tcp")) protocol = TCP;
-      wxStringTokenizer tkz(com_name, _T(":"));
+      wxStringTokenizer tkz(com_name, ":");
       wxString token = tkz.GetNextToken();
       wxString address = tkz.GetNextToken();
       token = tkz.GetNextToken();
@@ -339,13 +336,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
 #if 0
 
-  if (g_GPS_Ident == _T("FurunoGP3X")) {
+  if (g_GPS_Ident == "FurunoGP3X") {
     if (pr->pRoutePointList->GetCount() > 30) {
       long style = wxOK;
       auto dlg = new OCPN_TimedHTMLMessageDialog(
           0,
-          _T("Routes containing more than 30 waypoints must be split before ")
-          _T("uploading."),
+          _("Routes containing more than 30 waypoints must be split before "
+            "uploading."),
           _("Route Upload"), 10, style, false, wxDefaultPosition);
       int reply = dlg->ShowModal();
       return 1;
@@ -356,7 +353,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
-  if (com_name.Upper().Matches(_T("*GARMIN*")))  // Garmin USB Mode
+  if (com_name.Upper().Matches("*GARMIN*"))  // Garmin USB Mode
   {
     //        if(m_pdevmon)
     //            m_pdevmon->StopIOThread(true);
@@ -366,36 +363,22 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     drv_n0183_serial->StopGarminUSBIOThread(true);
 
     if (!drv_n0183_serial->IsGarminThreadActive()) {
-      int v_init = Garmin_GPS_Init(wxString(_T("usb:")));
+      int v_init = Garmin_GPS_Init(wxString("usb:"));
       if (v_init < 0) {
-        wxString msg(_T(" Garmin USB GPS could not be initialized"));
-        wxLogMessage(msg);
-        msg.Printf(_T(" Error Code is %d"), v_init);
-        wxLogMessage(msg);
-        msg = _T(" LastGarminError is: ");
-        msg += GetLastGarminError();
-        wxLogMessage(msg);
-
+        MESSAGE_LOG << "Garmin USB GPS could not be initialized, error code: "
+                    << v_init << " LastGarminError: " << GetLastGarminError();
         ret_val = ERR_GARMIN_INITIALIZE;
       } else {
-        wxLogMessage(_T("Garmin USB Initialized"));
-
-        wxString msg = _T("USB Unit identifies as: ");
-        wxString GPS_Unit = Garmin_GPS_GetSaveString();
-        msg += GPS_Unit;
-        wxLogMessage(msg);
+        MESSAGE_LOG << "Garmin USB initialized, unit identifies as "
+                    <<  Garmin_GPS_GetSaveString();
       }
 
-      wxLogMessage(_T("Sending Routes..."));
+      wxLogMessage("Sending Routes...");
       int ret1 = Garmin_GPS_SendRoute(wxString("usb:"), pr, dlg_ctx);
 
       if (ret1 != 1) {
-        wxLogMessage(_T(" Error Sending Routes"));
-        wxString msg;
-        msg = _T(" LastGarminError is: ");
-        msg += GetLastGarminError();
-        wxLogMessage(msg);
-
+        MESSAGE_LOG << " Error sending routes, last garmin error: "
+                    << GetLastGarminError();
         ret_val = ERR_GARMIN_GENERAL;
       } else
         ret_val = 0;
@@ -417,48 +400,28 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     // structures
     int v_init = Garmin_GPS_Init(short_com);
     if (v_init < 0) {
-      wxString msg(_T("Garmin GPS could not be initialized on port: "));
-      msg += short_com;
-      wxString err;
-      err.Printf(_T(" Error Code is %d"), v_init);
-      msg += err;
-
-      msg += _T("\n LastGarminError is: ");
-      msg += GetLastGarminError();
-
-      wxLogMessage(msg);
+      MESSAGE_LOG << "Garmin GPS could not be initialized on port: "
+                  << short_com << " Error Code: " << v_init
+                  << " LastGarminError: " << GetLastGarminError();
 
       ret_val = ERR_GARMIN_INITIALIZE;
       goto ret_point;
     } else {
-      wxString msg(_T("Sent Route to Garmin GPS on port: "));
-      msg += short_com;
-      msg += _T("\n Unit identifies as: ");
-      wxString GPS_Unit = Garmin_GPS_GetSaveString();
-      msg += GPS_Unit;
-
-      wxLogMessage(msg);
+      MESSAGE_LOG << "Sent Route to Garmin GPS on port: " << short_com
+                  << "Unit identifies as: " << Garmin_GPS_GetSaveString();
     }
 
     dlg_ctx.set_value(40);
-
     lret_val = Garmin_GPS_SendRoute(short_com, pr, dlg_ctx);
     if (lret_val != 1) {
-      wxString msg(_T("Error Sending Route to Garmin GPS on port: "));
-      msg += short_com;
-      wxString err;
-      err.Printf(_T(" Error Code is %d"), ret_val);
-
-      msg += _T("\n LastGarminError is: ");
-      msg += GetLastGarminError();
-
-      msg += err;
-      wxLogMessage(msg);
-
+      MESSAGE_LOG << "Error Sending Route to Garmin GPS on port: " << short_com
+                  << " Error Code: " << lret_val
+                  << " LastGarminError: " << GetLastGarminError();
       ret_val = ERR_GARMIN_GENERAL;
       goto ret_point;
-    } else
+    } else {
       ret_val = 0;
+    }
 
   ret_point:
 
@@ -493,7 +456,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       while (node) {
         RoutePoint* prp = node->GetData();
 
-        if (g_GPS_Ident == _T("Generic")) {
+        if (g_GPS_Ident == "Generic") {
           if (prp->m_lat < 0.)
             oNMEA0183.Wpl.Position.Latitude.Set(-prp->m_lat, _T ( "S" ));
           else
@@ -508,7 +471,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
           oNMEA0183.Wpl.Write(snt);
 
-        } else if (g_GPS_Ident == _T("FurunoGP3X")) {
+        } else if (g_GPS_Ident == "FurunoGP3X") {
           //  Furuno has its own talker ID, so do not allow the global
           //  override
           wxString talker_save = g_TalkerIdText;
@@ -527,7 +490,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             oNMEA0183.GPwpl.Position.Longitude.Set(prp->m_lon, _T ( "E" ));
 
           wxString name = prp->GetName();
-          name += _T("000000");
+          name += "000000";
           name.Truncate(g_maxWPNameLength);
           oNMEA0183.GPwpl.To = name;
 
@@ -552,23 +515,21 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             std::string("ECWPL"), snt.Sentence.ToStdString(), address);
 
         drv_n0183->SendMessage(msg_out, address);
-        if (g_GPS_Ident != _T("FurunoGP3X"))
+        if (g_GPS_Ident != "FurunoGP3X")
           drv_n0183->SendMessage(msg_out, address);
 
         multiplexer.LogOutputMessage(snt.Sentence, com_name.ToStdString(),
                                      false);
-        wxString msg(_T("-->GPS Port:"));
-        msg += com_name;
-        msg += _T(" Sentence: ");
-        msg += snt.Sentence;
+        auto msg =
+            wxString("-->GPS Port: ") + com_name + " Sentence: " + snt.Sentence;
         msg.Trim();
         wxLogMessage(msg);
+
         dlg_ctx.set_value((ip * 100) / nProg);
 
         wxMilliSleep(progress_stall);
 
         node = node->GetNext();
-
         ip++;
       }
     }
@@ -581,14 +542,14 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
     //  Furuno GPS can only accept 5 (five) waypoint linkage sentences....
     //  So, we need to compact a few more points into each link sentence.
-    if (g_GPS_Ident == _T("FurunoGP3X")) {
+    if (g_GPS_Ident == "FurunoGP3X") {
       max_wp = 8;
       max_length = 80;
     }
 
     //  Furuno has its own talker ID, so do not allow the global override
     wxString talker_save = g_TalkerIdText;
-    if (g_GPS_Ident == _T("FurunoGP3X")) g_TalkerIdText.Clear();
+    if (g_GPS_Ident == "FurunoGP3X") g_TalkerIdText.Clear();
 
     oNMEA0183.Rte.Empty();
     oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
@@ -598,7 +559,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     else
       oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
 
-    if (g_GPS_Ident == _T("FurunoGP3X")) {
+    if (g_GPS_Ident == "FurunoGP3X") {
       oNMEA0183.Rte.RouteName = _T ( "01" );
       oNMEA0183.TalkerID = _T ( "GP" );
       oNMEA0183.Rte.m_complete_char = 'C';  // override the default "c"
@@ -609,17 +570,17 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     oNMEA0183.Rte.message_number = 1;
 
     // add the waypoints
-    wxRoutePointListNode* node = pr->pRoutePointList->GetFirst();
+    auto node = pr->pRoutePointList->GetFirst();
     while (node) {
       RoutePoint* prp = node->GetData();
       wxString name = prp->GetName().Truncate(g_maxWPNameLength);
 
-      if (g_GPS_Ident == _T("FurunoGP3X")) {
+      if (g_GPS_Ident == "FurunoGP3X") {
         name = prp->GetName();
-        name += _T("000000");
+        name += "000000";
         name.Truncate(g_maxWPNameLength);
-        name.Prepend(_T(" "));  // What Furuno calls "Skip Code", space means
-                                // use the WP
+        name.Prepend(" ");  // What Furuno calls "Skip Code", space means
+                            // use the WP
       }
 
       oNMEA0183.Rte.AddWaypoint(name);
@@ -640,7 +601,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       tNMEA0183.Rte.Empty();
       tNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
-      if (g_GPS_Ident != _T("FurunoGP3X")) {
+      if (g_GPS_Ident != "FurunoGP3X") {
         if (pr->m_RouteNameString.IsEmpty())
           tNMEA0183.Rte.RouteName = _T ( "1" );
         else
@@ -663,12 +624,12 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       int sent_len = 0;
       unsigned int wp_count = 0;
 
-      wxRoutePointListNode* node = pr->pRoutePointList->GetFirst();
+      auto node = pr->pRoutePointList->GetFirst();
       while (node) {
         RoutePoint* prp = node->GetData();
         unsigned int name_len =
             prp->GetName().Truncate(g_maxWPNameLength).Len();
-        if (g_GPS_Ident == _T("FurunoGP3X"))
+        if (g_GPS_Ident == "FurunoGP3X")
           name_len = 7;  // six chars, with leading space for "Skip Code"
 
         if (bnew_sentence) {
@@ -684,7 +645,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             bnew_sentence = true;
           } else {
             if (wp_count == max_wp)
-              sent_len += name_len;  // with comma
+              sent_len += name_len;      // with comma
             else
               sent_len += name_len + 1;  // with comma
             wp_count++;
@@ -703,12 +664,12 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       while (node) {
         RoutePoint* prp = node->GetData();
         wxString name = prp->GetName().Truncate(g_maxWPNameLength);
-        if (g_GPS_Ident == _T("FurunoGP3X")) {
+        if (g_GPS_Ident == "FurunoGP3X") {
           name = prp->GetName();
-          name += _T("000000");
+          name += "000000";
           name.Truncate(g_maxWPNameLength);
-          name.Prepend(_T(" "));  // What Furuno calls "Skip Code", space
-                                  // means use the WP
+          name.Prepend(" ");  // What Furuno calls "Skip Code", space
+                              // means use the WP
         }
 
         unsigned int name_len = name.Len();
@@ -721,13 +682,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           oNMEA0183.Rte.Empty();
           oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
-          if (g_GPS_Ident != _T("FurunoGP3X")) {
+          if (g_GPS_Ident != "FurunoGP3X") {
             if (pr->m_RouteNameString.IsEmpty())
-              oNMEA0183.Rte.RouteName = _T ( "1" );
+              oNMEA0183.Rte.RouteName = "1";
             else
               oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
           } else {
-            oNMEA0183.Rte.RouteName = _T ( "01" );
+            oNMEA0183.Rte.RouteName = "01";
           }
 
           oNMEA0183.Rte.total_number_of_messages = final_total;
@@ -768,10 +729,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
         wxYield();
 
-        wxString msg(_T("-->GPS Port:"));
-        msg += com_name;
-        msg += _T(" Sentence: ");
-        msg += sentence;
+        //             LogOutputMessage(sentence, dstr->GetPort(), false);
+        auto msg =
+            wxString("-->GPS Port: ") + com_name + " Sentence: " + sentence;
         msg.Trim();
         wxLogMessage(msg);
 
@@ -787,22 +747,20 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
       wxYield();
 
-      wxString msg(_T("-->GPS Port:"));
-      msg += com_name;
-      msg += _T(" Sentence: ");
-      msg += snt.Sentence;
+      auto msg =
+          wxString("-->GPS Port:") + com_name + " Sentence: " + snt.Sentence;
       msg.Trim();
       wxLogMessage(msg);
     }
 
-    if (g_GPS_Ident == _T("FurunoGP3X")) {
+    if (g_GPS_Ident == "FurunoGP3X") {
       wxString name = pr->GetName();
-      if (name.IsEmpty()) name = _T("RTECOMMENT");
+      if (name.IsEmpty()) name = "RTECOMMENT";
       wxString rte;
-      rte.Printf(_T("$PFEC,GPrtc,01,"));
+      rte.Printf("$PFEC,GPrtc,01,");
       rte += name.Left(16);
       wxString rtep;
-      rtep.Printf(_T(",%c%c"), 0x0d, 0x0a);
+      rtep.Printf(",%c%c", 0x0d, 0x0a);
       rte += rtep;
 
       auto msg_out = std::make_shared<Nmea0183Msg>(std::string("GPRTC"),
@@ -810,15 +768,12 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       drv_n0183->SendMessage(msg_out, address);
       multiplexer.LogOutputMessage(rte, com_name.ToStdString(), false);
 
-      wxString msg(_T("-->GPS Port:"));
-      msg += com_name;
-      msg += _T(" Sentence: ");
-      msg += rte;
+      auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + rte;
       msg.Trim();
       wxLogMessage(msg);
 
       wxString term;
-      term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
+      term.Printf("$PFEC,GPxfr,CTL,E%c%c", 0x0d, 0x0a);
 
       auto msg_outf = std::make_shared<Nmea0183Msg>(
           std::string("GPRTC"), term.ToStdString(), address);
@@ -826,10 +781,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
       multiplexer.LogOutputMessage(term, com_name.ToStdString(), false);
 
-      msg = wxString(_T("-->GPS Port:"));
-      msg += com_name;
-      msg += _T(" Sentence: ");
-      msg += term;
+      msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
       wxLogMessage(msg);
     }
@@ -842,7 +794,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     //  All finished with the temp port
     if (btempStream) registry.Deactivate(driver);
 
-    if (g_GPS_Ident == _T("FurunoGP3X")) g_TalkerIdText = talker_save;
+    if (g_GPS_Ident == "FurunoGP3X") g_TalkerIdText = talker_save;
   }
 #endif
 ret_point_1:
@@ -875,7 +827,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 #ifdef USE_GARMINHOST
   // FIXME (dave)
 #ifdef __WXMSW__
-  if (com_name.Upper().Matches(_T("*GARMIN*")))  // Garmin USB Mode
+  if (com_name.Upper().Matches("*GARMIN*"))  // Garmin USB Mode
   {
     //        if(m_pdevmon)
     //            m_pdevmon->StopIOThread(true);
@@ -885,40 +837,28 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     drv_n0183_serial->StopGarminUSBIOThread(true);
 
     if (!drv_n0183_serial->IsGarminThreadActive()) {
-      int v_init = Garmin_GPS_Init(wxString(_T("usb:")));
+      int v_init = Garmin_GPS_Init(wxString("usb:"));
       if (v_init < 0) {
-        wxString msg(_T(" Garmin USB GPS could not be initialized"));
-        wxLogMessage(msg);
-        msg.Printf(_T(" Error Code is %d"), v_init);
-        wxLogMessage(msg);
-        msg = _T(" LastGarminError is: ");
-        msg += GetLastGarminError();
-        wxLogMessage(msg);
+        MESSAGE_LOG << "Garmin USB GPS could not be initialized, last error: "
+                    << v_init << " LastGarminError: " << GetLastGarminError();
 
         ret_val = ERR_GARMIN_INITIALIZE;
       } else {
-        wxLogMessage(_T("Garmin USB Initialized"));
-
-        wxString msg = _T("USB Unit identifies as: ");
-        wxString GPS_Unit = Garmin_GPS_GetSaveString();
-        msg += GPS_Unit;
-        wxLogMessage(msg);
+        MESSAGE_LOG << "Garmin USB Initialized, unit identifies as: "
+                    << Garmin_GPS_GetSaveString();
       }
     }
-    wxLogMessage(_T("Sending Waypoint..."));
+    wxLogMessage("Sending Waypoint...");
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
     rplist.Append(prp);
 
-    int ret1 = Garmin_GPS_SendWaypoints(wxString(_T("usb:")), &rplist);
+    int ret1 = Garmin_GPS_SendWaypoints(wxString("usb:"), &rplist);
 
     if (ret1 != 1) {
-      wxLogMessage(_T(" Error Sending Waypoint to Garmin USB"));
-      wxString msg;
-      msg = _T(" LastGarminError is: ");
-      msg += GetLastGarminError();
-      wxLogMessage(msg);
+      MESSAGE_LOG << "Error Sending Waypoint to Garmin USB, last error: "
+                  << GetLastGarminError();
 
       ret_val = ERR_GARMIN_GENERAL;
     } else
@@ -932,33 +872,21 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
   // Are we using Garmin Host mode for uploads?
   if (g_bGarminHostUpload) {
     RoutePointList rplist;
-    int ret_val;
 
     wxString short_com = com_name.Mid(7);
     // Initialize the Garmin receiver, build required Jeeps internal data
     // structures
     int v_init = Garmin_GPS_Init(short_com);
     if (v_init < 0) {
-      wxString msg(_T("Garmin GPS could not be initialized on port: "));
-      msg += com_name;
-      wxString err;
-      err.Printf(_T(" Error Code is %d"), v_init);
-      msg += err;
-
-      msg += _T("\n LastGarminError is: ");
-      msg += GetLastGarminError();
-
-      wxLogMessage(msg);
+      MESSAGE_LOG << "Garmin GPS could not be initialized on port: " << com_name
+                  << " Error Code: " << v_init
+                  << "LastGarminError: " << GetLastGarminError();
 
       ret_val = ERR_GARMIN_INITIALIZE;
       goto ret_point;
     } else {
-      wxString msg(_T("Sent waypoint(s) to Garmin GPS on port: "));
-      msg += com_name;
-      msg += _T("\n Unit identifies as: ");
-      wxString GPS_Unit = Garmin_GPS_GetSaveString();
-      msg += GPS_Unit;
-      wxLogMessage(msg);
+      MESSAGE_LOG << "Sent waypoint(s) to Garmin GPS on port: " << com_name;
+      MESSAGE_LOG << "Unit identifies as: " << Garmin_GPS_GetSaveString();
     }
 
     // Create a RoutePointList with one item
@@ -966,17 +894,9 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
     ret_val = Garmin_GPS_SendWaypoints(short_com, &rplist);
     if (ret_val != 1) {
-      wxString msg(_T("Error Sending Waypoint(s) to Garmin GPS on port: "));
-      msg += com_name;
-      wxString err;
-      err.Printf(_T(" Error Code is %d"), ret_val);
-      msg += err;
-
-      msg += _T("\n LastGarminError is: ");
-      msg += GetLastGarminError();
-
-      wxLogMessage(msg);
-
+      MESSAGE_LOG << "Error Sending Waypoint(s) to Garmin GPS on port, "
+                  << com_name << " error code: " << ret_val
+                  << ", last garmin error: " << GetLastGarminError();
       ret_val = ERR_GARMIN_GENERAL;
       goto ret_point;
     } else
@@ -986,44 +906,43 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
   } else
 #endif  // USE_GARMINHOST
 
-  {  // Standard NMEA mode
+  {     // Standard NMEA mode
 
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
-    oNMEA0183.TalkerID = _T ( "EC" );
+    oNMEA0183.TalkerID = "EC";
     dlg_ctx.set_range(100);
 
-    if (g_GPS_Ident == _T("Generic")) {
+    if (g_GPS_Ident == "Generic") {
       if (prp->m_lat < 0.)
-        oNMEA0183.Wpl.Position.Latitude.Set(-prp->m_lat, _T ( "S" ));
+        oNMEA0183.Wpl.Position.Latitude.Set(-prp->m_lat, "S");
       else
-        oNMEA0183.Wpl.Position.Latitude.Set(prp->m_lat, _T ( "N" ));
+        oNMEA0183.Wpl.Position.Latitude.Set(prp->m_lat, "N");
 
       if (prp->m_lon < 0.)
-        oNMEA0183.Wpl.Position.Longitude.Set(-prp->m_lon, _T ( "W" ));
+        oNMEA0183.Wpl.Position.Longitude.Set(-prp->m_lon, "W");
       else
-        oNMEA0183.Wpl.Position.Longitude.Set(prp->m_lon, _T ( "E" ));
+        oNMEA0183.Wpl.Position.Longitude.Set(prp->m_lon, "E");
 
       oNMEA0183.Wpl.To = prp->GetName().Truncate(g_maxWPNameLength);
 
       oNMEA0183.Wpl.Write(snt);
-    } else if (g_GPS_Ident == _T("FurunoGP3X")) {
-      oNMEA0183.TalkerID = _T ( "PFEC," );
+    } else if (g_GPS_Ident == "FurunoGP3X") {
+      oNMEA0183.TalkerID = "PFEC,";
 
       if (prp->m_lat < 0.)
-        oNMEA0183.GPwpl.Position.Latitude.Set(-prp->m_lat, _T ( "S" ));
+        oNMEA0183.GPwpl.Position.Latitude.Set(-prp->m_lat, "S");
       else
-        oNMEA0183.GPwpl.Position.Latitude.Set(prp->m_lat, _T ( "N" ));
+        oNMEA0183.GPwpl.Position.Latitude.Set(prp->m_lat, "N");
 
       if (prp->m_lon < 0.)
-        oNMEA0183.GPwpl.Position.Longitude.Set(-prp->m_lon, _T ( "W" ));
+        oNMEA0183.GPwpl.Position.Longitude.Set(-prp->m_lon, "W");
       else
-        oNMEA0183.GPwpl.Position.Longitude.Set(prp->m_lon, _T ( "E" ));
+        oNMEA0183.GPwpl.Position.Longitude.Set(prp->m_lon, "E");
 
       wxString name = prp->GetName();
-      name += _T("000000");
+      name += "000000";
       name.Truncate(g_maxWPNameLength);
-
       oNMEA0183.GPwpl.To = name;
 
       oNMEA0183.GPwpl.Write(snt);
@@ -1034,25 +953,18 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     drv_n0183->SendMessage(msg_out, address);
 
     multiplexer.LogOutputMessage(snt.Sentence, com_name, false);
-
-    wxString msg(_T("-->GPS Port:"));
-    msg += com_name;
-    msg += _T(" Sentence: ");
-    msg += snt.Sentence;
+    auto msg = wxString("-->GPS Port:") + com_name + " Sentence: ";
     msg.Trim();
     wxLogMessage(msg);
 
-    if (g_GPS_Ident == _T("FurunoGP3X")) {
+    if (g_GPS_Ident == "FurunoGP3X") {
       wxString term;
-      term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
+      term.Printf("$PFEC,GPxfr,CTL,E%c%c", 0x0d, 0x0a);
 
       // driver->SendSentence(term);
       // LogOutputMessage(term, dstr->GetPort(), false);
 
-      wxString msg(_T("-->GPS Port:"));
-      msg += com_name;
-      msg += _T(" Sentence: ");
-      msg += term;
+      auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
       wxLogMessage(msg);
     }
@@ -1070,6 +982,5 @@ ret_point:
   if (b_restoreStream) {
     MakeCommDriver(&params_save);
   }
-
   return ret_val;
 }
