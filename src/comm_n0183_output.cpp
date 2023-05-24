@@ -56,6 +56,22 @@
 
 //FIXME (dave)  think about GUI feedback, disabled herein
 
+wxString FormatPrintableMessage(wxString msg_raw){
+    std::string fmsg;
+    std::string str = msg_raw.ToStdString();
+    for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+      if (isprint(*it))
+        fmsg += *it;
+      else {
+        wxString bin_print;
+        bin_print.Printf(_T("<0x%02X>"), *it);
+        fmsg += bin_print;
+      }
+    }
+
+    return wxString(fmsg.c_str());
+}
+
 void LogBroadcastOutputMessageColor(const wxString &msg,
                                         const wxString &stream_name,
                                         const wxString &color) {
@@ -165,7 +181,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
     cp.Type = SERIAL;
     cp.SetPortStr(comx);
     cp.Baudrate = baud;
-    cp.IOSelect = DS_TYPE_INPUT_OUTPUT;
+    cp.IOSelect = DS_TYPE_OUTPUT;
 
     driver = MakeCommDriver(&cp);
     btempStream = true;
@@ -551,7 +567,9 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
           if (g_GPS_Ident != _T("FurunoGP3X"))
             drv_n0183->SendMessage(msg_out, address);
 
-//             LogOutputMessage(snt.Sentence, dstr->GetPort(), false);
+          wxString fmsg = FormatPrintableMessage(payload);
+          LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+          wxYield();
 
           wxString msg(_T("-->GPS Port:"));
           msg += com_name;
@@ -766,7 +784,9 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                              address);
           drv_n0183->SendMessage(msg_out, address);
 
-//             LogOutputMessage(sentence, dstr->GetPort(), false);
+          wxString fmsg = FormatPrintableMessage(sentence);
+          LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+          wxYield();
 
           wxString msg(_T("-->GPS Port:"));
           msg += com_name;
@@ -784,7 +804,9 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                              address);
         drv_n0183->SendMessage(msg_out, address);
 
-        //LogOutputMessage(snt.Sentence, dstr->GetPort(), false);
+        wxString fmsg = FormatPrintableMessage(snt.Sentence);
+        LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+        wxYield();
 
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
@@ -809,7 +831,9 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                              address);
         drv_n0183->SendMessage(msg_out, address);
 
-//           LogOutputMessage(rte, dstr->GetPort(), false);
+        wxString fmsg = FormatPrintableMessage(rte);
+        LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+        wxYield();
 
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
@@ -826,7 +850,9 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
                                              address);
         drv_n0183->SendMessage(msg_outf, address);
 
-//           LogOutputMessage(term, dstr->GetPort(), false);
+        wxString fmsg1 = FormatPrintableMessage(term);
+        LogBroadcastOutputMessageColor(fmsg1, com_name, _T("<BLUE>"));
+        wxYield();
 
         msg = wxString(_T("-->GPS Port:"));
         msg += com_name;
@@ -855,8 +881,10 @@ int SendRouteToGPS_N0183(Route *pr, const wxString &com_name,
 #endif
 ret_point_1:
 
-  if (b_restoreStream )
-      MakeCommDriver(&params_save);
+  if (b_restoreStream ){
+    wxMilliSleep(500);    // Give temp driver a chance to die
+    MakeCommDriver(&params_save);
+  }
 
   return ret_val;
 }
@@ -1043,7 +1071,9 @@ int SendWaypointToGPS_N0183(RoutePoint *prp, const wxString &com_name/*,SendToGp
                                              address);
     drv_n0183->SendMessage(msg_out, address);
 
-    //LogOutputMessage(snt.Sentence, com_name, false);
+    wxString fmsg = FormatPrintableMessage(snt.Sentence);
+    LogBroadcastOutputMessageColor(fmsg, com_name, _T("<BLUE>"));
+    wxYield();
 
     wxString msg(_T("-->GPS Port:"));
     msg += com_name;

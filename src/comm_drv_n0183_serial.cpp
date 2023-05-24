@@ -375,6 +375,12 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
 void CommDriverN0183Serial::handle_N0183_MSG(
     CommDriverN0183SerialEvent& event) {
+
+  // Is this an output-only port?
+  // Commonly used for "Send to GPS" function
+  if (m_params.IOSelect == DS_TYPE_OUTPUT)
+    return;
+
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
 
