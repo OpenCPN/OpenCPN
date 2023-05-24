@@ -40,6 +40,7 @@
 #endif
 
 #include <algorithm>
+#include <filesystem>
 #include <limits.h>
 #include <memory>
 
@@ -1979,9 +1980,10 @@ bool MyApp::OnInit() {
 
     make_certificate(ipAddr, data_dir.ToStdString());
 
-    m_RESTserver.StartServer(data_dir.ToStdString());
+    m_RESTserver.StartServer(std::filesystem::path(data_dir.ToStdString()));
 
-    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
+    StartMDNSService(g_hostname.ToStdString(),
+                     "opencpn-object-control-service", 8000);
   }
   return TRUE;
 }

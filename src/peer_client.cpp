@@ -44,15 +44,15 @@
 
 extern MyFrame *gFrame;
 
-wxString GetErrorText(int result){
+wxString GetErrorText(RestServerResult result){
   switch (result) {
-    case RESTServerResult::RESULT_GENERIC_ERROR:
+    case RestServerResult::GenericError:
       return _("Server Generic Error");
-    case RESTServerResult::RESULT_OBJECT_REJECTED:
+    case RestServerResult::ObjectRejected:
       return _("Peer rejected object");
-    case RESTServerResult::RESULT_DUPLICATE_REJECTED:
+    case RestServerResult::DuplicateRejected:
       return _("Peer rejected duplicate object");
-    case RESTServerResult::RESULT_ROUTE_INSERT_ERROR:
+    case RestServerResult::RouteInsertError:
        return _("Peer internal error (insert)");
     default:
       return _("Server Unknown Error");
@@ -249,7 +249,7 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name, std::ve
       // Capture the result
       int result = root["result"].AsInt();
       if (result > 0) {
-        if (result == RESULT_NEW_PIN_REQUESTED) {
+        if (result == static_cast<int>(RestServerResult::NewPinRequested)) {
 
           // Show the dialog asking for PIN
           PINConfirmDialog dlg((wxWindow *)gFrame, wxID_ANY, _("OpenCPN Server Message"),
@@ -266,14 +266,14 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name, std::ve
           if (dlg.GetReturnCode() == ID_PCD_OK) {
             wxString PIN_tentative = dlg.GetText1Value().Trim().Trim(false);
             unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
-            std::string new_api_key = PINtoRandomKeyString(dPIN);;
+            std::string new_api_key = PintoRandomKeyString(dPIN);;
 
             SaveClientKey(server_name, new_api_key);
           }
           else
             b_cancel = true;
         }
-        else if (result == RESULT_GENERIC_ERROR)
+        else if (result == static_cast<int>(RestServerResult::GenericError))
           apikey_ok = true;
       }
       else
@@ -339,7 +339,8 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name, std::ve
       // Capture the result
       int result = root["result"].AsInt();
       if (result > 0) {
-        wxString error_text = GetErrorText(result);
+        wxString error_text =
+            GetErrorText(static_cast<RestServerResult>(result));
         OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
                         wxICON_ERROR | wxOK);
         mdlg.ShowModal();

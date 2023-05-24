@@ -1163,7 +1163,7 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   return bAddroute;
 }
 
-bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
+bool InsertTrack(Track *pTentTrack, bool bApplyChanges) {
   if (!pTentTrack) return false;
 
   bool bAddtrack = true;

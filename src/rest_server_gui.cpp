@@ -38,6 +38,11 @@
 #include "rest_server_gui.h"
 #include "routemanagerdialog.h"
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
+
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame* gFrame;
 
@@ -93,9 +98,6 @@ RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
 }
 
 
-#ifdef __ANDROID__
-#include "androidUTIL.h"
-#endif
 
 IMPLEMENT_DYNAMIC_CLASS(AcceptObjectDialog, wxDialog)
 
@@ -127,7 +129,7 @@ AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent, wxWindowID id,
 AcceptObjectDialog::~AcceptObjectDialog() {
   delete m_OKButton;
   delete m_CancelButton;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 
@@ -203,6 +205,9 @@ void AcceptObjectDialog::OnOKClick(wxCommandEvent& event) {
 
 void AcceptObjectDialog::OnCancelClick(wxCommandEvent& event) {
   EndModal(ID_STG_CANCEL);
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
 }
 
 
@@ -217,7 +222,11 @@ PINCreateDialog::PINCreateDialog() {
   m_OKButton = NULL;
   m_CancelButton = NULL;
   premtext = NULL;
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
 }
+
 
 PINCreateDialog::PINCreateDialog(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
