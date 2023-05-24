@@ -163,7 +163,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
 
     ConnectionParams cp;
     cp.Type = SERIAL;
-    cp.SetPortStr(com_name);
+    cp.SetPortStr(comx);
     cp.Baudrate = baud;
     cp.IOSelect = DS_TYPE_INPUT_OUTPUT;
 
