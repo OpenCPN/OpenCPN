@@ -68,7 +68,7 @@ public:
   wxSingleInstanceChecker* m_checker;
   CommBridge m_comm_bridge;
 
-  RESTServer m_RESTserver;
+  RestServer m_RESTserver;
 
   DECLARE_EVENT_TABLE()
 };

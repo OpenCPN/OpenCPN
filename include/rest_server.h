@@ -22,39 +22,80 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+/**
+ * \file
+ *
+ * Opencpn REST API
+ *
+ * Supports the following endpoints:
+ *
+ *   GET /api/ping?api_key=<pincode>
+ *         Returns {"result": <code>}
+ * 
+ *   POST /api/rx_object?api_key=<pincode>&source=<ip address>&force
+ *        The source parameter is mandatory, ip address of originating
+ *        peer. Message body contains xml-encoded data for one or
+ *        more route(s), track(s) and/or waypoint(s).
+ *        If "force" is present, the host object is unconditionally
+ *        updated. If not, host may run a "OK to overwrite" dialog.
+ *        Returns {"result": <code>}
+ * 
+ *   GET /api/uid_exists?uid=<uid>
+ *        Check if route or waypoint with given UID exists
+ *        Returns {"result": <code>}
+ * 
+ * Authentication uses a pairing mechanism. When an unpaired device
+ * tries to connect, the API generates a random pincode which is
+ * sent to the connecting party where it is displayed to user. User
+ * must then input the pincode in the server-side GUI thus making
+ * sure he has physical access to the machine.
+ */
+
+
 
 #ifndef _RESTSERVER_H
 #define _RESTSERVER_H
 
+#include <atomic>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <string>
+#include <thread>
 #include <unordered_map>
 
 #include <wx/event.h>
 #include <wx/string.h>
 
+#include "observable_evtvar.h"
 #include "route.h"
 #include "track.h"
 
-typedef enum RESTServerResult {
-  RESULT_NO_ERROR = 0,
-  RESULT_GENERIC_ERROR,
-  RESULT_OBJECT_REJECTED,
-  RESULT_DUPLICATE_REJECTED,
-  RESULT_ROUTE_INSERT_ERROR,
-  RESULT_NEW_PIN_REQUESTED
-} _RESTServerResult;
+/** Return codes from HandleServerMessage. */
+enum class RestServerResult {
+  NoError = 0,
+  GenericError,
+  ObjectRejected,
+  DuplicateRejected,
+  RouteInsertError,
+  NewPinRequested,
+  Undefined
+};
 
+/** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
 
 enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
 
-class RESTServerThread;  // Internal
-class RESTServerEvent;   // Internal
-class PINCreateDialog;
+/** \internal  IO thread. */
+class RestServerThread;
 
-std::string PINtoRandomKeyString(int dpin);
+/** \internal Event sent from IO thread to main code. */
+class RestServerEvent;
+
+class PinCreateDialog;
+
+std::string PintoRandomKeyString(int dpin);
 
 /** Abstract base class visible in callbacks. */
 class PinDialog {
@@ -116,54 +157,70 @@ public:
         delete_track([](Track*) -> void {}) {}
 };
 
-class RESTServer : public wxEvtHandler {
+
+/** Server public interface. */
+class RestServer : public wxEvtHandler {
+friend class RestServerObjectApp;
 public:
-  RESTServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
+  RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
 
-  virtual ~RESTServer();
+  virtual ~RestServer();
 
-  bool StartServer(std::string certificate_location);
+
+
+  bool StartServer(std::filesystem::path certificate_location);
   void StopServer();
 
-  void HandleServerMessage(RESTServerEvent& event);
+  void HandleServerMessage(RestServerEvent& event);
 
-  //    Secondary thread life toggle
-  //    Used to inform launching object (this) to determine if the thread can
-  //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_bsec_thread_active; }
+  /**
+   * Secondary thread life toggle
+   * Used to inform launching object (this) to determine if the thread can
+   * be safely called or polled, e.g. wxThread->Destroy();
+   */
 
-  void SetSecondaryThread(RESTServerThread* secondary_Thread) {
-    m_pSecondary_Thread = secondary_Thread;
-  }
-  RESTServerThread* GetSecondaryThread() { return m_pSecondary_Thread; }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
   void UpdateRouteMgr() { m_dlg_ctx.update_route_mgr(); }
 
   std::string GetCertificateDirectory() { return m_certificate_directory; }
-  int m_Thread_run_flag;
-
   std::string m_cert_file;
   std::string m_key_file;
 
 private:
+  class IoThread {
+  public:
+    IoThread(RestServer* parent, bool& m_portable);
+    virtual ~IoThread(void) {}
+
+
+
+    void Entry();
+    void Stop();
+
+    /** 1 -> running, 0 -> stop requested, -1 -> stopped. */
+    std::atomic_int run_flag;
+  private:
+    bool& m_portable;
+    RestServer* m_parent;
+  };
+
   bool LoadConfig(void);
   bool SaveConfig(void);
 
   RestServerDlgCtx m_dlg_ctx;
   RouteCtx m_route_ctx;
-  bool& m_portable;
-  RESTServerThread* m_pSecondary_Thread;
-  bool m_bsec_thread_active;
+
   std::string m_certificate_directory;
   std::unordered_map<std::string, std::string> m_key_map;
   PinDialog* m_pin_dialog;
-  wxString m_sPIN;
-  int m_dPIN;
-  bool m_b_overwrite;
-  std::string m_tempUploadFilePath;
+  wxString m_pin;
+  RestServerThread* m_parent;
+  int m_dpin;
+  bool m_overwrite;
+  std::string m_tmp_upload_path;
   std::ofstream m_ul_stream;
+  std::thread m_thread;
+  bool m_portable;
+  IoThread m_io_thread;
 };
 
 #endif  // guard
