@@ -450,11 +450,8 @@ void GshhsPolyCell::DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt
             // that have a discontiguous date line
 
             if (idl && ccp.x == 180) {
-              if (vp.m_projection_type == PROJECTION_MERCATOR ||
-                  vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)
-                q.m_x -=
-                    40058986 * 4096.0;  // 360 degrees in normalized viewport
-              else
+              if (vp.m_projection_type != PROJECTION_MERCATOR &&
+                  vp.m_projection_type != PROJECTION_EQUIRECTANGULAR)
                 q.m_x -= 360;  // lat/lon coordinates
             }
           }
