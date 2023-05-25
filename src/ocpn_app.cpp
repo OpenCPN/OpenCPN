@@ -1576,18 +1576,9 @@ bool MyApp::OnInit() {
       (g_Platform->GetSharedDataDir() + _T("tcdata") +
        wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
-//TODO: What are we trying to do here?
   if (TideCurrentDataSet.empty()) {
     TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
     TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
-  } else {
-    wxString first_tide = TideCurrentDataSet[0];
-    wxFileName ft(first_tide);
-    if (!ft.FileExists()) {
-      TideCurrentDataSet.erase(TideCurrentDataSet.begin());
-      TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
-      TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
-    }
   }
 
   //  Check the global AIS alarm sound file

@@ -1406,8 +1406,19 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a recalculation of default main toolbar location
     g_maintoolbar_x = -1;
 
-    // Force a reload of updated default tide/current datasets
+    // Check the tide/current databases for readability,
+    //  remove any not readable
+    std::vector<std::string> TCDS_temp;
+    for (unsigned int i=0; i < TideCurrentDataSet.size() ; i++)
+      TCDS_temp.push_back(TideCurrentDataSet[i]);
+
     TideCurrentDataSet.clear();
+    for (unsigned int i=0; i < TCDS_temp.size() ; i++){
+      wxString tide = TCDS_temp[i];
+      wxFileName ft(tide);
+      if (ft.FileExists())
+        TideCurrentDataSet.push_back(TCDS_temp[i]);
+    }
   }
 }
 
