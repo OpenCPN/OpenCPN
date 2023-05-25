@@ -749,8 +749,8 @@ static void *DEPCNT02(void *param)
   ObjRazRules *rzRules = (ObjRazRules *)param;
   S57Obj *obj = rzRules->obj;
   // Debug
-  //      if(obj->Index == 812)
-  //            int tty = 5;
+        //if(obj->Index == 5014)
+              //int tty = 5;
 
   if ((!strncmp(obj->FeatureName, "DEPARE", 6)) &&
       GEO_LINE == obj->Primitive_type) {
@@ -759,54 +759,29 @@ static void *DEPCNT02(void *param)
     drval2 = drval1;
     GetDoubleAttr(obj, "DRVAL2", drval2);
 
-    //            GString *drval1str = S57_getAttVal(geo, "DRVAL1");
-    //            double   drval1    = (NULL == drval1str) ? 0.0    :
-    //            atof(drval1str->str); GString *drval2str = S57_getAttVal(geo,
-    //            "DRVAL2"); double   drval2    = (NULL == drval2str) ? drval1 :
-    //            atof(drval2str->str);
-
     if (drval1 <= safety_contour) {
       if (drval2 >= safety_contour) safe = TRUE;
     }
 
- //FIXME plib
-//     else {
-//       double next_safe_contour = 1e6;
-//       if (obj->m_chart_context->chart) {
-//         next_safe_contour =
-//             obj->m_chart_context->chart->GetCalculatedSafetyContour();
-//         if (drval1 == next_safe_contour) safe = TRUE;
-//       } else {
-//         next_safe_contour = obj->m_chart_context->safety_contour;
-//
-//         if (fabs(drval1 - next_safe_contour) < 1e-4) safe = true;
-//       }
-//    }
+    else {
+      double next_safe_contour = 1e6;
+      next_safe_contour = obj->m_chart_context->safety_contour;
+      if (fabs(drval1 - next_safe_contour) < 1e-4) safe = true;
+    }
 
   } else {
     // continuation A (DEPCNT)
     double valdco = 0;
     GetDoubleAttr(obj, "VALDCO", valdco);
-    //            GString *valdcostr = S57_getAttVal(geo, "VALDCO");
-    //            double   valdco    = (NULL == valdcostr) ? 0.0 :
-    //            atof(valdcostr->str);
 
     if (valdco == safety_contour)
       safe = TRUE;  // this is useless !?!?
 
- // FIXME plib
-//     else {
-//       double next_safe_contour = 1e6;
-//       if (obj->m_chart_context->chart) {
-//         next_safe_contour =
-//             obj->m_chart_context->chart->GetCalculatedSafetyContour();
-//         if (valdco == next_safe_contour) safe = TRUE;
-//       } else {
-//         next_safe_contour = obj->m_chart_context->safety_contour;
-//
-//         if (fabs(valdco - next_safe_contour) < 1e-4) safe = true;
-//       }
-//    }
+    else {
+      double next_safe_contour = 1e6;
+      next_safe_contour = obj->m_chart_context->safety_contour;
+      if (fabs(valdco - next_safe_contour) < 1e-4) safe = true;
+    }
 
       /*
                         if (valdco > safety_contour)

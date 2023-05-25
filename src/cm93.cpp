@@ -2026,7 +2026,6 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
   //    Check the member array to see if all these viewport cells have been
   //    loaded
   bool bcell_is_in;
-  bool recalc_depth = false;
 
   for (unsigned int i = 0; i < vpcells.size(); i++) {
     bcell_is_in = false;
@@ -2050,7 +2049,6 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
         CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm);
 
         ForceEdgePriorityEvaluate();  // need to re-evaluate priorities
-        recalc_depth = true;
 
         m_cells_loaded_array.push_back(cell_index);
 
@@ -2078,6 +2076,9 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
       AssembleLineGeometry();
 
+      ClearDepthContourArray();
+      BuildDepthContourArray();
+
       //  Set up the chart context
       m_this_chart_context->m_pvc_hash = &Get_vc_hash();
       m_this_chart_context->m_pve_hash = &Get_ve_hash();
@@ -2087,7 +2088,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       m_this_chart_context->chart = this;
       m_this_chart_context->chart_type = GetChartType();
 
-      m_this_chart_context->safety_contour = 1e6;  // to be evaluated later
+      m_this_chart_context->safety_contour = m_next_safe_cnt;
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
       //  Loop and populate all the objects
@@ -2100,13 +2101,9 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
           }
         }
       }
+
       OCPNPlatform::HideBusySpinner();
     }
-  }
-
-  if (recalc_depth) {
-    ClearDepthContourArray();
-    BuildDepthContourArray();
   }
 }
 
