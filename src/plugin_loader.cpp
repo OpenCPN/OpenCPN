@@ -666,14 +666,6 @@ bool PluginLoader::UnLoadPlugIn(size_t ix) {
   return true;
 }
 
-static PluginMetadata MetadataByName(const std::string& name) {
-  if (name.empty()) return {};
-  const auto available = PluginHandler::getInstance()->getAvailable();
-  auto predicate = [name](const PluginMetadata& md) { return md.name == name; };
-  auto found = std::find_if(available.begin(), available.end(), predicate);
-  return found != available.end() ? *found : PluginMetadata();
-}
-
 static std::string VersionFromManifest(const std::string& plugin_name) {
   std::string version;
   std::string path = PluginHandler::versionPath(plugin_name);
@@ -683,6 +675,19 @@ static std::string VersionFromManifest(const std::string& plugin_name) {
     stream >> version;
   }
   return version;
+}
+
+/** Find metadata for given plugin. */
+static PluginMetadata MetadataByName(const std::string& name) {
+  if (name.empty()) return {};
+
+  auto version = VersionFromManifest(name);
+  auto available = PluginHandler::getInstance()->getAvailable();
+  auto predicate = [name, version](const PluginMetadata& md) {
+    return md.name == name && md.version == version;
+  };
+  auto found = std::find_if(available.begin(), available.end(), predicate);
+  return found != available.end() ? *found : PluginMetadata();
 }
 
 /** Update PlugInContainer using data from PluginMetadata and manifest. */
