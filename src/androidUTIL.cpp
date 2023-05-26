@@ -37,6 +37,7 @@
 #include <wx/filepicker.h>
 #include <wx/zipstrm.h>
 #include <wx/textwrapper.h>
+#include <wx/matrix.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -385,6 +386,7 @@ MigrateAssistantDialog *g_migrateDialog;
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
 wxFontPickerEvent g_dummy_wxfpe;
+wxTransformMatrix g_dummy_transform;
 
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
