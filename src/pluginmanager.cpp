@@ -4046,6 +4046,19 @@ void PluginListPanel::SelectByName(wxString &name) {
   }
 }
 
+/** Return sorted list of all  installed  plugins. */
+std::vector<PlugInData> GetInstalled() {
+  std::vector<PlugInData> result;
+  auto loader = PluginLoader::getInstance();
+  for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
+    result.push_back(PlugInData(*(loader->GetPlugInArray()->Item(i))));
+  }
+  auto compare = [](const PlugInData& lhs, const PlugInData& rhs)
+      { return lhs.Key() < rhs.Key(); };
+  std::sort(result.begin(), result.end(), compare);
+  return result;
+}
+
 /* Is plugin with given name present in loaded? */
 static bool IsPluginLoaded(const std::string& name) {
   auto loaded = PluginLoader::getInstance()->GetPlugInArray();
@@ -4086,17 +4099,14 @@ void PluginListPanel::ReloadPluginPanels() {
   struct Comp {
     bool operator() (const PluginMetadata& lhs,
                      const PluginMetadata rhs) const {
-      return lhs.name.compare(rhs.name) < 0; }
+      return lhs.key().compare(rhs.key()) < 0; }
   } comp;
   std::set<PluginMetadata, Comp> unique_entries(comp);
   for (auto p: available) unique_entries.insert(p);
 
   /* Add panels for first loaded plugins and then catalog entries. */
-  auto loader = PluginLoader::getInstance();
-  for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
-    AddPlugin(PlugInData(*(loader->GetPlugInArray()->Item(i))));
-  }
-  for (auto p : unique_entries) AddPlugin(PlugInData(p));
+  for (const auto& p : GetInstalled()) AddPlugin(p);
+  for (const auto& p : unique_entries) AddPlugin(PlugInData(p));
 
   Show();
   Layout();
@@ -4805,11 +4815,19 @@ void PluginPanel::OnPluginAction(wxCommandEvent &event) {
 }
 
 void PluginPanel::SetEnabled(bool enabled) {
+std::cout <<  "SetEnabled: enabed: " << ( enabled ? "true\n" : "false\n");
   if (m_plugin.m_enabled != enabled) {
     m_plugin.m_enabled = enabled;
     PluginLoader::getInstance()->UpdatePlugIns();
     NotifySetupOptionsPlugin(&m_plugin);
+    wxString config_section = "/PlugIns/";
   }
+  wxString config_section = "/PlugIns/";
+  config_section += m_plugin.m_plugin_filename;
+std::cout << "config section: " << config_section << "\n";
+  pConfig->SetPath(config_section);
+  pConfig->Write("bEnabled", enabled);
+  pConfig->Flush();
   if (!enabled && !m_bSelected) {
     m_pName->SetForegroundColour(
         wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));

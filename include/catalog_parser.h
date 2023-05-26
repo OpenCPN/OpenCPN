@@ -69,7 +69,7 @@ struct PluginMetadata {
   int ix;         ///< Index in list of installed or available.
   void clear() { *this = PluginMetadata(); }
   std::string key() const {
-    return std::string(name) + version + release + target + target_version;
+    return name + version + release + target + target_version;
   }
 
   std::string to_string(); ///< Return printable XML representation.

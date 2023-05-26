@@ -679,15 +679,21 @@ static std::string VersionFromManifest(const std::string& plugin_name) {
 
 /** Find metadata for given plugin. */
 static PluginMetadata MetadataByName(const std::string& name) {
+  using namespace std;
   if (name.empty()) return {};
 
+  auto available = getCompatiblePlugins();
+  vector<PluginMetadata> matches;
+  copy_if(available.begin(), available.end(), back_inserter(matches),
+          [name](const PluginMetadata& md) { return md.name == name; });
+  if (matches.size() == 0) return {};
+  if (matches.size() == 1) return matches[0];   // only one found with given name
+
   auto version = VersionFromManifest(name);
-  auto available = PluginHandler::getInstance()->getAvailable();
-  auto predicate = [name, version](const PluginMetadata& md) {
-    return md.name == name && md.version == version;
-  };
-  auto found = std::find_if(available.begin(), available.end(), predicate);
-  return found != available.end() ? *found : PluginMetadata();
+  auto predicate =
+      [version](const PluginMetadata& md){ return version == md.version; };
+  auto found = find_if(matches.begin(), matches.end(), predicate);
+  return found != matches.end() ? *found : matches[0];
 }
 
 /** Update PlugInContainer using data from PluginMetadata and manifest. */
@@ -727,7 +733,6 @@ void PluginLoader::UpdateManagedPlugins() {
     const auto md(MetadataByName(pd->m_common_name.ToStdString()));
     return md.name.empty() && !pd->m_pplugin;
   };
-
   auto end =
       std::remove_if(loaded_plugins.begin(), loaded_plugins.end(), predicate);
   loaded_plugins.erase(end, loaded_plugins.end());
