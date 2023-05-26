@@ -5315,14 +5315,6 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader->UnBind();
 
 
-//       glUseProgram(texture_2DA_shader_program);
-//       matloc = glGetUniformLocation(texture_2DA_shader_program, "MVMatrix");
-//       glUniformMatrix4fv(matloc, 1, GL_FALSE,
-//                          (const GLfloat *)pvp->vp_transform);
-//       transloc =
-//           glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
-//       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
-
       shader = ptexture_2DA_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
@@ -5344,6 +5336,17 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
+
+      //  Leftover shader required by some older Android plugins
+      if (texture_2DA_shader_program){
+        glUseProgram(texture_2DA_shader_program);
+        GLint matloc = glGetUniformLocation(texture_2DA_shader_program, "MVMatrix");
+        glUniformMatrix4fv(matloc, 1, GL_FALSE,
+                         (const GLfloat *)pvp->vp_matrix_transform);
+        GLint transloc =
+          glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
+        glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+      }
 
       m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
 
