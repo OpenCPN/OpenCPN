@@ -557,8 +557,10 @@ void* CommDriverN0183SerialThread::Entry() {
         take_byte = circle.get();
       }
 
-      if (circle.empty() && take_byte != 0x0a)
+      if (circle.empty() && take_byte != 0x0a){
+        tmp_vec.push_back(take_byte);
         break;
+      }
 
       if (take_byte == 0x0a){
         tmp_vec.push_back(take_byte);
