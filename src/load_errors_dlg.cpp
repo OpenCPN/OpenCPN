@@ -143,12 +143,12 @@ static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
 #else
   int sts = dlg.ShowModal();
 #endif
-//   if (sts == wxID_YES || sts == wxID_OK) {
-//     for (const auto& plugin : format_ctx.plugins) {
-//       PluginHandler::getInstance()->uninstall(plugin);
-//     }
-//     for (const auto& lib : format_ctx.libs) remove(lib.c_str());
-//   }
+  if (sts == wxID_YES || sts == wxID_OK) {
+    for (const auto& plugin : format_ctx.plugins) {
+      PluginHandler::getInstance()->uninstall(plugin);
+    }
+    for (const auto& lib : format_ctx.libs) remove(lib.c_str());
+  }
 }
 
 LoadErrorsDlgCtrl::LoadErrorsDlgCtrl(wxWindow* parent) : m_parent(parent) {
