@@ -2843,7 +2843,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-#if 1
+#if 0
   wxString SENCdir = g_SENCPrefix;
   if (SENCdir.Last() != wxFileName::GetPathSeparator())
     SENCdir.Append(wxFileName::GetPathSeparator());
