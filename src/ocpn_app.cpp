@@ -1329,7 +1329,8 @@ bool MyApp::OnInit() {
      g_hostname = wxGetUserName();
 #ifdef __ANDROID__
   androidGetDeviceInfo();
-  g_hostname = wxString("Android ") + g_android_Device_Model;
+  g_hostname = wxString("Android-") + g_android_Device_Model;
+  g_hostname.Replace(" ", "-", true);
 #endif
 
   //      A Portabel need a unique mDNS data hostname to share routes.
