@@ -181,6 +181,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                            wxDefaultPosition, wxDefaultSize, wxDP_DEFAULT);
   bSizerDepartureTS->Add(m_dpDepartureDate, 0, wxALIGN_CENTER_VERTICAL | wxALL,
                          5);
+  m_dpDepartureDate->SetMinSize(wxSize(-1, GetCharHeight()));
+
 
 #ifdef __WXGTK__
   m_tpDepartureTime = new TimeCtrl(m_pnlBasic, wxID_ANY, wxDefaultDateTime,
