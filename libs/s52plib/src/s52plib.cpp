@@ -4506,7 +4506,8 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   glUniform1i(texUni, 0);
 
   if (!strncmp(instr_str, "DASH", 4)){
-   float width = GetPPMM() * 5.4;  // from s52 specs, 3.6mm dash, 1.8mm space // tex_w;
+   //reduced from s52 specs (5.4), 3.6mm dash, 1.8mm space
+   float width = GetPPMM() * 3; //looks better
    glUniform1f(texWidth, width);
    glUniform1f(dashFactor, 0.66);
   }
