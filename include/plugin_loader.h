@@ -65,9 +65,6 @@ public:
   /** Create a container with applicable fields defined from metadata. */
   explicit PlugInData(const PluginMetadata& md);
 
-  /** "Downcast" a PlugInContainer to a PlugInData. */
-  explicit PlugInData(const PlugInContainer& pic);
-
   PlugInData();
 
   bool m_enabled;
@@ -217,6 +214,9 @@ public:
   const ArrayOfPlugIns* GetPlugInArray() { return &plugin_array; }
   bool IsPlugInAvailable(const wxString& commonName);
   bool CheckPluginCompatibility(const wxString& plugin_file);
+
+  /** Update enabled/disabled state for plugin with given name. */
+  void SetEnabled(const wxString& common_name, bool enabled);
 
 private:
   PluginLoader();

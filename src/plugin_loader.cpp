@@ -115,8 +115,6 @@ PlugInData::PlugInData(const PluginMetadata& md) : PlugInData() {
   m_enabled = false;
 }
 
-PlugInData::PlugInData(const PlugInContainer& pic) { *this = pic; }
-
 /** Return true if path "seems" to contain a system plugin */
 static bool IsSystemPlugin(const std::string& path) {
   static const std::vector<std::string> SysPlugins = {
@@ -227,6 +225,18 @@ bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
   }
   return false;
 }
+
+void PluginLoader::SetEnabled(const wxString& common_name, bool enabled) {
+  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+    PlugInContainer* pic = plugin_array[i];
+    if (pic->m_common_name == common_name) {
+      pic->m_enabled = enabled;
+      return;
+    }
+  }
+  wxLogMessage("Atttempt to update non-existing plugin " + common_name);
+}
+
 
 void PluginLoader::SetPluginDefaultIcon(const wxBitmap* bitmap) {
   delete m_default_plugin_icon;
