@@ -3617,7 +3617,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                            border_size);
 
   // Scale the images in the dashboard list control
-  int imageRefSize = 32 * GetOCPNGUIToolScaleFactor_PlugIn();
+  int imageRefSize = GetCharWidth() * 4;
 
   wxImageList *imglist1 = new wxImageList(imageRefSize, imageRefSize, true, 1);
 
@@ -3715,6 +3715,8 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   m_pCheckBoxIsVisible =
       new wxCheckBox(m_pPanelDashboard, wxID_ANY, _("show this dashboard"),
                      wxDefaultPosition, wxDefaultSize, 0);
+  m_pCheckBoxIsVisible->SetMinSize(wxSize(25 * GetCharWidth(), -1));
+
   itemFlexGridSizer->Add(m_pCheckBoxIsVisible, 0, wxEXPAND | wxALL,
                          border_size);
   wxStaticText *itemDummy01 =
@@ -3726,21 +3728,18 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer->Add(itemStaticText01, 0, wxEXPAND | wxALL, border_size);
   m_pTextCtrlCaption = new wxTextCtrl(m_pPanelDashboard, wxID_ANY, _T(""),
-                                      wxDefaultPosition, wxSize(220, -1));
+                                      wxDefaultPosition, wxDefaultSize);
+  m_pCheckBoxIsVisible->SetMinSize(wxSize(30 * GetCharWidth(), -1));
   itemFlexGridSizer->Add(m_pTextCtrlCaption, 0, wxALIGN_RIGHT | wxALL,
                          border_size);
-
-#ifdef __OCPN__ANDROID__
-  itemStaticText01->Hide();
-  m_pTextCtrlCaption->Hide();
-#endif
 
   wxStaticText *itemStaticText02 =
       new wxStaticText(m_pPanelDashboard, wxID_ANY, _("Orientation:"),
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer->Add(itemStaticText02, 0, wxEXPAND | wxALL, border_size);
   m_pChoiceOrientation = new wxChoice(m_pPanelDashboard, wxID_ANY,
-                                      wxDefaultPosition, wxSize(220, -1));
+                                      wxDefaultPosition, wxDefaultSize);
+  m_pChoiceOrientation->SetMinSize(wxSize(15 * GetCharWidth(), -1));
   m_pChoiceOrientation->Append(_("Vertical"));
   m_pChoiceOrientation->Append(_("Horizontal"));
   itemFlexGridSizer->Add(m_pChoiceOrientation, 0, wxALIGN_RIGHT | wxALL,
