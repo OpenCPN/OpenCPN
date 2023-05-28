@@ -195,7 +195,7 @@ public:
   void PrepareAllPluginContextMenus();
 
   void NotifySetupOptions();
-  void ClosePlugInPanel(PlugInContainer *pic, int ix);
+  void ClosePlugInPanel(const PlugInContainer *pic, int ix);
   void CloseAllPlugInPanels(int);
 
   ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray() {
@@ -312,7 +312,7 @@ private:
   wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
                                   unsigned char dim_ratio);
 
-  void ProcessLateInit(PlugInContainer *pic);
+  void ProcessLateInit(const PlugInContainer *pic);
   void OnPluginDeactivate(const PlugInContainer* pic);
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();

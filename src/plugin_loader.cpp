@@ -78,6 +78,8 @@ extern wxWindow* gFrame;
 extern ChartDB* ChartData;
 extern bool g_bportable;
 
+
+
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"};
 
@@ -91,8 +93,46 @@ static PlugInContainer* GetContainer(const PlugInData& pd,
   return nullptr;
 }
 
+std::string GetPluginVersion(
+    const PlugInData pd,
+    std::function<const PluginMetadata(const std::string&)> get_metadata) {
+  auto loader = PluginLoader::getInstance();
+  auto pic = GetContainer(pd, *loader->GetPlugInArray());
+  auto metadata(pic->m_managed_metadata);
+  if (metadata.version == "")
+    metadata = get_metadata(pic->m_common_name.ToStdString());
+  std::string import_suffix(metadata.is_imported ? _(" [Imported]") : "");
+
+  int v_major(0);
+  int v_minor(0);
+
+  if (!pic) {
+    wxLogMessage("Attempt to get version for empty pic pointer");
+    return SemanticVersion(0, 0, -1).to_string() + import_suffix;
+  }
+  if (pic->m_pplugin)  {
+    v_major = pic->m_pplugin->GetPlugInVersionMajor();
+    v_minor = pic->m_pplugin->GetPlugInVersionMinor();
+  }
+  auto p = dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
+  if (p) {
+    // New style plugin, trust version available in the API.
+    auto v = SemanticVersion(v_major, v_minor, p->GetPlugInVersionPatch(),
+                             p->GetPlugInVersionPost(),
+                             p->GetPlugInVersionPre(),
+                             p->GetPlugInVersionBuild());
+    return v.to_string() + import_suffix;
+  } else if (metadata.version != "") {
+    return metadata.version + import_suffix;
+  } else {
+    return SemanticVersion(v_major, v_minor, -1).to_string() + import_suffix;
+  }
+}
+
+
+
 PlugInContainer::PlugInContainer()
-    : PlugInData(), m_library(), m_destroy_fn(nullptr) {}
+    : PlugInData(), m_pplugin(nullptr), m_library(), m_destroy_fn(nullptr) {}
 
 PlugInData::PlugInData()
     : m_enabled(false),
@@ -102,8 +142,7 @@ PlugInData::PlugInData()
       m_api_version(0),
       m_version_major(0),
       m_version_minor(0),
-      m_status(PluginStatus::Unknown),
-      m_pplugin(nullptr) {}
+      m_status(PluginStatus::Unknown) {}
 
 PlugInData::PlugInData(const PluginMetadata& md) : PlugInData() {
   m_common_name = wxString(md.name);
@@ -226,6 +265,49 @@ bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
   return false;
 }
 
+void PluginLoader::ShowPreferencesDialog(const PlugInData& pd,
+                                         wxWindow* parent) {
+  auto loader = PluginLoader::getInstance();
+  auto pic = GetContainer(pd, *loader->GetPlugInArray());
+  if (pic) pic->m_pplugin->ShowPreferencesDialog(parent);
+}
+
+
+void PluginLoader::NotifySetupOptionsPlugin(const PlugInData *pd) {
+  auto pic = GetContainer(*pd, *GetPlugInArray());
+  if (!pic) return;
+  if (pic->m_enabled && pic->m_init_state) {
+    if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) {
+      switch (pic->m_api_version) {
+        case 109:
+        case 110:
+        case 111:
+        case 112:
+        case 113:
+        case 114:
+        case 115:
+        case 116:
+        case 117:
+        case 118: {
+          if (pic->m_pplugin) {
+            opencpn_plugin_19 *ppi =
+                dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
+            if (ppi) {
+              ppi->OnSetupOptions();
+              auto loader = PluginLoader::getInstance();
+              loader->SetToolboxPanel(pic->m_common_name, true);
+            }
+            break;
+          }
+        }
+        default:
+          break;
+      }
+    }
+  }
+}
+
+
 void PluginLoader::SetEnabled(const wxString& common_name, bool enabled) {
   for (size_t i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic = plugin_array[i];
@@ -234,9 +316,21 @@ void PluginLoader::SetEnabled(const wxString& common_name, bool enabled) {
       return;
     }
   }
-  wxLogMessage("Atttempt to update non-existing plugin " + common_name);
+  wxLogMessage("Atttempt to update enabled non-existing plugin "
+               + common_name);
 }
 
+void PluginLoader::SetToolboxPanel(const wxString& common_name, bool value) {
+  for (size_t i = 0; i < plugin_array.GetCount(); i++) {
+    PlugInContainer* pic = plugin_array[i];
+    if (pic->m_common_name == common_name) {
+      pic->m_toolbox_panel = value;
+      return;
+    }
+  }
+  wxLogMessage("Atttempt to update toolbox panel on non-existing plugin "
+               + common_name);
+}
 
 void PluginLoader::SetPluginDefaultIcon(const wxBitmap* bitmap) {
   delete m_default_plugin_icon;

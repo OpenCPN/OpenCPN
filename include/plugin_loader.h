@@ -58,6 +58,15 @@ enum class PluginStatus {
 };
 
 class PlugInContainer;  // forward
+class PlugInData;  // forward
+
+/** Return version string for a plugin, possibly with an "Imported" suffix. */
+std::string GetPluginVersion(
+    const PlugInData pd,
+    std::function<const PluginMetadata(const std::string&)> get_metadata);
+
+
+
 
 /** Basic data for a loaded plugin, trivially copyable */
 class PlugInData {
@@ -85,7 +94,6 @@ public:
   wxBitmap m_bitmap;
   wxString m_version_str;          //!< Complete version as of semantic_vers
   std::string m_manifest_version;  //!< As detected from manifest
-  opencpn_plugin* m_pplugin;
 
   /** sort key. */
   std::string Key() const;
@@ -101,6 +109,7 @@ public:
 
   ~PlugInContainer() = default;
 
+  opencpn_plugin* m_pplugin;
   wxDynamicLibrary m_library;
   destroy_t* m_destroy_fn;
 };
@@ -191,6 +200,10 @@ public:
   void SetOnDeactivateCb(std::function<void(const PlugInContainer*)> cb) {
     m_on_deactivate_cb = cb;
   }
+  /** Display the preferences dialog for a plugin. */
+  void ShowPreferencesDialog(const PlugInData& pd, wxWindow* parent);
+
+  void NotifySetupOptionsPlugin(const PlugInData *pic);
 
   /** Remove a plugin from *GetPluginArray().  */
   void RemovePlugin(const PlugInData& pd);
@@ -217,6 +230,9 @@ public:
 
   /** Update enabled/disabled state for plugin with given name. */
   void SetEnabled(const wxString& common_name, bool enabled);
+
+  /** Update m_toolbox_panel state for plugin with given name. */
+  void SetToolboxPanel(const wxString& common_name, bool value);
 
 private:
   PluginLoader();

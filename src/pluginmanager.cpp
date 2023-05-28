@@ -1129,7 +1129,7 @@ bool PlugInManager::CallLateInit(void) {
   return bret;
 }
 
-void PlugInManager::ProcessLateInit(PlugInContainer *pic) {
+void PlugInManager::ProcessLateInit(const PlugInContainer *pic) {
   if (pic->m_cap_flag & WANTS_LATE_INIT) {
     wxString msg("PlugInManager: Calling LateInit PlugIn: ");
     msg += pic->m_plugin_file;
@@ -1678,32 +1678,7 @@ void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
 }
 
 void NotifySetupOptionsPlugin(const PlugInData *pic) {
-  if (pic->m_enabled && pic->m_init_state) {
-    if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) {
-      switch (pic->m_api_version) {
-        case 109:
-        case 110:
-        case 111:
-        case 112:
-        case 113:
-        case 114:
-        case 115:
-        case 116:
-        case 117:
-        case 118: {
-          opencpn_plugin_19 *ppi =
-              dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
-          if (ppi) {
-            ppi->OnSetupOptions();
-            const_cast<PlugInData *>(pic)->m_toolbox_panel = true;
-          }
-          break;
-        }
-        default:
-          break;
-      }
-    }
-  }
+  PluginLoader::getInstance()->NotifySetupOptionsPlugin(pic);
 }
 
 void PlugInManager::NotifySetupOptions() {
@@ -1714,12 +1689,13 @@ void PlugInManager::NotifySetupOptions() {
   }
 }
 
-void PlugInManager::ClosePlugInPanel(PlugInContainer *pic,
+void PlugInManager::ClosePlugInPanel(const PlugInContainer *pic,
                                      int ok_apply_cancel) {
   if (pic->m_enabled && pic->m_init_state) {
     if ((pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) && pic->m_toolbox_panel) {
       pic->m_pplugin->OnCloseToolboxPanel(0, ok_apply_cancel);
-      pic->m_toolbox_panel = false;
+      auto loader = PluginLoader::getInstance();
+      loader->SetToolboxPanel(pic->m_common_name, false);
     }
   }
 }
@@ -4048,6 +4024,7 @@ void PluginListPanel::SelectByName(wxString &name) {
 
 /** Return sorted list of all  installed  plugins. */
 std::vector<const PlugInData*> GetInstalled() {
+// FIXME (leamas) make a copy of m_pplugin.
   std::vector<const PlugInData*> result;
   auto loader = PluginLoader::getInstance();
   for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
@@ -4592,43 +4569,11 @@ static PluginMetadata GetMetadataByName(const std::string& name) {
   return found != plugins.end() ? *found : PluginMetadata();
 }
 
-/** Return version string for a plugin, possibly with an "Imported" suffix. */
-static std::string GetPluginVersion(const PlugInData* pic) {
-  auto metadata(pic->m_managed_metadata);
-  if (metadata.version == "")
-    metadata = GetMetadataByName(pic->m_common_name.ToStdString());
-  std::string import_suffix(metadata.is_imported ? _(" [Imported]") : "");
-
-  int v_major(0);
-  int v_minor(0);
-
-  if (!pic) {
-    wxLogMessage("Attempt to get version for empty pic pointer");
-    return SemanticVersion(0, 0, -1).to_string() + import_suffix;
-  }
-  if (pic->m_pplugin)  {
-    v_major = pic->m_pplugin->GetPlugInVersionMajor();
-    v_minor = pic->m_pplugin->GetPlugInVersionMinor();
-  }
-  auto p = dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
-  if (p) {
-    // New style plugin, trust version available in the API.
-    auto v = SemanticVersion(v_major, v_minor, p->GetPlugInVersionPatch(),
-                             p->GetPlugInVersionPost(),
-                             p->GetPlugInVersionPre(),
-                             p->GetPlugInVersionBuild());
-    return v.to_string() + import_suffix;
-  } else if (metadata.version != "") {
-    return metadata.version + import_suffix;
-  } else {
-    return SemanticVersion(v_major, v_minor, -1).to_string() + import_suffix;
-  }
-}
 
 void PluginPanel::SetSelected(bool selected) {
   m_bSelected = selected;
 
-  m_pVersion->SetLabel(GetPluginVersion(&m_plugin));
+  m_pVersion->SetLabel(GetPluginVersion(m_plugin, GetMetadataByName));
   if (selected) {
     SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
     m_pButtons->Show(true);
@@ -4779,19 +4724,19 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
       (m_plugin.m_cap_flag & WANTS_PREFERENCES)) {
 #ifdef __ANDROID__
     androidDisableRotation();
-    m_plugin.m_pplugin->ShowPreferencesDialog(
-        GetGrandParent());  // GrandParent will be the entire list panel, not
-                            // the plugin panel Ensures better centering on
-                            // small screens
+    PluginLoader::getInstance()->ShowPreferencesDialog(m_plugin,
+                                                       GetGrandParent());
+    // GrandParent will be the entire list panel, not the plugin panel.
+    // Ensures better centering on small screens
 #else
-    m_plugin.m_pplugin->ShowPreferencesDialog(this);
+    PluginLoader::getInstance()->ShowPreferencesDialog(m_plugin, this);
 #endif
   }
 }
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent &event) {
   SetEnabled(!m_plugin.m_enabled);
-  m_pVersion->SetLabel(GetPluginVersion(&m_plugin));
+  m_pVersion->SetLabel(GetPluginVersion(m_plugin, GetMetadataByName));
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent &event) {
