@@ -498,10 +498,10 @@ static std::vector<PluginMetadata> getUpdates(const char *name) {
 }
 
 /** Remove plugin and update GUI elements. */
-static void gui_uninstall(PlugInData *pic, const char *plugin) {
+static void gui_uninstall(const PlugInData *pic, const char *plugin) {
   g_Platform->ShowBusySpinner();
   PluginLoader::getInstance()->DeactivatePlugIn(*pic);
-  pic->m_enabled = false;
+  PluginLoader::getInstance()->SetEnabled(pic->m_common_name, false);
   PluginLoader::getInstance()->UpdatePlugIns();
 
   wxLogMessage("Uninstalling %s", plugin);
@@ -517,7 +517,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
-static void run_update_dialog(PluginListPanel *parent, PlugInData *pic,
+static void run_update_dialog(PluginListPanel *parent, const PlugInData *pic,
                               bool uninstall, const char *name = 0,
                               bool b_forceEnable = false) {
   wxString pluginName = pic->m_common_name;
@@ -4047,14 +4047,15 @@ void PluginListPanel::SelectByName(wxString &name) {
 }
 
 /** Return sorted list of all  installed  plugins. */
-std::vector<PlugInData> GetInstalled() {
-  std::vector<PlugInData> result;
+std::vector<const PlugInData*> GetInstalled() {
+  std::vector<const PlugInData*> result;
   auto loader = PluginLoader::getInstance();
   for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
-    result.push_back(PlugInData(*(loader->GetPlugInArray()->Item(i))));
+    auto const item = loader->GetPlugInArray()->Item(i);
+    result.push_back(item);
   }
-  auto compare = [](const PlugInData& lhs, const PlugInData& rhs)
-      { return lhs.Key() < rhs.Key(); };
+  auto compare = [](const PlugInData* lhs, const PlugInData* rhs) {
+      return lhs->Key() < rhs->Key(); };
   std::sort(result.begin(), result.end(), compare);
   return result;
 }
@@ -4102,10 +4103,10 @@ void PluginListPanel::ReloadPluginPanels() {
       return lhs.key().compare(rhs.key()) < 0; }
   } comp;
   std::set<PluginMetadata, Comp> unique_entries(comp);
-  for (auto p: available) unique_entries.insert(p);
+  for (const auto& p: available) unique_entries.insert(p);
 
   /* Add panels for first loaded plugins and then catalog entries. */
-  for (const auto& p : GetInstalled()) AddPlugin(p);
+  for (const auto& p : GetInstalled()) AddPlugin(*p);
   for (const auto& p : unique_entries) AddPlugin(PlugInData(p));
 
   Show();
@@ -4115,7 +4116,7 @@ void PluginListPanel::ReloadPluginPanels() {
   Scroll(0, 0);
 }
 
-void PluginListPanel::AddPlugin(PlugInData pic) {
+void PluginListPanel::AddPlugin(const PlugInData& pic) {
   auto pPluginPanel =
       new PluginPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, pic);
   pPluginPanel->SetSelected(false);
@@ -4270,13 +4271,12 @@ EVT_PAINT(PluginPanel::OnPaint)
 END_EVENT_TABLE()
 
 PluginPanel::PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
-                         const wxSize &size, PlugInData plugin)
-    : wxPanel(parent, id, pos, size, wxBORDER_NONE) {
+                         const wxSize &size, const PlugInData plugin)
+    : wxPanel(parent, id, pos, size, wxBORDER_NONE), m_plugin(plugin) {
   m_PluginListPanel = (PluginListPanel *)parent;  //->GetParent();
   m_PluginListPanel = dynamic_cast<PluginListPanel *>(parent /*->GetParent()*/);
   wxASSERT(m_PluginListPanel != 0);
 
-  m_plugin = plugin;
   m_bSelected = false;
   m_penWidthUnselected = g_Platform->GetDisplayDPmm() * .25;
   m_penWidthSelected = g_Platform->GetDisplayDPmm() * .5;
@@ -4817,7 +4817,7 @@ void PluginPanel::OnPluginAction(wxCommandEvent &event) {
 void PluginPanel::SetEnabled(bool enabled) {
 std::cout <<  "SetEnabled: enabed: " << ( enabled ? "true\n" : "false\n");
   if (m_plugin.m_enabled != enabled) {
-    m_plugin.m_enabled = enabled;
+    PluginLoader::getInstance()->SetEnabled(m_plugin.m_common_name, enabled);
     PluginLoader::getInstance()->UpdatePlugIns();
     NotifySetupOptionsPlugin(&m_plugin);
     wxString config_section = "/PlugIns/";

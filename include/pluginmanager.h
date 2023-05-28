@@ -430,7 +430,7 @@ public:
   void SelectByName(wxString &name);
 
 private:
-  void AddPlugin(PlugInData pd);
+  void AddPlugin(const PlugInData& pd);
   int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer *sizer);
   // void Clear();
 
@@ -458,7 +458,7 @@ class PluginPanel : public wxPanel {
 public:
   /** Construct an entry for a loaded plugin. */
   PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
-              const wxSize &size, PlugInData plugin);
+              const wxSize &size, const PlugInData plugin);
 
   /** Construct an entry reflecting a plugin available in the catalog. */
   PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
@@ -479,16 +479,16 @@ public:
   void OnPluginDown(wxCommandEvent &event);
   void SetEnabled(bool enabled);
   bool GetSelected() { return m_bSelected; }
-  PlugInData *GetPluginPtr() { return &m_plugin; };
+  const PlugInData *GetPluginPtr() { return &m_plugin; };
   void SetActionLabel(wxString &label);
   ActionVerb GetAction() { return m_action; }
-  PlugInData *GetPlugin() { return &m_plugin; }
+  const PlugInData *GetPlugin() { return &m_plugin; }
   void OnPaint(wxPaintEvent &event);
 
 private:
   PluginListPanel *m_PluginListPanel;
   bool m_bSelected;
-  PlugInData m_plugin;
+  const PlugInData m_plugin;
   wxStaticText *m_pName;
   wxStaticText *m_pVersion;
   wxStaticText *m_pDescription;
