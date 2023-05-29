@@ -3391,8 +3391,8 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                         m_soundFont);  // measure the text for DC mode
     }
     point_size = m_SoundingsPointSize;
+    point_size /= m_dipfactor;    // Apply Windows display scaling.
   }
-
 
   double postmult = m_SoundingsScaleFactor;
   if ((postmult <= 2.0) && (postmult >= 0.5)) {
