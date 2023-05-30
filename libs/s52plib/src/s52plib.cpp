@@ -467,32 +467,16 @@ void s52plib::SetPPMM(float ppmm) {
   canvas_pix_per_mm = ppmm;
 
   // We need a supplemental scale factor for HPGL vector symbol rendering.
-  //  This will cause raster and vector symbols to be rendered harmoniously
-
-  //  We do this by making an arbitrary measurement and declaration:
-  // We declare that the nominal size of a "flare" light rendered as HPGL vector
-  // should be roughly twice the size of a simplified lateral bouy rendered as
-  // raster.
-
-  // Referring to the chartsymbols.xml file, we find that the dimension of a
-  // flare light is 810 units, and a raster BOYLAT is nominally 16 pix.
-  // However, elsewhere we declare that the nominal size of of a flare
-  //  should be 6 mm instead of 8.1 mm
-  // So, do the math with 600 instead of 810.
-
-  m_rv_scale_factor = 2.0 * (1600. / (600 * ppmm));
+  //  to allow raster and vector symbols to be rendered harmoniously
+  //  We do this empirically, making it look "nice" on average displays.
+  m_rv_scale_factor = 0.8;
 
   // Estimate the display size
-
   int ww, hh;
   ::wxDisplaySize(&ww, &hh);
   m_display_size_mm = ww / GetPPMM();  // accurate enough for internal use
 
   m_display_size_mm /= m_displayScale;
-
-//   wxString msg;
-//   msg.Printf("Core s52plib:  ppmm: %g rv_scale_factor: %g  calc_display_size_mm: %g", ppmm, m_rv_scale_factor, m_display_size_mm);
-//   wxLogMessage(msg);
 }
 
 void s52plib::SetScaleFactorExp(double ChartScaleFactorExp) {
@@ -2560,11 +2544,6 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   float fsf = 100 / canvas_pix_per_mm;
 
   float xscale = 1.0;
-  //  Set the onscreen size of the symbol
-  //  Compensate for various display resolutions
-  //  Develop empirically, making a flare light about 6 mm long
-  double pix_factor = GetPPMM() / 6.0;
-  xscale *= pix_factor;
 
   if ((!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6)) ||
       (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6)) ||
@@ -2573,7 +2552,7 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     // assume the symbol length
     float sym_length = 30;
     float scaled_length = sym_length / vp_plib.view_scale_ppm;
-    float target_length = 1852;
+    float target_length = 800;
 
     xscale = target_length / scaled_length;
     xscale = wxMin(xscale, 1.0);
@@ -10680,6 +10659,7 @@ bool RenderFromHPGL::Render(char *str, char *col, wxPoint &r, wxPoint &pivot,
   wxPoint lineEnd;
 
   scaleFactor = 100.0 / plib->GetPPMM();
+
   scaleFactor /= scale;
   scaleFactor /= g_scaminScale;
 
