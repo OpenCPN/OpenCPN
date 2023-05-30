@@ -2073,8 +2073,7 @@ void NotifySetupOptionsPlugin(const PlugInContainer *pic) {
         case 116:
         case 117:
         case 118: {
-          opencpn_plugin_19 *ppi =
-              dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
+          auto ppi = dynamic_cast<opencpn_plugin_118 *>(pic->m_pplugin);
           if (ppi) {
             ppi->OnSetupOptions();
             const_cast<PlugInContainer *>(pic)->m_bToolboxPanel = true;
