@@ -1251,7 +1251,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     dc.SetPen(target_pen);
     dc.SetBrush(target_brush);
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y,
-                    1.4 * AIS_icon_diameter);  // 9
+                     1.8 * AIS_icon_diameter);
+
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
     //        Draw the inactive cross-out line
     if (!td->b_active) {
@@ -1262,7 +1263,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     }
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
     AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
-                 2 * AIS_icon_diameter, td);
+                     2.0 * AIS_icon_diameter, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
   } else if (td->Class == AIS_SART) {  // SART Target
