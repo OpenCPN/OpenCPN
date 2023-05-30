@@ -482,6 +482,8 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
         } else if (!strcmp(object.name(), "wpt")) {
           RoutePoint *pWp = NULL;
           pWp = GPXLoadWaypoint1(object, "circle", "", false, false, false, 0);
+          pWp->m_bIsolatedMark = true;  // This is an isolated mark
+
           // Check for duplicate GUID
           if (g_pRouteMan){
             bool b_add = true;
