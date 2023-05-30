@@ -2870,7 +2870,7 @@ configure_file(
 #
 set(PKG_DESCR [=[
 OpenCPN is a concise ChartPlotter/Navigator. The application supports:
-GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart
+GPS/GPSD Position Input, BSB Raster Chart Display, S57 Vector ENChart
 Display, AIS Input Decoding, Waypoint Autopilot Navigation. ]=])
 
 if (UNIX AND NOT APPLE)
