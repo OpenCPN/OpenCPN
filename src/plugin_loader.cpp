@@ -93,7 +93,19 @@ static PlugInContainer* GetContainer(const PlugInData& pd,
   return nullptr;
 }
 
-std::string GetPluginVersion(
+/** Return true if path "seems" to contain a system plugin */
+static bool IsSystemPlugin(const std::string& path) {
+  static const std::vector<std::string> SysPlugins = {
+      "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi"};
+
+  const std::string lc_path = ocpn::tolower(path);
+  for (const auto& p : SysPlugins)
+    if (lc_path.find(p) != std::string::npos) return true;
+  return false;
+}
+
+
+std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
   auto loader = PluginLoader::getInstance();
@@ -152,17 +164,6 @@ PlugInData::PlugInData(const PluginMetadata& md) : PlugInData() {
   m_managed_metadata = md;
   m_status = PluginStatus::ManagedInstallAvailable;
   m_enabled = false;
-}
-
-/** Return true if path "seems" to contain a system plugin */
-static bool IsSystemPlugin(const std::string& path) {
-  static const std::vector<std::string> SysPlugins = {
-      "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi"};
-
-  const std::string lc_path = ocpn::tolower(path);
-  for (const auto& p : SysPlugins)
-    if (lc_path.find(p) != std::string::npos) return true;
-  return false;
 }
 
 std::string PlugInData::Key() const {
@@ -782,7 +783,7 @@ static std::string VersionFromManifest(const std::string& plugin_name) {
 }
 
 /** Find metadata for given plugin. */
-static PluginMetadata MetadataByName(const std::string& name) {
+PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   using namespace std;
   if (name.empty()) return {};
 
@@ -801,13 +802,21 @@ static PluginMetadata MetadataByName(const std::string& name) {
 }
 
 /** Update PlugInContainer using data from PluginMetadata and manifest. */
-static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata& md) {
+void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
+                                const PluginMetadata& md) {
+
+  auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
+                         ocpn::tolower(md.name));
+  bool is_system = found != SYSTEM_PLUGINS.end();
+
   std::string installed = VersionFromManifest(md.name);
   plugin->m_manifest_version = installed;
   auto installedVersion = SemanticVersion::parse(installed);
-
   auto metaVersion = SemanticVersion::parse(md.version);
-  if (installedVersion < metaVersion)
+
+  if (is_system)
+    plugin->m_status = PluginStatus::System;
+  else if (installedVersion < metaVersion)
     plugin->m_status = PluginStatus::ManagedInstalledUpdateAvailable;
   else if (installedVersion == metaVersion)
     plugin->m_status = PluginStatus::ManagedInstalledCurrentVersion;
@@ -834,7 +843,8 @@ void PluginLoader::UpdateManagedPlugins() {
   // available in the current catalog Usually due to reverting from Alpha/Beta
   // catalog back to master
   auto predicate = [](const PlugInContainer* pd) -> bool {
-    const auto md(MetadataByName(pd->m_common_name.ToStdString()));
+    const auto md(
+        PluginLoader::MetadataByName(pd->m_common_name.ToStdString()));
     return md.name.empty() && !pd->m_pplugin;
   };
   auto end =
@@ -843,13 +853,15 @@ void PluginLoader::UpdateManagedPlugins() {
 
   //  Update from the catalog metadata
   for (auto& plugin : loaded_plugins) {
-    auto md = MetadataByName(plugin->m_common_name.ToStdString());
+    auto md = PluginLoader::MetadataByName(plugin->m_common_name.ToStdString());
     if (!md.name.empty()) {
       auto import_path = PluginHandler::ImportedMetadataPath(md.name.c_str());
       md.is_imported = isRegularFile(import_path.c_str());
       if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
         // This is an installed plugin
-        UpdatePlugin(plugin, md);
+        PluginLoader::UpdatePlugin(plugin, md);
+      } else if (IsSystemPlugin(md.name)) {
+        plugin->m_status = PluginStatus::System;
       } else if (plugin->m_api_version) {
         // If the plugin is actually loaded, but the new plugin is known not
         // to be installed, then it must be a legacy plugin loaded.

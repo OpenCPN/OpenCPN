@@ -60,13 +60,6 @@ enum class PluginStatus {
 class PlugInContainer;  // forward
 class PlugInData;  // forward
 
-/** Return version string for a plugin, possibly with an "Imported" suffix. */
-std::string GetPluginVersion(
-    const PlugInData pd,
-    std::function<const PluginMetadata(const std::string&)> get_metadata);
-
-
-
 
 /** Basic data for a loaded plugin, trivially copyable */
 class PlugInData {
@@ -162,6 +155,20 @@ class PluginLoader {
 public:
   static PluginLoader* getInstance();
   virtual ~PluginLoader() = default;
+  /**
+   *  Update PlugInContainer status using data from PluginMetadata and manifest.
+   */
+  static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata& md);
+
+
+  /** Return version string for a plugin, possibly with an "Imported" suffix. */
+  static std::string GetPluginVersion(
+      const PlugInData pd,
+      std::function<const PluginMetadata(const std::string&)> get_metadata);
+
+  /** Find metadata for given plugin. */
+  static PluginMetadata MetadataByName(const std::string& name);
+
 
   EventVar evt_blacklisted_plugin;
 

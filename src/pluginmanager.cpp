@@ -1677,8 +1677,8 @@ void PlugInManager::SendCursorLatLonToAllPlugIns(double lat, double lon) {
   }
 }
 
-void NotifySetupOptionsPlugin(const PlugInData *pic) {
-  PluginLoader::getInstance()->NotifySetupOptionsPlugin(pic);
+void NotifySetupOptionsPlugin(const PlugInData *pd) {
+  PluginLoader::getInstance()->NotifySetupOptionsPlugin(pd);
 }
 
 void PlugInManager::NotifySetupOptions() {
@@ -4022,13 +4022,18 @@ void PluginListPanel::SelectByName(wxString &name) {
   }
 }
 
+
 /** Return sorted list of all  installed  plugins. */
 std::vector<const PlugInData*> GetInstalled() {
-// FIXME (leamas) make a copy of m_pplugin.
   std::vector<const PlugInData*> result;
   auto loader = PluginLoader::getInstance();
   for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
     auto const item = loader->GetPlugInArray()->Item(i);
+    if (item->m_managed_metadata.name.empty()){
+      const auto name = item->m_common_name.ToStdString();
+      item->m_managed_metadata = PluginLoader::MetadataByName(name);
+    }
+    PluginLoader::UpdatePlugin(item, item->m_managed_metadata);
     result.push_back(item);
   }
   auto compare = [](const PlugInData* lhs, const PlugInData* rhs) {
@@ -4573,7 +4578,8 @@ static PluginMetadata GetMetadataByName(const std::string& name) {
 void PluginPanel::SetSelected(bool selected) {
   m_bSelected = selected;
 
-  m_pVersion->SetLabel(GetPluginVersion(m_plugin, GetMetadataByName));
+  m_pVersion->SetLabel(
+      PluginLoader::GetPluginVersion(m_plugin, GetMetadataByName));
   if (selected) {
     SetBackgroundColour(GetDialogColor(DLG_SELECTED_BACKGROUND));
     m_pButtons->Show(true);
@@ -4735,8 +4741,9 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent &event) {
 }
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent &event) {
-  SetEnabled(!m_plugin.m_enabled);
-  m_pVersion->SetLabel(GetPluginVersion(m_plugin, GetMetadataByName));
+  SetEnabled(event.IsChecked());
+  m_pVersion->SetLabel(
+      PluginLoader::GetPluginVersion(m_plugin, GetMetadataByName));
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent &event) {
@@ -4760,19 +4767,9 @@ void PluginPanel::OnPluginAction(wxCommandEvent &event) {
 }
 
 void PluginPanel::SetEnabled(bool enabled) {
-std::cout <<  "SetEnabled: enabed: " << ( enabled ? "true\n" : "false\n");
-  if (m_plugin.m_enabled != enabled) {
-    PluginLoader::getInstance()->SetEnabled(m_plugin.m_common_name, enabled);
-    PluginLoader::getInstance()->UpdatePlugIns();
-    NotifySetupOptionsPlugin(&m_plugin);
-    wxString config_section = "/PlugIns/";
-  }
-  wxString config_section = "/PlugIns/";
-  config_section += m_plugin.m_plugin_filename;
-std::cout << "config section: " << config_section << "\n";
-  pConfig->SetPath(config_section);
-  pConfig->Write("bEnabled", enabled);
-  pConfig->Flush();
+  PluginLoader::getInstance()->SetEnabled(m_plugin.m_common_name, enabled);
+  PluginLoader::getInstance()->UpdatePlugIns();
+  NotifySetupOptionsPlugin(&m_plugin);
   if (!enabled && !m_bSelected) {
     m_pName->SetForegroundColour(
         wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
