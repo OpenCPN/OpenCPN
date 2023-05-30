@@ -4155,17 +4155,13 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   double brg, dist;
   wxString s;
   DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
-//   if (g_bShowMag)
-//     s.Printf("%03d%c(M)  ", (int)gFrame->GetMag(brg), 0x00B0);
-//   else
-//     s.Printf("%03d%c  ", (int)brg, 0x00B0);
-
-  if (g_bShowTrue)
-    s << wxString::Format("%03d%c  ", (int)floor(brg+.5), 0x00B0);
-  if (g_bShowMag)
-    s << wxString::Format("%03d%c(M)  ", (int)floor(gFrame->GetMag(brg)+.5), 0x00B0);
-
   s << FormatDistanceAdaptive(dist);
+  if (g_bShowTrue)
+    s << wxString::Format("  %03d%c", (int)floor(brg+.5), 0x00B0);
+  if (g_bShowMag)
+    s << wxString::Format("  %03d%c(M)", (int)floor(gFrame->GetMag(brg)+.5), 0x00B0);
+
+
 
   // CUSTOMIZATION - LIVE ETA OPTION
   // -------------------------------------------------------
