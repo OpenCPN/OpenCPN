@@ -1569,10 +1569,12 @@ void NavObjectChanges::AddRoute(Route *pr, const char *action) {
   pugi::xml_node child = xchild.append_child("opencpn:action");
   child.append_child(pugi::node_pcdata).set_value(action);
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 void NavObjectChanges::AddTrack(Track *pr, const char *action) {
@@ -1585,10 +1587,12 @@ void NavObjectChanges::AddTrack(Track *pr, const char *action) {
   pugi::xml_node child = xchild.append_child("opencpn:action");
   child.append_child(pugi::node_pcdata).set_value(action);
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 void NavObjectChanges::AddWP(RoutePoint *pWP, const char *action) {
@@ -1601,10 +1605,12 @@ void NavObjectChanges::AddWP(RoutePoint *pWP, const char *action) {
   pugi::xml_node child = xchild.append_child("opencpn:action");
   child.append_child(pugi::node_pcdata).set_value(action);
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 void NavObjectChanges::AddTrackPoint(TrackPoint *pWP, const char *action,
@@ -1622,10 +1628,12 @@ void NavObjectChanges::AddTrackPoint(TrackPoint *pWP, const char *action,
   pugi::xml_node gchild = xchild.append_child("opencpn:track_GUID");
   gchild.append_child(pugi::node_pcdata).set_value(parent_GUID.mb_str());
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 bool NavObjectChanges::ApplyChanges(void) {
