@@ -91,7 +91,7 @@ static const char* const DEVICE_NOT_FOUND =
 struct HideCheckbox : public wxCheckBox {
   HideCheckbox(wxWindow* parent, const char* label, bool* state)
       : wxCheckBox(parent, wxID_ANY, label, wxDefaultPosition, wxDefaultSize,
-                   wxALIGN_RIGHT),
+                   wxALIGN_LEFT),
         m_state(state) {
     SetValue(*state);
     Bind(wxEVT_CHECKBOX,
@@ -107,7 +107,7 @@ struct HidePanel : wxPanel {
   HidePanel(wxWindow* parent, const char* label, bool* state)
       : wxPanel(parent) {
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    hbox->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
+    //hbox->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     hbox->Add(new HideCheckbox(this, label, state), wxSizerFlags().Expand());
     SetSizer(hbox);
     Fit();
@@ -153,7 +153,7 @@ public:
       : HideShowPanel(parent, 0) {
     m_child = get_cmd(parent, cmd);
     toggle();
-    auto flags = wxSizerFlags().Expand().Border().Right();
+    auto flags = wxSizerFlags().Expand().Right();
 
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     const char* label = _("Manual command line instructions");
@@ -192,7 +192,7 @@ public:
     m_child = new wxStaticText(this, wxID_ANY, rule.substr(from));
     toggle();
 
-    auto flags = wxSizerFlags().Expand().Border().Right();
+    auto flags = wxSizerFlags().Expand().Right();
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Review rule")), flags);
     hbox->Add(m_arrow);
@@ -258,7 +258,7 @@ struct Buttons : public wxPanel {
   Buttons(wxWindow* parent, const char* rule_path)
       : wxPanel(parent), m_rule_path(rule_path) {
     auto sizer = new wxBoxSizer(wxHORIZONTAL);
-    auto flags = wxSizerFlags().Right().Bottom().Border();
+    auto flags = wxSizerFlags().Right().Bottom();
     sizer->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     auto install = new wxButton(this, wxID_ANY, _("Install rule"));
     install->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -303,7 +303,7 @@ public:
   DongleRuleDialog(wxWindow* parent)
       : wxDialog(parent, wxID_ANY, _("Manage dongle udev rule")) {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand().Border();
+    auto flags = wxSizerFlags().Expand();
     std::string intro(DONGLE_INTRO);
     if (getenv("FLATPAK_ID")) {
       intro += FLATPAK_INTRO_TRAILER;
@@ -312,7 +312,7 @@ public:
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new DongleInfoPanel(this), flags);
     sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL, &hide_dongle_dialog),
-               flags.Right());
+               flags.Left());
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new Buttons(this, get_dongle_rule().c_str()), flags);
     SetSizer(sizer);
@@ -345,7 +345,7 @@ public:
   DeviceRuleDialog(wxWindow* parent, const char* device_path)
       : wxDialog(parent, wxID_ANY, _("Manage device udev rule")) {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand().Border();
+    auto flags = wxSizerFlags().Expand();
 
     std::string symlink(make_udev_link());
     auto intro = get_device_intro(device_path, symlink.c_str());
@@ -385,7 +385,8 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
 
 bool CheckDongleAccess(wxWindow* parent) {
   int result = 0;
-  if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
+//  if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
+  if (getenv("FLATPAK_ID")) {
     auto dialog = new DongleRuleDialog(parent);
     result = dialog->ShowModal();
     delete dialog;
