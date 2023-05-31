@@ -162,8 +162,8 @@ public:
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(hbox);
-    auto indent = parent->GetTextExtent("aaa").GetWidth();
-    flags = flags.Border(wxLEFT, indent);
+    //auto indent = parent->GetTextExtent("aaa").GetWidth();
+    flags = flags.Border(wxLEFT);
     vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
 
     SetSizer(vbox);
