@@ -474,13 +474,14 @@ void RouteManagerDialog::Create() {
 
   wxString reseq_label(_("&Resequence Waypoints"));
   wxString export_label(_("&Export selected..."));
+  wxString send_to_gps_label(_("&Send to GPS..."));
+  wxString send_to_peer_label(_("Send to &Peer..."));
 
 #ifdef __ANDROID__
-  wxSize frame_size = gFrame->GetSize();
-  if (frame_size.x < frame_size.y){
-    reseq_label = wxString(_("&Resequence"));
-    export_label = wxString(_("&Export..."));
-  }
+  reseq_label = wxString(_("Resequence"));
+  export_label = wxString(_("Export"));
+  send_to_gps_label = wxString(_("Send to GPS"));
+  send_to_peer_label = wxString(_("Send to Peer"));
 #endif
 
   btnRteExport = new wxButton(winr, -1, export_label);
@@ -498,7 +499,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL,
       this);
 
-  btnRteSendToPeer = new wxButton(winr, -1, _("Send to &Peer..."));
+  btnRteSendToPeer = new wxButton(winr, -1, send_to_peer_label);
   bsRouteButtonsInner->Add(btnRteSendToPeer, 0, wxALL | wxEXPAND,
                            DIALOG_MARGIN);
   btnRteSendToPeer->Connect(
@@ -506,7 +507,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteSendToPeerClick), NULL,
       this);
 
-  btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS..."));
+  btnRteSendToGPS = new wxButton(winr, -1, send_to_gps_label);
   bsRouteButtonsInner->Add(btnRteSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   btnRteSendToGPS->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
