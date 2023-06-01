@@ -13,3 +13,7 @@ buildwin/crashrpt/CrashSender1402.exe
 .DS_Store
 .idea
 *.swp
+configdev.bat
+*.log
+.vscode
+.vs

@@ -110,19 +110,21 @@ std::string PluginLoader::GetPluginVersion(
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
   auto loader = PluginLoader::getInstance();
   auto pic = GetContainer(pd, *loader->GetPlugInArray());
-  auto metadata(pic->m_managed_metadata);
-  if (metadata.version == "")
-    metadata = get_metadata(pic->m_common_name.ToStdString());
-  std::string import_suffix(metadata.is_imported ? _(" [Imported]") : "");
+  std::string import_suffix;
+  PluginMetadata metadata;
+  if (pic) {
+    metadata = pic->m_managed_metadata;
+    if (metadata.version == "")
+      metadata = get_metadata(pic->m_common_name.ToStdString());
+    import_suffix = metadata.is_imported ? _(" [Imported]") : "";
+  } else {
+    wxLogMessage("Attempt to get version for empty pic pointer");
+    return SemanticVersion(0, 0, -1).to_string();
+  }
 
   int v_major(0);
   int v_minor(0);
-
-  if (!pic) {
-    wxLogMessage("Attempt to get version for empty pic pointer");
-    return SemanticVersion(0, 0, -1).to_string() + import_suffix;
-  }
-  if (pic->m_pplugin)  {
+  if (pic->m_pplugin) {
     v_major = pic->m_pplugin->GetPlugInVersionMajor();
     v_minor = pic->m_pplugin->GetPlugInVersionMinor();
   }

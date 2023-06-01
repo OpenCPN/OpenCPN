@@ -1118,6 +1118,11 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
 
   auto loader = PluginLoader::getInstance();
   auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
+  if (ix < 0) {
+    wxLogMessage("trying to uninstall non-existing plugin %s",
+                 plugin_name.c_str());
+    return false;
+  }
   auto pic = loader->GetPlugInArray()->Item(ix);
   // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
   loader->UnLoadPlugIn(ix);

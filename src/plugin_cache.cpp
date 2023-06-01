@@ -52,7 +52,8 @@ static std::string tarball_path(const char* basename, bool create = false) {
   if (create) {
     dirs.Mkdir(wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
   }
-  wxFileName path(dirs.GetFullPath(), wxString(basename));
+  static const auto kSeparator = wxFileName::GetPathSeparator();
+  wxFileName path(dirs.GetFullPath() + kSeparator +  wxString(basename));
   return path.GetFullPath().ToStdString();
 }
 
