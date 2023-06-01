@@ -4183,15 +4183,15 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
     m_adv_button = NULL;
   } else {
     // First line
-    m_catalogText = new wxStaticText(this, wxID_STATIC, _T(""));
+    m_catalogText = new wxStaticText(this, wxID_STATIC, GetCatalogText(false));
     itemStaticBoxSizer4->Add(m_catalogText,
-                             wxSizerFlags().Border().Proportion(1));
-    m_catalogText->SetLabel(GetCatalogText(false));
+                             wxSizerFlags().Border(wxALL, 5).Proportion(1));
+    //m_catalogText->SetLabel(GetCatalogText(false));
 
     m_updateButton =
-        new wxButton(this, wxID_ANY, _("Update Plugin Catalog:master"),
+        new wxButton(this, wxID_ANY, "Update Plugin Catalog:master                ",
                      wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT);
+    itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT | wxTOP, 5);
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
     SetUpdateButtonLabel();
@@ -4199,14 +4199,14 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
     // Next line
     m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                                 wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_adv_button, 0, wxALIGN_LEFT);
+    itemStaticBoxSizer4->Add(m_adv_button, 0, wxALIGN_LEFT | wxTOP, GetCharWidth());
     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                        &CatalogMgrPanel::OnPluginSettingsButton, this);
 
     // Next line
     m_tarballButton = new wxButton(this, wxID_ANY, _("Import plugin..."),
                                    wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_tarballButton, 0, wxALIGN_LEFT | wxLEFT,
+    itemStaticBoxSizer4->Add(m_tarballButton, 0, wxALIGN_LEFT | wxALL,
                              2 * GetCharWidth());
     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
@@ -4704,6 +4704,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
       pConfig->Read(_T("LatestCatalogDownloaded"), _T("default"));
   catalog += latestCatalog;
 
+#ifndef __OCPN__ANDROID__
   //  Get the version from the currently active catalog, by which we mean
   //  the latest catalog parsed.
   auto pluginHandler = PluginHandler::getInstance();
@@ -4711,6 +4712,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
 
   catalog += wxString("  ") + _("Last change: ") + " " + date;
   if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
+#endif
 
   return catalog;
 }
