@@ -385,8 +385,7 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
 
 bool CheckDongleAccess(wxWindow* parent) {
   int result = 0;
-//  if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
-  if (getenv("FLATPAK_ID")) {
+  if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
     auto dialog = new DongleRuleDialog(parent);
     result = dialog->ShowModal();
     delete dialog;
