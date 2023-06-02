@@ -238,6 +238,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
       	N2kMsg.SetPGN(126993L);
         N2kMsg.Priority=7;
         N2kMsg.Source = 2;
+        N2kMsg.Destination = 133;
         N2kMsg.Add2ByteUInt((uint16_t)(2000));    // Rate, msec
 
         N2kMsg.AddByte(0);    //Status
@@ -255,14 +256,14 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   auto source_address = std::make_shared<NavAddr2000>(interface, source_name);
   auto dest_address = std::make_shared<NavAddr2000>(interface, N2kMsg.Destination);
 
-  auto message_to_send = std::make_shared<Nmea2000Msg>(source_name, mv, source_address);
+  auto message_to_send = std::make_shared<Nmea2000Msg>(126993L, mv, source_address);
 
     for(size_t i=0; i< mv.size(); i++){
       printf("%02X ", mv.at(i));
     }
     printf("\n\n");
 
-  //SendMessage(message_to_send, dest_address);
+  SendMessage(message_to_send, dest_address);
 
   int yyp = 4;
 #endif
@@ -331,10 +332,13 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
   std::vector<uint8_t> load = msg_n2k->payload;
 
   uint64_t _pgn = msg_n2k->PGN.pgn;
+  auto destination_address = std::static_pointer_cast<const NavAddr2000>(addr);
 
   tN2kMsg N2kMsg;   // automatically sets destination 255
   N2kMsg.SetPGN(_pgn);
   N2kMsg.Priority=6;
+  if (destination_address)
+    N2kMsg.Destination = destination_address->address;
 
   for (size_t i=0 ; i < load.size(); i++)
     N2kMsg.AddByte(load.at(i));    //data
