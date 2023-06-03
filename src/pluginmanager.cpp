@@ -8606,7 +8606,8 @@ CommDriverResult WriteCommDriverN2K(
   const std::vector<uint8_t> load;
   size_t data_len = payload.get()->size();
 
-  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, *(payload), dest_addr);
+  auto msg = std::make_shared<const Nmea2000Msg>(
+              _PGN, *(payload), dest_addr, priority);
 
   bool result = driver->get()->SendMessage(msg, dest_addr);
 
