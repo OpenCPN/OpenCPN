@@ -236,7 +236,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   //SetHeartbeat(N2kMsg,2000,0);
       //SetN2kPGN126993(N2kMsg, 2000, 0);
       	N2kMsg.SetPGN(126993L);
-        N2kMsg.Priority=7;
+        //N2kMsg.Priority=7;
         N2kMsg.Source = 2;
         N2kMsg.Destination = 133;
         N2kMsg.Add2ByteUInt((uint16_t)(2000));    // Rate, msec
@@ -256,12 +256,16 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   auto source_address = std::make_shared<NavAddr2000>(interface, source_name);
   auto dest_address = std::make_shared<NavAddr2000>(interface, N2kMsg.Destination);
 
-  auto message_to_send = std::make_shared<Nmea2000Msg>(126993L, mv, source_address);
+  auto message_to_send = std::make_shared<Nmea2000Msg>(126993L,
+                                  mv, source_address, 3);
 
     for(size_t i=0; i< mv.size(); i++){
       printf("%02X ", mv.at(i));
     }
     printf("\n\n");
+
+  SetTXPGN(126993);
+  wxSleep(1);
 
   SendMessage(message_to_send, dest_address);
 
@@ -336,7 +340,7 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
   tN2kMsg N2kMsg;   // automatically sets destination 255
   N2kMsg.SetPGN(_pgn);
-  N2kMsg.Priority=6;
+  N2kMsg.Priority = msg_n2k->priority;
   if (destination_address)
     N2kMsg.Destination = destination_address->address;
 
@@ -517,7 +521,9 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
 
   // send it out
 
-  *response_flag = false;  // prime the response detector
+  if (response_flag)
+    *response_flag = false;  // prime the response detector
+
   // Send the msg
   bool bsent = false;
   bool not_done = true;
@@ -545,17 +551,23 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
   if (!bsent)
     return 1;
 
-  int timeout = timeout_msec;
   bool bOK = false;
-  while (timeout > 0) {
-    wxYieldIfNeeded();
-    wxMilliSleep(100);
-    if (*response_flag){
-      bOK = true;
-      break;
+  if (timeout_msec) {
+    int timeout = timeout_msec;
+    while (timeout > 0) {
+      wxYieldIfNeeded();
+      wxMilliSleep(100);
+      if (response_flag){
+        if (*response_flag){
+          bOK = true;
+          break;
+        }
+      }
+      timeout -= 100;
     }
-    timeout -= 100;
   }
+  else
+    bOK = true;
 
   if(!bOK){
     //printf( "***Err-1\n");
@@ -567,14 +579,31 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
   return 0;
 }
 
+/* Copied from canboat Project
+ * https://github.com/canboat/canboat
+ *
+ * The following startup command reverse engineered from Actisense NMEAreader.
+ * It instructs the NGT1 to clear its PGN message TX list, thus it starts
+ * sending all PGNs.
+ */
+static unsigned char NGT_STARTUP_SEQ[] = {
+    0x11, /* msg byte 1, meaning ? */
+    0x02, /* msg byte 2, meaning ? */
+    0x00  /* msg byte 3, meaning ? */
+};
+
 int CommDriverN2KSerial::SetTXPGN(int pgn) {
 
   // Try to detect Actisense NGT-xx, has Mfg_code == 273
-  if (m_got_mfg_code) {
-    if (m_manufacturers_code != 273)
-      return 0;  // Not Actisense, no error
-  }
+//   if (m_got_mfg_code) {
+//     if (m_manufacturers_code != 273)
+//       return 0;  // Not Actisense, no error
+//   }
 
+  SendMgmtMsg( NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
+
+
+#if 0
   //  Enable PGN message
   unsigned char request_enable[] = { 0x47,
                       0x00, 0x00, 0x00,           //pgn
@@ -603,7 +632,7 @@ int CommDriverN2KSerial::SetTXPGN(int pgn) {
   int cc = SendMgmtMsg( request_activate, sizeof(request_activate), 0x4B, 2000, &m_bmg4B_resp);
 //   if (cc)
 //     return -3;
-
+#endif
 
 
   return 0;
