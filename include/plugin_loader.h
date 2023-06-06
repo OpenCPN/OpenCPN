@@ -232,8 +232,6 @@ private:
 #ifdef __WXMSW__
   wxString m_module_name;
   bool m_found_wxwidgets;
-  /** Get list of dependencies for a loaded plugin */
-  std::vector<std::string> GetDependencies(PlugInContainer* pic);
 #endif
 
   const wxBitmap* m_default_plugin_icon;
