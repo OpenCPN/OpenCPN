@@ -78,6 +78,10 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef WIN32
+#include <Psapi.h>
+#endif
+
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 extern ChartDB* ChartData;
