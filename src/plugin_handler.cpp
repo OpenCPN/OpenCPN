@@ -1064,9 +1064,13 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
 
   auto loader = PluginLoader::getInstance();
   auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
-  auto pic = loader->GetPlugInArray()->Item(ix);
-  // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
-  loader->UnLoadPlugIn(ix);
+  if (ix != -1) {
+    auto pic = loader->GetPlugInArray()->Item(ix);
+    // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
+    loader->UnLoadPlugIn(ix);
+  } else {
+    wxLogWarning("Cannot find plugin %s", plugin_name.c_str());
+  }
   string path = PluginHandler::fileListPath(plugin_name);
   if (!ocpn::exists(path)) {
     wxLogWarning("Cannot find installation data for %s (%s)",
