@@ -913,6 +913,10 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
         if((type == CHART_TYPE_KAP) && (nscale == smallest_scale))
           nmin_scale *= 24;
 
+         // Allow MBTiles quilt to zoom far out and still show smallest scale chart.
+        if((type == CHART_TYPE_MBTILES) && (nscale == smallest_scale))
+          nmin_scale *= 24;
+
         if (CHART_TYPE_MBTILES == ChartData->GetDBChartType(test_db_index))
           scales_mbtiles.push_back(
               scale{test_db_index, nscale, nmin_scale, nmax_scale});
