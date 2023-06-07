@@ -4396,7 +4396,7 @@ msgstr "Ciag danych NMEA jest na ogół 3 znakowy (jak RMC, GGA itp.) \n"
 "  Może mieć również prefiks dwuliterowy identyfikacji źródła lub TALKER wiadomości.\n"
 " Całe  sentencje wygląda jak GPGGA lub AITXT.\n"
 " Możesz odfiltrować wszystkie ciagi danych z określonego TALKERa (jak GP, AI itp.). \n"
-" Filtr akceptuje tylko te trzy formaty."
+" Filtr akceptuje tylko te trzy formaty.\n"
 
 #: src/connections_dialog.cpp:2230
 msgid "REGEX syntax error: \n"
