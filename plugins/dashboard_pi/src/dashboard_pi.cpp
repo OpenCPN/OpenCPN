@@ -3805,7 +3805,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemStaticBoxSizer03->Add(itemBoxSizer04, 0, wxALIGN_TOP | wxALL,
                             border_size);
   m_pButtonAdd = new wxButton(m_pPanelDashboard, wxID_ANY, _("Add"),
-                              wxDefaultPosition, wxSize(20, -1));
+                              wxDefaultPosition, wxSize(-1, -1));
   itemBoxSizer04->Add(m_pButtonAdd, 0, wxEXPAND | wxALL, border_size);
   m_pButtonAdd->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
@@ -3821,7 +3821,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
      NULL, this );
   */
   m_pButtonDelete = new wxButton(m_pPanelDashboard, wxID_ANY, _("Delete"),
-                                 wxDefaultPosition, wxSize(20, -1));
+                                 wxDefaultPosition, wxSize(-1, -1));
   itemBoxSizer04->Add(m_pButtonDelete, 0, wxEXPAND | wxALL, border_size);
   m_pButtonDelete->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
