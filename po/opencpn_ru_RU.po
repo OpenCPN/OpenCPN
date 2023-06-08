@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-01 17:07-0400\n"
-"PO-Revision-Date: 2023-06-05 01:25\n"
+"PO-Revision-Date: 2023-06-08 02:36\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -81,7 +81,7 @@ msgstr "Дополнительная информация об объекте"
 #: src/routemanagerdialog.cpp:483 src/routemanagerdialog.cpp:1830
 #: src/routemanagerdialog.cpp:2828
 msgid "Send to GPS"
-msgstr "Загрузить в GPS"
+msgstr "Отправить в GPS"
 
 #: include/SendToPeerDlg.h:40 src/routemanagerdialog.cpp:484
 msgid "Send to Peer"
@@ -3228,7 +3228,7 @@ msgstr "Пересчитать названия точек"
 
 #: src/canvasMenu.cpp:770 src/canvasMenu.cpp:871
 msgid "Send to new GPS"
-msgstr "Загрузить в GPS"
+msgstr "Отправить в GPS"
 
 #: src/canvasMenu.cpp:792
 msgid "Layer Track"
@@ -7196,15 +7196,15 @@ msgstr "&Экспортировать…"
 
 #: src/routemanagerdialog.cpp:477
 msgid "&Send to GPS..."
-msgstr ""
+msgstr "&Отправить в GPS..."
 
 #: src/routemanagerdialog.cpp:478
 msgid "Send to &Peer..."
-msgstr ""
+msgstr "Отправить в OpenCPN по Сети..."
 
 #: src/routemanagerdialog.cpp:481
 msgid "Resequence"
-msgstr ""
+msgstr "Последовательность"
 
 #: src/routemanagerdialog.cpp:482 src/TrackPropDlg.cpp:987
 msgid "Export"
@@ -7264,7 +7264,7 @@ msgstr "&Идти к метке"
 
 #: src/routemanagerdialog.cpp:792
 msgid "&Send to GPS"
-msgstr "&Загрузить в GPS"
+msgstr "&Отправить в GPS"
 
 #: src/routemanagerdialog.cpp:809
 msgid "Delete All"
@@ -7771,7 +7771,7 @@ msgid "<p>The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
 "</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
-msgstr ""
+msgstr "<p>OpenCPN запустится в безопасном режиме без модулей и других возможных проблемных функций.</p>"
 
 #: src/safe_mode.cpp:63
 msgid "Safe restart"
