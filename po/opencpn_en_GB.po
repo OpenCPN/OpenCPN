@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-01 17:07-0400\n"
-"PO-Revision-Date: 2023-06-05 01:25\n"
+"PO-Revision-Date: 2023-06-08 02:36\n"
 "Last-Translator: \n"
 "Language-Team: English, United Kingdom\n"
 "Language: en_GB\n"
@@ -1451,176 +1451,176 @@ msgstr "Vatican City State"
 
 #: src/ais_target_data.cpp:1043 src/ais_target_data.cpp:1047
 msgid "Cyprus"
-msgstr ""
+msgstr "Cyprus"
 
 #: src/ais_target_data.cpp:1045 src/ais_target_data.cpp:1057
 msgid "Germany"
-msgstr ""
+msgstr "Germany"
 
 #: src/ais_target_data.cpp:1049
 msgid "Georgia"
-msgstr ""
+msgstr "Georgia"
 
 #: src/ais_target_data.cpp:1051
 msgid "Moldova"
-msgstr ""
+msgstr "Moldova"
 
 #: src/ais_target_data.cpp:1053 src/ais_target_data.cpp:1070
 #: src/ais_target_data.cpp:1102 src/ais_target_data.cpp:1116
 msgid "Malta"
-msgstr ""
+msgstr "Malta"
 
 #: src/ais_target_data.cpp:1055
 msgid "Armenia"
-msgstr ""
+msgstr "Armenia"
 
 #: src/ais_target_data.cpp:1060
 msgid "Denmark"
-msgstr ""
+msgstr "Denmark"
 
 #: src/ais_target_data.cpp:1062 src/ais_target_data.cpp:1064
 msgid "Spain"
-msgstr ""
+msgstr "Spain"
 
 #: src/ais_target_data.cpp:1068
 msgid "France"
-msgstr ""
+msgstr "France"
 
 #: src/ais_target_data.cpp:1072
 msgid "Finland"
-msgstr ""
+msgstr "Finland"
 
 #: src/ais_target_data.cpp:1074
 msgid "Faroe Islands"
-msgstr ""
+msgstr "Faroe Islands"
 
 #: src/ais_target_data.cpp:1079
 msgid "Great Britain"
-msgstr ""
+msgstr "Great Britain"
 
 #: src/ais_target_data.cpp:1081
 msgid "Gibraltar"
-msgstr ""
+msgstr "Gibraltar"
 
 #: src/ais_target_data.cpp:1083 src/ais_target_data.cpp:1089
 msgid "Greece"
-msgstr ""
+msgstr "Greece"
 
 #: src/ais_target_data.cpp:1085
 msgid "Croatia"
-msgstr ""
+msgstr "Croatia"
 
 #: src/ais_target_data.cpp:1091
 msgid "Morocco"
-msgstr ""
+msgstr "Morocco"
 
 #: src/ais_target_data.cpp:1093
 msgid "Hungary"
-msgstr ""
+msgstr "Hungary"
 
 #: src/ais_target_data.cpp:1097
 msgid "Netherlands"
-msgstr ""
+msgstr "Netherlands"
 
 #: src/ais_target_data.cpp:1099
 msgid "Italy"
-msgstr ""
+msgstr "Italy"
 
 #: src/ais_target_data.cpp:1104
 msgid "Ireland"
-msgstr ""
+msgstr "Ireland"
 
 #: src/ais_target_data.cpp:1106
 msgid "Iceland"
-msgstr ""
+msgstr "Iceland"
 
 #: src/ais_target_data.cpp:1108
 msgid "Liechtenstein"
-msgstr ""
+msgstr "Liechtenstein"
 
 #: src/ais_target_data.cpp:1110
 msgid "Luxembourg"
-msgstr ""
+msgstr "Luxembourg"
 
 #: src/ais_target_data.cpp:1112
 msgid "Monaco"
-msgstr ""
+msgstr "Monaco"
 
 #: src/ais_target_data.cpp:1114
 msgid "Madeira"
-msgstr ""
+msgstr "Madeira"
 
 #: src/ais_target_data.cpp:1120
 msgid "Norway"
-msgstr ""
+msgstr "Norway"
 
 #: src/ais_target_data.cpp:1122
 msgid "Poland"
-msgstr ""
+msgstr "Poland"
 
 #: src/ais_target_data.cpp:1124
 msgid "Montenegro"
-msgstr ""
+msgstr "Montenegro"
 
 #: src/ais_target_data.cpp:1126
 msgid "Portugal"
-msgstr ""
+msgstr "Portugal"
 
 #: src/ais_target_data.cpp:1128
 msgid "Romania"
-msgstr ""
+msgstr "Romania"
 
 #: src/ais_target_data.cpp:1131
 msgid "Sweden"
-msgstr ""
+msgstr "Sweden"
 
 #: src/ais_target_data.cpp:1133
 msgid "Slovak Republic"
-msgstr ""
+msgstr "Slovak Republic"
 
 #: src/ais_target_data.cpp:1135
 msgid "San Marino"
-msgstr ""
+msgstr "San Marino"
 
 #: src/ais_target_data.cpp:1137
 msgid "Switzerland"
-msgstr ""
+msgstr "Switzerland"
 
 #: src/ais_target_data.cpp:1139
 msgid "Czech Republic"
-msgstr ""
+msgstr "Czech Republic"
 
 #: src/ais_target_data.cpp:1141
 msgid "Turkey"
-msgstr ""
+msgstr "Turkey"
 
 #: src/ais_target_data.cpp:1143
 msgid "Ukraine"
-msgstr ""
+msgstr "Ukraine"
 
 #: src/ais_target_data.cpp:1145
 msgid "Russian"
-msgstr ""
+msgstr "Russian"
 
 #: src/ais_target_data.cpp:1147
 msgid "Macedonia"
-msgstr ""
+msgstr "Macedonia"
 
 #: src/ais_target_data.cpp:1149
 msgid "Latvia"
-msgstr ""
+msgstr "Latvia"
 
 #: src/ais_target_data.cpp:1151
 msgid "Estonia"
-msgstr ""
+msgstr "Estonia"
 
 #: src/ais_target_data.cpp:1153
 msgid "Lithuania"
-msgstr ""
+msgstr "Lithuania"
 
 #: src/ais_target_data.cpp:1155
 msgid "Slovenia"
-msgstr ""
+msgstr "Slovenia"
 
 #: src/ais_target_data.cpp:1157
 msgid "Serbia"
@@ -7246,35 +7246,35 @@ msgstr ""
 #: src/routemanagerdialog.cpp:1386 src/routemanagerdialog.cpp:2234
 #: src/routemanagerdialog.cpp:2689
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr ""
+msgstr "Are you sure you want to delete the selected object(s)"
 
 #: src/routemanagerdialog.cpp:1430
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr ""
+msgstr "Are you sure you want to delete <ALL> routes?"
 
 #: src/routemanagerdialog.cpp:1610
 msgid "Send Route(s) to OpenCPN Peer"
-msgstr ""
+msgstr "Send Route(s) to OpenCPN Peer"
 
 #: src/routemanagerdialog.cpp:1650
 msgid "Send Waypoint(s) to OpenCPN Peer"
-msgstr ""
+msgstr "Send Waypoint(s) to OpenCPN Peer"
 
 #: src/routemanagerdialog.cpp:1690
 msgid "Send Track(s) to OpenCPN Peer"
-msgstr ""
+msgstr "Send Track(s) to OpenCPN Peer"
 
 #: src/routemanagerdialog.cpp:1857
 msgid "&Merge Selected Tracks"
-msgstr ""
+msgstr "&Merge Selected Tracks"
 
 #: src/routemanagerdialog.cpp:1859
 msgid "Reduce Data..."
-msgstr ""
+msgstr "Reduce Data..."
 
 #: src/routemanagerdialog.cpp:1861
 msgid "&Copy as text"
-msgstr ""
+msgstr "&Copy as text"
 
 #: src/routemanagerdialog.cpp:1890
 msgid "Select the maximum error allowed (in meters)\n"
@@ -7284,7 +7284,7 @@ msgstr "Select the maximum error allowed (in metres)\n"
 
 #: src/routemanagerdialog.cpp:1892
 msgid "Reduce Data Precision"
-msgstr ""
+msgstr "Reduce Data Precision"
 
 #: src/routemanagerdialog.cpp:1930
 #, c-format
@@ -7325,49 +7325,54 @@ msgstr "The waypoint you want to delete is used in a route, do you really want t
 
 #: src/routemanagerdialog.cpp:2845
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr ""
+msgstr "Are you sure you want to delete <ALL> waypoints?"
 
 #: src/routemanagerdialog.cpp:2850
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
-msgstr ""
+msgstr "There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 
 #: src/routemanagerdialog.cpp:3014
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
-msgstr ""
+msgstr "Are you sure you want to delete this layer and <ALL> of its contents?"
 
 #: src/routemanagerdialog.cpp:3018
 msgid "The file will also be deleted from OpenCPN's layer directory."
-msgstr ""
+msgstr "The file will also be deleted from OpenCPN's layer directory."
 
 #: src/routemanagerdialog.cpp:3297
 msgid "(Unnamed Layer)"
-msgstr ""
+msgstr "(Unnamed Layer)"
 
 #: src/routeman.cpp:734 src/routeman.cpp:828
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
-msgstr ""
+msgstr "You are trying to delete an active AIS MOB route, are you REALLY sure?"
 
 #: src/routeman.cpp:899
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
 
 #: src/routeman.cpp:905
 msgid "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "Waypoints will be renamed to reflect the natural order, the names will be '001', '002' etc.\n\n"
+"Do you want to rename the waypoints?"
 
 #: src/route_point_gui.cpp:102 src/route_point_gui.cpp:110
 #: src/route_point_gui.cpp:274 src/route_point_gui.cpp:282
 msgid "Marks"
-msgstr ""
+msgstr "Marks"
 
 #: src/route_point_gui.cpp:732
 msgid "The ScaMin value for new waypoints is set to"
-msgstr ""
+msgstr "The ScaMin value for new waypoints is set to"
 
 #: src/route_point_gui.cpp:733
 msgid "but current chartscale is"
@@ -7379,15 +7384,15 @@ msgstr "Therefore the new waypoint will not be visible at this zoom level."
 
 #: src/route_point_gui.cpp:869
 msgid "Waypoint(s) Transmitted."
-msgstr ""
+msgstr "Waypoint(s) Transmitted."
 
 #: src/route_point_gui.cpp:872
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "Error on Waypoint Upload.  Garmin GPS not connected"
 
 #: src/route_point_gui.cpp:874
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr ""
+msgstr "Error on Waypoint Upload.  Please check logfiles..."
 
 #: src/routeprintout.cpp:101 src/RoutePropDlg.cpp:321 src/trackprintout.cpp:85
 #: src/TrackPropDlg.cpp:302
@@ -7691,7 +7696,10 @@ msgid "<p>The last opencpn run seems to have failed. Do you want to run\n"
 "in safe mode without plugins and other possibly problematic\n"
 "features?\n"
 "</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
-msgstr ""
+msgstr "<p>The last opencpn run seems to have failed. Do you want to run\n"
+"in safe mode without plugins and other possibly problematic\n"
+"features?\n"
+"</p><br/></br><p>You may consider visiting the <a href=\"https://github.com/OpenCPN/OpenCPN/wiki/OpenCPN-5.8-known-issues\">list of known issues</a>.</p>"
 
 #: src/safe_mode.cpp:63
 msgid "Safe restart"
