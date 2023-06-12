@@ -149,9 +149,14 @@ public:
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision, *m_choiceCANSource;
-  wxScrolledWindow *m_scrollWinConnections;
   wxBoxSizer *boxSizerConnections;
   ConnectionParams *mSelectedConnection;
+
+#ifdef __ANDROID__
+  wxPanel *m_scrollWinConnections;
+#else
+  wxScrolledWindow *m_scrollWinConnections;
+#endif
 
   bool connectionsaved;
   bool m_connection_enabled;
