@@ -232,7 +232,14 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(const wxString &com_n
     driver = FindDriver(drivers, com_name.ToStdString());
 
   if (com_name.Find("Bluetooth") != wxNOT_FOUND) {
+      wxString comm_addr = com_name.AfterFirst(';');
+
+      driver = FindDriver(drivers, comm_addr.ToStdString());
       if (!driver) {
+
+        //Force Android Bluetooth to use only already enabled driver
+        return driver;
+
         ConnectionParams ConnectionParams;
         ConnectionParams.Type = INTERNAL_BT;
         wxStringTokenizer tkz(com_name, _T(";"));
