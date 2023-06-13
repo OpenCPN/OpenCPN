@@ -42,7 +42,7 @@ if [ ! -f libarchive-3.3.3.tar.gz ]; then
 fi
 tar zxf libarchive-3.3.3.tar.gz
 cd libarchive-3.3.3
-if [ "$(shasum /usr/local/lib/libarchive.13.dylib | cut -d' ' -f1)" != "$(shasum .libs/libarchive.13.dylib | cut -d' ' -f1)" ]; then
+#if [ "$(shasum /usr/local/lib/libarchive.13.dylib | cut -d' ' -f1)" != "$(shasum .libs/libarchive.13.dylib | cut -d' ' -f1)" ]; then
     # Build only if we didn't before
     ./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
     make
@@ -50,7 +50,7 @@ if [ "$(shasum /usr/local/lib/libarchive.13.dylib | cut -d' ' -f1)" != "$(shasum
     sudo rm -f /usr/local/include/archive.h
     sudo rm -f /usr/local/include/archive_entry.h
     sudo make install
-fi
+#fi
 cd ..
 
 # Install the build dependencies for OpenCPN
