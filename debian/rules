@@ -2,6 +2,12 @@
 
 include  /usr/share/dpkg/architecture.mk
 
+ifeq ($(DEB_TARGET_ARCH),amd64)
+  TARGET_ARCH = x86_64
+else
+  TARGET_ARCH = $(DEB_TARGET_ARCH)
+endif
+
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
@@ -18,7 +24,7 @@ override_dh_auto_configure:
             -DOCPN_USE_BUNDLED_LIBS=OFF \
             -DOCPN_USE_NEWSERIAL=ON \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
-            -DOCPN_FORCE_GTK3=ON \
+            -DOCPN_TARGET_TUPLE="debian-$(TARGET_ARCH);12;$(TARGET_ARCH)" \
 	    -DOCPN_BUILD_TEST=OFF
 
 override_dh_auto_test:
