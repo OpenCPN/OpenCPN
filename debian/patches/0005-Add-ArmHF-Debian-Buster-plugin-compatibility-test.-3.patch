@@ -1,0 +1,31 @@
+From: dsr <bdbcat@yahoo.com>
+Date: Wed, 7 Jun 2023 22:02:30 -0400
+Subject: Add ArmHF/Debian Buster plugin compatibility test. #3324
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/a7242a38f4
+---
+ src/plugin_handler.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/plugin_handler.cpp b/src/plugin_handler.cpp
+index d464e16..9d28349 100644
+--- a/src/plugin_handler.cpp
++++ b/src/plugin_handler.cpp
+@@ -229,6 +229,8 @@ public:
+         "debian-arm64;12;ubuntu-arm64;24.04",
+         "debian-arm64;sid;ubuntu-arm64;24.04",
+ 
++        "debian-armhf;10;ubuntu-armhf;18.04",
++        "debian-gtk3-armhf;10;ubuntu-gtk3-armhf;18.04",
+         "debian-armhf;11;ubuntu-gtk3-armhf;20.04",
+         "debian-wx32-armhf;11;ubuntu-wx32-armhf;22.04",
+         "debian-armhf;12;ubuntu-armhf;23.04",
+@@ -237,7 +239,7 @@ public:
+         "debian-armhf;sid;ubuntu-armhf;24.04"}; //clang-format: on
+ 
+     if (ocpn::startswith(plugin.abi(), "debian")) {
+-      wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
++      wxLogDebug("Checking for debian plugin on a ubuntu host");
+       const std::string compat_version = plugin.abi() + ";" +
+                                          plugin.major_version() + ";" + m_abi +
+                                          ";" + m_abi_version;

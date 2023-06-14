@@ -16,10 +16,10 @@ Forwarded: not-needed
  create mode 100644 data/help_web.html
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e9da521..523ec17 100644
+index 1b31994..2b16220 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2146,7 +2146,7 @@ if (APPLE)
+@@ -2160,7 +2160,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -28,7 +28,7 @@ index e9da521..523ec17 100644
      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc
    )
  
-@@ -2198,12 +2198,12 @@ if (APPLE)
+@@ -2212,12 +2212,12 @@ if (APPLE)
    if (OCPN_BUNDLE_DOCS )
      set(
        DOC_FILES
@@ -43,7 +43,7 @@ index e9da521..523ec17 100644
    endif (OCPN_BUNDLE_DOCS )
  
    target_sources(
-@@ -2358,7 +2358,7 @@ if (NOT APPLE)
+@@ -2372,7 +2372,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS )
      install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
    else (OCPN_BUNDLE_DOCS )

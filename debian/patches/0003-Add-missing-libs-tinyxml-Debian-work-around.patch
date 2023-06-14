@@ -18,10 +18,10 @@ Forwarded: not-needed
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 981d72f..d256033 100644
+index 0eee5a3..cb2c54a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1597,8 +1597,10 @@ if (OCPN_USE_SVG)
+@@ -1611,8 +1611,10 @@ if (OCPN_USE_SVG)
    endif()
  endif (OCPN_USE_SVG)
  
@@ -33,7 +33,7 @@ index 981d72f..d256033 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif (OCPN_USE_NEWSERIAL)
-@@ -1673,6 +1675,7 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+@@ -1687,6 +1689,7 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
    set(LIBARCHIVE_COMMENT_END "-->")
  endif ()
  
@@ -41,7 +41,7 @@ index 981d72f..d256033 100644
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-@@ -1684,9 +1687,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
+@@ -1698,9 +1701,6 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
  add_subdirectory(libs/wxJSON)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
  

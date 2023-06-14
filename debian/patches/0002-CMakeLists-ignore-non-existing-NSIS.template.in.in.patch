@@ -13,10 +13,10 @@ Forwarded: not-needed
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 523ec17..981d72f 100644
+index 2b16220..0eee5a3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2677,7 +2677,7 @@ if (MINGW)
+@@ -2691,7 +2691,7 @@ if (MINGW)
      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
    )
    add_dependencies(${PACKAGE_NAME} NSIS_config)

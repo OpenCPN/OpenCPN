@@ -16,10 +16,10 @@ Forwarded: not-ńeeded
  1 file changed, 19 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d256033..d1fecc7 100644
+index cb2c54a..5bea0dc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2022,16 +2022,6 @@ if (APPLE)
+@@ -2036,16 +2036,6 @@ if (APPLE)
      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
@@ -36,7 +36,7 @@ index d256033..d1fecc7 100644
    set_source_files_properties(
      ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
      PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
-@@ -2217,8 +2207,6 @@ if (APPLE)
+@@ -2231,8 +2221,6 @@ if (APPLE)
      data/authors.html
      data/opencpn.png
      data/ocpn-plugins.xml
@@ -45,7 +45,7 @@ index d256033..d1fecc7 100644
      ${SOUND_FILES}
      buildosx/opencpn.icns
      buildosx/MainMenu.xib
-@@ -2331,13 +2319,6 @@ if (NOT APPLE)
+@@ -2345,13 +2333,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  
