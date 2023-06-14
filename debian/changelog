@@ -1,3 +1,10 @@
+opencpn (5.8.2+dfsg-3~bpo12+1) bookworm-backports; urgency=medium
+
+  * Rebuild for bookworm-backports.
+  * Add three patches from upstream master branch.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 14 Jun 2023 22:32:25 +0200
+
 opencpn (5.8.2+dfsg-3) unstable; urgency=medium
 
   * d/rules: Try to fix test target on armhf et. al.
