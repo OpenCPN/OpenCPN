@@ -38,6 +38,7 @@
 class PriorityDlg : public wxDialog {
 public:
   PriorityDlg(wxWindow *parent);
+  virtual ~PriorityDlg();
 
 private:
   void OnMoveUpClick(wxCommandEvent& event);
@@ -64,6 +65,8 @@ private:
   size_t m_selIndex;
 
   int m_maxStringLength;
+  wxString m_max_string;
+  wxFont *m_pF;
 };
 
 

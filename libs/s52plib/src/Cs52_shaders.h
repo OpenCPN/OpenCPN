@@ -47,6 +47,7 @@ extern CGLShaderProgram *pCcolor_tri_shader_program[2];
 extern CGLShaderProgram *pCtexture_2D_shader_program[2];
 extern CGLShaderProgram *pcircle_filled_shader_program[2];
 extern CGLShaderProgram *ptexture_2DA_shader_program[2];
+extern CGLShaderProgram *pCtexture_2D_Color_shader_program[2];
 
 extern const GLchar* Cpreamble;
 

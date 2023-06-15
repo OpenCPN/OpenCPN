@@ -92,7 +92,7 @@ bool CommDecoder::DecodeRMC(std::string s, NavData& temp_data) {
       if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
         temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
       }
-      if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0)) {
+      if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0.05)) {
         temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
       } else {
         temp_data.gCog = NAN;

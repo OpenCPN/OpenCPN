@@ -282,14 +282,23 @@ void GRIBTable::SetTableSizePosition(int vpWidth, int vpHeight) {
   if (w < (m_pGribTable->GetRowLabelSize() + (m_pGribTable->GetColSize(0))) ||
       h < (m_pGribTable->GetColLabelSize() + (m_pGribTable->GetRowSize(0))))
     refit = true;
+
+#ifdef __ANDROID__
+  refit = true;
+#endif
   if (refit) {
     w = (scw.GetWidth() / 10) * 9;  // 10% less than canvas
     h = (scw.GetHeight() / 10) * 9;
     x = (scw.GetWidth() / 20);   // centered horizontally
     y = (scw.GetHeight() / 50);  // a bit out-centered toward the top
+#ifdef __ANDROID__
+    // Position directly below GRIB control dialog
+    y = m_pGDialog->GetSize().GetHeight() * 11 / 10;
+    h = scw.GetHeight() - m_pGDialog->GetSize().GetHeight();
+#endif
     final_pos = GetOCPNCanvasWindow()->ClientToScreen(wxPoint(x, y));
   }  //
-  // in case client size toot large for the grib
+  // in case client size too large for the grib
   int w1 = m_pGribTable->GetRowLabelSize() +
            (m_pGribTable->GetColSize(0) * m_pGribTable->GetNumberCols());
   w = wxMin(w, w1);

@@ -34,16 +34,12 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-// #include "conn_params.h"
-// #include "OCPNPlatform.h"
-// #include "route_gui.h"
-// #include "route.h"
-// #include "route_point_gui.h"
-// #include "route_point.h"
-// #include "ser_ports.h"
-
 #include "REST_server_gui.h"
 #include "FontMgr.h"
+
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
 
 IMPLEMENT_DYNAMIC_CLASS(AcceptObjectDialog, wxDialog)
 
@@ -60,24 +56,35 @@ AcceptObjectDialog::AcceptObjectDialog() {
 
 AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
-                           const wxPoint& pos, const wxSize& size, long style) {
+                           const wxPoint& pos, const wxSize& size, long style,
+                           const wxString& msg1, const wxString& msg2) {
   wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
   SetFont( *pif );
-  Create(parent, id, caption, hint, pos, size, style);
+  m_checkbox1_msg = msg2;
+  Create(parent, id, caption, hint, pos, size, style, msg1, msg2);
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
+
 }
 
 AcceptObjectDialog::~AcceptObjectDialog() {
   delete m_OKButton;
   delete m_CancelButton;
+#ifdef __OCPN__ANDROID__
+  androidEnableRotation();
+#endif
+
 }
 
 bool AcceptObjectDialog::Create(wxWindow* parent, wxWindowID id,
                           const wxString& caption, const wxString& hint,
-                          const wxPoint& pos, const wxSize& size, long style) {
+                          const wxPoint& pos, const wxSize& size, long style,
+                          const wxString& msg1, const wxString& msg2) {
   SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
   wxDialog::Create(parent, id, caption, pos, size, style);
 
-  CreateControls(hint);
+  CreateControls(hint, msg1, msg2);
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
   Centre();
@@ -85,7 +92,7 @@ bool AcceptObjectDialog::Create(wxWindow* parent, wxWindowID id,
   return TRUE;
 }
 
-void AcceptObjectDialog::CreateControls(const wxString& hint) {
+void AcceptObjectDialog::CreateControls(const wxString& hint, const wxString& msg1, const wxString& msg2) {
   AcceptObjectDialog* itemDialog1 = this;
 
    wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
@@ -95,17 +102,8 @@ void AcceptObjectDialog::CreateControls(const wxString& hint) {
   //    Add a reminder text box
   itemBoxSizer2->AddSpacer(20);
 
-  premtext = new wxStaticText( this, -1, "A loooooooooooooooooooooooooooooooooooooooooooooong line\n");
+  premtext = new wxStaticText( this, -1, msg1);
   itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
-
-  //    Create a progress gauge
-//   wxStaticBox* prog_box = new wxStaticBox(this, wxID_ANY, _("Progress..."));
-//
-//   wxStaticBoxSizer* prog_box_sizer = new wxStaticBoxSizer(prog_box, wxVERTICAL);
-//   itemBoxSizer2->Add(prog_box_sizer, 0, wxEXPAND | wxALL, 5);
-//
-//   m_pgauge = new wxGauge(this, -1, 100);
-//   prog_box_sizer->Add(m_pgauge, 0, wxEXPAND | wxALL, 5);
 
   m_pCheck1 = new wxCheckBox(this, ID_STG_CHECK1, m_checkbox1_msg);
   itemBoxSizer2->Add(m_pCheck1, 0, wxEXPAND | wxALL, 10);
@@ -144,6 +142,7 @@ void AcceptObjectDialog::SetCheck1Message(const wxString &msg) {
 
 void AcceptObjectDialog::OnOKClick(wxCommandEvent& event) {
   EndModal(ID_STG_OK);
+  SetReturnCode(ID_STG_OK);
 }
 
 void AcceptObjectDialog::OnCancelClick(wxCommandEvent& event) {
@@ -170,11 +169,19 @@ PINCreateDialog::PINCreateDialog(wxWindow* parent, wxWindowID id,
   wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
   SetFont( *pif );
   Create(parent, id, caption, hint, pos, size, style);
+#ifdef __ANDROID__
+    androidDisableRotation();
+#endif
+
 }
 
 PINCreateDialog::~PINCreateDialog() {
   delete m_OKButton;
   delete m_CancelButton;
+#ifdef __ANDROID__
+    androidEnableRotation();
+#endif
+
 }
 
 bool PINCreateDialog::Create(wxWindow* parent, wxWindowID id,

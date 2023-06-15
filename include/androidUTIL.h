@@ -37,6 +37,7 @@
 class ArrayOfCDI;
 
 #include <QString>
+#include <string>
 
 // Enumerators for OCPN menu actions requested by Android UI
 #define OCPN_ACTION_FOLLOW 0x1000
@@ -88,8 +89,8 @@ extern void androidEnableOptionItems(bool benable);
 
 extern wxString androidGetSupplementalLicense(void);
 
-extern bool androidStartNMEA(wxEvtHandler *consumer);
-extern bool androidStopNMEA();
+extern bool androidStartGPS(wxEvtHandler *consumer);
+extern bool androidStopGPS();
 extern wxString androidGPSService(int parm);
 extern bool androidDeviceHasGPS();
 
@@ -161,7 +162,7 @@ int androidGetTZOffsetMins();
 int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI);
 
 bool androidShowDisclaimer(wxString title, wxString msg);
-bool androidShowSimpleOKDialog(wxString title, wxString msg);
+bool androidShowSimpleOKDialog(std::string title, std::string msg);
 bool androidShowSimpleYesNoDialog(wxString title, wxString msg);
 bool androidInstallPlaystoreHelp();
 
@@ -177,6 +178,8 @@ void prepareAndroidStyleSheets();
 QString getAdjustedDialogStyleSheet();
 QString getListBookStyleSheet();
 QString getScrollBarsStyleSheet();
+QString getWideScrollBarsStyleSheet();
+
 void setChoiceStyleSheet(wxChoice *win, int refDim);
 void setMenuStyleSheet(wxMenu *win, const wxFont &font);
 QString prepareAndroidSliderStyleSheet(int sliderWidth);
@@ -191,6 +194,7 @@ int androidGetScreenOrientation();
 
 void androidEnableMulticast(bool benable);
 void androidLastCall();
+wxString androidGetIpV4Address(void);
 
 //      SVG Support
 wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-12 12:37-0400\n"
-"PO-Revision-Date: 2023-04-26 14:38\n"
+"PO-Revision-Date: 2023-06-05 01:25\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -679,7 +679,7 @@ msgstr "Opciones de hora"
 
 #: src/GribUIDialogBase.cpp:2139
 msgid "Icons Size Factor"
-msgstr ""
+msgstr "Factor de tamaño de iconos"
 
 #: src/GribUIDialogBase.cpp:2191
 msgid "GRIB PlugIn Preferences"
@@ -1039,11 +1039,13 @@ msgstr "Entre su rumbo previsto"
 msgid "Sorry...\n"
 "ZyGrib momentary stopped providing this service...\n"
 "Only Saildocs option is available"
-msgstr ""
+msgstr "Disculpe...\n"
+"ZyGrib momentáneo dejó de proporcionar este servicio...\n"
+"Solo la opción Saildocs está disponible"
 
 #: src/GribRequestDialog.cpp:496
 msgid "Warning"
-msgstr ""
+msgstr "Atención"
 
 #: src/GribRequestDialog.cpp:562
 msgid "Coord. "

@@ -37,6 +37,7 @@
 #include <wx/filepicker.h>
 #include <wx/zipstrm.h>
 #include <wx/textwrapper.h>
+#include <wx/matrix.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -81,6 +82,10 @@
 #include "toolbar.h"
 #include "toolbar.h"
 #include "TrackPropDlg.h"
+#include "comm_drv_n0183_android_int.h"
+#include "comm_drv_n0183_android_bt.h"
+#include "comm_drv_n0183_serial.h"
+#include "comm_navmsg_bus.h"
 
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
@@ -114,6 +119,7 @@ extern const wxEventType wxEVT_OCPN_DATASTREAM;
 // extern const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 wxEvtHandler *s_pAndroidNMEAMessageConsumer;
+wxEvtHandler *s_pAndroidGPSIntMessageConsumer;
 wxEvtHandler *s_pAndroidBTNMEAMessageConsumer;
 
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
@@ -334,7 +340,7 @@ wxString g_androidExtStorageDir;
 wxString g_androidGetFilesDirs0;
 wxString g_androidGetFilesDirs1;
 wxString g_androidDownloadDirectory;
-
+wxString g_android_Device_Model;
 
 int g_mask;
 int g_sel;
@@ -380,6 +386,7 @@ MigrateAssistantDialog *g_migrateDialog;
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
 wxFontPickerEvent g_dummy_wxfpe;
+wxTransformMatrix g_dummy_transform;
 
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
@@ -394,15 +401,64 @@ wxFontPickerEvent g_dummy_wxfpe;
 
 #define SCHEDULED_EVENT_CLEAN_EXIT 5498
 
+// Implement a small function missing from Android API 16, or so.
+// FIXME This can go away when Android MIN_SDK is raised to 19 (KitKat)
+int futimens(int fd, const struct timespec times[2]) {
+  return utimensat(fd, nullptr, times, 0);
+}
+
+// Event handler for Raw NMEA messages coming from Java upstream
+class AndroidNMEAEvent : public wxEvent {
+public:
+  AndroidNMEAEvent( wxEventType commandType, int id);
+  ~AndroidNMEAEvent();
+
+  // accessors
+  void SetPayload(std::shared_ptr<std::vector<unsigned char>> data);
+  std::shared_ptr<std::vector<unsigned char>> GetPayload();
+
+  // required for sending with wxPostEvent()
+  wxEvent* Clone() const;
+private:
+  std::shared_ptr<std::vector<unsigned char>> m_payload;
+};
+
+wxDECLARE_EVENT(wxEVT_ANDROID_NMEA_RAW, AndroidNMEAEvent);
+
+
+wxDEFINE_EVENT(wxEVT_ANDROID_NMEA_RAW, AndroidNMEAEvent);
+
+AndroidNMEAEvent::AndroidNMEAEvent( wxEventType commandType, int id = 0)
+      : wxEvent(id, commandType){};
+
+AndroidNMEAEvent::~AndroidNMEAEvent(){};
+
+void AndroidNMEAEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
+    m_payload = data;
+}
+std::shared_ptr<std::vector<unsigned char>> AndroidNMEAEvent::GetPayload() { return m_payload; }
+
+  // required for sending with wxPostEvent()
+wxEvent* AndroidNMEAEvent::Clone() const {
+    AndroidNMEAEvent* newevent =
+        new AndroidNMEAEvent(*this);
+    newevent->m_payload = this->m_payload;
+    return newevent;
+};
+
+
+
 class androidUtilHandler : public wxEvtHandler {
 public:
-  androidUtilHandler();
-  ~androidUtilHandler() {}
+  androidUtilHandler(DriverListener& listener);
+  ~androidUtilHandler();
 
   void onTimerEvent(wxTimerEvent &event);
   void onStressTimer(wxTimerEvent &event);
   void OnResizeTimer(wxTimerEvent &event);
   void OnScheduledEvent(wxCommandEvent &event);
+
+  void handle_N0183_MSG(AndroidNMEAEvent& event);
 
   wxString GetStringResult() { return m_stringResult; }
   void LoadAuxClasses();
@@ -417,6 +473,8 @@ public:
   int m_bskipConfirm;
   bool m_migratePermissionSetDone;
 
+  DriverListener& m_listener;
+
   DECLARE_EVENT_TABLE()
 };
 
@@ -430,7 +488,9 @@ EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
 
 END_EVENT_TABLE()
 
-androidUtilHandler::androidUtilHandler() {
+androidUtilHandler::androidUtilHandler(DriverListener& listener)
+  : m_listener(listener)
+{
   m_eventTimer.SetOwner(this, ANDROID_EVENT_TIMER);
   m_stressTimer.SetOwner(this, ANDROID_STRESS_TIMER);
   m_resizeTimer.SetOwner(this, ANDROID_RESIZE_TIMER);
@@ -438,6 +498,42 @@ androidUtilHandler::androidUtilHandler() {
   m_bskipConfirm = false;
 
   LoadAuxClasses();
+
+    // Prepare the wxEventHandler to accept events from upstream
+  Bind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG,
+       this);
+
+}
+
+androidUtilHandler::~androidUtilHandler() {
+  Unbind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG,
+       this);
+}
+
+void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent& event) {
+  auto p = event.GetPayload();
+  std::vector<unsigned char>* payload = p.get();
+
+  // Extract the NMEA0183 sentence
+  std::string full_sentence = std::string(payload->begin(), payload->end());
+
+  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+    std::string identifier;
+    // We notify based on full message, including the Talker ID
+    identifier = full_sentence.substr(1, 5);
+
+    // notify message listener and also "ALL" N0183 messages, to support plugin
+    // API using original talker id
+
+    auto address = std::make_shared<NavAddr>(NavAddr0183("Android_RAW"));
+
+    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
+                                                   address);
+    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
+
+    m_listener.Notify(std::move(msg));
+    m_listener.Notify(std::move(msg_all));
+  }
 }
 
 void androidUtilHandler::LoadAuxClasses()
@@ -544,7 +640,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
       }
 
       // Tide/Current window
-      if (gFrame->GetPrimaryCanvas()->getTCWin()) {
+      if (gFrame->GetPrimaryCanvas() && gFrame->GetPrimaryCanvas()->getTCWin()) {
         bool bshown = gFrame->GetPrimaryCanvas()->getTCWin()->IsShown();
         gFrame->GetPrimaryCanvas()->getTCWin()->Hide();
         gFrame->GetPrimaryCanvas()->getTCWin()->RecalculateSize();
@@ -932,7 +1028,8 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
 bool androidUtilInit(void) {
   qDebug() << "androidUtilInit()";
 
-  g_androidUtilHandler = new androidUtilHandler();
+  auto& msgbus = NavMsgBus::GetInstance();
+  g_androidUtilHandler = new androidUtilHandler(msgbus);
 
   //  Initialize some globals
 
@@ -995,6 +1092,10 @@ bool androidUtilInit(void) {
   return true;
 }
 
+wxString androidGetIpV4Address(void) {
+  wxString ipa = callActivityMethod_vs("getIpAddress");
+  return ipa;
+}
 
 wxSize getAndroidConfigSize() { return config_size; }
 
@@ -1019,19 +1120,18 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 void sendNMEAMessageEvent(wxString &msg) {
-  //FIXME (dave)
-#if 0
-  wxCharBuffer abuf = msg.ToUTF8();
-  if (abuf.data()) {  // OK conversion?
-    std::string s(abuf.data());
-    //    qDebug() << tstr;
-    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    Nevent.SetNMEAString(s);
-    Nevent.SetStream(NULL);
-    if (s_pAndroidNMEAMessageConsumer)
-      s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
-  }
-#endif
+
+  std::string string = msg.ToStdString();
+  auto buffer = std::make_shared<std::vector<unsigned char>>();
+  std::vector<unsigned char>* vec = buffer.get();
+
+  for (int i=0; i < string.size(); i++)
+    vec->push_back(string[i]);
+
+  AndroidNMEAEvent Nevent(wxEVT_ANDROID_NMEA_RAW, 0);
+  Nevent.SetPayload(buffer);
+  g_androidUtilHandler->AddPendingEvent(Nevent);
+
 }
 
 //      OCPNNativeLib
@@ -1207,29 +1307,52 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
   //  The NMEA message target handler may not be setup yet, if no connections
   //  are defined or enabled. But we may get synthesized messages from the Java
-  //  app, even without a definite connection, and we want to process these
-  //  messages too. So assume that the global MUX, if present, will handle these
-  //  messages.
+  //  app, even without a definite connection.  We ignore these messages.
   wxEvtHandler *consumer = s_pAndroidNMEAMessageConsumer;
-
-  if (!consumer && g_pMUX) consumer = g_pMUX;
 
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
 
   // qDebug() << "ProcessNMEA: " << string;
 
-  char tstr[200];
-  strncpy(tstr, string, 190);
-  strcat(tstr, "\r\n");
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
 
-  // FIXME (dave)
-//   if (consumer) {
-//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-//     Nevent.SetNMEAString(tstr);
-//     Nevent.SetStream(NULL);
-//
-//     consumer->AddPendingEvent(Nevent);
-//   }
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+
+    CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
+
+  return 66;
+}
+}
+
+extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEAInt(
+    JNIEnv *env, jobject obj, jstring nmea_string) {
+  //  The NMEA message target handler may not be setup yet, if no connections
+  //  are defined or enabled. But we may get synthesized messages from the Java
+  //  app, even without a definite connection.  We ignore these messages.
+  wxEvtHandler *consumer = s_pAndroidGPSIntMessageConsumer;
+
+  const char *string = env->GetStringUTFChars(nmea_string, NULL);
+
+  // qDebug() << "ProcessNMEA: " << string;
+
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+
+    CommDriverN0183AndroidIntEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_INT, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
 
   return 66;
 }
@@ -1238,23 +1361,57 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
+
+  wxEvtHandler *consumer = s_pAndroidBTNMEAMessageConsumer;
+
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
-  wxString wstring = wxString(string, wxConvUTF8);
 
-  char tstr[200];
-  strncpy(tstr, string, 190);
-  strcat(tstr, "\r\n");
+  // qDebug() << "ProcessBT: " << string;
 
-//FIXME (dave)
-//   if (s_pAndroidBTNMEAMessageConsumer) {
-//     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-//     Nevent.SetNMEAString(tstr);
-//     Nevent.SetStream(NULL);
-//
-//     s_pAndroidBTNMEAMessageConsumer->AddPendingEvent(Nevent);
-//   }
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+    vec->push_back('\r');
+    vec->push_back('\n');
+
+    CommDriverN0183AndroidBTEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_BT, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
 
   return 77;
+}
+}
+
+extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processARBNMEA(
+    JNIEnv *env, jobject obj, jstring nmea_string) {
+  //  The NMEA message target handler may not be setup yet, if no connections
+  //  are defined or enabled. But we may get synthesized messages from the Java
+  //  app, even without a definite connection.  We ignore these messages.
+  wxEvtHandler *consumer = g_androidUtilHandler;
+
+  const char *string = env->GetStringUTFChars(nmea_string, NULL);
+
+  qDebug() << "processARBNMEA: " << string;
+
+  if (consumer) {
+    auto buffer = std::make_shared<std::vector<unsigned char>>();
+    std::vector<unsigned char>* vec = buffer.get();
+
+    for (int i=0; i < strlen(string); i++)
+      vec->push_back(string[i]);
+    vec->push_back('\r');
+    vec->push_back('\n');
+
+    AndroidNMEAEvent Nevent(wxEVT_ANDROID_NMEA_RAW, 0);
+    Nevent.SetPayload(buffer);
+    consumer->AddPendingEvent(Nevent);
+  }
+  return 62;
 }
 }
 
@@ -2271,7 +2428,7 @@ bool androidShowDisclaimer(wxString title, wxString msg) {
   return (return_string == _T("OK"));
 }
 
-bool androidShowSimpleOKDialog(wxString title, wxString msg) {
+bool androidShowSimpleOKDialog(std::string title, std::string msg) {
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2287,12 +2444,9 @@ bool androidShowSimpleOKDialog(wxString title, wxString msg) {
   //  Need a Java environment to decode the resulting string
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) return false;
 
-  wxCharBuffer p1b = title.ToUTF8();
-  jstring p1 = (jenv)->NewStringUTF(p1b.data());
+  jstring p1 = (jenv)->NewStringUTF(title.c_str());
 
-  // Convert for wxString-UTF8  to jstring-UTF16
-  wxWCharBuffer b = msg.wc_str();
-  jstring p2 = (jenv)->NewString((jchar *)b.data(), msg.Len() * 2);
+  jstring p2 = (jenv)->NewStringUTF(msg.c_str());
 
   QAndroidJniObject data = activity.callObjectMethod(
       "simpleOKDialog",
@@ -2419,6 +2573,11 @@ wxString androidGetDeviceInfo() {
     }
     if (wxNOT_FOUND != s1.Find(_T("opencpn"))) {
       strcpy(&android_plat_spc.hn[0], s1.c_str());
+    }
+    if (wxNOT_FOUND != s1.Find(_T("Model (and Product): "))) {    //Model (and Product): LML413DL (cv3_lao_com)
+      wxString smp = s1.Mid(21);
+      wxString smp1 = smp.BeforeFirst('(');
+      g_android_Device_Model = smp1.Trim(false).Trim(true).Truncate(8);
     }
 
     // Look for some specific device identifiers, for special processing as
@@ -3011,8 +3170,8 @@ bool androidDeviceHasGPS() {
   return result;
 }
 
-bool androidStartNMEA(wxEvtHandler *consumer) {
-  s_pAndroidNMEAMessageConsumer = consumer;
+bool androidStartGPS(wxEvtHandler *consumer) {
+  s_pAndroidGPSIntMessageConsumer = consumer;
 
   // qDebug() << "androidStartNMEA";
   wxString s;
@@ -3025,7 +3184,7 @@ bool androidStartNMEA(wxEvtHandler *consumer) {
                        Please visit android Settings/Location dialog to enable GPS"),
         _T("OpenCPN"), wxOK);
 
-    androidStopNMEA();
+    androidStopGPS();
     return false;
   } else
     bGPSEnabled = true;
@@ -3033,8 +3192,8 @@ bool androidStartNMEA(wxEvtHandler *consumer) {
   return true;
 }
 
-bool androidStopNMEA() {
-  s_pAndroidNMEAMessageConsumer = NULL;
+bool androidStopGPS() {
+  s_pAndroidGPSIntMessageConsumer = NULL;
 
   wxString s = androidGPSService(GPS_OFF);
 
@@ -4335,6 +4494,67 @@ QScrollBar::sub-line:vertical {\
     subcontrol-origin: margin;\
 }";
 
+
+QString qtStyleSheetWideScrollBars =
+    "QScrollBar:horizontal {\
+border: 0px solid grey;\
+background-color: rgb(240, 240, 240);\
+height: 50px;\
+margin: 0px 1px 0 1px;\
+}\
+QScrollBar::handle:horizontal {\
+background-color: rgb(200, 200, 200);\
+min-width: 20px;\
+border-radius: 10px;\
+}\
+QScrollBar::add-line:horizontal {\
+border: 0px solid grey;\
+background: #32CC99;\
+width: 0px;\
+subcontrol-position: right;\
+subcontrol-origin: margin;\
+}\
+QScrollBar::sub-line:horizontal {\
+border: 0px solid grey;\
+background: #32CC99;\
+width: 0px;\
+subcontrol-position: left;\
+subcontrol-origin: margin;\
+}\
+QScrollBar:vertical {\
+border: 0px solid grey;\
+background-color: rgb(240, 240, 240);\
+width: 50px;\
+margin: 1px 0px 1px 0px;\
+}\
+QScrollBar::handle:vertical {\
+background-color: rgb(200, 200, 200);\
+min-height: 50px;\
+border-radius: 10px;\
+}\
+QScrollBar::add-line:vertical {\
+border: 0px solid grey;\
+background: #32CC99;\
+height: 0px;\
+subcontrol-position: top;\
+subcontrol-origin: margin;\
+}\
+QScrollBar::sub-line:vertical {\
+border: 0px solid grey;\
+background: #32CC99;\
+height: 0px;\
+subcontrol-position: bottom;\
+subcontrol-origin: margin;\
+}\
+QCheckBox {\
+spacing: 25px;\
+}\
+QCheckBox::indicator {\
+width: 30px;\
+height: 30px;\
+}\
+";
+
 std::string prepareStyleIcon(wxString icon_file, int size) {
   wxString data_locn = g_Platform->GetSharedDataDir();
   data_locn.Append(_T("styles/"));
@@ -4512,6 +4732,8 @@ QString getAdjustedDialogStyleSheet() { return qtStyleSheetDialog; }
 QString getListBookStyleSheet() { return qtStyleSheetListBook; }
 
 QString getScrollBarsStyleSheet() { return qtStyleSheetScrollbars; }
+
+QString getWideScrollBarsStyleSheet() { return qtStyleSheetWideScrollBars; }
 
 //      SVG Support
 wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,

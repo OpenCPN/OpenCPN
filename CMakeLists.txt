@@ -882,6 +882,8 @@ set(
   include/comm_bridge.h
   include/comm_driver.h
   include/comm_drv_n0183.h
+  include/comm_drv_n0183_android_bt.h
+  include/comm_drv_n0183_android_int.h
   include/comm_drv_n0183_net.h
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
@@ -1210,6 +1212,8 @@ endif ()
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
+  SET(SRCS ${SRCS} src/comm_drv_n0183_android_int.cpp)
+  SET(SRCS ${SRCS} src/comm_drv_n0183_android_bt.cpp)
 ENDIF(QT_ANDROID)
 
 set(SRCS ${SRCS} ${MODEL_SRC})
@@ -1541,8 +1545,8 @@ if (OCPN_USE_CURL)
       install(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
     endif (WIN32 AND OCPN_USE_EXTERN_CURL)
   else (NOT QT_ANDROID)
-    target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/include)
-#    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/libcurl.a)
+    target_include_directories( ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a)
   endif (NOT QT_ANDROID)
 endif (OCPN_USE_CURL)
 
@@ -3043,6 +3047,7 @@ if (APPLE)
       --identifier org.opencpn
       --install-location /Applications/OpenCPN.app
       --min-os-version 10.13
+      --scripts "${CMAKE_SOURCE_DIR}/buildosx/scripts"
       OpenCPN.app.pkg
   )
   add_dependencies(component-pkg show-bundled-libs pkg-tmp)
@@ -3200,3 +3205,15 @@ if (NOT QT_ANDROID)
 
   install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 endif ()
+
+if (QT_ANDROID)
+    target_include_directories( ${PACKAGE_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include)
+
+    target_link_libraries(${PACKAGE_NAME} PRIVATE
+      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
+      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
+      )
+
+    add_definitions(-DMG_ENABLE_OPENSSL)
+endif (QT_ANDROID)

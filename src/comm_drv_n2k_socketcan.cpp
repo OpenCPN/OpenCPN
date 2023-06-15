@@ -485,8 +485,11 @@ bool CommDriverN2KSocketCanImpl::SendMessage(std::shared_ptr<const NavMsg> msg,
   std::vector<uint8_t> load = msg_n2k->payload;
 
   uint64_t _pgn = msg_n2k->PGN.pgn;
+  auto destination_address = std::static_pointer_cast<const NavAddr2000>(addr);
 
-  unsigned long canId = BuildCanID(6, m_source_address, 255, _pgn);
+
+  unsigned long canId = BuildCanID(msg_n2k->priority, m_source_address,
+                                   destination_address->address, _pgn);
 
   frame.can_id = canId | CAN_EFF_FLAG;
 

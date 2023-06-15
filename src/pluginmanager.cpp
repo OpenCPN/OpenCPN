@@ -4083,8 +4083,8 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget) {
 
   pret->alarm_state = (plugin_ais_alarm_type)ptarget->n_alert_state;
 
-  memcpy(pret->CallSign, ptarget->CallSign, CALL_SIGN_LEN);
-  memcpy(pret->ShipName, ptarget->ShipName, SHIP_NAME_LEN);
+  memcpy(pret->CallSign, ptarget->CallSign, sizeof(ptarget->CallSign) - 1);
+  memcpy(pret->ShipName, ptarget->ShipName, sizeof(ptarget->ShipName) - 1);
 
   return pret;
 }
@@ -4183,15 +4183,15 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
     m_adv_button = NULL;
   } else {
     // First line
-    m_catalogText = new wxStaticText(this, wxID_STATIC, _T(""));
+    m_catalogText = new wxStaticText(this, wxID_STATIC, GetCatalogText(false));
     itemStaticBoxSizer4->Add(m_catalogText,
-                             wxSizerFlags().Border().Proportion(1));
-    m_catalogText->SetLabel(GetCatalogText(false));
+                             wxSizerFlags().Border(wxALL, 5).Proportion(1));
+    //m_catalogText->SetLabel(GetCatalogText(false));
 
     m_updateButton =
-        new wxButton(this, wxID_ANY, _("Update Plugin Catalog:master"),
+        new wxButton(this, wxID_ANY, "Update Plugin Catalog:master                ",
                      wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT);
+    itemStaticBoxSizer4->Add(m_updateButton, 0, wxALIGN_LEFT | wxTOP, 5);
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
     SetUpdateButtonLabel();
@@ -4199,14 +4199,14 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow *parent)
     // Next line
     m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                                 wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_adv_button, 0, wxALIGN_LEFT);
+    itemStaticBoxSizer4->Add(m_adv_button, 0, wxALIGN_LEFT | wxTOP, GetCharWidth());
     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                        &CatalogMgrPanel::OnPluginSettingsButton, this);
 
     // Next line
     m_tarballButton = new wxButton(this, wxID_ANY, _("Import plugin..."),
                                    wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_tarballButton, 0, wxALIGN_LEFT | wxLEFT,
+    itemStaticBoxSizer4->Add(m_tarballButton, 0, wxALIGN_LEFT | wxALL,
                              2 * GetCharWidth());
     m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                           &CatalogMgrPanel::OnTarballButton, this);
@@ -4704,6 +4704,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
       pConfig->Read(_T("LatestCatalogDownloaded"), _T("default"));
   catalog += latestCatalog;
 
+#ifndef __OCPN__ANDROID__
   //  Get the version from the currently active catalog, by which we mean
   //  the latest catalog parsed.
   auto pluginHandler = PluginHandler::getInstance();
@@ -4711,6 +4712,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
 
   catalog += wxString("  ") + _("Last change: ") + " " + date;
   if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
+#endif
 
   return catalog;
 }
@@ -6007,17 +6009,21 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor,
 
 // Render helpers
 void RenderRotateToViewPort(const ViewPort &VPoint) {
+#ifndef USE_ANDROID_GLES2
   float xt = VPoint.pix_width / 2.0, yt = VPoint.pix_height / 2.0;
   glTranslatef(xt, yt, 0);
   glRotatef(VPoint.rotation * 180. / PI, 0, 0, 1);
   glTranslatef(-xt, -yt, 0);
+#endif
 }
 
 void UndoRenderRotateToViewPort(const ViewPort &VPoint) {
+#ifndef USE_ANDROID_GLES2
   float xt = VPoint.pix_width / 2.0, yt = VPoint.pix_height / 2.0;
   glTranslatef(xt, yt, 0);
   glRotatef(-VPoint.rotation * 180. / PI, 0, 0, 1);
   glTranslatef(-xt, -yt, 0);
+#endif
 }
 
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc,
@@ -8600,7 +8606,8 @@ CommDriverResult WriteCommDriverN2K(
   const std::vector<uint8_t> load;
   size_t data_len = payload.get()->size();
 
-  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, *(payload), dest_addr);
+  auto msg = std::make_shared<const Nmea2000Msg>(
+              _PGN, *(payload), dest_addr, priority);
 
   bool result = driver->get()->SendMessage(msg, dest_addr);
 

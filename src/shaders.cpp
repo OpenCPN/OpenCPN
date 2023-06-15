@@ -160,9 +160,9 @@ static const GLchar* AALine_fragment_shader_source =
     "    if (d>w)\n"
     "      col.w = 0.0;\n"
     "    else{\n"
-    "      if(float((w/2-d)/(w/2)) < .5){\n"
+    "      if(float((w/2.0-d)/(w/2.0)) < .5){\n"
     "        //col.w *= pow(float((w-d)/w), uBlendFactor);\n"
-    "        col.w *= pow(float((w/2-d)/(w/2)), uBlendFactor);\n"
+    "        col.w *= pow(float((w/2.0-d)/(w/2.0)), uBlendFactor);\n"
     "      }\n"
     "    }\n"
     "    gl_FragColor = col;\n"
@@ -231,12 +231,37 @@ static const GLchar *ring_fragment_shader_source =
     "}\n"
     "}\n";
 
+  // Alpha 2D texture shader
+static const GLchar* Android_texture_2DA_vertex_shader_source =
+    "attribute vec2 aPos;\n"
+    "attribute vec2 aUV;\n"
+    "uniform mat4 MVMatrix;\n"
+    "uniform mat4 TransformMatrix;\n"
+    "varying vec2 varCoord;\n"
+    "void main() {\n"
+    "   gl_Position = MVMatrix * TransformMatrix * vec4(aPos, 0.0, 1.0);\n"
+    "   varCoord = aUV;\n"
+    "}\n";
+
+static const GLchar* Android_texture_2DA_fragment_shader_source =
+    "precision lowp float;\n"
+    "uniform sampler2D uTex;\n"
+    "varying vec2 varCoord;\n"
+    "uniform vec4 color;\n"
+    "void main() {\n"
+    "   gl_FragColor = texture2D(uTex, varCoord) + color;\n"
+    "}\n";
+
 GLShaderProgram *pAALine_shader_program[2];
 GLShaderProgram *pcolor_tri_shader_program[2];
 GLShaderProgram *ptexture_2D_shader_program[2];
 GLShaderProgram *pcircle_filled_shader_program[2];
 GLShaderProgram *ptexture_2DA_shader_program[2];
 GLShaderProgram *pring_shader_program[2];
+
+GLint texture_2DA_vertex_shader_p;
+GLint texture_2DA_fragment_shader_p;
+GLint texture_2DA_shader_program;
 
 
 bool bShadersLoaded[2];
@@ -313,6 +338,59 @@ bool loadShaders(int index) {
     if (shaderProgram->isOK())
       pring_shader_program[index] = shaderProgram;
   }
+
+#ifdef __ANDROID__
+  //  2DA shader called by some Android plugins
+  if (!texture_2DA_vertex_shader_p) {
+    /* Vertex shader */
+    texture_2DA_vertex_shader_p = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(texture_2DA_vertex_shader_p, 1,
+                   &Android_texture_2DA_vertex_shader_source, NULL);
+    glCompileShader(texture_2DA_vertex_shader_p);
+    glGetShaderiv(texture_2DA_vertex_shader_p, GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      //glGetShaderInfoLog(texture_2DA_vertex_shader_p, INFOLOG_LEN, NULL,
+      //                   infoLog);
+      //printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!texture_2DA_fragment_shader_p) {
+    /* Fragment shader */
+    texture_2DA_fragment_shader_p = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(texture_2DA_fragment_shader_p, 1,
+                   &Android_texture_2DA_fragment_shader_source, NULL);
+    glCompileShader(texture_2DA_fragment_shader_p);
+    glGetShaderiv(texture_2DA_fragment_shader_p, GL_COMPILE_STATUS,
+                  &success);
+    if (!success) {
+      //glGetShaderInfoLog(texture_2DA_fragment_shader_p, INFOLOG_LEN,
+      //                   NULL, infoLog);
+      //printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+
+  if (!texture_2DA_shader_program) {
+    /* Link shaders */
+    texture_2DA_shader_program = glCreateProgram();
+    glAttachShader(texture_2DA_shader_program,
+                   texture_2DA_vertex_shader_p);
+    glAttachShader(texture_2DA_shader_program,
+                   texture_2DA_fragment_shader_p);
+    glLinkProgram(texture_2DA_shader_program);
+    glGetProgramiv(texture_2DA_shader_program, GL_LINK_STATUS,
+                   &success);
+    if (!success) {
+      //glGetProgramInfoLog(texture_2DA_shader_program, INFOLOG_LEN,
+      //                    NULL, infoLog);
+      //printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+      ret_val = false;
+    }
+  }
+#endif
 
   bShadersLoaded[index] = true;
   reConfigureShaders(index);
