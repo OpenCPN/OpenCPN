@@ -2381,12 +2381,12 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
 
   // Calculate pixels per mm for later reference
   wxSize sd = g_Platform->getDisplaySize();
-  double max_physical = wxMax(sd.x, sd.y);
+  double horizontal = sd.x;
   // Set DPI (Win) scale factor
   g_scaler = g_Platform->GetDisplayDIPMult(this);
 
-  m_pix_per_mm = (max_physical) / ((double)m_display_size_mm);
-  m_canvas_scale_factor = (max_physical) / (m_display_size_mm / 1000.);
+  m_pix_per_mm = (horizontal) / ((double)m_display_size_mm);
+  m_canvas_scale_factor = (horizontal) / (m_display_size_mm / 1000.);
 
   if (ps52plib) ps52plib->SetPPMM(m_pix_per_mm);
 

@@ -1902,6 +1902,9 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       w *= OCPN_GetWinDIPScaleFactor();
       h *= OCPN_GetWinDIPScaleFactor();
 
+      h *= 2;   //TODO //Some trouble with math or text sizing.
+                // Add "fluff" to text bitmap size.
+
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
       wxMemoryDC temp_dc;

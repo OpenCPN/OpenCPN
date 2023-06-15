@@ -3576,23 +3576,29 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   wxBoxSizer *itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
   SetSizer(itemBoxSizerMainPanel);
 
+  wxWindow *dparent = this;
+#ifndef __ANDROID__
   wxScrolledWindow *scrollWin = new wxScrolledWindow(
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL | wxHSCROLL);
 
   scrollWin->SetScrollRate(1, 1);
   itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
-    wxStdDialogButtonSizer *DialogButtonSizer =
-      CreateStdDialogButtonSizer(wxOK | wxCANCEL);
-  itemBoxSizerMainPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5);
-
-
+  dparent = scrollWin;
 
   wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(itemBoxSizer2);
+#else
+  wxBoxSizer *itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
+  itemBoxSizerMainPanel->Add(itemBoxSizer2, 1, wxEXPAND);
+#endif
+
+  wxStdDialogButtonSizer *DialogButtonSizer =
+  CreateStdDialogButtonSizer(wxOK | wxCANCEL);
+  itemBoxSizerMainPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5);
 
 
-  wxNotebook *itemNotebook = new wxNotebook(scrollWin, wxID_ANY, wxDefaultPosition,
+  wxNotebook *itemNotebook = new wxNotebook(dparent, wxID_ANY, wxDefaultPosition,
                                             wxDefaultSize, wxNB_TOP);
   itemBoxSizer2->Add(itemNotebook, 0, wxALL | wxEXPAND, border_size);
 
@@ -3609,7 +3615,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                            border_size);
 
   // Scale the images in the dashboard list control
-  int imageRefSize = 32 * GetOCPNGUIToolScaleFactor_PlugIn();
+  int imageRefSize = GetCharWidth() * 4;
 
   wxImageList *imglist1 = new wxImageList(imageRefSize, imageRefSize, true, 1);
 
@@ -3707,6 +3713,8 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   m_pCheckBoxIsVisible =
       new wxCheckBox(m_pPanelDashboard, wxID_ANY, _("show this dashboard"),
                      wxDefaultPosition, wxDefaultSize, 0);
+  m_pCheckBoxIsVisible->SetMinSize(wxSize(25 * GetCharWidth(), -1));
+
   itemFlexGridSizer->Add(m_pCheckBoxIsVisible, 0, wxEXPAND | wxALL,
                          border_size);
   wxStaticText *itemDummy01 =
@@ -3718,21 +3726,18 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer->Add(itemStaticText01, 0, wxEXPAND | wxALL, border_size);
   m_pTextCtrlCaption = new wxTextCtrl(m_pPanelDashboard, wxID_ANY, _T(""),
-                                      wxDefaultPosition, wxSize(220, -1));
+                                      wxDefaultPosition, wxDefaultSize);
+  m_pCheckBoxIsVisible->SetMinSize(wxSize(30 * GetCharWidth(), -1));
   itemFlexGridSizer->Add(m_pTextCtrlCaption, 0, wxALIGN_RIGHT | wxALL,
                          border_size);
-
-#ifdef __OCPN__ANDROID__
-  itemStaticText01->Hide();
-  m_pTextCtrlCaption->Hide();
-#endif
 
   wxStaticText *itemStaticText02 =
       new wxStaticText(m_pPanelDashboard, wxID_ANY, _("Orientation:"),
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer->Add(itemStaticText02, 0, wxEXPAND | wxALL, border_size);
   m_pChoiceOrientation = new wxChoice(m_pPanelDashboard, wxID_ANY,
-                                      wxDefaultPosition, wxSize(220, -1));
+                                      wxDefaultPosition, wxDefaultSize);
+  m_pChoiceOrientation->SetMinSize(wxSize(15 * GetCharWidth(), -1));
   m_pChoiceOrientation->Append(_("Vertical"));
   m_pChoiceOrientation->Append(_("Horizontal"));
   itemFlexGridSizer->Add(m_pChoiceOrientation, 0, wxALIGN_RIGHT | wxALL,
@@ -3798,7 +3803,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   itemStaticBoxSizer03->Add(itemBoxSizer04, 0, wxALIGN_TOP | wxALL,
                             border_size);
   m_pButtonAdd = new wxButton(m_pPanelDashboard, wxID_ANY, _("Add"),
-                              wxDefaultPosition, wxSize(20, -1));
+                              wxDefaultPosition, wxSize(-1, -1));
   itemBoxSizer04->Add(m_pButtonAdd, 0, wxEXPAND | wxALL, border_size);
   m_pButtonAdd->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
@@ -3814,7 +3819,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
      NULL, this );
   */
   m_pButtonDelete = new wxButton(m_pPanelDashboard, wxID_ANY, _("Delete"),
-                                 wxDefaultPosition, wxSize(20, -1));
+                                 wxDefaultPosition, wxSize(-1, -1));
   itemBoxSizer04->Add(m_pButtonDelete, 0, wxEXPAND | wxALL, border_size);
   m_pButtonDelete->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
@@ -4109,6 +4114,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       SetSize(wxSize(canvas_size.x * 3 /4, canvas_size.y * 8 / 10));
   }
 
+  Layout();
   CentreOnScreen();
 
 }

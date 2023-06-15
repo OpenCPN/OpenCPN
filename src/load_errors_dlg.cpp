@@ -40,6 +40,9 @@
 #include "observable_evt.h"
 #include "plugin_handler.h"
 #include "plugin_loader.h"
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
 
 wxDEFINE_EVENT(EVT_LOAD_COMPLETE, ObservedEvt);
 
@@ -133,7 +136,13 @@ static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
   LoadErrorsDlg::FormatCtx format_ctx(errors);
   LoadErrorsDlg dlg(parent, format_ctx);
 
+#ifdef __ANDROID__
+  std::string ss = dlg.FormatMsg(format_ctx);
+  androidShowSimpleOKDialog("Error", ss);
+  int sts = wxID_YES;
+#else
   int sts = dlg.ShowModal();
+#endif
   if (sts == wxID_YES || sts == wxID_OK) {
     for (const auto& plugin : format_ctx.plugins) {
       PluginHandler::getInstance()->uninstall(plugin);

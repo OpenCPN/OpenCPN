@@ -45,6 +45,8 @@ extern GLShaderProgram *pcircle_filled_shader_program[2];
 extern GLShaderProgram *ptexture_2DA_shader_program[2];
 extern GLShaderProgram *pring_shader_program[2];
 
+extern GLint texture_2DA_shader_program;
+
 extern const GLchar* preamble;
 
 class GLShaderProgram
@@ -75,6 +77,7 @@ public:
           printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", log.get());
 #ifdef USE_ANDROID_GLES2
           qDebug() << "SHADER COMPILE ERROR  " << log.get();
+          qDebug() << shaderCStr;
 #endif
         }
          return false;

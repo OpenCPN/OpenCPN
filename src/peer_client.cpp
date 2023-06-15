@@ -127,10 +127,6 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
   long response_code = -1;
   navobj_transfer_progress = 0;
 
-#ifdef ANDROID
-//FIXME (dave)
-
-#else
   CURL* c = curl_easy_init();
   curl_easy_setopt(c, CURLOPT_ENCODING, "identity");               // No encoding, plain ASCII
   curl_easy_setopt(c, CURLOPT_URL, url.c_str());
@@ -153,7 +149,6 @@ long PostSendObjectMessage( std::string url, std::ostringstream &body,
 
   curl_easy_cleanup(c);
 
-#endif
   return response_code;
 }
 
@@ -269,7 +264,8 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name, std::ve
           dlg.SetMessage(hmsg);
           dlg.SetText1Message("");
 
-          if (dlg.ShowModal() == ID_PCD_OK) {
+          dlg.ShowModal();
+          if (dlg.GetReturnCode() == ID_PCD_OK) {
             wxString PIN_tentative = dlg.GetText1Value().Trim().Trim(false);
             unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
             std::string new_api_key = PINtoRandomKeyString(dPIN);;
@@ -456,6 +452,7 @@ void PINConfirmDialog::SetText1Message(const wxString &msg) {
 }
 
 void PINConfirmDialog::OnOKClick(wxCommandEvent& event) {
+  SetReturnCode(ID_PCD_OK);
   EndModal(ID_PCD_OK);
 }
 

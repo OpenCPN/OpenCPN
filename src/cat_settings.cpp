@@ -114,6 +114,10 @@ public:
     for (const auto& l : labels) wxLabels.Add(l);
     Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLabels);
 
+#ifdef __OCPN__ANDROID__
+    SetMinSize(wxSize(12 * GetCharWidth(), -1));
+#endif
+
     m_custom_ctrl->Enable(false);
     for (auto l = labels.begin(); l != labels.end(); l++) {
       if (g_catalog_channel == *l) {
@@ -160,7 +164,7 @@ class CatalogSizer : public wxStaticBoxSizer {
 public:
   CatalogSizer(wxWindow* parent)
       : wxStaticBoxSizer(wxHORIZONTAL, parent, _("Active catalog")) {
-    auto flags = wxSizerFlags().Border();
+    auto flags = wxSizerFlags().Border(wxALL, parent->GetCharWidth());
     Add(new wxStaticText(parent, wxID_ANY, _("Select plugin catalog")), flags);
     auto custom_ctrl = new CustomCatalogCtrl(parent);
     Add(new CatalogChoice(parent, custom_ctrl), flags);

@@ -33,6 +33,7 @@
 #include <wx/stdpaths.h>
 #include <wx/progdlg.h>
 #include <wx/clipbrd.h>
+#include <wx/statline.h>
 
 #include <iostream>
 #include <vector>
@@ -68,7 +69,7 @@
 #include "androidUTIL.h"
 #endif
 
-#define DIALOG_MARGIN 3
+#define DIALOG_MARGIN 10
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
@@ -471,13 +472,26 @@ void RouteManagerDialog::Create() {
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RouteManagerDialog::OnRteDeleteClick), NULL, this);
 
-  btnRteExport = new wxButton(winr, -1, _("&Export selected..."));
+  wxString reseq_label(_("&Resequence Waypoints"));
+  wxString export_label(_("&Export selected..."));
+  wxString send_to_gps_label(_("&Send to GPS..."));
+  wxString send_to_peer_label(_("Send to &Peer..."));
+
+#ifdef __ANDROID__
+  reseq_label = wxString(_("Resequence"));
+  export_label = wxString(_("Export"));
+  send_to_gps_label = wxString(_("Send to GPS"));
+  send_to_peer_label = wxString(_("Send to Peer"));
+#endif
+
+  btnRteExport = new wxButton(winr, -1, export_label);
   bsRouteButtonsInner->Add(btnRteExport, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   btnRteExport->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RouteManagerDialog::OnRteExportClick), NULL, this);
 
-  btnRteResequence = new wxButton(winr, -1, _("&Resequence Waypoints"));
+
+  btnRteResequence = new wxButton(winr, -1, reseq_label);
   bsRouteButtonsInner->Add(btnRteResequence, 0, wxALL | wxEXPAND,
                            DIALOG_MARGIN);
   btnRteResequence->Connect(
@@ -485,7 +499,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteResequenceClick), NULL,
       this);
 
-  btnRteSendToPeer = new wxButton(winr, -1, _("Send to &Peer"));
+  btnRteSendToPeer = new wxButton(winr, -1, send_to_peer_label);
   bsRouteButtonsInner->Add(btnRteSendToPeer, 0, wxALL | wxEXPAND,
                            DIALOG_MARGIN);
   btnRteSendToPeer->Connect(
@@ -493,7 +507,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnRteSendToPeerClick), NULL,
       this);
 
-  btnRteSendToGPS = new wxButton(winr, -1, _("&Send to GPS"));
+  btnRteSendToGPS = new wxButton(winr, -1, send_to_gps_label);
   bsRouteButtonsInner->Add(btnRteSendToGPS, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
   btnRteSendToGPS->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
@@ -824,8 +838,24 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this);
 
   // Dialog OK button
-  itemBoxSizer6->Add(0, 0, 1, wxEXPAND, 5);  // Spacer
-  itemBoxSizer6->Add(new wxButton(this, wxID_OK), 0, wxALL, DIALOG_MARGIN);
+  wxSize sz = ::wxGetDisplaySize();
+  if (sz.y < sz.x) {     // landscape
+    itemBoxSizer6->Add(0, 0, 1, wxEXPAND, 5);  // Spacer
+    itemBoxSizer6->Add(new wxButton(this, wxID_OK), 0, wxALL, DIALOG_MARGIN);
+  }
+  else {
+    wxStaticLine* staticLine121 =
+      new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
+                       wxDefaultSize, wxLI_HORIZONTAL);
+    itemBoxSizer1->Add(staticLine121, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+
+    wxBoxSizer *itemBoxSizer7 = new wxBoxSizer(wxVERTICAL);
+    itemBoxSizer1->Add(itemBoxSizer7, 1, wxEXPAND);
+    wxBoxSizer *itemBoxSizer7a = new wxBoxSizer(wxHORIZONTAL);
+    itemBoxSizer7->Add(itemBoxSizer7a, 1, wxEXPAND);
+    itemBoxSizer7a->AddStretchSpacer();
+    itemBoxSizer7a->Add(new wxButton(this, wxID_OK), 0, wxALL | wxALIGN_RIGHT, DIALOG_MARGIN / 2);
+  }
 
   //  Create "Layers" panel
   m_pPanelLay = new wxPanel(m_pNotebook, wxID_ANY, wxDefaultPosition,
