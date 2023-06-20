@@ -78,8 +78,6 @@ extern wxWindow* gFrame;
 extern ChartDB* ChartData;
 extern bool g_bportable;
 
-
-
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"};
 
@@ -103,7 +101,6 @@ static bool IsSystemPlugin(const std::string& path) {
     if (lc_path.find(p) != std::string::npos) return true;
   return false;
 }
-
 
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
@@ -131,10 +128,9 @@ std::string PluginLoader::GetPluginVersion(
   auto p = dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
   if (p) {
     // New style plugin, trust version available in the API.
-    auto v = SemanticVersion(v_major, v_minor, p->GetPlugInVersionPatch(),
-                             p->GetPlugInVersionPost(),
-                             p->GetPlugInVersionPre(),
-                             p->GetPlugInVersionBuild());
+    auto v = SemanticVersion(
+        v_major, v_minor, p->GetPlugInVersionPatch(), p->GetPlugInVersionPost(),
+        p->GetPlugInVersionPre(), p->GetPlugInVersionBuild());
     return v.to_string() + import_suffix;
   } else if (metadata.version != "") {
     return metadata.version + import_suffix;
@@ -142,8 +138,6 @@ std::string PluginLoader::GetPluginVersion(
     return SemanticVersion(v_major, v_minor, -1).to_string() + import_suffix;
   }
 }
-
-
 
 PlugInContainer::PlugInContainer()
     : PlugInData(), m_pplugin(nullptr), m_library(), m_destroy_fn(nullptr) {}
@@ -275,8 +269,7 @@ void PluginLoader::ShowPreferencesDialog(const PlugInData& pd,
   if (pic) pic->m_pplugin->ShowPreferencesDialog(parent);
 }
 
-
-void PluginLoader::NotifySetupOptionsPlugin(const PlugInData *pd) {
+void PluginLoader::NotifySetupOptionsPlugin(const PlugInData* pd) {
   auto pic = GetContainer(*pd, *GetPlugInArray());
   if (!pic) return;
   if (pic->m_enabled && pic->m_init_state) {
@@ -309,7 +302,6 @@ void PluginLoader::NotifySetupOptionsPlugin(const PlugInData *pd) {
   }
 }
 
-
 void PluginLoader::SetEnabled(const wxString& common_name, bool enabled) {
   for (size_t i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic = plugin_array[i];
@@ -318,8 +310,7 @@ void PluginLoader::SetEnabled(const wxString& common_name, bool enabled) {
       return;
     }
   }
-  wxLogMessage("Atttempt to update enabled non-existing plugin "
-               + common_name);
+  wxLogMessage("Atttempt to update enabled non-existing plugin " + common_name);
 }
 
 void PluginLoader::SetToolboxPanel(const wxString& common_name, bool value) {
@@ -330,8 +321,8 @@ void PluginLoader::SetToolboxPanel(const wxString& common_name, bool value) {
       return;
     }
   }
-  wxLogMessage("Atttempt to update toolbox panel on non-existing plugin "
-               + common_name);
+  wxLogMessage("Atttempt to update toolbox panel on non-existing plugin " +
+               common_name);
 }
 
 void PluginLoader::SetPluginDefaultIcon(const wxBitmap* bitmap) {
@@ -793,11 +784,12 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   copy_if(available.begin(), available.end(), back_inserter(matches),
           [name](const PluginMetadata& md) { return md.name == name; });
   if (matches.size() == 0) return {};
-  if (matches.size() == 1) return matches[0];   // only one found with given name
+  if (matches.size() == 1) return matches[0];  // only one found with given name
 
   auto version = VersionFromManifest(name);
-  auto predicate =
-      [version](const PluginMetadata& md){ return version == md.version; };
+  auto predicate = [version](const PluginMetadata& md) {
+    return version == md.version;
+  };
   auto found = find_if(matches.begin(), matches.end(), predicate);
   return found != matches.end() ? *found : matches[0];
 }
@@ -805,7 +797,6 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
 /** Update PlugInContainer using data from PluginMetadata and manifest. */
 void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
                                 const PluginMetadata& md) {
-
   auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
                          ocpn::tolower(md.name));
   bool is_system = found != SYSTEM_PLUGINS.end();

@@ -58,8 +58,7 @@ enum class PluginStatus {
 };
 
 class PlugInContainer;  // forward
-class PlugInData;  // forward
-
+class PlugInData;       // forward
 
 /** Basic data for a loaded plugin, trivially copyable */
 class PlugInData {
@@ -160,7 +159,6 @@ public:
    */
   static void UpdatePlugin(PlugInContainer* plugin, const PluginMetadata& md);
 
-
   /** Return version string for a plugin, possibly with an "Imported" suffix. */
   static std::string GetPluginVersion(
       const PlugInData pd,
@@ -168,7 +166,6 @@ public:
 
   /** Find metadata for given plugin. */
   static PluginMetadata MetadataByName(const std::string& name);
-
 
   EventVar evt_blacklisted_plugin;
 
@@ -210,7 +207,7 @@ public:
   /** Display the preferences dialog for a plugin. */
   void ShowPreferencesDialog(const PlugInData& pd, wxWindow* parent);
 
-  void NotifySetupOptionsPlugin(const PlugInData *pic);
+  void NotifySetupOptionsPlugin(const PlugInData* pic);
 
   /** Remove a plugin from *GetPluginArray().  */
   void RemovePlugin(const PlugInData& pd);
