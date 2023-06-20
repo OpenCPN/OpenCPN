@@ -149,11 +149,8 @@ public:
   /** Install a new, downloaded but not installed plugin tarball. */
   bool installPlugin(PluginMetadata plugin, std::string path);
 
-  /**
-   * Install a new, downloaded but not installed plugin tarball,
-   * returning metadata for installed plugin.
-   */
-  bool installPlugin(const std::string& path, PluginMetadata& metadata);
+  /** Extract metadata in given tarball path. */
+  bool ExtractMetadata(const std::string& path, PluginMetadata& metadata);
 
   /* Install a new, downloaded but not installed plugin tarball. */
   bool installPlugin(const std::string& path);
@@ -176,11 +173,17 @@ private:
   std::vector<PluginMetadata> installed;
   CatalogData catalogData;
   std::string last_error_msg;
+  bool InstallPlugin(const std::string& path,std::string& filelist,
+                     const std::string metadata_path,
+                     bool only_metadata);
+
   bool explodeTarball(struct archive* src, struct archive* dest,
                       std::string& filelist,
-                      const std::string& metadata_path);
+                      const std::string& metadata_path,
+                      bool only_metadata);
   bool extractTarball(const std::string path, std::string& filelist,
-                      const std::string metadata_path = "");
+                      const std::string metadata_path = "",
+                      bool only_metadata = false);
   bool archive_check(int r, const char* msg, struct archive* a);
   std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
 };

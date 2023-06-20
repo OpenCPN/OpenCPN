@@ -3921,9 +3921,9 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
   }
   auto handler = PluginHandler::getInstance();
   PluginMetadata metadata;
-  bool ok = handler->installPlugin(path.ToStdString(), metadata);
+  bool ok = handler->ExtractMetadata(path.ToStdString(), metadata);
   if (!ok) {
-    OCPNMessageBox(this, _("Error extracting import plugin tarball."),
+    OCPNMessageBox(this, _("Error extracting metadata from tarball."),
                    _("OpenCPN Plugin Import Error"));
     return;
   }
@@ -3931,6 +3931,16 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
     OCPNMessageBox(this, _("Incompatible import plugin detected."),
                    _("OpenCPN Plugin Import Error"));
     handler->uninstall(metadata.name);
+    return;
+  }
+  for (const auto& p : handler->getInstalled()) {
+    if (p.name == metadata.name) handler->uninstall(p.name);
+    break;
+  }
+  ok = handler->installPlugin(metadata, path.ToStdString());
+   if (!ok) {
+    OCPNMessageBox(this, _("Error extracting import plugin tarball."),
+                   _("OpenCPN Plugin Import Error"));
     return;
   }
   metadata.is_imported = true;

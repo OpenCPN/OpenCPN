@@ -747,7 +747,8 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
 
 bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
                                    std::string& filelist,
-                                   const std::string& metadata_path) {
+                                   const std::string& metadata_path,
+                                   bool only_metadata) {
   struct archive_entry* entry = 0;
   pathmap_t pathmap = getInstallPaths();
   while (true) {
@@ -767,6 +768,9 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
       continue;
     if (strlen(archive_entry_pathname(entry)) == 0) {
       continue;
+    }
+    if (!is_metadata && only_metadata) {
+        continue;
     }
     if (!is_metadata) {
       filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
@@ -808,15 +812,17 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
  *
  * For linux, the expected destinations are bin, lib and share.
  *
- * Parameters:
- *   - path: path to tarball
- *   - filelist: On return contains a list of files installed.
- *   - last_error_msg: Updated when returning false.
+ *   @param path path to tarball
+ *   @param filelist: On return contains a list of files installed.
+ *   @param metadata_path: if non-empty, location where to store metadata,
+ *   @param only_metadata: If true don't install any files, just extract
+ *                         metadata.
  *
  */
 bool PluginHandler::extractTarball(const std::string path,
                                    std::string& filelist,
-                                   const std::string metadata_path) {
+                                   const std::string metadata_path,
+                                   bool only_metadata) {
   struct archive* src = archive_read_new();
   archive_read_support_filter_gzip(src);
   archive_read_support_format_tar(src);
@@ -830,7 +836,7 @@ bool PluginHandler::extractTarball(const std::string path,
   }
   struct archive* dest = archive_write_disk_new();
   archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
-  bool ok = explodeTarball(src, dest, filelist, metadata_path);
+  bool ok = explodeTarball(src, dest, filelist, metadata_path, only_metadata);
   archive_read_free(src);
   archive_write_free(dest);
   return ok;
@@ -879,15 +885,6 @@ static std::string computeMetadataPath(void) {
   return path;
 }
 
-std::string PluginHandler::getMetadataPath() {
-  if (metadataPath.size() > 0) {
-    return metadataPath;
-  }
-  metadataPath = computeMetadataPath();
-  wxLogDebug("Using metadata path: %s", metadataPath.c_str());
-  return metadataPath;
-}
-
 static void parseMetadata(const std::string path, CatalogCtx& ctx) {
   using namespace std;
 
@@ -902,6 +899,46 @@ static void parseMetadata(const std::string path, CatalogCtx& ctx) {
                   istreambuf_iterator<char>());
   ParseCatalog(xml, &ctx);
 }
+
+bool PluginHandler::InstallPlugin(const std::string& path,
+                                  std::string& filelist,
+                                  const std::string metadata_path,
+                                  bool only_metadata) {
+  if (!extractTarball(path, filelist, metadata_path, only_metadata)) {
+    std::ostringstream os;
+    os << "Cannot unpack plugin tarball at : " << path;
+    if (filelist != "") cleanup(filelist, "unknown_name");
+    last_error_msg = os.str();
+    return false;
+  }
+  if (only_metadata)  {
+    return true;
+  }
+  struct CatalogCtx ctx;
+  std::ifstream istream(metadata_path);
+  std::stringstream buff;
+  buff << istream.rdbuf();
+
+  auto xml = std::string("<plugins>") + buff.str() + "</plugins>";
+  ParseCatalog(xml, &ctx);
+  auto name = ctx.plugins[0].name;
+  auto version = ctx.plugins[0].version;
+  saveFilelist(filelist, name);
+  saveDirlist(name);
+  saveVersion(name, version);
+
+  return true;
+}
+
+std::string PluginHandler::getMetadataPath() {
+  if (metadataPath.size() > 0) {
+    return metadataPath;
+  }
+  metadataPath = computeMetadataPath();
+  wxLogDebug("Using metadata path: %s", metadataPath.c_str());
+  return metadataPath;
+}
+
 
 const std::map<std::string, int> PluginHandler::getCountByTarget() {
   auto plugins = getInstalled();
@@ -1050,7 +1087,6 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
     PluginHandler::cleanup(filelist, plugin.name);
     return false;
   }
-  // remove(path.c_str());
   saveFilelist(filelist, plugin.name);
   saveDirlist(plugin.name);
   saveVersion(plugin.name, plugin.version);
@@ -1078,21 +1114,26 @@ bool PluginHandler::installPlugin(PluginMetadata plugin) {
 }
 
 bool PluginHandler::installPlugin(const std::string& path) {
-  PluginMetadata unused;
-  return installPlugin(path, unused);
+  PluginMetadata metadata;
+  if (!ExtractMetadata(path, metadata)) {
+    MESSAGE_LOG << "Cannot extract metadata from tarball";
+    return false;
+  }
+  return installPlugin(metadata, path);
 }
 
-bool PluginHandler::installPlugin(const std::string& path,
-                                  PluginMetadata& metadata) {
+bool PluginHandler::ExtractMetadata(const std::string& path,
+                                    PluginMetadata& metadata) {
   std::string filelist;
   std::string temp_path(tmpnam(0));
-  if (!extractTarball(path, filelist, temp_path)) {
+  if (!extractTarball(path, filelist, temp_path, true)) {
     std::ostringstream os;
     os << "Cannot unpack plugin tarball at : " << path;
     if (filelist != "") cleanup(filelist, "unknown_name");
     last_error_msg = os.str();
     return false;
   }
+
   struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
   std::stringstream buff;
@@ -1100,17 +1141,9 @@ bool PluginHandler::installPlugin(const std::string& path,
   remove(temp_path.c_str());
 
   auto xml = std::string("<plugins>") + buff.str() + "</plugins>";
-
   ParseCatalog(xml, &ctx);
-  auto name = ctx.plugins[0].name;
-  auto version = ctx.plugins[0].version;
-
-  saveFilelist(filelist, name);
-  saveDirlist(name);
-  saveVersion(name, version);
-
   metadata = ctx.plugins[0];
-  return true;
+  return !metadata.name.empty();
 }
 
 bool PluginHandler::uninstall(const std::string plugin_name) {
