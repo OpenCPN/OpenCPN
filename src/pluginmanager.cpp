@@ -517,6 +517,29 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
+/** Unload and uninstall plugin with given name. */
+static void UninstallPlugin(const std::string& name) {
+  auto handler = PluginHandler::getInstance();
+  auto loader = PluginLoader::getInstance();
+  auto finder = [name](const PluginMetadata pm) { return pm.name == name; };
+  const auto& installed = handler->getInstalled();
+  auto found = std::find_if(installed.begin(), installed.end(), finder);
+  if (found != installed.end()) {
+    for (size_t i = 0; i < loader->GetPlugInArray()->GetCount(); i++ ) {
+      auto const& item = loader->GetPlugInArray()->Item(i);
+      if (item->m_common_name.ToStdString() == name) {
+        DEBUG_LOG << "Unloading plugin: " << name;
+        loader->UnLoadPlugIn(i);
+        break;
+      }
+    }
+    handler->uninstall(found->name);
+    DEBUG_LOG << "Uninstalling: " << found->name;
+  }
+}
+
+
+
 static void run_update_dialog(PluginListPanel *parent, const PlugInData *pic,
                               bool uninstall, const char *name = 0,
                               bool b_forceEnable = false) {
@@ -3909,6 +3932,7 @@ void CatalogMgrPanel::OnPluginSettingsButton(wxCommandEvent &event) {
 #endif
 }
 
+
 void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
   // Present a file selector dialog to get the file name..
   wxString path;
@@ -3933,12 +3957,9 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent &event) {
     handler->uninstall(metadata.name);
     return;
   }
-  for (const auto& p : handler->getInstalled()) {
-    if (p.name == metadata.name) handler->uninstall(p.name);
-    break;
-  }
+  UninstallPlugin(metadata.name);
   ok = handler->installPlugin(metadata, path.ToStdString());
-   if (!ok) {
+  if (!ok) {
     OCPNMessageBox(this, _("Error extracting import plugin tarball."),
                    _("OpenCPN Plugin Import Error"));
     return;
