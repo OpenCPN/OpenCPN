@@ -163,6 +163,7 @@ public:
   void Toggle_AIS_CPA(void);
   void ToggleShowTrack(void);
   void CloneFrom(AisTargetData* q);
+  bool IsValidMID(int);
 
   int MID;
   int MMSI;

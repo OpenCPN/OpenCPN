@@ -1003,21 +1003,28 @@ void AisTargetData::ToggleShowTrack(void) {
   b_show_track = !b_show_track ? true : false;
 }
 
-// Get country name and code according to ITU 2019-02
+bool AisTargetData::IsValidMID(int mid) {
+  if (mid >= 201 && mid <= 775) return true;
+  return false;
+}
+
+// Get country name and code according to ITU 2023-02
 // (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
-wxString AisTargetData::GetCountryCode(
-    bool
-        b_CntryLongStr)  // false = Short country code, true = Full country name
-{
+wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
+  /***** Check for a valid MID *****/
+  // First check the most common case
   int nMID = MMSI / 1000000;
-  // SAR Aircraft start with 111 and has a MID at pos 4,5,6
-  if (111 == nMID) nMID = (MMSI - 111000000) / 1000;
-  // Base station start with 00 and has a MID at pos 4,5,6
-  if (Class == AIS_BASE) nMID = MMSI / 10000;
-  // AtoN start with 99 and has a MID at pos 3,4,5
-  if (99 == MMSI / 10000000) nMID = (MMSI - 990000000) / 10000;
-  // Check if a proper MID
-  if (nMID < 201 || nMID > 775) return wxEmptyString;
+  if (!IsValidMID(nMID)){
+    // SART, MOB, EPIRB starts with 97 and don't use MID (ITU-R M.1371-5)
+    // Some kind of healthy check
+    if (MMSI < 1000 || 97 == MMSI / 10000000) return wxEmptyString;
+    wxString s_mmsi;
+    s_mmsi << MMSI;
+    for (int i = 0; s_mmsi.length() - 3; i++) {
+      nMID = wxAtoi(s_mmsi.Mid(i, 3));
+      if (IsValidMID(nMID)) break;
+    }
+  }
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 
