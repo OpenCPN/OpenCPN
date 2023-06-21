@@ -94,6 +94,9 @@ class SENTENCE
       virtual const SENTENCE& operator += ( TRANSDUCER_TYPE transducer );
       virtual const SENTENCE& operator += ( NMEA0183_BOOLEAN boolean );
       virtual const SENTENCE& operator += ( LATLONG& source );
+
+   protected:
+      virtual wxString ToNmeaString(const wxString &field_string);
 };
 
 #endif // SENTENCE_CLASS_HEADER

@@ -477,8 +477,8 @@ const SENTENCE& SENTENCE::operator += ( const wxString& source )
 {
 //   ASSERT_VALID( this );
 
-    Sentence += _T(",");
-   Sentence += source;
+   Sentence += _T(",");
+   Sentence += ToNmeaString(source);
 
    return( *this );
 }
@@ -512,6 +512,7 @@ SENTENCE& SENTENCE::Add ( double value, int precision )
 
     return( *this );
 }
+
 const SENTENCE& SENTENCE::operator += ( COMMUNICATIONS_MODE mode )
 {
 //   ASSERT_VALID( this );
@@ -721,4 +722,52 @@ const SENTENCE& SENTENCE::operator += ( LATLONG& source )
    source.Write( *this );
 
    return( *this );
+}
+
+/**
+ * @brief Convert a unicode wxString to a 7-bit NMEA compliant wxString.
+ * Any non compliant character is replaced by '_' character.
+ *
+ * @param field_string The string to be converted
+ * @return NMEA compliant string
+*/
+wxString SENTENCE::ToNmeaString(const wxString &field_string)
+{
+   // Use ToAscii() convert the input string to 7-bit ASCII. This method does
+   // not make clever conversion, it only replaces any no ASCII character by '_'.
+   wxString ascii_string = field_string.ToAscii();
+   int str_length = ascii_string.length();
+
+   // Loop throught the ASCII string to replace any NMEA reserved char by '_'
+   // Valid NMEA characters can be found in chapter 6.1 of NMEA0183 standard V3.01
+   char c;
+   for (int i = 0; i < str_length; i++)
+   {
+      c = ascii_string[i];
+      
+      if (c < 0x20) // No characters below 0x20 are valid
+      {
+         ascii_string[i] = '_';
+      }
+      else if (c > 0x7d) // No characters above 0x7d are valid
+      {
+         ascii_string[i] = '_';
+      }
+      else
+      {
+         switch ((unsigned char) ascii_string[i])
+         {
+            case 0x21: // '!'
+            case 0x24: // '$'
+            case 0x2a: // '*'
+            case 0x2c: // ','
+            case 0x5c: // '\'
+            case 0x5e: // '^'
+               ascii_string[i] = '_';
+               break;
+         }
+      }
+   }
+
+   return ascii_string;
 }
