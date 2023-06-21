@@ -24,8 +24,7 @@ override_dh_auto_configure:
             -DOCPN_USE_BUNDLED_LIBS=OFF \
             -DOCPN_USE_NEWSERIAL=ON \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
-            -DOCPN_TARGET_TUPLE="debian-$(TARGET_ARCH);12;$(TARGET_ARCH)" \
-	    -DOCPN_BUILD_TEST=OFF
+            -DOCPN_TARGET_TUPLE="debian-$(TARGET_ARCH);12;$(TARGET_ARCH)"
 
 override_dh_auto_test:
 	cd obj-*-linux-gnu*; make run-tests
