@@ -1534,7 +1534,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   int gpsg_mmsi = 0;
   int arpa_mmsi = 0;
   int aprs_mmsi = 0;
-  int follower_mmsi = 0;
   int mmsi = 0;
 
   long arpa_tgt_num = 0;
@@ -1925,9 +1924,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       MmsiProperties *props = g_MMSI_Props_Array[i];
       if (mmsi == props->MMSI) {
-        // Check to see if this target has been flagged as a "follower"
-        if (props->m_bFollower) follower_mmsi = mmsi;
-
         // Check if this target has a dedicated tracktype
         if (TRACKTYPE_NEVER == props->TrackType) {
           pTargetData->b_show_track = false;
@@ -2094,8 +2090,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
             Parse_VDXBitstring(&strbit, pTargetData);  // Parse the new data
       }
 
-      //  Catch followers, and set correct flag
-      if (follower_mmsi) pTargetData->b_isFollower = true;
+      // Catch mmsi properties like track, persistent track, follower.
+      getMmsiProperties(pTargetData);
 
       //     Update the most recent report period
       pTargetData->RecentPeriod =
