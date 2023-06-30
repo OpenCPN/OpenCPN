@@ -41,6 +41,7 @@
 #include "comm_drv_factory.h"
 #include "comm_drv_n0183_net.h"
 #include "comm_drv_n0183_serial.h"
+#include "comm_drv_n0183_android_bt.h"
 #include "comm_drv_registry.h"
 #include "comm_n0183_output.h"
 #include "config_vars.h"
@@ -113,6 +114,14 @@ void BroadcastNMEA0183Message(const wxString &msg) {
         if (drv_net) {
           params = drv_net->GetParams();
         }
+#ifdef __ANDROID__
+        else {
+          auto drv_bluetooth = std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(driver);
+          if (drv_bluetooth) {
+            params = drv_bluetooth->GetParams();
+          }
+        }
+#endif
       }
 
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
