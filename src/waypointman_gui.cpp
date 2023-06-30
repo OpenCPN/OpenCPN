@@ -486,8 +486,11 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName, const wxString &k
   // legacy icon size
   float pix_factor = nominal_legacy_icon_size_pixels / 68.0;
 
-  wxBitmap img = LoadSVG(fileName, -1, -1);
-  bm_size = img.GetWidth() * pix_factor * g_MarkScaleFactorExp;
+  unsigned int w, h;
+  SVGDocumentPixelSize(fileName, w, h);
+
+  bm_size = w * pix_factor * g_MarkScaleFactorExp;
+
 #endif
 #else
   unsigned int w, h;

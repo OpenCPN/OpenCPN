@@ -4767,16 +4767,15 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
   wxFileName fn(save_file_dir + _T("/") + fsvg.GetFullName());
   fn.SetExt(_T("png"));
 
-  /*
-         //Caching does not work well, since we always build each icon twice.
-      if(fn.FileExists()){
-          wxBitmap bmp_test(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-          if(bmp_test.IsOk()){
-              if((bmp_test.GetWidth() == (int)width) && (bmp_test.GetHeight() ==
-     (int)height)) return bmp_test;
-          }
-      }
-  */
+  // Try to find the target image, at the proper resolution.
+  if(fn.FileExists()){
+    wxBitmap bmp_test(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    if(bmp_test.IsOk()){
+      if((bmp_test.GetWidth() == (int)width) && (bmp_test.GetHeight() ==
+            (int)height))
+        return bmp_test;
+    }
+  }
 
   wxString val = callActivityMethod_s2s2i("buildSVGIcon", filename,
                                           fn.GetFullPath(), width, height);
