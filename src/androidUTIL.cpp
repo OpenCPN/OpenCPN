@@ -401,6 +401,7 @@ wxTransformMatrix g_dummy_transform;
 #define ACTION_SAF_PERMISSION_END 6
 
 #define SCHEDULED_EVENT_CLEAN_EXIT 5498
+#define ID_CMD_PERSIST_DATA 5499
 
 // Implement a small function missing from Android API 16, or so.
 // FIXME This can go away when Android MIN_SDK is raised to 19 (KitKat)
@@ -995,6 +996,21 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
       //             androidTerminate();
       break;
 
+    case ID_CMD_PERSIST_DATA:
+      qDebug() << "CMD_PERSIST_DATA";
+      if (pConfig) {
+        //  Persist the config file, especially to capture the viewport
+        //  location,scale etc.
+        pConfig->UpdateSettings();
+
+        //  There may be unsaved objects at this point, and a navobj.xml.changes
+        //  restore file We commit the navobj deltas, and flush the restore file
+        //  Pass flag "true" to also recreate a new empty "changes" file
+        pConfig->UpdateNavObj(true);
+      }
+
+      break;
+
     case ID_CMD_TRIGGER_RESIZE:
       qDebug() << "Trigger Resize";
       timer_sequence = 0;
@@ -1475,15 +1491,11 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env,
 
   //  App may be summarily killed after this point due to OOM condition.
   //  So we need to persist some dynamic data.
-  if (pConfig) {
-    //  Persist the config file, especially to capture the viewport
-    //  location,scale etc.
-    pConfig->UpdateSettings();
 
-    //  There may be unsaved objects at this point, and a navobj.xml.changes
-    //  restore file We commit the navobj deltas, and flush the restore file
-    //  Pass flag "true" to also recreate a new empty "changes" file
-    pConfig->UpdateNavObj(true);
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(ID_CMD_PERSIST_DATA);
+  if (gFrame && gFrame->GetEventHandler()) {
+    g_androidUtilHandler->AddPendingEvent(evt);
   }
 
   g_running = false;
