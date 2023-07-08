@@ -490,8 +490,8 @@ if (QT_ANDROID)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC")
-  set(CMAKE_C_FLAGS "-pthread -fPIC")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g")
+  set(CMAKE_C_FLAGS "-pthread -fPIC -g")
 
   add_compile_options("-Wno-inconsistent-missing-override"
         "-Wno-potentially-evaluated-expression"
@@ -503,7 +503,7 @@ if (QT_ANDROID)
     add_compile_options("-O0")
   endif ()
 
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so ")
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif (QT_ANDROID)
 
 
