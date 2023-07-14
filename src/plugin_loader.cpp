@@ -107,17 +107,15 @@ std::string PluginLoader::GetPluginVersion(
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
   auto loader = PluginLoader::getInstance();
   auto pic = GetContainer(pd, *loader->GetPlugInArray());
-  std::string import_suffix;
-  PluginMetadata metadata;
-  if (pic) {
-    metadata = pic->m_managed_metadata;
-    if (metadata.version == "")
-      metadata = get_metadata(pic->m_common_name.ToStdString());
-    import_suffix = metadata.is_imported ? _(" [Imported]") : "";
-  } else {
-    wxLogMessage("Attempt to get version for empty pic pointer");
+  if (!pic) {
     return SemanticVersion(0, 0, -1).to_string();
   }
+
+  PluginMetadata metadata;
+  metadata = pic->m_managed_metadata;
+  if (metadata.version == "")
+    metadata = get_metadata(pic->m_common_name.ToStdString());
+  std::string import_suffix(metadata.is_imported ? _(" [Imported]") : "");
 
   int v_major(0);
   int v_minor(0);
@@ -310,7 +308,6 @@ void PluginLoader::SetEnabled(const wxString& common_name, bool enabled) {
       return;
     }
   }
-  wxLogMessage("Atttempt to update enabled non-existing plugin " + common_name);
 }
 
 void PluginLoader::SetToolboxPanel(const wxString& common_name, bool value) {
