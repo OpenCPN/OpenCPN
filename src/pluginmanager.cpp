@@ -648,6 +648,11 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
     pConfig->Write(_T ( "bEnabled" ), true);
   }
 
+  // This is installed from catalog, remove possible imported
+  // metadata leftovers
+  auto handler = PluginHandler::getInstance();
+  std::remove(handler->ImportedMetadataPath(update.name).c_str());
+
   //  Reload all plugins, which will bring in the action results.
   LoadAllPlugIns(false);
 
