@@ -1,0 +1,2 @@
+# Pre-release opencpn backports
+deb [signed-by=/etc/apt/keyrings/opencpn.key] http://mumin.crabdance.com/bookworm-backports ./
