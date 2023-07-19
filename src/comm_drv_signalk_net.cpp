@@ -168,9 +168,14 @@ void *WebSocketThread::Entry() {
 
       if (ws->getReadyState() == WebSocket::CLOSED) {
         //printf("ws closed\n");
+        delete ws;
+        ws = 0;
+        wxThread::Sleep(2000);  // Allow system to settle before starting re-connect loop
         break;
       }
-      ws->poll(10);
+      if ((ws->getReadyState() != WebSocket::CLOSED) && (ws->getReadyState() != WebSocket::CLOSING)) {
+        ws->poll(10);
+      }
       if (ws->getReadyState() == WebSocket::OPEN) {
         ws->dispatch(HandleMessage);
       }
