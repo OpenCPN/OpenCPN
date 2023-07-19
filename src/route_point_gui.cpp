@@ -660,18 +660,22 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 #endif
 
 void RoutePointGui::CalculateDCRect(wxDC &dc, ChartCanvas *canvas, wxRect *prect) {
-  dc.ResetBoundingBox();
-  dc.DestroyClippingRegion();
+  if (canvas) {
+    dc.ResetBoundingBox();
+    dc.DestroyClippingRegion();
 
-  // Draw the mark on the dc
-  ocpnDC odc(dc);
-  Draw(odc, canvas, NULL);
+    // Draw the mark on the dc
+    ocpnDC odc(dc);
+    odc.SetVP(canvas->GetVP());
 
-  //  Retrieve the drawing extents
-  prect->x = dc.MinX() - 1;
-  prect->y = dc.MinY() - 1;
-  prect->width = dc.MaxX() - dc.MinX() + 2;  // Mouse Poop?
-  prect->height = dc.MaxY() - dc.MinY() + 2;
+    Draw(odc, canvas, NULL);
+
+    //  Retrieve the drawing extents
+    prect->x = dc.MinX() - 1;
+    prect->y = dc.MinY() - 1;
+    prect->width = dc.MaxX() - dc.MinX() + 2;  // Mouse Poop?
+    prect->height = dc.MaxY() - dc.MinY() + 2;
+  }
 }
 
 bool RoutePointGui::IsVisibleSelectable(ChartCanvas* cc, bool boverrideViz) {
