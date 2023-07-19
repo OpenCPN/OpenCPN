@@ -6,6 +6,9 @@ endif ()
 
 set(SRC easywsclient.cpp)
 
+set_source_files_properties(
+        easywsclient.cpp PROPERTIES COMPILE_FLAGS "-O0")
+
 add_library(EASYWSCLIENT STATIC ${SRC})
 add_library(ocpn::easywsclient ALIAS EASYWSCLIENT)
 
