@@ -1070,24 +1070,29 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
 
     //  Circle color
   float colorv[4];
-  colorv[0] = m_brush.GetColour().Red() / float(256);
-  colorv[1] = m_brush.GetColour().Green() / float(256);
-  colorv[2] = m_brush.GetColour().Blue() / float(256);
-  colorv[3] = (m_brush.GetStyle() == wxBRUSHSTYLE_TRANSPARENT) ? 0.0 : 1.0;
-
+  if (m_brush.IsOk()) {
+    colorv[0] = m_brush.GetColour().Red() / float(256);
+    colorv[1] = m_brush.GetColour().Green() / float(256);
+    colorv[2] = m_brush.GetColour().Blue() / float(256);
+    colorv[3] = (m_brush.GetStyle() == wxBRUSHSTYLE_TRANSPARENT) ? 0.0 : 1.0;
+  }
   shader->SetUniform4fv("circle_color", colorv);
 
   //  Border color
   float bcolorv[4];
-  bcolorv[0] = m_pen.GetColour().Red() / float(256);
-  bcolorv[1] = m_pen.GetColour().Green() / float(256);
-  bcolorv[2] = m_pen.GetColour().Blue() / float(256);
-  bcolorv[3] = m_pen.GetColour().Alpha() / float(256);
-
+  if (m_pen.IsOk()) {
+    bcolorv[0] = m_pen.GetColour().Red() / float(256);
+    bcolorv[1] = m_pen.GetColour().Green() / float(256);
+    bcolorv[2] = m_pen.GetColour().Blue() / float(256);
+    bcolorv[3] = m_pen.GetColour().Alpha() / float(256);
+  }
   shader->SetUniform4fv("border_color", bcolorv);
 
   //  Border Width
-  shader->SetUniform1f("border_width", m_pen.GetWidth());
+  if (m_pen.IsOk())
+    shader->SetUniform1f("border_width", m_pen.GetWidth());
+  else
+    shader->SetUniform1f("border_width", 2);
 
   shader->SetAttributePointerf("aPos", coords);
 
@@ -1894,26 +1899,40 @@ void ocpnDC::SetVP(ViewPort vp){
   mat4x4_identity(I);
 
 
-  m_pcolor_tri_shader_program->Bind();
-  m_pcolor_tri_shader_program->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
-  m_pcolor_tri_shader_program->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
-  m_pcolor_tri_shader_program->UnBind();
+  if (m_pcolor_tri_shader_program) {
+    m_pcolor_tri_shader_program->Bind();
+    m_pcolor_tri_shader_program->SetUniformMatrix4fv(
+        "MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
+    m_pcolor_tri_shader_program->SetUniformMatrix4fv("TransformMatrix",
+                                                     (GLfloat *)I);
+    m_pcolor_tri_shader_program->UnBind();
+  }
+  if (m_pAALine_shader_program) {
+    m_pAALine_shader_program->Bind();
+    m_pAALine_shader_program->SetUniformMatrix4fv(
+        "MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
+    m_pAALine_shader_program->SetUniformMatrix4fv("TransformMatrix",
+                                                  (GLfloat *)I);
+    m_pAALine_shader_program->UnBind();
+  }
 
-  m_pAALine_shader_program->Bind();
-  m_pAALine_shader_program->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
-  m_pAALine_shader_program->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
-  m_pAALine_shader_program->UnBind();
+  if (m_pcircle_filled_shader_program) {
+    m_pcircle_filled_shader_program->Bind();
+    m_pcircle_filled_shader_program->SetUniformMatrix4fv(
+        "MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
+    m_pcircle_filled_shader_program->SetUniformMatrix4fv("TransformMatrix",
+                                                         (GLfloat *)I);
+    m_pcircle_filled_shader_program->UnBind();
+  }
 
-  m_pcircle_filled_shader_program->Bind();
-  m_pcircle_filled_shader_program->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
-  m_pcircle_filled_shader_program->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
-  m_pcircle_filled_shader_program->UnBind();
-
-  m_ptexture_2D_shader_program->Bind();
-  m_ptexture_2D_shader_program->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
-  m_ptexture_2D_shader_program->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
-  m_ptexture_2D_shader_program->UnBind();
-
+  if (m_ptexture_2D_shader_program) {
+    m_ptexture_2D_shader_program->Bind();
+    m_ptexture_2D_shader_program->SetUniformMatrix4fv(
+        "MVMatrix", (GLfloat *)m_vp.vp_matrix_transform);
+    m_ptexture_2D_shader_program->SetUniformMatrix4fv("TransformMatrix",
+                                                      (GLfloat *)I);
+    m_ptexture_2D_shader_program->UnBind();
+  }
 }
 
 
