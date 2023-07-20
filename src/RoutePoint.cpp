@@ -1241,6 +1241,7 @@ void RoutePoint::CalculateDCRect(wxDC &dc, ChartCanvas *canvas, wxRect *prect) {
 
   // Draw the mark on the dc
   ocpnDC odc(dc);
+  odc.SetVP(canvas->GetVP());
   Draw(odc, canvas, NULL);
 
   //  Retrieve the drawing extents

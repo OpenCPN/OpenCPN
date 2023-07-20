@@ -561,6 +561,7 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
       bool blink_save = prp2->m_bBlink;
       prp2->m_bBlink = false;
       ocpnDC odc_route(dc_route);
+      odc_route.SetVP(canvas->GetVP());
       RoutePointGui(*prp2).Draw(odc_route, canvas, NULL);
       prp2->m_bBlink = blink_save;
 
