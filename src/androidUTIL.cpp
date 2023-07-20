@@ -1003,9 +1003,10 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
         pConfig->UpdateSettings();
 
         //  There may be unsaved objects at this point, and a navobj.xml.changes
-        //  restore file We commit the navobj deltas, and flush the restore file
-        //  Pass flag "true" to also recreate a new empty "changes" file
-        pConfig->UpdateNavObj(true);
+        //  restore file.
+        //  We commit the navobj deltas
+        //  No need to flush or recreate a new empty "changes" file
+        pConfig->UpdateNavObjOnly();
       }
 
       break;

@@ -2821,6 +2821,16 @@ void MyConfig::UpdateSettings() {
   Flush();
 }
 
+void MyConfig::UpdateNavObjOnly() {
+  //   Create the NavObjectCollection, and save to specified file
+  NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
+
+  pNavObjectSet->CreateAllGPXObjects();
+  pNavObjectSet->SaveFile(m_sNavObjSetFile);
+
+  delete pNavObjectSet;
+}
+
 void MyConfig::UpdateNavObj(bool bRecreate) {
   //   Create the NavObjectCollection, and save to specified file
   NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
