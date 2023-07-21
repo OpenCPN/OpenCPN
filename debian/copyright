@@ -9,6 +9,7 @@ Files-Excluded:
  buildwin
  data/CoC-1973_2018-InlandECDIS_20220912.pdf
  data/doc
+ deploy_rsa.enc
  debian
  Docs
  flatpak
