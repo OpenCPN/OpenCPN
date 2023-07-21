@@ -5,4 +5,3 @@ plugins/chartdldr_pi/data/doc/08-AfterDownloading.png
 plugins/chartdldr_pi/data/doc/12-Add-Edit-Custom-Chart-Source.png
 plugins/chartdldr_pi/data/doc/15-Chart-Status-Selection.png
 plugins/chartdldr_pi/data/doc/16-Show-Local-Files.png
-debian/patches/0008-Re-add-plugin-doc-dir-which-should-not-bne-stripped.patch
