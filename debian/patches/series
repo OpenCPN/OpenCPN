@@ -2,6 +2,3 @@
 0002-CMakeLists-ignore-non-existing-NSIS.template.in.in.patch
 0003-Add-missing-libs-tinyxml-Debian-work-around.patch
 0004-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch
-0005-Add-ArmHF-Debian-Buster-plugin-compatibility-test.-3.patch
-0006-Disable-chart-thumbnail-creation.-3295.patch
-0007-Refactor-comm_serial-RX-thread-for-better-performanc.patch
