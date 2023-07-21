@@ -488,9 +488,8 @@ private:
                               const OCPNRegion &RectRegion,
                               const LLRegion &Region);
 
-  bool RenderCellOutlinesOnDC(ocpnDC &dc, ViewPort &vp, wxPoint *pwp,
+  bool RenderCellOutlines(ocpnDC &dc, ViewPort &vp, wxPoint *pwp,
                               M_COVR_Desc *mcd);
-  void RenderCellOutlinesOnGL(ViewPort &vp, M_COVR_Desc *mcd);
 
   //    Data members
 

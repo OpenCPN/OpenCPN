@@ -59,6 +59,7 @@ extern float g_ChartScaleFactorExp;
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
 extern bool g_bOverruleScaMin;
+extern bool g_bShowWptName;
 
 WX_DEFINE_LIST(RoutePointList);
 
@@ -115,6 +116,7 @@ RoutePoint::RoutePoint() {
   m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
   m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
   m_ScaMin = g_iWpt_ScaMin;
+  m_bShowName = g_bShowWptName;
   m_ScaMax = 0;
   b_UseScamin = g_bUseWptScaMin;
 
@@ -269,6 +271,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_ScaMin = g_iWpt_ScaMin;
   m_ScaMax = 0;
   b_UseScamin = g_bUseWptScaMin;
+  m_bShowName = g_bShowWptName;
 
   m_bDrawDragHandle = false;
   m_dragIconTexture = 0;

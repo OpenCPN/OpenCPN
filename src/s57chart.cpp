@@ -2843,7 +2843,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-#if 1
+#if 0
   wxString SENCdir = g_SENCPrefix;
   if (SENCdir.Last() != wxFileName::GetPathSeparator())
     SENCdir.Append(wxFileName::GetPathSeparator());
@@ -2877,8 +2877,11 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
   SetColorScheme(cs, false);
 
   //    Build array of contour values for later use by conditional symbology
-
   BuildDepthContourArray();
+
+  CreateChartContext();
+  PopulateObjectsWithContext();
+
   m_RAZBuilt = true;
   bReadyToRender = true;
 
@@ -2965,6 +2968,37 @@ void s57chart::SetSafetyContour(void) {
   if (m_next_safe_cnt > S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
     m_next_safe_cnt = (double)1e6;
 }
+
+void s57chart::CreateChartContext(){
+  //  Set up the chart context
+  m_this_chart_context = (chart_context *)calloc(sizeof(chart_context), 1);
+}
+
+void s57chart::PopulateObjectsWithContext(){
+
+  m_this_chart_context->chart = this;
+  m_this_chart_context->chart_type = GetChartType();
+  m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+  m_this_chart_context->chart_scale = GetNativeScale();
+  m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+  m_this_chart_context->pRigidATONArray = pRigidATONArray;
+  m_this_chart_context->safety_contour = m_next_safe_cnt;
+
+
+  //  Loop and populate all the objects
+  ObjRazRules *top;
+  for (int i = 0; i < PRIO_NUM; ++i) {
+    for (int j = 0; j < LUPNAME_NUM; j++) {
+      top = razRules[i][j];
+      while (top != NULL) {
+        S57Obj *obj = top->obj;
+        obj->m_chart_context = m_this_chart_context;
+        top = top->next;
+      }
+    }
+  }
+}
+
 
 void s57chart::InvalidateCache() {
   delete pDIB;
@@ -4296,28 +4330,6 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   ObjRazRules *top;
 
   AssembleLineGeometry();
-
-  //  Set up the chart context
-  m_this_chart_context = (chart_context *)calloc(sizeof(chart_context), 1);
-  m_this_chart_context->chart = this;
-  m_this_chart_context->chart_type = GetChartType();
-  m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
-  m_this_chart_context->chart_scale = GetNativeScale();
-  m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
-  m_this_chart_context->pRigidATONArray = pRigidATONArray;
-
-
-  //  Loop and populate all the objects
-  for (int i = 0; i < PRIO_NUM; ++i) {
-    for (int j = 0; j < LUPNAME_NUM; j++) {
-      top = razRules[i][j];
-      while (top != NULL) {
-        S57Obj *obj = top->obj;
-        obj->m_chart_context = m_this_chart_context;
-        top = top->next;
-      }
-    }
-  }
 
   return ret_val;
 }

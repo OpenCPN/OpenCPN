@@ -437,6 +437,7 @@ extern int g_MemFootMB;
 extern Multiplexer *g_pMUX;
 extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
+extern bool g_config_display_size_manual;
 
 
 #ifdef __WXMSW__
@@ -4401,10 +4402,10 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   }
 #endif
 
-  if (g_config_display_size_mm > 0) {
+  if ((g_config_display_size_mm > 0)  && g_config_display_size_manual){
     g_display_size_mm = g_config_display_size_mm;
   } else {
-    g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
+    g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   }
 
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -5308,8 +5309,8 @@ void MyFrame::UpdateStatusBar() {
       sogcog.Printf(_T("SOG --- "));
 
     wxString cogs;
-    // We show COG only if SOG is > 0
-    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0)) {
+    // We show COG only if SOG is > 0.05
+    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0.05)) {
       if (g_bShowTrue)
         cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
       if (g_bShowMag)

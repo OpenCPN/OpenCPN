@@ -713,8 +713,8 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, g_Platform->GetDisplayDPmm() / (2.0 / DPIscale));
-        // 0.4 mm nominal, but not less than 1 pixel
+      wxMax(2, g_Platform->GetDisplayDPmm() / (4.0 / DPIscale));
+        // 0.25 mm nominal, but not less than 2 pixels
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
@@ -1089,6 +1089,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       //  Using the true ends, not the clipped ends
       dc.StrokeCircle(tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
           AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+      dc.StrokeCircle(oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
+          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+
     }
 
     // Draw the intercept line from ownship
@@ -1248,7 +1251,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     dc.SetPen(target_pen);
     dc.SetBrush(target_brush);
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y,
-                    1.4 * AIS_icon_diameter);  // 9
+                     1.8 * AIS_icon_diameter);
+
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
     //        Draw the inactive cross-out line
     if (!td->b_active) {
@@ -1259,7 +1263,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     }
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
     AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
-                 2 * AIS_icon_diameter, td);
+                     2.0 * AIS_icon_diameter, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
   } else if (td->Class == AIS_SART) {  // SART Target

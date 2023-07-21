@@ -47,6 +47,7 @@
 #include "comm_drv_registry.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_drv_n0183_net.h"
+#include "comm_drv_n0183_android_bt.h"
 #include "comm_navmsg_bus.h"
 
 #ifdef __linux__
@@ -204,6 +205,14 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         if (drv_net) {
           params = drv_net->GetParams();
         }
+#ifdef __ANDROID__
+        else {
+          auto drv_bluetooth = std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(source_driver);
+          if (drv_bluetooth) {
+            params = drv_bluetooth->GetParams();
+          }
+        }
+#endif
       }
 
     // Check to see if the message passes the source's input filter
@@ -256,6 +265,14 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         if (drv_net) {
           params = drv_net->GetParams();
         }
+#ifdef __ANDROID__
+        else {
+          auto drv_bluetooth = std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(driver);
+          if (drv_bluetooth) {
+            params = drv_bluetooth->GetParams();
+          }
+        }
+#endif
       }
 
       if ((g_b_legacy_input_filter_behaviour && !bpass_input_filter) ||
