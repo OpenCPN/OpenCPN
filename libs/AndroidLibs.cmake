@@ -71,7 +71,6 @@ include_directories(
   ${_qt_include}/QtOpenGL
   ${_qt_include}/QtTest
   ${_master_base}/wxWidgets/include/
-  ${openssl_include}
   ${_wx_setup}
 )
 target_link_libraries(${PACKAGE_NAME} PRIVATE

@@ -41,6 +41,7 @@ class OcpnUpdateScrolledWindow;
 class UpdateDialog : public wxDialog {
 public:
   UpdateDialog(wxWindow* parent, const std::vector<PluginMetadata>& updates);
+  virtual ~UpdateDialog();
 
   PluginMetadata GetUpdate() { return update; };
   void SetUpdate(const PluginMetadata md) { update = md; };

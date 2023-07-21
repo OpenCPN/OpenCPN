@@ -572,10 +572,9 @@ void OCPNPlatform::Initialize_1(void) {
 
 #ifdef __OCPN__ANDROID__
   qDebug() << "Initialize_1()";
-#ifdef NOASSERT
+//#ifdef NOASSERT
   wxDisableAsserts( );      // No asserts at all in Release mode
-#endif
-  androidUtilInit();
+//#endif
 #endif
 
 }
@@ -641,6 +640,12 @@ void OCPNPlatform::Initialize_3(void) {
 
   if(!bcapable)
     g_bopengl = false;
+  else {
+    g_bopengl = true;
+    g_bdisable_opengl = false;
+    pConfig->UpdateSettings();
+  }
+
 
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
@@ -719,6 +724,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *str = (char *)glGetString(GL_RENDERER);
   if (str == NULL) {    //No GL at all...
+    wxLogMessage("GL_RENDERER not found.");
     delete tcanvas;
     delete pctx;
     return false;
@@ -727,6 +733,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *stv = (char *)glGetString(GL_VERSION);
   if (stv == NULL) {    //No GL Version...
+    wxLogMessage("GL_VERSION not found");
     delete tcanvas;
     delete pctx;
     return false;
@@ -735,6 +742,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *stsv = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
   if (stsv == NULL) {    //No GLSL...
+    wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found");
     delete tcanvas;
     delete pctx;
     return false;
@@ -804,9 +812,26 @@ bool OCPNPlatform::IsGLCapable() {
   if(g_bdisable_opengl)
     return false;
 
-  OCPN_GLCaps GL_Caps;
+  // Protect against fault in OpenGL caps test
+  // If this method crashes due to bad GL drivers,
+  // next startup will disable OpenGL
+  g_bdisable_opengl = true;
 
-  BuildGLCaps(&GL_Caps);
+  // Update and flush the config file
+  pConfig->UpdateSettings();
+
+  wxLogMessage("Starting OpenGL test...");
+  wxLog::FlushActive();
+
+  OCPN_GLCaps GL_Caps;
+  bool bcaps = BuildGLCaps(&GL_Caps);
+
+  wxLogMessage("OpenGL test complete.");
+  if (!bcaps){
+    wxLogMessage("BuildGLCaps fails.");
+    wxLog::FlushActive();
+    return false;
+  }
 
   // and so we decide....
 
@@ -820,6 +845,16 @@ bool OCPNPlatform::IsGLCapable() {
   if (!GL_Caps.bCanDoFBO)  {
     return false;
   }
+
+  // OpenGL is OK for OCPN
+  wxLogMessage("OpenGL determined CAPABLE.");
+  wxLog::FlushActive();
+
+  g_bdisable_opengl = false;
+  g_bopengl = true;
+
+  // Update and flush the config file
+  pConfig->UpdateSettings();
 
   return true;
 #endif
@@ -1371,8 +1406,19 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a recalculation of default main toolbar location
     g_maintoolbar_x = -1;
 
-    // Force a reload of updated default tide/current datasets
+    // Check the tide/current databases for readability,
+    //  remove any not readable
+    std::vector<std::string> TCDS_temp;
+    for (unsigned int i=0; i < TideCurrentDataSet.size() ; i++)
+      TCDS_temp.push_back(TideCurrentDataSet[i]);
+
     TideCurrentDataSet.clear();
+    for (unsigned int i=0; i < TCDS_temp.size() ; i++){
+      wxString tide = TCDS_temp[i];
+      wxFileName ft(tide);
+      if (ft.FileExists())
+        TideCurrentDataSet.push_back(TCDS_temp[i]);
+    }
   }
 }
 

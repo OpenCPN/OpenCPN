@@ -37,10 +37,10 @@
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
 #include "pi_ocpndc.h"
-
-#if 1//def __OCPN__ANDROID__
-//#include "qdebug.h"
 #include "pi_shaders.h"
+
+#ifdef __ANDROID__
+#include "qdebug.h"
 #endif
 
 #include "GribUIDialog.h"
@@ -236,6 +236,8 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
   } else
     m_pixelMM = 0.27;  // semi-standard number...
 
+  //qDebug() <<  "m_pixelMM: " << m_pixelMM;
+
   m_pGribTimelineRecordSet = NULL;
   m_last_vp_scale = 0.;
 
@@ -254,8 +256,11 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
 
   // Generate the wind arrow cache
 
-  if (m_pixelMM < 0.2)
+  if (m_pixelMM < 0.2){
     windArrowSize = 5.0 / m_pixelMM;  // Target scaled arrow size
+    windArrowSize = wxMin(windArrowSize,
+                          wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y) / 20);
+  }
   else
     windArrowSize = 26;  // Standard value for desktop
 
@@ -344,6 +349,8 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
     if (i == 0) {
       if (m_pixelMM > 0.2) {
         arrowSize = 5.0 / m_pixelMM;  // Target scaled arrow size
+        arrowSize = wxMin(arrowSize,
+                          wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y) / 20);
         dec1 = arrowSize / 6;         // pointer length
         dec2 = arrowSize / 8;         // space between double lines
       } else
@@ -2455,7 +2462,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(int settings, int x, int y,
 #else
   float penWidth = .4 / m_pixelMM;
 #endif
-  penWidth = wxMax(penWidth, 2.0);
+  penWidth = wxMin(penWidth, 3.0);
 
   if (m_pdc) {
     wxPen pen(arrowColor, 2);

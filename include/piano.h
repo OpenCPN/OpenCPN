@@ -108,7 +108,6 @@ public:
   int GetnKeys() { return m_nRegions; }
 
 private:
-  void DrawGLDirect(int y);
   void DrawGLSL(int y);
   void BuildGLTexture();
   bool InArray(std::vector<int> &array, int key);

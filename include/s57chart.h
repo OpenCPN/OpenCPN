@@ -285,6 +285,7 @@ protected:
   void AssembleLineGeometry(void);
 
   ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
+  double m_next_safe_cnt;
 
 private:
   int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
@@ -338,6 +339,8 @@ private:
                                        ListOfObjRazRules *rule_list,
                                        std::list<S57Obj*> *pi_rule_list,
                                        std::vector<s57Sector_t> &sectorlegs);
+  void CreateChartContext();
+  void PopulateObjectsWithContext();
 
   // Private Data
   char *hdr_buf;
@@ -382,7 +385,6 @@ private:
   bool m_btex_mem;
   char m_usage_char;
 
-  double m_next_safe_cnt;
 
   int m_LineVBO_name;
 

@@ -32,6 +32,7 @@
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/window.h>
+#include <wx/utils.h> 
 
 wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
 wxFont GetOCPNGUIScaledFont(wxString item);
@@ -89,6 +90,7 @@ public:
   void OnClose(wxCloseEvent& event);
   void OnTimer(wxTimerEvent& evt);
   void RecalculateSize(void);
+  void OnHtmlLinkClicked( wxHtmlLinkEvent& event ) { wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref()); }
 
 private:
   int m_style;

@@ -87,7 +87,9 @@ static const config_block plugin_blacklist[] = {
 #ifdef __WXOSX__
   { "S63",       0, 6,  true, STD_HARD_MSG},
 #endif
-  { "oeSENC",   99, 99, true, OCHART_OBSOLETED_MSG}
+  { "oeSENC",   99, 99, true, OCHART_OBSOLETED_MSG},
+  { "oernc_pi", 99, 99, true, OCHART_OBSOLETED_MSG},
+  { "oesenc_pi", 99, 99, true, OCHART_OBSOLETED_MSG}
 };
 
 
