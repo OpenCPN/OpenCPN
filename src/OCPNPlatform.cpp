@@ -1806,8 +1806,6 @@ void OCPNPlatform::PositionAISAlert(wxWindow *alert_window) {
   }
 #else
   if (alert_window) {
-    alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y,
-                          g_ais_alert_dialog_sx, g_ais_alert_dialog_sy);
     alert_window->Centre();
   }
 
