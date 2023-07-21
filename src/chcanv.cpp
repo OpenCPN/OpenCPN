@@ -5346,8 +5346,20 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     //      Update the viewpoint reference scale
     if (m_singleChart)
       VPoint.ref_scale = m_singleChart->GetNativeScale();
-    else
+    else {
+#ifdef __OCPN__ANDROID__
+      // This is an optimization for panning on touch screen systems.
+      // See above.
+      // Quilt might not be fully composed at this point, so for cm93
+      // the reference scale may not be known.
+      // In this case, do not update the VP ref_scale.
+      if ((last_vp.view_scale_ppm != scale_ppm) || !bwasValid) {
+        VPoint.ref_scale = m_pQuilt->GetRefNativeScale();
+      }
+#else
       VPoint.ref_scale = m_pQuilt->GetRefNativeScale();
+#endif
+    }
 
     //    Calculate the on-screen displayed actual scale
     //    by a simple traverse northward from the center point
