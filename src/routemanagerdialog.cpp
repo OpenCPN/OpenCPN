@@ -849,12 +849,14 @@ void RouteManagerDialog::Create() {
                        wxDefaultSize, wxLI_HORIZONTAL);
     itemBoxSizer1->Add(staticLine121, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
 
-    wxBoxSizer *itemBoxSizer7 = new wxBoxSizer(wxVERTICAL);
-    itemBoxSizer1->Add(itemBoxSizer7, 1, wxEXPAND);
+    wxBoxSizer *itemBoxSizer7 = new wxBoxSizer(wxHORIZONTAL);
+    itemBoxSizer1->Add(itemBoxSizer7, 0, wxEXPAND);
+
     wxBoxSizer *itemBoxSizer7a = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer7->Add(itemBoxSizer7a, 1, wxEXPAND);
+
     itemBoxSizer7a->AddStretchSpacer();
-    itemBoxSizer7a->Add(new wxButton(this, wxID_OK), 0, wxALL | wxALIGN_RIGHT, DIALOG_MARGIN / 2);
+    itemBoxSizer7a->Add(new wxButton(this, wxID_OK), 0, wxRIGHT | wxALIGN_RIGHT, DIALOG_MARGIN *4);
   }
 
   //  Create "Layers" panel
@@ -1102,13 +1104,13 @@ void RouteManagerDialog::RecalculateSize() {
   sz.y = 30 * char_height;
 
   wxSize dsize = GetParent()->GetClientSize();
-  sz.y = wxMin(sz.y, dsize.y - (0 * char_height));
-  sz.x = wxMin(sz.x, dsize.x - (0 * char_height));
+  sz.y = wxMin(sz.y, dsize.y);
+  sz.x = wxMin(sz.x, dsize.x);
   SetClientSize(sz);
 
   wxSize fsize = GetSize();
-  fsize.y = wxMin(fsize.y, dsize.y - (0 * char_height));
-  fsize.x = wxMin(fsize.x, dsize.x - (0 * char_height));
+  fsize.y = wxMin(fsize.y, dsize.y);
+  fsize.x = wxMin(fsize.x, dsize.x);
   SetSize(fsize);
 
   CentreOnParent();

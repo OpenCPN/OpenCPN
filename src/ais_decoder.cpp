@@ -1534,7 +1534,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   int gpsg_mmsi = 0;
   int arpa_mmsi = 0;
   int aprs_mmsi = 0;
-  int follower_mmsi = 0;
   int mmsi = 0;
 
   long arpa_tgt_num = 0;
@@ -1925,9 +1924,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       MmsiProperties *props = g_MMSI_Props_Array[i];
       if (mmsi == props->MMSI) {
-        // Check to see if this target has been flagged as a "follower"
-        if (props->m_bFollower) follower_mmsi = mmsi;
-
         // Check if this target has a dedicated tracktype
         if (TRACKTYPE_NEVER == props->TrackType) {
           pTargetData->b_show_track = false;
@@ -1967,14 +1963,21 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
 
               gps_watchdog_timeout_ticks =
                   60;  // increase watchdog time up to 1 minute
-              // add the changed sentence into nmea stream
+              // add the changed sentence into nmea message system
+              std::string full_sentence = aivdostr.ToStdString();
+              std::string identifier("AIVDO");
+              // We notify based on full message, including the Talker ID
+              // notify message listener and also "ALL" N0183 messages, to support plugin
+              // API using original talker id
+              auto address = std::make_shared<NavAddr0183>("virtual");
+              auto msg =
+              std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
+              auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
 
-              //FIXME (dave) What is this all about?
-//               OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
-//               std::string s = std::string(aivdostr.mb_str());
-//               event.SetNMEAString(s);
-//               event.SetStream(NULL);
-//               g_pMUX->AddPendingEvent(event);
+              auto &msgbus = NavMsgBus::GetInstance();
+
+              msgbus.Notify(std::move(msg));
+              msgbus.Notify(std::move(msg_all));
             }
           }
           return AIS_NoError;
@@ -2094,8 +2097,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
             Parse_VDXBitstring(&strbit, pTargetData);  // Parse the new data
       }
 
-      //  Catch followers, and set correct flag
-      if (follower_mmsi) pTargetData->b_isFollower = true;
+      // Catch mmsi properties like track, persistent track, follower.
+      getMmsiProperties(pTargetData);
 
       //     Update the most recent report period
       pTargetData->RecentPeriod =
