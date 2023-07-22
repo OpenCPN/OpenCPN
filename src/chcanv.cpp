@@ -7941,32 +7941,33 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       {
         SetCursor(*pCursorPencil);
 
-        if (m_nMeasureState == 1) {
+        if (!m_pMeasureRoute) {
           m_pMeasureRoute = new Route();
           pRouteList->Append(m_pMeasureRoute);
+        }
+
+        if (m_nMeasureState == 1) {
           r_rband.x = x;
           r_rband.y = y;
         }
 
-        if (m_nMeasureState >= 1) {
-          RoutePoint *pMousePoint = new RoutePoint(
-              m_cursor_lat, m_cursor_lon, wxString(_T ( "circle" )),
-              wxEmptyString, wxEmptyString);
-          pMousePoint->m_bShowName = false;
-          pMousePoint->SetShowWaypointRangeRings(false);
+        RoutePoint *pMousePoint = new RoutePoint(
+            m_cursor_lat, m_cursor_lon, wxString(_T ( "circle" )),
+            wxEmptyString, wxEmptyString);
+        pMousePoint->m_bShowName = false;
+        pMousePoint->SetShowWaypointRangeRings(false);
 
-          m_pMeasureRoute->AddPoint(pMousePoint);
+        m_pMeasureRoute->AddPoint(pMousePoint);
 
-          m_prev_rlat = m_cursor_lat;
-          m_prev_rlon = m_cursor_lon;
-          m_prev_pMousePoint = pMousePoint;
-          m_pMeasureRoute->m_lastMousePointIndex =
-              m_pMeasureRoute->GetnPoints();
+        m_prev_rlat = m_cursor_lat;
+        m_prev_rlon = m_cursor_lon;
+        m_prev_pMousePoint = pMousePoint;
+        m_pMeasureRoute->m_lastMousePointIndex =
+            m_pMeasureRoute->GetnPoints();
 
-          m_nMeasureState++;
-          gFrame->RefreshAllCanvas();
-          ret = true;
-        }
+        m_nMeasureState++;
+        gFrame->RefreshAllCanvas();
+        ret = true;
       }
 
       else {
