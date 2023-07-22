@@ -79,14 +79,14 @@ public:
 
   void OpenWebSocket();
   void CloseWebSocket();
-  bool IsThreadRunning() { return m_threadActive; }
+  bool IsThreadRunning() { return m_threadActive == 1; }
 
   std::string m_self;
   std::string m_context;
 
-  bool m_bsec_thread_active;
-
   std::atomic_int m_Thread_run_flag;
+  std::atomic_int m_threadActive;
+
   ConnectionParams m_params;
   DriverListener& m_listener;
 
@@ -103,7 +103,6 @@ private:
 
   OCPN_WebSocketMessageHandler *m_eventHandler;
   bool m_useWebSocket;
-  bool m_threadActive;
 
   bool m_bGPSValid_SK;
 
