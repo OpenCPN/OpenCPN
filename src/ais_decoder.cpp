@@ -1192,13 +1192,13 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
       if (item["value"].HasMember("altitude")) {
         pTargetData->altitude = item["value"]["altitude "].GetInt();
       }
-    } else if (update_path == _T("navigation.speedOverGround")) {
+    } else if (update_path == _T("navigation.speedOverGround") && item["value"].IsNumber()) {
       pTargetData->SOG = item["value"].GetDouble() * ms_to_knot_factor;
-    } else if (update_path == _T("navigation.courseOverGroundTrue")) {
+    } else if (update_path == _T("navigation.courseOverGroundTrue") && item["value"].IsNumber()) {
       pTargetData->COG = GEODESIC_RAD2DEG(item["value"].GetDouble());
-    } else if (update_path == _T("navigation.headingTrue")) {
+    } else if (update_path == _T("navigation.headingTrue") && item["value"].IsNumber()) {
       pTargetData->HDG = GEODESIC_RAD2DEG(item["value"].GetDouble());
-    } else if (update_path == _T("navigation.rateOfTurn")) {
+    } else if (update_path == _T("navigation.rateOfTurn") && item["value"].IsNumber()) {
       pTargetData->ROTAIS = 4.733 * sqrt(item["value"].GetDouble());
     } else if (update_path == _T("design.aisShipType")) {
       if (item["value"].HasMember("id")) {
@@ -1225,11 +1225,11 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         }
       }
     } else if (update_path == _T("design.draft")) {
-      if (item["value"].HasMember("maximum")) {
+      if (item["value"].HasMember("maximum") && item["value"].IsNumber()) {
         pTargetData->Draft = item["value"]["maximum"].GetDouble();
         pTargetData->Euro_Draft = item["value"]["maximum"].GetDouble();
       }
-      if (item["value"].HasMember("current")) {
+      if (item["value"].HasMember("current") && item["value"].IsNumber()) {
         double draft = item["value"]["current"].GetDouble();
         if (draft > 0) {
           pTargetData->Draft = draft;
