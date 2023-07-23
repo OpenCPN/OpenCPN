@@ -113,7 +113,11 @@ socket_t hostname_connect(const std::string& hostname, int port) {
         if (sockfd > 500){
           closesocket(sockfd);
           sockfd = INVALID_SOCKET;
+#ifdef _WIN32
+          Sleep(5000);
+#else
           sleep(5);
+#endif
           freeaddrinfo(result);
           return sockfd;
         }
