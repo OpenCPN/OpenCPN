@@ -8925,6 +8925,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         }
         current->FinalizeForRendering();
         current->m_bIsBeingEdited = false;
+        FinishRoute();
       }
       if (inserting) {
         for (int i = 1; i < connect; i++) {  // numbering in the tail route
