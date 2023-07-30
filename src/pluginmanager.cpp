@@ -4760,6 +4760,11 @@ void PluginPanel::OnPluginEnableToggle(wxCommandEvent& event) {
   SetEnabled(event.IsChecked());
   m_pVersion->SetLabel(
       PluginLoader::GetPluginVersion(m_plugin, GetMetadataByName));
+  if (m_plugin.m_status == PluginStatus::System) {
+    // Force pluginmanager to reload all panels. Not kosher --
+    // the EventVar should really only be notified from within PluginLoader.
+    PluginLoader::getInstance()->evt_pluglist_change.Notify();
+  }
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent& event) {
