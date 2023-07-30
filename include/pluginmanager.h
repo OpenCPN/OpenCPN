@@ -36,7 +36,7 @@
 #include "config.h"
 
 #include "ocpn_plugin.h"
-//#include "chcanv.h"                 // for ViewPort
+// #include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
 #include "catalog_parser.h"
@@ -78,7 +78,7 @@
 
 //    Assorted static helper routines
 
-PlugIn_AIS_Target *Create_PI_AIS_Target(AisTargetData *ptarget);
+PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
 
 class PluginListPanel;
 class PluginPanel;
@@ -93,7 +93,7 @@ class OCPN_MsgEvent : public wxEvent {
 public:
   OCPN_MsgEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
 
-  OCPN_MsgEvent(const OCPN_MsgEvent &event)
+  OCPN_MsgEvent(const OCPN_MsgEvent& event)
       : wxEvent(event),
         m_MessageID(event.m_MessageID),
         m_MessageText(event.m_MessageText) {}
@@ -104,11 +104,11 @@ public:
   wxString GetID() { return m_MessageID; }
   wxString GetJSONText() { return m_MessageText; }
 
-  void SetID(const wxString &string) { m_MessageID = string; }
-  void SetJSONText(const wxString &string) { m_MessageText = string; }
+  void SetID(const wxString& string) { m_MessageID = string; }
+  void SetJSONText(const wxString& string) { m_MessageText = string; }
 
   // required for sending with wxPostEvent()
-  wxEvent *Clone() const;
+  wxEvent* Clone() const;
 
 private:
   wxString m_MessageID;
@@ -127,11 +127,10 @@ enum ActionVerb {
   INSTALL_MANAGED_VERSION
 };
 
-
 class PlugInMenuItemContainer {
 public:
-  wxMenuItem *pmenu_item;
-  opencpn_plugin *m_pplugin;
+  wxMenuItem* pmenu_item;
+  opencpn_plugin* m_pplugin;
   bool b_viz;
   bool b_grey;
   int id;
@@ -139,27 +138,27 @@ public:
 };
 
 //    Define an array of PlugIn MenuItem Containers
-WX_DEFINE_ARRAY_PTR(PlugInMenuItemContainer *, ArrayOfPlugInMenuItems);
+WX_DEFINE_ARRAY_PTR(PlugInMenuItemContainer*, ArrayOfPlugInMenuItems);
 
 class PlugInToolbarToolContainer {
 public:
   PlugInToolbarToolContainer();
   ~PlugInToolbarToolContainer();
 
-  opencpn_plugin *m_pplugin;
+  opencpn_plugin* m_pplugin;
   int id;
   wxString label;
-  wxBitmap *bitmap_day;
-  wxBitmap *bitmap_dusk;
-  wxBitmap *bitmap_night;
-  wxBitmap *bitmap_Rollover_day;
-  wxBitmap *bitmap_Rollover_dusk;
-  wxBitmap *bitmap_Rollover_night;
+  wxBitmap* bitmap_day;
+  wxBitmap* bitmap_dusk;
+  wxBitmap* bitmap_night;
+  wxBitmap* bitmap_Rollover_day;
+  wxBitmap* bitmap_Rollover_dusk;
+  wxBitmap* bitmap_Rollover_night;
 
   wxItemKind kind;
   wxString shortHelp;
   wxString longHelp;
-  wxObject *clientData;
+  wxObject* clientData;
   int position;
   bool b_viz;
   bool b_toggle;
@@ -170,7 +169,7 @@ public:
 };
 
 //    Define an array of PlugIn ToolbarTool Containers
-WX_DEFINE_ARRAY_PTR(PlugInToolbarToolContainer *, ArrayOfPlugInToolbarTools);
+WX_DEFINE_ARRAY_PTR(PlugInToolbarToolContainer*, ArrayOfPlugInToolbarTools);
 
 //-----------------------------------------------------------------------------------------------------
 //
@@ -182,64 +181,64 @@ class BlacklistUI;
 
 class PlugInManager : public wxEvtHandler {
 public:
-  PlugInManager(MyFrame *parent);
+  PlugInManager(MyFrame* parent);
   virtual ~PlugInManager();
 
-  bool RenderAllCanvasOverlayPlugIns(ocpnDC &dc, const ViewPort &vp,
+  bool RenderAllCanvasOverlayPlugIns(ocpnDC& dc, const ViewPort& vp,
                                      int canvasIndex, int priority);
-  bool RenderAllGLCanvasOverlayPlugIns(wxGLContext *pcontext,
-                                       const ViewPort &vp, int canvasIndex,
+  bool RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
+                                       const ViewPort& vp, int canvasIndex,
                                        int priority);
   void SendCursorLatLonToAllPlugIns(double lat, double lon);
-  void SendViewPortToRequestingPlugIns(ViewPort &vp);
+  void SendViewPortToRequestingPlugIns(ViewPort& vp);
   void PrepareAllPluginContextMenus();
 
   void NotifySetupOptions();
-  void ClosePlugInPanel(PlugInContainer *pic, int ix);
+  void ClosePlugInPanel(const PlugInContainer* pic, int ix);
   void CloseAllPlugInPanels(int);
 
-  ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray() {
+  ArrayOfPlugInToolbarTools& GetPluginToolbarToolArray() {
     return m_PlugInToolbarTools;
   }
-  int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover,
+  int AddToolbarTool(wxString label, wxBitmap* bitmap, wxBitmap* bmpRollover,
                      wxItemKind kind, wxString shortHelp, wxString longHelp,
-                     wxObject *clientData, int position, int tool_sel,
-                     opencpn_plugin *pplugin);
+                     wxObject* clientData, int position, int tool_sel,
+                     opencpn_plugin* pplugin);
 
   void RemoveToolbarTool(int tool_id);
   void SetToolbarToolViz(int tool_id, bool viz);
   void SetToolbarItemState(int tool_id, bool toggle);
-  void SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
+  void SetToolbarItemBitmaps(int item, wxBitmap* bitmap, wxBitmap* bmpDisabled);
 
   int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile,
                      wxString SVGToggledfile, wxItemKind kind,
                      wxString shortHelp, wxString longHelp,
-                     wxObject *clientData, int position, int tool_sel,
-                     opencpn_plugin *pplugin);
+                     wxObject* clientData, int position, int tool_sel,
+                     opencpn_plugin* pplugin);
 
   void SetToolbarItemBitmaps(int item, wxString SVGfile,
                              wxString SVGfileRollover, wxString SVGfileToggled);
 
-  opencpn_plugin *FindToolOwner(const int id);
+  opencpn_plugin* FindToolOwner(const int id);
   wxString GetToolOwnerCommonName(const int id);
   void ShowDeferredBlacklistMessages();
 
-  ArrayOfPlugInMenuItems &GetPluginContextMenuItemArray() {
+  ArrayOfPlugInMenuItems& GetPluginContextMenuItemArray() {
     return m_PlugInMenuItems;
   }
-  int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin,
-                               const char *name = "");
-  void RemoveCanvasContextMenuItem(int item, const char *name = "");
-  void SetCanvasContextMenuItemViz(int item, bool viz, const char *name = "");
-  void SetCanvasContextMenuItemGrey(int item, bool grey, const char *name = "");
+  int AddCanvasContextMenuItem(wxMenuItem* pitem, opencpn_plugin* pplugin,
+                               const char* name = "");
+  void RemoveCanvasContextMenuItem(int item, const char* name = "");
+  void SetCanvasContextMenuItemViz(int item, bool viz, const char* name = "");
+  void SetCanvasContextMenuItemGrey(int item, bool grey, const char* name = "");
 
-  void SendNMEASentenceToAllPlugIns(const wxString &sentence);
-  void SendPositionFixToAllPlugIns(GenericPosDatEx *ppos);
-  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat *infos);
-  void SendAISSentenceToAllPlugIns(const wxString &sentence);
-  void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
-  void SendMessageToAllPlugins(const wxString &message_id,
-                               const wxString &message_body);
+  void SendNMEASentenceToAllPlugIns(const wxString& sentence);
+  void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos);
+  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* infos);
+  void SendAISSentenceToAllPlugIns(const wxString& sentence);
+  void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v);
+  void SendMessageToAllPlugins(const wxString& message_id,
+                               const wxString& message_body);
   bool UpDateChartDataTypes();
   void FinalizePluginLoadall();
 
@@ -252,12 +251,12 @@ public:
 
   bool IsAnyPlugInChartEnabled();
 
-  void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature,
-                                 const wxString &objname, double &lat,
-                                 double &lon, double &scale, int &nativescale);
+  void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
+                                 const wxString& objname, double& lat,
+                                 double& lon, double& scale, int& nativescale);
 
-  bool SendMouseEventToPlugins(wxMouseEvent &event);
-  bool SendKeyEventToPlugins(wxKeyEvent &event);
+  bool SendMouseEventToPlugins(wxMouseEvent& event);
+  bool SendKeyEventToPlugins(wxKeyEvent& event);
 
   void SendBaseConfigToAllPlugIns();
   void SendS52ConfigToAllPlugIns(bool bReconfig = false);
@@ -267,31 +266,31 @@ public:
   bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
   void InitCommListeners(void);
-  void HandleN0183( std::shared_ptr <const Nmea0183Msg> n0183_msg );
+  void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
 
-  ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper *target,
+  ListOfPI_S57Obj* GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper* target,
                                                 float zlat, float zlon,
                                                 float SelectRadius,
-                                                const ViewPort &vp);
-  wxString CreateObjDescriptions(ChartPlugInWrapper *target,
-                                 ListOfPI_S57Obj *rule_list);
+                                                const ViewPort& vp);
+  wxString CreateObjDescriptions(ChartPlugInWrapper* target,
+                                 ListOfPI_S57Obj* rule_list);
 
   wxString GetLastError();
-  MyFrame *GetParentFrame() { return pParent; }
+  MyFrame* GetParentFrame() { return pParent; }
 
-  void DimeWindow(wxWindow *win);
-  pluginUtilHandler *GetUtilHandler() { return m_utilHandler; }
-  void SetListPanelPtr(PluginListPanel *ptr) { m_listPanel = ptr; }
+  void DimeWindow(wxWindow* win);
+  pluginUtilHandler* GetUtilHandler() { return m_utilHandler; }
+  void SetListPanelPtr(PluginListPanel* ptr) { m_listPanel = ptr; }
 
-  ListOfPI_S57Obj *GetLightsObjRuleListVisibleAtLatLon(
-      ChartPlugInWrapper *target, float zlat, float zlon, const ViewPort &vp);
+  ListOfPI_S57Obj* GetLightsObjRuleListVisibleAtLatLon(
+      ChartPlugInWrapper* target, float zlat, float zlon, const ViewPort& vp);
 
 private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
-  bool CheckBlacklistedPlugin(opencpn_plugin *plugin);
+  bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
@@ -309,15 +308,15 @@ private:
   ObservableListener m_listener_N0183_all;
   ObservableListener m_listener_SignalK;
 
-  wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal,
+  wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);
 
-  void ProcessLateInit(PlugInContainer *pic);
+  void ProcessLateInit(const PlugInContainer* pic);
   void OnPluginDeactivate(const PlugInContainer* pic);
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();
 
-  MyFrame *pParent;
+  MyFrame* pParent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
   wxString m_last_error_string;
@@ -335,26 +334,26 @@ private:
   void SetPluginOrder(wxString serialized_names);
   wxString GetPluginOrder();
 
-  pluginUtilHandler *m_utilHandler;
-  PluginListPanel *m_listPanel;
+  pluginUtilHandler* m_utilHandler;
+  PluginListPanel* m_listPanel;
   std::unique_ptr<AbstractBlacklist> m_blacklist;
 
 #ifndef __OCPN__ANDROID__
 #ifdef OCPN_USE_CURL
 
 public:
-  wxCurlDownloadThread *m_pCurlThread;
+  wxCurlDownloadThread* m_pCurlThread;
   // The libcurl handle being re used for the transfer.
   std::shared_ptr<wxCurlBase> m_pCurl;
 
   // returns true if the error can be ignored
-  bool HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread *p,
-                             const wxString &url = wxEmptyString);
-  void OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev);
-  void OnCurlDownload(wxCurlDownloadEvent &ev);
+  bool HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThread* p,
+                             const wxString& url = wxEmptyString);
+  void OnEndPerformCurlDownload(wxCurlEndPerformEvent& ev);
+  void OnCurlDownload(wxCurlDownloadEvent& ev);
 
-  wxEvtHandler *m_download_evHandler;
-  long *m_downloadHandle;
+  wxEvtHandler* m_download_evHandler;
+  long* m_downloadHandle;
   bool m_last_online;
   long m_last_online_chk;
 #endif
@@ -363,7 +362,7 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
-WX_DEFINE_ARRAY_PTR(PluginPanel *, ArrayOfPluginPanel);
+WX_DEFINE_ARRAY_PTR(PluginPanel*, ArrayOfPluginPanel);
 
 class PluginDownloadDialog;
 
@@ -372,14 +371,14 @@ class PluginDownloadDialog;
  */
 class AddPluginPanel : public wxPanel {
 public:
-  AddPluginPanel(wxWindow *parent);
-  void OnClick(wxMouseEvent &event);
+  AddPluginPanel(wxWindow* parent);
+  void OnClick(wxMouseEvent& event);
   ~AddPluginPanel();
 
 protected:
   wxBitmap m_bitmap;
-  wxStaticBitmap *m_staticBitmap;
-  wxWindow *m_parent;
+  wxStaticBitmap* m_staticBitmap;
+  wxWindow* m_parent;
 };
 
 /*
@@ -387,14 +386,14 @@ protected:
  */
 class CatalogMgrPanel : public wxPanel {
 public:
-  CatalogMgrPanel(wxWindow *parent);
+  CatalogMgrPanel(wxWindow* parent);
   ~CatalogMgrPanel();
-  void OnUpdateButton(wxCommandEvent &event);
-  void SetListPanelPtr(PluginListPanel *listPanel) {
+  void OnUpdateButton(wxCommandEvent& event);
+  void SetListPanelPtr(PluginListPanel* listPanel) {
     m_PluginListPanel = listPanel;
   }
-  void OnTarballButton(wxCommandEvent &event);
-  void OnPluginSettingsButton(wxCommandEvent &event);
+  void OnTarballButton(wxCommandEvent& event);
+  void OnPluginSettingsButton(wxCommandEvent& event);
 
 protected:
   wxString GetCatalogText(bool);
@@ -402,10 +401,10 @@ protected:
   wxString GetImportInitDir();
 
   wxButton *m_updateButton, *m_advancedButton, *m_tarballButton;
-  wxButton *m_adv_button;
-  wxStaticText *m_catalogText;
-  wxWindow *m_parent;
-  PluginListPanel *m_PluginListPanel;
+  wxButton* m_adv_button;
+  wxStaticText* m_catalogText;
+  wxWindow* m_parent;
+  PluginListPanel* m_PluginListPanel;
   ObservableListener catalog_listener;
 };
 
@@ -415,28 +414,27 @@ class PluginListPanel : public wxScrolledWindow {
   DECLARE_EVENT_TABLE()
 
 public:
-  PluginListPanel(wxWindow *parent, wxWindowID id, const wxPoint &pos,
-                  const wxSize &size, ArrayOfPlugIns *pPluginArray);
+  PluginListPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+                  const wxSize& size);
   ~PluginListPanel();
 
-  void SelectPlugin(PluginPanel *pi);
-  void MoveUp(PluginPanel *pi);
-  void MoveDown(PluginPanel *pi);
+  void SelectPlugin(PluginPanel* pi);
+  void MoveUp(PluginPanel* pi);
+  void MoveDown(PluginPanel* pi);
   void UpdateSelections();
   void UpdatePluginsOrder();
 
   /** Complete reload from plugins array. */
   void ReloadPluginPanels();
-  void SelectByName(wxString &name);
+  void SelectByName(wxString& name);
 
 private:
-  void AddPlugin(PlugInContainer *pic);
-  int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer *sizer);
+  void AddPlugin(const PlugInData& pd);
+  int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
   // void Clear();
 
-  ArrayOfPlugIns *m_pPluginArray;
   ArrayOfPluginPanel m_PluginItems;
-  PluginPanel *m_PluginSelected;
+  PluginPanel* m_PluginSelected;
   wxString m_selectedName;
   int m_pluginSpacer;
 };
@@ -444,7 +442,7 @@ private:
 /** Invokes client browser on plugin info_url when clicked. */
 class WebsiteButton : public wxPanel {
 public:
-  WebsiteButton(wxWindow *parent, const char *url);
+  WebsiteButton(wxWindow* parent, const char* url);
   ~WebsiteButton(){};
   void SetURL(std::string url) { m_url = url; }
 
@@ -455,45 +453,52 @@ protected:
 class PluginPanel : public wxPanel {
   DECLARE_EVENT_TABLE()
 
+  /** An entry in the list of plugins presented by Options | Plugins. */
 public:
-  PluginPanel(wxPanel *parent, wxWindowID id, const wxPoint &pos,
-              const wxSize &size, PlugInContainer *p_plugin);
+  /** Construct an entry for a loaded plugin. */
+  PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
+              const wxSize& size, const PlugInData plugin);
+
+  /** Construct an entry reflecting a plugin available in the catalog. */
+  PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
+              const wxSize& size, PluginMetadata plugin);
+
   ~PluginPanel();
 
-  void OnPluginSelected(wxMouseEvent &event);
-  void OnPluginSelectedUp(wxMouseEvent &event);
+  void OnPluginSelected(wxMouseEvent& event);
+  void OnPluginSelectedUp(wxMouseEvent& event);
   void DoPluginSelect();
 
   void SetSelected(bool selected);
-  void OnPluginPreferences(wxCommandEvent &event);
-  void OnPluginEnableToggle(wxCommandEvent &event);
-  void OnPluginAction(wxCommandEvent &event);
-  void OnPluginUninstall(wxCommandEvent &event);
-  void OnPluginUp(wxCommandEvent &event);
-  void OnPluginDown(wxCommandEvent &event);
+  void OnPluginPreferences(wxCommandEvent& event);
+  void OnPluginEnableToggle(wxCommandEvent& event);
+  void OnPluginAction(wxCommandEvent& event);
+  void OnPluginUninstall(wxCommandEvent& event);
+  void OnPluginUp(wxCommandEvent& event);
+  void OnPluginDown(wxCommandEvent& event);
   void SetEnabled(bool enabled);
   bool GetSelected() { return m_bSelected; }
-  PlugInContainer *GetPluginPtr() { return m_pPlugin; };
-  void SetActionLabel(wxString &label);
+  const PlugInData* GetPluginPtr() { return &m_plugin; };
+  void SetActionLabel(wxString& label);
   ActionVerb GetAction() { return m_action; }
-  PlugInContainer *GetPlugin() { return m_pPlugin; }
-  void OnPaint(wxPaintEvent &event);
+  const PlugInData* GetPlugin() { return &m_plugin; }
+  void OnPaint(wxPaintEvent& event);
 
 private:
-  PluginListPanel *m_PluginListPanel;
+  PluginListPanel* m_PluginListPanel;
   bool m_bSelected;
-  PlugInContainer *m_pPlugin;
-  wxStaticText *m_pName;
-  wxStaticText *m_pVersion;
-  wxStaticText *m_pDescription;
-  wxBoxSizer *m_pButtons;
-  wxStaticBitmap *m_itemStaticBitmap;
-  wxStaticBitmap *m_itemStatusIconBitmap;
-  wxButton *m_pButtonPreferences;
+  const PlugInData m_plugin;
+  wxStaticText* m_pName;
+  wxStaticText* m_pVersion;
+  wxStaticText* m_pDescription;
+  wxBoxSizer* m_pButtons;
+  wxStaticBitmap* m_itemStaticBitmap;
+  wxStaticBitmap* m_itemStatusIconBitmap;
+  wxButton* m_pButtonPreferences;
   wxButton *m_pButtonAction, *m_pButtonUninstall;
 
-  wxCheckBox *m_cbEnable;
-  WebsiteButton *m_info_btn;
+  wxCheckBox* m_cbEnable;
+  WebsiteButton* m_info_btn;
   ActionVerb m_action;
   int m_penWidthUnselected, m_penWidthSelected;
 };
@@ -517,22 +522,22 @@ public:
   ~S52PLIB_Context(){};
 
   BoundingBox BBObj;  // lat/lon BBox of the rendered object
-  bool bBBObj_valid;    // set after the BBObj has been calculated once.
+  bool bBBObj_valid;  // set after the BBObj has been calculated once.
 
-  Rules *CSrules;  // per object conditional symbology
+  Rules* CSrules;  // per object conditional symbology
   int bCS_Added;
 
-  S52_TextC *FText;
+  S52_TextC* FText;
   int bFText_Added;
   wxRect rText;
 
-  LUPrec *LUP;
-  ObjRazRules *ChildRazRules;
-  mps_container *MPSRulesList;
+  LUPrec* LUP;
+  ObjRazRules* ChildRazRules;
+  mps_container* MPSRulesList;
 };
 
-void CreateCompatibleS57Object(PI_S57Obj *pObj, S57Obj *cobj,
-                               chart_context *pctx);
-void UpdatePIObjectPlibContext(PI_S57Obj *pObj, S57Obj *cobj);
+void CreateCompatibleS57Object(PI_S57Obj* pObj, S57Obj* cobj,
+                               chart_context* pctx);
+void UpdatePIObjectPlibContext(PI_S57Obj* pObj, S57Obj* cobj);
 
 #endif  // _PLUGINMGR_H_

@@ -22,9 +22,6 @@
  ***************************************************************************
  */
 
-#include <cstring>
-#include <fstream>
-#include <iterator>
 #include <sstream>
 
 #include <wx/log.h>
@@ -38,6 +35,87 @@
 #include "catalog_handler.h"
 #include "pugixml.hpp"
 
+static void add_node(pugi::xml_node root, const std::string& name,
+                     const std::string& value) {
+  auto child = root.append_child(name.c_str());
+  child.append_child(pugi::node_pcdata).set_value(value.c_str());
+}
+
+
+std::string PluginMetadata::to_string() {
+  pugi::xml_document doc;
+  auto root = doc.append_child("plugin");
+  root.append_attribute("version").set_value("1");
+
+  add_node(root, "name", name);
+  add_node(root, "version", version);
+  add_node(root, "release", release);
+  add_node(root, "summary", summary);
+  add_node(root, "api-version", api_version);
+  add_node(root, "open-source", openSource ? "true" : "false");
+  add_node(root, "is-imported", is_imported ? "true" : "false");
+  add_node(root, "author", author);
+  add_node(root, "source", author);
+  add_node(root, "info-url", info_url);
+  add_node(root, "description", description);
+  add_node(root, "target", target);
+  add_node(root, "target-version", target_version);
+  add_node(root, "target-arch", target_arch);
+  add_node(root, "tarball-url", tarball_url);
+  add_node(root, "tarball-checksum", checksum);
+
+  std::ostringstream ss;
+  doc.save(ss, "    ");
+  return ss.str();
+}
+
+static void ParseValue(pugi::xml_node node, const std::string& name,
+                        std::string& value) {
+  auto child = node.child(name.c_str());
+  if (child) value = ocpn::trim(child.first_child().value());
+}
+
+static void ParseBool(pugi::xml_node node, const std::string& name,
+                      bool& value) {
+  auto child = node.child(name.c_str());
+  if (child) {
+    auto text =  ocpn::trim(child.first_child().value());
+    value = text == "yes" || text == "true";
+  }
+}
+
+bool ParsePlugin(pugi::xml_node root, PluginMetadata& plugin) {
+    ParseValue(root, "name", plugin.name);
+    ParseValue(root, "version", plugin.version);
+    ParseValue(root, "release", plugin.release);
+    ParseValue(root, "summary", plugin.summary);
+    ParseValue(root, "api-version", plugin.api_version);
+    ParseValue(root, "author", plugin.author);
+    ParseValue(root, "description", plugin.description);
+    ParseValue(root, "source", plugin.source);
+    ParseValue(root, "tarball-url", plugin.tarball_url);
+    ParseValue(root, "info-url", plugin.info_url);
+    ParseValue(root, "target", plugin.target);
+    ParseValue(root, "target-version", plugin.target_version);
+    ParseValue(root, "target-arch", plugin.target_arch);
+    ParseValue(root, "target-checksum", plugin.checksum);
+    ParseBool(root, "open-source", plugin.openSource);
+    ParseBool(root, "is-imported", plugin.is_imported);
+    return root.child("name") ? true : false;
+}
+
+
+bool ParsePlugin(const std::string& xml, PluginMetadata& plugin) {
+  pugi::xml_document doc;
+  doc.load_string(xml.c_str());
+  auto node = doc.child("plugin");
+  if (!node) {
+    wxLogWarning("Trying to parse plugin without root node");
+    return false;
+  }
+  return ParsePlugin(doc.child("plugin"), plugin);
+}
+
 
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   bool ok = true;
@@ -46,16 +124,16 @@ bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   pugi::xml_document doc;
   doc.load_string(xml.c_str());
 
-  pugi::xml_node elements = doc.child("plugins");
-  for (pugi::xml_node element = elements.first_child(); element;
-       element = element.next_sibling()) {
-    if (!strcmp(element.name(), "version") && ctx->version == "") {
-      ctx->version = ocpn::trim(element.first_child().value());
-    } else if (strcmp(element.name(), "date") == 0 && ctx->date == "") {
-      ctx->date = ocpn::trim(element.first_child().value());
-    } else if (strcmp(element.name(), "meta-url") == 0) {
-      ctx->meta_url = ocpn::trim(element.first_child().value());
-    } else if (!strcmp(element.name(), "plugin")) {
+  pugi::xml_node nodes = doc.child("plugins");
+  for (pugi::xml_node node = nodes.first_child(); node;
+       node = node.next_sibling()) {
+    if (!strcmp(node.name(), "version") && ctx->version == "") {
+      ctx->version = ocpn::trim(node.first_child().value());
+    } else if (strcmp(node.name(), "date") == 0 && ctx->date == "") {
+      ctx->date = ocpn::trim(node.first_child().value());
+    } else if (strcmp(node.name(), "meta-url") == 0) {
+      ctx->meta_url = ocpn::trim(node.first_child().value());
+    } else if (!strcmp(node.name(), "plugin")) {
       if (ctx->meta_url != "") {
         ctx->meta_urls.push_back(ctx->meta_url);
         ctx->meta_url = "";
@@ -63,68 +141,22 @@ bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
         if (plugin) ctx->plugins.push_back(*plugin);
         plugin = new PluginMetadata;
       }
-
-      for (pugi::xml_node plugin_element = element.first_child();
-           plugin_element; plugin_element = plugin_element.next_sibling()) {
-        if (strcmp(plugin_element.name(), "meta-url") == 0) {
-          auto url = ocpn::trim(plugin_element.first_child().value());
-          ctx->meta_url = url;
-        } else if (strcmp(plugin_element.name(), "name") == 0) {
-          plugin->name = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "version") == 0) {
-          plugin->version = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "release") == 0) {
-          plugin->release = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "summary") == 0) {
-          plugin->summary = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "api_version") == 0) {
-          plugin->api_version =
-              ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "author") == 0) {
-          plugin->author = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "description") == 0) {
-          plugin->description =
-              ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "git-commit") == 0) {
-          plugin->git_commit = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "git-date") == 0) {
-          plugin->git_date = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "source") == 0) {
-          plugin->source = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "tarball-url") == 0) {
-          plugin->tarball_url =
-              ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "info-url") == 0) {
-          plugin->info_url = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "target") == 0) {
-          plugin->target = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "build-gtk") == 0) {
-          plugin->build_gtk = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "target-version") == 0) {
-          plugin->target_version =
-              ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "target-arch") == 0) {
-          plugin->target_arch =
-              ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "tarball-checksum") == 0) {
-          plugin->checksum = ocpn::trim(plugin_element.first_child().value());
-        } else if (strcmp(plugin_element.name(), "open-source") == 0) {
-          plugin->openSource =
-              ocpn::trim(plugin_element.first_child().value()) == "yes";
-        }
+      auto meta_url = node.child("meta-url");
+      if (meta_url) {
+        auto url = ocpn::trim(meta_url.first_child().value());
+        ctx->meta_url = url;
       }
+      ParsePlugin(node, *plugin);
     }
   }
-
   // capture last plugin
-  if (plugin)
+  if (plugin) {
     ctx->plugins.push_back(*plugin);
-  else {
+  } else {
     if (ctx->meta_url != "") {
       ctx->meta_urls.push_back(ctx->meta_url);
       ctx->meta_url = "";
     }
   }
-
   return true;
 }

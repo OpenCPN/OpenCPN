@@ -24,6 +24,7 @@
 
 #include "config.h"
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 
@@ -144,30 +145,34 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
   std::string url;
 
   bool ok = ::ParseCatalog(xml, ctx);
+  for (auto path : PluginHandler::getInstance()->GetImportPaths()) {
+    std::ifstream plugin_xml(path);
+    std::stringstream ss;
+    ss << plugin_xml.rdbuf();
+    PluginMetadata metadata;
+    ::ParsePlugin(ss.str().c_str(), metadata);
+    metadata.is_imported = true;
+    ctx->plugins.push_back(metadata);
+  }
   while (ctx->meta_urls.size() > 0) {
     std::ostringstream xml;
     url = ctx->meta_urls.back();
     ctx->meta_urls.pop_back();
 
     // already parsed this meta file?
-    bool bdone = false;
-    for (std::vector<std::string>::iterator it = ctx->parsed_metas.begin();
-         it != ctx->parsed_metas.end(); it++) {
-      if (*it == url) {
-        bdone = true;
-        break;
-      }
+    auto match = [url](const std::string& s) { return url == s; };
+    const auto& haystack = ctx->parsed_metas;
+    auto found = std::find_if(haystack.begin(), haystack.end(), match);
+    if (found != haystack.end()) {
+        continue;
     }
-
-    if (!bdone) {
-      ctx->parsed_metas.push_back(url);
-      if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
-        wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
-                     url.c_str());
-      } else {
-        ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
-        if (!ok) break;
-      }
+    ctx->parsed_metas.push_back(url);
+    if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
+      wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
+                   url.c_str());
+    } else {
+      ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
+      if (!ok) break;
     }
   }
   if (!ok) {

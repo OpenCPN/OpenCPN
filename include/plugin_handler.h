@@ -107,6 +107,12 @@ public:
   /** Return path to file containing version for given plugin. */
   static std::string versionPath(std::string name);
 
+  /** Return path to imported metadata for given plugin. */
+  static std::string ImportedMetadataPath(std::string name);
+
+  /** List of paths for imported plugins metadata. */
+  static std::vector<std::string> GetImportPaths();
+
   /** Return true if given plugin is loadable on given os/version. */
   static bool isCompatible(const PluginMetadata& metadata,
                            const char* os = PKG_TARGET,
@@ -118,11 +124,15 @@ public:
   /** Return list of all installed plugins. */
   const std::vector<PluginMetadata> getInstalled();
 
-  /** Return list of available, not installed plugins. */
+  /** Set metadata for an installed plugin */
+  void SetInstalledMetadata(const PluginMetadata& pm);
+
+  /** Update catalog and return list of available, not installed plugins. */
   const std::vector<PluginMetadata> getAvailable();
 
   /** Map of available plugin targets -> number of occurences. */
   const std::map<std::string, int> getCountByTarget();
+
 
   /** Return plugin containing given filename or "" if not found. */
   std::string getPluginByLibrary(const std::string& filename);
@@ -139,8 +149,11 @@ public:
   /** Install a new, downloaded but not installed plugin tarball. */
   bool installPlugin(PluginMetadata plugin, std::string path);
 
-  /** Install a new, downloaded but not installed plugin tarball. */
-  bool installPlugin(std::string path);
+  /** Extract metadata in given tarball path. */
+  bool ExtractMetadata(const std::string& path, PluginMetadata& metadata);
+
+  /* Install a new, downloaded but not installed plugin tarball. */
+  bool installPlugin(const std::string& path);
 
   /** Uninstall an installed plugin. */
   bool uninstall(const std::string plugin);
@@ -160,11 +173,17 @@ private:
   std::vector<PluginMetadata> installed;
   CatalogData catalogData;
   std::string last_error_msg;
+  bool InstallPlugin(const std::string& path,std::string& filelist,
+                     const std::string metadata_path,
+                     bool only_metadata);
+
   bool explodeTarball(struct archive* src, struct archive* dest,
                       std::string& filelist,
-                      const std::string& metadata_path);
+                      const std::string& metadata_path,
+                      bool only_metadata);
   bool extractTarball(const std::string path, std::string& filelist,
-                      const std::string metadata_path = "");
+                      const std::string metadata_path = "",
+                      bool only_metadata = false);
   bool archive_check(int r, const char* msg, struct archive* a);
   std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
 };
