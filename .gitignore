@@ -10,8 +10,8 @@ build
 buildwin/NSIS_Unicode/Include/Langstrings_*.nsh
 buildwin/crashrpt/CrashRpt1402.dll
 buildwin/crashrpt/CrashSender1402.exe
+buildwin/configdev.bat
 cache
-configdev.bat
 crowdin.yaml
 cscope.files
 cscope.out
