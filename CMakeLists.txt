@@ -729,7 +729,7 @@ if (NOT QT_ANDROID)
     set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
 
     # build only for release/unicode configuration
-    set(wxWidgets_CONFIGURATION mswu)
+    # set(wxWidgets_CONFIGURATION mswu)
 
   endif (MSVC)
 
@@ -1242,6 +1242,17 @@ target_include_directories(
   ${PACKAGE_NAME}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+if (MSVC AND NOT OCPN_CI_BUILD)
+  MESSAGE(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY VS_STARTUP_PROJECT ${PACKAGE_NAME})
+  set_target_properties(
+  ${PACKAGE_NAME}
+  PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${PACKAGE_NAME}>"
+    VS_DEBUGGER_COMMAND_ARGUMENTS "-p")
+endif (MSVC AND NOT OCPN_CI_BUILD)
 
 if (APPLE)
   target_include_directories(
@@ -2584,15 +2595,52 @@ endif (APPLE)
 if (WIN32 AND NOT UNIX)
   if (OCPN_BUNDLE_WXDLLS)
     file(GLOB wxdll_files
-      "${wxWidgets_LIB_DIR}/wxmsw32u_*.dll"
-      "${wxWidgets_LIB_DIR}/wxbase32u_*.dll"
+      "${wxWidgets_LIB_DIR}/wxmsw32*u_*.dll"
+      "${wxWidgets_LIB_DIR}/wxbase32*u_*.dll"
     )
-    install(FILES ${wxdll_files} DESTINATION ".")
+    file(GLOB wxdll_debug_files
+      "${wxWidgets_LIB_DIR}/wxmsw32*ud_*.dll"
+      "${wxWidgets_LIB_DIR}/wxbase32*ud_*.dll"
+    )
     list(LENGTH wxdll_files wxdll_count)
+    if (wxdll_count LESS 5)
+      message(FATAL_ERROR "Could not find all the WX DLLs.")
+    endif (wxdll_count LESS 5)
+    list(LENGTH wxdll_debug_files wxdllud_count)
+    if (wxdllud_count GREATER 0)
+      install(FILES ${wxdll_debug_files} DESTINATION "." CONFIGURATIONS Debug)
+      install(FILES ${wxdll_files} DESTINATION "." CONFIGURATIONS Release|RelWithDebInfo|MinSizeRel)
+    ELSE (wxdllud_count GREATER 0)
+      install(FILES ${wxdll_files} DESTINATION ".")
+    ENDIF (wxdllud_count GREATER 0)
     message(STATUS
-      "${wxdll_count} wxWidgets DLLs bundled into the installer package..."
+      "${wxdll_count} wxWidgets DLLs available to be bundled into the installer package..."
     )
-  endif ()
+    message(STATUS
+      "${wxdllud_count} wxWidgets debug DLLs available to be bundled into the installer package..."
+    )
+
+    if (OCPN_BUNDLE_WXDLLS AND NOT OCPN_CI_BUILD)
+      file(GLOB wxpdb_files
+          "${wxWidgets_LIB_DIR}/wxmsw32*u_*.pdb"
+          "${wxWidgets_LIB_DIR}/wxbase32*u_*.pdb"
+      )
+      file(GLOB wxpdb_debug_files
+        "${wxWidgets_LIB_DIR}/wxmsw32*ud_*.pdb"
+        "${wxWidgets_LIB_DIR}/wxbase32*ud_*.pdb"
+      )
+      list(LENGTH wxpdb_files wxpdb_count)
+      list(LENGTH wxpdb_debug_files wxpdbud_count)
+      install(FILES ${wxpdb_debug_files} DESTINATION "." CONFIGURATIONS Debug)
+      install(FILES ${wxpdb_files} DESTINATION "." CONFIGURATIONS Release|RelWithDebInfo|MinSizeRel)
+      message(STATUS
+        "${wxpdb_count} wxWidgets PDBs available to be bundled into the installer package..."
+      )
+      message(STATUS
+        "${wxpdbud_count} wxWidgets debug PDBs available to be bundled into the installer package..."
+      )
+    endif (OCPN_BUNDLE_WXDLLS AND NOT OCPN_CI_BUILD)
+  endif (OCPN_BUNDLE_WXDLLS)
   if (OCPN_BUNDLE_VCDLLS)
     file(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/vc/*.dll")
     install(FILES ${vcdll_files} DESTINATION ".")
@@ -3070,11 +3118,11 @@ include(CPack)
 
 if (MSVC)
   add_custom_command(
-    TARGET ${PACKAGE_NAME} POST_BUILD
-    COMMAND
-    cmake -E copy "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
-      "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
-  )
+  TARGET ${PACKAGE_NAME} POST_BUILD
+  COMMAND
+  ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+    "$<TARGET_PDB_FILE_DIR:${PACKAGE_NAME}>/${PACKAGE_NAME}-${PACKAGE_VERSION}.pdb"
+)
 endif (MSVC)
 
 # uninstall target

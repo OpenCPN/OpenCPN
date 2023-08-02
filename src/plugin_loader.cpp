@@ -54,6 +54,7 @@
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 #include <wx/window.h>
+#include <wx/process.h>
 
 #include "base_platform.h"
 #include "config_vars.h"
@@ -71,6 +72,10 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <dlfcn.h>
+#endif
+
+#ifdef __WXMSW__
+#include <Psapi.h>
 #endif
 
 extern BasePlatform* g_BasePlatform;
@@ -249,6 +254,9 @@ PluginLoader* PluginLoader::getInstance() {
 PluginLoader::PluginLoader()
     : m_blacklist(blacklist_factory()),
       m_default_plugin_icon(nullptr),
+#ifdef __WXMSW__
+      m_found_wxwidgets(false),
+#endif
       m_on_deactivate_cb([](const PlugInContainer* pic) {}) {}
 
 bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
@@ -1059,57 +1067,108 @@ FailureEpilogue:
 #endif  // USE_LIBELF
 
 bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
-  bool b_compat = true;
+  bool b_compat = false;
 
 #ifdef __WXMSW__
-  char strver[22];  // Enough space even for very big integers...
-  sprintf(strver, "%i%i", wxMAJOR_VERSION, wxMINOR_VERSION);
-  LPCWSTR fNmae = plugin_file.wc_str();
-  HANDLE handle = CreateFile(fNmae, GENERIC_READ, 0, 0, OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL, 0);
-  DWORD byteread, size = GetFileSize(handle, NULL);
-  PVOID virtualpointer = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
-  ReadFile(handle, virtualpointer, size, &byteread, NULL);
-  CloseHandle(handle);
-  // Get pointer to NT header
-  PIMAGE_NT_HEADERS ntheaders =
-      (PIMAGE_NT_HEADERS)(PCHAR(virtualpointer) +
-                          PIMAGE_DOS_HEADER(virtualpointer)->e_lfanew);
-  PIMAGE_SECTION_HEADER pSech =
-      IMAGE_FIRST_SECTION(ntheaders);  // Pointer to first section header
-  PIMAGE_IMPORT_DESCRIPTOR pImportDescriptor;  // Pointer to import descriptor
-  if (ntheaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]
-          .Size !=
-      0) /*if size of the table is 0 - Import Table does not exist */
-  {
-    pImportDescriptor =
-        (PIMAGE_IMPORT_DESCRIPTOR)((DWORD_PTR)virtualpointer +
-                                   Rva2Offset(
-                                       ntheaders->OptionalHeader
-                                           .DataDirectory
-                                               [IMAGE_DIRECTORY_ENTRY_IMPORT]
-                                           .VirtualAddress,
-                                       pSech, ntheaders));
-    LPSTR libname[256];
-    size_t i = 0;
-    // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR
-    while (pImportDescriptor->Name != 0) {
-      // Get the name of each DLL
-      libname[i] =
-          (PCHAR)((DWORD_PTR)virtualpointer +
-                  Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
-      if (strstr(libname[i], "wx") != NULL) {
-        if (strstr(libname[i], strver) == NULL) b_compat = false;
-        break;
+  // For Windows we identify the dll file containing the core wxWidgets functions
+  // Later we will compare this with the file containing the wxWidgets functions used
+  // by plugins.  If these file names match exactly then we assume the plugin is compatible.
+  // By using the file names we avoid having to hard code the file name into the OpenCPN sources.
+  // This makes it easier to update wxWigets versions without editing sources.
+  // NOTE: this solution may not follow symlinks but almost no one uses simlinks for wxWidgets dlls
+
+  // Only go through this process once per instance of O.
+  if (!m_found_wxwidgets) {
+    DWORD myPid = GetCurrentProcessId();
+    HANDLE hProcess =
+        OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, myPid);
+    if (hProcess == NULL) {
+      wxLogMessage(wxString::Format("Cannot identify running process for %s",
+                                    plugin_file.c_str()));
+    } else {
+      // Find namme of wxWidgets core DLL used by the current process
+      // so we can compare it to the one used by the plugin
+      HMODULE hMods[1024];
+      DWORD cbNeeded;
+      if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
+        for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
+          TCHAR szModName[MAX_PATH];
+          if (GetModuleFileNameEx(hProcess, hMods[i], szModName,
+                                  sizeof(szModName) / sizeof(TCHAR))) {
+            m_module_name = szModName;
+            if (m_module_name.Find("wxmsw") != wxNOT_FOUND) {
+              if (m_module_name.Find("_core_") != wxNOT_FOUND) {
+                m_found_wxwidgets = true;
+                wxLogMessage(wxString::Format(
+                    "Found wxWidgets core DLL: %s",
+                    m_module_name.c_str()));
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        wxLogMessage(wxString::Format("Cannot enumerate process modules for %s",
+                                      plugin_file.c_str()));
       }
-      pImportDescriptor++;  // advance to next IMAGE_IMPORT_DESCRIPTOR
-      i++;
+      if (hProcess) CloseHandle(hProcess);
     }
-  } else {
-    wxLogMessage(
-        wxString::Format("No Import Table! in %s", plugin_file.c_str()));
   }
-  if (virtualpointer) VirtualFree(virtualpointer, size, MEM_DECOMMIT);
+  if (!m_found_wxwidgets) {
+    wxLogMessage(wxString::Format("Cannot identify wxWidgets core DLL for %s",
+                                  plugin_file.c_str()));
+  } else {
+    LPCWSTR fName = plugin_file.wc_str();
+    HANDLE handle = CreateFile(fName, GENERIC_READ, 0, 0, OPEN_EXISTING,
+                               FILE_ATTRIBUTE_NORMAL, 0);
+    DWORD byteread, size = GetFileSize(handle, NULL);
+    PVOID virtualpointer = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
+    bool status = ReadFile(handle, virtualpointer, size, &byteread, NULL);
+    CloseHandle(handle);
+    PIMAGE_NT_HEADERS ntheaders =
+        (PIMAGE_NT_HEADERS)(PCHAR(virtualpointer) +
+                            PIMAGE_DOS_HEADER(virtualpointer)->e_lfanew);
+    PIMAGE_SECTION_HEADER pSech =
+        IMAGE_FIRST_SECTION(ntheaders);  // Pointer to first section header
+    PIMAGE_IMPORT_DESCRIPTOR pImportDescriptor;  // Pointer to import descriptor
+    if (ntheaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]
+            .Size !=
+        0) /*if size of the table is 0 - Import Table does not exist */
+    {
+      pImportDescriptor =
+          (PIMAGE_IMPORT_DESCRIPTOR)((DWORD_PTR)virtualpointer +
+                                     Rva2Offset(
+                                         ntheaders->OptionalHeader
+                                             .DataDirectory
+                                                 [IMAGE_DIRECTORY_ENTRY_IMPORT]
+                                             .VirtualAddress,
+                                         pSech, ntheaders));
+      LPSTR libname[256];
+      size_t i = 0;
+      // Walk until you reached an empty IMAGE_IMPORT_DESCRIPTOR or we find core wxWidgets DLL
+      while (pImportDescriptor->Name != 0) {
+        // Get the name of each DLL
+        libname[i] =
+            (PCHAR)((DWORD_PTR)virtualpointer +
+                    Rva2Offset(pImportDescriptor->Name, pSech, ntheaders));
+        // Check if the plugin DLL dependencey is same as main process wxWidgets core DLL
+        if (m_module_name.Find(libname[i]) != wxNOT_FOUND) {
+          // Match found - plugin is compatible
+          b_compat = true;
+          wxLogMessage(
+              wxString::Format("Compatible wxWidgets plugin library found for %s: %s",
+              plugin_file.c_str(), libname[i]));
+          break;
+        }
+        pImportDescriptor++;  // advance to next IMAGE_IMPORT_DESCRIPTOR
+        i++;
+      }
+    } else {
+      wxLogMessage(
+          wxString::Format("No Import Table! in %s", plugin_file.c_str()));
+    }
+    if (virtualpointer) VirtualFree(virtualpointer, size, MEM_DECOMMIT);
+  }
 #endif
 #if defined(__WXGTK__) || defined(__WXQT__)
 #if defined(USE_LIBELF)

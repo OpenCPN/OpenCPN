@@ -246,6 +246,12 @@ private:
   ArrayOfPlugIns plugin_array;
   wxString m_last_error_string;
   wxString m_plugin_location;
+
+#ifdef __WXMSW__
+  wxString m_module_name;
+  bool m_found_wxwidgets;
+#endif
+
   const wxBitmap* m_default_plugin_icon;
   std::function<void(const PlugInContainer*)> m_on_deactivate_cb;
 
