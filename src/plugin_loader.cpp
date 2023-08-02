@@ -92,15 +92,25 @@ static PlugInContainer* GetContainer(const PlugInData& pd,
 }
 
 /** Return true if path "seems" to contain a system plugin */
-static bool IsSystemPlugin(const std::string& path) {
-  static const std::vector<std::string> SysPlugins = {
+static bool IsSystemPluginPath(const std::string& path) {
+  static const std::vector<std::string> kPlugins = {
       "chartdldr_pi", "wmm_pi", "dashboard_pi", "grib_pi"};
 
   const std::string lc_path = ocpn::tolower(path);
-  for (const auto& p : SysPlugins)
+  for (const auto& p : kPlugins)
     if (lc_path.find(p) != std::string::npos) return true;
   return false;
 }
+
+/** Return true if name is a valid system plugin name. */
+static bool IsSystemPluginName(const std::string& name) {
+  static const std::vector<std::string> kPlugins = {
+      "chartdownloader", "wmm", "dashboard", "grib"};
+  auto found =
+      std::find(kPlugins.begin(), kPlugins.end(), ocpn::tolower(name));
+  return found != kPlugins.end();
+}
+
 
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
@@ -429,7 +439,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
 
   if (!g_bportable) {
     if (base_plugin_path.IsSameAs(plugin_file_path)) {
-      if (!IsSystemPlugin(file_name.ToStdString())) {
+      if (!IsSystemPluginPath(file_name.ToStdString())) {
         DEBUG_LOG << "Skipping plugin " << file_name << " in "
                   << g_BasePlatform->GetPluginDir();
         return false;
@@ -437,7 +447,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
     }
   }
 
-  if (!IsSystemPlugin(file_name.ToStdString()) && safe_mode::get_mode()) {
+  if (!IsSystemPluginPath(file_name.ToStdString()) && safe_mode::get_mode()) {
     DEBUG_LOG << "Skipping plugin " << file_name << " in safe mode";
     return false;
   }
@@ -849,7 +859,7 @@ void PluginLoader::UpdateManagedPlugins() {
       if (isRegularFile(PluginHandler::fileListPath(md.name).c_str())) {
         // This is an installed plugin
         PluginLoader::UpdatePlugin(plugin, md);
-      } else if (IsSystemPlugin(md.name)) {
+      } else if (IsSystemPluginName(md.name)) {
         plugin->m_status = PluginStatus::System;
       } else if (plugin->m_api_version) {
         // If the plugin is actually loaded, but the new plugin is known not
