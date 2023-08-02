@@ -805,7 +805,7 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
 void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
                                 const PluginMetadata& md) {
   auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
-                         ocpn::tolower(md.name));
+                         plugin->m_common_name.Lower());
   bool is_system = found != SYSTEM_PLUGINS.end();
 
   std::string installed = VersionFromManifest(md.name);
@@ -844,7 +844,8 @@ void PluginLoader::UpdateManagedPlugins() {
   auto predicate = [](const PlugInContainer* pd) -> bool {
     const auto md(
         PluginLoader::MetadataByName(pd->m_common_name.ToStdString()));
-    return md.name.empty() && !pd->m_pplugin;
+    return md.name.empty() && !pd->m_pplugin &&
+        !IsSystemPluginName(pd->m_common_name.ToStdString());
   };
   auto end =
       std::remove_if(loaded_plugins.begin(), loaded_plugins.end(), predicate);
