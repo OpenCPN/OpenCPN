@@ -148,9 +148,11 @@ tools.
 
 === https://www.jetbrains.com/clion/[CLion]
 
-There are some reports without details from users using CLion for OpenCPN
-development. CLion is commercial software, but are giving out
-free licenses for open source development in certain cases.
+The CLion IDE is currently used by some of the core project developers 
+with good results.
+
+CLion is commercial software, but are giving out free licenses for open
+source development in certain cases.
 
 === https://github.com/wxFormBuilder/wxFormBuilder[wxFormBuilder]
 
