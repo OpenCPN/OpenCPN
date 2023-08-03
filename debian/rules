@@ -12,7 +12,6 @@ override_dh_auto_configure:
 ifeq ($(DEB_BUILD_ARCH_CPU), arm)
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
-            -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
             -DDEB_VERSION=$(DEB_VERSION)               \
@@ -21,7 +20,6 @@ ifeq ($(DEB_BUILD_ARCH_CPU), arm)
 else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
-            -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
             -DCMAKE_INSTALL_LIBDIR=lib                 \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
             -DDEB_VERSION=$(DEB_VERSION)               \
