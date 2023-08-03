@@ -18,15 +18,6 @@ ifeq ($(DEB_BUILD_ARCH_CPU), arm)
             -DDEB_VERSION=$(DEB_VERSION)               \
             -DDEB_DISTRIBUTION=$(DEB_DISTRIBUTION)     \
             -DOCPN_BUILD_TEST=OFF
-else ifeq ($(DEB_BUILD_ARCH_CPU), aarch64)
-	dh_auto_configure -- \
-	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
-            -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=ON     \
-            -DCMAKE_INSTALL_LIBDIR=lib                 \
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo          \
-            -DDEB_VERSION=$(DEB_VERSION)               \
-            -DDEB_DISTRIBUTION=$(DEB_DISTRIBUTION)     \
-            -DOCPN_BUILD_TEST=OFF
 else ifeq ($(DEB_BUILD_ARCH_CPU), arm64)
 	dh_auto_configure -- \
 	    -DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH) \
