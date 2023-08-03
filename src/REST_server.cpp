@@ -389,7 +389,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
                       _("The received route already exists on this system.\nReplace?"),
-                      _("Always replace objects from this source?"));
+                      _("Always replace objects?"));
 
                 dialog2.ShowModal();
                 bool b_always = dialog2.GetCheck1Value();
@@ -440,7 +440,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
                       _("The received track already exists on this system.\nReplace?"),
-                      _("Always replace objects from this source?"));
+                      _("Always replace objects?"));
 
                 dialog2.ShowModal();
                 bool b_always = dialog2.GetCheck1Value();
@@ -495,7 +495,7 @@ void RESTServer::HandleServerMessage(RESTServerEvent& event) {
                 AcceptObjectDialog dialog2(NULL, wxID_ANY, _("OpenCPN Server Message"),
                       "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
                       _("The received waypoint already exists on this system.\nReplace?"),
-                      _("Always replace objects from this source?"));
+                      _("Always replace objects?"));
 
 
                 dialog2.ShowModal();
