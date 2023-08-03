@@ -103,10 +103,10 @@ See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
 
 From RPi 4 the board has resources enough to run a native build, which is
 performed according to the instructions for xref:#build_debian[Debian].
-At the time of writing, it is unclear if this is possible on a rPI 3
-with 1MB of RAM.
 
-NOTE: Fixme
+For RPi 3 with 1GB of ram builds are usually done utilizing cross-compiling on Linux, 
+often using docker and, for 32-bit armhf builds, also qemu. 
+A description of these builds is out of scope for this document.
 
 == Fedora
 
