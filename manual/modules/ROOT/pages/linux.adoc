@@ -103,10 +103,10 @@ See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
 
 From RPi 4 the board has resources enough to run a native build, which is
 performed according to the instructions for xref:#build_debian[Debian].
-At the time of writing, it is unclear if this is possible on a rPI 3
-with 1MB of RAM.
 
-NOTE: Fixme
+For RPi 3 with 1GB of ram builds are usually done utilizing cross-compiling on Linux, 
+often using docker and, for 32-bit armhf builds, also qemu. 
+A description of these builds is out of scope for this document.
 
 == Fedora
 
@@ -148,9 +148,11 @@ tools.
 
 === https://www.jetbrains.com/clion/[CLion]
 
-There are some reports without details from users using CLion for OpenCPN
-development. CLion is commercial software, but are giving out
-free licenses for open source development in certain cases.
+The CLion IDE is currently used by some of the core project developers 
+with good results.
+
+CLion is commercial software, but are giving out free licenses for open
+source development in certain cases.
 
 === https://github.com/wxFormBuilder/wxFormBuilder[wxFormBuilder]
 
