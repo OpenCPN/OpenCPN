@@ -156,7 +156,8 @@ PlugInContainer::PlugInContainer()
     : PlugInData(), m_pplugin(nullptr), m_library(), m_destroy_fn(nullptr) {}
 
 PlugInData::PlugInData()
-    : m_enabled(false),
+    : m_has_setup_options(false),
+      m_enabled(false),
       m_init_state(false),
       m_toolbox_panel(false),
       m_cap_flag(0),
@@ -288,6 +289,8 @@ void PluginLoader::ShowPreferencesDialog(const PlugInData& pd,
 void PluginLoader::NotifySetupOptionsPlugin(const PlugInData* pd) {
   auto pic = GetContainer(*pd, *GetPlugInArray());
   if (!pic) return;
+  if (pic->m_has_setup_options) return;
+  pic->m_has_setup_options = true;
   if (pic->m_enabled && pic->m_init_state) {
     if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE) {
       switch (pic->m_api_version) {
