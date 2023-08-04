@@ -261,7 +261,9 @@ public:
     auto plugins = PluginHandler::getInstance()->getInstalled();
     for (const auto& p : plugins) {
       if (p.version == "0.0") continue;
-      cout << left << setw(25) << p.name << p.version << "\n";
+      auto path = PluginHandler::ImportedMetadataPath(p.name);
+      std::string suffix(ocpn::exists(path) ? "[imported]" : "");
+      cout << left << setw(25) << p.name << p.version << suffix  << "\n";
     }
   }
 
@@ -292,7 +294,31 @@ public:
   }
 
   void import_plugin(const std::string& tarball_path) {
-    PluginHandler::getInstance()->installPlugin(tarball_path);
+    auto handler = PluginHandler::getInstance();
+    PluginMetadata metadata;
+    bool ok = handler->ExtractMetadata(tarball_path, metadata);
+    if (!ok) {
+      std::cerr << "Cannot extract metadata (malformed tarball?)\n";
+      exit(2);
+    }
+    if (!PluginHandler::isCompatible(metadata)) {
+      std::cerr << "Incompatible plugin detected\n";
+      exit(2);
+    }
+    ok = handler->installPlugin(metadata, tarball_path);
+    if (!ok) {
+      std::cerr << "Error extracting import plugin tarball.\n";
+      exit(2);
+    }
+    metadata.is_imported = true;
+    auto metadata_path = PluginHandler::ImportedMetadataPath(metadata.name);
+    std::ofstream file(metadata_path);
+    file << metadata.to_string();
+    if (!file.good()) {
+       std::cerr << "Error saving metadata file: " << metadata_path
+                << " for imported plugin: " << metadata.name;
+       exit(2);
+    }
     exit(0);
   }
 

@@ -150,6 +150,9 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     std::stringstream ss;
     ss << plugin_xml.rdbuf();
     PluginMetadata metadata;
+    if (ss.str().size() == 0) {
+      continue;
+    }
     ::ParsePlugin(ss.str().c_str(), metadata);
     metadata.is_imported = true;
     ctx->plugins.push_back(metadata);
