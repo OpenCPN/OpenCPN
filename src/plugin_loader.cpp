@@ -341,6 +341,11 @@ void PluginLoader::SetToolboxPanel(const wxString& common_name, bool value) {
                common_name);
 }
 
+const wxBitmap* PluginLoader::GetPluginDefaultIcon() {
+  if (!m_default_plugin_icon) m_default_plugin_icon = new wxBitmap(32, 32);
+  return m_default_plugin_icon;
+}
+
 void PluginLoader::SetPluginDefaultIcon(const wxBitmap* bitmap) {
   delete m_default_plugin_icon;
   m_default_plugin_icon = bitmap;
@@ -529,14 +534,15 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+
       auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
+      if (!pbm0->IsOk()) {
+        pbm0 = (wxBitmap *)GetPluginDefaultIcon();
+      }
       pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
 
       if (!pic->m_enabled && pic->m_destroy_fn) {
-        auto pbm1 = pic->m_pplugin->GetPlugInBitmap();
-        pic->m_bitmap = wxBitmap(pbm1->GetSubBitmap(
-            wxRect(0, 0, pbm1->GetWidth(), pbm1->GetHeight())));
         pic->m_destroy_fn(pic->m_pplugin);
         pic->m_destroy_fn = nullptr;
         pic->m_pplugin = nullptr;

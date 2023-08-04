@@ -198,6 +198,7 @@ public:
    */
   bool LoadAllPlugIns(bool enabled_plugins);
 
+  const wxBitmap* GetPluginDefaultIcon();
   void SetPluginDefaultIcon(const wxBitmap* bitmap);
 
   /** Callback invoked in late stage on deactivating a plugin. */
