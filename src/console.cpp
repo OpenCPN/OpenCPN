@@ -54,6 +54,7 @@
 #include <wx/cmdline.h>
 #include <wx/dynlib.h>
 #include <wx/fileconf.h>
+#include <wx/init.h>
 #include <wx/string.h>
 
 #include "base_platform.h"
@@ -404,6 +405,11 @@ public:
   }
 
   bool OnCmdLineParsed(wxCmdLineParser& parser) {
+    wxInitializer initializer;
+    if (!initializer) {
+      std::cerr << "Failed to initialize the wxWidgets library, aborting.";
+      exit(1);
+    }
     wxAppConsole::OnCmdLineParsed(parser);
     if (argc == 1) {
       std::cout << "OpenCPN CLI application. Use -h for help\n";
