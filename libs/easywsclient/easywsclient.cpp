@@ -109,19 +109,17 @@ socket_t hostname_connect(const std::string& hostname, int port) {
     {
         sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 
+#ifndef _WIN32
         // We cannot use select() on sockets with fd >= 1024.
         if (sockfd > 500){
           closesocket(sockfd);
           sockfd = INVALID_SOCKET;
-#ifdef _WIN32
-          Sleep(5000);
-#else
           sleep(5);
-#endif
           freeaddrinfo(result);
           return sockfd;
         }
-
+#endif
+        
         if (sockfd == INVALID_SOCKET) { continue; }
 
 #ifdef _WIN32
