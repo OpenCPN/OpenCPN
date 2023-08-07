@@ -41,9 +41,9 @@ goto :main
 @echo *        Example: mkdir \Users\myname\source\repos                         *
 @echo *                 cd \Users\myname\source\repos                            *
 @echo *  5. Clone Opencpn                                                        *
-@echo *        Example: clone https://github.com/transmitterdan/opencpn          *
+@echo *        Example: clone https://github.com/opencpn/opencpn                 *
 @echo *                 cd \Users\myname\source\repos\opencpn                    *
-@echo *                 git checkout localWinBuild                               *
+@echo *                 git checkout master                                      *
 @echo *  6. Set up local build environment by executing this script              *
 @echo *        Example: .\buildwin\winConfig.bat                                 *
 @echo *  7. Open solution file                                                   *
@@ -54,14 +54,14 @@ goto :main
 @echo *  Command line options:                                                   *
 @echo *      --clean            Remove build folder entirely before building     *
 @echo *                         MUST HAVE INTERNET CONNECTION FOR clean OPTION!  *
-@echo *      --rebuild          Rebuild all sources                             *
+@echo *      --rebuild          Rebuild all sources                              *
 @echo *                                                                          *
 @echo *      --release          Build Release configuration                      *
 @echo *      --relwithdebinfo   Build RelWithDebInfo configuration               *
 @echo *      --minsizerel       Build MinSizeRel configuration                   *
 @echo *      --debug            Build Debug configuration                        *
 @echo *                                                                          *
-@echo *      --all              Build all 4 configurations                       *
+@echo *      --all              Build all 4 configurations  (default)            *
 @echo *                                                                          *
 @echo *      --help             Print thie message                               *
 @echo *                                                                          *
@@ -87,9 +87,9 @@ if [%VisualStudioVersion%]==[17.0] (^
   set "VCstr=Visual Studio 17"
 )
 ::-------------------------------------------------------------
-:: Initialize local helper script to reinitialize environment
+:: Initialize local helper script that can reinitialize environment
 ::-------------------------------------------------------------
-@echo set "wxDIR=%wxDIR%" >> "%OCPN_Dir%\buildwin\configdev.bat"
+@echo set "wxDIR=%wxDIR%" > "%OCPN_Dir%\buildwin\configdev.bat"
 @echo set "wxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
 @echo set "wxWidgets_LIB_DIR=%wxWidgets_LIB_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
 @echo set "VCver=%VCver%" >> "%OCPN_DIR%\buildwin\configdev.bat"
@@ -316,17 +316,14 @@ if [%ocpn_debug%]==[1] (^
   if not exist "%OCPN_DIR%\build\Debug\plugins" (mkdir "%OCPN_DIR%\build\Debug\plugins")
   )
 if [%ocpn_release%]==[1] (^
-::  call "%OCPN_DIR%\buildwin\docopyAll.bat" Release
   if not exist "%OCPN_DIR%\build\Release" (mkdir "%OCPN_DIR%\build\Release")
   if not exist "%OCPN_DIR%\build\Release\plugins" (mkdir "%OCPN_DIR%\build\Release\plugins")
   )
 if [%ocpn_relwithdebinfo%]==[1] (^
-::  call "%OCPN_DIR%\buildwin\docopyAll.bat" RelWithDebInfo
   if not exist "%OCPN_DIR%\build\RelWithDebInfo" (mkdir "%OCPN_DIR%\build\RelWithDebInfo")
   if not exist "%OCPN_DIR%\build\RelWithDebInfo\plugins" (mkdir "%OCPN_DIR%\build\RelWithDebInfo\plugins")
   )
 if [%ocpn_minsizerel%]==[1] (^
-::  call "%OCPN_DIR%\buildwin\docopyAll.bat" MinSizeRel
   if not exist "%OCPN_DIR%\build\MinSizeRel" (mkdir "%OCPN_DIR%\build\MinSizeRel")
   if not exist "%OCPN_DIR%\build\MinSizeRel\plugins" (mkdir "%OCPN_DIR%\build\MinSizeRel\plugins")
   )
@@ -348,8 +345,7 @@ cd %OCPN_DIR%
 set "_addpath=%OCPN_DIR%\build\%nsis%\NSIS\;%OCPN_DIR%\build\%nsis%\NSIS\bin\"
 set "_addpath=%_addpath%;%OCPN_DIR%\build\%gettext%\tools\bin\"
 @echo path^|find /i "%_addpath%"    ^>nul ^|^| set "path=%path%;%_addpath%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@set _addpath=
-:: @echo cd "%OCPN_DIR%\build" >> "%OCPN_DIR%\buildwin\configdev.bat"
+set _addpath=
 endlocal
 ::-------------------------------------------------------------
 :: Setup environment
