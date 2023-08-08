@@ -145,8 +145,6 @@ std::string PluginLoader::GetPluginVersion(
         v_major, v_minor, p->GetPlugInVersionPatch(), p->GetPlugInVersionPost(),
         p->GetPlugInVersionPre(), p->GetPlugInVersionBuild());
     return v.to_string() + import_suffix;
-  } else if (metadata.version != "") {
-    return metadata.version + import_suffix;
   } else {
     return SemanticVersion(v_major, v_minor, -1).to_string() + import_suffix;
   }
