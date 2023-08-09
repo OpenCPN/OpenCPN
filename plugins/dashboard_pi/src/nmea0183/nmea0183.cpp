@@ -221,12 +221,16 @@ bool NMEA0183::IsGood( void ) const
 //   ASSERT_VALID( this );
 
    /*
-   ** NMEA 0183 sentences begin with $ and and with CR LF
+   ** NMEA 0183 sentences begin with $, includes * and with CR LF
    */
 
    if ( sentence.Sentence[ 0 ] != '$' )
    {
       return( FALSE );
+   }
+
+   if (!sentence.Sentence.Contains('*')) {
+      return (FALSE);
    }
 
    /*
