@@ -116,6 +116,26 @@ static bool IsSystemPluginName(const std::string& name) {
   return found != kPlugins.end();
 }
 
+/** Return version string from installation or as fallback API data */
+static std::string GetInstalledVersion(const PlugInData& pd) {
+  std::string path =
+      PluginHandler::versionPath(pd.m_common_name.ToStdString());
+  if (path == "" || !wxFileName::IsFileReadable(path)) {
+    auto loader = PluginLoader::getInstance();
+    auto pic = GetContainer(pd, *loader->GetPlugInArray());
+    if (!pic || !pic->m_pplugin) {
+      return SemanticVersion(0, 0, -1).to_string();
+    }
+    int v_major = pic->m_pplugin->GetPlugInVersionMajor();
+    int v_minor = pic->m_pplugin->GetPlugInVersionMinor();
+    return SemanticVersion(v_major, v_minor, -1).to_string();
+  }
+  std::ifstream stream;
+  std::string version;
+  stream.open(path, std::ifstream::in);
+  stream >> version;
+  return version;
+}
 
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
@@ -141,12 +161,13 @@ std::string PluginLoader::GetPluginVersion(
   auto p = dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
   if (p) {
     // New style plugin, trust version available in the API.
-    auto v = SemanticVersion(
+    auto sv = SemanticVersion(
         v_major, v_minor, p->GetPlugInVersionPatch(), p->GetPlugInVersionPost(),
         p->GetPlugInVersionPre(), p->GetPlugInVersionBuild());
-    return v.to_string() + import_suffix;
+    return sv.to_string() + import_suffix;
   } else {
-    return SemanticVersion(v_major, v_minor, -1).to_string() + import_suffix;
+    std::string version = GetInstalledVersion(pd);
+    return version + import_suffix;
   }
 }
 
