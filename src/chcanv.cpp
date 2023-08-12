@@ -8253,9 +8253,12 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_pRoutePointEditTarget) {
           m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
           m_pRoutePointEditTarget->m_bPtIsSelected = false;
-          wxRect wp_rect;
-          RoutePointGui(*m_pRoutePointEditTarget).CalculateDCRect(m_dc_route, this, &wp_rect);
-          RefreshRect(wp_rect, true);
+          if (!g_bopengl) {
+            wxRect wp_rect;
+            RoutePointGui(*m_pRoutePointEditTarget)
+                .CalculateDCRect(m_dc_route, this, &wp_rect);
+            RefreshRect(wp_rect, true);
+          }
           m_pRoutePointEditTarget = NULL;
         }
         m_bRouteEditing = true;
@@ -9219,10 +9222,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             pConfig->UpdateWayPoint(m_pRoutePointEditTarget);
           undo->AfterUndoableAction(m_pRoutePointEditTarget);
           m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
-          wxRect wp_rect;
-          RoutePointGui(*m_pRoutePointEditTarget).CalculateDCRect(m_dc_route, this, &wp_rect);
-          m_pRoutePointEditTarget->m_bPtIsSelected = false;
-          RefreshRect(wp_rect, true);
+          if (!g_bopengl) {
+            wxRect wp_rect;
+            RoutePointGui(*m_pRoutePointEditTarget)
+                .CalculateDCRect(m_dc_route, this, &wp_rect);
+            m_pRoutePointEditTarget->m_bPtIsSelected = false;
+            RefreshRect(wp_rect, true);
+          }
         }
         m_pRoutePointEditTarget = NULL;
         m_bMarkEditing = false;

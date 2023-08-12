@@ -1891,7 +1891,14 @@ void ocpnDC::GLDrawBlendData(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 
 void ocpnDC::SetVP(ViewPort vp){
   m_vp = vp;
+
+  // If not in DC mode, simply return
+  if (!m_glchartCanvas && !m_glchartCanvas)
+      return;
+
+  // Otherwise, prepare local shaders
   m_vp.SetVPTransformMatrix();
+
   BuildShaders();
 
   // Program the matrix transforms for the several private shaders
