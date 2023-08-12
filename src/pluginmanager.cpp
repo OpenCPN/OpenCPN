@@ -4669,6 +4669,10 @@ void PluginPanel::SetSelected(bool selected) {
         break;
     }
     SetActionLabel(label);
+    const auto plugin_name = m_plugin.m_common_name.ToStdString();
+    if (ocpn::exists(PluginHandler::ImportedMetadataPath(plugin_name))) {
+       m_pButtonAction->Hide();
+    }
 
     Layout();
   } else {
