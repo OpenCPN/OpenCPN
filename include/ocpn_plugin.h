@@ -592,9 +592,13 @@ public:
   /// \param priority Priority, plugins only upgrading from older API versions
   ///        should draw only when priority is OVERLAY_LEGACY (0)
   /// \return true if overlay was rendered, false otherwise
-  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
-                                          PlugIn_ViewPort *vp, int canvasIndex,
-                                          int priority = -1);
+  bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
+                                  int canvasIndex, int priority);
+
+  bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
+                                  int canvas_ix) override {
+    return RenderGLOverlayMultiCanvas(pcontext, vp, canvas_ix, -1); }
+
   using opencpn_plugin_116::RenderOverlayMultiCanvas;
   /// Render plugin overlay over chart canvas in non-OpenGL mode
   ///
@@ -604,8 +608,11 @@ public:
   /// \param priority Priority, plugins only upgrading from older API versions
   /// should draw only when priority is OVERLAY_LEGACY (0)
   /// \return true if overlay was rendered, false otherwise
-  virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
-                                        int canvasIndex, int priority = -1);
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvas_ix,
+                                int priority);
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                int canvas_ix) override {
+    return RenderOverlayMultiCanvas(dc, vp, canvas_ix, -1); }
 };
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
