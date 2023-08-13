@@ -53,8 +53,7 @@ public:
 
   DbusRaise() {
     bool_result0 = false;
-    DbusServer dbus_server(0);
-    dbus_server.Serve();
+    DbusServer& dbus_server = DbusServer::GetInstance();
     ObsListener obs_listener(dbus_server.on_raise);
 
     constexpr const char* const kDbusSendCmd =
@@ -88,8 +87,7 @@ public:
 
   DbusQuit() {
     bool_result0 = false;
-    DbusServer dbus_server(0);
-    dbus_server.Serve();
+    DbusServer& dbus_server = DbusServer::GetInstance();
     ObsListener listener(dbus_server);
     constexpr const char* const kDbusSendCmd =
        "dbus-send --type=method_call --dest=org.opencpn.OpenCPN --print-reply"
@@ -108,9 +106,9 @@ public:
 };
 
 TEST(DbusServer, Ping) {
-  auto main_loop = g_main_loop_new(0, false);
-  DbusServer dbus_server(main_loop);
-  std::thread main_loop_thread(g_main_loop_run, main_loop);
+  auto  main_loop = g_main_loop_new(0, false);
+  std::thread t(g_main_loop_run, main_loop);
+  DbusServer& dbus_server = DbusServer::GetInstance();
 
   constexpr const char* const kDbusSendCmd =
      "dbus-send --type=method_call --print-reply --dest=org.opencpn.OpenCPN"
@@ -135,11 +133,14 @@ TEST(DbusServer, Ping) {
   EXPECT_EQ(words[1], "true");
 
   pclose(f);
+  g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
-  main_loop_thread.join();
+  t.join();
 }
 
 TEST(DbusServer, Raise) {
+  auto  main_loop = g_main_loop_new(0, false);
+  std::thread t(g_main_loop_run, main_loop);
   auto logfile = std::string(CMAKE_BINARY_DIR) + "/unittests.log";
   wxLog::SetActiveTarget(new OcpnLog(logfile.c_str()));
   wxLog::SetLogLevel(wxLOG_Debug);
@@ -150,21 +151,30 @@ TEST(DbusServer, Raise) {
   DbusRaise dbus_raise;
   std::this_thread::sleep_for(100ms);
   EXPECT_TRUE(bool_result0);
+  g_main_loop_unref(main_loop);
+  g_main_loop_quit(main_loop);
+  t.join();
 }
 
 TEST(DbusServer, Quit) {
+  auto  main_loop = g_main_loop_new(0, false);
+  std::thread t(g_main_loop_run, main_loop);
   bool_result0 = false;
   DbusQuit dbus_quit;
   std::this_thread::sleep_for(100ms);
   EXPECT_TRUE(bool_result0);
+  g_main_loop_unref(main_loop);
+  g_main_loop_quit(main_loop);
+  t.join();
 }
 
 TEST(DbusServer, Open) {
   s_result = "";
   bool_result0 = false;
+  auto  main_loop = g_main_loop_new(0, false);
+  std::thread t(g_main_loop_run, main_loop);
 
-  DbusServer dbus_server(0);
-  dbus_server.Serve();
+  DbusServer& dbus_server = DbusServer::GetInstance();
   dbus_server.open_file_cb = [](const std::string& s) {
       s_result = s;
       bool_result0 = true;
@@ -191,14 +201,20 @@ TEST(DbusServer, Open) {
   std::this_thread::sleep_for(100ms);
   EXPECT_EQ(s_result, "/foo/bar.gpx");
   EXPECT_TRUE(bool_result0);
+
+  g_main_loop_unref(main_loop);
+  g_main_loop_quit(main_loop);
+  t.join();
 }
 
 TEST(DbusServer, GetRestEndpoint) {
   s_result = "";
   bool_result0 = false;
+  auto  main_loop = g_main_loop_new(0, false);
+  std::thread t(g_main_loop_run, main_loop);
 
-  DbusServer dbus_server(0);
-  dbus_server.Serve();
+  DbusServer& dbus_server = DbusServer::GetInstance();
+
   dbus_server.get_rest_api_endpoint_cb = []() { return "2.2.2.2/3333"; };
 
   constexpr const char* const kDbusSendCmd =
@@ -218,16 +234,24 @@ TEST(DbusServer, GetRestEndpoint) {
 
   int r = pclose(f);
   EXPECT_EQ(r, 0);
+
+  g_main_loop_unref(main_loop);
+  g_main_loop_quit(main_loop);
+  t.join();
 }
 
 TEST(Instance, DbusServer) {
-  DbusServer dbus_server1(0);
-  dbus_server1.Serve();
-  DbusServer dbus_server2(0);
-  dbus_server2.Serve();
-  std::this_thread::sleep_for(10ms);
+  auto  main_loop = g_main_loop_new(0, false);
+  std::thread t(g_main_loop_run, main_loop);
+  DbusServer& dbus_server1 = DbusServer::GetInstance();
+  DbusServer* dbus_server2 = DbusServer::GetInstance().UnitTestInstance();
+  dbus_server1.WaitUntilValid();
   EXPECT_TRUE(dbus_server1.IsMainInstance());
-  EXPECT_FALSE(dbus_server2.IsMainInstance());
+  EXPECT_FALSE(dbus_server2->IsMainInstance());
+  g_main_loop_unref(main_loop);
+  g_main_loop_quit(main_loop);
+  t.join();
+
 }
 
 TEST(DbusClient, Raise) {

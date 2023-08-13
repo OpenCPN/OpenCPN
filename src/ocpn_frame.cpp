@@ -4916,6 +4916,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     }
 
     case 5: {
+      // FIXME (leamas) Remove, delegate to CmdlineClient ctor
       if (!g_params.empty()) {
         for (size_t n = 0; n < g_params.size(); n++) {
           wxString path = g_params[n];

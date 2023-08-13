@@ -67,11 +67,11 @@ bool g_btouch;
 class IpcServerTest : public wxAppConsole {
 public:
   int OnRun() override {
-    IpcServerFactory server_factory(GetSocketPath());
-    TestRaise(server_factory);
-    TestQuit(server_factory);
-    TestGetRestApiEndpoint(server_factory);
-    TestOpenFile(server_factory);
+    IpcServer server(GetSocketPath());
+    TestRaise(server);
+    TestQuit(server);
+    TestGetRestApiEndpoint(server);
+    TestOpenFile(server);
     return 0;
   }
 
@@ -111,9 +111,9 @@ private:
     return path.GetFullPath().ToStdString();
   }
 
-  void TestRaise(IpcServerFactory& server_factory) {
+  void TestRaise(IpcServer& server) {
     int result0 = 5;
-    ObsListener listener(server_factory.on_raise,
+    ObsListener listener(server.on_raise,
                          [&result0]() { result0 = 17; });
     auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/ipc-client raise";
     FILE* stream = popen(cmd.c_str(), "r");
@@ -130,9 +130,9 @@ private:
     EXPECT_EQ(pclose(stream), 0);
   }
 
-  void TestQuit(IpcServerFactory& server_factory) {
+  void TestQuit(IpcServer& server) {
     int result0 = 7;
-    ObsListener listener(server_factory.on_quit,
+    ObsListener listener(server.on_quit,
                          [&result0]() { result0 = 13; });
     auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/ipc-client quit";
     FILE* stream = popen(cmd.c_str(), "r");
@@ -149,8 +149,8 @@ private:
     EXPECT_EQ(pclose(stream), 0);
   }
 
-  void TestGetRestApiEndpoint(IpcServerFactory& server_factory) {
-    server_factory.SetGetRestApiEndpointCb([]() { return "1.2.3.4/22"; });
+  void TestGetRestApiEndpoint(IpcServer& server) {
+    server.SetGetRestApiEndpointCb([]() { return "1.2.3.4/22"; });
     auto cmd =
         std::string(CMAKE_BINARY_DIR) + "/test/ipc-client get_rest_endpoint";
     FILE* stream = popen(cmd.c_str(), "r");
@@ -169,8 +169,8 @@ private:
     EXPECT_EQ(pclose(stream), 0);
   }
 
-  void TestOpenFile(IpcServerFactory& server_factory) {
-    server_factory.open_file_cb = [](const std::string&) { return false; };
+  void TestOpenFile(IpcServer& server) {
+    server.open_file_cb = [](const std::string&) { return false; };
     auto cmd =
         std::string(CMAKE_BINARY_DIR) + "/test/ipc-client open foobar.txt";
     FILE* stream = popen(cmd.c_str(), "r");

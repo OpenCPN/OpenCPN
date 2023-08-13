@@ -1,16 +1,20 @@
 #include "config.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <thread>
 
-#include <wx/event.h>
+
 #include <wx/app.h>
+#include <wx/event.h>
+#include <wx/evtloop.h>
 #include <wx/fileconf.h>
 #include <wx/jsonval.h>
+#include <wx/timer.h>
 
 #include <gtest/gtest.h>
 
@@ -24,13 +28,18 @@
 #include "comm_drv_registry.h"
 #include "comm_navmsg_bus.h"
 #include "config_vars.h"
+#include "ipc_api.h"
+#include "logger.h"
 #include "observable_confvar.h"
-#include "ocpn_types.h"
 #include "ocpn_plugin.h"
+#include "ocpn_types.h"
+#include "ocpn_utils.h"
 #include "own_ship.h"
 #include "S57ClassRegistrar.h"
 #include "routeman.h"
 #include "select.h"
+#include "std_instance_chk.h"
+#include "wx_instance_chk.h"
 
 namespace fs = std::filesystem;
 
@@ -132,6 +141,7 @@ std::string s_result2;
 std::string s_result3;
 
 int int_result0;
+bool bool_result0;
 
 NavAddr::Bus s_bus;
 AppMsg::Type s_apptype;
@@ -145,6 +155,16 @@ static void ConfigSetup() {
   std::remove(config_path.string().c_str());
   fs::copy(config_orig, config_path);
   InitBaseConfig(new wxFileConfig("", "", config_path.string()));
+}
+
+void EnsureHomedir() {
+#ifdef _MSC_VER
+  wxFileName path("/ProgramData/opencpn/");
+#else
+  wxFileName path("~/.opencpn");
+  path.Normalize(wxPATH_NORM_TILDE);
+#endif
+  if (!path.DirExists()) path.Mkdir();
 }
 
 class MsgCliApp : public wxAppConsole {
@@ -459,6 +479,49 @@ public:
   }
 };
 
+#ifdef HAVE_UNISTD_H
+class WxInstanceChk : public wxAppConsole {
+  public:
+    WxInstanceChk() {
+      SetAppName("opencpn");
+      g_BasePlatform = new BasePlatform();
+      auto cmd = std::string(CMAKE_BINARY_DIR) +  "/test/wx-instance";
+      auto stream = popen(cmd.c_str(), "w");
+      std::this_thread::sleep_for(200ms);    // Random time to catch up w IO
+      WxInstanceCheck check1;
+      EXPECT_FALSE(check1.IsMainInstance());
+      fputs("foobar\n", stream);
+      pclose(stream);
+      std::this_thread::sleep_for(200ms);
+      WxInstanceCheck check2;
+      EXPECT_TRUE(check2.IsMainInstance());
+    }
+};
+
+class StdInstanceTest : public wxAppConsole {
+  public:
+    StdInstanceTest() {
+      SetAppName("opencpn");
+      g_BasePlatform = new BasePlatform();
+      auto cmd = std::string(CMAKE_BINARY_DIR) +  "/test/std-instance";
+      auto stream = popen(cmd.c_str(), "w");
+      std::this_thread::sleep_for(200ms);
+      StdInstanceCheck check1;
+      EXPECT_FALSE(check1.IsMainInstance());
+      fputs("foobar\n", stream);
+      pclose(stream);
+      std::this_thread::sleep_for(200ms);
+      StdInstanceCheck check2;
+      EXPECT_TRUE(check2.IsMainInstance());
+    }
+};
+#endif
+
+
+static void UpdateBool0() {
+    bool_result0 = true;
+};
+
 class SillyDriver : public AbstractCommDriver {
 public:
   SillyDriver() : AbstractCommDriver(NavAddr::Bus::TestBus, "silly") {}
@@ -492,6 +555,68 @@ public:
   /** Handle driver status change. */
   virtual void Notify(const AbstractCommDriver& driver) {}
 };
+
+#ifdef __unix__
+class IpcClientTest : public wxAppConsole {
+public:
+   IpcClientTest() {
+    std::string server_cmd(CMAKE_BINARY_DIR);
+    server_cmd += "/test/cli-server";
+    stream = popen(server_cmd.c_str(), "r");
+    std::this_thread::sleep_for(25ms);    // Need some time to start server
+    char buff[1024];
+    char* line = fgets(buff, sizeof(buff), stream);   // initial line, throw.
+    EXPECT_TRUE(line);
+  }
+  static std::string GetSocketPath() {
+    wxFileName path("~/.opencpn", "opencpn-ipc");
+    path.Normalize(wxPATH_NORM_TILDE);
+    return path.GetFullPath().ToStdString();
+  }
+protected:
+  FILE* stream;
+};
+
+class CliRaise : public IpcClientTest {
+public:
+  CliRaise() : IpcClientTest() {
+    IpcClient client(IpcClientTest::GetSocketPath());
+    auto result = client.SendRaise();
+    char buff[1024];
+    char* line = fgets(buff, sizeof(buff), stream);
+    EXPECT_TRUE(line);
+    EXPECT_EQ(ocpn::trim(std::string(line)), "raise");
+
+    EXPECT_TRUE(result.first);
+    EXPECT_EQ(result.second.size(), 0);
+    EXPECT_EQ(pclose(stream), 0);
+  }
+};
+
+class IpcGetEndpoint : public IpcClientTest {
+public:
+  IpcGetEndpoint() {
+    IpcClient client(IpcClientTest::GetSocketPath());
+    auto result = client.GetRestEndpoint();
+
+    EXPECT_TRUE(result.first);
+    EXPECT_EQ(result.second, "0.0.0.0/api");
+    EXPECT_EQ(pclose(stream), 0);
+  }
+};
+
+class IpcOpen : public IpcClientTest {
+public:
+  IpcOpen() {
+    IpcClient client(IpcClientTest::GetSocketPath());
+    auto result = client.SendOpen("/foo/bar");
+
+    EXPECT_TRUE(result.first);
+    EXPECT_EQ(result.second, "/foo/bar");
+    EXPECT_EQ(pclose(stream), 0);
+  }
+};
+#endif  // __unix__
 
 TEST(Messaging, ObservableMsg) {
   wxLog::SetActiveTarget(&defaultLog);
@@ -693,12 +818,12 @@ TEST(Priority, Framework) {
 
   wxLog::SetActiveTarget(&defaultLog);
   PriorityApp app("stupan.se-10112-tcp.log.input");
+
   EXPECT_NEAR(gLat, 57.6460, 0.001);
   EXPECT_NEAR(gLon, 11.7130, 0.001);
 }
 
 TEST(Priority, DifferentSource) {
-  wxLog::SetActiveTarget(&defaultLog);
   const char* const GPGGA_1 =
     "$GPGGA,092212,5759.097,N,01144.345,E,1,06,1.9,3.5,M,39.4,M,,*4C";
   const char* const GPGGA_2 =
@@ -717,6 +842,13 @@ TEST(AIS, Decoding) {
 }
 
 TEST(AIS, AISVDO) {
+  wxInitializer initializer;
+  if (!initializer) {
+    std::cerr << "Failed to initialize the wxWidgets library, aborting.";
+    exit(1);
+  }
+  BasePlatform platform;
+  InitBaseConfig(new wxFileConfig("", "", platform.GetConfigFileName()));
   wxLog::SetActiveTarget(&defaultLog);
   const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
   int MMSI = 123456;
@@ -727,6 +859,13 @@ TEST(AIS, AISVDO) {
 }
 
 TEST(AIS, AISVDM) {
+  wxInitializer initializer;
+  if (!initializer) {
+    std::cerr << "Failed to initialize the wxWidgets library, aborting.";
+    exit(1);
+  }
+  BasePlatform platform;
+  InitBaseConfig(new wxFileConfig("", "", platform.GetConfigFileName()));
   const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
   int MMSI = 338781000;
 
@@ -764,3 +903,31 @@ TEST(PluginApi, SignalK) {
   EXPECT_EQ(wxString("bar value"), msg.ItemAt("Data").ItemAt("bar").AsString());
   EXPECT_EQ(1, msg.ItemAt("Data").ItemAt("list").ItemAt(0).AsInt());
 }
+
+#ifdef HAVE_UNISTD_H
+TEST(Instance, StdInstanceChk) {
+  EnsureHomedir();
+  StdInstanceTest check;
+}
+#endif
+
+TEST(Instance, WxInstanceChk) {
+  WxInstanceChk check;
+}
+
+#if !defined(FLATPAK) && defined(__unix__)
+TEST(IpcClient, IpcGetEndpoint) {
+  EnsureHomedir();
+  IpcGetEndpoint run_test;
+}
+
+TEST(IpcClient, Raise) {
+  EnsureHomedir();
+  CliRaise run_test;
+}
+
+TEST(IpcClient, Open) {
+  EnsureHomedir();
+  IpcOpen run_test;
+}
+#endif

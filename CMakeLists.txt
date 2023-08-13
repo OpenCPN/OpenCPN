@@ -856,37 +856,51 @@ set(
   MODEL_HDRS
   include/ais_bitstring.h
   include/ais_decoder.h
+  include/ais.h
+  include/ais_info_gui.h
+  include/AISTargetAlertDialog.h
   include/ais_target_data.h
+  include/AISTargetListDialog.h
+  include/AISTargetQueryDialog.h
+  include/atomic_queue.h
   include/base_platform.h
   include/catalog_handler.h
   include/catalog_parser.h
+  include/cat_settings.h
+  include/chart_ctx_factory.h
   include/chartdata_input_stream.h
+  include/chartdb.h
+  include/chartdbs.h
+  include/chartimg.h
+  include/chcanv.h
+  include/ChInfoWin.h
   include/cli_platform.h
+  include/color_handler.h
   include/comm_ais.h
   include/comm_appmsg.h
   include/comm_bridge.h
   include/comm_driver.h
-  include/comm_drv_n0183.h
+  include/comm_drv_factory.h
+  include/comm_drv_file.h
   include/comm_drv_n0183_android_bt.h
   include/comm_drv_n0183_android_int.h
+  include/comm_drv_n0183.h
   include/comm_drv_n0183_net.h
   include/comm_drv_n0183_serial.h
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
-  include/comm_drv_signalk_net.h
   include/comm_drv_registry.h
-  include/comm_drv_factory.h
-  include/comm_drv_file.h
+  include/comm_drv_signalk_net.h
   include/comm_n0183_output.h
-  include/comm_navmsg.h
   include/comm_navmsg_bus.h
+  include/comm_navmsg.h
   include/comm_util.h
   include/comm_vars.h
   include/config_vars.h
   include/conn_params.h
   include/cutil.h
-  include/dsPortType.h
   include/downloader.h
+  include/dsPortType.h
   include/garmin_protocol_mgr.h
   include/garmin_wrapper.h
   include/geodesic.h
@@ -927,18 +941,18 @@ set(
   include/AboutFrameImpl.h
   include/about.h
   include/ais.h
+  include/ais_info_gui.h
   include/AISTargetAlertDialog.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
-  include/ais_info_gui.h
   include/atomic_queue.h
   include/canvasMenu.h
   include/catalog_mgr.h
   include/cat_settings.h
+  include/chart_ctx_factory.h
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
-  include/chart_ctx_factory.h
   include/chcanv.h
   include/ChInfoWin.h
   include/color_handler.h
@@ -951,24 +965,38 @@ set(
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
+  include/garmin_protocol_mgr.h
+  include/garmin_wrapper.h
+  include/geodesic.h
+  include/georef.h
   include/GoToPositionDialog.h
-  include/gui_lib.h
   include/gshhs.h
+  include/gui_lib.h
+  include/hyperlink.h
+  include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
+  include/instance_check.h
+  include/ipc_api.h
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
   include/load_errors_dlg.h
-  include/meteo_points.h
+  include/local_api.h
+  include/logger.h
   include/MarkInfo.h
   include/mbtiles.h
+  include/meteo_points.h
+  include/multiplexer.h
   include/n0183_ctx_factory.h
+  include/nav_object_database.h
+  include/navutil_base.h
   include/navutil.h
+  include/nmea_ctx_factory.h
   include/NMEALogWindow.h
   include/ocpCursor.h
-  include/ocpn_frame.h
   include/ocpndc.h
+  include/ocpn_frame.h
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
   include/OCPNPlatform.h
@@ -976,7 +1004,15 @@ set(
   include/OCPNRegion.h
   include/options.h
   include/piano.h
+  include/pincode.h
+  include/plugin_blacklist.h
+  include/plugin_cache.h
+  include/plugin_handler.h
+  include/plugin_loader.h
   include/pluginmanager.h
+  include/pluginmanager.h
+  include/plugin_paths.h
+  include/position_parser.h
   include/printtable.h
   include/priority_gui.h
   include/Quilt.h
@@ -986,8 +1022,9 @@ set(
   include/route_gui.h
   include/routemanagerdialog.h
   include/routeman_gui.h
-  include/route_point.h
+  include/routeman.h
   include/route_point_gui.h
+  include/route_point.h
   include/routeprintout.h
   include/RoutePropDlg.h
   include/RoutePropDlgImpl.h
@@ -1016,6 +1053,7 @@ set(
   include/timers.h
   include/toolbar.h
   include/track_gui.h
+  include/track.h
   include/trackprintout.h
   include/TrackPropDlg.h
   include/TTYScroll.h
@@ -1023,9 +1061,11 @@ set(
   include/undo.h
   include/update_mgr.h
   include/usb_devices.h
-  include/waypointman_gui.h
   include/viewport.h
+  include/waypointman_gui.h
   include/WindowDestroyListener.h
+  include/WindowDestroyListener.h
+  include/wx_instance_chk.h
 )
 
 
@@ -1065,11 +1105,15 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
+  ${CMAKE_SOURCE_DIR}/src/instance_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
   ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
   ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
+  ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
+  ${CMAKE_SOURCE_DIR}/src/ipc_factories.cpp
+  ${CMAKE_SOURCE_DIR}/src/local_api.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/multiplexer.cpp
   ${CMAKE_SOURCE_DIR}/src/nav_object_database.cpp
@@ -1100,6 +1144,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
   ${CMAKE_SOURCE_DIR}/src/ser_ports.cpp
   ${CMAKE_SOURCE_DIR}/src/track.cpp
+  ${CMAKE_SOURCE_DIR}/src/wx_instance_chk.cpp
 )
 
 set(
@@ -1217,11 +1262,20 @@ set(
 if (LINUX)
   list(APPEND MODEL_HDRS include/comm_drv_n2k_socketcan.h )
   list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
+  list(APPEND HDRS
+    include/dbus_client.h
+    include/dbus_server.h
+    include/dbus_instance_check.h
+  )
+  list(APPEND MODEL_SRC
+    ${CMAKE_SOURCE_DIR}/src/dbus_server.cpp
+    ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
+  )
 endif ()
 
 set(GUI_HDRS ${GUI_HDRS} include/shaders.h)
 set(GUI_SRC ${GUI_SRC} src/shaders.cpp)
-
+ 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
@@ -1231,6 +1285,11 @@ endif ()
 if (LINUX)
   list(APPEND GUI_SRC src/linux_devices.cpp src/udev_rule_mgr.cpp)
   list(APPEND GUI_HDRS include/linux_devices.h include/udev_rule_mgr.h)
+endif ()
+
+if (UNIX)
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/std_instance_chk.cpp)
+  list(APPEND HDRS include/std_instance_chk.h)
 endif ()
 
 if (APPLE)
@@ -1371,6 +1430,13 @@ if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
   if (PANGO_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
     set(HAVE_PANGO 1)
+  endif ()
+endif ()
+
+if (LINUX)
+  find_package(GLIB COMPONENTS gio gobject)
+  if (GLIB_FOUND)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE glib::glib)
   endif ()
 endif ()
 
@@ -1974,10 +2040,16 @@ if (OCPN_BUILD_TEST)
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
   add_custom_target(run-tests
-    COMMAND ctest  -C $<CONFIG> -E tests
+    COMMAND ctest  -C $<CONFIG> -E tests --timeout 10
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
   )
   add_dependencies(run-tests tests)
+  if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
+    add_dependencies(run-tests ipc-srv-tests)
+  endif ()
+  if (LINUX)
+    add_dependencies(run-tests dbus_tests)
+  endif ()
 else ()
   add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
 endif ()
@@ -2068,8 +2140,8 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
 add_subdirectory("libs/easywsclient")
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::easywsclient)
 
-add_subdirectory("libs/wxservdisc")
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
+##add_subdirectory("libs/wxservdisc")
+####target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
 
 if (APPLE)
   set_source_files_properties(
@@ -3265,6 +3337,9 @@ if (NOT QT_ANDROID)
   if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
     target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
     target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
+  endif ()
+  if (TARGET glib::glib)
+    target_link_libraries(opencpn-cmd PRIVATE glib::glib)
   endif ()
   target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
 
