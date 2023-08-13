@@ -8716,7 +8716,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       if (b_start_rollover)
         m_RolloverPopupTimer.Start(m_rollover_popup_timer_msec,
                                    wxTIMER_ONE_SHOT);
-      Route *tail, *current;
+      Route *tail = 0, *current;
       bool appending = false;
       bool inserting = false;
       int connect = 0;
