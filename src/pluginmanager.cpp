@@ -1449,26 +1449,32 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
               (m_cached_overlay_bm.GetHeight() != vp.pix_height))
             m_cached_overlay_bm.Create(vp.pix_width, vp.pix_height, -1);
 
-          wxMemoryDC mdc;
-          mdc.SelectObject(m_cached_overlay_bm);
-          mdc.SetBackground(*wxBLACK_BRUSH);
-          mdc.Clear();
+          wxMemoryDC memory_dc;
+          memory_dc.SelectObject(m_cached_overlay_bm);
+          memory_dc.SetBackground(*wxBLACK_BRUSH);
+          memory_dc.Clear();
+          auto mdc = static_cast<wxDC*>(&memory_dc);
 
           bool b_rendered = false;
+
+          if (pic->m_api_version < 116) {
+            WARNING_LOG << "Using RenderOverlay on outdated API < 1.16, "
+              << " plugin " << pic->m_common_name << " needs to be updated";
+          }
 
           switch (pic->m_api_version) {
             case 106: {
               if (priority > 0) break;
               opencpn_plugin_16* ppi =
                   dynamic_cast<opencpn_plugin_16*>(pic->m_pplugin);
-              if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
+              if (ppi) b_rendered = ppi->RenderOverlay(*mdc, &pivp);
               break;
             }
             case 107: {
               if (priority > 0) break;
               opencpn_plugin_17* ppi =
                   dynamic_cast<opencpn_plugin_17*>(pic->m_pplugin);
-              if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
+              if (ppi) b_rendered = ppi->RenderOverlay(*mdc, &pivp);
               break;
             }
             case 108:
@@ -1516,12 +1522,12 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
               break;
             }
             default: {
-              b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
+              b_rendered = pic->m_pplugin->RenderOverlay(*pdc, &pivp);
               break;
             }
           }
 
-          mdc.SelectObject(wxNullBitmap);
+          memory_dc.SelectObject(wxNullBitmap);
 
           if (b_rendered) {
             wxMask* p_msk = new wxMask(m_cached_overlay_bm, wxColour(0, 0, 0));

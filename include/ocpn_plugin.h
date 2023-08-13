@@ -424,7 +424,7 @@ public:
 
   virtual void ShowPreferencesDialog(wxWindow *parent);
 
-  virtual bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
+  virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   virtual void SetCursorLatLon(double lat, double lon);
   virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
@@ -459,7 +459,7 @@ public:
   using opencpn_plugin::RenderOverlay;
   virtual ~opencpn_plugin_16();
 
-  virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
 
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
 };
@@ -470,7 +470,7 @@ public:
   virtual ~opencpn_plugin_17();
 
   using opencpn_plugin::RenderOverlay;
-  virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
@@ -481,7 +481,7 @@ public:
   opencpn_plugin_18(void *pmgr);
   virtual ~opencpn_plugin_18();
   using opencpn_plugin::RenderOverlay;
-  virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
   virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
