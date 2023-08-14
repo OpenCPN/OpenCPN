@@ -126,7 +126,7 @@ void opencpn_plugin::OnToolbarToolCallback(int id) {}
 
 void opencpn_plugin::OnContextMenuItemCallback(int id) {}
 
-bool opencpn_plugin::RenderOverlay(wxDC& dc, PlugIn_ViewPort* vp) {
+bool opencpn_plugin::RenderOverlay(wxMemoryDC* dc, PlugIn_ViewPort* vp) {
   return false;
 }
 
