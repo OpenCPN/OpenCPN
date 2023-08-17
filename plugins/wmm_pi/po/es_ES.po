@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-06-05 01:25\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
@@ -16,47 +16,188 @@ msgstr ""
 "X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
-
-#: src/wmm_pi.cpp:85
-msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
+#
+msgid ""
+"\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic "
+"variation values printed on many raster charts.\n"
+"\n"
 "Variation is the angle between true and magnetic north.\n"
 "Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
-"\t20000 to 66000\n\n"
-"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
-"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
-"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
-msgstr "\n\n"
-"El trazado del Modelo de Magnetismo Mundial permite a los usuarios comprobar las referencias mostradas en muchas de las cartas raster de las desviaciones magnéticas.\n\n\n\n"
-"La Declinación es el ángulo entre el norte verdadero y el magnético.\n\n"
-"La Inclinación es el ángulo vertical del campo magnético.\n\n"
-"\t(+- 90 en los polos magnéticos)\n\n"
-"La Intensidad de Campo es el campo magnético en nano tesla de\n\n"
-"\t20000 a 66000\n\n\n\n"
-"Las líneas dibujadas son similares a un mapa topográfico. El espacio entre ellas puede ser ajustado; a más espacio menos tiempo empleado en cálculos.\n\n\n\n"
-"Los controles deslizantes para tamaño de Paso y Precisión en Polo le permiten controlar los tiempos empleados en cálculos de ordenador.\n\n\n\n"
-"El Plugin del Modelo de Magnetismo Mundial ha sido escrito por Pavel Kalian y ampliado por Sean D'Epagnier para permitir las gráficas."
-
-#: src/wmm_pi.cpp:101
-msgid "WMM Plugin"
-msgstr "WMM Plugin"
-
-#: src/wmm_pi.cpp:162
-msgid "WMM_Live_Overlay"
-msgstr "WMM_Live_Overlay"
-
-#: src/wmm_pi.cpp:219 src/wmm_pi.cpp:288 src/WmmUIDialog.h:84
+"\t20000 to 66000\n"
+"\n"
+"The plotted lines are similar to a topographic map.  The space between them "
+"can be adjusted; more space takes less time to calculate.\n"
+"\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs "
+"computation time.\n"
+"\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by "
+"Sean D'Epagnier to support plotting."
+msgstr ""
+"\n"
+"\n"
+"El trazado del Modelo de Magnetismo Mundial permite a los usuarios comprobar "
+"las referencias mostradas en muchas de las cartas raster de las desviaciones "
+"magnéticas.\n"
+"\n"
+"\n"
+"\n"
+"La Declinación es el ángulo entre el norte verdadero y el magnético.\n"
+"\n"
+"La Inclinación es el ángulo vertical del campo magnético.\n"
+"\n"
+"\t(+- 90 en los polos magnéticos)\n"
+"\n"
+"La Intensidad de Campo es el campo magnético en nano tesla de\n"
+"\n"
+"\t20000 a 66000\n"
+"\n"
+"\n"
+"\n"
+"Las líneas dibujadas son similares a un mapa topográfico. El espacio entre "
+"ellas puede ser ajustado; a más espacio menos tiempo empleado en cálculos.\n"
+"\n"
+"\n"
+"\n"
+"Los controles deslizantes para tamaño de Paso y Precisión en Polo le permiten "
+"controlar los tiempos empleados en cálculos de ordenador.\n"
+"\n"
+"\n"
+"\n"
+"El Plugin del Modelo de Magnetismo Mundial ha sido escrito por Pavel Kalian y "
+"ampliado por Sean D'Epagnier para permitir las gráficas."
+#
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - Inclinación geomagnética"
+#
+msgid "About"
+msgstr "Acerca de"
+#
+msgid "Boat"
+msgstr "Barco"
+#
+msgid "Building Magnetic Map"
+msgstr "Generando mapa magnetismo"
+#
+msgid "Cancel"
+msgstr "Cancelar"
+#
+msgid "Cursor"
+msgstr "Cursor"
+#
+msgid "Degrees"
+msgstr "Grados"
+#
+msgid "East Component"
+msgstr "Componente Este"
+#
+msgid "Enable plot"
+msgstr "Activar dibujo"
+#
+msgid "Error, see log."
+msgstr "Error, ver log"
+#
+msgid "Extended"
+msgstr "Extendida"
+#
+msgid "F "
+msgstr "F "
+#
+msgid "Field Strength"
+msgstr "Intensidad del campo"
+#
+msgid "H "
+msgstr "H "
+#
+msgid "Horizontal Intensity"
+msgstr "Intensidad Horizontal"
+#
+msgid "Incl"
+msgstr "Incl"
+#
+msgid "Inclination"
+msgstr "Inclinación"
+#
+msgid "Magnetic Plot Settings"
+msgstr "Configuración dibujo magnetismo"
+#
+msgid "Magnetic Variation"
+msgstr "Declinación Magnética"
+#
+msgid "Nano Tesla"
+msgstr "Nano Tesla"
+#
+msgid "North Component"
+msgstr "Componente Norte"
+#
+msgid "Plot"
+msgstr "Trazado"
+#
+msgid "Pole Accuracy"
+msgstr "Precisión en el Polo"
+#
+msgid "Save"
+msgstr "Guardar"
+#
+msgid "Settings..."
+msgstr "Configuración..."
+#
+msgid "Show Plot Options"
+msgstr "Opciones para mostrar dibujos"
+#
+msgid "Show also data at cursor position"
+msgstr "Mostrar datos en la posición del cursor"
+#
+msgid "Show data in toolbar icon"
+msgstr "Mostrar datos en Barra de Iconos"
+#
+msgid "Show toolbar icon"
+msgstr "Mostrar icono en la barra"
+#
+msgid "Step Size"
+msgstr "Tamaño del paso"
+#
+msgid "Total Intensity"
+msgstr "Intensidad Total"
+#
+msgid "Vari"
+msgstr "Decli"
+#
+msgid "Variation"
+msgstr "Declinación magnética"
+#
+msgid "Variation only"
+msgstr "Declinación sólo"
+#
+msgid "Vertical Component"
+msgstr "Componente Vertical"
+#
+msgid "View"
+msgstr "Vista"
+#
 msgid "WMM"
 msgstr "WMM"
-
-#: src/wmm_pi.cpp:291
+#
+msgid "WMM Plugin"
+msgstr "WMM Plugin"
+#
+msgid "WMM Preferences"
+msgstr "WMM Preferencias"
+#
+msgid "WMM_Live_Overlay"
+msgstr "WMM_Live_Overlay"
+#
+msgid "Window transparency"
+msgstr "Transparencia de la ventana"
+#
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Plugin Modelo de Magnetismo Mundial para OpenCPN"
-
-#: src/wmm_pi.cpp:296
-msgid "World Magnetic Model PlugIn for OpenCPN\n"
+#
+msgid ""
+"World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
@@ -64,7 +205,8 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr "El Plugin Modelo de Magnetismo Mundial para OpenCPN\n"
+msgstr ""
+"El Plugin Modelo de Magnetismo Mundial para OpenCPN\n"
 "Implementa el Modelo de Magnetismo Mundial de la NOAA\n"
 "Más información en: \n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtm\n"
@@ -72,168 +214,12 @@ msgstr "El Plugin Modelo de Magnetismo Mundial para OpenCPN\n"
 "Despues de esa fecha, si no hay una nueva versión del plugin\n"
 "a tiempo, coja un nuevo archivo WMM.COF de la NOAA y colóquelo\n"
 "en el sitio donde se encuentre el archivo log de OpenCPN."
-
-#: src/wmm_pi.cpp:476 src/wmm_pi.cpp:642
-msgid "Error, see log."
-msgstr "Error, ver log"
-
-#: src/wmm_pi.cpp:925 src/WmmUIDialog.h:114
-msgid "WMM Preferences"
-msgstr "WMM Preferencias"
-
-#: src/wmm_pi.h:85 src/WmmUIDialog.h:154
-msgid "Magnetic Plot Settings"
-msgstr "Configuración dibujo magnetismo"
-
-#: src/WmmUIDialog.cpp:32
-msgid "Boat"
-msgstr "Barco"
-
-#: src/WmmUIDialog.cpp:40 src/WmmUIDialog.cpp:150
-msgid "F "
-msgstr "F "
-
-#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:153
-msgid "Total Intensity"
-msgstr "Intensidad Total"
-
-#: src/WmmUIDialog.cpp:52 src/WmmUIDialog.cpp:162
-msgid "H "
-msgstr "H "
-
-#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:165
-msgid "Horizontal Intensity"
-msgstr "Intensidad Horizontal"
-
-#: src/WmmUIDialog.cpp:64 src/WmmUIDialog.cpp:174
+#
 msgid "X "
 msgstr "X "
-
-#: src/WmmUIDialog.cpp:67 src/WmmUIDialog.cpp:177
-msgid "North Component"
-msgstr "Componente Norte"
-
-#: src/WmmUIDialog.cpp:76 src/WmmUIDialog.cpp:186
+#
 msgid "Y "
 msgstr "Y "
-
-#: src/WmmUIDialog.cpp:79 src/WmmUIDialog.cpp:189
-msgid "East Component"
-msgstr "Componente Este"
-
-#: src/WmmUIDialog.cpp:88 src/WmmUIDialog.cpp:198
+#
 msgid "Z "
 msgstr "Z "
-
-#: src/WmmUIDialog.cpp:91 src/WmmUIDialog.cpp:201
-msgid "Vertical Component"
-msgstr "Componente Vertical"
-
-#: src/WmmUIDialog.cpp:100 src/WmmUIDialog.cpp:210
-msgid "Incl"
-msgstr "Incl"
-
-#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:213
-msgid "(DIP) - Geomagnetic Inclination "
-msgstr "(DIP) - Inclinación geomagnética"
-
-#: src/WmmUIDialog.cpp:121 src/WmmUIDialog.cpp:231
-msgid "Vari"
-msgstr "Decli"
-
-#: src/WmmUIDialog.cpp:124 src/WmmUIDialog.cpp:234
-msgid "Magnetic Variation"
-msgstr "Declinación Magnética"
-
-#: src/WmmUIDialog.cpp:142
-msgid "Cursor"
-msgstr "Cursor"
-
-#: src/WmmUIDialog.cpp:256
-msgid "Plot"
-msgstr "Trazado"
-
-#: src/WmmUIDialog.cpp:265
-msgid "Enable plot"
-msgstr "Activar dibujo"
-
-#: src/WmmUIDialog.cpp:270
-msgid "Settings..."
-msgstr "Configuración..."
-
-#: src/WmmUIDialog.cpp:324
-msgid "Extended"
-msgstr "Extendida"
-
-#: src/WmmUIDialog.cpp:324
-msgid "Variation only"
-msgstr "Declinación sólo"
-
-#: src/WmmUIDialog.cpp:326
-msgid "View"
-msgstr "Vista"
-
-#: src/WmmUIDialog.cpp:332
-msgid "Show Plot Options"
-msgstr "Opciones para mostrar dibujos"
-
-#: src/WmmUIDialog.cpp:337
-msgid "Show also data at cursor position"
-msgstr "Mostrar datos en la posición del cursor"
-
-#: src/WmmUIDialog.cpp:341
-msgid "Show toolbar icon"
-msgstr "Mostrar icono en la barra"
-
-#: src/WmmUIDialog.cpp:345
-msgid "Show data in toolbar icon"
-msgstr "Mostrar datos en Barra de Iconos"
-
-#: src/WmmUIDialog.cpp:351
-msgid "Window transparency"
-msgstr "Transparencia de la ventana"
-
-#: src/WmmUIDialog.cpp:362 src/WmmUIDialog.cpp:464
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: src/WmmUIDialog.cpp:386 src/MagneticPlotMap.cpp:399
-msgid "Variation"
-msgstr "Declinación magnética"
-
-#: src/WmmUIDialog.cpp:396 src/WmmUIDialog.cpp:410
-msgid "Degrees"
-msgstr "Grados"
-
-#: src/WmmUIDialog.cpp:401 src/MagneticPlotMap.cpp:400
-msgid "Inclination"
-msgstr "Inclinación"
-
-#: src/WmmUIDialog.cpp:415 src/MagneticPlotMap.cpp:401
-msgid "Field Strength"
-msgstr "Intensidad del campo"
-
-#: src/WmmUIDialog.cpp:424
-msgid "Nano Tesla"
-msgstr "Nano Tesla"
-
-#: src/WmmUIDialog.cpp:437
-msgid "Step Size"
-msgstr "Tamaño del paso"
-
-#: src/WmmUIDialog.cpp:451
-msgid "Pole Accuracy"
-msgstr "Precisión en el Polo"
-
-#: src/WmmUIDialog.cpp:456
-msgid "About"
-msgstr "Acerca de"
-
-#: src/WmmUIDialog.cpp:460
-msgid "Save"
-msgstr "Guardar"
-
-#: src/MagneticPlotMap.cpp:398
-msgid "Building Magnetic Map"
-msgstr "Generando mapa magnetismo"
-

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-02-24 14:31\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
@@ -16,495 +16,372 @@ msgstr ""
 "X-Crowdin-Language: id\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 "X-Crowdin-File-ID: 111\n"
-
-#: src/clock.cpp:169 src/dial.cpp:455 src/dial.cpp:456 src/gps.cpp:238
-#: src/wind.cpp:68 src/wind_history.cpp:486
-msgid "N"
-msgstr "N"
-
-#: src/dashboard_pi.cpp:244
-msgid "Position"
-msgstr "Posisi"
-
-#: src/dashboard_pi.cpp:246
-msgid "SOG"
-msgstr "SOG"
-
-#: src/dashboard_pi.cpp:248
-msgid "Speedometer"
-msgstr "Spidometer"
-
-#: src/dashboard_pi.cpp:250
-msgid "COG"
-msgstr "COG"
-
-#: src/dashboard_pi.cpp:252
-msgid "Mag COG"
-msgstr "Mag COG"
-
-#: src/dashboard_pi.cpp:254
-msgid "GNSS Compass"
-msgstr ""
-
-#: src/dashboard_pi.cpp:256
-msgid "True Compass"
-msgstr "Kompas benar"
-
-#: src/dashboard_pi.cpp:258
-msgid "STW"
-msgstr "STW"
-
-#: src/dashboard_pi.cpp:260
-msgid "True HDG"
-msgstr "HDG benar"
-
-#: src/dashboard_pi.cpp:262
-msgid "Mag HDG"
-msgstr "Mag HDG"
-
-#: src/dashboard_pi.cpp:265
-msgid "App. Wind Angle & Speed"
-msgstr "Aplikasi. Sudut Angin & Kecepatan"
-
-#: src/dashboard_pi.cpp:267
-msgid "App & True Wind Angle"
-msgstr "Aplikasi & Sudut Angin Benar"
-
-#: src/dashboard_pi.cpp:269 src/dashboard_pi.cpp:271
-msgid "App. Wind Speed"
-msgstr "Aplikasi. Kecepatan angin"
-
-#: src/dashboard_pi.cpp:273
-msgid "True Wind Angle & Speed"
-msgstr "Sudut Angin Benar & Kecepatan"
-
-#: src/dashboard_pi.cpp:275
-msgid "Altitude"
-msgstr ""
-
-#: src/dashboard_pi.cpp:277
-msgid "Altitude Trace"
-msgstr ""
-
-#: src/dashboard_pi.cpp:279 src/dashboard_pi.cpp:281
-msgid "Depth"
-msgstr "Kedalaman"
-
-#: src/dashboard_pi.cpp:283 src/dashboard_pi.cpp:285
-msgid "Barometric pressure"
-msgstr "Tekanan barometrik"
-
-#: src/dashboard_pi.cpp:287
-msgid "Water Temp."
-msgstr "Suhu air."
-
-#: src/dashboard_pi.cpp:289
-msgid "Air Temp."
-msgstr "Suhu udara."
-
-#: src/dashboard_pi.cpp:291
-msgid "App. Wind Angle"
-msgstr "Aplikasi. sudut angin"
-
-#: src/dashboard_pi.cpp:293
-msgid "True Wind Angle"
-msgstr "Sudut Angin Benar"
-
-#: src/dashboard_pi.cpp:295
-msgid "True Wind Direction"
-msgstr "Arah Angin Benar"
-
-#: src/dashboard_pi.cpp:297
-msgid "True Wind Speed"
-msgstr "Kecepatan Angin Benar"
-
-#: src/dashboard_pi.cpp:299
-msgid "True Wind Dir. & Speed"
-msgstr "Benar Angin Dir. & Kecepatan"
-
-#: src/dashboard_pi.cpp:301 src/dashboard_pi.cpp:303
-msgid "VMG"
-msgstr "VMG"
-
-#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
-msgid "Rudder Angle"
-msgstr "Sudut Kemudi"
-
-#: src/dashboard_pi.cpp:309
-msgid "GNSS in use"
-msgstr ""
-
-#: src/dashboard_pi.cpp:311
-msgid "GNSS Status"
-msgstr ""
-
-#: src/dashboard_pi.cpp:313
-msgid "Cursor"
-msgstr "Kursor"
-
-#: src/dashboard_pi.cpp:315
-msgid "GNSS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:317
-msgid "Sunrise/Sunset"
-msgstr "Matahari terbit/Matahari terbenam"
-
-#: src/dashboard_pi.cpp:319
-msgid "Moon phase"
-msgstr "Tahap bulan"
-
-#: src/dashboard_pi.cpp:321
-msgid "Wind history"
-msgstr "Sejarah angin"
-
-#: src/dashboard_pi.cpp:323
-msgid "Barometric history"
-msgstr "Sejarah barometrik"
-
-#: src/dashboard_pi.cpp:325
-msgid "Trip Log"
-msgstr "Catat Perjalanan"
-
-#: src/dashboard_pi.cpp:327
-msgid "Sum Log"
-msgstr "Catat Jumlah"
-
-#: src/dashboard_pi.cpp:329
-msgid "From Ownship"
-msgstr "Dari Kepemilikan"
-
-#: src/dashboard_pi.cpp:331
-msgid "Pitch"
-msgstr "Nada"
-
-#: src/dashboard_pi.cpp:333
-msgid "Heel"
-msgstr "Hak"
-
-#: src/dashboard_pi.cpp:335
-msgid "Local GNSS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:337
-msgid "Local CPU Clock"
-msgstr "Lokasi Jam CPU"
-
-#: src/dashboard_pi.cpp:339
-msgid "Local Sunrise/Sunset"
-msgstr "Lokasi Matahari terbit/Matahari terbenam"
-
-#: src/dashboard_pi.cpp:569 src/dashboard_pi.cpp:895 src/dashboard_pi.cpp:3326
-#: src/dashboard_pi.cpp:3340 src/dashboard_pi.cpp:3570 src/dashboard_pi.cpp:3664
-#: src/dashboard_pi.cpp:4182
-msgid "Dashboard"
-msgstr "Dasbor"
-
-#: src/dashboard_pi.cpp:898
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Plugin Dasbor untuk OpenCPN"
-
-#: src/dashboard_pi.cpp:903
-msgid "Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr "Plugin Dasbor untuk OpenCPN\n"
-"Menyediakan tampilan alat navigasi dari sumber NMEA."
-
-#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:1957 src/dashboard_pi.cpp:2893
-#: src/dashboard_pi.cpp:3791
-msgid "Up"
-msgstr "Atas"
-
-#: src/dashboard_pi.cpp:1727 src/dashboard_pi.cpp:1959 src/dashboard_pi.cpp:2895
-#: src/dashboard_pi.cpp:3798
-msgid "Down"
-msgstr "Turun"
-
-#: src/dashboard_pi.cpp:1744 src/dashboard_pi.cpp:1968 src/dashboard_pi.cpp:2882
-msgid "Stbd"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1747 src/dashboard_pi.cpp:1970 src/dashboard_pi.cpp:2884
-msgid "Port"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3536
-msgid "Dashboard preferences"
-msgstr "Preferensi dasbor"
-
-#: src/dashboard_pi.cpp:3673
-msgid "show this dashboard"
-msgstr "tunjukkan dasbor ini"
-
-#: src/dashboard_pi.cpp:3682
-msgid "Caption:"
-msgstr "Keterangan:"
-
-#: src/dashboard_pi.cpp:3696
-msgid "Orientation:"
-msgstr "Orientasi:"
-
-#: src/dashboard_pi.cpp:3701 src/dashboard_pi.cpp:4738
-msgid "Vertical"
-msgstr "Vertikal"
-
-#: src/dashboard_pi.cpp:3702 src/dashboard_pi.cpp:4741
-msgid "Horizontal"
-msgstr "Horisontal"
-
-#: src/dashboard_pi.cpp:3733 src/dashboard_pi.cpp:3754 src/dashboard_pi.cpp:4348
-msgid "Instruments"
-msgstr "Instrumen"
-
-#: src/dashboard_pi.cpp:3767
-msgid "Add"
-msgstr "Tambah"
-
-#: src/dashboard_pi.cpp:3783
-msgid "Delete"
-msgstr "Hapus"
-
-#: src/dashboard_pi.cpp:3811
-msgid "Appearance"
-msgstr "Penampilan"
-
-#: src/dashboard_pi.cpp:3814
-msgid "Fonts"
-msgstr "Font"
-
-#: src/dashboard_pi.cpp:3823
-msgid "Title:"
-msgstr "Judul:"
-
-#: src/dashboard_pi.cpp:3832
-msgid "Data:"
-msgstr "Data:"
-
-#: src/dashboard_pi.cpp:3841
-msgid "Label:"
-msgstr "Label:"
-
-#: src/dashboard_pi.cpp:3850
-msgid "Small:"
-msgstr "Kecil:"
-
-#: src/dashboard_pi.cpp:3860
-msgid "Units, Ranges, Formats"
-msgstr "Unit, Rentang, Format"
-
-#: src/dashboard_pi.cpp:3868
-msgid "Speedometer max value:"
-msgstr "Nilai maks speedometer:"
-
-#: src/dashboard_pi.cpp:3877
-msgid "Speed Over Ground Damping Factor:"
-msgstr "Kecepatan di atas tanah faktor redaman:"
-
-#: src/dashboard_pi.cpp:3886
-msgid "COG Damping Factor:"
-msgstr "COG Faktor Redaman:"
-
-#: src/dashboard_pi.cpp:3895
-msgid "Local Time Offset From UTC:"
-msgstr "Waktu Lokal Offset Dari UTC:"
-
-#: src/dashboard_pi.cpp:3920
-msgid "Boat speed units:"
-msgstr "Unit kecepatan perahu:"
-
-#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:3987
-msgid "Honor OpenCPN settings"
-msgstr "Kehormatan pengaturan OpenCPN"
-
-#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:4006
-msgid "Kts"
-msgstr "Kts"
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "mph"
-msgstr "mph"
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "km/h"
-msgstr "km/h"
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "m/s"
-msgstr "m/dtk"
-
-#: src/dashboard_pi.cpp:3938
-msgid "Depth units:"
-msgstr "Unit Kedalaman:"
-
-#: src/dashboard_pi.cpp:3942 src/dashboard_pi.cpp:3989
-msgid "Meters"
-msgstr "Meter"
-
-#: src/dashboard_pi.cpp:3942
-msgid "Feet"
-msgstr "Kaki"
-
-#: src/dashboard_pi.cpp:3942
-msgid "Fathoms"
-msgstr "Fathoms"
-
-#: src/dashboard_pi.cpp:3943
-msgid "Inches"
-msgstr "Inci"
-
-#: src/dashboard_pi.cpp:3943
-msgid "Centimeters"
-msgstr "Sentimeter"
-
-#: src/dashboard_pi.cpp:3955
-#, c-format
-msgid "Depth Offset (%s):"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3984
-msgid "Distance units:"
-msgstr "Unit jarak jauh:"
-
-#: src/dashboard_pi.cpp:3988
-msgid "Nautical miles"
-msgstr "Mil laut"
-
-#: src/dashboard_pi.cpp:3988
-msgid "Statute miles"
-msgstr "Undang-undang mil"
-
-#: src/dashboard_pi.cpp:3989
-msgid "Kilometers"
-msgstr "Kilometer"
-
-#: src/dashboard_pi.cpp:4003
-msgid "Wind speed units:"
-msgstr "Unit kecepatan angin:"
-
-#: src/dashboard_pi.cpp:4020
-msgid "Temperature units:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4023
-msgid "Celsius"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4023
-msgid "Fahrenheit"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4023
-msgid "Kelvin"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4038
-msgid "Use N2K & SignalK true wind data over ground.\n"
-"(Instead of through water)"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4310
-msgid "Add instrument"
-msgstr "Tambahkan instrumen"
-
-#: src/dashboard_pi.cpp:4315
-msgid "Select instrument to add:"
-msgstr "Pilih instrumen untuk ditambahkan:"
-
-#: src/dashboard_pi.cpp:4722 src/dashboard_pi.cpp:4748
-msgid "Preferences..."
-msgstr "Preferensi..."
-
-#: src/dashboard_pi.cpp:4727
-msgid "Resize..."
-msgstr ""
-
-#: src/dashboard_pi.cpp:4735
-msgid "Undock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:5272
-msgid "Choose font"
-msgstr ""
-
-#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:490
-msgid "NE"
-msgstr "TL"
-
-#: src/dial.cpp:455 src/gps.cpp:242 src/wind.cpp:68 src/wind_history.cpp:494
-msgid "E"
-msgstr "E"
-
-#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:498
-msgid "SE"
-msgstr "SE"
-
-#: src/dial.cpp:455 src/gps.cpp:246 src/wind.cpp:69 src/wind_history.cpp:502
-msgid "S"
-msgstr "S"
-
-#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:506
-msgid "SW"
-msgstr "S/W"
-
-#: src/dial.cpp:456 src/gps.cpp:250 src/wind.cpp:69 src/wind_history.cpp:510
-msgid "W"
-msgstr "W"
-
-#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:514
-msgid "NW"
-msgstr "NW"
-
-#: src/instrument.cpp:191
-msgid " true"
-msgstr " benar"
-
-#: src/instrument.cpp:193
+#
 msgid " mag"
 msgstr " mag"
-
-#: src/wind_history.cpp:55 src/wind_history.cpp:120
+#
+msgid " true"
+msgstr " benar"
+#
 msgid "-"
 msgstr ""
-
-#: src/wind_history.cpp:367
+#
 #, c-format
 msgid "--- %s"
 msgstr ""
-
-#: src/wind_history.cpp:488
-msgid "NNE"
-msgstr "NNE"
-
-#: src/wind_history.cpp:492
+#
+msgid "Add"
+msgstr "Tambah"
+#
+msgid "Add instrument"
+msgstr "Tambahkan instrumen"
+#
+msgid "Air Temp."
+msgstr "Suhu udara."
+#
+msgid "Altitude"
+msgstr ""
+#
+msgid "Altitude Trace"
+msgstr ""
+#
+msgid "App & True Wind Angle"
+msgstr "Aplikasi & Sudut Angin Benar"
+#
+msgid "App. Wind Angle"
+msgstr "Aplikasi. sudut angin"
+#
+msgid "App. Wind Angle & Speed"
+msgstr "Aplikasi. Sudut Angin & Kecepatan"
+#
+msgid "App. Wind Speed"
+msgstr "Aplikasi. Kecepatan angin"
+#
+msgid "Appearance"
+msgstr "Penampilan"
+#
+msgid "Barometric history"
+msgstr "Sejarah barometrik"
+#
+msgid "Barometric pressure"
+msgstr "Tekanan barometrik"
+#
+msgid "Boat speed units:"
+msgstr "Unit kecepatan perahu:"
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "COG Damping Factor:"
+msgstr "COG Faktor Redaman:"
+#
+msgid "Caption:"
+msgstr "Keterangan:"
+#
+msgid "Celsius"
+msgstr ""
+#
+msgid "Centimeters"
+msgstr "Sentimeter"
+#
+msgid "Choose font"
+msgstr ""
+#
+msgid "Cursor"
+msgstr "Kursor"
+#
+msgid "Dashboard"
+msgstr "Dasbor"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Plugin Dasbor untuk OpenCPN"
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Plugin Dasbor untuk OpenCPN\n"
+"Menyediakan tampilan alat navigasi dari sumber NMEA."
+#
+msgid "Dashboard preferences"
+msgstr "Preferensi dasbor"
+#
+msgid "Data:"
+msgstr "Data:"
+#
+msgid "Delete"
+msgstr "Hapus"
+#
+msgid "Depth"
+msgstr "Kedalaman"
+#
+#, c-format
+msgid "Depth Offset (%s):"
+msgstr ""
+#
+msgid "Depth units:"
+msgstr "Unit Kedalaman:"
+#
+msgid "Distance units:"
+msgstr "Unit jarak jauh:"
+#
+msgid "Down"
+msgstr "Turun"
+#
+msgid "E"
+msgstr "E"
+#
 msgid "ENE"
 msgstr "ENE"
-
-#: src/wind_history.cpp:496
+#
 msgid "ESE"
 msgstr "ESE"
-
-#: src/wind_history.cpp:500
-msgid "SSE"
-msgstr "SSE"
-
-#: src/wind_history.cpp:504
-msgid "SSW"
-msgstr "SSW"
-
-#: src/wind_history.cpp:508
-msgid "WSW"
-msgstr "WSW"
-
-#: src/wind_history.cpp:512
-msgid "WNW"
-msgstr "WNW"
-
-#: src/wind_history.cpp:516
-msgid "NNW"
-msgstr "NNW"
-
-#: src/wind_history.cpp:640
+#
+msgid "Fahrenheit"
+msgstr ""
+#
+msgid "Fathoms"
+msgstr "Fathoms"
+#
+msgid "Feet"
+msgstr "Kaki"
+#
+msgid "Fonts"
+msgstr "Font"
+#
+msgid "From Ownship"
+msgstr "Dari Kepemilikan"
+#
+msgid "GNSS Clock"
+msgstr ""
+#
+msgid "GNSS Compass"
+msgstr ""
+#
+msgid "GNSS Status"
+msgstr ""
+#
+msgid "GNSS in use"
+msgstr ""
+#
+msgid "Heel"
+msgstr "Hak"
+#
+msgid "Honor OpenCPN settings"
+msgstr "Kehormatan pengaturan OpenCPN"
+#
+msgid "Horizontal"
+msgstr "Horisontal"
+#
+msgid "Inches"
+msgstr "Inci"
+#
+msgid "Instruments"
+msgstr "Instrumen"
+#
+msgid "Kelvin"
+msgstr ""
+#
+msgid "Kilometers"
+msgstr "Kilometer"
+#
+msgid "Kts"
+msgstr "Kts"
+#
+msgid "Label:"
+msgstr "Label:"
+#
+msgid "Local CPU Clock"
+msgstr "Lokasi Jam CPU"
+#
+msgid "Local GNSS Clock"
+msgstr ""
+#
+msgid "Local Sunrise/Sunset"
+msgstr "Lokasi Matahari terbit/Matahari terbenam"
+#
+msgid "Local Time Offset From UTC:"
+msgstr "Waktu Lokal Offset Dari UTC:"
+#
+msgid "Mag COG"
+msgstr "Mag COG"
+#
+msgid "Mag HDG"
+msgstr "Mag HDG"
+#
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "Maks %.1f %s sejak %02d:%02d Secara keseluruhan %.1f %s"
-
+#
+msgid "Meters"
+msgstr "Meter"
+#
+msgid "Moon phase"
+msgstr "Tahap bulan"
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "TL"
+#
+msgid "NNE"
+msgstr "NNE"
+#
+msgid "NNW"
+msgstr "NNW"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Nautical miles"
+msgstr "Mil laut"
+#
+msgid "Orientation:"
+msgstr "Orientasi:"
+#
+msgid "Pitch"
+msgstr "Nada"
+#
+msgid "Port"
+msgstr ""
+#
+msgid "Position"
+msgstr "Posisi"
+#
+msgid "Preferences..."
+msgstr "Preferensi..."
+#
+msgid "Resize..."
+msgstr ""
+#
+msgid "Rudder Angle"
+msgstr "Sudut Kemudi"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SE"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "SSE"
+msgstr "SSE"
+#
+msgid "SSW"
+msgstr "SSW"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "S/W"
+#
+msgid "Select instrument to add:"
+msgstr "Pilih instrumen untuk ditambahkan:"
+#
+msgid "Small:"
+msgstr "Kecil:"
+#
+msgid "Speed Over Ground Damping Factor:"
+msgstr "Kecepatan di atas tanah faktor redaman:"
+#
+msgid "Speedometer"
+msgstr "Spidometer"
+#
+msgid "Speedometer max value:"
+msgstr "Nilai maks speedometer:"
+#
+msgid "Statute miles"
+msgstr "Undang-undang mil"
+#
+msgid "Stbd"
+msgstr ""
+#
+msgid "Sum Log"
+msgstr "Catat Jumlah"
+#
+msgid "Sunrise/Sunset"
+msgstr "Matahari terbit/Matahari terbenam"
+#
+msgid "Temperature units:"
+msgstr ""
+#
+msgid "Title:"
+msgstr "Judul:"
+#
+msgid "Trip Log"
+msgstr "Catat Perjalanan"
+#
+msgid "True Compass"
+msgstr "Kompas benar"
+#
+msgid "True HDG"
+msgstr "HDG benar"
+#
+msgid "True Wind Angle"
+msgstr "Sudut Angin Benar"
+#
+msgid "True Wind Angle & Speed"
+msgstr "Sudut Angin Benar & Kecepatan"
+#
+msgid "True Wind Dir. & Speed"
+msgstr "Benar Angin Dir. & Kecepatan"
+#
+msgid "True Wind Direction"
+msgstr "Arah Angin Benar"
+#
+msgid "True Wind Speed"
+msgstr "Kecepatan Angin Benar"
+#
+msgid "Undock"
+msgstr ""
+#
+msgid "Units, Ranges, Formats"
+msgstr "Unit, Rentang, Format"
+#
+msgid "Up"
+msgstr "Atas"
+#
+msgid ""
+"Use N2K & SignalK true wind data over ground.\n"
+"(Instead of through water)"
+msgstr ""
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr "Vertikal"
+#
+msgid "W"
+msgstr "W"
+#
+msgid "WNW"
+msgstr "WNW"
+#
+msgid "WSW"
+msgstr "WSW"
+#
+msgid "Water Temp."
+msgstr "Suhu air."
+#
+msgid "Wind history"
+msgstr "Sejarah angin"
+#
+msgid "Wind speed units:"
+msgstr "Unit kecepatan angin:"
+#
+msgid "km/h"
+msgstr "km/h"
+#
+msgid "m/s"
+msgstr "m/dtk"
+#
+msgid "mph"
+msgstr "mph"
+#
+msgid "show this dashboard"
+msgstr "tunjukkan dasbor ini"

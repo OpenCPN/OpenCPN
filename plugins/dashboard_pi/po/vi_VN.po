@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-02-24 14:31\n"
 "Last-Translator: \n"
 "Language-Team: Vietnamese\n"
@@ -16,494 +16,370 @@ msgstr ""
 "X-Crowdin-Language: vi\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 "X-Crowdin-File-ID: 111\n"
-
-#: src/clock.cpp:169 src/dial.cpp:455 src/dial.cpp:456 src/gps.cpp:238
-#: src/wind.cpp:68 src/wind_history.cpp:486
-msgid "N"
-msgstr "N"
-
-#: src/dashboard_pi.cpp:244
-msgid "Position"
-msgstr "Vị trí"
-
-#: src/dashboard_pi.cpp:246
-msgid "SOG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:248
-msgid "Speedometer"
-msgstr ""
-
-#: src/dashboard_pi.cpp:250
-msgid "COG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:252
-msgid "Mag COG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:254
-msgid "GNSS Compass"
-msgstr ""
-
-#: src/dashboard_pi.cpp:256
-msgid "True Compass"
-msgstr ""
-
-#: src/dashboard_pi.cpp:258
-msgid "STW"
-msgstr ""
-
-#: src/dashboard_pi.cpp:260
-msgid "True HDG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:262
-msgid "Mag HDG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:265
-msgid "App. Wind Angle & Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:267
-msgid "App & True Wind Angle"
-msgstr ""
-
-#: src/dashboard_pi.cpp:269 src/dashboard_pi.cpp:271
-msgid "App. Wind Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:273
-msgid "True Wind Angle & Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:275
-msgid "Altitude"
-msgstr ""
-
-#: src/dashboard_pi.cpp:277
-msgid "Altitude Trace"
-msgstr ""
-
-#: src/dashboard_pi.cpp:279 src/dashboard_pi.cpp:281
-msgid "Depth"
-msgstr "Độ sâu"
-
-#: src/dashboard_pi.cpp:283 src/dashboard_pi.cpp:285
-msgid "Barometric pressure"
-msgstr ""
-
-#: src/dashboard_pi.cpp:287
-msgid "Water Temp."
-msgstr "Nhiệt độ nước."
-
-#: src/dashboard_pi.cpp:289
-msgid "Air Temp."
-msgstr "Nhiệt độ không khí."
-
-#: src/dashboard_pi.cpp:291
-msgid "App. Wind Angle"
-msgstr ""
-
-#: src/dashboard_pi.cpp:293
-msgid "True Wind Angle"
-msgstr "Góc gió thực"
-
-#: src/dashboard_pi.cpp:295
-msgid "True Wind Direction"
-msgstr "Hướng gió thực"
-
-#: src/dashboard_pi.cpp:297
-msgid "True Wind Speed"
-msgstr "Vận tốc gió thực"
-
-#: src/dashboard_pi.cpp:299
-msgid "True Wind Dir. & Speed"
-msgstr "Hướng gió và vận tốc gió thực"
-
-#: src/dashboard_pi.cpp:301 src/dashboard_pi.cpp:303
-msgid "VMG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
-msgid "Rudder Angle"
-msgstr ""
-
-#: src/dashboard_pi.cpp:309
-msgid "GNSS in use"
-msgstr ""
-
-#: src/dashboard_pi.cpp:311
-msgid "GNSS Status"
-msgstr ""
-
-#: src/dashboard_pi.cpp:313
-msgid "Cursor"
-msgstr "Con trỏ"
-
-#: src/dashboard_pi.cpp:315
-msgid "GNSS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:317
-msgid "Sunrise/Sunset"
-msgstr "Bình minh/Hoàng hôn"
-
-#: src/dashboard_pi.cpp:319
-msgid "Moon phase"
-msgstr "Kỳ trăng"
-
-#: src/dashboard_pi.cpp:321
-msgid "Wind history"
-msgstr "Lịch sử gió"
-
-#: src/dashboard_pi.cpp:323
-msgid "Barometric history"
-msgstr ""
-
-#: src/dashboard_pi.cpp:325
-msgid "Trip Log"
-msgstr "Nhật ký chuyến đi"
-
-#: src/dashboard_pi.cpp:327
-msgid "Sum Log"
-msgstr ""
-
-#: src/dashboard_pi.cpp:329
-msgid "From Ownship"
-msgstr ""
-
-#: src/dashboard_pi.cpp:331
-msgid "Pitch"
-msgstr "Độ cao"
-
-#: src/dashboard_pi.cpp:333
-msgid "Heel"
-msgstr ""
-
-#: src/dashboard_pi.cpp:335
-msgid "Local GNSS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:337
-msgid "Local CPU Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:339
-msgid "Local Sunrise/Sunset"
-msgstr ""
-
-#: src/dashboard_pi.cpp:569 src/dashboard_pi.cpp:895 src/dashboard_pi.cpp:3326
-#: src/dashboard_pi.cpp:3340 src/dashboard_pi.cpp:3570 src/dashboard_pi.cpp:3664
-#: src/dashboard_pi.cpp:4182
-msgid "Dashboard"
-msgstr "Bảng Điều khiển"
-
-#: src/dashboard_pi.cpp:898
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr ""
-
-#: src/dashboard_pi.cpp:903
-msgid "Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr ""
-
-#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:1957 src/dashboard_pi.cpp:2893
-#: src/dashboard_pi.cpp:3791
-msgid "Up"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1727 src/dashboard_pi.cpp:1959 src/dashboard_pi.cpp:2895
-#: src/dashboard_pi.cpp:3798
-msgid "Down"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1744 src/dashboard_pi.cpp:1968 src/dashboard_pi.cpp:2882
-msgid "Stbd"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1747 src/dashboard_pi.cpp:1970 src/dashboard_pi.cpp:2884
-msgid "Port"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3536
-msgid "Dashboard preferences"
-msgstr "Tùy chỉnh Bảng điều khiển"
-
-#: src/dashboard_pi.cpp:3673
-msgid "show this dashboard"
-msgstr "hiển thị Bảng điều khiển"
-
-#: src/dashboard_pi.cpp:3682
-msgid "Caption:"
-msgstr "Chú thích:"
-
-#: src/dashboard_pi.cpp:3696
-msgid "Orientation:"
-msgstr "Chiều:"
-
-#: src/dashboard_pi.cpp:3701 src/dashboard_pi.cpp:4738
-msgid "Vertical"
-msgstr "Chiều dọc"
-
-#: src/dashboard_pi.cpp:3702 src/dashboard_pi.cpp:4741
-msgid "Horizontal"
-msgstr "Chiều ngang"
-
-#: src/dashboard_pi.cpp:3733 src/dashboard_pi.cpp:3754 src/dashboard_pi.cpp:4348
-msgid "Instruments"
-msgstr "Dụng cụ"
-
-#: src/dashboard_pi.cpp:3767
-msgid "Add"
-msgstr "Thêm"
-
-#: src/dashboard_pi.cpp:3783
-msgid "Delete"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3811
-msgid "Appearance"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3814
-msgid "Fonts"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3823
-msgid "Title:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3832
-msgid "Data:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3841
-msgid "Label:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3850
-msgid "Small:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3860
-msgid "Units, Ranges, Formats"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3868
-msgid "Speedometer max value:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3877
-msgid "Speed Over Ground Damping Factor:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3886
-msgid "COG Damping Factor:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3895
-msgid "Local Time Offset From UTC:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3920
-msgid "Boat speed units:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:3987
-msgid "Honor OpenCPN settings"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:4006
-msgid "Kts"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "mph"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "km/h"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "m/s"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3938
-msgid "Depth units:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3942 src/dashboard_pi.cpp:3989
-msgid "Meters"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3942
-msgid "Feet"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3942
-msgid "Fathoms"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3943
-msgid "Inches"
-msgstr "Inch"
-
-#: src/dashboard_pi.cpp:3943
-msgid "Centimeters"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3955
-#, c-format
-msgid "Depth Offset (%s):"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3984
-msgid "Distance units:"
-msgstr "Đơn vị đo khoảng cách:"
-
-#: src/dashboard_pi.cpp:3988
-msgid "Nautical miles"
-msgstr "Hải lý"
-
-#: src/dashboard_pi.cpp:3988
-msgid "Statute miles"
-msgstr ""
-
-#: src/dashboard_pi.cpp:3989
-msgid "Kilometers"
-msgstr "Kilômét"
-
-#: src/dashboard_pi.cpp:4003
-msgid "Wind speed units:"
-msgstr "Đơn vị đo vận tốc gió:"
-
-#: src/dashboard_pi.cpp:4020
-msgid "Temperature units:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4023
-msgid "Celsius"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4023
-msgid "Fahrenheit"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4023
-msgid "Kelvin"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4038
-msgid "Use N2K & SignalK true wind data over ground.\n"
-"(Instead of through water)"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4310
-msgid "Add instrument"
-msgstr "Thêm công cụ"
-
-#: src/dashboard_pi.cpp:4315
-msgid "Select instrument to add:"
-msgstr "Chọn công cụ để thêm:"
-
-#: src/dashboard_pi.cpp:4722 src/dashboard_pi.cpp:4748
-msgid "Preferences..."
-msgstr "Tùy chỉnh..."
-
-#: src/dashboard_pi.cpp:4727
-msgid "Resize..."
-msgstr ""
-
-#: src/dashboard_pi.cpp:4735
-msgid "Undock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:5272
-msgid "Choose font"
-msgstr ""
-
-#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:490
-msgid "NE"
-msgstr "Đông Bắc"
-
-#: src/dial.cpp:455 src/gps.cpp:242 src/wind.cpp:68 src/wind_history.cpp:494
-msgid "E"
-msgstr "Đông"
-
-#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:498
-msgid "SE"
-msgstr "Đông Nam"
-
-#: src/dial.cpp:455 src/gps.cpp:246 src/wind.cpp:69 src/wind_history.cpp:502
-msgid "S"
-msgstr "Nam"
-
-#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:506
-msgid "SW"
-msgstr "Tây Nam"
-
-#: src/dial.cpp:456 src/gps.cpp:250 src/wind.cpp:69 src/wind_history.cpp:510
-msgid "W"
-msgstr "Tây"
-
-#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:514
-msgid "NW"
-msgstr "Tây Bắc"
-
-#: src/instrument.cpp:191
-msgid " true"
-msgstr " đúng"
-
-#: src/instrument.cpp:193
+#
 msgid " mag"
 msgstr ""
-
-#: src/wind_history.cpp:55 src/wind_history.cpp:120
+#
+msgid " true"
+msgstr " đúng"
+#
 msgid "-"
 msgstr ""
-
-#: src/wind_history.cpp:367
+#
 #, c-format
 msgid "--- %s"
 msgstr ""
-
-#: src/wind_history.cpp:488
-msgid "NNE"
-msgstr "BẮC-ÐÔNG BẮC"
-
-#: src/wind_history.cpp:492
+#
+msgid "Add"
+msgstr "Thêm"
+#
+msgid "Add instrument"
+msgstr "Thêm công cụ"
+#
+msgid "Air Temp."
+msgstr "Nhiệt độ không khí."
+#
+msgid "Altitude"
+msgstr ""
+#
+msgid "Altitude Trace"
+msgstr ""
+#
+msgid "App & True Wind Angle"
+msgstr ""
+#
+msgid "App. Wind Angle"
+msgstr ""
+#
+msgid "App. Wind Angle & Speed"
+msgstr ""
+#
+msgid "App. Wind Speed"
+msgstr ""
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "Barometric history"
+msgstr ""
+#
+msgid "Barometric pressure"
+msgstr ""
+#
+msgid "Boat speed units:"
+msgstr ""
+#
+msgid "COG"
+msgstr ""
+#
+msgid "COG Damping Factor:"
+msgstr ""
+#
+msgid "Caption:"
+msgstr "Chú thích:"
+#
+msgid "Celsius"
+msgstr ""
+#
+msgid "Centimeters"
+msgstr ""
+#
+msgid "Choose font"
+msgstr ""
+#
+msgid "Cursor"
+msgstr "Con trỏ"
+#
+msgid "Dashboard"
+msgstr "Bảng Điều khiển"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr ""
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+#
+msgid "Dashboard preferences"
+msgstr "Tùy chỉnh Bảng điều khiển"
+#
+msgid "Data:"
+msgstr ""
+#
+msgid "Delete"
+msgstr ""
+#
+msgid "Depth"
+msgstr "Độ sâu"
+#
+#, c-format
+msgid "Depth Offset (%s):"
+msgstr ""
+#
+msgid "Depth units:"
+msgstr ""
+#
+msgid "Distance units:"
+msgstr "Đơn vị đo khoảng cách:"
+#
+msgid "Down"
+msgstr ""
+#
+msgid "E"
+msgstr "Đông"
+#
 msgid "ENE"
 msgstr "ÐÔNG-ÐÔNG BẮC"
-
-#: src/wind_history.cpp:496
+#
 msgid "ESE"
 msgstr ""
-
-#: src/wind_history.cpp:500
-msgid "SSE"
+#
+msgid "Fahrenheit"
 msgstr ""
-
-#: src/wind_history.cpp:504
-msgid "SSW"
+#
+msgid "Fathoms"
 msgstr ""
-
-#: src/wind_history.cpp:508
-msgid "WSW"
+#
+msgid "Feet"
 msgstr ""
-
-#: src/wind_history.cpp:512
-msgid "WNW"
+#
+msgid "Fonts"
 msgstr ""
-
-#: src/wind_history.cpp:516
-msgid "NNW"
+#
+msgid "From Ownship"
 msgstr ""
-
-#: src/wind_history.cpp:640
+#
+msgid "GNSS Clock"
+msgstr ""
+#
+msgid "GNSS Compass"
+msgstr ""
+#
+msgid "GNSS Status"
+msgstr ""
+#
+msgid "GNSS in use"
+msgstr ""
+#
+msgid "Heel"
+msgstr ""
+#
+msgid "Honor OpenCPN settings"
+msgstr ""
+#
+msgid "Horizontal"
+msgstr "Chiều ngang"
+#
+msgid "Inches"
+msgstr "Inch"
+#
+msgid "Instruments"
+msgstr "Dụng cụ"
+#
+msgid "Kelvin"
+msgstr ""
+#
+msgid "Kilometers"
+msgstr "Kilômét"
+#
+msgid "Kts"
+msgstr ""
+#
+msgid "Label:"
+msgstr ""
+#
+msgid "Local CPU Clock"
+msgstr ""
+#
+msgid "Local GNSS Clock"
+msgstr ""
+#
+msgid "Local Sunrise/Sunset"
+msgstr ""
+#
+msgid "Local Time Offset From UTC:"
+msgstr ""
+#
+msgid "Mag COG"
+msgstr ""
+#
+msgid "Mag HDG"
+msgstr ""
+#
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr ""
-
+#
+msgid "Meters"
+msgstr ""
+#
+msgid "Moon phase"
+msgstr "Kỳ trăng"
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "Đông Bắc"
+#
+msgid "NNE"
+msgstr "BẮC-ÐÔNG BẮC"
+#
+msgid "NNW"
+msgstr ""
+#
+msgid "NW"
+msgstr "Tây Bắc"
+#
+msgid "Nautical miles"
+msgstr "Hải lý"
+#
+msgid "Orientation:"
+msgstr "Chiều:"
+#
+msgid "Pitch"
+msgstr "Độ cao"
+#
+msgid "Port"
+msgstr ""
+#
+msgid "Position"
+msgstr "Vị trí"
+#
+msgid "Preferences..."
+msgstr "Tùy chỉnh..."
+#
+msgid "Resize..."
+msgstr ""
+#
+msgid "Rudder Angle"
+msgstr ""
+#
+msgid "S"
+msgstr "Nam"
+#
+msgid "SE"
+msgstr "Đông Nam"
+#
+msgid "SOG"
+msgstr ""
+#
+msgid "SSE"
+msgstr ""
+#
+msgid "SSW"
+msgstr ""
+#
+msgid "STW"
+msgstr ""
+#
+msgid "SW"
+msgstr "Tây Nam"
+#
+msgid "Select instrument to add:"
+msgstr "Chọn công cụ để thêm:"
+#
+msgid "Small:"
+msgstr ""
+#
+msgid "Speed Over Ground Damping Factor:"
+msgstr ""
+#
+msgid "Speedometer"
+msgstr ""
+#
+msgid "Speedometer max value:"
+msgstr ""
+#
+msgid "Statute miles"
+msgstr ""
+#
+msgid "Stbd"
+msgstr ""
+#
+msgid "Sum Log"
+msgstr ""
+#
+msgid "Sunrise/Sunset"
+msgstr "Bình minh/Hoàng hôn"
+#
+msgid "Temperature units:"
+msgstr ""
+#
+msgid "Title:"
+msgstr ""
+#
+msgid "Trip Log"
+msgstr "Nhật ký chuyến đi"
+#
+msgid "True Compass"
+msgstr ""
+#
+msgid "True HDG"
+msgstr ""
+#
+msgid "True Wind Angle"
+msgstr "Góc gió thực"
+#
+msgid "True Wind Angle & Speed"
+msgstr ""
+#
+msgid "True Wind Dir. & Speed"
+msgstr "Hướng gió và vận tốc gió thực"
+#
+msgid "True Wind Direction"
+msgstr "Hướng gió thực"
+#
+msgid "True Wind Speed"
+msgstr "Vận tốc gió thực"
+#
+msgid "Undock"
+msgstr ""
+#
+msgid "Units, Ranges, Formats"
+msgstr ""
+#
+msgid "Up"
+msgstr ""
+#
+msgid ""
+"Use N2K & SignalK true wind data over ground.\n"
+"(Instead of through water)"
+msgstr ""
+#
+msgid "VMG"
+msgstr ""
+#
+msgid "Vertical"
+msgstr "Chiều dọc"
+#
+msgid "W"
+msgstr "Tây"
+#
+msgid "WNW"
+msgstr ""
+#
+msgid "WSW"
+msgstr ""
+#
+msgid "Water Temp."
+msgstr "Nhiệt độ nước."
+#
+msgid "Wind history"
+msgstr "Lịch sử gió"
+#
+msgid "Wind speed units:"
+msgstr "Đơn vị đo vận tốc gió:"
+#
+msgid "km/h"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mph"
+msgstr ""
+#
+msgid "show this dashboard"
+msgstr "hiển thị Bảng điều khiển"

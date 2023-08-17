@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-12 12:37-0400\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-04-05 00:42\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
@@ -16,908 +16,297 @@ msgstr ""
 "X-Crowdin-Language: hu\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 "X-Crowdin-File-ID: 114\n"
-
-#: src/GribUIDialog.cpp:379 src/GribUIDialog.cpp:976
-msgid "Start a request"
-msgstr "Indítson egy lekérést"
-
-#: src/GribUIDialog.cpp:385
-msgid "Draw requested Area\n"
-"or Click here to stop request"
-msgstr "A kért terület kirajzolása \n"
-"vagy klikk ide a lekérés megállításához"
-
-#: src/GribUIDialog.cpp:390 src/GribUIDialog.cpp:979
-msgid "Valid Area and Continue"
-msgstr ""
-
-#: src/GribUIDialog.cpp:432
-msgid "File: "
-msgstr "Fájl:"
-
-#: src/GribUIDialog.cpp:437
-msgid "Error! "
-msgstr "Hiba! "
-
-#: src/GribUIDialog.cpp:437
-msgid " contains no valid data!"
-msgstr "nem tartalmaz érvényes adatot!"
-
-#: src/GribUIDialog.cpp:472
-msgid "No valid GRIB file"
-msgstr "Nincs érvényes GRIB fájl"
-
-#: src/GribUIDialog.cpp:695 src/GribUIDialog.cpp:953
-msgid "Hide data at cursor"
-msgstr "Kurzornál adat eltüntetése"
-
-#: src/GribUIDialog.cpp:696 src/GribUIDialog.cpp:953
-msgid "Show data at cursor"
-msgstr "Kurzornál adat megjelenítése"
-
-#: src/GribUIDialog.cpp:697 src/GribUIDialog.cpp:960 src/GribUIDialog.cpp:1302
-msgid "Start play back"
-msgstr "Visszajátszás indítása"
-
-#: src/GribUIDialog.cpp:944
-msgid "Select geopotential altitude"
-msgstr ""
-
-#: src/GribUIDialog.cpp:947 src/GribUIDialogBase.cpp:71
-#: src/GribUIDialogBase.cpp:194 src/GribUIDialogBase.cpp:1662
-msgid "Now"
-msgstr "Most"
-
-#: src/GribUIDialog.cpp:949 src/GribUIDialogBase.cpp:78
-#: src/GribUIDialogBase.cpp:201
-msgid "Zoom To Center"
-msgstr "Belenagyítás középre"
-
-#: src/GribUIDialog.cpp:960 src/GribUIDialog.cpp:1262
-msgid "Stop play back"
-msgstr "Visszajátszás leállítása"
-
-#: src/GribUIDialog.cpp:966 src/GribUIDialogBase.cpp:226
-msgid "Open a new file"
-msgstr "Új fájl megnyitása"
-
-#: src/GribUIDialog.cpp:969 src/GribUIDialogBase.cpp:108
-#: src/GribUIDialogBase.cpp:233 src/GribUIDialogBase.cpp:1785
-#: src/GribUIDialogBase.h:318
-msgid "Settings"
-msgstr "Beállítások"
-
-#: src/GribUIDialog.cpp:978
-msgid "Draw requested Area or Click here to stop request"
-msgstr "A kért terület kirajzolása vagy klikk ide a lekérés megállításához"
-
-#: src/GribUIDialog.cpp:1639 src/GribUIDialog.cpp:1667
-msgid "Select a GRIB file"
-msgstr "GRIB könyvtár kiválasztása"
-
-#: src/GribUIDialog.cpp:1956
-msgid " files don't exist!"
-msgstr "fájl nem létezik!"
-
-#: src/GribUIDialog.cpp:1977
-msgid " can't be read!"
-msgstr "nem olvasható!"
-
-#: src/GribUIDialog.cpp:2324 src/GribUIDialog.cpp:2328
-#: src/GribUIDialogBase.h:166
-msgid "GRIB Display Control"
-msgstr "GRIB kijelzés vezérlés"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:44
-msgid "Knots"
-msgstr "Csomó"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:44
-msgid "m/s"
-msgstr "m/s"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:44
-msgid "mph"
-msgstr "mph"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:45
-msgid "km/h"
-msgstr "km/h"
-
-#: src/GribSettingsDialog.cpp:34
-msgid "Beaufort"
-msgstr "Beaufort"
-
-#: src/GribSettingsDialog.cpp:35
-msgid "MilliBars"
-msgstr "Millibar"
-
-#: src/GribSettingsDialog.cpp:35
-msgid "mmHG"
-msgstr "mmHg"
-
-#: src/GribSettingsDialog.cpp:35
-msgid "inHG"
-msgstr "inHG"
-
-#: src/GribSettingsDialog.cpp:37
-msgid "Meters"
-msgstr "Méter"
-
-#: src/GribSettingsDialog.cpp:37
-msgid "Feet"
-msgstr "Láb"
-
-#: src/GribSettingsDialog.cpp:38
-msgid "Celsius"
-msgstr "Celsius"
-
-#: src/GribSettingsDialog.cpp:38
-msgid "Fahrenheit"
-msgstr "Farenheit"
-
-#: src/GribSettingsDialog.cpp:40
-msgid "Millimeters"
-msgstr "Milliméter"
-
-#: src/GribSettingsDialog.cpp:40
-msgid "Inches"
-msgstr "Hüvelyk"
-
-#: src/GribSettingsDialog.cpp:42
-msgid "Percentage"
-msgstr "Százalék"
-
-#: src/GribSettingsDialog.cpp:43
-msgid "j/kg"
-msgstr "j/kg"
-
-#: src/GribSettingsDialog.cpp:46
-msgid "dBZ"
-msgstr "dBZ"
-
-#: src/GribSettingsDialog.cpp:64 src/GribUIDialogBase.cpp:600
-#: src/GribUIDialogBase.cpp:1339 src/GribUIDialogBase.cpp:2655
-#: src/GribOverlayFactory.cpp:1373
-msgid "Wind"
-msgstr "Szél"
-
-#: src/GribSettingsDialog.cpp:65 src/GribUIDialogBase.cpp:619
-#: src/GribUIDialogBase.cpp:2663
-msgid "Wind Gust"
-msgstr "Széllökés"
-
-#: src/GribSettingsDialog.cpp:66 src/GribUIDialogBase.cpp:632
-#: src/GribUIDialogBase.cpp:2659 src/GribTable.cpp:134
-msgid "Pressure"
-msgstr "Légnyomás, mBar"
-
-#: src/GribSettingsDialog.cpp:67 src/GribUIDialogBase.cpp:647
-#: src/GribUIDialogBase.cpp:2704
-msgid "Waves"
-msgstr "Hullám"
-
-#: src/GribSettingsDialog.cpp:68 src/GribUIDialogBase.cpp:672
-#: src/GribUIDialogBase.cpp:1340 src/GribUIDialogBase.cpp:2695
-msgid "Current"
-msgstr "Áramlat sebessége, csomó."
-
-#: src/GribSettingsDialog.cpp:69 src/GribUIDialogBase.cpp:692
-#: src/GribUIDialogBase.cpp:1340 src/GribUIDialogBase.cpp:2667
-#: src/GribTable.cpp:171
-msgid "Rainfall"
-msgstr "Eső"
-
-#: src/GribSettingsDialog.cpp:70 src/GribUIDialogBase.cpp:707
-#: src/GribUIDialogBase.cpp:713 src/GribUIDialogBase.cpp:1340
-#: src/GribUIDialogBase.cpp:2671 src/GribTable.cpp:180
-msgid "Cloud Cover"
-msgstr "Felhőtakaró"
-
-#: src/GribSettingsDialog.cpp:71
-msgid "Air Temperature"
-msgstr "Tenger felszín hőmérséklete, C"
-
-#: src/GribSettingsDialog.cpp:72
-msgid "Sea Temperature"
-msgstr "Tenger felszín hőmérséklete, C"
-
-#: src/GribSettingsDialog.cpp:73 src/GribUIDialogBase.cpp:749
-#: src/GribUIDialogBase.cpp:1340 src/GribUIDialogBase.cpp:2681
-#: src/GribTable.cpp:208
-msgid "CAPE"
-msgstr "CAPE"
-
-#: src/GribSettingsDialog.cpp:75
-msgid "Altitude(Geopotential)"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:76 src/CursorData.cpp:330
-msgid "Relative Humidity"
-msgstr "Relatív páratartalom"
-
-#: src/GribSettingsDialog.cpp:677
-msgid "h"
-msgstr "ó"
-
-#: src/GribSettingsDialog.cpp:679
-msgid "mn"
-msgstr "mn"
-
-#: src/GribSettingsDialog.cpp:747
-msgid "Apply"
-msgstr "Alkalmaz"
-
-#: src/GribSettingsDialog.cpp:950 src/GribSettingsDialog.cpp:959
-#: src/CursorData.cpp:664 src/CursorData.cpp:670
-msgid "Display Isotachs"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:966 src/CursorData.cpp:675
-msgid "Display Isobars"
-msgstr "Izobárok megjelenítése"
-
-#: src/GribSettingsDialog.cpp:986 src/CursorData.cpp:681
-msgid "Display Isotherms"
-msgstr "Izotermák megjelenítése"
-
-#: src/GribSettingsDialog.cpp:993 src/CursorData.cpp:689
-msgid "Display Iso CAPE"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1000
-msgid "Display Comp. Reflectivity"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1011 src/GribSettingsDialog.cpp:1088
-#: src/GribUIDialogBase.cpp:1228
-msgid "Spacing"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1105
-msgid "You want to remove the dialog title/drag bar\n"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1107
-msgid "You want to add a title/drag bar to the dialog\n"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1111
-msgid "This change needs a complete reload.\n"
-"It will be applied after closing and re-opening the plugin"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1136
-msgid "You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
-msgstr ""
-
-#: src/GribSettingsDialog.cpp:1139 src/GribSettingsDialog.cpp:1188
-#: src/grib_pi.cpp:831 src/GribRequestDialog.cpp:713
-msgid "Warning!"
-msgstr "Figyelem!"
-
-#: src/GribSettingsDialog.cpp:1185
-msgid "This option imply you authorize intrepolation\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:39 src/GribUIDialogBase.cpp:163
-msgid "Previous"
-msgstr "Előző"
-
-#: src/GribUIDialogBase.cpp:54 src/GribUIDialogBase.cpp:178
-msgid "Next"
-msgstr "Következő"
-
-#: src/GribUIDialogBase.cpp:64 src/GribUIDialogBase.cpp:187
-msgid "Select geoptential altitude"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:586
-msgid "MyLabel"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:639
-msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Légnyomás, mBar"
-
-#: src/GribUIDialogBase.cpp:654
-msgid "Significant Wave Height"
-msgstr "Hullám magasság, m"
-
-#: src/GribUIDialogBase.cpp:661
-msgid "Waves period"
-msgstr "Hullám periódus"
-
-#: src/GribUIDialogBase.cpp:668
-msgid "Waves Direction"
-msgstr "Szél irány"
-
-#: src/GribUIDialogBase.cpp:679
-msgid "Surface Current Speed"
-msgstr "Felszíni áramlat sebesség"
-
-#: src/GribUIDialogBase.cpp:686
-msgid "Surface Current Direction"
-msgstr "Felszíni áramlat iránya"
-
-#: src/GribUIDialogBase.cpp:699
-msgid "Cumulative Rainfall per Hour"
-msgstr "Összegzett csapadék óránként"
-
-#: src/GribUIDialogBase.cpp:721 src/GribUIDialogBase.cpp:1339
-msgid "Air Temp"
-msgstr "Levegő hőm"
-
-#: src/GribUIDialogBase.cpp:734 src/GribUIDialogBase.cpp:1339
-msgid "Sea Temp"
-msgstr "Tenger felszín hőmérséklete, C"
-
-#: src/GribUIDialogBase.cpp:741
-msgid "Sea or Air Temperature at Surface Level"
-msgstr "Tenger vagy levegő hőmérséklet a felszínnél"
-
-#: src/GribUIDialogBase.cpp:755
-msgid "Convective Available Potential Energy"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:763
-msgid "Comp. Refl."
-msgstr "Komp. refl."
-
-#: src/GribUIDialogBase.cpp:769
-msgid "Composite Reflectivity"
-msgstr "Kompozit reflektivitás"
-
-#: src/GribUIDialogBase.cpp:777 src/CursorData.cpp:328
-msgid "Altitude"
-msgstr "Magasság"
-
-#: src/GribUIDialogBase.cpp:795
-msgid "Temp."
-msgstr "Hőm."
-
-#: src/GribUIDialogBase.cpp:812
-msgid "Relat. Hum."
-msgstr "Rel. pára"
-
-#: src/GribUIDialogBase.cpp:1127
-msgid "Data Display Options"
-msgstr "Adat megjelenítési beállítások"
-
-#: src/GribUIDialogBase.cpp:1143
-msgid "Units"
-msgstr "Mértékegységek"
-
-#: src/GribUIDialogBase.cpp:1158 src/CursorData.cpp:663
-msgid "Barbed Arrows"
-msgstr "Tollas nyilak"
-
-#: src/GribUIDialogBase.cpp:1166
-msgid "Default Colour"
-msgstr "Alapértelmezett színek"
-
-#: src/GribUIDialogBase.cpp:1167
-msgid "Controlled Colours"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1183 src/GribUIDialogBase.cpp:1287
-#: src/GribUIDialogBase.cpp:1359
-msgid "Spacing(pixels)"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1189 src/GribUIDialogBase.cpp:1292
-#: src/GribUIDialogBase.cpp:1364
-msgid "Fixed"
-msgstr "Rögzített"
-
-#: src/GribUIDialogBase.cpp:1196 src/GribUIDialogBase.cpp:1299
-#: src/GribUIDialogBase.cpp:1370
-msgid "Minimum"
-msgstr "Minimum"
-
-#: src/GribUIDialogBase.cpp:1209 src/GribUIDialogBase.cpp:1245
-msgid "Always visible"
-msgstr "Mindig látható"
-
-#: src/GribUIDialogBase.cpp:1220
-msgid "IsoBars"
-msgstr "Izobárok"
-
-#: src/GribUIDialogBase.cpp:1254
-msgid "Abbreviated Numbers"
-msgstr "Rövidített számok"
-
-#: src/GribUIDialogBase.cpp:1261 src/CursorData.cpp:699 src/CursorData.cpp:704
-msgid "Direction Arrows"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1270
-msgid "Single Arrow"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1270
-msgid "Double Arrow"
-msgstr "Kettős nyíl"
-
-#: src/GribUIDialogBase.cpp:1270
-msgid "Proportional Arrow"
-msgstr "Arányos nyíl"
-
-#: src/GribUIDialogBase.cpp:1311
-msgid "Default Size"
-msgstr "Alapértelmezett méret"
-
-#: src/GribUIDialogBase.cpp:1312
-msgid "Small Size"
-msgstr "Kis méret"
-
-#: src/GribUIDialogBase.cpp:1328 src/CursorData.cpp:665 src/CursorData.cpp:671
-#: src/CursorData.cpp:685 src/CursorData.cpp:690 src/CursorData.cpp:695
-#: src/CursorData.cpp:700 src/CursorData.cpp:705
-msgid "OverlayMap"
-msgstr "Overlay térkép"
-
-#: src/GribUIDialogBase.cpp:1333
-msgid "Color scheme"
-msgstr "Színséma"
-
-#: src/GribUIDialogBase.cpp:1339
-msgid "Generic"
-msgstr "Általános"
-
-#: src/GribUIDialogBase.cpp:1349 src/CursorData.cpp:666 src/CursorData.cpp:672
-#: src/CursorData.cpp:677 src/CursorData.cpp:686 src/CursorData.cpp:691
-#: src/CursorData.cpp:696 src/CursorData.cpp:701 src/CursorData.cpp:706
-msgid "Numbers"
-msgstr "Számok"
-
-#: src/GribUIDialogBase.cpp:1381 src/CursorData.cpp:667 src/CursorData.cpp:707
-msgid "Particle Map"
-msgstr "Homokszemcse térkép"
-
-#: src/GribUIDialogBase.cpp:1385
-msgid "Density"
-msgstr "Sűrűség"
-
-#: src/GribUIDialogBase.cpp:1410
-msgid "Transparency for all Overlay Maps"
-msgstr "Összes overlay térkép átlátszósága"
-
-#: src/GribUIDialogBase.cpp:1419
-msgid "Overlay Transparency (%)"
-msgstr "Overlay átlátszóság (%)"
-
-#: src/GribUIDialogBase.cpp:1438
-msgid "Data"
-msgstr "Adat"
-
-#: src/GribUIDialogBase.cpp:1451
-msgid "Playback Options"
-msgstr "Visszajátszás beállítások"
-
-#: src/GribUIDialogBase.cpp:1461
-msgid "Speed Control"
-msgstr "Sebesség állítás"
-
-#: src/GribUIDialogBase.cpp:1474
-msgid "Slow"
-msgstr "Lassú"
-
-#: src/GribUIDialogBase.cpp:1485
-msgid "Fast"
-msgstr "Gyors"
-
-#: src/GribUIDialogBase.cpp:1492
-msgid "Loop Mode"
-msgstr "Folyamatos lejátszás"
-
-#: src/GribUIDialogBase.cpp:1504
-msgid "Loop Start"
-msgstr "Ismétlés kezdete"
-
-#: src/GribUIDialogBase.cpp:1509
-msgid "Top of Grib File"
-msgstr "A Grib fájl elejére"
-
-#: src/GribUIDialogBase.cpp:1510
-msgid "Current time forecast"
-msgstr "Aktuális időpntra vonatkozó előrejelzés"
-
-#: src/GribUIDialogBase.cpp:1522
-msgid "Interpolate between gribs"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1534
-msgid "Time Interval"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1555 src/GribUIDialogBase.cpp:1725
-msgid "Playback"
-msgstr "Lejátszás"
-
-#: src/GribUIDialogBase.cpp:1568
-msgid "Dialogs Style"
-msgstr "Párbeszédpanel stílus"
-
-#: src/GribUIDialogBase.cpp:1578
-msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1585
-msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1592
-msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1598
-msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1610
-msgid "Buttons Visibility"
-msgstr "Gombok láthatósága"
-
-#: src/GribUIDialogBase.cpp:1624
-msgid "Attached icon bar"
-msgstr "Csatolt ikonsor"
-
-#: src/GribUIDialogBase.cpp:1631
-msgid "Isolated icon bar"
-msgstr "Különálló ikonsor"
-
-#: src/GribUIDialogBase.cpp:1642
-msgid "Geopot. Height Choice"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1683
-msgid "Zoom to Center"
-msgstr "Belenagyítás középre"
-
-#: src/GribUIDialogBase.cpp:1705
-msgid "Show Cursor Data"
-msgstr "Kurzor adatok megjelenítése"
-
-#: src/GribUIDialogBase.cpp:1745
-msgid "Time Slider"
-msgstr "Idő csúszka"
-
-#: src/GribUIDialogBase.cpp:1765
-msgid "Open File"
-msgstr "Fájl megnyitása"
-
-#: src/GribUIDialogBase.cpp:1805
-msgid "Request"
-msgstr "Kérés"
-
-#: src/GribUIDialogBase.cpp:1827
-msgid "GUI"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1836 src/GribUIDialogBase.cpp:2155
-#: src/GribUIDialogBase.cpp:2807
-msgid "Cancel"
-msgstr "Mégse"
-
-#: src/GribUIDialogBase.cpp:2063 src/GribUIDialogBase.cpp:2205
-msgid "General Options"
-msgstr "Általános beállítások"
-
-#: src/GribUIDialogBase.cpp:2071 src/GribUIDialogBase.cpp:2210
-msgid "Use High Definition Graphics"
-msgstr "Nagyfelbontású grafika használata"
-
-#: src/GribUIDialogBase.cpp:2075 src/GribUIDialogBase.cpp:2215
-msgid "Use Gradual Colors"
-msgstr "Színátmenetek használata"
-
-#: src/GribUIDialogBase.cpp:2080 src/GribUIDialogBase.cpp:2220
-msgid "Copy First Cumulative Missing Record"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2085 src/GribUIDialogBase.cpp:2225
-msgid "Copy Missing Wave Records"
-msgstr "Hiányó hullám adatok másolása"
-
-#: src/GribUIDialogBase.cpp:2090 src/GribUIDialogBase.cpp:2230
-msgid "Draw Barbed Arrows Head"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2095 src/GribUIDialogBase.cpp:2235
-msgid "Zoom to file center when opened"
-msgstr "Belenagyítás a fájl megnyitásakor"
-
-#: src/GribUIDialogBase.cpp:2104 src/GribUIDialogBase.cpp:2240
-msgid "Load the More Recent File in Directory"
-msgstr "A könyvtárból a legfrissebb fájl megnyitása"
-
-#: src/GribUIDialogBase.cpp:2105 src/GribUIDialogBase.cpp:2241
-msgid "Load the Last Opened File"
-msgstr "Utoljára megnyitott fájl betöltése"
-
-#: src/GribUIDialogBase.cpp:2109 src/GribUIDialogBase.cpp:2245
-msgid "Load File Options"
-msgstr "Fájl betöltési lehetőségek"
-
-#: src/GribUIDialogBase.cpp:2115 src/GribUIDialogBase.cpp:2252
-msgid "Start at the first forecast in GRIB file"
-msgstr "A GRIB fájlban található első előrejelzéssel kezdjen"
-
-#: src/GribUIDialogBase.cpp:2116 src/GribUIDialogBase.cpp:2253
-msgid "Start at the nearest forecast to current time"
-msgstr "Az aktuális időponthoz legközelebbi előrejelzéssel kezdjen"
-
-#: src/GribUIDialogBase.cpp:2117 src/GribUIDialogBase.cpp:2254
-msgid "Authorize Interpolation to start at current time"
-msgstr "Interpolálás engedélyezése aktuális időponttól kezdve"
-
-#: src/GribUIDialogBase.cpp:2121 src/GribUIDialogBase.cpp:2258
-msgid "Start Options"
-msgstr "Indítási beállítások"
-
-#: src/GribUIDialogBase.cpp:2126 src/GribUIDialogBase.cpp:2264
-msgid "Local Time"
-msgstr "Helyi idő"
-
-#: src/GribUIDialogBase.cpp:2126 src/GribUIDialogBase.cpp:2264
-msgid "UTC"
-msgstr "UTC"
-
-#: src/GribUIDialogBase.cpp:2129 src/GribUIDialogBase.cpp:2267
-msgid "Time Options"
-msgstr "Idő opciók"
-
-#: src/GribUIDialogBase.cpp:2139
-msgid "Icons Size Factor"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2191
-msgid "GRIB PlugIn Preferences"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2324
-msgid "Profile"
-msgstr "Profil"
-
-#: src/GribUIDialogBase.cpp:2338
-msgid "Sender eMail Address"
-msgstr "Küldő e-mail címe"
-
-#: src/GribUIDialogBase.cpp:2372
-msgid "Mail To "
-msgstr "Címzett:"
-
-#: src/GribUIDialogBase.cpp:2385
-msgid "Forecast Model "
-msgstr "Előrejelzési modell "
-
-#: src/GribUIDialogBase.cpp:2405
-msgid "Moving Grib"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2414
-msgid "Speed"
-msgstr "Sebesség"
-
-#: src/GribUIDialogBase.cpp:2425
-msgid "Kts"
-msgstr "Csomó"
-
-#: src/GribUIDialogBase.cpp:2432
-msgid "Course"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2442 src/GribUIDialogBase.cpp:2498
-msgid "Deg"
-msgstr "Fok"
-
-#: src/GribUIDialogBase.cpp:2457
-msgid "zyGrib Login"
-msgstr "zyGrib Login"
-
-#: src/GribUIDialogBase.cpp:2467
-msgid "zyGrib Code"
-msgstr "zyGrib Code"
-
-#: src/GribUIDialogBase.cpp:2487
-msgid "Resolution"
-msgstr "Felbontás"
-
-#: src/GribUIDialogBase.cpp:2504
-msgid "Interval"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2516
-msgid "Hours"
-msgstr "Óra"
-
-#: src/GribUIDialogBase.cpp:2523
-msgid "Time Range"
-msgstr "Időtartomány"
-
-#: src/GribUIDialogBase.cpp:2534
-msgid "Days"
-msgstr "Napok"
-
-#: src/GribUIDialogBase.cpp:2547
-msgid "Area Selection"
-msgstr "Terület kiválasztás"
-
-#: src/GribUIDialogBase.cpp:2561
-msgid "Manual Selection"
-msgstr "Kézi kiválasztás"
-
-#: src/GribUIDialogBase.cpp:2566
-msgid "Use Always this Area"
-msgstr "Mindig ezt a területet használja"
-
-#: src/GribUIDialogBase.cpp:2577
-msgid "Max Lat"
-msgstr "Max szélesség"
-
-#: src/GribUIDialogBase.cpp:2587 src/GribRequestDialog.cpp:355
-#: src/GribRequestDialog.cpp:358
-msgid "N"
-msgstr "É"
-
-#: src/GribUIDialogBase.cpp:2592
-msgid "Max Long"
-msgstr "Max hosszúság"
-
-#: src/GribUIDialogBase.cpp:2602 src/GribRequestDialog.cpp:356
-#: src/GribRequestDialog.cpp:357
-msgid "E"
-msgstr "K"
-
-#: src/GribUIDialogBase.cpp:2608
-msgid "Min Lat"
-msgstr "Min szélesség"
-
-#: src/GribUIDialogBase.cpp:2618 src/GribRequestDialog.cpp:355
-#: src/GribRequestDialog.cpp:358
-msgid "S"
-msgstr "D"
-
-#: src/GribUIDialogBase.cpp:2624
-msgid "Min Long"
-msgstr "Min hosszúság"
-
-#: src/GribUIDialogBase.cpp:2634 src/GribRequestDialog.cpp:356
-#: src/GribRequestDialog.cpp:357
-msgid "W"
-msgstr "Ny"
-
-#: src/GribUIDialogBase.cpp:2647
-msgid "Data Selection"
-msgstr "Adat kiválasztás"
-
-#: src/GribUIDialogBase.cpp:2676
-msgid "Air Temperature(2m)"
-msgstr "Levegő hőmérséklet (2m-en)"
-
-#: src/GribUIDialogBase.cpp:2686
-msgid "Comp. Reflect."
-msgstr "Komp. refl."
-
-#: src/GribUIDialogBase.cpp:2691
-msgid "Sea Temperature(surf.)"
-msgstr "Tenger felszín hőmérséklete"
-
-#: src/GribUIDialogBase.cpp:2722
-msgid "Geopotential Height"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2732
-msgid "850 hPa"
-msgstr "850 hPa"
-
-#: src/GribUIDialogBase.cpp:2737
-msgid "700 hPa"
-msgstr "700 hPa"
-
-#: src/GribUIDialogBase.cpp:2742
-msgid "500 hPa"
-msgstr "500 hPa"
-
-#: src/GribUIDialogBase.cpp:2746
-msgid "300 hPa"
-msgstr "300 hPa"
-
-#: src/GribUIDialogBase.cpp:2758
-msgid "Mail"
-msgstr "E-Mail"
-
-#: src/GribUIDialogBase.cpp:2785
-msgid "Estimated File Size"
-msgstr "Becsült fájl méret:"
-
-#: src/GribUIDialogBase.cpp:2795
+#
 msgid " (Max size )"
 msgstr " (max méret)"
-
-#: src/GribUIDialogBase.cpp:3080
-msgid "Data at Position:"
-msgstr "Adat a pozíción:"
-
-#: src/GribUIDialogBase.cpp:3111
-msgid "Close"
-msgstr "Bezárás"
-
-#: src/smapi.cpp:117
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr "Email hiba: MAPI32.DLL nincs telepítve, vagy érvénytelen ezen a számítógépen!"
-
-#: src/GribUIDialogBase.h:350
-msgid "Preferences"
-msgstr "Beállítások"
-
-#: src/GribUIDialogBase.h:440
-msgid "Write and send eMail request"
+#
+msgid " can't be read!"
+msgstr "nem olvasható!"
+#
+msgid " contains no valid data!"
+msgstr "nem tartalmaz érvényes adatot!"
+#
+msgid " files don't exist!"
+msgstr "fájl nem létezik!"
+#
+msgid "300 hPa"
+msgstr "300 hPa"
+#
+msgid "500 hPa"
+msgstr "500 hPa"
+#
+msgid "700 hPa"
+msgstr "700 hPa"
+#
+msgid "850 hPa"
+msgstr "850 hPa"
+#
+msgid "Abbreviated Isobars Numbers"
+msgstr "Rövidített izobár számok"
+#
+msgid "Abbreviated Numbers"
+msgstr "Rövidített számok"
+#
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "A kéréshez kiküldéshez használt email cím. (LINUXban kötelező)"
+#
+msgid "Air Temp"
+msgstr "Levegő hőm"
+#
+msgid "Air Temp."
+msgstr "Levegő hőm."
+#
+msgid "Air Temperature"
+msgstr "Tenger felszín hőmérséklete, C"
+#
+msgid "Air Temperature at"
+msgstr "Levegő hőmérséklet"
+#
+msgid "Air Temperature(2m)"
+msgstr "Levegő hőmérséklet (2m-en)"
+#
+msgid "Altitude"
+msgstr "Magasság"
+#
+msgid "Altitude(Geopotential)"
 msgstr ""
-
-#: src/GribUIDialogBase.h:467
-msgid "Grib Data Table"
-msgstr "Grib adat táblázat"
-
-#: src/grib_pi.h:109 src/GribOverlayFactory.cpp:389 src/grib_pi.cpp:445
-#: src/GribRequestDialog.cpp:139 src/GribRequestDialog.cpp:215
-#: src/GribRequestDialog.cpp:550 src/CursorData.cpp:160
-msgid "Dialog"
-msgstr "Párbeszédablak"
-
-#: src/GribOverlayFactory.cpp:588
-msgid "Warning : Data at Geopotential Height"
+#
+msgid "Always visible"
+msgstr "Mindig látható"
+#
+msgid "Apply"
+msgstr "Alkalmaz"
+#
+msgid "Area Selection"
+msgstr "Terület kiválasztás"
+#
+msgid "Attached icon bar"
+msgstr "Csatolt ikonsor"
+#
+msgid "Authorize Interpolation to start at current time"
+msgstr "Interpolálás engedélyezése aktuális időponttól kezdve"
+#
+msgid "Barbed Arrows"
+msgstr "Tollas nyilak"
+#
+msgid "Beaufort"
+msgstr "Beaufort"
+#
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
-
-#: src/GribOverlayFactory.cpp:1343
-msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
-
-#: src/GribOverlayFactory.cpp:1373
+"Mielőtt email küld a Zygribnek, meg kell adnia a Login és Code adatokat .\n"
+"Kérem menjen a www.zygrib.org/ oldalra és kövesse a leírást..."
+#
 msgid "Building Isobar map"
 msgstr "Izobár térkép generálása"
-
-#: src/GribOverlayFactory.cpp:1648
-msgid "OverlayMap Unable to compute record magnitude"
+#
+msgid "Buttons Visibility"
+msgstr "Gombok láthatósága"
+#
+msgid "C. Reflect."
 msgstr ""
-
-#: src/GribOverlayFactory.cpp:1686
-msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Ez a grafikus hw nem támogatja az overlayeket (tiltsa le az OpenGL-t)"
-
-#: src/GribOverlayFactory.cpp:1697
-msgid "Overlays too wide and can't be displayed:"
-msgstr "Az overlay-ek túl szélesek és nem lehet megjeleníteni:"
-
-#: src/GribOverlayFactory.cpp:1708
-msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "overlay-ek nem engedélyezettek ha nem Észak fölfelé DC módban van (engedélyezze az OpenGL-t)"
-
-#: src/GribOverlayFactory.cpp:1728
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Zoomolj, vagy válts nagyobb méretarányra az elnyomott HTSGW GRIB megjelenítéséhez"
-
-#: src/GribOverlayFactory.cpp:1759
-msgid "GribNumbers Unable to compute record magnitude"
+#
+msgid "CAPE"
+msgstr "CAPE"
+#
+msgid "Cancel"
+msgstr "Mégse"
+#
+msgid "Celsius"
+msgstr "Celsius"
+#
+msgid "Close"
+msgstr "Bezárás"
+#
+msgid "Cloud Cover"
+msgstr "Felhőtakaró"
+#
+msgid "Color scheme"
+msgstr "Színséma"
+#
+msgid "Comp. Refl."
+msgstr "Komp. refl."
+#
+msgid "Comp. Reflect."
+msgstr "Komp. refl."
+#
+msgid "Composite Reflectivity"
+msgstr "Kompozit reflektivitás"
+#
+msgid "Continue..."
+msgstr "Folytatás..."
+#
+msgid "Controlled Colours"
 msgstr ""
-
-#: src/grib_pi.cpp:150
-msgid "Grib"
-msgstr "Grib"
-
-#: src/grib_pi.cpp:201
+#
+msgid "Convective Available Potential Energy"
+msgstr ""
+#
+msgid "Coord. "
+msgstr "Koordináták"
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr ""
+#
+msgid "Copy Missing Wave Records"
+msgstr "Hiányó hullám adatok másolása"
+#
+msgid "Course"
+msgstr ""
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr "Összegzett csapadék óránként"
+#
+msgid "Current"
+msgstr "Áramlat sebessége, csomó."
+#
+msgid "Current time forecast"
+msgstr "Aktuális időpntra vonatkozó előrejelzés"
+#
+msgid "Current,Dir"
+msgstr "Áramlás,irány"
+#
+msgid "Current,Speed"
+msgstr "Áramlás,seb."
+#
+msgid "Data"
+msgstr "Adat"
+#
+msgid "Data Display Options"
+msgstr "Adat megjelenítési beállítások"
+#
+msgid "Data Selection"
+msgstr "Adat kiválasztás"
+#
+msgid "Data at Position:"
+msgstr "Adat a pozíción:"
+#
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr ""
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr ""
+#
+msgid "Data at cursor position"
+msgstr "Adat a kurzor pozícióban"
+#
+msgid "Days"
+msgstr "Napok"
+#
+msgid "Default Colour"
+msgstr "Alapértelmezett színek"
+#
+msgid "Default Size"
+msgstr "Alapértelmezett méret"
+#
+msgid "Deg"
+msgstr "Fok"
+#
+msgid "Density"
+msgstr "Sűrűség"
+#
+msgid "Dialog"
+msgstr "Párbeszédablak"
+#
+msgid "Dialogs Style"
+msgstr "Párbeszédpanel stílus"
+#
+msgid "Direction Arrows"
+msgstr ""
+#
+msgid "Display Comp. Reflectivity"
+msgstr ""
+#
+msgid "Display Iso CAPE"
+msgstr ""
+#
+msgid "Display Iso Reflectivity"
+msgstr ""
+#
+msgid "Display Isobars"
+msgstr "Izobárok megjelenítése"
+#
+msgid "Display Isotachs"
+msgstr ""
+#
+msgid "Display Isotherms"
+msgstr "Izotermák megjelenítése"
+#
+msgid "Double Arrow"
+msgstr "Kettős nyíl"
+#
+msgid "Draw Barbed Arrows Head"
+msgstr ""
+#
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+"A kért terület kirajzolása \n"
+"vagy klikk ide a lekérés megállításához"
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr "A kért terület kirajzolása vagy klikk ide a lekérés megállításához"
+#
+msgid "E"
+msgstr "K"
+#
+msgid "Enter your forecasted Course"
+msgstr "Adja meg a tervezett útvonalát"
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Adja meg a tervezett sebességét (csomóban)"
+#
+msgid "Error! "
+msgstr "Hiba! "
+#
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr "Hiba! Max Lat kisebb a Min Lat-nál vagy Max Lon kisebb a Min Lon-nál."
+#
+msgid "Estimated File Size"
+msgstr "Becsült fájl méret:"
+#
+msgid "Fahrenheit"
+msgstr "Farenheit"
+#
+msgid "Fast"
+msgstr "Gyors"
+#
+msgid "Feet"
+msgstr "Láb"
+#
+msgid "File: "
+msgstr "Fájl:"
+#
+msgid "Fixed"
+msgstr "Rögzített"
+#
+msgid "Forecast Model "
+msgstr "Előrejelzési modell "
+#
+msgid "GRIB Display Control"
+msgstr "GRIB kijelzés vezérlés"
+#
+msgid "GRIB PlugIn Preferences"
+msgstr ""
+#
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN GRIB modul"
-
-#: src/grib_pi.cpp:205
-msgid "GRIB PlugIn for OpenCPN\n"
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
-"and a request function to get GRIB files by eMail.\n\n"
+"and a request function to get GRIB files by eMail.\n"
+"\n"
 "Supported GRIB data include:\n"
 "- wind direction and speed (at 10 m)\n"
 "- wind gust\n"
@@ -930,242 +319,577 @@ msgid "GRIB PlugIn for OpenCPN\n"
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "A GRIB OpenCPN modul\n"
-"alapvető GRIB állomány kijezését teszi lehetővé különböző GRIB fájl típusokkal.\n\n"
+msgstr ""
+"A GRIB OpenCPN modul\n"
+"alapvető GRIB állomány kijezését teszi lehetővé különböző GRIB fájl "
+"típusokkal.\n"
+"\n"
 "Támogatott GRIB fájl típusok:\n"
 "- szél irány és sebesség\n"
 "- hullám magasság\n"
 "- tenger felszíni hőmérséklete\n"
 "- felszíni áramlás iránya és sebessége."
-
-#: src/grib_pi.cpp:412
-msgid "Weather table"
-msgstr "Időjárás táblázat"
-
-#: src/grib_pi.cpp:828
-msgid "You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed at current time will not be real but Recomputed\n"
-"This can decrease accuracy!"
+#
+msgid "GUI"
 msgstr ""
-
-#: src/GribTable.cpp:104
-msgid "Wind,Dir"
-msgstr "Szél,irány"
-
-#: src/GribTable.cpp:110
-msgid "Wind,Speed"
-msgstr "Szélsebesség"
-
-#: src/GribTable.cpp:120
-msgid "Wind,Gust"
-msgstr "Széllökés"
-
-#: src/GribTable.cpp:149
-msgid "Waves,Dir"
-msgstr "Hullám,irány"
-
-#: src/GribTable.cpp:154
-msgid "Waves,Hsig"
-msgstr "Hullám,Hsig"
-
-#: src/GribTable.cpp:161
-msgid "Waves,Per"
-msgstr "Hullám,Per"
-
-#: src/GribTable.cpp:189
-msgid "Air Temp."
-msgstr "Levegő hőm."
-
-#: src/GribTable.cpp:198
-msgid "Sea Temp."
-msgstr "Tenger hőm."
-
-#: src/GribTable.cpp:217
-msgid "C. Reflect."
+#
+msgid "General Options"
+msgstr "Általános beállítások"
+#
+msgid "Generic"
+msgstr "Általános"
+#
+msgid "Geopot. Height Choice"
 msgstr ""
-
-#: src/GribTable.cpp:231
-msgid "Current,Dir"
-msgstr "Áramlás,irány"
-
-#: src/GribTable.cpp:237
-msgid "Current,Speed"
-msgstr "Áramlás,seb."
-
-#: src/GribRequestDialog.cpp:131 src/GribRequestDialog.cpp:1154
-msgid "Send"
-msgstr "Küldés"
-
-#: src/GribRequestDialog.cpp:132
-msgid "Save"
-msgstr "Mentés"
-
-#: src/GribRequestDialog.cpp:151
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "A kéréshez kiküldéshez használt email cím. (LINUXban kötelező)"
-
-#: src/GribRequestDialog.cpp:152
-msgid "This is your zyGrib's forum access Login"
-msgstr "Ez az Ön zyGrib fórum Login neve"
-
-#: src/GribRequestDialog.cpp:154
+#
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Szerezze meg ezt a Code-ot a zyGrib fórumból (ez nem a jelszava!)"
-
-#: src/GribRequestDialog.cpp:155
-msgid "Enter your forescasted Speed (in Knots)"
-msgstr "Adja meg a tervezett sebességét (csomóban)"
-
-#: src/GribRequestDialog.cpp:156
-msgid "Enter your forecasted Course"
-msgstr "Adja meg a tervezett útvonalát"
-
-#: src/GribRequestDialog.cpp:496
-msgid "Sorry...\n"
+#
+msgid "Grib"
+msgstr "Grib"
+#
+msgid "Grib Data Table"
+msgstr "Grib adat táblázat"
+#
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr ""
+#
+msgid "Hide data at cursor"
+msgstr "Kurzornál adat eltüntetése"
+#
+msgid "Hours"
+msgstr "Óra"
+#
+msgid "Icons Size Factor"
+msgstr ""
+#
+msgid "Inches"
+msgstr "Hüvelyk"
+#
+msgid "Interpolate between gribs"
+msgstr ""
+#
+msgid "Interval"
+msgstr ""
+#
+msgid "IsoBar Unable to compute record magnitude"
+msgstr ""
+#
+msgid "IsoBars"
+msgstr "Izobárok"
+#
+msgid "Isolated icon bar"
+msgstr "Különálló ikonsor"
+#
+msgid "Knots"
+msgstr "Csomó"
+#
+msgid "Kts"
+msgstr "Csomó"
+#
+msgid "Load File Options"
+msgstr "Fájl betöltési lehetőségek"
+#
+msgid "Load the Last Opened File"
+msgstr "Utoljára megnyitott fájl betöltése"
+#
+msgid "Load the More Recent File in Directory"
+msgstr "A könyvtárból a legfrissebb fájl megnyitása"
+#
+msgid "Local Time"
+msgstr "Helyi idő"
+#
+msgid "Loop Mode"
+msgstr "Folyamatos lejátszás"
+#
+msgid "Loop Start"
+msgstr "Ismétlés kezdete"
+#
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr ""
+"Email hiba: MAPI32.DLL nincs telepítve, vagy érvénytelen ezen a számítógépen!"
+#
+msgid "MB"
+msgstr "MB"
+#
+msgid "Mail"
+msgstr "E-Mail"
+#
+msgid "Mail To "
+msgstr "Címzett:"
+#
+msgid "Manual Selection"
+msgstr "Kézi kiválasztás"
+#
+msgid "Max"
+msgstr "Max"
+#
+msgid "Max Lat"
+msgstr "Max szélesség"
+#
+msgid "Max Long"
+msgstr "Max hosszúság"
+#
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Légnyomás, mBar"
+#
+msgid "Menu"
+msgstr "Menü"
+#
+msgid "Meters"
+msgstr "Méter"
+#
+msgid "MilliBars"
+msgstr "Millibar"
+#
+msgid "Millimeters"
+msgstr "Milliméter"
+#
+msgid "Min Lat"
+msgstr "Min szélesség"
+#
+msgid "Min Long"
+msgstr "Min hosszúság"
+#
+msgid "Minimum"
+msgstr "Minimum"
+#
+msgid "Moving Grib"
+msgstr ""
+#
+msgid "MyLabel"
+msgstr ""
+#
+msgid "N"
+msgstr "É"
+#
+msgid "N/A"
+msgstr "N/A"
+#
+msgid "Next"
+msgstr "Következő"
+#
+msgid "No valid GRIB file"
+msgstr "Nincs érvényes GRIB fájl"
+#
+msgid "Now"
+msgstr "Most"
+#
+msgid "Numbers"
+msgstr "Számok"
+#
+msgid "Open File"
+msgstr "Fájl megnyitása"
+#
+msgid "Open a new file"
+msgstr "Új fájl megnyitása"
+#
+msgid "Overlay Transparency (%)"
+msgstr "Overlay átlátszóság (%)"
+#
+msgid "OverlayMap"
+msgstr "Overlay térkép"
+#
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr ""
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Ez a grafikus hw nem támogatja az overlayeket (tiltsa le az OpenGL-t)"
+#
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Az overlay-ek túl szélesek és nem lehet megjeleníteni:"
+#
+msgid "Particle Map"
+msgstr "Homokszemcse térkép"
+#
+msgid "Percentage"
+msgstr "Százalék"
+#
+msgid "Playback"
+msgstr "Lejátszás"
+#
+msgid "Playback Options"
+msgstr "Visszajátszás beállítások"
+#
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr ""
+"Zoomolj, vagy válts nagyobb méretarányra az elnyomott HTSGW GRIB "
+"megjelenítéséhez"
+#
+msgid "Preferences"
+msgstr "Beállítások"
+#
+msgid "Pressure"
+msgstr "Légnyomás, mBar"
+#
+msgid "Previous"
+msgstr "Előző"
+#
+msgid "Profile"
+msgstr "Profil"
+#
+msgid "Proportional Arrow"
+msgstr "Arányos nyíl"
+#
+msgid "Rainfall"
+msgstr "Eső"
+#
+msgid "Relat. Hum."
+msgstr "Rel. pára"
+#
+msgid "Relative Humidity"
+msgstr "Relatív páratartalom"
+#
+msgid "Request"
+msgstr "Kérés"
+#
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+"A kérést nem lehet elküldeni. Kérem ellenőrizze az email rendszer "
+"paramétereket.\n"
+"Nézzen bele a log fájlba is.\n"
+"Mentés vagy Eldobás a befejezéshez..."
+#
+msgid "Resolution"
+msgstr "Felbontás"
+#
+msgid "S"
+msgstr "D"
+#
+msgid "Save"
+msgstr "Mentés"
+#
+msgid "Sea Surface Temperature"
+msgstr "Tenger felszín hőmérséklete"
+#
+msgid "Sea Temp"
+msgstr "Tenger felszín hőmérséklete, C"
+#
+msgid "Sea Temp."
+msgstr "Tenger hőm."
+#
+msgid "Sea Temperature"
+msgstr "Tenger felszín hőmérséklete, C"
+#
+msgid "Sea Temperature(surf.)"
+msgstr "Tenger felszín hőmérséklete"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Tenger vagy levegő hőmérséklet a felszínnél"
+#
+msgid "Select a GRIB file"
+msgstr "GRIB könyvtár kiválasztása"
+#
+msgid "Select geopotential altitude"
+msgstr ""
+#
+msgid "Select geoptential altitude"
+msgstr ""
+#
+msgid "Send"
+msgstr "Küldés"
+#
+msgid "Sender eMail Address"
+msgstr "Küldő e-mail címe"
+#
+msgid "Settings"
+msgstr "Beállítások"
+#
+msgid "Show Cursor Data"
+msgstr "Kurzor adatok megjelenítése"
+#
+msgid "Show data at cursor"
+msgstr "Kurzornál adat megjelenítése"
+#
+msgid "Significant Wave Height"
+msgstr "Hullám magasság, m"
+#
+msgid "Single Arrow"
+msgstr ""
+#
+msgid "Slow"
+msgstr "Lassú"
+#
+msgid "Small Size"
+msgstr "Kis méret"
+#
+msgid ""
+"Sorry...\n"
 "ZyGrib momentary stopped providing this service...\n"
 "Only Saildocs option is available"
 msgstr ""
-
-#: src/GribRequestDialog.cpp:496
+#
+msgid "Spacing"
+msgstr ""
+#
+msgid "Spacing(pixels)"
+msgstr ""
+#
+msgid "Speed"
+msgstr "Sebesség"
+#
+msgid "Speed Control"
+msgstr "Sebesség állítás"
+#
+msgid "Start Options"
+msgstr "Indítási beállítások"
+#
+msgid "Start a request"
+msgstr "Indítson egy lekérést"
+#
+msgid "Start at the first forecast in GRIB file"
+msgstr "A GRIB fájlban található első előrejelzéssel kezdjen"
+#
+msgid "Start at the nearest forecast to current time"
+msgstr "Az aktuális időponthoz legközelebbi előrejelzéssel kezdjen"
+#
+msgid "Start play back"
+msgstr "Visszajátszás indítása"
+#
+msgid "Stop play back"
+msgstr "Visszajátszás leállítása"
+#
+msgid "Surface Current Direction"
+msgstr "Felszíni áramlat iránya"
+#
+msgid "Surface Current Speed"
+msgstr "Felszíni áramlat sebesség"
+#
+msgid "Temp."
+msgstr "Hőm."
+#
+msgid "Temperature"
+msgstr "Hőmérséklet"
+#
+msgid ""
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr ""
+#
+msgid "This is your zyGrib's forum access Login"
+msgstr "Ez az Ön zyGrib fórum Login neve"
+#
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+#
+msgid "Time Interval"
+msgstr ""
+#
+msgid "Time Options"
+msgstr "Idő opciók"
+#
+msgid "Time Range"
+msgstr "Időtartomány"
+#
+msgid "Time Slider"
+msgstr "Idő csúszka"
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "Túl nagy file, zyGrib mérethatár 2Mb!"
+#
+msgid "Too large area! Each side must be less than 180°!"
+msgstr "Túl nagy terület! Minden oldalnak kisebbnek kell lennie 180°-nál!"
+#
+msgid "Too small area for this resolution!"
+msgstr "Túl kicsi terület ehhez a felbontáshoz!"
+#
+msgid "Top of Grib File"
+msgstr "A Grib fájl elejére"
+#
+msgid "Transparency for all Overlay Maps"
+msgstr "Összes overlay térkép átlátszósága"
+#
+msgid "UTC"
+msgstr "UTC"
+#
+msgid "Units"
+msgstr "Mértékegységek"
+#
+msgid "Use Always this Area"
+msgstr "Mindig ezt a területet használja"
+#
+msgid "Use Gradual Colors"
+msgstr "Színátmenetek használata"
+#
+msgid "Use High Definition Graphics"
+msgstr "Nagyfelbontású grafika használata"
+#
+msgid "Valid Area and Continue"
+msgstr ""
+#
+msgid "W"
+msgstr "Ny"
+#
 msgid "Warning"
 msgstr ""
-
-#: src/GribRequestDialog.cpp:562
-msgid "Coord. "
-msgstr "Koordináták"
-
-#: src/GribRequestDialog.cpp:568 src/GribRequestDialog.cpp:1025
-#: src/GribRequestDialog.cpp:1029
-msgid "MB"
-msgstr "MB"
-
-#: src/GribRequestDialog.cpp:708
-msgid "You request a forecast for more than 8 days horizon.\n"
+#
+msgid "Warning : Data at Geopotential Height"
+msgstr ""
+#
+msgid "Warning!"
+msgstr "Figyelem!"
+#
+msgid "Waves"
+msgstr "Hullám"
+#
+msgid "Waves Direction"
+msgstr "Szél irány"
+#
+msgid "Waves period"
+msgstr "Hullám periódus"
+#
+msgid "Waves,Dir"
+msgstr "Hullám,irány"
+#
+msgid "Waves,Hsig"
+msgstr "Hullám,Hsig"
+#
+msgid "Waves,Per"
+msgstr "Hullám,Per"
+#
+msgid "Weather table"
+msgstr "Időjárás táblázat"
+#
+msgid "Wind"
+msgstr "Szél"
+#
+msgid "Wind Direction"
+msgstr "Szélirány"
+#
+msgid "Wind Gust"
+msgstr "Széllökés"
+#
+msgid "Wind Gust at"
+msgstr "Széllökés "
+#
+msgid "Wind Speed"
+msgstr "Szélsebesség"
+#
+msgid "Wind Speed in Bf"
+msgstr "Szélsebesség Bf"
+#
+msgid "Wind,Dir"
+msgstr "Szél,irány"
+#
+msgid "Wind,Gust"
+msgstr "Széllökés"
+#
+msgid "Wind,Speed"
+msgstr "Szélsebesség"
+#
+msgid "Write and send eMail request"
+msgstr ""
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but "
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5°x2.5°\n"
 "and the time intervall 12 hours."
-msgstr "A lekérés több mint 8 nap időtartamú\n"
+msgstr ""
+"A lekérés több mint 8 nap időtartamú\n"
 "Ez ellentmondó a hullám adattal, amit kiszedtünk a lekérésből.\n"
 "Emlékeztetjük, hogy az első 8 nap után a felbontás csak 2.5°x2.5°\n"
 "és az idő intervallum 12 órás."
-
-#: src/GribRequestDialog.cpp:1028
-msgid "Max"
-msgstr "Max"
-
-#: src/GribRequestDialog.cpp:1168
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
-"Please visit www.zygrib.org/ and follow instructions..."
-msgstr "Mielőtt email küld a Zygribnek, meg kell adnia a Login és Code adatokat .\n"
-"Kérem menjen a www.zygrib.org/ oldalra és kövesse a leírást..."
-
-#: src/GribRequestDialog.cpp:1170
-msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr "Túl nagy file, zyGrib mérethatár 2Mb!"
-
-#: src/GribRequestDialog.cpp:1171
-msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr "Hiba! Max Lat kisebb a Min Lat-nál vagy Max Lon kisebb a Min Lon-nál."
-
-#: src/GribRequestDialog.cpp:1172
-msgid "Too large area! Each side must be less than 180°!"
-msgstr "Túl nagy terület! Minden oldalnak kisebbnek kell lennie 180°-nál!"
-
-#: src/GribRequestDialog.cpp:1173
-msgid "Too small area for this resolution!"
-msgstr "Túl kicsi terület ehhez a felbontáshoz!"
-
-#: src/GribRequestDialog.cpp:1190 src/GribRequestDialog.cpp:1252
-msgid "Continue..."
-msgstr "Folytatás..."
-
-#: src/GribRequestDialog.cpp:1229 src/GribRequestDialog.cpp:1235
-msgid "Your request is ready. An email is prepared in your email environment. \n"
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr ""
+#
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr ""
+#
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "A lekérés elkészült. Egy emailt készítettünk elő, az Ön email kezelőjében. \n"
+msgstr ""
+"A lekérés elkészült. Egy emailt készítettünk elő, az Ön email kezelőjében. \n"
 "Ellenőrizze és küldje el! \n"
 "Mentés vagy Eldobás a befejezéshez...vagy Folytatás..."
-
-#: src/GribRequestDialog.cpp:1240
-msgid "Your request was sent \n"
+#
+msgid ""
+"Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
-msgstr "A kérése el lett küldve. \n"
+msgstr ""
+"A kérése el lett küldve. \n"
 "(amennyiben a rendszerének van konfigurált MTA-ja és tud levelet küldeni).\n"
 "Mentés vagy Eldobás a befejezéshez...vagy Folytatás..."
-
-#: src/GribRequestDialog.cpp:1247
-msgid "Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr "A kérést nem lehet elküldeni. Kérem ellenőrizze az email rendszer paramétereket.\n"
-"Nézzen bele a log fájlba is.\n"
-"Mentés vagy Eldobás a befejezéshez..."
-
-#: src/CursorData.cpp:303
-msgid "Data at cursor position"
-msgstr "Adat a kurzor pozícióban"
-
-#: src/CursorData.cpp:326
-msgid "at Geopotential Height"
-msgstr ""
-
-#: src/CursorData.cpp:329
-msgid "Temperature"
-msgstr "Hőmérséklet"
-
-#: src/CursorData.cpp:332
+#
+msgid "Zoom To Center"
+msgstr "Belenagyítás középre"
+#
+msgid "Zoom to Center"
+msgstr "Belenagyítás középre"
+#
+msgid "Zoom to file center when opened"
+msgstr "Belenagyítás a fájl megnyitásakor"
+#
 msgid "at"
 msgstr "ekkor"
-
-#: src/CursorData.cpp:337
-msgid "Wind Speed"
-msgstr "Szélsebesség"
-
-#: src/CursorData.cpp:338
-msgid "Wind Speed in Bf"
-msgstr "Szélsebesség Bf"
-
-#: src/CursorData.cpp:339
-msgid "Wind Direction"
-msgstr "Szélirány"
-
-#: src/CursorData.cpp:344
-msgid "Wind Gust at"
-msgstr "Széllökés "
-
-#: src/CursorData.cpp:347
-msgid "Air Temperature at"
-msgstr "Levegő hőmérséklet"
-
-#: src/CursorData.cpp:347
+#
+msgid "at Geopotential Height"
+msgstr ""
+#
+msgid "dBZ"
+msgstr "dBZ"
+#
+msgid "h"
+msgstr "ó"
+#
+msgid "inHG"
+msgstr "inHG"
+#
+msgid "j/kg"
+msgstr "j/kg"
+#
+msgid "km/h"
+msgstr "km/h"
+#
+msgid "m/s"
+msgstr "m/s"
+#
+msgid "mmHG"
+msgstr "mmHg"
+#
+msgid "mn"
+msgstr "mn"
+#
+msgid "mph"
+msgstr "mph"
+#
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+"overlay-ek nem engedélyezettek ha nem Észak fölfelé DC módban van "
+"(engedélyezze az OpenGL-t)"
+#
 msgid "surface level"
 msgstr "tengerfelszínen"
-
-#: src/CursorData.cpp:348
-msgid "Sea Surface Temperature"
-msgstr "Tenger felszín hőmérséklete"
-
-#: src/CursorData.cpp:403 src/CursorData.cpp:404 src/CursorData.cpp:405
-#: src/CursorData.cpp:421 src/CursorData.cpp:442 src/CursorData.cpp:467
-#: src/CursorData.cpp:469 src/CursorData.cpp:473 src/CursorData.cpp:484
-#: src/CursorData.cpp:509 src/CursorData.cpp:510 src/CursorData.cpp:532
-#: src/CursorData.cpp:547 src/CursorData.cpp:563 src/CursorData.cpp:579
-#: src/CursorData.cpp:595 src/CursorData.cpp:609 src/CursorData.cpp:624
-#: src/CursorData.cpp:639 src/CursorData.cpp:653
-msgid "N/A"
-msgstr "N/A"
-
-#: src/CursorData.cpp:676
-msgid "Abbreviated Isobars Numbers"
-msgstr "Rövidített izobár számok"
-
-#: src/CursorData.cpp:694
-msgid "Display Iso Reflectivity"
-msgstr ""
-
-#: src/CursorData.cpp:759
-msgid "Menu"
-msgstr "Menü"
-
+#
+msgid "zyGrib Code"
+msgstr "zyGrib Code"
+#
+msgid "zyGrib Login"
+msgstr "zyGrib Login"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-06-05 01:25\n"
 "Last-Translator: \n"
 "Language-Team: Finnish\n"
@@ -16,47 +16,175 @@ msgstr ""
 "X-Crowdin-Language: fi\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
-
-#: src/wmm_pi.cpp:85
-msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
+#
+msgid ""
+"\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic "
+"variation values printed on many raster charts.\n"
+"\n"
 "Variation is the angle between true and magnetic north.\n"
 "Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
-"\t20000 to 66000\n\n"
-"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
-"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
-"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
-msgstr "\n"
-"Maan magneettisen mallin graafisen esityksen avulla käyttäjät voivat tehdä ristiviittauksia erantoarvoihin, joita on painettuna  monissa rasterikartoissa.\n\n"
+"\t20000 to 66000\n"
+"\n"
+"The plotted lines are similar to a topographic map.  The space between them "
+"can be adjusted; more space takes less time to calculate.\n"
+"\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs "
+"computation time.\n"
+"\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by "
+"Sean D'Epagnier to support plotting."
+msgstr ""
+"\n"
+"Maan magneettisen mallin graafisen esityksen avulla käyttäjät voivat tehdä "
+"ristiviittauksia erantoarvoihin, joita on painettuna  monissa "
+"rasterikartoissa.\n"
+"\n"
 "Eranto on tosisuunnan ja magneettisen pohjoisen välinen kulma. \n"
 "Inklinaatio on magneettisen kentän pystykulma.\n"
 "\t (+-90 magneettisilla navoilla)\n"
 "Magneettikentän voimakkuuden yksikkö on nanotesla ja arvoväli on\n"
-"\t20000:sta 66000:aan\n\n"
-"Piiretyt linjat ovat samanlaisia kuin topografisissa kartoissa.  Niiden väli on säädettävissä; isommat välit vähentävät laskenta-aikaa.\n\n"
-"Askelkoon ja navan sijaintitarkkuuden liukusäätimien avulla vaikutetaan laskentanopeuden ja -ajan suhteisiin.\n\n"
-"Maan magneettinen malli -lisäosan kirjoitti Pavel Kalian ja Sean D'Epagnier lisäsi graafisen esityksen tuen."
-
-#: src/wmm_pi.cpp:101
-msgid "WMM Plugin"
-msgstr "WMM-lisäosa"
-
-#: src/wmm_pi.cpp:162
-msgid "WMM_Live_Overlay"
-msgstr "WMM_muuttuva_peittokuva"
-
-#: src/wmm_pi.cpp:219 src/wmm_pi.cpp:288 src/WmmUIDialog.h:84
+"\t20000:sta 66000:aan\n"
+"\n"
+"Piiretyt linjat ovat samanlaisia kuin topografisissa kartoissa.  Niiden väli "
+"on säädettävissä; isommat välit vähentävät laskenta-aikaa.\n"
+"\n"
+"Askelkoon ja navan sijaintitarkkuuden liukusäätimien avulla vaikutetaan "
+"laskentanopeuden ja -ajan suhteisiin.\n"
+"\n"
+"Maan magneettinen malli -lisäosan kirjoitti Pavel Kalian ja Sean D'Epagnier "
+"lisäsi graafisen esityksen tuen."
+#
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - Geomagneettinen kaltevuus "
+#
+msgid "About"
+msgstr "Tietoja"
+#
+msgid "Boat"
+msgstr "Vene"
+#
+msgid "Building Magnetic Map"
+msgstr "Muodostetaan magneettinen kartta"
+#
+msgid "Cancel"
+msgstr "Peruuta"
+#
+msgid "Cursor"
+msgstr "Kursori"
+#
+msgid "Degrees"
+msgstr "Asteita"
+#
+msgid "East Component"
+msgstr "Itäinen komponentti"
+#
+msgid "Enable plot"
+msgstr "Salli piirtäminen"
+#
+msgid "Error, see log."
+msgstr "Virhe, katso lokia."
+#
+msgid "Extended"
+msgstr "Laajennettu"
+#
+msgid "F "
+msgstr "F "
+#
+msgid "Field Strength"
+msgstr "Kentän voimakkuus"
+#
+msgid "H "
+msgstr "H "
+#
+msgid "Horizontal Intensity"
+msgstr "Vaakaintensiteetti"
+#
+msgid "Incl"
+msgstr "Kaltevuus"
+#
+msgid "Inclination"
+msgstr "Kaltevuus"
+#
+msgid "Magnetic Plot Settings"
+msgstr "Magneettiset piirtoasetukset"
+#
+msgid "Magnetic Variation"
+msgstr "Magneettinen eranto"
+#
+msgid "Nano Tesla"
+msgstr "Nanotesla"
+#
+msgid "North Component"
+msgstr "Pohjoinen komponentti"
+#
+msgid "Plot"
+msgstr "Diagrammi"
+#
+msgid "Pole Accuracy"
+msgstr "Napatarkkuus"
+#
+msgid "Save"
+msgstr "Tallenna"
+#
+msgid "Settings..."
+msgstr "Asetukset..."
+#
+msgid "Show Plot Options"
+msgstr "Näytä piirtovaihtoehdot"
+#
+msgid "Show also data at cursor position"
+msgstr "Näytä myös tietoja kursorin sijainnissa"
+#
+msgid "Show data in toolbar icon"
+msgstr "Näytä tiedot työkalurivin kuvakeessa"
+#
+msgid "Show toolbar icon"
+msgstr "Näytä työkalurivikuvake"
+#
+msgid "Step Size"
+msgstr "Askelkoko"
+#
+msgid "Total Intensity"
+msgstr "Kokonaisintensiteetti"
+#
+msgid "Vari"
+msgstr "Eranto"
+#
+msgid "Variation"
+msgstr "Eranto"
+#
+msgid "Variation only"
+msgstr "Vain eranto"
+#
+msgid "Vertical Component"
+msgstr "Pystykomponentti"
+#
+msgid "View"
+msgstr "Näytä"
+#
 msgid "WMM"
 msgstr "WMM"
-
-#: src/wmm_pi.cpp:291
+#
+msgid "WMM Plugin"
+msgstr "WMM-lisäosa"
+#
+msgid "WMM Preferences"
+msgstr "WMM valinnat"
+#
+msgid "WMM_Live_Overlay"
+msgstr "WMM_muuttuva_peittokuva"
+#
+msgid "Window transparency"
+msgstr "Ikkunoiden läpinäkyvyys"
+#
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Maan magneettinen malli -lisäosa OpenCPN:ään"
-
-#: src/wmm_pi.cpp:296
-msgid "World Magnetic Model PlugIn for OpenCPN\n"
+#
+msgid ""
+"World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
@@ -64,174 +192,20 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr "Maan magneettinen malli -lisäosa OpenCPN:ään\n"
+msgstr ""
+"Maan magneettinen malli -lisäosa OpenCPN:ään\n"
 "Lisäosa toteuttaa NOAA:n maan magneettisen mallin.\n"
 "Lisää tietoja ositteesta:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
 "Paketoitu WMM2020-malli vanhenee 31.12.2025.\n"
-"Jollei uutta lisäosaversiota ole julkaistu tähän mennessä, lataa uusi WMM.COF NOAA:lta ja sijoita se hakemistoon, jonka löydät OpenCPN:n lokitiedostosta."
-
-#: src/wmm_pi.cpp:476 src/wmm_pi.cpp:642
-msgid "Error, see log."
-msgstr "Virhe, katso lokia."
-
-#: src/wmm_pi.cpp:925 src/WmmUIDialog.h:114
-msgid "WMM Preferences"
-msgstr "WMM valinnat"
-
-#: src/wmm_pi.h:85 src/WmmUIDialog.h:154
-msgid "Magnetic Plot Settings"
-msgstr "Magneettiset piirtoasetukset"
-
-#: src/WmmUIDialog.cpp:32
-msgid "Boat"
-msgstr "Vene"
-
-#: src/WmmUIDialog.cpp:40 src/WmmUIDialog.cpp:150
-msgid "F "
-msgstr "F "
-
-#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:153
-msgid "Total Intensity"
-msgstr "Kokonaisintensiteetti"
-
-#: src/WmmUIDialog.cpp:52 src/WmmUIDialog.cpp:162
-msgid "H "
-msgstr "H "
-
-#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:165
-msgid "Horizontal Intensity"
-msgstr "Vaakaintensiteetti"
-
-#: src/WmmUIDialog.cpp:64 src/WmmUIDialog.cpp:174
+"Jollei uutta lisäosaversiota ole julkaistu tähän mennessä, lataa uusi WMM.COF "
+"NOAA:lta ja sijoita se hakemistoon, jonka löydät OpenCPN:n lokitiedostosta."
+#
 msgid "X "
 msgstr "X "
-
-#: src/WmmUIDialog.cpp:67 src/WmmUIDialog.cpp:177
-msgid "North Component"
-msgstr "Pohjoinen komponentti"
-
-#: src/WmmUIDialog.cpp:76 src/WmmUIDialog.cpp:186
+#
 msgid "Y "
 msgstr "Y "
-
-#: src/WmmUIDialog.cpp:79 src/WmmUIDialog.cpp:189
-msgid "East Component"
-msgstr "Itäinen komponentti"
-
-#: src/WmmUIDialog.cpp:88 src/WmmUIDialog.cpp:198
+#
 msgid "Z "
 msgstr "Z "
-
-#: src/WmmUIDialog.cpp:91 src/WmmUIDialog.cpp:201
-msgid "Vertical Component"
-msgstr "Pystykomponentti"
-
-#: src/WmmUIDialog.cpp:100 src/WmmUIDialog.cpp:210
-msgid "Incl"
-msgstr "Kaltevuus"
-
-#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:213
-msgid "(DIP) - Geomagnetic Inclination "
-msgstr "(DIP) - Geomagneettinen kaltevuus "
-
-#: src/WmmUIDialog.cpp:121 src/WmmUIDialog.cpp:231
-msgid "Vari"
-msgstr "Eranto"
-
-#: src/WmmUIDialog.cpp:124 src/WmmUIDialog.cpp:234
-msgid "Magnetic Variation"
-msgstr "Magneettinen eranto"
-
-#: src/WmmUIDialog.cpp:142
-msgid "Cursor"
-msgstr "Kursori"
-
-#: src/WmmUIDialog.cpp:256
-msgid "Plot"
-msgstr "Diagrammi"
-
-#: src/WmmUIDialog.cpp:265
-msgid "Enable plot"
-msgstr "Salli piirtäminen"
-
-#: src/WmmUIDialog.cpp:270
-msgid "Settings..."
-msgstr "Asetukset..."
-
-#: src/WmmUIDialog.cpp:324
-msgid "Extended"
-msgstr "Laajennettu"
-
-#: src/WmmUIDialog.cpp:324
-msgid "Variation only"
-msgstr "Vain eranto"
-
-#: src/WmmUIDialog.cpp:326
-msgid "View"
-msgstr "Näytä"
-
-#: src/WmmUIDialog.cpp:332
-msgid "Show Plot Options"
-msgstr "Näytä piirtovaihtoehdot"
-
-#: src/WmmUIDialog.cpp:337
-msgid "Show also data at cursor position"
-msgstr "Näytä myös tietoja kursorin sijainnissa"
-
-#: src/WmmUIDialog.cpp:341
-msgid "Show toolbar icon"
-msgstr "Näytä työkalurivikuvake"
-
-#: src/WmmUIDialog.cpp:345
-msgid "Show data in toolbar icon"
-msgstr "Näytä tiedot työkalurivin kuvakeessa"
-
-#: src/WmmUIDialog.cpp:351
-msgid "Window transparency"
-msgstr "Ikkunoiden läpinäkyvyys"
-
-#: src/WmmUIDialog.cpp:362 src/WmmUIDialog.cpp:464
-msgid "Cancel"
-msgstr "Peruuta"
-
-#: src/WmmUIDialog.cpp:386 src/MagneticPlotMap.cpp:399
-msgid "Variation"
-msgstr "Eranto"
-
-#: src/WmmUIDialog.cpp:396 src/WmmUIDialog.cpp:410
-msgid "Degrees"
-msgstr "Asteita"
-
-#: src/WmmUIDialog.cpp:401 src/MagneticPlotMap.cpp:400
-msgid "Inclination"
-msgstr "Kaltevuus"
-
-#: src/WmmUIDialog.cpp:415 src/MagneticPlotMap.cpp:401
-msgid "Field Strength"
-msgstr "Kentän voimakkuus"
-
-#: src/WmmUIDialog.cpp:424
-msgid "Nano Tesla"
-msgstr "Nanotesla"
-
-#: src/WmmUIDialog.cpp:437
-msgid "Step Size"
-msgstr "Askelkoko"
-
-#: src/WmmUIDialog.cpp:451
-msgid "Pole Accuracy"
-msgstr "Napatarkkuus"
-
-#: src/WmmUIDialog.cpp:456
-msgid "About"
-msgstr "Tietoja"
-
-#: src/WmmUIDialog.cpp:460
-msgid "Save"
-msgstr "Tallenna"
-
-#: src/MagneticPlotMap.cpp:398
-msgid "Building Magnetic Map"
-msgstr "Muodostetaan magneettinen kartta"
-

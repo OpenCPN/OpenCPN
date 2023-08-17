@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-02-24 14:31\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
@@ -16,495 +16,372 @@ msgstr ""
 "X-Crowdin-Language: ko\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 "X-Crowdin-File-ID: 111\n"
-
-#: src/clock.cpp:169 src/dial.cpp:455 src/dial.cpp:456 src/gps.cpp:238
-#: src/wind.cpp:68 src/wind_history.cpp:486
-msgid "N"
-msgstr "북"
-
-#: src/dashboard_pi.cpp:244
-msgid "Position"
-msgstr "위치"
-
-#: src/dashboard_pi.cpp:246
-msgid "SOG"
-msgstr "대지속력"
-
-#: src/dashboard_pi.cpp:248
-msgid "Speedometer"
-msgstr "속도계"
-
-#: src/dashboard_pi.cpp:250
-msgid "COG"
-msgstr "실침로"
-
-#: src/dashboard_pi.cpp:252
-msgid "Mag COG"
-msgstr "자기 실침로"
-
-#: src/dashboard_pi.cpp:254
-msgid "GNSS Compass"
-msgstr "위성항법시스템(GNSS) 나침반"
-
-#: src/dashboard_pi.cpp:256
-msgid "True Compass"
-msgstr "실제 나침반"
-
-#: src/dashboard_pi.cpp:258
-msgid "STW"
-msgstr "대수속력"
-
-#: src/dashboard_pi.cpp:260
-msgid "True HDG"
-msgstr "실제 선수방향"
-
-#: src/dashboard_pi.cpp:262
-msgid "Mag HDG"
-msgstr "자기 선수방향"
-
-#: src/dashboard_pi.cpp:265
-msgid "App. Wind Angle & Speed"
-msgstr "바람 각 및 속도 앱"
-
-#: src/dashboard_pi.cpp:267
-msgid "App & True Wind Angle"
-msgstr "앱과 참바람 각"
-
-#: src/dashboard_pi.cpp:269 src/dashboard_pi.cpp:271
-msgid "App. Wind Speed"
-msgstr "풍속 앱"
-
-#: src/dashboard_pi.cpp:273
-msgid "True Wind Angle & Speed"
-msgstr "참바람 각과 속도"
-
-#: src/dashboard_pi.cpp:275
-msgid "Altitude"
-msgstr ""
-
-#: src/dashboard_pi.cpp:277
-msgid "Altitude Trace"
-msgstr ""
-
-#: src/dashboard_pi.cpp:279 src/dashboard_pi.cpp:281
-msgid "Depth"
-msgstr "수심"
-
-#: src/dashboard_pi.cpp:283 src/dashboard_pi.cpp:285
-msgid "Barometric pressure"
-msgstr "기압"
-
-#: src/dashboard_pi.cpp:287
-msgid "Water Temp."
-msgstr "수온"
-
-#: src/dashboard_pi.cpp:289
-msgid "Air Temp."
-msgstr "기온"
-
-#: src/dashboard_pi.cpp:291
-msgid "App. Wind Angle"
-msgstr "바람 각 앱"
-
-#: src/dashboard_pi.cpp:293
-msgid "True Wind Angle"
-msgstr "참바람 각"
-
-#: src/dashboard_pi.cpp:295
-msgid "True Wind Direction"
-msgstr "참바람 방향"
-
-#: src/dashboard_pi.cpp:297
-msgid "True Wind Speed"
-msgstr "참바람 속도"
-
-#: src/dashboard_pi.cpp:299
-msgid "True Wind Dir. & Speed"
-msgstr "참바람 방향과 속도"
-
-#: src/dashboard_pi.cpp:301 src/dashboard_pi.cpp:303
-msgid "VMG"
-msgstr "최적 속력"
-
-#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
-msgid "Rudder Angle"
-msgstr "방향타 각"
-
-#: src/dashboard_pi.cpp:309
-msgid "GNSS in use"
-msgstr "위성항법시스템(GNSS) 사용 중"
-
-#: src/dashboard_pi.cpp:311
-msgid "GNSS Status"
-msgstr "위성항법시스템(GNSS) 상태"
-
-#: src/dashboard_pi.cpp:313
-msgid "Cursor"
-msgstr "커서"
-
-#: src/dashboard_pi.cpp:315
-msgid "GNSS Clock"
-msgstr "위성항법시스템(GNSS) 시계"
-
-#: src/dashboard_pi.cpp:317
-msgid "Sunrise/Sunset"
-msgstr "일출/일몰"
-
-#: src/dashboard_pi.cpp:319
-msgid "Moon phase"
-msgstr "달의 위상"
-
-#: src/dashboard_pi.cpp:321
-msgid "Wind history"
-msgstr "바람 기록"
-
-#: src/dashboard_pi.cpp:323
-msgid "Barometric history"
-msgstr "기압 기록"
-
-#: src/dashboard_pi.cpp:325
-msgid "Trip Log"
-msgstr "여정 일지"
-
-#: src/dashboard_pi.cpp:327
-msgid "Sum Log"
-msgstr "일지 합계"
-
-#: src/dashboard_pi.cpp:329
-msgid "From Ownship"
-msgstr "자선에서"
-
-#: src/dashboard_pi.cpp:331
-msgid "Pitch"
-msgstr "배가 위아래로 흔들리기"
-
-#: src/dashboard_pi.cpp:333
-msgid "Heel"
-msgstr "배가 좌우로 기울기"
-
-#: src/dashboard_pi.cpp:335
-msgid "Local GNSS Clock"
-msgstr "로컬 자동항법시스템(GNSS) 시계"
-
-#: src/dashboard_pi.cpp:337
-msgid "Local CPU Clock"
-msgstr "로컬 CPU 시계"
-
-#: src/dashboard_pi.cpp:339
-msgid "Local Sunrise/Sunset"
-msgstr "로컬 일출/일몰"
-
-#: src/dashboard_pi.cpp:569 src/dashboard_pi.cpp:895 src/dashboard_pi.cpp:3326
-#: src/dashboard_pi.cpp:3340 src/dashboard_pi.cpp:3570 src/dashboard_pi.cpp:3664
-#: src/dashboard_pi.cpp:4182
-msgid "Dashboard"
-msgstr "계기반"
-
-#: src/dashboard_pi.cpp:898
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr "OpenCPN용 계비반 플러그인 "
-
-#: src/dashboard_pi.cpp:903
-msgid "Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr "OpenCPN용 계기반 플러그인\n"
-"NMEA 소스에서 탐색 장비 디스플레이를 제공합니다."
-
-#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:1957 src/dashboard_pi.cpp:2893
-#: src/dashboard_pi.cpp:3791
-msgid "Up"
-msgstr "위로"
-
-#: src/dashboard_pi.cpp:1727 src/dashboard_pi.cpp:1959 src/dashboard_pi.cpp:2895
-#: src/dashboard_pi.cpp:3798
-msgid "Down"
-msgstr "아래로"
-
-#: src/dashboard_pi.cpp:1744 src/dashboard_pi.cpp:1968 src/dashboard_pi.cpp:2882
-msgid "Stbd"
-msgstr "우현"
-
-#: src/dashboard_pi.cpp:1747 src/dashboard_pi.cpp:1970 src/dashboard_pi.cpp:2884
-msgid "Port"
-msgstr "좌현"
-
-#: src/dashboard_pi.cpp:3536
-msgid "Dashboard preferences"
-msgstr "계기반 기본 설정"
-
-#: src/dashboard_pi.cpp:3673
-msgid "show this dashboard"
-msgstr "이 계기반 보이기"
-
-#: src/dashboard_pi.cpp:3682
-msgid "Caption:"
-msgstr "표제:"
-
-#: src/dashboard_pi.cpp:3696
-msgid "Orientation:"
-msgstr "방향"
-
-#: src/dashboard_pi.cpp:3701 src/dashboard_pi.cpp:4738
-msgid "Vertical"
-msgstr "수직"
-
-#: src/dashboard_pi.cpp:3702 src/dashboard_pi.cpp:4741
-msgid "Horizontal"
-msgstr "수평"
-
-#: src/dashboard_pi.cpp:3733 src/dashboard_pi.cpp:3754 src/dashboard_pi.cpp:4348
-msgid "Instruments"
-msgstr "계기"
-
-#: src/dashboard_pi.cpp:3767
-msgid "Add"
-msgstr "추가"
-
-#: src/dashboard_pi.cpp:3783
-msgid "Delete"
-msgstr "삭제"
-
-#: src/dashboard_pi.cpp:3811
-msgid "Appearance"
-msgstr "겉보기"
-
-#: src/dashboard_pi.cpp:3814
-msgid "Fonts"
-msgstr "글꼴"
-
-#: src/dashboard_pi.cpp:3823
-msgid "Title:"
-msgstr "제목:"
-
-#: src/dashboard_pi.cpp:3832
-msgid "Data:"
-msgstr "데이터:"
-
-#: src/dashboard_pi.cpp:3841
-msgid "Label:"
-msgstr "라벨:"
-
-#: src/dashboard_pi.cpp:3850
-msgid "Small:"
-msgstr "작은:"
-
-#: src/dashboard_pi.cpp:3860
-msgid "Units, Ranges, Formats"
-msgstr "단위, 범위, 형식"
-
-#: src/dashboard_pi.cpp:3868
-msgid "Speedometer max value:"
-msgstr "속도계 최대 값"
-
-#: src/dashboard_pi.cpp:3877
-msgid "Speed Over Ground Damping Factor:"
-msgstr "대지속력 감쇠 인수:"
-
-#: src/dashboard_pi.cpp:3886
-msgid "COG Damping Factor:"
-msgstr "실침로 감쇠 인수:"
-
-#: src/dashboard_pi.cpp:3895
-msgid "Local Time Offset From UTC:"
-msgstr "세계협정시(UTC)로부터 지역 시간 옵셋"
-
-#: src/dashboard_pi.cpp:3920
-msgid "Boat speed units:"
-msgstr "보트 속력 단위:"
-
-#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:3987
-msgid "Honor OpenCPN settings"
-msgstr "OpenCPN 설정 존중"
-
-#: src/dashboard_pi.cpp:3923 src/dashboard_pi.cpp:4006
-msgid "Kts"
-msgstr "노트"
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "mph"
-msgstr "마일/시간"
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "km/h"
-msgstr "킬로미터/시간"
-
-#: src/dashboard_pi.cpp:3924 src/dashboard_pi.cpp:4006
-msgid "m/s"
-msgstr "미터/초"
-
-#: src/dashboard_pi.cpp:3938
-msgid "Depth units:"
-msgstr "수심 단위:"
-
-#: src/dashboard_pi.cpp:3942 src/dashboard_pi.cpp:3989
-msgid "Meters"
-msgstr "미터"
-
-#: src/dashboard_pi.cpp:3942
-msgid "Feet"
-msgstr "피트"
-
-#: src/dashboard_pi.cpp:3942
-msgid "Fathoms"
-msgstr "패덤"
-
-#: src/dashboard_pi.cpp:3943
-msgid "Inches"
-msgstr "인치"
-
-#: src/dashboard_pi.cpp:3943
-msgid "Centimeters"
-msgstr "센티미터"
-
-#: src/dashboard_pi.cpp:3955
-#, c-format
-msgid "Depth Offset (%s):"
-msgstr "수심 옵셋 (%s)"
-
-#: src/dashboard_pi.cpp:3984
-msgid "Distance units:"
-msgstr "거리 단위:"
-
-#: src/dashboard_pi.cpp:3988
-msgid "Nautical miles"
-msgstr "해리"
-
-#: src/dashboard_pi.cpp:3988
-msgid "Statute miles"
-msgstr "법정 마일"
-
-#: src/dashboard_pi.cpp:3989
-msgid "Kilometers"
-msgstr "킬로미터"
-
-#: src/dashboard_pi.cpp:4003
-msgid "Wind speed units:"
-msgstr "풍속 단위:"
-
-#: src/dashboard_pi.cpp:4020
-msgid "Temperature units:"
-msgstr "온도 단위:"
-
-#: src/dashboard_pi.cpp:4023
-msgid "Celsius"
-msgstr "섭씨"
-
-#: src/dashboard_pi.cpp:4023
-msgid "Fahrenheit"
-msgstr "화씨"
-
-#: src/dashboard_pi.cpp:4023
-msgid "Kelvin"
-msgstr "절대온도"
-
-#: src/dashboard_pi.cpp:4038
-msgid "Use N2K & SignalK true wind data over ground.\n"
-"(Instead of through water)"
-msgstr ""
-
-#: src/dashboard_pi.cpp:4310
-msgid "Add instrument"
-msgstr "계기 추가"
-
-#: src/dashboard_pi.cpp:4315
-msgid "Select instrument to add:"
-msgstr "추가할 계기 선택"
-
-#: src/dashboard_pi.cpp:4722 src/dashboard_pi.cpp:4748
-msgid "Preferences..."
-msgstr "기본 설정..."
-
-#: src/dashboard_pi.cpp:4727
-msgid "Resize..."
-msgstr "크기 조정..."
-
-#: src/dashboard_pi.cpp:4735
-msgid "Undock"
-msgstr "분리"
-
-#: src/dashboard_pi.cpp:5272
-msgid "Choose font"
-msgstr "글꼴 선택"
-
-#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:490
-msgid "NE"
-msgstr "북동"
-
-#: src/dial.cpp:455 src/gps.cpp:242 src/wind.cpp:68 src/wind_history.cpp:494
-msgid "E"
-msgstr "동"
-
-#: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:498
-msgid "SE"
-msgstr "남동"
-
-#: src/dial.cpp:455 src/gps.cpp:246 src/wind.cpp:69 src/wind_history.cpp:502
-msgid "S"
-msgstr "남"
-
-#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:506
-msgid "SW"
-msgstr "남서"
-
-#: src/dial.cpp:456 src/gps.cpp:250 src/wind.cpp:69 src/wind_history.cpp:510
-msgid "W"
-msgstr "서"
-
-#: src/dial.cpp:456 src/wind.cpp:69 src/wind_history.cpp:514
-msgid "NW"
-msgstr "북서"
-
-#: src/instrument.cpp:191
-msgid " true"
-msgstr "참"
-
-#: src/instrument.cpp:193
+#
 msgid " mag"
 msgstr "자기"
-
-#: src/wind_history.cpp:55 src/wind_history.cpp:120
+#
+msgid " true"
+msgstr "참"
+#
 msgid "-"
 msgstr ""
-
-#: src/wind_history.cpp:367
+#
 #, c-format
 msgid "--- %s"
 msgstr ""
-
-#: src/wind_history.cpp:488
-msgid "NNE"
-msgstr "북북동"
-
-#: src/wind_history.cpp:492
+#
+msgid "Add"
+msgstr "추가"
+#
+msgid "Add instrument"
+msgstr "계기 추가"
+#
+msgid "Air Temp."
+msgstr "기온"
+#
+msgid "Altitude"
+msgstr ""
+#
+msgid "Altitude Trace"
+msgstr ""
+#
+msgid "App & True Wind Angle"
+msgstr "앱과 참바람 각"
+#
+msgid "App. Wind Angle"
+msgstr "바람 각 앱"
+#
+msgid "App. Wind Angle & Speed"
+msgstr "바람 각 및 속도 앱"
+#
+msgid "App. Wind Speed"
+msgstr "풍속 앱"
+#
+msgid "Appearance"
+msgstr "겉보기"
+#
+msgid "Barometric history"
+msgstr "기압 기록"
+#
+msgid "Barometric pressure"
+msgstr "기압"
+#
+msgid "Boat speed units:"
+msgstr "보트 속력 단위:"
+#
+msgid "COG"
+msgstr "실침로"
+#
+msgid "COG Damping Factor:"
+msgstr "실침로 감쇠 인수:"
+#
+msgid "Caption:"
+msgstr "표제:"
+#
+msgid "Celsius"
+msgstr "섭씨"
+#
+msgid "Centimeters"
+msgstr "센티미터"
+#
+msgid "Choose font"
+msgstr "글꼴 선택"
+#
+msgid "Cursor"
+msgstr "커서"
+#
+msgid "Dashboard"
+msgstr "계기반"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "OpenCPN용 계비반 플러그인 "
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"OpenCPN용 계기반 플러그인\n"
+"NMEA 소스에서 탐색 장비 디스플레이를 제공합니다."
+#
+msgid "Dashboard preferences"
+msgstr "계기반 기본 설정"
+#
+msgid "Data:"
+msgstr "데이터:"
+#
+msgid "Delete"
+msgstr "삭제"
+#
+msgid "Depth"
+msgstr "수심"
+#
+#, c-format
+msgid "Depth Offset (%s):"
+msgstr "수심 옵셋 (%s)"
+#
+msgid "Depth units:"
+msgstr "수심 단위:"
+#
+msgid "Distance units:"
+msgstr "거리 단위:"
+#
+msgid "Down"
+msgstr "아래로"
+#
+msgid "E"
+msgstr "동"
+#
 msgid "ENE"
 msgstr "동북동"
-
-#: src/wind_history.cpp:496
+#
 msgid "ESE"
 msgstr "동남동"
-
-#: src/wind_history.cpp:500
-msgid "SSE"
-msgstr "남남동"
-
-#: src/wind_history.cpp:504
-msgid "SSW"
-msgstr "남남서"
-
-#: src/wind_history.cpp:508
-msgid "WSW"
-msgstr "서남서"
-
-#: src/wind_history.cpp:512
-msgid "WNW"
-msgstr "서북서"
-
-#: src/wind_history.cpp:516
-msgid "NNW"
-msgstr "북북서"
-
-#: src/wind_history.cpp:640
+#
+msgid "Fahrenheit"
+msgstr "화씨"
+#
+msgid "Fathoms"
+msgstr "패덤"
+#
+msgid "Feet"
+msgstr "피트"
+#
+msgid "Fonts"
+msgstr "글꼴"
+#
+msgid "From Ownship"
+msgstr "자선에서"
+#
+msgid "GNSS Clock"
+msgstr "위성항법시스템(GNSS) 시계"
+#
+msgid "GNSS Compass"
+msgstr "위성항법시스템(GNSS) 나침반"
+#
+msgid "GNSS Status"
+msgstr "위성항법시스템(GNSS) 상태"
+#
+msgid "GNSS in use"
+msgstr "위성항법시스템(GNSS) 사용 중"
+#
+msgid "Heel"
+msgstr "배가 좌우로 기울기"
+#
+msgid "Honor OpenCPN settings"
+msgstr "OpenCPN 설정 존중"
+#
+msgid "Horizontal"
+msgstr "수평"
+#
+msgid "Inches"
+msgstr "인치"
+#
+msgid "Instruments"
+msgstr "계기"
+#
+msgid "Kelvin"
+msgstr "절대온도"
+#
+msgid "Kilometers"
+msgstr "킬로미터"
+#
+msgid "Kts"
+msgstr "노트"
+#
+msgid "Label:"
+msgstr "라벨:"
+#
+msgid "Local CPU Clock"
+msgstr "로컬 CPU 시계"
+#
+msgid "Local GNSS Clock"
+msgstr "로컬 자동항법시스템(GNSS) 시계"
+#
+msgid "Local Sunrise/Sunset"
+msgstr "로컬 일출/일몰"
+#
+msgid "Local Time Offset From UTC:"
+msgstr "세계협정시(UTC)로부터 지역 시간 옵셋"
+#
+msgid "Mag COG"
+msgstr "자기 실침로"
+#
+msgid "Mag HDG"
+msgstr "자기 선수방향"
+#
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "최대 %.1f %s 이후 %02d:%02d 전체 %.1f %s"
-
+#
+msgid "Meters"
+msgstr "미터"
+#
+msgid "Moon phase"
+msgstr "달의 위상"
+#
+msgid "N"
+msgstr "북"
+#
+msgid "NE"
+msgstr "북동"
+#
+msgid "NNE"
+msgstr "북북동"
+#
+msgid "NNW"
+msgstr "북북서"
+#
+msgid "NW"
+msgstr "북서"
+#
+msgid "Nautical miles"
+msgstr "해리"
+#
+msgid "Orientation:"
+msgstr "방향"
+#
+msgid "Pitch"
+msgstr "배가 위아래로 흔들리기"
+#
+msgid "Port"
+msgstr "좌현"
+#
+msgid "Position"
+msgstr "위치"
+#
+msgid "Preferences..."
+msgstr "기본 설정..."
+#
+msgid "Resize..."
+msgstr "크기 조정..."
+#
+msgid "Rudder Angle"
+msgstr "방향타 각"
+#
+msgid "S"
+msgstr "남"
+#
+msgid "SE"
+msgstr "남동"
+#
+msgid "SOG"
+msgstr "대지속력"
+#
+msgid "SSE"
+msgstr "남남동"
+#
+msgid "SSW"
+msgstr "남남서"
+#
+msgid "STW"
+msgstr "대수속력"
+#
+msgid "SW"
+msgstr "남서"
+#
+msgid "Select instrument to add:"
+msgstr "추가할 계기 선택"
+#
+msgid "Small:"
+msgstr "작은:"
+#
+msgid "Speed Over Ground Damping Factor:"
+msgstr "대지속력 감쇠 인수:"
+#
+msgid "Speedometer"
+msgstr "속도계"
+#
+msgid "Speedometer max value:"
+msgstr "속도계 최대 값"
+#
+msgid "Statute miles"
+msgstr "법정 마일"
+#
+msgid "Stbd"
+msgstr "우현"
+#
+msgid "Sum Log"
+msgstr "일지 합계"
+#
+msgid "Sunrise/Sunset"
+msgstr "일출/일몰"
+#
+msgid "Temperature units:"
+msgstr "온도 단위:"
+#
+msgid "Title:"
+msgstr "제목:"
+#
+msgid "Trip Log"
+msgstr "여정 일지"
+#
+msgid "True Compass"
+msgstr "실제 나침반"
+#
+msgid "True HDG"
+msgstr "실제 선수방향"
+#
+msgid "True Wind Angle"
+msgstr "참바람 각"
+#
+msgid "True Wind Angle & Speed"
+msgstr "참바람 각과 속도"
+#
+msgid "True Wind Dir. & Speed"
+msgstr "참바람 방향과 속도"
+#
+msgid "True Wind Direction"
+msgstr "참바람 방향"
+#
+msgid "True Wind Speed"
+msgstr "참바람 속도"
+#
+msgid "Undock"
+msgstr "분리"
+#
+msgid "Units, Ranges, Formats"
+msgstr "단위, 범위, 형식"
+#
+msgid "Up"
+msgstr "위로"
+#
+msgid ""
+"Use N2K & SignalK true wind data over ground.\n"
+"(Instead of through water)"
+msgstr ""
+#
+msgid "VMG"
+msgstr "최적 속력"
+#
+msgid "Vertical"
+msgstr "수직"
+#
+msgid "W"
+msgstr "서"
+#
+msgid "WNW"
+msgstr "서북서"
+#
+msgid "WSW"
+msgstr "서남서"
+#
+msgid "Water Temp."
+msgstr "수온"
+#
+msgid "Wind history"
+msgstr "바람 기록"
+#
+msgid "Wind speed units:"
+msgstr "풍속 단위:"
+#
+msgid "km/h"
+msgstr "킬로미터/시간"
+#
+msgid "m/s"
+msgstr "미터/초"
+#
+msgid "mph"
+msgstr "마일/시간"
+#
+msgid "show this dashboard"
+msgstr "이 계기반 보이기"

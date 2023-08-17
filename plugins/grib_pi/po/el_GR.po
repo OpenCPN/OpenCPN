@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-12 12:37-0400\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-04-05 00:42\n"
 "Last-Translator: \n"
 "Language-Team: Greek\n"
@@ -16,913 +16,306 @@ msgstr ""
 "X-Crowdin-Language: el\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 "X-Crowdin-File-ID: 114\n"
-
-#: src/GribUIDialog.cpp:379 src/GribUIDialog.cpp:976
-msgid "Start a request"
-msgstr "Αρχή αιτήματος"
-
-#: src/GribUIDialog.cpp:385
-msgid "Draw requested Area\n"
-"or Click here to stop request"
-msgstr "Δείξε την περιοχή\n"
-"Κάνε κλικ εδώ για ακύρωση"
-
-#: src/GribUIDialog.cpp:390 src/GribUIDialog.cpp:979
-msgid "Valid Area and Continue"
-msgstr "Επικύρωση περιοχής και να συνέχεια"
-
-#: src/GribUIDialog.cpp:432
-msgid "File: "
-msgstr "Αρχείο: "
-
-#: src/GribUIDialog.cpp:437
-msgid "Error! "
-msgstr "Σφάλμα! "
-
-#: src/GribUIDialog.cpp:437
-msgid " contains no valid data!"
-msgstr " δεν περιέχει έγκυρα δεδομένα!"
-
-#: src/GribUIDialog.cpp:472
-msgid "No valid GRIB file"
-msgstr "Μη έγκυρο αρχείο GRIB"
-
-#: src/GribUIDialog.cpp:695 src/GribUIDialog.cpp:953
-msgid "Hide data at cursor"
-msgstr "Απόκρυψη δεδομένων στο δρομέα"
-
-#: src/GribUIDialog.cpp:696 src/GribUIDialog.cpp:953
-msgid "Show data at cursor"
-msgstr "Εμφάνιση δεδομένων στο δρομέα"
-
-#: src/GribUIDialog.cpp:697 src/GribUIDialog.cpp:960 src/GribUIDialog.cpp:1302
-msgid "Start play back"
-msgstr "Εκκίνηση αναπαραγωγής"
-
-#: src/GribUIDialog.cpp:944
-msgid "Select geopotential altitude"
-msgstr "Επιλογή γεωδυναμικού ύψους"
-
-#: src/GribUIDialog.cpp:947 src/GribUIDialogBase.cpp:71
-#: src/GribUIDialogBase.cpp:194 src/GribUIDialogBase.cpp:1662
-msgid "Now"
-msgstr "Τώρα"
-
-#: src/GribUIDialog.cpp:949 src/GribUIDialogBase.cpp:78
-#: src/GribUIDialogBase.cpp:201
-msgid "Zoom To Center"
-msgstr "Ζουμ στο κέντρο"
-
-#: src/GribUIDialog.cpp:960 src/GribUIDialog.cpp:1262
-msgid "Stop play back"
-msgstr "Διακοπή αναπαραγωγής"
-
-#: src/GribUIDialog.cpp:966 src/GribUIDialogBase.cpp:226
-msgid "Open a new file"
-msgstr "Ανοίξτε ένα νέο αρχείο"
-
-#: src/GribUIDialog.cpp:969 src/GribUIDialogBase.cpp:108
-#: src/GribUIDialogBase.cpp:233 src/GribUIDialogBase.cpp:1785
-#: src/GribUIDialogBase.h:318
-msgid "Settings"
-msgstr "Επιλογές"
-
-#: src/GribUIDialog.cpp:978
-msgid "Draw requested Area or Click here to stop request"
-msgstr "Δείξε την περιοχή ή κάνε κλικ εδώ για ακύρωση"
-
-#: src/GribUIDialog.cpp:1639 src/GribUIDialog.cpp:1667
-msgid "Select a GRIB file"
-msgstr "Επιλέξτε ένα αρχείο GRIB"
-
-#: src/GribUIDialog.cpp:1956
-msgid " files don't exist!"
-msgstr " δεν υπάρχουν αρχεία!"
-
-#: src/GribUIDialog.cpp:1977
-msgid " can't be read!"
-msgstr " δεν διαβάζεται!"
-
-#: src/GribUIDialog.cpp:2324 src/GribUIDialog.cpp:2328
-#: src/GribUIDialogBase.h:166
-msgid "GRIB Display Control"
-msgstr "Έλεγχος Εμφάνισης GRIB"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:44
-msgid "Knots"
-msgstr "Κόμβους"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:44
-msgid "m/s"
-msgstr "m/s"
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:44
-msgid "mph"
-msgstr "μ.α.ώ."
-
-#: src/GribSettingsDialog.cpp:34 src/GribSettingsDialog.cpp:45
-msgid "km/h"
-msgstr "km/h"
-
-#: src/GribSettingsDialog.cpp:34
-msgid "Beaufort"
-msgstr "Μπωφόρ"
-
-#: src/GribSettingsDialog.cpp:35
-msgid "MilliBars"
-msgstr "μιλιμπαρ"
-
-#: src/GribSettingsDialog.cpp:35
-msgid "mmHG"
-msgstr "mmHg"
-
-#: src/GribSettingsDialog.cpp:35
-msgid "inHG"
-msgstr "ίντσες Hg"
-
-#: src/GribSettingsDialog.cpp:37
-msgid "Meters"
-msgstr "μέτρα"
-
-#: src/GribSettingsDialog.cpp:37
-msgid "Feet"
-msgstr "Πόδια"
-
-#: src/GribSettingsDialog.cpp:38
-msgid "Celsius"
-msgstr "Κελσίου"
-
-#: src/GribSettingsDialog.cpp:38
-msgid "Fahrenheit"
-msgstr "Φάρεναιτ"
-
-#: src/GribSettingsDialog.cpp:40
-msgid "Millimeters"
-msgstr "χιλιοστά"
-
-#: src/GribSettingsDialog.cpp:40
-msgid "Inches"
-msgstr "ίντσες"
-
-#: src/GribSettingsDialog.cpp:42
-msgid "Percentage"
-msgstr "Επί τοις εκατό"
-
-#: src/GribSettingsDialog.cpp:43
-msgid "j/kg"
-msgstr "J/kg"
-
-#: src/GribSettingsDialog.cpp:46
-msgid "dBZ"
-msgstr "dBZ"
-
-#: src/GribSettingsDialog.cpp:64 src/GribUIDialogBase.cpp:600
-#: src/GribUIDialogBase.cpp:1339 src/GribUIDialogBase.cpp:2655
-#: src/GribOverlayFactory.cpp:1373
-msgid "Wind"
-msgstr "Άνεμος"
-
-#: src/GribSettingsDialog.cpp:65 src/GribUIDialogBase.cpp:619
-#: src/GribUIDialogBase.cpp:2663
-msgid "Wind Gust"
-msgstr "Σπιλιάδες"
-
-#: src/GribSettingsDialog.cpp:66 src/GribUIDialogBase.cpp:632
-#: src/GribUIDialogBase.cpp:2659 src/GribTable.cpp:134
-msgid "Pressure"
-msgstr "Πίεση"
-
-#: src/GribSettingsDialog.cpp:67 src/GribUIDialogBase.cpp:647
-#: src/GribUIDialogBase.cpp:2704
-msgid "Waves"
-msgstr "Κύματα"
-
-#: src/GribSettingsDialog.cpp:68 src/GribUIDialogBase.cpp:672
-#: src/GribUIDialogBase.cpp:1340 src/GribUIDialogBase.cpp:2695
-msgid "Current"
-msgstr "Ρεύμα"
-
-#: src/GribSettingsDialog.cpp:69 src/GribUIDialogBase.cpp:692
-#: src/GribUIDialogBase.cpp:1340 src/GribUIDialogBase.cpp:2667
-#: src/GribTable.cpp:171
-msgid "Rainfall"
-msgstr "Βροχόπτωση"
-
-#: src/GribSettingsDialog.cpp:70 src/GribUIDialogBase.cpp:707
-#: src/GribUIDialogBase.cpp:713 src/GribUIDialogBase.cpp:1340
-#: src/GribUIDialogBase.cpp:2671 src/GribTable.cpp:180
-msgid "Cloud Cover"
-msgstr "Νεφοκάλυψη"
-
-#: src/GribSettingsDialog.cpp:71
-msgid "Air Temperature"
-msgstr "Θερμοκρασία αέρος"
-
-#: src/GribSettingsDialog.cpp:72
-msgid "Sea Temperature"
-msgstr "Θερμοκρασία θαλάσσης"
-
-#: src/GribSettingsDialog.cpp:73 src/GribUIDialogBase.cpp:749
-#: src/GribUIDialogBase.cpp:1340 src/GribUIDialogBase.cpp:2681
-#: src/GribTable.cpp:208
-msgid "CAPE"
-msgstr "ΔΔΕΣ (CAPE)"
-
-#: src/GribSettingsDialog.cpp:75
-msgid "Altitude(Geopotential)"
-msgstr "Υψόμετρο (Γεωδυναμικό)"
-
-#: src/GribSettingsDialog.cpp:76 src/CursorData.cpp:330
-msgid "Relative Humidity"
-msgstr "Σχετική Υγρασία"
-
-#: src/GribSettingsDialog.cpp:677
-msgid "h"
-msgstr "h"
-
-#: src/GribSettingsDialog.cpp:679
-msgid "mn"
-msgstr "mN"
-
-#: src/GribSettingsDialog.cpp:747
-msgid "Apply"
-msgstr "Εφαρμογή"
-
-#: src/GribSettingsDialog.cpp:950 src/GribSettingsDialog.cpp:959
-#: src/CursorData.cpp:664 src/CursorData.cpp:670
-msgid "Display Isotachs"
-msgstr "Εμφάνιση ισοταχών"
-
-#: src/GribSettingsDialog.cpp:966 src/CursorData.cpp:675
-msgid "Display Isobars"
-msgstr "Εμφάνιση ισοβαρών"
-
-#: src/GribSettingsDialog.cpp:986 src/CursorData.cpp:681
-msgid "Display Isotherms"
-msgstr "Εμφάνιση ισόθερμων"
-
-#: src/GribSettingsDialog.cpp:993 src/CursorData.cpp:689
-msgid "Display Iso CAPE"
-msgstr "Εμφάνιση ισοδυναμικών (CAPE)"
-
-#: src/GribSettingsDialog.cpp:1000
-msgid "Display Comp. Reflectivity"
-msgstr "Δείξε συνθ. αντανακλαστικότητα"
-
-#: src/GribSettingsDialog.cpp:1011 src/GribSettingsDialog.cpp:1088
-#: src/GribUIDialogBase.cpp:1228
-msgid "Spacing"
-msgstr "Αποστάσεις"
-
-#: src/GribSettingsDialog.cpp:1105
-msgid "You want to remove the dialog title/drag bar\n"
-msgstr "Θέλετε να καταργήσετε το τίτλο του διαλόγου ή την μπάρα\n"
-
-#: src/GribSettingsDialog.cpp:1107
-msgid "You want to add a title/drag bar to the dialog\n"
-msgstr "Θέλετε να προσθέσετε έναν τίτλο/μπάρα στον διάλογο\n"
-
-#: src/GribSettingsDialog.cpp:1111
-msgid "This change needs a complete reload.\n"
-"It will be applied after closing and re-opening the plugin"
-msgstr "Αυτή η αλλαγή χρειάζεται μια πλήρη επαναφόρτωση.\n"
-"Θα εφαρμοστεί μετά το κλείσιμο και την επανέναρξη του προσθέτου"
-
-#: src/GribSettingsDialog.cpp:1136
-msgid "You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
-msgstr "Έχετε επιτρέψει παρεμβολή δεδομένων. \n"
-"Μη ξεχνάτε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά υπολογισμένα.\n"
-"Aυτό μπορεί να μειώσει την ακρίβεια!"
-
-#: src/GribSettingsDialog.cpp:1139 src/GribSettingsDialog.cpp:1188
-#: src/grib_pi.cpp:831 src/GribRequestDialog.cpp:713
-msgid "Warning!"
-msgstr "Προσοχή!"
-
-#: src/GribSettingsDialog.cpp:1185
-msgid "This option imply you authorize intrepolation\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
-msgstr "Αυτή η επιλογή συνεπάγεται εξουσιοδότηση για παρεμβολή\n"
-"Μην ξεχάσετε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά υπολογισμένα\n"
-" Αυτό μπορεί να μειώσει την ακρίβεια!"
-
-#: src/GribUIDialogBase.cpp:39 src/GribUIDialogBase.cpp:163
-msgid "Previous"
-msgstr "Προηγούμενο"
-
-#: src/GribUIDialogBase.cpp:54 src/GribUIDialogBase.cpp:178
-msgid "Next"
-msgstr "Επόμενο"
-
-#: src/GribUIDialogBase.cpp:64 src/GribUIDialogBase.cpp:187
-msgid "Select geoptential altitude"
-msgstr "Επιλογή γεωδυναμικού ύψους"
-
-#: src/GribUIDialogBase.cpp:586
-msgid "MyLabel"
-msgstr "MyLabel"
-
-#: src/GribUIDialogBase.cpp:639
-msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Μέση πίεση στο επίπεδο της θάλασσας (MSLP)"
-
-#: src/GribUIDialogBase.cpp:654
-msgid "Significant Wave Height"
-msgstr "Σημαντικό ύψος κύματος"
-
-#: src/GribUIDialogBase.cpp:661
-msgid "Waves period"
-msgstr "Περίοδος κύματος"
-
-#: src/GribUIDialogBase.cpp:668
-msgid "Waves Direction"
-msgstr "Κατεύθυνση κυμάτων"
-
-#: src/GribUIDialogBase.cpp:679
-msgid "Surface Current Speed"
-msgstr "Ταχύτητα ρεύματος"
-
-#: src/GribUIDialogBase.cpp:686
-msgid "Surface Current Direction"
-msgstr "Κατεύθυνση ρεύματος"
-
-#: src/GribUIDialogBase.cpp:699
-msgid "Cumulative Rainfall per Hour"
-msgstr "Αθροιστική βροχόπτωση ανά ώρα"
-
-#: src/GribUIDialogBase.cpp:721 src/GribUIDialogBase.cpp:1339
-msgid "Air Temp"
-msgstr "Θερμ. αέρος"
-
-#: src/GribUIDialogBase.cpp:734 src/GribUIDialogBase.cpp:1339
-msgid "Sea Temp"
-msgstr "Θερμ. θαλάσσης"
-
-#: src/GribUIDialogBase.cpp:741
-msgid "Sea or Air Temperature at Surface Level"
-msgstr "Θερμοκρασία θαλάσσης ή αέρος στην επιφάνεια"
-
-#: src/GribUIDialogBase.cpp:755
-msgid "Convective Available Potential Energy"
-msgstr "Διαθέσιμη δυναμική ενέργεια συναγωγής αέρα (ΔΔΕΣ, CAPE)"
-
-#: src/GribUIDialogBase.cpp:763
-msgid "Comp. Refl."
-msgstr "Συνθ. ανταν."
-
-#: src/GribUIDialogBase.cpp:769
-msgid "Composite Reflectivity"
-msgstr "Σύνθετη ανακλαστικότητα"
-
-#: src/GribUIDialogBase.cpp:777 src/CursorData.cpp:328
-msgid "Altitude"
-msgstr "Υψόμετρο"
-
-#: src/GribUIDialogBase.cpp:795
-msgid "Temp."
-msgstr "Θερμ/σία"
-
-#: src/GribUIDialogBase.cpp:812
-msgid "Relat. Hum."
-msgstr "Σχ. υγρασία"
-
-#: src/GribUIDialogBase.cpp:1127
-msgid "Data Display Options"
-msgstr "Επιλογές εμφάνισης δεδομένων"
-
-#: src/GribUIDialogBase.cpp:1143
-msgid "Units"
-msgstr "Μονάδες"
-
-#: src/GribUIDialogBase.cpp:1158 src/CursorData.cpp:663
-msgid "Barbed Arrows"
-msgstr "Αγκαθωτά βέλη"
-
-#: src/GribUIDialogBase.cpp:1166
-msgid "Default Colour"
-msgstr "Προεπιλεγμένο χρώμα"
-
-#: src/GribUIDialogBase.cpp:1167
-msgid "Controlled Colours"
-msgstr "Ελεγχόμενα χρώματα"
-
-#: src/GribUIDialogBase.cpp:1183 src/GribUIDialogBase.cpp:1287
-#: src/GribUIDialogBase.cpp:1359
-msgid "Spacing(pixels)"
-msgstr "απόσταση(πίξελ)"
-
-#: src/GribUIDialogBase.cpp:1189 src/GribUIDialogBase.cpp:1292
-#: src/GribUIDialogBase.cpp:1364
-msgid "Fixed"
-msgstr "Σταθερή"
-
-#: src/GribUIDialogBase.cpp:1196 src/GribUIDialogBase.cpp:1299
-#: src/GribUIDialogBase.cpp:1370
-msgid "Minimum"
-msgstr "Ελάχιστο"
-
-#: src/GribUIDialogBase.cpp:1209 src/GribUIDialogBase.cpp:1245
-msgid "Always visible"
-msgstr "Πάντα ορατό"
-
-#: src/GribUIDialogBase.cpp:1220
-msgid "IsoBars"
-msgstr "Ισοβαρείς"
-
-#: src/GribUIDialogBase.cpp:1254
-msgid "Abbreviated Numbers"
-msgstr "Συντετμημένοι αριθμοί"
-
-#: src/GribUIDialogBase.cpp:1261 src/CursorData.cpp:699 src/CursorData.cpp:704
-msgid "Direction Arrows"
-msgstr "Βέλη κατεύθυνσης"
-
-#: src/GribUIDialogBase.cpp:1270
-msgid "Single Arrow"
-msgstr "Μονό βέλος"
-
-#: src/GribUIDialogBase.cpp:1270
-msgid "Double Arrow"
-msgstr "Διπλό βέλος"
-
-#: src/GribUIDialogBase.cpp:1270
-msgid "Proportional Arrow"
-msgstr "Βέλος ανάλογου μήκους"
-
-#: src/GribUIDialogBase.cpp:1311
-msgid "Default Size"
-msgstr "Προεπιλεγμένο μέγεθος"
-
-#: src/GribUIDialogBase.cpp:1312
-msgid "Small Size"
-msgstr "Μικρό μέγεθος"
-
-#: src/GribUIDialogBase.cpp:1328 src/CursorData.cpp:665 src/CursorData.cpp:671
-#: src/CursorData.cpp:685 src/CursorData.cpp:690 src/CursorData.cpp:695
-#: src/CursorData.cpp:700 src/CursorData.cpp:705
-msgid "OverlayMap"
-msgstr "Επικάλυψη χάρτη"
-
-#: src/GribUIDialogBase.cpp:1333
-msgid "Color scheme"
-msgstr "Συνδυασμός χρωμάτων"
-
-#: src/GribUIDialogBase.cpp:1339
-msgid "Generic"
-msgstr "Γενικής χρήσης"
-
-#: src/GribUIDialogBase.cpp:1349 src/CursorData.cpp:666 src/CursorData.cpp:672
-#: src/CursorData.cpp:677 src/CursorData.cpp:686 src/CursorData.cpp:691
-#: src/CursorData.cpp:696 src/CursorData.cpp:701 src/CursorData.cpp:706
-msgid "Numbers"
-msgstr "Αριθμοί"
-
-#: src/GribUIDialogBase.cpp:1381 src/CursorData.cpp:667 src/CursorData.cpp:707
-msgid "Particle Map"
-msgstr "Ζωντανός Χάρτης"
-
-#: src/GribUIDialogBase.cpp:1385
-msgid "Density"
-msgstr "Πυκνότητα"
-
-#: src/GribUIDialogBase.cpp:1410
-msgid "Transparency for all Overlay Maps"
-msgstr "Διαφάνεια για όλους τους χάρτες επικάλυψης"
-
-#: src/GribUIDialogBase.cpp:1419
-msgid "Overlay Transparency (%)"
-msgstr "Διαφάνεια επικάλυψης (%)"
-
-#: src/GribUIDialogBase.cpp:1438
-msgid "Data"
-msgstr "Δεδομένα"
-
-#: src/GribUIDialogBase.cpp:1451
-msgid "Playback Options"
-msgstr "Επιλογές αναπαραγωγής"
-
-#: src/GribUIDialogBase.cpp:1461
-msgid "Speed Control"
-msgstr "Έλεγχος ταχύτητας"
-
-#: src/GribUIDialogBase.cpp:1474
-msgid "Slow"
-msgstr "Αργά"
-
-#: src/GribUIDialogBase.cpp:1485
-msgid "Fast"
-msgstr "Γρήγορα"
-
-#: src/GribUIDialogBase.cpp:1492
-msgid "Loop Mode"
-msgstr "Κυκλική διαδικασία"
-
-#: src/GribUIDialogBase.cpp:1504
-msgid "Loop Start"
-msgstr "Αρχή κύκλου"
-
-#: src/GribUIDialogBase.cpp:1509
-msgid "Top of Grib File"
-msgstr "Αρχή του αρχείου GRIB"
-
-#: src/GribUIDialogBase.cpp:1510
-msgid "Current time forecast"
-msgstr "Πρόγνωση για τώρα"
-
-#: src/GribUIDialogBase.cpp:1522
-msgid "Interpolate between gribs"
-msgstr "Παρεμβολή ανάμεσα στα GRIB"
-
-#: src/GribUIDialogBase.cpp:1534
-msgid "Time Interval"
-msgstr "Χρονικό διάστημα"
-
-#: src/GribUIDialogBase.cpp:1555 src/GribUIDialogBase.cpp:1725
-msgid "Playback"
-msgstr "Αναπαραγωγή"
-
-#: src/GribUIDialogBase.cpp:1568
-msgid "Dialogs Style"
-msgstr "Στιλ δαλόγων"
-
-#: src/GribUIDialogBase.cpp:1578
-msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr "Τα δεδομένα στον διάλογο του δρομέα είναι συνδεδεμένα με τη λωρίδα των εικονιδίων - με λωρίδα τίτλου"
-
-#: src/GribUIDialogBase.cpp:1585
-msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr "Τα δεδομένα στον διάλογο του δρομέα είναι συνδεδεμένα με τη λωρίδα των εικονιδίων - χωρίς λωρίδα τίτλου"
-
-#: src/GribUIDialogBase.cpp:1592
-msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr "Τα δεδομένα στον διάλογο του δρομέα είναι απομονωμένα και προβάλλονται οριζοντίως"
-
-#: src/GribUIDialogBase.cpp:1598
-msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr "Τα δεδομένα στον διάλογο του δρομέα είναι απομονωμένα και προβάλλονται καθέτως"
-
-#: src/GribUIDialogBase.cpp:1610
-msgid "Buttons Visibility"
-msgstr "Ορατότητα κουμπιών"
-
-#: src/GribUIDialogBase.cpp:1624
-msgid "Attached icon bar"
-msgstr "Συνημμένη λωρίδα εικονιδίων"
-
-#: src/GribUIDialogBase.cpp:1631
-msgid "Isolated icon bar"
-msgstr "Μεμονωμένη λωρίδα εικονιδίων"
-
-#: src/GribUIDialogBase.cpp:1642
-msgid "Geopot. Height Choice"
-msgstr "Επιλογή γεωδυν. ύψους"
-
-#: src/GribUIDialogBase.cpp:1683
-msgid "Zoom to Center"
-msgstr "Ζουμ στο κέντρο"
-
-#: src/GribUIDialogBase.cpp:1705
-msgid "Show Cursor Data"
-msgstr "Εμφάνιση δεδομένων δρομέα"
-
-#: src/GribUIDialogBase.cpp:1745
-msgid "Time Slider"
-msgstr "Ρυθμιστικό χρόνου"
-
-#: src/GribUIDialogBase.cpp:1765
-msgid "Open File"
-msgstr "Άνοιξε το αρχείο"
-
-#: src/GribUIDialogBase.cpp:1805
-msgid "Request"
-msgstr "Αίτημα"
-
-#: src/GribUIDialogBase.cpp:1827
-msgid "GUI"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:1836 src/GribUIDialogBase.cpp:2155
-#: src/GribUIDialogBase.cpp:2807
-msgid "Cancel"
-msgstr "Ακύρωση"
-
-#: src/GribUIDialogBase.cpp:2063 src/GribUIDialogBase.cpp:2205
-msgid "General Options"
-msgstr "Γενικές επιλογές"
-
-#: src/GribUIDialogBase.cpp:2071 src/GribUIDialogBase.cpp:2210
-msgid "Use High Definition Graphics"
-msgstr "Χρήση Γραφικών Υψηλής Ευκρίνειας"
-
-#: src/GribUIDialogBase.cpp:2075 src/GribUIDialogBase.cpp:2215
-msgid "Use Gradual Colors"
-msgstr "Χρήση συνεχούς χρωματικής παλέτας"
-
-#: src/GribUIDialogBase.cpp:2080 src/GribUIDialogBase.cpp:2220
-msgid "Copy First Cumulative Missing Record"
-msgstr "Αντίγραψε το πρώτο αθροιστικό δεδομένο που λείπει"
-
-#: src/GribUIDialogBase.cpp:2085 src/GribUIDialogBase.cpp:2225
-msgid "Copy Missing Wave Records"
-msgstr "Αντίγραψε τα δεδομένα κυματισμού που λείπουν"
-
-#: src/GribUIDialogBase.cpp:2090 src/GribUIDialogBase.cpp:2230
-msgid "Draw Barbed Arrows Head"
-msgstr "Κεφαλή αγκαθωτών βελών"
-
-#: src/GribUIDialogBase.cpp:2095 src/GribUIDialogBase.cpp:2235
-msgid "Zoom to file center when opened"
-msgstr "Ζουμ στο κέντρο όταν ανοιχτεί το αρχείο"
-
-#: src/GribUIDialogBase.cpp:2104 src/GribUIDialogBase.cpp:2240
-msgid "Load the More Recent File in Directory"
-msgstr "Άνοιξε το πιο πρόσφατο αρχείο στον φάκελλο"
-
-#: src/GribUIDialogBase.cpp:2105 src/GribUIDialogBase.cpp:2241
-msgid "Load the Last Opened File"
-msgstr "Άνοιξε το αρχείο που χρησιμοποιήθηκε τελευταία"
-
-#: src/GribUIDialogBase.cpp:2109 src/GribUIDialogBase.cpp:2245
-msgid "Load File Options"
-msgstr "Επιλογές φόρτωσης του αρχείου"
-
-#: src/GribUIDialogBase.cpp:2115 src/GribUIDialogBase.cpp:2252
-msgid "Start at the first forecast in GRIB file"
-msgstr "Αρχή με την πρώτη πρόγνωση στο αρχείο GRIB"
-
-#: src/GribUIDialogBase.cpp:2116 src/GribUIDialogBase.cpp:2253
-msgid "Start at the nearest forecast to current time"
-msgstr "Αρχή με την πρόγνωση πιο κοντά στην τρέχουσα χρονική στιγμή"
-
-#: src/GribUIDialogBase.cpp:2117 src/GribUIDialogBase.cpp:2254
-msgid "Authorize Interpolation to start at current time"
-msgstr "Η παρεμβολή να αρχίζει από τώρα"
-
-#: src/GribUIDialogBase.cpp:2121 src/GribUIDialogBase.cpp:2258
-msgid "Start Options"
-msgstr "Επιλογές εκκίνησης"
-
-#: src/GribUIDialogBase.cpp:2126 src/GribUIDialogBase.cpp:2264
-msgid "Local Time"
-msgstr "Τοπική ώρα"
-
-#: src/GribUIDialogBase.cpp:2126 src/GribUIDialogBase.cpp:2264
-msgid "UTC"
-msgstr "UTC"
-
-#: src/GribUIDialogBase.cpp:2129 src/GribUIDialogBase.cpp:2267
-msgid "Time Options"
-msgstr "Επιλογές ώρας"
-
-#: src/GribUIDialogBase.cpp:2139
-msgid "Icons Size Factor"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:2191
-msgid "GRIB PlugIn Preferences"
-msgstr "Επιλογές προσθέτου GRIB"
-
-#: src/GribUIDialogBase.cpp:2324
-msgid "Profile"
-msgstr "Προφίλ"
-
-#: src/GribUIDialogBase.cpp:2338
-msgid "Sender eMail Address"
-msgstr "Διεύθυνση eMail αποστολέα"
-
-#: src/GribUIDialogBase.cpp:2372
-msgid "Mail To "
-msgstr "Στείλε σε "
-
-#: src/GribUIDialogBase.cpp:2385
-msgid "Forecast Model "
-msgstr "Μοντέλο πρόγνωσης"
-
-#: src/GribUIDialogBase.cpp:2405
-msgid "Moving Grib"
-msgstr "Κινητό GRIB"
-
-#: src/GribUIDialogBase.cpp:2414
-msgid "Speed"
-msgstr "Ταχύτητα"
-
-#: src/GribUIDialogBase.cpp:2425
-msgid "Kts"
-msgstr "κόμβοι"
-
-#: src/GribUIDialogBase.cpp:2432
-msgid "Course"
-msgstr "Πορεία"
-
-#: src/GribUIDialogBase.cpp:2442 src/GribUIDialogBase.cpp:2498
-msgid "Deg"
-msgstr "βαθμοί"
-
-#: src/GribUIDialogBase.cpp:2457
-msgid "zyGrib Login"
-msgstr "zyGrib Login"
-
-#: src/GribUIDialogBase.cpp:2467
-msgid "zyGrib Code"
-msgstr "zyGrib Κωδικός"
-
-#: src/GribUIDialogBase.cpp:2487
-msgid "Resolution"
-msgstr "Διακριτική ικανότητα"
-
-#: src/GribUIDialogBase.cpp:2504
-msgid "Interval"
-msgstr "Διάστημα"
-
-#: src/GribUIDialogBase.cpp:2516
-msgid "Hours"
-msgstr "Ώρες"
-
-#: src/GribUIDialogBase.cpp:2523
-msgid "Time Range"
-msgstr "Χρονικά όρια"
-
-#: src/GribUIDialogBase.cpp:2534
-msgid "Days"
-msgstr "Μέρες"
-
-#: src/GribUIDialogBase.cpp:2547
-msgid "Area Selection"
-msgstr "Επιλογή περιοχής"
-
-#: src/GribUIDialogBase.cpp:2561
-msgid "Manual Selection"
-msgstr "Επιλογή με το χέρι"
-
-#: src/GribUIDialogBase.cpp:2566
-msgid "Use Always this Area"
-msgstr "Μόνιμη χρήση αυτής της περιοχής"
-
-#: src/GribUIDialogBase.cpp:2577
-msgid "Max Lat"
-msgstr "Μεγ. πλάτος"
-
-#: src/GribUIDialogBase.cpp:2587 src/GribRequestDialog.cpp:355
-#: src/GribRequestDialog.cpp:358
-msgid "N"
-msgstr "Β"
-
-#: src/GribUIDialogBase.cpp:2592
-msgid "Max Long"
-msgstr "Μεγ. μήκος"
-
-#: src/GribUIDialogBase.cpp:2602 src/GribRequestDialog.cpp:356
-#: src/GribRequestDialog.cpp:357
-msgid "E"
-msgstr "Α"
-
-#: src/GribUIDialogBase.cpp:2608
-msgid "Min Lat"
-msgstr "Ελ. πλάτος"
-
-#: src/GribUIDialogBase.cpp:2618 src/GribRequestDialog.cpp:355
-#: src/GribRequestDialog.cpp:358
-msgid "S"
-msgstr "Ν"
-
-#: src/GribUIDialogBase.cpp:2624
-msgid "Min Long"
-msgstr "Ελ. μήκος"
-
-#: src/GribUIDialogBase.cpp:2634 src/GribRequestDialog.cpp:356
-#: src/GribRequestDialog.cpp:357
-msgid "W"
-msgstr "Δ"
-
-#: src/GribUIDialogBase.cpp:2647
-msgid "Data Selection"
-msgstr "Επιλογή δεδομένων"
-
-#: src/GribUIDialogBase.cpp:2676
-msgid "Air Temperature(2m)"
-msgstr "Θερμοκρασία αέρος (2m)"
-
-#: src/GribUIDialogBase.cpp:2686
-msgid "Comp. Reflect."
-msgstr "Συνθ. ανταν."
-
-#: src/GribUIDialogBase.cpp:2691
-msgid "Sea Temperature(surf.)"
-msgstr "Θερμοκρασία θαλάσσης (επιφανειακή)"
-
-#: src/GribUIDialogBase.cpp:2722
-msgid "Geopotential Height"
-msgstr "Γεωδυναμικό ύψος"
-
-#: src/GribUIDialogBase.cpp:2732
-msgid "850 hPa"
-msgstr "850 hPa"
-
-#: src/GribUIDialogBase.cpp:2737
-msgid "700 hPa"
-msgstr "700 hPa"
-
-#: src/GribUIDialogBase.cpp:2742
-msgid "500 hPa"
-msgstr "500 hPa"
-
-#: src/GribUIDialogBase.cpp:2746
-msgid "300 hPa"
-msgstr "300 hPa"
-
-#: src/GribUIDialogBase.cpp:2758
-msgid "Mail"
-msgstr "eMail"
-
-#: src/GribUIDialogBase.cpp:2785
-msgid "Estimated File Size"
-msgstr "Εκτιμώμενο μέγεθος αρχείου"
-
-#: src/GribUIDialogBase.cpp:2795
+#
 msgid " (Max size )"
 msgstr " ﻿ (Μέγιστο μέγεθος)"
-
-#: src/GribUIDialogBase.cpp:3080
-msgid "Data at Position:"
-msgstr "Δεδομένa στη θέση:"
-
-#: src/GribUIDialogBase.cpp:3111
-msgid "Close"
-msgstr "Κλείσιμο"
-
-#: src/smapi.cpp:117
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr "Σφάλμα στο MAIL: Το αρχείο  MAPI32.DLL δεν υπάρχει ή είναι άκυρο!"
-
-#: src/GribUIDialogBase.h:350
-msgid "Preferences"
-msgstr "Προτιμήσεις"
-
-#: src/GribUIDialogBase.h:440
-msgid "Write and send eMail request"
-msgstr "Γράψε και στείλε αίτημα eMail"
-
-#: src/GribUIDialogBase.h:467
-msgid "Grib Data Table"
-msgstr "Πίνακας δεδομένων GRIB"
-
-#: src/grib_pi.h:109 src/GribOverlayFactory.cpp:389 src/grib_pi.cpp:445
-#: src/GribRequestDialog.cpp:139 src/GribRequestDialog.cpp:215
-#: src/GribRequestDialog.cpp:550 src/CursorData.cpp:160
-msgid "Dialog"
-msgstr "Διάλογος"
-
-#: src/GribOverlayFactory.cpp:588
-msgid "Warning : Data at Geopotential Height"
-msgstr "Προσοχή: Δεδομένα σε γεωδυναμικό ύψος"
-
-#: src/GribOverlayFactory.cpp:1343
-msgid "IsoBar Unable to compute record magnitude"
-msgstr "Ισοβαρείς: Αδύνατος ο υπολογισμός του μεγέθους"
-
-#: src/GribOverlayFactory.cpp:1373
+#
+msgid " can't be read!"
+msgstr " δεν διαβάζεται!"
+#
+msgid " contains no valid data!"
+msgstr " δεν περιέχει έγκυρα δεδομένα!"
+#
+msgid " files don't exist!"
+msgstr " δεν υπάρχουν αρχεία!"
+#
+msgid "300 hPa"
+msgstr "300 hPa"
+#
+msgid "500 hPa"
+msgstr "500 hPa"
+#
+msgid "700 hPa"
+msgstr "700 hPa"
+#
+msgid "850 hPa"
+msgstr "850 hPa"
+#
+msgid "Abbreviated Isobars Numbers"
+msgstr "Συντετμημένοι αριθμοί ισοβαρών"
+#
+msgid "Abbreviated Numbers"
+msgstr "Συντετμημένοι αριθμοί"
+#
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "Διεύθυνση για να αποσταλεί  το αίτημα eMail. (Υποχρεωτικό για LINUX)"
+#
+msgid "Air Temp"
+msgstr "Θερμ. αέρος"
+#
+msgid "Air Temp."
+msgstr "Θερμοκρασία αέρα"
+#
+msgid "Air Temperature"
+msgstr "Θερμοκρασία αέρος"
+#
+msgid "Air Temperature at"
+msgstr "Θερμοκρασία αέρος σε"
+#
+msgid "Air Temperature(2m)"
+msgstr "Θερμοκρασία αέρος (2m)"
+#
+msgid "Altitude"
+msgstr "Υψόμετρο"
+#
+msgid "Altitude(Geopotential)"
+msgstr "Υψόμετρο (Γεωδυναμικό)"
+#
+msgid "Always visible"
+msgstr "Πάντα ορατό"
+#
+msgid "Apply"
+msgstr "Εφαρμογή"
+#
+msgid "Area Selection"
+msgstr "Επιλογή περιοχής"
+#
+msgid "Attached icon bar"
+msgstr "Συνημμένη λωρίδα εικονιδίων"
+#
+msgid "Authorize Interpolation to start at current time"
+msgstr "Η παρεμβολή να αρχίζει από τώρα"
+#
+msgid "Barbed Arrows"
+msgstr "Αγκαθωτά βέλη"
+#
+msgid "Beaufort"
+msgstr "Μπωφόρ"
+#
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr ""
+"Πριν στείλεις email στο Zybrib πρέπει να εγγραφείς.\n"
+"Πήγαινε στο www.zygrib.org/ και ακολούθησε τις οδηγίες..."
+#
 msgid "Building Isobar map"
 msgstr "Ο χάρτης ισοβαρών κατασκευάζεται"
-
-#: src/GribOverlayFactory.cpp:1648
-msgid "OverlayMap Unable to compute record magnitude"
-msgstr "Χάρτης επικάλυψης: Αδύνατος ο υπολογισμός του μεγέθους"
-
-#: src/GribOverlayFactory.cpp:1686
-msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Οι επικαλύψεις δεν είναι δυνατές στο σύστημα (Απενεργοποίηση του OpenGL)"
-
-#: src/GribOverlayFactory.cpp:1697
-msgid "Overlays too wide and can't be displayed:"
-msgstr "Οι επικαλύψεις είναι πολύ πλατιές και δεν μπορούν να παρουσιαστούν:"
-
-#: src/GribOverlayFactory.cpp:1708
-msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "οι επικαλύψεις δεν είναι δυνατές σε λειτουργία DC παρά μόνο με «Βορράς πάνω» (Ενεργοποίηση του OpenGL)"
-
-#: src/GribOverlayFactory.cpp:1728
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Μείωση μεγέθυνσης για να φανούν οι μη ορατές επικαλύψεις:"
-
-#: src/GribOverlayFactory.cpp:1759
-msgid "GribNumbers Unable to compute record magnitude"
-msgstr "Αρ.Grib: Αδύνατος ο υπολογισμός του μεγέθους"
-
-#: src/grib_pi.cpp:150
-msgid "Grib"
-msgstr "Grib"
-
-#: src/grib_pi.cpp:201
+#
+msgid "Buttons Visibility"
+msgstr "Ορατότητα κουμπιών"
+#
+msgid "C. Reflect."
+msgstr "Συνθ. ανταν."
+#
+msgid "CAPE"
+msgstr "ΔΔΕΣ (CAPE)"
+#
+msgid "Cancel"
+msgstr "Ακύρωση"
+#
+msgid "Celsius"
+msgstr "Κελσίου"
+#
+msgid "Close"
+msgstr "Κλείσιμο"
+#
+msgid "Cloud Cover"
+msgstr "Νεφοκάλυψη"
+#
+msgid "Color scheme"
+msgstr "Συνδυασμός χρωμάτων"
+#
+msgid "Comp. Refl."
+msgstr "Συνθ. ανταν."
+#
+msgid "Comp. Reflect."
+msgstr "Συνθ. ανταν."
+#
+msgid "Composite Reflectivity"
+msgstr "Σύνθετη ανακλαστικότητα"
+#
+msgid "Continue..."
+msgstr "Συνέχεια..."
+#
+msgid "Controlled Colours"
+msgstr "Ελεγχόμενα χρώματα"
+#
+msgid "Convective Available Potential Energy"
+msgstr "Διαθέσιμη δυναμική ενέργεια συναγωγής αέρα (ΔΔΕΣ, CAPE)"
+#
+msgid "Coord. "
+msgstr "Συντεταγμ. "
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr "Αντίγραψε το πρώτο αθροιστικό δεδομένο που λείπει"
+#
+msgid "Copy Missing Wave Records"
+msgstr "Αντίγραψε τα δεδομένα κυματισμού που λείπουν"
+#
+msgid "Course"
+msgstr "Πορεία"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr "Αθροιστική βροχόπτωση ανά ώρα"
+#
+msgid "Current"
+msgstr "Ρεύμα"
+#
+msgid "Current time forecast"
+msgstr "Πρόγνωση για τώρα"
+#
+msgid "Current,Dir"
+msgstr "Ρεύμα, κατεύθ."
+#
+msgid "Current,Speed"
+msgstr "Ρεύμα, ταχύτητα"
+#
+msgid "Data"
+msgstr "Δεδομένα"
+#
+msgid "Data Display Options"
+msgstr "Επιλογές εμφάνισης δεδομένων"
+#
+msgid "Data Selection"
+msgstr "Επιλογή δεδομένων"
+#
+msgid "Data at Position:"
+msgstr "Δεδομένa στη θέση:"
+#
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr ""
+"Τα δεδομένα στον διάλογο του δρομέα είναι συνδεδεμένα με τη λωρίδα των "
+"εικονιδίων - με λωρίδα τίτλου"
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+"Τα δεδομένα στον διάλογο του δρομέα είναι συνδεδεμένα με τη λωρίδα των "
+"εικονιδίων - χωρίς λωρίδα τίτλου"
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr ""
+"Τα δεδομένα στον διάλογο του δρομέα είναι απομονωμένα και προβάλλονται "
+"οριζοντίως"
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr ""
+"Τα δεδομένα στον διάλογο του δρομέα είναι απομονωμένα και προβάλλονται καθέτως"
+#
+msgid "Data at cursor position"
+msgstr "Δεδομένα στη θέση του δρομέα"
+#
+msgid "Days"
+msgstr "Μέρες"
+#
+msgid "Default Colour"
+msgstr "Προεπιλεγμένο χρώμα"
+#
+msgid "Default Size"
+msgstr "Προεπιλεγμένο μέγεθος"
+#
+msgid "Deg"
+msgstr "βαθμοί"
+#
+msgid "Density"
+msgstr "Πυκνότητα"
+#
+msgid "Dialog"
+msgstr "Διάλογος"
+#
+msgid "Dialogs Style"
+msgstr "Στιλ δαλόγων"
+#
+msgid "Direction Arrows"
+msgstr "Βέλη κατεύθυνσης"
+#
+msgid "Display Comp. Reflectivity"
+msgstr "Δείξε συνθ. αντανακλαστικότητα"
+#
+msgid "Display Iso CAPE"
+msgstr "Εμφάνιση ισοδυναμικών (CAPE)"
+#
+msgid "Display Iso Reflectivity"
+msgstr "Δείξε αντανακλαστικότητα ISO"
+#
+msgid "Display Isobars"
+msgstr "Εμφάνιση ισοβαρών"
+#
+msgid "Display Isotachs"
+msgstr "Εμφάνιση ισοταχών"
+#
+msgid "Display Isotherms"
+msgstr "Εμφάνιση ισόθερμων"
+#
+msgid "Double Arrow"
+msgstr "Διπλό βέλος"
+#
+msgid "Draw Barbed Arrows Head"
+msgstr "Κεφαλή αγκαθωτών βελών"
+#
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+"Δείξε την περιοχή\n"
+"Κάνε κλικ εδώ για ακύρωση"
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr "Δείξε την περιοχή ή κάνε κλικ εδώ για ακύρωση"
+#
+msgid "E"
+msgstr "Α"
+#
+msgid "Enter your forecasted Course"
+msgstr "Γράψε την προβλεπόμενη πορεία"
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Γράψε την προβλεπόμενη ταχύτητα (σε κόμβους)"
+#
+msgid "Error! "
+msgstr "Σφάλμα! "
+#
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr ""
+"Σφάλμα! Μεγ. πλάτος μικρότερο από ελάχ. πλάτος ή  μεγ. μήκος μικρότερο από "
+"ελάχ. μήκος!"
+#
+msgid "Estimated File Size"
+msgstr "Εκτιμώμενο μέγεθος αρχείου"
+#
+msgid "Fahrenheit"
+msgstr "Φάρεναιτ"
+#
+msgid "Fast"
+msgstr "Γρήγορα"
+#
+msgid "Feet"
+msgstr "Πόδια"
+#
+msgid "File: "
+msgstr "Αρχείο: "
+#
+msgid "Fixed"
+msgstr "Σταθερή"
+#
+msgid "Forecast Model "
+msgstr "Μοντέλο πρόγνωσης"
+#
+msgid "GRIB Display Control"
+msgstr "Έλεγχος Εμφάνισης GRIB"
+#
+msgid "GRIB PlugIn Preferences"
+msgstr "Επιλογές προσθέτου GRIB"
+#
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Επιπρόσθετο GRIB για το OpenCPN"
-
-#: src/grib_pi.cpp:205
-msgid "GRIB PlugIn for OpenCPN\n"
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
-"and a request function to get GRIB files by eMail.\n\n"
+"and a request function to get GRIB files by eMail.\n"
+"\n"
 "Supported GRIB data include:\n"
 "- wind direction and speed (at 10 m)\n"
 "- wind gust\n"
@@ -935,9 +328,11 @@ msgid "GRIB PlugIn for OpenCPN\n"
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr "Πρόσθετο GRIB για το OpenCPN\n"
+msgstr ""
+"Πρόσθετο GRIB για το OpenCPN\n"
 "Παρέχει απλή παρουσίαση δεδομένων από αρχεία GRIB διαφόρων τύπων.\n"
-"Δίνει και έναν τρόπο να αποκτηθούν αρχεία GRIB με email.\n\n"
+"Δίνει και έναν τρόπο να αποκτηθούν αρχεία GRIB με email.\n"
+"\n"
 "Δεδομένα GRIB μπορεί να είναι:\n"
 "- κατεύθυνση και ταχύτητα ανέμου (στα 10 m)\n"
 "- σπιλιάδες\n"
@@ -949,238 +344,584 @@ msgstr "Πρόσθετο GRIB για το OpenCPN\n"
 "- επιφανειακή θερμοκρασία θαλάσσης\n"
 "- κατεύθυνση και ταχύτητα ρευμάτων,\n"
 "- Διαθέσιμη Δυναμική Ενέργεια Συναγωγής (CAPE)\n"
-"- άνεμος, υψόμετρο, θερμοκρασία και σχετική υγρασία για 300, 500, 700, 850 hPa."
-
-#: src/grib_pi.cpp:412
-msgid "Weather table"
-msgstr "Μετεωρολογικός πίνακας"
-
-#: src/grib_pi.cpp:828
-msgid "You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed at current time will not be real but Recomputed\n"
-"This can decrease accuracy!"
-msgstr "Έχετε επιτρέψει παρεμβολή δεδομένων.\n"
-"Μη ξεχνάτε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά υπολογισμένα\n"
-" Aυτό μπορεί να μειώσει την ακρίβεια!"
-
-#: src/GribTable.cpp:104
-msgid "Wind,Dir"
-msgstr "Άνεμος, κατευθ."
-
-#: src/GribTable.cpp:110
-msgid "Wind,Speed"
-msgstr "Άνεμος, ταχύτητα"
-
-#: src/GribTable.cpp:120
-msgid "Wind,Gust"
-msgstr "Άνεμος, σπηλιάδες"
-
-#: src/GribTable.cpp:149
-msgid "Waves,Dir"
-msgstr "Κύματα, κατεύθ."
-
-#: src/GribTable.cpp:154
-msgid "Waves,Hsig"
-msgstr "Κύματα, σημ. ύψος"
-
-#: src/GribTable.cpp:161
-msgid "Waves,Per"
-msgstr "Κύματα, περίοδος"
-
-#: src/GribTable.cpp:189
-msgid "Air Temp."
-msgstr "Θερμοκρασία αέρα"
-
-#: src/GribTable.cpp:198
-msgid "Sea Temp."
-msgstr "Θερμοκρασία θαλ."
-
-#: src/GribTable.cpp:217
-msgid "C. Reflect."
-msgstr "Συνθ. ανταν."
-
-#: src/GribTable.cpp:231
-msgid "Current,Dir"
-msgstr "Ρεύμα, κατεύθ."
-
-#: src/GribTable.cpp:237
-msgid "Current,Speed"
-msgstr "Ρεύμα, ταχύτητα"
-
-#: src/GribRequestDialog.cpp:131 src/GribRequestDialog.cpp:1154
-msgid "Send"
-msgstr "Αποστολή"
-
-#: src/GribRequestDialog.cpp:132
+"- άνεμος, υψόμετρο, θερμοκρασία και σχετική υγρασία για 300, 500, 700, 850 "
+"hPa."
+#
+msgid "GUI"
+msgstr ""
+#
+msgid "General Options"
+msgstr "Γενικές επιλογές"
+#
+msgid "Generic"
+msgstr "Γενικής χρήσης"
+#
+msgid "Geopot. Height Choice"
+msgstr "Επιλογή γεωδυν. ύψους"
+#
+msgid "Geopotential Height"
+msgstr "Γεωδυναμικό ύψος"
+#
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr ""
+"Αποκτήστε αυτόν τον κωδικό στο φόρουμ του zyGrib (αυτός δεν είναι ο μυστικός "
+"κωδικός σας!)"
+#
+msgid "Grib"
+msgstr "Grib"
+#
+msgid "Grib Data Table"
+msgstr "Πίνακας δεδομένων GRIB"
+#
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr "Αρ.Grib: Αδύνατος ο υπολογισμός του μεγέθους"
+#
+msgid "Hide data at cursor"
+msgstr "Απόκρυψη δεδομένων στο δρομέα"
+#
+msgid "Hours"
+msgstr "Ώρες"
+#
+msgid "Icons Size Factor"
+msgstr ""
+#
+msgid "Inches"
+msgstr "ίντσες"
+#
+msgid "Interpolate between gribs"
+msgstr "Παρεμβολή ανάμεσα στα GRIB"
+#
+msgid "Interval"
+msgstr "Διάστημα"
+#
+msgid "IsoBar Unable to compute record magnitude"
+msgstr "Ισοβαρείς: Αδύνατος ο υπολογισμός του μεγέθους"
+#
+msgid "IsoBars"
+msgstr "Ισοβαρείς"
+#
+msgid "Isolated icon bar"
+msgstr "Μεμονωμένη λωρίδα εικονιδίων"
+#
+msgid "Knots"
+msgstr "Κόμβους"
+#
+msgid "Kts"
+msgstr "κόμβοι"
+#
+msgid "Load File Options"
+msgstr "Επιλογές φόρτωσης του αρχείου"
+#
+msgid "Load the Last Opened File"
+msgstr "Άνοιξε το αρχείο που χρησιμοποιήθηκε τελευταία"
+#
+msgid "Load the More Recent File in Directory"
+msgstr "Άνοιξε το πιο πρόσφατο αρχείο στον φάκελλο"
+#
+msgid "Local Time"
+msgstr "Τοπική ώρα"
+#
+msgid "Loop Mode"
+msgstr "Κυκλική διαδικασία"
+#
+msgid "Loop Start"
+msgstr "Αρχή κύκλου"
+#
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Σφάλμα στο MAIL: Το αρχείο  MAPI32.DLL δεν υπάρχει ή είναι άκυρο!"
+#
+msgid "MB"
+msgstr "MB"
+#
+msgid "Mail"
+msgstr "eMail"
+#
+msgid "Mail To "
+msgstr "Στείλε σε "
+#
+msgid "Manual Selection"
+msgstr "Επιλογή με το χέρι"
+#
+msgid "Max"
+msgstr "Μέγιστο"
+#
+msgid "Max Lat"
+msgstr "Μεγ. πλάτος"
+#
+msgid "Max Long"
+msgstr "Μεγ. μήκος"
+#
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Μέση πίεση στο επίπεδο της θάλασσας (MSLP)"
+#
+msgid "Menu"
+msgstr "Μενού"
+#
+msgid "Meters"
+msgstr "μέτρα"
+#
+msgid "MilliBars"
+msgstr "μιλιμπαρ"
+#
+msgid "Millimeters"
+msgstr "χιλιοστά"
+#
+msgid "Min Lat"
+msgstr "Ελ. πλάτος"
+#
+msgid "Min Long"
+msgstr "Ελ. μήκος"
+#
+msgid "Minimum"
+msgstr "Ελάχιστο"
+#
+msgid "Moving Grib"
+msgstr "Κινητό GRIB"
+#
+msgid "MyLabel"
+msgstr "MyLabel"
+#
+msgid "N"
+msgstr "Β"
+#
+msgid "N/A"
+msgstr "Δ/Υ"
+#
+msgid "Next"
+msgstr "Επόμενο"
+#
+msgid "No valid GRIB file"
+msgstr "Μη έγκυρο αρχείο GRIB"
+#
+msgid "Now"
+msgstr "Τώρα"
+#
+msgid "Numbers"
+msgstr "Αριθμοί"
+#
+msgid "Open File"
+msgstr "Άνοιξε το αρχείο"
+#
+msgid "Open a new file"
+msgstr "Ανοίξτε ένα νέο αρχείο"
+#
+msgid "Overlay Transparency (%)"
+msgstr "Διαφάνεια επικάλυψης (%)"
+#
+msgid "OverlayMap"
+msgstr "Επικάλυψη χάρτη"
+#
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr "Χάρτης επικάλυψης: Αδύνατος ο υπολογισμός του μεγέθους"
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
+"Οι επικαλύψεις δεν είναι δυνατές στο σύστημα (Απενεργοποίηση του OpenGL)"
+#
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Οι επικαλύψεις είναι πολύ πλατιές και δεν μπορούν να παρουσιαστούν:"
+#
+msgid "Particle Map"
+msgstr "Ζωντανός Χάρτης"
+#
+msgid "Percentage"
+msgstr "Επί τοις εκατό"
+#
+msgid "Playback"
+msgstr "Αναπαραγωγή"
+#
+msgid "Playback Options"
+msgstr "Επιλογές αναπαραγωγής"
+#
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Μείωση μεγέθυνσης για να φανούν οι μη ορατές επικαλύψεις:"
+#
+msgid "Preferences"
+msgstr "Προτιμήσεις"
+#
+msgid "Pressure"
+msgstr "Πίεση"
+#
+msgid "Previous"
+msgstr "Προηγούμενο"
+#
+msgid "Profile"
+msgstr "Προφίλ"
+#
+msgid "Proportional Arrow"
+msgstr "Βέλος ανάλογου μήκους"
+#
+msgid "Rainfall"
+msgstr "Βροχόπτωση"
+#
+msgid "Relat. Hum."
+msgstr "Σχ. υγρασία"
+#
+msgid "Relative Humidity"
+msgstr "Σχετική Υγρασία"
+#
+msgid "Request"
+msgstr "Αίτημα"
+#
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+"Το αίτημα δεν μπορεί να αποσταλεί. Παρακαλώ βεβαιώστε τις παραμέτρους του "
+"email σας.\n"
+"Κοιτάξτε και στο αρχείο log.\n"
+"Αποθηκεύστε ή Ακυρώστε για να τελειώσετε..."
+#
+msgid "Resolution"
+msgstr "Διακριτική ικανότητα"
+#
+msgid "S"
+msgstr "Ν"
+#
 msgid "Save"
 msgstr "Αποθήκευση"
-
-#: src/GribRequestDialog.cpp:151
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "Διεύθυνση για να αποσταλεί  το αίτημα eMail. (Υποχρεωτικό για LINUX)"
-
-#: src/GribRequestDialog.cpp:152
-msgid "This is your zyGrib's forum access Login"
-msgstr "Αυτοί είναι οι κωδικοί σου για την πρόσβαση στο φόρουμ του ZyGrib"
-
-#: src/GribRequestDialog.cpp:154
-msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr "Αποκτήστε αυτόν τον κωδικό στο φόρουμ του zyGrib (αυτός δεν είναι ο μυστικός κωδικός σας!)"
-
-#: src/GribRequestDialog.cpp:155
-msgid "Enter your forescasted Speed (in Knots)"
-msgstr "Γράψε την προβλεπόμενη ταχύτητα (σε κόμβους)"
-
-#: src/GribRequestDialog.cpp:156
-msgid "Enter your forecasted Course"
-msgstr "Γράψε την προβλεπόμενη πορεία"
-
-#: src/GribRequestDialog.cpp:496
-msgid "Sorry...\n"
+#
+msgid "Sea Surface Temperature"
+msgstr "Θερμοκρασία επιφανείας θαλάσσης"
+#
+msgid "Sea Temp"
+msgstr "Θερμ. θαλάσσης"
+#
+msgid "Sea Temp."
+msgstr "Θερμοκρασία θαλ."
+#
+msgid "Sea Temperature"
+msgstr "Θερμοκρασία θαλάσσης"
+#
+msgid "Sea Temperature(surf.)"
+msgstr "Θερμοκρασία θαλάσσης (επιφανειακή)"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Θερμοκρασία θαλάσσης ή αέρος στην επιφάνεια"
+#
+msgid "Select a GRIB file"
+msgstr "Επιλέξτε ένα αρχείο GRIB"
+#
+msgid "Select geopotential altitude"
+msgstr "Επιλογή γεωδυναμικού ύψους"
+#
+msgid "Select geoptential altitude"
+msgstr "Επιλογή γεωδυναμικού ύψους"
+#
+msgid "Send"
+msgstr "Αποστολή"
+#
+msgid "Sender eMail Address"
+msgstr "Διεύθυνση eMail αποστολέα"
+#
+msgid "Settings"
+msgstr "Επιλογές"
+#
+msgid "Show Cursor Data"
+msgstr "Εμφάνιση δεδομένων δρομέα"
+#
+msgid "Show data at cursor"
+msgstr "Εμφάνιση δεδομένων στο δρομέα"
+#
+msgid "Significant Wave Height"
+msgstr "Σημαντικό ύψος κύματος"
+#
+msgid "Single Arrow"
+msgstr "Μονό βέλος"
+#
+msgid "Slow"
+msgstr "Αργά"
+#
+msgid "Small Size"
+msgstr "Μικρό μέγεθος"
+#
+msgid ""
+"Sorry...\n"
 "ZyGrib momentary stopped providing this service...\n"
 "Only Saildocs option is available"
 msgstr ""
-
-#: src/GribRequestDialog.cpp:496
-msgid "Warning"
-msgstr ""
-
-#: src/GribRequestDialog.cpp:562
-msgid "Coord. "
-msgstr "Συντεταγμ. "
-
-#: src/GribRequestDialog.cpp:568 src/GribRequestDialog.cpp:1025
-#: src/GribRequestDialog.cpp:1029
-msgid "MB"
-msgstr "MB"
-
-#: src/GribRequestDialog.cpp:708
-msgid "You request a forecast for more than 8 days horizon.\n"
-"This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
-"and the time intervall 12 hours."
-msgstr "Ζητήθηκε πρόγνωση για πάνω από 8 ημέρες.\n"
-"Αυτό δεν είναι συμβατό με τα δεδομένα κυμάτων, τα οποία θα αφαιρεθούν από το αίτημα.\n"
-"Πέρα από τις 8 ημέρες η διακριτική ικανότητα είναι μόνο 2.5°x2.5°\n"
-" και τα χρονικά διαστήματα 12ωρα."
-
-#: src/GribRequestDialog.cpp:1028
-msgid "Max"
-msgstr "Μέγιστο"
-
-#: src/GribRequestDialog.cpp:1168
-msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
-"Please visit www.zygrib.org/ and follow instructions..."
-msgstr "Πριν στείλεις email στο Zybrib πρέπει να εγγραφείς.\n"
-"Πήγαινε στο www.zygrib.org/ και ακολούθησε τις οδηγίες..."
-
-#: src/GribRequestDialog.cpp:1170
-msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr "Πολύ μεγάλο αρχείο! Το όριο του zyGrib είναι 2 ΜΒ!"
-
-#: src/GribRequestDialog.cpp:1171
-msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr "Σφάλμα! Μεγ. πλάτος μικρότερο από ελάχ. πλάτος ή  μεγ. μήκος μικρότερο από ελάχ. μήκος!"
-
-#: src/GribRequestDialog.cpp:1172
-msgid "Too large area! Each side must be less than 180°!"
-msgstr "Πολύ μεγάλη περιοχή! Κάθε πλευρά πρέπει να είναι λιγότερη από 180°!"
-
-#: src/GribRequestDialog.cpp:1173
-msgid "Too small area for this resolution!"
-msgstr "Πολύ μικρή περιοχή για αυτή τη διακριτική ικανότητα!"
-
-#: src/GribRequestDialog.cpp:1190 src/GribRequestDialog.cpp:1252
-msgid "Continue..."
-msgstr "Συνέχεια..."
-
-#: src/GribRequestDialog.cpp:1229 src/GribRequestDialog.cpp:1235
-msgid "Your request is ready. An email is prepared in your email environment. \n"
-"You have just to verify and send it...\n"
-"Save or Cancel to finish...or Continue..."
-msgstr "Το αίτημα είναι έτοιμο. Ένα eMail έχει ετοιμαστεί στην αντίστοιχη περιοχή.\n"
-"Επιβεβαίωσέ το και στείλτο...\n"
-"Αποθήκευση, Ακύρωση ή Συνέχεια..."
-
-#: src/GribRequestDialog.cpp:1240
-msgid "Your request was sent \n"
-"(if your system has an MTA configured and is able to send email).\n"
-"Save or Cancel to finish...or Continue..."
-msgstr "Το αίτημά απεστάλη\n"
-"(αν στο σύστημα μπορεί να στέλνει email).\n"
-"Αποθήκευση, Ακύρωση ή Συνέχεια..."
-
-#: src/GribRequestDialog.cpp:1247
-msgid "Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr "Το αίτημα δεν μπορεί να αποσταλεί. Παρακαλώ βεβαιώστε τις παραμέτρους του email σας.\n"
-"Κοιτάξτε και στο αρχείο log.\n"
-"Αποθηκεύστε ή Ακυρώστε για να τελειώσετε..."
-
-#: src/CursorData.cpp:303
-msgid "Data at cursor position"
-msgstr "Δεδομένα στη θέση του δρομέα"
-
-#: src/CursorData.cpp:326
-msgid "at Geopotential Height"
-msgstr "σε γεωδυναμικό ύψος"
-
-#: src/CursorData.cpp:329
+#
+msgid "Spacing"
+msgstr "Αποστάσεις"
+#
+msgid "Spacing(pixels)"
+msgstr "απόσταση(πίξελ)"
+#
+msgid "Speed"
+msgstr "Ταχύτητα"
+#
+msgid "Speed Control"
+msgstr "Έλεγχος ταχύτητας"
+#
+msgid "Start Options"
+msgstr "Επιλογές εκκίνησης"
+#
+msgid "Start a request"
+msgstr "Αρχή αιτήματος"
+#
+msgid "Start at the first forecast in GRIB file"
+msgstr "Αρχή με την πρώτη πρόγνωση στο αρχείο GRIB"
+#
+msgid "Start at the nearest forecast to current time"
+msgstr "Αρχή με την πρόγνωση πιο κοντά στην τρέχουσα χρονική στιγμή"
+#
+msgid "Start play back"
+msgstr "Εκκίνηση αναπαραγωγής"
+#
+msgid "Stop play back"
+msgstr "Διακοπή αναπαραγωγής"
+#
+msgid "Surface Current Direction"
+msgstr "Κατεύθυνση ρεύματος"
+#
+msgid "Surface Current Speed"
+msgstr "Ταχύτητα ρεύματος"
+#
+msgid "Temp."
+msgstr "Θερμ/σία"
+#
 msgid "Temperature"
 msgstr "Θερμοκρασία"
-
-#: src/CursorData.cpp:332
-msgid "at"
-msgstr "σε"
-
-#: src/CursorData.cpp:337
-msgid "Wind Speed"
-msgstr "Ταχύτητα ανέμου"
-
-#: src/CursorData.cpp:338
-msgid "Wind Speed in Bf"
-msgstr "Ταχύτητα ανέμου σε Bf"
-
-#: src/CursorData.cpp:339
+#
+msgid ""
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr ""
+"Αυτή η αλλαγή χρειάζεται μια πλήρη επαναφόρτωση.\n"
+"Θα εφαρμοστεί μετά το κλείσιμο και την επανέναρξη του προσθέτου"
+#
+msgid "This is your zyGrib's forum access Login"
+msgstr "Αυτοί είναι οι κωδικοί σου για την πρόσβαση στο φόρουμ του ZyGrib"
+#
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Αυτή η επιλογή συνεπάγεται εξουσιοδότηση για παρεμβολή\n"
+"Μην ξεχάσετε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά "
+"υπολογισμένα\n"
+" Αυτό μπορεί να μειώσει την ακρίβεια!"
+#
+msgid "Time Interval"
+msgstr "Χρονικό διάστημα"
+#
+msgid "Time Options"
+msgstr "Επιλογές ώρας"
+#
+msgid "Time Range"
+msgstr "Χρονικά όρια"
+#
+msgid "Time Slider"
+msgstr "Ρυθμιστικό χρόνου"
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "Πολύ μεγάλο αρχείο! Το όριο του zyGrib είναι 2 ΜΒ!"
+#
+msgid "Too large area! Each side must be less than 180°!"
+msgstr "Πολύ μεγάλη περιοχή! Κάθε πλευρά πρέπει να είναι λιγότερη από 180°!"
+#
+msgid "Too small area for this resolution!"
+msgstr "Πολύ μικρή περιοχή για αυτή τη διακριτική ικανότητα!"
+#
+msgid "Top of Grib File"
+msgstr "Αρχή του αρχείου GRIB"
+#
+msgid "Transparency for all Overlay Maps"
+msgstr "Διαφάνεια για όλους τους χάρτες επικάλυψης"
+#
+msgid "UTC"
+msgstr "UTC"
+#
+msgid "Units"
+msgstr "Μονάδες"
+#
+msgid "Use Always this Area"
+msgstr "Μόνιμη χρήση αυτής της περιοχής"
+#
+msgid "Use Gradual Colors"
+msgstr "Χρήση συνεχούς χρωματικής παλέτας"
+#
+msgid "Use High Definition Graphics"
+msgstr "Χρήση Γραφικών Υψηλής Ευκρίνειας"
+#
+msgid "Valid Area and Continue"
+msgstr "Επικύρωση περιοχής και να συνέχεια"
+#
+msgid "W"
+msgstr "Δ"
+#
+msgid "Warning"
+msgstr ""
+#
+msgid "Warning : Data at Geopotential Height"
+msgstr "Προσοχή: Δεδομένα σε γεωδυναμικό ύψος"
+#
+msgid "Warning!"
+msgstr "Προσοχή!"
+#
+msgid "Waves"
+msgstr "Κύματα"
+#
+msgid "Waves Direction"
+msgstr "Κατεύθυνση κυμάτων"
+#
+msgid "Waves period"
+msgstr "Περίοδος κύματος"
+#
+msgid "Waves,Dir"
+msgstr "Κύματα, κατεύθ."
+#
+msgid "Waves,Hsig"
+msgstr "Κύματα, σημ. ύψος"
+#
+msgid "Waves,Per"
+msgstr "Κύματα, περίοδος"
+#
+msgid "Weather table"
+msgstr "Μετεωρολογικός πίνακας"
+#
+msgid "Wind"
+msgstr "Άνεμος"
+#
 msgid "Wind Direction"
 msgstr "Κατεύθυνση ανέμου"
-
-#: src/CursorData.cpp:344
+#
+msgid "Wind Gust"
+msgstr "Σπιλιάδες"
+#
 msgid "Wind Gust at"
 msgstr "Σπιλιάδες σε"
-
-#: src/CursorData.cpp:347
-msgid "Air Temperature at"
-msgstr "Θερμοκρασία αέρος σε"
-
-#: src/CursorData.cpp:347
+#
+msgid "Wind Speed"
+msgstr "Ταχύτητα ανέμου"
+#
+msgid "Wind Speed in Bf"
+msgstr "Ταχύτητα ανέμου σε Bf"
+#
+msgid "Wind,Dir"
+msgstr "Άνεμος, κατευθ."
+#
+msgid "Wind,Gust"
+msgstr "Άνεμος, σπηλιάδες"
+#
+msgid "Wind,Speed"
+msgstr "Άνεμος, ταχύτητα"
+#
+msgid "Write and send eMail request"
+msgstr "Γράψε και στείλε αίτημα eMail"
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but "
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Έχετε επιτρέψει παρεμβολή δεδομένων.\n"
+"Μη ξεχνάτε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά "
+"υπολογισμένα\n"
+" Aυτό μπορεί να μειώσει την ακρίβεια!"
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Έχετε επιτρέψει παρεμβολή δεδομένων. \n"
+"Μη ξεχνάτε ότι τα δεδομένα που εμφανίζονται δεν είναι πραγματικά αλλά "
+"υπολογισμένα.\n"
+"Aυτό μπορεί να μειώσει την ακρίβεια!"
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5°x2.5°\n"
+"and the time intervall 12 hours."
+msgstr ""
+"Ζητήθηκε πρόγνωση για πάνω από 8 ημέρες.\n"
+"Αυτό δεν είναι συμβατό με τα δεδομένα κυμάτων, τα οποία θα αφαιρεθούν από το "
+"αίτημα.\n"
+"Πέρα από τις 8 ημέρες η διακριτική ικανότητα είναι μόνο 2.5°x2.5°\n"
+" και τα χρονικά διαστήματα 12ωρα."
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "Θέλετε να προσθέσετε έναν τίτλο/μπάρα στον διάλογο\n"
+#
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "Θέλετε να καταργήσετε το τίτλο του διαλόγου ή την μπάρα\n"
+#
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Το αίτημα είναι έτοιμο. Ένα eMail έχει ετοιμαστεί στην αντίστοιχη περιοχή.\n"
+"Επιβεβαίωσέ το και στείλτο...\n"
+"Αποθήκευση, Ακύρωση ή Συνέχεια..."
+#
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Το αίτημά απεστάλη\n"
+"(αν στο σύστημα μπορεί να στέλνει email).\n"
+"Αποθήκευση, Ακύρωση ή Συνέχεια..."
+#
+msgid "Zoom To Center"
+msgstr "Ζουμ στο κέντρο"
+#
+msgid "Zoom to Center"
+msgstr "Ζουμ στο κέντρο"
+#
+msgid "Zoom to file center when opened"
+msgstr "Ζουμ στο κέντρο όταν ανοιχτεί το αρχείο"
+#
+msgid "at"
+msgstr "σε"
+#
+msgid "at Geopotential Height"
+msgstr "σε γεωδυναμικό ύψος"
+#
+msgid "dBZ"
+msgstr "dBZ"
+#
+msgid "h"
+msgstr "h"
+#
+msgid "inHG"
+msgstr "ίντσες Hg"
+#
+msgid "j/kg"
+msgstr "J/kg"
+#
+msgid "km/h"
+msgstr "km/h"
+#
+msgid "m/s"
+msgstr "m/s"
+#
+msgid "mmHG"
+msgstr "mmHg"
+#
+msgid "mn"
+msgstr "mN"
+#
+msgid "mph"
+msgstr "μ.α.ώ."
+#
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+"οι επικαλύψεις δεν είναι δυνατές σε λειτουργία DC παρά μόνο με «Βορράς "
+"πάνω» (Ενεργοποίηση του OpenGL)"
+#
 msgid "surface level"
 msgstr "επίπεδο επιφάνειας"
-
-#: src/CursorData.cpp:348
-msgid "Sea Surface Temperature"
-msgstr "Θερμοκρασία επιφανείας θαλάσσης"
-
-#: src/CursorData.cpp:403 src/CursorData.cpp:404 src/CursorData.cpp:405
-#: src/CursorData.cpp:421 src/CursorData.cpp:442 src/CursorData.cpp:467
-#: src/CursorData.cpp:469 src/CursorData.cpp:473 src/CursorData.cpp:484
-#: src/CursorData.cpp:509 src/CursorData.cpp:510 src/CursorData.cpp:532
-#: src/CursorData.cpp:547 src/CursorData.cpp:563 src/CursorData.cpp:579
-#: src/CursorData.cpp:595 src/CursorData.cpp:609 src/CursorData.cpp:624
-#: src/CursorData.cpp:639 src/CursorData.cpp:653
-msgid "N/A"
-msgstr "Δ/Υ"
-
-#: src/CursorData.cpp:676
-msgid "Abbreviated Isobars Numbers"
-msgstr "Συντετμημένοι αριθμοί ισοβαρών"
-
-#: src/CursorData.cpp:694
-msgid "Display Iso Reflectivity"
-msgstr "Δείξε αντανακλαστικότητα ISO"
-
-#: src/CursorData.cpp:759
-msgid "Menu"
-msgstr "Μενού"
-
+#
+msgid "zyGrib Code"
+msgstr "zyGrib Κωδικός"
+#
+msgid "zyGrib Login"
+msgstr "zyGrib Login"

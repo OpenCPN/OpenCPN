@@ -514,6 +514,7 @@ if exist %DEST% (
 )
 %PSH% -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
   if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
+  [Net.ServicePointManager]::SecurityProtocol = 'Tls, Tls11, Tls12, Ssl3'; ^
   Invoke-WebRequest "%URL%" -OutFile '%DEST%'; ^
   exit $LASTEXITCODE
 if errorlevel 1 (@echo Download failed && pause && exit /b 1) else (@echo Download OK)

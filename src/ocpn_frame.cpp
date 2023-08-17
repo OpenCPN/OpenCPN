@@ -4901,7 +4901,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     optionsParent = GetPrimaryCanvas();
 #endif
       g_options =
-          new options(optionsParent, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
+          new options(optionsParent, -1, _("Chart Options"), wxPoint(-1, -1), wxSize(sx, sy)); // Name on Dialog initialization of chart options
 
       // needed to ensure that the chart window starts with keyboard focus
       SurfaceAllCanvasToolbars();
@@ -7007,7 +7007,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
     g_MainToolbar = new ocpnFloatingToolbarDialog(toolbarParent, wxPoint(-1, -1), orient,
                                                   g_toolbar_scalefactor);
     g_MainToolbar->SetCornerRadius(5);
-    g_MainToolbar->SetBackGroundColorString(_T("GREY3"));
+    g_MainToolbar->SetBackGroundColorString(_T("BLUE1"));
     g_MainToolbar->SetToolbarHideMethod(TOOLBAR_HIDE_TO_FIRST_TOOL);
     g_MainToolbar->SetToolConfigString(g_toolbarConfig);
     g_MainToolbar->EnableRolloverBitmaps(false);
@@ -7073,19 +7073,19 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
 
   tic = new ToolbarItemContainer(
       ID_SETTINGS, style->GetToolIcon(_T("MUI_settings"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Options"), _T("MUI_settings"));
+      wxITEM_NORMAL, _("Chart Options"), _T("MUI_settings"));
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
       ID_MENU_ROUTE_NEW, style->GetToolIcon(_T("MUI_route"), TOOLICON_NORMAL),
       style->GetToolIcon(_T("MUI_route"), TOOLICON_TOGGLED), wxITEM_CHECK,
-      wxString(_("Create Route")) << _T(" (Ctrl-R)"), _T("MUI_route"));
+      wxString(_("Draw Route")), _T("MUI_route"));
 
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
       ID_ROUTEMANAGER, style->GetToolIcon(_T("MUI_RMD"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Route & Mark Manager"), _T("MUI_RMD"));
+      wxITEM_NORMAL, _("Route Planner"), _T("MUI_RMD"));
   g_MainToolbar->AddToolItem(tic);
 
   tic = new ToolbarItemContainer(
@@ -7094,10 +7094,10 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
       _("Enable Tracking"), _T("MUI_track"));
   g_MainToolbar->AddToolItem(tic);
 
-  tic = new ToolbarItemContainer(
-      ID_COLSCHEME, style->GetToolIcon(_T("MUI_colorscheme"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Change Color Scheme"), _T("MUI_colorscheme"));
-  g_MainToolbar->AddToolItem(tic);
+//  tic = new ToolbarItemContainer(
+//      ID_COLSCHEME, style->GetToolIcon(_T("MUI_colorscheme"), TOOLICON_NORMAL),
+//      wxITEM_NORMAL, _("Change Color Scheme"), _T("MUI_colorscheme"));
+//  g_MainToolbar->AddToolItem(tic);
   // if( GetMasterToolItemShow(ID_COLSCHEME) ){
   //  tb->AddTool( ID_COLSCHEME, _T("MUI_colorscheme"), style->GetToolIcon(
   //  _T("MUI_colorscheme"), TOOLICON_NORMAL ),
@@ -7107,24 +7107,24 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
   //  the colorscheme
   //}
 
-  tic = new ToolbarItemContainer(
-      ID_PRINT, style->GetToolIcon(_T("MUI_print"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("Print Chart"), _T("MUI_print"));
-  g_MainToolbar->AddToolItem(tic);
+//  tic = new ToolbarItemContainer(
+//      ID_PRINT, style->GetToolIcon(_T("MUI_print"), TOOLICON_NORMAL),
+//      wxITEM_NORMAL, _("Print Chart"), _T("MUI_print"));
+//  g_MainToolbar->AddToolItem(tic);
 
-  tic = new ToolbarItemContainer(
-      ID_ABOUT, style->GetToolIcon(_T("MUI_help"), TOOLICON_NORMAL),
-      wxITEM_NORMAL, _("About OpenCPN"), _T("MUI_help"));
-  g_MainToolbar->AddToolItem(tic);
+//  tic = new ToolbarItemContainer(
+//      ID_ABOUT, style->GetToolIcon(_T("MUI_help"), TOOLICON_NORMAL),
+//      wxITEM_NORMAL, _("About OpenCPN"), _T("MUI_help"));
+//  g_MainToolbar->AddToolItem(tic);
 
   //      Add any PlugIn toolbar tools that request default positioning
   AddDefaultPositionPlugInTools();
 
   //  And finally add the MOB tool
-  tic = new ToolbarItemContainer(
-      ID_MOB, style->GetToolIcon(_T("mob_btn"), TOOLICON_NORMAL), wxITEM_NORMAL,
-      wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)"), _T("mob_btn"));
-  g_MainToolbar->AddToolItem(tic);
+//  tic = new ToolbarItemContainer(
+//      ID_MOB, style->GetToolIcon(_T("mob_btn"), TOOLICON_NORMAL), wxITEM_NORMAL,
+//      wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)"), _T("mob_btn"));
+//  g_MainToolbar->AddToolItem(tic);
 
   // Build the toolbar
   g_MainToolbar->RebuildToolbar();
@@ -7274,7 +7274,7 @@ static const char *usercolors[] = {
     "GREEN2; 45;150; 45;",
     "GREEN3;200;220;200;",
     "GREEN4;  0;255;  0;",
-    "BLUE1; 170;170;255;",
+    "BLUE1; 50;50;150;",
     "BLUE2;  45; 45;170;",
     "BLUE3;   0;  0;255;",
     "GREY1; 200;200;200;",

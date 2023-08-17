@@ -313,7 +313,7 @@ void MUIButton::Init() {
 void MUIButton::CreateControls() {
   this->SetForegroundColour(wxColour(255, 255, 255));
 
-  wxColour backColor = GetGlobalColor(_T("GREY3"));
+  wxColour backColor = GetGlobalColor(_T("BLUE1"));
   SetBackgroundColour(backColor);
 
   this->SetFont(wxFont(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
@@ -322,7 +322,7 @@ void MUIButton::CreateControls() {
 
 void MUIButton::SetColorScheme(ColorScheme cs) {
   if (m_cs != cs) {
-    wxColour backColor = GetGlobalColor(_T("GREY3"));
+    wxColour backColor = GetGlobalColor(_T("BLUE1"));
     SetBackgroundColour(backColor);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -567,7 +567,7 @@ void MUIBar::Init() {
   m_canvasOptions = NULL;
   m_canvasOptionsAnimationTimer.SetOwner(this,
                                          CANVAS_OPTIONS_ANIMATION_TIMER_1);
-  m_backcolorString = _T("GREY3");
+  m_backcolorString = _T("BLUE1");
   m_scaleTextBox = NULL;
   m_capture_size_y = 0;
 
@@ -655,12 +655,12 @@ void MUIBar::CreateControls() {
       m_zinButton = new MUIButton(this, ID_ZOOMIN, m_scaleFactor,
                                   iconDir + _T("MUI_zoom-in.svg"));
       barSizer->Add(m_zinButton, 0, wxSHAPED);
-
+      barSizer->AddSpacer(5);
       m_zoutButton = new MUIButton(this, ID_ZOOMOUT, m_scaleFactor,
                                    iconDir + _T("MUI_zoom-out.svg"));
       barSizer->Add(m_zoutButton, 0, wxSHAPED);
 
-      barSizer->AddSpacer(2);
+      barSizer->AddSpacer(5);
     }
 
 #ifndef __OCPN__ANDROID__
@@ -671,7 +671,7 @@ void MUIBar::CreateControls() {
     barSizer->Add(m_scaleTextBox, 0, wxALIGN_CENTER_VERTICAL);
     m_scaleTextBox->Bind(wxEVT_LEFT_DOWN, &MUIBar::OnScaleSelected, this);
 
-    barSizer->AddSpacer(5);
+    barSizer->AddSpacer(12);
 
     m_followButton = new MUIButton(this, ID_FOLLOW, m_scaleFactor,
                                    iconDir + _T("MUI_follow.svg"),
@@ -679,7 +679,7 @@ void MUIBar::CreateControls() {
                                    iconDir + _T("MUI_follow_ahead.svg"));
     barSizer->Add(m_followButton, 0, wxSHAPED);
 
-    barSizer->AddSpacer(2);
+    barSizer->AddSpacer(5);
 #endif
     m_menuButton = new MUIButton(this, ID_MUI_MENU, m_scaleFactor,
                                  iconDir + _T("MUI_menu.svg"));

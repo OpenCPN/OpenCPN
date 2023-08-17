@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chartdldr_pi 1.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -325,11 +325,11 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:910
+#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:859
 msgid "Cancel"
 msgstr ""
 
-#: src/chartdldrgui.cpp:393 src/chartdldrgui.cpp:994
+#: src/chartdldrgui.cpp:393 src/chartdldrgui.cpp:1015
 msgid "Choose Chart File Directory"
 msgstr ""
 
@@ -419,52 +419,52 @@ msgstr ""
 msgid "%u charts total, %u updated, %u new"
 msgstr ""
 
-#: src/chartdldrgui.cpp:852
+#: src/chartdldrgui.cpp:870
 msgid "Default Path to Charts"
 msgstr ""
 
-#: src/chartdldrgui.cpp:863
+#: src/chartdldrgui.cpp:881
 msgid "Select a folder"
 msgstr ""
 
-#: src/chartdldrgui.cpp:870
+#: src/chartdldrgui.cpp:888
 msgid "Preferences"
 msgstr ""
 
-#: src/chartdldrgui.cpp:875
+#: src/chartdldrgui.cpp:893
 msgid "After catalog update select for download"
 msgstr ""
 
-#: src/chartdldrgui.cpp:880
+#: src/chartdldrgui.cpp:898
 msgid "All updated charts"
 msgstr ""
 
-#: src/chartdldrgui.cpp:885
+#: src/chartdldrgui.cpp:903
 msgid "All new charts"
 msgstr ""
 
-#: src/chartdldrgui.cpp:895
+#: src/chartdldrgui.cpp:913
 msgid "Allow bulk update of all configured chart sources and charts"
 msgstr ""
 
-#: src/chartdldrgui.cpp:900
+#: src/chartdldrgui.cpp:918
 msgid "Update chart source catalog"
 msgstr ""
 
-#: src/chartdldrgui.cpp:945 src/chartdldrgui.cpp:946
+#: src/chartdldrgui.cpp:966 src/chartdldrgui.cpp:967
 msgid "Downloading chart sources"
 msgstr ""
 
-#: src/chartdldrgui.cpp:960
+#: src/chartdldrgui.cpp:981
 #, c-format
 msgid "Failed to save: %s "
 msgstr ""
 
-#: src/chartdldrgui.cpp:962 src/chartdldrgui.cpp:972
+#: src/chartdldrgui.cpp:983 src/chartdldrgui.cpp:993
 msgid "Chart downloader"
 msgstr ""
 
-#: src/chartdldrgui.cpp:969
+#: src/chartdldrgui.cpp:990
 #, c-format
 msgid ""
 "Failed to download: %s \n"

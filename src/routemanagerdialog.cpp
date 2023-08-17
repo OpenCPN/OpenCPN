@@ -300,7 +300,7 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent) {
   long style =
       wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT;
 
-  wxFrame::Create(parent, -1, wxString(_("Route & Mark Manager")),
+  wxFrame::Create(parent, -1, wxString(_("Route Planner")),
                   wxDefaultPosition, wxDefaultSize, style);
 
   wxFont *qFont = GetOCPNScaledFont(_("Dialog"));

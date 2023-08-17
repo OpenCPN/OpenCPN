@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
+"POT-Creation-Date: 2023-08-16 16:53+0530\n"
 "PO-Revision-Date: 2023-06-05 01:25\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
@@ -16,47 +16,174 @@ msgstr ""
 "X-Crowdin-Language: nb\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
-
-#: src/wmm_pi.cpp:85
-msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
+#
+msgid ""
+"\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic "
+"variation values printed on many raster charts.\n"
+"\n"
 "Variation is the angle between true and magnetic north.\n"
 "Inclination or dip, is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
 "Field Strength is the magnetic field in nano tesla from\n"
-"\t20000 to 66000\n\n"
-"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
-"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
-"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
-msgstr "\n"
-"Magnetisk Verdens Modell plotting, tillater brukere å kryssreferere verdier for magnetisk deviasjon funnet i mange rasterkart.\n\n"
+"\t20000 to 66000\n"
+"\n"
+"The plotted lines are similar to a topographic map.  The space between them "
+"can be adjusted; more space takes less time to calculate.\n"
+"\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs "
+"computation time.\n"
+"\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by "
+"Sean D'Epagnier to support plotting."
+msgstr ""
+"\n"
+"Magnetisk Verdens Modell plotting, tillater brukere å kryssreferere verdier "
+"for magnetisk deviasjon funnet i mange rasterkart.\n"
+"\n"
 "Deklinasjon er vinkelen mellom virkelig og magnetisk nord.\n"
 "Inklinasjon eller dip er den vertikale vinkelen for det magnetiske feltet.\n"
 "\t(+-90 ved de magnetiske polene)\n"
 "Feltstyrken er det magnetiske feltet målt i Tesla fra\n"
-"\t20000 til 66000\n\n"
-"Linjeplottene ligner på et topografisk kart. Avstanden mellom linjene kan justeres; mer avstand tar mindre tid å kalkulere.\n\n"
-"Trinnstørrelse og polnøyaktighet skyvebrytere tillater justering for å kompensere for fart mot behandlingstid.\n\n"
-"Magnetisk Verdens Modell utvidelsen er skrevet av Pavel Kalian og utvidet av Sean D'Epagnier for å støtte plotting."
-
-#: src/wmm_pi.cpp:101
-msgid "WMM Plugin"
-msgstr "MVM Utvidelse"
-
-#: src/wmm_pi.cpp:162
-msgid "WMM_Live_Overlay"
-msgstr "WMM_Live_Overlegg"
-
-#: src/wmm_pi.cpp:219 src/wmm_pi.cpp:288 src/WmmUIDialog.h:84
+"\t20000 til 66000\n"
+"\n"
+"Linjeplottene ligner på et topografisk kart. Avstanden mellom linjene kan "
+"justeres; mer avstand tar mindre tid å kalkulere.\n"
+"\n"
+"Trinnstørrelse og polnøyaktighet skyvebrytere tillater justering for å "
+"kompensere for fart mot behandlingstid.\n"
+"\n"
+"Magnetisk Verdens Modell utvidelsen er skrevet av Pavel Kalian og utvidet av "
+"Sean D'Epagnier for å støtte plotting."
+#
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - Geomagnetisk helling "
+#
+msgid "About"
+msgstr "Om"
+#
+msgid "Boat"
+msgstr "Båt"
+#
+msgid "Building Magnetic Map"
+msgstr "Bygger magnetisk kart"
+#
+msgid "Cancel"
+msgstr "Avbryt"
+#
+msgid "Cursor"
+msgstr "Kursor"
+#
+msgid "Degrees"
+msgstr "Grader"
+#
+msgid "East Component"
+msgstr "Øst-komponent"
+#
+msgid "Enable plot"
+msgstr "Aktiver plott"
+#
+msgid "Error, see log."
+msgstr "Feil, se logg."
+#
+msgid "Extended"
+msgstr "Utvidet"
+#
+msgid "F "
+msgstr ""
+#
+msgid "Field Strength"
+msgstr "Feltstyrke"
+#
+msgid "H "
+msgstr ""
+#
+msgid "Horizontal Intensity"
+msgstr "Horisontal intensitet"
+#
+msgid "Incl"
+msgstr "Inkl."
+#
+msgid "Inclination"
+msgstr "Helling innover"
+#
+msgid "Magnetic Plot Settings"
+msgstr "Innstillinger for magnetisk plott"
+#
+msgid "Magnetic Variation"
+msgstr "Magnetisk variasjon"
+#
+msgid "Nano Tesla"
+msgstr "Nano Tesla"
+#
+msgid "North Component"
+msgstr "Nord-komponent"
+#
+msgid "Plot"
+msgstr "Plott"
+#
+msgid "Pole Accuracy"
+msgstr "Polnøyaktighet"
+#
+msgid "Save"
+msgstr "Lagre"
+#
+msgid "Settings..."
+msgstr "Innstillinger..."
+#
+msgid "Show Plot Options"
+msgstr "Vis alternativer for plott"
+#
+msgid "Show also data at cursor position"
+msgstr "Vis data ved kursorposisjon"
+#
+msgid "Show data in toolbar icon"
+msgstr "Vis data i verktøylinje-ikon"
+#
+msgid "Show toolbar icon"
+msgstr "Vis verktøylinje ikon"
+#
+msgid "Step Size"
+msgstr "Trinnstørrelse"
+#
+msgid "Total Intensity"
+msgstr "Total intensitet"
+#
+msgid "Vari"
+msgstr "Vari"
+#
+msgid "Variation"
+msgstr "Variasjon"
+#
+msgid "Variation only"
+msgstr "Kun variasjon"
+#
+msgid "Vertical Component"
+msgstr "Vertikal komponent"
+#
+msgid "View"
+msgstr "Vis"
+#
 msgid "WMM"
 msgstr "MVM"
-
-#: src/wmm_pi.cpp:291
+#
+msgid "WMM Plugin"
+msgstr "MVM Utvidelse"
+#
+msgid "WMM Preferences"
+msgstr "MVM Egenskaper"
+#
+msgid "WMM_Live_Overlay"
+msgstr "WMM_Live_Overlegg"
+#
+msgid "Window transparency"
+msgstr "Vindusgjennomsiktighet"
+#
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Magnetisk Verdens Modell utvidelse for OpenCPN"
-
-#: src/wmm_pi.cpp:296
-msgid "World Magnetic Model PlugIn for OpenCPN\n"
+#
+msgid ""
+"World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
@@ -64,7 +191,8 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr "Magnetisk Verdens-modell utvidelse for OpenCPN\n"
+msgstr ""
+"Magnetisk Verdens-modell utvidelse for OpenCPN\n"
 "Integrerer NOAA Magnetisk Verdens-modell\n"
 "Mer informasjon:\n"
 "https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n"
@@ -72,168 +200,12 @@ msgstr "Magnetisk Verdens-modell utvidelse for OpenCPN\n"
 "Etter det, hvis ikke en nye versjon av utvidelsen er kommet\n"
 "tidsnok, hent en ny WMM.COF fra NOAA og lim den inn\n"
 "der den skal være ihht. loggfilen til OpenCPN."
-
-#: src/wmm_pi.cpp:476 src/wmm_pi.cpp:642
-msgid "Error, see log."
-msgstr "Feil, se logg."
-
-#: src/wmm_pi.cpp:925 src/WmmUIDialog.h:114
-msgid "WMM Preferences"
-msgstr "MVM Egenskaper"
-
-#: src/wmm_pi.h:85 src/WmmUIDialog.h:154
-msgid "Magnetic Plot Settings"
-msgstr "Innstillinger for magnetisk plott"
-
-#: src/WmmUIDialog.cpp:32
-msgid "Boat"
-msgstr "Båt"
-
-#: src/WmmUIDialog.cpp:40 src/WmmUIDialog.cpp:150
-msgid "F "
-msgstr ""
-
-#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:153
-msgid "Total Intensity"
-msgstr "Total intensitet"
-
-#: src/WmmUIDialog.cpp:52 src/WmmUIDialog.cpp:162
-msgid "H "
-msgstr ""
-
-#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:165
-msgid "Horizontal Intensity"
-msgstr "Horisontal intensitet"
-
-#: src/WmmUIDialog.cpp:64 src/WmmUIDialog.cpp:174
+#
 msgid "X "
 msgstr ""
-
-#: src/WmmUIDialog.cpp:67 src/WmmUIDialog.cpp:177
-msgid "North Component"
-msgstr "Nord-komponent"
-
-#: src/WmmUIDialog.cpp:76 src/WmmUIDialog.cpp:186
+#
 msgid "Y "
 msgstr ""
-
-#: src/WmmUIDialog.cpp:79 src/WmmUIDialog.cpp:189
-msgid "East Component"
-msgstr "Øst-komponent"
-
-#: src/WmmUIDialog.cpp:88 src/WmmUIDialog.cpp:198
+#
 msgid "Z "
 msgstr ""
-
-#: src/WmmUIDialog.cpp:91 src/WmmUIDialog.cpp:201
-msgid "Vertical Component"
-msgstr "Vertikal komponent"
-
-#: src/WmmUIDialog.cpp:100 src/WmmUIDialog.cpp:210
-msgid "Incl"
-msgstr "Inkl."
-
-#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:213
-msgid "(DIP) - Geomagnetic Inclination "
-msgstr "(DIP) - Geomagnetisk helling "
-
-#: src/WmmUIDialog.cpp:121 src/WmmUIDialog.cpp:231
-msgid "Vari"
-msgstr "Vari"
-
-#: src/WmmUIDialog.cpp:124 src/WmmUIDialog.cpp:234
-msgid "Magnetic Variation"
-msgstr "Magnetisk variasjon"
-
-#: src/WmmUIDialog.cpp:142
-msgid "Cursor"
-msgstr "Kursor"
-
-#: src/WmmUIDialog.cpp:256
-msgid "Plot"
-msgstr "Plott"
-
-#: src/WmmUIDialog.cpp:265
-msgid "Enable plot"
-msgstr "Aktiver plott"
-
-#: src/WmmUIDialog.cpp:270
-msgid "Settings..."
-msgstr "Innstillinger..."
-
-#: src/WmmUIDialog.cpp:324
-msgid "Extended"
-msgstr "Utvidet"
-
-#: src/WmmUIDialog.cpp:324
-msgid "Variation only"
-msgstr "Kun variasjon"
-
-#: src/WmmUIDialog.cpp:326
-msgid "View"
-msgstr "Vis"
-
-#: src/WmmUIDialog.cpp:332
-msgid "Show Plot Options"
-msgstr "Vis alternativer for plott"
-
-#: src/WmmUIDialog.cpp:337
-msgid "Show also data at cursor position"
-msgstr "Vis data ved kursorposisjon"
-
-#: src/WmmUIDialog.cpp:341
-msgid "Show toolbar icon"
-msgstr "Vis verktøylinje ikon"
-
-#: src/WmmUIDialog.cpp:345
-msgid "Show data in toolbar icon"
-msgstr "Vis data i verktøylinje-ikon"
-
-#: src/WmmUIDialog.cpp:351
-msgid "Window transparency"
-msgstr "Vindusgjennomsiktighet"
-
-#: src/WmmUIDialog.cpp:362 src/WmmUIDialog.cpp:464
-msgid "Cancel"
-msgstr "Avbryt"
-
-#: src/WmmUIDialog.cpp:386 src/MagneticPlotMap.cpp:399
-msgid "Variation"
-msgstr "Variasjon"
-
-#: src/WmmUIDialog.cpp:396 src/WmmUIDialog.cpp:410
-msgid "Degrees"
-msgstr "Grader"
-
-#: src/WmmUIDialog.cpp:401 src/MagneticPlotMap.cpp:400
-msgid "Inclination"
-msgstr "Helling innover"
-
-#: src/WmmUIDialog.cpp:415 src/MagneticPlotMap.cpp:401
-msgid "Field Strength"
-msgstr "Feltstyrke"
-
-#: src/WmmUIDialog.cpp:424
-msgid "Nano Tesla"
-msgstr "Nano Tesla"
-
-#: src/WmmUIDialog.cpp:437
-msgid "Step Size"
-msgstr "Trinnstørrelse"
-
-#: src/WmmUIDialog.cpp:451
-msgid "Pole Accuracy"
-msgstr "Polnøyaktighet"
-
-#: src/WmmUIDialog.cpp:456
-msgid "About"
-msgstr "Om"
-
-#: src/WmmUIDialog.cpp:460
-msgid "Save"
-msgstr "Lagre"
-
-#: src/MagneticPlotMap.cpp:398
-msgid "Building Magnetic Map"
-msgstr "Bygger magnetisk kart"
-

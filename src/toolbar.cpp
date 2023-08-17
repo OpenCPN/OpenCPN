@@ -225,7 +225,7 @@ public:
     rollover = false;
     bitmapOK = false;
     m_btooltip_hiviz = false;
-
+    m_label_name = shortHelp;
     toolname = g_pi_manager->GetToolOwnerCommonName(id);
     if (toolname == _T("")) {
       isPluginTool = false;
@@ -250,7 +250,7 @@ public:
     rollover = false;
     m_btooltip_hiviz = false;
     isPluginTool = false;
-
+    m_label_name = shortHelp;
     m_bmpNormal = bmpNormal;
     bitmapOK = true;
   }
@@ -288,6 +288,7 @@ public:
   bool isPluginTool;
   bool b_hilite;
   bool m_btooltip_hiviz;
+  wxString m_label_name;
   wxRect last_rect;
   wxString pluginNormalIconSVG;
   wxString pluginRolloverIconSVG;
@@ -1977,9 +1978,9 @@ bool ocpnToolBarSimple::Realize() {
     tool->firstInLine = firstNode;
     tool->lastInLine = false;
     firstNode = false;
-
+    
     tool->last_rect.width = 0;  // mark it invalid
-
+    bool isMuiMenu = tool->GetToolname().Cmp("MUI_menu") == 0;
     if (tool->IsSeparator()) {
       if (GetWindowStyleFlag() & wxTB_HORIZONTAL) {
         if (m_currentRowsOrColumns >= m_maxCols)
@@ -2025,6 +2026,9 @@ bool ocpnToolBarSimple::Realize() {
         tool->trect.Inflate((separatorSize / 2), topMargin);
 
         m_lastY += toolSize.y + separatorSize;
+        if (!isMuiMenu) {
+          m_lastY += 10; // Increasing separation between tools for label
+        }
       }
       m_currentRowsOrColumns++;
     } else if (tool->IsControl()) {
@@ -2055,6 +2059,7 @@ bool ocpnToolBarSimple::Realize() {
   } else {
     m_maxWidth += toolSize.x;
     m_maxWidth += m_style->GetRightMargin() * m_sizefactor;
+    m_maxWidth += 50; // extra width to broaden toolbar
   }
 
   SetSize(m_maxWidth, m_maxHeight);
@@ -2563,7 +2568,7 @@ void ocpnToolBarSimple::DrawTool(wxDC &dc, wxToolBarToolBase *toolBase) {
   if ((tool->last_rect.width &&
        (tool->last_rect.x != drawAt.x || tool->last_rect.y != drawAt.y)) ||
       bNeedClear) {
-    wxBrush bb(GetGlobalColor(_T("GREY3")));
+    wxBrush bb(GetGlobalColor(_T("BLUE1")));
     dc.SetBrush(bb);
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.DrawRectangle(tool->last_rect.x, tool->last_rect.y,
@@ -2582,7 +2587,12 @@ void ocpnToolBarSimple::DrawTool(wxDC &dc, wxToolBarToolBase *toolBase) {
         wxRect(drawAt.x, drawAt.y, sbmp.GetWidth(), sbmp.GetHeight());
 
   } else {
+    bool isMuiMenu = tool->GetToolname().Cmp("MUI_menu") == 0;
     dc.DrawBitmap(bmp, drawAt);
+    if (! isMuiMenu) {
+      dc.SetTextForeground(GetGlobalColor(_T("GREY1")));
+      dc.DrawText(tool->m_label_name, drawAt.x, drawAt.y+30); // Setting position of label for Icon
+    }
     tool->last_rect =
         wxRect(drawAt.x, drawAt.y, bmp.GetWidth(), bmp.GetHeight());
   }
