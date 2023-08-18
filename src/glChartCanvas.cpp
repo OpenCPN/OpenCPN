@@ -3771,7 +3771,7 @@ int refChartIndex;
 
 int n_render;
 void glChartCanvas::Render() {
-  if (!m_bsetup || !m_pParentCanvas->m_pQuilt ||
+  if (!m_bsetup || !m_pParentCanvas->m_pQuilt ||    
       (m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_pQuilt) ||
       (!m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_singleChart)) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an

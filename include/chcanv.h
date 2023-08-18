@@ -44,6 +44,7 @@
 #include "emboss_data.h"
 #include "S57Sector.h"
 #include "gshhs.h"
+#include "CustomStatsPanel.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -506,7 +507,8 @@ public:
   void SetMUIBarPosition();
   void DestroyMuiBar();
   void CreateMUIBar();
-
+  void CreateShipStats();
+  void DestroyShipStats();
   void ToggleChartOutlines(void);
   void ToggleCanvasQuiltMode(void);
 
@@ -905,6 +907,7 @@ private:
   int m_restore_group;
 
   MUIBar *m_muiBar;
+  CustomStatsPanel *m_shipStats;
   wxSize m_muiBarHOSize;
 
   bool m_bShowOutlines;

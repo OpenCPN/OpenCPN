@@ -512,6 +512,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_bShowScaleInStatusBar = true;
 
   m_muiBar = NULL;
+  m_shipStats = NULL;
   m_bShowScaleInStatusBar = false;
 
   m_bShowOutlines = false;
@@ -6751,6 +6752,13 @@ void ChartCanvas::DestroyMuiBar() {
   if (m_muiBar) {
     m_muiBar->Destroy();
     m_muiBar = NULL;
+  }
+}
+
+void ChartCanvas::CreateShipStats() {
+  if (! m_shipStats) {  // rebuild if necessary
+    m_shipStats = new CustomStatsPanel(this, wxHORIZONTAL, g_toolbar_scalefactor);
+    m_shipStats->SetBestPosition();
   }
 }
 

@@ -4965,6 +4965,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         ChartCanvas *cc = g_canvasArray.Item(i);
         if (cc) {
           cc->CreateMUIBar();
+          cc->CreateShipStats();
           cc->CheckGroupValid();
         }
       }
