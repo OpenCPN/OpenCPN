@@ -142,10 +142,10 @@ if [%1]==[--clean] (shift /1 && set ocpn_clean=1&& set ocpn_rebuild=0&& goto :pa
 if [%1]==[--rebuild] (shift /1 && set ocpn_rebuild=1&& set ocpn_clean=0&& goto :parse)
 if [%1]==[--help] (shift /1 && goto :usage)
 if [%1]==[--all] (shift /1 && set ocpn_all=1&& goto :parse)
-if [%1]==[--minsizerel] (shift /1 && set ocpn_all=0&& set ocpn_minsizerel=1)
-if [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1)
-if [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1)
-if [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1)
+if [%1]==[--minsizerel] (shift /1 && set ocpn_all=0&& set ocpn_minsizerel=1&& goto :parse)
+if [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1&& goto :parse)
+if [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1&& goto :parse)
+if [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1&& goto :parse)
 if [%1]==[] (goto :begin) else (^
   @echo Unknown option: %1
   shift /1
