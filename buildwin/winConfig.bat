@@ -26,6 +26,11 @@ goto :main
 :: *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 :: ***************************************************************************
 :: *
+::
+:: Revision 2> 2023/08/19 Dan Dickey
+::  - Add support for auto rebuilding. To rebuild just run winConfig.bat with
+::    no arguments
+::
 :usage
 @echo ****************************************************************************
 @echo *  This script can be used to create a local build environment for OpenCPN.*
@@ -63,7 +68,7 @@ goto :main
 @echo *                                                                          *
 @echo *      --all              Build all 4 configurations  (default)            *
 @echo *                                                                          *
-@echo *      --help             Print thie message                               *
+@echo *      --help             Print this message                               *
 @echo *                                                                          *
 @echo ****************************************************************************
 exit /b 1
@@ -108,14 +113,30 @@ goto :usage
 :vsok
 set ocpn_clean=0
 set ocpn_rebuild=0
-:: By default build all 4 possible configurations
-:: Edit and set to 0 any configurations you do not wish to build
+:: By default build all 4 possible configurations the first time
+:: Edit and set to 1 at least one configuration
 set ocpn_all=1
 set ocpn_minsizerel=0
 set ocpn_release=0
 set ocpn_relwithdebinfo=0
 set ocpn_debug=0
-
+:: If this is a rebuild then build existing configurations
+if exist "%OCPN_DIR%\build\Debug" (
+  set ocpn_all=0
+  set ocpn_debug=1
+)
+if exist "%OCPN_DIR%\build\Release" (
+  set ocpn_all=0
+  set ocpn_release=1
+)
+if exist "%OCPN_DIR%\build\relwithdebinfo" (
+  set ocpn_all=0
+  set ocpn_relwithdebinfo=1
+)
+if exist "%OCPN_DIR%\build\minsizerel" (
+  set ocpn_all=0
+  set ocpn_minsizerel=1
+)
 :parse
 if [%1]==[--clean] (shift /1 && set ocpn_clean=1&& set ocpn_rebuild=0&& goto :parse)
 if [%1]==[--rebuild] (shift /1 && set ocpn_rebuild=1&& set ocpn_clean=0&& goto :parse)
@@ -231,13 +252,17 @@ if not exist "%buildWINtmp%" (mkdir "%buildWINtmp%")
 ::-------------------------------------------------------------
 :: Install nuget
 ::-------------------------------------------------------------
+if exist "%buildWINtmp%\nuget.exe" (goto :skipnuget)
 @echo Downloading nuget
 set "URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 set "DEST=%buildWINtmp%\nuget.exe"
 call :download
+:skipnuget
+
 ::-------------------------------------------------------------
 :: Download OpenCPN Core dependencies
 ::-------------------------------------------------------------
+if exist "%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip" (goto :skipbuildwin)
 @echo Downloading Windows depencencies from OpenCPN repository
 set "URL=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.3.zip"
 set "DEST=%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip"
@@ -250,6 +275,7 @@ call :explode
 if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
+:skipbuildwin
 ::-------------------------------------------------------------
 :: Download wxWidgets 3.2.2 sources
 ::-------------------------------------------------------------
@@ -279,7 +305,6 @@ set "DEST=%wxDIR%\build\3rdparty\webview2"
 call :explode
 if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK)
 
-:skipwxDL
 ::-------------------------------------------------------------
 :: Build wxWidgets from sources
 ::-------------------------------------------------------------
@@ -295,6 +320,7 @@ msbuild /noLogo /v:m /m "-p:Configuration=DLL Release";Platform=Win32 ^
   /l:FileLogger,Microsoft.Build.Engine;logfile=%CACHE_DIR%\buildwin\wxWidgets\MSBuild_RELEASE_WIN32_Debug.log ^
   "%wxDIR%\build\msw\wx_vc%VCver%.sln"
 
+:skipwxDL
 if not exist "%CACHE_DIR%\buildwin\wxWidgets" (
     mkdir "%CACHE_DIR%\buildwin\wxWidgets"
 )
@@ -331,8 +357,14 @@ if [%ocpn_minsizerel%]==[1] (^
 :: Download and initialize build dependencies
 ::-------------------------------------------------------------
 cd %OCPN_DIR%\build
+where /Q xgettext.exe
+if errorlevel 0 (goto :skipgettext)
 %buildWINtmp%\nuget install Gettext.Tools
+:skipgettext
+where /Q makensisw.exe
+if errorlevel 0 (goto :skipnsis)
 %buildWINtmp%\nuget install NSIS-Package
+:skipnsis
 for /D %%D in ("Gettext*") do (set gettext=%%~D)
 for /D %%D in ("NSIS-Package*") do (set nsis=%%~D)
 @echo gettext=%gettext%
