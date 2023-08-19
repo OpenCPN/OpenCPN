@@ -252,11 +252,14 @@ if not exist "%buildWINtmp%" (mkdir "%buildWINtmp%")
 ::-------------------------------------------------------------
 :: Install nuget
 ::-------------------------------------------------------------
-if exist "%buildWINtmp%\nuget.exe" (goto :skipnuget)
+where /Q /R %buildWINtmp% nuget.exe && goto :skipnuget
 @echo Downloading nuget
 set "URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 set "DEST=%buildWINtmp%\nuget.exe"
 call :download
+where /Q /R %buildWINtmp% nuget.exe && goto :skipnuget
+@echo Error: Could not download nuget.exe
+goto :usage
 :skipnuget
 
 ::-------------------------------------------------------------
@@ -357,13 +360,17 @@ if [%ocpn_minsizerel%]==[1] (^
 :: Download and initialize build dependencies
 ::-------------------------------------------------------------
 cd %OCPN_DIR%\build
-where /Q xgettext.exe
-if errorlevel 0 (goto :skipgettext)
+where /Q xgettext.exe && goto :skipgettext
 %buildWINtmp%\nuget install Gettext.Tools
+where /Q xgettext.exe && goto :skipgettext
+@echo Error: Could not install GetText tools.
+goto :usage
 :skipgettext
-where /Q makensisw.exe
-if errorlevel 0 (goto :skipnsis)
+where /Q makensisw.exe && goto :skipnsis
 %buildWINtmp%\nuget install NSIS-Package
+where /Q makensisw.exe && goto :skipnsis
+@echo Error: Could not install NSIS installer.
+goto :usage
 :skipnsis
 for /D %%D in ("Gettext*") do (set gettext=%%~D)
 for /D %%D in ("NSIS-Package*") do (set nsis=%%~D)
