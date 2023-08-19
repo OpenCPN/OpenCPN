@@ -1711,7 +1711,7 @@ bool ChartDatabase::DetectDirChange(const wxString &dir_path,
                                     const wxString &prog_label,
                                     const wxString &magic, wxString &new_magic,
                                     wxGenericProgressDialog *pprog) {
-  if (pprog) pprog->SetTitle(_("OpenCPN Directory Scan...."));
+  if (pprog) pprog->SetTitle(_("BOSS ENC Directory Scan...."));
 
   //    parse the magic number
   long long unsigned int nmagic;
@@ -2066,7 +2066,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   //    match of each potential addition and bthis_dir_in_dB is false.
   bool bthis_dir_in_dB = IsChartDirUsed(dir_name);
 
-  if (pprog) pprog->SetTitle(_("OpenCPN Chart Add...."));
+  if (pprog) pprog->SetTitle(_("BOSS ENC Chart Add...."));
 
   // build a hash table based on filename (without directory prefix) of
   // the chart to fast to detect identical charts

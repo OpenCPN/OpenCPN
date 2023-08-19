@@ -3340,20 +3340,20 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
   UseNativeStatusBar(false);  // better for MSW, undocumented in frame.cpp
 #endif
 
-  if (g_bShowStatusBar) {
-    if (!m_pStatusBar) {
-      m_pStatusBar =
-          CreateStatusBar(m_StatusBarFieldCount, 0);  // No wxST_SIZEGRIP needed
-      ApplyGlobalColorSchemetoStatusBar();
-    }
-
-  } else {
-    if (m_pStatusBar) {
-      m_pStatusBar->Destroy();
-      m_pStatusBar = NULL;
-      SetStatusBar(NULL);
-    }
-  }
+  //if (g_bShowStatusBar) {
+  //  if (!m_pStatusBar) {
+  //    m_pStatusBar =
+  //        CreateStatusBar(m_StatusBarFieldCount, 0);  // No wxST_SIZEGRIP needed
+  //    ApplyGlobalColorSchemetoStatusBar();
+  //  }
+  //
+  //} else {
+  //  if (m_pStatusBar) {
+  //    m_pStatusBar->Destroy();
+  //    m_pStatusBar = NULL;
+  //    SetStatusBar(NULL);
+ //   }
+  //}
 
   wxSize lastOptSize = options_lastWindowSize;
   SendSizeEvent();
@@ -5194,6 +5194,11 @@ void MyFrame::UpdateStatusBar() {
   //      Show a little heartbeat tick in StatusWindow0 on NMEA events
   //      But no faster than 10 hz.
   unsigned long uiCurrentTickCount;
+  ChartCanvas* chartCanvas = GetPrimaryCanvas();
+  CustomStatsPanel *m_shipStats = NULL;
+  if (chartCanvas) {
+      m_shipStats = chartCanvas->GetShipStatsPanel();
+  }
   m_MMEAeventTime.SetToCurrent();
   uiCurrentTickCount =
       m_MMEAeventTime.GetMillisecond() / 100;  // tenths of a second
@@ -5218,7 +5223,7 @@ void MyFrame::UpdateStatusBar() {
       s1 += _T("   ");
       s1 += toSDMM(2, gLon);
 
-      if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
+      //if (STAT_FIELD_TICK >= 0) SetStatusText(s1, STAT_FIELD_TICK);
     }
 
     wxString sogcog;
@@ -5240,9 +5245,12 @@ void MyFrame::UpdateStatusBar() {
       cogs.Printf(("COG ---%c"), 0x00B0);
 
     sogcog.Append(cogs);
-    SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+    //SetStatusText(sogcog, STAT_FIELD_SOGCOG);
   }
-
+  if (m_shipStats) {
+    // updating cursor position to custom  stats table
+    m_shipStats->updateShipDetailsAndPositions(this,gLat, gLon, gSog, gCog);
+  }
 }
 
 
@@ -5587,7 +5595,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (g_tick == 2) {
     wxString sogcog(_T("SOG --- ") + getUsrSpeedUnit() + +_T("     ") +
                     _T(" COG ---\u00B0"));
-    if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);
+    //if (GetStatusBar()) SetStatusText(sogcog, STAT_FIELD_SOGCOG);
 
     gCog = 0.0;  // say speed is zero to kill ownship predictor
   }
@@ -7122,10 +7130,10 @@ ocpnToolBarSimple *MyFrame::CreateMasterToolbar() {
   AddDefaultPositionPlugInTools();
 
   //  And finally add the MOB tool
-//  tic = new ToolbarItemContainer(
-//      ID_MOB, style->GetToolIcon(_T("mob_btn"), TOOLICON_NORMAL), wxITEM_NORMAL,
-//      wxString(_("Drop MOB Marker")) << _(" (Ctrl-Space)"), _T("mob_btn"));
-//  g_MainToolbar->AddToolItem(tic);
+  tic = new ToolbarItemContainer(
+      ID_MOB, style->GetToolIcon(_T("mob_btn"), TOOLICON_NORMAL), wxITEM_NORMAL,
+      wxString(_("Drop MOB Marker")), _T("mob_btn"));
+  g_MainToolbar->AddToolItem(tic);
 
   // Build the toolbar
   g_MainToolbar->RebuildToolbar();

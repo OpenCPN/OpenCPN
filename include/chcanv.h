@@ -550,7 +550,7 @@ public:
   void SetAttenAIS(bool show);
 
   MUIBar *GetMUIBar() { return m_muiBar; }
-
+  CustomStatsPanel *GetShipStatsPanel() { return m_shipStats; }
   void SetAlertString(wxString str) { m_alertString = str; }
   wxString GetAlertString() { return m_alertString; }
 

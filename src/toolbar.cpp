@@ -2027,7 +2027,7 @@ bool ocpnToolBarSimple::Realize() {
 
         m_lastY += toolSize.y + separatorSize;
         if (!isMuiMenu) {
-          m_lastY += 10; // Increasing separation between tools for label
+          m_lastY += 8; // Increasing separation between tools for label
         }
       }
       m_currentRowsOrColumns++;
@@ -2059,7 +2059,7 @@ bool ocpnToolBarSimple::Realize() {
   } else {
     m_maxWidth += toolSize.x;
     m_maxWidth += m_style->GetRightMargin() * m_sizefactor;
-    m_maxWidth += 70; // extra width to broaden toolbar
+    m_maxWidth += 50; // extra width to broaden toolbar
   }
 
   SetSize(m_maxWidth, m_maxHeight);
@@ -2591,7 +2591,7 @@ void ocpnToolBarSimple::DrawTool(wxDC &dc, wxToolBarToolBase *toolBase) {
     dc.DrawBitmap(bmp, drawAt);
     if (! isMuiMenu) {
       dc.SetTextForeground(GetGlobalColor(_T("GREY1")));
-      dc.DrawText(tool->m_label_name, drawAt.x, drawAt.y+40); // Setting position of label for Icon
+      dc.DrawText(tool->m_label_name, drawAt.x, drawAt.y+30); // Setting position of label for Icon
     }
     tool->last_rect =
         wxRect(drawAt.x, drawAt.y, bmp.GetWidth(), bmp.GetHeight());

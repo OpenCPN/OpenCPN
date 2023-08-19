@@ -4141,7 +4141,7 @@ void ChartCanvas::OnCursorTrackTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
-  if (!parent_frame->m_pStatusBar) return;
+  //if (!parent_frame->m_pStatusBar) return;
 
   wxString s1;
   s1 += _T(" ");
@@ -4150,8 +4150,11 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   s1 += toSDMM(2, cursor_lon);
 
   if (STAT_FIELD_CURSOR_LL >= 0)
-    parent_frame->SetStatusText(s1, STAT_FIELD_CURSOR_LL);
-
+    //parent_frame->SetStatusText(s1, STAT_FIELD_CURSOR_LL);
+  if (m_shipStats) {
+    // updating cursor position to custom  stats table
+    m_shipStats->updateCursorPositions(cursor_lat, cursor_lon);
+  }
   if (STAT_FIELD_CURSOR_BRGRNG < 0) return;
 
   double brg, dist;
@@ -4209,7 +4212,7 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   }
   // END OF - LIVE ETA OPTION
 
-  parent_frame->SetStatusText(s, STAT_FIELD_CURSOR_BRGRNG);
+  //parent_frame->SetStatusText(s, STAT_FIELD_CURSOR_BRGRNG);
 }
 
 // CUSTOMIZATION - FORMAT MINUTES
@@ -5484,7 +5487,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
         }
       }
 
-      if (!b_noshow) parent_frame->SetStatusText(text, STAT_FIELD_SCALE);
+      //if (!b_noshow) parent_frame->SetStatusText(text, STAT_FIELD_SCALE);
     }
   }
 
@@ -6598,7 +6601,7 @@ void ChartCanvas::ToggleCPAWarn() {
   else { g_bTCPA_Max = true; }
   // Print to status bar if available.
   if (STAT_FIELD_SCALE >= 4 && parent_frame->GetStatusBar()) {
-    parent_frame->SetStatusText(_("CPA alarm ") + mess, STAT_FIELD_SCALE);
+    //parent_frame->SetStatusText(_("CPA alarm ") + mess, STAT_FIELD_SCALE);
   }
   else {
     OCPNMessageBox(this,
