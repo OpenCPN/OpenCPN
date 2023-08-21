@@ -35,6 +35,28 @@
 #include <stdlib.h>
 
 
+#ifdef __OCPN__ANDROID__
+// Handle occasional SIG on Android
+#include <signal.h>
+#include <setjmp.h>
+
+struct sigaction sa_all_plib;
+struct sigaction sa_all_plib_previous;
+
+sigjmp_buf env_plib;  // the context saved by sigsetjmp();
+
+void catch_signals_plib(int signo) {
+  switch (signo) {
+    case SIGSEGV:
+      siglongjmp(env_plib, 1);  // jump back to the setjmp() point
+      break;
+
+    default:
+      break;
+  }
+}
+#endif
+
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
@@ -8658,32 +8680,65 @@ int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules) {
         break;  // AP
 
       case RUL_CND_SY: {
-        if (!rzRules->obj->bCS_Added) {
-          rzRules->obj->CSrules = NULL;
-          GetAndAddCSRules(rzRules, rules);
-          rzRules->obj->bCS_Added = 1;  // mark the object
-        }
-        Rules *rules_last = rules;
-        rules = rzRules->obj->CSrules;
+#ifdef __OCPN__ANDROID__
+        // Catch a difficult to trap SIGSEGV, avoiding app crash
+        sigaction(SIGSEGV, NULL,
+                  &sa_all_plib_previous);  // save existing action for this signal
 
-        while (NULL != rules) {
-          switch (rules->ruleType) {
-            case RUL_ARE_CO:
-              RenderToGLAC(rzRules, rules);
-              break;
-            case RUL_ARE_PA:
-              RenderToGLAP(rzRules, rules);
-              break;
-            case RUL_NONE:
-            default:
-              break;  // no rule type (init)
+        struct sigaction temp;
+        sigaction(SIGSEGV, NULL,
+                  &temp);  // inspect existing action for this signal
+
+        temp.sa_handler = catch_signals_plib;  // point to my handler
+        sigemptyset(&temp.sa_mask);             // make the blocking set
+                                                // empty, so that all
+                                                // other signals will be
+                                                // unblocked during my handler
+        temp.sa_flags = 0;
+        sigaction(SIGSEGV, &temp, NULL);
+
+        if (sigsetjmp(env_plib, 1))  //  Something in the
+                                //  code block below this on caused SIGSEGV...
+        {
+          // reset signal handler
+          sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+          return 0;
+        }
+        else
+#endif
+        {
+          if (!rzRules->obj->bCS_Added) {
+            rzRules->obj->CSrules = NULL;
+            GetAndAddCSRules(rzRules, rules);
+            rzRules->obj->bCS_Added = 1;  // mark the object
           }
-          rules_last = rules;
-          rules = rules->next;
-        }
+          Rules *rules_last = rules;
+          rules = rzRules->obj->CSrules;
 
-        rules = rules_last;
-        break;
+          while (NULL != rules) {
+            switch (rules->ruleType) {
+              case RUL_ARE_CO:
+                RenderToGLAC(rzRules, rules);
+                break;
+              case RUL_ARE_PA:
+                RenderToGLAP(rzRules, rules);
+                break;
+              case RUL_NONE:
+              default:
+                break;  // no rule type (init)
+            }
+            rules_last = rules;
+            rules = rules->next;
+          }
+
+          rules = rules_last;
+          break;
+        }
+#ifdef __OCPN__ANDROID__
+        // reset signal handler
+        sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+#endif
+
       }
 
       case RUL_NONE:
