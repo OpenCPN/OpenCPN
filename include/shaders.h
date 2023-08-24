@@ -55,7 +55,9 @@ public:
     GLShaderProgram() : programId_(0), linked_(false) {
       programId_ = glCreateProgram();
     }
-    ~GLShaderProgram() { }
+    ~GLShaderProgram() {
+      glDeleteProgram(programId_) ;
+    }
 
     bool addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
       char const *shaderCStr = shaderSource.c_str();

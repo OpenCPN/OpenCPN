@@ -1893,7 +1893,7 @@ void ocpnDC::SetVP(ViewPort vp){
   m_vp = vp;
 
   // If not in DC mode, simply return
-  if (!m_glchartCanvas && !m_glchartCanvas)
+  if (!m_glchartCanvas && !m_glcanvas)
       return;
 
   // Otherwise, prepare local shaders
