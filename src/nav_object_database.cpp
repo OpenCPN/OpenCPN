@@ -1612,7 +1612,13 @@ void NavObjectChanges::AddWP(RoutePoint *pWP, const char *action) {
   SetRootGPXNode();
 
   pugi::xml_node object = root().append_child("wpt");
-  GPXCreateWpt(object, pWP, OPT_WPT);
+
+  int flags = OPT_WPT;
+  // If the action is a simple deletion, simplify the output flags
+  if(!strncmp(action, "delete", 6))
+    flags = OUT_GUID | OUT_NAME;
+
+  GPXCreateWpt(object, pWP, flags);
 
   pugi::xml_node xchild = object.child("extensions");
   pugi::xml_node child = xchild.append_child("opencpn:action");
