@@ -1337,7 +1337,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   wxString m_cOverlayColorsChoices[] = {
       _("Generic"),  _("Wind"),        _("Air Temp"), _("Sea Temp"),
-      _("Rainfall"), _("Cloud Cover"), _("Current"),  _("CAPE")};
+      _("Rainfall"), _("Cloud Cover"), _("Current"), _("REFC")};
   int m_cOverlayColorsNChoices =
       sizeof(m_cOverlayColorsChoices) / sizeof(wxString);
   m_cOverlayColors =
