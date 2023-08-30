@@ -640,7 +640,10 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in,
          settings == GribOverlaySettings::CLOUD) &&
         val_in < 0.01)
       a = 0;
-
+    if ((settings == GribOverlaySettings::COMP_REFL) &&
+        val_in < 5)
+      a = 0;
+    
     GetGraphicColor(settings, val_in, r, g, b);
   } else
     r = 255, g = 255, b = 255, a = 0;
@@ -1002,6 +1005,13 @@ static ColorMap CloudMap[] = {
     {50, _T("#969678")}, {60, _T("#787864")}, {70, _T("#646450")},
     {80, _T("#5a5a46")}, {90, _T("#505036")}};
 
+static ColorMap REFCMap[] = {
+    {0, _T("#ffffff")},  {5, _T("#06E8E4")},  {10, _T("#009BE9")},
+    {15, _T("#0400F3")}, {20, _T("#00F924")}, {25, _T("#06C200")},
+    {30, _T("#009100")}, {35, _T("#FAFB00")}, {40, _T("#EBB608")},
+    {45, _T("#FF9400")}, {50, _T("#FD0002")}, {55, _T("#D70000")},
+    {60, _T("#C20300")}, {65, _T("#F900FE")}, {70, _T("#945AC8")}};
+
 static ColorMap CAPEMap[] = {
     {0, _T("#0046c8")},    {5, _T("#0050f0")},    {10, _T("#005aff")},
     {15, _T("#0069ff")},   {20, _T("#0078ff")},   {30, _T("#000cff")},
@@ -1025,6 +1035,7 @@ enum {
   CLOUD_GRAPHIC_INDEX,
   CURRENT_GRAPHIC_INDEX,
   CAPE_GRAPHIC_INDEX
+  REFC_GRAPHIC_INDEX
 };
 
 static void InitColor(ColorMap *map, size_t maplen) {
@@ -1047,6 +1058,7 @@ void GRIBOverlayFactory::InitColorsTable() {
             (sizeof PrecipitationMap) / (sizeof *PrecipitationMap));
   InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
   InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
+  InitColor(REFCMap, (sizeof REFCMap) / (sizeof *REFCMap));
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
@@ -1094,6 +1106,10 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
     case CAPE_GRAPHIC_INDEX:
       map = CAPEMap;
       maplen = (sizeof CAPEMap) / (sizeof *CAPEMap);
+      break;
+    case REFC_GRAPHIC_INDEX:
+      map = REFCMap;
+      maplen = (sizeof REFCMap) / (sizeof *REFCMap);
       break;
     default:
       return;
