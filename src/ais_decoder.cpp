@@ -1593,15 +1593,20 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     token = tkz.GetNextToken();  // 3) Bearing from own ship
     token.ToDouble(&arpa_brg);
     arpa_brgunit = tkz.GetNextToken();  // 4) Bearing Units
-    if (arpa_brgunit == _T("R")) {
-      if (std::isnan(arpa_ref_hdg)) {
+    if (arpa_cogunit == _T("R")) {
+        double course;
         if (!std::isnan(gHdt))
-          arpa_brg += gHdt;
+          course = gHdt;
         else
-          arpa_brg += gCog;
-      } else
-        arpa_brg += arpa_ref_hdg;
-      if (arpa_brg >= 360.) arpa_brg -= 360.;
+          course = gCog;
+
+        double new_arpa_speed = sqrt( gSog * gSog + arpa_sog * arpa_sog - 2 * gSog * arpa_sog * cos( (arpa_cog-course-180) * PI / 180.) );
+        double new_arpa_cog = acos( (new_arpa_speed * new_arpa_speed + gSog * gSog - arpa_sog * arpa_sog) / (2 * new_arpa_speed * gSog) ) * 180. / PI + course;
+
+        arpa_sog = new_arpa_speed;
+        arpa_cog = new_arpa_cog;
+
+      if (arpa_cog >= 360.) arpa_cog -= 360.;
     }
     token = tkz.GetNextToken();  // 5) Target speed
     token.ToDouble(&arpa_sog);
