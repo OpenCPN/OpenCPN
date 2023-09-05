@@ -1609,13 +1609,18 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     token.ToDouble(&arpa_cog);
     arpa_cogunit = tkz.GetNextToken();  // 7) Course Units
     if (arpa_cogunit == _T("R")) {
-      if (std::isnan(arpa_ref_hdg)) {
+        double course;
         if (!std::isnan(gHdt))
-          arpa_cog += gHdt;
+          course = gHdt;
         else
-          arpa_cog += gCog;
-      } else
-        arpa_cog += arpa_ref_hdg;
+          course = gCog;
+
+        double new_arpa_speed = sqrt( gSog * gSog + arpa_sog * arpa_sog - 2 * gSog * arpa_sog * cos( (arpa_cog-course-180) * PI / 180.) );
+        double new_arpa_cog = acos( (new_arpa_speed * new_arpa_speed + gSog * gSog - arpa_sog * arpa_sog) / (2 * new_arpa_speed * gSog) ) * 180. / PI + course;
+
+        arpa_sog = new_arpa_speed;
+        arpa_cog = new_arpa_cog;
+
       if (arpa_cog >= 360.) arpa_cog -= 360.;
     }
     token = tkz.GetNextToken();  // 8) Distance of closest-point-of-approach
