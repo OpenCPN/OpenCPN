@@ -57,9 +57,7 @@ recommended.
 
 == Editor and IDE configuration
 
-There is an https://github.com/OpenCPN/OpenCPN/issues/1416[open bug] for
-creating an _.editorconfig_ file.  This file could be used by most
-editors to define basic settings.
+An _.editorconfig_ file is now available in the OpenCPN source code.  This file could be used by mosteditors to define basic settings.
 
 There are no standard configurations available for IDEs like Visual Studio
 Code, Eclipse or CLion.
