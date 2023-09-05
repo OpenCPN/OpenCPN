@@ -1,5 +1,39 @@
 = Code Formatting
 
+Ensure that your source code format for OpenCPN or Plugins follows the standards below; proper use of tabs, spaces, line feeds and carriage returns is important.
+
+  - There is a difference in the use of LF (line feed) and CR (carriage return) when using WIndows versis Linux/Mac. Most good editors allow the user to select the use of these line end functions. Pick one and be consistent. The same goes for the use of tabs versis spaces - pick one and be consistent.
+
+  - There should be no extra spaces at the end of a line, or empty lines at the end of a file (EOF errors). Both of these are considered 'bad coding practice'.
+
+  - Git has tools that will help verify and improve your code format and will simply refuse to commit unless the rules are followed. These rules can be adjusted, though a basic ruleset is already applied. There is also an option to test before commit, a pre-commit option.
+
+  - OpenCPN allows for testing according to the rules specified, there is a script in the plugins directory. In your local R&D system, find './plugins/.git/hooks' and copy/rename the file 'pre-commit.sample' to 'pre-commit' and ensure the file is executable. That script may now be used to test according to your own local rules.
+
+  - The rules are set in the coding directory, the same as where your application code is. Rules could vary depending on your platform, especially for EOL characters.
+
+For a typical Linux platform using spaces instead of tabs you may enforce git looking for errors, using:
+
+    git config --global core.whitespace\
+    trailing-space,-space-before-tab,-indent-with-non-tab,tab-in-indent,cr-at-eol
+
+Meaning:
+
+- Trailing space -> error
+
+- Tab in indent -> error
+
+- CR at end of line -> error
+
+There is a good page explaing the configuration and the options available, please see   'https://git-scm.com/book/pt-br/v2/Customizing-Git-Git-Configuration' and the section 'Formatting and Whitespace'.
+
+Once the code is added to git (using 'git add ...') you may test it using:
+
+    <yourLocalPath>/plugins/.git/hooks/pre-commit
+
+That will test all your code within the current path and the result should be the command prompt response back if all is  OK. Once this is done, then you may also commit without errors.
+
+
 == C/C++
 
 After resolving https://github.com/OpenCPN/OpenCPN/issues/1118[Bug 1118]
@@ -33,7 +67,7 @@ and CMakeLists.txt.
 clang is part of the llvm tools. These are usually installed using package
 managers like choco (Windows), brew (MacOS) or apt (Debian/Ubuntu).
 
-To format a C, C++ or header file with clang-format with the project's default 
+To format a C, C++ or header file with clang-format with the project's default
 configuration use:
 
     clang-format -i  <filename>
