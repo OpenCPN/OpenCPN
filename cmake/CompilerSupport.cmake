@@ -5,9 +5,10 @@
 include(CheckSymbolExists)
 include(CheckCXXCompilerFlag)
 
+set(CMAKE_REQUIRED_FLAGS ="-march=native")
 check_symbol_exists(__SSE__ xmmintrin.h HAVE_MSSE)
 check_symbol_exists(__SSE2__ emmintrin.h HAVE_MSSE2)
-check_symbol_exists(__SSE3__ pmmintrin.h HAVE_MSSE3)
+check_symbol_exists(__SSSE3__ tmmintrin.h HAVE_MSSSE3)
 check_symbol_exists(__AVX2__ immintrin.h HAVE_MAVX2)
 check_symbol_exists(__ARM_NEON__ arm_neon.h HAVE_ARM_NEON)
 if(HAVE_ARM_NEON)
