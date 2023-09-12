@@ -1,7 +1,6 @@
 opencpn (5.8.4+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release
-  * Add three patches from upstream master branch.
   * Rebuilt for bookworm-backports.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Fri, 21 Jul 2023 13:26:58 +0200
