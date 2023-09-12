@@ -5,6 +5,12 @@ opencpn (5.8.4+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
  -- Alec Leamas <leamas.alec@gmail.com>  Fri, 21 Jul 2023 13:26:58 +0200
 
+opencpn (5.8.4+dfsg-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 15 Jun 2023 20:26:20 +0200
+
 opencpn (5.8.2+dfsg-3) unstable; urgency=medium
 
   * d/rules: Try to fix test target on armhf et. al.
