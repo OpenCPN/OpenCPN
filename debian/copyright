@@ -4,6 +4,7 @@ Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
 Source: https://github.com/OpenCPN/OpenCPN.git
 Files-Excluded:
  */NSIS.template.in*
+ *.cpt
  buildandroid
  buildosx
  buildwin
