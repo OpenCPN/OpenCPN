@@ -1053,7 +1053,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const OCPNRegion &RectRegion,
                                         const LLRegion &Region) {
   // Do not render if significantly underzoomed
-  if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
+if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
     if (m_nTiles > 500) {
       return true;
     }
@@ -1078,7 +1078,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   int viewZoom = m_maxZoom;
   // Set zoom modifier according to Raster Zoom Modifier settings from display preference pane
-  double zoomMod = 2 * pow(2, g_chart_zoom_modifier_raster / 3.0);
+  double zoomMod = 2 * pow(2, -g_chart_zoom_modifier_raster / 3.0);
 
   for (int kz = m_minZoom; kz <= 19; kz++) {
     double db_mpp = OSM_zoomMPP[kz];
@@ -1247,7 +1247,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glDisable(GL_TEXTURE_2D);
 
-  m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm;
+  m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
 
