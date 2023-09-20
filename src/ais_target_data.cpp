@@ -1016,14 +1016,21 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
   int nMID = MMSI / 1000000;
   if (!IsValidMID(nMID)){
     // SART, MOB, EPIRB starts with 97 and don't use MID (ITU-R M.1371-5)
-    // Some kind of healthy check
+    // or healthy check
     if (MMSI < 1000 || 97 == MMSI / 10000000) return wxEmptyString;
+
+    // Find MID when not in first position like e.g. SAR/ATON
     wxString s_mmsi;
     s_mmsi << MMSI;
-    for (int i = 0; s_mmsi.length() - 3; i++) {
+    bool foundMID = false;
+    for (int i = 0; i < s_mmsi.length() - 3; i++) {
       nMID = wxAtoi(s_mmsi.Mid(i, 3));
-      if (IsValidMID(nMID)) break;
+      if (IsValidMID(nMID)) {
+        foundMID = true;
+        break;
+      }
     }
+    if (!foundMID) return wxEmptyString;
   }
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
