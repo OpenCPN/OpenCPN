@@ -22,54 +22,61 @@ Receiving messages is done in six steps:
 . Handle the messages as they arrives.
 
 
-All in all, an example could be like this:
+The code handling messages must live in a wxEventClass instance. 
+In almost all cases this means that the code should be implemented in a wxWindow.
+If there is a wxWindow available with a suitable lifespan, this could be used. 
+If there is no such window, it needs to be created (it can be hidden) or an
+existing one can be modified to alwasy exist, using Show()/Hide() to enable and
+disable. 
 
-First, declare a listener on the class level, here with the shipdriver
-plugin _ShipDriver_pi.h_ header as an example:
+As an example, the *ShipDrivergui_impl*  class is used.
+First, in the header declare a listener on the class level, here with the shipdriver
+plugin _ShipDrivergui_impl.h_ header as an example:
 ----
-        class ShipDriver_pi : public opencpn_plugin_118 {
+        class Dlg : public ShipDriverBase {
         public:
-            ShipDriver_pi(void* ppimgr);
-            ~ShipDriver_pi(void);
             ...
         private:
      ②      std::shared_ptr<ObservableListener> listener;
             ...
 ----
-Then declare a method which handles the message, something like this:
+Then, in the implementation (.cpp) file  declare a method which handles the
+message, something like this:
 ----
-     ④ void HandleGPGA(ObservedEvt ev) {
+     ④ static void HandleGPGA(ObservedEvt ev) {
      ①      NMEA0183 id("GPGGA");
             std::string payload = GetN0183Payload(id, ev)
             ...
 ----
-Then, in the constructor set up the listening:
+Then, still in the .cpp file, set up the listening in the window constructor:
 ----
-         ShipDriver_pi::ShipDriver_pi(void* ppimgr)
-         : opencpn_plugin_116(ppimgr)
+         Dlg::Dlg(wxWindow* parent, ...) 
+        
          {
          ...
      ①   NMEA0183Id id("GPGGA");
      ③   wxDEFINE_EVENT(EVT_SHIPDRIVER, ObservedEvt);
-     ⑤   listener.Listen(id.key(), EVT_SHIPDRIVER, this);
-     ⑥   Bind(EVT_SHIPDRIVER [](ObservedEvt ev) { HandleGPGA(ev); });
+     ⑤   listener = GetListener(id, EVT_SHIPDRIVER, this);
+     ⑥   Bind(EVT_SHIPDRIVER, [&](ObservedEvt ev) { HandleGPGA(ev); });
 
 ----
 Notes:
 
 ①:: This is the type of message we are listening to. There are similar types
-    for NMEA2000 , SignalK and decoded navigation data (lat, long, etc.)
+    for NMEA2000, SignalK and decoded navigation data (lat, long, etc.). Check
+    *ocpn_plugin.h* for details.
 
 ②:: Boiler-plate code, makes sure the listener is destroyed together with
     the plugin. It is important that the listener is declared in the class,
     a variable defined in a method will not work.
 
 ③:: This is the event generated for our message which we will listen to.
-    It should have an unique name, including the plugin name is a good habit.
+    It should have a unique name, including the plugin name is a good habit.
     However the name, here _EVT_SHIPDRIVER_, could be anything.
 
 ④:: The `GetN0183Payload()` method  gets the payload of the message into the
-    `payload` string. From here it can be processed as required.
+    `payload` string. From here it can be processed as required. There are similar
+     methods for Nmea2000 and SignalK messages (signalK from upcoming 5.10.0).
 
 ⑤:: This activates the listener. From this point system sends us an
     _EVT_SHIPDRIVER_ for each received GPGGA message.
