@@ -36,6 +36,13 @@ target_include_directories(
   ${PROJECT_SOURCE_DIR}/../libs/sound/include
   ${PROJECT_SOURCE_DIR}/../buildandroid/libcurl/include
 )
+if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+  target_include_directories(
+    tests
+    PRIVATE
+    ${OCPN_DEPS_BUNDLE_PATH}/include
+  )
+endif()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
   if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
@@ -93,6 +100,9 @@ if (LIBLZMA_FOUND)
 endif ()
 
 if (NOT WIN32)
+  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+    set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
+  endif()
   find_package(OpenSSL)
   if (OPENSSL_FOUND)
     message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
