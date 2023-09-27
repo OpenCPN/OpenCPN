@@ -118,16 +118,15 @@ $ ".\build\opencpn.sln"
 
 * Managed plugins are only supplied as Release builds. Thus, if you want to
   debug OpenCPN when any managed plugins are installed, you must debug OpenCPN in
-  Release or RelWithDebInfo mode.  If you build your own plugin in Debug mode, then
+  Release or RelWithDebInfo mode.  If you build your own plugin in Debug configuration, then
   you can debug both OpenCPN and your plugin at the same time using the same Visual Studio
   Debug session.
 
 * You can use msbuild as the command line builder instead of CMake.  The reasons for doing so are:
 ** msbuild is faster than CMake or CMake w/Ninja
 ** msbuild gives full access to every type of build and project
-** as it turns out, by default, cmake uses msbuild under the covers
 
-* We also recommend installing the latest powershell version.  It is much more
+* We also recommend installing the latest powershell version.  It is more
 powerful and visually friendly.  Install like this:
 +
 [,console]
@@ -162,8 +161,8 @@ $ ".\opencpn" -p
 +
 [,console]
 ----
- --clean :: cleans all files from the build folder then sets up the build system anew
- --rebuild :: rebuilds all sources
+ --clean :: clean and reinitialize the build folder
+ --rebuild :: rebuild all sources
  --help :: print helpful text
  --relwithdebinfo :: build relwithdebinfo configuration
  --debug :: build debug configuration
@@ -179,13 +178,23 @@ $ ".\opencpn" -p
 +
 [,console]
 ----
+$ cd build
 $ msbuild /m -t:Rebuild -p:Configuration=Debug opencpn.sln
 ----
 +
-** Clean and build every project to create Release build with debug info
+** Build Release version of the installer package
 +
 [,console]
 ----
+$ cd build
+$ msbuild /v:m /m -p:Configuration=Release PACKAGE.vcxproj
+----
++
+** Clean and build every project as a Release build with debug info
++
+[,console]
+----
+$ cd build
 $ msbuild /m -t:Rebuild -p:Configuration=RelWithDebInfo All_BUILD.vcxproj
 ----
 +
@@ -193,6 +202,7 @@ $ msbuild /m -t:Rebuild -p:Configuration=RelWithDebInfo All_BUILD.vcxproj
 +
 [,console]
 ----
+$ cd build
 $ msbuild /m -t:Build -p:Configuration=Debug opencpn.vcxproj
 ----
 +
@@ -200,6 +210,7 @@ $ msbuild /m -t:Build -p:Configuration=Debug opencpn.vcxproj
 +
 [,console]
 ----
+$ cd build
 $ msbuild /m -t:Clean -p:Configuration=Debug opencpn-cmd.vcxproj
 ----
 +
@@ -207,6 +218,7 @@ $ msbuild /m -t:Clean -p:Configuration=Debug opencpn-cmd.vcxproj
 +
 [,console]
 ----
+$ cd build
 $ msbuild /m -t:Rebuild -p:Configuration=Debug plugins\chartdldr_pi\chartdldr_pi.vcxproj
 ----
 +
@@ -215,6 +227,7 @@ $ msbuild /m -t:Rebuild -p:Configuration=Debug plugins\chartdldr_pi\chartdldr_pi
 +
 [,console]
 ----
+$ cd build
 $ cmake -DCMAKE_INSTALL_PREFIX="C:\Program Files (x86)\OpenCPN" ..
 $ cmake --build . --config Debug --target Package
 ----
@@ -223,6 +236,7 @@ $ cmake --build . --config Debug --target Package
 +
 [,console]
 ----
+$ cd build
 $ cmake --build . --config Release --clean-first
 ----
 +

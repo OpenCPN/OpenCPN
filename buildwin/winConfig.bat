@@ -313,14 +313,16 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK)
 ::-------------------------------------------------------------
 @echo Building wxWidgets
 
-msbuild /noLogo /v:m /m "-p:Configuration=DLL Debug";Platform=Win32 ^
-  -p:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix="_vc14x" ^
-  /l:FileLogger,Microsoft.Build.Engine;logfile=%CACHE_DIR%\buildwin\wxWidgets\MSBuild_DEBUG_WIN32_Debug.log ^
+msbuild -noLogo -verbosity:minimal -maxCpuCount ^
+  -property:"Configuration=DLL Debug";Platform=Win32 ^
+  -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
+  -logger:FileLogger,Microsoft.Build.Engine;logfile="%CACHE_DIR%\buildwin\wxWidgets\MSBuild_DEBUG_WIN32_Debug.log" ^
   "%wxDIR%\build\msw\wx_vc%VCver%.sln"
 
-msbuild /noLogo /v:m /m "-p:Configuration=DLL Release";Platform=Win32 ^
-  -p:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix="_vc14x" ^
-  /l:FileLogger,Microsoft.Build.Engine;logfile=%CACHE_DIR%\buildwin\wxWidgets\MSBuild_RELEASE_WIN32_Debug.log ^
+msbuild -noLogo -verbosity:minimal -maxCpuCount ^
+  -property:"Configuration=DLL Release";Platform=Win32 ^
+  -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
+  -logger:FileLogger,Microsoft.Build.Engine;logfile="%CACHE_DIR%\buildwin\wxWidgets\MSBuild_RELEASE_WIN32_Debug.log" ^
   "%wxDIR%\build\msw\wx_vc%VCver%.sln"
 
 :skipwxDL
@@ -362,29 +364,35 @@ if [%ocpn_minsizerel%]==[1] (^
 cd %OCPN_DIR%\build
 where /Q xgettext.exe && goto :skipgettext
 %buildWINtmp%\nuget install Gettext.Tools
-where /Q xgettext.exe && goto :skipgettext
+where /Q /R . xgettext.exe && @echo Found Gettext.Tools && goto :skipgettext
 @echo Error: Could not install GetText tools.
 goto :usage
 :skipgettext
 where /Q makensisw.exe && goto :skipnsis
 %buildWINtmp%\nuget install NSIS-Package
-where /Q makensisw.exe && goto :skipnsis
+where /Q /R . makensisw.exe && @echo Found NSIS-Package && goto :skipnsis
 @echo Error: Could not install NSIS installer.
 goto :usage
 :skipnsis
-for /D %%D in ("Gettext*") do (set gettext=%%~D)
-for /D %%D in ("NSIS-Package*") do (set nsis=%%~D)
-@echo gettext=%gettext%
-@echo nsis=%nsis%
+for /D %%D in (Gettext*) do (set "gettextpath=%%~fD")
+for /D %%D in (NSIS-Package*) do (set "nsispath=%%~fD")
+@echo gettext=%gettextpath%
+@echo nsis=%nsispath%
 cd %OCPN_DIR%
 ::-------------------------------------------------------------
 :: Finalize local environment helper script
 ::-------------------------------------------------------------
 @echo Finishing %OCPN_DIR%\buildwin\configdev.bat
-set "_addpath=%OCPN_DIR%\build\%nsis%\NSIS\;%OCPN_DIR%\build\%nsis%\NSIS\bin\"
-set "_addpath=%_addpath%;%OCPN_DIR%\build\%gettext%\tools\bin\"
+if [%nsispath%]==[] (goto :addGettext)
+set "_addpath=%nsispath%\NSIS\;%nsispath%\NSIS\bin\"
+:addGettext
+if [%gettext%]==[] (goto :addPath)
+set "_addpath=%_addpath%;%gettextpath%\tools\bin\"
+:addPath
+:if [%_addpath%]==[] (goto :skipAddPath)
 @echo path^|find /i "%_addpath%"    ^>nul ^|^| set "path=%path%;%_addpath%" >> "%OCPN_DIR%\buildwin\configdev.bat"
 set _addpath=
+:skipAddPath
 endlocal
 ::-------------------------------------------------------------
 :: Setup environment
