@@ -245,6 +245,10 @@ endif (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 
 if (APPLE)
   option(OCPN_USE_LIBCPP "Use libc++ instead of libstdc++ on macOS" ON)
+  option(OCPN_USE_DEPS_BUNDLE "Use prebuilt dependency bundle instead of searching for libraries on macOS" OFF)
+  if(NOT OCPN_DEPS_BUNDLE_PATH)
+    set(OCPN_DEPS_BUNDLE_PATH "/usr/local")
+  endif()
 endif ()
 
 option(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
@@ -740,6 +744,10 @@ if (NOT QT_ANDROID)
   endif ()
 
   #find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS} REQUIRED )
+  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+    set(wxWidgets_CONFIG_EXECUTABLE "${OCPN_DEPS_BUNDLE_PATH}/lib/wx/config/osx_cocoa-unicode-3.2")
+    set(wxWidgets_CONFIG_OPTIONS "--prefix=${OCPN_DEPS_BUNDLE_PATH}")
+  endif()
   find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   if (wxWidgets_FOUND AND OCPN_USE_WEBVIEW)
     message(STATUS "Found wxWidgets webview add-on")
@@ -1259,6 +1267,12 @@ if (APPLE)
     ${PACKAGE_NAME}
     PRIVATE /usr/X11/include /usr/X11/include/GL
   )
+  if(OCPN_USE_DEPS_BUNDLE)
+    target_include_directories(
+      ${PACKAGE_NAME}
+      PRIVATE "${OCPN_DEPS_BUNDLE_PATH}/include"
+    )
+  endif()
 endif ()
 
 # IF(NOT WIN32) include(OcpnFindGpsd) if (TARGET ocpn::gpsd)
@@ -1563,7 +1577,7 @@ if (OCPN_USE_SVG)
     set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
   else()
     message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
-    set(PKGPROJ_TEMPLATE OpenCPN.pkgproj.in)
+    set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
     if (NOT QT_ANDROID)
       include(OcpnFindCairo)
       include(OcpnFindExpat)
@@ -2664,14 +2678,27 @@ if (WIN32 AND NOT UNIX)
 endif (WIN32 AND NOT UNIX)
 
 if (APPLE)
-  find_library(
-    MPG123 NAMES mpg123
-    PATHS /usr/local/opt/mpg123/lib NO_DEFAULT_PATH
-    REQUIRED
-  )
+  if(OCPN_USE_DEPS_BUNDLE)
+    message (status "PATH: ${OCPN_DEPS_BUNDLE_PATH}")
+    find_library(
+      MPG123 NAMES libmpg3 mpg123
+      HINTS "${OCPN_DEPS_BUNDLE_PATH}/lib"
+      NO_DEFAULT_PATH
+      REQUIRED
+    )
+  else()
+    find_library(
+      MPG123 NAMES libmpg3 mpg123
+      REQUIRED
+    )
+  endif()
   target_link_libraries(${PACKAGE_NAME} PUBLIC ${MPG123})
   message(STATUS "MPG123: ${MPG123}")
-  find_library(MP3LAME NAMES mp3lame lame REQUIRED)
+  if(OCPN_USE_DEPS_BUNDLE)
+    find_library(MP3LAME NAMES mp3lame lame HINTS "${OCPN_DEPS_BUNDLE_PATH}/lib" NO_DEFAULT_PATH REQUIRED)
+  else()
+    find_library(MP3LAME NAMES mp3lame lame REQUIRED)
+  endif()
   target_link_libraries(${PACKAGE_NAME} PUBLIC ${MP3LAME})
   message(STATUS "MP3LAME: ${MP3LAME}")
 endif ()
@@ -3214,7 +3241,18 @@ if (NOT QT_ANDROID)
     endif ()
   endif ()
 
+  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+    target_include_directories(
+      opencpn-cmd
+      PUBLIC
+      ${OCPN_DEPS_BUNDLE_PATH}/include
+    )
+  endif()
+
   if (NOT WIN32)
+    if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+      set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
+    endif()
     find_package(OpenSSL)
     if (OPENSSL_FOUND)
       message(STATUS

@@ -1108,7 +1108,10 @@ FailureEpilogue:
 
 bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
   bool b_compat = false;
-
+#ifdef __WXOSX__
+  //TODO: Actually do some tests (In previous versions b_compat was initialized to true, so the actual behavior was exactly like this)
+  b_compat = true;
+#endif
 #ifdef __WXMSW__
   // For Windows we identify the dll file containing the core wxWidgets functions
   // Later we will compare this with the file containing the wxWidgets functions used

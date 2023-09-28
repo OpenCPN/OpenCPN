@@ -1,9 +1,14 @@
 # - Try to find  zstd library
 # Defines ZSTD_FOUND and the interface library ocpn::zstd.
 
-find_path(ZSTD_INCLUDE_DIR NAMES zstd.h)
+if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+  set(ZSTD_INCLUDE_DIR "${OCPN_DEPS_BUNDLE_PATH}/include")
+  set(ZSTD_LIBRARY "${OCPN_DEPS_BUNDLE_PATH}/lib/libzstd.dylib")
+else()
+  find_path(ZSTD_INCLUDE_DIR NAMES zstd.h)
 
-find_library(ZSTD_LIBRARY NAMES zstd zstd_static)
+  find_library(ZSTD_LIBRARY NAMES zstd zstd_static)
+endif()
 
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(

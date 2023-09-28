@@ -12,23 +12,27 @@
 #  Copyright (c) 2009-2015 Jörg Müller. All rights reserved.
 #  License: Apache 2.0 (not distributed in binary packages).
 
-# Use pkg-config to get hints about paths
-find_package(PkgConfig QUIET)
-if(PKG_CONFIG_FOUND)
+if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+  set(LIBSNDFILE_INCLUDE_DIR "${OCPN_DEPS_BUNDLE_PATH}/include")
+  set(LIBSNDFILE_LIBRARY "${OCPN_DEPS_BUNDLE_PATH}/lib/libsndfile.dylib")
+else()
+  # Use pkg-config to get hints about paths
+  find_package(PkgConfig QUIET)
+  if(PKG_CONFIG_FOUND)
 	pkg_check_modules(LIBSNDFILE_PKGCONF sndfile)
-endif(PKG_CONFIG_FOUND)
+  endif(PKG_CONFIG_FOUND)
 
-# Include dir
-find_path(LIBSNDFILE_INCLUDE_DIR
+  # Include dir
+  find_path(LIBSNDFILE_INCLUDE_DIR
 	NAMES sndfile.h
-	PATHS ${LIBSNDFILE_PKGCONF_INCLUDE_DIRS}
-)
+  )
 
-# Library
-find_library(LIBSNDFILE_LIBRARY
+  # Library
+  find_library(LIBSNDFILE_LIBRARY
 	NAMES sndfile libsndfile-1
 	PATHS ${LIBSNDFILE_PKGCONF_LIBRARY_DIRS}
-)
+  )
+endif()
 
 find_package(PackageHandleStandardArgs)
 find_package_handle_standard_args(LibSndFile  DEFAULT_MSG  LIBSNDFILE_LIBRARY LIBSNDFILE_INCLUDE_DIR)
