@@ -31,7 +31,11 @@ libusb_version="1.0.26"
 openssl_version="3.0.11"
 wx_version="3.2.2.1"
 
+macos_deployment_target="10.15"
+
 mkdir -p "${cache_dir}"
+
+export MACOSX_DEPLOYMENT_TARGET=${macos_deployment_target}
 
 #TODO:
 #RPATH in cmake built libs - leads to OpenCPN not being installable
@@ -341,7 +345,6 @@ if [ ! -f openssl-${openssl_version}.tar.gz ]; then
   wget https://www.openssl.org/source/openssl-${openssl_version}.tar.gz
 fi
 tar xjf openssl-${openssl_version}.tar.gz
-export MACOSX_DEPLOYMENT_TARGET=10.15
 cd openssl-${openssl_version}
 if [[ "${arch}" = *"x86_64"* ]]; then
   ./Configure --prefix="${cache_dir}" darwin64-x86_64-cc shared 
@@ -353,7 +356,6 @@ if [[ "${arch}" = *"x86_64"* ]]; then
   fi
 fi
 if [[ "${arch}" = *"arm64"* ]]; then
-  export MACOSX_DEPLOYMENT_TARGET=10.15
   ./Configure --prefix=${cache_dir} enable-rc5 zlib darwin64-arm64-cc no-asm
   make -j ${ncpu}
   if [[ "${arch}" = *"x86_64"* ]] && [[ "${arch}" = *"arm64"* ]]; then
@@ -378,9 +380,10 @@ cd wxWidgets-${wx_version}
 
 ./configure \
       --with-cxx=11 \
-      --with-macosx-version-min=10.10 \
+      --with-macosx-version-min=${macos_deployment_target} \
       --enable-unicode \
       --enable-macosx_arch=$(echo ${arch} | tr ';' ',') \
+      --enable-universal_binary=$(echo ${arch} | tr ';' ',') \
       --disable-sys-libs \
       --with-osx-cocoa \
       --enable-aui \
@@ -390,5 +393,7 @@ cd wxWidgets-${wx_version}
       --prefix=${cache_dir}
 make -j ${ncpu}
 make install
+# We are maybe going to run on x86_64 and have to be using system grep, have to change the path
+sudo sed -i -e "s/^EGREP.*/EGREP=\/usr\/bin\/egrep/g" $(readlink ${cache_dir}/bin/wx-config)
 cd ..
 rm -rf wxWidgets-${wx_version}

@@ -80,6 +80,27 @@ jobs:
            - /usr/local/lib
       - run: ci/generic-upload.sh
 
+  build-macos-universal:
+    macos:
+      xcode: "13.4.1"
+    environment:
+      - OCPN_TARGET:  macos
+      - pkg_mod: 11
+      - MACOSX_DEPLOYMENT_TARGET: 11.0
+    steps:
+      - checkout
+      - restore_cache:
+         keys:
+           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+      - run: ci/universal-build-macos.sh
+      - save_cache:
+         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+         paths:
+           - /usr/local/bin
+           - /usr/local/include
+           - /usr/local/lib
+      - run: ci/generic-upload.sh
+
 workflows:
   version: 2
   build_all:
@@ -101,6 +122,11 @@ workflows:
                 - flatpak
                 - master
       - build-android-armhf:
+          filters:
+            branches:
+              only:
+                - master
+      - build-macos-universal:
           filters:
             branches:
               only:
