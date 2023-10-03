@@ -52,9 +52,6 @@
 // The os version compatible plugins are are built for
 #define PKG_TARGET_VERSION "${PKG_TARGET_VERSION}"
 
-// The architecture compatible plugins are built for
-#define PKG_TARGET_ARCH "${ARCH}"
-
 // Command line to play a sound in system(3), like "aplay %s".
 #define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}
 

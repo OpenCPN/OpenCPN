@@ -128,8 +128,8 @@ static std::vector<std::string> glob_dir(const std::string& dir_path,
   wxDir dir(dir_path);
   auto match = dir.GetFirst(&s, pattern);
   while (match) {
-    static const std::string SEP
-        = wxString(wxFileName::GetPathSeparator()).ToStdString();
+    static const std::string SEP =
+        wxString(wxFileName::GetPathSeparator()).ToStdString();
     found.push_back(dir_path + SEP + s.ToStdString());
     match = dir.GetNext(&s);
   }
@@ -261,7 +261,7 @@ public:
         "debian-armhf;12;ubuntu-armhf;23.04",
         "debian-armhf;12;ubuntu-armhf;23.10",
         "debian-armhf;12;ubuntu-armhf;24.04",
-        "debian-armhf;sid;ubuntu-armhf;24.04"}; //clang-format: on
+        "debian-armhf;sid;ubuntu-armhf;24.04"};  // clang-format: on
 
     if (ocpn::startswith(plugin.abi(), "debian")) {
       wxLogDebug("Checking for debian plugin on a ubuntu host");
@@ -339,8 +339,7 @@ PluginHandler::PluginHandler() {}
 bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
   static const std::vector<std::string> simple_abis = {
-      "msvc",        "msvc-wx32",     "darwin",
-      "darwin-wx32", "android-armhf", "android-arm64"};
+      "msvc", "msvc-wx32", "android-armhf", "android-arm64"};
 
   Plugin plugin(metadata);
   if (plugin.abi() == "all") {
@@ -365,8 +364,15 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
-  DEBUG_LOG << "Plugin compatibility check Final: "
-            << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
+  if (plugin.abi() == "darwin-wx32") {
+    OCPN_OSDetail *detail = g_BasePlatform->GetOSDetail();
+    auto found = metadata.target_arch.find(detail->osd_arch);
+    if(found != std::string::npos) {
+      rv = true;
+    }
+  }
+    DEBUG_LOG << "Plugin compatibility check Final: "
+              << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
 }
 
@@ -380,7 +386,8 @@ std::string PluginHandler::versionPath(std::string name) {
   return pluginsConfigDir() + SEP + name + ".version";
 }
 
-std::string PluginHandler::ImportedMetadataPath(std::string name) {;
+std::string PluginHandler::ImportedMetadataPath(std::string name) {
+  ;
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return importsDir() + SEP + name + ".xml";
 }
@@ -770,7 +777,7 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
       continue;
     }
     if (!is_metadata && only_metadata) {
-        continue;
+      continue;
     }
     if (!is_metadata) {
       filelist.append(std::string(archive_entry_pathname(entry)) + "\n");
@@ -911,7 +918,7 @@ bool PluginHandler::InstallPlugin(const std::string& path,
     last_error_msg = os.str();
     return false;
   }
-  if (only_metadata)  {
+  if (only_metadata) {
     return true;
   }
   struct CatalogCtx ctx;
@@ -939,7 +946,6 @@ std::string PluginHandler::getMetadataPath() {
   return metadataPath;
 }
 
-
 const std::map<std::string, int> PluginHandler::getCountByTarget() {
   auto plugins = getInstalled();
   auto a = getAvailable();
@@ -959,11 +965,9 @@ const std::map<std::string, int> PluginHandler::getCountByTarget() {
   return count_by_target;
 }
 
-
 std::vector<std::string> PluginHandler::GetImportPaths() {
   return glob_dir(importsDir(), "*.xml");
 }
-
 
 void PluginHandler::cleanupFiles(const std::string& manifestFile,
                                  const std::string& plugname) {
@@ -1069,14 +1073,13 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
 }
 
 void PluginHandler::SetInstalledMetadata(const PluginMetadata& pm) {
-   auto loader = PluginLoader::getInstance();
-   ssize_t ix =  PlugInIxByName(pm.name, loader->GetPlugInArray());
-   if (ix == -1) return;  // no such plugin
+  auto loader = PluginLoader::getInstance();
+  ssize_t ix = PlugInIxByName(pm.name, loader->GetPlugInArray());
+  if (ix == -1) return;  // no such plugin
 
-   auto plugins = *loader->GetPlugInArray();
-   plugins[ix]->m_managed_metadata = pm;
+  auto plugins = *loader->GetPlugInArray();
+  plugins[ix]->m_managed_metadata = pm;
 }
-
 
 bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
   std::string filelist;
@@ -1203,7 +1206,7 @@ static std::string FindMatchingDataDir(std::regex name_re) {
     auto token = tokens.GetNextToken();
     wxFileName path(token);
     wxDir dir(path.GetFullPath());
-    if (dir.IsOpened()){
+    if (dir.IsOpened()) {
       wxString filename;
       bool cont = dir.GetFirst(&filename, "", wxDIR_DIRS);
       while (cont) {
