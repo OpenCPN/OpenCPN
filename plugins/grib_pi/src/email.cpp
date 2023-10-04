@@ -107,18 +107,14 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
       return false;
     }
 
-    msg << wxT("sh") << wxT(" ") << sendmail << wxT(" --utf8");  // command
-    msg << wxT(" --subject") << wxT(" '") << message.m_subject
-        << wxT("' ");  // subject argument
-    msg << wxT("--body") << wxT(" '") << message.m_body
-        << wxT("'");  // body argument
-
-    for (size_t rcpt = 0; rcpt < message.m_to.GetCount();
-         rcpt++)  // mail to argument
-      msg << wxT(" '") << message.m_to[rcpt] << wxT("'");
+    msg << "sh -c \" " << sendmail
+        << " --utf8  --subject '" << message.m_subject << "' "
+        <<"--body '"  << message.m_body << "'";
+    for (size_t rcpt = 0; rcpt < message.m_to.GetCount(); rcpt++)
+      msg << " '" << message.m_to[rcpt] << "'";  // add recipients
+    msg << "\"";
 
     wxSystem(msg.c_str());
-
     return true;
 
   } else {  // directly with sendmail
