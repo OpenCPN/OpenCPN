@@ -34,6 +34,7 @@
 #include <sys/param.h>
 #include <sys/select.h>
 #include <sys/time.h>
+#include <sys/sysctl.h>
 #include <time.h>
 #include <stdlib.h>
 #include <AvailabilityMacros.h>
@@ -242,6 +243,32 @@ bool ValidateSerialPortName(char* pPortName, int iMaxNamestoSearch) {
 int GetMacMonitorSize() {
   CGSize displayPhysicalSize = CGDisplayScreenSize(CGMainDisplayID());  // mm
   return displayPhysicalSize.width;
+}
+
+/**
+ * Determines whether we run as a translated binary under Rosetta
+ * See https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment#Determine-Whether-Your-App-Is-Running-as-a-Translated-Binary 
+ */
+int ProcessIsTranslated() {
+   int ret = 0;
+   size_t size = sizeof(ret);
+   if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1) 
+   {
+      if (errno == ENOENT)
+         return 0;
+      return -1;
+   }
+   return ret;
+}
+
+int IsAppleSilicon() {
+    int ret = 0;
+    size_t size = sizeof(ret);
+    
+    if (sysctlbyname("hw.optional.arm64", &ret, &size, NULL, 0) == -1) {        
+        return -1;
+    }
+    return ret;
 }
 
 #endif  //__WXOSX__

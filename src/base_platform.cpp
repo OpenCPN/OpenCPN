@@ -551,6 +551,18 @@ bool BasePlatform::DetectOSDetail(OCPN_OSDetail* detail) {
   if (arch == wxARCH_32) detail->osd_arch = std::string("armhf");
 #endif
 
+#ifdef __WXOSX__
+  if (IsAppleSilicon() == 1) {
+    if (ProcessIsTranslated() != 1) {
+      detail->osd_arch = std::string("arm64");
+    } else {
+      detail->osd_arch = std::string("x86_64");
+    }
+  } else {
+    detail->osd_arch = std::string("x86_64");
+  }
+#endif
+
   return true;
 }
 
