@@ -1030,6 +1030,11 @@ void ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
 }
 
 void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
+  if (dc) {
+    dc->DrawCircle(x, y, radius);
+    return;
+  }
+
   glEnable(GL_BLEND);
 
   float coords[8];
