@@ -8,6 +8,7 @@
 
 #include <wx/event.h>
 #include <wx/app.h>
+#include <wx/jsonval.h>
 
 #include <gtest/gtest.h>
 
@@ -23,6 +24,7 @@
 #include "config_vars.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "ocpn_plugin.h"
 #include "own_ship.h"
 #include "routeman.h"
 #include "select.h"
@@ -733,4 +735,30 @@ TEST(AIS, AISVDM) {
     EXPECT_NEAR(found->second->Lat, 49.93760, 0.0001);
     EXPECT_NEAR(found->second->Lon, -3.65751, 0.0001);
   }
+}
+
+TEST(PluginApi, SignalK) {
+  const char* const kJsonMsg = R"""(
+  {
+      "foo": 1,
+      "bar": "bar value",
+      "list" : [1, 2, 3]
+  }
+  )""";
+
+  SignalkMsg signalk_msg("ownship_ctx", "global_ctx", kJsonMsg);
+
+  const wxEventTypeTag<ObservedEvt> EvtTest(wxNewEventType());
+  ObservedEvt ev(EvtTest);
+  ev.SetSharedPtr(std::make_shared<SignalkMsg>(signalk_msg));
+
+  auto payload = GetSignalkPayload(ev);
+  const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
+  EXPECT_EQ(0, msg.ItemAt("ErrorCount").AsInt());
+  EXPECT_EQ(0, msg.ItemAt("WarningCount").AsInt());
+  EXPECT_EQ(wxString("ownship_ctx"), msg.ItemAt("ContextSelf").AsString());
+  EXPECT_EQ(wxString("global_ctx"), msg.ItemAt("Context").AsString());
+  EXPECT_EQ(1, msg.ItemAt("Data").ItemAt("foo").AsInt());
+  EXPECT_EQ(wxString("bar value"), msg.ItemAt("Data").ItemAt("bar").AsString());
+  EXPECT_EQ(1, msg.ItemAt("Data").ItemAt("list").ItemAt(0).AsInt());
 }

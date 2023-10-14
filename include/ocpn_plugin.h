@@ -1701,6 +1701,24 @@ extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
                                                      ObservedEvt ev);
 
 /**
+ *  Get SignalK status payload after receiving a message.
+ *  @return pointer to a wxJSONValue map object. Typical usage:
+ *
+ *      auto ptr = GetSignalkPayload(ev);
+ *      const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
+ *
+ *  The map contains the following entries:
+ *  - "Data": the parsed json message
+ *  - "ErrorCount": int, the number of parsing errors
+ *  - "WarningCount": int, the number of parsing warnings
+ *  - "Errors": list of strings, error messages.
+ *  - "Warnings": list of strings, warning messages..
+ *  - "Context": string, message context
+ *  - "ContextSelf": string, own ship context.
+ */
+std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev);
+
+/**
  * Return source identifier (iface) of a received n2000 message of type id
  * in ev.
  */
