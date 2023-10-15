@@ -171,6 +171,67 @@ private:
   wxEventType ev_type;
 };
 
+/**
+ * Define an action to be performed when a KeyProvider is notified.
+ * Convenience container hiding the Bind(), wxEVENT_TYPE and listening details.
+ * The action function is in most use cases a lambda expression.
+ *
+ * Controller/GUI example usage, listening to the EventVar model.change:
+ *
+ *       class Gui: public SomeBaseClass {
+ *       public:
+ *         Gui:Gui(Model& model):
+ *           change_listener(model.change, [&](ObservableEvt& ev) {
+ *               auto s = ev.GetString();
+ *               .... do something
+ *           })
+ *         {}
+ *
+ *       private:
+ *         EvtVarListener change_listener;
+ *       }
+ *
+ * Or, using Init():
+ *
+ *       Gui:Gui(Model& model)  {
+ *         auto action = [&](ObservableEvt& ev) {
+ *             auto s = ev.GetString();
+ *             .... do something
+ *         });
+ *         change_listener.Init(model.change, action);
+ *       }
+ *
+ */
+class ObsListener : public wxEvtHandler {
+public:
+
+  /** Create an object which does not listen until Init(); */
+  ObsListener() {}
+
+  /** Create object which invokes action when kp is notified. */
+  ObsListener(const KeyProvider& kp,
+              std::function<void(ObservedEvt& ev)> action) {
+    Init(kp, action);
+  }
+
+  /** Create object which invokes action when kp is notified. */
+  ObsListener(const KeyProvider& kp, std::function<void()> action)
+      : ObsListener(kp, [&](ObservedEvt&) { action(); }) {}
+
+  /** Initiate an object yet not listening. */
+  void Init(const KeyProvider& kp,
+            std::function<void(ObservedEvt& ev)> action) {
+    const wxEventTypeTag<ObservedEvt> EvtObs(wxNewEventType());
+    // i. e. wxDEFINE_EVENT(), avoiding the evil macro.
+    m_listener.Listen(kp, this, EvtObs);
+    Bind(EvtObs, action);
+  }
+
+private:
+  ObservableListener m_listener;
+};
+
+
 /** Shorthand for accessing ObservedEvt.SharedPtr(). */
 template <typename T>
 std::shared_ptr<const T> UnpackEvtPointer(ObservedEvt ev) {
