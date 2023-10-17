@@ -22,12 +22,12 @@ Receiving messages is done in six steps:
 . Handle the messages as they arrives.
 
 
-The code handling messages must live in a wxEventClass instance. 
+The code handling messages must live in a wxEventClass instance.
 In almost all cases this means that the code should be implemented in a wxWindow.
-If there is a wxWindow available with a suitable lifespan, this could be used. 
+If there is a wxWindow available with a suitable lifespan, this could be used.
 If there is no such window, it needs to be created (it can be hidden) or an
 existing one can be modified to alwasy exist, using Show()/Hide() to enable and
-disable. 
+disable.
 
 As an example, the *ShipDrivergui_impl*  class is used.
 First, in the header declare a listener on the class level, here with the shipdriver
@@ -50,8 +50,8 @@ message, something like this:
 ----
 Then, still in the .cpp file, set up the listening in the window constructor:
 ----
-         Dlg::Dlg(wxWindow* parent, ...) 
-        
+         Dlg::Dlg(wxWindow* parent, ...)
+
          {
          ...
      ①   NMEA0183Id id("GPGGA");
@@ -105,6 +105,27 @@ something which otherwise is a problem.
 To get the feeling one need to experiment.
 But then again, C++ lambdas is a complex step which is not necessary
 to get something running.
+
+=== Receiving SignalK messages
+
+Handling signalk messages goes like
+```
+    auto payload = GetSignalkPayload(ev);
+    const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
+```
+`msg` is a const json map containing at least
+
+* "Data": the parsed json message.
+* "ErrorCount": int, the number of parsing errors.
+* "WarningCount": int, the number of parsing warnings.
+* "Errors": list of strings, error messages.
+* "Warnings": list of strings, warning messages.
+* "Context": string, message context.
+* "ContextSelf": string, own ship context.
+
+Since the map is const, expressions like `msg["Data"]` are not possible 
+(the [] operator is not const since it potentially inserts data into the
+map if the index does not exist). Use `msg.ItemAt("Data")` instead.
 
 == Sending messages
 
