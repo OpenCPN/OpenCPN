@@ -83,6 +83,7 @@ set "OCPN_Dir=%CD%"
 set "wxDIR=%OCPN_DIR%\cache\buildwxWidgets"
 set "wxWidgets_ROOT_DIR=%wxDIR%"
 set "wxWidgets_LIB_DIR=%wxDIR%\lib\vc_dll"
+set "wxVER=3.2.3"
 if [%VisualStudioVersion%]==[16.0] (^
   set VCver=16
   set "VCstr=Visual Studio 16"
@@ -146,6 +147,7 @@ if [%1]==[--minsizerel] (shift /1 && set ocpn_all=0&& set ocpn_minsizerel=1&& go
 if [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1&& goto :parse)
 if [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1&& goto :parse)
 if [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1&& goto :parse)
+if [%1]==[--wxver] (shift /1 && set wxVER=%1 && shift /1 && goto :parse)
 if [%1]==[] (goto :begin) else (^
   @echo Unknown option: %1
   shift /1
@@ -280,18 +282,18 @@ if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
 ::-------------------------------------------------------------
-:: Download wxWidgets 3.2.2 sources
+:: Download wxWidgets sources
 ::-------------------------------------------------------------
 if exist "%wxDIR%\build\msw\wx_vc%VCver%.sln" (goto :skipwxDL)
 @echo Downloading wxWidgets sources
 mkdir "%wxDIR%"
-set "URL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.2.1/wxWidgets-3.2.2.1.zip"
-set "DEST=%wxDIR%\wxWidgets-3.2.2.1.zip"
+set "URL=https://github.com/wxWidgets/wxWidgets/releases/download/v%wxVER%/wxWidgets-%wxVER%.zip"
+set "DEST=%wxDIR%\wxWidgets-%wxVER%.zip"
 call :download
 if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK)
 
 @echo exploding wxWidgets
-set "SOURCE=%wxDIR%\wxWidgets-3.2.2.1.zip"
+set "SOURCE=%wxDIR%\wxWidgets-%wxVER%.zip"
 set "DEST=%wxDIR%"
 call :explode
 if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK)
@@ -386,7 +388,7 @@ cd %OCPN_DIR%
 if [%nsispath%]==[] (goto :addGettext)
 set "_addpath=%nsispath%\NSIS\;%nsispath%\NSIS\bin\"
 :addGettext
-if [%gettext%]==[] (goto :addPath)
+if [%gettextpath%]==[] (goto :addPath)
 set "_addpath=%_addpath%;%gettextpath%\tools\bin\"
 :addPath
 :if [%_addpath%]==[] (goto :skipAddPath)
