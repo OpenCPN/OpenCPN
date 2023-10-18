@@ -42,22 +42,27 @@ if( NOT QT_ANDROID)
       set_source_files_properties(
         src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
       if (HAVE_MSSE)
+          message(STATUS "mipmap SSE support enabled")
           set_source_files_properties(
               src/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
       endif ()
       if (HAVE_MSSE2)
+          message(STATUS "mipmap SSE2 support enabled")
           set_source_files_properties(
               src/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "-msse2")
       endif ()
       if (HAVE_MSSSE3)
+          message(STATUS "mipmap SSSE3 support enabled")
           set_source_files_properties(
               src/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "-mssse3")
       endif ()
       if (HAVE_MAVX2)
+          message(STATUS "mipmap AVX2 support enabled")
           set_source_files_properties(
               src/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
       endif ()
       if (HAVE_MFPU_NEON)
+          message(STATUS "mipmap NEON support enabled")
           set_source_files_properties(
               src/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       endif ()
