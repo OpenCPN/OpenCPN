@@ -65,7 +65,6 @@
  *      ObservableListener change_listener;
  *    }
  */
-
 class EventVar : public Observable {
 public:
   EventVar() : Observable(Autokey()) {}
