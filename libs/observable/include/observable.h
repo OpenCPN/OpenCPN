@@ -24,6 +24,7 @@
 #ifndef OBSERVABLE_H
 #define OBSERVABLE_H
 
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <string>
