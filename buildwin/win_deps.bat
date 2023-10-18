@@ -24,22 +24,22 @@ wget --version >nul 2>&1 || choco install -y wget
 set "CACHE_DIR=%~dp0..\cache"
 if not exist !CACHE_DIR! (mkdir !CACHE_DIR!)
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-if not exist cache\wxWidgets-3.2.2 (
+if not exist cache\wxWidgets-3.2.3 (
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  wget -nv %GITHUB_DL%/v3.2.2.1/wxMSW-3.2.2_vc14x_Dev.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.2 wxMSW-3.2.2_vc14x_Dev.7z
-  wget -nv %GITHUB_DL%/v3.2.2.1/wxWidgets-3.2.2.1-headers.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.2 wxWidgets-3.2.2.1-headers.7z
-  wget -nv %GITHUB_DL%/v3.2.2.1/wxMSW-3.2.2_vc14x_ReleaseDLL.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.2 wxMSW-3.2.2_vc14x_ReleaseDLL.7z
+  wget -nv %GITHUB_DL%/v3.2.3/wxMSW-3.2.3_vc14x_Dev.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.3 wxMSW-3.2.3_vc14x_Dev.7z
+  wget -nv %GITHUB_DL%/v3.2.3/wxWidgets-3.2.3-headers.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.3 wxWidgets-3.2.3-headers.7z
+  wget -nv %GITHUB_DL%/v3.2.3/wxMSW-3.2.3_vc14x_ReleaseDLL.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.3 wxMSW-3.2.3_vc14x_ReleaseDLL.7z
 )
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
-set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.2"
+set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.3"
 echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
 echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_dll" >> %CACHE_DIR%\wx-config.bat
 
