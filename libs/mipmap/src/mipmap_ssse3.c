@@ -28,7 +28,6 @@
 #include "mipmap.h"
 
 #if defined(__SSSE3__) || (defined(__MSVC__) &&  (_MSC_VER >= 1700))
-
 #include <tmmintrin.h>
 
 // typically 5 times faster than generic
