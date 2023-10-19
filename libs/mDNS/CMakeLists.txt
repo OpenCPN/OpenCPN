@@ -12,4 +12,11 @@ set (SRC
 add_library(MDNS STATIC ${SRC})
 target_include_directories(MDNS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set_property(TARGET MDNS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
+if (NOT "${wxWidgets_LIBRARIES}" STREQUAL "")
+  target_include_directories(MDNS PRIVATE ${wxWidgets_INCLUDE_DIRS})
+  target_link_libraries(MDNS PRIVATE ${wxWidgets_LIBRARIES})
+  target_compile_definitions(MDNS PRIVATE HAVE_WXWIDGETS)
+endif ()
+
 add_library(ocpn::mDNS ALIAS MDNS)
