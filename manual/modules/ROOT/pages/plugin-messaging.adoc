@@ -150,7 +150,9 @@ to get something running.
 
 == Receiving SignalK messages
 
-Handling signalk messages goes like
+As of 5.8 handling SignalK messages is not possible, see 
+https://github.com/OpenCPN/OpenCPN/issues/3381[the OpenCPN issue].
+From 5.10 handling signalk messages goes like:
 ```
     auto payload = GetSignalkPayload(ev);
     const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
