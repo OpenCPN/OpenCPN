@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:truthy
+name: Doxygen
+
+on:
+  workflow_run:
+    # Must restrict to given workflows:
+    # https://github.com/community/community/discussions/16059
+    workflows: [MacOS, Windows]
+    types: [completed]
+  workflow_dispatch:
+
+env: 
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  on-anything:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "GITHUB_ACTOR=$GITHUB_ACTOR" >> $GITHUB_ENV
+      - run: echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
+      - run: ci/api-docs.sh
