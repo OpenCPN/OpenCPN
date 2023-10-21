@@ -8210,9 +8210,9 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       }
     }
 
-    double ppg_scale_factor = ppg->sfactor;
-    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
-      ppg_scale_factor = 1.0;
+    double ppg_scale_factor = 1.0;
+    if (rzRules->obj->m_chart_context->chart)   //  This is not a plugin chart
+      ppg_scale_factor = ppg->sfactor;
 
 
     I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - x_origin) *
@@ -8485,9 +8485,9 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
     }
 
     PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-    double ppg_scale_factor = ppg->sfactor;
-    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
-      ppg_scale_factor = 1.0;
+    double ppg_scale_factor = 1.0;
+    if (rzRules->obj->m_chart_context->chart)   //  This is not a plugin chart
+      ppg_scale_factor = ppg->sfactor;
 
     TriPrim *p_tp = ppg->tri_prim_head;
     GLintptr vbo_offset = 0;
