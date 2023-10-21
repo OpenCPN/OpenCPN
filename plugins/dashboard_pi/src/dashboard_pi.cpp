@@ -1694,8 +1694,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
           // XDR Airtemp
           if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C") &&
-               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
+              m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                    _T("TempAir")) ||
+              m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
+                  _T("AIRTEMP") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                   _T("ENV_OUTAIR_T") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
