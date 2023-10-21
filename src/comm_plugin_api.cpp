@@ -27,6 +27,9 @@
 #include <vector>
 
 #include <wx/event.h>
+#include <wx/jsonval.h>
+#include <wx/jsonreader.h>
+
 
 #include "ocpn_plugin.h"
 #include "comm_navmsg_bus.h"
@@ -47,6 +50,31 @@ std::string GetN2000Source(NMEA2000Id id, ObservedEvt ev) {
 std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev) {
   auto msg = UnpackEvtPointer<Nmea0183Msg>(ev);
   return msg->payload;
+}
+
+std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
+  auto msg = UnpackEvtPointer<SignalkMsg>(ev);
+  wxJSONReader reader;
+  wxJSONValue data;
+  reader.Parse(wxString(msg->raw_message), &data);
+
+  wxJSONValue root(wxJSONTYPE_OBJECT);
+  root["Data"] = data;
+  root["ErrorCount"] = reader.GetErrorCount();
+  root["WarningCount"] = reader.GetWarningCount();
+
+  root["Errors"] = wxJSONValue(wxJSONTYPE_ARRAY);
+  for (size_t i = 0; i < reader.GetErrors().GetCount(); i++)
+    root["Errors"].Append(reader.GetErrors().Item(i));
+
+  root["Warnings"] = wxJSONValue(wxJSONTYPE_ARRAY);
+  for (size_t i = 0; i < reader.GetWarnings().GetCount(); i++)
+    root["Warnings"].Append(reader.GetWarnings().Item(i));
+
+  root["Context"] = msg->context;
+  root["ContextSelf"] = msg->context_self;
+
+  return static_pointer_cast<void>(std::make_shared<wxJSONValue>(root));
 }
 
 shared_ptr<ObservableListener> GetListener(NMEA2000Id id, wxEventType et,

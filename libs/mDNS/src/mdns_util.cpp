@@ -45,6 +45,11 @@
 #include <net/if.h>
 #endif
 
+#ifdef HAVE_WXWIDGETS
+#include <wx/log.h>
+#define printf(...) wxLogDebug(__VA_ARGS__)
+#endif
+
 
 // Alias some things to simulate recieving data to fuzz library
 #if defined(MDNS_FUZZING)

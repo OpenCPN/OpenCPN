@@ -303,8 +303,6 @@ public:
   std::string context;
   std::string raw_message;
 
-  std::vector<std::string> errors;
-  std::vector<std::string> warnings;
   std::string key() const { return std::string("signalK"); };
 };
 

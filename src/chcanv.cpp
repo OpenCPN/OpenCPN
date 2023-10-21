@@ -6609,6 +6609,8 @@ void ChartCanvas::ToggleCPAWarn() {
 void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
 
 void ChartCanvas::OnSize(wxSizeEvent &event) {
+  if ((event.m_size.GetWidth() < 1) || (event.m_size.GetHeight() < 1))
+    return;
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
 #ifdef __WXOSX__
