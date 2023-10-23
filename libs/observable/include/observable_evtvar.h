@@ -38,6 +38,7 @@
  * shared EventVar variable
  *
  *  Model usage:
+ *  \code
  *
  *   class Model: ...
  *   public:
@@ -47,23 +48,25 @@
  *       ...
  *       change.Notify("new value")
  *     }
+ *  \endcode
  *
  *  Controller/GUI usage:
+ *  \code
  *
  *    class Gui: public wxEvtHandler {
  *    public:
  *      Gui:Gui(Model& model) {
- *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        change_listener.Listen(model.change, this, EVT_FOO);
- *        Bind(EVT_FOO, [&](wxCommandEvent ev) {
- *          auto s = ev.GetString();    s -> "new value"
+ *        auto action = [&](wxCommandEvent ev) {
+ *          auto s = ev.GetString();    // s -> "new value"
  *          ... do something;
  *        });
+ *        change_listener.Init(model.change, action);
  *      }
  *
  *    private:
- *      ObservableListener change_listener;
+ *      ObsListener change_listener;
  *    }
+ *  \endcode
  */
 class EventVar : public Observable {
 public:

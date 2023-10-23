@@ -1,0 +1,38 @@
+= Event
+
+The *event_var* use case allows listen-notify using a shared variable.
+In the OpenCPN project it is mostly used to decouple lower layers from 
+GUI code i.e. GUI code listens and reacts to events.
+
+Usage example, Model notifies Controller/GUI:
+
+```
+  class Model: ...
+  public:
+    EventVar change;
+
+    void some_method() {
+      ...
+      change.Notify("new value")
+    }
+
+Controller/GUI usage:
+
+   class Gui: public wxEvtHandler {
+   public:
+     Gui:Gui(Model& model) {
+       auto action = [&](wxCommandEvent ev) {
+         auto s = ev.GetString();    s -> "new value"
+         ... do something;
+       });
+       change_listener.Init(model.change, action);
+     }
+
+   private:
+     ObsListener change_listener;
+   }
+```
+
+The EventVar can carry all sorts of data including a  int, a string, a raw
+pointer and also a generic ref-counted std::shared_ptr<void>.
+What's actually available depends on the Notify() performed. 
