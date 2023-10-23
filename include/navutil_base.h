@@ -32,6 +32,9 @@
 
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
+enum { WSPEED_KTS = 0, WSPEED_MS, WSPEED_MPH, WSPEED_KMH };
+enum { DEPTH_FT = 0, DEPTH_M, DEPTH_FA };
+enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
 
 enum {
   DISTANCE_NMI = 0,
@@ -56,13 +59,21 @@ private:
 
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern double toUsrSpeed(double kts_speed, int unit = -1);
+extern double toUsrWindSpeed(double kts_speed, int unit = -1);
 extern wxString getUsrSpeedUnit(int unit = -1);
+extern wxString getUsrWindSpeedUnit(int unit = -1);
 extern wxString FormatDistanceAdaptive(double distance);
+
+extern double toUsrTemp(double cel_temp, int unit = -1);
 
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern wxString getUsrDistanceUnit(int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit, int default_val);
 extern double fromUsrSpeed(double usr_speed, int unit, int default_val);
+
+extern double toUsrDepth(double cel_depth, int unit = -1);
+extern double fromUsrDepth(double usr_depth, int unit = -1);
+extern wxString getUsrDepthUnit(int unit = -1);
 
 const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime);
 

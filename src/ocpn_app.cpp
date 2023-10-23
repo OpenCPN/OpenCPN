@@ -349,6 +349,7 @@ bool g_bTempShowMenuBar;
 int g_iSDMMFormat;
 int g_iDistanceFormat;
 int g_iSpeedFormat;
+int g_iWindSpeedFormat;
 int g_iTempFormat;
 
 int g_iNavAidRadarRingsNumberVisible;

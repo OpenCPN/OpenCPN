@@ -132,6 +132,7 @@ extern int g_nTrackPrecision;
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
+extern int g_iWindSpeedFormat;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -979,6 +980,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     conf->Write(_T ( "GlobalToolbarConfig" ), g_toolbarConfig);
     conf->Write(_T ( "DistanceFormat" ), g_iDistanceFormat);
     conf->Write(_T ( "SpeedFormat" ), g_iSpeedFormat);
+    conf->Write(_T ( "WindSpeedFormat" ), g_iWindSpeedFormat);
     conf->Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
   }
 
@@ -1417,6 +1419,8 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
                                   // 2 = "Kilometers", 3 = "Meters"
   CHECK_INT(_T ( "SpeedFormat" ),
             &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+  CHECK_INT(_T ( "WindSpeedFormat" ),
+            &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
 
   // LIVE ETA OPTION
   CHECK_INT(_T ( "LiveETA" ), &g_bShowLiveETA);

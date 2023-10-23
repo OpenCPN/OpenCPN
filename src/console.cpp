@@ -172,6 +172,9 @@ static void InitRouteman() {
 int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;
 int g_iSpeedFormat = 0;
+int g_iWindSpeedFormat = 0;
+int g_iTempFormat = 0;
+int g_nDepthUnitDisplay = 0;
 
 namespace safe_mode {
 bool get_mode() { return false; }

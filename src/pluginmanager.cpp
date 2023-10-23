@@ -3053,8 +3053,16 @@ double toUsrSpeed_Plugin(double kts_speed, int unit) {
   return toUsrSpeed(kts_speed, unit);
 }
 
+double toUsrWindSpeed_Plugin(double kts_speed, int unit) {
+  return toUsrWindSpeed(kts_speed, unit);
+}
+
 double fromUsrSpeed_Plugin(double usr_speed, int unit) {
   return fromUsrSpeed(usr_speed, unit);
+}
+
+double fromUsrWindSpeed_Plugin(double usr_wspeed, int unit) {
+  return fromUsrWindSpeed(usr_wspeed, unit);
 }
 
 double toUsrTemp_Plugin(double cel_temp, int unit) {
@@ -3070,6 +3078,8 @@ wxString getUsrDistanceUnit_Plugin(int unit) {
 }
 
 wxString getUsrSpeedUnit_Plugin(int unit) { return getUsrSpeedUnit(unit); }
+
+wxString getUsrWindSpeedUnit_Plugin(int unit) { return getUsrWindSpeedUnit(unit); }
 
 wxString getUsrTempUnit_Plugin(int unit) { return getUsrTempUnit(unit); }
 

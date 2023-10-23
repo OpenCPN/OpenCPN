@@ -80,7 +80,8 @@ typedef enum ais_transponder_class {
   AIS_DSC,         // DSC target
   AIS_SART,        // SART
   AIS_ARPA,        // ARPA radar target
-  AIS_APRS         // APRS position report
+  AIS_APRS,        // APRS position report
+  AIS_METEO        // Meteorological and Hydrographic data
 } _ais_transponder_class;
 
 
@@ -138,6 +139,19 @@ struct Ais8_001_22 {
   wxDateTime start_time;
   wxDateTime expiry_time;
   Ais8_001_22_SubAreaList sub_areas;
+};
+
+  // *** Meteorological and Hydrographic data acc.to: IMO SN.1/Circ.289
+class AISMeteoPoint;
+
+WX_DEFINE_ARRAY_PTR(AISMeteoPoint, ArrayOfAISMeteoPoints);
+
+class AISMeteoPoint {
+public:
+  int met_mmsi;
+  int origin_mmsi;
+  wxString met_lat;
+  wxString met_lon;
 };
 
 struct AisTargetCallbacks {
@@ -224,8 +238,9 @@ public:
   bool b_isDSCtarget; // DSC flag to a possible simultaneous AIS target
   int  m_dscNature;
   int  m_dscTXmmsi;   // MMSI for the DSC relay issuer
+  long dsc_NatureOfDistress;
 
-  //                     MMSI Properties
+    // MMSI Properties
   bool b_NoTrack;
   bool b_OwnShip;
   bool b_PersistTrack; // For AIS target query
@@ -244,14 +259,45 @@ public:
 
   wxString MSG_14_text;
 
-  //      Per target collision parameters
+   // Per target collision parameters
   bool bCPA_Valid;
   double TCPA;  // Minutes
   double CPA;   // Nautical Miles
-
   bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
-
   bool b_show_track;
+
+   // Ais8_001_31 Meteo data
+  int met_original_mmsi;
+  int met_month;            // UTC 0
+  int met_day;              // UTC 0
+  int met_hour;             // UTC 24
+  int met_minute;           // UTC 60
+  int met_pos_acc;          // low = 0 GNSS
+  int met_wind_kn;          // NAN=127
+  int met_wind_gust_kn;     // kn NAN=127
+  int met_wind_dir;         // NAN=360
+  int met_wind_gust_dir;    // NAN=360
+  double met_air_temp;      // C NAN = -102.4
+  int met_rel_humid;        // % NAN = 101
+  double met_dew_point;     // NAN = 501(50.1)
+  int met_airpress;         // value+799 hPa NAN = 511(1310)
+  int met_airpress_tend;    // NAN = 3
+  double met_hor_vis;       // NAN = 127(12.7)
+  double met_water_level;   // m Water level(incl.tide) NAN = 4001
+  int met_water_lev_trend;  // NAN = 3
+  double met_current;       // kn NAN = 255(25.5)
+  int met_curr_dir;         // NAN = 360
+  double met_wave_hight;    // m NAN=255(25.5)
+  int met_wave_period;      // s NAN = 63
+  int met_wave_dir;         // NAN = 360
+  double met_swell_hight;   // m NAN = 255 (25.5)
+  int met_swell_per;        // s NAN = 63
+  int met_swell_dir;        // NAN=360
+  int met_seastate;         // Bf NAN=13
+  double met_water_temp;    // C NAN = 501(50.1)
+  int met_precipitation;    // type NAN=7
+  double met_salinity;      // ‰ NAN=510(51.0)
+  int met_ice;              // NAN=3
 
   std::vector<AISTargetTrackPoint> m_ptrack;
 
@@ -263,7 +309,6 @@ public:
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is
                                                 // the max number of chartcanvas
-  long dsc_NatureOfDistress;
 
 private:
   AisTargetCallbacks m_callbacks;
