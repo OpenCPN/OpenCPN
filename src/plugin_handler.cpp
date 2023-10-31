@@ -364,7 +364,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
-  if (plugin.abi() == "darwin-wx32") {
+  // macOS is an exception as packages with universal binaries can support both x86_64 and arm64 at the same time
+  if (host.abi() == "darwin-wx32" && plugin.abi() == "darwin-wx32") {
     OCPN_OSDetail *detail = g_BasePlatform->GetOSDetail();
     auto found = metadata.target_arch.find(detail->osd_arch);
     if(found != std::string::npos) {
