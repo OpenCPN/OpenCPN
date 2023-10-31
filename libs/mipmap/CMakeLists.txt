@@ -39,8 +39,10 @@ if( NOT QT_ANDROID)
   # always use optimizations for the texture compression which is much faster
   if (NOT MSVC)
       set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
-      set_source_files_properties(
-        src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
+      if (NOT APPLE OR NOT OCPN_RELEASE STREQUAL "universal")
+          set_source_files_properties(
+            src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
+      endif()
       if (HAVE_MSSE)
           message(STATUS "mipmap SSE support enabled")
           set_source_files_properties(
