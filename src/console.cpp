@@ -404,7 +404,7 @@ public:
     }
   }
 
-  bool OnCmdLineParsed(wxCmdLineParser& parser) {
+  bool OnCmdLineParsed(wxCmdLineParser& parser) override {
     wxInitializer initializer;
     if (!initializer) {
       std::cerr << "Failed to initialize the wxWidgets library, aborting.";
