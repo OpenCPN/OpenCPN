@@ -19,7 +19,7 @@
 # - 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 # ***************************************************************************
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 MESSAGE (STATUS "*** Staging to build PlugIns ***")
 # These variables are inherited by all plugins
 set(PARENT opencpn)

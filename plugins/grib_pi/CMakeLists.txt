@@ -19,7 +19,7 @@
 # ***************************************************************************
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.1.1)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (COMMAND cmake_policy)
   if (POLICY CMP0043)
