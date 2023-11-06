@@ -1023,7 +1023,7 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
     wxString s_mmsi;
     s_mmsi << MMSI;
     bool foundMID = false;
-    for (int i = 0; i < s_mmsi.length() - 3; i++) {
+    for (size_t i = 0; i < s_mmsi.length() - 3; i++) {
       nMID = wxAtoi(s_mmsi.Mid(i, 3));
       if (IsValidMID(nMID)) {
         foundMID = true;
