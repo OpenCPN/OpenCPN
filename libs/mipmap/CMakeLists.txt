@@ -39,7 +39,7 @@ if( NOT QT_ANDROID)
   # always use optimizations for the texture compression which is much faster
   if (NOT MSVC)
       set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
-      if (NOT APPLE OR NOT OCPN_RELEASE STREQUAL "universal")
+      if (NOT APPLE)
           set_source_files_properties(
             src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
       endif()
