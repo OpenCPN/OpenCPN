@@ -101,6 +101,7 @@
 #include "config.h"
 #include "ConfigMgr.h"
 #include "config_vars.h"
+#include "cmdline.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -213,14 +214,8 @@ bool g_bPauseTest;
 wxString g_compatOS;
 wxString g_compatOsVersion;
 
-int g_unit_test_1;
-int g_unit_test_2;
-bool g_start_fullscreen;
-bool g_rebuild_gl_cache;
-bool g_parse_all_enc;
 
 // Files specified on the command line, if any.
-wxVector<wxString> g_params;
 
 MyFrame *gFrame;
 
@@ -526,9 +521,6 @@ bool g_bFullScreenQuilt = true;
 bool g_bQuiltEnable;
 bool g_bQuiltStart;
 
-bool g_bportable;
-
-bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
 
@@ -1000,7 +992,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   ParseLoglevel(parser);
 
   for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
-    g_params.push_back(parser.GetParam(paramNr));
+    g_params.push_back(parser.GetParam(paramNr).ToStdString());
 
   return true;
 }

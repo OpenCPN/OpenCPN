@@ -51,6 +51,7 @@
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
+#include "cmdline.h"
 #include "config.h"
 #include "config_vars.h"
 #include "dychart.h"
@@ -262,8 +263,6 @@ extern ocpnGLOptions g_GLOptions;
 extern s52plib *ps52plib;
 
 extern wxString g_locale;
-extern bool g_bportable;
-extern bool g_bdisable_opengl;
 
 extern ChartGroupArray *g_pGroupArray;
 

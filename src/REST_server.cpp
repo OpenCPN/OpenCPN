@@ -43,6 +43,7 @@
 #include "REST_server.h"
 #include "mongoose.h"
 #include "config_vars.h"
+#include "cmdline.h"
 #include "gui_lib.h"
 #include "REST_server_gui.h"
 #include "pugixml.hpp"
@@ -54,7 +55,6 @@
 #include "routemanagerdialog.h"
 #endif
 
-extern bool g_bportable;
 extern std::vector<Track*> g_TrackList;
 #ifndef CLIAPP
 extern RouteManagerDialog* pRouteManagerDialog;

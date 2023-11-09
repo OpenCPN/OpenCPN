@@ -77,7 +77,6 @@ class Multiplexer;
 class Select;
 
 BasePlatform* g_BasePlatform = 0;
-bool g_bportable = false;
 wxString g_winPluginDir;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;

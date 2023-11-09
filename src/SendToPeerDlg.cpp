@@ -23,6 +23,7 @@
  */
 #include <memory>
 
+#include "cmdline.h"
 #include "config_vars.h"
 #include "mDNS_query.h"
 #include "OCPNPlatform.h"
@@ -45,7 +46,6 @@
 extern OCPNPlatform* g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxDateTime g_DNS_cache_time;
-extern bool g_bportable;
 extern int navobj_transfer_progress;
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)

@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include "base_platform.h"
+#include "cmdline.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
 #include "comm_bridge.h"
@@ -133,7 +134,6 @@ extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
 extern BasePlatform* g_BasePlatform;
-extern bool g_bportable;
 extern wxString g_winPluginDir;
 extern void* g_pi_manager;
 extern wxString g_compatOS;
