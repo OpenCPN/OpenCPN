@@ -49,7 +49,6 @@
 
 extern MyFrame *gFrame;
 
-wxDECLARE_APP(MyApp);
 
 class PriorityEntry : public wxTreeItemData {
 public:

@@ -381,8 +381,6 @@ DWORD color_inactiveborder;
 #endif
 
 
-wxDECLARE_APP(MyApp);
-
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
