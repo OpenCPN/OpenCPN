@@ -811,8 +811,6 @@ static bool LoadAllPlugIns(bool load_enabled) {
 }
 
 
-
-
 #ifndef __ANDROID__
 // Connection class, for use by both communicating instances
 class stConnection : public wxConnection {
@@ -1028,8 +1026,6 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
   event.Skip();
 }
 
-
-
 static wxStopWatch init_sw;
 
 MyApp::MyApp() {
@@ -1140,12 +1136,10 @@ bool MyApp::OnInit() {
   //  Perform first stage initialization
   OCPNPlatform::Initialize_1();
 
-#if wxCHECK_VERSION(3, 0, 0)
   // Set the name of the app as displayed to the user.
   // This is necessary at least on OS X, for the capitalisation to be correct in
   // the system menus.
   MyApp::SetAppDisplayName("OpenCPN");
-#endif
 
   //  Seed the random number generator
   wxDateTime x = wxDateTime::UNow();
@@ -1481,32 +1475,14 @@ bool MyApp::OnInit() {
     wxLogMessage(g_Platform->GetLargeLogMessage());
 
     //  Validate OpenGL functionality, if selected
-#ifdef ocpnUSE_GL
-
-#ifdef __WXMSW__
-#if !wxCHECK_VERSION( \
-    2, 9, 0)  // The OpenGL test app only runs on wx 2.8, unavailable on wx3.x
-
-  if (/*g_bopengl &&*/ !g_bdisable_opengl) {
-    wxFileName fn(g_Platform->GetExePath());
-    bool b_test_result = TestGLCanvas(fn.GetPathWithSep());
-
-    if (!b_test_result)
-      wxLogMessage(_T("OpenGL disabled due to test app failure."));
-
-    g_bdisable_opengl = !b_test_result;
-  }
-#endif
-#endif
-
-#else
+#ifndef ocpnUSE_GL
   g_bdisable_opengl = true;
   ;
 #endif
 
   if (g_bdisable_opengl) g_bopengl = false;
 
-#if defined(__UNIX__) && !defined(__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__)
   if (g_bSoftwareGL) setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
 #endif
 
