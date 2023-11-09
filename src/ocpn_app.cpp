@@ -65,22 +65,24 @@
 #include <wx/artprov.h>
 #include <wx/aui/aui.h>
 #include <wx/clrpicker.h>
+#include <wx/cmdline.h>
 #include <wx/dialog.h>
 #include <wx/dialog.h>
 #include <wx/dir.h>
+#include <wx/display.h>
+#include <wx/dynlib.h>
 #include <wx/image.h>
 #include <wx/intl.h>
 #include <wx/ipc.h>
 #include <wx/jsonreader.h>
 #include <wx/listctrl.h>
+#include <wx/power.h>
 #include <wx/printdlg.h>
 #include <wx/print.h>
 #include <wx/progdlg.h>
 #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
-#include <wx/cmdline.h>
-#include <wx/display.h>
 
 
 #include "AboutFrameImpl.h"
@@ -920,7 +922,6 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
-#include <wx/dynlib.h>
 
 #if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
@@ -2141,7 +2142,6 @@ Track* MyApp::TrackOff(void) {
     return nullptr;
 }
 
-#include <wx/power.h>
 
 
 
