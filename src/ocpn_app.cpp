@@ -166,7 +166,7 @@ void RedirectIOToConsole();
 #include "crashprint.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #else
 #include "serial/serial.h"
@@ -813,7 +813,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
 
 
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 // Connection class, for use by both communicating instances
 class stConnection : public wxConnection {
 public:
@@ -1044,7 +1044,7 @@ MyApp::MyApp() {
 
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionItems(false);
 #endif
@@ -1069,7 +1069,7 @@ bool MyApp::OnInit() {
   g_Platform = new OCPNPlatform;
   g_BasePlatform = g_Platform;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   //  On Windows
   //  We allow only one instance unless the portable option is used
   if (!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
@@ -1124,7 +1124,7 @@ bool MyApp::OnInit() {
       return false;  // exit quietly
     }
   }
-#endif  // __OCPN__ANDROID__
+#endif  // __ANDROID__
 
   if (getenv("OPENCPN_FATAL_ERROR") != 0) {
     wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
@@ -1206,7 +1206,7 @@ bool MyApp::OnInit() {
   wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
   wxString os_name;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   os_name = platforminfo.GetOperatingSystemIdName();
 #else
   os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1506,7 +1506,7 @@ bool MyApp::OnInit() {
 
   if (g_bdisable_opengl) g_bopengl = false;
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__UNIX__) && !defined(__ANDROID__) && !defined(__WXOSX__)
   if (g_bSoftwareGL) setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
 #endif
 
@@ -1545,7 +1545,7 @@ bool MyApp::OnInit() {
     wxStandardPaths &std_path = g_Platform->GetStdPaths();
 
     if (!g_bportable)
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       pInit_Chart_Dir->Append(std_path.GetDocumentsDir());
 #else
       pInit_Chart_Dir->Append(androidGetExtStorageDir());
@@ -1662,7 +1662,7 @@ bool MyApp::OnInit() {
   g_nframewin_posx = position.x;
   g_nframewin_posy = position.y;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxSize asz = getAndroidDisplayDimensions();
   ch = asz.y;
   cw = asz.x;
@@ -1751,7 +1751,7 @@ bool MyApp::OnInit() {
 
   if (g_bframemax) gFrame->Maximize(true);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (g_bresponsive && (gFrame->GetPrimaryCanvas()->GetPixPerMM() > 4.0))
     gFrame->Maximize(true);
 #endif
@@ -1912,7 +1912,7 @@ bool MyApp::OnInit() {
 
   if (g_start_fullscreen) gFrame->ToggleFullScreen();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  We need a resize to pick up height adjustment after building android
   //  ActionBar
   gFrame->SetSize(getAndroidDisplayDimensions());
@@ -1939,7 +1939,7 @@ bool MyApp::OnInit() {
 
   OCPNPlatform::Initialize_4();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidHideBusyIcon();
 #endif
   wxLogMessage(
@@ -1947,7 +1947,7 @@ bool MyApp::OnInit() {
 
   wxMilliSleep(500);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  We defer the startup message to here to allow the app frame to be
   //  contructed, thus avoiding a dialog with NULL parent which might not work
   //  on some devices.
@@ -1982,7 +1982,7 @@ bool MyApp::OnInit() {
   // As an a.e. Raspberry does not have a hardwareclock we will have some
   // problems with date/time setting
   g_bHasHwClock = true;  // by default most computers do have a hwClock
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__ANDROID__)
   struct stat buffer;
   g_bHasHwClock =
       ((stat("/dev/rtc", &buffer) == 0) || (stat("/dev/rtc0", &buffer) == 0) ||
@@ -1999,7 +1999,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
