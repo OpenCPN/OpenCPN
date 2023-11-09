@@ -76,6 +76,19 @@ public:
 
 WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
 
+// *** Meteorological and Hydrographic data acc.to: IMO SN.1/Circ.289
+class AISMeteoPoint;
+
+WX_DEFINE_ARRAY_PTR(AISMeteoPoint, ArrayOfAISMeteoPoints);
+
+class AISMeteoPoint {
+public:
+  int met_mmsi;
+  int origin_mmsi;
+  wxString met_lat;
+  wxString met_lon;
+};
+
 struct AisDecoderCallbacks {
     std::function<bool()> confirm_stop_track;
     AisDecoderCallbacks() : confirm_stop_track([]() { return true; } ) {}

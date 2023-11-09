@@ -141,19 +141,6 @@ struct Ais8_001_22 {
   Ais8_001_22_SubAreaList sub_areas;
 };
 
-  // *** Meteorological and Hydrographic data acc.to: IMO SN.1/Circ.289
-class AISMeteoPoint;
-
-WX_DEFINE_ARRAY_PTR(AISMeteoPoint, ArrayOfAISMeteoPoints);
-
-class AISMeteoPoint {
-public:
-  int met_mmsi;
-  int origin_mmsi;
-  wxString met_lat;
-  wxString met_lon;
-};
-
 struct AisTargetCallbacks {
   std::function<double(double)> get_mag;
   AisTargetCallbacks(): get_mag([](double a) { return 1.0; }) {}
