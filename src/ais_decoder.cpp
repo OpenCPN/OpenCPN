@@ -3241,11 +3241,18 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->Lon = lon_tentative;
             ptd->Lat = lat_tentative;
 
-            wxString meteoname = "METEO";
-            if (ptd->MMSI / 100000 == 1994) {
-               meteoname = wxString::Format("METEO ID%d", ptd->MMSI - 199400000);
+              // Try to make unique name for each station based on position
+            wxString x = ptd->ShipName;
+            if (x.find("METEO") == wxNOT_FOUND) {
+            double id1, id2;
+            wxString slat = wxString::Format("%0.3f", lat_tentative);
+            wxString slon = wxString::Format("%0.3f", lon_tentative);
+            slat.ToDouble(&id1);
+            slon.ToDouble(&id2);
+            wxString nameID = "METEO ";
+            nameID << wxString::Format("%0.3f", abs(id1) + abs(id2)).Right(3);
+            strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN); // - 1)
             }
-            strncpy(ptd->ShipName, meteoname, SHIP_NAME_LEN - 1);
 
             ptd->met_pos_acc = bstr->GetInt(106, 1);
             ptd->met_day = bstr->GetInt(107, 5);
