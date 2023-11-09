@@ -44,7 +44,7 @@
 #include "config.h"
 
 #include "base_platform.h"
-//#include "dychart.h"
+#include "cmdline.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "cutil.h"
@@ -125,7 +125,6 @@ extern bool g_bUpgradeInProcess;
 
 extern int quitflag;
 extern MyFrame *gFrame;
-extern bool g_bportable;
 
 extern MyConfig *pConfig;
 
@@ -251,7 +250,6 @@ extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
 extern BasePlatform *g_BasePlatform;
-extern bool g_bdisable_opengl;
 
 #ifdef __ANDROID__
 extern PlatSpec android_plat_spc;

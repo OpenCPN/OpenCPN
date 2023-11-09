@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,24 +16,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _COMMDRIVERN2K_H__
-#define _COMMDRIVERN2K_H__
 
-#include <memory>
+#include "cmdline.h"
 
-#include "comm_driver.h"
+int g_unit_test_1 = 0;
+int g_unit_test_2 = 0;
+bool g_start_fullscreen = false;
+bool g_rebuild_gl_cache = false;
+bool g_parse_all_enc = false;
+bool g_bportable = false;
+bool g_bdisable_opengl = false;
+std::vector<std::string> g_params;
 
-class CommDriverN2K : public AbstractCommDriver {
-public:
-  CommDriverN2K(const std::string& s = "n2k0" );
 
-  virtual ~CommDriverN2K();
-
-  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                           std::shared_ptr<const NavAddr> addr) override = 0;
-  virtual void SetListener(DriverListener& l) override;
-  virtual std::shared_ptr<NavAddr> GetAddress(const N2kName& name);
-  virtual int SetTXPGN(int pgn){ return 0; }
-};
-
-#endif  // guard

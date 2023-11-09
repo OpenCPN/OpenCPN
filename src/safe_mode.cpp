@@ -7,13 +7,13 @@
 #include <wx/sizer.h>
 
 #include "base_platform.h"
-#include "ocpn_utils.h"
+#include "cmdline.h"
 #include "gui_lib.h"
+#include "ocpn_utils.h"
 
 #include "safe_mode.h"
 
 extern BasePlatform* g_BasePlatform;
-extern bool g_bdisable_opengl;
 
 namespace safe_mode {
 

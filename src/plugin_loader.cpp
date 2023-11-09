@@ -57,9 +57,11 @@
 #include <wx/process.h>
 
 #include "base_platform.h"
+#include "chartdb.h"
 #include "config_vars.h"
-#include "ocpn_utils.h"
+#include "cmdline.h"
 #include "logger.h"
+#include "ocpn_utils.h"
 #include "observable_confvar.h"
 #include "plugin_blacklist.h"
 #include "plugin_cache.h"
@@ -67,7 +69,6 @@
 #include "plugin_loader.h"
 #include "plugin_paths.h"
 #include "safe_mode.h"
-#include "chartdb.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -81,7 +82,6 @@
 extern BasePlatform* g_BasePlatform;
 extern wxWindow* gFrame;
 extern ChartDB* ChartData;
-extern bool g_bportable;
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"};

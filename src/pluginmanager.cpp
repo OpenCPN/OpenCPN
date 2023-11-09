@@ -251,8 +251,6 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_N0183_PLUGIN, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
-wxDECLARE_APP(MyApp);
-
 static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   //  Only send messages if someone is listening...
   if (!g_pi_manager->GetJSONMessageTargetCount()) return;

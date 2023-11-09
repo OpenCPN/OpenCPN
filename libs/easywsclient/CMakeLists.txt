@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 if (TARGET ocpn::easywsclient)
-    return ()
+  return ()
 endif ()
 
 set(SRC easywsclient.cpp)
