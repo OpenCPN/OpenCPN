@@ -81,7 +81,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
   if (pAISTarget) {
     switch (column) {
       case tlTRK:
-        if ((pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE))
+        if ((pAISTarget->Class == AIS_ATON) ||
+            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else if (pAISTarget->b_show_track && !pAISTarget->b_NoTrack)
           ret = _("Yes");
@@ -127,6 +128,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       case tlTYPE:
         if ((pAISTarget->Class == AIS_BASE) ||
             (pAISTarget->Class == AIS_SART) ||
+            (pAISTarget->Class == AIS_METEO) ||
             pAISTarget->b_SarAircraftPosnReport)
           ret = _("-");
         else
@@ -149,6 +151,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
         if ((pAISTarget->Class == AIS_ATON) ||
             (pAISTarget->Class == AIS_BASE) ||
             (pAISTarget->Class == AIS_CLASS_B) ||
+            (pAISTarget->Class == AIS_METEO) ||
             pAISTarget->b_SarAircraftPosnReport)
           ret = _("-");
         break;
@@ -168,7 +171,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
 
       case tlCOG: {
         if ((pAISTarget->COG >= 360.0) || (pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE))
+            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else {
           int crs = wxRound(pAISTarget->COG);
@@ -191,7 +194,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       }
       case tlCPA: {
         if ((!pAISTarget->bCPA_Valid) || (pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE))
+            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else
           ret.Printf(_T("%5.2f"), toUsrDistance(pAISTarget->CPA));
@@ -199,7 +202,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       }
       case tlTCPA: {
         if ((!pAISTarget->bCPA_Valid) || (pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE))
+            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
           ret = _("-");
         else
           ret.Printf(_T("%5.0f"), pAISTarget->TCPA);

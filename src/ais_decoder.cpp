@@ -3251,7 +3251,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             slon.ToDouble(&id2);
             wxString nameID = "METEO ";
             nameID << wxString::Format("%0.3f", abs(id1) + abs(id2)).Right(3);
-            strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN); // - 1)
+            strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
             }
 
             ptd->met_pos_acc = bstr->GetInt(106, 1);
