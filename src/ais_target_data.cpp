@@ -831,12 +831,12 @@ wxString AisTargetData::BuildQueryResult(void) {
   if (Class == AIS_METEO) {
     if (met_wind_kn < 127) {
       double userwindspeed = toUsrWindSpeed(met_wind_kn);
-      wxString wspeed = wxString::Format("%.0f %s %d\u00b0", userwindspeed,
-                                         getUsrWindSpeedUnit(), met_wind_dir);
+      wxString wspeed = wxString::Format("%.0f %s %d%c", userwindspeed, getUsrWindSpeedUnit(),
+                           met_wind_dir, 0x00B0);
 
       double userwindgustspeed = toUsrWindSpeed(met_wind_gust_kn);
-      wxString wspeedGust = wxString::Format("%.0f %s %d\u00b0", userwindgustspeed,
-                           getUsrWindSpeedUnit(), met_wind_gust_dir);
+      wxString wspeedGust = wxString::Format("%.0f %s %d%c", userwindgustspeed,
+                           getUsrWindSpeedUnit(), met_wind_gust_dir, 0x00B0);
       if (met_wind_gust_kn >= 127) wspeedGust = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Wind speed")
@@ -853,8 +853,8 @@ wxString AisTargetData::BuildQueryResult(void) {
                              ais_meteo_get_trend(met_water_lev_trend));
         if (met_water_level >= 30.) level = wxEmptyString;
 
-          wxString current =
-            wxString::Format("%.1f kts %d\u00b0", met_current, met_curr_dir);
+          wxString current = wxString::Format("%.1f kts %d%c", met_current,
+                                            met_curr_dir, 0x00B0);
         if (met_current >= 25.5) current = wxEmptyString;
 
         html << vertSpacer << rowStart << _("Water level deviation")
@@ -866,15 +866,15 @@ wxString AisTargetData::BuildQueryResult(void) {
 
     if (met_wave_hight < 25. || met_swell_hight < 25.) {
       double userwave = toUsrDepth(met_wave_hight);
-      wxString wave = wxString::Format("%.1f %s %d\u00b0 %d %s", userwave,
-                                       getUsrDepthUnit(), met_wave_dir,
-                                       met_wave_period, _("s"));
+        wxString wave =
+            wxString::Format("%.1f %s %d%c %d %s", userwave, getUsrDepthUnit(),
+                             met_wave_dir, 0x00B0, met_wave_period, _("s"));
       if (met_wave_hight >= 25.) wave = wxEmptyString;
 
       double userswell = toUsrDepth(met_swell_hight);
-      wxString swell = wxString::Format("%.1f %s %d\u00b0 %d %s", userswell,
-                                        getUsrDepthUnit(), met_swell_dir,
-                                        met_swell_per, _("s"));
+      wxString swell =
+          wxString::Format("%.1f %s %d%c %d %s", userswell, getUsrDepthUnit(),
+                           met_swell_dir, 0x00B0, met_swell_per, _("s"));
       if (met_swell_hight >= 25.) swell = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Waves hight & period")
@@ -887,7 +887,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     if (met_air_temp != -102.4 || met_airpress < 1310) {
       double usertemp = toUsrTemp(met_air_temp);
       wxString airtemp =
-          wxString::Format("%.1f\u00b0%s", usertemp, getUsrTempUnit());
+          wxString::Format("%.1f%c%s", usertemp, 0x00B0, getUsrTempUnit());
       if (met_air_temp == -102.4) airtemp = wxEmptyString;
 
       wxString airpress = wxString::Format(
@@ -906,7 +906,7 @@ wxString AisTargetData::BuildQueryResult(void) {
 
       double usertempDew = toUsrTemp(met_dew_point);
       wxString dewpoint =
-          wxString::Format("%.1f\u00b0%s", usertempDew, getUsrTempUnit());
+          wxString::Format("%.1f%c%s", usertempDew, 0x00B0, getUsrTempUnit());
       if (met_dew_point >= 50.1) dewpoint = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Relative Humidity")
@@ -919,7 +919,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     if (met_water_temp < 50.1 || met_seastate < 13) {
       double usertemp = toUsrTemp(met_water_temp);
       wxString watertemp =
-          wxString::Format("%.1f\u00b0%s", usertemp, getUsrTempUnit());
+          wxString::Format("%.1f%c%s", usertemp, 0x00B0, getUsrTempUnit());
       if (met_water_temp >= 50.1) watertemp = wxEmptyString;
 
       wxString seastate = wxString::Format("%d Bf ", met_seastate);
@@ -948,8 +948,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     }
 
     if (met_salinity < 51. || met_ice < 2) {
-      wxString sal =
-          wxString::Format("%.1f\u2030", met_salinity);
+      wxString sal = wxString::Format("%.1f%c", met_salinity, 0x2030);
       if (met_salinity >= 51.) sal = wxEmptyString;
 
       wxString icestatus = _("No");
@@ -1095,7 +1094,7 @@ wxString AisTargetData::GetRolloverString(void) {
       int userwindspeed = toUsrWindSpeed(met_wind_kn);
       result << _("Wind speed");
       result << wxString::Format(": %d %s", userwindspeed, getUsrWindSpeedUnit())
-             << wxString::Format(" %d\u00b0 ", met_wind_dir);
+             << wxString::Format(" %d%c ", met_wind_dir, 0x00B0);
     }
     if (met_water_level <= 30.) {
       if (result.Len()) result << "\n";
@@ -1110,7 +1109,7 @@ wxString AisTargetData::GetRolloverString(void) {
       result << _("Current");
       wxString sign = met_current >= 25.1 ? ">=" : "";
       result << wxString::Format(": %s%.1f ", sign, met_current) << _("kts")
-             << wxString::Format(" %d\u00b0 ",  met_curr_dir );
+             << wxString::Format(" %d%c ", met_curr_dir, 0x00B0);
     }
     if (met_wave_hight < 25.) {
       if (result.Len()) result << "\n";
@@ -1124,7 +1123,7 @@ wxString AisTargetData::GetRolloverString(void) {
       if (result.Len()) result << "\n";
       double usertemp = toUsrTemp(met_air_temp);
       result << _("Air temp");
-      result << wxString::Format(": %.1f\u00b0", usertemp)
+      result << wxString::Format(": %.1f%c", usertemp, 0x00B0)
              << getUsrTempUnit() << " ";
     }
     if (met_airpress < 1310) {
