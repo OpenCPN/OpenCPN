@@ -19,7 +19,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(
     WXSERVDISC PRIVATE $<$<COMPILE_LANGUAGE:C>:-Wno-pointer-sign>
   )
-  target_compile_options(WXSERVDISC PRIVATE -Wno-pointer-sign -Wno-parentheses)
+  target_compile_options(WXSERVDISC PRIVATE -Wno-parentheses)
 endif ()
 
 if (WIN32)
