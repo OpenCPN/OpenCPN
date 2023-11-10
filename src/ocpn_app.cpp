@@ -101,6 +101,7 @@
 #include "config.h"
 #include "ConfigMgr.h"
 #include "config_vars.h"
+#include "cmdline.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"
@@ -165,7 +166,7 @@ void RedirectIOToConsole();
 #include "crashprint.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #else
 #include "serial/serial.h"
@@ -213,14 +214,8 @@ bool g_bPauseTest;
 wxString g_compatOS;
 wxString g_compatOsVersion;
 
-int g_unit_test_1;
-int g_unit_test_2;
-bool g_start_fullscreen;
-bool g_rebuild_gl_cache;
-bool g_parse_all_enc;
 
 // Files specified on the command line, if any.
-wxVector<wxString> g_params;
 
 MyFrame *gFrame;
 
@@ -524,9 +519,6 @@ bool g_bFullScreenQuilt = true;
 bool g_bQuiltEnable;
 bool g_bQuiltStart;
 
-bool g_bportable;
-
-bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
 
@@ -817,9 +809,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
 }
 
 
-
-
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 // Connection class, for use by both communicating instances
 class stConnection : public wxConnection {
 public:
@@ -935,27 +925,27 @@ END_EVENT_TABLE()
 #if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   //    Add some OpenCPN specific command line options
-  parser.AddSwitch(_T("h"), _T("help"), _("Show usage syntax."),
+  parser.AddSwitch("h", "help", _("Show usage syntax."),
                    wxCMD_LINE_OPTION_HELP);
-  parser.AddSwitch(_T("p"), wxEmptyString, _("Run in portable mode."));
-  parser.AddSwitch(_T("fullscreen"), wxEmptyString,
+  parser.AddSwitch("p", wxEmptyString, _("Run in portable mode."));
+  parser.AddSwitch("fullscreen", wxEmptyString,
                    _("Switch to full screen mode on start."));
   parser.AddSwitch(
-      _T("no_opengl"), wxEmptyString,
+      "no_opengl", wxEmptyString,
       _("Disable OpenGL video acceleration. This setting will be remembered."));
-  parser.AddSwitch(_T("rebuild_gl_raster_cache"), wxEmptyString,
-                   _T("Rebuild OpenGL raster cache on start."));
+  parser.AddSwitch("rebuild_gl_raster_cache", wxEmptyString,
+                   _("Rebuild OpenGL raster cache on start."));
   parser.AddSwitch(
-      _T("parse_all_enc"), wxEmptyString,
-      _T("Convert all S-57 charts to OpenCPN's internal format on start."));
+      "parse_all_enc", wxEmptyString,
+      _("Convert all S-57 charts to OpenCPN's internal format on start."));
   parser.AddOption(
-      _T("l"), _T("loglevel"),
-      _("Amount of logging: error, warning, message, info, debug or trace"));
-  parser.AddOption(_T("unit_test_1"), wxEmptyString,
+      "l", "loglevel",
+      "Amount of logging: error, warning, message, info, debug or trace");
+  parser.AddOption("unit_test_1", wxEmptyString,
                    _("Display a slideshow of <num> charts and then exit. Zero "
                      "or negative <num> specifies no limit."),
                    wxCMD_LINE_VAL_NUMBER);
-  parser.AddSwitch(_T("unit_test_2"));
+  parser.AddSwitch("unit_test_2");
   parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
                   wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
   parser.AddLongSwitch("unit_test_2");
@@ -984,13 +974,13 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   wxString repo;
   wxString plugin;
 
-  g_unit_test_2 = parser.Found(_T("unit_test_2"));
-  g_bportable = parser.Found(_T("p"));
-  g_start_fullscreen = parser.Found(_T("fullscreen"));
-  g_bdisable_opengl = parser.Found(_T("no_opengl"));
-  g_rebuild_gl_cache = parser.Found(_T("rebuild_gl_raster_cache"));
-  g_parse_all_enc = parser.Found(_T("parse_all_enc"));
-  if (parser.Found(_T("unit_test_1"), &number)) {
+  g_unit_test_2 = parser.Found("unit_test_2");
+  g_bportable = parser.Found("p");
+  g_start_fullscreen = parser.Found("fullscreen");
+  g_bdisable_opengl = parser.Found("no_opengl");
+  g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
+  g_parse_all_enc = parser.Found("parse_all_enc");
+  if (parser.Found("unit_test_1", &number)) {
     g_unit_test_1 = static_cast<int>(number);
     if (g_unit_test_1 == 0) g_unit_test_1 = -1;
   }
@@ -998,7 +988,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   ParseLoglevel(parser);
 
   for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
-    g_params.push_back(parser.GetParam(paramNr));
+    g_params.push_back(parser.GetParam(paramNr).ToStdString());
 
   return true;
 }
@@ -1034,8 +1024,6 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
   event.Skip();
 }
 
-
-
 static wxStopWatch init_sw;
 
 MyApp::MyApp() {
@@ -1050,7 +1038,7 @@ MyApp::MyApp() {
 
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionItems(false);
 #endif
@@ -1075,7 +1063,7 @@ bool MyApp::OnInit() {
   g_Platform = new OCPNPlatform;
   g_BasePlatform = g_Platform;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   //  On Windows
   //  We allow only one instance unless the portable option is used
   if (!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
@@ -1130,7 +1118,7 @@ bool MyApp::OnInit() {
       return false;  // exit quietly
     }
   }
-#endif  // __OCPN__ANDROID__
+#endif  // __ANDROID__
 
   if (getenv("OPENCPN_FATAL_ERROR") != 0) {
     wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
@@ -1146,12 +1134,10 @@ bool MyApp::OnInit() {
   //  Perform first stage initialization
   OCPNPlatform::Initialize_1();
 
-#if wxCHECK_VERSION(3, 0, 0)
   // Set the name of the app as displayed to the user.
   // This is necessary at least on OS X, for the capitalisation to be correct in
   // the system menus.
   MyApp::SetAppDisplayName("OpenCPN");
-#endif
 
   //  Seed the random number generator
   wxDateTime x = wxDateTime::UNow();
@@ -1212,7 +1198,7 @@ bool MyApp::OnInit() {
   wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
   wxString os_name;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   os_name = platforminfo.GetOperatingSystemIdName();
 #else
   os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1487,32 +1473,14 @@ bool MyApp::OnInit() {
     wxLogMessage(g_Platform->GetLargeLogMessage());
 
     //  Validate OpenGL functionality, if selected
-#ifdef ocpnUSE_GL
-
-#ifdef __WXMSW__
-#if !wxCHECK_VERSION( \
-    2, 9, 0)  // The OpenGL test app only runs on wx 2.8, unavailable on wx3.x
-
-  if (/*g_bopengl &&*/ !g_bdisable_opengl) {
-    wxFileName fn(g_Platform->GetExePath());
-    bool b_test_result = TestGLCanvas(fn.GetPathWithSep());
-
-    if (!b_test_result)
-      wxLogMessage(_T("OpenGL disabled due to test app failure."));
-
-    g_bdisable_opengl = !b_test_result;
-  }
-#endif
-#endif
-
-#else
+#ifndef ocpnUSE_GL
   g_bdisable_opengl = true;
   ;
 #endif
 
   if (g_bdisable_opengl) g_bopengl = false;
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__)
   if (g_bSoftwareGL) setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
 #endif
 
@@ -1551,7 +1519,7 @@ bool MyApp::OnInit() {
     wxStandardPaths &std_path = g_Platform->GetStdPaths();
 
     if (!g_bportable)
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       pInit_Chart_Dir->Append(std_path.GetDocumentsDir());
 #else
       pInit_Chart_Dir->Append(androidGetExtStorageDir());
@@ -1668,7 +1636,7 @@ bool MyApp::OnInit() {
   g_nframewin_posx = position.x;
   g_nframewin_posy = position.y;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxSize asz = getAndroidDisplayDimensions();
   ch = asz.y;
   cw = asz.x;
@@ -1757,7 +1725,7 @@ bool MyApp::OnInit() {
 
   if (g_bframemax) gFrame->Maximize(true);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (g_bresponsive && (gFrame->GetPrimaryCanvas()->GetPixPerMM() > 4.0))
     gFrame->Maximize(true);
 #endif
@@ -1918,7 +1886,7 @@ bool MyApp::OnInit() {
 
   if (g_start_fullscreen) gFrame->ToggleFullScreen();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  We need a resize to pick up height adjustment after building android
   //  ActionBar
   gFrame->SetSize(getAndroidDisplayDimensions());
@@ -1945,7 +1913,7 @@ bool MyApp::OnInit() {
 
   OCPNPlatform::Initialize_4();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidHideBusyIcon();
 #endif
   wxLogMessage(
@@ -1953,7 +1921,7 @@ bool MyApp::OnInit() {
 
   wxMilliSleep(500);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  We defer the startup message to here to allow the app frame to be
   //  contructed, thus avoiding a dialog with NULL parent which might not work
   //  on some devices.
@@ -1988,7 +1956,7 @@ bool MyApp::OnInit() {
   // As an a.e. Raspberry does not have a hardwareclock we will have some
   // problems with date/time setting
   g_bHasHwClock = true;  // by default most computers do have a hwClock
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__ANDROID__)
   struct stat buffer;
   g_bHasHwClock =
       ((stat("/dev/rtc", &buffer) == 0) || (stat("/dev/rtc0", &buffer) == 0) ||
@@ -2005,7 +1973,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {

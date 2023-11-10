@@ -73,4 +73,5 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
+wxDECLARE_APP(MyApp);
 #endif

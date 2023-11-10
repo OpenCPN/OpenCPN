@@ -59,6 +59,7 @@
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"
+#include "cmdline.h"
 #include "config.h"
 #include "config_vars.h"
 #include "conn_params.h"
@@ -143,7 +144,6 @@ extern bool g_bShowDepthUnits;
 extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
-extern bool g_bdisable_opengl;
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;

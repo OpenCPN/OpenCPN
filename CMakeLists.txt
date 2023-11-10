@@ -145,6 +145,7 @@ option(OCPN_USE_GL "Enable OpenGL support" ON)
 option(OCPN_USE_GLES_SHIM "Enable GLESv1 Shim library" OFF)
 option(OCPN_USE_UDEV_PORTS "Use udev to enumerate serial ports" ON)
 option(OCPN_USE_SYSFS_PORTS "Use sysfs to enumerate serial ports" OFF)
+option(OCPN_ENABLE_MDNS_DEBUG "Enable mDNS debug output" OFF)
 
 set(OCPN_TARGET_TUPLE "" CACHE STRING
   "List of target;version;arch like flatpak;20.08;aarch64 [\"\"]"
@@ -1016,6 +1017,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
+  ${CMAKE_SOURCE_DIR}/src/cmdline.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp

@@ -39,6 +39,7 @@
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
+#include "cmdline.h"
 #include "TCWin.h"
 #include "geodesic.h"
 #include "styles.h"
@@ -264,7 +265,6 @@ extern PlugInManager *g_pi_manager;
 extern OCPN_AUIManager *g_pauimgr;
 
 extern bool g_bopengl;
-extern bool g_bdisable_opengl;
 
 extern bool g_bFullScreenQuilt;
 

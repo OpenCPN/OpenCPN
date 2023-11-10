@@ -70,6 +70,7 @@
 #include "chart_ctx_factory.h"
 #include "chcanv.h"
 #include "cm93.h"
+#include "cmdline.h"
 #include "color_handler.h"
 #include "comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "comm_drv_registry.h"
@@ -241,9 +242,6 @@ extern double g_VPRotate;
 extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern bool g_bskew_comp;
-extern bool g_bopengl;
-extern int g_unit_test_1;
-extern int g_unit_test_2;
 extern bool g_bPauseTest;
 extern wxRect g_blink_rect;
 extern bool g_bSleep;
@@ -262,7 +260,6 @@ extern int options_lastPage;
 extern int options_subpage;
 extern bool b_reloadForPlugins;
 extern ChartCanvas *g_focusCanvas;
-extern wxVector<wxString> g_params;
 extern bool g_bNeedDBUpdate;
 extern bool g_bFullscreen;
 extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
@@ -322,7 +319,6 @@ extern std::vector<OcpnSound *> bells_sound;
 extern char bells_sound_file_name[2][12];
 extern int g_sticky_chart;
 extern int g_sticky_projection;
-extern bool g_bdisable_opengl;
 extern int Usercolortable_index;
 extern wxArrayPtrVoid *UserColorTableArray;
 extern wxArrayPtrVoid *UserColourHashTableArray;
@@ -384,8 +380,6 @@ DWORD color_inactiveborder;
 
 #endif
 
-
-wxDECLARE_APP(MyApp);
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -8334,7 +8328,6 @@ void ApplyLocale() {
 extern s57RegistrarMgr *m_pRegistrarMan;
 extern wxString g_UserPresLibData;
 extern wxString g_SENCPrefix;
-extern bool g_bportable;
 extern wxString g_csv_locn;
 extern SENCThreadManager *g_SencThreadManager;
 

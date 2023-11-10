@@ -77,6 +77,7 @@
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"
+#include "cmdline.h"
 #include "ConfigMgr.h"
 #include "config_vars.h"
 #include "dychart.h"
@@ -303,8 +304,6 @@ extern bool g_bShowStatusBar;
 extern s52plib* ps52plib;
 
 extern wxString g_locale;
-extern bool g_bportable;
-extern bool g_bdisable_opengl;
 
 extern ChartGroupArray* g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;

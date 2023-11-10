@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.1.1)
+cmake_minimum_required(VERSION 3.5.0)
 cmake_policy(SET CMP0043 NEW)
 
 project(chartdldr_pi)

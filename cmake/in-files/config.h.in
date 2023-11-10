@@ -20,6 +20,8 @@
 
 #cmakedefine ENABLE_VCAN_TESTS
 
+#cmakedefine OCPN_ENABLE_MDNS_DEBUG
+
 // Enable dark mode on modern MacOS.
 #cmakedefine OCPN_USE_DARKMODE
 
