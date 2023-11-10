@@ -101,7 +101,6 @@ extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
-extern int g_iWindSpeedFormat;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
@@ -167,7 +166,7 @@ static inline double MS2KNOTS(double ms) {
   return ms * 1.9438444924406;
 }
 
-ArrayOfAISMeteoPoints g_pMeteoArray;
+std::vector<AISMeteoPoint> g_pMeteoArray;
 
 int AisMeteoNewMmsi(int, int, int, double, double);
 
@@ -3243,7 +3242,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 
               // Try to make unique name for each station based on position
             wxString x = ptd->ShipName;
-            if (x.find("METEO") == wxNOT_FOUND) {
+            if (x.Find("METEO") == wxNOT_FOUND) {
             double id1, id2;
             wxString slat = wxString::Format("%0.3f", lat_tentative);
             wxString slon = wxString::Format("%0.3f", lon_tentative);
@@ -4253,14 +4252,13 @@ int AisMeteoNewMmsi(int m_mmsi, int m_lat, int m_lon, double pt_Lat,
     bool found = false;
     int new_mmsi;
 
-    if (g_pMeteoArray.GetCount()) {
+    if (g_pMeteoArray.size()) {
       wxString t_lat, t_lon;
-      for (unsigned int i = 0; i < g_pMeteoArray.GetCount(); i++) {
+      for (const auto& point: g_pMeteoArray) {
         // Does this station position exist
-        if (slat.IsSameAs(g_pMeteoArray[i].met_lat) &&
-            slon.IsSameAs(g_pMeteoArray[i].met_lon)) {
+        if (slat.IsSameAs(point.met_lat) && slon.IsSameAs(point.met_lon)) {
           // Created before. Continue
-          new_mmsi = g_pMeteoArray[i].met_mmsi;
+          new_mmsi = point.met_mmsi;
           found = true;
           break;
         }

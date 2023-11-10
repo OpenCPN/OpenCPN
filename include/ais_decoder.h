@@ -28,9 +28,9 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include <wx/datetime.h>
-#include "rapidjson/fwd.h"
 #include <wx/event.h>
 #include <wx/string.h>
 
@@ -40,8 +40,12 @@
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "ocpn_types.h"
+#include "rapidjson/fwd.h"
 #include "track.h"
 
+class AISMeteoPoint;  // forward
+                      //
+extern std::vector<AISMeteoPoint> g_pMeteoArray;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,
@@ -76,11 +80,6 @@ public:
 
 WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
 
-// *** Meteorological and Hydrographic data acc.to: IMO SN.1/Circ.289
-class AISMeteoPoint;
-
-WX_DEFINE_ARRAY_PTR(AISMeteoPoint, ArrayOfAISMeteoPoints);
-
 class AISMeteoPoint {
 public:
   int met_mmsi;
@@ -88,6 +87,7 @@ public:
   wxString met_lat;
   wxString met_lon;
 };
+
 
 struct AisDecoderCallbacks {
     std::function<bool()> confirm_stop_track;

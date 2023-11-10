@@ -41,7 +41,6 @@
 
 extern int g_iSDMMFormat;
 extern int g_iSpeedFormat;
-extern int g_iWindSpeedFormat;
 extern int g_iDistanceFormat;
 extern int g_nDepthUnitDisplay;
 extern int g_iTempFormat;

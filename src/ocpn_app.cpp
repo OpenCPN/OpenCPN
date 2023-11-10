@@ -233,7 +233,6 @@ wxString *pdir_list[20];
 int g_restore_stackindex;
 int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
-int g_nDepthUnitDisplay;
 
 RouteList *pRouteList;
 std::vector<Track*> g_TrackList;
@@ -349,8 +348,6 @@ bool g_bTempShowMenuBar;
 int g_iSDMMFormat;
 int g_iDistanceFormat;
 int g_iSpeedFormat;
-int g_iWindSpeedFormat;
-int g_iTempFormat;
 
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;

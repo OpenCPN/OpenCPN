@@ -251,7 +251,6 @@ extern wxColour g_colourTrackLineColour;
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
-extern int g_iWindSpeedFormat;
 extern int g_iTempFormat;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;

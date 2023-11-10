@@ -161,7 +161,6 @@ extern int g_nTrackPrecision;
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
-extern int g_iWindSpeedFormat;
 extern int g_iTempFormat;
 
 extern int g_nframewin_x;

@@ -29,8 +29,11 @@ bool g_bWplUsePosition;
 
 double g_UserVar = 0.0;
 
+int g_iWindSpeedFormat = 0;
+int g_iTempFormat = 0;
 int g_maxWPNameLength;
 int g_NMEAAPBPrecision = 3;
+int g_nDepthUnitDisplay = 0;
 int g_nNMEADebug = 0;
 int gps_watchdog_timeout_ticks = 0;
 int sat_watchdog_timeout_ticks = 12;
