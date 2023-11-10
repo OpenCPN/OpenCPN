@@ -131,6 +131,9 @@ Select* pSelectAIS;
 int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;
 int g_iSpeedFormat = 0;
+int g_iWindSpeedFormat = 0;
+int g_iTempFormat = 0;
+int g_nDepthUnitDisplay = 0;
 
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
