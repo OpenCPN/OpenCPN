@@ -326,7 +326,8 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
     if (wxv >= 32) {
       auto tokens = ocpn::split(_name.c_str(), "-");
-      _name = std::string(tokens[0]) + std::string("-wx32-") + tokens[1];
+      _name = std::string(tokens[0]) + std::string("-wx32");
+      if (tokens.size() > 1) _name = _name + std::string("-") + tokens[1];
     }
   }
 
