@@ -922,6 +922,7 @@ set(
   include/LinkPropDlg.h
   include/load_errors_dlg.h
   include/logger.h
+  include/meteo_points.h
   include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h

@@ -43,10 +43,6 @@
 #include "rapidjson/fwd.h"
 #include "track.h"
 
-class AISMeteoPoint;  // forward
-                      //
-extern std::vector<AISMeteoPoint> g_pMeteoArray;
-
 enum AISAudioSoundType {
   AISAUDIO_NONE,
   AISAUDIO_CPA,
@@ -79,14 +75,6 @@ public:
 };
 
 WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
-
-class AISMeteoPoint {
-public:
-  int met_mmsi;
-  int origin_mmsi;
-  wxString met_lat;
-  wxString met_lon;
-};
 
 
 struct AisDecoderCallbacks {

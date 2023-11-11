@@ -33,6 +33,8 @@
 #include <unordered_map>
 #include <memory>
 
+#include "meteo_points.h"
+
 #define SHIP_NAME_LEN 35
 #define DESTINATION_LEN 21
 #define CALL_SIGN_LEN 8
@@ -253,39 +255,7 @@ public:
   bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
   bool b_show_track;
 
-   // Ais8_001_31 Meteo data
-  int met_original_mmsi;
-  int met_month;            // UTC 0
-  int met_day;              // UTC 0
-  int met_hour;             // UTC 24
-  int met_minute;           // UTC 60
-  int met_pos_acc;          // low = 0 GNSS
-  int met_wind_kn;          // NAN=127
-  int met_wind_gust_kn;     // kn NAN=127
-  int met_wind_dir;         // NAN=360
-  int met_wind_gust_dir;    // NAN=360
-  double met_air_temp;      // C NAN = -102.4
-  int met_rel_humid;        // % NAN = 101
-  double met_dew_point;     // NAN = 501(50.1)
-  int met_airpress;         // value+799 hPa NAN = 511(1310)
-  int met_airpress_tend;    // NAN = 3
-  double met_hor_vis;       // NAN = 127(12.7)
-  double met_water_level;   // m Water level(incl.tide) NAN = 4001
-  int met_water_lev_trend;  // NAN = 3
-  double met_current;       // kn NAN = 255(25.5)
-  int met_curr_dir;         // NAN = 360
-  double met_wave_hight;    // m NAN=255(25.5)
-  int met_wave_period;      // s NAN = 63
-  int met_wave_dir;         // NAN = 360
-  double met_swell_hight;   // m NAN = 255 (25.5)
-  int met_swell_per;        // s NAN = 63
-  int met_swell_dir;        // NAN=360
-  int met_seastate;         // Bf NAN=13
-  double met_water_temp;    // C NAN = 501(50.1)
-  int met_precipitation;    // type NAN=7
-  double met_salinity;      // ‰ NAN=510(51.0)
-  int met_ice;              // NAN=3
-
+  AisMeteoData met_data;
   std::vector<AISTargetTrackPoint> m_ptrack;
 
   std::unordered_map<int, Ais8_001_22> area_notices;
