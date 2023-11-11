@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <limits.h>
 #include <memory>
+#include <thread>
 
 #ifdef __WXMSW__
 #include <math.h>
@@ -110,7 +111,9 @@
 #include "gdal/cpl_csv.h"
 #include "glTexCache.h"
 #include "GoToPositionDialog.h"
+#include "instance_check.h"
 #include "Layer.h"
+#include "local_api.h"
 #include "logger.h"
 #include "MarkInfo.h"
 #include "mDNS_query.h"
@@ -177,6 +180,8 @@ void RedirectIOToConsole();
 #else
 #include "serial/serial.h"
 #endif
+
+using namespace std::literals::chrono_literals;
 
 extern int ShowNavWarning();
 
@@ -843,39 +848,7 @@ bool stConnection::OnExec(const wxString &topic, const wxString &data) {
   }
   return true;
 }
-
-// Server class, for listening to connection requests
-class stServer : public wxServer {
-public:
-  wxConnectionBase *OnAcceptConnection(const wxString &topic);
-};
-
-// Accepts a connection from another instance
-wxConnectionBase *stServer::OnAcceptConnection(const wxString &topic) {
-  if (topic.Lower() == wxT("opencpn")) {
-    // Check that there are no modal dialogs active
-    wxWindowList::Node *node = wxTopLevelWindows.GetFirst();
-    while (node) {
-      wxDialog *dialog = wxDynamicCast(node->GetData(), wxDialog);
-      if (dialog && dialog->IsModal()) {
-        return 0;
-      }
-      node = node->GetNext();
-    }
-    return new stConnection();
-  }
-  return 0;
-}
-
-// Client class, to be used by subsequent instances in OnInit
-class stClient : public wxClient {
-public:
-  stClient(){};
-  wxConnectionBase *OnMakeConnection() { return new stConnection; }
-};
-
-#endif
-
+#endif   // __ANDROID__
 //------------------------------------------------------------------------------
 //    PNG Icon resources
 //------------------------------------------------------------------------------
@@ -916,8 +889,30 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
+bool MyApp::OpenFile(const std::string& path) {
+  NavObjectCollection1 nav_objects;
+  auto result = nav_objects.load_file(path.c_str());
+  if (!result)  {
+    std::string s(_("Cannot load route or waypoint file: "));
+    s += std::string("\"") + path + "\"";
+    wxMessageBox(s, "OpenCPN", wxICON_WARNING | wxOK);
+    return false; 
+  }
 
-#if wxUSE_CMDLINE_PARSER
+  int wpt_dups;
+  // Import with full vizibility of names and objects
+  nav_objects.LoadAllGPXObjects(!nav_objects.IsOpenCPN(), wpt_dups, true); 
+
+  if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+    pRouteManagerDialog->UpdateLists();
+  LLBBox box = nav_objects.GetBBox();
+  if (box.GetValid()) {
+    gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
+  }
+  return true;
+}
+
+
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   //    Add some OpenCPN specific command line options
   parser.AddSwitch("h", "help", _("Show usage syntax."),
@@ -946,6 +941,16 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   parser.AddSwitch(
       "s", "safe_mode",
      _("Run without plugins, opengl and other \"dangerous\" stuff"));
+  parser.AddSwitch("r", "remote",
+                   _("Execute commands on already running instance"));
+  parser.AddSwitch("R", "raise", _("Make OpenCPN visible if hidden"));
+  parser.AddSwitch("q", "quit",
+                   _("Terminate a remote instance (requires -r)"));
+  parser.AddSwitch("e", "get_rest_endpoint",
+                   _("Print rest server endpoint and exit (requires -r)"));
+  parser.AddOption("o", "open", _("Open GPX route(s) or waypoint file(s)"),
+                   wxCMD_LINE_VAL_STRING,
+                   wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
 }
 
 /** Parse --loglevel and set up logging, falling back to defaults. */
@@ -983,12 +988,40 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   safe_mode::set_mode(parser.Found("safe_mode"));
   ParseLoglevel(parser);
 
+  bool has_options = false;
+  static const std::vector<std::string> kOptions = {
+    "unit_test_2", "p", "fullscreen", "no_opengl", "rebuild_gl_raster_cache",
+    "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
+  for (const auto& opt : kOptions) {
+    if (parser.Found(opt)) has_options = true;
+  }
+
   for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
     g_params.push_back(parser.GetParam(paramNr).ToStdString());
 
+  // Instantiate the global OCPNPlatform class
+  g_Platform = new OCPNPlatform;
+  g_BasePlatform = g_Platform;
+
+  wxString optarg; 
+  if (parser.Found("raise"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
+  else if (parser.Found("quit"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Quit);
+  else if (parser.Found("get_rest_endpoint"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::GetRestEndpoint);
+  else if (parser.Found("open", &optarg))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
+                                     optarg.ToStdString());
+  else if (parser.GetParamCount() == 1)
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
+                                     parser.GetParam(0).ToStdString());
+  else if (!has_options) {
+    // Neither arguments nor options
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
+  }
   return true;
 }
-#endif
 
 #ifdef __WXMSW__
 //  Handle any exception not handled by CrashRpt
@@ -1023,8 +1056,14 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
 
 static wxStopWatch init_sw;
 
+int MyApp::OnRun() {
+  if (m_exitcode != -2) return m_exitcode;
+  return wxAppConsole::OnRun();
+}
+
 MyApp::MyApp() : m_RESTserver(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
-                              g_bportable) {
+                              g_bportable),
+                 m_exitcode(-2) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
 
@@ -1060,60 +1099,43 @@ bool MyApp::OnInit() {
   // Instantiate the global OCPNPlatform class
   g_Platform = new OCPNPlatform;
   g_BasePlatform = g_Platform;
-
 #ifndef __ANDROID__
-  //  On Windows
   //  We allow only one instance unless the portable option is used
   if (!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
-    wxChar separator = wxFileName::GetPathSeparator();
-    wxString service_name =
-        g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
-
-    m_checker = new wxSingleInstanceChecker(_T("_OpenCPN_SILock"),
-                                            g_Platform->GetPrivateDataDir());
-    if (!m_checker->IsAnotherRunning()) {
-      stServer *m_server = new stServer;
-      if (!m_server->Create(service_name)) {
-        wxLogDebug(wxT("Failed to create an IPC service."));
-      }
+    auto& instance_chk = InstanceCheck::GetInstance();
+    instance_chk.WaitUntilValid();
+    if (instance_chk.IsMainInstance()) {
+      // Server is created on first call to GetInstance()
+      auto& server = LocalServerApi::GetInstance();
     } else {
-      wxLogNull logNull;
-      stClient *client = new stClient;
-      // ignored under DDE, host name in TCP/IP based classes
-      wxString hostName = wxT("localhost");
-      // Create the connection service, topic
-      wxConnectionBase *connection =
-          client->MakeConnection(hostName, service_name, _T("OpenCPN"));
-      if (connection) {
-        // Ask the other instance to open a file or raise itself
-        if (!g_params.empty()) {
-          for (size_t n = 0; n < g_params.size(); n++) {
-            wxString path = g_params[n];
-            if (::wxFileExists(path)) {
-              connection->Execute(path);
-            }
-          }
-        }
-        connection->Execute(wxT(""));
-        connection->Disconnect();
-        delete connection;
-      } else {
-        //  If we get here, it means that the wxWidgets single-instance-detect
-        //  logic found the lock file, And so thinks another instance is
-        //  running. But that instance is not reachable, for some reason. So,
-        //  the safe thing to do is delete the lockfile, and exit.  Next start
-        //  will proceed normally. This may leave a zombie OpenCPN, but at least
-        //  O starts.
-        wxString lockFile = wxString(g_Platform->GetPrivateDataDir() +
-                                     separator + _T("_OpenCPN_SILock"));
-        if (wxFileExists(lockFile)) wxRemoveFile(lockFile);
-
+      std::unique_ptr<LocalClientApi> client; 
+      try {
+        client = LocalClientApi::GetClient();
+      } catch (LocalApiException& ie) {
+	std::cerr << "Ipc client exception: " << ie.str() << "\n" << std::flush;
+        // If we get here it means that the instance_chk found another 
+        // running instance. But that instance is for some reason not
+        // reachable. The safe thing to do is delete the lockfile and exit.
+        // Next start  will proceed normally. This may leave a zombie OpenCPN,
+        // but at least O starts.
+        instance_chk.CleanUp();
         wxMessageBox(_("Sorry, an existing instance of OpenCPN may be too busy "
                        "to respond.\nPlease retry."),
-                     wxT("OpenCPN"), wxICON_INFORMATION | wxOK);
+                     "OpenCPN", wxICON_INFORMATION | wxOK);
+        m_exitcode = 2;
+        return true;  // main program quiet exit.
+      } 
+      if (client) {
+        auto result =
+          client->HandleCmdline(m_parsed_cmdline.action, m_parsed_cmdline.arg);
+        if (result.first) {
+          m_exitcode = 0;
+        } else {
+          wxLogDebug("Error running remote command: %s", result.second.c_str());
+          m_exitcode = 1;
+        }
+        return true;
       }
-      delete client;
-      return false;  // exit quietly
     }
   }
 #endif  // __ANDROID__

@@ -91,6 +91,7 @@
 #include "idents.h"
 #include "iENCToolbar.h"
 #include "Layer.h"
+#include "local_api.h"
 #include "load_errors_dlg.h"
 #include "MarkInfo.h"
 #include "MUIBar.h"
@@ -4940,6 +4941,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
     }
     case 6: {
       InitAppMsgBusListener();
+      InitApiListeners();
 
       break;
     }
@@ -5023,6 +5025,18 @@ void MyFrame::InitAppMsgBusListener() {
     auto msg = std::static_pointer_cast<const GPSWatchdogMsg>(ptr);
     HandleGPSWatchdogMsg(msg);
   });
+
+}
+
+/** Setup handling of events from the local ipc/dbsu API. */
+void MyFrame::InitApiListeners() {
+  auto& server = LocalServerApi::GetInstance();
+  m_on_raise_listener.Init(server.on_raise, [&](ObservedEvt){ Raise(); });
+  m_on_quit_listener.Init(server.on_quit, [&](ObservedEvt){ FastClose(); });
+  server.SetGetRestApiEndpointCb(
+    [&]{ return wxGetApp().m_RESTserver.GetEndpoint(); });
+  server.open_file_cb =
+      [](const std::string& path) { return wxGetApp().OpenFile(path); };
 
 }
 
