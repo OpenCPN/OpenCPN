@@ -1242,7 +1242,7 @@ wxString AisTargetData::Get_class_string(bool b_short) {
     case AIS_APRS:
       return b_short ? _("APRS") : _("APRS Position Report");
     case AIS_METEO:
-      return b_short ? _("METEO") : _("Meteorologic and Hydrographic");
+      return b_short ? _("Meteo") : _("Meteorologic and Hydrographic");
 
     default:
       return b_short ? _("Unk") : _("Unknown");
