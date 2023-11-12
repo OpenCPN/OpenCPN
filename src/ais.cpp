@@ -1261,6 +1261,14 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                     TargetPoint.y);
       dc.SetPen(wxPen(UBLCK, 1));
     }
+
+  } else if (td->Class == AIS_METEO) {
+    wxPen target_pen(UBLCK, 2);
+    dc.SetPen(target_pen);
+    dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
+    dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1.8 * AIS_icon_diameter);
+    dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
+
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
     AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
                      2.0 * AIS_icon_diameter, td);

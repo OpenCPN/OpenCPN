@@ -35,8 +35,11 @@ extern bool g_bWplUsePosition;
 
 extern double g_UserVar;
 
+extern int g_iWindSpeedFormat;
+extern int g_iTempFormat;
 extern int g_maxWPNameLength;
 extern int g_NMEAAPBPrecision;
+extern int g_nDepthUnitDisplay;
 extern int g_nNMEADebug;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;

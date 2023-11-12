@@ -164,6 +164,7 @@ enum {
   ID_SDMMFORMATCHOICE,
   ID_DISTANCEUNITSCHOICE,
   ID_SPEEDUNITSCHOICE,
+  ID_WINDSPEEDUNITCHOICE,
   ID_DEPTHUNITSCHOICE,
   ID_SELECTLIST,
   ID_SHOWDEPTHUNITSBOX1,
@@ -465,7 +466,7 @@ public:
 
   // For "Units" page
   wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect,
-      *pTempFormat;
+      *pTempFormat, *pWindSpeedFormat;
   wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 

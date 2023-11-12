@@ -42,6 +42,8 @@
 extern int g_iSDMMFormat;
 extern int g_iSpeedFormat;
 extern int g_iDistanceFormat;
+extern int g_nDepthUnitDisplay;
+extern int g_iTempFormat;
 
 wxString toSDMM(int NEflag, double a, bool hi_precision) {
   wxString s;
@@ -169,6 +171,29 @@ double toUsrSpeed(double kts_speed, int unit) {
 }
 
 /**************************************************************************/
+/*          Converts the wind speed to the units selected by user         */
+/**************************************************************************/
+double toUsrWindSpeed(double kts_wspeed, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iWindSpeedFormat;
+  switch (unit) {
+    case WSPEED_KTS:  // kts
+      ret = kts_wspeed;
+      break;
+    case WSPEED_MS:  // m/s
+      ret = kts_wspeed * 0.514444444;
+      break;
+    case WSPEED_MPH:  // mph
+      ret = kts_wspeed * 1.15078;
+      break;
+    case WSPEED_KMH:  // km/h
+      ret = kts_wspeed * 1.852;
+      break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
 /*          Converts the distance to the units selected by user           */
 /**************************************************************************/
 double toUsrDistance(double nm_distance, int unit) {
@@ -203,6 +228,45 @@ double toUsrDistance(double nm_distance, int unit) {
   return ret;
 }
 
+/**************************************************************************/
+/*    Converts the temperature to the units selected by user              */
+/**************************************************************************/
+double toUsrTemp(double cel_temp, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iTempFormat;
+  switch (unit) {
+    case TEMPERATURE_C:  // Celsius
+      ret = cel_temp;
+      break;
+    case TEMPERATURE_F:  // Fahrenheit
+      ret = (cel_temp * 9.0 / 5.0) + 32;
+      break;
+    case TEMPERATURE_K:
+      ret = cel_temp + 273.15;
+      break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
+/*          Returns the abbreviation of user selected temperature unit */
+/**************************************************************************/
+wxString getUsrTempUnit(int unit) {
+  wxString ret;
+  if (unit == -1) unit = g_iTempFormat;
+  switch (unit) {
+    case TEMPERATURE_C:  // Celsius
+      ret = _("C");
+      break;
+    case TEMPERATURE_F:  // Fahrenheit
+      ret = _("F");
+      break;
+    case TEMPERATURE_K:  // Kelvin
+      ret = _("K");
+      break;
+  }
+  return ret;
+}
 
 /**************************************************************************/
 /*          Returns the abbreviation of user selected distance unit       */
@@ -259,6 +323,30 @@ wxString getUsrSpeedUnit(int unit) {
     case SPEED_MS:
       ret = _("m/s");
       break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
+/*       Returns the abbreviation of user selected wind speed unit        */
+/**************************************************************************/
+wxString getUsrWindSpeedUnit(int unit) {
+  wxString ret;
+  if (unit == -1) unit = g_iWindSpeedFormat;
+  switch (unit) {
+    case WSPEED_KTS:  // kts
+      ret = _("kts");
+      break;
+    case WSPEED_MS:
+      ret = _("m/s");
+      break;
+    case WSPEED_MPH:  // mph
+      ret = _("mph");
+      break;
+    case WSPEED_KMH:
+      ret = _("km/h");
+      break;
+
   }
   return ret;
 }
@@ -331,6 +419,66 @@ double fromUsrDistance(double usr_distance, int unit, int default_val) {
       break;
     case DISTANCE_FT:
       ret = usr_distance / 6076.12;
+      break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
+/*    Converts the depth in meters to the units selected by user          */
+/**************************************************************************/
+double toUsrDepth(double cel_depth, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_nDepthUnitDisplay;
+  switch (unit) {
+    case DEPTH_FT:  // Feet
+      ret = cel_depth / 0.3048;
+      break;
+    case DEPTH_M:  // Meters
+      ret = cel_depth ;
+      break;
+    case DEPTH_FA:
+      ret = cel_depth / 0.3048 / 6;
+      break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
+/*  Converts the depth from the units selected by user to Meters   */
+/**************************************************************************/
+double fromUsrDepth(double usr_depth, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_nDepthUnitDisplay;
+  switch (unit) {
+    case DEPTH_FT:  // Feet
+      ret = usr_depth * 0.3048;
+      break;
+    case DEPTH_M:  // Feet
+      ret = usr_depth;
+      break;
+    case DEPTH_FA:  // Fathoms
+      ret = usr_depth * 0.3048 * 6;
+      break;
+  }
+  return ret;
+}
+
+/**************************************************************************/
+/*          Returns the abbreviation of user selected depth unit */
+/**************************************************************************/
+wxString getUsrDepthUnit(int unit) {
+  wxString ret;
+  if (unit == -1) unit = g_nDepthUnitDisplay;
+  switch (unit) {
+    case DEPTH_FT:  // Feet
+      ret = _("ft");
+      break;
+    case DEPTH_M:// Meters
+      ret = _("m");
+      break;
+    case DEPTH_FA:  // Fathoms
+      ret = _("fa");
       break;
   }
   return ret;

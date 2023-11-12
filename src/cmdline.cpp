@@ -27,5 +27,3 @@ bool g_parse_all_enc = false;
 bool g_bportable = false;
 bool g_bdisable_opengl = false;
 std::vector<std::string> g_params;
-
-

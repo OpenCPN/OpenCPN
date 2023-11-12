@@ -18,7 +18,7 @@
  **************************************************************************/
 
 /**
- * \file 
+ * \file
  * Global variables reflecting command line options and arguments.
  */
 
@@ -33,5 +33,3 @@ extern bool g_parse_all_enc;
 extern bool g_bportable;
 extern bool g_bdisable_opengl;
 extern std::vector<std::string> g_params;
-
-
