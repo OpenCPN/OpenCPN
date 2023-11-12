@@ -38,6 +38,8 @@
 #include <windows.h>
 #endif
 
+#define COMPILING_AIS_DECODER 1
+
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/log.h>
@@ -46,9 +48,6 @@
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
 
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 #include "ais_decoder.h"
 #include "meteo_points.h"
 #include "ais_target_data.h"
@@ -3174,7 +3173,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               sa.shape = bstr->GetInt(base + 1, 3);
               int scale_factor = 1;
               if (sa.shape == AIS8_001_22_SHAPE_TEXT) {
-                char t[15];
+                char t[15]{};
                 t[14] = 0;
                 bstr->GetStr(base + 4, 84, t, 14);
                 sa.text = wxString(t, wxConvUTF8);
@@ -3286,7 +3285,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->met_data.wave_hight = bstr->GetInt(277, 8) / 10.;
             ptd->met_data.wave_period = bstr->GetInt(285, 6);
             ptd->met_data.wave_dir = bstr->GetInt(291, 9);
-            ptd->met_data.swell_hight = bstr->GetInt(300, 8) / 10;
+            ptd->met_data.swell_hight = bstr->GetInt(300, 8) / 10.;
             ptd->met_data.swell_per = bstr->GetInt(308, 6);
             ptd->met_data.swell_dir = bstr->GetInt(314, 9);
             ptd->met_data.seastate = bstr->GetInt(323, 4);
@@ -3387,7 +3386,7 @@ bool AisDecoder::NMEACheckSumOK(const wxString &str_in) {
   }
 
   if (string_length > 4) {
-    char scanstr[3];
+    char scanstr[3]{};
     scanstr[0] = str_ascii[payload_length + 1];
     scanstr[1] = str_ascii[payload_length + 2];
     scanstr[2] = 0;
@@ -3433,7 +3432,7 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
   }
 
   //    Add the newest point
-  AISTargetTrackPoint ptrackpoint;
+  AISTargetTrackPoint ptrackpoint{};
   ptrackpoint.m_lat = ptarget->Lat;
   ptrackpoint.m_lon = ptarget->Lon;
   ptrackpoint.m_time = wxDateTime::Now().GetTicks();
@@ -3792,7 +3791,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       break;  // leave the loop
     }
     //std::shared_ptr<AisTargetData> xtd(std::make_shared<AisTargetData>(*it->second));
-    auto xtd = it->second;
+    std::shared_ptr<AisTargetData> xtd = it->second;
 
     int target_posn_age = now.GetTicks() - xtd->PositionReportTicks;
     int target_static_age = now.GetTicks() - xtd->StaticReportTicks;
@@ -3898,7 +3897,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   for (unsigned int i = 0; i < remove_array.size(); i++) {
     auto itd = current_targets.find(remove_array[i]);
     if (itd != current_targets.end()) {
-      auto td = itd->second;
+      std::shared_ptr<AisTargetData> td = itd->second;
       current_targets.erase(itd);
       //delete td;
     }
@@ -3934,7 +3933,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     std::shared_ptr<AisTargetData> palert_target_dsc = NULL;
 
     for (it = current_targets.begin(); it != current_targets.end(); ++it) {
-      auto td = it->second;
+      std::shared_ptr<AisTargetData> td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {

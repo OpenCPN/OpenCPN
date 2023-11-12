@@ -40,7 +40,14 @@
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "ocpn_types.h"
+#if !defined(COMPILING_AIS_DECODER)
 #include "rapidjson/fwd.h"
+#else
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+#endif
 #include "track.h"
 
 enum AISAudioSoundType {
