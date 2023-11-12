@@ -5083,11 +5083,18 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   if (gSog > 3.0) g_bCruising = true;
 
 
-  //      Maintain the validity flags
+//      Maintain the GPS position validity flag
+//      Determined by source validity of RMC, GGA, GLL (N0183)
+//        or PGNs 129029, 129025 (N2K)
+//      Positions by sK and AIVDO are assumed valid
   m_b_new_data = true;
   bool last_bGPSValid = bGPSValid;
-  if ((msg->vflag && POS_UPDATE) == POS_UPDATE)
-    bGPSValid = true;
+  if ((msg->vflag & POS_UPDATE) == POS_UPDATE) {
+    if ((msg->vflag & POS_VALID) == POS_VALID)
+      bGPSValid = true;
+    else
+      bGPSValid = false;
+  }
   if (last_bGPSValid != bGPSValid)
     UpdateGPSCompassStatusBoxes(true);
 

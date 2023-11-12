@@ -159,6 +159,7 @@ public:
 #define SOG_UPDATE     (int)(1 << 2)
 #define VAR_UPDATE     (int)(1 << 3)
 #define HDT_UPDATE     (int)(1 << 4)
+#define POS_VALID      (int)(1 << 5)
 
 class BasicNavDataMsg : public AppMsg {
 public:
