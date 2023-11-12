@@ -22,6 +22,9 @@
  * Global variables reflecting command line options and arguments.
  */
 
+#ifndef _CMDLINE_H__
+#define _CMDLINE_H__
+
 #include <vector>
 #include <string>
 
@@ -33,3 +36,5 @@ extern bool g_parse_all_enc;
 extern bool g_bportable;
 extern bool g_bdisable_opengl;
 extern std::vector<std::string> g_params;
+
+#endif  // _CMDLINE_H__
