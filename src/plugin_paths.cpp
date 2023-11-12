@@ -5,6 +5,7 @@
 #include <wx/string.h>
 
 #include "config.h"
+#include "cmdline.h"
 #include "base_platform.h"
 #include "ocpn_plugin.h"
 #include "plugin_paths.h"
@@ -17,7 +18,6 @@
  */
 
 extern BasePlatform* g_BasePlatform;
-extern bool g_bportable;
 
 static std::vector<std::string> split(const std::string& s, char delimiter) {
   std::vector<std::string> tokens;

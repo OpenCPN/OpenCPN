@@ -56,6 +56,7 @@
 #include "config.h"
 
 #include "base_platform.h"
+#include "cmdline.h"
 #include "logger.h"
 #include "ocpn_utils.h"
 #include "ocpn_plugin.h"
@@ -82,7 +83,6 @@ void appendOSDirSlash(wxString* pString);
 
 extern wxString g_winPluginDir;
 
-extern bool g_bportable;
 extern bool g_btouch;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;

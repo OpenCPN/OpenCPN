@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,24 +16,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _COMMDRIVERN2K_H__
-#define _COMMDRIVERN2K_H__
 
-#include <memory>
+/**
+ * \file
+ * Global variables reflecting command line options and arguments.
+ */
 
-#include "comm_driver.h"
+#include <vector>
+#include <string>
 
-class CommDriverN2K : public AbstractCommDriver {
-public:
-  CommDriverN2K(const std::string& s = "n2k0" );
-
-  virtual ~CommDriverN2K();
-
-  virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                           std::shared_ptr<const NavAddr> addr) override = 0;
-  virtual void SetListener(DriverListener& l) override;
-  virtual std::shared_ptr<NavAddr> GetAddress(const N2kName& name);
-  virtual int SetTXPGN(int pgn){ return 0; }
-};
-
-#endif  // guard
+extern int g_unit_test_1;
+extern int g_unit_test_2;
+extern bool g_start_fullscreen;
+extern bool g_rebuild_gl_cache;
+extern bool g_parse_all_enc;
+extern bool g_bportable;
+extern bool g_bdisable_opengl;
+extern std::vector<std::string> g_params;

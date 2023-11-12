@@ -59,6 +59,7 @@
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"
+#include "cmdline.h"
 #include "config.h"
 #include "config_vars.h"
 #include "conn_params.h"
@@ -143,7 +144,6 @@ extern bool g_bShowDepthUnits;
 extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
-extern bool g_bdisable_opengl;
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;
@@ -1001,6 +1001,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
                              // "Kilometers", 3 = "Meters"
   Read(_T ( "SpeedFormat" ),
        &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+  Read(_T ( "WindSpeedFormat" ),
+       &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
   Read(_T ("TemperatureFormat"), &g_iTempFormat);  // 0 = C, 1 = F, 2 = K
 
   // LIVE ETA OPTION
@@ -2458,6 +2460,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "GlobalToolbarConfig" ), g_toolbarConfig);
     Write(_T ( "DistanceFormat" ), g_iDistanceFormat);
     Write(_T ( "SpeedFormat" ), g_iSpeedFormat);
+    Write(_T ( "WindSpeedFormat" ), g_iWindSpeedFormat);
     Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
     Write(_T ( "TemperatureFormat" ), g_iTempFormat);
   }
@@ -3325,24 +3328,28 @@ double fromUsrSpeed(double usr_speed, int unit) {
   return ret;
 }
 /**************************************************************************/
-/*    Converts the temperature to the units selected by user              */
+/*     Converts the wind speed from the units selected by user to knots   */
 /**************************************************************************/
-double toUsrTemp(double cel_temp, int unit) {
+double fromUsrWindSpeed(double usr_wspeed, int unit) {
   double ret = NAN;
-  if (unit == -1) unit = g_iTempFormat;
+  if (unit == -1) unit = g_iWindSpeedFormat;
   switch (unit) {
-    case TEMPERATURE_C:  // Celsius
-      ret = cel_temp;
+    case WSPEED_KTS:  // kts
+      ret = usr_wspeed;
       break;
-    case TEMPERATURE_F:  // Fahrenheit
-      ret = (cel_temp * 9.0 / 5.0) + 32;
+    case WSPEED_MS:  // m/s
+      ret = usr_wspeed / 0.514444444;
       break;
-    case TEMPERATURE_K:
-      ret = cel_temp + 273.15;
+    case WSPEED_MPH:  // mph
+      ret = usr_wspeed / 1.15078;
+      break;
+    case WSPEED_KMH:  // km/h
+      ret = usr_wspeed / 1.852;
       break;
   }
   return ret;
 }
+
 
 /**************************************************************************/
 /*  Converts the temperature from the units selected by user to Celsius   */
@@ -3359,26 +3366,6 @@ double fromUsrTemp(double usr_temp, int unit) {
       break;
     case TEMPERATURE_K:  // K
       ret = usr_temp - 273.15;
-      break;
-  }
-  return ret;
-}
-
-/**************************************************************************/
-/*          Returns the abbreviation of user selected temperature unit */
-/**************************************************************************/
-wxString getUsrTempUnit(int unit) {
-  wxString ret;
-  if (unit == -1) unit = g_iTempFormat;
-  switch (unit) {
-    case TEMPERATURE_C:  // Celsius
-      ret = _("C");
-      break;
-    case TEMPERATURE_F:  // Fahrenheit
-      ret = _("F");
-      break;
-    case TEMPERATURE_K:  // Kelvin
-      ret = _("K");
       break;
   }
   return ret;

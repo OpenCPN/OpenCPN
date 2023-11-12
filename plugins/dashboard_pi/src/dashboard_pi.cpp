@@ -583,7 +583,7 @@ int dashboard_pi::Init(void) {
   // Rudder data PGN 127245
   wxDEFINE_EVENT(EVT_N2K_127245, ObservedEvt);
   NMEA2000Id id_127245 = NMEA2000Id(127245);
-  listener_127245 = std::move(GetListener(id_127245, EVT_N2K_127245, this));
+  listener_127245 = GetListener(id_127245, EVT_N2K_127245, this);
   Bind(EVT_N2K_127245, [&](ObservedEvt ev) {
     HandleN2K_127245(ev);
   });
@@ -592,7 +592,7 @@ int dashboard_pi::Init(void) {
   // Roll Pitch   PGN 127257
   wxDEFINE_EVENT(EVT_N2K_127257, ObservedEvt);
   NMEA2000Id id_127257 = NMEA2000Id(127257);
-  listener_127257 = std::move(GetListener(id_127257, EVT_N2K_127257, this));
+  listener_127257 = GetListener(id_127257, EVT_N2K_127257, this);
   Bind(EVT_N2K_127257, [&](ObservedEvt ev) {
     HandleN2K_127257(ev);
   });
@@ -600,7 +600,7 @@ int dashboard_pi::Init(void) {
   // Speed through water PGN 128259
   wxDEFINE_EVENT(EVT_N2K_128259, ObservedEvt);
   NMEA2000Id id_128259 = NMEA2000Id(128259);
-  listener_128259 = std::move(GetListener(id_128259, EVT_N2K_128259, this));
+  listener_128259 = GetListener(id_128259, EVT_N2K_128259, this);
   Bind(EVT_N2K_128259, [&](ObservedEvt ev) {
     HandleN2K_128259(ev);
   });
@@ -608,7 +608,7 @@ int dashboard_pi::Init(void) {
   // Depth Data   PGN 128267
   wxDEFINE_EVENT(EVT_N2K_128267, ObservedEvt);
   NMEA2000Id id_128267 = NMEA2000Id(128267);
-  listener_128267 = std::move(GetListener(id_128267, EVT_N2K_128267, this));
+  listener_128267 = GetListener(id_128267, EVT_N2K_128267, this);
   Bind(EVT_N2K_128267, [&](ObservedEvt ev) {
     HandleN2K_128267(ev);
   });
@@ -616,7 +616,7 @@ int dashboard_pi::Init(void) {
   // Distance log
   wxDEFINE_EVENT(EVT_N2K_128275, ObservedEvt);
   NMEA2000Id id_128275 = NMEA2000Id(128275);
-  listener_128275 = std::move(GetListener(id_128275, EVT_N2K_128275, this));
+  listener_128275 = GetListener(id_128275, EVT_N2K_128275, this);
   Bind(EVT_N2K_128275, [&](ObservedEvt ev) {
     HandleN2K_128275(ev);
   });
@@ -624,7 +624,7 @@ int dashboard_pi::Init(void) {
   // GNSS Position Data   PGN 129029
   wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);
   NMEA2000Id id_129029 = NMEA2000Id(129029);
-  listener_129029 = std::move(GetListener(id_129029, EVT_N2K_129029, this));
+  listener_129029 = GetListener(id_129029, EVT_N2K_129029, this);
   Bind(EVT_N2K_129029, [&](ObservedEvt ev) {
     HandleN2K_129029(ev);
   });
@@ -632,7 +632,7 @@ int dashboard_pi::Init(void) {
   // GNSS Satellites in View   PGN 129540
   wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
   NMEA2000Id id_129540 = NMEA2000Id(129540);
-  listener_129540 = std::move(GetListener(id_129540, EVT_N2K_129540, this));
+  listener_129540 = GetListener(id_129540, EVT_N2K_129540, this);
   Bind(EVT_N2K_129540, [&](ObservedEvt ev) {
     HandleN2K_129540(ev);
   });
@@ -640,7 +640,7 @@ int dashboard_pi::Init(void) {
   // Wind   PGN 130306
   wxDEFINE_EVENT(EVT_N2K_130306, ObservedEvt);
   NMEA2000Id id_130306 = NMEA2000Id(130306);
-  listener_130306 = std::move(GetListener(id_130306, EVT_N2K_130306, this));
+  listener_130306 = GetListener(id_130306, EVT_N2K_130306, this);
   Bind(EVT_N2K_130306, [&](ObservedEvt ev) {
     HandleN2K_130306(ev);
   });
@@ -648,7 +648,7 @@ int dashboard_pi::Init(void) {
   // Envorinment   PGN 130310
   wxDEFINE_EVENT(EVT_N2K_130310, ObservedEvt);
   NMEA2000Id id_130310 = NMEA2000Id(130310);
-  listener_130310 = std::move(GetListener(id_130310, EVT_N2K_130310, this));
+  listener_130310 = GetListener(id_130310, EVT_N2K_130310, this);
   Bind(EVT_N2K_130310, [&](ObservedEvt ev) {
     HandleN2K_130310(ev);
   });

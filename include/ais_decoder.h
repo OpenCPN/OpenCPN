@@ -28,9 +28,9 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include <wx/datetime.h>
-#include "rapidjson/fwd.h"
 #include <wx/event.h>
 #include <wx/string.h>
 
@@ -40,8 +40,8 @@
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "ocpn_types.h"
+#include "rapidjson/fwd.h"
 #include "track.h"
-
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,
@@ -75,6 +75,7 @@ public:
 };
 
 WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
+
 
 struct AisDecoderCallbacks {
     std::function<bool()> confirm_stop_track;

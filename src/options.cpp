@@ -77,6 +77,7 @@
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"
+#include "cmdline.h"
 #include "ConfigMgr.h"
 #include "config_vars.h"
 #include "dychart.h"
@@ -303,8 +304,6 @@ extern bool g_bShowStatusBar;
 extern s52plib* ps52plib;
 
 extern wxString g_locale;
-extern bool g_bportable;
-extern bool g_bdisable_opengl;
 
 extern ChartGroupArray* g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -2221,7 +2220,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   dispOwnShipCalcOptionsGrid->AddGrowableCol(1);
 
-  pSogCogFromLLCheckBox =
+pSogCogFromLLCheckBox =
       new wxCheckBox(itemPanelShip, ID_SOGCOGFROMLLCHECKBOX,
                      _("Calculate SOG and COG from position changes"));
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLCheckBox, 1, wxALL, 5);
@@ -4393,6 +4392,21 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 #endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
 
+    //  wind units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Wind speed")),
+                    labelFlags);
+    wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
+    int m_WindSpeedFormatsNChoices =
+        sizeof(pWindSpeedFormats) / sizeof(wxString);
+    pWindSpeedFormat =
+        new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), m_WindSpeedFormatsNChoices,
+                     pWindSpeedFormats);
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pWindSpeedFormat, inputFlags);
+
     // depth units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Depth")),
                     labelFlags);
@@ -4531,6 +4545,16 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
                      wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats);
     unitsSizer->Add(pSpeedFormat, inputFlags);
+
+    // windspeed units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("WindSpeed")),
+                    labelFlags);
+    wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
+    int m_WindSpeedFormatsNChoices = sizeof(pWindSpeedFormats) / sizeof(wxString);
+    pWindSpeedFormat =
+        new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+                     wxDefaultSize, m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+    unitsSizer->Add(pWindSpeedFormat, inputFlags);
 
     // depth units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Depth")),
@@ -6126,6 +6150,7 @@ void options::SetInitialSettings(void) {
   pSDMMFormat->Select(g_iSDMMFormat);
   pDistanceFormat->Select(g_iDistanceFormat);
   pSpeedFormat->Select(g_iSpeedFormat);
+  pWindSpeedFormat->Select(g_iWindSpeedFormat);
   pTempFormat->Select(g_iTempFormat);
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
@@ -7013,6 +7038,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();
+  g_iWindSpeedFormat = pWindSpeedFormat->GetSelection();
   g_iTempFormat = pTempFormat->GetSelection();
 
   // LIVE ETA OPTION

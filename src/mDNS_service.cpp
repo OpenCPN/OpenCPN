@@ -49,7 +49,13 @@
 #include <net/if.h>
 #endif
 
+#include "config.h"
 #include "mdns_util.h"
+
+#ifndef OCPN_ENABLE_MDNS_DEBUG
+#define printf(...)
+#endif
+
 
 static char addrbuffer[64];
 static char namebuffer[256];

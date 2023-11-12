@@ -58,6 +58,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "base_platform.h"
 #include "catalog_handler.h"
 #include "catalog_parser.h"
+#include "cmdline.h"
 #include "config.h"
 #include "downloader.h"
 #include "gui_lib.h"
@@ -82,7 +83,6 @@ static std::string SEP("/");
 extern BasePlatform* g_BasePlatform;
 extern wxString g_winPluginDir;
 extern MyConfig* pConfig;
-extern bool g_bportable;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -326,7 +326,8 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
     if (wxv >= 32) {
       auto tokens = ocpn::split(_name.c_str(), "-");
-      _name = std::string(tokens[0]) + std::string("-wx32-") + tokens[1];
+      _name = std::string(tokens[0]) + std::string("-wx32");
+      if (tokens.size() > 1) _name = _name + std::string("-") + tokens[1];
     }
   }
 
