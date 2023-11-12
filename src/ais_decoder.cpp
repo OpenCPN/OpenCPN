@@ -46,6 +46,9 @@
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
 
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 #include "ais_decoder.h"
 #include "meteo_points.h"
 #include "ais_target_data.h"
@@ -57,9 +60,6 @@
 #include "multiplexer.h"
 #include "navutil_base.h"
 #include "own_ship.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 #include "route_point.h"
 #include "select.h"
 #include "SoundFactory.h"
