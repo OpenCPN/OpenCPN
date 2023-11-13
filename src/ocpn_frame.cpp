@@ -1880,6 +1880,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   wxTheApp->OnExit();
 #endif
 #endif
+  wxTheApp->ExitMainLoop();
 }
 
 void MyFrame::OnMove(wxMoveEvent &event) {
