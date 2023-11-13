@@ -364,8 +364,6 @@ int g_maxzoomin;
 // Set default color scheme
 ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
-int Usercolortable_index;
-wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
