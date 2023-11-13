@@ -47,10 +47,10 @@
   int water_lev_trend;  // NAN = 3
   double current;       // kn NAN = 255(25.5)
   int curr_dir;         // NAN = 360
-  double wave_hight;    // m NAN=255(25.5)
+  double wave_height;    // m NAN=255(25.5)
   int wave_period;      // s NAN = 63
   int wave_dir;         // NAN = 360
-  double swell_hight;   // m NAN = 255 (25.5)
+  double swell_height;   // m NAN = 255 (25.5)
   int swell_per;        // s NAN = 63
   int swell_dir;        // NAN=360
   int seastate;         // Bf NAN=13

@@ -3284,10 +3284,10 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);
             ptd->met_data.current = bstr->GetInt(216, 8) / 10.;
             ptd->met_data.curr_dir = bstr->GetInt(224, 9);
-            ptd->met_data.wave_hight = bstr->GetInt(277, 8) / 10.;
+            ptd->met_data.wave_height = bstr->GetInt(277, 8) / 10.;
             ptd->met_data.wave_period = bstr->GetInt(285, 6);
             ptd->met_data.wave_dir = bstr->GetInt(291, 9);
-            ptd->met_data.swell_hight = bstr->GetInt(300, 8) / 10;
+            ptd->met_data.swell_height = bstr->GetInt(300, 8) / 10;
             ptd->met_data.swell_per = bstr->GetInt(308, 6);
             ptd->met_data.swell_dir = bstr->GetInt(314, 9);
             ptd->met_data.seastate = bstr->GetInt(323, 4);

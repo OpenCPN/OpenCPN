@@ -270,10 +270,10 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   int met_water_lev_trend = 3;
   double met_current = 25.5;
   int met_curr_dir = 360;
-  double met_wave_hight = 25.5;
+  double met_wave_height = 25.5;
   int met_wave_period = 63;
   int met_wave_dir = 360;
-  double met_swell_hight = 25.5;
+  double met_swell_height = 25.5;
   int met_swell_per = 63;
   int met_swell_dir = 360;
   int met_seastate = 13;
@@ -864,24 +864,24 @@ wxString AisTargetData::BuildQueryResult(void) {
              << current << rowEnd;
     }
 
-    if (met_data.wave_hight < 25. || met_data.swell_hight < 25.) {
-      double userwave = toUsrDepth(met_data.wave_hight);
+    if (met_data.wave_height < 25. || met_data.swell_height < 25.) {
+      double userwave = toUsrDepth(met_data.wave_height);
         wxString wave =
             wxString::Format("%.1f %s %d%c %d %s", userwave, getUsrDepthUnit(),
                              met_data.wave_dir, 0x00B0,
                              met_data.wave_period, _("s"));
-      if (met_data.wave_hight >= 25.) wave = wxEmptyString;
+      if (met_data.wave_height >= 25.) wave = wxEmptyString;
 
-      double userswell = toUsrDepth(met_data.swell_hight);
+      double userswell = toUsrDepth(met_data.swell_height);
       wxString swell =
           wxString::Format("%.1f %s %d%c %d %s", userswell, getUsrDepthUnit(),
                            met_data.swell_dir, 0x00B0,
                            met_data.swell_per, _("s"));
-      if (met_data.swell_hight >= 25.) swell = wxEmptyString;
+      if (met_data.swell_height >= 25.) swell = wxEmptyString;
 
-      html << vertSpacer << rowStart << _("Waves hight & period")
+      html << vertSpacer << rowStart << _("Waves height & period")
            << _T("</font></td><td align=right><font size=-2>")
-           << _("Swell hight & period ")
+           << _("Swell height & period ")
            << _T("</font></td></tr>") << rowStartH << _T("<b>") << wave
            << _T("</b></td><td align=right><b>") << swell << rowEnd;
     }
@@ -1114,10 +1114,10 @@ wxString AisTargetData::GetRolloverString(void) {
       result << wxString::Format(": %s%.1f ", sign, met_data.current) << _("kts")
              << wxString::Format(" %d%c ", met_data.curr_dir, 0x00B0);
     }
-    if (met_data.wave_hight < 25.) {
+    if (met_data.wave_height < 25.) {
       if (result.Len()) result << "\n";
-      double userwh = toUsrDepth(met_data.wave_hight);
-      result << _("Wave high");
+      double userwh = toUsrDepth(met_data.wave_height);
+      result << _("Wave height");
       result << wxString::Format(": %.1f %s", userwh, getUsrDepthUnit()) << " "
              << _("Period") << wxString::Format(": %d ", met_data.wave_period)
              << _("s");
