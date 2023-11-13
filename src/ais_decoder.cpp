@@ -38,8 +38,6 @@
 #include <windows.h>
 #endif
 
-#define COMPILING_AIS_DECODER 1
-
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/log.h>
