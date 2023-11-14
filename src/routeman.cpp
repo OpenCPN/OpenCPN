@@ -85,6 +85,7 @@ extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 extern Routeman *g_pRouteMan;
+extern bool bGPSValid;
 
 extern wxRect g_blink_rect;
 
@@ -504,6 +505,9 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
     m_NMEA0183.Rmb.IsDataValid = NTrue;
+    if (!bGPSValid)
+      m_NMEA0183.Rmb.IsDataValid = NFalse;
+
     m_NMEA0183.Rmb.CrossTrackError = CurrentXTEToActivePoint;
 
     if (XTEDir < 0)
@@ -540,6 +544,7 @@ bool Routeman::UpdateAutopilot() {
       m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
 
     m_NMEA0183.Rmb.FAAModeIndicator = "A";
+
     m_NMEA0183.Rmb.Write(snt);
 
     BroadcastNMEA0183Message(snt.Sentence);
@@ -551,6 +556,8 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
     m_NMEA0183.Rmc.IsDataValid = NTrue;
+    if (!bGPSValid)
+      m_NMEA0183.Rmc.IsDataValid = NFalse;
 
     if (gLat < 0.)
       m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, _T("S"));
@@ -602,7 +609,10 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
 
-    m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;
+    m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid)
+      m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
+
     m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
 
     m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
