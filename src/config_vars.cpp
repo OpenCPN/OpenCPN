@@ -28,7 +28,9 @@ bool g_bGarminHostUpload;
 bool g_bWplUsePosition;
 
 double g_UserVar = 0.0;
-
+int g_iDistanceFormat = 0;
+int g_iSDMMFormat = 0;
+int g_iSpeedFormat = 0;
 int g_iWindSpeedFormat = 0;
 int g_iTempFormat = 0;
 int g_maxWPNameLength;
@@ -41,6 +43,7 @@ int sat_watchdog_timeout_ticks = 12;
 wxString g_GPS_Ident;
 wxString g_hostname;
 wxString g_TalkerIdText;
+wxString g_winPluginDir;
 
 static wxConfigBase* the_base_config = 0;
 

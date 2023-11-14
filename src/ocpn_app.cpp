@@ -65,22 +65,24 @@
 #include <wx/artprov.h>
 #include <wx/aui/aui.h>
 #include <wx/clrpicker.h>
+#include <wx/cmdline.h>
 #include <wx/dialog.h>
 #include <wx/dialog.h>
 #include <wx/dir.h>
+#include <wx/display.h>
+#include <wx/dynlib.h>
 #include <wx/image.h>
 #include <wx/intl.h>
 #include <wx/ipc.h>
 #include <wx/jsonreader.h>
 #include <wx/listctrl.h>
+#include <wx/power.h>
 #include <wx/printdlg.h>
 #include <wx/print.h>
 #include <wx/progdlg.h>
 #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
-#include <wx/cmdline.h>
-#include <wx/display.h>
 
 
 #include "AboutFrameImpl.h"
@@ -268,7 +270,6 @@ wxString ChartListFileName;
 wxString AISTargetNameFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
-wxString g_winPluginDir;  // Base plugin directory on Windows.
 wxString g_csv_locn;
 wxString g_SENCPrefix;
 wxString g_UserPresLibData;
@@ -340,10 +341,6 @@ bool g_bAutoHideToolbar;
 bool g_bPermanentMOBIcon;
 bool g_bTempShowMenuBar;
 
-int g_iSDMMFormat;
-int g_iDistanceFormat;
-int g_iSpeedFormat;
-
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
@@ -362,8 +359,6 @@ int g_maxzoomin;
 // Set default color scheme
 ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
-int Usercolortable_index;
-wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
@@ -920,36 +915,36 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
-#include <wx/dynlib.h>
 
 #if wxUSE_CMDLINE_PARSER
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   //    Add some OpenCPN specific command line options
   parser.AddSwitch("h", "help", _("Show usage syntax."),
                    wxCMD_LINE_OPTION_HELP);
-  parser.AddSwitch("p", wxEmptyString, _("Run in portable mode."));
-  parser.AddSwitch("fullscreen", wxEmptyString,
+  parser.AddSwitch("p", "portable", _("Run in portable mode."));
+  parser.AddSwitch("f", "fullscreen",
                    _("Switch to full screen mode on start."));
   parser.AddSwitch(
-      "no_opengl", wxEmptyString,
+      "G", "no_opengl",
       _("Disable OpenGL video acceleration. This setting will be remembered."));
-  parser.AddSwitch("rebuild_gl_raster_cache", wxEmptyString,
+  parser.AddSwitch("g", "rebuild_gl_raster_cache",
                    _("Rebuild OpenGL raster cache on start."));
   parser.AddSwitch(
-      "parse_all_enc", wxEmptyString,
+      "P", "parse_all_enc",
       _("Convert all S-57 charts to OpenCPN's internal format on start."));
   parser.AddOption(
       "l", "loglevel",
       "Amount of logging: error, warning, message, info, debug or trace");
-  parser.AddOption("unit_test_1", wxEmptyString,
+  parser.AddOption("u", "unit_test_1",
                    _("Display a slideshow of <num> charts and then exit. Zero "
                      "or negative <num> specifies no limit."),
                    wxCMD_LINE_VAL_NUMBER);
-  parser.AddSwitch("unit_test_2");
+  parser.AddSwitch("U", "unit_test_2");
   parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
                   wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
-  parser.AddLongSwitch("unit_test_2");
-  parser.AddSwitch("safe_mode");
+  parser.AddSwitch(
+      "s", "safe_mode",
+     _("Run without plugins, opengl and other \"dangerous\" stuff"));
 }
 
 /** Parse --loglevel and set up logging, falling back to defaults. */
@@ -2141,7 +2136,6 @@ Track* MyApp::TrackOff(void) {
     return nullptr;
 }
 
-#include <wx/power.h>
 
 
 

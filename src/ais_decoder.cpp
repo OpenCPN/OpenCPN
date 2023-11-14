@@ -103,8 +103,6 @@ extern bool g_bInlandEcdis;
 extern int g_WplAction;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;

@@ -227,8 +227,6 @@ extern unsigned int g_canvasConfig;
 
 extern wxString g_CmdSoundString;
 
-extern int g_iSDMMFormat;
-
 unsigned int gs_plib_flags;
 wxString g_lastPluginMessage;
 extern ChartCanvas* g_focusCanvas;

@@ -72,7 +72,6 @@ int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
 
 BasePlatform* g_BasePlatform = 0;
-wxString g_winPluginDir;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -126,10 +125,6 @@ Select* pSelectAIS;
 
 
 // navutil_base context
-
-int g_iDistanceFormat = 0;
-int g_iSDMMFormat = 0;
-int g_iSpeedFormat = 0;
 
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);

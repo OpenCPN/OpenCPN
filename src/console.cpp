@@ -77,7 +77,6 @@ class Multiplexer;
 class Select;
 
 BasePlatform* g_BasePlatform = 0;
-wxString g_winPluginDir;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -166,11 +165,6 @@ static void InitRouteman() {
   auto RouteMgrDlgUpdateListCtrl = [&]() {};
   g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl);
 }
-
-// navutil_base context
-int g_iDistanceFormat = 0;
-int g_iSDMMFormat = 0;
-int g_iSpeedFormat = 0;
 
 namespace safe_mode {
 bool get_mode() { return false; }
