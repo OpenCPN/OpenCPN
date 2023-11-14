@@ -921,29 +921,30 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   //    Add some OpenCPN specific command line options
   parser.AddSwitch("h", "help", _("Show usage syntax."),
                    wxCMD_LINE_OPTION_HELP);
-  parser.AddSwitch("p", wxEmptyString, _("Run in portable mode."));
-  parser.AddSwitch("fullscreen", wxEmptyString,
+  parser.AddSwitch("p", "portable", _("Run in portable mode."));
+  parser.AddSwitch("f", "fullscreen",
                    _("Switch to full screen mode on start."));
   parser.AddSwitch(
-      "no_opengl", wxEmptyString,
+      "G", "no_opengl",
       _("Disable OpenGL video acceleration. This setting will be remembered."));
-  parser.AddSwitch("rebuild_gl_raster_cache", wxEmptyString,
+  parser.AddSwitch("g", "rebuild_gl_raster_cache",
                    _("Rebuild OpenGL raster cache on start."));
   parser.AddSwitch(
-      "parse_all_enc", wxEmptyString,
+      "P", "parse_all_enc",
       _("Convert all S-57 charts to OpenCPN's internal format on start."));
   parser.AddOption(
       "l", "loglevel",
       "Amount of logging: error, warning, message, info, debug or trace");
-  parser.AddOption("unit_test_1", wxEmptyString,
+  parser.AddOption("u", "unit_test_1",
                    _("Display a slideshow of <num> charts and then exit. Zero "
                      "or negative <num> specifies no limit."),
                    wxCMD_LINE_VAL_NUMBER);
-  parser.AddSwitch("unit_test_2");
+  parser.AddSwitch("U", "unit_test_2");
   parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
                   wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
-  parser.AddLongSwitch("unit_test_2");
-  parser.AddSwitch("safe_mode");
+  parser.AddSwitch(
+      "s", "safe_mode",
+     _("Run without plugins, opengl and other \"dangerous\" stuff"));
 }
 
 /** Parse --loglevel and set up logging, falling back to defaults. */
