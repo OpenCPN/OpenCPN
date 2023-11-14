@@ -219,10 +219,6 @@ extern double g_TrackDeltaDistance;
 extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
 
-extern int g_iSDMMFormat;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
-
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern int g_cm93_zoom_factor;

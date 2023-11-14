@@ -119,7 +119,6 @@ extern sigjmp_buf env;  // the context saved by sigsetjmp();
 #endif
 
 extern OCPNPlatform *g_Platform;
-extern wxString g_winPluginDir;
 extern bool g_bFirstRun;
 extern bool g_bUpgradeInProcess;
 

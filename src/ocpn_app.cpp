@@ -270,7 +270,6 @@ wxString ChartListFileName;
 wxString AISTargetNameFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
-wxString g_winPluginDir;  // Base plugin directory on Windows.
 wxString g_csv_locn;
 wxString g_SENCPrefix;
 wxString g_UserPresLibData;
@@ -341,10 +340,6 @@ bool g_bAutoHideToolbar;
 
 bool g_bPermanentMOBIcon;
 bool g_bTempShowMenuBar;
-
-int g_iSDMMFormat;
-int g_iDistanceFormat;
-int g_iSpeedFormat;
 
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
