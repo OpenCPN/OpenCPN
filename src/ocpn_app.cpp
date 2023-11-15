@@ -498,8 +498,6 @@ double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;
 double g_plus_minus_zoom_factor;
 
-int g_nCOMPortCheck = 32;
-
 bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
 

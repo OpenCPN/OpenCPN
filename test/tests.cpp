@@ -72,7 +72,6 @@ double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
-int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
 
 BasePlatform* g_BasePlatform = 0;

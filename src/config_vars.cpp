@@ -21,7 +21,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-
 #include "config_vars.h"
 
 bool g_bGarminHostUpload;
@@ -35,6 +34,7 @@ int g_iWindSpeedFormat = 0;
 int g_iTempFormat = 0;
 int g_maxWPNameLength;
 int g_NMEAAPBPrecision = 3;
+int g_nCOMPortCheck = 32;
 int g_nDepthUnitDisplay = 0;
 int g_nNMEADebug = 0;
 int gps_watchdog_timeout_ticks = 0;

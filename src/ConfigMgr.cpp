@@ -96,7 +96,6 @@ extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
-extern int g_nDepthUnitDisplay;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
@@ -128,8 +127,6 @@ extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
-
-extern int g_iWindSpeedFormat;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -261,8 +258,6 @@ extern bool g_bMagneticAPB;
 extern bool g_bShowChartBar;
 
 extern int g_MemFootMB;
-
-extern int g_nCOMPortCheck;
 
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
