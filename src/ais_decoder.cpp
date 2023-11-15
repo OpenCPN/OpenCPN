@@ -168,7 +168,7 @@ static inline double MS2KNOTS(double ms) {
   return ms * 1.9438444924406;
 }
 
-int AisMeteoNewMmsi(int, int, int, double, double);
+int AisMeteoNewMmsi(int, int, int);
 
 void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
@@ -1914,6 +1914,20 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     //  Extract the MMSI
     if (!mmsi) mmsi = strbit.GetInt(9, 30);
     long mmsi_long = mmsi;
+
+    // Ais8_001_31 (class AIS_METEO) test for a possible new mmsi ID
+    int origin_mmsi = 0;
+    int messID = strbit.GetInt(1, 6);
+    int dac = strbit.GetInt(41, 10);
+    int fi = strbit.GetInt(51, 6);
+    if (messID == 8 && dac == 001 && fi == 31) {
+      int met_lon = strbit.GetInt(57, 25);
+      int met_lat = strbit.GetInt(82, 24);
+      origin_mmsi = mmsi;
+      mmsi = AisMeteoNewMmsi(mmsi, met_lat, met_lon);
+      mmsi_long = mmsi;
+    }
+
     //  Search the current AISTargetList for an MMSI match
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
@@ -1921,36 +1935,13 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
+
+      if (origin_mmsi) {  // New mmsi allocated for a Meteo station
+        pTargetData->MMSI = mmsi;
+        pTargetData->met_data.original_mmsi = origin_mmsi;
+      }
     } else {
       pTargetData = it->second;    // find current entry
-
-      //Ais8_001_31 (class AIS_METEO) test for a possible new mmsi ID
-      int messID = strbit.GetInt(1, 6);
-      int dac = strbit.GetInt(41, 10);
-      int fi = strbit.GetInt(51, 6);
-      if (messID == 8 && dac == 001 && fi == 31) { //Ais8_001_31
-        int met_lon = strbit.GetInt(57, 25);
-        int met_lat = strbit.GetInt(82, 24);
-        //Compare message position with already present in TargetData
-        int new_mmsi = AisMeteoNewMmsi(mmsi, met_lat, met_lon, pTargetData->Lat,
-                                       pTargetData->Lon);
-        if (mmsi != new_mmsi) {
-          int origin_mmsi = mmsi;
-          mmsi = new_mmsi;
-          mmsi_long = new_mmsi;
-          pTargetData.reset();
-          it = AISTargetList.find(mmsi);
-          if (it == AISTargetList.end()) {  // not found
-            pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
-            bnewtarget = true;
-            m_n_targets++;
-            pTargetData->MMSI = mmsi;
-            pTargetData->met_data.original_mmsi = origin_mmsi;
-          } else {
-            pTargetData = it->second;
-          }
-        }
-      }
 
       if(!bnewtarget) pStaleTarget = pTargetData;  // save a pointer to stale data
     }
@@ -3284,10 +3275,10 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);
             ptd->met_data.current = bstr->GetInt(216, 8) / 10.;
             ptd->met_data.curr_dir = bstr->GetInt(224, 9);
-            ptd->met_data.wave_hight = bstr->GetInt(277, 8) / 10.;
+            ptd->met_data.wave_height = bstr->GetInt(277, 8) / 10.;
             ptd->met_data.wave_period = bstr->GetInt(285, 6);
             ptd->met_data.wave_dir = bstr->GetInt(291, 9);
-            ptd->met_data.swell_hight = bstr->GetInt(300, 8) / 10;
+            ptd->met_data.swell_height = bstr->GetInt(300, 8) / 10;
             ptd->met_data.swell_per = bstr->GetInt(308, 6);
             ptd->met_data.swell_dir = bstr->GetInt(314, 9);
             ptd->met_data.seastate = bstr->GetInt(323, 4);
@@ -4224,8 +4215,8 @@ wxString GetShipNameFromFile(int nmmsi) {
   return name;
 }
 
-int AisMeteoNewMmsi(int m_mmsi, int m_lat, int m_lon, double pt_Lat,
-                    double pt_Lon) {
+  // Assign a unique meteo mmsi related to position
+int AisMeteoNewMmsi(int m_mmsi, int m_lat, int m_lon) {
   if (m_lon & 0x01000000)  // negative?
     m_lon |= 0xFE000000;
   double lon_tentative = m_lon / 60000.;
@@ -4234,45 +4225,39 @@ int AisMeteoNewMmsi(int m_mmsi, int m_lat, int m_lon, double pt_Lat,
     m_lat |= 0xFF000000;
   double lat_tentative = m_lat / 60000.;
 
-    // Since buoys can move we set position to separate ~50 m
-    // to be able to compare previous message.
-  wxString sLON = wxString::Format("%0.3f", pt_Lon);
+    // Since buoys can move we use position precision not better
+    // than 50 m to be able to compare previous messages
   wxString slon = wxString::Format("%0.3f", lon_tentative);
-  wxString sLAT = wxString::Format("%0.3f", pt_Lat);
   wxString slat = wxString::Format("%0.3f", lat_tentative);
 
-  if (sLON.IsSameAs(slon) && sLAT.IsSameAs(slat)) {  // Same position - continue
-    return m_mmsi;
-  } else {  // Change mmsi number
-    // Some countries use one mmsi for all meteo stations.
-    // Create our own fake mmsi to separate them.
-    // 199 is INMARSAT-A MID, should not occur ever in AIS stream.
-    // 1992 to 1993 are already used so here we use 1994+
-    static int nextMeteommsi = 199400000;
-    bool found = false;
-    int new_mmsi = 0;
-
-    auto& points = AisMeteoPoints::GetInstance().GetPoints();
-
-    if (points.size()) {
-      wxString t_lat, t_lon;
-      for (const auto& point: points) {
-        // Does this station position exist
-        if (slat.IsSameAs(point.lat) &&
-            slon.IsSameAs(point.lon)) {
-          // Created before. Continue
-          new_mmsi = point.mmsi;
-          found = true;
-          break;
-        }
+  // Change mmsi number
+  // Some countries use one equal mmsi for all meteo stations.
+  // Others use the same mmsi for a meteo station and a nearby AtoN
+  // So we create our own fake mmsi to separate them.
+  // 199 is INMARSAT-A MID, should not occur ever in AIS stream.
+  // 1992 to 1993 are already used so here we use 1994+
+  static int nextMeteommsi = 199400000;
+  bool found = false;
+  int new_mmsi = 0;
+  auto& points = AisMeteoPoints::GetInstance().GetPoints();
+  if (points.size()) {
+    wxString t_lat, t_lon;
+    for (const auto& point: points) {
+      // Does this station position exist
+      if (slat.IsSameAs(point.lat) &&
+          slon.IsSameAs(point.lon)) {
+        // Created before. Continue
+        new_mmsi = point.mmsi;
+        found = true;
+        break;
       }
     }
-    if (!found) {
-      // Create a new post
-      nextMeteommsi++;
-      points.push_back(AisMeteoPoint(nextMeteommsi, slat, slon));
-      new_mmsi = nextMeteommsi;
-    }
-    return new_mmsi;
   }
+  if (!found) {
+    // Create a new post
+    nextMeteommsi++;
+    points.push_back(AisMeteoPoint(nextMeteommsi, slat, slon));
+    new_mmsi = nextMeteommsi;
+  }
+  return new_mmsi;
 }

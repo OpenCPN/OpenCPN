@@ -270,10 +270,10 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   int met_water_lev_trend = 3;
   double met_current = 25.5;
   int met_curr_dir = 360;
-  double met_wave_hight = 25.5;
+  double met_wave_height = 25.5;
   int met_wave_period = 63;
   int met_wave_dir = 360;
-  double met_swell_hight = 25.5;
+  double met_swell_height = 25.5;
   int met_swell_per = 63;
   int met_swell_dir = 360;
   int met_seastate = 13;
@@ -451,6 +451,17 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("</b></td><td>&nbsp;</td><td align=right><b>") << IMOstr
          << rowEnd << _T("</table></td></tr>");
 
+  else if (Class == AIS_METEO) {
+    MMSIstr = wxString::Format(_T("%09d"), abs(met_data.original_mmsi));
+    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
+            _T("cellspacing=0>")
+         << rowStart << _("MMSI")
+         << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
+         << _("Class") << _T("</font></td></tr>") << rowStartH << _T("<b>")
+         << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
+         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart << _T("ID: ")
+         << MMSI << rowEnd << _T("</table></td></tr>");
+  }
   else
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
             _T("cellspacing=0>")
@@ -829,7 +840,7 @@ wxString AisTargetData::BuildQueryResult(void) {
   }
 
   if (Class == AIS_METEO) {
-    if (met_data.wind_kn < 127) {
+    if (met_data.wind_kn < 126) {
       double userwindspeed = toUsrWindSpeed(met_data.wind_kn);
       wxString wspeed = wxString::Format("%.0f %s %d%c", userwindspeed, getUsrWindSpeedUnit(),
                            met_data.wind_dir, 0x00B0);
@@ -837,7 +848,7 @@ wxString AisTargetData::BuildQueryResult(void) {
       double userwindgustspeed = toUsrWindSpeed(met_data.wind_gust_kn);
       wxString wspeedGust = wxString::Format("%.0f %s %d%c", userwindgustspeed,
                            getUsrWindSpeedUnit(), met_data.wind_gust_dir, 0x00B0);
-      if (met_data.wind_gust_kn >= 127) wspeedGust = wxEmptyString;
+      if (met_data.wind_gust_kn >= 126) wspeedGust = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Wind speed")
            << _T("</font></td><td align=right><font size=-2>")
@@ -859,29 +870,29 @@ wxString AisTargetData::BuildQueryResult(void) {
 
         html << vertSpacer << rowStart << _("Water level deviation")
              << _T("</font></td><td align=right><font size=-2>")
-             << _("Current ") << _T("</font></td></tr>") << rowStartH
+             << _("Surface current ") << _T("</font></td></tr>") << rowStartH
              << _T("<b>") << level << _T("</b></td><td align=right><b>")
              << current << rowEnd;
     }
 
-    if (met_data.wave_hight < 25. || met_data.swell_hight < 25.) {
-      double userwave = toUsrDepth(met_data.wave_hight);
+    if (met_data.wave_height < 25. || met_data.swell_height < 25.) {
+      double userwave = toUsrDepth(met_data.wave_height);
         wxString wave =
             wxString::Format("%.1f %s %d%c %d %s", userwave, getUsrDepthUnit(),
                              met_data.wave_dir, 0x00B0,
                              met_data.wave_period, _("s"));
-      if (met_data.wave_hight >= 25.) wave = wxEmptyString;
+      if (met_data.wave_height >= 25.) wave = wxEmptyString;
 
-      double userswell = toUsrDepth(met_data.swell_hight);
+      double userswell = toUsrDepth(met_data.swell_height);
       wxString swell =
           wxString::Format("%.1f %s %d%c %d %s", userswell, getUsrDepthUnit(),
                            met_data.swell_dir, 0x00B0,
                            met_data.swell_per, _("s"));
-      if (met_data.swell_hight >= 25.) swell = wxEmptyString;
+      if (met_data.swell_height >= 25.) swell = wxEmptyString;
 
-      html << vertSpacer << rowStart << _("Waves hight & period")
+      html << vertSpacer << rowStart << _("Waves height & period")
            << _T("</font></td><td align=right><font size=-2>")
-           << _("Swell hight & period ")
+           << _("Swell height & period ")
            << _T("</font></td></tr>") << rowStartH << _T("<b>") << wave
            << _T("</b></td><td align=right><b>") << swell << rowEnd;
     }
@@ -1092,7 +1103,7 @@ wxString AisTargetData::GetRolloverString(void) {
            << _T(" ") << _("min");
   }
   if (Class == AIS_METEO) {
-    if (met_data.wind_kn < 127) {
+    if (met_data.wind_kn < 126) {
       if (result.Len()) result << "\n";
       int userwindspeed = toUsrWindSpeed(met_data.wind_kn);
       result << _("Wind speed");
@@ -1114,10 +1125,10 @@ wxString AisTargetData::GetRolloverString(void) {
       result << wxString::Format(": %s%.1f ", sign, met_data.current) << _("kts")
              << wxString::Format(" %d%c ", met_data.curr_dir, 0x00B0);
     }
-    if (met_data.wave_hight < 25.) {
+    if (met_data.wave_height < 25.) {
       if (result.Len()) result << "\n";
-      double userwh = toUsrDepth(met_data.wave_hight);
-      result << _("Wave high");
+      double userwh = toUsrDepth(met_data.wave_height);
+      result << _("Wave height");
       result << wxString::Format(": %.1f %s", userwh, getUsrDepthUnit()) << " "
              << _("Period") << wxString::Format(": %d ", met_data.wave_period)
              << _("s");
@@ -1242,7 +1253,7 @@ wxString AisTargetData::Get_class_string(bool b_short) {
     case AIS_APRS:
       return b_short ? _("APRS") : _("APRS Position Report");
     case AIS_METEO:
-      return b_short ? _("Meteo") : _("Meteorologic and Hydrographic");
+      return b_short ? _("Meteo") : _("Meteorologic station");
 
     default:
       return b_short ? _("Unk") : _("Unknown");
