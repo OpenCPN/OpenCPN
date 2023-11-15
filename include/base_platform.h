@@ -141,7 +141,7 @@ protected:
   OCPN_OSDetail* m_osDetail;
 
   FILE* flog;
-  wxLog* m_Oldlogger;
+  wxLog* m_old_logger;
   wxString large_log_message;
 
   wxSize m_displaySize;

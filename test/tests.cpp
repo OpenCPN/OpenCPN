@@ -116,7 +116,6 @@ Routeman* g_pRouteMan;
 
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
-wxLog* g_logger;
 AisDecoder* g_pAIS;
 Select* pSelectAIS;
 

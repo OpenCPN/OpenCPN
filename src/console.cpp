@@ -86,7 +86,6 @@ wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
-wxLog* g_logger;
 
 bool g_bAIS_ACK_Timeout;
 bool g_bAIS_CPA_Alert_Suppress_Moored;

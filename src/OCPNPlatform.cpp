@@ -216,7 +216,6 @@ extern ocpnGLOptions g_GLOptions;
 extern int g_default_font_size;
 extern wxString g_default_font_facename;
 
-wxLog *g_logger;
 bool g_bEmailCrashReport;
 extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
@@ -347,9 +346,7 @@ void catch_signals(int signo) {
 #ifdef OCPN_USE_CRASHREPORT
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
-  //  Flush log file
-  if (g_logger) g_logger->Flush();
-
+  wxLog::GetActiveTarget()->Flush();   //  Flush log file
   return CR_CB_DODEFAULT;
 }
 #endif
