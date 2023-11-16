@@ -129,9 +129,6 @@ extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
 
-extern int g_iSDMMFormat;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
 extern int g_iWindSpeedFormat;
 
 extern int g_nframewin_x;

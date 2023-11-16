@@ -189,7 +189,6 @@ extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1;
 extern bool AnchorAlertOn2;
 extern int g_nAWMax;
-extern int g_iDistanceFormat;
 
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;

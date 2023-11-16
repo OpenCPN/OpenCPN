@@ -46,6 +46,12 @@
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
 
+// Be sure to include these before ais_decoder.h
+// to avoid a conflict with rapidjson/fwd.h
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+
 #include "ais_decoder.h"
 #include "meteo_points.h"
 #include "ais_target_data.h"
@@ -57,9 +63,6 @@
 #include "multiplexer.h"
 #include "navutil_base.h"
 #include "own_ship.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 #include "route_point.h"
 #include "select.h"
 #include "SoundFactory.h"
@@ -100,8 +103,6 @@ extern bool g_bInlandEcdis;
 extern int g_WplAction;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
@@ -3792,7 +3793,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       break;  // leave the loop
     }
     //std::shared_ptr<AisTargetData> xtd(std::make_shared<AisTargetData>(*it->second));
-    auto xtd = it->second;
+    std::shared_ptr<AisTargetData> xtd = it->second;
 
     int target_posn_age = now.GetTicks() - xtd->PositionReportTicks;
     int target_static_age = now.GetTicks() - xtd->StaticReportTicks;
@@ -3898,7 +3899,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   for (unsigned int i = 0; i < remove_array.size(); i++) {
     auto itd = current_targets.find(remove_array[i]);
     if (itd != current_targets.end()) {
-      auto td = itd->second;
+      std::shared_ptr<AisTargetData> td = itd->second;
       current_targets.erase(itd);
       //delete td;
     }
@@ -3934,7 +3935,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     std::shared_ptr<AisTargetData> palert_target_dsc = NULL;
 
     for (it = current_targets.begin(); it != current_targets.end(); ++it) {
-      auto td = it->second;
+      std::shared_ptr<AisTargetData> td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {

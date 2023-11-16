@@ -134,7 +134,6 @@ extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
 extern BasePlatform* g_BasePlatform;
-extern wxString g_winPluginDir;
 extern void* g_pi_manager;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;

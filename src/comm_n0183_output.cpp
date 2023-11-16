@@ -51,6 +51,7 @@
 #include "nmea_ctx_factory.h"
 #include "route.h"
 #include "nmea_log.h"
+#include "pluginmanager.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -145,8 +146,9 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log) {
     }
   }
   // Send to plugins
-  // FIXME (dave)
-  //  if (g_pi_manager) g_pi_manager->SendNMEASentenceToAllPlugIns(msg);
+#ifndef CLIAPP
+  PlugInManager::SendNMEASentenceToAllPlugIns(msg);
+#endif
 }
 
 std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
@@ -159,6 +161,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
 
   int baud = 0;
   wxString comx;
+  bool bGarmin = false;
   if (com_name.Lower().StartsWith("serial")) {
     comx = com_name.AfterFirst(':');  // strip "Serial:"
     comx =
@@ -173,6 +176,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       if (drv_serial_n0183) {
         params_save = drv_serial_n0183->GetParams();
         baud = params_save.Baudrate;
+        bGarmin = params_save.Garmin;
       }
       registry.Deactivate(old_driver);
 
@@ -186,6 +190,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     cp.Type = SERIAL;
     cp.SetPortStr(comx);
     cp.Baudrate = baud;
+    //cp.Garmin = bGarmin;
     cp.IOSelect = DS_TYPE_OUTPUT;
 
     driver = MakeCommDriver(&cp);
@@ -327,12 +332,49 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
 
-  driver = CreateOutputConnection(com_name, params_save, btempStream,
-                                  b_restoreStream, dlg_ctx);
-  if (!driver) return 1;
+  // Find any existing(i.e. open) serial com port with the same name,
+  // and query its parameters.
+  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
+  bool is_garmin_serial = false;
+  std::shared_ptr<AbstractCommDriver> existing_driver;
+  std::shared_ptr<CommDriverN0183Serial> drv_serial_n0183;
+
+  if (com_name.Lower().StartsWith("serial")) {
+      wxString comx;
+      comx = com_name.AfterFirst(':');  // strip "Serial:"
+      comx = comx.BeforeFirst(
+          ' ');  // strip off any description provided by Windows
+      existing_driver = FindDriver(drivers, comx.ToStdString());
+      wxLogDebug("Looking for old stream %s", com_name);
+
+      if (existing_driver) {
+        drv_serial_n0183 =
+            std::dynamic_pointer_cast<CommDriverN0183Serial>(existing_driver);
+        if (drv_serial_n0183) {
+          is_garmin_serial = drv_serial_n0183->GetParams().Garmin;
+         }
+      }
+  }
+
+  //  Special case for Garmin serial driver that is currently active
+  //  We shall deactivate the current driver, and allow the self-contained
+  //  Garmin stack to handle the object upload
+  //  Also, save the driver's state, and mark for re-activation
+
+  if (is_garmin_serial) {
+      params_save = drv_serial_n0183->GetParams();
+      b_restoreStream = true;
+      drv_serial_n0183->Close();    // Fast close
+      registry.Deactivate(drv_serial_n0183);
+  }
+  else {
+      driver = CreateOutputConnection(com_name, params_save, btempStream,
+                                      b_restoreStream, dlg_ctx);
+      if (!driver)
+        return 1;
+  }
 
   auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
-  auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
 
 #if 0
 
@@ -398,7 +440,15 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     wxString short_com = com_name.Mid(7);
     // Initialize the Garmin receiver, build required Jeeps internal data
     // structures
-    int v_init = Garmin_GPS_Init(short_com);
+    // Retry 5 times, 1 sec cycle
+    int n_try = 5;
+    int v_init;
+    while (n_try) {
+      v_init = Garmin_GPS_Init(short_com);
+      if (v_init >= 0) break;
+      n_try--;
+      wxMilliSleep(1000);
+    }
     if (v_init < 0) {
       MESSAGE_LOG << "Garmin GPS could not be initialized on port: "
                   << short_com << " Error Code: " << v_init
@@ -407,7 +457,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       ret_val = ERR_GARMIN_INITIALIZE;
       goto ret_point;
     } else {
-      MESSAGE_LOG << "Sent Route to Garmin GPS on port: " << short_com
+      MESSAGE_LOG << "Sendig Route to Garmin GPS on port: " << short_com
                   << "Unit identifies as: " << Garmin_GPS_GetSaveString();
     }
 
@@ -434,7 +484,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 #endif  // USE_GARMINHOST
 
 #if 1
+
   {
+    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
@@ -810,22 +862,57 @@ ret_point_1:
 int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
                             Multiplexer& multiplexer, N0183DlgCtx dlg_ctx) {
   int ret_val = 0;
-
   ConnectionParams params_save;
   bool b_restoreStream = false;
   bool btempStream = false;
   std::shared_ptr<AbstractCommDriver> driver;
   auto& registry = CommDriverRegistry::GetInstance();
 
-  driver = CreateOutputConnection(com_name, params_save, btempStream,
-                                  b_restoreStream, dlg_ctx);
-  if (!driver) return 1;
+  // Find any existing(i.e. open) serial com port with the same name,
+  // and query its parameters.
+  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
+  bool is_garmin_serial = false;
+  std::shared_ptr<AbstractCommDriver> existing_driver;
+  std::shared_ptr<CommDriverN0183Serial> drv_serial_n0183;
+
+  if (com_name.Lower().StartsWith("serial")) {
+    wxString comx;
+    comx = com_name.AfterFirst(':');  // strip "Serial:"
+    comx = comx.BeforeFirst(
+        ' ');  // strip off any description provided by Windows
+    existing_driver = FindDriver(drivers, comx.ToStdString());
+    wxLogDebug("Looking for old stream %s", com_name);
+
+    if (existing_driver) {
+        drv_serial_n0183 =
+            std::dynamic_pointer_cast<CommDriverN0183Serial>(existing_driver);
+        if (drv_serial_n0183) {
+          is_garmin_serial = drv_serial_n0183->GetParams().Garmin;
+        }
+    }
+  }
+
+  //  Special case for Garmin serial driver that is currently active
+  //  We shall deactivate the current driver, and allow the self-contained
+  //  Garmin stack to handle the object upload
+  //  Also, save the driver's state, and mark for re-activation
+
+  if (is_garmin_serial) {
+    params_save = drv_serial_n0183->GetParams();
+    b_restoreStream = true;
+    drv_serial_n0183->Close();    // Fast close
+    registry.Deactivate(drv_serial_n0183);
+  }
+  else {
+    driver = CreateOutputConnection(com_name, params_save, btempStream,
+                                    b_restoreStream, dlg_ctx);
+    if (!driver)
+        return 1;
+  }
 
   auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
-  auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
 
 #ifdef USE_GARMINHOST
-  // FIXME (dave)
 #ifdef __WXMSW__
   if (com_name.Upper().Matches("*GARMIN*"))  // Garmin USB Mode
   {
@@ -876,7 +963,15 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     wxString short_com = com_name.Mid(7);
     // Initialize the Garmin receiver, build required Jeeps internal data
     // structures
-    int v_init = Garmin_GPS_Init(short_com);
+    // Retry 5 times, 1 sec cycle
+    int n_try = 5;
+    int v_init;
+    while (n_try) {
+        v_init = Garmin_GPS_Init(short_com);
+        if (v_init >= 0) break;
+        n_try--;
+        wxMilliSleep(1000);
+    }
     if (v_init < 0) {
       MESSAGE_LOG << "Garmin GPS could not be initialized on port: " << com_name
                   << " Error Code: " << v_init
@@ -885,7 +980,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
       ret_val = ERR_GARMIN_INITIALIZE;
       goto ret_point;
     } else {
-      MESSAGE_LOG << "Sent waypoint(s) to Garmin GPS on port: " << com_name;
+      MESSAGE_LOG << "Sending waypoint(s) to Garmin GPS on port: " << com_name;
       MESSAGE_LOG << "Unit identifies as: " << Garmin_GPS_GetSaveString();
     }
 
@@ -907,7 +1002,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 #endif  // USE_GARMINHOST
 
   {     // Standard NMEA mode
-
+    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = "EC";

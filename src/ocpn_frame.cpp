@@ -320,8 +320,6 @@ extern std::vector<OcpnSound *> bells_sound;
 extern char bells_sound_file_name[2][12];
 extern int g_sticky_chart;
 extern int g_sticky_projection;
-extern int Usercolortable_index;
-extern wxArrayPtrVoid *UserColorTableArray;
 extern wxArrayPtrVoid *UserColourHashTableArray;
 extern wxColorHashMap *pcurrent_user_color_hash;
 
@@ -394,6 +392,8 @@ DWORD color_inactiveborder;
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
+
+static wxArrayPtrVoid *UserColorTableArray = 0;
 
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
@@ -660,9 +660,7 @@ static void onBellsFinishedCB(void *ptr) {
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
-    : wxFrame(frame, -1, title, pos, size,
-              style)  // wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
-      // wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
+    : wxFrame(frame, -1, title, pos, size, style)
       {
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
@@ -1015,7 +1013,7 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
   g_StyleManager->GetCurrentStyle()->SetColorScheme(cs);
 
   // Search the user color table array to find the proper hash table
-  Usercolortable_index = 0;
+  unsigned Usercolortable_index = 0;
   for (unsigned int i = 0; i < UserColorTableArray->GetCount(); i++) {
     colTable *ct = (colTable *)UserColorTableArray->Item(i);
     if (SchemeName.IsSameAs(*ct->tableName)) {
@@ -1883,6 +1881,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   wxTheApp->OnExit();
 #endif
 #endif
+  wxTheApp->ExitMainLoop();
 }
 
 void MyFrame::OnMove(wxMoveEvent &event) {
@@ -5078,11 +5077,18 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
   if (gSog > 3.0) g_bCruising = true;
 
 
-  //      Maintain the validity flags
+//      Maintain the GPS position validity flag
+//      Determined by source validity of RMC, GGA, GLL (N0183)
+//        or PGNs 129029, 129025 (N2K)
+//      Positions by sK and AIVDO are assumed valid
   m_b_new_data = true;
   bool last_bGPSValid = bGPSValid;
-  if ((msg->vflag && POS_UPDATE) == POS_UPDATE)
-    bGPSValid = true;
+  if ((msg->vflag & POS_UPDATE) == POS_UPDATE) {
+    if ((msg->vflag & POS_VALID) == POS_VALID)
+      bGPSValid = true;
+    else
+      bGPSValid = false;
+  }
   if (last_bGPSValid != bGPSValid)
     UpdateGPSCompassStatusBoxes(true);
 
@@ -7561,8 +7567,8 @@ void InitializeUserColors(void) {
 }
 
 void DeInitializeUserColors(void) {
-  unsigned int i;
-  for (i = 0; i < UserColorTableArray->GetCount(); i++) {
+  if (!UserColorTableArray) return;
+  for (unsigned i = 0; i < UserColorTableArray->GetCount(); i++) {
     colTable *ct = (colTable *)UserColorTableArray->Item(i);
 
     for (unsigned int j = 0; j < ct->color->GetCount(); j++) {
@@ -7578,7 +7584,7 @@ void DeInitializeUserColors(void) {
 
   delete UserColorTableArray;
 
-  for (i = 0; i < UserColourHashTableArray->GetCount(); i++) {
+  for (unsigned i = 0; i < UserColourHashTableArray->GetCount(); i++) {
     wxColorHashMap *phash = (wxColorHashMap *)UserColourHashTableArray->Item(i);
     delete phash;
   }

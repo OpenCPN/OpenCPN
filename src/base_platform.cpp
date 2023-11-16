@@ -57,6 +57,7 @@
 
 #include "base_platform.h"
 #include "cmdline.h"
+#include "config_vars.h"
 #include "logger.h"
 #include "ocpn_utils.h"
 #include "ocpn_plugin.h"
@@ -81,7 +82,6 @@ static const char* const DEFAULT_XDG_DATA_DIRS =
 
 void appendOSDirSlash(wxString* pString);
 
-extern wxString g_winPluginDir;
 
 extern bool g_btouch;
 extern float g_selection_radius_mm;

@@ -58,6 +58,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "base_platform.h"
 #include "catalog_handler.h"
 #include "catalog_parser.h"
+#include "config_vars.h"
 #include "cmdline.h"
 #include "config.h"
 #include "downloader.h"
@@ -81,7 +82,6 @@ static std::string SEP("/");
 #endif
 
 extern BasePlatform* g_BasePlatform;
-extern wxString g_winPluginDir;
 extern MyConfig* pConfig;
 
 extern wxString g_compatOS;

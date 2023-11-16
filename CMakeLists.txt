@@ -3296,3 +3296,5 @@ if (QT_ANDROID)
 
     add_definitions(-DMG_ENABLE_OPENSSL)
 endif (QT_ANDROID)
+
+add_custom_target(print-model-files COMMAND cmake -E echo ${MODEL_SRC})
