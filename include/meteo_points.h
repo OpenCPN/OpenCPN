@@ -47,10 +47,10 @@
   int water_lev_trend;  // NAN = 3
   double current;       // kn NAN = 255(25.5)
   int curr_dir;         // NAN = 360
-  double wave_hight;    // m NAN=255(25.5)
+  double wave_height;   // m NAN=255(25.5)
   int wave_period;      // s NAN = 63
   int wave_dir;         // NAN = 360
-  double swell_hight;   // m NAN = 255 (25.5)
+  double swell_height;  // m NAN = 255 (25.5)
   int swell_per;        // s NAN = 63
   int swell_dir;        // NAN=360
   int seastate;         // Bf NAN=13
@@ -60,8 +60,9 @@
   int ice;              // NAN=3
 };
 
-
-
+ /**
+ * Add a new point to the list of Meteo stations
+ */
 class AisMeteoPoint {
 public:
   const int mmsi;
@@ -76,8 +77,8 @@ public:
  * List of Meteo stations, a singleton.
  * Since several nations have chose not to use individual mmsi ID
  * for each station but the same for all we need to separate them
- * by its position. Every station is allocated a unik fake ID.
- * This list collect them and is used to identify each update to whom it belongs.
+ * by its position. Every station is allocated a unique Meteo ID.
+ * This list collect them and is used to destine each update to whom it belongs.
  */
 class AisMeteoPoints {
 public:
