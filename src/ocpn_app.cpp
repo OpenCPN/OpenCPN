@@ -635,7 +635,7 @@ AboutFrameImpl *g_pAboutDlg;
 about *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
-wxLocale *plocale_def_lang;
+wxLocale *plocale_def_lang = 0;
 #endif
 
 wxString g_locale;
@@ -2093,7 +2093,7 @@ void RestoreSystemColors(void);
 #endif
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
-  delete plocale_def_lang;
+  if (plocale_def_lang) delete plocale_def_lang;
 #endif
 
   FontMgr::Shutdown();
