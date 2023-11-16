@@ -187,6 +187,36 @@ extern int ShowNavWarning();
 
 static void UpdatePositionCalculatedSogCog();
 
+const char* const kUsage =
+R"""(Usage:
+  opencpn -h | --help
+  opencpn [-p] [-f] [-G] [-g] [-P] [-l <str>] [-u <num>] [-U] [-s] [GPX file ...]
+  opencpn --remote [-R] | -q] | -e] |-o <str>]
+
+Options for starting opencpn
+  -p, --portable               	Run in portable mode.
+  -f, --fullscreen             	Switch to full screen mode on start.
+  -G, --no_opengl              	Disable OpenGL video acceleration. This setting will
+                                be remembered.
+  -g, --rebuild_gl_raster_cache	Rebuild OpenGL raster cache on start.
+  -P, --parse_all_enc          	Convert all S-57 charts to OpenCPN's internal format on start.
+  -l, --loglevel=<str>         	Amount of logging: error, warning, message, info, debug or trace
+  -u, --unit_test_1=<num>      	Display a slideshow of <num> charts and then exit.
+                                Zero or negative <num> specifies no limit.
+  -U, --unit_test_2
+  -s, --safe_mode              	Run without plugins, opengl and other "dangerous" stuff
+
+Options manipulating already started opencpn
+  -r, --remote                 	Execute commands on already running instance
+  -R, --raise                  	Make running OpenCPN visible if hidden
+  -q, --quit                   	Terminate already running opencpn
+  -e, --get_rest_endpoint      	Print rest server endpoint and exit.
+  -o, --open=<GPX file>         Open file in running opencpn
+
+Arguments:
+  GPX  file                     GPX-formatted file with waypoints or routes.
+)""";
+
 
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
@@ -896,12 +926,12 @@ bool MyApp::OpenFile(const std::string& path) {
     std::string s(_("Cannot load route or waypoint file: "));
     s += std::string("\"") + path + "\"";
     wxMessageBox(s, "OpenCPN", wxICON_WARNING | wxOK);
-    return false; 
+    return false;
   }
 
   int wpt_dups;
   // Import with full vizibility of names and objects
-  nav_objects.LoadAllGPXObjects(!nav_objects.IsOpenCPN(), wpt_dups, true); 
+  nav_objects.LoadAllGPXObjects(!nav_objects.IsOpenCPN(), wpt_dups, true);
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateLists();
@@ -914,42 +944,25 @@ bool MyApp::OpenFile(const std::string& path) {
 
 
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
-  //    Add some OpenCPN specific command line options
-  parser.AddSwitch("h", "help", _("Show usage syntax."),
-                   wxCMD_LINE_OPTION_HELP);
-  parser.AddSwitch("p", "portable", _("Run in portable mode."));
-  parser.AddSwitch("f", "fullscreen",
-                   _("Switch to full screen mode on start."));
-  parser.AddSwitch(
-      "G", "no_opengl",
-      _("Disable OpenGL video acceleration. This setting will be remembered."));
-  parser.AddSwitch("g", "rebuild_gl_raster_cache",
-                   _("Rebuild OpenGL raster cache on start."));
-  parser.AddSwitch(
-      "P", "parse_all_enc",
-      _("Convert all S-57 charts to OpenCPN's internal format on start."));
-  parser.AddOption(
-      "l", "loglevel",
-      "Amount of logging: error, warning, message, info, debug or trace");
-  parser.AddOption("u", "unit_test_1",
-                   _("Display a slideshow of <num> charts and then exit. Zero "
-                     "or negative <num> specifies no limit."),
-                   wxCMD_LINE_VAL_NUMBER);
+  // Add OpenCPN specific command line options. Help message
+  // is hardcoded in kUsage;
+  parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
+  parser.AddSwitch("p", "portable");
+  parser.AddSwitch("f", "fullscreen");
+  parser.AddSwitch( "G", "no_opengl");
+  parser.AddSwitch("g", "rebuild_gl_raster_cache");
+  parser.AddSwitch( "P", "parse_all_enc");
+  parser.AddOption( "l", "loglevel");
+  parser.AddOption("u", "unit_test_1", "", wxCMD_LINE_VAL_NUMBER);
   parser.AddSwitch("U", "unit_test_2");
   parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
                   wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
-  parser.AddSwitch(
-      "s", "safe_mode",
-     _("Run without plugins, opengl and other \"dangerous\" stuff"));
-  parser.AddSwitch("r", "remote",
-                   _("Execute commands on already running instance"));
-  parser.AddSwitch("R", "raise", _("Make OpenCPN visible if hidden"));
-  parser.AddSwitch("q", "quit",
-                   _("Terminate a remote instance (requires -r)"));
-  parser.AddSwitch("e", "get_rest_endpoint",
-                   _("Print rest server endpoint and exit (requires -r)"));
-  parser.AddOption("o", "open", _("Open GPX route(s) or waypoint file(s)"),
-                   wxCMD_LINE_VAL_STRING,
+  parser.AddSwitch("s", "safe_mode");
+  parser.AddSwitch("r", "remote");
+  parser.AddSwitch("R", "raise");
+  parser.AddSwitch("q", "quit");
+  parser.AddSwitch("e", "get_rest_endpoint");
+  parser.AddOption("o", "open", "", wxCMD_LINE_VAL_STRING,
                    wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
 }
 
@@ -970,6 +983,11 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
   wxLog::SetLogLevel(level);
 }
 
+bool MyApp::OnCmdLineHelp(wxCmdLineParser& parser) {
+  std::cout << kUsage;
+  return false;
+}
+
 bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   long number;
   wxString repo;
@@ -988,23 +1006,40 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   safe_mode::set_mode(parser.Found("safe_mode"));
   ParseLoglevel(parser);
 
-  bool has_options = false;
-  static const std::vector<std::string> kOptions = {
+  bool has_start_options = false;
+  static const std::vector<std::string> kStartOptions = {
     "unit_test_2", "p", "fullscreen", "no_opengl", "rebuild_gl_raster_cache",
     "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
-  for (const auto& opt : kOptions) {
-    if (parser.Found(opt)) has_options = true;
+  for (const auto& opt : kStartOptions) {
+    if (parser.Found(opt)) has_start_options = true;
   }
-
-  for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
-    g_params.push_back(parser.GetParam(paramNr).ToStdString());
+  if (has_start_options && parser.Found("remote")) {
+    std::cerr << "this option is not compatible with --remote\n";
+    return false;
+  }
 
   // Instantiate the global OCPNPlatform class
   g_Platform = new OCPNPlatform;
   g_BasePlatform = g_Platform;
 
-  wxString optarg; 
-  if (parser.Found("raise"))
+  bool has_remote_options = false;
+  static const std::vector<std::string> kRemoteOptions = {
+    "raise", "quit", "open", "get_rest_endpoint"};
+  for (const auto& opt : kRemoteOptions) {
+    if (parser.Found(opt)) has_remote_options = true;
+  }
+  if (has_remote_options && ! parser.Found("remote")) {
+    std::cerr << "This option requires --remote\n";
+    return false;
+  }
+
+  for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
+    g_params.push_back(parser.GetParam(paramNr).ToStdString());
+
+  wxString optarg;
+  if (!parser.Found("remote"))
+    m_parsed_cmdline = ParsedCmdline();
+  else if (parser.Found("raise"))
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
   else if (parser.Found("quit"))
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Quit);
@@ -1016,7 +1051,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   else if (parser.GetParamCount() == 1)
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
                                      parser.GetParam(0).ToStdString());
-  else if (!has_options) {
+  else if (!has_start_options && !has_remote_options) {
     // Neither arguments nor options
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
   }
@@ -1106,14 +1141,20 @@ bool MyApp::OnInit() {
     instance_chk.WaitUntilValid();
     if (instance_chk.IsMainInstance()) {
       // Server is created on first call to GetInstance()
-      auto& server = LocalServerApi::GetInstance();
+      if (m_parsed_cmdline.action == CmdlineAction::Skip) {
+        auto& server = LocalServerApi::GetInstance();
+      } else {
+        std::cerr << "No remote opencpn found. Giving up.\n";
+        m_exitcode = 1;
+        return true;
+      }
     } else {
-      std::unique_ptr<LocalClientApi> client; 
+      std::unique_ptr<LocalClientApi> client;
       try {
         client = LocalClientApi::GetClient();
       } catch (LocalApiException& ie) {
-	std::cerr << "Ipc client exception: " << ie.str() << "\n" << std::flush;
-        // If we get here it means that the instance_chk found another 
+        std::cerr << "Ipc client exception: " << ie.str() << "\n" << std::flush;
+        // If we get here it means that the instance_chk found another
         // running instance. But that instance is for some reason not
         // reachable. The safe thing to do is delete the lockfile and exit.
         // Next start  will proceed normally. This may leave a zombie OpenCPN,
@@ -1124,7 +1165,7 @@ bool MyApp::OnInit() {
                      "OpenCPN", wxICON_INFORMATION | wxOK);
         m_exitcode = 2;
         return true;  // main program quiet exit.
-      } 
+      }
       if (client) {
         auto result =
           client->HandleCmdline(m_parsed_cmdline.action, m_parsed_cmdline.arg);

@@ -50,6 +50,7 @@ public:
   bool OnInit() override;
   int OnExit() override;
   void OnInitCmdLine(wxCmdLineParser& parser) override;
+  bool OnCmdLineHelp(wxCmdLineParser& parser) override;
   bool OnCmdLineParsed(wxCmdLineParser& parser) override;
   virtual int OnRun() override;
 
