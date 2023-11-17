@@ -63,7 +63,10 @@ class OcpnSound
          * Setting a non-null callback forces use of asynchronous mode.
          * Using a default, 0 argument restores to synchronous mode.
          *
-         * NOTE: Callback might be invoked in a interrupt or thread context,
+         * Deleting a pointer owning the OcpnSound object in the callback is
+         * not supported.
+         *
+         * NOTE: Callback might be invoked in an interrupt or thread context,
          * avoid anything which might block (I/O, memory allocation etc.).
          */
         virtual void SetFinishedCallback(AudioDoneCallback cb = 0,

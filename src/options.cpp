@@ -87,6 +87,7 @@
 #include "multiplexer.h"
 #include "navutil_base.h"
 #include "navutil.h"
+#include "observable_evtvar.h"
 #include "observable_globvar.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
@@ -4676,6 +4677,11 @@ public:
     wxButton* SelSound;
     wxButton* TestSound;
 
+    /** Notified with a OCPN_Sound* pointer when sound has completed. */
+    EventVar m_on_sound_done;
+
+    ObsListener m_sound_done_listener;
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -4762,6 +4768,11 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
         wxDefaultPosition, m_small_button_size, 0);
   soundSizer1->Add(TestSound, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
+  auto sound_action = [] (ObservedEvt ev) {
+    auto sound = static_cast<OcpnSound*>(ev.GetClientData());
+    delete sound;
+  };
+  m_sound_done_listener.Init(m_on_sound_done, sound_action);
 
 }
 
@@ -4834,7 +4845,8 @@ void OCPNSoundPanel::OnButtonTestSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
   auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
-  sound->SetFinishedCallback([sound](void*) { delete sound; });
+  sound->SetFinishedCallback(
+          [&](void* snd) { m_on_sound_done.Notify(snd); });
   sound->Load(m_sound_file, g_iSoundDeviceIndex);
   sound->Play();
 }
