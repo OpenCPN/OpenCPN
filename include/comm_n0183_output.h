@@ -32,6 +32,7 @@
 
 #include "nmea_log.h"
 #include "multiplexer.h"
+#include "observable_evtvar.h"
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -44,7 +45,8 @@ class Route;
 #define ERR_GARMIN_INITIALIZE -1
 #define ERR_GARMIN_GENERAL -2
 
-void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log);
+void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
+                              EventVar& on_msg_sent);
 
 class N0183DlgCtx {
 public:
@@ -59,6 +61,7 @@ public:
         pulse([](void) {}),
         set_message([](const std::string&) {}) {}
 };
+
 
 int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
                          bool bsend_waypoints, Multiplexer& multiplexer,

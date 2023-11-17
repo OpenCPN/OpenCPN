@@ -308,6 +308,8 @@ private:
   ObservableListener m_listener_N0183_all;
   ObservableListener m_listener_SignalK;
 
+  ObsListener m_on_msg_sent_listener;
+
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);
 

@@ -51,7 +51,6 @@
 #include "nmea_ctx_factory.h"
 #include "route.h"
 #include "nmea_log.h"
-#include "pluginmanager.h"
 
 #ifdef USE_GARMINHOST
 #include "garmin_wrapper.h"
@@ -93,7 +92,8 @@ void LogBroadcastOutputMessageColor(const wxString& msg,
   }
 }
 
-void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log) {
+void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
+                              EventVar& on_msg_sent) {
   auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers =
       registry.GetDrivers();
@@ -146,9 +146,7 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log) {
     }
   }
   // Send to plugins
-#ifndef CLIAPP
-  PlugInManager::SendNMEASentenceToAllPlugIns(msg);
-#endif
+  on_msg_sent.Notify(msg.ToStdString());
 }
 
 std::shared_ptr<AbstractCommDriver> CreateOutputConnection(

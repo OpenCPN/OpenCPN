@@ -949,6 +949,9 @@ PlugInManager::PlugInManager(MyFrame* parent) {
 
   HandlePluginLoaderEvents();
   InitCommListeners();
+  auto msg_sent_action = [](ObservedEvt ev) {
+    SendNMEASentenceToAllPlugIns(ev.GetString()); };
+  m_on_msg_sent_listener.Init(g_pRouteMan->on_message_sent, msg_sent_action);
 }
 PlugInManager::~PlugInManager() {
 #if !defined(__ANDROID__) && defined(OCPN_USE_CURL)

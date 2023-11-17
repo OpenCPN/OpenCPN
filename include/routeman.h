@@ -152,6 +152,9 @@ public:
   /** Notified with a shared_ptr<ActiveLegDat>, leg info to all plugins.  */
   EventVar json_leg_info;
 
+  /** Notified when a message available as GetString() is sent to garmin. */
+  EventVar  on_message_sent;
+
 private:
 
   Route *pActiveRoute;
@@ -188,6 +191,8 @@ private:
   struct RoutePropDlgCtx m_prop_dlg_ctx;
   std::function<void()> m_route_mgr_dlg_update_list_ctrl;
   NmeaLog& m_nmea_log;
+
+  ObsListener msg_sent_listener;
 };
 
 //----------------------------------------------------------------------------
