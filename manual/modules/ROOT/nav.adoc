@@ -7,6 +7,7 @@
 ** xref:mac-osx.adoc[MacOS]
 * xref:odraw-messaging.adoc[Odraw Messaging]
 * xref:plugin-messaging.adoc[New Message Plugin API]
+* xref:gui-model.adoc[Model - Gui code organization]
 * xref:comm-overview.adoc[Communication Overview]
 * xref:code-formatting.adoc[Code Formatting]
 * xref:user-interface-styling.adoc[User Interface Styling]

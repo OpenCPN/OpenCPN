@@ -1,0 +1,188 @@
+= GUI - model code organization
+
+In the time of writing the core OpenCPN codebase consists of more than
+300000 lines. A code base this large requires some kind of organization.
+
+The traditional way to organize GUI applications like OpenCPN is the 
+Model - View - Controller (MVC) pattern.
+However, for various reasons OpenCPN does not follow this.
+Instead, a late push has been done to split the code into two pieces
+named Model and Gui where Model indeed corresponds to the MVC "Model"
+while Gui corresponds to the MVC "View" and "Controller" parts.
+
+The overall picture thus becomes:
+
+       ┌──────────────────────────────────┐
+       │     Gui (View + Controller)      │
+       └──────────────────────────────────┘           
+       
+       ┌──────────────────────────────────┐
+       │            Model                 │
+       └──────────────────────────────────┘
+
+In the traditional layered software approach this means:
+
+1. Code in the GUI can call any code, be it in Gui or Model.
+2. Code in the Model can only call the Model; it can not call the GUI
+
+Violating these rules typically leads to linker errors when linking
+the tests and/or opencpn-cmd targets.
+
+Typical Model parts are communication drivers, databases like 
+routes and configuration data, various datatypes, plugin loading, 
+etc.
+Having these in a model part means that they can be updated, tested
+and used without paying attention to the Gui as long as the interface
+is kept stable.
+This considerably simplifies code maintenance.
+
+
+
+== Definition of the Gui and Model parts
+
+At the time of writing, the Model is defined by the variable MODEL_SRC
+in the top level CMakeLists.txt.
+Remaining source file makes up the Gui.
+Work to make this more visible is likely to be done, for example
+by creating separate subdirectories like src/gui and src/model instead
+of a single src/ directory.
+
+== Model -> Gui communication.
+
+From time to time Model code still needs to invoke the Gui. 
+One example could be a communication driver which needs some user data
+which should be retrieved using a dialog box. 
+Another example could be that the same driver needs to send a message
+to all plugins using the BroadcastToAllPlugins() method which currently
+resides in the Gui. 
+There are three possible ways to handle this.
+
+1. Refactor the code so that the called method is moved to a Model component.
+2. Send an asynchronous signal to the Gui without and feedback.
+3. Use a callback.
+
+Of these, moving the code to the Model is generally a good thing if feasible.
+However, things like a dialog just cannot be moved, it will always have
+Gui dependencies.
+
+Otherwise, sending a signal is the simplest solution.
+It should be used when possible. 
+The basic limitation is that this is an asynchronous fire-and-forget approach,
+the model will not get anything back from the Gui.
+
+If sending a signal does not fit the bill, a callback should be used.
+This is synchronous, and the Model can get a return value from the Gui
+
+== Using signals
+
+Sending signals is done using an ```EventVar```.
+This is declared in the _observable_evtvar.h_ header file.
+
+The Model part defines and signals to the EventVar. 
+The declaration is done in the header:
+   
+    #include "observable_evtvar.h"
+    class ModelClass {
+    public:
+      /** Notified on SomeChange with a strinng available in GetString(). */
+      EventVar some_change;
+
+Note the comment, an ```EventVar``` without a comment is hard to track down. 
+
+In the implementation file:
+
+    void ModelClass::SomeMethod() {
+      ....
+      some_change;.Notify("this happened");
+      ...
+    }
+
+There are many overloads for ```Notify()``` which could be used to carry not only
+strings but also pointers, int/bool, etc.
+
+This is basically it from the Model perspective. 
+One more more Gui component could listen to SomeChange, but this does not
+affect ModelClass.
+
+The Gui performs the listening. 
+First, in the header declare an ObsListener
+
+    #include "model_class.h"
+
+    class GuiClassn {
+      ...
+    private:
+      ObsListener some_change_listener;
+    }
+
+
+And then, typically in the constructor, set up the listening in the 
+implementation .cpp file:
+
+    void GuiClass::GuiClass(ModelClass& model_class) {
+      auto action = [&](ObservedEvt ev) {
+        wxString s = ev.GetString();
+        do something useful
+      }
+      some_change_listener.Init(model_class.some_change, action);
+
+Here, GuiClass obviously needs to have access to an instance of ModelClass to 
+be able to listen to it.
+In our case this is often a global variable, but this varies and could be more
+or less complicated.
+
+== Using a callback
+
+To use a callback, the model part defines it in a header, where there also 
+is a accessor for the Gui to set it. 
+The example assumes the function takes a string argument and returns a bool.
+This is just an example, the signature could be anything.
+
+    #include <functional>
+    ...
+    class ModelClass {
+    public:
+      ModelClass::ModelClass() ;
+      void SetCallback(std::function<bool(const std::string&)> cb) {
+        m_callback = cb;
+      }
+    private:
+      std::function<bool(const std::string&)> m_callback;
+    }
+
+In the implementation .cpp file we first ensure that m_callback always have
+a defined, default value which basically does nothing without
+crashing 
+
+    ModelClass::ModelClass() 
+            : m_callback([](const std::string) { return false; }) {
+      ...
+    }
+
+It is now possible to invoke the callback and get the result from the
+Gui (assuming that ```SetCallback()``` has been called):
+
+    ModelClass::SomeFunction() {
+      ...
+      bool result = m_callback("foo");
+      ...
+    }
+
+In the Gui the callback is set, typically using a lambda in the 
+constructor like
+
+    #include "model_class.h"
+    ...
+    GuiClass::GuiClass(ModelClass& model_class) {
+      ...
+      model_class.SetCallback([&](const std::string& s) {
+        do something with s;
+        return true or false;
+      });
+
+And that's it. The model can now effectively call a function in the Gui
+without any knowledge of it.
+This upholds the basic promise that the model is not linked to the Gui
+in any way.
+ 
+  
