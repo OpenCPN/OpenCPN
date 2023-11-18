@@ -10,6 +10,17 @@
 # variable to use the respective SDK version.
 export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
 
+# URL of the repository to download the dependency bundle from
+export DEPS_BUNDLE_REPO="${DEPS_BUNDLE_REPO:-https://dl.cloudsmith.io/public/nohal/opencpn-plugins/raw/files}"
+# Name of the bundle
+export DEPS_BUNDLE_FILE="${DEPS_BUNDLE_FILE:-macos_deps_universal.tar.xz}"
+# Where to unpack the bundle
+export DEPS_BUNDLE_DEST="${DEPS_BUNDLE_DEST:-/usr/local}"
+# What architecture(s) to build for
+export ARCHS="${ARCHS:-arm64;x86_64}"
+# Release component of the resulting package name
+export RELEASE="${RELEASE:-universal}"
+
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
@@ -52,12 +63,12 @@ fi
 # Note: For local builds it is completely OK to build against any other version of wxWidgets 3.2,
 # for example installed from Homebrew, just keep in mind that such products should not be distributed
 # as they will cause interoperability problems with plugins
-if [ ! -f /tmp/macos_deps_universal.tar.xz ]; then
+if [ ! -f /tmp/${DEPS_BUNDLE_FILE} ]; then
     # Download only if we do not have the archive yet
-    curl -k -o /tmp/macos_deps_universal.tar.xz \
-        https://dl.cloudsmith.io/public/nohal/opencpn-plugins/raw/files/macos_deps_universal.tar.xz
+    curl -k -o /tmp/${DEPS_BUNDLE_FILE} ${DEPS_BUNDLE_REPO}/${DEPS_BUNDLE_FILE}
 fi
-sudo tar -C /usr/local -xJf /tmp/macos_deps_universal.tar.xz
+sudo mkdir -p ${DEPS_BUNDLE_DEST}
+sudo tar -C ${DEPS_BUNDLE_DEST} -xJf /tmp/${DEPS_BUNDLE_FILE}
 
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
@@ -70,12 +81,17 @@ test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
 cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_VERBOSE=ON \
   -DOCPN_USE_LIBCPP=ON \
-  -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
-  -DOCPN_RELEASE=universal \
+  -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
+  -DOCPN_RELEASE=${RELEASE} \
   -DOCPN_BUILD_TEST=OFF \
   -DOCPN_USE_DEPS_BUNDLE=ON \
-  -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+  -DCMAKE_OSX_ARCHITECTURES="${ARCHS}" \
+  -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
+  -DOCPN_DEPS_BUNDLE_PATH=${DEPS_BUNDLE_DEST} \
+  -DwxWidgets_CONFIG_EXECUTABLE=${DEPS_BUNDLE_DEST}/lib/wx/config/osx_cocoa-unicode-3.2 \
+  -DwxWidgets_CONFIG_OPTIONS="--prefix=${DEPS_BUNDLE_DEST}" \
   ..
+
 # Compile OpenCPN
 make -sj$(sysctl -n hw.physicalcpu)
 # Create the package artifacts
