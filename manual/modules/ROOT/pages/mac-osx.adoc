@@ -1,9 +1,10 @@
 = Compiling on macOS
 
-The official OpenCPN packages are currently built only for x86 platform and run using Rosetta emulation layer on Apple Silicon machines.
-The bellow instructions concentrate on the official x86 build, but should be mostly valid on ARM based systems as well.
+The official OpenCPN packages are currently built as universal binaries and run natively on both Intel and Apple Silicon machines.
 
 == The fast track
+
+This process will allow building single architecture binaries which are NOT compatible with the official OpenCPN packages and plugin built for them, but does not do modifications to the environment that might cause you problems while building other software. Such a setup is perfectly good for OpenCPN development.
 
 - Install Xcode and the Command Line Tools for Xcode from the Apple Developer website (https://developer.apple.com/download/all/)
 - Install Homebrew (https://brew.sh)
@@ -16,9 +17,8 @@ The bellow instructions concentrate on the official x86 build, but should be mos
 This process is continuously tested by the OpenCPN automatic builds, so it is known to work.
 The `generic-build-macos.sh` is extensively commented, it's strongly recommended to use it as reference while
 creating a build environment manually.
-Note that the official OpenCPN builds for macOS are x86-only and native arm64 builds, while technically possible,
-are not tested at all and are not possible using the wxWidgets binary dependencies the script downloads and deploys.
-Still even on Apple Silicon based machines the build logic is exactly identical so the logic of the script may be followed.
+
+Note that the official OpenCPN builds for macOS are created using a slightly different process implemented in `universal-build-macos.sh` to be repeatable, compatible with older macOS systems and to be able to produce universal binaries running natively on both Apple Silicon and Intel hardware. This process requires special set of dependencies that may conflict with other libraries on your system and you do not need it unless you intend to distribute your build product or use it with plugins from other developers available through the plugin manager.
 
 == Development environment, detailed instructions
 
