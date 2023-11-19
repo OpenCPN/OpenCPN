@@ -58,7 +58,7 @@ resides in the Gui.
 There are three possible ways to handle this.
 
 1. Refactor the code so that the called method is moved to a Model component.
-2. Send an asynchronous signal to the Gui without and feedback.
+2. Send an asynchronous signal to the Gui without any feedback.
 3. Use a callback.
 
 Of these, moving the code to the Model is generally a good thing if feasible.
