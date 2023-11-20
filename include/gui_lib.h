@@ -59,7 +59,7 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class TimedMessageBox : wxEvtHandler {
+class TimedMessageBox : public wxEvtHandler {
 public:
   TimedMessageBox(wxWindow* parent, const wxString& message,
                   const wxString& caption = _T("Message box"),
