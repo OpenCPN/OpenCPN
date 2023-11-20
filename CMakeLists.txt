@@ -379,16 +379,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.9)
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif ()
 endif ()
-
-message(STATUS "Default compiler options:")
-message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
-message(STATUS "CMAKE_CXX_FLAGS_MINSIZEREL: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
-message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
-message(
-  STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
-)
-
 # ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
 # TODO: Should we use  -fno-stack-protector IF NOT DEBUGGING CFLAGS="-O2
 # -march=native"
@@ -403,8 +393,11 @@ if (NOT WIN32 AND NOT APPLE)
       "-Wno-deprecated-declarations"
     )
   endif ()
-  if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_compile_options("-O0")
+  if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+      string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0")
+      add_compile_options("-O0")
+    endif ()
   endif ()
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
@@ -510,6 +503,16 @@ if (QT_ANDROID)
 
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif (QT_ANDROID)
+
+message(STATUS "Final compiler options:")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CMAKE_CXX_FLAGS_MINSIZEREL: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
+message(
+  STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+)
+
 
 
 #
