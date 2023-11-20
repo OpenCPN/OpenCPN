@@ -330,7 +330,7 @@ include(GetArch)
 getarch()
 message(STATUS "*** Host Build Architecture is ${ARCH}")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
 if (NOT MSVC)
   set(OBJ_VISIBILITY "-fvisibility=hidden")
