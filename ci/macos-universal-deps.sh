@@ -24,14 +24,14 @@ opus_version="1.4"
 blake2_version="0.98.1"
 zstd_version="1.5.5"
 libarchive_version="3.7.2"
-mpg123_version="1.32.1"
+mpg123_version="1.32.3"
 lame_version="3.100"
 libsndfile_version="1.2.2"
 libusb_version="1.0.26"
-openssl_version="3.0.11"
-wx_version="3.2.3"
+openssl_version="3.0.12"
+wx_version="3.2.4"
 
-macos_deployment_target="10.15"
+macos_deployment_target="10.13"
 
 mkdir -p "${cache_dir}"
 
@@ -236,7 +236,7 @@ rm -rf libarchive-${libarchive_version}
 
 #MPG123
 if [ ! -f mpg123-${mpg123_version}.tar.bz2 ]; then
-  wget https://downloads.sourceforge.net/project/mpg123/mpg123//mpg123-${mpg123_version}.tar.bz2
+  wget https://downloads.sourceforge.net/project/mpg123/mpg123/${mpg123_version}/mpg123-${mpg123_version}.tar.bz2
 fi
 tar xJf mpg123-${mpg123_version}.tar.bz2
 cd mpg123-${mpg123_version}
