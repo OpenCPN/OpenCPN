@@ -83,7 +83,7 @@ set "OCPN_Dir=%CD%"
 set "wxDIR=%OCPN_DIR%\cache\buildwxWidgets"
 set "wxWidgets_ROOT_DIR=%wxDIR%"
 set "wxWidgets_LIB_DIR=%wxDIR%\lib\vc_dll"
-set "wxVER=3.2.3"
+set "wxVER=3.2.4"
 if [%VisualStudioVersion%]==[16.0] (^
   set VCver=16
   set "VCstr=Visual Studio 16"
@@ -173,16 +173,18 @@ if not exist "%OCPN_DIR%\build" (^
 ::-------------------------------------------------------------
 if [%ocpn_rebuild%]==[1] (
   @echo Beginning rebuild cleanout
-  set folder=Release
-  call :backup
-  set folder=RelWithDebInfo
-  call :backup
-  set folder=Debug
-  call :backup
-  set folder=MinSizeRel
-  call :backup
-  set folder=
-  @echo Backup complete
+  if exist "%OCPN_DIR%\build" (
+    set folder=Release
+    call :backup
+    set folder=RelWithDebInfo
+    call :backup
+    set folder=Debug
+    call :backup
+    set folder=MinSizeRel
+    call :backup
+    set folder=
+    @echo Backup complete
+  )
   if exist "%OCPN_DIR%\build\Release" rmdir /s /q "%OCPN_DIR%\build\Release"
   if exist "%OCPN_DIR%\build\Release" @echo Could not remove "%OCPN_DIR%\build\Release" folder
   if exist "%OCPN_DIR%\build\RelWithDebInfo" rmdir /s /q "%OCPN_DIR%\build\RelWithDebInfo"
@@ -193,6 +195,8 @@ if [%ocpn_rebuild%]==[1] (
   if exist "%OCPN_DIR%\build\MinSizeRel" @echo Could not remove "%OCPN_DIR%\build\MinSizeRel" folder
   if exist "%OCPN_DIR%\build\CMakeFiles" rmdir /s /q "%OCPN_DIR%\build\CMakeFiles"
   if exist "%OCPN_DIR%\build\CMakeFiles" @echo Could not remove "%OCPN_DIR%\build\CMakeFiles" folder
+  if exist "%OCPN_DIR%\build\CMakeCache.txt" del "%OCPN_DIR%\build\CMakeCache.txt"
+  if exist "%OCPN_DIR%\build\CMakeCache.txt" @echo Could not remove "%OCPN_DIR%\build\CMakeCache.txt"
   if exist "%OCPN_DIR%\build\.vs" rmdir /s /q "%OCPN_DIR%\build\.vs"
   if exist "%OCPN_DIR%\build\.vs" (
 	@echo Could not remove "%OCPN_DIR%\build\.vs" folder
@@ -215,17 +219,18 @@ if [%ocpn_clean%]==[1] (
   @echo [101;93mThe --clean option requires an internet connection.[0m
   choice /C YN /T 10 /M "Remove entire build folder including downloaded tools? [yN]" /D N
   if ERRORLEVEL==2  goto :usage
-:clean
-  set folder=Release
-  call :backup
-  set folder=RelWithDebInfo
-  call :backup
-  set folder=Debug
-  call :backup
-  set folder=MinSizeRel
-  call :backup
-  set folder=
-  @echo Backup complete
+  if exist "%OCPN_DIR%\build" (
+    set folder=Release
+    call :backup
+    set folder=RelWithDebInfo
+    call :backup
+    set folder=Debug
+    call :backup
+    set folder=MinSizeRel
+    call :backup
+    set folder=
+    @echo Backup complete
+  )
   if exist "%OCPN_DIR%\build" rmdir /s /q "%OCPN_DIR%\build"
   if exist "%OCPN_DIR%\build" (
     @echo Could not remove "%OCPN_DIR%\build" folder
@@ -466,6 +471,7 @@ goto :EOF
 :config_build
 cmake -A Win32 -G "%VCstr%" ^
   -DCMAKE_GENERATOR_PLATFORM=Win32 ^
+  -DCMAKE_BUILD_TYPE=%build_type% ^
   -DwxWidgets_LIB_DIR="%wxWidgets_LIB_DIR%" ^
   -DwxWidgets_ROOT_DIR="%wxWidgets_ROOT_DIR%" ^
   -DCMAKE_CXX_FLAGS="/MP /EHsc /DWIN32" ^
@@ -477,9 +483,31 @@ cmake -A Win32 -G "%VCstr%" ^
   -DOCPN_BUNDLE_GSHHS:BOOL=ON ^
   -DOCPN_BUNDLE_TCDATA:BOOL=ON ^
   -DOCPN_BUNDLE_DOCS:BOOL=ON ^
+  -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=OFF ^
+  -DOCPN_ENABLE_PORTAUDIO:BOOL=OFF ^
   -DCMAKE_INSTALL_PREFIX="%CD%\%build_type%" ^
   ..
-if errorlevel 1 goto :cmakeErr
+if errorlevel 1 (
+  cmake -A Win32 -G "%VCstr%" --debug-find ^
+    -DCMAKE_GENERATOR_PLATFORM=Win32 ^
+    -DCMAKE_BUILD_TYPE=%build_type% ^
+    -DwxWidgets_LIB_DIR="%wxWidgets_LIB_DIR%" ^
+    -DwxWidgets_ROOT_DIR="%wxWidgets_ROOT_DIR%" ^
+    -DCMAKE_CXX_FLAGS="/MP /EHsc /DWIN32" ^
+    -DCMAKE_C_FLAGS="/MP" ^
+    -DOCPN_CI_BUILD:BOOL=OFF ^
+    -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
+    -DOCPN_BUNDLE_WXDLLS:BOOL=ON ^
+    -DOCPN_BUILD_TEST:BOOL=OFF ^
+    -DOCPN_BUNDLE_GSHHS:BOOL=ON ^
+    -DOCPN_BUNDLE_TCDATA:BOOL=ON ^
+    -DOCPN_BUNDLE_DOCS:BOOL=ON ^
+    -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=OFF ^
+    -DOCPN_ENABLE_PORTAUDIO:BOOL=OFF ^
+    -DCMAKE_INSTALL_PREFIX="%CD%\%build_type%" ^
+    ..
+  if errorlevel 1 goto :cmakeErr
+)
 msbuild /noLogo /v:m /m -p:Configuration=%build_type%;Platform=Win32 ^
 /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
 INSTALL.vcxproj
