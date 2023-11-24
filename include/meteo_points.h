@@ -34,7 +34,7 @@
   int minute;           // UTC 60
   int pos_acc;          // low = 0 GNSS
   int wind_kn;          // NAN=127
-  int wind_gust_kn;     // kn NAN=127
+  int wind_gust_kn;     // kn NAN=127/122
   int wind_dir;         // NAN=360
   int wind_gust_dir;    // NAN=360
   double air_temp;      // C NAN = -102.4
@@ -43,11 +43,12 @@
   int airpress;         // value+799 hPa NAN = 511(1310)
   int airpress_tend;    // NAN = 3
   double hor_vis;       // NAN = 127(12.7)
-  double water_level;   // m Water level(incl.tide) NAN = 4001
+  double water_lev_dev; // Water level deviation (incl.tide) NAN = 30
+  double water_level;   // Water level NAN = -32,768
   int water_lev_trend;  // NAN = 3
   double current;       // kn NAN = 255(25.5)
   int curr_dir;         // NAN = 360
-  double wave_height;   // m NAN=255(25.5)
+  double wave_height;   // m NAN=255(24.5)
   int wave_period;      // s NAN = 63
   int wave_dir;         // NAN = 360
   double swell_height;  // m NAN = 255 (25.5)
@@ -56,7 +57,7 @@
   int seastate;         // Bf NAN=13
   double water_temp;    // C NAN = 501(50.1)
   int precipitation;    // type NAN=7
-  double salinity;      // ‰ NAN=510(51.0)
+  double salinity;      // ‰ NAN=510(50.0)
   int ice;              // NAN=3
 };
 
@@ -68,9 +69,10 @@ public:
   const int mmsi;
   const wxString lat;
   const wxString lon;
+  const int siteID;
   AisMeteoPoint(int mmsi, const wxString& lat,
-                const wxString& lon) :
-   mmsi(mmsi), lat(lat), lon(lon) {}
+                const wxString& lon, int siteID) :
+   mmsi(mmsi), lat(lat), lon(lon), siteID(siteID) {}
 };
 
 /**
