@@ -64,12 +64,19 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <string>
 #include <thread>
 #include <unordered_map>
+
+#if defined(__GNUC__) && (__GNUC__ < 8)
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
 
 #include <wx/event.h>
 #include <wx/string.h>
@@ -201,7 +208,7 @@ public:
 
   virtual ~RestServer();
 
-  bool StartServer(std::filesystem::path certificate_location);
+  bool StartServer(fs::path certificate_location);
   void StopServer();
 
   void UpdateReturnStatus(RestServerResult r);
@@ -209,7 +216,6 @@ public:
 
   void UpdateRouteMgr() { m_dlg_ctx.update_route_mgr(); }
 
-  std::string GetCertificateDirectory() { return m_certificate_directory; }
   std::string m_cert_file;
   std::string m_key_file;
 
@@ -242,7 +248,6 @@ private:
     std::atomic_int run_flag;
     RestServer& m_parent;
     std::string m_server_ip;
-    std::thread m_thread;
   };
 
   /**
@@ -254,7 +259,6 @@ private:
     static Apikeys Parse(const std::string& s);
     std::string ToString() const;
   };
-
 
   bool LoadConfig(void);
   bool SaveConfig(void);

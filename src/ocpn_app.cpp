@@ -40,9 +40,16 @@
 #endif
 
 #include <algorithm>
-#include <filesystem>
 #include <limits.h>
 #include <memory>
+
+#if defined(__GNUC__) && (__GNUC__ < 8)
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
 
 #ifdef __WXMSW__
 #include <math.h>
@@ -1980,7 +1987,7 @@ bool MyApp::OnInit() {
 
     make_certificate(ipAddr, data_dir.ToStdString());
 
-    m_RESTserver.StartServer(std::filesystem::path(data_dir.ToStdString()));
+    m_RESTserver.StartServer(fs::path(data_dir.ToStdString()));
 
     StartMDNSService(g_hostname.ToStdString(),
                      "opencpn-object-control-service", 8000);

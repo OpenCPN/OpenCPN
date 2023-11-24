@@ -465,6 +465,10 @@ if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
   add_definitions(-DPSAPI_VERSION=1)
+  # https://developercommunity.visualstudio.com
+  # /t/error-c2872-byte-ambiguous-symbol/93889
+  # https://shorturl.at/hmJSZ
+  add_definitions(-D_HAS_STD_BYTE=0)
 endif (MSVC)
 
 if (MSVC)
@@ -504,6 +508,9 @@ if (QT_ANDROID)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif (QT_ANDROID)
 
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+  link_libraries(stdc++fs )
+endif ()
 message(STATUS "Final compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
