@@ -950,6 +950,7 @@ set(
   include/options.h
   include/own_ship.h
   include/piano.h
+  include/pincode.h
   include/plugin_cache.h
   include/plugin_blacklist.h
   include/plugin_handler.h
@@ -1061,6 +1062,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
+  ${CMAKE_SOURCE_DIR}/src/pincode.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
@@ -3228,6 +3230,7 @@ if (NOT QT_ANDROID)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE pico_sha2)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::rapidjson)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)
