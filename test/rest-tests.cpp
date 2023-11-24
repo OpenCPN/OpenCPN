@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <thread>
@@ -20,10 +19,18 @@
 #include "mDNS_query.h"
 #include "observable_confvar.h"
 #include "ocpn_types.h"
+#include "ocpn_utils.h"
 #include "rest_server.h"
 #include "routeman.h"
 
+#if defined(__GNUC__) && __GNUC__ == 7
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
 namespace fs = std::filesystem;
+#endif
+
 using namespace std::chrono_literals;
 
 extern WayPointman* pWayPointMan;
@@ -102,6 +109,30 @@ protected:
     }
   }
 };
+
+class RestServer404App : public RestServerApp {
+public:
+  RestServer404App(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
+      : RestServerApp(ctx, route_ctx, portable) {}
+
+protected: 
+  void Work() {
+    auto path = fs::path(CMAKE_BINARY_DIR) / "curl-result";
+   
+    std::stringstream ss;
+    ss << CURLPROG << " --insecure --max-time 10 -I -o " << path 
+      << " https://localhost:8443/api/pong";
+    system(ss.str().c_str());
+    std::this_thread::sleep_for(50ms);
+    ProcessPendingEvents();
+    std::ifstream f(path.string());
+    std::string result;
+    std::getline(f, result);
+    auto words = ocpn::split(result.c_str(), " ");
+    EXPECT_EQ(words[1], "404");  // ok
+  }
+};
+
 
 class RestServerObjectApp : public RestServerApp {
 public:
@@ -253,6 +284,7 @@ protected:
     }
   }
 };
+#ifndef FLATPAK
 
 TEST(RestServer, start_stop) {
   wxInitializer initializer;
@@ -272,6 +304,16 @@ TEST(RestServer, Ping) {
   RestServerPingApp app(dialog_ctx, route_ctx, g_portable);
   app.Run();
 };
+
+TEST(RestServer, Pong) {
+  wxInitializer initializer;
+  ConfigSetup();
+  RestServerDlgCtx dialog_ctx;
+  RouteCtx route_ctx;
+  RestServer404App app(dialog_ctx, route_ctx, g_portable);
+  app.Run();
+};
+
 
 TEST(RestServer, Object) {
   wxInitializer initializer;
@@ -301,3 +343,5 @@ TEST(RestServer, CheckWrite) {
   RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
   app.Run();
 }
+
+#endif        // FLATPAK

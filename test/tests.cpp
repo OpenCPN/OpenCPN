@@ -9,6 +9,7 @@
 
 #include <wx/event.h>
 #include <wx/app.h>
+#include <wx/fileconf.h>
 #include <wx/jsonval.h>
 
 #include <gtest/gtest.h>
@@ -356,9 +357,8 @@ class GuernseyApp : public wxAppConsole {
 public:
   GuernseyApp(vector<string>& log) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
-    string path("..");
-    path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP +
-            "Guernesey-1659560590623.input.txt";
+    string path(TESTDATA);
+    path += kSEP + "Guernesey-1659560590623.input.txt";
     auto driver = make_shared<FileCommDriver>("test-output.txt", path, msgbus);
     listener.Listen(Nmea0183Msg("GPGLL"), this, EVT_FOO);
     Bind(EVT_FOO, [&log](ObservedEvt ev) {
@@ -378,8 +378,8 @@ public:
   PriorityApp(string inputfile) : wxAppConsole() {
     ConfigSetup();
     auto& msgbus = NavMsgBus::GetInstance();
-    string path("..");
-    path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP + inputfile;
+    std::string path(TESTDATA);
+    path += kSEP + inputfile;
     auto driver = make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
     CommBridge comm_bridge;
     comm_bridge.Initialize();
