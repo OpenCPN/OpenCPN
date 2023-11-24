@@ -57,15 +57,13 @@ public:
     // Handle buggy make_certificate:
     make_certificate(local_address, dirpath.string() + "/");
     m_rest_server.StartServer(dirpath.string());
-    Work() ;
+    Work();
     ProcessPendingEvents();
     m_rest_server.StopServer();
   }
 
 protected:
   virtual void Work() { std::this_thread::sleep_for(50ms); }
-
-protected:
   RestServer m_rest_server;
 };
 
@@ -94,7 +92,6 @@ protected:
       ss << CURLPROG << " --insecure -o " << path
         << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey="
         << key << "\"";
-std::cout << "running cmd: " << ss.str() <<  "\n";
       system(ss.str().c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -128,8 +125,7 @@ protected:
       std::string result;
       std::getline(f, result);
       EXPECT_EQ(result, "{\"result\": 5}");   // New pin required
-    }
-    {
+    } {
       // Try to transfer using api key set up above.
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
@@ -137,7 +133,6 @@ protected:
           << outpath <<  " -H \"Content-Type: text/xml\""
           << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
           << "&apikey=" << key << "\"";
-
       system(ss.str().c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -145,8 +140,7 @@ protected:
       std::string result;
       std::getline(f, result);
       EXPECT_EQ(result, "{\"result\": 0}");     // Ok
-    }
-    {
+    } {
       // Set "find duplicate guid" callback to return true;
       m_rest_server.m_route_ctx.find_route_by_guid = [](wxString guid) {
         auto r = new Route;
@@ -165,7 +159,6 @@ protected:
           << outpath <<  " -H \"Content-Type: text/xml\""
           << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
           << "&apikey=" << key << "\"";
-
       system(ss.str().c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -173,8 +166,7 @@ protected:
       std::string result;
       std::getline(f, result);
       EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate rejected
-    }
-    {
+    } {
       // Try to transfer same object using argument force
       std::stringstream ss;
       auto key = m_rest_server.m_key_map["1.2.3.4"];
@@ -183,7 +175,6 @@ protected:
           << " \"https://localhost:8443/api/rx_object?source=1.2.3.4"
           << "&force=1&apikey=" << key << "\"";
       system(ss.str().c_str());
-std::cout << "Running cmd: " << ss.str() << "\n";
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
       std::ifstream f(outpath.string());
@@ -193,6 +184,7 @@ std::cout << "Running cmd: " << ss.str() << "\n";
     }
   }
 };
+
 class RestCheckWriteApp : public RestServerApp {
 public:
   RestCheckWriteApp(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
@@ -202,19 +194,17 @@ protected:
 
   void Work() override {
 
-
     auto datapath = fs::path(TESTDATA) / "foo.gpx";
     auto outpath = fs::path(CMAKE_BINARY_DIR) / "curl-result";
     {
       std::stringstream ss;
-      auto key = m_rest_server.m_key_map["1.2.3.4"];
       ss << CURLPROG << " --insecure --silent --data @" << datapath << " -o "
         << outpath <<  " -H \"Content-Type: text/xml\""
         << " \"https://localhost:8443/api/writable?source=1.2.3.4"
-        << "&apikey=" << key
+        << "&apikey=" << "foobar"
         << "&guid=6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
 
-      // Try check our standard object, bad api key
+    // Try check our standard object, bad api key
     std::cout << "Running command; " << ss.str() << "\n";
       system(ss.str().c_str());
       std::this_thread::sleep_for(50ms);
@@ -222,21 +212,16 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");     // Ok
-    }
-    {
-      auto key = m_rest_server.m_key_map["1.2.3.4"];
+      EXPECT_EQ(result, "{\"result\": 5}");     // New pin required
+    } {
       // Try check our standard object, fix the api key
-      key = m_rest_server.m_key_map["1.2.3.4"];
+      auto key = m_rest_server.m_key_map["1.2.3.4"];
       std::stringstream  ss;
-      ss.clear();
       ss << CURLPROG << " --insecure --silent --data @" << datapath << " -o "
         << outpath <<  " -H \"Content-Type: text/xml\""
         << " \"https://localhost:8443/api/writable?source=1.2.3.4"
         << "&apikey=" << key
         << "&guid=6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
-      ProcessPendingEvents();
-std::cout << "Running command; " << ss.str() << "\n";
       system(ss.str().c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -244,25 +229,20 @@ std::cout << "Running command; " << ss.str() << "\n";
       std::string result;
       std::getline(f, result);
       EXPECT_EQ(result, "{\"result\": 0}");     // Ok
-    }
-
-    {
-        // Set "find duplicate guid" callback to return true;
+    } {
+      // Set "find duplicate guid" callback to return true;
       m_rest_server.m_route_ctx.find_route_by_guid = [](wxString guid) {
         auto r = new Route;
         r->m_GUID = guid;
         return r;
       };
       auto key = m_rest_server.m_key_map["1.2.3.4"];
- std::cout << "USing key: " << key << "\n";
       std::stringstream  ss;
       ss << CURLPROG << " --insecure --silent --data @" << datapath << " -o "
         << outpath <<  " -H \"Content-Type: text/xml\""
         << " \"https://localhost:8443/api/writable?source=1.2.3.4"
         << "&apikey=" << key
         << "&guid=apikey6a76a7e6-dc39-4a7d-964e-1eff3462c06c\"";
-std::cout << "Running apikey command; " << ss.str() << "\n";
-       ProcessPendingEvents();
       system(ss.str().c_str());
       std::this_thread::sleep_for(50ms);
       ProcessPendingEvents();
@@ -273,6 +253,7 @@ std::cout << "Running apikey command; " << ss.str() << "\n";
     }
   }
 };
+
 TEST(RestServer, start_stop) {
   wxInitializer initializer;
   ConfigSetup();
