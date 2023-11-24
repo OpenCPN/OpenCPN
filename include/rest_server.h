@@ -1,11 +1,7 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+
+ /***************************************************************************
+ *   Copyright (C) 2022 David Register                                     *
+ *   Copyright (C) 2022-2023  Alec Leamas                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +18,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
 /**
  * \file
  *
@@ -30,28 +27,28 @@
  * Supports the following endpoints:
  *
  *   GET /api/ping?api_key=<pincode>&source=<ip address>
- *   Basic ping check, verifies api_key i. e., the pairing.
- *   Parameters:
- *     See below
- *   Returns
- *     {"result": <code>}
+ *       Basic ping check, verifies api_key i. e., the pairing.
+ *         Parameters:
+ *           See below
+ *         Returns
+ *           {"result": <code>}
  *
  *   POST /api/rx_object?api_key=<pincode>&source=<ip address>&force=1
- *   Upload a GPX route, track or waypoints. Parameters:
- *     - source=<ip> Mandatory, origin ip address or hostname
- *     - force=<1> if present, the host object is unconditionally
- *       updated. If not, host may run a "OK to overwrite" dialog.
- *     - api_key=<key> Mandatory, as obtained when pairing, see below.
- *   Body:
- *     xml-encoded GPX data for one or more route(s), track(s) and/or
- *     waypoint(s)
- *   Returns:
- *     {"result": <code>}
+ *       Upload a GPX route, track or waypoints. Parameters:
+ *         - source=<ip> Mandatory, origin ip address or hostname
+ *         - force=<1> if present, the host object is unconditionally
+ *           updated. If not, host may run a "OK to overwrite" dialog.
+ *         - api_key=<key> Mandatory, as obtained when pairing, see below.
+ *       Body:
+ *         xml-encoded GPX data for one or more route(s), track(s) and/or
+ *         waypoint(s)
+ *       Returns:
+ *         {"result": <code>}
  *
  *   GET /api/writable?guid=<guid>
- *     Check if route or waypoint with given is writable.
+ *       Check if route or waypoint with given is writable.
  *   Returns
- *     {"result": <code>}
+ *       {"result": <code>}
  *
  * Authentication uses a pairing mechanism. When an unpaired device
  * tries to connect, the API generates a random pincode which is
@@ -80,10 +77,11 @@
 
 
 #include "pugixml.hpp"
+#include "pincode.h"
 #include "route.h"
 #include "track.h"
 
-/** Return codes from HandleServerMessage. */
+/** Return codes from HandleServerMessage and eventually in the http response */
 enum class RestServerResult {
   NoError = 0,
   GenericError,
@@ -129,6 +127,7 @@ private:
       : cmd(c), api_key(key), source(src), force(_force), payload(_payload) {}
 };
 
+/** Return hash code for numeric pin value. */
 std::string PintoRandomKeyString(int dpin);
 
 /** Abstract base class visible in callbacks. */
@@ -144,8 +143,8 @@ public:
 
 /** Returned status from  RunAcceptObjectDlg. */
 struct AcceptObjectDlgResult {
-  int status;         ///< return value from ShowModal()
-  bool check1_value;  ///< As of GetCheck1Value()
+  const int status;         ///< return value from ShowModal()
+  const bool check1_value;  ///< As of GetCheck1Value()
 
   AcceptObjectDlgResult() : status(0), check1_value(false) {}
   AcceptObjectDlgResult(int s, bool b) : status(s), check1_value(b) {}
@@ -221,7 +220,7 @@ public:
   std::condition_variable return_status_condition;
 
   /** Binary exit synchronization, released when io thread exits. */
-  wxSemaphore m_exit_sync;
+  wxSemaphore m_exit_sem;
 
 private:
   class IoThread {
@@ -276,13 +275,13 @@ private:
   std::string m_certificate_directory;
   Apikeys m_key_map;
   PinDialog* m_pin_dialog;
-  wxString m_pin;
-  int m_dpin;
+
   bool m_overwrite;
   std::string m_upload_path;
   std::ofstream m_ul_stream;
   std::thread m_thread;
   IoThread m_io_thread;
+  Pincode m_pincode;
 };
 
 #endif  // guard

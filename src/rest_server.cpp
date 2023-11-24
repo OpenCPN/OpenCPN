@@ -1,11 +1,7 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement RESTful server.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+
+ /**************************************************************************
+ *   Copyright (C) 2022 David Register                                     *
+ *   Copyright (C) 2022-2023  Alec Leamas                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +18,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file Implement rest_server.h */
 
 #include <memory>
 #include <mutex>
@@ -53,20 +51,8 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
 
-static unsigned long long PINtoRandomKey(int dpin) {
-  using namespace std;
-  linear_congruential_engine<unsigned long long, 48271, 0, 0xFFFFFFFFFFFFFFFF>
-      engine;
-  engine.seed(dpin);
-  unsigned long long r = engine();
-  return r;
-}
-
 std::string PintoRandomKeyString(int dpin) {
-  unsigned long long pin = PINtoRandomKey(dpin);
-  char buffer[100];
-  snprintf(buffer, sizeof(buffer) - 1, "%0llX", pin);
-  return std::string(buffer);
+  return Pincode::IntToHash(dpin);
 }
 
 /** Extract a HTTP variable from query string. */
@@ -206,13 +192,13 @@ void RestServer::IoThread::Run() {
   while (run_flag > 0) mg_mgr_poll(&mgr, 200);  // Infinite event loop
   mg_mgr_free(&mgr);
   run_flag = -1;
-  m_parent.m_exit_sync.Post();
+  m_parent.m_exit_sem.Post();
 }
 
 void RestServer::IoThread::Stop() { run_flag = 0; }
 
 bool RestServer::IoThread::WaitUntilStopped() {
-  auto r = m_parent.m_exit_sync.WaitTimeout(10000);
+  auto r = m_parent.m_exit_sem.WaitTimeout(10000);
   if (r != wxSEMA_NO_ERROR) {
     WARNING_LOG << "Semaphore error: " << r;
   }
@@ -231,13 +217,13 @@ RestServer::Apikeys RestServer::Apikeys::Parse(const std::string& s) {
   }
   return  apikeys;
 }
+
 std::string RestServer::Apikeys::ToString() const {
   std::stringstream ss;
   for (const auto& it : *this)
     ss << it.first << ":" << it.second << ";";
   return ss.str();
 }
-
 
 void RestServer::UpdateReturnStatus(RestServerResult result) {
   {
@@ -248,11 +234,12 @@ void RestServer::UpdateReturnStatus(RestServerResult result) {
 }
 
 RestServer::RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
-    : m_exit_sync(0, 1),
+    : m_exit_sem(0, 1),
       m_dlg_ctx(ctx),
       m_route_ctx(route_ctx),
       m_pin_dialog(0),
-      m_io_thread(*this, portable ? kHttpsPortableAddr : kHttpsAddr) {
+      m_io_thread(*this, portable ? kHttpsPortableAddr : kHttpsAddr),
+      m_pincode(Pincode::Create()) {
   // Prepare the wxEventHandler to accept events from the io thread
   Bind(REST_IO_EVT, &RestServer::HandleServerMessage, this);
 }
@@ -276,7 +263,6 @@ bool RestServer::StartServer(fs::path certificate_location) {
 
 void RestServer::StopServer() {
   wxLogMessage(wxString::Format("Stopping REST service"));
-
   //  Kill off the IO Thread if alive
   if (m_thread.joinable()) {
     wxLogMessage("Stopping io thread");
@@ -287,9 +273,7 @@ void RestServer::StopServer() {
 }
 
 bool RestServer::LoadConfig(void) {
-
   TheBaseConfig()->SetPath("/Settings/RestServer");
-
   wxString key_string;
   TheBaseConfig()->Read("ServerKeys", &key_string);
   m_key_map = Apikeys::Parse(key_string.ToStdString());
@@ -306,23 +290,13 @@ bool RestServer::SaveConfig(void) {
 }
 
 bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
-  // Look up the api key in the hash map.
-  std::string api_found;
-  for (auto it : m_key_map) {
-    if (it.first == evt_data.source && it.second == evt_data.api_key) {
-      api_found = it.second;
-      break;
-    }
+  // Look up the api key in the hash map. If found, we are done.
+  if (m_key_map.find(evt_data.source) != m_key_map.end()) {
+     if (m_key_map[evt_data.source] == evt_data.api_key) return true;
   }
-  if (api_found.size()) {
-    return true;
-  }
-  // Need a new PIN confirmation
-  m_dpin = wxMin(rand() % 10000 + 1, 9999);
-  m_pin.Printf("%04d", m_dpin);
-  std::string new_api_key = PintoRandomKeyString(m_dpin);
-
-  //  Add new PIN to map and persist it
+  // Need a new PIN confirmation, add it to map and persist
+  m_pincode = Pincode::Create();
+  std::string new_api_key = m_pincode.Hash();
   m_key_map[evt_data.source] = new_api_key;
   SaveConfig();
 
@@ -330,7 +304,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
   ss << evt_data.source << " " << _("wants to send you new data.") << "\n"
      << _("Please enter the following PIN number on ")  << evt_data.source
      << " " << _("to pair with this device") << "\n";
-  m_pin_dialog = m_dlg_ctx.show_dialog(ss.str(), m_pin.ToStdString());
+  m_pin_dialog = m_dlg_ctx.show_dialog(ss.str(), m_pincode.ToString());
 
   return false;
 }
@@ -359,10 +333,8 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
   }
 
   if (event.GetId() == ORS_CHUNK_LAST) {
-    // Cancel existing dialog
+    // Cancel existing dialog and close temp file
     m_dlg_ctx.close_dialog(m_pin_dialog);
-
-    // Close the temp file.
     if (m_upload_path.size() && m_ul_stream.is_open()) m_ul_stream.close();
 
     // Io thread might be waiting for return_status on notify_one()
@@ -429,7 +401,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
       }
     }
 
-    if (m_overwrite || overwrite_one) {
+    if (m_overwrite || overwrite_one || evt_data.force) {
       //  Remove the existing duplicate route before adding new route
       m_route_ctx.delete_route(duplicate);
     }
@@ -437,7 +409,6 @@ void RestServer::HandleRoute(pugi::xml_node object,
   if (add) {
     // Add the route to the global list
     NavObjectCollection1 pSet;
-
     if (InsertRouteA(route, &pSet))
       UpdateReturnStatus(RestServerResult::NoError);
     else
@@ -470,7 +441,7 @@ void RestServer::HandleTrack(pugi::xml_node object,
         SaveConfig();
       }
     }
-    if (m_overwrite || overwrite_one) {
+    if (m_overwrite || overwrite_one || evt_data.force) {
       m_route_ctx.delete_track(duplicate);
     }
   }

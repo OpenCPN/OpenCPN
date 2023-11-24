@@ -23,10 +23,14 @@
 #include <string>
 #include <cstdint>
 
+/** A random generated int value with accessors for string and hashcode. */
 class Pincode {
 public:
   /** Create a new pincode based on a random value. */
   static Pincode Create();
+
+  /** Create a new pincode based on a known value. */
+  Pincode(uint64_t v) { m_value = v; }
 
   /** Return numeric value: */
   uint64_t Get() const;
@@ -37,9 +41,15 @@ public:
   /** Return a hashvalue string. */
   std::string Hash() const;
 
+  /** Return a hashvalue as computed on 5.8 hosts. */
+  std::string CompatHash();
+
+  /** convert numeric value to hash string. */
+  static std::string IntToHash(uint64_t value);
+
 private:
   uint64_t m_value;
-  Pincode(uint64_t v) { m_value = v; }
+
 };
 
 #endif  // OPENCPN_INCLUDE_PINCODE_H_
