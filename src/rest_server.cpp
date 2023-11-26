@@ -1,5 +1,5 @@
 
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 David Register                                     *
  *   Copyright (C) 2022-2023  Alec Leamas                                  *
  *                                                                         *
@@ -19,17 +19,16 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file Implement rest_server.h */
+/** \file  rest_server.cpp Implement rest_server.h */
 
 #include <memory>
 #include <mutex>
-#include <random>
+#include <utility>
 #include <vector>
 
 #include <wx/event.h>
 #include <wx/log.h>
 #include <wx/string.h>
-#include <wx/utils.h>
 
 #include "config_vars.h"
 #include "logger.h"
@@ -42,7 +41,6 @@
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
 
-
 using namespace std::chrono_literals;
 
 static const char* const kHttpAddr = "http://0.0.0.0:8000";
@@ -51,9 +49,7 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
 
-std::string PintoRandomKeyString(int dpin) {
-  return Pincode::IntToHash(dpin);
-}
+std::string PintoRandomKeyString(int pin) { return Pincode::IntToHash(pin); }
 
 /** Extract a HTTP variable from query string. */
 static inline std::string HttpVarToString(const struct mg_str& query,
@@ -65,7 +61,7 @@ static inline std::string HttpVarToString(const struct mg_str& query,
 }
 
 static void PostEvent(RestServer* parent,
-                      std::shared_ptr<RestIoEvtData> evt_data, int id) {
+                      const std::shared_ptr<RestIoEvtData>& evt_data, int id) {
   auto evt = new ObservedEvt(REST_IO_EVT, id);
   evt->SetSharedPtr(evt_data);
   parent->QueueEvent(evt);
@@ -88,10 +84,11 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
   mg_http_delete_chunk(c, hm);
   parent->UpdateReturnStatus(RestServerResult::Void);
 
-  if (source.size()) {
+  if (!source.empty()) {
     assert(parent && "Null parent pointer");
-    auto data_ptr = std::make_shared<RestIoEvtData>(
-        RestIoEvtData(api_key, source, xml_content, force.size()));
+    auto data_ptr =
+        std::make_shared<RestIoEvtData>(RestIoEvtData::CreateCmdData(
+            api_key, source, xml_content, !force.empty()));
     PostEvent(parent, data_ptr, MID);
   }
   if (MID == ORS_CHUNK_LAST) {
@@ -109,11 +106,11 @@ static void HandlePing(struct mg_connection* c, struct mg_http_message* hm,
                        RestServer* parent) {
   std::string api_key = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
-  if (source.size()) {
+  if (!source.empty()) {
     assert(parent && "Null parent pointer");
     parent->UpdateReturnStatus(RestServerResult::Void);
-    auto data_ptr =
-        std::make_shared<RestIoEvtData>(RestIoEvtData(api_key, source));
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreatePingData(api_key, source));
     PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
     std::unique_lock<std::mutex> lock{parent->ret_mutex};
     bool r = parent->return_status_condition.wait_for(lock, 10s, [&] {
@@ -129,11 +126,11 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
   std::string apikey = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
   std::string guid = HttpVarToString(hm->query, "guid");
-  if (source.size()) {
+  if (!source.empty()) {
     assert(parent && "Null parent pointer");
     parent->UpdateReturnStatus(RestServerResult::Void);
-    auto data_ptr =
-        std::make_shared<RestIoEvtData>(RestIoEvtData(apikey, source, guid));
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateChkWriteData(apikey, source, guid));
     PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
     std::unique_lock<std::mutex> lock{parent->ret_mutex};
     bool r = parent->return_status_condition.wait_for(lock, 10s, [&] {
@@ -147,21 +144,21 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
 static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
-  RestServer* parent = static_cast<RestServer*>(fn_data);
+  auto parent = static_cast<RestServer*>(fn_data);
 
   if (ev == MG_EV_ACCEPT /*&& fn_data != NULL*/) {
-    struct mg_tls_opts opts;
-    memset(&opts, 0, sizeof(mg_tls_opts));
+    struct mg_tls_opts opts = {0};
+    memset(&opts, 0, sizeof(mg_tls_opts));  // FIXME (leamas)
 
-    opts.ca = NULL;  //"cert.pem";         // Uncomment to enable two-way SSL
+    opts.ca = nullptr;  //"cert.pem";         // Uncomment to enable two-way SSL
     opts.cert = parent->m_cert_file.c_str();    // Certificate PEM file
     opts.certkey = parent->m_key_file.c_str();  // The key PEM file
-    opts.ciphers = NULL;
+    opts.ciphers = nullptr;
     mg_tls_init(c, &opts);
   } else if (ev == MG_EV_TLS_HS) {  // Think of this as "start of session"
     PostEvent(parent, nullptr, ORS_START_OF_SESSION);
   } else if (ev == MG_EV_HTTP_CHUNK) {
-    struct mg_http_message* hm = (struct mg_http_message*)ev_data;
+    auto hm = (struct mg_http_message*)ev_data;
     if (mg_http_match_uri(hm, "/api/ping")) {
       HandlePing(c, hm, parent);
     } else if (mg_http_match_uri(hm, "/api/rx_object")) {
@@ -172,16 +169,15 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
   }
 }
 
-
 //========================================================================
 /*    RestServer implementation */
 
-RestServer::IoThread::IoThread(RestServer& parent, const std::string& ip)
-    : m_parent(parent), m_server_ip(ip) {}
+RestServer::IoThread::IoThread(RestServer& parent, std::string ip)
+    : run_flag(-1), m_parent(parent), m_server_ip(std::move(ip)) {}
 
 void RestServer::IoThread::Run() {
   run_flag = 1;
-  struct mg_mgr mgr;        // Event manager
+  struct mg_mgr mgr = {0};  // Event manager
   mg_log_set(MG_LL_DEBUG);  // Set log level
   mg_mgr_init(&mgr);        // Initialise event manager
 
@@ -215,13 +211,12 @@ RestServer::Apikeys RestServer::Apikeys::Parse(const std::string& s) {
       apikeys[words[0]] = words[1];
     }
   }
-  return  apikeys;
+  return apikeys;
 }
 
 std::string RestServer::Apikeys::ToString() const {
   std::stringstream ss;
-  for (const auto& it : *this)
-    ss << it.first << ":" << it.second << ";";
+  for (const auto& it : *this) ss << it.first << ":" << it.second << ";";
   return ss.str();
 }
 
@@ -235,9 +230,11 @@ void RestServer::UpdateReturnStatus(RestServerResult result) {
 
 RestServer::RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
     : m_exit_sem(0, 1),
-      m_dlg_ctx(ctx),
-      m_route_ctx(route_ctx),
-      m_pin_dialog(0),
+      m_dlg_ctx(std::move(ctx)),
+      m_route_ctx(std::move(route_ctx)),
+      return_status(RestServerResult::Void),
+      m_pin_dialog(nullptr),
+      m_overwrite(false),
       m_io_thread(*this, portable ? kHttpsPortableAddr : kHttpsAddr),
       m_pincode(Pincode::Create()) {
   // Prepare the wxEventHandler to accept events from the io thread
@@ -248,7 +245,7 @@ RestServer::~RestServer() {
   Unbind(REST_IO_EVT, &RestServer::HandleServerMessage, this);
 }
 
-bool RestServer::StartServer(fs::path certificate_location) {
+bool RestServer::StartServer(const fs::path& certificate_location) {
   m_certificate_directory = certificate_location.string();
   m_cert_file = (certificate_location / "cert.pem").string();
   m_key_file = (certificate_location / "key.pem").string();
@@ -272,16 +269,16 @@ void RestServer::StopServer() {
   }
 }
 
-bool RestServer::LoadConfig(void) {
+bool RestServer::LoadConfig() {
   TheBaseConfig()->SetPath("/Settings/RestServer");
   wxString key_string;
   TheBaseConfig()->Read("ServerKeys", &key_string);
   m_key_map = Apikeys::Parse(key_string.ToStdString());
-  TheBaseConfig()->Read("ServerOverwriteDuplicates", &m_overwrite, 0);
+  TheBaseConfig()->Read("ServerOverwriteDuplicates", &m_overwrite, false);
   return true;
 }
 
-bool RestServer::SaveConfig(void) {
+bool RestServer::SaveConfig() {
   TheBaseConfig()->SetPath("/Settings/RestServer");
   TheBaseConfig()->Write("ServerKeys", wxString(m_key_map.ToString()));
   TheBaseConfig()->Write("ServerOverwriteDuplicates", m_overwrite);
@@ -292,7 +289,7 @@ bool RestServer::SaveConfig(void) {
 bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
   // Look up the api key in the hash map. If found, we are done.
   if (m_key_map.find(evt_data.source) != m_key_map.end()) {
-     if (m_key_map[evt_data.source] == evt_data.api_key) return true;
+    if (m_key_map[evt_data.source] == evt_data.api_key) return true;
   }
   // Need a new PIN confirmation, add it to map and persist
   m_pincode = Pincode::Create();
@@ -302,8 +299,8 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
 
   std::stringstream ss;
   ss << evt_data.source << " " << _("wants to send you new data.") << "\n"
-     << _("Please enter the following PIN number on ")  << evt_data.source
-     << " " << _("to pair with this device") << "\n";
+     << _("Please enter the following PIN number on ") << evt_data.source << " "
+     << _("to pair with this device") << "\n";
   m_pin_dialog = m_dlg_ctx.show_dialog(ss.str(), m_pincode.ToString());
 
   return false;
@@ -326,8 +323,8 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
   auto evt_data = UnpackEvtPointer<RestIoEvtData>(event);
   if (event.GetId() == ORS_CHUNK_N) {
     //  Stream out to temp file
-    if (m_upload_path.size() && m_ul_stream.is_open()) {
-      m_ul_stream.write(evt_data->payload.c_str(), evt_data->payload.size());
+    if (!m_upload_path.empty() && m_ul_stream.is_open()) {
+      m_ul_stream.write(evt_data->payload.c_str(), !evt_data->payload.empty());
     }
     return;
   }
@@ -335,7 +332,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
   if (event.GetId() == ORS_CHUNK_LAST) {
     // Cancel existing dialog and close temp file
     m_dlg_ctx.close_dialog(m_pin_dialog);
-    if (m_upload_path.size() && m_ul_stream.is_open()) m_ul_stream.close();
+    if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
 
     // Io thread might be waiting for return_status on notify_one()
     UpdateReturnStatus(RestServerResult::GenericError);
@@ -380,8 +377,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
 
 void RestServer::HandleRoute(pugi::xml_node object,
                              const RestIoEvtData& evt_data) {
-  Route* route = NULL;
-  route = GPXLoadRoute1(object, true, false, false, 0, true);
+  Route* route = GPXLoadRoute1(object, true, false, false, 0, true);
   // Check for duplicate GUID
   bool add = true;
   bool overwrite_one = false;
@@ -419,13 +415,12 @@ void RestServer::HandleRoute(pugi::xml_node object,
 
 void RestServer::HandleTrack(pugi::xml_node object,
                              const RestIoEvtData& evt_data) {
-  Track* route = NULL;
-  route = GPXLoadTrack1(object, true, false, false, 0);
+  Track* track = GPXLoadTrack1(object, true, false, false, 0);
   // Check for duplicate GUID
   bool add = true;
   bool overwrite_one = false;
 
-  Track* duplicate = m_route_ctx.find_track_by_guid(route->m_GUID);
+  Track* duplicate = m_route_ctx.find_track_by_guid(track->m_GUID);
   if (duplicate) {
     if (!m_overwrite && !evt_data.force) {
       auto result = m_dlg_ctx.run_accept_object_dlg(
@@ -446,10 +441,10 @@ void RestServer::HandleTrack(pugi::xml_node object,
     }
   }
   if (add) {
-    // Add the route to the global list
+    // Add the track to the global list
     NavObjectCollection1 pSet;
 
-    if (InsertTrack(route, false))
+    if (InsertTrack(track, false))
       UpdateReturnStatus(RestServerResult::NoError);
     else
       UpdateReturnStatus(RestServerResult::RouteInsertError);
@@ -459,8 +454,8 @@ void RestServer::HandleTrack(pugi::xml_node object,
 
 void RestServer::HandleWaypoint(pugi::xml_node object,
                                 const RestIoEvtData& evt_data) {
-  RoutePoint* rp = NULL;
-  rp = GPXLoadWaypoint1(object, "circle", "", false, false, false, 0);
+  RoutePoint* rp =
+      GPXLoadWaypoint1(object, "circle", "", false, false, false, 0);
   rp->m_bIsolatedMark = true;  // This is an isolated mark
   // Check for duplicate GUID
   bool add = true;
@@ -490,3 +485,30 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
     m_dlg_ctx.top_level_refresh();
   }
 }
+
+RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
+                             std::string src, std::string _payload, bool _force)
+    : cmd(c),
+      api_key(std::move(key)),
+      source(std::move(src)),
+      force(_force),
+      payload(std::move(_payload)) {}
+
+RestServerDlgCtx::RestServerDlgCtx()
+    : show_dialog([](const std::string&, const std::string&) -> PinDialog* {
+        return nullptr;
+      }),
+      close_dialog([](PinDialog*) {}),
+      update_route_mgr([]() {}),
+      run_accept_object_dlg([](const wxString&, const wxString&) {
+        return AcceptObjectDlgResult();
+      }),
+      top_level_refresh([]() {}) {}
+
+RouteCtx::RouteCtx()
+    : find_route_by_guid(
+          [](const wxString&) { return static_cast<Route*>(nullptr); }),
+      find_track_by_guid(
+          [](const wxString&) { return static_cast<Track*>(nullptr); }),
+      delete_route([](Route*) -> void {}),
+      delete_track([](Track*) -> void {}) {}

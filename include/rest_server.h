@@ -1,5 +1,5 @@
 
- /***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2022 David Register                                     *
  *   Copyright (C) 2022-2023  Alec Leamas                                  *
  *                                                                         *
@@ -19,48 +19,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- *
- * Opencpn REST API
- *
- * Supports the following endpoints:
- *
- *   GET /api/ping?api_key=<pincode>&source=<ip address>
- *       Basic ping check, verifies api_key i. e., the pairing.
- *         Parameters:
- *           See below
- *         Returns
- *           {"result": <code>}
- *
- *   POST /api/rx_object?api_key=<pincode>&source=<ip address>&force=1
- *       Upload a GPX route, track or waypoints. Parameters:
- *         - source=<ip> Mandatory, origin ip address or hostname
- *         - force=<1> if present, the host object is unconditionally
- *           updated. If not, host may run a "OK to overwrite" dialog.
- *         - api_key=<key> Mandatory, as obtained when pairing, see below.
- *       Body:
- *         xml-encoded GPX data for one or more route(s), track(s) and/or
- *         waypoint(s)
- *       Returns:
- *         {"result": <code>}
- *
- *   GET /api/writable?guid=<guid>
- *       Check if route or waypoint with given is writable.
- *   Returns
- *       {"result": <code>}
- *
- * Authentication uses a pairing mechanism. When an unpaired device
- * tries to connect, the API generates a random pincode which is
- * sent to the connecting party where it is displayed to user. User
- * must then input the pincode in the server-side GUI thus making
- * sure she has physical access to the machine.
- *
- * Result codes are as defined in RestServerResult.
- */
-
-#ifndef _RESTSERVER_H
-#define _RESTSERVER_H
+#ifndef RESTSERVER_H_
+#define RESTSERVER_H_
 
 #include <atomic>
 #include <condition_variable>
@@ -75,13 +35,13 @@
 namespace fs = std::experimental::filesystem;
 #else
 #include <filesystem>
+#include <utility>
 namespace fs = std::filesystem;
 #endif
 
 #include <wx/event.h>
 #include <wx/string.h>
-#include <wx/thread.h>    // for wxSemaphore, std::semaphore is c++20
-
+#include <wx/thread.h>  // for wxSemaphore, std::semaphore is c++20
 
 #include "pugixml.hpp"
 #include "pincode.h"
@@ -112,30 +72,36 @@ struct RestIoEvtData {
   const std::string source;   ///< Rest API parameter source
   const bool force;           ///< rest API parameter force
 
-  const std::string payload;  ///< GPX data for Object, Guid for CheckWrite
+  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
+  const std::string payload;
 
-  /** Cmd::Object constructor. */
-  RestIoEvtData(const std::string& key, const std::string& src,
-                const std::string& gpx_data, bool _force)
-      : RestIoEvtData(Cmd::Object, key, src, gpx_data, _force) {}
+  /** Create a Cmd::Object instance. */
+  static RestIoEvtData CreateCmdData(const std::string& key,
+                                     const std::string& src,
+                                     const std::string& gpx_data, bool _force) {
+    return {Cmd::Object, key, src, gpx_data, _force};
+  }
 
-  /** Cmd::Ping constructor. */
-  RestIoEvtData(const std::string& key, const std::string& src)
-      : RestIoEvtData(Cmd::Ping, key, src, "", false) {}
+  /** Create a Cod::Ping instance: */
+  static RestIoEvtData CreatePingData(const std::string& key,
+                                      const std::string& src) {
+    return {Cmd::Ping, key, src, "", false};
+  }
 
   /** Cmd::CheckWrite constructor. */
-  RestIoEvtData(const std::string& key, const std::string& src,
-                const std::string& guid)
-      : RestIoEvtData(Cmd::CheckWrite, key, src, guid, false) {}
+  static RestIoEvtData CreateChkWriteData(const std::string& key,
+                                          const std::string& src,
+                                          const std::string& guid) {
+    return {Cmd::CheckWrite, key, src, guid, false};
+  }
 
 private:
-  RestIoEvtData(Cmd c, const std::string& key, const std::string& src,
-                const std::string& _payload, bool _force)
-      : cmd(c), api_key(key), source(src), force(_force), payload(_payload) {}
+  RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
+                bool _force);
 };
 
 /** Return hash code for numeric pin value. */
-std::string PintoRandomKeyString(int dpin);
+std::string PintoRandomKeyString(int pin);
 
 /** Abstract base class visible in callbacks. */
 class PinDialog {
@@ -148,12 +114,15 @@ public:
   virtual void DeInit() = 0;
 };
 
-/** Returned status from  RunAcceptObjectDlg. */
+/** Returned status from RunAcceptObjectDlg. */
 struct AcceptObjectDlgResult {
   const int status;         ///< return value from ShowModal()
   const bool check1_value;  ///< As of GetCheck1Value()
 
+  /** default constructor, returns empty  struct. */
   AcceptObjectDlgResult() : status(0), check1_value(false) {}
+
+  /** Create a struct with given values for status and check1_value. */
   AcceptObjectDlgResult(int s, bool b) : status(s), check1_value(b) {}
 };
 
@@ -171,16 +140,7 @@ public:
       run_accept_object_dlg;
   std::function<void()> top_level_refresh;
 
-  RestServerDlgCtx()
-      : show_dialog([](const std::string&, const std::string&) -> PinDialog* {
-          return 0;
-        }),
-        close_dialog([](PinDialog*) {}),
-        update_route_mgr([]() {}),
-        run_accept_object_dlg([](const wxString&, const wxString&) {
-          return AcceptObjectDlgResult();
-        }),
-        top_level_refresh([]() {}) {}
+  RestServerDlgCtx();
 };
 
 /** Callbacks for handling routes and tracks. */
@@ -190,49 +150,109 @@ public:
   std::function<Track*(wxString)> find_track_by_guid;
   std::function<void(Route*)> delete_route;
   std::function<void(Track*)> delete_track;
-  RouteCtx()
-      : find_route_by_guid([](wxString) { return static_cast<Route*>(0); }),
-        find_track_by_guid([](wxString) { return static_cast<Track*>(0); }),
-        delete_route([](Route*) -> void {}),
-        delete_track([](Track*) -> void {}) {}
+  RouteCtx();
 };
 
-/** Server public interface. */
-class RestServer : public wxEvtHandler {
-  friend class RestServerObjectApp;  // Unit test
-  friend class RestCheckWriteApp;    // Unit test
-  friend class RestServerPingApp;    // Unit test
+/**
+ *
+ * Opencpn REST API
+ *
+ * Supports the following endpoints:
+ *
+ *  GET /api/ping?api_key=`<pincode>`  &source=<ip `address>`  <br>
+ *  Basic ping check, verifies api_key i. e., the pairing.
+ *    - Parameters:
+ *           See below <br>
+ *    - Returns:
+ *           {"result": <code>}
+ *
+ *  POST /api/rx_object?api_key=`<pincode>` &source=`<ip address>`&force=1 <br>
+ *  Upload a GPX route, track or waypoints.
+ *     - Parameters:
+ *         - source=`<ip>` Mandatory, origin ip address or hostname
+ *         - force=`<1>` f present, the host object is unconditionally
+ *           updated. If not, host may run a "OK to overwrite" dialog.
+ *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *
+ *     - Body:
+ *         xml-encoded GPX data for one or more route(s), track(s) and/or
+ *         waypoint(s) <br>
+ *     - Returns:
+ *         {"result": <code>}
+ *
+ *  GET /api/writable?guid=<`guid>`  <br>
+ *  Check if route or waypoint with given guid is writable. <br>
+ *    - Returns::
+ *         {"result": <code>}
+ *
+ * Authentication uses a pairing mechanism. When an unpaired device
+ * tries to connect, the API generates a random pincode which is
+ * sent to the connecting party where it is displayed to user. User
+ * must then input the pincode in the server-side GUI thus making
+ * sure she has physical access to the machine.
+ *
+ * Result codes are as defined in RestServerResult.
+ */
+class AbstractRestServer {
+  /** Server public interface. */
+
+public:
+  /** Start the server thread. */
+  virtual bool StartServer(const fs::path& certificate_location) = 0;
+
+  /** Stop server thread, blocks until completed. */
+  virtual void StopServer() = 0;
+};
+
+/** AbstractRestServer implementation and interface to underlying IO thread. */
+class RestServer : public AbstractRestServer, public wxEvtHandler {
+  friend class RestServerObjectApp;  ///< Unit test hook
+  friend class RestCheckWriteApp;    ///< Unit test hook
+  friend class RestServerPingApp;    ///< Unit test hook
 
 public:
   RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
 
-  virtual ~RestServer();
+  ~RestServer() override;
 
-  bool StartServer(fs::path certificate_location);
-  void StopServer();
+  /** Start the server thread. */
+  bool StartServer(const fs::path& certificate_location) override;
 
+  /** Stop server thread, blocks until completed. */
+  void StopServer() override;
+
+  /** IoThread interface.*/
   void UpdateReturnStatus(RestServerResult r);
+
+  /** IoThread interface. */
   RestServerResult GetReturnStatus() { return return_status; }
 
-  void UpdateRouteMgr() { m_dlg_ctx.update_route_mgr(); }
+  /** IoThread interface. */
+  void UpdateRouteMgr() const { m_dlg_ctx.update_route_mgr(); }
 
+  /** Semi-static storage used by IoThread C code. */
   std::string m_cert_file;
+
+  /** Semi-static storage used by IoThread C code. */
   std::string m_key_file;
 
-  /** Guards return_status */
+  /** IoThread interface: Guards return_status */
   std::mutex ret_mutex;
 
-  /** Guards return_status */
+  /** IoThread interface: Guards return_status */
   std::condition_variable return_status_condition;
 
-  /** Binary exit synchronization, released when io thread exits. */
+  /**
+   * IoThread interface: Binary exit synchronization, released when
+   * io thread exits. std::semaphore is C++20, hence wxSemaphore.
+   */
   wxSemaphore m_exit_sem;
 
 private:
   class IoThread {
   public:
-    IoThread(RestServer& parent, const std::string& ip);
-    virtual ~IoThread(void) {}
+    IoThread(RestServer& parent, std::string ip);
+    virtual ~IoThread() = default;
     void Run();
 
     bool IsRunning() { return run_flag > 0; }
@@ -251,17 +271,17 @@ private:
   };
 
   /**
-  * Stores the api key for different ip addresses. Methods for
-  * serialize/deserialize config file format.
- */
-  class Apikeys: public std::unordered_map<std::string, std::string> {
+   * Stores the api key for different ip addresses. Methods for
+   * serialize/deserialize config file format.
+   */
+  class Apikeys : public std::unordered_map<std::string, std::string> {
   public:
     static Apikeys Parse(const std::string& s);
     std::string ToString() const;
   };
 
-  bool LoadConfig(void);
-  bool SaveConfig(void);
+  bool LoadConfig();
+  bool SaveConfig();
 
   void HandleServerMessage(ObservedEvt& event);
 
