@@ -22,11 +22,12 @@
 #define _METEO_POINTS_H__
 
 /** Meteo points are Meteorological and Hydrographic data received
- ** by NMEA0183 (AIS) VDM message 8 dac:001 fi: 31.
- ** Structure and content as described in IMO SN.1/Circ.289 **/
+ ** by NMEA0183 (AIS) VDM message 8 dac:001 fi: 31 or Ais8_367_33.
+ ** Structure and content as described in IMO SN.1/Circ.289 or
+ ** DAC367_FI33_em_version_release_3-23mar15_0**/
 
  struct AisMeteoData {
-   // Ais8_001_31 Meteo data
+   // Ais8_001_31, Ais8_367_33 Meteo data
   int original_mmsi;
   int month;            // UTC 0
   int day;              // UTC 0
@@ -59,7 +60,8 @@
   int precipitation;    // type NAN=7
   double salinity;      // ‰ NAN=510(50.0)
   int ice;              // NAN=3
-};
+  int vertical_ref;     // NAN=14
+ };
 
  /**
  * Add a new point to the list of Meteo stations
@@ -70,9 +72,10 @@ public:
   const wxString lat;
   const wxString lon;
   const int siteID;
-  AisMeteoPoint(int mmsi, const wxString& lat,
-                const wxString& lon, int siteID) :
-   mmsi(mmsi), lat(lat), lon(lon), siteID(siteID) {}
+  const int orig_mmsi;
+  AisMeteoPoint(int mmsi, const wxString& lat, const wxString& lon, int siteID,
+                int orig_mmsi)
+      : mmsi(mmsi), lat(lat), lon(lon), siteID(siteID), orig_mmsi(orig_mmsi) {}
 };
 
 /**
@@ -80,7 +83,7 @@ public:
  * Since several nations have chose not to use individual mmsi ID
  * for each station but the same for all we need to separate them
  * by its position. Every station is allocated a unique Meteo ID.
- * This list collect them and is used to destine each update to whom it belongs.
+ * This list collect them and is used to destine each data update to whom it belongs.
  */
 class AisMeteoPoints {
 public:

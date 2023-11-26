@@ -162,6 +162,54 @@ wxString aisMeteoPrecipType(int precip) {
   return prec;
 }
 
+wxString aisMeteoWaterLevelRef(int refID) {
+  wxString ref = wxEmptyString;
+  switch (refID) {
+    case 0:
+      ref = "MLLW";
+      break;
+    case 1:
+      ref = "IGLD-85";
+      break;
+    case 2:
+      ref = "Local river";
+      break;
+    case 3:
+      ref = "STND";
+      break;
+    case 4:
+      ref = "MHHW";
+    case 5:
+      ref = "MHW";
+      break;
+    case 6:
+      ref = "MSL";
+      break;
+    case 7:
+      ref = "MLW";
+      break;
+    case 8:
+      ref = "NGVD-29";
+      break;
+    case 9:
+      ref = "NAVD-88";
+      break;
+    case 10:
+      ref = "WGS-84";
+      break;
+    case 11:
+      ref = "LAT";
+      break;
+    case 12:
+      ref = "Pool";
+      break;
+    case 13:
+      ref = "Gauge";
+      break;
+  }
+  return ref;
+}
+
 AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   strncpy(ShipName, "Unknown             ", SHIP_NAME_LEN);
   strncpy(CallSign, "       ", 8);
@@ -282,6 +330,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   met_data.precipitation = 7;
   met_data.salinity = 51.;
   met_data.ice = 3;
+  met_data.vertical_ref = 14;
 }
 
 void AisTargetData::CloneFrom(AisTargetData *q) {
@@ -460,8 +509,8 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
          << _("Class") << _T("</font></td></tr>") << rowStartH << _T("<b>")
          << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart << _T("ID: ")
-         << MMSI << rowEnd << _T("</table></td></tr>");
+         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart << _T("<b>ID: ")
+         << MMSI << rowEnd << _T("</b></table></td></tr>");
   }
   else
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
@@ -868,6 +917,11 @@ wxString AisTargetData::BuildQueryResult(void) {
         double userlevel = toUsrDepth(met_data.water_lev_dev);
         wlevel = wxString::Format("%.1f %s %s", userlevel, getUsrDepthUnit(),
                              ais_meteo_get_trend(met_data.water_lev_trend));
+        if (met_data.vertical_ref < 14) {
+          wlevel_txt = _("Water level dev. Ref: ");
+          wlevel_txt << aisMeteoWaterLevelRef(met_data.vertical_ref);
+        }
+
         if (met_data.water_lev_dev >= 30.) wlevel = wxEmptyString;
 
       } else if (met_data.water_level > -32.) {
@@ -920,7 +974,8 @@ wxString AisTargetData::BuildQueryResult(void) {
       wxString airpress = wxString::Format(
           "%d hPa %s", met_data.airpress,
            ais_meteo_get_trend(met_data.airpress_tend));
-      if (met_data.airpress >= 1310) airpress = wxEmptyString;
+      const int ap = met_data.airpress;
+      if (ap < 800 || ap >= 1310) airpress = wxEmptyString;
 
       html << vertSpacer << rowStart << _("Air Temperatur")
            << _T("</font></td><td align=right><font size=-2>") << _("Air pressure")
@@ -1144,18 +1199,16 @@ wxString AisTargetData::GetRolloverString(void) {
     if (met_data.current  < 25.) {
       if (result.Len()) result << "\n";
       result << _("Current");
-      wxString sign = met_data.current >= 25.1 ? ">=" : "";
-      result << wxString::Format(": %s%.1f ", sign, met_data.current) << _("kts")
+      result << wxString::Format(": %.1f ", met_data.current) << _("kts")
              << wxString::Format(" %d%c ", met_data.curr_dir, 0x00B0);
     }
 
     if (met_data.wave_height < 24.6) {
       if (result.Len()) result << "\n";
       double userwh = toUsrDepth(met_data.wave_height);
-      result << _("Wave height");
-      result << wxString::Format(": %.1f %s", userwh, getUsrDepthUnit()) << " "
-             << _("Period") << wxString::Format(": %d ", met_data.wave_period)
-             << _("s");
+      result << _("Wave height")
+             << wxString::Format(": %.1f %s", userwh, getUsrDepthUnit())
+             << " / " << met_data.wave_period << " " << _("s");
     }
 
     if (met_data.air_temp != -102.4) {
@@ -1166,7 +1219,7 @@ wxString AisTargetData::GetRolloverString(void) {
              << getUsrTempUnit() << " ";
     }
 
-    if (met_data.airpress < 1310) {
+    if (met_data.airpress > 799 && met_data.airpress < 1310) {
       if (met_data.air_temp == -102.4 && result.Len()) result << "\n";
       result << _("Air press");
       result << wxString::Format(": %d hPa", met_data.airpress);
@@ -1278,7 +1331,7 @@ wxString AisTargetData::Get_class_string(bool b_short) {
     case AIS_APRS:
       return b_short ? _("APRS") : _("APRS Position Report");
     case AIS_METEO:
-      return b_short ? _("Meteo") : _("Meteorologic station");
+      return b_short ? _("METEO") : _("Meteorologic");
 
     default:
       return b_short ? _("Unk") : _("Unknown");
