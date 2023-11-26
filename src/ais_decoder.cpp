@@ -3769,7 +3769,8 @@ void AisDecoder::UpdateAllAlarms(void) {
         }
 
         if ((td->CPA < g_CPAWarn_NM) && (td->TCPA > 0) &&
-            (td->Class != AIS_ATON) && (td->Class != AIS_BASE)) {
+            (td->Class != AIS_ATON) && (td->Class != AIS_BASE) &&
+            (td->Class != AIS_METEO)) {
           if (g_bTCPA_Max) {
             if (td->TCPA < g_TCPA_Max) {
               if (td->b_isFollower)
