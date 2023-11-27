@@ -3357,11 +3357,13 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
           const int startbits = 56;
           const int slotsize = 112;
           const int slots_count = (size - startbits) / slotsize;
+          int slotbit;
           for (int slot = 0; slot < slots_count; slot++) {
-            int type = bstr->GetInt(slot * slotsize + 57, 4);
-            ptd->met_data.hour = bstr->GetInt(slot * slotsize + 66, 5);
-            ptd->met_data.minute = bstr->GetInt(slot * slotsize + 71, 6);
-            int Site_ID = bstr->GetInt(slot * slotsize + 77, 7);
+            slotbit = slot * slotsize;
+            int type = bstr->GetInt(slotbit + 57, 4);
+            ptd->met_data.hour = bstr->GetInt(slotbit + 66, 5);
+            ptd->met_data.minute = bstr->GetInt(slotbit + 71, 6);
+            int Site_ID = bstr->GetInt(slotbit + 77, 7);
 
               // Name the station acc to site ID until message type 1
             if (!ptd->b_nameValid) {
@@ -3371,38 +3373,41 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               ptd->b_nameValid = true;
             }
 
+            wxString test = ptd->ShipName;
+            wxLogMessage(test);
+
             if (type == 0) { //Location
-              int lon = bstr->GetInt(slot * slotsize + 90, 28);
+              int lon = bstr->GetInt(slotbit + 90, 28);
               if (lon & 0x08000000)  // negative?
                 lon |= 0xf0000000;
               ptd->Lon = lon / 600000.;
 
-              int lat = bstr->GetInt(slot * slotsize + 118, 27);
+              int lat = bstr->GetInt(slotbit + 118, 27);
               if (lat & 0x04000000)  // negative?
                 lat |= 0xf8000000;
               ptd->Lat = lat / 600000.;
               ptd->b_positionOnceValid = true;
 
             } else if (type == 1) {  // Name
-              bstr->GetStr(slot * slotsize + 84, 84, &ptd->ShipName[0], SHIP_NAME_LEN);
+              bstr->GetStr(slotbit + 84, 84, &ptd->ShipName[0], SHIP_NAME_LEN);
               ptd->b_nameValid = true;
 
             } else if (type == 2) {  // Wind
                 // Description 1 and 2 are real time values.
-              int descr = bstr->GetInt(slot * slotsize + 116, 3);
+              int descr = bstr->GetInt(slotbit + 116, 3);
               if (descr == 1 || descr == 2) {
-                ptd->met_data.wind_kn = bstr->GetInt(slot * slotsize + 84, 7);
-                ptd->met_data.wind_gust_kn = bstr->GetInt(slot * slotsize + 91, 7);
-                ptd->met_data.wind_dir = bstr->GetInt(slot * slotsize + 98, 9);
-                ptd->met_data.wind_gust_dir = bstr->GetInt(slot * slotsize + 107, 9);
+                ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
+                ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
+                ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
+                ptd->met_data.wind_gust_dir = bstr->GetInt(slotbit + 107, 9);
               }
 
             } else if (type == 3) {  // Water level
               // Description 1 and 2 are real time values.
-              int descr = bstr->GetInt(slot * slotsize + 108, 3);
+              int descr = bstr->GetInt(slotbit + 108, 3);
               if (descr == 1 || descr == 2) {
-                int wltype = bstr->GetInt(slot * slotsize + 84, 1);
-                int wl = bstr->GetInt(slot * slotsize + 85, 16); // cm
+                int wltype = bstr->GetInt(slotbit + 84, 1);
+                int wl = bstr->GetInt(slotbit + 85, 16); // cm
                 if (wl & 0x00004000)  // negative?
                   wl |= 0xffff0000;
 
@@ -3411,46 +3416,46 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
                 else
                   ptd->met_data.water_lev_dev = wl / 100.; // m
               }
-              ptd->met_data.water_lev_trend = bstr->GetInt(slot * slotsize + 101, 2);
-              ptd->met_data.vertical_ref = bstr->GetInt(slot * slotsize + 103, 5);
+              ptd->met_data.water_lev_trend = bstr->GetInt(slotbit + 101, 2);
+              ptd->met_data.vertical_ref = bstr->GetInt(slotbit + 103, 5);
 
             } else if (type == 6) {  //  Horizontal Current Profil
-              int readbearing = bstr->GetInt(slot * slotsize + 84, 9);
-              int readdistance = bstr->GetInt(slot * slotsize + 93, 9);
-              ptd->met_data.current = bstr->GetInt(slot * slotsize + 102, 8) / 10.0;
-              ptd->met_data.curr_dir = bstr->GetInt(slot * slotsize + 110, 9);
-              int readLevel = bstr->GetInt(slot * slotsize + 119, 9);
+              int readbearing = bstr->GetInt(slotbit + 84, 9);
+              int readdistance = bstr->GetInt(slotbit + 93, 9);
+              ptd->met_data.current = bstr->GetInt(slotbit + 102, 8) / 10.0;
+              ptd->met_data.curr_dir = bstr->GetInt(slotbit + 110, 9);
+              int readLevel = bstr->GetInt(slotbit + 119, 9);
 
             } else if (type == 7) {  // Sea state
-              int swell_descr = bstr->GetInt(slot * slotsize + 111, 3);  // Use 1 || 2 real data
+              int swell_descr = bstr->GetInt(slotbit + 111, 3);  // Use 1 || 2 real data
               if (swell_descr == 1 || swell_descr == 2) {
-                ptd->met_data.swell_height = bstr->GetInt(slot * slotsize + 84, 8) / 10.0;
-                ptd->met_data.swell_per = bstr->GetInt(slot * slotsize + 92, 6);
-                ptd->met_data.swell_dir = bstr->GetInt(slot * slotsize + 98, 9);
+                ptd->met_data.swell_height = bstr->GetInt(slotbit + 84, 8) / 10.0;
+                ptd->met_data.swell_per = bstr->GetInt(slotbit + 92, 6);
+                ptd->met_data.swell_dir = bstr->GetInt(slotbit + 98, 9);
               }
-              ptd->met_data.seastate = bstr->GetInt(slot * slotsize + 107, 4); // Bf
-              int wt_descr = bstr->GetInt(slot * slotsize + 131, 3);
+              ptd->met_data.seastate = bstr->GetInt(slotbit + 107, 4); // Bf
+              int wt_descr = bstr->GetInt(slotbit + 131, 3);
               if (wt_descr == 1 || wt_descr == 2)
-                ptd->met_data.water_temp = bstr->GetInt(slot * slotsize + 114, 10) / 10. - 10.;
+                ptd->met_data.water_temp = bstr->GetInt(slotbit + 114, 10) / 10. - 10.;
 
-              int wawe_descr = bstr->GetInt(slot * slotsize + 157, 3);
+              int wawe_descr = bstr->GetInt(slotbit + 157, 3);
               if (wawe_descr == 1 || wawe_descr == 2) { // Only real data
-                ptd->met_data.wave_height = bstr->GetInt(slot * slotsize + 134, 8) / 10.0;
-                ptd->met_data.wave_period = bstr->GetInt(slot * slotsize + 142, 6);
-                ptd->met_data.wave_dir = bstr->GetInt(slot * slotsize + 148, 9);
+                ptd->met_data.wave_height = bstr->GetInt(slotbit + 134, 8) / 10.0;
+                ptd->met_data.wave_period = bstr->GetInt(slotbit + 142, 6);
+                ptd->met_data.wave_dir = bstr->GetInt(slotbit + 148, 9);
               }
-              ptd->met_data.salinity = bstr->GetInt(slot * slotsize + 160, 9 / 10.0);
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 160, 9 / 10.0);
 
             } else if (type == 8) {  // Salinity
-              ptd->met_data.water_temp = bstr->GetInt(slot * slotsize + 84, 10) / 10.0 - 10.0;
-              ptd->met_data.salinity = bstr->GetInt(slot * slotsize + 120, 9) / 10.0;
+              ptd->met_data.water_temp = bstr->GetInt(slotbit + 84, 10) / 10.0 - 10.0;
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 120, 9) / 10.0;
 
             } else if (type == 9) {  // Weather
-              int tmp = bstr->GetInt(slot * slotsize + 84, 11);
+              int tmp = bstr->GetInt(slotbit + 84, 11);
               if (tmp & 0x00000400)  // negative?
                 tmp |= 0xFFFFF800;
               ptd->met_data.air_temp = tmp / 10.;
-              int pp , precip = bstr->GetInt(slot * slotsize + 98, 2);
+              int pp , precip = bstr->GetInt(slotbit + 98, 2);
               switch (precip) { // Adapt to IMO precipitation
               case 0:
                 pp = 1;
@@ -3462,19 +3467,19 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
                 pp = 7;
               }
               ptd->met_data.precipitation = pp;
-              ptd->met_data.hor_vis = bstr->GetInt(slot * slotsize + 100, 8) / 10.0;
-              ptd->met_data.dew_point = bstr->GetInt(slot * slotsize + 108, 10) / 10.0 - 20.0;
-              ptd->met_data.airpress = bstr->GetInt(slot * slotsize + 121, 9) + 799;
-              ptd->met_data.airpress_tend = bstr->GetInt(slot * slotsize + 130, 2);
-              ptd->met_data.salinity = bstr->GetInt(slot * slotsize + 135, 9) / 10.0;
+              ptd->met_data.hor_vis = bstr->GetInt(slotbit + 100, 8) / 10.0;
+              ptd->met_data.dew_point = bstr->GetInt(slotbit + 108, 10) / 10.0 - 20.0;
+              ptd->met_data.airpress = bstr->GetInt(slotbit + 121, 9) + 799;
+              ptd->met_data.airpress_tend = bstr->GetInt(slotbit + 130, 2);
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 135, 9) / 10.0;
 
             } else if (type == 11) {  // Wind V2
               // Description 1 and 2 are real time values.
-              int descr = bstr->GetInt(slot * slotsize + 113, 3);
+              int descr = bstr->GetInt(slotbit + 113, 3);
               if (descr == 1 || descr == 2) {
-              ptd->met_data.wind_kn = bstr->GetInt(slot * slotsize + 84, 7);
-              ptd->met_data.wind_gust_kn = bstr->GetInt(slot * slotsize + 91, 7);
-              ptd->met_data.wind_dir = bstr->GetInt(slot * slotsize + 98, 9);
+              ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
+              ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
+              ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
               }
             }
           }
