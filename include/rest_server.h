@@ -185,6 +185,11 @@ public:
  *    - Returns::
  *         {"result": `<code>`}
  *
+ *  GET /api/get-version  <br>
+ *  Return current server version string. Does not require api_key or source.
+ *    - Returns (example::
+ *        {"version": "5.8.9" }
+ *
  * Authentication uses a pairing mechanism. When an unpaired device
  * tries to connect, the API generates a random pincode which is
  * sent to the connecting party where it is displayed to user. User

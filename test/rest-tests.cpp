@@ -6,9 +6,10 @@
 #include <iostream>
 #include <thread>
 
-#include <wx/event.h>
 #include <wx/app.h>
+#include <wx/event.h>
 #include <wx/fileconf.h>
+#include <wx/jsonreader.h>
 #include <wx/log.h>
 
 #include <gtest/gtest.h>
@@ -133,6 +134,35 @@ protected:
   }
 };
 
+class RestServerVersionApp : public RestServerApp {
+public:
+  RestServerVersionApp(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
+      : RestServerApp(ctx, route_ctx, portable) {}
+
+protected: 
+  void Work() {
+    auto path = fs::path(CMAKE_BINARY_DIR) / "curl-result";
+  
+    {
+      std::stringstream ss;
+      ss << CURLPROG << " --insecure --max-time 3 -o " << path 
+        << " https://localhost:8443/api/get-version";
+      system(ss.str().c_str());
+    }
+    std::this_thread::sleep_for(50ms);
+    ProcessPendingEvents();
+    std::ifstream f(path.string());
+    std::stringstream ss;
+    ss << f.rdbuf();
+    wxJSONValue root;
+    wxJSONReader reader;
+    std::string reply = ss.str();
+    int errors = reader.Parse(reply, &root);
+    EXPECT_EQ(errors, 0);
+    wxString version = root["version"].AsString();
+    EXPECT_EQ(version, PACKAGE_VERSION);
+  }
+};
 
 class RestServerObjectApp : public RestServerApp {
 public:
@@ -313,6 +343,17 @@ TEST(RestServer, Pong) {
   RestServer404App app(dialog_ctx, route_ctx, g_portable);
   app.Run();
 };
+
+TEST(RestServer, Version) {
+  wxInitializer initializer;
+  ConfigSetup();
+  RestServerDlgCtx dialog_ctx;
+  RouteCtx route_ctx;
+  RestServerVersionApp app(dialog_ctx, route_ctx, g_portable);
+  app.Run();
+};
+
+
 
 
 TEST(RestServer, Object) {
