@@ -1211,6 +1211,14 @@ wxString AisTargetData::GetRolloverString(void) {
              << " / " << met_data.wave_period << " " << _("s");
     }
 
+    if (met_data.water_temp < 50.) {
+      if (result.Len()) result << "\n";
+      double usertemp = toUsrTemp(met_data.water_temp);
+      result << _("Water temp");
+      result << wxString::Format(": %.1f%c", usertemp, 0x00B0)
+             << getUsrTempUnit();
+    }
+
     if (met_data.air_temp != -102.4) {
       if (result.Len()) result << "\n";
       double usertemp = toUsrTemp(met_data.air_temp);
