@@ -48,6 +48,9 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
+static const char* const kVersionReply = R"""(
+{ "version": "@version@" }
+)""";
 
 std::string PintoRandomKeyString(int pin) { return Pincode::IntToHash(pin); }
 
@@ -150,7 +153,7 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
     struct mg_tls_opts opts = {0};
     memset(&opts, 0, sizeof(mg_tls_opts));  // FIXME (leamas)
 
-    opts.ca = nullptr;  //"cert.pem";         // Uncomment to enable two-way SSL
+    opts.ca = nullptr;  //   "cert.pem";       // Uncomment to enable two-way SSL
     opts.cert = parent->m_cert_file.c_str();    // Certificate PEM file
     opts.certkey = parent->m_key_file.c_str();  // The key PEM file
     opts.ciphers = nullptr;
@@ -165,6 +168,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       HandleRxObject(c, hm, parent);
     } else if (mg_http_match_uri(hm, "/api/writable")) {
       HandleWritable(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/get-version")) {
+        std::string reply(kVersionReply);
+        ocpn::replace(reply, "@version@", PACKAGE_VERSION);
+        mg_http_reply(c, 200, "", reply.c_str());
     } else {
       mg_http_reply(c, 404, "", "url: not found");
     }
