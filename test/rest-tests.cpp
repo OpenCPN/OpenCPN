@@ -120,7 +120,7 @@ protected:
     auto path = fs::path(CMAKE_BINARY_DIR) / "curl-result";
    
     std::stringstream ss;
-    ss << CURLPROG << " --insecure --max-time 10 -I -o " << path 
+    ss << CURLPROG << " --insecure --max-time 3 -I -o " << path 
       << " https://localhost:8443/api/pong";
     system(ss.str().c_str());
     std::this_thread::sleep_for(50ms);
