@@ -165,7 +165,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       HandleRxObject(c, hm, parent);
     } else if (mg_http_match_uri(hm, "/api/writable")) {
       HandleWritable(c, hm, parent);
+    } else {
+      mg_http_reply(c, 404, "", "url: not found");
     }
+
   }
 }
 
@@ -324,7 +327,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
   if (event.GetId() == ORS_CHUNK_N) {
     //  Stream out to temp file
     if (!m_upload_path.empty() && m_ul_stream.is_open()) {
-      m_ul_stream.write(evt_data->payload.c_str(), !evt_data->payload.empty());
+      m_ul_stream.write(evt_data->payload.c_str(), evt_data->payload.size());
     }
     return;
   }
