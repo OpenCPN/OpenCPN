@@ -43,14 +43,6 @@
 #include <limits.h>
 #include <memory>
 
-#if defined(__GNUC__) && (__GNUC__ < 8)
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <filesystem>
-namespace fs = std::filesystem;
-#endif
-
 #ifdef __WXMSW__
 #include <math.h>
 #include <psapi.h>
