@@ -3306,8 +3306,15 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               1 - 401 = 800 - 1200 hPa*/
             ptd->met_data.airpress = bstr->GetInt(183, 9) + 799;
             ptd->met_data.airpress_tend = bstr->GetInt(192, 2);
-            ptd->met_data.hor_vis = bstr->GetInt(194, 8) / 10.;
-            //int MSB = bstr->GetInt(194, 8) < 0;
+
+            int horVis = bstr->GetInt(194, 8);
+            if (horVis & 0x80u) { // if MSB = 1
+              horVis &= 0x7F;     // We print >x.x
+              ptd->met_data.hor_vis_GT = true;
+            } else
+              ptd->met_data.hor_vis_GT = false;
+
+            ptd->met_data.hor_vis = horVis / 10.0;
 
             ptd->met_data.water_lev_dev = (bstr->GetInt(202, 12) / 100.) - 10.;
             ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);

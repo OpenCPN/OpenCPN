@@ -314,6 +314,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   met_data.airpress = 1310;
   met_data.airpress_tend = 3;
   met_data.hor_vis = 12.7;
+  met_data.hor_vis_GT = false;
   met_data.water_lev_dev = 4001 / 100 - 10;
   met_data.water_level = -32;
   met_data.water_lev_trend = 3;
@@ -698,10 +699,11 @@ wxString AisTargetData::BuildQueryResult(void) {
          << rowEnd << rowStartH << _T("<b>") << toSDMM(2, Lon);
     if (Class != AIS_METEO) html << rowEnd;
     else {
-      wxString meteoTime = wxString::Format(
-          "<font size=-3>%s</font><font size=-1><b> %02d:%02d</font>",
-          _("Issued (UTC)"), met_data.hour, met_data.minute);
-      html << "</b></td><td align=right>" << meteoTime << rowEnd;
+      wxString meteoTime =
+          wxString::Format(" %02d:%02d", met_data.hour, met_data.minute);
+      html << " </td><td align=right></b></font><font size=-3>"
+           << _("Issued (UTC)") << "</font><font size=-1><b>" << meteoTime
+           << "</font>" << rowEnd;
     }
   }
 
@@ -895,7 +897,7 @@ wxString AisTargetData::BuildQueryResult(void) {
   if (Class == AIS_METEO) {
     if (met_data.wind_kn < 122) {
       double userwindspeed = toUsrWindSpeed(met_data.wind_kn);
-      wxString wspeed = wxString::Format("%.0f %s %d%c", userwindspeed, getUsrWindSpeedUnit(),
+      wxString wspeed = wxString::Format("%0.1f %s %d%c", userwindspeed, getUsrWindSpeedUnit(),
                            met_data.wind_dir, 0x00B0);
 
       double userwindgustspeed = toUsrWindSpeed(met_data.wind_gust_kn);
@@ -946,7 +948,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     if (met_data.wave_height < 24.6 || met_data.swell_height < 24.6) {
       double userwave = toUsrDepth(met_data.wave_height);
         wxString wave =
-            wxString::Format("%.1f %s %d%c %d %s", userwave, getUsrDepthUnit(),
+            wxString::Format("%.1f %s %d%c %d %s ", userwave, getUsrDepthUnit(),
                              met_data.wave_dir, 0x00B0,
                              met_data.wave_period, _("s"));
       if (met_data.wave_height >= 24.6) wave = wxEmptyString;
@@ -1021,7 +1023,8 @@ wxString AisTargetData::BuildQueryResult(void) {
 
       double userVisDist = toUsrDistance(met_data.hor_vis);
       wxString horVis =
-          wxString::Format("%.1f %s", userVisDist, getUsrDistanceUnit());
+          wxString::Format("%s%.1f %s", (met_data.hor_vis_GT ? ">" : ""),
+                           userVisDist, getUsrDistanceUnit());
       if (met_data.hor_vis >= 12.7) horVis = wxEmptyString;
       html << vertSpacer << rowStart << _("Precipitation")
            << _T("</font></td><td align=right><font size=-2>")
@@ -1231,6 +1234,15 @@ wxString AisTargetData::GetRolloverString(void) {
       if (met_data.air_temp == -102.4 && result.Len()) result << "\n";
       result << _("Air press");
       result << wxString::Format(": %d hPa", met_data.airpress);
+    }
+
+    if (met_data.hor_vis < 12.) {
+      if (result.Len()) result << "\n";
+      double userVisDist = toUsrDistance(met_data.hor_vis);
+      wxString horVis =
+          wxString::Format(": %s%.1f %s", (met_data.hor_vis_GT ? ">" : ""),
+                           userVisDist, getUsrDistanceUnit());
+      result << _("Visibility") << horVis;
     }
   }
   return result;
