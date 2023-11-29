@@ -412,6 +412,7 @@ public:
 class AisApp : public wxAppConsole {
 public:
   AisApp(const char* type, const char* msg) : wxAppConsole() {
+    ConfigSetup();
     SetAppName("opencpn_unittests");
     g_BasePlatform = new BasePlatform();
     pSelectAIS = new Select();

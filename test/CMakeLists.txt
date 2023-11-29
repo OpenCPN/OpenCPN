@@ -19,31 +19,33 @@ set(SRC
   ${CMAKE_SOURCE_DIR}/src/mDNS_query.cpp
 )
 
-if (CURL)
-  list(APPEND SRC rest-tests.cpp)
-endif ()
-
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
 endif ()
 
+if (MSVC)
+  set(CURL_HINTS C:\\mingw64\\bin C:\\ProgramData\\chocolatey\\bin)
+endif ()
+find_program(CURL NAMES curl HINTS ${CURL_HINTS})
+
+if (CURL)
+  list(APPEND SRC rest-tests.cpp)
+endif ()
 
 add_executable(tests ${SRC})
 
-target_compile_options(tests PUBLIC "-O0")
+if (CURL)
+  target_compile_definitions(tests PUBLIC CURLPROG="${CURL}")
+endif ()
+
+if (NOT MSVC)
+  target_compile_options(tests PUBLIC "-O0")
+endif ()
 target_compile_definitions(tests
   PUBLIC
     CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
 )
-if (MSVC) 
-  set(CURL_HINTS C:\\mingw64\\bin C:\\ProgramData\\chocolatey\\bin)
-  find_program(CURL NAMES curl HINTS ${CURL_HINTS})
-endif ()
-if (CURL)
-  target_compile_definitions(tests PUBLIC CURLPROG="${CURL}")
-endif ()
-
 if (MSVC)
   target_link_libraries(tests
 	  PRIVATE setupapi.lib psapi.lib ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
@@ -157,3 +159,23 @@ gtest_discover_tests(tests)
 
 
 add_test(NAME tests COMMAND tests)
+
+# Create a batch file which can be used to add paths to downloaded
+# stuff so the tests runs on windows. Assumes things in top_dir\cache
+# This is not that intelligent and needs manual updates when wxWidgets
+# version is updated
+if (MSVC)
+  set(_cache_dir ${CMAKE_SOURCE_DIR}\\\\cache)
+  set(_script_path ${CMAKE_BINARY_DIR}\\set_test_path.cmake)
+  set(_bat_path ${CMAKE_BINARY_DIR}\\\\set_test_path.bat)
+set(_script
+"file(WRITE ${_bat_path} \"
+PATH=%PATH%\;${_cache_dir}\\\\buildwin
+PATH=%PATH%\;${_cache_dir}\\\\wxWidgets-3.2.3\\\\lib\\\\vc14x_dll\")
+")
+  file(WRITE ${_script_path} ${_script})
+  add_custom_target(win-path-setup
+    COMMAND cmake -P "${_script_path}"
+    COMMAND cmake -E echo "Creating ${_bat_path}"
+  )
+endif ()
