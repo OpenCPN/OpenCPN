@@ -280,7 +280,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
       //  Allow re-transmit on same port (if type is SERIAL),
       //  or any any other NMEA0183 port supporting output
       //  But, do not echo to the source network interface.  This will likely recurse...
-        if (params.Type == SERIAL || driver->iface != source_iface) {
+        if ((!params.DisableEcho && params.Type == SERIAL) || driver->iface != source_iface) {
           if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
               params.IOSelect == DS_TYPE_OUTPUT)
           {
