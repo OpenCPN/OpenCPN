@@ -6,6 +6,14 @@
 #include <iostream>
 #include <thread>
 
+#ifndef _WIN32
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/types.h>
+#endif
+
 #include <wx/app.h>
 #include <wx/event.h>
 #include <wx/fileconf.h>
@@ -42,6 +50,31 @@ static void ConfigSetup() {
   InitBaseConfig(new wxFileConfig("", "", config_path.string()));
 }
 
+#ifdef _WIN32
+#define GetLocalAddresses()  get_local_ipv4_addresses()
+
+#else
+static std::vector<std::string> GetLocalAddresses() {
+  struct ifaddrs* ifAddrStruct = 0;
+  struct ifaddrs* ifa = 0;
+  void* tmpAddrPtr = 0;
+  std::vector<std::string> retvals;
+
+  getifaddrs(&ifAddrStruct);
+  for (ifa = ifAddrStruct; ifa; ifa = ifa->ifa_next) {
+    if (!ifa->ifa_addr) continue;
+    if (ifa->ifa_addr->sa_family == AF_INET) {
+      tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+      char address_buffer[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, tmpAddrPtr, address_buffer, INET_ADDRSTRLEN);
+      retvals.push_back(address_buffer);
+    }
+  }
+  if (ifAddrStruct) freeifaddrs(ifAddrStruct);
+  return retvals;
+}
+#endif   // _WIN32
+
 static bool g_portable = false;
 class RestServerApp : public wxAppConsole {
 public:
@@ -50,7 +83,15 @@ public:
             m_rest_server(ctx, route_ctx, portable) {}
 
   void Run() {
-    std::vector<std::string> addresses  = get_local_ipv4_addresses();
+    std::vector<std::string> addresses;
+    for (int i = 0; addresses.size() == 0 && i < 10; i++) {
+       std::this_thread::sleep_for(500ms);
+       addresses = GetLocalAddresses();
+    } 
+    if (!addresses.size()) {
+        std::cerr << "Cannot get local IP address(!)\n";
+        return;
+    }
     auto local_address = addresses[0];
     fs::path dirpath(std::string(CMAKE_BINARY_DIR) + "/certs");
     if (!fs::exists(dirpath)) fs::create_directory(dirpath);
