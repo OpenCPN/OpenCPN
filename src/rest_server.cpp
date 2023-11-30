@@ -52,6 +52,43 @@ static const char* const kVersionReply = R"""(
 { "version": "@version@" }
 )""";
 
+/** Kind of messages sent from io thread to main code. */
+enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
+
+struct RestIoEvtData {
+  const enum class Cmd { Ping, Object, CheckWrite } cmd;
+  const std::string api_key;  ///< Rest API parameter apikey
+  const std::string source;   ///< Rest API parameter source
+  const bool force;           ///< rest API parameter force
+
+  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
+  const std::string payload;
+
+  /** Create a Cmd::Object instance. */
+  static RestIoEvtData CreateCmdData(const std::string& key,
+                                     const std::string& src,
+                                     const std::string& gpx_data, bool _force) {
+    return {Cmd::Object, key, src, gpx_data, _force};
+  }
+
+  /** Create a Cod::Ping instance: */
+  static RestIoEvtData CreatePingData(const std::string& key,
+                                      const std::string& src) {
+    return {Cmd::Ping, key, src, "", false};
+  }
+
+  /** Cmd::CheckWrite constructor. */
+  static RestIoEvtData CreateChkWriteData(const std::string& key,
+                                          const std::string& src,
+                                          const std::string& guid) {
+    return {Cmd::CheckWrite, key, src, guid, false};
+  }
+
+private:
+  RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
+                bool _force);
+};
+
 std::string PintoRandomKeyString(int pin) { return Pincode::IntToHash(pin); }
 
 /** Extract a HTTP variable from query string. */
@@ -251,9 +288,7 @@ RestServer::RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
   Bind(REST_IO_EVT, &RestServer::HandleServerMessage, this);
 }
 
-RestServer::~RestServer() {
-  Unbind(REST_IO_EVT, &RestServer::HandleServerMessage, this);
-}
+RestServer::~RestServer() { StopServer(); }
 
 bool RestServer::StartServer(const fs::path& certificate_location) {
   m_certificate_directory = certificate_location.string();
@@ -341,7 +376,8 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
 
   if (event.GetId() == ORS_CHUNK_LAST) {
     // Cancel existing dialog and close temp file
-    m_dlg_ctx.close_dialog(m_pin_dialog);
+    wxEvent* event = new wxCloseEvent;
+    wxQueueEvent(m_pin_dialog, event);
     if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
 
     // Io thread might be waiting for return_status on notify_one()
@@ -505,10 +541,9 @@ RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
       payload(std::move(_payload)) {}
 
 RestServerDlgCtx::RestServerDlgCtx()
-    : show_dialog([](const std::string&, const std::string&) -> PinDialog* {
+    : show_dialog([](const std::string&, const std::string&) -> wxDialog* {
         return nullptr;
       }),
-      close_dialog([](PinDialog*) {}),
       update_route_mgr([]() {}),
       run_accept_object_dlg([](const wxString&, const wxString&) {
         return AcceptObjectDlgResult();

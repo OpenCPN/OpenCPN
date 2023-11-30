@@ -59,60 +59,11 @@ enum class RestServerResult {
   Void
 };
 
-/** Kind of messages sent from io thread to main code. */
-enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
-
 /** Dialog return codes. */
 enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
 
 /** Data from IO thread to main */
-struct RestIoEvtData {
-  const enum class Cmd { Ping, Object, CheckWrite } cmd;
-  const std::string api_key;  ///< Rest API parameter apikey
-  const std::string source;   ///< Rest API parameter source
-  const bool force;           ///< rest API parameter force
-
-  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
-  const std::string payload;
-
-  /** Create a Cmd::Object instance. */
-  static RestIoEvtData CreateCmdData(const std::string& key,
-                                     const std::string& src,
-                                     const std::string& gpx_data, bool _force) {
-    return {Cmd::Object, key, src, gpx_data, _force};
-  }
-
-  /** Create a Cod::Ping instance: */
-  static RestIoEvtData CreatePingData(const std::string& key,
-                                      const std::string& src) {
-    return {Cmd::Ping, key, src, "", false};
-  }
-
-  /** Cmd::CheckWrite constructor. */
-  static RestIoEvtData CreateChkWriteData(const std::string& key,
-                                          const std::string& src,
-                                          const std::string& guid) {
-    return {Cmd::CheckWrite, key, src, guid, false};
-  }
-
-private:
-  RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                bool _force);
-};
-
-/** Return hash code for numeric pin value. */
-std::string PintoRandomKeyString(int pin);
-
-/** Abstract base class visible in callbacks. */
-class PinDialog {
-public:
-  /** Create and show the dialog */
-  virtual PinDialog* Initiate(const std::string& msg,
-                              const std::string& text1) = 0;
-
-  /** Close and destroy */
-  virtual void DeInit() = 0;
-};
+struct RestIoEvtData;
 
 /** Returned status from RunAcceptObjectDlg. */
 struct AcceptObjectDlgResult {
@@ -126,12 +77,14 @@ struct AcceptObjectDlgResult {
   AcceptObjectDlgResult(int s, bool b) : status(s), check1_value(b) {}
 };
 
-/** Callbacks invoked from PinDialog implementations. */
+/** Callbacks for handling dialogs and RouteManager updates */
 class RestServerDlgCtx {
 public:
-  std::function<PinDialog*(const std::string& msg, const std::string& text1)>
+  /** Run the "Server wants a pincode" dialog. */
+  std::function<wxDialog*(const std::string& msg, const std::string& text1)>
       show_dialog;
-  std::function<void(PinDialog*)> close_dialog;
+
+  /** Update Route manager after updates to underlying nav_object_database. */
   std::function<void(void)> update_route_mgr;
 
   /** Run the "Accept Object" dialog, returns value from ShowModal(). */
@@ -140,6 +93,7 @@ public:
       run_accept_object_dlg;
   std::function<void()> top_level_refresh;
 
+  /**  All dummy stubs constructor. */
   RestServerDlgCtx();
 };
 
@@ -199,7 +153,6 @@ public:
  * Result codes are as defined in RestServerResult.
  */
 class AbstractRestServer {
-  /** Server public interface. */
 
 public:
   /** Start the server thread. */
@@ -303,7 +256,7 @@ private:
 
   std::string m_certificate_directory;
   Apikeys m_key_map;
-  PinDialog* m_pin_dialog;
+  wxDialog* m_pin_dialog;
 
   bool m_overwrite;
   std::string m_upload_path;

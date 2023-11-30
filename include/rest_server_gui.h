@@ -88,7 +88,7 @@ private:
 };
 
 
-class PINCreateDialog : public PinDialog, public wxDialog {
+class PINCreateDialog : public wxDialog {
   DECLARE_DYNAMIC_CLASS(PINCreateDialog)
   DECLARE_EVENT_TABLE()
 
@@ -102,7 +102,7 @@ public:
   static RestServerDlgCtx GetDlgCtx();
 
 
-  PinDialog* Initiate(const std::string& msg, const std::string& text1);
+  wxDialog* Initiate(const std::string& msg, const std::string& text1);
   void DeInit();
 
   bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME,
