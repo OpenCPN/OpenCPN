@@ -40,6 +40,7 @@
 #include "gui_lib.h"
 #include "nav_object_database.h"
 #include "rest_server.h"
+#include "semantic_vers.h"
 
 extern MyFrame* gFrame;
 
@@ -117,7 +118,7 @@ int xfer_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
 }
 
 long PostSendObjectMessage(std::string url, std::ostringstream& body,
-                           MemoryStruct* response) {
+                           MemoryStruct* response, bool timeout = false) {
   long response_code = -1;
   navobj_transfer_progress = 0;
 
@@ -136,6 +137,8 @@ long PostSendObjectMessage(std::string url, std::ostringstream& body,
   curl_easy_setopt(c, CURLOPT_WRITEDATA, (void*)response);
   curl_easy_setopt(c, CURLOPT_NOPROGRESS, 0);
   curl_easy_setopt(c, CURLOPT_XFERINFOFUNCTION, xfer_callback);
+  if (timeout) curl_easy_setopt(c, CURLOPT_TIMEOUT, 5);
+
 
   CURLcode result = curl_easy_perform(c);
   navobj_transfer_progress = 0;
@@ -146,6 +149,22 @@ long PostSendObjectMessage(std::string url, std::ostringstream& body,
 
   return response_code;
 }
+
+bool CheckApiKey(std::string url, MemoryStruct* response) {
+  long response_code = -1;
+
+  CURL* c = curl_easy_init();
+  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");  // Encoding: plain ASCII
+  curl_easy_setopt(c, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+  CURLcode result = curl_easy_perform(c);
+  if (result == CURLE_OK)
+    curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
+  curl_easy_cleanup(c);
+  return response_code == 200;
+}
+
 
 std::string GetClientKey(std::string& server_name) {
   if (TheBaseConfig()) {
@@ -209,6 +228,69 @@ void SaveClientKey(std::string& server_name, std::string key) {
   return;
 }
 
+
+SemanticVersion GetApiVersion(const std::string& dest_ip) {
+  std::string url(dest_ip);
+  url += "/api/get-version";
+
+  struct MemoryStruct chunk;
+  chunk.memory = (char*)malloc(1);
+  chunk.size = 0; 
+  std::string buf;
+  std::ostringstream ostream(buf);
+  long response_code = PostSendObjectMessage(url, ostream, &chunk, true);
+
+  if (response_code == 200) {
+    wxString body(chunk.memory);
+    wxJSONValue root;
+    wxJSONReader reader;
+
+    int numErrors = reader.Parse(body, &root);
+    if (numErrors != 0) return SemanticVersion(-1, -1);
+
+    wxString version = root["version"].AsString();
+    return SemanticVersion::parse(version.ToStdString());
+  } else {
+      return SemanticVersion(-1, -1);
+  }
+}
+
+
+RestServerResult CheckApiKey(const std::string& source,
+	                     const std::string& api_key,
+			     const std::string& dest_ip)
+{
+  std::string url(dest_ip);
+  url += "/api/ping";
+  url += std::string("?source=") + g_hostname;
+  url += std::string("&apikey=") + api_key;
+
+  struct MemoryStruct chunk;
+  chunk.memory = (char*)malloc(1);
+  chunk.size = 0; 
+  std::string buf;
+  std::ostringstream ostream(buf);
+  long response_code = PostSendObjectMessage(url, ostream, &chunk, true);
+
+  if (response_code == 200) {
+    wxString body(chunk.memory);
+    wxJSONValue root;
+    wxJSONReader reader;
+
+    int numErrors = reader.Parse(body, &root);
+    // Capture the result
+    int result = root["result"].AsInt();
+
+    if (result > 0) {
+       return RestServerResult::NewPinRequested;
+    } else {
+       return RestServerResult::Void;
+    }
+  } else {
+    return RestServerResult::Void;
+  }
+}
+
 int SendNavobjects(std::string dest_ip_address, std::string server_name,
                    std::vector<Route*> route,
                    std::vector<RoutePoint*> routepoint,
@@ -237,7 +319,7 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name,
       wxString body(chunk.memory);
       wxJSONValue root;
       wxJSONReader reader;
-
+	
       int numErrors = reader.Parse(body, &root);
       // Capture the result
       int result = root["result"].AsInt();
@@ -259,12 +341,22 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name,
           if (dlg.GetReturnCode() == ID_PCD_OK) {
             wxString PIN_tentative = dlg.GetText1Value().Trim().Trim(false);
             unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
-            std::string new_api_key = PintoRandomKeyString(dPIN);
-            ;
-
-            SaveClientKey(server_name, new_api_key);
-          } else
+	    Pincode pincode(dPIN);
+	    std::string api_key = pincode.Hash();
+            SemanticVersion v = GetApiVersion(dest_ip_address);
+            RestServerResult result;
+            if (v.major >= 9) {
+              result = CheckApiKey(g_hostname.ToStdString(), api_key,
+		                   dest_ip_address);
+            } else {
+              api_key = pincode.CompatHash();
+              result = CheckApiKey(g_hostname.ToStdString(), api_key,
+			           dest_ip_address);
+            }
+            SaveClientKey(server_name, api_key);
+          } else {
             b_cancel = true;
+	  }
         } else if (result == static_cast<int>(RestServerResult::GenericError))
           apikey_ok = true;
       } else
