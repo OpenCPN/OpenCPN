@@ -111,6 +111,9 @@ void ConnectionParams::Deserialize(const wxString &configStr) {
   if (prms.Count() >= 23) {
     DisableEcho = wxAtoi(prms[22]);
   }
+  if (prms.Count() >= 24) {
+    AuthToken = prms[22];
+  }
 }
 
 wxString ConnectionParams::Serialize() const {
@@ -125,12 +128,12 @@ wxString ConnectionParams::Serialize() const {
     ostcs.Append(OutputSentenceList[i]);
   }
   wxString ret = wxString::Format(
-      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d"), Type,
+      _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s"), Type,
       NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(),
       Baudrate, ChecksumCheck, IOSelect, InputSentenceListType, istcs.c_str(),
       OutputSentenceListType, ostcs.c_str(), Priority, Garmin, GarminUpload,
       FurunoGP3X, bEnabled, UserComment.c_str(), AutoSKDiscover, socketCAN_port.c_str(),
-      NoDataReconnect, DisableEcho);
+      NoDataReconnect, DisableEcho, AuthToken.c_str());
 
   return ret;
 }
@@ -157,6 +160,7 @@ ConnectionParams::ConnectionParams() {
   AutoSKDiscover = false;
   NoDataReconnect = false;
   DisableEcho = false;
+  AuthToken = wxEmptyString;
 }
 
 ConnectionParams::~ConnectionParams() {

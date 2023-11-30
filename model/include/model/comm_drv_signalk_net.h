@@ -108,6 +108,8 @@ private:
 
   bool SetOutputSocketOptions(wxSocketBase *sock);
 
+  std::string m_token;
+
   WebSocketThread *m_wsThread;
 
 };

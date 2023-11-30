@@ -110,7 +110,7 @@ static wxEvtHandler* s_wsSKConsumer;
 class WebSocketThread : public wxThread {
 public:
   WebSocketThread(CommDriverSignalKNet* parent, wxIPV4address address,
-                  wxEvtHandler* consumer);
+                  wxEvtHandler* consumer, std::string token);
   virtual void* Entry();
 
 private:
@@ -119,14 +119,17 @@ private:
   wxIPV4address m_address;
   wxEvtHandler* m_consumer;
   CommDriverSignalKNet* m_parentStream;
+  std::string m_token;
 };
 
 WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
                                  wxIPV4address address,
-                                 wxEvtHandler* consumer) {
+                                 wxEvtHandler* consumer,
+                                 std::string token) {
   m_address = address;
   m_consumer = consumer;
   m_parentStream = parent;
+  m_token = token;
 }
 
 void* WebSocketThread::Entry() {
@@ -147,6 +150,11 @@ void* WebSocketThread::Entry() {
   std::stringstream wssAddress;
   wssAddress << "wss://" << host.mb_str() << ":" << port
              << "/signalk/v1/stream?subscribe=all&sendCachedValues=false";
+
+  if (!m_token.empty()) {
+    wsAddress << "&token=" << m_token;
+    wssAddress << "&token=" << m_token;
+  }
 
   ix::WebSocket ws;
   ws.setUrl(wssAddress.str());
@@ -217,6 +225,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
 
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
+  m_token = params->AuthToken;
   m_socketread_watchdog_timer.SetOwner(this, kTimerSocket);
   m_wsThread = NULL;
   m_threadActive = false;
@@ -271,7 +280,7 @@ void CommDriverSignalKNet::OpenWebSocket() {
 
   // Start a thread to run the client without blocking
 
-  m_wsThread = new WebSocketThread(this, GetAddr(), this);
+  m_wsThread = new WebSocketThread(this, GetAddr(), this, m_token);
   if (m_wsThread->Create() != wxTHREAD_NO_ERROR) {
     wxLogError(wxT("Can't create WebSocketThread!"));
 
