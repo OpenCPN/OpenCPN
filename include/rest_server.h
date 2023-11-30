@@ -29,34 +29,44 @@
  *
  * Supports the following endpoints:
  *
- *   GET /api/ping?api_key=<pincode>
- *         Returns {"result": <code>}
- * 
- *   POST /api/rx_object?api_key=<pincode>&source=<ip address>&force
- *        The source parameter is mandatory, ip address of originating
- *        peer. Message body contains xml-encoded data for one or
- *        more route(s), track(s) and/or waypoint(s).
- *        If "force" is present, the host object is unconditionally
- *        updated. If not, host may run a "OK to overwrite" dialog.
- *        Returns {"result": <code>}
- * 
- *   GET /api/uid_exists?uid=<uid>
- *        Check if route or waypoint with given UID exists
- *        Returns {"result": <code>}
- * 
+ *   GET /api/ping?api_key=<pincode>&source=<ip address>
+ *   Basic ping check, verifies api_key i. e., the pairing.
+ *   Parameters:
+ *     See below
+ *   Returns
+ *     {"result": <code>}
+ *
+ *   POST /api/rx_object?api_key=<pincode>&source=<ip address>&force=1
+ *   Upload a GPX route, track or waypoints. Parameters:
+ *     - source=<ip> Mandatory, origin ip address or hostname
+ *     - force=<1> if present, the host object is unconditionally
+ *       updated. If not, host may run a "OK to overwrite" dialog.
+ *     - api_key=<key> Mandatory, as obtained when pairing, see below.
+ *   Body:
+ *     xml-encoded GPX data for one or more route(s), track(s) and/or
+ *     waypoint(s)
+ *   Returns:
+ *     {"result": <code>}
+ *
+ *   GET /api/writable?guid=<guid>
+ *     Check if route or waypoint with given is writable.
+ *   Returns
+ *     {"result": <code>}
+ *
  * Authentication uses a pairing mechanism. When an unpaired device
  * tries to connect, the API generates a random pincode which is
  * sent to the connecting party where it is displayed to user. User
  * must then input the pincode in the server-side GUI thus making
- * sure he has physical access to the machine.
+ * sure she has physical access to the machine.
+ *
+ * Result codes are as defined in RestServerResult.
  */
-
-
 
 #ifndef _RESTSERVER_H
 #define _RESTSERVER_H
 
 #include <atomic>
+#include <condition_variable>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -66,8 +76,10 @@
 
 #include <wx/event.h>
 #include <wx/string.h>
+#include <wx/thread.h>    // for wxSemaphore, std::semaphore is c++20
 
-#include "observable_evtvar.h"
+
+#include "pugixml.hpp"
 #include "route.h"
 #include "track.h"
 
@@ -79,21 +91,43 @@ enum class RestServerResult {
   DuplicateRejected,
   RouteInsertError,
   NewPinRequested,
-  Undefined
+  Void
 };
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
 
+/** Dialog return codes. */
 enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
 
-/** \internal  IO thread. */
-class RestServerThread;
+/** Data from IO thread to main */
+struct RestIoEvtData {
+  const enum class Cmd { Ping, Object, CheckWrite } cmd;
+  const std::string api_key;  ///< Rest API parameter apikey
+  const std::string source;   ///< Rest API parameter source
+  const bool force;           ///< rest API parameter force
 
-/** \internal Event sent from IO thread to main code. */
-class RestServerEvent;
+  const std::string payload;  ///< GPX data for Object, Guid for CheckWrite
 
-class PinCreateDialog;
+  /** Cmd::Object constructor. */
+  RestIoEvtData(const std::string& key, const std::string& src,
+                const std::string& gpx_data, bool _force)
+      : RestIoEvtData(Cmd::Object, key, src, gpx_data, _force) {}
+
+  /** Cmd::Ping constructor. */
+  RestIoEvtData(const std::string& key, const std::string& src)
+      : RestIoEvtData(Cmd::Ping, key, src, "", false) {}
+
+  /** Cmd::CheckWrite constructor. */
+  RestIoEvtData(const std::string& key, const std::string& src,
+                const std::string& guid)
+      : RestIoEvtData(Cmd::CheckWrite, key, src, guid, false) {}
+
+private:
+  RestIoEvtData(Cmd c, const std::string& key, const std::string& src,
+                const std::string& _payload, bool _force)
+      : cmd(c), api_key(key), source(src), force(_force), payload(_payload) {}
+};
 
 std::string PintoRandomKeyString(int dpin);
 
@@ -157,27 +191,22 @@ public:
         delete_track([](Track*) -> void {}) {}
 };
 
-
 /** Server public interface. */
 class RestServer : public wxEvtHandler {
-friend class RestServerObjectApp;
+  friend class RestServerObjectApp;  // Unit test
+  friend class RestCheckWriteApp;    // Unit test
+  friend class RestServerPingApp;    // Unit test
+
 public:
   RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
 
   virtual ~RestServer();
 
-
-
   bool StartServer(std::filesystem::path certificate_location);
   void StopServer();
 
-  void HandleServerMessage(RestServerEvent& event);
-
-  /**
-   * Secondary thread life toggle
-   * Used to inform launching object (this) to determine if the thread can
-   * be safely called or polled, e.g. wxThread->Destroy();
-   */
+  void UpdateReturnStatus(RestServerResult r);
+  RestServerResult GetReturnStatus() { return return_status; }
 
   void UpdateRouteMgr() { m_dlg_ctx.update_route_mgr(); }
 
@@ -185,41 +214,74 @@ public:
   std::string m_cert_file;
   std::string m_key_file;
 
+  /** Guards return_status */
+  std::mutex ret_mutex;
+
+  /** Guards return_status */
+  std::condition_variable return_status_condition;
+
+  /** Binary exit synchronization, released when io thread exits. */
+  wxSemaphore m_exit_sync;
+
 private:
   class IoThread {
   public:
-    IoThread(RestServer* parent, bool& m_portable);
+    IoThread(RestServer& parent, const std::string& ip);
     virtual ~IoThread(void) {}
+    void Run();
 
+    bool IsRunning() { return run_flag > 0; }
 
-
-    void Entry();
+    /** Request thread to stop asap. */
     void Stop();
 
+    /** Block until thread is stopped. */
+    bool WaitUntilStopped();
+
+  private:
     /** 1 -> running, 0 -> stop requested, -1 -> stopped. */
     std::atomic_int run_flag;
-  private:
-    bool& m_portable;
-    RestServer* m_parent;
+    RestServer& m_parent;
+    std::string m_server_ip;
+    std::thread m_thread;
   };
+
+  /**
+  * Stores the api key for different ip addresses. Methods for
+  * serialize/deserialize config file format.
+ */
+  class Apikeys: public std::unordered_map<std::string, std::string> {
+  public:
+    static Apikeys Parse(const std::string& s);
+    std::string ToString() const;
+  };
+
 
   bool LoadConfig(void);
   bool SaveConfig(void);
 
+  void HandleServerMessage(ObservedEvt& event);
+
+  void HandleWaypoint(pugi::xml_node object, const RestIoEvtData& evt_data);
+  void HandleTrack(pugi::xml_node object, const RestIoEvtData& evt_data);
+  void HandleRoute(pugi::xml_node object, const RestIoEvtData& evt_data);
+
+  bool CheckApiKey(const RestIoEvtData& evt_data);
+
   RestServerDlgCtx m_dlg_ctx;
   RouteCtx m_route_ctx;
 
+  RestServerResult return_status;
+
   std::string m_certificate_directory;
-  std::unordered_map<std::string, std::string> m_key_map;
+  Apikeys m_key_map;
   PinDialog* m_pin_dialog;
   wxString m_pin;
-  RestServerThread* m_parent;
   int m_dpin;
   bool m_overwrite;
-  std::string m_tmp_upload_path;
+  std::string m_upload_path;
   std::ofstream m_ul_stream;
   std::thread m_thread;
-  bool m_portable;
   IoThread m_io_thread;
 };
 
