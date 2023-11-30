@@ -55,6 +55,8 @@ class AcceptObjectDialog : public wxDialog {
 
 public:
   AcceptObjectDialog();
+  AcceptObjectDialog(wxWindow* parent, const wxString& caption,
+                     const wxString& msg1, const wxString msg2);
   AcceptObjectDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
                const wxString& hint, const wxPoint& pos, const wxSize& size,
                long style, const wxString& msg1, const wxString& msg2);
@@ -94,6 +96,7 @@ class PINCreateDialog : public wxDialog {
 
 public:
   PINCreateDialog();
+
   PINCreateDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
                const wxString& hint, const wxPoint& pos, const wxSize& size,
                long style);
