@@ -83,6 +83,7 @@ public:
             m_rest_server(ctx, route_ctx, portable) {}
 
   void Run() {
+    ConfigSetup();
     std::vector<std::string> addresses;
     for (int i = 0; addresses.size() == 0 && i < 10; i++) {
        std::this_thread::sleep_for(500ms);
@@ -380,10 +381,6 @@ protected:
 };
 
 TEST(RestServer, start_stop) {
-#ifdef _MSC_VER
-  wxInitializer initializer;
-#endif
-  ConfigSetup();
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
   RestServerApp app(dialog_ctx, route_ctx, g_portable);
@@ -393,23 +390,14 @@ TEST(RestServer, start_stop) {
 
 TEST(RestServer, Ping) {
   wxDisableAsserts();
-#ifdef _MSC_VER
-  wxInitializer initializer;
-#endif
-  ConfigSetup();
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
-std::cout << "About to run ping\n" << std::flush;
   RestServerPingApp app(dialog_ctx, route_ctx, g_portable);
   app.Run();
 };
 
 TEST(RestServer, Pong) {
-#ifdef _MSC_VER
-  wxInitializer initializer;
-#endif
   wxDisableAsserts();
-  ConfigSetup();
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
   RestServer404App app(dialog_ctx, route_ctx, g_portable);
@@ -417,11 +405,7 @@ TEST(RestServer, Pong) {
 };
 
 TEST(RestServer, Version) {
-#ifdef _MSC_VER
-  wxInitializer initializer;
-#endif
   wxDisableAsserts();
-  ConfigSetup();
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
   RestServerVersionApp app(dialog_ctx, route_ctx, g_portable);
@@ -429,12 +413,7 @@ TEST(RestServer, Version) {
 };
 
 TEST(RestServer, Object) {
-#ifdef _MSC_VER
-  wxInitializer initializer;
-#endif
   wxDisableAsserts();
-  ConfigSetup();
-
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
   RestServerObjectApp app(dialog_ctx, route_ctx, g_portable);
@@ -442,12 +421,7 @@ TEST(RestServer, Object) {
 }
 
 TEST(RestServer, CheckWrite) {
-#ifdef _MSC_VER
-  wxInitializer initializer;
-#endif
   wxDisableAsserts();
-  ConfigSetup();
-
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
   RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
