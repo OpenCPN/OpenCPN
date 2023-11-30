@@ -67,9 +67,7 @@ static void UpdateRouteMgr() {
 
 static AcceptObjectDlgResult RunAcceptObjectDlg(const wxString& msg,
                                                 const wxString& check1msg) {
-  AcceptObjectDialog dlg(NULL, wxID_ANY, _("OpenCPN Server Message"),
-        "", wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE,
-        msg, check1msg);
+  AcceptObjectDialog dlg(NULL, _("OpenCPN Server Message"), msg, check1msg);
   int result = dlg.ShowModal();
   bool check1 = dlg.GetCheck1Value();
   return AcceptObjectDlgResult(result, check1);
@@ -88,8 +86,6 @@ RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
   return ctx;
 }
 
-
-
 IMPLEMENT_DYNAMIC_CLASS(AcceptObjectDialog, wxDialog)
 
 BEGIN_EVENT_TABLE(AcceptObjectDialog, wxDialog)
@@ -103,6 +99,14 @@ AcceptObjectDialog::AcceptObjectDialog() {
   premtext = NULL;
 }
 
+AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent,
+                                       const wxString& caption,
+                                       const wxString& msg1,
+                                       const wxString msg2)
+       : AcceptObjectDialog(parent, 0, caption, "", wxDefaultPosition,
+                            wxDefaultSize, SYMBOL_STG_STYLE,
+                            msg1, msg2) {}
+
 AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
                            const wxPoint& pos, const wxSize& size, long style,
@@ -114,7 +118,6 @@ AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent, wxWindowID id,
 #ifdef __ANDROID__
   androidDisableRotation();
 #endif
-
 }
 
 AcceptObjectDialog::~AcceptObjectDialog() {
