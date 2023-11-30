@@ -12,17 +12,32 @@ set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 
 set(SRC
   tests.cpp
+  rest-tests.cpp
   ${MODEL_SRC}
   ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
   ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
+  ${CMAKE_SOURCE_DIR}/src/certificates.cpp
+  ${CMAKE_SOURCE_DIR}/src/mDNS_query.cpp
 )
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
 endif ()
 
+
 add_executable(tests ${SRC})
 
-target_compile_definitions(tests PUBLIC CLIAPP USE_MOCK_DEFS)
+target_compile_options(tests PUBLIC "-O0")
+target_compile_definitions(tests
+  PUBLIC
+    CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
+    TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+)
+
+find_program(CURL NAMES curl)
+if (CURL)
+  target_compile_definitions(tests PUBLIC CURLPROG="${CURL}")
+endif ()
+
 if (MSVC)
   target_link_libraries(tests PRIVATE setupapi.lib psapi.lib)
 endif ()
@@ -64,6 +79,7 @@ target_link_libraries(tests PRIVATE ocpn::gdal)
 target_link_libraries(tests PRIVATE ocpn::geoprim)
 target_link_libraries(tests PRIVATE ocpn::iso8211)
 target_link_libraries(tests PRIVATE ocpn::libarchive)
+target_link_libraries(tests PRIVATE ocpn::mDNS)
 target_link_libraries(tests PRIVATE ocpn::mongoose)
 target_link_libraries(tests PRIVATE ocpn::N2KParser)
 target_link_libraries(tests PRIVATE ocpn::nmea0183)
