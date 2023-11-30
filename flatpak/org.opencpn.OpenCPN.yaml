@@ -137,10 +137,10 @@ modules:
           - -DOCPN_USE_SYSFS_PORTS=ON
           - -DBUILD_SHARED_LIBS=OFF
           - -DOCPN_TARGET_TUPLE=flatpak-x86_64;22.08;x86_64
-          - -DCMAKE_FIND_ROOT_PATH=/app
-          - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
-          - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
-          - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH
+          - -DCMAKE_FIND_ROOT_PATH=/app;/usr
+          - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=BOTH
+          - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
+          - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
       build-options:
           build-args:
             - --share=network
