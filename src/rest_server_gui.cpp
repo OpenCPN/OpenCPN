@@ -46,7 +46,7 @@
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame* gFrame;
 
-static PinDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
+static wxDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
   auto dlg = new PINCreateDialog(dynamic_cast<wxWindow*>(gFrame), wxID_ANY,
                                  _("OpenCPN Server Message"),
                                  "", wxDefaultPosition, wxDefaultSize,
@@ -55,14 +55,6 @@ static PinDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
   dlg->SetText1Message(txt1);
   dlg->Show();
   return dlg;
-}
-
-static void CloseDlg(PinDialog* pin_dlg) {
-  if (pin_dlg) {
-    auto dlg = dynamic_cast<PINCreateDialog*>(pin_dlg);
-    dlg->Close();
-    dlg->Destroy();
-  }
 }
 
 static void UpdateRouteMgr() {
@@ -88,7 +80,6 @@ RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
   ctx.show_dialog =
       [](const std::string& msg, const std::string& text1) {
           return DisplayDlg(msg, text1); };
-  ctx.close_dialog = [](PinDialog* pin_dlg) { CloseDlg(pin_dlg); };
   ctx.update_route_mgr = []() { UpdateRouteMgr(); };
   ctx.run_accept_object_dlg =
       [](const wxString& msg, const wxString& check1msg) {
@@ -249,8 +240,8 @@ PINCreateDialog::~PINCreateDialog() {
 
 }
 
-PinDialog* PINCreateDialog::Initiate(const std::string& msg,
-                                     const std::string& text1) {
+wxDialog* PINCreateDialog::Initiate(const std::string& msg,
+                                    const std::string& text1) {
   auto dlg =  new PINCreateDialog(dynamic_cast<wxWindow*>(gFrame),
                                   wxID_ANY, _("OpenCPN Server Message"), "",
                                   wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
