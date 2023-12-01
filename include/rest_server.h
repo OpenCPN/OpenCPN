@@ -114,7 +114,7 @@ public:
  *
  * Supports the following endpoints:
  *
- *  GET /api/ping?api_key=`<pincode>`  &source=<ip `address>`  <br>
+ *  GET /api/ping?api_key=`<pincode>`  &source=`<ip address>`  <br>
  *  Basic ping check, verifies api_key i. e., the pairing.
  *    - Parameters:
  *           See below <br>

@@ -190,7 +190,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
     struct mg_tls_opts opts = {0};
     memset(&opts, 0, sizeof(mg_tls_opts));  // FIXME (leamas)
 
-    opts.ca = nullptr;  //   "cert.pem";       // Uncomment to enable two-way SSL
+    opts.ca =
+        nullptr;  //   "cert.pem";       // Uncomment to enable two-way SSL
     opts.cert = parent->m_cert_file.c_str();    // Certificate PEM file
     opts.certkey = parent->m_key_file.c_str();  // The key PEM file
     opts.ciphers = nullptr;
@@ -206,13 +207,12 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
     } else if (mg_http_match_uri(hm, "/api/writable")) {
       HandleWritable(c, hm, parent);
     } else if (mg_http_match_uri(hm, "/api/get-version")) {
-        std::string reply(kVersionReply);
-        ocpn::replace(reply, "@version@", PACKAGE_VERSION);
-        mg_http_reply(c, 200, "", reply.c_str());
+      std::string reply(kVersionReply);
+      ocpn::replace(reply, "@version@", PACKAGE_VERSION);
+      mg_http_reply(c, 200, "", reply.c_str());
     } else {
       mg_http_reply(c, 404, "", "url: not found");
     }
-
   }
 }
 
@@ -352,78 +352,77 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
 }
 
 void RestServer::HandleServerMessage(ObservedEvt& event) {
-  if (event.GetId() == ORS_START_OF_SESSION) {
-    // Prepare a temp file to catch chuncks that might follow
-    m_upload_path = wxFileName::CreateTempFileName("ocpn_tul").ToStdString();
-
-    m_ul_stream.open(m_upload_path.c_str(), std::ios::out | std::ios::trunc);
-    if (!m_ul_stream.is_open()) {
-      wxLogMessage("REST_server: Cannot open %s for write", m_upload_path);
-      m_upload_path.clear();  // reset for next time.
-      return;
-    }
-    return;
-  }
-
   auto evt_data = UnpackEvtPointer<RestIoEvtData>(event);
-  if (event.GetId() == ORS_CHUNK_N) {
-    //  Stream out to temp file
-    if (!m_upload_path.empty() && m_ul_stream.is_open()) {
-      m_ul_stream.write(evt_data->payload.c_str(), evt_data->payload.size());
-    }
-    return;
+  switch (event.GetId()) {
+    case ORS_START_OF_SESSION:
+      // Prepare a temp file to catch chuncks that might follow
+      m_upload_path = wxFileName::CreateTempFileName("ocpn_tul").ToStdString();
+
+      m_ul_stream.open(m_upload_path.c_str(), std::ios::out | std::ios::trunc);
+      if (!m_ul_stream.is_open()) {
+        wxLogMessage("REST_server: Cannot open %s for write", m_upload_path);
+        m_upload_path.clear();  // reset for next time.
+        return;
+      }
+      return;
+    case ORS_CHUNK_N:
+      //  Stream out to temp file
+      if (!m_upload_path.empty() && m_ul_stream.is_open()) {
+        m_ul_stream.write(evt_data->payload.c_str(), evt_data->payload.size());
+      }
+      return;
+    case ORS_CHUNK_LAST:
+      // Cancel existing dialog and close temp file
+      wxEvent* event = new wxCloseEvent;
+      wxQueueEvent(m_pin_dialog, event);
+      if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
+
+      // Io thread might be waiting for return_status on notify_one()
+      UpdateReturnStatus(RestServerResult::GenericError);
+      break;
   }
 
-  if (event.GetId() == ORS_CHUNK_LAST) {
-    // Cancel existing dialog and close temp file
-    wxEvent* event = new wxCloseEvent;
-    wxQueueEvent(m_pin_dialog, event);
-    if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
-
-    // Io thread might be waiting for return_status on notify_one()
-    UpdateReturnStatus(RestServerResult::GenericError);
-  }
-
-  if (CheckApiKey(*evt_data)) {
-    UpdateReturnStatus(RestServerResult::NoError);
-  } else {
+  if (!CheckApiKey(*evt_data)) {
     UpdateReturnStatus(RestServerResult::NewPinRequested);
     return;
   }
 
-  if (evt_data->cmd == RestIoEvtData::Cmd::CheckWrite) {
-    auto guid = evt_data->payload;
-    auto dup = m_route_ctx.find_route_by_guid(guid);
-    if (!dup || evt_data->force || m_overwrite) {
-      UpdateReturnStatus(RestServerResult::NoError);
-    } else {
-      UpdateReturnStatus(RestServerResult::DuplicateRejected);
-    }
-    return;
-  } else  if (evt_data->cmd == RestIoEvtData::Cmd::Ping) {
-    UpdateReturnStatus(RestServerResult::NoError);
-    return;
-  }
-
-  // Load the GPX file
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(m_upload_path.c_str());
-  if (result.status == pugi::status_ok) {
-    m_upload_path.clear();  // empty for next time
-
-    pugi::xml_node objects = doc.child("gpx");
-    for (pugi::xml_node object = objects.first_child(); object;
-         object = object.next_sibling()) {
-      if (!strcmp(object.name(), "rte")) {
-        HandleRoute(object, *evt_data);
-      } else if (!strcmp(object.name(), "trk")) {
-        HandleTrack(object, *evt_data);
-      } else if (!strcmp(object.name(), "wpt")) {
-        HandleWaypoint(object, *evt_data);
+  UpdateReturnStatus(RestServerResult::NoError);
+  switch (evt_data->cmd) {
+    case RestIoEvtData::Cmd::Ping:
+      return;
+    case RestIoEvtData::Cmd::CheckWrite: {
+      auto guid = evt_data->payload;
+      auto dup = m_route_ctx.find_route_by_guid(guid);
+      if (!dup || evt_data->force || m_overwrite) {
+        UpdateReturnStatus(RestServerResult::NoError);
+      } else {
+        UpdateReturnStatus(RestServerResult::DuplicateRejected);
       }
+      return;
     }
-  } else {
-    UpdateReturnStatus(RestServerResult::ObjectParseError);
+    case RestIoEvtData::Cmd::Object: {
+      pugi::xml_document doc;
+      pugi::xml_parse_result result = doc.load_file(m_upload_path.c_str());
+      if (result.status == pugi::status_ok) {
+        m_upload_path.clear();  // empty for next time
+
+        pugi::xml_node objects = doc.child("gpx");
+        for (pugi::xml_node object = objects.first_child(); object;
+             object = object.next_sibling()) {
+          if (!strcmp(object.name(), "rte")) {
+            HandleRoute(object, *evt_data);
+          } else if (!strcmp(object.name(), "trk")) {
+            HandleTrack(object, *evt_data);
+          } else if (!strcmp(object.name(), "wpt")) {
+            HandleWaypoint(object, *evt_data);
+          }
+        }
+      } else {
+        UpdateReturnStatus(RestServerResult::ObjectParseError);
+      }
+      break;
+    }
   }
 }
 
