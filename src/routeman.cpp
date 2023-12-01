@@ -1339,8 +1339,8 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       icon_larger = pmi->iconImage.Resize(
           wxSize(w, h), wxPoint(w / 2 - w0 / 2, h / 2 - h0 / 2));
     } else {
-      // rescale in one or two directions to avoid cropping, then resize to fit
-      // to cell
+      // We want to maintain the aspect ratio of the original image, but need the canvas to fit the fixed cell size
+      // rescale in one or two directions to avoid cropping, then resize to fit to cell (Adds border/croops as necessary)
       int h1 = h;
       int w1 = w;
       if (h0 > h)
@@ -1349,8 +1349,7 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       else if (w0 > w)
         h1 = wxRound((double)h0 * ((double)w / (double)w0));
 
-      icon_larger = pmi->iconImage.Rescale(w1, h1);
-      icon_larger = icon_larger.Resize(wxSize(w, h),
+      icon_larger = pmi->iconImage.Rescale(w1, h1).Resize(wxSize(w, h),
                                        wxPoint(w / 2 - w1 / 2, h / 2 - h1 / 2));
     }
 
