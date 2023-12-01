@@ -53,6 +53,7 @@ enum class RestServerResult {
   NoError = 0,
   GenericError,
   ObjectRejected,
+  ObjectParseError,
   DuplicateRejected,
   RouteInsertError,
   NewPinRequested,

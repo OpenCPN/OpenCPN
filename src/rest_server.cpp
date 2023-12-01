@@ -400,7 +400,11 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       UpdateReturnStatus(RestServerResult::DuplicateRejected);
     }
     return;
+  } else  if (evt_data->cmd == RestIoEvtData::Cmd::Ping) {
+    UpdateReturnStatus(RestServerResult::NoError);
+    return;
   }
+
   // Load the GPX file
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load_file(m_upload_path.c_str());
@@ -418,6 +422,8 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
         HandleWaypoint(object, *evt_data);
       }
     }
+  } else {
+    UpdateReturnStatus(RestServerResult::ObjectParseError);
   }
 }
 

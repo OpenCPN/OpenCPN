@@ -140,7 +140,7 @@ protected:
       std::ifstream f(path.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");  // Bad api key
+      EXPECT_EQ(result, "{\"result\": 6}");  // Bad api key
     }{
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
@@ -243,7 +243,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");   // New pin required
+      EXPECT_EQ(result, "{\"result\": 6}");   // New pin required
     } {
       // Try to transfer using api key set up above.
       fs::path curl_prog(CURLPROG);
@@ -286,7 +286,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate rejected
+      EXPECT_EQ(result, "{\"result\": 4}");     // Duplicate rejected
     } {
       // Try to transfer same object using argument force
       fs::path curl_prog(CURLPROG);
@@ -338,7 +338,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");     // New pin required
+      EXPECT_EQ(result, "{\"result\": 6}");     // New pin required
     } {
       // Try check our standard object, fix the api key
       auto key = m_rest_server.m_key_map["1.2.3.4"];
@@ -375,7 +375,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate reject
+      EXPECT_EQ(result, "{\"result\": 4}");     // Duplicate reject
     }
   }
 };
