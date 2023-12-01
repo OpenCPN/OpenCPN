@@ -36,21 +36,39 @@ static const char* const  kName  = "_OpenCPN_SILock";
 
 static void KillProcess(int pid) {
 #ifdef _MSC_VER
-  const auto proc = OpenProcess(PROCESS_TERMINATE, false, pid);
-  TerminateProcess(proc, 1);
-  CloseHandle(proc);
+  if (GetCurrentProcessId() != pid) {
+    const auto proc = OpenProcess(PROCESS_TERMINATE, false, pid);
+    TerminateProcess(proc, 1);
+    CloseHandle(proc);
+  }
 #else
-  kill(static_cast<pid_t>(pid), SIGKILL);
+  if (pid != getpid()) kill(static_cast<pid_t>(pid), SIGKILL);
 #endif
 }
 
-WxInstanceCheck::WxInstanceCheck() {
+//
+// Since required global variables does not exist from the beginning we
+// use lazy  init, postponed until object is actually used. At this point
+// required  globals should be in place
+WxInstanceCheck::WxInstanceCheck()
+       : m_checker(new wxSingleInstanceChecker), is_inited(false) { }
+
+void WxInstanceCheck::Init() {
+  assert(g_BasePlatform && "NULL g_BasePlatform");
   wxString dir = g_BasePlatform ->GetPrivateDataDir();
-  if (!m_checker.Create(kName, dir)) {
+  if (!m_checker->Create(kName, dir)) {
     WARNING_LOG << "Cannot create instance locker (!)";
   }
+  is_inited = true;
 }
+
+bool  WxInstanceCheck::IsMainInstance() {
+  if (!is_inited) Init();
+  return !m_checker->IsAnotherRunning();
+}
+
 void WxInstanceCheck::CleanUp() {
+  if (!is_inited) Init();
   wxFileName lockfile(g_BasePlatform ->GetPrivateDataDir(), kName);
   if (!wxFileExists(lockfile.GetFullPath())) return;
 
@@ -66,4 +84,10 @@ void WxInstanceCheck::CleanUp() {
   }
   wxRemoveFile(lockfile.GetFullPath());
   if (pid != -1) KillProcess(pid);
+}
+
+void WxInstanceCheck::OnExit() {
+  if (!is_inited) Init();
+  delete m_checker;
+  m_checker = 0;
 }

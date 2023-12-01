@@ -27,7 +27,7 @@
 #include "local_api.h"
 
 /**
- * \file 
+ * \file  ipc-api.h
  * Server and client CLI api implementations.
  */
 

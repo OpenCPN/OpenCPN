@@ -1096,15 +1096,16 @@ int MyApp::OnRun() {
   return wxAppConsole::OnRun();
 }
 
-MyApp::MyApp() : m_RESTserver(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
-                              g_bportable),
-                 m_exitcode(-2) {
+MyApp::MyApp()
+    : m_checker(InstanceCheck::GetInstance()),
+      m_RESTserver(PINCreateDialog::GetDlgCtx(),
+      RouteCtxFactory(),
+      g_bportable),
+      m_exitcode(-2) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-
   if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
     setenv("GDK_BACKEND", "x11", 1);
-
 #endif   // __linux__
 }
 
@@ -1129,7 +1130,6 @@ bool MyApp::OnInit() {
   dc.SelectObject(bmp);
   dc.DrawText(_T("X"), 0, 0);
 #endif
-  m_checker = 0;
 
   // Instantiate the global OCPNPlatform class
   g_Platform = new OCPNPlatform;
@@ -1137,9 +1137,8 @@ bool MyApp::OnInit() {
 #ifndef __ANDROID__
   //  We allow only one instance unless the portable option is used
   if (!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
-    auto& instance_chk = InstanceCheck::GetInstance();
-    instance_chk.WaitUntilValid();
-    if (instance_chk.IsMainInstance()) {
+    m_checker.WaitUntilValid();
+    if (m_checker.IsMainInstance()) {
       // Server is created on first call to GetInstance()
       if (m_parsed_cmdline.action == CmdlineAction::Skip) {
         auto& server = LocalServerApi::GetInstance();
@@ -1153,13 +1152,13 @@ bool MyApp::OnInit() {
       try {
         client = LocalClientApi::GetClient();
       } catch (LocalApiException& ie) {
-        std::cerr << "Ipc client exception: " << ie.str() << "\n" << std::flush;
+        WARNING_LOG << "Ipc client exception: " << ie.str();
         // If we get here it means that the instance_chk found another
         // running instance. But that instance is for some reason not
         // reachable. The safe thing to do is delete the lockfile and exit.
         // Next start  will proceed normally. This may leave a zombie OpenCPN,
         // but at least O starts.
-        instance_chk.CleanUp();
+        m_checker.CleanUp();
         wxMessageBox(_("Sorry, an existing instance of OpenCPN may be too busy "
                        "to respond.\nPlease retry."),
                      "OpenCPN", wxICON_INFORMATION | wxOK);
@@ -2048,8 +2047,9 @@ bool MyApp::OnInit() {
 }
 
 int MyApp::OnExit() {
-  wxLogMessage(_T("opencpn::MyApp starting exit."));
 
+  wxLogMessage(_T("opencpn::MyApp starting exit."));
+  m_checker.OnExit();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
   wxDateTime lognow = wxDateTime::Now();
@@ -2160,8 +2160,6 @@ void RestoreSystemColors(void);
 #endif
 
   FontMgr::Shutdown();
-
-  delete m_checker;
 
   g_Platform->OnExit_2();
   safe_mode::clear_check();

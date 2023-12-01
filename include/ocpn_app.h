@@ -34,7 +34,7 @@
 #include <wx/event.h>
 #endif  // precompiled headers
 
-#include <wx/snglinst.h>
+#include <instance_check.h>
 
 #include "comm_bridge.h"
 #include "local_api.h"
@@ -70,7 +70,7 @@ public:
 
   Track* TrackOff(void);
 
-  wxSingleInstanceChecker* m_checker;
+  InstanceCheck& m_checker;
   CommBridge m_comm_bridge;
 
   RestServer m_RESTserver;

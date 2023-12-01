@@ -20,11 +20,15 @@
 #ifndef INSTANCE_CHECK_H__
 #define INSTANCE_CHECK_H__
 
+#include <memory>
+
 /** Common interface for all instance checkers. */
 class InstanceCheck {
 public:
     /** @return Reference to an InstanceCheck implementation. */
     static InstanceCheck& GetInstance();
+
+    virtual ~InstanceCheck() = default;
 
     /** Return true if this process is the primary opencpn instance. */
     virtual bool IsMainInstance() = 0;
@@ -37,6 +41,9 @@ public:
      * and defunct opencpn processes.
      */
     virtual void CleanUp() {};
+
+    /** Do whatever needed before wxWidget's checks triggers. */
+    virtual void OnExit () {};
 };
 
 #endif   // INSTANCE_CHECK_H__

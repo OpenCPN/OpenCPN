@@ -29,12 +29,20 @@ class WxInstanceCheck : public InstanceCheck {
 public:
   WxInstanceCheck();
 
-  bool IsMainInstance() override { return !m_checker.IsAnotherRunning(); }
+  ~WxInstanceCheck() { if (m_checker) delete m_checker; }
+
+  bool IsMainInstance() override;
 
   void CleanUp() override;
 
+  void OnExit() override;
+
+
 private:
-  wxSingleInstanceChecker m_checker;
+  void Init();
+
+  wxSingleInstanceChecker* m_checker;
+  bool is_inited;
 };
 
 #endif   // _WX_INST_CHECK__
