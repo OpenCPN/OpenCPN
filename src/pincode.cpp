@@ -27,31 +27,7 @@
 #include <sstream>
 
 #include "picosha2.h"
-/**
-// Need a new PIN confirmation
-    m_dPIN = wxMin(rand() % 10000 + 1, 9999);
-    m_sPIN.Printf("%04d", m_dPIN);
 
-    std::string new_api_key = PINtoRandomKeyString(m_dPIN);
-
-
-unsigned long long PINtoRandomKey( int dpin) {
-  std::linear_congruential_engine<unsigned long long, 48271, 0, 0xFFFFFFFFFFFFFFFF> engine;
-  engine.seed( dpin );
-  unsigned long long r = engine(); 
-  return r;
-
-}   
-
-std::string PINtoRandomKeyString( int dpin) {
-  unsigned long long pin = PINtoRandomKey(dpin);
-  char buffer[100];
-  snprintf(buffer, sizeof(buffer)-1, "%0llX", pin);
-  return std::string(buffer);
-}   
-
-
-**/
 std::string Pincode::CompatHash() {
   std::linear_congruential_engine<unsigned long long, 48271, 0,
 	                          0xFFFFFFFFFFFFFFFF> engine;

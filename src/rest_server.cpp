@@ -71,7 +71,7 @@ struct RestIoEvtData {
     return {Cmd::Object, key, src, gpx_data, _force};
   }
 
-  /** Create a Cod::Ping instance: */
+  /** Create a Cmd::Ping instance: */
   static RestIoEvtData CreatePingData(const std::string& key,
                                       const std::string& src) {
     return {Cmd::Ping, key, src, "", false};
@@ -188,12 +188,9 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
 
   if (ev == MG_EV_ACCEPT /*&& fn_data != NULL*/) {
     struct mg_tls_opts opts = {0};
-    memset(&opts, 0, sizeof(mg_tls_opts));  // FIXME (leamas)
-
-    opts.ca =
-        nullptr;  //   "cert.pem";       // Uncomment to enable two-way SSL
-    opts.cert = parent->m_cert_file.c_str();    // Certificate PEM file
-    opts.certkey = parent->m_key_file.c_str();  // The key PEM file
+    opts.ca = nullptr;  //   "cert.pem"  Uncomment to enable two-way SSL
+    opts.cert = parent->m_cert_file.c_str();
+    opts.certkey = parent->m_key_file.c_str();
     opts.ciphers = nullptr;
     mg_tls_init(c, &opts);
   } else if (ev == MG_EV_TLS_HS) {  // Think of this as "start of session"
@@ -304,10 +301,10 @@ bool RestServer::StartServer(const fs::path& certificate_location) {
 }
 
 void RestServer::StopServer() {
-  wxLogMessage(wxString::Format("Stopping REST service"));
+  wxLogDebug("Stopping REST service");
   //  Kill off the IO Thread if alive
   if (m_thread.joinable()) {
-    wxLogMessage("Stopping io thread");
+    wxLogDebug("Stopping io thread");
     m_io_thread.Stop();
     m_io_thread.WaitUntilStopped();
     m_thread.join();
@@ -373,8 +370,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       return;
     case ORS_CHUNK_LAST:
       // Cancel existing dialog and close temp file
-      wxEvent* event = new wxCloseEvent;
-      wxQueueEvent(m_pin_dialog, event);
+      wxQueueEvent(m_pin_dialog, new wxCloseEvent);
       if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
 
       // Io thread might be waiting for return_status on notify_one()

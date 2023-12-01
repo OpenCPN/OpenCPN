@@ -48,16 +48,21 @@ namespace fs = std::filesystem;
 #include "route.h"
 #include "track.h"
 
-/** Return codes from HandleServerMessage and eventually in the http response */
+/**
+ *  Return codes from HandleServerMessage and eventually in the http response
+ *  Since they are transported as integers on the wire they cannot really be
+ *  changed without breaking compatibility with older servers. Adding new types
+ *  should be fine.
+ */
 enum class RestServerResult {
   NoError = 0,
-  GenericError,
-  ObjectRejected,
-  ObjectParseError,
-  DuplicateRejected,
-  RouteInsertError,
-  NewPinRequested,
-  Void
+  GenericError = 1,
+  ObjectRejected = 2,
+  DuplicateRejected = 3,
+  RouteInsertError = 4,
+  NewPinRequested = 5,
+  ObjectParseError = 6,
+  Void = 100
 };
 
 /** Dialog return codes. */
@@ -112,22 +117,23 @@ public:
  *
  * Opencpn REST API
  *
- * Supports the following endpoints:
+ * Supported endpoints:
  *
  *  GET /api/ping?api_key=`<pincode>`  &source=`<ip address>`  <br>
  *  Basic ping check, verifies api_key i. e., the pairing.
  *    - Parameters:
- *           See below <br>
+ *        - source=`<ip>` Mandatory, origin ip address or hostname.
+ *        - api_key=`<key>` Mandatory, as obtained when pairing, see below.
  *    - Returns:
- *           {"result": `<code>`}
+ *        {"result": `<code>`}
  *
- *  POST /api/rx_object?api_key=`<pincode>` &source=`<ip address>`&force=1 <br>
- *  Upload a GPX route, track or waypoints.
+ *  POST /api/rx_object?api_key=`<pincode>`&source=`<ip address>`&force=1 <br>
+ *  Upload GPX route(s), track(s) or waypoint(s).
  *     - Parameters:
- *         - source=`<ip>` Mandatory, origin ip address or hostname
- *         - force=`<1>` f present, the host object is unconditionally
- *           updated. If not, host may run a "OK to overwrite" dialog.
+ *         - source=`<ip>` Mandatory, origin ip address or hostname.
  *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *         - force=`<1>` if present, the host object is unconditionally
+ *           updated. If not, host may run a "OK to overwrite" dialog.
  *
  *     - Body:
  *         xml-encoded GPX data for one or more route(s), track(s) and/or
@@ -137,12 +143,17 @@ public:
  *
  *  GET /api/writable?guid=<`guid>`  <br>
  *  Check if route or waypoint with given guid is writable. <br>
- *    - Returns::
+ *    - Parameters:
+ *         - source=`<ip>` Mandatory, origin ip address or hostname.
+ *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *         - guid=`<guid>` Route, waypoint or track guid.
+ *    - Returns:
  *         {"result": `<code>`}
  *
  *  GET /api/get-version  <br>
  *  Return current server version string. Does not require api_key or source.
- *    - Returns (example::
+ *    - Parameters: None
+ *    - Returns (example):
  *        {"version": "5.8.9" }
  *
  * Authentication uses a pairing mechanism. When an unpaired device
@@ -174,10 +185,8 @@ public:
 
   ~RestServer() override;
 
-  /** Start the server thread. */
   bool StartServer(const fs::path& certificate_location) override;
 
-  /** Stop server thread, blocks until completed. */
   void StopServer() override;
 
   /** IoThread interface.*/

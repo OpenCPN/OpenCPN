@@ -57,16 +57,16 @@ static void ConfigSetup() {
 static std::vector<std::string> GetLocalAddresses() {
   struct ifaddrs* ifAddrStruct = 0;
   struct ifaddrs* ifa = 0;
-  void* tmpAddrPtr = 0;
+  void* tmp_addr = 0;
   std::vector<std::string> retvals;
 
   getifaddrs(&ifAddrStruct);
   for (ifa = ifAddrStruct; ifa; ifa = ifa->ifa_next) {
     if (!ifa->ifa_addr) continue;
     if (ifa->ifa_addr->sa_family == AF_INET) {
-      tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+      tmp_addr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
       char address_buffer[INET_ADDRSTRLEN];
-      inet_ntop(AF_INET, tmpAddrPtr, address_buffer, INET_ADDRSTRLEN);
+      inet_ntop(AF_INET, tmp_addr, address_buffer, INET_ADDRSTRLEN);
       retvals.push_back(address_buffer);
     }
   }
@@ -140,7 +140,7 @@ protected:
       std::ifstream f(path.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 6}");  // Bad api key
+      EXPECT_EQ(result, "{\"result\": 5}");  // Bad api key
     }{
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
@@ -243,7 +243,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 6}");   // New pin required
+      EXPECT_EQ(result, "{\"result\": 5}");   // New pin required
     } {
       // Try to transfer using api key set up above.
       fs::path curl_prog(CURLPROG);
@@ -286,7 +286,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 4}");     // Duplicate rejected
+      EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate rejected
     } {
       // Try to transfer same object using argument force
       fs::path curl_prog(CURLPROG);
@@ -338,7 +338,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 6}");     // New pin required
+      EXPECT_EQ(result, "{\"result\": 5}");     // New pin required
     } {
       // Try check our standard object, fix the api key
       auto key = m_rest_server.m_key_map["1.2.3.4"];
@@ -375,7 +375,7 @@ protected:
       std::ifstream f(outpath.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 4}");     // Duplicate reject
+      EXPECT_EQ(result, "{\"result\": 3}");     // Duplicate reject
     }
   }
 };

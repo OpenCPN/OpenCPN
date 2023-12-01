@@ -31,7 +31,6 @@
 #include <wx/string.h>
 
 #include "route.h"
-//#include "navutil.h"
 #include "comm_n0183_output.h"
 
 /*  Wrapped interface from higher level objects   */
