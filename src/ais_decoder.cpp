@@ -3345,8 +3345,6 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             b_posn_report = true;
             ptd->PositionReportTicks = now.GetTicks();
             ptd->b_nameValid = true;
-            ptd->b_show_AIS_CPA = false;
-            ptd->bCPA_Valid = false;
 
             parse_result = true;
           }
@@ -3499,8 +3497,6 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             b_posn_report = true;
             ptd->PositionReportTicks = now.GetTicks();
             ptd->b_nameValid = true;
-            ptd->b_show_AIS_CPA = false;
-            ptd->bCPA_Valid = false;
 
             parse_result = true;
           }
@@ -3840,6 +3836,11 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   if (dist <= 1e-5) ptarget->Brg = -1.0;  // Brg is undefined if Range == 0.
 
   if (!ptarget->b_positionOnceValid || !bGPSValid) {
+    ptarget->bCPA_Valid = false;
+    return;
+  }
+  //  Ais Meteo is not a hard target in danger for collision
+  if (ptarget->Class == AIS_METEO) {
     ptarget->bCPA_Valid = false;
     return;
   }
