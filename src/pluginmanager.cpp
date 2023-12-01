@@ -1481,7 +1481,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
               if (priority > 0) break;
               opencpn_plugin_18* ppi =
                   dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
-              if (ppi) b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+              if (ppi) b_rendered = ppi->RenderOverlay(mdc, &pivp);
               break;
             }
             case 116:
@@ -1490,12 +1490,12 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
               opencpn_plugin_18* ppi =
                   dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
               if (ppi) {
-                b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+                b_rendered = ppi->RenderOverlay(mdc, &pivp);
               }
               opencpn_plugin_116* ppi116 =
                   dynamic_cast<opencpn_plugin_116*>(pic->m_pplugin);
               if (ppi116)
-                b_rendered = ppi116->RenderOverlayMultiCanvas(*pdc, &pivp,
+                b_rendered = ppi116->RenderOverlayMultiCanvas(mdc, &pivp,
                                                               g_canvasConfig);
               break;
             }
@@ -1504,14 +1504,14 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
                 if (ppi) {
-                  b_rendered = ppi->RenderOverlay(*pdc, &pivp);
+                  b_rendered = ppi->RenderOverlay(mdc, &pivp);
                 }
               }
               opencpn_plugin_118* ppi118 =
                   dynamic_cast<opencpn_plugin_118*>(pic->m_pplugin);
               if (ppi118)
                 b_rendered = ppi118->RenderOverlayMultiCanvas(
-                    *pdc, &pivp, g_canvasConfig, priority);
+                    mdc, &pivp, g_canvasConfig, priority);
               break;
             }
             default: {
