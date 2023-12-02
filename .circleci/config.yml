@@ -1,9 +1,13 @@
 ---
+# Buildpack images found at: https://hub.docker.com/_/buildpack-deps/
+
 version: 2
 jobs:
   build-bookworm:
     docker:
-      - image: debian:bookworm
+      - image: leamas/debian-git:bookworm
+      # bookworm-scm fails on non-existing /etc/apt/sources.list
+      # - image: buildpack-deps:bookworm-scm
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PW
@@ -29,14 +33,16 @@ jobs:
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
 
-  build-focal:
+  build-jammy:
     docker:
-      - image: circleci/buildpack-deps:focal-scm
+      - image: leamas/ubuntu-git:jammy
+      # jammy-scm fails on missing sudo
+      # - image: buildpack-deps:jammy-scm
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PW
     environment:
-      - OCPN_TARGET: focal-gtk3
+      - OCPN_TARGET: jammy
       - CMAKE_BUILD_PARALLEL_LEVEL: 2
     steps:
       - checkout
@@ -161,7 +167,7 @@ workflows:
       - build-bionic:
           <<: *std-filters
 
-      - build-focal:
+      - build-jammy:
           <<: *std-filters
 
       - build-flatpak:
