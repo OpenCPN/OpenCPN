@@ -1,6 +1,20 @@
 ---
 version: 2
 jobs:
+  build-bookworm:
+    docker:
+      - image: debian:bookworm
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PW
+    environment:
+      - OCPN_TARGET: bookworm
+    steps:
+      - checkout
+      - run: cat /etc/apt/sources.list
+      - run: ci/generic-build-debian.sh
+      - run: ci/generic-upload.sh
+
   build-bionic:
     docker:
       - image: circleci/buildpack-deps:bionic-scm
@@ -14,6 +28,7 @@ jobs:
       - run: cat /etc/apt/sources.list
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
+
   build-focal:
     docker:
       - image: circleci/buildpack-deps:focal-scm
@@ -28,6 +43,7 @@ jobs:
       - run: cat /etc/apt/sources.list
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
+
   build-flatpak:
     working_directory: ~/OpenCPN
     machine:
@@ -139,6 +155,9 @@ workflows:
   version: 2
   build_all:
     jobs:
+      - build-bookworm:
+          <<: *std-filters
+
       - build-bionic:
           <<: *std-filters
 
