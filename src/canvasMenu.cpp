@@ -647,7 +647,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
             MenuAppend1(menuAIS, ID_DEF_MENU_AIS_CPA, _("Show Target CPA"));
         }
         MenuAppend1(menuAIS, ID_DEF_MENU_AISTARGETLIST, _("Target List..."));
-        if (1 /*g_bAISShowTracks*/) {
+        if (myptarget->Class != AIS_METEO /*g_bAISShowTracks*/) {
           if (myptarget && myptarget->b_show_track)
             MenuAppend1(menuAIS, ID_DEF_MENU_AISSHOWTRACK,
                         _("Hide Target Track"));

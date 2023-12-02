@@ -44,6 +44,7 @@
   int airpress;         // value+799 hPa NAN = 511(1310)
   int airpress_tend;    // NAN = 3
   double hor_vis;       // NAN = 127(12.7)
+  bool hor_vis_GT;      // Greater than
   double water_lev_dev; // Water level deviation (incl.tide) NAN = 30
   double water_level;   // Water level NAN = -32,768
   int water_lev_trend;  // NAN = 3
