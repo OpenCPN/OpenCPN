@@ -126,38 +126,33 @@ jobs:
            - /usr/local/lib
       - run: ci/generic-upload.sh
 
+std-filters: &std-filters
+  filters:
+    branches:
+     only:
+        - master
+        - build
+        - flatpak
+
+
 workflows:
   version: 2
   build_all:
     jobs:
       - build-bionic:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
+
       - build-focal:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
+
       - build-flatpak:
-          filters:
-            branches:
-              only:
-                - flatpak
-                - master
+          <<: *std-filters
+
       - build-android-armhf:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
+
       - build-macos-universal:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
+
       - build-macos-intel-legacy:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
