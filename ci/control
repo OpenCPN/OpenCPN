@@ -1,44 +1,78 @@
 Source: opencpn
-Build-Depends: debhelper (>= 9),
- cmake3 | cmake (>> 3.5.0),
+Maintainer: Alec Leamas <leamas.alec@gmail.com>
+Section: misc
+Priority: optional
+Build-Depends: debhelper-compat (>= 11),
+ cmake,
+ googletest (>= 1.11.0) | base-files,
  libarchive-dev,
  libbz2-dev,
- libcairo2-dev,
- libcurl4-openssl-dev,
+ libcurl4-gnutls-dev | libcurl4-openssl-dev,
+ libcxx-serial-dev | base-files (<< 12),
+ libdrm-dev,
  libelf-dev,
  libexif-dev,
- libgdk-pixbuf2.0-dev,
- libgl1-mesa-dev,
- libglib2.0-dev,
+ libgdk-pixbuf-2.0-dev | base-files (<< 12),
+ libglew-dev,
+ libgtk-3-dev,
+ libjs-highlight.js,
+ libjs-mathjax,
  liblz4-dev,
  liblzma-dev,
  libpango1.0-dev,
- libsndfile1-dev,
- libssl-dev,
  libsqlite3-dev,
+ libssl-dev,
  libtinyxml-dev,
  libudev-dev,
- libunarr-dev | base-files (<< 11),
+ libunarr-dev | base-files (<< 12),
  libusb-1.0-0-dev,
- libglew-dev,
- base-files (>=11) | libwxgtk3.0-dev,
+ libwxsvg-dev (>= 2:1.5.21) | base-files (<< 12),
  base-files (>=11) | libwxgtk3.0-0v5 | libwxgtk3.0-0,
- libwxgtk3.0-gtk3-dev | base-files (<< 10),
- base-files (>=10) | libwxgtk-webview3.0-dev,
- libwxgtk-webview3.0-gtk3-dev | base-files (<< 11),
- libwxsvg-dev | base-files (<< 11),
+ libwxgtk3.2-dev | libwxgtk3.0-gtk3-dev | base-files (<< 10),
+ libwxgtk-webview3.2-dev | libwxgtk-webview3.0-gtk3-dev | base-files (<< 11),
+ lsb-release,
  portaudio19-dev,
  rapidjson-dev
-
-Standards-Version: 4.3.0
+Standards-Version: 4.6.2
+Vcs-Browser: https://gitlab.com/leamas/opencpn
+Vcs-Git: https://gitlab.com/leamas/opencpn.git -b debian/sid
 Homepage: https://opencpn.org
+Rules-Requires-Root: no
 
-Description: Packages needed to build opencpn on debian.
- The Build-Depends field can be used to install dependencies
- using something like:
+Package: opencpn
+Architecture: any
+Depends: opencpn-data (>= ${source:Version}),
+ bzip2,
+ libjs-mathjax,
+ libjs-highlight.js,
+ ${shlibs:Depends},
+ ${misc:Depends}
+Recommends: wx3.0-i18n
+Breaks: opencpn-plugins (<< 4.8.8~)
+Replaces: opencpn-plugins (<< 4.8.8~)
+Suggests: binutils
+Description: Open Source Chartplotter and Marine GPS Navigation Software
+ Chart Plotter and Navigational software program for use underway
+ or as a planning tool. Developed by a team of active sailors using real
+ world conditions for program testing and refinement.
+ By default supports raster and vector formats like BSB and S63. Support for
+ many other formats are available in plugins. Other plugins provides
+ support for e. g., AIS, radar and weather maps.
+ Application has language support in 20+ languages.
  .
- .   sudo apt install devscripts equivs
- .   sudo mk-build-deps --install ci/control
+ This package contains programs, libraries and some support files.
+
+Package: opencpn-data
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
+ Chart Plotter and Navigational software program for use underway
+ or as a planning tool. Developed by a team of active sailors using real
+ world conditions for program testing and refinement.
+ By default supports raster and vector formats like BSB and S63. Support for
+ many other formats are available in plugins. Other plugins provides
+ support for e. g., AIS, radar and weather maps.
+ Application has language support in 20+ languages.
  .
- These packages are available in trusty+. The base-files
- fallback is for optional packages available in later releases.
+ This package contains architecture independent data files.
