@@ -36,6 +36,7 @@ finish-args:
     - --share=network
     - --device=all
     - --allow=canbus
+    - --talk-name=org.opencpn.OpenCPN.*
 
 add-extensions:
     org.opencpn.OpenCPN.Plugin:
@@ -176,10 +177,10 @@ modules:
             BUILD_NUMBER: "0"
             CCACHE_DISABLE: "1"
       # See comment at top
-      # run-tests: true
-      # test-rule:
-      # test-commands:
-      #     - cd .flatpak-builder/build/opencpn/_flatpak_build; make run-tests;
+      run-tests: true
+      test-rule:
+      test-commands:
+          - cd  /run/build/opencpn/_flatpak_build/test; ./tests
       post-install:
           - install -d /app/extensions
           - sed -i '/^Exec=/s/=.*/=opencpn.sh/' /app/share/applications/opencpn.desktop
