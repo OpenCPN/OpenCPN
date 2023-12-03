@@ -44,6 +44,7 @@ endif ()
 if (NOT MSVC)
   target_compile_options(tests PUBLIC "-O0")
 endif ()
+
 target_compile_definitions(tests
   PUBLIC
     CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
@@ -72,6 +73,12 @@ if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   target_include_directories(ipc-srv-tests PRIVATE ../include)
   add_dependencies(ipc-srv-tests cli-server ipc-client)
 endif ()
+
+target_compile_definitions(tests
+  PUBLIC
+    CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
+    TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+)
 
 if (MSVC)
   target_link_libraries(tests
@@ -128,6 +135,7 @@ target_link_libraries(tests PRIVATE ocpn::mDNS)
 target_link_libraries(tests PRIVATE ocpn::mongoose)
 target_link_libraries(tests PRIVATE ocpn::N2KParser)
 target_link_libraries(tests PRIVATE ocpn::nmea0183)
+target_link_libraries(tests PRIVATE ocpn::opencpn)
 target_link_libraries(tests PRIVATE pico_sha2)
 target_link_libraries(tests PRIVATE ocpn::pugixml)
 target_link_libraries(tests PRIVATE ocpn::rapidjson)
@@ -245,23 +253,28 @@ if (APPLE)
 endif ()
 add_executable(wx-instance ${WX_INSTANCE_SRC})
 target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
-target_include_directories(wx-instance  PRIVATE ../include)
-
-set(STD_INSTANCE_SRC
-  std_instance.cpp
-  ${CMAKE_SOURCE_DIR}/src/std_instance_chk.cpp
-  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-  ${CMAKE_SOURCE_DIR}/src/logger.cpp
-)
-if (APPLE)
-  list(APPEND STD_INSTANCE_SRC ../src/macutils.c)
+target_link_libraries(wx-instance PRIVATE ocpn::opencpn)
+target_include_directories(wx-instance PRIVATE ../include)
+if (MSVC)
+  target_link_libraries(wx-instance PRIVATE setupapi)
 endif ()
-add_executable(std-instance ${STD_INSTANCE_SRC})
-target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
-target_include_directories(std-instance PRIVATE ../include)
 
-add_test(NAME tests COMMAND tests)
+if (UNIX)
+  set(STD_INSTANCE_SRC
+    std_instance.cpp
+    ${CMAKE_SOURCE_DIR}/src/std_instance_chk.cpp
+    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
+    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  )
+  if (APPLE)
+    list(APPEND STD_INSTANCE_SRC ../src/macutils.c)
+  endif ()
+  add_executable(std-instance ${STD_INSTANCE_SRC})
+  target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
+  target_include_directories(std-instance PRIVATE ../include)
+  add_test(NAME tests COMMAND tests)
+endif ()
 
 # Create a batch file which can be used to add paths to downloaded
 # stuff so the tests runs on windows. Assumes things in top_dir\cache
