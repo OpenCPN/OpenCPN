@@ -343,9 +343,9 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name,
             unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
 	    Pincode pincode(dPIN);
 	    std::string api_key = pincode.Hash();
-            SemanticVersion v = GetApiVersion(dest_ip_address);
             RestServerResult result;
-            if (v.major >= 9) {
+            SemanticVersion v = GetApiVersion(dest_ip_address);
+            if (v >= SemanticVersion(5, 9)) {
               result = CheckApiKey(g_hostname.ToStdString(), api_key,
 		                   dest_ip_address);
             } else {
