@@ -3260,13 +3260,18 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
                 ChartPlugInWrapper *ChPI =
                     dynamic_cast<ChartPlugInWrapper *>(chart);
                 if (ChPI) {
+                  SetClipRegion(vp, get_region);
                   RenderNoDTA(vp, get_region);
                   ChPI->RenderRegionViewOnGLNoText(*m_pcontext, vp, rect_region,
                                                    get_region);
+                  DisableClipRegion();
+
                 } else {
+                  SetClipRegion(vp, get_region);
                   RenderNoDTA(vp, get_region);
                   chart->RenderRegionViewOnGL(*m_pcontext, vp, rect_region,
                                               get_region);
+                  DisableClipRegion();
                 }
               }
             }
