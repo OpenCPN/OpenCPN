@@ -48,9 +48,7 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
-static const char* const kVersionReply = R"""(
-{ "version": "@version@" }
-)""";
+static const char* const kVersionReply = R"""( { "version": "@version@" })""";
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
@@ -77,7 +75,7 @@ struct RestIoEvtData {
     return {Cmd::Ping, key, src, "", false};
   }
 
-  /** Cmd::CheckWrite constructor. */
+  /** Create a Cmd::CheckWrite instance. */
   static RestIoEvtData CreateChkWriteData(const std::string& key,
                                           const std::string& src,
                                           const std::string& guid) {
@@ -374,9 +372,6 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       // Cancel existing dialog and close temp file
       wxQueueEvent(m_pin_dialog, new wxCloseEvent);
       if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
-
-      // Io thread might be waiting for return_status on notify_one()
-      UpdateReturnStatus(RestServerResult::GenericError);
       break;
   }
 
