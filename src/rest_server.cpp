@@ -336,6 +336,9 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
   // Need a new PIN confirmation, add it to map and persist
   m_pincode = Pincode::Create();
   std::string new_api_key = m_pincode.Hash();
+  if (evt_data.api_key.size() < 10)  // client sends old-style keys
+    new_api_key = m_pincode.CompatHash();
+
   m_key_map[evt_data.source] = new_api_key;
   SaveConfig();
 
