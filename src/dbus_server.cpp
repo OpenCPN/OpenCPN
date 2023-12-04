@@ -32,6 +32,7 @@
 #include <thread>
 
 #include "dbus_server.h"
+#include "logger.h"
 
 /** Event handler context */
 struct DbusCtx {
@@ -52,6 +53,7 @@ static gpointer static_user_data = 0;
 
 static void OnNameAcquired(GDBusConnection*, const gchar* /* name */,
                            gpointer user_data) {
+  DEBUG_LOG << "OnNameAcquired";
   auto ctx = static_cast<DbusCtx*>(user_data);
   ctx->handler->SetMainInstance(true);
 }
@@ -65,6 +67,7 @@ static void OnNameReleased(GDBusConnection*, const gchar* /* name */,
 /** Bus acquired: register services. Fail silently if not the name owner. */
 static void OnBusAcquired(GDBusConnection* connection, const gchar* /* name */,
                           gpointer user_data) {
+  DEBUG_LOG << "OnBusAcquired";
   auto ctx = static_cast<DbusCtx*>(user_data);
   g_dbus_connection_register_object(
       connection, kDbusObject, ctx->handler->introspection_data->interfaces[0],
@@ -132,6 +135,7 @@ DbusServer::DbusServer()
   m_owner_id = g_bus_own_name(G_BUS_TYPE_SESSION, kDbusName, flags,
                               OnBusAcquired, OnNameAcquired, OnNameReleased,
                               ctx, deleter);
+  DEBUG_LOG << "DbusServer::DbusServer, m_owner_id: " << m_owner_id;
 }
 
 DbusServer::~DbusServer() {

@@ -116,6 +116,7 @@ TEST(DbusServer, Ping) {
   FILE* f = popen(kDbusSendCmd, "r");
   char buff[1024];
   char* line = fgets(buff, sizeof(buff), f);   // initial line, throw.
+std::cout << "Initial line: " << line << "\n";
   EXPECT_TRUE(line);
 
   line = fgets(buff, sizeof(buff), f);  //  "   uint32 21614"
