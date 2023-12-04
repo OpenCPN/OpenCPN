@@ -105,7 +105,9 @@ static void PostEvent(RestServer* parent,
   auto evt = new ObservedEvt(REST_IO_EVT, id);
   evt->SetSharedPtr(evt_data);
   parent->QueueEvent(evt);
+#ifdef UNIT_TESTS
   wxTheApp->ProcessPendingEvents();
+#endif
 }
 
 static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,

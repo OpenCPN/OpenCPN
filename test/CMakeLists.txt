@@ -45,6 +45,7 @@ target_compile_definitions(tests
   PUBLIC
     CLIAPP USE_MOCK_DEFS CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+    UNIT_TESTS
 )
 if (MSVC)
   target_link_libraries(tests
