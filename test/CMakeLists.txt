@@ -169,7 +169,7 @@ if (LIBLZMA_FOUND)
   endif ()
 endif ()
 
-if (LINUX)
+if (UNIX)
   add_executable(dbus_tests
     dbus_tests.cpp
     ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
