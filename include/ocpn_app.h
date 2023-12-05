@@ -49,10 +49,12 @@ public:
 
   bool OnInit() override;
   int OnExit() override;
+#ifndef __ANDROID__
   void OnInitCmdLine(wxCmdLineParser& parser) override;
   bool OnCmdLineHelp(wxCmdLineParser& parser) override;
   bool OnCmdLineParsed(wxCmdLineParser& parser) override;
-  virtual int OnRun() override;
+#endif 
+  int OnRun() override;
 
   void OnActivateApp(wxActivateEvent& event);
   bool OpenFile(const std::string& path);

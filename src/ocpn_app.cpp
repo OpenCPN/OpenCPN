@@ -942,7 +942,7 @@ bool MyApp::OpenFile(const std::string& path) {
   return true;
 }
 
-
+#ifndef __ANDROID__
 void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   // Add OpenCPN specific command line options. Help message
   // is hardcoded in kUsage;
@@ -965,8 +965,14 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   parser.AddOption("o", "open", "", wxCMD_LINE_VAL_STRING,
                    wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
 }
+#endif   // __ANDROID__
 
 /** Parse --loglevel and set up logging, falling back to defaults. */
+#ifdef __ANDROID__
+static void ParseLoglevel(wxCmdLineParser &parser) {
+  wxLog::SetLogLevel(wxLOG_Message);
+}
+#else
 static void ParseLoglevel(wxCmdLineParser &parser) {
   const char *strLevel = std::getenv("OPENCPN_LOGLEVEL");
   strLevel = strLevel ? strLevel : "info";
@@ -982,12 +988,16 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
   }
   wxLog::SetLogLevel(level);
 }
+#endif   // __ANDROID__
 
+#ifndef __ANDROID__
 bool MyApp::OnCmdLineHelp(wxCmdLineParser& parser) {
   std::cout << kUsage;
   return false;
 }
+#endif
 
+#ifndef __ANDROID__
 bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   long number;
   wxString repo;
@@ -1057,6 +1067,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   }
   return true;
 }
+#endif  // __ANDROID__
 
 #ifdef __WXMSW__
 //  Handle any exception not handled by CrashRpt

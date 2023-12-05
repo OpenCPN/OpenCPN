@@ -23,6 +23,14 @@
 #include "ocpn_utils.h"
 #include "logger.h"
 
+#ifdef __ANDROID__
+
+CmdlineAction LocalClientApi::ParseArgs(const wxCmdLineParser& parser,
+                                        std::string& arg) {
+  return CmdlineAction::Skip;
+}
+
+#else
 CmdlineAction LocalClientApi::ParseArgs(const wxCmdLineParser& parser,
                                         std::string& arg) {
   CmdlineAction result = CmdlineAction::Fail;
@@ -48,6 +56,7 @@ CmdlineAction LocalClientApi::ParseArgs(const wxCmdLineParser& parser,
   }
   return result;
 }
+#endif   // __ANDROID__
 
 LocalApiResult LocalClientApi::HandleCmdline(const wxCmdLineParser& parser) {
   std::string arg;
@@ -95,8 +104,8 @@ LocalApiResult LocalClientApi::HandleCmdline(CmdlineAction action,
                 << "\n" << std::flush;
           return result;
         }
-    case CmdlineAction::Skip: 
-      return LocalApiResult(true, "Unknown command CmdlineAction::Skip"); 
+    case CmdlineAction::Skip:
+      return LocalApiResult(true, "Unknown command CmdlineAction::Skip");
   }
   wxLogMessage("Strange code path!");
   return LocalApiResult(false, "Internal error");
