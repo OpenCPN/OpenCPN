@@ -152,16 +152,12 @@ auto shared_navaddr_none = std::make_shared<NavAddr>();
 
 wxLogStderr defaultLog;
 
-#ifdef _WIN32
-static int setenv(const char* name, const char* value, int overwrite)
-{
-    int errcode = 0;
-    if (!overwrite) {
-        size_t envsize = 0;
-        errcode = getenv_s(&envsize, NULL, 0, name);
-        if(errcode || envsize) return errcode;
-    }
-    return _putenv_s(name, value);
+#ifdef _MSC_VER
+int setenv(const char* name, const char* value, bool overwrite) {
+  if (!overwrite) {
+     if (getenv(name)) return 1;
+  }
+  return _putenv_s(name, value);
 }
 #endif
 
@@ -751,7 +747,7 @@ static void UpdateBool0() {
     bool_result0 = true;
 };
 
-#ifdef HAVE_UNISTD_H
+#ifdef __unix__
 class StdInstanceCheck2 : public wxAppConsole {
 public:
   StdInstanceCheck2() {
