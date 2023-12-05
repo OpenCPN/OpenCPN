@@ -96,6 +96,9 @@ public:
 
   static DbusServer& GetInstance();
 
+  /** Clear current singleton instance and disconnect from session bus */
+  static void Disconnect();
+
   DbusServer(DbusServer&) = delete;
   void operator=(const DbusServer&) = delete;
 
@@ -111,6 +114,8 @@ public:
    * could be used to determine the wait time. On my fast development
    * machine 200 us is enough in native Linux, but Flatpak requires
    * longer time.
+   *
+   * TODO: Some kind of lazy evalution to avoid delays?
    */
   void WaitUntilValid() override; 
 
@@ -131,6 +136,7 @@ protected:
   DbusServer();
 
 private:
+  static DbusServer* s_instance;
   bool m_is_main_instance;
   unsigned m_owner_id;
 };

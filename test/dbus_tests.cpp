@@ -28,16 +28,6 @@ wxString g_winPluginDir;
 static bool bool_result0;
 static std::string s_result;
 
-static void EnsureHomedir() {
-#ifdef _MSC_VER
-  wxFileName path("/ProgramData/opencpn/")
-#else
-  wxFileName path("~/.opencpn");
-  path.Normalize(wxPATH_NORM_TILDE);
-#endif
-  if (!path.DirExists()) path.Mkdir();
-}
-
 class DbusRaise : public wxAppConsole {
 public:
 
@@ -116,7 +106,6 @@ TEST(DbusServer, Ping) {
   FILE* f = popen(kDbusSendCmd, "r");
   char buff[1024];
   char* line = fgets(buff, sizeof(buff), f);   // initial line, throw.
-std::cout << "Initial line: " << line << "\n";
   EXPECT_TRUE(line);
 
   line = fgets(buff, sizeof(buff), f);  //  "   uint32 21614"
@@ -137,6 +126,7 @@ std::cout << "Initial line: " << line << "\n";
   g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
   t.join();
+  DbusServer::Disconnect();
 }
 
 TEST(DbusServer, Raise) {
@@ -155,6 +145,7 @@ TEST(DbusServer, Raise) {
   g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
   t.join();
+  DbusServer::Disconnect();
 }
 
 TEST(DbusServer, Quit) {
@@ -167,6 +158,7 @@ TEST(DbusServer, Quit) {
   g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
   t.join();
+  DbusServer::Disconnect();
 }
 
 TEST(DbusServer, Open) {
@@ -206,6 +198,7 @@ TEST(DbusServer, Open) {
   g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
   t.join();
+  DbusServer::Disconnect();
 }
 
 TEST(DbusServer, GetRestEndpoint) {
@@ -239,6 +232,7 @@ TEST(DbusServer, GetRestEndpoint) {
   g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
   t.join();
+  DbusServer::Disconnect();
 }
 
 TEST(Instance, DbusServer) {
@@ -252,17 +246,17 @@ TEST(Instance, DbusServer) {
   g_main_loop_unref(main_loop);
   g_main_loop_quit(main_loop);
   t.join();
-
+  DbusServer::Disconnect();
+  delete dbus_server2;
 }
 
 TEST(DbusClient, Raise) {
-  std::this_thread::sleep_for(200ms);    // WTF
+  DbusServer::Disconnect();
   std::string server_cmd(TEST_ROOT);
   server_cmd += "/test_server.py 1";
   FILE* p = popen(server_cmd.c_str(), "r");
-  std::this_thread::sleep_for(100ms);    // Need some time to start server
+  std::this_thread::sleep_for(50ms);    // Need some time to start server
   DbusLocalClient dbus_local_client;
-  std::this_thread::sleep_for(200ms);
   auto result = dbus_local_client.SendRaise();
   EXPECT_EQ(std::string(""), result.second);
   EXPECT_TRUE(result.first);
@@ -270,6 +264,7 @@ TEST(DbusClient, Raise) {
 }
 
 TEST(DbusClient, Quit) {
+  DbusServer::Disconnect();
   std::string server_cmd(TEST_ROOT);
   server_cmd += "/test_server.py 1";
   FILE* p = popen(server_cmd.c_str(), "r");
@@ -282,6 +277,7 @@ TEST(DbusClient, Quit) {
 }
 
 TEST(DbusClient, Open) {
+  DbusServer::Disconnect();
   auto logfile = std::string(CMAKE_BINARY_DIR) + "/unittests.log";
   wxLog::SetActiveTarget(new OcpnLog(logfile.c_str()));
   wxLog::SetLogLevel(wxLOG_Debug);
@@ -297,6 +293,7 @@ TEST(DbusClient, Open) {
 }
 
 TEST(DbusClient, GetEndpoint) {
+  DbusServer::Disconnect();
   std::string server_cmd(TEST_ROOT);
   server_cmd += "/test_server.py 1";
   FILE* p = popen(server_cmd.c_str(), "r");

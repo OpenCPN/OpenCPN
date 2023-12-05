@@ -112,10 +112,16 @@ static void HandleMethodCall(GDBusConnection*, const gchar* /* sender */,
   }
 }
 
+DbusServer* DbusServer::s_instance = nullptr;
+
 DbusServer& DbusServer::GetInstance() {
-  static DbusServer* server = nullptr; 
-  if (!server) server = new DbusServer();
-  return *server;
+  if (!s_instance) s_instance = new DbusServer();
+  return *s_instance;
+}
+
+void DbusServer::Disconnect() {
+  delete s_instance;
+  s_instance = nullptr;
 }
 
 DbusServer::DbusServer()
@@ -140,6 +146,7 @@ DbusServer::DbusServer()
 
 DbusServer::~DbusServer() {
   if (m_owner_id) g_bus_unown_name(m_owner_id);
+  m_owner_id = 0;
   g_dbus_node_info_unref(introspection_data);
 }
 
