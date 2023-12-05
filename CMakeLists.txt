@@ -1112,7 +1112,6 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
   ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
   ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
-  ${CMAKE_SOURCE_DIR}/src/ipc_factories.cpp
   ${CMAKE_SOURCE_DIR}/src/local_api.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/multiplexer.cpp
@@ -1309,8 +1308,11 @@ if (QT_ANDROID)
   set(GUI_SRC ${GUI_SRC} src/comm_drv_n0183_android_bt.cpp)
 endif ()
 
-set(SRCS ${GUI_SRC} ${MODEL_SRC})
+if (NOT QT_ANDROID)
+  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/ipc_factories.cpp)
+endif ()
 
+set(SRCS ${GUI_SRC} ${MODEL_SRC})
 set(HDRS ${MODEL_HDRS} ${GUI_HDRS})
 
 # Temporary support for #3513, to be removed
@@ -1318,6 +1320,7 @@ file(WRITE ${CMAKE_BINARY_DIR}/gui-src.txt "${GUI_SRC}")
 file(WRITE ${CMAKE_BINARY_DIR}/gui-headers.txt "${GUI_HDRS}")
 file(WRITE ${CMAKE_BINARY_DIR}/model-hdrs.txt "${MODEL_HDRS}")
 file(WRITE ${CMAKE_BINARY_DIR}/model-src.txt "${MODEL_SRC}")
+
 
 
 if (APPLE)

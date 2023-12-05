@@ -5028,7 +5028,11 @@ void MyFrame::InitAppMsgBusListener() {
 
 }
 
-/** Setup handling of events from the local ipc/dbsu API. */
+/** Setup handling of events from the local ipc/dbus API. */
+#ifdef __ANDROID__
+void MyFrame::InitApiListeners() {}
+
+#else
 void MyFrame::InitApiListeners() {
   auto& server = LocalServerApi::GetInstance();
   m_on_raise_listener.Init(server.on_raise, [&](ObservedEvt){ Raise(); });
@@ -5039,6 +5043,7 @@ void MyFrame::InitApiListeners() {
       [](const std::string& path) { return wxGetApp().OpenFile(path); };
 
 }
+#endif
 
 void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
 

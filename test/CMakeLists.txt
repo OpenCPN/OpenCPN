@@ -169,7 +169,7 @@ if (LIBLZMA_FOUND)
   endif ()
 endif ()
 
-if (UNIX)
+if (UNIX AND NOT QT_ANDROID)
   add_executable(dbus_tests
     dbus_tests.cpp
     ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
@@ -180,7 +180,7 @@ if (UNIX)
     ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
     ${CMAKE_SOURCE_DIR}/src/logger.cpp
   )
- target_link_libraries(dbus_tests PRIVATE observable::observable)
+  target_link_libraries(dbus_tests PRIVATE observable::observable)
   target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
   target_link_libraries(dbus_tests PRIVATE glib::glib)
@@ -225,7 +225,7 @@ endif ()
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
 gtest_add_tests(TARGET tests)
-if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
+if (UNIX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT QT_ANDROID)
   gtest_add_tests(TARGET ipc-srv-tests)
   # We don't have a session bus available when testing flatpak
   # so these can just be run in native builds
