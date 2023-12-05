@@ -213,14 +213,14 @@ public:
   BasicTest() {
     const auto config_orig = fs::path(TESTDATA) / "opencpn.conf";
     const auto config_path = fs::path(CMAKE_BINARY_DIR) / "opencpn.conf";
-    const auto log_home = fs::path(CMAKE_BINARY_DIR) / "config-home";
-    if (!fs::exists(log_home)) fs::create_directories(log_home);
-    setenv("XDG_CONFIG_HOME", log_home.string().c_str(), true);
+    auto logfile = fs::path(CMAKE_BINARY_DIR) / "unittests.log";
+    wxLog::SetActiveTarget(new OcpnLog(logfile.string().c_str()));
+    wxLog::SetLogLevel(wxLOG_Debug);
+    wxLog::FlushActive();
     std::remove(config_path.string().c_str());
     fs::copy(config_orig, config_path); 
     InitBaseConfig(new wxFileConfig("", "", config_path.string()));
     g_BasePlatform = new BasePlatform();
-    wxLog::SetActiveTarget(&defaultLog);
     pSelectAIS = new Select();
     pSelect = new Select();
     g_pAIS = new AisDecoder(AisDecoderCallbacks());
