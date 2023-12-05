@@ -227,8 +227,8 @@ include(GoogleTest)
 gtest_add_tests(TARGET tests)
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET ipc-srv-tests)
-endif ()
-if (LINUX)
+  # We don't have a session bus available when testing flatpak
+  # so these can just be run in native builds
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 

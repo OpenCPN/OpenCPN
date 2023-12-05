@@ -137,6 +137,7 @@ modules:
           - type: archive
             url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.tar.bz2
             sha256: 0640e1ab716db5af2ecb7389dbef6138d7679261fbff730d23845ba838ca133e
+      config-opts:
           - --with-gtk=3
           - --with-opengl
           - --with-sdl
@@ -178,9 +179,8 @@ modules:
             CCACHE_DISABLE: "1"
       # See comment at top
       run-tests: true
-      test-rule:
-      test-commands:
-          - cd  /run/build/opencpn/_flatpak_build/test; ./tests
+      # test-commands: cd /run/build/opencpn/_flatpak_build; make run-tests
+      test-rule: run-tests
       post-install:
           - install -d /app/extensions
           - sed -i '/^Exec=/s/=.*/=opencpn.sh/' /app/share/applications/opencpn.desktop
