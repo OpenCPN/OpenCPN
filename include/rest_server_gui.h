@@ -25,9 +25,16 @@
 #ifndef __RESTSERVERGUI_H__
 #define __RESTSERVERGUI_H__
 
+#include <functional>
+#include <string>
+
+#include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/stattext.h>
 #include <wx/checkbox.h>
+
+#include "ocpn_frame.h"
+#include "rest_server.h"
 
 //    Constants for  Dialog
 #define ID_STGDIALOG 10005
@@ -48,6 +55,8 @@ class AcceptObjectDialog : public wxDialog {
 
 public:
   AcceptObjectDialog();
+  AcceptObjectDialog(wxWindow* parent, const wxString& caption,
+                     const wxString& msg1, const wxString msg2);
   AcceptObjectDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
                const wxString& hint, const wxPoint& pos, const wxSize& size,
                long style, const wxString& msg1, const wxString& msg2);
@@ -80,16 +89,24 @@ private:
   wxString m_checkbox1_msg;
 };
 
+
 class PINCreateDialog : public wxDialog {
   DECLARE_DYNAMIC_CLASS(PINCreateDialog)
   DECLARE_EVENT_TABLE()
 
 public:
   PINCreateDialog();
+
   PINCreateDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
                const wxString& hint, const wxPoint& pos, const wxSize& size,
                long style);
   ~PINCreateDialog();
+
+  static RestServerDlgCtx GetDlgCtx();
+
+
+  wxDialog* Initiate(const std::string& msg, const std::string& text1);
+  void DeInit();
 
   bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STG_IDNAME,
               const wxString& caption = SYMBOL_STG_TITLE,

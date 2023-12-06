@@ -27,7 +27,9 @@
 #include "ocpn_types.h"
 #include "routeman_gui.h"
 #include "routeman.h"
+#include "routemanagerdialog.h"
 #include "RoutePropDlg.h"
+#include "RoutePropDlgImpl.h"
 #include "styles.h"
 
 #if wxCHECK_VERSION(3, 1, 2)
@@ -45,6 +47,35 @@ END_EVENT_TABLE()
 
 
 extern Routeman *g_pRouteMan;
+extern RoutePropDlgImpl *pRoutePropDialog;
+extern RouteManagerDialog *pRouteManagerDialog;
+
+RoutePropDlgCtx RoutePropDlg::GetDlgCtx() {
+  struct RoutePropDlgCtx ctx;
+  ctx.set_route_and_update = [&](Route* r) {
+    if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+      pRoutePropDialog->SetRouteAndUpdate(r, true);
+    }
+  };
+  ctx.set_enroute_point = [&](Route* r, RoutePoint* rt) {
+    if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
+      if (pRoutePropDialog->GetRoute() == r) {
+        pRoutePropDialog->SetEnroutePoint(rt);
+      }
+    }
+  };
+  ctx.hide = [&](Route* r) {
+    if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
+        (r == pRoutePropDialog->GetRoute())) {
+      pRoutePropDialog->Hide();
+    }
+  };
+  auto RouteMgrDlgUpdateListCtrl = [&]() {
+    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+      pRouteManagerDialog->UpdateRouteListCtrl();
+  };
+  return ctx;
+}
 
 RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
                            const wxString& title, const wxPoint& pos,

@@ -44,8 +44,11 @@
 #endif
 
 #include "observable_evtvar.h"
+#include "routeman.h"
 
 ///////////////////////////////////////////////////////////////////////////
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class RoutePropDlg
@@ -169,6 +172,8 @@ public:
                             wxTAB_TRAVERSAL);
 
   ~RoutePropDlg();
+
+  static RoutePropDlgCtx GetDlgCtx();
 
   void m_hyperlink1OnContextMenu(wxMouseEvent& event) {
     m_hyperlink1->PopupMenu(m_menuLink, event.GetPosition());

@@ -37,7 +37,7 @@
 #include <wx/snglinst.h>
 
 #include "comm_bridge.h"
-#include "REST_server.h"
+#include "rest_server.h"
 
 class Track;
 
@@ -68,7 +68,7 @@ public:
   wxSingleInstanceChecker* m_checker;
   CommBridge m_comm_bridge;
 
-  RESTServer m_RESTserver;
+  RestServer m_RESTserver;
 
   DECLARE_EVENT_TABLE()
 };

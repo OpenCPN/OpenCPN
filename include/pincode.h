@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Routeman drawing stuff
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+
+ /***************************************************************************
+ *   Copyright (C) 2023 Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,28 +17,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef OPENCPN_INCLUDE_PINCODE_H_
+#define OPENCPN_INCLUDE_PINCODE_H_
 
-#ifndef _ROUTEMAN_GUI_H
-#define _ROUTEMAN_GUI_H
+#include <string>
+#include <cstdint>
 
-#include "routeman.h"
-
-class RoutemanGui {
+/** A random generated int value with accessors for string and hashcode. */
+class Pincode {
 public:
-  RoutemanGui(Routeman& routeman) : m_routeman(routeman) {}
+  /** Create a new pincode based on a random value. */
+  static Pincode Create();
 
-  static RoutemanDlgCtx GetDlgCtx();
+  /** Create a new pincode based on a known value. */
+  Pincode(uint64_t v) { m_value = v; }
 
-  void DeleteAllTracks();
-  void DeleteTrack(Track *pTrack);
-  bool UpdateProgress(); 
+  /** Return numeric value: */
+  uint64_t Get() const;
 
+  /** Return value as string. */
+  std::string ToString() const;
+
+  /** Return a hashvalue string. */
+  std::string Hash() const;
+
+  /** Return a hashvalue as computed on 5.8 hosts. */
+  std::string CompatHash();
+
+  /** convert numeric value to hash string. */
+  static std::string IntToHash(uint64_t value);
 
 private:
-  void DoAdvance(void);
+  uint64_t m_value;
 
-  Routeman& m_routeman;
 };
 
-
-#endif   // _ROUTEMAN_GUI_H
+#endif  // OPENCPN_INCLUDE_PINCODE_H_

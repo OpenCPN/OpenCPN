@@ -82,6 +82,7 @@ class RoutePoint;
 #define RT_OUT_ACTION_UPD 1 << 3
 #define RT_OUT_NO_RTPTS 1 << 4
 
+class NavObjectCollection1;  // forward
 
 bool WptIsInRouteList(RoutePoint *pr);
 RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
@@ -91,6 +92,22 @@ Route *RouteExists(Route *pTentRoute);
 Track *TrackExists(const wxString &guid);
 
 Route *FindRouteContainingWaypoint(RoutePoint *pWP);
+
+Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
+                     bool b_layerviz, int layer_id, bool b_change);
+
+RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString symbol_name,
+                             wxString GUID, bool b_fullviz, bool b_layer,
+                             bool b_layerviz, int layer_id);
+
+
+bool InsertRouteA(Route* pTentRoute, NavObjectCollection1* navobj);
+bool InsertTrack(Track* pTentTrack, bool bApplyChanges = false);
+bool InsertWpt(RoutePoint* pWp, bool overwrite);
+
+
+Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
+                     bool b_layer, bool b_layerviz, int layer_id);
 
 class NavObjectCollection1 : public pugi::xml_document {
 public:

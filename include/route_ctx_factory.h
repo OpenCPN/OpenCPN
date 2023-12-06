@@ -1,11 +1,11 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  Routeman drawing stuff
- * Author:   David Register, Alec Leamas
+ * Purpose:  Wrapper for creating a RouteCtx based on global vars
+ * Author:   Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by Alec Leamas
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,28 +22,40 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#ifndef _ROUTE_CTX_FACTORY_H__
+#define _ROUTE_CTX_FACTORY_H__
 
-#ifndef _ROUTEMAN_GUI_H
-#define _ROUTEMAN_GUI_H
+#include <wx/string.h>
 
+#include "nav_object_database.h"
 #include "routeman.h"
+#include "track.h"
 
-class RoutemanGui {
-public:
-  RoutemanGui(Routeman& routeman) : m_routeman(routeman) {}
+extern Routeman *g_pRouteMan;
+extern std::vector<Track*> g_TrackList;
 
-  static RoutemanDlgCtx GetDlgCtx();
-
-  void DeleteAllTracks();
-  void DeleteTrack(Track *pTrack);
-  bool UpdateProgress(); 
-
-
-private:
-  void DoAdvance(void);
-
-  Routeman& m_routeman;
-};
-
-
-#endif   // _ROUTEMAN_GUI_H
+RouteCtx RouteCtxFactory() {
+    RouteCtx ctx;
+    ctx.find_route_by_guid =
+        [](wxString guid) {
+            if (!g_pRouteMan) return static_cast<Route*>(0);
+            return g_pRouteMan->FindRouteByGUID(guid); };
+    ctx.find_track_by_guid =
+        [](wxString guid) { 
+            if (!g_pRouteMan) return static_cast<Track*>(0);
+            return g_pRouteMan->FindTrackByGUID(guid); };
+    ctx.delete_route =
+        [](Route* route) {
+            if (!g_pRouteMan) return;
+            g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance()); };
+    ctx.delete_track =
+        [](Track* track) {
+            auto it = std::find(g_TrackList.begin(), g_TrackList.end(), track);
+              if (it != g_TrackList.end()) {
+                g_TrackList.erase(it);
+              }
+              delete track;
+        };
+    return ctx;
+}
+#endif   //  _ROUTE_CTX_FACTORY_H__

@@ -32,6 +32,13 @@
 #include "SendToGpsDlg.h"
 #include "comm_n0183_output.h"
 
+static bool ConfirmOverwrite() {
+  int r = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
+                         _("OpenCPN Message"),
+                         wxOK | wxCANCEL | wxICON_QUESTION);
+  return r == wxID_OK;
+}
+
 
 static  N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
   N0183DlgCtx dlg_ctx;
@@ -49,6 +56,7 @@ static  N0183DlgCtx GetDialogCtx(SendToGpsDlg* dialog) {
       dialog->GetProgressGauge()->Pulse(); };
   dlg_ctx.set_message =
       [dialog](const std::string& s) { dialog->SetMessage(wxString(s)); };
+  dlg_ctx.confirm_overwrite = []() { return ConfirmOverwrite(); };
   return dlg_ctx;
 }
 

@@ -2,12 +2,14 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <thread>
 
 #include <wx/event.h>
 #include <wx/app.h>
+#include <wx/fileconf.h>
 #include <wx/jsonval.h>
 
 #include <gtest/gtest.h>
@@ -28,6 +30,8 @@
 #include "own_ship.h"
 #include "routeman.h"
 #include "select.h"
+
+namespace fs = std::filesystem;
 
 class AISTargetAlertDialog;
 class Multiplexer;
@@ -141,6 +145,13 @@ AppMsg::Type s_apptype;
 auto shared_navaddr_none = std::make_shared<NavAddr>();
 
 wxLogStderr defaultLog;
+static void ConfigSetup() {
+  const auto config_orig = fs::path(TESTDATA) / "opencpn.conf";
+  const auto config_path = fs::path(CMAKE_BINARY_DIR) / "opencpn.conf";
+  std::remove(config_path.string().c_str());
+  fs::copy(config_orig, config_path);
+  InitBaseConfig(new wxFileConfig("", "", config_path.string()));
+}
 
 class MsgCliApp : public wxAppConsole {
 public:
@@ -337,18 +348,17 @@ public:
 using namespace std;
 
 #ifdef _MSC_VER
-const static string kSEP("\\");
+const static std::string kSEP("\\");
 #else
-const static string kSEP("/");
+const static std::string kSEP("/");
 #endif
 
 class GuernseyApp : public wxAppConsole {
 public:
   GuernseyApp(vector<string>& log) : wxAppConsole() {
     auto& msgbus = NavMsgBus::GetInstance();
-    string path("..");
-    path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP +
-            "Guernesey-1659560590623.input.txt";
+    string path(TESTDATA);
+    path += kSEP + "Guernesey-1659560590623.input.txt";
     auto driver = make_shared<FileCommDriver>("test-output.txt", path, msgbus);
     listener.Listen(Nmea0183Msg("GPGLL"), this, EVT_FOO);
     Bind(EVT_FOO, [&log](ObservedEvt ev) {
@@ -366,9 +376,10 @@ public:
 class PriorityApp : public wxAppConsole {
 public:
   PriorityApp(string inputfile) : wxAppConsole() {
+    ConfigSetup();
     auto& msgbus = NavMsgBus::GetInstance();
-    string path("..");
-    path += kSEP + ".." + kSEP + "test" + kSEP + "testdata" + kSEP + inputfile;
+    std::string path(TESTDATA);
+    path += kSEP + inputfile;
     auto driver = make_shared<FileCommDriver>(inputfile + ".log", path, msgbus);
     CommBridge comm_bridge;
     comm_bridge.Initialize();
@@ -380,6 +391,7 @@ public:
 class PriorityApp2 : public wxAppConsole {
 public:
   PriorityApp2(const char* msg1, const char* msg2) : wxAppConsole() {
+    ConfigSetup();
     auto& msgbus = NavMsgBus::GetInstance();
     CommBridge comm_bridge;
     comm_bridge.Initialize();
@@ -400,6 +412,7 @@ public:
 class AisApp : public wxAppConsole {
 public:
   AisApp(const char* type, const char* msg) : wxAppConsole() {
+    ConfigSetup();
     SetAppName("opencpn_unittests");
     g_BasePlatform = new BasePlatform();
     pSelectAIS = new Select();
@@ -683,6 +696,7 @@ TEST(Position, ParseGGA) {
 }
 
 TEST(Priority, Framework) {
+
   wxLog::SetActiveTarget(&defaultLog);
   PriorityApp app("stupan.se-10112-tcp.log.input");
   EXPECT_NEAR(gLat, 57.6460, 0.001);

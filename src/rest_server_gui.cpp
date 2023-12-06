@@ -34,13 +34,57 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-#include "REST_server.h"
-#include "REST_server_gui.h"
 #include "FontMgr.h"
+#include "rest_server_gui.h"
+#include "routemanagerdialog.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+
+extern RouteManagerDialog *pRouteManagerDialog;
+extern MyFrame* gFrame;
+
+static wxDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
+  auto dlg = new PINCreateDialog(dynamic_cast<wxWindow*>(gFrame), wxID_ANY,
+                                 _("OpenCPN Server Message"),
+                                 "", wxDefaultPosition, wxDefaultSize,
+                                 SYMBOL_STG_STYLE );
+  dlg->SetMessage(msg);
+  dlg->SetText1Message(txt1);
+  dlg->Show();
+  return dlg;
+}
+
+static void UpdateRouteMgr() {
+  if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+    pRouteManagerDialog->UpdateTrkListCtrl();
+    pRouteManagerDialog->UpdateWptListCtrl();
+    pRouteManagerDialog->UpdateRouteListCtrl();
+  }
+}
+
+static AcceptObjectDlgResult RunAcceptObjectDlg(const wxString& msg,
+                                                const wxString& check1msg) {
+  AcceptObjectDialog dlg(NULL, _("OpenCPN Server Message"), msg, check1msg);
+  int result = dlg.ShowModal();
+  bool check1 = dlg.GetCheck1Value();
+  return AcceptObjectDlgResult(result, check1);
+}
+
+RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
+  RestServerDlgCtx ctx;
+  ctx.show_dialog =
+      [](const std::string& msg, const std::string& text1) {
+          return DisplayDlg(msg, text1); };
+  ctx.update_route_mgr = []() { UpdateRouteMgr(); };
+  ctx.run_accept_object_dlg =
+      [](const wxString& msg, const wxString& check1msg) {
+          return RunAcceptObjectDlg(msg, check1msg); };
+  ctx.top_level_refresh = []()  { dynamic_cast<wxWindow*>(gFrame)->Refresh(); };
+  return ctx;
+}
 
 IMPLEMENT_DYNAMIC_CLASS(AcceptObjectDialog, wxDialog)
 
@@ -55,6 +99,14 @@ AcceptObjectDialog::AcceptObjectDialog() {
   premtext = NULL;
 }
 
+AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent,
+                                       const wxString& caption,
+                                       const wxString& msg1,
+                                       const wxString msg2)
+       : AcceptObjectDialog(parent, 0, caption, "", wxDefaultPosition,
+                            wxDefaultSize, SYMBOL_STG_STYLE,
+                            msg1, msg2) {}
+
 AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
                            const wxPoint& pos, const wxSize& size, long style,
@@ -66,13 +118,12 @@ AcceptObjectDialog::AcceptObjectDialog(wxWindow* parent, wxWindowID id,
 #ifdef __ANDROID__
   androidDisableRotation();
 #endif
-
 }
 
 AcceptObjectDialog::~AcceptObjectDialog() {
   delete m_OKButton;
   delete m_CancelButton;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 
@@ -148,6 +199,9 @@ void AcceptObjectDialog::OnOKClick(wxCommandEvent& event) {
 
 void AcceptObjectDialog::OnCancelClick(wxCommandEvent& event) {
   EndModal(ID_STG_CANCEL);
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
 }
 
 
@@ -162,7 +216,11 @@ PINCreateDialog::PINCreateDialog() {
   m_OKButton = NULL;
   m_CancelButton = NULL;
   premtext = NULL;
+#ifdef __ANDROID__
+  androidEnableRotation();
+#endif
 }
+
 
 PINCreateDialog::PINCreateDialog(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
@@ -183,6 +241,22 @@ PINCreateDialog::~PINCreateDialog() {
     androidEnableRotation();
 #endif
 
+}
+
+wxDialog* PINCreateDialog::Initiate(const std::string& msg,
+                                    const std::string& text1) {
+  auto dlg =  new PINCreateDialog(dynamic_cast<wxWindow*>(gFrame),
+                                  wxID_ANY, _("OpenCPN Server Message"), "",
+                                  wxDefaultPosition, wxDefaultSize, SYMBOL_STG_STYLE );
+  dlg->SetMessage(msg);
+  dlg->SetText1Message(text1);
+  dlg->Show();
+  return dlg;
+}
+
+void PINCreateDialog::DeInit(){
+  Close();
+  Destroy();
 }
 
 bool PINCreateDialog::Create(wxWindow* parent, wxWindowID id,

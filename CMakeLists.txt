@@ -330,7 +330,7 @@ include(GetArch)
 getarch()
 message(STATUS "*** Host Build Architecture is ${ARCH}")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 message(STATUS "Setting C++11 standard via cmake standard mechanism")
 if (NOT MSVC)
   set(OBJ_VISIBILITY "-fvisibility=hidden")
@@ -379,16 +379,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.9)
     set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
   endif ()
 endif ()
-
-message(STATUS "Default compiler options:")
-message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
-message(STATUS "CMAKE_CXX_FLAGS_MINSIZEREL: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
-message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
-message(
-  STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
-)
-
 # ADD_COMPILE_OPTIONS( "-Wall" "-ansi" "-pedantic" "-Wno-variadic-macros" )
 # TODO: Should we use  -fno-stack-protector IF NOT DEBUGGING CFLAGS="-O2
 # -march=native"
@@ -403,8 +393,11 @@ if (NOT WIN32 AND NOT APPLE)
       "-Wno-deprecated-declarations"
     )
   endif ()
-  if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_compile_options("-O0")
+  if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+      string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0")
+      add_compile_options("-O0")
+    endif ()
   endif ()
 
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
@@ -472,6 +465,10 @@ if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
   add_definitions(-DPSAPI_VERSION=1)
+  # https://developercommunity.visualstudio.com
+  # /t/error-c2872-byte-ambiguous-symbol/93889
+  # https://shorturl.at/hmJSZ
+  add_definitions(-D_HAS_STD_BYTE=0)
 endif (MSVC)
 
 if (MSVC)
@@ -510,6 +507,19 @@ if (QT_ANDROID)
 
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif (QT_ANDROID)
+
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+  link_libraries(stdc++fs )
+endif ()
+message(STATUS "Final compiler options:")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CMAKE_CXX_FLAGS_MINSIZEREL: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
+message(
+  STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+)
+
 
 
 #
@@ -947,6 +957,7 @@ set(
   include/options.h
   include/own_ship.h
   include/piano.h
+  include/pincode.h
   include/plugin_cache.h
   include/plugin_blacklist.h
   include/plugin_handler.h
@@ -957,10 +968,11 @@ set(
   include/printtable.h
   include/priority_gui.h
   include/Quilt.h
-  include/REST_server.h
-  include/REST_server_gui.h
+  include/rest_server.h
+  include/rest_server_gui.h
   include/RolloverWin.h
   include/route.h
+  include/route_ctx_factory.h
   include/route_gui.h
   include/routemanagerdialog.h
   include/routeman.h
@@ -1057,13 +1069,14 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
+  ${CMAKE_SOURCE_DIR}/src/pincode.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
   ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
-  ${CMAKE_SOURCE_DIR}/src/REST_server.cpp
+  ${CMAKE_SOURCE_DIR}/src/rest_server.cpp
   ${CMAKE_SOURCE_DIR}/src/route.cpp
   ${CMAKE_SOURCE_DIR}/src/route_point.cpp
   ${CMAKE_SOURCE_DIR}/src/routeman.cpp
@@ -1142,7 +1155,7 @@ set(
   src/printtable.cpp
   src/priority_gui.cpp
   src/Quilt.cpp
-  src/REST_server_gui.cpp
+  src/rest_server_gui.cpp
   src/RolloverWin.cpp
   src/routemanagerdialog.cpp
   src/routeman_gui.cpp
@@ -3224,6 +3237,7 @@ if (NOT QT_ANDROID)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
+  target_link_libraries(opencpn-cmd PRIVATE pico_sha2)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::rapidjson)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)

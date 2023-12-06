@@ -131,7 +131,10 @@
 #include "route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
+#include "routeman_gui.h"
+#include "route_ctx_factory.h"
 #include "RoutePropDlgImpl.h"
+#include "rest_server_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
@@ -1020,11 +1023,13 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
   event.Skip();
 }
 
+
 static wxStopWatch init_sw;
 
-MyApp::MyApp() {
+MyApp::MyApp() : m_RESTserver(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
+                              g_bportable) {
 #ifdef __linux__
-// Handle e. g., wayland default display -- see #1166.
+  // Handle e. g., wayland default display -- see #1166.
 
   if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
     setenv("GDK_BACKEND", "x11", 1);
@@ -1252,32 +1257,8 @@ bool MyApp::OnInit() {
 
   //      Init the Route Manager
 
-  struct RoutePropDlgCtx ctx;
-  ctx.SetRouteAndUpdate = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
-      pRoutePropDialog->SetRouteAndUpdate(r, true);
-    }
-  };
-  ctx.SetEnroutePoint = [&](Route* r, RoutePoint* rt) {
-    if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
-      if (pRoutePropDialog->GetRoute() == r) {
-        pRoutePropDialog->SetEnroutePoint(rt);
-      }
-    }
-  };
-  ctx.Hide = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
-        (r == pRoutePropDialog->GetRoute())) {
-      pRoutePropDialog->Hide();
-    }
-  };
-  auto RouteMgrDlgUpdateListCtrl = [&]() {
-    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-      pRouteManagerDialog->UpdateRouteListCtrl();
-  };
-
-  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl,
-                             NMEALogWindow::Get());
+ g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
+                            NMEALogWindow::Get());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
@@ -1998,9 +1979,10 @@ bool MyApp::OnInit() {
 
     make_certificate(ipAddr, data_dir.ToStdString());
 
-    m_RESTserver.StartServer(data_dir.ToStdString());
+    m_RESTserver.StartServer(fs::path(data_dir.ToStdString()));
 
-    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
+    StartMDNSService(g_hostname.ToStdString(),
+                     "opencpn-object-control-service", 8000);
   }
   return TRUE;
 }

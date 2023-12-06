@@ -329,7 +329,7 @@ void CommDriverSignalKNet::CloseWebSocket() {
     wxMilliSleep(100);
 
 #if 0
-      m_Thread_run_flag = 0;
+      m_thread_run_flag = 0;
        printf("sending delete\n");
       m_wsThread->Delete();
       wxMilliSleep(100);
