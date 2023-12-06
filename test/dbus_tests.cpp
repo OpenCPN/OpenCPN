@@ -255,7 +255,7 @@ TEST(DbusClient, Raise) {
   std::string server_cmd(TEST_ROOT);
   server_cmd += "/test_server.py 1";
   FILE* p = popen(server_cmd.c_str(), "r");
-  std::this_thread::sleep_for(50ms);    // Need some time to start server
+  std::this_thread::sleep_for(150ms);    // Need some time to start server
   DbusLocalClient dbus_local_client;
   auto result = dbus_local_client.SendRaise();
   EXPECT_EQ(std::string(""), result.second);

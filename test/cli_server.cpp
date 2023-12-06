@@ -14,6 +14,8 @@
 static std::string GetSocketPath() {
   wxFileName path("~/.opencpn", "opencpn-ipc");
   path.Normalize(wxPATH_NORM_TILDE);
+  auto dir = path.GetPath();
+  if (!wxFileName::DirExists(dir)) wxFileName::Mkdir(dir);
   return path.GetFullPath().ToStdString();
 }
 

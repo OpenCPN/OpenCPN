@@ -124,7 +124,7 @@ public:
       exit(ok ? 0 : 2);
     }
     else if (args[0] == "get_rest_endpoint") {
-      auto cmd = std::string(args[0]) + args[1];
+      auto cmd = std::string(args[0]);
       const void* reply = factory.connection->Request(cmd.c_str(), 0);
       std::cout << static_cast<const char*>(reply) << "\n";
       exit(reply ? 0 : 2);
@@ -132,7 +132,8 @@ public:
     else if (args[0] == "open") {
       auto cmd = std::string(args[0]) + " " + args[1];
       const void* reply = factory.connection->Request(cmd.c_str(), 0);
-      std::cout << static_cast<const char*>(reply) << "\n";
+      reply_buff = reply ? static_cast<const char*>(reply) : "";
+      std::cout << reply_buff << "\n" << std::flush;
       exit(reply ? 0 : 2);
     }
      else {
@@ -140,5 +141,7 @@ public:
       exit(1);
     }
   }
+private:
+  std::string reply_buff;
 };
 wxIMPLEMENT_APP_CONSOLE(ClientApp);

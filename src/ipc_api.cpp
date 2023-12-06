@@ -30,9 +30,10 @@
 extern BasePlatform* g_BasePlatform;
 
 std::string GetSocketPath() {
-  auto sep = static_cast<char>(wxFileName::GetPathSeparator());
-  return
-    g_BasePlatform->GetPrivateDataDir().ToStdString() + sep + "opencpn-ipc";
+  auto const static sep = static_cast<char>(wxFileName::GetPathSeparator());
+  auto dirpath = g_BasePlatform->GetPrivateDataDir();
+  if (!wxFileName::DirExists(dirpath)) wxFileName::Mkdir(dirpath);
+  return dirpath.ToStdString() + sep + "opencpn-ipc";
 }
 #endif
 

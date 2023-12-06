@@ -68,6 +68,7 @@ class IpcServerTest : public wxAppConsole {
 public:
   int OnRun() override {
     IpcServer server(GetSocketPath());
+    EXPECT_TRUE(server.is_connected);
     TestRaise(server);
     TestQuit(server);
     TestGetRestApiEndpoint(server);
