@@ -4,6 +4,7 @@ Section: misc
 Priority: optional
 Build-Depends: debhelper-compat (>= 11),
  cmake,
+ dbus,
  googletest (>= 1.11.0) | base-files,
  libarchive-dev,
  libbz2-dev,
@@ -32,6 +33,9 @@ Build-Depends: debhelper-compat (>= 11),
  libwxgtk-webview3.2-dev | libwxgtk-webview3.0-gtk3-dev | base-files (<< 11),
  lsb-release,
  portaudio19-dev,
+ python-is-python3 | base-files (<< 11),
+ python3-dbus,
+ python3-gi | base-files (<< 11),
  rapidjson-dev
 Standards-Version: 4.6.2
 Vcs-Browser: https://gitlab.com/leamas/opencpn
