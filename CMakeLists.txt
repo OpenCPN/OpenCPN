@@ -856,34 +856,15 @@ message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
 set(
-  HDRS
-  include/AboutFrame.h
-  include/AboutFrameImpl.h
-  include/about.h
+  MODEL_HDRS
   include/ais_bitstring.h
   include/ais_decoder.h
-  include/ais.h
-  include/AISTargetAlertDialog.h
   include/ais_target_data.h
-  include/AISTargetListDialog.h
-  include/AISTargetQueryDialog.h
-  include/ais_info_gui.h
-  include/atomic_queue.h
   include/base_platform.h
-  include/canvasMenu.h
   include/catalog_handler.h
-  include/catalog_mgr.h
   include/catalog_parser.h
-  include/cat_settings.h
   include/chartdata_input_stream.h
-  include/chartdb.h
-  include/chartdbs.h
-  include/chartimg.h
-  include/chart_ctx_factory.h
-  include/chcanv.h
-  include/ChInfoWin.h
   include/cli_platform.h
-  include/color_handler.h
   include/comm_ais.h
   include/comm_appmsg.h
   include/comm_bridge.h
@@ -904,14 +885,62 @@ set(
   include/comm_navmsg_bus.h
   include/comm_util.h
   include/comm_vars.h
-  include/compass.h
-  include/concanv.h
   include/config_vars.h
   include/conn_params.h
-  include/conn_params_panel.h
   include/cutil.h
-  include/DetailSlider.h
   include/downloader.h
+  include/garmin_protocol_mgr.h
+  include/geodesic.h
+  include/georef.h
+  include/hyperlink.h
+  include/logger.h
+  include/multiplexer.h
+  include/nav_object_database.h
+  include/navutil_base.h
+  include/ocpn_plugin.h
+  include/ocpn_types.h
+  include/ocpn_utils.h
+  include/own_ship.h
+  include/pincode.h
+  include/plugin_blacklist.h
+  include/plugin_handler.h
+  include/plugin_loader.h
+  include/plugin_paths.h
+  include/position_parser.h
+  include/rest_server.h
+  include/route.h
+  include/routeman.h
+  include/select.h
+  include/semantic_vers.h
+  include/ser_ports.h
+  include/track.h
+)
+
+set(
+  GUI_HDRS
+  include/AboutFrame.h
+  include/AboutFrameImpl.h
+  include/about.h
+  include/ais.h
+  include/AISTargetAlertDialog.h
+  include/AISTargetListDialog.h
+  include/AISTargetQueryDialog.h
+  include/ais_info_gui.h
+  include/atomic_queue.h
+  include/canvasMenu.h
+  include/catalog_mgr.h
+  include/cat_settings.h
+  include/chartdb.h
+  include/chartdbs.h
+  include/chartimg.h
+  include/chart_ctx_factory.h
+  include/chcanv.h
+  include/ChInfoWin.h
+  include/color_handler.h
+  include/compass.h
+  include/concanv.h
+  include/conn_params_panel.h
+  include/DetailSlider.h
   include/download_mgr.h
   include/dsPortType.h
   include/emboss_data.h
@@ -919,13 +948,9 @@ set(
   include/FontDesc.h
   include/FontMgr.h
   include/garmin_wrapper.h
-  include/garmin_protocol_mgr.h
-  include/geodesic.h
-  include/georef.h
   include/GoToPositionDialog.h
   include/gui_lib.h
   include/gshhs.h
-  include/hyperlink.h
   include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
@@ -933,16 +958,12 @@ set(
   include/Layer.h
   include/LinkPropDlg.h
   include/load_errors_dlg.h
-  include/logger.h
   include/meteo_points.h
   include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h
-  include/multiplexer.h
-  include/nav_object_database.h
   include/n0183_ctx_factory.h
   include/navutil.h
-  include/navutil_base.h
   include/NMEALogWindow.h
   include/nmea_ctx_factory.h
   include/ocpCursor.h
@@ -951,33 +972,20 @@ set(
   include/OCPNListCtrl.h
   include/ocpn_pixel.h
   include/OCPNPlatform.h
-  include/ocpn_plugin.h
   include/ocpn_print.h
   include/OCPNRegion.h
-  include/ocpn_types.h
-  include/ocpn_utils.h
   include/options.h
-  include/own_ship.h
   include/piano.h
-  include/pincode.h
   include/plugin_cache.h
-  include/plugin_blacklist.h
-  include/plugin_handler.h
-  include/plugin_loader.h
-  include/plugin_paths.h
   include/pluginmanager.h
-  include/position_parser.h
   include/printtable.h
   include/priority_gui.h
   include/Quilt.h
-  include/rest_server.h
   include/rest_server_gui.h
   include/RolloverWin.h
-  include/route.h
   include/route_ctx_factory.h
   include/route_gui.h
   include/routemanagerdialog.h
-  include/routeman.h
   include/routeman_gui.h
   include/route_point.h
   include/route_point_gui.h
@@ -990,13 +998,13 @@ set(
   include/S57QueryDialog.h
   include/S57Sector.h
   include/safe_mode.h
-  include/select.h
   include/select_item.h
-  include/semantic_vers.h
   include/SendToGpsDlg.h
   include/SendToPeerDlg.h
+  include/shaders.h
   include/Station_Data.h
   include/styles.h
+  include/svg_utils.h
   include/TCDataFactory.h
   include/TCDataSource.h
   include/TCDS_Ascii_Harmonic.h
@@ -1008,7 +1016,6 @@ set(
   include/tide_time.h
   include/timers.h
   include/toolbar.h
-  include/track.h
   include/track_gui.h
   include/trackprintout.h
   include/TrackPropDlg.h
@@ -1019,10 +1026,9 @@ set(
   include/usb_devices.h
   include/waypointman_gui.h
   include/viewport.h
-  include/shaders.h
   include/WindowDestroyListener.h
-  include/svg_utils.h
 )
+
 
 set(MODEL_SRC
   # Testable sources without GUI dependencies.
@@ -1036,14 +1042,12 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/cli_platform.cpp
   ${CMAKE_SOURCE_DIR}/src/cmdline.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_bridge.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_decoder.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_factory.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_net.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_serial.cpp
@@ -1052,13 +1056,15 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk_net.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
+  ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_vars.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
-  ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
+  ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
@@ -1071,6 +1077,8 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
   ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/ogrs57datasource.cpp
+  ${CMAKE_SOURCE_DIR}/src/ogrs57layer.cpp
   ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
   ${CMAKE_SOURCE_DIR}/src/pincode.cpp
   ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
@@ -1081,8 +1089,12 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/rest_server.cpp
   ${CMAKE_SOURCE_DIR}/src/route.cpp
-  ${CMAKE_SOURCE_DIR}/src/route_point.cpp
   ${CMAKE_SOURCE_DIR}/src/routeman.cpp
+  ${CMAKE_SOURCE_DIR}/src/route_point.cpp
+  ${CMAKE_SOURCE_DIR}/src/s57classregistrar.cpp
+  ${CMAKE_SOURCE_DIR}/src/s57featuredefns.cpp
+  ${CMAKE_SOURCE_DIR}/src/s57reader.cpp
+  ${CMAKE_SOURCE_DIR}/src/s57RegistrarMgr.cpp
   ${CMAKE_SOURCE_DIR}/src/select.cpp
   ${CMAKE_SOURCE_DIR}/src/select_item.cpp
   ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
@@ -1091,117 +1103,124 @@ set(MODEL_SRC
 )
 
 set(
-  SRCS
-  src/about.cpp
-  src/AboutFrame.cpp
-  src/AboutFrameImpl.cpp
-  src/ais.cpp
-  src/AISTargetAlertDialog.cpp
-  src/AISTargetListDialog.cpp
-  src/AISTargetQueryDialog.cpp
-  src/ais_info_gui.cpp
-  src/CanvasConfig.cpp
-  src/canvasMenu.cpp
-  src/CanvasOptions.cpp
-  src/catalog_mgr.cpp
-  src/cat_settings.cpp
-  src/certificates.cpp
-  src/chartdb.cpp
-  src/chartdbs.cpp
-  src/chartimg.cpp
-  src/chcanv.cpp
-  src/ChInfoWin.cpp
-  src/color_handler.cpp
-  src/compass.cpp
-  src/concanv.cpp
-  src/ConfigMgr.cpp
-  src/conn_params_panel.cpp
-  src/connections_dialog.cpp
-  src/DetailSlider.cpp
-  src/download_mgr.cpp
-  src/FlexHash.cpp
-  src/FontDesc.cpp
-  src/FontMgr.cpp
-  src/GoToPositionDialog.cpp
-  src/gshhs.cpp
-  src/gui_lib.cpp
-  src/IDX_entry.cpp
-  src/iENCToolbar.cpp
-  src/kml.cpp
-  src/Layer.cpp
-  src/LinkPropDlg.cpp
-  src/load_errors_dlg.cpp
-  src/logger.cpp
-  src/MarkInfo.cpp
-  src/mbtiles.cpp
-  src/mDNS_query.cpp
-  src/mDNS_service.cpp
-  src/MUIBar.cpp
-  src/navutil.cpp
-  src/NMEALogWindow.cpp
-  src/ocpCursor.cpp
-  src/ocpn_app.cpp
-  src/OCPN_AUIManager.cpp
-  src/ocpndc.cpp
-  src/ocpn_frame.cpp
-  src/OCPNListCtrl.cpp
-  src/ocpn_pixel.cpp
-  src/OCPNPlatform.cpp
-  src/ocpn_plugin.cpp
-  src/ocpn_print.cpp
-  src/OCPNRegion.cpp
-  src/options.cpp
-  src/peer_client.cpp
-  src/piano.cpp
-  src/pluginmanager.cpp
-  src/plugin_paths.cpp
-  src/printtable.cpp
-  src/priority_gui.cpp
-  src/Quilt.cpp
-  src/rest_server_gui.cpp
-  src/RolloverWin.cpp
-  src/routemanagerdialog.cpp
-  src/routeman_gui.cpp
-  src/route_gui.cpp
-  src/route_point_gui.cpp
-  src/routeprintout.cpp
-  src/RoutePropDlg.cpp
-  src/RoutePropDlgImpl.cpp
-  src/S57QueryDialog.cpp
-  src/safe_mode.cpp
-  src/SendToGpsDlg.cpp
-  src/SendToPeerDlg.cpp
-  src/Station_Data.cpp
-  src/styles.cpp
-  src/svg_utils.cpp
-  src/TCDataFactory.cpp
-  src/TCDataSource.cpp
-  src/TCDS_Ascii_Harmonic.cpp
-  src/TCDS_Binary_Harmonic.cpp
-  src/tcmgr.cpp
-  src/TCWin.cpp
-  src/thumbwin.cpp
-  src/toolbar.cpp
-  src/track_gui.cpp
-  src/trackprintout.cpp
-  src/TrackPropDlg.cpp
-  src/TTYScroll.cpp
-  src/TTYWindow.cpp
-  src/undo.cpp
-  src/update_mgr.cpp
-  src/waypointman_gui.cpp
-  src/viewport.cpp
-  src/shaders.cpp
+  GUI_SRC
+  ${CMAKE_SOURCE_DIR}/src/about.cpp
+  ${CMAKE_SOURCE_DIR}/src/AboutFrame.cpp
+  ${CMAKE_SOURCE_DIR}/src/AboutFrameImpl.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais.cpp
+  ${CMAKE_SOURCE_DIR}/src/ais_info_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/AISTargetAlertDialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/AISTargetListDialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/AISTargetQueryDialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/CanvasConfig.cpp
+  ${CMAKE_SOURCE_DIR}/src/canvasMenu.cpp
+  ${CMAKE_SOURCE_DIR}/src/CanvasOptions.cpp
+  ${CMAKE_SOURCE_DIR}/src/catalog_mgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/cat_settings.cpp
+  ${CMAKE_SOURCE_DIR}/src/certificates.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartdb.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartdbs.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartimg.cpp
+  ${CMAKE_SOURCE_DIR}/src/chcanv.cpp
+  ${CMAKE_SOURCE_DIR}/src/ChInfoWin.cpp
+  ${CMAKE_SOURCE_DIR}/src/cm93.cpp
+  ${CMAKE_SOURCE_DIR}/src/color_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/compass.cpp
+  ${CMAKE_SOURCE_DIR}/src/concanv.cpp
+  ${CMAKE_SOURCE_DIR}/src/ConfigMgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/connections_dialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/conn_params_panel.cpp
+  ${CMAKE_SOURCE_DIR}/src/DetailSlider.cpp
+  ${CMAKE_SOURCE_DIR}/src/download_mgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/FlexHash.cpp
+  ${CMAKE_SOURCE_DIR}/src/FontDesc.cpp
+  ${CMAKE_SOURCE_DIR}/src/FontMgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/glChartCanvas.cpp
+  ${CMAKE_SOURCE_DIR}/src/glTexCache.cpp
+  ${CMAKE_SOURCE_DIR}/src/glTextureDescriptor.cpp
+  ${CMAKE_SOURCE_DIR}/src/glTextureManager.cpp
+  ${CMAKE_SOURCE_DIR}/src/GoToPositionDialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/gshhs.cpp
+  ${CMAKE_SOURCE_DIR}/src/gui_lib.cpp
+  ${CMAKE_SOURCE_DIR}/src/IDX_entry.cpp
+  ${CMAKE_SOURCE_DIR}/src/iENCToolbar.cpp
+  ${CMAKE_SOURCE_DIR}/src/kml.cpp
+  ${CMAKE_SOURCE_DIR}/src/Layer.cpp
+  ${CMAKE_SOURCE_DIR}/src/LinkPropDlg.cpp
+  ${CMAKE_SOURCE_DIR}/src/load_errors_dlg.cpp
+  ${CMAKE_SOURCE_DIR}/src/MarkInfo.cpp
+  ${CMAKE_SOURCE_DIR}/src/mbtiles.cpp
+  ${CMAKE_SOURCE_DIR}/src/mDNS_query.cpp
+  ${CMAKE_SOURCE_DIR}/src/mDNS_service.cpp
+  ${CMAKE_SOURCE_DIR}/src/MUIBar.cpp
+  ${CMAKE_SOURCE_DIR}/src/navutil.cpp
+  ${CMAKE_SOURCE_DIR}/src/NMEALogWindow.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpCursor.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_app.cpp
+  ${CMAKE_SOURCE_DIR}/src/OCPN_AUIManager.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpndc.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_frame.cpp
+  ${CMAKE_SOURCE_DIR}/src/OCPNListCtrl.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_pixel.cpp
+  ${CMAKE_SOURCE_DIR}/src/OCPNPlatform.cpp
+  ${CMAKE_SOURCE_DIR}/src/ocpn_print.cpp
+  ${CMAKE_SOURCE_DIR}/src/OCPNRegion.cpp
+  ${CMAKE_SOURCE_DIR}/src/options.cpp
+  ${CMAKE_SOURCE_DIR}/src/Osenc.cpp
+  ${CMAKE_SOURCE_DIR}/src/peer_client.cpp
+  ${CMAKE_SOURCE_DIR}/src/piano.cpp
+  ${CMAKE_SOURCE_DIR}/src/pluginmanager.cpp
+  ${CMAKE_SOURCE_DIR}/src/printtable.cpp
+  ${CMAKE_SOURCE_DIR}/src/priority_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/Quilt.cpp
+  ${CMAKE_SOURCE_DIR}/src/rest_server_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/RolloverWin.cpp
+  ${CMAKE_SOURCE_DIR}/src/route_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/routemanagerdialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/routeman_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/route_point_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/routeprintout.cpp
+  ${CMAKE_SOURCE_DIR}/src/RoutePropDlg.cpp
+  ${CMAKE_SOURCE_DIR}/src/RoutePropDlgImpl.cpp
+  ${CMAKE_SOURCE_DIR}/src/s57chart.cpp
+  ${CMAKE_SOURCE_DIR}/src/s57obj.cpp
+  ${CMAKE_SOURCE_DIR}/src/S57QueryDialog.cpp
+  ${CMAKE_SOURCE_DIR}/src/safe_mode.cpp
+  ${CMAKE_SOURCE_DIR}/src/SencManager.cpp
+  ${CMAKE_SOURCE_DIR}/src/SendToGpsDlg.cpp
+  ${CMAKE_SOURCE_DIR}/src/SendToPeerDlg.cpp
+  ${CMAKE_SOURCE_DIR}/src/shaders.cpp
+  ${CMAKE_SOURCE_DIR}/src/Station_Data.cpp
+  ${CMAKE_SOURCE_DIR}/src/styles.cpp
+  ${CMAKE_SOURCE_DIR}/src/svg_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/TCDataFactory.cpp
+  ${CMAKE_SOURCE_DIR}/src/TCDataSource.cpp
+  ${CMAKE_SOURCE_DIR}/src/TCDS_Ascii_Harmonic.cpp
+  ${CMAKE_SOURCE_DIR}/src/TCDS_Binary_Harmonic.cpp
+  ${CMAKE_SOURCE_DIR}/src/tcmgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/TCWin.cpp
+  ${CMAKE_SOURCE_DIR}/src/thumbwin.cpp
+  ${CMAKE_SOURCE_DIR}/src/toolbar.cpp
+  ${CMAKE_SOURCE_DIR}/src/track_gui.cpp
+  ${CMAKE_SOURCE_DIR}/src/trackprintout.cpp
+  ${CMAKE_SOURCE_DIR}/src/TrackPropDlg.cpp
+  ${CMAKE_SOURCE_DIR}/src/TTYScroll.cpp
+  ${CMAKE_SOURCE_DIR}/src/TTYWindow.cpp
+  ${CMAKE_SOURCE_DIR}/src/undo.cpp
+  ${CMAKE_SOURCE_DIR}/src/update_mgr.cpp
+  ${CMAKE_SOURCE_DIR}/src/viewport.cpp
+  ${CMAKE_SOURCE_DIR}/src/waypointman_gui.cpp
+  #  ${CMAKE_SOURCE_DIR}/src/wificlient.cpp
 )
 
 
 if (LINUX)
-  list(APPEND HDRS include/comm_drv_n2k_socketcan.h )
+  list(APPEND MODEL_HDRS include/comm_drv_n2k_socketcan.h )
   list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
 endif ()
 
-SET(HDRS ${HDRS} include/shaders.h)
-SET(SRCS ${SRCS} src/shaders.cpp)
+set(GUI_HDRS ${GUI_HDRS} include/shaders.h)
+set(GUI_SRC ${GUI_SRC} src/shaders.cpp)
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1210,28 +1229,37 @@ if (OCPN_USE_GARMINHOST)
 endif ()
 
 if (LINUX)
-  list(APPEND SRCS src/linux_devices.cpp src/udev_rule_mgr.cpp)
-  list(APPEND HDRS include/linux_devices.h include/udev_rule_mgr.h)
+  list(APPEND GUI_SRC src/linux_devices.cpp src/udev_rule_mgr.cpp)
+  list(APPEND GUI_HDRS include/linux_devices.h include/udev_rule_mgr.h)
 endif ()
 
 if (APPLE)
-  list(APPEND HDRS include/macutils.h )
+  list(APPEND MODEL_HDRS include/macutils.h )
   list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/macutils.c)
 endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)
-  list(APPEND HDRS include/crashprint.h)
-  list(APPEND SRCS src/crashprint.cpp)
+  list(APPEND GUI_HDRS include/crashprint.h)
+  list(APPEND GUI_SRC src/crashprint.cpp)
 endif ()
 
-IF(QT_ANDROID)
-  SET(HDRS ${HDRS} include/androidUTIL.h)
-  SET(SRCS ${SRCS} src/androidUTIL.cpp)
-  SET(SRCS ${SRCS} src/comm_drv_n0183_android_int.cpp)
-  SET(SRCS ${SRCS} src/comm_drv_n0183_android_bt.cpp)
-ENDIF(QT_ANDROID)
+if (QT_ANDROID)
+  set(GUI_HDRS ${GUI_HDRS} include/androidUTIL.h)
+  set(GUI_SRC ${GUI_SRC} src/androidUTIL.cpp)
+  set(GUI_SRC ${GUI_SRC} src/comm_drv_n0183_android_int.cpp)
+  set(GUI_SRC ${GUI_SRC} src/comm_drv_n0183_android_bt.cpp)
+endif ()
 
-set(SRCS ${SRCS} ${MODEL_SRC})
+set(SRCS ${GUI_SRC} ${MODEL_SRC})
+
+set(HDRS ${MODEL_HDRS} ${GUI_HDRS})
+
+# Temporary support for #3513, to be removed
+file(WRITE ${CMAKE_BINARY_DIR}/gui-src.txt "${GUI_SRC}")
+file(WRITE ${CMAKE_BINARY_DIR}/gui-headers.txt "${GUI_HDRS}")
+file(WRITE ${CMAKE_BINARY_DIR}/model-hdrs.txt "${MODEL_HDRS}")
+file(WRITE ${CMAKE_BINARY_DIR}/model-src.txt "${MODEL_SRC}")
+
 
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
@@ -3313,5 +3341,3 @@ if (QT_ANDROID)
 
     add_definitions(-DMG_ENABLE_OPENSSL)
 endif (QT_ANDROID)
-
-add_custom_target(print-model-files COMMAND cmake -E echo ${MODEL_SRC})
