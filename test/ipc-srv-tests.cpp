@@ -197,6 +197,7 @@ wxIMPLEMENT_APP_NO_MAIN(IpcServerTest);
 
 #ifndef OCPN_FLATPAK
 
+#if wxCHECK_VERSION(3,2,1)
 TEST(IpcServer, Commands) {
   char arg0[32];
   strcpy(arg0, "ipc-srv");
@@ -204,5 +205,6 @@ TEST(IpcServer, Commands) {
   int argc = 1;
   wxEntry(argc, argv);
 }
+#endif
 
 #endif
