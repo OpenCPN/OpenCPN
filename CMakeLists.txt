@@ -465,6 +465,7 @@ if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
   add_definitions(-DPSAPI_VERSION=1)
+  add_definitions(-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1)
   # https://developercommunity.visualstudio.com
   # /t/error-c2872-byte-ambiguous-symbol/93889
   # https://shorturl.at/hmJSZ
@@ -881,6 +882,7 @@ set(
   include/chart_ctx_factory.h
   include/chcanv.h
   include/ChInfoWin.h
+  include/cli_platform.h
   include/color_handler.h
   include/comm_ais.h
   include/comm_appmsg.h
@@ -1031,6 +1033,7 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
   ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
+  ${CMAKE_SOURCE_DIR}/src/cli_platform.cpp
   ${CMAKE_SOURCE_DIR}/src/cmdline.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
   ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
@@ -3206,7 +3209,7 @@ if (NOT QT_ANDROID)
     PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include
   )
 
-  target_compile_definitions(opencpn-cmd PUBLIC CLIAPP USE_MOCK_DEFS)
+  target_compile_definitions(opencpn-cmd PUBLIC USE_MOCK_DEFS)
   if (MSVC)
     target_link_libraries(opencpn-cmd PRIVATE setupapi.lib psapi.lib)
   endif ()

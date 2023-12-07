@@ -107,7 +107,7 @@ static bool checkIfFlatpacked() {
   return id == "org.opencpn.OpenCPN";
 }
 
-static wxString ExpandPaths(wxString paths, BasePlatform* platform);
+static wxString ExpandPaths(wxString paths, AbstractPlatform* platform);
 
 static wxString GetLinuxDataPath() {
   wxString dirs;
@@ -131,7 +131,7 @@ static wxString GetLinuxDataPath() {
   return s;
 }
 
-static wxString ExpandPaths(wxString paths, BasePlatform* platform) {
+static wxString ExpandPaths(wxString paths, AbstractPlatform* platform) {
   wxStringTokenizer tokens(paths, ';');
   wxString s = "";
   while (tokens.HasMoreTokens()) {
@@ -162,7 +162,7 @@ BasePlatform::BasePlatform() {
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
 
-wxStandardPaths& BasePlatform::GetStdPaths() {
+wxStandardPaths& AbstractPlatform::GetStdPaths() {
 #ifndef __ANDROID__
   return wxStandardPaths::Get();
 #else
@@ -171,7 +171,7 @@ wxStandardPaths& BasePlatform::GetStdPaths() {
 #endif
 }
 
-wxString BasePlatform::NormalizePath(const wxString& full_path) {
+wxString AbstractPlatform::NormalizePath(const wxString& full_path) {
   if (!g_bportable) {
     return full_path;
   } else {
@@ -185,7 +185,7 @@ wxString BasePlatform::NormalizePath(const wxString& full_path) {
   }
 }
 
-wxString& BasePlatform::GetHomeDir() {
+wxString& AbstractPlatform::GetHomeDir() {
   if (m_homeDir.IsEmpty()) {
     //      Establish a "home" location
     wxStandardPaths& std_path = GetStdPaths();
@@ -224,7 +224,7 @@ wxString& BasePlatform::GetHomeDir() {
   return m_homeDir;
 }
 
-wxString& BasePlatform::GetExePath() {
+wxString& AbstractPlatform::GetExePath() {
   if (m_exePath.IsEmpty()) {
     wxStandardPaths& std_path = GetStdPaths();
     m_exePath = std_path.GetExecutablePath();
@@ -233,17 +233,17 @@ wxString& BasePlatform::GetExePath() {
   return m_exePath;
 }
 
-wxString* BasePlatform::GetSharedDataDirPtr() {
+wxString* AbstractPlatform::GetSharedDataDirPtr() {
   if (m_SData_Dir.IsEmpty()) GetSharedDataDir();
   return &m_SData_Dir;
 }
 
-wxString* BasePlatform::GetPrivateDataDirPtr() {
+wxString* AbstractPlatform::GetPrivateDataDirPtr() {
   if (m_PrivateDataDir.IsEmpty()) GetPrivateDataDir();
   return &m_PrivateDataDir;
 }
 
-wxString& BasePlatform::GetSharedDataDir() {
+wxString& AbstractPlatform::GetSharedDataDir() {
   if (m_SData_Dir.IsEmpty()) {
     //      Establish a "shared data" location
     /*  From the wxWidgets documentation...
@@ -296,7 +296,7 @@ wxString GetPluginDataDir(const char* plugin_name) {
   return "";
 }
 
-wxString& BasePlatform::GetPrivateDataDir() {
+wxString& AbstractPlatform::GetPrivateDataDir() {
   if (m_PrivateDataDir.IsEmpty()) {
     //      Establish the prefix of the location of user specific data files
     wxStandardPaths& std_path = GetStdPaths();
@@ -336,7 +336,7 @@ wxString& BasePlatform::GetPrivateDataDir() {
   return m_PrivateDataDir;
 }
 
-wxString BasePlatform::GetWinPluginBaseDir() {
+wxString AbstractPlatform::GetWinPluginBaseDir() {
   if (g_winPluginDir != "") {
     wxLogMessage("winPluginDir: Using value from ini file.");
     wxFileName fn(g_winPluginDir);
@@ -395,7 +395,7 @@ wxString BasePlatform::GetWinPluginBaseDir() {
   return winPluginDir;
 }
 
-wxString& BasePlatform::GetPluginDir() {
+wxString& AbstractPlatform::GetPluginDir() {
   if (m_PluginsDir.IsEmpty()) {
     wxStandardPaths& std_path = GetStdPaths();
 
@@ -420,12 +420,12 @@ wxString& BasePlatform::GetPluginDir() {
   return m_PluginsDir;
 }
 
-wxString* BasePlatform::GetPluginDirPtr() {
+wxString* AbstractPlatform::GetPluginDirPtr() {
   if (m_PluginsDir.IsEmpty()) GetPluginDir();
   return &m_PluginsDir;
 }
 
-bool BasePlatform::isPlatformCapable(int flag) {
+bool AbstractPlatform::isPlatformCapable(int flag) {
 #ifndef __ANDROID__
   return true;
 #else
@@ -452,7 +452,7 @@ void appendOSDirSlash(wxString* pString) {
   if (pString->Last() != sep) pString->Append(sep);
 }
 
-wxString BasePlatform::GetWritableDocumentsDir() {
+wxString AbstractPlatform::GetWritableDocumentsDir() {
   wxString dir;
 
 #ifdef __ANDROID__
@@ -464,7 +464,7 @@ wxString BasePlatform::GetWritableDocumentsDir() {
   return dir;
 }
 
-bool BasePlatform::DetectOSDetail(OCPN_OSDetail* detail) {
+bool AbstractPlatform::DetectOSDetail(OCPN_OSDetail* detail) {
   if (!detail) return false;
 
   // We take some defaults from build-time definitions
@@ -566,7 +566,7 @@ bool BasePlatform::DetectOSDetail(OCPN_OSDetail* detail) {
   return true;
 }
 
-wxString& BasePlatform::GetConfigFileName() {
+wxString& AbstractPlatform::GetConfigFileName() {
   if (m_config_file_name.IsEmpty()) {
     //      Establish the location of the config file
     wxStandardPaths& std_path = GetStdPaths();
@@ -677,26 +677,20 @@ bool BasePlatform::InitializeLogFile(void) {
 
   if (wxLog::GetLogLevel() > wxLOG_User) wxLog::SetLogLevel(wxLOG_Info);
 
-#if CLIAPP
-  wxLog::SetActiveTarget(new wxLogStderr);
-  wxLog::SetTimestamp("");
-  wxLog::SetLogLevel(wxLOG_Warning);
-#else
   g_logger = new OcpnLog(mlog_file.mb_str());
   m_Oldlogger = wxLog::SetActiveTarget(g_logger);
-#endif
 
   return true;
 }
 
-void BasePlatform::CloseLogFile(void) {
+void AbstractPlatform::CloseLogFile(void) {
   if (g_logger) {
     wxLog::SetActiveTarget(m_Oldlogger);
     delete g_logger;
   }
 }
 
-wxString BasePlatform::GetPluginDataPath() {
+wxString AbstractPlatform::GetPluginDataPath() {
   if (g_bportable) {
     wxString sep = wxFileName::GetPathSeparator();
     wxString ret = GetPrivateDataDir() + sep + _T("plugins");
@@ -739,27 +733,22 @@ wxString BasePlatform::GetPluginDataPath() {
 
 
 #ifdef __ANDROID__
-void BasePlatform::ShowBusySpinner() { androidShowBusyIcon(); }
-#elif defined(CLIAPP)
-void BasePlatform::ShowBusySpinner() { }
+void AbstractPlatform::ShowBusySpinner() { androidShowBusyIcon(); }
 #else
-void BasePlatform::ShowBusySpinner() { ::wxBeginBusyCursor(); }
+void AbstractPlatform::ShowBusySpinner() { ::wxBeginBusyCursor(); }
 #endif
 
 #ifdef __ANDROID__
-void BasePlatform::HideBusySpinner() { androidHideBusyIcon(); }
-#elif defined(CLIAPP)
-void BasePlatform::HideBusySpinner() { }
+void AbstractPlatform::HideBusySpinner() { androidHideBusyIcon(); }
 #else
-void BasePlatform::HideBusySpinner() { ::wxEndBusyCursor(); }
+void AbstractPlatform::HideBusySpinner() { ::wxEndBusyCursor(); }
 #endif
 
 // getDisplaySize
 
-#ifdef CLIAPP
-wxSize BasePlatform::getDisplaySize() { return wxSize(); }
 
-#elif defined(__ANDROID__)
+
+#if defined(__ANDROID__)
 wxSize BasePlatform::getDisplaySize() { return getAndroidDisplayDimensions(); }
 
 #else
@@ -771,11 +760,6 @@ wxSize BasePlatform::getDisplaySize() {
 #endif
 
 // GetDisplaySizeMM
-
-#ifdef CLIAPP
-double BasePlatform::GetDisplaySizeMM() { return 1.0; }
-
-#else
 double BasePlatform::GetDisplaySizeMM() {
 
   if (m_displaySizeMMOverride > 0) return m_displaySizeMMOverride;
@@ -807,13 +791,8 @@ double BasePlatform::GetDisplaySizeMM() {
   wxLogDebug("Detected display size (horizontal): %d mm", (int)ret);
   return ret;
 }
-#endif   // CLIAPP
 
-
-#ifdef CLIAPP
-double BasePlatform::GetDisplayDPmm() { return 1.0; }
-
-#elif defined(__ANDROID__)
+#if defined(__ANDROID__)
 double BasePlatform::GetDisplayDPmm() { return getAndroidDPmm(); }
 
 #else
@@ -824,7 +803,7 @@ double BasePlatform::GetDisplayDPmm() {
 #endif
 
 
-double BasePlatform::GetDisplayDIPMult(wxWindow *win) {
+double AbstractPlatform::GetDisplayDIPMult(wxWindow *win) {
   double rv = 1.0;
 #ifdef __WXMSW__
   if (win)
@@ -833,7 +812,7 @@ double BasePlatform::GetDisplayDIPMult(wxWindow *win) {
   return rv;
 }
 
-unsigned int BasePlatform::GetSelectRadiusPix() {
+unsigned int AbstractPlatform::GetSelectRadiusPix() {
   return GetDisplayDPmm() *
          (g_btouch ? g_selection_radius_touch_mm : g_selection_radius_mm);
 }
@@ -913,7 +892,7 @@ bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm) {
   return bRes;
 }
 
-bool BasePlatform::GetWindowsMonitorSize(int *width, int *height) {
+bool AbstractPlatform::GetWindowsMonitorSize(int *width, int *height) {
   bool bFoundDevice = true;
 
   if (m_monitorWidth < 10) {

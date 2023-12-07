@@ -16,7 +16,7 @@
 
 #include "ais_decoder.h"
 #include "ais_defs.h"
-#include "base_platform.h"
+#include "cli_platform.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
 #include "comm_bridge.h"
@@ -76,7 +76,7 @@ float g_selection_radius_touch_mm;
 int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
 
-BasePlatform* g_BasePlatform = 0;
+AbstractPlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -416,7 +416,7 @@ public:
   AisApp(const char* type, const char* msg) : wxAppConsole() {
     ConfigSetup();
     SetAppName("opencpn_unittests");
-    g_BasePlatform = new BasePlatform();
+    g_BasePlatform = new CliPlatform();
     pSelectAIS = new Select();
     pSelect = new Select();
     g_pAIS = new AisDecoder(AisDecoderCallbacks());

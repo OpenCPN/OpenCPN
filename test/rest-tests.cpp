@@ -22,8 +22,8 @@
 
 #include <gtest/gtest.h>
 
-#include "base_platform.h"
 #include "certificates.h"
+#include "cli_platform.h"
 #include "config_vars.h"
 #include "mDNS_query.h"
 #include "observable_confvar.h"
@@ -37,7 +37,7 @@ using namespace std::chrono_literals;
 extern WayPointman* pWayPointMan;
 extern RouteList* pRouteList;
 extern Select* pSelect;
-extern BasePlatform* g_BasePlatform;
+extern AbstractPlatform* g_BasePlatform;
 
 static std::string s_result;
 static int int_result0;
@@ -225,7 +225,7 @@ protected:
     auto colour_func = [] (wxString c) { return *wxBLACK; };
     pWayPointMan = new WayPointman(colour_func);
     pRouteList = new RouteList;
-    g_BasePlatform = new BasePlatform();
+    g_BasePlatform = new CliPlatform();
     pSelect =  new Select();
 
     auto outpath = fs::path(CMAKE_BINARY_DIR) / "curl-result";
@@ -317,7 +317,7 @@ protected:
     auto colour_func = [] (wxString c) { return *wxBLACK; };
     pWayPointMan = new WayPointman(colour_func);
     pRouteList = new RouteList;
-    g_BasePlatform = new BasePlatform();
+    g_BasePlatform = new CliPlatform();
     pSelect = new Select();
 
     fs::path curl_prog(CURLPROG);

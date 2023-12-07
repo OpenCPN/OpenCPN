@@ -4090,11 +4090,11 @@ int s57chart::BuildSENCFile(const wxString &FullPath000,
     senc.setRefLocn(ref_lat, ref_lon);
     senc.SetLODMeters(m_LOD_meters);
 
-    OCPNPlatform::ShowBusySpinner();
+    AbstractPlatform::ShowBusySpinner();
 
     int ret = senc.createSenc200(FullPath000, SENCFileName, b_progress);
 
-    OCPNPlatform::HideBusySpinner();
+    AbstractPlatform::HideBusySpinner();
 
     if (ret == ERROR_INGESTING000)
       return BUILD_SENC_NOK_PERMANENT;
