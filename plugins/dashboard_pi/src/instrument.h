@@ -39,7 +39,7 @@
 #endif
 
 // Required GetGlobalColor
-#include "../../../include/ocpn_plugin.h"
+#include "ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 #include <wx/dcgraph.h>  // supplemental, for Mac
 
