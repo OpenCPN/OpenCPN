@@ -440,7 +440,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     // structures
     // Retry 5 times, 1 sec cycle
     int n_try = 5;
-    int v_init;
+    int v_init = 0;
     while (n_try) {
       v_init = Garmin_GPS_Init(short_com);
       if (v_init >= 0) break;
@@ -963,7 +963,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     // structures
     // Retry 5 times, 1 sec cycle
     int n_try = 5;
-    int v_init;
+    int v_init = 0;
     while (n_try) {
         v_init = Garmin_GPS_Init(short_com);
         if (v_init >= 0) break;
