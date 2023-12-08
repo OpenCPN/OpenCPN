@@ -3338,6 +3338,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->met_data.ice = bstr->GetInt(349, 2);
 
             ptd->Class = AIS_METEO;
+            ptd->COG = -1.;
+            ptd->HDG = 511;
+            ptd->SOG = -1.;
             ptd->b_NoTrack = true;
             ptd->b_show_track = false;
             ptd->b_positionDoubtful = false;
@@ -3491,6 +3494,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 
           if (ptd->b_positionOnceValid) {
             ptd->Class = AIS_METEO;
+            ptd->COG = -1.;
+            ptd->HDG = 511;
+            ptd->SOG = -1.;
             ptd->b_NoTrack = true;
             ptd->b_show_track = false;
             ptd->b_positionDoubtful = false;

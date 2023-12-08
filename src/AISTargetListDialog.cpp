@@ -196,7 +196,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlCOG: {
       if ((t1->COG >= 360.0) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE))
+          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
         n1 = -1.0;
       else {
         int crs = wxRound(t1->COG);
@@ -207,7 +207,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       }
 
       if ((t2->COG >= 360.0) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE))
+          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
         n2 = -1.0;
       else {
         int crs = wxRound(t2->COG);
@@ -223,13 +223,13 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlSOG: {
       if ((t1->SOG > 100.) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE))
+          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
         n1 = -1.0;
       else
         n1 = t1->SOG;
 
       if ((t2->SOG > 100.) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE))
+          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
         n2 = -1.0;
       else
         n2 = t2->SOG;

@@ -1132,7 +1132,7 @@ wxString AisTargetData::GetRolloverString(void) {
   }
 
   if (g_bAISRolloverShowCOG && ((SOG <= 102.2) || b_SarAircraftPosnReport) &&
-      ((Class != AIS_ATON) && (Class != AIS_BASE))) {
+      !((Class == AIS_ATON) || (Class == AIS_BASE) || (Class == AIS_METEO))) {
     if (result.Len()) result << _T("\n");
 
     double speed_show = toUsrSpeed(SOG);
