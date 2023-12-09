@@ -33,7 +33,7 @@
 // headers
 // ----------------------------------------------------------------------------
 
-#include <assert.h>
+#include <cassert>
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -59,7 +59,7 @@ extern OCPNPlatform *g_Platform;
 // ============================================================================
 // ChartGeoTIFF implementation
 // ============================================================================
-ChartGeoTIFF::ChartGeoTIFF() : im(nullptr), tif(nullptr), gtif(nullptr) {
+ChartGeoTIFF::ChartGeoTIFF() : tif(nullptr), gtif(nullptr), im(nullptr) {
   m_ChartType = CHART_TYPE_GEOTIFF;
 }
 
@@ -171,20 +171,21 @@ InitReturn ChartGeoTIFF::Init(const wxString &name, ChartInitFlag init_flags) {
     return INIT_FAIL_REMOVE;
   }
 
-  double pixelMM = (double)g_Platform->GetDisplaySizeMM() /
+  const double pixelMM = (double)g_Platform->GetDisplaySizeMM() /
                    wxMax(wxGetDisplaySize().x, wxGetDisplaySize().y);
   m_Chart_Scale = (PlyTable[0].ltp - PlyTable[1].ltp) * 1852 * 60 * 1000 /
                   (pixelMM * Size_Y);
 
   m_nCOVREntries = 1;
-  m_pCOVRTablePoints = (int *)malloc(sizeof(int));
+  m_pCOVRTablePoints = static_cast<int *>(malloc(sizeof(int)));
   *m_pCOVRTablePoints = REF_POINTS;
-  m_pCOVRTable = (float **)malloc(sizeof(float *));
-  *m_pCOVRTable = (float *)malloc(REF_POINTS * 2 * sizeof(float));
+  m_pCOVRTable = static_cast<float **>(malloc(sizeof(float *)));
+  *m_pCOVRTable = static_cast<float *>(malloc(REF_POINTS * 2 * sizeof(float)));
   memcpy(*m_pCOVRTable, &PlyTable, REF_POINTS * 2 * sizeof(float));
 
   nRefpoint = REF_POINTS;
-  pRefTable = (Refpoint *)realloc(pRefTable, sizeof(Refpoint) * (REF_POINTS));
+  pRefTable = static_cast<Refpoint *>(
+      realloc(pRefTable, sizeof(Refpoint) * (REF_POINTS)));
   for (size_t nRefpoint = 0; nRefpoint < REF_POINTS; nRefpoint++) {
     pRefTable[nRefpoint].xr = nRefpoint <= 1 ? xmin : xmax;
     pRefTable[nRefpoint].yr = nRefpoint == 0 || nRefpoint == 3 ? ymin : ymax;
@@ -201,8 +202,8 @@ InitReturn ChartGeoTIFF::Init(const wxString &name, ChartInitFlag init_flags) {
   return PostInit();
 }
 
-bool ChartGeoTIFF::IsPixelTransparent(uint8_t *image, const int &x,
-                                      const int &y, bool fix_borders) {
+bool ChartGeoTIFF::IsPixelTransparent(const uint8_t *image, const int &x,
+                                      const int &y, bool fix_borders) const {
   if (fix_borders) {
     if (x < 0 || y < 0) {
       return false;
@@ -214,11 +215,11 @@ bool ChartGeoTIFF::IsPixelTransparent(uint8_t *image, const int &x,
       return true;
     }
   }
-  size_t pos = 4 * y * Size_X + 4 * x;
+  const size_t pos = 4 * y * Size_X + 4 * x;
   return image[pos + 3] == 0;
 }
 
-bool ChartGeoTIFF::FindEdge(uint8_t *image, int &x, int &y) {
+bool ChartGeoTIFF::FindEdge(const uint8_t *image, int &x, int &y) const {
   y = Size_Y;
 #define STEPS 4
   // Bottom to top samples
@@ -250,25 +251,25 @@ bool ChartGeoTIFF::FindEdge(uint8_t *image, int &x, int &y) {
   // TODO: Top->bottom & Right->Left (Can be done in the same loop in case we do
   // not find first pixel to be transparent, but it will probably be faster to
   // start independently in the other direction most of the time?)
-  // TODO: Another possible optimization is to remember shich sample was
+  // TODO: Another possible optimization is to remember which sample was
   // completely transparent not to have to scan it in the other direction
   return false;
 }
 
 InitReturn ChartGeoTIFF::PostInit() {
-  int analyze_ret_val = AnalyzeRefpoints();
+  const int analyze_ret_val = AnalyzeRefpoints();
   if (0 != analyze_ret_val) {
     return INIT_FAIL_REMOVE;
   }
 
-  pline_table = NULL;
+  pline_table = nullptr;
 
-  im = (uint8_t *)_TIFFmalloc(
+  im = static_cast<uint8_t *>(_TIFFmalloc(
       Size_X * Size_Y *
-      4);  // FIXME: This is very simple, but takes A LOT of memory, needs to be
+      4));  // FIXME: This is very simple, but takes A LOT of memory, needs to be
            // reimplemented so that GetChartBits loads only the needed
            // lines/tiles/strips instead
-  int res = TIFFReadRGBAImage(tif, Size_X, Size_Y, (uint32_t *)im);
+  const int res = TIFFReadRGBAImage(tif, Size_X, Size_Y, reinterpret_cast<uint32_t *>(im));
   if (res != 1) {
     return INIT_FAIL_REMOVE;
   }
@@ -277,7 +278,7 @@ InitReturn ChartGeoTIFF::PostInit() {
   if (FindEdge(im, x, y)) {
     // Found edge, let's trace the outline
     if (TraceOutline(im, x, y) && !ply_points.empty()) {
-      *m_pCOVRTablePoints = ply_points.size();
+      *m_pCOVRTablePoints = static_cast<int>(ply_points.size());
       Plypoint PlyTable[*m_pCOVRTablePoints];  // By default we define the
                                                // polygon around the whole image
       GTIFDefn defn;
@@ -286,7 +287,7 @@ InitReturn ChartGeoTIFF::PostInit() {
         return INIT_FAIL_REMOVE;
       }
       size_t cnt{0};
-      for (auto p : ply_points) {
+      for (const auto &p : ply_points) {
         double dx = p.first;
         double dy = p.second;
         if (!CornerLatLon(gtif, &defn, dx, dy, PlyTable[cnt].ltp,
@@ -297,8 +298,8 @@ InitReturn ChartGeoTIFF::PostInit() {
         }
         cnt++;
       }
-      m_pCOVRTable = (float **)malloc(sizeof(float *));
-      *m_pCOVRTable = (float *)malloc(*m_pCOVRTablePoints * 2 * sizeof(float));
+      m_pCOVRTable = static_cast<float **>(malloc(sizeof(float *)));
+      *m_pCOVRTable = static_cast<float *>(malloc(*m_pCOVRTablePoints * 2 * sizeof(float)));
       memcpy(*m_pCOVRTable, &PlyTable, *m_pCOVRTablePoints * 2 * sizeof(float));
     }
   }
@@ -316,7 +317,7 @@ bool ChartGeoTIFF::GetChartBits(wxRect &source, unsigned char *pPix,
   uint8_t r, g, b;
   for (int i = 0; i < source.height; i++) {
     for (int j = 0; j < source.width; j++) {
-      size_t pos = 4 * (Size_Y - i - source.y) * Size_X + 4 * (source.x + j);
+      const size_t pos = 4 * (Size_Y - i - source.y) * Size_X + 4 * (source.x + j);
       if (pos <= 4 * Size_X * Size_Y) {
         r = im[pos];
         g = im[pos + 1];
@@ -334,34 +335,32 @@ bool ChartGeoTIFF::GetChartBits(wxRect &source, unsigned char *pPix,
 
 void ChartGeoTIFF::AppendPoint(const int &x, const int &y, const int &dir) {
   if (ply_points.empty()) {
-    ply_points.push_back({x, Size_Y - y});
+    ply_points.emplace_back(x, Size_Y - y);
   } else {
     int ex_x = ply_points.back().first;
-    int ex_y = ply_points.back().second;
+    const int ex_y = ply_points.back().second;
     if (abs(ex_x - x) == 1 && abs(ex_y - y) == 1) {
       switch (dir) {
         case 1:
+          case 3:
           ply_points.back() = {ex_x, Size_Y - y};
           break;
-        case 3:
-          ply_points.back() = {ex_x, Size_Y - y};
-          break;
+
         case 5:
-          ply_points.back() = {x, Size_Y - ex_y};
-          break;
-        case 7:
+          case 7:
+
           ply_points.back() = {x, Size_Y - ex_y};
           break;
         default:
           break;
       }
     } else {
-      ply_points.push_back({x, Size_Y - y});
+      ply_points.emplace_back(x, Size_Y - y);
     }
   }
 }
 
-bool ChartGeoTIFF::TraceOutline(uint8_t *image, int x0, int y0) {
+bool ChartGeoTIFF::TraceOutline(const uint8_t *image, const int x0, const int y0) {
   /*
  image: an RGBA image buffer
  x0, y0, coordinates of a point on the edge of the transparent area
@@ -378,10 +377,10 @@ bool ChartGeoTIFF::TraceOutline(uint8_t *image, int x0, int y0) {
   int y{y0};
   bool hitstart{false};
   size_t count{0};
-  size_t countlimit =
+  const size_t countlimit =
       (Size_X + Size_Y) /
       5;  // Artificial limit for the number of points in the outline
-  const size_t indices[8] = {2, 3, 4, 5, 6, 7, 0, 1};
+  const int indices[8] = {2, 3, 4, 5, 6, 7, 0, 1};
   bool neighbors[8];
   int newdir{-1};
   int olddir{-1};
@@ -394,7 +393,7 @@ bool ChartGeoTIFF::TraceOutline(uint8_t *image, int x0, int y0) {
     neighbors[7] = IsPixelTransparent(image, x - 1, y + 1, true);
     neighbors[0] = IsPixelTransparent(image, x, y + 1, true);
     neighbors[1] = IsPixelTransparent(image, x + 1, y + 1, true);
-    for (int idx : indices) {
+    for (const int idx : indices) {
       if (neighbors[idx]) {
         if (std::abs(idx - newdir) !=
             4) {  // We do not ever want to go back the same way we got here
@@ -458,7 +457,6 @@ bool ChartGeoTIFF::TraceOutline(uint8_t *image, int x0, int y0) {
       default:
         std::cerr << "Ouch, we got stuck!" << std::endl;
         return false;
-        break;
     }
 
     if (count >= 4 && abs(x - x0) < 2 && abs(y - y0) < 2) {
