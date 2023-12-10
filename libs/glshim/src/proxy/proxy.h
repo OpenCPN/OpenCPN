@@ -4,7 +4,6 @@
 #include <alsa/asoundlib.h>
 #include "../gl/defines.h"
 #include "../config.h"
-#include "config.h"
 
 #ifndef PROXY_H
 #define PROXY_H
