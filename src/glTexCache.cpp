@@ -583,7 +583,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level,
   } else {  // COMPRESSED_BUFFER_OK == status
     if (m_newCatalog) {
       // it's an empty catalog or it's not used, odds it's going to be slow
-      OCPNPlatform::ShowBusySpinner();
+      BasePlatform::ShowBusySpinner();
       busy_shown = true;
       m_newCatalog = false;
     }
@@ -631,7 +631,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level,
     ptd->map_array[i] = 0;
   }
 
-  if (busy_shown) OCPNPlatform::HideBusySpinner();
+  if (busy_shown) AbstractPlatform::HideBusySpinner();
 
   return true;
 }

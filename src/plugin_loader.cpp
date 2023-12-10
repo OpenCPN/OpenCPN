@@ -533,14 +533,14 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
         pic->m_enabled = false;
         enabled.Set(false);
       }
-#ifndef CLIAPP
-      // The CLI has no graphics context, but plugins assumes there is.
-      if (pic->m_enabled) {
-        pic->m_cap_flag = pic->m_pplugin->Init();
-        pic->m_init_state = true;
-        evt_load_plugin.Notify(pic);
+      if (dynamic_cast<wxApp*>(wxAppConsole::GetInstance())) {
+        // The CLI has no graphics context, but plugins assumes there is.
+        if (pic->m_enabled) {
+          pic->m_cap_flag = pic->m_pplugin->Init();
+          pic->m_init_state = true;
+        }
       }
-#endif
+      evt_load_plugin.Notify(pic);
       wxLog::FlushActive();
 
       std::string found_version;

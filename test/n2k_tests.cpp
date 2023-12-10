@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-#include "base_platform.h"
+#include "cli_platform.h"
 #include "cmdline.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
@@ -133,7 +133,7 @@ extern float g_selection_radius_touch_mm;
 extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
-extern BasePlatform* g_BasePlatform;
+extern AbstractPlatform* g_BasePlatform;
 extern void* g_pi_manager;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -188,7 +188,7 @@ protected:
   wxAppConsole* app;
 
   virtual void SetUp()  override {
-    g_BasePlatform = new BasePlatform();
+    g_BasePlatform = new CliPlatform();
     pSelectAIS = new Select();
     pSelect = new Select();
     g_pAIS = new AisDecoder(AisDecoderCallbacks());
@@ -274,7 +274,7 @@ public:
     wxAppConsole::OnInit();
 
     //Observable::Clear();
-    g_BasePlatform = new BasePlatform();
+    g_BasePlatform = new CliPlatform();
     delete pSelectAIS;
     pSelectAIS = new Select();
     delete pSelect;

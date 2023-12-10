@@ -51,8 +51,6 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
-#include "config.h"
-
 #include "gdal/ogr_geometry.h"
 
 #include "cutil.h"

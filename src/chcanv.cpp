@@ -1481,7 +1481,7 @@ bool ChartCanvas::CheckGroup(int igroup) {
 void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
   if (!ChartData) return;
 
-  OCPNPlatform::ShowBusySpinner();
+  AbstractPlatform::ShowBusySpinner();
 
   double old_scale = GetVPScale();
   InvalidateQuilt();
@@ -1545,7 +1545,7 @@ void ChartCanvas::canvasChartsRefresh(int dbi_hint) {
 
   SetCursor(wxCURSOR_ARROW);
 
-  OCPNPlatform::HideBusySpinner();
+  AbstractPlatform::HideBusySpinner();
 }
 
 bool ChartCanvas::DoCanvasUpdate(void) {
@@ -10840,7 +10840,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
     bool busy = false;
     if (bvectorQuilt && (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm ||
                          m_cache_vp.rotation != VPoint.rotation)) {
-      OCPNPlatform::ShowBusySpinner();
+      AbstractPlatform::ShowBusySpinner();
       busy = true;
     }
 
@@ -10984,7 +10984,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
                                                 chart_get_all_region);
     }
 
-    if (busy) OCPNPlatform::HideBusySpinner();
+    AbstractPlatform::HideBusySpinner();
 
   }
 

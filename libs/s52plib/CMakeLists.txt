@@ -18,7 +18,8 @@ SET(SRC
     src/DepthFont.cpp
     src/mygeom.cpp
     src/Cs52_shaders.cpp
-    )
+    src/color_types.h
+)
 
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)
@@ -30,11 +31,10 @@ add_library(ocpn::s52plib ALIAS S52PLIB)
 
 set_property(TARGET S52PLIB PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(S52PLIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(S52PLIB PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(S52PLIB PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_include_directories(S52PLIB PRIVATE ../geoprim/src)
-target_include_directories(S52PLIB PRIVATE ../pugixml)
-target_include_directories(S52PLIB PRIVATE ../../include)
-target_include_directories(S52PLIB PRIVATE ../gdal/include)
-target_include_directories(S52PLIB PRIVATE ../libtess2/Include)
-target_include_directories(S52PLIB PRIVATE ${CMAKE_BINARY_DIR}/include)
+target_link_libraries(S52PLIB PRIVATE ocpn::geoprim)
+target_link_libraries(S52PLIB PRIVATE ocpn::pugixml)
+target_link_libraries(S52PLIB PRIVATE ocpn::gdal)
+target_link_libraries(S52PLIB PRIVATE ocpn::tess2)
 

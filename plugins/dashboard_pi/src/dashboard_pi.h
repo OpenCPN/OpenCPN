@@ -50,7 +50,7 @@
 #include <wx/jsonval.h>
 
 // wx2.9 #include <wx/wrapsizer.h>
-#include "../../../include/ocpn_plugin.h"
+#include "ocpn_plugin.h"
 
 #ifdef __OCPN__ANDROID__
 #include <wx/qt/private/wxQtGesture.h>
