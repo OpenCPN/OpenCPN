@@ -30,7 +30,7 @@
 #include <thread>
 #include <unordered_map>
 
-#if defined(__GNUC__) && (__GNUC__ < 8)
+#if defined(__GNUC__) && (__GNUC__ < 8) && (! __APPLE__)
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #else

@@ -45,6 +45,17 @@ else (CMAKE_HOST_WIN32)
       ${LOOK_OPTION}
   )
   message(STATUS " GeOTIFF library found: ${GEOTIFF_LIBRARIES}")
+  set(TIFF_LIB_LOOK_PATHS ${LINUX_LIB_PATHS})
+  if (APPLE AND NOT APPLE_MODERN)
+    set(TIFF_LIB_LOOK_PATHS /usr/local/Cellar/libtiff/4.6.0/lib /opt/local/lib)
+    set(LOOK_OPTION NO_DEFAULT_PATH)
+  endif ()
+  find_library(TIFF_LIBRARIES
+      NAMES libtiff tiff
+      PATHS ${TIFF_LIB_LOOK_PATHS}
+      ${LOOK_OPTION}
+  )
+  message(STATUS " TIFF library found: ${TIFF_LIBRARIES}")
   # handle the QUIETLY and REQUIRED arguments and set GEOTIFF_FOUND to TRUE if
   # all listed variables are TRUE
   include( "FindPackageHandleStandardArgs" )
@@ -52,6 +63,10 @@ else (CMAKE_HOST_WIN32)
       DEFAULT_MSG GEOTIFF_INCLUDE_DIRS GEOTIFF_LIBRARIES
   )
   mark_as_advanced(GEOTIFF_INCLUDE_DIRS GEOTIFF_LIBRARIES )
+  find_package_handle_standard_args("TIFF"
+      DEFAULT_MSG TIFF_INCLUDE_DIRS TIFF_LIBRARIES
+  )
+  mark_as_advanced(TIFF_INCLUDE_DIRS TIFF_LIBRARIES )
 endif ()
 
 if (NOT GEOTIFF_FOUND)
@@ -60,7 +75,7 @@ endif ()
 
 add_library(_GEOTIFF INTERFACE)
 
-target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
+target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES} ${TIFF_LIBRARIES})
 
 target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
 if (APPLE)
