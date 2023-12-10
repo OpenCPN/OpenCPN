@@ -10,6 +10,7 @@ set(SRC
     src/Column.cpp
     src/Database.cpp
     src/Exception.cpp
+    src/Savepoint.cpp
     src/Statement.cpp
     src/Transaction.cpp
 )
@@ -20,6 +21,9 @@ set(INCL
     include/SQLiteCpp/Column.h
     include/SQLiteCpp/Database.h
     include/SQLiteCpp/Exception.h
+    include/SQLiteCpp/ExecuteMany.h
+    include/SQLiteCpp/Savepoint.h
+    include/SQLiteCpp/SQLiteCppExport.h
     include/SQLiteCpp/Statement.h
     include/SQLiteCpp/Transaction.h
     include/SQLiteCpp/Utils.h

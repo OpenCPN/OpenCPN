@@ -4,16 +4,16 @@
  * @brief   Backup is used to backup a database file in a safe and online way.
  *
  * Copyright (c) 2015 Shibao HONG (shibaohong@outlook.com)
- * Copyright (c) 2015-2018 Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ * Copyright (c) 2015-2023 Sebastien Rombauts (sebastien.rombauts@gmail.com)
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
  */
-#include <sqlite3.h>
-
 #include <SQLiteCpp/Backup.h>
 
 #include <SQLiteCpp/Exception.h>
+
+#include <sqlite3.h>
 
 namespace SQLite
 {
@@ -22,83 +22,62 @@ namespace SQLite
 Backup::Backup(Database&    aDestDatabase,
                const char*  apDestDatabaseName,
                Database&    aSrcDatabase,
-               const char*  apSrcDatabaseName) :
-    mpSQLiteBackup(NULL)
+               const char*  apSrcDatabaseName)
 {
-    mpSQLiteBackup = sqlite3_backup_init(aDestDatabase.getHandle(),
+    mpSQLiteBackup.reset(sqlite3_backup_init(aDestDatabase.getHandle(),
                                          apDestDatabaseName,
                                          aSrcDatabase.getHandle(),
-                                         apSrcDatabaseName);
-    if (NULL == mpSQLiteBackup)
+                                         apSrcDatabaseName));
+    if (nullptr == mpSQLiteBackup)
     {
         // If an error occurs, the error code and message are attached to the destination database connection.
         throw SQLite::Exception(aDestDatabase.getHandle());
     }
 }
 
-// Initialize resource for SQLite database backup
 Backup::Backup(Database&            aDestDatabase,
                const std::string&   aDestDatabaseName,
                Database&            aSrcDatabase,
                const std::string&   aSrcDatabaseName) :
-    mpSQLiteBackup(NULL)
+    Backup(aDestDatabase, aDestDatabaseName.c_str(), aSrcDatabase, aSrcDatabaseName.c_str())
 {
-    mpSQLiteBackup = sqlite3_backup_init(aDestDatabase.getHandle(),
-                                         aDestDatabaseName.c_str(),
-                                         aSrcDatabase.getHandle(),
-                                         aSrcDatabaseName.c_str());
-    if (NULL == mpSQLiteBackup)
-    {
-        // If an error occurs, the error code and message are attached to the destination database connection.
-        throw SQLite::Exception(aDestDatabase.getHandle());
-    }
 }
 
-// Initialize resource for SQLite database backup
 Backup::Backup(Database &aDestDatabase, Database &aSrcDatabase) :
-    mpSQLiteBackup(NULL)
+    Backup(aDestDatabase, "main", aSrcDatabase, "main")
 {
-    mpSQLiteBackup = sqlite3_backup_init(aDestDatabase.getHandle(),
-                                         "main",
-                                         aSrcDatabase.getHandle(),
-                                         "main");
-    if (NULL == mpSQLiteBackup)
-    {
-        // If an error occurs, the error code and message are attached to the destination database connection.
-        throw SQLite::Exception(aDestDatabase.getHandle());
-    }
-}
-
-// Release resource for SQLite database backup
-Backup::~Backup()
-{
-    if (NULL != mpSQLiteBackup)
-    {
-        sqlite3_backup_finish(mpSQLiteBackup);
-    }
 }
 
 // Execute backup step with a given number of source pages to be copied
 int Backup::executeStep(const int aNumPage /* = -1 */)
 {
-    const int res = sqlite3_backup_step(mpSQLiteBackup, aNumPage);
+    const int res = sqlite3_backup_step(mpSQLiteBackup.get(), aNumPage);
     if (SQLITE_OK != res && SQLITE_DONE != res && SQLITE_BUSY != res && SQLITE_LOCKED != res)
     {
-        //throw SQLite::Exception(sqlite3_errstr(res), res);
+        throw SQLite::Exception(sqlite3_errstr(res), res);
     }
     return res;
 }
 
 // Get the number of remaining source pages to be copied in this backup process
-int Backup::getRemainingPageCount()
+int Backup::getRemainingPageCount() const
 {
-    return sqlite3_backup_remaining(mpSQLiteBackup);
+    return sqlite3_backup_remaining(mpSQLiteBackup.get());
 }
 
 // Get the number of total source pages to be copied in this backup process
-int Backup::getTotalPageCount()
+int Backup::getTotalPageCount() const
 {
-    return sqlite3_backup_pagecount(mpSQLiteBackup);
+    return sqlite3_backup_pagecount(mpSQLiteBackup.get());
+}
+
+// Release resource for SQLite database backup
+void SQLite::Backup::Deleter::operator()(sqlite3_backup* apBackup)
+{
+    if (apBackup)
+    {
+        sqlite3_backup_finish(apBackup);
+    }
 }
 
 }  // namespace SQLite
