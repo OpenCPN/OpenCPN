@@ -4084,7 +4084,6 @@ static bool IsPluginLoaded(const std::string& name) {
 void PluginListPanel::ReloadPluginPanels() {
   if (m_is_loading.test_and_set()) {
     // recursive call...
-    m_is_loading.clear();
     DEBUG_LOG << "LoadAllPlugins: recursive invocation";
     return;
   }
