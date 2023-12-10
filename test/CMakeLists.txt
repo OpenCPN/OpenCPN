@@ -172,7 +172,7 @@ if (MSVC)
 set(_script
 "file(WRITE ${_bat_path} \"
 PATH=%PATH%\;${_cache_dir}\\\\buildwin
-PATH=%PATH%\;${_cache_dir}\\\\wxWidgets-3.2.3\\\\lib\\\\vc14x_dll\")
+PATH=%PATH%\;${_cache_dir}\\\\wxWidgets-3.2.4\\\\lib\\\\vc14x_dll\")
 ")
   file(WRITE ${_script_path} ${_script})
   add_custom_target(win-path-setup
