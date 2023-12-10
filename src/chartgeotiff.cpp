@@ -279,8 +279,7 @@ InitReturn ChartGeoTIFF::PostInit() {
     // Found edge, let's trace the outline
     if (TraceOutline(im, x, y) && !ply_points.empty()) {
       *m_pCOVRTablePoints = static_cast<int>(ply_points.size());
-      Plypoint PlyTable[*m_pCOVRTablePoints];  // By default we define the
-                                               // polygon around the whole image
+      Plypoint *PlyTable = (Plypoint *)malloc(ply_points.size() * sizeof(Plypoint));  // By default we define the polygon around the whole image
       GTIFDefn defn;
 
       if (!GTIFGetDefn(gtif, &defn)) {
@@ -300,7 +299,8 @@ InitReturn ChartGeoTIFF::PostInit() {
       }
       m_pCOVRTable = static_cast<float **>(malloc(sizeof(float *)));
       *m_pCOVRTable = static_cast<float *>(malloc(*m_pCOVRTablePoints * 2 * sizeof(float)));
-      memcpy(*m_pCOVRTable, &PlyTable, *m_pCOVRTablePoints * 2 * sizeof(float));
+      memcpy(*m_pCOVRTable, PlyTable, *m_pCOVRTablePoints * 2 * sizeof(float));
+      free(PlyTable);
     }
   }
 
