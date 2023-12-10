@@ -32,11 +32,10 @@
 #include <wx/dynlib.h>
 
 #include <memory>
-
+#include <atomic>
 #include "config.h"
 
 #include "ocpn_plugin.h"
-// #include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
 #include "chartimg.h"
 #include "catalog_parser.h"
@@ -439,6 +438,7 @@ private:
   PluginPanel* m_PluginSelected;
   wxString m_selectedName;
   int m_pluginSpacer;
+  std::atomic_flag m_is_loading;   //!<  recursive lock.
 };
 
 /** Invokes client browser on plugin info_url when clicked. */
