@@ -4032,8 +4032,8 @@ END_EVENT_TABLE()
 PluginListPanel::PluginListPanel(wxWindow* parent, wxWindowID id,
                                  const wxPoint& pos, const wxSize& size)
     : wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL | wxVSCROLL),
-      m_PluginSelected(0),
-      m_is_loading(ATOMIC_FLAG_INIT){
+      m_PluginSelected(0) {
+  m_is_loading.clear();
   SetSizer(new wxBoxSizer(wxVERTICAL));
   ReloadPluginPanels();
 }
