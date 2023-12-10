@@ -1,3 +1,11 @@
+# Building the dependency bundle for macOS universal build on Apple Silicon hardware:
+## sudo ./macos-universal-deps.sh
+## cd /usr/local
+## sudo sh -c "tar c * |xz > macos_deps_universal.tar.xz"
+#
+# Building the dependency bundle for legacy Intel machines:
+# 
+
 set -x
 
 if [ $# -ge 1 ]; then
@@ -30,6 +38,9 @@ libsndfile_version="1.2.2"
 libusb_version="1.0.26"
 openssl_version="3.0.12"
 wx_version="3.2.4"
+tiff_version="4.6.0"
+proj_version="9.3.1"
+geotiff_version="1.7.1"
 
 macos_deployment_target="10.13"
 
@@ -370,6 +381,52 @@ fi
 make install
 cd ..
 rm -rf openssl-${openssl_version}
+
+#libtiff
+if [ ! -f tiff-${tiff_version}.tar.xz ]; then
+  wget https://download.osgeo.org/libtiff/tiff-${tiff_version}.tar.xz
+fi
+tar xJf tiff-${tiff_version}.tar.xz
+cd tiff-${tiff_version}
+mkdir build
+cd build
+cmake -Dwebp=FALSE -Dlerc=FALSE -Djpeg=FALSE -Dold-jpeg=FALSE -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+make -j ${ncpu}
+make install
+cd ..
+cd ..
+rm -rf tiff-${tiff_version}
+
+#proj
+if [ ! -f proj-${proj_version}.tar.gz ]; then
+  wget https://download.osgeo.org/proj/proj-${proj_version}.tar.gz
+fi
+tar xzf proj-${proj_version}.tar.gz
+cd proj-${proj_version}
+mkdir build
+cd build
+cmake -DTIFF_INCLUDE_DIR=${cache_dir}/include -DTIFF_LIBRARY=${cache_dir}/lib/libtiff.dylib -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+make -j ${ncpu}
+make install
+cd ..
+cd ..
+rm -rf proj-${proj_version}
+
+#geotiff
+if [ ! -f libgeotiff-${geotiff_version}.tar.gz ]; then
+  wget https://download.osgeo.org/geotiff/libgeotiff/libgeotiff-${geotiff_version}.tar.gz
+fi
+tar xzf libgeotiff-${geotiff_version}.tar.gz
+cd libgeotiff-${geotiff_version}
+cp ${cache_dir}/include/tiff*.h libxtiff
+mkdir build
+cd build
+cmake -DPROJ_DIR=${cache_dir}/lib/cmake/proj -DTIFF_DIR=${cache_dir}/lib/cmake/tiff -DTIFF_INCLUDE_DIR=${cache_dir}/include -DTIFF_LIBRARY=${cache_dir}/lib/libtiff.dylib -DPROJ_INCLUDE_DIR=${cache_dir}/include -DPROJ_LIBRARIES=${cache_dir}/lib/libproj.dylib -DCMAKE_OSX_ARCHITECTURES="${arch}" -DCMAKE_INSTALL_PREFIX=${cache_dir} -DENABLE_EXTERNAL_LIBS=false -DBUILD_SHARED_LIBS=1 -DCMAKE_POLICY_DEFAULT_CMP0068=NEW -DCMAKE_SKIP_BUILD_RPATH=FALSE -DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE -DCMAKE_INSTALL_RPATH=${cache_dir}/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE ..
+make -j ${ncpu}
+make install
+cd ..
+cd ..
+rm -rf libgeotiff-${geotiff_version}
 
 #wxWidgets
 if [ ! -f wxWidgets-${wx_version}.tar.bz2 ]; then
