@@ -28,6 +28,7 @@
 #include "ocpn_types.h"
 #include "ocpn_plugin.h"
 #include "own_ship.h"
+#include "S57ClassRegistrar.h"
 #include "routeman.h"
 #include "select.h"
 
@@ -80,6 +81,7 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
+S57ClassRegistrar *g_poRegistrar;
 Select* pSelect;
 double g_n_arrival_circle_radius;
 double g_PlanSpeed;
