@@ -50,15 +50,15 @@ if not exist C:\ProgramData\chocolatey\lib\nsis (
 )
 
 :: Make sure the pre-compiled libraries are in place
-set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
+set "GH_DL_BASE=https://github.com/nohal/OCPNWindowsCoreBuildSupport"
 if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
-      %GH_DL_BASE%/archive/refs/tags/v0.3.zip
+      %GH_DL_BASE%/archive/refs/tags/v0.4.zip
   7z x -y !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
       -o%CACHE_DIR%\buildwintemp
   if not exist !CACHE_DIR!\buildwin (mkdir !CACHE_DIR!\buildwin)
   xcopy ^
-    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin ^
+    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.4\buildwin ^
     !CACHE_DIR!\buildwin /s /y /q
   if exist !CACHE_DIR!\buildwin\wxWidgets (
     rmdir !CACHE_DIR!\buildwin\wxWidgets /s /q
