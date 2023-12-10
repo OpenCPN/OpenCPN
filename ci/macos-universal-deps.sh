@@ -3,8 +3,10 @@
 ## cd /usr/local
 ## sudo sh -c "tar c * |xz > macos_deps_universal.tar.xz"
 #
-# Building the dependency bundle for legacy Intel machines:
-# 
+# Building the dependency bundle for legacy Intel machines on older macOS (10.14 with Xcode 11.2.1 was used for the production bundle, somewhat newer should probably work too):
+## ./macos-universal-deps.sh /tmp/ocpn_deps x86_64 
+## cd /tmp/ocpn_deps
+## tar c * |xz > macos_deps_intel_legacy.tar.xz
 
 set -x
 
