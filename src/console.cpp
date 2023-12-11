@@ -78,7 +78,7 @@ class AISTargetAlertDialog;
 class Multiplexer;
 class Select;
 
-AbstractPlatform* g_BasePlatform = 0;
+BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
@@ -248,7 +248,7 @@ public:
     wxLog::SetTimestamp("");
     wxLog::SetLogLevel(wxLOG_Warning);
 
-    g_BasePlatform = new CliPlatform();
+    g_BasePlatform = new BasePlatform();
     auto config_file = g_BasePlatform->GetConfigFileName();
     InitBaseConfig(new wxFileConfig("", "", config_file));
     pSelect = new Select();
