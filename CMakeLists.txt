@@ -220,6 +220,9 @@ if (WIN32 AND NOT UNIX)
   option(
     BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON
   )
+  option(
+    BUNDLE_GEOTIFFDLLS "Bundle the prebuilt LibTIFF, LibGeoTIFF and PROJ DLLs" ON
+  )
 endif ()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
@@ -2725,6 +2728,18 @@ if (WIN32 AND NOT UNIX)
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
   endif (BUNDLE_LIBARCHIVEDLLS)
+  if (BUNDLE_GEOTIFFDLLS)
+    file(
+      GLOB
+        geotiffdll_files
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/tiff.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/geotiff.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/proj_9_3.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/proj.db"
+    )
+    install(FILES ${geotiffdll_files} DESTINATION ".")
+    message(STATUS "GeoTIFF DLLs bundled into the installer package...")
+  endif (BUNDLE_GEOTIFFDLLS)
 endif (WIN32 AND NOT UNIX)
 
 if (APPLE)
