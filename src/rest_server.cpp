@@ -87,6 +87,7 @@ private:
                 bool _force);
 };
 
+/** Compat interface to old peer_client. */
 std::string PintoRandomKeyString(int pin) { return Pincode::IntToHash(pin); }
 
 /** Extract a HTTP variable from query string. */
@@ -133,7 +134,7 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
   }
   if (MID == ORS_CHUNK_LAST) {
     std::unique_lock<std::mutex> lock{parent->ret_mutex};
-    bool r = parent->return_status_condition.wait_for(lock, 10s, [&] {
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
@@ -153,7 +154,7 @@ static void HandlePing(struct mg_connection* c, struct mg_http_message* hm,
         RestIoEvtData::CreatePingData(api_key, source));
     PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
     std::unique_lock<std::mutex> lock{parent->ret_mutex};
-    bool r = parent->return_status_condition.wait_for(lock, 10s, [&] {
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
@@ -173,7 +174,7 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
         RestIoEvtData::CreateChkWriteData(apikey, source, guid));
     PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
     std::unique_lock<std::mutex> lock{parent->ret_mutex};
-    bool r = parent->return_status_condition.wait_for(lock, 10s, [&] {
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
       return parent->GetReturnStatus() != RestServerResult::Void;
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
@@ -269,7 +270,7 @@ void RestServer::UpdateReturnStatus(RestServerResult result) {
     std::lock_guard<std::mutex> lock{ret_mutex};
     return_status = result;
   }
-  return_status_condition.notify_one();
+  return_status_cv.notify_one();
 }
 
 RestServer::RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
@@ -294,8 +295,8 @@ bool RestServer::StartServer(const fs::path& certificate_location) {
 
   // Load persistent config info and  kick off the  Server thread
   LoadConfig();
-  if (!m_thread.joinable()) {
-    m_thread = std::thread([&]() { m_io_thread.Run(); });
+  if (!m_std_thread.joinable()) {
+    m_std_thread = std::thread([&]() { m_io_thread.Run(); });
   }
   return true;
 }
@@ -303,11 +304,11 @@ bool RestServer::StartServer(const fs::path& certificate_location) {
 void RestServer::StopServer() {
   wxLogDebug("Stopping REST service");
   //  Kill off the IO Thread if alive
-  if (m_thread.joinable()) {
+  if (m_std_thread.joinable()) {
     wxLogDebug("Stopping io thread");
     m_io_thread.Stop();
     m_io_thread.WaitUntilStopped();
-    m_thread.join();
+    m_std_thread.join();
   }
 }
 
@@ -346,7 +347,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
   ss << evt_data.source << " " << _("wants to send you new data.") << "\n"
      << _("Please enter the following PIN number on ") << evt_data.source << " "
      << _("to pair with this device") << "\n";
-  m_pin_dialog = m_dlg_ctx.show_dialog(ss.str(), m_pincode.ToString());
+  m_pin_dialog = m_dlg_ctx.run_pincode_dlg(ss.str(), m_pincode.ToString());
 
   return false;
 }
@@ -443,7 +444,6 @@ void RestServer::HandleRoute(pugi::xml_node object,
         SaveConfig();
       }
     }
-
     if (m_overwrite || overwrite_one || evt_data.force) {
       //  Remove the existing duplicate route before adding new route
       m_route_ctx.delete_route(duplicate);
@@ -542,7 +542,7 @@ RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
       payload(std::move(_payload)) {}
 
 RestServerDlgCtx::RestServerDlgCtx()
-    : show_dialog([](const std::string&, const std::string&) -> wxDialog* {
+    : run_pincode_dlg([](const std::string&, const std::string&) -> wxDialog* {
         return nullptr;
       }),
       update_route_mgr([]() {}),

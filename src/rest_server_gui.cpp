@@ -75,7 +75,7 @@ static AcceptObjectDlgResult RunAcceptObjectDlg(const wxString& msg,
 
 RestServerDlgCtx PINCreateDialog::GetDlgCtx() {
   RestServerDlgCtx ctx;
-  ctx.show_dialog =
+  ctx.run_pincode_dlg =
       [](const std::string& msg, const std::string& text1) {
           return DisplayDlg(msg, text1); };
   ctx.update_route_mgr = []() { UpdateRouteMgr(); };

@@ -88,7 +88,7 @@ class RestServerDlgCtx {
 public:
   /** Run the "Server wants a pincode" dialog. */
   std::function<wxDialog*(const std::string& msg, const std::string& text1)>
-      show_dialog;
+      run_pincode_dlg;
 
   /** Update Route manager after updates to underlying nav_object_database. */
   std::function<void(void)> update_route_mgr;
@@ -110,6 +110,8 @@ public:
   std::function<Track*(wxString)> find_track_by_guid;
   std::function<void(Route*)> delete_route;
   std::function<void(Track*)> delete_track;
+
+  /** Dummy stubs constructor. */
   RouteCtx();
 };
 
@@ -160,7 +162,7 @@ public:
  * tries to connect, the API generates a random pincode which is
  * sent to the connecting party where it is displayed to user. User
  * must then input the pincode in the server-side GUI thus making
- * sure she has physical access to the machine.
+ * sure she has physical access to the server.
  *
  * Result codes are as defined in RestServerResult.
  */
@@ -208,7 +210,7 @@ public:
   std::mutex ret_mutex;
 
   /** IoThread interface: Guards return_status */
-  std::condition_variable return_status_condition;
+  std::condition_variable return_status_cv;
 
   /**
    * IoThread interface: Binary exit synchronization, released when
@@ -219,6 +221,20 @@ public:
 private:
   class IoThread {
   public:
+    /**
+     * Asynchcronous thread handling IO. Eventually driven by the mongoose main
+     * loop i. e. mg_mgr_poll().  Receives data, hands it to the containing
+     * RestServer and expects feedback according to:
+     * - IoThread gets a http request from mongoose
+     * - "Simple" requests like 404 are handled directly. Otherwise:
+     * - IoThtread sets return_status to RestServerResult::Void.
+     * - IoThread posts a ObservedEvt containing a RestIoEvtData to RestServer
+     * - IoThread blocks until return_status is changed.
+     * - RestServer processes event and sets return_status, unblocking IoThread
+     * - IoThread sends a http reply based on return_status using mongoose.
+     *
+     * return_status is a critical zone guarded by return_status_cv.
+     */
     IoThread(RestServer& parent, std::string ip);
     virtual ~IoThread() = default;
     void Run();
@@ -239,7 +255,7 @@ private:
   };
 
   /**
-   * Stores the api key for different ip addresses. Methods for
+   * Stores the api key for different ip addresses. Methods to
    * serialize/deserialize config file format.
    */
   class Apikeys : public std::unordered_map<std::string, std::string> {
@@ -271,7 +287,7 @@ private:
   bool m_overwrite;
   std::string m_upload_path;
   std::ofstream m_ul_stream;
-  std::thread m_thread;
+  std::thread m_std_thread;
   IoThread m_io_thread;
   Pincode m_pincode;
 };
