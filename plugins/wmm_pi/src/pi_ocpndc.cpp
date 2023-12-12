@@ -48,7 +48,6 @@
 #include <vector>
 
 #include "pi_ocpndc.h"
-#include "cutil.h"
 
 #ifdef __OCPN__ANDROID__
 #include <qopengl.h>
