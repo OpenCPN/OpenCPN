@@ -11,6 +11,8 @@ set (SRC
 )
 add_library(MDNS STATIC ${SRC})
 target_include_directories(MDNS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#FIXME (#3527) Dependency on main CMakeLlists.txt
 set_property(TARGET MDNS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
 if (NOT "${wxWidgets_LIBRARIES}" STREQUAL "")

@@ -32,7 +32,11 @@ add_library(ocpn::geoprim ALIAS GEOPRIM)
 
 set_property(TARGET GEOPRIM PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(GEOPRIM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+#FIXME (#3527) Missing linkage
 target_include_directories(GEOPRIM PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
+#FIXME (#3527) Dependency on main CMakeLists.txt
 target_include_directories(GEOPRIM PRIVATE ../../include)
 
 find_package(OpenGL)

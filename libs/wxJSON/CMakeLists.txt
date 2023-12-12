@@ -4,6 +4,7 @@ if (TARGET ocpn::wxjson)
     return ()
 endif ()
 
+# FIXME (#3527) Dependency on main openpcn
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -29,6 +30,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 add_library(WXJSON STATIC ${SRC})
 add_library(ocpn::wxjson ALIAS WXJSON)
 
+# FIXME (#3527) Dependency on main openpcn
 set_property(TARGET WXJSON PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
 target_include_directories(WXJSON PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(WXJSON PRIVATE ${wxWidgets_LIBRARIES})

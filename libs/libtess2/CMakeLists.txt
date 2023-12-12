@@ -60,5 +60,6 @@ SET(SRC
 add_library(TESS2 STATIC ${SRC})
 add_library(ocpn::tess2 ALIAS TESS2)
 
+# FixME (#3527) Dependency on main CMakeLists.txt
 set_target_properties(TESS2 PROPERTIES COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(TESS2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)

@@ -69,4 +69,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 endif ()
 
 target_include_directories(GARMINHOST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jeeps)
+
+#FIXME (#3527) missing linkage
 target_include_directories(GARMINHOST PRIVATE ${wxWidgets_INCLUDE_DIRS})

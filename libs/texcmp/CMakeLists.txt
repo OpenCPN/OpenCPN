@@ -4,6 +4,7 @@ if (TARGET ocpn::texcmp)
     return ()
 endif ()
 
+# FIXME: Bad main opencpn dependency (#3527)
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -78,6 +79,7 @@ target_include_directories(TEXCMP PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lz4)
 endif ()
 
 # always use optimizations for the texture compression which is much faster
+# FIXME (#3527) HAVE_MSSE2 and ARCH represents dependencies on main CMakeLists
 
 IF ( NOT MSVC)
   IF (HAVE_MSSE2 AND NOT QT_ANDROID)

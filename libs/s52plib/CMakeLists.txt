@@ -4,6 +4,7 @@ if (TARGET ocpn::s52plib)
     return ()
 endif ()
 
+# FixME (#3527) Dependency on main CMakeLists.txt
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -29,12 +30,18 @@ endif ()
 add_library(S52PLIB STATIC ${SRC})
 add_library(ocpn::s52plib ALIAS S52PLIB)
 
+# FixME (#3527) Dependency on main opencpn
 set_property(TARGET S52PLIB PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
 target_include_directories(S52PLIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# FixME (#3527) Dependency on main opencpn
 target_include_directories(S52PLIB PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+# FixME (#3527) Missing linkage
 target_include_directories(S52PLIB PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
 target_link_libraries(S52PLIB PRIVATE ocpn::geoprim)
 target_link_libraries(S52PLIB PRIVATE ocpn::pugixml)
 target_link_libraries(S52PLIB PRIVATE ocpn::gdal)
 target_link_libraries(S52PLIB PRIVATE ocpn::tess2)
-

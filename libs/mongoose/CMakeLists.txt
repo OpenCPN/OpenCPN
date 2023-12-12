@@ -77,7 +77,8 @@ target_include_directories(
 )
 
 if (MSVC)
-target_include_directories(
-  MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../cache/buildwin/include
-)
+  # FIXME (#3527) Dependency on main OpenCPN
+  target_include_directories(
+    MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../cache/buildwin/include
+  )
 endif (MSVC)

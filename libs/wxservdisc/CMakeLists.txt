@@ -13,7 +13,9 @@ set(SRC
 add_library(WXSERVDISC STATIC ${SRC})
 add_library(ocpn::wxservdisc ALIAS WXSERVDISC)
 
+# FIXME (#3527) Dependency on main openpcn
 set_property(TARGET WXSERVDISC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
 target_include_directories(WXSERVDISC PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(
