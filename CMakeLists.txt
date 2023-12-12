@@ -220,6 +220,9 @@ if (WIN32 AND NOT UNIX)
   option(
     BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON
   )
+  option(
+    BUNDLE_GEOTIFFDLLS "Bundle the prebuilt LibTIFF, LibGeoTIFF and PROJ DLLs" ON
+  )
 endif ()
 
 if (CMAKE_VERSION VERSION_GREATER 3.4)
@@ -933,6 +936,7 @@ set(
   include/chartdb.h
   include/chartdbs.h
   include/chartimg.h
+  include/chartgeotiff.h
   include/chart_ctx_factory.h
   include/chcanv.h
   include/ChInfoWin.h
@@ -1121,6 +1125,7 @@ set(
   ${CMAKE_SOURCE_DIR}/src/chartdb.cpp
   ${CMAKE_SOURCE_DIR}/src/chartdbs.cpp
   ${CMAKE_SOURCE_DIR}/src/chartimg.cpp
+  ${CMAKE_SOURCE_DIR}/src/chartgeotiff.cpp
   ${CMAKE_SOURCE_DIR}/src/chcanv.cpp
   ${CMAKE_SOURCE_DIR}/src/ChInfoWin.cpp
   ${CMAKE_SOURCE_DIR}/src/cm93.cpp
@@ -2723,6 +2728,18 @@ if (WIN32 AND NOT UNIX)
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
   endif (BUNDLE_LIBARCHIVEDLLS)
+  if (BUNDLE_GEOTIFFDLLS)
+    file(
+      GLOB
+        geotiffdll_files
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/tiff.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/geotiff.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/proj_9_3.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/proj.db"
+    )
+    install(FILES ${geotiffdll_files} DESTINATION ".")
+    message(STATUS "GeoTIFF DLLs bundled into the installer package...")
+  endif (BUNDLE_GEOTIFFDLLS)
 endif (WIN32 AND NOT UNIX)
 
 if (APPLE)
@@ -3289,6 +3306,12 @@ if (NOT QT_ANDROID)
       target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
     endif ()
   endif ()
+  include(OcpnFindGeoTIFF)
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::geotiff)
+  #find_package(TIFF REQUIRED) 
+  #find_package(GeoTIFF REQUIRED)
+  #target_include_directories(${PACKAGE_NAME} PRIVATE ${GeoTIFF_INCLUDE_DIRS})
+  #target_link_libraries(${PACKAGE_NAME} PRIVATE  ${GeoTIFF_LIBRARIES})
 
   if(APPLE AND OCPN_USE_DEPS_BUNDLE)
     target_include_directories(

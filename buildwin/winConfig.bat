@@ -274,7 +274,7 @@ goto :usage
 ::-------------------------------------------------------------
 if exist "%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip" (goto :skipbuildwin)
 @echo Downloading Windows depencencies from OpenCPN repository
-set "URL=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.3.zip"
+set "URL=https://github.com/nohal/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.4.zip"
 set "DEST=%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip"
 call :download
 
@@ -283,7 +283,7 @@ set "SOURCE=%DEST%"
 set "DEST=%buildWINtmp%"
 call :explode
 if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
-  xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
+  xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.4\buildwin" "%CACHE_DIR%\buildwin"
   if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
 :skipbuildwin
 ::-------------------------------------------------------------
