@@ -33,7 +33,6 @@
 #endif  // precompiled headers
 
 #include "depth.h"
-#include "wx28compat.h"
 extern int g_iDashDepthUnit;
 
 #ifdef __BORLANDC__

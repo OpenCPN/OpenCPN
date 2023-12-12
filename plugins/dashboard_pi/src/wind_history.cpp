@@ -33,7 +33,6 @@
 #endif  // precompiled headers
 
 #include "wind_history.h"
-#include "wx28compat.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop

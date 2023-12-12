@@ -32,7 +32,6 @@
 #endif  // precompiled headers
 
 #include "baro_history.h"
-#include "wx28compat.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop

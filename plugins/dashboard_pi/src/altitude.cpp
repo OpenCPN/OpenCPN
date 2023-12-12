@@ -36,7 +36,6 @@
 #endif  // precompiled headers
 
 #include "altitude.h"
-#include "wx28compat.h"
 extern int g_iDashDepthUnit;   // use same unit for altitude
 
 #ifdef __BORLANDC__
