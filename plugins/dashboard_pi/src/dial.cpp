@@ -34,7 +34,6 @@
 #endif  // precompiled headers
 
 #include "dial.h"
-#include "wx28compat.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop

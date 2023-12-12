@@ -58,7 +58,6 @@
 #include <vector>
 
 #include "pi_ocpndc.h"
-#include "wx28compat.h"
 #include "cutil.h"
 
 #include "pi_shaders.h"
