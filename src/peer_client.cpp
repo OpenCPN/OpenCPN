@@ -41,6 +41,7 @@
 #include "nav_object_database.h"
 #include "rest_server.h"
 #include "semantic_vers.h"
+#include "ocpn_frame.h"
 
 extern MyFrame* gFrame;
 
