@@ -30,6 +30,7 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
+#include "config.h"
 #include "config_vars.h"
 #include "logger.h"
 #include "mongoose.h"

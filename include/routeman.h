@@ -35,6 +35,7 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
+#include "color_types.h"
 #include "MarkIcon.h"
 #include "nav_object_database.h"
 #include "nmea0183.h"
