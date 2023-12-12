@@ -24,6 +24,8 @@
 #ifndef _ROUTE_H__
 #define _ROUTE_H__
 
+#include <functional>
+
 #include <wx/colour.h>
 #include <wx/datetime.h>
 #include <wx/gdicmn.h>
