@@ -33,6 +33,11 @@
 #if defined(__GNUC__) && (__GNUC__ < 8)
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
+
+#elif defined(__clang_major__) && (__clang_major__ < 15)
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
 #else
 #include <filesystem>
 #include <utility>
