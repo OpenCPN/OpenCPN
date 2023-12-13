@@ -40,6 +40,8 @@ public:
   void ProcessUserIcons(ocpnStyle::Style *style, double displayDPmm);
   MarkIcon *ProcessIcon(wxBitmap pimage, const wxString &key,
                         const wxString &description);
+  unsigned int GetIconTexture(const wxBitmap *pmb, int &glw, int &glh);
+
   void ReloadRoutepointIcons();
 
 private:

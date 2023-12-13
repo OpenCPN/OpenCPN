@@ -7,20 +7,17 @@
 
 #include <wx/window.h>
 
-#include "OCPNPlatform.h"
 #include "ocpn_utils.h"
 
 namespace safe_mode {
 
+extern bool safe_mode;
+
+std::string check_file_path();
+
 bool get_mode();
 
 void set_mode(bool mode);
-
-/**
- * Check if the last start failed, possibly invoke user dialog and set
- * safe mode state.
- */
-void check_last_start();
 
 /** Mark last run as successful. */
 void clear_check();

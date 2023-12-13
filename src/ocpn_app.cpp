@@ -138,7 +138,7 @@
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
-#include "safe_mode.h"
+#include "safe_mode_gui.h"
 #include "select.h"
 #include "SoundFactory.h"
 #include "styles.h"

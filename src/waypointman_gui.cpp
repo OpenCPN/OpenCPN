@@ -24,6 +24,27 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ******************A********************************************************/
 
+#if defined(__ANDROID__)
+#include <qopengl.h>
+#include <GL/gl_private.h>  // this is a cut-down version of gl.h
+#include <GLES2/gl2.h>
+
+#elif defined(__MSVC__)
+#include "glew.h"
+#include <GL/glu.h>
+
+#elif defined(__WXOSX__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+typedef void (*  _GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#include <GL/glu.h>
+#endif
+ 
+
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
 #include <wx/dir.h>
@@ -34,6 +55,7 @@
 #include <wx/utils.h>
 
 #include "base_platform.h"
+#include "cutil.h"
 #include "MarkIcon.h"
 #include "route_point.h"
 #include "styles.h"
@@ -640,4 +662,68 @@ void WayPointmanGui::ReloadRoutepointIcons() {
   }
 }
 
+unsigned int WayPointmanGui::GetIconTexture(const wxBitmap *pbm, int &glw,
+                                           int &glh) {
+#ifdef ocpnUSE_GL
+  int index = m_waypoint_man.GetIconIndex(pbm);
+  MarkIcon *pmi = (MarkIcon *)m_waypoint_man.m_pIconArray->Item(index);
+
+  if (!pmi->icon_texture) {
+    /* make rgba texture */
+    wxImage image = pbm->ConvertToImage();
+    unsigned char *d = image.GetData();
+    if (d == 0) {
+      // don't create a texture with junk
+      return 0;
+    }
+
+    glGenTextures(1, &pmi->icon_texture);
+    glBindTexture(GL_TEXTURE_2D, pmi->icon_texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    int w = image.GetWidth(), h = image.GetHeight();
+
+    pmi->tex_w = NextPow2(w);
+    pmi->tex_h = NextPow2(h);
+
+    unsigned char *a = image.GetAlpha();
+
+    unsigned char mr, mg, mb;
+    if (!a) image.GetOrFindMaskColour(&mr, &mg, &mb);
+
+    unsigned char *e = new unsigned char[4 * w * h];
+    for (int y = 0; y < h; y++) {
+      for (int x = 0; x < w; x++) {
+        unsigned char r, g, b;
+        int off = (y * w + x);
+        r = d[off * 3 + 0];
+        g = d[off * 3 + 1];
+        b = d[off * 3 + 2];
+        e[off * 4 + 0] = r;
+        e[off * 4 + 1] = g;
+        e[off * 4 + 2] = b;
+
+        e[off * 4 + 3] =
+            a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+      }
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pmi->tex_w, pmi->tex_h, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, NULL);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, e);
+
+    delete[] e;
+  }
+
+  glw = pmi->tex_w;
+  glh = pmi->tex_h;
+
+  return pmi->icon_texture;
+#else
+  return 0;
+#endif
+}
 

@@ -362,7 +362,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
     int glw, glh;
-    unsigned int IconTexture = pWayPointMan->GetIconTexture(pbm, glw, glh);
+    unsigned int IconTexture =
+       WayPointmanGui(*pWayPointMan).GetIconTexture(pbm, glw, glh);
 
     glBindTexture(GL_TEXTURE_2D, IconTexture);
 
