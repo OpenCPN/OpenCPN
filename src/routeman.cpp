@@ -46,10 +46,7 @@
 #include "georef.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
-#include "navutil.h"
 #include "nmea_ctx_factory.h"
-//#include "nmea_log.h"
-//#include "OCPNPlatform.h"
 #include "own_ship.h"
 #include "route.h"
 #include "routeman.h"
@@ -1121,71 +1118,6 @@ bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
     return pmi->preScaled;
   else
     return false;
-}
-
-unsigned int WayPointman::GetIconTexture(const wxBitmap *pbm, int &glw,
-                                         int &glh) {
-#ifdef ocpnUSE_GL
-  int index = GetIconIndex(pbm);
-  MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(index);
-
-  if (!pmi->icon_texture) {
-    /* make rgba texture */
-    wxImage image = pbm->ConvertToImage();
-    unsigned char *d = image.GetData();
-    if (d == 0) {
-      // don't create a texture with junk
-      return 0;
-    }
-
-    glGenTextures(1, &pmi->icon_texture);
-    glBindTexture(GL_TEXTURE_2D, pmi->icon_texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-    int w = image.GetWidth(), h = image.GetHeight();
-
-    pmi->tex_w = NextPow2(w);
-    pmi->tex_h = NextPow2(h);
-
-    unsigned char *a = image.GetAlpha();
-
-    unsigned char mr, mg, mb;
-    if (!a) image.GetOrFindMaskColour(&mr, &mg, &mb);
-
-    unsigned char *e = new unsigned char[4 * w * h];
-    for (int y = 0; y < h; y++) {
-      for (int x = 0; x < w; x++) {
-        unsigned char r, g, b;
-        int off = (y * w + x);
-        r = d[off * 3 + 0];
-        g = d[off * 3 + 1];
-        b = d[off * 3 + 2];
-        e[off * 4 + 0] = r;
-        e[off * 4 + 1] = g;
-        e[off * 4 + 2] = b;
-
-        e[off * 4 + 3] =
-            a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
-      }
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pmi->tex_w, pmi->tex_h, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, e);
-
-    delete[] e;
-  }
-
-  glw = pmi->tex_w;
-  glh = pmi->tex_h;
-
-  return pmi->icon_texture;
-#else
-  return 0;
-#endif
 }
 
 wxBitmap WayPointman::GetIconBitmapForList(int index, int height) {

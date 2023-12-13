@@ -230,7 +230,6 @@ public:
   ~WayPointman();
   wxBitmap *GetIconBitmap(const wxString &icon_key);
   bool GetIconPrescaled(const wxString &icon_key);
-  unsigned int GetIconTexture(const wxBitmap *pmb, int &glw, int &glh);
   int GetIconIndex(const wxBitmap *pbm);
   int GetIconImageListIndex(const wxBitmap *pbm);
   int GetXIconImageListIndex(const wxBitmap *pbm);

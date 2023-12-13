@@ -115,11 +115,6 @@ bool g_bMagneticAPB;
 Routeman* g_pRouteMan;
 
 
-
-namespace safe_mode {
-bool get_mode() { return false; }
-}  // namespace safe_mode
-
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
 wxLog* g_logger;

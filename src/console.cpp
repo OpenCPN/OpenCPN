@@ -176,10 +176,6 @@ static void InitRouteman() {
   g_pRouteMan = new Routeman(ctx, RoutemanDlgCtx(), dummy_log);
 }
 
-namespace safe_mode {
-bool get_mode() { return false; }
-}  // namespace safe_mode
-
 static const char* USAGE = R"""(
 Usage: opencpn-cli [options] <command>
 
