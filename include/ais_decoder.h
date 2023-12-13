@@ -43,6 +43,9 @@
 #include "rapidjson/fwd.h"
 #include "track.h"
 
+// AISTargetAlertDialog in gui layer
+extern wxEvtHandler* g_pais_alert_dialog_active;
+
 enum AISAudioSoundType {
   AISAUDIO_NONE,
   AISAUDIO_CPA,
@@ -79,7 +82,10 @@ WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
 
 struct AisDecoderCallbacks {
     std::function<bool()> confirm_stop_track;
-    AisDecoderCallbacks() : confirm_stop_track([]() { return true; } ) {}
+    std::function<int()> get_target_mmsi;
+    AisDecoderCallbacks()
+        : confirm_stop_track([]() { return true; } ),
+          get_target_mmsi([]() { return 0; })  {}
 };
 
 class AisDecoder : public wxEvtHandler {

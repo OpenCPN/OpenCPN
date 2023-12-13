@@ -58,7 +58,6 @@ wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
 extern AisDecoder *g_pAIS;
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
@@ -196,11 +195,14 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
         pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS,
                                 b_jumpto, b_createWP, b_ack, -1,
                                 _("AIS Alert"));
+
         g_pais_alert_dialog_active = pAISAlertDialog;
 
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        g_pais_alert_dialog_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        auto alert_dlg_active =
+            dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+        alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
         g_Platform->PositionAISAlert(pAISAlertDialog);
 
         pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
@@ -235,8 +237,10 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     }
 
     // Get the target currently displayed
+    auto alert_dlg_active =
+        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
     palert_target = g_pAIS->Get_Target_Data_From_MMSI(
-        g_pais_alert_dialog_active->Get_Dialog_MMSI());
+        alert_dlg_active->Get_Dialog_MMSI());
 
     //  If the currently displayed target is not alerted, it must be in "expiry
     //  delay" We should cancel that alert display now, and pick up the more
@@ -254,18 +258,18 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       if (((AIS_ALERT_SET == palert_target->n_alert_state) &&
            !palert_target->b_in_ack_timeout) ||
           (palert_target->Class == AIS_SART) ) {
-        g_pais_alert_dialog_active->UpdateText();
+        alert_dlg_active->UpdateText();
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
-        g_pais_alert_dialog_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
       }
       //  In "expiry delay"?
       else if (!palert_target->b_in_ack_timeout &&
-               (now.IsEarlierThan(g_pais_alert_dialog_active->dtAlertExpireTime))) {
-        g_pais_alert_dialog_active->UpdateText();
+               (now.IsEarlierThan(alert_dlg_active->dtAlertExpireTime))) {
+        alert_dlg_active->UpdateText();
       } else {
-        g_pais_alert_dialog_active->Close();
+        alert_dlg_active->Close();
         m_bAIS_Audio_Alert_On = false;
       }
 
@@ -274,7 +278,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       else
         m_bAIS_Audio_Alert_On = true;
     } else {  // this should not happen, however...
-      g_pais_alert_dialog_active->Close();
+      alert_dlg_active->Close();
       m_bAIS_Audio_Alert_On = false;
     }
   }

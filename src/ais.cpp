@@ -63,7 +63,6 @@ extern OCPNPlatform *g_Platform;
 
 int g_ais_cog_predictor_width;
 extern AisDecoder *g_pAIS;
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
 //    AIS Global configuration
@@ -1118,10 +1117,11 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   //  Highlight the AIS target symbol if an alert dialog is currently open for
   //  it
   if (cp != NULL) {
-    if (g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() &&
-        cp) {
-      if (g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI)
-        cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
+    auto alert_dlg_active =
+        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+    if (alert_dlg_active && alert_dlg_active->IsShown() && cp) {
+      if (alert_dlg_active->Get_Dialog_MMSI() == td->MMSI)
+         cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
     }
   }
 

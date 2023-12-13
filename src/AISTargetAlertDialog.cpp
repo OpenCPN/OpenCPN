@@ -53,7 +53,6 @@
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern MyFrame *gFrame;
 extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
