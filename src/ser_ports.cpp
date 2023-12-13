@@ -107,7 +107,6 @@
 #include "macutils.h"
 #endif
 
-#include "gui_lib.h"
 #include "garmin_protocol_mgr.h"
 
 #ifdef __WXMSW__
