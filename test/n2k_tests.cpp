@@ -121,7 +121,6 @@ extern bool g_bAISRolloverShowClass;
 extern Multiplexer* g_pMUX;
 extern std::vector<Track*> g_TrackList;
 extern int g_WplAction;
-extern AISTargetAlertDialog* g_pais_alert_dialog_active;
 extern wxString AISTargetNameFileName;
 extern double g_AISShowTracks_Mins;
 extern bool g_bAIS_CPA_Alert;

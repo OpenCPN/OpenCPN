@@ -124,7 +124,6 @@ wxEvtHandler *s_pAndroidNMEAMessageConsumer;
 wxEvtHandler *s_pAndroidGPSIntMessageConsumer;
 wxEvtHandler *s_pAndroidBTNMEAMessageConsumer;
 
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern AISTargetListDialog *g_pAISTargetList;
 // extern MarkInfoImpl              *pMarkPropDialog;

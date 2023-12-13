@@ -146,7 +146,6 @@ extern MyConfig *pConfig;
 extern arrayofCanvasPtr g_canvasArray;
 extern MyFrame *gFrame;
 extern AISTargetListDialog *g_pAISTargetList;
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ConsoleCanvas *console;
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -743,6 +742,14 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
        _("OpenCPN Info"), wxYES_NO | wxCENTER, 60);
     return r == wxID_YES;
   };
+  ais_callbacks.get_target_mmsi =  []() {
+    auto alert_dlg_active =
+        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+    assert(alert_dlg_active);
+    return alert_dlg_active->Get_Dialog_MMSI();
+  };
+
+
   g_pAIS = new AisDecoder(ais_callbacks);
 
   g_pAISGUI = new AisInfoGui();
@@ -4143,7 +4150,9 @@ int MyFrame::DoOptionsDialog() {
 
   if (console && console->IsShown()) console->Raise();
 
-  if (g_pais_alert_dialog_active) g_pais_alert_dialog_active->Raise();
+  auto alert_dlg_active =
+      dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+  if (alert_dlg_active) alert_dlg_active->Raise();
 
   if (NMEALogWindow::Get().Active())
     NMEALogWindow::Get().GetTTYWindow()->Raise();
@@ -8268,9 +8277,11 @@ void ApplyLocale() {
     g_pais_query_dialog_active = NULL;
   }
 
-  if (g_pais_alert_dialog_active) {
-    g_pais_alert_dialog_active->Destroy();
-    g_pais_alert_dialog_active = NULL;
+  auto alert_dlg_active =
+      dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+  if (alert_dlg_active) {
+    alert_dlg_active->Destroy();
+    g_pais_alert_dialog_active = nullptr;
   }
 
   if (g_pAISTargetList) {

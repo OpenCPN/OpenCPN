@@ -76,7 +76,9 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
+wxEvtHandler* g_pais_alert_dialog_active;
+
+extern wxEvtHandler *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern Select *pSelect;
 extern bool bGPSValid;
@@ -206,7 +208,7 @@ AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
 
   BuildERIShipTypeHash();
 
-  g_pais_alert_dialog_active = NULL;
+  g_pais_alert_dialog_active = nullptr;
   m_bAIS_Audio_Alert_On = false;
 
   m_n_targets = 0;
@@ -4130,7 +4132,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   std::shared_ptr<AisTargetData> palert_target = NULL;
   int audioType = AISAUDIO_NONE;
 
-  if (NULL == g_pais_alert_dialog_active) {
+  if (!g_pais_alert_dialog_active) {
     pAISMOBRoute = NULL;    // Reset the AISMOB auto route.
     double tcpa_min = 1e6;  // really long
     double sart_range = 1e6;
@@ -4189,9 +4191,9 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       audioType = AISAUDIO_DSC;
     }
   }
-  else {                // Alert is currently shown
-    palert_target = Get_Target_Data_From_MMSI(
-        g_pais_alert_dialog_active->Get_Dialog_MMSI());
+  else {
+    // Alert is currently shown, get target from from knowable GUI
+    palert_target = Get_Target_Data_From_MMSI(m_callbacks.get_target_mmsi());
   }
     // Show or update the alert
   if (palert_target)

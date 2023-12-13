@@ -64,7 +64,6 @@ bool g_bAISRolloverShowClass;
 Multiplexer* g_pMUX;
 std::vector<Track*> g_TrackList;
 int g_WplAction;
-AISTargetAlertDialog* g_pais_alert_dialog_active;
 wxString AISTargetNameFileName;
 double g_AISShowTracks_Mins;
 bool g_bAIS_CPA_Alert;

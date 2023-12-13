@@ -124,7 +124,6 @@ S57ClassRegistrar *g_poRegistrar;
 
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
-AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
