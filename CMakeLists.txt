@@ -888,21 +888,27 @@ set(
   include/config_vars.h
   include/conn_params.h
   include/cutil.h
+  include/dsPortType.h
   include/downloader.h
   include/garmin_protocol_mgr.h
+  include/garmin_wrapper.h
   include/geodesic.h
   include/georef.h
   include/hyperlink.h
+  include/idents.h
   include/logger.h
+  include/MarkIcon.h
   include/multiplexer.h
   include/nav_object_database.h
   include/navutil_base.h
+  include/nmea_ctx_factory.h
   include/ocpn_plugin.h
   include/ocpn_types.h
   include/ocpn_utils.h
   include/own_ship.h
   include/pincode.h
   include/plugin_blacklist.h
+  include/plugin_cache.h
   include/plugin_handler.h
   include/plugin_loader.h
   include/plugin_paths.h
@@ -911,6 +917,7 @@ set(
   include/route.h
   include/routeman.h
   include/select.h
+  include/select_item.h
   include/semantic_vers.h
   include/ser_ports.h
   include/track.h
@@ -942,16 +949,13 @@ set(
   include/conn_params_panel.h
   include/DetailSlider.h
   include/download_mgr.h
-  include/dsPortType.h
   include/emboss_data.h
   include/FlexHash.h
   include/FontDesc.h
   include/FontMgr.h
-  include/garmin_wrapper.h
   include/GoToPositionDialog.h
   include/gui_lib.h
   include/gshhs.h
-  include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
   include/kml.h
@@ -959,13 +963,11 @@ set(
   include/LinkPropDlg.h
   include/load_errors_dlg.h
   include/meteo_points.h
-  include/MarkIcon.h
   include/MarkInfo.h
   include/mbtiles.h
   include/n0183_ctx_factory.h
   include/navutil.h
   include/NMEALogWindow.h
-  include/nmea_ctx_factory.h
   include/ocpCursor.h
   include/ocpn_frame.h
   include/ocpndc.h
@@ -976,7 +978,6 @@ set(
   include/OCPNRegion.h
   include/options.h
   include/piano.h
-  include/plugin_cache.h
   include/pluginmanager.h
   include/printtable.h
   include/priority_gui.h
@@ -998,7 +999,6 @@ set(
   include/S57QueryDialog.h
   include/S57Sector.h
   include/safe_mode.h
-  include/select_item.h
   include/SendToGpsDlg.h
   include/SendToPeerDlg.h
   include/shaders.h
