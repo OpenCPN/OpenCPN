@@ -1755,6 +1755,13 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
 
+if (APPLE)
+  # Required for 10.13 compat.
+  find_library(BOOST_SYSTEM NAMES boost_system REQUIRED)
+  find_library(BOOST_FILESYSTEM NAMES boost_filesystem REQUIRED)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC BOOST_SYSTEM BOOST_FILESYSTEM)
+endif ()
+
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
