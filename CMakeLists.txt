@@ -3235,6 +3235,10 @@ if (NOT QT_ANDROID)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
+  if (APPLE)
+    # 10.13 compat support
+    target_link_libraries(opencpn-cmd PUBLIC BOOST_SYSTEM BOOST_FILESYSTEM)
+  endif ()
 
   if (CMAKE_VERSION VERSION_GREATER 3.4)
     if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
