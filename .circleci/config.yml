@@ -74,7 +74,7 @@ jobs:
 
   build-android-armhf:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: cimg/android:2023.12-ndk
     environment:
       - OCPN_TARGET: android-armhf
     steps:
