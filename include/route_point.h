@@ -25,16 +25,13 @@
 #define _ROUTEPOINT_H__
 
 #include <wx/bitmap.h>
-#include <wx/clrpicker.h>
+#include <wx/colour.h>
 #include <wx/datetime.h>
-#include <wx/font.h>
-#include <wx/gauge.h>
 #include <wx/gdicmn.h>
 #include <wx/string.h>
 
 #include "bbox.h"
 #include "hyperlink.h"
-#include "chcanv.h"
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 
@@ -198,9 +195,6 @@ public:
   int m_iWaypointRangeRingsStepUnits;
   wxColour m_wxcWaypointRangeRingsColour;
 
-#ifdef ocpnUSE_GL
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
-              bool use_cached_screen_coords = false, bool bVizOverride = false);
   unsigned int m_iTextTexture;
   int m_iTextTextureWidth, m_iTextTextureHeight;
 
@@ -209,7 +203,6 @@ public:
 
   bool m_pos_on_screen;
   wxPoint2DDouble m_screen_pos;  // cached for arrows and points
-#endif
 
   double m_WaypointArrivalRadius;
   HyperlinkList *m_HyperlinkList;
