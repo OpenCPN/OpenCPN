@@ -3401,9 +3401,6 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               ptd->b_nameValid = true;
             }
 
-            wxString test = ptd->ShipName;
-            wxLogMessage(test);
-
             if (type == 0) { //Location
               int lon = bstr->GetInt(slotbit + 90, 28);
               if (lon & 0x08000000)  // negative?
