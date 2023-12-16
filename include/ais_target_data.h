@@ -256,6 +256,7 @@ public:
   bool b_show_track;
 
   AisMeteoData met_data;
+  bool b_hasImoDac, b_hasMeteoFi;
   std::vector<AISTargetTrackPoint> m_ptrack;
 
   std::unordered_map<int, Ais8_001_22> area_notices;

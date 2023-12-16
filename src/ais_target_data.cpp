@@ -279,6 +279,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
 
   b_isEuroInland = false;
   b_blue_paddle = false;
+  b_hasImoDac = b_hasMeteoFi = false;
 
   b_NoTrack = false;
   b_OwnShip = false;
