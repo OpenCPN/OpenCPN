@@ -1141,6 +1141,13 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
         handleUpdate(pTargetData, bnewtarget, *itr);
       }
     }
+    if (pTargetData->b_hasMeteoFi) {
+      /* Meteo data is not(yet) supported by SignalK.
+         But the target position is there producing a false
+         class A target, "jumping" around. Sort it out.*/
+      return;
+    }
+
     pTargetData->MMSI = mmsi;
     // A SART can send wo any values first transmits. Detect class already here.
     if (97 == mmsi / 10000000) {
@@ -1345,14 +1352,20 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
             pTargetData->blue_paddle == 2 ? true : false;
       }
     } else if (update_path == _T("sensors.ais.designatedAreaCode")) {
-      if (item["value"].GetInt() == 200) {
+      if (item["value"].GetInt() == 200) {  // European inland
         pTargetData->b_hasInlandDac = true;
-      }  // European inland
+      }
+      else if (item["value"].GetInt() == 1) {
+        pTargetData->b_hasImoDac = true;  // IMO specification
+      }
     } else if (update_path == _T("sensors.ais.functionalId")) {
-      if (item["value"].GetInt() ==
-              10 &&  // "Inland ship static and voyage related data"
-          pTargetData->b_hasInlandDac) {
+      if (item["value"].GetInt() == 10 && pTargetData->b_hasInlandDac) {
+          // "Inland ship static and voyage related data"
         pTargetData->b_isEuroInland = true;
+      }
+      else if (item["value"].GetInt() == 31 && pTargetData->b_hasImoDac) {
+          // Dac 001 and FI 31 is IMO Meteo message
+        pTargetData->b_hasMeteoFi = true;
       }
     } else if (update_path == _T("")) {
       if (item["value"].HasMember("name")) {
@@ -3387,9 +3400,6 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
               strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
               ptd->b_nameValid = true;
             }
-
-            wxString test = ptd->ShipName;
-            wxLogMessage(test);
 
             if (type == 0) { //Location
               int lon = bstr->GetInt(slotbit + 90, 28);
