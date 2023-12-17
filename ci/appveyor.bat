@@ -52,7 +52,7 @@ cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DOCPN_CI_BUILD=ON ^
     -DOCPN_BUNDLE_WXDLLS=ON ^
     -DOCPN_RELEASE=0 ^
-    -DOCPN_BUILD_TEST=OFF ^
+    -DOCPN_BUILD_TEST=ON ^
     ..
 
 cmake --build . --target package --config %CONFIGURATION%
