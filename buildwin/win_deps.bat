@@ -51,6 +51,7 @@ if not exist C:\ProgramData\chocolatey\lib\nsis (
 
 :: Make sure the pre-compiled libraries are in place
 set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
+set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
 if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
       %GH_DL_BASE%/archive/refs/tags/v0.3.zip
@@ -63,4 +64,6 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   if exist !CACHE_DIR!\buildwin\wxWidgets (
     rmdir !CACHE_DIR!\buildwin\wxWidgets /s /q
   )
+  wget !opencpn_support_base!/opencpn-support/raw/files/iphlpapi.lib ^
+   -O %CACHE_DIR%\buildwin\iphlpapi.lib
 )
