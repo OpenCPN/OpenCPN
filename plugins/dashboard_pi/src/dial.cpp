@@ -77,10 +77,12 @@ DashboardInstrument_Dial::DashboardInstrument_Dial(
 wxSize DashboardInstrument_Dial::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
+  wxFont f;
   if (m_Properties)
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
+      f = m_Properties->m_TitelFont.GetChosenFont();
   else
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
+      f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   if (orient == wxHORIZONTAL) {
     w = wxMax(hint.y, DefaultWidth + m_TitleHeight);
     return wxSize(w - m_TitleHeight, w);
@@ -122,10 +124,12 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
   m_cx = size.x / 2;
   int availableHeight = size.y - m_TitleHeight - 6;
   int width, height;
+  wxFont f;
   if (m_Properties)
-    bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &(m_Properties->m_LabelFont.GetChosenFont()));
+    f = m_Properties->m_LabelFont.GetChosenFont();
   else
-    bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &(g_pFontLabel->GetChosenFont()));
+    f = g_pFontLabel->GetChosenFont();
+  bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &f);
   m_cy = m_TitleHeight + 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2;
@@ -286,15 +290,17 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
   int offset = 0;
   int value = m_MainValueMin;
   int width, height;
+  wxFont f;
   for (double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle;
        angle += abm) {
     wxString label =
         (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
                                  : wxString::Format(_T("%d"), value));
     if (m_Properties)
-        dc->GetTextExtent(label, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+        f = m_Properties->m_SmallFont.GetChosenFont();
     else
-        dc->GetTextExtent(label, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
+        f = g_pFontSmall->GetChosenFont();
+    dc->GetTextExtent(label, &width, &height, 0, 0, &f);
     double halfW = width / 2;
     if (m_LabelOption == DIAL_LABEL_HORIZONTAL) {
       double halfH = height / 2;
@@ -350,10 +356,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     if (unit == _T("\u00B0"))
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit == _T("\u00B0L"))  // No special display for now, might be
-                                     // XX°< (as in text-only instrument)
+                                     // XXï¿½< (as in text-only instrument)
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit ==
-             _T("\u00B0R"))  // No special display for now, might be >XX°
+             _T("\u00B0R"))  // No special display for now, might be >XXï¿½
       text = wxString::Format(format, value) + DEGREE_SIGN;
     else if (unit == _T("\u00B0T"))
       text = wxString::Format(format, value) + DEGREE_SIGN + _T("T");
@@ -367,10 +373,12 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     text = _T("---");
 
   int width, height;
+  wxFont f;
   if (m_Properties)
-    dc->GetMultiLineTextExtent(text, &width, &height, NULL, &(m_Properties->m_LabelFont.GetChosenFont()));
+    f = m_Properties->m_LabelFont.GetChosenFont();
   else
-    dc->GetMultiLineTextExtent(text, &width, &height, NULL, &(g_pFontLabel->GetChosenFont()));
+    f = g_pFontLabel->GetChosenFont();
+  dc->GetMultiLineTextExtent(text, &width, &height, NULL, &f);
 
   wxRect TextPoint;
   TextPoint.width = width;
@@ -431,9 +439,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
   token = tkz.GetNextToken();
   while (token.Length()) {
     if(m_Properties)
-        dc->GetTextExtent(token, &width, &height, NULL, NULL, &(m_Properties->m_LabelFont.GetChosenFont()));
+        f = m_Properties->m_LabelFont.GetChosenFont();
     else
-        dc->GetTextExtent(token, &width, &height, NULL, NULL, &(g_pFontLabel->GetChosenFont()));
+        f = g_pFontLabel->GetChosenFont();
+    dc->GetTextExtent(token, &width, &height, NULL, NULL, &f);
     dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;
     token = tkz.GetNextToken();
@@ -466,7 +475,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   brush.SetColour(cl);
   dc->SetBrush(brush);
 
-  /* this is fix for a +/-180° round instrument, when m_MainValue is supplied as
+  /* this is fix for a +/-180ï¿½ round instrument, when m_MainValue is supplied as
    * <0..180><L | R> for example TWA & AWA */
   double data;
   if (m_MainValueUnit == _T("\u00B0L"))
@@ -526,24 +535,31 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
   dc->SetBrush(*b2);
 
   int offset = 0;
+  wxFont f;
   for (double tmpangle = startangle - ANGLE_OFFSET;
        tmpangle < startangle + 360 - ANGLE_OFFSET; tmpangle += 90) {
     if (showlabels) {
       Value = CompassArray[offset];
-      if (Properties)
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &(Properties->m_SmallFont.GetChosenFont()));
-      else
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
+      if (Properties) {
+        f = Properties->m_SmallFont.GetChosenFont();
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+      } else {
+        f = g_pFontSmall->GetChosenFont();
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+      }
       double x = width / 2;
       long double anglefortext = tmpangle - rad2deg(asin((x / radius)));
       pt.x = cx + radius * cos(deg2rad(anglefortext));
       pt.y = cy + radius * sin(deg2rad(anglefortext));
       dc->DrawRotatedText(Value, pt.x, pt.y, -90 - tmpangle);
       Value = CompassArray[offset + 1];
-      if (Properties)
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &(Properties->m_SmallFont.GetChosenFont()));
-      else
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
+      if (Properties) {
+        f = Properties->m_SmallFont.GetChosenFont();
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+      } else {
+        f = g_pFontSmall->GetChosenFont();
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+      }
       x = width / 2;
       anglefortext = tmpangle - rad2deg(asin((x / radius))) + 45;
       pt.x = cx + radius * cos(deg2rad(anglefortext));

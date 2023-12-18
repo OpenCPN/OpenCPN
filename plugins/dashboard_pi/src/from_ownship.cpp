@@ -90,8 +90,10 @@ void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
 wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
-  dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, &(g_pFontData->GetChosenFont()));
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+  f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(w + 10, wxMax(hint.y, m_TitleHeight + m_DataHeight * 2));

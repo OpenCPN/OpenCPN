@@ -60,19 +60,26 @@ DashboardInstrument_Depth::DashboardInstrument_Depth(wxWindow* parent,
 wxSize DashboardInstrument_Depth::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
+  wxFont f;
   if (m_Properties)
   {
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
-      dc.GetTextExtent("15.7 Feet", &w, &m_DataHeight, 0, 0, &(m_Properties->m_DataFont.GetChosenFont()));
+      f = m_Properties->m_TitelFont.GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc.GetTextExtent("15.7 Feet", &w, &m_DataHeight, 0, 0, &f);
       // Space for bottom(temp)text later.
-      dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &(m_Properties->m_LabelFont.GetChosenFont()));
+      f = m_Properties->m_LabelFont.GetChosenFont();
+      dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &f);
   }
   else
   {
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
-      dc.GetTextExtent("15.7 Feet", &w, &m_DataHeight, 0, 0, &(g_pFontData->GetChosenFont()));
+      f = g_pFontTitle->GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = g_pFontData->GetChosenFont();
+      dc.GetTextExtent("15.7 Feet", &w, &m_DataHeight, 0, 0, &f);
       // Space for bottom(temp)text later.
-      dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &(g_pFontLabel->GetChosenFont()));
+      f = g_pFontLabel->GetChosenFont();
+      dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &f);
   }
   int y_total =
       //  Title         Depth data       plot area       w-temp
@@ -181,17 +188,20 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   wxString label;
   label.Printf(_T("%.0f ") + m_DepthUnit, 0.0);
   int width, height;
+  wxFont f;
   if (m_Properties)
-      dc->GetTextExtent(label, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+      f = m_Properties->m_SmallFont.GetChosenFont();
   else
-      dc->GetTextExtent(label, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label, &width, &height, 0, 0, &f);
   dc->DrawText(label, size.x - width - 1, m_plotup - height);
 
   label.Printf(_T("%.0f ") + m_DepthUnit, m_MaxDepth);
   if (m_Properties)
-      dc->GetTextExtent(label, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+      f = m_Properties->m_SmallFont.GetChosenFont();
   else
-      dc->GetTextExtent(label, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label, &width, &height, 0, 0, &f);
   dc->DrawText(label, size.x - width - 1, m_plotdown);
 }
 

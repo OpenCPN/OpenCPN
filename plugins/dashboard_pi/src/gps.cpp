@@ -76,10 +76,12 @@ DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
 wxSize DashboardInstrument_GPS::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
+  wxFont f;
   if(m_Properties)
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
+      f = m_Properties->m_TitelFont.GetChosenFont();
   else
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
+      f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   w = (12 * m_refDim);  // Max 12 vertical bars
   if (orient == wxHORIZONTAL) {
     m_cx = w / 2;
@@ -234,10 +236,12 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
 
   wxScreenDC sdc;
   int height, width;
+  wxFont f;
   if (m_Properties)
-    sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &(m_Properties->m_SmallFont.GetChosenFont()));
+    f = m_Properties->m_SmallFont.GetChosenFont();
   else
-    sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &(g_pFontSmall->GetChosenFont()));
+    f = g_pFontSmall->GetChosenFont();
+  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &f);
 
   wxBitmap tbm(width, height, -1);
   wxMemoryDC tdc(tbm);
@@ -300,13 +304,14 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   // Draw SatID
-
+  wxFont f;
   wxScreenDC sdc;
   int height, width;
   if (m_Properties)
-      sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &(m_Properties->m_SmallFont.GetChosenFont()));
+      f = m_Properties->m_SmallFont.GetChosenFont();
   else
-      sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &(g_pFontSmall->GetChosenFont()));
+      f = g_pFontSmall->GetChosenFont();
+  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &f);
 
   wxColour cl;
   wxBitmap tbm(dc->GetSize().x, height, -1);
@@ -389,15 +394,17 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   }
 
   wxString label;
+  wxFont f;
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
       label.Printf(_T("%02d"), m_SatInfo[idx].SatNumber);
       int width, height;
       wxScreenDC sdc;
       if (m_Properties)
-          sdc.GetTextExtent(label, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+          f = m_Properties->m_SmallFont.GetChosenFont();
       else
-          sdc.GetTextExtent(label, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
+          f = g_pFontSmall->GetChosenFont();
+      sdc.GetTextExtent(label, &width, &height, 0, 0, &f);
 
       wxBitmap tbm(width, height, -1);
       wxMemoryDC tdc(tbm);

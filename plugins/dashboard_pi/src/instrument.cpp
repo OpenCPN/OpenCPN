@@ -118,10 +118,14 @@ DashboardInstrument::DashboardInstrument(wxWindow* pparent, wxWindowID id,
   SetDrawSoloInPane(false);
   wxClientDC dc(this);
   int width;
-  if (m_Properties)
-    dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
-  else
-    dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
+  wxFont f;
+  if (m_Properties) {
+    f = m_Properties->m_TitelFont.GetChosenFont();
+    dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &f);
+  } else {
+    f = g_pFontTitle->GetChosenFont();
+    dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &f);
+  }
   Connect(wxEVT_ERASE_BACKGROUND,
           wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
   Connect(wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
@@ -254,15 +258,20 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow* pparent,
 wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
+  wxFont f;
   if (m_Properties)
   {
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
-      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &(m_Properties->m_DataFont.GetChosenFont()));
+      f = m_Properties->m_TitelFont.GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &f);
   }
   else
   {
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
-      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &(g_pFontData->GetChosenFont()));
+      f = g_pFontTitle->GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = g_pFontData->GetChosenFont();
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &f);
   }
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(hint.y, m_TitleHeight + m_DataHeight));
@@ -348,15 +357,20 @@ DashboardInstrument_Position::DashboardInstrument_Position(wxWindow* pparent,
 wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
+  wxFont f;
   if (m_Properties)
   {
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
-      dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &(m_Properties->m_DataFont.GetChosenFont()));
+      f = m_Properties->m_TitelFont.GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &f);
   }
   else
   {
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
-      dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &(g_pFontData->GetChosenFont()));
+      f = g_pFontTitle->GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = g_pFontData->GetChosenFont();
+      dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &f);
   }
 
   if (orient == wxHORIZONTAL) {

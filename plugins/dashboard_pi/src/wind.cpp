@@ -152,10 +152,12 @@ void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc) {
 
   wxSize size = GetClientSize();
   int width, height;
+  wxFont f;
   if (m_Properties)
-    bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &(m_Properties->m_LabelFont.GetChosenFont()));
+    f = m_Properties->m_LabelFont.GetChosenFont();
   else
-    bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &(g_pFontLabel->GetChosenFont()));
+    f = g_pFontLabel->GetChosenFont();
+  bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &f);
   m_cx = size.x / 2;
   int availableHeight = size.y - m_TitleHeight - height;
   m_cy = m_TitleHeight + height / 2;
@@ -319,10 +321,12 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
     text = _T("---");
 
   int width, height;
+  wxFont f;
   if (m_Properties)
-    dc->GetMultiLineTextExtent(text, &width, &height, NULL, &(m_Properties->m_LabelFont.GetChosenFont()));
+    f = m_Properties->m_LabelFont.GetChosenFont();
   else
-    dc->GetMultiLineTextExtent(text, &width, &height, NULL, &(g_pFontLabel->GetChosenFont()));
+    f = g_pFontLabel->GetChosenFont();
+  dc->GetMultiLineTextExtent(text, &width, &height, NULL, &f);
 
   wxRect TextPoint;
   TextPoint.width = width;
@@ -380,10 +384,13 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
 
   token = tkz.GetNextToken();
   while (token.Length()) {
-    if (m_Properties)
-        dc->GetTextExtent(token, &width, &height, NULL, NULL, &(m_Properties->m_LabelFont.GetChosenFont()));
-    else
-        dc->GetTextExtent(token, &width, &height, NULL, NULL, &(g_pFontLabel->GetChosenFont()));
+    if (m_Properties) {
+        f = m_Properties->m_LabelFont.GetChosenFont();
+        dc->GetTextExtent(token, &width, &height, NULL, NULL, &f);
+    } else {
+        f = g_pFontLabel->GetChosenFont();
+        dc->GetTextExtent(token, &width, &height, NULL, NULL, &f);
+    }
     dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;
     token = tkz.GetNextToken();

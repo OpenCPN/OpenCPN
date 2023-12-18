@@ -58,8 +58,10 @@ DashboardInstrument_Clock::DashboardInstrument_Clock(wxWindow *parent,
 wxSize DashboardInstrument_Clock::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
-  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &(g_pFontData->GetChosenFont()));
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+  f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(m_TitleHeight + m_DataHeight, hint.y));
@@ -130,7 +132,8 @@ DashboardInstrument_Moon::DashboardInstrument_Moon(wxWindow *parent,
 wxSize DashboardInstrument_Moon::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth,
@@ -305,8 +308,10 @@ DashboardInstrument_Sun::DashboardInstrument_Sun(wxWindow *parent,
 wxSize DashboardInstrument_Sun::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
-  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &(g_pFontData->GetChosenFont()));
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+  f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth,
