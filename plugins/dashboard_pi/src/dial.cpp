@@ -50,9 +50,9 @@ double rad2deg(double angle) { return angle * 180.0 / M_PI; }
 double deg2rad(double angle) { return angle / 180.0 * M_PI; }
 
 DashboardInstrument_Dial::DashboardInstrument_Dial(
-    wxWindow* parent, wxWindowID id, wxString title, DASH_CAP cap_flag,
+    wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties, DASH_CAP cap_flag,
     int s_angle, int r_angle, int s_value, int e_value)
-    : DashboardInstrument(parent, id, title, cap_flag) {
+    : DashboardInstrument(parent, id, title, cap_flag, Properties) {
   m_AngleStart = s_angle;
   m_AngleRange = r_angle;
   m_MainValueMin = s_value;
@@ -77,7 +77,10 @@ DashboardInstrument_Dial::DashboardInstrument_Dial(
 wxSize DashboardInstrument_Dial::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  if (m_Properties)
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
+  else
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
   if (orient == wxHORIZONTAL) {
     w = wxMax(hint.y, DefaultWidth + m_TitleHeight);
     return wxSize(w - m_TitleHeight, w);
@@ -100,17 +103,29 @@ void DashboardInstrument_Dial::SetData(DASH_CAP st, double data,
 }
 
 void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
-  wxColour c1;
-  GetGlobalColor(_T("DASHB"), &c1);
-  wxBrush b1(c1);
-  bdc->SetBackground(b1);
+
+  if (m_Properties)
+  {
+      wxBrush b1(GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour));
+      bdc->SetBackground(b1);
+  }
+  else
+  {
+      wxColour c1;
+      GetGlobalColor(_T("DASHB"), &c1);
+      wxBrush b1(c1);
+      bdc->SetBackground(b1);
+  }
   bdc->Clear();
 
   wxSize size = GetClientSize();
   m_cx = size.x / 2;
   int availableHeight = size.y - m_TitleHeight - 6;
   int width, height;
-  bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, g_pFontLabel);
+  if (m_Properties)
+    bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &(m_Properties->m_LabelFont.GetChosenFont()));
+  else
+    bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &(g_pFontLabel->GetChosenFont()));
   m_cy = m_TitleHeight + 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2;
@@ -129,7 +144,14 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
 void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
   wxSize size = GetClientSize();
   wxColour cl;
-  GetGlobalColor(_T("DASHL"), &cl);
+  if (m_Properties)
+  {
+      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+  }
+  else
+  {
+      GetGlobalColor(_T("DASHL"), &cl);
+  }
   dc->SetTextForeground(cl);
   dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
@@ -244,9 +266,17 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
   wxPen pen;
   wxColor cl;
   GetGlobalColor(_T("DASHF"), &cl);
-  dc->SetFont(*g_pFontSmall);
-  dc->SetTextForeground(cl);
 
+  if (m_Properties)
+  {
+      dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontSmall->GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
+  }
   int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
   // angle between markers
   double abm = m_AngleRange * m_LabelStep / (m_MainValueMax - m_MainValueMin);
@@ -261,7 +291,10 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
     wxString label =
         (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
                                  : wxString::Format(_T("%d"), value));
-    dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
+    if (m_Properties)
+        dc->GetTextExtent(label, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+    else
+        dc->GetTextExtent(label, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
     double halfW = width / 2;
     if (m_LabelOption == DIAL_LABEL_HORIZONTAL) {
       double halfH = height / 2;
@@ -298,11 +331,18 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
                                         DialPositionOption position) {
   if (position == DIAL_POSITION_NONE) return;
 
-  dc->SetFont(*g_pFontLabel);
+  if (m_Properties)
+  {
+      dc->SetFont(m_Properties->m_LabelFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontLabel->GetChosenFont());      
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontLabel->GetColour()));
+  }
   wxColour cl;
-  GetGlobalColor(_T("DASHF"), &cl);
-  dc->SetTextForeground(cl);
-
+  //GetGlobalColor(_T("DASHF"), &cl);
   wxSize size = GetClientSize();
 
   wxString text;
@@ -327,7 +367,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     text = _T("---");
 
   int width, height;
-  dc->GetMultiLineTextExtent(text, &width, &height, NULL, g_pFontLabel);
+  if (m_Properties)
+    dc->GetMultiLineTextExtent(text, &width, &height, NULL, &(m_Properties->m_LabelFont.GetChosenFont()));
+  else
+    dc->GetMultiLineTextExtent(text, &width, &height, NULL, &(g_pFontLabel->GetChosenFont()));
 
   wxRect TextPoint;
   TextPoint.width = width;
@@ -340,12 +383,18 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     case DIAL_POSITION_INSIDE: {
       TextPoint.x = m_cx - (width / 2) - 1;
       TextPoint.y = (size.y * .75) - height;
-      GetGlobalColor(_T("DASHL"), &cl);
+      if (m_Properties)
+          cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+      else
+          GetGlobalColor(_T("DASHL"), &cl);
       int penwidth = size.x / 100;
       wxPen* pen =
           wxThePenList->FindOrCreatePen(cl, penwidth, wxPENSTYLE_SOLID);
       dc->SetPen(*pen);
-      GetGlobalColor(_T("DASHB"), &cl);
+      if (m_Properties)
+          cl = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
+      else
+        GetGlobalColor(_T("DASHB"), &cl);
       dc->SetBrush(cl);
       // There might be a background drawn below
       // so we must clear it first.
@@ -371,8 +420,8 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       break;
   }
 
-  wxColour c2;
-  GetGlobalColor(_T("DASHB"), &c2);
+  //wxColour c2;
+  //GetGlobalColor(_T("DASHB"), &c2);
   wxColour c3;
   GetGlobalColor(_T("DASHF"), &c3);
 
@@ -381,7 +430,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
 
   token = tkz.GetNextToken();
   while (token.Length()) {
-    dc->GetTextExtent(token, &width, &height, NULL, NULL, g_pFontLabel);
+    if(m_Properties)
+        dc->GetTextExtent(token, &width, &height, NULL, NULL, &(m_Properties->m_LabelFont.GetChosenFont()));
+    else
+        dc->GetTextExtent(token, &width, &height, NULL, NULL, &(g_pFontLabel->GetChosenFont()));
     dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;
     token = tkz.GetNextToken();
@@ -405,8 +457,10 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   dc->DrawCircle(m_cx, m_cy, m_radius / 8);
 
   dc->SetPen(*wxTRANSPARENT_PEN);
-
-  GetGlobalColor(_T("DASHN"), &cl);
+  if (m_Properties)
+      cl = GetColourSchemeFont(m_Properties->m_Arrow_First_Colour);
+  else
+    GetGlobalColor(_T("DASHN"), &cl);
   wxBrush brush;
   brush.SetStyle(wxBRUSHSTYLE_SOLID);
   brush.SetColour(cl);
@@ -447,14 +501,16 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
 
 /* Shared functions */
 void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
-                     bool showlabels) {
+                     bool showlabels, InstrumentProperties* Properties) {
   wxPoint pt, points[3];
   wxString Value;
   int width, height;
   wxString CompassArray[] = {_("N"),  _("NE"), _("E"),  _("SE"), _("S"),
                              _("SW"), _("W"),  _("NW"), _("N")};
-
-  dc->SetFont(*g_pFontSmall);
+  if (Properties)
+      dc->SetFont((Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->SetFont((g_pFontSmall->GetChosenFont()));
 
   wxColour cl;
   wxPen* pen;
@@ -474,14 +530,20 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
        tmpangle < startangle + 360 - ANGLE_OFFSET; tmpangle += 90) {
     if (showlabels) {
       Value = CompassArray[offset];
-      dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
+      if (Properties)
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &(Properties->m_SmallFont.GetChosenFont()));
+      else
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
       double x = width / 2;
       long double anglefortext = tmpangle - rad2deg(asin((x / radius)));
       pt.x = cx + radius * cos(deg2rad(anglefortext));
       pt.y = cy + radius * sin(deg2rad(anglefortext));
       dc->DrawRotatedText(Value, pt.x, pt.y, -90 - tmpangle);
       Value = CompassArray[offset + 1];
-      dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
+      if (Properties)
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &(Properties->m_SmallFont.GetChosenFont()));
+      else
+        dc->GetTextExtent(Value, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
       x = width / 2;
       anglefortext = tmpangle - rad2deg(asin((x / radius))) + 45;
       pt.x = cx + radius * cos(deg2rad(anglefortext));

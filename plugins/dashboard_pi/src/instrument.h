@@ -39,21 +39,22 @@
 #endif
 
 // Required GetGlobalColor
-#include "ocpn_plugin.h"
+#include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 #include <wx/dcgraph.h>  // supplemental, for Mac
 
 #include <bitset>
+#include <wx/fontdata.h>
 
 const wxString DEGREE_SIGN = wxString::Format(
     _T("%c"), 0x00B0);  // This is the degree sign in UTF8. It should be
                         // correctly handled on both Win & Unix
 #define DefaultWidth 150
 
-extern wxFont *g_pFontTitle;
-extern wxFont *g_pFontData;
-extern wxFont *g_pFontLabel;
-extern wxFont *g_pFontSmall;
+extern wxFontData *g_pFontTitle;
+extern wxFontData *g_pFontData;
+extern wxFontData *g_pFontLabel;
+extern wxFontData *g_pFontSmall;
 
 wxString toSDMM(int NEflag, double a);
 
@@ -104,10 +105,55 @@ enum DASH_CAP {
   ((int)OCPN_DBP_STC_LAST)  // Number of instrument capability flags
 using CapType = std::bitset<N_INSTRUMENTS>;
 
+
+wxColour GetColourSchemeBackgroundColour(wxColour co);
+wxColour GetColourSchemeFont(wxColour co);
+
+class InstrumentProperties {
+public:
+    InstrumentProperties() { SetDefault(); }
+    InstrumentProperties(int aInstrument, int Listplace) {
+        m_aInstrument = aInstrument;
+        m_Listplace = Listplace;
+        m_TitelFont = *(g_pFontTitle);
+        m_DataFont = *(g_pFontData);
+        m_LabelFont = *(g_pFontLabel);
+        m_SmallFont = *(g_pFontSmall);
+        GetGlobalColor(_T("DASHL"), &m_TitlelBackgroundColour);
+        GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
+        GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
+        GetGlobalColor(_T("BLUE3"), &m_Arrow_Second_Colour);
+    }
+    ~InstrumentProperties() {}
+    void SetDefault()
+    {
+        m_aInstrument = -1;
+        m_Listplace = -1;
+        m_TitelFont = *(g_pFontTitle);
+        m_DataFont = *(g_pFontData);
+        m_LabelFont = *(g_pFontLabel);
+        m_SmallFont = *(g_pFontSmall);
+        GetGlobalColor(_T("DASHL"), &m_TitlelBackgroundColour);
+        GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
+        GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
+        GetGlobalColor(_T("BLUE3"), &m_Arrow_Second_Colour);
+    };
+    int m_aInstrument;
+    int m_Listplace;
+    wxFontData m_TitelFont;
+    wxColour m_TitlelBackgroundColour;
+    wxFontData m_DataFont;
+    wxColour m_DataBackgroundColour;
+    wxFontData m_LabelFont;
+    wxFontData m_SmallFont;
+    wxColour m_Arrow_First_Colour;
+    wxColour m_Arrow_Second_Colour;
+};
+
 class DashboardInstrument : public wxControl {
 public:
   DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title,
-                      DASH_CAP cap_flag);
+                      DASH_CAP cap_flag, InstrumentProperties* Properties = NULL);
   ~DashboardInstrument() {}
 
   CapType GetCapacity();
@@ -120,12 +166,12 @@ public:
   void SetCapFlag(DASH_CAP val) { m_cap_flag.set(val); }
   bool HasCapFlag(DASH_CAP val) { return m_cap_flag.test(val); }
   int instrumentTypeId;
+  InstrumentProperties *m_Properties;
 
 protected:
   CapType m_cap_flag;
   int m_TitleHeight;
   wxString m_title;
-
   virtual void Draw(wxGCDC *dc) = 0;
 
 private:
@@ -135,7 +181,7 @@ private:
 class DashboardInstrument_Single : public DashboardInstrument {
 public:
   DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title,
-                             DASH_CAP cap, wxString format);
+                             InstrumentProperties* Properties, DASH_CAP cap, wxString format);
   ~DashboardInstrument_Single() {}
 
   wxSize GetSize(int orient, wxSize hint);
@@ -145,6 +191,7 @@ protected:
   wxString m_data;
   wxString m_format;
   int m_DataHeight;
+  InstrumentProperties* m_Properties;
 
   void Draw(wxGCDC *dc);
 };
@@ -152,6 +199,7 @@ protected:
 class DashboardInstrument_Position : public DashboardInstrument {
 public:
   DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title,
+                               InstrumentProperties* Properties = NULL,
                                DASH_CAP cap_flag1 = OCPN_DBP_STC_LAT,
                                DASH_CAP cap_flag2 = OCPN_DBP_STC_LON);
   ~DashboardInstrument_Position() {}

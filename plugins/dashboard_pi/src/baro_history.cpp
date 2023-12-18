@@ -43,8 +43,8 @@
 //************************************************************************************************************************
 
 DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory(
-    wxWindow* parent, wxWindowID id, wxString title)
-    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_MDA) {
+    wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties)
+    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_MDA, Properties) {
   SetDrawSoloInPane(true);
 
   m_MaxPress = 0;
@@ -55,7 +55,14 @@ DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory(
   // Set top line height to leave space for pressure data
   wxClientDC dc(this);
   int w, h;
-  dc.GetTextExtent("hPa----", &w, &h, 0, 0, g_pFontData);
+  if (m_Properties)
+  {
+      dc.GetTextExtent("hPa----", &w, &h, 0, 0, &(m_Properties->m_DataFont.GetChosenFont()));
+  }
+  else
+  {
+      dc.GetTextExtent("hPa----", &w, &h, 0, 0, &(g_pFontData->GetChosenFont()));
+  }
   m_TopLineHeight = wxMax(30, h);
   m_SpdRecCnt = 0;
   m_SpdStartVal = -1;
@@ -80,7 +87,10 @@ DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory(
 wxSize DashboardInstrument_BaroHistory::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  if (m_Properties)
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(m_Properties->m_TitelFont.GetChosenFont()));
+  else
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &(g_pFontTitle->GetChosenFont()));
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(m_TitleHeight + 140, hint.y));
   } else {
@@ -159,8 +169,16 @@ void DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc) {
   wxColour cl;
   int width, height;
   cl = wxColour(61, 61, 204, 255);
-  dc->SetTextForeground(cl);
-  dc->SetFont(*g_pFontSmall);
+  if (m_Properties)
+  {
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
+      dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
+  }
+  else
+  {
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
+      dc->SetFont(g_pFontSmall->GetChosenFont());
+  }
   // round m_MaxPress up to the next hpa ...
   if (m_MaxPress > 1100) m_MaxPress = 1100;
 
@@ -197,22 +215,37 @@ void DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc) {
     // bottom legend for min wind
     label5.Printf(_T("%.0f hPa"), (m_TotalMinPress - 18));
   }
-  dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
   dc->DrawText(label1, 4, (int)(m_TopLineHeight - height / 2));
-  dc->GetTextExtent(label2, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      dc->GetTextExtent(label2, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(label2, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
   dc->DrawText(label2, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height / 4 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
-  dc->GetTextExtent(label3, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      dc->GetTextExtent(label3, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(label3, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
   dc->DrawText(label3, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height / 2 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
-  dc->GetTextExtent(label4, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      dc->GetTextExtent(label4, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(label4, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
   dc->DrawText(
       label4, 4,
       (int)(m_TopLineHeight + m_DrawAreaRect.height * 0.75 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
-  dc->GetTextExtent(label5, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      dc->GetTextExtent(label5, &width, &height, 0, 0, &(m_Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(label5, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
   dc->DrawText(label5, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
@@ -271,7 +304,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   wxColour col;
   double ratioH;
   int degw, degh;
-  int width, height, sec, min, hour;
+  int width, height, min, hour;
   wxString WindAngle, WindSpeed;
   wxPen pen;
   wxString label;
@@ -279,18 +312,41 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   //---------------------------------------------------------------------------------
   // Pressure
   //---------------------------------------------------------------------------------
-  col = wxColour(61, 61, 204, 255);  // blue, opaque
-  dc->SetFont(*g_pFontData);
-  dc->SetTextForeground(col);
+  //col = wxColour(61, 61, 204, 255);  // blue, opaque
+  if (m_Properties)
+  {
+      dc->SetFont(m_Properties->m_DataFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontData->GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
+  }
   if (!std::isnan(m_Press))
     WindSpeed = wxString::Format(_T("hPa %3.1f  "), m_Press);
   else
     WindSpeed = wxString::Format(_T("hPa ---  "));
-  dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, g_pFontData);
+  if (m_Properties)
+      dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, &(m_Properties->m_DataFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, &(g_pFontData->GetChosenFont()));
   dc->DrawText(WindSpeed, m_LeftLegend + 3, 1);
-  dc->SetFont(*g_pFontLabel);
+  if (m_Properties)
+  {
+      dc->SetFont(m_Properties->m_LabelFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontLabel->GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontLabel->GetColour()));
+  }
   int labelw, labelh;
-  dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, g_pFontLabel);
+  if (m_Properties)
+      dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, &(m_Properties->m_LabelFont.GetChosenFont()));
+  else
+      dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, &(g_pFontLabel->GetChosenFont()));
   // determine the time range of the available data (=oldest data value)
   int i = 0;
   while (m_ArrayRecTime[i].year == 999 && i < BARO_RECORD_COUNT - 1) i++;
@@ -310,7 +366,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   dc->DrawText(wxString::Format(
                    _(" Max %.1f since %02d:%02d  Overall Max %.1f Min %.1f "),
                    m_MaxPress, hour, min, m_TotalMaxPress, m_TotalMinPress),
-                   m_LeftLegend + 2 + degw, m_TopLineHeight - 1 - labelh);
+                   m_LeftLegend + 2 + degw, m_TopLineHeight - 2 - labelh);
   pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(61, 61, 204, 255));  // blue, opaque
   pen.SetWidth(3);
@@ -375,7 +431,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
   dc->SetTextForeground(col);
-  dc->SetFont(*g_pFontSmall);
+  dc->SetFont((g_pFontSmall->GetChosenFont()));
   int done = -1;
   wxPoint pointTime;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
@@ -388,7 +444,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));
         label.Printf(_T("%02d:%02d"), hour, min);
-        dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
+        dc->GetTextExtent(label, &width, &height, 0, 0, &(g_pFontSmall->GetChosenFont()));
         dc->DrawText(label, pointTime.x - width / 2,
                      m_WindowRect.height - height);
         done = hour * 100 + min;

@@ -47,6 +47,7 @@ class DashboardInstrument_FromOwnship : public DashboardInstrument {
 public:
   DashboardInstrument_FromOwnship(wxWindow* pparent, wxWindowID id,
                                   wxString title,
+                                  InstrumentProperties* Properties,
                                   DASH_CAP cap_flag1 = OCPN_DBP_STC_PLA,
                                   DASH_CAP cap_flag2 = OCPN_DBP_STC_PLO,
                                   DASH_CAP cap_flag3 = OCPN_DBP_STC_LAT,
