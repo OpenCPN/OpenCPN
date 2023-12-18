@@ -57,9 +57,7 @@
 #include <wx/qt/private/wxQtGesture.h>
 #endif
 
-// in OPENcpn code :
-//#include "nmea0183/nmea0183.h"
-#include "nmea0183.h"
+#include "nmea0183/nmea0183.h"
 #include "instrument.h"
 #include "speedometer.h"
 #include "compass.h"
