@@ -509,9 +509,6 @@ if (QT_ANDROID)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,libgorp.so -Wl,--build-id")
 endif (QT_ANDROID)
 
-if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-  link_libraries(stdc++fs )
-endif ()
 message(STATUS "Final compiler options:")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -1758,12 +1755,9 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
 
-if (APPLE)
-  # Required for 10.13 compat.
-  find_library(BOOST_SYSTEM NAMES boost_system REQUIRED)
-  find_library(BOOST_FILESYSTEM NAMES boost_filesystem REQUIRED)
-  target_link_libraries(${PACKAGE_NAME} PUBLIC BOOST_SYSTEM BOOST_FILESYSTEM)
-endif ()
+# Ensure we have boost::filesystem if std::filesystem is missing.
+include(StdFilesystem)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
 
 message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
@@ -3276,6 +3270,7 @@ if (NOT QT_ANDROID)
 
   target_link_libraries(opencpn-cmd PRIVATE observable::observable)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
+  target_link_libraries(opencpn-cmd PRIVATE ocpn::filesystem)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::geoprim)

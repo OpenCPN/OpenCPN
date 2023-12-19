@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include <wx/datetime.h>
+#include <wx/intl.h>
 #include <wx/string.h>
 
 #include "ais_target_data.h"

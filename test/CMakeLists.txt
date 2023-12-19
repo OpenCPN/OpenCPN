@@ -90,6 +90,7 @@ endif ()
 
 target_link_libraries(tests PRIVATE observable::observable)
 target_link_libraries(tests PRIVATE ocpn::easywsclient)
+target_link_libraries(tests PRIVATE ocpn::filesystem)
 target_link_libraries(tests PRIVATE ocpn::garminhost)
 target_link_libraries(tests PRIVATE ocpn::gdal)
 target_link_libraries(tests PRIVATE ocpn::geoprim)
