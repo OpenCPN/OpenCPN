@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 #
 # Build the OSX artifacts using dependencies from Homebrew and the OS to minimize impact on the environment
 # The resulting build product is NOT ABI compatible with the upstream packages and plugins and should NEVER be distributed
