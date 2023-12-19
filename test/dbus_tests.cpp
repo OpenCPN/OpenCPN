@@ -105,6 +105,7 @@ TEST(DbusServer, Ping) {
      " /org/opencpn/OpenCPN opencpn.desktop.Ping";
   FILE* f = popen(kDbusSendCmd, "r");
   char buff[1024];
+  std::this_thread::sleep_for(100ms);
   char* line = fgets(buff, sizeof(buff), f);   // initial line, throw.
   EXPECT_TRUE(line);
 
@@ -177,6 +178,7 @@ TEST(DbusServer, Open) {
      "dbus-send --type=method_call --print-reply --dest=org.opencpn.OpenCPN"
      " /org/opencpn/OpenCPN opencpn.desktop.Open string:/foo/bar.gpx";
   FILE* f = popen(kDbusSendCmd, "r");
+  std::this_thread::sleep_for(100ms);
   char buff[1024];
   char* line = fgets(buff, sizeof(buff), f);   // initial line, throw.
   EXPECT_TRUE(line);
