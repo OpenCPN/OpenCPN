@@ -295,7 +295,7 @@ set(OCPN_SOUND_CMD "" CACHE STRING
   "Hardcoded value for CLI command used in SystemCmdSound backend"
 )
 
-if (UNIX AND NOT APPLE AND NOT QT_ANDRIOD)
+if (UNIX AND NOT APPLE AND NOT QT_ANDROID)
   set(LINUX "1")
 endif ()
 

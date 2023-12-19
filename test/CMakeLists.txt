@@ -169,7 +169,7 @@ if (LIBLZMA_FOUND)
   endif ()
 endif ()
 
-if (UNIX AND NOT QT_ANDROID)
+if (LINUX)
   add_executable(dbus_tests
     dbus_tests.cpp
     ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
@@ -225,7 +225,7 @@ endif ()
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
 gtest_add_tests(TARGET tests)
-if (UNIX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT QT_ANDROID)
+if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET ipc-srv-tests)
   # We don't have a session bus available when testing flatpak
   # so these can just be run in native builds
