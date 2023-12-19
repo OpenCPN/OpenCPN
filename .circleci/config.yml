@@ -104,7 +104,7 @@ jobs:
 
   build-macos-universal:
     macos:
-      xcode: "13.4.1"
+      xcode: "15.1.0"
     environment:
       - OCPN_TARGET:  macos
       - pkg_mod: 11
