@@ -1329,6 +1329,10 @@ target_include_directories(
 )
 add_library(ocpn::opencpn ALIAS _opencpn)
 
+target_include_directories(
+  ${PACKAGE_NAME} BEFORE PUBLIC ${CMAKE_SOURCE_DIR}/include
+)
+
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES
@@ -3285,10 +3289,6 @@ if (NOT QT_ANDROID)
   set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
 
   add_executable(opencpn-cmd ${SRC_CONSOLE})
-  if (APPLE)
-    # 10.13 compat support
-    target_link_libraries(opencpn-cmd PUBLIC BOOST_SYSTEM BOOST_FILESYSTEM)
-  endif ()
 
   if (CMAKE_VERSION VERSION_GREATER 3.4)
     if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
@@ -3300,7 +3300,7 @@ if (NOT QT_ANDROID)
 
   target_include_directories(
     opencpn-cmd
-    PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/test/include
+    BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/test/include
   )
 
   target_compile_definitions(opencpn-cmd PUBLIC USE_MOCK_DEFS)

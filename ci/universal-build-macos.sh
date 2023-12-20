@@ -2,6 +2,10 @@
 
 set -x
 
+# Install the stuff needed for upload to the Cloudsmith repository
+# before messing w /usr/local
+pip3 install --user  -q cloudsmith-cli
+
 #
 # Build the OSX artifacts
 #
@@ -100,7 +104,7 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
   ..
 
 # Compile OpenCPN
-make -sj$(sysctl -n hw.physicalcpu)
+make -j$(sysctl -n hw.physicalcpu)
 # Create the package artifacts
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
@@ -117,5 +121,3 @@ make create-dmg
 # The build is over, if there is error now it is not ours
 set +e
 
-# Install the stuff needed for upload to the Cloudsmith repository
-pip3 install --user  -q cloudsmith-cli
