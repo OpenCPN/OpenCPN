@@ -1932,6 +1932,16 @@ bool MyApp::OnInit() {
   }
 #endif
 
+  // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
+  // glDeleteTextures. Truly awful.
+#ifdef ocpnUSE_GL
+  RoutePoint::delete_gl_textures =
+      [](unsigned n, const unsigned* texts) { glDeleteTextures(n, texts); };
+#else
+  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned* texts) { };
+#endif
+
+
   if (g_start_fullscreen) gFrame->ToggleFullScreen();
 
 #ifdef __ANDROID__
