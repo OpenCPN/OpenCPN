@@ -24,10 +24,11 @@
 #ifndef _ROUTEPOINT_H__
 #define _ROUTEPOINT_H__
 
+#include <functional>
+
 #include <wx/bitmap.h>
 #include <wx/colour.h>
 #include <wx/datetime.h>
-#include <wx/gdicmn.h>
 #include <wx/string.h>
 
 #include "bbox.h"
@@ -52,6 +53,15 @@ public:
   RoutePoint(RoutePoint *orig);
   RoutePoint();
   virtual ~RoutePoint(void);
+
+  /**
+   * Horrible Hack (tm). The destructor needs to call glDeleteTextures, but
+   * this is not visible for RoutePoint. This is basically a global, initially
+   * doing nothing but at an "early stage" initiated do do the actual
+   * glDeleteTextures call.
+   */
+  static std::function<void(unsigned, const unsigned*)> delete_gl_textures;
+
   void ReLoadIcon() { m_IconIsDirty = true; }
 
   void SetPosition(double lat, double lon);
@@ -236,10 +246,8 @@ private:
   bool m_bsharedMark /*m_bKeepXRoute*/;  // This is an isolated mark which is
                                          // also part of a route. It should not
                                          // be deleted with route.
-#ifdef ocpnUSE_GL
   unsigned int m_dragIconTexture;
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
-#endif
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
