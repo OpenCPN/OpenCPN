@@ -856,29 +856,22 @@ set(
   MODEL_HDRS
   include/ais_bitstring.h
   include/ais_decoder.h
-  include/ais.h
-  include/ais_info_gui.h
-  include/AISTargetAlertDialog.h
+  include/ais_defs.h
   include/ais_target_data.h
-  include/AISTargetListDialog.h
-  include/AISTargetQueryDialog.h
   include/atomic_queue.h
   include/base_platform.h
   include/catalog_handler.h
   include/catalog_parser.h
-  include/cat_settings.h
+  include/certificates.h
   include/chart_ctx_factory.h
   include/chartdata_input_stream.h
-  include/chartdb.h
-  include/chartdbs.h
-  include/chartimg.h
-  include/chcanv.h
-  include/ChInfoWin.h
   include/cli_platform.h
-  include/color_handler.h
+  include/cmdline.h
   include/comm_ais.h
+  include/comm_appmsg_bus.h
   include/comm_appmsg.h
   include/comm_bridge.h
+  include/comm_decoder.h
   include/comm_driver.h
   include/comm_drv_factory.h
   include/comm_drv_file.h
@@ -890,6 +883,7 @@ set(
   include/comm_drv_n2k.h
   include/comm_drv_n2k_serial.h
   include/comm_drv_registry.h
+  include/comm_drv_signalk.h
   include/comm_drv_signalk_net.h
   include/comm_n0183_output.h
   include/comm_navmsg_bus.h
@@ -907,12 +901,19 @@ set(
   include/georef.h
   include/hyperlink.h
   include/idents.h
+  include/instance_check.h
+  include/ipc_api.h
+  include/local_api.h
   include/logger.h
   include/MarkIcon.h
+  include/mDNS_query.h
+  include/mDNS_service.h
+  include/meteo_points.h
   include/multiplexer.h
   include/nav_object_database.h
   include/navutil_base.h
   include/nmea_ctx_factory.h
+  include/nmea_log.h
   include/ocpn_plugin.h
   include/ocpn_types.h
   include/ocpn_utils.h
@@ -927,6 +928,7 @@ set(
   include/rest_server.h
   include/route.h
   include/routeman.h
+  include/route_point.h
   include/safe_mode.h
   include/select.h
   include/select_item.h
@@ -945,10 +947,12 @@ set(
   include/AISTargetAlertDialog.h
   include/AISTargetListDialog.h
   include/AISTargetQueryDialog.h
-  include/atomic_queue.h
+  include/CanvasConfig.h
   include/canvasMenu.h
+  include/CanvasOptions.h
   include/catalog_mgr.h
   include/cat_settings.h
+  include/chartbase.h
   include/chart_ctx_factory.h
   include/chartdb.h
   include/chartdbs.h
@@ -958,6 +962,7 @@ set(
   include/color_handler.h
   include/compass.h
   include/concanv.h
+  include/connections_dialog.h
   include/conn_params_panel.h
   include/DetailSlider.h
   include/download_mgr.h
@@ -967,30 +972,18 @@ set(
   include/FontMgr.h
   include/garmin_protocol_mgr.h
   include/garmin_wrapper.h
-  include/geodesic.h
-  include/georef.h
   include/GoToPositionDialog.h
   include/gshhs.h
   include/gui_lib.h
-  include/hyperlink.h
-  include/idents.h
   include/IDX_entry.h
   include/iENCToolbar.h
-  include/instance_check.h
-  include/ipc_api.h
   include/kml.h
   include/Layer.h
   include/LinkPropDlg.h
   include/load_errors_dlg.h
-  include/local_api.h
-  include/logger.h
   include/MarkInfo.h
   include/mbtiles.h
-  include/meteo_points.h
-  include/multiplexer.h
   include/n0183_ctx_factory.h
-  include/nav_object_database.h
-  include/navutil_base.h
   include/navutil.h
   include/nmea_ctx_factory.h
   include/NMEALogWindow.h
@@ -1004,15 +997,7 @@ set(
   include/OCPNRegion.h
   include/options.h
   include/piano.h
-  include/pincode.h
-  include/plugin_blacklist.h
-  include/plugin_cache.h
-  include/plugin_handler.h
-  include/plugin_loader.h
   include/pluginmanager.h
-  include/pluginmanager.h
-  include/plugin_paths.h
-  include/position_parser.h
   include/printtable.h
   include/priority_gui.h
   include/Quilt.h
@@ -1022,9 +1007,7 @@ set(
   include/route_gui.h
   include/routemanagerdialog.h
   include/routeman_gui.h
-  include/routeman.h
   include/route_point_gui.h
-  include/route_point.h
   include/routeprintout.h
   include/RoutePropDlg.h
   include/RoutePropDlgImpl.h
@@ -1053,7 +1036,6 @@ set(
   include/timers.h
   include/toolbar.h
   include/track_gui.h
-  include/track.h
   include/trackprintout.h
   include/TrackPropDlg.h
   include/TTYScroll.h
@@ -1105,12 +1087,12 @@ set(MODEL_SRC
   ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
   ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
   ${CMAKE_SOURCE_DIR}/src/cutil.cpp
-  ${CMAKE_SOURCE_DIR}/src/instance_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/downloader.cpp
   ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
   ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
   ${CMAKE_SOURCE_DIR}/src/georef.cpp
   ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
+  ${CMAKE_SOURCE_DIR}/src/instance_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
   ${CMAKE_SOURCE_DIR}/src/local_api.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
@@ -1254,7 +1236,6 @@ set(
   ${CMAKE_SOURCE_DIR}/src/update_mgr.cpp
   ${CMAKE_SOURCE_DIR}/src/viewport.cpp
   ${CMAKE_SOURCE_DIR}/src/waypointman_gui.cpp
-  #  ${CMAKE_SOURCE_DIR}/src/wificlient.cpp
 )
 
 
