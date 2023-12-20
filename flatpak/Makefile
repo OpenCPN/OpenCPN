@@ -15,6 +15,11 @@ REPO_URL        ?= https://flatpak.ocpnci.kalian.cz
 
 all: build sign
 
+build-only:
+	flatpak-builder --repo=$(CURDIR)/repo --force-clean \
+	    --build-only --keep-build-dirs --default-branch=devel \
+	    app ../flatpak/org.opencpn.OpenCPN.yaml
+
 build:
 	flatpak-builder --repo=$(CURDIR)/repo --force-clean \
 	    --default-branch=devel \

@@ -15,12 +15,12 @@ using a plugin system. Other plugins provides support for e. g. radar, AIS
 and weather maps. Program is localized in 20+ languages and ported to
 several OS including MacOS, Windows and Linux.
 
-.SH OPTIONS
+.SH OPTIONS FOR STARTING OPENCPN
 .TP
 .B \-h, \-\-help
 Show help info.
 .TP
-.B \-p
+.B \-p, \-\-portable
 Run in portable mode.
 .TP
 .B  \-l, \-\-loglevel=<level>
@@ -29,24 +29,48 @@ Set amount of logged information. Level is any of \fItrace\fR,
 defaulting to \fIinfo\fR if not set in environment; see ENVIRONMENT.
 
 .TP
-.B  \-fullscreen
+.B  \-f, \-\-fullscreen
 Switch to full screen mode on start.
 .TP
-.B  \-no_opengl
+.B  \-G, \-\-no_opengl
 Disable OpenGL video acceleration. This setting will be remembered.
 .TP
-.B  \-rebuild_gl_raster_cache
+.B \-g,  \-\-rebuild_gl_raster_cache
 Rebuild OpenGL raster cache on start.
 .TP
-.B  \-parse_all_enc
+.B  \-P, \-\-parse_all_enc
 Convert all S-57 charts to OpenCPN's internal format on start.
 .TP
-.B  \-unit_test_1:<num>
+.B  \-u, \-\-unit_test_1:<num>
 Display a slideshow of <num> charts and then exit. Zero or negative <num>
 specifies no limit.
 
-.B  \-safe_mode
+.TP
+.B \-s, \-\-safe_mode
 Run without plugins, openGL and other possibly problematic features.
+It is still possible to unintall plugins in this mode.
+
+.SH OPTIONS FOR MANIPULATING RUNNING OPENCPN
+
+.TP
+.B \-r, \-\-remote
+Run commands on a running instance instead of starting opencpn. Exits with
+error code if no running opencpn instance is found.
+
+.TP
+.B \-R, \-\-raise
+Raise opencpn window to be on top of other windows, requires \-\-remote.
+This is the default behaviour if opencpn is invoked without options and
+arguments and there already is a running instance.
+
+.TP
+.B \-e, \-\-get_rest_endpoint
+Print the url for connecting to the local opencpn REST server e. g. 
+http://localhost:8000. Requires \-\-remote.
+
+.TP
+.B \-q, \-\-quit
+Make the remote instance exit. Requires \-\-remote.
 
 .SH PLUGIN LOADING
 
@@ -105,12 +129,6 @@ If defined, displays the message and exits on startup.
 .B ~/.opencpn/opencpn.log
 System log file, a useful tool to solve problems.
 
-
-.SH NOTES
-
-The support for OPENCPN_PLUGIN_DIRS and XDG_DATA_DIRS was introduced in
-version 5.0.0. Prior to this, all plugins was loaded from a single directory
-and all plugin data directories had a common parent.
 
 .SH SEE ALSO
 .br

@@ -87,8 +87,6 @@ extern bool g_btouch;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
 
-extern wxLog* g_logger;
-
 extern BasePlatform* g_BasePlatform;
 
 #ifdef __ANDROID__
@@ -147,6 +145,7 @@ static wxString ExpandPaths(wxString paths, AbstractPlatform* platform) {
 
 //  OCPN Platform implementation
 BasePlatform::BasePlatform() {
+  m_old_logger = 0;
   m_isFlatpacked = checkIfFlatpacked();
   m_osDetail = new OCPN_OSDetail;
   DetectOSDetail(m_osDetail);
@@ -677,16 +676,15 @@ bool BasePlatform::InitializeLogFile(void) {
 
   if (wxLog::GetLogLevel() > wxLOG_User) wxLog::SetLogLevel(wxLOG_Info);
 
-  g_logger = new OcpnLog(mlog_file.mb_str());
-  m_Oldlogger = wxLog::SetActiveTarget(g_logger);
+  auto logger = new OcpnLog(mlog_file.mb_str());
+  m_old_logger = wxLog::SetActiveTarget(logger);
 
   return true;
 }
 
 void AbstractPlatform::CloseLogFile(void) {
-  if (g_logger) {
-    wxLog::SetActiveTarget(m_Oldlogger);
-    delete g_logger;
+  if (m_old_logger) {
+    wxLog::SetActiveTarget(m_old_logger);
   }
 }
 

@@ -129,7 +129,6 @@ extern double g_RemoveLost_Mins;
 extern double g_MarkLost_Mins;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
-extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
 extern BasePlatform* g_BasePlatform;

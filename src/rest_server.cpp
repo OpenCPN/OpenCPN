@@ -277,12 +277,13 @@ void RestServer::UpdateReturnStatus(RestServerResult result) {
 
 RestServer::RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
     : m_exit_sem(0, 1),
+      m_endpoint(portable ? kHttpsPortableAddr : kHttpsAddr),
       m_dlg_ctx(std::move(ctx)),
       m_route_ctx(std::move(route_ctx)),
       return_status(RestServerResult::Void),
       m_pin_dialog(nullptr),
       m_overwrite(false),
-      m_io_thread(*this, portable ? kHttpsPortableAddr : kHttpsAddr),
+      m_io_thread(*this, m_endpoint),
       m_pincode(Pincode::Create()) {
   // Prepare the wxEventHandler to accept events from the io thread
   Bind(REST_IO_EVT, &RestServer::HandleServerMessage, this);

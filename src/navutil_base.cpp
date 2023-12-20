@@ -39,9 +39,6 @@
 #include "navutil_base.h"
 #include "vector2D.h"
 
-extern int g_nDepthUnitDisplay;
-extern int g_iTempFormat;
-
 wxString toSDMM(int NEflag, double a, bool hi_precision) {
   wxString s;
   double mpy;

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,36 +15,28 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-#include "config_vars.h"
+ **************************************************************************/
+#ifndef _STD_INSTANCE_CHECK_H__
+#define _STD_INSTANCE_CHECK_H__
 
-bool g_bGarminHostUpload;
-bool g_bWplUsePosition;
+#include <wx/snglinst.h>
 
-double g_UserVar = 0.0;
-int g_iDistanceFormat = 0;
-int g_iSDMMFormat = 0;
-int g_iSpeedFormat = 0;
-int g_iWindSpeedFormat = 0;
-int g_iTempFormat = 0;
-int g_maxWPNameLength;
-int g_NMEAAPBPrecision = 3;
-int g_nCOMPortCheck = 32;
-int g_nDepthUnitDisplay = 0;
-int g_nNMEADebug = 0;
-int gps_watchdog_timeout_ticks = 0;
-int sat_watchdog_timeout_ticks = 12;
+#include "instance_check.h"
 
-wxString g_GPS_Ident;
-wxString g_hostname;
-wxString g_TalkerIdText;
-wxString g_winPluginDir;
+/**  InstanceCheck implementation based on <unistd.h> i. e. Linux/MacOS */
+class StdInstanceCheck : public InstanceCheck {
+public:
+  StdInstanceCheck();
 
-static wxConfigBase* the_base_config = 0;
+  virtual ~StdInstanceCheck();
 
-wxConfigBase* TheBaseConfig() {
-  wxASSERT_MSG(the_base_config != 0, "Uninitialized the_base_config");
-  return the_base_config;
-}
-void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
+  bool IsMainInstance() override;
+
+  void CleanUp() override;
+
+private:
+  std::string m_path;
+  bool m_is_main_instance;
+};
+
+#endif  // _STD_INSTANCE_CHECK_H__

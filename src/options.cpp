@@ -154,7 +154,6 @@ extern double gVar;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
-extern int g_nDepthUnitDisplay;
 extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
@@ -248,8 +247,6 @@ extern double g_TrackDeltaDistance;
 extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
 extern wxColour g_colourTrackLineColour;
-
-extern int g_iTempFormat;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 

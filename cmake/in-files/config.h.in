@@ -57,6 +57,10 @@
 // Command line to play a sound in system(3), like "aplay %s".
 #define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}
 
+#define CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}"
+
+#define TEST_ROOT "${CMAKE_CURRENT_LIST_DIR}/test"
+
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11
 

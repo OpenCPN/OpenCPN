@@ -1,10 +1,5 @@
-/******************************************************************************
- *
- * Project: OpenCPN
- * Purpose: Variables defined in config file, command line etc.
- *
- ***************************************************************************
- *   Copyright (C) 2019 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,38 +18,30 @@
  ***************************************************************************
  */
 
-#ifndef CONFIG_VARS_H__
-#define CONFIG_VARS_H__
+#ifndef DBUS_LOCAL_API_H__
+#define DBUS_LOCAL_API_H__
 
-#include <wx/config.h>
-#include <wx/string.h>
+#include <memory>
+#include <string>
+#include <thread>
+#include <utility>
 
+#include "dbus_server.h"
+#include "local_api.h"
 
-extern bool g_bGarminHostUpload;
-extern bool g_bWplUsePosition;
+/** Implement LocalClientApi on linux using Dbus mechanisms.  */
+class DbusLocalClient : public LocalClientApi {
+public:
+  DbusLocalClient() = default;
+  virtual ~DbusLocalClient() = default;
 
-extern double g_UserVar;
+  LocalApiResult SendRaise();
 
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
-extern int g_iSDMMFormat;
-extern int g_iWindSpeedFormat;
-extern int g_iTempFormat;
-extern int g_maxWPNameLength;
-extern int g_NMEAAPBPrecision;
-extern int g_nCOMPortCheck;
-extern int g_nDepthUnitDisplay;
-extern int g_nNMEADebug;
-extern int gps_watchdog_timeout_ticks;
-extern int sat_watchdog_timeout_ticks;
+  LocalApiResult SendOpen(const char* path);
 
-extern wxString g_GPS_Ident;
-extern wxString g_hostname;
-extern wxString g_TalkerIdText;
-extern wxString g_android_Device_Model;
-extern wxString g_winPluginDir;   // Base plugin directory on Windows.
+  LocalApiResult SendQuit();
 
-wxConfigBase* TheBaseConfig();
-void InitBaseConfig(wxConfigBase* cfg);
+  LocalApiResult GetRestEndpoint();
+};
 
-#endif  // CONFIG_VARS_H__
+#endif  // DBUS_LOCAL_API_H__

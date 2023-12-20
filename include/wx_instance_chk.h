@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,36 +15,34 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-#include "config_vars.h"
+ **************************************************************************/
 
-bool g_bGarminHostUpload;
-bool g_bWplUsePosition;
+#ifndef _WX_INST_CHECK__
+#define _WX_INST_CHECK__
 
-double g_UserVar = 0.0;
-int g_iDistanceFormat = 0;
-int g_iSDMMFormat = 0;
-int g_iSpeedFormat = 0;
-int g_iWindSpeedFormat = 0;
-int g_iTempFormat = 0;
-int g_maxWPNameLength;
-int g_NMEAAPBPrecision = 3;
-int g_nCOMPortCheck = 32;
-int g_nDepthUnitDisplay = 0;
-int g_nNMEADebug = 0;
-int gps_watchdog_timeout_ticks = 0;
-int sat_watchdog_timeout_ticks = 12;
+#include <wx/snglinst.h>
 
-wxString g_GPS_Ident;
-wxString g_hostname;
-wxString g_TalkerIdText;
-wxString g_winPluginDir;
+#include "instance_check.h"
 
-static wxConfigBase* the_base_config = 0;
+/**  Thin wrapper for wxSingleInstanceChecker implementing InstanceCheck */
+class WxInstanceCheck : public InstanceCheck {
+public:
+  WxInstanceCheck();
 
-wxConfigBase* TheBaseConfig() {
-  wxASSERT_MSG(the_base_config != 0, "Uninitialized the_base_config");
-  return the_base_config;
-}
-void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
+  ~WxInstanceCheck() { if (m_checker) delete m_checker; }
+
+  bool IsMainInstance() override;
+
+  void CleanUp() override;
+
+  void OnExit() override;
+
+
+private:
+  void Init();
+
+  wxSingleInstanceChecker* m_checker;
+  bool is_inited;
+};
+
+#endif   // _WX_INST_CHECK__

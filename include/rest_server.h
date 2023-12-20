@@ -182,6 +182,9 @@ public:
 
   /** Stop server thread, blocks until completed. */
   virtual void StopServer() = 0;
+
+  /** Return HTTPS url to local rest server. */
+  virtual std::string GetEndpoint() = 0;
 };
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */
@@ -198,6 +201,8 @@ public:
   bool StartServer(const fs::path& certificate_location) override;
 
   void StopServer() override;
+
+  std::string GetEndpoint() override { return m_endpoint; }
 
   /** IoThread interface.*/
   void UpdateReturnStatus(RestServerResult r);
@@ -220,11 +225,14 @@ public:
   /** IoThread interface: Guards return_status */
   std::condition_variable return_status_cv;
 
+
   /**
    * IoThread interface: Binary exit synchronization, released when
    * io thread exits. std::semaphore is C++20, hence wxSemaphore.
    */
   wxSemaphore m_exit_sem;
+
+  const std::string m_endpoint;
 
 private:
   class IoThread {

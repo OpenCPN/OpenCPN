@@ -371,6 +371,7 @@ public:
   void PositionIENCToolbar();
 
   void InitAppMsgBusListener();
+  void InitApiListeners();
   void UpdateStatusBar(void);
 
 private:
@@ -436,6 +437,8 @@ private:
 
   ObservableListener listener_basic_navdata;
   ObservableListener listener_gps_watchdog;
+  ObsListener m_on_raise_listener;
+  ObsListener m_on_quit_listener;
 
   DECLARE_EVENT_TABLE()
 };

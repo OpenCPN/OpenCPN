@@ -34,9 +34,10 @@
 #include <wx/event.h>
 #endif  // precompiled headers
 
-#include <wx/snglinst.h>
+#include <instance_check.h>
 
 #include "comm_bridge.h"
+#include "local_api.h"
 #include "rest_server.h"
 
 class Track;
@@ -46,11 +47,17 @@ public:
   MyApp();
   ~MyApp(){};
 
-  bool OnInit();
-  int OnExit();
-  void OnInitCmdLine(wxCmdLineParser& parser);
-  bool OnCmdLineParsed(wxCmdLineParser& parser);
+  bool OnInit() override;
+  int OnExit() override;
+#ifndef __ANDROID__
+  void OnInitCmdLine(wxCmdLineParser& parser) override;
+  bool OnCmdLineHelp(wxCmdLineParser& parser) override;
+  bool OnCmdLineParsed(wxCmdLineParser& parser) override;
+#endif 
+  int OnRun() override;
+
   void OnActivateApp(wxActivateEvent& event);
+  bool OpenFile(const std::string& path);
 
 #ifdef LINUX_CRASHRPT
   //! fatal exeption handling
@@ -65,12 +72,26 @@ public:
 
   Track* TrackOff(void);
 
-  wxSingleInstanceChecker* m_checker;
+  InstanceCheck& m_checker;
   CommBridge m_comm_bridge;
 
   RestServer m_RESTserver;
 
   DECLARE_EVENT_TABLE()
+private: 
+
+  /** Remote command deemed to be run from actual argc/argv. */
+  struct ParsedCmdline {
+    CmdlineAction action;
+    std::string arg;
+    ParsedCmdline(CmdlineAction a, const std::string& s) : action(a), arg(s) {}
+    ParsedCmdline() : ParsedCmdline(CmdlineAction::Skip, "") {}
+    ParsedCmdline(CmdlineAction a) : ParsedCmdline(a, "") {}
+  };
+
+  ParsedCmdline m_parsed_cmdline;
+  int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code) 
+
 };
 
 wxDECLARE_APP(MyApp);

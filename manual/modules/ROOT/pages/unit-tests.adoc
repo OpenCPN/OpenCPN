@@ -1,0 +1,63 @@
+= Running Unit Tests
+
+== General
+
+There are some rudimentary unit tests available. The coverage is not high,
+but they can still be useful. The methods to invoke them depends on platform.
+
+On all platform the tests are built using the build target `test`
+
+== Linux
+
+After a successful build of the overall program, the unit tests are 
+created using `make test`. 
+
+The simplest way to run the test is from the build directory:
+
+    $ cd build
+    $ make test
+    $ make run-tests
+
+This provides a good overview over all tests available and the results.
+
+If there is a need of more fine-grained operation, the basic tests are
+available in the _build/test_ directory. Here, there is a number of 
+executables like _tests_, _rest-tests_ and _ipc-tests_.
+
+Each of these can be run and will then provide more detailed output.
+For example `tests --help` provides info on available command line options.
+There is for example options to only run a single test, avoiding certain 
+test(s), etc.
+
+== Windows
+
+After a successful build of the program, tests are built by building the
+`test` target. This could (probably) be done in VS Studio or on the command
+line:
+
+    % cd build
+    % cmake --build . --config Release  --target test
+
+The tests are created in a directory like _build\test\<config>_, for 
+example _build\test\Release_. To be able to run, libraries needs to be 
+installed into the same directory using something like
+
+    % cd build
+    % cmake -DCMAKE_INSTALL_PREFIX=C:/Users/al/src/OpenCPN/build/test/Release ..
+    % cmake --install .
+
+The CMAKE_INSTALL_PREFIX path is the absolute path to the test directory; 
+obviously this will be different for every user.
+
+With the libraries in place the test overview  could be run like
+
+    % cd build
+    % cmake --build . --config Release --target run-tests 
+
+If there is a need to get more detailed feedback the basic test executables
+like _rest-tests_, _ipc-tests_  and _tests_ can be run from the installation
+directory. See Linux above.
+
+== MacOS
+
+TBD

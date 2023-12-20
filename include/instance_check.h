@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,36 +15,35 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-#include "config_vars.h"
+ **************************************************************************/
 
-bool g_bGarminHostUpload;
-bool g_bWplUsePosition;
+#ifndef INSTANCE_CHECK_H__
+#define INSTANCE_CHECK_H__
 
-double g_UserVar = 0.0;
-int g_iDistanceFormat = 0;
-int g_iSDMMFormat = 0;
-int g_iSpeedFormat = 0;
-int g_iWindSpeedFormat = 0;
-int g_iTempFormat = 0;
-int g_maxWPNameLength;
-int g_NMEAAPBPrecision = 3;
-int g_nCOMPortCheck = 32;
-int g_nDepthUnitDisplay = 0;
-int g_nNMEADebug = 0;
-int gps_watchdog_timeout_ticks = 0;
-int sat_watchdog_timeout_ticks = 12;
+#include <memory>
 
-wxString g_GPS_Ident;
-wxString g_hostname;
-wxString g_TalkerIdText;
-wxString g_winPluginDir;
+/** Common interface for all instance checkers. */
+class InstanceCheck {
+public:
+    /** @return Reference to an InstanceCheck implementation. */
+    static InstanceCheck& GetInstance();
 
-static wxConfigBase* the_base_config = 0;
+    virtual ~InstanceCheck() = default;
 
-wxConfigBase* TheBaseConfig() {
-  wxASSERT_MSG(the_base_config != 0, "Uninitialized the_base_config");
-  return the_base_config;
-}
-void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
+    /** Return true if this process is the primary opencpn instance. */
+    virtual bool IsMainInstance() = 0;
+
+    /** Wait until this object can be used for example for Dbus connection. */
+    virtual void WaitUntilValid() {};
+
+    /**
+     * Remove all persistent instance state, including possible lock file
+     * and defunct opencpn processes.
+     */
+    virtual void CleanUp() {};
+
+    /** Do whatever needed before wxWidget's checks triggers. */
+    virtual void OnExit () {};
+};
+
+#endif   // INSTANCE_CHECK_H__
