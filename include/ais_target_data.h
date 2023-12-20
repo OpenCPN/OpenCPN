@@ -26,12 +26,13 @@
 #define _AIS_TARGET_DATA_H__
 
 #include <functional>
-#include <vector>
-
-#include <wx/string.h>
-#include <wx/datetime.h>
-#include <unordered_map>
 #include <memory>
+#include <vector>
+#include <unordered_map>
+
+#include <wx/datetime.h>
+#include <wx/intl.h>
+#include <wx/string.h>
 
 #include "meteo_points.h"
 
