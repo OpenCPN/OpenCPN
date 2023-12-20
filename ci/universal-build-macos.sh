@@ -42,7 +42,7 @@ brew list --versions python3 || {
 
 
 # Install the build dependencies for OpenCPN
-brew install boost    # pre-10.15 compatibility
+brew install --overwrite boost    # pre-10.15 compatibility
 brew install cmake
 brew install gettext
 
