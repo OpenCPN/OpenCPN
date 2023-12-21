@@ -169,6 +169,7 @@ modules:
           - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=BOTH
           - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
           - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+          - -DCMAKE_BUILD_TYPE=Release
       build-options:
           build-args:
             - --share=network
