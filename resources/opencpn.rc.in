@@ -1,4 +1,4 @@
-0 ICON "..\src\bitmaps\opencpn.ico"
+0 ICON "..\\resources\\bitmaps\\opencpn.ico"
 1 VERSIONINFO
     FILEVERSION ${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH},0
     PRODUCTVERSION ${VERSION_MAJOR},${VERSION_MINOR}, 0, 0

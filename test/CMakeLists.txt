@@ -13,10 +13,10 @@ set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 set(SRC
   tests.cpp
   ${MODEL_SRC}
-  ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
-  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/certificates.cpp
-  ${CMAKE_SOURCE_DIR}/src/mDNS_query.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/certificates.cpp
+  ${MODEL_SRC_DIR}/mDNS_query.cpp
 )
 
 if (LINUX)
@@ -54,14 +54,14 @@ target_compile_definitions(tests
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(IPC_SRV_TESTS_SRC
     ipc-srv-tests.cpp
-    ${CMAKE_SOURCE_DIR}/src/local_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+    ${MODEL_SRC_DIR}/local_api.cpp
+    ${MODEL_SRC_DIR}/ipc_api.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
   )
   if (APPLE)
-    list(APPEND IPC_SRV_TESTS_SRC ../src/macutils.c)
+    list(APPEND IPC_SRV_TESTS_SRC ${MODEL_SRC_DIR}/macutils.c)
   endif ()
   add_executable(ipc-srv-tests ${IPC_SRV_TESTS_SRC})
 
@@ -83,7 +83,7 @@ target_compile_definitions(tests
 if (MSVC)
   target_link_libraries(tests
 	  PRIVATE setupapi.lib psapi.lib ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
- )
+  )
 endif ()
 if (APPLE)
   # 10.13 compat support
@@ -172,13 +172,13 @@ endif ()
 if (LINUX)
   add_executable(dbus_tests
     dbus_tests.cpp
-    ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/dbus_server.cpp
-    ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/local_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+    ${MODEL_SRC_DIR}/dbus_client.cpp
+    ${MODEL_SRC_DIR}/dbus_server.cpp
+    ${MODEL_SRC_DIR}/ipc_api.cpp
+    ${MODEL_SRC_DIR}/local_api.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
   )
   target_link_libraries(dbus_tests PRIVATE observable::observable)
   target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
@@ -232,11 +232,11 @@ if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 
-add_executable(cli-server cli_server.cpp ../src/ocpn_utils.cpp)
+add_executable(cli-server cli_server.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(cli-server PRIVATE ${wxWidgets_LIBRARIES})
 target_include_directories(cli-server PRIVATE ../include)
 
-add_executable(ipc-client ipc_client.cpp ../src/ocpn_utils.cpp)
+add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(ipc-client PRIVATE observable::observable)
 target_include_directories(ipc-client  PRIVATE ../include)
@@ -244,9 +244,9 @@ target_include_directories(ipc-client  PRIVATE ../include)
 
 set (WX_INSTANCE_SRC
   wx_instance.cpp
-  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-  ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/ocpn_utils.cpp
+  ${MODEL_SRC_DIR}/logger.cpp
 )
 if (APPLE)
   list(APPEND WX_INSTANCE_SRC ../src/macutils.c)
@@ -262,10 +262,10 @@ endif ()
 if (UNIX)
   set(STD_INSTANCE_SRC
     std_instance.cpp
-    ${CMAKE_SOURCE_DIR}/src/std_instance_chk.cpp
-    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+    ${MODEL_SRC_DIR}/std_instance_chk.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
   )
   if (APPLE)
     list(APPEND STD_INSTANCE_SRC ../src/macutils.c)
