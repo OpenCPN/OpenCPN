@@ -59,6 +59,14 @@ jobs:
           ls -l build/$CONFIGURATION/opencpn-cmd.exe || exit 1
           ls -l build/test/$CONFIGURATION/tests.exe || exit 1
 
+      - name: "Run tests"
+        shell: bash
+        run: |
+          set -x
+          cd build
+          cmake --install .
+          cmake --build . --config $CONFIGURATION --target run-tests
+
       - name: Upload
         shell: bash
         run: ci/generic-upload.sh
