@@ -5,10 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 message(STATUS "Building tests")
 
-
 enable_testing ()
-
-set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
 
 set(SRC
   tests.cpp
@@ -27,7 +24,6 @@ if (MSVC)
   set(CURL_HINTS C:\\mingw64\\bin C:\\ProgramData\\chocolatey\\bin)
 endif ()
 find_program(CURL NAMES curl HINTS ${CURL_HINTS})
-
 if (CURL)
   list(APPEND SRC rest-tests.cpp)
 endif ()
@@ -65,12 +61,21 @@ if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   endif ()
   add_executable(ipc-srv-tests ${IPC_SRV_TESTS_SRC})
 
+
   # See note in ipc-srv-tests.cpp
   target_compile_options(ipc-srv-tests PRIVATE -O0)
   target_link_libraries(ipc-srv-tests PRIVATE observable::observable)
   target_link_libraries(ipc-srv-tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest)
-  target_include_directories(ipc-srv-tests PRIVATE ../include)
+  target_include_directories(ipc-srv-tests PRIVATE .
+    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/gui/include/gui
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
+
+
+
   add_dependencies(ipc-srv-tests cli-server ipc-client)
 endif ()
 
@@ -184,7 +189,13 @@ if (LINUX)
   target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
   target_link_libraries(dbus_tests PRIVATE glib::glib)
-  target_include_directories(dbus_tests PRIVATE ../include)
+  target_include_directories(dbus_tests PRIVATE 
+    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/gui/include/gui
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
+
 endif ()
 
 
@@ -235,11 +246,22 @@ endif ()
 add_executable(cli-server cli_server.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(cli-server PRIVATE ${wxWidgets_LIBRARIES})
 target_include_directories(cli-server PRIVATE ../include)
+target_include_directories(cli-server PRIVATE 
+  ${CMAKE_SOURCE_DIR}/model/include/model
+  ${CMAKE_SOURCE_DIR}/gui/include/gui
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 
 add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(ipc-client PRIVATE observable::observable)
-target_include_directories(ipc-client  PRIVATE ../include)
+target_include_directories(ipc-client PRIVATE 
+  ${CMAKE_SOURCE_DIR}/model/include/model
+  ${CMAKE_SOURCE_DIR}/gui/include/gui
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 
 
 set (WX_INSTANCE_SRC
@@ -249,12 +271,17 @@ set (WX_INSTANCE_SRC
   ${MODEL_SRC_DIR}/logger.cpp
 )
 if (APPLE)
-  list(APPEND WX_INSTANCE_SRC ../src/macutils.c)
+  list(APPEND WX_INSTANCE_SRC ${MODEL_SRC_DIR}/macutils.c)
 endif ()
 add_executable(wx-instance ${WX_INSTANCE_SRC})
 target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(wx-instance PRIVATE ocpn::opencpn)
-target_include_directories(wx-instance PRIVATE ../include)
+target_include_directories(wx-instance PRIVATE 
+  ${CMAKE_SOURCE_DIR}/model/include/model
+  ${CMAKE_SOURCE_DIR}/gui/include/gui
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 if (MSVC)
   target_link_libraries(wx-instance PRIVATE setupapi)
 endif ()
@@ -268,11 +295,16 @@ if (UNIX)
     ${MODEL_SRC_DIR}/logger.cpp
   )
   if (APPLE)
-    list(APPEND STD_INSTANCE_SRC ../src/macutils.c)
+    list(APPEND STD_INSTANCE_SRC ${MODEL_SRC_DIR}/macutils.c)
   endif ()
   add_executable(std-instance ${STD_INSTANCE_SRC})
   target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
-  target_include_directories(std-instance PRIVATE ../include)
+  target_include_directories(std-instance PRIVATE 
+    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/gui/include/gui
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
   add_test(NAME tests COMMAND tests)
 endif ()
 
