@@ -631,7 +631,6 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   dc->GetTextExtent(WindAngle, &degw, &degh, 0, 0, &f);
   dc->DrawText(WindAngle, m_WindowRect.width - degw - m_RightLegend - 3, 6);
   pen.SetStyle(wxPENSTYLE_SOLID);
-  GetColourSchemeFont(g_pFontData->GetColour()).GetGreen();
   if (m_Properties) {
       #if wxCHECK_VERSION(3, 1, 6)
       unsigned int r = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetRed();
