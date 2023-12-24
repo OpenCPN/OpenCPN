@@ -50,7 +50,7 @@
 class DashboardInstrument_BaroHistory : public DashboardInstrument {
 public:
   DashboardInstrument_BaroHistory(wxWindow* parent, wxWindowID id,
-                                  wxString title);
+                                  wxString title, InstrumentProperties* Properties);
 
   ~DashboardInstrument_BaroHistory(void) {}
 

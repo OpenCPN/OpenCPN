@@ -41,8 +41,8 @@
 #endif
 
 DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle(
-    wxWindow* parent, wxWindowID id, wxString title)
-    : DashboardInstrument_Dial(parent, id, title, OCPN_DBP_STC_RSA, 100, 160,
+    wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties)
+    : DashboardInstrument_Dial(parent, id, title, Properties, OCPN_DBP_STC_RSA, 100, 160,
                                -40, +40) {
   // Default Rudder position is centered
   m_MainValue = 0;
@@ -59,7 +59,8 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle(
 wxSize DashboardInstrument_RudderAngle::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   if (orient == wxHORIZONTAL) {
     w = wxMax(hint.y, (DefaultWidth - m_TitleHeight) / .7);
   } else {
