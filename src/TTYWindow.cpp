@@ -72,11 +72,11 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
 
   wxStaticBox* psb = new wxStaticBox(this, wxID_ANY, _("Legend"));
   wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer(psb, wxVERTICAL);
+  bSizerBottomContainer->Add(sbSizer1, 0, wxALIGN_LEFT | wxALL, 5);
 
   CreateLegendBitmap();
   wxBitmapButton* bb = new wxBitmapButton(this, wxID_ANY, m_bm_legend);
   sbSizer1->Add(bb, 1, wxALL | wxEXPAND, 5);
-  bSizerBottomContainer->Add(sbSizer1, 0, wxALIGN_LEFT | wxALL, 5);
 
   wxStaticBox* buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
   wxStaticBoxSizer* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
@@ -111,21 +111,18 @@ TTYWindow::~TTYWindow() {
 void TTYWindow::CreateLegendBitmap() {
   double dip_factor = OCPN_GetWinDIPScaleFactor();
   wxScreenDC dcs;
-  wxFont *pmetricFont = FontMgr::Get().GetFont(_("Dialog"));
-
+  wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
   int width, height;
-  dcs.GetTextExtent("M", &width, &height, NULL, NULL, pmetricFont);
+  dcs.GetTextExtent("M", &width, &height, NULL, NULL, &font);
   double ref_dim = height * dip_factor;
 
-  m_bm_legend.Create(25 * ref_dim, 6.5 * ref_dim);
+  m_bm_legend.Create(36 * width * dip_factor, 6.5 * ref_dim);
   wxMemoryDC dc;
   dc.SelectObject(m_bm_legend);
   if (m_bm_legend.IsOk()) {
     dc.SetBackground(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW)));
     dc.Clear();
-
-    wxFont f(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-    dc.SetFont(f);
+    dc.SetFont(font);
 
     int yp = ref_dim * 1.25;
     int y = ref_dim * .25;

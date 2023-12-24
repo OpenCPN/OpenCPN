@@ -57,60 +57,58 @@
 #include <wx/odcombo.h>
 #include <wx/statline.h>
 #include <wx/regex.h>
+#include <wx/renderer.h>
 #include <wx/textwrapper.h>
 
 #include "comm_drv_factory.h"
 #include "comm_util.h"
 #include "conn_params_panel.h"
 
-#if wxCHECK_VERSION(2, 9, \
-                    4) /* does this work in 2.8 too.. do we need a test? */
-#include <wx/renderer.h>
-#endif
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
 
 #include "config.h"
-#include "config_vars.h"
 
+#include "ais_decoder.h"
+#include "ais.h"
+#include "ais_target_data.h"
+#include "chart_ctx_factory.h"
+#include "chartdbs.h"
+#include "chcanv.h"
+#include "cm93.h"
+#include "cmdline.h"
+#include "ConfigMgr.h"
+#include "config_vars.h"
 #include "dychart.h"
-#include "ocpn_frame.h"
+#include "FontMgr.h"
 #include "idents.h"
+#include "MarkInfo.h"
+#include "multiplexer.h"
+#include "navutil_base.h"
+#include "navutil.h"
+#include "observable_globvar.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "OCPN_Sound.h"
+#include "options.h"
+#include "routeman.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "ser_ports.h"
+#include "SoundFactory.h"
+#include "styles.h"
+#include "svg_utils.h"
+#include "SystemCmdSound.h"
+#include "usb_devices.h"
+#include "waypointman_gui.h"
+#include "wx28compat.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 extern GLuint g_raster_format;
 #endif
 
-#include "chartdbs.h"
-#include "options.h"
-#include "styles.h"
-#include "multiplexer.h"
-#include "FontMgr.h"
-#include "OCPN_Sound.h"
-#include "SoundFactory.h"
-#include "SystemCmdSound.h"
-
-#include "SystemCmdSound.h"
-
-#include "NMEALogWindow.h"
-#include "wx28compat.h"
-#include "routeman.h"
-#include "chcanv.h"
-#include "MarkInfo.h"
-
-#include "ais.h"
-#include "ais_decoder.h"
-#include "ais_target_data.h"
-
-#include "usb_devices.h"
-#include "navutil.h"
-#include "navutil_base.h"
-
-#include "s52plib.h"
-#include "s52utils.h"
-#include "cm93.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -123,14 +121,6 @@ extern GLuint g_raster_format;
 #ifdef __OCPN__ANDROID__
 #include <QtWidgets/QScroller>
 #endif
-
-#include "OCPNPlatform.h"
-#include "ConfigMgr.h"
-
-#include "observable_globvar.h"
-#include "ser_ports.h"
-#include "svg_utils.h"
-#include "waypointman_gui.h"
 
 #ifdef __WXOSX__
   #if wxCHECK_VERSION(3,2,0)
@@ -164,7 +154,6 @@ extern double gVar;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
-extern int g_nDepthUnitDisplay;
 extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
@@ -259,11 +248,6 @@ extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
 extern wxColour g_colourTrackLineColour;
 
-extern int g_iSDMMFormat;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
-extern int g_iTempFormat;
-
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern int g_cm93_zoom_factor;
@@ -314,8 +298,6 @@ extern bool g_bShowStatusBar;
 extern s52plib* ps52plib;
 
 extern wxString g_locale;
-extern bool g_bportable;
-extern bool g_bdisable_opengl;
 
 extern ChartGroupArray* g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -328,7 +310,7 @@ extern bool g_bGLexpert;
 //    Some constants
 #define ID_CHOICE_NMEA wxID_HIGHEST + 1
 
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern AisDecoder* g_pAIS;
@@ -470,7 +452,7 @@ static int lang_list[] = {
     wxLANGUAGE_YIDDISH, wxLANGUAGE_YORUBA, wxLANGUAGE_ZHUANG, wxLANGUAGE_ZULU};
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 void prepareSlider(wxSlider* slider) {
   slider->GetHandle()->setStyleSheet(
       prepareAndroidSliderStyleSheet(slider->GetSize().x));
@@ -1587,7 +1569,7 @@ EVT_CHAR_HOOK(options::OnCharHook)
 
 END_EVENT_TABLE()
 
-options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
+options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
                  const wxPoint& pos, const wxSize& size, long style) {
   Init();
 
@@ -1600,13 +1582,7 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
   SetFont(*dialogFont);
 
   CreateControls();
-  RecalculateSize();
-
-  // Protect against unreasonable small size
-  // And also handle the empty config file init case.
-  if (((size.x < 200) || (size.y < 200)) && !g_bresponsive) Fit();
-
-  Center();
+  RecalculateSize( size.x, size.y);
 
   wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
   GlobalVar<wxString> compat_os(&g_compatOS);
@@ -1626,7 +1602,6 @@ options::~options(void) {
                    this);
 
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
-  delete groupsPanel;
 
   delete m_pSerialArray;
   delete m_pGroupArray;
@@ -1649,23 +1624,29 @@ bool options::SendIdleEvents(wxIdleEvent& event) {
 }
 #endif
 
-void options::RecalculateSize(void) {
+void options::RecalculateSize(int hint_x, int hint_y) {
   if (!g_bresponsive) {
     m_nCharWidthMax = GetSize().x / GetCharWidth();
+
+    // Protect against unreasonable small size
+    // And also handle the empty config file init case.
+    if ((hint_x < 200) || (hint_y < 200)){
+
+      // Constrain size on small displays
+      int display_width, display_height;
+      wxDisplaySize(&display_width, &display_height);
+
+      if(display_height < 600){
+        SetSize(wxSize(GetOCPNCanvasWindow()->GetSize() ));
+      }
+      else {
+        vectorPanel-> SetSizeHints(ps57Ctl);
+        Fit();
+      }
+    }
+
+    CenterOnScreen();
     return;
-#if 0
-    wxSize canvas_size = gFrame->GetSize();
-    wxSize fitted_size = GetSize();
-
-    fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
-    fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
-
-    SetSize(fitted_size);
-
-    Fit();
-
-    return;
-#endif
   }
 
   wxSize esize;
@@ -1776,17 +1757,7 @@ void options::Init(void) {
   m_scrollRate = 15;
 #endif
 
-  //FIXME (dave) move
-  //m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
-  //m_BTscanning = 0;
-
   dialogFont = GetOCPNScaledFont(_("Dialog"));
-
-  dialogFontPlus = new wxFont(
-      *dialogFont);  // we can't use Smaller() because wx2.8 doesn't support it
-  dialogFontPlus->SetPointSize((dialogFontPlus->GetPointSize() * 1.2) +
-                               0.5);  // + 0.5 to round instead of truncate
-  dialogFontPlus->SetWeight(wxFONTWEIGHT_BOLD);
 
   m_bVectorInit = false;
 
@@ -2243,7 +2214,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   dispOwnShipCalcOptionsGrid->AddGrowableCol(1);
 
-  pSogCogFromLLCheckBox =
+pSogCogFromLLCheckBox =
       new wxCheckBox(itemPanelShip, ID_SOGCOGFROMLLCHECKBOX,
                      _("Calculate SOG and COG from position changes"));
   dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLCheckBox, 1, wxALL, 5);
@@ -2634,6 +2605,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   UpdateChartDirList();
 
   chartPanel->Layout();
+
 }
 
 void options::UpdateChartDirList() {
@@ -3387,7 +3359,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
 
     // display options
-    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Display")),
+    optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
                        groupLabelFlags);
 
     wxBoxSizer* miscSizer = new wxBoxSizer(wxVERTICAL);
@@ -3599,7 +3571,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     miscSizer->Add(pCheck_SOUNDG, inputFlags);
 
     pCheck_META = new wxCheckBox(ps57Ctl, ID_METACHECKBOX,
-                                 _("Chart Information Objects"));
+                                  _("Chart Information Objects"));
     pCheck_META->SetValue(FALSE);
     miscSizer->Add(pCheck_META, inputFlags);
 
@@ -3820,15 +3792,17 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   tcDataSelected->InsertColumn(0, col0);
 
   int w = 400, w1, h;
-  for (unsigned int id = 0; id < TideCurrentDataSet.Count(); id++) {
+  unsigned int id = 0;
+  for (auto ds : TideCurrentDataSet) {
     wxListItem li;
     li.SetId(id);
-    long idx = tcDataSelected->InsertItem(li);
+    tcDataSelected->InsertItem(li);
 
-    wxString setName = TideCurrentDataSet[id];
+    wxString setName = ds;
     tcDataSelected->SetItem(id, 0, setName);
     GetTextExtent(setName, &w1, &h);
     w = w1 > w ? w1 : w;
+    ++id;
   }
   tcDataSelected->SetColumnWidth(0, 20 + w);
 
@@ -3851,10 +3825,11 @@ void options::CreatePanel_ChartGroups(size_t parent, int border_size,
   // and we have the actual widgets in a separate class (because of its
   // complexity)
 
-  wxWindow* chartsPage = m_pListbook->GetPage(parent);
-  groupsPanel = new ChartGroupsUI(chartsPage);
-
-  groupsPanel->m_panel = AddPage(parent, _("Chart Groups"));
+  wxNotebook *chartsPageNotebook = (wxNotebook *)m_pListbook->GetPage(parent);
+  wxScrolledWindow *sw = new ChartGroupsUI(chartsPageNotebook);
+  sw->SetScrollRate(m_scrollRate, m_scrollRate);
+  chartsPageNotebook->AddPage(sw, _("Chart Groups"));
+  groupsPanel = dynamic_cast<ChartGroupsUI*>(sw);
 
   groupsPanel->CreatePanel(parent, border_size, group_item_spacing);
 }
@@ -3871,6 +3846,7 @@ void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
 }
 
 void ChartGroupsUI::CompletePanel(void) {
+  m_panel = this;
   m_topSizer = new wxBoxSizer(wxVERTICAL);
   m_panel->SetSizer(m_topSizer);
 
@@ -3965,6 +3941,7 @@ void ChartGroupsUI::CompletePanel(void) {
   m_pDeleteGroupButton->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartGroupsUI::OnDeleteGroup), NULL, this);
+
 
   wxBoxSizer* newDeleteGrp = new wxBoxSizer(wxVERTICAL);
   sizerGroups->Add(newDeleteGrp, 0, wxALL, m_border_size);
@@ -4409,6 +4386,21 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 #endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
 
+    //  wind units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Wind speed")),
+                    labelFlags);
+    wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
+    int m_WindSpeedFormatsNChoices =
+        sizeof(pWindSpeedFormats) / sizeof(wxString);
+    pWindSpeedFormat =
+        new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), m_WindSpeedFormatsNChoices,
+                     pWindSpeedFormats);
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pWindSpeedFormat, inputFlags);
+
     // depth units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Depth")),
                     labelFlags);
@@ -4547,6 +4539,16 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
                      wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats);
     unitsSizer->Add(pSpeedFormat, inputFlags);
+
+    // windspeed units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("WindSpeed")),
+                    labelFlags);
+    wxString pWindSpeedFormats[] = {_("Knots"), _("m/s"), _("Mph"), _("km/h")};
+    int m_WindSpeedFormatsNChoices = sizeof(pWindSpeedFormats) / sizeof(wxString);
+    pWindSpeedFormat =
+        new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
+                     wxDefaultSize, m_WindSpeedFormatsNChoices, pWindSpeedFormats);
+    unitsSizer->Add(pWindSpeedFormat, inputFlags);
 
     // depth units
     unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Depth")),
@@ -5792,9 +5794,9 @@ void options::CreateControls(void) {
   m_pageCharts = CreatePanel(_("Charts"));
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
+
   // ChartGroups must be created after ChartsLoad and must be at least third
   CreatePanel_ChartGroups(m_pageCharts, border_size, group_item_spacing);
-  RecalculateSize();
   CreatePanel_TidesCurrents(m_pageCharts, border_size, group_item_spacing);
 
   wxNotebook* nb =
@@ -5865,9 +5867,12 @@ void options::CreateControls(void) {
 
   SetSizeHints(-1, -1, width - marginx, height - marginy);
 
+#ifndef __WXGTK__
   //  The s57 chart panel is the one which controls the minimum width required
   //  to avoid horizontal scroll bars
-  vectorPanel->SetSizeHints(ps57Ctl);
+  //vectorPanel->SetSizeHints(ps57Ctl);
+#endif
+
 }
 
 void options::SetInitialPage(int page_sel, int sub_page) {
@@ -6139,6 +6144,7 @@ void options::SetInitialSettings(void) {
   pSDMMFormat->Select(g_iSDMMFormat);
   pDistanceFormat->Select(g_iDistanceFormat);
   pSpeedFormat->Select(g_iSpeedFormat);
+  pWindSpeedFormat->Select(g_iWindSpeedFormat);
   pTempFormat->Select(g_iTempFormat);
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
@@ -7026,6 +7032,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();
+  g_iWindSpeedFormat = pWindSpeedFormat->GetSelection();
   g_iTempFormat = pTempFormat->GetSelection();
 
   // LIVE ETA OPTION
@@ -7171,7 +7178,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
+
+  bool bchange_scale = false;
+  if (g_ChartScaleFactor != m_pSlider_Chart_Factor->GetValue())
+    bchange_scale = true;
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
+
   g_ChartScaleFactorExp =
       g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
   g_MarkScaleFactorExp =
@@ -7230,7 +7242,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
       // generated on Windows at closure of the options dialog...
-      ps52plib->FlushSymbolCaches();
+      ps52plib->FlushSymbolCaches(ChartCtxFactory());
       // some CNSY depends on renderer (e.g. CARC)
       ps52plib->ClearCNSYLUPArray();
       ps52plib->GenerateStateHash();
@@ -7312,6 +7324,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
     // Detect a change to S52 library config
     if ((stateHash != ps52plib->GetStateHash()) || bUserStdChange)
       m_returnChanges |= S52_CHANGED;
+
+    if (bchange_scale)
+      m_returnChanges |= S52_CHANGED;
   }
 
 // User Interface Panel
@@ -7360,7 +7375,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     m_returnChanges |= TOOLBAR_CHANGED;
 
   // And keep config in sync
-  if (m_pPlugInCtrl) m_pPlugInCtrl->UpdatePluginsOrder();
+  //if (m_pPlugInCtrl) m_pPlugInCtrl->UpdatePluginsOrder(); FIXME(leamas)
   g_pi_manager->UpdateConfig();
 
   // PlugIns may have added panels
@@ -7371,11 +7386,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   // Pick up all the entries in the Tide/current DataSelected control
   // and update the global static array
-  TideCurrentDataSet.Clear();
+  TideCurrentDataSet.clear();
   int nEntry = tcDataSelected->GetItemCount();
   for (int i = 0; i < nEntry; i++) {
     wxString setName = tcDataSelected->GetItemText(i);
-    TideCurrentDataSet.Add(setName);
+    TideCurrentDataSet.push_back(setName.ToStdString());
   }
 
   if (event.GetId() != ID_APPLY)  // only on ID_OK
@@ -7956,7 +7971,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     wxFont* psfont = new wxFont(font);
     wxColor color = font_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
-    pParent->UpdateAllFonts();
+    gFrame->UpdateAllFonts();
     m_bfontChanged = true;
     OnFontChoice(event);
   }
@@ -7999,7 +8014,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
   FontMgr::Get().SetFont(sel_text_element, pif, cn);
 
-  pParent->UpdateAllFonts();
+  gFrame->UpdateAllFonts();
   m_bfontChanged = true;
 
   androidEnableRotation();
@@ -8019,7 +8034,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     wxColor color = colour_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, pif, color);
 
-    pParent->UpdateAllFonts();
+    gFrame->UpdateAllFonts();
     m_bfontChanged = true;
     OnFontChoice(event);
   }
@@ -8241,8 +8256,7 @@ void options::DoOnPageChange(size_t page) {
 
       m_pPlugInCtrl =
           new PluginListPanel(itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
-                              wxDefaultSize,
-                              PluginLoader::getInstance()->GetPlugInArray());
+                              wxDefaultSize);
       m_pPlugInCtrl->SetScrollRate(m_scrollRate, m_scrollRate);
       itemBoxSizerPanelPlugins->Add(m_pPlugInCtrl, 01,
                                     wxEXPAND | wxGROW | wxALL, 4);
@@ -8471,7 +8485,8 @@ EVT_NOTEBOOK_PAGE_CHANGED(
     ChartGroupsUI::OnGroupPageChange)  // This should work under Windows :-(
 END_EVENT_TABLE()
 
-ChartGroupsUI::ChartGroupsUI(wxWindow* parent) {
+ChartGroupsUI::ChartGroupsUI(wxWindow* parent)
+    : wxScrolledWindow(parent) {
   m_GroupSelectedPage = -1;
   m_pActiveChartsTree = 0;
   pParent = parent;

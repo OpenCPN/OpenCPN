@@ -40,6 +40,7 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "config.h"
 #include "comm_drv_n0183_serial.h"
 #include "comm_navmsg_bus.h"
 #include "comm_drv_registry.h"
@@ -117,7 +118,7 @@ wxEvent* CommDriverN0183SerialEvent::Clone() const {
     return newevent;
 };
 
-
+#ifndef __ANDROID__
 class CommDriverN0183SerialThread {
 public:
   CommDriverN0183SerialThread(CommDriverN0183Serial* Launcher,
@@ -148,6 +149,7 @@ private:
   n0183_atomic_queue<char*> out_que;
 
 };
+#endif
 
 template <class T>
 class circular_buffer {
@@ -241,11 +243,15 @@ bool CommDriverN0183Serial::Open() {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
 
-    //    Kick off the  RX thread
+#ifndef __ANDROID__
+   //    Kick off the  RX thread
     SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
     SetThreadRunFlag(1);
     std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
     t.detach();
+#else
+    androidStartUSBSerial(comx, m_BaudRate, this);
+#endif
   }
 
   return true;
@@ -263,6 +269,7 @@ void CommDriverN0183Serial::Close() {
   Unbind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
        this);
 
+#ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
 
@@ -294,6 +301,13 @@ void CommDriverN0183Serial::Close() {
     delete m_GarminHandler;
     m_GarminHandler = NULL;
   }
+
+#else
+  wxString comx;
+  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
+  androidStopUSBSerial(comx);
+#endif
+
 }
 
 bool CommDriverN0183Serial::IsGarminThreadActive() {
@@ -337,7 +351,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
     wxString port = m_params.GetStrippedDSPort(); //GetPort().AfterFirst(':');
     androidWriteSerial( port, payload );
     return true;
-#endif
+#else
     if( GetSecondaryThread() ) {
         if( IsSecThreadActive() )
         {
@@ -354,12 +368,19 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
             return false;
     }
     return true;
+#endif
 }
 
 
 
 void CommDriverN0183Serial::handle_N0183_MSG(
     CommDriverN0183SerialEvent& event) {
+
+  // Is this an output-only port?
+  // Commonly used for "Send to GPS" function
+  if (m_params.IOSelect == DS_TYPE_OUTPUT)
+    return;
+
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
 
@@ -384,8 +405,8 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   }
 }
 
-#ifndef __ANDROID__
 
+#ifndef __ANDROID__
 #define DS_RX_BUFFER_SIZE 4096
 
 CommDriverN0183SerialThread::CommDriverN0183SerialThread(
@@ -412,7 +433,7 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
     m_serial.setBaudrate(baud_rate);
     m_serial.open();
     m_serial.setTimeout(250, 250, 0, 250, 0);
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     //      std::cerr << "Unhandled Exception while opening serial port: " <<
     //      e.what() << std::endl;
   }
@@ -422,7 +443,7 @@ bool CommDriverN0183SerialThread::OpenComPortPhysical(const wxString& com_name,
 void CommDriverN0183SerialThread::CloseComPortPhysical() {
   try {
     m_serial.close();
-  } catch (std::exception& e) {
+  } catch (std::exception&) {
     //      std::cerr << "Unhandled Exception while closing serial port: " <<
     //      e.what() << std::endl;
   }
@@ -469,9 +490,9 @@ size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
 void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
   m_pParentDriver->SetSecThreadActive();  // I am alive
-  int nl_found = 0;
   wxString msg;
   circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+  std::vector<uint8_t> tmp_vec;
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
@@ -484,7 +505,6 @@ void* CommDriverN0183SerialThread::Entry() {
     // whenever it actually appears (Of course given it appears with the
     // expected device name).
   }
-
 
   //    The main loop
   static size_t retries = 0;
@@ -499,7 +519,7 @@ void* CommDriverN0183SerialThread::Entry() {
     if (m_serial.isOpen()) {
       try {
         newdata = m_serial.read(rdata, 200);
-      } catch (std::exception& e) {
+      } catch (std::exception&) {
         //        std::cerr << "Serial read exception: " << e.what() <<
         //        std::endl;
         if (10 < retries++) {
@@ -523,35 +543,34 @@ void* CommDriverN0183SerialThread::Entry() {
     }
 
     if (newdata > 0) {
-      nl_found = 0;
-      for (unsigned int i = 0; i < newdata; i++) {
+      for (unsigned int i = 0; i < newdata; i++)
         circle.put(rdata[i]);
-        if (0x0a == rdata[i]) nl_found++;
+    }
+
+    // Process the queue until empty
+    while (!circle.empty()) {
+      if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+
+      uint8_t take_byte = circle.get();
+      while ((take_byte != 0x0a) && !circle.empty()) {
+        tmp_vec.push_back(take_byte);
+        take_byte = circle.get();
       }
 
-      //    Found a NL char, thus end of message?
-      if (nl_found) {
-        bool done = false;
-        while (!done) {
-          if (circle.empty()) {
-            done = true;
-            break;
-          }
+      if (circle.empty() && take_byte != 0x0a){
+        tmp_vec.push_back(take_byte);
+        break;
+      }
 
-          //    Copy the message into a vector for tranmittal upstream
-          auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char>* vec = buffer.get();
+      if (take_byte == 0x0a){
+        tmp_vec.push_back(take_byte);
 
-          uint8_t take_byte = circle.get();
-          while ((take_byte != 0x0a) && !circle.empty()) {
-            vec->push_back(take_byte);
-            take_byte = circle.get();
-          }
+        //    Copy the message into a vector for transmittal upstream
+        auto buffer = std::make_shared<std::vector<unsigned char>>();
+        std::vector<unsigned char>* vec = buffer.get();
 
-          if (take_byte == 0x0a) {
-            vec->push_back(take_byte);
-
-            if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+        for (size_t i=0; i < tmp_vec.size() ; i++)
+          vec->push_back(tmp_vec.at(i));
 
             //    Message is ready to parse and send out
             //    Messages may be coming in as <blah blah><lf><cr>.
@@ -559,18 +578,15 @@ void* CommDriverN0183SerialThread::Entry() {
             //    If that happens, the first character of a new captured message
             //    will the <cr>, and we need to discard it. This is out of spec,
             //    but we should handle it anyway
-            if (vec->at(0) == '\r') vec->erase(vec->begin());
+        if (vec->at(0) == '\r') vec->erase(vec->begin());
 
-            CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-            Nevent.SetPayload(buffer);
-            m_pParentDriver->AddPendingEvent(Nevent);
+        CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
+        Nevent.SetPayload(buffer);
+        m_pParentDriver->AddPendingEvent(Nevent);
+        tmp_vec.clear();
 
-          } else {
-            done = true;
-          }
-        }
-      }  // if nl
-    }    // if newdata > 0
+      }
+    } //while
 
     //      Check for any pending output message
 
@@ -595,7 +611,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
       b_qdata = !out_que.empty();
     }  // while b_qdata
-  }
+  }   // while not done.
 
 thread_exit:
   CloseComPortPhysical();
@@ -604,5 +620,4 @@ thread_exit:
 
   return 0;
 }
-
-#endif  // Android
+#endif  //__ANDROID__

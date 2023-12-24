@@ -274,6 +274,7 @@ EVT_BUTTON(wxID_NO, OCPN_TimedHTMLMessageDialog::OnNo)
 EVT_BUTTON(wxID_CANCEL, OCPN_TimedHTMLMessageDialog::OnCancel)
 EVT_CLOSE(OCPN_TimedHTMLMessageDialog::OnClose)
 EVT_TIMER(-1, OCPN_TimedHTMLMessageDialog::OnTimer)
+EVT_HTML_LINK_CLICKED( wxID_ANY, OCPN_TimedHTMLMessageDialog::OnHtmlLinkClicked )
 END_EVENT_TABLE()
 
 OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog(

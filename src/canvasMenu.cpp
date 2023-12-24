@@ -93,6 +93,7 @@ extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
 extern AisDecoder *g_pAIS;
+extern bool g_bCPAWarn;
 extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
@@ -178,6 +179,7 @@ enum {
   ID_WP_MENU_SET_ANCHORWATCH,
   ID_WP_MENU_CLEAR_ANCHORWATCH,
   ID_DEF_MENU_AISTARGETLIST,
+  ID_DEF_MENU_AIS_CPAWARNING,
 
   ID_RC_MENU_SCALE_IN,
   ID_RC_MENU_SCALE_OUT,
@@ -481,10 +483,16 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   }
 
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
-    MenuAppend1(contextMenu, ID_DEF_MENU_DROP_WP,
+    bool b_dm_add = true;
+    if (g_btouch && parent->IsMeasureActive())
+      b_dm_add = false;
+
+    if (b_dm_add) {
+      MenuAppend1(contextMenu, ID_DEF_MENU_DROP_WP,
                 _menuText(_("Drop Mark"), _T("Ctrl-M")));
-    MenuAppend1(contextMenu, ID_DEF_MENU_NEW_RT,
+      MenuAppend1(contextMenu, ID_DEF_MENU_NEW_RT,
                 _menuText(_("New Route..."), _T("Ctrl-R")));
+    }
 
     if (!bGPSValid)
       MenuAppend1(contextMenu, ID_DEF_MENU_MOVE_BOAT_HERE, _("Move Boat Here"));
@@ -639,7 +647,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
             MenuAppend1(menuAIS, ID_DEF_MENU_AIS_CPA, _("Show Target CPA"));
         }
         MenuAppend1(menuAIS, ID_DEF_MENU_AISTARGETLIST, _("Target List..."));
-        if (1 /*g_bAISShowTracks*/) {
+        if (myptarget->Class != AIS_METEO /*g_bAISShowTracks*/) {
           if (myptarget && myptarget->b_show_track)
             MenuAppend1(menuAIS, ID_DEF_MENU_AISSHOWTRACK,
                         _("Hide Target Track"));
@@ -668,9 +676,14 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         }
 
         menuFocus = menuAIS;
-      } else
+      } else {
         MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST,
                     _("AIS target list") + _T("..."));
+
+        wxString nextCPAstatus = g_bCPAWarn ? _("Hide") : _("Show");
+        MenuAppend1(contextMenu, ID_DEF_MENU_AIS_CPAWARNING,
+                    _menuText(nextCPAstatus + " " + _("CPA alarm "), "W"));
+      }
     }
   }
 
@@ -1019,6 +1032,12 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 #ifdef __WXMSW__
         pmi->SetFont(m_scaledFont);
 #endif
+
+#ifdef __OCPN__ANDROID__
+        wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+        pmi->SetFont(sFont);
+#endif
+
         PrepareMenuItem( pmi );
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
@@ -1035,6 +1054,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                                      pimis->pmenu_item->GetKind(), submenu);
 #ifdef __WXMSW__
     pmi->SetFont(m_scaledFont);
+#endif
+
+#ifdef __OCPN__ANDROID__
+    wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+    pmi->SetFont(sFont);
 #endif
 
     PrepareMenuItem( pmi );
@@ -1198,6 +1222,10 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_DEF_MENU_AISTARGETLIST:
       parent->ShowAISTargetList();
+      break;
+
+    case ID_DEF_MENU_AIS_CPAWARNING:
+      parent->ToggleCPAWarn();
       break;
 
     case ID_WP_MENU_GOTO: {

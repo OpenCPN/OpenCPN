@@ -28,6 +28,7 @@
 
 #include <string>
 #include "route.h"
+#include "track.h"
 
 int SendNavobjects(std::string dest_ip_address, std::string server_name, std::vector<Route*> route, std::vector<RoutePoint*> routepoint, std::vector<Track*> track, bool overwrite = false);
 

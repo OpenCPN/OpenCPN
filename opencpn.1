@@ -15,12 +15,12 @@ using a plugin system. Other plugins provides support for e. g. radar, AIS
 and weather maps. Program is localized in 20+ languages and ported to
 several OS including MacOS, Windows and Linux.
 
-.SH OPTIONS
+.SH OPTIONS FOR STARTING OPENCPN
 .TP
 .B \-h, \-\-help
 Show help info.
 .TP
-.B \-p
+.B \-p, \-\-portable
 Run in portable mode.
 .TP
 .B  \-l, \-\-loglevel=<level>
@@ -29,47 +29,78 @@ Set amount of logged information. Level is any of \fItrace\fR,
 defaulting to \fIinfo\fR if not set in environment; see ENVIRONMENT.
 
 .TP
-.B  \-fullscreen
+.B  \-f, \-\-fullscreen
 Switch to full screen mode on start.
 .TP
-.B  \-no_opengl
+.B  \-G, \-\-no_opengl
 Disable OpenGL video acceleration. This setting will be remembered.
 .TP
-.B  \-rebuild_gl_raster_cache
+.B \-g,  \-\-rebuild_gl_raster_cache
 Rebuild OpenGL raster cache on start.
 .TP
-.B  \-parse_all_enc
+.B  \-P, \-\-parse_all_enc
 Convert all S-57 charts to OpenCPN's internal format on start.
 .TP
-.B  \-unit_test_1:<num>
+.B  \-u, \-\-unit_test_1:<num>
 Display a slideshow of <num> charts and then exit. Zero or negative <num>
 specifies no limit.
+
+.TP
+.B \-s, \-\-safe_mode
+Run without plugins, openGL and other possibly problematic features.
+It is still possible to unintall plugins in this mode.
+
+.SH OPTIONS FOR MANIPULATING RUNNING OPENCPN
+
+.TP
+.B \-r, \-\-remote
+Run commands on a running instance instead of starting opencpn. Exits with
+error code if no running opencpn instance is found.
+
+.TP
+.B \-R, \-\-raise
+Raise opencpn window to be on top of other windows, requires \-\-remote.
+This is the default behaviour if opencpn is invoked without options and
+arguments and there already is a running instance.
+
+.TP
+.B \-e, \-\-get_rest_endpoint
+Print the url for connecting to the local opencpn REST server e. g. 
+http://localhost:8000. Requires \-\-remote.
+
+.TP
+.B \-q, \-\-quit
+Make the remote instance exit. Requires \-\-remote.
 
 .SH PLUGIN LOADING
 
 Plugin loading depends on that the opencpn main program can locate the
 plugin object file and that the plugin can locate it's own data.
 .P
-On Linux, the main program searches for plugin .so-files in a library
-named \fIopencpn/plugins\fR.
-By default, this path is searched in ~/.local/lib:/usr/local/lib:/usr/lib.
-The default search path can be overridden by the OPENCPN_PLUGIN_DIRS
-environment variable.
+On Linux,  the main program searches for plugin .so-files  in two locatiosn.
+The first is \fI~/.local/lib/opencpn\fR. 
+
+The second is \fI@install-dir@/../lib/opencpn\fR where \fI@install-dir@\fR
+is the location where opencpn is installed.
+If for example opencpn is installed in \fI/usr/bin\fR plugins will be loaded
+from \fI/usr/lib/opencpn\fR.
 .P
-On other platforms, all plugin object files lives in a single directory
-defined at installation.
+On other platforms plugins are also loaded from two different locations,
+one of which used primarely for system plugins and requiring administrative
+privileges. 
+The other is a user-writable locations used by the plugin manager.
 .P
 A plugin's data directory is a path ending with
 \fIopencpn/plugins/<plugin_name>\fR.
 On Linux, this is by default searched in
-~/local/share:/usr/local/share:/usr/share.
+~/.local/share:/usr/local/share:/usr/share.
 This search path is overridden by XDG_DATA_DIRS as defined by the freedesktop
 spec.
 Only plugins adapted for this (i. e., using GetPluginDataDir()) handles this
 properly.
 .P
-On other platforms, the plugin data directories always lives in a common
-parent defined at installation time.
+On other platforms plugin data directories are located in similar locations
+which also must be retrieved in runtime using GetPluginDataDir().
 
 .SH LIBRARY LOADING AND LD_LIBRARY_PATH
 
@@ -83,7 +114,8 @@ installed in the same directories as the plugin.
 .SH ENVIRONMENT
 .TP
 .B OPENCPN_PLUGIN_DIRS
-Plugin load path, see PLUGIN LOADING
+Plugin load path, see PLUGIN LOADING. If existing, overrides all default entries.
+The path is ';'-separated on Windows but uses ':' on other platforms.
 .TP
 .B OPENCPN_LOGLEVEL
 Default loglevel if not defined on command line using -l/--loglevel. See
@@ -98,14 +130,10 @@ If defined, displays the message and exits on startup.
 System log file, a useful tool to solve problems.
 
 
-.SH NOTES
-
-The support for OPENCPN_PLUGIN_DIRS and XDG_DATA_DIRS was introduced in
-version 5.0.0. Prior to this, all plugins was loaded from a single directory
-and all plugin data directories had a common parent.
-
 .SH SEE ALSO
 .br
-http://www.opencpn.org
+https://www.opencpn.org
 .br
-http://www.freedesktop.org
+https://www.freedesktop.org
+.br
+https://opencpn-manuals.github.io/main

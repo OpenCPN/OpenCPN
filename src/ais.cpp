@@ -63,7 +63,6 @@ extern OCPNPlatform *g_Platform;
 
 int g_ais_cog_predictor_width;
 extern AisDecoder *g_pAIS;
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
 //    AIS Global configuration
@@ -713,8 +712,8 @@ static void AISSetMetrics() {
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
   AIS_nominal_line_width_pix =
-      wxMax(1.5, g_Platform->GetDisplayDPmm() / (2.0 / DPIscale));
-        // 0.4 mm nominal, but not less than 1 pixel
+      wxMax(2, g_Platform->GetDisplayDPmm() / (4.0 / DPIscale));
+        // 0.25 mm nominal, but not less than 2 pixels
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
@@ -767,13 +766,14 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   wxPoint TargetPoint, PredPoint;
 
   //   Always draw alert targets, even if they are off the screen
-  if (td->n_alert_state == AIS_ALERT_SET)
+  if (td->n_alert_state == AIS_ALERT_SET){
     drawit++;
-  else
+  }
+  else {
       //    Is target in Vpoint?
-      if (vp.GetBBox().Contains(td->Lat, td->Lon))
-    drawit++;  // yep
-  else
+    if (vp.GetBBox().Contains(td->Lat, td->Lon))
+      drawit++;  // yep
+    else {
       //  If AIS tracks are shown, is the first point of the track on-screen?
       if (1 /*g_bAISShowTracks*/ && td->b_show_track) {
         if (td->m_ptrack.size() > 0) {
@@ -781,6 +781,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           if (vp.GetBBox().Contains(ptrack_point.m_lat, ptrack_point.m_lon))
             drawit++;
         }
+      }
+    }
   }
 
   //    Calculate AIS target Position Predictor, using global static variable
@@ -1086,6 +1088,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       //  Using the true ends, not the clipped ends
       dc.StrokeCircle(tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
           AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+      dc.StrokeCircle(oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
+          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
+
     }
 
     // Draw the intercept line from ownship
@@ -1112,10 +1117,11 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   //  Highlight the AIS target symbol if an alert dialog is currently open for
   //  it
   if (cp != NULL) {
-    if (g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() &&
-        cp) {
-      if (g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI)
-        cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
+    auto alert_dlg_active =
+        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+    if (alert_dlg_active && alert_dlg_active->IsShown() && cp) {
+      if (alert_dlg_active->Get_Dialog_MMSI() == td->MMSI)
+         cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
     }
   }
 
@@ -1245,7 +1251,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     dc.SetPen(target_pen);
     dc.SetBrush(target_brush);
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y,
-                    1.4 * AIS_icon_diameter);  // 9
+                     1.8 * AIS_icon_diameter);
+
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
     //        Draw the inactive cross-out line
     if (!td->b_active) {
@@ -1254,9 +1261,32 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                     TargetPoint.y);
       dc.SetPen(wxPen(UBLCK, 1));
     }
+
+  } else if (td->Class == AIS_METEO) {  // Meteorologic
+    wxPen met(UBLCK,(wxMax(target_outline_pen.GetWidth(), 2.5)));
+    dc.SetPen(met);
+    dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
+    double met_radius = 1.8 * AIS_icon_diameter;
+    dc.StrokeCircle(TargetPoint.x, TargetPoint.y, met_radius);
+
+      /* Inscribed "W" in the circle. */
+    dc.SetPen(wxPen(wxMax(target_outline_pen.GetWidth(), 1)));
+    //Left part
+    dc.StrokeLine(TargetPoint.x, TargetPoint.y - met_radius / 4,
+      TargetPoint.x - met_radius / 3, TargetPoint.y + met_radius / 2);
+    dc.StrokeLine(
+      TargetPoint.x - met_radius / 3, TargetPoint.y + met_radius / 2,
+      TargetPoint.x - met_radius / 2, TargetPoint.y - met_radius / 2);
+      // Right part
+    dc.StrokeLine(TargetPoint.x, TargetPoint.y - met_radius / 4,
+      TargetPoint.x + met_radius / 3, TargetPoint.y + met_radius / 2);
+    dc.StrokeLine(
+      TargetPoint.x + met_radius / 3, TargetPoint.y + met_radius / 2,
+      TargetPoint.x + met_radius / 2, TargetPoint.y - met_radius / 2);
+
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
     AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
-                 2 * AIS_icon_diameter, td);
+                     2.0 * AIS_icon_diameter, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
   } else if (td->Class == AIS_SART) {  // SART Target
@@ -1271,23 +1301,23 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     int ar = airtype == 5 ? 15 : 9;         // array size
     wxPoint SarIcon[15];
     wxPoint SarRot[15];
-
+    double scaleplus = 1.4;
     if (airtype == 5) {
-      SarIcon[0] = wxPoint(0, 9) * AIS_scale_factor * 1.4;
-      SarIcon[1] = wxPoint(1, 1) * AIS_scale_factor * 1.4;
-      SarIcon[2] = wxPoint(2, 1) * AIS_scale_factor * 1.4;
-      SarIcon[3] = wxPoint(9, 8) * AIS_scale_factor * 1.4;
-      SarIcon[4] = wxPoint(9, 7) * AIS_scale_factor * 1.4;
-      SarIcon[5] = wxPoint(3, 0) * AIS_scale_factor * 1.4;
-      SarIcon[6] = wxPoint(3, -5) * AIS_scale_factor * 1.4;
-      SarIcon[7] = wxPoint(9, -12) * AIS_scale_factor * 1.4;
-      SarIcon[8] = wxPoint(9, -13) * AIS_scale_factor * 1.4;
-      SarIcon[9] = wxPoint(2, -5) * AIS_scale_factor * 1.4;
-      SarIcon[10] = wxPoint(1, -15) * AIS_scale_factor * 1.4;
-      SarIcon[11] = wxPoint(3, -16) * AIS_scale_factor * 1.4;
-      SarIcon[12] = wxPoint(4, -18) * AIS_scale_factor * 1.4;
-      SarIcon[13] = wxPoint(1, -18) * AIS_scale_factor * 1.4;
-      SarIcon[14] = wxPoint(0, -19) * AIS_scale_factor * 1.4;
+      SarIcon[0] = wxPoint(0, 9) * AIS_scale_factor * scaleplus;
+      SarIcon[1] = wxPoint(1, 1) * AIS_scale_factor * scaleplus;
+      SarIcon[2] = wxPoint(2, 1) * AIS_scale_factor * scaleplus;
+      SarIcon[3] = wxPoint(9, 8) * AIS_scale_factor * scaleplus;
+      SarIcon[4] = wxPoint(9, 7) * AIS_scale_factor * scaleplus;
+      SarIcon[5] = wxPoint(3, 0) * AIS_scale_factor * scaleplus;
+      SarIcon[6] = wxPoint(3, -5) * AIS_scale_factor * scaleplus;
+      SarIcon[7] = wxPoint(9, -12) * AIS_scale_factor * scaleplus;
+      SarIcon[8] = wxPoint(9, -13) * AIS_scale_factor * scaleplus;
+      SarIcon[9] = wxPoint(2, -5) * AIS_scale_factor * scaleplus;
+      SarIcon[10] = wxPoint(1, -15) * AIS_scale_factor * scaleplus;
+      SarIcon[11] = wxPoint(3, -16) * AIS_scale_factor * scaleplus;
+      SarIcon[12] = wxPoint(4, -18) * AIS_scale_factor * scaleplus;
+      SarIcon[13] = wxPoint(1, -18) * AIS_scale_factor * scaleplus;
+      SarIcon[14] = wxPoint(0, -19) * AIS_scale_factor * scaleplus;
     } else {
       SarIcon[0] = wxPoint(0, 12) * AIS_scale_factor;
       SarIcon[1] = wxPoint(4, 2) * AIS_scale_factor;
@@ -1300,49 +1330,99 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       SarIcon[8] = wxPoint(0, -22) * AIS_scale_factor;
     }
 
-    // Draw icon as two halves
+    if (airtype == 5) {       // helicopter
+      // Draw icon as two halves
+      //  First half
 
-    //  First half
+      for (int i = 0; i < ar; i++) SarRot[i] = SarIcon[i];
+      transrot_pts(ar, SarRot, sin_theta, cos_theta);
 
-    for (int i = 0; i < ar; i++) SarRot[i] = SarIcon[i];
-    transrot_pts(ar, SarRot, sin_theta, cos_theta);
+      wxPen tri_pen(target_brush.GetColour(), 1);
+      dc.SetPen(tri_pen);
+      dc.SetBrush(target_brush);
 
-    wxPen tri_pen(target_brush.GetColour(), 1);
-    dc.SetPen(tri_pen);
-    dc.SetBrush(target_brush);
+      // Manual tesselation
+      int mappings[14][3] = {{0, 1, 10}, {0, 10, 14}, {1, 2, 9}, {1, 9, 10}, {10, 13, 14},
+                             {10, 11, 13}, {11, 12, 13}, {1, 14, 10}, {2, 5, 9}, {5, 6, 9},
+                             {2, 3, 5}, {3, 4, 5}, {6, 7, 8}, {6, 9, 8}};
 
-    int mappings[7][3] = {{0, 1, 4}, {1, 2, 3}, {1, 3, 4}, {0, 4, 5},
-                          {0, 5, 8}, {5, 6, 7}, {5, 7, 8}};
-    for (int i = 0; i < 7; i++) {
-      wxPoint ais_tri_icon[3];
-      for (int j = 0; j < 3; j++) ais_tri_icon[j] = SarRot[mappings[i][j]];
-      dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+      int nmap = 14;
+      for (int i = 0; i < nmap; i++) {
+        wxPoint ais_tri_icon[3];
+        for (int j = 0; j < 3; j++) ais_tri_icon[j] = SarRot[mappings[i][j]];
+        dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+      }
+
+      dc.SetPen(target_outline_pen);
+      dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
+      dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
+
+      // second half
+
+      for (int i = 0; i < ar; i++)
+        SarRot[i] =
+            wxPoint(-SarIcon[i].x, SarIcon[i].y);  // mirror the icon (x -> -x)
+
+      transrot_pts(ar, SarRot, sin_theta, cos_theta);
+
+      dc.SetPen(tri_pen);
+      dc.SetBrush(target_brush);
+
+      for (int i = 0; i < nmap; i++) {
+        wxPoint ais_tri_icon[3];
+        for (int j = 0; j < 3; j++) ais_tri_icon[j] = SarRot[mappings[i][j]];
+        dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+      }
+
+      dc.SetPen(target_outline_pen);
+      dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
+      dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
     }
+    else{
+      // Draw icon as two halves
+      //  First half
 
-    dc.SetPen(target_outline_pen);
-    dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
-    dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
+      for (int i = 0; i < ar; i++) SarRot[i] = SarIcon[i];
+      transrot_pts(ar, SarRot, sin_theta, cos_theta);
 
-    // second half
+      wxPen tri_pen(target_brush.GetColour(), 1);
+      dc.SetPen(tri_pen);
+      dc.SetBrush(target_brush);
 
-    for (int i = 0; i < ar; i++)
-      SarRot[i] =
-          wxPoint(-SarIcon[i].x, SarIcon[i].y);  // mirror the icon (x -> -x)
+      // Manual tesselation
+      int mappings[7][3] = {{0, 1, 4}, {1, 2, 3}, {1, 3, 4}, {0, 4, 5},
+                            {0, 5, 8}, {5, 6, 7}, {5, 7, 8}};
+      for (int i = 0; i < 7; i++) {
+        wxPoint ais_tri_icon[3];
+        for (int j = 0; j < 3; j++) ais_tri_icon[j] = SarRot[mappings[i][j]];
+        dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+      }
 
-    transrot_pts(ar, SarRot, sin_theta, cos_theta);
+      dc.SetPen(target_outline_pen);
+      dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
+      dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
 
-    dc.SetPen(tri_pen);
-    dc.SetBrush(target_brush);
+      // second half
 
-    for (int i = 0; i < 7; i++) {
-      wxPoint ais_tri_icon[3];
-      for (int j = 0; j < 3; j++) ais_tri_icon[j] = SarRot[mappings[i][j]];
-      dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+      for (int i = 0; i < ar; i++)
+        SarRot[i] =
+            wxPoint(-SarIcon[i].x, SarIcon[i].y);  // mirror the icon (x -> -x)
+
+      transrot_pts(ar, SarRot, sin_theta, cos_theta);
+
+      dc.SetPen(tri_pen);
+      dc.SetBrush(target_brush);
+
+      for (int i = 0; i < 7; i++) {
+        wxPoint ais_tri_icon[3];
+        for (int j = 0; j < 3; j++) ais_tri_icon[j] = SarRot[mappings[i][j]];
+        dc.StrokePolygon(3, ais_tri_icon, TargetPoint.x, TargetPoint.y);
+      }
+
+      dc.SetPen(target_outline_pen);
+      dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
+      dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
     }
-
-    dc.SetPen(target_outline_pen);
-    dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
-    dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
 
     //        Draw the inactive cross-out line
     if (!td->b_active) {

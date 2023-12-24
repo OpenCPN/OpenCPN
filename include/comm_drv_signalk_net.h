@@ -27,6 +27,9 @@
 #ifndef _SIGNALK_NET_H
 #define _SIGNALK_NET_H
 
+#include <atomic>
+#include <string>
+
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -36,7 +39,6 @@
 #include <wx/datetime.h>
 #include <wx/socket.h>
 
-#include <string>
 #include "rapidjson/fwd.h"
 #include "conn_params.h"
 #include "comm_drv_signalk.h"
@@ -44,8 +46,6 @@
 #define SIGNALK_SOCKET_ID 5011
 #define N_DOG_TIMEOUT 5             // seconds
 #define N_DOG_TIMEOUT_RECONNECT 10  // seconds
-
-#define TIMER_SOCKET 9006
 
 static const double ms_to_knot_factor = 1.9438444924406;
 
@@ -79,14 +79,14 @@ public:
 
   void OpenWebSocket();
   void CloseWebSocket();
-  bool IsThreadRunning() { return m_threadActive; }
+  bool IsThreadRunning() { return m_threadActive == 1; }
 
   std::string m_self;
   std::string m_context;
 
-  bool m_bsec_thread_active;
+  std::atomic_int m_Thread_run_flag;
+  std::atomic_int m_threadActive;
 
-  int m_Thread_run_flag;
   ConnectionParams m_params;
   DriverListener& m_listener;
 
@@ -103,7 +103,6 @@ private:
 
   OCPN_WebSocketMessageHandler *m_eventHandler;
   bool m_useWebSocket;
-  bool m_threadActive;
 
   bool m_bGPSValid_SK;
 

@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <limits.h>
 #include <memory>
+#include <thread>
 
 #ifdef __WXMSW__
 #include <math.h>
@@ -65,53 +66,67 @@
 #include <wx/artprov.h>
 #include <wx/aui/aui.h>
 #include <wx/clrpicker.h>
+#include <wx/cmdline.h>
 #include <wx/dialog.h>
 #include <wx/dialog.h>
 #include <wx/dir.h>
+#include <wx/display.h>
+#include <wx/dynlib.h>
 #include <wx/image.h>
 #include <wx/intl.h>
 #include <wx/ipc.h>
 #include <wx/jsonreader.h>
 #include <wx/listctrl.h>
+#include <wx/power.h>
 #include <wx/printdlg.h>
 #include <wx/print.h>
 #include <wx/progdlg.h>
 #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
-#include <wx/cmdline.h>
 
-#include "ocpn_app.h"
-#include "ocpn_frame.h"
 
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetQueryDialog.h"
 #include "ais_info_gui.h"
-
+#include "AISTargetAlertDialog.h"
+#include "AISTargetListDialog.h"
+#include "AISTargetQueryDialog.h"
 #include "CanvasConfig.h"
+#include "certificates.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"
+#include "comm_bridge.h"
+#include "comm_n0183_output.h"
+#include "comm_vars.h"
 #include "concanv.h"
 #include "config.h"
-#include "config_vars.h"
 #include "ConfigMgr.h"
+#include "config_vars.h"
+#include "cmdline.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"
-#include "GoToPositionDialog.h"
 #include "gdal/cpl_csv.h"
 #include "glTexCache.h"
+#include "GoToPositionDialog.h"
+#include "instance_check.h"
 #include "Layer.h"
+#include "local_api.h"
 #include "logger.h"
 #include "MarkInfo.h"
+#include "mDNS_query.h"
+#include "mDNS_service.h"
 #include "multiplexer.h"
 #include "nav_object_database.h"
 #include "navutil.h"
 #include "navutil_base.h"
+#include "NMEALogWindow.h"
+#include "observable.h"
 #include "OCPN_AUIManager.h"
+#include "ocpn_app.h"
+#include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "options.h"
 #include "own_ship.h"
@@ -119,11 +134,14 @@
 #include "route.h"
 #include "routemanagerdialog.h"
 #include "routeman.h"
+#include "routeman_gui.h"
+#include "route_ctx_factory.h"
 #include "RoutePropDlgImpl.h"
+#include "rest_server_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"
 #include "S57QueryDialog.h"
-#include "safe_mode.h"
+#include "safe_mode_gui.h"
 #include "select.h"
 #include "SoundFactory.h"
 #include "styles.h"
@@ -131,20 +149,6 @@
 #include "thumbwin.h"
 #include "track.h"
 #include "TrackPropDlg.h"
-#include "AISTargetListDialog.h"
-#include "comm_n0183_output.h"
-#include "comm_bridge.h"
-#include "certificates.h"
-#include "mDNS_query.h"
-
-//#include "usb_devices.h"
-//#include "comm_drv_registry.h"
-//#include "comm_navmsg_bus.h"
-//#include "N2KParser.h"
-//#include "comm_util.h"
-#include "comm_vars.h"
-
-#include "mDNS_service.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"
@@ -171,13 +175,47 @@ void RedirectIOToConsole();
 #include "crashprint.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #else
 #include "serial/serial.h"
 #endif
 
+using namespace std::literals::chrono_literals;
+
+extern int ShowNavWarning();
+
 static void UpdatePositionCalculatedSogCog();
+
+const char* const kUsage =
+R"""(Usage:
+  opencpn -h | --help
+  opencpn [-p] [-f] [-G] [-g] [-P] [-l <str>] [-u <num>] [-U] [-s] [GPX file ...]
+  opencpn --remote [-R] | -q] | -e] |-o <str>]
+
+Options for starting opencpn
+  -p, --portable               	Run in portable mode.
+  -f, --fullscreen             	Switch to full screen mode on start.
+  -G, --no_opengl              	Disable OpenGL video acceleration. This setting will
+                                be remembered.
+  -g, --rebuild_gl_raster_cache	Rebuild OpenGL raster cache on start.
+  -P, --parse_all_enc          	Convert all S-57 charts to OpenCPN's internal format on start.
+  -l, --loglevel=<str>         	Amount of logging: error, warning, message, info, debug or trace
+  -u, --unit_test_1=<num>      	Display a slideshow of <num> charts and then exit.
+                                Zero or negative <num> specifies no limit.
+  -U, --unit_test_2
+  -s, --safe_mode              	Run without plugins, opengl and other "dangerous" stuff
+
+Options manipulating already started opencpn
+  -r, --remote                 	Execute commands on already running instance
+  -R, --raise                  	Make running OpenCPN visible if hidden
+  -q, --quit                   	Terminate already running opencpn
+  -e, --get_rest_endpoint      	Print rest server endpoint and exit.
+  -o, --open=<GPX file>         Open file in running opencpn
+
+Arguments:
+  GPX  file                     GPX-formatted file with waypoints or routes.
+)""";
 
 
 //  comm event definitions
@@ -217,14 +255,8 @@ bool g_bPauseTest;
 wxString g_compatOS;
 wxString g_compatOsVersion;
 
-int g_unit_test_1;
-int g_unit_test_2;
-bool g_start_fullscreen;
-bool g_rebuild_gl_cache;
-bool g_parse_all_enc;
 
 // Files specified on the command line, if any.
-wxVector<wxString> g_params;
 
 MyFrame *gFrame;
 
@@ -237,7 +269,6 @@ wxString *pdir_list[20];
 int g_restore_stackindex;
 int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
-int g_nDepthUnitDisplay;
 
 RouteList *pRouteList;
 std::vector<Track*> g_TrackList;
@@ -278,7 +309,6 @@ wxString ChartListFileName;
 wxString AISTargetNameFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
-wxString g_winPluginDir;  // Base plugin directory on Windows.
 wxString g_csv_locn;
 wxString g_SENCPrefix;
 wxString g_UserPresLibData;
@@ -350,11 +380,6 @@ bool g_bAutoHideToolbar;
 bool g_bPermanentMOBIcon;
 bool g_bTempShowMenuBar;
 
-int g_iSDMMFormat;
-int g_iDistanceFormat;
-int g_iSpeedFormat;
-int g_iTempFormat;
-
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
@@ -373,8 +398,6 @@ int g_maxzoomin;
 // Set default color scheme
 ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
-int Usercolortable_index;
-wxArrayPtrVoid *UserColorTableArray;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
@@ -459,7 +482,6 @@ AisInfoGui *g_pAISGUI;
 
 bool g_bAIS_CPA_Alert;
 bool g_bAIS_CPA_Alert_Audio;
-AISTargetAlertDialog *g_pais_alert_dialog_active;
 AISTargetQueryDialog *g_pais_query_dialog_active;
 int g_iSoundDeviceIndex;
 
@@ -511,8 +533,6 @@ double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;
 double g_plus_minus_zoom_factor;
 
-int g_nCOMPortCheck = 32;
-
 bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
 
@@ -530,15 +550,12 @@ bool g_bFullScreenQuilt = true;
 bool g_bQuiltEnable;
 bool g_bQuiltStart;
 
-bool g_bportable;
-
-bool g_bdisable_opengl;
 
 ChartGroupArray *g_pGroupArray;
 
 S57QueryDialog *g_pObjectQueryDialog;
 
-wxArrayString TideCurrentDataSet;
+std::vector<std::string> TideCurrentDataSet;
 wxString g_TCData_Dir;
 
 bool g_boptionsactive;
@@ -653,7 +670,7 @@ AboutFrameImpl *g_pAboutDlg;
 about *g_pAboutDlgLegacy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
-wxLocale *plocale_def_lang;
+wxLocale *plocale_def_lang = 0;
 #endif
 
 wxString g_locale;
@@ -752,7 +769,6 @@ bool g_bUIexpert;
 int g_chart_zoom_modifier_raster;
 int g_chart_zoom_modifier_vector;
 
-int g_NMEAAPBPrecision;
 
 bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -824,9 +840,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
 }
 
 
-
-
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 // Connection class, for use by both communicating instances
 class stConnection : public wxConnection {
 public:
@@ -864,39 +878,7 @@ bool stConnection::OnExec(const wxString &topic, const wxString &data) {
   }
   return true;
 }
-
-// Server class, for listening to connection requests
-class stServer : public wxServer {
-public:
-  wxConnectionBase *OnAcceptConnection(const wxString &topic);
-};
-
-// Accepts a connection from another instance
-wxConnectionBase *stServer::OnAcceptConnection(const wxString &topic) {
-  if (topic.Lower() == wxT("opencpn")) {
-    // Check that there are no modal dialogs active
-    wxWindowList::Node *node = wxTopLevelWindows.GetFirst();
-    while (node) {
-      wxDialog *dialog = wxDynamicCast(node->GetData(), wxDialog);
-      if (dialog && dialog->IsModal()) {
-        return 0;
-      }
-      node = node->GetNext();
-    }
-    return new stConnection();
-  }
-  return 0;
-}
-
-// Client class, to be used by subsequent instances in OnInit
-class stClient : public wxClient {
-public:
-  stClient(){};
-  wxConnectionBase *OnMakeConnection() { return new stConnection; }
-};
-
-#endif
-
+#endif   // __ANDROID__
 //------------------------------------------------------------------------------
 //    PNG Icon resources
 //------------------------------------------------------------------------------
@@ -937,39 +919,60 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
-#include <wx/dynlib.h>
+bool MyApp::OpenFile(const std::string& path) {
+  NavObjectCollection1 nav_objects;
+  auto result = nav_objects.load_file(path.c_str());
+  if (!result)  {
+    std::string s(_("Cannot load route or waypoint file: "));
+    s += std::string("\"") + path + "\"";
+    wxMessageBox(s, "OpenCPN", wxICON_WARNING | wxOK);
+    return false;
+  }
 
-#if wxUSE_CMDLINE_PARSER
-void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
-  //    Add some OpenCPN specific command line options
-  parser.AddSwitch(_T("h"), _T("help"), _("Show usage syntax."),
-                   wxCMD_LINE_OPTION_HELP);
-  parser.AddSwitch(_T("p"), wxEmptyString, _("Run in portable mode."));
-  parser.AddSwitch(_T("fullscreen"), wxEmptyString,
-                   _("Switch to full screen mode on start."));
-  parser.AddSwitch(
-      _T("no_opengl"), wxEmptyString,
-      _("Disable OpenGL video acceleration. This setting will be remembered."));
-  parser.AddSwitch(_T("rebuild_gl_raster_cache"), wxEmptyString,
-                   _T("Rebuild OpenGL raster cache on start."));
-  parser.AddSwitch(
-      _T("parse_all_enc"), wxEmptyString,
-      _T("Convert all S-57 charts to OpenCPN's internal format on start."));
-  parser.AddOption(
-      _T("l"), _T("loglevel"),
-      _("Amount of logging: error, warning, message, info, debug or trace"));
-  parser.AddOption(_T("unit_test_1"), wxEmptyString,
-                   _("Display a slideshow of <num> charts and then exit. Zero "
-                     "or negative <num> specifies no limit."),
-                   wxCMD_LINE_VAL_NUMBER);
-  parser.AddSwitch(_T("unit_test_2"));
-  parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
-                  wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
-  parser.AddLongSwitch("unit_test_2");
-  parser.AddSwitch("safe_mode");
+  int wpt_dups;
+  // Import with full vizibility of names and objects
+  nav_objects.LoadAllGPXObjects(!nav_objects.IsOpenCPN(), wpt_dups, true);
+
+  if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+    pRouteManagerDialog->UpdateLists();
+  LLBBox box = nav_objects.GetBBox();
+  if (box.GetValid()) {
+    gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
+  }
+  return true;
 }
 
+#ifndef __ANDROID__
+void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
+  // Add OpenCPN specific command line options. Help message
+  // is hardcoded in kUsage;
+  parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
+  parser.AddSwitch("p", "portable");
+  parser.AddSwitch("f", "fullscreen");
+  parser.AddSwitch( "G", "no_opengl");
+  parser.AddSwitch("g", "rebuild_gl_raster_cache");
+  parser.AddSwitch( "P", "parse_all_enc");
+  parser.AddOption( "l", "loglevel");
+  parser.AddOption("u", "unit_test_1", "", wxCMD_LINE_VAL_NUMBER);
+  parser.AddSwitch("U", "unit_test_2");
+  parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
+                  wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
+  parser.AddSwitch("s", "safe_mode");
+  parser.AddSwitch("r", "remote");
+  parser.AddSwitch("R", "raise");
+  parser.AddSwitch("q", "quit");
+  parser.AddSwitch("e", "get_rest_endpoint");
+  parser.AddOption("o", "open", "", wxCMD_LINE_VAL_STRING,
+                   wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
+}
+#endif   // __ANDROID__
+
 /** Parse --loglevel and set up logging, falling back to defaults. */
+#ifdef __ANDROID__
+static void ParseLoglevel(wxCmdLineParser &parser) {
+  wxLog::SetLogLevel(wxLOG_Message);
+}
+#else
 static void ParseLoglevel(wxCmdLineParser &parser) {
   const char *strLevel = std::getenv("OPENCPN_LOGLEVEL");
   strLevel = strLevel ? strLevel : "info";
@@ -985,31 +988,86 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
   }
   wxLog::SetLogLevel(level);
 }
+#endif   // __ANDROID__
 
+#ifndef __ANDROID__
+bool MyApp::OnCmdLineHelp(wxCmdLineParser& parser) {
+  std::cout << kUsage;
+  return false;
+}
+#endif
+
+#ifndef __ANDROID__
 bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   long number;
   wxString repo;
   wxString plugin;
 
-  g_unit_test_2 = parser.Found(_T("unit_test_2"));
-  g_bportable = parser.Found(_T("p"));
-  g_start_fullscreen = parser.Found(_T("fullscreen"));
-  g_bdisable_opengl = parser.Found(_T("no_opengl"));
-  g_rebuild_gl_cache = parser.Found(_T("rebuild_gl_raster_cache"));
-  g_parse_all_enc = parser.Found(_T("parse_all_enc"));
-  if (parser.Found(_T("unit_test_1"), &number)) {
+  g_unit_test_2 = parser.Found("unit_test_2");
+  g_bportable = parser.Found("p");
+  g_start_fullscreen = parser.Found("fullscreen");
+  g_bdisable_opengl = parser.Found("no_opengl");
+  g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
+  g_parse_all_enc = parser.Found("parse_all_enc");
+  if (parser.Found("unit_test_1", &number)) {
     g_unit_test_1 = static_cast<int>(number);
     if (g_unit_test_1 == 0) g_unit_test_1 = -1;
   }
   safe_mode::set_mode(parser.Found("safe_mode"));
   ParseLoglevel(parser);
 
-  for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
-    g_params.push_back(parser.GetParam(paramNr));
+  bool has_start_options = false;
+  static const std::vector<std::string> kStartOptions = {
+    "unit_test_2", "p", "fullscreen", "no_opengl", "rebuild_gl_raster_cache",
+    "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
+  for (const auto& opt : kStartOptions) {
+    if (parser.Found(opt)) has_start_options = true;
+  }
+  if (has_start_options && parser.Found("remote")) {
+    std::cerr << "this option is not compatible with --remote\n";
+    return false;
+  }
 
+  // Instantiate the global OCPNPlatform class
+  g_Platform = new OCPNPlatform;
+  g_BasePlatform = g_Platform;
+
+  bool has_remote_options = false;
+  static const std::vector<std::string> kRemoteOptions = {
+    "raise", "quit", "open", "get_rest_endpoint"};
+  for (const auto& opt : kRemoteOptions) {
+    if (parser.Found(opt)) has_remote_options = true;
+  }
+  if (has_remote_options && ! parser.Found("remote")) {
+    std::cerr << "This option requires --remote\n";
+    return false;
+  }
+
+  for (size_t paramNr = 0; paramNr < parser.GetParamCount(); ++paramNr)
+    g_params.push_back(parser.GetParam(paramNr).ToStdString());
+
+  wxString optarg;
+  if (!parser.Found("remote"))
+    m_parsed_cmdline = ParsedCmdline();
+  else if (parser.Found("raise"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
+  else if (parser.Found("quit"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Quit);
+  else if (parser.Found("get_rest_endpoint"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::GetRestEndpoint);
+  else if (parser.Found("open", &optarg))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
+                                     optarg.ToStdString());
+  else if (parser.GetParamCount() == 1)
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
+                                     parser.GetParam(0).ToStdString());
+  else if (!has_start_options && !has_remote_options) {
+    // Neither arguments nor options
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::Raise);
+  }
   return true;
 }
-#endif
+#endif  // __ANDROID__
 
 #ifdef __WXMSW__
 //  Handle any exception not handled by CrashRpt
@@ -1042,22 +1100,29 @@ void MyApp::OnActivateApp(wxActivateEvent &event) {
 }
 
 
-
 static wxStopWatch init_sw;
 
-MyApp::MyApp() {
-#ifdef __linux__
-// Handle e. g., wayland default display -- see #1166.
+int MyApp::OnRun() {
+  if (m_exitcode != -2) return m_exitcode;
+  return wxAppConsole::OnRun();
+}
 
+MyApp::MyApp()
+    : m_checker(InstanceCheck::GetInstance()),
+      m_RESTserver(PINCreateDialog::GetDlgCtx(),
+      RouteCtxFactory(),
+      g_bportable),
+      m_exitcode(-2) {
+#ifdef __linux__
+  // Handle e. g., wayland default display -- see #1166.
   if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
     setenv("GDK_BACKEND", "x11", 1);
-
 #endif   // __linux__
 }
 
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionItems(false);
 #endif
@@ -1076,86 +1141,74 @@ bool MyApp::OnInit() {
   dc.SelectObject(bmp);
   dc.DrawText(_T("X"), 0, 0);
 #endif
-  m_checker = 0;
 
   // Instantiate the global OCPNPlatform class
   g_Platform = new OCPNPlatform;
   g_BasePlatform = g_Platform;
-
-#ifndef __OCPN__ANDROID__
-  //  On Windows
+#ifndef __ANDROID__
   //  We allow only one instance unless the portable option is used
   if (!g_bportable && wxDirExists(g_Platform->GetPrivateDataDir())) {
-    wxChar separator = wxFileName::GetPathSeparator();
-    wxString service_name =
-        g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
-
-    m_checker = new wxSingleInstanceChecker(_T("_OpenCPN_SILock"),
-                                            g_Platform->GetPrivateDataDir());
-    if (!m_checker->IsAnotherRunning()) {
-      stServer *m_server = new stServer;
-      if (!m_server->Create(service_name)) {
-        wxLogDebug(wxT("Failed to create an IPC service."));
+    m_checker.WaitUntilValid();
+    if (m_checker.IsMainInstance()) {
+      // Server is created on first call to GetInstance()
+      if (m_parsed_cmdline.action == CmdlineAction::Skip) {
+        auto& server = LocalServerApi::GetInstance();
+      } else {
+        std::cerr << "No remote opencpn found. Giving up.\n";
+        m_exitcode = 1;
+        return true;
       }
     } else {
-      wxLogNull logNull;
-      stClient *client = new stClient;
-      // ignored under DDE, host name in TCP/IP based classes
-      wxString hostName = wxT("localhost");
-      // Create the connection service, topic
-      wxConnectionBase *connection =
-          client->MakeConnection(hostName, service_name, _T("OpenCPN"));
-      if (connection) {
-        // Ask the other instance to open a file or raise itself
-        if (!g_params.empty()) {
-          for (size_t n = 0; n < g_params.size(); n++) {
-            wxString path = g_params[n];
-            if (::wxFileExists(path)) {
-              connection->Execute(path);
-            }
-          }
-        }
-        connection->Execute(wxT(""));
-        connection->Disconnect();
-        delete connection;
-      } else {
-        //  If we get here, it means that the wxWidgets single-instance-detect
-        //  logic found the lock file, And so thinks another instance is
-        //  running. But that instance is not reachable, for some reason. So,
-        //  the safe thing to do is delete the lockfile, and exit.  Next start
-        //  will proceed normally. This may leave a zombie OpenCPN, but at least
-        //  O starts.
-        wxString lockFile = wxString(g_Platform->GetPrivateDataDir() +
-                                     separator + _T("_OpenCPN_SILock"));
-        if (wxFileExists(lockFile)) wxRemoveFile(lockFile);
-
+      std::unique_ptr<LocalClientApi> client;
+      try {
+        client = LocalClientApi::GetClient();
+      } catch (LocalApiException& ie) {
+        WARNING_LOG << "Ipc client exception: " << ie.str();
+        // If we get here it means that the instance_chk found another
+        // running instance. But that instance is for some reason not
+        // reachable. The safe thing to do is delete the lockfile and exit.
+        // Next start  will proceed normally. This may leave a zombie OpenCPN,
+        // but at least O starts.
+        m_checker.CleanUp();
         wxMessageBox(_("Sorry, an existing instance of OpenCPN may be too busy "
                        "to respond.\nPlease retry."),
-                     wxT("OpenCPN"), wxICON_INFORMATION | wxOK);
+                     "OpenCPN", wxICON_INFORMATION | wxOK);
+        m_exitcode = 2;
+        return true;  // main program quiet exit.
       }
-      delete client;
-      return false;  // exit quietly
+      if (client) {
+        auto result =
+          client->HandleCmdline(m_parsed_cmdline.action, m_parsed_cmdline.arg);
+        if (result.first) {
+          m_exitcode = 0;
+        } else {
+          wxLogDebug("Error running remote command: %s", result.second.c_str());
+          m_exitcode = 1;
+        }
+        return true;
+      }
     }
   }
-#endif  // __OCPN__ANDROID__
+#endif  // __ANDROID__
 
   if (getenv("OPENCPN_FATAL_ERROR") != 0) {
     wxLogFatalError(getenv("OPENCPN_FATAL_ERROR"));
   }
+
+#ifndef __ANDROID__
   // Check if last run failed, set up safe_mode.
   if (!safe_mode::get_mode()) {
     safe_mode::check_last_start();
   }
+#endif
 
   //  Perform first stage initialization
   OCPNPlatform::Initialize_1();
 
-#if wxCHECK_VERSION(3, 0, 0)
   // Set the name of the app as displayed to the user.
   // This is necessary at least on OS X, for the capitalisation to be correct in
   // the system menus.
   MyApp::SetAppDisplayName("OpenCPN");
-#endif
 
   //  Seed the random number generator
   wxDateTime x = wxDateTime::UNow();
@@ -1216,7 +1269,7 @@ bool MyApp::OnInit() {
   wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
   wxString os_name;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   os_name = platforminfo.GetOperatingSystemIdName();
 #else
   os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1274,31 +1327,8 @@ bool MyApp::OnInit() {
 
   //      Init the Route Manager
 
-  struct RoutePropDlgCtx ctx;
-  ctx.SetRouteAndUpdate = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
-      pRoutePropDialog->SetRouteAndUpdate(r, true);
-    }
-  };
-  ctx.SetEnroutePoint = [&](Route* r, RoutePoint* rt) {
-    if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
-      if (pRoutePropDialog->GetRoute() == r) {
-        pRoutePropDialog->SetEnroutePoint(rt);
-      }
-    }
-  };
-  ctx.Hide = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
-        (r == pRoutePropDialog->GetRoute())) {
-      pRoutePropDialog->Hide();
-    }
-  };
-  auto RouteMgrDlgUpdateListCtrl = [&]() {
-    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-      pRouteManagerDialog->UpdateRouteListCtrl();
-  };
-
-  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl);
+ g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
+                            NMEALogWindow::Get());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
@@ -1321,6 +1351,11 @@ bool MyApp::OnInit() {
   g_hostname = ::wxGetHostName();
   if(g_hostname.IsEmpty())
      g_hostname = wxGetUserName();
+#ifdef __ANDROID__
+  androidGetDeviceInfo();
+  g_hostname = wxString("Android-") + g_android_Device_Model;
+  g_hostname.Replace(" ", "-", true);
+#endif
 
   //      A Portabel need a unique mDNS data hostname to share routes.
   if (g_bportable) {
@@ -1407,7 +1442,7 @@ bool MyApp::OnInit() {
   //      Init the WayPoint Manager
   pWayPointMan = NULL;
 
-  g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
+  g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   wxString msg;
   msg.Printf(_T("Detected display size (horizontal): %d mm"),
              (int)g_display_size_mm);
@@ -1423,7 +1458,7 @@ bool MyApp::OnInit() {
     g_Platform->SetDisplaySizeMM(g_display_size_mm);
   }
 
-  g_display_size_mm = wxMax(80, g_display_size_mm);
+  g_display_size_mm = wxMax(50, g_display_size_mm);
 
   if (g_btouch) {
     int SelectPixelRadius = 50;
@@ -1486,32 +1521,14 @@ bool MyApp::OnInit() {
     wxLogMessage(g_Platform->GetLargeLogMessage());
 
     //  Validate OpenGL functionality, if selected
-#ifdef ocpnUSE_GL
-
-#ifdef __WXMSW__
-#if !wxCHECK_VERSION( \
-    2, 9, 0)  // The OpenGL test app only runs on wx 2.8, unavailable on wx3.x
-
-  if (/*g_bopengl &&*/ !g_bdisable_opengl) {
-    wxFileName fn(g_Platform->GetExePath());
-    bool b_test_result = TestGLCanvas(fn.GetPathWithSep());
-
-    if (!b_test_result)
-      wxLogMessage(_T("OpenGL disabled due to test app failure."));
-
-    g_bdisable_opengl = !b_test_result;
-  }
-#endif
-#endif
-
-#else
+#ifndef ocpnUSE_GL
   g_bdisable_opengl = true;
   ;
 #endif
 
   if (g_bdisable_opengl) g_bopengl = false;
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__)
   if (g_bSoftwareGL) setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
 #endif
 
@@ -1550,7 +1567,7 @@ bool MyApp::OnInit() {
     wxStandardPaths &std_path = g_Platform->GetStdPaths();
 
     if (!g_bportable)
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       pInit_Chart_Dir->Append(std_path.GetDocumentsDir());
 #else
       pInit_Chart_Dir->Append(androidGetExtStorageDir());
@@ -1574,17 +1591,9 @@ bool MyApp::OnInit() {
       (g_Platform->GetSharedDataDir() + _T("tcdata") +
        wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
 
-  if (!TideCurrentDataSet.GetCount()) {
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata0));
-    TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
-  } else {
-    wxString first_tide = TideCurrentDataSet[0];
-    wxFileName ft(first_tide);
-    if (!ft.FileExists()) {
-      TideCurrentDataSet.RemoveAt(0);
-      TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata0), 0);
-      TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata1));
-    }
+  if (TideCurrentDataSet.empty()) {
+    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
+    TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata1).ToStdString());
   }
 
   //  Check the global AIS alarm sound file
@@ -1650,7 +1659,7 @@ bool MyApp::OnInit() {
     position = wxPoint(g_nframewin_posx, g_nframewin_posy);
 
 #ifdef __WXMSW__
-  //  Support MultiMonitor setups which an allow negative window positions.
+  //  Support MultiMonitor setups which can allow negative window positions.
   RECT frame_rect;
   frame_rect.left = position.x;
   frame_rect.top = position.y;
@@ -1663,7 +1672,19 @@ bool MyApp::OnInit() {
     position = wxPoint(10, 10);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __WXOSX__
+  //  Support MultiMonitor setups which can allow negative window positions.
+  const wxPoint ptScreen(position.x, position.y);
+  const int displayIndex = wxDisplay::GetFromPoint(ptScreen);
+
+  if (displayIndex == wxNOT_FOUND)
+    position = wxPoint(10, 30);
+#endif
+
+  g_nframewin_posx = position.x;
+  g_nframewin_posy = position.y;
+
+#ifdef __ANDROID__
   wxSize asz = getAndroidDisplayDimensions();
   ch = asz.y;
   cw = asz.x;
@@ -1680,8 +1701,10 @@ bool MyApp::OnInit() {
   app_style |= wxWANTS_CHARS;
 
   // Create the main frame window
-  wxString myframe_window_title = wxString::Format(wxT("OpenCPN %s"),
-                                                   VERSION_FULL);  // Gunther
+
+  // Strip the commit SHA number from the string to be shown in frame title.
+  wxString short_version_name = wxString(PACKAGE_VERSION).BeforeFirst('+');
+  wxString myframe_window_title = wxString(wxT("OpenCPN ") + short_version_name);
 
   if (g_bportable) {
     myframe_window_title += _(" -- [Portable(-p) executing from ");
@@ -1750,7 +1773,7 @@ bool MyApp::OnInit() {
 
   if (g_bframemax) gFrame->Maximize(true);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (g_bresponsive && (gFrame->GetPrimaryCanvas()->GetPixPerMM() > 4.0))
     gFrame->Maximize(true);
 #endif
@@ -1909,9 +1932,19 @@ bool MyApp::OnInit() {
   }
 #endif
 
+  // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
+  // glDeleteTextures. Truly awful.
+#ifdef ocpnUSE_GL
+  RoutePoint::delete_gl_textures =
+      [](unsigned n, const unsigned* texts) { glDeleteTextures(n, texts); };
+#else
+  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned* texts) { };
+#endif
+
+
   if (g_start_fullscreen) gFrame->ToggleFullScreen();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  We need a resize to pick up height adjustment after building android
   //  ActionBar
   gFrame->SetSize(getAndroidDisplayDimensions());
@@ -1938,7 +1971,7 @@ bool MyApp::OnInit() {
 
   OCPNPlatform::Initialize_4();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidHideBusyIcon();
 #endif
   wxLogMessage(
@@ -1946,7 +1979,7 @@ bool MyApp::OnInit() {
 
   wxMilliSleep(500);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  We defer the startup message to here to allow the app frame to be
   //  contructed, thus avoiding a dialog with NULL parent which might not work
   //  on some devices.
@@ -1954,15 +1987,14 @@ bool MyApp::OnInit() {
       (g_AndroidVersionCode != androidGetVersionCode())) {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
-    //FIXME (dave)  Move to frame
-/*
+
     if (wxID_CANCEL == ShowNavWarning()) {
       qDebug() << "Closing due to NavWarning Cancel";
       gFrame->Close();
       androidTerminate();
       return true;
     }
-*/
+
     n_NavMessageShown = 1;
   }
 
@@ -1974,8 +2006,7 @@ bool MyApp::OnInit() {
   //  or if the version string has changed at all
   //  We defer until here to allow for localization of the message
   if (!n_NavMessageShown || (vs != g_config_version_string)) {
-    //FIXME (dave)  Move to frame
-    //if (wxID_CANCEL == ShowNavWarning()) return false;
+    if (wxID_CANCEL == ShowNavWarning()) return false;
     n_NavMessageShown = 1;
   }
 #endif
@@ -1983,7 +2014,7 @@ bool MyApp::OnInit() {
   // As an a.e. Raspberry does not have a hardwareclock we will have some
   // problems with date/time setting
   g_bHasHwClock = true;  // by default most computers do have a hwClock
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__)
+#if defined(__UNIX__) && !defined(__ANDROID__)
   struct stat buffer;
   g_bHasHwClock =
       ((stat("/dev/rtc", &buffer) == 0) || (stat("/dev/rtc0", &buffer) == 0) ||
@@ -2000,7 +2031,7 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
@@ -2028,17 +2059,18 @@ bool MyApp::OnInit() {
 
     make_certificate(ipAddr, data_dir.ToStdString());
 
-    m_RESTserver.StartServer(data_dir.ToStdString());
+    m_RESTserver.StartServer(fs::path(data_dir.ToStdString()));
 
-    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service", 8000);
+    StartMDNSService(g_hostname.ToStdString(),
+                     "opencpn-object-control-service", 8000);
   }
-
   return TRUE;
 }
 
 int MyApp::OnExit() {
-  wxLogMessage(_T("opencpn::MyApp starting exit."));
 
+  wxLogMessage(_T("opencpn::MyApp starting exit."));
+  m_checker.OnExit();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
   wxDateTime lognow = wxDateTime::Now();
@@ -2145,12 +2177,10 @@ void RestoreSystemColors(void);
 #endif
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
-  delete plocale_def_lang;
+  if (plocale_def_lang) delete plocale_def_lang;
 #endif
 
   FontMgr::Shutdown();
-
-  delete m_checker;
 
   g_Platform->OnExit_2();
   safe_mode::clear_check();
@@ -2169,7 +2199,6 @@ Track* MyApp::TrackOff(void) {
     return nullptr;
 }
 
-#include <wx/power.h>
 
 
 

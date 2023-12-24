@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-02-24 14:31\n"
+"PO-Revision-Date: 2023-06-05 01:25\n"
 "Last-Translator: \n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -80,11 +80,11 @@ msgstr "Sand vindvinkel og -hastighed"
 
 #: src/dashboard_pi.cpp:275
 msgid "Altitude"
-msgstr ""
+msgstr "Højde"
 
 #: src/dashboard_pi.cpp:277
 msgid "Altitude Trace"
-msgstr ""
+msgstr "Højde Sporing"
 
 #: src/dashboard_pi.cpp:279 src/dashboard_pi.cpp:281
 msgid "Depth"
@@ -400,7 +400,8 @@ msgstr "Kelvin"
 #: src/dashboard_pi.cpp:4038
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
-msgstr ""
+msgstr "Brug N2K & SignalK sande vinddata over jorden.\n"
+"(i stedet for gennem vand)"
 
 #: src/dashboard_pi.cpp:4310
 msgid "Add instrument"

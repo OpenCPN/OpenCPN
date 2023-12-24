@@ -10,7 +10,8 @@
 
 #include "config.h"
 
-#include "base_platform.h"
+#include "cli_platform.h"
+#include "cmdline.h"
 #include "comm_ais.h"
 #include "comm_appmsg_bus.h"
 #include "comm_bridge.h"
@@ -120,7 +121,6 @@ extern bool g_bAISRolloverShowClass;
 extern Multiplexer* g_pMUX;
 extern std::vector<Track*> g_TrackList;
 extern int g_WplAction;
-extern AISTargetAlertDialog* g_pais_alert_dialog_active;
 extern wxString AISTargetNameFileName;
 extern double g_AISShowTracks_Mins;
 extern bool g_bAIS_CPA_Alert;
@@ -129,12 +129,9 @@ extern double g_RemoveLost_Mins;
 extern double g_MarkLost_Mins;
 extern float g_selection_radius_mm;
 extern float g_selection_radius_touch_mm;
-extern int g_nCOMPortCheck;
 extern bool g_benableUDPNullHeader;
 
 extern BasePlatform* g_BasePlatform;
-extern bool g_bportable;
-extern wxString g_winPluginDir;
 extern void* g_pi_manager;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;

@@ -222,6 +222,11 @@ public:
               std::shared_ptr<const NavAddr> src)
       : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload) {}
 
+  Nmea2000Msg(const uint64_t _pgn, const std::vector<unsigned char>& _payload,
+              std::shared_ptr<const NavAddr> src, int _priority)
+      : NavMsg(NavAddr::Bus::N2000, src), PGN(_pgn), payload(_payload),
+        priority(_priority) {}
+
   virtual ~Nmea2000Msg() = default;
 
   std::string key() const { return std::string("n2000-") + PGN.to_string(); };
@@ -231,6 +236,7 @@ public:
 
   N2kPGN PGN;  // For TX message, unparsed
   std::vector<unsigned char> payload;
+  int priority;
 };
 
 /** A regular Nmea0183 message. */
@@ -297,8 +303,6 @@ public:
   std::string context;
   std::string raw_message;
 
-  std::vector<std::string> errors;
-  std::vector<std::string> warnings;
   std::string key() const { return std::string("signalK"); };
 };
 

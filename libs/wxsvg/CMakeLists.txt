@@ -13,6 +13,7 @@ endif ()
 # requiring proper pkg-config setup and just using standard wxWidgets
 # options. It has only been tested on linux.
 
+# FIXME (#3527) Dependency on main openpcn
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -166,6 +167,7 @@ target_include_directories(WXSVG
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include/wxSVG
         ${CMAKE_CURRENT_SOURCE_DIR}/include/wxSVGXML
+# FIXME (#3527) Missing linkage
         ${wxWidgets_INCLUDE_DIRS}
 )
 

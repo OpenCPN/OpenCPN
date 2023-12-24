@@ -217,14 +217,16 @@ bool write_to_disk(EVP_PKEY * pkey, X509 * x509, std::string cert_directory)
 int make_certificate(std::string ipv4, std::string destination_dir)
 {
     /* Generate the key. */
-    std::cout << "Generating RSA key..." << std::endl;
+    if (getenv("OCPN_DEBUG_CERT"))
+      std::cout << "Generating RSA key..." << std::endl;
 
     EVP_PKEY * pkey = generate_key();
     if(!pkey)
         return 1;
 
     /* Generate the certificate. */
-    std::cout << "Generating x509 certificate..." << std::endl;
+    if (getenv("OCPN_DEBUG_CERT"))
+      std::cout << "Generating x509 certificate..." << std::endl;
 
     X509 * x509 = generate_x509(pkey, ipv4);
     if(!x509)
@@ -234,7 +236,8 @@ int make_certificate(std::string ipv4, std::string destination_dir)
     }
 
     /* Write the private key and certificate out to disk. */
-    std::cout << "Writing key and certificate to disk..." << std::endl;
+    if (getenv("OCPN_DEBUG_CERT"))
+      std::cout << "Writing key and certificate to disk..." << std::endl;
 
     bool ret = write_to_disk(pkey, x509, destination_dir);
     EVP_PKEY_free(pkey);
@@ -242,7 +245,7 @@ int make_certificate(std::string ipv4, std::string destination_dir)
 
     if(ret)
     {
-        std::cout << "Success!" << std::endl;
+        if (getenv("OCPN_DEBUG_CERT")) std::cout << "Success!" << std::endl;
         return 0;
     }
     else

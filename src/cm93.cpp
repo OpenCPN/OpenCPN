@@ -2026,7 +2026,6 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
   //    Check the member array to see if all these viewport cells have been
   //    loaded
   bool bcell_is_in;
-  bool recalc_depth = false;
 
   for (unsigned int i = 0; i < vpcells.size(); i++) {
     bcell_is_in = false;
@@ -2040,7 +2039,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
     //    The cell is not in place, so go load it
     if (!bcell_is_in) {
 #ifndef __OCPN__ANDROID__
-      OCPNPlatform::ShowBusySpinner();
+      AbstractPlatform::ShowBusySpinner();
 #endif
       int cell_index = vpcells[i];
 
@@ -2050,7 +2049,6 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
         CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm);
 
         ForceEdgePriorityEvaluate();  // need to re-evaluate priorities
-        recalc_depth = true;
 
         m_cells_loaded_array.push_back(cell_index);
 
@@ -2078,6 +2076,9 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
       AssembleLineGeometry();
 
+      ClearDepthContourArray();
+      BuildDepthContourArray();
+
       //  Set up the chart context
       m_this_chart_context->m_pvc_hash = &Get_vc_hash();
       m_this_chart_context->m_pve_hash = &Get_ve_hash();
@@ -2087,7 +2088,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       m_this_chart_context->chart = this;
       m_this_chart_context->chart_type = GetChartType();
 
-      m_this_chart_context->safety_contour = 1e6;  // to be evaluated later
+      m_this_chart_context->safety_contour = m_next_safe_cnt;
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
 
       //  Loop and populate all the objects
@@ -2100,13 +2101,9 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
           }
         }
       }
-      OCPNPlatform::HideBusySpinner();
-    }
-  }
 
-  if (recalc_depth) {
-    ClearDepthContourArray();
-    BuildDepthContourArray();
+      AbstractPlatform::HideBusySpinner();
+    }
   }
 }
 
@@ -3246,7 +3243,6 @@ S57Obj *cm93chart::CreateS57Obj(int cell_index, int iobject, int subcell,
     int *pAVI;
     char *pAVS;
     double *pAVR;
-    int nlen;
     double dival;
     int ival;
 
@@ -5233,6 +5229,8 @@ bool cm93compchart::DoRenderRegionViewOnGL(const wxGLContext &glc,
   //    Render the cm93 cell's M_COVR outlines if called for
   if (m_cell_index_special_outline) {
     ocpnDC dc;
+    dc.SetVP(VPoint);
+
     covr_set *pcover = m_pcm93chart_current->GetCoverSet();
 
     for (unsigned int im = 0; im < pcover->GetCoverCount(); im++) {
@@ -5698,56 +5696,9 @@ void cm93compchart::SetSpecialCellIndexOffset(int cell_index, int object_id,
 bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
                                                   ChartCanvas *cc) {
   if (m_cmscale >= 7) return false;
-
-  wxColour col;
-  //#ifdef ocpnUSE_GL
-  ViewPort nvp;
-  bool secondpass = false;
   glChartCanvas *glcc = cc->GetglCanvas();
   if (!glcc) return false;
 
-  if (g_bopengl) /* opengl */ {
-    wxPen pen = dc.GetPen();
-    col = pen.GetColour();
-
-#ifndef __WXQT__  // Some QT platforms (Android) have trouble with
-                  // GL_LINE_SMOOTH
-    if (g_GLOptions.m_GLLineSmoothing) {
-      glEnable(GL_LINE_SMOOTH);
-      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    }
-#endif
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glLineWidth(g_GLMinSymbolLineWidth);
-    glDisable(GL_LINE_STIPPLE);
-    dc.SetGLStipple();
-
-    if (g_b_EnableVBO) glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-
-#if 1 //!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    // use a viewport that allows the vertexes to be reused over many frames
-    glPushMatrix();
-
-    // TODO this needs fixing for multicanvas
-    if (glChartCanvas::HasNormalizedViewPort(vp)) {
-      glcc->MultMatrixViewPort(vp);
-      nvp = glChartCanvas::NormalizedViewPort(vp);
-    } else
-      nvp = vp;
-
-    // test viewport for accelerated panning and idl crossing
-    if ((vp.m_projection_type == PROJECTION_MERCATOR ||
-         vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
-        (vp.GetBBox().GetMinLon() < -180 || vp.GetBBox().GetMaxLon() > 180))
-      secondpass = true;
-
-#endif
-  }
 
   int nss_max;
 
@@ -5806,35 +5757,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
         M_COVR_Desc *mcd = pcover->GetCover(im);
 
         if (vp.GetBBox().IntersectOut(mcd->m_covr_bbox)) continue;
-#ifdef ocpnUSE_GL
-        if (g_bopengl) {
-//FIXME (dave) Use DC for rendering
-#if 1//!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-          glColor3ub(col.Red(), col.Green(), col.Blue());
-          RenderCellOutlinesOnGL(nvp, mcd);
-#endif
-          // if signs don't agree we need to render a second pass
-          // translating around the world
-          if (secondpass) {
-#define NORM_FACTOR 4096.0
-            double ts =
-                40058986 * NORM_FACTOR; /* 360 degrees in normalized viewport */
-#if 1 //!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-            glColor3ub(col.Red(), col.Green(), col.Blue());
-            glPushMatrix();
-            glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
-            RenderCellOutlinesOnGL(nvp, mcd);
-            glPopMatrix();
 
-#endif
-          }
-          bdrawn = true;
-        } else
-#endif
-        {
-          wxPoint *pwp = psc->GetDrawBuffer(mcd->m_nvertices);
-          bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
-        }
+        wxPoint *pwp = psc->GetDrawBuffer(mcd->m_nvertices);
+        bdrawn = RenderCellOutlines(dc, vp, pwp, mcd);
       }
     }
     nss++;
@@ -5842,11 +5767,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
 
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glPopMatrix();
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-#endif
     glDisable(GL_LINE_STIPPLE);
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_BLEND);
@@ -5855,7 +5775,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
   return true;
 }
 
-bool cm93compchart::RenderCellOutlinesOnDC(ocpnDC &dc, ViewPort &vp,
+bool cm93compchart::RenderCellOutlines(ocpnDC &dc, ViewPort &vp,
                                            wxPoint *pwp, M_COVR_Desc *mcd) {
   float_2Dpt *p = mcd->pvertices;
   int np = mcd->m_nvertices;
@@ -5881,117 +5801,6 @@ bool cm93compchart::RenderCellOutlinesOnDC(ocpnDC &dc, ViewPort &vp,
 
   dc.DrawLines(mcd->m_nvertices, pwp, 0, 0, false);
   return true;
-}
-
-void cm93compchart::RenderCellOutlinesOnGL(ViewPort &vp, M_COVR_Desc *mcd) {
-#ifdef ocpnUSE_GL
-  // cannot reuse coordinates
-  if (vp.m_projection_type != mcd->gl_screen_projection_type ||
-      !glChartCanvas::HasNormalizedViewPort(vp) || vp.m_projection_type == PROJECTION_POLAR /* could speed up by also testing for n-s switch */) {
-    delete[] mcd->gl_screen_vertices;
-    mcd->gl_screen_vertices = NULL;
-  }
-
-  // if needed, cache normalized vertices
-  if (!mcd->gl_screen_vertices) {
-    // first compute a buffer size
-    double lastlat, lastlon = 0;
-    int count = 0;
-    float_2Dpt *p = mcd->pvertices;
-    for (int ip = 0; ip < mcd->m_nvertices; ip++, p++) {
-      double lon = p->x;
-      if (lon >= 180) lon -= 360;
-
-      // crosses IDL? if so break up into two segments
-      if (fabs(lon - lastlon) > 180) count++;
-
-      count++;
-      lastlon = lon;
-    }
-
-    mcd->gl_screen_vertices = new float_2Dpt[2 * count];
-
-    wxPoint2DDouble l;
-    p = mcd->pvertices;
-    float_2Dpt *q = mcd->gl_screen_vertices;
-    lastlon = 0;
-
-    bool lastvalid = false;
-    for (int ip = 0; ip < mcd->m_nvertices; ip++, p++) {
-      double lat = p->y;
-      double lon = p->x;
-      if (lon >= 180) lon -= 360;
-
-      // crosses IDL? if so break up into two segments
-      if (fabs(lon - lastlon) > 180) {
-        if (lastvalid) {
-          wxPoint2DDouble r =
-              vp.GetDoublePixFromLL(lastlat, lastlon > 0 ? 180 : -180);
-          if (!std::isnan(r.m_x)) {
-            q->y = l.m_x;
-            q->x = l.m_y;
-            q++;
-
-            //    Outlines stored in MCDs are not adjusted for offsets
-            r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
-            r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
-
-            q->y = r.m_x;
-            q->x = r.m_y;
-            q++;
-          }
-        }
-
-        wxPoint2DDouble r = vp.GetDoublePixFromLL(lat, lon > 0 ? 180 : -180);
-        if ((lastvalid = !std::isnan(r.m_x))) {
-          r.m_x -= mcd->user_xoff * vp.view_scale_ppm;
-          r.m_y -= mcd->user_yoff * vp.view_scale_ppm;
-          l.m_x = r.m_x;
-        }
-      }
-
-      lastlat = lat;
-      lastlon = lon;
-
-      wxPoint2DDouble s = vp.GetDoublePixFromLL(lat, lon);
-      if (!std::isnan(s.m_x)) {
-        //    Outlines stored in MCDs are not adjusted for offsets
-        s.m_x -= mcd->user_xoff * vp.view_scale_ppm;
-        s.m_y -= mcd->user_yoff * vp.view_scale_ppm;
-
-        if (lastvalid) {
-          q->y = l.m_x;
-          q->x = l.m_y;
-          q++;
-
-          q->y = s.m_x;
-          q->x = s.m_y;
-          q++;
-        }
-
-        l = s;
-        lastvalid = true;
-      } else
-        lastvalid = false;
-    }
-
-    mcd->m_ngl_vertices = q - mcd->gl_screen_vertices;
-    mcd->gl_screen_projection_type = vp.m_projection_type;
-  }
-
-#if 1 //!defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-
-#if 1  // Push array (faster)
-  glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), mcd->gl_screen_vertices);
-  glDrawArrays(GL_LINES, 0, mcd->m_ngl_vertices);
-#else  // immediate mode (may be useful for debugging buggy gfx cards)
-  glBegin(GL_LINES);
-  for (int i = 0; i < mcd->m_ngl_vertices; i++)
-    glVertex2f(mcd->gl_screen_vertices[i].y, mcd->gl_screen_vertices[i].x);
-  glEnd();
-#endif
-#endif
-#endif
 }
 
 void cm93compchart::GetPointPix(ObjRazRules *rzRules, float rlat, float rlon,
@@ -6593,9 +6402,9 @@ void CM93OffsetDialog::UpdateOffsets(void) {
 
     //    Closing the current cell will record the offsets in the M_COVR cache
     //    file Re-opening will then refresh the M_COVRs in the cover set
-    OCPNPlatform::ShowBusySpinner();
+    AbstractPlatform::ShowBusySpinner();
     m_pcompchart->CloseandReopenCurrentSubchart();
-    OCPNPlatform::HideBusySpinner();
+    AbstractPlatform::HideBusySpinner();
 
     if (m_pparent) {
       m_pparent->Refresh(true);

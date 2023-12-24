@@ -23,23 +23,18 @@
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
-#include <wx/dcscreen.h>
 #include <wx/dynarray.h>
-#include <wx/gdicmn.h>
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 
-#include "dychart.h"
 #include "base_platform.h"
 #include "cutil.h"
 #include "georef.h"
-#include "glChartCanvas.h"
 #include "navutil_base.h"
 #include "route.h"
 #include "routeman.h"
 #include "route_point.h"
 #include "select.h"
-#include "wx28compat.h"
 
 #include <wx/listimpl.cpp>
 
@@ -59,8 +54,12 @@ extern float g_ChartScaleFactorExp;
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
 extern bool g_bOverruleScaMin;
+extern bool g_bShowWptName;
 
 WX_DEFINE_LIST(RoutePointList);
+
+std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
+    = [](unsigned, const unsigned*) { assert(false); };
 
 RoutePoint::RoutePoint() {
   m_pbmIcon = NULL;
@@ -115,12 +114,11 @@ RoutePoint::RoutePoint() {
   m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
   m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
   m_ScaMin = g_iWpt_ScaMin;
+  m_bShowName = g_bShowWptName;
   m_ScaMax = 0;
   b_UseScamin = g_bUseWptScaMin;
 
-#ifdef ocpnUSE_GL
   m_pos_on_screen = false;
-#endif
   m_bDrawDragHandle = false;
   m_dragIconTexture = 0;
   m_draggingOffsetx = m_draggingOffsety = 0;
@@ -269,6 +267,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_ScaMin = g_iWpt_ScaMin;
   m_ScaMax = 0;
   b_UseScamin = g_bUseWptScaMin;
+  m_bShowName = g_bShowWptName;
 
   m_bDrawDragHandle = false;
   m_dragIconTexture = 0;
@@ -285,9 +284,7 @@ RoutePoint::~RoutePoint() {
     m_HyperlinkList->DeleteContents(true);
     delete m_HyperlinkList;
   }
-#ifdef ocpnUSE_GL
-  if (m_dragIconTexture > 0) glDeleteTextures(1, &m_dragIconTexture);
-#endif
+  RoutePoint::delete_gl_textures(1, &m_dragIconTexture);
 }
 
 wxDateTime RoutePoint::GetCreateTime() {
@@ -300,12 +297,10 @@ wxDateTime RoutePoint::GetCreateTime() {
 void RoutePoint::SetCreateTime(wxDateTime dt) { m_CreateTimeX = dt; }
 
 void RoutePoint::SetName(const wxString &name) {
-#ifdef ocpnUSE_GL
   if (m_iTextTexture) {
-    glDeleteTextures(1, &m_iTextTexture);
+    RoutePoint::delete_gl_textures(1, &m_iTextTexture);
     m_iTextTexture = 0;
   }
-#endif
   m_MarkName = name;
   CalculateNameExtents();
 }

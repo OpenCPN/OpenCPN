@@ -135,10 +135,14 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlTYPE:
       s1 = t1->Get_vessel_type_string(false);
-      if ((t1->Class == AIS_BASE) || (t1->Class == AIS_SART)) s1 = _T("-");
+      if ((t1->Class == AIS_BASE) ||
+          (t1->Class == AIS_SART || (t1->Class == AIS_METEO)))
+        s1 = _T("-");
 
       s2 = t2->Get_vessel_type_string(false);
-      if ((t1->Class == AIS_BASE) || (t1->Class == AIS_SART)) s2 = _T("-");
+      if ((t1->Class == AIS_BASE) || (t1->Class == AIS_SART) ||
+          (t1->Class == AIS_METEO))
+        s2 = _T("-");
       break;
 
     case tlNAVSTATUS: {
@@ -154,8 +158,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
         s1 = _("-");
 
       if ((t1->Class == AIS_ATON) || (t1->Class == AIS_BASE) ||
-          (t1->Class == AIS_CLASS_B))
-        s1 = _T("-");
+          (t1->Class == AIS_CLASS_B) || (t1->Class == AIS_METEO)) s1 = _T("-");
 
       if ((t2->NavStatus <= 15) && (t2->NavStatus >= 0)) {
         if (t2->Class == AIS_SART) {
@@ -169,8 +172,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
         s2 = _("-");
 
       if ((t2->Class == AIS_ATON) || (t2->Class == AIS_BASE) ||
-          (t2->Class == AIS_CLASS_B))
-        s2 = _T("-");
+          (t2->Class == AIS_CLASS_B) || (t2->Class == AIS_METEO)) s2 = _T("-");
 
       break;
     }
@@ -194,7 +196,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlCOG: {
       if ((t1->COG >= 360.0) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE))
+          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
         n1 = -1.0;
       else {
         int crs = wxRound(t1->COG);
@@ -205,7 +207,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       }
 
       if ((t2->COG >= 360.0) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE))
+          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
         n2 = -1.0;
       else {
         int crs = wxRound(t2->COG);
@@ -221,13 +223,13 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlSOG: {
       if ((t1->SOG > 100.) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE))
+          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
         n1 = -1.0;
       else
         n1 = t1->SOG;
 
       if ((t2->SOG > 100.) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE))
+          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
         n2 = -1.0;
       else
         n2 = t2->SOG;
@@ -237,7 +239,7 @@ static int ItemCompare(AisTargetData *pAISTarget1,
     }
     case tlCPA: {
       if ((!t1->bCPA_Valid) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE))
+          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
         n1 = 99999.0;
       else
         n1 = t1->CPA;
@@ -253,13 +255,13 @@ static int ItemCompare(AisTargetData *pAISTarget1,
     }
     case tlTCPA: {
       if ((!t1->bCPA_Valid) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE))
+          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
         n1 = 99999.0;
       else
         n1 = t1->TCPA;
 
       if ((!t2->bCPA_Valid) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE))
+          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
         n2 = 99999.0;
       else
         n2 = t2->TCPA;

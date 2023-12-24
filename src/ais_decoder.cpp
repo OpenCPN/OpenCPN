@@ -40,16 +40,20 @@
 
 #include <wx/datetime.h>
 #include <wx/event.h>
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 #include <wx/log.h>
 #include <wx/string.h>
 #include <wx/textfile.h>
 #include <wx/timer.h>
 #include <wx/tokenzr.h>
 
+// Be sure to include these before ais_decoder.h
+// to avoid a conflict with rapidjson/fwd.h
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+
 #include "ais_decoder.h"
+#include "meteo_points.h"
 #include "ais_target_data.h"
 #include "comm_navmsg_bus.h"
 #include "config_vars.h"
@@ -72,7 +76,9 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
+wxEvtHandler* g_pais_alert_dialog_active;
+
+extern wxEvtHandler *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern Select *pSelect;
 extern bool bGPSValid;
@@ -99,8 +105,6 @@ extern bool g_bInlandEcdis;
 extern int g_WplAction;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
@@ -166,6 +170,8 @@ static inline double MS2KNOTS(double ms) {
   return ms * 1.9438444924406;
 }
 
+int AisMeteoNewMmsi(int, int, int, int, int);
+
 void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
                       AIS_Target_Name_Hash *AISTargetNamesNC, long mmsi);
@@ -202,7 +208,7 @@ AisDecoder::AisDecoder(AisDecoderCallbacks callbacks)
 
   BuildERIShipTypeHash();
 
-  g_pais_alert_dialog_active = NULL;
+  g_pais_alert_dialog_active = nullptr;
   m_bAIS_Audio_Alert_On = false;
 
   m_n_targets = 0;
@@ -663,6 +669,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     data.AtoNName[34] = 0;
     strncpy(pTargetData->ShipName, data.AtoNName, SHIP_NAME_LEN - 1);
+    pTargetData->ShipName[sizeof(pTargetData->ShipName) - 1] = '\0';
     pTargetData->b_nameValid = true;
     pTargetData->MID = 124;  // Indicates a name from n2k
     pTargetData->Class = AIS_ATON;
@@ -735,8 +742,9 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
 
     //Populate the target_data
     pTargetData->MMSI = mmsi;
-    Name[sizeof(Name) - 1] = 0;
     strncpy(pTargetData->ShipName, Name, SHIP_NAME_LEN - 1);
+    pTargetData->ShipName[sizeof(pTargetData->ShipName) - 1] = '\0';
+    Name[sizeof(Name) - 1] = 0;
     pTargetData->b_nameValid = true;
     pTargetData->MID = 124;  // Indicates a name from n2k
 
@@ -750,9 +758,11 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->Draft = Draught;
     pTargetData->IMO = IMOnumber;
     strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
+    pTargetData->CallSign[sizeof(pTargetData->CallSign) - 1] = '\0';
     pTargetData->ShipType = (unsigned char)VesselType;
-    Destination[sizeof(Destination) - 1] = 0;
     strncpy(pTargetData->Destination, Destination, DESTINATION_LEN - 1);
+    pTargetData->Destination[sizeof(pTargetData->Destination) - 1] = '\0';
+    Destination[sizeof(Destination) - 1] = 0;
 
     if (!N2kIsNA(ETAdate) && !N2kIsNA(ETAtime)) {
       long secs = (ETAdate * 24 * 3600) + wxRound(ETAtime);
@@ -866,6 +876,7 @@ bool AisDecoder::HandleN2K_129810( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->DimC = Beam - PosRefStbd;
     pTargetData->DimD = PosRefStbd;
     strncpy(pTargetData->CallSign, Callsign, CALL_SIGN_LEN - 1);
+    pTargetData->CallSign[sizeof(pTargetData->CallSign) - 1] = '\0';
     pTargetData->ShipType = (unsigned char)VesselType;
 
     pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
@@ -1130,6 +1141,13 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
         handleUpdate(pTargetData, bnewtarget, *itr);
       }
     }
+    if (pTargetData->b_hasMeteoFi) {
+      /* Meteo data is not(yet) supported by SignalK.
+         But the target position is there producing a false
+         class A target, "jumping" around. Sort it out.*/
+      return;
+    }
+
     pTargetData->MMSI = mmsi;
     // A SART can send wo any values first transmits. Detect class already here.
     if (97 == mmsi / 10000000) {
@@ -1192,13 +1210,13 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
       if (item["value"].HasMember("altitude")) {
         pTargetData->altitude = item["value"]["altitude "].GetInt();
       }
-    } else if (update_path == _T("navigation.speedOverGround")) {
+    } else if (update_path == _T("navigation.speedOverGround") && item["value"].IsNumber()) {
       pTargetData->SOG = item["value"].GetDouble() * ms_to_knot_factor;
-    } else if (update_path == _T("navigation.courseOverGroundTrue")) {
+    } else if (update_path == _T("navigation.courseOverGroundTrue") && item["value"].IsNumber()) {
       pTargetData->COG = GEODESIC_RAD2DEG(item["value"].GetDouble());
-    } else if (update_path == _T("navigation.headingTrue")) {
+    } else if (update_path == _T("navigation.headingTrue") && item["value"].IsNumber()) {
       pTargetData->HDG = GEODESIC_RAD2DEG(item["value"].GetDouble());
-    } else if (update_path == _T("navigation.rateOfTurn")) {
+    } else if (update_path == _T("navigation.rateOfTurn") && item["value"].IsNumber()) {
       pTargetData->ROTAIS = 4.733 * sqrt(item["value"].GetDouble());
     } else if (update_path == _T("design.aisShipType")) {
       if (item["value"].HasMember("id")) {
@@ -1225,11 +1243,11 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         }
       }
     } else if (update_path == _T("design.draft")) {
-      if (item["value"].HasMember("maximum")) {
+      if (item["value"].HasMember("maximum") && item["value"].IsNumber()) {
         pTargetData->Draft = item["value"]["maximum"].GetDouble();
         pTargetData->Euro_Draft = item["value"]["maximum"].GetDouble();
       }
-      if (item["value"].HasMember("current")) {
+      if (item["value"].HasMember("current") && item["value"].IsNumber()) {
         double draft = item["value"]["current"].GetDouble();
         if (draft > 0) {
           pTargetData->Draft = draft;
@@ -1334,14 +1352,20 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
             pTargetData->blue_paddle == 2 ? true : false;
       }
     } else if (update_path == _T("sensors.ais.designatedAreaCode")) {
-      if (item["value"].GetInt() == 200) {
+      if (item["value"].GetInt() == 200) {  // European inland
         pTargetData->b_hasInlandDac = true;
-      }  // European inland
+      }
+      else if (item["value"].GetInt() == 1) {
+        pTargetData->b_hasImoDac = true;  // IMO specification
+      }
     } else if (update_path == _T("sensors.ais.functionalId")) {
-      if (item["value"].GetInt() ==
-              10 &&  // "Inland ship static and voyage related data"
-          pTargetData->b_hasInlandDac) {
+      if (item["value"].GetInt() == 10 && pTargetData->b_hasInlandDac) {
+          // "Inland ship static and voyage related data"
         pTargetData->b_isEuroInland = true;
+      }
+      else if (item["value"].GetInt() == 31 && pTargetData->b_hasImoDac) {
+          // Dac 001 and FI 31 is IMO Meteo message
+        pTargetData->b_hasMeteoFi = true;
       }
     } else if (update_path == _T("")) {
       if (item["value"].HasMember("name")) {
@@ -1534,7 +1558,6 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   int gpsg_mmsi = 0;
   int arpa_mmsi = 0;
   int aprs_mmsi = 0;
-  int follower_mmsi = 0;
   int mmsi = 0;
 
   long arpa_tgt_num = 0;
@@ -1911,6 +1934,53 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     //  Extract the MMSI
     if (!mmsi) mmsi = strbit.GetInt(9, 30);
     long mmsi_long = mmsi;
+
+    // Ais8_001_31 || ais8_367_33 (class AIS_METEO) test for a new mmsi ID
+    int origin_mmsi = 0;
+    int messID = strbit.GetInt(1, 6);
+    int dac = strbit.GetInt(41, 10);
+    int fi = strbit.GetInt(51, 6);
+    if (messID == 8) {
+      int met_lon, met_lat;
+      if (dac == 001 && fi == 31) {
+        origin_mmsi = mmsi;
+        met_lon = strbit.GetInt(57, 25);
+        met_lat = strbit.GetInt(82, 24);
+        mmsi = AisMeteoNewMmsi(mmsi, met_lat, met_lon, 25, 0);
+        mmsi_long = mmsi;
+
+      } else if (dac == 367 && fi == 33) { // ais8_367_33
+          // Check for a valid message size before further handling
+        const int size = strbit.GetBitCount();
+        if (size < 168) return AIS_GENERIC_ERROR;
+        const int startb = 56;
+        const int slot_size = 112;
+        const int extra_bits = (size - startb) % slot_size;
+        if (extra_bits > 0) return AIS_GENERIC_ERROR;
+
+        int mes_type = strbit.GetInt(57, 4);
+        int site_ID = strbit.GetInt(77, 7);
+        if (mes_type == 0) { // Location
+          origin_mmsi = mmsi;
+          met_lon = strbit.GetInt(90, 28);
+          met_lat = strbit.GetInt(118, 27);
+          mmsi = AisMeteoNewMmsi(mmsi, met_lat, met_lon, 28, site_ID);
+          mmsi_long = mmsi;
+        } else { // Other messsage types without position.
+            // We need a previously received type 0, position message
+            // to get use of any sensor report.
+          int x_mmsi = AisMeteoNewMmsi(mmsi, 91, 181, 0, site_ID);
+          if (x_mmsi) {
+            origin_mmsi = mmsi;
+            mmsi = x_mmsi;
+            mmsi_long = mmsi;
+          } else // So far no use for this report.
+            return AIS_GENERIC_ERROR;
+
+        }
+      }
+    }
+
     //  Search the current AISTargetList for an MMSI match
     auto it = AISTargetList.find(mmsi);
     if (it == AISTargetList.end())  // not found
@@ -1918,16 +1988,23 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       pTargetData = AisTargetDataMaker::GetInstance().GetTargetData();
       bnewtarget = true;
       m_n_targets++;
+
+      if (origin_mmsi) {  // New mmsi allocated for a Meteo station
+        pTargetData->MMSI = mmsi;
+        pTargetData->met_data.original_mmsi = origin_mmsi;
+      }
     } else {
       pTargetData = it->second;    // find current entry
-      pStaleTarget = pTargetData;  // save a pointer to stale data
+
+      if(!bnewtarget) pStaleTarget = pTargetData;  // save a pointer to stale data
+      if (origin_mmsi) {  // Meteo point
+        pTargetData->MMSI = mmsi;
+        pTargetData->met_data.original_mmsi = origin_mmsi;
+      }
     }
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       MmsiProperties *props = g_MMSI_Props_Array[i];
       if (mmsi == props->MMSI) {
-        // Check to see if this target has been flagged as a "follower"
-        if (props->m_bFollower) follower_mmsi = mmsi;
-
         // Check if this target has a dedicated tracktype
         if (TRACKTYPE_NEVER == props->TrackType) {
           pTargetData->b_show_track = false;
@@ -1967,14 +2044,21 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
 
               gps_watchdog_timeout_ticks =
                   60;  // increase watchdog time up to 1 minute
-              // add the changed sentence into nmea stream
+              // add the changed sentence into nmea message system
+              std::string full_sentence = aivdostr.ToStdString();
+              std::string identifier("AIVDO");
+              // We notify based on full message, including the Talker ID
+              // notify message listener and also "ALL" N0183 messages, to support plugin
+              // API using original talker id
+              auto address = std::make_shared<NavAddr0183>("virtual");
+              auto msg =
+              std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
+              auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
 
-              //FIXME (dave) What is this all about?
-//               OCPN_DataStreamEvent event(wxEVT_OCPN_DATASTREAM, 0);
-//               std::string s = std::string(aivdostr.mb_str());
-//               event.SetNMEAString(s);
-//               event.SetStream(NULL);
-//               g_pMUX->AddPendingEvent(event);
+              auto &msgbus = NavMsgBus::GetInstance();
+
+              msgbus.Notify(std::move(msg));
+              msgbus.Notify(std::move(msg_all));
             }
           }
           return AIS_NoError;
@@ -1996,7 +2080,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     if (pStaleTarget)
       pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
 
-    if (pTargetData) {
+     if (pTargetData) {
       if (gpsg_mmsi) {
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
@@ -2094,8 +2178,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
             Parse_VDXBitstring(&strbit, pTargetData);  // Parse the new data
       }
 
-      //  Catch followers, and set correct flag
-      if (follower_mmsi) pTargetData->b_isFollower = true;
+      // Catch mmsi properties like track, persistent track, follower.
+      getMmsiProperties(pTargetData);
 
       //     Update the most recent report period
       pTargetData->RecentPeriod =
@@ -2575,8 +2659,12 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
   now.MakeGMT();
   int message_ID = bstr->GetInt(1, 6);  // Parse on message ID
   ptd->MID = message_ID;
-  ptd->MMSI =
-      bstr->GetInt(9, 30);  // MMSI is always in the same spot in the bitstream
+
+    // Save for Ais8_001_31 and ais8_367_33 (class AIS_METEO)
+  int met_mmsi = ptd->MMSI;
+
+    // MMSI is always in the same spot in the bitstream
+  ptd->MMSI = bstr->GetInt(9, 30);
 
   switch (message_ID) {
     case 1:  // Position Report
@@ -3074,6 +3162,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
     {
       int dac = bstr->GetInt(41, 10);
       int fi = bstr->GetInt(51, 6);
+
       if (dac == 200)  // European inland
       {
         if (fi == 10)  // "Inland ship static and voyage related data"
@@ -3175,6 +3264,267 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             parse_result = true;
           }
         }
+
+          // Meteorological and Hydrographic data ref: IMO SN.1/Circ.289
+        if (fi == 31) {
+          if (bstr->GetBitCount() >= 360) {
+            //Ais8_001_31  mmsi can have been changed.
+            if (met_mmsi != 666) ptd->MMSI = met_mmsi;
+
+            // Default out of bounce values.
+            double lon_tentative = 181.;
+            double lat_tentative = 91.;
+
+            int lon = bstr->GetInt(57, 25);
+            int lat = bstr->GetInt(82, 24);
+
+            if (lon & 0x01000000)  // negative?
+               lon |= 0xFE000000;
+            lon_tentative = lon / 60000.;
+
+            if (lat & 0x00800000)  //negative?
+               lat |= 0xFF000000;
+            lat_tentative = lat / 60000.;
+
+            ptd->Lon = lon_tentative;
+            ptd->Lat = lat_tentative;
+
+              // Try to make unique name for each station based on position
+            wxString x = ptd->ShipName;
+            if (x.Find("METEO") == wxNOT_FOUND) {
+            double id1, id2;
+            wxString slat = wxString::Format("%0.3f", lat_tentative);
+            wxString slon = wxString::Format("%0.3f", lon_tentative);
+            slat.ToDouble(&id1);
+            slon.ToDouble(&id2);
+            wxString nameID = "METEO ";
+            nameID << wxString::Format("%0.3f", abs(id1) + abs(id2)).Right(3);
+            strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
+            }
+
+            ptd->met_data.pos_acc = bstr->GetInt(106, 1);
+            ptd->met_data.day = bstr->GetInt(107, 5);
+            ptd->met_data.hour = bstr->GetInt(112, 5);
+            ptd->met_data.minute = bstr->GetInt(117, 6);
+            ptd->met_data.wind_kn = bstr->GetInt(123, 7);
+            ptd->met_data.wind_gust_kn = bstr->GetInt(130, 7);
+            ptd->met_data.wind_dir = bstr->GetInt(137, 9);
+            ptd->met_data.wind_gust_dir = bstr->GetInt(146, 9);
+
+            int tmp = bstr->GetInt(155, 11);
+            if (tmp & 0x00000400)  // negative?
+              tmp |= 0xFFFFF800;
+            ptd->met_data.air_temp = tmp / 10.;
+            ptd->met_data.rel_humid = bstr->GetInt(166, 7);
+            int dew = bstr->GetInt(173, 10);
+            if (dew & 0x00000200)  // negative? (bit 9 = 1)
+              dew |= 0xFFFFFC00;
+            ptd->met_data.dew_point = dew / 10.;
+
+            /*Air pressure, defined as pressure reduced to sea level,
+              in 1 hPa steps.0 = pressure 799 hPa or less
+              1 - 401 = 800 - 1200 hPa*/
+            ptd->met_data.airpress = bstr->GetInt(183, 9) + 799;
+            ptd->met_data.airpress_tend = bstr->GetInt(192, 2);
+
+            int horVis = bstr->GetInt(194, 8);
+            if (horVis & 0x80u) { // if MSB = 1
+              horVis &= 0x7F;     // We print >x.x
+              ptd->met_data.hor_vis_GT = true;
+            } else
+              ptd->met_data.hor_vis_GT = false;
+
+            ptd->met_data.hor_vis = horVis / 10.0;
+
+            ptd->met_data.water_lev_dev = (bstr->GetInt(202, 12) / 100.) - 10.;
+            ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);
+            ptd->met_data.current = bstr->GetInt(216, 8) / 10.;
+            ptd->met_data.curr_dir = bstr->GetInt(224, 9);
+            ptd->met_data.wave_height = bstr->GetInt(277, 8) / 10.;
+            ptd->met_data.wave_period = bstr->GetInt(285, 6);
+            ptd->met_data.wave_dir = bstr->GetInt(291, 9);
+            ptd->met_data.swell_height = bstr->GetInt(300, 8) / 10;
+            ptd->met_data.swell_per = bstr->GetInt(308, 6);
+            ptd->met_data.swell_dir = bstr->GetInt(314, 9);
+            ptd->met_data.seastate = bstr->GetInt(323, 4);
+
+            int wt = bstr->GetInt(327, 10);
+            if (wt & 0x00000200)  // negative? (bit 9 = 1)
+              wt |= 0xFFFFFC00;
+            ptd->met_data.water_temp = wt / 10.;
+
+            ptd->met_data.precipitation = bstr->GetInt(337, 3);
+            ptd->met_data.salinity = bstr->GetInt(340, 9) / 10.;
+            ptd->met_data.ice = bstr->GetInt(349, 2);
+
+            ptd->Class = AIS_METEO;
+            ptd->COG = -1.;
+            ptd->HDG = 511;
+            ptd->SOG = -1.;
+            ptd->b_NoTrack = true;
+            ptd->b_show_track = false;
+            ptd->b_positionDoubtful = false;
+            ptd->b_positionOnceValid = true;
+            b_posn_report = true;
+            ptd->PositionReportTicks = now.GetTicks();
+            ptd->b_nameValid = true;
+
+            parse_result = true;
+          }
+        }
+        break;
+      }
+
+      if (dac == 367 && fi == 33) {  //  ais8_367_33
+          // US data acording to DAC367_FI33_em_version_release_3-23mar15_0
+          // We use only the same kind of data as of ais8_001_31 from these reports.
+        const int size = bstr->GetBitCount();
+        if (size >= 168) {
+            //  Change to meteo mmsi-ID
+          if (met_mmsi != 666) ptd->MMSI = met_mmsi;
+          const int startbits = 56;
+          const int slotsize = 112;
+          const int slots_count = (size - startbits) / slotsize;
+          int slotbit;
+          for (int slot = 0; slot < slots_count; slot++) {
+            slotbit = slot * slotsize;
+            int type = bstr->GetInt(slotbit + 57, 4);
+            ptd->met_data.hour = bstr->GetInt(slotbit + 66, 5);
+            ptd->met_data.minute = bstr->GetInt(slotbit + 71, 6);
+            int Site_ID = bstr->GetInt(slotbit + 77, 7);
+
+              // Name the station acc to site ID until message type 1
+            if (!ptd->b_nameValid) {
+              wxString nameID = "METEO Site: ";
+              nameID << Site_ID;
+              strncpy(ptd->ShipName, nameID, SHIP_NAME_LEN - 1);
+              ptd->b_nameValid = true;
+            }
+
+            if (type == 0) { //Location
+              int lon = bstr->GetInt(slotbit + 90, 28);
+              if (lon & 0x08000000)  // negative?
+                lon |= 0xf0000000;
+              ptd->Lon = lon / 600000.;
+
+              int lat = bstr->GetInt(slotbit + 118, 27);
+              if (lat & 0x04000000)  // negative?
+                lat |= 0xf8000000;
+              ptd->Lat = lat / 600000.;
+              ptd->b_positionOnceValid = true;
+
+            } else if (type == 1) {  // Name
+              bstr->GetStr(slotbit + 84, 84, &ptd->ShipName[0], SHIP_NAME_LEN);
+              ptd->b_nameValid = true;
+
+            } else if (type == 2) {  // Wind
+                // Description 1 and 2 are real time values.
+              int descr = bstr->GetInt(slotbit + 116, 3);
+              if (descr == 1 || descr == 2) {
+                ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
+                ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
+                ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
+                ptd->met_data.wind_gust_dir = bstr->GetInt(slotbit + 107, 9);
+              }
+
+            } else if (type == 3) {  // Water level
+              // Description 1 and 2 are real time values.
+              int descr = bstr->GetInt(slotbit + 108, 3);
+              if (descr == 1 || descr == 2) {
+                int wltype = bstr->GetInt(slotbit + 84, 1);
+                int wl = bstr->GetInt(slotbit + 85, 16); // cm
+                if (wl & 0x00004000)  // negative?
+                  wl |= 0xffff0000;
+
+                if (wltype == 1) // 0 = deviation from datum; 1 = water depth
+                  ptd->met_data.water_level = wl/100.; // m
+                else
+                  ptd->met_data.water_lev_dev = wl / 100.; // m
+              }
+              ptd->met_data.water_lev_trend = bstr->GetInt(slotbit + 101, 2);
+              ptd->met_data.vertical_ref = bstr->GetInt(slotbit + 103, 5);
+
+            } else if (type == 6) {  //  Horizontal Current Profil
+              int readbearing = bstr->GetInt(slotbit + 84, 9);
+              int readdistance = bstr->GetInt(slotbit + 93, 9);
+              ptd->met_data.current = bstr->GetInt(slotbit + 102, 8) / 10.0;
+              ptd->met_data.curr_dir = bstr->GetInt(slotbit + 110, 9);
+              int readLevel = bstr->GetInt(slotbit + 119, 9);
+
+            } else if (type == 7) {  // Sea state
+              int swell_descr = bstr->GetInt(slotbit + 111, 3);  // Use 1 || 2 real data
+              if (swell_descr == 1 || swell_descr == 2) {
+                ptd->met_data.swell_height = bstr->GetInt(slotbit + 84, 8) / 10.0;
+                ptd->met_data.swell_per = bstr->GetInt(slotbit + 92, 6);
+                ptd->met_data.swell_dir = bstr->GetInt(slotbit + 98, 9);
+              }
+              ptd->met_data.seastate = bstr->GetInt(slotbit + 107, 4); // Bf
+              int wt_descr = bstr->GetInt(slotbit + 131, 3);
+              if (wt_descr == 1 || wt_descr == 2)
+                ptd->met_data.water_temp = bstr->GetInt(slotbit + 114, 10) / 10. - 10.;
+
+              int wawe_descr = bstr->GetInt(slotbit + 157, 3);
+              if (wawe_descr == 1 || wawe_descr == 2) { // Only real data
+                ptd->met_data.wave_height = bstr->GetInt(slotbit + 134, 8) / 10.0;
+                ptd->met_data.wave_period = bstr->GetInt(slotbit + 142, 6);
+                ptd->met_data.wave_dir = bstr->GetInt(slotbit + 148, 9);
+              }
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 160, 9 / 10.0);
+
+            } else if (type == 8) {  // Salinity
+              ptd->met_data.water_temp = bstr->GetInt(slotbit + 84, 10) / 10.0 - 10.0;
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 120, 9) / 10.0;
+
+            } else if (type == 9) {  // Weather
+              int tmp = bstr->GetInt(slotbit + 84, 11);
+              if (tmp & 0x00000400)  // negative?
+                tmp |= 0xFFFFF800;
+              ptd->met_data.air_temp = tmp / 10.;
+              int pp , precip = bstr->GetInt(slotbit + 98, 2);
+              switch (precip) { // Adapt to IMO precipitation
+              case 0:
+                pp = 1;
+              case 1:
+                pp = 5;
+              case 2:
+                pp = 4;
+              case 3:
+                pp = 7;
+              }
+              ptd->met_data.precipitation = pp;
+              ptd->met_data.hor_vis = bstr->GetInt(slotbit + 100, 8) / 10.0;
+              ptd->met_data.dew_point = bstr->GetInt(slotbit + 108, 10) / 10.0 - 20.0;
+              ptd->met_data.airpress = bstr->GetInt(slotbit + 121, 9) + 799;
+              ptd->met_data.airpress_tend = bstr->GetInt(slotbit + 130, 2);
+              ptd->met_data.salinity = bstr->GetInt(slotbit + 135, 9) / 10.0;
+
+            } else if (type == 11) {  // Wind V2
+              // Description 1 and 2 are real time values.
+              int descr = bstr->GetInt(slotbit + 113, 3);
+              if (descr == 1 || descr == 2) {
+              ptd->met_data.wind_kn = bstr->GetInt(slotbit + 84, 7);
+              ptd->met_data.wind_gust_kn = bstr->GetInt(slotbit + 91, 7);
+              ptd->met_data.wind_dir = bstr->GetInt(slotbit + 98, 9);
+              }
+            }
+          }
+
+          if (ptd->b_positionOnceValid) {
+            ptd->Class = AIS_METEO;
+            ptd->COG = -1.;
+            ptd->HDG = 511;
+            ptd->SOG = -1.;
+            ptd->b_NoTrack = true;
+            ptd->b_show_track = false;
+            ptd->b_positionDoubtful = false;
+            b_posn_report = true;
+            ptd->PositionReportTicks = now.GetTicks();
+            ptd->b_nameValid = true;
+
+            parse_result = true;
+          }
+        }
+        break;
       }
       break;
     }
@@ -3450,7 +3800,8 @@ void AisDecoder::UpdateAllAlarms(void) {
         }
 
         if ((td->CPA < g_CPAWarn_NM) && (td->TCPA > 0) &&
-            (td->Class != AIS_ATON) && (td->Class != AIS_BASE)) {
+            (td->Class != AIS_ATON) && (td->Class != AIS_BASE) &&
+            (td->Class != AIS_METEO)) {
           if (g_bTCPA_Max) {
             if (td->TCPA < g_TCPA_Max) {
               if (td->b_isFollower)
@@ -3508,6 +3859,11 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   if (dist <= 1e-5) ptarget->Brg = -1.0;  // Brg is undefined if Range == 0.
 
   if (!ptarget->b_positionOnceValid || !bGPSValid) {
+    ptarget->bCPA_Valid = false;
+    return;
+  }
+  //  Ais Meteo is not a hard target in danger for collision
+  if (ptarget->Class == AIS_METEO) {
     ptarget->bCPA_Valid = false;
     return;
   }
@@ -3653,7 +4009,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       break;  // leave the loop
     }
     //std::shared_ptr<AisTargetData> xtd(std::make_shared<AisTargetData>(*it->second));
-    auto xtd = it->second;
+    std::shared_ptr<AisTargetData> xtd = it->second;
 
     int target_posn_age = now.GetTicks() - xtd->PositionReportTicks;
     int target_static_age = now.GetTicks() - xtd->StaticReportTicks;
@@ -3701,7 +4057,8 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         xtd->b_active = false;
     }
 
-    if (xtd->Class == AIS_SART) removelost_Mins = 18.0;
+    if (xtd->Class == AIS_SART || xtd->Class == AIS_METEO)
+      removelost_Mins = 18.0;
 
     //      Remove lost targets if specified
 
@@ -3758,7 +4115,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   for (unsigned int i = 0; i < remove_array.size(); i++) {
     auto itd = current_targets.find(remove_array[i]);
     if (itd != current_targets.end()) {
-      auto td = itd->second;
+      std::shared_ptr<AisTargetData> td = itd->second;
       current_targets.erase(itd);
       //delete td;
     }
@@ -3785,7 +4142,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
   std::shared_ptr<AisTargetData> palert_target = NULL;
   int audioType = AISAUDIO_NONE;
 
-  if (NULL == g_pais_alert_dialog_active) {
+  if (!g_pais_alert_dialog_active) {
     pAISMOBRoute = NULL;    // Reset the AISMOB auto route.
     double tcpa_min = 1e6;  // really long
     double sart_range = 1e6;
@@ -3794,7 +4151,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     std::shared_ptr<AisTargetData> palert_target_dsc = NULL;
 
     for (it = current_targets.begin(); it != current_targets.end(); ++it) {
-      auto td = it->second;
+      std::shared_ptr<AisTargetData> td = it->second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
           if (g_bAIS_CPA_Alert && td->b_active) {
@@ -3844,9 +4201,9 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       audioType = AISAUDIO_DSC;
     }
   }
-  else {                // Alert is currently shown
-    palert_target = Get_Target_Data_From_MMSI(
-        g_pais_alert_dialog_active->Get_Dialog_MMSI());
+  else {
+    // Alert is currently shown, get target from from knowable GUI
+    palert_target = Get_Target_Data_From_MMSI(m_callbacks.get_target_mmsi());
   }
     // Show or update the alert
   if (palert_target)
@@ -4081,4 +4438,81 @@ wxString GetShipNameFromFile(int nmmsi) {
     infile.close();
   }
   return name;
+}
+
+  // Assign a unique meteo mmsi related to position
+int AisMeteoNewMmsi(int orig_mmsi, int m_lat,int m_lon, int lon_bits = 0, int siteID = 0) {
+  bool found = false;
+  int new_mmsi = 0;
+  if (!lon_bits && siteID) {
+      // Check if a ais8_367_33 data report belongs to a present site
+    auto &points = AisMeteoPoints::GetInstance().GetPoints();
+    if (points.size()) {
+      for (const auto &point : points) {
+        // Does this station ID exist
+        if (siteID == point.siteID && orig_mmsi == point.orig_mmsi) {
+          // Created before. Continue
+          new_mmsi = point.mmsi;
+          found = true;
+          break;
+        }
+      }
+    }
+    if (!found) return 0;
+  }
+  double lon_tentative = 181.;
+  double lat_tentative = 91.;
+
+  if (lon_bits == 25) {
+    if (m_lon & 0x01000000)  // negative?
+      m_lon |= 0xFE000000;
+    lon_tentative = m_lon / 60000.;
+
+    if (m_lat & 0x00800000)  // negative?
+      m_lat |= 0xFF000000;
+    lat_tentative = m_lat / 60000.;
+
+  } else if (lon_bits == 28) {
+    if (m_lon & 0x08000000)  // negative?
+      m_lon |= 0xf0000000;
+    lon_tentative = m_lon / 600000.;
+
+    if (m_lat & 0x04000000)  // negative?
+      m_lat |= 0xf8000000;
+    lat_tentative = m_lat / 600000.;
+  }
+
+    // Since buoys can move we use position precision not better
+    // than 50 m to be able to compare previous messages
+  wxString slon = wxString::Format("%0.3f", lon_tentative);
+  wxString slat = wxString::Format("%0.3f", lat_tentative);
+
+  // Change mmsi_ID number
+  // Some countries use one equal mmsi for all meteo stations.
+  // Others use the same mmsi for a meteo station and a nearby AtoN
+  // So we create our own fake mmsi to separate them.
+  // 199 is INMARSAT-A MID, should not occur ever in AIS stream.
+  // 1992 to 1993 are already used so here we use 1994+
+  static int nextMeteommsi = 199400000;
+  auto& points = AisMeteoPoints::GetInstance().GetPoints();
+  if (points.size()) {
+    wxString t_lat, t_lon;
+    for (const auto& point: points) {
+      // Does this station position exist
+      if (slat.IsSameAs(point.lat) &&
+          slon.IsSameAs(point.lon)) {
+        // Created before. Continue
+        new_mmsi = point.mmsi;
+        found = true;
+        break;
+      }
+    }
+  }
+  if (!found) {
+    // Create a new post
+    nextMeteommsi++;
+    points.push_back(AisMeteoPoint(nextMeteommsi, slat, slon, siteID, orig_mmsi));
+    new_mmsi = nextMeteommsi;
+  }
+  return new_mmsi;
 }

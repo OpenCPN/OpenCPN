@@ -29,6 +29,7 @@
 #ifndef _CHARTMBTILES_H_
 #define _CHARTMBTILES_H_
 
+#include <cstdint>
 #include "chartbase.h"
 #include "georef.h"  // for GeoRef type
 #include "OCPNRegion.h"

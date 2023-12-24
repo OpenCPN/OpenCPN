@@ -323,6 +323,7 @@ void AISTargetQueryDialog::UpdateText() {
     m_createWptBtn->Enable(td->b_positionOnceValid);
     m_createTrkBtn->Enable(td->b_show_track);
 
+    AdjustBestSize(td.get());
     RenderHTMLQuery(td.get());
   }
 

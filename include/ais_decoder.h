@@ -28,9 +28,9 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include <wx/datetime.h>
-#include "rapidjson/fwd.h"
 #include <wx/event.h>
 #include <wx/string.h>
 
@@ -40,8 +40,11 @@
 #include "comm_navmsg.h"
 #include "observable_evtvar.h"
 #include "ocpn_types.h"
+#include "rapidjson/fwd.h"
 #include "track.h"
 
+// AISTargetAlertDialog in gui layer
+extern wxEvtHandler* g_pais_alert_dialog_active;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,
@@ -76,9 +79,13 @@ public:
 
 WX_DEFINE_ARRAY_PTR(MmsiProperties *, ArrayOfMmsiProperties);
 
+
 struct AisDecoderCallbacks {
     std::function<bool()> confirm_stop_track;
-    AisDecoderCallbacks() : confirm_stop_track([]() { return true; } ) {}
+    std::function<int()> get_target_mmsi;
+    AisDecoderCallbacks()
+        : confirm_stop_track([]() { return true; } ),
+          get_target_mmsi([]() { return 0; })  {}
 };
 
 class AisDecoder : public wxEvtHandler {

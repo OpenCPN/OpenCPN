@@ -913,6 +913,10 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
         if((type == CHART_TYPE_KAP) && (nscale == smallest_scale))
           nmin_scale *= 24;
 
+         // Allow MBTiles quilt to zoom far out and still show smallest scale chart.
+        if((type == CHART_TYPE_MBTILES) && (nscale == smallest_scale))
+          nmin_scale *= 24;
+
         if (CHART_TYPE_MBTILES == ChartData->GetDBChartType(test_db_index))
           scales_mbtiles.push_back(
               scale{test_db_index, nscale, nmin_scale, nmax_scale});
@@ -1335,6 +1339,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
   LLBBox viewbox = vp_local.GetBBox();
   int sure_index = -1;
   int sure_index_scale = 0;
+  int sure_index_type = -1;
 
   for (int i = 0; i < n_all_charts; i++) {
     //    We can eliminate some charts immediately
@@ -1354,7 +1359,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       continue;
 #endif
 
-    if (reference_family != cte.GetChartFamily()) continue;
+    if (reference_family != cte.GetChartFamily()) {
+      if (cte.GetChartType() != CHART_TYPE_MBTILES)
+        continue;
+    }
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
 
@@ -1369,14 +1377,6 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     if (!m_bquiltskew && fabs(skew_norm) > 1.0) continue;
 
-    //    Calculate zoom factor for this chart
-    int candidate_chart_scale = cte.GetScale();
-    double chart_native_ppm =
-        m_canvas_scale_factor / (double)candidate_chart_scale;
-    double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
-
-    double zoom_factor_test = 0.2;
-
     //    Special case for S57 ENC
     //    Add the chart only if the chart's fractional area exceeds n%
     if( CHART_TYPE_S57 == cte.GetChartType() ) {
@@ -1388,6 +1388,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
         continue;
     }
 
+    int candidate_chart_scale = cte.GetScale();
+
     //  Try to guarantee that there is one chart added with scale larger than
     //  reference scale
     //    Take note here, and keep track of the smallest scale chart that is
@@ -1396,6 +1398,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       if (cte.Scale_gt(sure_index_scale)) {
         sure_index = i;
         sure_index_scale = candidate_chart_scale;
+        sure_index_type = cte.GetChartType();
       }
     }
 
@@ -1403,8 +1406,21 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     //    and is on-screen somewhere.... Now  add the candidate if its scale is
     //    smaller than the reference scale, or is not excessively underzoomed.
 
+    //    Calculate zoom factor for this chart
+    double chart_native_ppm =
+        m_canvas_scale_factor / (double)candidate_chart_scale;
+    double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
+    double zoom_factor_test_extra = 0.2;
 
-    if ((cte.Scale_ge(reference_scale) && (zoom_factor > zoom_test_val)) || (zoom_factor > zoom_factor_test)) {
+    // For some quilts (e.g.cm93 + MBTiles), the reference scale is not known
+    // or is default 1e8 value.  This would exclude large scale MBtiles.
+    // Adjust the reference scale test value so as to include the MBTiles,
+    // if their zoom factor is suitable
+    double ref_scale_test = reference_scale;
+    if (cte.GetChartType() == CHART_TYPE_MBTILES)
+      ref_scale_test = candidate_chart_scale;
+
+    if ((cte.Scale_ge(ref_scale_test) && (zoom_factor > zoom_test_val)) || (zoom_factor > zoom_factor_test_extra)) {
 
       LLRegion cell_region = GetChartQuiltRegion(cte, vp_local);
 
@@ -1480,7 +1496,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     }
 
     //    If not already added, do so now
-    if (!sure_exists) {
+    if (!sure_exists && (sure_index_type != CHART_TYPE_MBTILES)) {
       m_extended_stack_array.push_back(sure_index);
 
       QuiltCandidate *qcnew = new QuiltCandidate;

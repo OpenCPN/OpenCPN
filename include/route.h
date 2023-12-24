@@ -24,16 +24,16 @@
 #ifndef _ROUTE_H__
 #define _ROUTE_H__
 
+#include <functional>
+
 #include <wx/colour.h>
 #include <wx/datetime.h>
 #include <wx/gdicmn.h>
-#include <wx/list.h>
 #include <wx/object.h>
 #include <wx/pen.h>
 #include <wx/string.h>
 
 #include "route_point.h"
-#include "wx28compat.h"
 #include "bbox.h"
 
 #define WIDTH_UNDEFINED -1
@@ -90,15 +90,6 @@ public:
                                 bool bRenamePoints = false);
   RoutePoint *InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
                                bool bRenamePoints = false);
-
-  void DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
-                      wxPoint *rpn);
-  void DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2,
-                   ViewPort &vp, bool bdraw_arrow);
-
-  void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas);
-  void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
-  void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
 
   RoutePoint *GetLastPoint();
   void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);

@@ -844,65 +844,14 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
 
   this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-  wxBoxSizer* bSizerPrefsMain;
-  bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer *itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
+  SetSizer(itemBoxSizerMainPanel);
 
-  wxStaticBoxSizer* sbSizerPaths;
-  sbSizerPaths = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("Default Path to Charts")), wxVERTICAL);
+  wxScrolledWindow *scrollWin = new wxScrolledWindow(
+     this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
 
-  //      m_dpDefaultDir = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString,
-  //      _("Select a root folder for your charts"), wxDefaultPosition,
-  //      wxDefaultSize, wxDIRP_USE_TEXTCTRL ); sbSizerPaths->Add(
-  //      m_dpDefaultDir, 0, wxALL|wxEXPAND, 5 );
-
-  m_tcDefaultDir = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
-                                  wxSize(-1, -1), wxHSCROLL);
-  sbSizerPaths->Add(m_tcDefaultDir, 3, wxALL | wxEXPAND, 5);
-
-  m_buttonChartDirectory = new wxButton(this, wxID_ANY, _("Select a folder"));
-  sbSizerPaths->Add(m_buttonChartDirectory, 1, wxALIGN_RIGHT | wxALL, 5);
-
-  bSizerPrefsMain->Add(sbSizerPaths, 0, wxALL | wxEXPAND, 5);
-
-  wxStaticBoxSizer* sbSizerBehavior;
-  sbSizerBehavior = new wxStaticBoxSizer(
-      new wxStaticBox(this, wxID_ANY, _("Preferences")), wxVERTICAL);
-
-  sbSizerBehavior->SetMinSize(-1, 200);
-
-  m_stPreselect = new wxStaticText(
-      this, wxID_ANY, _("After catalog update select for download"),
-      wxDefaultPosition, wxDefaultSize, 0);
-  m_stPreselect->Wrap(-1);
-  sbSizerBehavior->Add(m_stPreselect, 0, wxALL, 5);
-
-  m_cbSelectUpdated = new wxCheckBox(this, wxID_ANY, _("All updated charts"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbSelectUpdated->SetValue(true);
-  sbSizerBehavior->Add(m_cbSelectUpdated, 0, wxALL, 5);
-
-  m_cbSelectNew = new wxCheckBox(this, wxID_ANY, _("All new charts"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  sbSizerBehavior->Add(m_cbSelectNew, 0, wxALL, 5);
-
-  m_staticline1 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
-                                   wxDefaultSize, wxLI_HORIZONTAL);
-  sbSizerBehavior->Add(m_staticline1, 0, wxEXPAND | wxALL, 5);
-
-  m_cbBulkUpdate = new wxCheckBox(
-      this, wxID_ANY,
-      _("Allow bulk update of all configured chart sources and charts"),
-      wxDefaultPosition, wxDefaultSize, 0);
-  sbSizerBehavior->Add(m_cbBulkUpdate, 0, wxALL, 5);
-
-  m_buttonDownloadMasterCatalog =
-      new wxButton(this, wxID_ANY, _("Update chart source catalog"),
-                   wxDefaultPosition, wxDefaultSize, 0);
-
-  sbSizerBehavior->Add(m_buttonDownloadMasterCatalog, 0, wxALL, 5);
-
-  bSizerPrefsMain->Add(sbSizerBehavior, 1, wxALL | wxEXPAND, 5);
+  scrollWin->SetScrollRate(1, 1);
+  itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
   m_sdbSizerBtns = new wxStdDialogButtonSizer();
   m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
@@ -911,13 +860,85 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   m_sdbSizerBtns->AddButton(m_sdbSizerBtnsCancel);
   m_sdbSizerBtns->Realize();
 
-  bSizerPrefsMain->Add(m_sdbSizerBtns, 0, wxALL | wxEXPAND, 5);
+  itemBoxSizerMainPanel->Add(m_sdbSizerBtns, 0, wxALL | wxEXPAND, 5);
 
-  this->SetSizer(bSizerPrefsMain);
-  this->Layout();
+  wxBoxSizer *bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
+  scrollWin->SetSizer(bSizerPrefsMain);
+
+  wxStaticBoxSizer* sbSizerPaths;
+  sbSizerPaths = new wxStaticBoxSizer(
+      new wxStaticBox(scrollWin, wxID_ANY, _("Default Path to Charts")), wxVERTICAL);
+
+  //      m_dpDefaultDir = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString,
+  //      _("Select a root folder for your charts"), wxDefaultPosition,
+  //      wxDefaultSize, wxDIRP_USE_TEXTCTRL ); sbSizerPaths->Add(
+  //      m_dpDefaultDir, 0, wxALL|wxEXPAND, 5 );
+
+  m_tcDefaultDir = new wxTextCtrl(scrollWin, wxID_ANY, _T(""), wxDefaultPosition,
+                                  wxSize(-1, -1), wxHSCROLL);
+  sbSizerPaths->Add(m_tcDefaultDir, 3, wxALL | wxEXPAND, 5);
+
+  m_buttonChartDirectory = new wxButton(scrollWin, wxID_ANY, _("Select a folder"));
+  sbSizerPaths->Add(m_buttonChartDirectory, 1, wxALIGN_RIGHT | wxALL, 5);
+
+  bSizerPrefsMain->Add(sbSizerPaths, 0, wxALL | wxEXPAND, 5);
+
+  wxStaticBoxSizer* sbSizerBehavior;
+  sbSizerBehavior = new wxStaticBoxSizer(
+      new wxStaticBox(scrollWin, wxID_ANY, _("Preferences")), wxVERTICAL);
+
+  sbSizerBehavior->SetMinSize(-1, 200);
+
+  m_stPreselect = new wxStaticText(
+      scrollWin, wxID_ANY, _("After catalog update select for download"),
+      wxDefaultPosition, wxDefaultSize, 0);
+  m_stPreselect->Wrap(-1);
+  sbSizerBehavior->Add(m_stPreselect, 0, wxALL, 5);
+
+  m_cbSelectUpdated = new wxCheckBox(scrollWin, wxID_ANY, _("All updated charts"),
+                                     wxDefaultPosition, wxDefaultSize, 0);
+  m_cbSelectUpdated->SetValue(true);
+  sbSizerBehavior->Add(m_cbSelectUpdated, 0, wxALL, 5);
+
+  m_cbSelectNew = new wxCheckBox(scrollWin, wxID_ANY, _("All new charts"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  sbSizerBehavior->Add(m_cbSelectNew, 0, wxALL, 5);
+
+  m_staticline1 = new wxStaticLine(scrollWin, wxID_ANY, wxDefaultPosition,
+                                   wxDefaultSize, wxLI_HORIZONTAL);
+  sbSizerBehavior->Add(m_staticline1, 0, wxEXPAND | wxALL, 5);
+
+  m_cbBulkUpdate = new wxCheckBox(
+      scrollWin, wxID_ANY,
+      _("Allow bulk update of all configured chart sources and charts"),
+      wxDefaultPosition, wxDefaultSize, 0);
+  sbSizerBehavior->Add(m_cbBulkUpdate, 0, wxALL, 5);
+
+  m_buttonDownloadMasterCatalog =
+      new wxButton(scrollWin, wxID_ANY, _("Update chart source catalog"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+
+  sbSizerBehavior->Add(m_buttonDownloadMasterCatalog, 0, wxALL, 5);
+
+  bSizerPrefsMain->Add(sbSizerBehavior, 1, wxALL | wxEXPAND, 5);
+
 
   this->Fit();
-  this->Centre(wxBOTH);
+
+  // Constrain size on small displays
+  int display_width, display_height;
+  wxDisplaySize(&display_width, &display_height);
+
+  wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
+  if(display_height < 600){
+    SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    SetSize(wxSize(60 * GetCharWidth(), canvas_size.y * 8 / 10));
+  }
+  else {
+    SetMaxSize(GetOCPNCanvasWindow()->GetSize());
+    SetSize(wxSize(60 * GetCharWidth(), canvas_size.y * 8 / 10));
+  }
+  this->CentreOnScreen();
 
   // Connect Events
   m_sdbSizerBtnsCancel->Connect(

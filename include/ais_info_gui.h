@@ -22,6 +22,7 @@
  **************************************************************************/
 
 #include "ais_target_data.h"
+#include "observable.h"
 #include "OCPN_Sound.h"
 
 class AisInfoGui: public wxEvtHandler {

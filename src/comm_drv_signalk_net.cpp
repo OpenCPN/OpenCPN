@@ -36,6 +36,8 @@
 #include "easywsclient.hpp"
 #include "geodesic.h"
 
+const int kTimerSocket = 9006;
+
 class CommDriverSignalKNetEvent;  // fwd
 
 class CommDriverSignalKNetThread : public wxThread {
@@ -147,15 +149,20 @@ void *WebSocketThread::Entry() {
     bool not_connected = true;
     while ((not_connected) && (m_parentStream->m_Thread_run_flag > 0)) {
       ws = WebSocket::from_url(wsAddress.str());
-      if (ws == NULL)
-        printf("No Connect\n");
+      if (ws == NULL){
+        int tloop = 20;
+        for (int i=0; i < tloop; i++){
+          if (m_parentStream->m_Thread_run_flag == 0){
+            m_parentStream->SetThreadRunning(false);
+            return 0;
+          }
+          else {
+            wxMilliSleep(100);
+          }
+        }
+      }
       else
         not_connected = false;
-
-      if (m_parentStream->m_Thread_run_flag == 0){
-        m_parentStream->SetThreadRunning(false);
-        return 0;
-      }
     }
 
     while ((not_done) && (m_parentStream->m_Thread_run_flag > 0)) {
@@ -168,9 +175,14 @@ void *WebSocketThread::Entry() {
 
       if (ws->getReadyState() == WebSocket::CLOSED) {
         //printf("ws closed\n");
+        delete ws;
+        ws = 0;
+        wxThread::Sleep(2000);  // Allow system to settle before starting re-connect loop
         break;
       }
-      ws->poll(10);
+      if ((ws->getReadyState() != WebSocket::CLOSED) && (ws->getReadyState() != WebSocket::CLOSING)) {
+        ws->poll(10);
+      }
       if (ws->getReadyState() == WebSocket::OPEN) {
         ws->dispatch(HandleMessage);
       }
@@ -221,7 +233,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
 
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
-  m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET);
+  m_socketread_watchdog_timer.SetOwner(this, kTimerSocket);
   m_wsThread = NULL;
   m_threadActive = false;
 
@@ -238,7 +250,9 @@ void CommDriverSignalKNet::Activate() {
 
 void CommDriverSignalKNet::Open(void) {
   wxString discoveredIP;
+#if 0
   int discoveredPort;
+#endif
 
   //if (m_useWebSocket)
   {
@@ -299,23 +313,23 @@ void CommDriverSignalKNet::CloseWebSocket() {
 
       m_Thread_run_flag = 0;
       int tsec = 10;
-      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+      while (IsThreadRunning() && tsec) {
+        wxSleep(1);
+        tsec--;
+      }
 
       wxString msg;
-      if (m_Thread_run_flag < 0)
+      if (m_Thread_run_flag <= 0)
         msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
       else
         msg.Printf(_T("Not Stopped after 10 sec."));
       wxLogMessage(msg);
     }
 
-    m_bsec_thread_active = false;
     wxMilliSleep(100);
 
-
-
 #if 0
-      m_Thread_run_flag = 0;
+      m_thread_run_flag = 0;
        printf("sending delete\n");
       m_wsThread->Delete();
       wxMilliSleep(100);

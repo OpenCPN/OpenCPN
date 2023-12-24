@@ -33,7 +33,6 @@
 #endif  // precompiled headers
 
 #include "wind_history.h"
-#include "wx28compat.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop
@@ -44,8 +43,8 @@
 //************************************************************************************************************************
 
 DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory(
-    wxWindow* parent, wxWindowID id, wxString title)
-    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD) {
+    wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties)
+    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD, Properties) {
   m_cap_flag.set(OCPN_DBP_STC_TWS);
   SetDrawSoloInPane(true);
   m_MaxWindDir = -1;
@@ -58,7 +57,12 @@ DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory(
   // Set top line height to leave space for wind data
   wxClientDC dc(this);
   int w, h;
-  dc.GetTextExtent("TWS----", &w, &h, 0, 0, g_pFontData);
+  wxFont f;
+  if (m_Properties)
+      f = m_Properties->m_DataFont.GetChosenFont();
+  else
+      f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent("TWS----", &w, &h, 0, 0, &f);
   m_TopLineHeight = wxMax(30, h);
   m_SpdRecCnt = 0;
   m_DirRecCnt = 0;
@@ -87,7 +91,12 @@ DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory(
 wxSize DashboardInstrument_WindDirHistory::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  wxFont f;
+  if (m_Properties)
+      f = m_Properties->m_TitelFont.GetChosenFont();
+  else
+      f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(m_TitleHeight + 140, hint.y));
   } else {
@@ -284,9 +293,16 @@ void DashboardInstrument_WindDirHistory::DrawWindDirScale(wxGCDC* dc) {
   wxPen pen;
   int width, height;
   cl = wxColour(204, 41, 41, 255);  // red, opague
-
-  dc->SetTextForeground(cl);
-  dc->SetFont(*g_pFontSmall);
+  if (m_Properties)
+  {
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
+      dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
+  }
+  else
+  {
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
+      dc->SetFont(g_pFontSmall->GetChosenFont());
+  }
   if (!m_IsRunning) {
     label1 = _T("---");
     label2 = _T("---");
@@ -323,17 +339,35 @@ void DashboardInstrument_WindDirHistory::DrawWindDirScale(wxGCDC* dc) {
   // draw the legend with the labels; find the widest string and store it in
   // m_RightLegend.
   // m_RightLegend is the basis for the horizontal lines !
-  dc->GetTextExtent(label5, &width, &height, 0, 0, g_pFontSmall);
-  m_RightLegend = width;
-  dc->GetTextExtent(label4, &width, &height, 0, 0, g_pFontSmall);
-  m_RightLegend = wxMax(width, m_RightLegend);
-  dc->GetTextExtent(label3, &width, &height, 0, 0, g_pFontSmall);
-  m_RightLegend = wxMax(width, m_RightLegend);
-  dc->GetTextExtent(label2, &width, &height, 0, 0, g_pFontSmall);
-  m_RightLegend = wxMax(width, m_RightLegend);
-  dc->GetTextExtent(label1, &width, &height, 0, 0, g_pFontSmall);
-  m_RightLegend = wxMax(width, m_RightLegend);
-
+  wxFont f;
+  if (m_Properties)
+  {
+      f = m_Properties->m_SmallFont.GetChosenFont();
+      dc->GetTextExtent(label5, &width, &height, 0, 0, &f);
+      m_RightLegend = width;
+      dc->GetTextExtent(label4, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+      dc->GetTextExtent(label3, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+      dc->GetTextExtent(label2, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+      dc->GetTextExtent(label1, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+  }
+  else
+  {
+      f = g_pFontSmall->GetChosenFont();
+      dc->GetTextExtent(label5, &width, &height, 0, 0, &f);
+      m_RightLegend = width;
+      dc->GetTextExtent(label4, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+      dc->GetTextExtent(label3, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+      dc->GetTextExtent(label2, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+      dc->GetTextExtent(label1, &width, &height, 0, 0, &f);
+      m_RightLegend = wxMax(width, m_RightLegend);
+  }
   m_RightLegend += 4;  // leave some space to the edge
   dc->DrawText(label5, m_WindowRect.width - m_RightLegend,
                m_TopLineHeight - height / 2);
@@ -358,9 +392,17 @@ void DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc) {
   double val1;
   double WindSpdScale;
 
-  cl = wxColour(61, 61, 204, 255);
-  dc->SetTextForeground(cl);
-  dc->SetFont(*g_pFontSmall);
+  //cl = wxColour(61, 61, 204, 255);
+  if (m_Properties)
+  {
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
+      dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
+  }
+  else
+  {      
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
+      dc->SetFont(g_pFontSmall->GetChosenFont());
+  }
   // round maxWindSpd up to the next full knot; nicer view ...
   m_MaxWindSpdScale = (int)m_MaxWindSpd + 1;
   if (!m_IsRunning) {
@@ -410,22 +452,43 @@ void DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc) {
     // bottom legend for min wind, always 0
     label5.Printf(_T("%.0f %s"), 0.0, m_WindSpeedUnit.c_str());
   }
-  dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, g_pFontSmall);
+  wxFont f;
+  if (m_Properties)
+      f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, &f);
   dc->DrawText(label1, 4, (int)(m_TopLineHeight - height / 2));
-  dc->GetTextExtent(label2, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label2, &width, &height, 0, 0, &f);
   dc->DrawText(label2, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height / 4 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
-  dc->GetTextExtent(label3, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label3, &width, &height, 0, 0, &f);
   dc->DrawText(label3, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height / 2 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
-  dc->GetTextExtent(label4, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label4, &width, &height, 0, 0, &f);
   dc->DrawText(
       label4, 4,
       (int)(m_TopLineHeight + m_DrawAreaRect.height * 0.75 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
-  dc->GetTextExtent(label5, &width, &height, 0, 0, g_pFontSmall);
+  if (m_Properties)
+      f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+      f = g_pFontSmall->GetChosenFont();
+  dc->GetTextExtent(label5, &width, &height, 0, 0, &f);
   dc->DrawText(label5, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
@@ -525,7 +588,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   wxColour col;
   double ratioH;
   int degw, degh;
-  int width, height, sec, min, hour;
+  int width, height, min, hour;
   double dir;
   wxString WindAngle, WindSpeed;
   wxPen pen;
@@ -534,24 +597,51 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   //---------------------------------------------------------------------------------
   // wind direction
   //---------------------------------------------------------------------------------
-  dc->SetFont(*g_pFontData);
-  col = wxColour(204, 41, 41, 255);  // red, opaque
-  dc->SetTextForeground(col);
+  dc->SetFont((g_pFontData->GetChosenFont()));
+  col = wxColour(204, 41, 41, 255);  // red, opaque Set TWD to DataFonf + Color, TWS to LabelFOnt + Color
+  if (m_Properties)
+  {
+      dc->SetFont(m_Properties->m_DataFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontData->GetChosenFont());
+      if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
+          dc->SetTextForeground(col);
+      else
+          dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
+  }
   if (!m_IsRunning)
-    WindAngle = _T("TWD ---");
+    WindAngle = _T("TWD --- ");
   else {
     dir = m_WindDir;
     while (dir > 360) dir -= 360;
     while (dir < 0) dir += 360;
     if (!std::isnan(dir))
-      WindAngle = wxString::Format(_T("TWD %3.0f"), dir) + DEGREE_SIGN;
+      WindAngle = wxString::Format(_T("TWD %3.0f "), dir) + DEGREE_SIGN;
     else
-      WindAngle = wxString::Format(_T("TWD ---")) + DEGREE_SIGN;
+      WindAngle = wxString::Format(_T("TWD --- ")) + DEGREE_SIGN;
   }
-  dc->GetTextExtent(WindAngle, &degw, &degh, 0, 0, g_pFontData);
-  dc->DrawText(WindAngle, m_WindowRect.width - degw - m_RightLegend - 3, 1);
+  wxFont f;
+  if (m_Properties)
+      f = m_Properties->m_DataFont.GetChosenFont();
+  else
+      f = g_pFontData->GetChosenFont();
+  dc->GetTextExtent(WindAngle, &degw, &degh, 0, 0, &f);
+  dc->DrawText(WindAngle, m_WindowRect.width - degw - m_RightLegend - 3, 6);
   pen.SetStyle(wxPENSTYLE_SOLID);
-  pen.SetColour(wxColour(204, 41, 41, 96));  // red, transparent
+  GetColourSchemeFont(g_pFontData->GetColour()).GetGreen();
+  if (m_Properties)
+      pen.SetColour(wxColour(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetRed(), GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetGreen(), GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetBlue(), 96)); // transparent
+  else
+  {
+      if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
+          pen.SetColour(wxColour(204, 41, 41, 96));
+      else
+          pen.SetColour(wxColour(GetColourSchemeFont(g_pFontData->GetColour()).GetRed(), GetColourSchemeFont(g_pFontData->GetColour()).GetGreen(), GetColourSchemeFont(g_pFontData->GetColour()).GetBlue(), 96)); // transparent
+  }
+    //pen.SetColour(wxColour(204, 41, 41, 96));  // red, transparent
   pen.SetWidth(1);
   dc->SetPen(pen);
   ratioH = (double)m_DrawAreaRect.height / m_WindDirRange;
@@ -580,13 +670,23 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ld++;
     }
   }
-  dc->DrawLines(ld, wdDraw);
+  if (ld > 1)
+    dc->DrawLines(ld, wdDraw);
 
   //---------------------------------------------------------------------------------
   // exponential smoothing of direction
   //---------------------------------------------------------------------------------
   pen.SetStyle(wxPENSTYLE_SOLID);
-  pen.SetColour(wxColour(204, 41, 41, 255));
+  //pen.SetColour(wxColour(204, 41, 41, 255));
+  if (m_Properties)
+      pen.SetColour(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+  else
+  {
+      if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
+          pen.SetColour(wxColour(204, 41, 41, 255));
+      else
+          pen.SetColour(GetColourSchemeFont(g_pFontData->GetColour()));
+  }
   pen.SetWidth(2);
   dc->SetPen(pen);
 
@@ -604,27 +704,57 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       points[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
       wdDraw[ld] = points[idx];
       ld++;
-    } 
+    }
   }
-  dc->DrawLines(ld, wdDraw);
+  if (ld > 1)
+    dc->DrawLines(ld, wdDraw);
 
   //---------------------------------------------------------------------------------
   // wind speed
   //---------------------------------------------------------------------------------
   col = wxColour(61, 61, 204, 255);  // blue, opaque
-  dc->SetFont(*g_pFontData);
-  dc->SetTextForeground(col);
+  if (m_Properties)
+  {
+      dc->SetFont(m_Properties->m_LabelFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontLabel->GetChosenFont());
+      if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
+          dc->SetTextForeground(col);
+      else
+          dc->SetTextForeground(GetColourSchemeFont(g_pFontLabel->GetColour()));
+  }
   if (!std::isnan(m_WindSpd))
     WindSpeed = wxString::Format(_T("TWS %3.1f %s "), m_WindSpd,
                                  m_WindSpeedUnit.c_str());
   else
     WindSpeed = wxString::Format(_T("TWS --- %s "), m_WindSpeedUnit.c_str());
-
-  dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, g_pFontData);
-  dc->DrawText(WindSpeed, m_LeftLegend + 3, 1);
-  dc->SetFont(*g_pFontLabel);
+  if (m_Properties) {
+      f =m_Properties->m_LabelFont.GetChosenFont();
+      dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, &f);
+  } else {
+      f = g_pFontLabel->GetChosenFont();
+      dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, &f);
+  }
+  dc->DrawText(WindSpeed, m_LeftLegend + 3, 6);
+  dc->SetFont((g_pFontLabel->GetChosenFont()));
   int labelw, labelh;
-  dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, g_pFontLabel);
+  if (m_Properties)
+  {
+      f = m_Properties->m_LabelFont.GetChosenFont();
+      dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, &f);
+      dc->SetFont(m_Properties->m_TitelFont.GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_TitelFont.GetColour()));
+  }
+  else
+  {
+      f = g_pFontLabel->GetChosenFont();
+      dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, &f);
+      dc->SetFont(g_pFontTitle->GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontTitle->GetColour()));
+  }
   // determine the time range of the available data (=oldest data value)
   int i = 0;
   while (m_ArrayRecTime[i].year == 999 && i < WIND_RECORD_COUNT - 1) i++;
@@ -640,9 +770,18 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       wxString::Format(_("Max %.1f %s since %02d:%02d  Overall %.1f %s"),
                        m_MaxWindSpd, m_WindSpeedUnit.c_str(), hour, min,
                        m_TotalMaxWindSpd, m_WindSpeedUnit.c_str()),
-                       m_LeftLegend + 3 + 2 + degw, m_TopLineHeight -1 -labelh);
+                       m_LeftLegend + 3 + 2 + degw, m_TopLineHeight -7 -labelh);
   pen.SetStyle(wxPENSTYLE_SOLID);
-  pen.SetColour(wxColour(61, 61, 204, 96));  // blue, transparent
+  if (m_Properties)
+      pen.SetColour(wxColour(GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetRed(), GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetGreen(), GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetBlue(), 96)); // transparent
+  else
+  {
+      if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
+          pen.SetColour(wxColour(61, 61, 204, 96)); // blue, transparent
+      else
+          pen.SetColour(wxColour(GetColourSchemeFont(g_pFontLabel->GetColour()).GetRed(), GetColourSchemeFont(g_pFontLabel->GetColour()).GetGreen(), GetColourSchemeFont(g_pFontLabel->GetColour()).GetBlue(), 96)); // transparent
+  }
+  //pen.SetColour(wxColour(61, 61, 204, 96));  // blue, transparent
   pen.SetWidth(1);
   dc->SetPen(pen);
   ratioH = (double)m_DrawAreaRect.height / m_MaxWindSpdScale;
@@ -669,13 +808,23 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  dc->DrawLines(ls, spdDraw);
+  if (ls > 1)
+    dc->DrawLines(ls, spdDraw);
 
   //---------------------------------------------------------------------------------
   // exponential smoothing of speed
   //---------------------------------------------------------------------------------
   pen.SetStyle(wxPENSTYLE_SOLID);
-  pen.SetColour(wxColour(61, 61, 204, 255));  // blue, opaque
+  if (m_Properties)
+      pen.SetColour(GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()));
+  else
+  {
+      if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
+          pen.SetColour(wxColour(61, 61, 204, 255));  // blue, opaque
+      else
+          pen.SetColour(GetColourSchemeFont(g_pFontLabel->GetColour()));
+  }
+  //pen.SetColour(wxColour(61, 61, 204, 255));  // blue, opaque
   pen.SetWidth(2);
   dc->SetPen(pen);
   ls = 0;
@@ -694,7 +843,8 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       ls++;
     }
   }
-  dc->DrawLines(ls, spdDraw);
+  if (ls > 1)
+    dc->DrawLines(ls, spdDraw);
 
   //---------------------------------------------------------------------------------
   // draw vertical timelines every 10 minutes
@@ -704,7 +854,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
   dc->SetTextForeground(col);
-  dc->SetFont(*g_pFontSmall);
+  dc->SetFont((g_pFontSmall->GetChosenFont()));
   int done = -1;
   wxPoint pointTime;
   for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
@@ -717,7 +867,8 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));
         label.Printf(_T("%02d:%02d"), hour, min);
-        dc->GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
+        f = g_pFontSmall->GetChosenFont();
+        dc->GetTextExtent(label, &width, &height, 0, 0, &f);
         dc->DrawText(label, pointTime.x - width / 2,
                      m_WindowRect.height - height);
         done = hour * 100 + min;

@@ -103,8 +103,8 @@ public:
   //--------------------------------------------------------------------------
   //      Platform Display Support
   //--------------------------------------------------------------------------
-  static void ShowBusySpinner(void);
-  static void HideBusySpinner(void);
+  virtual void ShowBusySpinner(void);
+  virtual void HideBusySpinner(void);
   double getFontPointsperPixel(void);
   wxSize getDisplaySize();
   double GetDisplaySizeMM();

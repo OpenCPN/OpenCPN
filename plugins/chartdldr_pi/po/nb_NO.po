@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-02-27 02:12\n"
+"PO-Revision-Date: 2023-06-05 01:25\n"
 "Last-Translator: \n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -128,7 +128,7 @@ msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
 msgstr "Du har valgt å oppdatere alle kartkatalogene.\n"
-"Så, laste ned alle nye og oppdaterte karter.\n"
+"Så, laste ned alle nye og oppdaterte kart.\n"
 "Dette kan ta lang tid."
 
 #: src/chartdldr_pi.cpp:883
@@ -136,7 +136,7 @@ msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
 msgstr "Du har valgt å oppdatere alle kartkatalogene.\n"
-"Så laste ned bare nye (men ikke oppdaterte) karter.\n"
+"Så laste ned bare nye (men ikke oppdaterte) kart.\n"
 "Dette kan ta lang tid."
 
 #: src/chartdldr_pi.cpp:890
@@ -144,7 +144,7 @@ msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
 msgstr "Du har valgt å oppdatere alle kartkatalogene.\n"
-"Last ned kun oppdaterte (men ikke nye) karter.\n"
+"Last ned kun oppdaterte (men ikke nye) kart.\n"
 "Dette kan ta lang tid."
 
 #: src/chartdldr_pi.cpp:915 src/chartdldr_pi.cpp:1462
@@ -378,7 +378,7 @@ msgstr "Last ned alle kartkataloger, og deretter oppdater kartene."
 
 #: src/chartdldrgui.cpp:493
 msgid "Download Charts..."
-msgstr "Last ned karter..."
+msgstr "Last ned kart..."
 
 #: src/chartdldrgui.cpp:518
 msgid "Status"
@@ -398,7 +398,7 @@ msgstr "Velg ny"
 
 #: src/chartdldrgui.cpp:556
 msgid "Check all charts that are 'New' in the list."
-msgstr "Sjekk alle karter som er 'Nye' i listen."
+msgstr "Sjekk alle kart som er 'Nye' i listen."
 
 #: src/chartdldrgui.cpp:559
 msgid "Select Updated"
@@ -406,21 +406,21 @@ msgstr "Velg oppdaterte"
 
 #: src/chartdldrgui.cpp:562
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr "Velg alle karter som er 'utdatert' i listen."
+msgstr "Velg alle kart som er 'utdatert' i listen."
 
 #: src/chartdldrgui.cpp:576
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr "%u karter totalt, %u oppdatert, %u nye, %u valgte"
+msgstr "%u kart totalt, %u oppdatert, %u nye, %u valgte"
 
 #: src/chartdldrgui.cpp:587
 #, c-format
 msgid "%u charts total, %u updated, %u new"
-msgstr "%u karter totalt, %u oppdatert, %u nye"
+msgstr "%u kart totalt, %u oppdatert, %u nye"
 
 #: src/chartdldrgui.cpp:852
 msgid "Default Path to Charts"
-msgstr "Standard sti til karter"
+msgstr "Standard sti til kart"
 
 #: src/chartdldrgui.cpp:863
 msgid "Select a folder"

@@ -62,6 +62,7 @@
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chartimg.h"
+#include "chart_ctx_factory.h"
 #include "chcanv.h"
 #include "ChInfoWin.h"
 #include "cm93.h"  // for chart outline draw
@@ -186,7 +187,7 @@ extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
 
-GLenum g_texture_rectangle_format;
+extern GLenum g_texture_rectangle_format;
 
 extern int g_memCacheLimit;
 extern ColorScheme global_color_scheme;
@@ -329,6 +330,7 @@ static void print_region(OCPNRegion &Region)
         upd.NextRect();
     }
 }
+
 #endif
 
 GLboolean QueryExtension(const char *extName) {
@@ -1173,7 +1175,10 @@ void glChartCanvas::SetupOpenGL() {
     //m_b_DisableFBO = true;
 #endif
 
-  //m_b_DisableFBO = true;
+  // Accelerated pan is not used for MacOS Retina display
+  // So there is no advantage to using FBO
+  if (m_displayScale > 1)
+    m_b_DisableFBO = true;
 
   //      Maybe build FBO(s)
   BuildFBO();
@@ -1393,7 +1398,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
   if (!m_bsetup) {
     SetupOpenGL();
 
-    if (ps52plib) ps52plib->FlushSymbolCaches();
+    if (ps52plib) ps52plib->FlushSymbolCaches(ChartCtxFactory());
 
     m_bsetup = true;
     //        g_bDebugOGL = true;
@@ -1687,10 +1692,8 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
   // chart is outside of viewport lat/lon bounding box
   if (box.IntersectOutGetBias(vp.GetBBox(), lon_bias)) return;
 
-  float plylat, plylon;
 
   wxColour color;
-
   if (ChartData->GetDBChartType(dbIndex) == CHART_TYPE_CM93)
     color = GetGlobalColor(_T ( "YELO1" ));
   else if (ChartData->GetDBChartFamily(dbIndex) == CHART_FAMILY_VECTOR)
@@ -1699,6 +1702,8 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
     color = GetGlobalColor(_T ( "UINFR" ));
 
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+  float plylat, plylon;
+
   if (g_GLOptions.m_GLLineSmoothing) glEnable(GL_LINE_SMOOTH);
 
   glColor3ub(color.Red(), color.Green(), color.Blue());
@@ -3255,13 +3260,18 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
                 ChartPlugInWrapper *ChPI =
                     dynamic_cast<ChartPlugInWrapper *>(chart);
                 if (ChPI) {
+                  SetClipRegion(vp, get_region);
                   RenderNoDTA(vp, get_region);
                   ChPI->RenderRegionViewOnGLNoText(*m_pcontext, vp, rect_region,
                                                    get_region);
+                  DisableClipRegion();
+
                 } else {
+                  SetClipRegion(vp, get_region);
                   RenderNoDTA(vp, get_region);
                   chart->RenderRegionViewOnGL(*m_pcontext, vp, rect_region,
                                               get_region);
+                  DisableClipRegion();
                 }
               }
             }
@@ -3472,7 +3482,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
 
     if (!background_region.Empty()) {
       ViewPort cvp = ClippedViewport(vp, background_region);
+      SetClipRect(cvp, rect, false);
       RenderWorldChart(dc, cvp, rect, world_view);
+      DisableClipRegion();
     }
   }
 
@@ -3819,6 +3831,11 @@ void glChartCanvas::Render() {
 
 #endif
 
+#ifdef __WXOSX__
+  // Support scaled HDPI displays.
+  m_displayScale = GetContentScaleFactor();
+#endif
+
   m_last_render_time = wxDateTime::Now().GetTicks();
 
   // we don't care about jobs that are now off screen
@@ -3845,15 +3862,26 @@ void glChartCanvas::Render() {
   m_glcanvas_width = gl_width;
   m_glcanvas_height = gl_height;
 
-#if 1
+  // Avoid some harmonic difficulties with odd-size glCanvas
+  bool b_odd = false;
   if (gl_height & 1){
     gl_height -= 1;
-    // Adjust the Viewport height
     ViewPort *vp = m_pParentCanvas->GetpVP();
     vp->pix_height = gl_height;
+    b_odd = true;
+  }
+
+  if (gl_width & 1){
+    gl_width -= 1;
+    ViewPort *vp = m_pParentCanvas->GetpVP();
+    vp->pix_width = gl_width;
+    b_odd = true;
+  }
 
    //  Set the shader viewport transform matrix
-   //  Using the adjusted height
+   //  Using the adjusted dimensions
+  if(b_odd){
+    ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4 m;
     mat4x4_identity(m);
     mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
@@ -3862,7 +3890,6 @@ void glChartCanvas::Render() {
     mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
                              -vp->pix_height / 2, 0);
   }
-#endif
 
   ViewPort VPoint = m_pParentCanvas->VPoint;
 
@@ -3951,13 +3978,6 @@ void glChartCanvas::Render() {
 #endif
 
     if (b_newview) {
-      bool busy = false;
-      if (VPoint.b_quilt && m_pParentCanvas->m_pQuilt->IsQuiltVector() &&
-          (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm ||
-           m_cache_vp.rotation != VPoint.rotation)) {
-        OCPNPlatform::ShowBusySpinner();
-        busy = true;
-      }
 
       float dx = 0;
       float dy = 0;
@@ -4200,7 +4220,6 @@ void glChartCanvas::Render() {
 
 #endif  // gles2 for accpan
 
-      if (busy) OCPNPlatform::HideBusySpinner();
 
     }  // newview
 
@@ -4278,6 +4297,11 @@ void glChartCanvas::Render() {
     coords[5] = sy;
     coords[6] = 0;
     coords[7] = sy;
+
+    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+    glClearColor( color.Red() / 256., color.Green() / 256. ,
+         color.Blue()/ 256. ,1.0 );
+    glClear(GL_COLOR_BUFFER_BIT);
 
     RenderTextures(gldc, coords, uv, 4, m_pParentCanvas->GetpVP());
 #endif
@@ -5296,14 +5320,6 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader->UnBind();
 
 
-//       glUseProgram(texture_2DA_shader_program);
-//       matloc = glGetUniformLocation(texture_2DA_shader_program, "MVMatrix");
-//       glUniformMatrix4fv(matloc, 1, GL_FALSE,
-//                          (const GLfloat *)pvp->vp_transform);
-//       transloc =
-//           glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
-//       glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
-
       shader = ptexture_2DA_shader_program[GetCanvasIndex()];
       shader->Bind();
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
@@ -5325,6 +5341,17 @@ void glChartCanvas::configureShaders(ViewPort & vp) {
       shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)pvp->vp_matrix_transform);
       shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
       shader->UnBind();
+
+      //  Leftover shader required by some older Android plugins
+      if (texture_2DA_shader_program){
+        glUseProgram(texture_2DA_shader_program);
+        GLint matloc = glGetUniformLocation(texture_2DA_shader_program, "MVMatrix");
+        glUniformMatrix4fv(matloc, 1, GL_FALSE,
+                         (const GLfloat *)pvp->vp_matrix_transform);
+        GLint transloc =
+          glGetUniformLocation(texture_2DA_shader_program, "TransformMatrix");
+        glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat *)I);
+      }
 
       m_gldc.m_texfont.PrepareShader(vp.pix_width, vp.pix_height, vp.rotation);
 

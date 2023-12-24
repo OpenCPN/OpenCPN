@@ -114,9 +114,9 @@ unsigned int get_px_length(const char* val) {
   int num;
   try {
     num = std::stoi(val);
-  } catch (std::invalid_argument const& ex) {
+  } catch (std::invalid_argument&) {
     return 0;
-  } catch (std::out_of_range const& ex) {
+  } catch (std::out_of_range& ) {
     return 0;
   }
   if (num < 0) {
@@ -137,6 +137,8 @@ unsigned int get_px_length(const char* val) {
 
 bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
                           unsigned int& height) {
+  width = 0;
+  height = 0;
   pugi::xml_document svgDoc;
   if (svgDoc.load_file(filename.fn_str())) {
     pugi::xml_node svgNode = svgDoc.child("svg");
@@ -163,7 +165,7 @@ unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
 
 SVGBitmapCache::SVGBitmapCache() {
   wxFileName iconcachedir;
-  iconcachedir.SetName("iconCache");
+  iconcachedir.SetName("iconCacheSVG");
   iconcachedir.SetPath(g_BasePlatform->GetPrivateDataDir());
   //  Create the cache dir here if necessary
   if (!wxDir::Exists(iconcachedir.GetFullPath())) {

@@ -305,7 +305,17 @@ TCDS_Binary_Harmonic::TCDS_Binary_Harmonic() {
   //  Build the units array
 }
 
-TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic() {}
+TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic()
+{
+  for (int i = 0; i < num_csts; i++) {
+    free(m_cst_nodes[i]);
+    free(m_cst_epochs[i]);
+  }
+  free(m_work_buffer);
+  free(m_cst_epochs);
+  free(m_cst_nodes);
+  free(m_cst_speeds);
+}
 
 TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
   if (!open_tide_db(data_file_path.mb_str())) return TC_TCD_FILE_CORRUPT;

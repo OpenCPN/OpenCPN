@@ -35,6 +35,28 @@
 #include <stdlib.h>
 
 
+#ifdef __OCPN__ANDROID__
+// Handle occasional SIG on Android
+#include <signal.h>
+#include <setjmp.h>
+
+struct sigaction sa_all_plib;
+struct sigaction sa_all_plib_previous;
+
+sigjmp_buf env_plib;  // the context saved by sigsetjmp();
+
+void catch_signals_plib(int signo) {
+  switch (signo) {
+    case SIGSEGV:
+      siglongjmp(env_plib, 1);  // jump back to the setjmp() point
+      break;
+
+    default:
+      break;
+  }
+}
+#endif
+
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
@@ -81,7 +103,6 @@ float GetOCPNChartScaleFactor_Plugin();
 extern "C" wxString *GetpSharedDataLocation();
 
 #endif
-
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
@@ -380,6 +401,11 @@ s52plib::~s52plib() {
   m_chartSymbols.DeleteGlobals();
 
   delete HPGL;
+  for(int i = 0; i < TXF_CACHE; i++) {
+    if(s_txf[i].cache) {
+      delete(s_txf[i].cache);
+    }
+  }
 }
 
 void s52plib::InitializeNatsurHash() {
@@ -463,33 +489,16 @@ void s52plib::SetPPMM(float ppmm) {
   canvas_pix_per_mm = ppmm;
 
   // We need a supplemental scale factor for HPGL vector symbol rendering.
-  //  This will cause raster and vector symbols to be rendered harmoniously
-
-  //  We do this by making an arbitrary measurement and declaration:
-  // We declare that the nominal size of a "flare" light rendered as HPGL vector
-  // should be roughly twice the size of a simplified lateral bouy rendered as
-  // raster.
-
-  // Referring to the chartsymbols.xml file, we find that the dimension of a
-  // flare light is 810 units, and a raster BOYLAT is nominally 16 pix.
-  // However, elsewhere we declare that the nominal size of of a flare
-  //  should be 6 mm instead of 8.1 mm
-  // So, do the math with 600 instead of 810.
-
-  m_rv_scale_factor = 2.0 * (1600. / (600 * ppmm));
+  //  to allow raster and vector symbols to be rendered harmoniously
+  //  We do this empirically, making it look "nice" on average displays.
+  m_rv_scale_factor = 0.8;
 
   // Estimate the display size
-
   int ww, hh;
   ::wxDisplaySize(&ww, &hh);
-  m_display_size_mm =
-      wxMax(ww, hh) / GetPPMM();  // accurate enough for internal use
+  m_display_size_mm = ww / GetPPMM();  // accurate enough for internal use
 
   m_display_size_mm /= m_displayScale;
-
-//   wxString msg;
-//   msg.Printf("Core s52plib:  ppmm: %g rv_scale_factor: %g  calc_display_size_mm: %g", ppmm, m_rv_scale_factor, m_display_size_mm);
-//   wxLogMessage(msg);
 }
 
 void s52plib::SetScaleFactorExp(double ChartScaleFactorExp) {
@@ -711,6 +720,12 @@ void s52plib::GenerateStateHash() {
     memcpy(&state_buffer[offset], &m_nTextFactor, sizeof(int));
     offset += sizeof(int);
   }
+
+  if (offset + sizeof(bool) < sizeof(state_buffer)) {
+    memcpy(&state_buffer[offset], &m_nDisplayCategory, sizeof(int));
+    offset += sizeof(int);
+  }
+
   m_state_hash = crc32buf(state_buffer, offset);
 }
 
@@ -1243,9 +1258,8 @@ void s52plib::DestroyRules(RuleHash *rh) {
   delete rh;
 }
 
-void s52plib::FlushSymbolCaches(void) {
-  m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true);
-
+void s52plib::FlushSymbolCaches(const ChartCtx& ctx) {
+  m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true, ctx);
   RuleHash *rh = _symb_sym;
 
   if (!rh) return;
@@ -1363,7 +1377,7 @@ LUPrec *s52plib::S52_LUPLookup(LUPname LUP_Name, const char *objectName,
   return LUP;
 }
 
-void s52plib::SetPLIBColorScheme(ColorScheme cs) {
+void s52plib::SetPLIBColorScheme(ColorScheme cs, const ChartCtx& ctx) {
   wxString SchemeName;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
@@ -1380,10 +1394,10 @@ void s52plib::SetPLIBColorScheme(ColorScheme cs) {
       break;
   }
 
-  SetPLIBColorScheme(SchemeName);
+  SetPLIBColorScheme(SchemeName, ctx);
 }
 
-void s52plib::SetPLIBColorScheme(wxString scheme) {
+void s52plib::SetPLIBColorScheme(wxString scheme, const ChartCtx& ctx) {
   wxString str_find;
   str_find = scheme;
   m_colortable_index = 0;  // default is the first color in the table
@@ -1396,7 +1410,7 @@ void s52plib::SetPLIBColorScheme(wxString scheme) {
   }
   m_colortable_index = m_chartSymbols.FindColorTable(scheme);
 
-  m_chartSymbols.SetColorTableIndex(m_colortable_index);
+  m_chartSymbols.SetColorTableIndex(m_colortable_index, false, ctx);
 
   m_ColorScheme = scheme;
 }
@@ -2552,11 +2566,6 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   float fsf = 100 / canvas_pix_per_mm;
 
   float xscale = 1.0;
-  //  Set the onscreen size of the symbol
-  //  Compensate for various display resolutions
-  //  Develop empirically, making a flare light about 6 mm long
-  double pix_factor = GetPPMM() / 6.0;
-  xscale *= pix_factor;
 
   if ((!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6)) ||
       (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6)) ||
@@ -2565,7 +2574,7 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     // assume the symbol length
     float sym_length = 30;
     float scaled_length = sym_length / vp_plib.view_scale_ppm;
-    float target_length = 1852;
+    float target_length = 800;
 
     xscale = target_length / scaled_length;
     xscale = wxMin(xscale, 1.0);
@@ -2602,13 +2611,16 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   //  Very special case for ATON flare lights at 135 degrees, the standard
   //  render angle. We don't want them to rotate with the viewport.
   if (rzRules->obj->bIsAton &&
-      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6)) &&
-      (fabs(rot_angle - 135.0) < 1.)) {
-    render_angle -= vp_plib.rotation * 180. / PI;
+      (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6))){
 
-    //  And, due to popular request, we make the flare lights a little bit
-    //  smaller than S52 specifications
-    xscale = xscale * 6. / 7.;
+#ifdef __OCPN__ANDROID__
+      //  Due to popular request, we make the flare lights a little bit
+      //  smaller than S52 specifications
+      xscale = xscale * 5. / 7.;
+#endif
+
+      if( fabs(rot_angle - 135.0) < 1.)
+        render_angle -= vp_plib.rotation * 180. / PI;
   }
 
   int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
@@ -3380,8 +3392,8 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                         m_soundFont);  // measure the text for DC mode
     }
     point_size = m_SoundingsPointSize;
+    point_size /= m_dipfactor;    // Apply Windows display scaling.
   }
-
 
   double postmult = m_SoundingsScaleFactor;
   if ((postmult <= 2.0) && (postmult >= 0.5)) {
@@ -3393,7 +3405,7 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   // Build the texDepth object, if required
   if (!m_pdc) {  // OpenGL
     if (!m_texSoundings.IsBuilt() ||
-        (fabs(m_texSoundings.GetScale() - scale_factor) > 0.1)) {
+        (fabs(m_texSoundings.GetScale() - scale_factor) > 0.05)) {
       m_texSoundings.Delete();
       m_texSoundings.SetContentScaleFactor(m_ContentScaleFactor);
 
@@ -3445,13 +3457,13 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   }
 
   if (symPivot < 4) {
-    pivot_x = (pivotWidth * symPivot) - (pivotWidth / 4);
+    pivot_x = (pivotWidth * symPivot); // - (pivotWidth / 4);
     pivot_y = pivotHeight / 2;
-  } else if (symPivot == 4) {
-    pivot_x = -pivotWidth - (pivotWidth / 4);
+  } else if (symPivot == 4){
+    pivot_x = -pivotWidth; // - (pivotWidth / 4);
     pivot_y = pivotHeight / 2;
   } else {
-    pivot_x = -(pivotWidth / 4);
+    pivot_x = 0; //-(pivotWidth / 4);
     pivot_y = pivotHeight / 5;
   }
   pivot_x *= m_dipfactor;
@@ -3501,9 +3513,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       float tx1 = texrect.x, ty1 = texrect.y;
       float tx2 = tx1 + w, ty2 = ty1 + h;
 
-#if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#else
-
       if (m_TextureFormat == GL_TEXTURE_2D) {
         // Normalize the sybmol texture coordinates against the next higher POT
         // size
@@ -3539,61 +3548,38 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       coords[4] = 0;
       coords[5] = h;
 
-      glUseProgram(S52texture_2D_ColorMod_shader_program);
-
       float colorv[4];
       colorv[0] = symColor.Red() / float(256);
       colorv[1] = symColor.Green() / float(256);
       colorv[2] = symColor.Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc =
-          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "color");
-      glUniform4fv(colloc, 1, colorv);
+      pCtexture_2D_Color_shader_program[0]->Bind();
 
-      // Get pointers to the attributes in the program.
-      GLint mPosAttrib = glGetAttribLocation(
-          S52texture_2D_ColorMod_shader_program, "position");
-      GLint mUvAttrib =
-          glGetAttribLocation(S52texture_2D_ColorMod_shader_program, "aUV");
-
-      // Select the active texture unit.
+        // Select the active texture unit.
       glActiveTexture(GL_TEXTURE0);
 
-      // Bind our texture to the texturing target.
-      glBindTexture(GL_TEXTURE_2D, texture);
+      pCtexture_2D_Color_shader_program[0]->SetUniform4fv( "color", colorv);
 
-      // Set up the texture sampler to texture unit 0
-      GLint texUni =
-          glGetUniformLocation(S52texture_2D_ColorMod_shader_program, "uTex");
-      glUniform1i(texUni, 0);
+      pCtexture_2D_Color_shader_program[0]->SetUniform1i( "uTex", 0);
 
-      // Disable VBO's (vertex buffer objects) for attributes.
+        // Disable VBO's (vertex buffer objects) for attributes.
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-      // Set the attribute mPosAttrib with the vertices in the screen
-      // coordinates...
-      glVertexAttribPointer(mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords);
-      // ... and enable it.
-      glEnableVertexAttribArray(mPosAttrib);
-
-      // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-      glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv);
-      // ... and enable it.
-      glEnableVertexAttribArray(mUvAttrib);
+      pCtexture_2D_Color_shader_program[0]->SetAttributePointerf( "position", coords);
+      pCtexture_2D_Color_shader_program[0]->SetAttributePointerf( "aUV", uv);
 
       // Rotate
-      mat4x4 I, Q;
-      mat4x4_identity(I);
+       mat4x4 I, Q;
+       mat4x4_identity(I);
+       mat4x4_identity(Q);
 
       mat4x4_translate_in_place(I, r.x, r.y, 0);
       mat4x4_rotate_Z(Q, I, -vp_plib.rotation);
       mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
 
-      GLint matloc = glGetUniformLocation(S52texture_2D_ColorMod_shader_program,
-                                          "TransformMatrix");
-      glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
+      pCtexture_2D_Color_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)Q);
 
       // Perform the actual drawing.
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -3601,16 +3587,8 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
       // Restore the per-object transform to Identity Matrix
       mat4x4 IM;
       mat4x4_identity(IM);
-      GLint matlocf = glGetUniformLocation(
-          S52texture_2D_ColorMod_shader_program, "TransformMatrix");
-      glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
-
-      // Restore GL state
-      glDisableVertexAttribArray(mPosAttrib);
-      glDisableVertexAttribArray(mUvAttrib);
-      glUseProgram(0);
-
-#endif  // GLES2
+      pCtexture_2D_Color_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)IM);
+      pCtexture_2D_Color_shader_program[0]->UnBind();
       glDisable(m_TextureFormat);
     } else { /* this is only for legacy mode, or systems without NPOT textures
               */
@@ -4528,7 +4506,8 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
   glUniform1i(texUni, 0);
 
   if (!strncmp(instr_str, "DASH", 4)){
-   float width = GetPPMM() * 5.4;  // from s52 specs, 3.6mm dash, 1.8mm space // tex_w;
+   //reduced from s52 specs (5.4), 3.6mm dash, 1.8mm space
+   float width = GetPPMM() * 3; //looks better
    glUniform1f(texWidth, width);
    glUniform1f(dashFactor, 0.66);
   }
@@ -5648,11 +5627,15 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
   // Very important for partial screen renders, as with dc mode pans or OpenGL
   // FBO operation.
 
-  wxPoint cr0 = GetPixFromLLROT(GetBBox().GetMaxLat(),
-                                      GetBBox().GetMinLon(), 0);
-  wxPoint cr1 = GetPixFromLLROT(GetBBox().GetMinLat(),
-                                      GetBBox().GetMaxLon(), 0);
+  wxPoint cr0 = GetPixFromLLROT(GetReducedBBox().GetMaxLat(),
+                                      GetReducedBBox().GetMinLon(), 0);
+  wxPoint cr1 = GetPixFromLLROT(GetReducedBBox().GetMinLat(),
+                                      GetReducedBBox().GetMaxLon(), 0);
   wxRect clip_rect(cr0, cr1);
+
+  double box_margin = wxMax(fabs(GetBBox().GetMaxLon() - GetBBox().GetMinLon()),
+                              fabs(GetBBox().GetMaxLat() - GetBBox().GetMinLat()));
+  LLBBox screen_box = GetBBox();
 
   for (int ip = 0; ip < npt; ip++) {
     double lon = *pdl++;
@@ -5662,7 +5645,19 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
     double nort = *pd++;
     double depth = *pd++;
 
+    // Make a rough inclusion test from lat/lon
+    // onto the screen coordinates, enlarged a bit
+    if (!screen_box.ContainsMarge(lat, lon, box_margin))
+      continue;
+
     wxPoint r = GetPixFromLLROT(lat, lon, 0);
+
+    // Some simple inclusion tests
+    if((r.x < 0) || (r.y < 0))
+      continue;
+    if ((r.x == INVALID_COORD) || (r.y == INVALID_COORD))
+      continue;
+
     //      Use estimated symbol size
     wxRect rr(r.x - (box_dim / 2), r.y - (box_dim / 2), box_dim, box_dim);
 
@@ -5687,10 +5682,6 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
           dryAngle = -vp_plib.rotation * 180. / PI;
         // FIXME (dave) drying height symbol should be wider/bolder.
 
-        //FIXME (dave) Patch to chartsymbols.xml
-        // Remove on Release of 5.8.0
-        rules->razRule->pos.symb.pivot_x.SYCL = 750;
-
         RenderHPGL(rzRules, rules->razRule, r, dryAngle, m_SoundingsScaleFactor);
       } else if (rules->razRule->definition.SYDF == 'R') {
         // Parse the first rule to determine the color
@@ -5709,7 +5700,6 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
       rules = rules->next;
     }
   }
-
   return 1;
 }
 
@@ -5771,6 +5761,14 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   wxPoint r;
   GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r);
 
+  if (radius > m_display_size_mm / 10){
+    double fact = radius / (m_display_size_mm / 10);
+    radius /= fact;
+    sector_radius /= fact;
+    arc_width /= fact;
+    arc_width = wxMax(arc_width, 1);
+  }
+
   //  radius scaled to display
   float rad = radius * canvas_pix_per_mm;
   float sec_rad = sector_radius * canvas_pix_per_mm;
@@ -5782,7 +5780,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
 
   // Adjust size
-  //  Some plain lights have no SCAMIN attribute.
+  //  Some lights have no SCAMIN attribute. e.g. cm93
   //  This causes display congestion at small viewing scales, since the objects
   //  are rendered at fixed pixel dimensions from the LUP rules. As a
   //  correction, the idea is to not allow the rendered symbol to be larger than
@@ -5791,19 +5789,20 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
   float xscale = 1.0;
   if (rzRules->obj->Scamin > 1e8) {  // huge (unset) SCAMIN)
-    float radius_meters_target = 200;
+    float radius_meters_target = 1000;
 
     float radius_meters = (radius * canvas_pix_per_mm) / vp_plib.view_scale_ppm;
 
     xscale = radius_meters_target / radius_meters;
     xscale = wxMin(xscale, 1.0);
-    xscale = wxMax(.4, xscale);
+    xscale = wxMax(.5, xscale);
 
     rad *= xscale;
     arcw *= xscale;
     arcw = wxMin(arcw, rad / 10);
     sec_rad *= xscale;
   }
+
   //      Enable anti-aliased lines, at best quality
   glEnable(GL_BLEND);
 
@@ -5820,7 +5819,7 @@ int s52plib::RenderCARC_GLSL(ObjRazRules *rzRules, Rules *rules) {
   point.x = (int)xp + vp_plib.pix_width / 2;
   point.y = (int)yp + vp_plib.pix_height / 2;
 
-  float rad_fluff = rad + 10;
+  float rad_fluff = rad + 20;
   float coords[8];
   coords[0] = -rad_fluff;
   coords[1] = rad_fluff;
@@ -8233,9 +8232,9 @@ int s52plib::RenderToGLAC_GLSL(ObjRazRules *rzRules, Rules *rules) {
       }
     }
 
-    double ppg_scale_factor = ppg->sfactor;
-    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
-      ppg_scale_factor = 1.0;
+    double ppg_scale_factor = 1.0;
+    if (rzRules->obj->m_chart_context->chart)   //  This is not a plugin chart
+      ppg_scale_factor = ppg->sfactor;
 
 
     I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - x_origin) *
@@ -8508,9 +8507,9 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
     }
 
     PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-    double ppg_scale_factor = ppg->sfactor;
-    if (!rzRules->obj->m_chart_context->chart)   //  This is a plugin chart
-      ppg_scale_factor = 1.0;
+    double ppg_scale_factor = 1.0;
+    if (rzRules->obj->m_chart_context->chart)   //  This is not a plugin chart
+      ppg_scale_factor = ppg->sfactor;
 
     TriPrim *p_tp = ppg->tri_prim_head;
     GLintptr vbo_offset = 0;
@@ -8680,32 +8679,65 @@ int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules) {
         break;  // AP
 
       case RUL_CND_SY: {
-        if (!rzRules->obj->bCS_Added) {
-          rzRules->obj->CSrules = NULL;
-          GetAndAddCSRules(rzRules, rules);
-          rzRules->obj->bCS_Added = 1;  // mark the object
-        }
-        Rules *rules_last = rules;
-        rules = rzRules->obj->CSrules;
+#ifdef __OCPN__ANDROID__
+        // Catch a difficult to trap SIGSEGV, avoiding app crash
+        sigaction(SIGSEGV, NULL,
+                  &sa_all_plib_previous);  // save existing action for this signal
 
-        while (NULL != rules) {
-          switch (rules->ruleType) {
-            case RUL_ARE_CO:
-              RenderToGLAC(rzRules, rules);
-              break;
-            case RUL_ARE_PA:
-              RenderToGLAP(rzRules, rules);
-              break;
-            case RUL_NONE:
-            default:
-              break;  // no rule type (init)
+        struct sigaction temp;
+        sigaction(SIGSEGV, NULL,
+                  &temp);  // inspect existing action for this signal
+
+        temp.sa_handler = catch_signals_plib;  // point to my handler
+        sigemptyset(&temp.sa_mask);             // make the blocking set
+                                                // empty, so that all
+                                                // other signals will be
+                                                // unblocked during my handler
+        temp.sa_flags = 0;
+        sigaction(SIGSEGV, &temp, NULL);
+
+        if (sigsetjmp(env_plib, 1))  //  Something in the
+                                //  code block below this on caused SIGSEGV...
+        {
+          // reset signal handler
+          sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+          return 0;
+        }
+        else
+#endif
+        {
+          if (!rzRules->obj->bCS_Added) {
+            rzRules->obj->CSrules = NULL;
+            GetAndAddCSRules(rzRules, rules);
+            rzRules->obj->bCS_Added = 1;  // mark the object
           }
-          rules_last = rules;
-          rules = rules->next;
-        }
+          Rules *rules_last = rules;
+          rules = rzRules->obj->CSrules;
 
-        rules = rules_last;
-        break;
+          while (NULL != rules) {
+            switch (rules->ruleType) {
+              case RUL_ARE_CO:
+                RenderToGLAC(rzRules, rules);
+                break;
+              case RUL_ARE_PA:
+                RenderToGLAP(rzRules, rules);
+                break;
+              case RUL_NONE:
+              default:
+                break;  // no rule type (init)
+            }
+            rules_last = rules;
+            rules = rules->next;
+          }
+
+          rules = rules_last;
+          break;
+        }
+#ifdef __OCPN__ANDROID__
+        // reset signal handler
+        sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+#endif
+
       }
 
       case RUL_NONE:
@@ -9332,9 +9364,14 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
   // only for objects whose decoded S52 display category (by LUP) is also OTHER
   if (m_nDisplayCategory == OTHER) {
     if (OTHER == obj_cat) {
-      if (!strncmp(rzRules->LUP->OBCL, "M_", 2))
-        if (!m_bShowMeta && strncmp(rzRules->LUP->OBCL, "M_QUAL", 6))
+      if (!strncmp(rzRules->LUP->OBCL, "M_", 2)){
+        if (!m_bShowMeta)
           return false;
+        else {
+          if (!strncmp(rzRules->LUP->OBCL, "M_QUAL", 6) && !m_qualityOfDataOn)
+            return false;
+        }
+      }
     }
   } else {
     // We want to filter out M_NSYS objects everywhere except "OTHER" category
@@ -9761,12 +9798,10 @@ void s52plib::PLIB_LoadS57Config() {
     }
   }
 }
+#endif
 
-void s52plib::PLIB_LoadS57GlobalConfig()
+void s52plib::PLIB_LoadS57GlobalConfig(wxFileConfig *pconfig)
 {
-    //    Get a pointer to the opencpn configuration object
-    wxFileConfig *pconfig = GetOCPNConfigObject();
-
     int read_int;
     double dval;
 
@@ -9820,14 +9855,8 @@ void s52plib::PLIB_LoadS57GlobalConfig()
 }
 
 
-void s52plib::PLIB_LoadS57ObjectConfig()
+void s52plib::PLIB_LoadS57ObjectConfig(wxFileConfig *pconfig)
 {
-    //    Get a pointer to the opencpn configuration object
-    wxFileConfig *pconfig = GetOCPNConfigObject();
-
-    //int read_int;
-    //double dval;
-
     //    S57 Object Class Visibility
 
     OBJLElement *pOLE;
@@ -9871,7 +9900,6 @@ void s52plib::PLIB_LoadS57ObjectConfig()
         }
     }
 }
-#endif
 
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender(void) { PrepareForRender( &vp_plib); }
@@ -9897,7 +9925,7 @@ void s52plib::PrepareForRender(VPointCompat *vp) {
   lastLightLon = 0;
 
   // Precalulate the ENC scale factors
-  m_SoundingsScaleFactor = exp(m_nSoundingFactor * (log(2.0) / 5.0));
+  m_SoundingsScaleFactor = (m_nSoundingFactor * .1) + 1; //exp(m_nSoundingFactor * (log(2.0) / 5.0));
   m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0));
 }
 
@@ -9930,12 +9958,10 @@ void s52plib::SetAnchorOn(bool val) {
 }
 
 void s52plib::SetQualityOfData(bool val) {
-  int old_vis = GetQualityOfData();
-  if (old_vis == (int)val) return;
 
-  if (old_vis && !val) {  // On, going off
+  if (!val) {  // going off
     AddObjNoshow("M_QUAL");
-  } else if (!old_vis && val) {  // Off, going on
+  } else {  // Off, going on
     RemoveObjNoshow("M_QUAL");
 
     for (unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++) {
@@ -10688,6 +10714,7 @@ bool RenderFromHPGL::Render(char *str, char *col, wxPoint &r, wxPoint &pivot,
   wxPoint lineEnd;
 
   scaleFactor = 100.0 / plib->GetPPMM();
+
   scaleFactor /= scale;
   scaleFactor /= g_scaminScale;
 
@@ -11095,6 +11122,7 @@ void RenderFromHPGL::DrawPolygonTessellated(int n, wxPoint points[],
   }
 }
 
+
 void PrepareS52ShaderUniforms(VPointCompat *vp) {
 
   loadS52Shaders();
@@ -11176,6 +11204,11 @@ void PrepareS52ShaderUniforms(VPointCompat *vp) {
   shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
   shader->UnBind();
 
+  shader = pCtexture_2D_Color_shader_program[0];
+  shader->Bind();
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)Q);
+  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)I);
+  shader->UnBind();
 
 }
 

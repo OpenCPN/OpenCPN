@@ -117,6 +117,7 @@ public:
                      double lonmax);
 
   void InvalidateTransformCache() { lat0_cache = NAN; }
+  void SetVPTransformMatrix();
 
   //  Generic
   double clat;  // center point

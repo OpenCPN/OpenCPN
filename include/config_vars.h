@@ -35,13 +35,24 @@ extern bool g_bWplUsePosition;
 
 extern double g_UserVar;
 
+extern int g_iDistanceFormat;
+extern int g_iSpeedFormat;
+extern int g_iSDMMFormat;
+extern int g_iWindSpeedFormat;
+extern int g_iTempFormat;
 extern int g_maxWPNameLength;
+extern int g_NMEAAPBPrecision;
+extern int g_nCOMPortCheck;
+extern int g_nDepthUnitDisplay;
 extern int g_nNMEADebug;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
+extern wxString g_TalkerIdText;
+extern wxString g_android_Device_Model;
+extern wxString g_winPluginDir;   // Base plugin directory on Windows.
 
 wxConfigBase* TheBaseConfig();
 void InitBaseConfig(wxConfigBase* cfg);

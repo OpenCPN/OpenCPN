@@ -31,8 +31,8 @@
 
 #include "pi_gl.h"
 
-extern GLint pi_color_tri_shader_program;
-extern GLint pi_colorv_tri_shader_program;
+extern GLint GRIBpi_color_tri_shader_program;
+extern GLint GRIBpi_colorv_tri_shader_program;
 extern GLint pi_texture_2D_shader_program;
 extern GLint pi_circle_filled_shader_program;
 

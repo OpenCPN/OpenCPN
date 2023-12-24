@@ -87,6 +87,7 @@
 
 #include "ssl/sha1.h"
 #include "shaders.h"
+#include "chart_ctx_factory.h"
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
@@ -188,6 +189,7 @@ static unsigned int hash_fast32(const void *buf, size_t len,
 unsigned long connector_key::hash() const {
   return hash_fast32(k, sizeof k, 0);
 }
+
 
 //----------------------------------------------------------------------------------
 //      render_canvas_parms Implementation
@@ -385,16 +387,16 @@ void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
 
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
-      ps52plib->SetPLIBColorScheme(_T("DAY"));
+      ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
-      ps52plib->SetPLIBColorScheme(_T("DUSK"));
+      ps52plib->SetPLIBColorScheme("DUSK", ChartCtxFactory());
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
-      ps52plib->SetPLIBColorScheme(_T("NIGHT"));
+      ps52plib->SetPLIBColorScheme("NIGHT", ChartCtxFactory());
       break;
     default:
-      ps52plib->SetPLIBColorScheme(_T("DAY"));
+      ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
   }
 
@@ -1275,6 +1277,8 @@ void s57chart::AssembleLineGeometry(void) {
   unsigned char *buffer_offset;
   size_t offset;
 
+  bool grow_buffer = false;
+
   if (0 == m_vbo_byte_length) {
     m_line_vertex_buffer = (float *)malloc(vbo_byte_length);
     m_vbo_byte_length = vbo_byte_length;
@@ -1286,6 +1290,7 @@ void s57chart::AssembleLineGeometry(void) {
     buffer_offset = (unsigned char *)m_line_vertex_buffer + m_vbo_byte_length;
     offset = m_vbo_byte_length;
     m_vbo_byte_length = m_vbo_byte_length + vbo_byte_length;
+    grow_buffer = true;
   }
 
   float *lvr = (float *)buffer_offset;
@@ -1381,16 +1386,23 @@ void s57chart::AssembleLineGeometry(void) {
     delete pcs;
   }
   m_vc_hash.clear();
-}
+
+#ifdef ocpnUSE_GL
+  if (g_b_EnableVBO) {
+    if (grow_buffer) {
+      if (m_LineVBO_name > 0){
+          glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+          m_LineVBO_name = -1;
+      }
+    }
+  }
+#endif
+
+
+ }
 
 void s57chart::BuildLineVBO(void) {
 #ifdef ocpnUSE_GL
-  // cm93 cannot efficiently use VBO, since the edge list is discovered
-  // incrementally, and this would require rebuilding the VBO for each new cell
-  // that is loaded.
-
-  if (CHART_TYPE_CM93 == GetChartType()) return;
-
   if (!g_b_EnableVBO) return;
 
   if (m_LineVBO_name == -1) {
@@ -1515,6 +1527,7 @@ void s57chart::BuildLineVBO(void) {
     m_LineVBO_name = vboId;
     m_this_chart_context->vboID = vboId;
   }
+
 #endif
 }
 
@@ -2832,7 +2845,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-#if 1
+#if 0
   wxString SENCdir = g_SENCPrefix;
   if (SENCdir.Last() != wxFileName::GetPathSeparator())
     SENCdir.Append(wxFileName::GetPathSeparator());
@@ -2866,8 +2879,11 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
   SetColorScheme(cs, false);
 
   //    Build array of contour values for later use by conditional symbology
-
   BuildDepthContourArray();
+
+  CreateChartContext();
+  PopulateObjectsWithContext();
+
   m_RAZBuilt = true;
   bReadyToRender = true;
 
@@ -2954,6 +2970,37 @@ void s57chart::SetSafetyContour(void) {
   if (m_next_safe_cnt > S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
     m_next_safe_cnt = (double)1e6;
 }
+
+void s57chart::CreateChartContext(){
+  //  Set up the chart context
+  m_this_chart_context = (chart_context *)calloc(sizeof(chart_context), 1);
+}
+
+void s57chart::PopulateObjectsWithContext(){
+
+  m_this_chart_context->chart = this;
+  m_this_chart_context->chart_type = GetChartType();
+  m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+  m_this_chart_context->chart_scale = GetNativeScale();
+  m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+  m_this_chart_context->pRigidATONArray = pRigidATONArray;
+  m_this_chart_context->safety_contour = m_next_safe_cnt;
+
+
+  //  Loop and populate all the objects
+  ObjRazRules *top;
+  for (int i = 0; i < PRIO_NUM; ++i) {
+    for (int j = 0; j < LUPNAME_NUM; j++) {
+      top = razRules[i][j];
+      while (top != NULL) {
+        S57Obj *obj = top->obj;
+        obj->m_chart_context = m_this_chart_context;
+        top = top->next;
+      }
+    }
+  }
+}
+
 
 void s57chart::InvalidateCache() {
   delete pDIB;
@@ -3058,7 +3105,7 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
 
   //      set the color scheme
   ps52plib->SaveColorScheme();
-  ps52plib->SetPLIBColorScheme(_T("DAY"));
+  ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
   //      Do the render
   DoRenderViewOnDC(memdc, vp, DC_RENDER_ONLY, true);
 
@@ -4043,11 +4090,11 @@ int s57chart::BuildSENCFile(const wxString &FullPath000,
     senc.setRefLocn(ref_lat, ref_lon);
     senc.SetLODMeters(m_LOD_meters);
 
-    OCPNPlatform::ShowBusySpinner();
+    AbstractPlatform::ShowBusySpinner();
 
     int ret = senc.createSenc200(FullPath000, SENCFileName, b_progress);
 
-    OCPNPlatform::HideBusySpinner();
+    AbstractPlatform::HideBusySpinner();
 
     if (ret == ERROR_INGESTING000)
       return BUILD_SENC_NOK_PERMANENT;
@@ -4285,25 +4332,6 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   ObjRazRules *top;
 
   AssembleLineGeometry();
-
-  //  Set up the chart context
-  m_this_chart_context = (chart_context *)calloc(sizeof(chart_context), 1);
-  m_this_chart_context->chart = this;
-  m_this_chart_context->chart_type = GetChartType();
-  m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
-  m_this_chart_context->chart_scale = GetNativeScale();
-
-  //  Loop and populate all the objects
-  for (int i = 0; i < PRIO_NUM; ++i) {
-    for (int j = 0; j < LUPNAME_NUM; j++) {
-      top = razRules[i][j];
-      while (top != NULL) {
-        S57Obj *obj = top->obj;
-        obj->m_chart_context = m_this_chart_context;
-        top = top->next;
-      }
-    }
-  }
 
   return ret_val;
 }
@@ -5917,26 +5945,30 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       attrIndex = thisLight->attributeNames.Index(_T("COLOUR"));
       if (attrIndex != wxNOT_FOUND) {
         wxString color = thisLight->attributeValues.Item(attrIndex);
-        if (color == _T("red (3)"))
+        if (color == _T("red (3)") || color == _T("red(3)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("green (4)"))
+        else if (color == _T("green (4)") || color == _T("green(4)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("white (1)"))
+        else if (color == _T("white (1)") || color == _T("white(1)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("yellow (6)"))
+        else if (color == _T("yellow (6)") || color == _T("yellow(6)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-        else if (color == _T("blue (5)"))
+        else if (color == _T("blue (5)") || color == _T("blue(5)"))
           colorStr =
               _T("<table border=0><tr><td ")
               _T("bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("magenta (12)") || color == _T("magenta(12)"))
+          colorStr =
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=magenta>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
         else
           colorStr =
               _T("<table border=0><tr><td ")
@@ -5949,15 +5981,15 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (vis.Contains(_T("8"))) {
           if (attrIndex != wxNOT_FOUND) {
             wxString color = thisLight->attributeValues.Item(attrIndex);
-            if (color == _T("red (3)"))
+            if (( color == _T("red (3)") || color == _T("red(3)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (color == _T("green (4)"))
+            if (( color == _T("green (4)") || color == _T("green(4)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-            if (color == _T("white (1)"))
+            if (( color == _T("white (1)") || color == _T("white(1)")))
               colorStr =
                   _T("<table border=0><tr><td ")
                   _T("bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
@@ -5978,6 +6010,12 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       attrIndex = thisLight->attributeNames.Index(_T("SIGGRP"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
+        lightsHtml << _T(" ");
+      }
+
+      attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
+      if( attrIndex != wxNOT_FOUND ) {
+        lightsHtml << _T(" ") << thisLight->attributeValues.Item( attrIndex ).Upper()[0];
         lightsHtml << _T(" ");
       }
 

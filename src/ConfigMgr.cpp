@@ -96,13 +96,13 @@ extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
-extern int g_nDepthUnitDisplay;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
+extern wxString  g_TalkerIdText;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -127,10 +127,6 @@ extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
-
-extern int g_iSDMMFormat;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -263,8 +259,6 @@ extern bool g_bShowChartBar;
 
 extern int g_MemFootMB;
 
-extern int g_nCOMPortCheck;
-
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
 extern int g_BSBImgDebug;
@@ -312,7 +306,7 @@ extern ChartGroupArray *g_pGroupArray;
 extern bool g_bDebugOGL;
 extern wxString g_uploadConnection;
 
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern bool g_btouch;
@@ -978,6 +972,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     conf->Write(_T ( "GlobalToolbarConfig" ), g_toolbarConfig);
     conf->Write(_T ( "DistanceFormat" ), g_iDistanceFormat);
     conf->Write(_T ( "SpeedFormat" ), g_iSpeedFormat);
+    conf->Write(_T ( "WindSpeedFormat" ), g_iWindSpeedFormat);
     conf->Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
   }
 
@@ -1416,6 +1411,8 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
                                   // 2 = "Kilometers", 3 = "Meters"
   CHECK_INT(_T ( "SpeedFormat" ),
             &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+  CHECK_INT(_T ( "WindSpeedFormat" ),
+            &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
 
   // LIVE ETA OPTION
   CHECK_INT(_T ( "LiveETA" ), &g_bShowLiveETA);
@@ -1615,81 +1612,6 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
 #ifdef __WXQT__
   conf->SetPath(_T ( "/Settings/QTFonts" ));
-#endif
-
-#if 0
-    if(conf->GetNumberOfEntries() != (unsigned int)FontMgr::Get().GetNumFonts() )
-        return false;
-
-    wxString str;
-    long dummy;
-    wxString pval;
-
-    bool bCont = conf->GetFirstEntry( str, dummy );
-    while( bCont ) {
-        conf->Read( str, &pval );
-        if(!FontMgr::Get().FindFontByConfigString(str))
-            return false;
-
-        bCont = conf->GetNextEntry( str, dummy );
-    }
-
-
-//  Tide/Current Data Sources
-    conf->SetPath( _T ( "/TideCurrentDataSources" ) );
-    if( conf->GetNumberOfEntries() != TideCurrentDataSet.GetCount())
-        return false;
-
-    if( conf->GetNumberOfEntries()){
-        wxString str, val;
-        long dummy;
-        bool bCont = conf->GetFirstEntry( str, dummy );
-        while( bCont ) {
-            conf->Read( str, &val );              // Get a file name
-            if( TideCurrentDataSet.Index(val) == wxNOT_FOUND)
-                return false;
-            bCont = conf->GetNextEntry( str, dummy );
-        }
-    }
-
-#endif
-
-#if 0
-    //    Groups
-    conf->SetPath( _T ( "/Groups" ) );
-    unsigned int group_count;
-    conf->Read( _T ( "GroupCount" ), (int *) &group_count, 0 );
-
-    if(group_count != g_pGroupArray->GetCount())
-        return false;
-
-    // Walk the array of groups in the target template
-    for( unsigned int i = 0; i < group_count; i++ ) {
-        wxString s;
-        s.Printf( _T("Group%d"), i + 1 );
-        s.Prepend( _T ( "/Groups/" ) );
-        conf->SetPath( s );
-
-        wxString t;
-        conf->Read( _T ( "GroupName" ), &t );
-
-        // Look for this group name int the active array
-        bool bfound = false;
-        ChartGroup *pGroup;
-        for(unsigned int j = 0 ; j < g_pGroupArray->GetCount() ; j++){
-            pGroup = g_pGroupArray->Item(i);
-            if(pGroup && (pGroup->m_group_name.IsSameAs(t))){
-                bfound = true;
-                break;
-            }
-        }
-
-        if(!bfound)
-            return false;
-        //TODO
-        // Here we could further check the contents of the found group.
-    }
-
 #endif
 
   conf->SetPath(_T ( "/Settings/Others" ));

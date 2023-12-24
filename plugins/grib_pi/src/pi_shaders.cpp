@@ -177,11 +177,11 @@ static const GLchar* FBO_texture_2D_fragment_shader_source =
     "}\n";
 
 GLint pi_color_tri_fragment_shader;
-GLint pi_color_tri_shader_program;
+GLint GRIBpi_color_tri_shader_program;
 GLint pi_color_tri_vertex_shader;
 
 GLint pi_colorv_tri_fragment_shader;
-GLint pi_colorv_tri_shader_program;
+GLint GRIBpi_colorv_tri_shader_program;
 GLint pi_colorv_tri_vertex_shader;
 
 GLint pi_texture_2D_fragment_shader;
@@ -211,13 +211,13 @@ bool pi_loadShaders() {
 
   // Simple colored triangle shader
 
-  if (!pi_color_tri_shader_program) {
+  if (!GRIBpi_color_tri_shader_program) {
     auto shaderProgram = PI_GLShaderProgram::Builder()
      .addShaderFromSource(color_tri_vertex_shader_source, GL_VERTEX_SHADER)
      .addShaderFromSource(color_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
      .linkProgram();
 
-    pi_color_tri_shader_program = shaderProgram.programId();
+    GRIBpi_color_tri_shader_program = shaderProgram.programId();
   }
 
 #if 0
@@ -268,13 +268,13 @@ bool pi_loadShaders() {
 #endif
 
   // Array colored triangle shader
-  if (!pi_colorv_tri_shader_program) {
+  if (!GRIBpi_colorv_tri_shader_program) {
     auto shaderProgram = PI_GLShaderProgram::Builder()
      .addShaderFromSource(colorv_tri_vertex_shader_source, GL_VERTEX_SHADER)
      .addShaderFromSource(colorv_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
      .linkProgram();
 
-    pi_colorv_tri_shader_program = shaderProgram.programId();
+    GRIBpi_colorv_tri_shader_program = shaderProgram.programId();
   }
 
 #if 0
@@ -550,14 +550,14 @@ void configureShaders(float width, float height) {
   mat4x4 I;
   mat4x4_identity(I);
 
-  glUseProgram(pi_color_tri_shader_program);
-  GLint matloc = glGetUniformLocation(pi_color_tri_shader_program, "MVMatrix");
+  glUseProgram(GRIBpi_color_tri_shader_program);
+  GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "MVMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat*)vp_transform);
   GLint transloc =
-      glGetUniformLocation(pi_color_tri_shader_program, "TransformMatrix");
+      glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
   glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat*)I);
 
-  // qDebug() << pi_color_tri_shader_program << transloc;
+  // qDebug() << GRIBpi_color_tri_shader_program << transloc;
 
   glUseProgram(pi_circle_filled_shader_program);
   matloc = glGetUniformLocation(pi_circle_filled_shader_program, "MVMatrix");
@@ -577,11 +577,13 @@ void configureShaders(float width, float height) {
 
   // qDebug() << pi_texture_2D_shader_program << transloc;
 
-  glUseProgram(pi_colorv_tri_shader_program);
-  matloc = glGetUniformLocation(pi_colorv_tri_shader_program, "MVMatrix");
+  glUseProgram(GRIBpi_colorv_tri_shader_program);
+  matloc = glGetUniformLocation(GRIBpi_colorv_tri_shader_program, "MVMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat*)vp_transform);
   transloc =
-      glGetUniformLocation(pi_colorv_tri_shader_program, "TransformMatrix");
+      glGetUniformLocation(GRIBpi_colorv_tri_shader_program, "TransformMatrix");
   glUniformMatrix4fv(transloc, 1, GL_FALSE, (const GLfloat*)I);
+
+  glUseProgram(0);
 }
 

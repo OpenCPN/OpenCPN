@@ -1,51 +1,41 @@
 #!/usr/bin/env bash
 
-#
-# Build the OSX artifacts
-#
-set -xe
+set -e
 
-export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
+#
+# Build the OSX artifacts using dependencies from Homebrew and the OS to minimize impact on the environment
+# The resulting build product is NOT ABI compatible with the upstream packages and plugins and should NEVER be distributed
+# If you want to produce the upstream compatible build, refer to the universal-build-macos.sh script which pulls in the prebuilt dependencies required for universal binary build and compatible with older macOS releases
+# The only prerequisites of the script are Homebrew and Xcode installed and working
+#
+
 
 # Return latest installed brew version of given package
 pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 
 
-# Check if the cache is with us. If not, re-install brew.
+# Check if the cache is with us. If not, re-install brew. This is needed in the CircleCI environment.
 brew list --versions python3 || {
     brew update-reset
-    # As indicated by warning message in CircleCI build log:
-    #git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core" \
-        #fetch --unshallow
-    #git -C "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask" \
-        #fetch --unshallow
 }
 
-#exit 0
-
-
-
-# build libarchive, for legacy compatibility.
-curl -k -o libarchive-3.3.3.tar.gz  \
-    https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
-tar zxf libarchive-3.3.3.tar.gz
-cd libarchive-3.3.3
-./configure --without-lzo2 --without-nettle --without-xml2 --without-openssl --with-expat
-# installs to /usr/local
-sudo rm -f /usr/local/include/archive.h
-sudo rm -f /usr/local/include/archive_entry.h
-sudo make install
-cd ..
-
-brew install cairo
-brew install freetype
+# Install the build dependencies for OpenCPN
+brew install boost   # Pre-10.15 compatibility
+brew install cmake
+brew install gettext
 brew install lame
 brew install lz4
 brew install mpg123
 brew install xz
 brew install zstd
+brew install libarchive
+brew install wxwidgets
 
-for pkg in openssl python3  cmake ; do
+ln -s /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
+ln -s /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
+ln -s /usr/local/opt/libarchive/lib/libarchive.13.dylib /usr/local/lib/libarchive.13.dylib
+
+for pkg in openssl cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
@@ -59,31 +49,23 @@ else
     brew install --cask packages
 fi
 
-#curl -k -o /tmp/wx321_opencpn50_macos1010.tar.xz  \
-#    https://download.opencpn.org/s/Djqm4SXzYjF8nBw/download
-#tar -C /tmp -xJf /tmp/wx321_opencpn50_macos1010.tar.xz
-
-curl -k -o /tmp/wx322-2_opencpn50_macos1010.tar.bz2  \
-    https://download.opencpn.org/s/8xYPFAqTR8ZGXXb/download
-tar -C /tmp -xJf /tmp/wx322-2_opencpn50_macos1010.tar.bz2
-
-export PATH="/usr/local/opt/gettext/bin:$PATH"
-echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile
-
 # Build, install and make package
-mkdir build
+mkdir -p build
 cd build
 test -n "$TRAVIS_TAG" && CI_BUILD=OFF || CI_BUILD=ON
+# Configure the build
 cmake -DOCPN_CI_BUILD=$CI_BUILD \
   -DOCPN_VERBOSE=ON \
-  -DOCPN_USE_LIBCPP=ON \
   -DOCPN_USE_SYSTEM_LIBARCHIVE=OFF \
-  -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx322-2_opencpn50_macos1010/lib/wx/config/osx_cocoa-unicode-3.2 \
-  -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx322-2_opencpn50_macos1010" \
-  -DCMAKE_INSTALL_PREFIX=/tmp/opencpn -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
-  -DOCPN_BUILD_TEST=OFF \
+  -DCMAKE_INSTALL_PREFIX=/tmp/opencpn \
+  -DOCPN_RELEASE=0 \
+  -DOCPN_BUILD_TEST=ON \
   ..
+
+# Compile OpenCPN
 make -sj$(sysctl -n hw.physicalcpu)
+
+# Create the package artifacts
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
 make install
@@ -92,6 +74,3 @@ make install # Dunno why the second is needed but it is, otherwise
 
 make create-pkg
 make create-dmg
-
-# Install the stuff needed by upload.
-pip3 install --user  -q cloudsmith-cli

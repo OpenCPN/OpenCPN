@@ -40,9 +40,6 @@
 ** You can use it any way you like.
 */
 
-extern int              g_NMEAXTEPrecision;
-
-
 XTE::XTE()
 {
    Mnemonic = _T("XTE");

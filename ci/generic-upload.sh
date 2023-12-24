@@ -9,7 +9,7 @@ cd build
 
 if sudo -H echo foo &>/dev/null; then SUDO="sudo -H"; else SUDO=""; fi
 case "$OCPN_TARGET" in
-    xenial|trusty|bionic*|focal*)
+    bionic*|focal*|jammy*)
         for src in $(expand *.deb); do
             old=$(basename $src)
             new=$(echo $old | sed "s/opencpn/opencpn-${OCPN_TARGET}/")
@@ -50,7 +50,8 @@ else
         # Assuming builders have installed python3 + pip
         $SUDO python3 -m pip install -q cloudsmith-cli
     fi
-    for src in $(expand *.dmg *setup.exe *.deb *.pkg); do
+    if test -f Release/opencpn.pdb; then cp Release/opencpn.pdb .; fi
+    for src in $(expand *.dmg *setup.exe *.deb *.pkg *pdb*gz *.dSYM.tar.gz); do
         old=$(basename $src)
         new=$(echo $old | sed "s/+/+${BUILD_NR}./")
         if [ "$old" != "$new" ]; then $SUDO mv "$old" "$new"; fi

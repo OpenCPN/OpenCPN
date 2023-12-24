@@ -35,12 +35,12 @@
 #endif  // precompiled headers
 
 #define PLUGIN_VERSION_MAJOR 4
-#define PLUGIN_VERSION_MINOR 1
+#define PLUGIN_VERSION_MINOR 2
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 16
 
-#include "../../../include/ocpn_plugin.h"
+#include "ocpn_plugin.h"
 
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
@@ -172,7 +172,9 @@ private:
   wxString m_ZyGribLogin;
   wxString m_ZyGribCode;
   double m_GUIScaleFactor;
-
+ #ifdef __WXMSW__
+  double m_GribIconsScaleFactor;
+ #endif
   bool m_bGRIBShowIcon;
 
   bool m_bShowGrib;

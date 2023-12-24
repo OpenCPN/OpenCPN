@@ -35,8 +35,7 @@
 #include "ocpndc.h"
 #include "route.h"
 #include "viewport.h"
-
-class SendToGpsDlg;
+#include "SendToGpsDlg.h"
 
 class RouteGui {
 public:

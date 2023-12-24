@@ -11,6 +11,8 @@
 #include "georef.h"
 #include "route_point_gui.h"
 #include "ocpn_frame.h"
+#include "multiplexer.h"
+#include "n0183_ctx_factory.h"
 #include "FontMgr.h"
 #include "glChartCanvas.h"
 #include "viewport.h"
@@ -22,6 +24,8 @@
 #include "styles.h"
 #include "ocpn_plugin.h"
 
+
+extern Multiplexer* g_pMUX;
 extern ocpnGLOptions g_GLOptions;
 extern float g_MarkScaleFactorExp;
 extern bool g_btouch;
@@ -358,7 +362,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
     int glw, glh;
-    unsigned int IconTexture = pWayPointMan->GetIconTexture(pbm, glw, glh);
+    unsigned int IconTexture =
+       WayPointmanGui(*pWayPointMan).GetIconTexture(pbm, glw, glh);
 
     glBindTexture(GL_TEXTURE_2D, IconTexture);
 
@@ -447,7 +452,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 #else
       wxScreenDC sdc;
       sdc.SetFont(*m_point.m_pMarkFont);
-      sdc.GetTextExtent(m_point.m_MarkName, &w, &h, NULL, NULL, m_point.m_pMarkFont);
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -499,6 +503,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
                    m_point.m_iTextTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
                       data);
+
+      delete[] data;
 
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
@@ -659,18 +665,22 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 #endif
 
 void RoutePointGui::CalculateDCRect(wxDC &dc, ChartCanvas *canvas, wxRect *prect) {
-  dc.ResetBoundingBox();
-  dc.DestroyClippingRegion();
+  if (canvas) {
+    dc.ResetBoundingBox();
+    dc.DestroyClippingRegion();
 
-  // Draw the mark on the dc
-  ocpnDC odc(dc);
-  Draw(odc, canvas, NULL);
+    // Draw the mark on the dc
+    ocpnDC odc(dc);
+    odc.SetVP(canvas->GetVP());
 
-  //  Retrieve the drawing extents
-  prect->x = dc.MinX() - 1;
-  prect->y = dc.MinY() - 1;
-  prect->width = dc.MaxX() - dc.MinX() + 2;  // Mouse Poop?
-  prect->height = dc.MaxY() - dc.MinY() + 2;
+    Draw(odc, canvas, NULL);
+
+    //  Retrieve the drawing extents
+    prect->x = dc.MinX() - 1;
+    prect->y = dc.MinY() - 1;
+    prect->width = dc.MaxX() - dc.MinX() + 2;  // Mouse Poop?
+    prect->height = dc.MaxY() - dc.MinY() + 2;
+  }
 }
 
 bool RoutePointGui::IsVisibleSelectable(ChartCanvas* cc, bool boverrideViz) {
@@ -861,7 +871,9 @@ void RoutePointGui::ReLoadIcon(void) {
 }
 
 bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
-  int result = SendWaypointToGPS_N0183(&m_point, com_name);
+
+  N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);
+  int result = SendWaypointToGPS_N0183(&m_point, com_name, *g_pMUX, dlg_ctx);
 
   wxString msg;
   if (0 == result)

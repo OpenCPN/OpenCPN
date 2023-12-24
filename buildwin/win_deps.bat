@@ -24,22 +24,22 @@ wget --version >nul 2>&1 || choco install -y wget
 set "CACHE_DIR=%~dp0..\cache"
 if not exist !CACHE_DIR! (mkdir !CACHE_DIR!)
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-if not exist cache\wxWidgets-3.2.2 (
+if not exist cache\wxWidgets-3.2.4 (
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  wget -nv %GITHUB_DL%/v3.2.2.1/wxMSW-3.2.2_vc14x_Dev.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.2 wxMSW-3.2.2_vc14x_Dev.7z
-  wget -nv %GITHUB_DL%/v3.2.2.1/wxWidgets-3.2.2.1-headers.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.2 wxWidgets-3.2.2.1-headers.7z
-  wget -nv %GITHUB_DL%/v3.2.2.1/wxMSW-3.2.2_vc14x_ReleaseDLL.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.2 wxMSW-3.2.2_vc14x_ReleaseDLL.7z
+  wget -nv %GITHUB_DL%/v3.2.4/wxMSW-3.2.4_vc14x_Dev.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.4 wxMSW-3.2.4_vc14x_Dev.7z
+  wget -nv %GITHUB_DL%/v3.2.4/wxWidgets-3.2.4-headers.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.4 wxWidgets-3.2.4-headers.7z
+  wget -nv %GITHUB_DL%/v3.2.4/wxMSW-3.2.4_vc14x_ReleaseDLL.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.4 wxMSW-3.2.4_vc14x_ReleaseDLL.7z
 )
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
-set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.2"
+set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.4"
 echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
 echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_dll" >> %CACHE_DIR%\wx-config.bat
 
@@ -51,6 +51,7 @@ if not exist C:\ProgramData\chocolatey\lib\nsis (
 
 :: Make sure the pre-compiled libraries are in place
 set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
+set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
 if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
       %GH_DL_BASE%/archive/refs/tags/v0.3.zip
@@ -63,4 +64,6 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
   if exist !CACHE_DIR!\buildwin\wxWidgets (
     rmdir !CACHE_DIR!\buildwin\wxWidgets /s /q
   )
+  wget !opencpn_support_base!/opencpn-support/raw/files/iphlpapi.lib ^
+   -O %CACHE_DIR%\buildwin\iphlpapi.lib
 )

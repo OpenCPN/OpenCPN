@@ -28,7 +28,10 @@
 #include <wx/wx.h>
 #endif  // precompiled header
 
-#include "navutil.h"
+#include <wx/string.h>
+
+#include "route.h"
+#include "comm_n0183_output.h"
 
 /*  Wrapped interface from higher level objects   */
 int Garmin_GPS_Init(const wxString &port_name);
@@ -42,7 +45,7 @@ wxString Garmin_GPS_GetSaveString();
 
 int Garmin_GPS_SendWaypoints(const wxString &port_name, RoutePointList *wplist);
 int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
-                         wxGauge *pProgress);
+                         N0183DlgCtx dlg_ctx);
 
 wxString GetLastGarminError(void);
 

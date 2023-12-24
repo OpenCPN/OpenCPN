@@ -46,13 +46,10 @@
 #include "navutil_base.h"
 
 
-enum { TEMPERATURE_C = 0, TEMPERATURE_F = 1, TEMPERATURE_K = 2 };
-
-
 extern bool LogMessageOnce(const wxString &msg);
 extern double fromUsrDistance(double usr_distance, int unit = -1);
 extern double fromUsrSpeed(double usr_speed, int unit = -1);
-extern double toUsrTemp(double cel_temp, int unit = -1);
+extern double fromUsrWindSpeed(double usr_wspeed, int unit = -1);
 extern double fromUsrTemp(double usr_temp, int unit = -1);
 extern wxString getUsrTempUnit(int unit = -1);
 extern wxString formatAngle(double angle);
@@ -140,6 +137,7 @@ public:
 class MyConfig : public wxFileConfig {
 public:
   MyConfig(const wxString &LocalFileName);
+  ~MyConfig();
 
   int LoadMyConfig();
   void LoadS57Config();
@@ -171,6 +169,7 @@ public:
   virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
   virtual void UpdateSettings();
   virtual void UpdateNavObj(bool bRecreate = false);
+  virtual void UpdateNavObjOnly();
   virtual bool IsChangesFileDirty();
 
   bool LoadLayers(wxString &path);

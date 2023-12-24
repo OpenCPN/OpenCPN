@@ -1,3 +1,4 @@
+#include <string>
 
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
@@ -10,6 +11,8 @@
 #include "comm_n0183_output.h"
 #include "georef.h"
 #include "gui_lib.h"
+#include "multiplexer.h"
+#include "n0183_ctx_factory.h"
 #include "navutil.h"
 #include "own_ship.h"
 #include "routeman.h"
@@ -22,6 +25,7 @@
 extern Routeman* g_pRouteMan;
 extern wxColour g_colourTrackLineColour;
 extern int g_route_line_width;
+extern Multiplexer *g_pMUX;
 
 extern wxColor GetDimColor(wxColor c);
 extern bool g_bHighliteTracks;
@@ -561,6 +565,7 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
       bool blink_save = prp2->m_bBlink;
       prp2->m_bBlink = false;
       ocpnDC odc_route(dc_route);
+      odc_route.SetVP(canvas->GetVP());
       RoutePointGui(*prp2).Draw(odc_route, canvas, NULL);
       prp2->m_bBlink = blink_save;
 
@@ -576,13 +581,14 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
   *prect = update_rect;
 }
 
-
 int RouteGui::SendToGPS(const wxString& com_name, bool bsend_waypoints,
                         SendToGpsDlg* dialog) {
   int result = 0;
 
+  N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);
   ::wxBeginBusyCursor();
-  result = SendRouteToGPS_N0183(&m_route, com_name, bsend_waypoints);
+  result = SendRouteToGPS_N0183(&m_route, com_name, bsend_waypoints, *g_pMUX,
+                                dlg_ctx);
   ::wxEndBusyCursor();
 
   wxString msg;

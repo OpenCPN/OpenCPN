@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::sound)
     return ()
 endif ()
 
+# FixME (#3527) Dependency on main CMakeLists.txt
 if (NOT CMAKE_MODULE_PATH)
     set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -51,7 +52,9 @@ target_include_directories(SOUND
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE
         ${CMAKE_BINARY_DIR}/include
+#FIXME (#3527) Missing linkage
         ${wxWidgets_INCLUDE_DIRS}
+#FIXME (#3527) Dependency on main OpenCPN
         ${CMAKE_CURRENT_BINARY_DIR}/../../include
         ${CMAKE_CURRENT_BINARY_DIR}/../../../include
 )

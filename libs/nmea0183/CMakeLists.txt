@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::nmea0183)
     return ()
 endif ()
 
+#FIXME (#3527) Dependency on main OpenCPN
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -66,4 +67,6 @@ add_library(ocpn::nmea0183 ALIAS NMEA0183)
 
 set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(NMEA0183 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+#FIXME (#3527)  Missing linkage
 target_include_directories(NMEA0183 PRIVATE ${wxWidgets_INCLUDE_DIRS})

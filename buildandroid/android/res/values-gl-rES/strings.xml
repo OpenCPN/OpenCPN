@@ -30,6 +30,7 @@
     <string name="ocpn_prefs_charts_vectorchartsettings">Preferencias das cartas vectoriais</string>
     <string name="ocpn_prefs_charts_summary_chartfiles">Configurar as cartas instaladas</string>
     <string name="ocpn_prefs_charts_summary_vectorchartsettings">Establecer as opcións de visualización das cartas vectoriais</string>
+    <string name="ocpn_prefs_charts_vectordisplaycategory_All">Todo</string>
     <string name="ocpn_prefs_charts_vectordisplaycolors_2">2 Cores</string>
     <string name="ocpn_prefs_charts_vectordisplaycolors_4">4 Cores</string>
     <!-- Connections Preferences -->

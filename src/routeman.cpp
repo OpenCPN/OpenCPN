@@ -22,61 +22,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include <wx/wxprec.h>
+#include <cmath>
+#include <memory>
+#include <vector>
 
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include <wx/apptrait.h>
-#include <wx/dir.h>
-#include <wx/filename.h>
+#include <wx/wxprec.h>
+
 #include <wx/image.h>
 #include <wx/jsonval.h>
 #include <wx/listimpl.cpp>
-#include <wx/progdlg.h>
-#include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
 #include "ais_decoder.h"
 #include "base_platform.h"
-#include "chcanv.h"
 #include "comm_n0183_output.h"
 #include "comm_vars.h"
 #include "config_vars.h"
-#include "concanv.h"
 #include "cutil.h"
-#include "dychart.h"
 #include "georef.h"
-#include "MarkIcon.h"
 #include "nav_object_database.h"
 #include "navutil_base.h"
-#include "navutil.h"
-#include "ocpn_app.h"
-#include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "nmea_ctx_factory.h"
 #include "own_ship.h"
-#include "pluginmanager.h"
 #include "route.h"
-#include "routemanagerdialog.h"
 #include "routeman.h"
-#include "RoutePropDlgImpl.h"
-#include "styles.h"
-#include "svg_utils.h"
 #include "track.h"
-
-#ifndef CLIAPP
-#include "color_handler.h"
-#include "concanv.h"
-#include "gui_lib.h"
-#endif
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
-#endif
-
-#ifndef CLIAPP
-extern ConsoleCanvas *console;
 #endif
 
 extern BasePlatform* g_BasePlatform;
@@ -85,6 +62,7 @@ extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 extern Routeman *g_pRouteMan;
+extern bool bGPSValid;
 
 extern wxRect g_blink_rect;
 
@@ -128,9 +106,12 @@ void appendOSDirSlash(wxString *pString);
 //--------------------------------------------------------------------------------
 
 Routeman::Routeman(struct RoutePropDlgCtx ctx,
-                   std::function<void()> dlg_update_list_ctrl) {
-  m_prop_dlg_ctx = ctx;
-  m_route_mgr_dlg_update_list_ctrl = dlg_update_list_ctrl;
+                   struct RoutemanDlgCtx route_dlg_ctx,
+                   NmeaLog& nmea_log)
+    : m_NMEA0183(NmeaCtxFactory()),
+      m_prop_dlg_ctx(ctx),
+      m_route_dlg_ctx(route_dlg_ctx),
+      m_nmea_log(nmea_log) {
   pActiveRoute = NULL;
   pActivePoint = NULL;
   pRouteActivatePoint = NULL;
@@ -240,7 +221,7 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
   //if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
   //  pRoutePropDialog->SetRouteAndUpdate(route, true);
   //}
-  m_prop_dlg_ctx.SetRouteAndUpdate(route);
+  m_prop_dlg_ctx.set_route_and_update(route);
 
 }
 
@@ -302,10 +283,7 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
 
   m_bDataValid = false;
 
-#ifndef CLIAPP
-  console->ShowWithFreshFonts();
-#endif
-
+  m_route_dlg_ctx.show_with_fresh_fonts();
   return true;
 }
 
@@ -380,7 +358,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   ///      pRoutePropDialog->SetEnroutePoint(pActivePoint);
   ///    }
   ///  }
-  m_prop_dlg_ctx.SetEnroutePoint(pA, pActivePoint);
+  m_prop_dlg_ctx.set_enroute_point(pA, pActivePoint);
   return true;
 }
 
@@ -421,7 +399,7 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     ///     pRoutePropDialog->SetEnroutePoint(pActivePoint);
     ///   }
     /// }
-    m_prop_dlg_ctx.SetEnroutePoint(pr, pActivePoint);
+    m_prop_dlg_ctx.set_enroute_point(pr, pActivePoint);
 
     json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
     return true;
@@ -459,11 +437,7 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
   pActivePoint = NULL;
 
-#ifndef CLIAPP
-  console->pCDI->ClearBackground();
-  console->Show(false);
-#endif
-
+  m_route_dlg_ctx.clear_console_background();
   m_bDataValid = false;
 
   return true;
@@ -503,6 +477,9 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
     m_NMEA0183.Rmb.IsDataValid = NTrue;
+    if (!bGPSValid)
+      m_NMEA0183.Rmb.IsDataValid = NFalse;
+
     m_NMEA0183.Rmb.CrossTrackError = CurrentXTEToActivePoint;
 
     if (XTEDir < 0)
@@ -539,9 +516,10 @@ bool Routeman::UpdateAutopilot() {
       m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
 
     m_NMEA0183.Rmb.FAAModeIndicator = "A";
+
     m_NMEA0183.Rmb.Write(snt);
 
-    BroadcastNMEA0183Message(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
   }
 
   // RMC
@@ -550,6 +528,8 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
     m_NMEA0183.Rmc.IsDataValid = NTrue;
+    if (!bGPSValid)
+      m_NMEA0183.Rmc.IsDataValid = NFalse;
 
     if (gLat < 0.)
       m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, _T("S"));
@@ -592,7 +572,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
     m_NMEA0183.Rmc.Write(snt);
 
-    BroadcastNMEA0183Message(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
   }
 
   // APB
@@ -601,7 +581,10 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
 
-    m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;
+    m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid)
+      m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
+
     m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
 
     m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
@@ -658,7 +641,7 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Apb.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
   }
 
   // XTE
@@ -680,7 +663,7 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Xte.CrossTrackUnits = _T("N");
 
     m_NMEA0183.Xte.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence);
+    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
   }
 
   return true;
@@ -726,19 +709,10 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
 bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
-#ifdef CLIAPP
-      pAISMOBRoute = NULL;
-#else
-      int ret = OCPNMessageBox(NULL,
-                               _("You are trying to delete an active AIS MOB "
-                                 "route, are you REALLY sure?"),
-                               _("OpenCPN Warning"), wxYES_NO);
-
-      if (ret == wxID_NO)
+      if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
         return false;
-      else
-        pAISMOBRoute = NULL;
-#endif
+      }
+      pAISMOBRoute = 0;
     }
     ::wxBeginBusyCursor();
 
@@ -752,7 +726,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
     ///     (pRoute == pRoutePropDialog->GetRoute())) {
     ///   pRoutePropDialog->Hide();
     /// }
-    m_prop_dlg_ctx.Hide(pRoute);
+    m_prop_dlg_ctx.hide(pRoute);
 
     nav_obj_changes->DeleteConfigRoute(pRoute);
 
@@ -760,9 +734,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
     pRouteList->DeleteObject(pRoute);
 
-    m_route_mgr_dlg_update_list_ctrl();   // Update the RouteManagerDialog
-    ///if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-    ///  pRouteManagerDialog->UpdateRouteListCtrl();
+    m_route_dlg_ctx.route_mgr_dlg_update_list_ctrl();
 
     // walk the route, tentatively deleting/marking points used only by this
     // route
@@ -819,20 +791,11 @@ void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
   while (node) {
     Route *proute = node->GetData();
     if (proute == pAISMOBRoute) {
-#ifdef CLIAPP
-      pAISMOBRoute = NULL;
-#else
-      ::wxEndBusyCursor();
-      int ret = OCPNMessageBox(NULL,
-                               _("You are trying to delete an active AIS MOB "
-                                 "route, are you REALLY sure?"),
-                               _("OpenCPN Warning"), wxYES_NO);
-      if (ret == wxID_NO)
-        return;
-      else
-        pAISMOBRoute = NULL;
+       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
+         return;
+       }
+      pAISMOBRoute = 0;
       ::wxBeginBusyCursor();
-#endif
     }
 
     node = node->GetNext();
@@ -847,9 +810,6 @@ void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
   ::wxEndBusyCursor();
 }
 
-#ifdef  CLIAPP
-wxColour GetGlobalColor(wxString name) { return *wxBLACK; }
-#endif
 
 void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   // Re-Create the pens and colors
@@ -877,20 +837,23 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   //    Or in something like S-52 compliance
 
   m_pRoutePen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T("UINFB")), scaled_line_width, wxPENSTYLE_SOLID);
+      m_route_dlg_ctx.get_global_colour("UINFB"), scaled_line_width,
+                                        wxPENSTYLE_SOLID);
   m_pSelectedRoutePen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T("UINFO")), scaled_line_width, wxPENSTYLE_SOLID);
+      m_route_dlg_ctx.get_global_colour("UINFO"), scaled_line_width,
+                                        wxPENSTYLE_SOLID);
   m_pActiveRoutePen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T("UARTE")), scaled_line_width, wxPENSTYLE_SOLID);
+      m_route_dlg_ctx.get_global_colour("UARTE"), scaled_line_width,
+                                        wxPENSTYLE_SOLID);
   m_pTrackPen = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T("CHMGD")), track_scaled_line_width, wxPENSTYLE_SOLID);
-
-  m_pRouteBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("UINFB")),
-                                                    wxBRUSHSTYLE_SOLID);
+      m_route_dlg_ctx.get_global_colour("CHMGD"), track_scaled_line_width,
+                                        wxPENSTYLE_SOLID);
+  m_pRouteBrush = wxTheBrushList->FindOrCreateBrush(
+      m_route_dlg_ctx.get_global_colour("UINFB"), wxBRUSHSTYLE_SOLID);
   m_pSelectedRouteBrush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T("UINFO")), wxBRUSHSTYLE_SOLID);
+      m_route_dlg_ctx.get_global_colour("UINFO"), wxBRUSHSTYLE_SOLID);
   m_pActiveRouteBrush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T("PLRTE")), wxBRUSHSTYLE_SOLID);
+      m_route_dlg_ctx.get_global_colour("PLRTE"), wxBRUSHSTYLE_SOLID);
 }
 
 wxString Routeman::GetRouteReverseMessage(void) {
@@ -941,7 +904,8 @@ void Routeman::ZeroCurrentXTEToActivePoint() {
 //      WayPointman   Implementation
 //--------------------------------------------------------------------------------
 
-WayPointman::WayPointman() {
+WayPointman::WayPointman(GlobalColourFunc color_func)
+      : m_get_global_colour(color_func) {
   m_pWayPointList = new RoutePointList;
 
   pmarkicon_image_list = NULL;
@@ -991,6 +955,8 @@ WayPointman::~WayPointman() {
 
   if (pmarkicon_image_list) pmarkicon_image_list->RemoveAll();
   delete pmarkicon_image_list;
+  delete m_pLegacyIconArray;
+  delete m_pExtendedIconArray;
 }
 
 bool WayPointman::AddRoutePoint(RoutePoint *prp) {
@@ -1154,71 +1120,6 @@ bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
     return false;
 }
 
-unsigned int WayPointman::GetIconTexture(const wxBitmap *pbm, int &glw,
-                                         int &glh) {
-#ifdef ocpnUSE_GL
-  int index = GetIconIndex(pbm);
-  MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(index);
-
-  if (!pmi->icon_texture) {
-    /* make rgba texture */
-    wxImage image = pbm->ConvertToImage();
-    unsigned char *d = image.GetData();
-    if (d == 0) {
-      // don't create a texture with junk
-      return 0;
-    }
-
-    glGenTextures(1, &pmi->icon_texture);
-    glBindTexture(GL_TEXTURE_2D, pmi->icon_texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-    int w = image.GetWidth(), h = image.GetHeight();
-
-    pmi->tex_w = NextPow2(w);
-    pmi->tex_h = NextPow2(h);
-
-    unsigned char *a = image.GetAlpha();
-
-    unsigned char mr, mg, mb;
-    if (!a) image.GetOrFindMaskColour(&mr, &mg, &mb);
-
-    unsigned char *e = new unsigned char[4 * w * h];
-    for (int y = 0; y < h; y++) {
-      for (int x = 0; x < w; x++) {
-        unsigned char r, g, b;
-        int off = (y * w + x);
-        r = d[off * 3 + 0];
-        g = d[off * 3 + 1];
-        b = d[off * 3 + 2];
-        e[off * 4 + 0] = r;
-        e[off * 4 + 1] = g;
-        e[off * 4 + 2] = b;
-
-        e[off * 4 + 3] =
-            a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
-      }
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pmi->tex_w, pmi->tex_h, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, NULL);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, e);
-
-    delete[] e;
-  }
-
-  glw = pmi->tex_w;
-  glh = pmi->tex_h;
-
-  return pmi->icon_texture;
-#else
-  return 0;
-#endif
-}
-
 wxBitmap WayPointman::GetIconBitmapForList(int index, int height) {
   wxBitmap pret;
   MarkIcon *pmi;
@@ -1325,8 +1226,8 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       icon_larger = pmi->iconImage.Resize(
           wxSize(w, h), wxPoint(w / 2 - w0 / 2, h / 2 - h0 / 2));
     } else {
-      // rescale in one or two directions to avoid cropping, then resize to fit
-      // to cell
+      // We want to maintain the aspect ratio of the original image, but need the canvas to fit the fixed cell size
+      // rescale in one or two directions to avoid cropping, then resize to fit to cell (Adds border/croops as necessary)
       int h1 = h;
       int w1 = w;
       if (h0 > h)
@@ -1335,8 +1236,7 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       else if (w0 > w)
         h1 = wxRound((double)h0 * ((double)w / (double)w0));
 
-      icon_larger = pmi->iconImage.Rescale(w1, h1);
-      icon_larger = icon_larger.Resize(wxSize(w, h),
+      icon_larger = pmi->iconImage.Rescale(w1, h1).Resize(wxSize(w, h),
                                        wxPoint(w / 2 - w1 / 2, h / 2 - h1 / 2));
     }
 
@@ -1363,7 +1263,7 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
     int ym = xbmp.GetHeight() / 2;
     int dp = xm / 2;
     int width = wxMax(xm / 10, 2);
-    wxPen red(GetGlobalColor(_T( "URED" )), width);
+    wxPen red(m_get_global_colour("URED"), width);
     mdc.SetPen(red);
     mdc.DrawLine(xm - dp, ym - dp, xm + dp, ym + dp);
     mdc.DrawLine(xm - dp, ym + dp, xm + dp, ym - dp);
@@ -1386,7 +1286,7 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
     ym = fbmp.GetHeight() / 2;
     dp = xm / 2;
     width = wxMax(xm / 10, 2);
-    wxPen fred(GetGlobalColor(_T( "UGREN" )), width);
+    wxPen fred(m_get_global_colour("UGREN"), width);
     fmdc.SetPen(fred);
     fmdc.DrawLine(xm - dp, ym + dp, xm + dp, ym + dp);
     fmdc.SelectObject(wxNullBitmap);

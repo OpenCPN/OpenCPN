@@ -30,12 +30,12 @@ jobs:
           #   cmake_generator: Xcode
           #   cmake_defines: -DCMAKE_CXX_STANDARD=11
           #   use_homebrew: 1
+          #- name: macOS 11 wxOSX
+          #  runner: macos-12
+          #  pkg_mod: 11
+          #  MACOSX_DEPLOYMENT_TARGET: 10.13
           - name: macOS 11 wxOSX
-            runner: macos-12
-            pkg_mod: 11
-            MACOSX_DEPLOYMENT_TARGET: 10.13
-          - name: macOS 10.15 wxOSX
-            runner: macos-10.15
+            runner: macos-11
             pkg_mod: 10
             MACOSX_DEPLOYMENT_TARGET: 10.13
     env:
@@ -53,10 +53,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Before build
-        run: ./ci/github-pre-build.sh
-        env:
-          USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
+      #- name: Before build
+      #  run: ./ci/github-pre-build.sh
+      #  env:
+      #    USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
 
       # required for CMake to find Ninja
       - name: Configure and Build

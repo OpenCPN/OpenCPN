@@ -24,12 +24,12 @@
 #ifndef CATALOG_PARSER_H__
 #define CATALOG_PARSER_H__
 
-#include <memory>
 #include <string>
 #include <vector>
 
 /**
- *  Datatypes and a single method to parse ocpn-plugins.xml XML data.
+ *  Datatypes and  methods to parse ocpn-plugins.xml XML data,
+ *  either complete catalog or a single plugin.
  */
 
 /** Overall metadata for the set of plugins used. */
@@ -61,17 +61,21 @@ struct PluginMetadata {
   std::string info_url;
   std::string meta_url;
   std::string checksum;
+  bool is_imported;
 
   bool openSource;
 
-  bool readonly;  // Can plugin be removed?
-  int ix;         // Index in list of installed or available.
+  bool readonly;  ///< Can plugin be removed?
+  int ix;         ///< Index in list of installed or available.
   void clear() { *this = PluginMetadata(); }
   std::string key() const {
-    return std::string(name) + version + release + target + target_version;
+    return name + version + release + target + target_version;
   }
 
-  PluginMetadata() : openSource(true), readonly(true), ix(-1) {}
+  std::string to_string(); ///< Return printable XML representation.
+
+  PluginMetadata()
+      : is_imported(false), openSource(true), readonly(true), ix(-1) {}
 };
 
 /**
@@ -96,5 +100,7 @@ struct CatalogCtx {
 };
 
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx);
+
+bool ParsePlugin(const std::string& xml, PluginMetadata& metadata);
 
 #endif  // CATALOG_PARSER_H__

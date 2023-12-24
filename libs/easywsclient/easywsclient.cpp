@@ -108,6 +108,18 @@ socket_t hostname_connect(const std::string& hostname, int port) {
     for(p = result; p != NULL; p = p->ai_next)
     {
         sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+
+#ifndef _WIN32
+        // We cannot use select() on sockets with fd >= 1024.
+        if (sockfd > 500){
+          closesocket(sockfd);
+          sockfd = INVALID_SOCKET;
+          sleep(5);
+          freeaddrinfo(result);
+          return sockfd;
+        }
+#endif
+        
         if (sockfd == INVALID_SOCKET) { continue; }
 
 #ifdef _WIN32
@@ -179,7 +191,6 @@ socket_t hostname_connect(const std::string& hostname, int port) {
           fcntl(sockfd, F_SETFL,opts);  //set back to blocking
           break;
         }
-
 #endif
         closesocket(sockfd);
         sockfd = INVALID_SOCKET;
@@ -564,9 +575,10 @@ easywsclient::WebSocket::pointer from_url(const std::string& url, bool useMask, 
     //fprintf(stderr, "easywsclient: connecting: host=%s port=%d path=/%s\n", host, port, path);
     socket_t sockfd = hostname_connect(host, port);
     if (sockfd == INVALID_SOCKET) {
-        fprintf(stderr, "Unable to connect to %s:%d\n", host, port);
+        //fprintf(stderr, "Unable to connect to %s:%d\n", host, port);
         return NULL;
     }
+
     {
         // XXX: this should be done non-blocking,
         char line[1024];

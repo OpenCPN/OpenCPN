@@ -58,8 +58,6 @@
 #include <vector>
 
 #include "pi_ocpndc.h"
-#include "wx28compat.h"
-#include "cutil.h"
 
 #include "pi_shaders.h"
 #ifdef USE_ANDROID_GLES2
@@ -93,7 +91,7 @@ int NextPow2(int size) {
 //----------------------------------------------------------------------------
 /* pass the dc to the constructor, or NULL to use opengl */
 pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
-    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -120,7 +118,7 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
 }
 
 pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
-    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(false) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
   wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -139,7 +137,7 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
 }
 
 pi_ocpnDC::pi_ocpnDC()
-    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush) {
+    : glcanvas(NULL), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
@@ -165,7 +163,9 @@ pi_ocpnDC::~pi_ocpnDC() {
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
 //#ifdef __OCPN__ANDROID__
-  configureShaders(vp->pix_width, vp->pix_height);
+  if ( m_buseGL ) {
+    configureShaders(vp->pix_width, vp->pix_height);
+  }
 //#endif
   m_vpSize = wxSize(vp->pix_width, vp->pix_height);
 }
@@ -524,6 +524,7 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
     glUniform4fv(colloc, 1, colorv);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(pos);
 
     /* wx draws a nice rounded end in dc mode, so replicate
      *           this for opengl mode, should this be done for the dashed mode
@@ -580,14 +581,14 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         glLineWidth(pen_width);
     }
 
-#if 1//def USE_ANDROID_GLES2
+#if 1 //def USE_ANDROID_GLES2
     if (b_draw_thick)
       piDrawGLThickLine(x1, y1, x2, y2, m_pen, b_hiqual);
     else {
-      glUseProgram(pi_color_tri_shader_program);
+      glUseProgram(GRIBpi_color_tri_shader_program);
 
       float fBuf[4];
-      GLint pos = glGetAttribLocation(pi_color_tri_shader_program, "position");
+      GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
       glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                             fBuf);
       glEnableVertexAttribArray(pos);
@@ -603,7 +604,7 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       colorv[2] = m_pen.GetColour().Blue() / float(256);
       colorv[3] = 1.0;
 
-      GLint colloc = glGetUniformLocation(pi_color_tri_shader_program, "color");
+      GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
       glUniform4fv(colloc, 1, colorv);
 
       wxDash *dashes;
@@ -642,6 +643,7 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
           fBuf[3] = yb;
 
           glDrawArrays(GL_LINES, 0, 2);
+          glDisableVertexAttribArray(pos);
 
           xa = xa + (lspace + ldraw) * cosa;
           ya = ya + (lspace + ldraw) * sina;
@@ -655,7 +657,11 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
         fBuf[3] = y2;
 
         glDrawArrays(GL_LINES, 0, 2);
+        glDisableVertexAttribArray(pos);
+
       }
+
+      glUseProgram(0);
     }
 
 #else
@@ -881,7 +887,7 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       return;
     }
 
-#ifndef USE_ANDROID_GLES2
+#if 0 //ndef USE_ANDROID_GLES2
 
     glBegin(GL_LINE_STRIP);
     for (int i = 0; i < n; i++)
@@ -901,9 +907,9 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       workBuf[(i * 2) + 1] = points[i].y + yoffset;
     }
 
-    glUseProgram(pi_color_tri_shader_program);
+    glUseProgram(GRIBpi_color_tri_shader_program);
 
-    GLint pos = glGetAttribLocation(pi_color_tri_shader_program, "position");
+    GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           workBuf);
     glEnableVertexAttribArray(pos);
@@ -919,10 +925,13 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
     colorv[3] = m_pen.GetColour().Alpha() / float(256);
     1.0;
 
-    GLint colloc = glGetUniformLocation(pi_color_tri_shader_program, "color");
+    GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
     glUniform4fv(colloc, 1, colorv);
 
     glDrawArrays(GL_LINE_STRIP, 0, n);
+    glDisableVertexAttribArray(pos);
+
+    glUseProgram(0);
 
 #endif
 
@@ -1027,19 +1036,23 @@ void pi_ocpnDC::DrawGLLineArray(int n, float *vertex_array, float *color_array,
     //             glEnd();
 
 #else
-    glUseProgram(pi_colorv_tri_shader_program);
+    glUseProgram(GRIBpi_colorv_tri_shader_program);
 
-    GLint pos = glGetAttribLocation(pi_colorv_tri_shader_program, "position");
+    GLint pos = glGetAttribLocation(GRIBpi_colorv_tri_shader_program, "position");
     glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           vertex_array);
     glEnableVertexAttribArray(pos);
 
-    GLint colloc = glGetAttribLocation(pi_colorv_tri_shader_program, "colorv");
+    GLint colloc = glGetAttribLocation(GRIBpi_colorv_tri_shader_program, "colorv");
     glVertexAttribPointer(colloc, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                           color_array);
     glEnableVertexAttribArray(colloc);
 
     glDrawArrays(GL_LINES, 0, n);
+    glDisableVertexAttribArray(pos);
+    glDisableVertexAttribArray(colloc);
+
+    glUseProgram(0);
 
 #endif
 
@@ -1178,11 +1191,11 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     drawrrhelperGLES2(x1, y2, r, 2, steps);
     drawrrhelperGLES2(x2, y2, r, 3, steps);
 
-    glUseProgram(pi_color_tri_shader_program);
+    glUseProgram(GRIBpi_color_tri_shader_program);
 
     // Get pointers to the attributes in the program.
     GLint mPosAttrib =
-        glGetAttribLocation(pi_color_tri_shader_program, "position");
+        glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
 
     // Disable VBO's (vertex buffer objects) for attributes.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1198,7 +1211,7 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     bcolorv[2] = m_brush.GetColour().Blue() / float(256);
     bcolorv[3] = m_brush.GetColour().Alpha() / float(256);
 
-    GLint bcolloc = glGetUniformLocation(pi_color_tri_shader_program, "color");
+    GLint bcolloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
     glUniform4fv(bcolloc, 1, bcolorv);
 
     float angle = 0.;
@@ -1215,18 +1228,20 @@ void pi_ocpnDC::DrawRoundedRectangle(wxCoord x, wxCoord y, wxCoord w, wxCoord h,
     Q[3][1] = yoffset;
 
     GLint matloc =
-        glGetUniformLocation(pi_color_tri_shader_program, "TransformMatrix");
+        glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
     glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat *)Q);
 
     // Perform the actual drawing.
     glDrawArrays(GL_TRIANGLE_FAN, 0, workBufIndex / 2);
+    glDisableVertexAttribArray(mPosAttrib);
 
     // Restore the per-object transform to Identity Matrix
     mat4x4 IM;
     mat4x4_identity(IM);
     GLint matlocf =
-        glGetUniformLocation(pi_color_tri_shader_program, "TransformMatrix");
+        glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
     glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+    glUseProgram(0);
 
 #else
     if (ConfigureBrush()) {
@@ -1327,6 +1342,7 @@ void pi_ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
 
   // Perform the actual drawing.
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glDisableVertexAttribArray(mPosAttrib);
 
   //      Enable anti-aliased lines, at best quality
   glDisable(GL_BLEND);
@@ -1486,12 +1502,16 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
         glDrawArrays(GL_TRIANGLES, 0, 3);
       }
 
+      glDisableVertexAttribArray(mPosAttrib);
+
       // Restore the per-object transform to Identity Matrix
       mat4x4 IM;
       mat4x4_identity(IM);
       GLint matlocf =
           glGetUniformLocation(pi_color_tri_shader_program, "TransformMatrix");
       glUniformMatrix4fv(matlocf, 1, GL_FALSE, (const GLfloat *)IM);
+
+      glUseProgram(0);
     }
 
 #else
@@ -1628,14 +1648,14 @@ void pi_odc_endCallbackD_GLSL(void *data) {
 #if 1
   pi_ocpnDC *pDC = (pi_ocpnDC *)data;
 
-  glUseProgram(pi_color_tri_shader_program);
+  glUseProgram(GRIBpi_color_tri_shader_program);
 
   // Disable VBO's (vertex buffer objects) for attributes.
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   float *bufPt = &(pDC->s_odc_tess_work_buf[pDC->s_odc_tess_vertex_idx_this]);
-  GLint pos = glGetAttribLocation(pi_color_tri_shader_program, "position");
+  GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
   glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), bufPt);
   glEnableVertexAttribArray(pos);
 
@@ -1652,10 +1672,14 @@ void pi_odc_endCallbackD_GLSL(void *data) {
   colorv[2] = c.Blue() / float(256);
   colorv[3] = c.Alpha() / float(256);
 
-  GLint colloc = glGetUniformLocation(pi_color_tri_shader_program, "color");
+  GLint colloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "color");
   glUniform4fv(colloc, 1, colorv);
 
   glDrawArrays(pDC->s_odc_tess_mode, 0, pDC->s_odc_nvertex);
+
+  glDisableVertexAttribArray(pos);
+  glUseProgram(0);
+
 #endif
 }
 #endif
@@ -1894,8 +1918,14 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetMultiLineTextExtent(text, &w, &h, NULL, &m_font); /*we need to handle multiline*/
+      int ww, hw;
+      sdc.GetTextExtent("W", &ww, &hw); // metric
+      w += ww;    // RHS padding.
       w *= OCPN_GetWinDIPScaleFactor();
       h *= OCPN_GetWinDIPScaleFactor();
+
+      h *= 2;   //TODO //Some trouble with math or text sizing.
+                // Add "fluff" to text bitmap size.
 
       /* create bitmap of appropriate size and select it */
       wxBitmap bmp(w, h);
@@ -2086,6 +2116,10 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       glVertexAttribPointer(mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1);
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      glDisableVertexAttribArray(mPosAttrib);
+      glDisableVertexAttribArray(mUvAttrib);
+
+      glUseProgram(0);
 
 #endif
 

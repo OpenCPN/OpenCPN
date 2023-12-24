@@ -32,9 +32,12 @@ class RoutemanGui {
 public:
   RoutemanGui(Routeman& routeman) : m_routeman(routeman) {}
 
+  static RoutemanDlgCtx GetDlgCtx();
+
   void DeleteAllTracks();
   void DeleteTrack(Track *pTrack);
   bool UpdateProgress(); 
+
 
 private:
   void DoAdvance(void);

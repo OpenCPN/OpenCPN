@@ -85,6 +85,10 @@ class MyConfig;
 extern MyConfig *pConfig;
 #endif
 
+// Raster Zoom Modifier value from advanced display preference pane
+// Physically located in ocpn_app.cpp
+extern int g_chart_zoom_modifier_raster;
+
 #define LON_UNDEF NAN
 #define LAT_UNDEF NAN
 
@@ -315,12 +319,7 @@ bool ChartMBTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
 
 double ChartMBTiles::GetNormalScaleMin(double canvas_scale_factor,
                                        bool b_allow_overzoom) {
-  //      if(b_allow_overzoom)
-  return (canvas_scale_factor / m_ppm_avg) /
-         132;  // allow wide range overzoom overscale
-  //      else
-  //            return (canvas_scale_factor / m_ppm_avg) / 2;         // don't
-  //            suggest too much overscale
+  return (1); //allow essentially unlimited overzoom
 }
 
 double ChartMBTiles::GetNormalScaleMax(double canvas_scale_factor,
@@ -1054,7 +1053,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const OCPNRegion &RectRegion,
                                         const LLRegion &Region) {
   // Do not render if significantly underzoomed
-  if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
+if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
     if (m_nTiles > 500) {
       return true;
     }
@@ -1078,8 +1077,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   glEnable(GL_TEXTURE_2D);
 
   int viewZoom = m_maxZoom;
-  double zoomMod =
-      2.0;  // decrease to get more detail, nominal 4?, 2 works OK for NOAA.
+  // Set zoom modifier according to Raster Zoom Modifier settings from display preference pane
+  double zoomMod = 2 * pow(2, -g_chart_zoom_modifier_raster / 3.0);
 
   for (int kz = m_minZoom; kz <= 19; kz++) {
     double db_mpp = OSM_zoomMPP[kz];
@@ -1248,7 +1247,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glDisable(GL_TEXTURE_2D);
 
-  m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm;
+  m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
 

@@ -34,9 +34,10 @@
 #include <wx/string.h>
 
 #include "comm_appmsg.h"
+#include "config_vars.h"
 #include "nmea0183.h"
 #include "N2KParser.h"
-
+#include "nmea_ctx_factory.h"
 
 
 typedef struct{
@@ -51,9 +52,10 @@ typedef struct{
   int SID;
 } NavData;
 
+
 class CommDecoder {
 public:
-  CommDecoder(){};
+  CommDecoder() : m_NMEA0183(NmeaCtxFactory()) {};
   ~CommDecoder(){};
 
   // NMEA0183 decoding, by sentence.

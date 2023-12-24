@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-02-27 02:12\n"
+"PO-Revision-Date: 2023-04-26 14:38\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -78,11 +78,11 @@ msgstr "Selecteer nieuwe"
 #: src/chartdldr_pi.cpp:651
 #, c-format
 msgid "Charts: %s"
-msgstr ""
+msgstr "Kaart: %s"
 
 #: src/chartdldr_pi.cpp:651
 msgid " from "
-msgstr ""
+msgstr " vanaf"
 
 #: src/chartdldr_pi.cpp:657 src/chartdldrgui.cpp:499
 msgid "Charts"
@@ -94,7 +94,7 @@ msgstr "Nieuw"
 
 #: src/chartdldr_pi.cpp:725 src/chartdldrgui.h:173 src/chartdldrgui.h:242
 msgid "Out of date"
-msgstr ""
+msgstr "Verouderd"
 
 #: src/chartdldr_pi.cpp:728
 msgid "Up to date"
@@ -109,7 +109,7 @@ msgstr "%lu kaarten totaal, %lu bijgewerkt, %lu nieuwe"
 #: src/chartdldr_pi.cpp:1270 src/chartdldr_pi.cpp:1287 src/chartdldr_pi.cpp:1306
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr ""
+msgstr "%lu kaarten totaal, %lu bijgewerkt, %lu nieuw, %lu geselecteerd"
 
 #: src/chartdldr_pi.cpp:841 src/chartdldr_pi.cpp:1633
 msgid "(Please update first)"
@@ -181,19 +181,19 @@ msgstr "Download van catalogus %s mislukt.\n"
 
 #: src/chartdldr_pi.cpp:1190 src/chartdldr_pi.cpp:1196 src/chartdldrgui.cpp:566
 msgid "Select All"
-msgstr ""
+msgstr "Selecteer alles"
 
 #: src/chartdldr_pi.cpp:1192 src/chartdldrgui.cpp:570 src/chartdldrgui.cpp:624
 msgid "Select None"
-msgstr ""
+msgstr "Selecteer Niets"
 
 #: src/chartdldr_pi.cpp:1193
 msgid "De-select all charts in the list."
-msgstr ""
+msgstr "De-selecteer alle kaarten in de lijst."
 
 #: src/chartdldr_pi.cpp:1197 src/chartdldrgui.cpp:571
 msgid "Select all charts in the list."
-msgstr ""
+msgstr "Selecteer alle kaarten in de lijst."
 
 #: src/chartdldr_pi.cpp:1321
 msgid "No charts selected for download."
@@ -253,7 +253,9 @@ msgstr "Lokaal pad"
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
-msgstr ""
+msgstr "Weet je zeker dat je de kaartbron wilt verwijderen?\n"
+"De lokale kaartbestanden worden niet verwijderd,\n"
+"maar je kunt de kaarten niet meer bijwerken."
 
 #: src/chartdldr_pi.cpp:1618
 msgid "Edit Chart Source"
@@ -268,7 +270,7 @@ msgstr "Het pad %s maakt geen deel uit van de door u aangegeven kaartmappen.\n"
 
 #: src/chartdldr_pi.cpp:1757
 msgid "Installing charts."
-msgstr ""
+msgstr "Kaarten installeren."
 
 #: src/chartdldr_pi.cpp:2350 src/chartdldr_pi.cpp:2354
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
@@ -292,7 +294,7 @@ msgstr "Probleem kaartbrondefinitie"
 
 #: src/chartdldrgui.cpp:206
 msgid "Dialog"
-msgstr ""
+msgstr "Dialoogvenster"
 
 #: src/chartdldrgui.cpp:253
 msgid "Predefined"
@@ -312,15 +314,15 @@ msgstr "Aangepast"
 
 #: src/chartdldrgui.cpp:304
 msgid "Proposed chart installation directory"
-msgstr ""
+msgstr "Voorgestelde kaartinstallatiemap"
 
 #: src/chartdldrgui.cpp:324
 msgid "Select a different directory"
-msgstr ""
+msgstr "Selecteer een andere map"
 
 #: src/chartdldrgui.cpp:331
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:910
 msgid "Cancel"
@@ -372,7 +374,7 @@ msgstr "Alles bijwerken"
 
 #: src/chartdldrgui.cpp:487
 msgid "Download all chart catalogs, and then update charts."
-msgstr ""
+msgstr "Download alle kaartcatalogi en werk vervolgens kaarten bij."
 
 #: src/chartdldrgui.cpp:493
 msgid "Download Charts..."
@@ -384,32 +386,32 @@ msgstr "Status"
 
 #: src/chartdldrgui.cpp:522
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: src/chartdldrgui.cpp:526
 msgid "Chart Description"
-msgstr ""
+msgstr "Kaartomschrijving"
 
 #: src/chartdldrgui.cpp:554
 msgid "Select New"
-msgstr ""
+msgstr "Selecteer nieuwe"
 
 #: src/chartdldrgui.cpp:556
 msgid "Check all charts that are 'New' in the list."
-msgstr ""
+msgstr "Selecteer alle kaarten die 'Nieuw' zijn in de lijst."
 
 #: src/chartdldrgui.cpp:559
 msgid "Select Updated"
-msgstr ""
+msgstr "Selecteer bijgewerkte"
 
 #: src/chartdldrgui.cpp:562
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr ""
+msgstr "Selecteer alle kaarten die 'verouderd' zijn in de lijst."
 
 #: src/chartdldrgui.cpp:576
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr ""
+msgstr "%u kaarten totaal, %u bijgewerkt, %u nieuw, %u geselecteerd"
 
 #: src/chartdldrgui.cpp:587
 #, c-format

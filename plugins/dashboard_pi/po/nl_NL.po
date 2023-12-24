@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-02-27 02:12\n"
+"PO-Revision-Date: 2023-04-26 14:38\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -44,7 +44,7 @@ msgstr "Grondkoers (M!)"
 
 #: src/dashboard_pi.cpp:254
 msgid "GNSS Compass"
-msgstr ""
+msgstr "GNSS Kompas"
 
 #: src/dashboard_pi.cpp:256
 msgid "True Compass"
@@ -80,7 +80,7 @@ msgstr "Ware wind"
 
 #: src/dashboard_pi.cpp:275
 msgid "Altitude"
-msgstr ""
+msgstr "Hoogte"
 
 #: src/dashboard_pi.cpp:277
 msgid "Altitude Trace"
@@ -132,11 +132,11 @@ msgstr "Roerstand"
 
 #: src/dashboard_pi.cpp:309
 msgid "GNSS in use"
-msgstr ""
+msgstr "GNSS in gebruik"
 
 #: src/dashboard_pi.cpp:311
 msgid "GNSS Status"
-msgstr ""
+msgstr "GNSS Status"
 
 #: src/dashboard_pi.cpp:313
 msgid "Cursor"
@@ -144,7 +144,7 @@ msgstr "Cursor"
 
 #: src/dashboard_pi.cpp:315
 msgid "GNSS Clock"
-msgstr ""
+msgstr "GNSS klok"
 
 #: src/dashboard_pi.cpp:317
 msgid "Sunrise/Sunset"
@@ -184,7 +184,7 @@ msgstr "Helling"
 
 #: src/dashboard_pi.cpp:335
 msgid "Local GNSS Clock"
-msgstr ""
+msgstr "Lokale GNSS Klok"
 
 #: src/dashboard_pi.cpp:337
 msgid "Local CPU Clock"
@@ -222,11 +222,11 @@ msgstr "Omlaag"
 
 #: src/dashboard_pi.cpp:1744 src/dashboard_pi.cpp:1968 src/dashboard_pi.cpp:2882
 msgid "Stbd"
-msgstr ""
+msgstr "Stuurboord"
 
 #: src/dashboard_pi.cpp:1747 src/dashboard_pi.cpp:1970 src/dashboard_pi.cpp:2884
 msgid "Port"
-msgstr ""
+msgstr "Bakboord"
 
 #: src/dashboard_pi.cpp:3536
 msgid "Dashboard preferences"
@@ -383,24 +383,25 @@ msgstr "Eenheid voor windsnelheid:"
 
 #: src/dashboard_pi.cpp:4020
 msgid "Temperature units:"
-msgstr ""
+msgstr "Eenheid temperatuur"
 
 #: src/dashboard_pi.cpp:4023
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 
 #: src/dashboard_pi.cpp:4023
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 #: src/dashboard_pi.cpp:4023
 msgid "Kelvin"
-msgstr ""
+msgstr "Kelvin"
 
 #: src/dashboard_pi.cpp:4038
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
-msgstr ""
+msgstr "Gebruik N2K & SignalK ware wind over de grond.\n"
+"(In plaats van door water)"
 
 #: src/dashboard_pi.cpp:4310
 msgid "Add instrument"
@@ -416,7 +417,7 @@ msgstr "Voorkeuren..."
 
 #: src/dashboard_pi.cpp:4727
 msgid "Resize..."
-msgstr ""
+msgstr "Formaat wijzigen"
 
 #: src/dashboard_pi.cpp:4735
 msgid "Undock"
@@ -424,7 +425,7 @@ msgstr "Afvaren"
 
 #: src/dashboard_pi.cpp:5272
 msgid "Choose font"
-msgstr ""
+msgstr "Kies lettertype"
 
 #: src/dial.cpp:455 src/wind.cpp:68 src/wind_history.cpp:490
 msgid "NE"
@@ -464,7 +465,7 @@ msgstr " magnetisch"
 
 #: src/wind_history.cpp:55 src/wind_history.cpp:120
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: src/wind_history.cpp:367
 #, c-format

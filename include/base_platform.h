@@ -65,10 +65,10 @@ struct OCPN_OSDetail {
   std::string osd_ID;
 };
 
-class BasePlatform {
+class AbstractPlatform {
 public:
-  BasePlatform();
-  virtual ~BasePlatform() {}
+  AbstractPlatform() = default;
+  virtual ~AbstractPlatform()  = default;
 
   wxString& GetPrivateDataDir();
   wxString* GetPluginDirPtr();
@@ -110,20 +110,20 @@ public:
   OCPN_OSDetail* GetOSDetail() { return m_osDetail; }
 
   void CloseLogFile(void);
-  bool InitializeLogFile(void);
+  virtual bool InitializeLogFile(void) = 0;
   wxString& GetLargeLogMessage(void) { return large_log_message; }
   FILE* GetLogFilePtr() { return flog; }
 
   wxString NormalizePath(const wxString& full_path);
 
-  virtual wxSize getDisplaySize();
-  virtual double GetDisplaySizeMM();
-  virtual double GetDisplayDPmm();
+  virtual wxSize getDisplaySize() { return wxSize(); }
+  virtual double GetDisplaySizeMM() { return 1.0; }
+  virtual double GetDisplayDPmm() { return 1.0; }
   virtual unsigned int GetSelectRadiusPix();
   double GetDisplayDIPMult(wxWindow *win);
 
-  void ShowBusySpinner();
-  void HideBusySpinner();
+  static void ShowBusySpinner();
+  static void HideBusySpinner();
 
 protected:
   bool DetectOSDetail(OCPN_OSDetail* detail);
@@ -141,7 +141,7 @@ protected:
   OCPN_OSDetail* m_osDetail;
 
   FILE* flog;
-  wxLog* m_Oldlogger;
+  wxLog* m_old_logger;
   wxString large_log_message;
 
   wxSize m_displaySize;
@@ -154,6 +154,16 @@ protected:
 #endif
   int m_monitorWidth, m_monitorHeight;
   bool m_bdisableWindowsDisplayEnum;
+};
+
+class BasePlatform : public AbstractPlatform {
+public:
+  BasePlatform();
+  bool InitializeLogFile() override;
+
+  wxSize getDisplaySize() override;
+  double GetDisplaySizeMM() override;
+  double GetDisplayDPmm() override;
 };
 
 #endif  //  BASEPLATFORM_H

@@ -32,6 +32,8 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#include "config.h"
+
 #include <wx/tokenzr.h>
 #include <wx/regex.h>
 
@@ -214,6 +216,9 @@ void ConnectionsDialog::Init(){
   m_stBTPairs = 0;
   m_choiceBTDataSources = 0;
 
+  m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
+  m_BTscanning = 0;
+
   //Create the UI
   int group_item_spacing = 2;
 
@@ -303,15 +308,6 @@ void ConnectionsDialog::Init(){
       new wxStaticBox(m_container, wxID_ANY, _("Data Connections")),
       wxVERTICAL);
 
-  /*
-    wxBoxSizer* bSizer17;
-    bSizer17 = new wxBoxSizer(wxVERTICAL);
-
-    m_lcSources = new wxListCtrl(m_pNMEAForm, wxID_ANY, wxDefaultPosition,
-                                 wxSize(-1, 150), wxLC_REPORT |
-    wxLC_SINGLE_SEL); bSizer17->Add(m_lcSources, 1, wxALL | wxEXPAND, 5);
-  */
-
   wxPanel* cPanel =
       new wxPanel(m_container, wxID_ANY, wxDefaultPosition,
                   wxDLG_UNIT(m_parent, wxSize(-1, -1)), wxBG_STYLE_ERASE);
@@ -320,10 +316,17 @@ void ConnectionsDialog::Init(){
   wxBoxSizer* boxSizercPanel = new wxBoxSizer(wxVERTICAL);
   cPanel->SetSizer(boxSizercPanel);
 
+#ifdef __ANDROID__
+  m_scrollWinConnections = new wxPanel(
+      cPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      wxBORDER_RAISED | wxBG_STYLE_ERASE);
+#else
   m_scrollWinConnections = new wxScrolledWindow(
       cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_parent, wxSize(-1, 80)),
       wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE);
   m_scrollWinConnections->SetScrollRate(5, 5);
+#endif
+
   boxSizercPanel->Add(m_scrollWinConnections, 0, wxALL | wxEXPAND, 5);
 
   boxSizerConnections = new wxBoxSizer(wxVERTICAL);
@@ -407,47 +410,28 @@ void ConnectionsDialog::Init(){
                                   wxDefaultPosition, wxDefaultSize);
     m_buttonScanBT->Hide();
 
-    wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
-    sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
+//     wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
+//     sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
 
-    bSizer15a->Add(m_buttonScanBT, 0, wxALL, 5);
+    sbSizerConnectionProps->Add(m_buttonScanBT, 0, wxALL, 5);
 
     m_stBTPairs =
         new wxStaticText(m_container, wxID_ANY, _("Bluetooth Data Sources"),
                          wxDefaultPosition, wxDefaultSize, 0);
     m_stBTPairs->Wrap(-1);
     m_stBTPairs->Hide();
-    bSizer15a->Add(m_stBTPairs, 0, wxALL, 5);
+    sbSizerConnectionProps->Add(m_stBTPairs, 0, wxALL, 5);
 
     wxArrayString mt;
     mt.Add(_T( "unscanned" ));
+    int ref_size = m_parent->GetCharWidth();
     m_choiceBTDataSources = new wxChoice(m_container, wxID_ANY,
-                                         wxDefaultPosition, wxDefaultSize, mt);
-
-#if 0
-        m_BTscan_results.Clear();
-        m_BTscan_results.Add(_T("None"));
-
-        m_BTscan_results = g_Platform->getBluetoothScanResults();
-        m_choiceBTDataSources->Clear();
-        m_choiceBTDataSources->Append(m_BTscan_results[0]);  // scan status
-
-        unsigned int i=1;
-        while( (i+1) < m_BTscan_results.GetCount()){
-            wxString item1 = m_BTscan_results[i] + _T(";");
-            wxString item2 = m_BTscan_results.Item(i+1);
-            m_choiceBTDataSources->Append(item1 + item2);
-
-            i += 2;
-    }
-
-    if( m_BTscan_results.GetCount() > 1){
-        m_choiceBTDataSources->SetSelection( 1 );
-    }
-#endif
+                                         wxDefaultPosition,
+                                         wxSize(30 * ref_size, 2 * ref_size),
+                                         mt);
 
     m_choiceBTDataSources->Hide();
-    bSizer15a->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP, 5);
+    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, /*wxEXPAND |*/ wxTOP, 5);
 
    } else
     m_rbTypeInternalBT = NULL;
@@ -518,6 +502,7 @@ void ConnectionsDialog::Init(){
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
   gSizerSerProps = new wxGridSizer(0, 1, 0, 0);
+  sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
 
   wxFlexGridSizer* fgSizer1;
   fgSizer1 = new wxFlexGridSizer(0, 4, 0, 0);
@@ -566,7 +551,7 @@ void ConnectionsDialog::Init(){
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
 
   m_stPriority = new wxStaticText(m_container, wxID_ANY, _("List position"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
+                                  wxDefaultPosition, wxDefaultSize,0);
   m_stPriority->Wrap(-1);
   fgSizer1->Add(m_stPriority, 0, wxALL, 5);
 
@@ -575,7 +560,8 @@ void ConnectionsDialog::Init(){
   int m_choicePriorityNChoices =
       sizeof(m_choicePriorityChoices) / sizeof(wxString);
   m_choicePriority =
-      new wxChoice(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
+                   wxSize(8 * m_parent->GetCharWidth(), -1),
                    m_choicePriorityNChoices, m_choicePriorityChoices, 0);
   m_choicePriority->SetSelection(9);
   fgSizer1->Add(m_choicePriority, 0, wxEXPAND | wxTOP, 5);
@@ -595,20 +581,26 @@ void ConnectionsDialog::Init(){
 
   gSizerSerProps->Add(fgSizer1, 0, wxEXPAND, 5);
 
+   //  User Comments
+  wxBoxSizer* commentSizer = new wxBoxSizer(wxHORIZONTAL);
+  sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
+
+  m_stSerialComment = new wxStaticText(m_container, wxID_ANY, _("User Comment"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stSerialComment->Wrap(-1);
+  commentSizer->Add(m_stSerialComment, 0, wxALL, 5);
+
+  m_tSerialComment = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  m_tSerialComment->SetMaxSize(wxSize(40 * m_container->GetCharWidth(), -1));
+  m_tSerialComment->SetMinSize(wxSize(40 * m_container->GetCharWidth(), -1));
+
+  commentSizer->Add(m_tSerialComment, 1, wxEXPAND | wxTOP, 5);
+
   wxFlexGridSizer* fgSizer5;
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer5->SetFlexibleDirection(wxBOTH);
   fgSizer5->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-  //  User Comments
-  m_stSerialComment = new wxStaticText(m_container, wxID_ANY, _("User Comment"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
-  m_stSerialComment->Wrap(-1);
-  fgSizer5->Add(m_stSerialComment, 0, wxALL, 5);
-
-  m_tSerialComment = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
-                                    wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer5->Add(m_tSerialComment, 1, wxEXPAND | wxTOP, 5);
 
   m_cbCheckCRC = new wxCheckBox(m_container, wxID_ANY, _("Control checksum"),
                                 wxDefaultPosition, wxDefaultSize, 0);
@@ -689,7 +681,6 @@ void ConnectionsDialog::Init(){
       m_container, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 5);
 
-  sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
   sbSizerInFilter = new wxStaticBoxSizer(
@@ -1131,7 +1122,11 @@ void ConnectionsDialog::ShowNMEASerial(bool visible) {
   m_tSerialComment->Show(visible);
 }
 
-void ConnectionsDialog::ShowNMEAGPS(bool visible) {}
+void ConnectionsDialog::ShowNMEAGPS(bool visible) {
+  m_cbCheckSKDiscover->Hide();
+  m_ButtonSKDiscover->Hide();
+  m_cbOutput->Hide();
+}
 
 void ConnectionsDialog::ShowNMEACAN(bool visible) {
   m_stCANSource->Show(visible);
@@ -1152,6 +1147,8 @@ void ConnectionsDialog::ShowNMEABT(bool visible) {
     if (m_stBTPairs) m_stBTPairs->Hide();
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
+  m_cbCheckSKDiscover->Hide();
+  m_ButtonSKDiscover->Hide();
   m_tcOutputStc->Show(visible);
   m_btnOutputStcList->Show(visible);
   m_cbOutput->Show(visible);
@@ -1295,6 +1292,24 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     }
   }
 
+  if (m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue()) {
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
+    m_cbOutput->Hide();
+    sbSizerOutFilter->GetStaticBox()->Hide();
+    m_stTalkerIdText->Hide();
+    m_TalkerIdText->Hide();
+    m_stPrecision->Hide();
+    m_choicePrecision->Hide();
+  }
+
+  if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue()) {
+    m_cbCheckSKDiscover->Hide();
+    m_ButtonSKDiscover->Hide();
+    m_StaticTextSKServerStatus->Hide();
+  }
+
   if (m_rbTypeCAN->GetValue()) {
     m_cbCheckSKDiscover->Hide();
     m_ButtonSKDiscover->Hide();
@@ -1395,7 +1410,6 @@ void ConnectionsDialog::SetDSFormRWStates(void) {
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
     UpdateDiscoverStatus(wxEmptyString);
-
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(_T("10110"));
@@ -1824,9 +1838,9 @@ void ConnectionsDialog::ApplySettings(){
         old_priority = cp->Priority;
         UpdateConnectionParamsFromSelectedItem(cp);
         cp->b_IsSetup = false;
-        cp->bEnabled = false;
-        if (cp->m_optionsPanel)
-          cp->m_optionsPanel->SetEnableCheckbox(false);
+        //cp->bEnabled = false;
+        //if (cp->m_optionsPanel)
+        //  cp->m_optionsPanel->SetEnableCheckbox(false);
 
         // delete TheConnectionParams()->Item(itemIndex)->m_optionsPanel;
         // old_priority = TheConnectionParams()->Item(itemIndex)->Priority;
@@ -1964,8 +1978,8 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
     pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
-    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
-    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue().Trim(false).Trim(true);
+    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
     if (m_rbNetProtoTCP->GetValue())
       pConnectionParams->NetProtocol = TCP;
     else if (m_rbNetProtoUDP->GetValue())
@@ -2059,7 +2073,7 @@ void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
 
   PriorityDlg *pdlg = new PriorityDlg(m_parent);
   pdlg->ShowModal();
-
+  delete pdlg;
 }
 
 

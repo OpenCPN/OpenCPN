@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::iso8211)
     return ()
@@ -23,5 +23,9 @@ add_library(ISO8211 STATIC ${SRC})
 add_library(ocpn::iso8211 ALIAS ISO8211)
 set_property(TARGET ISO8211 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(ISO8211 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#FIXME (#3527) Dependency on main openpcn
 target_include_directories(ISO8211 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+
+#FIXME (#3527) MIssing linkage
 target_include_directories(ISO8211 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../gdal/include)

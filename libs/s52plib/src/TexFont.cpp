@@ -304,7 +304,7 @@ void TexFont::RenderGlyph(int c) {
   colorv[2] = m_color.Blue() / float(256);
   colorv[3] = 0;
 
-  m_TexFontShader->SetUniformMatrix4fv( "color", colorv);
+  m_TexFontShader->SetUniform4fv( "color", colorv);
 
   // Rotate
   //float angle = 0;
@@ -496,13 +496,10 @@ static const GLchar *TexFont_fragment_shader_source =
     "}\n";
 
 
-
 #if 1
 
 bool TexFont::LoadTexFontShaders() {
   bool ret_val = true;
-
-  int success;
 
   // Are the shaders ready?
   if(m_TexFontShader)

@@ -69,6 +69,8 @@ wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
 
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
+#define N_ACTIVE_LOG_WATCHDOG 300
+
 bool debug_priority = 0;
 
 void ClearNavData(NavData &d){
@@ -125,6 +127,8 @@ bool CommBridge::Initialize() {
 
   m_watchdog_timer.SetOwner(this, WATCHDOG_TIMER);
   m_watchdog_timer.Start(1000, wxTIMER_CONTINUOUS);
+  n_LogWatchdogPeriod = 3600;  //every 60 minutes,
+                               //reduced after first position Rx
 
   // Initialize the comm listeners
   InitCommListeners();
@@ -175,10 +179,12 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
       auto& msgbus = AppMsgBus::GetInstance();
       msgbus.Notify(std::move(msg));
 
-      wxString logmsg;
-      logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
+      if (m_watchdogs.position_watchdog % n_LogWatchdogPeriod == 0) {
+        wxString logmsg;
+        logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"), gLat,
                     gLon);
-      wxLogMessage(logmsg);
+        wxLogMessage(logmsg);
+      }
     }
 
     gSog = NAN;
@@ -536,7 +542,9 @@ bool CommBridge::HandleN2K_129029(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
       gLat = temp_data.gLat;
       gLon = temp_data.gLon;
       valid_flag += POS_UPDATE;
+      valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;    // allow faster dog log
     }
   }
 
@@ -568,7 +576,9 @@ bool CommBridge::HandleN2K_129025(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
       gLat = temp_data.gLat;
       gLon = temp_data.gLon;
       valid_flag += POS_UPDATE;
+      valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;    // allow faster dog log
     }
   }
   //FIXME (dave) How to notify user of errors?
@@ -679,30 +689,39 @@ bool CommBridge::HandleN0183_RMC(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   NavData temp_data;
   ClearNavData(temp_data);
 
+  bool bvalid = true;
   if (!m_decoder.DecodeRMC(str, temp_data))
-    return false;
+    bvalid = false;
 
   int valid_flag = 0;
   if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
-    gLat = temp_data.gLat;
-    gLon = temp_data.gLon;
+    if(bvalid) {
+      gLat = temp_data.gLat;
+      gLon = temp_data.gLon;
+      valid_flag += POS_VALID;
+      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+    }
     valid_flag += POS_UPDATE;
-    m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
   }
 
   if (EvalPriority(n0183_msg, active_priority_velocity, priority_map_velocity)) {
-    gSog = temp_data.gSog;
-    valid_flag += SOG_UPDATE;
-    gCog = temp_data.gCog;
-    valid_flag += COG_UPDATE;
-    m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+    if(bvalid) {
+      gSog = temp_data.gSog;
+      valid_flag += SOG_UPDATE;
+      gCog = temp_data.gCog;
+      valid_flag += COG_UPDATE;
+      m_watchdogs.velocity_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
   if (!std::isnan(temp_data.gVar)){
     if (EvalPriority(n0183_msg, active_priority_variation, priority_map_variation)) {
-      gVar = temp_data.gVar;
-      valid_flag += VAR_UPDATE;
-      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+      if(bvalid) {
+        gVar = temp_data.gVar;
+        valid_flag += VAR_UPDATE;
+        m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+      }
     }
   }
 
@@ -829,23 +848,31 @@ bool CommBridge::HandleN0183_GGA(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   NavData temp_data;
   ClearNavData(temp_data);
 
-  if (!m_decoder.DecodeGGA(str, temp_data)) return false;
+  bool bvalid = true;
+  if (!m_decoder.DecodeGGA(str, temp_data))
+    bvalid = false;;
 
   int valid_flag = 0;
 
   if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
-     gLat = temp_data.gLat;
-     gLon = temp_data.gLon;
-     valid_flag += POS_UPDATE;
-     m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+    if (bvalid) {
+      gLat = temp_data.gLat;
+      gLon = temp_data.gLon;
+      valid_flag += POS_VALID;
+      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+    }
+    valid_flag += POS_UPDATE;
   }
 
   if (EvalPriority(n0183_msg, active_priority_satellites, priority_map_satellites)) {
-    if (temp_data.n_satellites >= 0){
-      g_SatsInView = temp_data.n_satellites;
-      g_bSatValid = true;
+    if (bvalid) {
+      if (temp_data.n_satellites >= 0) {
+        g_SatsInView = temp_data.n_satellites;
+        g_bSatValid = true;
 
-      m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+        m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
+      }
     }
   }
 
@@ -858,15 +885,21 @@ bool CommBridge::HandleN0183_GLL(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
   NavData temp_data;
   ClearNavData(temp_data);
 
-  if (!m_decoder.DecodeGLL(str, temp_data)) return false;
+  bool bvalid = true;
+  if (!m_decoder.DecodeGLL(str, temp_data))
+    bvalid = false;
 
   int valid_flag = 0;
 
   if (EvalPriority(n0183_msg, active_priority_position, priority_map_position)) {
-     gLat = temp_data.gLat;
-     gLon = temp_data.gLon;
-     valid_flag += POS_UPDATE;
-     m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+    if (bvalid) {
+      gLat = temp_data.gLat;
+      gLon = temp_data.gLon;
+      valid_flag += POS_VALID;
+      m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;  // allow faster dog log
+    }
+    valid_flag += POS_UPDATE;
   }
 
   SendBasicNavdata(valid_flag);
@@ -892,7 +925,9 @@ bool CommBridge::HandleN0183_AIVDO(
         gLat = gpd.kLat;
         gLon = gpd.kLon;
         valid_flag += POS_UPDATE;
+        valid_flag += POS_VALID;
         m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+        n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;    // allow faster dog log
       }
     }
 
@@ -940,7 +975,9 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
       gLat = temp_data.gLat;
       gLon = temp_data.gLon;
       valid_flag += POS_UPDATE;
+      valid_flag += POS_VALID;
       m_watchdogs.position_watchdog = gps_watchdog_timeout_ticks;
+      n_LogWatchdogPeriod = N_ACTIVE_LOG_WATCHDOG;    // allow faster dog log
     }
   }
 
@@ -948,7 +985,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     if (EvalPriority(sK_msg, active_priority_velocity, priority_map_velocity)) {
       gSog = temp_data.gSog;
       valid_flag += SOG_UPDATE;
-      if((gSog > 0) && !std::isnan(temp_data.gCog)){
+      if((gSog > 0.05) && !std::isnan(temp_data.gCog)){
         gCog = temp_data.gCog;
         valid_flag += COG_UPDATE;
       }

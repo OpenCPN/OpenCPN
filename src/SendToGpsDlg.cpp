@@ -36,6 +36,7 @@
 
 #include "conn_params.h"
 #include "OCPNPlatform.h"
+#include "rest_server.h"
 #include "route_gui.h"
 #include "route.h"
 #include "route_point_gui.h"
@@ -233,7 +234,7 @@ void SendToGpsDlg::OnSendClick(wxCommandEvent& event) {
   wxString destPort = src.BeforeFirst(' ');  // Serial:
 
   // For Bluetooth, we need the entire string
-  if (src.Lower().Find(_T("Bluetooth")) != wxNOT_FOUND) destPort = src;
+  if (src.Lower().Find(_T("bluetooth")) != wxNOT_FOUND) destPort = src;
 
   //    And send it out
   if (m_pRoute) RouteGui(*m_pRoute).SendToGPS(destPort, true, this);

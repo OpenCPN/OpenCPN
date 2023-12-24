@@ -45,6 +45,8 @@ extern GLShaderProgram *pcircle_filled_shader_program[2];
 extern GLShaderProgram *ptexture_2DA_shader_program[2];
 extern GLShaderProgram *pring_shader_program[2];
 
+extern GLint texture_2DA_shader_program;
+
 extern const GLchar* preamble;
 
 class GLShaderProgram
@@ -53,7 +55,9 @@ public:
     GLShaderProgram() : programId_(0), linked_(false) {
       programId_ = glCreateProgram();
     }
-    ~GLShaderProgram() { }
+    ~GLShaderProgram() {
+      glDeleteProgram(programId_) ;
+    }
 
     bool addShaderFromSource(std::string const &shaderSource, GLenum shaderType) {
       char const *shaderCStr = shaderSource.c_str();
@@ -70,11 +74,12 @@ public:
         GLint logLength = 0;
         glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
         if (logLength > 0) {
-          auto log = std::unique_ptr<char>(new char[logLength]);
+          auto log = std::unique_ptr<char[]>(new char[logLength]);
           glGetShaderInfoLog(shaderId, logLength, &logLength, log.get());
           printf("ERROR::SHADER::COMPILATION_FAILED\n%s\n", log.get());
 #ifdef USE_ANDROID_GLES2
           qDebug() << "SHADER COMPILE ERROR  " << log.get();
+          qDebug() << shaderCStr;
 #endif
         }
          return false;
@@ -91,7 +96,7 @@ public:
         GLint logLength = 0;
         glGetShaderiv(programId_, GL_INFO_LOG_LENGTH, &logLength);
         if (logLength > 0) {
-          auto log = std::unique_ptr<char>(new char[logLength]);
+          auto log = std::unique_ptr<char[]>(new char[logLength]);
           glGetShaderInfoLog(programId_, logLength, &logLength, log.get());
           printf("ERROR::SHADER::LINK_FAILED\n%s\n", log.get());
         }

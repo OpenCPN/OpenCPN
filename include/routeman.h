@@ -35,9 +35,11 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
+#include "color_types.h"
 #include "MarkIcon.h"
 #include "nav_object_database.h"
 #include "nmea0183.h"
+#include "nmea_log.h"
 #include "ocpn_types.h"
 #include "observable_evtvar.h"
 #include "route.h"
@@ -62,17 +64,36 @@ class markicon_description_list_type;
 WX_DEFINE_SORTED_ARRAY(MarkIcon *, SortedArrayOfMarkIcon);
 WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
 
-// Callbacks for RoutePropDlg
+/** Callbacks for RoutePropDlg */
 struct RoutePropDlgCtx {
-  std::function<void(Route*)> SetRouteAndUpdate;
-  std::function<void(Route*, RoutePoint*)> SetEnroutePoint;
-  std::function<void(Route*)> Hide;
+  std::function<void(Route*)> set_route_and_update;
+  std::function<void(Route*, RoutePoint*)> set_enroute_point;
+  std::function<void(Route*)> hide;
   RoutePropDlgCtx() :
-      SetRouteAndUpdate([&](Route* r) {}),
-      SetEnroutePoint([&](Route* r, RoutePoint* rt) {}),
-      Hide([&](Route* r) {})
+      set_route_and_update([&](Route* r) {}),
+      set_enroute_point([&](Route* r, RoutePoint* rt) {}),
+      hide([&](Route* r) {})
       { }
 };
+
+/** Routeman callbacks. */
+
+struct RoutemanDlgCtx {
+  std::function<bool()> confirm_delete_ais_mob;
+  std::function<wxColour(wxString)> get_global_colour;
+  std::function<void()> show_with_fresh_fonts;
+  std::function<void()> clear_console_background;
+  std::function<void()> route_mgr_dlg_update_list_ctrl;
+
+  RoutemanDlgCtx()
+     : confirm_delete_ais_mob([]() { return true; }),
+       get_global_colour([](wxString c) { return *wxBLACK; }),
+       show_with_fresh_fonts([]() { }),
+       clear_console_background([]() { }),
+       route_mgr_dlg_update_list_ctrl([]() { })
+       {}
+};
+
 
 //----------------------------------------------------------------------------
 //   Routeman
@@ -83,8 +104,9 @@ class Routeman {
 friend class RoutemanGui;
 
 public:
-  Routeman(struct RoutePropDlgCtx ctx,
-           std::function<void()> RouteMgrDlgUpdateListCtrl);
+  Routeman(struct RoutePropDlgCtx prop_dlg_ctx,
+           struct RoutemanDlgCtx route_dlg_ctx,
+           NmeaLog& nmea_log);
   ~Routeman();
 
   bool DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes);
@@ -150,6 +172,9 @@ public:
   /** Notified with a shared_ptr<ActiveLegDat>, leg info to all plugins.  */
   EventVar json_leg_info;
 
+  /** Notified when a message available as GetString() is sent to garmin. */
+  EventVar  on_message_sent;
+
 private:
 
   Route *pActiveRoute;
@@ -184,23 +209,27 @@ private:
   double m_arrival_min;
   int m_arrival_test;
   struct RoutePropDlgCtx m_prop_dlg_ctx;
-  std::function<void()> m_route_mgr_dlg_update_list_ctrl;
+  struct RoutemanDlgCtx m_route_dlg_ctx;
+  NmeaLog& m_nmea_log;
+
+  ObsListener msg_sent_listener;
 };
 
 //----------------------------------------------------------------------------
 //   WayPointman
 //----------------------------------------------------------------------------
 
+typedef std::function<wxColour(wxString)> GlobalColourFunc;
+
 class WayPointman {
 
 friend class WayPointmanGui;
 
 public:
-  WayPointman();
+  WayPointman(GlobalColourFunc colour_func);
   ~WayPointman();
   wxBitmap *GetIconBitmap(const wxString &icon_key);
   bool GetIconPrescaled(const wxString &icon_key);
-  unsigned int GetIconTexture(const wxBitmap *pmb, int &glw, int &glh);
   int GetIconIndex(const wxBitmap *pbm);
   int GetIconImageListIndex(const wxBitmap *pbm);
   int GetXIconImageListIndex(const wxBitmap *pbm);
@@ -251,6 +280,7 @@ private:
   int m_bitmapSizeForList;
   int m_iconListHeight;
   ColorScheme m_cs;
+  GlobalColourFunc m_get_global_colour;
 };
 
 #endif // _ROUTEMAN_H__

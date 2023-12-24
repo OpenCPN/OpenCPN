@@ -48,10 +48,13 @@
 
 #include <wx/datetime.h>
 
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
+
+#include "cmdline.h"
 #include "mdns_util.h"
 #include "mDNS_query.h"
-
-extern bool g_bportable;
 
 // Static data structs
 std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
@@ -278,10 +281,14 @@ void FindAllOCPNServers(size_t timeout_secs) {
 std::vector<std::string> get_local_ipv4_addresses() {
   std::vector<std::string> ret_vec;
 
+#ifdef __ANDROID__
+  wxString ipa = androidGetIpV4Address();
+  ret_vec.push_back(ipa.ToStdString());
+#endif
+
 	// When sending, each socket can only send to one network interface
 	// Thus we need to open one socket for each interface and address family
 	int num_sockets = 0;
-#ifndef ANDROID
 
 #ifdef _WIN32
 
@@ -387,7 +394,9 @@ std::vector<std::string> get_local_ipv4_addresses() {
 #endif
 	free(adapter_address);
 
-#else
+#endif
+
+#if !defined(_WIN32) && !defined(__ANDROID__)
 
 	struct ifaddrs* ifaddr = 0;
 	struct ifaddrs* ifa = 0;
@@ -484,8 +493,6 @@ std::vector<std::string> get_local_ipv4_addresses() {
 	freeifaddrs(ifaddr);
 
 #endif
-
-#endif //ANDROID
 
 	return ret_vec;
 }

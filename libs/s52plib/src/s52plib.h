@@ -124,6 +124,7 @@ class PixelCache;
 
 class RenderFromHPGL;
 class TexFont;
+class wxFileConfig;
 
 class noshow_element {
 public:
@@ -205,8 +206,8 @@ public:
   void GenerateStateHash();
   long GetStateHash() { return m_state_hash; }
 
-  void SetPLIBColorScheme(wxString scheme);
-  void SetPLIBColorScheme(ColorScheme cs);
+  void SetPLIBColorScheme(wxString scheme, const ChartCtx& ctx);
+  void SetPLIBColorScheme(ColorScheme cs, const ChartCtx& ctx);
   wxString GetPLIBColorScheme(void) { return m_ColorScheme; }
 
   void SetGLRendererString(const wxString &renderer);
@@ -241,7 +242,7 @@ public:
   void AdjustTextList(int dx, int dy, int screenw, int screenh);
   void ClearTextList(void);
   int SetLineFeaturePriority(ObjRazRules *rzRules, int npriority);
-  void FlushSymbolCaches();
+  void FlushSymbolCaches(const ChartCtx& ctx);
 
   //    For DC's
   int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules);
@@ -326,7 +327,6 @@ public:
                       double ref_scale, double display_scale
                       );
 
-
   // Todo accessors
   LUPname m_nSymbolStyle;
   LUPname m_nBoundaryStyle;
@@ -394,8 +394,8 @@ public:
 
   ChartSymbols m_chartSymbols;
 
-  void PLIB_LoadS57GlobalConfig();
-  void PLIB_LoadS57ObjectConfig();
+  void PLIB_LoadS57GlobalConfig(wxFileConfig *pconfig);
+  void PLIB_LoadS57ObjectConfig(wxFileConfig *pconfig);
   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
 
 private:

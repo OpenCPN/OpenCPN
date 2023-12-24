@@ -61,22 +61,21 @@ extern s52plib *ps52plib;
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
-//FIXME (dave)
-// wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
-//   S57Obj *obj = rzRules->obj;
-//   if (obj->m_chart_context->chart)
-//     return obj->m_chart_context->chart->pFloatingATONArray;
-//   else
-//     return obj->m_chart_context->pFloatingATONArray;
-// }
+wxArrayPtrVoid *GetChartFloatingATONArray(ObjRazRules *rzRules) {
+  S57Obj *obj = rzRules->obj;
+  if (obj->m_chart_context)
+    return obj->m_chart_context->pFloatingATONArray;
+  else
+    return NULL;
+}
 
-// wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
-//   S57Obj *obj = rzRules->obj;
-//   if (obj->m_chart_context->chart)
-//     return obj->m_chart_context->chart->pRigidATONArray;
-//   else
-//     return obj->m_chart_context->pRigidATONArray;
-// }
+wxArrayPtrVoid *GetChartRigidATONArray(ObjRazRules *rzRules) {
+  S57Obj *obj = rzRules->obj;
+  if (obj->m_chart_context->chart)
+    return obj->m_chart_context->pRigidATONArray;
+  else
+    return NULL;
+}
 
 static void *CLRLIN01(void *param) {
   ObjRazRules *rzRules = (ObjRazRules *)param;
@@ -750,8 +749,8 @@ static void *DEPCNT02(void *param)
   ObjRazRules *rzRules = (ObjRazRules *)param;
   S57Obj *obj = rzRules->obj;
   // Debug
-  //      if(obj->Index == 812)
-  //            int tty = 5;
+        //if(obj->Index == 5014)
+              //int tty = 5;
 
   if ((!strncmp(obj->FeatureName, "DEPARE", 6)) &&
       GEO_LINE == obj->Primitive_type) {
@@ -760,54 +759,29 @@ static void *DEPCNT02(void *param)
     drval2 = drval1;
     GetDoubleAttr(obj, "DRVAL2", drval2);
 
-    //            GString *drval1str = S57_getAttVal(geo, "DRVAL1");
-    //            double   drval1    = (NULL == drval1str) ? 0.0    :
-    //            atof(drval1str->str); GString *drval2str = S57_getAttVal(geo,
-    //            "DRVAL2"); double   drval2    = (NULL == drval2str) ? drval1 :
-    //            atof(drval2str->str);
-
     if (drval1 <= safety_contour) {
       if (drval2 >= safety_contour) safe = TRUE;
     }
 
- //FIXME plib
-//     else {
-//       double next_safe_contour = 1e6;
-//       if (obj->m_chart_context->chart) {
-//         next_safe_contour =
-//             obj->m_chart_context->chart->GetCalculatedSafetyContour();
-//         if (drval1 == next_safe_contour) safe = TRUE;
-//       } else {
-//         next_safe_contour = obj->m_chart_context->safety_contour;
-//
-//         if (fabs(drval1 - next_safe_contour) < 1e-4) safe = true;
-//       }
-//    }
+    else {
+      double next_safe_contour = 1e6;
+      next_safe_contour = obj->m_chart_context->safety_contour;
+      if (fabs(drval1 - next_safe_contour) < 1e-4) safe = true;
+    }
 
   } else {
     // continuation A (DEPCNT)
     double valdco = 0;
     GetDoubleAttr(obj, "VALDCO", valdco);
-    //            GString *valdcostr = S57_getAttVal(geo, "VALDCO");
-    //            double   valdco    = (NULL == valdcostr) ? 0.0 :
-    //            atof(valdcostr->str);
 
     if (valdco == safety_contour)
       safe = TRUE;  // this is useless !?!?
 
- // FIXME plib
-//     else {
-//       double next_safe_contour = 1e6;
-//       if (obj->m_chart_context->chart) {
-//         next_safe_contour =
-//             obj->m_chart_context->chart->GetCalculatedSafetyContour();
-//         if (valdco == next_safe_contour) safe = TRUE;
-//       } else {
-//         next_safe_contour = obj->m_chart_context->safety_contour;
-//
-//         if (fabs(valdco - next_safe_contour) < 1e-4) safe = true;
-//       }
-//    }
+    else {
+      double next_safe_contour = 1e6;
+      next_safe_contour = obj->m_chart_context->safety_contour;
+      if (fabs(valdco - next_safe_contour) < 1e-4) safe = true;
+    }
 
       /*
                         if (valdco > safety_contour)
@@ -2058,8 +2032,10 @@ end:
 
   // This is a specialization, to print OBJNAM for obstructions, if available
   // Seen in NZ ENCs, e.g. "Horn Rock"
-  if (objName)
+  if (objName) {
     obstrn04str.Append(_T(";TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26)"));
+    delete objName;
+  }
 
   obstrn04str.Append('\037');
 
@@ -2490,7 +2466,6 @@ static void *RESARE02(void *param)
         //  Todo more for s57 3.1  Look at caris catalog ATTR::RESARE
       }
     }
-
   } else {
     // Continuation D
     if (NULL != catreastr) {
@@ -2989,13 +2964,8 @@ static void *TOPMAR01(void *param)
     int floating = FALSE;  // not a floating platform
     int topshp = (!battr) ? 0 : top_int;
 
-    //FIXME plib
-//     if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
-//       floating = TRUE;
-//     else
-//         // FIXME: this test is wierd since it doesn't affect 'floating'
-//         if (TRUE == _atPtPos(obj, GetChartRigidATONArray(rzRules), false))
-//       floating = FALSE;
+    if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
+       floating = TRUE;
 
     if (floating) {
       // floating platform

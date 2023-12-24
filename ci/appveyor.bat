@@ -9,6 +9,17 @@ set "SCRIPTDIR=%~dp0"
 :: %CONFIGURATION% comes from environment, set a default if invoked elsewise.
 if "%CONFIGURATION%" == "" set "CONFIGURATION=Release"
 
+:: On GA, set up N:, see below
+if exist D:\a\OpenCPN\OpenCPN (subst N: D:\a\OpenCPN\OpenCPN)
+
+:: If N: exists it is used as base dir to sanitize source file paths
+:: in pdb.
+if exist N:\ (
+  n:
+  cd \
+  echo "Using virtual drive N: as base path"
+)
+
 call %SCRIPTDIR%..\buildwin\win_deps.bat wx32
 call %SCRIPTDIR%..\cache\wx-config.bat
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
@@ -40,10 +51,17 @@ cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
     -DOCPN_CI_BUILD=ON ^
     -DOCPN_BUNDLE_WXDLLS=ON ^
-    -DOCPN_BUILD_TEST=OFF ^
+    -DOCPN_RELEASE=0 ^
+    -DOCPN_BUILD_TEST=ON ^
     ..
 
 cmake --build . --target package --config %CONFIGURATION%
+
+:: Compress pdb and mark with git hash
+@echo on
+"C:\Program Files\Git\bin\bash" -c ^
+  "tar czf opencpn+%GITHUB_SHA:~0,8%.pdb.tar.gz %CONFIGURATION%/opencpn.pdb"
+@echo off
 
 :: Display dependencies debug info
 echo import glob; import subprocess > ldd.py

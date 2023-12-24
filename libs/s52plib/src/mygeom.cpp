@@ -51,8 +51,6 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
-#include "config.h"
-
 #include "gdal/ogr_geometry.h"
 
 #include "cutil.h"
@@ -360,6 +358,10 @@ int PolyTessGeo::BuildDeferredTess(void) {
     // All done with this geometry
     delete m_pxgeom;
     m_pxgeom = NULL;
+
+    // Free the working memory
+    free(m_vertexPtrArray);
+    m_vertexPtrArray = nullptr;
 
     return rv;
 

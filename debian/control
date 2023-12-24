@@ -25,7 +25,6 @@ Build-Depends: debhelper (>= 9),
  libudev-dev,
  libunarr-dev | base-files (<< 11),
  libusb-1.0-0-dev,
- libglew-dev,
  base-files (>=12) | libwxgtk3.0-gtk3-dev,
  base-files (>=12) | libwxgtk3.0-gtk3-0v5,
  base-files (>=12) | libwxgtk-webview3.0-gtk3-dev,
@@ -33,6 +32,8 @@ Build-Depends: debhelper (>= 9),
  base-files (<< 12) | libwxgtk-webview3.2-dev,
  portaudio19-dev,
  rapidjson-dev,
+ base-files (<< 11) | libglew-dev,
+ base-files (>=11) | libglew2.1-static,
  git
 #For the ARM build, perhaps add: , libdri2-dev [armhf],libgles1-mesa-dev [armhf]
 Standards-Version: 3.9.3
@@ -42,7 +43,7 @@ Homepage: http://www.opencpn.org
 
 Package: opencpn
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, wx3.0-i18n
+Depends: ${shlibs:Depends}, ${misc:Depends}, wx-i18n
 Breaks: opencpn-gshhs-crude (<< ${source:Version}),
  opencpn-tcdata (<< ${source:Version})
 Provides: opencpn-plugin-wmm, opencpn-plugin-chartdldr
@@ -51,6 +52,6 @@ Replaces: opencpn-plugin-wmm, opencpn-plugin-chartdldr,
  opencpn-gshhs-crude (<< ${source:Version}),
  opencpn-tcdata (<< ${source:Version}),
  opencpn-data (<< ${source:Version})
-Recommends: xcalib,xdg-utils,opencpn-doc,opencpn-sglock-amd64,opencpn-sglock-arm32,libusb-0.1-4
+Recommends: xcalib,xdg-utils,opencpn-doc,opencpn-sglock-amd64,opencpn-sglock-arm64,opencpn-sglock-arm32,libusb-0.1-4
 Description: Concise chartplotter and navigation software
  OpenCPN is a free software (GPLv2) project to create a concise chartplotter and navigation software for use as an underway or planning tool.  OpenCPN is developed by a team of active sailors using real world conditions for program testing and refinement.

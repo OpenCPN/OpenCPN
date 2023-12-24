@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Temporary tooling  for 3513, to be removed
+#
+set -x
+for hdr in model/include/model/*; do
+   for src in model/src/*; do
+     sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|model/${hdr##*/}|" $src
+   done
+   for src in gui/src/* gui/include/gui/* test/*cpp plugins/*/src/*.cpp plugins/*/src/*.h; do
+     sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|model/${hdr##*/}|" $src
+   done
+done
+
+
+for hdr in gui/include/gui/*; do
+   for src in gui/src/*; do
+     sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|gui/${hdr##*/}|" $src
+   done
+   for src in model/src/* model/include/model/* test/*cpp plugins/*/src/*.cpp plugins/*/src/*.h; do
+     sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|gui/${hdr##*/}|" $src
+   done
+done
+
+
+# Handle strange bug, 
+for f in $(git grep -l "s57.hart.h" ..) ; do
+   sed -i 's|s57.hart.h|gui/s57chart.h|' $f
+done

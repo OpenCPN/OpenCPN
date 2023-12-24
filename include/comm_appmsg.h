@@ -154,11 +154,12 @@ public:
 };
 
 // bitmask defining update validity of BasicNavDataMsg members
-#define POS_UPDATE     (int)(1 << 0)
+#define POS_UPDATE     (int)(1)
 #define COG_UPDATE     (int)(1 << 1)
 #define SOG_UPDATE     (int)(1 << 2)
 #define VAR_UPDATE     (int)(1 << 3)
 #define HDT_UPDATE     (int)(1 << 4)
+#define POS_VALID      (int)(1 << 5)
 
 class BasicNavDataMsg : public AppMsg {
 public:

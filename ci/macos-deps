@@ -7,5 +7,4 @@ mpg123
 python
 wget
 libarchive
-cairo
 openssl

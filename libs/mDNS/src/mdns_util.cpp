@@ -2,28 +2,11 @@
  *
  * Project:  OpenCPN
  * Purpose:  mDNS Utilities.
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
+ * Author:   Mattias Jansson, David Register
+ */
 
 /* mDNS/DNS-SD library  -  Public Domain  -  2017 Mattias Jansson
+ *   Copyright (C) 2022 by David Register                                  *
  *
  * This library provides a cross-platform mDNS and DNS-SD library in C.
  * The implementation is based on RFC 6762 and RFC 6763.
@@ -54,9 +37,19 @@
 #define sleep(x) Sleep(x * 1000)
 #else
 #include <netdb.h>
-#include <ifaddrs.h>
+ #ifdef __ANDROID__
+    #include "ifaddrs-android.h"
+  #else
+    #include <ifaddrs.h>
+ #endif
 #include <net/if.h>
 #endif
+
+#ifdef HAVE_WXWIDGETS
+#include <wx/log.h>
+#define printf(...) wxLogDebug(__VA_ARGS__)
+#endif
+
 
 // Alias some things to simulate recieving data to fuzz library
 #if defined(MDNS_FUZZING)
@@ -491,7 +484,6 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 	// Thus we need to open one socket for each interface and address family
 	int num_sockets = 0;
 
-#ifndef ANDROID
 #ifdef _WIN32
 
 	IP_ADAPTER_ADDRESSES* adapter_address = 0;
@@ -685,7 +677,6 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 	freeifaddrs(ifaddr);
 
 #endif
-#endif //ANDROID
 
 	return num_sockets;
 }

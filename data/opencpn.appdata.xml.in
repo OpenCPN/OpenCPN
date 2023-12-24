@@ -19,7 +19,7 @@
       icon. The core supports:
     </p>
     <ul>
-      <li> GPS/GPDS Position Input and Display</li>
+      <li> GPS/GPSD Position Input and Display</li>
       <li> BSB Raster Chart display </li>
       <li> S57 Vector ENC and CM93 chart display </li>
       <li> AIS Input Decoding and Display</li>

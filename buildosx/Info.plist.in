@@ -34,7 +34,7 @@
 	<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
 
     <key>NSPrincipalClass</key>
-    <string>NSApplication</string>
+    <string>wxNSApplication</string>
     <key>NSRequiresAquaSystemAppearance</key>
     <false/>
 

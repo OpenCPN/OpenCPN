@@ -93,6 +93,7 @@ extern wxColour g_colourWaypointRangeRingsColour;
 
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
+extern bool g_bShowWptName;
 
 WX_DECLARE_LIST(wxBitmap, BitmapList);
 #include <wx/listimpl.cpp>
@@ -365,16 +366,17 @@ void MarkInfoDlg::Create() {
 
   wxBoxSizer* bSizerNameValue = new wxBoxSizer(wxVERTICAL);
 
+    m_checkBoxShowName = new wxCheckBox(
+      m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition,
+      wxDefaultSize,
+      wxALIGN_CENTER_VERTICAL);
+  bSizerName->Add(m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
   m_textName = new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
                               wxDefaultPosition, wxDefaultSize, 0);
   bSizerNameValue->Add(m_textName, 0, wxALL | wxEXPAND, 5);
   bSizerName->Add(bSizerNameValue, 1, wxEXPAND, 5);
   bSizerTextProperties->Add(bSizerName, 0, wxEXPAND, 5);
-
-  m_checkBoxShowName =
-      new wxCheckBox(m_panelBasicProperties, wxID_ANY, _("Show name"),
-                     wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
-  bSizerTextProperties->Add(m_checkBoxShowName, 0, wxALL, 5);
 
   ///
   wxBoxSizer* bSizer8 = new wxBoxSizer(wxHORIZONTAL);
@@ -383,7 +385,7 @@ void MarkInfoDlg::Create() {
   m_staticTextIcon =
       new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Icon"),
                        wxDefaultPosition, wxDefaultSize, 0);
-  bSizer8->Add(m_staticTextIcon, 0, wxALL, 5);
+  bSizer8->Add(m_staticTextIcon, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   m_bcomboBoxIcon = new OCPNIconCombo(m_panelBasicProperties, wxID_ANY,
                                       _("Combo!"), wxDefaultPosition,
@@ -407,25 +409,31 @@ void MarkInfoDlg::Create() {
   int w, h;
   GetTextExtent(_T("179 59.9999 W"), &w, &h);
 
+  wxGridBagSizer* gridBagSizer = new wxGridBagSizer(5, 5);
+
   m_staticTextLatitude =
       new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Latitude"));
-  LLGrid->Add(m_staticTextLatitude, 0, wxALL | wxALIGN_LEFT, 0);
+  gridBagSizer->Add(m_staticTextLatitude, wxGBPosition(0, 0), wxDefaultSpan,
+                    wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 
   m_textLatitude =
       new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
                      wxDefaultPosition, wxSize(w + 20, -1), 0);
-  LLGrid->Add(m_textLatitude, 1, wxALL, 5);
+  gridBagSizer->Add(m_textLatitude, wxGBPosition(0, 1), wxDefaultSpan,
+                    wxALIGN_LEFT | wxEXPAND, 5);
 
   m_staticTextLongitude =
       new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Longitude"));
-  LLGrid->Add(m_staticTextLongitude, 0, wxALL | wxALIGN_LEFT, 0);
+  gridBagSizer->Add(m_staticTextLongitude, wxGBPosition(0, 2), wxDefaultSpan,
+                    wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 
   m_textLongitude =
       new wxTextCtrl(m_panelBasicProperties, wxID_ANY, wxEmptyString,
                      wxDefaultPosition, wxSize(w + 20, -1), 0);
-  LLGrid->Add(m_textLongitude, 1, wxALL, 5);
+  gridBagSizer->Add(m_textLongitude, wxGBPosition(0, 3), wxDefaultSpan,
+                    wxALIGN_LEFT | wxEXPAND, 5);
 
-  bSizerTextProperties->AddSpacer(15);
+  bSizerTextProperties->Add(gridBagSizer, 0, wxEXPAND | wxALL, 5);
 
   m_staticTextDescription =
       new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Description"),
@@ -1395,7 +1403,7 @@ void MarkInfoDlg::DefautlBtnClicked(wxCommandEvent& event) {
         g_bUseWptScaMin = m_checkBoxScaMin->GetValue();
       }
       if (m_SaveDefaultDlg->NameCB->GetValue()) {
-        g_iWpt_ScaMin = m_checkBoxShowName->GetValue();
+        g_bShowWptName = m_checkBoxShowName->GetValue();
       }
     }
     m_SaveDefaultDlg = NULL;
@@ -1576,9 +1584,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_EtaDatePickerCtrl->Enable(false);
       m_EtaTimePickerCtrl->Enable(false);
       m_cbEtaPresent->Enable(false);
-      if (!m_textDescription->IsEmpty()) {
-        m_notebookProperties->SetSelection(1);  // Show Description page
-      }
+      m_notebookProperties->SetSelection(0);  // Show Basic page
       m_comboBoxTideStation->Enable(false);
     } else {
       m_staticTextLayer->Enable(false);

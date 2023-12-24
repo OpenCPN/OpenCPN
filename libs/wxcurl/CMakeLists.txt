@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 if (TARGET ocpn::wxcurl)
     return ()
@@ -8,6 +8,7 @@ if (POLICY CMP0077)
     CMAKE_POLICY(SET CMP0077 OLD)
 endif ()
 
+# FixME (#3527) Dependency on main CMakeLists.txt
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()

@@ -44,7 +44,7 @@
 #include "config.h"
 
 #include "base_platform.h"
-//#include "dychart.h"
+#include "cmdline.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "cutil.h"
@@ -119,13 +119,11 @@ extern sigjmp_buf env;  // the context saved by sigsetjmp();
 #endif
 
 extern OCPNPlatform *g_Platform;
-extern wxString g_winPluginDir;
 extern bool g_bFirstRun;
 extern bool g_bUpgradeInProcess;
 
 extern int quitflag;
 extern MyFrame *gFrame;
-extern bool g_bportable;
 
 extern MyConfig *pConfig;
 
@@ -218,7 +216,6 @@ extern ocpnGLOptions g_GLOptions;
 extern int g_default_font_size;
 extern wxString g_default_font_facename;
 
-wxLog *g_logger;
 bool g_bEmailCrashReport;
 extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
@@ -246,7 +243,7 @@ extern int g_FlushNavobjChangesTimeout;
 extern wxString g_CmdSoundString;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern int g_Android_SDK_Version;
 extern wxString g_androidDownloadDirectory;
 extern wxString g_gpx_path;
@@ -349,9 +346,7 @@ void catch_signals(int signo) {
 #ifdef OCPN_USE_CRASHREPORT
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO *pInfo) {
-  //  Flush log file
-  if (g_logger) g_logger->Flush();
-
+  wxLog::GetActiveTarget()->Flush();   //  Flush log file
   return CR_CB_DODEFAULT;
 }
 #endif
@@ -571,10 +566,9 @@ void OCPNPlatform::Initialize_1(void) {
 
 #ifdef __OCPN__ANDROID__
   qDebug() << "Initialize_1()";
-#ifdef NOASSERT
+//#ifdef NOASSERT
   wxDisableAsserts( );      // No asserts at all in Release mode
-#endif
-  androidUtilInit();
+//#endif
 #endif
 
 }
@@ -640,6 +634,12 @@ void OCPNPlatform::Initialize_3(void) {
 
   if(!bcapable)
     g_bopengl = false;
+  else {
+    g_bopengl = true;
+    g_bdisable_opengl = false;
+    pConfig->UpdateSettings();
+  }
+
 
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
@@ -718,6 +718,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *str = (char *)glGetString(GL_RENDERER);
   if (str == NULL) {    //No GL at all...
+    wxLogMessage("GL_RENDERER not found.");
     delete tcanvas;
     delete pctx;
     return false;
@@ -726,6 +727,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *stv = (char *)glGetString(GL_VERSION);
   if (stv == NULL) {    //No GL Version...
+    wxLogMessage("GL_VERSION not found");
     delete tcanvas;
     delete pctx;
     return false;
@@ -734,6 +736,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   char *stsv = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
   if (stsv == NULL) {    //No GLSL...
+    wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found");
     delete tcanvas;
     delete pctx;
     return false;
@@ -799,19 +802,53 @@ bool OCPNPlatform::IsGLCapable() {
 #elif defined(CLI)
   return false;
 #else
-  GL_Caps = new OCPN_GLCaps;
 
-  BuildGLCaps(GL_Caps);
+  if(g_bdisable_opengl)
+    return false;
+
+  // Protect against fault in OpenGL caps test
+  // If this method crashes due to bad GL drivers,
+  // next startup will disable OpenGL
+  g_bdisable_opengl = true;
+
+  // Update and flush the config file
+  pConfig->UpdateSettings();
+
+  wxLogMessage("Starting OpenGL test...");
+  wxLog::FlushActive();
+
+  OCPN_GLCaps GL_Caps;
+  bool bcaps = BuildGLCaps(&GL_Caps);
+
+  wxLogMessage("OpenGL test complete.");
+  if (!bcaps){
+    wxLogMessage("BuildGLCaps fails.");
+    wxLog::FlushActive();
+    return false;
+  }
 
   // and so we decide....
 
   // Require a modern GLSL implementation
-  if (!GL_Caps->bCanDoGLSL) return false;
-
+  if (!GL_Caps.bCanDoGLSL) {
+    return false;
+  }
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!GL_Caps->bCanDoFBO) return false;
+  if (!GL_Caps.bCanDoFBO)  {
+    return false;
+  }
+
+  // OpenGL is OK for OCPN
+  wxLogMessage("OpenGL determined CAPABLE.");
+  wxLog::FlushActive();
+
+  g_bdisable_opengl = false;
+  g_bopengl = true;
+
+  // Update and flush the config file
+  pConfig->UpdateSettings();
 
   return true;
 #endif
@@ -1363,8 +1400,19 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     // Force a recalculation of default main toolbar location
     g_maintoolbar_x = -1;
 
-    // Force a reload of updated default tide/current datasets
-    TideCurrentDataSet.Clear();
+    // Check the tide/current databases for readability,
+    //  remove any not readable
+    std::vector<std::string> TCDS_temp;
+    for (unsigned int i=0; i < TideCurrentDataSet.size() ; i++)
+      TCDS_temp.push_back(TideCurrentDataSet[i]);
+
+    TideCurrentDataSet.clear();
+    for (unsigned int i=0; i < TCDS_temp.size() ; i++){
+      wxString tide = TCDS_temp[i];
+      wxFileName ft(tide);
+      if (ft.FileExists())
+        TideCurrentDataSet.push_back(TCDS_temp[i]);
+    }
   }
 }
 
@@ -1752,8 +1800,6 @@ void OCPNPlatform::PositionAISAlert(wxWindow *alert_window) {
   }
 #else
   if (alert_window) {
-    alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y,
-                          g_ais_alert_dialog_sx, g_ais_alert_dialog_sy);
     alert_window->Centre();
   }
 

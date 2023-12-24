@@ -39,6 +39,7 @@
 #include <algorithm>
 #include <chrono>
 #include <ctime>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -54,20 +55,23 @@
 #include <wx/cmdline.h>
 #include <wx/dynlib.h>
 #include <wx/fileconf.h>
+#include <wx/init.h>
 #include <wx/string.h>
 
-#include "base_platform.h"
 #include "catalog_handler.h"
+#include "cli_platform.h"
 #include "comm_appmsg_bus.h"
 #include "comm_driver.h"
 #include "comm_navmsg_bus.h"
 #include "config_vars.h"
 #include "downloader.h"
+#include "nmea_log.h"
 #include "observable_evtvar.h"
 #include "ocpn_utils.h"
 #include "plugin_handler.h"
 #include "plugin_loader.h"
 #include "routeman.h"
+#include "S57ClassRegistrar.h"
 #include "select.h"
 #include "track.h"
 
@@ -76,15 +80,12 @@ class Multiplexer;
 class Select;
 
 BasePlatform* g_BasePlatform = 0;
-bool g_bportable = false;
-wxString g_winPluginDir;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 wxString g_compatOS = PKG_TARGET;
 wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
 wxString g_catalog_custom_url;
 wxString g_catalog_channel;
-wxLog* g_logger;
 
 bool g_bAIS_ACK_Timeout;
 bool g_bAIS_CPA_Alert_Suppress_Moored;
@@ -115,19 +116,17 @@ double g_MarkLost_Mins;
 double g_AISShowTracks_Mins;
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;
-int g_nCOMPortCheck = 32;
 bool g_benableUDPNullHeader;
+
+S57ClassRegistrar *g_poRegistrar;
 
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
-AISTargetAlertDialog* g_pais_alert_dialog_active;
 Route* pAISMOBRoute;
 int g_WplAction;
 Select* pSelectAIS;
 
 /* comm_bridge context. */
-
-int g_NMEAAPBPrecision;
 
 Select* pSelect;
 double g_n_arrival_circle_radius;
@@ -145,6 +144,7 @@ int g_iWaypointRangeRingsNumber;
 int g_iWaypointRangeRingsStepUnits;
 wxColour g_colourWaypointRangeRingsColour;
 bool g_bUseWptScaMin;
+bool g_bShowWptName;
 int g_iWpt_ScaMin;
 int g_LayerIdx;
 bool g_bOverruleScaMin;
@@ -162,20 +162,17 @@ bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
 
+class NmeaLogDummy: public NmeaLog {
+  bool Active() const { return false; }
+  void Add(const wxString& s) {};
+};
+
 static void InitRouteman() {
   struct RoutePropDlgCtx ctx;
   auto RouteMgrDlgUpdateListCtrl = [&]() {};
-  g_pRouteMan = new Routeman(ctx, RouteMgrDlgUpdateListCtrl);
+  static  NmeaLogDummy dummy_log;
+  g_pRouteMan = new Routeman(ctx, RoutemanDlgCtx(), dummy_log);
 }
-
-// navutil_base context
-int g_iDistanceFormat = 0;
-int g_iSDMMFormat = 0;
-int g_iSpeedFormat = 0;
-
-namespace safe_mode {
-bool get_mode() { return false; }
-}  // namespace safe_mode
 
 static const char* USAGE = R"""(
 Usage: opencpn-cli [options] <command>
@@ -251,7 +248,8 @@ public:
     pSelect = new Select();
     pRouteList = new RouteList;
     InitRouteman();
-    pWayPointMan = new WayPointman();
+    auto colour_func = [] (wxString c) { return *wxBLACK; };
+    pWayPointMan = new WayPointman(colour_func);
   }
 
   void list_plugins() {
@@ -262,7 +260,9 @@ public:
     auto plugins = PluginHandler::getInstance()->getInstalled();
     for (const auto& p : plugins) {
       if (p.version == "0.0") continue;
-      cout << left << setw(25) << p.name << p.version << "\n";
+      auto path = PluginHandler::ImportedMetadataPath(p.name);
+      std::string suffix(ocpn::exists(path) ? "[imported]" : "");
+      cout << left << setw(25) << p.name << p.version << suffix  << "\n";
     }
   }
 
@@ -293,7 +293,31 @@ public:
   }
 
   void import_plugin(const std::string& tarball_path) {
-    PluginHandler::getInstance()->installPlugin(tarball_path);
+    auto handler = PluginHandler::getInstance();
+    PluginMetadata metadata;
+    bool ok = handler->ExtractMetadata(tarball_path, metadata);
+    if (!ok) {
+      std::cerr << "Cannot extract metadata (malformed tarball?)\n";
+      exit(2);
+    }
+    if (!PluginHandler::isCompatible(metadata)) {
+      std::cerr << "Incompatible plugin detected\n";
+      exit(2);
+    }
+    ok = handler->installPlugin(metadata, tarball_path);
+    if (!ok) {
+      std::cerr << "Error extracting import plugin tarball.\n";
+      exit(2);
+    }
+    metadata.is_imported = true;
+    auto metadata_path = PluginHandler::ImportedMetadataPath(metadata.name);
+    std::ofstream file(metadata_path);
+    file << metadata.to_string();
+    if (!file.good()) {
+       std::cerr << "Error saving metadata file: " << metadata_path
+                << " for imported plugin: " << metadata.name;
+       exit(2);
+    }
     exit(0);
   }
 
@@ -378,7 +402,12 @@ public:
     }
   }
 
-  bool OnCmdLineParsed(wxCmdLineParser& parser) {
+  bool OnCmdLineParsed(wxCmdLineParser& parser) override {
+    wxInitializer initializer;
+    if (!initializer) {
+      std::cerr << "Failed to initialize the wxWidgets library, aborting.";
+      exit(1);
+    }
     wxAppConsole::OnCmdLineParsed(parser);
     if (argc == 1) {
       std::cout << "OpenCPN CLI application. Use -h for help\n";

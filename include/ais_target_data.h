@@ -26,12 +26,15 @@
 #define _AIS_TARGET_DATA_H__
 
 #include <functional>
-#include <vector>
-
-#include <wx/string.h>
-#include <wx/datetime.h>
-#include <unordered_map>
 #include <memory>
+#include <vector>
+#include <unordered_map>
+
+#include <wx/datetime.h>
+#include <wx/intl.h>
+#include <wx/string.h>
+
+#include "meteo_points.h"
 
 #define SHIP_NAME_LEN 35
 #define DESTINATION_LEN 21
@@ -80,7 +83,8 @@ typedef enum ais_transponder_class {
   AIS_DSC,         // DSC target
   AIS_SART,        // SART
   AIS_ARPA,        // ARPA radar target
-  AIS_APRS         // APRS position report
+  AIS_APRS,        // APRS position report
+  AIS_METEO        // Meteorological and Hydrographic data
 } _ais_transponder_class;
 
 
@@ -163,6 +167,7 @@ public:
   void Toggle_AIS_CPA(void);
   void ToggleShowTrack(void);
   void CloneFrom(AisTargetData* q);
+  bool IsValidMID(int);
 
   int MID;
   int MMSI;
@@ -223,8 +228,9 @@ public:
   bool b_isDSCtarget; // DSC flag to a possible simultaneous AIS target
   int  m_dscNature;
   int  m_dscTXmmsi;   // MMSI for the DSC relay issuer
+  long dsc_NatureOfDistress;
 
-  //                     MMSI Properties
+    // MMSI Properties
   bool b_NoTrack;
   bool b_OwnShip;
   bool b_PersistTrack; // For AIS target query
@@ -243,15 +249,15 @@ public:
 
   wxString MSG_14_text;
 
-  //      Per target collision parameters
+   // Per target collision parameters
   bool bCPA_Valid;
   double TCPA;  // Minutes
   double CPA;   // Nautical Miles
-
   bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
-
   bool b_show_track;
 
+  AisMeteoData met_data;
+  bool b_hasImoDac, b_hasMeteoFi;
   std::vector<AISTargetTrackPoint> m_ptrack;
 
   std::unordered_map<int, Ais8_001_22> area_notices;
@@ -262,7 +268,6 @@ public:
   short last_scale[AIS_TARGETDATA_MAX_CANVAS];  // where
                                                 // AIS_TARGETDATA_MAX_CANVAS is
                                                 // the max number of chartcanvas
-  long dsc_NatureOfDistress;
 
 private:
   AisTargetCallbacks m_callbacks;

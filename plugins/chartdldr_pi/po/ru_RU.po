@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-02-24 14:31\n"
+"PO-Revision-Date: 2023-06-08 02:36\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -37,7 +37,7 @@ msgstr "Загрузчик Карт"
 
 #: src/chartdldr_pi.cpp:251
 msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr "Загрузчик Карт плагин для OpenCPN"
+msgstr "Модуль \"Загрузчик Карт\" для OpenCPN"
 
 #: src/chartdldr_pi.cpp:256
 msgid "Chart Downloader PlugIn for OpenCPN\n"
@@ -93,7 +93,7 @@ msgstr "Новый"
 
 #: src/chartdldr_pi.cpp:725 src/chartdldrgui.h:173 src/chartdldrgui.h:242
 msgid "Out of date"
-msgstr "Устаревший"
+msgstr "Устарело"
 
 #: src/chartdldr_pi.cpp:728
 msgid "Up to date"
@@ -293,11 +293,11 @@ msgstr "Проблема определения источника карт"
 
 #: src/chartdldrgui.cpp:206
 msgid "Dialog"
-msgstr ""
+msgstr "Диалог"
 
 #: src/chartdldrgui.cpp:253
 msgid "Predefined"
-msgstr "Стандартные"
+msgstr "Стандартный"
 
 #: src/chartdldrgui.cpp:276
 msgid "Name"
@@ -309,19 +309,19 @@ msgstr "URL"
 
 #: src/chartdldrgui.cpp:299
 msgid "Custom"
-msgstr "Пользовательское"
+msgstr "Пользовательский"
 
 #: src/chartdldrgui.cpp:304
 msgid "Proposed chart installation directory"
-msgstr ""
+msgstr "Предлагаемый каталог установки карт"
 
 #: src/chartdldrgui.cpp:324
 msgid "Select a different directory"
-msgstr ""
+msgstr "Выбрать другую папку"
 
 #: src/chartdldrgui.cpp:331
 msgid "OK"
-msgstr ""
+msgstr "ОК"
 
 #: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:910
 msgid "Cancel"
@@ -341,7 +341,7 @@ msgstr "Доступные каталоги карт"
 
 #: src/chartdldrgui.cpp:455
 msgid "Add Catalog"
-msgstr "Добавить каталог"
+msgstr "Добавить"
 
 #: src/chartdldrgui.cpp:457
 msgid "Add a new chart catalog."

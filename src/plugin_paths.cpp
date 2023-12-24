@@ -5,6 +5,7 @@
 #include <wx/string.h>
 
 #include "config.h"
+#include "cmdline.h"
 #include "base_platform.h"
 #include "ocpn_plugin.h"
 #include "plugin_paths.h"
@@ -16,11 +17,7 @@
  * data.
  */
 
-const char* const LINUX_DATA_PATH =
-    "~/.local/share:/usr/local/share:/usr/share";
-
 extern BasePlatform* g_BasePlatform;
-extern bool g_bportable;
 
 static std::vector<std::string> split(const std::string& s, char delimiter) {
   std::vector<std::string> tokens;
@@ -118,16 +115,27 @@ void PluginPaths::initLinuxPaths() {
   m_userBindir = m_home + "/.local/bin";
   m_userDatadir = m_home + "/.local/share";
 
-  const string platform_dir = g_BasePlatform->GetPluginDir().ToStdString();
+  std::string base_plugin_path;
+#if defined(__WXGTK__) || defined(__WXQT__)
+  char exe_buf[100] = {0};
+  ssize_t len = readlink("/proc/self/exe", exe_buf, 99);
+  if (len > 0){
+    exe_buf[len] = '\0';
+    wxFileName fn(exe_buf);
+    wxString path = fn.GetPath();
+    base_plugin_path = (path + wxString("/../lib/opencpn")).ToStdString();
+    base_plugin_path = expand(base_plugin_path);
+  }
+#endif
+
   const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
-  string dirlist = envdirs ? envdirs : OCPN_LINUX_LOAD_PATH;
+  string dirlist = envdirs ? envdirs : "~/.local/lib/opencpn";
   m_libdirs = split(dirlist, ':');
   for (auto& dir : m_libdirs) {
-    dir += "/opencpn";
     dir = expand(dir);
   }
-  if (envdirs == 0 && dirlist.find(platform_dir) == string::npos) {
-    m_libdirs.push_back(expand(platform_dir));
+  if (envdirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
+    m_libdirs.push_back(expand(base_plugin_path));
   }
   m_bindirs = m_libdirs;
   for (auto& dir : m_bindirs) {
@@ -140,13 +148,13 @@ void PluginPaths::initLinuxPaths() {
     dir = pos == string::npos ? dir : dir.substr(0, pos) + "/bin";
   }
   const char* const xdg_data_dirs = getenv("XDG_DATA_DIRS");
-  dirlist = xdg_data_dirs ? xdg_data_dirs : LINUX_DATA_PATH;
+  dirlist = xdg_data_dirs ? xdg_data_dirs : "~/.local/lib";
   m_datadirs = split(dirlist, ':');
   for (auto& dir : m_datadirs) {
     dir += "/opencpn/plugins";
   }
-  if (xdg_data_dirs == 0 && dirlist.find(platform_dir) == string::npos) {
-    m_datadirs.push_back(platform_dir + "/plugins");
+  if (xdg_data_dirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
+    m_datadirs.push_back(base_plugin_path + "/plugins");
   }
 }
 
@@ -163,7 +171,7 @@ void PluginPaths::initApplePaths() {
   fn_exe.RemoveLastDir();
   string exeLibDir =
       fn_exe.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR).ToStdString() +
-      "Plugins";
+      "PlugIns";
   m_libdirs.push_back(exeLibDir);
   // m_libdirs.push_back("/Applications/OpenCPN.app/Contents/Plugins");
   m_bindirs = m_libdirs;

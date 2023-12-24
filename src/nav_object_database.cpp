@@ -668,9 +668,9 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
       if ( !dt.IsValid() )
         dt = wxDateTime::Now();
 
-      wxString t = dt.FormatISODate()
+      wxString t = dt.ToUTC().FormatISODate()
                        .Append(_T("T"))
-                       .Append(dt.FormatISOTime())
+                       .Append(dt.ToUTC().FormatISOTime())
                        .Append(_T("Z"));
       child.append_child(pugi::node_pcdata).set_value(t.mb_str());
     }
@@ -783,6 +783,19 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
       step.set_value(pr->m_fWaypointRangeRingsStep);
       pugi::xml_attribute units = child.append_attribute("units");
       units.set_value(pr->m_iWaypointRangeRingsStepUnits);
+
+      // Color specification in GPX file must be fully opaque
+      if (pr->m_wxcWaypointRangeRingsColour.IsOk()) {
+        pr->m_wxcWaypointRangeRingsColour.Set(
+            pr->m_wxcWaypointRangeRingsColour.Red(),
+            pr->m_wxcWaypointRangeRingsColour.Green(),
+            pr->m_wxcWaypointRangeRingsColour.Blue(),
+            wxALPHA_OPAQUE);
+      }
+      else {
+        pr->m_wxcWaypointRangeRingsColour.Set(0,0,0,wxALPHA_OPAQUE);
+      }
+
       pugi::xml_attribute colour = child.append_attribute("colour");
       colour.set_value(
           pr->m_wxcWaypointRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX)
@@ -1150,7 +1163,7 @@ bool InsertRouteA(Route *pTentRoute, NavObjectCollection1* navobj) {
   return bAddroute;
 }
 
-bool InsertTrack(Track *pTentTrack, bool bApplyChanges = false) {
+bool InsertTrack(Track *pTentTrack, bool bApplyChanges) {
   if (!pTentTrack) return false;
 
   bool bAddtrack = true;
@@ -1569,10 +1582,12 @@ void NavObjectChanges::AddRoute(Route *pr, const char *action) {
   pugi::xml_node child = xchild.append_child("opencpn:action");
   child.append_child(pugi::node_pcdata).set_value(action);
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 void NavObjectChanges::AddTrack(Track *pr, const char *action) {
@@ -1585,26 +1600,36 @@ void NavObjectChanges::AddTrack(Track *pr, const char *action) {
   pugi::xml_node child = xchild.append_child("opencpn:action");
   child.append_child(pugi::node_pcdata).set_value(action);
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 void NavObjectChanges::AddWP(RoutePoint *pWP, const char *action) {
   SetRootGPXNode();
 
   pugi::xml_node object = root().append_child("wpt");
-  GPXCreateWpt(object, pWP, OPT_WPT);
+
+  int flags = OPT_WPT;
+  // If the action is a simple deletion, simplify the output flags
+  if(!strncmp(action, "delete", 6))
+    flags = OUT_GUID | OUT_NAME;
+
+  GPXCreateWpt(object, pWP, flags);
 
   pugi::xml_node xchild = object.child("extensions");
   pugi::xml_node child = xchild.append_child("opencpn:action");
   child.append_child(pugi::node_pcdata).set_value(action);
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 void NavObjectChanges::AddTrackPoint(TrackPoint *pWP, const char *action,
@@ -1622,10 +1647,12 @@ void NavObjectChanges::AddTrackPoint(TrackPoint *pWP, const char *action,
   pugi::xml_node gchild = xchild.append_child("opencpn:track_GUID");
   gchild.append_child(pugi::node_pcdata).set_value(parent_GUID.mb_str());
 
-  pugi::xml_writer_file writer(m_changes_file);
-  object.print(writer, " ");
-  fflush(m_changes_file);
-  m_bdirty = true;
+  if (m_changes_file){
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    m_bdirty = true;
+  }
 }
 
 bool NavObjectChanges::ApplyChanges(void) {

@@ -23,6 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <string>
 #include <mutex>
 #include <vector>
 #include <thread>
@@ -48,7 +49,13 @@
 #include <net/if.h>
 #endif
 
+#include "config.h"
 #include "mdns_util.h"
+
+#ifndef OCPN_ENABLE_MDNS_DEBUG
+#define printf(...)
+#endif
+
 
 static char addrbuffer[64];
 static char namebuffer[256];

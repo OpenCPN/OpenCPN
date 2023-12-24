@@ -26,12 +26,15 @@
 #ifndef _COMMDRIVERN2KSERIAL_H
 #define _COMMDRIVERN2KSERIAL_H
 
+#include <atomic>
+
 #include <wx/thread.h>
 
+#include "config.h"
 #include "comm_drv_n2k.h"
 #include "conn_params.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #include "serial/serial.h"
 #endif
 
@@ -84,8 +87,9 @@ public:
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
   void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent& event);
+  int GetMfgCode();
 
-  int m_Thread_run_flag;
+  std::atomic_int m_Thread_run_flag;
 
 private:
   void ProcessManagementPacket(std::vector<unsigned char> *payload);

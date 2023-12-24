@@ -33,7 +33,6 @@
 #endif  // precompiled headers
 
 #include "gps.h"
-#include "wx28compat.h"
 
 #ifdef __BORLANDC__
 #pragma hdrstop
@@ -43,8 +42,9 @@
 #include "dial.h"
 
 DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
-                                                 wxWindowID id, wxString title)
-    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS) {
+                                                 wxWindowID id, wxString title,
+                                                 InstrumentProperties* Properties)
+    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS, Properties) {
   m_refDim = GetCharHeight() * 80 / 100;
   m_refDim *= OCPN_GetWinDIPScaleFactor() < 1.0 ?
               2.0 * OCPN_GetWinDIPScaleFactor() : 1.0; //1.5
@@ -76,7 +76,12 @@ DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
 wxSize DashboardInstrument_GPS::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  wxFont f;
+  if(m_Properties)
+      f = m_Properties->m_TitelFont.GetChosenFont();
+  else
+      f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   w = (12 * m_refDim);  // Max 12 vertical bars
   if (orient == wxHORIZONTAL) {
     m_cx = w / 2;
@@ -200,13 +205,18 @@ void DashboardInstrument_GPS::Draw(wxGCDC* dc) {
 void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
   wxSize size = GetClientSize();
   wxColour cb;
-
-  GetGlobalColor(_T("DASHB"), &cb);
+  if (m_Properties)
+      cb = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
+  else
+      GetGlobalColor(_T("DASHB"), &cb);
   dc->SetTextBackground(cb);
   dc->SetBackgroundMode(wxSOLID);
 
   wxColour cl;
-  GetGlobalColor(_T("DASHL"), &cl);
+  if (m_Properties)
+      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+  else
+      GetGlobalColor(_T("DASHL"), &cl);
   dc->SetTextForeground(cl);
   dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
@@ -219,21 +229,36 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
   dc->SetPen(pen);
 
   dc->DrawCircle(m_cx, m_cy, m_radius);
-
-  dc->SetFont(*g_pFontSmall);
+  if (m_Properties)
+      dc->SetFont((m_Properties->m_SmallFont.GetChosenFont()));
+  else
+      dc->SetFont((g_pFontSmall->GetChosenFont()));
 
   wxScreenDC sdc;
   int height, width;
-  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, g_pFontSmall);
+  wxFont f;
+  if (m_Properties)
+    f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+    f = g_pFontSmall->GetChosenFont();
+  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &f);
 
   wxBitmap tbm(width, height, -1);
   wxMemoryDC tdc(tbm);
   tdc.SetBackground(cb);
-  tdc.SetTextForeground(cl);
+  //tdc.SetTextForeground(cl);
   tdc.SetTextBackground(cb);
   tdc.SetBackgroundMode(wxSOLID);
-  tdc.SetFont(*g_pFontSmall);
-
+  if (m_Properties)
+  {
+      tdc.SetFont(m_Properties->m_SmallFont.GetChosenFont());
+      tdc.SetTextForeground(GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
+  }
+  else
+  {
+      tdc.SetFont(g_pFontSmall->GetChosenFont());
+      tdc.SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
+  }
   tdc.Clear();
   tdc.DrawText(_("N"), 0, 0);
   dc->Blit(m_cx - 3, m_cy - m_radius - 6, width, height, &tdc, 0, 0);
@@ -274,25 +299,41 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
                m_scaleBase + 2 * m_scaleDelta);
   dc->DrawLine(3, m_scaleBase + 3 * m_scaleDelta, size.x - 3,
                m_scaleBase + 3 * m_scaleDelta);
+  tdc.SetTextForeground(cl);
 }
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   // Draw SatID
-
+  wxFont f;
   wxScreenDC sdc;
   int height, width;
-  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, g_pFontSmall);
+  if (m_Properties)
+      f = m_Properties->m_SmallFont.GetChosenFont();
+  else
+      f = g_pFontSmall->GetChosenFont();
+  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &f);
 
   wxColour cl;
   wxBitmap tbm(dc->GetSize().x, height, -1);
   wxMemoryDC tdc(tbm);
   wxColour c2;
-  GetGlobalColor(_T("DASHB"), &c2);
+  if (m_Properties)
+      c2 = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
+  else
+      GetGlobalColor(_T("DASHB"), &c2);
   tdc.SetBackground(c2);
   tdc.Clear();
 
-  tdc.SetFont(*g_pFontSmall);
-  GetGlobalColor(_T("DASHF"), &cl);
+  if (m_Properties)
+  {
+      tdc.SetFont(m_Properties->m_SmallFont.GetChosenFont());
+      cl = GetColourSchemeFont(m_Properties->m_SmallFont.GetColour());
+  }
+  else
+  {
+      tdc.SetFont(g_pFontSmall->GetChosenFont());
+      GetGlobalColor(_T("DASHF"), &cl);
+  }
   tdc.SetTextForeground(cl);
 
   int pitch = m_refDim;
@@ -318,7 +359,11 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
 
 void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   wxColour cl;
-  GetGlobalColor(_T("DASHL"), &cl);
+  if (m_Properties)
+      cl = GetColourSchemeFont(m_Properties->m_DataFont.GetColour());
+  else
+      cl = GetColourSchemeFont(g_pFontData->GetColour());
+  //GetGlobalColor(_T("DASHL"), &cl);
   wxBrush brush(cl);
   dc->SetBrush(brush);
   dc->SetPen(*wxTRANSPARENT_PEN);
@@ -330,7 +375,10 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   dc->SetBackgroundMode(wxSOLID);
 
   wxColour cb;
-  GetGlobalColor(_T("DASHB"), &cb);
+  if (m_Properties)
+      cb = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
+  else
+      GetGlobalColor(_T("DASHB"), &cb);
 
   int m_scaleDelta = m_refDim / 2;
   int m_scaleBase = (m_radius * 2) + (2 * m_refDim);
@@ -346,20 +394,33 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   }
 
   wxString label;
+  wxFont f;
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
       label.Printf(_T("%02d"), m_SatInfo[idx].SatNumber);
       int width, height;
       wxScreenDC sdc;
-      sdc.GetTextExtent(label, &width, &height, 0, 0, g_pFontSmall);
+      if (m_Properties)
+          f = m_Properties->m_SmallFont.GetChosenFont();
+      else
+          f = g_pFontSmall->GetChosenFont();
+      sdc.GetTextExtent(label, &width, &height, 0, 0, &f);
 
       wxBitmap tbm(width, height, -1);
       wxMemoryDC tdc(tbm);
       tdc.SetBackground(cb);
       tdc.Clear();
 
-      tdc.SetFont(*g_pFontSmall);
-      tdc.SetTextForeground(cf);
+      if (m_Properties)
+      {
+          tdc.SetFont(m_Properties->m_SmallFont.GetChosenFont());
+          tdc.SetTextForeground(GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
+      }
+      else
+      {
+          tdc.SetFont(g_pFontSmall->GetChosenFont());
+          tdc.SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
+      }
       tdc.SetBackgroundMode(wxSOLID);
       tdc.SetTextBackground(cl);
 

@@ -58,6 +58,8 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "base_platform.h"
 #include "catalog_handler.h"
 #include "catalog_parser.h"
+#include "config_vars.h"
+#include "cmdline.h"
 #include "config.h"
 #include "downloader.h"
 #include "gui_lib.h"
@@ -80,9 +82,7 @@ static std::string SEP("/");
 #endif
 
 extern BasePlatform* g_BasePlatform;
-extern wxString g_winPluginDir;
 extern MyConfig* pConfig;
-extern bool g_bportable;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -121,11 +121,27 @@ static void mkdir(const std::string path) {
 #endif
 }
 
+static std::vector<std::string> glob_dir(const std::string& dir_path,
+                                         const std::string& pattern) {
+  std::vector<std::string> found;
+  wxString s;
+  wxDir dir(dir_path);
+  auto match = dir.GetFirst(&s, pattern);
+  while (match) {
+    static const std::string SEP =
+        wxString(wxFileName::GetPathSeparator()).ToStdString();
+    found.push_back(dir_path + SEP + s.ToStdString());
+    match = dir.GetNext(&s);
+  }
+  return found;
+}
+
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
  * or -1 if not found
  */
-static ssize_t PlugInIxByName(const std::string name, ArrayOfPlugIns* plugins) {
+static ssize_t PlugInIxByName(const std::string name,
+                              const ArrayOfPlugIns* plugins) {
   for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
     if (name == plugins->Item(i)->m_common_name.ToStdString()) {
       return i;
@@ -145,6 +161,15 @@ static std::string pluginsConfigDir() {
     mkdir(pluginDataDir);
   }
   return pluginDataDir;
+}
+
+static std::string importsDir() {
+  auto path = pluginsConfigDir();
+  path = path + SEP + "imports";
+  if (!ocpn::exists(path)) {
+    mkdir(path);
+  }
+  return path;
 }
 
 static std::string dirListPath(std::string name) {
@@ -220,9 +245,26 @@ public:
         "debian-x86_64;12;ubuntu-x86_64;23.04",
         "debian-x86_64;12;ubuntu-x86_64;23.10",
         "debian-x86_64;12;ubuntu-x86_64;24.04",
-        "debian-x86_64;sid;ubuntu-x86_64;24.04"};  // clang-format: on
+        "debian-x86_64;sid;ubuntu-x86_64;24.04",
+
+        "debian-arm64;11;ubuntu-gtk3-arm64;20.04",
+        "debian-wx32-arm64;11;ubuntu-wx32-arm64;22.04",
+        "debian-arm64;12;ubuntu-arm64;23.04",
+        "debian-arm64;12;ubuntu-arm64;23.10",
+        "debian-arm64;12;ubuntu-arm64;24.04",
+        "debian-arm64;sid;ubuntu-arm64;24.04",
+
+        "debian-armhf;10;ubuntu-armhf;18.04",
+        "debian-gtk3-armhf;10;ubuntu-gtk3-armhf;18.04",
+        "debian-armhf;11;ubuntu-gtk3-armhf;20.04",
+        "debian-wx32-armhf;11;ubuntu-wx32-armhf;22.04",
+        "debian-armhf;12;ubuntu-armhf;23.04",
+        "debian-armhf;12;ubuntu-armhf;23.10",
+        "debian-armhf;12;ubuntu-armhf;24.04",
+        "debian-armhf;sid;ubuntu-armhf;24.04"};  // clang-format: on
+
     if (ocpn::startswith(plugin.abi(), "debian")) {
-      wxLogDebug("Checking for debian plugin on a ubuntu-x86_64 host");
+      wxLogDebug("Checking for debian plugin on a ubuntu host");
       const std::string compat_version = plugin.abi() + ";" +
                                          plugin.major_version() + ";" + m_abi +
                                          ";" + m_abi_version;
@@ -284,7 +326,8 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
     if (wxv >= 32) {
       auto tokens = ocpn::split(_name.c_str(), "-");
-      _name = std::string(tokens[0]) + std::string("-wx32-") + tokens[1];
+      _name = std::string(tokens[0]) + std::string("-wx32");
+      if (tokens.size() > 1) _name = _name + std::string("-") + tokens[1];
     }
   }
 
@@ -297,8 +340,7 @@ PluginHandler::PluginHandler() {}
 bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
   static const std::vector<std::string> simple_abis = {
-      "msvc",        "msvc-wx32",     "darwin",
-      "darwin-wx32", "android-armhf", "android-arm64"};
+      "msvc", "msvc-wx32", "android-armhf", "android-arm64"};
 
   Plugin plugin(metadata);
   if (plugin.abi() == "all") {
@@ -323,8 +365,16 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
     rv = true;
     wxLogDebug("Found Debian version matching Ubuntu host");
   }
-  DEBUG_LOG << "Plugin compatibility check Final: "
-            << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
+  // macOS is an exception as packages with universal binaries can support both x86_64 and arm64 at the same time
+  if (host.abi() == "darwin-wx32" && plugin.abi() == "darwin-wx32") {
+    OCPN_OSDetail *detail = g_BasePlatform->GetOSDetail();
+    auto found = metadata.target_arch.find(detail->osd_arch);
+    if(found != std::string::npos) {
+      rv = true;
+    }
+  }
+    DEBUG_LOG << "Plugin compatibility check Final: "
+              << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
 }
 
@@ -336,6 +386,12 @@ std::string PluginHandler::fileListPath(std::string name) {
 std::string PluginHandler::versionPath(std::string name) {
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
   return pluginsConfigDir() + SEP + name + ".version";
+}
+
+std::string PluginHandler::ImportedMetadataPath(std::string name) {
+  ;
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  return importsDir() + SEP + name + ".xml";
 }
 
 typedef std::unordered_map<std::string, std::string> pathmap_t;
@@ -700,7 +756,8 @@ bool PluginHandler::archive_check(int r, const char* msg, struct archive* a) {
 
 bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
                                    std::string& filelist,
-                                   const std::string& metadata_path) {
+                                   const std::string& metadata_path,
+                                   bool only_metadata) {
   struct archive_entry* entry = 0;
   pathmap_t pathmap = getInstallPaths();
   while (true) {
@@ -719,6 +776,9 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
     } else if (!entry_set_install_path(entry, pathmap))
       continue;
     if (strlen(archive_entry_pathname(entry)) == 0) {
+      continue;
+    }
+    if (!is_metadata && only_metadata) {
       continue;
     }
     if (!is_metadata) {
@@ -761,15 +821,17 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
  *
  * For linux, the expected destinations are bin, lib and share.
  *
- * Parameters:
- *   - path: path to tarball
- *   - filelist: On return contains a list of files installed.
- *   - last_error_msg: Updated when returning false.
+ *   @param path path to tarball
+ *   @param filelist: On return contains a list of files installed.
+ *   @param metadata_path: if non-empty, location where to store metadata,
+ *   @param only_metadata: If true don't install any files, just extract
+ *                         metadata.
  *
  */
 bool PluginHandler::extractTarball(const std::string path,
                                    std::string& filelist,
-                                   const std::string metadata_path) {
+                                   const std::string metadata_path,
+                                   bool only_metadata) {
   struct archive* src = archive_read_new();
   archive_read_support_filter_gzip(src);
   archive_read_support_format_tar(src);
@@ -783,7 +845,7 @@ bool PluginHandler::extractTarball(const std::string path,
   }
   struct archive* dest = archive_write_disk_new();
   archive_write_disk_set_options(dest, ARCHIVE_EXTRACT_TIME);
-  bool ok = explodeTarball(src, dest, filelist, metadata_path);
+  bool ok = explodeTarball(src, dest, filelist, metadata_path, only_metadata);
   archive_read_free(src);
   archive_write_free(dest);
   return ok;
@@ -832,15 +894,6 @@ static std::string computeMetadataPath(void) {
   return path;
 }
 
-std::string PluginHandler::getMetadataPath() {
-  if (metadataPath.size() > 0) {
-    return metadataPath;
-  }
-  metadataPath = computeMetadataPath();
-  wxLogDebug("Using metadata path: %s", metadataPath.c_str());
-  return metadataPath;
-}
-
 static void parseMetadata(const std::string path, CatalogCtx& ctx) {
   using namespace std;
 
@@ -854,6 +907,45 @@ static void parseMetadata(const std::string path, CatalogCtx& ctx) {
   std::string xml((istreambuf_iterator<char>(ifpath)),
                   istreambuf_iterator<char>());
   ParseCatalog(xml, &ctx);
+}
+
+bool PluginHandler::InstallPlugin(const std::string& path,
+                                  std::string& filelist,
+                                  const std::string metadata_path,
+                                  bool only_metadata) {
+  if (!extractTarball(path, filelist, metadata_path, only_metadata)) {
+    std::ostringstream os;
+    os << "Cannot unpack plugin tarball at : " << path;
+    if (filelist != "") cleanup(filelist, "unknown_name");
+    last_error_msg = os.str();
+    return false;
+  }
+  if (only_metadata) {
+    return true;
+  }
+  struct CatalogCtx ctx;
+  std::ifstream istream(metadata_path);
+  std::stringstream buff;
+  buff << istream.rdbuf();
+
+  auto xml = std::string("<plugins>") + buff.str() + "</plugins>";
+  ParseCatalog(xml, &ctx);
+  auto name = ctx.plugins[0].name;
+  auto version = ctx.plugins[0].version;
+  saveFilelist(filelist, name);
+  saveDirlist(name);
+  saveVersion(name, version);
+
+  return true;
+}
+
+std::string PluginHandler::getMetadataPath() {
+  if (metadataPath.size() > 0) {
+    return metadataPath;
+  }
+  metadataPath = computeMetadataPath();
+  wxLogDebug("Using metadata path: %s", metadataPath.c_str());
+  return metadataPath;
 }
 
 const std::map<std::string, int> PluginHandler::getCountByTarget() {
@@ -873,6 +965,10 @@ const std::map<std::string, int> PluginHandler::getCountByTarget() {
     }
   }
   return count_by_target;
+}
+
+std::vector<std::string> PluginHandler::GetImportPaths() {
+  return glob_dir(importsDir(), "*.xml");
 }
 
 void PluginHandler::cleanupFiles(const std::string& manifestFile,
@@ -957,9 +1053,8 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   vector<PluginMetadata> plugins;
 
   auto loader = PluginLoader::getInstance();
-  ArrayOfPlugIns* mgr_plugins = loader->GetPlugInArray();
-  for (unsigned int i = 0; i < mgr_plugins->GetCount(); i += 1) {
-    PlugInContainer* p = mgr_plugins->Item(i);
+  for (unsigned int i = 0; i < loader->GetPlugInArray()->GetCount(); i += 1) {
+    const PlugInContainer* p = loader->GetPlugInArray()->Item(i);
     PluginMetadata plugin;
     auto name = string(p->m_common_name);
     // std::transform(name.begin(), name.end(), name.begin(), ::tolower);
@@ -979,6 +1074,15 @@ const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   return plugins;
 }
 
+void PluginHandler::SetInstalledMetadata(const PluginMetadata& pm) {
+  auto loader = PluginLoader::getInstance();
+  ssize_t ix = PlugInIxByName(pm.name, loader->GetPlugInArray());
+  if (ix == -1) return;  // no such plugin
+
+  auto plugins = *loader->GetPlugInArray();
+  plugins[ix]->m_managed_metadata = pm;
+}
+
 bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
   std::string filelist;
   if (!extractTarball(path, filelist)) {
@@ -988,7 +1092,6 @@ bool PluginHandler::installPlugin(PluginMetadata plugin, std::string path) {
     PluginHandler::cleanup(filelist, plugin.name);
     return false;
   }
-  // remove(path.c_str());
   saveFilelist(filelist, plugin.name);
   saveDirlist(plugin.name);
   saveVersion(plugin.name, plugin.version);
@@ -1015,16 +1118,27 @@ bool PluginHandler::installPlugin(PluginMetadata plugin) {
   return installPlugin(plugin, path);
 }
 
-bool PluginHandler::installPlugin(std::string path) {
+bool PluginHandler::installPlugin(const std::string& path) {
+  PluginMetadata metadata;
+  if (!ExtractMetadata(path, metadata)) {
+    MESSAGE_LOG << "Cannot extract metadata from tarball";
+    return false;
+  }
+  return installPlugin(metadata, path);
+}
+
+bool PluginHandler::ExtractMetadata(const std::string& path,
+                                    PluginMetadata& metadata) {
   std::string filelist;
   std::string temp_path(tmpnam(0));
-  if (!extractTarball(path, filelist, temp_path)) {
+  if (!extractTarball(path, filelist, temp_path, true)) {
     std::ostringstream os;
     os << "Cannot unpack plugin tarball at : " << path;
     if (filelist != "") cleanup(filelist, "unknown_name");
     last_error_msg = os.str();
     return false;
   }
+
   struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
   std::stringstream buff;
@@ -1032,16 +1146,9 @@ bool PluginHandler::installPlugin(std::string path) {
   remove(temp_path.c_str());
 
   auto xml = std::string("<plugins>") + buff.str() + "</plugins>";
-
   ParseCatalog(xml, &ctx);
-  auto name = ctx.plugins[0].name;
-  auto version = ctx.plugins[0].version;
-
-  saveFilelist(filelist, name);
-  saveDirlist(name);
-  saveVersion(name, version);
-
-  return true;
+  metadata = ctx.plugins[0];
+  return !metadata.name.empty();
 }
 
 bool PluginHandler::uninstall(const std::string plugin_name) {
@@ -1049,6 +1156,11 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
 
   auto loader = PluginLoader::getInstance();
   auto ix = PlugInIxByName(plugin_name, loader->GetPlugInArray());
+  if (ix < 0) {
+    wxLogMessage("trying to uninstall non-existing plugin %s",
+                 plugin_name.c_str());
+    return false;
+  }
   auto pic = loader->GetPlugInArray()->Item(ix);
   // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
   loader->UnLoadPlugIn(ix);
@@ -1076,6 +1188,7 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   // Best effort tries, failures are OK.
   remove(dirListPath(plugin_name).c_str());
   remove(PluginHandler::versionPath(plugin_name).c_str());
+  remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
 
   return true;
 }
@@ -1095,7 +1208,7 @@ static std::string FindMatchingDataDir(std::regex name_re) {
     auto token = tokens.GetNextToken();
     wxFileName path(token);
     wxDir dir(path.GetFullPath());
-    if (dir.IsOpened()){
+    if (dir.IsOpened()) {
       wxString filename;
       bool cont = dir.GetFirst(&filename, "", wxDIR_DIRS);
       while (cont) {

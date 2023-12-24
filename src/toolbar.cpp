@@ -353,6 +353,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   // A top-level sizer
   m_topSizer = new wxBoxSizer(wxHORIZONTAL);
   SetSizer(m_topSizer);
+  m_topSizer->Add(m_ptoolbar);
 
   //    Set initial "Dock" parameters
   m_dock_x = 0;
@@ -911,9 +912,6 @@ void ocpnFloatingToolbarDialog::Realize() {
   if (m_ptoolbar) {
     m_ptoolbar->Realize();
 
-    m_topSizer->Clear();
-    m_topSizer->Add(m_ptoolbar);
-
     if (m_bGrabberEnable) {
       if (!m_pGrabberwin) {
         m_pGrabberwin =
@@ -1124,7 +1122,9 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
     m_destroyTimer.Start(
         5, wxTIMER_ONE_SHOT);  //  Destor the unneeded recovery grabber
   }
-
+  for (auto it = m_Items.cbegin(); it != m_Items.cend(); it++) {
+    delete *it;
+  }
   m_Items.clear();
 }
 

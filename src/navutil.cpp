@@ -59,6 +59,7 @@
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"
+#include "cmdline.h"
 #include "config.h"
 #include "config_vars.h"
 #include "conn_params.h"
@@ -119,11 +120,11 @@ extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
-extern int g_nDepthUnitDisplay;
 extern wxString g_winPluginDir;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
+extern wxString g_TalkerIdText;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
@@ -142,7 +143,6 @@ extern bool g_bShowDepthUnits;
 extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
-extern bool g_bdisable_opengl;
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;
@@ -156,11 +156,6 @@ extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
 extern int g_nTrackPrecision;
-
-extern int g_iSDMMFormat;
-extern int g_iDistanceFormat;
-extern int g_iSpeedFormat;
-extern int g_iTempFormat;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -324,8 +319,6 @@ extern bool g_bShowChartBar;
 
 extern int g_MemFootMB;
 
-extern int g_nCOMPortCheck;
-
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
 extern int g_BSBImgDebug;
@@ -379,7 +372,7 @@ extern int g_tcwin_scale;
 extern wxString g_uploadConnection;
 
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern wxArrayString TideCurrentDataSet;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
 extern bool g_btouch;
@@ -508,6 +501,12 @@ MyConfig::MyConfig(const wxString &LocalFileName)
   m_pNavObjectInputSet = NULL;
   m_pNavObjectChangesSet = NULL;
 
+}
+
+MyConfig::~MyConfig() {
+  for (size_t i = 0; i < g_canvasConfigArray.GetCount(); i++) {
+    delete g_canvasConfigArray.Item(i);
+  }
 }
 
 void MyConfig::CreateRotatingNavObjBackup() {
@@ -781,6 +780,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (wxIsEmpty(g_CmdSoundString))
     g_CmdSoundString = wxString(OCPN_SOUND_CMD);
   Read(_T ( "NavMessageShown" ), &n_NavMessageShown);
+  Read(_T ( "DisableOpenGL" ), &g_bdisable_opengl);
 
   Read(_T ( "AndroidVersionCode" ), &g_AndroidVersionCode);
 
@@ -867,7 +867,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read(_T ( "UseNMEA_GLL" ), &g_bUseGLL);
     Read(_T ( "UseMagAPB" ), &g_bMagneticAPB);
     Read(_T ( "TrackContinuous" ), &g_btrackContinuous, false);
-    Read(_T ( "FilterTrackDropLargeJump" ), &g_trackFilterMax, 0);
+    Read(_T ( "FilterTrackDropLargeJump" ), &g_trackFilterMax, 1000);
   }
 
   Read(_T ( "ShowTrue" ), &g_bShowTrue);
@@ -993,6 +993,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
                              // "Kilometers", 3 = "Meters"
   Read(_T ( "SpeedFormat" ),
        &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+  Read(_T ( "WindSpeedFormat" ),
+       &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
   Read(_T ("TemperatureFormat"), &g_iTempFormat);  // 0 = C, 1 = F, 2 = K
 
   // LIVE ETA OPTION
@@ -1414,13 +1416,17 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   //  Tide/Current Data Sources
   SetPath(_T ( "/TideCurrentDataSources" ));
   if (GetNumberOfEntries()) {
-    TideCurrentDataSet.Clear();
+    TideCurrentDataSet.clear();
     wxString str, val;
     long dummy;
     bool bCont = GetFirstEntry(str, dummy);
     while (bCont) {
-      Read(str, &val);  // Get a file name
-      TideCurrentDataSet.Add(val);
+      Read(str, &val);  // Get a file name and add it to the list just in case it is not repeated
+      // We have seen duplication of dataset entries in https://github.com/OpenCPN/OpenCPN/issues/3042, this
+      // effectively gets rid of them.
+      if (std::find(TideCurrentDataSet.begin(), TideCurrentDataSet.end(), val.ToStdString()) == TideCurrentDataSet.end()) {
+        TideCurrentDataSet.push_back(val.ToStdString());
+      }
       bCont = GetNextEntry(str, dummy);
     }
   }
@@ -2149,6 +2155,7 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
   Read(_T ( "canvasENCShowVisibleSectorLights" ),
        &cConfig->bShowENCVisibleSectorLights, 0);
   Read(_T ( "canvasENCShowAnchorInfo" ), &cConfig->bShowENCAnchorInfo, 0);
+  Read(_T ( "canvasENCShowDataQuality" ), &cConfig->bShowENCDataQuality, 0);
 
   int sx, sy;
   Read(_T ( "canvasSizeX" ), &sx, 0);
@@ -2254,7 +2261,8 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
           cConfig->canvas->GetShowVisibleSectors());
     Write(_T ( "canvasENCShowAnchorInfo" ),
           cConfig->canvas->GetShowENCAnchor());
-
+    Write(_T ( "canvasENCShowDataQuality" ),
+          cConfig->canvas->GetShowENCDataQual());
     Write(_T ( "canvasCourseUp" ),
           cConfig->canvas->GetUpMode() == COURSE_UP_MODE);
     Write(_T ( "canvasHeadUp" ), cConfig->canvas->GetUpMode() == HEAD_UP_MODE);
@@ -2352,6 +2360,7 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
   Write(_T ( "OpenGL" ), g_bopengl);
+  Write(_T ( "DisableOpenGL" ), g_bdisable_opengl);
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
   Write(_T ( "ShowFPS" ), g_bShowFPS);
 
@@ -2443,6 +2452,7 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "GlobalToolbarConfig" ), g_toolbarConfig);
     Write(_T ( "DistanceFormat" ), g_iDistanceFormat);
     Write(_T ( "SpeedFormat" ), g_iSpeedFormat);
+    Write(_T ( "WindSpeedFormat" ), g_iWindSpeedFormat);
     Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
     Write(_T ( "TemperatureFormat" ), g_iTempFormat);
   }
@@ -2746,11 +2756,12 @@ void MyConfig::UpdateSettings() {
   //  Tide/Current Data Sources
   DeleteGroup(_T ( "/TideCurrentDataSources" ));
   SetPath(_T ( "/TideCurrentDataSources" ));
-  unsigned int iDirMax = TideCurrentDataSet.Count();
-  for (unsigned int id = 0; id < iDirMax; id++) {
+  unsigned int id = 0;
+  for (auto val : TideCurrentDataSet) {
     wxString key;
     key.Printf(_T("tcds%d"), id);
-    Write(key, TideCurrentDataSet[id]);
+    Write(key, wxString(val));
+    ++id;
   }
 
   SetPath(_T ( "/Settings/Others" ));
@@ -2804,6 +2815,16 @@ void MyConfig::UpdateSettings() {
   SaveCanvasConfigs();
 
   Flush();
+}
+
+void MyConfig::UpdateNavObjOnly() {
+  //   Create the NavObjectCollection, and save to specified file
+  NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
+
+  pNavObjectSet->CreateAllGPXObjects();
+  pNavObjectSet->SaveFile(m_sNavObjSetFile);
+
+  delete pNavObjectSet;
 }
 
 void MyConfig::UpdateNavObj(bool bRecreate) {
@@ -3299,24 +3320,28 @@ double fromUsrSpeed(double usr_speed, int unit) {
   return ret;
 }
 /**************************************************************************/
-/*    Converts the temperature to the units selected by user              */
+/*     Converts the wind speed from the units selected by user to knots   */
 /**************************************************************************/
-double toUsrTemp(double cel_temp, int unit) {
+double fromUsrWindSpeed(double usr_wspeed, int unit) {
   double ret = NAN;
-  if (unit == -1) unit = g_iTempFormat;
+  if (unit == -1) unit = g_iWindSpeedFormat;
   switch (unit) {
-    case TEMPERATURE_C:  // Celsius
-      ret = cel_temp;
+    case WSPEED_KTS:  // kts
+      ret = usr_wspeed;
       break;
-    case TEMPERATURE_F:  // Fahrenheit
-      ret = (cel_temp * 9.0 / 5.0) + 32;
+    case WSPEED_MS:  // m/s
+      ret = usr_wspeed / 0.514444444;
       break;
-    case TEMPERATURE_K:
-      ret = cel_temp + 273.15;
+    case WSPEED_MPH:  // mph
+      ret = usr_wspeed / 1.15078;
+      break;
+    case WSPEED_KMH:  // km/h
+      ret = usr_wspeed / 1.852;
       break;
   }
   return ret;
 }
+
 
 /**************************************************************************/
 /*  Converts the temperature from the units selected by user to Celsius   */
@@ -3333,26 +3358,6 @@ double fromUsrTemp(double usr_temp, int unit) {
       break;
     case TEMPERATURE_K:  // K
       ret = usr_temp - 273.15;
-      break;
-  }
-  return ret;
-}
-
-/**************************************************************************/
-/*          Returns the abbreviation of user selected temperature unit */
-/**************************************************************************/
-wxString getUsrTempUnit(int unit) {
-  wxString ret;
-  if (unit == -1) unit = g_iTempFormat;
-  switch (unit) {
-    case TEMPERATURE_C:  // Celsius
-      ret = _("C");
-      break;
-    case TEMPERATURE_F:  // Fahrenheit
-      ret = _("F");
-      break;
-    case TEMPERATURE_K:  // Kelvin
-      ret = _("K");
       break;
   }
   return ret;
@@ -3472,6 +3477,11 @@ void DimeControl(wxWindow *ctrl) {
 #ifdef __WXQT__
   return;  // this is seriously broken on wxqt
 #endif
+
+  if(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW).Red() < 128) {
+    // Dark system color themes usually do better job than we do on diming UI controls, do not fight with them
+    return;
+  }
 
   if (NULL == ctrl) return;
 

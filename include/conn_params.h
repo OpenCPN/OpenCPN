@@ -94,6 +94,8 @@ public:
   wxString Port;
   wxString socketCAN_port;
   int Baudrate;
+  bool NoDataReconnect;
+  bool DisableEcho;
   bool ChecksumCheck;
   bool Garmin;
   bool GarminUpload;

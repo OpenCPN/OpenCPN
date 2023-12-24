@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010-2023 by David S. Register                          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -58,8 +58,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern about* g_pAboutDlgLegacy;
 extern bool g_bresponsive;
 
-wxString OpenCPNVersion =
-    wxString::Format(wxT("\n      Version %s"), VERSION_FULL);
+wxString OpenCPNVersion("\n      Version ");
 
 #define xID_OK 10009
 
@@ -67,7 +66,7 @@ wxString OpenCPNVersion =
 
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2021  The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2023  The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")
@@ -204,6 +203,11 @@ about::about(wxWindow* parent, wxString Data_Locn, wxWindowID id,
   pLicenseHTMLCtl = NULL;
   pAuthorHTMLCtl = NULL;
   m_blicensePageSet = false;
+
+  if(strlen(DEBIAN_PPA_VERSION))
+   OpenCPNVersion += wxString(DEBIAN_PPA_VERSION);
+  else
+   OpenCPNVersion += wxString(PACKAGE_VERSION);
 
   Create(parent, id, caption, pos, size, style);
 }

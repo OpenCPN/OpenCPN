@@ -40,6 +40,9 @@
 #include "observable_evt.h"
 #include "plugin_handler.h"
 #include "plugin_loader.h"
+#ifdef __ANDROID__
+#include "androidUTIL.h"
+#endif
 
 wxDEFINE_EVENT(EVT_LOAD_COMPLETE, ObservedEvt);
 
@@ -65,28 +68,24 @@ The following library has encountered errors during startup:
 static const char* const kBadPluginsFooter = _(R"(
 
 These plugins will be uninstalled. You might want to reinstall
-them after updating  the catalog.
+them after updating the catalog.
 )");
 
 static const char* const kBadPluginFooter = _(R"(
 
 This plugin will be uninstalled. You might want to reinstall
-it after updating  the catalog.
+it after updating the catalog.
 )");
 
 static const char* const kBadLibsFooter = _(R"(
 
-These libraries  will be removed. You might want to reinstall them
-after updating  the catalog. However, I don't know which actual
-plugins to install in this case.
-)");
+These libraries will be removed. You might want to reinstall their
+associated plugin after updating the catalog.)");
 
 static const char* const kBadLibFooter = _(R"(
 
-The library  will be removed. You might want to reinstall it
-after updating  the catalog. However, I don't know which actual
-plugin to install in this case.
-)");
+The library will be removed. You might want to reinstall it's
+associated plugin after updating the catalog.)");
 
 /** Unloadable plugins report message box. */
 class LoadErrorsDlg : public OCPNMessageDialog {
@@ -137,7 +136,13 @@ static void Run(wxWindow* parent, const std::vector<LoadError>& errors) {
   LoadErrorsDlg::FormatCtx format_ctx(errors);
   LoadErrorsDlg dlg(parent, format_ctx);
 
+#ifdef __ANDROID__
+  std::string ss = dlg.FormatMsg(format_ctx);
+  androidShowSimpleOKDialog("Error", ss);
+  int sts = wxID_YES;
+#else
   int sts = dlg.ShowModal();
+#endif
   if (sts == wxID_YES || sts == wxID_OK) {
     for (const auto& plugin : format_ctx.plugins) {
       PluginHandler::getInstance()->uninstall(plugin);

@@ -47,12 +47,12 @@
 #include "select.h"
 
 #ifdef __OCPN__ANDROID__
+#include <QDebug>
 #include "androidUTIL.h"
 #endif
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
-extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern MyFrame *gFrame;
 extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
@@ -64,6 +64,7 @@ extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern OCPNPlatform *g_Platform;
+extern bool g_btouch;
 
 //---------------------------------------------------------------------------------------------------------------------
 //
@@ -137,6 +138,7 @@ void AISTargetAlertDialog::Init() {
   m_max_nline = 20;
   m_adj_height = 0;
   m_bsizeSet = false;
+  m_pParent = 0;
 }
 
 bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
@@ -153,6 +155,7 @@ bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
 
   m_target_mmsi = target_mmsi;
   m_pdecoder = pdecoder;
+  m_pParent = parent;
 
   wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 12);
   int font_size = wxMax(8, dFont->GetPointSize());
@@ -179,15 +182,17 @@ bool AISTargetAlertDialog::Create(int target_mmsi, wxWindow *parent,
 void AISTargetAlertDialog::CreateControls() {
   wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(topSizer);
+  long style = wxHW_SCROLLBAR_AUTO;
+  if (g_btouch) style |= wxHW_NO_SELECTION;
 
   m_pAlertTextCtl =
-      new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                       wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+      new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
 #ifdef __OCPN__ANDROID__
   m_pAlertTextCtl->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
   m_pAlertTextCtl->SetBorders(5);
+  m_pAlertTextCtl->SetScrollRate(1, 1);
 
   topSizer->Add(m_pAlertTextCtl, 1, wxALL | wxEXPAND, 5);
 
@@ -249,6 +254,10 @@ bool AISTargetAlertDialog::GetAlertText() {
 
 void AISTargetAlertDialog::UpdateText() {
   if (GetAlertText()) {
+    // Capture current scroll position
+    int x, y;
+    m_pAlertTextCtl->GetViewStart( &x, &y);
+
     wxFont *dFont = FontMgr::Get().GetFont(_("AISTargetAlert"), 12);
     wxString face = dFont->GetFaceName();
     int sizes[7];
@@ -272,6 +281,9 @@ void AISTargetAlertDialog::UpdateText() {
     m_pAlertTextCtl->SetPage(html);
 
     RecalculateSize();
+
+    // Restore scroll position
+    m_pAlertTextCtl->Scroll(x, y);
   }
 
   SetColorScheme();
@@ -308,6 +320,12 @@ void AISTargetAlertDialog::RecalculateSize(void) {
   wxSize gSize = GetClientSize();
   int adjustedWidth = wxMax(GetClientSize().x, textWidth + GetCharHeight() * 2);
   SetClientSize(adjustedWidth, esize.y);
+
+  // Constrain the vertical size to be no larger than parent window height
+  if (m_pParent) {
+    wxSize wsize = m_pParent->GetSize();
+    SetSize(-1, wxMin(esize.y, wsize.y));
+  }
 
   g_Platform->PositionAISAlert(this);
 }
