@@ -44,9 +44,15 @@ extern PI_ColorScheme aktuellColorScheme;
 wxColour GetColourSchemeBackgroundColour(wxColour co)
 {
     wxColour ret_val = co;
-    int red = co.GetRed();
-    int Green = co.GetGreen();
-    int Blue = co.GetBlue();
+    #if wxCHECK_VERSION(3, 1, 6)
+    unsigned int red = co.GetRed();
+    unsigned int Green = co.GetGreen();
+    unsigned int Blue = co.GetBlue();
+    #else
+    unsigned int red = co.Red();
+    unsigned int Green = co.Green();
+    unsigned int Blue = co.Blue();
+    #endif
     switch (aktuellColorScheme) {
     case PI_GLOBAL_COLOR_SCHEME_RGB:
         break;
@@ -73,9 +79,15 @@ wxColour GetColourSchemeBackgroundColour(wxColour co)
 wxColour GetColourSchemeFont(wxColour co)
 {
     wxColour ret_val = co;
-    int red = co.GetRed();
-    int Green = co.GetGreen();
-    int Blue = co.GetBlue();
+    #if wxCHECK_VERSION(3, 1, 6)
+    unsigned int red = co.GetRed();
+    unsigned int Green = co.GetGreen();
+    unsigned int Blue = co.GetBlue();
+    #else
+    unsigned int red = co.Red();
+    unsigned int Green = co.Green();
+    unsigned int Blue = co.Blue();
+    #endif
     switch (aktuellColorScheme) {
     case PI_GLOBAL_COLOR_SCHEME_RGB:
         break;

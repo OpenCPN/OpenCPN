@@ -632,14 +632,32 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   dc->DrawText(WindAngle, m_WindowRect.width - degw - m_RightLegend - 3, 6);
   pen.SetStyle(wxPENSTYLE_SOLID);
   GetColourSchemeFont(g_pFontData->GetColour()).GetGreen();
-  if (m_Properties)
-      pen.SetColour(wxColour(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetRed(), GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetGreen(), GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetBlue(), 96)); // transparent
-  else
-  {
+  if (m_Properties) {
+      #if wxCHECK_VERSION(3, 1, 6)
+      unsigned int r = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetRed();
+      unsigned int g = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetGreen();
+      unsigned int b = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).GetBlue();
+      #else
+      unsigned int r = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).Red();
+      unsigned int g = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).Green();
+      unsigned int b = GetColourSchemeFont(m_Properties->m_DataFont.GetColour()).Blue();
+      #endif
+      pen.SetColour(wxColour(r, g, b, 96)); // transparent
+  } else {
       if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
           pen.SetColour(wxColour(204, 41, 41, 96));
-      else
-          pen.SetColour(wxColour(GetColourSchemeFont(g_pFontData->GetColour()).GetRed(), GetColourSchemeFont(g_pFontData->GetColour()).GetGreen(), GetColourSchemeFont(g_pFontData->GetColour()).GetBlue(), 96)); // transparent
+      else {
+          #if wxCHECK_VERSION(3, 1, 6)
+          unsigned int r = GetColourSchemeFont(g_pFontData->GetColour()).GetRed();
+          unsigned int g = GetColourSchemeFont(g_pFontData->GetColour()).GetGreen();
+          unsigned int b = GetColourSchemeFont(g_pFontData->GetColour()).GetBlue();
+          #else
+          unsigned int r = GetColourSchemeFont(g_pFontData->GetColour()).Red();
+          unsigned int g = GetColourSchemeFont(g_pFontData->GetColour()).Green();
+          unsigned int b = GetColourSchemeFont(g_pFontData->GetColour()).Blue();
+          #endif
+          pen.SetColour(wxColour(r, g, b, 96)); // transparent
+      }
   }
     //pen.SetColour(wxColour(204, 41, 41, 96));  // red, transparent
   pen.SetWidth(1);
@@ -772,14 +790,32 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
                        m_TotalMaxWindSpd, m_WindSpeedUnit.c_str()),
                        m_LeftLegend + 3 + 2 + degw, m_TopLineHeight -7 -labelh);
   pen.SetStyle(wxPENSTYLE_SOLID);
-  if (m_Properties)
-      pen.SetColour(wxColour(GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetRed(), GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetGreen(), GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetBlue(), 96)); // transparent
-  else
-  {
+  if (m_Properties) {
+      #if wxCHECK_VERSION(3, 1, 6)
+      unsigned int r = GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetRed();
+      unsigned int g = GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetGreen();
+      unsigned int b = GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).GetBlue();
+      #else
+      unsigned int r = GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).Red();
+      unsigned int g = GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).Green();
+      unsigned int b = GetColourSchemeFont(m_Properties->m_LabelFont.GetColour()).Blue();
+      #endif
+      pen.SetColour(wxColour(r, g, b, 96)); // transparent
+  } else {
       if (GetColourSchemeFont(g_pFontData->GetColour()) == GetColourSchemeFont(g_pFontLabel->GetColour()))
           pen.SetColour(wxColour(61, 61, 204, 96)); // blue, transparent
-      else
-          pen.SetColour(wxColour(GetColourSchemeFont(g_pFontLabel->GetColour()).GetRed(), GetColourSchemeFont(g_pFontLabel->GetColour()).GetGreen(), GetColourSchemeFont(g_pFontLabel->GetColour()).GetBlue(), 96)); // transparent
+      else {
+          #if wxCHECK_VERSION(3, 1, 6)
+          unsigned int r = GetColourSchemeFont(g_pFontLabel->GetColour()).GetRed();
+          unsigned int g = GetColourSchemeFont(g_pFontLabel->GetColour()).GetGreen();
+          unsigned int b = GetColourSchemeFont(g_pFontLabel->GetColour()).GetBlue();
+          #else
+          unsigned int r = GetColourSchemeFont(g_pFontLabel->GetColour()).Red();
+          unsigned int g = GetColourSchemeFont(g_pFontLabel->GetColour()).Green();
+          unsigned int b = GetColourSchemeFont(g_pFontLabel->GetColour()).Blue();
+          #endif
+          pen.SetColour(wxColour(r, g, b, 96)); // transparent
+      }
   }
   //pen.SetColour(wxColour(61, 61, 204, 96));  // blue, transparent
   pen.SetWidth(1);
