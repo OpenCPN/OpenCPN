@@ -21,6 +21,10 @@ SET(SRC
 
 add_library(ISO8211 STATIC ${SRC})
 add_library(ocpn::iso8211 ALIAS ISO8211)
+
+# FIXME: Bad dependency on main openpcn:
+target_link_libraries(ISO8211 PRIVATE ocpn::s57enc)
+
 set_property(TARGET ISO8211 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(ISO8211 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

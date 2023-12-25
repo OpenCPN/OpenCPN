@@ -928,6 +928,7 @@ set(
   ${MODEL_HDR_DIR}/route.h
   ${MODEL_HDR_DIR}/routeman.h
   ${MODEL_HDR_DIR}/route_point.h
+  ${MODEL_HDR_DIR}/S57ClassRegistrar.h
   ${MODEL_HDR_DIR}/safe_mode.h
   ${MODEL_HDR_DIR}/select.h
   ${MODEL_HDR_DIR}/select_item.h
@@ -1016,7 +1017,6 @@ set(
   ${GUI_HDR_DIR}/routeprintout.h
   ${GUI_HDR_DIR}/RoutePropDlg.h
   ${GUI_HDR_DIR}/RoutePropDlgImpl.h
-  ${GUI_HDR_DIR}/S57ClassRegistrar.h
   ${GUI_HDR_DIR}/S57Light.h
   ${GUI_HDR_DIR}/S57ObjectDesc.h
   ${GUI_HDR_DIR}/S57QueryDialog.h
@@ -1843,76 +1843,23 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
 add_subdirectory(libs/pugixml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
 
+add_subdirectory(libs/gdal)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gdal)
+
+add_subdirectory(libs/iso8211)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::iso8211)
+
+add_subdirectory(libs/N2KParser)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::N2KParser)
+
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
   install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
 endif (MSVC)
 
 message(STATUS "S57 ENC support: enabled")
-set(
-  SRC_S57ENC
-  ${GUI_HDR_DIR}/cm93.h
-  ${MODEL_HDR_DIR}/ogr_s57.h
-  ${MODEL_HDR_DIR}/s57.h
-  ${GUI_HDR_DIR}/Osenc.h
-  ${GUI_HDR_DIR}/s57chart.h
-  ${MODEL_HDR_DIR}/s57RegistrarMgr.h
-  ${GUI_HDR_DIR}/SencManager.h
-  ${GUI_SRC_DIR}/cm93.cpp
-  ${MODEL_SRC_DIR}/ogrs57datasource.cpp
-  ${MODEL_SRC_DIR}/ogrs57layer.cpp
-  ${GUI_SRC_DIR}/Osenc.cpp
-  ${GUI_SRC_DIR}/s57chart.cpp
-  ${MODEL_SRC_DIR}/s57classregistrar.cpp
-  ${MODEL_SRC_DIR}/s57featuredefns.cpp
-  ${GUI_SRC_DIR}/s57obj.cpp
-  ${MODEL_SRC_DIR}/s57reader.cpp
-  ${MODEL_SRC_DIR}/s57RegistrarMgr.cpp
-  ${GUI_SRC_DIR}/SencManager.cpp
-)
-add_library(S57ENC STATIC ${SRC_S57ENC})
-target_link_libraries(
-  S57ENC
-  PUBLIC
-    ocpn::nmea0183
-    ocpn::tess2
-    ocpn::sound
-    ocpn::wxjson
-    ssl::sha1
-    ocpn::tinyxml
-    observable::observable
-)
-
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
-  target_compile_options(S57ENC PRIVATE -fvisibility=default)
-endif ()
-
-if (OCPN_USE_CURL AND NOT QT_ANDROID)
-  target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
-endif ()
-
-add_subdirectory(libs/iso8211)
-target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
-
-add_subdirectory(libs/gdal)
-target_link_libraries(S57ENC PUBLIC ocpn::gdal)
-
-add_subdirectory(libs/N2KParser)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::N2KParser)
-
-if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
-  target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
-  target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
-endif ()
-
-target_link_libraries(S57ENC PUBLIC ocpn::pugixml)
-target_link_libraries(S57ENC PUBLIC ocpn::geoprim)
-target_link_libraries(S57ENC PUBLIC ocpn::s52plib)
-
-target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
-set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
+add_subdirectory(s57)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s57enc)
 
 if (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
