@@ -65,24 +65,27 @@ foreach (_component ${GLIB_FIND_COMPONENTS})
     find_library(
       GLIB_GIO_LIBRARIES NAMES gio-2.0 HINTS ${_GLIB_LIBRARY_DIR}
     )
-    list(APPEND ADDITIONAL_REQUIRED_VARS ${GLIB_GIO_LIBRARIES})
+    list(APPEND ADDITIONAL_REQUIRED_VARS GLIB_GIO_LIBRARIES)
   elseif (${_component} STREQUAL "gobject")
     find_library(
       GLIB_GOBJECT_LIBRARIES NAMES gobject-2.0 HINTS ${_GLIB_LIBRARY_DIR}
     )
-    list(APPEND ADDITIONAL_REQUIRED_VARS ${GLIB_GOBJECT_LIBRARIES})
+    list(APPEND ADDITIONAL_REQUIRED_VARS GLIB_GOBJECT_LIBRARIES)
   elseif (${_component} STREQUAL "gmodule")
     find_library(
       GLIB_GMODULE_LIBRARIES NAMES gmodule-2.0 HINTS ${_GLIB_LIBRARY_DIR}
     )
-    list(APPEND ADDITIONAL_REQUIRED_VARS ${GLIB_GMODULE_LIBRARIES})
+    list(APPEND ADDITIONAL_REQUIRED_VARS GLIB_GMODULE_LIBRARIES)
   elseif (${_component} STREQUAL "gthread")
     find_library(
       GLIB_GTHREAD_LIBRARIES NAMES gthread-2.0 HINTS ${_GLIB_LIBRARY_DIR}
     )
-    list(APPEND ADDITIONAL_REQUIRED_VARS ${GLIB_GTHREAD_LIBRARIES})
+    list(APPEND ADDITIONAL_REQUIRED_VARS GLIB_GTHREAD_LIBRARIES)
   endif ()
 endforeach ()
+
+add_library(_GLIB_IF INTERFACE)
+add_library(glib::glib ALIAS _GLIB_IF)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GLIB REQUIRED_VARS GLIB_INCLUDE_DIRS
@@ -91,9 +94,17 @@ find_package_handle_standard_args(GLIB REQUIRED_VARS GLIB_INCLUDE_DIRS
 if (GLIB_LIBRARIES AND GLIB_INCLUDE_DIRS)
   set(GLIB_FOUND 1)
 endif ()
-add_library(_GLIB_IF INTERFACE)
-add_library(glib::glib ALIAS _GLIB_IF)
-target_link_libraries(_GLIB_IF
-  INTERFACE ${GLIB_LIBRARIES} ${ADDITIONAL_REQUIRED_VARS}
-)
+target_link_libraries(_GLIB_IF INTERFACE ${GLIB_LIBRARIES})
+if (GLIB_GIO_LIBRARIES)
+  target_link_libraries(_GLIB_IF INTERFACE ${GLIB_GIO_LIBRARIES})
+endif ()
+if (GLIB_GOBJECT_LIBRARIES)
+  target_link_libraries(_GLIB_IF INTERFACE ${GLIB_GOBJECT_LIBRARIES})
+endif ()
+if (GLIB_GMODULE_LIBRARIES)
+  target_link_libraries(_GLIB_IF INTERFACE ${GLIB_GMODULE_LIBRARIES})
+endif ()
+if (GLIB_GTHREAD_LIBRARIES)
+  target_link_libraries(_GLIB_IF INTERFACE ${GLIB_GTHREAD_LIBRARIES})
+endif ()
 target_include_directories(_GLIB_IF INTERFACE ${GLIB_INCLUDE_DIRS})
