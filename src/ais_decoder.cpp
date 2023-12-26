@@ -1633,13 +1633,34 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     token.ToDouble(&arpa_cog);
     arpa_cogunit = tkz.GetNextToken();  // 7) Course Units
     if (arpa_cogunit == _T("R")) {
-      if (std::isnan(arpa_ref_hdg)) {
-        if (!std::isnan(gHdt))
-          arpa_cog += gHdt;
+      double course;
+      if (!std::isnan(gHdt))
+        course = gHdt;
+      else
+        course = gCog;
+
+      double rel_bearing = 180 + course - arpa_cog;
+      if (rel_bearing > 180)
+        rel_bearing -= 360;
+
+      double new_arpa_speed = sqrt( gSog * gSog + arpa_sog * arpa_sog - 2 * gSog * arpa_sog * cos(rel_bearing * PI / 180.) );
+
+      if (new_arpa_speed != 0 && gSog != 0){
+        double cos_val = (new_arpa_speed * new_arpa_speed + gSog * gSog - arpa_sog * arpa_sog) / (2 * new_arpa_speed * gSog);
+        if (cos_val > 1)
+          cos_val = 1;
+        else if (cos_val < -1)
+          cos_val = -1;
+
+        arpa_cog = acos( cos_val  ) * 180. / PI;
+        if (rel_bearing < 0)
+          arpa_cog = course - arpa_cog;
         else
-          arpa_cog += gCog;
-      } else
-        arpa_cog += arpa_ref_hdg;
+          arpa_cog = course + arpa_cog;
+      }
+
+      arpa_sog = new_arpa_speed;
+
       if (arpa_cog >= 360.) arpa_cog -= 360.;
     }
     token = tkz.GetNextToken();  // 8) Distance of closest-point-of-approach
