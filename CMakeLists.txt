@@ -1979,24 +1979,6 @@ if (UNIX)
   endif ()
 endif (UNIX)
 
-if (OCPN_BUILD_TEST)
-  add_subdirectory(libs/gtest)
-  add_subdirectory(test)
-  add_custom_target(run-tests
-    COMMAND ctest  -C $<CONFIG> -E tests --timeout 10
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-  )
-  add_dependencies(run-tests tests)
-  if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
-    add_dependencies(run-tests ipc-srv-tests)
-  endif ()
-  if (LINUX)
-    add_dependencies(run-tests dbus_tests)
-  endif ()
-else ()
-  add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
-endif ()
-
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
@@ -3232,9 +3214,29 @@ if (NOT TARGET uninstall)
   )
 endif ()
 
+add_subdirectory(model)
+
 if (NOT QT_ANDROID)
   add_subdirectory(cli)
 endif () 
+
+if (OCPN_BUILD_TEST)
+  add_subdirectory(libs/gtest)
+  add_subdirectory(test)
+  add_custom_target(run-tests
+    COMMAND ctest  -C $<CONFIG> -E tests --timeout 10
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+  )
+  add_dependencies(run-tests tests)
+  if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
+    add_dependencies(run-tests ipc-srv-tests)
+  endif ()
+  if (LINUX)
+    add_dependencies(run-tests dbus_tests)
+  endif ()
+else ()
+  add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
+endif ()
 
 if (QT_ANDROID)
   target_include_directories( ${PACKAGE_NAME} PRIVATE
