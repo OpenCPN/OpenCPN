@@ -26,16 +26,15 @@
 #include "logger.h"
 #include "ocpn_utils.h"
 
-#ifndef UNIT_TEST
 extern BasePlatform* g_BasePlatform;
 
+// FIXME (leamas) Bad name
 std::string GetSocketPath() {
   auto const static sep = static_cast<char>(wxFileName::GetPathSeparator());
   auto dirpath = g_BasePlatform->GetPrivateDataDir();
   if (!wxFileName::DirExists(dirpath)) wxFileName::Mkdir(dirpath);
   return dirpath.ToStdString() + sep + "opencpn-ipc";
 }
-#endif
 
 IpcClient::IpcClient(const std::string& path) {
   connection = MakeConnection("localhost", path, "OpenCPN");
