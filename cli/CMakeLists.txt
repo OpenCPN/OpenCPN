@@ -1,9 +1,5 @@
-set(SRC_CONSOLE console.cpp api_shim.cpp ${MODEL_SRC})
+set(SRC_CONSOLE console.cpp api_shim.cpp)
 add_executable(opencpn-cmd ${SRC_CONSOLE})
-if (APPLE)
-  # 10.13 compat support
-  target_link_libraries(opencpn-cmd PUBLIC boost_system boost_filesystem)
-endif ()
 
 if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
   target_link_libraries(opencpn-cmd PRIVATE -fsanitize=${ENABLE_SANITIZER})
@@ -39,6 +35,7 @@ if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
 endif ()
 
 target_link_libraries(opencpn-cmd PRIVATE ocpn::opencpn)
+target_link_libraries(opencpn-cmd PRIVATE ocpn::model)
 
 target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
 
@@ -47,7 +44,6 @@ target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::geoprim)
-target_link_libraries(opencpn-cmd PRIVATE glib::glib)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
@@ -61,7 +57,11 @@ target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
+target_link_libraries(opencpn-cmd PRIVATE ocpn::filesystem)
 
+if (TARGET glib::glib)
+target_link_libraries(opencpn-cmd PRIVATE glib::glib)
+endif ()
 if (HAVE_LIBUDEV)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)
 endif ()

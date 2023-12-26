@@ -109,9 +109,6 @@ set(
   ${MODEL_HDR_DIR}/wx28compat.h
 )
 
-
-
-
 set(MODEL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(SRC
   ${MODEL_SRC_DIR}/ais_bitstring.cpp
@@ -156,7 +153,6 @@ set(SRC
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
-  ${MODEL_SRC_DIR}/ipc_factories.cpp
   ${MODEL_SRC_DIR}/local_api.cpp
   ${MODEL_SRC_DIR}/logger.cpp
   ${MODEL_SRC_DIR}/mDNS_query.cpp
@@ -192,12 +188,16 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
+if (NOT QT_ANDROID)
+  list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
+endif ()
+
 if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n2k_socketcan.cpp)
 endif ()
 
-if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
+if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_client.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_client.cpp)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_server.h )
@@ -213,10 +213,10 @@ if (APPLE)
   list(APPEND SRC ${MODEL_SRC_DIR}/macutils.c)
 endif ()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_library(_OCPN_MODEL STATIC ${SRC} ${HDRS})
 add_library(ocpn::model ALIAS _OCPN_MODEL)
-
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(
   _OCPN_MODEL PUBLIC
@@ -256,7 +256,9 @@ endif ()
 
 if (UNIX AND NOT APPLE)
   find_package(GLIB COMPONENTS gio gobject REQUIRED)
-  target_link_libraries(_OCPN_MODEL PUBLIC glib::glib)
+  if (GLIB_FOUND)
+    target_link_libraries(_OCPN_MODEL PUBLIC glib::glib)
+  endif ()
 endif ()
 
 target_link_libraries(
@@ -293,5 +295,11 @@ if (QT_ANDROID)
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
   )
-  add_definitions(-DMG_ENABLE_OPENSSL)
+  target_compile_definitions(_OCPN_MODEL PUBLIC -DMG_ENABLE_OPENSSL)
+  target_include_directories(_OCPN_MODEL PUBLIC
+    ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
+  )
+  target_link_libraries(_OCPN_MODEL PUBLIC
+    ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
+  )
 endif ()

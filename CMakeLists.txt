@@ -518,21 +518,6 @@ message(
   STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
 )
 
-
-
-#
-# Installation directory setup
-#
-set(
-  LINUX_LIB_PATHS
-  /usr/local/lib
-  /usr/local/lib64
-  /usr/lib/i386-linux-gnu
-  /usr/lib/x86_64-linux-gnu
-  /usr/lib
-  /usr/lib64
-)
-
 # Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
 # to avoid multilib plugin paths. After all, we do not install any
 # "real" libraries.
@@ -852,92 +837,6 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-set(MODEL_HDR_DIR ${CMAKE_SOURCE_DIR}/model/include/model)
-set(
-  MODEL_HDRS
-  ${MODEL_HDR_DIR}/ais_bitstring.h
-  ${MODEL_HDR_DIR}/ais_decoder.h
-  ${MODEL_HDR_DIR}/ais_defs.h
-  ${MODEL_HDR_DIR}/ais_target_data.h
-  ${MODEL_HDR_DIR}/atomic_queue.h
-  ${MODEL_HDR_DIR}/base_platform.h
-  ${MODEL_HDR_DIR}/catalog_handler.h
-  ${MODEL_HDR_DIR}/catalog_parser.h
-  ${MODEL_HDR_DIR}/certificates.h
-  ${MODEL_HDR_DIR}/chartdata_input_stream.h
-  ${MODEL_HDR_DIR}/cli_platform.h
-  ${MODEL_HDR_DIR}/cmdline.h
-  ${MODEL_HDR_DIR}/comm_ais.h
-  ${MODEL_HDR_DIR}/comm_appmsg_bus.h
-  ${MODEL_HDR_DIR}/comm_appmsg.h
-  ${MODEL_HDR_DIR}/comm_bridge.h
-  ${MODEL_HDR_DIR}/comm_decoder.h
-  ${MODEL_HDR_DIR}/comm_driver.h
-  ${MODEL_HDR_DIR}/comm_drv_factory.h
-  ${MODEL_HDR_DIR}/comm_drv_file.h
-  ${MODEL_HDR_DIR}/comm_drv_n0183_android_bt.h
-  ${MODEL_HDR_DIR}/comm_drv_n0183_android_int.h
-  ${MODEL_HDR_DIR}/comm_drv_n0183.h
-  ${MODEL_HDR_DIR}/comm_drv_n0183_net.h
-  ${MODEL_HDR_DIR}/comm_drv_n0183_serial.h
-  ${MODEL_HDR_DIR}/comm_drv_n2k.h
-  ${MODEL_HDR_DIR}/comm_drv_n2k_serial.h
-  ${MODEL_HDR_DIR}/comm_drv_registry.h
-  ${MODEL_HDR_DIR}/comm_drv_signalk.h
-  ${MODEL_HDR_DIR}/comm_drv_signalk_net.h
-  ${MODEL_HDR_DIR}/comm_n0183_output.h
-  ${MODEL_HDR_DIR}/comm_navmsg_bus.h
-  ${MODEL_HDR_DIR}/comm_navmsg.h
-  ${MODEL_HDR_DIR}/comm_util.h
-  ${MODEL_HDR_DIR}/comm_vars.h
-  ${MODEL_HDR_DIR}/config_vars.h
-  ${MODEL_HDR_DIR}/conn_params.h
-  ${MODEL_HDR_DIR}/cutil.h
-  ${MODEL_HDR_DIR}/downloader.h
-  ${MODEL_HDR_DIR}/dsPortType.h
-  ${MODEL_HDR_DIR}/garmin_protocol_mgr.h
-  ${MODEL_HDR_DIR}/garmin_wrapper.h
-  ${MODEL_HDR_DIR}/geodesic.h
-  ${MODEL_HDR_DIR}/georef.h
-  ${MODEL_HDR_DIR}/hyperlink.h
-  ${MODEL_HDR_DIR}/idents.h
-  ${MODEL_HDR_DIR}/instance_check.h
-  ${MODEL_HDR_DIR}/ipc_api.h
-  ${MODEL_HDR_DIR}/json_event.h
-  ${MODEL_HDR_DIR}/local_api.h
-  ${MODEL_HDR_DIR}/logger.h
-  ${MODEL_HDR_DIR}/MarkIcon.h
-  ${MODEL_HDR_DIR}/mDNS_query.h
-  ${MODEL_HDR_DIR}/mDNS_service.h
-  ${MODEL_HDR_DIR}/meteo_points.h
-  ${MODEL_HDR_DIR}/multiplexer.h
-  ${MODEL_HDR_DIR}/nav_object_database.h
-  ${MODEL_HDR_DIR}/navutil_base.h
-  ${MODEL_HDR_DIR}/nmea_log.h
-  ${MODEL_HDR_DIR}/ocpn_types.h
-  ${MODEL_HDR_DIR}/ocpn_utils.h
-  ${MODEL_HDR_DIR}/own_ship.h
-  ${MODEL_HDR_DIR}/pincode.h
-  ${MODEL_HDR_DIR}/plugin_blacklist.h
-  ${MODEL_HDR_DIR}/plugin_cache.h
-  ${MODEL_HDR_DIR}/plugin_handler.h
-  ${MODEL_HDR_DIR}/plugin_loader.h
-  ${MODEL_HDR_DIR}/plugin_paths.h
-  ${MODEL_HDR_DIR}/position_parser.h
-  ${MODEL_HDR_DIR}/rest_server.h
-  ${MODEL_HDR_DIR}/route.h
-  ${MODEL_HDR_DIR}/routeman.h
-  ${MODEL_HDR_DIR}/route_point.h
-  ${MODEL_HDR_DIR}/S57ClassRegistrar.h
-  ${MODEL_HDR_DIR}/safe_mode.h
-  ${MODEL_HDR_DIR}/select.h
-  ${MODEL_HDR_DIR}/select_item.h
-  ${MODEL_HDR_DIR}/semantic_vers.h
-  ${MODEL_HDR_DIR}/ser_ports.h
-  ${MODEL_HDR_DIR}/track.h
-  ${MODEL_HDR_DIR}/wx28compat.h
-)
-
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(
   GUI_HDRS
@@ -1055,85 +954,6 @@ set(
   ${GUI_HDR_DIR}/wx_instance_chk.h
 )
 
-set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
-set(MODEL_SRC
-  ${MODEL_SRC_DIR}/ais_bitstring.cpp
-  ${MODEL_SRC_DIR}/ais_decoder.cpp
-  ${MODEL_SRC_DIR}/ais_target_data.cpp
-  ${MODEL_SRC_DIR}/base_platform.cpp
-  ${MODEL_SRC_DIR}/catalog_handler.cpp
-  ${MODEL_SRC_DIR}/catalog_parser.cpp
-  ${MODEL_SRC_DIR}/certificates.cpp
-  ${MODEL_SRC_DIR}/chartdata_input_stream.cpp
-  ${MODEL_SRC_DIR}/cli_platform.cpp
-  ${MODEL_SRC_DIR}/cmdline.cpp
-  ${MODEL_SRC_DIR}/comm_ais.cpp
-  ${MODEL_SRC_DIR}/comm_appmsg_bus.cpp
-  ${MODEL_SRC_DIR}/comm_appmsg.cpp
-  ${MODEL_SRC_DIR}/comm_bridge.cpp
-  ${MODEL_SRC_DIR}/comm_decoder.cpp
-  ${MODEL_SRC_DIR}/comm_drv_factory.cpp
-  ${MODEL_SRC_DIR}/comm_drv_file.cpp
-  ${MODEL_SRC_DIR}/comm_drv_n0183.cpp
-  ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
-  ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
-  ${MODEL_SRC_DIR}/comm_drv_n2k.cpp
-  ${MODEL_SRC_DIR}/comm_drv_n2k_serial.cpp
-  ${MODEL_SRC_DIR}/comm_drv_registry.cpp
-  ${MODEL_SRC_DIR}/comm_drv_signalk.cpp
-  ${MODEL_SRC_DIR}/comm_drv_signalk_net.cpp
-  ${MODEL_SRC_DIR}/comm_n0183_output.cpp
-  ${MODEL_SRC_DIR}/comm_navmsg_bus.cpp
-  ${MODEL_SRC_DIR}/comm_navmsg.cpp
-  ${MODEL_SRC_DIR}/comm_navmsg.cpp
-  ${MODEL_SRC_DIR}/comm_plugin_api.cpp
-  ${MODEL_SRC_DIR}/comm_util.cpp
-  ${MODEL_SRC_DIR}/comm_vars.cpp
-  ${MODEL_SRC_DIR}/config_vars.cpp
-  ${MODEL_SRC_DIR}/conn_params.cpp
-  ${MODEL_SRC_DIR}/cutil.cpp
-  ${MODEL_SRC_DIR}/downloader.cpp
-  ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp
-  ${MODEL_SRC_DIR}/geodesic.cpp
-  ${MODEL_SRC_DIR}/georef.cpp
-  ${MODEL_SRC_DIR}/hyperlink.cpp
-  ${MODEL_SRC_DIR}/instance_handler.cpp
-  ${MODEL_SRC_DIR}/ipc_api.cpp
-  ${MODEL_SRC_DIR}/local_api.cpp
-  ${MODEL_SRC_DIR}/logger.cpp
-  ${MODEL_SRC_DIR}/mDNS_query.cpp
-  ${MODEL_SRC_DIR}/mDNS_service.cpp
-  ${MODEL_SRC_DIR}/multiplexer.cpp
-  ${MODEL_SRC_DIR}/nav_object_database.cpp
-  ${MODEL_SRC_DIR}/navutil_base.cpp
-  ${MODEL_SRC_DIR}/ocpn_plugin.cpp
-  ${MODEL_SRC_DIR}/ocpn_utils.cpp
-  ${MODEL_SRC_DIR}/ogrs57datasource.cpp
-  ${MODEL_SRC_DIR}/ogrs57layer.cpp
-  ${MODEL_SRC_DIR}/own_ship.cpp
-  ${MODEL_SRC_DIR}/pincode.cpp
-  ${MODEL_SRC_DIR}/plugin_blacklist.cpp
-  ${MODEL_SRC_DIR}/plugin_cache.cpp
-  ${MODEL_SRC_DIR}/plugin_handler.cpp
-  ${MODEL_SRC_DIR}/plugin_loader.cpp
-  ${MODEL_SRC_DIR}/plugin_paths.cpp
-  ${MODEL_SRC_DIR}/position_parser.cpp
-  ${MODEL_SRC_DIR}/rest_server.cpp
-  ${MODEL_SRC_DIR}/route.cpp
-  ${MODEL_SRC_DIR}/routeman.cpp
-  ${MODEL_SRC_DIR}/route_point.cpp
-  ${MODEL_SRC_DIR}/s57classregistrar.cpp
-  ${MODEL_SRC_DIR}/s57featuredefns.cpp
-  ${MODEL_SRC_DIR}/s57reader.cpp
-  ${MODEL_SRC_DIR}/s57RegistrarMgr.cpp
-  ${MODEL_SRC_DIR}/safe_mode.cpp
-  ${MODEL_SRC_DIR}/select.cpp
-  ${MODEL_SRC_DIR}/select_item.cpp
-  ${MODEL_SRC_DIR}/semantic_vers.cpp
-  ${MODEL_SRC_DIR}/ser_ports.cpp
-  ${MODEL_SRC_DIR}/track.cpp
-  ${MODEL_SRC_DIR}/wx_instance_chk.cpp
-)
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(
   GUI_SRC
@@ -1238,21 +1058,6 @@ set(
   ${GUI_SRC_DIR}/waypointman_gui.cpp
 )
 
-
-if (LINUX)
-  list(APPEND MODEL_HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
-  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/comm_drv_n2k_socketcan.cpp)
-  list(APPEND MODEL_HDRS
-    ${MODEL_HDR_DIR}/dbus_client.h
-    ${MODEL_HDR_DIR}/dbus_server.h
-    ${MODEL_HDR_DIR}/dbus_instance_check.h
-  )
-  list(APPEND MODEL_SRC
-    ${MODEL_SRC_DIR}/dbus_server.cpp
-    ${MODEL_SRC_DIR}/dbus_client.cpp
-  )
-endif ()
-
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
@@ -1270,15 +1075,6 @@ if (LINUX)
   )
 endif ()
 
-if (UNIX)
-  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
-  list(APPEND MODEL_HDRS ${MODEL_HDR_DIR}/std_instance_chk.h)
-endif ()
-
-if (APPLE)
-  list(APPEND MODEL_HDRS ${MODEL_HDR_DIR}/macutils.h )
-  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/macutils.c)
-endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)
   list(APPEND GUI_HDRS ${GUI_HDR_DIR}/crashprint.h)
@@ -1288,18 +1084,10 @@ endif ()
 if (QT_ANDROID)
   list(APPEND GUI_HDRS include/androidUTIL.h)
   list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/src/androidUTIL.cpp)
-  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_int.cpp)
-  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_bt.cpp)
 endif ()
 
-if (NOT QT_ANDROID)
-  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
-endif ()
-
-list(APPEND MODEL_HDRS ${CMAKE_SOURCE_DIR}/include/ocpn_plugin.h)
-
-set(SRCS ${GUI_SRC} ${MODEL_SRC})
-set(HDRS ${MODEL_HDRS} ${GUI_HDRS})
+set(SRCS ${GUI_SRC} )
+set(HDRS ${GUI_HDRS})
 
 # Temporary support for #3513, to be removed
 file(WRITE ${CMAKE_BINARY_DIR}/gui-src.txt "${GUI_SRC}")
@@ -1385,22 +1173,17 @@ endif ()
 find_package(Gettext REQUIRED)
 
 add_subdirectory(libs/observable)
-target_link_libraries(${PACKAGE_NAME} PRIVATE observable::observable)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
 
 add_subdirectory(libs/picosha2)
-target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
 
 add_subdirectory(libs/mongoose)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
 
 add_subdirectory(libs/rapidjson)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::rapidjson)
 
 add_subdirectory(libs/mDNS)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mDNS)
 
 if (NOT QT_ANDROID)
   find_package(LIBUDEV)
@@ -1425,13 +1208,6 @@ if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
   if (PANGO_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
     set(HAVE_PANGO 1)
-  endif ()
-endif ()
-
-if (LINUX)
-  find_package(GLIB COMPONENTS gio gobject)
-  if (GLIB_FOUND)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE glib::glib)
   endif ()
 endif ()
 
@@ -1597,15 +1373,6 @@ if (CMAKE_HOST_WIN32)
     "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include"
   )
 endif (CMAKE_HOST_WIN32)
-if (OCPN_USE_LZMA)
-  find_package(LibLZMA)
-  if (LIBLZMA_FOUND)
-    message(STATUS "Building with lzma support: ${LIBLZMA_LIBRARIES}")
-    target_include_directories(${PACKAGE_NAME} PUBLIC ${LIBLZMA_INCLUDE_DIRS})
-  else (LIBLZMA_FOUND)
-    message(STATUS "lzma library not found")
-  endif (LIBLZMA_FOUND)
-endif (OCPN_USE_LZMA)
 
 if (OCPN_USE_CURL)
   if (CMAKE_HOST_WIN32)
@@ -1826,31 +1593,23 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
 
 include("SoundConfig")
 add_subdirectory(libs/sound)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
 
 add_subdirectory(libs/wxJSON)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
 add_subdirectory(libs/geoprim)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
 
 add_subdirectory(libs/s52plib)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
 
 add_subdirectory(libs/pugixml)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
 
 add_subdirectory(libs/gdal)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gdal)
 
 add_subdirectory(libs/iso8211)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::iso8211)
 
 add_subdirectory(libs/N2KParser)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::N2KParser)
 
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
@@ -1859,7 +1618,6 @@ endif (MSVC)
 
 message(STATUS "S57 ENC support: enabled")
 add_subdirectory(s57)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s57enc)
 
 if (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
@@ -1915,25 +1673,6 @@ endif ()
 # GL_LIBS="-lGL -lGLU" AC_SUBST(GL_LIBS)
 #
 # GL_CFLAGS="-DUSE_GLU_TESS" AC_SUBST(GL_CFLAGS) fi
-
-if (UNIX AND NOT APPLE)
-  find_path(LIBELF_INCLUDE_DIR NAMES libelf.h gelf.h PATH_SUFFIXES libelf)
-  find_library(LIBELF_LIBRARY NAMES elf)
-  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-    message(STATUS "Found LibELF...")
-    message(STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}")
-    message(STATUS "    ELF Include: ${LIBELF_LIBRARY}")
-    target_include_directories(${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}")
-    target_link_libraries(${PACKAGE_NAME} PRIVATE "${LIBELF_LIBRARY}")
-
-    set(USE_LIBELF ON)   # => config.h
-  else ()
-    message(
-      WARNING
-        "Did not found LibELF, plugin compatibility check will be simplified."
-    )
-  endif ()
-endif (UNIX AND NOT APPLE)
 
 # Finalize config.h setup and deploy it.
 include(TargetSetup)
@@ -2060,10 +1799,8 @@ if (WIN32)
 endif (WIN32)
 
 add_subdirectory("libs/nmea0183")
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
 
 add_subdirectory("libs/easywsclient")
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::easywsclient)
 
 ##add_subdirectory("libs/wxservdisc")
 ####target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
@@ -3215,6 +2952,7 @@ if (NOT TARGET uninstall)
 endif ()
 
 add_subdirectory(model)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model)
 
 if (NOT QT_ANDROID)
   add_subdirectory(cli)

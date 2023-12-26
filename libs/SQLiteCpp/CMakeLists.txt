@@ -39,6 +39,10 @@ target_include_directories(SQLITE_CPP
     PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+if (TARGET LibLZMA::LibLZMA)
+  target_link_libraries(SQLITE_CPP PUBLIC LibLZMA::LibLZMA)
+endif ()
+
 #FIXME (#3527) Dependency on main openpcn
 set_property(TARGET SQLITE_CPP PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 

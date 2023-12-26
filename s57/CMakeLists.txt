@@ -59,7 +59,15 @@ target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 if (OCPN_USE_CURL AND NOT QT_ANDROID)
   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
 endif ()
+if (TARGET LibLZMA::LibLZMA)
+  target_link_libraries(S57ENC PUBLIC LibLZMA::LibLZMA)
+endif ()
 target_include_directories(S57ENC PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+if (APPLE)
+  target_include_directories(S57ENC PUBLIC /usr/local/include)
+  target_link_libraries(S57ENC PUBLIC ocpn::filesystem)
+endif ()
+
 target_include_directories(
   S57ENC PUBLIC
     ${CMAKE_SOURCE_DIR}/gui/include/gui 
