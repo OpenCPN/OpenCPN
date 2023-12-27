@@ -5552,7 +5552,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
       case ID_DBP_I_TWD:  // true wind direction
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_TWD,
-            _T("%5.0f"));
+            _T("%3.0f"));
         break;
       case ID_DBP_I_TWS:  // true wind speed
         instrument = new DashboardInstrument_Single(
@@ -5562,7 +5562,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
       case ID_DBP_I_AWA:  // apparent wind angle
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_AWA,
-            _T("%5.0f"));
+            _T("%3.0f"));
         break;
       case ID_DBP_I_VMG:
         instrument = new DashboardInstrument_Single(
