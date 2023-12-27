@@ -4,14 +4,17 @@
 #
 set -x
 for hdr in model/include/model/*; do
-   for src in model/src/*; do
+   for src in src/androidUTIL.cpp; do
       sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|model/${hdr##*/}|" $src
    done
-   for src in gui/src/* gui/include/gui/* test/*cpp plugins/*/src/*.cpp \
-              plugins/*/src/*.h s57/include/*.h s57/src/*.cpp
-   do
-     sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|model/${hdr##*/}|" $src
-   done
+##   for src in model/src/*; do
+##      sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|model/${hdr##*/}|" $src
+##   done
+##   for src in gui/src/* gui/include/gui/* test/*cpp plugins/*/src/*.cpp \
+##              plugins/*/src/*.h s57/include/*.h s57/src/*.cpp
+##   do
+##     sed -i "/#include \"${hdr##*/}/s|${hdr##*/}|model/${hdr##*/}|" $src
+##   done
 done
 
 
