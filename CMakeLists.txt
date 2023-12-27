@@ -1095,6 +1095,7 @@ file(WRITE ${CMAKE_BINARY_DIR}/gui-headers.txt "${GUI_HDRS}")
 file(WRITE ${CMAKE_BINARY_DIR}/model-hdrs.txt "${MODEL_HDRS}")
 file(WRITE ${CMAKE_BINARY_DIR}/model-src.txt "${MODEL_SRC}")
 
+
 if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
@@ -1172,18 +1173,9 @@ endif ()
 
 find_package(Gettext REQUIRED)
 
-add_subdirectory(libs/observable)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
-
-add_subdirectory(libs/picosha2)
-
-add_subdirectory(libs/mongoose)
-
-add_subdirectory(libs/rapidjson)
-
-add_subdirectory(libs/mDNS)
 
 if (NOT QT_ANDROID)
   find_package(LIBUDEV)
@@ -1591,25 +1583,8 @@ message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
 
-include("SoundConfig")
-add_subdirectory(libs/sound)
-
-add_subdirectory(libs/wxJSON)
-
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
-
-add_subdirectory(libs/geoprim)
-
-add_subdirectory(libs/s52plib)
-
-add_subdirectory(libs/pugixml)
-
-add_subdirectory(libs/gdal)
-
-add_subdirectory(libs/iso8211)
-
-add_subdirectory(libs/N2KParser)
 
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
@@ -1684,7 +1659,11 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
+include(SoundConfig)
+configure_file(
+  ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
+  ${CMAKE_BINARY_DIR}/include/config.h
+)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
 if (NOT APPLE AND NOT QT_ANDROID)
@@ -1797,13 +1776,6 @@ endif (xAPPLE)
 if (WIN32)
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 endif (WIN32)
-
-add_subdirectory("libs/nmea0183")
-
-add_subdirectory("libs/easywsclient")
-
-##add_subdirectory("libs/wxservdisc")
-####target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
 
 if (APPLE)
   set_source_files_properties(
@@ -2086,6 +2058,26 @@ endif (LIBLZMA_FOUND)
 if (UNIX)
   target_link_libraries(${PACKAGE_NAME} PRIVATE dl)
 endif ()
+
+# Add targets used elsewhere, notably by model
+
+
+add_subdirectory(libs/easywsclient)
+add_subdirectory(libs/gdal)
+add_subdirectory(libs/geoprim)
+add_subdirectory(libs/iso8211)
+add_subdirectory(libs/mDNS)
+add_subdirectory(libs/mongoose)
+add_subdirectory(libs/N2KParser)
+add_subdirectory(libs/nmea0183)
+add_subdirectory(libs/observable)
+add_subdirectory(libs/picosha2)
+add_subdirectory(libs/pugixml)
+add_subdirectory(libs/rapidjson)
+add_subdirectory(libs/s52plib)
+add_subdirectory(libs/sound)
+add_subdirectory(libs/wxJSON)
+
 
 #
 # Install

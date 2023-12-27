@@ -29,55 +29,20 @@ target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
 if (TARGET ocpn::wxsvg)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
 endif ()
-if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-  target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
-  target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
-endif ()
 
-target_link_libraries(opencpn-cmd PRIVATE ocpn::opencpn)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::model)
 
-target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
-
-target_link_libraries(opencpn-cmd PRIVATE observable::observable)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::geoprim)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
-target_link_libraries(opencpn-cmd PRIVATE pico_sha2)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::rapidjson)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::filesystem)
 
-if (TARGET glib::glib)
-target_link_libraries(opencpn-cmd PRIVATE glib::glib)
-endif ()
 if (HAVE_LIBUDEV)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)
-endif ()
-if (LIBLZMA_FOUND)
-  if (TARGET LibLZMA::LibLZMA)
-    target_link_libraries(opencpn-cmd PRIVATE LibLZMA::LibLZMA)
-  else ()
-    target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
-  endif ()
 endif ()
 
 if(APPLE AND OCPN_USE_DEPS_BUNDLE)
   target_include_directories(
-    opencpn-cmd
-      PUBLIC
-        ${OCPN_DEPS_BUNDLE_PATH}/include
+    opencpn-cmd PUBLIC ${OCPN_DEPS_BUNDLE_PATH}/include
   )
 endif()
 
