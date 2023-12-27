@@ -219,9 +219,8 @@ add_library(_OCPN_MODEL STATIC ${SRC} ${HDRS})
 add_library(ocpn::model ALIAS _OCPN_MODEL)
 
 target_include_directories(
-  _OCPN_MODEL PUBLIC
+  _OCPN_MODEL BEFORE PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/include
-    ${CMAKE_SOURCE_DIR}/gui/include/gui
     ${CMAKE_SOURCE_DIR}/model/include/model
     ${CMAKE_BINARY_DIR}/include
 )

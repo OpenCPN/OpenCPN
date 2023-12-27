@@ -1115,20 +1115,13 @@ endif ()
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
-  _opencpn
-  BEFORE
-  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
+  _opencpn BEFORE INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/include/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
 add_library(ocpn::opencpn ALIAS _opencpn)
 
-## We must use this to be visible to the plugins
-## FIXME (leamas) link plugins to main program (model).
-include_directories(BEFORE 
-    ${CMAKE_SOURCE_DIR}/model/include/model
-    ${CMAKE_SOURCE_DIR}/gui/include/gui
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/resources
-)
 set_target_properties(
   ${PACKAGE_NAME}
   PROPERTIES
@@ -1136,16 +1129,16 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-  message(STATUS "PackageName debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
-  ${PACKAGE_NAME}
-  BEFORE
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${PACKAGE_NAME} BEFORE PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/include/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
 
 if (MSVC AND NOT OCPN_CI_BUILD)
-  MESSAGE(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")
+  message(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTY VS_STARTUP_PROJECT ${PACKAGE_NAME})
   set_target_properties(
