@@ -335,6 +335,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
       GetGlobalColor(_T("DASHF"), &cl);
   }
   tdc.SetTextForeground(cl);
+  tdc.SetTextBackground(c2);
 
   int pitch = m_refDim;
   int offset = m_refDim * 15 / 100;
@@ -376,9 +377,10 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
 
   wxColour cb;
   if (m_Properties)
-      cb = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
+      cb = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
   else
-      GetGlobalColor(_T("DASHB"), &cb);
+      GetGlobalColor(_T("DASHL"), &cb);
+  dc->SetTextBackground(cb);
 
   int m_scaleDelta = m_refDim / 2;
   int m_scaleBase = (m_radius * 2) + (2 * m_refDim);
@@ -422,7 +424,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
           tdc.SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
       }
       tdc.SetBackgroundMode(wxSOLID);
-      tdc.SetTextBackground(cl);
+      tdc.SetTextBackground(cb);
 
       tdc.DrawText(label, 0, 0);
       tdc.SelectObject(wxNullBitmap);
