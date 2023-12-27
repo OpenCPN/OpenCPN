@@ -33,8 +33,8 @@
 #include <sstream>
 #include <iomanip>
 
-#include "comm_appmsg.h"
-#include "ocpn_utils.h"
+#include "model/comm_appmsg.h"
+#include "model/ocpn_utils.h"
 
 /* Free functions. */
 

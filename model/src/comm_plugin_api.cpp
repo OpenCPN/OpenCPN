@@ -32,8 +32,8 @@
 
 
 #include "ocpn_plugin.h"
-#include "comm_navmsg_bus.h"
-#include "comm_appmsg.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_appmsg.h"
 
 using namespace std;
 

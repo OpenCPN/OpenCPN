@@ -8,19 +8,19 @@
 
 #include "color_handler.h"
 #include "chartbase.h"
-#include "comm_n0183_output.h"
-#include "georef.h"
+#include "model/comm_n0183_output.h"
+#include "model/georef.h"
 #include "gui_lib.h"
-#include "multiplexer.h"
+#include "model/multiplexer.h"
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
-#include "own_ship.h"
-#include "routeman.h"
+#include "model/own_ship.h"
+#include "model/routeman.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
 #include "glChartCanvas.h"
 #include "line_clip.h"
-#include "route.h"
+#include "model/route.h"
 
 extern Routeman* g_pRouteMan;
 extern wxColour g_colourTrackLineColour;

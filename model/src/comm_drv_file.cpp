@@ -36,10 +36,10 @@
 
 #include <wx/log.h>
 
-#include "comm_driver.h"
-#include "comm_drv_registry.h"
-#include "comm_drv_file.h"
-#include "ocpn_utils.h"
+#include "model/comm_driver.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_drv_file.h"
+#include "model/ocpn_utils.h"
 
 class VoidDriverListener : public DriverListener {
   virtual void Notify(std::shared_ptr<const NavMsg> message) {}

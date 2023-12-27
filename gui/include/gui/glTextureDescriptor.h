@@ -38,7 +38,7 @@
 #endif
 
 #include "dychart.h"
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "color_types.h"
 
 #define CA_READ 0

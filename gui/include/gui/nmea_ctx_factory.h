@@ -27,7 +27,7 @@
 #define _NMEA_CTX_FACTORY_H__
 
 #include "nmea0183.h"
-#include "config_vars.h"
+#include "model/config_vars.h"
 
 static NmeaContext NmeaCtxFactory() {
   NmeaContext ctx;

@@ -53,14 +53,14 @@
 #endif
 
 #include "connections_dialog.h"
-#include "config_vars.h"
+#include "model/config_vars.h"
 #include "conn_params_panel.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"    // FIXME for GetOCPNScaledFont_PlugIn
 #include "options.h"
 #include "udev_rule_mgr.h"
-#include "comm_drv_factory.h"
+#include "model/comm_drv_factory.h"
 #include "gui_lib.h"
 #include "nmea0183.h"
 #include "priority_gui.h"

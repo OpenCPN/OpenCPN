@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "cmdline.h"
+#include "model/cmdline.h"
 
 int g_unit_test_1 = 0;
 int g_unit_test_2 = 0;

@@ -23,10 +23,10 @@
 #include <wx/window.h>
 
 #include "gui_lib.h"
-#include "nav_object_database.h"
-#include "ocpn_types.h"
+#include "model/nav_object_database.h"
+#include "model/ocpn_types.h"
 #include "routeman_gui.h"
-#include "routeman.h"
+#include "model/routeman.h"
 #include "routemanagerdialog.h"
 #include "RoutePropDlg.h"
 #include "RoutePropDlgImpl.h"

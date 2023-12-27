@@ -11,10 +11,10 @@
 
 #include <gio/gio.h>
 
-#include "base_platform.h"
-#include "dbus_client.h"
-#include "logger.h"
-#include "ocpn_utils.h"
+#include "model/base_platform.h"
+#include "model/dbus_client.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
 
 using namespace std::literals::chrono_literals;
 

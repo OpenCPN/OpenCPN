@@ -53,8 +53,8 @@
 #include <vector>
 
 #include "ocpndc.h"
-#include "wx28compat.h"
-#include "cutil.h"
+#include "model/wx28compat.h"
+#include "model/cutil.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"

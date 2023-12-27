@@ -34,8 +34,8 @@
 #include <wx/timer.h>
 
 
-#include "conn_params.h"
-#include "comm_util.h"
+#include "model/conn_params.h"
+#include "model/comm_util.h"
 class options;
 class ConnectionParamsPanel;
 

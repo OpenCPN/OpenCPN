@@ -93,35 +93,35 @@
 #include "AISTargetListDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "CanvasConfig.h"
-#include "certificates.h"
+#include "model/certificates.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"
-#include "comm_bridge.h"
-#include "comm_n0183_output.h"
-#include "comm_vars.h"
+#include "model/comm_bridge.h"
+#include "model/comm_n0183_output.h"
+#include "model/comm_vars.h"
 #include "concanv.h"
 #include "config.h"
 #include "ConfigMgr.h"
-#include "config_vars.h"
-#include "cmdline.h"
+#include "model/config_vars.h"
+#include "model/cmdline.h"
 #include "DetailSlider.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "gdal/cpl_csv.h"
 #include "glTexCache.h"
 #include "GoToPositionDialog.h"
-#include "instance_check.h"
+#include "model/instance_check.h"
 #include "Layer.h"
-#include "local_api.h"
-#include "logger.h"
+#include "model/local_api.h"
+#include "model/logger.h"
 #include "MarkInfo.h"
-#include "mDNS_query.h"
-#include "mDNS_service.h"
-#include "multiplexer.h"
-#include "nav_object_database.h"
+#include "model/mDNS_query.h"
+#include "model/mDNS_service.h"
+#include "model/multiplexer.h"
+#include "model/nav_object_database.h"
 #include "navutil.h"
-#include "navutil_base.h"
+#include "model/navutil_base.h"
 #include "NMEALogWindow.h"
 #include "observable.h"
 #include "OCPN_AUIManager.h"
@@ -129,11 +129,11 @@
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "options.h"
-#include "own_ship.h"
-#include "plugin_handler.h"
-#include "route.h"
+#include "model/own_ship.h"
+#include "model/plugin_handler.h"
+#include "model/route.h"
 #include "routemanagerdialog.h"
-#include "routeman.h"
+#include "model/routeman.h"
 #include "routeman_gui.h"
 #include "route_ctx_factory.h"
 #include "RoutePropDlgImpl.h"
@@ -142,12 +142,12 @@
 #include "s57chart.h"
 #include "S57QueryDialog.h"
 #include "safe_mode_gui.h"
-#include "select.h"
+#include "model/select.h"
 #include "SoundFactory.h"
 #include "styles.h"
 #include "tcmgr.h"
 #include "thumbwin.h"
-#include "track.h"
+#include "model/track.h"
 #include "TrackPropDlg.h"
 
 #ifdef __linux__
@@ -159,11 +159,11 @@
 #endif
 
 #ifdef __WXOSX__
-#include "macutils.h"
+#include "model/macutils.h"
 #endif
 
 #ifdef __WXMSW__
-#include "garmin_protocol_mgr.h"  // Used for port probing on Windows
+#include "model/garmin_protocol_mgr.h"  // Used for port probing on Windows
 void RedirectIOToConsole();
 #endif
 
@@ -451,7 +451,7 @@ s57RegistrarMgr *m_pRegistrarMan;
 CM93OffsetDialog *g_pCM93OffsetDialog;
 
 #ifdef __WXOSX__
-#include "macutils.h"
+#include "model/macutils.h"
 #endif
 
 // begin rms

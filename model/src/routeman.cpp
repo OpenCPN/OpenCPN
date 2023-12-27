@@ -37,20 +37,20 @@
 #include <wx/listimpl.cpp>
 #include <wx/tokenzr.h>
 
-#include "ais_decoder.h"
-#include "base_platform.h"
-#include "comm_n0183_output.h"
-#include "comm_vars.h"
-#include "config_vars.h"
-#include "cutil.h"
-#include "georef.h"
-#include "nav_object_database.h"
-#include "navutil_base.h"
+#include "model/ais_decoder.h"
+#include "model/base_platform.h"
+#include "model/comm_n0183_output.h"
+#include "model/comm_vars.h"
+#include "model/config_vars.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/nav_object_database.h"
+#include "model/navutil_base.h"
 #include "nmea_ctx_factory.h"
-#include "own_ship.h"
-#include "route.h"
-#include "routeman.h"
-#include "track.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/track.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

@@ -61,11 +61,11 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 
-#include "garmin_protocol_mgr.h"
+#include "model/garmin_protocol_mgr.h"
 
-#include "comm_drv_n0183_net.h"
-#include "comm_navmsg_bus.h"
-#include "idents.h"
+#include "model/comm_drv_n0183_net.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/idents.h"
 
 #define N_DOG_TIMEOUT 5
 

@@ -19,7 +19,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "pincode.h"
+#include "model/pincode.h"
 
 #include <algorithm>
 #include <iomanip>

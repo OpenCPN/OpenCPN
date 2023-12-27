@@ -30,7 +30,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "comm_appmsg_bus.h"
+#include "model/comm_appmsg_bus.h"
 
 void AppMsgBus::Notify(std::shared_ptr<const AppMsg> msg) {
   Observable(*msg).Notify(msg);

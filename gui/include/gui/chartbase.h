@@ -27,7 +27,7 @@
 #define _CHARTBASE_H_
 
 #include "bbox.h"
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "color_types.h"
 #include "LLRegion.h"
 

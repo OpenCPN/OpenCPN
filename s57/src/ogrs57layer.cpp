@@ -28,7 +28,7 @@
  *
  */
 
-#include "ogr_s57.h"
+#include "model/ogr_s57.h"
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"
 

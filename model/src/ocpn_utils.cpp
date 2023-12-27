@@ -36,7 +36,7 @@
 #include <unistd.h>
 #endif
 
-#include "ocpn_utils.h"
+#include "model/ocpn_utils.h"
 
 namespace ocpn {
 

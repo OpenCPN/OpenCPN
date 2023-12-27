@@ -26,7 +26,7 @@
 #ifndef _ROUTEMAN_GUI_H
 #define _ROUTEMAN_GUI_H
 
-#include "routeman.h"
+#include "model/routeman.h"
 
 class RoutemanGui {
 public:

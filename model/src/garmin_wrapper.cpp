@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#include "garmin_wrapper.h"
+#include "model/garmin_wrapper.h"
 
 #include "gpsapp.h"
 #include "garmin_gps.h"

@@ -35,12 +35,12 @@
 #include <wx/jsonreader.h>
 #include <wx/tokenzr.h>
 
-#include "config_vars.h"
+#include "model/config_vars.h"
 #include "FontMgr.h"
 #include "gui_lib.h"
-#include "nav_object_database.h"
-#include "rest_server.h"
-#include "semantic_vers.h"
+#include "model/nav_object_database.h"
+#include "model/rest_server.h"
+#include "model/semantic_vers.h"
 #include "ocpn_frame.h"
 
 extern MyFrame* gFrame;

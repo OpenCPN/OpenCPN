@@ -32,14 +32,14 @@
 #include <wx/jsonreader.h>
 #include <wx/log.h>
 
-#include "catalog_handler.h"
-#include "catalog_parser.h"
-#include "downloader.h"
+#include "model/catalog_handler.h"
+#include "model/catalog_parser.h"
+#include "model/downloader.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
-#include "ocpn_utils.h"
-#include "base_platform.h"
-#include "plugin_handler.h"
+#include "model/ocpn_utils.h"
+#include "model/base_platform.h"
+#include "model/plugin_handler.h"
 
 #ifdef _WIN32
 static const std::string SEP("\\");

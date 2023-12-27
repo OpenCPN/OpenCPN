@@ -27,7 +27,7 @@
 #include <wx/wxprec.h>
 
 #ifndef __DSPORTTYPE_H__
-#include <dsPortType.h>
+#include "model/dsPortType.h"
 #endif
 
 

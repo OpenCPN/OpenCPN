@@ -36,9 +36,9 @@
 
 #include <wx/log.h>
 
-#include "comm_drv_n2k_serial.h"
-#include "comm_navmsg_bus.h"
-#include "comm_drv_registry.h"
+#include "model/comm_drv_n2k_serial.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_drv_registry.h"
 
 #include <N2kMsg.h>
 std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg);

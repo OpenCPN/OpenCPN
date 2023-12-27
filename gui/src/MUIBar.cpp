@@ -43,7 +43,7 @@
 #include "styles.h"
 #include "navutil.h"
 #include "svg_utils.h"
-#include "idents.h"
+#include "model/idents.h"
 #include "color_handler.h"
 
 #ifdef __OCPN__ANDROID__

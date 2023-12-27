@@ -6,8 +6,8 @@
 
 #include "color_handler.h"
 #include "navutil.h"
-#include "own_ship.h"
-#include "routeman.h"
+#include "model/own_ship.h"
+#include "model/routeman.h"
 #include "track_gui.h"
 #include "glChartCanvas.h"
 

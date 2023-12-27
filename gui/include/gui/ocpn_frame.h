@@ -34,13 +34,13 @@
 #include <wx/msw/private.h>
 #endif
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "ocpn_print.h"
 #include "color_handler.h"
 #include "gui_lib.h"
 #include "s52s57.h"
 #include "SencManager.h"
-#include "comm_appmsg_bus.h"
+#include "model/comm_appmsg_bus.h"
 #include "bbox.h"
 #include "load_errors_dlg.h"
 

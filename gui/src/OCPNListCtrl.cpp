@@ -23,8 +23,8 @@
  */
 
 #include "OCPNListCtrl.h"
-#include "ais_target_data.h"
-#include "navutil_base.h"
+#include "model/ais_target_data.h"
+#include "model/navutil_base.h"
 
 extern wxString g_AisTargetList_column_spec;
 extern wxString g_AisTargetList_column_order;

@@ -30,7 +30,7 @@
 #include <wx/string.h>
 
 #include "SendToGpsDlg.h"
-#include "comm_n0183_output.h"
+#include "model/comm_n0183_output.h"
 
 static bool ConfirmOverwrite() {
   int r = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),

@@ -34,7 +34,7 @@
 #include <string>
 #include <iomanip>
 
-#include "comm_driver.h"
+#include "model/comm_driver.h"
 
 std::string NavAddr::BusToString(NavAddr::Bus b) {
   switch (b) {

@@ -37,8 +37,8 @@
 #include "gui_lib.h"
 #include "dychart.h"
 #include "tcmgr.h"
-#include "georef.h"
-#include "logger.h"
+#include "model/georef.h"
+#include "model/logger.h"
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB

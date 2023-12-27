@@ -23,13 +23,13 @@
  */
 #include <wx/string.h>
 
-#include "nav_object_database.h"
-#include "routeman.h"
-#include "navutil_base.h"
-#include "nav_object_database.h"
-#include "select.h"
-#include "track.h"
-#include "route.h"
+#include "model/nav_object_database.h"
+#include "model/routeman.h"
+#include "model/navutil_base.h"
+#include "model/nav_object_database.h"
+#include "model/select.h"
+#include "model/track.h"
+#include "model/route.h"
 
 #ifdef __ANDROID__
 #include <QDebug>

@@ -30,7 +30,7 @@
 #define _CHARTIMG_H_
 
 #include "chartbase.h"
-#include "georef.h"  // for GeoRef type
+#include "model/georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
 

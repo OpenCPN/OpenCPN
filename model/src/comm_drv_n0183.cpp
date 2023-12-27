@@ -30,7 +30,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "comm_drv_n0183.h"
+#include "model/comm_drv_n0183.h"
 
 CommDriverN0183::CommDriverN0183() : AbstractCommDriver(NavAddr::Bus::N0183) {}
 

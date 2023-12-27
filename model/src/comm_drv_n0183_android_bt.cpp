@@ -40,9 +40,9 @@
 #include <wx/utils.h>
 
 #include "config.h"
-#include "comm_drv_n0183_android_bt.h"
-#include "comm_navmsg_bus.h"
-#include "comm_drv_registry.h"
+#include "model/comm_drv_n0183_android_bt.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_drv_registry.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

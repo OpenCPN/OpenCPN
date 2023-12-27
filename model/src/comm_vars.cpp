@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "comm_vars.h"
+#include "model/comm_vars.h"
 
 wxString gRmcDate;
 wxString gRmcTime;

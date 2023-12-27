@@ -35,9 +35,9 @@
 
 #include "cat_settings.h"
 #include "observable_globvar.h"
-#include "ocpn_utils.h"
-#include "plugin_cache.h"
-#include "plugin_handler.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_cache.h"
+#include "model/plugin_handler.h"
 
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;

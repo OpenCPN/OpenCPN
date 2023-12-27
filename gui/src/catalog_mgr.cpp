@@ -38,12 +38,12 @@
 #include <wx/sizer.h>
 #include <wx/statline.h>
 
-#include "catalog_handler.h"
+#include "model/catalog_handler.h"
 #include "catalog_mgr.h"
-#include "downloader.h"
-#include "ocpn_utils.h"
+#include "model/downloader.h"
+#include "model/ocpn_utils.h"
 #include "OCPNPlatform.h"
-#include "plugin_handler.h"
+#include "model/plugin_handler.h"
 #include "download_mgr.h"
 
 extern OCPNPlatform* g_Platform;

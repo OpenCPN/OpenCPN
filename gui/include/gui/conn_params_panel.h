@@ -22,7 +22,7 @@
  **************************************************************************/
 
 #ifndef __DSPORTTYPE_H__
-#include <dsPortType.h>
+#include "model/dsPortType.h"
 #endif
 
 #ifndef __CONN_PARAMS_PANEL_H__
@@ -34,7 +34,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "conn_params.h"
+#include "model/conn_params.h"
 
 class options;
 

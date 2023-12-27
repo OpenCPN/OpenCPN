@@ -30,7 +30,7 @@
 #include <wx/dialog.h>
 #include <wx/window.h>
 
-#include "catalog_parser.h"
+#include "model/catalog_parser.h"
 
 class OcpnUpdateScrolledWindow;
 

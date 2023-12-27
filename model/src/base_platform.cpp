@@ -55,11 +55,11 @@
 
 #include "config.h"
 
-#include "base_platform.h"
-#include "cmdline.h"
-#include "config_vars.h"
-#include "logger.h"
-#include "ocpn_utils.h"
+#include "model/base_platform.h"
+#include "model/cmdline.h"
+#include "model/config_vars.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
 #include "ocpn_plugin.h"
 
 #ifdef __ANDROID__
@@ -68,7 +68,7 @@
 #endif
 
 #ifdef __WXOSX__
-#include "macutils.h"
+#include "model/macutils.h"
 #endif
 
 #ifdef __WXMSW__

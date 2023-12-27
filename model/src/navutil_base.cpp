@@ -34,9 +34,9 @@
 #include <wx/translation.h>
 #include <wx/utils.h>
 
-#include "navutil_base.h"
+#include "model/navutil_base.h"
 
-#include "navutil_base.h"
+#include "model/navutil_base.h"
 #include "vector2D.h"
 
 wxString toSDMM(int NEflag, double a, bool hi_precision) {

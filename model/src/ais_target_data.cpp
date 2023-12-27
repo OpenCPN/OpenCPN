@@ -27,10 +27,10 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 
-#include "ais_target_data.h"
-#include "config_vars.h"
+#include "model/ais_target_data.h"
+#include "model/config_vars.h"
 #include "ocpn_frame.h"
-#include "navutil_base.h"
+#include "model/navutil_base.h"
 #include "navutil.h"
 
 extern bool bGPSValid;

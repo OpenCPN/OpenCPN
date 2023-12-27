@@ -42,13 +42,13 @@
 
 #include "catalog_mgr.h"
 #include "download_mgr.h"
-#include "downloader.h"
+#include "model/downloader.h"
 #include "OCPNPlatform.h"
 #include "picosha2.h"
-#include "plugin_handler.h"
-#include "plugin_cache.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_cache.h"
 #include "pluginmanager.h"
-#include "semantic_vers.h"
+#include "model/semantic_vers.h"
 #include "styles.h"
 #include "svg_utils.h"
 

@@ -23,7 +23,7 @@
  ***************************************************************************
  */
 
-#include "own_ship.h"
+#include "model/own_ship.h"
 
 double gLat; 
 double gLon;

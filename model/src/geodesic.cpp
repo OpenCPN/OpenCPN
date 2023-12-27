@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "geodesic.h"
+#include "model/geodesic.h"
 
 /* These methods implemented using the Vincenty method.
  *

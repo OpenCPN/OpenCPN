@@ -37,9 +37,9 @@
 
 #include "udev_rule_mgr.h"
 #include "linux_devices.h"
-#include "logger.h"
+#include "model/logger.h"
 #include "gui_lib.h"
-#include "ocpn_utils.h"
+#include "model/ocpn_utils.h"
 
 static bool hide_dongle_dialog;
 static bool hide_device_dialog;

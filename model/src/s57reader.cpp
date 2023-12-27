@@ -30,11 +30,11 @@
  */
 
 #include <assert.h>
-#include "s57.h"
+#include "model/s57.h"
 #include "gdal/ogr_api.h"
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"
-#include "ogr_s57.h"
+#include "model/ogr_s57.h"
 
 /************************************************************************/
 /*                             S57Reader()                              */

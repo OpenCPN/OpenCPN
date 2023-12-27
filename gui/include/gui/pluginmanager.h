@@ -38,13 +38,13 @@
 #include "ocpn_plugin.h"
 #include "OCPN_Sound.h"
 #include "chartimg.h"
-#include "catalog_parser.h"
-#include "plugin_blacklist.h"
+#include "model/catalog_parser.h"
+#include "model/plugin_blacklist.h"
 #include "observable.h"
-#include "ais_target_data.h"
-#include "comm_navmsg.h"
+#include "model/ais_target_data.h"
+#include "model/comm_navmsg.h"
 #include "s57chart.h"  // for Object list
-#include "semantic_vers.h"
+#include "model/semantic_vers.h"
 
 // For widgets...
 #include <wx/hyperlink.h>
@@ -73,7 +73,7 @@
 
 #include <wx/json_defs.h>
 #include <wx/jsonwriter.h>
-#include "plugin_loader.h"
+#include "model/plugin_loader.h"
 
 //    Assorted static helper routines
 

@@ -24,7 +24,7 @@
 
 #include <cstring>
 
-#include "ais_bitstring.h"
+#include "model/ais_bitstring.h"
 
 AisBitstring::AisBitstring(const char *str) {
   byte_length = strlen(str);

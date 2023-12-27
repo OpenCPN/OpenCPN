@@ -44,7 +44,7 @@
 #endif
 
 #include "pugixml.hpp"
-#include "base_platform.h"
+#include "model/base_platform.h"
 
 wxBitmap LoadSVG(const wxString filename, const unsigned int width,
                  const unsigned int height, wxBitmap* default_bitmap,

@@ -29,7 +29,7 @@
 
 #include "dychart.h"
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "OCPNRegion.h"
 #include "LLRegion.h"
 #include "viewport.h"

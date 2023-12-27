@@ -30,7 +30,7 @@
 #include <math.h>
 #include <ctype.h>
 
-#include "cutil.h"
+#include "model/cutil.h"
 
 
 double round_msvc(double x) { return (floor(x + 0.5)); }

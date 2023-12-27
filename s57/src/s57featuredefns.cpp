@@ -44,7 +44,7 @@
  *
  */
 
-#include "s57.h"
+#include "model/s57.h"
 #include "gdal/ogr_api.h"
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"

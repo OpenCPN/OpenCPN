@@ -35,18 +35,18 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "comm_util.h"
-#include "comm_drv_n2k_serial.h"
-#include "comm_drv_n0183_serial.h"
-#include "comm_drv_n0183_net.h"
-#include "comm_drv_signalk_net.h"
-#include "comm_drv_n0183_android_int.h"
-#include "comm_drv_n0183_android_bt.h"
-#include "comm_navmsg_bus.h"
-#include "comm_drv_registry.h"
+#include "model/comm_util.h"
+#include "model/comm_drv_n2k_serial.h"
+#include "model/comm_drv_n0183_serial.h"
+#include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_signalk_net.h"
+#include "model/comm_drv_n0183_android_int.h"
+#include "model/comm_drv_n0183_android_bt.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_drv_registry.h"
 
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
-#include "comm_drv_n2k_socketcan.h"
+#include "model/comm_drv_n2k_socketcan.h"
 #endif
 
 std::shared_ptr<AbstractCommDriver> MakeCommDriver(

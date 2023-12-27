@@ -85,15 +85,15 @@ millions of points.
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "track.h"
+#include "model/track.h"
 
-#include "georef.h"
-#include "json_event.h"
-#include "nav_object_database.h"
-#include "navutil_base.h"
-#include "own_ship.h"
-#include "routeman.h"
-#include "select.h"
+#include "model/georef.h"
+#include "model/json_event.h"
+#include "model/nav_object_database.h"
+#include "model/navutil_base.h"
+#include "model/own_ship.h"
+#include "model/routeman.h"
+#include "model/select.h"
 
 extern WayPointman *pWayPointMan;
 extern Select *pSelect;

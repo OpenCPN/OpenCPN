@@ -21,7 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#include "ais_target_data.h"
+#include "model/ais_target_data.h"
 #include "observable.h"
 #include "OCPN_Sound.h"
 

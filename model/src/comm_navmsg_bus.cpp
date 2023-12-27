@@ -30,10 +30,10 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "comm_navmsg_bus.h"
+#include "model/comm_navmsg_bus.h"
 
 // FIXME(leamas) test junk
-#include "conn_params.h"
+#include "model/conn_params.h"
 
 using namespace std;
 

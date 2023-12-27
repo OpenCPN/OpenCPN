@@ -40,7 +40,7 @@
 #include <wx/statline.h>
 #include <wx/tokenzr.h>
 
-#include "conn_params.h"
+#include "model/conn_params.h"
 
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"

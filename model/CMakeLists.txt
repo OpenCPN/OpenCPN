@@ -221,7 +221,7 @@ add_library(ocpn::model ALIAS _OCPN_MODEL)
 target_include_directories(
   _OCPN_MODEL BEFORE PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/include
-    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_BINARY_DIR}/include
 )
 

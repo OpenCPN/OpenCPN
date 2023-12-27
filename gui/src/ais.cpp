@@ -39,19 +39,19 @@
 #include <math.h>
 #include <time.h>
 
-#include "cutil.h"
+#include "model/cutil.h"
 #include "FontMgr.h"
 #include "ais.h"
 #include "navutil.h"  // for Select
-#include "georef.h"
+#include "model/georef.h"
 #include "styles.h"
-#include "select.h"
-#include "ais_decoder.h"
-#include "ais_target_data.h"
+#include "model/select.h"
+#include "model/ais_decoder.h"
+#include "model/ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
-#include "own_ship.h"
-#include "wx28compat.h"
+#include "model/own_ship.h"
+#include "model/wx28compat.h"
 #include "OCPNPlatform.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"

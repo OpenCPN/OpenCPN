@@ -37,23 +37,23 @@
 #include <wx/jsonwriter.h>
 #include <wx/tokenzr.h>
 
-#include "comm_driver.h"
-#include "comm_drv_factory.h"
-#include "comm_drv_n0183_net.h"
-#include "comm_drv_n0183_serial.h"
-#include "comm_drv_n0183_android_bt.h"
-#include "comm_drv_registry.h"
-#include "comm_n0183_output.h"
-#include "config_vars.h"
-#include "conn_params.h"
-#include "logger.h"
+#include "model/comm_driver.h"
+#include "model/comm_drv_factory.h"
+#include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_n0183_serial.h"
+#include "model/comm_drv_n0183_android_bt.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_n0183_output.h"
+#include "model/config_vars.h"
+#include "model/conn_params.h"
+#include "model/logger.h"
 #include "nmea0183.h"
 #include "nmea_ctx_factory.h"
-#include "route.h"
-#include "nmea_log.h"
+#include "model/route.h"
+#include "model/nmea_log.h"
 
 #ifdef USE_GARMINHOST
-#include "garmin_wrapper.h"
+#include "model/garmin_wrapper.h"
 #endif
 
 wxString FormatPrintableMessage(wxString msg_raw) {

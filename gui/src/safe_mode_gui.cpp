@@ -6,11 +6,11 @@
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
-#include "cmdline.h"
+#include "model/cmdline.h"
 #include "gui_lib.h"
-#include "ocpn_utils.h"
+#include "model/ocpn_utils.h"
 
-#include "safe_mode.h"
+#include "model/safe_mode.h"
 
 namespace safe_mode {
 

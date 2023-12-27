@@ -29,8 +29,8 @@
 #include <wx/progdlg.h>
 #include <wx/window.h>
 
-#include "downloader.h"
-#include "catalog_parser.h"
+#include "model/downloader.h"
+#include "model/catalog_parser.h"
 
 // Accepted by PluginDownloadDialog, reloads plugin list.
 wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);

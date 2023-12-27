@@ -56,19 +56,19 @@
 #include <wx/window.h>
 #include <wx/process.h>
 
-#include "base_platform.h"
+#include "model/base_platform.h"
 #include "chartdb.h"
-#include "config_vars.h"
-#include "cmdline.h"
-#include "logger.h"
-#include "ocpn_utils.h"
+#include "model/config_vars.h"
+#include "model/cmdline.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
 #include "observable_confvar.h"
-#include "plugin_blacklist.h"
-#include "plugin_cache.h"
-#include "plugin_handler.h"
-#include "plugin_loader.h"
-#include "plugin_paths.h"
-#include "safe_mode.h"
+#include "model/plugin_blacklist.h"
+#include "model/plugin_cache.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
+#include "model/plugin_paths.h"
+#include "model/safe_mode.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

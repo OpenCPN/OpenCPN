@@ -104,11 +104,11 @@
 #endif
 
 #ifdef __WXOSX__
-#include "macutils.h"
+#include "model/macutils.h"
 #endif
 
-#include "config_vars.h"
-#include "garmin_protocol_mgr.h"
+#include "model/config_vars.h"
+#include "model/garmin_protocol_mgr.h"
 
 #ifdef __WXMSW__
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,

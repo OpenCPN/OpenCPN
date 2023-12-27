@@ -41,14 +41,14 @@
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "navutil.h"
 #include "tinyxml.h"
 #include "kml.h"
-#include "track.h"
-#include "route.h"
+#include "model/track.h"
+#include "model/route.h"
 #include "ocpn_frame.h"
-#include "own_ship.h"
+#include "model/own_ship.h"
 
 extern MyFrame* gFrame;
 

@@ -39,13 +39,13 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
-#include "cutil.h"
-#include "georef.h"
-#include "georef.h"
-#include "nav_object_database.h"
-#include "route.h"
-#include "routeman.h"
-#include "select.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/georef.h"
+#include "model/nav_object_database.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/select.h"
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;

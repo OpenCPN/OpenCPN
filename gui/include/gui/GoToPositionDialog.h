@@ -28,7 +28,7 @@
 #include <wx/dialog.h>
 #include <wx/textctrl.h>
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "color_types.h"
 
 class ChartCanvas;

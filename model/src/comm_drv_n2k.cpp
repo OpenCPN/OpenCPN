@@ -32,7 +32,7 @@
 #include <string>
 #include <memory>
 
-#include "comm_drv_n2k.h"
+#include "model/comm_drv_n2k.h"
 
 
 

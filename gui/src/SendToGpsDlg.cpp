@@ -34,15 +34,15 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-#include "conn_params.h"
+#include "model/conn_params.h"
 #include "OCPNPlatform.h"
-#include "rest_server.h"
+#include "model/rest_server.h"
 #include "route_gui.h"
-#include "route.h"
+#include "model/route.h"
 #include "route_point_gui.h"
-#include "route_point.h"
+#include "model/route_point.h"
 #include "SendToGpsDlg.h"
-#include "ser_ports.h"
+#include "model/ser_ports.h"
 
 extern OCPNPlatform* g_Platform;
 extern wxString g_uploadConnection;

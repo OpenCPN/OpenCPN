@@ -32,7 +32,7 @@
 #include <vector>
 
 #include "config.h"
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "navutil.h"
 #include "styles.h"
 #include "toolbar.h"
@@ -42,7 +42,7 @@
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "svg_utils.h"
-#include "idents.h"
+#include "model/idents.h"
 #include "ocpn_frame.h"
 
 #ifdef __OCPN__ANDROID__

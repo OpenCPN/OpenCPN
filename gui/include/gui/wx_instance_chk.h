@@ -22,7 +22,7 @@
 
 #include <wx/snglinst.h>
 
-#include "instance_check.h"
+#include "model/instance_check.h"
 
 /**  Thin wrapper for wxSingleInstanceChecker implementing InstanceCheck */
 class WxInstanceCheck : public InstanceCheck {

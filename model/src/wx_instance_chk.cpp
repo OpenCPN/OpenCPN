@@ -20,8 +20,8 @@
 #include <wx/filename.h>
 #include <wx/string.h>
 
-#include "base_platform.h"
-#include "logger.h"
+#include "model/base_platform.h"
+#include "model/logger.h"
 #include "wx_instance_chk.h"
 
 #ifdef _MSC_VER

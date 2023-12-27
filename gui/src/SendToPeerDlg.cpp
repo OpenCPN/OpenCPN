@@ -23,15 +23,15 @@
  */
 #include <memory>
 
-#include "cmdline.h"
-#include "config_vars.h"
-#include "mDNS_query.h"
+#include "model/cmdline.h"
+#include "model/config_vars.h"
+#include "model/mDNS_query.h"
 #include "OCPNPlatform.h"
 #include "peer_client.h"
 #include "route_gui.h"
-#include "route.h"
+#include "model/route.h"
 #include "route_point_gui.h"
-#include "route_point.h"
+#include "model/route_point.h"
 #include "SendToPeerDlg.h"
 #include "ocpn_plugin.h"
 

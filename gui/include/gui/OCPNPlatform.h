@@ -49,7 +49,7 @@
 #include <wx/validate.h>
 #include <wx/window.h>
 
-#include "base_platform.h"
+#include "model/base_platform.h"
 
 class MyConfig;
 class ArrayOfCDI;

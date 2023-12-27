@@ -39,15 +39,15 @@
 #include "Osenc.h"
 #include "s52s57.h"
 #include "s57chart.h"  // for one static method
-#include "cutil.h"
-#include "s57RegistrarMgr.h"
+#include "model/cutil.h"
+#include "model/s57RegistrarMgr.h"
 #include "gdal/cpl_csv.h"
-#include "ogr_s57.h"
+#include "model/ogr_s57.h"
 #include "gdal/cpl_string.h"
 #include "LOD_reduce.h"
 
 #include "mygeom.h"
-#include "georef.h"
+#include "model/georef.h"
 #include "gui_lib.h"
 #include <mutex>
 

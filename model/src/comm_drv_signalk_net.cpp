@@ -29,12 +29,12 @@
 
 #include "rapidjson/document.h"
 
-#include "comm_drv_signalk_net.h"
-#include "comm_navmsg_bus.h"
-#include "comm_drv_registry.h"
+#include "model/comm_drv_signalk_net.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_drv_registry.h"
 
 #include "easywsclient.hpp"
-#include "geodesic.h"
+#include "model/geodesic.h"
 
 const int kTimerSocket = 9006;
 

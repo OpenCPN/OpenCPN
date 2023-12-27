@@ -26,7 +26,7 @@
 
 #include <wx/window.h>
 #include <wx/timer.h>
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "color_types.h"
 
 class ocpnDC;

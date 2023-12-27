@@ -36,7 +36,7 @@
 
 #include "config.h"
 #include "ocpn_plugin.h"
-#include "base_platform.h"
+#include "model/base_platform.h"
 
 extern BasePlatform *g_BasePlatform;
 

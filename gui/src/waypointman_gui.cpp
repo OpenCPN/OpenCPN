@@ -54,10 +54,10 @@ typedef void (*  _GLUfuncptr)();
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "base_platform.h"
-#include "cutil.h"
-#include "MarkIcon.h"
-#include "route_point.h"
+#include "model/base_platform.h"
+#include "model/cutil.h"
+#include "model/MarkIcon.h"
+#include "model/route_point.h"
 #include "styles.h"
 #include "svg_utils.h"
 #include "waypointman_gui.h"

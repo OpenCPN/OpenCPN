@@ -27,9 +27,9 @@
 
 #include <wx/string.h>
 
-#include "nav_object_database.h"
-#include "routeman.h"
-#include "track.h"
+#include "model/nav_object_database.h"
+#include "model/routeman.h"
+#include "model/track.h"
 
 extern Routeman *g_pRouteMan;
 extern std::vector<Track*> g_TrackList;

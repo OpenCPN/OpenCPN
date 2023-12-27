@@ -37,16 +37,16 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
-#include "ais_decoder.h"
+#include "model/ais_decoder.h"
 #include "ais_info_gui.h"
 #include "AISTargetAlertDialog.h"
-#include "ais_target_data.h"
+#include "model/ais_target_data.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "navutil.h"
 #include "routemanagerdialog.h"
-#include "route_point.h"
+#include "model/route_point.h"
 #include "SoundFactory.h"
 #include "undo.h"
 

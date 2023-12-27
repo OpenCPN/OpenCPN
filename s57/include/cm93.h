@@ -29,7 +29,7 @@
 #include <wx/listctrl.h>  // Somehow missing from wx build
 
 #include "s57chart.h"
-#include "cutil.h"  // for types
+#include "model/cutil.h"  // for types
 #include "poly_math.h"
 
 //    Some constants

@@ -52,9 +52,9 @@
 #include "androidUTIL.h"
 #endif
 
-#include "cmdline.h"
+#include "model/cmdline.h"
 #include "mdns_util.h"
-#include "mDNS_query.h"
+#include "model/mDNS_query.h"
 
 // Static data structs
 std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;

@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************/
 
-#include "cli_platform.h"
+#include "model/cli_platform.h"
 
 bool CliPlatform::InitializeLogFile() {
   wxLog::SetActiveTarget(new wxLogStderr);

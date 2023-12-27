@@ -35,17 +35,17 @@
 #include <wx/tokenzr.h>
 #include <wx/fileconf.h>
 
-#include "comm_ais.h"
-#include "comm_appmsg_bus.h"
-#include "comm_bridge.h"
-#include "comm_drv_registry.h"
-#include "comm_navmsg_bus.h"
-#include "comm_vars.h"
-#include "config_vars.h"
-#include "idents.h"
+#include "model/comm_ais.h"
+#include "model/comm_appmsg_bus.h"
+#include "model/comm_bridge.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_vars.h"
+#include "model/config_vars.h"
+#include "model/idents.h"
 #include "OCPNPlatform.h"
-#include "ocpn_types.h"
-#include "own_ship.h"
+#include "model/ocpn_types.h"
+#include "model/own_ship.h"
 
 
 //  comm event definitions

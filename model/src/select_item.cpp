@@ -22,7 +22,7 @@
  ***************************************************************************
  */
 
-#include "select_item.h"
+#include "model/select_item.h"
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(SelectableItemList);

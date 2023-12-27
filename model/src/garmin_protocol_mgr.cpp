@@ -61,11 +61,11 @@
 #include <setupapi.h>
 #endif
 
-#include "comm_drv_n0183_serial.h"
-#include "config_vars.h"
+#include "model/comm_drv_n0183_serial.h"
+#include "model/config_vars.h"
 #include "dychart.h"
-#include "garmin_wrapper.h"
-#include "garmin_protocol_mgr.h"
+#include "model/garmin_wrapper.h"
+#include "model/garmin_protocol_mgr.h"
 #include "nmea0183.h"
 #include "nmea_ctx_factory.h"
 

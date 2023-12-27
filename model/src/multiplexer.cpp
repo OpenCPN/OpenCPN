@@ -40,15 +40,15 @@
 
 #include <wx/wx.h>
 
-#include "multiplexer.h"
+#include "model/multiplexer.h"
 
-#include "config_vars.h"
-#include "conn_params.h"
-#include "comm_drv_registry.h"
-#include "comm_drv_n0183_serial.h"
-#include "comm_drv_n0183_net.h"
-#include "comm_drv_n0183_android_bt.h"
-#include "comm_navmsg_bus.h"
+#include "model/config_vars.h"
+#include "model/conn_params.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_drv_n0183_serial.h"
+#include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_n0183_android_bt.h"
+#include "model/comm_navmsg_bus.h"
 
 #ifdef __linux__
 #include "udev_rule_mgr.h"

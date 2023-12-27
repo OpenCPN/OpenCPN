@@ -25,12 +25,12 @@
 
 #include <stdlib.h>
 
-#include "ipc_api.h"
+#include "model/ipc_api.h"
 #include "wx_instance_chk.h"
 
 #ifdef __linux__
-#include "dbus_client.h"
-#include "dbus_server.h"
+#include "model/dbus_client.h"
+#include "model/dbus_server.h"
 #endif 
 
 static InstanceCheck& GetWxInstanceChk() {

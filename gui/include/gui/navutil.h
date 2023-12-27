@@ -41,9 +41,9 @@
 #include "chartdbs.h"
 // nclude "RoutePoint.h"
 #include "vector2D.h"
-#include "select_item.h"
+#include "model/select_item.h"
 #include "ocpndc.h"
-#include "navutil_base.h"
+#include "model/navutil_base.h"
 
 
 extern bool LogMessageOnce(const wxString &msg);

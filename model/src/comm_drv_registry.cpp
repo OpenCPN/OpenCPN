@@ -32,8 +32,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "comm_driver.h"
-#include "comm_drv_registry.h"
+#include "model/comm_driver.h"
+#include "model/comm_drv_registry.h"
 
 void CommDriverRegistry::Activate(DriverPtr driver) {
   auto found = std::find(drivers.begin(), drivers.end(), driver);

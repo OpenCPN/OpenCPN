@@ -30,7 +30,7 @@
 #include <wx/clipbrd.h>
 
 #include "GoToPositionDialog.h"
-#include "position_parser.h"
+#include "model/position_parser.h"
 #include "MarkInfo.h"
 #include "navutil.h"
 #include "chcanv.h"

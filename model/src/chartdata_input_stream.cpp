@@ -37,7 +37,7 @@
 #include <wx/wfstream.h>
 
 #include "config.h"
-#include "chartdata_input_stream.h"
+#include "model/chartdata_input_stream.h"
 
 #ifdef OCPN_USE_LZMA
 

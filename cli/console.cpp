@@ -58,22 +58,22 @@
 #include <wx/init.h>
 #include <wx/string.h>
 
-#include "catalog_handler.h"
-#include "cli_platform.h"
-#include "comm_appmsg_bus.h"
-#include "comm_driver.h"
-#include "comm_navmsg_bus.h"
-#include "config_vars.h"
-#include "downloader.h"
-#include "nmea_log.h"
+#include "model/catalog_handler.h"
+#include "model/cli_platform.h"
+#include "model/comm_appmsg_bus.h"
+#include "model/comm_driver.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/config_vars.h"
+#include "model/downloader.h"
+#include "model/nmea_log.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
+#include "model/routeman.h"
+#include "model/S57ClassRegistrar.h"
+#include "model/select.h"
+#include "model/track.h"
 #include "observable_evtvar.h"
-#include "ocpn_utils.h"
-#include "plugin_handler.h"
-#include "plugin_loader.h"
-#include "routeman.h"
-#include "S57ClassRegistrar.h"
-#include "select.h"
-#include "track.h"
 
 class AISTargetAlertDialog;
 class Multiplexer;

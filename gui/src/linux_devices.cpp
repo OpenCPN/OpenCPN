@@ -45,8 +45,8 @@
 #include <libusb.h>
 
 #include "linux_devices.h"
-#include "logger.h"
-#include "ocpn_utils.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
 
 typedef struct usbdata {
   std::string vendor_id;

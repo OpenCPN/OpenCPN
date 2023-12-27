@@ -38,8 +38,8 @@
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evt.h"
-#include "plugin_handler.h"
-#include "plugin_loader.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif

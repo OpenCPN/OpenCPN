@@ -23,10 +23,10 @@
 #include <wx/snglinst.h>
 #include <wx/string.h>
 
-#include "base_platform.h"
+#include "model/base_platform.h"
 
 #include "bbox.h"
-#include "nav_object_database.h"
+#include "model/nav_object_database.h"
 
 extern BasePlatform *g_BasePlatform;
 

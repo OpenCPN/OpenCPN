@@ -22,7 +22,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#include "plugin_blacklist.h"
+#include "model/plugin_blacklist.h"
 
 #include <algorithm>
 #include <cctype>
@@ -33,7 +33,7 @@
 #include <wx/translation.h>
 #include <wx/log.h>
 
-#include "logger.h"
+#include "model/logger.h"
 
 
 // Work around gnu's major() and minor() macros

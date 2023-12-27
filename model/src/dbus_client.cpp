@@ -19,7 +19,7 @@
 
 #include <gio/gio.h>
 
-#include "dbus_client.h"
+#include "model/dbus_client.h"
 
 static GDBusProxy* GetProxy() {
   // session_bus_up();

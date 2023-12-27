@@ -43,24 +43,24 @@
 
 #include "config.h"
 
-#include "base_platform.h"
-#include "cmdline.h"
+#include "model/base_platform.h"
+#include "model/cmdline.h"
 #include "OCPNPlatform.h"
 #include "gui_lib.h"
-#include "cutil.h"
-#include "config_vars.h"
-#include "logger.h"
+#include "model/cutil.h"
+#include "model/config_vars.h"
+#include "model/logger.h"
 #include "styles.h"
 #include "navutil.h"
-#include "ocpn_utils.h"
-#include "conn_params.h"
+#include "model/ocpn_utils.h"
+#include "model/conn_params.h"
 #include "FontMgr.h"
 #include "s52s57.h"
 #include "options.h"
-#include "select.h"
+#include "model/select.h"
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "plugin_paths.h"
+#include "model/plugin_paths.h"
 #include "ocpn_frame.h"
 #include <string>
 #include <vector>
@@ -98,7 +98,7 @@
 #endif
 
 #ifdef __WXOSX__
-#include "macutils.h"
+#include "model/macutils.h"
 #endif
 
 #ifdef __WXGTK__

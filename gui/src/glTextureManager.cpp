@@ -51,7 +51,7 @@
 #include "mipmap/mipmap.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"
-#include "own_ship.h"
+#include "model/own_ship.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES 0x8D64

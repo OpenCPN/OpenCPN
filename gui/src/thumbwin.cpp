@@ -40,7 +40,7 @@
 
 #include "thumbwin.h"
 #include "chartdb.h"
-#include "wx28compat.h"
+#include "model/wx28compat.h"
 #include "color_handler.h"
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation

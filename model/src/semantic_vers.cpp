@@ -29,7 +29,7 @@
 #include <string>
 #include <sstream>
 
-#include "semantic_vers.h"
+#include "model/semantic_vers.h"
 
 #undef major  // walk around gnu's major() and minor() macros.
 #undef minor

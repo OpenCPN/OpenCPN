@@ -27,14 +27,14 @@
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 
-#include "base_platform.h"
-#include "cutil.h"
-#include "georef.h"
-#include "navutil_base.h"
-#include "route.h"
-#include "routeman.h"
-#include "route_point.h"
-#include "select.h"
+#include "model/base_platform.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/navutil_base.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/route_point.h"
+#include "model/select.h"
 
 #include <wx/listimpl.cpp>
 

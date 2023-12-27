@@ -72,7 +72,7 @@ target_include_directories(
   S57ENC PUBLIC
     ${CMAKE_SOURCE_DIR}/gui/include/gui 
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${CMAKE_BINARY_DIR}/include
 )

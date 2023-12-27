@@ -65,11 +65,11 @@
 #include "routeprintout.h"
 
 #include "printtable.h"
-#include "wx28compat.h"
-#include "track.h"
-#include "route.h"
+#include "model/wx28compat.h"
+#include "model/track.h"
+#include "model/route.h"
 #include "gui_lib.h"
-#include "navutil_base.h"
+#include "model/navutil_base.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1

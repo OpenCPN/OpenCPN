@@ -30,9 +30,9 @@
 #undef Yield  // from win.h, conflicts with mingw headers
 #endif
 
-#include "catalog_parser.h"
-#include "ocpn_utils.h"
-#include "catalog_handler.h"
+#include "model/catalog_parser.h"
+#include "model/ocpn_utils.h"
+#include "model/catalog_handler.h"
 #include "pugixml.hpp"
 
 static void add_node(pugi::xml_node root, const std::string& name,

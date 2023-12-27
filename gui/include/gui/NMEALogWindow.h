@@ -26,7 +26,7 @@
 #define __NMEALOGWINDOW_H__
 
 #include "WindowDestroyListener.h"
-#include "nmea_log.h"
+#include "model/nmea_log.h"
 
 class wxWindow;
 class wxString;

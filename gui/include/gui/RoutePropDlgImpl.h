@@ -26,10 +26,10 @@
 #define _ROUTEPROPDLGIMPL_H_
 
 #include "RoutePropDlg.h"
-#include "route.h"
+#include "model/route.h"
 #include <wx/dataview.h>
 #include <wx/dvrenderers.h>
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "color_types.h"
 #include <cmath>
 #include "LinkPropDlg.h"

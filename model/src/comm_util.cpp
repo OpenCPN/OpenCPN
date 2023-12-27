@@ -32,8 +32,8 @@
 #include <vector>
 #include <string>
 
-#include "comm_util.h"
-#include "comm_drv_registry.h"
+#include "model/comm_util.h"
+#include "model/comm_drv_registry.h"
 
 bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus _bus) {
   auto& registry = CommDriverRegistry::GetInstance();

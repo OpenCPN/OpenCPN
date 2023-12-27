@@ -19,9 +19,9 @@
 #include <iostream>
 #include <string>
 
-#include "local_api.h"
-#include "ocpn_utils.h"
-#include "logger.h"
+#include "model/local_api.h"
+#include "model/ocpn_utils.h"
+#include "model/logger.h"
 
 #ifdef __ANDROID__
 

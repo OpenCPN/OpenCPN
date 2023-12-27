@@ -28,9 +28,9 @@
 #include <wx/filename.h>
 #include <wx/filefn.h>
 
-#include "base_platform.h"
-#include "ocpn_utils.h"
-#include "plugin_cache.h"
+#include "model/base_platform.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_cache.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

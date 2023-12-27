@@ -28,7 +28,7 @@
 #include <wx/string.h>
 #include <wx/datetime.h>
 
-#include "comm_ais.h"
+#include "model/comm_ais.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

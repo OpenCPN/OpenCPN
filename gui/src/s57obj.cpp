@@ -43,18 +43,18 @@
 #include "s57chart.h"
 
 #include "mygeom.h"
-#include "cutil.h"
-#include "georef.h"
+#include "model/cutil.h"
+#include "model/georef.h"
 #include "navutil.h"  // for LogMessageOnce
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
 #include "s52utils.h"
-#include "wx28compat.h"
+#include "model/wx28compat.h"
 
 #include "gdal/cpl_csv.h"
 #include "setjmp.h"
 
-#include "ogr_s57.h"
+#include "model/ogr_s57.h"
 
 #include "pluginmanager.h"  // for S57 lights overlay
 

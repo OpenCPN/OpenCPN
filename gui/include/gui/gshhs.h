@@ -42,10 +42,10 @@
 
 #include <wx/geometry.h>
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 //#include "ocpndc.h"
 #include "viewport.h"
-#include "cutil.h"
+#include "model/cutil.h"
 #include "poly_math.h"
 #include "color_types.h"
 

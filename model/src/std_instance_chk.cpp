@@ -28,10 +28,10 @@
 
 #include <wx/string.h>
 
-#include "base_platform.h"
-#include "ocpn_utils.h"
+#include "model/base_platform.h"
+#include "model/ocpn_utils.h"
 
-#include "std_instance_chk.h"
+#include "model/std_instance_chk.h"
 
 
 extern BasePlatform* g_BasePlatform;

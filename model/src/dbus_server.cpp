@@ -31,8 +31,8 @@
 #include <chrono>
 #include <thread>
 
-#include "dbus_server.h"
-#include "logger.h"
+#include "model/dbus_server.h"
+#include "model/logger.h"
 
 /** Event handler context */
 struct DbusCtx {

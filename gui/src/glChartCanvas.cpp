@@ -79,14 +79,14 @@
 #include "navutil.h"
 #include "color_handler.h"
 #include "OCPNPlatform.h"
-#include "own_ship.h"
+#include "model/own_ship.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
 #include "RolloverWin.h"
 #include "route_gui.h"
-#include "route.h"
-#include "routeman.h"
+#include "model/route.h"
+#include "model/routeman.h"
 #include "route_point_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
@@ -95,7 +95,7 @@
 #include "thumbwin.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "track.h"
+#include "model/track.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>

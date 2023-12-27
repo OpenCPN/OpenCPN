@@ -27,8 +27,8 @@
 #define _PEERCLIENT_H
 
 #include <string>
-#include "route.h"
-#include "track.h"
+#include "model/route.h"
+#include "model/track.h"
 
 int SendNavobjects(std::string dest_ip_address, std::string server_name, std::vector<Route*> route, std::vector<RoutePoint*> routepoint, std::vector<Track*> track, bool overwrite = false);
 

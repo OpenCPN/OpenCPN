@@ -1116,7 +1116,7 @@ add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
   _opencpn BEFORE INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/model/include/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
@@ -1132,7 +1132,7 @@ set_target_properties(
 
 target_include_directories(
   ${PACKAGE_NAME} BEFORE PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/model/include/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )

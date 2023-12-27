@@ -34,11 +34,11 @@
 #include <wx/event.h>
 #endif  // precompiled headers
 
-#include <instance_check.h>
+#include "model/instance_check.h"
 
-#include "comm_bridge.h"
-#include "local_api.h"
-#include "rest_server.h"
+#include "model/comm_bridge.h"
+#include "model/local_api.h"
+#include "model/rest_server.h"
 
 class Track;
 

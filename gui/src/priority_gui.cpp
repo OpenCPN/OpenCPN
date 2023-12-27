@@ -43,7 +43,7 @@
 
 #include "priority_gui.h"
 #include "ocpn_app.h"
-#include "comm_bridge.h"
+#include "model/comm_bridge.h"
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 

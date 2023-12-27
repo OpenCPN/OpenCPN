@@ -40,13 +40,13 @@
 
 #include "navutil.h"
 #include "styles.h"
-#include "routeman.h"
+#include "model/routeman.h"
 #include "MarkInfo.h"
 #include "routemanagerdialog.h"
 #include "undo.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
-#include "route.h"
+#include "model/route.h"
 
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;

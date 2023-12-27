@@ -30,7 +30,7 @@
 #include <memory>
 #include <vector>
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "bbox.h"
 #include "LLRegion.h"
 

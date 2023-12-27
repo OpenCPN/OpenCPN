@@ -46,16 +46,16 @@
 #include "s57chart.h"
 #include "cm93.h"
 #include "s52plib.h"
-#include "georef.h"
+#include "model/georef.h"
 #include "mygeom.h"
-#include "cutil.h"
+#include "model/cutil.h"
 #include "navutil.h"     // for LogMessageOnce
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "ocpndc.h"
 #include "pluginmanager.h"  // for PlugInManager
 #include "OCPNPlatform.h"
-#include "wx28compat.h"
-#include "chartdata_input_stream.h"
+#include "model/wx28compat.h"
+#include "model/chartdata_input_stream.h"
 #include "DetailSlider.h"
 #include "chcanv.h"
 #include "gui_lib.h"

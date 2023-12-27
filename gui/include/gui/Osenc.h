@@ -36,7 +36,7 @@
 #include <wx/filename.h>
 
 #include "gdal/cpl_csv.h"
-#include "ogr_s57.h"
+#include "model/ogr_s57.h"
 #include "s52s57.h"
 #include "chartbase.h"
 

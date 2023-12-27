@@ -21,10 +21,10 @@
 
 #include <wx/filename.h>
 
-#include "ipc_api.h"
-#include "base_platform.h"
-#include "logger.h"
-#include "ocpn_utils.h"
+#include "model/ipc_api.h"
+#include "model/base_platform.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
 
 extern BasePlatform* g_BasePlatform;
 

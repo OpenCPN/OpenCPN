@@ -26,7 +26,7 @@
 #ifndef _WAYPOINT_GUI_H__
 #define _WAYPOINT_GUI_H__
 
-#include "routeman.h"
+#include "model/routeman.h"
 #include "styles.h"
 
 class WayPointmanGui {

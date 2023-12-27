@@ -30,7 +30,7 @@
 #include <wx/timer.h>
 #include <stdint.h>
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "color_types.h"
 #include "bbox.h"
 #include "viewport.h"

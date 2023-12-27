@@ -31,13 +31,13 @@
 #include "navutil.h"
 #include "ais.h"
 #include "FontMgr.h"
-#include "ais_target_data.h"
-#include "ais_decoder.h"
-#include "select.h"
+#include "model/ais_target_data.h"
+#include "model/ais_decoder.h"
+#include "model/select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
-#include "track.h"
-#include "route_point.h"
+#include "model/track.h"
+#include "model/route_point.h"
 #include "ocpn_frame.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;

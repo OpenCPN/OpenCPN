@@ -32,13 +32,13 @@
 #include <wx/string.h>
 
 #include "config.h"
-#include "config_vars.h"
-#include "logger.h"
+#include "model/config_vars.h"
+#include "model/logger.h"
 #include "mongoose.h"
-#include "nav_object_database.h"
-#include "ocpn_utils.h"
+#include "model/nav_object_database.h"
+#include "model/ocpn_utils.h"
 #include "observable_evt.h"
-#include "rest_server.h"
+#include "model/rest_server.h"
 
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);

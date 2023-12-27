@@ -36,7 +36,7 @@
 #include "OCPNPlatform.h"
 
 #include "styles.h"
-#include "wx28compat.h"
+#include "model/wx28compat.h"
 #include "svg_utils.h"
 #include "color_handler.h"
 #include "tinyxml.h"

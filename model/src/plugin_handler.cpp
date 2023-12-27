@@ -55,21 +55,21 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #undef Yield  // from win.h, conflicts with mingw headers
 #endif
 
-#include "base_platform.h"
-#include "catalog_handler.h"
-#include "catalog_parser.h"
-#include "config_vars.h"
-#include "cmdline.h"
+#include "model/base_platform.h"
+#include "model/catalog_handler.h"
+#include "model/catalog_parser.h"
+#include "model/config_vars.h"
+#include "model/cmdline.h"
 #include "config.h"
-#include "downloader.h"
+#include "model/downloader.h"
 #include "gui_lib.h"
-#include "logger.h"
+#include "model/logger.h"
 #include "navutil.h"
-#include "ocpn_utils.h"
-#include "plugin_cache.h"
-#include "plugin_handler.h"
-#include "plugin_loader.h"
-#include "plugin_paths.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_cache.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
+#include "model/plugin_paths.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");

@@ -32,19 +32,19 @@
 #include <wx/html/htmlwin.h>
 
 
-#include "ais_decoder.h"
+#include "model/ais_decoder.h"
 #include "AISTargetAlertDialog.h"
-#include "ais_target_data.h"
+#include "model/ais_target_data.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "ocpn_types.h"
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "routemanagerdialog.h"
-#include "route_point.h"
-#include "select.h"
+#include "model/route_point.h"
+#include "model/select.h"
 
 #ifdef __OCPN__ANDROID__
 #include <QDebug>

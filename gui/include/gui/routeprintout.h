@@ -36,7 +36,7 @@
 #include <wx/msw/private.h>
 #endif
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 #include "navutil.h"
 #include "printtable.h"
 #include "ocpn_frame.h"

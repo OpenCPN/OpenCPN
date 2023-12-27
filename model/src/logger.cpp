@@ -31,7 +31,7 @@
 #include <wx/datetime.h>
 #include <wx/filename.h>
 
-#include "logger.h"
+#include "model/logger.h"
 
 const wxLogLevel OcpnLog::LOG_BADLEVEL = wxLOG_Max + 1;
 

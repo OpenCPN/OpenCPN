@@ -21,7 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-#include "config_vars.h"
+#include "model/config_vars.h"
 
 bool g_bGarminHostUpload;
 bool g_bWplUsePosition;

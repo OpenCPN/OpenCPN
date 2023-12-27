@@ -33,7 +33,7 @@
 #include <wx/gdicmn.h>
 #include <wx/string.h>
 
-#include "ocpn_types.h"
+#include "model/ocpn_types.h"
 //#include "tinyxml.h"
 #include "color_types.h"
 

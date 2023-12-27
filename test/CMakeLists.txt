@@ -68,7 +68,7 @@ if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   target_link_libraries(ipc-srv-tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest)
   target_include_directories(ipc-srv-tests PRIVATE .
-    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
   )
@@ -159,7 +159,7 @@ if (LINUX)
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
   target_link_libraries(dbus_tests PRIVATE glib::glib)
   target_include_directories(dbus_tests PRIVATE 
-    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
   )
@@ -215,7 +215,7 @@ add_executable(cli-server cli_server.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(cli-server PRIVATE ${wxWidgets_LIBRARIES})
 target_include_directories(cli-server PRIVATE ../include)
 target_include_directories(cli-server PRIVATE 
-  ${CMAKE_SOURCE_DIR}/model/include/model
+  ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
 )
@@ -224,7 +224,7 @@ add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(ipc-client PRIVATE observable::observable)
 target_include_directories(ipc-client PRIVATE 
-  ${CMAKE_SOURCE_DIR}/model/include/model
+  ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
 )
@@ -243,7 +243,7 @@ add_executable(wx-instance ${WX_INSTANCE_SRC})
 target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(wx-instance PRIVATE ocpn::opencpn)
 target_include_directories(wx-instance PRIVATE 
-  ${CMAKE_SOURCE_DIR}/model/include/model
+  ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
 )
@@ -265,7 +265,7 @@ if (UNIX)
   add_executable(std-instance ${STD_INSTANCE_SRC})
   target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
   target_include_directories(std-instance PRIVATE 
-    ${CMAKE_SOURCE_DIR}/model/include/model
+    ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
   )
