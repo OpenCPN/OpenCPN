@@ -301,6 +301,7 @@ if (QT_ANDROID)
   target_compile_definitions(_OCPN_MODEL PUBLIC -DMG_ENABLE_OPENSSL)
   target_include_directories(_OCPN_MODEL PUBLIC
     ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
+    ${CMAKE_SOURCE_DIR}/android
   )
   target_link_libraries(_OCPN_MODEL PUBLIC
     ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a

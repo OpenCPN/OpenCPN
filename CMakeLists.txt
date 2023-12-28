@@ -1075,15 +1075,14 @@ if (LINUX)
   )
 endif ()
 
-
 if (LINUX AND OCPN_USE_CRASHREPORT)
   list(APPEND GUI_HDRS ${GUI_HDR_DIR}/crashprint.h)
   list(APPEND GUI_SRC ${GUI_SRC_DIR}/crashprint.cpp)
 endif ()
 
 if (QT_ANDROID)
-  list(APPEND GUI_HDRS include/androidUTIL.h)
-  list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/src/androidUTIL.cpp)
+  list(APPEND GUI_HDRS android/androidUTIL.h)
+  list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/android/androidUTIL.cpp)
 endif ()
 
 set(SRCS ${GUI_SRC} )
@@ -1136,6 +1135,12 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
+
+if (QT_ANDROID)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
+  )
+endif ()
 
 if (MSVC AND NOT OCPN_CI_BUILD)
   message(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")

@@ -58,6 +58,11 @@ target_include_directories(SOUND
         ${CMAKE_CURRENT_BINARY_DIR}/../../../include
 )
 
+#FIXME (#3527) Dependency on main OpenCPN
+if (QT_ANDROID)
+  target_include_directories(SOUND PUBLIC ${CMAKE_SOURCE_DIR}/android)
+endif ()
+
 target_link_libraries(SOUND PRIVATE "${SOUND_SUPPORT_LIBS}")
 if (PORTAUDIO_FOUND)
   target_link_libraries(SOUND PRIVATE portaudio::portaudio)
