@@ -1119,6 +1119,15 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
+if (MSVC)
+  target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildwin)
+elseif(APPLE)
+  target_include_directories(
+    _opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildosx/include
+  )
+elseif (QT_ANDROID) 
+  target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/android)
+endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
 
 set_target_properties(
@@ -1287,6 +1296,20 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   else (OPENGL_FOUND)
     message(STATUS "OpenGL not found...")
   endif (OPENGL_FOUND)
+endif ()
+
+if (MSVC)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildwin
+  )
+elseif(APPLE)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildosx/include
+  )
+elseif (QT_ANDROID) 
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
+  )
 endif ()
 
 if (OCPN_USE_CRASHREPORT)

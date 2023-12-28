@@ -225,6 +225,9 @@ if (NOT QT_ANDROID)
   endif()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 else (NOT QT_ANDROID)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
+  )
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lz")
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lGLESv1_CM")
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lGLESv2")

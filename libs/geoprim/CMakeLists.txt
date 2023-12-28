@@ -38,6 +38,13 @@ target_include_directories(GEOPRIM PRIVATE ${wxWidgets_INCLUDE_DIRS})
 
 #FIXME (#3527) Dependency on main CMakeLists.txt
 target_include_directories(GEOPRIM PRIVATE ../../include)
+if (QT_ANDROID)
+  target_include_directories(GEOPRIM PRIVATE  ${CMAKE_SOURCE_DIR}/android)
+elseif (MSVC)
+  target_include_directories(
+    GEOPRIM BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include
+  )
+endif ()
 
 find_package(OpenGL)
 if (OPENGL_FOUND)
