@@ -19,14 +19,14 @@ jobs:
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
 
-  build-bionic:
+  build-focal:
     docker:
-      - image: circleci/buildpack-deps:bionic-scm
+      - image: circleci/buildpack-deps:focal-scm
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PW
     environment:
-      - OCPN_TARGET: bionic
+      - OCPN_TARGET: focal
     steps:
       - checkout
       - run: cat /etc/apt/sources.list
@@ -164,7 +164,7 @@ workflows:
       - build-bookworm:
           <<: *std-filters
 
-      - build-bionic:
+      - build-focal:
           <<: *std-filters
 
       - build-jammy:
