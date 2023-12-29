@@ -13,10 +13,7 @@ endif ()
 # requiring proper pkg-config setup and just using standard wxWidgets
 # options. It has only been tested on linux.
 
-# FIXME (#3527) Dependency on main openpcn
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
-endif ()
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 if(UNIX AND NOT APPLE)
   include(FindGlib2)
@@ -103,17 +100,13 @@ endif ()
    # CMake has trouble finding libgobject-2.0.so, as required for static wxsvg library.
    # We look for and add it explicitely
 if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
-
+        include(FindPkgConfig)
         # Assume pkg-config is available.
         pkg_search_module(GOBJECT REQUIRED gobject-2.0)
-        #MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
         target_link_libraries(WXSVG PRIVATE ${GOBJECT_LDFLAGS})
-
-        find_library(PANGOCAIRO_LIBRARY NAMES pangocairo-1.0 PATHS ${LINUX_LIB_PATHS})
-        #MESSAGE (STATUS "    PANGOCAIRO: " ${PANGOCAIRO_LIBRARY})
+        find_library(PANGOCAIRO_LIBRARY NAMES pangocairo-1.0)
         target_link_libraries(WXSVG PRIVATE ${PANGOCAIRO_LIBRARY})
-
-endif (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+endif ()
 
 include(FindEXIF)
 if (EXIF_FOUND)
@@ -167,18 +160,18 @@ target_include_directories(WXSVG
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include/wxSVG
         ${CMAKE_CURRENT_SOURCE_DIR}/include/wxSVGXML
-# FIXME (#3527) Missing linkage
         ${wxWidgets_INCLUDE_DIRS}
 )
+target_link_libraries(WXSVG PUBLIC ${wxWidgets_LIBRARIES})
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
-    target_compile_options(WXSVG PRIVATE
-        "-Wno-varargs" "-Wno-unknown-pragmas" "-Wno-overloaded-virtual"
-    )
+  target_compile_options(WXSVG PRIVATE
+      "-Wno-varargs" "-Wno-unknown-pragmas" "-Wno-overloaded-virtual"
+  )
 endif()
 target_link_libraries(WXSVG PRIVATE ocpn::expat wxsvg::cairo)
 if (TARGET ocpn::pango)
-    target_link_libraries(WXSVG PRIVATE ocpn::pango)
+  target_link_libraries(WXSVG PRIVATE ocpn::pango)
 endif ()
 if (TARGET ocpn::gtk)
   target_link_libraries(WXSVG PRIVATE ocpn::gtk)
