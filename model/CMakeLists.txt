@@ -64,7 +64,7 @@ set(
   ${MODEL_HDR_DIR}/conn_params.h
   ${MODEL_HDR_DIR}/cutil.h
   ${MODEL_HDR_DIR}/downloader.h
-  ${MODEL_HDR_DIR}/dsPortType.h
+  ${MODEL_HDR_DIR}/ds_porttype.h
   ${MODEL_HDR_DIR}/garmin_protocol_mgr.h
   ${MODEL_HDR_DIR}/garmin_wrapper.h
   ${MODEL_HDR_DIR}/geodesic.h

@@ -22,7 +22,7 @@
  **************************************************************************/
 
 #ifndef __DSPORTTYPE_H__
-#include "model/dsPortType.h"
+#include "model/ds_porttype.h"
 #endif
 
 #ifndef __CONN_PARAMS_PANEL_H__

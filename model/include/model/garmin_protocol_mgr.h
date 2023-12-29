@@ -66,7 +66,7 @@
 
 
 #include "conn_params.h"
-#include "dsPortType.h"
+#include "ds_porttype.h"
 
 //----------------------------------------------------------------------------
 //   constants
