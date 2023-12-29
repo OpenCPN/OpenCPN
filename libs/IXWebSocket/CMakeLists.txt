@@ -10,7 +10,6 @@ if (TARGET ocpn::ixwebsocket)
     return ()
 endif ()
 
-
 project(ixwebsocket C CXX)
 
 set (CMAKE_CXX_STANDARD 11)
@@ -206,25 +205,56 @@ if (USE_TLS)
   if (USE_OPEN_SSL)
     message(STATUS "TLS configured to use openssl")
 
-    # Help finding Homebrew's OpenSSL on macOS
-    if (APPLE)
-      set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /usr/local/opt/openssl/lib)
-      set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /usr/local/opt/openssl/include)
-
-      # This is for MacPort OpenSSL 1.0
-      # set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib/openssl-1.0)
-      # set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /opt/local/include/openssl-1.0)
+if (NOT WIN32)
+ if (QT_ANDROID)
+    target_include_directories(ixwebsocket PRIVATE
+        ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include)
+    target_link_libraries(ixwebsocket PRIVATE
+      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
+      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
+      )
+    add_definitions(-DMG_ENABLE_OPENSSL)
+  else (QT_ANDROID)
+    if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+      set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
     endif()
+    find_package(OpenSSL)
 
-    # This OPENSSL_FOUND check is to help find a cmake manually configured OpenSSL
-    if (NOT OPENSSL_FOUND)
-      find_package(OpenSSL REQUIRED)
-    endif()
-    message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
-
-    add_definitions(${OPENSSL_DEFINITIONS})
-    target_include_directories(ixwebsocket PUBLIC $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>)
-    target_link_libraries(ixwebsocket PRIVATE ${OPENSSL_LIBRARIES})
+    if (OPENSSL_FOUND)
+      message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
+      target_include_directories(ixwebsocket PRIVATE ${OPENSSL_INCLUDE_DIR})
+      target_link_libraries(ixwebsocket PRIVATE ${OPENSSL_LIBRARIES})
+      add_definitions(-DMG_ENABLE_OPENSSL)
+    else (OPENSSL_FOUND)
+      if (APPLE)
+	      message(STATUS "IXWebsocket: APPLE: Setting OpenSSL...")
+        target_include_directories(
+          ixwebsocket
+          PUBLIC /usr/local/opt/openssl@3/include
+        )
+        target_link_libraries(
+          ixwebsocket
+          PRIVATE /usr/local/opt/openssl@3/lib/libcrypto.3.dylib
+          /usr/local/opt/openssl@3/lib/libssl.3.dylib
+        )
+      endif (APPLE)
+    endif (OPENSSL_FOUND)
+  endif (QT_ANDROID)
+else (NOT WIN32)
+  target_include_directories(
+    ixwebsocket
+    PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
+  )
+  target_link_libraries(
+    ixwebsocket
+    PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
+  )
+  target_link_libraries(
+      ixwebsocket
+      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
+  )
+endif (NOT WIN32)
+set(OPENSSL_FOUND TRUE)
   elseif (USE_MBED_TLS)
     message(STATUS "TLS configured to use mbedtls")
 
@@ -245,7 +275,13 @@ if (USE_TLS)
   endif()
 endif()
 
-option(USE_ZLIB "Enable zlib support" TRUE)
+if (NOT QT_ANDROID)
+  option(USE_ZLIB "Enable zlib support" TRUE)
+else()
+  option(USE_ZLIB "Enable zlib support" FALSE)
+endif()
+
+option(USE_ZLIB "Enable zlib support" FALSE)
 
 if (USE_ZLIB)
   find_package(ZLIB REQUIRED)
