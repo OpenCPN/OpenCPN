@@ -23,4 +23,3 @@
 class CliPlatform : public AbstractPlatform {
   bool InitializeLogFile(void) override;
 };
-

@@ -31,7 +31,7 @@
 #ifdef __linux__
 #include "model/dbus_client.h"
 #include "model/dbus_server.h"
-#endif 
+#endif
 
 static InstanceCheck& GetWxInstanceChk() {
   static WxInstanceCheck wx_check;
@@ -47,14 +47,14 @@ std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
   if (UseDbus()) {
     return std::unique_ptr<LocalClientApi>(new DbusLocalClient);
   } else {
-    return std::unique_ptr<LocalClientApi>(new IpcClient);	  
+    return std::unique_ptr<LocalClientApi>(new IpcClient);
   }
 }
 
 LocalServerApi& LocalServerApi:: GetInstance() {
   return UseDbus() ? DbusServer::GetInstance() : IpcConnection::GetInstance();
 }
-    
+
 InstanceCheck& InstanceCheck::GetInstance() {
   if (UseDbus())
     return DbusServer::GetInstance();
@@ -74,4 +74,5 @@ LocalServerApi& LocalServerApi:: GetInstance() {
 InstanceCheck& InstanceCheck::GetInstance() {
   return GetWxInstanceChk();
 }
+
 #endif    // __linux__

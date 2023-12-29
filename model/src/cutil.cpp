@@ -84,5 +84,3 @@ int NextPow2(int size) {
 
   return n + 1;
 }
-
-

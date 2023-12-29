@@ -1,3 +1,24 @@
+# ************************************************************************
+#  Copyright (C) 2023 Alec Leamas                                        *
+#  Copyright (C) 2010 David S Register                                   *
+#                                                                        *
+#  This program is free software; you can redistribute it and/or modify  *
+#  it under the terms of the GNU General Public License as published by  *
+#  the Free Software Foundation; either version 2 of the License, or     *
+#  (at your option) any later version.                                   *
+#                                                                        .
+#  This program is distributed in the hope that it will be useful,       *
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+#  GNU General Public License for more details.                          *
+#                                                                        *
+#  You should have received a copy of the GNU General Public License     *
+#  along with this program; if not, write to the                         *
+#  Free Software Foundation, Inc.,                                       *
+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+# ************************************************************************
+
+
 set(SRC_CONSOLE console.cpp api_shim.cpp)
 add_executable(opencpn-cmd ${SRC_CONSOLE})
 
@@ -11,7 +32,7 @@ target_include_directories(
       ${PROJECT_SOURCE_DIR}/include
       # ${PROJECT_SOURCE_DIR}/test/include
       #      ${PROJECT_SOURCE_DIR}/model/include
-      ${PROJECT_SOURCE_DIR}/gui/include 
+      ${PROJECT_SOURCE_DIR}/gui/include
 )
 
 target_compile_definitions(opencpn-cmd PUBLIC USE_MOCK_DEFS)
@@ -84,4 +105,4 @@ if (APPLE)
     PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
   )
-endif () 
+endif ()

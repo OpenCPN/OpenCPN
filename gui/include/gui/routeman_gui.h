@@ -36,7 +36,7 @@ public:
 
   void DeleteAllTracks();
   void DeleteTrack(Track *pTrack);
-  bool UpdateProgress(); 
+  bool UpdateProgress();
 
 
 private:

@@ -924,5 +924,3 @@ int RoutePointGui::GetIconImageIndex() {
       return (pWayPointMan->GetXIconImageListIndex(GetIconBitmap()));
   }
 }
-
-

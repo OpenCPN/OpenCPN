@@ -31,7 +31,7 @@
 #include <memory>
 
 // Handle gnu's major/minor macros
-#ifdef major 
+#ifdef major
 #define gnu_major major
 #define gnu_minor minor
 #undef major

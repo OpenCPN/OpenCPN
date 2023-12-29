@@ -100,6 +100,3 @@ wxColour GetDialogColor(DialogColor color) {
   }
   return col;
 }
-
-
-

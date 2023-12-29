@@ -941,5 +941,3 @@ bool AbstractPlatform::GetWindowsMonitorSize(int *width, int *height) {
 }
 
 #endif
-
-

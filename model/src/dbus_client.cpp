@@ -52,7 +52,7 @@ LocalApiResult DbusLocalClient::SendRaise() {
                                              0 /* cancellable */,
                                              &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result) 
+  bool ok(error == 0 && g_variant_is_container(result)
           && g_variant_n_children(result) == 0);
   if (error) g_clear_error(&error);
   g_variant_unref(result);
@@ -72,7 +72,7 @@ LocalApiResult DbusLocalClient::SendQuit() {
                                              0 /* cancellable */,
                                              &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result) 
+  bool ok(error == 0 && g_variant_is_container(result)
           && g_variant_n_children(result) == 0);
   if (error) g_clear_error(&error);
   g_variant_unref(result);
@@ -92,7 +92,7 @@ LocalApiResult DbusLocalClient::SendOpen(const char* path) {
                                              0 /* cancellable */,
                                              &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result) 
+  bool ok(error == 0 && g_variant_is_container(result)
           && g_variant_n_children(result) == 1);
   gboolean result_code = false;
   if (ok) {
@@ -120,7 +120,7 @@ LocalApiResult DbusLocalClient::GetRestEndpoint() {
                                              0 /* cancellable */,
                                              &error);
   const std::string message(error ? error->message : "");
-  bool ok(error == 0 && g_variant_is_container(result) 
+  bool ok(error == 0 && g_variant_is_container(result)
           && g_variant_n_children(result) == 1);
   std::string result_str;
   if (ok) {
@@ -135,6 +135,6 @@ LocalApiResult DbusLocalClient::GetRestEndpoint() {
   g_object_unref(proxy);
   if (ok)
     return LocalApiResult(true, result_str.c_str());
-  else 
+  else
     return LocalApiResult(false, "Error invoking DBus server command.");
 }

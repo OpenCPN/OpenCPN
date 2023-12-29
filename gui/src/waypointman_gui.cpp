@@ -43,7 +43,7 @@ typedef void (*  _GLUfuncptr)();
 #include <GL/glew.h>
 #include <GL/glu.h>
 #endif
- 
+
 
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
@@ -726,4 +726,3 @@ unsigned int WayPointmanGui::GetIconTexture(const wxBitmap *pbm, int &glw,
   return 0;
 #endif
 }
-

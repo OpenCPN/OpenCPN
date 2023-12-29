@@ -64,7 +64,7 @@ private:
   wxConnectionBase* connection;
 };
 
- 
+
 class IpcServer;  // forward
 
 /**
@@ -85,7 +85,7 @@ public:
   /** Handle commands without reply: quit and raise. */
   bool OnExec(const wxString&, const wxString& data);
 
-  /** 
+  /**
    * Handle commands with a reply
    *   - open <path>, returns "ok" or "fail"
    *   - get_api_endpoint, returns endpoint string.
@@ -117,7 +117,7 @@ public:
    }
 
    /** void, we are serving as long as there is a ServerFactory. */
-   void Serve() {} 
+   void Serve() {}
 };
 
 #endif  // _IPC_API_H__

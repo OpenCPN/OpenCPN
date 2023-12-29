@@ -31,9 +31,9 @@
 #include "observable_evtvar.h"
 
 /**
- * \file 
+ * \file
  *
- * DBus interface header file. 
+ * DBus interface header file.
  */
 
 /** The name registered on the session bus. */
@@ -117,7 +117,7 @@ public:
    *
    * TODO: Some kind of lazy evalution to avoid delays?
    */
-  void WaitUntilValid() override; 
+  void WaitUntilValid() override;
 
   /** Callback context. */
   GDBusNodeInfo* introspection_data;

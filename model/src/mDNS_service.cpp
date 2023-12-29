@@ -534,5 +534,3 @@ bool StopMDNSService(){
 
   return true;
 }
-
-

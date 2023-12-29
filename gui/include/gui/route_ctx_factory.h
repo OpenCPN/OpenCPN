@@ -41,7 +41,7 @@ RouteCtx RouteCtxFactory() {
             if (!g_pRouteMan) return static_cast<Route*>(0);
             return g_pRouteMan->FindRouteByGUID(guid); };
     ctx.find_track_by_guid =
-        [](wxString guid) { 
+        [](wxString guid) {
             if (!g_pRouteMan) return static_cast<Track*>(0);
             return g_pRouteMan->FindTrackByGUID(guid); };
     ctx.delete_route =

@@ -32,7 +32,7 @@
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/window.h>
-#include <wx/utils.h> 
+#include <wx/utils.h>
 
 wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
 wxFont GetOCPNGUIScaledFont(wxString item);

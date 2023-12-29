@@ -150,4 +150,3 @@ void MyPrintout::GenerateGLbmp() {
 #endif
   }
 }
-

@@ -26,7 +26,7 @@
 /** InstanceCheck implementation based on DBus */
 class DbusInstanceCheck : public InstanceCheck {
 
-public: 
+public:
   DbusInstanceCheck();
 
   bool IsPrimaryInstance() { return dbus_server.IsMainInstance(); }

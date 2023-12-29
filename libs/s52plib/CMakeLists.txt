@@ -37,7 +37,7 @@ target_include_directories(S52PLIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # FixME (#3527) Dependency on main opencpn
 target_include_directories(
-  S52PLIB PRIVATE 
+  S52PLIB PRIVATE
   ${PROJECT_SOURCE_DIR}/model/include
   ${PROJECT_SOURCE_DIR}/include
 )

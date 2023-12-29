@@ -236,7 +236,7 @@ SemanticVersion GetApiVersion(const std::string& dest_ip) {
 
   struct MemoryStruct chunk;
   chunk.memory = (char*)malloc(1);
-  chunk.size = 0; 
+  chunk.size = 0;
   std::string buf;
   std::ostringstream ostream(buf);
   long response_code = PostSendObjectMessage(url, ostream, &chunk, true);
@@ -268,7 +268,7 @@ RestServerResult CheckApiKey(const std::string& source,
 
   struct MemoryStruct chunk;
   chunk.memory = (char*)malloc(1);
-  chunk.size = 0; 
+  chunk.size = 0;
   std::string buf;
   std::ostringstream ostream(buf);
   long response_code = PostSendObjectMessage(url, ostream, &chunk, true);
@@ -320,7 +320,7 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name,
       wxString body(chunk.memory);
       wxJSONValue root;
       wxJSONReader reader;
-	
+
       int numErrors = reader.Parse(body, &root);
       // Capture the result
       int result = root["result"].AsInt();

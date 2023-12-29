@@ -19,4 +19,3 @@ wxColour GetDialogColor(DialogColor color);
 
 
 #endif   // _COLOR_HANDLER_H
-

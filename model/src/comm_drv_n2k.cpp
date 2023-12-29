@@ -50,4 +50,3 @@ void CommDriverN2K::SetListener(DriverListener& l){};
 std::shared_ptr<NavAddr> CommDriverN2K::GetAddress(const N2kName& name) {
     return std::make_shared<NavAddr>(NavAddr2000(iface, name));
 }
-

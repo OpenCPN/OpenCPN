@@ -5637,4 +5637,3 @@ void InProgressIndicator::Stop()
      m_timer.Stop();
 
 }
-

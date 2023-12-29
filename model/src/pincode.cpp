@@ -32,7 +32,7 @@ std::string Pincode::CompatHash() {
   std::linear_congruential_engine<unsigned long long, 48271, 0,
 	                          0xFFFFFFFFFFFFFFFF> engine;
   engine.seed(m_value);
-  unsigned long long compat_val = engine(); 
+  unsigned long long compat_val = engine();
   char buffer[100];
   snprintf(buffer, sizeof(buffer)-1, "%0llX", compat_val);
   return std::string(buffer);

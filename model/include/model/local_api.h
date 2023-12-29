@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** 
+/**
  * \file
  *
  * The local API has a server side handling commands and a client part
@@ -52,7 +52,7 @@ class LocalApiException :  public std::exception {
 public:
   LocalApiException(const std::string why) : reason(why) {}
 
-  const char* str() { return reason.c_str(); } 
+  const char* str() { return reason.c_str(); }
 private:
   std::string reason;
 };
@@ -77,7 +77,7 @@ public:
 
   /** Set callback returning the rest server root endpoint. */
   virtual void SetGetRestApiEndpointCb(std::function<std::string()> cb) {
-    get_rest_api_endpoint_cb = cb; 
+    get_rest_api_endpoint_cb = cb;
   }
 
   std::function<std::string()> get_rest_api_endpoint_cb;
@@ -90,7 +90,7 @@ protected:
 
 /** Base interface for local clients. */
 class LocalClientApi {
-public:  
+public:
   static std::unique_ptr<LocalClientApi> GetClient();
 
   LocalClientApi() = default;

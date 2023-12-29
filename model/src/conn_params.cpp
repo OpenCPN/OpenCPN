@@ -423,5 +423,3 @@ NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
       return NavAddr::Bus::Undef;
   }
 }
-
-

@@ -235,7 +235,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
   tN2kMsg N2kMsg;   // automatically sets destination 255
   //SetHeartbeat(N2kMsg,2000,0);
       //SetN2kPGN126993(N2kMsg, 2000, 0);
-      	N2kMsg.SetPGN(126993L);
+        N2kMsg.SetPGN(126993L);
         //N2kMsg.Priority=7;
         N2kMsg.Source = 2;
         N2kMsg.Destination = 133;
@@ -1189,4 +1189,3 @@ std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg){
 
   return rv;
 }
-

@@ -25,4 +25,3 @@ EventVar event;
 };
 
 #endif
-

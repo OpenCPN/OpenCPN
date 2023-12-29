@@ -53,7 +53,7 @@ public:
   void OnInitCmdLine(wxCmdLineParser& parser) override;
   bool OnCmdLineHelp(wxCmdLineParser& parser) override;
   bool OnCmdLineParsed(wxCmdLineParser& parser) override;
-#endif 
+#endif
   int OnRun() override;
 
   void OnActivateApp(wxActivateEvent& event);
@@ -78,7 +78,7 @@ public:
   RestServer m_RESTserver;
 
   DECLARE_EVENT_TABLE()
-private: 
+private:
 
   /** Remote command deemed to be run from actual argc/argv. */
   struct ParsedCmdline {
@@ -90,7 +90,7 @@ private:
   };
 
   ParsedCmdline m_parsed_cmdline;
-  int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code) 
+  int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code)
 
 };
 

@@ -158,7 +158,7 @@ if (LINUX)
   target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
   target_link_libraries(dbus_tests PRIVATE glib::glib)
-  target_include_directories(dbus_tests PRIVATE 
+  target_include_directories(dbus_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
@@ -203,7 +203,7 @@ endif ()
 
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
-gtest_add_tests(TARGET tests) 
+gtest_add_tests(TARGET tests)
 if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET ipc-srv-tests)
   # We don't have a session bus available when testing flatpak
@@ -214,7 +214,7 @@ endif ()
 add_executable(cli-server cli_server.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(cli-server PRIVATE ${wxWidgets_LIBRARIES})
 target_include_directories(cli-server PRIVATE ../include)
-target_include_directories(cli-server PRIVATE 
+target_include_directories(cli-server PRIVATE
   ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
@@ -223,7 +223,7 @@ target_include_directories(cli-server PRIVATE
 add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(ipc-client PRIVATE observable::observable)
-target_include_directories(ipc-client PRIVATE 
+target_include_directories(ipc-client PRIVATE
   ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
@@ -242,7 +242,7 @@ endif ()
 add_executable(wx-instance ${WX_INSTANCE_SRC})
 target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(wx-instance PRIVATE ocpn::opencpn)
-target_include_directories(wx-instance PRIVATE 
+target_include_directories(wx-instance PRIVATE
   ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
@@ -264,7 +264,7 @@ if (UNIX)
   endif ()
   add_executable(std-instance ${STD_INSTANCE_SRC})
   target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
-  target_include_directories(std-instance PRIVATE 
+  target_include_directories(std-instance PRIVATE
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources

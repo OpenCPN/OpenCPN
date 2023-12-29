@@ -520,6 +520,3 @@ void CommDriverSignalKNet::updateMagneticVariance(
 //
 //   // Extract the NMEA0183 sentence
 //   std::string full_sentence = std::string(payload->begin(), payload->end());
-
-
-

@@ -493,4 +493,3 @@ void CommDecoder::updateMagneticVariance(
     NavData& temp_data) {
   temp_data.gVar = GEODESIC_RAD2DEG(value.GetDouble());
 }
-

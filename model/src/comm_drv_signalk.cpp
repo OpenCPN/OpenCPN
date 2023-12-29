@@ -45,4 +45,3 @@ void CommDriverSignalK::SetListener(DriverListener& l){};
 std::shared_ptr<NavAddr> CommDriverSignalK::GetAddress(const NavAddrSignalK& name) {
     return std::make_shared<NavAddr>(NavAddrSignalK());
 }
-

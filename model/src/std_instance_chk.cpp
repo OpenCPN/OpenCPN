@@ -38,15 +38,15 @@ extern BasePlatform* g_BasePlatform;
 
 static const char* const  kName  = "_OpenCPN_SILock";
 
-static int GetLockfilePid(const std::string& path){ 
+static int GetLockfilePid(const std::string& path){
   std::ifstream f(path.c_str());
   std::stringstream ss;
   ss << f.rdbuf();
   int pid = -1;
   try { ss >> pid; } catch (...) { pid = -1; }
-  return  pid; 
+  return  pid;
 }
- 
+
 StdInstanceCheck::StdInstanceCheck() : m_is_main_instance(false) {
   wxString dir = g_BasePlatform ->GetPrivateDataDir();
   m_path = (dir + "/" + kName).ToStdString();
@@ -76,7 +76,7 @@ void StdInstanceCheck::CleanUp() {
   for (int  i = 0; kill(pid, 0) == 0 && i < 3; i++) {
     kill(pid, SIGTERM);
     sleep(1);
-  }      
+  }
   if (kill(pid, 0) == 0) kill(pid, SIGKILL);
   std::remove(m_path.c_str());
 }

@@ -247,12 +247,12 @@ int GetMacMonitorSize() {
 
 /**
  * Determines whether we run as a translated binary under Rosetta
- * See https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment#Determine-Whether-Your-App-Is-Running-as-a-Translated-Binary 
+ * See https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment#Determine-Whether-Your-App-Is-Running-as-a-Translated-Binary
  */
 int ProcessIsTranslated() {
    int ret = 0;
    size_t size = sizeof(ret);
-   if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1) 
+   if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1)
    {
       if (errno == ENOENT)
          return 0;
@@ -264,8 +264,8 @@ int ProcessIsTranslated() {
 int IsAppleSilicon() {
     int ret = 0;
     size_t size = sizeof(ret);
-    
-    if (sysctlbyname("hw.optional.arm64", &ret, &size, NULL, 0) == -1) {        
+
+    if (sysctlbyname("hw.optional.arm64", &ret, &size, NULL, 0) == -1) {
         return -1;
     }
     return ret;

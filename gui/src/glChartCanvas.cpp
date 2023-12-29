@@ -5079,7 +5079,6 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
 
     float min_zoom_scale = 2e8;
 
-=======
 #endif
 
         total_zoom_val =

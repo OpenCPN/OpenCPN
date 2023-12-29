@@ -160,6 +160,3 @@ void DbusServer::WaitUntilValid() {
     } while (!m_is_main_instance &&  i++ < 200);
     wxYield();
 }
-
-
-

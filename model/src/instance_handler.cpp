@@ -44,8 +44,8 @@ public:
   /** Center global view to a given box callback. */
   std::function<void(LLBBox)> gframe_center_view;
     // gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
-   
-  /** Raise current OPenCPN main window to top of GUI application stack. */ 
+
+  /** Raise current OPenCPN main window to top of GUI application stack. */
   std::function<void()> raise;
    //  gFrame->InvalidateAllGL();
    //  gFrame->RefreshAllCanvas(false);
@@ -53,12 +53,12 @@ public:
 };
 
 // Client class, to be used by subsequent instances in OnInit
-class StClient : public wxClient { 
-public: 
-  StClient(){}; 
-  wxConnectionBase *OnMakeConnection() { return new StConnection; } 
-}; 
- 
+class StClient : public wxClient {
+public:
+  StClient(){};
+  wxConnectionBase *OnMakeConnection() { return new StConnection; }
+};
+
 
 // Opens a file passed from another instance
 bool StConnection::OnExec(const wxString &topic, const wxString &data) {
@@ -73,8 +73,8 @@ bool StConnection::OnExec(const wxString &topic, const wxString &data) {
     pSet->load_file(path.fn_str());
     int wpt_dups;
     // Import with full vizibility of names and objects
-    pSet->LoadAllGPXObjects(!pSet->IsOpenCPN(), wpt_dups, true); 
-    update_route_mgr_dlg(); 
+    pSet->LoadAllGPXObjects(!pSet->IsOpenCPN(), wpt_dups, true);
+    update_route_mgr_dlg();
     LLBBox box = pSet->GetBBox();
     if (box.GetValid()) {
       gframe_center_view(box);
@@ -101,7 +101,7 @@ static bool IsToplevelModal() {
   }
   return false;
 }
- 
+
 // Accepts a connection from another instance
 wxConnectionBase *StServer::OnAcceptConnection(const wxString& topic) {
   if (topic.Lower() == "opencpn" && !IsToplevelModal()) {

@@ -14,7 +14,7 @@ set(
 )
 
 set(
-  HDRS 
+  HDRS
   include/cm93.h
   include/ogr_s57.h
   include/Osenc.h
@@ -22,7 +22,7 @@ set(
   include/s57chart.h
   include/s57RegistrarMgr.h
   include/SencManager.h
-) 
+)
 
 add_library(S57ENC STATIC ${SRC})
 add_library(ocpn::s57enc ALIAS S57ENC)
@@ -70,7 +70,7 @@ endif ()
 
 target_include_directories(
   S57ENC PUBLIC
-    ${CMAKE_SOURCE_DIR}/gui/include/gui 
+    ${CMAKE_SOURCE_DIR}/gui/include/gui
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_CURRENT_LIST_DIR}/include
