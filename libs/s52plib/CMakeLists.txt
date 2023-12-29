@@ -36,7 +36,17 @@ set_property(TARGET S52PLIB PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(S52PLIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # FixME (#3527) Dependency on main opencpn
-target_include_directories(S52PLIB PRIVATE  ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(
+  S52PLIB PRIVATE 
+  ${PROJECT_SOURCE_DIR}/model/include
+  ${PROJECT_SOURCE_DIR}/include
+)
+if (QT_ANDROID)
+  target_include_directories(S52PLIB PRIVATE ${CMAKE_SOURCE_DIR}/android)
+endif ()
+if (MSVC)
+  target_include_directories(S52PLIB PRIVATE ${CMAKE_SOURCE_DIR}/buildwin)
+endif ()
 
 # FixME (#3527) Missing linkage
 target_include_directories(S52PLIB PRIVATE ${wxWidgets_INCLUDE_DIRS})

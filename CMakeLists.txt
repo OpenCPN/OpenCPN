@@ -518,21 +518,6 @@ message(
   STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
 )
 
-
-
-#
-# Installation directory setup
-#
-set(
-  LINUX_LIB_PATHS
-  /usr/local/lib
-  /usr/local/lib64
-  /usr/lib/i386-linux-gnu
-  /usr/lib/x86_64-linux-gnu
-  /usr/lib
-  /usr/lib64
-)
-
 # Per default, use CMAKE_INSTALL_LIBDIR=lib on Debian (and derivatives)
 # to avoid multilib plugin paths. After all, we do not install any
 # "real" libraries.
@@ -852,456 +837,262 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
-set(
-  MODEL_HDRS
-  include/ais_bitstring.h
-  include/ais_decoder.h
-  include/ais_defs.h
-  include/ais_target_data.h
-  include/atomic_queue.h
-  include/base_platform.h
-  include/catalog_handler.h
-  include/catalog_parser.h
-  include/certificates.h
-  include/chart_ctx_factory.h
-  include/chartdata_input_stream.h
-  include/cli_platform.h
-  include/cmdline.h
-  include/comm_ais.h
-  include/comm_appmsg_bus.h
-  include/comm_appmsg.h
-  include/comm_bridge.h
-  include/comm_decoder.h
-  include/comm_driver.h
-  include/comm_drv_factory.h
-  include/comm_drv_file.h
-  include/comm_drv_n0183_android_bt.h
-  include/comm_drv_n0183_android_int.h
-  include/comm_drv_n0183.h
-  include/comm_drv_n0183_net.h
-  include/comm_drv_n0183_serial.h
-  include/comm_drv_n2k.h
-  include/comm_drv_n2k_serial.h
-  include/comm_drv_registry.h
-  include/comm_drv_signalk.h
-  include/comm_drv_signalk_net.h
-  include/comm_n0183_output.h
-  include/comm_navmsg_bus.h
-  include/comm_navmsg.h
-  include/comm_util.h
-  include/comm_vars.h
-  include/config_vars.h
-  include/conn_params.h
-  include/cutil.h
-  include/downloader.h
-  include/dsPortType.h
-  include/garmin_protocol_mgr.h
-  include/garmin_wrapper.h
-  include/geodesic.h
-  include/georef.h
-  include/hyperlink.h
-  include/idents.h
-  include/instance_check.h
-  include/ipc_api.h
-  include/local_api.h
-  include/logger.h
-  include/MarkIcon.h
-  include/mDNS_query.h
-  include/mDNS_service.h
-  include/meteo_points.h
-  include/multiplexer.h
-  include/nav_object_database.h
-  include/navutil_base.h
-  include/nmea_ctx_factory.h
-  include/nmea_log.h
-  include/ocpn_plugin.h
-  include/ocpn_types.h
-  include/ocpn_utils.h
-  include/own_ship.h
-  include/pincode.h
-  include/plugin_blacklist.h
-  include/plugin_cache.h
-  include/plugin_handler.h
-  include/plugin_loader.h
-  include/plugin_paths.h
-  include/position_parser.h
-  include/rest_server.h
-  include/route.h
-  include/routeman.h
-  include/route_point.h
-  include/safe_mode.h
-  include/select.h
-  include/select_item.h
-  include/semantic_vers.h
-  include/ser_ports.h
-  include/track.h
-)
-
+set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(
   GUI_HDRS
-  include/AboutFrame.h
-  include/AboutFrameImpl.h
-  include/about.h
-  include/ais.h
-  include/ais_info_gui.h
-  include/AISTargetAlertDialog.h
-  include/AISTargetListDialog.h
-  include/AISTargetQueryDialog.h
-  include/CanvasConfig.h
-  include/canvasMenu.h
-  include/CanvasOptions.h
-  include/catalog_mgr.h
-  include/cat_settings.h
-  include/chartbase.h
-  include/chart_ctx_factory.h
-  include/chartdb.h
-  include/chartdbs.h
-  include/chartimg.h
-  include/chcanv.h
-  include/ChInfoWin.h
-  include/color_handler.h
-  include/compass.h
-  include/concanv.h
-  include/connections_dialog.h
-  include/conn_params_panel.h
-  include/DetailSlider.h
-  include/download_mgr.h
-  include/emboss_data.h
-  include/FlexHash.h
-  include/FontDesc.h
-  include/FontMgr.h
-  include/garmin_protocol_mgr.h
-  include/garmin_wrapper.h
-  include/GoToPositionDialog.h
-  include/gshhs.h
-  include/gui_lib.h
-  include/IDX_entry.h
-  include/iENCToolbar.h
-  include/kml.h
-  include/Layer.h
-  include/LinkPropDlg.h
-  include/load_errors_dlg.h
-  include/MarkInfo.h
-  include/mbtiles.h
-  include/n0183_ctx_factory.h
-  include/navutil.h
-  include/nmea_ctx_factory.h
-  include/NMEALogWindow.h
-  include/ocpCursor.h
-  include/ocpndc.h
-  include/ocpn_frame.h
-  include/OCPNListCtrl.h
-  include/ocpn_pixel.h
-  include/OCPNPlatform.h
-  include/ocpn_print.h
-  include/OCPNRegion.h
-  include/options.h
-  include/piano.h
-  include/pluginmanager.h
-  include/printtable.h
-  include/priority_gui.h
-  include/Quilt.h
-  include/rest_server_gui.h
-  include/RolloverWin.h
-  include/route_ctx_factory.h
-  include/route_gui.h
-  include/routemanagerdialog.h
-  include/routeman_gui.h
-  include/route_point_gui.h
-  include/routeprintout.h
-  include/RoutePropDlg.h
-  include/RoutePropDlgImpl.h
-  include/S57ClassRegistrar.h
-  include/S57Light.h
-  include/S57ObjectDesc.h
-  include/S57QueryDialog.h
-  include/S57Sector.h
-  include/safe_mode_gui.h
-  include/select_item.h
-  include/SendToGpsDlg.h
-  include/SendToPeerDlg.h
-  include/shaders.h
-  include/Station_Data.h
-  include/styles.h
-  include/svg_utils.h
-  include/TCDataFactory.h
-  include/TCDataSource.h
-  include/TCDS_Ascii_Harmonic.h
-  include/TCDS_Binary_Harmonic.h
-  include/TC_Error_Code.h
-  include/tcmgr.h
-  include/TCWin.h
-  include/thumbwin.h
-  include/tide_time.h
-  include/timers.h
-  include/toolbar.h
-  include/track_gui.h
-  include/trackprintout.h
-  include/TrackPropDlg.h
-  include/TTYScroll.h
-  include/TTYWindow.h
-  include/undo.h
-  include/update_mgr.h
-  include/usb_devices.h
-  include/viewport.h
-  include/waypointman_gui.h
-  include/WindowDestroyListener.h
-  include/WindowDestroyListener.h
-  include/wx_instance_chk.h
+  ${GUI_HDR_DIR}/AboutFrame.h
+  ${GUI_HDR_DIR}/AboutFrameImpl.h
+  ${GUI_HDR_DIR}/about.h
+  ${GUI_HDR_DIR}/ais.h
+  ${GUI_HDR_DIR}/ais_info_gui.h
+  ${GUI_HDR_DIR}/AISTargetAlertDialog.h
+  ${GUI_HDR_DIR}/AISTargetListDialog.h
+  ${GUI_HDR_DIR}/AISTargetQueryDialog.h
+  ${GUI_HDR_DIR}/CanvasConfig.h
+  ${GUI_HDR_DIR}/canvasMenu.h
+  ${GUI_HDR_DIR}/CanvasOptions.h
+  ${GUI_HDR_DIR}/catalog_mgr.h
+  ${GUI_HDR_DIR}/cat_settings.h
+  ${GUI_HDR_DIR}/chartbase.h
+  ${GUI_HDR_DIR}/chart_ctx_factory.h
+  ${GUI_HDR_DIR}/chartdb.h
+  ${GUI_HDR_DIR}/chartdbs.h
+  ${GUI_HDR_DIR}/chartimg.h
+  ${GUI_HDR_DIR}/chcanv.h
+  ${GUI_HDR_DIR}/ChInfoWin.h
+  ${GUI_HDR_DIR}/color_handler.h
+  ${GUI_HDR_DIR}/compass.h
+  ${GUI_HDR_DIR}/concanv.h
+  ${GUI_HDR_DIR}/ConfigMgr.h
+  ${GUI_HDR_DIR}/connections_dialog.h
+  ${GUI_HDR_DIR}/conn_params_panel.h
+  ${GUI_HDR_DIR}/DetailSlider.h
+  ${GUI_HDR_DIR}/download_mgr.h
+  ${GUI_HDR_DIR}/dychart.h
+  ${GUI_HDR_DIR}/emboss_data.h
+  ${GUI_HDR_DIR}/FlexHash.h
+  ${GUI_HDR_DIR}/FontDesc.h
+  ${GUI_HDR_DIR}/FontMgr.h
+  ${GUI_HDR_DIR}/GoToPositionDialog.h
+  ${GUI_HDR_DIR}/gshhs.h
+  ${GUI_HDR_DIR}/gui_lib.h
+  ${GUI_HDR_DIR}/IDX_entry.h
+  ${GUI_HDR_DIR}/iENCToolbar.h
+  ${GUI_HDR_DIR}/kml.h
+  ${GUI_HDR_DIR}/Layer.h
+  ${GUI_HDR_DIR}/LinkPropDlg.h
+  ${GUI_HDR_DIR}/load_errors_dlg.h
+  ${GUI_HDR_DIR}/MarkInfo.h
+  ${GUI_HDR_DIR}/mbtiles.h
+  ${GUI_HDR_DIR}/MUIBar.h
+  ${GUI_HDR_DIR}/n0183_ctx_factory.h
+  ${GUI_HDR_DIR}/navutil.h
+  ${GUI_HDR_DIR}/nmea_ctx_factory.h
+  ${GUI_HDR_DIR}/NMEALogWindow.h
+  ${GUI_HDR_DIR}/ocpCursor.h
+  ${GUI_HDR_DIR}/ocpndc.h
+  ${GUI_HDR_DIR}/ocpn_app.h
+  ${GUI_HDR_DIR}/ocpn_frame.h
+  ${GUI_HDR_DIR}/OCPNListCtrl.h
+  ${GUI_HDR_DIR}/ocpn_pixel.h
+  ${GUI_HDR_DIR}/OCPNPlatform.h
+  ${GUI_HDR_DIR}/ocpn_print.h
+  ${GUI_HDR_DIR}/OCPN_AUIManager.h
+  ${GUI_HDR_DIR}/OCPNRegion.h
+  ${GUI_HDR_DIR}/options.h
+  ${GUI_HDR_DIR}/piano.h
+  ${GUI_HDR_DIR}/peer_client.h
+  ${GUI_HDR_DIR}/pluginmanager.h
+  ${GUI_HDR_DIR}/printtable.h
+  ${GUI_HDR_DIR}/priority_gui.h
+  ${GUI_HDR_DIR}/Quilt.h
+  ${GUI_HDR_DIR}/rest_server_gui.h
+  ${GUI_HDR_DIR}/RolloverWin.h
+  ${GUI_HDR_DIR}/route_ctx_factory.h
+  ${GUI_HDR_DIR}/route_gui.h
+  ${GUI_HDR_DIR}/routemanagerdialog.h
+  ${GUI_HDR_DIR}/routeman_gui.h
+  ${GUI_HDR_DIR}/route_point_gui.h
+  ${GUI_HDR_DIR}/routeprintout.h
+  ${GUI_HDR_DIR}/RoutePropDlg.h
+  ${GUI_HDR_DIR}/RoutePropDlgImpl.h
+  ${GUI_HDR_DIR}/S57Light.h
+  ${GUI_HDR_DIR}/S57ObjectDesc.h
+  ${GUI_HDR_DIR}/S57QueryDialog.h
+  ${GUI_HDR_DIR}/S57Sector.h
+  ${GUI_HDR_DIR}/safe_mode_gui.h
+  ${GUI_HDR_DIR}/SendToGpsDlg.h
+  ${GUI_HDR_DIR}/SendToPeerDlg.h
+  ${GUI_HDR_DIR}/shaders.h
+  ${GUI_HDR_DIR}/Station_Data.h
+  ${GUI_HDR_DIR}/styles.h
+  ${GUI_HDR_DIR}/svg_utils.h
+  ${GUI_HDR_DIR}/TCDataFactory.h
+  ${GUI_HDR_DIR}/TCDataSource.h
+  ${GUI_HDR_DIR}/TCDS_Ascii_Harmonic.h
+  ${GUI_HDR_DIR}/TCDS_Binary_Harmonic.h
+  ${GUI_HDR_DIR}/TC_Error_Code.h
+  ${GUI_HDR_DIR}/tcmgr.h
+  ${GUI_HDR_DIR}/TCWin.h
+  ${GUI_HDR_DIR}/thumbwin.h
+  ${GUI_HDR_DIR}/tide_time.h
+  ${GUI_HDR_DIR}/timers.h
+  ${GUI_HDR_DIR}/time_textbox.h
+  ${GUI_HDR_DIR}/toolbar.h
+  ${GUI_HDR_DIR}/track_gui.h
+  ${GUI_HDR_DIR}/trackprintout.h
+  ${GUI_HDR_DIR}/TrackPropDlg.h
+  ${GUI_HDR_DIR}/TTYScroll.h
+  ${GUI_HDR_DIR}/TTYWindow.h
+  ${GUI_HDR_DIR}/undo.h
+  ${GUI_HDR_DIR}/update_mgr.h
+  ${GUI_HDR_DIR}/usb_devices.h
+  ${GUI_HDR_DIR}/viewport.h
+  ${GUI_HDR_DIR}/waypointman_gui.h
+  ${GUI_HDR_DIR}/WindowDestroyListener.h
+  ${GUI_HDR_DIR}/WindowDestroyListener.h
+  ${GUI_HDR_DIR}/wx_instance_chk.h
 )
 
-
-set(MODEL_SRC
-  # Testable sources without GUI dependencies.
-  ${CMAKE_SOURCE_DIR}/src/ais_bitstring.cpp
-  ${CMAKE_SOURCE_DIR}/src/ais_decoder.cpp
-  ${CMAKE_SOURCE_DIR}/src/ais_target_data.cpp
-  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/catalog_handler.cpp
-  ${CMAKE_SOURCE_DIR}/src/catalog_parser.cpp
-  ${CMAKE_SOURCE_DIR}/src/chartdata_input_stream.cpp
-  ${CMAKE_SOURCE_DIR}/src/cli_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/cmdline.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_ais.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_appmsg_bus.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_appmsg.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_bridge.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_decoder.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_factory.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_file.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_net.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_n0183_serial.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_serial.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_registry.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_drv_signalk_net.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_n0183_output.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_navmsg_bus.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_navmsg.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_plugin_api.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_util.cpp
-  ${CMAKE_SOURCE_DIR}/src/comm_vars.cpp
-  ${CMAKE_SOURCE_DIR}/src/config_vars.cpp
-  ${CMAKE_SOURCE_DIR}/src/conn_params.cpp
-  ${CMAKE_SOURCE_DIR}/src/cutil.cpp
-  ${CMAKE_SOURCE_DIR}/src/downloader.cpp
-  ${CMAKE_SOURCE_DIR}/src/garmin_protocol_mgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/geodesic.cpp
-  ${CMAKE_SOURCE_DIR}/src/georef.cpp
-  ${CMAKE_SOURCE_DIR}/src/hyperlink.cpp
-  ${CMAKE_SOURCE_DIR}/src/instance_handler.cpp
-  ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
-  ${CMAKE_SOURCE_DIR}/src/local_api.cpp
-  ${CMAKE_SOURCE_DIR}/src/logger.cpp
-  ${CMAKE_SOURCE_DIR}/src/multiplexer.cpp
-  ${CMAKE_SOURCE_DIR}/src/nav_object_database.cpp
-  ${CMAKE_SOURCE_DIR}/src/navutil_base.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_plugin.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-  ${CMAKE_SOURCE_DIR}/src/ogrs57datasource.cpp
-  ${CMAKE_SOURCE_DIR}/src/ogrs57layer.cpp
-  ${CMAKE_SOURCE_DIR}/src/own_ship.cpp
-  ${CMAKE_SOURCE_DIR}/src/pincode.cpp
-  ${CMAKE_SOURCE_DIR}/src/plugin_blacklist.cpp
-  ${CMAKE_SOURCE_DIR}/src/plugin_cache.cpp
-  ${CMAKE_SOURCE_DIR}/src/plugin_handler.cpp
-  ${CMAKE_SOURCE_DIR}/src/plugin_loader.cpp
-  ${CMAKE_SOURCE_DIR}/src/plugin_paths.cpp
-  ${CMAKE_SOURCE_DIR}/src/position_parser.cpp
-  ${CMAKE_SOURCE_DIR}/src/rest_server.cpp
-  ${CMAKE_SOURCE_DIR}/src/route.cpp
-  ${CMAKE_SOURCE_DIR}/src/routeman.cpp
-  ${CMAKE_SOURCE_DIR}/src/route_point.cpp
-  ${CMAKE_SOURCE_DIR}/src/s57classregistrar.cpp
-  ${CMAKE_SOURCE_DIR}/src/s57featuredefns.cpp
-  ${CMAKE_SOURCE_DIR}/src/s57reader.cpp
-  ${CMAKE_SOURCE_DIR}/src/s57RegistrarMgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/safe_mode.cpp
-  ${CMAKE_SOURCE_DIR}/src/select.cpp
-  ${CMAKE_SOURCE_DIR}/src/select_item.cpp
-  ${CMAKE_SOURCE_DIR}/src/semantic_vers.cpp
-  ${CMAKE_SOURCE_DIR}/src/ser_ports.cpp
-  ${CMAKE_SOURCE_DIR}/src/track.cpp
-  ${CMAKE_SOURCE_DIR}/src/wx_instance_chk.cpp
-)
-
+set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(
   GUI_SRC
-  ${CMAKE_SOURCE_DIR}/src/about.cpp
-  ${CMAKE_SOURCE_DIR}/src/AboutFrame.cpp
-  ${CMAKE_SOURCE_DIR}/src/AboutFrameImpl.cpp
-  ${CMAKE_SOURCE_DIR}/src/ais.cpp
-  ${CMAKE_SOURCE_DIR}/src/ais_info_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/AISTargetAlertDialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/AISTargetListDialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/AISTargetQueryDialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/CanvasConfig.cpp
-  ${CMAKE_SOURCE_DIR}/src/canvasMenu.cpp
-  ${CMAKE_SOURCE_DIR}/src/CanvasOptions.cpp
-  ${CMAKE_SOURCE_DIR}/src/catalog_mgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/cat_settings.cpp
-  ${CMAKE_SOURCE_DIR}/src/certificates.cpp
-  ${CMAKE_SOURCE_DIR}/src/chartdb.cpp
-  ${CMAKE_SOURCE_DIR}/src/chartdbs.cpp
-  ${CMAKE_SOURCE_DIR}/src/chartimg.cpp
-  ${CMAKE_SOURCE_DIR}/src/chcanv.cpp
-  ${CMAKE_SOURCE_DIR}/src/ChInfoWin.cpp
-  ${CMAKE_SOURCE_DIR}/src/cm93.cpp
-  ${CMAKE_SOURCE_DIR}/src/color_handler.cpp
-  ${CMAKE_SOURCE_DIR}/src/compass.cpp
-  ${CMAKE_SOURCE_DIR}/src/concanv.cpp
-  ${CMAKE_SOURCE_DIR}/src/ConfigMgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/connections_dialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/conn_params_panel.cpp
-  ${CMAKE_SOURCE_DIR}/src/DetailSlider.cpp
-  ${CMAKE_SOURCE_DIR}/src/download_mgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/FlexHash.cpp
-  ${CMAKE_SOURCE_DIR}/src/FontDesc.cpp
-  ${CMAKE_SOURCE_DIR}/src/FontMgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/glChartCanvas.cpp
-  ${CMAKE_SOURCE_DIR}/src/glTexCache.cpp
-  ${CMAKE_SOURCE_DIR}/src/glTextureDescriptor.cpp
-  ${CMAKE_SOURCE_DIR}/src/glTextureManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/GoToPositionDialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/gshhs.cpp
-  ${CMAKE_SOURCE_DIR}/src/gui_lib.cpp
-  ${CMAKE_SOURCE_DIR}/src/IDX_entry.cpp
-  ${CMAKE_SOURCE_DIR}/src/iENCToolbar.cpp
-  ${CMAKE_SOURCE_DIR}/src/kml.cpp
-  ${CMAKE_SOURCE_DIR}/src/Layer.cpp
-  ${CMAKE_SOURCE_DIR}/src/LinkPropDlg.cpp
-  ${CMAKE_SOURCE_DIR}/src/load_errors_dlg.cpp
-  ${CMAKE_SOURCE_DIR}/src/MarkInfo.cpp
-  ${CMAKE_SOURCE_DIR}/src/mbtiles.cpp
-  ${CMAKE_SOURCE_DIR}/src/mDNS_query.cpp
-  ${CMAKE_SOURCE_DIR}/src/mDNS_service.cpp
-  ${CMAKE_SOURCE_DIR}/src/MUIBar.cpp
-  ${CMAKE_SOURCE_DIR}/src/navutil.cpp
-  ${CMAKE_SOURCE_DIR}/src/NMEALogWindow.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpCursor.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_app.cpp
-  ${CMAKE_SOURCE_DIR}/src/OCPN_AUIManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpndc.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_frame.cpp
-  ${CMAKE_SOURCE_DIR}/src/OCPNListCtrl.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_pixel.cpp
-  ${CMAKE_SOURCE_DIR}/src/OCPNPlatform.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_print.cpp
-  ${CMAKE_SOURCE_DIR}/src/OCPNRegion.cpp
-  ${CMAKE_SOURCE_DIR}/src/options.cpp
-  ${CMAKE_SOURCE_DIR}/src/Osenc.cpp
-  ${CMAKE_SOURCE_DIR}/src/peer_client.cpp
-  ${CMAKE_SOURCE_DIR}/src/piano.cpp
-  ${CMAKE_SOURCE_DIR}/src/pluginmanager.cpp
-  ${CMAKE_SOURCE_DIR}/src/printtable.cpp
-  ${CMAKE_SOURCE_DIR}/src/priority_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/Quilt.cpp
-  ${CMAKE_SOURCE_DIR}/src/rest_server_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/RolloverWin.cpp
-  ${CMAKE_SOURCE_DIR}/src/route_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/routemanagerdialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/routeman_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/route_point_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/routeprintout.cpp
-  ${CMAKE_SOURCE_DIR}/src/RoutePropDlg.cpp
-  ${CMAKE_SOURCE_DIR}/src/RoutePropDlgImpl.cpp
-  ${CMAKE_SOURCE_DIR}/src/s57chart.cpp
-  ${CMAKE_SOURCE_DIR}/src/s57obj.cpp
-  ${CMAKE_SOURCE_DIR}/src/S57QueryDialog.cpp
-  ${CMAKE_SOURCE_DIR}/src/safe_mode_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/SencManager.cpp
-  ${CMAKE_SOURCE_DIR}/src/SendToGpsDlg.cpp
-  ${CMAKE_SOURCE_DIR}/src/SendToPeerDlg.cpp
-  ${CMAKE_SOURCE_DIR}/src/shaders.cpp
-  ${CMAKE_SOURCE_DIR}/src/Station_Data.cpp
-  ${CMAKE_SOURCE_DIR}/src/styles.cpp
-  ${CMAKE_SOURCE_DIR}/src/svg_utils.cpp
-  ${CMAKE_SOURCE_DIR}/src/TCDataFactory.cpp
-  ${CMAKE_SOURCE_DIR}/src/TCDataSource.cpp
-  ${CMAKE_SOURCE_DIR}/src/TCDS_Ascii_Harmonic.cpp
-  ${CMAKE_SOURCE_DIR}/src/TCDS_Binary_Harmonic.cpp
-  ${CMAKE_SOURCE_DIR}/src/tcmgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/TCWin.cpp
-  ${CMAKE_SOURCE_DIR}/src/thumbwin.cpp
-  ${CMAKE_SOURCE_DIR}/src/toolbar.cpp
-  ${CMAKE_SOURCE_DIR}/src/track_gui.cpp
-  ${CMAKE_SOURCE_DIR}/src/trackprintout.cpp
-  ${CMAKE_SOURCE_DIR}/src/TrackPropDlg.cpp
-  ${CMAKE_SOURCE_DIR}/src/TTYScroll.cpp
-  ${CMAKE_SOURCE_DIR}/src/TTYWindow.cpp
-  ${CMAKE_SOURCE_DIR}/src/undo.cpp
-  ${CMAKE_SOURCE_DIR}/src/update_mgr.cpp
-  ${CMAKE_SOURCE_DIR}/src/viewport.cpp
-  ${CMAKE_SOURCE_DIR}/src/waypointman_gui.cpp
+  ${GUI_SRC_DIR}/about.cpp
+  ${GUI_SRC_DIR}/AboutFrame.cpp
+  ${GUI_SRC_DIR}/AboutFrameImpl.cpp
+  ${GUI_SRC_DIR}/ais.cpp
+  ${GUI_SRC_DIR}/ais_info_gui.cpp
+  ${GUI_SRC_DIR}/AISTargetAlertDialog.cpp
+  ${GUI_SRC_DIR}/AISTargetListDialog.cpp
+  ${GUI_SRC_DIR}/AISTargetQueryDialog.cpp
+  ${GUI_SRC_DIR}/CanvasConfig.cpp
+  ${GUI_SRC_DIR}/canvasMenu.cpp
+  ${GUI_SRC_DIR}/CanvasOptions.cpp
+  ${GUI_SRC_DIR}/catalog_mgr.cpp
+  ${GUI_SRC_DIR}/cat_settings.cpp
+  ${GUI_SRC_DIR}/chartdb.cpp
+  ${GUI_SRC_DIR}/chartdbs.cpp
+  ${GUI_SRC_DIR}/chartimg.cpp
+  ${GUI_SRC_DIR}/chcanv.cpp
+  ${GUI_SRC_DIR}/ChInfoWin.cpp
+  ${GUI_SRC_DIR}/cm93.cpp
+  ${GUI_SRC_DIR}/color_handler.cpp
+  ${GUI_SRC_DIR}/compass.cpp
+  ${GUI_SRC_DIR}/concanv.cpp
+  ${GUI_SRC_DIR}/ConfigMgr.cpp
+  ${GUI_SRC_DIR}/connections_dialog.cpp
+  ${GUI_SRC_DIR}/conn_params_panel.cpp
+  ${GUI_SRC_DIR}/DetailSlider.cpp
+  ${GUI_SRC_DIR}/download_mgr.cpp
+  ${GUI_SRC_DIR}/FlexHash.cpp
+  ${GUI_SRC_DIR}/FontDesc.cpp
+  ${GUI_SRC_DIR}/FontMgr.cpp
+  ${GUI_SRC_DIR}/GoToPositionDialog.cpp
+  ${GUI_SRC_DIR}/gshhs.cpp
+  ${GUI_SRC_DIR}/gui_lib.cpp
+  ${GUI_SRC_DIR}/IDX_entry.cpp
+  ${GUI_SRC_DIR}/iENCToolbar.cpp
+  ${GUI_SRC_DIR}/kml.cpp
+  ${GUI_SRC_DIR}/Layer.cpp
+  ${GUI_SRC_DIR}/LinkPropDlg.cpp
+  ${GUI_SRC_DIR}/load_errors_dlg.cpp
+  ${GUI_SRC_DIR}/MarkInfo.cpp
+  ${GUI_SRC_DIR}/mbtiles.cpp
+  ${GUI_SRC_DIR}/MUIBar.cpp
+  ${GUI_SRC_DIR}/navutil.cpp
+  ${GUI_SRC_DIR}/NMEALogWindow.cpp
+  ${GUI_SRC_DIR}/ocpCursor.cpp
+  ${GUI_SRC_DIR}/ocpn_app.cpp
+  ${GUI_SRC_DIR}/OCPN_AUIManager.cpp
+  ${GUI_SRC_DIR}/ocpndc.cpp
+  ${GUI_SRC_DIR}/ocpn_frame.cpp
+  ${GUI_SRC_DIR}/OCPNListCtrl.cpp
+  ${GUI_SRC_DIR}/ocpn_pixel.cpp
+  ${GUI_SRC_DIR}/OCPNPlatform.cpp
+  ${GUI_SRC_DIR}/ocpn_print.cpp
+  ${GUI_SRC_DIR}/OCPNRegion.cpp
+  ${GUI_SRC_DIR}/options.cpp
+  ${GUI_SRC_DIR}/Osenc.cpp
+  ${GUI_SRC_DIR}/peer_client.cpp
+  ${GUI_SRC_DIR}/piano.cpp
+  ${GUI_SRC_DIR}/pluginmanager.cpp
+  ${GUI_SRC_DIR}/printtable.cpp
+  ${GUI_SRC_DIR}/priority_gui.cpp
+  ${GUI_SRC_DIR}/Quilt.cpp
+  ${GUI_SRC_DIR}/rest_server_gui.cpp
+  ${GUI_SRC_DIR}/RolloverWin.cpp
+  ${GUI_SRC_DIR}/route_gui.cpp
+  ${GUI_SRC_DIR}/routemanagerdialog.cpp
+  ${GUI_SRC_DIR}/routeman_gui.cpp
+  ${GUI_SRC_DIR}/route_point_gui.cpp
+  ${GUI_SRC_DIR}/routeprintout.cpp
+  ${GUI_SRC_DIR}/RoutePropDlg.cpp
+  ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
+  ${GUI_SRC_DIR}/s57chart.cpp
+  ${GUI_SRC_DIR}/s57obj.cpp
+  ${GUI_SRC_DIR}/S57QueryDialog.cpp
+  ${GUI_SRC_DIR}/safe_mode_gui.cpp
+  ${GUI_SRC_DIR}/SencManager.cpp
+  ${GUI_SRC_DIR}/SendToGpsDlg.cpp
+  ${GUI_SRC_DIR}/SendToPeerDlg.cpp
+  ${GUI_SRC_DIR}/shaders.cpp
+  ${GUI_SRC_DIR}/Station_Data.cpp
+  ${GUI_SRC_DIR}/styles.cpp
+  ${GUI_SRC_DIR}/svg_utils.cpp
+  ${GUI_SRC_DIR}/TCDataFactory.cpp
+  ${GUI_SRC_DIR}/TCDataSource.cpp
+  ${GUI_SRC_DIR}/TCDS_Ascii_Harmonic.cpp
+  ${GUI_SRC_DIR}/TCDS_Binary_Harmonic.cpp
+  ${GUI_SRC_DIR}/tcmgr.cpp
+  ${GUI_SRC_DIR}/TCWin.cpp
+  ${GUI_SRC_DIR}/thumbwin.cpp
+  ${GUI_SRC_DIR}/toolbar.cpp
+  ${GUI_SRC_DIR}/track_gui.cpp
+  ${GUI_SRC_DIR}/trackprintout.cpp
+  ${GUI_SRC_DIR}/TrackPropDlg.cpp
+  ${GUI_SRC_DIR}/TTYScroll.cpp
+  ${GUI_SRC_DIR}/TTYWindow.cpp
+  ${GUI_SRC_DIR}/undo.cpp
+  ${GUI_SRC_DIR}/update_mgr.cpp
+  ${GUI_SRC_DIR}/viewport.cpp
+  ${GUI_SRC_DIR}/waypointman_gui.cpp
 )
 
-
-if (LINUX)
-  list(APPEND MODEL_HDRS include/comm_drv_n2k_socketcan.h )
-  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/comm_drv_n2k_socketcan.cpp)
-  list(APPEND HDRS
-    include/dbus_client.h
-    include/dbus_server.h
-    include/dbus_instance_check.h
-  )
-  list(APPEND MODEL_SRC
-    ${CMAKE_SOURCE_DIR}/src/dbus_server.cpp
-    ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
-  )
-endif ()
-
-set(GUI_HDRS ${GUI_HDRS} include/shaders.h)
-set(GUI_SRC ${GUI_SRC} src/shaders.cpp)
- 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
-  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/garmin_wrapper.cpp)
+  list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/garmin_wrapper.cpp)
 endif ()
 
 if (LINUX)
-  list(APPEND GUI_SRC src/linux_devices.cpp src/udev_rule_mgr.cpp)
-  list(APPEND GUI_HDRS include/linux_devices.h include/udev_rule_mgr.h)
-endif ()
-
-if (UNIX)
-  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/std_instance_chk.cpp)
-  list(APPEND HDRS include/std_instance_chk.h)
-endif ()
-
-if (APPLE)
-  list(APPEND MODEL_HDRS include/macutils.h )
-  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/macutils.c)
+  list(APPEND GUI_SRC
+    ${GUI_SRC_DIR}/linux_devices.cpp
+    ${GUI_SRC_DIR}/udev_rule_mgr.cpp
+  )
+  list(APPEND GUI_HDRS
+    ${GUI_HDR_DIR}/linux_devices.h
+    ${GUI_HDR_DIR}/udev_rule_mgr.h
+  )
 endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)
-  list(APPEND GUI_HDRS include/crashprint.h)
-  list(APPEND GUI_SRC src/crashprint.cpp)
+  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/crashprint.h)
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/crashprint.cpp)
 endif ()
 
 if (QT_ANDROID)
-  set(GUI_HDRS ${GUI_HDRS} include/androidUTIL.h)
-  set(GUI_SRC ${GUI_SRC} src/androidUTIL.cpp)
-  set(GUI_SRC ${GUI_SRC} src/comm_drv_n0183_android_int.cpp)
-  set(GUI_SRC ${GUI_SRC} src/comm_drv_n0183_android_bt.cpp)
+  list(APPEND GUI_HDRS android/androidUTIL.h)
+  list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/android/androidUTIL.cpp)
 endif ()
 
-if (NOT QT_ANDROID)
-  list(APPEND MODEL_SRC ${CMAKE_SOURCE_DIR}/src/ipc_factories.cpp)
-endif ()
-
-set(SRCS ${GUI_SRC} ${MODEL_SRC})
-set(HDRS ${MODEL_HDRS} ${GUI_HDRS})
+set(SRCS ${GUI_SRC} )
+set(HDRS ${GUI_HDRS})
 
 # Temporary support for #3513, to be removed
 file(WRITE ${CMAKE_BINARY_DIR}/gui-src.txt "${GUI_SRC}")
 file(WRITE ${CMAKE_BINARY_DIR}/gui-headers.txt "${GUI_HDRS}")
 file(WRITE ${CMAKE_BINARY_DIR}/model-hdrs.txt "${MODEL_HDRS}")
 file(WRITE ${CMAKE_BINARY_DIR}/model-src.txt "${MODEL_SRC}")
-
 
 
 if (APPLE)
@@ -1323,15 +1114,21 @@ endif ()
 add_library(_opencpn INTERFACE) # plugin link target.
 target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
-  _opencpn
-  BEFORE
-  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
+  _opencpn BEFORE INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
+if (MSVC)
+  target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildwin)
+elseif(APPLE)
+  target_include_directories(
+    _opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildosx/include
+  )
+elseif (QT_ANDROID) 
+  target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/android)
+endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
-
-target_include_directories(
-  ${PACKAGE_NAME} BEFORE PUBLIC ${CMAKE_SOURCE_DIR}/include
-)
 
 set_target_properties(
   ${PACKAGE_NAME}
@@ -1340,16 +1137,22 @@ set_target_properties(
     OUTPUT_NAME ${PACKAGE_NAME}
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-  message(STATUS "PackageName debug  ${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(
-  ${PACKAGE_NAME}
-  BEFORE
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${PACKAGE_NAME} BEFORE PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/model/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
 
+if (QT_ANDROID)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
+  )
+endif ()
+
 if (MSVC AND NOT OCPN_CI_BUILD)
-  MESSAGE(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")
+  message(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTY VS_STARTUP_PROJECT ${PACKAGE_NAME})
   set_target_properties(
@@ -1377,23 +1180,9 @@ endif ()
 
 find_package(Gettext REQUIRED)
 
-add_subdirectory(libs/observable)
-target_link_libraries(${PACKAGE_NAME} PRIVATE observable::observable)
 
 add_subdirectory(libs/ssl_sha1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ssl::sha1)
-
-add_subdirectory(libs/picosha2)
-target_link_libraries(${PACKAGE_NAME} PRIVATE pico_sha2)
-
-add_subdirectory(libs/mongoose)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mongoose)
-
-add_subdirectory(libs/rapidjson)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::rapidjson)
-
-add_subdirectory(libs/mDNS)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::mDNS)
 
 if (NOT QT_ANDROID)
   find_package(LIBUDEV)
@@ -1418,13 +1207,6 @@ if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
   if (PANGO_FOUND)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pango)
     set(HAVE_PANGO 1)
-  endif ()
-endif ()
-
-if (LINUX)
-  find_package(GLIB COMPONENTS gio gobject)
-  if (GLIB_FOUND)
-    target_link_libraries(${PACKAGE_NAME} PRIVATE glib::glib)
   endif ()
 endif ()
 
@@ -1516,6 +1298,20 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
   endif (OPENGL_FOUND)
 endif ()
 
+if (MSVC)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildwin
+  )
+elseif(APPLE)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildosx/include
+  )
+elseif (QT_ANDROID) 
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
+  )
+endif ()
+
 if (OCPN_USE_CRASHREPORT)
   message(STATUS "Crash reporting enabled")
   if (MSVC)
@@ -1590,15 +1386,6 @@ if (CMAKE_HOST_WIN32)
     "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include"
   )
 endif (CMAKE_HOST_WIN32)
-if (OCPN_USE_LZMA)
-  find_package(LibLZMA)
-  if (LIBLZMA_FOUND)
-    message(STATUS "Building with lzma support: ${LIBLZMA_LIBRARIES}")
-    target_include_directories(${PACKAGE_NAME} PUBLIC ${LIBLZMA_INCLUDE_DIRS})
-  else (LIBLZMA_FOUND)
-    message(STATUS "lzma library not found")
-  endif (LIBLZMA_FOUND)
-endif (OCPN_USE_LZMA)
 
 if (OCPN_USE_CURL)
   if (CMAKE_HOST_WIN32)
@@ -1762,14 +1549,14 @@ if (OPENGL_FOUND)
   target_sources(
     ${PACKAGE_NAME}
     PRIVATE
-    include/glChartCanvas.h
-    include/glTextureDescriptor.h
-    include/glTexCache.h
-    include/glTextureManager.h
-    src/glTextureDescriptor.cpp
-    src/glTexCache.cpp
-    src/glChartCanvas.cpp
-    src/glTextureManager.cpp
+    ${GUI_HDR_DIR}/glChartCanvas.h
+    ${GUI_HDR_DIR}/glTextureDescriptor.h
+    ${GUI_HDR_DIR}/glTexCache.h
+    ${GUI_HDR_DIR}/glTextureManager.h
+    ${GUI_SRC_DIR}/glTextureDescriptor.cpp
+    ${GUI_SRC_DIR}/glTexCache.cpp
+    ${GUI_SRC_DIR}/glChartCanvas.cpp
+    ${GUI_SRC_DIR}/glTextureManager.cpp
   )
 endif ()
 
@@ -1817,24 +1604,8 @@ message(STATUS "    Adding local LIBTESS2")
 add_subdirectory(libs/libtess2)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
 
-include("SoundConfig")
-add_subdirectory(libs/sound)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sound)
-
-add_subdirectory(libs/wxJSON)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
-
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
-
-add_subdirectory(libs/geoprim)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::geoprim)
-
-add_subdirectory(libs/s52plib)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::s52plib)
-
-add_subdirectory(libs/pugixml)
-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::pugixml)
 
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
@@ -1842,69 +1613,7 @@ if (MSVC)
 endif (MSVC)
 
 message(STATUS "S57 ENC support: enabled")
-set(
-  SRC_S57ENC
-  include/cm93.h
-  include/ogr_s57.h
-  include/Osenc.h
-  include/s57chart.h
-  include/s57RegistrarMgr.h
-  include/SencManager.h
-  src/cm93.cpp
-  src/ogrs57datasource.cpp
-  src/ogrs57layer.cpp
-  src/Osenc.cpp
-  src/s57chart.cpp
-  src/s57classregistrar.cpp
-  src/s57featuredefns.cpp
-  src/s57obj.cpp
-  src/s57reader.cpp
-  src/s57RegistrarMgr.cpp
-  src/SencManager.cpp
-)
-add_library(S57ENC STATIC ${SRC_S57ENC})
-target_link_libraries(
-  S57ENC
-  PUBLIC
-    ocpn::nmea0183
-    ocpn::tess2
-    ocpn::sound
-    ocpn::wxjson
-    ssl::sha1
-    ocpn::tinyxml
-    observable::observable
-)
-
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
-  target_compile_options(S57ENC PRIVATE -fvisibility=default)
-endif ()
-
-if (OCPN_USE_CURL AND NOT QT_ANDROID)
-  target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
-endif ()
-
-add_subdirectory(libs/iso8211)
-target_link_libraries(S57ENC PUBLIC ocpn::iso8211)
-
-add_subdirectory(libs/gdal)
-target_link_libraries(S57ENC PUBLIC ocpn::gdal)
-
-add_subdirectory(libs/N2KParser)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::N2KParser)
-
-if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
-  target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
-  target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
-endif ()
-
-target_link_libraries(S57ENC PUBLIC ocpn::pugixml)
-target_link_libraries(S57ENC PUBLIC ocpn::geoprim)
-target_link_libraries(S57ENC PUBLIC ocpn::s52plib)
-
-target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
-set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-target_link_libraries(${PACKAGE_NAME} PRIVATE S57ENC)
+add_subdirectory(s57)
 
 if (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
@@ -1961,25 +1670,6 @@ endif ()
 #
 # GL_CFLAGS="-DUSE_GLU_TESS" AC_SUBST(GL_CFLAGS) fi
 
-if (UNIX AND NOT APPLE)
-  find_path(LIBELF_INCLUDE_DIR NAMES libelf.h gelf.h PATH_SUFFIXES libelf)
-  find_library(LIBELF_LIBRARY NAMES elf)
-  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-    message(STATUS "Found LibELF...")
-    message(STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}")
-    message(STATUS "    ELF Include: ${LIBELF_LIBRARY}")
-    target_include_directories(${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}")
-    target_link_libraries(${PACKAGE_NAME} PRIVATE "${LIBELF_LIBRARY}")
-
-    set(USE_LIBELF ON)   # => config.h
-  else ()
-    message(
-      WARNING
-        "Did not found LibELF, plugin compatibility check will be simplified."
-    )
-  endif ()
-endif (UNIX AND NOT APPLE)
-
 # Finalize config.h setup and deploy it.
 include(TargetSetup)
 if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
@@ -1990,7 +1680,11 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-configure_file(${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
+include(SoundConfig)
+configure_file(
+  ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
+  ${CMAKE_BINARY_DIR}/include/config.h
+)
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
 if (NOT APPLE AND NOT QT_ANDROID)
@@ -2024,24 +1718,6 @@ if (UNIX)
   endif ()
 endif (UNIX)
 
-if (OCPN_BUILD_TEST)
-  add_subdirectory(libs/gtest)
-  add_subdirectory(test)
-  add_custom_target(run-tests
-    COMMAND ctest  -C $<CONFIG> -E tests --timeout 10
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-  )
-  add_dependencies(run-tests tests)
-  if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
-    add_dependencies(run-tests ipc-srv-tests)
-  endif ()
-  if (LINUX)
-    add_dependencies(run-tests dbus_tests)
-  endif ()
-else ()
-  add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
-endif ()
-
 # If we build for windows systems, we also include the resource file containing
 # the manifest, icon and other resources
 if (MSVC)
@@ -2061,28 +1737,28 @@ endif (OCPN_BUNDLE_GSHHS)
 
 set(
   uiData
-  src/bitmaps/styles.xml
-  src/bitmaps/toolicons_journeyman.png
-  src/bitmaps/toolicons_journeyman_flat.png
-  src/bitmaps/toolicons_traditional.png
-  src/bitmaps/iconRMinus.png
-  src/bitmaps/iconRPlus.png
-  src/bitmaps/iconMinimum.png
-  src/bitmaps/iconStandard.png
-  src/bitmaps/iconUserStd.png
-  src/bitmaps/iconAll.png
-  src/bitmaps/DragHandle.svg
-  src/bitmaps/eye.svg
-  src/bitmaps/eyex.svg
-  src/bitmaps/eyeGray.svg
-  src/bitmaps/iENC_All.svg
-  src/bitmaps/iENC_Minimum.svg
-  src/bitmaps/iENC_Standard.svg
-  src/bitmaps/iENC_UserStd.svg
-  src/bitmaps/iENC_RPlus.svg
-  src/bitmaps/iENC_RMinus.svg
-  src/bitmaps/package-x-generic.png
-  src/bitmaps/plus.svg
+  resources/bitmaps/styles.xml
+  resources/bitmaps/toolicons_journeyman.png
+  resources/bitmaps/toolicons_journeyman_flat.png
+  resources/bitmaps/toolicons_traditional.png
+  resources/bitmaps/iconRMinus.png
+  resources/bitmaps/iconRPlus.png
+  resources/bitmaps/iconMinimum.png
+  resources/bitmaps/iconStandard.png
+  resources/bitmaps/iconUserStd.png
+  resources/bitmaps/iconAll.png
+  resources/bitmaps/DragHandle.svg
+  resources/bitmaps/eye.svg
+  resources/bitmaps/eyex.svg
+  resources/bitmaps/eyeGray.svg
+  resources/bitmaps/iENC_All.svg
+  resources/bitmaps/iENC_Minimum.svg
+  resources/bitmaps/iENC_Standard.svg
+  resources/bitmaps/iENC_UserStd.svg
+  resources/bitmaps/iENC_RPlus.svg
+  resources/bitmaps/iENC_RMinus.svg
+  resources/bitmaps/package-x-generic.png
+  resources/bitmaps/plus.svg
 )
 
 set(
@@ -2121,15 +1797,6 @@ endif (xAPPLE)
 if (WIN32)
   target_sources(${PACKAGE_NAME} PRIVATE app.manifest)
 endif (WIN32)
-
-add_subdirectory("libs/nmea0183")
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::nmea0183)
-
-add_subdirectory("libs/easywsclient")
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::easywsclient)
-
-##add_subdirectory("libs/wxservdisc")
-####target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::wxservdisc)
 
 if (APPLE)
   set_source_files_properties(
@@ -2413,6 +2080,26 @@ if (UNIX)
   target_link_libraries(${PACKAGE_NAME} PRIVATE dl)
 endif ()
 
+# Add targets used elsewhere, notably by model
+
+
+add_subdirectory(libs/easywsclient)
+add_subdirectory(libs/gdal)
+add_subdirectory(libs/geoprim)
+add_subdirectory(libs/iso8211)
+add_subdirectory(libs/mDNS)
+add_subdirectory(libs/mongoose)
+add_subdirectory(libs/N2KParser)
+add_subdirectory(libs/nmea0183)
+add_subdirectory(libs/observable)
+add_subdirectory(libs/picosha2)
+add_subdirectory(libs/pugixml)
+add_subdirectory(libs/rapidjson)
+add_subdirectory(libs/s52plib)
+add_subdirectory(libs/sound)
+add_subdirectory(libs/wxJSON)
+
+
 #
 # Install
 #
@@ -2513,15 +2200,17 @@ if (NOT APPLE)
       DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps
     )
     install(
-      FILES src/bitmaps/opencpn-64.png
+      FILES resources/bitmaps/opencpn-64.png
       DESTINATION ${PREFIX_DATA}/icons/hicolor/64x64/apps
       RENAME opencpn.png
     )
     install(
-      FILES src/bitmaps/other_svg_src/opencpn.svg
+      FILES resources/bitmaps/other_svg_src/opencpn.svg
       DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps
     )
-    install(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications)
+    install(
+      FILES resources/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications
+    )
     install(
       FILES ${CMAKE_BINARY_DIR}/opencpn.appdata.xml
       DESTINATION ${PREFIX_DATA}/metainfo
@@ -2921,7 +2610,7 @@ set(
 if (WIN32 AND NOT UNIX)
   if (NOT SKIP_VERSION_CONFIG)
     configure_file(
-      ${CMAKE_SOURCE_DIR}/src/opencpn.rc.in ${CMAKE_BINARY_DIR}/opencpn.rc
+      ${CMAKE_SOURCE_DIR}/resources/opencpn.rc.in ${CMAKE_BINARY_DIR}/opencpn.rc
     )
     configure_file(
       "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_GERMAN.nsh.in"
@@ -3016,7 +2705,7 @@ if (WIN32 AND NOT UNIX)
   # These lines set the name of the Windows Start Menu shortcut and the icon
   # that goes with it
   set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/resources/bitmaps\\\\opencpn.ico")
 
   set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup")
 
@@ -3051,7 +2740,7 @@ endif (OCPN_BUNDLE_TCDATA)
 # Appstream data (linux in general, in particular flatpak).
 #
 configure_file(
-  "${CMAKE_SOURCE_DIR}/data/opencpn.appdata.xml.in"
+  "${CMAKE_SOURCE_DIR}/resources/opencpn.appdata.xml.in"
   "${CMAKE_BINARY_DIR}/opencpn.appdata.xml"
   @ONLY
 )
@@ -3121,19 +2810,13 @@ if (APPLE)
     FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib
     DESTINATION "bin/OpenCPN.app/Contents/Plugins"
   )
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-cmd
-    DESTINATION "bin/OpenCPN.app/Contents/MacOS"
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-      WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
+  set(
+    LIBS
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
+    "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
   )
-    set(
-      LIBS
-      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libdashboard_pi.dylib"
-      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libgrib_pi.dylib"
-      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libchartdldr_pi.dylib"
-      "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/Plugins/libwmm_pi.dylib"
-    )
   install(CODE "
     include(BundleUtilities)
     set(BU_CHMOD_BUNDLE_ITEMS TRUE)
@@ -3281,133 +2964,38 @@ if (NOT TARGET uninstall)
   )
 endif ()
 
-#
-# Piggy-back the console application on the main setup.
-# Note that cli apps are not supported on Android
-#
+add_subdirectory(model)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model)
+
 if (NOT QT_ANDROID)
-  set(SRC_CONSOLE src/console.cpp src/api_shim.cpp ${MODEL_SRC} ${UNITTEST_SRC})
+  add_subdirectory(cli)
+endif () 
 
-  add_executable(opencpn-cmd ${SRC_CONSOLE})
-
-  if (CMAKE_VERSION VERSION_GREATER 3.4)
-    if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-      target_link_libraries(opencpn-cmd
-        PRIVATE -fsanitize=${ENABLE_SANITIZER}
-      )
-    endif ()
-  endif ()
-
-  target_include_directories(
-    opencpn-cmd
-    BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/test/include
+if (OCPN_BUILD_TEST)
+  add_subdirectory(libs/gtest)
+  add_subdirectory(test)
+  add_custom_target(run-tests
+    COMMAND ctest  -C $<CONFIG> -E tests --timeout 10
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
   )
-
-  target_compile_definitions(opencpn-cmd PUBLIC USE_MOCK_DEFS)
-  if (MSVC)
-    target_link_libraries(opencpn-cmd PRIVATE setupapi.lib psapi.lib)
+  add_dependencies(run-tests tests)
+  if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
+    add_dependencies(run-tests ipc-srv-tests)
   endif ()
-
-  if (TARGET ocpn::wxcurl)
-    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxcurl)
-  else ()
-    target_link_libraries(opencpn-cmd PRIVATE ${SYS_WXCURL_LIBRARIES})
+  if (LINUX)
+    add_dependencies(run-tests dbus_tests)
   endif ()
-
-  target_link_libraries(opencpn-cmd PRIVATE ${wxWidgets_LIBRARIES})
-  if (TARGET ocpn::wxsvg)
-    target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
-  endif ()
-  if (LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY)
-    target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
-    target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
-  endif ()
-  if (TARGET glib::glib)
-    target_link_libraries(opencpn-cmd PRIVATE glib::glib)
-  endif ()
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
-
-  target_link_libraries(opencpn-cmd PRIVATE observable::observable)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::easywsclient)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::filesystem)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::garminhost)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::gdal)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::geoprim)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::iso8211)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::libarchive)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::mongoose)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::N2KParser)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::nmea0183)
-  target_link_libraries(opencpn-cmd PRIVATE pico_sha2)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::pugixml)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::rapidjson)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::s52plib)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::sound)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
-  target_link_libraries(opencpn-cmd PRIVATE ocpn::wxjson)
-
-  target_include_directories(opencpn-cmd PUBLIC "${LIBELF_INCLUDE_DIR}")
-  target_link_libraries(opencpn-cmd PRIVATE "${LIBELF_LIBRARY}")
-  if (HAVE_LIBUDEV)
-    target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)
-  endif ()
-  if (LIBLZMA_FOUND)
-    if (TARGET LibLZMA::LibLZMA)
-      target_link_libraries(opencpn-cmd PRIVATE LibLZMA::LibLZMA)
-    else ()
-      target_link_libraries(opencpn-cmd PRIVATE ${LIBLZMA_LIBRARIES})
-    endif ()
-  endif ()
-
-  if(APPLE AND OCPN_USE_DEPS_BUNDLE)
-    target_include_directories(
-      opencpn-cmd
-      PUBLIC
-      ${OCPN_DEPS_BUNDLE_PATH}/include
-    )
-  endif()
-
-  if (NOT WIN32)
-    if(APPLE AND OCPN_USE_DEPS_BUNDLE)
-      set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
-    endif()
-    find_package(OpenSSL)
-    if (OPENSSL_FOUND)
-      message(STATUS
-        "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}"
-      )
-      target_include_directories(opencpn-cmd PRIVATE ${OPENSSL_INCLUDE_DIR})
-      target_include_directories(${PACKAGE_NAME} PRIVATE ${OPENSSL_INCLUDE_DIR})
-      target_link_libraries(opencpn-cmd PRIVATE ${OPENSSL_LIBRARIES})
-      add_definitions(-DMG_ENABLE_OPENSSL)
-    endif ()
-  else ()
-    target_include_directories(
-      opencpn-cmd
-      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/include/openssl
-    )
-    target_link_libraries(
-      opencpn-cmd
-      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libssl.lib
-    )
-   target_link_libraries(
-      opencpn-cmd
-      PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
-    )
-  endif ()
-
-  install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
+else ()
+  add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
 endif ()
 
 if (QT_ANDROID)
-    target_include_directories( ${PACKAGE_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include)
-
-    target_link_libraries(${PACKAGE_NAME} PRIVATE
-      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
-      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
-      )
-
-    add_definitions(-DMG_ENABLE_OPENSSL)
-endif (QT_ANDROID)
+  target_include_directories( ${PACKAGE_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
+  )
+  target_link_libraries(${PACKAGE_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
+    ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
+  )
+  add_definitions(-DMG_ENABLE_OPENSSL)
+endif ()

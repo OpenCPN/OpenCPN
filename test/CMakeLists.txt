@@ -5,18 +5,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 message(STATUS "Building tests")
 
-
 enable_testing ()
-
-set(PROJ_SRC ${PROJECT_SOURCE_DIR}/../src)
+set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
   tests.cpp
-  ${MODEL_SRC}
-  ${CMAKE_SOURCE_DIR}/src/api_shim.cpp
-  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/certificates.cpp
-  ${CMAKE_SOURCE_DIR}/src/mDNS_query.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/certificates.cpp
+  ${MODEL_SRC_DIR}/mDNS_query.cpp
 )
 
 if (LINUX)
@@ -27,7 +24,6 @@ if (MSVC)
   set(CURL_HINTS C:\\mingw64\\bin C:\\ProgramData\\chocolatey\\bin)
 endif ()
 find_program(CURL NAMES curl HINTS ${CURL_HINTS})
-
 if (CURL)
   list(APPEND SRC rest-tests.cpp)
 endif ()
@@ -54,23 +50,31 @@ target_compile_definitions(tests
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(IPC_SRV_TESTS_SRC
     ipc-srv-tests.cpp
-    ${CMAKE_SOURCE_DIR}/src/local_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+    ${MODEL_SRC_DIR}/local_api.cpp
+    ${MODEL_SRC_DIR}/ipc_api.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
   )
   if (APPLE)
-    list(APPEND IPC_SRV_TESTS_SRC ../src/macutils.c)
+    list(APPEND IPC_SRV_TESTS_SRC ${MODEL_SRC_DIR}/macutils.c)
   endif ()
   add_executable(ipc-srv-tests ${IPC_SRV_TESTS_SRC})
+
 
   # See note in ipc-srv-tests.cpp
   target_compile_options(ipc-srv-tests PRIVATE -O0)
   target_link_libraries(ipc-srv-tests PRIVATE observable::observable)
   target_link_libraries(ipc-srv-tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest)
-  target_include_directories(ipc-srv-tests PRIVATE ../include)
+  target_include_directories(ipc-srv-tests PRIVATE .
+    ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
+
+
+
   add_dependencies(ipc-srv-tests cli-server ipc-client)
 endif ()
 
@@ -83,7 +87,7 @@ target_compile_definitions(tests
 if (MSVC)
   target_link_libraries(tests
 	  PRIVATE setupapi.lib psapi.lib ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
- )
+  )
 endif ()
 if (APPLE)
   # 10.13 compat support
@@ -120,29 +124,9 @@ target_link_libraries(tests PRIVATE ${wxWidgets_LIBRARIES})
 if (DEFINED LIBELF_LIBRARY)
   target_link_libraries(tests PRIVATE "${LIBELF_LIBRARY}")
 endif ()
-if (LINUX)
-  target_link_libraries(tests PRIVATE glib::glib)
-endif ()
-target_link_libraries(tests PRIVATE observable::observable)
-target_link_libraries(tests PRIVATE ocpn::easywsclient)
 target_link_libraries(tests PRIVATE ocpn::filesystem)
-target_link_libraries(tests PRIVATE ocpn::garminhost)
-target_link_libraries(tests PRIVATE ocpn::gdal)
-target_link_libraries(tests PRIVATE ocpn::geoprim)
-target_link_libraries(tests PRIVATE ocpn::iso8211)
-target_link_libraries(tests PRIVATE ocpn::libarchive)
-target_link_libraries(tests PRIVATE ocpn::mDNS)
-target_link_libraries(tests PRIVATE ocpn::mongoose)
-target_link_libraries(tests PRIVATE ocpn::N2KParser)
-target_link_libraries(tests PRIVATE ocpn::nmea0183)
-target_link_libraries(tests PRIVATE ocpn::opencpn)
-target_link_libraries(tests PRIVATE pico_sha2)
-target_link_libraries(tests PRIVATE ocpn::pugixml)
-target_link_libraries(tests PRIVATE ocpn::rapidjson)
-target_link_libraries(tests PRIVATE ocpn::s52plib)
-target_link_libraries(tests PRIVATE ocpn::serial)
+target_link_libraries(tests PRIVATE ocpn::model)
 target_link_libraries(tests PRIVATE ocpn::tinyxml)
-target_link_libraries(tests PRIVATE ocpn::wxjson)
 
 if (DEFINED CURL_LIBRARIES)
   target_link_libraries(tests PRIVATE ${CURL_LIBRARIES})
@@ -155,36 +139,31 @@ elseif (TARGET ocpn::wxcurl)
   target_link_libraries(tests PRIVATE ocpn::wxcurl)
 endif ()
 
-if (DEFINED LIBELF_LIBRARY)
-  target_link_libraries(tests PRIVATE ${LIBELF_LIBRARY})
-endif ()
 if (HAVE_LIBUDEV)
   target_link_libraries(tests PRIVATE ocpn::libudev)
-endif ()
-if (LIBLZMA_FOUND)
-  if (TARGET LibLZMA::LibLZMA)
-    target_link_libraries(tests PRIVATE LibLZMA::LibLZMA)
-  else ()
-    target_link_libraries(tests PRIVATE ${LIBLZMA_LIBRARIES})
-  endif ()
 endif ()
 
 if (LINUX)
   add_executable(dbus_tests
     dbus_tests.cpp
-    ${CMAKE_SOURCE_DIR}/src/dbus_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/dbus_server.cpp
-    ${CMAKE_SOURCE_DIR}/src/ipc_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/local_api.cpp
-    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+    ${MODEL_SRC_DIR}/dbus_client.cpp
+    ${MODEL_SRC_DIR}/dbus_server.cpp
+    ${MODEL_SRC_DIR}/ipc_api.cpp
+    ${MODEL_SRC_DIR}/local_api.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
   )
   target_link_libraries(dbus_tests PRIVATE observable::observable)
   target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
   target_link_libraries(dbus_tests PRIVATE glib::glib)
-  target_include_directories(dbus_tests PRIVATE ../include)
+  target_include_directories(dbus_tests PRIVATE 
+    ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
+
 endif ()
 
 
@@ -194,7 +173,7 @@ if (NOT WIN32)
   endif()
   find_package(OpenSSL)
   if (OPENSSL_FOUND)
-    message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
+    message(STATUS "OpenSSL found ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
     target_include_directories(tests PRIVATE ${OPENSSL_INCLUDE_DIR})
     target_link_libraries(tests PRIVATE ${OPENSSL_LIBRARIES})
     add_definitions(-DMG_ENABLE_OPENSSL)
@@ -224,7 +203,7 @@ endif ()
 
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
-gtest_add_tests(TARGET tests)
+gtest_add_tests(TARGET tests) 
 if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET ipc-srv-tests)
   # We don't have a session bus available when testing flatpak
@@ -232,29 +211,42 @@ if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 
-add_executable(cli-server cli_server.cpp ../src/ocpn_utils.cpp)
+add_executable(cli-server cli_server.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(cli-server PRIVATE ${wxWidgets_LIBRARIES})
 target_include_directories(cli-server PRIVATE ../include)
+target_include_directories(cli-server PRIVATE 
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 
-add_executable(ipc-client ipc_client.cpp ../src/ocpn_utils.cpp)
+add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(ipc-client PRIVATE observable::observable)
-target_include_directories(ipc-client  PRIVATE ../include)
+target_include_directories(ipc-client PRIVATE 
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 
 
 set (WX_INSTANCE_SRC
   wx_instance.cpp
-  ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-  ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-  ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/ocpn_utils.cpp
+  ${MODEL_SRC_DIR}/logger.cpp
 )
 if (APPLE)
-  list(APPEND WX_INSTANCE_SRC ../src/macutils.c)
+  list(APPEND WX_INSTANCE_SRC ${MODEL_SRC_DIR}/macutils.c)
 endif ()
 add_executable(wx-instance ${WX_INSTANCE_SRC})
 target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(wx-instance PRIVATE ocpn::opencpn)
-target_include_directories(wx-instance PRIVATE ../include)
+target_include_directories(wx-instance PRIVATE 
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
 if (MSVC)
   target_link_libraries(wx-instance PRIVATE setupapi)
 endif ()
@@ -262,17 +254,21 @@ endif ()
 if (UNIX)
   set(STD_INSTANCE_SRC
     std_instance.cpp
-    ${CMAKE_SOURCE_DIR}/src/std_instance_chk.cpp
-    ${CMAKE_SOURCE_DIR}/src/base_platform.cpp
-    ${CMAKE_SOURCE_DIR}/src/ocpn_utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
+    ${MODEL_SRC_DIR}/std_instance_chk.cpp
+    ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/ocpn_utils.cpp
+    ${MODEL_SRC_DIR}/logger.cpp
   )
   if (APPLE)
-    list(APPEND STD_INSTANCE_SRC ../src/macutils.c)
+    list(APPEND STD_INSTANCE_SRC ${MODEL_SRC_DIR}/macutils.c)
   endif ()
   add_executable(std-instance ${STD_INSTANCE_SRC})
   target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
-  target_include_directories(std-instance PRIVATE ../include)
+  target_include_directories(std-instance PRIVATE 
+    ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/resources
+  )
   add_test(NAME tests COMMAND tests)
 endif ()
 

@@ -197,7 +197,8 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/nmea0183
 )
-target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
+target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+target_link_libraries(${PACKAGE_NAME} ocpn::N2KParser )
 
 IF (WIN32 AND NOT MSVC)
   SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

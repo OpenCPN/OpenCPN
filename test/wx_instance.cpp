@@ -6,7 +6,7 @@
 #include <wx/snglinst.h>
 #include <wx/string.h>
 
-#include "base_platform.h"
+#include "model/base_platform.h"
 
 BasePlatform* g_BasePlatform = 0;
 float g_selection_radius_mm;
