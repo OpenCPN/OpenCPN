@@ -7634,7 +7634,10 @@ _OCPN_DLStatus OCPN_postDataHttp(const wxString &url,
 #ifdef __OCPN__ANDROID__
   wxString lparms = parameters;
   wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
-  if (postResult.IsSameAs(_T("NOK"))) return OCPN_DL_FAILED;
+  if (postResult.StartsWith(_T("NOK"))) {
+    result = postResult;
+    return OCPN_DL_FAILED;
+  }
 
   result = postResult;
   return OCPN_DL_NO_ERROR;
