@@ -760,34 +760,6 @@ bool PluginLoader::DeactivatePlugIn(const PlugInData& pd) {
   return DeactivatePlugIn(pic);
 }
 
-/**
- * Return list of available, unique and compatible plugins from
- * configured XML catalog.
- */
-// FIXME: Move to PluginHandler.
-static std::vector<PluginMetadata> getCompatiblePlugins() {
-  /** Compare two PluginMetadata objects, a named c++ requirement. */
-  struct metadata_compare {
-    bool operator()(const PluginMetadata& lhs,
-                    const PluginMetadata& rhs) const {
-      return lhs.key() < rhs.key();
-    }
-  };
-
-  std::vector<PluginMetadata> returnArray;
-
-  std::set<PluginMetadata, metadata_compare> unique_plugins;
-  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
-    unique_plugins.insert(plugin);
-  }
-  for (const auto& plugin : unique_plugins) {
-    if (PluginHandler::isCompatible(plugin)) {
-      returnArray.push_back(plugin);
-    }
-  }
-  return returnArray;
-}
-
 bool PluginLoader::UnLoadPlugIn(size_t ix) {
   if (ix >= plugin_array.GetCount()) {
     wxLogWarning("Attempt to remove non-existing plugin %d", ix);
@@ -822,7 +794,7 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   using namespace std;
   if (name.empty()) return {};
 
-  auto available = getCompatiblePlugins();
+  auto available = PluginHandler::getInstance()->getCompatiblePlugins();
   vector<PluginMetadata> matches;
   copy_if(available.begin(), available.end(), back_inserter(matches),
           [name](const PluginMetadata& md) { return md.name == name; });

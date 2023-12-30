@@ -1021,6 +1021,33 @@ void PluginHandler::cleanup(const std::string& filelist,
   remove(PluginHandler::versionPath(plugname).c_str());
 }
 
+/**
+ * Return list of available, unique and compatible plugins from
+ * configured XML catalog.
+ */
+std::vector<PluginMetadata> PluginHandler::getCompatiblePlugins() {
+  /** Compare two PluginMetadata objects, a named c++ requirement. */
+  struct metadata_compare {
+    bool operator()(const PluginMetadata& lhs,
+                    const PluginMetadata& rhs) const {
+      return lhs.key() < rhs.key();
+    }
+  };
+
+  std::vector<PluginMetadata> returnArray;
+
+  std::set<PluginMetadata, metadata_compare> unique_plugins;
+  for (const auto& plugin : getAvailable()) {
+    unique_plugins.insert(plugin);
+  }
+  for (const auto& plugin : unique_plugins) {
+    if (isCompatible(plugin)) {
+      returnArray.push_back(plugin);
+    }
+  }
+  return returnArray;
+}
+
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
   using namespace std;
   CatalogCtx ctx;
