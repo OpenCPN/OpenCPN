@@ -140,7 +140,6 @@ long PostSendObjectMessage(std::string url, std::ostringstream& body,
   curl_easy_setopt(c, CURLOPT_XFERINFOFUNCTION, xfer_callback);
   if (timeout) curl_easy_setopt(c, CURLOPT_TIMEOUT, 5);
 
-
   CURLcode result = curl_easy_perform(c);
   navobj_transfer_progress = 0;
   if (result == CURLE_OK)
@@ -165,7 +164,6 @@ bool CheckApiKey(std::string url, MemoryStruct* response) {
   curl_easy_cleanup(c);
   return response_code == 200;
 }
-
 
 std::string GetClientKey(std::string& server_name) {
   if (TheBaseConfig()) {
@@ -229,7 +227,6 @@ void SaveClientKey(std::string& server_name, std::string key) {
   return;
 }
 
-
 SemanticVersion GetApiVersion(const std::string& dest_ip) {
   std::string url(dest_ip);
   url += "/api/get-version";
@@ -252,15 +249,13 @@ SemanticVersion GetApiVersion(const std::string& dest_ip) {
     wxString version = root["version"].AsString();
     return SemanticVersion::parse(version.ToStdString());
   } else {
-      return SemanticVersion(-1, -1);
+    return SemanticVersion(-1, -1);
   }
 }
 
-
 RestServerResult CheckApiKey(const std::string& source,
-	                     const std::string& api_key,
-			     const std::string& dest_ip)
-{
+                             const std::string& api_key,
+                             const std::string& dest_ip) {
   std::string url(dest_ip);
   url += "/api/ping";
   url += std::string("?source=") + g_hostname;
@@ -283,9 +278,9 @@ RestServerResult CheckApiKey(const std::string& source,
     int result = root["result"].AsInt();
 
     if (result > 0) {
-       return RestServerResult::NewPinRequested;
+      return RestServerResult::NewPinRequested;
     } else {
-       return RestServerResult::Void;
+      return RestServerResult::Void;
     }
   } else {
     return RestServerResult::Void;
@@ -342,22 +337,22 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name,
           if (dlg.GetReturnCode() == ID_PCD_OK) {
             wxString PIN_tentative = dlg.GetText1Value().Trim().Trim(false);
             unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
-	    Pincode pincode(dPIN);
-	    std::string api_key = pincode.Hash();
+            Pincode pincode(dPIN);
+            std::string api_key = pincode.Hash();
             RestServerResult result;
             SemanticVersion v = GetApiVersion(dest_ip_address);
             if (v >= SemanticVersion(5, 9)) {
               result = CheckApiKey(g_hostname.ToStdString(), api_key,
-		                   dest_ip_address);
+                                   dest_ip_address);
             } else {
               api_key = pincode.CompatHash();
               result = CheckApiKey(g_hostname.ToStdString(), api_key,
-			           dest_ip_address);
+                                   dest_ip_address);
             }
             SaveClientKey(server_name, api_key);
           } else {
             b_cancel = true;
-	  }
+          }
         } else if (result == static_cast<int>(RestServerResult::GenericError))
           apikey_ok = true;
       } else
