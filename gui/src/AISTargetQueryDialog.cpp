@@ -321,7 +321,11 @@ void AISTargetQueryDialog::UpdateText() {
       m_createTrkBtn->SetLabel(_("Record Track"));
 
     m_createWptBtn->Enable(td->b_positionOnceValid);
-    m_createTrkBtn->Enable(td->b_show_track);
+
+    if (td->Class == AIS_METEO || td->Class == AIS_BASE)
+      m_createTrkBtn->Disable();
+    else
+      m_createTrkBtn->Enable(td->b_show_track);
 
     AdjustBestSize(td.get());
     RenderHTMLQuery(td.get());
