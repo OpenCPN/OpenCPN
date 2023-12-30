@@ -412,11 +412,7 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
       SVGDocumentPixelSize(name, w, h);
 
       // We want certain minimal size for the icons
-      float nominal_icon_size_pixels = wxMax(4.0,
-                                      floor(displayDPmm * 12.0));
-
-      w = wxMax(wxMax(w, h), nominal_icon_size_pixels);
-
+      w = wxMax(wxMax(w, h), 15);
       bm_size = w * g_MarkScaleFactorExp;
       bm_size /= OCPN_GetWinDIPScaleFactor();
 
