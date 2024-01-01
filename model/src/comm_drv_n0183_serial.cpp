@@ -95,7 +95,7 @@ private:
   mutable std::mutex m_mutex;
 };
 
-#define OUT_QUEUE_LENGTH                20
+#define OUT_QUEUE_LENGTH                50
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
