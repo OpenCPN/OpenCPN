@@ -87,6 +87,7 @@ set(
   ${MODEL_HDR_DIR}/ocpn_types.h
   ${MODEL_HDR_DIR}/ocpn_utils.h
   ${MODEL_HDR_DIR}/own_ship.h
+  ${MODEL_HDR_DIR}/peer_client.h
   ${MODEL_HDR_DIR}/pincode.h
   ${MODEL_HDR_DIR}/plugin_blacklist.h
   ${MODEL_HDR_DIR}/plugin_cache.h
@@ -163,6 +164,7 @@ set(SRC
   ${MODEL_SRC_DIR}/ocpn_plugin.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/own_ship.cpp
+  ${MODEL_SRC_DIR}/peer_client.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
   ${MODEL_SRC_DIR}/plugin_cache.cpp

@@ -28,7 +28,6 @@
 
 #include <curl/curl.h>
 
-#include "peer_client.h"
 
 #include <wx/fileconf.h>
 #include <wx/json_defs.h>
@@ -36,15 +35,12 @@
 #include <wx/tokenzr.h>
 
 #include "model/config_vars.h"
-#include "FontMgr.h"
-#include "gui_lib.h"
 #include "model/nav_object_database.h"
+#include "model/peer_client.h"
 #include "model/rest_server.h"
 #include "model/semantic_vers.h"
-#include "ocpn_frame.h"
 
-extern MyFrame* gFrame;
-
+#if 0
 wxString GetErrorText(RestServerResult result) {
   switch (result) {
     case RestServerResult::GenericError:
@@ -537,3 +533,5 @@ void PINConfirmDialog::OnOKClick(wxCommandEvent& event) {
 void PINConfirmDialog::OnCancelClick(wxCommandEvent& event) {
   EndModal(ID_PCD_CANCEL);
 }
+
+#endif    // 0

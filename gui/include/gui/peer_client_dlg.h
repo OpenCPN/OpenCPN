@@ -23,8 +23,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef _PEERCLIENT_H
-#define _PEERCLIENT_H
+#ifndef _PEER__CLIENT_DLG_H
+#define _PEER__CLIENT_DLG_H
 
 #include <string>
 #include "model/route.h"

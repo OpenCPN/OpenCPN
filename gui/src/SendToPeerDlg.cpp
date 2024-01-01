@@ -27,7 +27,7 @@
 #include "model/config_vars.h"
 #include "model/mDNS_query.h"
 #include "OCPNPlatform.h"
-#include "peer_client.h"
+#include "peer_client_dlg.h"
 #include "route_gui.h"
 #include "model/route.h"
 #include "route_point_gui.h"
