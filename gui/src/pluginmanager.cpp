@@ -3906,6 +3906,12 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   auto pluginHandler = PluginHandler::getInstance();
   pluginHandler->setMetadata("");
 
+  // Also clear the cached values in the CatalogHandler, forcing
+  // a reload and parse of the catalog.
+  auto cataloghdlr = CatalogHandler::getInstance();
+  cataloghdlr->ClearCatalogData();
+
+
   //  Reload all plugins, which will also update the status fields
   LoadAllPlugIns(false);
 

@@ -1050,29 +1050,19 @@ std::vector<PluginMetadata> PluginHandler::getCompatiblePlugins() {
 
 const std::vector<PluginMetadata> PluginHandler::getAvailable() {
   using namespace std;
-  CatalogCtx ctx;
+  CatalogCtx *ctx;
 
   auto catalogHandler = CatalogHandler::getInstance();
 
-  std::string path = getMetadataPath();
-  if (!ocpn::exists(path)) {
-    return ctx.plugins;
-  }
-  std::ifstream file;
-  file.open(path, std::ios::in);
-  if (file.is_open()) {
-    std::string xml((std::istreambuf_iterator<char>(file)),
-                    std::istreambuf_iterator<char>());
-    file.close();
-    auto status = catalogHandler->DoParseCatalog(xml, &ctx);
-    if (status == CatalogHandler::ServerStatus::OK) {
-      catalogData.undef = false;
-      catalogData.version = ctx.version;
-      catalogData.date = ctx.date;
-    }
-  }
+  ctx = catalogHandler->GetActiveCatalogContext();
+  auto status = catalogHandler->GetCatalogStatus();
 
-  return ctx.plugins;
+  if (status == CatalogHandler::ServerStatus::OK) {
+    catalogData.undef = false;
+    catalogData.version = ctx->version;
+    catalogData.date = ctx->date;
+  }
+  return ctx->plugins;
 }
 
 const std::vector<PluginMetadata> PluginHandler::getInstalled() {

@@ -56,7 +56,8 @@ public:
     CURL_ERROR,
     JSON_ERROR,
     XML_ERROR,
-    OS_ERROR
+    OS_ERROR,
+    FILE_ERROR
   };
 
   static CatalogHandler* getInstance();
@@ -112,6 +113,12 @@ public:
   /** Invalidate *CatalogData caches */
   void ClearCatalogData();
 
+  /** Return a pointer to the currently active plugin catalog context */
+  CatalogCtx *GetActiveCatalogContext();
+
+  /** Retrieve status of currently active plugin catalog  */
+  ServerStatus GetCatalogStatus();
+
   /** Last error message, free format. */
   std::string LastErrorMsg();
 
@@ -139,6 +146,8 @@ private:
   CatalogData latest_data;
   CatalogData default_data;
   CatalogData user_data;
+  ServerStatus m_catalog_status;
+  CatalogCtx m_catalogctx;
 };
 
 typedef CatalogHandler::ServerStatus catalog_status;

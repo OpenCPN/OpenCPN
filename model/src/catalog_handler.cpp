@@ -60,7 +60,9 @@ static const char* const API_ENDPOINT = "https://api.github.com/repos";
 // static const char* const API_PATH = "/leamas/plugins/branches";
 static const char* const API_PATH = "/OpenCPN/plugins/branches";
 
-CatalogHandler::CatalogHandler() : status(ServerStatus::UNKNOWN) {
+CatalogHandler::CatalogHandler() :
+     status(ServerStatus::UNKNOWN),
+     m_catalog_status(ServerStatus::UNKNOWN){
   if (g_catalog_channel == "") {
     g_catalog_channel = DEFAULT_CHANNEL;
   }
@@ -79,6 +81,37 @@ std::string CatalogHandler::GetDefaultUrl() {
   ocpn::replace(url, "@branch@", g_catalog_channel.ToStdString());
   return url;
 }
+
+catalog_status CatalogHandler::GetCatalogStatus(){
+    return m_catalog_status;
+}
+
+CatalogCtx *CatalogHandler::GetActiveCatalogContext() {
+
+  if (m_catalog_status == ServerStatus::OK){
+    return &m_catalogctx;
+  }
+
+  auto path = PluginHandler::getInstance()->getMetadataPath();
+
+  if (!ocpn::exists(path)) {
+    m_catalog_status = ServerStatus::FILE_ERROR;
+  }
+  std::ifstream file;
+  file.open(path, std::ios::in);
+  if (file.is_open()) {
+    std::string xml((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+    file.close();
+    auto status = DoParseCatalog(xml, &m_catalogctx);
+    m_catalog_status = status;
+    return &m_catalogctx;
+  }
+
+  return &m_catalogctx;
+}
+
+
 
 catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream) {
   std::string path(g_catalog_custom_url.ToStdString());
@@ -279,6 +312,15 @@ void CatalogHandler::ClearCatalogData() {
   default_data.undef = true;
   user_data.undef = true;
   latest_data.undef = true;
+  m_catalog_status = ServerStatus::UNKNOWN;
+
+  m_catalogctx.plugins.clear();
+  m_catalogctx.meta_urls.clear();
+  m_catalogctx.parsed_metas.clear();
+  m_catalogctx.version.clear();
+  m_catalogctx.date.clear();
+
+
 }
 
 std::string CatalogHandler::GetCustomUrl() {
