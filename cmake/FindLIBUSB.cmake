@@ -35,15 +35,21 @@ if (TARGET ocpn::libusb)
     return ()
 endif ()
 
-find_package(PkgConfig)
-if(PKG_CONFIG_FOUND)
+if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+  set(LIBUSB_INCLUDE_DIR "${OCPN_DEPS_BUNDLE_PATH}/include")
+  set(LIBUSB_LIBRARIES "${OCPN_DEPS_BUNDLE_PATH}/lib/libusb-1.0.dylib")
+else()
+  find_package(PkgConfig)
+  if(PKG_CONFIG_FOUND)
     pkg_search_module(LIBUSB_PKG libusb-1.0)
-endif()
+  endif()
 
-find_library(LIBUSB_LIBRARIES
+  find_library(LIBUSB_LIBRARIES
     NAMES libusb-1.0 usb-1.0
     HINTS ${LIBUSB_PKG_LIBRARY_DIRS}
-)
+  )
+endif()
+
 if (LIBUSB_LIBRARIES)
   add_library(_LIBUSB INTERFACE)
   target_link_libraries(_LIBUSB INTERFACE "${LIBUSB_LIBRARIES}")

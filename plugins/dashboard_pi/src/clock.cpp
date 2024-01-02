@@ -43,21 +43,25 @@
 DashboardInstrument_Clock::DashboardInstrument_Clock(wxWindow *parent,
                                                      wxWindowID id,
                                                      wxString title,
+                                                     InstrumentProperties* Properties,
                                                      DASH_CAP cap_flag,
                                                      wxString format)
-    : DashboardInstrument_Single(parent, id, title, cap_flag, format) {
+    : DashboardInstrument_Single(parent, id, title, Properties, cap_flag, format) {
   // if format contains the string "LCL" then display time in local TZ
   if (format.Contains(_T( "LCL" )))
     setUTC(false);
   else
     setUTC(true);
+  m_Properties = Properties;
 }
 
 wxSize DashboardInstrument_Clock::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+  f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(m_TitleHeight + m_DataHeight, hint.y));
@@ -97,8 +101,9 @@ wxString DashboardInstrument_Clock::GetDisplayTime(wxDateTime UTCtime) {
 DashboardInstrument_CPUClock::DashboardInstrument_CPUClock(wxWindow *parent,
                                                            wxWindowID id,
                                                            wxString title,
+                                                           InstrumentProperties* Properties,
                                                            wxString format)
-    : DashboardInstrument_Clock(parent, id, title, OCPN_DBP_STC_LAT, format) {
+    : DashboardInstrument_Clock(parent, id, title, Properties, OCPN_DBP_STC_LAT, format) {
   m_cap_flag.set(OCPN_DBP_STC_LON);
   m_cap_flag.set(OCPN_DBP_STC_CLK);
 }
@@ -114,8 +119,9 @@ void DashboardInstrument_CPUClock::SetUtcTime(wxDateTime data) {
 
 DashboardInstrument_Moon::DashboardInstrument_Moon(wxWindow *parent,
                                                    wxWindowID id,
-                                                   wxString title)
-    : DashboardInstrument_Clock(parent, id, title, OCPN_DBP_STC_CLK,
+                                                   wxString title,
+                                                   InstrumentProperties* Properties)
+    : DashboardInstrument_Clock(parent, id, title, Properties, OCPN_DBP_STC_CLK,
                                 _T("%i/4 %c")) {
   m_cap_flag.set(OCPN_DBP_STC_LAT);
   m_phase = -1;
@@ -126,7 +132,8 @@ DashboardInstrument_Moon::DashboardInstrument_Moon(wxWindow *parent,
 wxSize DashboardInstrument_Moon::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth,
@@ -287,8 +294,9 @@ wxDateTime convHrmn(double dhr) {
 
 DashboardInstrument_Sun::DashboardInstrument_Sun(wxWindow *parent,
                                                  wxWindowID id, wxString title,
+                                                 InstrumentProperties* Properties,
                                                  wxString format)
-    : DashboardInstrument_Clock(parent, id, title, OCPN_DBP_STC_LAT, format) {
+    : DashboardInstrument_Clock(parent, id, title, Properties, OCPN_DBP_STC_LAT, format) {
   m_cap_flag.set(OCPN_DBP_STC_LON);
   m_cap_flag.set(OCPN_DBP_STC_CLK);
   m_lat = m_lon = 999.9;
@@ -300,8 +308,10 @@ DashboardInstrument_Sun::DashboardInstrument_Sun(wxWindow *parent,
 wxSize DashboardInstrument_Sun::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+  f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth,
@@ -315,7 +325,7 @@ wxSize DashboardInstrument_Sun::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Sun::Draw(wxGCDC *dc) {
   wxColour cl;
 
-  dc->SetFont(*g_pFontData);
+  dc->SetFont((g_pFontData->GetChosenFont()));
   GetGlobalColor(_T("DASHF"), &cl);
   dc->SetTextForeground(cl);
 

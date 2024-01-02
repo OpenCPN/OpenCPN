@@ -8,6 +8,15 @@
 
 # This manifest is used to build development snapshots (including
 # nightly builds) of the flatpak package.
+#
+# For unknown reasons the tests fails when invoked as part of the build.
+# To run tests:
+#
+#   $ cd build
+#   $ make -f ../flatpak/Makefile build-only
+#   $ flatpak-builder --run app ../flatpak/org.opencpn.OpenCPN.yaml bash
+#   $ cd .flatpak-builder/build/opencpn/_flatpak_build
+#   $ make run-tests
 
 
 app-id: org.opencpn.OpenCPN
@@ -27,6 +36,7 @@ finish-args:
     - --share=network
     - --device=all
     - --allow=canbus
+    - --talk-name=org.opencpn.OpenCPN.*
 
 add-extensions:
     org.opencpn.OpenCPN.Plugin:
@@ -37,6 +47,24 @@ add-extensions:
         autodelete: false
 
 modules:
+    - name: pycairo
+      buildsystem: meson
+      sources:
+        - type: archive
+          url: https://files.pythonhosted.org/packages/c7/7c/de4d40316ee563e4f15a0f05f28c8458833fbef80c4588b9dd51f39b78ee/pycairo-1.25.1.tar.gz
+          sha256: 7e2be4fbc3b4536f16db7a11982cbf713e75069a4d73d44fe5a49b68423f5c0c
+    - name: PyGobject
+      buildsystem: meson
+      sources:
+        - type: archive
+          url: https://files.pythonhosted.org/packages/ac/4a/f24ddf1d20cc4b56affc7921e29928559a06c922eb60077448392792b914/PyGObject-3.46.0.tar.gz
+          sha256: 481437b05af0a66b7c366ea052710eb3aacbb979d22d30b797f7ec29347ab1e6
+    - name: python-dbus
+      sources:
+        - type: archive
+          url:  https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.3.2.tar.gz
+          sha256: ad67819308618b5069537be237f8e68ca1c7fcc95ee4a121fe6845b1418248f8
+
     - name: rapidjson
       buildsystem: cmake
       builddir: true
@@ -107,11 +135,8 @@ modules:
     - name: wxGTK3
       sources:
           - type: archive
-            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.1/wxWidgets-3.2.1.tar.bz2
-            sha256: c229976bb413eb88e45cb5dfb68b27890d450149c09b331abd751e7ae0f5fa66
-          - type: patch
-            paths:
-              - patches/0101-Add-wxDEPRECATED_EXPORT_CORE-macro-for-wxTransformMa.patch
+            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.tar.bz2
+            sha256: 0640e1ab716db5af2ecb7389dbef6138d7679261fbff730d23845ba838ca133e
       config-opts:
           - --with-gtk=3
           - --with-opengl
@@ -126,7 +151,7 @@ modules:
     - name:  zlib
       sources:
           - type: archive
-            url: http://zlib.net/zlib-1.2.13.tar.gz
+            url: https://www.zlib.net/fossils/zlib-1.2.13.tar.gz
             sha256: b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
 
     - name: opencpn
@@ -140,10 +165,11 @@ modules:
           - -DOCPN_USE_SYSFS_PORTS=ON
           - -DBUILD_SHARED_LIBS=OFF
           - -DOCPN_TARGET_TUPLE=flatpak-x86_64;22.08;x86_64
-          - -DCMAKE_FIND_ROOT_PATH=/app
-          - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER
-          - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH
-          - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH
+          - -DCMAKE_FIND_ROOT_PATH=/app;/usr
+          - -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=BOTH
+          - -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
+          - -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+          - -DCMAKE_BUILD_TYPE=Release
       build-options:
           build-args:
             - --share=network
@@ -151,8 +177,11 @@ modules:
           cflags: -DFLATPAK
           env:
             BUILD_NUMBER: "0"
+            CCACHE_DISABLE: "1"
+      # See comment at top
       run-tests: true
-      test-rule: "run-tests"
+      # test-commands: cd /run/build/opencpn/_flatpak_build; make run-tests
+      test-rule: run-tests
       post-install:
           - install -d /app/extensions
           - sed -i '/^Exec=/s/=.*/=opencpn.sh/' /app/share/applications/opencpn.desktop

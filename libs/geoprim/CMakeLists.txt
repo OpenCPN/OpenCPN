@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::geoprim)
     return ()
@@ -32,8 +32,19 @@ add_library(ocpn::geoprim ALIAS GEOPRIM)
 
 set_property(TARGET GEOPRIM PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 target_include_directories(GEOPRIM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+#FIXME (#3527) Missing linkage
 target_include_directories(GEOPRIM PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
+#FIXME (#3527) Dependency on main CMakeLists.txt
 target_include_directories(GEOPRIM PRIVATE ../../include)
+if (QT_ANDROID)
+  target_include_directories(GEOPRIM PRIVATE  ${CMAKE_SOURCE_DIR}/android)
+elseif (MSVC)
+  target_include_directories(
+    GEOPRIM BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/include
+  )
+endif ()
 
 find_package(OpenGL)
 if (OPENGL_FOUND)

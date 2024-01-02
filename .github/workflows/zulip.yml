@@ -19,10 +19,13 @@ env:
 jobs:
   on-anything:
     runs-on: ubuntu-latest
+    env:
+      zulip_api_key: ${{ secrets.ZULIP_API_KEY }}
     steps:
       - run: echo "GITHUB_ACTOR=$GITHUB_ACTOR" >> $GITHUB_ENV
       - run: echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
-      - name: Tell Zulip
+      - if: ${{ env.zulip_api_key != ''}} 
+        name: Tell Zulip
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           email: github-actions-bot@opencpn.zulipchat.com

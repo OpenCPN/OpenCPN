@@ -4,7 +4,8 @@
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin
  * Author:   Jean-Eudes Onfray
- *
+ * expanded: Bernd Cirotzki 2023 (special colour design)
+ * 
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
@@ -70,6 +71,8 @@
 #include "baro_history.h"
 #include "from_ownship.h"
 #include "iirfilter.h"
+#include <wx/clrpicker.h>
+#include <wx/statline.h>
 
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */
@@ -94,21 +97,69 @@ class DashboardInstrumentContainer;
 #define wxFontPickerCtrl OCPNFontButton
 class OCPNFontButton;
 
+WX_DEFINE_ARRAY(InstrumentProperties*, wxArrayOfInstrumentProperties);
+
+class EditDialog : public wxDialog
+{
+private:
+
+protected:
+    wxStaticText* m_staticText1;
+    wxStaticText* m_staticText5;
+    wxStaticText* m_staticText2;
+    wxStaticText* m_staticText6;
+    wxStaticText* m_staticText3;
+    wxStaticText* m_staticText4;
+    wxStaticLine* m_staticline1;
+    wxStaticLine* m_staticline2;
+    wxStaticText* m_staticText7;
+    wxStaticText* m_staticText9;
+    wxStaticText* m_staticText10;
+    wxStdDialogButtonSizer* m_sdbSizer3;
+    wxButton* m_sdbSizer3OK;
+    wxButton* m_sdbSizer3Cancel;
+
+    // Virtual event handlers, override them in your derived class
+    virtual void OnSetdefault(wxCommandEvent& event);
+
+public:
+    wxFontPickerCtrl* m_fontPicker2;
+    wxColourPickerCtrl* m_colourPicker1;
+    wxFontPickerCtrl* m_fontPicker4;
+    wxColourPickerCtrl* m_colourPicker2;
+    wxFontPickerCtrl* m_fontPicker5;
+    wxFontPickerCtrl* m_fontPicker6;
+    wxColourPickerCtrl* m_colourPicker3;
+    wxColourPickerCtrl* m_colourPicker4;
+    wxButton* m_button1;
+
+    EditDialog(wxWindow* parent, InstrumentProperties& Properties, wxWindowID id = wxID_ANY, const wxString& title = wxT("Edit Instrument"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(-1, -1), long style = wxDEFAULT_DIALOG_STYLE);
+
+    ~EditDialog();
+};
+
 class DashboardWindowContainer {
 public:
   DashboardWindowContainer(DashboardWindow *dashboard_window, wxString name,
                            wxString caption, wxString orientation,
-                           wxArrayInt inst) {
+                           wxArrayInt inst, wxArrayOfInstrumentProperties inProberty) {
     m_pDashboardWindow = dashboard_window;
     m_sName = name;
     m_sCaption = caption;
     m_sOrientation = orientation;
     m_aInstrumentList = inst;
+    m_aInstrumentPropertyList = inProberty;
     m_bIsVisible = false;
     m_bIsDeleted = false;
   }
 
-  ~DashboardWindowContainer() {}
+  ~DashboardWindowContainer() {
+      for (unsigned int i = 0; i < m_aInstrumentPropertyList.GetCount(); i++)
+      {
+          InstrumentProperties* Inst = m_aInstrumentPropertyList.Item(i);
+          delete Inst;
+      }
+  }
   DashboardWindow *m_pDashboardWindow;
   bool m_bIsVisible;
   bool m_bIsDeleted;
@@ -118,6 +169,7 @@ public:
   wxString m_sCaption;
   wxString m_sOrientation;
   wxArrayInt m_aInstrumentList;
+  wxArrayOfInstrumentProperties m_aInstrumentPropertyList;
 };
 
 class DashboardInstrumentContainer {
@@ -275,6 +327,7 @@ private:
   int mALT_Watchdog;
   int mLOG_Watchdog;
   int mTrLOG_Watchdog;
+  int colourschemecounter;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;
@@ -298,6 +351,7 @@ public:
   void OnInstrumentDelete(wxCommandEvent &event);
   void OnInstrumentUp(wxCommandEvent &event);
   void OnInstrumentDown(wxCommandEvent &event);
+  void OnDashboarddefaultFont(wxCommandEvent& event);  
   void SaveDashboardConfig();
   void RecalculateSize(void);
 
@@ -335,6 +389,7 @@ private:
   wxButton *m_pButtonDelete;
   wxButton *m_pButtonUp;
   wxButton *m_pButtonDown;
+  wxButton *m_pButtondefaultFont;
 };
 
 class AddInstrumentDlg : public wxDialog {
@@ -380,7 +435,7 @@ public:
 #endif
 
   bool isInstrumentListEqual(const wxArrayInt &list);
-  void SetInstrumentList(wxArrayInt list);
+  void SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProperties* InstrumentPropertyList);
   void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
   void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk,
                                    SAT_INFO sats[4]);
@@ -420,7 +475,7 @@ class OCPNFontButton : public wxButton {
 public:
   OCPNFontButton() {}
   OCPNFontButton(wxWindow *parent, wxWindowID id,
-                 const wxFont &initial = wxNullFont,
+                 const wxFontData &initial,
                  const wxPoint &pos = wxDefaultPosition,
                  const wxSize &size = wxDefaultSize,
                  long style = wxFONTBTN_DEFAULT_STYLE,
@@ -430,7 +485,11 @@ public:
   }
 
   virtual wxColour GetSelectedColour() const { return m_data.GetColour(); }
-
+  virtual void SetSelectedFont(const wxFont &font) {
+      m_data.SetChosenFont(font);
+      m_selectedFont = m_data.GetChosenFont();
+      UpdateFont();
+  }
   virtual void SetSelectedColour(const wxColour &colour) {
     m_data.SetColour(colour);
     UpdateFont();
@@ -440,7 +499,7 @@ public:
 
 public:  // API extensions specific for OCPNFontButton
   // user can override this to init font data in a different way
-  virtual void InitFontData();
+  // virtual void InitFontData();
 
   // returns the font data shown in wxFontDialog
   wxFontData *GetFontData() { return &m_data; }
@@ -450,7 +509,7 @@ public:  // API extensions specific for OCPNFontButton
 
 public:
   bool Create(wxWindow *parent, wxWindowID id,
-              const wxFont &initial = *wxNORMAL_FONT,
+              const wxFontData &initial,
               const wxPoint &pos = wxDefaultPosition,
               const wxSize &size = wxDefaultSize,
               long style = wxFONTBTN_DEFAULT_STYLE,

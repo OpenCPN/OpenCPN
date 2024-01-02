@@ -52,6 +52,21 @@ jobs:
         shell: cmd
         run: ci\appveyor.bat
 
+      - name: "Check build results"
+        shell: bash
+        run: |
+          ls -l build/$CONFIGURATION/opencpn.exe || exit 1
+          ls -l build/cli/$CONFIGURATION/opencpn-cmd.exe || exit 1
+          ls -l build/test/$CONFIGURATION/tests.exe || exit 1
+
+      - name: "Run tests"
+        shell: bash
+        run: |
+          set -x
+          cd build
+          cmake --install .
+          cmake --build . --config $CONFIGURATION --target run-tests
+
       - name: Upload
         shell: bash
         run: ci/generic-upload.sh

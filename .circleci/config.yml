@@ -1,19 +1,24 @@
 ---
+# Buildpack images found at: https://hub.docker.com/_/buildpack-deps/
+
 version: 2
 jobs:
-  build-bionic:
+  build-bookworm:
     docker:
-      - image: circleci/buildpack-deps:bionic-scm
+      - image: leamas/debian-git:bookworm
+      # bookworm-scm fails on non-existing /etc/apt/sources.list
+      # - image: buildpack-deps:bookworm-scm
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PW
     environment:
-      - OCPN_TARGET: bionic
+      - OCPN_TARGET: bookworm
     steps:
       - checkout
       - run: cat /etc/apt/sources.list
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
+
   build-focal:
     docker:
       - image: circleci/buildpack-deps:focal-scm
@@ -21,13 +26,30 @@ jobs:
           username: $DOCKER_USER
           password: $DOCKER_PW
     environment:
-      - OCPN_TARGET: focal-gtk3
+      - OCPN_TARGET: focal
+    steps:
+      - checkout
+      - run: cat /etc/apt/sources.list
+      - run: ci/generic-build-debian.sh
+      - run: ci/generic-upload.sh
+
+  build-jammy:
+    docker:
+      - image: leamas/ubuntu-git:jammy
+      # jammy-scm fails on missing sudo
+      # - image: buildpack-deps:jammy-scm
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PW
+    environment:
+      - OCPN_TARGET: jammy
       - CMAKE_BUILD_PARALLEL_LEVEL: 2
     steps:
       - checkout
       - run: cat /etc/apt/sources.list
       - run: ci/generic-build-debian.sh
       - run: ci/generic-upload.sh
+
   build-flatpak:
     working_directory: ~/OpenCPN
     machine:
@@ -52,7 +74,7 @@ jobs:
 
   build-android-armhf:
     docker:
-      - image: circleci/android:api-28-ndk
+      - image: cimg/android:2023.12-ndk
     environment:
       - OCPN_TARGET: android-armhf
     steps:
@@ -80,28 +102,82 @@ jobs:
            - /usr/local/lib
       - run: ci/generic-upload.sh
 
+  build-macos-universal:
+    macos:
+      xcode: "15.1.0"
+    environment:
+      - OCPN_TARGET:  macos
+      - pkg_mod: 11
+      - MACOSX_DEPLOYMENT_TARGET: 11.0
+    steps:
+      - checkout
+      - restore_cache:
+         keys:
+           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+      - run: ci/universal-build-macos.sh
+      - save_cache:
+         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+         paths:
+           - /usr/local/bin
+           - /usr/local/include
+           - /usr/local/lib
+      - run: ci/generic-upload.sh
+
+  build-macos-intel-legacy:
+    macos:
+      xcode: "13.4.1"
+    environment:
+      - OCPN_TARGET:  macos
+      - pkg_mod: 11
+      - MACOSX_DEPLOYMENT_TARGET: 10.13
+      - ARCHS: x86_64
+      - DEPS_BUNDLE_FILE: macos_deps_intel_legacy.tar.xz
+      - DEPS_BUNDLE_DEST: /tmp/ocpn_deps
+      - RELEASE: legacyintel
+    steps:
+      - checkout
+      - restore_cache:
+         keys:
+           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+      - run: ci/universal-build-macos.sh
+      - save_cache:
+         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+         paths:
+           - /usr/local/bin
+           - /usr/local/include
+           - /usr/local/lib
+      - run: ci/generic-upload.sh
+
+std-filters: &std-filters
+  filters:
+    branches:
+     only:
+        - master
+        - build
+        - flatpak
+
+
 workflows:
   version: 2
   build_all:
     jobs:
-      - build-bionic:
-          filters:
-            branches:
-              only:
-                - master
+      - build-bookworm:
+          <<: *std-filters
+
       - build-focal:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
+
+      - build-jammy:
+          <<: *std-filters
+
       - build-flatpak:
-          filters:
-            branches:
-              only:
-                - flatpak
-                - master
+          <<: *std-filters
+
       - build-android-armhf:
-          filters:
-            branches:
-              only:
-                - master
+          <<: *std-filters
+
+      - build-macos-universal:
+          <<: *std-filters
+
+      - build-macos-intel-legacy:
+          <<: *std-filters

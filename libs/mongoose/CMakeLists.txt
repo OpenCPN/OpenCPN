@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::mongoose)
     return ()
@@ -22,7 +22,11 @@ if (NOT WIN32)
       )
     add_definitions(-DMG_ENABLE_OPENSSL)
   else (QT_ANDROID)
+    if(APPLE AND OCPN_USE_DEPS_BUNDLE)
+      set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
+    endif()
     find_package(OpenSSL)
+    
     if (OPENSSL_FOUND)
       message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
       target_include_directories(MONGOOSE PRIVATE ${OPENSSL_INCLUDE_DIR})
@@ -73,7 +77,8 @@ target_include_directories(
 )
 
 if (MSVC)
-target_include_directories(
-  MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../cache/buildwin/include
-)
+  # FIXME (#3527) Dependency on main OpenCPN
+  target_include_directories(
+    MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../cache/buildwin/include
+  )
 endif (MSVC)

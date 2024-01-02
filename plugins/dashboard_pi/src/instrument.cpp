@@ -33,11 +33,83 @@
 #include <cmath>
 
 #include "instrument.h"
-#include "wx28compat.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"
 #endif
+
+ // ColorScheme ... Try only make a simple darker in Night mode. this could be made better.
+extern PI_ColorScheme aktuellColorScheme;
+
+wxColour GetColourSchemeBackgroundColour(wxColour co)
+{
+    wxColour ret_val = co;
+    #if wxCHECK_VERSION(3, 1, 6)
+    unsigned int red = co.GetRed();
+    unsigned int Green = co.GetGreen();
+    unsigned int Blue = co.GetBlue();
+    #else
+    unsigned int red = co.Red();
+    unsigned int Green = co.Green();
+    unsigned int Blue = co.Blue();
+    #endif
+    switch (aktuellColorScheme) {
+    case PI_GLOBAL_COLOR_SCHEME_RGB:
+        break;
+    case PI_GLOBAL_COLOR_SCHEME_DAY:
+        break;
+    case PI_GLOBAL_COLOR_SCHEME_DUSK:
+        red -= 80; if (red < 0) red = 0;
+        Green -= 80; if (Green < 0) Green = 0;
+        Blue -= 80; if (Blue < 0) Blue = 0;
+        ret_val = wxColour(red, Green, Blue);
+        break;
+    case PI_GLOBAL_COLOR_SCHEME_NIGHT:
+        red -= 150; if (red < 0) red = 0;
+        Green -= 150; if (Green < 0) Green = 0;
+        Blue -= 150; if (Blue < 0) Blue = 0;
+        ret_val = wxColour(red, Green, Blue);
+        break;
+    default: break;
+    }
+    return ret_val;
+}
+
+
+wxColour GetColourSchemeFont(wxColour co)
+{
+    wxColour ret_val = co;
+    #if wxCHECK_VERSION(3, 1, 6)
+    unsigned int red = co.GetRed();
+    unsigned int Green = co.GetGreen();
+    unsigned int Blue = co.GetBlue();
+    #else
+    unsigned int red = co.Red();
+    unsigned int Green = co.Green();
+    unsigned int Blue = co.Blue();
+    #endif
+    switch (aktuellColorScheme) {
+    case PI_GLOBAL_COLOR_SCHEME_RGB:
+        break;
+    case PI_GLOBAL_COLOR_SCHEME_DAY:
+        break;
+    case PI_GLOBAL_COLOR_SCHEME_DUSK:
+        red += 150; if (red > 255) red = 255;
+        Green += 150; if (Green > 255) Green = 255;
+        Blue += 150; if (Blue > 255) Blue = 255;
+        ret_val = wxColour(red, Green, Blue);
+        break;
+    case PI_GLOBAL_COLOR_SCHEME_NIGHT:
+        red += 80; if (red > 255) red = 255;
+        Green += 80; if (Green > 255) Green = 255;
+        Blue += 80; if (Blue > 255) Blue = 255;
+        ret_val = wxColour(red, Green, Blue);
+        break;
+    default: break;
+    }
+    return ret_val;
+}
+
 
 //----------------------------------------------------------------
 //
@@ -45,18 +117,27 @@
 //
 //----------------------------------------------------------------
 
+
 DashboardInstrument::DashboardInstrument(wxWindow* pparent, wxWindowID id,
-                                         wxString title, DASH_CAP cap_flag)
+                                         wxString title, DASH_CAP cap_flag,
+                                         InstrumentProperties* Properties)
     : wxControl(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
   m_title = title;
+  m_Properties = Properties;
   m_cap_flag.set(cap_flag);
 
   SetBackgroundStyle(wxBG_STYLE_CUSTOM);
   SetDrawSoloInPane(false);
   wxClientDC dc(this);
   int width;
-  dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, g_pFontTitle);
-
+  wxFont f;
+  if (m_Properties) {
+    f = m_Properties->m_TitelFont.GetChosenFont();
+    dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &f);
+  } else {
+    f = g_pFontTitle->GetChosenFont();
+    dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &f);
+  }
   Connect(wxEVT_ERASE_BACKGROUND,
           wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
   Connect(wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
@@ -92,29 +173,35 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt)) {
 }
 
 void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
-  wxAutoBufferedPaintDC pdc(this);
-  if (!pdc.IsOk()) {
-    wxLogMessage(
-        _T("DashboardInstrument::OnPaint() fatal: ")
-        _T("wxAutoBufferedPaintDC.IsOk() false."));
-    return;
-  }
+    wxAutoBufferedPaintDC pdc(this);
+    if (!pdc.IsOk()) {
+        wxLogMessage(
+            _T("DashboardInstrument::OnPaint() fatal: ")
+            _T("wxAutoBufferedPaintDC.IsOk() false."));
+        return;
+    }
 
-  wxSize size = GetClientSize();
-  if (size.x == 0 || size.y == 0) {
-    wxLogMessage(_T("DashboardInstrument::OnPaint() fatal: Zero size DC."));
-    return;
-  }
+    wxSize size = GetClientSize();
+    if (size.x == 0 || size.y == 0) {
+        wxLogMessage(_T("DashboardInstrument::OnPaint() fatal: Zero size DC."));
+        return;
+    }
 
 #if wxUSE_GRAPHICS_CONTEXT
-  wxGCDC dc(pdc);
+    wxGCDC dc(pdc);
 #else
-  wxDC &dc(pdc);
+    wxDC& dc(pdc);
 #endif
-
-  wxColour cl;
-  GetGlobalColor(_T("DASHB"), &cl);
-  dc.SetBackground(cl);
+    wxColour cl;
+    if (m_Properties)
+    {
+        dc.SetBackground(GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour));
+    }
+    else
+    {
+        GetGlobalColor(_T("DASHB"), &cl);
+        dc.SetBackground(cl);
+    }
 #ifdef __WXGTK__
   dc.SetBrush(cl);
   dc.SetPen(*wxTRANSPARENT_PEN);
@@ -125,17 +212,38 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
   Draw(&dc);
 
   if (!m_drawSoloInPane) {
-    wxPen pen;
-    pen.SetStyle(wxPENSTYLE_SOLID);
-    GetGlobalColor(_T("DASHL"), &cl);
-    pen.SetColour(cl);
-    dc.SetPen(pen);
-    dc.SetBrush(cl);
-    dc.DrawRoundedRectangle(0, 0, size.x, m_TitleHeight, 3);
+      wxPen pen;
+      pen.SetStyle(wxPENSTYLE_SOLID);
+      if (m_Properties)
+      {
+          pen.SetColour(GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour));
+          dc.SetPen(pen);
+          dc.SetBrush(GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour));
+      }
+      else
+      {
+          GetGlobalColor(_T("DASHL"), &cl);
+          pen.SetColour(cl);
+          dc.SetPen(pen);
+          dc.SetBrush(cl);
+      }
 
-    dc.SetFont(*g_pFontTitle);
-    GetGlobalColor(_T("DASHF"), &cl);
-    dc.SetTextForeground(cl);
+    dc.DrawRoundedRectangle(0, 0, size.x, m_TitleHeight, 3);
+    if (m_Properties)
+    {
+        dc.SetFont(m_Properties->m_TitelFont.GetChosenFont());
+        dc.SetTextForeground(GetColourSchemeFont(m_Properties->m_TitelFont.GetColour()));
+        dc.SetTextBackground(GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour));
+    }
+    else
+    {
+        dc.SetFont((g_pFontTitle->GetChosenFont()));
+        dc.SetTextForeground(GetColourSchemeFont(g_pFontTitle->GetColour()));
+        GetGlobalColor(_T("DASHL"), &cl);
+        dc.SetTextBackground(cl);
+    }
+    // GetGlobalColor(_T("DASHF"), &cl);
+    //dc.SetTextForeground(cl);
     dc.DrawText(m_title, 5, 0);
   }
 }
@@ -149,20 +257,34 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 DashboardInstrument_Single::DashboardInstrument_Single(wxWindow* pparent,
                                                        wxWindowID id,
                                                        wxString title,
+                                                       InstrumentProperties* Properties,
                                                        DASH_CAP cap_flag,
                                                        wxString format)
-    : DashboardInstrument(pparent, id, title, cap_flag) {
+    : DashboardInstrument(pparent, id, title, cap_flag, Properties) {
   m_format = format;
   m_data = _T("---");
   m_DataHeight = 0;
+  m_Properties = Properties;
 }
 
 wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-  dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
-
+  wxFont f;
+  if (m_Properties)
+  {
+      f = m_Properties->m_TitelFont.GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &f);
+  }
+  else
+  {
+      f = g_pFontTitle->GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = g_pFontData->GetChosenFont();
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &f);
+  }
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(hint.y, m_TitleHeight + m_DataHeight));
   } else {
@@ -172,9 +294,18 @@ wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
 
 void DashboardInstrument_Single::Draw(wxGCDC* dc) {
   wxColour cl;
-  dc->SetFont(*g_pFontData);
-  GetGlobalColor(_T("DASHF"), &cl);
-  dc->SetTextForeground(cl);
+  if (m_Properties)
+  {
+      dc->SetFont((m_Properties->m_DataFont.GetChosenFont()));
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont(g_pFontData->GetChosenFont());
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
+  }
+  //GetGlobalColor(_T("DASHF"), &cl);
+  //dc->SetTextForeground(cl);
 
   dc->DrawText(m_data, 10, m_TitleHeight);
 }
@@ -222,9 +353,10 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
 DashboardInstrument_Position::DashboardInstrument_Position(wxWindow* pparent,
                                                            wxWindowID id,
                                                            wxString title,
+                                                           InstrumentProperties* Properties,
                                                            DASH_CAP cap_flag1,
                                                            DASH_CAP cap_flag2)
-    : DashboardInstrument(pparent, id, title, cap_flag1) {
+    : DashboardInstrument(pparent, id, title, cap_flag1, Properties) {
   m_cap_flag.set(cap_flag2);
 
   m_data1 = _T("---");
@@ -237,8 +369,21 @@ DashboardInstrument_Position::DashboardInstrument_Position(wxWindow* pparent,
 wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-  dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, g_pFontData);
+  wxFont f;
+  if (m_Properties)
+  {
+      f = m_Properties->m_TitelFont.GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &f);
+  }
+  else
+  {
+      f = g_pFontTitle->GetChosenFont();
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+      f = g_pFontData->GetChosenFont();
+      dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &f);
+  }
 
   if (orient == wxHORIZONTAL) {
     return wxSize(w + 10, wxMax(hint.y, m_TitleHeight + m_DataHeight * 2));
@@ -249,9 +394,18 @@ wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
 
 void DashboardInstrument_Position::Draw(wxGCDC* dc) {
   wxColour cl;
-  dc->SetFont(*g_pFontData);
-  GetGlobalColor(_T("DASHF"), &cl);
-  dc->SetTextForeground(cl);
+  if (m_Properties)
+  {
+      dc->SetFont((m_Properties->m_DataFont.GetChosenFont()));
+      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+  }
+  else
+  {
+      dc->SetFont((g_pFontData->GetChosenFont()));
+      dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
+  }
+  //GetGlobalColor(_T("DASHF"), &cl);
+  //dc->SetTextForeground(cl);
 
   dc->DrawText(m_data1, 10, m_TitleHeight);
   dc->DrawText(m_data2, 10, m_TitleHeight + m_DataHeight);

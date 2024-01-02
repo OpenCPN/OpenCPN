@@ -10,7 +10,48 @@ as earlier.
 However, the new system can be used also for nmea0183 where it offers more
 flexibility and performance.
 
-== Receiving messages
+== Simplified receiving using ObsListener
+
+From 5.10 a new ObsListener class offers a simpler way to listen to
+messages. The simplified approach:
+
+. Declare a ObsListener listener object
+. Declare a method which handles the message.
+. Initiate the listener to invoke the method  when message arrives.
+
+The ObsListener object normally lives in the class context, like:
+----
+
+        class Dlg : public ShipDriverBase {
+        public:
+            ...
+        private:
+            ObsListener  listener;
+            ...
+
+----
+The method is declared something like below.
+----
+       static void HandleGPGA(ObservedEvt ev) {
+            NMEA0183Id id("GPGGA");
+            std::string payload = GetN0183Payload(id, ev)
+            ...
+----
+There are other ids for NMEA2000 and SignalK messages available.
+Likewise, there are similar methods to access the payload.
+See the *ocpn_plugin.h* header file.
+
+To invoke this method when a GPGGA message arrives, initiate the
+ObsListener like:
+----
+        listener.Init(NMEA0183Id("GPGGA"),
+                      [&](ObservedEvt ev) { HandleGPGA(ev); });
+----
+The last line is a lambda expression which could be used to much more than
+to just invoke a method, see <<using-lambda>> below.
+
+
+== Receiving messages the legacy 5.8 way.
 
 Receiving messages is done in six steps:
 
@@ -22,54 +63,61 @@ Receiving messages is done in six steps:
 . Handle the messages as they arrives.
 
 
-All in all, an example could be like this:
+The code handling messages must live in a wxEventClass instance.
+In almost all cases this means that the code should be implemented in a wxWindow.
+If there is a wxWindow available with a suitable lifespan, this could be used.
+If there is no such window, it needs to be created (it can be hidden) or an
+existing one can be modified to alwasy exist, using Show()/Hide() to enable and
+disable.
 
-First, declare a listener on the class level, here with the shipdriver
-plugin _ShipDriver_pi.h_ header as an example:
+As an example, the *ShipDrivergui_impl*  class is used.
+First, in the header declare a listener on the class level, here with the shipdriver
+plugin _ShipDrivergui_impl.h_ header as an example:
 ----
-        class ShipDriver_pi : public opencpn_plugin_118 {
+        class Dlg : public ShipDriverBase {
         public:
-            ShipDriver_pi(void* ppimgr);
-            ~ShipDriver_pi(void);
             ...
         private:
      ②      std::shared_ptr<ObservableListener> listener;
             ...
 ----
-Then declare a method which handles the message, something like this:
+Then, in the implementation (.cpp) file  declare a method which handles the
+message, something like this:
 ----
-     ④ void HandleGPGA(ObservedEvt ev) {
+     ④ static void HandleGPGA(ObservedEvt ev) {
      ①      NMEA0183 id("GPGGA");
             std::string payload = GetN0183Payload(id, ev)
             ...
 ----
-Then, in the constructor set up the listening:
+Then, still in the .cpp file, set up the listening in the window constructor:
 ----
-         ShipDriver_pi::ShipDriver_pi(void* ppimgr)
-         : opencpn_plugin_116(ppimgr)
+         Dlg::Dlg(wxWindow* parent, ...)
+
          {
          ...
      ①   NMEA0183Id id("GPGGA");
      ③   wxDEFINE_EVENT(EVT_SHIPDRIVER, ObservedEvt);
-     ⑤   listener.Listen(id.key(), EVT_SHIPDRIVER, this);
-     ⑥   Bind(EVT_SHIPDRIVER [](ObservedEvt ev) { HandleGPGA(ev); });
+     ⑤   listener = GetListener(id, EVT_SHIPDRIVER, this);
+     ⑥   Bind(EVT_SHIPDRIVER, [&](ObservedEvt ev) { HandleGPGA(ev); });
 
 ----
 Notes:
 
 ①:: This is the type of message we are listening to. There are similar types
-    for NMEA2000 , SignalK and decoded navigation data (lat, long, etc.)
+    for NMEA2000, SignalK and decoded navigation data (lat, long, etc.). Check
+    *ocpn_plugin.h* for details.
 
 ②:: Boiler-plate code, makes sure the listener is destroyed together with
     the plugin. It is important that the listener is declared in the class,
     a variable defined in a method will not work.
 
 ③:: This is the event generated for our message which we will listen to.
-    It should have an unique name, including the plugin name is a good habit.
+    It should have a unique name, including the plugin name is a good habit.
     However the name, here _EVT_SHIPDRIVER_, could be anything.
 
 ④:: The `GetN0183Payload()` method  gets the payload of the message into the
-    `payload` string. From here it can be processed as required.
+    `payload` string. From here it can be processed as required. There are similar
+     methods for Nmea2000 and SignalK messages (signalK from upcoming 5.10.0).
 
 ⑤:: This activates the listener. From this point system sends us an
     _EVT_SHIPDRIVER_ for each received GPGGA message.
@@ -78,8 +126,9 @@ Notes:
     the _EVT_SHIPDRIVER_ arrives.  From this point all incoming GPGGA
     messages will land in the `HandleGPGGA()` method and be processed.
 
+[#using-lambda]
 
-=== Epilog: Using the lambda
+== Epilog: Using the lambda
 
 The last step above was
 `Bind(EVT_SHIPDRIVER [](wxCommandEvent ev) { HandleGPGA(ev); })`.
@@ -98,6 +147,29 @@ something which otherwise is a problem.
 To get the feeling one need to experiment.
 But then again, C++ lambdas is a complex step which is not necessary
 to get something running.
+
+== Receiving SignalK messages
+
+As of 5.8 handling SignalK messages is not possible, see 
+https://github.com/OpenCPN/OpenCPN/issues/3381[the OpenCPN issue].
+From 5.10 handling signalk messages goes like:
+```
+    auto payload = GetSignalkPayload(ev);
+    const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
+```
+`msg` is a const json map containing at least
+
+* "Data": the parsed json message.
+* "ErrorCount": int, the number of parsing errors.
+* "WarningCount": int, the number of parsing warnings.
+* "Errors": list of strings, error messages.
+* "Warnings": list of strings, warning messages.
+* "Context": string, message context.
+* "ContextSelf": string, own ship context.
+
+Since the map is const, expressions like `msg["Data"]` are not possible
+(the [] operator is not const since it potentially inserts data into the
+map if the index does not exist). Use `msg.ItemAt("Data")` instead.
 
 == Sending messages
 

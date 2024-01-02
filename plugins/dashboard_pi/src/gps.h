@@ -44,11 +44,11 @@
 #include "instrument.h"
 
 // Required for struct SAT_INFO
-#include "nmea0183/SatInfo.h"
+#include "SatInfo.h"
 
 class DashboardInstrument_GPS : public DashboardInstrument {
 public:
-  DashboardInstrument_GPS(wxWindow* parent, wxWindowID id, wxString title);
+  DashboardInstrument_GPS(wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties);
 
   ~DashboardInstrument_GPS(void) {}
 

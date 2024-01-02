@@ -55,7 +55,7 @@
 class DashboardInstrument_Wind : public DashboardInstrument_Dial {
 public:
   DashboardInstrument_Wind(wxWindow* parent, wxWindowID id, wxString title,
-                           DASH_CAP cap_flag);
+                           InstrumentProperties* Properties, DASH_CAP cap_flag);
 
   ~DashboardInstrument_Wind(void) {}
 
@@ -66,8 +66,8 @@ protected:
 
 class DashboardInstrument_WindCompass : public DashboardInstrument_Dial {
 public:
-  DashboardInstrument_WindCompass(wxWindow* parent, wxWindowID id,
-                                  wxString title, DASH_CAP cap_flag);
+  DashboardInstrument_WindCompass(wxWindow* parent, wxWindowID id, wxString title,
+                                  InstrumentProperties* Properties, DASH_CAP cap_flag);
 
   ~DashboardInstrument_WindCompass(void) {}
 
@@ -78,8 +78,8 @@ protected:
 
 class DashboardInstrument_TrueWindAngle : public DashboardInstrument_Dial {
 public:
-  DashboardInstrument_TrueWindAngle(wxWindow* parent, wxWindowID id,
-                                    wxString title, DASH_CAP cap_flag);
+  DashboardInstrument_TrueWindAngle(wxWindow* parent, wxWindowID id, wxString title,
+                                    InstrumentProperties* Properties, DASH_CAP cap_flag);
 
   ~DashboardInstrument_TrueWindAngle(void) {}
 
@@ -93,8 +93,8 @@ Author: Thomas Rauch
 ******************************************************************************/
 class DashboardInstrument_AppTrueWindAngle : public DashboardInstrument_Dial {
 public:
-  DashboardInstrument_AppTrueWindAngle(wxWindow* parent, wxWindowID id,
-                                       wxString title, DASH_CAP cap_flag);
+  DashboardInstrument_AppTrueWindAngle(wxWindow* parent, wxWindowID id, wxString title,
+                                       InstrumentProperties* Properties, DASH_CAP cap_flag);
 
   ~DashboardInstrument_AppTrueWindAngle(void) {}
   void SetData(DASH_CAP, double, wxString);

@@ -463,7 +463,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pCAPE->SetValue(m_RequestConfigBase.GetChar(15) == 'X' &&
                     (IsGFS || IsHRRR));
   m_pCAPE->Enable(IsGFS || IsHRRR);
-  m_pReflectivity->Enable(false);
+  m_pReflectivity->Enable(IsGFS || IsHRRR);
 
   m_pAltitudeData->SetValue(
       (IsGFS || IsICON || IsECMWF)

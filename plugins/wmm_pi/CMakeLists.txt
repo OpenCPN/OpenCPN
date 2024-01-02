@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.1.1)
+cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0043 NEW)
 
 project(wmm_pi)
@@ -29,6 +29,12 @@ if (NOT CMAKE_BUILD_TYPE)
 endif (NOT CMAKE_BUILD_TYPE)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
+if (APPLE)
+  include_directories(${CMAKE_SOURCE_DIR}/buildosx/include)
+elseif (QT_ANDROID)
+  include_directories(${CMAKE_SOURCE_DIR}/android)
+endif ()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -122,28 +128,26 @@ endif (APPLE)
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)
   if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DEBUG /OPT:REF /OPT:ICF")
     add_custom_command(
       TARGET ${PACKAGE_NAME}
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
       COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>"
-              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>"
-              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.dll"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.dll"
     )
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-      add_custom_command(
-        TARGET ${PACKAGE_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
-        COMMAND
-          ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
-          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-        COMMAND
-          ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
-          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      )
-    endif ()
+    add_custom_command(
+      TARGET ${PACKAGE_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.pdb"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.pdb"
+    )
   endif (MSVC)
 endif (NOT OCPN_CI_BUILD)
 

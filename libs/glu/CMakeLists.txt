@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 project(glu)
 
@@ -23,6 +23,19 @@ ENDIF(QT_ANDROID)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(include)
+
+IF (APPLE)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildosx/include)
+ENDIF ()
+
+IF (QT_ANDROID)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/android)
+ENDIF ()
+
+IF (MSVC)
+  INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/buildwin)
+ENDIF ()
+
 
 IF(CMAKE_HOST_WIN32)
     IF(MSVC)

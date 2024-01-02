@@ -5,16 +5,13 @@
 #
 # ~~~
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 if (TARGET ocpn::pugixml)
   return ()
 endif ()
 
-SET(SRC
-    pugixml.cpp
-    )
-
+set(SRC pugixml.cpp)
 
 add_library(OCPN_PUGIXML STATIC ${SRC})
 add_library(ocpn::pugixml ALIAS OCPN_PUGIXML)

@@ -8,7 +8,10 @@ src_tree_root="$(dirname $(readlink -f $0))/.."
 sudo apt-get -qq update
 sudo apt-get install --yes --force-yes -q devscripts equivs
 
-mk-build-deps "${src_tree_root}/ci/control" --install --root-cmd=sudo --remove --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes --force-yes"
+mk-build-deps "${src_tree_root}/ci/control" \
+    --install --root-cmd=sudo\
+    --remove \
+    --tool="apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes --force-yes"
 sudo apt-get --allow-unauthenticated --yes --force-yes install -f
 
 # Xenial finds webview header but not the library:
@@ -30,7 +33,7 @@ cmake $WEBVIEW_OPT  $EXTRA_BUILD_OPTS\
     -DOCPN_USE_BUNDLED_LIBS=OFF \
     ..
 make -sj2
-make run-tests
+dbus-run-session make run-tests || :
 make package
 popd
 

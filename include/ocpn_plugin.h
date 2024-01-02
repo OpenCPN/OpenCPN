@@ -455,9 +455,9 @@ typedef void destroy_t(opencpn_plugin *);
 class DECL_EXP opencpn_plugin_16 : public opencpn_plugin {
 public:
   opencpn_plugin_16(void *pmgr);
+  virtual ~opencpn_plugin_16();
 
   using opencpn_plugin::RenderOverlay;
-  virtual ~opencpn_plugin_16();
 
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
 
@@ -470,6 +470,7 @@ public:
   virtual ~opencpn_plugin_17();
 
   using opencpn_plugin::RenderOverlay;
+
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
@@ -480,7 +481,9 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin {
 public:
   opencpn_plugin_18(void *pmgr);
   virtual ~opencpn_plugin_18();
+
   using opencpn_plugin::RenderOverlay;
+
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
@@ -583,7 +586,10 @@ public:
 class DECL_EXP opencpn_plugin_118 : public opencpn_plugin_117 {
 public:
   opencpn_plugin_118(void *pmgr);
+
   using opencpn_plugin_116::RenderGLOverlayMultiCanvas;
+  using opencpn_plugin_116::RenderOverlayMultiCanvas;
+
   /// Render plugin overlay over chart canvas in OpenGL mode
   ///
   /// \param pcontext Pointer to the OpenGL context
@@ -592,20 +598,41 @@ public:
   /// \param priority Priority, plugins only upgrading from older API versions
   ///        should draw only when priority is OVERLAY_LEGACY (0)
   /// \return true if overlay was rendered, false otherwise
-  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
-                                          PlugIn_ViewPort *vp, int canvasIndex,
-                                          int priority = -1);
-  using opencpn_plugin_116::RenderOverlayMultiCanvas;
+#ifdef _MSC_VER
+  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
+		                          int canvasIndex, int priority = -1);
+#else
+  virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
+                                  int canvasIndex, int priority);
+
+  bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
+                                  int canvas_ix) override {
+    return RenderGLOverlayMultiCanvas(pcontext, vp, canvas_ix, -1);
+  }
+#endif
+
+
+
   /// Render plugin overlay over chart canvas in non-OpenGL mode
   ///
   /// \param dc Reference to the "device context"
   /// \param vp Pointer to the Viewport
   /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
   /// \param priority Priority, plugins only upgrading from older API versions
-  /// should draw only when priority is OVERLAY_LEGACY (0)
+  ///        should draw only when priority is OVERLAY_LEGACY (0)
   /// \return true if overlay was rendered, false otherwise
+#ifdef _MSC_VER
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex, int priority = -1);
+#else
+  virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvas_ix,
+                                int priority);
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                int canvas_ix) override {
+    return RenderOverlayMultiCanvas(dc, vp, canvas_ix, -1);
+  }
+#endif
+
 };
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
@@ -1552,6 +1579,7 @@ public:
   bool m_isVisible;
   wxString m_Description;
 
+
   Plugin_WaypointExList *pWaypointList;
 };
 
@@ -1672,8 +1700,28 @@ extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
 extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
                                                      ObservedEvt ev);
 
-/** Return source identifier (iface) of a received n2000 message of type id in
- * ev. */
+/**
+ *  Get SignalK status payload after receiving a message.
+ *  @return pointer to a wxJSONValue map object. Typical usage:
+ *
+ *      auto ptr = GetSignalkPayload(ev);
+ *      const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
+ *
+ *  The map contains the following entries:
+ *  - "Data": the parsed json message
+ *  - "ErrorCount": int, the number of parsing errors
+ *  - "WarningCount": int, the number of parsing warnings
+ *  - "Errors": list of strings, error messages.
+ *  - "Warnings": list of strings, warning messages..
+ *  - "Context": string, message context
+ *  - "ContextSelf": string, own ship context.
+ */
+std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev);
+
+/**
+ * Return source identifier (iface) of a received n2000 message of type id
+ * in ev.
+ */
 extern DECL_EXP std::string GetN2000Source(NMEA2000Id id, ObservedEvt ev);
 
 /** Return payload in a received n0183 message of type id in ev. */
@@ -1702,31 +1750,33 @@ struct PluginNavdata {
 /** Return BasicNavDataMsg decoded data available in ev */
 extern DECL_EXP PluginNavdata GetEventNavdata(ObservedEvt ev);
 
-/* Plugin API supporting direct access to comm drivers for output purposes
- *
+/** Plugin API supporting direct access to comm drivers for output purposes */
+/*
  * Plugins may access comm ports for direct output.
  * The general program flow for a plugin may look something like this
  * pseudo-code:
  * 1.  Plugin will query OCPN core for a list of active comm drivers.
- * 2.  Plugin will inspect the list, and query OCPN core for driver attributes.
+ * 2.  Plugin will inspect the list, and query OCPN core for driver
+ *     attributes.
  * 3.  Plugin will select a comm driver with appropriate attributes for output.
- * 4.  Plugin will register a list of PGNs expected to be transmitted (N2K
- * specific)
+ * 4.  Plugin will register a list of PGNs expected to be transmitted
+ *     (N2K specific)
  * 5.  Plugin may then send a payload buffer to a specific comm driver for
- * output as soon as possible.
+ *     output as soon as possible.
  *
  * The mechanism for specifying a particular comm driver uses the notion of
  * "handles". Each active comm driver has an associated opaque handle, managed
  * by OCPN core. All references by a plugin to a driver are by means of its
  * handle. Handles should be considered to be "opaque", meaning that the exact
- * contents of the handle are of no specific value to the plugin, and only have
- * meaning to the OCPN core management of drivers.
+ * contents of the handle are of no specific value to the plugin, and only
+ * have meaning to the OCPN core management of drivers.
  */
 
 /** Definition of OCPN DriverHandle  */
 typedef std::string DriverHandle;
 
 /** Error return values  */
+
 typedef enum CommDriverResult {
   RESULT_COMM_NO_ERROR = 0,
   RESULT_COMM_INVALID_HANDLE,
@@ -1739,11 +1789,11 @@ typedef enum CommDriverResult {
 /** Query OCPN core for a list of active drivers  */
 extern DECL_EXP std::vector<DriverHandle> GetActiveDrivers();
 
-/** Query a specific driver for attributes
- * Driver attributes are available from OCPN core as a hash map of
- * tag->attribute pairs. There is a defined set of common tags guaranteed for
- * every driver. Both tags and attributes are defined as std::string. Here is
- * the list of common tag-attribute pairs.
+/** Query a specific driver for attributes  */
+/* Driver attributes are available from OCPN core as a hash map of
+ * tag->attribute pairs. There is a defined set of common tags guaranteed
+ * for every driver. Both tags and attributes are defined as std::string.
+ * Here is the list of common tag-attribute pairs.
  *
  * Tag              Attribute definition
  * ----------       --------------------
@@ -1751,36 +1801,38 @@ extern DECL_EXP std::vector<DriverHandle> GetActiveDrivers();
  *
  *
  */
-extern DECL_EXP const std::unordered_map<std::string, std::string>
-GetAttributes(DriverHandle handle);
 
-/**
- * Send a message to a specific driver/device.
- *
- * Comm drivers on bus protocols other than NMEA2000 may write directly to the
- * port using  a simple call.  The physical write operation will be queued, and
- * executed in order as bandwidth allows. Return value is number of bytes queued
- * for transmission.
+/**  Query driver attributes  */
+extern DECL_EXP const std::unordered_map<std::string, std::string>
+        GetAttributes(DriverHandle handle);
+
+/* Writing to a specific driver  */
+
+/* Comm drivers on bus protocols other than NMEA2000 may write directly to the
+ * port * using  a simple call.  The physical write operation will be queued,
+ * and executed in order as bandwidth allows.
+ * Return value is number of bytes queued for transmission.
  */
 extern DECL_EXP CommDriverResult WriteCommDriver(
-    DriverHandle handle, const std::shared_ptr<std::vector<uint8_t>> &payload);
+        DriverHandle handle,
+        const std::shared_ptr <std::vector<uint8_t>> &payload);
 
-/** Send a PGN message to a NMEA2000 address.  */
+/** Send a PGN message to an NMEA2000 address.  */
 extern DECL_EXP CommDriverResult WriteCommDriverN2K(
     DriverHandle handle, int PGN, int destinationCANAddress, int priority,
-    const std::shared_ptr<std::vector<uint8_t>> &payload);
+    const std::shared_ptr <std::vector<uint8_t>> &payload);
 
 /**
- * Register a PGN transmitted by a device.
- *
- * NMEA2000 bus protocol device management requires that devices writing on the
- * bus must inform all bus listeners of the specific PGNs that may be
- * transmitted by this device. Once configured, this bus management process will
- * be handled transparently by the OCPN core drivers. It is only necessary for
- * plugins wishing to write to the NMEA2000 bus to register the specific PGNs
- * that they anticipate using, with the selected driver.
+ * Special NMEA2000 requirements
+ * NMEA2000 bus protocol device management requires that devices writing on
+ * the bus must inform all bus listeners of the specific PGNs that may be
+ * transmitted by this device. Once configured, this bus management process
+ * will be handled transparently by the OCPN core drivers. It is only
+ * necessary for plugins wishing to write to the NMEA2000 bus to register the
+ * specific PGNs that they anticipate using, with the selected driver.
  */
 extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
                                                 std::vector<int> &pgn_list);
+
 
 #endif  //_PLUGIN_H_

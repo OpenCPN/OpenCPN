@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::sqlite)
     return ()
 endif ()
 
-if(NOT CMAKE_MODULE_PATH)
-  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 add_library(_SQLITE INTERFACE)
 add_library(ocpn::sqlite ALIAS _SQLITE)
@@ -48,4 +46,3 @@ else ()
       target_compile_definitions(_SQLITE INTERFACE -DSQLITE_USE_LEGACY_STRUCT)
   endif()
 endif ()
-

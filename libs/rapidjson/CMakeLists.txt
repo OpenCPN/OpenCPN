@@ -16,7 +16,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 
-cmake_minimum_required(VERSION 3.1.13)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::rapidjson)
   return ()
@@ -79,3 +79,4 @@ endif ()
 add_library(_RAPIDJSON_IF INTERFACE)
 add_library(ocpn::rapidjson ALIAS _RAPIDJSON_IF)
 target_include_directories(_RAPIDJSON_IF INTERFACE "${src_dir}/include")
+target_compile_definitions(_RAPIDJSON_IF INTERFACE RAPIDJSON_HAS_STDSTRING=1)

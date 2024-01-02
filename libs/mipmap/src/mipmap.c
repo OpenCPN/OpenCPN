@@ -143,7 +143,7 @@ void MipMap_ResolveRoutines()
         if(info[3] & bit_SSE2)
             MipMap_32 = MipMap_32_sse2;
 #endif
-#if defined(__SSE3__)
+#if defined(__SSSE3__)
         if(info[2] & bit_SSSE3)
             MipMap_24 = MipMap_24_ssse3;
 #endif
