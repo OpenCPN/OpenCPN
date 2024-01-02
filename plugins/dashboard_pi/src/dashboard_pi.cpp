@@ -227,6 +227,7 @@ enum {
   ID_DBP_I_SUNLCL,
   ID_DBP_I_ALTI,
   ID_DBP_D_ALTI,
+  ID_DBP_I_VMGW,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -305,6 +306,8 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("VMG");
     case ID_DBP_D_VMG:
       return _("VMG");
+    case ID_DBP_I_VMGW:
+      return _("VMG Wind");
     case ID_DBP_I_RSA:
       return _("Rudder Angle");
     case ID_DBP_D_RSA:
@@ -366,6 +369,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_I_TWS:
     case ID_DBP_I_AWA:
     case ID_DBP_I_VMG:
+    case ID_DBP_I_VMGW:
     case ID_DBP_I_RSA:
     case ID_DBP_I_SAT:
     case ID_DBP_I_PTR:
@@ -511,6 +515,7 @@ int dashboard_pi::Init(void) {
   mWTP_Watchdog = 2;
   mRSA_Watchdog = 2;
   mVMG_Watchdog = 2;
+  mVMGW_Watchdog = 2;
   mUTC_Watchdog = 2;
   mATMP_Watchdog = 2;
   mWDN_Watchdog = 2;
@@ -837,6 +842,11 @@ void dashboard_pi::Notify() {
   if (mVMG_Watchdog <= 0) {
     SendSentenceToAllInstruments(OCPN_DBP_STC_VMG, NAN, "-");
     mVMG_Watchdog = gps_watchdog_timeout_ticks;
+  }
+  mVMGW_Watchdog--;
+  if (mVMGW_Watchdog <= 0) {
+    SendSentenceToAllInstruments(OCPN_DBP_STC_VMGW, NAN, "-");
+    mVMGW_Watchdog = gps_watchdog_timeout_ticks;
   }
   mUTC_Watchdog--;
   if (mUTC_Watchdog <= 0) {
@@ -2691,6 +2701,18 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         OCPN_DBP_STC_VMG, toUsrSpeed_Plugin(m_vmg_kn, g_iDashSpeedUnit),
         getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
       mVMG_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
+    else if (update_path ==
+             _T("performance.velocityMadeGood")) {
+      double m_vmgw_kn = GetJsonDouble(value);
+      if (std::isnan(m_vmgw_kn)) return;
+
+      m_vmgw_kn = MS2KNOTS(m_vmgw_kn);
+      SendSentenceToAllInstruments(
+        OCPN_DBP_STC_VMGW, toUsrSpeed_Plugin(m_vmgw_kn, g_iDashSpeedUnit),
+        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+      mVMGW_Watchdog = gps_watchdog_timeout_ticks;
     }
 
     else if (update_path == _T("steering.rudderAngle")) {  // ->port
@@ -5563,6 +5585,11 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_AWA,
             _T("%3.0f"));
+        break;
+      case ID_DBP_I_VMGW:   // VMG based on wind and STW
+        instrument = new DashboardInstrument_Single(
+            this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_VMGW,
+            _T("%2.1f"));
         break;
       case ID_DBP_I_VMG:
         instrument = new DashboardInstrument_Single(

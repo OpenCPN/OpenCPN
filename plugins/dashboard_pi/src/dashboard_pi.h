@@ -318,6 +318,7 @@ private:
   int mWTP_Watchdog;
   int mRSA_Watchdog;
   int mVMG_Watchdog;
+  int mVMGW_Watchdog;
   int mUTC_Watchdog;
   int mATMP_Watchdog;
   int mWDN_Watchdog;
