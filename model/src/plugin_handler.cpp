@@ -1179,34 +1179,51 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
     return false;
   }
   auto pic = loader->GetPlugInArray()->Item(ix);
-  // g_pi_manager->ClosePlugInPanel(pic, wxID_OK);
-  loader->UnLoadPlugIn(ix);
-  string path = PluginHandler::fileListPath(plugin_name);
-  if (!ocpn::exists(path)) {
-    wxLogWarning("Cannot find installation data for %s (%s)",
-                 plugin_name.c_str(), path);
-    return false;
+
+  if (!pic->m_managed_metadata.is_orphan) {
+    loader->UnLoadPlugIn(ix);
+    string path = PluginHandler::fileListPath(plugin_name);
+    if (!ocpn::exists(path)) {
+      wxLogWarning("Cannot find installation data for %s (%s)",
+                   plugin_name.c_str(), path);
+      return false;
+    }
+    vector<string> plug_paths = LoadLinesFromFile(path);
+    for (const auto& p : plug_paths) {
+      if (isRegularFile(p.c_str())) {
+        int r = remove(p.c_str());
+        if (r != 0) {
+          wxLogWarning("Cannot remove file %s: %s", p.c_str(), strerror(r));
+        }
+      }
+    }
+    for (const auto& p : plug_paths) PurgeEmptyDirs(p);
+    int r = remove(path.c_str());
+    if (r != 0) {
+      wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
+    }
+
+    // Best effort tries, failures are OK.
+    remove(dirListPath(plugin_name).c_str());
+    remove(PluginHandler::versionPath(plugin_name).c_str());
+    remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
   }
-  vector<string> plug_paths = LoadLinesFromFile(path);
-  for (const auto& p : plug_paths) {
-    if (isRegularFile(p.c_str())) {
-      int r = remove(p.c_str());
+  else {
+    // This is an orphan plugin
+    //  All we can really do is remove the library file (.so/.dylib/.dll)
+    //  Which is sufficient, in this case
+
+    // Capture library file name before pic dies.
+    string libfile = pic->m_plugin_file.ToStdString();
+    loader->UnLoadPlugIn(ix);
+
+    if (isRegularFile(libfile.c_str())) {
+      int r = remove(libfile.c_str());
       if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", p.c_str(), strerror(r));
+        wxLogWarning("Cannot remove file %s: %s", libfile.c_str(), strerror(r));
       }
     }
   }
-  for (const auto& p : plug_paths) PurgeEmptyDirs(p);
-  int r = remove(path.c_str());
-  if (r != 0) {
-    wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
-  }
-
-  // Best effort tries, failures are OK.
-  remove(dirListPath(plugin_name).c_str());
-  remove(PluginHandler::versionPath(plugin_name).c_str());
-  remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
-
   return true;
 }
 

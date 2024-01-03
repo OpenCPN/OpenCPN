@@ -111,6 +111,13 @@ CatalogCtx *CatalogHandler::GetActiveCatalogContext() {
   return &m_catalogctx;
 }
 
+bool CatalogHandler::AddMetadataToActiveContext(PluginMetadata metadata) {
+  if (m_catalog_status == ServerStatus::OK) {
+    m_catalogctx.plugins.push_back(metadata);
+    return true;
+  }
+  else return false;
+}
 
 
 catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream) {

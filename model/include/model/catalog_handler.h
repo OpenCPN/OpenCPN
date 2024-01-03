@@ -119,6 +119,9 @@ public:
   /** Retrieve status of currently active plugin catalog  */
   ServerStatus GetCatalogStatus();
 
+  /** Add an abritrary stub metadata netry to the active catalog context */
+  bool AddMetadataToActiveContext(PluginMetadata metadata);
+
   /** Last error message, free format. */
   std::string LastErrorMsg();
 
