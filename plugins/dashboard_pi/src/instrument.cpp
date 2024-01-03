@@ -59,15 +59,15 @@ wxColour GetColourSchemeBackgroundColour(wxColour co)
     case PI_GLOBAL_COLOR_SCHEME_DAY:
         break;
     case PI_GLOBAL_COLOR_SCHEME_DUSK:
-        red -= 80; if (red < 0) red = 0;
-        Green -= 80; if (Green < 0) Green = 0;
-        Blue -= 80; if (Blue < 0) Blue = 0;
+        red *= .8;
+        Green *= .8;
+        Blue *= .8;
         ret_val = wxColour(red, Green, Blue);
         break;
     case PI_GLOBAL_COLOR_SCHEME_NIGHT:
-        red -= 150; if (red < 0) red = 0;
-        Green -= 150; if (Green < 0) Green = 0;
-        Blue -= 150; if (Blue < 0) Blue = 0;
+        red *= .5;
+        Green *= .5;
+        Blue *= .5;
         ret_val = wxColour(red, Green, Blue);
         break;
     default: break;
@@ -94,15 +94,21 @@ wxColour GetColourSchemeFont(wxColour co)
     case PI_GLOBAL_COLOR_SCHEME_DAY:
         break;
     case PI_GLOBAL_COLOR_SCHEME_DUSK:
-        red += 150; if (red > 255) red = 255;
-        Green += 150; if (Green > 255) Green = 255;
-        Blue += 150; if (Blue > 255) Blue = 255;
+        red *= .8;
+        Green *= .8;
+        Blue *= .8;
+        //if (red + Green + Blue < 10) {
+        //  red = Green = Blue = 50;
+        //}
         ret_val = wxColour(red, Green, Blue);
         break;
     case PI_GLOBAL_COLOR_SCHEME_NIGHT:
-        red += 80; if (red > 255) red = 255;
-        Green += 80; if (Green > 255) Green = 255;
-        Blue += 80; if (Blue > 255) Blue = 255;
+        red *= .5;
+        Green *= .5;
+        Blue *= .5;
+        if (red + Green + Blue < 10) {
+          red = Green = Blue = 50;
+        }
         ret_val = wxColour(red, Green, Blue);
         break;
     default: break;

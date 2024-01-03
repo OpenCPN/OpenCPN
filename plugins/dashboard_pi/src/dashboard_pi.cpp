@@ -525,7 +525,6 @@ int dashboard_pi::Init(void) {
   mALT_Watchdog = 2;
   mLOG_Watchdog = 2;
   mTrLOG_Watchdog = 2;
-  colourschemecounter = 0;
 
   g_pFontTitle = new wxFontData();
   g_pFontTitle->SetChosenFont(wxFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL));
@@ -3121,26 +3120,7 @@ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
 }
 
 void dashboard_pi::SetColorScheme(PI_ColorScheme cs) {
-    // what on hell is this. ... getting several Coloursheme from Maim OPENCPN when changing the colourscheme.
-    // so this is necessary
-    switch (cs) {
-    case PI_GLOBAL_COLOR_SCHEME_RGB: break;
-
-    case PI_GLOBAL_COLOR_SCHEME_DAY:
-        if (colourschemecounter == 0)
-            aktuellColorScheme = PI_GLOBAL_COLOR_SCHEME_DAY;
-        colourschemecounter++;
-    case   PI_GLOBAL_COLOR_SCHEME_DUSK:
-        if (colourschemecounter == 0)
-            aktuellColorScheme = PI_GLOBAL_COLOR_SCHEME_DUSK;
-        colourschemecounter++;
-    case    PI_GLOBAL_COLOR_SCHEME_NIGHT:
-        if (colourschemecounter == 0)
-            aktuellColorScheme = PI_GLOBAL_COLOR_SCHEME_NIGHT;
-        colourschemecounter = 0;
-    default:
-        break;
-    }
+  aktuellColorScheme = cs;
   for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
     DashboardWindow *dashboard_window =
         m_ArrayOfDashboardWindow.Item(i)->m_pDashboardWindow;
