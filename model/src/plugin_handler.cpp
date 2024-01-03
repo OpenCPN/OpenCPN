@@ -1180,14 +1180,16 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   }
   auto pic = loader->GetPlugInArray()->Item(ix);
 
-  if (!pic->m_managed_metadata.is_orphan) {
-    loader->UnLoadPlugIn(ix);
-    string path = PluginHandler::fileListPath(plugin_name);
-    if (!ocpn::exists(path)) {
-      wxLogWarning("Cannot find installation data for %s (%s)",
-                   plugin_name.c_str(), path);
-      return false;
-    }
+  // Capture library file name before pic dies.
+  string libfile = pic->m_plugin_file.ToStdString();
+  loader->UnLoadPlugIn(ix);
+
+  string path = PluginHandler::fileListPath(plugin_name);
+  if (!ocpn::exists(path)) {
+    wxLogWarning("Cannot find installation data for %s (%s)",
+                 plugin_name.c_str(), path);
+  }
+  else {
     vector<string> plug_paths = LoadLinesFromFile(path);
     for (const auto& p : plug_paths) {
       if (isRegularFile(p.c_str())) {
@@ -1202,28 +1204,20 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
     if (r != 0) {
       wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
     }
-
     // Best effort tries, failures are OK.
     remove(dirListPath(plugin_name).c_str());
     remove(PluginHandler::versionPath(plugin_name).c_str());
     remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
   }
-  else {
-    // This is an orphan plugin
-    //  All we can really do is remove the library file (.so/.dylib/.dll)
-    //  Which is sufficient, in this case
 
-    // Capture library file name before pic dies.
-    string libfile = pic->m_plugin_file.ToStdString();
-    loader->UnLoadPlugIn(ix);
+    //  If this is an orphan plugin, there may be no installation record
+    //  So make sure that the library file (.so/.dylib/.dll) is removed
+    //  as a minimum best effort requirement
 
-    if (isRegularFile(libfile.c_str())) {
-      int r = remove(libfile.c_str());
-      if (r != 0) {
-        wxLogWarning("Cannot remove file %s: %s", libfile.c_str(), strerror(r));
-      }
-    }
+  if (isRegularFile(libfile.c_str())) {
+    remove(libfile.c_str());
   }
+
   return true;
 }
 
