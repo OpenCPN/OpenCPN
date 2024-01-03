@@ -31,9 +31,12 @@
 #include <string>
 
 #include "model/route.h"
-#include "model/route_point.h"
 #include "model/track.h"
 #include "model/semantic_vers.h"
+
+#include "observable_evtvar.h"
+
+enum class PeerDlgResult { Ok, Cancel, HasPincode };
 
 enum class PeerDlg { PinConfirm, InvalidHttpResponse, ErrorReturn, TransferOk };
 
@@ -46,27 +49,31 @@ struct PeerData {
   std::vector<Track*> tracks;
   bool overwrite;
 
-  /** Dialog with possible HTTP or RestServer error code. */
-  std::function<int(PeerDlg, int)> run_status_dlg;
+  /** Notified with transfer percent progress (0-100). */
+  EventVar& progress;
+
+  /** Dialog returning status */
+  std::function<PeerDlgResult(PeerDlg, int)> run_status_dlg;
 
   /**
    * Pin confirm dialog, returns new {0, user_pin} or
    * {error_code, error msg)
    */
-  std::function<std::pair<int, std::string>()> run_pincode_dlg;
+  std::function<std::pair<PeerDlgResult, std::string>()> run_pincode_dlg;
 
-  PeerData();
+  PeerData(EventVar& p);
 };
 
+void GetApiVersion(PeerData& peer_data);
 
 /** Send data to server peer.*/
-int SendNavobjects(const PeerData& peer_data);
+int SendNavobjects(PeerData& peer_data);
 
 /**
  * Check if server peer deems that writing these objects can be accepted
  * i. e., that the object(s) does not exist or can be overwritten.
  */
-bool CheckNavObjects(const PeerData& peer_data);
+bool CheckNavObjects(PeerData& peer_data);
 
 
 #endif  // guard

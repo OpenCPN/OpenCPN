@@ -25,61 +25,58 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include <curl/curl.h>
-
 
 #include <wx/fileconf.h>
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
-#include <wx/tokenzr.h>
+#include <wx/log.h>
 
 #include "model/config_vars.h"
 #include "model/nav_object_database.h"
 #include "model/peer_client.h"
+#include "model/ocpn_utils.h"
 #include "model/rest_server.h"
 #include "model/semantic_vers.h"
-
-#if 0
-wxString GetErrorText(RestServerResult result) {
-  switch (result) {
-    case RestServerResult::GenericError:
-      return _("Server Generic Error");
-    case RestServerResult::ObjectRejected:
-      return _("Peer rejected object");
-    case RestServerResult::DuplicateRejected:
-      return _("Peer rejected duplicate object");
-    case RestServerResult::RouteInsertError:
-      return _("Peer internal error (insert)");
-    default:
-      return _("Server Unknown Error");
-  }
-}
-
-size_t wxcurl_string_write_UTF8(void* ptr, size_t size, size_t nmemb,
-                                void* pcharbuf) {
-  size_t iRealSize = size * nmemb;
-  wxCharBuffer* pStr = (wxCharBuffer*)pcharbuf;
-
-  if (pStr) {
-#ifdef __WXMSW__
-    wxString str1a = wxString(*pStr);
-    wxString str2 = wxString((const char*)ptr, wxConvUTF8, iRealSize);
-    *pStr = (str1a + str2).mb_str();
-#else
-    wxString str = wxString(*pStr, wxConvUTF8) +
-                   wxString((const char*)ptr, wxConvUTF8, iRealSize);
-    *pStr = str.mb_str(wxConvUTF8);
-#endif
-  }
-
-  return iRealSize;
-}
+#include "observable_confvar.h"
 
 struct MemoryStruct {
   char* memory;
   size_t size;
+  MemoryStruct() {
+    memory = (char*)malloc(1);
+    size = 0;
+  }
+  MemoryStruct(size_t init_size) {
+    memory = (char*)malloc(init_size);
+    size = memory ? init_size : 0;
+  }
+  ~MemoryStruct() { free(memory); }
 };
+
+using PeerDlgPair = std::pair<PeerDlgResult, std::string>;
+
+PeerData::PeerData(EventVar& p)
+    : overwrite(false),
+      progress(p),
+      run_status_dlg([](PeerDlg, int) { return PeerDlgResult::Cancel; }),
+      run_pincode_dlg([] { return PeerDlgPair(PeerDlgResult::Cancel, ""); }) {}
+
+// std::string ServerResultToText(RestServerResult result) {
+//   using namespace std;
+//   using RSR = RestServerResult;
+//   static const unordered_map<RestServerResult, wxString> TextByResult = {
+//     { RSR::GenericError, _("Peer Generic Error") },
+//     { RSR::ObjectRejected, _("Peer rejected object") },
+//     { RSR::DuplicateRejected, _("Peer rejected duplicate object") },
+//     { RSR::RouteInsertError,  _("Peer internal error (insert)") }
+//   };
+//   auto found = TextByResult.find(result);
+//   if (found != TextByResult.end()) return found->second.ToStdString();
+//   return _("Unknown peer error").ToStdString();
+// }
 
 static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb,
                                   void* userp) {
@@ -89,7 +86,7 @@ static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb,
   char* ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
   if (!ptr) {
     /* out of memory! */
-    printf("not enough memory (realloc returned NULL)\n");
+    std::cerr << "not enough memory (realloc returned NULL)\n";
     return 0;
   }
 
@@ -101,138 +98,119 @@ static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb,
   return realsize;
 }
 
-int navobj_transfer_progress;
-
-int xfer_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
-                  curl_off_t ultotal, curl_off_t ulnow) {
+static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
+                         [[maybe_unused]] curl_off_t dlnow, curl_off_t ultotal,
+                         curl_off_t ulnow) {
+  auto peer_data = static_cast<PeerData*>(clientp);
   if (ultotal == 0) {
-    navobj_transfer_progress = 0;
+    peer_data->progress.Notify(0, "");
   } else {
-    navobj_transfer_progress = 100 * ulnow / ultotal;
+    peer_data->progress.Notify(100 * ulnow / ultotal, "");
   }
-  wxYield();
-  return 0;
+  return CURL_PROGRESSFUNC_CONTINUE;
 }
 
-long PostSendObjectMessage(std::string url, std::ostringstream& body,
-                           MemoryStruct* response, bool timeout = false) {
+/** Perform a POST operation on server, store possible reply in response. */
+static long PostSendObjectMessage(std::string url, std::string& body,
+                                  PeerData& peer_data, bool timeout,
+                                  MemoryStruct* response) {
   long response_code = -1;
-  navobj_transfer_progress = 0;
+  peer_data.progress.Notify(0, "");
 
   CURL* c = curl_easy_init();
-  curl_easy_setopt(c, CURLOPT_ENCODING,
-                   "identity");  // No encoding, plain ASCII
+  // No encoding, plain ASCII
+  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");   // Plain ASCII
   curl_easy_setopt(c, CURLOPT_URL, url.c_str());
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
 
-  int iSize = strlen(body.str().c_str());
-  curl_easy_setopt(c, CURLOPT_POSTFIELDSIZE, iSize);
-  curl_easy_setopt(c, CURLOPT_COPYPOSTFIELDS, body.str().c_str());
-
+  curl_easy_setopt(c, CURLOPT_POSTFIELDSIZE, body.size());
+  curl_easy_setopt(c, CURLOPT_COPYPOSTFIELDS, body.c_str());
   curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(c, CURLOPT_WRITEDATA, (void*)response);
   curl_easy_setopt(c, CURLOPT_NOPROGRESS, 0);
+  curl_easy_setopt(c, CURLOPT_XFERINFODATA, &peer_data);
   curl_easy_setopt(c, CURLOPT_XFERINFOFUNCTION, xfer_callback);
+  int level =  wxLog::GetLogLevel();
+  int level2 = wxLOG_Debug;
+  // FIXME (leamas) always logs
+  curl_easy_setopt(c, CURLOPT_VERBOSE,
+                   wxLog::GetLogLevel() >= wxLOG_Debug ? 1 : 0);
   if (timeout) curl_easy_setopt(c, CURLOPT_TIMEOUT, 5);
 
   CURLcode result = curl_easy_perform(c);
-  navobj_transfer_progress = 0;
+  peer_data.progress.Notify(0, "");
   if (result == CURLE_OK)
     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
 
   curl_easy_cleanup(c);
-
   return response_code;
 }
 
-bool CheckApiKey(std::string url, MemoryStruct* response) {
-  long response_code = -1;
+/** Perform a GET operation on server, store possible reply in chunk. */
+static int ApiGetUrl(std::string url, const MemoryStruct* chunk,
+                     int timeout = 0) {
+  int response_code = -1;
 
   CURL* c = curl_easy_init();
   curl_easy_setopt(c, CURLOPT_ENCODING, "identity");  // Encoding: plain ASCII
   curl_easy_setopt(c, CURLOPT_URL, url.c_str());
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
+  curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(c, CURLOPT_WRITEDATA, (void*)chunk);
+  curl_easy_setopt(c, CURLOPT_NOPROGRESS, 1);
+  if (timeout != 0) curl_easy_setopt(c, CURLOPT_TIMEOUT, timeout);
   CURLcode result = curl_easy_perform(c);
   if (result == CURLE_OK)
     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
   curl_easy_cleanup(c);
-  return response_code == 200;
+  return response_code;
 }
 
-std::string GetClientKey(std::string& server_name) {
-  if (TheBaseConfig()) {
-    TheBaseConfig()->SetPath("/Settings/RESTClient");
-
-    wxString key_string;
-
-    TheBaseConfig()->Read("ServerKeys", &key_string);
-    wxStringTokenizer st(key_string, _T(";"));
-    while (st.HasMoreTokens()) {
-      wxString s1 = st.GetNextToken();
-      wxString server_name_persisted = s1.BeforeFirst(':');
-      wxString server_key = s1.AfterFirst(':');
-
-      if (!server_name_persisted.ToStdString().compare(server_name))
-        return server_key.ToStdString();
-    }
+static std::string GetClientKey(std::string& server_name) {
+  ConfigVar<std::string> server_keys("/Settings/RESTClient", "ServerKeys",
+                                     TheBaseConfig());
+  auto key_string = server_keys.Get("");
+  auto entries = ocpn::split(key_string.c_str(), ";");
+  for (const auto& entry : entries) {
+    auto server_key = ocpn::split(entry.c_str(), ":");
+    if (server_key.size() != 2) continue;
+    if (server_key[0] == server_name) return server_key[1];
   }
   return "1";
 }
 
-void SaveClientKey(std::string& server_name, std::string key) {
-  if (TheBaseConfig()) {
-    TheBaseConfig()->SetPath("/Settings/RESTClient");
+static void SaveClientKey(std::string& server_name, std::string key) {
+  ConfigVar<std::string> server_keys("/Settings/RESTClient", "ServerKeys",
+                                     TheBaseConfig());
+  auto config_server_keys = server_keys.Get("");
 
-    wxArrayString array;
-    wxString key_string;
-    TheBaseConfig()->Read("ServerKeys", &key_string);
-    wxStringTokenizer st(key_string, _T(";"));
-    while (st.HasMoreTokens()) {
-      wxString s1 = st.GetNextToken();
-      array.Add(s1);
-    }
-
-    bool b_updated = false;
-    for (unsigned int i = 0; i < array.GetCount(); i++) {
-      wxString s1 = array[i];
-      wxString server_name_persisted = s1.BeforeFirst(':');
-      wxString server_key = s1.AfterFirst(':');
-      if (server_name_persisted.IsSameAs(server_name.c_str())) {
-        array[i] = server_name_persisted + ":" + key.c_str();
-        b_updated = true;
-        break;
-      }
-    }
-
-    if (!b_updated) {
-      wxString new_entry = server_name.c_str() + wxString(":") + key.c_str();
-      array.Add(new_entry);
-    }
-
-    wxString key_string_updated;
-    for (unsigned int i = 0; i < array.GetCount(); i++) {
-      wxString s1 = array[i];
-      key_string_updated += s1;
-      key_string_updated += ";";
-    }
-
-    TheBaseConfig()->Write("ServerKeys", key_string_updated);
+  auto server_keys_list = ocpn::split(config_server_keys.c_str(), ";");
+  std::unordered_map<std::string, std::string> key_by_server;
+  for (const auto& item : server_keys_list) {
+    auto server_and_key = ocpn::split(item.c_str(), ":");
+    if (server_and_key.size() != 2) continue;
+    key_by_server[server_and_key[0]] = server_and_key[1];
   }
-  return;
+  key_by_server[server_name] = key;
+
+  config_server_keys = "";
+  for (const auto& it : key_by_server) {
+    config_server_keys += it.first + ":" + it.second + ";";
+  }
+  server_keys.Set(config_server_keys);
+  wxLog::FlushActive();
 }
 
-SemanticVersion GetApiVersion(const std::string& dest_ip) {
-  std::string url(dest_ip);
-  url += "/api/get-version";
+void GetApiVersion(PeerData& peer_data) {
+  if (peer_data.api_version > SemanticVersion(5, 0)) return;
+  std::stringstream url;
+  url << "https://" << peer_data.dest_ip_address << "/api/get-version";
 
   struct MemoryStruct chunk;
-  chunk.memory = (char*)malloc(1);
-  chunk.size = 0;
   std::string buf;
-  std::ostringstream ostream(buf);
-  long response_code = PostSendObjectMessage(url, ostream, &chunk, true);
+  long response_code = ApiGetUrl(url.str(), &chunk, 3);
 
   if (response_code == 200) {
     wxString body(chunk.memory);
@@ -240,17 +218,19 @@ SemanticVersion GetApiVersion(const std::string& dest_ip) {
     wxJSONReader reader;
 
     int numErrors = reader.Parse(body, &root);
-    if (numErrors != 0) return SemanticVersion(-1, -1);
-
+    if (numErrors != 0)  {
+      peer_data.api_version = SemanticVersion(-1, -1);
+      return;
+    }
     wxString version = root["version"].AsString();
-    return SemanticVersion::parse(version.ToStdString());
+    peer_data.api_version = SemanticVersion::parse(version.ToStdString());
   } else {
-    return SemanticVersion(-1, -1);
+    // Return "old" version without /api/writable support
+    peer_data.api_version = SemanticVersion(5, 8);
   }
 }
 
-RestServerResult CheckApiKey(const std::string& source,
-                             const std::string& api_key,
+RestServerResult CheckApiKey(const std::string& api_key,
                              const std::string& dest_ip) {
   std::string url(dest_ip);
   url += "/api/ping";
@@ -258,23 +238,23 @@ RestServerResult CheckApiKey(const std::string& source,
   url += std::string("&apikey=") + api_key;
 
   struct MemoryStruct chunk;
-  chunk.memory = (char*)malloc(1);
-  chunk.size = 0;
   std::string buf;
-  std::ostringstream ostream(buf);
-  long response_code = PostSendObjectMessage(url, ostream, &chunk, true);
-
+  EventVar unused;
+  PeerData peer_data(unused);
+  long response_code = PostSendObjectMessage(url, buf, peer_data, true, &chunk);
   if (response_code == 200) {
     wxString body(chunk.memory);
     wxJSONValue root;
     wxJSONReader reader;
 
-    int numErrors = reader.Parse(body, &root);
+    int num_errors = reader.Parse(body, &root);
+    if (num_errors > 0) wxLogDebug("ApiGetUrl, parse errors: %d",
+                                   num_errors);
     // Capture the result
     int result = root["result"].AsInt();
 
     if (result > 0) {
-      return RestServerResult::NewPinRequested;
+      return RestServerResult::NewPinRequested;  // FIXME (leamas) WTF
     } else {
       return RestServerResult::Void;
     }
@@ -283,255 +263,203 @@ RestServerResult CheckApiKey(const std::string& source,
   }
 }
 
-int SendNavobjects(std::string dest_ip_address, std::string server_name,
-                   std::vector<Route*> route,
-                   std::vector<RoutePoint*> routepoint,
-                   std::vector<Track*> track, bool overwrite) {
-  if (route.empty() && routepoint.empty() && track.empty()) return -1;
-  bool apikey_ok = false;
-  bool b_cancel = false;
-  std::ostringstream stream;
+/** Return a usable api key, possibly after user dialogs. */
+static bool GetApiKey(PeerData& peer_data, std::string& key) {
   std::string api_key;
+  if (peer_data.api_version == SemanticVersion(0,0)) GetApiVersion(peer_data);
 
-  while (!apikey_ok && b_cancel == false) {
-    api_key = GetClientKey(server_name);
-
-    std::string url(dest_ip_address);
-    url += "/api/ping";
-    url += std::string("?source=") + g_hostname;
-    url += std::string("&apikey=") + api_key;
-
-    struct MemoryStruct chunk;
-    chunk.memory = (char*)malloc(1);
-    chunk.size = 0;
-
-    long response_code = PostSendObjectMessage(url, stream, &chunk);
-
-    if (response_code == 200) {
-      wxString body(chunk.memory);
-      wxJSONValue root;
-      wxJSONReader reader;
-
-      int numErrors = reader.Parse(body, &root);
-      // Capture the result
-      int result = root["result"].AsInt();
-      if (result > 0) {
-        if (result == static_cast<int>(RestServerResult::NewPinRequested)) {
-          // Show the dialog asking for PIN
-          PINConfirmDialog dlg(
-              (wxWindow*)gFrame, wxID_ANY, _("OpenCPN Server Message"), "",
-              wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE);
-
-          wxString hmsg(_("The server "));
-          hmsg += _("needs a PIN.\nPlease enter the PIN number from ");
-          hmsg += _("the server to pair with this device.\n");
-
-          dlg.SetMessage(hmsg);
-          dlg.SetText1Message("");
-
-          dlg.ShowModal();
-          if (dlg.GetReturnCode() == ID_PCD_OK) {
-            wxString PIN_tentative = dlg.GetText1Value().Trim().Trim(false);
-            unsigned int dPIN = atoi(PIN_tentative.ToStdString().c_str());
-            Pincode pincode(dPIN);
-            std::string api_key = pincode.Hash();
-            RestServerResult result;
-            SemanticVersion v = GetApiVersion(dest_ip_address);
-            if (v >= SemanticVersion(5, 9)) {
-              result = CheckApiKey(g_hostname.ToStdString(), api_key,
-                                   dest_ip_address);
-            } else {
-              api_key = pincode.CompatHash();
-              result = CheckApiKey(g_hostname.ToStdString(), api_key,
-                                   dest_ip_address);
-            }
-            SaveClientKey(server_name, api_key);
-          } else {
-            b_cancel = true;
+  while (true) {
+    api_key = GetClientKey(peer_data.server_name);
+    std::stringstream url;
+    url << "https://" << peer_data.dest_ip_address << "/api/ping" << "?source="
+        << g_hostname << "&apikey=" <<  api_key;
+    MemoryStruct chunk;
+    int http_status = ApiGetUrl(url.str(), &chunk);
+    if (http_status != 200) {
+      auto r = peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse,
+                                        http_status);
+      if (r == PeerDlgResult::Ok) continue;
+      return false;
+    }
+    wxString body(chunk.memory);
+    wxJSONValue root;
+    wxJSONReader reader;
+    int num_errors = reader.Parse(body, &root);
+    if (num_errors > 0) wxLogDebug("GetApiKey, parse errors: %d", num_errors);
+    int int_result = root["result"].AsInt();
+    auto result = static_cast<RestServerResult>(int_result);
+    switch (result) {
+    case RestServerResult::NewPinRequested: {
+        auto pin_result = peer_data.run_pincode_dlg();
+        if (pin_result.first == PeerDlgResult::HasPincode) {
+          std::string tentative_pin = ocpn::trim(pin_result.second);
+          unsigned int_pin = atoi(tentative_pin.c_str());
+          Pincode pincode(int_pin);
+          api_key = pincode.Hash();
+          GetApiVersion(peer_data);
+          if (peer_data.api_version < SemanticVersion(5, 9)) {
+            api_key = pincode.CompatHash();
           }
-        } else if (result == static_cast<int>(RestServerResult::GenericError))
-          apikey_ok = true;
-      } else
-        apikey_ok = true;
-    } else {
-      wxString err_msg;
-      err_msg.Printf("Server HTTP response is: %ld", response_code);
-      OCPNMessageDialog mdlg(NULL, err_msg, wxString(_("OpenCPN Info")),
-                             wxICON_ERROR | wxOK);
-      mdlg.ShowModal();
-
-      b_cancel = true;
+          SaveClientKey(peer_data.server_name, api_key);
+        } else {
+          auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
+          if (r == PeerDlgResult::Ok) continue;
+          return false;
+        }
+      }
+      break;
+    case RestServerResult::GenericError:
+      // 5.8 returns GenericError for a valid key (!)
+      [[fallthrough]];
+    case RestServerResult::NoError:
+      break;
+    default:
+      auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
+      if (r == PeerDlgResult::Ok) continue;
+      return false;
     }
+    break;
   }
-  if (!apikey_ok || b_cancel) {
-    return false;
-  }
-  // Get XML representation of object.
-  NavObjectCollection1* pgpx = new NavObjectCollection1;
-  navobj_transfer_progress = 0;
-  int total = route.size() + track.size() + routepoint.size();
+  key = api_key;
+  return true;
+}
+
+/** Convert PeerData routes, tracks and waypoints to GPX XML format. */
+static std::string PeerDataToXml(PeerData& peer_data) {
+  NavObjectCollection1 gpx;
+  std::ostringstream stream;
+  int total = peer_data.routes.size() + peer_data.tracks.size() +
+              peer_data.routepoints.size();
   int gpxgen = 0;
-  for (auto r : route) {
+  for (auto r : peer_data.routes) {
     gpxgen++;
-    pgpx->AddGPXRoute(r);
-    navobj_transfer_progress = 100 * gpxgen / total;
+    gpx.AddGPXRoute(r);
+    peer_data.progress.Notify(100 * gpxgen / total, "");
     wxYield();
   }
-  for (auto r : routepoint) {
+  for (auto r : peer_data.routepoints) {
     gpxgen++;
-    pgpx->AddGPXWaypoint(r);
-    navobj_transfer_progress = 100 * gpxgen / total;
+    gpx.AddGPXWaypoint(r);
+    peer_data.progress.Notify(100 * gpxgen / total, "");
     wxYield();
   }
-  for (auto r : track) {
+  for (auto r : peer_data.tracks) {
     gpxgen++;
-    pgpx->AddGPXTrack(r);
-    navobj_transfer_progress = 100 * gpxgen / total;
+    gpx.AddGPXTrack(r);
+    peer_data.progress.Notify(100 * gpxgen / total, "");
     wxYield();
   }
-  pgpx->save(stream, PUGIXML_TEXT(" "));
+  gpx.save(stream, PUGIXML_TEXT(" "));
+  return stream.str();
+}
 
-  while (b_cancel == false) {
-    std::string api_key = GetClientKey(server_name);
-
-    std::string url(dest_ip_address);
-    url += "/api/rx_object";
-    url += std::string("?source=") + g_hostname;
-    url += std::string("&apikey=") + api_key;
+/** Actually transfer body. */
+static void SendObjects(std::string& body, const std::string& api_key,
+                        PeerData& peer_data) {
+  bool cancel = false;
+  while (!cancel) {
+    std::stringstream url;
+    url << "https://" << peer_data.dest_ip_address << "/api/rx_object"
+        << "?source=" << g_hostname << "&apikey=" << api_key;
+    if (peer_data.overwrite) url << "&force=1";
 
     struct MemoryStruct chunk;
-    chunk.memory = (char*)malloc(1);
-    chunk.size = 0;
-    long response_code = PostSendObjectMessage(url, stream, &chunk);
-
+    long response_code =
+        PostSendObjectMessage(url.str(), body, peer_data, false, &chunk);
     if (response_code == 200) {
-      wxString body(chunk.memory);
+      wxString json(chunk.memory);
       wxJSONValue root;
       wxJSONReader reader;
 
-      int numErrors = reader.Parse(body, &root);
+      int num_errors = reader.Parse(json, &root);
+      if (num_errors > 0)
+        wxLogDebug("SendObjects, parse errors: %d", num_errors);
       // Capture the result
       int result = root["result"].AsInt();
       if (result > 0) {
-        wxString error_text =
-            GetErrorText(static_cast<RestServerResult>(result));
-        OCPNMessageDialog mdlg(NULL, error_text, wxString(_("OpenCPN Info")),
-                               wxICON_ERROR | wxOK);
-        mdlg.ShowModal();
-        b_cancel = true;
+        peer_data.run_status_dlg(PeerDlg::ErrorReturn, result);
       } else {
-        OCPNMessageDialog mdlg(
-            NULL, _("Objects successfully sent to peer OpenCPN instance."),
-            wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK);
-        mdlg.ShowModal();
-        b_cancel = true;
+        peer_data.run_status_dlg(PeerDlg::TransferOk, 0);
       }
+      cancel = true;
     } else {
-      wxString err_msg;
-      err_msg.Printf("Server HTTP response is: %ld", response_code);
-      OCPNMessageDialog mdlg(NULL, err_msg, wxString(_("OpenCPN Info")),
-                             wxICON_ERROR | wxOK);
-      mdlg.ShowModal();
-
-      b_cancel = true;
+      peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, response_code);
+      cancel = true;
     }
+  }
+}
+
+/** Parse json message in chunk, return "result" from server. */
+static int CheckChunk(struct MemoryStruct& chunk, const std::string& guid) {
+  wxString body(chunk.memory);
+  wxJSONValue root;
+  wxJSONReader reader;
+  int num_errors = reader.Parse(body, &root);
+  if (num_errors > 0)
+    wxLogDebug("CheckChunk: parsing errors found: %d", num_errors);
+  int result = root["result"].AsInt();
+  if (result != 0) {
+    wxLogDebug("Server rejected guid %s, status: %d", guid.c_str(), result);
+    return result;
+  }
+  return 0;
+}
+
+/** Return true if server accepts overwriting all peer_data objects. */
+static bool CheckObjects(const std::string& api_key,
+                         PeerData& peer_data) {
+  std::stringstream url;
+  url << "https://" << peer_data.dest_ip_address
+      << "?source=" << peer_data.server_name << "&apikey=" << api_key
+      << "&guid=";
+  for (const auto& r : peer_data.routes) {
+    std::string guid = r->GetGUID().ToStdString();
+    std::string full_url = url.str() + guid;
+    struct MemoryStruct chunk;
+    bool ok = ApiGetUrl(full_url, &chunk) == 200;   // FIXME (leamas)
+    int result = CheckChunk(chunk, guid);
+    if (result != 0) return false;
+  }
+  for (const auto& t : peer_data.tracks) {
+    std::string guid = t->m_GUID.ToStdString();
+    std::string full_url = url.str() + guid;
+    struct MemoryStruct chunk;
+    bool ok = ApiGetUrl(full_url, &chunk) == 200;   // FIXME (leamas)
+    int result = CheckChunk(chunk, guid);
+    if (result != 0) return false;
+  }
+  for (const auto& rp : peer_data.routepoints) {
+    std::string guid = rp->m_GUID.ToStdString();
+    std::string full_url = url.str() + guid;
+    struct MemoryStruct chunk;
+    bool ok = ApiGetUrl(full_url, &chunk) == 200;   // FIXME (leamas)
+    int result = CheckChunk(chunk, guid);
+    if (result != 0) return false;
   }
   return true;
 }
 
-IMPLEMENT_DYNAMIC_CLASS(PINConfirmDialog, wxDialog)
-
-BEGIN_EVENT_TABLE(PINConfirmDialog, wxDialog)
-EVT_BUTTON(ID_PCD_CANCEL, PINConfirmDialog::OnCancelClick)
-EVT_BUTTON(ID_PCD_OK, PINConfirmDialog::OnOKClick)
-END_EVENT_TABLE()
-
-PINConfirmDialog::PINConfirmDialog() {
-  m_OKButton = NULL;
-  m_CancelButton = NULL;
-  premtext = NULL;
-}
-
-PINConfirmDialog::PINConfirmDialog(wxWindow* parent, wxWindowID id,
-                                   const wxString& caption,
-                                   const wxString& hint, const wxPoint& pos,
-                                   const wxSize& size, long style) {
-  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
-  SetFont(*pif);
-  Create(parent, id, caption, hint, pos, size, style);
-}
-
-PINConfirmDialog::~PINConfirmDialog() {
-  delete m_OKButton;
-  delete m_CancelButton;
-}
-
-bool PINConfirmDialog::Create(wxWindow* parent, wxWindowID id,
-                              const wxString& caption, const wxString& hint,
-                              const wxPoint& pos, const wxSize& size,
-                              long style) {
-  SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
-  wxDialog::Create(parent, id, caption, pos, size, style);
-
-  CreateControls(hint);
-  GetSizer()->Fit(this);
-  GetSizer()->SetSizeHints(this);
-  Centre();
-
-  return TRUE;
-}
-
-void PINConfirmDialog::CreateControls(const wxString& hint) {
-  PINConfirmDialog* itemDialog1 = this;
-
-  wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
-  SetSizer(itemBoxSizer2);
-
-  //    Add a reminder text box
-  itemBoxSizer2->AddSpacer(20);
-
-  premtext = new wxStaticText(
-      this, -1, "A loooooooooooooooooooooooooooooooooooooooooooooong line\n");
-  itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
-
-  m_pText1 = new wxTextCtrl(this, wxID_ANY, "        ", wxDefaultPosition,
-                            wxDefaultSize, wxTE_CENTRE);
-  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
-
-  //    OK/Cancel/etc.
-  wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
-  itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5);
-
-  m_CancelButton = new wxButton(itemDialog1, ID_PCD_CANCEL, _("Cancel"),
-                                wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-  m_OKButton = new wxButton(itemDialog1, ID_PCD_OK, "OK", wxDefaultPosition,
-                            wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-  m_OKButton->SetDefault();
-}
-
-void PINConfirmDialog::SetMessage(const wxString& msg) {
-  if (premtext) {
-    premtext->SetLabel(msg);
-    premtext->Refresh(true);
+int SendNavobjects(PeerData& peer_data) {
+  if (peer_data.routes.empty() && peer_data.routepoints.empty() &&
+      peer_data.tracks.empty()) {
+    return -1;
   }
+  std::string api_key;
+  bool apikey_ok = GetApiKey(peer_data, api_key);
+  if (!apikey_ok) return false;
+  std::string body = PeerDataToXml(peer_data);
+  SendObjects(body, api_key, peer_data);
+  return true;
 }
 
-void PINConfirmDialog::SetText1Message(const wxString& msg) {
-  m_pText1->ChangeValue(msg);
-  m_pText1->Show();
-  GetSizer()->Fit(this);
-}
+bool CheckNavObjects(PeerData& peer_data) {
+  if (peer_data.routes.empty() && peer_data.routepoints.empty() &&
+      peer_data.tracks.empty()) {
+    return true;  // the server will no not object to null transfers.
+  }
+  std::string apikey;
+  bool apikey_ok = GetApiKey(peer_data, apikey);
+  if (!apikey_ok) return false;
 
-void PINConfirmDialog::OnOKClick(wxCommandEvent& event) {
-  SetReturnCode(ID_PCD_OK);
-  EndModal(ID_PCD_OK);
+  return CheckObjects(apikey, peer_data);
 }
-
-void PINConfirmDialog::OnCancelClick(wxCommandEvent& event) {
-  EndModal(ID_PCD_CANCEL);
-}
-
-#endif    // 0

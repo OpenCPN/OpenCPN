@@ -30,7 +30,16 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#include <string>
+
 #include <wx/dialog.h>
+
+#include "model/route.h"
+#include "model/track.h"
+#include "model/route_point.h"
+
+#include "observable_evtvar.h"
+
 
 //    Constants for SendToPeer... Dialog
 #define ID_STPDIALOG 10006
@@ -43,10 +52,6 @@
 #define SYMBOL_STP_POSITION wxDefaultPosition
 
 enum { ID_STP_CANCEL = 10000, ID_STP_OK, ID_STP_CHOICE_PEER, ID_STP_SCAN };
-
-class Route;
-class RoutePoint;
-class Track;
 
 /**
  * Route "Send to Peer..." Dialog Definition
@@ -77,14 +82,13 @@ public:
   void SetScanTime(int t){ m_scanTime = t * 2;}
 
 private:
-  void CreateControls(const wxString& hint);
+  void CreateControls([[maybe_unused]] const wxString& hint);
 
   void OnCancelClick(wxCommandEvent& event);
-  void OnSendClick(wxCommandEvent& event);
+  void OnSendClick([[maybe_unused]] wxCommandEvent& event);
   void OnScanClick(wxCommandEvent& event);
   void OnTimerAutoscan(wxTimerEvent &event);
   void OnTimerScanTick(wxTimerEvent &event);
-  void OnTimerTransferTick(wxTimerEvent &event);
   void DoScan();
 
   std::vector<Route*> m_RouteList;
@@ -96,10 +100,11 @@ private:
   wxButton* m_SendButton;
   wxStaticText* premtext;
   wxButton *m_RescanButton;
+  EventVar progress;
+  ObsListener progress_listener;
 
   wxTimer m_autoScanTimer;
   wxTimer m_ScanTickTimer;
-  wxTimer m_TransferTimer;
   int m_tick;
   int m_scanTime;
   bool m_bScanOnCreate;

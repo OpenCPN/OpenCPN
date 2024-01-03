@@ -27,13 +27,8 @@
 #define _PEER__CLIENT_DLG_H
 
 #include <string>
-#include "model/route.h"
-#include "model/track.h"
 
-int SendNavobjects(std::string dest_ip_address, std::string server_name,
-                   std::vector<Route*> route,
-                   std::vector<RoutePoint*> routepoint,
-                   std::vector<Track*> track, bool overwrite = false);
+#include "model/peer_client.h"
 
 #define ID_PCDDIALOG 10005
 #define SYMBOL_PCD_STYLE \
@@ -44,18 +39,16 @@ int SendNavobjects(std::string dest_ip_address, std::string server_name,
 #define SYMBOL_PCD_SIZE wxSize(500, 500)
 #define SYMBOL_PCD_POSITION wxDefaultPosition
 
-enum { ID_PCD_CANCEL = 10000, ID_PCD_OK, ID_PCD_CHECK1 };
+enum { ID_PCD_CANCEL = 10000, ID_PCD_OK = 10001, ID_PCD_CHECK1 };
 
-class PINConfirmDialog : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(PINConfirmDialog)
-  DECLARE_EVENT_TABLE()
+class PINConfirmDlg : public wxDialog {
 
 public:
-  PINConfirmDialog();
-  PINConfirmDialog(wxWindow* parent, wxWindowID id, const wxString& caption,
+  PINConfirmDlg();
+  PINConfirmDlg(wxWindow* parent, wxWindowID id, const wxString& caption,
                    const wxString& hint, const wxPoint& pos, const wxSize& size,
                    long style);
-  ~PINConfirmDialog();
+  ~PINConfirmDlg();
 
   bool Create(wxWindow* parent, wxWindowID id = SYMBOL_PCD_IDNAME,
               const wxString& caption = SYMBOL_PCD_TITLE,
