@@ -328,7 +328,6 @@ private:
   int mALT_Watchdog;
   int mLOG_Watchdog;
   int mTrLOG_Watchdog;
-  int colourschemecounter;
 
   iirfilter mSOGFilter;
   iirfilter mCOGFilter;
