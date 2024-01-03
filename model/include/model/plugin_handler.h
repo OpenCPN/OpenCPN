@@ -130,9 +130,14 @@ public:
   /** Update catalog and return list of available, not installed plugins. */
   const std::vector<PluginMetadata> getAvailable();
 
+  /**
+ * Return list of available, unique and compatible plugins from
+ * configured XML catalog.
+ */
+  std::vector<PluginMetadata> getCompatiblePlugins();
+
   /** Map of available plugin targets -> number of occurences. */
   const std::map<std::string, int> getCountByTarget();
-
 
   /** Return plugin containing given filename or "" if not found. */
   std::string getPluginByLibrary(const std::string& filename);

@@ -69,6 +69,8 @@
 #include "model/plugin_loader.h"
 #include "model/plugin_paths.h"
 #include "model/safe_mode.h"
+#include "model/catalog_handler.h"
+
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -166,8 +168,12 @@ std::string PluginLoader::GetPluginVersion(
         p->GetPlugInVersionPre(), p->GetPlugInVersionBuild());
     return sv.to_string() + import_suffix;
   } else {
-    std::string version = GetInstalledVersion(pd);
-    return version + import_suffix;
+    if (!metadata.is_orphan) {
+      std::string version = GetInstalledVersion(pd);
+      return version + import_suffix;
+    }
+    else
+      return metadata.version;
   }
 }
 
@@ -571,6 +577,35 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
         if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       }
 
+      //  Check to see if the plugin just processed has an associated catalog entry
+      //  understanding that SYSTEM plugins have no metadata by design
+      auto found = std::find(SYSTEM_PLUGINS.begin(), SYSTEM_PLUGINS.end(),
+                             pic->m_common_name.Lower());
+      bool is_system = found != SYSTEM_PLUGINS.end();
+
+      if (!is_system) {
+        auto available = PluginHandler::getInstance()->getCompatiblePlugins();
+        std::vector<PluginMetadata> matches;
+        wxString name = pic->m_common_name;
+        copy_if(available.begin(), available.end(), back_inserter(matches),
+                [name](const PluginMetadata& md) { return md.name == name; });
+        if (matches.size() == 0) {
+          // Installed plugin is an orphan....
+          // Add a stub metadata entry to the active CatalogHandler context
+          // to satisfy minimal PIM functionality
+          auto catalogHdlr = CatalogHandler::getInstance();
+
+          PluginMetadata mdata;
+          mdata.name = pic->m_common_name.ToStdString();
+          SemanticVersion orphanVersion(pic->m_version_major, pic->m_version_minor);
+          mdata.version = orphanVersion.to_string();
+          mdata.target = "all";   // Force IsCompatible() true
+          mdata.is_orphan = true;
+
+          catalogHdlr->AddMetadataToActiveContext(mdata);
+        }
+      }
+
     } else {  //  No pic->m_pplugin
       wxLogMessage(
           "    PluginLoader: Unloading invalid PlugIn, API version %d ",
@@ -760,34 +795,6 @@ bool PluginLoader::DeactivatePlugIn(const PlugInData& pd) {
   return DeactivatePlugIn(pic);
 }
 
-/**
- * Return list of available, unique and compatible plugins from
- * configured XML catalog.
- */
-// FIXME: Move to PluginHandler.
-static std::vector<PluginMetadata> getCompatiblePlugins() {
-  /** Compare two PluginMetadata objects, a named c++ requirement. */
-  struct metadata_compare {
-    bool operator()(const PluginMetadata& lhs,
-                    const PluginMetadata& rhs) const {
-      return lhs.key() < rhs.key();
-    }
-  };
-
-  std::vector<PluginMetadata> returnArray;
-
-  std::set<PluginMetadata, metadata_compare> unique_plugins;
-  for (const auto& plugin : PluginHandler::getInstance()->getAvailable()) {
-    unique_plugins.insert(plugin);
-  }
-  for (const auto& plugin : unique_plugins) {
-    if (PluginHandler::isCompatible(plugin)) {
-      returnArray.push_back(plugin);
-    }
-  }
-  return returnArray;
-}
-
 bool PluginLoader::UnLoadPlugIn(size_t ix) {
   if (ix >= plugin_array.GetCount()) {
     wxLogWarning("Attempt to remove non-existing plugin %d", ix);
@@ -822,7 +829,7 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   using namespace std;
   if (name.empty()) return {};
 
-  auto available = getCompatiblePlugins();
+  auto available = PluginHandler::getInstance()->getCompatiblePlugins();
   vector<PluginMetadata> matches;
   copy_if(available.begin(), available.end(), back_inserter(matches),
           [name](const PluginMetadata& md) { return md.name == name; });
@@ -857,6 +864,10 @@ void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
     plugin->m_status = PluginStatus::ManagedInstalledCurrentVersion;
   else
     plugin->m_status = PluginStatus::ManagedInstalledDowngradeAvailable;
+
+  if (!is_system && md.is_orphan)
+    plugin->m_status = PluginStatus::Unmanaged;
+
 
   plugin->m_managed_metadata = md;
 }
@@ -898,6 +909,8 @@ void PluginLoader::UpdateManagedPlugins() {
         PluginLoader::UpdatePlugin(plugin, md);
       } else if (IsSystemPluginName(md.name)) {
         plugin->m_status = PluginStatus::System;
+      } else if (md.is_orphan) {
+          plugin->m_status = PluginStatus::Unmanaged;
       } else if (plugin->m_api_version) {
         // If the plugin is actually loaded, but the new plugin is known not
         // to be installed, then it must be a legacy plugin loaded.
@@ -911,7 +924,8 @@ void PluginLoader::UpdateManagedPlugins() {
   }
 
   plugin_array.Clear();
-  for (const auto& p : loaded_plugins) plugin_array.Add(p);
+  for (const auto& p : loaded_plugins)
+    plugin_array.Add(p);
   evt_pluglist_change.Notify();
 }
 

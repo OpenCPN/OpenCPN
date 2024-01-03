@@ -3906,6 +3906,12 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   auto pluginHandler = PluginHandler::getInstance();
   pluginHandler->setMetadata("");
 
+  // Also clear the cached values in the CatalogHandler, forcing
+  // a reload and parse of the catalog.
+  auto cataloghdlr = CatalogHandler::getInstance();
+  cataloghdlr->ClearCatalogData();
+
+
   //  Reload all plugins, which will also update the status fields
   LoadAllPlugIns(false);
 
@@ -4418,7 +4424,10 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
     m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
     itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
-    if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable) {
+    if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable ||
+        m_plugin.m_status == PluginStatus::System ||
+        (m_plugin.m_status == PluginStatus::Unmanaged &&
+         !m_plugin.m_managed_metadata.is_orphan) ) {
       m_pVersion->Hide();
     }
     m_pVersion->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4623,6 +4632,10 @@ void PluginPanel::SetSelected(bool selected) {
         m_plugin.m_status == PluginStatus::Unmanaged ||
         m_plugin.m_status == PluginStatus::System)
       unInstallPossible = false;
+
+    // Orphan plugins can usually be uninstalled, at best effort.
+    if (m_plugin.m_managed_metadata.is_orphan)
+      unInstallPossible = true;
 
     m_pButtonUninstall->Show(unInstallPossible);
 
