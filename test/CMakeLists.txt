@@ -72,8 +72,9 @@ if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
   )
-
-
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
+  endif ()
 
   add_dependencies(ipc-srv-tests cli-server ipc-client)
 endif ()
@@ -112,12 +113,8 @@ if(APPLE AND OCPN_USE_DEPS_BUNDLE)
   )
 endif()
 
-if (CMAKE_VERSION VERSION_GREATER 3.4)
-  if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-    target_link_libraries(tests
-        PRIVATE -fsanitize=${ENABLE_SANITIZER}
-    )
-  endif ()
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(tests PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 target_link_libraries(tests PRIVATE ${wxWidgets_LIBRARIES})
@@ -163,7 +160,9 @@ if (LINUX)
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
   )
-
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(dbus_tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
+  endif ()
 endif ()
 
 
@@ -219,6 +218,9 @@ target_include_directories(cli-server PRIVATE
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
 )
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(cli-server PRIVATE -fsanitize=${ENABLE_SANITIZER})
+endif ()
 
 add_executable(ipc-client ipc_client.cpp ${MODEL_SRC_DIR}/ocpn_utils.cpp)
 target_link_libraries(ipc-client PRIVATE ${wxWidgets_LIBRARIES})
@@ -228,6 +230,9 @@ target_include_directories(ipc-client PRIVATE
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
 )
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(ipc-client PRIVATE -fsanitize=${ENABLE_SANITIZER})
+endif ()
 
 
 set (WX_INSTANCE_SRC
@@ -250,6 +255,9 @@ target_include_directories(wx-instance PRIVATE
 if (MSVC)
   target_link_libraries(wx-instance PRIVATE setupapi)
 endif ()
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(wx-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
+endif ()
 
 if (UNIX)
   set(STD_INSTANCE_SRC
@@ -269,6 +277,9 @@ if (UNIX)
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/resources
   )
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(std-instance PRIVATE -fsanitize=${ENABLE_SANITIZER})
+  endif ()
   add_test(NAME tests COMMAND tests)
 endif ()
 
