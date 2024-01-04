@@ -139,6 +139,22 @@ static std::string GetInstalledVersion(const PlugInData& pd) {
   return version;
 }
 
+static PluginMetadata CreateMetadata(const PlugInContainer* pic) {
+  auto catalogHdlr = CatalogHandler::getInstance();
+
+  PluginMetadata mdata;
+  mdata.name = pic->m_common_name.ToStdString();
+  SemanticVersion orphanVersion(pic->m_version_major, pic->m_version_minor);
+  mdata.version = orphanVersion.to_string();
+  mdata.summary = pic->m_short_description;
+  mdata.description = pic->m_long_description;
+
+  mdata.target = "all";   // Force IsCompatible() true
+  mdata.is_orphan = true;
+
+  return mdata;
+}
+
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
@@ -152,7 +168,9 @@ std::string PluginLoader::GetPluginVersion(
   metadata = pic->m_managed_metadata;
   if (metadata.version == "")
     metadata = get_metadata(pic->m_common_name.ToStdString());
-  std::string import_suffix(metadata.is_imported ? _(" [Imported]") : "");
+  std::string detail_suffix(metadata.is_imported ? _(" [Imported]") : "");
+  if (metadata.is_orphan)
+    detail_suffix = _(" [Orphan]");
 
   int v_major(0);
   int v_minor(0);
@@ -166,14 +184,14 @@ std::string PluginLoader::GetPluginVersion(
     auto sv = SemanticVersion(
         v_major, v_minor, p->GetPlugInVersionPatch(), p->GetPlugInVersionPost(),
         p->GetPlugInVersionPre(), p->GetPlugInVersionBuild());
-    return sv.to_string() + import_suffix;
+    return sv.to_string() + detail_suffix;
   } else {
     if (!metadata.is_orphan) {
       std::string version = GetInstalledVersion(pd);
-      return version + import_suffix;
+      return version + detail_suffix;
     }
     else
-      return metadata.version;
+      return metadata.version + detail_suffix;
   }
 }
 
@@ -585,24 +603,18 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
 
       if (!is_system) {
         auto available = PluginHandler::getInstance()->getCompatiblePlugins();
-        std::vector<PluginMetadata> matches;
         wxString name = pic->m_common_name;
-        copy_if(available.begin(), available.end(), back_inserter(matches),
-                [name](const PluginMetadata& md) { return md.name == name; });
-        if (matches.size() == 0) {
+        auto it = find_if(available.begin(), available.end(),
+                    [name](const PluginMetadata& md) { return md.name == name; });
+
+        if (it == available.end()) {
           // Installed plugin is an orphan....
           // Add a stub metadata entry to the active CatalogHandler context
           // to satisfy minimal PIM functionality
+
+          auto oprhan_metadata = CreateMetadata(pic);
           auto catalogHdlr = CatalogHandler::getInstance();
-
-          PluginMetadata mdata;
-          mdata.name = pic->m_common_name.ToStdString();
-          SemanticVersion orphanVersion(pic->m_version_major, pic->m_version_minor);
-          mdata.version = orphanVersion.to_string();
-          mdata.target = "all";   // Force IsCompatible() true
-          mdata.is_orphan = true;
-
-          catalogHdlr->AddMetadataToActiveContext(mdata);
+          catalogHdlr->AddMetadataToActiveContext(oprhan_metadata);
         }
       }
 
