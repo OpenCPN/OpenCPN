@@ -7,6 +7,7 @@
 #include "config.h"
 #include "model/cmdline.h"
 #include "model/base_platform.h"
+#include "model/ocpn_utils.h"
 #include "ocpn_plugin.h"
 #include "model/plugin_paths.h"
 
@@ -115,16 +116,20 @@ void PluginPaths::initLinuxPaths() {
   m_userBindir = m_home + "/.local/bin";
   m_userDatadir = m_home + "/.local/share";
 
-  std::string base_plugin_path;
+  std::vector<std::string> base_plugin_paths;
 #if defined(__WXGTK__) || defined(__WXQT__)
   char exe_buf[100] = {0};
   ssize_t len = readlink("/proc/self/exe", exe_buf, 99);
   if (len > 0){
     exe_buf[len] = '\0';
     wxFileName fn(exe_buf);
-    wxString path = fn.GetPath();
-    base_plugin_path = (path + wxString("/../lib/opencpn")).ToStdString();
-    base_plugin_path = expand(base_plugin_path);
+    std::string path = fn.GetPath().ToStdString();
+    base_plugin_paths.push_back(expand(path + "/../lib/opencpn"));
+    if(g_BasePlatform->GetOSDetail()->osd_arch.find("64") != string::npos) {
+      base_plugin_paths.push_back(expand(path + "/../lib64/opencpn"));
+    } else {
+      base_plugin_paths.push_back(expand(path + "/../lib32/opencpn"));
+    }
   }
 #endif
 
@@ -134,8 +139,12 @@ void PluginPaths::initLinuxPaths() {
   for (auto& dir : m_libdirs) {
     dir = expand(dir);
   }
-  if (envdirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
-    m_libdirs.push_back(expand(base_plugin_path));
+  for (auto &base_plugin_path : base_plugin_paths) {
+    if (envdirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
+      if(ocpn::exists(base_plugin_path)) {
+        m_libdirs.push_back(base_plugin_path);
+      }
+    }
   }
   m_bindirs = m_libdirs;
   for (auto& dir : m_bindirs) {
@@ -153,8 +162,10 @@ void PluginPaths::initLinuxPaths() {
   for (auto& dir : m_datadirs) {
     dir += "/opencpn/plugins";
   }
-  if (xdg_data_dirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
-    m_datadirs.push_back(base_plugin_path + "/plugins");
+  for (auto &base_plugin_path : base_plugin_paths) {
+    if (xdg_data_dirs == 0 && dirlist.find(base_plugin_path) == string::npos) {
+      m_datadirs.push_back(base_plugin_path + "/plugins");
+    }
   }
 }
 

@@ -1333,7 +1333,10 @@ bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
 
   FILE* f = fopen(plugin_file, "r");
   char strver[26];  // Enough space even for very big integers...
-
+  if (f == NULL) {
+    wxLogMessage("Plugin %s can't be opened", plugin_file);
+    return false;
+  }
   sprintf(strver,
 #if defined(__WXGTK3__)
           "libwx_gtk3u_core-%i.%i"

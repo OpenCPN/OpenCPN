@@ -52,7 +52,6 @@ if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   else ()
     add_definitions("-DANDROID_ARMHF")
   endif ()
-  set(PACKAGE_NAME gorp)
 endif ()
 
 if (APPLE)
@@ -65,15 +64,9 @@ endif ()
 
 project(OpenCPN)
 
-# Capture $DEB_VERSION on PPA build
-if (DEFINED DEB_VERSION)
-  add_definitions("-DDEB_VERSION=${DEB_VERSION}")
-endif ()
-
 if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
   set(CMAKE_VERBOSE_MAKEFILE ON)
 endif ()
-set(CMAKE_CXX_VISIBILITY_PRESET=hidden)
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
 
@@ -197,10 +190,7 @@ if (WIN32 AND NOT UNIX)
 endif ()
 
 option(OCPN_ENABLE_CLANG_TIDY "Add clang-tidy automatically to builds" OFF)
-set(ENABLE_SANITIZER
-    "none"
-    CACHE STRING "Add clang sanitizer to the build"
-)
+set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
 
 option(OCPN_ENABLE_CPPCHECK "Add cppcheck automatically to builds" OFF)
 
@@ -302,13 +292,13 @@ endmacro ()
 #
 # Language, compiler and static checkers setup
 #
-
 include(GetArch)
 getarch()
 message(STATUS "*** Host Build Architecture is ${ARCH}")
 
 set(CMAKE_CXX_STANDARD 17)
-message(STATUS "Setting C++11 standard via cmake standard mechanism")
+message(STATUS "Setting C++17 standard via cmake standard mechanism")
+set(CMAKE_CXX_VISIBILITY_PRESET=hidden)
 if (NOT MSVC)
   set(OBJ_VISIBILITY "-fvisibility=hidden")
 endif ()
@@ -366,9 +356,9 @@ if (NOT WIN32 AND NOT APPLE)
     endif ()
   endif ()
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
-  # profiling with gprof ADD_COMPILE_OPTIONS( -pg ) SET(CMAKE_EXE_LINKER_FLAGS
-  # -pg) profiling with gcov ADD_COMPILE_OPTIONS( "-fprofile-arcs -ftest-
-  # coverage" ) SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
+  # profiling with gprof ADD_COMPILE_OPTIONS( -pg )
+  # SET(CMAKE_EXE_LINKER_FLAGS -pg)
+  # profiling with gcov ADD_COMPILE_OPTIONS( "-fprofile-arcs -ftest- # coverage" )
 endif ()
 
 if (APPLE)
@@ -604,45 +594,21 @@ if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
 
     set(OPENGL_LIBRARIES ${REVISED_OPENGL_LIBRARIES})
     message(STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
-
   else ()
     message(STATUS "OpenGL not found...")
   endif ()
 endif ()
 
 # configure GLEW
-if (OPENGL_FOUND)
-  if (CMAKE_HOST_WIN32)
-    # Pull the the required items from local directory for Windows list(APPEND
-    # CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin") list(APPEND
-    # CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/include/glew")
-    # find_package(GLEW REQUIRED) message(STATUS "+++GLEW: "
-    # ${GLEW_INCLUDE_DIRS})
-    include_directories(
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include/glew"
-    )
-    link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib)
-  else ()
-    if (NOT APPLE)
-
-      # Use a static linkage of libGLEW on Buster and Bionic This is required,
-      # since buster and bionic offer different versions of libGLEW in their
-      # repositories, thereby making a PPA bionic build of OCPN un-installable
-      # on generic debian systems. The static build of libGLEW (a backport from
-      # focal to bionic) is available from a private PPA
-      # https://launchpad.net/~leamas-alec/+archive/ubuntu/glew-bionic
-
-      if ("${DEB_DISTRIBUTION}" STREQUAL "bionic")
-        message(STATUS "Using GLEW_STATIC")
-        set(GLEW_USE_STATIC_LIBS ON)
-      endif ("${DEB_DISTRIBUTION}" STREQUAL "bionic")
-
-      find_package(GLEW REQUIRED)
-      include_directories(${GLEW_INCLUDE_DIRS})
-      link_libraries(${GLEW_LIBRARIES})
-    endif ()
-  endif ()
+if (OPENGL_FOUND AND CMAKE_HOST_WIN32)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include/glew)
+  link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib)
+elseif (OPENGL_FOUND AND NOT APPLE)
+  find_package(GLEW REQUIRED)
+  include_directories(${GLEW_INCLUDE_DIRS})
+  link_libraries(${GLEW_LIBRARIES})
 endif ()
+
 
 if (NOT QT_ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins. These
@@ -660,15 +626,9 @@ if (NOT QT_ANDROID)
     # Exclude wxexpat.lib, since we use our own version. Other things are
     # excluded as well, but we don't need them
     set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-
-    # build only for release/unicode configuration set(wxWidgets_CONFIGURATION
-    # mswu)
-
   endif ()
 
-  if (GTK2_FOUND)
-    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
-  elseif (GTK3_FOUND)
+  if (GTK3_FOUND)
     set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
   endif ()
 
@@ -1080,8 +1040,8 @@ endif ()
 if (MSVC AND NOT OCPN_CI_BUILD)
   message(STATUS "PACKAGE_NAME = ${PACKAGE_NAME}")
   set_property(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT
-                                                   ${PACKAGE_NAME}
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY VS_STARTUP_PROJECT ${PACKAGE_NAME}
   )
   set_target_properties(
     ${PACKAGE_NAME}
@@ -1101,9 +1061,6 @@ if (APPLE)
     )
   endif ()
 endif ()
-
-# IF(NOT WIN32) include(OcpnFindGpsd) if (TARGET ocpn::gpsd)
-# target_link_libraries(${PACKAGE_NAME} ocpn::gpsd) endif () ENDIF (NOT WIN32)
 
 find_package(Gettext REQUIRED)
 
@@ -1168,18 +1125,17 @@ endif ()
 if (DEFINED _wx_selected_config)
   message(STATUS "selected config ${_wx_selected_config}")
   if (_wx_selected_config MATCHES "androideabi-qt")
-    # message(STATUS "Building for wxQt-Android") message(STATUS "Qt_Base: "
-    # ${Qt_Base}) message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
+    # message(STATUS "Building for wxQt-Android")
+    # message(STATUS "Qt_Base: " # ${Qt_Base})
+    # message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
     # set(QT_ANDROID "ON")
-  endif (_wx_selected_config MATCHES "androideabi-qt")
-endif (DEFINED _wx_selected_config)
+  endif ()
+endif ()
 
 if ((_wx_selected_config MATCHES "qt-armv7"))
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 else ()
-  set(wxWidgets_FIND_COMPONENTS
-      net xml html adv aui core base webview
-  )
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 endif ()
 
 if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
@@ -1188,7 +1144,6 @@ if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
     message(STATUS "Found OpenGLESv1")
     add_definitions(-DocpnUSE_GL) # ocpnUSE_GLES is in config.h
     # set(OPENGLES_FOUND "YES") set(OPENGL_FOUND "YES")
-
     set(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm")
   endif ()
 endif ()
@@ -1249,12 +1204,8 @@ if (OCPN_USE_CRASHREPORT)
       PRIVATE ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib
     )
     set(CMAKE_EXE_LINKER_FLAGS "/DEBUG /Release ${CMAKE_EXE_LINKER_FLAGS}")
-  else ()
-    if (LINUX)
-      if (CMAKE_BUILD_TYPE MATCHES "Rel*")
-        message(STATUS "Using Linux crash reporting")
-      endif ()
-    endif ()
+  elseif (LINUX AND CMAKE_BUILD_TYPE MATCHES "Rel*")
+    message(STATUS "Using Linux crash reporting")
   endif ()
 endif ()
 
@@ -1379,7 +1330,7 @@ if (QT_ANDROID)
   target_include_directories(
     ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libexpat/include
   )
-endif (QT_ANDROID)
+endif ()
 
 if (OCPN_USE_SVG)
   message(STATUS "SVG support enabled...")
@@ -1432,7 +1383,6 @@ if (OCPN_USE_SVG)
         add_subdirectory("libs/wxsvg")
       endif ()
       target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxsvg)
-
     else ()
       add_definitions(-DocpnUSE_SVG)
       include_directories(${CMAKE_SOURCE_DIR}/libs/wxsvg/include/wxSVG)
@@ -1497,7 +1447,7 @@ endif ()
 
 find_package(OcpnLibarchive)
 if (NOT TARGET ocpn::libarchive)
-  message(FATAL:_ERROR "No libarchive!!!")
+  message(FATAL_ERROR "No libarchive!!!")
 endif ()
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
 if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
@@ -1534,9 +1484,6 @@ else ()
   message(STATUS "Garmin Host Mode support: disabled")
 endif ()
 
-# Chart Symbols library set(SRC_SYMBOLS src/chartsymbols.cpp
-# include/chartsymbols.h)
-
 # Compile texcompression support library
 if (OPENGL_FOUND)
   add_subdirectory("libs/texcmp")
@@ -1551,11 +1498,7 @@ use_bundled_lib(USE_BUNDLED_LZ4 lz4)
 if (LZ4_FOUND AND NOT USE_BUNDLED_LZ4)
   message(STATUS "Building with system lz4")
   include_directories(${LZ4_INCLUDE_DIR})
-  if (COMMAND target_link_directories)
-    target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
-  else ()
-    link_directories(${LZ4_LIBRARY_DIRS})
-  endif ()
+  target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LZ4_LIBRARIES})
 else ()
   message(STATUS "Building with bundled lz4")
@@ -1904,24 +1847,13 @@ if (QT_ANDROID)
 endif ()
 
 # Sanitizers, part 2/2
-if (CMAKE_VERSION VERSION_GREATER 3.4)
-  if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-    target_link_libraries(
-      ${PACKAGE_NAME} PRIVATE -fsanitize=${ENABLE_SANITIZER}
-    )
-  endif ()
+if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 if (LIBLZMA_FOUND)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LIBLZMA_LIBRARY})
 endif ()
-
-# Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of
-# the required link libraries So, add them manually.  These declarations may be
-# redundant in some architectures, but do no harm.
-# if (UNIX)
-#   target_link_libraries(${PACKAGE_NAME} PRIVATE dl)
-# endif ()
 
 # Add targets used elsewhere, notably by model
 
@@ -1962,12 +1894,10 @@ if (NOT APPLE)
     FILES ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
     DESTINATION ${PREFIX_PKGDATA}
   )
-
   install(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata)
   install(DIRECTORY data/svg/markicons/
           DESTINATION ${PREFIX_PKGDATA}/uidata/markicons
   )
-
   if (OCPN_USE_SVG)
     # Traditional theme SVG icons
     install(DIRECTORY data/svg/traditional/
@@ -2001,9 +1931,7 @@ if (NOT APPLE)
                 data/CoC-1973_2018-InlandECDIS_20220912.pdf
           DESTINATION ${PREFIX_PKGDATA}
   )
-
   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
-
   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
   install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
   install(FILES data/opencpn.png DESTINATION ${PREFIX_PKGDATA})
@@ -2056,8 +1984,6 @@ if (NOT APPLE)
   endif ()
 
 endif ()
-# Fix up time_t definition Checks for 32-bit version. And always use 32-bit
-# time_t for compatibility
 
 #
 # Gettext languages setup.
