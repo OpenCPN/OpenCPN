@@ -264,6 +264,10 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif ()
 
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(_OCPN_MODEL PUBLIC -fsanitize=${ENABLE_SANITIZER})
+endif ()
+
 target_link_libraries(
   _OCPN_MODEL PUBLIC
     observable::observable
