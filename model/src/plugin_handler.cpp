@@ -1155,6 +1155,8 @@ bool PluginHandler::ExtractMetadata(const std::string& path,
     last_error_msg = os.str();
     return false;
   }
+  if (!isRegularFile(temp_path.c_str()))
+    return false;
 
   struct CatalogCtx ctx;
   std::ifstream istream(temp_path);
