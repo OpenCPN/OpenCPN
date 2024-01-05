@@ -1739,9 +1739,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           }
           // XDR Pitch (=Nose up/down) or Heel (stb/port)
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
-            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH") ||
-                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                    _T("PITCH")) {
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+                Contains(_T("PTCH")) ||
+                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+                Contains(_T("PITCH"))) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
                   xdrunit = _T("\u00B0\u2191") + _("Up");
@@ -1760,8 +1761,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               }
             }
             // XDR Heel
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                     _T("ROLL")) {
+            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+                     Contains(_T("ROLL"))) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
                   xdrunit = _T("\u00B0\u003E") + _("Stbd");
