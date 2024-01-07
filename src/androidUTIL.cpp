@@ -1044,6 +1044,7 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
 
 bool androidUtilInit(void) {
   qDebug() << "androidUtilInit()";
+  firebase::crashlytics::Log("-----------------------------androidUtilInit()");
 
   auto& msgbus = NavMsgBus::GetInstance();
   g_androidUtilHandler = new androidUtilHandler(msgbus);
@@ -4747,6 +4748,27 @@ QString getListBookStyleSheet() { return qtStyleSheetListBook; }
 QString getScrollBarsStyleSheet() { return qtStyleSheetScrollbars; }
 
 QString getWideScrollBarsStyleSheet() { return qtStyleSheetWideScrollBars; }
+
+void AndroidNotifyPluginState(wxString common_name, bool enabled) {
+  qDebug() << "Plugin State Update: " << \
+      common_name.ToStdString().c_str() << " enabled: " << \
+      enabled;
+
+  std::ostringstream oss;
+  oss << "Plugin State Update: " << \
+      common_name.ToStdString().c_str() << " enabled: " << \
+      enabled;
+  firebase::crashlytics::Log(oss.str().c_str());
+
+}
+void AndroidNotifyPluginLoad(wxString filename) {
+  qDebug() << "Loading plugin: " << filename.ToStdString().c_str();
+
+  std::ostringstream oss;
+  oss << "Loading plugin: " << filename.ToStdString().c_str();;
+  firebase::crashlytics::Log(oss.str().c_str());
+}
+
 
 //      SVG Support
 wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,

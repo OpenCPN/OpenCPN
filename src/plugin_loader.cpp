@@ -350,6 +350,9 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
   }
 
   PlugInContainer* pic = LoadPlugIn(file_name);
+#ifdef __OCPN__ANDROID__
+    AndroidNotifyPluginLoad(pic->m_plugin_file);
+#endif
 
   // Check the config file to see if this PlugIn is user-enabled,
   // only loading enabled plugins.
@@ -383,6 +386,9 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
       if (pic->m_bEnabled) {
         pic->m_cap_flag = pic->m_pplugin->Init();
         pic->m_bInitState = true;
+#ifdef __OCPN__ANDROID__
+        AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
         evt_load_plugin.Notify(pic);
       }
 #endif
@@ -415,6 +421,9 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
         pic->m_destroy_fn = NULL;
         pic->m_pplugin = NULL;
         pic->m_bInitState = false;
+#ifdef __OCPN__ANDROID__
+        AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
         if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       }
 
@@ -538,6 +547,9 @@ bool PluginLoader::UpdatePlugIns() {
       if (!ppl) {
         pic->m_pplugin = NULL;
         pic->m_bInitState = false;
+#ifdef __OCPN__ANDROID__
+        AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
       }
     }
 
@@ -549,6 +561,9 @@ bool PluginLoader::UpdatePlugIns() {
         if (newpic) {
           pic->m_pluginStatus = stat;
           pic->m_bEnabled = true;
+#ifdef __OCPN__ANDROID__
+          AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
         }
       } else
         continue;
@@ -562,6 +577,9 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_cap_flag = pic->m_pplugin->Init();
       pic->m_pplugin->SetDefaults();
       pic->m_bInitState = true;
+#ifdef __OCPN__ANDROID__
+      AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
       ProcessLateInit(pic);
       pic->m_short_description = pic->m_pplugin->GetShortDescription();
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
@@ -582,6 +600,9 @@ bool PluginLoader::UpdatePlugIns() {
       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       pic->m_pplugin = NULL;
       pic->m_bInitState = false;
+#ifdef __OCPN__ANDROID__
+      AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
     }
   }
   evt_update_chart_types.Notify();
@@ -595,6 +616,9 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
     wxLogMessage(msg + pic->m_plugin_file);
     m_on_deactivate_cb(pic);
     pic->m_bInitState = false;
+#ifdef __OCPN__ANDROID__
+    AndroidNotifyPluginState(pic->m_common_name, pic->m_bEnabled);
+#endif
     pic->m_pplugin->DeInit();
   }
   return true;

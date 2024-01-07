@@ -38,6 +38,7 @@ class ArrayOfCDI;
 
 #include <QString>
 #include <string>
+#include "crashlytics.h"
 
 // Enumerators for OCPN menu actions requested by Android UI
 #define OCPN_ACTION_FOLLOW 0x1000
@@ -195,6 +196,9 @@ int androidGetScreenOrientation();
 void androidEnableMulticast(bool benable);
 void androidLastCall();
 wxString androidGetIpV4Address(void);
+
+void AndroidNotifyPluginState(wxString name, bool benabled);
+void AndroidNotifyPluginLoad(wxString filename);
 
 //      SVG Support
 wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,

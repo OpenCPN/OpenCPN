@@ -1211,6 +1211,7 @@ endif ()
 
 IF(QT_ANDROID)
   SET(HDRS ${HDRS} include/androidUTIL.h)
+  SET(HDRS ${HDRS} include/crashlytics.h)
   SET(SRCS ${SRCS} src/androidUTIL.cpp)
   SET(SRCS ${SRCS} src/comm_drv_n0183_android_int.cpp)
   SET(SRCS ${SRCS} src/comm_drv_n0183_android_bt.cpp)
