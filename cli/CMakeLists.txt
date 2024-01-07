@@ -51,7 +51,6 @@ if (TARGET ocpn::wxsvg)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::wxsvg)
 endif ()
 
-target_link_libraries(opencpn-cmd PRIVATE ocpn::model)
 
 target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
@@ -95,6 +94,12 @@ else ()
     PRIVATE ${CMAKE_SOURCE_DIR}/cache/buildwin/libcrypto.lib
   )
 endif ()
+
+target_link_libraries(opencpn-cmd PRIVATE ocpn::model ocpn::model-src)
+if (MSVC)
+  target_link_libraries(opencpn-cmd PRIVATE  iphlpapi)
+endif ()
+
 
 install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
 

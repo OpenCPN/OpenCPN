@@ -8,13 +8,7 @@ message(STATUS "Building tests")
 enable_testing ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
-set(SRC
-  tests.cpp
-  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
-  ${MODEL_SRC_DIR}/base_platform.cpp
-  ${MODEL_SRC_DIR}/certificates.cpp
-  ${MODEL_SRC_DIR}/mDNS_query.cpp
-)
+set(SRC tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
@@ -47,6 +41,8 @@ target_compile_definitions(tests
     TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
     UNIT_TESTS
 )
+target_link_libraries(tests PRIVATE ocpn::model ocpn::model-src)
+
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(IPC_SRV_TESTS_SRC
     ipc-srv-tests.cpp
@@ -122,7 +118,6 @@ if (DEFINED LIBELF_LIBRARY)
   target_link_libraries(tests PRIVATE "${LIBELF_LIBRARY}")
 endif ()
 target_link_libraries(tests PRIVATE ocpn::filesystem)
-target_link_libraries(tests PRIVATE ocpn::model)
 target_link_libraries(tests PRIVATE ocpn::tinyxml)
 
 if (DEFINED CURL_LIBRARIES)

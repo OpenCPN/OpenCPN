@@ -2672,7 +2672,7 @@ if (NOT TARGET uninstall)
 endif ()
 
 add_subdirectory(model)
-target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
 if (NOT QT_ANDROID)
   add_subdirectory(cli)

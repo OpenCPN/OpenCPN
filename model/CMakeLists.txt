@@ -215,11 +215,15 @@ endif ()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_library(_OCPN_MODEL STATIC ${SRC} ${HDRS})
+add_library(_OCPN_MODEL INTERFACE)
 add_library(ocpn::model ALIAS _OCPN_MODEL)
 
+add_library(_model_src OBJECT ${SRC} ${HDRS})
+add_library(ocpn::model-src ALIAS _model_src)
+target_link_libraries(_model_src PUBLIC _OCPN_MODEL)
+
 target_include_directories(
-  _OCPN_MODEL BEFORE PUBLIC
+  _OCPN_MODEL BEFORE INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_BINARY_DIR}/include
@@ -231,10 +235,10 @@ if (OCPN_USE_LZMA)
   if (LIBLZMA_FOUND)
     message(STATUS "Building with lzma support: ${LIBLZMA_LIBRARIES}")
     if (TARGET LibLZMA::LibLZMA)
-      target_link_libraries(_OCPN_MODEL PUBLIC LibLZMA::LibLZMA)
+      target_link_libraries(_OCPN_MODEL INTERFACE LibLZMA::LibLZMA)
     else ()
-      target_include_directories(_OCPN_MODEL PUBLIC ${LIBLZMA_INCLUDE_DIRS})
-      target_link_libraries(_OCPN_MODEL PUBLIC ${LIBLZMA_LIBRARIES})
+      target_include_directories(_OCPN_MODEL INTERFACE ${LIBLZMA_INCLUDE_DIRS})
+      target_link_libraries(_OCPN_MODEL INTERFACE ${LIBLZMA_LIBRARIES})
     endif ()
   else ()
     message(STATUS "lzma library not found")
@@ -248,8 +252,8 @@ if (UNIX AND NOT APPLE)
     message(STATUS "Found LibELF...")
     message(STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}")
     message(STATUS "    ELF Include: ${LIBELF_LIBRARY}")
-    target_include_directories(_OCPN_MODEL PUBLIC "${LIBELF_INCLUDE_DIR}")
-    target_link_libraries(_OCPN_MODEL PUBLIC "${LIBELF_LIBRARY}")
+    target_include_directories(_OCPN_MODEL INTERFACE "${LIBELF_INCLUDE_DIR}")
+    target_link_libraries(_OCPN_MODEL INTERFACE "${LIBELF_LIBRARY}")
 
     set(USE_LIBELF ON PARENT_SCOPE)   # => config.h
   else ()
@@ -260,16 +264,16 @@ endif ()
 if (UNIX AND NOT APPLE)
   find_package(GLIB COMPONENTS gio gobject REQUIRED)
   if (GLIB_FOUND)
-    target_link_libraries(_OCPN_MODEL PUBLIC glib::glib)
+    target_link_libraries(_OCPN_MODEL INTERFACE glib::glib)
   endif ()
 endif ()
 
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
-  target_link_libraries(_OCPN_MODEL PUBLIC -fsanitize=${ENABLE_SANITIZER})
+  target_link_libraries(_OCPN_MODEL INTERFACE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 target_link_libraries(
-  _OCPN_MODEL PUBLIC
+  _OCPN_MODEL INTERFACE
     observable::observable
     ocpn::easywsclient
     ocpn::garminhost
@@ -291,23 +295,28 @@ target_link_libraries(
 )
 
 if (OCPN_USE_NEWSERIAL)
-  target_link_libraries(_OCPN_MODEL PUBLIC ocpn::serial)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::serial)
+endif ()
+
+
+if (MSVC)
+  target_link_libraries(_OCPN_MODEL INTERFACE iphlpapi)
 endif ()
 
 if (QT_ANDROID)
-  target_include_directories(_OCPN_MODEL PRIVATE
+  target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
   )
-  target_link_libraries(_OCPN_MODEL PRIVATE
+  target_link_libraries(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
   )
-  target_compile_definitions(_OCPN_MODEL PUBLIC -DMG_ENABLE_OPENSSL)
-  target_include_directories(_OCPN_MODEL PUBLIC
+  target_compile_definitions(_OCPN_MODEL INTERFACE -DMG_ENABLE_OPENSSL)
+  target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/include
     ${CMAKE_SOURCE_DIR}/android
   )
-  target_link_libraries(_OCPN_MODEL PUBLIC
+  target_link_libraries(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libcurl/${ARCH}/lib/libcurl.a
   )
 endif ()
