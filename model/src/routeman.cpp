@@ -1469,6 +1469,15 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   return;
 }
 
+RoutePoint* WayPointman::FindWaypointByGuid(const std::string& guid) {
+  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
+  while (node) {
+    RoutePoint* rp  = node->GetData();
+    if (guid == rp->m_GUID) return rp;
+    node = node->GetNext();
+  }
+  return 0;
+}
 void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
   if (!b_update_changeset)
     NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;

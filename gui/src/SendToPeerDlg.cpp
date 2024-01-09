@@ -80,7 +80,7 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
     }
     case PeerDlg::TransferOk: {
       std::stringstream ss;
-      std::string msg(_("Transfer succesfully completed"));
+      std::string msg(_("Transfer successfully completed"));
       OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
                             wxICON_INFORMATION | wxOK);
       dlg.ShowModal();

@@ -432,8 +432,8 @@ void RestServer::HandleRoute(pugi::xml_node object,
   bool add = true;
   bool overwrite_one = false;
   Route* duplicate = m_route_ctx.find_route_by_guid(route->GetGUID());
-  if (duplicate && !evt_data.force) {
-    if (!m_overwrite) {
+  if (duplicate) {
+    if (!m_overwrite && !evt_data.force) {
       auto result = m_dlg_ctx.run_accept_object_dlg(
           _("The received route already exists on this system.\nReplace?"),
           _("Always replace objects?"));
@@ -446,12 +446,12 @@ void RestServer::HandleRoute(pugi::xml_node object,
         SaveConfig();
       }
     }
+  }
+  if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
       //  Remove the existing duplicate route before adding new route
       m_route_ctx.delete_route(duplicate);
     }
-  }
-  if (add) {
     // Add the route to the global list
     NavObjectCollection1 pSet;
     if (InsertRouteA(route, &pSet))
@@ -486,11 +486,11 @@ void RestServer::HandleTrack(pugi::xml_node object,
         SaveConfig();
       }
     }
+  }
+  if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
       m_route_ctx.delete_track(duplicate);
     }
-  }
-  if (add) {
     // Add the track to the global list
     NavObjectCollection1 pSet;
 
@@ -511,7 +511,7 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   bool add = true;
   bool overwrite_one = false;
 
-  RoutePoint* duplicate = WaypointExists(rp->GetName(), rp->m_lat, rp->m_lon);
+  RoutePoint* duplicate = m_route_ctx.find_wpt_by_guid(rp->m_GUID);
   if (duplicate) {
     if (!m_overwrite && !evt_data.force) {
       auto result = m_dlg_ctx.run_accept_object_dlg(
@@ -528,6 +528,9 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
     }
   }
   if (add) {
+    if (m_overwrite || overwrite_one || evt_data.force) {
+       m_route_ctx.delete_waypoint(duplicate);
+    }
     if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force))
       UpdateReturnStatus(RestServerResult::NoError);
     else
@@ -559,5 +562,8 @@ RouteCtx::RouteCtx()
           [](const wxString&) { return static_cast<Route*>(nullptr); }),
       find_track_by_guid(
           [](const wxString&) { return static_cast<Track*>(nullptr); }),
+      find_wpt_by_guid(
+          [](const wxString&) { return static_cast<RoutePoint*>(nullptr); }),
       delete_route([](Route*) -> void {}),
-      delete_track([](Track*) -> void {}) {}
+      delete_track([](Track*) -> void {}),
+      delete_waypoint([](RoutePoint*) -> void {}) {}

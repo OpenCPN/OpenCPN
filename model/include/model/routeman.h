@@ -236,6 +236,7 @@ public:
   int GetFIconImageListIndex(const wxBitmap *pbm);
   int GetNumIcons(void) { return m_pIconArray->Count(); }
   wxString CreateGUID(RoutePoint *pRP);
+  RoutePoint* FindWaypointByGuid(const std::string& guid);
   RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
   RoutePoint *GetOtherNearbyWaypoint(double lat, double lon,
                                      double radius_meters,

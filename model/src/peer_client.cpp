@@ -409,8 +409,8 @@ static int CheckChunk(struct MemoryStruct& chunk, const std::string& guid) {
 static bool CheckObjects(const std::string& api_key,
                          PeerData& peer_data) {
   std::stringstream url;
-  url << "https://" << peer_data.dest_ip_address
-      << "?source=" << peer_data.server_name << "&apikey=" << api_key
+  url << "https://" << peer_data.dest_ip_address << "/api/writable"
+      << "?source=" << g_hostname << "&apikey=" << api_key
       << "&guid=";
   for (const auto& r : peer_data.routes) {
     std::string guid = r->GetGUID().ToStdString();

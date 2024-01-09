@@ -116,8 +116,10 @@ class RouteCtx {
 public:
   std::function<Route*(wxString)> find_route_by_guid;
   std::function<Track*(wxString)> find_track_by_guid;
+  std::function<RoutePoint*(wxString)> find_wpt_by_guid;
   std::function<void(Route*)> delete_route;
   std::function<void(Track*)> delete_track;
+  std::function<void(RoutePoint*)> delete_waypoint;
 
   /** Dummy stubs constructor. */
   RouteCtx();
