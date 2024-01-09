@@ -23,6 +23,7 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -34,11 +35,11 @@
 #include "config.h"
 #include "model/config_vars.h"
 #include "model/logger.h"
-#include "mongoose.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
-#include "observable_evt.h"
 #include "model/rest_server.h"
+#include "mongoose.h"
+#include "observable_evt.h"
 
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
@@ -160,7 +161,8 @@ static void HandlePing(struct mg_connection* c, struct mg_http_message* hm,
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
   }
-  mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
+  mg_http_reply(c, 200, "", "{\"result\": %d, \"version\": %s}\n",
+                parent->GetReturnStatus(), VERSION_FULL);
 }
 
 static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,

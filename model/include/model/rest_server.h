@@ -137,7 +137,8 @@ public:
  *        - source=`<ip>` Mandatory, origin ip address or hostname.
  *        - api_key=`<key>` Mandatory, as obtained when pairing, see below.
  *    - Returns:
- *        {"result": `<code>`}
+ *        {"result": `<code>`, "version": `<version>`}
+ *        `<version>` is a printable version like 5.9.0
  *
  *  POST /api/rx_object?api_key=`<pincode>`&source=`<ip address>`&force=1 <br>
  *  Upload GPX route(s), track(s) or waypoint(s).

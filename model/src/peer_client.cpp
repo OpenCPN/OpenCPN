@@ -252,7 +252,13 @@ RestServerResult CheckApiKey(const std::string& api_key,
                                    num_errors);
     // Capture the result
     int result = root["result"].AsInt();
-
+    if (root.HasMember("version")) {
+      wxString version = root["version"].AsString();
+      peer_data.api_version = SemanticVersion::parse(version.ToStdString());
+    } else {
+      // Assume "old" version without /api/writable support:
+      peer_data.api_version = SemanticVersion(5, 8);
+    }
     if (result > 0) {
       return RestServerResult::NewPinRequested;  // FIXME (leamas) WTF
     } else {
