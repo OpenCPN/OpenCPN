@@ -110,7 +110,7 @@ static wxEvtHandler* s_wsSKConsumer;
 class WebSocketThread : public wxThread {
 public:
   WebSocketThread(CommDriverSignalKNet* parent, wxIPV4address address,
-                  wxEvtHandler* consumer, std::string token);
+                  wxEvtHandler* consumer, const std::string& token);
   virtual void* Entry();
 
 private:
@@ -125,7 +125,7 @@ private:
 WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
                                  wxIPV4address address,
                                  wxEvtHandler* consumer,
-                                 std::string token) {
+                                 const std::string& token) {
   m_address = address;
   m_consumer = consumer;
   m_parentStream = parent;
@@ -217,7 +217,6 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
       m_Thread_run_flag(-1),
       m_params(*params),
       m_listener(listener) {
-  ix::initNetSystem();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_SIGNALK_NET, &CommDriverSignalKNet::handle_SK_sentence,
@@ -233,7 +232,9 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
   Open();
 }
 
-CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
+CommDriverSignalKNet::~CommDriverSignalKNet() {
+  Close();
+}
 
 void CommDriverSignalKNet::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
@@ -377,6 +378,14 @@ void CommDriverSignalKNet::handle_SK_sentence(
       std::make_shared<const SignalkMsg>(m_self, m_context, msgTerminated);
   m_listener.Notify(std::move(navmsg));
 }
+
+  void CommDriverSignalKNet::initIXNetSystem() {
+    ix::initNetSystem();
+  };
+
+  void CommDriverSignalKNet::uninitIXNetSystem() {
+    ix::uninitNetSystem();
+  };
 
 #if 0
 void CommDriverSignalKNet::handleUpdate(wxJSONValue &update) {

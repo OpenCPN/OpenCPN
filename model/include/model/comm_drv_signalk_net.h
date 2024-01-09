@@ -90,6 +90,10 @@ public:
   ConnectionParams m_params;
   DriverListener& m_listener;
 
+  static void initIXNetSystem();
+
+  static void uninitIXNetSystem();
+
 private:
   wxIPV4address m_addr;
   wxIPV4address GetAddr() const { return m_addr; }

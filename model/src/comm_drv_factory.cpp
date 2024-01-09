@@ -120,3 +120,12 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
   }
   return NULL;
 };
+
+
+void initIXNetSystem() {
+  CommDriverSignalKNet::initIXNetSystem();
+};
+
+void uninitIXNetSystem() {
+  CommDriverSignalKNet::uninitIXNetSystem();
+};
