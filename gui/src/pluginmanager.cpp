@@ -4122,7 +4122,7 @@ void PluginListPanel::ReloadPluginPanels() {
   /* Remove duplicates. */
   struct Comp {
     bool operator()(const PluginMetadata& lhs, const PluginMetadata rhs) const {
-      return lhs.key().compare(rhs.key()) < 0;
+      return lhs.name.compare(rhs.name) < 0;
     }
   } comp;
   std::set<PluginMetadata, Comp> unique_entries(comp);
