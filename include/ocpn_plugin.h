@@ -1696,7 +1696,22 @@ struct SignalkId {
 extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
     SignalkId id, wxEventType ev, wxEvtHandler *handler);
 
-/** Return payload in a received n2000 message of type id in ev. */
+/** Return N2K payload for a received n2000 message of type id in ev.
+ *
+ *  The vector returned is described in the following example
+
+    payload: [147,19,      // Header bytes, unused
+                3,         // N2K priority
+                16,240,1,  // example pgn 126992 encoded little endian
+                255,       // N2K destination address
+                1,  	   // N2K origin address
+                255,255,255,255, // timestamp, unused
+                8,	   // count of following NMEA2000 data
+                13,240,207,76,208,3,94,40,	 // NMEA2000 data
+                85         // CRC byte, unused,not included in count
+            ];
+*/
+
 extern DECL_EXP std::vector<uint8_t> GetN2000Payload(NMEA2000Id id,
                                                      ObservedEvt ev);
 
