@@ -49,10 +49,6 @@ struct MemoryStruct {
     memory = (char*)malloc(1);
     size = 0;
   }
-  MemoryStruct(size_t init_size) {
-    memory = (char*)malloc(init_size);
-    size = memory ? init_size : 0;
-  }
   ~MemoryStruct() { free(memory); }
 };
 
@@ -112,7 +108,7 @@ static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
 
 /** Perform a POST operation on server, store possible reply in response. */
 static long PostSendObjectMessage(std::string url, std::string& body,
-                                  PeerData& peer_data, bool timeout,
+                                  PeerData& peer_data,
                                   MemoryStruct* response) {
   long response_code = -1;
   peer_data.progress.Notify(0, "");
@@ -131,12 +127,10 @@ static long PostSendObjectMessage(std::string url, std::string& body,
   curl_easy_setopt(c, CURLOPT_NOPROGRESS, 0);
   curl_easy_setopt(c, CURLOPT_XFERINFODATA, &peer_data);
   curl_easy_setopt(c, CURLOPT_XFERINFOFUNCTION, xfer_callback);
-  int level =  wxLog::GetLogLevel();
-  int level2 = wxLOG_Debug;
+  curl_easy_setopt(c, CURLOPT_TIMEOUT, 20);
   // FIXME (leamas) always logs
   curl_easy_setopt(c, CURLOPT_VERBOSE,
                    wxLog::GetLogLevel() >= wxLOG_Debug ? 1 : 0);
-  if (timeout) curl_easy_setopt(c, CURLOPT_TIMEOUT, 5);
 
   CURLcode result = curl_easy_perform(c);
   peer_data.progress.Notify(0, "");
@@ -227,45 +221,6 @@ void GetApiVersion(PeerData& peer_data) {
   } else {
     // Return "old" version without /api/writable support
     peer_data.api_version = SemanticVersion(5, 8);
-  }
-}
-
-RestServerResult CheckApiKey(const std::string& api_key,
-                             const std::string& dest_ip) {
-  std::string url(dest_ip);
-  url += "/api/ping";
-  url += std::string("?source=") + g_hostname;
-  url += std::string("&apikey=") + api_key;
-
-  struct MemoryStruct chunk;
-  std::string buf;
-  EventVar unused;
-  PeerData peer_data(unused);
-  long response_code = PostSendObjectMessage(url, buf, peer_data, true, &chunk);
-  if (response_code == 200) {
-    wxString body(chunk.memory);
-    wxJSONValue root;
-    wxJSONReader reader;
-
-    int num_errors = reader.Parse(body, &root);
-    if (num_errors > 0) wxLogDebug("ApiGetUrl, parse errors: %d",
-                                   num_errors);
-    // Capture the result
-    int result = root["result"].AsInt();
-    if (root.HasMember("version")) {
-      wxString version = root["version"].AsString();
-      peer_data.api_version = SemanticVersion::parse(version.ToStdString());
-    } else {
-      // Assume "old" version without /api/writable support:
-      peer_data.api_version = SemanticVersion(5, 8);
-    }
-    if (result > 0) {
-      return RestServerResult::NewPinRequested;  // FIXME (leamas) WTF
-    } else {
-      return RestServerResult::Void;
-    }
-  } else {
-    return RestServerResult::Void;
   }
 }
 
@@ -371,7 +326,7 @@ static void SendObjects(std::string& body, const std::string& api_key,
 
     struct MemoryStruct chunk;
     long response_code =
-        PostSendObjectMessage(url.str(), body, peer_data, false, &chunk);
+        PostSendObjectMessage(url.str(), body, peer_data, &chunk);
     if (response_code == 200) {
       wxString json(chunk.memory);
       wxJSONValue root;
@@ -422,7 +377,10 @@ static bool CheckObjects(const std::string& api_key,
     std::string guid = r->GetGUID().ToStdString();
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
-    bool ok = ApiGetUrl(full_url, &chunk) == 200;   // FIXME (leamas)
+    if (ApiGetUrl(full_url, &chunk) != 200) {
+      wxLogMessage("Cannot check /api/writable for route %s", guid.c_str());
+      return false;
+    }
     int result = CheckChunk(chunk, guid);
     if (result != 0) return false;
   }
@@ -430,7 +388,10 @@ static bool CheckObjects(const std::string& api_key,
     std::string guid = t->m_GUID.ToStdString();
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
-    bool ok = ApiGetUrl(full_url, &chunk) == 200;   // FIXME (leamas)
+    if (ApiGetUrl(full_url, &chunk) != 200) {
+      wxLogMessage("Cannot check /api/writable for track %s", guid.c_str());
+      return false;
+    }
     int result = CheckChunk(chunk, guid);
     if (result != 0) return false;
   }
@@ -438,17 +399,20 @@ static bool CheckObjects(const std::string& api_key,
     std::string guid = rp->m_GUID.ToStdString();
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
-    bool ok = ApiGetUrl(full_url, &chunk) == 200;   // FIXME (leamas)
+    if (ApiGetUrl(full_url, &chunk) != 200) {
+      wxLogMessage("Cannot check /api/writable for waypoint %s", guid.c_str());
+      return false;
+    }
     int result = CheckChunk(chunk, guid);
     if (result != 0) return false;
   }
   return true;
 }
 
-int SendNavobjects(PeerData& peer_data) {
+bool SendNavobjects(PeerData& peer_data) {
   if (peer_data.routes.empty() && peer_data.routepoints.empty() &&
       peer_data.tracks.empty()) {
-    return -1;
+    return true;
   }
   std::string api_key;
   bool apikey_ok = GetApiKey(peer_data, api_key);
@@ -461,11 +425,10 @@ int SendNavobjects(PeerData& peer_data) {
 bool CheckNavObjects(PeerData& peer_data) {
   if (peer_data.routes.empty() && peer_data.routepoints.empty() &&
       peer_data.tracks.empty()) {
-    return true;  // the server will no not object to null transfers.
+    return true;  // the server will not object to null transfers.
   }
   std::string apikey;
   bool apikey_ok = GetApiKey(peer_data, apikey);
   if (!apikey_ok) return false;
-
   return CheckObjects(apikey, peer_data);
 }

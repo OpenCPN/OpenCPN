@@ -133,16 +133,6 @@ SendToPeerDlg::SendToPeerDlg() {
 #endif
 }
 
-SendToPeerDlg::SendToPeerDlg(wxWindow* parent, wxWindowID id,
-                             const wxString& caption, const wxString& hint,
-                             const wxPoint& pos, const wxSize& size,
-                             long style) {
-#ifdef __ANDROID__
-  androidDisableRotation();
-#endif
-  Create(parent, id, caption, hint, pos, size, style);
-}
-
 SendToPeerDlg::~SendToPeerDlg() {
   delete m_PeerListBox;
   delete m_pgauge;
@@ -157,7 +147,6 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
                            const wxString& caption, const wxString& hint,
                            const wxPoint& pos, const wxSize& size, long style) {
   SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
-
   wxFont* pF = OCPNGetFont(_T("Dialog"), 0);
   SetFont(*pF);
 
@@ -172,11 +161,13 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
     m_autoScanTimer.SetOwner(this, TIMER_AUTOSCAN);
     m_autoScanTimer.Start(500, wxTIMER_ONE_SHOT);
   }
-
   m_ScanTickTimer.SetOwner(this, TIMER_SCANTICK);
 
   auto action = [&](ObservedEvt& evt) { m_pgauge->SetValue(evt.GetInt()); };
   progress_listener.Init(progress, action);
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
   return true;
 }
 
@@ -280,7 +271,6 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
   peer_data.run_pincode_dlg = RunPincodeDlg;
   peer_data.dest_ip_address = peer_ip.ToStdString();
   peer_data.server_name = server_name.ToStdString();
-
 
   GetApiVersion(peer_data);
   if (peer_data.api_version < SemanticVersion(5, 9)) {

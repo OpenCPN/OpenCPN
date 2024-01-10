@@ -62,9 +62,6 @@ class SendToPeerDlg : public wxDialog {
 
 public:
   SendToPeerDlg();
-  SendToPeerDlg(wxWindow* parent, wxWindowID id, const wxString& caption,
-               const wxString& hint, const wxPoint& pos, const wxSize& size,
-               long style);
   ~SendToPeerDlg();
 
   bool Create(wxWindow* parent, wxWindowID id = SYMBOL_STP_IDNAME,
@@ -76,7 +73,6 @@ public:
   void SetRoute(Route* pRoute) { m_RouteList.push_back(pRoute); }
   void SetWaypoint(RoutePoint* pRoutePoint) { m_RoutePointList.push_back(pRoutePoint); }
   void SetTrack(Track* pTrack) { m_TrackList.push_back(pTrack); }
-  wxGauge* GetProgressGauge() { return m_pgauge; }
   void SetMessage(wxString message);
   void SetScanOnCreate(bool s){ m_bScanOnCreate = s;}
   void SetScanTime(int t){ m_scanTime = t * 2;}

@@ -67,7 +67,7 @@ struct PeerData {
 void GetApiVersion(PeerData& peer_data);
 
 /** Send data to server peer.*/
-int SendNavobjects(PeerData& peer_data);
+bool SendNavobjects(PeerData& peer_data);
 
 /**
  * Check if server peer deems that writing these objects can be accepted
