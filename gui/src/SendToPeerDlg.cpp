@@ -274,6 +274,7 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
   peer_data.routepoints = m_RoutePointList;
   peer_data.run_status_dlg = RunStatusDlg;
   peer_data.run_pincode_dlg = RunPincodeDlg;
+  peer_data.activate = m_activate_chkbox->GetValue();
 
   // And send it out
   m_pgauge->SetRange(100);

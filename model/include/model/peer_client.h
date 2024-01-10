@@ -44,16 +44,17 @@ enum class PeerDlg { PinConfirm, InvalidHttpResponse, ErrorReturn, TransferOk };
 struct PeerData {
   std::string dest_ip_address;
   std::string server_name;
-  SemanticVersion api_version;  /**< API version for server. */
+  SemanticVersion api_version;  ///< server API version
   std::vector<Route*> routes;
   std::vector<RoutePoint*> routepoints;
   std::vector<Track*> tracks;
-  bool overwrite;
+  bool overwrite;     ///< API parameter, force overwrite w/o server dialogs.
+  bool activate;      ///< API parameter, activate route after transfer
 
   /** Notified with transfer percent progress (0-100). */
   EventVar& progress;
 
-  /** Dialog returning status */
+  /** Dialog displaying status (good, bad, ...) */
   std::function<PeerDlgResult(PeerDlg, int)> run_status_dlg;
 
   /**

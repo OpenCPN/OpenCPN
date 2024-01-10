@@ -59,6 +59,7 @@ using PeerDlgPair = std::pair<PeerDlgResult, std::string>;
 
 PeerData::PeerData(EventVar& p)
     : overwrite(false),
+      activate(false),
       progress(p),
       run_status_dlg([](PeerDlg, int) { return PeerDlgResult::Cancel; }),
       run_pincode_dlg([] { return PeerDlgPair(PeerDlgResult::Cancel, ""); }) {}
@@ -320,6 +321,7 @@ static void SendObjects(std::string& body, const std::string& api_key,
     url << "https://" << peer_data.dest_ip_address << "/api/rx_object"
         << "?source=" << g_hostname << "&apikey=" << api_key;
     if (peer_data.overwrite) url << "&force=1";
+    if (peer_data.activate) url << "&activate=1";
 
     struct MemoryStruct chunk;
     long response_code =
