@@ -30,6 +30,8 @@
 #include <thread>
 #include <unordered_map>
 
+#include "observable_evtvar.h"
+
 
 // MacOS 1.13:
 #if defined(__clang_major__) && (__clang_major__ < 15)
@@ -150,6 +152,8 @@ public:
  *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
  *         - force=`<1>` if present, the host object is unconditionally
  *           updated. If not, host may run a "OK to overwrite" dialog.
+ *         - activate=`<1>` Optional, activate route or waypoint after
+ *           transfer
  *
  *     - Body:
  *         xml-encoded GPX data for one or more route(s), track(s) and/or
@@ -191,6 +195,9 @@ public:
 
   /** Return HTTPS url to local rest server. */
   virtual std::string GetEndpoint() = 0;
+
+  /** Notified with a string GUID when user wants to activate a route. */
+  EventVar ActivateRequest;
 };
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */

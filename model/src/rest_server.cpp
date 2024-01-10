@@ -61,6 +61,7 @@ struct RestIoEvtData {
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
   const bool force;           ///< rest API parameter force
+  const bool activate;        ///< rest API parameter activate
 
   /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
   const std::string payload;
@@ -68,30 +69,28 @@ struct RestIoEvtData {
   /** Create a Cmd::Object instance. */
   static RestIoEvtData CreateCmdData(const std::string& key,
                                      const std::string& src,
-                                     const std::string& gpx_data, bool _force) {
-    return {Cmd::Object, key, src, gpx_data, _force};
+                                     const std::string& gpx_data, bool _force,
+                                     bool _activate) {
+    return {Cmd::Object, key, src, gpx_data, _force, _activate};
   }
 
   /** Create a Cmd::Ping instance: */
   static RestIoEvtData CreatePingData(const std::string& key,
                                       const std::string& src) {
-    return {Cmd::Ping, key, src, "", false};
+    return {Cmd::Ping, key, src, "", false, false};
   }
 
   /** Create a Cmd::CheckWrite instance. */
   static RestIoEvtData CreateChkWriteData(const std::string& key,
                                           const std::string& src,
                                           const std::string& guid) {
-    return {Cmd::CheckWrite, key, src, guid, false};
+    return {Cmd::CheckWrite, key, src, guid, false, false};
   }
 
 private:
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                bool _force);
+                bool _force, bool _activate);
 };
-
-/** Compat interface to old peer_client. */
-std::string PintoRandomKeyString(int pin) { return Pincode::IntToHash(pin); }
 
 /** Extract a HTTP variable from query string. */
 static inline std::string HttpVarToString(const struct mg_str& query,
@@ -119,6 +118,7 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
   std::string api_key = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
   std::string force = HttpVarToString(hm->query, "force");
+  std::string activate = HttpVarToString(hm->query, "activate");
   std::string xml_content;
   if (hm->chunk.len)
     xml_content = std::string(hm->chunk.ptr, hm->chunk.len);
@@ -132,7 +132,7 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
     assert(parent && "Null parent pointer");
     auto data_ptr =
         std::make_shared<RestIoEvtData>(RestIoEvtData::CreateCmdData(
-            api_key, source, xml_content, !force.empty()));
+            api_key, source, xml_content, !force.empty(), !activate.empty()));
     PostEvent(parent, data_ptr, MID);
   }
   if (MID == ORS_CHUNK_LAST) {
@@ -480,10 +480,13 @@ void RestServer::HandleRoute(pugi::xml_node object,
     }
     // Add the route to the global list
     NavObjectCollection1 pSet;
-    if (InsertRouteA(route, &pSet))
+    if (InsertRouteA(route, &pSet))  {
       UpdateReturnStatus(RestServerResult::NoError);
-    else
+      if (evt_data.activate)
+        ActivateRequest.Notify(route->GetGUID().ToStdString());
+   } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
+    }
     m_dlg_ctx.top_level_refresh();
   }
   UpdateRouteMgr();
@@ -566,11 +569,13 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
 }
 
 RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
-                             std::string src, std::string _payload, bool _force)
+                             std::string src, std::string _payload, bool _force,
+                             bool _activate)
     : cmd(c),
       api_key(std::move(key)),
       source(std::move(src)),
       force(_force),
+      activate(_activate),
       payload(std::move(_payload)) {}
 
 RestServerDlgCtx::RestServerDlgCtx()
