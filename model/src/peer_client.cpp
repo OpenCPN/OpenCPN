@@ -92,7 +92,13 @@ static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
   } else {
     peer_data->progress.Notify(100 * ulnow / ultotal, "");
   }
+// FIXME (leamas) dirty fix for outdated, bundled curl
+// returning 0 is undocumented, but worked for  5.8
+#ifdef CURL_PROGRESSFUNC_CONTINUE
   return CURL_PROGRESSFUNC_CONTINUE;
+#else
+  return 0;
+#endif
 }
 
 /** Perform a POST operation on server, store possible reply in response. */
