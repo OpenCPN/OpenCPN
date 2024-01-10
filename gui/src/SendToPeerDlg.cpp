@@ -23,6 +23,8 @@
  */
 #include <memory>
 
+#include <wx/statline.h>
+
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/mDNS_query.h"
@@ -228,8 +230,15 @@ void SendToPeerDlg::CreateControls(const wxString&) {
                          wxSize(-1, GetCharHeight()));
   itemBoxSizer3->Add(m_pgauge, 0, wxEXPAND | wxALL, 20);
 
-  //    Add a reminder text box
   itemBoxSizer2->AddSpacer(30);
+  itemBoxSizer2->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
+  m_activate_chkbox = new wxCheckBox(this,  wxID_ANY,
+                                     _("Activate after transfer"),
+                                     wxDefaultPosition, wxDefaultSize,
+                                     wxALIGN_RIGHT);
+  itemBoxSizer2->Add(m_activate_chkbox, 0,
+                     wxALIGN_RIGHT | wxALL, 10);
+
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);

@@ -25,18 +25,30 @@
 #ifndef __SENDTOPEERDLG_H__
 #define __SENDTOPEERDLG_H__
 
+#include <vector>
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <string>
+#include <vector>
 
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/combobox.h>
 #include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/gauge.h>
+#include <wx/gdicmn.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/timer.h>
+#include <wx/window.h>
 
 #include "model/route.h"
-#include "model/track.h"
 #include "model/route_point.h"
+#include "model/track.h"
 
 #include "observable_evtvar.h"
 
@@ -95,7 +107,8 @@ private:
   wxButton* m_CancelButton;
   wxButton* m_SendButton;
   wxStaticText* premtext;
-  wxButton *m_RescanButton;
+  wxButton* m_RescanButton;
+  wxCheckBox* m_activate_chkbox;
   EventVar progress;
   ObsListener progress_listener;
 
