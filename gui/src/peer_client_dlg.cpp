@@ -34,7 +34,6 @@
 
 #include <curl/curl.h>
 
-#include "model/nav_object_database.h"
 #include "model/peer_client.h"
 #include "model/rest_server.h"
 #include "model/semantic_vers.h"
@@ -52,46 +51,43 @@ struct MemoryStruct {
   size_t size;
 };
 
-
-wxString GetErrorText(RestServerResult result) {
-  switch (result) {
-    case RestServerResult::GenericError:
-      return _("Server Generic Error");
-    case RestServerResult::ObjectRejected:
-      return _("Peer rejected object");
-    case RestServerResult::DuplicateRejected:
-      return _("Peer rejected duplicate object");
-    case RestServerResult::RouteInsertError:
-      return _("Peer internal error (insert)");
-    default:
-      return _("Server Unknown Error");
-  }
-}
-
-PINConfirmDlg::PINConfirmDlg() {
-  m_OKButton = NULL;
-  m_CancelButton = NULL;
+PinConfirmDlg::PinConfirmDlg() {
+  m_ok_btn = NULL;
+  m_cancel_btn = NULL;
   premtext = NULL;
 }
 
-PINConfirmDlg::PINConfirmDlg(wxWindow* parent, wxWindowID id,
-                             const wxString& caption,
-                             const wxString& hint, const wxPoint& pos,
-                             const wxSize& size, long style) {
+PinConfirmDlg::PinConfirmDlg(wxWindow* parent, wxWindowID id,
+                             const wxString& caption, const wxString& hint,
+                             const wxPoint& pos, const wxSize& size,
+                             long style) {
   wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
   SetFont(*pif);
   Create(parent, id, caption, hint, pos, size, style);
 }
 
-PINConfirmDlg::~PINConfirmDlg() {
-  delete m_OKButton;
-  delete m_CancelButton;
+PinConfirmDlg::~PinConfirmDlg() {
+  delete m_ok_btn;
+  delete m_cancel_btn;
 }
 
-bool PINConfirmDlg::Create(wxWindow* parent, wxWindowID id,
-                              const wxString& caption, const wxString& hint,
-                              const wxPoint& pos, const wxSize& size,
-                              long style) {
+/** Enable OK button iff input represents a four digit pincode. */
+void PinConfirmDlg::OnTextChange(wxCommandEvent&) {
+  auto txt = m_pin_textctrl->GetValue().ToStdString();
+  int value = -1;
+  if (txt.size() >= 4) {
+    try {
+      value = std::stoi(txt);
+    } catch (std::exception&) {
+      ;
+    }
+  }
+  m_ok_btn->Enable(value >= 0 && txt.size() >= 4);
+}
+
+bool PinConfirmDlg::Create(wxWindow* parent, wxWindowID id,
+                           const wxString& caption, const wxString& hint,
+                           const wxPoint& pos, const wxSize& size, long style) {
   SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
   wxDialog::Create(parent, id, caption, pos, size, style);
 
@@ -102,9 +98,7 @@ bool PINConfirmDlg::Create(wxWindow* parent, wxWindowID id,
   return TRUE;
 }
 
-void PINConfirmDlg::CreateControls(const wxString&) {
-  PINConfirmDlg* itemDialog1 = this;
-
+void PinConfirmDlg::CreateControls(const wxString&) {
   wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
   SetSizer(itemBoxSizer2);
 
@@ -115,46 +109,46 @@ void PINConfirmDlg::CreateControls(const wxString&) {
       this, -1, "A loooooooooooooooooooooooooooooooooooooooooooooong line\n");
   itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
 
-  m_pText1 = new wxTextCtrl(this, wxID_ANY, "        ", wxDefaultPosition,
-                            wxDefaultSize, wxTE_CENTRE);
-  itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
+  m_pin_textctrl = new wxTextCtrl(this, wxID_ANY, "        ", wxDefaultPosition,
+                                  wxDefaultSize, wxTE_CENTRE);
+  itemBoxSizer2->Add(m_pin_textctrl, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 10);
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
   itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5);
 
-  m_CancelButton = new wxButton(itemDialog1, ID_PCD_CANCEL, _("Cancel"),
-                                wxDefaultPosition, wxDefaultSize, 0);
-   m_CancelButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                        [&](wxCommandEvent e)  {OnCancelClick(e); });
-  itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+  m_cancel_btn = new wxButton(this, ID_PCD_CANCEL, _("Cancel"));
 
-  m_OKButton = new wxButton(itemDialog1, ID_PCD_OK, "OK", wxDefaultPosition,
-                            wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-  m_OKButton->SetDefault();
-  m_OKButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                   [&](wxCommandEvent e)  {OnOKClick(e); });
+  m_cancel_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                     [&](wxCommandEvent e) { OnCancelClick(e); });
+  itemBoxSizer16->Add(m_cancel_btn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  m_ok_btn = new wxButton(this, ID_PCD_OK, "OK");
+  itemBoxSizer16->Add(m_ok_btn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+  m_ok_btn->SetDefault();
+  m_ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                 [&](wxCommandEvent e) { OnOKClick(e); });
+  m_ok_btn->Enable(false);
+  m_pin_textctrl->Bind(wxEVT_TEXT,
+                       [&](wxCommandEvent& ev) { OnTextChange(ev); });
 }
 
-void PINConfirmDlg::SetMessage(const wxString& msg) {
+void PinConfirmDlg::SetMessage(const wxString& msg) {
   if (premtext) {
     premtext->SetLabel(msg);
     premtext->Refresh(true);
   }
 }
 
-void PINConfirmDlg::SetText1Message(const wxString& msg) {
-  m_pText1->ChangeValue(msg);
-  m_pText1->Show();
+void PinConfirmDlg::SetPincodeText(const wxString& message) {
+  m_pin_textctrl->ChangeValue(message);
+  m_pin_textctrl->Show();
   GetSizer()->Fit(this);
 }
 
-void PINConfirmDlg::OnOKClick(wxCommandEvent&) {
+void PinConfirmDlg::OnOKClick(wxCommandEvent&) {
   SetReturnCode(ID_PCD_OK);
   EndModal(ID_PCD_OK);
 }
 
-void PINConfirmDlg::OnCancelClick(wxCommandEvent&) {
-  EndModal(ID_PCD_CANCEL);
-}
+void PinConfirmDlg::OnCancelClick(wxCommandEvent&) { EndModal(ID_PCD_CANCEL); }

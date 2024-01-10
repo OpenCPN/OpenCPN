@@ -93,21 +93,34 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
 }
 
 std::pair<PeerDlgResult, std::string> RunPincodeDlg() {
-  PINConfirmDlg dlg(gFrame, wxID_ANY, _("OpenCPN Server Message"), "",
+  PinConfirmDlg dlg(gFrame, wxID_ANY, _("OpenCPN Server Message"), "",
                     wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE);
 
   static const char* const msg =
-      R""(_(A server pin is needed.
-  Please enter the PIN number from the server to pair with this device.))"";
+    _("A server pin is needed.\n"
+      "Please enter PIN number from server to pair with this device");
 
   dlg.SetMessage(msg);
-  dlg.SetText1Message("");
+  dlg.SetPincodeText("");
   dlg.ShowModal();
   if (dlg.GetReturnCode() == ID_PCD_OK) {
-    auto pin = dlg.GetText1Value().Trim().Trim(false);
+    auto pin = dlg.GetPincodeText().Trim().Trim(false);
     return {PeerDlgResult::HasPincode, pin.ToStdString()};
   }
   return {PeerDlgResult::Cancel, ""};
+}
+
+/** Dig out server name and ip address from textbox value. */
+static void ParsePeer(const wxString& ui_value, PeerData& peer_data) {
+  wxString server_name = ui_value.BeforeFirst('{').Trim();
+  wxString peer_ip = ui_value;
+  int tail = ui_value.Find('{');
+  if (tail != wxNOT_FOUND) peer_ip = peer_ip.Mid(tail + 1);
+  peer_ip = peer_ip.BeforeFirst('}') + ":";
+  // Is the destination a portable?  Detect by string inspection.
+  peer_ip += server_name.BeforeFirst('-') == "Portable" ? "8444" : "8443";
+  peer_data.server_name = server_name.ToStdString();
+  peer_data.dest_ip_address = peer_ip.ToStdString();
 }
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
@@ -240,37 +253,23 @@ void SendToPeerDlg::SetMessage(wxString msg) {
 }
 
 void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
-  if (m_RouteList.empty() && m_TrackList.empty() && m_RoutePointList.empty())
+  if (m_RouteList.empty() && m_TrackList.empty() && m_RoutePointList.empty()) {
     Close();
-
-  //    Get the selected peer information
-  wxString peer_ip = m_PeerListBox->GetValue();
-  wxString server_name = peer_ip.BeforeFirst('{').Trim();
-  int tail = peer_ip.Find('{');
-  if (tail != wxNOT_FOUND) peer_ip = peer_ip.Mid(tail + 1);
-  peer_ip = peer_ip.BeforeFirst('}');
-  peer_ip += ":";
-
-  // Is the destination a portable?  Detect by string inspection.
-  wxString p = "Portable";
-  if (p.IsSameAs(server_name.BeforeFirst('-')))
-    peer_ip += "8444";
-  else
-    peer_ip += "8443";
-
-  //    And send it out
-  m_pgauge->SetRange(100);
-  m_pgauge->SetValue(0);
-  m_pgauge->Show();
-
+    return;
+  }
+  // Set up transfer data
   PeerData peer_data(progress);
+  ParsePeer(m_PeerListBox->GetValue(), peer_data);
   peer_data.routes = m_RouteList;
   peer_data.tracks = m_TrackList;
   peer_data.routepoints = m_RoutePointList;
   peer_data.run_status_dlg = RunStatusDlg;
   peer_data.run_pincode_dlg = RunPincodeDlg;
-  peer_data.dest_ip_address = peer_ip.ToStdString();
-  peer_data.server_name = server_name.ToStdString();
+
+  // And send it out
+  m_pgauge->SetRange(100);
+  m_pgauge->SetValue(0);
+  m_pgauge->Show();
 
   GetApiVersion(peer_data);
   if (peer_data.api_version < SemanticVersion(5, 9)) {
@@ -282,7 +281,6 @@ void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
       SendNavobjects(peer_data);
     }
   }
-
   m_pgauge->Hide();
   Close();
 }

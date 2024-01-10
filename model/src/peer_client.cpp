@@ -26,6 +26,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <utility>
 
 #include <curl/curl.h>
 
@@ -33,6 +35,7 @@
 #include <wx/json_defs.h>
 #include <wx/jsonreader.h>
 #include <wx/log.h>
+#include <wx/string.h>
 
 #include "model/config_vars.h"
 #include "model/nav_object_database.h"
@@ -59,20 +62,6 @@ PeerData::PeerData(EventVar& p)
       progress(p),
       run_status_dlg([](PeerDlg, int) { return PeerDlgResult::Cancel; }),
       run_pincode_dlg([] { return PeerDlgPair(PeerDlgResult::Cancel, ""); }) {}
-
-// std::string ServerResultToText(RestServerResult result) {
-//   using namespace std;
-//   using RSR = RestServerResult;
-//   static const unordered_map<RestServerResult, wxString> TextByResult = {
-//     { RSR::GenericError, _("Peer Generic Error") },
-//     { RSR::ObjectRejected, _("Peer rejected object") },
-//     { RSR::DuplicateRejected, _("Peer rejected duplicate object") },
-//     { RSR::RouteInsertError,  _("Peer internal error (insert)") }
-//   };
-//   auto found = TextByResult.find(result);
-//   if (found != TextByResult.end()) return found->second.ToStdString();
-//   return _("Unknown peer error").ToStdString();
-// }
 
 static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb,
                                   void* userp) {
@@ -108,14 +97,13 @@ static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
 
 /** Perform a POST operation on server, store possible reply in response. */
 static long PostSendObjectMessage(std::string url, std::string& body,
-                                  PeerData& peer_data,
-                                  MemoryStruct* response) {
+                                  PeerData& peer_data, MemoryStruct* response) {
   long response_code = -1;
   peer_data.progress.Notify(0, "");
 
   CURL* c = curl_easy_init();
   // No encoding, plain ASCII
-  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");   // Plain ASCII
+  curl_easy_setopt(c, CURLOPT_ENCODING, "identity");  // Plain ASCII
   curl_easy_setopt(c, CURLOPT_URL, url.c_str());
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
   curl_easy_setopt(c, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -204,7 +192,7 @@ void GetApiVersion(PeerData& peer_data) {
 
   struct MemoryStruct chunk;
   std::string buf;
-  long response_code = ApiGetUrl(url.str(), &chunk, 3);
+  long response_code = ApiGetUrl(url.str(), &chunk, 2);
 
   if (response_code == 200) {
     wxString body(chunk.memory);
@@ -212,7 +200,7 @@ void GetApiVersion(PeerData& peer_data) {
     wxJSONReader reader;
 
     int numErrors = reader.Parse(body, &root);
-    if (numErrors != 0)  {
+    if (numErrors != 0) {
       peer_data.api_version = SemanticVersion(-1, -1);
       return;
     }
@@ -227,18 +215,18 @@ void GetApiVersion(PeerData& peer_data) {
 /** Return a usable api key, possibly after user dialogs. */
 static bool GetApiKey(PeerData& peer_data, std::string& key) {
   std::string api_key;
-  if (peer_data.api_version == SemanticVersion(0,0)) GetApiVersion(peer_data);
+  if (peer_data.api_version == SemanticVersion(0, 0)) GetApiVersion(peer_data);
 
   while (true) {
     api_key = GetClientKey(peer_data.server_name);
     std::stringstream url;
-    url << "https://" << peer_data.dest_ip_address << "/api/ping" << "?source="
-        << g_hostname << "&apikey=" <<  api_key;
+    url << "https://" << peer_data.dest_ip_address << "/api/ping"
+        << "?source=" << g_hostname << "&apikey=" << api_key;
     MemoryStruct chunk;
-    int http_status = ApiGetUrl(url.str(), &chunk);
+    int http_status = ApiGetUrl(url.str(), &chunk, 3);
     if (http_status != 200) {
-      auto r = peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse,
-                                        http_status);
+      auto r =
+          peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, http_status);
       if (r == PeerDlgResult::Ok) continue;
       return false;
     }
@@ -250,7 +238,7 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
     int int_result = root["result"].AsInt();
     auto result = static_cast<RestServerResult>(int_result);
     switch (result) {
-    case RestServerResult::NewPinRequested: {
+      case RestServerResult::NewPinRequested: {
         auto pin_result = peer_data.run_pincode_dlg();
         if (pin_result.first == PeerDlgResult::HasPincode) {
           std::string tentative_pin = ocpn::trim(pin_result.second);
@@ -267,17 +255,20 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
           if (r == PeerDlgResult::Ok) continue;
           return false;
         }
-      }
-      break;
-    case RestServerResult::GenericError:
-      // 5.8 returns GenericError for a valid key (!)
-      [[fallthrough]];
-    case RestServerResult::NoError:
-      break;
-    default:
-      auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
-      if (r == PeerDlgResult::Ok) continue;
-      return false;
+      } break;
+      case RestServerResult::GenericError:
+        // 5.8 returns GenericError for a valid key (!)
+        [[fallthrough]];
+      case RestServerResult::NoError:
+        if (root.HasMember("version")) {
+          auto s = root["version"].AsString().ToStdString();
+          peer_data.api_version = SemanticVersion::parse(s);
+        }
+        break;
+      default:
+        auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
+        if (r == PeerDlgResult::Ok) continue;
+        return false;
     }
     break;
   }
@@ -367,12 +358,10 @@ static int CheckChunk(struct MemoryStruct& chunk, const std::string& guid) {
 }
 
 /** Return true if server accepts overwriting all peer_data objects. */
-static bool CheckObjects(const std::string& api_key,
-                         PeerData& peer_data) {
+static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
   std::stringstream url;
   url << "https://" << peer_data.dest_ip_address << "/api/writable"
-      << "?source=" << g_hostname << "&apikey=" << api_key
-      << "&guid=";
+      << "?source=" << g_hostname << "&apikey=" << api_key << "&guid=";
   for (const auto& r : peer_data.routes) {
     std::string guid = r->GetGUID().ToStdString();
     std::string full_url = url.str() + guid;

@@ -217,6 +217,30 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
   }
 }
 
+std::string RestResultText(RestServerResult result) {
+  wxString s;
+  switch (result) {
+    case RestServerResult::NoError:
+      s =  _("No error");
+    case RestServerResult::GenericError:
+      s =  _("Server Generic Error");
+    case RestServerResult::ObjectRejected:
+      s =  _("Peer rejected object");
+    case RestServerResult::DuplicateRejected:
+      s =  _("Peer rejected duplicate object");
+    case RestServerResult::RouteInsertError:
+      s =  _("Peer internal error (insert)");
+    case RestServerResult::NewPinRequested:
+      s =  _("Peer requests new pincode");
+    case RestServerResult::ObjectParseError:
+      s =  _("XML parse error");
+    case RestServerResult::Void:
+      s =  _("Unspecified error");
+  }
+  return s.ToStdString();
+}
+
+
 //========================================================================
 /*    RestServer implementation */
 

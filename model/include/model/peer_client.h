@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 #include "model/route.h"
 #include "model/track.h"

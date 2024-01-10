@@ -76,6 +76,9 @@ enum class RestServerResult {
 /** Dialog return codes. */
 enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
 
+/** RestServerResult string representation */
+std::string RestResultText(RestServerResult result);
+
 /** Data from IO thread to main */
 struct RestIoEvtData;
 
