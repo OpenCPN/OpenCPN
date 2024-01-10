@@ -1467,9 +1467,15 @@ bool NavObjectCollection1::IsOpenCPN() {
 }
 
 bool NavObjectCollection1::SaveFile(const wxString filename) {
-  save_file(filename.fn_str(), "  ");
+  wxString tmp_filename = filename + ".tmp";
+  if (wxFileExists(tmp_filename)) {
+    wxRemoveFile(tmp_filename);
+  }
+  save_file(tmp_filename.fn_str(), "  ");
+  wxRenameFile(tmp_filename.fn_str(), filename.fn_str(), true);
   return true;
 }
+
 bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
                                              int &wpt_duplicates,
                                              bool b_compute_bbox) {

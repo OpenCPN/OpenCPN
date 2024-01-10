@@ -449,7 +449,8 @@ void MyConfig::CreateRotatingNavObjBackup() {
         if (wxFile::Exists(oldname)) wxCopyFile(oldname, newname);
       }
 
-      if (wxFile::Exists(m_sNavObjSetFile)) {
+      wxULongLong size = wxFileName::GetSize(m_sNavObjSetFile);
+      if (wxFile::Exists(m_sNavObjSetFile) && size > 0) {
         newname = wxString::Format(_T("%s.1"), m_sNavObjSetFile.c_str());
         wxCopyFile(m_sNavObjSetFile, newname);
       }
@@ -1569,7 +1570,7 @@ static bool ReloadPendingChanges(const wxString& changes_path) {
   // Let's reconstruct the unsaved changes
   auto pNavObjectChangesSet = NavObjectChanges::getTempInstance();
   pNavObjectChangesSet->Init(changes_path);
-  pNavObjectChangesSet->load_file(changes_path.fn_str());
+  auto res = pNavObjectChangesSet->load_file(changes_path.fn_str());
 
   //  Remove the file before applying the changes,
   //  just in case the changes file itself causes a fault.
@@ -1577,7 +1578,11 @@ static bool ReloadPendingChanges(const wxString& changes_path) {
   if (::wxFileExists(changes_path))
     ::wxRemoveFile(changes_path);
 
-  if (size == 0) return false;
+  if (size == 0 || res.status != pugi::xml_parse_status::status_ok) {
+    wxLogMessage(changes_path + " seems corrupted, not applying it.");
+    pNavObjectChangesSet->reset();
+    return false;
+  }
 
   wxLogMessage(_T("Applying NavObjChanges"));
   pNavObjectChangesSet->ApplyChanges();
@@ -1587,15 +1592,27 @@ static bool ReloadPendingChanges(const wxString& changes_path) {
 void MyConfig::LoadNavObjects() {
   //      next thing to do is read tracks, etc from the NavObject XML file,
   wxLogMessage(_T("Loading navobjects from navobj.xml"));
-  CreateRotatingNavObjBackup();
 
   if (NULL == m_pNavObjectInputSet)
     m_pNavObjectInputSet = new NavObjectCollection1();
 
   int wpt_dups = 0;
-  if (::wxFileExists(m_sNavObjSetFile) &&
-      m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()))
-    m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
+  if (::wxFileExists(m_sNavObjSetFile)) {
+    if (wxFileName::GetSize(m_sNavObjSetFile) < 461) { // Empty navobj.xml file with just the gpx tag is 461 bytes, so anything smaller is obvious sign of a fatal crash while saving it last time, replace it with latest backup if available
+      wxLogMessage("Navobjects file exists, but seems truncated!");
+      wxString newest_backup = m_sNavObjSetFile + ".1";
+      if (wxFileExists(newest_backup) && wxFileName::GetSize(newest_backup) >= 461) {
+        wxLogMessage("We do have a backup that looks healthy and will use it.");
+        wxCopyFile(newest_backup, m_sNavObjSetFile, true);
+      }
+    }
+    if(m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status == pugi::xml_parse_status::status_ok) {
+      CreateRotatingNavObjBackup(); // We only create backups when data is good, there is no point in saving something we can't even load
+      m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
+    } else {
+      wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile);
+    }
+  }
 
   wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
                wpt_dups);
@@ -1678,7 +1695,10 @@ bool MyConfig::LoadLayers(wxString &path) {
 
           if (::wxFileExists(file_path)) {
             NavObjectCollection1 *pSet = new NavObjectCollection1;
-            pSet->load_file(file_path.fn_str());
+            if (pSet->load_file(file_path.fn_str()).status != pugi::xml_parse_status::status_ok) {
+              wxLogMessage("Error loading GPX file " + file_path);
+              pSet->reset();
+            }
             long nItems = pSet->LoadAllGPXObjectsAsLayer(
                 l->m_LayerID, bLayerViz, l->m_bHasVisibleNames);
             l->m_NoOfItems += nItems;
@@ -2756,7 +2776,10 @@ void MyConfig::UpdateNavObj(bool bRecreate) {
     m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
 
     m_pNavObjectChangesSet->reset();
-    m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str());
+    if (m_pNavObjectChangesSet->load_file(m_sNavObjSetChangesFile.fn_str()).status != pugi::xml_parse_status::status_ok) {
+      wxLogMessage("Error while loading " + m_sNavObjSetChangesFile + ", ignoring contents of the file.");
+      m_pNavObjectChangesSet->reset();
+    }
   }
 }
 
@@ -3056,7 +3079,12 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
 
       if (::wxFileExists(path)) {
         NavObjectCollection1 *pSet = new NavObjectCollection1;
-        pSet->load_file(path.fn_str());
+        if (pSet->load_file(path.fn_str()).status != pugi::xml_parse_status::status_ok) {
+          wxLogMessage("Error loading GPX file " + path);
+          pSet->reset();
+          delete pSet;
+          continue;
+        }
 
         if (islayer) {
           l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(
