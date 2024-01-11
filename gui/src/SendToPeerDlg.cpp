@@ -113,7 +113,7 @@ std::pair<PeerDlgResult, std::string> RunPincodeDlg() {
 
   dlg.SetMessage(msg);
   dlg.SetPincodeText("");
-  if (dlg.ShowModal() == ID_PCD_OK) {
+  if (dlg.ShowModal() == wxID_OK) {
     auto pin = dlg.GetPincodeText().Trim().Trim(false);
     return {PeerDlgResult::HasPincode, pin.ToStdString()};
   }

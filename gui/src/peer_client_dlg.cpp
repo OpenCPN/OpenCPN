@@ -117,13 +117,13 @@ void PinConfirmDlg::CreateControls(const wxString&) {
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
   itemBoxSizer2->Add(itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5);
 
-  m_cancel_btn = new wxButton(this, ID_PCD_CANCEL, _("Cancel"));
+  m_cancel_btn = new wxButton(this, wxID_CANCEL);
 
   m_cancel_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                      [&](wxCommandEvent e) { OnCancelClick(e); });
   itemBoxSizer16->Add(m_cancel_btn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_ok_btn = new wxButton(this, ID_PCD_OK, "OK");
+  m_ok_btn = new wxButton(this, wxID_OK);
   itemBoxSizer16->Add(m_ok_btn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   m_ok_btn->SetDefault();
   m_ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -147,8 +147,7 @@ void PinConfirmDlg::SetPincodeText(const wxString& message) {
 }
 
 void PinConfirmDlg::OnOKClick(wxCommandEvent&) {
-  SetReturnCode(ID_PCD_OK);
-  EndModal(ID_PCD_OK);
+  EndModal(wxID_OK);
 }
 
-void PinConfirmDlg::OnCancelClick(wxCommandEvent&) { EndModal(ID_PCD_CANCEL); }
+void PinConfirmDlg::OnCancelClick(wxCommandEvent&) { EndModal(wxID_CANCEL); }

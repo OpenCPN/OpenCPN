@@ -43,8 +43,6 @@
 #define SYMBOL_PCD_SIZE wxSize(500, 500)
 #define SYMBOL_PCD_POSITION wxDefaultPosition
 
-enum { ID_PCD_CANCEL = 10000, ID_PCD_OK = 10001 };
-
 class PinConfirmDlg : public wxDialog {
 public:
   PinConfirmDlg();
