@@ -838,46 +838,6 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
-
-#ifndef __ANDROID__
-// Connection class, for use by both communicating instances
-class stConnection : public wxConnection {
-public:
-  stConnection() {}
-  ~stConnection() {}
-  bool OnExec(const wxString &topic, const wxString &data);
-};
-
-// Opens a file passed from another instance
-bool stConnection::OnExec(const wxString &topic, const wxString &data) {
-  // not setup yet
-  if (!gFrame) return false;
-
-  wxString path(data);
-  if (path.IsEmpty()) {
-    gFrame->InvalidateAllGL();
-    gFrame->RefreshAllCanvas(false);
-    gFrame->Raise();
-  } else {
-    NavObjectCollection1 *pSet = new NavObjectCollection1;
-    pSet->load_file(path.fn_str());
-    int wpt_dups;
-    pSet->LoadAllGPXObjects(
-        !pSet->IsOpenCPN(), wpt_dups,
-        true);  // Import with full vizibility of names and objects
-    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-      pRouteManagerDialog->UpdateLists();
-
-    LLBBox box = pSet->GetBBox();
-    if (box.GetValid()) {
-      gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
-    }
-    delete pSet;
-    return true;
-  }
-  return true;
-}
-#endif   // __ANDROID__
 //------------------------------------------------------------------------------
 //    PNG Icon resources
 //------------------------------------------------------------------------------
@@ -885,7 +845,6 @@ bool stConnection::OnExec(const wxString &topic, const wxString &data) {
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
 #endif
-
 
 
 wxString newPrivateFileName(wxString home_locn, const char *name,
@@ -1009,7 +968,6 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
   wxLogLevel level = OcpnLog::str2level(strLevel);
   if (level == OcpnLog::LOG_BADLEVEL) {
     fprintf(stderr, "Bad loglevel %s, using \"info\"", strLevel);
-    strLevel = "info";
     level = wxLOG_Info;
   }
   wxLog::SetLogLevel(level);
