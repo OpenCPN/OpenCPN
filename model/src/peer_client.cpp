@@ -257,6 +257,8 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
             api_key = pincode.CompatHash();
           }
           SaveClientKey(peer_data.server_name, api_key);
+        } else if (pin_result.first == PeerDlgResult::Cancel) {
+          return false;
         } else {
           auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
           if (r == PeerDlgResult::Ok) continue;
