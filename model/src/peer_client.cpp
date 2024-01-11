@@ -414,6 +414,10 @@ bool SendNavobjects(PeerData& peer_data) {
   std::string api_key;
   bool apikey_ok = GetApiKey(peer_data, api_key);
   if (!apikey_ok) return false;
+  if (peer_data.api_version < SemanticVersion(5, 9) && peer_data.activate) {
+    peer_data.run_status_dlg(PeerDlg::ActivateUnsupported, 0);
+    return false;
+  }
   std::string body = PeerDataToXml(peer_data);
   SendObjects(body, api_key, peer_data);
   return true;

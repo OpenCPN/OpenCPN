@@ -39,7 +39,13 @@
 
 enum class PeerDlgResult { Ok, Cancel, HasPincode };
 
-enum class PeerDlg { PinConfirm, InvalidHttpResponse, ErrorReturn, TransferOk };
+enum class PeerDlg {
+  PinConfirm,
+  InvalidHttpResponse,
+  ErrorReturn,
+  TransferOk,
+  ActivateUnsupported
+};
 
 struct PeerData {
   std::string dest_ip_address;
@@ -48,8 +54,8 @@ struct PeerData {
   std::vector<Route*> routes;
   std::vector<RoutePoint*> routepoints;
   std::vector<Track*> tracks;
-  bool overwrite;     ///< API parameter, force overwrite w/o server dialogs.
-  bool activate;      ///< API parameter, activate route after transfer
+  bool overwrite;  ///< API parameter, force overwrite w/o server dialogs.
+  bool activate;   ///< API parameter, activate route after transfer
 
   /** Notified with transfer percent progress (0-100). */
   EventVar& progress;
@@ -76,6 +82,5 @@ bool SendNavobjects(PeerData& peer_data);
  * i. e., that the object(s) does not exist or can be overwritten.
  */
 bool CheckNavObjects(PeerData& peer_data);
-
 
 #endif  // guard

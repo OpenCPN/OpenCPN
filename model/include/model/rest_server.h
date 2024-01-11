@@ -59,7 +59,7 @@ namespace fs = std::filesystem;
 #include "track.h"
 
 /**
- *  Return codes from HandleServerMessage and eventually in the http response
+ *  Return codes from HandleServerMessage and eventually in the http response.
  *  Since they are transported as integers on the wire they cannot really be
  *  changed without breaking compatibility with older servers. Adding new types
  *  should be fine.
