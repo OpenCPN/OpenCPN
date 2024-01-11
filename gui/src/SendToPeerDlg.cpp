@@ -25,6 +25,8 @@
 
 #include <wx/statline.h>
 
+#include <curl/curl.h>
+
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/mDNS_query.h"
@@ -66,7 +68,12 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
   switch (kind) {
     case PeerDlg::InvalidHttpResponse: {
       std::stringstream ss;
-      ss << _("Server HTTP response is :") << status;
+      if (status >= 0) {
+        ss << _("Server HTTP response is :") << status;
+      } else {
+        ss << _("Curl transfer error: ")
+           << curl_easy_strerror(static_cast<CURLcode>(-status));
+      }
       OCPNMessageDialog dlg(NULL, ss.str(), _("OpenCPN Info"),
                             wxICON_ERROR | wxOK | wxCANCEL);
       int r = dlg.ShowModal();

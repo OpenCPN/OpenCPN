@@ -102,7 +102,10 @@ static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
 #endif
 }
 
-/** Perform a POST operation on server, store possible reply in response. */
+/**
+ *  Perform a POST operation on server, store possible reply in response.
+ *  @return positive http status or negated CURLcode error
+ */
 static long PostSendObjectMessage(std::string url, std::string& body,
                                   PeerData& peer_data, MemoryStruct* response) {
   long response_code = -1;
@@ -133,10 +136,13 @@ static long PostSendObjectMessage(std::string url, std::string& body,
     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
 
   curl_easy_cleanup(c);
-  return response_code;
+  return response_code == -1 ? -static_cast<long>(result) : response_code;
 }
 
-/** Perform a GET operation on server, store possible reply in chunk. */
+/**
+ * Perform a GET operation on server, store possible reply in chunk.
+ * @return positive http status or negated CURLcode error
+ */
 static int ApiGetUrl(std::string url, const MemoryStruct* chunk,
                      int timeout = 0) {
   int response_code = -1;
@@ -154,7 +160,7 @@ static int ApiGetUrl(std::string url, const MemoryStruct* chunk,
   if (result == CURLE_OK)
     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
   curl_easy_cleanup(c);
-  return response_code;
+  return response_code == -1 ? -static_cast<long>(result) : response_code;
 }
 
 static std::string GetClientKey(std::string& server_name) {
