@@ -197,7 +197,7 @@ public:
   virtual std::string GetEndpoint() = 0;
 
   /** Notified with a string GUID when user wants to activate a route. */
-  EventVar ActivateRequest;
+  EventVar activate_route;
 };
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */

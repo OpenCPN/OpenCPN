@@ -483,7 +483,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
     if (InsertRouteA(route, &pSet))  {
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
-        ActivateRequest.Notify(route->GetGUID().ToStdString());
+        activate_route.Notify(route->GetGUID().ToStdString());
    } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     }
