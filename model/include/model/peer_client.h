@@ -42,9 +42,11 @@ enum class PeerDlgResult { Ok, Cancel, HasPincode };
 enum class PeerDlg {
   PinConfirm,
   InvalidHttpResponse,
-  ErrorReturn,
+  ErrorReturn,        // Unexpected result code in json server reply.
   TransferOk,
-  ActivateUnsupported
+  ActivateUnsupported,
+  JsonParseError,
+  BadPincode          // User pincode not accepted by server
 };
 
 struct PeerData {

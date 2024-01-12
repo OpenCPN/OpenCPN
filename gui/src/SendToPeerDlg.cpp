@@ -95,6 +95,20 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
       dlg.ShowModal();
       return PeerDlgResult::Ok;
     }
+    case PeerDlg::JsonParseError: {
+      std::string msg(_("Cannot parse server reply"));
+      OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
+     case PeerDlg::BadPincode: {
+      std::string msg(_("Pincode not accepted"));
+      OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
     case PeerDlg::ActivateUnsupported: {
       std::string msg(_("Server does not support activation"));
       OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
@@ -102,7 +116,6 @@ static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
 
       int r = dlg.ShowModal();
       return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
-      return PeerDlgResult::Cancel;
     }
     case PeerDlg::PinConfirm:
       assert(false && "Illegal PinConfirm result dialog");

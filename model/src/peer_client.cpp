@@ -106,8 +106,8 @@ static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
  *  Perform a POST operation on server, store possible reply in response.
  *  @return positive http status or negated CURLcode error
  */
-static long PostSendObjectMessage(std::string url, std::string& body,
-                                  PeerData& peer_data, MemoryStruct* response) {
+static long ApiPost(const std::string& url, const std::string& body,
+                    PeerData& peer_data, MemoryStruct* response) {
   long response_code = -1;
   peer_data.progress.Notify(0, "");
 
@@ -143,8 +143,8 @@ static long PostSendObjectMessage(std::string url, std::string& body,
  * Perform a GET operation on server, store possible reply in chunk.
  * @return positive http status or negated CURLcode error
  */
-static int ApiGetUrl(std::string url, const MemoryStruct* chunk,
-                     int timeout = 0) {
+static int ApiGet(const std::string& url, const MemoryStruct* chunk,
+                  int timeout = 0) {
   int response_code = -1;
 
   CURL* c = curl_easy_init();
@@ -198,6 +198,33 @@ static void SaveClientKey(std::string& server_name, std::string key) {
   wxLog::FlushActive();
 }
 
+bool CheckKey(const std::string& key, PeerData peer_data) {
+  std::stringstream url;
+  url << "https://" << peer_data.dest_ip_address << "/api/ping"
+      << "?source=" << g_hostname << "&apikey=" << key;
+  MemoryStruct reply;
+  long status = ApiGet(url.str(), &reply, 5);
+  if (status != 200) {
+    peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, status);
+    return false;
+  }
+  wxString body(reply.memory);
+  wxJSONValue root;
+  wxJSONReader reader;
+  int num_errors = reader.Parse(body, &root);
+  if (num_errors != 0) {
+    for (const auto& error : reader.GetErrors()) {
+       wxLogMessage("Json server reply parse error: %s",
+                     error.ToStdString().c_str());
+    }
+    peer_data.run_status_dlg(PeerDlg::JsonParseError, status);
+    return false;
+  }
+  auto result = static_cast<RestServerResult>(root["result"].AsInt());
+  return result != RestServerResult::NewPinRequested;
+}
+
+
 void GetApiVersion(PeerData& peer_data) {
   if (peer_data.api_version > SemanticVersion(5, 0)) return;
   std::stringstream url;
@@ -205,7 +232,7 @@ void GetApiVersion(PeerData& peer_data) {
 
   struct MemoryStruct chunk;
   std::string buf;
-  long response_code = ApiGetUrl(url.str(), &chunk, 2);
+  long response_code = ApiGet(url.str(), &chunk, 2);
 
   if (response_code == 200) {
     wxString body(chunk.memory);
@@ -236,7 +263,7 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
     url << "https://" << peer_data.dest_ip_address << "/api/ping"
         << "?source=" << g_hostname << "&apikey=" << api_key;
     MemoryStruct chunk;
-    int http_status = ApiGetUrl(url.str(), &chunk, 3);
+    int http_status = ApiGet(url.str(), &chunk, 3);
     if (http_status != 200) {
       auto r =
           peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, http_status);
@@ -261,6 +288,11 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
           GetApiVersion(peer_data);
           if (peer_data.api_version < SemanticVersion(5, 9)) {
             api_key = pincode.CompatHash();
+          }
+          if (!CheckKey(api_key, peer_data)) {
+            auto r = peer_data.run_status_dlg(PeerDlg::BadPincode, 0);
+            if (r == PeerDlgResult::Ok) continue;
+            return false;
           }
           SaveClientKey(peer_data.server_name, api_key);
         } else if (pin_result.first == PeerDlgResult::Cancel) {
@@ -332,8 +364,7 @@ static void SendObjects(std::string& body, const std::string& api_key,
     if (peer_data.activate) url << "&activate=1";
 
     struct MemoryStruct chunk;
-    long response_code =
-        PostSendObjectMessage(url.str(), body, peer_data, &chunk);
+    long response_code = ApiPost(url.str(), body, peer_data, &chunk);
     if (response_code == 200) {
       wxString json(chunk.memory);
       wxJSONValue root;
@@ -382,7 +413,7 @@ static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
     std::string guid = r->GetGUID().ToStdString();
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
-    if (ApiGetUrl(full_url, &chunk) != 200) {
+    if (ApiGet(full_url, &chunk) != 200) {
       wxLogMessage("Cannot check /api/writable for route %s", guid.c_str());
       return false;
     }
@@ -393,7 +424,7 @@ static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
     std::string guid = t->m_GUID.ToStdString();
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
-    if (ApiGetUrl(full_url, &chunk) != 200) {
+    if (ApiGet(full_url, &chunk) != 200) {
       wxLogMessage("Cannot check /api/writable for track %s", guid.c_str());
       return false;
     }
@@ -404,7 +435,7 @@ static bool CheckObjects(const std::string& api_key, PeerData& peer_data) {
     std::string guid = rp->m_GUID.ToStdString();
     std::string full_url = url.str() + guid;
     struct MemoryStruct chunk;
-    if (ApiGetUrl(full_url, &chunk) != 200) {
+    if (ApiGet(full_url, &chunk) != 200) {
       wxLogMessage("Cannot check /api/writable for waypoint %s", guid.c_str());
       return false;
     }
