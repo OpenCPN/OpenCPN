@@ -161,7 +161,7 @@ static void HandlePing(struct mg_connection* c, struct mg_http_message* hm,
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
   }
-  mg_http_reply(c, 200, "", "{\"result\": %d, \"version\": %s}\n",
+  mg_http_reply(c, 200, "", "{\"result\": %d, \"version\": \"%s\"}\n",
                 parent->GetReturnStatus(), VERSION_FULL);
 }
 

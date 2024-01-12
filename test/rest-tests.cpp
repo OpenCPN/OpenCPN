@@ -140,7 +140,7 @@ protected:
       std::ifstream f(path.string());
       std::string result;
       std::getline(f, result);
-      const char* expected =  "{\"result\": 5, \"version\": " VERSION_FULL "}";
+      const char* expected =  "{\"result\": 5, \"version\": \"" VERSION_FULL "\"}";
       EXPECT_EQ(result, expected);  // Bad api key
     }{
       fs::path curl_prog(CURLPROG);
@@ -155,7 +155,8 @@ protected:
       std::ifstream f(path.string());
       std::string result;
       std::getline(f, result);
-      const char* expected =  "{\"result\": 0, \"version\": " VERSION_FULL "}";
+      const char* expected =
+          "{\"result\": 0, \"version\": \"" VERSION_FULL "\"}";
       EXPECT_EQ(result, expected);  // ok
     }
   }
