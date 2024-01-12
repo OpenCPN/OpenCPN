@@ -38,11 +38,14 @@
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
 #include "model/rest_server.h"
+#include "model/routeman.h"
 #include "mongoose.h"
 #include "observable_evt.h"
 
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
+
+extern Routeman* g_pRouteMan;
 
 using namespace std::chrono_literals;
 
@@ -484,10 +487,10 @@ void RestServer::HandleRoute(pugi::xml_node object,
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
-   } else {
+      g_pRouteMan->on_routes_update.Notify();
+    } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     }
-    m_dlg_ctx.top_level_refresh();
   }
   UpdateRouteMgr();
 }

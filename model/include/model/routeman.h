@@ -175,6 +175,9 @@ public:
   /** Notified when a message available as GetString() is sent to garmin. */
   EventVar  on_message_sent;
 
+  /** Notified when list of routes is updated (no data in event) */
+  EventVar on_routes_update;
+
 private:
   Route *pActiveRoute;
   RoutePoint *pActivePoint;
