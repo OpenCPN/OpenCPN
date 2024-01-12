@@ -197,6 +197,31 @@ static void SaveClientKey(std::string& server_name, std::string key) {
   server_keys.Set(config_server_keys);
   wxLog::FlushActive();
 }
+static RestServerResult ParseServerJson(const MemoryStruct& reply,
+                                        PeerData& peer_data) {
+  wxString body(reply.memory);
+  wxJSONValue root;
+  wxJSONReader reader;
+  int num_errors = reader.Parse(body, &root);
+  if (num_errors != 0) {
+    for (const auto& error : reader.GetErrors()) {
+      wxLogMessage("Json server reply parse error: %s",
+                   error.ToStdString().c_str());
+    }
+    peer_data.run_status_dlg(PeerDlg::JsonParseError, num_errors);
+    peer_data.api_version = SemanticVersion(-1, -1);
+    return RestServerResult::Void;
+  }
+  if (root.HasMember("version")) {
+    auto s = root["version"].AsString().ToStdString();
+    peer_data.api_version = SemanticVersion::parse(s);
+  }
+  if (root.HasMember("result")) {
+    return static_cast<RestServerResult>(root["result"].AsInt());
+  } else {
+    return RestServerResult::Void;
+  }
+}
 
 bool CheckKey(const std::string& key, PeerData peer_data) {
   std::stringstream url;
@@ -208,22 +233,9 @@ bool CheckKey(const std::string& key, PeerData peer_data) {
     peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, status);
     return false;
   }
-  wxString body(reply.memory);
-  wxJSONValue root;
-  wxJSONReader reader;
-  int num_errors = reader.Parse(body, &root);
-  if (num_errors != 0) {
-    for (const auto& error : reader.GetErrors()) {
-       wxLogMessage("Json server reply parse error: %s",
-                     error.ToStdString().c_str());
-    }
-    peer_data.run_status_dlg(PeerDlg::JsonParseError, status);
-    return false;
-  }
-  auto result = static_cast<RestServerResult>(root["result"].AsInt());
+  auto result = ParseServerJson(reply, peer_data);
   return result != RestServerResult::NewPinRequested;
 }
-
 
 void GetApiVersion(PeerData& peer_data) {
   if (peer_data.api_version > SemanticVersion(5, 0)) return;
@@ -235,17 +247,7 @@ void GetApiVersion(PeerData& peer_data) {
   long response_code = ApiGet(url.str(), &chunk, 2);
 
   if (response_code == 200) {
-    wxString body(chunk.memory);
-    wxJSONValue root;
-    wxJSONReader reader;
-
-    int numErrors = reader.Parse(body, &root);
-    if (numErrors != 0) {
-      peer_data.api_version = SemanticVersion(-1, -1);
-      return;
-    }
-    wxString version = root["version"].AsString();
-    peer_data.api_version = SemanticVersion::parse(version.ToStdString());
+    ParseServerJson(chunk, peer_data);
   } else {
     // Return "old" version without /api/writable support
     peer_data.api_version = SemanticVersion(5, 8);
@@ -263,20 +265,13 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
     url << "https://" << peer_data.dest_ip_address << "/api/ping"
         << "?source=" << g_hostname << "&apikey=" << api_key;
     MemoryStruct chunk;
-    int http_status = ApiGet(url.str(), &chunk, 3);
-    if (http_status != 200) {
-      auto r =
-          peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, http_status);
+    int status = ApiGet(url.str(), &chunk, 3);
+    if (status != 200) {
+      auto r = peer_data.run_status_dlg(PeerDlg::InvalidHttpResponse, status);
       if (r == PeerDlgResult::Ok) continue;
       return false;
     }
-    wxString body(chunk.memory);
-    wxJSONValue root;
-    wxJSONReader reader;
-    int num_errors = reader.Parse(body, &root);
-    if (num_errors > 0) wxLogDebug("GetApiKey, parse errors: %d", num_errors);
-    int int_result = root["result"].AsInt();
-    auto result = static_cast<RestServerResult>(int_result);
+    auto result = ParseServerJson(chunk, peer_data);
     switch (result) {
       case RestServerResult::NewPinRequested: {
         auto pin_result = peer_data.run_pincode_dlg();
@@ -298,7 +293,8 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
         } else if (pin_result.first == PeerDlgResult::Cancel) {
           return false;
         } else {
-          auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
+          auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn,
+                                            static_cast<int>(result));
           if (r == PeerDlgResult::Ok) continue;
           return false;
         }
@@ -307,13 +303,10 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
         // 5.8 returns GenericError for a valid key (!)
         [[fallthrough]];
       case RestServerResult::NoError:
-        if (root.HasMember("version")) {
-          auto s = root["version"].AsString().ToStdString();
-          peer_data.api_version = SemanticVersion::parse(s);
-        }
         break;
       default:
-        auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn, int_result);
+        auto r = peer_data.run_status_dlg(PeerDlg::ErrorReturn,
+                                          static_cast<int>(result));
         if (r == PeerDlgResult::Ok) continue;
         return false;
     }
