@@ -98,6 +98,7 @@ private:
   void OnTimerAutoscan(wxTimerEvent &event);
   void OnTimerScanTick(wxTimerEvent &event);
   void DoScan();
+  bool EnableActivateChkbox();
 
   std::vector<Route*> m_RouteList;
   std::vector<RoutePoint*> m_RoutePointList;

@@ -201,6 +201,11 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
   return true;
 }
 
+bool SendToPeerDlg::EnableActivateChkbox() {
+  return m_RouteList.size() == 1 && m_RoutePointList.empty() &&
+     m_TrackList.empty();
+}
+
 void SendToPeerDlg::CreateControls(const wxString&) {
   SendToPeerDlg* itemDialog1 = this;
 
@@ -253,6 +258,7 @@ void SendToPeerDlg::CreateControls(const wxString&) {
                                      wxALIGN_RIGHT);
   itemBoxSizer2->Add(m_activate_chkbox, 0,
                      wxALIGN_RIGHT | wxALL, 10);
+  if (!EnableActivateChkbox()) m_activate_chkbox->Disable();
 
 
   //    OK/Cancel/etc.
