@@ -127,6 +127,7 @@ static inline double MS2KNOTS(double ms) {
 }
 
 int AisMeteoNewMmsi(int, int, int, int, int);
+int origin_mmsi = 0;
 
 void AISshipNameCache(AisTargetData *pTargetData,
                       AIS_Target_Name_Hash *AISTargetNamesC,
@@ -1041,6 +1042,7 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
              // are
   }
   long mmsi = 0;
+  int meteo_SiteID = 0;
   if (root.HasMember("context") && root["context"].IsString()) {
     wxString context = root["context"].GetString();
     if (context == m_signalk_selfid) {
@@ -1060,6 +1062,18 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
       } else {
         mmsi = 0;
       }
+    }
+    else if (context.StartsWith(_T("meteo.urn:mrn:imo:mmsi:"), &mmsi_string)) {
+        // mmsi_string for a Meteo is like: 002655619:672707
+      origin_mmsi = wxAtoi(wxString(mmsi_string).BeforeFirst(':'));
+      meteo_SiteID = wxAtoi('1' + wxString(mmsi_string).AfterFirst(':'));
+      // Preface "1" to distinguish e.g. "012345" from "12345"
+      // Get a meteo mmsi_ID
+      int meteo_mmsi = AisMeteoNewMmsi(origin_mmsi, 0, 0, 999, meteo_SiteID);
+      if (meteo_mmsi)
+        mmsi = meteo_mmsi;
+      else
+        mmsi = 0;
     }
   }
   if (mmsi == 0) {
@@ -1091,23 +1105,42 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   getAISTarget(mmsi, pTargetData, pStaleTarget, bnewtarget, last_report_ticks,
                now);
   if (pTargetData) {
+    pTargetData->MMSI = mmsi;
     getMmsiProperties(pTargetData);
     if (root.HasMember("updates") && root["updates"].IsArray()) {
       for (rapidjson::Value::ConstValueIterator itr = root["updates"].Begin(); itr != root["updates"].End(); ++itr) {
         handleUpdate(pTargetData, bnewtarget, *itr);
       }
     }
-    if (pTargetData->b_hasMeteoFi) {
-      /* Meteo data is not(yet) supported by SignalK.
-         But the target position is there producing a false
-         class A target, "jumping" around. Sort it out.*/
-      return;
-    }
 
-    pTargetData->MMSI = mmsi;
     // A SART can send wo any values first transmits. Detect class already here.
     if (97 == mmsi / 10000000) {
       pTargetData->Class = AIS_SART;
+    } else if (1994 == mmsi / 100000) {
+      // SignalK meteo data
+      pTargetData->Class = AIS_METEO;
+      pTargetData->met_data.original_mmsi = origin_mmsi;
+      pTargetData->met_data.stationID = meteo_SiteID;
+        /* Make a unique "shipname" for each station
+           based on position inherited from meteo_SiteID */
+      wxString met_name = pTargetData->ShipName;
+      if (met_name.Find("METEO") == wxNOT_FOUND) {
+        wxString s_id;
+        int id1, id2;
+        s_id << meteo_SiteID;
+        s_id.Mid(1, 3).ToInt(&id1);
+        s_id.Mid(4, 3).ToInt(&id2);
+        met_name = "METEO ";
+        met_name << wxString::Format("%03d", (id1 + id2)).Right(3);
+        strncpy(pTargetData->ShipName, met_name, SHIP_NAME_LEN - 1);
+      }
+      pTargetData->b_nameValid = true;
+      pTargetData->MID = 123;  // Indicates a name from SignalK
+      pTargetData->COG = -1.;
+      pTargetData->HDG = 511;
+      pTargetData->SOG = -1.;
+      pTargetData->b_NoTrack = true;
+      pTargetData->b_show_track = false;
     }
     pTargetData->b_OwnShip = false;
     AISTargetList[pTargetData->MMSI] = pTargetData;
@@ -1163,9 +1196,10 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->b_positionDoubtful = false;
       }
 
+      /* Not implemented in SK server (2024-01)
       if (item["value"].HasMember("altitude")) {
         pTargetData->altitude = item["value"]["altitude "].GetInt();
-      }
+      }*/
     } else if (update_path == _T("navigation.speedOverGround") && item["value"].IsNumber()) {
       pTargetData->SOG = item["value"].GetDouble() * ms_to_knot_factor;
     } else if (update_path == _T("navigation.courseOverGroundTrue") && item["value"].IsNumber()) {
@@ -1311,18 +1345,110 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
       if (item["value"].GetInt() == 200) {  // European inland
         pTargetData->b_hasInlandDac = true;
       }
-      else if (item["value"].GetInt() == 1) {
-        pTargetData->b_hasImoDac = true;  // IMO specification
-      }
     } else if (update_path == _T("sensors.ais.functionalId")) {
       if (item["value"].GetInt() == 10 && pTargetData->b_hasInlandDac) {
           // "Inland ship static and voyage related data"
         pTargetData->b_isEuroInland = true;
       }
-      else if (item["value"].GetInt() == 31 && pTargetData->b_hasImoDac) {
-          // Dac 001 and FI 31 is IMO Meteo message
-        pTargetData->b_hasMeteoFi = true;
+
+        // METEO Data
+    } else if (update_path == "environment.date") {
+      wxString issued = item["value"].GetString();
+      if (issued.Len()) {
+          // Parse ISO 8601 date/time
+        wxDateTime tz;
+        ParseGPXDateTime(tz, issued);
+        pTargetData->met_data.day = tz.GetDay();
+        pTargetData->met_data.hour = tz.GetHour();
+        pTargetData->met_data.minute = tz.GetMinute();
       }
+    } else if (update_path == "environment.wind.averageSpeed" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.wind_kn = MS2KNOTS(item["value"].GetDouble());
+    } else if (update_path == "environment.wind.gust" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.wind_gust_kn = MS2KNOTS(item["value"].GetDouble());
+    } else if (update_path == "environment.wind.directionTrue" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.wind_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
+    } else if (update_path == "environment.wind.gustDirectionTrue" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.wind_gust_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
+    } else if (update_path == "environment.outside.temperature" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.air_temp = KelvinToC(item["value"].GetDouble());
+    } else if (update_path == "environment.outside.relativeHumidity" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.rel_humid = item["value"].GetDouble();
+    } else if (update_path == "environment.outside.dewPointTemperature" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.dew_point = KelvinToC(item["value"].GetDouble());
+    } else if (update_path == "environment.outside.pressure" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.airpress = item["value"].GetInt() / 100;
+    } else if (update_path == "environment.water.level" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.water_lev_dev = item["value"].GetDouble();
+    } else if (update_path == "environment.water.current.drift" &&
+               item["value"].IsNumber()) {  // surfcurrspd
+        pTargetData->met_data.current = MS2KNOTS(item["value"].GetDouble());
+    } else if (update_path == "environment.water.current.set" &&
+               item["value"].IsNumber()) {  // surfcurrdir
+        pTargetData->met_data.curr_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
+    } else if (update_path == "environment.water.levelTendencyValue" &&
+               item["value"].IsNumber()) {
+          pTargetData->met_data.water_lev_trend = item["value"].GetInt();
+    } else if (update_path == "environment.water.levelTendency") {
+      // Don't use this text we parse it ourself.
+    } else if (update_path == "environment.water.waves.significantHeight" &&
+                item["value"].IsNumber()) {
+        pTargetData->met_data.wave_height = item["value"].GetDouble();
+    } else if (update_path == "environment.water.waves.period" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.wave_period = item["value"].GetInt();
+    } else if (update_path == "environment.water.waves.directionTrue" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.wave_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
+    } else if (update_path == "environment.water.swell.height" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.swell_height = item["value"].GetDouble();
+    } else if (update_path == "environment.water.swell.period" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.swell_per = item["value"].GetInt();
+    } else if (update_path == "environment.water.swell.directionTrue" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.swell_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
+    } else if (update_path == "environment.water.temperature" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.water_temp = KelvinToC(item["value"].GetDouble());
+    } else if (update_path == "environment.water.salinity" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.salinity = item["value"].GetDouble();
+    } else if (update_path == "environment.water.ice"){
+        // Don't use. We parse it ourself
+    } else if (update_path == "environment.water.iceValue" &&
+               item["value"].IsNumber()) {
+          pTargetData->met_data.ice = item["value"].GetInt();
+    } else if (update_path == "environment.water.seaStateValue" &&
+               item["value"].IsNumber()) {
+          pTargetData->met_data.seastate = item["value"].GetInt();
+    } else if (update_path == "environment.water.seaState") {
+        //This is the parsed (air!) Bf-scale. Don't use
+    } else if (update_path == "environment.outside.precipitation") {
+        // Don't use. We parse it ourself
+    } else if (update_path == "environment.outside.precipitationValue" &&
+               item["value"].IsNumber()) {
+          pTargetData->met_data.precipitation = item["value"].GetInt();
+    } else if (update_path == "environment.outside.pressureTendencyValue" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.airpress_tend = item["value"].GetInt();
+    } else if (update_path == "environment.outside.pressureTendency") {
+        // Parsed value, don't use, we do it ourself
+    } else if (update_path == "environment.outside.horizontalVisibility" &&
+               item["value"].IsNumber()) {
+        pTargetData->met_data.hor_vis = GEODESIC_METERS2NM(item["value"].GetDouble());
+    } else if (update_path == "environment.outside.horizontalVisibility.overRange") {
+        pTargetData->met_data.hor_vis_GT = item["value"].GetBool();
     } else if (update_path == _T("")) {
       if (item["value"].HasMember("name")) {
         const wxString &name = item["value"]["name"].GetString();
@@ -1337,7 +1463,8 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
             item["value"]["communication"]["callsignVhf"].GetString();
         strncpy(pTargetData->CallSign, callsign.c_str(), 7);
       }
-      if (item["value"].HasMember("mmsi")) {
+      if (item["value"].HasMember("mmsi") &&
+          1994 != (pTargetData->MMSI) / 100000) { //Meteo
         long mmsi;
         wxString tmp = item["value"]["mmsi"].GetString();
         if (tmp.ToLong(&mmsi)) {
@@ -1350,8 +1477,8 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
             pTargetData->b_SarAircraftPosnReport = true;
           }
 
-          AISshipNameCache(pTargetData.get(), AISTargetNamesC, AISTargetNamesNC,
-                           mmsi);
+          AISshipNameCache(pTargetData.get(), AISTargetNamesC,
+                            AISTargetNamesNC, mmsi);
         }
       }
     } else {
@@ -4399,8 +4526,9 @@ wxString GetShipNameFromFile(int nmmsi) {
 int AisMeteoNewMmsi(int orig_mmsi, int m_lat,int m_lon, int lon_bits = 0, int siteID = 0) {
   bool found = false;
   int new_mmsi = 0;
-  if (!lon_bits && siteID) {
+  if ((!lon_bits || lon_bits == 999) && siteID) {
       // Check if a ais8_367_33 data report belongs to a present site
+      // Or SignalK data (lon_bits == 999)
     auto &points = AisMeteoPoints::GetInstance().GetPoints();
     if (points.size()) {
       for (const auto &point : points) {
@@ -4413,7 +4541,10 @@ int AisMeteoNewMmsi(int orig_mmsi, int m_lat,int m_lon, int lon_bits = 0, int si
         }
       }
     }
-    if (!found) return 0;
+    if (!found && !lon_bits) {
+        // ais8_367_33
+      return 0;
+    }
   }
   double lon_tentative = 181.;
   double lat_tentative = 91.;
@@ -4450,7 +4581,8 @@ int AisMeteoNewMmsi(int orig_mmsi, int m_lat,int m_lon, int lon_bits = 0, int si
   // 1992 to 1993 are already used so here we use 1994+
   static int nextMeteommsi = 199400000;
   auto& points = AisMeteoPoints::GetInstance().GetPoints();
-  if (points.size()) {
+
+  if (lon_bits != 999 && points.size()) {  // 999 comes from SignalK
     wxString t_lat, t_lon;
     for (const auto& point: points) {
       // Does this station position exist

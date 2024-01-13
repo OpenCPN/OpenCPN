@@ -29,6 +29,7 @@
  struct AisMeteoData {
    // Ais8_001_31, Ais8_367_33 Meteo data
   int original_mmsi;
+  int stationID;        // SignalK ID
   int month;            // UTC 0
   int day;              // UTC 0
   int hour;             // UTC 24
