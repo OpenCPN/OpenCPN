@@ -405,7 +405,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       return;
     case ORS_CHUNK_LAST:
       // Cancel existing dialog and close temp file
-      wxQueueEvent(m_pin_dialog, new wxCloseEvent);
+      if (m_pin_dialog) wxQueueEvent(m_pin_dialog, new wxCloseEvent);
       if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
       break;
   }
@@ -487,7 +487,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
-      g_pRouteMan->on_routes_update.Notify();
+      if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
     } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     }
