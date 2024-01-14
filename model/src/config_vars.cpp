@@ -23,6 +23,7 @@
  */
 #include "model/config_vars.h"
 
+bool g_persist_active_route;
 bool g_bGarminHostUpload;
 bool g_bWplUsePosition;
 
@@ -40,6 +41,7 @@ int g_nNMEADebug = 0;
 int gps_watchdog_timeout_ticks = 0;
 int sat_watchdog_timeout_ticks = 12;
 
+wxString g_active_route;
 wxString g_GPS_Ident;
 wxString g_hostname;
 wxString g_TalkerIdText;

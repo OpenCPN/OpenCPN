@@ -770,7 +770,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   //    Global options and settings
   SetPath(_T ( "/Settings" ));
-
+  Read("ActiveRoute", &g_active_route);
+  Read("PersistActiveRoute", &g_persist_active_route);
   Read(_T ( "LastAppliedTemplate" ), &g_lastAppliedTemplateGUID);
   Read(_T ( "CompatOS" ), &g_compatOS);
   Read(_T ( "CompatOsVersion" ), &g_compatOsVersion);
@@ -2458,6 +2459,8 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "TemperatureFormat" ), g_iTempFormat);
   }
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
+  Write("ActiveRoute" , g_active_route);
+  Write("PersistActiveRoute", g_persist_active_route);
   Write(_T ( "UseGarminHostUpload" ), g_bGarminHostUpload);
 
   Write(_T ( "MobileTouch" ), g_btouch);
