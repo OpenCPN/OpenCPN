@@ -378,6 +378,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
   ss << evt_data.source << " " << _("wants to send you new data.") << "\n"
      << _("Please enter the following PIN number on ") << evt_data.source << " "
      << _("to pair with this device") << "\n";
+  if (m_pin_dialog) m_pin_dialog->Destroy();
   m_pin_dialog = m_dlg_ctx.run_pincode_dlg(ss.str(), m_pincode.ToString());
 
   return false;
