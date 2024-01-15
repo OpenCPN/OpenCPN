@@ -1592,6 +1592,10 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
     PluginLoader::getInstance()->LoadAllPlugIns(false);
     m_pPlugInCtrl->ReloadPluginPanels();
   });
+  auto action = [&](wxCommandEvent &evt) {
+      g_persist_active_route = m_persist_active_route_chkbox->IsChecked(); };
+  m_persist_active_route_chkbox->Bind(wxEVT_CHECKBOX, action);
+  m_persist_active_route_chkbox->SetValue(g_persist_active_route);
 }
 
 options::~options(void) {
@@ -2254,6 +2258,17 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
       new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Routes"));
   wxStaticBoxSizer* routeSizer = new wxStaticBoxSizer(routeText, wxVERTICAL);
   Routes->Add(routeSizer, 0, wxGROW | wxALL, border_size);
+
+  wxStaticBox* activeRouteText =
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("Active Route"));
+  wxStaticBoxSizer* activeRouteSizer =
+      new wxStaticBoxSizer(activeRouteText, wxVERTICAL);
+
+  m_persist_active_route_chkbox = new wxCheckBox(
+          itemPanelRoutes, wxID_ANY,
+          _("Persist active route, automatically activate on start up"));
+  activeRouteSizer->Add(m_persist_active_route_chkbox, 0, wxALL, 5);
+  Routes->Add(activeRouteSizer, 0, wxGROW | wxALL, border_size);
 
   routeSizer->AddSpacer(5);
 
