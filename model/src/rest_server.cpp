@@ -33,12 +33,15 @@
 #include <wx/string.h>
 
 #include "config.h"
+
 #include "model/config_vars.h"
 #include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
+#include "model/pincode.h"
 #include "model/rest_server.h"
 #include "model/routeman.h"
+
 #include "mongoose.h"
 #include "observable_evt.h"
 
