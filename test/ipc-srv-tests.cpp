@@ -31,16 +31,16 @@
 
 #include <gtest/gtest.h>
 
-#include "base_platform.h"
+#include "model/base_platform.h"
 #include "observable_evtvar.h"
 
-#include "ipc_api.h"
-#include "local_api.h"
-#include "logger.h"
-#include "ocpn_utils.h"
+#include "model/ipc_api.h"
+#include "model/local_api.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
 
 #ifdef __APPLE__
-#include "macutils.h"
+#include "model/macutils.h"
 #endif
 
 /**

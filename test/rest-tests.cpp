@@ -22,15 +22,15 @@
 
 #include <gtest/gtest.h>
 
-#include "certificates.h"
-#include "cli_platform.h"
-#include "config_vars.h"
-#include "mDNS_query.h"
+#include "model/certificates.h"
+#include "model/cli_platform.h"
+#include "model/config_vars.h"
+#include "model/mDNS_query.h"
 #include "observable_confvar.h"
-#include "ocpn_types.h"
-#include "ocpn_utils.h"
-#include "rest_server.h"
-#include "routeman.h"
+#include "model/ocpn_types.h"
+#include "model/ocpn_utils.h"
+#include "model/rest_server.h"
+#include "model/routeman.h"
 
 using namespace std::chrono_literals;
 

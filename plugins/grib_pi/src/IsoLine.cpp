@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif  // precompiled headers
 
 //#include "chcanv.h"
-//#include "georef.h"
+//#include "model/georef.h"
 #include <wx/graphics.h>
 
 #include "IsoLine.h"

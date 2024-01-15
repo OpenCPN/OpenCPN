@@ -5,8 +5,8 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
-#include "std_instance_chk.h"
-#include "base_platform.h"
+#include "model/std_instance_chk.h"
+#include "model/base_platform.h"
 
 float g_selection_radius_mm;
 float g_selection_radius_touch_mm;

@@ -30,6 +30,12 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+if (APPLE)
+  include_directories(${CMAKE_SOURCE_DIR}/buildosx/include)
+elseif (QT_ANDROID)
+  include_directories(${CMAKE_SOURCE_DIR}/android)
+endif ()
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # SET(CMAKE_BUILD_TYPE Debug)

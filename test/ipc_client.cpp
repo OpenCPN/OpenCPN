@@ -9,8 +9,8 @@
 #include <wx/string.h>
 #include <wx/timer.h>
 
-#include "ocpn_utils.h"
-#include "ipc_api.h"
+#include "model/ocpn_utils.h"
+#include "model/ipc_api.h"
 
 static std::string SocketPath() {
   wxFileName path("~/.opencpn", "opencpn-ipc");

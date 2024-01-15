@@ -227,6 +227,7 @@ enum {
   ID_DBP_I_SUNLCL,
   ID_DBP_I_ALTI,
   ID_DBP_D_ALTI,
+  ID_DBP_I_VMGW,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -305,6 +306,8 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("VMG");
     case ID_DBP_D_VMG:
       return _("VMG");
+    case ID_DBP_I_VMGW:
+      return _("VMG Wind");
     case ID_DBP_I_RSA:
       return _("Rudder Angle");
     case ID_DBP_D_RSA:
@@ -366,6 +369,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_I_TWS:
     case ID_DBP_I_AWA:
     case ID_DBP_I_VMG:
+    case ID_DBP_I_VMGW:
     case ID_DBP_I_RSA:
     case ID_DBP_I_SAT:
     case ID_DBP_I_PTR:
@@ -511,6 +515,7 @@ int dashboard_pi::Init(void) {
   mWTP_Watchdog = 2;
   mRSA_Watchdog = 2;
   mVMG_Watchdog = 2;
+  mVMGW_Watchdog = 2;
   mUTC_Watchdog = 2;
   mATMP_Watchdog = 2;
   mWDN_Watchdog = 2;
@@ -520,7 +525,6 @@ int dashboard_pi::Init(void) {
   mALT_Watchdog = 2;
   mLOG_Watchdog = 2;
   mTrLOG_Watchdog = 2;
-  colourschemecounter = 0;
 
   g_pFontTitle = new wxFontData();
   g_pFontTitle->SetChosenFont(wxFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL));
@@ -837,6 +841,11 @@ void dashboard_pi::Notify() {
   if (mVMG_Watchdog <= 0) {
     SendSentenceToAllInstruments(OCPN_DBP_STC_VMG, NAN, "-");
     mVMG_Watchdog = gps_watchdog_timeout_ticks;
+  }
+  mVMGW_Watchdog--;
+  if (mVMGW_Watchdog <= 0) {
+    SendSentenceToAllInstruments(OCPN_DBP_STC_VMGW, NAN, "-");
+    mVMGW_Watchdog = gps_watchdog_timeout_ticks;
   }
   mUTC_Watchdog--;
   if (mUTC_Watchdog <= 0) {
@@ -1700,17 +1709,17 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         for (int i = 0; i < m_NMEA0183.Xdr.TransducerCnt; i++) {
           xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
           // XDR Airtemp
-          if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C") &&
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C") && (
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                    _T("Te") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                   _T("TempAir")) ||
+                   _T("TempAir") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                   _T("AIRTEMP") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                   _T("ENV_OUTAIR_T") ||
               m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                  _T("ENV_OUTSIDE_T")) {
+                  _T("ENV_OUTSIDE_T"))) {
             if (mPriATMP >= 4) {
               mPriATMP = 4;
               SendSentenceToAllInstruments(
@@ -1730,9 +1739,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           }
           // XDR Pitch (=Nose up/down) or Heel (stb/port)
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
-            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH") ||
-                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                    _T("PITCH")) {
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+                Contains(_T("PTCH")) ||
+                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+                Contains(_T("PITCH"))) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
                   xdrunit = _T("\u00B0\u2191") + _("Up");
@@ -1751,8 +1761,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               }
             }
             // XDR Heel
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                     _T("ROLL")) {
+            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+                     Contains(_T("ROLL"))) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
                   xdrunit = _T("\u00B0\u003E") + _("Stbd");
@@ -2693,6 +2703,18 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       mVMG_Watchdog = gps_watchdog_timeout_ticks;
     }
 
+    else if (update_path ==
+             _T("performance.velocityMadeGood")) {
+      double m_vmgw_kn = GetJsonDouble(value);
+      if (std::isnan(m_vmgw_kn)) return;
+
+      m_vmgw_kn = MS2KNOTS(m_vmgw_kn);
+      SendSentenceToAllInstruments(
+        OCPN_DBP_STC_VMGW, toUsrSpeed_Plugin(m_vmgw_kn, g_iDashSpeedUnit),
+        getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+      mVMGW_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
     else if (update_path == _T("steering.rudderAngle")) {  // ->port
       if (mPriRSA >= 2) {
         double m_rudangle = GetJsonDouble(value);
@@ -3099,24 +3121,7 @@ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
 }
 
 void dashboard_pi::SetColorScheme(PI_ColorScheme cs) {
-    // what on hell is this. ... getting several Coloursheme from Maim OPENCPN when changing the colourscheme.
-    // so this is necessary
-    switch (cs) {
-    case PI_GLOBAL_COLOR_SCHEME_RGB: break;
-
-    case PI_GLOBAL_COLOR_SCHEME_DAY:
-        if (colourschemecounter == 0)
-            aktuellColorScheme = PI_GLOBAL_COLOR_SCHEME_DAY;
-        colourschemecounter++;
-    case   PI_GLOBAL_COLOR_SCHEME_DUSK:
-        if (colourschemecounter == 0)
-            aktuellColorScheme = PI_GLOBAL_COLOR_SCHEME_DUSK;
-        colourschemecounter++;
-    case    PI_GLOBAL_COLOR_SCHEME_NIGHT:
-        if (colourschemecounter == 0)
-            aktuellColorScheme = PI_GLOBAL_COLOR_SCHEME_NIGHT;
-        colourschemecounter = 0;
-    }
+  aktuellColorScheme = cs;
   for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
     DashboardWindow *dashboard_window =
         m_ArrayOfDashboardWindow.Item(i)->m_pDashboardWindow;
@@ -3585,7 +3590,7 @@ bool dashboard_pi::SaveConfig(void) {
               }
           }
       }
-      for (unsigned int j = 0; j < cont->m_aInstrumentList.GetCount(); j++)
+      for (size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++)
       {
           pConf->Write(wxString::Format(_T("Instrument%d"), j + 1), cont->m_aInstrumentList.Item(j));
           InstrumentProperties* Inst = NULL;
@@ -3593,10 +3598,10 @@ bool dashboard_pi::SaveConfig(void) {
           if (pConf->Exists(wxString::Format(_T("InstTitelFont%d"), j + 1)))
           {
               bool Delete = true;
-              for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+              for (size_t i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
               {
                   Inst = cont->m_aInstrumentPropertyList.Item(i);
-                  if (Inst->m_Listplace == j)
+                  if (Inst->m_Listplace == (int)j)
                   {
                       Delete = false;
                       break;
@@ -3619,10 +3624,10 @@ bool dashboard_pi::SaveConfig(void) {
               }
           }
           Inst = NULL;
-          for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+          for (size_t i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
           {
               Inst = cont->m_aInstrumentPropertyList.Item(i);
-              if (Inst->m_Listplace == j)
+              if (Inst->m_Listplace == (int)j)
               {
                   pConf->Write(wxString::Format(_T("InstTitelFont%d"), j + 1), Inst->m_TitelFont.GetChosenFont().GetNativeFontInfoDesc());
                   pConf->Write(wxString::Format(_T("InstTitelColor%d"), j + 1), Inst->m_TitelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
@@ -4576,7 +4581,7 @@ void DashboardPreferencesDialog::OnInstrumentDelete(wxCommandEvent &event) {
       for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
       {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
-          if (Inst->m_aInstrument == m_pListCtrlInstruments->GetItemData(itemID) &&
+          if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID) &&
               Inst->m_Listplace == itemID)
           {
               cont->m_aInstrumentPropertyList.Remove(Inst);
@@ -4618,7 +4623,7 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
     for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
     {
         Inst = cont->m_aInstrumentPropertyList.Item(i); // m_pListCtrlInstruments->GetItemData(itemID)
-        if (Inst->m_aInstrument == m_pListCtrlInstruments->GetItemData(itemID)) // Is for right Instrumenttype.
+        if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID)) // Is for right Instrumenttype.
         {
             if (Inst->m_Listplace == itemID)
                 break;
@@ -4702,7 +4707,7 @@ void DashboardPreferencesDialog::OnInstrumentUp(wxCommandEvent &event) {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
           if (Inst->m_Listplace  == (itemID - 1))
               Inst->m_Listplace = itemID;
-          if (Inst->m_aInstrument == m_pListCtrlInstruments->GetItemData(itemID) &&
+          if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID) &&
               Inst->m_Listplace == itemID)
           {
               cont->m_aInstrumentPropertyList.Item(i)->m_Listplace = itemID - 1;
@@ -4742,9 +4747,9 @@ void DashboardPreferencesDialog::OnInstrumentDown(wxCommandEvent &event) {
       for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
       {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
-          if (Inst->m_Listplace == (itemID + 1) && Inst->m_aInstrument != m_pListCtrlInstruments->GetItemData(itemID))
+          if (Inst->m_Listplace == (itemID + 1) && Inst->m_aInstrument != (int)m_pListCtrlInstruments->GetItemData(itemID))
               Inst->m_Listplace = itemID;
-          if (Inst->m_aInstrument == m_pListCtrlInstruments->GetItemData(itemID) &&
+          if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID) &&
               Inst->m_Listplace == itemID)
           {
               cont->m_aInstrumentPropertyList.Item(i)->m_Listplace = itemID + 1;
@@ -5348,9 +5353,9 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
   for (size_t i = 0; i < list.GetCount(); i++) {
     int id = list.Item(i);
     Properties = NULL;
-    for (unsigned int j = 0; j < InstrumentPropertyList->GetCount(); j++)
+    for (size_t j = 0; j < InstrumentPropertyList->GetCount(); j++)
     {
-        if (InstrumentPropertyList->Item(j)->m_aInstrument == id && InstrumentPropertyList->Item(j)->m_Listplace == i)
+        if (InstrumentPropertyList->Item(j)->m_aInstrument == id && InstrumentPropertyList->Item(j)->m_Listplace == (int)i)
         {
             Properties = InstrumentPropertyList->Item(j);
             break;
@@ -5552,7 +5557,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
       case ID_DBP_I_TWD:  // true wind direction
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_TWD,
-            _T("%5.0f"));
+            _T("%3.0f"));
         break;
       case ID_DBP_I_TWS:  // true wind speed
         instrument = new DashboardInstrument_Single(
@@ -5562,7 +5567,12 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
       case ID_DBP_I_AWA:  // apparent wind angle
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_AWA,
-            _T("%5.0f"));
+            _T("%3.0f"));
+        break;
+      case ID_DBP_I_VMGW:   // VMG based on wind and STW
+        instrument = new DashboardInstrument_Single(
+            this, wxID_ANY, getInstrumentCaption(id), Properties, OCPN_DBP_STC_VMGW,
+            _T("%2.1f"));
         break;
       case ID_DBP_I_VMG:
         instrument = new DashboardInstrument_Single(
