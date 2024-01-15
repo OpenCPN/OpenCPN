@@ -81,7 +81,8 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
    RoutemanDlgCtx ctx;
    ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
    ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
-   ctx.show_with_fresh_fonts = []() { console->ShowWithFreshFonts(); };
+   ctx.show_with_fresh_fonts =
+       []{ if (console) console->ShowWithFreshFonts(); };
    ctx.clear_console_background = [] () {
         console->pCDI->ClearBackground();
         console->Show(false); };

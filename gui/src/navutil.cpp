@@ -83,6 +83,7 @@
 #include "navutil.h"
 #include "nmea0183.h"
 #include "NMEALogWindow.h"
+#include "observable_globvar.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
@@ -1711,6 +1712,9 @@ void MyConfig::LoadNavObjects() {
     }
   }
   m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
+  // Signal to listeners to g_active_route that it's possible to look up guid.
+  GlobalVar<wxString> active_route(&g_active_route);
+  active_route.Notify();
 }
 
 bool MyConfig::LoadLayers(wxString &path) {

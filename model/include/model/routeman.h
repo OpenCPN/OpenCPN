@@ -176,7 +176,6 @@ public:
   EventVar  on_message_sent;
 
 private:
-
   Route *pActiveRoute;
   RoutePoint *pActivePoint;
   double RouteBrgToActivePoint;  // TODO all these need to be doubles
@@ -213,6 +212,7 @@ private:
   NmeaLog& m_nmea_log;
 
   ObsListener msg_sent_listener;
+  ObsListener active_route_listener;
 };
 
 //----------------------------------------------------------------------------
