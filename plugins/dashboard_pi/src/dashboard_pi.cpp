@@ -1393,8 +1393,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             } else if (m_NMEA0183.Mwv.Reference ==
                        _T("T"))  // Theoretical (aka True)
             {
-              if (mPriTWA >= 5) {
-                mPriTWA = 5;
+              if (mPriTWA >= 4) {
+                mPriTWA = 4;
                 wxString m_twaunit;
                 double m_twaangle;
                 bool b_R = false;
