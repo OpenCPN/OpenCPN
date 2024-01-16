@@ -141,7 +141,6 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
     mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
-    parent->UpdateRouteMgr();
   }
 }
 
@@ -461,6 +460,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     m_dlg_ctx.top_level_refresh();
   }
+  UpdateRouteMgr();
 }
 
 void RestServer::HandleTrack(pugi::xml_node object,
