@@ -799,7 +799,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/OCPNRegion.h
     ${GUI_HDR_DIR}/options.h
     ${GUI_HDR_DIR}/piano.h
-    ${GUI_HDR_DIR}/peer_client.h
+    ${GUI_HDR_DIR}/peer_client_dlg.h
     ${GUI_HDR_DIR}/pluginmanager.h
     ${GUI_HDR_DIR}/printtable.h
     ${GUI_HDR_DIR}/priority_gui.h
@@ -910,7 +910,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/OCPNRegion.cpp
     ${GUI_SRC_DIR}/options.cpp
     ${GUI_SRC_DIR}/Osenc.cpp
-    ${GUI_SRC_DIR}/peer_client.cpp
+    ${GUI_SRC_DIR}/peer_client_dlg.cpp
     ${GUI_SRC_DIR}/piano.cpp
     ${GUI_SRC_DIR}/pluginmanager.cpp
     ${GUI_SRC_DIR}/printtable.cpp

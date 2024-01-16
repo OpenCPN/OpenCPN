@@ -77,7 +77,7 @@
 #include "tide_time.h"
 #include "track_gui.h"
 #include "undo.h"
-#include "peer_client.h"
+#include "peer_client_dlg.h"
 #include "model/mDNS_query.h"
 #include "OCPNPlatform.h"
 

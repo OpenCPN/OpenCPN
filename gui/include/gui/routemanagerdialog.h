@@ -31,6 +31,8 @@
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
 
+#include "observable.h"
+
 #define NAME_COLUMN 2
 #define DISTANCE_COLUMN 3
 
@@ -223,6 +225,8 @@ private:
 
   int m_charWidth;
   int m_listIconSize;
+
+  ObsListener routes_update_listener;
 };
 
 #endif  // _RouteManagerDialog_h_

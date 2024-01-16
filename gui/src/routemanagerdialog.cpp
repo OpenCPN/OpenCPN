@@ -65,7 +65,7 @@
 #include "model/mDNS_query.h"
 #include "SendToPeerDlg.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -317,6 +317,8 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent) {
   btnExportViz = NULL;
 
   Create();
+  routes_update_listener.Init(g_pRouteMan->on_routes_update,
+                              [&](wxCommandEvent) { UpdateRouteListCtrl(); });
 }
 
 void RouteManagerDialog::Create() {

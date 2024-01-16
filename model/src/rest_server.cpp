@@ -23,6 +23,7 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -34,14 +35,17 @@
 #include "config.h"
 #include "model/config_vars.h"
 #include "model/logger.h"
-#include "mongoose.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
-#include "observable_evt.h"
 #include "model/rest_server.h"
+#include "model/routeman.h"
+#include "mongoose.h"
+#include "observable_evt.h"
 
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
+
+extern Routeman* g_pRouteMan;
 
 using namespace std::chrono_literals;
 
@@ -60,6 +64,7 @@ struct RestIoEvtData {
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
   const bool force;           ///< rest API parameter force
+  const bool activate;        ///< rest API parameter activate
 
   /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
   const std::string payload;
@@ -67,30 +72,28 @@ struct RestIoEvtData {
   /** Create a Cmd::Object instance. */
   static RestIoEvtData CreateCmdData(const std::string& key,
                                      const std::string& src,
-                                     const std::string& gpx_data, bool _force) {
-    return {Cmd::Object, key, src, gpx_data, _force};
+                                     const std::string& gpx_data, bool _force,
+                                     bool _activate) {
+    return {Cmd::Object, key, src, gpx_data, _force, _activate};
   }
 
   /** Create a Cmd::Ping instance: */
   static RestIoEvtData CreatePingData(const std::string& key,
                                       const std::string& src) {
-    return {Cmd::Ping, key, src, "", false};
+    return {Cmd::Ping, key, src, "", false, false};
   }
 
   /** Create a Cmd::CheckWrite instance. */
   static RestIoEvtData CreateChkWriteData(const std::string& key,
                                           const std::string& src,
                                           const std::string& guid) {
-    return {Cmd::CheckWrite, key, src, guid, false};
+    return {Cmd::CheckWrite, key, src, guid, false, false};
   }
 
 private:
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                bool _force);
+                bool _force, bool _activate);
 };
-
-/** Compat interface to old peer_client. */
-std::string PintoRandomKeyString(int pin) { return Pincode::IntToHash(pin); }
 
 /** Extract a HTTP variable from query string. */
 static inline std::string HttpVarToString(const struct mg_str& query,
@@ -118,6 +121,7 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
   std::string api_key = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
   std::string force = HttpVarToString(hm->query, "force");
+  std::string activate = HttpVarToString(hm->query, "activate");
   std::string xml_content;
   if (hm->chunk.len)
     xml_content = std::string(hm->chunk.ptr, hm->chunk.len);
@@ -131,7 +135,7 @@ static void HandleRxObject(struct mg_connection* c, struct mg_http_message* hm,
     assert(parent && "Null parent pointer");
     auto data_ptr =
         std::make_shared<RestIoEvtData>(RestIoEvtData::CreateCmdData(
-            api_key, source, xml_content, !force.empty()));
+            api_key, source, xml_content, !force.empty(), !activate.empty()));
     PostEvent(parent, data_ptr, MID);
   }
   if (MID == ORS_CHUNK_LAST) {
@@ -160,7 +164,8 @@ static void HandlePing(struct mg_connection* c, struct mg_http_message* hm,
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
   }
-  mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
+  mg_http_reply(c, 200, "", "{\"result\": %d, \"version\": \"%s\"}\n",
+                parent->GetReturnStatus(), VERSION_FULL);
 }
 
 static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
@@ -214,6 +219,30 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
     }
   }
 }
+
+std::string RestResultText(RestServerResult result) {
+  wxString s;
+  switch (result) {
+    case RestServerResult::NoError:
+      s =  _("No error");
+    case RestServerResult::GenericError:
+      s =  _("Server Generic Error");
+    case RestServerResult::ObjectRejected:
+      s =  _("Peer rejected object");
+    case RestServerResult::DuplicateRejected:
+      s =  _("Peer rejected duplicate object");
+    case RestServerResult::RouteInsertError:
+      s =  _("Peer internal error (insert)");
+    case RestServerResult::NewPinRequested:
+      s =  _("Peer requests new pincode");
+    case RestServerResult::ObjectParseError:
+      s =  _("XML parse error");
+    case RestServerResult::Void:
+      s =  _("Unspecified error");
+  }
+  return s.ToStdString();
+}
+
 
 //========================================================================
 /*    RestServer implementation */
@@ -349,6 +378,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
   ss << evt_data.source << " " << _("wants to send you new data.") << "\n"
      << _("Please enter the following PIN number on ") << evt_data.source << " "
      << _("to pair with this device") << "\n";
+  if (m_pin_dialog) m_pin_dialog->Destroy();
   m_pin_dialog = m_dlg_ctx.run_pincode_dlg(ss.str(), m_pincode.ToString());
 
   return false;
@@ -376,7 +406,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       return;
     case ORS_CHUNK_LAST:
       // Cancel existing dialog and close temp file
-      wxQueueEvent(m_pin_dialog, new wxCloseEvent);
+      if (m_pin_dialog) wxQueueEvent(m_pin_dialog, new wxCloseEvent);
       if (!m_upload_path.empty() && m_ul_stream.is_open()) m_ul_stream.close();
       break;
   }
@@ -432,8 +462,8 @@ void RestServer::HandleRoute(pugi::xml_node object,
   bool add = true;
   bool overwrite_one = false;
   Route* duplicate = m_route_ctx.find_route_by_guid(route->GetGUID());
-  if (duplicate && !evt_data.force) {
-    if (!m_overwrite) {
+  if (duplicate) {
+    if (!m_overwrite && !evt_data.force) {
       auto result = m_dlg_ctx.run_accept_object_dlg(
           _("The received route already exists on this system.\nReplace?"),
           _("Always replace objects?"));
@@ -446,19 +476,22 @@ void RestServer::HandleRoute(pugi::xml_node object,
         SaveConfig();
       }
     }
+  }
+  if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
       //  Remove the existing duplicate route before adding new route
       m_route_ctx.delete_route(duplicate);
     }
-  }
-  if (add) {
     // Add the route to the global list
     NavObjectCollection1 pSet;
-    if (InsertRouteA(route, &pSet))
+    if (InsertRouteA(route, &pSet))  {
       UpdateReturnStatus(RestServerResult::NoError);
-    else
+      if (evt_data.activate)
+        activate_route.Notify(route->GetGUID().ToStdString());
+      if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+    } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
-    m_dlg_ctx.top_level_refresh();
+    }
   }
   UpdateRouteMgr();
 }
@@ -486,11 +519,11 @@ void RestServer::HandleTrack(pugi::xml_node object,
         SaveConfig();
       }
     }
+  }
+  if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
       m_route_ctx.delete_track(duplicate);
     }
-  }
-  if (add) {
     // Add the track to the global list
     NavObjectCollection1 pSet;
 
@@ -511,7 +544,7 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   bool add = true;
   bool overwrite_one = false;
 
-  RoutePoint* duplicate = WaypointExists(rp->GetName(), rp->m_lat, rp->m_lon);
+  RoutePoint* duplicate = m_route_ctx.find_wpt_by_guid(rp->m_GUID);
   if (duplicate) {
     if (!m_overwrite && !evt_data.force) {
       auto result = m_dlg_ctx.run_accept_object_dlg(
@@ -528,6 +561,9 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
     }
   }
   if (add) {
+    if (m_overwrite || overwrite_one || evt_data.force) {
+       m_route_ctx.delete_waypoint(duplicate);
+    }
     if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force))
       UpdateReturnStatus(RestServerResult::NoError);
     else
@@ -537,11 +573,13 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
 }
 
 RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
-                             std::string src, std::string _payload, bool _force)
+                             std::string src, std::string _payload, bool _force,
+                             bool _activate)
     : cmd(c),
       api_key(std::move(key)),
       source(std::move(src)),
       force(_force),
+      activate(_activate),
       payload(std::move(_payload)) {}
 
 RestServerDlgCtx::RestServerDlgCtx()
@@ -559,5 +597,8 @@ RouteCtx::RouteCtx()
           [](const wxString&) { return static_cast<Route*>(nullptr); }),
       find_track_by_guid(
           [](const wxString&) { return static_cast<Track*>(nullptr); }),
+      find_wpt_by_guid(
+          [](const wxString&) { return static_cast<RoutePoint*>(nullptr); }),
       delete_route([](Route*) -> void {}),
-      delete_track([](Track*) -> void {}) {}
+      delete_track([](Track*) -> void {}),
+      delete_waypoint([](RoutePoint*) -> void {}) {}

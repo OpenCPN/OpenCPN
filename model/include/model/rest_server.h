@@ -30,6 +30,8 @@
 #include <thread>
 #include <unordered_map>
 
+#include "observable_evtvar.h"
+
 
 // MacOS 1.13:
 #if defined(__clang_major__) && (__clang_major__ < 15)
@@ -57,7 +59,7 @@ namespace fs = std::filesystem;
 #include "track.h"
 
 /**
- *  Return codes from HandleServerMessage and eventually in the http response
+ *  Return codes from HandleServerMessage and eventually in the http response.
  *  Since they are transported as integers on the wire they cannot really be
  *  changed without breaking compatibility with older servers. Adding new types
  *  should be fine.
@@ -75,6 +77,9 @@ enum class RestServerResult {
 
 /** Dialog return codes. */
 enum { ID_STG_CANCEL = 10000, ID_STG_OK, ID_STG_CHECK1, ID_STG_CHOICE_COMM };
+
+/** RestServerResult string representation */
+std::string RestResultText(RestServerResult result);
 
 /** Data from IO thread to main */
 struct RestIoEvtData;
@@ -116,8 +121,10 @@ class RouteCtx {
 public:
   std::function<Route*(wxString)> find_route_by_guid;
   std::function<Track*(wxString)> find_track_by_guid;
+  std::function<RoutePoint*(wxString)> find_wpt_by_guid;
   std::function<void(Route*)> delete_route;
   std::function<void(Track*)> delete_track;
+  std::function<void(RoutePoint*)> delete_waypoint;
 
   /** Dummy stubs constructor. */
   RouteCtx();
@@ -135,7 +142,8 @@ public:
  *        - source=`<ip>` Mandatory, origin ip address or hostname.
  *        - api_key=`<key>` Mandatory, as obtained when pairing, see below.
  *    - Returns:
- *        {"result": `<code>`}
+ *        {"result": `<code>`, "version": `<version>`}
+ *        `<version>` is a printable version like 5.9.0
  *
  *  POST /api/rx_object?api_key=`<pincode>`&source=`<ip address>`&force=1 <br>
  *  Upload GPX route(s), track(s) or waypoint(s).
@@ -144,6 +152,8 @@ public:
  *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
  *         - force=`<1>` if present, the host object is unconditionally
  *           updated. If not, host may run a "OK to overwrite" dialog.
+ *         - activate=`<1>` Optional, activate route or waypoint after
+ *           transfer
  *
  *     - Body:
  *         xml-encoded GPX data for one or more route(s), track(s) and/or
@@ -185,6 +195,9 @@ public:
 
   /** Return HTTPS url to local rest server. */
   virtual std::string GetEndpoint() = 0;
+
+  /** Notified with a string GUID when user wants to activate a route. */
+  EventVar activate_route;
 };
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */

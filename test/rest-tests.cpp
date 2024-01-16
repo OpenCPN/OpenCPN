@@ -88,7 +88,7 @@ public:
     for (int i = 0; addresses.size() == 0 && i < 10; i++) {
        std::this_thread::sleep_for(500ms);
        addresses = GetLocalAddresses();
-    } 
+    }
     if (!addresses.size()) {
         std::cerr << "Cannot get local IP address(!)\n";
         return;
@@ -140,7 +140,9 @@ protected:
       std::ifstream f(path.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 5}");  // Bad api key
+      const char* expected =
+          "{\"result\": 5, \"version\": \"" VERSION_FULL "\"}";
+      EXPECT_EQ(result, expected);  // Bad api key
     }{
       fs::path curl_prog(CURLPROG);
       std::stringstream ss;
@@ -154,7 +156,9 @@ protected:
       std::ifstream f(path.string());
       std::string result;
       std::getline(f, result);
-      EXPECT_EQ(result, "{\"result\": 0}");  // ok
+      const char* expected =
+          "{\"result\": 0, \"version\": \"" VERSION_FULL "\"}";
+      EXPECT_EQ(result, expected);  // ok
     }
   }
 };

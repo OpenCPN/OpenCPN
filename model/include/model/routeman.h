@@ -175,6 +175,9 @@ public:
   /** Notified when a message available as GetString() is sent to garmin. */
   EventVar  on_message_sent;
 
+  /** Notified when list of routes is updated (no data in event) */
+  EventVar on_routes_update;
+
 private:
   Route *pActiveRoute;
   RoutePoint *pActivePoint;
@@ -236,6 +239,7 @@ public:
   int GetFIconImageListIndex(const wxBitmap *pbm);
   int GetNumIcons(void) { return m_pIconArray->Count(); }
   wxString CreateGUID(RoutePoint *pRP);
+  RoutePoint* FindWaypointByGuid(const std::string& guid);
   RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
   RoutePoint *GetOtherNearbyWaypoint(double lat, double lon,
                                      double radius_meters,

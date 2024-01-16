@@ -75,7 +75,7 @@ public:
   InstanceCheck& m_checker;
   CommBridge m_comm_bridge;
 
-  RestServer m_RESTserver;
+  RestServer m_rest_server;
 
   DECLARE_EVENT_TABLE()
 private:
@@ -91,6 +91,9 @@ private:
 
   ParsedCmdline m_parsed_cmdline;
   int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code)
+
+  void InitRestListeners();
+  ObsListener rest_srv_listener;
 
 };
 

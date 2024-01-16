@@ -806,6 +806,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_resizeTimer.SetOwner(this, RESIZE_TIMER);
   m_recaptureTimer.SetOwner(this, RECAPTURE_TIMER);
   m_tick_idx = 0;
+  assert(g_pRouteMan != 0 && "g_pRouteMan not available");
+  m_routes_update_listener.Init(g_pRouteMan->on_routes_update,
+                                [&](wxCommandEvent) { Refresh(); });
 
 
 #ifdef __WXOSX__
@@ -5039,7 +5042,7 @@ void MyFrame::InitApiListeners() {
   m_on_raise_listener.Init(server.on_raise, [&](ObservedEvt){ Raise(); });
   m_on_quit_listener.Init(server.on_quit, [&](ObservedEvt){ FastClose(); });
   server.SetGetRestApiEndpointCb(
-    [&]{ return wxGetApp().m_RESTserver.GetEndpoint(); });
+    [&]{ return wxGetApp().m_rest_server.GetEndpoint(); });
   server.open_file_cb =
       [](const std::string& path) { return wxGetApp().OpenFile(path); };
 

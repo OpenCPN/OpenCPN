@@ -35,14 +35,15 @@
 #endif
 
 #include "model/ocpn_types.h"
-#include "ocpn_print.h"
-#include "color_handler.h"
-#include "gui_lib.h"
-#include "s52s57.h"
-#include "SencManager.h"
 #include "model/comm_appmsg_bus.h"
 #include "bbox.h"
+#include "color_handler.h"
+#include "gui_lib.h"
 #include "load_errors_dlg.h"
+#include "observable_evtvar.h"
+#include "ocpn_print.h"
+#include "s52s57.h"
+#include "SencManager.h"
 
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
@@ -439,6 +440,7 @@ private:
   ObservableListener listener_gps_watchdog;
   ObsListener m_on_raise_listener;
   ObsListener m_on_quit_listener;
+  ObsListener m_routes_update_listener;
 
   DECLARE_EVENT_TABLE()
 };
