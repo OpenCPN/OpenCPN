@@ -52,6 +52,8 @@
 #include "model/routeman.h"
 #include "model/track.h"
 
+#include "observable_globvar.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
@@ -100,6 +102,19 @@ WX_DEFINE_LIST(markicon_description_list_type);
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
 
+static void ActivatePersistedRoute(Routeman* routeman) {
+  if (g_active_route == "") {
+    wxLogWarning("\"Persist route\" but no persisted route configured");
+    return;
+  }
+  Route* route = routeman->FindRouteByGUID(g_active_route);
+  if (!route) {
+    wxLogWarning("Persisted route GUID not available");
+    return;
+  }
+  routeman->ActivateRoute(route);   // FIXME (leamas) better start point
+}
+
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
@@ -108,13 +123,19 @@ void appendOSDirSlash(wxString *pString);
 Routeman::Routeman(struct RoutePropDlgCtx ctx,
                    struct RoutemanDlgCtx route_dlg_ctx,
                    NmeaLog& nmea_log)
-    : m_NMEA0183(NmeaCtxFactory()),
+    : pActiveRoute(0),
+      pActivePoint(0),
+      pRouteActivatePoint(0),
+      m_NMEA0183(NmeaCtxFactory()),
       m_prop_dlg_ctx(ctx),
       m_route_dlg_ctx(route_dlg_ctx),
       m_nmea_log(nmea_log) {
-  pActiveRoute = NULL;
-  pActivePoint = NULL;
-  pRouteActivatePoint = NULL;
+  if (g_persist_active_route) ActivatePersistedRoute(this);
+
+  GlobalVar<wxString> active_route(&g_active_route);
+  auto route_action = [&] (wxCommandEvent) {
+      if (g_persist_active_route) ActivatePersistedRoute(this); };
+  active_route_listener.Init(active_route, route_action);
 }
 
 Routeman::~Routeman() {
@@ -265,6 +286,7 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   if (g_bPluginHandleAutopilotRoute) return true;
 
   pActiveRoute = pRouteToActivate;
+  g_active_route = pActiveRoute->GetGUID();
 
   if (pStartPoint) {
     pActivePoint = pStartPoint;
