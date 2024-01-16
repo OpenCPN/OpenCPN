@@ -790,8 +790,13 @@ double BasePlatform::GetDisplayDPmm() { return getAndroidDPmm(); }
 
 #else
 double BasePlatform::GetDisplayDPmm() {
-  double r = getDisplaySize().x;  // dots
-  return r / GetDisplaySizeMM();
+  if (dynamic_cast<wxApp*>(wxAppConsole::GetInstance())) {
+    double r = getDisplaySize().x;  // dots
+    return r / GetDisplaySizeMM();
+  } else {
+    // This is a console app... assuming 300 DPI ~ 12 DPmm
+    return 12.0;
+  }
 }
 #endif
 

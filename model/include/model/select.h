@@ -102,6 +102,7 @@ public:
   SelectableItemList *GetSelectList() { return pSelectList; }
 
 private:
+  // FIXME (leamas?) this is not model stuff.
   void CalcSelectRadius(SelectCtx& ctx);
 
   SelectableItemList *pSelectList;
