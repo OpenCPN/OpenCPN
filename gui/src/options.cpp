@@ -203,7 +203,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern int g_WplAction;
 
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
@@ -237,10 +236,8 @@ extern double g_n_ownship_beam_meters;
 extern double g_n_gps_antenna_offset_y;
 extern double g_n_gps_antenna_offset_x;
 extern int g_n_ownship_min_mm;
-extern double g_n_arrival_circle_radius;
 
 extern bool g_bEnableZoomToCursor;
-extern bool g_bTrackDaily;
 extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern bool g_bHighliteTracks;
@@ -271,7 +268,6 @@ extern double g_AckTimeout_Mins;
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
-extern wxString g_compatOS;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
@@ -283,7 +279,6 @@ extern int g_mouse_zoom_sensitivity_ui;
 extern OcpnSound* g_anchorwatch_sound;
 extern wxString g_anchorwatch_sound_file;
 extern wxString g_DSC_sound_file;
-extern wxString g_SART_sound_file;
 extern wxString g_AIS_sound_file;
 extern bool g_bAIS_GCPA_Alert_Audio;
 extern bool g_bAIS_SART_Alert_Audio;
@@ -321,7 +316,6 @@ options* g_pOptions;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
-extern bool g_btouch;
 extern bool g_bresponsive;
 extern bool g_bAutoHideToolbar;
 extern int g_nAutoHideToolbar;
@@ -343,7 +337,6 @@ extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_default_wp_icon;
-extern wxString g_default_routepoint_icon;
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;
 bool g_bOverruleScaMin;

@@ -181,7 +181,6 @@ extern bool g_bopengl;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
-extern bool g_btouch;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
@@ -209,7 +208,6 @@ extern bool g_bGLexpert;
 extern bool g_bcompression_wait;
 extern float g_ShipScaleFactorExp;
 
-float g_GLMinSymbolLineWidth;
 float g_GLMinCartographicLineWidth;
 
 extern bool g_fog_overzoom;

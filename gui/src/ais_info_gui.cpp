@@ -71,7 +71,6 @@ extern Route *pAISMOBRoute;
 extern wxString g_AIS_sound_file;
 extern wxString g_CmdSoundString;
 extern wxString g_DSC_sound_file;
-extern wxString g_SART_sound_file;
 extern MyConfig* pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame* gFrame;

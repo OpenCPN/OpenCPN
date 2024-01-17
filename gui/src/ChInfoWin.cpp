@@ -26,6 +26,7 @@
 
 #include <wx/dcclient.h>
 
+#include "model/config_vars.h"
 #include "ChInfoWin.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
@@ -35,7 +36,6 @@
 #include "androidUTIL.h"
 #endif
 
-extern bool g_btouch;
 extern OCPNPlatform* g_Platform;
 
 BEGIN_EVENT_TABLE(ChInfoWin, wxPanel)

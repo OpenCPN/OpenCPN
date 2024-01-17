@@ -82,11 +82,6 @@ static const char* const DEFAULT_XDG_DATA_DIRS =
 
 void appendOSDirSlash(wxString* pString);
 
-
-extern bool g_btouch;
-extern float g_selection_radius_mm;
-extern float g_selection_radius_touch_mm;
-
 extern BasePlatform* g_BasePlatform;
 
 #ifdef __ANDROID__

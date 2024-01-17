@@ -135,7 +135,6 @@ extern bool g_bframemax;
 extern int g_route_prop_x, g_route_prop_y;
 extern int g_route_prop_sx, g_route_prop_sy;
 
-extern double g_PlanSpeed;
 extern wxString g_VisibleLayers;
 extern wxString g_InvisibleLayers;
 
@@ -159,7 +158,6 @@ extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern bool g_bTrackCarryOver;
-extern bool g_bTrackDaily;
 extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern double g_AISShowTracks_Mins;
@@ -190,7 +188,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern int g_WplAction;
 extern bool g_benableAISNameCache;
 extern int g_ScaledNumWeightSOG;
 extern int g_ScaledNumWeightCPA;
@@ -240,7 +237,6 @@ extern double g_n_ownship_beam_meters;
 extern double g_n_gps_antenna_offset_y;
 extern double g_n_gps_antenna_offset_x;
 extern int g_n_ownship_min_mm;
-extern double g_n_arrival_circle_radius;
 
 extern bool g_bPreserveScaleOnX;
 extern bool g_bsimplifiedScalebar;
@@ -295,8 +291,6 @@ extern bool g_bHighliteTracks;
 extern int g_cog_predictor_width;
 extern int g_ais_cog_predictor_width;
 
-extern int g_route_line_width;
-extern int g_track_line_width;
 extern wxColour g_colourTrackLineColour;
 extern wxString g_default_wp_icon;
 
@@ -308,7 +302,6 @@ extern wxString g_uploadConnection;
 extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
-extern bool g_btouch;
 extern bool g_bresponsive;
 
 extern bool g_bGLexpert;
@@ -343,7 +336,6 @@ extern int g_iENCToolbarPosY;
 
 extern bool g_bSpaceDropMark;
 
-extern bool g_benableUDPNullHeader;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 

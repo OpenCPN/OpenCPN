@@ -289,7 +289,6 @@ extern bool g_bShowStatusBar;
 extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern bool g_bTrackCarryOver;
-extern bool g_bTrackDaily;
 extern bool g_FlushNavobjChanges;
 extern int g_FlushNavobjChangesTimeout;
 extern bool g_bShowChartBar;

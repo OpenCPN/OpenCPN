@@ -102,7 +102,6 @@ extern bool g_bDrawAISSize;
 extern bool g_bAllowShowScaled;
 extern bool g_bShowScaled;
 extern bool g_bInlandEcdis;
-extern int g_WplAction;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 
@@ -156,7 +155,6 @@ static double arpa_ref_hdg = NAN;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 extern bool g_bquiting;
 extern wxString g_DSC_sound_file;
-extern wxString g_SART_sound_file;
 extern wxString g_AIS_sound_file;
 extern bool g_bAIS_GCPA_Alert_Audio;
 extern bool g_bAIS_SART_Alert_Audio;

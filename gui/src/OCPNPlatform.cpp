@@ -176,17 +176,11 @@ extern wxString *pInit_Chart_Dir;
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
-extern float g_selection_radius_mm;
-extern float g_selection_radius_touch_mm;
-
-extern bool g_bTrackDaily;
-extern double g_PlanSpeed;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
 extern bool g_bskew_comp;
 
 extern bool g_bopengl;
-extern bool g_btouch;
 extern bool g_bresponsive;
 extern bool g_bShowStatusBar;
 extern int g_cm93_zoom_factor;

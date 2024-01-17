@@ -28,7 +28,6 @@
 extern Multiplexer* g_pMUX;
 extern ocpnGLOptions g_GLOptions;
 extern float g_MarkScaleFactorExp;
-extern bool g_btouch;
 extern WayPointman* pWayPointMan;
 extern MyFrame* gFrame;
 extern wxRect g_blink_rect;

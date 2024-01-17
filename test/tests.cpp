@@ -89,34 +89,23 @@ bool g_bAISRolloverShowClass;
 
 Multiplexer* g_pMUX;
 std::vector<Track*> g_TrackList;
-int g_WplAction;
 wxString AISTargetNameFileName;
 double g_AISShowTracks_Mins;
 bool g_bAIS_CPA_Alert;
 Route *pAISMOBRoute;
 double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
-float g_selection_radius_mm;
-float g_selection_radius_touch_mm;
-bool g_benableUDPNullHeader;
 
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
-wxString g_compatOS = PKG_TARGET;
-wxString g_compatOsVersion = PKG_TARGET_VERSION;
 
 S57ClassRegistrar *g_poRegistrar;
 Select* pSelect;
-double g_n_arrival_circle_radius;
-double g_PlanSpeed;
-bool g_bTrackDaily;
 int g_trackFilterMax;
-wxString g_default_routepoint_icon;
 double g_TrackDeltaDistance;
 float g_fWaypointRangeRingsStep;
 float g_ChartScaleFactorExp;
 wxString g_default_wp_icon;
-bool g_btouch;
 int g_iWaypointRangeRingsNumber;
 int g_iWaypointRangeRingsStepUnits;
 wxColour g_colourWaypointRangeRingsColour;
@@ -129,27 +118,16 @@ int g_nTrackPrecision;
 bool g_bIsNewLayer;
 RouteList *pRouteList;
 WayPointman* pWayPointMan;
-int g_route_line_width;
-int g_track_line_width;
 RoutePoint* pAnchorWatchPoint1(nullptr);
 RoutePoint* pAnchorWatchPoint2(nullptr);
-bool g_bAllowShipToActive;
 wxRect g_blink_rect;
 bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
 
-
-wxString g_catalog_custom_url;
-wxString g_catalog_channel;
 wxLog* g_logger;
 AisDecoder* g_pAIS;
 Select* pSelectAIS;
-
-/* comm_bridge context. */
-
-
-// navutil_base context
 
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
@@ -234,15 +212,15 @@ public:
     wxLog::SetLogLevel(wxLOG_Debug);
     wxLog::FlushActive();
     std::remove(config_path.string().c_str());
-    fs::copy(config_orig, config_path); 
+    fs::copy(config_orig, config_path);
     InitBaseConfig(new wxFileConfig("", "", config_path.string()));
     g_BasePlatform = new BasePlatform();
     pSelectAIS = new Select();
     pSelect = new Select();
     g_pAIS = new AisDecoder(AisDecoderCallbacks());
-  
+
     Work();
-  }   
+  }
   virtual void Work() { std::this_thread::sleep_for(20ms); }
 };
 
@@ -629,13 +607,13 @@ public:
         "list" : [1, 2, 3]
     }
     )""";
-    
+
     SignalkMsg signalk_msg("ownship_ctx", "global_ctx", kJsonMsg);
-    
+
     const wxEventTypeTag<ObservedEvt> EvtTest(wxNewEventType());
     ObservedEvt ev(EvtTest);
     ev.SetSharedPtr(std::make_shared<SignalkMsg>(signalk_msg));
-    
+
     auto payload = GetSignalkPayload(ev);
     const auto msg = *std::static_pointer_cast<const wxJSONValue>(payload);
     EXPECT_EQ(0, msg.ItemAt("ErrorCount").AsInt());

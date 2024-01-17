@@ -214,7 +214,6 @@ extern wxArrayString g_locale_catalog_array;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern wxString g_locale;
-extern bool g_btouch;
 extern ocpnFloatingToolbarDialog* g_MainToolbar;
 
 extern int g_chart_zoom_modifier_raster;
@@ -232,8 +231,6 @@ wxString g_lastPluginMessage;
 extern ChartCanvas* g_focusCanvas;
 extern ChartCanvas* g_overlayCanvas;
 extern bool g_bquiting;
-extern wxString g_catalog_channel;
-extern wxString g_catalog_custom_url;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;

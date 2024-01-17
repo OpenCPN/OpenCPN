@@ -22,12 +22,24 @@
  ***************************************************************************
  */
 #include "model/config_vars.h"
+#include "config.h"
 
-bool g_persist_active_route;
-bool g_bGarminHostUpload;
-bool g_bWplUsePosition;
+bool g_bAllowShipToActive = false;
+bool g_benableUDPNullHeader = false;
+bool g_bGarminHostUpload = false;
+bool g_bTrackDaily = false;
+bool g_bWplUsePosition = false;
+bool g_persist_active_route = false;
+bool g_btouch = false;
 
+double g_n_arrival_circle_radius = 0.0;
+double g_PlanSpeed = 0.0;
 double g_UserVar = 0.0;
+
+float g_GLMinSymbolLineWidth;
+float g_selection_radius_mm = 2.0;
+float g_selection_radius_touch_mm = 10.0;
+
 int g_iDistanceFormat = 0;
 int g_iSDMMFormat = 0;
 int g_iSpeedFormat = 0;
@@ -38,12 +50,21 @@ int g_NMEAAPBPrecision = 3;
 int g_nCOMPortCheck = 32;
 int g_nDepthUnitDisplay = 0;
 int g_nNMEADebug = 0;
+int g_route_line_width = 0;
+int g_track_line_width = 0;
+int g_WplAction = 0;
 int gps_watchdog_timeout_ticks = 0;
 int sat_watchdog_timeout_ticks = 12;
 
 wxString g_active_route;
+wxString g_catalog_channel;
+wxString g_catalog_custom_url;
+wxString g_compatOS = PKG_TARGET;
+wxString g_compatOsVersion = PKG_TARGET_VERSION;
+wxString g_default_routepoint_icon;
 wxString g_GPS_Ident;
 wxString g_hostname;
+wxString g_SART_sound_file;
 wxString g_TalkerIdText;
 wxString g_winPluginDir;
 

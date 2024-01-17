@@ -57,7 +57,7 @@ The scale factor in Subtracks[2] will determine if it's allowed to just
 draw a simple line segment from 0 to 5, or if we need to recurse to find
 more detail.
 
-At large scale factors, a long track will mostly be off screen, so
+At large scale factors, a long track will mostly be off-screen, so
 the bounding box tests quickly eliminate the invisible sections.
 
 At small scale factors, the scale test allows representing a section
@@ -65,7 +65,7 @@ of track using a single line segment greatly reducing the number of
 segments rendered.  The scale is set so the difference is less than 1 pixel
 and mostly impossible to notice.
 
-In practice I never exceed 170 segments in all cases assembling a real track
+In practice,  I never exceed 170 segments in all cases assembling a real track
 with over 86,000 segments.  If the track is particularly not-straight, and
 the size of the screen particularly large (lots of pixels) the number
 of segments will be higher, though it should be managable with tracks with
@@ -87,6 +87,7 @@ millions of points.
 
 #include "model/track.h"
 
+#include "model/config_vars.h"
 #include "model/georef.h"
 #include "model/json_event.h"
 #include "model/nav_object_database.h"
@@ -95,16 +96,12 @@ millions of points.
 #include "model/routeman.h"
 #include "model/select.h"
 
-extern WayPointman *pWayPointMan;
-extern Select *pSelect;
-extern double g_PlanSpeed;
+extern WayPointman* pWayPointMan;
+extern Select* pSelect;
 extern int g_nTrackPrecision;
-extern bool g_bTrackDaily;
 extern bool g_bHighliteTracks;
 extern double g_TrackDeltaDistance;
-extern float g_GLMinSymbolLineWidth;
 extern wxColour g_colourTrackLineColour;
-extern wxColor GetDimColor(wxColor c);
 extern int g_trackFilterMax;
 
 
@@ -179,7 +176,7 @@ double _distance2(vector2D &a, vector2D &b) {
   return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
 }
 double _distance(vector2D &a, vector2D &b) { return sqrt(_distance2(a, b)); }
-double _magnitude2(vector2D &a) { return a.x * a.x + a.y * a.y; }
+
 
 Track::Track() {
   m_bVisible = true;
@@ -672,7 +669,7 @@ void Track::InsertSubTracks(LLBBox &box, int level, int pos) {
 }
 
 /* This function adds a new point ensuring the resulting track is finalized
-   The runtime of this routine is O(log(n)) which is an an improvment over
+   The runtime of this routine is O(log(n)) which is an improvment over
    blowing away the subtracks and calling Finalize which is O(n),
    but should not be used for building a large track O(n log(n)) which
    _is_ worse than blowing the subtracks and calling Finalize.

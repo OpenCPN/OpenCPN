@@ -81,11 +81,6 @@ class Select;
 
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
-wxString g_compatOS = PKG_TARGET;
-wxString g_compatOsVersion = PKG_TARGET_VERSION;
-
-wxString g_catalog_custom_url;
-wxString g_catalog_channel;
 
 bool g_bAIS_ACK_Timeout;
 bool g_bAIS_CPA_Alert_Suppress_Moored;
@@ -114,32 +109,23 @@ bool g_bAIS_CPA_Alert;
 double g_RemoveLost_Mins;
 double g_MarkLost_Mins;
 double g_AISShowTracks_Mins;
-float g_selection_radius_mm;
-float g_selection_radius_touch_mm;
-bool g_benableUDPNullHeader;
 
 S57ClassRegistrar *g_poRegistrar;
 
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
 Route* pAISMOBRoute;
-int g_WplAction;
 Select* pSelectAIS;
 
 /* comm_bridge context. */
 
 Select* pSelect;
-double g_n_arrival_circle_radius;
-double g_PlanSpeed;
-bool g_bTrackDaily;
 int g_trackFilterMax;
-wxString g_default_routepoint_icon;
 double g_TrackDeltaDistance;
 float g_fWaypointRangeRingsStep;
 float g_ChartScaleFactorExp;
 float g_MarkScaleFactorExp;
 wxString g_default_wp_icon;
-bool g_btouch;
 int g_iWaypointRangeRingsNumber;
 int g_iWaypointRangeRingsStepUnits;
 wxColour g_colourWaypointRangeRingsColour;
@@ -152,11 +138,8 @@ int g_nTrackPrecision;
 bool g_bIsNewLayer;
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
-int g_route_line_width;
-int g_track_line_width;
 RoutePoint* pAnchorWatchPoint1 = 0;
 RoutePoint* pAnchorWatchPoint2 = 0;
-bool g_bAllowShipToActive;
 wxRect g_blink_rect;
 bool g_bMagneticAPB;
 

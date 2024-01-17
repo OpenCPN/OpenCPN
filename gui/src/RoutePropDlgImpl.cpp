@@ -57,7 +57,6 @@ extern Select* pSelect;
 extern MyFrame* gFrame;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern TCMgr* ptcmgr;
-extern bool g_btouch;
 
 int g_route_prop_x, g_route_prop_y, g_route_prop_sx, g_route_prop_sy;
 

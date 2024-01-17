@@ -39,9 +39,11 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
+#include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/georef.h"
+#include "model/config_vars.h"
 #include "model/nav_object_database.h"
 #include "model/route.h"
 #include "model/routeman.h"
@@ -49,14 +51,7 @@
 
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
-extern int g_route_line_width;
 extern Select *pSelect;
-extern double g_n_arrival_circle_radius;
-extern float g_GLMinSymbolLineWidth;
-extern double g_PlanSpeed;
-extern wxString g_default_routepoint_icon;
-extern bool g_bAllowShipToActive;
-;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(RouteList);

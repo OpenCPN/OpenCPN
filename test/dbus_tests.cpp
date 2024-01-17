@@ -20,10 +20,6 @@ using namespace std::literals::chrono_literals;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable;
-float g_selection_radius_mm;
-float g_selection_radius_touch_mm;
-bool g_btouch;
-wxString g_winPluginDir;
 
 static bool bool_result0;
 static std::string s_result;

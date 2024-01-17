@@ -46,6 +46,7 @@ target_link_libraries(tests PRIVATE ocpn::model ocpn::model-src)
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(IPC_SRV_TESTS_SRC
     ipc-srv-tests.cpp
+    ${MODEL_SRC_DIR}/config_vars.cpp
     ${MODEL_SRC_DIR}/local_api.cpp
     ${MODEL_SRC_DIR}/ipc_api.cpp
     ${MODEL_SRC_DIR}/ocpn_utils.cpp
@@ -140,6 +141,7 @@ if (LINUX)
     dbus_tests.cpp
     ${MODEL_SRC_DIR}/dbus_client.cpp
     ${MODEL_SRC_DIR}/dbus_server.cpp
+    ${MODEL_SRC_DIR}/config_vars.cpp
     ${MODEL_SRC_DIR}/ipc_api.cpp
     ${MODEL_SRC_DIR}/local_api.cpp
     ${MODEL_SRC_DIR}/ocpn_utils.cpp
@@ -233,6 +235,7 @@ endif ()
 set (WX_INSTANCE_SRC
   wx_instance.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/config_vars.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/logger.cpp
 )
@@ -259,6 +262,7 @@ if (UNIX)
     std_instance.cpp
     ${MODEL_SRC_DIR}/std_instance_chk.cpp
     ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/config_vars.cpp
     ${MODEL_SRC_DIR}/ocpn_utils.cpp
     ${MODEL_SRC_DIR}/logger.cpp
   )

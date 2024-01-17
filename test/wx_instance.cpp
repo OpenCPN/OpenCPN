@@ -9,12 +9,7 @@
 #include "model/base_platform.h"
 
 BasePlatform* g_BasePlatform = 0;
-float g_selection_radius_mm;
-float g_selection_radius_touch_mm;
-bool g_btouch;
 bool g_bportable;
-
-wxString g_winPluginDir;
 
 class WxInstanceApp : public wxAppConsole {
 public:

@@ -56,7 +56,6 @@ extern ocpnStyle::StyleManager *g_StyleManager;
 extern MyFrame *gFrame;
 extern PlugInManager *g_pi_manager;
 extern bool g_bPermanentMOBIcon;
-extern bool g_btouch;
 extern bool g_bsmoothpanzoom;
 extern OCPNPlatform *g_Platform;
 extern bool g_bmasterToolbarFull;

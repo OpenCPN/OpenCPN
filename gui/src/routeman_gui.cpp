@@ -53,7 +53,6 @@
 #include "navutil.h"
 
 extern bool g_bShowShipToActive;
-extern bool g_bAllowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern MyFrame* gFrame;

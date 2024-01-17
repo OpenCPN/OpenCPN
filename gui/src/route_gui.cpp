@@ -24,13 +24,10 @@
 
 extern Routeman* g_pRouteMan;
 extern wxColour g_colourTrackLineColour;
-extern int g_route_line_width;
 extern Multiplexer *g_pMUX;
 
 extern wxColor GetDimColor(wxColor c);
 extern bool g_bHighliteTracks;
-extern float g_GLMinSymbolLineWidth;
-extern bool g_bAllowShipToActive;
 
 extern ocpnGLOptions g_GLOptions;
 

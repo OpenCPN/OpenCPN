@@ -74,17 +74,12 @@ extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 
 extern ActiveTrack *g_pActiveTrack;
-extern int g_track_line_width;
-
-extern int g_route_line_width;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route *pAISMOBRoute;
-extern bool g_btouch;
 extern float g_ChartScaleFactorExp;
 
 extern bool g_bShowShipToActive;
-extern bool g_bAllowShipToActive;
 
 bool g_bPluginHandleAutopilotRoute;
 

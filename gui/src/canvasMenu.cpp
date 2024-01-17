@@ -124,7 +124,6 @@ extern CM93OffsetDialog *g_pCM93OffsetDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern RouteList *pRouteList;
 extern wxString g_default_wp_icon;
-extern bool g_btouch;
 extern bool g_bBasicMenus;
 extern TrackPropDlg *pTrackPropDialog;
 extern double gHdt;

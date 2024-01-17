@@ -64,8 +64,8 @@ extern double toUsrSpeed(double kts_speed, int unit = -1);
 extern double toUsrWindSpeed(double kts_speed, int unit = -1);
 extern wxString getUsrSpeedUnit(int unit = -1);
 extern wxString getUsrWindSpeedUnit(int unit = -1);
+extern wxString getUsrTempUnit(int unit = -1);
 extern wxString FormatDistanceAdaptive(double distance);
-
 extern double toUsrTemp(double cel_temp, int unit = -1);
 
 extern double toUsrDistance(double nm_distance, int unit = -1);

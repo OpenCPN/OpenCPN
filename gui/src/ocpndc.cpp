@@ -53,15 +53,14 @@
 #include <vector>
 
 #include "ocpndc.h"
-#include "model/wx28compat.h"
 #include "model/cutil.h"
+#include "model/config_vars.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)

@@ -33,14 +33,16 @@
 #endif  // precompiled headers
 #include "dychart.h"
 
+#include "model/config_vars.h"
+#include "model/cutil.h"
+#include "model/wx28compat.h"
+
 #include "chcanv.h"
 #include "piano.h"
 #include "chartdb.h"
 #include "chartbase.h"
 #include "styles.h"
 #include "ocpndc.h"
-#include "model/cutil.h"
-#include "model/wx28compat.h"
 #include "OCPNPlatform.h"
 #include "color_handler.h"
 #include "ocpn_plugin.h"
@@ -63,7 +65,6 @@ WX_DEFINE_OBJARRAY(RectArray);
 //------------------------------------------------------------------------------
 extern ChartDB *ChartData;
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern bool g_btouch;
 extern int g_GUIScaleFactor;
 extern bool g_bopengl;
 

@@ -64,7 +64,6 @@ extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern OCPNPlatform *g_Platform;
-extern bool g_btouch;
 
 //---------------------------------------------------------------------------------------------------------------------
 //

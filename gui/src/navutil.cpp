@@ -164,7 +164,6 @@ extern int g_nframewin_posx;
 extern int g_nframewin_posy;
 extern bool g_bframemax;
 
-extern double g_PlanSpeed;
 extern wxString g_VisibleLayers;
 extern wxString g_InvisibleLayers;
 extern wxString g_VisiNameinLayers;
@@ -193,7 +192,6 @@ extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
 extern bool g_bAISShowTracks;
 extern bool g_bTrackCarryOver;
-extern bool g_bTrackDaily;
 extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern double g_AISShowTracks_Mins;
@@ -211,7 +209,6 @@ extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
 extern wxString g_sAIS_Alert_Sound_File;
 extern wxString g_anchorwatch_sound_file;
 extern wxString g_DSC_sound_file;
-extern wxString g_SART_sound_file;
 extern wxString g_AIS_sound_file;
 extern bool g_bAIS_GCPA_Alert_Audio;
 extern bool g_bAIS_SART_Alert_Audio;
@@ -233,7 +230,6 @@ extern bool g_bDrawAISRealtime;
 extern double g_AIS_RealtPred_Kts;
 extern bool g_bShowAISName;
 extern int g_Show_Target_Name_Scale;
-extern int g_WplAction;
 extern bool g_benableAISNameCache;
 extern bool g_bUseOnlyConfirmedAISName;
 extern int g_ScaledNumWeightSOG;
@@ -297,7 +293,6 @@ extern double g_n_ownship_beam_meters;
 extern double g_n_gps_antenna_offset_y;
 extern double g_n_gps_antenna_offset_x;
 extern int g_n_ownship_min_mm;
-extern double g_n_arrival_circle_radius;
 extern int g_maxzoomin;
 
 extern bool g_bShowShipToActive;
@@ -360,11 +355,8 @@ extern bool g_bHighliteTracks;
 extern int g_cog_predictor_width;
 extern int g_ais_cog_predictor_width;
 
-extern int g_route_line_width;
-extern int g_track_line_width;
 extern wxColour g_colourTrackLineColour;
 extern wxString g_default_wp_icon;
-extern wxString g_default_routepoint_icon;
 
 extern ChartGroupArray *g_pGroupArray;
 
@@ -376,7 +368,6 @@ extern ocpnStyle::StyleManager *g_StyleManager;
 extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 
-extern bool g_btouch;
 extern bool g_bresponsive;
 
 extern bool g_bGLexpert;
@@ -395,9 +386,6 @@ extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
-
-extern float g_selection_radius_mm;
-extern float g_selection_radius_touch_mm;
 
 extern bool g_benable_rotate;
 extern bool g_bEmailCrashReport;
@@ -427,8 +415,6 @@ extern bool g_bSpaceDropMark;
 extern bool g_bShowTide;
 extern bool g_bShowCurrent;
 
-extern bool g_benableUDPNullHeader;
-
 extern wxString g_uiStyle;
 extern bool g_btrackContinuous;
 extern bool g_useMUI;
@@ -443,16 +429,11 @@ extern int g_route_prop_x, g_route_prop_y;
 extern int g_route_prop_sx, g_route_prop_sy;
 extern int g_AndroidVersionCode;
 
-extern wxString g_compatOS;
-extern wxString g_compatOsVersion;
 extern wxString g_ObjQFileExt;
 
 wxString g_gpx_path;
 bool g_bLayersLoaded;
 bool g_bShowMuiZoomButtons = true;
-
-wxString g_catalog_custom_url;
-wxString g_catalog_channel;
 
 int g_trackFilterMax;
 double g_mouse_zoom_sensitivity;

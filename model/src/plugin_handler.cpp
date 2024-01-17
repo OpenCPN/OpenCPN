@@ -83,9 +83,6 @@ static std::string SEP("/");
 
 extern BasePlatform* g_BasePlatform;
 
-extern wxString g_compatOS;
-extern wxString g_compatOsVersion;
-
 /** split s on first occurrence of delim, or return s in first result. */
 static std::vector<std::string> split(const std::string& s,
                                       const std::string& delim) {

@@ -16,7 +16,6 @@ extern wxColour g_colourTrackLineColour;
 
 extern wxColor GetDimColor(wxColor c);
 extern bool g_bHighliteTracks;
-extern float g_GLMinSymbolLineWidth;
 
 extern ocpnGLOptions g_GLOptions;
 
@@ -265,5 +264,3 @@ void TrackGui::AddPointToList(ChartCanvas *cc,
     if ((abs(r.x - l.x) > 1) || (abs(r.y - l.y) > 1)) pointlist.push_back(r);
   }
 }
-
-

@@ -208,10 +208,8 @@ extern double g_n_ownship_beam_meters;
 extern double g_n_gps_antenna_offset_y;
 extern double g_n_gps_antenna_offset_x;
 extern int g_n_ownship_min_mm;
-extern double g_n_arrival_circle_radius;
 
 extern bool g_bEnableZoomToCursor;
-extern bool g_bTrackDaily;
 extern bool g_bHighliteTracks;
 extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
@@ -274,7 +272,6 @@ extern AisDecoder *g_pAIS;
 
 extern options *g_pOptions;
 
-extern bool g_btouch;
 extern bool g_bresponsive;
 extern bool g_bAutoHideToolbar;
 extern int g_nAutoHideToolbar;

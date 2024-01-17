@@ -35,14 +35,10 @@
 
 #include "cat_settings.h"
 #include "observable_globvar.h"
+#include "model/config_vars.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_cache.h"
 #include "model/plugin_handler.h"
-
-extern wxString g_catalog_channel;
-extern wxString g_catalog_custom_url;
-extern wxString g_compatOS;
-extern wxString g_compatOsVersion;
 
 /** The custom URL text entry. */
 class CustomCatalogCtrl : public wxTextCtrl {

@@ -34,6 +34,7 @@
 
 #include "model/catalog_handler.h"
 #include "model/catalog_parser.h"
+#include "model/config_vars.h"
 #include "model/downloader.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
@@ -47,8 +48,6 @@ static const std::string SEP("\\");
 static const std::string SEP("/");
 #endif
 
-extern wxString g_catalog_custom_url;
-extern wxString g_catalog_channel;
 extern BasePlatform* g_BasePlatform;
 
 static const char* const DOWNLOAD_REPO =

@@ -79,8 +79,6 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
 
-extern bool g_benableUDPNullHeader;
-
 #define N_DOG_TIMEOUT 5
 
 #ifdef __WXMSW__

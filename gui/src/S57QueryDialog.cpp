@@ -38,7 +38,6 @@ extern int g_S57_dialog_sy;
 extern int g_S57_extradialog_sx;
 extern int g_S57_extradialog_sy;
 extern bool g_bresponsive;
-extern bool g_btouch;
 
 // Private class implementations
 class MessageHardBreakWrapper : public wxTextWrapper {

@@ -86,7 +86,6 @@ extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 
 extern MarkInfoDlg* g_pMarkInfoDialog;
-extern double g_n_arrival_circle_radius;
 extern int g_iWaypointRangeRingsNumber;
 extern float g_fWaypointRangeRingsStep;
 extern wxColour g_colourWaypointRangeRingsColour;

@@ -87,7 +87,6 @@ extern int g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool g_bopengl;
 extern PlugInManager *g_pi_manager;
-extern float g_GLMinSymbolLineWidth;
 
 extern bool g_b_EnableVBO;
 

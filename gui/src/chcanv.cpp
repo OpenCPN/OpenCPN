@@ -224,8 +224,6 @@ extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_maxzoomin;
 
-extern float g_GLMinSymbolLineWidth;
-bool g_bAllowShipToActive;
 bool g_bShowShipToActive;
 int g_shipToActiveStyle;
 int g_shipToActiveColor;
@@ -274,7 +272,6 @@ bool g_bDebugOGL;
 extern bool g_b_assume_azerty;
 
 extern ChartGroupArray *g_pGroupArray;
-extern wxString g_default_routepoint_icon;
 
 extern S57QueryDialog *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager *g_StyleManager;
@@ -282,7 +279,6 @@ extern ocpnStyle::StyleManager *g_StyleManager;
 extern OcpnSound *g_anchorwatch_sound;
 
 extern bool g_bShowTrue, g_bShowMag;
-extern bool g_btouch;
 extern bool g_bresponsive;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;

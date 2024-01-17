@@ -58,10 +58,6 @@ using namespace std::literals::chrono_literals;
 
 BasePlatform* g_BasePlatform = 0;
 bool g_bportable;
-wxString g_winPluginDir;
-float g_selection_radius_mm;
-float g_selection_radius_touch_mm;
-bool g_btouch;
 
 /** Define an action to be performed when a KeyProvider is notified. */
 class IpcServerTest : public wxAppConsole {

@@ -29,12 +29,21 @@
 #include <wx/config.h>
 #include <wx/string.h>
 
-
+extern bool g_bAllowShipToActive;
+extern bool g_benableUDPNullHeader;
 extern bool g_bGarminHostUpload;
+extern bool g_bTrackDaily;
 extern bool g_bWplUsePosition;
 extern bool g_persist_active_route;
+extern bool g_btouch;
 
+extern double g_n_arrival_circle_radius;
+extern double g_PlanSpeed;
 extern double g_UserVar;
+
+extern float g_GLMinSymbolLineWidth;
+extern float g_selection_radius_mm;
+extern float g_selection_radius_touch_mm;
 
 extern int g_iDistanceFormat;
 extern int g_iSpeedFormat;
@@ -46,14 +55,23 @@ extern int g_NMEAAPBPrecision;
 extern int g_nCOMPortCheck;
 extern int g_nDepthUnitDisplay;
 extern int g_nNMEADebug;
+extern int g_route_line_width;
+extern int g_track_line_width;
+extern int g_WplAction;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 
 extern wxString g_active_route;
+extern wxString g_android_Device_Model;
+extern wxString g_catalog_channel;
+extern wxString g_catalog_custom_url;
+extern wxString g_compatOS;
+extern wxString g_compatOsVersion;
+extern wxString g_default_routepoint_icon;
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
+extern wxString g_SART_sound_file;
 extern wxString g_TalkerIdText;
-extern wxString g_android_Device_Model;
 extern wxString g_winPluginDir;   // Base plugin directory on Windows.
 
 wxConfigBase* TheBaseConfig();

@@ -248,9 +248,6 @@ bool g_bUpgradeInProcess;
 
 bool g_bPauseTest;
 
-wxString g_compatOS;
-wxString g_compatOsVersion;
-
 
 // Files specified on the command line, if any.
 
@@ -334,7 +331,6 @@ std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 OcpnSound *g_anchorwatch_sound = SoundFactory();
 wxString g_anchorwatch_sound_file;
 wxString g_DSC_sound_file;
-wxString g_SART_sound_file;
 wxString g_AIS_sound_file;
 
 RoutePoint *pAnchorWatchPoint1;
@@ -413,8 +409,6 @@ int g_lastClientRecth;
 double g_display_size_mm;
 double g_config_display_size_mm;
 bool g_config_display_size_manual;
-float g_selection_radius_mm = 2.0;
-float g_selection_radius_touch_mm = 10.0;
 
 int g_GUIScaleFactor;
 int g_ChartScaleFactor;
@@ -483,7 +477,6 @@ bool g_bframemax;
 bool g_bAutoAnchorMark;
 
 wxRect g_blink_rect;
-double g_PlanSpeed;
 int gpIDXn;
 
 wxArrayString *pMessageOnceArray;
@@ -582,7 +575,6 @@ bool g_bDrawAISRealtime;
 double g_AIS_RealtPred_Kts;
 bool g_bShowAISName;
 int g_Show_Target_Name_Scale;
-int g_WplAction;
 
 int g_nAIS_activity_timer;
 
@@ -591,15 +583,11 @@ bool g_bEnableZoomToCursor;
 bool g_bTrackActive;
 bool g_bTrackCarryOver;
 bool g_bDeferredStartTrack;
-bool g_bTrackDaily;
 int g_track_rotate_time;
 int g_track_rotate_time_type;
 bool g_bHighliteTracks;
-int g_route_line_width;
-int g_track_line_width;
 wxColour g_colourTrackLineColour;
 wxString g_default_wp_icon;
-wxString g_default_routepoint_icon;
 
 ActiveTrack *g_pActiveTrack;
 double g_TrackIntervalSeconds;
@@ -624,8 +612,6 @@ double g_n_ownship_beam_meters;
 double g_n_gps_antenna_offset_y;
 double g_n_gps_antenna_offset_x;
 int g_n_ownship_min_mm;
-
-double g_n_arrival_circle_radius;
 
 bool g_bNeedDBUpdate;
 bool g_bPreserveScaleOnX;
@@ -704,14 +690,11 @@ char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 int g_sticky_chart;
 int g_sticky_projection;
 
-bool g_benableUDPNullHeader;
-
 int n_NavMessageShown;
 wxString g_config_version_string;
 
 wxString g_CmdSoundString;
 
-bool g_btouch;
 bool g_bresponsive;
 bool g_bRollover;
 
