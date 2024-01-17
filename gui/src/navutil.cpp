@@ -997,7 +997,14 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
        &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
   Read(_T ("TemperatureFormat"), &g_iTempFormat);  // 0 = C, 1 = F, 2 = K
 
-  // LIVE ETA OPTION
+
+  Read(_T ( "COMPort" ),&g_iCOMPort);  
+  Read(_T ( "Baudrate" ),&g_iBaudrate);  
+  Read(_T ( "Parity" ),&g_iParity);  
+  Read(_T ("Data_bits"), &g_iData_bits); 
+  Read(_T ("Stopbits"), &g_iStopbits); 
+
+// LIVE ETA OPTION
   Read(_T ( "LiveETA" ), &g_bShowLiveETA);
   Read(_T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed);
 
@@ -2456,6 +2463,15 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
     Write(_T ( "TemperatureFormat" ), g_iTempFormat);
   }
+
+  Write(_T ( "COMPort" ), g_iCOMPort);
+  Write(_T ( "Baudrate" ), g_iBaudrate);
+  Write(_T ( "Parity" ), g_iParity);
+  Write(_T ( "Data_bits" ), g_iData_bits);
+  Write(_T ( "Stopbits" ), g_iStopbits);
+
+
+  
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
   Write(_T ( "UseGarminHostUpload" ), g_bGarminHostUpload);
 

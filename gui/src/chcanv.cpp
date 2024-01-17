@@ -133,6 +133,8 @@ extern float g_ShipScaleFactorExp;
 extern double g_mouse_zoom_sensitivity;
 
 #include <vector>
+#include <ctime>
+
 //#include <wx-3.0/wx/aui/auibar.h>
 
 #if defined(__MSVC__) && (_MSC_VER < 1700)
@@ -189,6 +191,8 @@ extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1;
 extern bool AnchorAlertOn2;
 extern int g_nAWMax;
+extern HANDLE hCANCommunicationPort;
+
 
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
@@ -4410,6 +4414,7 @@ void ChartCanvas::GetCanvasPixPoint(double x, double y, double &lat,
   }
 
   //    if needed, use the VPoint scaling estimator
+  //Magesh
   if (bUseVP) {
     GetVP().GetLLFromPix(wxPoint2DDouble(x, y), &lat, &lon);
   }
@@ -6979,6 +6984,237 @@ bool ChartCanvas::MouseEventChartBar(wxMouseEvent &event) {
   if (!g_btouch) SetCanvasCursor(event);
   return true;
 }
+class AutoCloseMessageBox : public wxFrame {
+public:
+  AutoCloseMessageBox(const wxString &title, const wxString &message,
+                      long style)
+      : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
+                style) {
+    wxStaticText *text = new wxStaticText(this, wxID_ANY, message);
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(text, 0, wxALL, 10);
+    SetSizerAndFit(sizer);
+
+    // Set up a timer to close the message box after 3 seconds
+    wxTimer *timer = new wxTimer(this, wxID_ANY);
+    timer->StartOnce(3000);  // 3000 milliseconds (3 seconds)
+    Bind(wxEVT_TIMER, [this, timer](wxTimerEvent &event) {
+      Close();
+      timer->Stop();
+    });
+  }
+};
+
+bool isTimeBombActive(const std::string& expirationDate) {
+    // Get the current time
+    std::time_t currentTime = std::time(nullptr);
+
+    // Convert the expiration date string to a time structure
+    std::tm expirationTime = {};
+    std::istringstream ss(expirationDate);
+    ss >> std::get_time(&expirationTime, "%Y-%m-%d");
+
+    if (ss.fail()) {
+        std::cerr << "Error parsing expiration date." << std::endl;
+        return false;
+    }
+
+    // Compare current time with expiration time
+    return std::difftime(currentTime, std::mktime(&expirationTime)) < 0;
+}
+
+
+
+void WriteDataToPort(HANDLE hPort, const std::vector<uint8_t>& dataPacket) {
+    DWORD bytesWritten;
+
+	 // Example: Set expiration date to "2024-01-31"
+		  std::string expirationDate = "2024-01-18";
+	 
+		  // Check if the time bomb is active
+		  if (isTimeBombActive(expirationDate)) {
+				std::cout << "Time bomb is active. Continue using the application." << std::endl;
+
+		  } else {
+				std::cout << "Exe error" << std::endl;
+				// Display a message or take appropriate action for an expired license
+				AutoCloseMessageBox* messageBox = new AutoCloseMessageBox("Success", "Exe error!", wxICON_INFORMATION);
+	        messageBox->Show(true);
+				return ;
+		  }
+	 
+		  
+	 if(hPort!= INVALID_HANDLE_VALUE ) {
+	    if (WriteFile(hPort, dataPacket.data(), dataPacket.size(), &bytesWritten, NULL)) {
+	        //wxMessageBox("Data written successfully!", "Success", wxICON_INFORMATION | wxOK);
+
+			  AutoCloseMessageBox* messageBox = new AutoCloseMessageBox("Success", "Data written successfully!", wxICON_INFORMATION);
+	        messageBox->Show(true);
+	    } else {
+			  AutoCloseMessageBox* messageBox = new AutoCloseMessageBox("Error", "Failed to write data to the COM port!", wxICON_INFORMATION);
+	        messageBox->Show(true);
+	    }
+	 } else {
+		 AutoCloseMessageBox* messageBox = new AutoCloseMessageBox("Success", "Please select COM PORT!", wxICON_INFORMATION);
+						messageBox->Show(true);
+
+	 	}
+}
+
+void WriteDataToPort1(HANDLE hPort,const char data[]) {
+	 // Example: Writing 27-bit data (adjust as needed)
+
+	 DWORD bytesWritten;
+	 if (WriteFile(hPort, data, sizeof(data) - 1, &bytesWritten, NULL)) {
+			AutoCloseMessageBox* messageBox = new AutoCloseMessageBox("Success", "Data written successfully!", wxICON_INFORMATION);
+        messageBox->Show(true);
+
+		  
+	 } else {
+		  wxMessageBox("Failed to write data to the COM port!", "Error", wxICON_ERROR | wxOK);
+	 }
+}
+
+// Function to convert double to IEEE 754 bytes (64-bit)
+void convertToIEEE754Bytes(double value, uint8_t bytes[8], bool littleEndian = true) {
+    // Assuming IEEE 754 double-precision standard is used
+    // Construct the IEEE 754 representation by bit manipulation
+
+    // Reinterpret the double as an integer to extract its bits
+    uint64_t intValue = *reinterpret_cast<uint64_t*>(&value);
+
+    // Set the byte order based on littleEndian parameter
+    if (!littleEndian) {
+        // Reverse the byte order
+        for (int i = 0; i < 8; ++i) {
+            bytes[i] = static_cast<uint8_t>((intValue >> ((7 - i) * 8)) & 0xFF);
+        }
+    } else {
+        // Use the natural byte order (LSB first)
+        for (int i = 0; i < 8; ++i) {
+            bytes[i] = static_cast<uint8_t>((intValue >> (i * 8)) & 0xFF);
+        }
+    }
+   
+}
+
+// Function to create the 27-byte data packet
+std::vector<uint8_t> createCANDataPacket(double latitude, double longitude, double altitude) {
+    // Counter data (byte 0)
+    
+    // Packet type (byte 0)
+    char packetType = 'T';
+    
+    uint16_t  counterDataLatitude = 1;
+    uint16_t  counterDataLongitude = 2;
+    uint16_t  counterDataAltitude = 3;
+
+    // ID (bytes 1-8)
+    std::string id = "10001004";
+	
+
+    // Data length (byte 9)
+    char dataLength = 8;
+    // Actual data (bytes 10-17)
+    uint8_t actualDataLatitude[8], actualDataLongitude[8], actualDataAltitude[8];
+	
+	
+	convertToIEEE754Bytes(latitude, actualDataLatitude);
+	convertToIEEE754Bytes(longitude, actualDataLongitude);
+	convertToIEEE754Bytes(altitude, actualDataAltitude);
+    
+    
+    // Reserved values (bytes 18-20)
+    std::string reservedValues(6, '\0');
+
+    // Carriage return (byte 26)
+    char carriageReturn = 0x0d;
+
+    // Concatenate all parts to form the 27-byte data packet
+    std::vector<uint8_t> dataPacket;
+
+    // Data packet for latitude
+    dataPacket.push_back(packetType);
+    for (char c : id) dataPacket.push_back(c);
+    dataPacket.push_back(dataLength);
+    dataPacket.push_back(static_cast<uint8_t>(counterDataLatitude & 0xFF));
+    dataPacket.push_back(static_cast<uint8_t>((counterDataLatitude >> 8) & 0xFF));
+    for (int i = 0; i < 8; ++i) dataPacket.push_back(actualDataLatitude[i]);
+    for (char c : reservedValues) dataPacket.push_back(c);
+    dataPacket.push_back(carriageReturn);
+    
+    std::cout << "Generated Latitude CAN Data Packets:\n";
+    for (uint8_t byte : dataPacket) {
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte) << " ";
+    }
+    std::cout << std::dec << std::endl;
+	 
+
+	 	 
+	 WriteDataToPort(hCANCommunicationPort,dataPacket);
+
+	 
+    dataPacket.clear();
+
+    // Data packet for longitude
+    dataPacket.push_back(packetType);
+    for (char c : id) dataPacket.push_back(c);
+    dataPacket.push_back(dataLength);
+    dataPacket.push_back(static_cast<uint8_t>(counterDataLongitude & 0xFF));
+    dataPacket.push_back(static_cast<uint8_t>((counterDataLongitude >> 8) & 0xFF));
+    for (int i = 0; i < 8; ++i) dataPacket.push_back(actualDataLongitude[i]);
+    for (char c : reservedValues) dataPacket.push_back(c);
+    dataPacket.push_back(carriageReturn);
+    
+       std::cout << "Generated Longitude CAN Data Packets:\n";
+    for (uint8_t byte : dataPacket) {
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte) << " ";
+    }
+    std::cout << std::dec << std::endl;
+
+	 WriteDataToPort(hCANCommunicationPort,dataPacket);
+    dataPacket.clear();
+
+	 
+    
+    
+    // Data packet for altitude
+    dataPacket.push_back(packetType);
+    for (char c : id) dataPacket.push_back(c);
+    dataPacket.push_back(dataLength);
+    dataPacket.push_back(static_cast<uint8_t>(counterDataAltitude & 0xFF));
+    dataPacket.push_back(static_cast<uint8_t>((counterDataAltitude >> 8) & 0xFF));
+    for (int i = 0; i < 8; ++i) dataPacket.push_back(actualDataAltitude[i]);
+    for (char c : reservedValues) dataPacket.push_back(c);
+    dataPacket.push_back(carriageReturn);
+    
+           std::cout << "Generated Altitude CAN Data Packets:\n";
+    for (uint8_t byte : dataPacket) {
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte) << " ";
+    }
+    std::cout << std::dec << std::endl;
+	 WriteDataToPort(hCANCommunicationPort,dataPacket);
+
+    return dataPacket;
+}
+
+
+
+int HandleMouseUpEvent(double lat_floatValue, double lon_floatValue) {
+  // Convert float values to strings
+  char buffer1[50], buffer2[50];
+  sprintf_s(buffer1, sizeof(buffer1), "Latitude : %.4f", lat_floatValue);
+  sprintf_s(buffer2, sizeof(buffer2), "\nLongitude :%.4f", lon_floatValue);
+
+  strcat_s(buffer1, sizeof(buffer1), buffer2);
+
+  // Display the message box
+  //MessageBoxA(NULL, buffer1, "Float Values", MB_OK);
+
+  createCANDataPacket(lat_floatValue, lon_floatValue, 0.0);
+
+  return 0;
+}
 
 bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   int x, y;
@@ -7005,6 +7241,11 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   mouse_y = y;
   mouse_leftisdown = event.LeftDown();
   GetCanvasPixPoint(x, y, m_cursor_lat, m_cursor_lon);
+  if(event.LeftUp()) {
+
+  HandleMouseUpEvent(m_cursor_lat,m_cursor_lon);
+  	}
+
 
   //  Establish the event region
   cursor_region = CENTER;
@@ -7044,6 +7285,10 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
     }
   }
 #endif
+
+  if(event.LeftUp()) {
+   // HandleMouseUpEvent(m_cursor_lat, m_cursor_lon);
+  }
 
   // Update modifiers here; some window managers never send the key event
   m_modkeys = 0;
@@ -7508,6 +7753,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
   // Seth: Is this refresh needed?
   Refresh(false);  // needed for MSW, not GTK  Why??
 }
+//Magesh
 bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
   // For now just bail out completely if the point clicked is not on the chart
   if (std::isnan(m_cursor_lat)) return false;
@@ -9317,7 +9563,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   if (event.LeftDown()) {
     // Skip the first left click if it will cause a canvas focus shift
     if ((GetCanvasCount() > 1) && (this != g_focusCanvas)) {
-      // printf("focus shift\n");
+       printf("focus shift\n");
       return false;
     }
 

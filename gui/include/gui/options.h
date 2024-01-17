@@ -219,7 +219,13 @@ enum {
   ID_AISALERTAUDIO,
   ID_AISALERTDIALOG,
   ID_TEMPUNITSCHOICE,
-  ID_BUTTONMIGRATE
+  ID_BUTTONMIGRATE,
+  ID_COMM_PORT,
+  ID_BAUD_RATE,
+  ID_PARITY_BITS,
+  ID_DATA_BITS,
+  ID_STOP_BIT
+  
 };
 
 /* Define an int bit field for dialog return value
@@ -391,7 +397,7 @@ public:
   wxNotebook *m_pListbook;
 #endif
 
-  size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
+  size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips,m_pageCANSettings;
   size_t m_pageUI, m_pagePlugins;
   int lastPage, lastSubPage;
   wxPoint lastWindowPos;
@@ -466,7 +472,7 @@ public:
 
   // For "Units" page
   wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect,
-      *pTempFormat, *pWindSpeedFormat;
+      *pTempFormat, *pWindSpeedFormat,*pComPort,*pBaudRate,*pPartiy,*pStopbits,*pDatabits;
   wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 
@@ -628,6 +634,10 @@ private:
   void CreatePanel_UI(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Units(size_t parent, int border_size,
                          int group_item_spacing);
+  void CreatePanel_CANSettings(size_t parent, int border_size,
+                         int group_item_spacing);
+
+  
   void CreatePanel_Sounds(size_t parent, int border_size,
                           int group_item_spacing);
   void CreatePanel_Advanced(size_t parent, int border_size,

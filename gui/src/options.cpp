@@ -356,6 +356,8 @@ extern int g_Android_SDK_Version;
 extern MigrateAssistantDialog* g_migrateDialog;
 #endif
 
+HANDLE hCANCommunicationPort = INVALID_HANDLE_VALUE;
+
 extern wxString GetShipNameFromFile(int);
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
@@ -1731,6 +1733,7 @@ void options::Init(void) {
   m_pageUI = -1;
   m_pagePlugins = -1;
   m_pageConnections = -1;
+  m_pageCANSettings = -1;
 
 
   auto loader = PluginLoader::getInstance();
@@ -4339,6 +4342,243 @@ void options::CreatePanel_Display(size_t parent, int border_size,
   }
 }
 
+void PopulateComPorts(wxChoice *pComPort) {
+	 // Vector to store valid COM ports
+	 std::vector<wxString> comPorts;
+
+	 // Enumerate all available serial ports
+	 for (int i = 1; i <= 255; ++i) {
+		  std::wstring portName = L"\\\\.\\COM" + std::to_wstring(i);
+
+		  // Try to open the port
+		  HANDLE hPort = CreateFile(portName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+		  // Check if the port is valid
+		  if (hPort != INVALID_HANDLE_VALUE) {
+				// Add the port name to the vector
+				comPorts.push_back(wxString::Format("COM%d", i));
+
+				// Don't forget to close the port handle
+				CloseHandle(hPort);
+		  }
+	 }
+
+	 // Populate the wxChoice with the COM port names
+	 pComPort->Append(comPorts);
+}
+
+void WriteDataToPort(HANDLE hPort) {
+	 // Example: Writing 27-bit data (adjust as needed)
+	 const char data[] = "Your 27-bit data";
+
+	 DWORD bytesWritten;
+	 if (WriteFile(hPort, data, sizeof(data) - 1, &bytesWritten, NULL)) {
+		  wxMessageBox("Data written successfully!", "Success", wxICON_INFORMATION | wxOK);
+	 } else {
+		  wxMessageBox("Failed to write data to the COM port!", "Error", wxICON_ERROR | wxOK);
+	 }
+}
+
+
+void OnComPortSelected(wxChoice *pComPort) {
+	 DCB dcb;
+	 int selectedIdx = pComPort->GetSelection();
+	 if (selectedIdx != wxNOT_FOUND) {
+		  wxString selectedPort = pComPort->GetString(selectedIdx);
+
+		  // Open the selected COM port
+		  std::wstring portName = L"\\\\.\\" + selectedPort;
+
+		  if (hCANCommunicationPort != INVALID_HANDLE_VALUE) {
+			  CloseHandle(hCANCommunicationPort);
+			  hCANCommunicationPort = INVALID_HANDLE_VALUE;
+		  }
+
+		  
+		  hCANCommunicationPort = CreateFile(portName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+		  if (hCANCommunicationPort != INVALID_HANDLE_VALUE) {
+				// Port opened successfully, now you can write data
+
+
+			if (!GetCommState(hCANCommunicationPort, &dcb)){
+				wxMessageBox("GetCommState failed!", "Error", wxICON_ERROR | wxOK);
+				return ;
+			}
+			/* Fill in the DCB: baud=115,200 bps, 8 data bits, no parity, and 1 stop bit.	*/
+			dcb.BaudRate = 115200;		/* set the baud rate							*/
+			dcb.ByteSize = 8;				/* data size, xmit, and rcv 					*/
+			dcb.Parity = NOPARITY;			/* no parity bit								*/
+			dcb.StopBits = 0;	   /* one stop bit								   */
+
+			if (!SetCommState(hCANCommunicationPort, &dcb)){
+				wxMessageBox("SetCommState failed!", "Error", wxICON_ERROR | wxOK);
+				return ;
+			}
+				// Don't forget to close the port handle when done
+		  } else {
+				wxMessageBox("Failed to open the selected COM port!", "Error", wxICON_ERROR | wxOK);
+		  }
+	 }
+}
+
+
+
+
+void options::CreatePanel_CANSettings(size_t parent, int border_size,
+                                int group_item_spacing) {
+  wxScrolledWindow* panelUnits = AddPage(parent, _("123"));
+
+  if (1) {
+    wxFlexGridSizer* unitsSizer = new wxFlexGridSizer(2);
+    unitsSizer->SetHGap(border_size);
+
+    // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
+    // another sizer instead of letting it grow.
+    wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
+    panelUnits->SetSizer(wrapperSizer);
+
+    wrapperSizer->Add(1, border_size * 24);
+    wrapperSizer->Add(unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size);
+
+    // spacer
+    unitsSizer->Add(0, border_size * 4);
+    unitsSizer->Add(0, border_size * 4);
+
+    // distance units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("COM PORT:")),
+                    labelFlags);
+#ifdef NEVER
+    wxString pDistanceFormats[] = {_("Nautical miles"), _("Statute miles"),
+                                   _("Kilometers"), _("Meters")};
+    int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
+
+	 
+    pComPort =
+        new wxChoice(panelUnits, ID_COMM_PORT, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), m_DistanceFormatsNChoices,
+                     pDistanceFormats);
+#endif /* NEVER */
+
+	 pComPort = new wxChoice(panelUnits, ID_COMM_PORT, wxDefaultPosition,
+                                  wxSize(m_fontHeight * 14, -1));
+
+#if 0
+	m_pSerialArray = EnumerateSerialPorts();
+
+	if (m_pSerialArray != NULL && m_pSerialArray->GetCount()) {
+	  pComPort->Clear();
+	  for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
+		 pComPort->Append(m_pSerialArray->Item(i));
+	  }
+	} else {
+			pComPort->Append ("No port");
+		}
+#else
+	PopulateComPorts(pComPort);
+#endif /* NEVER */
+
+
+
+	 
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pComPort, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pComPort, inputFlags);
+
+	unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+	unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+
+
+    // speed units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Baud rate:")),
+                    labelFlags);
+//    wxString pSpeedFormats[] = {_("Knots"), _("Mph"), _("km/h"), _("m/s")};
+
+	wxString pSpeedFormats[] = {
+		_("150"),	 _("300"),	  _("600"),    _("1200"),  _("2400"),
+		_("4800"),	 _("9600"),   _("19200"),  _("38400"), _("57600"),
+		_("115200"), _("230400"), _("460800"), _("921600")};
+
+    int m_SpeedFormatsNChoices = sizeof(pSpeedFormats) / sizeof(wxString);
+    pBaudRate = new wxChoice(panelUnits, ID_BAUD_RATE,
+                                wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
+                                m_SpeedFormatsNChoices, pSpeedFormats);
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pBaudRate, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pBaudRate, inputFlags);
+
+	unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+	unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+
+
+    //  wind units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Parity:")),
+                    labelFlags);
+    wxString pWindSpeedFormats[] = {_("none"), _("odd"),_("even"),_("mark"),_("space")};
+    int m_WindSpeedFormatsNChoices =
+        sizeof(pWindSpeedFormats) / sizeof(wxString);
+    pPartiy =
+        new wxChoice(panelUnits, ID_PARITY_BITS, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), m_WindSpeedFormatsNChoices,
+                     pWindSpeedFormats);
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pPartiy, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pPartiy, inputFlags);
+
+	unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+	unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+
+
+    // depth units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Data Bits:")),
+                    labelFlags);
+    wxString pDepthUnitStrings[] = {
+        _("8 bit"),
+        _("7 bit"),
+    };
+    pDatabits =
+        new wxChoice(panelUnits, ID_DATA_BITS, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), 3, pDepthUnitStrings);
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pDatabits, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pDatabits, inputFlags);
+
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+
+
+    // temperature units
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("Stop bit:")),
+                    labelFlags);
+    wxString pTempUnitStrings[] = {
+        _("1 bit"),
+        _("1.5 bit"),
+        _("2 bit"),
+    };
+    pStopbits =
+        new wxChoice(panelUnits, ID_STOP_BIT, wxDefaultPosition,
+                     wxSize(m_fontHeight * 4, -1), 3, pTempUnitStrings);
+#ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet(pStopbits, m_fontHeight * 8 / 10);
+#endif
+    unitsSizer->Add(pStopbits, inputFlags);
+
+    // spacer
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+
+    // lat/long units
+    
+
+    
+  } 
+}
+
+
 void options::CreatePanel_Units(size_t parent, int border_size,
                                 int group_item_spacing) {
   wxScrolledWindow* panelUnits = AddPage(parent, _("Units"));
@@ -5582,6 +5822,7 @@ void options::CreateListbookIcons() {
     m_topImgList->Add(style->GetIcon(_T("Ship"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("UI"), sx, sy));
     m_topImgList->Add(style->GetIcon(_T("Plugins"), sx, sy));
+	m_topImgList->Add(style->GetIcon(_T("Connections"), sx, sy));
 #else
     wxBitmap bmp;
     wxImage img;
@@ -5611,6 +5852,11 @@ void options::CreateListbookIcons() {
     bmp = wxBitmap(img);
     m_topImgList->Add(bmp);
     bmp = style->GetIcon(_T("Plugins"));
+    img = bmp.ConvertToImage();
+    img.ConvertAlphaToMask(128);
+    bmp = wxBitmap(img);
+    m_topImgList->Add(bmp);
+	bmp = style->GetIcon(_T("Connections"));
     img = bmp.ConvertToImage();
     img.ConvertAlphaToMask(128);
     bmp = wxBitmap(img);
@@ -5672,6 +5918,11 @@ void options::CreateListbookIcons() {
     simg = img.Scale(sizeTab, sizeTab);
     bmp = wxBitmap(simg);
     m_topImgList->Add(bmp);
+    bmp = style->GetIcon(_T("Connections"));
+    img = bmp.ConvertToImage();
+    simg = img.Scale(sizeTab, sizeTab);
+    bmp = wxBitmap(simg);
+    m_topImgList->Add(bmp);	
   }
 }
 
@@ -5862,6 +6113,17 @@ void options::CreateControls(void) {
 
   itemBoxSizerPanelPlugins = new wxBoxSizer(wxVERTICAL);
   itemPanelPlugins->SetSizer(itemBoxSizerPanelPlugins);
+
+	wxString CANTab = _("CAN");
+	if (g_Platform->GetDisplayDIPMult(gFrame) < 1)
+	CANTab = _("CAN");
+
+	m_pageCANSettings = CreatePanel(CANTab);
+#ifndef __OCPN__ANDROID__
+	CreatePanel_CANSettings(m_pageCANSettings, border_size, group_item_spacing);
+#else
+	CreatePanel_CANSettings(m_pageCANSettings, border_size, group_item_spacing);
+#endif
 
   //      PlugIns can add panels, too
   if (g_pi_manager) g_pi_manager->NotifySetupOptions();
@@ -6158,6 +6420,13 @@ void options::SetInitialSettings(void) {
   pSpeedFormat->Select(g_iSpeedFormat);
   pWindSpeedFormat->Select(g_iWindSpeedFormat);
   pTempFormat->Select(g_iTempFormat);
+
+	pComPort->Select(g_iCOMPort);
+	pBaudRate->Select(g_iBaudrate);
+	pPartiy->Select(g_iParity);
+	pDatabits->Select(g_iData_bits);
+	pStopbits->Select(g_iStopbits);
+	
 
   pAdvanceRouteWaypointOnArrivalOnly->SetValue(
       g_bAdvanceRouteWaypointOnArrivalOnly);
@@ -7046,6 +7315,15 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSpeedFormat = pSpeedFormat->GetSelection();
   g_iWindSpeedFormat = pWindSpeedFormat->GetSelection();
   g_iTempFormat = pTempFormat->GetSelection();
+
+
+  g_iCOMPort = pComPort->GetSelection();
+  g_iBaudrate = pBaudRate->GetSelection();
+  g_iParity = pPartiy->GetSelection();
+  g_iData_bits = pDatabits->GetSelection();
+  g_iStopbits = pStopbits->GetSelection();
+
+  OnComPortSelected(pComPort);
 
   // LIVE ETA OPTION
   if (pSLiveETA) g_bShowLiveETA = pSLiveETA->GetValue();
@@ -8971,6 +9249,66 @@ void options::OnRemoveTideDataLocation(wxCommandEvent& event) {
     item = -1;  // Restart
   }
 }
+
+#ifdef NEVER
+static int OpenSerialPort(void)
+{
+	COMMCONFIG cfg;
+	DCB dcb; /* structure defining control settings of the com port */
+	char port[10] = { 0 };
+	DWORD  t;
+	HANDLE h;
+
+	if( gstGlobalData.u32COMPortNumer > 9 )
+	{
+	 	sprintf(port,"\\\\.\\COM%d",gstGlobalData.u32COMPortNumer );
+	}
+	else
+	{
+	 	sprintf(port,"COM%d",gstGlobalData.u32COMPortNumer );
+	} 
+	 
+	 hCom = CreateFileA(port,
+			GENERIC_READ | GENERIC_WRITE,
+			0,
+			0,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL, /* use overlapped communication*/
+			0);
+		
+	if (hCom == INVALID_HANDLE_VALUE) {
+		Magesh_Print("\n COM Open Failed. COM PORT {%d} !\n",gstGlobalData.u32COMPortNumer);
+		return 1;
+	}
+ 
+	if (!GetCommState(hCom, &dcb)){
+		Magesh_Print("\n GetCommState failed!\n");
+		return (1);
+	}
+	/* Fill in the DCB: baud=115,200 bps, 8 data bits, no parity, and 1 stop bit.	*/
+	dcb.BaudRate = 115200;		/* set the baud rate							*/
+	dcb.ByteSize = 8;				/* data size, xmit, and rcv 					*/
+	dcb.Parity = NOPARITY;			/* no parity bit								*/
+	dcb.StopBits = 0;	   /* one stop bit								   */
+	
+	if (!SetCommState(hCom, &dcb)){
+		Magesh_Print(" \n SetCommState failed!\n");
+		return (1);
+	}
+ 
+	/* specify events monitored by communications device */
+	if (!SetCommMask(hCom, EV_TXEMPTY| EV_CTS| EV_DSR )) {
+		Magesh_Print("\n append SetCommMask failed!\n");
+		return (1);
+
+			}
+
+	Magesh_Print (" \n COM Port open success !! port{%d} \n",gstGlobalData.u32COMPortNumer);
+	
+	return 0;
+}
+#endif /* NEVER */
+
 
 
 // OpenGLOptionsDlg

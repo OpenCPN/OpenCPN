@@ -572,6 +572,8 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
   if (m_pParentCanvas->MouseEventOverlayWindows(event)) return;
 
+  printf("\n Mouse EVENT: ", event.GetClickCount());
+
 #ifndef __OCPN__ANDROID__
   if (m_pParentCanvas->MouseEventSetup(event))
     return;  // handled, no further action required

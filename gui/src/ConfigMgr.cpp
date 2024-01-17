@@ -976,6 +976,13 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
     conf->Write(_T ( "ShowDepthUnits" ), g_bShowDepthUnits);
   }
 
+  conf->Write(_T ( "COMPort" ), g_iCOMPort);
+  conf->Write(_T ( "Baudrate" ), g_iBaudrate);
+  conf->Write(_T ( "Parity" ), g_iParity);
+  conf->Write(_T ( "Data_bits" ), g_iData_bits);
+  conf->Write(_T ( "Stopbits" ), g_iStopbits);
+
+
   conf->Write(_T ( "MobileTouch" ), g_btouch);
   conf->Write(_T ( "ResponsiveGraphics" ), g_bresponsive);
 
@@ -1413,6 +1420,21 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
             &g_iSpeedFormat);  // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
   CHECK_INT(_T ( "WindSpeedFormat" ),
             &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
+
+	CHECK_INT(_T ( "COMPort" ),
+	   &g_iCOMPort);
+
+	CHECK_INT(_T ( "Baudrate" ),
+	   &g_iBaudrate);
+
+	CHECK_INT(_T ( "Parity" ),
+	   &g_iParity);
+
+	CHECK_INT(_T ( "Data_bits" ),
+	   &g_iData_bits);
+
+	 CHECK_INT(_T ( "Stopbits" ),
+	   &g_iStopbits);
 
   // LIVE ETA OPTION
   CHECK_INT(_T ( "LiveETA" ), &g_bShowLiveETA);

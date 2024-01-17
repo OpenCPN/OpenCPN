@@ -40,6 +40,15 @@ int g_nNMEADebug = 0;
 int gps_watchdog_timeout_ticks = 0;
 int sat_watchdog_timeout_ticks = 12;
 
+
+int g_iCOMPort = 0;
+int g_iBaudrate = 0;
+int g_iParity = 0;
+int g_iData_bits = 0;
+int g_iStopbits = 0;
+
+
+
 wxString g_GPS_Ident;
 wxString g_hostname;
 wxString g_TalkerIdText;
