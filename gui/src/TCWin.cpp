@@ -20,7 +20,6 @@
 #include "ocpn_frame.h"
 
 extern ColorScheme global_color_scheme;
-extern IDX_entry *gpIDX;
 extern int gpIDXn;
 extern TCMgr *ptcmgr;
 extern wxString g_locale;
@@ -91,7 +90,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   if (strchr("Tt", pIDX->IDX_type)) {
     m_plot_type = TIDE_PLOT;
     SetTitle(wxString(_("Tide")));
-    gpIDX = pIDX;  // remember pointer for routeplan
+    // remember pointer for routeplan
 
   } else {
     m_plot_type = CURRENT_PLOT;
@@ -396,7 +395,8 @@ void TCWin::RecalculateSize() {
 void TCWin::OKEvent(wxCommandEvent &event) {
   Hide();
   pParent->pCwin = NULL;
-  if (--gpIDXn == 0) gpIDX = NULL;
+  if (--gpIDXn == 0)
+    ;
   delete m_pTCRolloverWin;
   delete m_tList;
   pParent->Refresh(false);
@@ -413,7 +413,8 @@ void TCWin::OKEvent(wxCommandEvent &event) {
 void TCWin::OnCloseWindow(wxCloseEvent &event) {
   Hide();
   pParent->pCwin = NULL;
-  if (--gpIDXn == 0) gpIDX = NULL;
+  if (--gpIDXn == 0)
+    ;
   delete m_pTCRolloverWin;
   delete m_tList;
 
