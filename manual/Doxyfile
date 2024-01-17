@@ -908,7 +908,8 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT    = ../model/src ../gui/src ../s57 ../include
+INPUT    = ../model/src ../model/include/model  ../gui/src ../gui/include/gui
+INPUT    +=  ../s57 ../include
 INPUT    += ../libs/observable/include ../libs/observable/src ../libs/observable
 
 # This tag can be used to specify the character encoding of the source files
