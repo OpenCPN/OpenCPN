@@ -802,7 +802,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
 
 
 wxString newPrivateFileName(wxString, const char *name,
-                            const char *windowsName) {
+                            [[maybe_unused]] const char *windowsName) {
   wxString fname = wxString::FromUTF8(name);
 
   wxString filePathAndName;
@@ -2128,24 +2128,6 @@ void RestoreSystemColors(void);
 #ifdef LINUX_CRASHRPT
 void MyApp::OnFatalException() { g_crashprint.Report(); }
 #endif
-
-Track* MyApp::TrackOff(void) {
-  if (gFrame)
-    return gFrame->TrackOff();
-  else
-    return nullptr;
-}
-
-
-
-
-
-
-
-
-
-
-
 
 //----------------------------------------------------------------------------------------------------------
 //      Application-wide CPL Error handler

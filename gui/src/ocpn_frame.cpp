@@ -600,6 +600,7 @@ static bool isTransparentToolbarInOpenGLOK(void) {
 //------------------------------------------------------------------------------
 
 //      Frame implementation
+// NOLINTBEGIN
 wxDEFINE_EVENT(BELLS_PLAYED_EVTYPE, wxCommandEvent);
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
@@ -631,6 +632,8 @@ EVT_POWER_RESUME(MyFrame::OnResume)
 #endif  // wxHAS_POWER_EVENTS
 
 END_EVENT_TABLE()
+
+// NOLINTEND
 
 /*
  * Direct callback from completed sound, possibly in an interrupt
@@ -2753,13 +2756,6 @@ void MyFrame::RefreshAllCanvas(bool bErase) {
   }
 }
 
-void MyFrame::SetAISDisplayStyle(ChartCanvas *cc, int StyleIndx) {
-  cc->SetAISCanvasDisplayStyle(StyleIndx);
-
-  UpdateGlobalMenuItems();
-  ReloadAllVP();
-}
-
 void MyFrame::setStringVP(wxString VPS) {
   ChartCanvas *cc = GetPrimaryCanvas();
 
@@ -3708,14 +3704,6 @@ void MyFrame::SurfaceAllCanvasToolbars(void) {
 #endif
 }
 
-void MyFrame::ToggleAllToolbars(bool b_smooth) {
-  // .. for each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->ToggleToolbar(b_smooth);
-  }
-}
-
 void MyFrame::JumpToPosition(ChartCanvas *cc, double lat, double lon,
                              double scale) {
   if (lon > 180.0) lon -= 360.0;
@@ -3834,10 +3822,6 @@ int MyFrame::DoOptionsDialog() {
   g_options->SetConfigPtr(pConfig);
 
   g_options->SetInitialSettings();
-
-  bPrevQuilt = g_bQuiltEnable;
-  bPrevFullScreenQuilt = g_bFullScreenQuilt;
-  bPrevOGL = g_bopengl;
 
   prev_locale = g_locale;
 
@@ -4361,11 +4345,6 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   return b_need_refresh;
 }
 
-wxString MyFrame::GetGroupName(int igroup) {
-  ChartGroup *pGroup = g_pGroupArray->Item(igroup - 1);
-  return pGroup->m_group_name;
-}
-
 bool MyFrame::CheckGroup(int igroup) {
   if (igroup == 0) return true;  // "all charts" is always OK
 
@@ -4594,15 +4573,6 @@ void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
             ps52plib->GenerateStateHash();
 #endif
   }
-}
-
-void MyFrame::ClearRouteTool() {
-  if (g_MainToolbar->GetToolbar())
-    g_MainToolbar->GetToolbar()->ToggleTool(ID_ROUTE, false);
-
-#ifdef __OCPN__ANDROID__
-  androidSetRouteAnnunciator(false);
-#endif
 }
 
 void MyFrame::DoStackDown(ChartCanvas *cc) { DoStackDelta(cc, -1); }
@@ -5083,7 +5053,6 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
 //      Determined by source validity of RMC, GGA, GLL (N0183)
 //        or PGNs 129029, 129025 (N2K)
 //      Positions by sK and AIVDO are assumed valid
-  m_b_new_data = true;
   bool last_bGPSValid = bGPSValid;
   if ((msg->vflag & POS_UPDATE) == POS_UPDATE) {
     if ((msg->vflag & POS_VALID) == POS_VALID)
@@ -5773,7 +5742,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 #endif
 
   // Reset pending next AppMsgBus notification
-  m_b_new_data = false;
 
   if (g_unit_test_2)
     FrameTimer1.Start(TIMER_GFRAME_1 * 3, wxTIMER_CONTINUOUS);
@@ -6553,10 +6521,6 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   }
 }
 
-void MyFrame::OnEvtTHREADMSG(OCPN_ThreadMessageEvent &event) {
-  wxLogMessage(wxString(event.GetSString().c_str(), wxConvUTF8));
-}
-
 void MyFrame::FilterCogSog(void) {
   if (g_bfilter_cogsog && !g_own_ship_sog_cog_calc) {
     //    Simple averaging filter for COG
@@ -6617,14 +6581,6 @@ void MyFrame::FilterCogSog(void) {
       gSog = sum;
     }
   }
-}
-
-void MyFrame::StopSockets(void) {
-  // TODO: Can be removed?
-}
-
-void MyFrame::ResumeSockets(void) {
-  // TODO: Can be removed?
 }
 
 void MyFrame::LoadHarmonics() {
@@ -7018,13 +6974,6 @@ bool MyFrame::CollapseGlobalToolbar() {
     g_bmasterToolbarFull = false;
     return true;
   } else
-    return false;
-}
-
-bool MyFrame::GetMasterToolItemShow(int toolid) {
-  if (g_bmasterToolbarFull)
-    return true;
-  else
     return false;
 }
 

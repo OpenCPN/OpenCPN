@@ -70,8 +70,6 @@ public:
   bool OnExceptionInMainLoop();
 #endif
 
-  Track* TrackOff(void);
-
   InstanceCheck& m_checker;
   CommBridge m_comm_bridge;
 

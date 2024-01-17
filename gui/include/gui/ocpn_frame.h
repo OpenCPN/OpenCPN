@@ -48,8 +48,6 @@
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
 
-int GetApplicationMemoryUse(void);
-
 // Helper to create menu label + hotkey string when registering menus
 wxString _menuText(wxString name, wxString shortcut);
 
@@ -80,24 +78,24 @@ class ArrayOfCDI;
 
 #define TIMER_GFRAME_1 999
 
-#define ID_QUIT 101
 #define ID_CM93ZOOMG 102
 
 
 
-//      Command identifiers for wxCommandEvents coming from the outside world.
-//      Removed from enum to facilitate constant definition
+// Command identifiers for wxCommandEvents coming from the outside world.
+// Removed from enum to facilitate constant definition
+//
+// NOLINTBEGIN
 #define ID_CMD_APPLY_SETTINGS 300
 #define ID_CMD_NULL_REFRESH 301
 #define ID_CMD_TRIGGER_RESIZE 302
 #define ID_CMD_SETVP 303
 #define ID_CMD_POST_JSON_TO_PLUGINS 304
-#define ID_CMD_SET_LOCALE 305
 #define ID_CMD_SOUND_FINISHED 306
+// NOLINTEND
 
-#define N_STATUS_BAR_FIELDS_MAX 20
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #define STAT_FIELD_COUNT 2
 #define STAT_FIELD_TICK -1
 #define STAT_FIELD_SOGCOG 0
@@ -116,10 +114,6 @@ class ArrayOfCDI;
 //      Define a constant GPS signal watchdog timeout value
 #define GPS_TIMEOUT_SECONDS 10
 
-//    Define a timer value for Tide/Current updates
-//    Note that the underlying data algorithms produce fresh data only every 15
-//    minutes So maybe 5 minute updates should provide sufficient oversampling
-#define TIMER_TC_VALUE_SECONDS 300
 
 #define MAX_COG_AVERAGE_SECONDS 60
 #define MAX_COGSOG_FILTER_SECONDS 60
@@ -130,8 +124,6 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
-class OCPN_SignalKEvent;
-class DataStream;
 class AisTargetData;
 
 bool isSingleChart(ChartBase *chart);
@@ -142,7 +134,7 @@ public:
   ~OCPN_ThreadMessageEvent();
 
   // accessors
-  void SetSString(std::string string) { m_string = string; }
+  [[maybe_unused]] void SetSString(std::string string) { m_string = string; }
   std::string GetSString() { return m_string; }
 
   // required for sending with wxPostEvent()
@@ -153,7 +145,6 @@ private:
 };
 
 class MyFrame : public wxFrame {
-  friend class SignalKEventHandler;
 
 public:
   MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
@@ -172,10 +163,6 @@ public:
   void OnInitTimer(wxTimerEvent &event);
   void OnFrameTimer1(wxTimerEvent &event);
   bool DoChartUpdate(void);
-  void OnEvtTHREADMSG(OCPN_ThreadMessageEvent &event);
-  void OnEvtOCPN_NMEA(OCPN_DataStreamEvent &event);
-  void OnEvtOCPN_SignalK(OCPN_SignalKEvent &event);
-  void OnEvtOCPN_SIGNALK_Test(OCPN_SignalKEvent &event);
   void OnEvtPlugInMessage(OCPN_MsgEvent &event);
   void OnMemFootTimer(wxTimerEvent &event);
   void OnRecaptureTimer(wxTimerEvent &event);
@@ -194,7 +181,6 @@ public:
   void UpdateAllFonts(void);
   void PositionConsole(void);
   void OnToolLeftClick(wxCommandEvent &event);
-  void ClearRouteTool();
   void DoStackUp(ChartCanvas *cc);
   void DoStackDown(ChartCanvas *cc);
   void selectChartDisplay(int type, int family);
@@ -207,8 +193,6 @@ public:
 
   void SetUpMode(ChartCanvas *cc, int mode);
 
-  wxMenuBar *GetMainMenuBar() { return m_pMenuBar; }
-
   ChartCanvas *GetPrimaryCanvas();
   ChartCanvas *GetFocusCanvas();
 
@@ -219,9 +203,6 @@ public:
   int GetCanvasIndexUnderMouse();
 
   bool DropMarker(bool atOwnShip = true);
-
-  void TriggerResize(wxSize sz);
-  void OnResizeTimer(wxTimerEvent &event);
 
   void TriggerRecaptureTimer();
   bool SetGlobalToolbarViz(bool viz);
@@ -241,8 +222,6 @@ public:
   int DoOptionsDialog();
   bool ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray);
   void DoPrint(void);
-  void StopSockets(void);
-  void ResumeSockets(void);
   void ToggleDataQuality(ChartCanvas *cc);
   void TogglebFollow(ChartCanvas *cc);
   void ToggleFullScreen();
@@ -277,12 +256,8 @@ public:
   void ToggleQuiltMode(ChartCanvas *cc);
   void UpdateControlBar(ChartCanvas *cc);
 
-  void ShowTides(bool bShow);
-  void ShowCurrents(bool bShow);
-
   void SubmergeAllCanvasToolbars(void);
   void SurfaceAllCanvasToolbars(void);
-  void ToggleAllToolbars(bool b_smooth = false);
   void SetAllToolbarScale(void);
   void SetGPSCompassScale(void);
   void InvalidateAllCanvasUndo();
@@ -318,7 +293,6 @@ public:
   wxMenuBar *m_pMenuBar;
   int nBlinkerTick;
   bool m_bTimeIsSet;
-  bool m_bDateIsSet;
 
   wxTimer InitTimer;
   int m_iInitCount;
@@ -350,7 +324,6 @@ public:
 
   bool m_bdefer_resize;
   wxSize m_defer_size;
-  wxSize m_newsize;
   double COGTable[MAX_COG_AVERAGE_SECONDS];
 
   void FastClose();
@@ -387,12 +360,7 @@ private:
   void ApplyGlobalColorSchemetoStatusBar(void);
 
   bool ScrubGroupArray();
-  wxString GetGroupName(int igroup);
 
-  bool EvalPriority(const wxString &message, DataStream *pDS);
-  void SetAISDisplayStyle(ChartCanvas *cc, int StyleIndx);
-
-  bool GetMasterToolItemShow(int toolid);
   void OnToolbarAnimateTimer(wxTimerEvent &event);
   bool CollapseGlobalToolbar();
 
@@ -413,26 +381,19 @@ private:
   double COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
   double SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 
-  bool m_bpersistent_quilt;
   int m_ChartUpdatePeriod;
   bool m_last_bGPSValid;
   bool m_last_bVelocityValid;
 
   wxString prev_locale;
-  bool bPrevQuilt;
-  bool bPrevFullScreenQuilt;
-  bool bPrevOGL;
 
   time_t m_fixtime;
-  wxMenu *piano_ctx_menu;
   bool b_autofind;
 
   time_t m_last_track_rotation_ts;
-  wxRect m_mainlast_tb_rect;
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
-  bool m_b_new_data;
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
 
