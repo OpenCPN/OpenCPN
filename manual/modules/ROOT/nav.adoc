@@ -6,6 +6,7 @@
 ** xref:windows.adoc[Windows]
 ** xref:mac-osx.adoc[MacOS]
 * xref:unit-tests.adoc[Unit tests]
+* xref:rest-interface.adoc[REST server]
 * xref:odraw-messaging.adoc[Odraw Messaging]
 * xref:plugin-messaging.adoc[New Message Plugin API]
 * xref:gui-model.adoc[Model - Gui code organization]
