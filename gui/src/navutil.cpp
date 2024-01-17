@@ -54,41 +54,43 @@
 #include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/cmdline.h"
+#include "model/config_vars.h"
+#include "model/conn_params.h"
+#include "model/cutil.h"
+#include "model/geodesic.h"
+#include "model/georef.h"
+#include "model/idents.h"
+#include "model/multiplexer.h"
+#include "model/nav_object_database.h"
+#include "model/navutil_base.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/select.h"
+#include "model/track.h"
+
 #include "ais.h"
 #include "CanvasConfig.h"
 #include "chartbase.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "model/cmdline.h"
+#include "cm93.h"
 #include "config.h"
-#include "model/config_vars.h"
-#include "model/conn_params.h"
-#include "model/cutil.h"
 #include "dychart.h"
 #include "FontMgr.h"
-#include "model/geodesic.h"
-#include "model/georef.h"
-#include "model/idents.h"
 #include "Layer.h"
-#include "model/multiplexer.h"
-#include "model/nav_object_database.h"
-#include "model/navutil_base.h"
 #include "navutil.h"
 #include "nmea0183.h"
 #include "NMEALogWindow.h"
+#include "observable_globvar.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
-#include "model/own_ship.h"
-#include "model/route.h"
-#include "model/routeman.h"
-#include "s52utils.h"
-#include "model/select.h"
-#include "styles.h"
-#include "model/track.h"
 #include "s52plib.h"
-#include "cm93.h"
+#include "s52utils.h"
+#include "styles.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -769,7 +771,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   //    Global options and settings
   SetPath(_T ( "/Settings" ));
-
+  Read("ActiveRoute", &g_active_route);
+  Read("PersistActiveRoute", &g_persist_active_route);
   Read(_T ( "LastAppliedTemplate" ), &g_lastAppliedTemplateGUID);
   Read(_T ( "CompatOS" ), &g_compatOS);
   Read(_T ( "CompatOsVersion" ), &g_compatOsVersion);
@@ -1716,6 +1719,9 @@ void MyConfig::LoadNavObjects() {
     }
   }
   m_pNavObjectChangesSet->Init(m_sNavObjSetChangesFile);
+  // Signal to listeners to g_active_route that it's possible to look up guid.
+  GlobalVar<wxString> active_route(&g_active_route);
+  active_route.Notify();
 }
 
 bool MyConfig::LoadLayers(wxString &path) {
@@ -2473,6 +2479,8 @@ void MyConfig::UpdateSettings() {
 
   
   Write(_T ( "GPSIdent" ), g_GPS_Ident);
+  Write("ActiveRoute" , g_active_route);
+  Write("PersistActiveRoute", g_persist_active_route);
   Write(_T ( "UseGarminHostUpload" ), g_bGarminHostUpload);
 
   Write(_T ( "MobileTouch" ), g_btouch);

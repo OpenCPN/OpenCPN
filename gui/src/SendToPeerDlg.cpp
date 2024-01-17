@@ -23,15 +23,24 @@
  */
 #include <memory>
 
+#include <wx/statline.h>
+
+#include <curl/curl.h>
+
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/mDNS_query.h"
-#include "OCPNPlatform.h"
-#include "peer_client.h"
-#include "route_gui.h"
+#include "model/peer_client.h"
 #include "model/route.h"
-#include "route_point_gui.h"
 #include "model/route_point.h"
+
+#include "gui_lib.h"
+#include "OCPNPlatform.h"
+#include "ocpn_frame.h"
+#include "peer_client_dlg.h"
+#include "route_gui.h"
+#include "route_point_gui.h"
+
 #include "SendToPeerDlg.h"
 #include "ocpn_plugin.h"
 
@@ -39,24 +48,119 @@
 #include "androidUTIL.h"
 #endif
 
-#define TIMER_AUTOSCAN  94522
-#define TIMER_SCANTICK  94523
-#define TIMER_TRANSFER  94524
+#define TIMER_AUTOSCAN 94522
+#define TIMER_SCANTICK 94523
 
+extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxDateTime g_DNS_cache_time;
-extern int navobj_transfer_progress;
+
+static PeerDlgResult ConfirmWriteDlg() {
+  std::string msg(_("Objects exists on server. OK to overwrite?"));
+  long style = wxYES | wxNO | wxNO_DEFAULT | wxICON_QUESTION;
+  OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"), style);
+  int reply = dlg.ShowModal();
+  return reply == wxID_YES ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+}
+
+static PeerDlgResult RunStatusDlg(PeerDlg kind, int status) {
+  switch (kind) {
+    case PeerDlg::InvalidHttpResponse: {
+      std::stringstream ss;
+      if (status >= 0) {
+        ss << _("Server HTTP response is :") << status;
+      } else {
+        ss << _("Curl transfer error: ")
+           << curl_easy_strerror(static_cast<CURLcode>(-status));
+      }
+      OCPNMessageDialog dlg(NULL, ss.str(), _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
+    case PeerDlg::ErrorReturn: {
+      std::stringstream ss;
+      ss << _("Server internal error response:") << status;
+      OCPNMessageDialog dlg(NULL, ss.str(), _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
+    case PeerDlg::TransferOk: {
+      std::stringstream ss;
+      std::string msg(_("Transfer successfully completed"));
+      OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
+                            wxICON_INFORMATION | wxOK);
+      dlg.ShowModal();
+      return PeerDlgResult::Ok;
+    }
+    case PeerDlg::JsonParseError: {
+      std::string msg(_("Cannot parse server reply"));
+      OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
+     case PeerDlg::BadPincode: {
+      std::string msg(_("Pincode not accepted"));
+      OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
+    case PeerDlg::ActivateUnsupported: {
+      std::string msg(_("Server does not support activation"));
+      OCPNMessageDialog dlg(NULL, msg, _("OpenCPN Info"),
+                            wxICON_ERROR | wxOK | wxCANCEL);
+
+      int r = dlg.ShowModal();
+      return r == wxID_OK ? PeerDlgResult::Ok : PeerDlgResult::Cancel;
+    }
+    case PeerDlg::PinConfirm:
+      assert(false && "Illegal PinConfirm result dialog");
+  }
+  return PeerDlgResult::Cancel;  // For the compiler, not reached
+}
+
+std::pair<PeerDlgResult, std::string> RunPincodeDlg() {
+  PinConfirmDlg dlg(gFrame, wxID_ANY, _("OpenCPN Server Message"), "",
+                    wxDefaultPosition, wxDefaultSize, SYMBOL_PCD_STYLE);
+
+  static const char* const msg =
+    _("A server pin is needed.\n"
+      "Please enter PIN number from server to pair with this device");
+
+  dlg.SetMessage(msg);
+  dlg.SetPincodeText("");
+  if (dlg.ShowModal() == wxID_OK) {
+    auto pin = dlg.GetPincodeText().Trim().Trim(false);
+    return {PeerDlgResult::HasPincode, pin.ToStdString()};
+  }
+  return {PeerDlgResult::Cancel, ""};
+}
+
+/** Dig out server name and ip address from textbox value. */
+static void ParsePeer(const wxString& ui_value, PeerData& peer_data) {
+  wxString server_name = ui_value.BeforeFirst('{').Trim();
+  wxString peer_ip = ui_value;
+  int tail = ui_value.Find('{');
+  if (tail != wxNOT_FOUND) peer_ip = peer_ip.Mid(tail + 1);
+  peer_ip = peer_ip.BeforeFirst('}') + ":";
+  // Is the destination a portable?  Detect by string inspection.
+  peer_ip += server_name.BeforeFirst('-') == "Portable" ? "8444" : "8443";
+  peer_data.server_name = server_name.ToStdString();
+  peer_data.dest_ip_address = peer_ip.ToStdString();
+}
 
 IMPLEMENT_DYNAMIC_CLASS(SendToPeerDlg, wxDialog)
 
 BEGIN_EVENT_TABLE(SendToPeerDlg, wxDialog)
-  EVT_BUTTON(ID_STP_CANCEL, SendToPeerDlg::OnCancelClick)
-  EVT_BUTTON(ID_STP_OK, SendToPeerDlg::OnSendClick)
-  EVT_BUTTON(ID_STP_SCAN, SendToPeerDlg::OnScanClick)
-  EVT_TIMER(TIMER_AUTOSCAN, SendToPeerDlg::OnTimerAutoscan)
-  EVT_TIMER(TIMER_SCANTICK, SendToPeerDlg::OnTimerScanTick)
-  EVT_TIMER(TIMER_TRANSFER, SendToPeerDlg::OnTimerTransferTick)
+EVT_BUTTON(ID_STP_CANCEL, SendToPeerDlg::OnCancelClick)
+EVT_BUTTON(ID_STP_OK, SendToPeerDlg::OnSendClick)
+EVT_BUTTON(ID_STP_SCAN, SendToPeerDlg::OnScanClick)
+EVT_TIMER(TIMER_AUTOSCAN, SendToPeerDlg::OnTimerAutoscan)
+EVT_TIMER(TIMER_SCANTICK, SendToPeerDlg::OnTimerScanTick)
 END_EVENT_TABLE()
 
 SendToPeerDlg::SendToPeerDlg() {
@@ -65,21 +169,11 @@ SendToPeerDlg::SendToPeerDlg() {
   m_SendButton = NULL;
   m_CancelButton = NULL;
   premtext = NULL;
-  m_scanTime = 5;  //default, seconds
+  m_scanTime = 5;  // default, seconds
   m_bScanOnCreate = false;
 #ifdef __ANDROID__
   androidDisableRotation();
 #endif
-
-}
-
-SendToPeerDlg::SendToPeerDlg(wxWindow* parent, wxWindowID id,
-                           const wxString& caption, const wxString& hint,
-                           const wxPoint& pos, const wxSize& size, long style) {
-#ifdef __ANDROID__
-  androidDisableRotation();
-#endif
-  Create(parent, id, caption, hint, pos, size, style);
 }
 
 SendToPeerDlg::~SendToPeerDlg() {
@@ -93,11 +187,10 @@ SendToPeerDlg::~SendToPeerDlg() {
 }
 
 bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
-                          const wxString& caption, const wxString& hint,
-                          const wxPoint& pos, const wxSize& size, long style) {
+                           const wxString& caption, const wxString& hint,
+                           const wxPoint& pos, const wxSize& size, long style) {
   SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
-
-  wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
+  wxFont* pF = OCPNGetFont(_T("Dialog"), 0);
   SetFont(*pF);
 
   wxDialog::Create(parent, id, caption, pos, size, style);
@@ -107,18 +200,26 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
   GetSizer()->SetSizeHints(this);
   Centre();
 
-  if (m_bScanOnCreate){
+  if (m_bScanOnCreate) {
     m_autoScanTimer.SetOwner(this, TIMER_AUTOSCAN);
     m_autoScanTimer.Start(500, wxTIMER_ONE_SHOT);
   }
-
   m_ScanTickTimer.SetOwner(this, TIMER_SCANTICK);
-  m_TransferTimer.SetOwner(this, TIMER_TRANSFER);
 
-  return TRUE;
+  auto action = [&](ObservedEvt& evt) { m_pgauge->SetValue(evt.GetInt()); };
+  progress_listener.Init(progress, action);
+#ifdef __ANDROID__
+  androidDisableRotation();
+#endif
+  return true;
 }
 
-void SendToPeerDlg::CreateControls(const wxString& hint) {
+bool SendToPeerDlg::EnableActivateChkbox() {
+  return m_RouteList.size() == 1 && m_RoutePointList.empty() &&
+     m_TrackList.empty();
+}
+
+void SendToPeerDlg::CreateControls(const wxString&) {
   SendToPeerDlg* itemDialog1 = this;
 
   wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
@@ -135,10 +236,10 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
   m_PeerListBox = new wxComboBox(this, ID_STP_CHOICE_PEER);
 
   //    Fill in the wxComboBox with all detected peers
-  for (unsigned int i=0; i < g_DNS_cache.size(); i++){
+  for (unsigned int i = 0; i < g_DNS_cache.size(); i++) {
     wxString item(g_DNS_cache[i]->hostname.c_str());
 
-    //skip "self"
+    // skip "self"
     if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
       item += " {";
       item += g_DNS_cache[i]->ip.c_str();
@@ -147,8 +248,7 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
     }
   }
 
-  if (m_PeerListBox->GetCount())
-    m_PeerListBox->SetSelection(0);
+  if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
 
   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
 
@@ -159,12 +259,20 @@ void SendToPeerDlg::CreateControls(const wxString& hint) {
                                 wxDefaultPosition, wxDefaultSize, 0);
   itemBoxSizer3->Add(m_RescanButton, 0, wxALL, 5);
 
-  m_pgauge = new wxGauge(itemDialog1, -1, m_scanTime * 2,
-                          wxDefaultPosition, wxSize(-1, GetCharHeight()));
+  m_pgauge = new wxGauge(itemDialog1, -1, m_scanTime * 2, wxDefaultPosition,
+                         wxSize(-1, GetCharHeight()));
   itemBoxSizer3->Add(m_pgauge, 0, wxEXPAND | wxALL, 20);
 
-  //    Add a reminder text box
   itemBoxSizer2->AddSpacer(30);
+  itemBoxSizer2->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
+  m_activate_chkbox = new wxCheckBox(this,  wxID_ANY,
+                                     _("Activate after transfer"),
+                                     wxDefaultPosition, wxDefaultSize,
+                                     wxALIGN_RIGHT);
+  itemBoxSizer2->Add(m_activate_chkbox, 0,
+                     wxALIGN_RIGHT | wxALL, 10);
+  if (!EnableActivateChkbox()) m_activate_chkbox->Disable();
+
 
   //    OK/Cancel/etc.
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
@@ -187,98 +295,80 @@ void SendToPeerDlg::SetMessage(wxString msg) {
   }
 }
 
-void SendToPeerDlg::OnSendClick(wxCommandEvent& event) {
-  if (m_RouteList.empty() && m_TrackList.empty() && m_RoutePointList.empty())
+void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
+  if (m_RouteList.empty() && m_TrackList.empty() && m_RoutePointList.empty()) {
     Close();
+    return;
+  }
+  // Set up transfer data
+  PeerData peer_data(progress);
+  ParsePeer(m_PeerListBox->GetValue(), peer_data);
+  peer_data.routes = m_RouteList;
+  peer_data.tracks = m_TrackList;
+  peer_data.routepoints = m_RoutePointList;
+  peer_data.run_status_dlg = RunStatusDlg;
+  peer_data.run_pincode_dlg = RunPincodeDlg;
+  peer_data.activate = m_activate_chkbox->GetValue();
 
-  //    Get the selected peer information
-  wxString peer_ip = m_PeerListBox->GetValue();
-  wxString server_name = peer_ip.BeforeFirst('{').Trim();
-  int tail = peer_ip.Find('{');
-  if (tail != wxNOT_FOUND)
-    peer_ip = peer_ip.Mid(tail+1);
-  peer_ip = peer_ip.BeforeFirst('}');
-  peer_ip += ":";
-
-  // Is the destination a portable?  Detect by string inspection.
-  wxString p = "Portable";
-  if (p.IsSameAs(server_name.BeforeFirst('-')))
-    peer_ip += "8444";
-  else
-    peer_ip += "8443";
-
-  std::string server_address("https://");
-  server_address += peer_ip.ToStdString();
-
-
-   //g_uploadConnection = src;  // save for persistence
-
-
-  //    And send it out
+  // And send it out
   m_pgauge->SetRange(100);
   m_pgauge->SetValue(0);
-  m_TransferTimer.Start(50);
   m_pgauge->Show();
-  if (!m_RouteList.empty() || !m_RoutePointList.empty() || !m_TrackList.empty())
-  {
-    int return_code = SendNavobjects(server_address, server_name.ToStdString(), m_RouteList, m_RoutePointList, m_TrackList, true);
+
+  GetApiVersion(peer_data);
+  if (peer_data.api_version < SemanticVersion(5, 9)) {
+    SendNavobjects(peer_data);
+  } else {
+    bool is_writable = CheckNavObjects(peer_data);
+    if (is_writable || ConfirmWriteDlg() == PeerDlgResult::Ok) {
+      peer_data.overwrite = true;
+      SendNavobjects(peer_data);
+    }
   }
-  m_TransferTimer.Stop();
   m_pgauge->Hide();
   Close();
 }
 
-void SendToPeerDlg::OnScanClick(wxCommandEvent& event) {
-  DoScan();
-}
+void SendToPeerDlg::OnScanClick(wxCommandEvent&) { DoScan(); }
 
-void SendToPeerDlg::OnTimerAutoscan(wxTimerEvent &event) {
-  DoScan();
-}
+void SendToPeerDlg::OnTimerAutoscan(wxTimerEvent&) { DoScan(); }
 
-void SendToPeerDlg::OnTimerScanTick(wxTimerEvent &event) {
+void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
   m_tick--;
-  if(m_pgauge) {
+  if (m_pgauge) {
     int v = m_pgauge->GetValue();
-    if( v + 1 <= m_pgauge->GetRange())
-      m_pgauge->SetValue(v+1);
+    if (v + 1 <= m_pgauge->GetRange()) m_pgauge->SetValue(v + 1);
   }
 
-  if (m_tick == 0){
+  if (m_tick == 0) {
     // Housekeeping
-   m_ScanTickTimer.Stop();
-   g_Platform->HideBusySpinner();
-   m_RescanButton->Enable();
-   m_SendButton->Enable();
-   m_SendButton->SetDefault();
-   m_pgauge->Hide();
-   m_bScanOnCreate = false;
+    m_ScanTickTimer.Stop();
+    g_Platform->HideBusySpinner();
+    m_RescanButton->Enable();
+    m_SendButton->Enable();
+    m_SendButton->SetDefault();
+    m_pgauge->Hide();
+    m_bScanOnCreate = false;
 
-      // Clear the combo box
-   m_PeerListBox->Clear();
+    // Clear the combo box
+    m_PeerListBox->Clear();
 
-   //    Fill in the wxComboBox with all detected peers
-   for (unsigned int i=0; i < g_DNS_cache.size(); i++){
-     wxString item(g_DNS_cache[i]->hostname.c_str());
+    //    Fill in the wxComboBox with all detected peers
+    for (unsigned int i = 0; i < g_DNS_cache.size(); i++) {
+      wxString item(g_DNS_cache[i]->hostname.c_str());
 
-    //skip "self"
-     if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
-       item += " {";
-       item += g_DNS_cache[i]->ip.c_str();
-       item += "}";
-       m_PeerListBox->Append(item);
-     }
-   }
-   if (m_PeerListBox->GetCount())
-    m_PeerListBox->SetSelection(0);
+      // skip "self"
+      if (!g_hostname.IsSameAs(item.BeforeFirst('.'))) {
+        item += " {";
+        item += g_DNS_cache[i]->ip.c_str();
+        item += "}";
+        m_PeerListBox->Append(item);
+      }
+    }
+    if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
 
-   g_DNS_cache_time = wxDateTime::Now();
+    g_DNS_cache_time = wxDateTime::Now();
   }
-}
-
-void SendToPeerDlg::OnTimerTransferTick(wxTimerEvent &event) {
-  m_pgauge->SetValue(navobj_transfer_progress);
-  event.Skip();
 }
 
 void SendToPeerDlg::DoScan() {
@@ -295,7 +385,7 @@ void SendToPeerDlg::DoScan() {
   m_ScanTickTimer.Start(500, wxTIMER_CONTINUOUS);
 }
 
-void SendToPeerDlg::OnCancelClick(wxCommandEvent& event) {
+void SendToPeerDlg::OnCancelClick(wxCommandEvent&) {
   g_Platform->HideBusySpinner();
   Close();
 }

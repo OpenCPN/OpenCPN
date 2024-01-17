@@ -849,9 +849,8 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   if (matches.size() == 1) return matches[0];  // only one found with given name
 
   auto version = VersionFromManifest(name);
-  auto predicate = [version](const PluginMetadata& md) {
-    return version == md.version;
-  };
+  auto predicate =
+          [version](const PluginMetadata& md) { return version == md.version; };
   auto found = find_if(matches.begin(), matches.end(), predicate);
   return found != matches.end() ? *found : matches[0];
 }

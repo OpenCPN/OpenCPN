@@ -32,6 +32,7 @@
 
 extern bool g_bGarminHostUpload;
 extern bool g_bWplUsePosition;
+extern bool g_persist_active_route;
 
 extern double g_UserVar;
 
@@ -48,13 +49,14 @@ extern int g_nNMEADebug;
 extern int gps_watchdog_timeout_ticks;
 extern int sat_watchdog_timeout_ticks;
 
+
 extern int g_iCOMPort;
 extern int g_iBaudrate;
 extern int g_iParity;
 extern int g_iData_bits;
 extern int g_iStopbits;
 
-
+extern wxString g_active_route;
 extern wxString g_GPS_Ident;
 extern wxString g_hostname;
 extern wxString g_TalkerIdText;

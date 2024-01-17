@@ -838,46 +838,6 @@ static bool LoadAllPlugIns(bool load_enabled) {
   return b;
 }
 
-
-#ifndef __ANDROID__
-// Connection class, for use by both communicating instances
-class stConnection : public wxConnection {
-public:
-  stConnection() {}
-  ~stConnection() {}
-  bool OnExec(const wxString &topic, const wxString &data);
-};
-
-// Opens a file passed from another instance
-bool stConnection::OnExec(const wxString &topic, const wxString &data) {
-  // not setup yet
-  if (!gFrame) return false;
-
-  wxString path(data);
-  if (path.IsEmpty()) {
-    gFrame->InvalidateAllGL();
-    gFrame->RefreshAllCanvas(false);
-    gFrame->Raise();
-  } else {
-    NavObjectCollection1 *pSet = new NavObjectCollection1;
-    pSet->load_file(path.fn_str());
-    int wpt_dups;
-    pSet->LoadAllGPXObjects(
-        !pSet->IsOpenCPN(), wpt_dups,
-        true);  // Import with full vizibility of names and objects
-    if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-      pRouteManagerDialog->UpdateLists();
-
-    LLBBox box = pSet->GetBBox();
-    if (box.GetValid()) {
-      gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
-    }
-    delete pSet;
-    return true;
-  }
-  return true;
-}
-#endif   // __ANDROID__
 //------------------------------------------------------------------------------
 //    PNG Icon resources
 //------------------------------------------------------------------------------
@@ -885,7 +845,6 @@ bool stConnection::OnExec(const wxString &topic, const wxString &data) {
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
 #endif
-
 
 
 wxString newPrivateFileName(wxString home_locn, const char *name,
@@ -918,7 +877,34 @@ BEGIN_EVENT_TABLE(MyApp, wxApp)
 EVT_ACTIVATE_APP(MyApp::OnActivateApp)
 END_EVENT_TABLE()
 
-bool MyApp::OpenFile(const std::string& path) {
+static void ActivateRoute(const std::string &guid) {
+  Route *route = g_pRouteMan->FindRouteByGUID(guid);
+  if (!route) {
+    wxLogMessage("Cannot activate guid: no such route");
+    return;
+  }
+  if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+  //  If this is an auto-created MOB route, always select the second point
+  //  (the MOB)
+  // as the destination.
+  RoutePoint* point;
+  if (wxNOT_FOUND == route->m_RouteNameString.Find("MOB")) {
+    point = g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
+  } else {
+    point = route->GetPoint(2);
+  }
+  g_pRouteMan->ActivateRoute(route, point);
+  route->m_bRtIsSelected = false;
+}
+
+void MyApp::InitRestListeners() {
+  auto activate_route = [&](wxCommandEvent ev) {
+    auto guid = ev.GetString().ToStdString();
+    ActivateRoute(guid); };
+  rest_srv_listener.Init(m_rest_server.activate_route, activate_route);
+}
+
+  bool MyApp::OpenFile(const std::string& path) {
   NavObjectCollection1 nav_objects;
   auto result = nav_objects.load_file(path.c_str());
   if (!result)  {
@@ -982,7 +968,6 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
   wxLogLevel level = OcpnLog::str2level(strLevel);
   if (level == OcpnLog::LOG_BADLEVEL) {
     fprintf(stderr, "Bad loglevel %s, using \"info\"", strLevel);
-    strLevel = "info";
     level = wxLOG_Info;
   }
   wxLog::SetLogLevel(level);
@@ -1108,7 +1093,7 @@ int MyApp::OnRun() {
 
 MyApp::MyApp()
     : m_checker(InstanceCheck::GetInstance()),
-      m_RESTserver(PINCreateDialog::GetDlgCtx(),
+      m_rest_server(PINCreateDialog::GetDlgCtx(),
       RouteCtxFactory(),
       g_bportable),
       m_exitcode(-2) {
@@ -1572,6 +1557,8 @@ bool MyApp::OnInit() {
       pInit_Chart_Dir->Append(androidGetExtStorageDir());
 #endif
   }
+
+  InitRestListeners();
 
   //      Establish the GSHHS Dataset location
   gDefaultWorldMapLocation = "gshhs";
@@ -2058,8 +2045,7 @@ bool MyApp::OnInit() {
 
     make_certificate(ipAddr, data_dir.ToStdString());
 
-    m_RESTserver.StartServer(fs::path(data_dir.ToStdString()));
-
+    m_rest_server.StartServer(fs::path(data_dir.ToStdString()));
     StartMDNSService(g_hostname.ToStdString(),
                      "opencpn-object-control-service", 8000);
   }

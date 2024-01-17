@@ -42,6 +42,7 @@
 
 #include <wx/dir.h>
 #include <wx/file.h>
+#include <wx/filename.h>
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 #include <wx/window.h>
@@ -55,16 +56,15 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #undef Yield  // from win.h, conflicts with mingw headers
 #endif
 
+#include "config.h"
+
 #include "model/base_platform.h"
 #include "model/catalog_handler.h"
 #include "model/catalog_parser.h"
 #include "model/config_vars.h"
 #include "model/cmdline.h"
-#include "config.h"
 #include "model/downloader.h"
-#include "gui_lib.h"
 #include "model/logger.h"
-#include "navutil.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_cache.h"
 #include "model/plugin_handler.h"
@@ -82,7 +82,6 @@ static std::string SEP("/");
 #endif
 
 extern BasePlatform* g_BasePlatform;
-extern MyConfig* pConfig;
 
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;

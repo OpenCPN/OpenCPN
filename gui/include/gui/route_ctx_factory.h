@@ -31,6 +31,7 @@
 #include "model/routeman.h"
 #include "model/track.h"
 
+extern WayPointman* pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern std::vector<Track*> g_TrackList;
 
@@ -44,6 +45,10 @@ RouteCtx RouteCtxFactory() {
         [](wxString guid) {
             if (!g_pRouteMan) return static_cast<Track*>(0);
             return g_pRouteMan->FindTrackByGUID(guid); };
+    ctx.find_wpt_by_guid =
+        [](wxString guid) {
+            if (!pWayPointMan) return static_cast<RoutePoint*>(0);
+            return pWayPointMan->FindWaypointByGuid(guid.ToStdString()); };
     ctx.delete_route =
         [](Route* route) {
             if (!g_pRouteMan) return;
@@ -56,6 +61,10 @@ RouteCtx RouteCtxFactory() {
               }
               delete track;
         };
+    ctx.delete_waypoint =
+        [](RoutePoint* wpt) {
+            if (!pWayPointMan) return;
+            pWayPointMan->DestroyWaypoint(wpt); };
     return ctx;
 }
 #endif   //  _ROUTE_CTX_FACTORY_H__

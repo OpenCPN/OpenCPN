@@ -658,6 +658,7 @@ private:
   ChartGroupsUI *groupsPanel;
   wxImageList *m_topImgList;
 
+  wxCheckBox* m_persist_active_route_chkbox;
   wxScrolledWindow *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
