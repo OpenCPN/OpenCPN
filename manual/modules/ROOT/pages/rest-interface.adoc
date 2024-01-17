@@ -1,0 +1,87 @@
+= REST interface
+
+== General
+Since 5.8 OpenCPN has a REST interface.
+On a normal non-portable installation it listens on port 8443.
+
+The interface is documented in the file _model/include/model/rest_server.h_,
+also available in the manual at
+http://opencpn.github.io/OpenCPN/api-docs/classAbstractRestServer.html.
+
+== Pairing
+
+In order to establish trust between a client and a server a pairing scheme
+is used. It works like this:
+
+1. Client sends the key it has for server (if any) to it.
+2. Server validates the key. If ok, all is done.
+3. In response to a bad key server generates a new key for the client.
+4. A numeric pincode corresponding to the key is presented in the server GUI.
+5. User reads pincode at server GUI and inputs it in client GUI.
+6. Client stores key for server.
+7. Rinse and repeat.
+
+The basic idea is that user needs to have physical access to both the server
+and the client GUI to perform the pairing.
+
+== Headless pairing
+
+CAUTION: This is experimental code available from 5.9+. You have been warned.
+
+The requirement to have access to both the server and client GUI is cumbersome
+when working with a headless server. In these cases it might be possible to
+make headless pairing using ssh. Prequisites:
+
+  * The client needs to have access to the server without using a password,
+    usually  configured using `ssh-copy-id`. Instructions for this is out
+    of scope for this document.
+  * The server needs have opencpn installed so that it is available on PATH.
+    In particular, _opencpn-cmd_ should be accessible from the shell.
+  * In order for ssh to work the server needs a fixed IP address.
+
+The primary use case is a headless Raspberry pie server i. e., a Linux one.
+The actual command required to run ssh varies, example here is `ssh raspbian`,
+YMMV.
+
+Steps:
+
+    ①  $ opencpn-cmd print-hostname
+       hemulen
+    ②  $ ssh raspbian  opencpn-cmd generate-key hemulen
+       4781
+    ③  $ ssh raspbian opencpn-cmd print-hostname
+       raspbian
+    ④  $ opencpn-cmd store-key raspbian 4781
+
+
+① Check the name for the local host using `opencpn-cmd print-hostname` on
+the client.
+
+② Run ssh `<ssh-host> opencpn-cmd generate-key <hostname>`. Substitute
+`<hostname>` with the name obtained in ①. The command prints a pincode on
+stdout.
+
+③ Run `ssh <ssh-host> opencpn-cmd print-hostname`. This prints a hostname
+on stdout.
+
+④ Run `opencpn-cmd store-key <hostname> <pincode>`. Substitute `<pincode>`
+with the pincode obtained in ②. and `<hostname>` with hostname from ③.
+
+=== Verifying
+First look up the key in the config file. Here is something like
+```
+[Settings/RESTClient]
+ServerKeys=hemulen:104F8AAB;misan:1EFB3EF;DESKTOP-VPDSRM1:b5d8a55fb763;raspbian:b572ebd3a02e;
+
+```
+
+Note the raspbian entry, here b572ebd3a02e. This is the key derived from the
+pincode which is used in the API.
+
+Verify using curl to make a pin command. `api_key` is as of above, hemulen is
+from step ①.  In my case:
+
+    $ curl --insecure "https://raspbian:8443/api/ping?api_key=bc45def81515&source=hemulen"
+    {"result": 0, "version": "5.9.0"}
+
+"result" is a `RestServerResult` defined in _model/include/model/rest_server.h_
