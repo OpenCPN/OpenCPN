@@ -196,7 +196,6 @@ extern int g_ShowScaled_Num;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern wxString g_sAIS_Alert_Sound_File;
-extern bool g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool g_bShowAreaNotices;
 extern bool g_bDrawAISSize;
 extern bool g_bDrawAISRealtime;
@@ -207,8 +206,6 @@ extern int g_Show_Target_Name_Scale;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
@@ -241,8 +238,6 @@ extern bool g_bEnableZoomToCursor;
 extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern bool g_bHighliteTracks;
-extern double g_TrackDeltaDistance;
-extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
 extern wxColour g_colourTrackLineColour;
 
@@ -262,7 +257,6 @@ extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
 
-extern bool g_bAIS_ACK_Timeout;
 extern double g_AckTimeout_Mins;
 
 extern bool g_bQuiltEnable;

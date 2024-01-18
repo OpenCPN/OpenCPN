@@ -372,8 +372,6 @@ bool g_bTempShowMenuBar;
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
-int g_iWaypointRangeRingsNumber;
-float g_fWaypointRangeRingsStep;
 int g_iWaypointRangeRingsStepUnits;
 wxColour g_colourWaypointRangeRingsColour;
 bool g_bWayPointPreventDragging;
@@ -567,8 +565,6 @@ bool g_bHideMoored;
 bool g_bAllowShowScaled;
 double g_ShowMoored_Kts;
 wxString g_sAIS_Alert_Sound_File;
-bool g_bAIS_CPA_Alert_Suppress_Moored;
-bool g_bAIS_ACK_Timeout;
 double g_AckTimeout_Mins;
 bool g_bShowScaled;
 bool g_bShowAreaNotices;
@@ -593,7 +589,6 @@ wxString g_default_wp_icon;
 
 ActiveTrack *g_pActiveTrack;
 double g_TrackIntervalSeconds;
-double g_TrackDeltaDistance;
 int g_nTrackPrecision;
 
 int g_cm93_zoom_factor;

@@ -100,9 +100,7 @@ extern WayPointman *pWayPointMan;
 extern Select *pSelect;
 extern int g_nTrackPrecision;
 extern bool g_bHighliteTracks;
-extern double g_TrackDeltaDistance;
 extern wxColour g_colourTrackLineColour;
-extern int g_trackFilterMax;
 
 
 #if defined(__UNIX__) && \

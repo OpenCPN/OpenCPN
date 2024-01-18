@@ -215,8 +215,6 @@ extern bool g_bAIS_SART_Alert_Audio;
 extern bool g_bAIS_DSC_Alert_Audio;
 extern bool g_bAnchor_Alert_Audio;
 
-extern bool g_bAIS_CPA_Alert_Suppress_Moored;
-extern bool g_bAIS_ACK_Timeout;
 extern double g_AckTimeout_Mins;
 extern wxString g_AisTargetList_perspective;
 extern int g_AisTargetList_range;
@@ -245,8 +243,6 @@ int g_S57_extradialog_sx, g_S57_extradialog_sy;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
@@ -260,7 +256,6 @@ extern bool g_bShowWptName;
 extern bool g_bEnableZoomToCursor;
 extern wxString g_toolbarConfig;
 extern double g_TrackIntervalSeconds;
-extern double g_TrackDeltaDistance;
 
 extern int g_nCacheLimit;
 extern int g_memCacheLimit;
@@ -435,7 +430,6 @@ wxString g_gpx_path;
 bool g_bLayersLoaded;
 bool g_bShowMuiZoomButtons = true;
 
-int g_trackFilterMax;
 double g_mouse_zoom_sensitivity;
 int g_mouse_zoom_sensitivity_ui;
 

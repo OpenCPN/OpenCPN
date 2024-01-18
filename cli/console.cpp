@@ -84,8 +84,6 @@ class Select;
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-bool g_bAIS_ACK_Timeout;
-bool g_bAIS_CPA_Alert_Suppress_Moored;
 bool g_bCPAMax;
 bool g_bCPAWarn;
 bool g_bHideMoored;
@@ -121,14 +119,17 @@ Select* pSelectAIS;
 
 /* comm_bridge context. */
 
+/** Removed
+
+-bool g_bAIS_ACK_Timeout;
+-bool g_bAIS_CPA_Alert_Suppress_Moored;
+
+**/
+
 Select* pSelect;
-int g_trackFilterMax;
-double g_TrackDeltaDistance;
-float g_fWaypointRangeRingsStep;
-float g_ChartScaleFactorExp;
-float g_MarkScaleFactorExp;
-wxString g_default_wp_icon;
-int g_iWaypointRangeRingsNumber;
+float g_ChartScaleFactorExp;   //  gui only
+float g_MarkScaleFactorExp;    // gui only
+wxString g_default_wp_icon;    // gui only
 int g_iWaypointRangeRingsStepUnits;
 wxColour g_colourWaypointRangeRingsColour;
 bool g_bUseWptScaMin;
