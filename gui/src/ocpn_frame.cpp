@@ -220,8 +220,6 @@ extern TCMgr *ptcmgr;
 extern bool g_bShowTrue;
 extern bool g_bShowMag;
 extern char nmea_tick_chars[];
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1, AnchorAlertOn2;
 extern wxString g_AW1GUID;

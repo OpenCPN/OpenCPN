@@ -331,8 +331,6 @@ wxString g_anchorwatch_sound_file;
 wxString g_DSC_sound_file;
 wxString g_AIS_sound_file;
 
-RoutePoint *pAnchorWatchPoint1;
-RoutePoint *pAnchorWatchPoint2;
 double AnchorPointMinDist;
 bool AnchorAlertOn1, AnchorAlertOn2;
 bool g_bCruising;

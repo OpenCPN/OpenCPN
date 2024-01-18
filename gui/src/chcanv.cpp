@@ -183,8 +183,6 @@ extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
 extern ActiveTrack *g_pActiveTrack;
 
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1;
 extern bool AnchorAlertOn2;

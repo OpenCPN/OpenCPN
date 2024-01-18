@@ -55,6 +55,9 @@
 
 extern bool g_bPluginHandleAutopilotRoute;
 
+extern RoutePoint *pAnchorWatchPoint1;
+extern RoutePoint *pAnchorWatchPoint2;
+
 //    List definitions for Waypoint Manager Icons
 
 class markicon_bitmap_list_type;

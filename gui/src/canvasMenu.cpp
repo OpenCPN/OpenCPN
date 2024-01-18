@@ -104,8 +104,6 @@ extern ChartGroupArray *g_pGroupArray;
 extern PlugInManager *g_pi_manager;
 extern int g_nAWMax;
 extern int g_nAWDefault;
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern wxString g_AW1GUID;
 extern wxString g_AW2GUID;
 extern int g_click_stop;

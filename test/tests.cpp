@@ -103,8 +103,6 @@ float g_ChartScaleFactorExp;
 wxString g_default_wp_icon;
 RouteList *pRouteList;
 WayPointman* pWayPointMan;
-RoutePoint* pAnchorWatchPoint1(nullptr);
-RoutePoint* pAnchorWatchPoint2(nullptr);
 wxRect g_blink_rect;
 bool g_bMagneticAPB;
 

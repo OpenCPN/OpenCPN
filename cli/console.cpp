@@ -125,8 +125,6 @@ float g_MarkScaleFactorExp;    // gui only
 wxString g_default_wp_icon;    // gui only
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
-RoutePoint* pAnchorWatchPoint1 = 0;
-RoutePoint* pAnchorWatchPoint2 = 0;
 wxRect g_blink_rect;
 bool g_bMagneticAPB;
 

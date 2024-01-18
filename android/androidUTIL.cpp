@@ -291,8 +291,6 @@ extern ChartStack *pCurrentStack;
 extern Select *pSelect;
 extern WayPointman *pWayPointMan;
 extern bool g_bCruising;
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern bool g_bAutoAnchorMark;
 extern wxAuiManager *g_pauimgr;
 extern wxString g_AisTargetList_perspective;
