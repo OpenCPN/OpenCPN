@@ -101,7 +101,6 @@ S57ClassRegistrar *g_poRegistrar;
 Select* pSelect;
 float g_ChartScaleFactorExp;
 wxString g_default_wp_icon;
-bool g_bIsNewLayer;
 RouteList *pRouteList;
 WayPointman* pWayPointMan;
 RoutePoint* pAnchorWatchPoint1(nullptr);

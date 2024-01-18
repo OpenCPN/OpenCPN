@@ -123,7 +123,6 @@ Select* pSelect;
 float g_ChartScaleFactorExp;   // gui only
 float g_MarkScaleFactorExp;    // gui only
 wxString g_default_wp_icon;    // gui only
-bool g_bIsNewLayer;
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
 RoutePoint* pAnchorWatchPoint1 = 0;

@@ -40,7 +40,6 @@
 
 extern BasePlatform* g_BasePlatform;
 extern WayPointman *pWayPointMan;
-extern bool g_bIsNewLayer;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
 extern wxColour g_colourWaypointRangeRingsColour;
@@ -242,7 +241,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
 
   if (bAddToList && NULL != pWayPointMan) pWayPointMan->AddRoutePoint(this);
 
-  m_bIsInLayer = g_bIsNewLayer;
+  // m_bIsInLayer = g_bIsNewLayer;
   if (m_bIsInLayer) {
     m_LayerID = g_LayerIdx;
     m_bIsListed = false;

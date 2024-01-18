@@ -264,7 +264,6 @@ double g_ChartNotRenderScaleFactor;
 RouteList *pRouteList;
 std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
-bool g_bIsNewLayer;
 
 Select *pSelect;
 Select *pSelectTC;
