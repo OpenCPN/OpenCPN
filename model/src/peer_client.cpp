@@ -261,8 +261,8 @@ static bool GetApiKey(PeerData& peer_data, std::string& key) {
 
   while (true) {
     api_key = GetClientKey(peer_data.server_name);
-    // long enough to be identified as 5.9+ by server
-    if (api_key.size() < 9) api_key = "0123456789abc";
+    if (api_key.size() < 9 && peer_data.api_version >= SemanticVersion(5, 9))
+        api_key = "0123456789abc";   // Long enough for being seen as 5.9+
     std::stringstream url;
     url << "https://" << peer_data.dest_ip_address << "/api/ping"
         << "?source=" << g_hostname << "&apikey=" << api_key;
