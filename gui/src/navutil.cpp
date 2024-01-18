@@ -406,8 +406,7 @@ MyConfig::MyConfig(const wxString &LocalFileName)
   m_sNavObjSetChangesFile = m_sNavObjSetFile + _T ( ".changes" );
 
   m_pNavObjectInputSet = NULL;
-  m_pNavObjectChangesSet = NULL;
-
+  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
 }
 
 MyConfig::~MyConfig() {
@@ -1618,8 +1617,6 @@ void MyConfig::LoadNavObjects() {
                wpt_dups);
   delete m_pNavObjectInputSet;
 
-  m_pNavObjectChangesSet = NavObjectChanges::getInstance();
-
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
     if (ReloadPendingChanges(m_sNavObjSetChangesFile)) {
       UpdateNavObj();
@@ -2814,11 +2811,7 @@ static wxFileName exportFileName(wxWindow *parent,
 }
 
 bool MyConfig::IsChangesFileDirty() {
-  if (m_pNavObjectChangesSet) {
-    return m_pNavObjectChangesSet->IsDirty();
-  } else {
-    return true;
-  }
+  return m_pNavObjectChangesSet->IsDirty();
 }
 
 bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
