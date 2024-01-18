@@ -47,6 +47,7 @@ extern wxColour g_colourWaypointRangeRingsColour;
 
 extern int g_LayerIdx;
 
+extern wxRect g_blink_rect;
 
 class RoutePoint {
 friend class RoutePointGui;

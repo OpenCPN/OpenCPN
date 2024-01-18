@@ -466,7 +466,7 @@ bool g_bframemax;
 
 bool g_bAutoAnchorMark;
 
-wxRect g_blink_rect;
+int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
@@ -1489,6 +1489,8 @@ bool MyApp::OnInit() {
          wxFileName::GetPathSeparator() + _T("2bells.wav"));
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
   }
+
+  gpIDXn = 0;
 
   g_Platform->Initialize_2();
 

@@ -122,7 +122,6 @@ Select* pSelectAIS;
 Select* pSelect;
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
-wxRect g_blink_rect;
 
 Routeman* g_pRouteMan;
 

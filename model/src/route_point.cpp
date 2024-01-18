@@ -41,13 +41,15 @@
 extern BasePlatform* g_BasePlatform;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
-extern wxRect g_blink_rect;
 extern wxColour g_colourWaypointRangeRingsColour;
 
 WX_DEFINE_LIST(RoutePointList);
 
 wxColour g_colourWaypointRangeRingsColour;
+
 int g_LayerIdx;
+
+wxRect g_blink_rect;
 
 std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
     = [](unsigned, const unsigned*) { assert(false); };

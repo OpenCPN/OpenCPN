@@ -66,8 +66,6 @@ extern Select *pSelect;
 extern Routeman *g_pRouteMan;
 extern bool bGPSValid;
 
-extern wxRect g_blink_rect;
-
 extern ActiveTrack *g_pActiveTrack;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;

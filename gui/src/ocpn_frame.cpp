@@ -237,7 +237,6 @@ extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern bool g_bskew_comp;
 extern bool g_bPauseTest;
-extern wxRect g_blink_rect;
 extern bool g_bSleep;
 extern bool g_bPlayShipsBells;
 extern wxDateTime g_loglast_time;

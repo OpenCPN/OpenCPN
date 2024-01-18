@@ -30,7 +30,6 @@ extern ocpnGLOptions g_GLOptions;
 extern float g_MarkScaleFactorExp;
 extern WayPointman* pWayPointMan;
 extern MyFrame* gFrame;
-extern wxRect g_blink_rect;
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;
 

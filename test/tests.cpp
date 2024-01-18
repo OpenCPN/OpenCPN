@@ -102,7 +102,6 @@ Select* pSelect;
 wxString g_default_wp_icon;
 RouteList *pRouteList;
 WayPointman* pWayPointMan;
-wxRect g_blink_rect;
 
 Routeman* g_pRouteMan;
 
