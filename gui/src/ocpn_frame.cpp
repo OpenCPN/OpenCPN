@@ -201,7 +201,6 @@ extern bool g_bShowCompassWin;
 extern bool g_benable_rotate;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
-extern float g_ChartScaleFactorExp;
 extern int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;

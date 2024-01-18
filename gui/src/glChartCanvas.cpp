@@ -292,7 +292,6 @@ extern bool b_skipout;
 extern wxSize pprog_size;
 extern int pprog_count;
 extern int pprog_threads;
-extern float g_ChartScaleFactorExp;
 extern MyFrame *gFrame;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't

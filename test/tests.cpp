@@ -99,12 +99,10 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 
 S57ClassRegistrar *g_poRegistrar;
 Select* pSelect;
-float g_ChartScaleFactorExp;
 wxString g_default_wp_icon;
 RouteList *pRouteList;
 WayPointman* pWayPointMan;
 wxRect g_blink_rect;
-bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
 

@@ -68,13 +68,10 @@ extern bool bGPSValid;
 
 extern wxRect g_blink_rect;
 
-extern bool g_bMagneticAPB;
-
 extern ActiveTrack *g_pActiveTrack;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route *pAISMOBRoute;
-extern float g_ChartScaleFactorExp;
 
 extern bool g_bShowShipToActive;
 
@@ -82,6 +79,8 @@ bool g_bPluginHandleAutopilotRoute;
 
 RoutePoint *pAnchorWatchPoint1;
 RoutePoint *pAnchorWatchPoint2;
+
+float g_ChartScaleFactorExp;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);

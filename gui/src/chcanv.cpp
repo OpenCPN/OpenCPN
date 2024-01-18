@@ -128,7 +128,6 @@
 
 #endif
 
-extern float g_ChartScaleFactorExp;
 extern float g_ShipScaleFactorExp;
 extern double g_mouse_zoom_sensitivity;
 

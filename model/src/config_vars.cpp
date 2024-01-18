@@ -28,6 +28,7 @@ bool g_bAIS_ACK_Timeout = false;
 bool g_bAIS_CPA_Alert_Suppress_Moored = false;
 bool g_bAllowShipToActive = false;
 bool g_benableUDPNullHeader = false;
+bool g_bMagneticAPB = false;
 bool g_bOverruleScaMin = false;
 bool g_bGarminHostUpload = false;
 bool g_bShowWptName = false;

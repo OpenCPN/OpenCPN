@@ -120,13 +120,9 @@ Select* pSelectAIS;
 /* comm_bridge context. */
 
 Select* pSelect;
-float g_ChartScaleFactorExp;   // gui only
-float g_MarkScaleFactorExp;    // gui only
-wxString g_default_wp_icon;    // gui only
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
 wxRect g_blink_rect;
-bool g_bMagneticAPB;
 
 Routeman* g_pRouteMan;
 

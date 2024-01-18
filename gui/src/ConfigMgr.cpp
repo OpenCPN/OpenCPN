@@ -241,7 +241,6 @@ extern wxString g_localeOverride;
 extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern int g_COGAvgSec;
-extern bool g_bMagneticAPB;
 extern bool g_bShowChartBar;
 
 extern int g_MemFootMB;

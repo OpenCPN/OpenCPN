@@ -43,7 +43,6 @@ extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
 extern wxColour g_colourWaypointRangeRingsColour;
-extern float g_ChartScaleFactorExp;
 
 WX_DEFINE_LIST(RoutePointList);
 

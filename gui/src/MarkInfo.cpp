@@ -82,7 +82,6 @@ extern wxString g_default_wp_icon;
 
 // Global page setup data
 
-extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 
 extern MarkInfoDlg* g_pMarkInfoDialog;

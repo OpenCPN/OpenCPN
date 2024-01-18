@@ -235,7 +235,6 @@ extern wxLocale *plocale_def_lang;
 #endif
 
 // extern OCPN_Sound        g_anchorwatch_sound;
-extern bool g_bMagneticAPB;
 
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -270,7 +269,6 @@ extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 
 extern double g_config_display_size_mm;
-extern float g_ChartScaleFactorExp;
 extern bool g_config_display_size_manual;
 
 extern Multiplexer *g_pMUX;

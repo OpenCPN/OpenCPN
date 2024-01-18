@@ -276,8 +276,6 @@ extern bool g_bAIS_SART_Alert_Audio;
 extern bool g_bAIS_DSC_Alert_Audio;
 extern bool g_bAnchor_Alert_Audio;
 
-extern bool g_bMagneticAPB;
-
 extern bool g_fog_overzoom;
 extern bool g_oz_vector_scale;
 extern bool g_bShowStatusBar;
@@ -312,7 +310,6 @@ extern bool g_bAutoHideToolbar;
 extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
-extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 extern bool g_bRollover;
 extern int g_ShipScaleFactor;

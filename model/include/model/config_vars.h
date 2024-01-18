@@ -34,6 +34,7 @@ extern bool g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool g_bAllowShipToActive;
 extern bool g_benableUDPNullHeader;
 extern bool g_bGarminHostUpload;
+extern bool g_bMagneticAPB;
 extern bool g_bOverruleScaMin;
 extern bool g_bTrackDaily;
 extern bool g_bWplUsePosition;

@@ -403,7 +403,6 @@ bool g_config_display_size_manual;
 
 int g_GUIScaleFactor;
 int g_ChartScaleFactor;
-float g_ChartScaleFactorExp;
 float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 int g_ShipScaleFactor;
@@ -653,8 +652,6 @@ bool g_benable_rotate;
 
 bool g_bShowTrue = true;
 bool g_bShowMag;
-
-bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
 

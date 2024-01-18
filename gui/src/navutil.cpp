@@ -297,7 +297,6 @@ extern wxString g_localeOverride;
 extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern int g_COGAvgSec;
-extern bool g_bMagneticAPB;
 extern bool g_bShowChartBar;
 
 extern int g_MemFootMB;
@@ -384,7 +383,6 @@ extern bool g_bAutoHideToolbar;
 extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
-extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 
 extern int g_ShipScaleFactor;
