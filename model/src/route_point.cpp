@@ -54,6 +54,8 @@ extern bool g_bShowWptName;
 
 WX_DEFINE_LIST(RoutePointList);
 
+wxColour g_colourWaypointRangeRingsColour;
+
 std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
     = [](unsigned, const unsigned*) { assert(false); };
 
@@ -401,14 +403,6 @@ int RoutePoint::GetWaypointRangeRingsStepUnits() {
     return g_iWaypointRangeRingsStepUnits;
   else
     return m_iWaypointRangeRingsStepUnits;
-}
-
-wxColour RoutePoint::GetWaypointRangeRingsColour(void) {
-  if (m_wxcWaypointRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX) ==
-      _T("#FFFFFF"))
-    return g_colourWaypointRangeRingsColour;
-  else
-    return m_wxcWaypointRangeRingsColour;
 }
 
 void RoutePoint::SetScaMin(long val) {

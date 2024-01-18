@@ -191,7 +191,6 @@ extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
 extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 
 extern bool g_bPreserveScaleOnX;

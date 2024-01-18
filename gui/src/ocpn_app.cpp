@@ -373,7 +373,6 @@ int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
 int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
 bool g_bWayPointPreventDragging;
 bool g_bConfirmObjectDelete;
 wxColour g_colourOwnshipRangeRingsColour;

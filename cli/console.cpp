@@ -131,7 +131,6 @@ float g_ChartScaleFactorExp;   //  gui only
 float g_MarkScaleFactorExp;    // gui only
 wxString g_default_wp_icon;    // gui only
 int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
 bool g_bUseWptScaMin;
 bool g_bShowWptName;
 int g_iWpt_ScaMin;

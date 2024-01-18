@@ -86,7 +86,6 @@ extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 
 extern MarkInfoDlg* g_pMarkInfoDialog;
-extern wxColour g_colourWaypointRangeRingsColour;
 
 extern int g_iWpt_ScaMin;
 extern bool g_bUseWptScaMin;

@@ -102,7 +102,6 @@ Select* pSelect;
 float g_ChartScaleFactorExp;
 wxString g_default_wp_icon;
 int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
 bool g_bUseWptScaMin;
 int g_iWpt_ScaMin;
 bool g_bShowWptName;
