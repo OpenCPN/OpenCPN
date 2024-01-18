@@ -98,7 +98,6 @@ millions of points.
 
 extern WayPointman *pWayPointMan;
 extern Select *pSelect;
-extern int g_nTrackPrecision;
 extern bool g_bHighliteTracks;
 extern wxColour g_colourTrackLineColour;
 

@@ -125,7 +125,6 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
-extern int g_nTrackPrecision;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -199,7 +198,6 @@ extern int g_S57_dialog_sx, g_S57_dialog_sy;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsStepUnits;
 extern bool g_bWayPointPreventDragging;
 extern bool g_bConfirmObjectDelete;
 extern wxColour g_colourOwnshipRangeRingsColour;

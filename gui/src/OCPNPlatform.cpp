@@ -187,7 +187,6 @@ extern int g_cm93_zoom_factor;
 extern int g_GUIScaleFactor;
 extern bool g_fog_overzoom;
 extern bool g_oz_vector_scale;
-extern int g_nTrackPrecision;
 extern wxString g_toolbarConfig;
 extern bool g_bPreserveScaleOnX;
 extern bool g_running;

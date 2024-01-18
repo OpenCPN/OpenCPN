@@ -41,20 +41,15 @@
 extern BasePlatform* g_BasePlatform;
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
-extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
-extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern float g_ChartScaleFactorExp;
-extern int g_iWpt_ScaMin;
-extern bool g_bUseWptScaMin;
-extern bool g_bOverruleScaMin;
-extern bool g_bShowWptName;
 
 WX_DEFINE_LIST(RoutePointList);
 
 wxColour g_colourWaypointRangeRingsColour;
+int g_LayerIdx;
 
 std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
     = [](unsigned, const unsigned*) { assert(false); };

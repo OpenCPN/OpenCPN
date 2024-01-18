@@ -265,8 +265,6 @@ RouteList *pRouteList;
 std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
 bool g_bIsNewLayer;
-int g_LayerIdx;
-bool g_bLayerViz;
 
 Select *pSelect;
 Select *pSelectTC;
@@ -372,13 +370,9 @@ bool g_bTempShowMenuBar;
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
-int g_iWaypointRangeRingsStepUnits;
 bool g_bWayPointPreventDragging;
 bool g_bConfirmObjectDelete;
 wxColour g_colourOwnshipRangeRingsColour;
-int g_iWpt_ScaMin;
-bool g_bUseWptScaMin;
-bool g_bShowWptName;
 int g_maxzoomin;
 
 // Set default color scheme
@@ -588,7 +582,6 @@ wxString g_default_wp_icon;
 
 ActiveTrack *g_pActiveTrack;
 double g_TrackIntervalSeconds;
-int g_nTrackPrecision;
 
 int g_cm93_zoom_factor;
 PopUpDSlide *pPopupDetailSlider;

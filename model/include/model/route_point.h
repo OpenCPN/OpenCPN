@@ -45,6 +45,8 @@
 // Default color, global state
 extern wxColour g_colourWaypointRangeRingsColour;
 
+extern int g_LayerIdx;
+
 
 class RoutePoint {
 friend class RoutePointGui;

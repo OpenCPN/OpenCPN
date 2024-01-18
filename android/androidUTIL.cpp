@@ -190,7 +190,6 @@ extern bool g_bWplIsAprsPosition;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsStepUnits;
 extern bool g_bWayPointPreventDragging;
 
 extern bool g_bPreserveScaleOnX;
@@ -208,7 +207,6 @@ extern int g_n_ownship_min_mm;
 extern bool g_bEnableZoomToCursor;
 extern bool g_bHighliteTracks;
 extern double g_TrackIntervalSeconds;
-extern int g_nTrackPrecision;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 

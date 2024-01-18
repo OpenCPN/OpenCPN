@@ -119,24 +119,10 @@ Select* pSelectAIS;
 
 /* comm_bridge context. */
 
-/** Removed
-
--bool g_bAIS_ACK_Timeout;
--bool g_bAIS_CPA_Alert_Suppress_Moored;
-
-**/
-
 Select* pSelect;
-float g_ChartScaleFactorExp;   //  gui only
+float g_ChartScaleFactorExp;   // gui only
 float g_MarkScaleFactorExp;    // gui only
 wxString g_default_wp_icon;    // gui only
-int g_iWaypointRangeRingsStepUnits;
-bool g_bUseWptScaMin;
-bool g_bShowWptName;
-int g_iWpt_ScaMin;
-int g_LayerIdx;
-bool g_bOverruleScaMin;
-int g_nTrackPrecision;
 bool g_bIsNewLayer;
 RouteList* pRouteList;
 WayPointman* pWayPointMan;

@@ -264,7 +264,6 @@ extern ChartGroupArray *g_pGroupArray;
 extern bool g_bEnableZoomToCursor;
 extern double g_display_size_mm;
 extern double g_config_display_size_mm;
-extern int g_nTrackPrecision;
 extern wxString ChartListFileName;
 extern bool g_bFullscreenToolbar;
 extern arrayofCanvasPtr g_canvasArray;
