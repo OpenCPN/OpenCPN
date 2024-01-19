@@ -537,6 +537,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
   ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
   if (load_enabled && !enabled.Get(true)) {
+    pic->m_destroy_fn(pic->m_pplugin);
     delete pic;
     wxLogMessage("Skipping not enabled candidate.");
     return true;
