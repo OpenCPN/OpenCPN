@@ -162,6 +162,11 @@ MarkIcon* WayPointmanGui::ProcessIcon(wxBitmap pimage, const wxString& key,
 }
 
 void WayPointmanGui::ProcessIcons(ocpnStyle::Style *style, double displayDPmm) {
+  for (unsigned int i = 0; i < m_waypoint_man.m_pIconArray->GetCount(); i++) {
+    MarkIcon *pmi = (MarkIcon *)m_waypoint_man.m_pIconArray->Item(i);
+    delete pmi->piconBitmap;
+    delete pmi;
+  }
   m_waypoint_man.m_pIconArray->Clear();
 
   ProcessDefaultIcons(displayDPmm);
@@ -345,11 +350,12 @@ void WayPointmanGui::ProcessDefaultIcons(double displayDPmm) {
   if (pmi) pmi->preScaled = true;
 
   // Add the extended icons to their own sorted array
-  if (m_waypoint_man.m_pExtendedIconArray)
+  if (m_waypoint_man.m_pExtendedIconArray) {
     m_waypoint_man.m_pExtendedIconArray->Clear();
-  else
+  } else {
     m_waypoint_man.m_pExtendedIconArray =
         new SortedArrayOfMarkIcon(CompareMarkIcons);
+  }
 
 #if 0
     wxArrayString FileList;
