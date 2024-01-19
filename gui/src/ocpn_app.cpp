@@ -2146,6 +2146,7 @@ void RestoreSystemColors(void);
 
   g_Platform->OnExit_2();
   safe_mode::clear_check();
+  delete g_Platform;
 
   return TRUE;
 }

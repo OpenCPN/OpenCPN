@@ -159,6 +159,8 @@ protected:
 class BasePlatform : public AbstractPlatform {
 public:
   BasePlatform();
+  ~BasePlatform();
+
   bool InitializeLogFile() override;
 
   wxSize getDisplaySize() override;
