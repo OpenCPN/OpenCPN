@@ -993,10 +993,6 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
     return false;
   }
 
-  // Instantiate the global OCPNPlatform class
-  g_Platform = new OCPNPlatform;
-  g_BasePlatform = g_Platform;
-
   bool has_remote_options = false;
   static const std::vector<std::string> kRemoteOptions = {
     "raise", "quit", "open", "get_rest_endpoint"};
