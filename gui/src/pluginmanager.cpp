@@ -2239,8 +2239,6 @@ int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile,
   // In case there is some problem with the SVG file(s) specified.
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
   pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
-  pttc->bitmap_Rollover_day = new wxBitmap(style->GetIcon(_T("default_pi")));
-
   pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
   pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
   pttc->bitmap_Rollover_day = new wxBitmap(*pttc->bitmap_day);
