@@ -71,7 +71,6 @@ extern Select* pSelect;
 extern Routeman* g_pRouteMan;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern RoutePropDlgImpl* pRoutePropDialog;
-extern bool g_bShowTrue, g_bShowMag;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern MyFrame* gFrame;

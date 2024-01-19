@@ -205,8 +205,6 @@ extern bool g_bShowCompassWin;
 extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
 extern int g_Show_Target_Name_Scale;
-extern bool g_bCPAWarn;
-extern bool g_bTCPA_Max;
 
 extern MyFrame *gFrame;
 
@@ -275,7 +273,6 @@ extern ocpnStyle::StyleManager *g_StyleManager;
 
 extern OcpnSound *g_anchorwatch_sound;
 
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bresponsive;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;

@@ -93,7 +93,6 @@ extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
 extern AisDecoder *g_pAIS;
-extern bool g_bCPAWarn;
 extern bool g_bShowAreaNotices;
 extern bool bGPSValid;
 extern Routeman *g_pRouteMan;

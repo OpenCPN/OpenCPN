@@ -147,9 +147,6 @@ extern options *g_options;
 extern bool g_boptionsactive;
 
 // AIS Global configuration
-extern double g_CPAMax_NM;
-extern double g_CPAWarn_NM;
-extern double g_TCPA_Max;
 extern bool g_bMarkLost;
 extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
@@ -157,8 +154,6 @@ extern double g_RemoveLost_Mins;
 extern bool g_bShowCOG;
 extern bool g_bSyncCogPredictors;
 extern double g_ShowCOG_Mins;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
 extern bool g_bShowAreaNotices;
 extern bool g_bDrawAISSize;
 extern bool g_bDrawAISRealtime;
@@ -168,7 +163,6 @@ extern bool g_bAIS_GCPA_Alert_Audio;
 extern bool g_bAIS_SART_Alert_Audio;
 extern bool g_bAIS_DSC_Alert_Audio;
 extern bool g_bAIS_CPA_Alert_Audio;
-extern bool g_bCPAWarn;
 extern bool g_bAIS_CPA_Alert;
 
 extern wxString *pInit_Chart_Dir;

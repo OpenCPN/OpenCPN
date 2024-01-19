@@ -150,7 +150,6 @@ extern bool g_bShowDepthUnits;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
-extern bool g_bShowTrue, g_bShowMag;
 extern double gVar;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
@@ -174,12 +173,6 @@ extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
 //    AIS Global configuration
-extern bool g_bCPAMax;
-extern double g_CPAMax_NM;
-extern bool g_bCPAWarn;
-extern double g_CPAWarn_NM;
-extern bool g_bTCPA_Max;
-extern double g_TCPA_Max;
 extern bool g_bMarkLost;
 extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
@@ -189,8 +182,6 @@ extern double g_ShowCOG_Mins;
 extern bool g_bSyncCogPredictors;
 extern bool g_bAISShowTracks;
 extern double g_AISShowTracks_Mins;
-extern double g_ShowMoored_Kts;
-extern bool g_bHideMoored;
 extern bool g_bAllowShowScaled;
 extern int g_ShowScaled_Num;
 extern bool g_bAIS_CPA_Alert;
@@ -253,8 +244,6 @@ extern double g_ownship_HDTpredictor_miles;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
-
-extern double g_AckTimeout_Mins;
 
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;

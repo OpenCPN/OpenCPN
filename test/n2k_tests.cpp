@@ -94,17 +94,6 @@ static const std::vector<std::pair<double, double>> expected_targets =
 class AISTargetAlertDialog;
 class Multiplexer;
 
-extern bool g_bCPAMax;
-extern bool g_bCPAWarn;
-extern bool g_bHideMoored;
-extern bool g_bTCPA_Max;
-extern double g_AckTimeout_Mins;
-extern double g_CPAMax_NM;
-extern double g_CPAWarn_NM;
-extern double g_ShowMoored_Kts;
-extern double g_TCPA_Max;
-extern bool g_bShowMag;
-extern bool g_bShowTrue;
 extern bool bGPSValid;
 extern bool g_bInlandEcdis;
 extern bool g_bRemoveLost;

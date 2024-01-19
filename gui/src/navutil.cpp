@@ -116,7 +116,6 @@ extern double vLat, vLon;
 extern double kLat, kLon;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -175,12 +174,6 @@ extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
 //    AIS Global configuration
-extern bool g_bCPAMax;
-extern double g_CPAMax_NM;
-extern bool g_bCPAWarn;
-extern double g_CPAWarn_NM;
-extern bool g_bTCPA_Max;
-extern double g_TCPA_Max;
 extern bool g_bMarkLost;
 extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;
@@ -194,8 +187,6 @@ extern int g_track_rotate_time;
 extern int g_track_rotate_time_type;
 extern double g_AISShowTracks_Mins;
 extern double g_AISShowTracks_Limit;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
 extern bool g_bAllowShowScaled;
 extern bool g_bShowScaled;
 extern int g_ShowScaled_Num;
@@ -213,7 +204,6 @@ extern bool g_bAIS_SART_Alert_Audio;
 extern bool g_bAIS_DSC_Alert_Audio;
 extern bool g_bAnchor_Alert_Audio;
 
-extern double g_AckTimeout_Mins;
 extern wxString g_AisTargetList_perspective;
 extern int g_AisTargetList_range;
 extern int g_AisTargetList_sortColumn;

@@ -68,8 +68,6 @@ extern AISTargetQueryDialog *g_pais_query_dialog_active;
 //    AIS Global configuration
 extern bool g_bShowCOG;
 extern double g_ShowCOG_Mins;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
 extern bool g_bAISShowTracks;
 extern bool g_bShowAreaNotices;
 extern bool g_bDrawAISSize;

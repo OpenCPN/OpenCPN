@@ -534,12 +534,6 @@ bool g_bHasHwClock;
 
 // AIS Global configuration
 bool g_bShowAIS;
-bool g_bCPAMax;
-double g_CPAMax_NM;
-bool g_bCPAWarn;
-double g_CPAWarn_NM;
-bool g_bTCPA_Max;
-double g_TCPA_Max;
 bool g_bMarkLost;
 double g_MarkLost_Mins;
 bool g_bRemoveLost;
@@ -550,11 +544,8 @@ double g_ShowCOG_Mins;
 bool g_bAISShowTracks;
 double g_AISShowTracks_Mins;
 double g_AISShowTracks_Limit;
-bool g_bHideMoored;
 bool g_bAllowShowScaled;
-double g_ShowMoored_Kts;
 wxString g_sAIS_Alert_Sound_File;
-double g_AckTimeout_Mins;
 bool g_bShowScaled;
 bool g_bShowAreaNotices;
 bool g_bDrawAISSize;
@@ -649,9 +640,6 @@ bool g_bShowMenuBar;
 bool g_bShowCompassWin;
 
 bool g_benable_rotate;
-
-bool g_bShowTrue = true;
-bool g_bShowMag;
 
 bool g_bInlandEcdis;
 

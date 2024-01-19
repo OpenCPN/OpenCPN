@@ -63,17 +63,6 @@ using namespace std::literals::chrono_literals;
 class AISTargetAlertDialog;
 class Multiplexer;
 
-bool g_bCPAMax;
-bool g_bCPAWarn;
-bool g_bHideMoored;
-bool g_bTCPA_Max;
-double g_AckTimeout_Mins;
-double g_CPAMax_NM;
-double g_CPAWarn_NM;
-double g_ShowMoored_Kts;
-double g_TCPA_Max;
-bool g_bShowMag;
-bool g_bShowTrue;
 bool bGPSValid;
 bool g_bInlandEcdis;
 bool g_bRemoveLost;
