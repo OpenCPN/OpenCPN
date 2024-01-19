@@ -33,7 +33,6 @@
 #include "model/own_ship.h"
 #include "ocpn_frame.h"
 
-extern bool bGPSValid;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;

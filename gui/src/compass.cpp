@@ -30,6 +30,7 @@
 #endif  // precompiled headers
 #include "config.h"
 #include "model/ocpn_types.h"
+#include "model/own_ship.h"
 #include "compass.h"
 #include "chcanv.h"
 #include "styles.h"
@@ -38,7 +39,6 @@
 #include "ocpn_frame.h"     // FIXME (dave) colorschemes
 
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bopengl;

@@ -74,6 +74,7 @@
 #include "Quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
+#include "model/own_ship.h"
 #include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "model/ais_decoder.h"
@@ -197,7 +198,6 @@ extern bool bDrawCurrentValues;
 
 extern s52plib *ps52plib;
 
-extern bool bGPSValid;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;

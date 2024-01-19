@@ -378,7 +378,6 @@ ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-bool bGPSValid;
 bool bVelocityValid;
 
 int gHDx_Watchdog;

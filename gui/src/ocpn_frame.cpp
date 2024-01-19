@@ -318,7 +318,6 @@ extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
 extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
-extern bool bGPSValid;
 extern bool bVelocityValid;
 extern int gHDx_Watchdog;
 extern AisDecoder *g_pAIS;

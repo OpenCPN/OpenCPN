@@ -81,7 +81,6 @@ wxEvtHandler* g_pais_alert_dialog_active;
 extern wxEvtHandler *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern Select *pSelect;
-extern bool bGPSValid;
 extern bool g_bMarkLost;
 extern double g_MarkLost_Mins;
 extern bool g_bRemoveLost;

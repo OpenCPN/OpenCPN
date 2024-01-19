@@ -79,6 +79,7 @@
 #include "undo.h"
 #include "peer_client_dlg.h"
 #include "model/mDNS_query.h"
+#include "model/own_ship.h"
 #include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
@@ -94,7 +95,6 @@ extern void pupHandler_PasteWaypoint();
 
 extern AisDecoder *g_pAIS;
 extern bool g_bShowAreaNotices;
-extern bool bGPSValid;
 extern Routeman *g_pRouteMan;
 extern bool g_bskew_comp;
 extern double vLat, vLon;

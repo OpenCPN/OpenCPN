@@ -64,7 +64,6 @@ extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 extern Routeman *g_pRouteMan;
-extern bool bGPSValid;
 
 extern ActiveTrack *g_pActiveTrack;
 

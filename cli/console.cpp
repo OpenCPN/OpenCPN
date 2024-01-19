@@ -84,7 +84,6 @@ class Select;
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-bool bGPSValid;
 bool g_bInlandEcdis;
 bool g_bRemoveLost;
 bool g_bMarkLost;

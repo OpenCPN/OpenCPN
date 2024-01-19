@@ -63,7 +63,6 @@ using namespace std::literals::chrono_literals;
 class AISTargetAlertDialog;
 class Multiplexer;
 
-bool bGPSValid;
 bool g_bInlandEcdis;
 bool g_bRemoveLost;
 bool g_bMarkLost;

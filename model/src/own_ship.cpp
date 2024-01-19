@@ -32,3 +32,5 @@ double gSog;
 double gHdt;
 double gHdm;
 double gVar;
+
+bool bGPSValid;

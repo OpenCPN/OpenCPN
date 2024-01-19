@@ -94,7 +94,6 @@ static const std::vector<std::pair<double, double>> expected_targets =
 class AISTargetAlertDialog;
 class Multiplexer;
 
-extern bool bGPSValid;
 extern bool g_bInlandEcdis;
 extern bool g_bRemoveLost;
 extern bool g_bMarkLost;
