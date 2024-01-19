@@ -90,6 +90,7 @@ extern int g_restore_stackindex;
 extern int g_restore_dbindex;
 extern LayerList *pLayerList;
 extern MyConfig *pConfig;
+extern double initial_scale_ppm, initial_rotation;
 extern int g_nbrightness;
 extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
