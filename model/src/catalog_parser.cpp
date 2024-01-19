@@ -138,7 +138,10 @@ bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
         ctx->meta_urls.push_back(ctx->meta_url);
         ctx->meta_url = "";
       } else {
-        if (plugin) ctx->plugins.push_back(*plugin);
+        if (plugin) {
+          ctx->plugins.push_back(*plugin);
+          delete plugin;
+        }
         plugin = new PluginMetadata;
       }
       auto meta_url = node.child("meta-url");
@@ -152,6 +155,7 @@ bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
   // capture last plugin
   if (plugin) {
     ctx->plugins.push_back(*plugin);
+    delete plugin;
   } else {
     if (ctx->meta_url != "") {
       ctx->meta_urls.push_back(ctx->meta_url);
