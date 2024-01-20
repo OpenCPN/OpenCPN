@@ -351,6 +351,7 @@ bool PluginLoader::LoadPluginCandidate(wxString file_name, bool load_enabled) {
 
   PlugInContainer* pic = LoadPlugIn(file_name);
 #ifdef __OCPN__ANDROID__
+  if (pic)
     AndroidNotifyPluginLoad(pic->m_plugin_file);
 #endif
 
