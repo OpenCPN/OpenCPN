@@ -237,7 +237,6 @@ extern wxPrintData *g_printData;
 extern wxPageSetupData *g_pageSetupData;
 extern int g_ChartUpdatePeriod;
 extern int g_SkewCompUpdatePeriod;
-extern double g_VPRotate;
 extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern bool g_bskew_comp;
