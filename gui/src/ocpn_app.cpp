@@ -1000,22 +1000,6 @@ bool MyApp::OnExceptionInMainLoop() {
 
 void MyApp::OnActivateApp(wxActivateEvent &event) {
   return;
-  //    Code carefully in this method.
-  //    It is called in some unexpected places,
-  //    such as on closure of dialogs, etc.
-
-  if (!event.GetActive()) {
-    //  Remove a temporary Menubar when the application goes inactive
-    //  This is one way to handle properly ALT-TAB navigation on the Windows
-    //  desktop without accidentally leaving an unwanted Menubar shown.
-#ifdef __WXMSW__
-    if (g_bTempShowMenuBar) {
-      g_bTempShowMenuBar = false;
-      if (gFrame) gFrame->ApplyGlobalSettings(false);
-    }
-#endif
-  }
-  event.Skip();
 }
 
 
