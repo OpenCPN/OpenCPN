@@ -74,7 +74,6 @@
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
-#include "model/S57ClassRegistrar.h"
 #include "model/select.h"
 #include "model/track.h"
 
@@ -86,7 +85,6 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 /* comm_bridge context. */
 
 RouteList* pRouteList;
-WayPointman* pWayPointMan;
 
 class NmeaLogDummy: public NmeaLog {
   bool Active() const { return false; }

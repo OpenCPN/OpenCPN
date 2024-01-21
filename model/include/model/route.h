@@ -34,6 +34,9 @@
 #include <wx/string.h>
 
 #include "route_point.h"
+#include "routeman.h"
+#include "hyperlink.h"
+
 #include "bbox.h"
 
 #define WIDTH_UNDEFINED -1
@@ -43,6 +46,10 @@
 #define RTE_TIME_DISP_PC _T("PC")
 #define RTE_TIME_DISP_LOCAL _T("LOCAL")
 #define RTE_UNDEF_DEPARTURE wxInvalidDateTime
+
+class WayPointman;   // FIXME (leamas) why? routeman.h defines this.
+
+extern WayPointman *pWayPointMan;
 
 const wxString GpxxColorNames[] = {
     _T("Black"),      _T("DarkRed"),   _T("DarkGreen"),
@@ -64,8 +71,6 @@ const wxColour GpxxColors[] = {
 const int StyleValues[] = {-1,          wxSOLID,      wxDOT,
                            wxLONG_DASH, wxSHORT_DASH, wxDOT_DASH};
 const int WidthValues[] = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-class HyperlinkList;
 
 class Route : public wxObject {
 friend class RouteGui;

@@ -54,6 +54,7 @@
 #endif
 
 class Routeman;   // forward
+class WayPointman;  // forward
 
 extern bool g_bPluginHandleAutopilotRoute;
 
