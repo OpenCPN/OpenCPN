@@ -58,18 +58,6 @@
 #include "androidUTIL.h"
 #endif
 
-extern BasePlatform* g_BasePlatform;
-extern AisDecoder *g_pAIS;
-extern std::vector<Track*> g_TrackList;
-extern Select *pSelect;
-extern Routeman *g_pRouteMan;
-
-extern ActiveTrack *g_pActiveTrack;
-
-extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
-extern Route *pAISMOBRoute;
-
-extern bool g_bShowShipToActive;
 
 bool g_bPluginHandleAutopilotRoute;
 

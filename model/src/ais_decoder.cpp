@@ -80,12 +80,8 @@ static const long long lNaN = 0xfff8000000000000;
 wxEvtHandler* g_pais_alert_dialog_active;
 
 extern wxEvtHandler *g_pais_alert_dialog_active;
-
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern Route *pAISMOBRoute;
-extern wxString AISTargetNameFileName;
-extern std::vector<Track*> g_TrackList;
-extern Multiplexer *g_pMUX;
+extern const wxEventType wxEVT_OCPN_DATASTREAM;
+extern bool g_bquiting;
 
 AisDecoder *g_pAIS;
 Select* pSelectAIS;
@@ -126,8 +122,6 @@ static int first_rx_ticks;
 static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
-extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern bool g_bquiting;
 
 static inline double GeodesicRadToDeg(double rads) {
   return rads * 180.0 / M_PI;

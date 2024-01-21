@@ -96,11 +96,6 @@ millions of points.
 #include "model/routeman.h"
 #include "model/select.h"
 
-extern WayPointman *pWayPointMan;
-extern Select *pSelect;
-extern bool g_bHighliteTracks;
-extern wxColour g_colourTrackLineColour;
-
 std::vector<Track*> g_TrackList;
 
 #if defined(__UNIX__) && \

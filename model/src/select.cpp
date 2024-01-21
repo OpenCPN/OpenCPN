@@ -34,8 +34,6 @@
 
 #include "vector2D.h"
 
-extern BasePlatform *g_BasePlatform;
-
 Select* pSelect;
 
 Select::Select() {

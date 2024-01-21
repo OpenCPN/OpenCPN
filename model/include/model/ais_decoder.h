@@ -45,6 +45,7 @@
 #include "track.h"
 
 class AisDecoder;  // forward
+class ArrayOfMmsiProperties;  // forward
 
 // AISTargetAlertDialog in gui layer
 extern wxEvtHandler* g_pais_alert_dialog_active;
@@ -52,6 +53,7 @@ extern wxEvtHandler* g_pais_alert_dialog_active;
 extern Select* pSelectAIS;
 extern wxString AISTargetNameFileName;
 extern AisDecoder *g_pAIS;
+extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,

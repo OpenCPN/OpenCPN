@@ -49,9 +49,6 @@
 #include "model/routeman.h"
 #include "model/select.h"
 
-extern Routeman *g_pRouteMan;
-extern Select *pSelect;
-
 WayPointman *pWayPointMan;
 
 #include <wx/listimpl.cpp>

@@ -12,8 +12,6 @@
 
 #include "model/safe_mode.h"
 
-extern BasePlatform* g_BasePlatform;
-
 namespace safe_mode {
 
 #ifdef _WIN32

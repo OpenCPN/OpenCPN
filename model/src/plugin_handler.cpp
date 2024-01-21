@@ -81,8 +81,6 @@ static std::string SEP("/");
 #define F_OK 0
 #endif
 
-extern BasePlatform* g_BasePlatform;
-
 /** split s on first occurrence of delim, or return s in first result. */
 static std::vector<std::string> split(const std::string& s,
                                       const std::string& delim) {

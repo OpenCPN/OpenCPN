@@ -35,13 +35,6 @@
 #include <QDebug>
 #endif
 
-extern WayPointman *pWayPointMan;
-extern Routeman *g_pRouteMan;
-
-extern RouteList *pRouteList;
-extern std::vector<Track*> g_TrackList;
-extern Select *pSelect;
-
 NavObjectCollection1::NavObjectCollection1()
     : pugi::xml_document(), m_bSkipChangeSetUpdate(false) {}
 

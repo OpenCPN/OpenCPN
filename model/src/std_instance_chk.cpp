@@ -34,8 +34,6 @@
 #include "model/std_instance_chk.h"
 
 
-extern BasePlatform* g_BasePlatform;
-
 static const char* const  kName  = "_OpenCPN_SILock";
 
 static int GetLockfilePid(const std::string& path){

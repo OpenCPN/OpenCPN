@@ -38,11 +38,6 @@
 
 #include <wx/listimpl.cpp>
 
-extern BasePlatform* g_BasePlatform;
-extern WayPointman *pWayPointMan;
-extern Routeman *g_pRouteMan;
-extern wxColour g_colourWaypointRangeRingsColour;
-
 WX_DEFINE_LIST(RoutePointList);
 
 wxColour g_colourWaypointRangeRingsColour;
