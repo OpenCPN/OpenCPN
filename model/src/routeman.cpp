@@ -60,7 +60,6 @@
 
 extern BasePlatform* g_BasePlatform;
 extern AisDecoder *g_pAIS;
-extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern Select *pSelect;
 extern Routeman *g_pRouteMan;
@@ -79,6 +78,8 @@ Route *pAISMOBRoute;
 
 RoutePoint *pAnchorWatchPoint1;
 RoutePoint *pAnchorWatchPoint2;
+
+RouteList *pRouteList;
 
 float g_ChartScaleFactorExp;
 

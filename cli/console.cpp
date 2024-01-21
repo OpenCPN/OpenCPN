@@ -84,8 +84,6 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 
 /* comm_bridge context. */
 
-RouteList* pRouteList;
-
 class NmeaLogDummy: public NmeaLog {
   bool Active() const { return false; }
   void Add(const wxString& s) {};

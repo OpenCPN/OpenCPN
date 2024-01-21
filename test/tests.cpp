@@ -68,7 +68,6 @@ Multiplexer* g_pMUX;
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-RouteList *pRouteList;
 
 wxLog* g_logger;
 AisDecoder* g_pAIS;

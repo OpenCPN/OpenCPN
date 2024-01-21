@@ -263,7 +263,6 @@ int g_restore_stackindex;
 int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
 
-RouteList *pRouteList;
 LayerList *pLayerList;
 
 Select *pSelectTC;
