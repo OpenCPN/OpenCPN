@@ -390,15 +390,10 @@ ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-int gGPS_Watchdog;
 bool bGPSValid;
 bool bVelocityValid;
 
 int gHDx_Watchdog;
-int gHDT_Watchdog;
-int gVAR_Watchdog;
-
-int gSAT_Watchdog;
 
 bool g_bDebugCM93;
 bool g_bDebugS57;
@@ -459,8 +454,6 @@ double g_ownship_HDTpredictor_miles;
 
 bool g_own_ship_sog_cog_calc;
 int g_own_ship_sog_cog_calc_damp_sec;
-wxDateTime last_own_ship_sog_cog_calc_ts;
-double last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
 
 Multiplexer *g_pMUX;
 
@@ -1081,7 +1074,6 @@ bool MyApp::OnInit() {
 #endif
 
   GpxDocument::SeedRandom();
-  last_own_ship_sog_cog_calc_ts = wxInvalidDateTime;
 
 #if defined(__WXGTK__) && defined(ocpnUSE_GLES) && defined(__ARM_ARCH)
   // There is a race condition between cairo which is used for text rendering
