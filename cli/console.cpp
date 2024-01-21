@@ -92,7 +92,6 @@ Select* pSelectAIS;
 
 /* comm_bridge context. */
 
-Select* pSelect;
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
 

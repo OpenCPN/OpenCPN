@@ -266,7 +266,6 @@ RouteList *pRouteList;
 std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
 
-Select *pSelect;
 Select *pSelectTC;
 Select *pSelectAIS;
 

@@ -26,6 +26,9 @@
 
 #include "select_item.h"
 
+#include "model/track.h"
+#include "model/route.h"
+
 #define SELTYPE_UNKNOWN 0x0001
 #define SELTYPE_ROUTEPOINT 0x0002
 #define SELTYPE_ROUTESEGMENT 0x0004
@@ -37,10 +40,9 @@
 #define SELTYPE_TRACKSEGMENT 0x0100
 #define SELTYPE_DRAGHANDLE 0x0200
 
-class RoutePoint;
-class TrackPoint;
-class Track;
-class Route;
+class Select;   // forward
+
+extern Select* pSelect;
 
 struct SelectCtx {
   const bool show_nav_objects;
