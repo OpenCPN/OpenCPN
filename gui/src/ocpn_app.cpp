@@ -243,7 +243,6 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
 OCPNPlatform *g_Platform;
-BasePlatform *g_BasePlatform;   // points to g_platform, handles brain-dead MS linker.
 
 bool g_bFirstRun;
 bool g_bUpgradeInProcess;

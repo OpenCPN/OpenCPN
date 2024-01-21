@@ -18,7 +18,6 @@
 
 using namespace std::literals::chrono_literals;
 
-BasePlatform* g_BasePlatform = 0;
 bool g_bportable;
 
 static bool bool_result0;

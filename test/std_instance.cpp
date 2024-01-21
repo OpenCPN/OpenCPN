@@ -9,7 +9,6 @@
 #include "model/base_platform.h"
 
 bool g_bportable;
-BasePlatform* g_BasePlatform = 0;
 
 class StdInstanceApp : public wxAppConsole {
 public:

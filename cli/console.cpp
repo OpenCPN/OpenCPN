@@ -79,10 +79,7 @@
 
 #include "observable_evtvar.h"
 
-BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
-
-/* comm_bridge context. */
 
 class NmeaLogDummy: public NmeaLog {
   bool Active() const { return false; }
