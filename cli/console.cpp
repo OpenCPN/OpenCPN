@@ -88,8 +88,6 @@ void* g_pi_manager = reinterpret_cast<void*>(1L);
 RouteList* pRouteList;
 WayPointman* pWayPointMan;
 
-Routeman* g_pRouteMan;
-
 class NmeaLogDummy: public NmeaLog {
   bool Active() const { return false; }
   void Add(const wxString& s) {};

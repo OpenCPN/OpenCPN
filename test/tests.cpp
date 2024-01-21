@@ -61,7 +61,6 @@ namespace fs = std::filesystem;
 
 using namespace std::literals::chrono_literals;
 
-class AISTargetAlertDialog;
 class Multiplexer;
 
 Multiplexer* g_pMUX;
@@ -69,12 +68,8 @@ Multiplexer* g_pMUX;
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-S57ClassRegistrar *g_poRegistrar;
-wxString g_default_wp_icon;
 RouteList *pRouteList;
 WayPointman* pWayPointMan;
-
-Routeman* g_pRouteMan;
 
 wxLog* g_logger;
 AisDecoder* g_pAIS;

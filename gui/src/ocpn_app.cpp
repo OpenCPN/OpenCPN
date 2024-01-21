@@ -268,7 +268,6 @@ LayerList *pLayerList;
 
 Select *pSelectTC;
 
-Routeman *g_pRouteMan;
 WayPointman *pWayPointMan;
 MarkInfoDlg *g_pMarkInfoDialog;
 RoutePropDlgImpl *pRoutePropDialog;
