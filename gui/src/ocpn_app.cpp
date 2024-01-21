@@ -484,16 +484,12 @@ long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
 
-FILE *s_fpdebug;
-bool bAutoOpen;
-
 bool g_bUseGLL = true;
 
 int g_nCacheLimit;
 int g_memCacheLimit;
 bool g_bGDAL_Debug;
 
-double g_VPRotate;  // Viewport rotation angle, used on "Course Up" mode
 bool g_bCourseUp;
 int g_COGAvgSec = 15;  // COG average period (sec.) for Course Up Mode
 double g_COGAvg;
@@ -510,8 +506,6 @@ double g_plus_minus_zoom_factor;
 
 bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
-
-bool g_bbigred;
 
 PlugInManager *g_pi_manager;
 
@@ -544,14 +538,6 @@ wxSize options_lastWindowSize(0, 0);
 
 bool g_bSleep;
 bool g_bsimplifiedScalebar;
-
-int g_grad_default;
-wxColour g_border_color_default;
-int g_border_size_default;
-int g_sash_size_default;
-wxColour g_caption_color_default;
-wxColour g_sash_color_default;
-wxColour g_background_color_default;
 
 int osMajor, osMinor;
 
@@ -1676,18 +1662,6 @@ bool MyApp::OnInit() {
   g_pauimgr->SetDockSizeConstraint(.9, .9);
 
   // g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
-
-  g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
-  g_border_color_default =
-      g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR);
-  g_border_size_default =
-      g_pauidockart->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE);
-  g_sash_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_SASH_SIZE);
-  g_caption_color_default =
-      g_pauidockart->GetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR);
-  g_sash_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_SASH_COLOUR);
-  g_background_color_default =
-      g_pauidockart->GetColour(wxAUI_DOCKART_BACKGROUND_COLOUR);
 
   // tell wxAuiManager to manage the frame
   g_pauimgr->SetManagedWindow(gFrame);
