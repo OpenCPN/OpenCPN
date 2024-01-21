@@ -163,7 +163,6 @@ extern about *g_pAboutDlgLegacy;
 extern AboutFrameImpl *g_pAboutDlg;
 
 extern double vLat, vLon;
-extern double initial_scale_ppm, initial_rotation;
 extern wxString g_locale;
 extern ColorScheme global_color_scheme;
 extern options *g_pOptions;

@@ -115,7 +115,6 @@ extern int g_LayerIdx;
 extern MyConfig *pConfig;
 extern double vLat, vLon;
 extern double kLat, kLon;
-extern double initial_scale_ppm, initial_rotation;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
 extern bool g_bShowTrue, g_bShowMag;
@@ -634,8 +633,6 @@ int MyConfig::LoadMyConfig() {
   vLon = START_LON;
   gLat = START_LAT;  // GPS position, as default
   gLon = START_LON;
-  initial_scale_ppm = .0003;  // decent initial value
-  initial_rotation = 0;
   g_maxzoomin = 800;
 
   g_iNavAidRadarRingsNumberVisible = 0;
@@ -1295,7 +1292,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     //    Sanity check the scale
     st_view_scale = fmax(st_view_scale, .001 / 32);
     st_view_scale = fmin(st_view_scale, 4);
-    initial_scale_ppm = st_view_scale;
   }
 
   if (Read(wxString(_T ( "VPRotation" )), &st)) {
@@ -1303,7 +1299,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     //    Sanity check the rotation
     st_rotation = fmin(st_rotation, 360);
     st_rotation = fmax(st_rotation, 0);
-    initial_rotation = st_rotation * PI / 180.;
   }
 
   wxString sll;
