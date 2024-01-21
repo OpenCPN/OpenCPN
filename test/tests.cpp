@@ -59,14 +59,11 @@ namespace fs = std::experimental::filesystem;
 namespace fs = std::filesystem;
 #endif
 
-
 using namespace std::literals::chrono_literals;
 
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-
 wxLog* g_logger;
-AisDecoder* g_pAIS;
 
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);

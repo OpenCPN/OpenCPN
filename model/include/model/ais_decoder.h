@@ -44,11 +44,14 @@
 #include "select.h"
 #include "track.h"
 
+class AisDecoder;  // forward
+
 // AISTargetAlertDialog in gui layer
 extern wxEvtHandler* g_pais_alert_dialog_active;
 
 extern Select* pSelectAIS;
 extern wxString AISTargetNameFileName;
+extern AisDecoder *g_pAIS;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,

@@ -432,7 +432,6 @@ double g_ownship_HDTpredictor_miles;
 bool g_own_ship_sog_cog_calc;
 int g_own_ship_sog_cog_calc_damp_sec;
 
-AisDecoder *g_pAIS;
 AisInfoGui *g_pAISGUI;
 
 AISTargetQueryDialog *g_pais_query_dialog_active;

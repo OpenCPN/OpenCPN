@@ -86,8 +86,8 @@ extern Route *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
 extern std::vector<Track*> g_TrackList;
 extern Multiplexer *g_pMUX;
-extern AisDecoder *g_pAIS;
 
+AisDecoder *g_pAIS;
 Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
