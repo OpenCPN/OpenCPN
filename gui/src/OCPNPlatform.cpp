@@ -171,14 +171,6 @@ extern Select *pSelect;
 extern Select *pSelectTC;
 extern Select *pSelectAIS;
 
-extern Select *pSelect;
-extern Select *pSelectTC;
-extern Select *pSelectAIS;
-
-extern Select *pSelect;
-extern Select *pSelectTC;
-extern Select *pSelectAIS;
-
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif

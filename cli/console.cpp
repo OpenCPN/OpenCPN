@@ -88,7 +88,6 @@ S57ClassRegistrar *g_poRegistrar;
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
 Route* pAISMOBRoute;
-Select* pSelectAIS;
 
 /* comm_bridge context. */
 

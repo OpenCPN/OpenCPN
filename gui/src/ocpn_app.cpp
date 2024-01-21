@@ -85,6 +85,7 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
+#include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/certificates.h"
 #include "model/cmdline.h"
@@ -267,7 +268,6 @@ std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
 
 Select *pSelectTC;
-Select *pSelectAIS;
 
 Routeman *g_pRouteMan;
 WayPointman *pWayPointMan;

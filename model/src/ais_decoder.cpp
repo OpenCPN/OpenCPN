@@ -80,8 +80,6 @@ static const long long lNaN = 0xfff8000000000000;
 wxEvtHandler* g_pais_alert_dialog_active;
 
 extern wxEvtHandler *g_pais_alert_dialog_active;
-extern Select *pSelectAIS;
-extern Select *pSelect;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
@@ -90,6 +88,7 @@ extern std::vector<Track*> g_TrackList;
 extern Multiplexer *g_pMUX;
 extern AisDecoder *g_pAIS;
 
+Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 

@@ -41,10 +41,12 @@
 #include "observable_evtvar.h"
 #include "ocpn_types.h"
 #include "rapidjson/fwd.h"
+#include "select.h"
 #include "track.h"
 
 // AISTargetAlertDialog in gui layer
 extern wxEvtHandler* g_pais_alert_dialog_active;
+extern Select* pSelectAIS;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,

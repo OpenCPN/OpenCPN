@@ -81,7 +81,6 @@ Routeman* g_pRouteMan;
 
 wxLog* g_logger;
 AisDecoder* g_pAIS;
-Select* pSelectAIS;
 
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
