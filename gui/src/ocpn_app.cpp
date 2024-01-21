@@ -184,8 +184,6 @@ using namespace std::literals::chrono_literals;
 
 extern int ShowNavWarning();
 
-static void UpdatePositionCalculatedSogCog();
-
 const char* const kUsage =
 R"""(Usage:
   opencpn -h | --help
@@ -245,7 +243,6 @@ WX_DEFINE_OBJARRAY(ArrayOfCDI);
 OCPNPlatform *g_Platform;
 BasePlatform *g_BasePlatform;   // points to g_platform, handles brain-dead MS linker.
 
-wxString g_vs;
 bool g_bFirstRun;
 bool g_bUpgradeInProcess;
 
@@ -259,9 +256,7 @@ MyFrame *gFrame;
 ConsoleCanvas *console;
 
 MyConfig *pConfig;
-ChartBase *Current_Vector_Ch;
 ChartDB *ChartData;
-wxString *pdir_list[20];
 int g_restore_stackindex;
 int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
@@ -323,7 +318,7 @@ int file_user_id;
 
 int quitflag;
 int g_tick = 0;
-int g_mem_total, g_mem_used, g_mem_initial;
+int g_mem_total, g_mem_initial;
 
 bool s_bSetSystemTime;
 
@@ -1214,7 +1209,6 @@ bool MyApp::OnInit() {
   //      Send init message
   wxLogMessage(_T("\n\n________\n"));
 
-  g_vs = wxString(VERSION_FULL).Trim(true).Trim(false);
   wxDateTime now = wxDateTime::Now();
   LOG_INFO("------- OpenCPN version %s restarted at %s -------\n", VERSION_FULL,
            now.FormatISODate().mb_str().data());
