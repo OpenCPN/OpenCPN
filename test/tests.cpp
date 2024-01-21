@@ -31,6 +31,7 @@
 #include "model/config_vars.h"
 #include "model/ipc_api.h"
 #include "model/logger.h"
+#include "model/multiplexer.h"
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 #include "model/ocpn_types.h"
@@ -60,10 +61,6 @@ namespace fs = std::filesystem;
 
 
 using namespace std::literals::chrono_literals;
-
-class Multiplexer;
-
-Multiplexer* g_pMUX;
 
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 

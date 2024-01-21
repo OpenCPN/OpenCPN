@@ -63,6 +63,8 @@ wxDEFINE_EVENT(EVT_N2K_127250, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129540, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_ALL, ObservedEvt);
 
+Multiplexer* g_pMUX;
+
 #ifdef HAVE_READLINK
 
 static std::string do_readlink(const char *link) {
