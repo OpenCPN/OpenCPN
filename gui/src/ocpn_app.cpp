@@ -1054,7 +1054,8 @@ bool MyApp::OnInit() {
     if (m_checker.IsMainInstance()) {
       // Server is created on first call to GetInstance()
       if (m_parsed_cmdline.action == CmdlineAction::Skip) {
-        auto& server = LocalServerApi::GetInstance();
+        // Server starts running when referenced.
+        [[maybe_unused]] auto& server = LocalServerApi::GetInstance();
       } else {
         std::cerr << "No remote opencpn found. Giving up.\n";
         m_exitcode = 1;
