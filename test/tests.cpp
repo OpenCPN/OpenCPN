@@ -65,7 +65,6 @@ class AISTargetAlertDialog;
 class Multiplexer;
 
 Multiplexer* g_pMUX;
-std::vector<Track*> g_TrackList;
 
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);

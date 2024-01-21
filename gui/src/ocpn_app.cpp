@@ -264,7 +264,6 @@ int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
 
 RouteList *pRouteList;
-std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
 
 Select *pSelectTC;

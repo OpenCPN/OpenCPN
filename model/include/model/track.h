@@ -33,12 +33,13 @@
 #include <vector>
 
 #include "bbox.h"
+#include "chcanv.h"
+#include "hyperlink.h"
 #include "route.h"
+#include "viewport.h"
 #include "vector2D.h"
 
-class HyperlinkList;
-class ChartCanvas;
-class ViewPort;
+extern std::vector<Track*> g_TrackList;
 
 struct SubTrack {
   SubTrack() {}

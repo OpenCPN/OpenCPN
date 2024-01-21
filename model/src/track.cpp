@@ -101,6 +101,7 @@ extern Select *pSelect;
 extern bool g_bHighliteTracks;
 extern wxColour g_colourTrackLineColour;
 
+std::vector<Track*> g_TrackList;
 
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -279,7 +280,6 @@ void ActiveTrack::Stop(bool do_add_point) {
   m_track_run = 0;
 }
 
-extern std::vector<Track*> g_TrackList;
 Track *ActiveTrack::DoExtendDaily() {
   Track *pExtendTrack = NULL;
   TrackPoint *pExtendPoint = NULL;
