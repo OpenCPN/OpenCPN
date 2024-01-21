@@ -98,9 +98,6 @@ class Multiplexer;
 extern Multiplexer* g_pMUX;
 extern std::vector<Track*> g_TrackList;
 extern wxString AISTargetNameFileName;
-extern bool g_bAIS_CPA_Alert;
-extern Route *pAISMOBRoute;
-extern double g_RemoveLost_Mins;
 
 extern BasePlatform* g_BasePlatform;
 extern void* g_pi_manager;

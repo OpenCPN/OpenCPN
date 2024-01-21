@@ -74,6 +74,8 @@ extern bool g_bShowShipToActive;
 
 bool g_bPluginHandleAutopilotRoute;
 
+Route *pAISMOBRoute;
+
 RoutePoint *pAnchorWatchPoint1;
 RoutePoint *pAnchorWatchPoint2;
 

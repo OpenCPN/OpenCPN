@@ -6618,8 +6618,6 @@ void MyFrame::LoadHarmonics() {
   }
 }
 
-Route *pAISMOBRoute;
-
 void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   if (!ptarget) return;
 

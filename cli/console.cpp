@@ -83,11 +83,7 @@
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-S57ClassRegistrar *g_poRegistrar;
-
 std::vector<Track*> g_TrackList;
-wxString AISTargetNameFileName;
-Route* pAISMOBRoute;
 
 /* comm_bridge context. */
 

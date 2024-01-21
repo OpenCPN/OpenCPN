@@ -91,6 +91,7 @@ extern AisDecoder *g_pAIS;
 Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
+wxString AISTargetNameFileName;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);

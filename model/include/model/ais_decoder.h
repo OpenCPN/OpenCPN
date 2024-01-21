@@ -46,7 +46,9 @@
 
 // AISTargetAlertDialog in gui layer
 extern wxEvtHandler* g_pais_alert_dialog_active;
+
 extern Select* pSelectAIS;
+extern wxString AISTargetNameFileName;
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,

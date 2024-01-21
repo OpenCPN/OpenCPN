@@ -55,6 +55,8 @@
 
 extern bool g_bPluginHandleAutopilotRoute;
 
+extern Route *pAISMOBRoute;
+
 extern RoutePoint *pAnchorWatchPoint1;
 extern RoutePoint *pAnchorWatchPoint2;
 

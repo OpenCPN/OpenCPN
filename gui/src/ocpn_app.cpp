@@ -293,7 +293,6 @@ bool g_bBasicMenus = false;
 bool bDrawCurrentValues;
 
 wxString ChartListFileName;
-wxString AISTargetNameFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
