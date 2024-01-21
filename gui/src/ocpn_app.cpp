@@ -596,8 +596,6 @@ double g_TrackIntervalSeconds;
 double g_TrackDeltaDistance;
 int g_nTrackPrecision;
 
-int g_total_NMEAerror_messages;
-
 int g_cm93_zoom_factor;
 PopUpDSlide *pPopupDetailSlider;
 bool g_bShowDetailSlider;
@@ -631,16 +629,10 @@ wxString g_locale;
 wxString g_localeOverride;
 bool g_b_assume_azerty;
 
-bool g_bUseRaster;
-bool g_bUseVector;
-bool g_bUseCM93;
-
 int g_click_stop;
 
-int g_MemFootSec;
 int g_MemFootMB;
 
-wxStaticBitmap *g_pStatBoxTool;
 bool g_bShowStatusBar;
 
 bool g_bquiting;
@@ -662,7 +654,6 @@ OCPN_AUIManager *g_pauimgr;
 wxAuiDefaultDockArt *g_pauidockart;
 
 wxString g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-wxString g_toolbarConfigSecondary = _T("....XX..X........XXXXXXXXXXXX");
 
 ocpnFloatingToolbarDialog *g_MainToolbar;
 int g_maintoolbar_x;
@@ -683,8 +674,6 @@ bool g_bMagneticAPB;
 
 bool g_bInlandEcdis;
 
-int g_GPU_MemSize;
-
 wxString g_uiStyle;
 
 // Values returned from WMM_PI for variation computation request.
@@ -692,8 +681,6 @@ wxString g_uiStyle;
 double gQueryVar = 361.0;
 
 char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
-
-int portaudio_initialized;
 
 bool g_bAIS_GCPA_Alert_Audio;
 bool g_bAIS_SART_Alert_Audio;
@@ -802,7 +789,6 @@ static bool LoadAllPlugIns(bool load_enabled) {
 wxString newPrivateFileName(wxString, const char *name,
                             [[maybe_unused]] const char *windowsName) {
   wxString fname = wxString::FromUTF8(name);
-  wxString fwname = wxString::FromUTF8(windowsName);
   wxString filePathAndName;
 
   filePathAndName = g_Platform->GetPrivateDataDir();
@@ -810,6 +796,7 @@ wxString newPrivateFileName(wxString, const char *name,
     filePathAndName.Append(wxFileName::GetPathSeparator());
 
 #ifdef __WXMSW__
+  wxString fwname = wxString::FromUTF8(windowsName);
   filePathAndName.Append(fwname);
 #else
   filePathAndName.Append(fname);
