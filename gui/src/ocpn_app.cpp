@@ -716,8 +716,8 @@ int g_GPU_MemSize;
 
 wxString g_uiStyle;
 
-//      Values returned from WMM_PI for variation computation request
-//      Initialize to invalid value so we don't use if if WMM hasn't updated yet
+// Values returned from WMM_PI for variation computation request.
+// Initialize to invalid so we don't use it if WMM hasn't updated yet
 double gQueryVar = 361.0;
 
 char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
@@ -848,7 +848,7 @@ wxString newPrivateFileName(wxString, const char *name,
 }
 
 
-// `Main program' equivalent, creating windows and returning main app frame
+// `Main program` equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
 // MyApp
 //------------------------------------------------------------------------------
@@ -1429,7 +1429,7 @@ bool MyApp::OnInit() {
     pSelectAIS->SetSelectPixelRadius(SelectPixelRadius);
   }
 
-  //        Is this the first run after a clean install?
+  //  Is this the first run after a clean installation?
   if (!n_NavMessageShown) g_bFirstRun = true;
 
     //  Now we can set the locale
@@ -1811,7 +1811,7 @@ bool MyApp::OnInit() {
       g_restore_dbindex = 0;
   }
 
-  //  Apply the inital Group Array structure to the chart data base
+  //  Apply the inital Group Array structure to the chart database
   ChartData->ApplyGroupArray(g_pGroupArray);
 
   //      All set to go.....

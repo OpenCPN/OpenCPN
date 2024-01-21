@@ -910,7 +910,7 @@ void MyFrame::RebuildChartDatabase() {
 
     delete pprog;
 
-    //  Apply the inital Group Array structure to the chart data base
+    //  Apply the inital Group Array structure to the chart database
     ChartData->ApplyGroupArray(g_pGroupArray);
   }
 }
@@ -2229,7 +2229,7 @@ void MyFrame::PositionConsole(void) {
   if (consoleHost) {
     if(consoleHost->GetCompass()){
       wxRect compass_rect = consoleHost->GetCompass()->GetRect();
-    // Compass is is normal upper right position.
+    // Compass is normal upper right position.
       if(compass_rect.y < 100)
         yOffset = compass_rect.y + compass_rect.height + 45;
     }
@@ -2670,7 +2670,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       }
 
       // If we didn't handle the event, allow it to bubble up to other handlers.
-      // This is required for the system menu items (Hide, etc) on OS X to work.
+      // This is required for the system menu items (Hide, etc.) on OS X to work.
       // This must only be called if we did NOT handle the event, otherwise it
       // stops the menu items from working on Windows.
       event.Skip();
@@ -2966,7 +2966,7 @@ void MyFrame::TrackOn(void) {
 
   g_pActiveTrack->Start();
 
-  // The main toolbar may still be NULL here and we will do nothing...
+  // The main toolbar may still be NULL here, and we will do nothing...
   SetMasterToolbarItemState(ID_TRACK, g_bTrackActive);
   if (g_MainToolbar)
     g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Disable Tracking"));
@@ -3399,7 +3399,7 @@ void MyFrame::BuildMenuBar(void) {
     }
 
     UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
-                              // etc)
+                              // etc.)
   } else {
     if (m_pMenuBar) {  // remove the menu bar if it is disabled
       SetMenuBar(NULL);
@@ -4692,7 +4692,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         g_bNeedDBUpdate = false;
       }
 
-      // Load the waypoints.. both of these routines are very slow to execute
+      // Load the waypoints. Both of these routines are very slow to execute
       // which is why they have been to defered until here
       auto colour_func = [](wxString c) { return GetGlobalColor(c); };
       pWayPointMan = new WayPointman(colour_func);
@@ -6049,7 +6049,7 @@ void MyFrame::selectChartDisplay(int type, int family) {
   }
 
   UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
-                            // etc)
+                            // etc.)
 }
 
 //----------------------------------------------------------------------------------
@@ -6259,7 +6259,7 @@ void MyFrame::DoPrint(void) {
   MyPrintout printout(wxT("Chart Print"));
 
   //  In OperGL mode, make the bitmap capture of the screen before the print
-  //  method starts, so as to be sure the "Abort..." dialog does not appear on
+  //  method starts as to be sure the "Abort..." dialog does not appear on
   //  the image
   if (g_bopengl) printout.GenerateGLbmp();
 
@@ -6305,11 +6305,11 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   wxString message_ID = event.GetID();
   wxString message_JSONText = event.GetJSONText();
 
-  //  We are free to use or ignore any or all of the PlugIn messages flying thru
-  //  this pipe tee.
+  //  We are free to use or ignore any or all of the PlugIn messages flying
+  //  through this pipe tee.
 
-  //  We can possibly use the estimated magnetic variation if WMM_pi is present
-  //  and active and we have no other source of Variation
+  //  We can possibly use the estimated magnetic variation if WMM_pi is
+  //  present, active, and we have no other source of Variation
   if (!g_bVAR_Rx) {
     if (message_ID == _T("WMM_VARIATION_BOAT")) {
       // construct the JSON root object
@@ -8584,7 +8584,7 @@ void ParseAllENC(wxWindow *parent) {
     thread_count = wxThread::GetCPUCount();
 
   if (thread_count < 1) {
-    // obviously there's a least one CPU!
+    // obviously there's at least one CPU!
     thread_count = 1;
   }
 
