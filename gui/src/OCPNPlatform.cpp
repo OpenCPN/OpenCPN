@@ -43,6 +43,7 @@
 
 #include "config.h"
 
+#include "model/ais_state_vars.h"
 #include "model/base_platform.h"
 #include "model/cmdline.h"
 #include "OCPNPlatform.h"
@@ -146,25 +147,6 @@ extern float g_toolbar_scalefactor;
 extern options *g_options;
 extern bool g_boptionsactive;
 
-// AIS Global configuration
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern bool g_bSyncCogPredictors;
-extern double g_ShowCOG_Mins;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern bool g_bAIS_CPA_Alert;
-
 extern wxString *pInit_Chart_Dir;
 
 extern double g_config_display_size_mm;
@@ -204,8 +186,6 @@ extern int g_default_font_size;
 extern wxString g_default_font_facename;
 
 bool g_bEmailCrashReport;
-extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
 extern double g_ChartNotRenderScaleFactor;
 extern bool g_bRollover;

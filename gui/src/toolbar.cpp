@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "config.h"
+#include "model/ais_state_vars.h"
 #include "model/ocpn_types.h"
 #include "navutil.h"
 #include "styles.h"
@@ -1131,7 +1132,6 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
 #include "compass.h"
 #include "chartdb.h"
 
-extern bool g_bAllowShowScaled;
 extern bool g_bTrackActive;
 extern s52plib *ps52plib;
 

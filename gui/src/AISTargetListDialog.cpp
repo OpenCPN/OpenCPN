@@ -34,6 +34,7 @@
 #include "AISTargetListDialog.h"
 #include "ais.h"
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "OCPNListCtrl.h"
 #include "styles.h"
@@ -47,13 +48,8 @@
 static AisDecoder *s_p_sort_decoder;
 
 extern int g_AisTargetList_count;
-extern bool g_bAisTargetList_sortReverse;
 extern bool g_bAisTargetList_autosort;
-extern int g_AisTargetList_sortColumn;
-extern wxString g_AisTargetList_column_spec;
-extern wxString g_AisTargetList_column_order;
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern int g_AisTargetList_range;
 extern wxString g_AisTargetList_perspective;
 extern MyConfig *pConfig;
 extern AISTargetListDialog *g_pAISTargetList;

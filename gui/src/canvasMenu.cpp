@@ -50,6 +50,7 @@
 #include "TrackPropDlg.h"
 #include "ais.h"
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "canvasMenu.h"
 #include "chartdb.h"
@@ -94,7 +95,6 @@ extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
 extern AisDecoder *g_pAIS;
-extern bool g_bShowAreaNotices;
 extern Routeman *g_pRouteMan;
 extern bool g_bskew_comp;
 extern double vLat, vLon;

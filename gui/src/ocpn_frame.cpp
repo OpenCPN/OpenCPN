@@ -56,6 +56,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_factory.h"  //FIXME(dave) this one goes away
@@ -186,7 +187,6 @@ extern bool g_b_legacy_input_filter_behaviour;
 extern bool g_bTrackActive;
 extern ocpnStyle::StyleManager *g_StyleManager;
 extern bool g_bmasterToolbarFull;
-extern bool g_bInlandEcdis;
 extern int g_nAutoHideToolbar;
 extern bool g_bAutoHideToolbar;
 extern bool g_bshowToolbar;
@@ -269,18 +269,10 @@ extern unsigned int g_canvasConfig;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
 extern wxString *pInit_Chart_Dir;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern bool g_bAISShowTracks;
-extern bool g_bAllowShowScaled;
-extern bool g_bShowScaled;
 extern bool g_bShowAIS;
 extern bool g_bShowOutlines;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowStatusBar;
-extern int g_track_rotate_time;
-extern int g_track_rotate_time_type;
-extern bool g_bTrackCarryOver;
 extern bool g_FlushNavobjChanges;
 extern int g_FlushNavobjChangesTimeout;
 extern bool g_bShowChartBar;
@@ -299,7 +291,6 @@ extern wxString g_AisTargetList_perspective;
 extern bool b_inCloseWindow;
 extern bool b_inCompressAllCharts;
 extern long g_maintoolbar_orient;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
 extern wxAuiDefaultDockArt *g_pauidockart;
 extern int g_click_stop;
 extern wxString g_CmdSoundString;

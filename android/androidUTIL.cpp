@@ -41,6 +41,7 @@
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
+#include "model/ais_state_vars.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_drv_n0183_android_int.h"
@@ -160,24 +161,6 @@ extern int g_SOGFilterSec;
 
 extern bool g_bDisplayGrid;
 
-//    AIS Global configuration
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern double g_ShowCOG_Mins;
-extern bool g_bAISShowTracks;
-extern double g_AISShowTracks_Mins;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern wxString g_sAIS_Alert_Sound_File;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-extern bool g_bWplIsAprsPosition;
-
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
@@ -210,10 +193,6 @@ extern bool g_bLookAhead;
 
 extern double g_ownship_predictor_minutes;
 extern double g_ownship_HDTpredictor_miles;
-
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
 
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;

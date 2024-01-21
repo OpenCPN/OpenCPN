@@ -54,6 +54,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/conn_params.h"
@@ -173,56 +174,9 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-//    AIS Global configuration
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern bool g_bSyncCogPredictors;
-extern double g_ShowCOG_Mins;
-extern bool g_bAISShowTracks;
-extern bool g_bTrackCarryOver;
-extern int g_track_rotate_time;
-extern int g_track_rotate_time_type;
-extern double g_AISShowTracks_Mins;
-extern double g_AISShowTracks_Limit;
-extern bool g_bAllowShowScaled;
-extern bool g_bShowScaled;
-extern int g_ShowScaled_Num;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
-extern wxString g_sAIS_Alert_Sound_File;
-extern wxString g_anchorwatch_sound_file;
-extern wxString g_DSC_sound_file;
-extern wxString g_AIS_sound_file;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
-extern bool g_bAnchor_Alert_Audio;
-
 extern wxString g_AisTargetList_perspective;
-extern int g_AisTargetList_range;
-extern int g_AisTargetList_sortColumn;
-extern bool g_bAisTargetList_sortReverse;
-extern wxString g_AisTargetList_column_spec;
-extern wxString g_AisTargetList_column_order;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-extern bool g_benableAISNameCache;
 extern bool g_bUseOnlyConfirmedAISName;
 extern int g_ScaledNumWeightSOG;
-extern int g_ScaledNumWeightCPA;
-extern int g_ScaledNumWeightTCPA;
-extern int g_ScaledNumWeightRange;
-extern int g_ScaledNumWeightSizeOfT;
 extern int g_ScaledSizeMinimal;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
@@ -299,10 +253,6 @@ extern int n_NavMessageShown;
 extern wxString g_config_version_string;
 
 extern wxString g_CmdSoundString;
-
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
 
 extern bool g_bDebugGPSD;
 
@@ -582,9 +532,9 @@ int MyConfig::LoadMyConfig() {
   g_ScaledNumWeightSOG = 50;
   g_ScaledNumWeightCPA = 60;
   g_ScaledNumWeightTCPA = 25;
+  g_ScaledSizeMinimal = 50;
   g_ScaledNumWeightRange = 75;
   g_ScaledNumWeightSizeOfT = 25;
-  g_ScaledSizeMinimal = 50;
   g_Show_Target_Name_Scale = 250000;
   g_bWplUsePosition = 0;
   g_WplAction = 0;

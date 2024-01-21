@@ -59,6 +59,7 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "model/ais_state_vars.h"
 #include "model/catalog_handler.h"
 #include "model/cli_platform.h"
 #include "model/comm_appmsg_bus.h"
@@ -83,20 +84,6 @@ class Select;
 
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
-
-bool g_bInlandEcdis;
-bool g_bRemoveLost;
-bool g_bMarkLost;
-bool g_bShowScaled;
-bool g_bAllowShowScaled;
-bool g_bAISRolloverShowCOG;
-bool g_bAISRolloverShowCPA;
-bool g_bAISShowTracks;
-bool g_bAISRolloverShowClass;
-bool g_bAIS_CPA_Alert;
-double g_RemoveLost_Mins;
-double g_MarkLost_Mins;
-double g_AISShowTracks_Mins;
 
 S57ClassRegistrar *g_poRegistrar;
 

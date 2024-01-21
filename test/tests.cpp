@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_defs.h"
 #include "model/cli_platform.h"
 #include "model/comm_ais.h"
@@ -63,24 +64,10 @@ using namespace std::literals::chrono_literals;
 class AISTargetAlertDialog;
 class Multiplexer;
 
-bool g_bInlandEcdis;
-bool g_bRemoveLost;
-bool g_bMarkLost;
-bool g_bShowScaled;
-bool g_bAllowShowScaled;
-bool g_bAISRolloverShowCOG;
-bool g_bAISRolloverShowCPA;
-bool g_bAISShowTracks;
-bool g_bAISRolloverShowClass;
-
 Multiplexer* g_pMUX;
 std::vector<Track*> g_TrackList;
 wxString AISTargetNameFileName;
-double g_AISShowTracks_Mins;
-bool g_bAIS_CPA_Alert;
 Route *pAISMOBRoute;
-double g_RemoveLost_Mins;
-double g_MarkLost_Mins;
 
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);

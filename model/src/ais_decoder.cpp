@@ -53,6 +53,7 @@
 #include "rapidjson/stringbuffer.h"
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/meteo_points.h"
 #include "model/ais_target_data.h"
 #include "model/comm_navmsg_bus.h"
@@ -81,17 +82,6 @@ wxEvtHandler* g_pais_alert_dialog_active;
 extern wxEvtHandler *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern Select *pSelect;
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern double g_AISShowTracks_Mins;
-extern bool g_bDrawAISSize;
-extern bool g_bAllowShowScaled;
-extern bool g_bShowScaled;
-extern bool g_bInlandEcdis;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern Route *pAISMOBRoute;
@@ -100,9 +90,6 @@ extern std::vector<Track*> g_TrackList;
 extern Multiplexer *g_pMUX;
 extern AisDecoder *g_pAIS;
 
-extern wxString g_CmdSoundString;
-
-bool g_benableAISNameCache;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 
@@ -141,11 +128,6 @@ static double arpa_ref_hdg = NAN;
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 extern bool g_bquiting;
-extern wxString g_DSC_sound_file;
-extern wxString g_AIS_sound_file;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
 
 static inline double GeodesicRadToDeg(double rads) {
   return rads * 180.0 / M_PI;

@@ -47,6 +47,7 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
+#include "model/ais_state_vars.h"
 #include "navutil.h"
 #include "chcanv.h"
 #include "model/georef.h"
@@ -91,6 +92,7 @@ extern int g_restore_dbindex;
 extern LayerList *pLayerList;
 extern MyConfig *pConfig;
 extern int g_nbrightness;
+extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -124,6 +126,7 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
+extern int g_nTrackPrecision;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -140,54 +143,15 @@ extern wxString g_InvisibleLayers;
 extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 
-//    AIS Global configuration
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern bool g_bSyncCogPredictors;
-extern double g_ShowCOG_Mins;
-extern bool g_bAISShowTracks;
-extern bool g_bTrackCarryOver;
-extern int g_track_rotate_time;
-extern int g_track_rotate_time_type;
-extern double g_AISShowTracks_Mins;
-extern double g_AISShowTracks_Limit;
-extern bool g_bAllowShowScaled;
-extern bool g_bShowScaled;
-extern int g_ShowScaled_Num;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
-extern wxString g_sAIS_Alert_Sound_File;
-extern wxString g_AisTargetList_perspective;
-extern int g_AisTargetList_range;
-extern int g_AisTargetList_sortColumn;
-extern bool g_bAisTargetList_sortReverse;
-extern wxString g_AisTargetList_column_spec;
-extern wxString g_AisTargetList_column_order;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-extern bool g_benableAISNameCache;
-extern int g_ScaledNumWeightSOG;
-extern int g_ScaledNumWeightCPA;
-extern int g_ScaledNumWeightTCPA;
-extern int g_ScaledNumWeightRange;
-extern int g_ScaledNumWeightSizeOfT;
-extern int g_ScaledSizeMinimal;
-
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
+extern int g_iWaypointRangeRingsNumber;
+extern float g_fWaypointRangeRingsStep;
+extern int g_iWaypointRangeRingsStepUnits;
+extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 extern bool g_bConfirmObjectDelete;
 extern wxColour g_colourOwnshipRangeRingsColour;
@@ -195,6 +159,7 @@ extern wxColour g_colourOwnshipRangeRingsColour;
 extern bool g_bEnableZoomToCursor;
 extern wxString g_toolbarConfig;
 extern double g_TrackIntervalSeconds;
+extern double g_TrackDeltaDistance;
 
 extern bool g_bGDAL_Debug;
 extern bool g_bDebugCM93;
@@ -241,10 +206,6 @@ extern int g_BSBImgDebug;
 
 extern wxString g_config_version_string;
 extern wxString g_config_version_string;
-
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
 
 extern bool g_bDebugGPSD;
 
@@ -311,7 +272,6 @@ extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 
-extern bool g_bInlandEcdis;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
 

@@ -23,12 +23,10 @@
  */
 
 #include "OCPNListCtrl.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
-
-extern wxString g_AisTargetList_column_spec;
-extern wxString g_AisTargetList_column_order;
 
 OCPNListCtrl::OCPNListCtrl(AISTargetListDialog* parent, wxWindowID id,
                            const wxPoint& pos, const wxSize& size, long style)

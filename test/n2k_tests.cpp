@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include "model/ais_state_vars.h"
 #include "model/cli_platform.h"
 #include "model/cmdline.h"
 #include "model/comm_ais.h"
@@ -94,24 +95,12 @@ static const std::vector<std::pair<double, double>> expected_targets =
 class AISTargetAlertDialog;
 class Multiplexer;
 
-extern bool g_bInlandEcdis;
-extern bool g_bRemoveLost;
-extern bool g_bMarkLost;
-extern bool g_bShowScaled;
-extern bool g_bAllowShowScaled;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
-extern bool g_bAISShowTracks;
-extern bool g_bAISRolloverShowClass;
-
 extern Multiplexer* g_pMUX;
 extern std::vector<Track*> g_TrackList;
 extern wxString AISTargetNameFileName;
-extern double g_AISShowTracks_Mins;
 extern bool g_bAIS_CPA_Alert;
 extern Route *pAISMOBRoute;
 extern double g_RemoveLost_Mins;
-extern double g_MarkLost_Mins;
 
 extern BasePlatform* g_BasePlatform;
 extern void* g_pi_manager;

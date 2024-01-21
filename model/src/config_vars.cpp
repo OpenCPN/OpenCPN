@@ -24,33 +24,26 @@
 #include "model/config_vars.h"
 #include "config.h"
 
-bool g_bAIS_ACK_Timeout = false;
-bool g_bAIS_CPA_Alert_Suppress_Moored = false;
+bool g_bAISRolloverShowClass = false;
+bool g_bAISRolloverShowCOG = false;
+bool g_bAISRolloverShowCPA = false;
 bool g_bAllowShipToActive = false;
-bool g_bCPAMax = false;
-bool g_bCPAWarn = false;
 bool g_benableUDPNullHeader = false;
-bool g_bHideMoored = false;
-bool g_bMagneticAPB = false;
 bool g_bOverruleScaMin = false;
 bool g_bGarminHostUpload = false;
+bool g_bInlandEcdis = false;
+bool g_bMagneticAPB = false;
 bool g_bShowWptName = false;
 bool g_btouch = false;
 bool g_bShowMag = false;
 bool g_bShowTrue = false;
-bool g_bTCPA_Max = false;
 bool g_bTrackDaily = false;
 bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
 bool g_persist_active_route = false;
 
-double g_AckTimeout_Mins = 0.0;
 double g_n_arrival_circle_radius = 0.0;
-double g_CPAMax_NM = 0.0;
-double g_CPAWarn_NM = 0.0;
 double g_PlanSpeed = 0.0;
-double g_ShowMoored_Kts = 0.0;
-double g_TCPA_Max = 0.0;
 double g_TrackDeltaDistance = 0.0;
 double g_UserVar = 0.0;
 

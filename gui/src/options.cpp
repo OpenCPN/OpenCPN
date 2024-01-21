@@ -71,6 +71,7 @@
 #include "config.h"
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "ais.h"
 #include "model/ais_target_data.h"
 #include "chart_ctx_factory.h"
@@ -172,28 +173,6 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-//    AIS Global configuration
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern double g_ShowCOG_Mins;
-extern bool g_bSyncCogPredictors;
-extern bool g_bAISShowTracks;
-extern double g_AISShowTracks_Mins;
-extern bool g_bAllowShowScaled;
-extern int g_ShowScaled_Num;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern wxString g_sAIS_Alert_Sound_File;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
@@ -224,8 +203,6 @@ extern double g_n_gps_antenna_offset_x;
 extern int g_n_ownship_min_mm;
 
 extern bool g_bEnableZoomToCursor;
-extern int g_track_rotate_time;
-extern int g_track_rotate_time_type;
 extern bool g_bHighliteTracks;
 extern wxColour g_colourTrackLineColour;
 
@@ -241,10 +218,6 @@ extern bool g_bLookAhead;
 extern double g_ownship_predictor_minutes;
 extern double g_ownship_HDTpredictor_miles;
 
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
-
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
@@ -257,13 +230,6 @@ extern double g_mouse_zoom_sensitivity;
 extern int g_mouse_zoom_sensitivity_ui;
 
 extern OcpnSound* g_anchorwatch_sound;
-extern wxString g_anchorwatch_sound_file;
-extern wxString g_DSC_sound_file;
-extern wxString g_AIS_sound_file;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
-extern bool g_bAnchor_Alert_Audio;
 
 extern bool g_fog_overzoom;
 extern bool g_oz_vector_scale;
@@ -309,7 +275,6 @@ extern bool g_bShowMuiZoomButtons;
 
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
-extern bool g_bInlandEcdis;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
 extern wxString g_lastAppliedTemplateGUID;

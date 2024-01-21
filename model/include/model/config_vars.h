@@ -29,19 +29,17 @@
 #include <wx/config.h>
 #include <wx/string.h>
 
-extern bool g_bAIS_ACK_Timeout;
-extern bool g_bAIS_CPA_Alert_Suppress_Moored;
+extern bool g_bAISRolloverShowClass;
+extern bool g_bAISRolloverShowCOG;
+extern bool g_bAISRolloverShowCPA;
 extern bool g_bAllowShipToActive;
-extern bool g_bCPAMax;
-extern bool g_bCPAWarn;
 extern bool g_benableUDPNullHeader;
 extern bool g_bGarminHostUpload;
-extern bool g_bHideMoored;
+extern bool g_bInlandEcdis;
 extern bool g_bMagneticAPB;
 extern bool g_bOverruleScaMin;
 extern bool g_bShowMag;
 extern bool g_bShowTrue;
-extern bool g_bTCPA_Max;
 extern bool g_bTrackDaily;
 extern bool g_bWplUsePosition;
 extern bool g_bShowWptName;
@@ -49,13 +47,8 @@ extern bool g_btouch;
 extern bool g_bUseWptScaMin;
 extern bool g_persist_active_route;
 
-extern double g_AckTimeout_Mins;
 extern double g_n_arrival_circle_radius;
-extern double g_CPAMax_NM;
-extern double g_CPAWarn_NM;
 extern double g_PlanSpeed;
-extern double g_ShowMoored_Kts;
-extern double g_TCPA_Max;
 extern double g_TrackDeltaDistance;
 extern double g_UserVar;
 

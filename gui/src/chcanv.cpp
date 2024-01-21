@@ -78,6 +78,7 @@
 #include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
@@ -203,8 +204,6 @@ extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
 extern AisDecoder *g_pAIS;
-extern bool g_bShowAreaNotices;
-extern int g_Show_Target_Name_Scale;
 
 extern MyFrame *gFrame;
 
@@ -214,7 +213,6 @@ extern int g_pNavAidRadarRingsStepUnits;
 extern bool g_bWayPointPreventDragging;
 extern bool g_bEnableZoomToCursor;
 extern bool g_bShowChartBar;
-extern bool g_bInlandEcdis;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_maxzoomin;
@@ -224,7 +222,6 @@ int g_shipToActiveStyle;
 int g_shipToActiveColor;
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -249,8 +246,6 @@ extern double g_ownship_HDTpredictor_miles;
 
 extern bool g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
-extern wxString g_sAIS_Alert_Sound_File;
-extern wxString g_anchorwatch_sound_file;
 
 extern PlugInManager *g_pi_manager;
 
@@ -13070,8 +13065,6 @@ void ChartCanvas::SetCanvasToolbarItemState(int tool_id, bool state) {
   if (GetToolbar() && GetToolbar()->GetToolbar())
     GetToolbar()->GetToolbar()->ToggleTool(tool_id, state);
 }
-
-extern bool g_bAllowShowScaled;
 
 void ChartCanvas::SetShowAIS(bool show) {
   m_bShowAIS = show;
