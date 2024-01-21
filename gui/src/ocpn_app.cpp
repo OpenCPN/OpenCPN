@@ -286,7 +286,6 @@ RouteManagerDialog *pRouteManagerDialog;
 GoToPositionDialog *pGoToPositionDialog;
 
 double vLat, vLon;
-double initial_scale_ppm, initial_rotation;
 
 int g_nbrightness = 100;
 
@@ -493,8 +492,6 @@ bool g_bframemax;
 bool g_bAutoAnchorMark;
 
 wxRect g_blink_rect;
-IDX_entry *gpIDX;
-int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
@@ -1567,9 +1564,6 @@ bool MyApp::OnInit() {
          wxFileName::GetPathSeparator() + _T("2bells.wav"));
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
   }
-
-  gpIDX = NULL;
-  gpIDXn = 0;
 
   g_Platform->Initialize_2();
 
