@@ -67,6 +67,7 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
 #include "model/downloader.h"
+#include "model/multiplexer.h"
 #include "model/nmea_log.h"
 #include "model/ocpn_utils.h"
 #include "model/pincode.h"
@@ -76,11 +77,8 @@
 #include "model/S57ClassRegistrar.h"
 #include "model/select.h"
 #include "model/track.h"
-#include "observable_evtvar.h"
 
-class AISTargetAlertDialog;
-class Multiplexer;
-class Select;
+#include "observable_evtvar.h"
 
 BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
