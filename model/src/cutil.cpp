@@ -39,7 +39,7 @@ double round_msvc(double x) { return (floor(x + 0.5)); }
 #include <windows.h>
 #include <float.h>  // for _clear87()
 
-extern long __stdcall MyUnhandledExceptionFilter(
+long __stdcall MyUnhandledExceptionFilter(
     struct _EXCEPTION_POINTERS *ExceptionInfo) {
   //    return EXCEPTION_EXECUTE_HANDLER ;        // terminates the app
 
@@ -62,7 +62,7 @@ extern long __stdcall MyUnhandledExceptionFilter(
 
 /*          Replacement for __MSVC__ in absence of snprintf or _snprintf  */
 #ifdef __MSVC__
-extern int mysnprintf(char *buffer, int count, const char *format, ...) {
+int mysnprintf(char *buffer, int count, const char *format, ...) {
   int ret;
 
   va_list arg;
