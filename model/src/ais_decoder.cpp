@@ -79,10 +79,6 @@ static const long long lNaN = 0xfff8000000000000;
 
 wxEvtHandler* g_pais_alert_dialog_active;
 
-extern wxEvtHandler *g_pais_alert_dialog_active;
-extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern bool g_bquiting;
-
 AisDecoder *g_pAIS;
 Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
