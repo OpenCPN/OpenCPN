@@ -39,8 +39,6 @@ target_include_directories(GEOPRIM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(GEOPRIM PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(GEOPRIM PRIVATE ${wxWidgets_LIBRARIES})
 
-#FIXME (#3527) Dependency on main CMakeLists.txt
-target_include_directories(GEOPRIM PRIVATE ../../include)
 if (QT_ANDROID)
   target_include_directories(GEOPRIM PRIVATE  ${CMAKE_SOURCE_DIR}/android)
 elseif (MSVC)
@@ -52,10 +50,9 @@ endif ()
 find_package(OpenGL)
 if (OPENGL_FOUND)
     target_include_directories(GEOPRIM PRIVATE ${OPENGL_INCLUDE_DIR})
+    target_link_libraries(GEOPRIM PRIVATE ${OPENGL_LIBRARIES} )
 
     message(STATUS "Found OpenGL....")
     message(STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     message(STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
-
-    target_link_libraries(GEOPRIM PRIVATE ${OPENGL_LIBRARIES} )
-endif (OPENGL_FOUND)
+endif ()
