@@ -48,8 +48,6 @@
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
 
-extern Routeman* g_pRouteMan;
-
 using namespace std::chrono_literals;
 
 static const char* const kHttpAddr = "http://0.0.0.0:8000";

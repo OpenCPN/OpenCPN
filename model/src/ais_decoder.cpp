@@ -53,6 +53,7 @@
 #include "rapidjson/stringbuffer.h"
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/meteo_points.h"
 #include "model/ais_target_data.h"
 #include "model/comm_navmsg_bus.h"
@@ -78,46 +79,11 @@ static const long long lNaN = 0xfff8000000000000;
 
 wxEvtHandler* g_pais_alert_dialog_active;
 
-extern wxEvtHandler *g_pais_alert_dialog_active;
-extern Select *pSelectAIS;
-extern Select *pSelect;
-extern bool bGPSValid;
-extern bool g_bCPAMax;
-extern double g_CPAMax_NM;
-extern bool g_bCPAWarn;
-extern double g_CPAWarn_NM;
-extern bool g_bTCPA_Max;
-extern double g_TCPA_Max;
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern double g_AISShowTracks_Mins;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
-extern bool g_bAIS_CPA_Alert_Suppress_Moored;
-extern bool g_bAIS_ACK_Timeout;
-extern double g_AckTimeout_Mins;
-extern bool g_bDrawAISSize;
-extern bool g_bAllowShowScaled;
-extern bool g_bShowScaled;
-extern bool g_bInlandEcdis;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern Route *pAISMOBRoute;
-extern wxString AISTargetNameFileName;
-extern wxString g_default_wp_icon;
-extern std::vector<Track*> g_TrackList;
-extern Multiplexer *g_pMUX;
-extern AisDecoder *g_pAIS;
-
-extern wxString g_CmdSoundString;
-
-bool g_benableAISNameCache;
+AisDecoder *g_pAIS;
+Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
+wxString AISTargetNameFileName;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
@@ -152,13 +118,6 @@ static int first_rx_ticks;
 static int rx_ticks;
 static double arpa_ref_hdg = NAN;
 
-extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern bool g_bquiting;
-extern wxString g_DSC_sound_file;
-extern wxString g_AIS_sound_file;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
 
 static inline double GeodesicRadToDeg(double rads) {
   return rads * 180.0 / M_PI;

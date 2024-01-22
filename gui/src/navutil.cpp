@@ -54,6 +54,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/cmdline.h"
 #include "model/config_vars.h"
 #include "model/conn_params.h"
@@ -111,13 +112,11 @@ extern int g_restore_dbindex;
 extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern LayerList *pLayerList;
-extern int g_LayerIdx;
 extern MyConfig *pConfig;
 extern double vLat, vLon;
 extern double kLat, kLon;
 extern ColorScheme global_color_scheme;
 extern int g_nbrightness;
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -156,7 +155,6 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
-extern int g_nTrackPrecision;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -176,67 +174,9 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-//    AIS Global configuration
-extern bool g_bCPAMax;
-extern double g_CPAMax_NM;
-extern bool g_bCPAWarn;
-extern double g_CPAWarn_NM;
-extern bool g_bTCPA_Max;
-extern double g_TCPA_Max;
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern bool g_bSyncCogPredictors;
-extern double g_ShowCOG_Mins;
-extern bool g_bAISShowTracks;
-extern bool g_bTrackCarryOver;
-extern int g_track_rotate_time;
-extern int g_track_rotate_time_type;
-extern double g_AISShowTracks_Mins;
-extern double g_AISShowTracks_Limit;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
-extern bool g_bAllowShowScaled;
-extern bool g_bShowScaled;
-extern int g_ShowScaled_Num;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
-extern wxString g_sAIS_Alert_Sound_File;
-extern wxString g_anchorwatch_sound_file;
-extern wxString g_DSC_sound_file;
-extern wxString g_AIS_sound_file;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
-extern bool g_bAnchor_Alert_Audio;
-
-extern bool g_bAIS_CPA_Alert_Suppress_Moored;
-extern bool g_bAIS_ACK_Timeout;
-extern double g_AckTimeout_Mins;
 extern wxString g_AisTargetList_perspective;
-extern int g_AisTargetList_range;
-extern int g_AisTargetList_sortColumn;
-extern bool g_bAisTargetList_sortReverse;
-extern wxString g_AisTargetList_column_spec;
-extern wxString g_AisTargetList_column_order;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-extern bool g_benableAISNameCache;
 extern bool g_bUseOnlyConfirmedAISName;
 extern int g_ScaledNumWeightSOG;
-extern int g_ScaledNumWeightCPA;
-extern int g_ScaledNumWeightTCPA;
-extern int g_ScaledNumWeightRange;
-extern int g_ScaledNumWeightSizeOfT;
 extern int g_ScaledSizeMinimal;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
@@ -245,22 +185,13 @@ int g_S57_extradialog_sx, g_S57_extradialog_sy;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 extern bool g_bConfirmObjectDelete;
 extern wxColour g_colourOwnshipRangeRingsColour;
-extern int g_iWpt_ScaMin;
-extern bool g_bUseWptScaMin;
-extern bool g_bOverruleScaMin;
-extern bool g_bShowWptName;
 
 extern bool g_bEnableZoomToCursor;
 extern wxString g_toolbarConfig;
 extern double g_TrackIntervalSeconds;
-extern double g_TrackDeltaDistance;
 
 extern int g_nCacheLimit;
 extern int g_memCacheLimit;
@@ -310,7 +241,6 @@ extern wxString g_localeOverride;
 extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern int g_COGAvgSec;
-extern bool g_bMagneticAPB;
 extern bool g_bShowChartBar;
 
 extern int g_MemFootMB;
@@ -323,10 +253,6 @@ extern int n_NavMessageShown;
 extern wxString g_config_version_string;
 
 extern wxString g_CmdSoundString;
-
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
 
 extern bool g_bDebugGPSD;
 
@@ -397,7 +323,6 @@ extern bool g_bAutoHideToolbar;
 extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
-extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 
 extern int g_ShipScaleFactor;
@@ -435,7 +360,6 @@ wxString g_gpx_path;
 bool g_bLayersLoaded;
 bool g_bShowMuiZoomButtons = true;
 
-int g_trackFilterMax;
 double g_mouse_zoom_sensitivity;
 int g_mouse_zoom_sensitivity_ui;
 
@@ -608,9 +532,9 @@ int MyConfig::LoadMyConfig() {
   g_ScaledNumWeightSOG = 50;
   g_ScaledNumWeightCPA = 60;
   g_ScaledNumWeightTCPA = 25;
+  g_ScaledSizeMinimal = 50;
   g_ScaledNumWeightRange = 75;
   g_ScaledNumWeightSizeOfT = 25;
-  g_ScaledSizeMinimal = 50;
   g_Show_Target_Name_Scale = 250000;
   g_bWplUsePosition = 0;
   g_WplAction = 0;

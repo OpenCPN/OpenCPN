@@ -82,14 +82,10 @@ static const char* const DEFAULT_XDG_DATA_DIRS =
 
 void appendOSDirSlash(wxString* pString);
 
-extern BasePlatform* g_BasePlatform;
+BasePlatform* g_BasePlatform;
 
 #ifdef __ANDROID__
 PlatSpec android_plat_spc;
-#endif
-
-#ifdef _MSC_VER
-extern bool m_bdisableWindowsDisplayEnum;
 #endif
 
 static bool checkIfFlatpacked() {

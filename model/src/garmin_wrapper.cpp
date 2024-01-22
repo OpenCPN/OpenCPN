@@ -29,9 +29,7 @@
 
 #define GPS_DEBUG
 
-extern char last_error[];
-
-gpsdevh *my_gps_devh;
+static gpsdevh *my_gps_devh;
 
 wxString GetLastGarminError(void) {
   return wxString(GetDeviceLastError(), wxConvUTF8);

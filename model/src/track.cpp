@@ -96,14 +96,7 @@ millions of points.
 #include "model/routeman.h"
 #include "model/select.h"
 
-extern WayPointman *pWayPointMan;
-extern Select *pSelect;
-extern int g_nTrackPrecision;
-extern bool g_bHighliteTracks;
-extern double g_TrackDeltaDistance;
-extern wxColour g_colourTrackLineColour;
-extern int g_trackFilterMax;
-
+std::vector<Track*> g_TrackList;
 
 #if defined(__UNIX__) && \
     !defined(__WXOSX__)  // high resolution stopwatch for profiling
@@ -282,7 +275,6 @@ void ActiveTrack::Stop(bool do_add_point) {
   m_track_run = 0;
 }
 
-extern std::vector<Track*> g_TrackList;
 Track *ActiveTrack::DoExtendDaily() {
   Track *pExtendTrack = NULL;
   TrackPoint *pExtendPoint = NULL;

@@ -74,9 +74,11 @@
 #include "Quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
+#include "model/own_ship.h"
 #include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
@@ -128,7 +130,6 @@
 
 #endif
 
-extern float g_ChartScaleFactorExp;
 extern float g_ShipScaleFactorExp;
 extern double g_mouse_zoom_sensitivity;
 
@@ -183,8 +184,6 @@ extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
 extern ActiveTrack *g_pActiveTrack;
 
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1;
 extern bool AnchorAlertOn2;
@@ -200,16 +199,11 @@ extern bool bDrawCurrentValues;
 
 extern s52plib *ps52plib;
 
-extern bool bGPSValid;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
 
 extern AisDecoder *g_pAIS;
-extern bool g_bShowAreaNotices;
-extern int g_Show_Target_Name_Scale;
-extern bool g_bCPAWarn;
-extern bool g_bTCPA_Max;
 
 extern MyFrame *gFrame;
 
@@ -219,7 +213,6 @@ extern int g_pNavAidRadarRingsStepUnits;
 extern bool g_bWayPointPreventDragging;
 extern bool g_bEnableZoomToCursor;
 extern bool g_bShowChartBar;
-extern bool g_bInlandEcdis;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_maxzoomin;
@@ -229,7 +222,6 @@ int g_shipToActiveStyle;
 int g_shipToActiveColor;
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -254,8 +246,6 @@ extern double g_ownship_HDTpredictor_miles;
 
 extern bool g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
-extern wxString g_sAIS_Alert_Sound_File;
-extern wxString g_anchorwatch_sound_file;
 
 extern PlugInManager *g_pi_manager;
 
@@ -278,7 +268,6 @@ extern ocpnStyle::StyleManager *g_StyleManager;
 
 extern OcpnSound *g_anchorwatch_sound;
 
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bresponsive;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
@@ -13076,8 +13065,6 @@ void ChartCanvas::SetCanvasToolbarItemState(int tool_id, bool state) {
   if (GetToolbar() && GetToolbar()->GetToolbar())
     GetToolbar()->GetToolbar()->ToggleTool(tool_id, state);
 }
-
-extern bool g_bAllowShowScaled;
 
 void ChartCanvas::SetShowAIS(bool show) {
   m_bShowAIS = show;

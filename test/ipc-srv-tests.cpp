@@ -56,7 +56,6 @@
 
 using namespace std::literals::chrono_literals;
 
-BasePlatform* g_BasePlatform = 0;
 bool g_bportable;
 
 /** Define an action to be performed when a KeyProvider is notified. */

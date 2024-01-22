@@ -36,8 +36,6 @@
 #include "androidUTIL.h"
 #endif
 
-extern BasePlatform* g_BasePlatform;
-
 static std::string cache_path() {
   wxFileName path;
   path.AssignDir(g_BasePlatform->GetPrivateDataDir());

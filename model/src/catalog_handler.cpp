@@ -48,8 +48,6 @@ static const std::string SEP("\\");
 static const std::string SEP("/");
 #endif
 
-extern BasePlatform* g_BasePlatform;
-
 static const char* const DOWNLOAD_REPO =
     "https://raw.githubusercontent.com/OpenCPN/plugins";
 

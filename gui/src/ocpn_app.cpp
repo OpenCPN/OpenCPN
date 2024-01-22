@@ -85,6 +85,8 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
+#include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/certificates.h"
 #include "model/cmdline.h"
 #include "model/comm_bridge.h"
@@ -241,7 +243,6 @@ wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
 
 OCPNPlatform *g_Platform;
-BasePlatform *g_BasePlatform;   // points to g_platform, handles brain-dead MS linker.
 
 bool g_bFirstRun;
 bool g_bUpgradeInProcess;
@@ -261,19 +262,10 @@ int g_restore_stackindex;
 int g_restore_dbindex;
 double g_ChartNotRenderScaleFactor;
 
-RouteList *pRouteList;
-std::vector<Track*> g_TrackList;
 LayerList *pLayerList;
-bool g_bIsNewLayer;
-int g_LayerIdx;
-bool g_bLayerViz;
 
-Select *pSelect;
 Select *pSelectTC;
-Select *pSelectAIS;
 
-Routeman *g_pRouteMan;
-WayPointman *pWayPointMan;
 MarkInfoDlg *g_pMarkInfoDialog;
 RoutePropDlgImpl *pRoutePropDialog;
 TrackPropDlg *pTrackPropDialog;
@@ -296,7 +288,6 @@ bool g_bBasicMenus = false;
 bool bDrawCurrentValues;
 
 wxString ChartListFileName;
-wxString AISTargetNameFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
@@ -330,12 +321,7 @@ static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
 std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
 
 OcpnSound *g_anchorwatch_sound = SoundFactory();
-wxString g_anchorwatch_sound_file;
-wxString g_DSC_sound_file;
-wxString g_AIS_sound_file;
 
-RoutePoint *pAnchorWatchPoint1;
-RoutePoint *pAnchorWatchPoint2;
 double AnchorPointMinDist;
 bool AnchorAlertOn1, AnchorAlertOn2;
 bool g_bCruising;
@@ -372,16 +358,9 @@ bool g_bTempShowMenuBar;
 int g_iNavAidRadarRingsNumberVisible;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
-int g_iWaypointRangeRingsNumber;
-float g_fWaypointRangeRingsStep;
-int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
 bool g_bWayPointPreventDragging;
 bool g_bConfirmObjectDelete;
 wxColour g_colourOwnshipRangeRingsColour;
-int g_iWpt_ScaMin;
-bool g_bUseWptScaMin;
-bool g_bShowWptName;
 int g_maxzoomin;
 
 // Set default color scheme
@@ -390,7 +369,6 @@ ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 wxArrayPtrVoid *UserColourHashTableArray;
 wxColorHashMap *pcurrent_user_color_hash;
 
-bool bGPSValid;
 bool bVelocityValid;
 
 int gHDx_Watchdog;
@@ -415,7 +393,6 @@ bool g_config_display_size_manual;
 
 int g_GUIScaleFactor;
 int g_ChartScaleFactor;
-float g_ChartScaleFactorExp;
 float g_MarkScaleFactorExp;
 int g_last_ChartScaleFactor;
 int g_ShipScaleFactor;
@@ -455,19 +432,10 @@ double g_ownship_HDTpredictor_miles;
 bool g_own_ship_sog_cog_calc;
 int g_own_ship_sog_cog_calc_damp_sec;
 
-Multiplexer *g_pMUX;
-
-AisDecoder *g_pAIS;
 AisInfoGui *g_pAISGUI;
 
-bool g_bAIS_CPA_Alert;
-bool g_bAIS_CPA_Alert_Audio;
 AISTargetQueryDialog *g_pais_query_dialog_active;
 int g_iSoundDeviceIndex;
-
-int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-int g_ais_query_dialog_x, g_ais_query_dialog_y;
 
 int g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -479,7 +447,7 @@ bool g_bframemax;
 
 bool g_bAutoAnchorMark;
 
-wxRect g_blink_rect;
+int gpIDXn;
 long gStart_LMT_Offset;
 
 wxArrayString *pMessageOnceArray;
@@ -508,10 +476,6 @@ bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
 
 PlugInManager *g_pi_manager;
-
-bool g_bAISRolloverShowClass;
-bool g_bAISRolloverShowCOG;
-bool g_bAISRolloverShowCPA;
 
 bool g_bDebugGPSD;
 
@@ -545,56 +509,18 @@ bool GetMemoryStatus(int *mem_total, int *mem_used);
 bool g_bHasHwClock;
 
 
-// AIS Global configuration
-bool g_bShowAIS;
-bool g_bCPAMax;
-double g_CPAMax_NM;
-bool g_bCPAWarn;
-double g_CPAWarn_NM;
-bool g_bTCPA_Max;
-double g_TCPA_Max;
-bool g_bMarkLost;
-double g_MarkLost_Mins;
-bool g_bRemoveLost;
-double g_RemoveLost_Mins;
-bool g_bShowCOG;
-bool g_bSyncCogPredictors;
-double g_ShowCOG_Mins;
-bool g_bAISShowTracks;
-double g_AISShowTracks_Mins;
-double g_AISShowTracks_Limit;
-bool g_bHideMoored;
-bool g_bAllowShowScaled;
-double g_ShowMoored_Kts;
-wxString g_sAIS_Alert_Sound_File;
-bool g_bAIS_CPA_Alert_Suppress_Moored;
-bool g_bAIS_ACK_Timeout;
-double g_AckTimeout_Mins;
-bool g_bShowScaled;
-bool g_bShowAreaNotices;
-bool g_bDrawAISSize;
-bool g_bDrawAISRealtime;
-double g_AIS_RealtPred_Kts;
-bool g_bShowAISName;
-int g_Show_Target_Name_Scale;
-
 int g_nAIS_activity_timer;
 
 bool g_bEnableZoomToCursor;
 
 bool g_bTrackActive;
-bool g_bTrackCarryOver;
 bool g_bDeferredStartTrack;
-int g_track_rotate_time;
-int g_track_rotate_time_type;
 bool g_bHighliteTracks;
 wxColour g_colourTrackLineColour;
 wxString g_default_wp_icon;
 
 ActiveTrack *g_pActiveTrack;
 double g_TrackIntervalSeconds;
-double g_TrackDeltaDistance;
-int g_nTrackPrecision;
 
 int g_cm93_zoom_factor;
 PopUpDSlide *pPopupDetailSlider;
@@ -639,12 +565,6 @@ bool g_bquiting;
 int g_BSBImgDebug;
 
 AISTargetListDialog *g_pAISTargetList;
-wxString g_AisTargetList_perspective;
-int g_AisTargetList_range;
-int g_AisTargetList_sortColumn;
-bool g_bAisTargetList_sortReverse;
-wxString g_AisTargetList_column_spec;
-wxString g_AisTargetList_column_order;
 int g_AisTargetList_count;
 bool g_bAisTargetList_autosort;
 
@@ -667,12 +587,7 @@ bool g_bShowCompassWin;
 
 bool g_benable_rotate;
 
-bool g_bShowTrue = true;
-bool g_bShowMag;
-
-bool g_bMagneticAPB;
-
-bool g_bInlandEcdis;
+int g_GPU_MemSize;
 
 wxString g_uiStyle;
 
@@ -682,10 +597,7 @@ double gQueryVar = 361.0;
 
 char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
 
-bool g_bAIS_GCPA_Alert_Audio;
-bool g_bAIS_SART_Alert_Audio;
-bool g_bAIS_DSC_Alert_Audio;
-bool g_bAnchor_Alert_Audio;
+int portaudio_initialized;
 
 char nmea_tick_chars[] = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 
@@ -1508,6 +1420,8 @@ bool MyApp::OnInit() {
          wxFileName::GetPathSeparator() + _T("2bells.wav"));
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
   }
+
+  gpIDXn = 0;
 
   g_Platform->Initialize_2();
 

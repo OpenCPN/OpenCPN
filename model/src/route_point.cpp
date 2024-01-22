@@ -38,23 +38,13 @@
 
 #include <wx/listimpl.cpp>
 
-extern BasePlatform* g_BasePlatform;
-extern WayPointman *pWayPointMan;
-extern bool g_bIsNewLayer;
-extern int g_LayerIdx;
-extern Routeman *g_pRouteMan;
-extern wxRect g_blink_rect;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
-extern float g_ChartScaleFactorExp;
-extern int g_iWpt_ScaMin;
-extern bool g_bUseWptScaMin;
-extern bool g_bOverruleScaMin;
-extern bool g_bShowWptName;
-
 WX_DEFINE_LIST(RoutePointList);
+
+wxColour g_colourWaypointRangeRingsColour;
+
+int g_LayerIdx;
+
+wxRect g_blink_rect;
 
 std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
     = [](unsigned, const unsigned*) { assert(false); };
@@ -247,7 +237,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
 
   if (bAddToList && NULL != pWayPointMan) pWayPointMan->AddRoutePoint(this);
 
-  m_bIsInLayer = g_bIsNewLayer;
+  // m_bIsInLayer = g_bIsNewLayer;
   if (m_bIsInLayer) {
     m_LayerID = g_LayerIdx;
     m_bIsListed = false;
@@ -403,14 +393,6 @@ int RoutePoint::GetWaypointRangeRingsStepUnits() {
     return g_iWaypointRangeRingsStepUnits;
   else
     return m_iWaypointRangeRingsStepUnits;
-}
-
-wxColour RoutePoint::GetWaypointRangeRingsColour(void) {
-  if (m_wxcWaypointRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX) ==
-      _T("#FFFFFF"))
-    return g_colourWaypointRangeRingsColour;
-  else
-    return m_wxcWaypointRangeRingsColour;
 }
 
 void RoutePoint::SetScaMin(long val) {

@@ -81,10 +81,6 @@
 #include <Psapi.h>
 #endif
 
-extern BasePlatform* g_BasePlatform;
-extern wxWindow* gFrame;
-extern ChartDB* ChartData;
-
 static const std::vector<std::string> SYSTEM_PLUGINS = {
     "chartdownloader", "wmm", "dashboard", "grib"};
 

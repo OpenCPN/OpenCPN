@@ -94,7 +94,6 @@ extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
 extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
-extern bool g_bOverruleScaMin;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxDateTime g_DNS_cache_time;
 

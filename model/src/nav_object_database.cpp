@@ -35,13 +35,6 @@
 #include <QDebug>
 #endif
 
-extern WayPointman *pWayPointMan;
-extern Routeman *g_pRouteMan;
-
-extern RouteList *pRouteList;
-extern std::vector<Track*> g_TrackList;
-extern Select *pSelect;
-
 NavObjectCollection1::NavObjectCollection1()
     : pugi::xml_document(), m_bSkipChangeSetUpdate(false) {}
 
@@ -501,7 +494,6 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
           }
 
           else if (ext_name == _T ( "opencpn:guid" )) {
-            // if ( !g_bIsNewLayer ) )
             pTentRoute->m_GUID =
                 wxString::FromUTF8(ext_child.first_child().value());
           }

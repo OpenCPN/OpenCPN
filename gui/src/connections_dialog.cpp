@@ -65,7 +65,6 @@
 #include "nmea0183.h"
 #include "priority_gui.h"
 
-extern bool g_bMagneticAPB;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;

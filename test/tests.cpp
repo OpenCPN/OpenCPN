@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_defs.h"
 #include "model/cli_platform.h"
 #include "model/comm_ais.h"
@@ -30,6 +31,7 @@
 #include "model/config_vars.h"
 #include "model/ipc_api.h"
 #include "model/logger.h"
+#include "model/multiplexer.h"
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 #include "model/ocpn_types.h"
@@ -57,77 +59,11 @@ namespace fs = std::experimental::filesystem;
 namespace fs = std::filesystem;
 #endif
 
-
 using namespace std::literals::chrono_literals;
 
-class AISTargetAlertDialog;
-class Multiplexer;
-
-bool g_bAIS_ACK_Timeout;
-bool g_bAIS_CPA_Alert_Suppress_Moored;
-bool g_bCPAMax;
-bool g_bCPAWarn;
-bool g_bHideMoored;
-bool g_bTCPA_Max;
-double g_AckTimeout_Mins;
-double g_CPAMax_NM;
-double g_CPAWarn_NM;
-double g_ShowMoored_Kts;
-double g_TCPA_Max;
-bool g_bShowMag;
-bool g_bShowTrue;
-bool bGPSValid;
-bool g_bInlandEcdis;
-bool g_bRemoveLost;
-bool g_bMarkLost;
-bool g_bShowScaled;
-bool g_bAllowShowScaled;
-bool g_bAISRolloverShowCOG;
-bool g_bAISRolloverShowCPA;
-bool g_bAISShowTracks;
-bool g_bAISRolloverShowClass;
-
-Multiplexer* g_pMUX;
-std::vector<Track*> g_TrackList;
-wxString AISTargetNameFileName;
-double g_AISShowTracks_Mins;
-bool g_bAIS_CPA_Alert;
-Route *pAISMOBRoute;
-double g_RemoveLost_Mins;
-double g_MarkLost_Mins;
-
-BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 
-S57ClassRegistrar *g_poRegistrar;
-Select* pSelect;
-int g_trackFilterMax;
-double g_TrackDeltaDistance;
-float g_fWaypointRangeRingsStep;
-float g_ChartScaleFactorExp;
-wxString g_default_wp_icon;
-int g_iWaypointRangeRingsNumber;
-int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
-bool g_bUseWptScaMin;
-int g_iWpt_ScaMin;
-bool g_bShowWptName;
-int g_LayerIdx;
-bool g_bOverruleScaMin;
-int g_nTrackPrecision;
-bool g_bIsNewLayer;
-RouteList *pRouteList;
-WayPointman* pWayPointMan;
-RoutePoint* pAnchorWatchPoint1(nullptr);
-RoutePoint* pAnchorWatchPoint2(nullptr);
-wxRect g_blink_rect;
-bool g_bMagneticAPB;
-
-Routeman* g_pRouteMan;
-
 wxLog* g_logger;
-AisDecoder* g_pAIS;
-Select* pSelectAIS;
 
 wxDEFINE_EVENT(EVT_FOO, ObservedEvt);
 wxDEFINE_EVENT(EVT_BAR, ObservedEvt);

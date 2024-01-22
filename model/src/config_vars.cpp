@@ -24,19 +24,31 @@
 #include "model/config_vars.h"
 #include "config.h"
 
+bool g_bAISRolloverShowClass = false;
+bool g_bAISRolloverShowCOG = false;
+bool g_bAISRolloverShowCPA = false;
 bool g_bAllowShipToActive = false;
 bool g_benableUDPNullHeader = false;
+bool g_bOverruleScaMin = false;
 bool g_bGarminHostUpload = false;
+bool g_bInlandEcdis = false;
+bool g_bMagneticAPB = false;
+bool g_bShowWptName = false;
+bool g_btouch = false;
+bool g_bShowMag = false;
+bool g_bShowTrue = false;
 bool g_bTrackDaily = false;
+bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
 bool g_persist_active_route = false;
-bool g_btouch = false;
 
 double g_n_arrival_circle_radius = 0.0;
 double g_PlanSpeed = 0.0;
+double g_TrackDeltaDistance = 0.0;
 double g_UserVar = 0.0;
 
-float g_GLMinSymbolLineWidth;
+float g_fWaypointRangeRingsStep = 0.0;
+float g_GLMinSymbolLineWidth = 0.0;
 float g_selection_radius_mm = 2.0;
 float g_selection_radius_touch_mm = 10.0;
 
@@ -45,13 +57,18 @@ int g_iSDMMFormat = 0;
 int g_iSpeedFormat = 0;
 int g_iWindSpeedFormat = 0;
 int g_iTempFormat = 0;
+int g_iWpt_ScaMin = 0;
+int g_iWaypointRangeRingsNumber = 0;
+int g_iWaypointRangeRingsStepUnits = 0;
 int g_maxWPNameLength;
 int g_NMEAAPBPrecision = 3;
 int g_nCOMPortCheck = 32;
 int g_nDepthUnitDisplay = 0;
 int g_nNMEADebug = 0;
+int g_nTrackPrecision = 0;
 int g_route_line_width = 0;
 int g_track_line_width = 0;
+int g_trackFilterMax = 0;
 int g_WplAction = 0;
 int gps_watchdog_timeout_ticks = 0;
 int sat_watchdog_timeout_ticks = 12;

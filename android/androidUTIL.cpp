@@ -41,6 +41,7 @@
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
+#include "model/ais_state_vars.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_drv_n0183_android_int.h"
@@ -150,7 +151,6 @@ extern bool g_bShowDepthUnits;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
-extern bool g_bShowMag;
 extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
 
@@ -161,40 +161,9 @@ extern int g_SOGFilterSec;
 
 extern bool g_bDisplayGrid;
 
-//    AIS Global configuration
-extern bool g_bCPAMax;
-extern double g_CPAMax_NM;
-extern bool g_bCPAWarn;
-extern double g_CPAWarn_NM;
-extern bool g_bTCPA_Max;
-extern double g_TCPA_Max;
-extern bool g_bMarkLost;
-extern double g_MarkLost_Mins;
-extern bool g_bRemoveLost;
-extern double g_RemoveLost_Mins;
-extern bool g_bShowCOG;
-extern double g_ShowCOG_Mins;
-extern bool g_bAISShowTracks;
-extern double g_AISShowTracks_Mins;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern wxString g_sAIS_Alert_Sound_File;
-extern bool g_bAIS_CPA_Alert_Suppress_Moored;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-extern bool g_bWplIsAprsPosition;
-
 extern int g_iNavAidRadarRingsNumberVisible;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern int g_iWaypointRangeRingsStepUnits;
-extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 
 extern bool g_bPreserveScaleOnX;
@@ -212,9 +181,6 @@ extern int g_n_ownship_min_mm;
 extern bool g_bEnableZoomToCursor;
 extern bool g_bHighliteTracks;
 extern double g_TrackIntervalSeconds;
-extern double g_TrackDeltaDistance;
-extern double g_TrackDeltaDistance;
-extern int g_nTrackPrecision;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -228,13 +194,6 @@ extern bool g_bLookAhead;
 extern double g_ownship_predictor_minutes;
 extern double g_ownship_HDTpredictor_miles;
 
-extern bool g_bAISRolloverShowClass;
-extern bool g_bAISRolloverShowCOG;
-extern bool g_bAISRolloverShowCPA;
-
-extern bool g_bAIS_ACK_Timeout;
-extern double g_AckTimeout_Mins;
-
 extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
@@ -244,7 +203,6 @@ extern wxLocale *plocale_def_lang;
 #endif
 
 // extern OCPN_Sound        g_anchorwatch_sound;
-extern bool g_bMagneticAPB;
 
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -279,7 +237,6 @@ extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 
 extern double g_config_display_size_mm;
-extern float g_ChartScaleFactorExp;
 extern bool g_config_display_size_manual;
 
 extern Multiplexer *g_pMUX;
@@ -300,8 +257,6 @@ extern ChartStack *pCurrentStack;
 extern Select *pSelect;
 extern WayPointman *pWayPointMan;
 extern bool g_bCruising;
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern bool g_bAutoAnchorMark;
 extern wxAuiManager *g_pauimgr;
 extern wxString g_AisTargetList_perspective;

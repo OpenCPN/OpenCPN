@@ -33,6 +33,7 @@
 
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "AISTargetAlertDialog.h"
 #include "model/ais_target_data.h"
 #include "chcanv.h"
@@ -54,11 +55,7 @@
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
 extern MyFrame *gFrame;
-extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx;
-extern int g_ais_alert_dialog_sy;
-extern bool g_bAIS_CPA_Alert_Audio;
 extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;

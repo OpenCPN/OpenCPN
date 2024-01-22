@@ -56,6 +56,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
 #include "model/cmdline.h"
 #include "model/comm_drv_factory.h"  //FIXME(dave) this one goes away
@@ -186,7 +187,6 @@ extern bool g_b_legacy_input_filter_behaviour;
 extern bool g_bTrackActive;
 extern ocpnStyle::StyleManager *g_StyleManager;
 extern bool g_bmasterToolbarFull;
-extern bool g_bInlandEcdis;
 extern int g_nAutoHideToolbar;
 extern bool g_bAutoHideToolbar;
 extern bool g_bshowToolbar;
@@ -201,7 +201,6 @@ extern bool g_bShowCompassWin;
 extern bool g_benable_rotate;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
-extern float g_ChartScaleFactorExp;
 extern int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
@@ -217,11 +216,7 @@ extern wxString g_default_wp_icon;
 extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
 extern TCMgr *ptcmgr;
-extern bool g_bShowTrue;
-extern bool g_bShowMag;
 extern char nmea_tick_chars[];
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
 extern double AnchorPointMinDist;
 extern bool AnchorAlertOn1, AnchorAlertOn2;
 extern wxString g_AW1GUID;
@@ -240,7 +235,6 @@ extern bool g_bCourseUp;
 extern bool g_bLookAhead;
 extern bool g_bskew_comp;
 extern bool g_bPauseTest;
-extern wxRect g_blink_rect;
 extern bool g_bSleep;
 extern bool g_bPlayShipsBells;
 extern wxDateTime g_loglast_time;
@@ -264,7 +258,6 @@ extern ChartGroupArray *g_pGroupArray;
 extern bool g_bEnableZoomToCursor;
 extern double g_display_size_mm;
 extern double g_config_display_size_mm;
-extern int g_nTrackPrecision;
 extern wxString ChartListFileName;
 extern bool g_bFullscreenToolbar;
 extern arrayofCanvasPtr g_canvasArray;
@@ -276,19 +269,10 @@ extern unsigned int g_canvasConfig;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
 extern wxString *pInit_Chart_Dir;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern bool g_bAISShowTracks;
-extern bool g_bAllowShowScaled;
-extern bool g_bHideMoored;
-extern bool g_bShowScaled;
 extern bool g_bShowAIS;
 extern bool g_bShowOutlines;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowStatusBar;
-extern int g_track_rotate_time;
-extern int g_track_rotate_time_type;
-extern bool g_bTrackCarryOver;
 extern bool g_FlushNavobjChanges;
 extern int g_FlushNavobjChangesTimeout;
 extern bool g_bShowChartBar;
@@ -307,7 +291,6 @@ extern wxString g_AisTargetList_perspective;
 extern bool b_inCloseWindow;
 extern bool b_inCompressAllCharts;
 extern long g_maintoolbar_orient;
-extern int g_ais_query_dialog_x, g_ais_query_dialog_y;
 extern wxAuiDefaultDockArt *g_pauidockart;
 extern int g_click_stop;
 extern wxString g_CmdSoundString;
@@ -326,12 +309,10 @@ extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
 extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
-extern bool bGPSValid;
 extern bool bVelocityValid;
 extern int gHDx_Watchdog;
 extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
-extern bool g_bCPAWarn;
 
 extern bool g_bUseGLL;
 extern int g_MemFootMB;
@@ -6636,8 +6617,6 @@ void MyFrame::LoadHarmonics() {
     if (b_newdataset) ptcmgr->LoadDataSources(TideCurrentDataSet);
   }
 }
-
-Route *pAISMOBRoute;
 
 void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   if (!ptarget) return;

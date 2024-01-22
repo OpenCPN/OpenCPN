@@ -59,6 +59,7 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "model/ais_state_vars.h"
 #include "model/catalog_handler.h"
 #include "model/cli_platform.h"
 #include "model/comm_appmsg_bus.h"
@@ -66,86 +67,19 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
 #include "model/downloader.h"
+#include "model/multiplexer.h"
 #include "model/nmea_log.h"
 #include "model/ocpn_utils.h"
 #include "model/pincode.h"
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
-#include "model/S57ClassRegistrar.h"
 #include "model/select.h"
 #include "model/track.h"
+
 #include "observable_evtvar.h"
 
-class AISTargetAlertDialog;
-class Multiplexer;
-class Select;
-
-BasePlatform* g_BasePlatform = 0;
 void* g_pi_manager = reinterpret_cast<void*>(1L);
-
-bool g_bAIS_ACK_Timeout;
-bool g_bAIS_CPA_Alert_Suppress_Moored;
-bool g_bCPAMax;
-bool g_bCPAWarn;
-bool g_bHideMoored;
-bool g_bTCPA_Max;
-double g_AckTimeout_Mins;
-double g_CPAMax_NM;
-double g_CPAWarn_NM;
-double g_ShowMoored_Kts;
-double g_TCPA_Max;
-bool g_bShowMag;
-bool g_bShowTrue;
-bool bGPSValid;
-bool g_bInlandEcdis;
-bool g_bRemoveLost;
-bool g_bMarkLost;
-bool g_bShowScaled;
-bool g_bAllowShowScaled;
-bool g_bAISRolloverShowCOG;
-bool g_bAISRolloverShowCPA;
-bool g_bAISShowTracks;
-bool g_bAISRolloverShowClass;
-bool g_bAIS_CPA_Alert;
-double g_RemoveLost_Mins;
-double g_MarkLost_Mins;
-double g_AISShowTracks_Mins;
-
-S57ClassRegistrar *g_poRegistrar;
-
-std::vector<Track*> g_TrackList;
-wxString AISTargetNameFileName;
-Route* pAISMOBRoute;
-Select* pSelectAIS;
-
-/* comm_bridge context. */
-
-Select* pSelect;
-int g_trackFilterMax;
-double g_TrackDeltaDistance;
-float g_fWaypointRangeRingsStep;
-float g_ChartScaleFactorExp;
-float g_MarkScaleFactorExp;
-wxString g_default_wp_icon;
-int g_iWaypointRangeRingsNumber;
-int g_iWaypointRangeRingsStepUnits;
-wxColour g_colourWaypointRangeRingsColour;
-bool g_bUseWptScaMin;
-bool g_bShowWptName;
-int g_iWpt_ScaMin;
-int g_LayerIdx;
-bool g_bOverruleScaMin;
-int g_nTrackPrecision;
-bool g_bIsNewLayer;
-RouteList* pRouteList;
-WayPointman* pWayPointMan;
-RoutePoint* pAnchorWatchPoint1 = 0;
-RoutePoint* pAnchorWatchPoint2 = 0;
-wxRect g_blink_rect;
-bool g_bMagneticAPB;
-
-Routeman* g_pRouteMan;
 
 class NmeaLogDummy: public NmeaLog {
   bool Active() const { return false; }

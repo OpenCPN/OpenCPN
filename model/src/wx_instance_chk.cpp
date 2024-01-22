@@ -30,8 +30,6 @@
 #include <signal.h>
 #endif
 
-extern BasePlatform* g_BasePlatform;
-
 static const char* const  kName  = "_OpenCPN_SILock";
 
 static void KillProcess(int pid) {

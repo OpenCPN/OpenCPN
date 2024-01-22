@@ -71,7 +71,6 @@ extern Select* pSelect;
 extern Routeman* g_pRouteMan;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern RoutePropDlgImpl* pRoutePropDialog;
-extern bool g_bShowTrue, g_bShowMag;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern MyFrame* gFrame;
@@ -82,17 +81,9 @@ extern wxString g_default_wp_icon;
 
 // Global page setup data
 
-extern float g_ChartScaleFactorExp;
 extern float g_MarkScaleFactorExp;
 
 extern MarkInfoDlg* g_pMarkInfoDialog;
-extern int g_iWaypointRangeRingsNumber;
-extern float g_fWaypointRangeRingsStep;
-extern wxColour g_colourWaypointRangeRingsColour;
-
-extern int g_iWpt_ScaMin;
-extern bool g_bUseWptScaMin;
-extern bool g_bShowWptName;
 
 WX_DECLARE_LIST(wxBitmap, BitmapList);
 #include <wx/listimpl.cpp>

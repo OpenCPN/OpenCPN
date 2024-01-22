@@ -58,30 +58,18 @@
 #include "androidUTIL.h"
 #endif
 
-extern BasePlatform* g_BasePlatform;
-extern AisDecoder *g_pAIS;
-extern RouteList *pRouteList;
-extern std::vector<Track*> g_TrackList;
-extern Select *pSelect;
-extern Routeman *g_pRouteMan;
-extern bool bGPSValid;
-
-extern wxRect g_blink_rect;
-
-extern bool g_bMagneticAPB;
-
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
-
-extern ActiveTrack *g_pActiveTrack;
-
-extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
-extern Route *pAISMOBRoute;
-extern float g_ChartScaleFactorExp;
-
-extern bool g_bShowShipToActive;
 
 bool g_bPluginHandleAutopilotRoute;
+
+Routeman* g_pRouteMan;
+Route *pAISMOBRoute;
+
+RoutePoint *pAnchorWatchPoint1;
+RoutePoint *pAnchorWatchPoint2;
+
+RouteList *pRouteList;
+
+float g_ChartScaleFactorExp;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);

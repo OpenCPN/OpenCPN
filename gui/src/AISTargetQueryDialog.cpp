@@ -33,6 +33,7 @@
 #include "FontMgr.h"
 #include "model/ais_target_data.h"
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
@@ -41,8 +42,6 @@
 #include "ocpn_frame.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern int g_ais_query_dialog_x;
-extern int g_ais_query_dialog_y;
 extern ColorScheme global_color_scheme;
 extern AisDecoder *g_pAIS;
 extern wxString g_default_wp_icon;

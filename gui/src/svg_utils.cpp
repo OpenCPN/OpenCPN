@@ -45,6 +45,7 @@
 
 #include "pugixml.hpp"
 #include "model/base_platform.h"
+#include "model/routeman.h"
 
 wxBitmap LoadSVG(const wxString filename, const unsigned int width,
                  const unsigned int height, wxBitmap* default_bitmap,
@@ -156,7 +157,6 @@ bool SVGDocumentPixelSize(const wxString filename, unsigned int& width,
 }
 
 extern BasePlatform* g_BasePlatform;
-extern float g_ChartScaleFactorExp;
 
 unsigned int SVGPixelsToDisplay(unsigned int svg_px) {
   return g_BasePlatform->GetDisplayDPmm() * SVG_MM_TO_IN / SVG_IN_TO_PX * svg_px *

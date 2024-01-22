@@ -26,8 +26,6 @@
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 
-extern BasePlatform* g_BasePlatform;
-
 // FIXME (leamas) Bad name
 std::string GetSocketPath() {
   auto const static sep = static_cast<char>(wxFileName::GetPathSeparator());
@@ -49,7 +47,7 @@ LocalApiResult IpcClient::SendQuit() {
   } else {
     return LocalApiResult(false, "Server error running quit command");
   }
-} 
+}
 
 
 LocalApiResult IpcClient::SendRaise() {
@@ -57,7 +55,7 @@ LocalApiResult IpcClient::SendRaise() {
     return LocalApiResult(true, "");
   } else {
     return LocalApiResult(false, "Server error running raise command");
-  }   
+  }
 }
 
 

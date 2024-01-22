@@ -28,6 +28,7 @@ set(
   ${MODEL_HDR_DIR}/ais_bitstring.h
   ${MODEL_HDR_DIR}/ais_decoder.h
   ${MODEL_HDR_DIR}/ais_defs.h
+  ${MODEL_HDR_DIR}/ais_state_vars.h
   ${MODEL_HDR_DIR}/ais_target_data.h
   ${MODEL_HDR_DIR}/atomic_queue.h
   ${MODEL_HDR_DIR}/base_platform.h
@@ -114,6 +115,7 @@ set(MODEL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(SRC
   ${MODEL_SRC_DIR}/ais_bitstring.cpp
   ${MODEL_SRC_DIR}/ais_decoder.cpp
+  ${MODEL_SRC_DIR}/ais_state_vars.cpp
   ${MODEL_SRC_DIR}/ais_target_data.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
   ${MODEL_SRC_DIR}/catalog_handler.cpp

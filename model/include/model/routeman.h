@@ -53,7 +53,21 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
+class Routeman;   // forward
+class WayPointman;  // forward
+
 extern bool g_bPluginHandleAutopilotRoute;
+
+extern Route *pAISMOBRoute;
+
+extern RouteList *pRouteList;
+
+extern RoutePoint *pAnchorWatchPoint1;
+extern RoutePoint *pAnchorWatchPoint2;
+
+extern float g_ChartScaleFactorExp;
+
+extern Routeman* g_pRouteMan;
 
 //    List definitions for Waypoint Manager Icons
 

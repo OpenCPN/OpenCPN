@@ -27,13 +27,14 @@
 
 #include "model/select.h"
 #include "model/georef.h"
-#include "vector2D.h"
 #include "model/nav_object_database.h"
 #include "model/track.h"
 #include "model/route.h"
 #include "model/base_platform.h"
 
-extern BasePlatform *g_BasePlatform;
+#include "vector2D.h"
+
+Select* pSelect;
 
 Select::Select() {
   pSelectList = new SelectableItemList;

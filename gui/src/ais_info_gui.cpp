@@ -38,6 +38,7 @@
 #include <wx/string.h>
 
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "ais_info_gui.h"
 #include "AISTargetAlertDialog.h"
 #include "model/ais_target_data.h"
@@ -59,18 +60,11 @@ wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
 extern AisDecoder *g_pAIS;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern bool g_bAIS_CPA_Alert;
-extern bool g_bAIS_CPA_Alert_Audio;
-extern bool g_bAIS_DSC_Alert_Audio;
-extern bool g_bAIS_GCPA_Alert_Audio;
-extern bool g_bAIS_SART_Alert_Audio;
 extern bool g_bquiting;
 extern int g_iSoundDeviceIndex;
 extern OCPNPlatform *g_Platform;
 extern Route *pAISMOBRoute;
-extern wxString g_AIS_sound_file;
 extern wxString g_CmdSoundString;
-extern wxString g_DSC_sound_file;
 extern MyConfig* pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame* gFrame;

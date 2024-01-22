@@ -34,4 +34,6 @@ extern double gHdt;
 extern double gHdm;
 extern double gVar;
 
+extern bool bGPSValid;
+
 #endif  // OWN_SHIP_H__

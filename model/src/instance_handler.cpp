@@ -28,8 +28,6 @@
 #include "bbox.h"
 #include "model/nav_object_database.h"
 
-extern BasePlatform *g_BasePlatform;
-
 class StConnection : public wxConnection {
 public:
   StConnection() {}

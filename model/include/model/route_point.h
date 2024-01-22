@@ -42,6 +42,12 @@
 #define ETA_FORMAT_STR "%x %H:%M"
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
 
+// Default color, global state
+extern wxColour g_colourWaypointRangeRingsColour;
+
+extern int g_LayerIdx;
+
+extern wxRect g_blink_rect;
 
 class RoutePoint {
 friend class RoutePointGui;
@@ -118,7 +124,6 @@ public:
   int GetWaypointRangeRingsNumber(void);
   float GetWaypointRangeRingsStep(void);
   int GetWaypointRangeRingsStepUnits(void);
-  wxColour GetWaypointRangeRingsColour(void);
   void SetShowWaypointRangeRings(bool b_showWaypointRangeRings) {
     m_bShowWaypointRangeRings = b_showWaypointRangeRings;
   };

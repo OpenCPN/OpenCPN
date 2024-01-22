@@ -35,6 +35,10 @@
 
 #include "comm_navmsg.h"
 
+class Multiplexer;  // forward
+
+extern Multiplexer* g_pMUX;
+
 struct MuxLogCallbacks {
   std::function<bool()> log_is_active;
   std::function<void(const std::string&)> log_message;

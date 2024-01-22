@@ -39,6 +39,7 @@
 #include <math.h>
 #include <time.h>
 
+#include "model/ais_state_vars.h"
 #include "model/cutil.h"
 #include "FontMgr.h"
 #include "ais.h"
@@ -65,33 +66,7 @@ int g_ais_cog_predictor_width;
 extern AisDecoder *g_pAIS;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
-//    AIS Global configuration
-extern bool g_bShowCOG;
-extern double g_ShowCOG_Mins;
-extern bool g_bHideMoored;
-extern double g_ShowMoored_Kts;
-extern bool g_bAISShowTracks;
-extern bool g_bShowAreaNotices;
-extern bool g_bDrawAISSize;
-extern bool g_bDrawAISRealtime;
-extern double g_AIS_RealtPred_Kts;
-extern bool g_bShowAISName;
-extern int g_Show_Target_Name_Scale;
-extern bool g_bInlandEcdis;
-
-extern int g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-extern int g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-
-extern bool g_bShowScaled;
-
-int g_ShowScaled_Num;
 int ImportanceSwitchPoint = 100;
-int g_ScaledNumWeightSOG;
-int g_ScaledNumWeightCPA;
-int g_ScaledNumWeightTCPA;
-int g_ScaledNumWeightRange;
-int g_ScaledNumWeightSizeOfT;
-int g_ScaledSizeMinimal;
 
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern bool g_bopengl;

@@ -20,6 +20,7 @@
 #include "ocpn_frame.h"
 
 extern ColorScheme global_color_scheme;
+extern int gpIDXn;
 extern TCMgr *ptcmgr;
 extern wxString g_locale;
 extern OCPNPlatform *g_Platform;
@@ -392,6 +393,7 @@ void TCWin::RecalculateSize() {
 void TCWin::OKEvent(wxCommandEvent &event) {
   Hide();
   pParent->pCwin = NULL;
+  --gpIDXn;
   delete m_pTCRolloverWin;
   delete m_tList;
   pParent->Refresh(false);
@@ -408,6 +410,7 @@ void TCWin::OKEvent(wxCommandEvent &event) {
 void TCWin::OnCloseWindow(wxCloseEvent &event) {
   Hide();
   pParent->pCwin = NULL;
+  --gpIDXn;
   delete m_pTCRolloverWin;
   delete m_tList;
 

@@ -56,7 +56,6 @@ extern MyFrame* gFrame;
 extern bool g_bShowActiveRouteHighway;
 extern double gCog;
 extern double gSog;
-extern bool g_bShowTrue, g_bShowMag;
 extern BasePlatform* g_BasePlatform;
 
 bool g_bShowRouteTotal;
