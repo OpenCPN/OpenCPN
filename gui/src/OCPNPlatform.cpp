@@ -747,6 +747,8 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
     wxLogMessage(msg);
     pcaps->bCanDoGLSL = false;
+    delete tcanvas;
+    delete pctx;
     return false;
   }
 
