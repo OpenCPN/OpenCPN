@@ -71,6 +71,7 @@ jobs:
             - build/.flatpak-builder/checksums
             - build/.flatpak-builder/downloads
             - build/.flatpak-builder/rofiles
+      - run: ci/generic-upload.sh
 
   build-android-armhf:
     docker:
