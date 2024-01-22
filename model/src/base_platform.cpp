@@ -88,10 +88,6 @@ BasePlatform* g_BasePlatform;
 PlatSpec android_plat_spc;
 #endif
 
-#ifdef _MSC_VER
-extern bool m_bdisableWindowsDisplayEnum;
-#endif
-
 static bool checkIfFlatpacked() {
   wxString id;
   if (!wxGetEnv("FLATPAK_ID", &id)) {
