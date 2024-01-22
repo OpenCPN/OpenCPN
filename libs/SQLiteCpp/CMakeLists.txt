@@ -43,8 +43,9 @@ if (TARGET LibLZMA::LibLZMA)
   target_link_libraries(SQLITE_CPP PUBLIC LibLZMA::LibLZMA)
 endif ()
 
-#FIXME (#3527) Dependency on main openpcn
-set_property(TARGET SQLITE_CPP PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(SQLITE_CPP PRIVATE -fvisibility=default -fPIC)
+endif ()
 
 # We do not need extensions, and using them in a static library causes
 # trouble with libdl linking order.
