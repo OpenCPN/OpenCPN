@@ -30,11 +30,14 @@ endif ()
 add_library(GEOPRIM STATIC ${SRC})
 add_library(ocpn::geoprim ALIAS GEOPRIM)
 
-set_property(TARGET GEOPRIM PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(GEOPRIM PRIVATE -fvisibility=default -fPIC)
+endif ()
+
 target_include_directories(GEOPRIM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-#FIXME (#3527) Missing linkage
 target_include_directories(GEOPRIM PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(GEOPRIM PRIVATE ${wxWidgets_LIBRARIES})
 
 #FIXME (#3527) Dependency on main CMakeLists.txt
 target_include_directories(GEOPRIM PRIVATE ../../include)
@@ -56,4 +59,3 @@ if (OPENGL_FOUND)
 
     target_link_libraries(GEOPRIM PRIVATE ${OPENGL_LIBRARIES} )
 endif (OPENGL_FOUND)
-
