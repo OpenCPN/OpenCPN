@@ -59,8 +59,10 @@ set(SRC
 add_library(GDAL STATIC ${SRC})
 add_library(ocpn::gdal ALIAS GDAL)
 
-#FIXME (#3527) Dependency on main opencpn
-set_property(TARGET GDAL PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(GDAL PRIVATE -fvisibility=default -fPIC)
+endif ()
+
 target_include_directories(GDAL BEFORE
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/gdal
