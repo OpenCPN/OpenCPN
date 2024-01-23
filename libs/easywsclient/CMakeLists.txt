@@ -12,8 +12,9 @@ set_source_files_properties(
 add_library(EASYWSCLIENT STATIC ${SRC})
 add_library(ocpn::easywsclient ALIAS EASYWSCLIENT)
 
-# FIXME (#3527) Dependency on main openpcn
-set_property(TARGET EASYWSCLIENT PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(EASYWSCLIENT PRIVATE -fvisibility=default -fPIC)
+endif ()
 
 target_include_directories(EASYWSCLIENT PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -4,17 +4,14 @@ if (TARGET ocpn::wxservdisc)
     return ()
 endif ()
 
-set(SRC
-  mdnsd.c
-  1035.c
-  wxServDisc.cpp
-  )
+set(SRC mdnsd.c 1035.c wxServDisc.cpp)
 
 add_library(WXSERVDISC STATIC ${SRC})
 add_library(ocpn::wxservdisc ALIAS WXSERVDISC)
 
-# FIXME (#3527) Dependency on main openpcn
-set_property(TARGET WXSERVDISC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(WXSERVDISC PRIVATE -fvisibility=default -fPIC)
+endif ()
 
 target_include_directories(WXSERVDISC PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

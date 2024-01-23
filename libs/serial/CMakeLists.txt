@@ -77,12 +77,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     PUBLIC_HEADER "${serial_HEADERS}"
 )
 
-#FIXME (#3527) Dependency on main CmakeLists
-if (OBJ_VISIBILITY)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        COMPILE_FLAGS "${OBJ_VISIBILITY}"
-    )
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(${PROJECT_NAME}  PRIVATE -fvisibility=default -fPIC)
 endif ()
+
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 if(APPLE)
     find_library(IOKIT_LIB IOKit)

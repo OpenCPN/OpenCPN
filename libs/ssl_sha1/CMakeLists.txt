@@ -6,8 +6,9 @@ endif ()
 
 add_library(SHA1 STATIC include/ssl/sha1.h src/sha1.c)
 
-# FIXME (#3527) Dependency on main openpcn
-set_property(TARGET SHA1 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(SHA1 PRIVATE -fvisibility=default -fPIC)
+endif ()
 
 target_include_directories(SHA1 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_library(ssl::sha1 ALIAS SHA1)

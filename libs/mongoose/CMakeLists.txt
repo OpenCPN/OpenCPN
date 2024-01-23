@@ -4,11 +4,7 @@ if (TARGET ocpn::mongoose)
     return ()
 endif ()
 
-
-set (SRC
-  src/mongoose.c
-  include/mongoose.h
-)
+set (SRC src/mongoose.c include/mongoose.h)
 add_library(MONGOOSE STATIC ${SRC})
 add_library(ocpn::mongoose ALIAS MONGOOSE)
 
@@ -26,7 +22,7 @@ if (NOT WIN32)
       set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
     endif()
     find_package(OpenSSL)
-    
+
     if (OPENSSL_FOUND)
       message(STATUS "OpenSSL found   ${OPENSSL_INCLUDE_DIR} ${OPENSSL_LIBRARIES}")
       target_include_directories(MONGOOSE PRIVATE ${OPENSSL_INCLUDE_DIR})
@@ -62,23 +58,16 @@ else (NOT WIN32)
   )
 endif (NOT WIN32)
 
-add_definitions(-DMG_ENABLE_OPENSSL)
-
-#set_property(TARGET MONGOOSE PROPERTY COMPILE_FLAGS "-fvisibility=default")
+target_compile_definitions(MONGOOSE PRIVATE MG_ENABLE_OPENSSL)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
   target_compile_options(
-    MONGOOSE PRIVATE
-      -fvisibility=default -Wno-unknown-pragmas -fPIC
+    MONGOOSE PRIVATE -fvisibility=default -Wno-unknown-pragmas -fPIC
   )
 endif ()
-target_include_directories(
-  MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
 
-if (MSVC)
-  # FIXME (#3527) Dependency on main OpenCPN
-  target_include_directories(
-    MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../cache/buildwin/include
-  )
-endif (MSVC)
+target_include_directories(MONGOOSE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if (MSVC AND DEFINED MSVC_INCLUDE_PATH)
+  target_include_directories(MONGOOSE PUBLIC ${MSVC_INCLUDE_PATH})
+endif ()

@@ -9,8 +9,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # Raspberry PI
-#FIXME (#3527) This is a dependency on gl_shim. Needs to be declared or
-# removed.
 if(BCMHOST)
   include_directories(
     /opt/vc/include
