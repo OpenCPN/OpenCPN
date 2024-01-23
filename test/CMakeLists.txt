@@ -132,6 +132,24 @@ if (HAVE_LIBUDEV)
   target_link_libraries(tests PRIVATE ocpn::libudev)
 endif ()
 
+add_executable(buffer_tests
+  buffer_tests.cpp
+  ${MODEL_SRC_DIR}/cmdline.cpp
+  ${MODEL_SRC_DIR}/config_vars.cpp
+  ${MODEL_SRC_DIR}/comm_out_queue.cpp
+  ${MODEL_SRC_DIR}/ocpn_utils.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/logger.cpp
+)
+target_link_libraries(buffer_tests PRIVATE observable::observable)
+target_link_libraries(buffer_tests PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(buffer_tests PRIVATE ocpn::gtest)
+target_include_directories(buffer_tests PRIVATE
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
+
 if (LINUX)
   add_executable(dbus_tests
     dbus_tests.cpp
@@ -198,6 +216,7 @@ endif ()
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
 gtest_add_tests(TARGET tests)
+gtest_add_tests(TARGET buffer_tests)
 if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
   gtest_add_tests(TARGET ipc-srv-tests)
   # We don't have a session bus available when testing flatpak
