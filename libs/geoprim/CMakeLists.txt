@@ -4,6 +4,7 @@ if (TARGET ocpn::geoprim)
     return ()
 endif ()
 
+# Fixme (#3527) dependency on main opencpn
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
@@ -39,6 +40,7 @@ target_include_directories(GEOPRIM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(GEOPRIM PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(GEOPRIM PRIVATE ${wxWidgets_LIBRARIES})
 
+# Fixme (#3527) dependency on main opencpn
 if (QT_ANDROID)
   target_include_directories(GEOPRIM PRIVATE  ${CMAKE_SOURCE_DIR}/android)
 elseif (MSVC)

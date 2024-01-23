@@ -4,6 +4,7 @@ if (TARGET ocpn::sound)
   return ()
 endif ()
 
+# Fixme (#3527) dependency on main opencpn
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 find_package(Portaudio)

@@ -21,6 +21,7 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS( " -fPIC")
 ENDIF(QT_ANDROID)
 
+# Fixme (#3527) dependencies on main opencpn
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(include)
 

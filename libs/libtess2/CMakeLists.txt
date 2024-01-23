@@ -20,7 +20,9 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     add_compile_options("-Wno-format" "-Wno-unknown-pragmas")
 endif ()
 
+# Fixme (#3527) dependency on main opencpn
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
+
 INCLUDE_DIRECTORIES(Include)
 
 IF(WIN32)

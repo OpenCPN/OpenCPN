@@ -15,6 +15,8 @@ if (NOT DEFINED ARCH)
 endif ()
 
 include(FindPkgConfig)
+
+# Fixme (#3527) dependency on main opencpn
 include(CompilerSupport)
 
 set(SRC
