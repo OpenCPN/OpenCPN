@@ -1,6 +1,6 @@
-#include  <mutex>
-#include  <string>
-#include  <vector>
+#include <mutex>
+#include <string>
+#include <vector>
 
 /**
  *  Queue of NMEA0183 messages which only holds a limited amount
@@ -8,11 +8,16 @@
  */
 class CommOutQueue {
 public:
+  /**
+   * Insert valid line of NMEA0183 data in buffer.
+   * @return false on errors including invalid input, else true.
+   */
+  virtual bool push_back(const std::string& line);
 
-  /** Insert line of NMEA0183 data in buffer. */
-  virtual void push_back(const std::string& line);
-
-  /** Return copy of next line to send, throws exception if empty. */
+  /**
+   * Return  next line to send and remove it from buffer,
+   * throws exception if empty.
+   */
   std::string pop();
 
   /** Return number of lines in queue. */
@@ -29,7 +34,6 @@ public:
   // Disable copying and assignment
   CommOutQueue(const CommOutQueue& other) = delete;
   CommOutQueue& operator=(const CommOutQueue&) = delete;
-
 
 protected:
   struct BufferItem {
@@ -50,5 +54,15 @@ public:
   CommOutQueueSingle() : CommOutQueue(1) {}
 
   /** Insert line of NMEA0183 data in buffer. */
-  void push_back(const std::string& line);
+  bool push_back(const std::string& line);
+};
+
+/** Add unit test measurements to CommOutQueue. */
+class MeasuredCommOutQueue : public CommOutQueue {
+public:
+  MeasuredCommOutQueue(int size) : CommOutQueue(size), push_time(0) {}
+
+  bool push_back(const std::string& line);
+
+  double push_time;
 };

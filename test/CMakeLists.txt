@@ -149,6 +149,9 @@ target_include_directories(buffer_tests PRIVATE
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/resources
 )
+target_compile_definitions(
+  buffer_tests PUBLIC TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+)
 
 if (LINUX)
   add_executable(dbus_tests
