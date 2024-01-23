@@ -60,7 +60,10 @@ endif ()
 add_library(NMEA0183 STATIC ${SRC})
 add_library(ocpn::nmea0183 ALIAS NMEA0183)
 
-set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(NMEA0183 PRIVATE -fvisibility=default -fPIC)
+endif ()
+
 target_include_directories(NMEA0183 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_include_directories(NMEA0183 PRIVATE ${wxWidgets_INCLUDE_DIRS})
