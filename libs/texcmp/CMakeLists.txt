@@ -5,7 +5,7 @@ if (TARGET ocpn::texcmp)
 endif ()
 
 option(USE_SYSTEM_LZ4 "Use system lz4 if available" ON)
-option(HAVE_MSSE2  "Use sse2 optimizations" ON)
+option(HAVE_MSSE2  "Use sse2 optimizations" OFF)
 
 if (NOT DEFINED ARCH)
   set(ARCH ${CMAKE_HOST_SYSTEM_PROCESSOR})
