@@ -772,6 +772,10 @@ wxSize BasePlatform::getDisplaySize() {
 
 // GetDisplaySizeMM
 double BasePlatform::GetDisplaySizeMM() {
+  if (!dynamic_cast<wxApp*>(wxAppConsole::GetInstance())) {
+      // This is a console app
+      return 250;
+  }
   if(m_displaySizeMMOverride.size() > 0 && m_displaySizeMMOverride[0] > 0) {
     return m_displaySizeMMOverride[0];
   }
