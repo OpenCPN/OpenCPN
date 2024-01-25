@@ -132,7 +132,7 @@ if (HAVE_LIBUDEV)
   target_link_libraries(tests PRIVATE ocpn::libudev)
 endif ()
 
-add_executable(buffer_tests
+set(BUF_TEST_SRC
   buffer_tests.cpp
   ${MODEL_SRC_DIR}/cmdline.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
@@ -140,10 +140,27 @@ add_executable(buffer_tests
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
   ${MODEL_SRC_DIR}/logger.cpp
+  ${MODEL_SRC_DIR}/ocpn_plugin.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
 )
+
+if (APPLE)
+  list(APPEND BUF_TEST_SRC ${MODEL_SRC_DIR}/macutils.c)
+endif ()
+
+add_executable(buffer_tests ${BUF_TEST_SRC})
+
 target_link_libraries(buffer_tests PRIVATE observable::observable)
 target_link_libraries(buffer_tests PRIVATE ${wxWidgets_LIBRARIES})
 target_link_libraries(buffer_tests PRIVATE ocpn::gtest)
+if (MSVC)
+  target_link_libraries(buffer_tests PRIVATE setupapi.lib)
+endif ()
+if (APPLE)
+target_link_libraries(buffer_tests PRIVATE ocpn::filesystem)
+endif ()
+
+
 target_include_directories(buffer_tests PRIVATE
   ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
