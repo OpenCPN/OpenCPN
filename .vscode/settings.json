@@ -4,6 +4,7 @@
         "condition_variable": "cpp",
         "iosfwd": "cpp",
         "ostream": "cpp",
+        "ratio": "cpp",
         "iostream": "cpp",
         "sstream": "cpp",
         "*.xpm": "cpp"
