@@ -324,7 +324,7 @@ void AISTargetQueryDialog::UpdateText() {
     if (td->Class == AIS_METEO || td->Class == AIS_BASE)
       m_createTrkBtn->Disable();
     else
-      m_createTrkBtn->Enable(td->b_show_track);
+      m_createTrkBtn->Enable();
 
     AdjustBestSize(td.get());
     RenderHTMLQuery(td.get());
