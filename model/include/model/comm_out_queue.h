@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -37,7 +38,7 @@ public:
 
 protected:
   struct BufferItem {
-    long type;
+    uint64_t type;
     std::string line;
     BufferItem(const std::string& line);
     BufferItem(const BufferItem& other);

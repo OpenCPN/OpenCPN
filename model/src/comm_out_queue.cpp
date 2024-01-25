@@ -2,16 +2,22 @@
 #include <cassert>
 #include <stdexcept>
 
+#include <sys/types.h>
+
 #include "model/comm_out_queue.h"
 
-static inline unsigned long ShiftChar(unsigned char ch, int shift) {
-  return static_cast<unsigned long>(ch) << shift;
-}
+// Both arm and intel are little endian, but better safe than sorry:
+#if  __BYTE_ORDER == __LITTLE_ENDIAN
+static const uint64_t kFirstFiveBytes = 0x000000ffffffffff;
+#else
+static const uint64_t kFirstFiveBytes = 0xffffffffff000000;
+#endif
 
-static unsigned long GetNmeaType(const std::string& line) {
-  auto id = line.substr(1, 5);
-  unsigned long result = 0;
-  for (int i = 5; i >= 0; i--) result += ShiftChar(id[i], i * 8);
+
+/** Return bytes 1..5 in line as an uint64_t. */
+static inline uint64_t GetNmeaType(const std::string& line) {
+  uint64_t result = *reinterpret_cast<const uint64_t*>(&line[1]);
+  result &= kFirstFiveBytes;
   return result;
 }
 
