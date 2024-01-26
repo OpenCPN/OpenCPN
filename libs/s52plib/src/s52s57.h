@@ -216,7 +216,11 @@ typedef struct _Rules {
 
 class LUPrec {
 public:
-  ~LUPrec() { ATTArray.clear(); };
+  ~LUPrec() {
+    for (unsigned int i = 0; i < ATTArray.size(); i++)
+      free(ATTArray[i]);
+    ATTArray.clear();
+  };
   int RCID;                      // record identifier
   char OBCL[7];                  // Name (6 char) '\0' terminated
   Object_t FTYP;                 // 'A' Area, 'L' Line, 'P' Point
