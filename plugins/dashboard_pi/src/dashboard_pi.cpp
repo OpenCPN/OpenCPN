@@ -3552,16 +3552,16 @@ bool dashboard_pi::SaveConfig(void) {
     pConf->Write(_T("DashboardCount" ),
                  (int)m_ArrayOfDashboardWindow.GetCount());
     // Delete old Dashborads
-    for (unsigned int i = m_ArrayOfDashboardWindow.GetCount(); i < 20; i++) {
-        if (pConf->Exists(wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), i + 1)))
+    for (size_t i = m_ArrayOfDashboardWindow.GetCount(); i < 20; i++) {
+        if (pConf->Exists(wxString::Format(_T("/PlugIns/Dashboard/Dashboard%zu"), i + 1)))
         {
-            pConf->DeleteGroup(wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), i + 1));
+            pConf->DeleteGroup(wxString::Format(_T("/PlugIns/Dashboard/Dashboard%zu"), i + 1));
         }
     }
-    for (unsigned int i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
+    for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
       DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i);
       pConf->SetPath(
-          wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), i + 1));
+          wxString::Format(_T("/PlugIns/Dashboard/Dashboard%zu"), i + 1));
       pConf->Write(_T("Name"), cont->m_sName);
       pConf->Write(_T("Caption"), cont->m_sCaption);
       pConf->Write(_T("Orientation"), cont->m_sOrientation);
@@ -3569,33 +3569,33 @@ bool dashboard_pi::SaveConfig(void) {
       pConf->Write(_T("InstrumentCount"),
                    (int)cont->m_aInstrumentList.GetCount());
       // Delete old Instruments
-      for (unsigned int i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
-          if (pConf->Exists(wxString::Format(_T("Instrument%d"), i + 1)))
+      for (size_t i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
+          if (pConf->Exists(wxString::Format(_T("Instrument%zu"), i + 1)))
           {
-              pConf->DeleteEntry(wxString::Format(_T("Instrument%d"), i + 1));
-              if (pConf->Exists(wxString::Format(_T("InstTitelFont%d"), i + 1)))
+              pConf->DeleteEntry(wxString::Format(_T("Instrument%zu"), i + 1));
+              if (pConf->Exists(wxString::Format(_T("InstTitelFont%zu"), i + 1)))
               {
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelFont%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstDataFont%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstDataColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstLabelColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstSmallColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("TitlelBackColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("DataBackColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%d"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitelFont%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitelColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataFont%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstLabelColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstSmallColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("TitlelBackColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("DataBackColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%zu"), i + 1));
               }
           }
       }
       for (size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++)
       {
-          pConf->Write(wxString::Format(_T("Instrument%d"), j + 1), cont->m_aInstrumentList.Item(j));
+          pConf->Write(wxString::Format(_T("Instrument%zu"), j + 1), cont->m_aInstrumentList.Item(j));
           InstrumentProperties* Inst = NULL;
           // First delete
-          if (pConf->Exists(wxString::Format(_T("InstTitelFont%d"), j + 1)))
+          if (pConf->Exists(wxString::Format(_T("InstTitelFont%zu"), j + 1)))
           {
               bool Delete = true;
               for (size_t i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
@@ -3609,18 +3609,18 @@ bool dashboard_pi::SaveConfig(void) {
               }
               if (Delete)
               {
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelFont%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelColor%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstDataFont%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstDataColor%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstLabelColor%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstSmallColor%d"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("TitlelBackColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("DataBackColor%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%d"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%d"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitelFont%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitelColor%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataFont%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataColor%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstLabelColor%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstSmallColor%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("TitlelBackColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("DataBackColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%zu"), i + 1));
               }
           }
           Inst = NULL;
@@ -3629,18 +3629,18 @@ bool dashboard_pi::SaveConfig(void) {
               Inst = cont->m_aInstrumentPropertyList.Item(i);
               if (Inst->m_Listplace == (int)j)
               {
-                  pConf->Write(wxString::Format(_T("InstTitelFont%d"), j + 1), Inst->m_TitelFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstTitelColor%d"), j + 1), Inst->m_TitelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("InstDataFont%d"), j + 1), Inst->m_DataFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstDataColor%d"), j + 1), Inst->m_DataFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("InstLabelFont%d"), j + 1), Inst->m_LabelFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstLabelColor%d"), j + 1), Inst->m_LabelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("InstSmallFont%d"), j + 1), Inst->m_SmallFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstSmallColor%d"), j + 1), Inst->m_SmallFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("TitlelBackColor%d"), j + 1), Inst->m_TitlelBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("DataBackColor%d"), j + 1), Inst->m_DataBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("ArrowFirst%d"), j + 1), Inst->m_Arrow_First_Colour.GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("ArrowSecond%d"), j + 1), Inst->m_Arrow_Second_Colour.GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstTitelFont%zu"), j + 1), Inst->m_TitelFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstTitelColor%zu"), j + 1), Inst->m_TitelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstDataFont%zu"), j + 1), Inst->m_DataFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstDataColor%zu"), j + 1), Inst->m_DataFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstLabelFont%zu"), j + 1), Inst->m_LabelFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstLabelColor%zu"), j + 1), Inst->m_LabelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstSmallFont%zu"), j + 1), Inst->m_SmallFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstSmallColor%zu"), j + 1), Inst->m_SmallFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("TitlelBackColor%zu"), j + 1), Inst->m_TitlelBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("DataBackColor%zu"), j + 1), Inst->m_DataBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("ArrowFirst%zu"), j + 1), Inst->m_Arrow_First_Colour.GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("ArrowSecond%zu"), j + 1), Inst->m_Arrow_Second_Colour.GetAsString(wxC2S_HTML_SYNTAX));
                   break;
               }
           }
