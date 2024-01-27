@@ -4941,6 +4941,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   wxLog::FlushActive();
 
   RefreshAllCanvas(true);
+  wxGetApp().m_usb_watcher.Start();
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
