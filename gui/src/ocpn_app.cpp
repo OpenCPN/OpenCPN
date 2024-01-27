@@ -926,7 +926,9 @@ MyApp::MyApp()
       m_rest_server(PINCreateDialog::GetDlgCtx(),
       RouteCtxFactory(),
       g_bportable),
-      m_exitcode(-2) {
+      m_usb_watcher(UsbWatchDaemon::GetInstance()),
+      m_exitcode(-2)
+{
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
   if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
@@ -1872,6 +1874,7 @@ int MyApp::OnExit() {
 
   wxLogMessage(_T("opencpn::MyApp starting exit."));
   m_checker.OnExit();
+  m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
   wxDateTime lognow = wxDateTime::Now();

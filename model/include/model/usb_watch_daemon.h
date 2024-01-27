@@ -75,13 +75,18 @@ private:
 
 class DummyWatchDaemon : public UsbWatchDaemon {
 public:
-  DummyWatchDaemon();
+
+  DummyWatchDaemon() : UsbWatchDaemon(SystemEvents::GetInstance()) {}
   ~DummyWatchDaemon() = default;
 
-  void Start();
-  void Stop();
+  void Start() {}
+  void Stop() {}
 };
 
+UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
+  static DummyWatchDaemon daemon;
+  return daemon;
+}
 
 #endif    // __linux__
 
