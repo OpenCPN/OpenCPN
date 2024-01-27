@@ -474,8 +474,7 @@ void ChartSymbols::ProcessSymbols(pugi::xml_node &node) {
 
 
 void ChartSymbols::BuildLookup(Lookup &lookup) {
-  LUPrec *LUP = (LUPrec *)calloc(1, sizeof(LUPrec));
-  //plib->pAlloc->Add(LUP);
+  auto LUP = new LUPrec();
 
   LUP->RCID = lookup.RCID;
   LUP->nSequence = lookup.id;

@@ -9245,12 +9245,8 @@ void s52plib::GetAndAddCSRules(ObjRazRules *rzRules, Rules *rules) {
 
   if (NULL == LUP)  // Not found
   {
-    NewLUP = (LUPrec *)calloc(1, sizeof(LUPrec));
-    //pAlloc->Add(NewLUP);
-
+    NewLUP = new LUPrec();
     NewLUP->DISC = rzRules->LUP->DISC;  // as a default
-
-    // sscanf(pBuf+11, "%d", &LUP->RCID);
 
     memcpy(NewLUP->OBCL, rzRules->LUP->OBCL, 6);  // the object class name
 
