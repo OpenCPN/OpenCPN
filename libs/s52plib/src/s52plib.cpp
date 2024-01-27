@@ -515,10 +515,11 @@ void s52plib::DestroyLUP(LUPrec *pLUP) {
   Rules *top = pLUP->ruleList;
   DestroyRulesChain(top);
 
-  for (unsigned int i = 0; i < pLUP->ATTArray.size(); i++)
-    free(pLUP->ATTArray[i]);
+//  for (unsigned int i = 0; i < pLUP->ATTArray.size(); i++)
+//    free(pLUP->ATTArray[i]);
 
   delete pLUP->INST;
+  delete pLUP;
 }
 
 void s52plib::DestroyRulesChain(Rules *top) {
@@ -9247,7 +9248,7 @@ void s52plib::GetAndAddCSRules(ObjRazRules *rzRules, Rules *rules) {
   if (NULL == LUP)  // Not found
   {
     NewLUP = (LUPrec *)calloc(1, sizeof(LUPrec));
-    pAlloc->Add(NewLUP);
+    //pAlloc->Add(NewLUP);
 
     NewLUP->DISC = rzRules->LUP->DISC;  // as a default
 

@@ -476,7 +476,7 @@ void ChartSymbols::ProcessSymbols(pugi::xml_node &node) {
 
 void ChartSymbols::BuildLookup(Lookup &lookup) {
   LUPrec *LUP = (LUPrec *)calloc(1, sizeof(LUPrec));
-  plib->pAlloc->Add(LUP);
+  //plib->pAlloc->Add(LUP);
 
   LUP->RCID = lookup.RCID;
   LUP->nSequence = lookup.id;
@@ -503,7 +503,7 @@ void ChartSymbols::BuildLookup(Lookup &lookup) {
   wxArrayOfLUPrec *pLUPARRAYtyped = plib->SelectLUPARRAY(LUP->TNAM);
 
   while (index < pLUPARRAYtyped->GetCount()) {
-    LUPrec *pLUPCandidate = pLUPARRAYtyped->Item(index);
+    auto pLUPCandidate = pLUPARRAYtyped->Item(index);
     if (LUP->RCID == pLUPCandidate->RCID) {
       pLUPARRAYtyped->RemoveAt(index);
       plib->DestroyLUP(pLUPCandidate);  // empties the LUP
@@ -511,7 +511,6 @@ void ChartSymbols::BuildLookup(Lookup &lookup) {
     }
     index++;
   }
-
   pLUPARRAYtyped->Add(LUP);
 }
 
