@@ -48,9 +48,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
   target_compile_options(S57ENC PRIVATE -fvisibility=default)
 endif ()
 
-if (OCPN_USE_LZMA AND LIBLZMA_FOUND)
-  target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
-  target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
+if (OCPN_USE_LZMA)
+  find_package(LibLZMA)
+  if (LIBLZMA_FOUND)
+    target_include_directories(S57ENC PRIVATE ${LIBLZMA_INCLUDE_DIR})
+    target_link_libraries(S57ENC PUBLIC ${LIBLZMA_LIBRARY})
+  endif ()
 endif ()
 
 
