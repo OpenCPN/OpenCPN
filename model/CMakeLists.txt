@@ -109,7 +109,9 @@ set(
   ${MODEL_HDR_DIR}/select_item.h
   ${MODEL_HDR_DIR}/semantic_vers.h
   ${MODEL_HDR_DIR}/ser_ports.h
+  ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/track.h
+  ${MODEL_HDR_DIR}/usb_watch_daemon.h
   ${MODEL_HDR_DIR}/wx28compat.h
 )
 
@@ -210,6 +212,7 @@ if (LINUX AND NOT QT_ANDROID)
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_client.cpp)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_server.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_server.cpp)
+  list(APPEND SRC ${MODEL_SRC_DIR}/linux_watch_daemon.cpp)
 endif ()
 
 if (OCPN_USE_GARMINHOST)
