@@ -216,37 +216,39 @@ if [%ocpn_rebuild%]==[1] (
 :: Save user configuration data and wipe the build folder
 ::-------------------------------------------------------------
 if [%ocpn_clean%]==[1] (
-  @echo [101;93mThe --clean option requires an internet connection.[0m
-  choice /C YN /T 10 /M "Remove entire build folder including downloaded tools? [yN]" /D N
-  if ERRORLEVEL==2  goto :usage
   if exist "%OCPN_DIR%\build" (
-    set folder=Release
-    call :backup
-    set folder=RelWithDebInfo
-    call :backup
-    set folder=Debug
-    call :backup
-    set folder=MinSizeRel
-    call :backup
-    set folder=
-    @echo Backup complete
+    @echo [101;93mThe --clean option requires an internet connection.[0m
+    choice /C YN /T 10 /M "Remove entire build folder including downloaded tools? [yN]" /D N
+    if ERRORLEVEL==2  goto :usage
+    if exist "%OCPN_DIR%\build" (
+      set folder=Release
+      call :backup
+      set folder=RelWithDebInfo
+      call :backup
+      set folder=Debug
+      call :backup
+      set folder=MinSizeRel
+      call :backup
+      set folder=
+      @echo Backup complete
+    )
+    if exist "%OCPN_DIR%\build" rmdir /s /q "%OCPN_DIR%\build"
+    if exist "%OCPN_DIR%\build" (
+      @echo Could not remove "%OCPN_DIR%\build" folder
+      @echo Is Visual Studio IDE open? If so, please close it so we can try again.
+      pause
+      @echo Retrying...
+      rmdir /s /q "%OCPN_DIR%\build"
+    )
+    if exist "%OCPN_DIR%\build" (
+      @echo Could not remove "%OCPN_DIR%\build". Continuing...
+    ) else (
+      @echo Cleared %OCPN_DIR%\build OK.
+    )
+    if exist "%CACHE_DIR%" (rmdir /s /q "%CACHE_DIR%" && @echo Cleared %CACHE_DIR%)
+    if exist "%buildWINtmp%" (rmdir /s /q "%buildWINtmp%" && @echo Cleared %buildWINtmp%)
+    timeout /T 5
   )
-  if exist "%OCPN_DIR%\build" rmdir /s /q "%OCPN_DIR%\build"
-  if exist "%OCPN_DIR%\build" (
-    @echo Could not remove "%OCPN_DIR%\build" folder
-    @echo Is Visual Studio IDE open? If so, please close it so we can try again.
-    pause
-    @echo Retrying...
-    rmdir /s /q "%OCPN_DIR%\build"
-  )
-  if exist "%OCPN_DIR%\build" (
-    @echo Could not remove "%OCPN_DIR%\build". Continuing...
-  ) else (
-    @echo Cleared %OCPN_DIR%\build OK.
-  )
-  if exist "%CACHE_DIR%" (rmdir /s /q "%CACHE_DIR%" && @echo Cleared %CACHE_DIR%)
-  if exist "%buildWINtmp%" (rmdir /s /q "%buildWINtmp%" && @echo Cleared %buildWINtmp%)
-  timeout /T 5
 )
 ::-------------------------------------------------------------
 :: Create needed folders
@@ -284,7 +286,7 @@ set "DEST=%buildWINtmp%"
 call :explode
 if errorlevel 1 (@echo [101;93mNOT OK[0m) else (
   xcopy /e /q /y "%buildWINtmp%\OCPNWindowsCoreBuildSupport-0.3\buildwin" "%CACHE_DIR%\buildwin"
-  if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK))
+  if errorlevel 1 (@echo [101;93mNOT OK[0m) else (echo OK)
 :skipbuildwin
 ::-------------------------------------------------------------
 :: Download wxWidgets sources
@@ -364,10 +366,29 @@ if [%ocpn_relwithdebinfo%]==[1] (^
 if [%ocpn_minsizerel%]==[1] (^
   if not exist "%OCPN_DIR%\build\MinSizeRel" (mkdir "%OCPN_DIR%\build\MinSizeRel")
   if not exist "%OCPN_DIR%\build\MinSizeRel\plugins" (mkdir "%OCPN_DIR%\build\MinSizeRel\plugins")
-  )
+)
 ::-------------------------------------------------------------
 :: Download and initialize build dependencies
 ::-------------------------------------------------------------
+set "DEST=%CACHE_DIR%\buildwin"
+if exist "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" (
+  @echo xcopy /d /y "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%DEST%"
+  @echo xcopy /d /y "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%DEST%\include"
+  xcopy /d /y "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%DEST%"
+  xcopy /d /y "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%DEST%\include"
+) else (
+  @echo [101;93mCould not find local copy of iphlpapi library so will try to download one.[0m
+)
+:: If we could not find local copy of iphlpapi library attempt download
+set "DEST=%CACHE_DIR%\buildwin\iphlpapi.lib"
+if not exist "%DEST%" (
+  set "DEST=%DEST%"
+  set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
+  set "URL=%opencpn_support_base%/opencpn-support/raw/files/iphlpapi.lib"
+  call :download
+  if errorlevel 1 (@echo [101;93mDownload failed.[0m) else (@echo Download OK)
+)
+
 cd %OCPN_DIR%\build
 where /Q xgettext.exe && goto :skipgettext
 %buildWINtmp%\nuget install Gettext.Tools
@@ -485,6 +506,7 @@ cmake -A Win32 -G "%VCstr%" ^
   -DOCPN_BUNDLE_DOCS:BOOL=ON ^
   -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=OFF ^
   -DOCPN_ENABLE_PORTAUDIO:BOOL=OFF ^
+  -DOCPN_BUILD_TEST:BOOL=OFF ^
   -DCMAKE_INSTALL_PREFIX="%CD%\%build_type%" ^
   ..
 if errorlevel 1 (
@@ -504,6 +526,7 @@ if errorlevel 1 (
     -DOCPN_BUNDLE_DOCS:BOOL=ON ^
     -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=OFF ^
     -DOCPN_ENABLE_PORTAUDIO:BOOL=OFF ^
+    -DOCPN_BUILD_TEST:BOOL=OFF ^
     -DCMAKE_INSTALL_PREFIX="%CD%\%build_type%" ^
     ..
   if errorlevel 1 goto :cmakeErr
@@ -537,8 +560,8 @@ exit /b 1
 :: Backup user configuration
 ::-------------------------------------------------------------
 :backup
+if not exist "%~dp0..\build\%folder%" goto :bexit
 @echo "Backing up %~dp0..\build\%folder%"
-if not exist "%~dp0..\build\%folder%" goto :breturn
 if not exist "%~dp0..\tmp" (mkdir "%~dp0..\tmp")
 if not exist "%~dp0..\tmp\%folder%" (mkdir "%~dp0..\tmp\%folder%")
 @echo backing up %folder%
@@ -556,6 +579,7 @@ if not exist "%~dp0..\build\%folder%\Charts" goto :breturn
 cmake -E copy_directory "%~dp0..\build\%folder%\Charts" "%~dp0..\tmp\%folder%"
 :breturn
 @echo backup returning
+:bexit
 exit /b 0
 ::-------------------------------------------------------------
 :: Restore user configuration to build folder
