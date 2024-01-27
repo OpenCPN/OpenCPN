@@ -47,9 +47,10 @@ public:
   virtual void Start() = 0;
   virtual void Stop() = 0;
 
+  SystemEvents& m_sys_events;
+
 protected:
   UsbWatchDaemon(SystemEvents& sys_events) : m_sys_events(sys_events) {}
-  SystemEvents& m_sys_events;
 };
 
 #if defined(__linux__) && !defined(__ANDROID__)
