@@ -42,8 +42,10 @@ static void dev_signal_cb(GDBusConnection* connection, const gchar* sender,
                           const gchar* object_path, const gchar* interface,
                           const gchar* signal, GVariant* parameters,
                           gpointer user_data) {
-  printf("%s: %s.%s %s\n", object_path, interface, signal,
-         g_variant_print(parameters, TRUE));
+  // printf("%s: %s.%s %s\n", object_path, interface, signal,
+  //        g_variant_print(parameters, TRUE));
+  auto watch_daemon = static_cast<LinuxUsbWatchDaemon*>(user_data);
+  watch_daemon->m_sys_events.evt_new_device.Notify();
 }
 
 static void prepare_for_sleep_cb(GDBusConnection* connection,
@@ -52,7 +54,10 @@ static void prepare_for_sleep_cb(GDBusConnection* connection,
                                  GVariant* parameters, gpointer user_data) {
   gboolean suspending;
   g_variant_get(parameters, "(b)", &suspending);
-  printf("Resume callback, arg: %s", suspending ? "true" : "false");
+  auto watch_daemon = static_cast<LinuxUsbWatchDaemon*>(user_data);
+  if (!suspending) watch_daemon->m_sys_events.evt_resume.Notify();
+
+  // printf("Resume callback, arg: %s", suspending ? "true" : "false");
 }
 
 UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
@@ -77,7 +82,7 @@ void LinuxUsbWatchDaemon::Start() {
   m_conn = g_bus_get_sync(G_BUS_TYPE_SYSTEM, 0, &err);
   filter_id_dev = g_dbus_connection_signal_subscribe(
       m_conn, kDevSender, kDevInterface, kDevMember, 0, 0,
-      G_DBUS_SIGNAL_FLAGS_NONE, dev_signal_cb, 0, 0);
+      G_DBUS_SIGNAL_FLAGS_NONE, dev_signal_cb, this, 0);
   filter_id_res = g_dbus_connection_signal_subscribe(
       m_conn, kResSender, kResInterface, kResMember, 0, 0,
       G_DBUS_SIGNAL_FLAGS_NONE, prepare_for_sleep_cb, 0, 0);

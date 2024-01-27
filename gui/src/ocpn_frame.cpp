@@ -76,6 +76,7 @@
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/sys_events.h"
 #include "model/track.h"
 
 #include "AboutFrameImpl.h"
@@ -6872,12 +6873,13 @@ void MyFrame::OnSuspendCancel(wxPowerEvent &WXUNUSED(event)) {
 int g_last_resume_ticks;
 void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
   wxDateTime now = wxDateTime::Now();
-  //    printf("OnResume...%d\n", now.GetTicks());
   wxLogMessage(_T("System resumed from suspend."));
 
+
   if ((now.GetTicks() - g_last_resume_ticks) > 5) {
-    wxLogMessage(_T("Restarting streams."));
-    //       printf("   Restarting streams\n");
+    SystemEvents::GetInstance().evt_resume.Notify();
+
+    wxLogMessage("Restarting streams.");
     g_last_resume_ticks = now.GetTicks();
 //FIXME (dave)
 #if 0
