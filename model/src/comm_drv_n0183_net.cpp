@@ -61,11 +61,13 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 
-#include "model/garmin_protocol_mgr.h"
-
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
+#include "model/sys_events.h"
+
+#include "observable.h"
 
 #define N_DOG_TIMEOUT 5
 
@@ -170,6 +172,11 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   Bind(wxEVT_COMMDRIVER_N0183_NET, &CommDriverN0183Net::handle_N0183_MSG, this);
 
   m_mrq_container = new MrqContainer;
+
+  auto resume_action = [&](ObservedEvt&) {
+    wxTimerEvent evt;
+    OnTimerSocket(evt); };
+  resume_listener.Init(SystemEvents::GetInstance().evt_resume, resume_action);
 
   Open();
 }
@@ -356,15 +363,15 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   }
 }
 
-void CommDriverN0183Net::OnTimerSocket(wxTimerEvent& event) {
+void CommDriverN0183Net::OnTimerSocket(wxTimerEvent&) {
   //  Attempt a connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
       SetBrxConnectEvent(false);
       tcp_socket->Connect(GetAddr(), FALSE);
-      GetSocketTimer()->Start(5000,
-                              wxTIMER_ONE_SHOT);  // schedule another attempt
+      // schedule another attempt
+      GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);
     }
   }
 }
