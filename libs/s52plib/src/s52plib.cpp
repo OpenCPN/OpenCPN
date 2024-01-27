@@ -515,10 +515,6 @@ void s52plib::DestroyLUP(LUPrec *pLUP) {
   Rules *top = pLUP->ruleList;
   DestroyRulesChain(top);
 
-//  for (unsigned int i = 0; i < pLUP->ATTArray.size(); i++)
-//    free(pLUP->ATTArray[i]);
-
-  delete pLUP->INST;
   delete pLUP;
 }
 
@@ -796,14 +792,14 @@ LUPrec *s52plib::FindBestLUP(wxArrayOfLUPrec *LUPArray, unsigned int startIndex,
     for (unsigned int iLUPAtt = 0; iLUPAtt < LUPCandidate->ATTArray.size();
          iLUPAtt++) {
       // Get the LUP attribute name
-      char *slatc = LUPCandidate->ATTArray[iLUPAtt];
+      const char *slatc = LUPCandidate->ATTArray[iLUPAtt].c_str();
 
       if (slatc && (strlen(slatc) < 6))
         goto next_LUP_Attr;  // LUP attribute value not UTF8 convertible (never
                              // seen in PLIB 3.x)
 
       if (slatc) {
-        char *slatv = slatc + 6;
+        const char *slatv = slatc + 6;
         while (attIdx < pObj->n_attr) {
           if (0 == strncmp(slatc, currATT, 6)) {
             // OK we have an attribute name match
@@ -1124,8 +1120,8 @@ int s52plib::_LUP2rules(LUPrec *LUP, S57Obj *pObj) {
     return 0;
   }
 
-  if (LUP->INST != NULL) {
-    Rules *top = StringToRules(*LUP->INST);
+  if (!LUP->INST.IsEmpty()) {
+    Rules *top = StringToRules(LUP->INST);
     LUP->ruleList = top;
 
     return 1;
@@ -9213,9 +9209,11 @@ void s52plib::GetAndAddCSRules(ObjRazRules *rzRules, Rules *rules) {
   LUPrec *NewLUP;
   LUPrec *LUP;
   LUPrec *LUPCandidate;
+  wxString cs_string;
 
   char *rule_str1 = RenderCS(rzRules, rules);
-  wxString cs_string(rule_str1, wxConvUTF8);
+  if (rule_str1)
+    cs_string = wxString(rule_str1, wxConvUTF8);
   free(rule_str1);  // delete rule_str1;
 
   //  Try to find a match for this object/attribute set in dynamic CS LUP Table
@@ -9233,7 +9231,7 @@ void s52plib::GetAndAddCSRules(ObjRazRules *rzRules, Rules *rules) {
   while ((index < index_max)) {
     LUPCandidate = la->Item(index);
     if (!strcmp(rzRules->LUP->OBCL, LUPCandidate->OBCL)) {
-      if (LUPCandidate->INST->IsSameAs(cs_string)) {
+      if (LUPCandidate->INST.IsSameAs(cs_string)) {
         if (LUPCandidate->DISC == rzRules->LUP->DISC) {
           LUP = LUPCandidate;
           break;
@@ -9257,8 +9255,8 @@ void s52plib::GetAndAddCSRules(ObjRazRules *rzRules, Rules *rules) {
     memcpy(NewLUP->OBCL, rzRules->LUP->OBCL, 6);  // the object class name
 
     //      Add the complete CS string to the LUP
-    wxString *pINST = new wxString(cs_string);
-    NewLUP->INST = pINST;
+    if(cs_string.Length())
+      NewLUP->INST = cs_string;
 
     _LUP2rules(NewLUP, rzRules->obj);
 

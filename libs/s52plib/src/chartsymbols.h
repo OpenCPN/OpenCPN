@@ -77,7 +77,7 @@ public:
   DisPrio displayPrio;                     // Display Priority
   RadPrio radarPrio;                       // 'O' or 'S', Radar Priority
   LUPname tableName;                       // FTYP:  areas, points, lines
-  std::vector<char *> attributeCodeArray;  // ArrayString of LUP Attributes
+  std::vector<std::string> attributeCodeArray;  // ArrayString of LUP Attributes
   wxString instruction;                    // Instruction Field (rules)
   DisCat displayCat;  // Display Categorie: D/S/O, DisplayBase, Standard, Other
   int comment;        // Look-Up Comment (PLib3.x put 'groupes' here,

@@ -240,10 +240,9 @@ void ChartSymbols::ProcessLookups(pugi::xml_node &node) {
       else if (!strcmp(lookupNode.name(), "attrib-code")) {
         int nc = strlen(nodeText);
         if (nc >= 6) {  //  ignore spurious short fields
-          char *attVal = (char *)calloc(nc + 2, sizeof(char));
-          memcpy(attVal, nodeText, nc);
-
-          if (attVal[6] == '\0') attVal[6] = ' ';
+          std::string attVal = std::string(nodeText);
+          if(attVal.length() == 6)
+            attVal += ' ';
           lookup.attributeCodeArray.push_back(attVal);
         }
       }
@@ -490,7 +489,7 @@ void ChartSymbols::BuildLookup(Lookup &lookup) {
 
   LUP->ATTArray = lookup.attributeCodeArray;
 
-  LUP->INST = new wxString(lookup.instruction);
+  LUP->INST = lookup.instruction;
   LUP->LUCM = lookup.comment;
 
   // Add LUP to array

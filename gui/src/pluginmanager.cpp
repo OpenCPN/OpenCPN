@@ -6173,7 +6173,6 @@ void PI_PLIBFreeContext(void* pContext) {
       delete ctop->obj;
 
       if (ps52plib) ps52plib->DestroyLUP(ctop->LUP);
-      delete ctop->LUP;
 
       ObjRazRules* cnxx = ctop->next;
       delete ctop;

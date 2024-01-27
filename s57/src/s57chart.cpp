@@ -493,7 +493,6 @@ void s57chart::FreeObjectsAndRules() {
             delete ctop->obj;
 
             if (ps52plib) ps52plib->DestroyLUP(ctop->LUP);
-            delete ctop->LUP;
 
             ObjRazRules *cnxx = ctop->next;
             delete ctop;
@@ -5677,12 +5676,12 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
 
       LUPstring = _T("    LUP ATTC: ");
       if (current->LUP->ATTArray.size())
-        LUPstring += wxString(current->LUP->ATTArray[0], wxConvUTF8);
+        LUPstring += wxString(current->LUP->ATTArray[0].c_str(), wxConvUTF8);
       LUPstring += _T("<br>");
       classAttributes << LUPstring;
 
       LUPstring = _T("    LUP INST: ");
-      if (current->LUP->INST) LUPstring += *(current->LUP->INST);
+      LUPstring += current->LUP->INST;
       LUPstring += _T("<br><br>");
       classAttributes << LUPstring;
     }

@@ -216,19 +216,15 @@ typedef struct _Rules {
 
 class LUPrec {
 public:
-  ~LUPrec() {
-    for (unsigned int i = 0; i < ATTArray.size(); i++)
-      free(ATTArray[i]);
-    ATTArray.clear();
-  };
+  ~LUPrec() { ATTArray.clear(); };
   int RCID;                      // record identifier
   char OBCL[7];                  // Name (6 char) '\0' terminated
   Object_t FTYP;                 // 'A' Area, 'L' Line, 'P' Point
   DisPrio DPRI;                  // Display Priority
   RadPrio RPRI;                  // 'O' or 'S', Radar Priority
   LUPname TNAM;                  // FTYP:  areas, points, lines
-  std::vector<char *> ATTArray;  // Array of LUP Attributes
-  wxString *INST;                // Instruction Field (rules)
+  std::vector<std::string> ATTArray;  // Array of LUP Attributes
+  wxString INST;                 // Instruction Field (rules)
   DisCat DISC;      // Display Categorie: D/S/O, DisplayBase, Standard, Other
   int LUCM;         // Look-Up Comment (PLib3.x put 'groupes' here,
                     // hence 'int', but its a string in the specs)
