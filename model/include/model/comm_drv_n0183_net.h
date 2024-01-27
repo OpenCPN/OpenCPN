@@ -26,15 +26,18 @@
 #ifndef _COMMDRIVERN0183NET_H
 #define _COMMDRIVERN0183NET_H
 
+#include <memory>
+#include <string>
+
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled header
 
-#include "comm_drv_n0183.h"
-
 #include <wx/datetime.h>
+#include <wx/string.h>
+#include <wx/timer.h>
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -52,6 +55,10 @@
 #include <sys/socket.h>  // needed for (some) Mac builds
 #include <netinet/in.h>
 #endif
+
+#include "comm_drv_n0183.h"
+#include "model/conn_params.h"
+#include "observable.h"
 
 class CommDriverN0183NetEvent;  // Internal
 class MrqContainer;
@@ -138,6 +145,8 @@ private:
   wxTimer m_socketread_watchdog_timer;
 
   bool m_bok;
+
+  ObsListener resume_listener;
 
   DECLARE_EVENT_TABLE()
 };
