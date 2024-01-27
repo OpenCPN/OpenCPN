@@ -29,15 +29,14 @@
 #include "comm_driver.h"
 #include "observable_evtvar.h"
 
-class ConnectionParams;
+typedef std::shared_ptr<AbstractCommDriver> DriverPtr;
 
 /**
  * The global driver registry, a singleton. Drivers register here when
  * activated, transport layer finds them.
+ *
+ * Also used as exchange point for messages for USB devices hotplug events.
  */
-
-typedef std::shared_ptr<AbstractCommDriver> DriverPtr;
-
 class CommDriverRegistry final {
 public:
   static CommDriverRegistry& GetInstance();
@@ -53,12 +52,6 @@ public:
 
   /** @return List of all activated drivers. */
   const std::vector<DriverPtr>& GetDrivers();
-
-
-  // FIXME (Dave)
-  //  Stub method, to pretest drivers.
-  //  Goes away for production
-  void TestDriver(ConnectionParams* params);
 
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
