@@ -41,6 +41,7 @@
 #include "model/routeman.h"
 #include "model/select.h"
 #include "model/std_instance_chk.h"
+#include "model/wait_continue.h"
 #include "wx_instance_chk.h"
 
 // Macos up to 10.13
@@ -913,4 +914,25 @@ TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
 TEST(IpcClient, Raise) { CliRaise run_test; }
 
 TEST(IpcClient, Open) { IpcOpen run_test; }
+
+TEST(WaitContinue, Basic) {
+  using namespace std::chrono;
+  WaitContinue waiter;
+  auto t1 = high_resolution_clock::now();
+  std::thread t([&waiter]{ waiter.Wait(50ms); });
+  t.join();
+  auto t2 = high_resolution_clock::now();
+  auto raw_elapsed = t2 - t1 - 50ms;
+  auto elapsed = duration_cast<milliseconds>(t2 - t1 - 50ms);
+  EXPECT_NEAR(elapsed.count(), 0, 5);
+
+  t1 = high_resolution_clock::now();
+  t = std::thread([&waiter]{ waiter.Wait(50ms); });
+  std::this_thread::sleep_for(25ms);
+  waiter.Continue();
+  t.join();
+  t2 = high_resolution_clock::now();
+  elapsed = duration_cast<milliseconds>(t2 - t1 - 25ms);
+  EXPECT_NEAR(elapsed.count(), 0, 5);
+}
 #endif
