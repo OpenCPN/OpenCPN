@@ -112,6 +112,7 @@ set(
   ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/track.h
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
+  ${MODEL_HDR_DIR}/wait_continue.h
   ${MODEL_HDR_DIR}/wx28compat.h
 )
 
