@@ -44,7 +44,9 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
+#include "model/sys_events.h"
 #include "model/wait_continue.h"
+#include "observable.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"
@@ -132,9 +134,7 @@ public:
   void OnExit(void);
 
 private:
-#ifndef __ANDROID__
   serial::Serial m_serial;
-#endif
   void ThreadMessage(const wxString& msg);
   bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();
@@ -149,7 +149,7 @@ private:
 
   n0183_atomic_queue<char*> out_que;
   WaitContinue device_waiter;
-
+  ObsListener resume_listener;
 };
 #endif
 
@@ -422,6 +422,8 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   m_baud = 4800;  // default
   long lbaud;
   if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
+  resume_listener.Init(SystemEvents::GetInstance().evt_resume,
+                       [&](ObservedEvt&) {device_waiter.Continue(); });
 }
 
 CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
