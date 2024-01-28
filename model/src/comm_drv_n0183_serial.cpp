@@ -150,6 +150,7 @@ private:
   n0183_atomic_queue<char*> out_que;
   WaitContinue device_waiter;
   ObsListener resume_listener;
+  ObsListener new_device_listener;
 };
 #endif
 
@@ -424,6 +425,8 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
                        [&](ObservedEvt&) {device_waiter.Continue(); });
+  new_device_listener.Init(SystemEvents::GetInstance().evt_new_device,
+                           [&](ObservedEvt&) {device_waiter.Continue(); });
 }
 
 CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
