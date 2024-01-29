@@ -17,46 +17,34 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file usb_watch_daemon.h Generic hardware events interface */
+/** \file linux_usb_watch.h Linux specific hardware events DBus interface */
 
-#ifndef USB_WATCH_DAEMON__H
-#define USB_WATCH_DAEMON__H
-
-#include <thread>
-
-#include "sys_events.h"
-
-/**
- * Listen to hardware events and notifies SystemEvents when new devices are
- * plugged in. This is platform dependent, first implementation is  Linux.
- *
- * No filtering of events is done. Listening drivers are supposed to check
- * the actual device when receiving the notification; there is no guarantee
- * regarding what device which is triggering the event.
- */
-class UsbWatchDaemon {
-public:
-  static UsbWatchDaemon& GetInstance();
-
-  virtual ~UsbWatchDaemon() = default;
-
-  virtual void Start() = 0;
-  virtual void Stop() = 0;
-
-  SystemEvents& m_sys_events;
-
-protected:
-  UsbWatchDaemon(SystemEvents& sys_events) : m_sys_events(sys_events) {}
-};
-
-#if !defined(__linux__) || defined(__ANDROID__)
-/** Empty placeholder, does not do anything meaningful. */
-class DummyWatchDaemon : public UsbWatchDaemon {
-public:
-  DummyWatchDaemon() : UsbWatchDaemon(SystemEvents::GetInstance()) {}
-  void Start() {}
-  void Stop() {}
-};
+#ifndef __linux__
+#error "This file can only be compiled on linux. "
 #endif
 
-#endif   //  USB_WATCH_DAEMON__H
+#include "model/usb_watch_daemon.h"
+
+#include <gio/gio.h>
+
+/**
+ * Listen to DBus system bus signals reflecting for example suspend/resume,
+ * new USB devicesbeing plugged in, etc; update EventVars in SysEvents
+ * accordingly
+ */
+class LinuxUsbWatchDaemon : public UsbWatchDaemon {
+public:
+  LinuxUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se) {}
+  ~LinuxUsbWatchDaemon();
+
+  void Start();
+  void Stop();
+
+private:
+  void DoStart();
+
+  GDBusConnection* m_conn;
+  GMainLoop* m_main_loop;
+  GMainContext* m_worker_context;
+  std::thread m_thread;
+};

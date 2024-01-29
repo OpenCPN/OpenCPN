@@ -191,6 +191,7 @@ set(SRC
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
   ${MODEL_SRC_DIR}/track.cpp
+  ${MODEL_SRC_DIR}/usb_watch_factory.cpp
   ${MODEL_SRC_DIR}/wx_instance_chk.cpp
 )
 
@@ -213,7 +214,8 @@ if (LINUX AND NOT QT_ANDROID)
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_client.cpp)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_server.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_server.cpp)
-  list(APPEND SRC ${MODEL_SRC_DIR}/linux_watch_daemon.cpp)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/linux_usb_watch.h)
+  list(APPEND SRC ${MODEL_SRC_DIR}/linux_usb_watch.cpp)
 endif ()
 
 if (OCPN_USE_GARMINHOST)
