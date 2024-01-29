@@ -23,7 +23,7 @@
  * SystemEvents
  */
 
-#include "model/usb_watch_daemon.h"
+#include "model/linux_usb_watch.h"
 
 // Definitions for "New device" event. Could be any device, but in real life
 // this is only USB.
@@ -58,11 +58,6 @@ static void prepare_for_sleep_cb(GDBusConnection* connection,
   if (!suspending) watch_daemon->m_sys_events.evt_resume.Notify();
 
   // printf("Resume callback, arg: %s", suspending ? "true" : "false");
-}
-
-UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
-  static LinuxUsbWatchDaemon watch_daemon(SystemEvents::GetInstance());
-  return watch_daemon;
 }
 
 LinuxUsbWatchDaemon::~LinuxUsbWatchDaemon() { Stop(); }
