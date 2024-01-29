@@ -547,7 +547,7 @@ std::vector<unsigned char> CommDriverN2KNet::PushFastMsgFragment(const CanHeader
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void CommDriverN2KNet::HandleInput(can_frame frame) {
+void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
   int position = -1;
   bool ready = true;
 
@@ -591,11 +591,56 @@ void CommDriverN2KNet::HandleInput(can_frame frame) {
 
   }
 }
+
+N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
+
+  return N2KFormat_Actisense_ASCII_RAW;
+}
+
+bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet) {
+  can_frame frame;
+  while (!m_circle->empty()) {
+    char b = m_circle->get();
+    if ((b != 0x0a) && (b != 0x0d)) {
+      m_sentence += b;
+    }
+    if (b == 0x0a) {  // end of sentence
+
+      // Extract a can_frame from ASCII stream
+      wxString ss(m_sentence.c_str());
+      m_sentence.clear();
+      wxStringTokenizer tkz(ss, " ");
+
+      // Discard first two tokens
+      wxString token = tkz.GetNextToken();
+      token = tkz.GetNextToken();
+      // can_id;
+      token = tkz.GetNextToken();
+      token.ToUInt(&frame.can_id, 16);
+
+      // 8 data bytes, if present, 0 otherwise
+      unsigned char bytes[8];
+      memset(bytes, 0, 8);
+      for (unsigned int i=0; i < 8; i++) {
+        if (tkz.HasMoreTokens()) {
+          token = tkz.GetNextToken();
+          unsigned int tui;
+          token.ToUInt(&tui, 16);
+          bytes[i] = tui;
+        }
+      }
+      memcpy( &frame.data, bytes, 8);
+      HandleCanFrameInput(frame);
+    }
+  }
+  return true;
+}
+
+
 void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
-  //#define RD_BUF_SIZE    200
 #define RD_BUF_SIZE \
   4096
-  can_frame frame;
+  //can_frame frame;
 
   switch (event.GetSocketEvent()) {
     case wxSOCKET_INPUT: {
@@ -612,7 +657,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
       //    non-blocking socket
       //           m_sock->SetNotify(wxSOCKET_LOST_FLAG);
 
-      std::vector<char> data(RD_BUF_SIZE + 1);
+      std::vector<unsigned char> data(RD_BUF_SIZE + 1);
       int newdata = 0;
       uint8_t next_byte = 0;
 
@@ -625,26 +670,36 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
             newdata = count;
           } else {
             // XXX FIXME: is it reliable?
-            // copy all received bytes
-            // there's 0 in furuno UDP tags before NMEA sentences.
-            // m_sock_buffer.append(&data.front(), count);
           }
         }
       }
 
       bool done = false;
-      ///////////////////
-
       if (newdata > 0) {
         for (int i = 0; i < newdata; i++) {
           m_circle->put(data[i]);
           printf("%c", data.at(i));
 
         }
+      }
 
+      m_n2k_format = DetectFormat(data);
+
+      switch (m_n2k_format) {
+        case N2KFormat_Actisense_ASCII_RAW:
+          ProcessActisense_ASCII_RAW(data);
+          break;
+        case N2KFormat_YD_RAW:    // Byte compatible with Actisense ASCII RAW
+          ProcessActisense_ASCII_RAW(data);
+          break;
+        case N2KFormat_Undefined:
+        default:
+          break;
       }
 
 
+
+#if 0
       while (!m_circle->empty()) {
         char b = m_circle->get();
         if ((b != 0x0a) && (b != 0x0d)) {
@@ -683,7 +738,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 
         }
       }
-
+#endif
 #if 0
         if (m_ib >= RX_BUFFER_SIZE_NET) m_ib = 0;
         uint8_t next_byte = m_circle->get();

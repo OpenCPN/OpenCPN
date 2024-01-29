@@ -69,6 +69,13 @@
 
 //typedef struct can_frame CanFrame;
 
+typedef enum
+{
+  N2KFormat_Undefined = 0,
+  N2KFormat_YD_RAW,
+  N2KFormat_Actisense_ASCII_RAW
+} N2K_Format;
+
 class CommDriverN2KNetEvent;  // Internal
 class MrqContainer;
 class FastMessageMap;
@@ -173,12 +180,15 @@ private:
                                              int position,
                                              const can_frame frame);
 
-  void HandleInput(can_frame frame);
+  void HandleCanFrameInput(can_frame frame);
 
   ConnectionType GetConnectionType() const { return m_connection_type; }
 
   bool ChecksumOK(const std::string& sentence);
   void SetOk(bool ok) { m_bok = ok; };
+
+  N2K_Format DetectFormat(std::vector<unsigned char> packet);
+  bool ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet);
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -211,6 +221,7 @@ private:
   std::string m_sentence;
 
   FastMessageMap *fast_messages;
+  N2K_Format m_n2k_format;
 
   DECLARE_EVENT_TABLE()
 };
