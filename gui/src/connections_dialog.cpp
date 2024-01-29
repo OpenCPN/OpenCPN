@@ -47,23 +47,25 @@
 #endif
 
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
 
-#include "connections_dialog.h"
+#include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
+#include "model/ser_ports.h"
+
+#include "connections_dialog.h"
 #include "conn_params_panel.h"
+#include "gui_lib.h"
+#include "nmea0183.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"    // FIXME for GetOCPNScaledFont_PlugIn
 #include "options.h"
-#include "udev_rule_mgr.h"
-#include "model/comm_drv_factory.h"
-#include "gui_lib.h"
-#include "nmea0183.h"
 #include "priority_gui.h"
+#include "udev_rule_mgr.h"
 
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
@@ -384,7 +386,7 @@ void ConnectionsDialog::Init(){
 
   m_rbTypeCAN = new wxRadioButton(m_container, wxID_ANY, "socketCAN",
                                   wxDefaultPosition, wxDefaultSize, 0);
-#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
   bSizer15->Add(m_rbTypeCAN, 0, wxALL, 5);
 #else
   m_rbTypeCAN->Hide();
@@ -1085,7 +1087,7 @@ void ConnectionsDialog::OnUploadFormatChange(wxCommandEvent& event) {
 void ConnectionsDialog::ShowNMEACommon(bool visible) {
   m_rbTypeSerial->Show(TRUE);
   m_rbTypeNet->Show(TRUE);
-#if defined(__linux__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
   m_rbTypeCAN->Show(TRUE);
 #endif
   if (m_rbTypeInternalGPS) m_rbTypeInternalGPS->Show(visible);
@@ -1623,7 +1625,7 @@ void ConnectionsDialog::SetDefaultConnectionParams(void) {
   bserial = FALSE;
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (m_rbTypeInternalGPS) {
     m_rbTypeInternalGPS->SetValue(true);
     SetNMEAFormToGPS();
@@ -2114,7 +2116,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
-#if defined(__linux__) && !defined(__OCPN__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
   if (pConnectionParams->Type == SERIAL)
     CheckSerialAccess(m_parent, pConnectionParams->Port.ToStdString());
 #endif
@@ -2282,7 +2284,7 @@ void SentenceListDlg::OnCLBSelect(wxCommandEvent& e) {
 }
 
 void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
 #endif
 
@@ -2295,7 +2297,7 @@ void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
   textdlg.SetTextValidator(wxFILTER_ASCII);
   int result = textdlg.ShowModal();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 
