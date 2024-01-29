@@ -55,6 +55,7 @@
 #include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
 #include "model/ser_ports.h"
+#include "model/sys_events.h"
 
 #include "connections_dialog.h"
 #include "conn_params_panel.h"
@@ -934,6 +935,9 @@ void ConnectionsDialog::Init(){
   ShowNMEASerial(true);
   ShowNMEANet(true);
   connectionsaved = TRUE;
+
+  new_device_listener.Init(SystemEvents::GetInstance().evt_new_device,
+                           [&](ObservedEvt&){ LoadSerialPorts(m_comboPort); });
 }
 
 void ConnectionsDialog::SetSelectedConnectionPanel(ConnectionParamsPanel* panel) {
