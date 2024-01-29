@@ -36,6 +36,7 @@
 #endif  // precompiled headers
 
 #include "model/comm_util.h"
+#include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_n2k_serial.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_n0183_net.h"
@@ -82,9 +83,25 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
           break;
         }
         default: {
-          auto driver = std::make_shared<CommDriverN0183Net>(params, msgbus);
-          registry.Activate(driver);
-          return driver;
+          switch (params->Protocol) {
+            case PROTO_NMEA0183: {
+              auto driver =
+                  std::make_shared<CommDriverN0183Net>(params, msgbus);
+              registry.Activate(driver);
+              return driver;
+              break;
+            }
+            case PROTO_NMEA2000:{
+              auto driver =
+                  std::make_shared<CommDriverN2KNet>(params, msgbus);
+              registry.Activate(driver);
+              return driver;
+
+              break;
+            }
+            default:
+              break;
+          }
           break;
         }
       }

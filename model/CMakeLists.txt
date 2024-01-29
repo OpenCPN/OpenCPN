@@ -52,6 +52,7 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_n0183_net.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_serial.h
   ${MODEL_HDR_DIR}/comm_drv_n2k.h
+  ${MODEL_HDR_DIR}/comm_drv_n2k_net.h
   ${MODEL_HDR_DIR}/comm_drv_n2k_serial.h
   ${MODEL_HDR_DIR}/comm_drv_registry.h
   ${MODEL_HDR_DIR}/comm_drv_signalk.h
@@ -135,6 +136,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
   ${MODEL_SRC_DIR}/comm_drv_n2k.cpp
+  ${MODEL_SRC_DIR}/comm_drv_n2k_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n2k_serial.cpp
   ${MODEL_SRC_DIR}/comm_drv_registry.cpp
   ${MODEL_SRC_DIR}/comm_drv_signalk.cpp
