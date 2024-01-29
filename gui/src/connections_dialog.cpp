@@ -70,10 +70,10 @@
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
-extern int g_NMEAAPBPrecision;
+
 extern OCPNPlatform* g_Platform;
 
-wxString StringArrayToString(wxArrayString arr) {
+static wxString StringArrayToString(wxArrayString arr) {
   wxString ret = wxEmptyString;
   for (size_t i = 0; i < arr.Count(); i++) {
     if (i > 0) ret.Append(_T(","));
@@ -84,7 +84,7 @@ wxString StringArrayToString(wxArrayString arr) {
 
 // Check available SocketCAN interfaces
 
-wxArrayString GetAvailableSocketCANInterfaces() {
+static wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
 
 #if defined(__linux__) && !defined(__ANDROID__)
@@ -130,6 +130,11 @@ wxArrayString GetAvailableSocketCANInterfaces() {
   return rv;
 }
 
+static void LoadSerialPorts(wxComboBox* box) {
+  box->Clear();
+  wxArrayString* ports = EnumerateSerialPorts();
+  for (size_t i = 0; i < ports->GetCount(); i++) box->Append((*ports)[i]);
+}
 
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation
@@ -164,13 +169,8 @@ void ConnectionsDialog::SetInitialSettings(void) {
       m_cbNMEADebug->SetValue(true);
     }
   }
+  LoadSerialPorts(m_comboPort);
 
-  if (m_parent->GetSerialArray()) {
-    m_comboPort->Clear();
-    for (size_t i = 0; i < m_parent->GetSerialArray()->Count(); i++) {
-      m_comboPort->Append(m_parent->GetSerialArray()->Item(i));
-    }
-  }
 
   //  On some platforms, the global connections list may be changed outside of
   //  the options dialog. Pick up any changes here, and re-populate the dialog
@@ -536,7 +536,7 @@ void ConnectionsDialog::Init(){
   fgSizer1->SetFlexibleDirection(wxBOTH);
   fgSizer1->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-  m_stSerPort = new wxStaticText(m_container, wxID_ANY, _("DataPort"),
+  m_stSerPort = new wxStaticText(m_container, wxID_ANY, _("Data port"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_stSerPort->Wrap(-1);
   fgSizer1->Add(m_stSerPort, 0, wxALL, 5);
