@@ -318,6 +318,7 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::java-jvm)
   target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
   )

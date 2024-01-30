@@ -22,6 +22,8 @@
 #ifndef ANDROID_JVM_H
 #define ANDROID_JVM_H
 
+#include <jni.h>
+
 #include <QtAndroidExtras/QAndroidJniObject>
 
 #include <wx/string.h>
@@ -29,7 +31,7 @@
 /** Main thread java JVM. Worker threads needs to set up their own. */
 extern JavaVM* java_vm;
 
-/** invoked by Android on start. */
+/** Invoked by Android on start. */
 jint JNI_OnLoad(JavaVM *vm, void *reserved);
 
 bool CheckPendingJNIException();
