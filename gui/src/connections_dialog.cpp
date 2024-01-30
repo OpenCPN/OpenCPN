@@ -135,6 +135,7 @@ static void LoadSerialPorts(wxComboBox* box) {
   box->Clear();
   wxArrayString* ports = EnumerateSerialPorts();
   for (size_t i = 0; i < ports->GetCount(); i++) box->Append((*ports)[i]);
+  delete ports;
 }
 
 //------------------------------------------------------------------------------
