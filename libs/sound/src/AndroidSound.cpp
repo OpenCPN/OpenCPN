@@ -25,11 +25,23 @@
 #ifndef OCPN_ANDROID_SOUND
 #define OCPN_ANDROID_SOUND
 
+#include <sstream>
 #include <thread>
+
+#include <wx/log.h>
 
 #include "OCPN_Sound.h"
 
 #include "AndroidSound.h"
+#include "android_jvm.h"
+
+static bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
+  std::ostringstream oss;
+  oss << sound;
+  wxString wxSound(oss.str());
+  wxString result = callActivityMethod_s2s("playSound", soundfile, wxSound.Mid(2));
+  return true;
+}
 
 AndroidSound::~AndroidSound() {}
 
