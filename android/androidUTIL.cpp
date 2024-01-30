@@ -94,6 +94,8 @@
 #include "dirent.h"
 #endif
 
+#include "android_jvm.h"
+
 const wxString AndroidSuppLicense = wxT(
     "<br><br>The software included in this product contains copyrighted "
     "software that is licensed under the GPL.")
@@ -271,7 +273,6 @@ wxString callActivityMethod_is(const char *method, int parm);
 
 //      Globals, accessible only to this module
 
-JavaVM *java_vm;
 bool b_androidBusyShown;
 double g_androidDPmm;
 double g_androidDensity;
