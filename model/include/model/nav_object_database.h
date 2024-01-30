@@ -94,7 +94,7 @@ Track *TrackExists(const wxString &guid);
 Route *FindRouteContainingWaypoint(RoutePoint *pWP);
 
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
-                     bool b_layerviz, int layer_id, bool b_change);
+                     bool b_layerviz, int layer_id, bool b_change, bool load_points = true);
 
 RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString symbol_name,
                              wxString GUID, bool b_fullviz, bool b_layer,
