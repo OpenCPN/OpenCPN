@@ -78,6 +78,7 @@
 #include "chcanv.h"
 #include "cm93.h"
 #include "config.h"
+#include "ConfigMgr.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "Layer.h"
@@ -347,7 +348,6 @@ extern bool g_useMUI;
 int g_nCPUCount;
 
 extern unsigned int g_canvasConfig;
-extern arrayofCanvasConfigPtr g_canvasConfigArray;
 extern wxString g_lastAppliedTemplateGUID;
 
 extern int g_route_prop_x, g_route_prop_y;
@@ -410,9 +410,6 @@ MyConfig::MyConfig(const wxString &LocalFileName)
 }
 
 MyConfig::~MyConfig() {
-  for (size_t i = 0; i < g_canvasConfigArray.GetCount(); i++) {
-    delete g_canvasConfigArray.Item(i);
-  }
 }
 
 void MyConfig::CreateRotatingNavObjBackup() {
@@ -1929,6 +1926,7 @@ void MyConfig::LoadConfigGroups(ChartGroupArray *pGroupArray) {
 void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
   wxString s;
   canvasConfig *pcc;
+  auto &config_array = ConfigMgr::Get().GetCanvasConfigArray();
 
   SetPath(_T ( "/Canvas" ));
 
@@ -1936,35 +1934,35 @@ void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
   if (!HasEntry(_T ( "CanvasConfig" ))) {
     pcc = new canvasConfig(0);
     pcc->LoadFromLegacyConfig(this);
-    g_canvasConfigArray.Add(pcc);
+    config_array.Add(pcc);
 
     return;
   }
 
   Read(_T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0);
 
+
   // Do not recreate canvasConfigs when applying config dynamically
-  if (g_canvasConfigArray.GetCount() ==
-      0) {  // This is initial load from startup
+  if (config_array.GetCount() == 0) {  // This is initial load from startup
     s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
     SetPath(s);
     canvasConfig *pcca = new canvasConfig(0);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
-    g_canvasConfigArray.Add(pcca);
+    config_array.Add(pcca);
 
     s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
     SetPath(s);
     pcca = new canvasConfig(1);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
-    g_canvasConfigArray.Add(pcca);
+    config_array.Add(pcca);
   } else {  // This is a dynamic (i.e. Template) load
-    canvasConfig *pcca = g_canvasConfigArray[0];
+    canvasConfig *pcca = config_array[0];
     s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
     SetPath(s);
     LoadConfigCanvas(pcca, bApplyAsTemplate);
 
-    if (g_canvasConfigArray.GetCount() > 1) {
-      canvasConfig *pcca = g_canvasConfigArray[1];
+    if (config_array.GetCount() > 1) {
+      canvasConfig *pcca = config_array[1];
       s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
       SetPath(s);
       LoadConfigCanvas(pcca, bApplyAsTemplate);
@@ -1973,7 +1971,7 @@ void MyConfig::LoadCanvasConfigs(bool bApplyAsTemplate) {
       SetPath(s);
       pcca = new canvasConfig(1);
       LoadConfigCanvas(pcca, bApplyAsTemplate);
-      g_canvasConfigArray.Add(pcca);
+      config_array.Add(pcca);
     }
   }
 }
@@ -2070,6 +2068,8 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
 }
 
 void MyConfig::SaveCanvasConfigs() {
+  auto &config_array = ConfigMgr::Get().GetCanvasConfigArray();
+
   SetPath(_T ( "/Canvas" ));
   Write(_T ( "CanvasConfig" ), (int)g_canvasConfig);
 
@@ -2083,8 +2083,8 @@ void MyConfig::SaveCanvasConfigs() {
       s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
       SetPath(s);
 
-      if (g_canvasConfigArray.GetCount() > 0) {
-        pcc = g_canvasConfigArray.Item(0);
+      if (config_array.GetCount() > 0) {
+        pcc = config_array.Item(0);
         if (pcc) {
           SaveConfigCanvas(pcc);
         }
@@ -2093,17 +2093,17 @@ void MyConfig::SaveCanvasConfigs() {
 
     case 1:
 
-      if (g_canvasConfigArray.GetCount() > 1) {
+      if (config_array.GetCount() > 1) {
         s.Printf(_T("/Canvas/CanvasConfig%d"), 1);
         SetPath(s);
-        pcc = g_canvasConfigArray.Item(0);
+        pcc = config_array.Item(0);
         if (pcc) {
           SaveConfigCanvas(pcc);
         }
 
         s.Printf(_T("/Canvas/CanvasConfig%d"), 2);
         SetPath(s);
-        pcc = g_canvasConfigArray.Item(1);
+        pcc = config_array.Item(1);
         if (pcc) {
           SaveConfigCanvas(pcc);
         }
