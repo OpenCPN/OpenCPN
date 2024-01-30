@@ -261,7 +261,6 @@ extern double g_config_display_size_mm;
 extern wxString ChartListFileName;
 extern bool g_bFullscreenToolbar;
 extern arrayofCanvasPtr g_canvasArray;
-extern arrayofCanvasConfigPtr g_canvasConfigArray;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxPoint options_lastWindowPos;
 extern wxSize options_lastWindowSize;
@@ -1142,9 +1141,11 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
     }
   }
 
+  auto &config_array = ConfigMgr::Get().GetCanvasConfigArray();
+
   // Canvas pointers in config array are now invalid
-  for (unsigned int i = 1; i < g_canvasConfigArray.GetCount(); i++) {
-    g_canvasConfigArray.Item(i)->canvas = NULL;
+  for (unsigned int i = 1; i < config_array.GetCount(); i++) {
+    config_array.Item(i)->canvas = NULL;
   }
 
   //    g_canvasArray.Clear();
@@ -1158,7 +1159,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   switch (g_canvasConfig) {
     default:
     case 0:  // a single canvas
-      if (!g_canvasArray.GetCount() || !g_canvasConfigArray.Item(0)) {
+      if (!g_canvasArray.GetCount() || !config_array.Item(0)) {
         cc = new ChartCanvas(this, 0);  // the chart display canvas
         g_canvasArray.Add(cc);
       } else {
@@ -1171,11 +1172,11 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
         cc->GetglCanvas()->Show();
       }
 
-      g_canvasConfigArray.Item(0)->canvas = cc;
+      config_array.Item(0)->canvas = cc;
 
       cc->SetDisplaySizeMM(g_display_size_mm);
 
-      cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
+      cc->ApplyCanvasConfig(config_array.Item(0));
 
       //            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x,
       //            g_maintoolbar_y ));
@@ -1205,9 +1206,9 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
       }
 
-      g_canvasConfigArray.Item(0)->canvas = cc;
+      config_array.Item(0)->canvas = cc;
 
-      cc->ApplyCanvasConfig(g_canvasConfigArray.Item(0));
+      cc->ApplyCanvasConfig(config_array.Item(0));
 
       cc->SetDisplaySizeMM(g_display_size_mm);
       cc->ConfigureChartBar();
@@ -1229,19 +1230,19 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
 
       //  There is not yet a config descriptor for canvas 2, so create one by
       //  copy ctor from canvas {0}.
-      if (g_canvasConfigArray.GetCount() < 2) {
-        canvasConfig *pcc = new canvasConfig(*g_canvasConfigArray.Item(0));
+      if (config_array.GetCount() < 2) {
+        canvasConfig *pcc = new canvasConfig(*config_array.Item(0));
         pcc->configIndex = 1;
 
         // Arbitrarily establish the initial size of the new canvas to be
         // half the screen width.
         pcc->canvasSize = wxSize(GetClientSize().x / 2, GetClientSize().y);
-        g_canvasConfigArray.Add(pcc);
+        config_array.Add(pcc);
       }
 
-      g_canvasConfigArray.Item(1)->canvas = cc;
+      config_array.Item(1)->canvas = cc;
 
-      cc->ApplyCanvasConfig(g_canvasConfigArray.Item(1));
+      cc->ApplyCanvasConfig(config_array.Item(1));
 
       cc->SetDisplaySizeMM(g_display_size_mm);
       cc->SetToolbarOrientation(g_maintoolbar_orient);
@@ -1259,17 +1260,16 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       g_pauimgr->GetPane(cc).Right();
 
 #ifdef __OCPN__ANDROID__
-      g_canvasConfigArray.Item(1)->canvasSize =
+      config_array.Item(1)->canvasSize =
           wxSize(GetClientSize().x / 2, GetClientSize().y);
       g_pauimgr->GetPane(cc).BestSize(GetClientSize().x / 2, GetClientSize().y);
-//           cc->SetSize(GetClientSize().x / 2, GetClientSize().y);
 #endif
 
       // If switching fromsingle canvas to 2-canvas mode dynamically,
       //  try to use the latest persisted size for the new second canvas.
       if (b_useStoredSize) {
-        int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
-        int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
+        int ccw = config_array.Item(1)->canvasSize.x;
+        int cch = config_array.Item(1)->canvasSize.y;
 
         // Check for undefined size, and set a nice default size if necessary.
         if (ccw < GetClientSize().x / 10) {
@@ -1337,14 +1337,14 @@ ChartCanvas *MyFrame::GetCanvasUnderMouse() {
 
   switch (g_canvasConfig) {
     case 1:
-      cc = g_canvasConfigArray.Item(0);
+      cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
                 /*canvas->ScreenToClient*/ (screenPoint)))
           return canvas;
       }
-      cc = g_canvasConfigArray.Item(1);
+      cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
@@ -1354,7 +1354,7 @@ ChartCanvas *MyFrame::GetCanvasUnderMouse() {
       break;
 
     default:
-      cc = g_canvasConfigArray.Item(0);
+      cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
@@ -1372,14 +1372,14 @@ int MyFrame::GetCanvasIndexUnderMouse() {
 
   switch (g_canvasConfig) {
     case 1:
-      cc = g_canvasConfigArray.Item(0);
+      cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
                 /*canvas->ScreenToClient*/ (screenPoint)))
           return 0;
       }
-      cc = g_canvasConfigArray.Item(1);
+      cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
@@ -1389,7 +1389,7 @@ int MyFrame::GetCanvasIndexUnderMouse() {
       break;
 
     default:
-      cc = g_canvasConfigArray.Item(0);
+      cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
@@ -1447,7 +1447,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
     //  So the logic needs a switch
     switch (g_canvasConfig) {
       case 1:
-        cc = g_canvasConfigArray.Item(0);
+        cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
         if (cc) {
           ChartCanvas *canvas = cc->canvas;
           if (canvas && (canvas == test)) {
@@ -1455,7 +1455,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
             nTargetGTK = 0;
           }
         }
-        cc = g_canvasConfigArray.Item(1);
+        cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
         if (cc) {
           ChartCanvas *canvas = cc->canvas;
           if (canvas && (canvas == test)) {
@@ -1470,7 +1470,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
 #ifdef __WXGTK__
           nfinalTarget = nTargetGTK;
 #endif
-          target = g_canvasConfigArray.Item(nfinalTarget)->canvas;
+          target = ConfigMgr::Get().GetCanvasConfigArray().Item(nfinalTarget)->canvas;
           if (target) {
             wxWindow *win = wxDynamicCast(target, wxWindow);
             win->SetFocus();
@@ -3715,8 +3715,8 @@ void MyFrame::JumpToPosition(ChartCanvas *cc, double lat, double lon,
 
 void MyFrame::UpdateCanvasConfigDescriptors() {
   // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasConfigArray.GetCount(); i++) {
-    canvasConfig *cc = g_canvasConfigArray.Item(i);
+  for (unsigned int i = 0; i < ConfigMgr::Get().GetCanvasConfigArray().GetCount(); i++) {
+    canvasConfig *cc = ConfigMgr::Get().GetCanvasConfigArray().Item(i);
     if (cc) {
       ChartCanvas *chart = cc->canvas;
       if (chart) {
@@ -3884,7 +3884,7 @@ int MyFrame::DoOptionsDialog() {
   unsigned int last_canvasConfig = g_canvasConfig;
   wxSize cc1SizeBefore;
   if (g_canvasConfig > 0) {
-    canvasConfig *cc = g_canvasConfigArray.Item(0);
+    canvasConfig *cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
     if (cc) cc1SizeBefore = g_canvasArray.Item(0)->GetSize();
   }
 
@@ -4015,8 +4015,8 @@ int MyFrame::DoOptionsDialog() {
   if (rr & CONFIG_CHANGED) {
     // Apply the changed canvas configs to each canvas
     // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasConfigArray.GetCount(); i++) {
-      canvasConfig *cc = g_canvasConfigArray.Item(i);
+    for (unsigned int i = 0; i < ConfigMgr::Get().GetCanvasConfigArray().GetCount(); i++) {
+      canvasConfig *cc = ConfigMgr::Get().GetCanvasConfigArray().Item(i);
       if (cc) {
         ChartCanvas *chartCanvas = cc->canvas;
         if (chartCanvas) {
