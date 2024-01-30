@@ -4,10 +4,8 @@ if (TARGET ocpn::sound)
   return ()
 endif ()
 
-# Fixme (#3527) dependency on main opencpn
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
-
 find_package(Portaudio)
+find_package(LibSndfile)
 
 set(SRC
   src/OCPN_Sound.cpp
@@ -52,17 +50,10 @@ target_include_directories(SOUND
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE
         ${CMAKE_BINARY_DIR}/include
-#FIXME (#3527) Missing linkage
         ${wxWidgets_INCLUDE_DIRS}
-#FIXME (#3527) Dependency on main OpenCPN
-        ${CMAKE_CURRENT_BINARY_DIR}/../../include
-        ${CMAKE_CURRENT_BINARY_DIR}/../../../include
 )
+target_link_libraries(SOUND PRIVATE ${wxWidgets_LIBRARIES})
 
-###FIXME (#3527) Dependency on main OpenCPN
-##if (QT_ANDROID)
-##  target_include_directories(SOUND PUBLIC ${CMAKE_SOURCE_DIR}/android)
-##endif ()
 
 target_link_libraries(SOUND PRIVATE "${SOUND_SUPPORT_LIBS}")
 if (PORTAUDIO_FOUND)
