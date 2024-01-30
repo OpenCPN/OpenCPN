@@ -1704,6 +1704,7 @@ bool NavObjectChanges::ApplyChanges(void) {
             pExisting->m_TrackStartString = pTrack->m_TrackStartString;
             pExisting->m_TrackEndString = pTrack->m_TrackEndString;
           }
+          delete pTrack;
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
@@ -1713,6 +1714,7 @@ bool NavObjectChanges::ApplyChanges(void) {
             g_pRouteMan->DeleteTrack(pExisting);
             m_bSkipChangeSetUpdate = false;
           }
+          delete pTrack;
         }
 
         else if (!strcmp(child.first_child().value(), "add")) {
@@ -1743,10 +1745,8 @@ bool NavObjectChanges::ApplyChanges(void) {
             delete pRoute;
             pRoute = GPXLoadRoute1(object, false, false, false, 0, true, true);
             ::UpdateRouteA(pRoute, this, this);
-            delete pRoute;
-          } else {
-            delete pRoute;
           }
+          delete pRoute;
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
