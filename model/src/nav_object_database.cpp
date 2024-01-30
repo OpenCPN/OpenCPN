@@ -1740,6 +1740,7 @@ bool NavObjectChanges::ApplyChanges(void) {
             delete pRoute;
             pRoute = GPXLoadRoute1(object, false, false, false, 0, true, true);
             ::UpdateRouteA(pRoute, this, this);
+            delete pRoute;
           } else {
             delete pRoute;
           }
