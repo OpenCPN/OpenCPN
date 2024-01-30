@@ -109,6 +109,7 @@ public:
   int Priority;
   bool bEnabled;
   wxString UserComment;
+  wxString AuthToken;
 
   wxString Serialize() const;
   void Deserialize(const wxString &configStr);

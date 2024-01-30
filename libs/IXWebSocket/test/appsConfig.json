@@ -1,0 +1,14 @@
+{
+  "apps": {
+    "FC2F10139A2BAc53BB72D9db967b024f": {
+      "roles": {
+        "_sub": {
+          "secret": "66B1dA3ED5fA074EB5AE84Dd8CE3b5ba"
+        },
+        "_pub": {
+          "secret": "1c04DB8fFe76A4EeFE3E318C72d771db"
+        }
+      }
+    }
+  }
+}

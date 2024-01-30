@@ -694,6 +694,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_fixtime = -1;
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
+  initIXNetSystem();
 
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
@@ -1847,7 +1848,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   }
   delete g_glTextureManager;
 #endif
-
+  uninitIXNetSystem();
   this->Destroy();
   gFrame = NULL;
 

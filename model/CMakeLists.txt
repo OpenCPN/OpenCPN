@@ -279,7 +279,7 @@ endif ()
 target_link_libraries(
   _OCPN_MODEL INTERFACE
     observable::observable
-    ocpn::easywsclient
+    ocpn::ixwebsocket
     ocpn::garminhost
     ocpn::gdal
     ocpn::geoprim
