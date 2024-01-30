@@ -1856,6 +1856,9 @@ if (LIBLZMA_FOUND)
 endif ()
 
 # Add targets used elsewhere, notably by model
+if (QT_ANDROID)
+  add_subdirectory(libs/android_jvm)
+endif ()
 
 add_subdirectory(libs/IXWebSocket)
 add_subdirectory(libs/gdal)
@@ -2715,6 +2718,7 @@ else ()
 endif ()
 
 if (QT_ANDROID)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::java-jvm)
   target_include_directories(
     ${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
