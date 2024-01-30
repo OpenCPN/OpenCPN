@@ -55,6 +55,7 @@ WayPointman *pWayPointMan;
 WX_DEFINE_LIST(RouteList);
 
 Route::Route() {
+  std::cout << "Route constructed" << std::endl << std::flush;
   m_bRtIsSelected = false;
   m_bRtIsActive = false;
   m_pRouteActivePoint = NULL;
@@ -95,6 +96,7 @@ Route::Route() {
 }
 
 Route::~Route() {
+  std::cout << "Route destroyed" << std::endl << std::flush;
   pRoutePointList->DeleteContents(false);  // do not delete Marks
   delete pRoutePointList;
   delete m_HyperlinkList;
