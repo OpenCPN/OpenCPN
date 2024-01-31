@@ -21,10 +21,6 @@ IF(QT_ANDROID)
   ADD_DEFINITIONS( " -fPIC")
 ENDIF(QT_ANDROID)
 
-# Fixme (#3527) dependencies on main opencpn
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
-INCLUDE_DIRECTORIES(include)
-
 IF (APPLE)
   INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildosx/include)
 ENDIF ()
@@ -75,3 +71,7 @@ SET(GLU_SOURCES
 add_library(GLU_static STATIC ${GLU_SOURCES})
 add_library(glu_static::glu_static ALIAS GLU_static)
 set_target_properties(GLU_static PROPERTIES OUTPUT_NAME GLU)
+target_include_directories(
+  GLU_static PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include
+)
+target_link_libraries(GLU_static PRIVATE ocpn::gl-headers)
