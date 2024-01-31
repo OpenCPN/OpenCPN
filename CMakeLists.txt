@@ -1516,7 +1516,7 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-include(SoundConfig)
+##include(SoundConfig)
 configure_file(
   ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
   ${CMAKE_BINARY_DIR}/include/config.h

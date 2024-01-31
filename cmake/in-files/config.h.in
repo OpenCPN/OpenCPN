@@ -38,8 +38,6 @@
 #cmakedefine HAVE_LIBUDEV
 #cmakedefine HAVE_PORTAUDIO
 #cmakedefine HAVE_READLINK
-#cmakedefine HAVE_SNDFILE
-#cmakedefine HAVE_SYSTEM_CMD_SOUND
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine USE_SYSFS_PORTS
 #cmakedefine HAVE_LINUX_SERIAL_H
@@ -54,8 +52,6 @@
 // The os version compatible plugins are are built for
 #define PKG_TARGET_VERSION "${PKG_TARGET_VERSION}"
 
-// Command line to play a sound in system(3), like "aplay %s".
-#define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}
 
 #define CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}"
 

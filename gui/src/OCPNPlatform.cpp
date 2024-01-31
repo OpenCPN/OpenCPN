@@ -51,6 +51,7 @@
 #include "model/cutil.h"
 #include "model/config_vars.h"
 #include "model/logger.h"
+#include "snd_config.h"
 #include "styles.h"
 #include "navutil.h"
 #include "model/ocpn_utils.h"

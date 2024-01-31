@@ -92,6 +92,7 @@
 #include "OCPN_Sound.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "snd_config.h"
 #include "styles.h"
 
 #ifdef ocpnUSE_GL
