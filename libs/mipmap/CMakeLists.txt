@@ -4,10 +4,6 @@ if (TARGET ocpn::mipmap)
     return ()
 endif ()
 
-# Fixme (#3527) dependency on main opencpn
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
-endif ()
 
 # Fixme (#3527) dependency on main opencpn
 include(GetArch)
