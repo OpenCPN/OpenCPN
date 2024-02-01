@@ -19,17 +19,18 @@
 
 /**
  * \file linux_watch_daemon.h
- * Listen for Linux DBus  events like suspend/resume and new devices to notify
+ * Listen for Linux DBus  events like suspend/resume and new devices and notify
  * SystemEvents
  */
 
 #include "model/linux_usb_watch.h"
 
-// Definitions for "New device" event. Could be any device, but in real life
-// this is only USB.
+// Definitions for "New device" and "device gone" events. Could be any device,
+// but in real life this is only USB.
 static const char* const kDevSender = "org.freedesktop.systemd1";
 static const char* const kDevInterface = "org.freedesktop.systemd1.Manager";
-static const char* const kDevMember = "UnitNew";
+static const char* const kDevAddMember = "UnitNew";
+static const char* const kDevRemoveMember = "UnitRemoved";
 
 // Definitions for suspend/resume event
 // Link:
@@ -42,10 +43,8 @@ static void dev_signal_cb(GDBusConnection* connection, const gchar* sender,
                           const gchar* object_path, const gchar* interface,
                           const gchar* signal, GVariant* parameters,
                           gpointer user_data) {
-  // printf("%s: %s.%s %s\n", object_path, interface, signal,
-  //        g_variant_print(parameters, TRUE));
   auto watch_daemon = static_cast<LinuxUsbWatchDaemon*>(user_data);
-  watch_daemon->m_sys_events.evt_new_device.Notify();
+  watch_daemon->m_sys_events.evt_dev_change.Notify();
 }
 
 static void prepare_for_sleep_cb(GDBusConnection* connection,
@@ -75,10 +74,13 @@ void LinuxUsbWatchDaemon::Start() {
 
   if (m_thread.joinable()) return;  // already running
   m_conn = g_bus_get_sync(G_BUS_TYPE_SYSTEM, 0, &err);
-  filter_id_dev = g_dbus_connection_signal_subscribe(
-      m_conn, kDevSender, kDevInterface, kDevMember, 0, 0,
+  g_dbus_connection_signal_subscribe(
+      m_conn, kDevSender, kDevInterface, kDevAddMember, 0, 0,
       G_DBUS_SIGNAL_FLAGS_NONE, dev_signal_cb, this, 0);
-  filter_id_res = g_dbus_connection_signal_subscribe(
+  g_dbus_connection_signal_subscribe(
+      m_conn, kDevSender, kDevInterface, kDevRemoveMember, 0, 0,
+      G_DBUS_SIGNAL_FLAGS_NONE, dev_signal_cb, this, 0);
+  g_dbus_connection_signal_subscribe(
       m_conn, kResSender, kResInterface, kResMember, 0, 0,
       G_DBUS_SIGNAL_FLAGS_NONE, prepare_for_sleep_cb, 0, 0);
   m_worker_context = g_main_context_new();
