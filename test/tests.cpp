@@ -532,6 +532,8 @@ public:
   }
 };
 
+// GetSignalkPayload() introduced in 1.19
+#if API_VERSION_MINOR > 18
 class SignalKApp : public BasicTest {
 public:
   SignalKApp() : BasicTest() {}
@@ -562,6 +564,7 @@ public:
     EXPECT_EQ(1, msg.ItemAt("Data").ItemAt("list").ItemAt(0).AsInt());
   }
 };
+#endif
 
 class AisDecodeApp : public BasicTest {
 public:
@@ -894,7 +897,9 @@ TEST(AIS, AISVDO) { AisVdoApp app; }
 
 TEST(AIS, AISVDM) { AisVdmApp app; }
 
+#if API_VERSION_MINOR > 18
 TEST(PluginApi, SignalK) { SignalKApp app; }
+#endif
 
 #ifdef HAVE_UNISTD_H
 TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
