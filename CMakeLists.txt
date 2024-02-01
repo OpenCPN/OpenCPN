@@ -1862,6 +1862,7 @@ endif ()
 
 add_subdirectory(libs/IXWebSocket)
 add_subdirectory(libs/gdal)
+add_subdirectory(libs/gl_headers)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
 add_subdirectory(libs/mDNS)
