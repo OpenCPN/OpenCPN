@@ -220,7 +220,7 @@ endif (LibArchive_FOUND)
 
 # TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
 
-# target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT QT_ANDROID)
   target_link_libraries(
