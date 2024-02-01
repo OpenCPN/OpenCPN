@@ -425,7 +425,7 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
                        [&](ObservedEvt&) {device_waiter.Continue(); });
-  new_device_listener.Init(SystemEvents::GetInstance().evt_new_device,
+  new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
                            [&](ObservedEvt&) {device_waiter.Continue(); });
 }
 

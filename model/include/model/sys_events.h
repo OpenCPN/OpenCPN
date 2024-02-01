@@ -37,8 +37,11 @@ public:
   /** Notified when resuming from hibernate. */
   EventVar evt_resume;
 
-  /** Notified when a new device is detected, usually USB hotplugged. */
-  EventVar evt_new_device;
+  /**
+   * Notified when a new or removed device is detected, usually an USB
+   * hotplug event:
+   */
+  EventVar evt_dev_change;
 
 private:
   SystemEvents() = default;

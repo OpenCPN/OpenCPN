@@ -937,7 +937,7 @@ void ConnectionsDialog::Init() {
   ShowNMEANet(true);
   connectionsaved = TRUE;
 
-  new_device_listener.Init(SystemEvents::GetInstance().evt_new_device,
+  new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
                            [&](ObservedEvt&) { LoadSerialPorts(m_comboPort); });
 }
 
