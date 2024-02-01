@@ -32,6 +32,7 @@ target_link_libraries(
     ocpn::iso8211
     ocpn::nmea0183
     ocpn::gdal
+    ocpn::gl-headers
     ocpn::geoprim
     ocpn::N2KParser
     ocpn::pugixml

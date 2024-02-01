@@ -289,7 +289,7 @@ endif (
   AND NOT QT_ANDROID
 )
 
-target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET})
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (APPLE)
   target_compile_options(

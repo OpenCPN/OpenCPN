@@ -48,6 +48,7 @@ target_include_directories(S52PLIB PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(S52PLIB PRIVATE ${wxWidgets_LIBRARIES})
 
 target_link_libraries(S52PLIB PRIVATE ocpn::geoprim)
+target_link_libraries(S52PLIB PRIVATE ocpn::gl-headers)
 target_link_libraries(S52PLIB PRIVATE ocpn::pugixml)
 target_link_libraries(S52PLIB PRIVATE ocpn::gdal)
 target_link_libraries(S52PLIB PRIVATE ocpn::tess2)
