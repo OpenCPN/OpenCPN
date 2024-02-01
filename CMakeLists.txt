@@ -1457,6 +1457,9 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
 
+# Add android and windows extra, bundled GL headers
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+
 # Ensure we have boost::filesystem if std::filesystem is missing.
 include(StdFilesystem)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
