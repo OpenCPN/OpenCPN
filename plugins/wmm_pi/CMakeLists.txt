@@ -78,6 +78,8 @@ set(SRC_JSON
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
 
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::opencpn)
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   target_compile_options(
     ${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas -Wno-overloaded-virtual
@@ -87,8 +89,7 @@ endif ()
 if (NOT QT_ANDROID)
   target_link_libraries(
     ${PACKAGE_NAME}
-      PRIVATE
-        ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::opencpn ocpn::gl-headers
+      PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson  ocpn::gl-headers
   )
 else (NOT QT_ANDROID)
   target_link_libraries(

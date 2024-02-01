@@ -43,13 +43,16 @@
 #include <time.h>
 
 #include "pi_gl.h"
-
 #include "grib_pi.h"
 #include "GribTable.h"
 #include "email.h"
 #include "folder.xpm"
 #include "GribUIDialog.h"
 #include <wx/arrimpl.cpp>
+
+#ifdef __ANDROID__
+#include "android_jvm.h"
+#endif
 
 // general variables
 double m_cursor_lat, m_cursor_lon;
@@ -2357,8 +2360,6 @@ void GRIBUICData::OnMove(wxMoveEvent &event) {
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
-extern JavaVM *java_vm;  // found in androidUtil.cpp, accidentally exported....
-
 bool CheckPendingJNIException() {
   if (!java_vm) {
     // qDebug() << "java_vm is NULL.";
@@ -2402,7 +2403,7 @@ wxString callActivityMethod_ss(const char *method, wxString parm) {
   JNIEnv *jenv;
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
     // qDebug() << "GetEnv failed.";
-    return _T("jenv Error");
+    return "jenv Error";
   }
 
   jstring p = (jenv)->NewStringUTF(parm.c_str());
