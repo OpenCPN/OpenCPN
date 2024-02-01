@@ -611,12 +611,124 @@ N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
     else
       return N2KFormat_Actisense_N2K_ASCII;
   }
-  else
-    return N2KFormat_Undefined;
+  else {
+    return N2KFormat_Actisense_N2K;
+  }
+}
+
+bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
+  std::vector<unsigned char> data;
+  bool bInMsg = false;
+  bool bGotESC = false;
+  bool bGotSOT = false;
+
+  while (!m_circle->empty()) {
+    uint8_t next_byte = m_circle->get();
+
+    if (bInMsg) {
+      if (bGotESC) {
+        if (ESCAPE == next_byte) {
+          data.push_back(next_byte);
+          bGotESC = false;
+        }
+      }
+
+      if (bGotESC && (ENDOFTEXT == next_byte)) {
+        // Process packet
+        // first 3 bytes are: 1 byte for message type, 2 bytes for rest of message length
+        unsigned int msg_length = (uint32_t)data[1] + ((uint32_t)data[2]<<8);
+
+        // As a sanity check, verify message length
+        if (msg_length == data.size()-1) {
+          uint8_t destination = data[3];
+          uint8_t source = data[4];
+
+          uint8_t dprp = data[7];
+          uint8_t priority = (dprp >> 2) & 7;  // priority bits are 3,4,5th bit
+          uint8_t rAndDP = dprp & 3;  // data page + reserved is first 2 bits
+
+          // PGN
+          uint8_t pduFormat = data[6];  // PF (PDU Format)
+          uint32_t pgn = (rAndDP << 16) + (pduFormat << 8);
+          if (pduFormat >=
+              240)  // message is broadcast, PS contains group extension
+            pgn += data[5];  // +PS (PDU Specific)
+
+          // Create the OCPN payload
+          std::vector<uint8_t> o_payload;
+          o_payload.push_back(0x93);
+          o_payload.push_back(0x13);
+          o_payload.push_back(priority);  // priority;
+          o_payload.push_back(pgn & 0xFF);
+          o_payload.push_back((pgn >> 8) & 0xFF);
+          o_payload.push_back((pgn >> 16) & 0xFF);
+          o_payload.push_back(destination);  // destination;
+          o_payload.push_back(source);       // source);
+          o_payload.push_back(0xFF);  // FIXME (dave) generate the time fields
+          o_payload.push_back(0xFF);
+          o_payload.push_back(0xFF);
+          o_payload.push_back(0xFF);
+          o_payload.push_back(data.size());
+
+          // Data starts at offset 13
+          for (size_t n = 13; n < data.size() - 1; n++)
+            o_payload.push_back(data[n]);
+
+          o_payload.push_back(0x55);  // CRC dummy, not checked
+
+          // Message is ready
+          CommDriverN2KNetEvent Nevent(wxEVT_COMMDRIVER_N2K_NET, 0);
+          auto n2k_payload = std::make_shared<std::vector<uint8_t>>(o_payload);
+          Nevent.SetPayload(n2k_payload);
+          AddPendingEvent(Nevent);
+        }
+
+        // reset for next packet
+        bInMsg = false;
+        bGotESC = false;
+        data.clear();
+
+      } else {
+        bGotESC = (next_byte == ESCAPE);
+
+        if (!bGotESC) {
+          data.push_back(next_byte);
+        }
+      }
+    }
+
+    else {
+      if (STARTOFTEXT == next_byte) {
+        bGotSOT = false;
+        if (bGotESC) {
+          bGotSOT = true;
+        }
+      } else {
+        bGotESC = (next_byte == ESCAPE);
+        if (bGotSOT) {
+          bGotSOT = false;
+          bInMsg = true;
+
+          data.push_back(next_byte);
+        }
+      }
+    }
+  }  // while
+
+    return true;
+}
+
+bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
+  return true;
+}
+
+bool CommDriverN2KNet::ProcessActisense_NGT(std::vector<unsigned char> packet) {
+  return true;
 }
 
 bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet) {
   can_frame frame;
+
   while (!m_circle->empty()) {
     char b = m_circle->get();
     if ((b != 0x0a) && (b != 0x0d)) {
@@ -657,6 +769,7 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(std::vector<unsigned char> pac
 bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(std::vector<unsigned char> packet) {
   // A001001.732 04FF6 1FA03 C8FBA80329026400
   std::string sentence;
+
   while (!m_circle->empty()) {
     char b = m_circle->get();
     if ((b != 0x0a) && (b != 0x0d)) {
@@ -765,8 +878,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
       if (newdata > 0) {
         for (int i = 0; i < newdata; i++) {
           m_circle->put(data[i]);
-          printf("%c", data.at(i));
-
+          //printf("%c", data.at(i));
         }
       }
 
@@ -781,6 +893,15 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
           break;
         case N2KFormat_Actisense_N2K_ASCII:
           ProcessActisense_ASCII_N2K(data);
+          break;
+        case N2KFormat_Actisense_N2K:
+          ProcessActisense_N2K(data);
+          break;
+        case N2KFormat_Actisense_RAW:
+          ProcessActisense_RAW(data);
+          break;
+        case N2KFormat_Actisense_NGT:
+          ProcessActisense_NGT(data);
           break;
         case N2KFormat_Undefined:
         default:

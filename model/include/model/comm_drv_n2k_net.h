@@ -74,7 +74,10 @@ typedef enum
   N2KFormat_Undefined = 0,
   N2KFormat_YD_RAW,
   N2KFormat_Actisense_RAW_ASCII,
-  N2KFormat_Actisense_N2K_ASCII
+  N2KFormat_Actisense_N2K_ASCII,
+  N2KFormat_Actisense_N2K,
+  N2KFormat_Actisense_RAW,
+  N2KFormat_Actisense_NGT
 } N2K_Format;
 
 class CommDriverN2KNetEvent;  // Internal
@@ -191,6 +194,9 @@ private:
   N2K_Format DetectFormat(std::vector<unsigned char> packet);
   bool ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet);
   bool ProcessActisense_ASCII_N2K(std::vector<unsigned char> packet);
+  bool ProcessActisense_N2K(std::vector<unsigned char> packet);
+  bool ProcessActisense_RAW(std::vector<unsigned char> packet);
+  bool ProcessActisense_NGT(std::vector<unsigned char> packet);
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
