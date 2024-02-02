@@ -612,11 +612,17 @@ N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
       return N2KFormat_Actisense_N2K_ASCII;
   }
   else {
-    return N2KFormat_Actisense_N2K;
+    if (packet[2] == 0x95)
+      return N2KFormat_Actisense_RAW;
+    else if (packet[2] == 0xd0)
+      return N2KFormat_Actisense_N2K;
   }
 }
 
 bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
+
+  //1002 d0 1500ff0401f80900684c1b00a074eb14f89052d288 1003
+
   std::vector<unsigned char> data;
   bool bInMsg = false;
   bool bGotESC = false;
@@ -719,7 +725,78 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
 }
 
 bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
-  return true;
+    //1002 95 0e15870402f8094b  fc e6 20 00 00 ff ff 6f 1003
+
+    can_frame frame;
+
+    std::vector<unsigned char> data;
+    bool bInMsg = false;
+    bool bGotESC = false;
+    bool bGotSOT = false;
+
+    while (!m_circle->empty()) {
+      uint8_t next_byte = m_circle->get();
+
+      if (bInMsg) {
+        if (bGotESC) {
+          if (ESCAPE == next_byte) {
+            data.push_back(next_byte);
+            bGotESC = false;
+          }
+        }
+
+        if (bGotESC && (ENDOFTEXT == next_byte)) {
+          // Process packet
+          // Create a can_frame, to assemble fast packets.
+
+          // As a sanity check, verify message length
+          if (data.size() >= 8) {
+            size_t dLen = data[1];
+
+            if (dLen+3 == data.size()) {
+
+              // can_id
+              memcpy(&frame.can_id, &data.data()[4], 4);
+
+              // data
+              memcpy(&frame.data, &data.data()[8], 8);
+
+              HandleCanFrameInput(frame);
+
+              // reset for next packet
+              bInMsg = false;
+              bGotESC = false;
+              data.clear();
+            }
+          }
+        } else {
+          bGotESC = (next_byte == ESCAPE);
+
+          if (!bGotESC) {
+            data.push_back(next_byte);
+          }
+        }
+      }
+
+      else {
+        if (STARTOFTEXT == next_byte) {
+          bGotSOT = false;
+          if (bGotESC) {
+            bGotSOT = true;
+          }
+        } else {
+          bGotESC = (next_byte == ESCAPE);
+          if (bGotSOT) {
+            bGotSOT = false;
+            bInMsg = true;
+
+            data.push_back(next_byte);
+          }
+        }
+      }
+    }  // while
+
+    return true;
 }
 
 bool CommDriverN2KNet::ProcessActisense_NGT(std::vector<unsigned char> packet) {
