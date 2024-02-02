@@ -1588,6 +1588,19 @@ static bool ReloadPendingChanges(const wxString& changes_path) {
   return  true;
 }
 
+wxString MyConfig::FindNewestUsableBackup() const {
+  wxString newest_backup;
+  pugi::xml_document doc;
+  for (int i = 1; i <= g_navobjbackups; i++) {
+    wxString backup = m_sNavObjSetFile + "." + wxString::Format("%d", i);
+    if (wxFileExists(backup) && wxFileName::GetSize(backup) > 461 && doc.load_file(backup.fn_str()).status == pugi::xml_parse_status::status_ok) {
+      newest_backup = backup;
+      break;
+    }
+  }
+  return newest_backup;
+}
+
 void MyConfig::LoadNavObjects() {
   //      next thing to do is read tracks, etc from the NavObject XML file,
   wxLogMessage(_T("Loading navobjects from navobj.xml"));
@@ -1596,25 +1609,54 @@ void MyConfig::LoadNavObjects() {
     m_pNavObjectInputSet = new NavObjectCollection1();
 
   int wpt_dups = 0;
+  wxString newest_backup;
   if (::wxFileExists(m_sNavObjSetFile)) {
     if (wxFileName::GetSize(m_sNavObjSetFile) < 461) { // Empty navobj.xml file with just the gpx tag is 461 bytes, so anything smaller is obvious sign of a fatal crash while saving it last time, replace it with latest backup if available
       wxLogMessage("Navobjects file exists, but seems truncated!");
-      wxString newest_backup = m_sNavObjSetFile + ".1";
-      if (wxFileExists(newest_backup) && wxFileName::GetSize(newest_backup) >= 461) {
-        wxLogMessage("We do have a backup that looks healthy and will use it.");
+      newest_backup = FindNewestUsableBackup();
+      if (wxFileExists(newest_backup)) {
+        wxLogMessage("We do have a backup " + newest_backup +  " that looks healthy and will use it.");
         wxCopyFile(newest_backup, m_sNavObjSetFile, true);
       }
     }
-    if(m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status == pugi::xml_parse_status::status_ok) {
-      CreateRotatingNavObjBackup(); // We only create backups when data is good, there is no point in saving something we can't even load
-      m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
+  } else { //File does not exist, try to recover from a backup
+    newest_backup = FindNewestUsableBackup();
+    if (wxFileExists(newest_backup)) {
+      wxLogMessage("We do have a backup " + newest_backup +  " that looks healthy and will use it.");
+        wxCopyFile(newest_backup, m_sNavObjSetFile, true);
     } else {
-      wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile);
+      wxLogMessage("No navobjects.xml file or usable backup exist, will create a new one.");
     }
   }
-
-  wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
+  bool success = false;
+  // We did all we could to have an usable navobj.xml file in scenarios where it did not exist or was clearly corrupted, let's try to load it
+  if(::wxFileExists(m_sNavObjSetFile) && m_pNavObjectInputSet->load_file(m_sNavObjSetFile.fn_str()).status == pugi::xml_parse_status::status_ok) {
+    CreateRotatingNavObjBackup(); // We only create backups when data is good, there is no point in saving something we can't even load
+    success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
+  } else {
+    // It was still not valid after all our efforts and did not load as XML, let's rename it to a corrupted file and try to recover from a backup on last time
+    wxString corrupted_file = m_sNavObjSetFile + wxDateTime::Now().Format(".corrupted.%Y-%m-%d-%H-%M-%S");
+    wxRenameFile(m_sNavObjSetFile, corrupted_file, true);
+    wxLogMessage("Error while loading navobjects from " + m_sNavObjSetFile + ", the corrupted file was renamed to " + corrupted_file);
+    // If we got here with existing navobj.xml file, but it's corrupted, we can still try to recover from a backup
+    if (newest_backup.IsEmpty()) { // If we got here with empty newest_backup, navobj.xml probably did exist, but was corrupted XML-wise, so we need to find a new backup
+      newest_backup = FindNewestUsableBackup();
+    }
+    m_pNavObjectInputSet->reset();
+    if (wxFileExists(newest_backup) && m_pNavObjectInputSet->load_file(newest_backup.fn_str()).status == pugi::xml_parse_status::status_ok) {
+      success = m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
+      wxLogMessage("We do have a healthy backup " + newest_backup +  " and did load it.");
+    } else {
+      wxLogMessage("No usable backup found, a new navobj.xml file will be created.");
+      m_pNavObjectInputSet->reset();
+    }
+  }
+  if (success) {
+    wxLogMessage(_T("Done loading navobjects, %d duplicate waypoints ignored"),
                wpt_dups);
+  } else {
+    wxLogMessage(_T("Failed to load navobjects, creating a new navobj.xml file."));
+  }
   delete m_pNavObjectInputSet;
 
   if (::wxFileExists(m_sNavObjSetChangesFile)) {
