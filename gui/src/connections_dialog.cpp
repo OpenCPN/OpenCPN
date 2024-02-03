@@ -437,7 +437,7 @@ void ConnectionsDialog::Init(){
 
   gSizerNetProps = new wxGridSizer(0, 2, 0, 0);
 
-  m_stNetProto = new wxStaticText(m_container, wxID_ANY, _("Protocol"),
+  m_stNetProto = new wxStaticText(m_container, wxID_ANY, _("Network Protocol"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stNetProto->Wrap(-1);
   gSizerNetProps->Add(m_stNetProto, 0, wxALL, 5);
@@ -470,6 +470,22 @@ void ConnectionsDialog::Init(){
 
   gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
 
+  m_stNetDataProtocol = new wxStaticText(m_container, wxID_ANY, _("Data Protocol"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetDataProtocol->Wrap(-1);
+  gSizerNetProps->Add(m_stNetDataProtocol, 0, wxALL, 5);
+
+
+  wxString m_choiceNetProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
+  int m_choiceNetProtocolNChoices =
+      sizeof(m_choiceNetProtocolChoices) / sizeof(wxString);
+  m_choiceNetDataProtocol = new wxChoice(
+      m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
+  m_choiceNetDataProtocol->SetSelection(0);
+  m_choiceNetDataProtocol->Enable(TRUE);
+  gSizerNetProps->Add(m_choiceNetDataProtocol, 1, wxEXPAND | wxTOP, 5);
+
   m_stNetAddr = new wxStaticText(m_container, wxID_ANY, _("Address"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_stNetAddr->Wrap(-1);
@@ -487,6 +503,16 @@ void ConnectionsDialog::Init(){
   m_tNetPort = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
                               wxDefaultPosition, wxDefaultSize, 0);
   gSizerNetProps->Add(m_tNetPort, 1, wxEXPAND | wxTOP, 5);
+
+  // Authentication token
+  m_stAuthToken = new wxStaticText(m_container, wxID_ANY, _("Auth Token"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stAuthToken->Wrap(-1);
+  gSizerNetProps->Add(m_stAuthToken, 0, wxALL, 5);
+
+  m_tAuthToken = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  gSizerNetProps->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
 
   //  User Comments
   m_stNetComment = new wxStaticText(m_container, wxID_ANY, _("User Comment"),
@@ -811,6 +837,9 @@ void ConnectionsDialog::Init(){
   m_choiceSerialProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
+  m_choiceNetDataProtocol->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
   m_choicePriority->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                             wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
                             NULL, this);
@@ -888,6 +917,9 @@ void ConnectionsDialog::Init(){
   m_tSerialComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
                             wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
                             NULL, this);
+  m_tAuthToken->Connect(wxEVT_COMMAND_TEXT_UPDATED,
+                         wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
+                         this);
 
   if (m_buttonScanBT)
     m_buttonScanBT->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -1077,6 +1109,8 @@ void ConnectionsDialog::ShowNMEACommon(bool visible) {
   m_TalkerIdText->Show(visible);
   m_cbCheckCRC->Show(visible);
   m_cbCheckSKDiscover->Show(visible);
+  m_stAuthToken->Show(visible);
+  m_tAuthToken->Show(visible);
   m_ButtonSKDiscover->Show(visible);
   if (visible) {
     const bool output = m_cbOutput->IsChecked();
@@ -1098,7 +1132,9 @@ void ConnectionsDialog::ShowNMEACommon(bool visible) {
 void ConnectionsDialog::ShowNMEANet(bool visible) {
   m_stNetAddr->Show(visible);
   m_tNetAddress->Show(visible);
+  m_stNetDataProtocol->Show(visible);
   m_stNetPort->Show(visible);
+  m_choiceNetDataProtocol->Show(visible);
   m_tNetPort->Show(visible);
   m_stNetProto->Show(visible);
   m_rbNetProtoSignalK->Show(visible);
@@ -1107,6 +1143,8 @@ void ConnectionsDialog::ShowNMEANet(bool visible) {
   m_rbNetProtoUDP->Show(visible);
   m_stNetComment->Show(visible);
   m_tNetComment->Show(visible);
+  m_stAuthToken->Show(visible);
+  m_tAuthToken->Show(visible);
 }
 
 void ConnectionsDialog::ShowNMEASerial(bool visible) {
@@ -1124,6 +1162,8 @@ void ConnectionsDialog::ShowNMEASerial(bool visible) {
 void ConnectionsDialog::ShowNMEAGPS(bool visible) {
   m_cbCheckSKDiscover->Hide();
   m_ButtonSKDiscover->Hide();
+  m_stAuthToken->Hide();
+  m_tAuthToken->Hide();
   m_cbOutput->Hide();
 }
 
@@ -1147,6 +1187,8 @@ void ConnectionsDialog::ShowNMEABT(bool visible) {
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
   m_cbCheckSKDiscover->Hide();
+  m_stAuthToken->Hide();
+  m_tAuthToken->Hide();
   m_ButtonSKDiscover->Hide();
   m_tcOutputStc->Show(visible);
   m_btnOutputStcList->Show(visible);
@@ -1259,11 +1301,17 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
   m_tcOutputStc->Show();
   m_btnOutputStcList->Show();
   m_cbCheckSKDiscover->Show();
+  m_stAuthToken->Show();
+  m_tAuthToken->Show();
   m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show();
+  m_stNetDataProtocol->Show();
+  m_choiceNetDataProtocol->Show();
 
   if (m_rbTypeSerial->GetValue()) {
     m_cbCheckSKDiscover->Hide();
+    m_stAuthToken->Hide();
+    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() == DataProtocol::PROTO_NMEA0183;
@@ -1288,11 +1336,15 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       sbSizerOutFilter->GetStaticBox()->Hide();
       m_rbOAccept->Hide();
       m_rbOIgnore->Hide();
+      m_stNetDataProtocol->Hide();
+      m_choiceNetDataProtocol->Hide();
     }
   }
 
   if (m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue()) {
     m_cbCheckSKDiscover->Hide();
+    m_stAuthToken->Hide();
+    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     m_cbOutput->Hide();
@@ -1305,12 +1357,16 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
 
   if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue()) {
     m_cbCheckSKDiscover->Hide();
+    m_stAuthToken->Hide();
+    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
   }
 
   if (m_rbTypeCAN->GetValue()) {
     m_cbCheckSKDiscover->Hide();
+    m_stAuthToken->Hide();
+    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     m_cbInput->Hide();
@@ -1333,6 +1389,8 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     sbSizerOutFilter->GetStaticBox()->Hide();
     m_rbOAccept->Hide();
     m_rbOIgnore->Hide();
+    m_stNetDataProtocol->Hide();
+    m_choiceNetDataProtocol->Hide();
   }
 
   if (m_rbTypeNet->GetValue()) {
@@ -1351,9 +1409,10 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       m_choicePrecision->Hide();
       m_stTalkerIdText->Hide();
       m_TalkerIdText->Hide();
-      m_cbCheckSKDiscover->Hide();
       m_ButtonSKDiscover->Hide();
       m_StaticTextSKServerStatus->Hide();
+      m_stAuthToken->Hide();
+      m_tAuthToken->Hide();
 
     } else if (m_rbNetProtoSignalK->GetValue()) {
       m_cbInput->Hide();
@@ -1373,11 +1432,33 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       m_btnInputStcList->Hide();
       m_tcOutputStc->Hide();
       m_btnOutputStcList->Hide();
+      m_stNetDataProtocol->Hide();
+      m_choiceNetDataProtocol->Hide();
 
     } else {
+      m_stAuthToken->Hide();
+      m_tAuthToken->Hide();
       m_cbCheckSKDiscover->Hide();
       m_ButtonSKDiscover->Hide();
       m_StaticTextSKServerStatus->Hide();
+
+      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() == DataProtocol::PROTO_NMEA2000) {
+        m_cbCheckCRC->Hide();
+        m_stPrecision->Hide();
+        m_choicePrecision->Hide();
+        m_stTalkerIdText->Hide();
+        m_TalkerIdText->Hide();
+        sbSizerInFilter->GetStaticBox()->Hide();
+        m_rbIAccept->Hide();
+        m_rbIIgnore->Hide();
+        sbSizerOutFilter->GetStaticBox()->Hide();
+        m_rbOAccept->Hide();
+        m_rbOIgnore->Hide();
+        m_tcInputStc->Hide();
+        m_btnInputStcList->Hide();
+        m_tcOutputStc->Hide();
+        m_btnOutputStcList->Hide();
+      }
     }
   }
 }
@@ -1452,6 +1533,8 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
       m_choicePriority->FindString(wxString::Format(_T( "%d" ), cp->Priority)));
   m_tNetAddress->SetValue(cp->NetworkAddress);
 
+  m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
+
   if (cp->NetworkPort == 0)
     m_tNetPort->SetValue(wxEmptyString);
   else
@@ -1498,6 +1581,8 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
     m_tSerialComment->SetValue(cp->UserComment);
   else if (cp->Type == NETWORK)
     m_tNetComment->SetValue(cp->UserComment);
+  
+  m_tAuthToken->SetValue(cp->AuthToken);
 
   m_connection_enabled = cp->bEnabled;
 
@@ -1527,6 +1612,7 @@ void ConnectionsDialog::SetDefaultConnectionParams(void) {
 
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
+  m_tAuthToken->SetValue(wxEmptyString);
 
   bool bserial = TRUE;
 #ifdef __WXGTK__
@@ -1979,10 +2065,14 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
 
     pConnectionParams->NetworkAddress = m_tNetAddress->GetValue().Trim(false).Trim(true);
     pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
-    if (m_rbNetProtoTCP->GetValue())
+    if (m_rbNetProtoTCP->GetValue()) {
       pConnectionParams->NetProtocol = TCP;
-    else if (m_rbNetProtoUDP->GetValue())
+      pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+    }
+    else if (m_rbNetProtoUDP->GetValue()) {
       pConnectionParams->NetProtocol = UDP;
+      pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+    }
     else if (m_rbNetProtoGPSD->GetValue())
       pConnectionParams->NetProtocol = GPSD;
     else if (m_rbNetProtoSignalK->GetValue())
@@ -1991,8 +2081,13 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
       pConnectionParams->NetProtocol = PROTO_UNDEFINED;
   }
 
+  if (m_rbTypeSerial->GetValue())
+    pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
+  else if (m_rbTypeNet->GetValue())
+    pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+
+
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
-  pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
   pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
   pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
   pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
@@ -2064,6 +2159,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   } else if (pConnectionParams->Type == NETWORK) {
     pConnectionParams->UserComment = m_tNetComment->GetValue();
   }
+  pConnectionParams->AuthToken = m_tAuthToken->GetValue();
 
   return pConnectionParams;
 }

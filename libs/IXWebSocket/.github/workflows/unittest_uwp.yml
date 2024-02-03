@@ -1,0 +1,45 @@
+name: uwp
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+  pull_request:
+
+jobs:
+  uwp:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: seanmiddleditch/gha-setup-vsdevenv@master
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - run: |
+        mkdir build
+        cd build
+        cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION="10.0" -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe -DUSE_TEST=1 -DUSE_ZLIB=0 ..
+    - run: |
+        cd build
+        ninja
+    - run: |
+        cd build
+        ninja test
+
+#
+#   Windows with OpenSSL is working but disabled as it takes 13 minutes (10 for openssl) to build with vcpkg
+#
+#   windows_openssl:
+#     runs-on: windows-latest
+#     steps:
+#     - uses: actions/checkout@v1
+#     - uses: seanmiddleditch/gha-setup-vsdevenv@master
+#     - run: |
+#         vcpkg install zlib:x64-windows
+#         vcpkg install openssl:x64-windows
+#     - run: |
+#         mkdir build
+#         cd build
+#         cmake -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_COMPILER=cl.exe -DUSE_OPEN_SSL=1 -DUSE_TLS=1 -DUSE_WS=1 -DUSE_TEST=1 ..
+#     - run: cmake --build build
+# 
+#     # Running the unittest does not work, the binary cannot be found
+#     #- run: ../build/test/ixwebsocket_unittest.exe
+#     # working-directory: test

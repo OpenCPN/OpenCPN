@@ -32,4 +32,7 @@
 std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     const ConnectionParams* params);
 
+void initIXNetSystem();
+void uninitIXNetSystem();
+
 #endif  // _COMM_UTIL_H

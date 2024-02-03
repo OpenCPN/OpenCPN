@@ -1857,7 +1857,7 @@ endif ()
 
 # Add targets used elsewhere, notably by model
 
-add_subdirectory(libs/easywsclient)
+add_subdirectory(libs/IXWebSocket)
 add_subdirectory(libs/gdal)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
@@ -1978,13 +1978,27 @@ if (NOT APPLE)
     install(FILES opencpn.1 opencpn-cmd.1 DESTINATION ${PREFIX_DATA}/man/man1)
   endif ()
 
-  if (PACKAGE_FORMAT MATCHES "DEB")
-    install(
-      FILES "buildlinux/98-sglock-ocpn.rules"
-      PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-      DESTINATION "/lib/udev/rules.d"
-    )
-  endif ()
+  install(CODE "
+    if (EXISTS /lib/udev/rules.d)
+      execute_process(
+        COMMAND sh -c \"test -w /lib/udev/rules.d 2>/dev/null \"
+        RESULT_VARIABLE _rv
+      )
+      if (_rv EQUAL 0)
+        execute_process(COMMAND
+          sh -c \"cp ${PROJECT_SOURCE_DIR}/buildlinux/98-sglock-ocpn.rules \
+                     /lib/udev/rules.d/98-sglock-ocpn.rules\"
+        )
+        execute_process(COMMAND
+          sh -c \"chmod 644 \
+              ${PROJECT_SOURCE_DIR}/buildlinux/98-sglock-ocpn.rules\"
+        )
+        message(STATUS \"Installed udev dongle rule\")
+      else ()
+        message(STATUS \"Skipped installing udev dongle rule\")
+      endif ()
+    endif ()
+  ")
 
 endif ()
 
