@@ -66,29 +66,10 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/idents.h"
 #include "model/comm_drv_registry.h"
-#include <sys/time.h>
 
 #define N_DOG_TIMEOUT 5
 
-//typedef struct can_frame CanFrame;
-
-#if 1
-using namespace std::chrono_literals;
-
-using TimePoint = std::chrono::time_point<std::chrono::system_clock,
-                                          std::chrono::duration<double>>;
-
 static const int kNotFound = -1;
-
-/// Number of fast messsages stored triggering Garbage Collection.
-static const int kGcThreshold = 100;
-
-/// Max time between garbage collection runs.
-static const std::chrono::milliseconds kGcInterval(10s);
-
-/// Max entry age before garbage collected
-static const std::chrono::milliseconds kEntryMaxAge(100s);
-#endif
 
 class MrqContainer{
 public:
@@ -150,70 +131,7 @@ unsigned char circular_buffer::get() {
 CanHeader::CanHeader()
     : priority('\0'), source('\0'), destination('\0'), pgn(-1) {};
 
-/** Track fast message fragments eventually forming complete messages. */
-class FastMessageMap {
-  public:
-    class Entry {
-  public:
-    Entry()
-        : time_arrived(std::chrono::system_clock::now()),
-          sid(0), expected_length(0), cursor(0) {}
 
-    bool IsExpired() const {
-      auto age = std::chrono::system_clock::now() - time_arrived;
-      return age > kEntryMaxAge;
-    }
-
-    TimePoint time_arrived;  ///< time of last fragment.
-
-    /// Can header, used to "map" the incoming fast message fragments
-    CanHeader header;
-
-    /// Sequence identifier, used to check if a received message is the
-    /// next message in the sequence
-    unsigned int sid;
-
-    unsigned int expected_length;  ///< total data length from first frame
-    unsigned int cursor;  ///< cursor into the current position in data.
-    std::vector<unsigned char> data;  ///< Received data
-    };
-
-    FastMessageMap() : dropped_frames(0) {}
-
-    Entry operator[](int i) const { return entries[i]; }  /// Getter
-    Entry& operator[](int i) { return entries[i]; }       /// Setter
-
-    /** Return index to entry matching header and sid or -1 if not found. */
-    int FindMatchingEntry(const CanHeader header, const unsigned char sid);
-
-    /** Allocate a new, fresh entry and return index to it. */
-    int AddNewEntry(void);
-
-    /** Insert a new entry, first part of a multipart message. */
-    bool InsertEntry(const CanHeader header, const unsigned char* data,
-                     int index);
-
-    /** Append fragment to existing multipart message. */
-    bool AppendEntry(const CanHeader hdr, const unsigned char* data, int index);
-
-    /** Remove entry at pos. */
-    void Remove(int pos);
-
-    int GarbageCollector(void);
-
-    void CheckGc() {
-    if (std::chrono::system_clock::now() - last_gc_run > kGcInterval ||
-        entries.size() > kGcThreshold) {
-      GarbageCollector();
-      last_gc_run = std::chrono::system_clock::now();
-    }
-    }
-
-    std::vector<Entry> entries;
-    TimePoint last_gc_run;
-    int dropped_frames;
-    TimePoint dropped_frame_time;
-};
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N2K_NET, CommDriverN2KNetEvent);
 
@@ -572,16 +490,6 @@ void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
       // Single frame message
       vec = PushCompleteMsg(header, position, frame);
     }
-    //auto name = N2kName(static_cast<uint64_t>(header.pgn));
-#if 0
-    auto src_addr = m_parent_driver->GetAddress(m_parent_driver->node_name);
-    auto msg = std::make_shared<const Nmea2000Msg>(header.pgn, vec, src_addr);
-    auto msg_all = std::make_shared<const Nmea2000Msg>(1, vec, src_addr);
-
-    ProcessRxMessages(msg);
-    m_parent_driver->m_listener.Notify(std::move(msg));
-    m_parent_driver->m_listener.Notify(std::move(msg_all));
-#endif
 
     // Message is ready
     CommDriverN2KNetEvent Nevent(wxEVT_COMMDRIVER_N2K_NET, 0);

@@ -32,6 +32,7 @@
 #include <wx/wx.h>
 #endif  // precompiled header
 
+#include "comm_can_util.h"
 #include "comm_drv_n2k.h"
 #include "conn_params.h"
 
@@ -54,15 +55,6 @@
 #include <netinet/in.h>
 #endif
 
-#if !defined(__WXMSW__) && !defined(__WXMAC__)
-#include <linux/can.h>
-#include <linux/can/raw.h>
-#endif
-
-#if defined (__WXMAC__)
-#include "can.h"
-#endif
-
 #define RX_BUFFER_SIZE_NET 4096
 
 #define ESCAPE 0x10
@@ -72,7 +64,6 @@
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
 
-//typedef struct can_frame CanFrame;
 
 typedef enum
 {
@@ -89,21 +80,6 @@ class CommDriverN2KNetEvent;  // Internal
 class MrqContainer;
 class FastMessageMap;
 
-/// CAN v2.0 29 bit header as used by NMEA 2000
-class CanHeader {
-public:
-  CanHeader();
-    /** Construct a CanHeader by parsing a frame */
-  CanHeader(can_frame frame);
-
-  /** Return true if header reflects a multipart fast message. */
-  bool IsFastMessage() const;
-
-  unsigned char priority;
-  unsigned char source;
-  unsigned char destination;
-  int pgn;
-};
 
 class circular_buffer {
 public:
