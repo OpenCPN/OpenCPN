@@ -67,6 +67,7 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/local_api.h"
 #include "model/multiplexer.h"
@@ -631,7 +632,7 @@ static void onBellsFinishedCB(void *ptr) {
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
-    : wxFrame(frame, -1, title, pos, size, style)
+    : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName)
       {
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
