@@ -149,7 +149,11 @@ public:
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision, *m_choiceCANSource;
+  wxChoice *m_choiceNetDataProtocol;
+
   wxBoxSizer *boxSizerConnections;
+  wxStaticText *m_stNetDataProtocol;
+
   ConnectionParams *mSelectedConnection;
 
 #ifdef __ANDROID__

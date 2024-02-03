@@ -437,7 +437,7 @@ void ConnectionsDialog::Init(){
 
   gSizerNetProps = new wxGridSizer(0, 2, 0, 0);
 
-  m_stNetProto = new wxStaticText(m_container, wxID_ANY, _("Protocol"),
+  m_stNetProto = new wxStaticText(m_container, wxID_ANY, _("Network Protocol"),
                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stNetProto->Wrap(-1);
   gSizerNetProps->Add(m_stNetProto, 0, wxALL, 5);
@@ -469,6 +469,22 @@ void ConnectionsDialog::Init(){
   bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
 
   gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
+
+  m_stNetDataProtocol = new wxStaticText(m_container, wxID_ANY, _("Data Protocol"),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetDataProtocol->Wrap(-1);
+  gSizerNetProps->Add(m_stNetDataProtocol, 0, wxALL, 5);
+
+
+  wxString m_choiceNetProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
+  int m_choiceNetProtocolNChoices =
+      sizeof(m_choiceNetProtocolChoices) / sizeof(wxString);
+  m_choiceNetDataProtocol = new wxChoice(
+      m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
+  m_choiceNetDataProtocol->SetSelection(0);
+  m_choiceNetDataProtocol->Enable(TRUE);
+  gSizerNetProps->Add(m_choiceNetDataProtocol, 1, wxEXPAND | wxTOP, 5);
 
   m_stNetAddr = new wxStaticText(m_container, wxID_ANY, _("Address"),
                                  wxDefaultPosition, wxDefaultSize, 0);
@@ -821,6 +837,9 @@ void ConnectionsDialog::Init(){
   m_choiceSerialProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
+  m_choiceNetDataProtocol->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
   m_choicePriority->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                             wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
                             NULL, this);
@@ -1113,7 +1132,9 @@ void ConnectionsDialog::ShowNMEACommon(bool visible) {
 void ConnectionsDialog::ShowNMEANet(bool visible) {
   m_stNetAddr->Show(visible);
   m_tNetAddress->Show(visible);
+  m_stNetDataProtocol->Show(visible);
   m_stNetPort->Show(visible);
+  m_choiceNetDataProtocol->Show(visible);
   m_tNetPort->Show(visible);
   m_stNetProto->Show(visible);
   m_rbNetProtoSignalK->Show(visible);
@@ -1284,6 +1305,8 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
   m_tAuthToken->Show();
   m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show();
+  m_stNetDataProtocol->Show();
+  m_choiceNetDataProtocol->Show();
 
   if (m_rbTypeSerial->GetValue()) {
     m_cbCheckSKDiscover->Hide();
@@ -1313,6 +1336,8 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       sbSizerOutFilter->GetStaticBox()->Hide();
       m_rbOAccept->Hide();
       m_rbOIgnore->Hide();
+      m_stNetDataProtocol->Hide();
+      m_choiceNetDataProtocol->Hide();
     }
   }
 
@@ -1364,6 +1389,8 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     sbSizerOutFilter->GetStaticBox()->Hide();
     m_rbOAccept->Hide();
     m_rbOIgnore->Hide();
+    m_stNetDataProtocol->Hide();
+    m_choiceNetDataProtocol->Hide();
   }
 
   if (m_rbTypeNet->GetValue()) {
@@ -1405,6 +1432,8 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       m_btnInputStcList->Hide();
       m_tcOutputStc->Hide();
       m_btnOutputStcList->Hide();
+      m_stNetDataProtocol->Hide();
+      m_choiceNetDataProtocol->Hide();
 
     } else {
       m_stAuthToken->Hide();
@@ -1412,6 +1441,24 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       m_cbCheckSKDiscover->Hide();
       m_ButtonSKDiscover->Hide();
       m_StaticTextSKServerStatus->Hide();
+
+      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() == DataProtocol::PROTO_NMEA2000) {
+        m_cbCheckCRC->Hide();
+        m_stPrecision->Hide();
+        m_choicePrecision->Hide();
+        m_stTalkerIdText->Hide();
+        m_TalkerIdText->Hide();
+        sbSizerInFilter->GetStaticBox()->Hide();
+        m_rbIAccept->Hide();
+        m_rbIIgnore->Hide();
+        sbSizerOutFilter->GetStaticBox()->Hide();
+        m_rbOAccept->Hide();
+        m_rbOIgnore->Hide();
+        m_tcInputStc->Hide();
+        m_btnInputStcList->Hide();
+        m_tcOutputStc->Hide();
+        m_btnOutputStcList->Hide();
+      }
     }
   }
 }
@@ -1485,6 +1532,8 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
   m_choicePriority->Select(
       m_choicePriority->FindString(wxString::Format(_T( "%d" ), cp->Priority)));
   m_tNetAddress->SetValue(cp->NetworkAddress);
+
+  m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
 
   if (cp->NetworkPort == 0)
     m_tNetPort->SetValue(wxEmptyString);
@@ -2016,10 +2065,14 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
 
     pConnectionParams->NetworkAddress = m_tNetAddress->GetValue().Trim(false).Trim(true);
     pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
-    if (m_rbNetProtoTCP->GetValue())
+    if (m_rbNetProtoTCP->GetValue()) {
       pConnectionParams->NetProtocol = TCP;
-    else if (m_rbNetProtoUDP->GetValue())
+      pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+    }
+    else if (m_rbNetProtoUDP->GetValue()) {
       pConnectionParams->NetProtocol = UDP;
+      pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+    }
     else if (m_rbNetProtoGPSD->GetValue())
       pConnectionParams->NetProtocol = GPSD;
     else if (m_rbNetProtoSignalK->GetValue())
@@ -2028,8 +2081,13 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
       pConnectionParams->NetProtocol = PROTO_UNDEFINED;
   }
 
+  if (m_rbTypeSerial->GetValue())
+    pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
+  else if (m_rbTypeNet->GetValue())
+    pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+
+
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
-  pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
   pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
   pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
   pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
