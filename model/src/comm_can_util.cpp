@@ -23,7 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-
+#include <algorithm>
 #include <vector>
 
 #include "model/comm_can_util.h"
