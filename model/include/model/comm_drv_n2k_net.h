@@ -54,9 +54,14 @@
 #include <netinet/in.h>
 #endif
 
+#if !defined(__WXMSW__) && !defined(__WXMAC__)
 #include <linux/can.h>
 #include <linux/can/raw.h>
+#endif
 
+#if defined (__WXMAC__)
+#include can.h
+#endif
 
 #define RX_BUFFER_SIZE_NET 4096
 
