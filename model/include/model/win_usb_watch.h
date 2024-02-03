@@ -17,32 +17,29 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file usb_watch_factory.cpp UsbWatchDaemon factory */
+/** \file win_usb_watch.h Windows specific hardware events interface */
 
-#if defined(__linux__) && !defined(__ANDROID__)
-#include "model/linux_usb_watch.h"
-#include "model/sys_events.h"
+#ifndef _WIN32
+#error "This file can only be compiled on windows. "
+#endif
 
-UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
-  static LinuxUsbWatchDaemon instance(SystemEvents::GetInstance());
-  return instance;
-}
-
-#elif defined(_WIN32)
-#include "model/win_usb_watch.h"
-#include "model/sys_events.h"
-
-UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
-  static WinUsbWatchDaemon instance(SystemEvents::GetInstance());
-  return instance;
-}
-
-
-#else
 #include "model/usb_watch_daemon.h"
 
-UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
-  static DummyWatchDaemon instance;
-  return instance;
-}
-#endif
+#include <windows.h>
+
+/**
+ * Listen to OS signals reflecting for example suspend/resume,
+ * new USB devicesbeing plugged in, etc; update EventVars in SysEvents
+ * accordingly
+ */
+class WinUsbWatchDaemon : public UsbWatchDaemon {
+public:
+  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se), m_frame(0)  {}
+  virtual ~WinUsbWatchDaemon() = default;
+
+  void Start();
+  void Stop();
+
+private:
+  wxFrame* m_frame;
+};
