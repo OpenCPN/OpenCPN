@@ -52,6 +52,7 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_n0183_net.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_serial.h
   ${MODEL_HDR_DIR}/comm_drv_n2k.h
+  ${MODEL_HDR_DIR}/comm_drv_n2k_net.h
   ${MODEL_HDR_DIR}/comm_drv_n2k_serial.h
   ${MODEL_HDR_DIR}/comm_drv_registry.h
   ${MODEL_HDR_DIR}/comm_drv_signalk.h
@@ -135,6 +136,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
   ${MODEL_SRC_DIR}/comm_drv_n2k.cpp
+  ${MODEL_SRC_DIR}/comm_drv_n2k_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n2k_serial.cpp
   ${MODEL_SRC_DIR}/comm_drv_registry.cpp
   ${MODEL_SRC_DIR}/comm_drv_signalk.cpp
@@ -241,7 +243,7 @@ if (OCPN_USE_LZMA)
     if (TARGET LibLZMA::LibLZMA)
       target_link_libraries(_OCPN_MODEL INTERFACE LibLZMA::LibLZMA)
     else ()
-      target_include_directories(_OCPN_MODEL INTERFACE ${LIBLZMA_INCLUDE_DIRS})
+      target_include_directories(_OCPN_MODEL INTERFACE ${LIBLZMA_INCLUDE_DIR})
       target_link_libraries(_OCPN_MODEL INTERFACE ${LIBLZMA_LIBRARIES})
     endif ()
   else ()
@@ -279,7 +281,7 @@ endif ()
 target_link_libraries(
   _OCPN_MODEL INTERFACE
     observable::observable
-    ocpn::easywsclient
+    ocpn::ixwebsocket
     ocpn::garminhost
     ocpn::gdal
     ocpn::geoprim

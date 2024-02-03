@@ -1,0 +1,15 @@
+name: mac_tsan_sectransport
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+  pull_request:
+
+jobs:
+  mac_tsan_sectransport:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - name: make test_tsan_sectransport
+      run: make -f makefile.dev test_tsan_sectransport

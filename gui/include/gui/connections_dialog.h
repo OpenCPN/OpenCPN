@@ -144,12 +144,16 @@ public:
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
   wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource;
-  wxTextCtrl *m_tNetComment, *m_tSerialComment;
+  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource, *m_stAuthToken;
+  wxTextCtrl *m_tNetComment, *m_tSerialComment, *m_tAuthToken;
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision, *m_choiceCANSource;
+  wxChoice *m_choiceNetDataProtocol;
+
   wxBoxSizer *boxSizerConnections;
+  wxStaticText *m_stNetDataProtocol;
+
   ConnectionParams *mSelectedConnection;
 
 #ifdef __ANDROID__
