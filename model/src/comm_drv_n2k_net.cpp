@@ -617,6 +617,7 @@ N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
     else if (packet[2] == 0xd0)
       return N2KFormat_Actisense_N2K;
   }
+  return N2KFormat_Undefined;
 }
 
 bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
@@ -823,7 +824,9 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(std::vector<unsigned char> pac
       token = tkz.GetNextToken();
       // can_id;
       token = tkz.GetNextToken();
-      token.ToUInt(&frame.can_id, 16);
+      long canID;
+      token.ToLong(&canID, 16);
+      frame.can_id = canID;
 
       // 8 data bytes, if present, 0 otherwise
       unsigned char bytes[8];
@@ -831,9 +834,9 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(std::vector<unsigned char> pac
       for (unsigned int i=0; i < 8; i++) {
         if (tkz.HasMoreTokens()) {
           token = tkz.GetNextToken();
-          unsigned int tui;
-          token.ToUInt(&tui, 16);
-          bytes[i] = tui;
+          long tui;
+          token.ToLong(&tui, 16);
+          bytes[i] = (uint8_t)tui;
         }
       }
       memcpy( &frame.data, bytes, 8);
@@ -863,11 +866,11 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(std::vector<unsigned char> pac
       wxString time_header = tkz.GetNextToken();
 
       wxString sprio_addr = tkz.GetNextToken();
-      unsigned int prio_addr;
-      sprio_addr.ToUInt(&prio_addr, 16);
-      uint8_t priority = prio_addr & 0X0F;
-      uint8_t destination = (prio_addr >> 4) & 0X0FF;
-      uint8_t source = (prio_addr >> 12) & 0X0FF;
+      long prio_addr;
+      sprio_addr.ToLong(&prio_addr, 16);
+      uint8_t priority = (uint8_t)prio_addr & 0X0F;
+      uint8_t destination = (uint8_t)(prio_addr >> 4) & 0X0FF;
+      uint8_t source = (uint8_t)(prio_addr >> 12) & 0X0FF;
 
 
       // PGN
@@ -880,9 +883,9 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(std::vector<unsigned char> pac
       wxString sdata = tkz.GetNextToken();
       std::vector<uint8_t> data;
       for (size_t i = 0; i < sdata.Length(); i += 2) {
-        unsigned int dv;
+        long dv;
         wxString stui = sdata.Mid(i, 2);
-        stui.ToUInt(&dv, 16);
+        stui.ToLong(&dv, 16);
         data.push_back((uint8_t)dv);
       }
 
@@ -984,155 +987,12 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
         default:
           break;
       }
-
-
-
-#if 0
-      while (!m_circle->empty()) {
-        char b = m_circle->get();
-        if ((b != 0x0a) && (b != 0x0d)) {
-          m_sentence += b;
-        }
-        if (b == 0x0a) {  // end of sentence
-
-          // Extract a can_frame from ASCII stream
-          wxString ss(m_sentence.c_str());
-          m_sentence.clear();
-          wxStringTokenizer tkz(ss, " ");
-
-          // Discard first two tokens
-          wxString token = tkz.GetNextToken();
-          token = tkz.GetNextToken();
-          // can_id;
-          token = tkz.GetNextToken();
-          token.ToUInt(&frame.can_id, 16);
-
-          // 8 data bytes, if present, 0 otherwise
-          unsigned char bytes[8];
-          memset(bytes, 0, 8);
-          for (unsigned int i=0; i < 8; i++) {
-            if (tkz.HasMoreTokens()) {
-              token = tkz.GetNextToken();
-              unsigned int tui;
-              token.ToUInt(&tui, 16);
-              bytes[i] = tui;
-            }
-          }
-          memcpy( &frame.data, bytes, 8);
-
-          HandleInput(frame);
-
-          printf("\n");
-
-        }
-      }
-#endif
-#if 0
-        if (m_ib >= RX_BUFFER_SIZE_NET) m_ib = 0;
-        uint8_t next_byte = m_circle->get();
-
-        if (m_bInMsg) {
-          if (m_bGotESC) {
-            if (ESCAPE == next_byte) {
-              rx_buffer[m_ib++] = next_byte;
-              m_bGotESC = false;
-            }
-          }
-
-          if (m_bGotESC && (ENDOFTEXT == next_byte)) {
-            // Process packet
-            //    Copy the message into a std::vector
-
-            auto buffer = std::make_shared<std::vector<unsigned char>>(
-                rx_buffer, rx_buffer + m_ib);
-            std::vector<unsigned char>* vec = buffer.get();
-
-            m_ib = 0;
-            m_bInMsg = false;
-            m_bGotESC = false;
-
-            //           printf("raw ");
-            //              for (unsigned int i = 0; i < vec->size(); i++)
-            //                printf("%02X ", vec->at(i));
-            //              printf("\n");
-
-            // Message is finished
-            // Send the captured raw data vector pointer to the thread's "parent"
-            //  thereby releasing the thread for further data capture
-            // CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
-            // Nevent.SetPayload(buffer);
-            // m_pParentDriver->AddPendingEvent(Nevent);
-
-          } else {
-            m_bGotESC = (next_byte == ESCAPE);
-
-            if (!m_bGotESC) {
-              rx_buffer[m_ib++] = next_byte;
-            }
-          }
-        }
-
-        else {
-          if (STARTOFTEXT == next_byte) {
-            m_bGotSOT = false;
-            if (m_bGotESC) {
-              m_bGotSOT = true;
-            }
-          } else {
-            m_bGotESC = (next_byte == ESCAPE);
-            if (m_bGotSOT) {
-              m_bGotSOT = false;
-              m_bInMsg = true;
-
-              rx_buffer[m_ib++] = next_byte;
-            }
-          }
-        }
-      }  // if newdata > 0
-
          //      Check for any pending output message
-#if 0
-    bool b_qdata = !out_que.empty();
-
-    while (b_qdata) {
-      //  Take a copy of message
-      std::vector<unsigned char> qmsg = out_que.front();
-      out_que.pop();
-
-      if (static_cast<size_t>(-1) == WriteComPortPhysical(qmsg) &&
-          10 < retries++) {
-        // We failed to write the port 10 times, let's close the port so that
-        // the reconnection logic kicks in and tries to fix our connection.
-        retries = 0;
-        CloseComPortPhysical();
-      }
-
-      b_qdata = !out_que.empty();
-    }  // while b_qdata
-#endif
-  }   // switch
-
-#endif
-//    }  // while ((not_done)
-
-////////////////////
-#if 0
-CommDriverN0183NetEvent Nevent(wxEVT_COMMDRIVER_N0183_NET, 0);
-if (nmea_line.size()) {
-  //    Copy the message into a vector for tranmittal upstream
-  auto buffer = std::make_shared<std::vector<unsigned char>>();
-  std::vector<unsigned char>* vec = buffer.get();
-  std::copy(nmea_line.begin(), nmea_line.end(),
-            std::back_inserter(*vec));
-
-  Nevent.SetPayload(buffer);
-  AddPendingEvent(Nevent);
-#endif
+    }   // case
 
       m_dog_value = N_DOG_TIMEOUT;  // feed the dog
       break;
-    }
-#if 0
+#if 1
 
     case wxSOCKET_LOST: {
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
