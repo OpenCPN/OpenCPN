@@ -60,7 +60,7 @@
 #endif
 
 #if defined (__WXMAC__)
-#include can.h
+#include "can.h"
 #endif
 
 #define RX_BUFFER_SIZE_NET 4096
