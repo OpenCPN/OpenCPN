@@ -47,6 +47,7 @@ extern bool g_bShowScaled;
 extern bool g_bSyncCogPredictors;
 extern bool g_bTCPA_Max;
 extern bool g_bTrackCarryOver;
+extern bool g_AisFirstTimeUse;
 
 extern double g_AckTimeout_Mins;
 extern double g_AIS_RealtPred_Kts;
