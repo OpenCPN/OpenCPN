@@ -4679,8 +4679,10 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
             Inst->m_Arrow_Second_Colour = Edit->m_colourPicker4->GetColour();
         }
     }
-    delete Edit;    
-    cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
+    delete Edit;
+    if (cont->m_pDashboardWindow) {
+      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
+    }
     if (DefaultFont) delete Inst;
 }
 
