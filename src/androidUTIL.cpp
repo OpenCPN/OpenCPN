@@ -325,7 +325,6 @@ wxString callActivityMethod_is(const char *method, int parm);
 //      Globals, accessible only to this module
 
 JavaVM *java_vm;
-JNIEnv *global_jenv;
 bool b_androidBusyShown;
 double g_androidDPmm;
 double g_androidDensity;
@@ -1128,12 +1127,6 @@ void resizeAndroidPersistents() {
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   java_vm = vm;
-
-  // Get JNI Env for all function calls
-  if (vm->GetEnv((void **)&global_jenv, JNI_VERSION_1_6) != JNI_OK) {
-    return -1;
-  }
-
   return JNI_VERSION_1_6;
 }
 
