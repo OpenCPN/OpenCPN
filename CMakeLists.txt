@@ -894,7 +894,10 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/LinkPropDlg.cpp
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
-    ${GUI_SRC_DIR}/mbtiles.cpp
+    ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
+    ${GUI_SRC_DIR}/mbtiles/mbtilesWorkerThread.hpp
+    ${GUI_SRC_DIR}/mbtiles/mbtilesTileQueue.hpp
+    ${GUI_SRC_DIR}/mbtiles/mbtilesTileDescriptor.hpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/NMEALogWindow.cpp
@@ -1005,6 +1008,7 @@ target_include_directories(
   INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
             ${CMAKE_CURRENT_SOURCE_DIR}/include
             ${CMAKE_CURRENT_SOURCE_DIR}/resources
+            ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
 )
 if (MSVC)
   target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildwin)
@@ -1029,6 +1033,7 @@ target_include_directories(
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}/resources
+          ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
 )
 
 if (QT_ANDROID)
@@ -1996,8 +2001,8 @@ if (NOT APPLE)
         message(STATUS \"Installed udev dongle rule\")
       else ()
         message(STATUS \"Skipped installing udev dongle rule\")
-      endif ()
-    endif ()
+  endif ()
+endif ()
   ")
 
 endif ()

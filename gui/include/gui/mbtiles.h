@@ -34,6 +34,7 @@
 #include "model/georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
+#include "mbtilesWorkerThread.hpp"
 
 enum class MBTilesType : std::int8_t { BASE, OVERLAY };
 enum class MBTilesScheme : std::int8_t { XYZ, TMS };
@@ -148,6 +149,10 @@ protected:
   std::string m_format;
 
   GLShaderProgram *m_tile_shader_program;
+
+  MbtTilesThread *m_workerThread;
+  void StartThread();
+  void StopThread();
 
 private:
   void InitFromTiles(const wxString &name);
