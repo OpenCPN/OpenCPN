@@ -272,7 +272,6 @@ wxString callActivityMethod_is(const char *method, int parm);
 //      Globals, accessible only to this module
 
 JavaVM *java_vm;
-JNIEnv *global_jenv;
 bool b_androidBusyShown;
 double g_androidDPmm;
 double g_androidDensity;
@@ -1074,12 +1073,6 @@ void resizeAndroidPersistents() {
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   java_vm = vm;
-
-  // Get JNI Env for all function calls
-  if (vm->GetEnv((void **)&global_jenv, JNI_VERSION_1_6) != JNI_OK) {
-    return -1;
-  }
-
   return JNI_VERSION_1_6;
 }
 
@@ -1586,6 +1579,8 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeCmdEventCmdString(
   wxString wx_sparm;
   JNIEnv *jenv;
 
+  if (!java_vm)  return 73;
+
   //  Need a Java environment to decode the string parameter
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
     // qDebug() << "GetEnv failed.";
@@ -1765,6 +1760,8 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_setDownloadStatus(
   wxString wx_sparm;
   JNIEnv *jenv;
 
+  if (!java_vm) return 74;
+
   //  Need a Java environment to decode the string parameter
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
     // qDebug() << "GetEnv failed.";
@@ -1822,6 +1819,8 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_sendPluginMessage(
   wxString Msg;
   JNIEnv *jenv;
 
+  if (!java_vm)  return 79;
+
   //  Need a Java environment to decode the string parameter
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
     // qDebug() << "GetEnv failed.";
@@ -1843,6 +1842,7 @@ void androidTerminate() { callActivityMethod_vs("terminateApp"); }
 
 bool CheckPendingJNIException() {
   JNIEnv *jenv;
+  if (!java_vm) return false;
 
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) return true;
 
@@ -1860,6 +1860,8 @@ bool CheckPendingJNIException() {
 }
 
 wxString callActivityMethod_vs(const char *method) {
+  if (!java_vm) return _T("NOK");
+
   if (CheckPendingJNIException()) return _T("NOK");
 
   JNIEnv *jenv;
@@ -1897,6 +1899,8 @@ wxString callActivityMethod_vs(const char *method) {
 }
 
 wxString callActivityMethod_is(const char *method, int parm) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
   JNIEnv *jenv;
 
@@ -1929,6 +1933,8 @@ wxString callActivityMethod_is(const char *method, int parm) {
 }
 
 wxString callActivityMethod_iis(const char *method, int parm1, int parm2) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
 
   JNIEnv *jenv;
@@ -1963,6 +1969,8 @@ wxString callActivityMethod_iis(const char *method, int parm1, int parm2) {
 }
 
 wxString callActivityMethod_ss(const char *method, wxString parm) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
   JNIEnv *jenv;
 
@@ -2010,6 +2018,8 @@ wxString callActivityMethod_ss(const char *method, wxString parm) {
 
 wxString callActivityMethod_s2s(const char *method, const wxString parm1,
                                 const wxString parm2) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
   JNIEnv *jenv;
 
@@ -2062,6 +2072,8 @@ wxString callActivityMethod_s2s(const char *method, const wxString parm1,
 
 wxString callActivityMethod_s3s(const char *method, wxString parm1,
                                 wxString parm2, wxString parm3) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
   JNIEnv *jenv;
 
@@ -2118,6 +2130,8 @@ wxString callActivityMethod_s3s(const char *method, wxString parm1,
 wxString callActivityMethod_s4s(const char *method, wxString parm1,
                                 wxString parm2, wxString parm3,
                                 wxString parm4) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
   JNIEnv *jenv;
 
@@ -2182,6 +2196,8 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1,
 
 wxString callActivityMethod_s2s2i(const char *method, wxString parm1,
                                   wxString parm2, int parm3, int parm4) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
 
   wxString return_string;
@@ -2231,6 +2247,8 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1,
 }
 
 wxString callActivityMethod_ssi(const char *method, wxString parm1, int parm2) {
+  if (!java_vm) return "NOK";
+
   if (CheckPendingJNIException()) return _T("NOK");
 
   wxString return_string;
@@ -2347,6 +2365,8 @@ void androidEnableRotation(void) {
 void androidDisableRotation(void) { callActivityMethod_vs("DisableRotation"); }
 
 bool androidShowDisclaimer(wxString title, wxString msg) {
+  if (!java_vm) return true;
+
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2389,6 +2409,8 @@ bool androidShowDisclaimer(wxString title, wxString msg) {
 }
 
 bool androidShowSimpleOKDialog(std::string title, std::string msg) {
+  if (!java_vm) return true;
+
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2428,6 +2450,8 @@ bool androidShowSimpleOKDialog(std::string title, std::string msg) {
 }
 
 bool androidShowSimpleYesNoDialog(wxString title, wxString msg) {
+  if (!java_vm) return false;
+
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2473,6 +2497,7 @@ bool androidInstallPlaystoreHelp() {
   qDebug() << "androidInstallPlaystoreHelp";
   //  return false;
 
+  if (!java_vm) return false;
   if (CheckPendingJNIException()) return false;
 
   wxString return_string;
@@ -2750,6 +2775,8 @@ bool androidGetMemoryStatus(int *mem_total, int *mem_used) {
 double GetAndroidDisplaySize() {
   double ret = 200.;  // sane default
 
+  if (!java_vm) return ret;
+
   //  Get a reference to the running native activity
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
@@ -2909,8 +2936,10 @@ double getAndroidDisplayDensity() {
 }
 
 wxSize getAndroidDisplayDimensions(void) {
+
   wxSize sz_ret = ::wxGetDisplaySize();  // default, probably reasonable, but
                                          // maybe not accurate
+  if (!java_vm) return sz_ret;
 
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
@@ -3010,6 +3039,7 @@ void androidForceFullRepaint(bool b_skipConfirm) {
 
 void androidShowBusyIcon() {
   if (b_androidBusyShown) return;
+  if (!java_vm) return;
 
   // qDebug() << "ShowBusy";
 
@@ -3031,6 +3061,7 @@ void androidShowBusyIcon() {
 
 void androidHideBusyIcon() {
   if (!b_androidBusyShown) return;
+  if (!java_vm) return;
 
   //  Get a reference to the running native activity
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
@@ -3050,6 +3081,8 @@ void androidHideBusyIcon() {
 }
 
 int androidGetVersionCode() {
+  if (!java_vm) return -1;
+
   //  Get a reference to the running native activity
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
@@ -3083,6 +3116,8 @@ int androidGetVersionCode() {
 }
 
 wxString androidGetVersionName() {
+  if (!java_vm) return "";
+
   //  Get a reference to the running native activity
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
@@ -3163,6 +3198,8 @@ bool androidStopGPS() {
 }
 
 wxString androidGPSService(int parm) {
+  if (!java_vm) return "NOK";
+
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
       "()Landroid/app/Activity;");
@@ -3194,6 +3231,8 @@ wxString androidGPSService(int parm) {
 }
 
 bool androidDeviceHasBlueTooth() {
+  if (!java_vm) return false;
+
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
       "()Landroid/app/Activity;");
@@ -3393,6 +3432,8 @@ int androidFileChooser(wxString *result, const wxString &initDir,
 }
 
 bool InvokeJNIPreferences(wxString &initial_settings) {
+  if (!java_vm) return false;
+
   bool ret = true;
   wxCharBuffer abuf = initial_settings.ToUTF8();
   if (!abuf.data()) return false;
