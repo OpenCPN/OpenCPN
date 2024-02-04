@@ -716,6 +716,16 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   //      Target data must be valid
   if (NULL == td) return;
 
+  static bool firstTimeUse = true;
+  //  First time AIS received
+  if (firstTimeUse) {
+    g_AisFirstTimeUse = true;
+    //   Show Status Bar CPA warning status
+    cp->ToggleCPAWarn();
+    g_AisFirstTimeUse = false;
+    firstTimeUse = false;
+  }
+
   //    Target is lost due to position report time-out, but still in Target List
   if (td->b_lost) return;
 
