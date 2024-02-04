@@ -121,7 +121,6 @@ protected:
   void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
   bool getTileTexture(mbTileDescriptor *tile);
   void FlushTiles(void);
-  void FlushTextures(void);
   bool RenderTile(mbTileDescriptor *tile, int zoomLevel,
                   const ViewPort &VPoint);
 

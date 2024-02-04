@@ -1,3 +1,6 @@
+#ifndef _MBTILESTILEQUEUE_H_
+#define _MBTILESTILEQUEUE_H_
+
 #include <vector>
 #include <wx/event.h>
 #include <wx/thread.h>
@@ -36,3 +39,5 @@ private:
   wxMutex m_queueMutex;
   wxSemaphore m_tileCounter;
 };
+
+#endif

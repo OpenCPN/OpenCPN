@@ -38,8 +38,11 @@ public:
 
   /// @brief Request a tile to be loaded by the thread. This method is thread
   /// safe.
-  /// @param job
-  void RequestTile(mbTileDescriptor *tile) { m_tileQueue.Push(tile); }
+  /// @param tile Pointer to the tile to load
+  void RequestTile(mbTileDescriptor *tile) {
+    tile->m_requested = true;
+    m_tileQueue.Push(tile);
+  }
 
   /// @brief Request for the thread to stop/delete itself
   void RequestStop() {
@@ -99,6 +102,7 @@ private:
     // If the tile has already been uncompressed, don't uncompress it
     // again
     if (tile->m_teximage != nullptr) return;
+    if (tile->glTextureName > 0) return;
 
     // Fetch the tile data from the mbtile database
     try {
@@ -180,9 +184,7 @@ private:
           }
         }
 
-        // In theory, tile->texImage and other fields should be protected by a
-        // mutex but since 32bit operations are atomic on 32bit processors, we
-        // don't need to
+        // Image buffer will be freed later by the main thread
         tile->m_teximage = teximage;
 
         return;

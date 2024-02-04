@@ -228,7 +228,6 @@ public:
   std::unordered_map<unsigned int, mbTileDescriptor *> tileMap;
 };
 
-
 // ============================================================================
 // ChartMBTiles implementation
 // ============================================================================
@@ -681,23 +680,6 @@ void ChartMBTiles::FlushTiles() {
   }
 }
 
-void ChartMBTiles::FlushTextures() {
-  if (m_tileArray == nullptr) {
-    return;
-  }
-  for (int iz = 0; iz < (m_maxZoom - m_minZoom) + 1; iz++) {
-    mbTileZoomDescriptor *tzd = m_tileArray[iz];
-
-    for (auto const &it : tzd->tileMap) {
-      mbTileDescriptor *tile = it.second;
-      if (tile && tile->glTextureName > 0) {
-        glDeleteTextures(1, &tile->glTextureName);
-        tile->glTextureName = 0;
-      }
-    }
-  }
-}
-
 void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom) {
   mbTileZoomDescriptor *tzd = new mbTileZoomDescriptor;
 
@@ -755,34 +737,39 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
     // Yes : bind the texture and return to the caller
     glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
     return true;
-  } else {
-    if ((tile->m_bAvailable) && (tile->m_teximage == 0) &&
-        (tile->m_requested == false)) {
+  } else if (!tile->m_bAvailable) {
+    // Tile is not in MbTiles file : not texture to render
+    return false;
+  } else if (tile->m_teximage == 0) {
+    if (tile->m_requested == false) {
       // The tile has not loaded and decompressed previously : request it
       // to the worker thread
       m_workerThread->RequestTile(tile);
-      return false;
-    } else {
-      // The tile has been decompressed to memory : load it into OpenGL texture
-      // memory
-      glEnable(GL_COLOR_MATERIAL);
-      glGenTextures(1, &tile->glTextureName);
-      glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
-
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA,
-                   GL_UNSIGNED_BYTE, tile->m_teximage);
-      // The tile is loaded into OpenGL memory : we can free the memory of the
-      // decompressed tile
-      free(tile->m_teximage);
-      tile->m_teximage = nullptr;
-
-      return true;
     }
+    return false;
+  } else {
+    // The tile has been decompressed to memory : load it into OpenGL texture
+    // memory
+    if (tile->glTextureName > 0) {
+      glDeleteTextures(1, &tile->glTextureName);
+    }
+    glEnable(GL_COLOR_MATERIAL);
+    glGenTextures(1, &tile->glTextureName);
+    glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, tile->m_teximage);
+    // The tile is loaded into OpenGL memory : we can free the memory of the
+    // decompressed tile
+    free(tile->m_teximage);
+    tile->m_teximage = nullptr;
+
+    return true;
   }
 
   return false;
@@ -1061,12 +1048,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
         if (tzd->tileMap.find(index) != tzd->tileMap.end())
           tile = tzd->tileMap[index];
         if (NULL == tile) {
-          tile = new mbTileDescriptor;
-          tile->tile_x = j;
-          tile->tile_y = i;
-          tile->m_zoomLevel = zoomFactor;
-          tile->m_bAvailable = true;
-
+          tile = new mbTileDescriptor(zoomFactor, j, i);
           tzd->tileMap[index] = tile;
         }
 
@@ -1117,12 +1099,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
           if (tzd->tileMap.find(index) != tzd->tileMap.end())
             tile = tzd->tileMap[index];
           if (NULL == tile) {
-            tile = new mbTileDescriptor;
-            tile->tile_x = j;
-            tile->tile_y = i;
-            tile->m_zoomLevel = zoomFactor;
-            tile->m_bAvailable = true;
-
+            tile = new mbTileDescriptor(zoomFactor, j, i);
             tzd->tileMap[index] = tile;
           }
 
