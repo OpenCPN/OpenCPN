@@ -32,6 +32,7 @@ disable.
 As an example, the *ShipDrivergui_impl*  class is used.
 First, in the header declare a listener on the class level, here with the shipdriver
 plugin _ShipDrivergui_impl.h_ header as an example:
+
 ----
         class Dlg : public ShipDriverBase {
         public:
@@ -42,6 +43,7 @@ plugin _ShipDrivergui_impl.h_ header as an example:
 ----
 Then, in the implementation (.cpp) file  declare a method which handles the
 message, something like this:
+
 ----
      ④ static void HandleGPGA(ObservedEvt ev) {
      ①      NMEA0183 id("GPGGA");
@@ -49,6 +51,7 @@ message, something like this:
             ...
 ----
 Then, still in the .cpp file, set up the listening in the window constructor:
+
 ----
          Dlg::Dlg(wxWindow* parent, ...)
 
@@ -58,8 +61,8 @@ Then, still in the .cpp file, set up the listening in the window constructor:
      ③   wxDEFINE_EVENT(EVT_SHIPDRIVER, ObservedEvt);
      ⑤   listener = GetListener(id, EVT_SHIPDRIVER, this);
      ⑥   Bind(EVT_SHIPDRIVER, [&](ObservedEvt ev) { HandleGPGA(ev); });
-
 ----
+
 Notes:
 
 ①:: This is the type of message we are listening to. There are similar types
@@ -84,6 +87,53 @@ Notes:
 ⑥:: This is the final piece in the puzzle. It defines what should happen when
     the _EVT_SHIPDRIVER_ arrives.  From this point all incoming GPGGA
     messages will land in the `HandleGPGGA()` method and be processed.
+
+=== Simplified workflow using a helper class
+
+The workflow above means quite a lot of typing for each message. Using a
+helper class can automate a lot of this.
+An example class called `MsgListener` is provided xref:msg_listen.adoc[here].
+
+With this class available in a header listening to a message is simplified to
+
+. Declare a MsgListener listener object
+. Declare a method which handles the message.
+. Initiate the listener to invoke the method  when message arrives.
+
+The MsgListener object normally lives in the class context, like:
+
+----
+
+     class Dlg : public ShipDriverBase {
+     public:
+         ...
+     private:
+         MsgListener<NMEA0183Id> listener;
+         ...
+
+----
+Other available types includes `MsgListener<NMEA2000Id>` and
+ `MsgListener<SignalkId>`
+
+The method is declared  as above:
+
+----
+    static void HandleGPGA(ObservedEvt ev) {
+        NMEA0183Id id("GPGGA");
+        std::string payload = GetN0183Payload(id, ev)
+        ...
+----
+Similar methods exist to extract NMEA2000 and SignalK data:
+`GetN2000Payload(NMEA2000Id id, ObservedEvt ev)` and
+`GetSignalkPayload(ObservedEvt ev)`.
+
+To invoke this method when a GPGGA message arrives, initiate the
+MsgListener like:
+
+----
+    listener.Init(NMEA0183Id("GPGGA"),
+                  [&](ObservedEvt ev) { HandleGPGA(ev); });
+----
 
 
 === Epilog: Using the lambda

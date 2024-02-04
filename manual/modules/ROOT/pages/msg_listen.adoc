@@ -1,0 +1,38 @@
+----
+
+/** \file msg_listen.h Plugin message listening helper class. */
+
+#include <functional>
+#include <memory>
+#include <wx/event.h>
+
+#include "ocpn_plugin.h"
+
+/**
+* Helper class for setting up message listening in plugins.
+* Example  usage:
+*     MsgListener<NMEA0183Id> listener
+*     ...
+*     auto action = [&] (ObservedEvt ev) {
+*            auto payload = GetN0183Payload(NMEA0183Id("GGA"),  ev);
+*            ...
+*     };
+*     listener.Init(NMEA0183Id("GGA"), action);
+*/
+template(typename T)
+class MsgListener : public wxEvtHandler {
+public:
+
+  MsgListener() = default;
+
+  void Init(T id,
+            std::function<void(ObservedEvt& ev)> action) {
+    const wxEventTypeTag<ObservedEvt> EvtObs(wxNewEventType());
+    m_listener = GetListener(id, EvtObs, this);
+    Bind(EvtObs, action);
+  }
+
+private:
+  std::shared_ptr<ObservableListener> m_listener;
+};
+----
