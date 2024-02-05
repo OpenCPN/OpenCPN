@@ -1310,31 +1310,34 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         if (m_NMEA0183.Parse()) {
           // Option for True vs Magnetic
           wxString windunit;
-          mPriWDN = 6;
-          if (!std::isnan(
-                  m_NMEA0183.Mwd.WindAngleTrue)) {  // if WindAngleTrue is
-                                                    // available, use it ...
-            SendSentenceToAllInstruments(
-                OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue, _T("\u00B0"));
+          if (!std::isnan(m_NMEA0183.Mwd.WindAngleTrue)) {
+            // if WindAngleTrue is available, use it ...
+            SendSentenceToAllInstruments( OCPN_DBP_STC_TWD,
+              m_NMEA0183.Mwd.WindAngleTrue, _T("\u00B0"));
+            mPriWDN = 6;
             // MWD can be seldom updated by the sensor. Set prolonged watchdog
             mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
-          } else if (!std::isnan(
-                         m_NMEA0183.Mwd
-                             .WindAngleMagnetic)) {  // otherwise try
-                                                     // WindAngleMagnetic ...
-            SendSentenceToAllInstruments(OCPN_DBP_STC_TWD,
-                                         m_NMEA0183.Mwd.WindAngleMagnetic,
-                                         _T("\u00B0M"));
-            mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
+          } else if (!std::isnan(m_NMEA0183.Mwd.WindAngleMagnetic)) {
+            // Make it true and use if variation is available
+            if (!std::isnan(mVar)) {
+              double twd = m_NMEA0183.Mwd.WindAngleMagnetic;
+              twd += mVar;
+              if (twd > 360.) {
+                twd -= 360;
+              } else if (twd < 0.) {
+                twd += 360;
+              }
+              SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twd,
+                                           _T("\u00B0M"));
+              mPriWDN = 6;
+              mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
+            }
           }
-
-          SendSentenceToAllInstruments(
-              OCPN_DBP_STC_TWS,
+          SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
               toUsrSpeed_Plugin(m_NMEA0183.Mwd.WindSpeedKnots,
                                 g_iDashWindSpeedUnit),
               getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
-          SendSentenceToAllInstruments(
-              OCPN_DBP_STC_TWS2,
+          SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2,
               toUsrSpeed_Plugin(m_NMEA0183.Mwd.WindSpeedKnots,
                                 g_iDashWindSpeedUnit),
               getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
