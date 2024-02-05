@@ -1328,7 +1328,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 twd += 360;
               }
               SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twd,
-                                           _T("\u00B0M"));
+                                           _T("\u00B0"));
               mPriWDN = 6;
               mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
             }
@@ -2922,7 +2922,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
             m_twdM += 360;
           }
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0M"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0"));
         mPriWDN = 4;
         mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
       }
