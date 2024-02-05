@@ -42,9 +42,11 @@ if (${lc_compiler_id} MATCHES clang
     AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0
 )
   # MacOS 10.13
-  find_library(BOOST_SYSTEM NAMES boost_system  REQUIRED)
-  find_library(BOOST_FILESYSTEM NAMES boost_filesystem REQUIRED)
-  find_path(BOOST_HDRS NAMES boost/filesystem.hpp REQUIRED)
-  target_link_libraries(_FILESYS INTERFACE ${BOOST_SYSTEM} ${BOOST_FILESYSTEM})
-  target_include_directories(_FILESYS INTERFACE ${BOOST_HDRS})
+  # Boost pulled in from Homebrew on the builders is not good enough as it is not ABI compatible with older targets
+  #find_library(BOOST_SYSTEM NAMES boost_system  REQUIRED)
+  #find_library(BOOST_FILESYSTEM NAMES boost_filesystem REQUIRED)
+  #find_path(BOOST_HDRS NAMES boost/filesystem.hpp REQUIRED)
+  #target_link_libraries(_FILESYS INTERFACE ${BOOST_SYSTEM} ${BOOST_FILESYSTEM})
+  #target_include_directories(_FILESYS INTERFACE ${BOOST_HDRS})
+  target_include_directories(_FILESYS INTERFACE libs/ghc/include)
 endif ()
