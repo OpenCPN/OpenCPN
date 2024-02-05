@@ -35,8 +35,8 @@
 
 // MacOS 1.13:
 #if defined(__clang_major__) && (__clang_major__ < 15)
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
 
 // Ubuntu Bionic:
 #elif !defined(__clang_major__) && defined(__GNUC__) && (__GNUC__ < 8)
