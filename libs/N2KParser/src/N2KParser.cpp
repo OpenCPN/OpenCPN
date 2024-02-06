@@ -264,6 +264,17 @@ bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double
                      OutsideAmbientAirTemperature, AtmosphericPressure);
 }
 
+// Humidity
+bool ParseN2kPGN130313(std::vector<unsigned char> &v, unsigned char &SID,
+                       unsigned char &HumidityInstance,
+                       tN2kHumiditySource &HumiditySource,
+                       double &ActualHumidity, double &SetHumidity) {
+    tN2kMsg msg = MakeN2kMsg(v);
+
+    return ParseN2kPGN130313(msg, SID, HumidityInstance, HumiditySource,
+                             ActualHumidity, SetHumidity);
+}
+
 
 // AIS Base Station position/time report
 bool ParseN2kPGN129793(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
