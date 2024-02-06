@@ -304,6 +304,7 @@ target_link_libraries(
     ocpn::s57enc
     ocpn::sound
     ocpn::wxjson
+    ocpn::filesystem
     pico_sha2
 )
 

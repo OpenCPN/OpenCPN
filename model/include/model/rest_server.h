@@ -34,7 +34,7 @@
 
 
 // MacOS 1.13:
-#if (defined(__clang_major__) && (__clang_major__ < 15)) || defined(__ANDROID__)
+#if (defined(__clang_major__) && (__clang_major__ < 15))
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 
