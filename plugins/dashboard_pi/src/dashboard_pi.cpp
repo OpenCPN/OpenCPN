@@ -1262,7 +1262,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         }
       }
     } else if (m_NMEA0183.LastSentenceIDReceived == _T("MDA") &&
-                (mPriMDA >= 4 || mPriATMP >= 5 || mPriHUM >= 4)) {
+                (mPriMDA >= 5 || mPriATMP >= 5 || mPriHUM >= 4)) {
       //    Barometric pressure  || HUmidity || Air temp
       if (m_NMEA0183.Parse()) {
         // TODO make posibilyti to select between Bar or InchHg
@@ -1270,11 +1270,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
          double   m_NMEA0183.Mda.Pressure;
          wxString m_NMEA0183.Mda.UnitOfMeasurement;
          */
-        if (mPriMDA >= 4 && m_NMEA0183.Mda.Pressure > .8 &&
+        if (mPriMDA >= 5 && m_NMEA0183.Mda.Pressure > .8 &&
             m_NMEA0183.Mda.Pressure < 1.1) {
           SendSentenceToAllInstruments( OCPN_DBP_STC_MDA,
                 m_NMEA0183.Mda.Pressure * 1000, _T("hPa"));
-          mPriMDA = 4;
+          mPriMDA = 5;
           mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
         if (mPriATMP >= 5) {
@@ -1758,9 +1758,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                     toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
                     getUsrTempUnit_Plugin(g_iDashTempUnit));
                 mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+                continue;
               }
             }  // Water temp
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
                          .Contains("WATER") ||
                      m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                          "WTHI") {
@@ -1773,11 +1774,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                         g_iDashTempUnit),
                     getUsrTempUnit_Plugin(g_iDashTempUnit));
                 mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
+                continue;
               }
             }
           }
           // XDR Pressure
-          else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "P") {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "P") {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
                     .Contains(_T("BARO")) && mPriMDA >= 4) {
               if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == "B") {
@@ -1786,11 +1788,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                              _T("hPa"));
                 mPriMDA = 4;
                 mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
+                continue;
               }
             }
           }
           // XDR Pitch (=Nose up/down) or Heel (stb/port)
-          else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
                     _T("PTCH")) ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
@@ -1809,10 +1812,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                              xdrunit);
                 mPITCH_Watchdog = gps_watchdog_timeout_ticks;
                 mPriPitchRoll = 3;
+                continue;
               }
             }
             // XDR Heel
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
                         Contains("ROLL")) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
@@ -1828,21 +1832,23 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                              xdrunit);
                 mHEEL_Watchdog = gps_watchdog_timeout_ticks;
                 mPriPitchRoll = 3;
+                continue;
               }
             }
             // XDR Rudder Angle
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
                          .Contains("RUDDER")) {
               if (mPriRSA > 4) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
                                              _T("\u00B0"));
                 mRSA_Watchdog = gps_watchdog_timeout_ticks;
                 mPriRSA = 4;
+                continue;
               }
             }
           }
           // Depth sounding
-          else if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D")) {
+          if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D")) {
             bool goodvalue = false;
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "XDHI"
                        && mPriDepth >= 6) {
@@ -1866,11 +1872,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                       toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
                       getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
                   mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
+                  continue;
                 }
               }
             }
           } // Humidity
-          else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "H") {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "H") {
             if (mPriHUM >= 3) {
               if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == "P") {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, xdrdata, "%");
