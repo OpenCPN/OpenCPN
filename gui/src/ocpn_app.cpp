@@ -1920,6 +1920,7 @@ int MyApp::OnExit() {
   delete pSelectAIS;
 
   delete ps52plib;
+  delete g_SencThreadManager;
 
   if (g_pGroupArray) {
     for (unsigned int igroup = 0; igroup < g_pGroupArray->GetCount();

@@ -1284,7 +1284,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   wxString str;
   long dummy;
-  wxString *pval = new wxString;
+  wxString pval;
   wxArrayString deleteList;
 
   bool bCont = GetFirstEntry(str, dummy);
@@ -1295,14 +1295,14 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
       // Convert pre 3.1 setting. Can't delete old entries from inside the
       // GetNextEntry() loop, so we need to save those and delete outside.
       deleteList.Add(str);
-      wxString oldKey = pval->BeforeFirst(_T(':'));
+      wxString oldKey = pval.BeforeFirst(_T(':'));
       str = FontMgr::GetFontConfigKey(oldKey);
     }
 
-    if (pval->IsEmpty() || pval->StartsWith(_T(":"))) {
+    if (pval.IsEmpty() || pval.StartsWith(_T(":"))) {
       deleteList.Add(str);
     } else
-      FontMgr::Get().LoadFontNative(&str, pval);
+      FontMgr::Get().LoadFontNative(&str, &pval);
 
     bCont = GetNextEntry(str, dummy);
   }
@@ -1311,7 +1311,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     DeleteEntry(deleteList[i]);
   }
   deleteList.Clear();
-  delete pval;
 
   //  Tide/Current Data Sources
   SetPath(_T ( "/TideCurrentDataSources" ));

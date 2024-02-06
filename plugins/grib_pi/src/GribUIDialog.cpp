@@ -2358,22 +2358,6 @@ void GRIBUICData::OnMove(wxMoveEvent &event) {
 #include <QtAndroidExtras/QAndroidJniObject>
 
 extern JavaVM *java_vm;  // found in androidUtil.cpp, accidentally exported....
-JNIEnv *jenv;
-
-#if 0  // need this for the solib?
-jint JNI_OnLoad(JavaVM *vm, void *reserved)
-{
-    //qDebug() << "JNI_OnLoad";
-    java_vm = vm;
-
-    // Get JNI Env for all function calls
-    if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        //qDebug() << "GetEnv failed.";
-        return -1;
-    }
-
-}
-#endif
 
 bool CheckPendingJNIException() {
   if (!java_vm) {
@@ -2381,6 +2365,7 @@ bool CheckPendingJNIException() {
     return true;
   }
 
+  JNIEnv *jenv;
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
     // qDebug() << "GetEnv failed.";
     return true;
@@ -2395,6 +2380,11 @@ bool CheckPendingJNIException() {
 }
 
 wxString callActivityMethod_ss(const char *method, wxString parm) {
+  if (!java_vm) {
+    // qDebug() << "java_vm is NULL.";
+    return _T("NOK");
+  }
+
   if (CheckPendingJNIException()) return _T("NOK");
 
   wxString return_string;
@@ -2409,7 +2399,8 @@ wxString callActivityMethod_ss(const char *method, wxString parm) {
   }
 
   //  Need a Java environment to decode the resulting string
-  if (java_vm && (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK)) {
+  JNIEnv *jenv;
+  if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
     // qDebug() << "GetEnv failed.";
     return _T("jenv Error");
   }

@@ -1785,6 +1785,11 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pAIS = NULL;
   }
 
+  if (g_pAISGUI) {
+    delete g_pAISGUI;
+    g_pAISGUI = NULL;
+  }
+
   delete g_pMUX;
   g_pMUX = NULL;
 

@@ -507,7 +507,7 @@ ConfigMgr::ConfigMgr() {
   LoadCatalog();
 }
 
-ConfigMgr::~ConfigMgr() { delete configList; }
+ConfigMgr::~ConfigMgr() { configList->Clear(); delete configList; }
 
 void ConfigMgr::Init() {
   m_configDir = g_Platform->GetPrivateDataDir();
@@ -1169,20 +1169,20 @@ bool ConfigMgr::CheckTemplateGUID(wxString GUID) {
 
 #define CHECK_INT(s, t)                           \
   read_int = *t;                                  \
-  if (!conf->Read(s, &read_int)) wxLogMessage(s); \
+  if (!conf.Read(s, &read_int)) wxLogMessage(s); \
   if ((int)*t != read_int) return false;
 
 #define CHECK_STR(s, t) \
   val = t;              \
-  conf->Read(s, &val);  \
+  conf.Read(s, &val);  \
   if (!t.IsSameAs(val)) return false;
 
 #define CHECK_STRP(s, t) \
-  conf->Read(s, &val);   \
+  conf.Read(s, &val);   \
   if (!t->IsSameAs(val)) return false;
 
 #define CHECK_FLT(s, t, eps) \
-  conf->Read(s, &val);       \
+  conf.Read(s, &val);       \
   val.ToDouble(&dval);       \
   if (fabs(dval - *t) > eps) return false;
 
@@ -1193,10 +1193,10 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   wxString val;
   double dval;
 
-  MyConfig *conf = new MyConfig(fileName);
+  MyConfig conf(fileName);
 
   //    Global options and settings
-  conf->SetPath(_T ( "/Settings" ));
+  conf.SetPath(_T ( "/Settings" ));
 
   CHECK_INT(_T ( "UIexpert" ), &g_bUIexpert);
 
@@ -1408,7 +1408,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
   CHECK_INT(_T ( "EnableUDPNullHeader" ), &g_benableUDPNullHeader);
 
-  conf->SetPath(_T ( "/Settings/GlobalState" ));
+  conf.SetPath(_T ( "/Settings/GlobalState" ));
 
   CHECK_INT(_T ( "FrameWinX" ), &g_nframewin_x);
   CHECK_INT(_T ( "FrameWinY" ), &g_nframewin_y);
@@ -1430,7 +1430,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
             &g_nDepthUnitDisplay);  // default is metres
 
   //    AIS
-  conf->SetPath(_T ( "/Settings/AIS" ));
+  conf.SetPath(_T ( "/Settings/AIS" ));
   CHECK_INT(_T ( "bNoCPAMax" ), &g_bCPAMax);
   CHECK_FLT(_T ( "NoCPAMaxNMi" ), &g_CPAMax_NM, .01)
   CHECK_INT(_T ( "bCPAWarn" ), &g_bCPAWarn);
@@ -1494,7 +1494,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT(_T ( "QueryDialogPosX" ), &g_ais_query_dialog_x);
   CHECK_INT(_T ( "QueryDialogPosY" ), &g_ais_query_dialog_y);
 
-  conf->SetPath(_T ( "/Directories" ));
+  conf.SetPath(_T ( "/Directories" ));
   CHECK_STR(_T ( "PresentationLibraryData" ), g_UserPresLibData)
   /// CHECK_STRP( _T ( "InitChartDir" ), pInit_Chart_Dir)
 
@@ -1508,12 +1508,12 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
 #if 0
     //  Load the persistent Auxiliary Font descriptor Keys
-    conf->SetPath ( _T ( "/Settings/AuxFontKeys" ) );
+    conf.SetPath ( _T ( "/Settings/AuxFontKeys" ) );
 
     wxString strk;
     long dummyk;
     wxString kval;
-    bool bContk = conf->GetFirstEntry( strk, dummyk );
+    bool bContk = conf,GetFirstEntry( strk, dummyk );
     bool bNewKey = false;
     while( bContk ) {
         Read( strk, &kval );
@@ -1527,26 +1527,26 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 #endif
 
 #ifdef __WXX11__
-  conf->SetPath(_T ( "/Settings/X11Fonts" ));
+  conf.SetPath(_T ( "/Settings/X11Fonts" ));
 #endif
 
 #ifdef __WXGTK__
-  conf->SetPath(_T ( "/Settings/GTKFonts" ));
+  conf.SetPath(_T ( "/Settings/GTKFonts" ));
 #endif
 
 #ifdef __WXMSW__
-  conf->SetPath(_T ( "/Settings/MSWFonts" ));
+  conf.SetPath(_T ( "/Settings/MSWFonts" ));
 #endif
 
 #ifdef __WXMAC__
-  conf->SetPath(_T ( "/Settings/MacFonts" ));
+  conf.SetPath(_T ( "/Settings/MacFonts" ));
 #endif
 
 #ifdef __WXQT__
-  conf->SetPath(_T ( "/Settings/QTFonts" ));
+  conf.SetPath(_T ( "/Settings/QTFonts" ));
 #endif
 
-  conf->SetPath(_T ( "/Settings/Others" ));
+  conf.SetPath(_T ( "/Settings/Others" ));
 
   // Radar rings
   CHECK_INT(_T ( "RadarRingsNumberVisible" ), &g_iNavAidRadarRingsNumberVisible)
@@ -1599,17 +1599,17 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   // S57 template items
 
 #define CHECK_BFN(s, t)     \
-  conf->Read(s, &read_int); \
+  conf.Read(s, &read_int);  \
   bval = t;                 \
   bval0 = read_int != 0;    \
   if (bval != bval0) return false;
 
 #define CHECK_IFN(s, t)     \
-  conf->Read(s, &read_int); \
+  conf.Read(s, &read_int);  \
   if (read_int != t) return false;
 
 #define CHECK_FFN(s, t) \
-  conf->Read(s, &dval); \
+  conf.Read(s, &dval);  \
   if (fabs(dval - t) > 0.1) return false;
 
   if (ps52plib) {
@@ -1617,7 +1617,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
     double dval;
     bool bval, bval0;
 
-    conf->SetPath(_T ( "/Settings/GlobalState" ));
+    conf.SetPath(_T ( "/Settings/GlobalState" ));
 
     CHECK_BFN(_T ( "bShowS57Text" ), ps52plib->GetShowS57Text());
 
@@ -1649,9 +1649,9 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
     OBJLElement *pOLE;
 
-    conf->SetPath(_T ( "/Settings/ObjectFilter" ));
+    conf.SetPath(_T ( "/Settings/ObjectFilter" ));
 
-    unsigned int iOBJMax = conf->GetNumberOfEntries();
+    unsigned int iOBJMax = conf.GetNumberOfEntries();
 
     if (iOBJMax != ps52plib->pOBJLArray->GetCount()) return false;
 
@@ -1660,9 +1660,9 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
       long val;
       long dummy;
 
-      bool bCont = conf->GetFirstEntry(str, dummy);
+      bool bCont = conf.GetFirstEntry(str, dummy);
       while (bCont) {
-        conf->Read(str, &val);  // Get an Object Viz
+        conf.Read(str, &val);  // Get an Object Viz
 
         // scan for the same key in the global list
         bool bfound = false;
@@ -1680,20 +1680,20 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
           if (!bfound) return false;
         }
-        bCont = conf->GetNextEntry(str, dummy);
+        bCont = conf.GetNextEntry(str, dummy);
       }
     }
   }
 
-  conf->SetPath(_T ( "/MmsiProperties" ));
-  int iPMax = conf->GetNumberOfEntries();
+  conf.SetPath(_T ( "/MmsiProperties" ));
+  int iPMax = conf.GetNumberOfEntries();
   if (iPMax) {
     wxString str, val;
     long dummy;
 
-    bool bCont = conf->GetFirstEntry(str, dummy);
+    bool bCont = conf.GetFirstEntry(str, dummy);
     while (bCont) {
-      conf->Read(str, &val);  // Get an entry
+      conf.Read(str, &val);  // Get an entry
 
       bool bfound = false;
       for (unsigned int j = 0; j < g_MMSI_Props_Array.GetCount(); j++) {
@@ -1705,7 +1705,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
       }
       if (!bfound) return false;
 
-      bCont = conf->GetNextEntry(str, dummy);
+      bCont = conf.GetNextEntry(str, dummy);
     }
   }
 
