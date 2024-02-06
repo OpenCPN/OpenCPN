@@ -295,6 +295,7 @@ private:
   short mPriPosition, mPriCOGSOG, mPriHeadingM, mPriHeadingT;
   short mPriVar, mPriDateTime, mPriAWA, mPriTWA, mPriDepth;
   short mPriSTW, mPriWTP, mPriATMP, mPriWDN, mPriSatStatus;
+  short mPriMDA;
   // Prio: Pos from O, SK gnss.satellites, GGA sats in use, SK gnss
   // satellitesinView, GSV sats in view
   short mPriSatUsed, mPriAlt, mPriRSA, mPriPitchRoll;

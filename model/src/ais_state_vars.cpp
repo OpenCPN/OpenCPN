@@ -49,6 +49,7 @@ bool g_bShowScaled;
 bool g_bSyncCogPredictors;
 bool g_bTCPA_Max;
 bool g_bTrackCarryOver;
+bool g_AisFirstTimeUse;
 
 double g_AckTimeout_Mins;
 double g_AIS_RealtPred_Kts;
