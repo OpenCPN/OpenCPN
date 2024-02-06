@@ -38,8 +38,8 @@ if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
 endif ()
 
 string(TOLOWER ${CMAKE_CXX_COMPILER_ID} lc_compiler_id)
-if (${lc_compiler_id} MATCHES clang
-    AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0
+if (QT_ANDROID OR (${lc_compiler_id} MATCHES clang
+    AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0)
 )
   # MacOS 10.13
   # Boost pulled in from Homebrew on the builders is not good enough as it is not ABI compatible with older targets
