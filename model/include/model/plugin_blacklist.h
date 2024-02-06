@@ -92,6 +92,9 @@ public:
   virtual bool mark_unloadable(const std::string& name,
 		               int major, int minor) = 0;
 
+  /** Reset blacklist to contructor state. */
+  virtual void reset() = 0;
+
   /** Return true iff plugin (a path) is loadable. */
   virtual bool is_loadable(const std::string path) = 0;
 

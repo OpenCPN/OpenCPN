@@ -287,6 +287,8 @@ public:
   ListOfPI_S57Obj* GetLightsObjRuleListVisibleAtLatLon(
       ChartPlugInWrapper* target, float zlat, float zlon, const ViewPort& vp);
 
+  void ResetPluginBlacklist() {m_blacklist->reset(); }
+
 private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin* plugin);

@@ -158,8 +158,12 @@ friend std::unique_ptr<AbstractBlacklist> blacklist_factory();
 typedef std::unordered_map<std::string, block> block_map;
 
 private:
-  PlugBlacklist() {
-    constexpr int list_len = sizeof(plugin_blacklist)/sizeof(config_block);
+  PlugBlacklist() { init(); }
+
+  void init() {
+    m_blocks.clear();
+    static constexpr int list_len =
+        sizeof(plugin_blacklist)/sizeof(config_block);
     for (int i = 0; i < list_len; i += 1) {
       m_blocks[plugin_blacklist[i].name] = block(plugin_blacklist[i]);
     }
@@ -233,6 +237,8 @@ public:
       filename = filename.substr(slashpos + 1);
     return update_block(filename, -1, -1);
   }
+
+  virtual void reset() { init(); }
 
   bool is_loadable(const std::string path) {
     auto filename(path);
