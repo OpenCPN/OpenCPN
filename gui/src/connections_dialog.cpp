@@ -76,7 +76,7 @@ extern OCPNPlatform* g_Platform;
 static wxString StringArrayToString(wxArrayString arr) {
   wxString ret = wxEmptyString;
   for (size_t i = 0; i < arr.Count(); i++) {
-    if (i > 0) ret.Append(_T(","));
+    if (i > 0) ret.Append(",");
     ret.Append(arr[i]);
   }
   return ret;
@@ -250,7 +250,7 @@ void ConnectionsDialog::Init() {
   m_tFilterSec = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
                                 wxDefaultPosition, wxDefaultSize, 0);
   wxString sfilt;
-  sfilt.Printf(_T("%d"), g_COGFilterSec);
+  sfilt.Printf("%d", g_COGFilterSec);
   m_tFilterSec->SetValue(sfilt);
   bSizer171->Add(m_tFilterSec, 0, wxALL, 4);
   bSizer161->Add(bSizer171, 1, wxEXPAND, 5);
@@ -265,7 +265,7 @@ void ConnectionsDialog::Init() {
   m_cbFurunoGP3X =
       new wxCheckBox(m_container, wxID_ANY, _("Format uploads for Furuno GP3X"),
                      wxDefaultPosition, wxDefaultSize, 0);
-  m_cbFurunoGP3X->SetValue(g_GPS_Ident == _T( "FurunoGP3X" ));
+  m_cbFurunoGP3X->SetValue(g_GPS_Ident == "FurunoGP3X");
   bSizer161->Add(m_cbFurunoGP3X, 0, wxALL, cb_space);
 
   m_cbGarminUploadHost = new wxCheckBox(
@@ -410,7 +410,7 @@ void ConnectionsDialog::Init() {
     sbSizerConnectionProps->Add(m_stBTPairs, 0, wxALL, 5);
 
     wxArrayString mt;
-    mt.Add(_T( "unscanned" ));
+    mt.Add("unscanned");
     int ref_size = m_parent->GetCharWidth();
     m_choiceBTDataSources =
         new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
@@ -638,20 +638,20 @@ void ConnectionsDialog::Init() {
 
   m_cbOutput =
       new wxCheckBox(m_container, wxID_ANY,
-                     wxString::Format(_T("%s (%s)"), _("Output on this port"),
+                     wxString::Format("%s (%s)", _("Output on this port"),
                                       _("as autopilot or NMEA repeater")),
                      wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_cbOutput, 0, wxALL, 5);
 
   m_stTalkerIdText = new wxStaticText(
       m_container, wxID_ANY,
-      wxString::Format(_T("%s (%s)"), _("Talker ID"), _("blank = default ID")),
+      wxString::Format("%s (%s)", _("Talker ID"), _("blank = default ID")),
       wxDefaultPosition, wxDefaultSize, 0);
   m_stTalkerIdText->Wrap(-1);
   fgSizer5->Add(m_stTalkerIdText, 0, wxALL, 5);
 
   // FIXME Verify "-1" ID is OK
-  m_TalkerIdText = new wxTextCtrl(m_container, -1, _T( "" ), wxDefaultPosition,
+  m_TalkerIdText = new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
                                   wxSize(50, -1), 0);
   m_TalkerIdText->SetMaxLength(2);
   fgSizer5->Add(m_TalkerIdText, 0, wxALIGN_LEFT | wxALL, group_item_spacing);
@@ -690,7 +690,7 @@ void ConnectionsDialog::Init() {
 
   // signalK Server Status
   m_StaticTextSKServerStatus = new wxStaticText(
-      m_container, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, 0);
+      m_container, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 5);
 
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
@@ -721,7 +721,7 @@ void ConnectionsDialog::Init() {
   bSizer11->Add(m_tcInputStc, 1, wxALL | wxEXPAND, 5);
 
   m_btnInputStcList =
-      new wxButton(m_container, wxID_ANY, _T("..."), wxDefaultPosition,
+      new wxButton(m_container, wxID_ANY, "...", wxDefaultPosition,
                    wxDefaultSize, wxBU_EXACTFIT);
   bSizer11->Add(m_btnInputStcList, 0, wxALL, 5);
 
@@ -756,7 +756,7 @@ void ConnectionsDialog::Init() {
   bSizer12->Add(m_tcOutputStc, 1, wxALL | wxEXPAND, 5);
 
   m_btnOutputStcList =
-      new wxButton(m_container, wxID_ANY, _T("..."), wxDefaultPosition,
+      new wxButton(m_container, wxID_ANY, "...", wxDefaultPosition,
                    wxDefaultSize, wxBU_EXACTFIT);
   bSizer12->Add(m_btnOutputStcList, 0, wxALL, 5);
 
@@ -963,7 +963,7 @@ void ConnectionsDialog::SetSelectedConnectionPanel(
     m_buttonRemove->Disable();
     m_buttonAdd->Enable();
     m_buttonAdd->Show();
-    m_sbConnEdit->SetLabel(_T(""));
+    m_sbConnEdit->SetLabel("");
     ClearNMEAForm();
   }
 }
@@ -1006,7 +1006,7 @@ void ConnectionsDialog::onBTScanTimer(wxTimerEvent& event) {
 
     unsigned int i = 1;
     while ((i + 1) < m_BTscan_results.GetCount()) {
-      wxString item1 = m_BTscan_results[i] + _T(";");
+      wxString item1 = m_BTscan_results[i] + ";";
       wxString item2 = m_BTscan_results.Item(i + 1);
       m_choiceBTDataSources->Append(item1 + item2);
 
@@ -1130,7 +1130,7 @@ void ConnectionsDialog::ShowNMEACommon(bool visible) {
     sbSizerOutFilter->SetDimension(0, 0, 0, 0);
     sbSizerInFilter->SetDimension(0, 0, 0, 0);
     sbSizerConnectionProps->SetDimension(0, 0, 0, 0);
-    m_sbConnEdit->SetLabel(_T(""));
+    m_sbConnEdit->SetLabel("");
   }
   sbSizerInFilter->Show(visible);
   sbSizerOutFilter->Show(visible);
@@ -1482,7 +1482,7 @@ void ConnectionsDialog::SetDSFormRWStates(void) {
     m_btnOutputStcList->Enable(TRUE);
   } else if (m_rbNetProtoGPSD->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(_T("2947"));
+      m_tNetPort->SetValue("2947");
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
     m_cbOutput->SetValue(FALSE);
@@ -1492,7 +1492,7 @@ void ConnectionsDialog::SetDSFormRWStates(void) {
     m_btnOutputStcList->Enable(FALSE);
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(_T("3000"));
+      m_tNetPort->SetValue("3000");
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
     m_cbOutput->SetValue(FALSE);
@@ -1502,7 +1502,7 @@ void ConnectionsDialog::SetDSFormRWStates(void) {
     UpdateDiscoverStatus(wxEmptyString);
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(_T("10110"));
+      m_tNetPort->SetValue("10110");
     m_cbInput->Enable(TRUE);
     m_cbOutput->Enable(TRUE);
     m_rbOAccept->Enable(TRUE);
@@ -1537,10 +1537,10 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
   m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
   m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
   m_choiceBaudRate->Select(
-      m_choiceBaudRate->FindString(wxString::Format(_T( "%d" ), cp->Baudrate)));
+      m_choiceBaudRate->FindString(wxString::Format("%d", cp->Baudrate)));
   m_choiceSerialProtocol->Select(cp->Protocol);  // TODO
   m_choicePriority->Select(
-      m_choicePriority->FindString(wxString::Format(_T( "%d" ), cp->Priority)));
+      m_choicePriority->FindString(wxString::Format("%d", cp->Priority)));
   m_tNetAddress->SetValue(cp->NetworkAddress);
 
   m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
@@ -1580,7 +1580,7 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
     SetNMEAFormToBT();
 
     // Preset the source selector
-    wxString bts = cp->NetworkAddress + _T(";") + cp->GetPortStr();
+    wxString bts = cp->NetworkAddress + ";" + cp->GetPortStr();
     m_choiceBTDataSources->Clear();
     m_choiceBTDataSources->Append(bts);
     m_choiceBTDataSources->SetSelection(0);
@@ -1613,11 +1613,11 @@ void ConnectionsDialog::SetDefaultConnectionParams(void) {
   m_rbOAccept->SetValue(TRUE);
   m_tcInputStc->SetValue(wxEmptyString);
   m_tcOutputStc->SetValue(wxEmptyString);
-  m_choiceBaudRate->Select(m_choiceBaudRate->FindString(_T( "4800" )));
+  m_choiceBaudRate->Select(m_choiceBaudRate->FindString("4800"));
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
-  m_choicePriority->Select(m_choicePriority->FindString(_T( "1" )));
+  m_choicePriority->Select(m_choicePriority->FindString("1"));
 
-  m_tNetAddress->SetValue(_T("0.0.0.0"));
+  m_tNetAddress->SetValue("0.0.0.0");
 
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
@@ -1778,7 +1778,7 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
 
   //  Mark connection deleted
   m_rbTypeSerial->SetValue(TRUE);
-  m_comboPort->SetValue(_T( "Deleted" ));
+  m_comboPort->SetValue("Deleted");
 
   FillSourceList();
   ShowNMEACommon(FALSE);
@@ -1823,7 +1823,7 @@ void ConnectionsDialog::UpdateDiscoverStatus(wxString stat) {
 void ConnectionsDialog::OnBtnIStcs(wxCommandEvent& event) {
   const ListType type = m_rbIAccept->GetValue() ? WHITELIST : BLACKLIST;
   const wxArrayString list =
-      wxStringTokenize(m_tcInputStc->GetValue(), _T( "," ));
+      wxStringTokenize(m_tcInputStc->GetValue(), ",");
   SentenceListDlg dlg(m_parent, FILTER_INPUT, type, list);
 
   if (dlg.ShowModal() == wxID_OK) m_tcInputStc->SetValue(dlg.GetSentences());
@@ -1832,7 +1832,7 @@ void ConnectionsDialog::OnBtnIStcs(wxCommandEvent& event) {
 void ConnectionsDialog::OnBtnOStcs(wxCommandEvent& event) {
   const ListType type = m_rbOAccept->GetValue() ? WHITELIST : BLACKLIST;
   const wxArrayString list =
-      wxStringTokenize(m_tcOutputStc->GetValue(), _T( "," ));
+      wxStringTokenize(m_tcOutputStc->GetValue(), ",");
   SentenceListDlg dlg(m_parent, FILTER_OUTPUT, type, list);
 
   if (dlg.ShowModal() == wxID_OK) m_tcOutputStc->SetValue(dlg.GetSentences());
@@ -1840,15 +1840,15 @@ void ConnectionsDialog::OnBtnOStcs(wxCommandEvent& event) {
 
 void ConnectionsDialog::OnNetProtocolSelected(wxCommandEvent& event) {
   if (m_rbNetProtoGPSD->GetValue()) {
-    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "2947" ));
+    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue("2947");
   } else if (m_rbNetProtoUDP->GetValue()) {
-    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "10110" ));
+    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue("10110");
     if (m_tNetAddress->GetValue().IsEmpty())
-      m_tNetAddress->SetValue(_T( "0.0.0.0" ));
+      m_tNetAddress->SetValue("0.0.0.0");
   } else if (m_rbNetProtoSignalK->GetValue()) {
-    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "8375" ));
+    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue("8375");
   } else if (m_rbNetProtoTCP->GetValue()) {
-    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue(_T( "10110" ));
+    if (m_tNetPort->GetValue().IsEmpty()) m_tNetPort->SetValue("10110");
   }
 
   SetDSFormRWStates();
@@ -2011,7 +2011,7 @@ void ConnectionsDialog::ApplySettings() {
 
   g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
   g_GPS_Ident =
-      m_cbFurunoGP3X->GetValue() ? _T( "FurunoGP3X" ) : _T( "Generic" );
+      m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
 }
 
 ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(
@@ -2020,7 +2020,7 @@ ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(
   // if (!m_bNMEAParams_shown) return NULL;
 
   //  Special encoding for deleted connection
-  if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
+  if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() ==  "Deleted")
     return NULL;
 
   //  We check some values here for consistency.
@@ -2038,10 +2038,10 @@ ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(
   //  TCP clients, GPSD and UDP output sockets require an address
   else if (m_rbTypeNet->GetValue()) {
     if (wxAtoi(m_tNetPort->GetValue()) == 0) {
-      m_tNetPort->SetValue(_T("10110"));  // reset to default
+      m_tNetPort->SetValue("10110");  // reset to default
     }
     if (m_tNetAddress->GetValue() == wxEmptyString) {
-      m_tNetAddress->SetValue(_T("0.0.0.0"));
+      m_tNetAddress->SetValue("0.0.0.0");
     }
   } else if (m_rbTypeCAN->GetValue()) {
   }
@@ -2114,7 +2114,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
   pConnectionParams->Garmin = m_cbGarminHost->GetValue();
   pConnectionParams->InputSentenceList =
-      wxStringTokenize(m_tcInputStc->GetValue(), _T(","));
+      wxStringTokenize(m_tcInputStc->GetValue(), ",");
   if (m_rbIAccept->GetValue())
     pConnectionParams->InputSentenceListType = WHITELIST;
   else
@@ -2129,7 +2129,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->IOSelect = DS_TYPE_OUTPUT;
 
   pConnectionParams->OutputSentenceList =
-      wxStringTokenize(m_tcOutputStc->GetValue(), _T(","));
+      wxStringTokenize(m_tcOutputStc->GetValue(), ",");
   if (m_rbOAccept->GetValue())
     pConnectionParams->OutputSentenceListType = WHITELIST;
   else
@@ -2147,7 +2147,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   pConnectionParams->b_IsSetup = FALSE;
 
   if (pConnectionParams->Type == INTERNAL_GPS) {
-    pConnectionParams->NetworkAddress = _T("");
+    pConnectionParams->NetworkAddress = "";
     pConnectionParams->NetworkPort = 0;
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     pConnectionParams->Baudrate = 0;
@@ -2155,7 +2155,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
 
   if (pConnectionParams->Type == INTERNAL_BT) {
     wxString parms = m_choiceBTDataSources->GetStringSelection();
-    wxStringTokenizer tkz(parms, _T(";"));
+    wxStringTokenizer tkz(parms, ";");
     wxString name = tkz.GetNextToken();
     wxString mac = tkz.GetNextToken();
 
@@ -2168,7 +2168,7 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   }
 
   if (pConnectionParams->Type == SOCKETCAN) {
-    pConnectionParams->NetworkAddress = _T("");
+    pConnectionParams->NetworkAddress = "";
     pConnectionParams->NetworkPort = 0;
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     pConnectionParams->Baudrate = 0;
@@ -2263,14 +2263,14 @@ wxString SentenceListDlg::GetBoxLabel(void) const {
 
 void SentenceListDlg::Populate(const wxArrayString& list) {
   if (m_dir == FILTER_OUTPUT) {
-    m_sentences.Add(_T("ECRMB"));
-    m_sentences.Add(_T("ECRMC"));
-    m_sentences.Add(_T("ECAPB"));
+    m_sentences.Add("ECRMB");
+    m_sentences.Add("ECRMC");
+    m_sentences.Add("ECAPB");
   }
-  m_sentences.Add(_T("AIVDM"));
-  m_sentences.Add(_T("AIVDO"));
-  m_sentences.Add(_T("FRPOS"));
-  m_sentences.Add(_T("CD"));
+  m_sentences.Add("AIVDM");
+  m_sentences.Add("AIVDO");
+  m_sentences.Add("FRPOS");
+  m_sentences.Add("CD");
   m_clbSentences->Clear();
   m_clbSentences->InsertItems(m_sentences, 0);
 
