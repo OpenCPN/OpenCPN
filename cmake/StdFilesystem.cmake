@@ -19,16 +19,15 @@
 
 #
 # Get a compatible std::filesystem. On gcc < 8 add required stdc++fs linkage.
-# On clang < 15 (NDK < 26, MacOS < 10.15) add headers and linkage for
-# boost::filesystem
+# On clang < 15 (NDK < 26, MacOS < 10.15) add header for ghc::filesystem.
 #
 # Exports: ocpn::filesystem transitive link target
 #
+# FIXME (leamas) merge with libs/ghc to a common lib.
 
 if (TARGET ocpn::filesystem)
   return ()
 endif ()
-
 
 add_library(_FILESYS INTERFACE)
 add_library(ocpn::filesystem ALIAS _FILESYS)
@@ -42,11 +41,9 @@ if (${lc_compiler_id} MATCHES clang
     AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 15.0
 )
   # MacOS 10.13
-  # Boost pulled in from Homebrew on the builders is not good enough as it is not ABI compatible with older targets
-  #find_library(BOOST_SYSTEM NAMES boost_system  REQUIRED)
-  #find_library(BOOST_FILESYSTEM NAMES boost_filesystem REQUIRED)
-  #find_path(BOOST_HDRS NAMES boost/filesystem.hpp REQUIRED)
-  #target_link_libraries(_FILESYS INTERFACE ${BOOST_SYSTEM} ${BOOST_FILESYSTEM})
-  #target_include_directories(_FILESYS INTERFACE ${BOOST_HDRS})
-  target_include_directories(_FILESYS INTERFACE libs/ghc/include)
+  # Boost pulled in from Homebrew on the builders is not good enough as
+  # it is not ABI compatible with older targets, use ghc instead.
+  target_include_directories(
+    _FILESYS INTERFACE ${PROJECT_SOURCE_DIR}/libs/ghc/include
+  )
 endif ()
