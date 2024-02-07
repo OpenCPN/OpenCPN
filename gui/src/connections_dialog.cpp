@@ -46,7 +46,6 @@
 #include <sys/socket.h>
 #endif
 
-
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
@@ -63,7 +62,7 @@
 #include "nmea0183.h"
 #include "NMEALogWindow.h"
 #include "OCPNPlatform.h"
-#include "ocpn_plugin.h"    // FIXME for GetOCPNScaledFont_PlugIn
+#include "ocpn_plugin.h"  // FIXME for GetOCPNScaledFont_PlugIn
 #include "options.h"
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
@@ -89,19 +88,11 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
 
 #if defined(__linux__) && !defined(__ANDROID__)
-  wxString candidates[] = {
-    "can0",
-    "can1",
-    "can2",
-    "can3",
-    "slcan0",
-    "slcan1",
-    "vcan0",
-    "vcan1"
-  };
+  wxString candidates[] = {"can0",   "can1",   "can2",  "can3",
+                           "slcan0", "slcan1", "vcan0", "vcan1"};
   size_t ncandidates = sizeof(candidates) / sizeof(wxString);
 
-  for (size_t i=0 ; i < ncandidates; i++){
+  for (size_t i = 0; i < ncandidates; i++) {
     int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (sock < 0) {
       continue;
@@ -146,21 +137,18 @@ BEGIN_EVENT_TABLE(ConnectionsDialog, wxEvtHandler)
 EVT_TIMER(ID_BT_SCANTIMER, ConnectionsDialog::onBTScanTimer)
 END_EVENT_TABLE()
 
-
 // Define constructors
 ConnectionsDialog::ConnectionsDialog() {}
 
-ConnectionsDialog::ConnectionsDialog(wxScrolledWindow *container, options *parent){
+ConnectionsDialog::ConnectionsDialog(wxScrolledWindow* container,
+                                     options* parent) {
   m_container = container;
   m_parent = parent;
 
   Init();
 }
 
-
-
-ConnectionsDialog::~ConnectionsDialog() {
-}
+ConnectionsDialog::~ConnectionsDialog() {}
 
 void ConnectionsDialog::SetInitialSettings(void) {
   m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
@@ -173,15 +161,14 @@ void ConnectionsDialog::SetInitialSettings(void) {
   }
   LoadSerialPorts(m_comboPort);
 
-
   //  On some platforms, the global connections list may be changed outside of
   //  the options dialog. Pick up any changes here, and re-populate the dialog
   //  list.
-   FillSourceList();
+  FillSourceList();
 
-   //  Reset the touch flag...
-   connectionsaved = true;
-   SetSelectedConnectionPanel(nullptr);
+  //  Reset the touch flag...
+  connectionsaved = true;
+  SetSelectedConnectionPanel(nullptr);
 }
 
 void ConnectionsDialog::RecalculateSize(void) {
@@ -212,8 +199,7 @@ void ConnectionsDialog::RecalculateSize(void) {
 #endif
 }
 
-void ConnectionsDialog::Init(){
-
+void ConnectionsDialog::Init() {
   // Setup some inital values
   m_buttonScanBT = 0;
   m_stBTPairs = 0;
@@ -222,7 +208,7 @@ void ConnectionsDialog::Init(){
   m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
   m_BTscanning = 0;
 
-  //Create the UI
+  // Create the UI
   int group_item_spacing = 2;
 
   wxBoxSizer* bSizer4 = new wxBoxSizer(wxVERTICAL);
@@ -295,10 +281,9 @@ void ConnectionsDialog::Init(){
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
 
-  m_ButtonPriorityDialog =
-      new wxButton(m_container, wxID_ANY,
-                     _("Adjust communication priorities..."),
-                     wxDefaultPosition, wxDefaultSize, 0);
+  m_ButtonPriorityDialog = new wxButton(m_container, wxID_ANY,
+                                        _("Adjust communication priorities..."),
+                                        wxDefaultPosition, wxDefaultSize, 0);
   bSizer161->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
 
   bSizer151->Add(bSizer161, 1, wxEXPAND, 5);
@@ -320,9 +305,9 @@ void ConnectionsDialog::Init(){
   cPanel->SetSizer(boxSizercPanel);
 
 #ifdef __ANDROID__
-  m_scrollWinConnections = new wxPanel(
-      cPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-      wxBORDER_RAISED | wxBG_STYLE_ERASE);
+  m_scrollWinConnections =
+      new wxPanel(cPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                  wxBORDER_RAISED | wxBG_STYLE_ERASE);
 #else
   m_scrollWinConnections = new wxScrolledWindow(
       cPanel, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_parent, wxSize(-1, 80)),
@@ -385,7 +370,6 @@ void ConnectionsDialog::Init(){
                                   wxDefaultPosition, wxDefaultSize, 0);
   bSizer15->Add(m_rbTypeNet, 0, wxALL, 5);
 
-
   m_rbTypeCAN = new wxRadioButton(m_container, wxID_ANY, "socketCAN",
                                   wxDefaultPosition, wxDefaultSize, 0);
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
@@ -413,8 +397,8 @@ void ConnectionsDialog::Init(){
                                   wxDefaultPosition, wxDefaultSize);
     m_buttonScanBT->Hide();
 
-//     wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
-//     sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
+    //     wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
+    //     sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
 
     sbSizerConnectionProps->Add(m_buttonScanBT, 0, wxALL, 5);
 
@@ -428,15 +412,15 @@ void ConnectionsDialog::Init(){
     wxArrayString mt;
     mt.Add(_T( "unscanned" ));
     int ref_size = m_parent->GetCharWidth();
-    m_choiceBTDataSources = new wxChoice(m_container, wxID_ANY,
-                                         wxDefaultPosition,
-                                         wxSize(30 * ref_size, 2 * ref_size),
-                                         mt);
+    m_choiceBTDataSources =
+        new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
+                     wxSize(30 * ref_size, 2 * ref_size), mt);
 
     m_choiceBTDataSources->Hide();
-    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, /*wxEXPAND |*/ wxTOP, 5);
+    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, /*wxEXPAND |*/ wxTOP,
+                                5);
 
-   } else
+  } else
     m_rbTypeInternalBT = NULL;
 
   gSizerNetProps = new wxGridSizer(0, 2, 0, 0);
@@ -474,18 +458,18 @@ void ConnectionsDialog::Init(){
 
   gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
 
-  m_stNetDataProtocol = new wxStaticText(m_container, wxID_ANY, _("Data Protocol"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetDataProtocol =
+      new wxStaticText(m_container, wxID_ANY, _("Data Protocol"),
+                       wxDefaultPosition, wxDefaultSize, 0);
   m_stNetDataProtocol->Wrap(-1);
   gSizerNetProps->Add(m_stNetDataProtocol, 0, wxALL, 5);
-
 
   wxString m_choiceNetProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
   int m_choiceNetProtocolNChoices =
       sizeof(m_choiceNetProtocolChoices) / sizeof(wxString);
-  m_choiceNetDataProtocol = new wxChoice(
-      m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-      m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
+  m_choiceNetDataProtocol =
+      new wxChoice(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                   m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
   m_choiceNetDataProtocol->SetSelection(0);
   m_choiceNetDataProtocol->Enable(TRUE);
   gSizerNetProps->Add(m_choiceNetDataProtocol, 1, wxEXPAND | wxTOP, 5);
@@ -510,12 +494,12 @@ void ConnectionsDialog::Init(){
 
   // Authentication token
   m_stAuthToken = new wxStaticText(m_container, wxID_ANY, _("Auth Token"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
+                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stAuthToken->Wrap(-1);
   gSizerNetProps->Add(m_stAuthToken, 0, wxALL, 5);
 
   m_tAuthToken = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
-                                    wxDefaultPosition, wxDefaultSize, 0);
+                                wxDefaultPosition, wxDefaultSize, 0);
   gSizerNetProps->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
 
   //  User Comments
@@ -580,7 +564,7 @@ void ConnectionsDialog::Init(){
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
 
   m_stPriority = new wxStaticText(m_container, wxID_ANY, _("List position"),
-                                  wxDefaultPosition, wxDefaultSize,0);
+                                  wxDefaultPosition, wxDefaultSize, 0);
   m_stPriority->Wrap(-1);
   fgSizer1->Add(m_stPriority, 0, wxALL, 5);
 
@@ -596,21 +580,20 @@ void ConnectionsDialog::Init(){
   fgSizer1->Add(m_choicePriority, 0, wxEXPAND | wxTOP, 5);
 
   m_stCANSource = new wxStaticText(m_container, wxID_ANY, _("socketCAN Source"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
+                                   wxDefaultPosition, wxDefaultSize, 0);
   m_stCANSource->Wrap(-1);
   fgSizer1->Add(m_stCANSource, 0, wxALL, 5);
 
   wxArrayString choices = GetAvailableSocketCANInterfaces();
-  m_choiceCANSource = new wxChoice(
-      m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-      choices);
+  m_choiceCANSource = new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
+                                   wxDefaultSize, choices);
   m_choiceCANSource->SetSelection(0);
   m_choiceCANSource->Enable(TRUE);
   fgSizer1->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
 
   gSizerSerProps->Add(fgSizer1, 0, wxEXPAND, 5);
 
-   //  User Comments
+  //  User Comments
   wxBoxSizer* commentSizer = new wxBoxSizer(wxHORIZONTAL);
   sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
@@ -668,8 +651,8 @@ void ConnectionsDialog::Init(){
   fgSizer5->Add(m_stTalkerIdText, 0, wxALL, 5);
 
   // FIXME Verify "-1" ID is OK
-  m_TalkerIdText = new wxTextCtrl(m_container, -1, _T( "" ),
-                                  wxDefaultPosition, wxSize(50, -1), 0);
+  m_TalkerIdText = new wxTextCtrl(m_container, -1, _T( "" ), wxDefaultPosition,
+                                  wxSize(50, -1), 0);
   m_TalkerIdText->SetMaxLength(2);
   fgSizer5->Add(m_TalkerIdText, 0, wxALIGN_LEFT | wxALL, group_item_spacing);
 
@@ -784,28 +767,32 @@ void ConnectionsDialog::Init(){
 #endif
   bSizer4->Add(bSizerOuterContainer, 1, wxEXPAND, 5);
 
-  m_buttonAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                       wxCommandEventHandler(ConnectionsDialog::OnAddDatasourceClick),
-                       NULL, this);
+  m_buttonAdd->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnAddDatasourceClick), NULL,
+      this);
   m_buttonRemove->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionsDialog::OnRemoveDatasourceClick), NULL, this);
+      wxCommandEventHandler(ConnectionsDialog::OnRemoveDatasourceClick), NULL,
+      this);
 
-  m_rbTypeSerial->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                          wxCommandEventHandler(ConnectionsDialog::OnTypeSerialSelected),
-                          NULL, this);
-  m_rbTypeNet->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnTypeNetSelected), NULL,
-                       this);
+  m_rbTypeSerial->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnTypeSerialSelected), NULL,
+      this);
+  m_rbTypeNet->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnTypeNetSelected), NULL, this);
 
-  m_rbTypeCAN->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnTypeCANSelected), NULL,
-                       this);
+  m_rbTypeCAN->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnTypeCANSelected), NULL, this);
 
   if (m_rbTypeInternalGPS)
     m_rbTypeInternalGPS->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-        wxCommandEventHandler(ConnectionsDialog::OnTypeGPSSelected), NULL, this);
+        wxCommandEventHandler(ConnectionsDialog::OnTypeGPSSelected), NULL,
+        this);
   if (m_rbTypeInternalBT)
     m_rbTypeInternalBT->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
@@ -813,122 +800,135 @@ void ConnectionsDialog::Init(){
 
   m_rbNetProtoTCP->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL, this);
+      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL,
+      this);
   m_rbNetProtoUDP->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL, this);
+      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL,
+      this);
   m_rbNetProtoGPSD->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL, this);
+      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL,
+      this);
   m_rbNetProtoSignalK->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL, this);
-  m_tNetAddress->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                         wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                         this);
+      wxCommandEventHandler(ConnectionsDialog::OnNetProtocolSelected), NULL,
+      this);
+  m_tNetAddress->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
   m_tNetPort->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                      this);
-  m_comboPort->Connect(wxEVT_COMMAND_COMBOBOX_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                       this);
-  m_comboPort->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                       wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                       this);
-  m_choiceBaudRate->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
-                            wxCommandEventHandler(ConnectionsDialog::OnBaudrateChoice),
-                            NULL, this);
+                      wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
+                      NULL, this);
+  m_comboPort->Connect(
+      wxEVT_COMMAND_COMBOBOX_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_comboPort->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_choiceBaudRate->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnBaudrateChoice), NULL, this);
   m_choiceSerialProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
   m_choiceNetDataProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionsDialog::OnProtocolChoice), NULL, this);
-  m_choicePriority->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
-                            wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
-                            NULL, this);
-  m_choiceCANSource->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
-                            wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
-                            NULL, this);
+  m_choicePriority->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_choiceCANSource->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
   m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(ConnectionsDialog::OnCrcCheck), NULL, this);
-  m_cbGarminHost->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                          wxCommandEventHandler(ConnectionsDialog::OnUploadFormatChange),
-                          NULL, this);
+                        wxCommandEventHandler(ConnectionsDialog::OnCrcCheck),
+                        NULL, this);
+  m_cbGarminHost->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnUploadFormatChange), NULL,
+      this);
   m_cbGarminUploadHost->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionsDialog::OnUploadFormatChange), NULL, this);
-  m_cbFurunoGP3X->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                          wxCommandEventHandler(ConnectionsDialog::OnUploadFormatChange),
-                          NULL, this);
-  m_cbCheckSKDiscover->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                               wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
-                               NULL, this);
-  m_ButtonSKDiscover->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                              wxCommandEventHandler(ConnectionsDialog::OnDiscoverButton),
-                              NULL, this);
+      wxCommandEventHandler(ConnectionsDialog::OnUploadFormatChange), NULL,
+      this);
+  m_cbFurunoGP3X->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnUploadFormatChange), NULL,
+      this);
+  m_cbCheckSKDiscover->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_ButtonSKDiscover->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnDiscoverButton), NULL, this);
 
-  m_rbIAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnRbAcceptInput), NULL,
-                       this);
-  m_rbIIgnore->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnRbIgnoreInput), NULL,
-                       this);
-  m_tcInputStc->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                        wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                        this);
-  m_btnInputStcList->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                             wxCommandEventHandler(ConnectionsDialog::OnBtnIStcs), NULL,
-                             this);
+  m_rbIAccept->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnRbAcceptInput), NULL, this);
+  m_rbIIgnore->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(ConnectionsDialog::OnRbIgnoreInput), NULL, this);
+  m_tcInputStc->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_btnInputStcList->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnBtnIStcs), NULL, this);
   m_cbInput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                     wxCommandEventHandler(ConnectionsDialog::OnCbInput), NULL, this);
+                     wxCommandEventHandler(ConnectionsDialog::OnCbInput), NULL,
+                     this);
   m_cbOutput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                      wxCommandEventHandler(ConnectionsDialog::OnCbOutput), NULL, this);
+                      wxCommandEventHandler(ConnectionsDialog::OnCbOutput),
+                      NULL, this);
   m_rbOAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnRbOutput), NULL, this);
+                       wxCommandEventHandler(ConnectionsDialog::OnRbOutput),
+                       NULL, this);
   m_rbOIgnore->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionsDialog::OnRbOutput), NULL, this);
-  m_tcOutputStc->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                         wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                         this);
-  m_btnOutputStcList->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                              wxCommandEventHandler(ConnectionsDialog::OnBtnOStcs), NULL,
-                              this);
-  m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                        this);
+                       wxCommandEventHandler(ConnectionsDialog::OnRbOutput),
+                       NULL, this);
+  m_tcOutputStc->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_btnOutputStcList->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnBtnOStcs), NULL, this);
+  m_cbCheckCRC->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
 
   m_cbNMEADebug->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionsDialog::OnShowGpsWindowCheckboxClick), NULL, this);
-  m_cbFilterSogCog->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                            wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL,
-                            this);
+      wxCommandEventHandler(ConnectionsDialog::OnShowGpsWindowCheckboxClick),
+      NULL, this);
+  m_cbFilterSogCog->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL, this);
   m_tFilterSec->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                        wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL,
-                        this);
-  m_cbAPBMagnetic->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                           wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL,
-                           this);
+                        wxCommandEventHandler(ConnectionsDialog::OnValChange),
+                        NULL, this);
+  m_cbAPBMagnetic->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnValChange), NULL, this);
 
-  m_ButtonPriorityDialog->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                           wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL,
-                           this);
+  m_ButtonPriorityDialog->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ConnectionsDialog::OnPriorityDialog), NULL, this);
 
-  m_tNetComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                         wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                         this);
-  m_tSerialComment->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                            wxCommandEventHandler(ConnectionsDialog::OnConnValChange),
-                            NULL, this);
-  m_tAuthToken->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                         wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL,
-                         this);
+  m_tNetComment->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_tSerialComment->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
+  m_tAuthToken->Connect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(ConnectionsDialog::OnConnValChange), NULL, this);
 
   if (m_buttonScanBT)
-    m_buttonScanBT->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                             wxCommandEventHandler(ConnectionsDialog::OnScanBTClick), NULL,
-                             this);
+    m_buttonScanBT->Connect(
+        wxEVT_COMMAND_BUTTON_CLICKED,
+        wxCommandEventHandler(ConnectionsDialog::OnScanBTClick), NULL, this);
 
   FillSourceList();
 
@@ -938,10 +938,11 @@ void ConnectionsDialog::Init(){
   connectionsaved = TRUE;
 
   new_device_listener.Init(SystemEvents::GetInstance().evt_new_device,
-                           [&](ObservedEvt&){ LoadSerialPorts(m_comboPort); });
+                           [&](ObservedEvt&) { LoadSerialPorts(m_comboPort); });
 }
 
-void ConnectionsDialog::SetSelectedConnectionPanel(ConnectionParamsPanel* panel) {
+void ConnectionsDialog::SetSelectedConnectionPanel(
+    ConnectionParamsPanel* panel) {
   //  Only one panel can be selected at any time
   //  Clear any selections
 
@@ -1288,7 +1289,6 @@ void ConnectionsDialog::ClearNMEAForm(void) {
   RecalculateSize();
 }
 
-
 void ConnectionsDialog::SetDSFormOptionVizStates(void) {
   m_cbInput->Show();
   m_cbOutput->Show();
@@ -1321,7 +1321,9 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
     m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
-    bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() == DataProtocol::PROTO_NMEA0183;
+    bool n0183ctlenabled =
+        (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
+        DataProtocol::PROTO_NMEA0183;
     if (!n0183ctlenabled) {
       m_cbInput->Hide();
       m_cbOutput->Hide();
@@ -1449,7 +1451,8 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
       m_ButtonSKDiscover->Hide();
       m_StaticTextSKServerStatus->Hide();
 
-      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() == DataProtocol::PROTO_NMEA2000) {
+      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
+          DataProtocol::PROTO_NMEA2000) {
         m_cbCheckCRC->Hide();
         m_stPrecision->Hide();
         m_choicePrecision->Hide();
@@ -1588,7 +1591,7 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
     m_tSerialComment->SetValue(cp->UserComment);
   else if (cp->Type == NETWORK)
     m_tNetComment->SetValue(cp->UserComment);
-  
+
   m_tAuthToken->SetValue(cp->AuthToken);
 
   m_connection_enabled = cp->bEnabled;
@@ -1596,7 +1599,6 @@ void ConnectionsDialog::SetConnectionParams(ConnectionParams* cp) {
   // Reset touch flag
   connectionsaved = true;
 }
-
 
 void ConnectionsDialog::SetDefaultConnectionParams(void) {
   if (m_comboPort && !m_comboPort->IsListEmpty()) {
@@ -1792,7 +1794,7 @@ void ConnectionsDialog::OnSelectDatasource(wxListEvent& event) {
 }
 
 void ConnectionsDialog::OnDiscoverButton(wxCommandEvent& event) {
-#if 0 //FIXME (dave)
+#if 0  // FIXME (dave)
   wxString ip;
   int port;
   std::string serviceIdent =
@@ -1852,12 +1854,20 @@ void ConnectionsDialog::OnNetProtocolSelected(wxCommandEvent& event) {
   SetDSFormRWStates();
   OnConnValChange(event);
 }
-void ConnectionsDialog::OnRbAcceptInput(wxCommandEvent& event) { OnConnValChange(event); }
-void ConnectionsDialog::OnRbIgnoreInput(wxCommandEvent& event) { OnConnValChange(event); }
+void ConnectionsDialog::OnRbAcceptInput(wxCommandEvent& event) {
+  OnConnValChange(event);
+}
+void ConnectionsDialog::OnRbIgnoreInput(wxCommandEvent& event) {
+  OnConnValChange(event);
+}
 
-void ConnectionsDialog::OnRbOutput(wxCommandEvent& event) { OnConnValChange(event); }
+void ConnectionsDialog::OnRbOutput(wxCommandEvent& event) {
+  OnConnValChange(event);
+}
 
-void ConnectionsDialog::OnCbInput(wxCommandEvent& event) { OnConnValChange(event); }
+void ConnectionsDialog::OnCbInput(wxCommandEvent& event) {
+  OnConnValChange(event);
+}
 
 void ConnectionsDialog::OnCbOutput(wxCommandEvent& event) {
   OnConnValChange(event);
@@ -1872,7 +1882,7 @@ void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
     NMEALogWindow::Get().DestroyWindow();
   } else {
-    NMEALogWindow::Get().Create((wxWindow *)(m_parent->pParent), 35);
+    NMEALogWindow::Get().Create((wxWindow*)(m_parent->pParent), 35);
 
     // Try to ensure that the log window is a least a little bit visible
     wxRect logRect(
@@ -1882,7 +1892,8 @@ void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
     if (m_container->GetRect().Contains(logRect)) {
       NMEALogWindow::Get().SetPos(
           m_container->GetRect().x / 2,
-          (m_container->GetRect().y + (m_container->GetRect().height - logRect.height) / 2));
+          (m_container->GetRect().y +
+           (m_container->GetRect().height - logRect.height) / 2));
       NMEALogWindow::Get().Move();
     }
 
@@ -1890,14 +1901,14 @@ void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   }
 }
 
-void ConnectionsDialog::ApplySettings(){
-
+void ConnectionsDialog::ApplySettings() {
   g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
 
   long filter_val = 1;
   m_tFilterSec->GetValue().ToLong(&filter_val);
   g_COGFilterSec =
-      wxMin(static_cast<int>(filter_val), 60/*MAX_COGSOG_FILTER_SECONDS*/);  //FIXME (dave)  should be
+      wxMin(static_cast<int>(filter_val),
+            60 /*MAX_COGSOG_FILTER_SECONDS*/);  // FIXME (dave)  should be
   g_COGFilterSec = wxMax(g_COGFilterSec, 1);
   g_SOGFilterSec = g_COGFilterSec;
 
@@ -1930,9 +1941,9 @@ void ConnectionsDialog::ApplySettings(){
         old_priority = cp->Priority;
         UpdateConnectionParamsFromSelectedItem(cp);
         cp->b_IsSetup = false;
-        //cp->bEnabled = false;
-        //if (cp->m_optionsPanel)
-        //  cp->m_optionsPanel->SetEnableCheckbox(false);
+        // cp->bEnabled = false;
+        // if (cp->m_optionsPanel)
+        //   cp->m_optionsPanel->SetEnableCheckbox(false);
 
         // delete TheConnectionParams()->Item(itemIndex)->m_optionsPanel;
         // old_priority = TheConnectionParams()->Item(itemIndex)->Priority;
@@ -1990,10 +2001,10 @@ void ConnectionsDialog::ApplySettings(){
     // their buffers, etc. before restating with new parameters...
     if (cp->Type == INTERNAL_BT) wxSleep(1);
 
-    //Connection has been disabled
+    // Connection has been disabled
     if (!cp->bEnabled) continue;
 
-    //Make any new or re-enabled drivers
+    // Make any new or re-enabled drivers
     MakeCommDriver(cp);
     cp->b_IsSetup = TRUE;
   }
@@ -2003,9 +2014,10 @@ void ConnectionsDialog::ApplySettings(){
       m_cbFurunoGP3X->GetValue() ? _T( "FurunoGP3X" ) : _T( "Generic" );
 }
 
-ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(void) {
-  //FIXME (dave)  How could this happen?
-  //if (!m_bNMEAParams_shown) return NULL;
+ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(
+    void) {
+  // FIXME (dave)  How could this happen?
+  // if (!m_bNMEAParams_shown) return NULL;
 
   //  Special encoding for deleted connection
   if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
@@ -2031,8 +2043,7 @@ ConnectionParams* ConnectionsDialog::CreateConnectionParamsFromSelectedItem(void
     if (m_tNetAddress->GetValue() == wxEmptyString) {
       m_tNetAddress->SetValue(_T("0.0.0.0"));
     }
-  }
-  else if (m_rbTypeCAN->GetValue()){
+  } else if (m_rbTypeCAN->GetValue()) {
   }
 
   ConnectionParams* pConnectionParams = new ConnectionParams();
@@ -2063,24 +2074,26 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   else if (m_rbTypeCAN && m_rbTypeCAN->GetValue())
     pConnectionParams->Type = SOCKETCAN;
 
-  if (m_rbTypeNet->GetValue()){
+  if (m_rbTypeNet->GetValue()) {
     //  Save the existing addr/port to allow closing of existing port
     pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
     pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
     pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
     pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
-    pConnectionParams->NetworkAddress = m_tNetAddress->GetValue().Trim(false).Trim(true);
-    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
+    pConnectionParams->NetworkAddress =
+        m_tNetAddress->GetValue().Trim(false).Trim(true);
+    pConnectionParams->NetworkPort =
+        wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
     if (m_rbNetProtoTCP->GetValue()) {
       pConnectionParams->NetProtocol = TCP;
-      pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-    }
-    else if (m_rbNetProtoUDP->GetValue()) {
+      pConnectionParams->Protocol =
+          (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+    } else if (m_rbNetProtoUDP->GetValue()) {
       pConnectionParams->NetProtocol = UDP;
-      pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-    }
-    else if (m_rbNetProtoGPSD->GetValue())
+      pConnectionParams->Protocol =
+          (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+    } else if (m_rbNetProtoGPSD->GetValue())
       pConnectionParams->NetProtocol = GPSD;
     else if (m_rbNetProtoSignalK->GetValue())
       pConnectionParams->NetProtocol = SIGNALK;
@@ -2089,10 +2102,11 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   }
 
   if (m_rbTypeSerial->GetValue())
-    pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection();
+    pConnectionParams->Protocol =
+        (DataProtocol)m_choiceSerialProtocol->GetSelection();
   else if (m_rbTypeNet->GetValue())
-    pConnectionParams->Protocol = (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-
+    pConnectionParams->Protocol =
+        (DataProtocol)m_choiceNetDataProtocol->GetSelection();
 
   pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
   pConnectionParams->Priority = wxAtoi(m_choicePriority->GetStringSelection());
@@ -2158,7 +2172,8 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
     pConnectionParams->NetworkPort = 0;
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     pConnectionParams->Baudrate = 0;
-    pConnectionParams->socketCAN_port = m_choiceCANSource->GetString(m_choiceCANSource->GetSelection());
+    pConnectionParams->socketCAN_port =
+        m_choiceCANSource->GetString(m_choiceCANSource->GetSelection());
   }
 
   if (pConnectionParams->Type == SERIAL) {
@@ -2171,13 +2186,11 @@ ConnectionParams* ConnectionsDialog::UpdateConnectionParamsFromSelectedItem(
   return pConnectionParams;
 }
 
-void ConnectionsDialog::OnPriorityDialog(wxCommandEvent &event){
-
-  PriorityDlg *pdlg = new PriorityDlg(m_parent);
+void ConnectionsDialog::OnPriorityDialog(wxCommandEvent& event) {
+  PriorityDlg* pdlg = new PriorityDlg(m_parent);
   pdlg->ShowModal();
   delete pdlg;
 }
-
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
                                  ListType type, const wxArrayString& list)
@@ -2355,7 +2368,8 @@ void SentenceListDlg::OnCheckAllClick(wxCommandEvent& event) {
 }
 
 void ConnectionsDialog::SetNMEAFormForProtocol() {
-  bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() == DataProtocol::PROTO_NMEA0183;
+  bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
+                         DataProtocol::PROTO_NMEA0183;
   ShowNMEACommon(n0183ctlenabled);
   m_cbGarminHost->Show(n0183ctlenabled);
   m_stPriority->Show(true);
@@ -2365,7 +2379,7 @@ void ConnectionsDialog::SetNMEAFormForProtocol() {
   SetDSFormRWStates();
 }
 
-void ConnectionsDialog::OnProtocolChoice(wxCommandEvent &event) {
+void ConnectionsDialog::OnProtocolChoice(wxCommandEvent& event) {
   SetNMEAFormForProtocol();
   OnConnValChange(event);
 }
