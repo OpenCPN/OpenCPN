@@ -141,6 +141,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
         td->b_PersistTrack = false;
         g_pAIS->m_persistent_tracks.erase(td->MMSI);
         m_createTrkBtn->SetLabel(_("Record Track"));
+        td->b_show_track = false;
       } else {
         TrackPoint *tp = NULL;
         TrackPoint *tp1 = NULL;
@@ -179,6 +180,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
                 _("OpenCPN Info"), wxYES_NO | wxCENTER, 60)) {
           td->b_PersistTrack = true;
           g_pAIS->m_persistent_tracks[td->MMSI] = t;
+          td->b_show_track = true;
         }
       }
     }

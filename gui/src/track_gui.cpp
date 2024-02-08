@@ -155,6 +155,11 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
     }
   }
 
+  // Render tracks associated with persistent AIS targets as a contrasting color
+  if(m_track.GetName().StartsWith("AIS"))
+    col = GetGlobalColor(_T ( "TEAL1" ));
+
+
   double radius = 0.;
   if (g_bHighliteTracks) {
     double radius_meters = 20;  // 1.5 mm at original scale

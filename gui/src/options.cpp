@@ -7096,6 +7096,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
               break;
           }
         }
+        // Check for any persistently tracked target, force b_show_track ON
+        std::map<int, Track *>::iterator it;
+        it = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
+        if (it != g_pAIS->m_persistent_tracks.end())
+          pAISTarget->b_show_track = true;
       }
     }
   }

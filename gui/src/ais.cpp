@@ -1720,8 +1720,16 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     wxColour c = GetGlobalColor(_T ( "CHMGD" ));
     dc.SetPen(wxPen(c, 1.5 * AIS_nominal_line_width_pix));
 
+    // Check for any persistently tracked target
+    // Render persistently tracked targets slightly differently.
+    std::map<int, Track *>::iterator itt;
+    itt = g_pAIS->m_persistent_tracks.find(td->MMSI);
+    if (itt != g_pAIS->m_persistent_tracks.end()) {
+      c = GetGlobalColor(_T ( "TEAL1" ));
+      dc.SetPen(wxPen(c, 2.0 * AIS_nominal_line_width_pix));
+    }
+
 #ifdef ocpnUSE_GL
-//#ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
     if (!dc.GetDC()) {
