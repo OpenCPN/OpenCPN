@@ -145,6 +145,9 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   if (m_track.m_width != WIDTH_UNDEFINED) width = m_track.m_width;
   if (m_track.m_Colour == wxEmptyString) {
     col = basic_colour;
+    // Render tracks associated with persistent AIS targets as a contrasting color
+    if(m_track.GetName().StartsWith("AIS"))
+      col = GetGlobalColor(_T ( "TEAL1" ));
   } else {
     for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
          i++) {
@@ -155,9 +158,6 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
     }
   }
 
-  // Render tracks associated with persistent AIS targets as a contrasting color
-  if(m_track.GetName().StartsWith("AIS"))
-    col = GetGlobalColor(_T ( "TEAL1" ));
 
 
   double radius = 0.;

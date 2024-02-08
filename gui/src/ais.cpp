@@ -1725,8 +1725,21 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     std::map<int, Track *>::iterator itt;
     itt = g_pAIS->m_persistent_tracks.find(td->MMSI);
     if (itt != g_pAIS->m_persistent_tracks.end()) {
-      c = GetGlobalColor(_T ( "TEAL1" ));
-      dc.SetPen(wxPen(c, 2.0 * AIS_nominal_line_width_pix));
+      auto *ptrack = itt->second;
+      if (ptrack->m_Colour == wxEmptyString) {
+        c = GetGlobalColor(_T ( "TEAL1" ));
+        dc.SetPen(wxPen(c, 2.0 * AIS_nominal_line_width_pix));
+      }
+      else {
+        for (unsigned int i = 0;
+             i < sizeof(::GpxxColorNames) / sizeof(wxString); i++) {
+          if (ptrack->m_Colour == ::GpxxColorNames[i]) {
+            c = ::GpxxColors[i];
+            dc.SetPen(wxPen(c, 2.0 * AIS_nominal_line_width_pix));
+            break;
+          }
+        }
+      }
     }
 
 #ifdef ocpnUSE_GL
