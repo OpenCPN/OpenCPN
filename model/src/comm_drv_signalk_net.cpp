@@ -34,8 +34,10 @@
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
-
 #include "model/geodesic.h"
+#include "model/sys_events.h"
+
+#include "observable.h"
 
 #include "ixwebsocket/IXNetSystem.h"
 #include "ixwebsocket/IXWebSocket.h"
@@ -121,16 +123,22 @@ private:
   CommDriverSignalKNet* m_parentStream;
   std::string m_token;
   ix::WebSocket ws;
+  ObsListener resume_listener;
 };
 
 WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
                                  wxIPV4address address,
                                  wxEvtHandler* consumer,
-                                 const std::string& token) {
-  m_address = address;
-  m_consumer = consumer;
-  m_parentStream = parent;
-  m_token = token;
+                                 const std::string& token)
+      : m_address(address),
+        m_consumer(consumer),
+        m_parentStream(parent),
+        m_token(token) {
+  resume_listener.Init(SystemEvents::GetInstance().evt_resume,
+                       [&](ObservedEvt& ev) {
+                          ws.stop();
+                          ws.start();
+                          wxLogDebug("WebSocketThread: restarted"); });
 }
 
 void* WebSocketThread::Entry() {
@@ -146,10 +154,10 @@ void* WebSocketThread::Entry() {
 
   // Craft the address string
   std::stringstream wsAddress;
-  wsAddress << "ws://" << host.mb_str() << ":" << port
+  wsAddress << "ws://" << host << ":" << port
             << "/signalk/v1/stream?subscribe=all&sendCachedValues=false";
   std::stringstream wssAddress;
-  wssAddress << "wss://" << host.mb_str() << ":" << port
+  wssAddress << "wss://" << host << ":" << port
              << "/signalk/v1/stream?subscribe=all&sendCachedValues=false";
 
   if (!m_token.empty()) {
@@ -169,7 +177,8 @@ void* WebSocketThread::Entry() {
     } else if (msg->type == ix::WebSocketMessageType::Open) {
       wxLogDebug("Connection established");
     } else if (msg->type == ix::WebSocketMessageType::Error) {
-      wxLogDebug(wxString::Format("Connection error: %s", msg->errorInfo.reason.c_str()));
+      wxLogDebug(wxString::Format("Connection error: %s",
+                                  msg->errorInfo.reason.c_str()));
       ws.getUrl() == wsAddress.str() ? ws.setUrl(wssAddress.str())
                                      : ws.setUrl(wsAddress.str());
     }
@@ -183,6 +192,7 @@ void* WebSocketThread::Entry() {
     std::this_thread::sleep_for(100ms);
   }
 
+  ws.stop();
   m_parentStream->SetThreadRunning(false);
   m_parentStream->m_Thread_run_flag = -1;
 
@@ -190,7 +200,6 @@ void* WebSocketThread::Entry() {
 }
 
 void WebSocketThread::HandleMessage(const std::string& message) {
-  int yyp = 0;
   if (s_wsSKConsumer) {
     CommDriverSignalKNetEvent signalKEvent(wxEVT_COMMDRIVER_SIGNALK_NET, 0);
     auto buffer = std::make_shared<std::string>(message);
