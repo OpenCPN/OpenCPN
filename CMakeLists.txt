@@ -1460,8 +1460,8 @@ endif ()
 # Add android and windows extra, bundled GL headers
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
 
-# Ensure we have boost::filesystem if std::filesystem is missing.
-include(StdFilesystem)
+# Ensure we have ghc::filesystem if std::filesystem is missing.
+add_subdirectory(libs/std_filesystem)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
 
 message(STATUS "    Adding local LIBTESS2")

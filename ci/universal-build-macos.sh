@@ -46,7 +46,6 @@ brew list --versions python3 || {
 
 
 # Install the build dependencies for OpenCPN
-brew install boost    # pre-10.15 compatibility
 brew install cmake
 brew install gettext
 
@@ -120,4 +119,3 @@ make create-dmg
 
 # The build is over, if there is error now it is not ours
 set +e
-

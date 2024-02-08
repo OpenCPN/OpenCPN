@@ -38,11 +38,6 @@
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
 
-// Ubuntu Bionic:
-#elif !defined(__clang_major__) && defined(__GNUC__) && (__GNUC__ < 8)
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-
 #else
 #include <filesystem>
 #include <utility>

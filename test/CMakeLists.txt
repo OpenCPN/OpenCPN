@@ -87,10 +87,6 @@ if (MSVC)
 	  PRIVATE setupapi.lib psapi.lib ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
   )
 endif ()
-if (APPLE)
-  # 10.13 compat support
-  target_link_libraries(tests PUBLIC BOOST_SYSTEM BOOST_FILESYSTEM)
-endif ()
 
 target_include_directories(
   tests

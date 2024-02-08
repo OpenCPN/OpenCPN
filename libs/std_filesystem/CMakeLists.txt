@@ -23,7 +23,6 @@
 #
 # Exports: ocpn::filesystem transitive link target
 #
-# FIXME (leamas) merge with libs/ghc to a common lib.
 
 if (TARGET ocpn::filesystem)
   return ()
@@ -44,6 +43,6 @@ if (${lc_compiler_id} MATCHES clang
   # Boost pulled in from Homebrew on the builders is not good enough as
   # it is not ABI compatible with older targets, use ghc instead.
   target_include_directories(
-    _FILESYS INTERFACE ${PROJECT_SOURCE_DIR}/libs/ghc/include
+    _FILESYS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
   )
 endif ()
