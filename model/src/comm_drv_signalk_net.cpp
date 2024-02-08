@@ -120,6 +120,7 @@ private:
   wxEvtHandler* m_consumer;
   CommDriverSignalKNet* m_parentStream;
   std::string m_token;
+  ix::WebSocket ws;
 };
 
 WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
@@ -156,32 +157,26 @@ void* WebSocketThread::Entry() {
     wssAddress << "&token=" << m_token;
   }
 
-  ix::WebSocket ws;
   ws.setUrl(wssAddress.str());
   ix::SocketTLSOptions opt;
   opt.disable_hostname_validation = true;
   opt.caFile = "NONE";
   ws.setTLSOptions(opt);
 
-  ws.setOnMessageCallback([&](const ix::WebSocketMessagePtr& msg) {
+  auto message_callback = [&](const ix::WebSocketMessagePtr& msg) {
     if (msg->type == ix::WebSocketMessageType::Message) {
-      // std::cout << "received message: " << msg->str << std::endl;
-      // std::cout << "> " << std::flush;
       HandleMessage(msg->str);
     } else if (msg->type == ix::WebSocketMessageType::Open) {
-      //std::cout << "Connection established" << std::endl;
-      //std::cout << "> " << std::flush;
       wxLogDebug("Connection established");
     } else if (msg->type == ix::WebSocketMessageType::Error) {
-      // Maybe SSL is not configured properly
-      //std::cout << "Connection error: " << msg->errorInfo.reason << std::endl;
-      //std::cout << "> " << std::flush;
       wxLogDebug(wxString::Format("Connection error: %s", msg->errorInfo.reason.c_str()));
       ws.getUrl() == wsAddress.str() ? ws.setUrl(wssAddress.str())
                                      : ws.setUrl(wsAddress.str());
     }
-  });
+  };
 
+
+  ws.setOnMessageCallback(message_callback);
   ws.start();
 
   while (m_parentStream->m_Thread_run_flag > 0) {
