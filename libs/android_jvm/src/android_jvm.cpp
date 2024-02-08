@@ -431,4 +431,47 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1,
   return return_string;
 }
 
+wxString callActivityMethod_ssi(const char *method, wxString parm1, int parm2) {
+  if (!java_vm) return "NOK";
+
+  if (CheckPendingJNIException()) return _T("NOK");
+
+  wxString return_string;
+  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+      "org/qtproject/qt5/android/QtNative", "activity",
+      "()Landroid/app/Activity;");
+  if (CheckPendingJNIException()) return _T("NOK");
+
+  if (!activity.isValid()) {
+    return return_string;
+  }
+
+  //  Need a Java environment to decode the resulting string
+  JNIEnv *jenv;
+
+  if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
+    // qDebug() << "GetEnv failed.";
+    return _T("jenv Error");
+  }
+
+  wxCharBuffer p1b = parm1.ToUTF8();
+  jstring p1 = (jenv)->NewStringUTF(p1b.data());
+
+  QAndroidJniObject data = activity.callObjectMethod(
+      method, "(Ljava/lang/String;I)Ljava/lang/String;", p1, parm2);
+
+  (jenv)->DeleteLocalRef(p1);
+
+  if (CheckPendingJNIException()) return _T("NOK");
+
+  jstring s = data.object<jstring>();
+
+  if ((jenv)->GetStringLength(s)) {
+    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+    return_string = wxString(ret_string, wxConvUTF8);
+  }
+
+  return return_string;
+}
+
 void androidTerminate() { callActivityMethod_vs("terminateApp"); }
