@@ -141,6 +141,7 @@ public:
 
   int LoadMyConfig();
   void LoadS57Config();
+  wxString FindNewestUsableBackup() const;
   void LoadNavObjects();
   virtual void AddNewRoute(Route *pr);
   virtual void UpdateRoute(Route *pr);

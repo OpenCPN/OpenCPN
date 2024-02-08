@@ -123,6 +123,7 @@ public:
            NmeaLog& nmea_log);
   ~Routeman();
 
+  bool DeleteTrack(Track *pTrack);
   bool DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes);
   void DeleteAllRoutes(NavObjectChanges* nav_obj_changes);
 

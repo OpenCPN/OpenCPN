@@ -1679,7 +1679,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   pConfig->UpdateNavObj();
 
-  //    pConfig->m_pNavObjectChangesSet->Clear();
   pConfig->m_pNavObjectChangesSet->reset();
 
   // Remove any leftover Routes and Waypoints from config file as they were
