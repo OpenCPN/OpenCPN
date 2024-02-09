@@ -947,7 +947,7 @@ void ConnectionsDialog::Init() {
 
   ShowNMEACommon(true);
   ShowNMEASerial(true);
-  ShowNMEANet(true);
+  ShowNMEANet(false);
   connectionsaved = TRUE;
 
   new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
@@ -1329,8 +1329,6 @@ void ConnectionsDialog::SetDSFormOptionVizStates(void) {
   m_tAuthToken->Show();
   m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show();
-  m_stNetDataProtocol->Show();
-  m_choiceNetDataProtocol->Show();
 
   if (m_rbTypeSerial->GetValue()) {
     m_cbCheckSKDiscover->Hide();
@@ -1762,7 +1760,10 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
   m_buttonRemove->Hide();  // Disable();
   m_buttonAdd->Hide();     // Disable();
 
+  // Default is always "serial"
+  m_rbTypeSerial->SetValue(TRUE);
   SetDSFormRWStates();
+  SetNMEAFormToSerial();
 
   RecalculateSize();
 
