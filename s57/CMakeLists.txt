@@ -60,7 +60,7 @@ endif ()
 
 target_include_directories(S57ENC PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-if (OCPN_USE_CURL AND NOT QT_ANDROID)
+if (OCPN_USE_CURL AND NOT ANDROID)
   target_link_libraries(S57ENC PUBLIC ocpn::wxcurl)
 endif ()
 if (TARGET LibLZMA::LibLZMA)
@@ -81,6 +81,6 @@ target_include_directories(
     ${CMAKE_BINARY_DIR}/include
 )
 
-if (QT_ANDROID)
+if (ANDROID)
   target_include_directories(S57ENC PUBLIC ${CMAKE_SOURCE_DIR}/android)
 endif ()

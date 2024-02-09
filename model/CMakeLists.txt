@@ -202,7 +202,7 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-#if (NOT QT_ANDROID)
+#if (NOT ANDROID)
   list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
 #endif ()
 
@@ -211,7 +211,7 @@ if (LINUX)
   list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n2k_socketcan.cpp)
 endif ()
 
-if (LINUX AND NOT QT_ANDROID)
+if (LINUX AND NOT ANDROID)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_client.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_client.cpp)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_server.h )
@@ -232,7 +232,7 @@ if (APPLE)
   list(APPEND SRC ${MODEL_SRC_DIR}/macutils.c)
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_bt.cpp)
   list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_int.cpp)
 endif ()
@@ -328,7 +328,7 @@ if (MSVC)
   target_link_libraries(_OCPN_MODEL INTERFACE iphlpapi)
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   target_link_libraries(_OCPN_MODEL INTERFACE ocpn::java-jvm)
   target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
