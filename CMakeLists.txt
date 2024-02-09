@@ -1059,6 +1059,10 @@ if (APPLE)
     target_include_directories(
       ${PACKAGE_NAME} PRIVATE "${OCPN_DEPS_BUNDLE_PATH}/include"
     )
+    set_target_properties(${PACKAGE_NAME} PROPERTIES
+      BUILD_RPATH "${OCPN_DEPS_BUNDLE_PATH}/lib"
+      INSTALL_RPATH "${OCPN_DEPS_BUNDLE_PATH}/lib"
+  )
   endif ()
 endif ()
 
