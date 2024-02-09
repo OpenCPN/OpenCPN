@@ -173,11 +173,8 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
 
   m_mrq_container = new MrqContainer;
 
-  auto resume_action = [&](ObservedEvt&) {
-    wxTimerEvent evt;
-    OnTimerSocket(evt); };
-  resume_listener.Init(SystemEvents::GetInstance().evt_resume, resume_action);
-
+  resume_listener.Init(SystemEvents::GetInstance().evt_resume,
+                       [&](ObservedEvt&) { OnTimerSocket(); });
   Open();
 }
 
@@ -363,7 +360,7 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   }
 }
 
-void CommDriverN0183Net::OnTimerSocket(wxTimerEvent&) {
+void CommDriverN0183Net::OnTimerSocket() {
   //  Attempt a connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
