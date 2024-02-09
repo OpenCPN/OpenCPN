@@ -61,8 +61,8 @@ SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 SET(BUILD_SHARED_LIBS "ON")
 
 
-#  QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and wxWidgets_USE_FILE is not useful.
-IF(NOT QT_ANDROID)
+#  ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and wxWidgets_USE_FILE is not useful.
+IF(NOT ANDROID)
 IF(NOT DEFINED wxWidgets_USE_FILE)
   SET(wxWidgets_USE_LIBS base core net xml html adv)
   SET(BUILD_SHARED_LIBS TRUE)
@@ -70,16 +70,16 @@ IF(NOT DEFINED wxWidgets_USE_FILE)
 ENDIF(NOT DEFINED wxWidgets_USE_FILE)
 
   INCLUDE(${wxWidgets_USE_FILE})
-ENDIF(NOT QT_ANDROID)
+ENDIF(NOT ANDROID)
 
 IF(MSYS)
 # this is just a hack. I think the bug is in FindwxWidgets.cmake
 STRING( REGEX REPLACE "/usr/local" "\\\\;C:/MinGW/msys/1.0/usr/local" wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} )
 ENDIF(MSYS)
 
-#  QT_ANDROID is a cross-build, so the native FIND_PACKAGE(OpenGL) is not useful.
+#  ANDROID is a cross-build, so the native FIND_PACKAGE(OpenGL) is not useful.
 #
-IF (NOT QT_ANDROID )
+IF (NOT ANDROID )
 FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
 
@@ -93,9 +93,8 @@ IF(OPENGL_GLU_FOUND)
 ELSE(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_GLU_FOUND)
-ENDIF(NOT QT_ANDROID)
+ENDIF(NOT ANDROID)
 
 SET(BUILD_SHARED_LIBS TRUE)
 
 FIND_PACKAGE(Gettext REQUIRED)
-

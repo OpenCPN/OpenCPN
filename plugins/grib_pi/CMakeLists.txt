@@ -62,15 +62,15 @@ if (MSVC)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
 endif ()
 
-# QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
+# ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
 # wxWidgets_USE_FILE are not useful.
-if (QT_ANDROID)
+if (ANDROID)
   set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
   set(BUILD_SHARED_LIBS "ON")
   add_definitions(
     "-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression"
   )
-else (QT_ANDROID)
+else (ANDROID)
   if (NOT DEFINED wxWidgets_USE_FILE)
     set(wxWidgets_USE_LIBS base core net xml html adv)
     set(BUILD_SHARED_LIBS TRUE)
@@ -78,7 +78,7 @@ else (QT_ANDROID)
   endif (NOT DEFINED wxWidgets_USE_FILE)
 
   include(${wxWidgets_USE_FILE})
-endif (QT_ANDROID)
+endif (ANDROID)
 
 find_package(Gettext REQUIRED)
 
@@ -127,10 +127,10 @@ if (WIN32)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
 endif (WIN32)
 
-#if (QT_ANDROID)
+#if (ANDROID)
   set(SRC_GRIB ${SRC_GRIB} src/pi_shaders.h)
   set(SRC_GRIB ${SRC_GRIB} src/pi_shaders.cpp)
-#endif (QT_ANDROID)
+#endif (ANDROID)
 
 if (NOT UNIX)
   set(SRC_BZIP
@@ -148,7 +148,7 @@ if (NOT UNIX)
   include_directories(${PLUGIN_SOURCE_DIR}/src/bzip2)
 endif (NOT UNIX)
 
-if (QT_ANDROID)
+if (ANDROID)
   set(SRC_BZIP_ANDROID
       src/bzip2/bzlib.c
       src/bzip2/blocksort.c
@@ -165,7 +165,7 @@ if (QT_ANDROID)
 
   message(STATUS ${SRC_GRIB})
 
-endif (QT_ANDROID)
+endif (ANDROID)
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
@@ -215,7 +215,7 @@ if (WIN32)
   add_dependencies(${PACKAGE_NAME} ${PARENT})
 endif (WIN32)
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${OCPN_Core_LIBRARIES})
   if (OCPN_USE_SVG)
@@ -224,7 +224,7 @@ if (NOT QT_ANDROID)
     endif()
   endif()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
-else (NOT QT_ANDROID)
+else (NOT ANDROID)
   target_include_directories(
     ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
   )
@@ -248,7 +248,7 @@ else (NOT QT_ANDROID)
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
-endif (NOT QT_ANDROID)
+endif (NOT ANDROID)
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
@@ -264,7 +264,7 @@ endif (APPLE)
 
 if (NOT WIN32
     AND NOT APPLE
-    AND NOT QT_ANDROID
+    AND NOT ANDROID
 )
   include(OcpnFindGtk)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::gtk)
@@ -274,7 +274,7 @@ endif ()
 
 if (UNIX
     AND NOT APPLE
-    AND NOT QT_ANDROID
+    AND NOT ANDROID
 )
   find_package(BZip2 REQUIRED)
   include_directories(${BZIP2_INCLUDE_DIR})
@@ -287,7 +287,7 @@ if (UNIX
 endif (
   UNIX
   AND NOT APPLE
-  AND NOT QT_ANDROID
+  AND NOT ANDROID
 )
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)

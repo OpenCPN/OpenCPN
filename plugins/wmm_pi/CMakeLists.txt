@@ -32,7 +32,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 if (APPLE)
   include_directories(${CMAKE_SOURCE_DIR}/buildosx/include)
-elseif (QT_ANDROID)
+elseif (ANDROID)
   include_directories(${CMAKE_SOURCE_DIR}/android)
 endif ()
 
@@ -61,10 +61,10 @@ set(SRC_WMM
     src/pi_ocpndc.h
 )
 
-if (QT_ANDROID)
+if (ANDROID)
   set(SRC_WMM ${SRC_WMM} src/pi_shaders.h)
   set(SRC_WMM ${SRC_WMM} src/pi_shaders.cpp)
-endif (QT_ANDROID)
+endif (ANDROID)
 
 set(SRC_JSON
     src/json_defs.h
@@ -86,12 +86,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   )
 endif ()
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
   target_link_libraries(
     ${PACKAGE_NAME}
       PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson  ocpn::gl-headers
   )
-else (NOT QT_ANDROID)
+else (NOT ANDROID)
   target_link_libraries(
     ${PACKAGE_NAME}
     PRIVATE ocpn::wxjson
@@ -105,7 +105,7 @@ else (NOT QT_ANDROID)
   )
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
-endif (NOT QT_ANDROID)
+endif (NOT ANDROID)
 
 if (WIN32)
   target_link_libraries(${PACKAGE_NAME} PRIVATE "GLU_static")
