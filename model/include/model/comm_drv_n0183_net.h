@@ -77,7 +77,8 @@ public:
   bool SetOutputSocketOptions(wxSocketBase* tsock);
   bool SendSentenceNetwork(const wxString& payload);
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
-  void OnTimerSocket(wxTimerEvent& event);
+  void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
+  void OnTimerSocket();
   void OnSocketEvent(wxSocketEvent& event);
   void OpenNetworkGPSD();
   void OpenNetworkTCP(unsigned int addr);
