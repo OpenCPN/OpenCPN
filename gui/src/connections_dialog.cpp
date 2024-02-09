@@ -415,6 +415,7 @@ void ConnectionsDialog::Init() {
     m_choiceBTDataSources =
         new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
                      wxSize(30 * ref_size, 2 * ref_size), mt);
+    m_choiceBTDataSources->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
 
     m_choiceBTDataSources->Hide();
     sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, /*wxEXPAND |*/ wxTOP,
@@ -470,9 +471,11 @@ void ConnectionsDialog::Init() {
   m_choiceNetDataProtocol =
       new wxChoice(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
+  m_choiceNetDataProtocol->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
   m_choiceNetDataProtocol->SetSelection(0);
   m_choiceNetDataProtocol->Enable(TRUE);
   gSizerNetProps->Add(m_choiceNetDataProtocol, 1, wxEXPAND | wxTOP, 5);
+
 
   m_stNetAddr = new wxStaticText(m_container, wxID_ANY, _("Address"),
                                  wxDefaultPosition, wxDefaultSize, 0);
@@ -545,6 +548,8 @@ void ConnectionsDialog::Init() {
   m_choiceBaudRate =
       new wxChoice(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0);
+  m_choiceBaudRate->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
+
   m_choiceBaudRate->SetSelection(0);
   fgSizer1->Add(m_choiceBaudRate, 1, wxEXPAND | wxTOP, 5);
 
@@ -559,6 +564,8 @@ void ConnectionsDialog::Init() {
   m_choiceSerialProtocol = new wxChoice(
       m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0);
+  m_choiceSerialProtocol->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
+
   m_choiceSerialProtocol->SetSelection(0);
   m_choiceSerialProtocol->Enable(TRUE);
   fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
@@ -576,6 +583,8 @@ void ConnectionsDialog::Init() {
       new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
                    wxSize(8 * m_parent->GetCharWidth(), -1),
                    m_choicePriorityNChoices, m_choicePriorityChoices, 0);
+  m_choicePriority->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
+
   m_choicePriority->SetSelection(9);
   fgSizer1->Add(m_choicePriority, 0, wxEXPAND | wxTOP, 5);
 
@@ -587,6 +596,8 @@ void ConnectionsDialog::Init() {
   wxArrayString choices = GetAvailableSocketCANInterfaces();
   m_choiceCANSource = new wxChoice(m_container, wxID_ANY, wxDefaultPosition,
                                    wxDefaultSize, choices);
+  m_choiceCANSource->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
+
   m_choiceCANSource->SetSelection(0);
   m_choiceCANSource->Enable(TRUE);
   fgSizer1->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
@@ -670,6 +681,8 @@ void ConnectionsDialog::Init() {
   m_choicePrecision =
       new wxChoice(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choicePrecisionNChoices, m_choicePrecisionChoices, 0);
+  m_choicePrecision->Bind(wxEVT_MOUSEWHEEL, &ConnectionsDialog::OnWheelChoice, this);
+
   m_choicePrecision->SetSelection(g_NMEAAPBPrecision);
   fgSizer5->Add(m_choicePrecision, 0, wxALL, 5);
 
@@ -939,6 +952,10 @@ void ConnectionsDialog::Init() {
 
   new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
                            [&](ObservedEvt&) { LoadSerialPorts(m_comboPort); });
+}
+
+void ConnectionsDialog::OnWheelChoice(wxMouseEvent& event) {
+  return;
 }
 
 void ConnectionsDialog::SetSelectedConnectionPanel(

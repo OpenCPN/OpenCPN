@@ -117,6 +117,8 @@ public:
   void onBTScanTimer(wxTimerEvent &event);
   void StopBTScan(void);
 
+  void OnWheelChoice(wxMouseEvent& event);
+
 //private:
   wxScrolledWindow *m_container;
   options *m_parent;
