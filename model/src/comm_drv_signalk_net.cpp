@@ -170,15 +170,17 @@ void* WebSocketThread::Entry() {
   opt.disable_hostname_validation = true;
   opt.caFile = "NONE";
   ws.setTLSOptions(opt);
+  ws.setPingInterval(30);
 
   auto message_callback = [&](const ix::WebSocketMessagePtr& msg) {
     if (msg->type == ix::WebSocketMessageType::Message) {
       HandleMessage(msg->str);
     } else if (msg->type == ix::WebSocketMessageType::Open) {
-      wxLogDebug("Connection established");
+      wxLogDebug("websocket: Connection established");
+    } else if (msg->type == ix::WebSocketMessageType::Close) {
+      wxLogDebug("websocket: Connection disconnected");
     } else if (msg->type == ix::WebSocketMessageType::Error) {
-      wxLogDebug(wxString::Format("Connection error: %s",
-                                  msg->errorInfo.reason.c_str()));
+      wxLogDebug("websocket: error: %s", msg->errorInfo.reason.c_str());
       ws.getUrl() == wsAddress.str() ? ws.setUrl(wssAddress.str())
                                      : ws.setUrl(wsAddress.str());
     }
