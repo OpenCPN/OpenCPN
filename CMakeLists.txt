@@ -69,6 +69,7 @@ if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
 endif ()
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
+message(STATUS "cmake_system_processor: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # Locations where cmake looks for cmake modules.
 set(
