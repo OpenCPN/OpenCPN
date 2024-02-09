@@ -114,10 +114,10 @@ jobs:
       - checkout
       - restore_cache:
          keys:
-           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+           - macos-cache-v2-universal-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
       - run: ci/universal-build-macos.sh
       - save_cache:
-         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+         key: macos-cache-v2-universal-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
          paths:
            - /usr/local/bin
            - /usr/local/include
@@ -139,10 +139,10 @@ jobs:
       - checkout
       - restore_cache:
          keys:
-           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+           - macos-cache-v2-intel-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
       - run: ci/universal-build-macos.sh
       - save_cache:
-         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+         key: macos-cache-v2-intel-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
          paths:
            - /usr/local/bin
            - /usr/local/include
