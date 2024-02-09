@@ -10,7 +10,7 @@ endif ()
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 set(PORTAUDIO_MSG "Use portaudio(3) to play sounds if available")
-if (WIN32 OR APPLE OR QT_ANDROID)
+if (WIN32 OR APPLE OR ANDROID)
   option(OCPN_ENABLE_PORTAUDIO ${PORTAUDIO_MSG} OFF)
 else ()
   option(OCPN_ENABLE_PORTAUDIO ${PORTAUDIO_MSG} ON)
@@ -49,7 +49,7 @@ if (WIN32)
   list(APPEND SRC src/MswSound.cpp include/MswSound.h)
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   list(APPEND SRC src/AndroidSound.cpp include/AndroidSound.h)
 endif ()
 
@@ -79,7 +79,7 @@ target_include_directories(SOUND
 )
 target_link_libraries(SOUND PRIVATE ${wxWidgets_LIBRARIES})
 
-if (QT_ANDROID)
+if (ANDROID)
   target_link_libraries(SOUND PRIVATE ocpn::java-jvm)
 endif ()
 message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")

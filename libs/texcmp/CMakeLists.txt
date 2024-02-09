@@ -34,7 +34,7 @@ set(SRC
 add_library(TEXCMP STATIC ${SRC})
 add_library(ocpn::texcmp  ALIAS TEXCMP)
 
-IF( NOT QT_ANDROID)
+IF( NOT ANDROID)
   if (NOT wxWidgets_INCLUDE_DIRS)
     find_package(GTK3)
     if (GTK3_FOUND)
@@ -73,7 +73,7 @@ endif ()
 # always use optimizations for the texture compression which is much faster
 
 IF (NOT MSVC)
-  IF (HAVE_MSSE2 AND NOT QT_ANDROID)
+  IF (HAVE_MSSE2 AND NOT ANDROID)
     # Using sse which makes the compression run about 50% faster
     message (STATUS "Compiling texture compression library with sse support")
     set_property(
