@@ -382,6 +382,7 @@ cd wxWidgets-${wx_version}
 
 # Apply the patch for wxSlider on macOS
 patch < $(dirname "${scriptpath}")/../buildosx/wx_slider_patch.diff
+patch < $(dirname "${scriptpath}")/../buildosx/wx_sonoma_scrolled_window_clip.diff
 
 ./configure \
       --with-cxx=11 \
