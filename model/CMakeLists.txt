@@ -285,7 +285,7 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif ()
 
-if (UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE AND NOT ANDROID)
   find_package(GLIB COMPONENTS gio gobject REQUIRED)
   if (GLIB_FOUND)
     target_link_libraries(_OCPN_MODEL INTERFACE glib::glib)
