@@ -2716,6 +2716,10 @@ if (NOT QT_ANDROID)
   add_subdirectory(cli)
 endif ()
 
+if (NOT QT_ANDROID)
+  add_subdirectory(glutil)
+endif ()
+
 if (OCPN_BUILD_TEST)
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
