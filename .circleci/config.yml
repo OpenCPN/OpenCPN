@@ -149,6 +149,13 @@ jobs:
            - /usr/local/lib
       - run: ci/generic-upload.sh
 
+  build-local-runner:
+    docker:
+      - image: cimg/base:current
+    resource_class: opencpn/linux
+    steps:
+      - run: echo "Hi I'm on a Container Runner!"
+
 std-filters: &std-filters
   filters:
     branches:
@@ -165,20 +172,22 @@ workflows:
       - build-bookworm:
           <<: *std-filters
 
-      - build-focal:
-          <<: *std-filters
+#      - build-focal:
+#          <<: *std-filters
 
-      - build-jammy:
-          <<: *std-filters
+#      - build-jammy:
+#          <<: *std-filters
 
-      - build-flatpak:
-          <<: *std-filters
+#      - build-flatpak:
+#          <<: *std-filters
 
-      - build-android-armhf:
-          <<: *std-filters
+#      - build-android-armhf:
+#          <<: *std-filters
 
-      - build-macos-universal:
-          <<: *std-filters
+ #     - build-macos-universal:
+ #         <<: *std-filters
 
-      - build-macos-intel-legacy:
-          <<: *std-filters
+ #     - build-macos-intel-legacy:
+ #         <<: *std-filters
+
+      - build-local-runner:
