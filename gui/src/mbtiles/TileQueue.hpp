@@ -5,7 +5,7 @@
 #include <wx/event.h>
 #include <wx/thread.h>
 
-#include "mbtilesTileDescriptor.hpp"
+#include "TileDescriptor.hpp"
 
 /// @brief Class implementing a thread safe tile queue between two thread
 class TileQueue {

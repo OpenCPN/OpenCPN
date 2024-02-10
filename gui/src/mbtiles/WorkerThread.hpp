@@ -12,7 +12,7 @@
 #include <sqlite3.h>
 #include <SQLiteCpp/SQLiteCpp.h>
 
-#include "mbtilesTileQueue.hpp"
+#include "TileQueue.hpp"
 
 // Pointer to the ChartCanvas object owning our MbTiles ChartBase object.
 // Since ChartBase class does not have a pointer to the parent widget, we have
