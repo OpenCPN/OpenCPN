@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implements comm_navmsg -- raw, undecoded messages.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ /**************************************************************************
+ *   Copyright (C) 2022  David Register                                    *
+ *   Copyright (C) 2022 - 2024  Alec Leamas                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file comm_navmsg.cpp  Implement comm_navmsg.h */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -49,6 +46,9 @@ std::string NavAddr::BusToString(NavAddr::Bus b) {
       break;
     case NavAddr::Bus::Onenet:
       return "Onenet";
+      break;
+    case NavAddr::Bus::Plugin:
+      return "Plugin";
       break;
     case NavAddr::Bus::TestBus:
       return "TestBus";
