@@ -767,7 +767,7 @@ void MyApp::InitRestListeners() {
   auto reverse_route = [&](wxCommandEvent ev) {
     auto guid = ev.GetString().ToStdString();
     ReverseRoute(guid); };
-  rest_reverse_listener.Init(m_rest_server.activate_route, reverse_route);
+  rest_reverse_listener.Init(m_rest_server.reverse_route, reverse_route);
 }
 
   bool MyApp::OpenFile(const std::string& path) {
