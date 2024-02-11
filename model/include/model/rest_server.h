@@ -266,6 +266,9 @@ public:
   /** Semi-static storage used by IoThread C code. */
   std::string m_key_file;
 
+  /** IoThread interface: body of return message, if any. */
+  std::string m_reply_body;
+
   /** IoThread interface: Guards return_status */
   std::mutex ret_mutex;
 

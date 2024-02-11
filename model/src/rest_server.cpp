@@ -56,12 +56,14 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
 static const char* const kVersionReply = R"""( { "version": "@version@" })""";
+static const char* const kListRoutesReply =
+    R"""( { "version": "@version@", "routes": @routes@ })""";
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
 
 struct RestIoEvtData {
-  const enum class Cmd { Ping, Object, CheckWrite } cmd;
+  const enum class Cmd { Ping, Object, CheckWrite, ListRoutes } cmd;
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
   const bool force;           ///< rest API parameter force
@@ -90,6 +92,14 @@ struct RestIoEvtData {
                                           const std::string& guid) {
     return {Cmd::CheckWrite, key, src, guid, false, false};
   }
+
+  /** Create a Cmd::ListRoutes instance. */
+  static RestIoEvtData CreateListRoutesData(const std::string& key,
+                                            const std::string& src) {
+    return {Cmd::ListRoutes, key, src, "", false, false};
+  }
+
+
 
 private:
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
@@ -189,6 +199,26 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
+static void HandleListRoutes(struct mg_connection* c, struct mg_http_message* hm,
+                           RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateListRoutesData(apikey, source));
+    PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
+    std::unique_lock<std::mutex> lock{parent->ret_mutex};
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+      return parent->GetReturnStatus() != RestServerResult::Void;
+    });
+    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+  }
+  mg_http_reply(c, 200, "",  parent->m_reply_body.c_str());
+}
+
+
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
 static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
@@ -215,8 +245,10 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       std::string reply(kVersionReply);
       ocpn::replace(reply, "@version@", PACKAGE_VERSION);
       mg_http_reply(c, 200, "", reply.c_str());
+    } else if (mg_http_match_uri(hm, "/api/list-routes")) {
+      HandleListRoutes(c, hm, parent);
     } else {
-      mg_http_reply(c, 404, "", "url: not found");
+      mg_http_reply(c, 404, "", "url: not found\n");
     }
   }
 }
@@ -387,6 +419,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
 
 void RestServer::HandleServerMessage(ObservedEvt& event) {
   auto evt_data = UnpackEvtPointer<RestIoEvtData>(event);
+  m_reply_body = "";
   switch (event.GetId()) {
     case ORS_START_OF_SESSION:
       // Prepare a temp file to catch chuncks that might follow
@@ -417,9 +450,9 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
     return;
   }
 
-  UpdateReturnStatus(RestServerResult::NoError);
   switch (evt_data->cmd) {
     case RestIoEvtData::Cmd::Ping:
+      UpdateReturnStatus(RestServerResult::NoError);
       return;
     case RestIoEvtData::Cmd::CheckWrite: {
       auto guid = evt_data->payload;
@@ -453,6 +486,21 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       }
       break;
     }
+    case RestIoEvtData::Cmd::ListRoutes: {
+      std::stringstream ss;
+      ss << "[";
+      for (auto& r : *pRouteList) {
+        if (ss.str() != "[") ss << ", ";
+        ss << "[ \"" << r->GetGUID() << "\", \"" << r->GetName() << "\"]";
+      }
+      ss << "]";
+      std::string reply(kListRoutesReply);
+      ocpn::replace(reply, "@version@", PACKAGE_VERSION);
+      ocpn::replace(reply, "@routes@", ss.str());
+      m_reply_body = reply;
+      UpdateReturnStatus(RestServerResult::NoError);
+    }
+    break;
   }
 }
 
