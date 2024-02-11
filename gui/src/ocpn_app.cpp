@@ -748,11 +748,26 @@ static void ActivateRoute(const std::string &guid) {
   route->m_bRtIsSelected = false;
 }
 
+static void ReverseRoute(const std::string &guid) {
+  Route *route = g_pRouteMan->FindRouteByGUID(guid);
+  if (!route) {
+    wxLogMessage("Cannot activate guid: no such route");
+    return;
+  }
+  route->Reverse();
+  // FIXNE (leamas) update routeman_gui
+}
+
+
 void MyApp::InitRestListeners() {
   auto activate_route = [&](wxCommandEvent ev) {
     auto guid = ev.GetString().ToStdString();
     ActivateRoute(guid); };
-  rest_srv_listener.Init(m_rest_server.activate_route, activate_route);
+  rest_activate_listener.Init(m_rest_server.activate_route, activate_route);
+  auto reverse_route = [&](wxCommandEvent ev) {
+    auto guid = ev.GetString().ToStdString();
+    ReverseRoute(guid); };
+  rest_reverse_listener.Init(m_rest_server.activate_route, reverse_route);
 }
 
   bool MyApp::OpenFile(const std::string& path) {

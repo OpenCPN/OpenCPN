@@ -232,6 +232,9 @@ public:
 
   /** Notified with a string GUID when user wants to activate a route. */
   EventVar activate_route;
+
+  /** Notified with a string GUID when user wants to reverse a route. */
+  EventVar reverse_route;
 };
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */
