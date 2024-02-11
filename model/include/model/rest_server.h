@@ -171,6 +171,45 @@ public:
  *    - Returns (example):
  *        {"version": "5.8.9" }
  *
+ *  GET /api/list-routes  <br>
+ *  Return list of available routes
+ *    - source=`<ip>` Mandatory, origin ip address or hostname.
+ *    - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *    - Returns json data
+ *      {
+ *        "version": "5.8.0",
+ *        "routes":  [ ["guid-1": "name1" ], ["guid-2": "name2" ], ... ]
+ *      }
+ *
+ *
+ *  GET /api/activate-route  <br>
+ *  Activate an existing route.
+ *    - source=`<ip>` Mandatory, origin ip address or hostname.
+ *    - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *    - guid=`<guid>` Route guid.
+ *    - Returns json data (activating already active route silently ignored)
+ *         {"result": `<code>`}
+ *
+ *  GET /api/reverse-route  <br>
+ *  Reverse an existing route
+ *    - source=`<ip>` Mandatory, origin ip address or hostname.
+ *    - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *    - guid=`<guid>` Route guid.
+ *    - Returns json data
+ *         {"result": `<code>`}
+ *
+ *  POST /api/plugin-msg
+ *  Upload string message forwarded to all plugins
+ *     - Parameters:
+ *         - source=`<ip>` Mandatory, origin ip address or hostname.
+ *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *         - id=`<id>` Mandatory, message id used by listeners.
+ *     - Body:
+ *         - Arbitrary text.
+ *     - Returns:
+ *         {"result": `<code>`}
+ *
+ *
  * Authentication uses a pairing mechanism. When an unpaired device
  * tries to connect, the API generates a random pincode which is
  * sent to the connecting party where it is displayed to user. User
@@ -232,7 +271,6 @@ public:
 
   /** IoThread interface: Guards return_status */
   std::condition_variable return_status_cv;
-
 
   /**
    * IoThread interface: Binary exit synchronization, released when
