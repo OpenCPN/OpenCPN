@@ -92,7 +92,8 @@ private:
   int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code)
 
   void InitRestListeners();
-  ObsListener rest_srv_listener;
+  ObsListener rest_activate_listener;
+  ObsListener rest_reverse_listener;
 
 };
 
