@@ -68,7 +68,8 @@ struct RestIoEvtData {
     Object,
     CheckWrite,
     ListRoutes,
-    ActivateRoute
+    ActivateRoute,
+    ReverseRoute
   } cmd;
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
@@ -109,6 +110,11 @@ struct RestIoEvtData {
                                                const std::string& src,
                                                const std::string& guid) {
     return {Cmd::ActivateRoute, key, src, guid, false, false};
+  }
+  static RestIoEvtData CreateReverseRouteData(const std::string& key,
+                                               const std::string& src,
+                                               const std::string& guid) {
+    return {Cmd::ReverseRoute, key, src, guid, false, false};
   }
 private:
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
@@ -248,6 +254,28 @@ static void HandleActivateRoute(struct mg_connection* c,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
+static void HandleReverseRoute(struct mg_connection* c,
+                               struct mg_http_message* hm,
+                               RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  std::string guid = HttpVarToString(hm->query, "guid");
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateReverseRouteData(apikey, source, guid));
+    PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
+    std::unique_lock<std::mutex> lock{parent->ret_mutex};
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+      return parent->GetReturnStatus() != RestServerResult::Void;
+    });
+    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+  }
+  mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
+}
+
+
 
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
@@ -279,6 +307,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       HandleListRoutes(c, hm, parent);
     } else if (mg_http_match_uri(hm, "/api/activate-route")) {
       HandleActivateRoute(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/reverse-route")) {
+      HandleReverseRoute(c, hm, parent);
     } else {
       mg_http_reply(c, 404, "", "url: not found\n");
     }
@@ -535,6 +565,15 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       auto guid = evt_data->payload;
       activate_route.Notify(guid);
       UpdateReturnStatus(RestServerResult::NoError);
+    } break;
+    case RestIoEvtData::Cmd::ReverseRoute: {
+      auto guid = evt_data->payload;
+      if (guid.empty()) {
+        UpdateReturnStatus(RestServerResult::ObjectRejected);
+      } else {
+        reverse_route.Notify(guid);
+        UpdateReturnStatus(RestServerResult::NoError);
+      }
     } break;
    }
 }
