@@ -57,7 +57,7 @@ static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
 static const char* const kVersionReply = R"""( { "version": "@version@" })""";
 static const char* const kListRoutesReply =
-    R"""( { "version": "@version@", "routes": @routes@ })""";
+    R"""( { "version": "@version@", "routes": "@routes@" })""";
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
@@ -98,8 +98,6 @@ struct RestIoEvtData {
                                             const std::string& src) {
     return {Cmd::ListRoutes, key, src, "", false, false};
   }
-
-
 
 private:
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
@@ -199,8 +197,8 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
-static void HandleListRoutes(struct mg_connection* c, struct mg_http_message* hm,
-                           RestServer* parent) {
+static void HandleListRoutes(struct mg_connection* c,
+                             struct mg_http_message* hm, RestServer* parent) {
   std::string apikey = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
   if (!source.empty()) {
@@ -215,9 +213,8 @@ static void HandleListRoutes(struct mg_connection* c, struct mg_http_message* hm
     });
     if (!r) wxLogWarning("Timeout waiting for REST server condition");
   }
-  mg_http_reply(c, 200, "",  parent->m_reply_body.c_str());
+  mg_http_reply(c, 200, "", parent->m_reply_body.c_str());
 }
-
 
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
@@ -257,25 +254,24 @@ std::string RestResultText(RestServerResult result) {
   wxString s;
   switch (result) {
     case RestServerResult::NoError:
-      s =  _("No error");
+      s = _("No error");
     case RestServerResult::GenericError:
-      s =  _("Server Generic Error");
+      s = _("Server Generic Error");
     case RestServerResult::ObjectRejected:
-      s =  _("Peer rejected object");
+      s = _("Peer rejected object");
     case RestServerResult::DuplicateRejected:
-      s =  _("Peer rejected duplicate object");
+      s = _("Peer rejected duplicate object");
     case RestServerResult::RouteInsertError:
-      s =  _("Peer internal error (insert)");
+      s = _("Peer internal error (insert)");
     case RestServerResult::NewPinRequested:
-      s =  _("Peer requests new pincode");
+      s = _("Peer requests new pincode");
     case RestServerResult::ObjectParseError:
-      s =  _("XML parse error");
+      s = _("XML parse error");
     case RestServerResult::Void:
-      s =  _("Unspecified error");
+      s = _("Unspecified error");
   }
   return s.ToStdString();
 }
-
 
 //========================================================================
 /*    RestServer implementation */
@@ -499,8 +495,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       ocpn::replace(reply, "@routes@", ss.str());
       m_reply_body = reply;
       UpdateReturnStatus(RestServerResult::NoError);
-    }
-    break;
+    } break;
   }
 }
 
@@ -533,7 +528,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
     }
     // Add the route to the global list
     NavObjectCollection1 pSet;
-    if (InsertRouteA(route, &pSet))  {
+    if (InsertRouteA(route, &pSet)) {
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
@@ -611,7 +606,7 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   }
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
-       m_route_ctx.delete_waypoint(duplicate);
+      m_route_ctx.delete_waypoint(duplicate);
     }
     if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force))
       UpdateReturnStatus(RestServerResult::NoError);
