@@ -25,12 +25,18 @@ public:
   GLuint glTextureName;
   // Set to true if the tile has not been found into the SQL database.
   std::atomic<bool> m_bAvailable;
+  // Pointer to the previous element of the tile chained list
+  mbTileDescriptor *prev;
+  // Pointer to the next element of the tile chained list
+  mbTileDescriptor *next;
 
   mbTileDescriptor(int zoomFactor, int x, int y) {
     glTextureName = 0;
     m_bAvailable = true;
     m_teximage = nullptr;
     m_requested = false;
+    prev = nullptr;
+    next = nullptr;
     tile_x = x;
     tile_y = y;
     m_zoomLevel = zoomFactor;

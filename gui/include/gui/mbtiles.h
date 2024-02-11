@@ -149,7 +149,7 @@ protected:
   std::string m_format;
 
   GLShaderProgram *m_tile_shader_program;
-
+  uint32_t m_tileCount;
   MbtTilesThread *m_workerThread;
   void StartThread();
   void StopThread();

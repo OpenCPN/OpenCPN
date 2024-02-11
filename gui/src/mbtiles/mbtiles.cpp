@@ -658,14 +658,15 @@ bool ChartMBTiles::RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) {
 /// @return true if the tile is ready to be rendered, false else.
 bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
   if (!m_pDB) return false;
-
+  m_tileCount++;
   // Is the texture ready to be rendered ?
   if (tile->glTextureName > 0) {
     // Yes : bind the texture and return to the caller
     glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
     return true;
   } else if (!tile->m_bAvailable) {
-    // Tile is not in MbTiles file : not texture to render
+    // Tile is not in MbTiles file : no texture to render
+    m_tileCount--;
     return false;
   } else if (tile->m_teximage == 0) {
     if (tile->m_requested == false) {
@@ -870,6 +871,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const ViewPort &VPoint,
                                         const OCPNRegion &RectRegion,
                                         const LLRegion &Region) {
+  m_tileCount = 0;
+
   // Do not render if significantly underzoomed
   if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
     if (m_nTiles > 500) {
@@ -955,10 +958,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     for (int iy = botTile; iy <= topTile; iy++) {
       for (int ix = leftTile; ix <= rightTile; ix++) {
         mbTileDescriptor *tile = m_tileCache->GetTile(zoomFactor, ix, iy);
-        if (tile == nullptr) {
-          tile = new mbTileDescriptor(zoomFactor, ix, iy);
-          m_tileCache->AddTile(tile);
-        }
 
         if (!Region.IntersectOut(tile->box)) {
           if (RenderTile(tile, zoomFactor, vp)) maxrenZoom = zoomFactor;
@@ -984,13 +983,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
       if (rightTile < leftTile) rightTile = leftTile;
 
-      for (int i = botTile; i <= topTile; i++) {
-        for (int j = leftTile; j <= rightTile; j++) {
-          mbTileDescriptor *tile = m_tileCache->GetTile(zoomFactor, j, i);
-          if (tile == nullptr) {
-            tile = new mbTileDescriptor(zoomFactor, j, i);
-            m_tileCache->AddTile(tile);
-          }
+      for (int iy = botTile; iy <= topTile; iy++) {
+        for (int ix = leftTile; ix <= rightTile; ix++) {
+          mbTileDescriptor *tile = m_tileCache->GetTile(zoomFactor, ix, iy);
 
           if (!Region.IntersectOut(tile->box)) RenderTile(tile, zoomFactor, vp);
         }
@@ -1006,6 +1001,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
       2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
+
+  printf("%d (%d/%d)\n", m_tileCount, m_tileCache->GetCacheSize(), m_tileCache->GetRealCacheSize());
+  m_tileCache->CleanCache((uint32_t)(m_tileCount * 1.1f));
 
   return true;
 }

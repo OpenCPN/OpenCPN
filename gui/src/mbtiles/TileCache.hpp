@@ -17,6 +17,10 @@ private:
   std::unordered_map<uint64_t, mbTileDescriptor *> tileMap;
   ZoomDescriptor *zoomTable;
   int minZoom, maxZoom, nbZoom;
+  // Chained list parameters
+  mbTileDescriptor *listStart = nullptr;
+  mbTileDescriptor *listEnd = nullptr;
+  uint32_t listSize = 0;
 
 public:
   TileCache(int minZoom, int maxZoom, float LonMin, float LatMin, float LonMax,
@@ -52,6 +56,9 @@ public:
         delete tile;
       }
     }
+    listStart = nullptr;
+    listEnd = nullptr;
+    listSize = 0;
   }
 
   int GetAreaNorth(int zoomLevel) {
@@ -62,25 +69,121 @@ public:
     return zoomTable[zoomLevel - minZoom].tile_y_min;
   }
 
-  /// @brief Retreive a tile from the cache
+  uint32_t GetCacheSize() { return listSize; }
+
+  uint32_t GetRealCacheSize() {
+    uint32_t cacheSize = 0;
+
+    mbTileDescriptor *tile = listStart;
+    while (tile != nullptr) {
+      cacheSize++;
+      tile = tile->next;
+    }
+
+    return cacheSize;
+  }
+
+  /// @brief Retreive a tile from the cache. If the tile is not present in the
+  /// cache, it is created and added.
   /// @param z Zoom level of the tile
   /// @param x x coordinate of the tile
   /// @param y y coordinate of the tile
   /// @return Pointer to the tile, nullptr if the tile is not present in the
   /// cache
   mbTileDescriptor *GetTile(int z, int x, int y) {
-    auto ref = tileMap.find(mbTileDescriptor::GetMapKey(z, x, y));
+    uint64_t index = mbTileDescriptor::GetMapKey(z, x, y);
+    auto ref = tileMap.find(index);
     if (ref != tileMap.end()) {
+      MoveTileToListStart(ref->second);
       return ref->second;
     }
 
-    return nullptr;
+    mbTileDescriptor *tile = new mbTileDescriptor(z, x, y);
+    tileMap[index] = tile;
+    AddTileToList(tile);
+
+    return tile;
   }
 
-  void AddTile(mbTileDescriptor *tile) {
-    uint64_t index = mbTileDescriptor::GetMapKey(tile->m_zoomLevel,
-                                                 tile->tile_x, tile->tile_y);
-    tileMap[index] = tile;
+  void CleanCache(uint32_t minTiles) {
+    uint64_t index;
+
+    while (listSize > minTiles) {
+      index = mbTileDescriptor::GetMapKey(listEnd->m_zoomLevel, listEnd->tile_x,
+                                          listEnd->tile_y);
+      auto ref = tileMap.find(index);
+      if (ref == tileMap.end()) {
+        break;
+      }
+      if ((ref->second->m_bAvailable) && (ref->second->m_teximage == 0) && (ref->second->glTextureName == 0)) {
+        break;
+      }
+      tileMap.erase(ref);
+      DeleteTileFromList(listEnd);
+    }
+  }
+
+private:
+  void AddTileToList(mbTileDescriptor *tile) {
+    if (listStart == nullptr) {
+      // List is empty : add the first element
+      tile->prev = nullptr;
+      tile->next = nullptr;
+      listStart = tile;
+      listEnd = tile;
+    } else {
+      // Insert tile at the start of the list
+      tile->prev = nullptr;
+      tile->next = listStart;
+      listStart->prev = tile;
+      listStart = tile;
+    }
+    listSize++;
+  }
+
+  void DeleteTileFromList(mbTileDescriptor *tile) {
+    if (tile) {
+      if (tile->prev == nullptr) {
+        listStart = tile->next;
+      }
+
+      if (tile->next == nullptr) {
+        listEnd = tile->prev;
+      } else {
+        tile->next->prev = tile->prev;
+      }
+
+      tile->prev->next = tile->next;
+      listSize--;
+
+      delete tile;
+    }
+  }
+
+  void MoveTileToListStart(mbTileDescriptor *tile) {
+    if (tile) {
+      if (tile->prev == nullptr) {
+        // Tile is already at beginning of list : exit function
+        return;
+      }
+
+      if (tile->next == nullptr) {
+        // Tile is at the end of list : update list end pointer
+        listEnd = tile->prev;
+      } else {
+        // We have a successor : update its previous pointer
+        tile->next->prev = tile->prev;
+      }
+
+      // Tile's predecessor must have its next pointer updated
+      tile->prev->next = tile->next;
+
+      // Insert tile at beginning of list
+      listStart->prev = tile;
+      tile->next = listStart;
+      tile->prev = nullptr;
+      listStart = tile;
+    }
   }
 };
 
