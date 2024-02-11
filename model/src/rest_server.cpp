@@ -35,6 +35,7 @@
 #include "config.h"
 
 #include "model/config_vars.h"
+#include "model/comm_navmsg_bus.h"
 #include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
@@ -69,14 +70,16 @@ struct RestIoEvtData {
     CheckWrite,
     ListRoutes,
     ActivateRoute,
-    ReverseRoute
+    ReverseRoute,
+    PluginMsg,
   } cmd;
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
+  const std::string id;       ///< rest API parameter id for PluginMsg.
   const bool force;           ///< rest API parameter force
   const bool activate;        ///< rest API parameter activate
 
-  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
+  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite, Activate, Reverse. */
   const std::string payload;
 
   /** Create a Cmd::Object instance. */
@@ -84,41 +87,55 @@ struct RestIoEvtData {
                                      const std::string& src,
                                      const std::string& gpx_data, bool _force,
                                      bool _activate) {
-    return {Cmd::Object, key, src, gpx_data, _force, _activate};
+    return RestIoEvtData(Cmd::Object, key, src, gpx_data, "", _force, _activate);
   }
 
   /** Create a Cmd::Ping instance: */
   static RestIoEvtData CreatePingData(const std::string& key,
                                       const std::string& src) {
-    return {Cmd::Ping, key, src, "", false, false};
+    return {Cmd::Ping, key, src, "", ""};
   }
 
   /** Create a Cmd::CheckWrite instance. */
   static RestIoEvtData CreateChkWriteData(const std::string& key,
                                           const std::string& src,
                                           const std::string& guid) {
-    return {Cmd::CheckWrite, key, src, guid, false, false};
+    return {Cmd::CheckWrite, key, src, "", guid};
   }
 
   /** Create a Cmd::ListRoutes instance. */
   static RestIoEvtData CreateListRoutesData(const std::string& key,
                                             const std::string& src) {
-    return {Cmd::ListRoutes, key, src, "", false, false};
+    return {Cmd::ListRoutes, key, src, "", ""};
   }
 
   static RestIoEvtData CreateActivateRouteData(const std::string& key,
                                                const std::string& src,
                                                const std::string& guid) {
-    return {Cmd::ActivateRoute, key, src, guid, false, false};
+    return {Cmd::ActivateRoute, key, src, guid, ""};
   }
+
+  static RestIoEvtData CreatePluginMsgData(const std::string& key,
+                                           const std::string& src,
+                                           const std::string& id,
+                                           const std::string& msg) {
+    return {Cmd::PluginMsg, key, src, msg, id};
+  }
+
   static RestIoEvtData CreateReverseRouteData(const std::string& key,
-                                               const std::string& src,
-                                               const std::string& guid) {
-    return {Cmd::ReverseRoute, key, src, guid, false, false};
+                                              const std::string& src,
+                                              const std::string& guid) {
+    return {Cmd::ReverseRoute, key, src, guid, ""};
   }
+
 private:
+
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                bool _force, bool _activate);
+                std::string _id, bool _force, bool _activate) ;
+  RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
+                std::string id)
+      : RestIoEvtData(c, key, src, _payload, id, false, false) {}
+
 };
 
 /** Extract a HTTP variable from query string. */
@@ -254,6 +271,35 @@ static void HandleActivateRoute(struct mg_connection* c,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
+static void HandlePluginMsg(struct mg_connection* c,
+                            struct mg_http_message* hm,
+                            RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  std::string id = HttpVarToString(hm->query, "id");
+  std::string message = HttpVarToString(hm->query, "message");
+  int chunk_status = hm->chunk.len ? ORS_CHUNK_N : ORS_CHUNK_LAST;
+  std::string content;
+  if (hm->chunk.len) content = std::string(hm->chunk.ptr, hm->chunk.len);
+  mg_http_delete_chunk(c, hm);
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreatePluginMsgData(apikey, source, id, content));
+    PostEvent(parent, data_ptr, chunk_status);
+    if (chunk_status == ORS_CHUNK_LAST) {
+      std::unique_lock<std::mutex> lock{parent->ret_mutex};
+      bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+        return parent->GetReturnStatus() != RestServerResult::Void;
+      });
+      if (!r) wxLogWarning("Timeout waiting for REST server condition");
+      mg_http_reply(c, 200, "", "{\"result\": %d}\n",
+                    parent->GetReturnStatus());
+    }
+  }
+}
+
 static void HandleReverseRoute(struct mg_connection* c,
                                struct mg_http_message* hm,
                                RestServer* parent) {
@@ -274,8 +320,6 @@ static void HandleReverseRoute(struct mg_connection* c,
   }
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
-
-
 
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
@@ -309,6 +353,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       HandleActivateRoute(c, hm, parent);
     } else if (mg_http_match_uri(hm, "/api/reverse-route")) {
       HandleReverseRoute(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/plugin-msg")) {
+      HandlePluginMsg(c, hm, parent);
     } else {
       mg_http_reply(c, 404, "", "url: not found\n");
     }
@@ -575,7 +621,16 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
         UpdateReturnStatus(RestServerResult::NoError);
       }
     } break;
-   }
+    case RestIoEvtData::Cmd::PluginMsg: {
+      std::ifstream f(m_upload_path);
+      m_upload_path.clear();  // empty for next time
+      std::stringstream ss;
+      ss << f.rdbuf();
+      auto msg = std::make_shared<PluginMsg>(PluginMsg(evt_data->id, ss.str()));
+      NavMsgBus::GetInstance().Notify(msg);
+      UpdateReturnStatus(RestServerResult::NoError);
+    } break;
+  }
 }
 
 void RestServer::HandleRoute(pugi::xml_node object,
@@ -695,12 +750,13 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   }
 }
 
-RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
-                             std::string src, std::string _payload, bool _force,
+RestIoEvtData::RestIoEvtData(Cmd c, std::string key, std::string src,
+                             std::string _payload, std::string _id, bool _force,
                              bool _activate)
     : cmd(c),
       api_key(std::move(key)),
       source(std::move(src)),
+      id(_id),
       force(_force),
       activate(_activate),
       payload(std::move(_payload)) {}
