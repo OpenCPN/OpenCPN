@@ -63,7 +63,13 @@ static const char* const kListRoutesReply =
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
 
 struct RestIoEvtData {
-  const enum class Cmd { Ping, Object, CheckWrite, ListRoutes } cmd;
+  const enum class Cmd {
+    Ping,
+    Object,
+    CheckWrite,
+    ListRoutes,
+    ActivateRoute
+  } cmd;
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
   const bool force;           ///< rest API parameter force
@@ -99,6 +105,11 @@ struct RestIoEvtData {
     return {Cmd::ListRoutes, key, src, "", false, false};
   }
 
+  static RestIoEvtData CreateActivateRouteData(const std::string& key,
+                                               const std::string& src,
+                                               const std::string& guid) {
+    return {Cmd::ActivateRoute, key, src, guid, false, false};
+  }
 private:
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
                 bool _force, bool _activate);
@@ -216,6 +227,28 @@ static void HandleListRoutes(struct mg_connection* c,
   mg_http_reply(c, 200, "", parent->m_reply_body.c_str());
 }
 
+static void HandleActivateRoute(struct mg_connection* c,
+                                struct mg_http_message* hm,
+                                RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  std::string guid = HttpVarToString(hm->query, "guid");
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateActivateRouteData(apikey, source, guid));
+    PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
+    std::unique_lock<std::mutex> lock{parent->ret_mutex};
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+      return parent->GetReturnStatus() != RestServerResult::Void;
+    });
+    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+  }
+  mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
+}
+
+
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
 static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
@@ -244,6 +277,8 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       mg_http_reply(c, 200, "", reply.c_str());
     } else if (mg_http_match_uri(hm, "/api/list-routes")) {
       HandleListRoutes(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/activate-route")) {
+      HandleActivateRoute(c, hm, parent);
     } else {
       mg_http_reply(c, 404, "", "url: not found\n");
     }
@@ -496,7 +531,12 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       m_reply_body = reply;
       UpdateReturnStatus(RestServerResult::NoError);
     } break;
-  }
+    case RestIoEvtData::Cmd::ActivateRoute: {
+      auto guid = evt_data->payload;
+      activate_route.Notify(guid);
+      UpdateReturnStatus(RestServerResult::NoError);
+    } break;
+   }
 }
 
 void RestServer::HandleRoute(pugi::xml_node object,
