@@ -983,6 +983,13 @@ void ConnectionsDialog::SetSelectedConnectionPanel(
     m_sbConnEdit->SetLabel("");
     ClearNMEAForm();
   }
+
+  RecalculateSize();
+  m_container->FitInside();
+  //  Scroll the panel to allow the user to see more of the NMEA parameter
+  //  settings area
+  wxPoint buttonPosition = m_buttonAdd->GetPosition();
+  m_container->Scroll(-1, buttonPosition.y / m_parent->GetScrollRate());
 }
 
 void ConnectionsDialog::EnableConnection(ConnectionParams* conn, bool value) {
