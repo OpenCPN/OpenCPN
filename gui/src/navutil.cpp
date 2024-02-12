@@ -1290,7 +1290,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   bool bCont = GetFirstEntry(str, dummy);
   while (bCont) {
-    Read(str, pval);
+    pval = Read(str);
 
     if (str.StartsWith(_T("Font"))) {
       // Convert pre 3.1 setting. Can't delete old entries from inside the
