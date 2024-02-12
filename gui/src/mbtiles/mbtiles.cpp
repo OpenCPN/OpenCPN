@@ -128,9 +128,9 @@ static const double OSM_zoomScale[] = {5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7,
 
 //  Meters per pixel, by zoom factor
 static const double OSM_zoomMPP[] = {
-    156412, 78206, 39103,   19551,   9776,   4888,   2444,   1222,
-    610,    984,   305.492, 152.746, 76.373, 38.187, 19.093, 9.547,
-    4.773,  2.387, 1.193,   0.596,   0.298,  0.149,  0.075};
+    156412, 78206,   39103,   19551,  9776,   4888,   2444,  1222,
+    610,    305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773,
+    2.387,  1.193,   0.596,   0.298,  0.149,  0.075};
 
 extern MyFrame *gFrame;
 
@@ -871,6 +871,9 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const ViewPort &VPoint,
                                         const OCPNRegion &RectRegion,
                                         const LLRegion &Region) {
+  // Reset the tile counter. This counter is used to know how many tile are
+  // currently used to draw the chart and then to dimension the tile cache size
+  // properly w.r.t the size of the screen and the level of details
   m_tileCount = 0;
 
   // Do not render if significantly underzoomed
@@ -938,10 +941,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
     // Get the tile numbers of the box corners of this render region, at this
     // zoom level
     int topTile =
-        wxMin(m_tileCache->GetAreaNorth(zoomFactor),
+        wxMin(m_tileCache->GetNorthLimit(zoomFactor),
               mbTileDescriptor::lat2tiley(box.GetMaxLat(), zoomFactor));
     int botTile =
-        wxMax(m_tileCache->GetAreaSouth(zoomFactor),
+        wxMax(m_tileCache->GetSouthLimit(zoomFactor),
               mbTileDescriptor::lat2tiley(box.GetMinLat(), zoomFactor));
     int leftTile = mbTileDescriptor::long2tilex(box.GetMinLon(), zoomFactor);
     int rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
@@ -973,10 +976,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
       // Get the tile numbers of the box corners of this render region, at
       // this zoom level
       int topTile =
-          wxMin(m_tileCache->GetAreaNorth(zoomFactor),
+          wxMin(m_tileCache->GetNorthLimit(zoomFactor),
                 mbTileDescriptor::lat2tiley(box.GetMaxLat(), zoomFactor));
       int botTile =
-          wxMax(m_tileCache->GetAreaSouth(zoomFactor),
+          wxMax(m_tileCache->GetSouthLimit(zoomFactor),
                 mbTileDescriptor::lat2tiley(box.GetMinLat(), zoomFactor));
       int leftTile = mbTileDescriptor::long2tilex(box.GetMinLon(), zoomFactor);
       int rightTile = mbTileDescriptor::long2tilex(-180 - eps, zoomFactor);
@@ -997,13 +1000,12 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glDisable(GL_TEXTURE_2D);
 
-  m_zoomScaleFactor =
-      2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
+  m_zoomScaleFactor = OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
 
-  printf("%d (%d/%d)\n", m_tileCount, m_tileCache->GetCacheSize(), m_tileCache->GetRealCacheSize());
-  m_tileCache->CleanCache((uint32_t)(m_tileCount * 1.1f));
+  // Limit the cache size to 3 times the number of tiles to draw on a rendering
+  m_tileCache->CleanCache(m_tileCount * 3);
 
   return true;
 }

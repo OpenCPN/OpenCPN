@@ -34,6 +34,16 @@ public:
     return tile;
   }
 
+  /// @brief Get current size of the queue.
+  /// @return Queue size in tiles
+  uint32_t GetSize() {
+    uint32_t size;
+    m_queueMutex.Lock();
+    size = m_tileList.size();
+    m_queueMutex.Unlock();
+    return size;
+  }
+
 private:
   std::vector<mbTileDescriptor *> m_tileList;
   wxMutex m_queueMutex;

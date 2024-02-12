@@ -53,9 +53,11 @@ public:
   }
 
   virtual ~mbTileDescriptor() {
+    // Delete intermediate texture buffer if still allocated
     if (m_teximage != nullptr) {
       free(m_teximage);
     }
+    // Delete OpenGL texture buffer if allocated
     if (glTextureName > 0) {
       glDeleteTextures(1, &glTextureName);
     }

@@ -44,7 +44,7 @@ public:
     m_tileQueue.Push(tile);
   }
 
-  /// @brief Request for the thread to stop/delete itself
+  /// @brief Request the thread to stop/delete itself
   void RequestStop() {
     // Set the exit request boolean
     m_exitThread = true;
@@ -68,7 +68,8 @@ private:
   // Pointer the SQL object managing the MbTiles file
   SQLite::Database *m_pDB;
 
-  // Main loop of the worker thread
+  /// @brief Main loop of the worker thread
+  /// @return Always 0
   virtual ExitCode Entry() {
     mbTileDescriptor *tile;
 
@@ -79,7 +80,12 @@ private:
       // thread to check for a deletion request
       if (tile != nullptr) {
         LoadTile(tile);
-        g_focusCanvas->Refresh();
+        // Only request a refresh of the display if there is no more tiles in
+        // the queue. This avoid annoying flickering effects on the screen when
+        // the computer is fast and able to redraw very quickly
+        if (m_tileQueue.GetSize() == 0) {
+          g_focusCanvas->Refresh();
+        }
       }
       // Check if the thread has been requested to be destroyed
     } while ((TestDestroy() == false) && (m_exitThread == false));
@@ -94,6 +100,8 @@ private:
     return (wxThread::ExitCode)0;
   }
 
+  /// @brief Load bitmap data of a tile from the MbTiles file to the tile cache
+  /// @param tile Pointer to the tile to be loaded
   void LoadTile(mbTileDescriptor *tile) {
     // If the tile has not been found in the SQL database in a previous attempt,
     // don't search for it again
