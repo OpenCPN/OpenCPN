@@ -9196,14 +9196,11 @@ void CanvasConfigSelect::OnMouseSelected(wxMouseEvent& event) {
 
 void CanvasConfigSelect::SetSelected(bool selected) {
   m_bSelected = selected;
-  wxColour colour;
 
   if (selected) {
-    GetGlobalColor(_T("UIBCK"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT);
   } else {
-    GetGlobalColor(_T("DILG0"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW);
   }
 
   Refresh(true);
@@ -9220,21 +9217,13 @@ void CanvasConfigSelect::OnPaint(wxPaintEvent& event) {
   dc.SetBrush(wxBrush(GetBackgroundColour()));
   dc.DrawRectangle(GetVirtualSize());
 
-  wxColour c;
-
   if (m_bSelected) {
     dc.SetBrush(wxBrush(m_boxColour));
-
-    GetGlobalColor(_T ( "UITX1" ), &c);
-    dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
-
+    dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT), 3));
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
   } else {
     dc.SetBrush(wxBrush(m_boxColour));
-
-    GetGlobalColor(_T ( "UITX1" ), &c);
-    dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
-
+    dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT), 3));
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
   }
 
