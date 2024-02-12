@@ -584,14 +584,11 @@ void OCPNChartDirPanel::DoChartSelected() {
 
 void OCPNChartDirPanel::SetSelected(bool selected) {
   m_bSelected = selected;
-  wxColour colour;
 
   if (selected) {
-    GetGlobalColor(_T("UIBCK"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT);
   } else {
-    GetGlobalColor(_T("DILG0"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW);
   }
 
   Refresh(true);
@@ -626,8 +623,6 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   dc.SetBrush(wxBrush(GetBackgroundColour()));
   dc.DrawRectangle(GetVirtualSize());
 
-  wxColour c;
-
   wxString nameString = m_pChartDir;
   ChartDirPanelHardBreakWrapper wrapper(this, nameString, width * 9 / 10);
   wxArrayString nameWrapped = wrapper.GetLineArray();
@@ -640,7 +635,6 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   if (m_bSelected) {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "UITX1" ), &c);
     dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
 
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
@@ -651,7 +645,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
     wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
     dc.SetFont(*dFont);
 
-    dc.SetTextForeground(wxColour(64, 64, 64));
+    dc.SetTextForeground(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWTEXT));
 
     int yd = height * 20 / 100;
     for (size_t i = 0; i < nameWrapped.GetCount(); i++) {
@@ -665,8 +659,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   else {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "GREY1" ), &c);
-    dc.SetPen(wxPen(c, 1));
+    dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWFRAME), 1));
 
     int offset = height / 10;
     dc.DrawRoundedRectangle(offset, offset, width - (2 * offset),
@@ -677,7 +670,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
     wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
     dc.SetFont(*dFont);
 
-    dc.SetTextForeground(wxColour(64, 64, 64));
+    dc.SetTextForeground(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWTEXT));
 
     int yd = height * 20 / 100;
     for (size_t i = 0; i < nameWrapped.GetCount(); i++) {
