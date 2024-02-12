@@ -242,6 +242,7 @@ class RestServer : public AbstractRestServer, public wxEvtHandler {
   friend class RestServerObjectApp;  ///< Unit test hook
   friend class RestCheckWriteApp;    ///< Unit test hook
   friend class RestServerPingApp;    ///< Unit test hook
+  friend class RestPluginMsgApp;     ///< Unit test hook
 
 public:
   RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
