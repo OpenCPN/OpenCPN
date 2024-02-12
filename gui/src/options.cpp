@@ -2878,9 +2878,7 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
         wxPanel* panel = wxDynamicCast(win, wxPanel);
         if (panel) {
           if (panel == selectedPanel) {
-            wxColour colour;
-            GetGlobalColor(_T("UIBCK"), &colour);
-            panel->SetBackgroundColour(colour);
+            panel->SetBackgroundColour(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT));
             ConfigPanel* cPanel = wxDynamicCast(panel, ConfigPanel);
             if (cPanel) m_selectedConfigPanelGUID = cPanel->GetConfigGUID();
           } else
