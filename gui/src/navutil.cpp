@@ -3576,3 +3576,24 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
     }
   }
 }
+
+#define LUMIMOSITY_NIGHT (-0.8)
+#define LUMIMOSITY_DUSK (-0.5)
+
+wxColor GetDimedColor(const wxColor& c)
+{
+    switch (global_color_scheme) {
+    case ColorScheme::GLOBAL_COLOR_SCHEME_NIGHT:
+        return (
+            wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_NIGHT, 255)),
+                wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_NIGHT, 255)),
+                wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_NIGHT, 255))));
+    case ColorScheme::GLOBAL_COLOR_SCHEME_DUSK:
+        return (
+            wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_DUSK, 255)),
+                wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_DUSK, 255)),
+                wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_DUSK, 255))));
+    default:
+        return c;
+    }
+}
