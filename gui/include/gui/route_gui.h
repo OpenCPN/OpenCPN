@@ -36,6 +36,7 @@
 #include "model/route.h"
 #include "viewport.h"
 #include "SendToGpsDlg.h"
+#include <unordered_map>
 
 class RouteGui {
 public:

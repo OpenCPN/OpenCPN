@@ -388,6 +388,13 @@ EVT_ACTIVATE(glChartCanvas::OnActivate) EVT_SIZE(glChartCanvas::OnSize)
   Init();
 }
 
+std::unordered_map<wxPenStyle, std::array<wxDash, 2>> glChartCanvas::dash_map = {
+    {wxPENSTYLE_DOT, {1, 1}},
+    {wxPENSTYLE_LONG_DASH, {5, 5}},
+    {wxPENSTYLE_SHORT_DASH, {1, 5}},
+    {wxPENSTYLE_DOT_DASH, {5, 1}},
+};
+
 void glChartCanvas::Init() {
   m_bsetup = false;
 
