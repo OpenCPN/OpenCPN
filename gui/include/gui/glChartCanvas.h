@@ -37,6 +37,9 @@
 #include "ocpndc.h"
 #include "chcanv.h"
 
+#include <array>
+#include <unordered_map>
+
 #define FORMAT_BITS GL_RGB
 
 #ifdef __OCPN__ANDROID__
