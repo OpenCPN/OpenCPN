@@ -9505,6 +9505,14 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
                 if (sa->radius_m > 0.0) bbox.EnLarge(sa->radius_m * vp_scale);
                 break;
               }
+              case AIS8_001_22_SHAPE_RECT: {
+                wxPoint target_point;
+                GetCanvasPointPix(sa->latitude, sa->longitude, &target_point);
+                bbox.Expand(target_point);
+                if (sa->e_dim_m > sa->n_dim_m) bbox.EnLarge(sa->e_dim_m * vp_scale);
+                else bbox.EnLarge(sa->n_dim_m * vp_scale);
+                break;
+              }
               case AIS8_001_22_SHAPE_POLYGON:
               case AIS8_001_22_SHAPE_POLYLINE: {
                 for (int i = 0; i < 4; ++i) {
