@@ -745,6 +745,7 @@ static void ActivateRoute(const std::string &guid) {
     point = route->GetPoint(2);
   }
   g_pRouteMan->ActivateRoute(route, point);
+  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
   route->m_bRtIsSelected = false;
 }
 
@@ -755,7 +756,7 @@ static void ReverseRoute(const std::string &guid) {
     return;
   }
   route->Reverse();
-  // FIXNE (leamas) update routeman_gui
+  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
 }
 
 
