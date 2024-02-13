@@ -3272,7 +3272,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     if (prp) prp->ReLoadIcon();
 
     auto canvas = gFrame->GetPrimaryCanvas();
-    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(), canvas->GetScaleValue());
     SelectItem* pFind =
         pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {
@@ -7656,7 +7656,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     if (prp) prp->ReLoadIcon();
 
     auto canvas = gFrame->GetPrimaryCanvas();
-    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(), canvas->GetScaleValue());
     SelectItem* pFind =
         pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {

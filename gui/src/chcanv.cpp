@@ -3704,7 +3704,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
   //  Handle the AIS Rollover Window first
   bool showAISRollover = false;
   if (g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS) {
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectItem *pFind = pSelectAIS->FindSelection(
         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET);
     if (pFind) {
@@ -3766,7 +3766,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
     //    Get a list of all selectable sgements, and search for the first
     //    visible segment as the rollover target.
 
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList = pSelect->FindSelectionList(
         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT);
     wxSelectableItemListNode *node = SelList.GetFirst();
@@ -3904,7 +3904,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
     }
   } else {
     //    Is the cursor still in select radius, and not timed out?
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     if (!pSelect->IsSelectableSegmentSelected(ctx, m_cursor_lat, m_cursor_lon,
                                               m_pRolloverRouteSeg))
       showRouteRollover = false;
@@ -3941,7 +3941,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
     //    Get a list of all selectable sgements, and search for the first
     //    visible segment as the rollover target.
 
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList = pSelect->FindSelectionList(
         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_TRACKSEGMENT);
     wxSelectableItemListNode *node = SelList.GetFirst();
@@ -4048,7 +4048,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
     }
   } else {
     //    Is the cursor still in select radius, and not timed out?
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     if (!pSelect->IsSelectableSegmentSelected(ctx, m_cursor_lat, m_cursor_lon,
                                               m_pRolloverTrackSeg))
       showTrackRollover = false;
@@ -6885,7 +6885,7 @@ void ChartCanvas::FindRoutePointsAtCursor(float selectRadius,
   m_pFoundPoint = NULL;
 
   SelectItem *pFind = NULL;
-  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
   SelectableItemList SelList = pSelect->FindSelectionList(
       ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTEPOINT);
   wxSelectableItemListNode *node = SelList.GetFirst();
@@ -7220,7 +7220,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
   }
 
   //      Get all the selectable things at the cursor
-  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
   pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
   pFindRP = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTEPOINT);
   pFindRouteSeg =
@@ -7257,7 +7257,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
     Route *pSelectedVizRoute = NULL;
 
     // There is at least one routepoint, so get the whole list
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList =
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTEPOINT);
     wxSelectableItemListNode *node = SelList.GetFirst();
@@ -7349,7 +7349,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
   // routes But call the popup handler with identifier appropriate to the type
   if (pFindRouteSeg)  // there is at least one select item
   {
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList =
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
 
@@ -7390,7 +7390,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
 
   if (pFindTrackSeg) {
     m_pSelectedTrack = NULL;
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     SelectableItemList SelList =
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
 
@@ -7423,7 +7423,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       IDX_entry *pIDX_best_candidate;
 
       SelectItem *pFind = NULL;
-      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
       SelectableItemList SelList = pSelectTC->FindSelectionList(
           ctx, m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT);
 
@@ -7525,7 +7525,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
     double zlat, zlon;
     GetCanvasPixPoint(x, y, zlat, zlon);
 
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     if (m_bShowAIS) {
       SelectItem *pFindAIS;
       pFindAIS = pSelectAIS->FindSelection(ctx, zlat, zlon, SELTYPE_AISTARGET);
@@ -7979,7 +7979,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
   if (event.Dragging()) {
     // in touch screen mode ensure the finger/cursor is on the selected point's
     // radius to allow dragging
-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     if (g_btouch) {
       if (m_pRoutePointEditTarget && !m_bIsInRadius) {
         SelectItem *pFind = NULL;
@@ -8660,7 +8660,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
       //      Check to see if there is a route or AIS target under the cursor
       //      If so, start the rollover timer which creates the popup
-      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale());
+      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
       bool b_start_rollover = false;
       if (g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS) {
         SelectItem *pFind = pSelectAIS->FindSelection(
