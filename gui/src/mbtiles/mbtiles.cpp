@@ -154,11 +154,7 @@ static const GLchar *tile_fragment_shader_source =
     "uniform float brightness;\n"
     "void main() {\n"
     "   vec4 textureColor = texture2D(uTex, varCoord);\n"
-    "   vec3 fragRGB = textureColor.rgb;\n"
-    "   fragRGB.x = fragRGB.x * brightness;\n"
-    "   fragRGB.y = fragRGB.y * brightness;\n"
-    "   fragRGB.z = fragRGB.z * brightness;\n"
-    "   gl_FragColor = vec4(fragRGB, textureColor.w);\n"
+    "   gl_FragColor = vec4(textureColor.rgb * brightness, textureColor.w);\n"
     "}\n";
 
 GLShaderProgram *g_tile_shader_program;
@@ -1005,7 +1001,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   glChartCanvas::DisableClipRegion();
 
   // Limit the cache size to 3 times the number of tiles to draw on a rendering
-  m_tileCache->CleanCache(m_tileCount * 3);
+  m_tileCache->CleanCache(m_tileCount * 5);
 
   return true;
 }
