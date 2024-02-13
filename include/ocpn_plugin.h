@@ -1851,4 +1851,17 @@ extern DECL_EXP CommDriverResult RegisterTXPGNs(DriverHandle handle,
                                                 std::vector<int> &pgn_list);
 
 
+// API 1.19
+//
+
+/** Facade for NavAddrPluginMsg. */
+struct PluginMsgId {
+  const std::string id;
+  PluginMsgId(const std::string &s) : id(s){};
+};
+
+extern DECL_EXP std::shared_ptr<ObservableListener> GetListener(
+    PluginMsgId id, wxEventType ev, wxEvtHandler *handler);
+
+extern DECL_EXP std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev);
 #endif  //_PLUGIN_H_

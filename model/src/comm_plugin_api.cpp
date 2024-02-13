@@ -52,6 +52,12 @@ std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev) {
   return msg->payload;
 }
 
+std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev) {
+  auto msg = UnpackEvtPointer<PluginMsg>(ev);
+  return msg->message;
+}
+
+
 std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
   auto msg = UnpackEvtPointer<SignalkMsg>(ev);
   wxJSONReader reader;
@@ -97,6 +103,12 @@ shared_ptr<ObservableListener> GetListener(NavDataId id, wxEventType et,
                                            wxEvtHandler* eh) {
   return make_shared<ObservableListener>(BasicNavDataMsg(), eh, et);
 }
+
+std::shared_ptr<ObservableListener> GetListener(PluginMsgId id, wxEventType et,
+                                                wxEvtHandler* eh) {
+  return make_shared<ObservableListener>(PluginMsg(id.id, ""), eh, et);
+}
+
 
 PluginNavdata GetEventNavdata(ObservedEvt ev) {
   auto msg = UnpackEvtPointer<BasicNavDataMsg>(ev);
