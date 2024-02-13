@@ -417,6 +417,62 @@ void MyConfig::CreateRotatingNavObjBackup() {
 #ifdef __OCPN__ANDROID__
   wxLogNull logNo;
 #endif
+  // Monthly backup, keep max 3
+  if(wxFileExists(m_sNavObjSetFile)) {
+    int month = wxDateTime::Now().GetMonth() + 1;
+    wxString fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), month);
+    if (!wxFileExists(fn)) {
+      wxCopyFile(m_sNavObjSetFile, fn);
+    }
+    if (month > 3) {
+      for (wxDateTime::wxDateTime_t i = 1; i <= month - 3; i++) {
+        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
+        if (wxFileExists(fn)) {
+          wxRemoveFile(fn);
+        }
+      }
+      for (wxDateTime::wxDateTime_t i = month + 1; i <= 12; i++) {
+        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
+        if (wxFileExists(fn)) {
+          wxRemoveFile(fn);
+        }
+      }
+    } else {
+      for (wxDateTime::wxDateTime_t i = month + 1; i <= 12 - month; i++) {
+        fn = wxString::Format(_T("%s.m%d"), m_sNavObjSetFile.c_str(), i);
+        if (wxFileExists(fn)) {
+          wxRemoveFile(fn);
+        }
+      }
+    }
+    // Weekly backup, we want to keep max 4
+    wxDateTime::wxDateTime_t week = wxDateTime::Now().GetWeekOfYear();
+    fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), week);
+    if (!wxFileExists(fn)) {
+      wxCopyFile(m_sNavObjSetFile, fn);
+    }
+    if (week > 4) {
+      for (wxDateTime::wxDateTime_t i = 1; i <= week - 4; i++) {
+        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
+        if (wxFileExists(fn)) {
+          wxRemoveFile(fn);
+        }
+      }
+      for (wxDateTime::wxDateTime_t i = week + 1; i <= 53; i++) {
+        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
+        if (wxFileExists(fn)) {
+          wxRemoveFile(fn);
+        }
+      }
+    } else {
+      for (wxDateTime::wxDateTime_t i = week + 1; i <= 53 - week; i++) {
+        fn = wxString::Format(_T("%s.w%u"), m_sNavObjSetFile.c_str(), i);
+        if (wxFileExists(fn)) {
+          wxRemoveFile(fn);
+        }
+      }
+    }
+  }
 
   // Rotate navobj backups, but just in case there are some changes in the
   // current version to prevent the user trying to "fix" the problem by
