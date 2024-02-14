@@ -19,7 +19,7 @@ export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
 # URL of the repository to download the dependency bundle from
 export DEPS_BUNDLE_REPO="${DEPS_BUNDLE_REPO:-https://dl.cloudsmith.io/public/nohal/opencpn-plugins/raw/files}"
 # Name of the bundle
-export DEPS_BUNDLE_FILE="${DEPS_BUNDLE_FILE:-macos_deps_universal.tar.xz}"
+export DEPS_BUNDLE_FILE="${DEPS_BUNDLE_FILE:-macos_deps_universal-opencpn.tar.xz}"
 # Where to unpack the bundle
 export DEPS_BUNDLE_DEST="${DEPS_BUNDLE_DEST:-/usr/local}"
 # What architecture(s) to build for

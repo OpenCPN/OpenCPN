@@ -382,6 +382,9 @@ cd wxWidgets-${wx_version}
 
 # Apply the patch for wxSlider on macOS
 patch < $(dirname "${scriptpath}")/../buildosx/wx_slider_patch.diff
+# The following patch is required to build usable wxWidgets on Sonoma and new Xcode,
+# but breaks ABI compatibility with O 5.8. Bundle built with it applied (or containing wxWidgets newer than 3.2.4)
+# must not be used to build plugins until O 5.8 support is phased out.
 patch < $(dirname "${scriptpath}")/../buildosx/wx_sonoma_scrolled_window_clip.diff
 
 ./configure \
