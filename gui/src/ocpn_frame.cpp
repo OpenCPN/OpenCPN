@@ -253,7 +253,7 @@ extern int options_lastPage;
 extern int options_subpage;
 extern bool b_reloadForPlugins;
 extern ChartCanvas *g_focusCanvas;
-extern bool g_bNeedDBUpdate;
+extern int g_NeedDBUpdate;
 extern bool g_bFullscreen;
 extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
 extern ChartGroupArray *g_pGroupArray;
@@ -849,15 +849,15 @@ void MyFrame::RebuildChartDatabase() {
   if (ChartDirArray.GetCount()) {
     //              Create and Save a new Chart Database based on the hints
     //              given in the config file
-
-    wxString msg1(
+    if(g_NeedDBUpdate == 1) {
+      wxString msg1(
         _("OpenCPN needs to update the chart database from config file "
           "entries...."));
 
-    OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),
+      OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),
                            wxICON_INFORMATION | wxOK);
-    int dlg_ret;
-    dlg_ret = mdlg.ShowModal();
+      mdlg.ShowModal();
+    }
 
     delete ChartData;
     ChartData = new ChartDB();
@@ -4637,7 +4637,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       g_Platform->SetFullscreen(g_bFullscreen);
 
       // Rebuild chart database, if necessary
-      if (g_bNeedDBUpdate) {
+      if (g_NeedDBUpdate > 0) {
         RebuildChartDatabase();
         for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
           ChartCanvas *cc = g_canvasArray.Item(i);
@@ -4664,7 +4664,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           }
         }
 
-        g_bNeedDBUpdate = false;
+        g_NeedDBUpdate = 0;
       }
 
       // Load the waypoints. Both of these routines are very slow to execute
