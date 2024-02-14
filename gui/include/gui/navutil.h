@@ -63,6 +63,7 @@ void DimeControl(wxWindow *ctrl);
 void DimeControl(wxWindow *ctrl, wxColour col, wxColour col1,
                  wxColour back_color, wxColour text_color, wxColour uitext,
                  wxColour udkrd, wxColour gridline);
+wxColor GetDimedColor(const wxColor& c);
 
 
 class Route;
@@ -141,6 +142,7 @@ public:
 
   int LoadMyConfig();
   void LoadS57Config();
+  wxString FindNewestUsableBackup() const;
   void LoadNavObjects();
   virtual void AddNewRoute(Route *pr);
   virtual void UpdateRoute(Route *pr);

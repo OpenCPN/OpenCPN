@@ -1386,7 +1386,7 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
   int tmpMmsi = met_data.original_mmsi ? met_data.original_mmsi : MMSI;
   // First check the most common case
   int nMID = tmpMmsi / 1000000;
-  if (!IsValidMID(nMID)){
+  if (!IsValidMID(nMID) || Class == AIS_ATON) {
     // SART, MOB, EPIRB starts with 97 and don't use MID (ITU-R M.1371-5)
     // or healthy check
     if (tmpMmsi < 1000 || 97 == tmpMmsi / 10000000) return wxEmptyString;
@@ -1395,7 +1395,9 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
     wxString s_mmsi;
     s_mmsi << tmpMmsi;
     bool foundMID = false;
-    for (size_t i = 0; i < s_mmsi.length() - 3; i++) {
+    size_t i;
+    i = Class == AIS_ATON ? 2 : 0;
+    for (i; i < s_mmsi.length() - 3; i++) {
       nMID = wxAtoi(s_mmsi.Mid(i, 3));
       if (IsValidMID(nMID)) {
         foundMID = true;

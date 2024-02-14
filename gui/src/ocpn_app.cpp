@@ -198,6 +198,7 @@ Options for starting opencpn
   -G, --no_opengl              	Disable OpenGL video acceleration. This setting will
                                 be remembered.
   -g, --rebuild_gl_raster_cache	Rebuild OpenGL raster cache on start.
+  -D, --rebuild_chart_db        Rescan chart directories and rebuild the chart database
   -P, --parse_all_enc          	Convert all S-57 charts to OpenCPN's internal format on start.
   -l, --loglevel=<str>         	Amount of logging: error, warning, message, info, debug or trace
   -u, --unit_test_1=<num>      	Display a slideshow of <num> charts and then exit.
@@ -541,7 +542,7 @@ double g_n_gps_antenna_offset_y;
 double g_n_gps_antenna_offset_x;
 int g_n_ownship_min_mm;
 
-bool g_bNeedDBUpdate;
+int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away 
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
@@ -784,10 +785,11 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
   parser.AddSwitch("p", "portable");
   parser.AddSwitch("f", "fullscreen");
-  parser.AddSwitch( "G", "no_opengl");
+  parser.AddSwitch("G", "no_opengl");
   parser.AddSwitch("g", "rebuild_gl_raster_cache");
-  parser.AddSwitch( "P", "parse_all_enc");
-  parser.AddOption( "l", "loglevel");
+  parser.AddSwitch("D", "rebuild_chart_db");
+  parser.AddSwitch("P", "parse_all_enc");
+  parser.AddOption("l", "loglevel");
   parser.AddOption("u", "unit_test_1", "", wxCMD_LINE_VAL_NUMBER);
   parser.AddSwitch("U", "unit_test_2");
   parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
@@ -842,6 +844,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   g_start_fullscreen = parser.Found("fullscreen");
   g_bdisable_opengl = parser.Found("no_opengl");
   g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
+  g_NeedDBUpdate = parser.Found("rebuild_chart_db") ? 2 : 0;
   g_parse_all_enc = parser.Found("parse_all_enc");
   if (parser.Found("unit_test_1", &number)) {
     g_unit_test_1 = static_cast<int>(number);
@@ -853,7 +856,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   bool has_start_options = false;
   static const std::vector<std::string> kStartOptions = {
     "unit_test_2", "p", "fullscreen", "no_opengl", "rebuild_gl_raster_cache",
-    "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
+    "rebuild_chart_db", "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
   for (const auto& opt : kStartOptions) {
     if (parser.Found(opt)) has_start_options = true;
   }
@@ -926,7 +929,9 @@ MyApp::MyApp()
       m_rest_server(PINCreateDialog::GetDlgCtx(),
       RouteCtxFactory(),
       g_bportable),
-      m_exitcode(-2) {
+      m_usb_watcher(UsbWatchDaemon::GetInstance()),
+      m_exitcode(-2)
+{
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
   if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
@@ -1637,8 +1642,8 @@ bool MyApp::OnInit() {
 
   //      Try to load the current chart list Data file
   ChartData = new ChartDB();
-  if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
-    g_bNeedDBUpdate = true;
+  if (g_NeedDBUpdate == 0 && !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
+    g_NeedDBUpdate = 1;
   }
 
   //  Verify any saved chart database startup index
@@ -1872,6 +1877,7 @@ int MyApp::OnExit() {
 
   wxLogMessage(_T("opencpn::MyApp starting exit."));
   m_checker.OnExit();
+  m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
   wxDateTime lognow = wxDateTime::Now();
@@ -1920,6 +1926,7 @@ int MyApp::OnExit() {
   delete pSelectAIS;
 
   delete ps52plib;
+  delete g_SencThreadManager;
 
   if (g_pGroupArray) {
     for (unsigned int igroup = 0; igroup < g_pGroupArray->GetCount();

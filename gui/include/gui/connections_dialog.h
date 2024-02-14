@@ -36,6 +36,9 @@
 
 #include "model/conn_params.h"
 #include "model/comm_util.h"
+
+#include "observable.h"
+
 class options;
 class ConnectionParamsPanel;
 
@@ -114,6 +117,8 @@ public:
   void onBTScanTimer(wxTimerEvent &event);
   void StopBTScan(void);
 
+  void OnWheelChoice(wxMouseEvent& event);
+
 //private:
   wxScrolledWindow *m_container;
   options *m_parent;
@@ -169,6 +174,8 @@ public:
   wxArrayString m_BTscan_results;
   wxTimer m_BTScanTimer;
   wxArrayString m_choice_CANSource_choices;
+
+  ObsListener new_device_listener;
 
   DECLARE_EVENT_TABLE()
 

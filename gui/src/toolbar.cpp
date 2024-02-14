@@ -1521,8 +1521,8 @@ ToolTipWin::ToolTipWin(wxWindow *parent)
               wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR) {
   m_pbm = NULL;
 
-  m_back_color = GetGlobalColor(_T ( "UIBCK" ));
-  m_text_color = GetGlobalColor(_T ( "UITX1" ));
+  m_back_color = GetDimedColor(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+  m_text_color = GetDimedColor(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 
   SetBackgroundStyle(wxBG_STYLE_CUSTOM);
   SetBackgroundColour(m_back_color);
@@ -1534,13 +1534,11 @@ ToolTipWin::ToolTipWin(wxWindow *parent)
 ToolTipWin::~ToolTipWin() { delete m_pbm; }
 
 void ToolTipWin::SetColorScheme(ColorScheme cs) {
-  m_back_color = GetGlobalColor(_T ( "UIBCK" ));
-  m_text_color = GetGlobalColor(_T ( "UITX1" ));
+  m_back_color = GetDimedColor(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+  m_text_color = GetDimedColor(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 
 #ifndef __WXOSX__
-  m_text_color = FontMgr::Get().GetFontColor(_("ToolTips"));
-  // assume black is the default
-  if (m_text_color == *wxBLACK) m_text_color = GetGlobalColor(_T ( "UITX1" ));
+  m_text_color = GetDimedColor(FontMgr::Get().GetFontColor(_("ToolTips")));
 #endif
 
   m_cs = cs;

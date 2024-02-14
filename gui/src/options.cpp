@@ -584,14 +584,11 @@ void OCPNChartDirPanel::DoChartSelected() {
 
 void OCPNChartDirPanel::SetSelected(bool selected) {
   m_bSelected = selected;
-  wxColour colour;
 
   if (selected) {
-    GetGlobalColor(_T("UIBCK"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT);
   } else {
-    GetGlobalColor(_T("DILG0"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW);
   }
 
   Refresh(true);
@@ -626,8 +623,6 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   dc.SetBrush(wxBrush(GetBackgroundColour()));
   dc.DrawRectangle(GetVirtualSize());
 
-  wxColour c;
-
   wxString nameString = m_pChartDir;
   ChartDirPanelHardBreakWrapper wrapper(this, nameString, width * 9 / 10);
   wxArrayString nameWrapped = wrapper.GetLineArray();
@@ -640,7 +635,6 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   if (m_bSelected) {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "UITX1" ), &c);
     dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
 
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
@@ -651,7 +645,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
     wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
     dc.SetFont(*dFont);
 
-    dc.SetTextForeground(wxColour(64, 64, 64));
+    dc.SetTextForeground(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWTEXT));
 
     int yd = height * 20 / 100;
     for (size_t i = 0; i < nameWrapped.GetCount(); i++) {
@@ -665,8 +659,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   else {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "GREY1" ), &c);
-    dc.SetPen(wxPen(c, 1));
+    dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWFRAME), 1));
 
     int offset = height / 10;
     dc.DrawRoundedRectangle(offset, offset, width - (2 * offset),
@@ -677,7 +670,7 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
     wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
     dc.SetFont(*dFont);
 
-    dc.SetTextForeground(wxColour(64, 64, 64));
+    dc.SetTextForeground(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWTEXT));
 
     int yd = height * 20 / 100;
     for (size_t i = 0; i < nameWrapped.GetCount(); i++) {
@@ -2878,9 +2871,7 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
         wxPanel* panel = wxDynamicCast(win, wxPanel);
         if (panel) {
           if (panel == selectedPanel) {
-            wxColour colour;
-            GetGlobalColor(_T("UIBCK"), &colour);
-            panel->SetBackgroundColour(colour);
+            panel->SetBackgroundColour(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT));
             ConfigPanel* cPanel = wxDynamicCast(panel, ConfigPanel);
             if (cPanel) m_selectedConfigPanelGUID = cPanel->GetConfigGUID();
           } else
@@ -7096,6 +7087,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
               break;
           }
         }
+        // Check for any persistently tracked target, force b_show_track ON
+        std::map<int, Track *>::iterator it;
+        it = g_pAIS->m_persistent_tracks.find(pAISTarget->MMSI);
+        if (it != g_pAIS->m_persistent_tracks.end())
+          pAISTarget->b_show_track = true;
       }
     }
   }
@@ -8074,7 +8070,6 @@ void options::DoOnPageChange(size_t page) {
     if (m_sconfigSelect_twovertical) m_sconfigSelect_twovertical->Refresh(true);
   }
 #endif
-
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
@@ -8095,7 +8090,6 @@ void options::DoOnPageChange(size_t page) {
       current_sel = GetOCPNKnownLanguage(g_locale);
 
       int nLang = sizeof(lang_list) / sizeof(int);
-
 #ifdef __WXMSW__
       // always add us english
       m_itemLangListBox->Append(_T("English (U.S.)"));
@@ -8130,7 +8124,6 @@ void options::DoOnPageChange(size_t page) {
 
       // always add us english
       lang_array.Add(_T("en_US"));
-
       for (int it = 0; it < nLang; it++) {
         {
           wxLog::EnableLogging(
@@ -8147,12 +8140,15 @@ void options::DoOnPageChange(size_t page) {
           ltest.AddCatalog(_T("opencpn"));
 
           wxLog::EnableLogging(TRUE);
-
           if (ltest.IsLoaded(_T("opencpn"))) {
-            wxString s0 =
-                wxLocale::GetLanguageInfo(lang_list[it])->CanonicalName;
+            auto x = wxLocale::GetLanguageInfo(lang_list[it]);
+            wxString s0;
+            if (x) s0 = x->CanonicalName;
+            else continue;
             wxString sl = wxLocale::GetLanguageName(lang_list[it]);
-            if (wxNOT_FOUND == lang_array.Index(s0)) lang_array.Add(s0);
+            if (wxNOT_FOUND == lang_array.Index(s0)) {
+              lang_array.Add(s0);
+            }
           }
         }
       }
@@ -8163,7 +8159,6 @@ void options::DoOnPageChange(size_t page) {
         m_itemLangListBox->Append(loc_lang_name);
       }
 #endif
-
       // BUGBUG
       //  Remember that wxLocale ctor has the effect of changing the system
       //  locale, including the "C" libraries.
@@ -9192,14 +9187,11 @@ void CanvasConfigSelect::OnMouseSelected(wxMouseEvent& event) {
 
 void CanvasConfigSelect::SetSelected(bool selected) {
   m_bSelected = selected;
-  wxColour colour;
 
   if (selected) {
-    GetGlobalColor(_T("UIBCK"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT);
   } else {
-    GetGlobalColor(_T("DILG0"), &colour);
-    m_boxColour = colour;
+    m_boxColour = wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW);
   }
 
   Refresh(true);
@@ -9216,21 +9208,13 @@ void CanvasConfigSelect::OnPaint(wxPaintEvent& event) {
   dc.SetBrush(wxBrush(GetBackgroundColour()));
   dc.DrawRectangle(GetVirtualSize());
 
-  wxColour c;
-
   if (m_bSelected) {
     dc.SetBrush(wxBrush(m_boxColour));
-
-    GetGlobalColor(_T ( "UITX1" ), &c);
-    dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
-
+    dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT), 3));
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
   } else {
     dc.SetBrush(wxBrush(m_boxColour));
-
-    GetGlobalColor(_T ( "UITX1" ), &c);
-    dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
-
+    dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_HIGHLIGHT), 3));
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
   }
 

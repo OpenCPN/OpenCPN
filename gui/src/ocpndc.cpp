@@ -736,7 +736,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
         glLineWidth(wxMax(g_GLMinSymbolLineWidth, 1));
     }
 
-    if (b_draw_thick) {
+    if (b_draw_thick || m_pen.GetStyle() != wxPENSTYLE_SOLID) {
       DrawGLThickLines(n, points, xoffset, yoffset, m_pen, b_hiqual);
 
       if (b_hiqual) {

@@ -37,6 +37,9 @@
 #include "ocpndc.h"
 #include "chcanv.h"
 
+#include <array>
+#include <unordered_map>
+
 #define FORMAT_BITS GL_RGB
 
 #ifdef __OCPN__ANDROID__
@@ -120,6 +123,7 @@ public:
   static bool s_b_useStencil;
   static bool s_b_useStencilAP;
   static bool s_b_useFBO;
+  static std::unordered_map<wxPenStyle, std::array<wxDash, 2>> dash_map;
 
   void SendJSONConfigMessage();
 

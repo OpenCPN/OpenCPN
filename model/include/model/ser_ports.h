@@ -25,6 +25,12 @@
 #ifndef SER_PORTS_H
 #define SER_PORTS_H
 
+// FIXME (leamas): Return by value instead!
+
+/**
+ * Enumerate all serial ports
+ * @return List of available port names owned by caller.
+ */
 wxArrayString *EnumerateSerialPorts(void);
 
 #endif

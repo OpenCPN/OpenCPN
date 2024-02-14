@@ -47,7 +47,8 @@ extern Select* pSelect;
 struct SelectCtx {
   const bool show_nav_objects;
   const double scale;
-  SelectCtx(bool s, double _scale) : show_nav_objects(s), scale(_scale) {}
+  const double chart_scale;
+  SelectCtx(bool s, double _scale, double _chart_scale) : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale) {}
 };
 
 class Select {

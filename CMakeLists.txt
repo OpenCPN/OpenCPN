@@ -1065,6 +1065,10 @@ if (APPLE)
     target_include_directories(
       ${PACKAGE_NAME} PRIVATE "${OCPN_DEPS_BUNDLE_PATH}/include"
     )
+    set_target_properties(${PACKAGE_NAME} PROPERTIES
+      BUILD_RPATH "${OCPN_DEPS_BUNDLE_PATH}/lib"
+      INSTALL_RPATH "${OCPN_DEPS_BUNDLE_PATH}/lib"
+  )
   endif ()
 endif ()
 
@@ -1463,8 +1467,11 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
 
-# Ensure we have boost::filesystem if std::filesystem is missing.
-include(StdFilesystem)
+# Add android and windows extra, bundled GL headers
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+
+# Ensure we have ghc::filesystem if std::filesystem is missing.
+add_subdirectory(libs/std_filesystem)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
 
 message(STATUS "    Adding local LIBTESS2")
@@ -1522,7 +1529,7 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-include(SoundConfig)
+##include(SoundConfig)
 configure_file(
   ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
   ${CMAKE_BINARY_DIR}/include/config.h
@@ -1862,9 +1869,13 @@ if (LIBLZMA_FOUND)
 endif ()
 
 # Add targets used elsewhere, notably by model
+if (QT_ANDROID)
+  add_subdirectory(libs/android_jvm)
+endif ()
 
 add_subdirectory(libs/IXWebSocket)
 add_subdirectory(libs/gdal)
+add_subdirectory(libs/gl_headers)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
 add_subdirectory(libs/mDNS)
@@ -2721,6 +2732,7 @@ else ()
 endif ()
 
 if (QT_ANDROID)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::java-jvm)
   target_include_directories(
     ${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include

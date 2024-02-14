@@ -41,12 +41,13 @@
 #include "model/routeman.h"
 #include "model/select.h"
 #include "model/std_instance_chk.h"
+#include "model/wait_continue.h"
 #include "wx_instance_chk.h"
 
 // Macos up to 10.13
 #if defined(__clang_major__) && (__clang_major__ < 15)
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
 
 // Ubuntu Bionic:
 #elif !defined(__clang_major__) && defined(__GNUC__) && (__GNUC__ < 8)
@@ -532,6 +533,8 @@ public:
   }
 };
 
+// GetSignalkPayload() introduced in 1.19
+#if API_VERSION_MINOR > 18
 class SignalKApp : public BasicTest {
 public:
   SignalKApp() : BasicTest() {}
@@ -562,6 +565,7 @@ public:
     EXPECT_EQ(1, msg.ItemAt("Data").ItemAt("list").ItemAt(0).AsInt());
   }
 };
+#endif
 
 class AisDecodeApp : public BasicTest {
 public:
@@ -894,7 +898,9 @@ TEST(AIS, AISVDO) { AisVdoApp app; }
 
 TEST(AIS, AISVDM) { AisVdmApp app; }
 
+#if API_VERSION_MINOR > 18
 TEST(PluginApi, SignalK) { SignalKApp app; }
+#endif
 
 #ifdef HAVE_UNISTD_H
 TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
@@ -908,4 +914,25 @@ TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
 TEST(IpcClient, Raise) { CliRaise run_test; }
 
 TEST(IpcClient, Open) { IpcOpen run_test; }
+
+TEST(WaitContinue, Basic) {
+  using namespace std::chrono;
+  WaitContinue waiter;
+  auto t1 = high_resolution_clock::now();
+  std::thread t([&waiter]{ waiter.Wait(50ms); });
+  t.join();
+  auto t2 = high_resolution_clock::now();
+  auto raw_elapsed = t2 - t1 - 50ms;
+  auto elapsed = duration_cast<milliseconds>(t2 - t1 - 50ms);
+  EXPECT_NEAR(elapsed.count(), 0, 5);
+
+  t1 = high_resolution_clock::now();
+  t = std::thread([&waiter]{ waiter.Wait(50ms); });
+  std::this_thread::sleep_for(25ms);
+  waiter.Continue();
+  t.join();
+  t2 = high_resolution_clock::now();
+  elapsed = duration_cast<milliseconds>(t2 - t1 - 25ms);
+  EXPECT_NEAR(elapsed.count(), 0, 5);
+}
 #endif

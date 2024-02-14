@@ -120,4 +120,56 @@ public:
    void Serve() {}
 };
 
+/**
+ * Useless place holder for LocalServerApi
+ */
+class DummyIpcServer : public LocalServerApi {
+public:
+   static DummyIpcServer& GetInstance() {
+     static DummyIpcServer server;
+     return server;
+   }
+
+   DummyIpcServer() {}
+   DummyIpcServer(const std::string& path) {}
+
+   wxConnectionBase* OnAcceptConnection(const wxString& topic) {
+     assert(false && "OnAcceptConnection called in DummyIpcServer");
+     return nullptr;   // not reachable, for the compiler
+   }
+
+   void Serve() {}
+};
+
+class DummyIpcClient :  public LocalClientApi {
+public:
+
+  DummyIpcClient(const std::string& path) {}
+
+  DummyIpcClient() {}
+
+  LocalApiResult SendRaise() {
+    return LocalApiResult(false, "raise command not implemented");
+  }
+
+  LocalApiResult SendOpen(const char* path) {
+    return LocalApiResult(false, "open command not implemented");
+  }
+
+  LocalApiResult SendQuit() {
+    return LocalApiResult(false, "quit command not implemented");
+  }
+
+  LocalApiResult GetRestEndpoint() {
+    return LocalApiResult(false, "get_rest_endpoint command not implemented");
+  }
+
+  wxConnectionBase* OnMakeConnection() {
+    assert(false && "OnMakeConnection called in DummyIpcServer");
+    return nullptr;   // not reachable, for the compiler
+  }
+};
+
+
+
 #endif  // _IPC_API_H__

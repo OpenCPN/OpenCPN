@@ -97,6 +97,7 @@ bool MDA::Parse( const SENTENCE& sentence )
 Pressure       = sentence.Double( 3 );
 UnitOfMeasurement = sentence.Field( 4 );
 AirTemp = sentence.Double(5);
+Humidity = sentence.Double(9);
 
 if(UnitOfMeasurement==wxT("B"))
 {

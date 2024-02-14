@@ -67,6 +67,7 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/local_api.h"
 #include "model/multiplexer.h"
@@ -76,6 +77,7 @@
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/sys_events.h"
 #include "model/track.h"
 
 #include "AboutFrameImpl.h"
@@ -251,7 +253,7 @@ extern int options_lastPage;
 extern int options_subpage;
 extern bool b_reloadForPlugins;
 extern ChartCanvas *g_focusCanvas;
-extern bool g_bNeedDBUpdate;
+extern int g_NeedDBUpdate;
 extern bool g_bFullscreen;
 extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
 extern ChartGroupArray *g_pGroupArray;
@@ -630,7 +632,7 @@ static void onBellsFinishedCB(void *ptr) {
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
-    : wxFrame(frame, -1, title, pos, size, style)
+    : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName)
       {
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
@@ -847,15 +849,15 @@ void MyFrame::RebuildChartDatabase() {
   if (ChartDirArray.GetCount()) {
     //              Create and Save a new Chart Database based on the hints
     //              given in the config file
-
-    wxString msg1(
+    if(g_NeedDBUpdate == 1) {
+      wxString msg1(
         _("OpenCPN needs to update the chart database from config file "
           "entries...."));
 
-    OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),
+      OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),
                            wxICON_INFORMATION | wxOK);
-    int dlg_ret;
-    dlg_ret = mdlg.ShowModal();
+      mdlg.ShowModal();
+    }
 
     delete ChartData;
     ChartData = new ChartDB();
@@ -1677,7 +1679,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   pConfig->UpdateNavObj();
 
-  //    pConfig->m_pNavObjectChangesSet->Clear();
   pConfig->m_pNavObjectChangesSet->reset();
 
   // Remove any leftover Routes and Waypoints from config file as they were
@@ -1783,6 +1784,11 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   if (g_pAIS) {
     delete g_pAIS;
     g_pAIS = NULL;
+  }
+
+  if (g_pAISGUI) {
+    delete g_pAISGUI;
+    g_pAISGUI = NULL;
   }
 
   delete g_pMUX;
@@ -4631,7 +4637,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       g_Platform->SetFullscreen(g_bFullscreen);
 
       // Rebuild chart database, if necessary
-      if (g_bNeedDBUpdate) {
+      if (g_NeedDBUpdate > 0) {
         RebuildChartDatabase();
         for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
           ChartCanvas *cc = g_canvasArray.Item(i);
@@ -4658,7 +4664,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           }
         }
 
-        g_bNeedDBUpdate = false;
+        g_NeedDBUpdate = 0;
       }
 
       // Load the waypoints. Both of these routines are very slow to execute
@@ -4936,6 +4942,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   wxLog::FlushActive();
 
   RefreshAllCanvas(true);
+  wxGetApp().m_usb_watcher.Start();
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
@@ -6866,12 +6873,13 @@ void MyFrame::OnSuspendCancel(wxPowerEvent &WXUNUSED(event)) {
 int g_last_resume_ticks;
 void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
   wxDateTime now = wxDateTime::Now();
-  //    printf("OnResume...%d\n", now.GetTicks());
   wxLogMessage(_T("System resumed from suspend."));
 
+
   if ((now.GetTicks() - g_last_resume_ticks) > 5) {
-    wxLogMessage(_T("Restarting streams."));
-    //       printf("   Restarting streams\n");
+    SystemEvents::GetInstance().evt_resume.Notify();
+
+    wxLogMessage("Restarting streams.");
     g_last_resume_ticks = now.GetTicks();
 //FIXME (dave)
 #if 0

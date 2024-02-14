@@ -3114,7 +3114,6 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
     Route *pRoute = node1->GetData();
     if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
       pRoute->SetVisible(layer->IsVisibleOnChart());
-      pConfig->UpdateRoute(pRoute);
     }
     node1 = node1->GetNext();
   }

@@ -20,7 +20,6 @@ brew list --versions python3 || {
 }
 
 # Install the build dependencies for OpenCPN
-brew install boost   # Pre-10.15 compatibility
 brew install cmake
 brew install gettext
 brew install lame

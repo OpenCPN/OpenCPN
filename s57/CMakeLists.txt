@@ -32,6 +32,7 @@ target_link_libraries(
     ocpn::iso8211
     ocpn::nmea0183
     ocpn::gdal
+    ocpn::gl-headers
     ocpn::geoprim
     ocpn::N2KParser
     ocpn::pugixml
@@ -79,3 +80,7 @@ target_include_directories(
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${CMAKE_BINARY_DIR}/include
 )
+
+if (QT_ANDROID)
+  target_include_directories(S57ENC PUBLIC ${CMAKE_SOURCE_DIR}/android)
+endif ()

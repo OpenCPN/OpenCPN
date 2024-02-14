@@ -55,7 +55,7 @@
 #include "canvasMenu.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "cm93.h"      // for chart outline draw
+#include "cm93.h"  // for chart outline draw
 #include "config.h"
 #include "model/config_vars.h"
 #include "model/cutil.h"
@@ -114,7 +114,7 @@ extern bool g_bConfirmObjectDelete;
 extern WayPointman *pWayPointMan;
 extern MyConfig *pConfig;
 extern Select *pSelect;
-extern OCPNPlatform* g_Platform;
+extern OCPNPlatform *g_Platform;
 
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
 
@@ -238,13 +238,12 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
   m_pFoundRoutePoint = selectedPoint;
   m_FoundAIS_MMSI = selectedAIS_MMSI;
   m_pIDXCandidate = selectedTCIndex;
-  if (!m_scaledFont.IsOk()){
+  if (!m_scaledFont.IsOk()) {
     wxFont *qFont = GetOCPNScaledFont(_("Menu"));
     m_scaledFont = *qFont;
   }
 
-  m_DIPFactor =g_Platform->GetDisplayDIPMult(gFrame);
-
+  m_DIPFactor = g_Platform->GetDisplayDIPMult(gFrame);
 }
 
 CanvasMenuHandler::~CanvasMenuHandler() {}
@@ -253,9 +252,9 @@ CanvasMenuHandler::~CanvasMenuHandler() {}
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
 
-void CanvasMenuHandler::PrepareMenuItem( wxMenuItem *item ){
+void CanvasMenuHandler::PrepareMenuItem(wxMenuItem *item) {
 #if defined(__WXMSW__)
-  wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));    // Control Background
+  wxColour ctrl_back_color = GetGlobalColor(_T("DILG1"));  // Control Background
   item->SetBackgroundColour(ctrl_back_color);
   wxColour menu_text_color = GetGlobalColor(_T ( "UITX1" ));
   item->SetTextColour(menu_text_color);
@@ -273,7 +272,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   item->SetFont(sFont);
 #endif
 
-  PrepareMenuItem( item );
+  PrepareMenuItem(item);
 
   if (g_btouch) menu->InsertSeparator(0);
   menu->Prepend(item);
@@ -290,7 +289,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   item->SetFont(sFont);
 #endif
 
-  PrepareMenuItem( item );
+  PrepareMenuItem(item);
 
   menu->Append(item);
   if (g_btouch) menu->AppendSeparator();
@@ -306,7 +305,7 @@ void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
   item->SetFont(*qFont);
 #endif
 
-  PrepareMenuItem( item );
+  PrepareMenuItem(item);
 }
 
 void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
@@ -331,45 +330,44 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   popy = y;
 
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
-
     bool bsubMenus = false;
 
-    if (bsubMenus){
+    if (bsubMenus) {
       if (parent->undo->AnythingToUndo()) {
-          //  Undo SubMenu
+        //  Undo SubMenu
         wxMenuItem *subMenuItemundo =
-          contextMenu->AppendSubMenu(subMenuUndo, _("Undo"));
+            contextMenu->AppendSubMenu(subMenuUndo, _("Undo"));
 
         wxString undoItem;
         undoItem << _("Undo") << _T(" ")
-                << parent->undo->GetNextUndoableAction()->Description();
+                 << parent->undo->GetNextUndoableAction()->Description();
         MenuAppend1(subMenuUndo, ID_UNDO, undoItem);
       }
       if (parent->undo->AnythingToRedo()) {
-          //  Redo SubMenu
+        //  Redo SubMenu
         wxMenuItem *subMenuItemRedo =
-          contextMenu->AppendSubMenu(subMenuRedo, _("Redo"));
+            contextMenu->AppendSubMenu(subMenuRedo, _("Redo"));
 
         wxString redoItem;
         redoItem << _("Redo") << _T(" ")
-                << parent->undo->GetNextRedoableAction()->Description();
+                 << parent->undo->GetNextRedoableAction()->Description();
         MenuAppend1(subMenuRedo, ID_REDO, redoItem);
       }
-    }
-    else {
+    } else {
       if (parent->undo->AnythingToUndo()) {
         wxString undoItem;
         undoItem << _("Undo") << _T(" ")
-               << parent->undo->GetNextUndoableAction()->Description();
+                 << parent->undo->GetNextUndoableAction()->Description();
         MenuAppend1(contextMenu, ID_UNDO, _menuText(undoItem, _T("Ctrl-Z")));
       }
 
       if (parent->undo->AnythingToRedo()) {
         wxString redoItem;
         redoItem << _("Redo") << _T(" ")
-               << parent->undo->GetNextRedoableAction()->Description();
+                 << parent->undo->GetNextRedoableAction()->Description();
 #ifdef __WXOSX__
-        MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Shift-Ctrl-Z")));
+        MenuAppend1(contextMenu, ID_REDO,
+                    _menuText(redoItem, _T("Shift-Ctrl-Z")));
 #else
         MenuAppend1(contextMenu, ID_REDO, _menuText(redoItem, _T("Ctrl-Y")));
 #endif
@@ -385,12 +383,11 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (!parent->m_pMouseRoute) {
     if (parent->m_bMeasure_Active)
       MenuAppend1(contextMenu, ID_DEF_MENU_DEACTIVATE_MEASURE,
-                   _menuText(_("Measure Off"), _T("Esc")));
+                  _menuText(_("Measure Off"), _T("Esc")));
     else
       MenuAppend1(contextMenu, ID_DEF_MENU_ACTIVATE_MEASURE,
-                   _menuText(_("Measure"), _T("M")));
+                  _menuText(_("Measure"), _T("M")));
   }
-
 
   bool ais_areanotice = false;
   if (g_pAIS && parent->GetShowAIS() && g_bShowAreaNotices) {
@@ -415,6 +412,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                 if (sa->radius_m > 0.0) bbox.EnLarge(sa->radius_m * vp_scale);
                 break;
               }
+              case AIS8_001_22_SHAPE_RECT:
               case AIS8_001_22_SHAPE_POLYGON:
               case AIS8_001_22_SHAPE_POLYLINE: {
                 double lat = sa->latitude;
@@ -480,14 +478,13 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     bool b_dm_add = true;
-    if (g_btouch && parent->IsMeasureActive())
-      b_dm_add = false;
+    if (g_btouch && parent->IsMeasureActive()) b_dm_add = false;
 
     if (b_dm_add) {
       MenuAppend1(contextMenu, ID_DEF_MENU_DROP_WP,
-                _menuText(_("Drop Mark"), _T("Ctrl-M")));
+                  _menuText(_("Drop Mark"), _T("Ctrl-M")));
       MenuAppend1(contextMenu, ID_DEF_MENU_NEW_RT,
-                _menuText(_("New Route..."), _T("Ctrl-R")));
+                  _menuText(_("New Route..."), _T("Ctrl-R")));
     }
 
     if (!bGPSValid)
@@ -751,7 +748,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(menuRoute, ID_RT_MENU_RESEQUENCE,
                   _("Resequence Waypoints..."));
 
-      //#ifndef __OCPN__ANDROID__
+      // #ifndef __OCPN__ANDROID__
       wxString port = parent->FindValidUploadPort();
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
@@ -766,10 +763,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         wxString item = _("Send to new GPS");
         MenuAppend1(menuRoute, ID_RT_MENU_SENDTONEWGPS, item);
       }
-      //#endif
-      wxString itemstp = SYMBOL_STP_TITLE; // Send to Peer
+      // #endif
+      wxString itemstp = SYMBOL_STP_TITLE;  // Send to Peer
       MenuAppend1(menuRoute, ID_RT_MENU_SENDTOPEER, itemstp);
-
     }
     // Eventually set this menu as the "focused context menu"
     if (menuFocus != menuAIS) menuFocus = menuRoute;
@@ -796,7 +792,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(menuTrack, ID_TK_MENU_DELETE, _("Delete") + _T( "..." ));
     }
 
-    wxString itemstp = SYMBOL_STP_TITLE; // Send to Peer
+    wxString itemstp = SYMBOL_STP_TITLE;  // Send to Peer
     MenuAppend1(menuTrack, ID_TK_MENU_SENDTOPEER, itemstp);
 
     // Eventually set this menu as the "focused context menu"
@@ -852,7 +848,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob"))
         MenuAppend1(menuWaypoint, ID_RT_MENU_DELPOINT, _("Delete"));
 
-      //#ifndef __OCPN__ANDROID__
+      // #ifndef __OCPN__ANDROID__
       wxString port = parent->FindValidUploadPort();
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
@@ -868,7 +864,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item);
       }
 
-      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, SYMBOL_STP_TITLE); //Send to Peer
+      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER,
+                  SYMBOL_STP_TITLE);  // Send to Peer
     }
 
     // Eventually set this menu as the "focused context menu"
@@ -902,7 +899,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob"))
         MenuAppend1(menuWaypoint, ID_WP_MENU_DELPOINT, _("Delete"));
 
-      //#ifndef __OCPN__ANDROID__
+      // #ifndef __OCPN__ANDROID__
       wxString port = parent->FindValidUploadPort();
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
@@ -913,8 +910,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
       MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOGPS, item);
 
-      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER, SYMBOL_STP_TITLE); //Send to Peer
-      //#endif
+      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER,
+                  SYMBOL_STP_TITLE);  // Send to Peer
+      // #endif
 
       if ((m_pFoundRoutePoint == pAnchorWatchPoint1) ||
           (m_pFoundRoutePoint == pAnchorWatchPoint2))
@@ -941,8 +939,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   enum { WPMENU = 1, TKMENU = 2, RTMENU = 4, MMMENU = 8 };
   int sub_menu = 0;
   if (!g_bBasicMenus && menuFocus != contextMenu) {
-    if(global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK &&
-                   global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT ){
+    if (global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK &&
+        global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) {
       menuFocus->AppendSeparator();
     }
     wxMenuItem *subMenu1;
@@ -1034,7 +1032,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         pmi->SetFont(sFont);
 #endif
 
-        PrepareMenuItem( pmi );
+        PrepareMenuItem(pmi);
         submenu->Append(pmi);
         pmi->Check((*it)->IsChecked());
       }
@@ -1057,7 +1055,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     pmi->SetFont(sFont);
 #endif
 
-    PrepareMenuItem( pmi );
+    PrepareMenuItem(pmi);
 
     wxMenu *dst = contextMenu;
     if (pimis->m_in_menu == "Waypoint")
@@ -1114,8 +1112,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
   bool dupFirstWpt = true, showRPD;
 
   parent->GetCanvasPixPoint(popx * parent->GetDisplayScale(),
-                            popy* parent->GetDisplayScale(),
-                            zlat, zlon);
+                            popy * parent->GetDisplayScale(), zlat, zlon);
 
   switch (event.GetId()) {
     case ID_DEF_MENU_MAX_DETAIL:
@@ -1317,7 +1314,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           g_pMarkInfoDialog->UpdateProperties();
         }
 
-        if(RouteManagerDialog::getInstanceFlag()){
+        if (RouteManagerDialog::getInstanceFlag()) {
           if (pRouteManagerDialog) {
             if (pRouteManagerDialog->IsShown())
               pRouteManagerDialog->UpdateWptListCtrl();
@@ -1333,8 +1330,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       parent->ShowMarkPropertiesDialog(m_pFoundRoutePoint);
       break;
 
-    case ID_WP_MENU_CLEAR_ANCHORWATCH:
-    {
+    case ID_WP_MENU_CLEAR_ANCHORWATCH: {
       wxString guid = wxEmptyString;
       if (pAnchorWatchPoint1 == m_pFoundRoutePoint) {
         pAnchorWatchPoint1 = NULL;
@@ -1345,7 +1341,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         guid = g_AW2GUID;
         g_AW2GUID.Clear();
       }
-      if(!guid.IsEmpty()) {
+      if (!guid.IsEmpty()) {
         wxJSONValue v;
         v[_T("GUID")] = guid;
         wxString msg_id(_T("OCPN_ANCHOR_WATCH_CLEARED"));
@@ -1354,8 +1350,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
     }
 
-    case ID_WP_MENU_SET_ANCHORWATCH:
-    {
+    case ID_WP_MENU_SET_ANCHORWATCH: {
       wxString guid = wxEmptyString;
       if (pAnchorWatchPoint1 == NULL) {
         pAnchorWatchPoint1 = m_pFoundRoutePoint;
@@ -1378,7 +1373,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           m_pFoundRoutePoint->SetName(nn);
         }
       }
-      if(!guid.IsEmpty()) {
+      if (!guid.IsEmpty()) {
         wxJSONValue v;
         v[_T("GUID")] = guid;
         wxString msg_id(_T("OCPN_ANCHOR_WATCH_SET"));
@@ -1542,9 +1537,10 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         if (m_pSelectedRoute->m_bIsInLayer) break;
 
         if (!g_pRouteMan->DeleteRoute(m_pSelectedRoute,
-                                      NavObjectChanges::getInstance())) break;
+                                      NavObjectChanges::getInstance()))
+          break;
 
-        if(RouteManagerDialog::getInstanceFlag()){
+        if (RouteManagerDialog::getInstanceFlag()) {
           if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
             pRouteManagerDialog->UpdateRouteListCtrl();
         }
@@ -1702,8 +1698,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_WPT_MENU_SENDTOGPS:
       if (m_pFoundRoutePoint) {
         if (parent->m_active_upload_port.Length())
-          RoutePointGui(*m_pFoundRoutePoint).SendToGPS(
-              parent->m_active_upload_port.BeforeFirst(' '), NULL);
+          RoutePointGui(*m_pFoundRoutePoint)
+              .SendToGPS(parent->m_active_upload_port.BeforeFirst(' '), NULL);
         else {
           SendToGpsDlg dlg;
           dlg.SetWaypoint(m_pFoundRoutePoint);
@@ -1727,8 +1723,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
 
     case ID_WPT_MENU_SENDTOPEER:
-       if (m_pFoundRoutePoint) {
-
+      if (m_pFoundRoutePoint) {
         SendToPeerDlg dlg;
         dlg.SetWaypoint(m_pFoundRoutePoint);
 
@@ -1737,28 +1732,27 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         // Check for stale cache...
         bool bDNScacheStale = true;
         wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()){
+        if (g_DNS_cache_time.IsValid()) {
           wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5)
-            bDNScacheStale = false;
+          if (delta.GetMinutes() < 5) bDNScacheStale = false;
         }
 
-         if ((g_DNS_cache.size() == 0) || bDNScacheStale)
-           dlg.SetScanOnCreate(true);
+        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+          dlg.SetScanOnCreate(true);
 
-        dlg.SetScanTime(5);     // seconds
-        dlg.Create(NULL, -1, _("Send Waypoint to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.SetScanTime(5);  // seconds
+        dlg.Create(NULL, -1, _("Send Waypoint to OpenCPN Peer") + _T( "..." ),
+                   _T(""));
         dlg.ShowModal();
       }
       break;
 
-
-
     case ID_RT_MENU_SENDTOGPS:
       if (m_pSelectedRoute) {
         if (parent->m_active_upload_port.Length())
-          RouteGui(*m_pSelectedRoute).SendToGPS(
-              parent->m_active_upload_port.BeforeFirst(' '), true, NULL);
+          RouteGui(*m_pSelectedRoute)
+              .SendToGPS(parent->m_active_upload_port.BeforeFirst(' '), true,
+                         NULL);
         else {
           SendToGpsDlg dlg;
           dlg.SetRoute(m_pSelectedRoute);
@@ -1779,9 +1773,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       }
       break;
 
-     case ID_RT_MENU_SENDTOPEER:
+    case ID_RT_MENU_SENDTOPEER:
       if (m_pSelectedRoute) {
-
         SendToPeerDlg dlg;
         dlg.SetRoute(m_pSelectedRoute);
 
@@ -1790,17 +1783,17 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         // Check for stale cache...
         bool bDNScacheStale = true;
         wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()){
+        if (g_DNS_cache_time.IsValid()) {
           wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5)
-            bDNScacheStale = false;
+          if (delta.GetMinutes() < 5) bDNScacheStale = false;
         }
 
-         if ((g_DNS_cache.size() == 0) || bDNScacheStale)
-           dlg.SetScanOnCreate(true);
+        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+          dlg.SetScanOnCreate(true);
 
-        dlg.SetScanTime(5);     // seconds
-        dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.SetScanTime(5);  // seconds
+        dlg.Create(NULL, -1, _("Send Route to OpenCPN Peer") + _T( "..." ),
+                   _T(""));
         dlg.ShowModal();
       }
       break;
@@ -1832,7 +1825,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
             pRoutePropDialog->Hide();
         }
 
-        if(RouteManagerDialog::getInstanceFlag()){
+        if (RouteManagerDialog::getInstanceFlag()) {
           if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
             pRouteManagerDialog->UpdateWptListCtrl();
             pRouteManagerDialog->UpdateRouteListCtrl();
@@ -1896,7 +1889,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       if (dlg_return == wxID_YES) {
         if (m_pSelectedTrack == g_pActiveTrack)
-            m_pSelectedTrack = parent->parent_frame->TrackOff();
+          m_pSelectedTrack = parent->parent_frame->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
         pConfig->DeleteConfigTrack(m_pSelectedTrack);
 
@@ -1921,7 +1914,6 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_TK_MENU_SENDTOPEER:
       if (m_pSelectedTrack) {
-
         SendToPeerDlg dlg;
         dlg.SetTrack(m_pSelectedTrack);
 
@@ -1930,21 +1922,20 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         // Check for stale cache...
         bool bDNScacheStale = true;
         wxDateTime tnow = wxDateTime::Now();
-        if (g_DNS_cache_time.IsValid()){
+        if (g_DNS_cache_time.IsValid()) {
           wxTimeSpan delta = tnow.Subtract(g_DNS_cache_time);
-          if (delta.GetMinutes() < 5)
-            bDNScacheStale = false;
+          if (delta.GetMinutes() < 5) bDNScacheStale = false;
         }
 
-         if ((g_DNS_cache.size() == 0) || bDNScacheStale)
-           dlg.SetScanOnCreate(true);
+        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+          dlg.SetScanOnCreate(true);
 
-        dlg.SetScanTime(5);     // seconds
-        dlg.Create(NULL, -1, _("Send Track to OpenCPN Peer") + _T( "..." ), _T(""));
+        dlg.SetScanTime(5);  // seconds
+        dlg.Create(NULL, -1, _("Send Track to OpenCPN Peer") + _T( "..." ),
+                   _T(""));
         dlg.ShowModal();
       }
       break;
-
 
     case ID_RC_MENU_SCALE_IN:
       parent->parent_frame->DoStackDown(parent);

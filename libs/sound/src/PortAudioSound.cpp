@@ -28,7 +28,7 @@
 #include <portaudio.h>
 #include <wx/log.h>
 
-#include "config.h"
+#include "snd_config.h"
 #include "PortAudioSound.h"
 
 

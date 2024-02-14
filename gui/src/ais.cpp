@@ -329,6 +329,31 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
                   dc.DrawCircle(target_point, sa->radius_m * vp_scale);
                 break;
               }
+              case AIS8_001_22_SHAPE_RECT: {
+                wxPoint target_point;
+                double lat = sa->latitude;
+                double lon = sa->longitude;
+                int orient_east = 90 + sa->orient_deg;
+                if (orient_east > 360) orient_east -= 360;
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
+                ll_gc_ll(lat, lon, orient_east, sa->e_dim_m / 1852.0, &lat,
+                         &lon);
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
+                ll_gc_ll(lat, lon, sa->orient_deg, sa->n_dim_m / 1852.0, &lat,
+                         &lon);
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
+                ll_gc_ll(sa->latitude, sa->longitude, sa->orient_deg,
+                         sa->n_dim_m / 1852.0, &lat, &lon);
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
+
+                dc.DrawPolygon(points.size(), &points.front());
+
+                break;
+              }
               case AIS8_001_22_SHAPE_POLYGON:
                 draw_polygon = true;
                 // FALL THROUGH
@@ -669,11 +694,11 @@ static void AISSetMetrics() {
   AIS_nominal_target_size_mm = wxMax(AIS_nominal_target_size_mm, 5.0);
 
   AIS_nominal_icon_size_pixels =
-               wxMax(4.0, g_Platform->GetDisplayDPmm() *
-               AIS_nominal_target_size_mm);  // nominal size, but not
-                                             // less than 4 pixel
+      wxMax(4.0, g_Platform->GetDisplayDPmm() *
+                     AIS_nominal_target_size_mm);  // nominal size, but not
+                                                   // less than 4 pixel
   AIS_pix_factor = AIS_nominal_icon_size_pixels /
-                   30.0; // generic A/B icons are 30 units in size
+                   30.0;  // generic A/B icons are 30 units in size
 
   AIS_scale_factor *= AIS_pix_factor;
 
@@ -688,7 +713,7 @@ static void AISSetMetrics() {
   //  display resolution
   AIS_nominal_line_width_pix =
       wxMax(2, g_Platform->GetDisplayDPmm() / (4.0 / DPIscale));
-        // 0.25 mm nominal, but not less than 2 pixels
+  // 0.25 mm nominal, but not less than 2 pixels
 
   AIS_width_interceptbar_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_interceptbar_top = 1.5 * AIS_nominal_line_width_pix;
@@ -699,16 +724,12 @@ static void AISSetMetrics() {
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
   AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
 
-  wxFont *font =FontMgr::Get().GetFont(_("AIS Target Name"), 12);
+  wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 12);
   double scaler = DPIscale;
 
-  AIS_NameFont =
-           FindOrCreateFont_PlugIn(font->GetPointSize() / scaler,
-                                   font->GetFamily(), font->GetStyle(),
-                                   font->GetWeight(), false,
-                                   font->GetFaceName());
-
-
+  AIS_NameFont = FindOrCreateFont_PlugIn(
+      font->GetPointSize() / scaler, font->GetFamily(), font->GetStyle(),
+      font->GetWeight(), false, font->GetFaceName());
 }
 
 static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
@@ -751,11 +772,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   wxPoint TargetPoint, PredPoint;
 
   //   Always draw alert targets, even if they are off the screen
-  if (td->n_alert_state == AIS_ALERT_SET){
+  if (td->n_alert_state == AIS_ALERT_SET) {
     drawit++;
-  }
-  else {
-      //    Is target in Vpoint?
+  } else {
+    //    Is target in Vpoint?
     if (vp.GetBBox().Contains(td->Lat, td->Lon))
       drawit++;  // yep
     else {
@@ -987,8 +1007,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   wxColour URED = GetGlobalColor(_T ( "URED" ));
   if (!td->b_nameValid) target_brush = wxBrush(GetGlobalColor(_T ( "CHYLW" )));
 
-  if ((td->Class == AIS_DSC) && ((td->ShipType == 12) ||
-                    (td->ShipType == 16)) )  // distress(relayed)
+  if ((td->Class == AIS_DSC) &&
+      ((td->ShipType == 12) || (td->ShipType == 16)))  // distress(relayed)
     target_brush = wxBrush(URED);
 
   if (td->b_SarAircraftPosnReport) target_brush = wxBrush(UINFG);
@@ -996,9 +1016,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   if ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid))
     target_brush = wxBrush(URED);
 
-  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) &&
-                            (td->bCPA_Valid) &&
-                            (!td->b_isFollower))
+  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) && (td->bCPA_Valid) &&
+      (!td->b_isFollower))
     target_brush = wxBrush(URED);
 
   if (td->b_positionDoubtful)
@@ -1071,11 +1090,12 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       dc.SetPen(wxPen(UBLCK, AIS_width_target_outline));
 
       //  Using the true ends, not the clipped ends
-      dc.StrokeCircle(tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
+      dc.StrokeCircle(
+          tCPAPoint_unclipped.x, tCPAPoint_unclipped.y,
           AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
-      dc.StrokeCircle(oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
+      dc.StrokeCircle(
+          oCPAPoint_unclipped.x, oCPAPoint_unclipped.y,
           AIS_intercept_bar_circle_diameter * AIS_user_scale_factor);
-
     }
 
     // Draw the intercept line from ownship
@@ -1103,10 +1123,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   //  it
   if (cp != NULL) {
     auto alert_dlg_active =
-        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+        dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
     if (alert_dlg_active && alert_dlg_active->IsShown() && cp) {
       if (alert_dlg_active->Get_Dialog_MMSI() == td->MMSI)
-         cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
+        cp->JaggyCircle(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 100);
     }
   }
 
@@ -1158,11 +1178,11 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
         if (dc.GetDC()) {
           dc.SetBrush(target_brush);
-          dc.StrokeCircle(PredPoint.x, PredPoint.y, 5* targetscale / 100);
+          dc.StrokeCircle(PredPoint.x, PredPoint.y, 5 * targetscale / 100);
         } else {
 #ifdef ocpnUSE_GL
 
-//#ifndef USE_ANDROID_GLES2
+// #ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
           glPushMatrix();
@@ -1202,7 +1222,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
           dc.SetBrush(target_brush);
           dc.StrokeCircle(PredPoint.x, PredPoint.y,
-                          AIS_intercept_bar_circle_diameter * AIS_user_scale_factor* targetscale / 100);
+                          AIS_intercept_bar_circle_diameter *
+                              AIS_user_scale_factor * targetscale / 100);
 #endif
 #endif
         }
@@ -1235,8 +1256,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
     dc.SetPen(target_pen);
     dc.SetBrush(target_brush);
-    dc.StrokeCircle(TargetPoint.x, TargetPoint.y,
-                     1.8 * AIS_icon_diameter);
+    dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1.8 * AIS_icon_diameter);
 
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 1);
     //        Draw the inactive cross-out line
@@ -1248,30 +1268,31 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     }
 
   } else if (td->Class == AIS_METEO) {  // Meteorologic
-    wxPen met(UBLCK,(wxMax(target_outline_pen.GetWidth(), 2.5)));
+    wxPen met(UBLCK, (wxMax(target_outline_pen.GetWidth(), 2.5)));
     dc.SetPen(met);
     dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
     double met_radius = 1.8 * AIS_icon_diameter;
     dc.StrokeCircle(TargetPoint.x, TargetPoint.y, met_radius);
 
-      /* Inscribed "W" in the circle. */
+    /* Inscribed "W" in the circle. */
     dc.SetPen(wxPen(wxMax(target_outline_pen.GetWidth(), 1)));
-    //Left part
+    // Left part
     dc.StrokeLine(TargetPoint.x, TargetPoint.y - met_radius / 4,
-      TargetPoint.x - met_radius / 3, TargetPoint.y + met_radius / 2);
+                  TargetPoint.x - met_radius / 3,
+                  TargetPoint.y + met_radius / 2);
     dc.StrokeLine(
-      TargetPoint.x - met_radius / 3, TargetPoint.y + met_radius / 2,
-      TargetPoint.x - met_radius / 2, TargetPoint.y - met_radius / 2);
-      // Right part
+        TargetPoint.x - met_radius / 3, TargetPoint.y + met_radius / 2,
+        TargetPoint.x - met_radius / 2, TargetPoint.y - met_radius / 2);
+    // Right part
     dc.StrokeLine(TargetPoint.x, TargetPoint.y - met_radius / 4,
-      TargetPoint.x + met_radius / 3, TargetPoint.y + met_radius / 2);
+                  TargetPoint.x + met_radius / 3,
+                  TargetPoint.y + met_radius / 2);
     dc.StrokeLine(
-      TargetPoint.x + met_radius / 3, TargetPoint.y + met_radius / 2,
-      TargetPoint.x + met_radius / 2, TargetPoint.y - met_radius / 2);
+        TargetPoint.x + met_radius / 3, TargetPoint.y + met_radius / 2,
+        TargetPoint.x + met_radius / 2, TargetPoint.y - met_radius / 2);
 
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
-    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y,
-                     2.0 * AIS_icon_diameter, td);
+    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y, 2.0 * AIS_icon_diameter, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
     Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
   } else if (td->Class == AIS_SART) {  // SART Target
@@ -1315,7 +1336,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       SarIcon[8] = wxPoint(0, -22) * AIS_scale_factor;
     }
 
-    if (airtype == 5) {       // helicopter
+    if (airtype == 5) {  // helicopter
       // Draw icon as two halves
       //  First half
 
@@ -1327,9 +1348,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       dc.SetBrush(target_brush);
 
       // Manual tesselation
-      int mappings[14][3] = {{0, 1, 10}, {0, 10, 14}, {1, 2, 9}, {1, 9, 10}, {10, 13, 14},
-                             {10, 11, 13}, {11, 12, 13}, {1, 14, 10}, {2, 5, 9}, {5, 6, 9},
-                             {2, 3, 5}, {3, 4, 5}, {6, 7, 8}, {6, 9, 8}};
+      int mappings[14][3] = {
+          {0, 1, 10},   {0, 10, 14},  {1, 2, 9},   {1, 9, 10}, {10, 13, 14},
+          {10, 11, 13}, {11, 12, 13}, {1, 14, 10}, {2, 5, 9},  {5, 6, 9},
+          {2, 3, 5},    {3, 4, 5},    {6, 7, 8},   {6, 9, 8}};
 
       int nmap = 14;
       for (int i = 0; i < nmap; i++) {
@@ -1362,8 +1384,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       dc.SetPen(target_outline_pen);
       dc.SetBrush(wxBrush(UBLCK, wxBRUSHSTYLE_TRANSPARENT));
       dc.StrokePolygon(ar, SarRot, TargetPoint.x, TargetPoint.y);
-    }
-    else{
+    } else {
       // Draw icon as two halves
       //  First half
 
@@ -1445,7 +1466,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                        AIS_scale_factor);
     } else {
 #ifdef ocpnUSE_GL
-//#ifndef USE_ANDROID_GLES2
+// #ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
       wxColour c = target_brush.GetColour();
@@ -1498,13 +1519,13 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       int penWidth = wxMax(target_outline_pen.GetWidth(), 2);
       dc.SetPen(wxPen(UBLCK, penWidth));
       dc.StrokeLine(ais_follow_stroke[0].x + TargetPoint.x,
-                      ais_follow_stroke[0].y + TargetPoint.y,
-                      ais_follow_stroke[1].x + TargetPoint.x,
-                      ais_follow_stroke[1].y + TargetPoint.y);
+                    ais_follow_stroke[0].y + TargetPoint.y,
+                    ais_follow_stroke[1].x + TargetPoint.x,
+                    ais_follow_stroke[1].y + TargetPoint.y);
       dc.StrokeLine(ais_follow_stroke[1].x + TargetPoint.x,
-                      ais_follow_stroke[1].y + TargetPoint.y,
-                      ais_follow_stroke[2].x + TargetPoint.x,
-                      ais_follow_stroke[2].y + TargetPoint.y);
+                    ais_follow_stroke[1].y + TargetPoint.y,
+                    ais_follow_stroke[2].x + TargetPoint.x,
+                    ais_follow_stroke[2].y + TargetPoint.y);
     }
 
     if (g_bDrawAISSize && bcan_draw_size) {
@@ -1525,7 +1546,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     // HSC usually have correct ShipType but navstatus == 0...
     // Class B can have (HSC)ShipType but never navstatus.
     if (((td->ShipType >= 40) && (td->ShipType < 50)) &&
-        (navstatus == UNDERWAY_USING_ENGINE || td->Class == AIS_CLASS_B ))
+        (navstatus == UNDERWAY_USING_ENGINE || td->Class == AIS_CLASS_B))
       navstatus = HSC;
 
     if (targetscale > 90) {
@@ -1541,9 +1562,12 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           diamond[1] = wxPoint(0, -6) * AIS_scale_factor;
           diamond[2] = wxPoint(-4, 0) * AIS_scale_factor;
           diamond[3] = wxPoint(0, 6) * AIS_scale_factor;
-          dc.StrokePolygon(4, diamond, TargetPoint.x, TargetPoint.y - (11 * AIS_scale_factor));
+          dc.StrokePolygon(4, diamond, TargetPoint.x,
+                           TargetPoint.y - (11 * AIS_scale_factor));
           dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - ( 22 * AIS_scale_factor ), 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x,
+                          TargetPoint.y - (22 * AIS_scale_factor),
+                          4 * AIS_scale_factor);
           break;
           break;
         }
@@ -1551,13 +1575,14 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           wxPoint can[4] = {wxPoint(-3, 0) * AIS_scale_factor,
                             wxPoint(3, 0) * AIS_scale_factor,
                             wxPoint(3, -16) * AIS_scale_factor,
-                            wxPoint(-3, -16) * AIS_scale_factor };
+                            wxPoint(-3, -16) * AIS_scale_factor};
           dc.StrokePolygon(4, can, TargetPoint.x, TargetPoint.y);
           break;
         }
         case NOT_UNDER_COMMAND: {
           dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9,
+                          4 * AIS_scale_factor);
           break;
         }
         case FISHING: {
@@ -1574,25 +1599,25 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         }
         case AGROUND: {
           dc.StrokeCircle(TargetPoint.x, TargetPoint.y, 4 * AIS_scale_factor);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9, 4 * AIS_scale_factor);
-          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 18, 4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 9,
+                          4 * AIS_scale_factor);
+          dc.StrokeCircle(TargetPoint.x, TargetPoint.y - 18,
+                          4 * AIS_scale_factor);
           break;
         }
         case HSC:
         case WIG: {
           dc.SetBrush(target_brush);
 
-          wxPoint arrow1[3] = {
-            wxPoint(-4, 20) * AIS_scale_factor,
-            wxPoint(0, 27) * AIS_scale_factor,
-            wxPoint(4, 20) * AIS_scale_factor };
+          wxPoint arrow1[3] = {wxPoint(-4, 20) * AIS_scale_factor,
+                               wxPoint(0, 27) * AIS_scale_factor,
+                               wxPoint(4, 20) * AIS_scale_factor};
           transrot_pts(3, arrow1, sin_theta, cos_theta, TargetPoint);
           dc.StrokePolygon(3, arrow1);
 
-          wxPoint arrow2[3] = {
-            wxPoint(-4, 27) * AIS_scale_factor,
-            wxPoint(0, 34) * AIS_scale_factor,
-            wxPoint(4, 27) * AIS_scale_factor };
+          wxPoint arrow2[3] = {wxPoint(-4, 27) * AIS_scale_factor,
+                               wxPoint(0, 34) * AIS_scale_factor,
+                               wxPoint(4, 27) * AIS_scale_factor};
           transrot_pts(3, arrow2, sin_theta, cos_theta, TargetPoint);
           dc.StrokePolygon(3, arrow2);
           break;
@@ -1678,7 +1703,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         if ((td->COG > 90) && (td->COG < 180))
           dc.DrawText(tgt_name, TargetPoint.x + w, TargetPoint.y - h);
         else
-          dc.DrawText(tgt_name, TargetPoint.x + w, TargetPoint.y /*+ (0.5 * h)*/);
+          dc.DrawText(tgt_name, TargetPoint.x + w,
+                      TargetPoint.y /*+ (0.5 * h)*/);
 
       }  // If name do not empty
     }    // if scale
@@ -1720,8 +1746,28 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     wxColour c = GetGlobalColor(_T ( "CHMGD" ));
     dc.SetPen(wxPen(c, 1.5 * AIS_nominal_line_width_pix));
 
+    // Check for any persistently tracked target
+    // Render persistently tracked targets slightly differently.
+    std::map<int, Track *>::iterator itt;
+    itt = g_pAIS->m_persistent_tracks.find(td->MMSI);
+    if (itt != g_pAIS->m_persistent_tracks.end()) {
+      auto *ptrack = itt->second;
+      if (ptrack->m_Colour == wxEmptyString) {
+        c = GetGlobalColor(_T ( "TEAL1" ));
+        dc.SetPen(wxPen(c, 2.0 * AIS_nominal_line_width_pix));
+      } else {
+        for (unsigned int i = 0;
+             i < sizeof(::GpxxColorNames) / sizeof(wxString); i++) {
+          if (ptrack->m_Colour == ::GpxxColorNames[i]) {
+            c = ::GpxxColors[i];
+            dc.SetPen(wxPen(c, 2.0 * AIS_nominal_line_width_pix));
+            break;
+          }
+        }
+      }
+    }
+
 #ifdef ocpnUSE_GL
-//#ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
     if (!dc.GetDC()) {
@@ -1735,8 +1781,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
                    TrackPoints[TrackPointCount].y);
 
       glEnd();
-    }
-    else {
+    } else {
       dc.DrawLines(TrackPointCount, TrackPoints);
     }
 #else
@@ -1744,8 +1789,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 #endif
 
 #else
-    if (dc.GetDC())
-      dc.StrokeLines(TrackPointCount, TrackPoints);
+    if (dc.GetDC()) dc.StrokeLines(TrackPointCount, TrackPoints);
 
 #endif
 

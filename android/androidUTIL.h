@@ -32,12 +32,14 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
+#include <QString>
+#include <string>
+
 #include "OCPN_Sound.h"
+#include "android_jvm.h"
 
 class ArrayOfCDI;
 
-#include <QString>
-#include <string>
 
 // Enumerators for OCPN menu actions requested by Android UI
 #define OCPN_ACTION_FOLLOW 0x1000
@@ -154,7 +156,6 @@ void androidDisableFullScreen();
 void androidRestoreFullScreen();
 
 void androidLaunchHelpView();
-void androidTerminate();
 
 void androidTestCPP();
 int androidGetTZOffsetMins();

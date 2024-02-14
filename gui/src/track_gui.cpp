@@ -145,6 +145,9 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   if (m_track.m_width != WIDTH_UNDEFINED) width = m_track.m_width;
   if (m_track.m_Colour == wxEmptyString) {
     col = basic_colour;
+    // Render tracks associated with persistent AIS targets as a contrasting color
+    if(m_track.GetName().StartsWith("AIS"))
+      col = GetGlobalColor(_T ( "TEAL1" ));
   } else {
     for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
          i++) {
@@ -155,6 +158,8 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
     }
   }
 
+
+
   double radius = 0.;
   if (g_bHighliteTracks) {
     double radius_meters = 20;  // 1.5 mm at original scale
@@ -163,7 +168,11 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   }
 
   {
-    dc.SetPen(*wxThePenList->FindOrCreatePen(col, width, style));
+    wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
+    if(glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
+      p.SetDashes(2, &glChartCanvas::dash_map[style][0]);
+    }
+    dc.SetPen(p);
     dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(col, wxBRUSHSTYLE_SOLID));
     for (std::list<std::list<wxPoint> >::iterator lines = pointlists.begin();
          lines != pointlists.end(); lines++) {

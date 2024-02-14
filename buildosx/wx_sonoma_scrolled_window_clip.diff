@@ -1,0 +1,218 @@
+diff --git a/docs/changes.txt b/docs/changes.txt
+index ab68d34cd2..ac8734f406 100644
+--- a/docs/changes.txt
++++ b/docs/changes.txt
+@@ -263,7 +263,7 @@ wxMSW:
+ 
+ wxOSX:
+ 
+-- Fix clipping behaviour when using Sonoma/Xcode 15 SDK (#23916, #24054).
++- Fix clipping when using Sonoma/Xcode 15 SDK (#23916, #24054, #24067, #24073).
+ - Restore activation for non-bundled applications (#24056, #24062).
+ 
+ 
+diff --git a/include/wx/osx/cocoa/private.h b/include/wx/osx/cocoa/private.h
+index ceb7050a76..2a986941bf 100644
+--- a/include/wx/osx/cocoa/private.h
++++ b/include/wx/osx/cocoa/private.h
+@@ -227,9 +227,14 @@ public :
+     // from the same pimpl class.
+     virtual void                controlTextDidChange();
+ 
++    virtual void                AdjustClippingView(wxScrollBar* horizontal, wxScrollBar* vertical) wxOVERRIDE;
++    virtual void                UseClippingView(bool clip) wxOVERRIDE;
++    virtual WXWidget            GetContainer() const wxOVERRIDE { return m_osxClipView ? m_osxClipView : m_osxView; }
++
+ protected:
+     WXWidget m_osxView;
+-    
++    WXWidget m_osxClipView;
++
+     // begins processing of native key down event, storing the native event for later wx event generation
+     void BeginNativeKeyDownEvent( NSEvent* event );
+     // done with the current native key down event
+diff --git a/include/wx/osx/core/private.h b/include/wx/osx/core/private.h
+index 429c8f7401..cf52b8d064 100644
+--- a/include/wx/osx/core/private.h
++++ b/include/wx/osx/core/private.h
+@@ -366,6 +366,14 @@ public :
+ 
+     virtual bool        EnableTouchEvents(int eventsMask) = 0;
+ 
++    // scrolling views need a clip subview that acts as parent for native children
++    // (except for the scollbars) which are children of the view itself
++    virtual void        AdjustClippingView(wxScrollBar* horizontal, wxScrollBar* vertical);
++    virtual void        UseClippingView(bool clip);
++
++    // returns native view which acts as a parent for native children
++    virtual WXWidget    GetContainer() const;
++
+     // Mechanism used to keep track of whether a change should send an event
+     // Do SendEvents(false) when starting actions that would trigger programmatic events
+     // and SendEvents(true) at the end of the block.
+diff --git a/include/wx/osx/window.h b/include/wx/osx/window.h
+index 4e8cdf60e5..3a161a5ce4 100644
+--- a/include/wx/osx/window.h
++++ b/include/wx/osx/window.h
+@@ -229,7 +229,7 @@ public:
+     // returns true if children have to clipped to the content area
+     // (e.g., scrolled windows)
+     bool                MacClipChildren() const { return m_clipChildren ; }
+-    void                MacSetClipChildren( bool clip ) { m_clipChildren = clip ; }
++    void                MacSetClipChildren( bool clip );
+ 
+     // returns true if the grandchildren need to be clipped to the children's content area
+     // (e.g., splitter windows)
+diff --git a/src/osx/cocoa/window.mm b/src/osx/cocoa/window.mm
+index 2c013c6e43..f7e559d819 100644
+--- a/src/osx/cocoa/window.mm
++++ b/src/osx/cocoa/window.mm
+@@ -17,6 +17,7 @@
+     #include "wx/textctrl.h"
+     #include "wx/combobox.h"
+     #include "wx/radiobut.h"
++    #include "wx/scrolbar.h"
+ #endif
+ 
+ #ifdef __WXMAC__
+@@ -2566,7 +2567,8 @@ void wxOSXCocoaClassAddWXMethods(Class c, wxOSXSkipOverrides skipFlags)
+ {
+     Init();
+     m_osxView = w;
+-    
++    m_osxClipView = nil;
++
+     // check if the user wants to create the control initially hidden
+     if ( !peer->IsShown() )
+         SetVisibility(false);
+@@ -3219,6 +3221,21 @@ void SetSubviewsNeedDisplay( NSView *view, NSRect rect )
+     return canFocus;
+ }
+ 
++@interface wxNSClipView : NSClipView
++
++@end
++
++@implementation wxNSClipView
++
++#if wxOSX_USE_NATIVE_FLIPPED
++- (BOOL)isFlipped
++{
++    return YES;
++}
++#endif
++
++@end
++
+ bool wxWidgetCocoaImpl::HasFocus() const
+ {
+     NSView* targetView = m_osxView;
+@@ -3309,7 +3326,13 @@ void SetSubviewsNeedDisplay( NSView *view, NSRect rect )
+ 
+ void wxWidgetCocoaImpl::Embed( wxWidgetImpl *parent )
+ {
+-    NSView* container = parent->GetWXWidget() ;
++    NSView* container = nil;
++
++    if ( m_wxPeer->MacIsWindowScrollbar( parent->GetWXPeer()))
++        container = parent->GetWXWidget();
++    else
++        container = parent->GetContainer();
++
+     wxASSERT_MSG( container != NULL , wxT("No valid mac container control") ) ;
+     [container addSubview:m_osxView];
+     
+@@ -4040,6 +4063,41 @@ new wxCocoaGesturesImpl(this, m_osxView, eventsMask)
+         [[m_osxView window] disableFlushWindow];
+     }
+ }
++
++void wxWidgetCocoaImpl::AdjustClippingView(wxScrollBar* horizontal, wxScrollBar* vertical)
++{
++    if( m_osxClipView )
++    {
++        NSRect bounds = m_osxView.bounds;
++        if( horizontal && horizontal->IsShown() )
++        {
++            int sz = horizontal->GetSize().y;
++            bounds.size.height -= sz;
++        }
++        if( vertical && vertical->IsShown() )
++        {
++            int sz = vertical->GetSize().x;
++            bounds.size.width -= sz;
++        }
++        m_osxClipView.frame = bounds;
++    }
++}
++
++void wxWidgetCocoaImpl::UseClippingView(bool clip)
++{
++   wxWindow* peer = m_wxPeer;
++
++    if ( peer && m_osxClipView == nil)
++    {
++        m_osxClipView = [[wxNSClipView alloc] initWithFrame: m_osxView.bounds];
++        [(NSClipView*)m_osxClipView setDrawsBackground: NO];
++        [m_osxView addSubview:m_osxClipView];
++
++        // TODO check for additional subwindows which might have to be moved to the clip view ?
++    }
++}
++
++
+ //
+ // Factory methods
+ //
+diff --git a/src/osx/window_osx.cpp b/src/osx/window_osx.cpp
+index ab6b25c54f..c324a19643 100644
+--- a/src/osx/window_osx.cpp
++++ b/src/osx/window_osx.cpp
+@@ -263,6 +263,13 @@ wxWindowMac::~wxWindowMac()
+     delete GetPeer() ;
+ }
+ 
++void wxWindowMac::MacSetClipChildren( bool clip )
++{
++    m_clipChildren = clip ;
++    if ( m_peer )
++        m_peer->UseClippingView(clip);
++}
++
+ WXWidget wxWindowMac::GetHandle() const
+ {
+     if ( GetPeer() )
+@@ -397,6 +404,8 @@ bool wxWindowMac::Create(wxWindowMac *parent,
+     {
+         SetPeer(wxWidgetImpl::CreateUserPane( this, parent, id, pos, size , style, GetExtraStyle() ));
+         MacPostControlCreate(pos, size) ;
++        if ( m_clipChildren )
++            m_peer->UseClippingView(m_clipChildren);
+     }
+ 
+ #ifndef __WXUNIVERSAL__
+@@ -2149,6 +2158,7 @@ void wxWindowMac::MacRepositionScrollBars()
+                 m_growBox->Hide();
+         }
+     }
++    m_peer->AdjustClippingView(m_hScrollBar, m_vScrollBar);
+ #endif
+ }
+ 
+@@ -2737,3 +2747,16 @@ bool wxWidgetImpl::NeedsFrame() const
+ void wxWidgetImpl::SetDrawingEnabled(bool WXUNUSED(enabled))
+ {
+ }
++
++void wxWidgetImpl::AdjustClippingView(wxScrollBar* WXUNUSED(horizontal), wxScrollBar* WXUNUSED(vertical))
++{
++}
++
++void wxWidgetImpl::UseClippingView(bool WXUNUSED(clip))
++{
++}
++
++WXWidget wxWidgetImpl::GetContainer() const
++{
++    return GetWXWidget();
++}

@@ -251,6 +251,7 @@ else (NOT QT_ANDROID)
 endif (NOT QT_ANDROID)
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT WIN32)
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lz")
@@ -289,7 +290,7 @@ endif (
   AND NOT QT_ANDROID
 )
 
-target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET})
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (APPLE)
   target_compile_options(

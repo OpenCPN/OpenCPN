@@ -72,6 +72,7 @@ set(
   ${MODEL_HDR_DIR}/garmin_wrapper.h
   ${MODEL_HDR_DIR}/geodesic.h
   ${MODEL_HDR_DIR}/georef.h
+  ${MODEL_HDR_DIR}/gui.h
   ${MODEL_HDR_DIR}/hyperlink.h
   ${MODEL_HDR_DIR}/idents.h
   ${MODEL_HDR_DIR}/instance_check.h
@@ -109,7 +110,10 @@ set(
   ${MODEL_HDR_DIR}/select_item.h
   ${MODEL_HDR_DIR}/semantic_vers.h
   ${MODEL_HDR_DIR}/ser_ports.h
+  ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/track.h
+  ${MODEL_HDR_DIR}/usb_watch_daemon.h
+  ${MODEL_HDR_DIR}/wait_continue.h
   ${MODEL_HDR_DIR}/wx28compat.h
 )
 
@@ -157,6 +161,7 @@ set(SRC
   ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
+  ${MODEL_SRC_DIR}/gui.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
@@ -188,6 +193,7 @@ set(SRC
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
   ${MODEL_SRC_DIR}/track.cpp
+  ${MODEL_SRC_DIR}/usb_watch_factory.cpp
   ${MODEL_SRC_DIR}/wx_instance_chk.cpp
 )
 
@@ -196,20 +202,25 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-if (NOT QT_ANDROID)
+#if (NOT QT_ANDROID)
   list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
-endif ()
+#endif ()
 
 if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n2k_socketcan.cpp)
 endif ()
 
-if (LINUX)
+if (LINUX AND NOT QT_ANDROID)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_client.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_client.cpp)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_server.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_server.cpp)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/linux_usb_watch.h)
+  list(APPEND SRC ${MODEL_SRC_DIR}/linux_usb_watch.cpp)
+elseif(WIN32)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/win_usb_watch.h )
+  list(APPEND SRC ${MODEL_SRC_DIR}/win_usb_watch.cpp)
 endif ()
 
 if (OCPN_USE_GARMINHOST)
@@ -219,6 +230,11 @@ endif ()
 if (APPLE)
   list(APPEND HDRS ${MODEL_HDR_DIR}/macutils.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/macutils.c)
+endif ()
+
+if (QT_ANDROID)
+  list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_bt.cpp)
+  list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_int.cpp)
 endif ()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -299,6 +315,7 @@ target_link_libraries(
     ocpn::s57enc
     ocpn::sound
     ocpn::wxjson
+    ocpn::filesystem
     pico_sha2
 )
 
@@ -312,6 +329,7 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::java-jvm)
   target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
   )

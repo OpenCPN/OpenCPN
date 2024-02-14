@@ -711,6 +711,39 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   return false;
 }
 
+bool Routeman::DeleteTrack(Track *pTrack) {
+  if (pTrack && !pTrack->m_bIsInLayer) {
+    ::wxBeginBusyCursor();
+    /*
+    wxGenericProgressDialog *pprog = nullptr;
+
+    int count = pTrack->GetnPoints();
+    if (count > 10000) {
+      pprog = new wxGenericProgressDialog(
+          _("OpenCPN Track Delete"), _T("0/0"), count, NULL,
+          wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
+              wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
+      pprog->SetSize(400, wxDefaultCoord);
+      pprog->Centre();
+    }
+    */
+
+    //    Remove the track from associated lists
+    pSelect->DeleteAllSelectableTrackSegments(pTrack);
+    auto it = std::find(g_TrackList.begin(), g_TrackList.end(), pTrack);
+    if (it != g_TrackList.end()) {
+      g_TrackList.erase(it);
+    }
+    delete pTrack;
+
+    ::wxEndBusyCursor();
+
+    //delete pprog;
+    return true;
+  }
+  return false;
+}
+
 bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
