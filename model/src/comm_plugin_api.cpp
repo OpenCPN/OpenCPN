@@ -152,7 +152,6 @@ const std::unordered_map<std::string, std::string> GetAttributes(
   if (found == drivers.end()) {
     return rv;
   }
-
   return found->get()->GetAttributes();
 }
 
@@ -162,11 +161,12 @@ CommDriverResult WriteCommDriver(
   auto& registry = CommDriverRegistry::GetInstance();
   auto drivers = registry.GetDrivers();
   auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
-  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
+  auto found = std::find_if(drivers.begin(), drivers.end(), func);
 
-  if (driver == drivers.end()) {
+  if (found == drivers.end()) {
     return RESULT_COMM_INVALID_HANDLE;
   }
+  auto driver = *found;
 
   // Determine protocol
   std::unordered_map<std::string, std::string> attributes =
@@ -175,26 +175,15 @@ CommDriverResult WriteCommDriver(
   if (protocol_it == attributes.end()) return RESULT_COMM_INVALID_PARMS;
   std::string protocol = protocol_it->second;
 
-  if (!protocol.compare("nmea0183")) {
-    std::shared_ptr<CommDriverN0183> d0183 =
-        std::dynamic_pointer_cast<CommDriverN0183>(*driver);
+  if (protocol == "nmea0183") {
+    auto d0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
 
-    std::string msg;
-    size_t data_len = payload.get()->size();
-    for (size_t i = 0; i < data_len; i++) {
-      msg += payload.get()->at(i);
-    }
-
+    std::string msg(payload->begin(), payload->end());
     std::string id = msg.substr(1, 5);
-    auto msg_out = std::make_shared<Nmea0183Msg>(
-        id, msg, std::make_shared<NavAddr0183>(d0183->iface));
-
-    bool bxmit_ok = d0183->SendMessage(
-        msg_out, std::make_shared<NavAddr0183>(d0183->iface));
-    if (bxmit_ok)
-      return RESULT_COMM_NO_ERROR;
-    else
-      return RESULT_COMM_TX_ERROR;
+    auto address = std::make_shared<NavAddr0183>(d0183->iface);
+    auto msg_out = std::make_shared<Nmea0183Msg>( id, msg, address);
+    bool xmit_ok = d0183->SendMessage(msg_out, address);
+    return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else
     return RESULT_COMM_INVALID_PARMS;
 }
@@ -209,22 +198,17 @@ CommDriverResult WriteCommDriverN2K(
   auto& registry = CommDriverRegistry::GetInstance();
   auto drivers = registry.GetDrivers();
   auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
-  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
+  auto found = std::find_if(drivers.begin(), drivers.end(), func);
 
-  if (driver == drivers.end()) {
+  if (found == drivers.end()) {
     return RESULT_COMM_INVALID_HANDLE;
   }
-
-  auto dest_addr = std::make_shared<const NavAddr2000>(driver->get()->iface,
+  auto driver = *found;
+  auto dest_addr = std::make_shared<const NavAddr2000>(driver->iface,
                                                        destinationCANAddress);
-
-  const std::vector<uint8_t> load;
-  size_t data_len = payload.get()->size();
-
-  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, *(payload), dest_addr,
+  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, *payload, dest_addr,
                                                  priority);
-
-  bool result = driver->get()->SendMessage(msg, dest_addr);
+  bool result = driver->SendMessage(msg, dest_addr);
 
   return RESULT_COMM_NO_ERROR;
 }
@@ -242,9 +226,7 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
   if (driver == drivers.end()) {
     return RESULT_COMM_INVALID_HANDLE;
   }
-
-  std::shared_ptr<CommDriverN2K> dn2k =
-      std::dynamic_pointer_cast<CommDriverN2K>(*driver);
+  auto dn2k = std::dynamic_pointer_cast<CommDriverN2K>(*driver);
 
   int nloop = 0;
   for (size_t i = 0; i < pgn_list.size(); i++) {
@@ -256,13 +238,9 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
       nTry--;
       nloop++;
     }
-
     if (iresult < 0) {
-      printf("####TXPGN Fail\n");
       return RESULT_COMM_REGISTER_PGN_ERROR;
     }
   }
-
-  printf("----TXPGN PASS  nloop: %d \n", nloop);
   return RESULT_COMM_NO_ERROR;
 }
