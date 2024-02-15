@@ -34,6 +34,9 @@
 #include "model/georef.h"  // for GeoRef type
 #include "OCPNRegion.h"
 #include "viewport.h"
+#include "TileDescriptor.hpp"
+#include "WorkerThread.hpp"
+#include "TileCache.hpp"
 
 enum class MBTilesType : std::int8_t { BASE, OVERLAY };
 enum class MBTilesScheme : std::int8_t { XYZ, TMS };
@@ -51,7 +54,6 @@ class WXDLLEXPORT ChartMbTiles;
 class ViewPort;
 class PixelCache;
 class ocpnBitmap;
-class mbTileZoomDescriptor;
 class mbTileDescriptor;
 
 namespace SQLite {
@@ -120,7 +122,6 @@ protected:
   void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
   bool getTileTexture(mbTileDescriptor *tile);
   void FlushTiles(void);
-  void FlushTextures(void);
   bool RenderTile(mbTileDescriptor *tile, int zoomLevel,
                   const ViewPort &VPoint);
 
@@ -134,7 +135,7 @@ protected:
   int m_b_cdebug;
 
   int m_minZoom, m_maxZoom;
-  mbTileZoomDescriptor **m_tileArray;
+  TileCache *m_tileCache;
   LLRegion m_minZoomRegion;
   wxBitmapType m_imageType;
 
@@ -148,6 +149,10 @@ protected:
   std::string m_format;
 
   GLShaderProgram *m_tile_shader_program;
+  uint32_t m_tileCount;
+  MbtTilesThread *m_workerThread;
+  void StartThread();
+  void StopThread();
 
 private:
   void InitFromTiles(const wxString &name);

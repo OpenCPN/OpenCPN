@@ -32,7 +32,7 @@
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "chartimg.h"
 #ifdef __OCPN__ANDROID__
-  #include "androidUTIL.h"
+#include "androidUTIL.h"
 #endif
 #include <algorithm>
 
@@ -845,7 +845,10 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type,
   switch (family) {
     case CHART_FAMILY_RASTER: {
       if (CHART_TYPE_MBTILES == type)
-        return scale * 4 * mod;  // MBTiles are fast enough
+        // Here we don't apply the zoom modifier because MBTILES renderer
+        // changes the zoom layer accordingly so that the minimum scale does not
+        // change.
+        return scale * 4;  // MBTiles are fast enough
       else
         return scale * 1 * mod;
     }
@@ -910,11 +913,12 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
         int nmin_scale = GetNomScaleMin(nscale, type, family);
 
         // Allow RNC quilt to zoom far out and still show smallest scale chart.
-        if((type == CHART_TYPE_KAP) && (nscale == smallest_scale))
+        if ((type == CHART_TYPE_KAP) && (nscale == smallest_scale))
           nmin_scale *= 24;
 
-         // Allow MBTiles quilt to zoom far out and still show smallest scale chart.
-        if((type == CHART_TYPE_MBTILES) && (nscale == smallest_scale))
+        // Allow MBTiles quilt to zoom far out and still show smallest scale
+        // chart.
+        if ((type == CHART_TYPE_MBTILES) && (nscale == smallest_scale))
           nmin_scale *= 24;
 
         if (CHART_TYPE_MBTILES == ChartData->GetDBChartType(test_db_index))
@@ -1293,9 +1297,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     double chart_native_ppm =
         m_canvas_scale_factor / (double)candidate_chart_scale;
     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
-    if (zoom_factor < zoom_test_val){
-        m_extended_stack_array.pop_back();
-        continue;
+    if (zoom_factor < zoom_test_val) {
+      m_extended_stack_array.pop_back();
+      continue;
     }
 
     double skew_norm = cte.GetChartSkew();
@@ -1307,7 +1311,6 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       qcnew->dbIndex = istack;
       qcnew->SetScale(cte.GetScale());
       m_pcandidate_array->push_back(qcnew);  // auto-sorted on scale
-
     }
 
     //             if( ( reference_type == cte.GetChartType() ) ||
@@ -1351,17 +1354,15 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
 
-    //  On android, SDK > 29, we require that the directory of charts be "writable"
-    //  as determined by Android Java file system
+    //  On android, SDK > 29, we require that the directory of charts be
+    //  "writable" as determined by Android Java file system
 #ifdef __OCPN__ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
-    if (!androidIsDirWritable( fn.GetPath()))
-      continue;
+    if (!androidIsDirWritable(fn.GetPath())) continue;
 #endif
 
     if (reference_family != cte.GetChartFamily()) {
-      if (cte.GetChartType() != CHART_TYPE_MBTILES)
-        continue;
+      if (cte.GetChartType() != CHART_TYPE_MBTILES) continue;
     }
 
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
@@ -1379,13 +1380,12 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     //    Special case for S57 ENC
     //    Add the chart only if the chart's fractional area exceeds n%
-    if( CHART_TYPE_S57 == cte.GetChartType() ) {
-      //Get the fractional area of this candidate
+    if (CHART_TYPE_S57 == cte.GetChartType()) {
+      // Get the fractional area of this candidate
       double chart_area = (cte.GetLonMax() - cte.GetLonMin()) *
                           (cte.GetLatMax() - cte.GetLatMin());
-      double quilt_area =  viewbox.GetLonRange() * viewbox.GetLatRange();
-      if ((chart_area / quilt_area) < .01)
-        continue;
+      double quilt_area = viewbox.GetLonRange() * viewbox.GetLatRange();
+      if ((chart_area / quilt_area) < .01) continue;
     }
 
     int candidate_chart_scale = cte.GetScale();
@@ -1420,8 +1420,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     if (cte.GetChartType() == CHART_TYPE_MBTILES)
       ref_scale_test = candidate_chart_scale;
 
-    if ((cte.Scale_ge(ref_scale_test) && (zoom_factor > zoom_test_val)) || (zoom_factor > zoom_factor_test_extra)) {
-
+    if ((cte.Scale_ge(ref_scale_test) && (zoom_factor > zoom_test_val)) ||
+        (zoom_factor > zoom_factor_test_extra)) {
       LLRegion cell_region = GetChartQuiltRegion(cte, vp_local);
 
       // this is false if the chart has no actual overlap on screen
@@ -1444,7 +1444,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
           //    same mod time These charts can be in the database due to having
           //    the exact same chart in different directories, as may be desired
           //    for some grouping schemes
-          //    Extended to also check for "identical" charts, having exact same EditionDate
+          //    Extended to also check for "identical" charts, having exact same
+          //    EditionDate
           bool b_noadd = false;
           ChartTableEntry *pn = ChartData->GetpChartTableEntry(i);
           for (unsigned int id = 0; id < m_extended_stack_array.size(); id++) {
@@ -1456,12 +1457,12 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
                 if (labs(pm->GetFileTime() - pn->GetFileTime()) < 60)
                   bsameTime = true;
               }
-              if (pm->GetChartEditionDate() == pn->GetChartEditionDate() )
+              if (pm->GetChartEditionDate() == pn->GetChartEditionDate())
                 bsameTime = true;
 
               if (bsameTime) {
-                  if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
-                    b_noadd = true;
+                if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                  b_noadd = true;
               }
             }
           }
@@ -1699,21 +1700,22 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   // Detect this case, and build the quilt based on the smallest scale chart
   // anywhere on screen.
 
-//   if ((m_refchart_dbIndex < 0) && m_extended_stack_array.size()){
-//     // Take the smallest scale chart in the array.
-//     int tentative_dbIndex = m_extended_stack_array.back();
-//
-//     // Verify that the zoom scale is acceptable.
-//     const ChartTableEntry &cte = ChartData->GetChartTableEntry(tentative_dbIndex);
-//     int candidate_chart_scale = cte.GetScale();
-//     double chart_native_ppm =
-//         m_canvas_scale_factor / (double)candidate_chart_scale;
-//     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
-//     if (zoom_factor > 0.1){
-//       m_refchart_dbIndex = tentative_dbIndex;
-//       BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
-//     }
-//   }
+  //   if ((m_refchart_dbIndex < 0) && m_extended_stack_array.size()){
+  //     // Take the smallest scale chart in the array.
+  //     int tentative_dbIndex = m_extended_stack_array.back();
+  //
+  //     // Verify that the zoom scale is acceptable.
+  //     const ChartTableEntry &cte =
+  //     ChartData->GetChartTableEntry(tentative_dbIndex); int
+  //     candidate_chart_scale = cte.GetScale(); double chart_native_ppm =
+  //         m_canvas_scale_factor / (double)candidate_chart_scale;
+  //     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
+  //     if (zoom_factor > 0.1){
+  //       m_refchart_dbIndex = tentative_dbIndex;
+  //       BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex,
+  //       vp_local);
+  //     }
+  //   }
 
   //    It is possible that the reference chart is not really part of the
   //    visible quilt This can happen when the reference chart is panned
@@ -1794,10 +1796,9 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //    figuratively "draw" charts until the ViewPort window is completely
   //    quilted over Add only those charts whose scale is smaller than the
   //    "reference scale"
-//  const LLRegion cvp_region = vp_local.GetLLRegion(
-//      wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
-  const LLRegion cvp_region = vp_local.GetLLRegion(
-      vp_local.rv_rect);
+  //  const LLRegion cvp_region = vp_local.GetLLRegion(
+  //      wxRect(0, 0, vp_local.pix_width, vp_local.pix_height));
+  const LLRegion cvp_region = vp_local.GetLLRegion(vp_local.rv_rect);
   LLRegion vp_region = cvp_region;
   unsigned int ir;
 
@@ -1818,7 +1819,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   // in this case allow a maximum error of 8 pixels (the rendered display is
   // much better, this is only for composing the quilt)
   const double z = 111274.96299695622;  ////WGS84_semimajor_axis_meters *
-                                        ///mercator_k0 * DEGREE;
+                                        /// mercator_k0 * DEGREE;
   double factor = 8.0 / (vp_local.view_scale_ppm * z);
 
   if (pqc_ref) {

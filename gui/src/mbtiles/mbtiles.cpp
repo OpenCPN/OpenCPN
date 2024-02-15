@@ -57,11 +57,12 @@
 #include <sqlite3.h>  //We need some defines
 #include <SQLiteCpp/SQLiteCpp.h>
 
-#include "mbtiles.h"
 #include "chcanv.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"
 #include "shaders.h"
+
+#include "mbtiles.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
@@ -120,25 +121,23 @@ extern int g_chart_zoom_modifier_raster;
 
 // A "nominal" scale value, by zoom factor.  Estimated at equator, with monitor
 // pixel size of 0.3mm
-static const double OSM_zoomScale[] = {
-    5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7, 1.0e7, 4.0e6, 2.0e6, 1.0e6,
-    5.0e5, 2.5e5, 1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3, 2.0e3, 1.0e3,
-    5.0e2, 2.5e2
-};
+static const double OSM_zoomScale[] = {5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7,
+                                       1.0e7, 4.0e6, 2.0e6, 1.0e6, 5.0e5, 2.5e5,
+                                       1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3,
+                                       2.0e3, 1.0e3, 5.0e2, 2.5e2};
 
 //  Meters per pixel, by zoom factor
 static const double OSM_zoomMPP[] = {
-    156412, 78206, 39103, 19551,   9776,    4888,   2444,
-    1222,   610,   984,   305.492, 152.746, 76.373, 38.187,
-    19.093, 9.547, 4.773, 2.387,   1.193,   0.596,  0.298,
-    0.149, 0.075
-};
+    156412, 78206,   39103,   19551,  9776,   4888,   2444,  1222,
+    610,    305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773,
+    2.387,  1.193,   0.596,   0.298,  0.149,  0.075};
 
-static const double eps = 6e-6;  // about 1cm on earth's surface at equator
 extern MyFrame *gFrame;
 
+static const double eps = 6e-6;  // about 1cm on earth's surface at equator
+
 // Private tile shader source
-static const GLchar* tile_vertex_shader_source =
+static const GLchar *tile_vertex_shader_source =
     "attribute vec2 aPos;\n"
     "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
@@ -148,14 +147,15 @@ static const GLchar* tile_vertex_shader_source =
     "   varCoord = aUV;\n"
     "}\n";
 
-static const GLchar* tile_fragment_shader_source =
+static const GLchar *tile_fragment_shader_source =
     "precision lowp float;\n"
     "uniform sampler2D uTex;\n"
     "varying vec2 varCoord;\n"
+    "uniform float brightness;\n"
     "void main() {\n"
-    "   gl_FragColor = texture2D(uTex, varCoord);\n"
+    "   vec4 textureColor = texture2D(uTex, varCoord);\n"
+    "   gl_FragColor = vec4(textureColor.rgb * brightness, textureColor.w);\n"
     "}\n";
-
 
 GLShaderProgram *g_tile_shader_program;
 
@@ -178,83 +178,13 @@ private:
 };
 #endif
 
-// *********************************************
-//   Utility Functions
-// *********************************************
-
-// https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#C.2FC.2B.2B
-static int long2tilex(double lon, int z) {
-  if (lon < -180) lon += 360;
-
-  return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, z)));
-}
-
-static int lat2tiley(double lat, int z) {
-  int y = (int)(floor(
-      (1.0 -
-       log(tan(lat * M_PI / 180.0) + 1.0 / cos(lat * M_PI / 180.0)) / M_PI) /
-      2.0 * pow(2.0, z)));
-  int ymax = 1 << z;
-  y = ymax - y - 1;
-  return y;
-}
-
-static double tilex2long(int x, int z) { return x / pow(2.0, z) * 360.0 - 180; }
-
-static double tiley2lat(int y, int z) {
-  double n = pow(2.0, z);
-  int ymax = 1 << z;
-  y = ymax - y - 1;
-  double latRad = atan(sinh(M_PI * (1 - (2 * y / n))));
-  return 180.0 / M_PI * latRad;
-}
-
-// ----------------------------------------------------------------------------
-// private classes
-// ----------------------------------------------------------------------------
-
-//  Per tile descriptor
-class mbTileDescriptor {
-public:
-  mbTileDescriptor() {
-    glTextureName = 0;
-    m_bAvailable = false;
-    m_bgeomSet = false;
-  }
-
-  virtual ~mbTileDescriptor() {}
-
-  int tile_x, tile_y;
-  int m_zoomLevel;
-  float latmin, lonmin, latmax, lonmax;
-  LLBBox box;
-
-  GLuint glTextureName;
-  bool m_bAvailable;
-  bool m_bgeomSet;
-};
-
-//  Per zoomlevel descriptor of tile array for that zoomlevel
-class mbTileZoomDescriptor {
-public:
-  mbTileZoomDescriptor() {}
-  virtual ~mbTileZoomDescriptor() {}
-
-  int tile_x_min, tile_x_max;
-  int tile_y_min, tile_y_max;
-
-  int nx_tile, ny_tile;
-
-  // std::map<unsigned int, mbTileDescriptor *> tileMap;
-  std::unordered_map<unsigned int, mbTileDescriptor *> tileMap;
-};
-
 // ============================================================================
 // ChartMBTiles implementation
 // ============================================================================
 
 ChartMBTiles::ChartMBTiles() {
   //    Init some private data
+  m_workerThread = nullptr;
   m_ChartFamily = CHART_FAMILY_RASTER;
   m_ChartType = CHART_TYPE_MBTILES;
 
@@ -275,7 +205,6 @@ ChartMBTiles::ChartMBTiles() {
   m_pCOVRTable = NULL;
   m_pNoCOVRTablePoints = NULL;
   m_pNoCOVRTable = NULL;
-  m_tileArray = NULL;
 
   m_LonMin = LON_UNDEF;
   m_LonMax = LON_UNDEF;
@@ -291,7 +220,14 @@ ChartMBTiles::ChartMBTiles() {
 }
 
 ChartMBTiles::~ChartMBTiles() {
+  // Stop the worker thread before destroying this instance
+  StopThread();
   FlushTiles();
+
+  if (m_tileCache) {
+    delete m_tileCache;
+  }
+
   if (m_pDB) {
     delete m_pDB;
   }
@@ -319,7 +255,7 @@ bool ChartMBTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
 
 double ChartMBTiles::GetNormalScaleMin(double canvas_scale_factor,
                                        bool b_allow_overzoom) {
-  return (1); //allow essentially unlimited overzoom
+  return (1);  // allow essentially unlimited overzoom
 }
 
 double ChartMBTiles::GetNormalScaleMax(double canvas_scale_factor,
@@ -417,10 +353,10 @@ void ChartMBTiles::InitFromTiles(const wxString &name) {
       // Let's try to use the simplest possible algo and just look for the zoom
       // level with largest extent (Which probably be the one with lowest
       // resolution?)...
-      minLat = wxMin(minLat, tiley2lat(minRow, zoom));
-      maxLat = wxMax(maxLat, tiley2lat(maxRow - 1, zoom));
-      minLon = wxMin(minLon, tilex2long(minCol, zoom));
-      maxLon = wxMax(maxLon, tilex2long(maxCol + 1, zoom));
+      minLat = wxMin(minLat, mbTileDescriptor::tiley2lat(minRow, zoom));
+      maxLat = wxMax(maxLat, mbTileDescriptor::tiley2lat(maxRow - 1, zoom));
+      minLon = wxMin(minLon, mbTileDescriptor::tilex2long(minCol, zoom));
+      maxLon = wxMax(maxLon, mbTileDescriptor::tilex2long(maxCol + 1, zoom));
       // std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom)
       // << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " <<
       // tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom)
@@ -474,9 +410,8 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
 
       }
 
-
-      else if(!strncmp(colName, "format", 6) ){
-          m_format = std::string(colValue);
+      else if (!strncmp(colName, "format", 6)) {
+        m_format = std::string(colValue);
       }
 
       // Get the min and max zoom values present in the db
@@ -513,7 +448,9 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
   m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];
   m_Chart_Scale = OSM_zoomScale[m_maxZoom];
 
-  PrepareTiles();  // Initialize the tile data structures
+  // Initialize the tile data structures
+  m_tileCache = new TileCache(m_minZoom, m_maxZoom, m_LonMin, m_LatMin,
+                              m_LonMax, m_LatMax);
 
   LLRegion covrRegion;
 
@@ -583,14 +520,18 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
       wxRect rect = upd.GetRect();
 
       double lonmin =
-          round(tilex2long(rect.x, zoomFactor) / eps_factor) * eps_factor;
+          round(mbTileDescriptor::tilex2long(rect.x, zoomFactor) / eps_factor) *
+          eps_factor;
       double lonmax =
-          round(tilex2long(rect.x + rect.width, zoomFactor) / eps_factor) *
+          round(mbTileDescriptor::tilex2long(rect.x + rect.width, zoomFactor) /
+                eps_factor) *
           eps_factor;
       double latmin =
-          round(tiley2lat(rect.y, zoomFactor) / eps_factor) * eps_factor;
+          round(mbTileDescriptor::tiley2lat(rect.y, zoomFactor) / eps_factor) *
+          eps_factor;
       double latmax =
-          round(tiley2lat(rect.y + rect.height, zoomFactor) / eps_factor) *
+          round(mbTileDescriptor::tiley2lat(rect.y + rect.height, zoomFactor) /
+                eps_factor) *
           eps_factor;
 
       LLBBox box;
@@ -640,6 +581,11 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
   if (init_flags == HEADER_ONLY) return INIT_OK;
 
   InitReturn pi_ret = PostInit();
+
+  // Start the worker thread. Be careful that the thread must be started after
+  // PostInit() to ensure that SQL database has been opened.
+  StartThread();
+
   if (pi_ret != INIT_OK)
     return pi_ret;
   else
@@ -666,66 +612,12 @@ InitReturn ChartMBTiles::PostInit(void) {
   return INIT_OK;
 }
 
-void ChartMBTiles::PrepareTiles() {
-  // OCPNStopWatch sw;
-  m_tileArray = new mbTileZoomDescriptor *[(m_maxZoom - m_minZoom) + 1];
-
-  for (int i = 0; i < (m_maxZoom - m_minZoom) + 1; i++) {
-    PrepareTilesForZoom(
-        m_minZoom + i,
-        (i == 0));  // Preset the geometry only on the minZoom tiles
-  }
-  // printf("PrepareTiles time: %f\n", sw.GetTime());
-}
-
+// FIXME : useless now
 void ChartMBTiles::FlushTiles() {
-  if (!bReadyToRender || m_tileArray == nullptr) return;
-  for (int iz = 0; iz < (m_maxZoom - m_minZoom) + 1; iz++) {
-    mbTileZoomDescriptor *tzd = m_tileArray[iz];
-
-    for (auto const &it : tzd->tileMap) {
-      mbTileDescriptor *tile = it.second;
-      if (tile) {
-        if (tile->glTextureName > 0) glDeleteTextures(1, &tile->glTextureName);
-        delete tile;
-      }
-    }
-    delete tzd;
-  }
-}
-
-void ChartMBTiles::FlushTextures() {
-  if (m_tileArray == nullptr) {
-    return;
-  }
-  for (int iz = 0; iz < (m_maxZoom - m_minZoom) + 1; iz++) {
-    mbTileZoomDescriptor *tzd = m_tileArray[iz];
-
-    for (auto const &it : tzd->tileMap) {
-      mbTileDescriptor *tile = it.second;
-      if (tile && tile->glTextureName > 0) {
-        glDeleteTextures(1, &tile->glTextureName);
-        tile->glTextureName = 0;
-      }
-    }
-  }
-}
-
-void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom) {
-  mbTileZoomDescriptor *tzd = new mbTileZoomDescriptor;
-
-  m_tileArray[zoomFactor - m_minZoom] = tzd;
-
-  // Calculate the tile counts in x and y, based on zoomfactor and chart extents
-  tzd->tile_x_min = long2tilex(m_LonMin + eps, zoomFactor);
-  tzd->tile_x_max = long2tilex(m_LonMax - eps, zoomFactor);
-  tzd->tile_y_min = lat2tiley(m_LatMin + eps, zoomFactor);
-  tzd->tile_y_max = lat2tiley(m_LatMax - eps, zoomFactor);
-
-  tzd->nx_tile = abs(tzd->tile_x_max - tzd->tile_x_min) + 1;
-  tzd->ny_tile = tzd->tile_y_max - tzd->tile_y_min + 1;
-
-  return;
+  // Delete all the tiles in the tile cache
+  // Note that this function also deletes OpenGL texture memory associated to
+  // the tiles
+  m_tileCache->Flush();
 }
 
 bool ChartMBTiles::GetChartExtent(Extent *pext) {
@@ -738,10 +630,7 @@ bool ChartMBTiles::GetChartExtent(Extent *pext) {
 }
 
 void ChartMBTiles::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
-  if (m_global_color_scheme != cs) {
-    m_global_color_scheme = cs;
-    FlushTextures();
-  }
+  m_global_color_scheme = cs;
 }
 
 void ChartMBTiles::GetValidCanvasRegion(const ViewPort &VPoint,
@@ -757,149 +646,54 @@ bool ChartMBTiles::RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) {
   return true;
 }
 
+/// @brief Loads a tile into OpenGL's texture memory for rendering. If the tile
+/// is not ready to be rendered (i.e. the tile has not been loaded from disk or
+/// decompressed to memory), the function sends a request to the worker thread
+/// which will do this later in the background.
+/// @param tile Pointer to the tile descriptor to be prepared
+/// @return true if the tile is ready to be rendered, false else.
 bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
   if (!m_pDB) return false;
-
-  // Is the texture ready?
+  m_tileCount++;
+  // Is the texture ready to be rendered ?
   if (tile->glTextureName > 0) {
+    // Yes : bind the texture and return to the caller
+    glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
+    return true;
+  } else if (!tile->m_bAvailable) {
+    // Tile is not in MbTiles file : no texture to render
+    m_tileCount--;
+    return false;
+  } else if (tile->m_teximage == 0) {
+    if (tile->m_requested == false) {
+      // The tile has not loaded and decompressed previously : request it
+      // to the worker thread
+      m_workerThread->RequestTile(tile);
+    }
+    return false;
+  } else {
+    // The tile has been decompressed to memory : load it into OpenGL texture
+    // memory
+    if (tile->glTextureName > 0) {
+      glDeleteTextures(1, &tile->glTextureName);
+    }
+    glEnable(GL_COLOR_MATERIAL);
+    glGenTextures(1, &tile->glTextureName);
     glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, tile->m_teximage);
+    // The tile is loaded into OpenGL memory : we can free the memory of the
+    // decompressed tile
+    free(tile->m_teximage);
+    tile->m_teximage = nullptr;
+
     return true;
-  } else {
-    if (!tile->m_bAvailable) return false;
-    // fetch the tile data from the mbtile database
-    try {
-      char qrs[2100];
-      sprintf(qrs,
-              "select tile_data, length(tile_data) from tiles where zoom_level "
-              "= %d AND tile_column=%d AND tile_row=%d",
-              tile->m_zoomLevel, tile->tile_x, tile->tile_y);
-
-      // Compile a SQL query, getting the specific  blob
-      SQLite::Statement query(*m_pDB, qrs);
-
-      int queryResult = query.tryExecuteStep();
-      if (SQLITE_DONE == queryResult) {
-        tile->m_bAvailable = false;
-        return false;  // requested ROW not found, should never happen
-      } else {
-        SQLite::Column blobColumn = query.getColumn(0);  // Get the blob
-        const void *blob = blobColumn.getBlob();
-
-        int length = query.getColumn(1);  // Get the length
-
-        wxMemoryInputStream blobStream(blob, length);
-        wxImage blobImage;
-
-        blobImage = wxImage(blobStream, wxBITMAP_TYPE_ANY);
-        int blobWidth, blobHeight;
-        unsigned char *imgdata;
-
-        if (blobImage.IsOk()){
-          blobWidth = blobImage.GetWidth();
-          blobHeight = blobImage.GetHeight();
-          // Support MapTiler HiDPI tiles, 512x512
-          if ((blobWidth != 256) || (blobHeight != 256))
-            blobImage.Rescale(256, 256, wxIMAGE_QUALITY_NORMAL);
-          imgdata = blobImage.GetData();
-        }
-        else
-          return false;
-
-        if ((m_global_color_scheme != GLOBAL_COLOR_SCHEME_RGB) &&
-            (m_global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)) {
-          double dimLevel;
-          switch (m_global_color_scheme) {
-            case GLOBAL_COLOR_SCHEME_DUSK: {
-              dimLevel = 0.8;
-              break;
-            }
-            case GLOBAL_COLOR_SCHEME_NIGHT: {
-              dimLevel = 0.3;
-              break;
-            }
-            default: {
-              dimLevel = 1.0;
-              break;
-            }
-          }
-
-          //                      for( int iy = 0; iy < blobHeight; iy++ ) {
-          //                           for( int ix = 0; ix < blobWidth; ix++ ) {
-          //                                  wxImage::RGBValue rgb(
-          //                                  blobImage.GetRed( ix, iy ),
-          //                                  blobImage.GetGreen( ix, iy ),
-          //                                  blobImage.GetBlue( ix, iy ) );
-          //                                  wxImage::HSVValue hsv =
-          //                                  wxImage::RGBtoHSV( rgb );
-          //                                  hsv.value = hsv.value * dimLevel;
-          //                                  wxImage::RGBValue nrgb =
-          //                                  wxImage::HSVtoRGB( hsv );
-          //                                  blobImage.SetRGB( ix, iy,
-          //                                  nrgb.red, nrgb.green, nrgb.blue );
-          //                           }
-          //                      }
-
-          for (int j = 0; j < blobHeight * blobWidth; j++) {
-            unsigned char *d = &imgdata[3 * j];
-            wxImage::RGBValue rgb(*d, *(d + 1), *(d + 2));
-            wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
-            hsv.value = hsv.value * dimLevel;
-            wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
-            *d = nrgb.red;
-            *(d + 1) = nrgb.green;
-            *(d + 2) = nrgb.blue;
-          }
-        }
-
-        int stride = 4;
-        int tex_w = 256;
-        int tex_h = 256;
-        if (!imgdata) return false;
-
-        unsigned char *teximage =
-            (unsigned char *)malloc(stride * tex_w * tex_h);
-        bool transparent = blobImage.HasAlpha();
-
-        for (int j = 0; j < tex_w * tex_h; j++) {
-          for (int k = 0; k < 3; k++)
-            teximage[j * stride + k] = imgdata[3 * j + k];
-
-          // Some NOAA Tilesets do not give transparent tiles, so we detect
-          // NOAA's idea of blank as RGB(1,0,0) and force  alpha = 0;
-          if (imgdata[3 * j] == 1 && imgdata[3 * j + 1] == 0 &&
-              imgdata[3 * j + 2] == 0) {
-            teximage[j * stride + 3] = 0;
-          } else {
-            if (transparent) {
-              teximage[j * stride + 3] =
-                  blobImage.GetAlpha(j % tex_w, j / tex_w);
-            } else {
-              teximage[j * stride + 3] = 255;
-            }
-          }
-        }
-
-        glGenTextures(1, &tile->glTextureName);
-        glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA,
-                     GL_UNSIGNED_BYTE, teximage);
-
-        free(teximage);
-
-        return true;
-      }
-
-    } catch (std::exception &e) {
-      const char *t = e.what();
-      wxLogMessage("mbtiles exception: %s", e.what());
-    }
   }
 
   return false;
@@ -957,12 +751,15 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   ViewPort vp = VPoint;
 
   bool btexture = getTileTexture(tile);
-  if (!btexture) {  // failed to load, draw NODTA on the minimum zoom
+  if (!btexture) {
+    // Tile is not available yet, don't render it and wait for the worker thread
+    // to load and decompress it later.
     glDisable(GL_TEXTURE_2D);
     return false;
   } else {
+    // Tile is available, render it on screen
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glColor4f(1,1,1,1);
+    glColor4f(1, 1, 1, 1);
 #endif
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -991,27 +788,45 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
 
   if (!g_tile_shader_program) {
     GLShaderProgram *shaderProgram = new GLShaderProgram;
-    shaderProgram->addShaderFromSource(tile_vertex_shader_source, GL_VERTEX_SHADER);
-    shaderProgram->addShaderFromSource(tile_fragment_shader_source, GL_FRAGMENT_SHADER);
+    shaderProgram->addShaderFromSource(tile_vertex_shader_source,
+                                       GL_VERTEX_SHADER);
+    shaderProgram->addShaderFromSource(tile_fragment_shader_source,
+                                       GL_FRAGMENT_SHADER);
     shaderProgram->linkProgram();
     g_tile_shader_program = shaderProgram;
   }
 
-    GLShaderProgram *shader = g_tile_shader_program;
-    shader->Bind();
+  GLShaderProgram *shader = g_tile_shader_program;
+  shader->Bind();
 
-   // Set up the texture sampler to texture unit 0
-    shader->SetUniform1i("uTex", 0);
+  // Set up the texture sampler to texture unit 0
+  shader->SetUniform1i("uTex", 0);
 
-    shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)vp.vp_matrix_transform);
+  shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)vp.vp_matrix_transform);
 
-    float co1[8];
-    float tco1[8];
+  float co1[8];
+  float tco1[8];
 
-    shader->SetAttributePointerf("aPos", co1);
-    shader->SetAttributePointerf("aUV", tco1);
+  shader->SetAttributePointerf("aPos", co1);
+  shader->SetAttributePointerf("aUV", tco1);
 
-    // Perform the actual drawing.
+  // Select brightness factor depending on global color scheme
+  float dimLevel = 1.0f;
+  switch (m_global_color_scheme) {
+    case GLOBAL_COLOR_SCHEME_DUSK:
+      dimLevel = 0.8;
+      break;
+    case GLOBAL_COLOR_SCHEME_NIGHT:
+      dimLevel = 0.3;
+      break;
+    default:
+      dimLevel = 1.0f;
+      break;
+  }
+  // Give the brightness level to the shader program
+  shader->SetUniform1f("brightness", dimLevel);
+
+  // Perform the actual drawing.
 
 // For some reason, glDrawElements is busted on Android
 // So we do this a hard ugly way, drawing two triangles...
@@ -1020,28 +835,28 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
 #else
 
-    co1[0] = coords[0];
-    co1[1] = coords[1];
-    co1[2] = coords[2];
-    co1[3] = coords[3];
-    co1[4] = coords[6];
-    co1[5] = coords[7];
-    co1[6] = coords[4];
-    co1[7] = coords[5];
+  co1[0] = coords[0];
+  co1[1] = coords[1];
+  co1[2] = coords[2];
+  co1[3] = coords[3];
+  co1[4] = coords[6];
+  co1[5] = coords[7];
+  co1[6] = coords[4];
+  co1[7] = coords[5];
 
-    tco1[0] = texcoords[0];
-    tco1[1] = texcoords[1];
-    tco1[2] = texcoords[2];
-    tco1[3] = texcoords[3];
-    tco1[4] = texcoords[6];
-    tco1[5] = texcoords[7];
-    tco1[6] = texcoords[4];
-    tco1[7] = texcoords[5];
+  tco1[0] = texcoords[0];
+  tco1[1] = texcoords[1];
+  tco1[2] = texcoords[2];
+  tco1[3] = texcoords[3];
+  tco1[4] = texcoords[6];
+  tco1[5] = texcoords[7];
+  tco1[6] = texcoords[4];
+  tco1[7] = texcoords[5];
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 #endif
 
-    shader->UnBind();
+  shader->UnBind();
 
   glDisable(GL_BLEND);
 
@@ -1052,8 +867,13 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const ViewPort &VPoint,
                                         const OCPNRegion &RectRegion,
                                         const LLRegion &Region) {
+  // Reset the tile counter. This counter is used to know how many tile are
+  // currently used to draw the chart and then to dimension the tile cache size
+  // properly w.r.t the size of the screen and the level of details
+  m_tileCount = 0;
+
   // Do not render if significantly underzoomed
-if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
+  if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
     if (m_nTiles > 500) {
       return true;
     }
@@ -1069,15 +889,15 @@ if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
     LLRegion validRegion = m_minZoomRegion;
     validRegion.Intersect(screenLLRegion);
     glChartCanvas::SetClipRegion(vp, validRegion);
-  }
-  else
+  } else
     glChartCanvas::SetClipRegion(vp, m_minZoomRegion);
 
   /* setup opengl parameters */
   glEnable(GL_TEXTURE_2D);
 
   int viewZoom = m_maxZoom;
-  // Set zoom modifier according to Raster Zoom Modifier settings from display preference pane
+  // Set zoom modifier according to Raster Zoom Modifier settings from display
+  // preference pane
   double zoomMod = 2 * pow(2, -g_chart_zoom_modifier_raster / 3.0);
 
   for (int kz = m_minZoom; kz <= 19; kz++) {
@@ -1091,8 +911,8 @@ if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
   }
 
   viewZoom = wxMin(viewZoom, m_maxZoom);
-  // printf("viewZoomCalc: %d  %g   %g\n",  viewZoom, VPoint.view_scale_ppm,  1.
-  // / VPoint.view_scale_ppm);
+  // printf("viewZoomCalc: %d  %g   %g\n",  viewZoom,
+  // VPoint.view_scale_ppm,  1. / VPoint.view_scale_ppm);
 
   int zoomFactor = m_minZoom;
 
@@ -1109,137 +929,66 @@ if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
   bool btwoPass = false;
   if (((screenBox.GetMinLon() < -180) && (screenBox.GetMaxLon() > -180)) ||
       ((screenBox.GetMinLon() < 180) && (screenBox.GetMaxLon() > 180))) {
-    // printf("\nTwoPass\n");
     btwoPass = true;
     box = screenBox;
   }
 
   while (zoomFactor <= viewZoom) {
-    // printf("zoomFactor: %d viewZoom: %d\n", zoomFactor, viewZoom);
-    mbTileZoomDescriptor *tzd = m_tileArray[zoomFactor - m_minZoom];
-
     // Get the tile numbers of the box corners of this render region, at this
     // zoom level
     int topTile =
-        wxMin(tzd->tile_y_max, lat2tiley(box.GetMaxLat(), zoomFactor));
+        wxMin(m_tileCache->GetNorthLimit(zoomFactor),
+              mbTileDescriptor::lat2tiley(box.GetMaxLat(), zoomFactor));
     int botTile =
-        wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
-    int leftTile = long2tilex(box.GetMinLon(), zoomFactor);
-    int rightTile = long2tilex(box.GetMaxLon(), zoomFactor);
+        wxMax(m_tileCache->GetSouthLimit(zoomFactor),
+              mbTileDescriptor::lat2tiley(box.GetMinLat(), zoomFactor));
+    int leftTile = mbTileDescriptor::long2tilex(box.GetMinLon(), zoomFactor);
+    int rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
 
     if (btwoPass) {
-      leftTile = long2tilex(-180 + eps, zoomFactor);
-      rightTile = long2tilex(box.GetMaxLon(), zoomFactor);
+      leftTile = mbTileDescriptor::long2tilex(-180 + eps, zoomFactor);
+      rightTile = mbTileDescriptor::long2tilex(box.GetMaxLon(), zoomFactor);
       vp = VPoint;
       if (vp.clon > 0) vp.clon -= 360;
 
     } else
       vp = VPoint;
 
-    // botTile -= 1;
-    topTile += 1;
-
-    // printf("limits: {%d %d}    {%d %d}\n", botTile, topTile, leftTile,
-    // rightTile);
-
-    for (int i = botTile; i < topTile; i++) {
-      if ((i > tzd->tile_y_max) || (i < tzd->tile_y_min)) continue;
-
-      for (int j = leftTile; j < rightTile + 1; j++) {
-        if ((tzd->tile_x_max >= tzd->tile_x_min) &&
-            ((j > tzd->tile_x_max) || (j < tzd->tile_x_min)))
-          continue;
-
-        unsigned int index = ((i - tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
-        // printf("pass 1:  %d  %d  %d\n", zoomFactor, i, j);
-        mbTileDescriptor *tile = NULL;
-
-        if (tzd->tileMap.find(index) != tzd->tileMap.end())
-          tile = tzd->tileMap[index];
-        if (NULL == tile) {
-          tile = new mbTileDescriptor;
-          tile->tile_x = j;
-          tile->tile_y = i;
-          tile->m_zoomLevel = zoomFactor;
-          tile->m_bAvailable = true;
-
-          tzd->tileMap[index] = tile;
-        }
-
-        if (!tile->m_bgeomSet) {
-          tile->lonmin =
-              round(tilex2long(tile->tile_x, zoomFactor) / eps) * eps;
-          tile->lonmax =
-              round(tilex2long(tile->tile_x + 1, zoomFactor) / eps) * eps;
-          tile->latmin =
-              round(tiley2lat(tile->tile_y - 1, zoomFactor) / eps) * eps;
-          tile->latmax = round(tiley2lat(tile->tile_y, zoomFactor) / eps) * eps;
-
-          tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
-          tile->m_bgeomSet = true;
-        }
+    for (int iy = botTile; iy <= topTile; iy++) {
+      for (int ix = leftTile; ix <= rightTile; ix++) {
+        mbTileDescriptor *tile = m_tileCache->GetTile(zoomFactor, ix, iy);
 
         if (!Region.IntersectOut(tile->box)) {
           if (RenderTile(tile, zoomFactor, vp)) maxrenZoom = zoomFactor;
         }
       }
-    }  // for
+    }
 
     // second pass
     if (btwoPass) {
       vp = VPoint;
       if (vp.clon < 0) vp.clon += 360;
 
-      // Get the tile numbers of the box corners of this render region, at this
-      // zoom level
+      // Get the tile numbers of the box corners of this render region, at
+      // this zoom level
       int topTile =
-          wxMin(tzd->tile_y_max, lat2tiley(box.GetMaxLat(), zoomFactor));
+          wxMin(m_tileCache->GetNorthLimit(zoomFactor),
+                mbTileDescriptor::lat2tiley(box.GetMaxLat(), zoomFactor));
       int botTile =
-          wxMax(tzd->tile_y_min, lat2tiley(box.GetMinLat(), zoomFactor));
-      int leftTile = long2tilex(box.GetMinLon(), zoomFactor);
-      int rightTile = long2tilex(-180 - eps /*box.GetMaxLon()*/, zoomFactor);
+          wxMax(m_tileCache->GetSouthLimit(zoomFactor),
+                mbTileDescriptor::lat2tiley(box.GetMinLat(), zoomFactor));
+      int leftTile = mbTileDescriptor::long2tilex(box.GetMinLon(), zoomFactor);
+      int rightTile = mbTileDescriptor::long2tilex(-180 - eps, zoomFactor);
 
       if (rightTile < leftTile) rightTile = leftTile;
-      topTile += 1;
 
-      for (int i = botTile; i < topTile; i++) {
-        for (int j = leftTile; j < rightTile + 1; j++) {
-          unsigned int index = ((i - tzd->tile_y_min) * (tzd->nx_tile + 1)) + j;
-
-          mbTileDescriptor *tile = NULL;
-
-          // printf("pass 2:  %d  %d  %d\n", zoomFactor, i, j);
-
-          if (tzd->tileMap.find(index) != tzd->tileMap.end())
-            tile = tzd->tileMap[index];
-          if (NULL == tile) {
-            tile = new mbTileDescriptor;
-            tile->tile_x = j;
-            tile->tile_y = i;
-            tile->m_zoomLevel = zoomFactor;
-            tile->m_bAvailable = true;
-
-            tzd->tileMap[index] = tile;
-          }
-
-          if (!tile->m_bgeomSet) {
-            tile->lonmin =
-                round(tilex2long(tile->tile_x, zoomFactor) / eps) * eps;
-            tile->lonmax =
-                round(tilex2long(tile->tile_x + 1, zoomFactor) / eps) * eps;
-            tile->latmin =
-                round(tiley2lat(tile->tile_y - 1, zoomFactor) / eps) * eps;
-            tile->latmax =
-                round(tiley2lat(tile->tile_y, zoomFactor) / eps) * eps;
-
-            tile->box.Set(tile->latmin, tile->lonmin, tile->latmax,
-                          tile->lonmax);
-            tile->m_bgeomSet = true;
-          }
+      for (int iy = botTile; iy <= topTile; iy++) {
+        for (int ix = leftTile; ix <= rightTile; ix++) {
+          mbTileDescriptor *tile = m_tileCache->GetTile(zoomFactor, ix, iy);
 
           if (!Region.IntersectOut(tile->box)) RenderTile(tile, zoomFactor, vp);
         }
-      }  // for
+      }
     }
 
     zoomFactor++;
@@ -1247,9 +996,12 @@ if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
 
   glDisable(GL_TEXTURE_2D);
 
-  m_zoomScaleFactor = 2.0 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
+  m_zoomScaleFactor = 2 * OSM_zoomMPP[maxrenZoom] * VPoint.view_scale_ppm / zoomMod;
 
   glChartCanvas::DisableClipRegion();
+
+  // Limit the cache size to 3 times the number of tiles to draw on a rendering
+  m_tileCache->CleanCache(m_tileCount * 5);
 
   return true;
 }
@@ -1260,4 +1012,30 @@ bool ChartMBTiles::RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
       _("MBTile requires OpenGL to be enabled"));
 
   return true;
+}
+
+/// @brief Create and start the wortker thread. This thread is dedicated at
+/// loading and decompressing chart tiles into memory, in the background. If
+/// for any reason the thread would fail to load, a fatal error id generated
+/// and a message displayed to the user.
+void ChartMBTiles::StartThread() {
+  // Create the worker thread
+  m_workerThread = new MbtTilesThread(m_pDB);
+  if (m_workerThread->Run() != wxTHREAD_NO_ERROR) {
+    delete m_workerThread;
+    m_workerThread = nullptr;
+    // Not beeing able to create the worker thread is really a bad situation,
+    // never supposed to happen. So we trigger a fatal error.
+    wxLogFatalError("MbTiles: Can't create the worker thread");
+  }
+}
+
+/// @brief  Stop and delete the worker thread. This function is called when
+/// OpenCPN is quitting.
+void ChartMBTiles::StopThread() {
+  // Stop the worker thread
+  if (m_workerThread != nullptr) {
+    m_workerThread->RequestStop();
+    m_workerThread = nullptr;
+  }
 }
