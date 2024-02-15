@@ -677,7 +677,9 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
     if (tile->glTextureName > 0) {
       glDeleteTextures(1, &tile->glTextureName);
     }
+#ifndef __OCPN__ANDROID__
     glEnable(GL_COLOR_MATERIAL);
+#endif
     glGenTextures(1, &tile->glTextureName);
     glBindTexture(GL_TEXTURE_2D, tile->glTextureName);
 
