@@ -813,7 +813,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
-                                    static_cast<int>(m_callbacks.get_mag(COG)),
+                                    static_cast<int>(m_callbacks.get_mag(Brg)),
                                     0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );

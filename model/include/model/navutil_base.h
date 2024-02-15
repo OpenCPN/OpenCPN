@@ -84,4 +84,7 @@ extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
 extern wxString formatTimeDelta(wxLongLong secs);
 
 extern double fromDMM(wxString sdms);
+
+extern double toMagnetic(double deg_true);
+extern double toMagnetic(double deg_true, double variation);
 #endif   // _NAVUTIL_BASE__

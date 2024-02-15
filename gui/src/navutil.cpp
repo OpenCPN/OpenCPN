@@ -3394,11 +3394,11 @@ wxString formatAngle(double angle) {
   wxString out;
   if (g_bShowMag && g_bShowTrue) {
     out.Printf(wxT("%03.0f %cT (%.0f %cM)"), angle, 0x00B0,
-               gFrame->GetMag(angle), 0x00B0);
+               toMagnetic(angle), 0x00B0);
   } else if (g_bShowTrue) {
     out.Printf(wxT("%03.0f %cT"), angle, 0x00B0);
   } else {
-    out.Printf(wxT("%03.0f %cM"), gFrame->GetMag(angle), 0x00B0);
+    out.Printf(wxT("%03.0f %cM"), toMagnetic(angle), 0x00B0);
   }
   return out;
 }

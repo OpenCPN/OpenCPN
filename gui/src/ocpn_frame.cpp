@@ -5208,7 +5208,7 @@ void MyFrame::UpdateStatusBar() {
       if (g_bShowTrue)
         cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
       if (g_bShowMag)
-        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)GetMag(gCog),
+        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)toMagnetic(gCog),
                                  0x00B0);
     } else
       cogs.Printf(("COG ---%c"), 0x00B0);
@@ -5752,20 +5752,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 }
 
-double MyFrame::GetMag(double a) {
-  if (!std::isnan(gVar)) {
-    if ((a - gVar) > 360.)
-      return (a - gVar - 360.);
-    else
-      return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-  } else {
-    if ((a - g_UserVar) > 360.)
-      return (a - g_UserVar - 360.);
-    else
-      return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-  }
-}
-
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
   auto loader = PluginLoader::getInstance();
@@ -5781,10 +5767,7 @@ double MyFrame::GetMag(double a, double lat, double lon) {
     if (fabs(gQueryVar) < 360.0)  // Don't use WMM variance if not updated yet
       Variance = gQueryVar;
   }
-  if ((a - Variance) > 360.)
-    return (a - Variance - 360.);
-  else
-    return ((a - Variance) >= 0.) ? (a - Variance) : (a - Variance + 360.);
+  return toMagnetic(a, Variance);
 }
 
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,

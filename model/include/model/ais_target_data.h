@@ -35,6 +35,7 @@
 #include <wx/string.h>
 
 #include "meteo_points.h"
+#include "navutil_base.h"
 
 #define SHIP_NAME_LEN 35
 #define DESTINATION_LEN 21
@@ -146,7 +147,7 @@ struct Ais8_001_22 {
 
 struct AisTargetCallbacks {
   std::function<double(double)> get_mag;
-  AisTargetCallbacks(): get_mag([](double a) { return 1.0; }) {}
+  AisTargetCallbacks(): get_mag([](double a) { return toMagnetic(a); }) {}
 };
 
 

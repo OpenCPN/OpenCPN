@@ -278,7 +278,6 @@ public:
   void ChartsRefresh();
 
   bool CheckGroup(int igroup);
-  double GetMag(double a);
   double GetMag(double a, double lat, double lon);
   bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
 

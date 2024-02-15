@@ -275,7 +275,7 @@ void ConsoleCanvas::UpdateRouteData() {
         cogstr << wxString::Format(wxString("%6.0f", wxConvUTF8), dcog);
       if (g_bShowMag)
         cogstr << wxString::Format(wxString("%6.0f(M)", wxConvUTF8),
-                                   gFrame->GetMag(dcog));
+                                   toMagnetic(dcog));
 
       pBRG->SetAValue(cogstr);
 
