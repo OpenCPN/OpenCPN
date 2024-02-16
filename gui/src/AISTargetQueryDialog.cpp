@@ -375,14 +375,14 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
 
       m_adjustedFontSize--;
     }
-    target_x = szv.x * 11/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
+    target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
   } else {
     wxSize szv = m_pQueryTextCtl->GetVirtualSize();
     int csz = g_Platform->getDisplaySize().x * 8 / 10;
     if ((szv.x) < csz) {
       if (szv.x > m_pQueryTextCtl->GetSize().x) target_x = szv.x;  // * 11/10;
     }
-    target_x = szv.x * 11/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
+    target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
   }
 
 #ifdef __OCPN__ANDROID__
@@ -433,9 +433,8 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
   int csz = g_Platform->getDisplaySize().y * 85 / 100;
   if ((szyv.y + yb) < csz) {
     if (szyv.y > m_pQueryTextCtl->GetSize().y)
-      target_y = szyv.y * 11 / 10 + yb;
-  } else {  // Probably going to be a vertical scroll bar, so adjust width
-            // slightly
+      target_y = szyv.y * 12 / 10 + yb;
+  } else {
     target_y = csz;
   }
   SetSize(target_x, target_y);
