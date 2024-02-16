@@ -65,6 +65,12 @@
 
 #include "LinkPropDlg.h"
 
+#ifdef __WXOSX__
+#define DIALOG_PARENT wxFrame
+#else
+#define DIALOG_PARENT wxDialog
+#endif
+
 #define ID_RCLK_MENU_COPY_TEXT 7013
 
 #define ID_TRK_MENU_ADD 7014
@@ -84,7 +90,7 @@ class HyperlinkList;
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TrackPropDlg
 ///////////////////////////////////////////////////////////////////////////////
-class TrackPropDlg : public wxFrame {
+class TrackPropDlg : public DIALOG_PARENT {
 private:
   static bool instanceFlag;
   static TrackPropDlg* single;

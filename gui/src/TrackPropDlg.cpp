@@ -106,7 +106,7 @@ TrackPropDlg* TrackPropDlg::getInstance(wxWindow* parent, wxWindowID id,
 TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
                            const wxString& title, const wxPoint& pos,
                            const wxSize& size, long style)
-    : wxFrame(parent, id, title, pos, size, style) {
+    : DIALOG_PARENT(parent, id, title, pos, size, style) {
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*qFont);
 
@@ -260,7 +260,7 @@ TrackPropDlg::~TrackPropDlg() {
 }
 
 void TrackPropDlg::OnActivate(wxActivateEvent& event){
-    wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+    DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
     long int style = pWin->GetWindowStyle();
     if (event.GetActive())
       pWin->SetWindowStyle(style | wxSTAY_ON_TOP);

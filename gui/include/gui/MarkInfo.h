@@ -58,6 +58,12 @@
 #include "time_textbox.h"
 #endif
 
+#ifdef __WXOSX__
+#define DIALOG_PARENT wxFrame
+#else
+#define DIALOG_PARENT wxDialog
+#endif
+
 #define ID_WPT_RANGERINGS_NO 7507
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_DELETE 7015
@@ -194,7 +200,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MarkInfoDef
 ///////////////////////////////////////////////////////////////////////////////
-class MarkInfoDlg : public wxFrame {
+class MarkInfoDlg : public DIALOG_PARENT {
   DECLARE_EVENT_TABLE()
   friend class SaveDefaultsDialog;
 

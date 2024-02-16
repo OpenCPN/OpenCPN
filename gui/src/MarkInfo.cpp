@@ -196,7 +196,7 @@ void LatLonTextCtrl::OnKillFocus(wxFocusEvent& event) {
 //    Mark Information Dialog Implementation
 //
 //-------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(MarkInfoDlg, wxFrame)
+BEGIN_EVENT_TABLE(MarkInfoDlg, DIALOG_PARENT)
 EVT_BUTTON(wxID_OK, MarkInfoDlg::OnMarkInfoOKClick)
 EVT_BUTTON(wxID_CANCEL, MarkInfoDlg::OnMarkInfoCancelClick)
 EVT_BUTTON(ID_BTN_DESC_BASIC, MarkInfoDlg::OnExtDescriptionClick)
@@ -221,7 +221,7 @@ END_EVENT_TABLE()
 
 MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
                          const wxPoint& pos, const wxSize& size, long style) {
-  wxFrame::Create(parent, id, title, pos, size, style);
+  DIALOG_PARENT::Create(parent, id, title, pos, size, style);
 
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*qFont);
@@ -251,7 +251,7 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
 }
 
 void MarkInfoDlg::OnActivate(wxActivateEvent& event) {
-  wxFrame* pWin = wxDynamicCast(event.GetEventObject(), wxFrame);
+  DIALOG_PARENT* pWin = wxDynamicCast(event.GetEventObject(), DIALOG_PARENT);
   long int style = pWin->GetWindowStyle();
   if (event.GetActive())
     pWin->SetWindowStyle(style | wxSTAY_ON_TOP);
@@ -870,6 +870,9 @@ void MarkInfoDlg::RecalculateSize(void) {
 
   m_defaultClientSize = GetClientSize();
   Center();
+#else
+  wxSize dsize = GetParent()->GetClientSize();
+  SetSize(wxMin(500, dsize.x / 3), wxMin(600, dsize.y / 1.5));
 #endif
 }
 
