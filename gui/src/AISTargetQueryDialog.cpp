@@ -190,12 +190,6 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
 bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
                                   const wxString &caption, const wxPoint &pos,
                                   const wxSize &size, long style) {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
-
   long wstyle = AIS_TARGET_QUERY_STYLE;
 
   if (!wxFrame::Create(parent, id, caption, pos, size, wstyle)) return false;

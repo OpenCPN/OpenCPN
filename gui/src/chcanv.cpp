@@ -9628,7 +9628,6 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
       objText << g_pi_manager->CreateObjDescriptions(target_plugin_chart,
                                                      pi_rule_list);
 
-    objText << _T("</font>");
     if (wxFONTSTYLE_ITALIC == dFont->GetStyle()) objText << _T("</i>");
 
     // Add the additional info files
@@ -9668,7 +9667,7 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
       }
       objText << AddFiles << _T("</table>");
     }
-
+    objText << _T("</font>");
     objText << _T("</body></html>");
 
     if (Chs57 || target_plugin_chart || (filecount > 1)) {

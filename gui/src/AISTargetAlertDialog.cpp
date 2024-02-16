@@ -84,16 +84,7 @@ bool OCPN_AlertDialog::Create(wxWindow *parent, wxWindowID id,
                               const wxSize &size, long style)
 
 {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
-
   long wstyle = wxDEFAULT_FRAME_STYLE;
-  if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
-      (global_color_scheme != GLOBAL_COLOR_SCHEME_RGB))
-    wstyle |= (wxNO_BORDER);
 
   wxSize size_min = size;
   size_min.IncTo(wxSize(500, 600));
