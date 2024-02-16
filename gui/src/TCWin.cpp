@@ -46,11 +46,6 @@ EVT_PAINT(TCWin::OnPaint) EVT_SIZE(TCWin::OnSize) EVT_MOTION(TCWin::MouseEvent)
     // Define a constructor
     extern wxDateTime gTimeSource;
 TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
 
   m_created = false;
   xSpot = 0;
@@ -60,10 +55,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER |
                 wxFRAME_FLOAT_ON_PARENT;
-  if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
-      (global_color_scheme != GLOBAL_COLOR_SCHEME_RGB))
-    wstyle |= (wxNO_BORDER);
-
+  
   pParent = parent;
   m_x = x;
   m_y = y;
