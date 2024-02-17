@@ -2714,6 +2714,13 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       m_modkeys |= wxMOD_CONTROL;
       break;
 
+#ifdef __WXOSX__
+    // On macOS Cmd generates WXK_CONTROL and Ctrl generates WXK_RAW_CONTROL
+    case WXK_RAW_CONTROL:
+      m_modkeys |= wxMOD_RAW_CONTROL;
+      break;
+#endif
+
     case WXK_LEFT:
       if (m_modkeys == wxMOD_CONTROL)
         parent_frame->DoStackDown(this);
@@ -2936,6 +2943,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           break;
       }
     }
+
+#ifdef __WXOSX__
+    // Ctrl+Cmd+F toggles fullscreen on macOS
+    if (key_char == 'F' && m_modkeys & wxMOD_CONTROL && m_modkeys & wxMOD_RAW_CONTROL) {
+      parent_frame->ToggleFullScreen();
+      return;
+    }
+#endif
 
     if (event.ControlDown()) key_char -= 64;
 
