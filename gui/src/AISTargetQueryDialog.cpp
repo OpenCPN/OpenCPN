@@ -85,7 +85,6 @@ void AISTargetQueryDialog::Init() {
   m_nl = 0;
   m_colorscheme = (ColorScheme)(-1);
   m_okButton = NULL;
-  m_bsize_set = false;
   m_bautoCentre = false;
   m_bautosize = false;
 }
@@ -345,13 +344,8 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
 
   wxSize origSize = GetSize();
 
-  //  First pass, try to set the size using the user specified font sizes
-  //  completely
-  if (!m_bsize_set) {
-    Fit();
-    RenderHTMLQuery(td);
-    m_bsize_set = true;
-  }
+  Fit();
+  RenderHTMLQuery(td);
 
   int target_x = -1;
   int target_y = -1;

@@ -90,7 +90,6 @@ public:
   wxButton* m_okButton;
   wxButton* m_createWptBtn;
   wxButton* m_createTrkBtn;
-  bool m_bsize_set;
   int m_adjustedFontSize;
   int m_control_font_size;
   wxFont* m_basefont;
