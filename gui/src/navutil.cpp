@@ -185,6 +185,7 @@ extern int g_S57_dialog_sx, g_S57_dialog_sy;
 int g_S57_extradialog_sx, g_S57_extradialog_sy;
 
 extern int g_iNavAidRadarRingsNumberVisible;
+extern bool g_bNavAidRadarRingsShown;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
 extern bool g_bWayPointPreventDragging;
@@ -614,6 +615,7 @@ int MyConfig::LoadMyConfig() {
   g_maxzoomin = 800;
 
   g_iNavAidRadarRingsNumberVisible = 0;
+  g_bNavAidRadarRingsShown = false;
   g_fNavAidRadarRingsStep = 1.0;
   g_pNavAidRadarRingsStepUnits = 0;
   g_colourOwnshipRangeRingsColour = *wxRED;
@@ -1398,6 +1400,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // Radar rings
   Read(_T ( "RadarRingsNumberVisible" ), &val);
   if (val.Length() > 0) g_iNavAidRadarRingsNumberVisible = atoi(val.mb_str());
+  g_bNavAidRadarRingsShown = g_iNavAidRadarRingsNumberVisible > 0;
 
   Read(_T ( "RadarRingsStep" ), &val);
   if (val.Length() > 0) g_fNavAidRadarRingsStep = atof(val.mb_str());

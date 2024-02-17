@@ -146,6 +146,7 @@ extern double g_defaultBoatSpeed;
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 
 extern int g_iNavAidRadarRingsNumberVisible;
+extern bool g_bNavAidRadarRingsShown;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
 extern int g_iWaypointRangeRingsNumber;
@@ -1068,6 +1069,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
                                               0));  // 3.0.0 config support
   conf->Write(_T ( "RadarRingsNumberVisible" ),
               g_iNavAidRadarRingsNumberVisible);
+  g_bNavAidRadarRingsShown = g_iNavAidRadarRingsNumberVisible > 0;
   conf->Write(_T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep);
   conf->Write(_T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits);
   conf->Write(_T ( "RadarRingsColour" ),

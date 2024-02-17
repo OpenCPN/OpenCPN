@@ -208,6 +208,7 @@ extern AisDecoder *g_pAIS;
 extern MyFrame *gFrame;
 
 extern int g_iNavAidRadarRingsNumberVisible;
+extern bool g_bNavAidRadarRingsShown;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
 extern bool g_bWayPointPreventDragging;
@@ -3028,11 +3029,11 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
         case 'P':
           parent_frame->ToggleTestPause();
           break;
-#if 0
         case 'R':
-            parent_frame->ToggleRocks();
+            g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
+            if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible == 0)
+                g_iNavAidRadarRingsNumberVisible = 1;
             break;
-#endif
         case 'S':
           SetShowENCDepth(!m_encShowDepth);
           ReloadVP();
@@ -5721,7 +5722,7 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
   }
 
   // Draw radar rings if activated
-  if (g_iNavAidRadarRingsNumberVisible) {
+  if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible > 0) {
     double factor = 1.00;
     if (g_pNavAidRadarRingsStepUnits == 1)  // nautical miles
       factor = 1 / 1.852;

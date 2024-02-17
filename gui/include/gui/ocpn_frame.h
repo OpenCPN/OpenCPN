@@ -231,7 +231,9 @@ public:
   void ToggleChartOutlines(ChartCanvas *cc);
   void ToggleENCText(ChartCanvas *cc);
   void ToggleSoundings(ChartCanvas *cc);
+  #if 0
   void ToggleRocks(void);
+  #endif
   bool ToggleLights(ChartCanvas *cc);
   void ToggleAnchor(ChartCanvas *cc);
   void ToggleAISDisplay(ChartCanvas *cc);

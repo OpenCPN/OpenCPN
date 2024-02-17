@@ -357,6 +357,7 @@ bool g_bPermanentMOBIcon;
 bool g_bTempShowMenuBar;
 
 int g_iNavAidRadarRingsNumberVisible;
+bool g_bNavAidRadarRingsShown;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
 bool g_bWayPointPreventDragging;
