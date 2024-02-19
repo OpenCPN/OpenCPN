@@ -39,6 +39,7 @@
 #include "model/comm_drv_n2k_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
+#include "model/logger.h"
 
 #include <N2kMsg.h>
 std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg);
@@ -741,16 +742,16 @@ void CommDriverN2KSerialThread::ThreadMessage(const wxString& msg) {
 size_t CommDriverN2KSerialThread::WriteComPortPhysical(std::vector<unsigned char> msg) {
   if (m_serial.isOpen()) {
     ssize_t status = 0;
+#if 0
+    printf("X                ");
+    for (size_t i = 0; i < msg.size(); i++) printf("%02X ", msg[i]);
+    printf("\n");
+#endif
     try {
-        printf("X                ");
-        for (size_t i = 0; i < msg.size(); i++)
-          printf("%02X ", msg.at(i));
-        printf("\n");
-
-        status = m_serial.write((uint8_t*)msg.data(), msg.size());
+      status = m_serial.write((uint8_t*)msg.data(), msg.size());
     } catch (std::exception& e) {
-       std::cerr << "Unhandled Exception while writing to serial port: " <<
-       e.what() << std::endl;
+      WARNING_LOG << "Unhandled Exception while writing to serial port: "
+          << e.what();
       return -1;
     }
     return status;
