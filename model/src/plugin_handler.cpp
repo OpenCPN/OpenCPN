@@ -337,11 +337,11 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   static const SemanticVersion kMaxApi = SemanticVersion(1, 19);
   auto plugin_api = SemanticVersion::parse(metadata.api_version);
   if (plugin_api.major == -1) {
-    DEBUG_LOG << "Cannot parse API version \"" << metadata.api_version;
+    DEBUG_LOG << "Cannot parse API version \"" << metadata.api_version << "\"";
     return false;
   }
   if (plugin_api < kMinApi || plugin_api > kMaxApi) {
-    DEBUG_LOG << "Incompatible API version \"" << metadata.api_version;
+    DEBUG_LOG << "Incompatible API version \"" << metadata.api_version << "\"";
     return false;
   }
 
@@ -379,8 +379,8 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
       rv = true;
     }
   }
-    DEBUG_LOG << "Plugin compatibility check Final: "
-              << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
+  DEBUG_LOG << "Plugin compatibility check Final: "
+            << (rv ? "ACCEPTED: " : "REJECTED: ") << metadata.name;
   return rv;
 }
 
