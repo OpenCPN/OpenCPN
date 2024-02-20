@@ -99,6 +99,7 @@ protected:
 
 private:
   std::string buffer;
+  static IpcServer* s_instance;
 };
 
 /**
