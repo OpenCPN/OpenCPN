@@ -74,12 +74,19 @@ LocalApiResult IpcClient::GetRestEndpoint() {
   return LocalApiResult(false, "Server error running get_rest_endpoint");
 }
 
+static IpcServer* factory = nullptr;
+
 LocalServerApi& IpcConnection::GetInstance() {
-  static IpcServer* factory = nullptr;
   if (!factory) factory = new IpcServer(GetSocketPath());
   return *factory;
 }
 
+void IpcConnection::ReleaseInstance() {
+  if (factory) {
+    delete factory;
+    factory = nullptr;
+  }
+}
 
 bool IpcConnection::OnExec(const wxString&, const wxString& data) {
   if (data == "quit") {
