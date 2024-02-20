@@ -1815,6 +1815,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   NMEALogWindow::Shutdown();
 
+  ReleaseApiListeners();
+
   g_MainToolbar = NULL;
   g_bTempShowMenuBar = false;
 
@@ -4976,6 +4978,7 @@ void MyFrame::InitAppMsgBusListener() {
 /** Setup handling of events from the local ipc/dbus API. */
 #ifdef __ANDROID__
 void MyFrame::InitApiListeners() {}
+void MyFrame::ReleaseApiListeners() {}
 
 #else
 void MyFrame::InitApiListeners() {
@@ -4988,6 +4991,8 @@ void MyFrame::InitApiListeners() {
       [](const std::string& path) { return wxGetApp().OpenFile(path); };
 
 }
+
+void MyFrame::ReleaseApiListeners() { LocalServerApi::ReleaseInstance(); }
 #endif
 
 void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {

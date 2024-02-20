@@ -48,6 +48,8 @@ LocalServerApi& LocalServerApi:: GetInstance() {
   return DummyIpcServer::GetInstance();
 }
 
+void LocalServerApi::ReleaseInstance() {}
+
 InstanceCheck& InstanceCheck::GetInstance() {
   return DummyInstanceChk::GetInstance();
 }
@@ -70,6 +72,8 @@ LocalServerApi& LocalServerApi:: GetInstance() {
   return UseDbus() ? DbusServer::GetInstance() : IpcConnection::GetInstance();
 }
 
+void LocalServerApi::ReleaseInstance() {}
+
 InstanceCheck& InstanceCheck::GetInstance() {
   if (UseDbus())
     return DbusServer::GetInstance();
@@ -85,6 +89,8 @@ std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
 LocalServerApi& LocalServerApi:: GetInstance() {
   return IpcConnection::GetInstance();
 }
+
+void LocalServerApi::ReleaseInstance() { IpcConnection::ReleaseInstance(); }
 
 InstanceCheck& InstanceCheck::GetInstance() {
   return GetWxInstanceChk();

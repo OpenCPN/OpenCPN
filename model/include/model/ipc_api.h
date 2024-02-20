@@ -75,6 +75,7 @@ friend  class IpcServer;
 
 public:
   static LocalServerApi& GetInstance();
+  static void ReleaseInstance();
 
   IpcConnection(IpcConnection&) = delete;
   void operator= (const IpcConnection&) = delete;

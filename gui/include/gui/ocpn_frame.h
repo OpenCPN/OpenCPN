@@ -347,6 +347,7 @@ public:
 
   void InitAppMsgBusListener();
   void InitApiListeners();
+  void ReleaseApiListeners();
   void UpdateStatusBar(void);
 
 private:
