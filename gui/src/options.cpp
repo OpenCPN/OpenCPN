@@ -8492,7 +8492,7 @@ void ChartGroupsUI::PopulateTrees(void) {
     if (!dirname.IsEmpty()) dir_array.Add(dirname);
   }
 
-  PopulateTreeCtrl(allAvailableCtl->GetTreeCtrl(), dir_array, wxColour(0, 0, 0),
+  PopulateTreeCtrl(allAvailableCtl->GetTreeCtrl(), dir_array, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),
                    dialogFont);
   m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
 
@@ -8505,7 +8505,7 @@ void ChartGroupsUI::PopulateTrees(void) {
     if (!dirname.IsEmpty()) dir_array0.Add(dirname);
   }
   PopulateTreeCtrl(defaultAllCtl->GetTreeCtrl(), dir_array0,
-                   wxColour(128, 128, 128), iFont);
+                   wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), iFont);
 }
 
 void ChartGroupsUI::CompleteInitialSettings(void) {

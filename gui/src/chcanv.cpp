@@ -12540,9 +12540,11 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
   wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush(
       GetGlobalColor(_T ( "UINFD" )), wxBRUSHSTYLE_SOLID);
 
+
   double skew_angle = GetVPRotation();
 
   wxFont *dFont = FontMgr::Get().GetFont(_("CurrentValue"));
+  dc.SetTextForeground(FontMgr::Get().GetFontColor(_("CurrentValue")));
   int font_size = wxMax(10, dFont->GetPointSize());
   font_size /= g_Platform->GetDisplayDIPMult(this);
   pTCFont =
