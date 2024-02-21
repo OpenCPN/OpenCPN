@@ -22,6 +22,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file plugin_api.cpp Implement various ocpn_plugin.h methods. */
+
 #include <memory>
 #include <sstream>
 #include <vector>
