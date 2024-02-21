@@ -232,6 +232,8 @@ CommDriverN0183Serial::~CommDriverN0183Serial() { Close(); }
 bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
+  if (comx.IsEmpty())
+    return false;
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
