@@ -220,7 +220,7 @@ void ConnectionsDialog::Init() {
 
 #ifdef __ANDROID__
   m_scrollWinConnections =
-      new wxPanel(cPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      new wxPanel(m_container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                   wxBORDER_RAISED | wxBG_STYLE_ERASE);
 #else
   m_scrollWinConnections = new wxScrolledWindow(
