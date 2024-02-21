@@ -2701,10 +2701,6 @@ wxString* GetpSharedDataLocation(void) {
   return g_Platform->GetSharedDataDirPtr();
 }
 
-wxString* GetpPrivateApplicationDataLocation(void) {
-  return g_Platform->GetPrivateDataDirPtr();
-}
-
 ArrayOfPlugIn_AIS_Targets* GetAISTargetArray(void) {
   if (!g_pAIS) return NULL;
 

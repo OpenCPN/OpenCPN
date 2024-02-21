@@ -30,6 +30,7 @@
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
 
+#include "model/base_platform.h"
 #include "model/comm_appmsg.h"
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_serial.h"
@@ -243,4 +244,8 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
     }
   }
   return RESULT_COMM_NO_ERROR;
+}
+
+wxString* GetpPrivateApplicationDataLocation(void) {
+  return  g_BasePlatform->GetPrivateDataDirPtr();
 }
