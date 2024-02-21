@@ -752,7 +752,8 @@ bool PluginLoader::UpdatePlugIns() {
       wxString msg("PluginLoader: Initializing PlugIn: ");
       msg += pic->m_plugin_file;
       wxLogMessage(msg);
-
+      if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
+        pic->m_has_setup_options = false;
       pic->m_cap_flag = pic->m_pplugin->Init();
       pic->m_pplugin->SetDefaults();
       pic->m_init_state = true;
