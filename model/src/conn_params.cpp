@@ -406,10 +406,6 @@ NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
    if (Type == NETWORK){
     if (LastNetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
-    else if (LastNetProtocol == UDP)
-      return NavAddr::Bus::N0183;
-    else if (LastNetProtocol == TCP)
-      return NavAddr::Bus::N0183;
     else if (LastNetProtocol == GPSD)
       return NavAddr::Bus::N0183;
   }
