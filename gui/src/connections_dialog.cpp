@@ -405,6 +405,7 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
       FillSourceList();
     }
     UpdateDatastreams();
+    m_sbSizerLB->Layout();
   }
 }
 
@@ -466,6 +467,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
         cp_edited->b_IsSetup = false;  // Trigger new stream
         FillSourceList();
         UpdateDatastreams();
+        m_sbSizerLB->Layout();
       }
     }
   }
