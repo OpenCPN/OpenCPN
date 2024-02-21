@@ -122,12 +122,21 @@ int FastMessageMap::AddNewEntry(void) {
 
 int FastMessageMap::GarbageCollector(void) {
   std::vector<unsigned> stale_entries;
-  for (unsigned i = 0; i < entries.size(); i++) {
-    //if (entries[i].IsExpired()) stale_entries.push_back(i);
-    if (IsEntryExpired(i)) stale_entries.push_back(i);
-  }
-  for (auto i : stale_entries) Remove(i);
-  return stale_entries.size();
+  bool bremoved;
+  int nremoved = 0;
+  do {
+    bremoved = false;
+    for (unsigned i = 0; i < entries.size(); i++) {
+      if (IsEntryExpired(i)) {
+        Remove(i);
+        nremoved++;
+        bremoved = true;
+        break;
+      }
+    }
+  } while (bremoved);
+
+  return nremoved;
 }
 
 bool FastMessageMap::InsertEntry(const CanHeader header,
@@ -186,7 +195,7 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
     // And now insert it
     InsertEntry(header, data, position);
     // FIXME (dave) Should update the dropped frame stats
-    return true;
+    return false;
   } else {
     // This is not the next frame in the sequence and not a start frame
     // We've dropped an intermedite frame, so free the slot and do no further
@@ -212,5 +221,9 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
   }
 }
 
-void FastMessageMap::Remove(int pos) { entries.erase(entries.begin() + pos); }
+void FastMessageMap::Remove(int pos) {
+  if ((unsigned int)(pos + 1) >= entries.size())
+    entries.erase(entries.begin() + pos);
+}
+
 

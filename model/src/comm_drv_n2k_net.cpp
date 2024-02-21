@@ -473,9 +473,18 @@ void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
   if (header.IsFastMessage()) {
     position = fast_messages->FindMatchingEntry(header, frame.data[0]);
     if (position == kNotFound) {
-      // Not an existing fast message: create new entry and insert first frame
-      position = fast_messages->AddNewEntry();
-      ready = fast_messages->InsertEntry(header, frame.data, position);
+      // Not an existing fast message:
+      // If valid, create new entry and insert first frame
+      // First, sanity check the arriving frame.
+      // If it is not the first frame of a FastMessage, then discard it
+      // n.b. This should be considered a network error, or possibly a gateway
+      //  error.  Maybe as simple as a dropped starting frame....
+      if ((frame.data[0] & 0x1F) == 0) {
+        position = fast_messages->AddNewEntry();
+        ready = fast_messages->InsertEntry(header, frame.data, position);
+      }
+      else
+        ready = false;
     } else {
       // An existing fast message entry is present, append the frame
       ready = fast_messages->AppendEntry(header, frame.data, position);
