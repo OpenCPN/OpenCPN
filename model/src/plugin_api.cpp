@@ -22,6 +22,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file plugin_api.cpp Implement various ocpn_plugin.h methods. */
+
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -30,6 +33,7 @@
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
 
+#include "model/base_platform.h"
 #include "model/comm_appmsg.h"
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_serial.h"
@@ -243,4 +247,8 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
     }
   }
   return RESULT_COMM_NO_ERROR;
+}
+
+wxString* GetpPrivateApplicationDataLocation(void) {
+  return  g_BasePlatform->GetPrivateDataDirPtr();
 }

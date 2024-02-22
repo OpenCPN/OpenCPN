@@ -85,7 +85,8 @@ void ConnectionsDialog::SetInitialSettings(void) {
 
 
 void ::ConnectionsDialog::OnSize(wxSizeEvent &ev){
-  m_sbSizerLB->Layout();
+  if (m_sbSizerLB)
+    m_sbSizerLB->Layout();
 }
 
 void ConnectionsDialog::Init() {

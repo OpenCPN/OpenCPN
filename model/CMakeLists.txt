@@ -151,7 +151,6 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_navmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
-  ${MODEL_SRC_DIR}/comm_plugin_api.cpp
   ${MODEL_SRC_DIR}/comm_util.cpp
   ${MODEL_SRC_DIR}/comm_vars.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
@@ -177,6 +176,7 @@ set(SRC
   ${MODEL_SRC_DIR}/own_ship.cpp
   ${MODEL_SRC_DIR}/peer_client.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
+  ${MODEL_SRC_DIR}/plugin_api.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
   ${MODEL_SRC_DIR}/plugin_cache.cpp
   ${MODEL_SRC_DIR}/plugin_handler.cpp

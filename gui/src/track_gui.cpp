@@ -163,8 +163,9 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   double radius = 0.;
   if (g_bHighliteTracks) {
     double radius_meters = 20;  // 1.5 mm at original scale
-    radius = radius_meters * VP.view_scale_ppm;
-    if (radius < 1.0) radius = 0;
+    double scale = VP.view_scale_ppm;
+    radius = wxMax((radius_meters * wxMin(scale, 1.1)), 6.0);
+    if (scale  < 0.004) radius = 0;
   }
 
   {
@@ -187,20 +188,20 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
 
       int hilite_width = radius;
       if (hilite_width >= 1.0) {
+        //  Save for base track
         wxPen psave = dc.GetPen();
-
-        dc.StrokeLines(i, points);
 
         wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
         wxColour hilt(trackLine_dim_colour.Red(), trackLine_dim_colour.Green(),
                       trackLine_dim_colour.Blue(), 128);
-
         wxPen HiPen(hilt, hilite_width, wxPENSTYLE_SOLID);
         dc.SetPen(HiPen);
-
+        // Draw highlighted track
         dc.StrokeLines(i, points);
 
         dc.SetPen(psave);
+        // Draw base track visible above highlight
+        dc.StrokeLines(i, points);
       } else
         dc.StrokeLines(i, points);
 
