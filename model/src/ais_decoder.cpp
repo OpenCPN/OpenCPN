@@ -69,7 +69,7 @@
 #include "SoundFactory.h"
 #include "model/track.h"
 #include "N2KParser.h"
-#include "AISTargetAlertDialog.h"
+//#include "AISTargetAlertDialog.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;

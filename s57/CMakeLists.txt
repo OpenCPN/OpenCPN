@@ -1,6 +1,6 @@
-set(SRC src/cm93.cpp)
+set(SRC )
 
-set(HDRS include/cm93.h)
+set(HDRS)
 
 add_library(S57ENC STATIC ${SRC})
 add_library(ocpn::s57enc ALIAS S57ENC)

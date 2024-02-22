@@ -50,10 +50,6 @@
 #include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_navmsg_bus.h"
 
-#ifdef __linux__
-#include "udev_rule_mgr.h"
-#endif
-
 wxDEFINE_EVENT(EVT_N0183_MUX, ObservedEvt);
 
 wxDEFINE_EVENT(EVT_N2K_129029, ObservedEvt);

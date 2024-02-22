@@ -48,7 +48,7 @@
 #include "model/conn_params.h"
 #include "model/logger.h"
 #include "nmea0183.h"
-#include "nmea_ctx_factory.h"
+#include "model/nmea_ctx_factory.h"
 #include "model/route.h"
 #include "model/nmea_log.h"
 

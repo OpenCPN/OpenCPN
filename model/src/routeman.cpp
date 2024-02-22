@@ -46,7 +46,7 @@
 #include "model/georef.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
-#include "nmea_ctx_factory.h"
+#include "model/nmea_ctx_factory.h"
 #include "model/own_ship.h"
 #include "model/route.h"
 #include "model/routeman.h"

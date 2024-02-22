@@ -29,9 +29,6 @@
 #include <wx/event.h>
 #include <wx/toolbar.h>
 
-#include "gui_lib.h"
-#include "ocpn_print.h"
-
 #define TIMER_GFRAME_1 999
 
 #define ID_QUIT 101

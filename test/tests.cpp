@@ -42,7 +42,7 @@
 #include "model/select.h"
 #include "model/std_instance_chk.h"
 #include "model/wait_continue.h"
-#include "wx_instance_chk.h"
+#include "model/wx_instance_chk.h"
 
 // Macos up to 10.13
 #if defined(__clang_major__) && (__clang_major__ < 15)
