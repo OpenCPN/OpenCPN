@@ -44,6 +44,7 @@
 #include "ocpn_print.h"
 #include "s52s57.h"
 #include "SencManager.h"
+#include "displays.h"
 
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);

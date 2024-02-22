@@ -185,7 +185,9 @@ public:
   s52plib(const wxString &PLib, bool b_forceLegacy = false);
   ~s52plib();
 
+  // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
   void SetPPMM(float ppmm);
+  void SetDisplayWidth(size_t pixels) { m_display_width = pixels; }
   float GetPPMM() { return canvas_pix_per_mm; }
   void SetDIPFactor( double factor);
   void SetContentScaleFactor( double factor);
@@ -531,6 +533,7 @@ private:
       canvas_pix_per_mm;  // Set by parent, used to scale symbols/lines/patterns
   double m_rv_scale_factor;
   float m_display_size_mm;
+  size_t m_display_width;
 
   S52color m_unused_color;
   wxColor m_unused_wxColor;

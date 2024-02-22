@@ -37,6 +37,7 @@
 #include "TrackPropDlg.h"
 #include "model/track.h"
 #include "model/route.h"
+#include "displays.h"
 #include "chcanv.h"
 #include "gui_lib.h"
 #include "ocpn_frame.h"
@@ -618,7 +619,8 @@ void TrackPropDlg::CreateControlsCompact() {
   int char_size = GetCharWidth();
   // Set the maximum size of the entire  dialog
   int width, height;
-  ::wxDisplaySize(&width, &height);
+  width = g_monitor_info[g_current_monitor].width;
+  height = g_monitor_info[g_current_monitor].height;
   SetSizeHints(-1, -1, width - 100, height - 100);
 }
 

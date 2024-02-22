@@ -105,6 +105,7 @@
 #include "usb_devices.h"
 #include "waypointman_gui.h"
 #include "model/wx28compat.h"
+#include "displays.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -274,7 +275,7 @@ extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern bool g_bShowMuiZoomButtons;
 
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 extern unsigned int g_canvasConfig;
 extern bool g_useMUI;
@@ -1565,7 +1566,8 @@ void options::RecalculateSize(int hint_x, int hint_y) {
 
       // Constrain size on small displays
       int display_width, display_height;
-      wxDisplaySize(&display_width, &display_height);
+      display_width = g_monitor_info[g_current_monitor].width;
+      display_height = g_monitor_info[g_current_monitor].height;
 
       if(display_height < 600){
         SetSize(wxSize(GetOCPNCanvasWindow()->GetSize() ));
@@ -5651,7 +5653,8 @@ void options::CreateControls(void) {
   // Check the display size.
   // If "small", adjust some factors to squish out some more white space
   int width, height;
-  ::wxDisplaySize(&width, &height);
+  width = g_monitor_info[g_current_monitor].width;
+  height = g_monitor_info[g_current_monitor].height;
 
   if (!g_bresponsive && height <= 800) {
     border_size = 2;
@@ -6242,13 +6245,18 @@ void options::SetInitialSettings(void) {
   m_pSlider_ENCText_Factor->SetValue(g_ENCTextScaleFactor);
   m_pMouse_Zoom_Slider->SetValue(g_mouse_zoom_sensitivity_ui);
   wxString screenmm;
-
   if (!g_config_display_size_manual) {
     pRBSizeAuto->SetValue(TRUE);
-    screenmm.Printf(_T("%d"), int(g_Platform->GetDisplaySizeMM()));
+    for (const auto &mm : g_monitor_info) {
+      screenmm.Append(wxString::Format("%zu,", mm.width_mm));
+    }
+    screenmm.RemoveLast(); //Strip last comma
     pScreenMM->Disable();
   } else {
-    screenmm.Printf(_T("%d"), int(g_config_display_size_mm));
+    for (const auto &mm : g_config_display_size_mm) {
+      screenmm.Append(wxString::Format("%zu,", mm));
+    }
+    screenmm.RemoveLast(); //Strip last comma
     pRBSizeManual->SetValue(TRUE);
   }
 
@@ -6490,18 +6498,28 @@ void options::UpdateOptionsUnits(void) {
 }
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
-  wxString screenmm = wxString::Format(
-      _T( "%d" ), static_cast<int>(g_Platform->GetDisplaySizeMM()));
+  wxString screenmm;
+  for (const auto &mm : g_monitor_info) {
+    screenmm.Append(wxString::Format("%zu,", mm.width_mm));
+  }
+  screenmm.RemoveLast(); //Strip last comma
   pScreenMM->SetValue(screenmm);
   pScreenMM->Disable();
   g_config_display_size_manual = FALSE;
 }
 
 void options::OnSizeManualButton(wxCommandEvent& event) {
-  wxString screenmm = wxString::Format(
-      _T( "%d" ), static_cast<int>(g_config_display_size_mm > 0
-                                       ? g_config_display_size_mm
-                                       : g_Platform->GetDisplaySizeMM()));
+  wxString screenmm;
+  if (g_config_display_size_mm.size() > 0 && g_config_display_size_mm[0] > 0) {
+    for (const auto &mm : g_config_display_size_mm) {
+      screenmm.Append(wxString::Format("%zu,", mm));
+    }
+  } else {
+    for (const auto &mm : g_monitor_info) {
+      screenmm.Append(wxString::Format("%zu,", mm.width_mm));
+    }
+  }
+  screenmm.RemoveLast(); //Strip last comma
   pScreenMM->SetValue(screenmm);
   pScreenMM->Enable();
   g_config_display_size_manual = TRUE;
@@ -6883,9 +6901,17 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bShowChartBar = pShowChartBar->GetValue();
 
   wxString screenmm = pScreenMM->GetValue();
-  long mm = -1;
-  screenmm.ToLong(&mm);
-  g_config_display_size_mm = mm > 0 ? mm : -1;
+  wxStringTokenizer tkz(screenmm, _T( "," ));
+  g_config_display_size_mm.clear();
+  while(tkz.HasMoreTokens()){
+    wxString token = tkz.GetNextToken();
+    long mm = -1;
+    if (token.ToLong(&mm) && mm > 0) {
+      g_config_display_size_mm.push_back(mm);
+    } else {
+      g_config_display_size_mm.push_back(0);
+    }
+  }
   g_config_display_size_manual = pRBSizeManual->GetValue();
 
   // Connections page.

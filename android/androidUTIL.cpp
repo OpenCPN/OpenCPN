@@ -238,7 +238,7 @@ extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
 extern Multiplexer *g_pMUX;
@@ -2449,9 +2449,9 @@ double getAndroidDPmm() {
   // qDebug() << "getAndroidDPmm" << g_androidDPmm;
 
   // User override?
-  if (g_config_display_size_manual && (g_config_display_size_mm > 0)) {
+  if (g_config_display_size_manual && (g_config_display_size_mm[0] > 0)) {
     double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
-    double size_mm = g_config_display_size_mm;
+    double size_mm = g_config_display_size_mm[0];
     size_mm = wxMax(size_mm, 50);
     size_mm = wxMin(size_mm, 400);
     double ret = maxDim / size_mm;

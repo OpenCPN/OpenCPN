@@ -366,6 +366,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   SetGLLineSmoothing(false);
 
   m_displayScale = 1.0;
+  m_display_width = 0;
 
   // Clear the TexFont cache
   unsigned int i;
@@ -494,9 +495,7 @@ void s52plib::SetPPMM(float ppmm) {
   m_rv_scale_factor = 0.8;
 
   // Estimate the display size
-  int ww, hh;
-  ::wxDisplaySize(&ww, &hh);
-  m_display_size_mm = ww / GetPPMM();  // accurate enough for internal use
+  m_display_size_mm = m_display_width / GetPPMM();  // accurate enough for internal use
 
   m_display_size_mm /= m_displayScale;
 }
