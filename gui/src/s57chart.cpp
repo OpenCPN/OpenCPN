@@ -4742,6 +4742,8 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
   std::vector<ObjRazRules *> selected_rules;
 
+  PrepareForRender(VPoint, ps52plib);
+
   //    Iterate thru the razRules array, by object/rule type
 
   ObjRazRules *top;
