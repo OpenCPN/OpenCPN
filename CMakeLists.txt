@@ -874,7 +874,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/chartimg.cpp
     ${GUI_SRC_DIR}/chcanv.cpp
     ${GUI_SRC_DIR}/ChInfoWin.cpp
-    ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
