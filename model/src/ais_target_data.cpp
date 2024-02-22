@@ -32,7 +32,6 @@
 #include "model/config_vars.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
-#include "ocpn_frame.h"
 
 static std::unordered_map<int, wxString> s_ERI_hash;
 

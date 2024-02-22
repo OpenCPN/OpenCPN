@@ -787,7 +787,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/nmea_ctx_factory.h
     ${GUI_HDR_DIR}/NMEALogWindow.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
@@ -851,7 +850,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/wx_instance_chk.h
 )
 
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
@@ -874,6 +872,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/chartimg.cpp
     ${GUI_SRC_DIR}/chcanv.cpp
     ${GUI_SRC_DIR}/ChInfoWin.cpp
+    ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
@@ -1034,7 +1033,7 @@ set_target_properties(
 
 target_include_directories(
   ${PACKAGE_NAME} BEFORE
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gui/include/gui
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}/resources
           ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
@@ -1490,7 +1489,6 @@ if (MSVC)
 endif ()
 
 message(STATUS "S57 ENC support: enabled")
-add_subdirectory(s57)
 
 if (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
@@ -1532,7 +1530,6 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-##include(SoundConfig)
 configure_file(
   ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
   ${CMAKE_BINARY_DIR}/include/config.h

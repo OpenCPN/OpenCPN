@@ -29,4 +29,4 @@ endif ()
 target_include_directories(ISO8211 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(ISO8211 PRIVATE ocpn::gdal)
-target_link_libraries(ISO8211 PRIVATE ocpn::s57enc)
+target_link_libraries(ISO8211 PRIVATE ocpn::model)

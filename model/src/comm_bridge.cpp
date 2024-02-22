@@ -43,7 +43,6 @@
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
 #include "model/idents.h"
-#include "OCPNPlatform.h"
 #include "model/ocpn_types.h"
 #include "model/own_ship.h"
 

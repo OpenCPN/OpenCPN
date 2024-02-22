@@ -26,7 +26,7 @@
 #include <stdlib.h>
 
 #include "model/ipc_api.h"
-#include "wx_instance_chk.h"
+#include "model/wx_instance_chk.h"
 
 #if defined(__linux__)  && !defined(__ANDROID__)
 #include "model/dbus_client.h"

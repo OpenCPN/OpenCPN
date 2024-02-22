@@ -57,7 +57,6 @@
 #include <wx/process.h>
 
 #include "model/base_platform.h"
-#include "chartdb.h"
 #include "model/config_vars.h"
 #include "model/cmdline.h"
 #include "model/logger.h"

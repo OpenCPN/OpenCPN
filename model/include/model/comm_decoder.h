@@ -37,7 +37,7 @@
 #include "config_vars.h"
 #include "nmea0183.h"
 #include "N2KParser.h"
-#include "nmea_ctx_factory.h"
+#include "model/nmea_ctx_factory.h"
 
 
 typedef struct{
