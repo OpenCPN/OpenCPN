@@ -1,28 +1,6 @@
-set(
-  SRC
-  src/cm93.cpp
-  src/Osenc.cpp
-  src/s57chart.cpp
-  src/s57obj.cpp
-  src/SencManager.cpp
-  src/ogrs57datasource.cpp
-  src/ogrs57layer.cpp
-  src/s57classregistrar.cpp
-  src/s57featuredefns.cpp
-  src/s57reader.cpp
-  src/s57RegistrarMgr.cpp
-)
+set(SRC src/cm93.cpp)
 
-set(
-  HDRS
-  include/cm93.h
-  include/ogr_s57.h
-  include/Osenc.h
-  include/s57.h
-  include/s57chart.h
-  include/s57RegistrarMgr.h
-  include/SencManager.h
-)
+set(HDRS include/cm93.h)
 
 add_library(S57ENC STATIC ${SRC})
 add_library(ocpn::s57enc ALIAS S57ENC)

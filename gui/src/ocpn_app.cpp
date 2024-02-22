@@ -406,7 +406,6 @@ bool g_bShowTide;
 bool g_bShowCurrent;
 
 s52plib *ps52plib;
-S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr *m_pRegistrarMan;
 
 CM93OffsetDialog *g_pCM93OffsetDialog;
@@ -544,7 +543,7 @@ double g_n_gps_antenna_offset_y;
 double g_n_gps_antenna_offset_x;
 int g_n_ownship_min_mm;
 
-int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away 
+int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
