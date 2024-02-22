@@ -21,7 +21,7 @@
 
 #include <wx/snglinst.h>
 
-#include "instance_check.h"
+#include "model/instance_check.h"
 
 /**  InstanceCheck implementation based on <unistd.h> i. e. Linux/MacOS */
 class StdInstanceCheck : public InstanceCheck {

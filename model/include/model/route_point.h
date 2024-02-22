@@ -31,8 +31,9 @@
 #include <wx/datetime.h>
 #include <wx/string.h>
 
+#include "model/hyperlink.h"
+
 #include "bbox.h"
-#include "hyperlink.h"
 
 #define MAX_INT_VAL 2147483647  // max possible integer value before 'rollover'
 

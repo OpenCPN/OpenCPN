@@ -33,9 +33,9 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
-#include "route_point.h"
-#include "routeman.h"
-#include "hyperlink.h"
+#include "model/route_point.h"
+#include "model/routeman.h"
+#include "model/hyperlink.h"
 
 #include "bbox.h"
 

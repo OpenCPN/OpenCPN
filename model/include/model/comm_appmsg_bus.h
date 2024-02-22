@@ -36,7 +36,7 @@
 
 #include <wx/event.h>
 
-#include "comm_appmsg.h"
+#include "model/comm_appmsg.h"
 
 /** Application layer messaging, a singleton. */
 class AppMsgBus {

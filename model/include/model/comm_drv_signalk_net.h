@@ -40,8 +40,8 @@
 #include <wx/socket.h>
 
 #include "rapidjson/fwd.h"
-#include "conn_params.h"
-#include "comm_drv_signalk.h"
+#include "model/conn_params.h"
+#include "model/comm_drv_signalk.h"
 
 #define SIGNALK_SOCKET_ID 5011
 #define N_DOG_TIMEOUT 5             // seconds

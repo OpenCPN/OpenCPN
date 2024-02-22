@@ -28,7 +28,7 @@
 #include <memory>
 #include <string>
 
-#include "comm_driver.h"
+#include "model/comm_driver.h"
 
 class CommDriverN0183 : public AbstractCommDriver {
 public:

@@ -27,10 +27,10 @@
 
 #include <wx/string.h>
 
-#include "ais_target_data.h"
-#include "ais_bitstring.h"
-#include "ais_defs.h"
-#include "ocpn_types.h"
+#include "model/ais_target_data.h"
+#include "model/ais_bitstring.h"
+#include "model/ais_defs.h"
+#include "model/ocpn_types.h"
 
 bool Parse_VDXBitstring(AisBitstring *bstr, AisTargetData *ptd);
 

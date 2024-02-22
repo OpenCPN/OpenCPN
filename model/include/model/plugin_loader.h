@@ -37,11 +37,11 @@
 
 #include "config.h"
 
-#include "catalog_parser.h"
+#include "model/catalog_parser.h"
+#include "model/plugin_blacklist.h"
+#include "model/semantic_vers.h"
 #include "observable_evtvar.h"
 #include "ocpn_plugin.h"
-#include "plugin_blacklist.h"
-#include "semantic_vers.h"
 
 enum class PluginStatus {
   System,     //!< One of the four system plugins, unmanaged.

@@ -33,11 +33,12 @@
 #include "rapidjson/fwd.h"
 #include <wx/string.h>
 
-#include "comm_appmsg.h"
-#include "config_vars.h"
+#include "model/comm_appmsg.h"
+#include "model/config_vars.h"
+#include "model/nmea_ctx_factory.h"
+
 #include "nmea0183.h"
 #include "N2KParser.h"
-#include "model/nmea_ctx_factory.h"
 
 
 typedef struct{

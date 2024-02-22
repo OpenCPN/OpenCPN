@@ -32,9 +32,9 @@
 #include <wx/wx.h>
 #endif  // precompiled header
 
-#include "comm_can_util.h"
-#include "comm_drv_n2k.h"
-#include "conn_params.h"
+#include "model/comm_can_util.h"
+#include "model/comm_drv_n2k.h"
+#include "model/conn_params.h"
 
 #include <wx/datetime.h>
 

@@ -24,7 +24,7 @@
 #include <wx/ipc.h>
 #include <wx/log.h>
 
-#include "local_api.h"
+#include "model/local_api.h"
 
 /**
  * \file  ipc-api.h

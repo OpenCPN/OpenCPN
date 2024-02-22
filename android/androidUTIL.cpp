@@ -76,7 +76,7 @@
 #include "MUIBar.h"
 #include "navutil.h"
 #include "nmea0183.h"
-#include "nmea_ctx_factory.h"
+#include "model/nmea_ctx_factory.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 #include "options.h"

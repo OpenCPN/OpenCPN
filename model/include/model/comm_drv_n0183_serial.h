@@ -31,9 +31,9 @@
 
 #include <wx/event.h>
 
-#include "comm_drv_n0183.h"
-#include "conn_params.h"
-#include "garmin_protocol_mgr.h"
+#include "model/comm_drv_n0183.h"
+#include "model/conn_params.h"
+#include "model/garmin_protocol_mgr.h"
 
 class CommDriverN0183SerialThread;  // Internal
 
