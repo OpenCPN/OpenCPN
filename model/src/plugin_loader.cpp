@@ -57,18 +57,18 @@
 #include <wx/process.h>
 
 #include "model/base_platform.h"
-#include "model/config_vars.h"
+#include "model/catalog_handler.h"
 #include "model/cmdline.h"
+#include "model/config_vars.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
-#include "observable_confvar.h"
 #include "model/plugin_blacklist.h"
 #include "model/plugin_cache.h"
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
 #include "model/plugin_paths.h"
 #include "model/safe_mode.h"
-#include "model/catalog_handler.h"
+#include "observable_confvar.h"
 
 
 #ifdef __ANDROID__

@@ -27,7 +27,7 @@
 
 #include <memory>
 
-#include "comm_driver.h"
+#include "model/comm_driver.h"
 
 class CommDriverSignalK : public AbstractCommDriver {
 public:

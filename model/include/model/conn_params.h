@@ -37,7 +37,7 @@
 #include <wx/string.h>
 #endif  // precompiled headers
 
-#include "comm_navmsg.h"
+#include "model/comm_navmsg.h"
 
 class ConnectionParams;
 class ConnectionsDialog;

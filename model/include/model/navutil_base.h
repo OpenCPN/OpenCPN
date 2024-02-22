@@ -30,7 +30,7 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "config_vars.h"
+#include "model/config_vars.h"
 
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };

@@ -35,16 +35,17 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
+#include "model/MarkIcon.h"
+#include "model/nav_object_database.h"
+#include "model/nmea_log.h"
+#include "model/ocpn_types.h"
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/select.h"
+
 #include "color_types.h"
-#include "MarkIcon.h"
-#include "nav_object_database.h"
 #include "nmea0183.h"
-#include "nmea_log.h"
-#include "ocpn_types.h"
 #include "observable_evtvar.h"
-#include "route.h"
-#include "route_point.h"
-#include "select.h"
 
 //----------------------------------------------------------------------------
 //   constants

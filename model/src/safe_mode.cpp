@@ -9,7 +9,6 @@
 #include "model/base_platform.h"
 #include "model/cmdline.h"
 #include "model/ocpn_utils.h"
-
 #include "model/safe_mode.h"
 
 namespace safe_mode {

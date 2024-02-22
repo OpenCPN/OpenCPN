@@ -34,15 +34,15 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
-#include "ais_bitstring.h"
-#include "ais_defs.h"
-#include "ais_target_data.h"
-#include "comm_navmsg.h"
-#include "observable_evtvar.h"
-#include "ocpn_types.h"
 #include "rapidjson/fwd.h"
-#include "select.h"
-#include "track.h"
+#include "model/ais_bitstring.h"
+#include "model/ais_defs.h"
+#include "model/ais_target_data.h"
+#include "model/comm_navmsg.h"
+#include "model/ocpn_types.h"
+#include "model/select.h"
+#include "model/track.h"
+#include "observable_evtvar.h"
 
 class AisDecoder;  // forward
 class ArrayOfMmsiProperties;  // forward

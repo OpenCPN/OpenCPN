@@ -26,7 +26,7 @@
 #ifndef _COMMDRIVERREGISTRY_H__
 #define _COMMDRIVERREGISTRY_H__
 
-#include "comm_driver.h"
+#include "model/comm_driver.h"
 #include "observable_evtvar.h"
 
 typedef std::shared_ptr<AbstractCommDriver> DriverPtr;

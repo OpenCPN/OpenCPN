@@ -26,8 +26,8 @@
 
 #include <gio/gio.h>
 
-#include "instance_check.h"
-#include "local_api.h"
+#include "model/instance_check.h"
+#include "model/local_api.h"
 #include "observable_evtvar.h"
 
 /**

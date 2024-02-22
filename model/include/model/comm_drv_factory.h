@@ -26,8 +26,8 @@
 #ifndef _COMM_DRV_FACTORY
 #define _COMM_DRV_FACTORY
 
-#include "conn_params.h"
-#include "comm_driver.h"
+#include "model/conn_params.h"
+#include "model/comm_driver.h"
 
 std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     const ConnectionParams* params);
