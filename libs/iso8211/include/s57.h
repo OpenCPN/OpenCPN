@@ -36,9 +36,9 @@
 
 #include "gdal/ogr_feature.h"
 #include "iso8211.h"
-#include "model/S57ClassRegistrar.h"
 
 class S57Reader;
+class S57ClassRegistrar;
 
 char **S57FileCollector(const char *pszDataset);
 

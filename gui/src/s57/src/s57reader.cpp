@@ -33,8 +33,8 @@
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"
 #include "gdal/ogr_api.h"
-#include "model/ogr_s57.h"
-#include "model/s57.h"
+#include "ogr_s57.h"
+#include "s57.h"
 
 /************************************************************************/
 /*                             S57Reader()                              */
