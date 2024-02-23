@@ -102,9 +102,6 @@ set(
   ${MODEL_HDR_DIR}/route.h
   ${MODEL_HDR_DIR}/routeman.h
   ${MODEL_HDR_DIR}/route_point.h
-  ${MODEL_HDR_DIR}/s57.h
-  ${MODEL_HDR_DIR}/S57ClassRegistrar.h
-  ${MODEL_HDR_DIR}/s57RegistrarMgr.h
   ${MODEL_HDR_DIR}/safe_mode.h
   ${MODEL_HDR_DIR}/select.h
   ${MODEL_HDR_DIR}/select_item.h
@@ -174,8 +171,6 @@ set(SRC
   ${MODEL_SRC_DIR}/navutil_base.cpp
   ${MODEL_SRC_DIR}/ocpn_plugin.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
-  ${MODEL_SRC_DIR}/ogrs57datasource.cpp
-  ${MODEL_SRC_DIR}/ogrs57layer.cpp
   ${MODEL_SRC_DIR}/own_ship.cpp
   ${MODEL_SRC_DIR}/peer_client.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
@@ -190,10 +185,6 @@ set(SRC
   ${MODEL_SRC_DIR}/route.cpp
   ${MODEL_SRC_DIR}/routeman.cpp
   ${MODEL_SRC_DIR}/route_point.cpp
-  ${MODEL_SRC_DIR}/s57classregistrar.cpp
-  ${MODEL_SRC_DIR}/s57featuredefns.cpp
-  ${MODEL_SRC_DIR}/s57reader.cpp
-  ${MODEL_SRC_DIR}/s57RegistrarMgr.cpp
   ${MODEL_SRC_DIR}/safe_mode.cpp
   ${MODEL_SRC_DIR}/select.cpp
   ${MODEL_SRC_DIR}/select_item.cpp

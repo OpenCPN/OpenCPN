@@ -736,6 +736,8 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
+set(GUI_S57_DIR ${CMAKE_SOURCE_DIR}/gui/src/s57)
+
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(GUI_HDRS
     ${GUI_HDR_DIR}/AboutFrame.h
@@ -851,7 +853,12 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
-
+list(APPEND  GUI_HDRS
+    ${GUI_S57_DIR}/include/ogr_s57.h
+    ${GUI_S57_DIR}/include/S57ClassRegistrar.h
+    ${GUI_S57_DIR}/include/s57.h
+    ${GUI_S57_DIR}/include/s57RegistrarMgr.h
+)
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
@@ -932,7 +939,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/RoutePropDlg.cpp
     ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
-    ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/S57QueryDialog.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
     ${GUI_SRC_DIR}/SencManager.cpp
@@ -960,6 +966,17 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
 )
+
+list(APPEND GUI_SRC
+  ${GUI_S57_DIR}/src/ogrs57datasource.cpp
+  ${GUI_S57_DIR}/src/ogrs57layer.cpp
+  ${GUI_S57_DIR}/src/s57classregistrar.cpp
+  ${GUI_S57_DIR}/src/s57featuredefns.cpp
+  ${GUI_S57_DIR}/src/s57obj.cpp
+  ${GUI_S57_DIR}/src/s57reader.cpp
+  ${GUI_S57_DIR}/src/s57RegistrarMgr.cpp
+)
+
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1037,6 +1054,7 @@ target_include_directories(
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}/resources
           ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
+          ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/s57/include
 )
 
 if (QT_ANDROID)

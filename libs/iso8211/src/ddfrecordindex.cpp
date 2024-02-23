@@ -58,7 +58,7 @@
  *
  */
 
-#include "model/s57.h"
+#include "s57.h"
 #include "gdal/cpl_conv.h"
 
 /************************************************************************/
@@ -312,4 +312,3 @@ DDFRecord * DDFRecordIndex::GetByIndex( int nIndex )
     else
         return pasRecords[nIndex].poRecord;
 }
-
