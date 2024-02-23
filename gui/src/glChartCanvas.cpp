@@ -3323,7 +3323,7 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
     }
   }
 
-  // Hilite rollover patch
+  // Hilite rollover of standard chart key
   LLRegion hiregion = m_pParentCanvas->m_pQuilt->GetHiliteRegion();
 
   if (!hiregion.Empty()) {
@@ -4666,7 +4666,7 @@ void glChartCanvas::RenderMBTilesOverlay(ViewPort &VPoint) {
       }
     }
 
-    // Render the HiLite on piano rollover
+    // Render the HiLite on piano rollover of mbTile key
     LLRegion hiregion = m_pParentCanvas->m_pQuilt->GetHiliteRegion();
 
     if (!hiregion.Empty()) {

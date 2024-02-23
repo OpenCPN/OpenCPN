@@ -2533,6 +2533,14 @@ void ChartCanvas::SetQuiltChartHiLiteIndex(int dbIndex) {
   m_pQuilt->SetHiliteIndex(dbIndex);
 }
 
+void ChartCanvas::SetQuiltChartHiLiteIndexArray(std::vector<int> hilite_array) {
+  m_pQuilt->SetHiliteIndexArray(hilite_array);
+}
+
+void ChartCanvas::ClearQuiltChartHiLiteIndexArray() {
+  m_pQuilt->ClearHiliteIndexArray();
+}
+
 std::vector<int> ChartCanvas::GetQuiltCandidatedbIndexArray(bool flag1,
                                                             bool flag2) {
   return m_pQuilt->GetCandidatedbIndexArray(flag1, flag2);
@@ -2542,8 +2550,12 @@ int ChartCanvas::GetQuiltRefChartdbIndex(void) {
   return m_pQuilt->GetRefChartdbIndex();
 }
 
-std::vector<int> ChartCanvas::GetQuiltExtendedStackdbIndexArray() {
+std::vector<int> &ChartCanvas::GetQuiltExtendedStackdbIndexArray() {
   return m_pQuilt->GetExtendedStackIndexArray();
+}
+
+std::vector<int> &ChartCanvas::GetQuiltFullScreendbIndexArray() {
+  return m_pQuilt->GetFullscreenIndexArray();
 }
 
 std::vector<int> ChartCanvas::GetQuiltEclipsedStackdbIndexArray() {
@@ -6756,6 +6768,70 @@ void ChartCanvas::DestroyMuiBar() {
   if (m_muiBar) {
     m_muiBar->Destroy();
     m_muiBar = NULL;
+  }
+}
+
+void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale) {
+  if (n_charts > 0) {
+    if (NULL == m_pCIWin) {
+      m_pCIWin = new ChInfoWin(this);
+      m_pCIWin->Hide();
+    }
+
+    if (!m_pCIWin->IsShown() || (m_pCIWin->chart_scale != scale)) {
+      wxString s;
+
+      s = _("Composite charts");
+      s += '\n';
+
+      wxString s1;
+      s1.Printf( "%d ", n_charts);
+      if (n_charts > 1)
+        s1 += _("charts");
+      else
+        s1 += _("chart");
+      s += s1;
+      s += '\n';
+
+      s1.Printf(_("Chart scale"));
+      s1 += ": ";
+      wxString s2;
+      s2.Printf("1:%d\n", scale);
+      s += s1;
+      s += s2;
+      s += '\n';
+
+      s1 = _("Zoom in for more information");
+      s += s1;
+
+      m_pCIWin->SetString(s);
+
+      int char_width = s1.Length();
+      int char_height = 5;
+      m_pCIWin->FitToChars(char_width, char_height);
+
+      //m_pCIWin->SetClientSize(
+        //  wxSize(char_width * GetCharWidth(), char_height * GetCharHeight()));
+      wxPoint p;
+      p.x = x / GetContentScaleFactor();
+      if ((p.x + m_pCIWin->GetWinSize().x) >
+          (m_canvas_width / GetContentScaleFactor()))
+        p.x = ((m_canvas_width / GetContentScaleFactor()) -
+               m_pCIWin->GetWinSize().x) /
+              2;  // centered
+
+      p.y = (m_canvas_height - m_Piano->GetHeight()) / GetContentScaleFactor() -
+            4 - m_pCIWin->GetWinSize().y;
+
+      m_pCIWin->dbIndex = 0;
+      m_pCIWin->chart_scale = 0;
+      m_pCIWin->SetPosition(p);
+      m_pCIWin->SetBitmap();
+      m_pCIWin->Refresh();
+      m_pCIWin->Show();
+    }
+  } else {
+    HideChartInfoWindow();
   }
 }
 
@@ -13466,7 +13542,9 @@ void ChartCanvas::AddTileOverlayIndexToNoShow(int index) {
 //
 //-------------------------------------------------------------------------------------------------------
 
-void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
+void ChartCanvas::HandlePianoClick(int selected_index,
+                                        const std::vector<int> &selected_dbIndex_array)
+{
   if (g_boptionsactive)
     return;  // Piano might be invalid due to chartset updates.
   if (!m_pCurrentStack) return;
@@ -13477,6 +13555,30 @@ void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
   // quickly click and display a chart, which may zoom in
   // but the delayed timer fires first and it zooms out again!
   StopMovement();
+
+  //  When switching by piano key click, we may appoint the new target chart to be
+  //  any chart in the composite array.
+  // As an improvement to UX, find the chart that is "closest" to the current vp,
+  //  and select that chart.  This will cause a jump to the centroid of that chart
+
+  double distance = 25000;  //RTW
+  int closest_index = -1;
+  for (int chart_index : selected_dbIndex_array) {
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(chart_index);
+    double chart_lat = (cte.GetLatMax() + cte.GetLatMin()) / 2;
+    double chart_lon = (cte.GetLonMax() + cte.GetLonMin()) / 2;
+
+    // measure distance as Manhattan style
+    double test_distance = abs(m_vLat - chart_lat) + abs(m_vLon - chart_lon);
+    if (test_distance < distance){
+      distance = test_distance;
+      closest_index = chart_index;
+    }
+  }
+
+  int selected_dbIndex = selected_dbIndex_array[0];
+  if (closest_index >= 0)
+    selected_dbIndex = closest_index;
 
   if (!GetQuiltMode()) {
     if (m_bpersistent_quilt /* && g_bQuiltEnable*/) {
@@ -13494,7 +13596,6 @@ void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
 
     if (m_singleChart)
       GetVP().SetProjectionType(m_singleChart->GetChartProjectionType());
-
   } else {
     // Handle MBTiles overlays first
     // Left click simply toggles the noshow array index entry
@@ -13582,19 +13683,21 @@ void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
 }
 
 void ChartCanvas::HandlePianoRClick(int x, int y, int selected_index,
-                                    int selected_dbIndex) {
+                                    const std::vector<int> &selected_dbIndex_array)
+{
   if (g_boptionsactive)
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
 
-  PianoPopupMenu(x, y, selected_index, selected_dbIndex);
+  PianoPopupMenu(x, y, selected_index, selected_dbIndex_array);
   UpdateCanvasControlBar();
 
   SetQuiltChartHiLiteIndex(-1);
 }
 
 void ChartCanvas::HandlePianoRollover(int selected_index,
-                                      int selected_dbIndex) {
+                                      const std::vector<int> &selected_dbIndex_array,
+                                      int n_charts, int scale) {
   if (g_boptionsactive)
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
@@ -13605,28 +13708,53 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
   wxPoint key_location = m_Piano->GetKeyOrigin(selected_index);
 
   if (!GetQuiltMode()) {
-    ShowChartInfoWindow(key_location.x, selected_dbIndex);
+    ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
   } else {
-    std::vector<int> piano_chart_index_array =
-        GetQuiltExtendedStackdbIndexArray();
+    // Select the correct vector
+    std::vector<int> piano_chart_index_array;
+    if (m_Piano->GetPianoMode() == PIANO_MODE_LEGACY) {
+      piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
+      if ((GetpCurrentStack()->nEntry > 1) ||
+          (piano_chart_index_array.size() >= 1)) {
+        ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
 
-    if ((GetpCurrentStack()->nEntry > 1) ||
+        SetQuiltChartHiLiteIndexArray(selected_dbIndex_array);
+        ReloadVP(false);  // no VP adjustment allowed
+      } else if (GetpCurrentStack()->nEntry == 1) {
+        const ChartTableEntry &cte =
+            ChartData->GetChartTableEntry(GetpCurrentStack()->GetDBIndex(0));
+        if (CHART_TYPE_CM93COMP != cte.GetChartType()) {
+          ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
+          ReloadVP(false);
+        } else if ((-1 == selected_index) &&
+                   (0 == selected_dbIndex_array.size())) {
+          ShowChartInfoWindow(key_location.x, -1);
+        }
+      }
+    }
+    else {
+      piano_chart_index_array = GetQuiltFullScreendbIndexArray();
+
+      if ((GetpCurrentStack()->nEntry > 1) ||
         (piano_chart_index_array.size() >= 1)) {
-      ShowChartInfoWindow(key_location.x, selected_dbIndex);
-      SetQuiltChartHiLiteIndex(selected_dbIndex);
 
-      ReloadVP(false);  // no VP adjustment allowed
-    } else if (GetpCurrentStack()->nEntry == 1) {
-      const ChartTableEntry &cte =
-          ChartData->GetChartTableEntry(GetpCurrentStack()->GetDBIndex(0));
-      if (CHART_TYPE_CM93COMP != cte.GetChartType()) {
-        ShowChartInfoWindow(key_location.x, selected_dbIndex);
-        ReloadVP(false);
-      } else if ((-1 == selected_index) && (-1 == selected_dbIndex)) {
-        ShowChartInfoWindow(key_location.x, selected_dbIndex);
+        if(n_charts > 1)
+          ShowCompositeInfoWindow(key_location.x, n_charts, scale);
+        else if(n_charts == 1)
+          ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
+
+        SetQuiltChartHiLiteIndexArray(selected_dbIndex_array);
+        ReloadVP(false);  // no VP adjustment allowed
       }
     }
   }
+}
+
+void ChartCanvas::ClearPianoRollover() {
+  ClearQuiltChartHiLiteIndexArray();
+  ShowChartInfoWindow(0, -1);
+  ShowCompositeInfoWindow(0, 0, 0);
+  ReloadVP(false);
 }
 
 void ChartCanvas::UpdateCanvasControlBar(void) {
@@ -13645,8 +13773,8 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
   wxString old_hash = m_Piano->GetStoredHash();
 
   if (GetQuiltMode()) {
-    piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
-    m_Piano->SetKeyArray(piano_chart_index_array);
+   m_Piano->SetKeyArray(GetQuiltExtendedStackdbIndexArray(),
+                         GetQuiltFullScreendbIndexArray());
 
     std::vector<int> piano_active_chart_index_array =
         GetQuiltCandidatedbIndexArray();
@@ -13663,7 +13791,7 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
     sel_family = ChartData->GetDBChartFamily(GetQuiltReferenceChartIndex());
   } else {
     piano_chart_index_array = ChartData->GetCSArray(GetpCurrentStack());
-    m_Piano->SetKeyArray(piano_chart_index_array);
+    m_Piano->SetKeyArray(piano_chart_index_array, piano_chart_index_array);
     // TODO refresh_Piano();
 
     if (m_singleChart) {
@@ -13741,37 +13869,49 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
 void ChartCanvas::FormatPianoKeys(void) { m_Piano->FormatKeys(); }
 
 void ChartCanvas::PianoPopupMenu(int x, int y, int selected_index,
-                                 int selected_dbIndex) {
+                                 const std::vector<int> &selected_dbIndex_array) {
   if (!GetpCurrentStack()) return;
 
   //    No context menu if quilting is disabled
   if (!GetQuiltMode()) return;
 
-  menu_selected_dbIndex = selected_dbIndex;
-  menu_selected_index = selected_index;
-
   m_piano_ctx_menu = new wxMenu();
 
-  //    Search the no-show array
-  bool b_is_in_noshow = false;
-  for (unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++) {
-    if (m_quilt_noshow_index_array[i] ==
-        selected_dbIndex)  // chart is in the noshow list
-    {
-      b_is_in_noshow = true;
-      break;
-    }
+  if(m_Piano->GetPianoMode() == PIANO_MODE_COMPOSITE) {
+//    m_piano_ctx_menu->Append(ID_PIANO_EXPAND_PIANO, _("Legacy chartbar"));
+//    Connect(ID_PIANO_EXPAND_PIANO, wxEVT_COMMAND_MENU_SELECTED,
+//            wxCommandEventHandler(ChartCanvas::OnPianoMenuExpandChartbar));
   }
+  else {
+//    m_piano_ctx_menu->Append(ID_PIANO_CONTRACT_PIANO, _("Fullscreen chartbar"));
+//    Connect(ID_PIANO_CONTRACT_PIANO, wxEVT_COMMAND_MENU_SELECTED,
+//            wxCommandEventHandler(ChartCanvas::OnPianoMenuContractChartbar));
 
-  if (b_is_in_noshow) {
-    m_piano_ctx_menu->Append(ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart"));
-    Connect(ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler(ChartCanvas::OnPianoMenuEnableChart));
-  } else if (GetpCurrentStack()->nEntry > 1) {
-    m_piano_ctx_menu->Append(ID_PIANO_DISABLE_QUILT_CHART,
-                             _("Hide This Chart"));
-    Connect(ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler(ChartCanvas::OnPianoMenuDisableChart));
+    menu_selected_dbIndex = selected_dbIndex_array[0];
+    menu_selected_index = selected_index;
+
+    //    Search the no-show array
+    bool b_is_in_noshow = false;
+    for (unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++) {
+      if (m_quilt_noshow_index_array[i] ==
+          menu_selected_dbIndex)  // chart is in the noshow list
+      {
+        b_is_in_noshow = true;
+        break;
+      }
+    }
+
+    if (b_is_in_noshow) {
+      m_piano_ctx_menu->Append(ID_PIANO_ENABLE_QUILT_CHART,
+                               _("Show This Chart"));
+      Connect(ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
+              wxCommandEventHandler(ChartCanvas::OnPianoMenuEnableChart));
+    } else if (GetpCurrentStack()->nEntry > 1) {
+      m_piano_ctx_menu->Append(ID_PIANO_DISABLE_QUILT_CHART,
+                               _("Hide This Chart"));
+      Connect(ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
+              wxCommandEventHandler(ChartCanvas::OnPianoMenuDisableChart));
+    }
   }
 
   wxPoint pos = wxPoint(x, y - 30);
@@ -13787,6 +13927,7 @@ void ChartCanvas::PianoPopupMenu(int x, int y, int selected_index,
   m_Piano->ResetRollover();
 
   SetQuiltChartHiLiteIndex(-1);
+  ClearQuiltChartHiLiteIndexArray();
 
   ReloadVP();
 }
