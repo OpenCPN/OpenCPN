@@ -766,6 +766,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connections_dialog.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/DetailSlider.h
+    ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
@@ -882,6 +883,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/connections_dialog.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
+    ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
@@ -1237,7 +1239,7 @@ if (UNIX)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARY})
     find_package(X11)
     if (X11_FOUND AND NOT APPLE)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES})
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} ${X11_Xrandr_LIB})
       set(OCPN_HAVE_X11 ON) # => config.h
     endif ()
     if (NOT APPLE)
@@ -1550,6 +1552,7 @@ if (CMAKE_HOST_WIN32)
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
     target_link_libraries(${PACKAGE_NAME} PRIVATE gdiplus.lib)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE Shcore.lib)
   endif ()
 endif ()
 

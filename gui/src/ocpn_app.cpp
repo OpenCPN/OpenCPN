@@ -390,7 +390,7 @@ int g_lastClientRecty;
 int g_lastClientRectw;
 int g_lastClientRecth;
 double g_display_size_mm;
-double g_config_display_size_mm;
+std::vector<size_t> g_config_display_size_mm;
 bool g_config_display_size_manual;
 
 int g_GUIScaleFactor;
@@ -1284,13 +1284,13 @@ bool MyApp::OnInit() {
   wxLogMessage(msg);
 
   // User override....
-  if ((g_config_display_size_mm > 0) && (g_config_display_size_manual)) {
-    g_display_size_mm = g_config_display_size_mm;
+  if (g_config_display_size_manual && g_config_display_size_mm.size() > g_current_monitor && g_config_display_size_mm[g_current_monitor] > 0) {
+    g_display_size_mm = g_config_display_size_mm[g_current_monitor];
     wxString msg;
     msg.Printf(_T("Display size (horizontal) config override: %d mm"),
                (int)g_display_size_mm);
     wxLogMessage(msg);
-    g_Platform->SetDisplaySizeMM(g_display_size_mm);
+    g_Platform->SetDisplaySizeMM(g_current_monitor, g_display_size_mm);
   }
 
   g_display_size_mm = wxMax(50, g_display_size_mm);

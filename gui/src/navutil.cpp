@@ -79,6 +79,7 @@
 #include "cm93.h"
 #include "config.h"
 #include "ConfigMgr.h"
+#include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "Layer.h"
@@ -313,7 +314,7 @@ extern bool g_bShowTrackPointTime;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
 extern bool g_benable_rotate;
@@ -524,7 +525,8 @@ void MyConfig::CreateRotatingNavObjBackup() {
 
 int MyConfig::LoadMyConfig() {
   int display_width, display_height;
-  wxDisplaySize(&display_width, &display_height);
+  display_width = g_monitor_info[g_current_monitor].width;
+  display_height = g_monitor_info[g_current_monitor].height;
 
   //  Set up any defaults not set elsewhere
   g_useMUI = true;
@@ -725,7 +727,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   wxString val;
 
   int display_width, display_height;
-  wxDisplaySize(&display_width, &display_height);
+  display_width = g_monitor_info[g_current_monitor].width;
+  display_height = g_monitor_info[g_current_monitor].height;
 
   //    Global options and settings
   SetPath(_T ( "/Settings" ));
@@ -791,17 +794,28 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "ShowTide" ), &g_bShowTide);
   Read(_T ( "ShowCurrent" ), &g_bShowCurrent);
 
-  int size_mm = -1;
+  wxString size_mm;
   Read(_T ( "DisplaySizeMM" ), &size_mm);
 
   Read(_T ( "SelectionRadiusMM" ), &g_selection_radius_mm);
   Read(_T ( "SelectionRadiusTouchMM" ), &g_selection_radius_touch_mm);
 
   if (!bAsTemplate) {
-    if (size_mm > 0) {
-      g_config_display_size_mm = size_mm;
-      if ((size_mm > 100) && (size_mm < 2000)) {
-        g_display_size_mm = size_mm;
+    g_config_display_size_mm.clear();
+    wxStringTokenizer tokenizer(size_mm, ",");
+    while ( tokenizer.HasMoreTokens() )
+    {
+      wxString token = tokenizer.GetNextToken();
+      int size;
+      try {
+        size = std::stoi(token.ToStdString());
+      } catch (std::invalid_argument &e) {
+        size = 0;
+      }
+      if (size > 100 && size < 2000) {
+        g_config_display_size_mm.push_back(size);
+      } else {
+        g_config_display_size_mm.push_back(0);
       }
     }
     Read(_T ( "DisplaySizeManual" ), &g_config_display_size_manual);
@@ -2492,13 +2506,17 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "AutoHideToolbar" ), g_bAutoHideToolbar);
   Write(_T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar);
 
-  Write(_T ( "DisplaySizeMM" ), g_config_display_size_mm);
+  wxString st0;
+  for (const auto &mm : g_config_display_size_mm) {
+    st0.Append(wxString::Format(_T ( "%zu," ), mm));
+  }
+  st0.RemoveLast(); //Strip last comma
+  Write(_T ( "DisplaySizeMM" ), st0);
   Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
   Write(_T ( "SelectionRadiusMM" ), g_selection_radius_mm);
   Write(_T ( "SelectionRadiusTouchMM" ), g_selection_radius_touch_mm);
 
-  wxString st0;
   st0.Printf(_T ( "%g" ), g_PlanSpeed);
   Write(_T ( "PlanSpeed" ), st0);
 

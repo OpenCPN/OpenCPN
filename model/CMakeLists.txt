@@ -292,6 +292,11 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif ()
 
+if (LINUX)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::gtk)
+  target_link_libraries(_OCPN_MODEL INTERFACE ${X11_LIBRARIES} ${X11_Xrandr_LIB})
+endif ()
+
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(_OCPN_MODEL INTERFACE -fsanitize=${ENABLE_SANITIZER})
 endif ()

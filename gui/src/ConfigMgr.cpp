@@ -259,7 +259,7 @@ extern int g_NMEAAPBPrecision;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
 extern bool g_benable_rotate;
@@ -913,7 +913,12 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "AutoHideToolbar" ), g_bAutoHideToolbar);
   conf->Write(_T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar);
 
-  conf->Write(_T ( "DisplaySizeMM" ), g_config_display_size_mm);
+  wxString st0;
+  for (const auto &mm : g_config_display_size_mm) {
+    st0.Append(wxString::Format(_T ( "%zu," ), mm));
+  }
+  st0.RemoveLast(); //Strip last comma
+  conf->Write(_T ( "DisplaySizeMM" ), st0);
   conf->Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
   conf->Write(_T ( "PlanSpeed" ), wxString::Format(_T("%.2f"), g_PlanSpeed));

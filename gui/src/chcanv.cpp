@@ -100,6 +100,7 @@
 #include "model/conn_params.h"
 #include "route_gui.h"
 #include "line_clip.h"
+#include "displays.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -2366,7 +2367,10 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   m_pix_per_mm = (horizontal) / ((double)m_display_size_mm);
   m_canvas_scale_factor = (horizontal) / (m_display_size_mm / 1000.);
 
-  if (ps52plib) ps52plib->SetPPMM(m_pix_per_mm);
+  if (ps52plib) {
+    ps52plib->SetDisplayWidth(g_monitor_info[g_current_monitor].width);
+    ps52plib->SetPPMM(m_pix_per_mm);
+  }
 
   wxString msg;
   msg.Printf(
@@ -2376,8 +2380,9 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   wxLogMessage(msg);
 
   int ssx, ssy;
-  ::wxDisplaySize(&ssx, &ssy);
-  msg.Printf(_T("wxDisplaySize(): %d %d"), ssx, ssy);
+  ssx = g_monitor_info[g_current_monitor].width;
+  ssy = g_monitor_info[g_current_monitor].height;
+  msg.Printf(_T("monitor size: %d %d"), ssx, ssy);
   wxLogMessage(msg);
 
   m_focus_indicator_pix = /*std::round*/ wxRound(1 * GetPixPerMM());
