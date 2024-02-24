@@ -1716,19 +1716,6 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           SetQuiltRefChart(initial_db_index);
           m_pCurrentStack->SetCurrentEntryFromdbIndex(initial_db_index);
         }
-
-        // Check proposed scale, see how much underzoom results
-        // Adjust as necessary to prevent slow loading on initial startup
-        // For MBTILES we skip this test because they are always shown in
-        // reasonable range of scale
-        if (pc) {
-          if (pc->GetChartType() != CHART_TYPE_MBTILES)
-            proposed_scale_onscreen =
-                wxMin(proposed_scale_onscreen, 4.0 * pc->GetNativeScale());
-          else
-            proposed_scale_onscreen =
-                wxMin(proposed_scale_onscreen, 32.0 * pc->GetNativeScale());
-        }
       }
 
       bNewView |= SetViewPoint(vpLat, vpLon,
