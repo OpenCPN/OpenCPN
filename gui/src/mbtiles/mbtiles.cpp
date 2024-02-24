@@ -205,6 +205,7 @@ ChartMBTiles::ChartMBTiles() {
   m_pCOVRTable = NULL;
   m_pNoCOVRTablePoints = NULL;
   m_pNoCOVRTable = NULL;
+  m_tileCache = NULL;
 
   m_LonMin = LON_UNDEF;
   m_LonMax = LON_UNDEF;
@@ -617,7 +618,9 @@ void ChartMBTiles::FlushTiles() {
   // Delete all the tiles in the tile cache
   // Note that this function also deletes OpenGL texture memory associated to
   // the tiles
-  m_tileCache->Flush();
+  if (m_tileCache) {
+    m_tileCache->Flush();
+  }
 }
 
 bool ChartMBTiles::GetChartExtent(Extent *pext) {
