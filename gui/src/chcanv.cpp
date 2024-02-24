@@ -6773,8 +6773,7 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale) {
     if (!m_pCIWin->IsShown() || (m_pCIWin->chart_scale != scale)) {
       wxString s;
 
-      s = _("Composite charts");
-      s += '\n';
+      s = _("Composite of ");
 
       wxString s1;
       s1.Printf( "%d ", n_charts);
@@ -6791,7 +6790,6 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale) {
       s2.Printf("1:%d\n", scale);
       s += s1;
       s += s2;
-      s += '\n';
 
       s1 = _("Zoom in for more information");
       s += s1;
@@ -6799,7 +6797,7 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale) {
       m_pCIWin->SetString(s);
 
       int char_width = s1.Length();
-      int char_height = 5;
+      int char_height = 3;
       m_pCIWin->FitToChars(char_width, char_height);
 
       //m_pCIWin->SetClientSize(
