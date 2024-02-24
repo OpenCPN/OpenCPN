@@ -1070,7 +1070,6 @@ std::vector<float> ChartTableEntry::GetReducedAuxPlyPoints(int iTable) {
 ///////////////////////////////////////////////////////////////////////
 
 WX_DEFINE_OBJARRAY(ChartTable);
-WX_DEFINE_OBJARRAY(ArrayOfChartClassDescriptor);
 
 ChartDatabase::ChartDatabase() {
   bValid = false;
@@ -1081,34 +1080,25 @@ ChartDatabase::ChartDatabase() {
   UpdateChartClassDescriptorArray();
 }
 
+
 void ChartDatabase::UpdateChartClassDescriptorArray(void) {
-  m_ChartClassDescriptorArray.Clear();
-
-  //    Create and add the descriptors for the default chart types recognized
-  ChartClassDescriptor *pcd;
-
-  pcd =
-      new ChartClassDescriptor(_T("ChartKAP"), _T("*.kap"), BUILTIN_DESCRIPTOR);
-  m_ChartClassDescriptorArray.Add(pcd);
-  pcd =
-      new ChartClassDescriptor(_T("ChartGEO"), _T("*.geo"), BUILTIN_DESCRIPTOR);
-  m_ChartClassDescriptorArray.Add(pcd);
-  pcd =
-      new ChartClassDescriptor(_T("s57chart"), _T("*.000"), BUILTIN_DESCRIPTOR);
-  m_ChartClassDescriptorArray.Add(pcd);
-  pcd =
-      new ChartClassDescriptor(_T("s57chart"), _T("*.s57"), BUILTIN_DESCRIPTOR);
-  m_ChartClassDescriptorArray.Add(pcd);
-  pcd = new ChartClassDescriptor(_T("cm93compchart"), _T("00300000.a"),
-                                 BUILTIN_DESCRIPTOR);
-  m_ChartClassDescriptorArray.Add(pcd);
-  pcd = new ChartClassDescriptor(_T("ChartMBTiles"), _T("*.mbtiles"),
-                                 BUILTIN_DESCRIPTOR);
-  m_ChartClassDescriptorArray.Add(pcd);
-
+  if(m_ChartClassDescriptorArray.empty()) {
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("ChartKAP"), _T("*.kap"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("ChartGEO"), _T("*.geo"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("s57chart"), _T("*.000"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("s57chart"), _T("*.s57"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(_T("ChartMBTiles"), _T("*.mbtiles"), BUILTIN_DESCRIPTOR));
+  }
   //    If the PlugIn Manager exists, get the array of dynamically loadable
   //    chart class names
   if (g_pi_manager) {
+    m_ChartClassDescriptorArray.erase(std::remove_if(
+    m_ChartClassDescriptorArray.begin(), m_ChartClassDescriptorArray.end(),
+    [](const ChartClassDescriptor& cd) {
+        return cd.m_descriptor_type ==PLUGIN_DESCRIPTOR;
+    }), m_ChartClassDescriptorArray.end());
+
     wxArrayString array = g_pi_manager->GetPlugInChartClassNameArray();
     for (unsigned int j = 0; j < array.GetCount(); j++) {
       //    Instantiate a blank chart to retrieve the directory search mask for
@@ -1118,13 +1108,8 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void) {
       if (cpiw) {
         wxString mask = cpiw->GetFileSearchMask();
 
-        //    Create a new descriptor
-        ChartClassDescriptor *picd =
-            new ChartClassDescriptor(class_name, mask, PLUGIN_DESCRIPTOR);
-
-        //    Add descriptor to the database array member
-        m_ChartClassDescriptorArray.Add(picd);
-
+        // Create a new descriptor and add it to the database
+        m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(class_name, mask, PLUGIN_DESCRIPTOR));
         delete cpiw;
       }
     }
@@ -1699,9 +1684,9 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo &dir_info,
   dir_magic = new_magic;
 
   //    Look for all possible defined chart classes
-  for (unsigned int i = 0; i < m_ChartClassDescriptorArray.GetCount(); i++) {
+  for (auto &cd : m_ChartClassDescriptorArray) {
     nAdd += SearchDirAndAddCharts(dir_info.fullpath,
-                                  m_ChartClassDescriptorArray.Item(i), pprog);
+                                  cd, pprog);
   }
 
   return nAdd;
@@ -2375,14 +2360,14 @@ bool ChartDatabase::AddSingleChart(wxString &ChartFullPath,
   //    bewteen the search mask and the the chart file extension
 
   ChartClassDescriptor desc;
-  for (unsigned int i = 0; i < m_ChartClassDescriptorArray.GetCount(); i++) {
-    if (m_ChartClassDescriptorArray[i].m_descriptor_type == PLUGIN_DESCRIPTOR) {
-      if (m_ChartClassDescriptorArray[i].m_search_mask == ext_upper) {
-        desc = m_ChartClassDescriptorArray[i];
+  for (auto &cd : m_ChartClassDescriptorArray) {
+    if (cd.m_descriptor_type == PLUGIN_DESCRIPTOR) {
+      if (cd.m_search_mask == ext_upper) {
+        desc = cd;
         break;
       }
-      if (m_ChartClassDescriptorArray[i].m_search_mask == ext_lower) {
-        desc = m_ChartClassDescriptorArray[i];
+      if (cd.m_search_mask == ext_lower) {
+        desc = cd;
         break;
       }
     }
@@ -2752,10 +2737,10 @@ bool ChartDatabase::IsChartAvailable(int dbIndex) {
     //    Search the array of chart class descriptors to find a match
     //    between the search mask and the the chart file extension
 
-    for (unsigned int i = 0; i < m_ChartClassDescriptorArray.GetCount(); i++) {
-      if (m_ChartClassDescriptorArray[i].m_descriptor_type ==
+    for (auto &cd : m_ChartClassDescriptorArray) {
+      if (cd.m_descriptor_type ==
           PLUGIN_DESCRIPTOR) {
-        wxString search_mask = m_ChartClassDescriptorArray[i].m_search_mask;
+        wxString search_mask = cd.m_search_mask;
 
         if (search_mask == ext_upper) {
           return true;
