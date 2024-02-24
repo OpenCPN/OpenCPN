@@ -4009,7 +4009,14 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
     if (!bUseLineCache) {
       ix = 0;
       //      skip the line number.
-      do byNext = *lp++;
+      do {
+        if (pos < pt->size) {
+          byNext = *lp++;
+          pos++;
+        } else {
+          byNext = 0;
+        }
+      }
       while ((byNext & 0x80) != 0);
       goto nocachestart;
     }
@@ -4028,7 +4035,14 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
     //    destination is pCL
 
     //      skip the line number.
-    do byNext = *lp++;
+    do {
+      if (pos < pt->size) {
+        byNext = *lp++;
+        pos++;
+      } else {
+        byNext = 0;
+      }
+    }
     while ((byNext & 0x80) != 0);
 
     //      Setup masking values.
@@ -4071,7 +4085,12 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
 #else
     // build tile offset table for faster random access
     {
-      byNext = *lp++;
+      if (pos < pt->size) {
+        byNext = *lp++;
+        pos++;
+      } else {
+        byNext = 0;
+      }
       unsigned char *offset = lp - 1;
       if (byNext == 0 || lp == end) {
         // finished early...corrupt?
@@ -4086,7 +4105,12 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
       nRunCount = byNext & byCountMask;
 
       while ((byNext & 0x80) != 0) {
-        byNext = *lp++;
+        if (pos < pt->size) {
+          byNext = *lp++;
+          pos++;
+        } else {
+          byNext = 0;
+        }
         nRunCount = nRunCount * 128 + (byNext & 0x7f);
       }
 
@@ -4183,7 +4207,6 @@ nocachestart:
       pos++;
     } else {
       break;
-      byNext = 0;
     }
 
     nPixValue = (byNext & byValueMask) >> nValueShift;
@@ -4194,8 +4217,13 @@ nocachestart:
     else {
       nRunCount = byNext & byCountMask;
       while ((byNext & 0x80) != 0) {
-        byNext = *lp++;
-        pos++;
+        if (pos < pt->size) {
+          byNext = *lp++;
+          pos++;
+        } else {
+          nRunCount = xl - ix;  // corrupted chart, just run to the end
+          break;
+        }
         nRunCount = nRunCount * 128 + (byNext & 0x7f);
       }
 
