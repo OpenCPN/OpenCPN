@@ -639,14 +639,16 @@ void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_a
       const ChartTableEntry &cte = ChartData->GetChartTableEntry(m_key_array[i]);
       int scale = cte.GetScale();
       int chart_type = cte.GetChartType();
+      int chart_family = cte.GetChartFamily();
 
-      // Perform scale compositing only for vector-family charts.
+      // Perform scale compositing only for vector-family charts
+      // and Raster Family charts..
       // All other families/types retain legacy piano keys, implemented as
       // PianoKeyElement with only one chart in the array.
       if ((cte.GetChartFamily() == CHART_FAMILY_VECTOR) ||
           (cte.GetChartFamily() == CHART_FAMILY_RASTER)) {
-        auto predicate = [scale, chart_type](const PianoKeyElement &pke) {
-          return ((scale == pke.chart_scale) && (chart_type == pke.chart_type));
+        auto predicate = [scale, chart_family](const PianoKeyElement &pke) {
+          return ((scale == pke.chart_scale) && (chart_family == pke.chart_family));
         };
         auto found = find_if(m_composite_array.begin(), m_composite_array.end(),
                              predicate);
