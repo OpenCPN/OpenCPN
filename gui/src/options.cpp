@@ -8044,6 +8044,12 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
   if (2 == i) {  // 2 is the index of "Chart Groups" page
     if (!groupsPanel->m_UIcomplete) groupsPanel->CompletePanel();
 
+    // Make sure any recently added chart dirs appear in the
+    // Groups panel, making them available for addition to groups.
+    UpdateWorkArrayFromDisplayPanel();
+    groupsPanel->SetDBDirs(*m_pWorkDirList);  // update the Groups tab
+    groupsPanel->m_treespopulated = FALSE;
+
     if (!groupsPanel->m_settingscomplete) {
       ::wxBeginBusyCursor();
       groupsPanel->CompleteInitialSettings();
