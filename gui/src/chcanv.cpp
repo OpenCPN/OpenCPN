@@ -347,6 +347,7 @@ extern int g_GUIScaleFactor;
 // Win DPI scale factor
 double g_scaler;
 wxString g_lastS52PLIBPluginMessage;
+extern bool g_bChartBarEx;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -6799,8 +6800,7 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale,
       int char_width = s1.Length();
       int char_height = 3;
 
-      bool bmore = true;
-      if (bmore) {
+      if (g_bChartBarEx) {
         s += '\n';
         int j = 0;
         for (int i : index_vector ) {

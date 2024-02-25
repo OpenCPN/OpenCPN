@@ -151,6 +151,7 @@ extern bool g_bShowChartBar;
 extern bool g_bShowDepthUnits;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
+extern bool g_bChartBarEx;
 extern bool g_bsmoothpanzoom;
 extern double gVar;
 extern int g_chart_zoom_modifier_raster;
@@ -3260,7 +3261,22 @@ With a higher value, the same zoom level shows a more detailed chart."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
     bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
+
+    // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
+    itemBoxSizerUI->Add(0, border_size * 3);
+
+    // ChartBar Options
+    itemBoxSizerUI->Add(
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Bar")),
+        labelFlags);
+    wxBoxSizer* ChartBarSizer = new wxBoxSizer(wxHORIZONTAL);
+    itemBoxSizerUI->Add(ChartBarSizer, 0, 0, 0);
+
+    pChartBarEX = new wxCheckBox(m_ChartDisplayPage, -1,
+                             _("Show extended chart bar information."));
+    ChartBarSizer->Add(pChartBarEX, inputFlags);
+
     /*
         pTransparentToolbar =
             new wxCheckBox(m_ChartDisplayPage, ID_TRANSTOOLBARCHECKBOX,
@@ -7194,6 +7210,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
   g_bopengl = pOpenGL->GetValue();
+
+  g_bChartBarEx = pChartBarEX->GetValue();
 
   //   Handle Vector Charts Tab
   int depthUnit = pDepthUnitSelect->GetSelection();

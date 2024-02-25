@@ -413,7 +413,7 @@ public:
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
-  wxCheckBox *pZoomButtons;
+  wxCheckBox *pZoomButtons, *pChartBarEX;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
 
