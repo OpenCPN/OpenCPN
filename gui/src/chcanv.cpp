@@ -6763,7 +6763,8 @@ void ChartCanvas::DestroyMuiBar() {
   }
 }
 
-void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale) {
+void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale,
+                                          const std::vector<int> &index_vector) {
   if (n_charts > 0) {
     if (NULL == m_pCIWin) {
       m_pCIWin = new ChInfoWin(this);
@@ -6793,15 +6794,38 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale) {
 
       s1 = _("Zoom in for more information");
       s += s1;
-
-      m_pCIWin->SetString(s);
+      s += '\n';
 
       int char_width = s1.Length();
       int char_height = 3;
+
+      bool bmore = true;
+      if (bmore) {
+        s += '\n';
+        int j = 0;
+        for (int i : index_vector ) {
+          const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+          wxString path = cte.GetFullSystemPath();
+          s += path;
+          s += '\n';
+          char_height++;
+          char_width = wxMax(char_width, path.Length());
+          if (j++ >= 9) break;
+        }
+        if (j >= 9) {
+          s += "   .\n   .\n   .\n";
+          char_height += 3;
+        }
+        s += '\n';
+        char_height += 1;
+        
+        char_width += 4;      // Fluff
+      }
+
+      m_pCIWin->SetString(s);
+
       m_pCIWin->FitToChars(char_width, char_height);
 
-      //m_pCIWin->SetClientSize(
-        //  wxSize(char_width * GetCharWidth(), char_height * GetCharHeight()));
       wxPoint p;
       p.x = x / GetContentScaleFactor();
       if ((p.x + m_pCIWin->GetWinSize().x) >
@@ -13729,7 +13753,7 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
         (piano_chart_index_array.size() >= 1)) {
 
         if(n_charts > 1)
-          ShowCompositeInfoWindow(key_location.x, n_charts, scale);
+          ShowCompositeInfoWindow(key_location.x, n_charts, scale, selected_dbIndex_array);
         else if(n_charts == 1)
           ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
 
@@ -13743,7 +13767,8 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
 void ChartCanvas::ClearPianoRollover() {
   ClearQuiltChartHiLiteIndexArray();
   ShowChartInfoWindow(0, -1);
-  ShowCompositeInfoWindow(0, 0, 0);
+  std::vector<int> vec;
+  ShowCompositeInfoWindow(0, 0, 0, vec);
   ReloadVP(false);
 }
 

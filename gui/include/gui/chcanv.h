@@ -367,7 +367,8 @@ public:
 
   void ShowChartInfoWindow(int x, int dbIndex);
   void HideChartInfoWindow(void);
-  void ShowCompositeInfoWindow(int x, int n_charts, int scale);
+  void ShowCompositeInfoWindow(int x, int n_charts,
+                               int scale, const std::vector<int> &index_vector);
 
   void StartMeasureRoute();
   void CancelMeasureRoute();
