@@ -4487,6 +4487,18 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       int new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
       if (new_db_index >= 0)
         pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+      else {  // for whatever reason, no reference chart is known
+              // Choose the smallest scale chart on the current stack
+              // and then adjust for scale range
+        int current_ref_stack_index = -1;
+        if (m_pCurrentStack->nEntry) {
+          int trial_index = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+          m_pQuilt->SetReferenceChart(trial_index);
+          new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
+          if (new_db_index >= 0)
+            pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+        }
+      }
 
       if (m_pCurrentStack)
         m_pCurrentStack->SetCurrentEntryFromdbIndex(
