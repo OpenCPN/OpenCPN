@@ -951,8 +951,11 @@ MyApp::MyApp()
 {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
+  if (wxGetEnv( "WAYLAND_DISPLAY", NULL)) {
     setenv("GDK_BACKEND", "x11", 1);
+  }
+  setenv("mesa_glthread", "false", 1); // Explicitly disable glthread. This may have some impact on OpenGL performance,
+                                       // but we know it is problematic for us. See #2889
 #endif   // __linux__
 }
 
