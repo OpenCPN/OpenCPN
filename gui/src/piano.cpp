@@ -638,6 +638,9 @@ void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_a
     for (size_t i = 0; i < m_key_array.size(); i++) {
       const ChartTableEntry &cte = ChartData->GetChartTableEntry(m_key_array[i]);
       int scale = cte.GetScale();
+      auto order = std::pow(10, std::floor(std::log10(scale)));
+      scale = std::ceil(scale / order) * order;
+
       int chart_type = cte.GetChartType();
       int chart_family = cte.GetChartFamily();
 
