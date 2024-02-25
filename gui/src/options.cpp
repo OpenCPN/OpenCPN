@@ -1718,6 +1718,13 @@ void options::Init(void) {
   double dsizemm = g_Platform->GetDisplaySizeMM();
   if (dsizemm < 80)  // Probably and Android Phone, portrait mode
     m_bcompact = true;
+
+  auto sound_action = [] (ObservedEvt ev) {
+    auto sound = static_cast<OcpnSound*>(ev.GetClientData());
+    delete sound;
+  };
+  m_sound_done_listener.Init(m_on_sound_done, sound_action);
+
 }
 
 #if defined(__GNUC__) && __GNUC__ < 8
@@ -4610,10 +4617,11 @@ public:
     ~OCPNSoundPanel() {};
 
     void OnButtonSelectSound(wxCommandEvent& event);
-    void OnButtonTestSound(wxCommandEvent& event);
+    void OnButtonSPTestSound(wxCommandEvent& event);
     wxString SelectSoundFile();
     void SetSoundFileLabel(wxString file);
     wxCheckBox *GetCheckBox(){ return m_pCheck_Sound; }
+    wxString GetSoundFile(){ return m_sound_file;}
 
     wxCheckBox *m_pCheck_Sound;
     wxSize m_small_button_size;
@@ -4625,9 +4633,9 @@ public:
     wxButton* TestSound;
 
     /** Notified with a OCPN_Sound* pointer when sound has completed. */
-    EventVar m_on_sound_done;
+    EventVar m_on_sp_sound_done;
 
-    ObsListener m_sound_done_listener;
+    ObsListener m_sound_sp_done_listener;
 
     DECLARE_EVENT_TABLE()
 };
@@ -4638,7 +4646,7 @@ public:
 
 BEGIN_EVENT_TABLE(OCPNSoundPanel, wxPanel)
 EVT_BUTTON(ID_SELECTSOUND, OCPNSoundPanel::OnButtonSelectSound)
-EVT_BUTTON(ID_TESTSOUND, OCPNSoundPanel::OnButtonTestSound)
+EVT_BUTTON(ID_TESTSOUND, OCPNSoundPanel::OnButtonSPTestSound)
 
 
 END_EVENT_TABLE()
@@ -4719,7 +4727,7 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
     auto sound = static_cast<OcpnSound*>(ev.GetClientData());
     delete sound;
   };
-  m_sound_done_listener.Init(m_on_sound_done, sound_action);
+  m_sound_sp_done_listener.Init(m_on_sp_sound_done, sound_action);
 
 }
 
@@ -4788,18 +4796,23 @@ void OCPNSoundPanel::OnButtonSelectSound(wxCommandEvent& event) {
   }
 }
 
-void OCPNSoundPanel::OnButtonTestSound(wxCommandEvent& event) {
+void OCPNSoundPanel::OnButtonSPTestSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
   auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback(
-          [&](void* snd) { m_on_sound_done.Notify(snd); });
+          [&](void* snd) { m_on_sp_sound_done.Notify(snd); });
   sound->Load(m_sound_file, g_iSoundDeviceIndex);
   sound->Play();
 }
 
 
 
+
+void options::OnUXAudioEnableButtonClick(wxCommandEvent &event) {
+  if (event.IsChecked())
+    m_pCheck_AlertAudio->SetValue( true );
+}
 
 
 
@@ -4832,6 +4845,10 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                         );
     wrapperSizer->Add(m_soundPanelAIS, 1, wxALL | wxEXPAND, border_size);
 
+    m_soundPanelAIS->GetCheckBox()->Connect(
+        wxEVT_COMMAND_CHECKBOX_CLICKED,
+        wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
+        this);
 
     // SART Alert
     m_soundPanelSART = new OCPNSoundPanel( panelSounds, wxID_ANY,
@@ -4843,6 +4860,11 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                         );
     wrapperSizer->Add(m_soundPanelSART, 1, wxALL | wxEXPAND, border_size);
 
+    m_soundPanelSART->GetCheckBox()->Connect(
+        wxEVT_COMMAND_CHECKBOX_CLICKED,
+        wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
+        this);
+
     // DSC Call
     m_soundPanelDSC = new OCPNSoundPanel( panelSounds, wxID_ANY,
                                                         wxDefaultPosition, wxDefaultSize,
@@ -4852,6 +4874,11 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
                                                         &g_DSC_sound_file
                                         );
     wrapperSizer->Add(m_soundPanelDSC, 1, wxALL | wxEXPAND, border_size);
+
+    m_soundPanelDSC->GetCheckBox()->Connect(
+        wxEVT_COMMAND_CHECKBOX_CLICKED,
+        wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
+        this);
 }
 
 void options::CreatePanel_MMSI(size_t parent, int border_size,
@@ -5108,14 +5135,18 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
       wxCommandEventHandler(options::OnAlertAudioEnableButtonClick), NULL,
       this);
 
-  //   wxButton* m_pPlay_Sound =
-  //       new wxButton(panelAIS, ID_AISALERTTESTSOUND, _("Test Alert Sound"),
-  //                    wxDefaultPosition, m_small_button_size, 0);
-  //   pAlertGrid->Add(m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT,
-  //   group_item_spacing);
+  wxButton* m_pPlay_Sound =
+         new wxButton(panelAIS, -1, _("Test AIS Alert Sound"),
+                      wxDefaultPosition, m_small_button_size, 0);
+     pAlertGrid->Add(m_pPlay_Sound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing);
 
-  wxStaticText* pStatic_Dummy5b = new wxStaticText(panelAIS, -1, _T(""));
-  pAlertGrid->Add(pStatic_Dummy5b, 1, wxALL, group_item_spacing);
+  m_pPlay_Sound->Connect(
+         wxEVT_COMMAND_BUTTON_CLICKED,
+         wxCommandEventHandler(options::OnButtonTestSound), NULL,
+         this);
+
+  //wxStaticText* pStatic_Dummy5b = new wxStaticText(panelAIS, -1, _T(""));
+  //pAlertGrid->Add(pStatic_Dummy5b, 1, wxALL, group_item_spacing);
 
   m_pCheck_Alert_Moored = new wxCheckBox(
       panelAIS, -1, _("Suppress Alerts for anchored/moored targets"));
@@ -5489,28 +5520,13 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 }
 
 void options::OnAlertEnableButtonClick(wxCommandEvent& event) {
-  if (event.IsChecked()) {
-    m_pCheck_AlertAudio->Enable();
-    m_soundPanelAIS->GetCheckBox()->Enable();
-    m_soundPanelSART->GetCheckBox()->Enable();
-    m_soundPanelDSC->GetCheckBox()->Enable();
-  } else {
-    m_pCheck_AlertAudio->Disable();
-    m_soundPanelAIS->GetCheckBox()->Disable();
-    m_soundPanelSART->GetCheckBox()->Disable();
-    m_soundPanelDSC->GetCheckBox()->Disable();
-  }
-}
+ }
 
 void options::OnAlertAudioEnableButtonClick(wxCommandEvent& event) {
   if (event.IsChecked()) {
-    m_soundPanelAIS->GetCheckBox()->Enable();
-    m_soundPanelSART->GetCheckBox()->Enable();
-    m_soundPanelDSC->GetCheckBox()->Enable();
-  } else {
-    m_soundPanelAIS->GetCheckBox()->Disable();
-    m_soundPanelSART->GetCheckBox()->Disable();
-    m_soundPanelDSC->GetCheckBox()->Disable();
+    m_soundPanelAIS->GetCheckBox()->SetValue( true );
+    m_soundPanelSART->GetCheckBox()->SetValue( true );
+    m_soundPanelDSC->GetCheckBox()->SetValue( true );
   }
 }
 
@@ -6197,13 +6213,8 @@ void options::SetInitialSettings(void) {
 
   // Alerts
   m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
-  if (m_pCheck_AlertDialog->GetValue()) {
-    m_pCheck_AlertAudio->Enable();
-    m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
-  } else {
-    m_pCheck_AlertAudio->Disable();
-    m_pCheck_AlertAudio->SetValue(false);
-  }
+  m_pCheck_AlertAudio->Enable();
+  m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
 
   m_pCheck_Alert_Moored->SetValue(g_bAIS_CPA_Alert_Suppress_Moored);
 
@@ -6212,23 +6223,9 @@ void options::SetInitialSettings(void) {
   m_pText_ACK_Timeout->SetValue(s);
 
   // Sounds
-  if (m_pCheck_AlertDialog
-          ->GetValue()) {  // AIS Alert sound only if Alert dialog is enabled
-
-    m_soundPanelAIS->GetCheckBox()->Enable(m_pCheck_AlertAudio->GetValue());
-    m_soundPanelAIS->GetCheckBox()->SetValue(g_bAIS_GCPA_Alert_Audio);
-    m_soundPanelSART->GetCheckBox()->Enable(m_pCheck_AlertAudio->GetValue());
-    m_soundPanelSART->GetCheckBox()->SetValue(g_bAIS_SART_Alert_Audio);
-    m_soundPanelDSC->GetCheckBox()->Enable(m_pCheck_AlertAudio->GetValue());
-    m_soundPanelDSC->GetCheckBox()->SetValue(g_bAIS_DSC_Alert_Audio);
-  } else {
-    m_soundPanelAIS->GetCheckBox()->Disable();
-    m_soundPanelAIS->GetCheckBox()->SetValue(false);
-    m_soundPanelSART->GetCheckBox()->Disable();
-    m_soundPanelSART->GetCheckBox()->SetValue(false);
-    m_soundPanelDSC->GetCheckBox()->Disable();
-    m_soundPanelDSC->GetCheckBox()->SetValue(false);
-  }
+  m_soundPanelAIS->GetCheckBox()->SetValue(g_bAIS_GCPA_Alert_Audio);
+  m_soundPanelSART->GetCheckBox()->SetValue(g_bAIS_SART_Alert_Audio);
+  m_soundPanelDSC->GetCheckBox()->SetValue(g_bAIS_DSC_Alert_Audio);
 
   // Rollover
   m_pCheck_Rollover_Class->SetValue(g_bAISRolloverShowClass);
@@ -8316,8 +8313,9 @@ void options::OnButtonTestSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
   auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
-  sound->SetFinishedCallback([sound](void*) { delete sound; });
-  sound->Load(g_sAIS_Alert_Sound_File, g_iSoundDeviceIndex);
+  sound->SetFinishedCallback(
+      [&](void* snd) { m_on_sound_done.Notify(snd); });
+  sound->Load(m_soundPanelAIS->GetSoundFile(), g_iSoundDeviceIndex);
   sound->Play();
 }
 
