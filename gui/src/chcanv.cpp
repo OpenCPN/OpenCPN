@@ -6818,7 +6818,7 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale,
         }
         s += '\n';
         char_height += 1;
-        
+
         char_width += 4;      // Fluff
       }
 

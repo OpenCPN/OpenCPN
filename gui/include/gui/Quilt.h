@@ -152,8 +152,8 @@ public:
 
   void SetHiliteIndex(int index) { m_nHiLiteIndex = index; }
   void SetHiliteIndexArray(const std::vector<int> &index_array) {
-    m_nHiLiteIndexArray = index_array; }
-  void ClearHiliteIndexArray() { m_nHiLiteIndexArray.clear(); }
+    m_HiLiteIndexArray = index_array; }
+  void ClearHiliteIndexArray() { m_HiLiteIndexArray.clear(); }
 
   void SetReferenceChart(int dbIndex) {
     m_refchart_dbIndex = dbIndex;
@@ -200,6 +200,8 @@ public:
   bool DoesQuiltContainPlugins(void);
 
   LLRegion GetHiliteRegion();
+  std::vector<int> &GetHiLiteIndexArray(){ return m_HiLiteIndexArray; }
+
   static LLRegion GetChartQuiltRegion(const ChartTableEntry &cte, ViewPort &vp);
 
   int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
@@ -246,7 +248,7 @@ private:
   ViewPort m_vp_rendered;  // last VP rendered
 
   int m_nHiLiteIndex;
-  std::vector<int> m_nHiLiteIndexArray;
+  std::vector<int> m_HiLiteIndexArray;
   int m_refchart_dbIndex;
   int m_reference_scale;
   int m_reference_type;

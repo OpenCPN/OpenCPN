@@ -1103,7 +1103,7 @@ LLRegion Quilt::GetHiliteRegion() {
 
   //TODO Idea:  convert this to an array of smaller regions.  Should be faster to compose...
 
-  for (auto &index : m_nHiLiteIndexArray) {
+  for (auto &index : m_HiLiteIndexArray) {
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
     LLRegion cell_region = GetChartQuiltRegion(cte, m_vp_quilt);
     r.Union(cell_region);
