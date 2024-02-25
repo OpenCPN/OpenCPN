@@ -99,6 +99,7 @@ public:
   TileOffsetCache *pTileOffset;  // entries for random access
 
   bool bValid;
+  int size;
 };
 
 class opncpnPalette {

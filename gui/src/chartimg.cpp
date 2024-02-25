@@ -3950,6 +3950,7 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
   int rgbval;
   unsigned char *lp;
   int ix = xs;
+  int pos = 0;
 
   if (bUseLineCache && pLineCache) {
     //    Is the requested line in the cache, and valid?
@@ -3968,14 +3969,14 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
 
   if (!pt->bValid)  // not valid, allocate
   {
-    int thisline_size = pline_table[y + 1] - pline_table[y];
+    pt->size = pline_table[y + 1] - pline_table[y];
 
 #ifdef USE_OLD_CACHE
     pt->pPix = (unsigned char *)malloc(Size_X);
 #else
     pt->pTileOffset = (TileOffsetCache *)calloc(
         sizeof(TileOffsetCache) * (Size_X / TILE_SIZE + 1), 1);
-    pt->pPix = (unsigned char *)malloc(thisline_size);
+    pt->pPix = (unsigned char *)malloc(pt->size );
 #endif
     if (pline_table[y] == 0 || pline_table[y + 1] == 0) FAIL;
 
@@ -3987,20 +3988,20 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
       FAIL;
 
 #ifdef USE_OLD_CACHE
-    if (thisline_size > ifs_bufsize) {
+    if (pt->size  > ifs_bufsize) {
       unsigned char *tmp = ifs_buf;
-      if (!(ifs_buf = (unsigned char *)realloc(ifs_buf, thisline_size))) {
+      if (!(ifs_buf = (unsigned char *)realloc(ifs_buf, pt->size ))) {
         free(tmp);
         FAIL;
       }
-      ifs_bufsize = thisline_size;
+      ifs_bufsize = pt->size ;
     }
 
     lp = ifs_buf;
 #else
     lp = pt->pPix;
 #endif
-    ifs_bitmap->Read(lp, thisline_size);
+    ifs_bitmap->Read(lp, pt->size );
 
 #ifdef USE_OLD_CACHE
     pCL = pt->pPix;
@@ -4008,7 +4009,14 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
     if (!bUseLineCache) {
       ix = 0;
       //      skip the line number.
-      do byNext = *lp++;
+      do {
+        if (pos < pt->size) {
+          byNext = *lp++;
+          pos++;
+        } else {
+          byNext = 0;
+        }
+      }
       while ((byNext & 0x80) != 0);
       goto nocachestart;
     }
@@ -4027,7 +4035,14 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
     //    destination is pCL
 
     //      skip the line number.
-    do byNext = *lp++;
+    do {
+      if (pos < pt->size) {
+        byNext = *lp++;
+        pos++;
+      } else {
+        byNext = 0;
+      }
+    }
     while ((byNext & 0x80) != 0);
 
     //      Setup masking values.
@@ -4044,7 +4059,7 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
     unsigned int tileindex = 1, nextTile = TILE_SIZE;
 #endif
     unsigned int nRunCount;
-    unsigned char *end = pt->pPix + thisline_size;
+    unsigned char *end = pt->pPix + pt->size;
     while (iPixel < (unsigned int)Size_X)
 #ifdef USE_OLD_CACHE
     {
@@ -4070,7 +4085,12 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
 #else
     // build tile offset table for faster random access
     {
-      byNext = *lp++;
+      if (pos < pt->size) {
+        byNext = *lp++;
+        pos++;
+      } else {
+        byNext = 0;
+      }
       unsigned char *offset = lp - 1;
       if (byNext == 0 || lp == end) {
         // finished early...corrupt?
@@ -4085,7 +4105,12 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
       nRunCount = byNext & byCountMask;
 
       while ((byNext & 0x80) != 0) {
-        byNext = *lp++;
+        if (pos < pt->size) {
+          byNext = *lp++;
+          pos++;
+        } else {
+          byNext = 0;
+        }
         nRunCount = nRunCount * 128 + (byNext & 0x7f);
       }
 
@@ -4166,6 +4191,7 @@ int ChartBaseBSB::BSBGetScanline(unsigned char *pLineBuf, int y, int xs, int xl,
     int tileoffset = pt->pTileOffset[tileindex].offset;
 
     lp = pt->pPix + tileoffset;
+    pos = tileoffset;
     ix = pt->pTileOffset[tileindex].pixel;
   }
 
@@ -4175,9 +4201,13 @@ nocachestart:
   byCountMask = (1 << (7 - nColorSize)) - 1;
   int nPixValue = 0;  // satisfy stupid compiler warning
   bool bLastPixValueValid = false;
-
   while (ix < xl - 1) {
-    byNext = *lp++;
+    if (pos < pt->size) {
+      byNext = *lp++;
+      pos++;
+    } else {
+      break;
+    }
 
     nPixValue = (byNext & byValueMask) >> nValueShift;
     unsigned int nRunCount;
@@ -4187,7 +4217,13 @@ nocachestart:
     else {
       nRunCount = byNext & byCountMask;
       while ((byNext & 0x80) != 0) {
-        byNext = *lp++;
+        if (pos < pt->size) {
+          byNext = *lp++;
+          pos++;
+        } else {
+          nRunCount = xl - ix;  // corrupted chart, just run to the end
+          break;
+        }
         nRunCount = nRunCount * 128 + (byNext & 0x7f);
       }
 
@@ -4284,7 +4320,12 @@ nocachestart:
 
   if (ix < xl) {
     if (!bLastPixValueValid) {
-      byNext = *lp++;
+      if (pos < pt->size) {
+        byNext = *lp++;
+        pos++;
+      } else {
+        byNext = 0;
+      }
       nPixValue = (byNext & byValueMask) >> nValueShift;
     }
     rgbval = (int)(pPalette[nPixValue]);  // last pixel
