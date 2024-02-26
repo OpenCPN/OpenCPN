@@ -611,7 +611,6 @@ bool Piano::IsAllEclipsedChartInPianoKeyElement(PianoKeyElement &pke){
 }
 
 void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_array) {
-
   // Measure the available space for keys, and so decide on mode
   // To account for scaling, etc., measure in parent base character size.
   if (center_array.size()) {
@@ -622,14 +621,15 @@ void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_a
     if (key_width < 8) {
       m_piano_mode = PIANO_MODE_COMPOSITE;
       m_key_array = full_array;
-    }
-    else {
+    } else {
       m_piano_mode = PIANO_MODE_LEGACY;
       m_key_array = center_array;
     }
-  }
-  else
+  } else {
     m_piano_mode = PIANO_MODE_LEGACY;
+    m_key_array.clear();
+  }
+
 
   // Create the composite array
   m_composite_array.clear();

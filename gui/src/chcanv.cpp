@@ -1404,6 +1404,8 @@ void ChartCanvas::SetGroupIndex(int index, bool autoSwitch) {
   //    applying the prior ViewPort exactly
   canvasChartsRefresh(dbi_hint);
 
+  UpdateCanvasControlBar();
+
   if (!autoSwitch && bgroup_override) {
     // show a short timed message box
     wxString msg(_("Group \""));
