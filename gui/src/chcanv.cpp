@@ -4798,6 +4798,30 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
         SetVPScale(tweak_scale_ppm);
       }
     }
+
+    if(new_ref_dbIndex == -1) {
+      // for whatever reason, no reference chart is known
+      // Probably panned out of the coverage region
+      // If any charts are anywhere on-screen, choose the smallest
+      // scale chart on the screen to be a new reference chart.
+     int trial_index = -1;
+     if (m_pCurrentStack->nEntry) {
+        int trial_index =
+            m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+     }
+
+      if (trial_index < 0) {
+        auto full_screen_array = GetQuiltFullScreendbIndexArray();
+        if (full_screen_array.size())
+          trial_index = full_screen_array[full_screen_array.size()-1];
+     }
+
+      if (trial_index >= 0){
+        m_pQuilt->SetReferenceChart(trial_index);
+        SetViewPoint(dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation);
+        ReloadVP();
+      }
+    }
   }
 
   //  Turn off bFollow only if the ownship has left the screen
