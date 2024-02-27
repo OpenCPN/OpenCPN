@@ -502,9 +502,10 @@ static void gui_uninstall(const PlugInData* pic, const char* plugin) {
   g_Platform->HideBusySpinner();
 }
 
-static bool LoadAllPlugIns(bool load_enabled) {
+static bool LoadAllPlugIns(bool load_enabled, bool keep_orphans = false) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled,
+                                                       keep_orphans);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -1055,7 +1056,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
                                       EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
     if (m_listPanel) m_listPanel->ReloadPluginPanels();
-    g_options->itemBoxSizerPanelPlugins->Layout();
+    if (g_options) g_options->itemBoxSizerPanelPlugins->Layout();
   });
 
   evt_load_directory_listener.Listen(loader->evt_load_directory, this,
@@ -1239,7 +1240,7 @@ bool PlugInManager::IsAnyPlugInChartEnabled() {
 }
 
 void PlugInManager::UpdateManagedPlugins() {
-  PluginLoader::getInstance()->UpdateManagedPlugins();
+  PluginLoader::getInstance()->UpdateManagedPlugins(false);
   PluginLoader::getInstance()->SortPlugins(ComparePlugins);
 
   if (m_listPanel) m_listPanel->ReloadPluginPanels();
@@ -3969,7 +3970,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
     WARNING_LOG << "Error saving metadata file: " << metadata_path
                 << " for imported plugin: " << metadata.name;
   }
-  LoadAllPlugIns(false);
+  LoadAllPlugIns(false, true);
   PluginHandler::getInstance()->SetInstalledMetadata(metadata);
   m_PluginListPanel->ReloadPluginPanels();
   wxString ws(_("Plugin"));
