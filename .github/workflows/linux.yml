@@ -29,11 +29,10 @@ jobs:
           - name: Ubuntu latest wxGTK 3
             runner: ubuntu-latest
             cmake_generator: Unix Makefiles
-          # Enable when #OCPN_USE_GL is fixed (#698)
-          #- name: Ubuntu latest wxGTK 3 no OpenGL
-          #  runner: ubuntu-latest
-          #  cmake_generator: Unix Makefiles
-          #  cmake_defines: -DOCPN_USE_GL=OFF
+          - name: Ubuntu latest wxGTK 3 no OpenGL
+            runner: ubuntu-latest
+            cmake_generator: Unix Makefiles
+            cmake_defines: -DOCPN_USE_GL:BOOL=OFF
 
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
