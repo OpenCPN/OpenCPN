@@ -27,6 +27,7 @@
 #ifndef _CHARTSYMBOLS_H_
 #define _CHARTSYMBOLS_H_
 
+#ifdef ocpnUSE_GL
 #ifdef __OCPN_USE_GLEW__
  #ifndef __OCPN__ANDROID__
   #if defined(_WIN32)
@@ -36,7 +37,7 @@
   #endif
  #endif
 #endif
-
+#endif
 
 #if defined(__OCPN__ANDROID__)
  //#include <GLES2/gl2.h>

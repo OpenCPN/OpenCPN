@@ -1278,10 +1278,12 @@ void PlugInManager::FinalizePluginLoadall() {
   SendSKConfigToAllPlugIns();
 
   // Inform Plugins of OpenGL configuration, if enabled
+#ifdef ocpnUSE_GL
   if (g_bopengl) {
     if (gFrame->GetPrimaryCanvas()->GetglCanvas())
       gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
   }
+#endif
 
   //  And then reload all catalogs.
   ReloadLocale();

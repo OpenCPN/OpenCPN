@@ -1173,12 +1173,13 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
         cc = g_canvasArray[0];
       }
 
+#ifdef ocpnUSE_GL
       // Verify that glCanvas is ready, if necessary
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
         cc->GetglCanvas()->Show();
       }
-
+#endif
       config_array.Item(0)->canvas = cc;
 
       cc->SetDisplaySizeMM(g_display_size_mm);
@@ -1209,10 +1210,11 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       }
 
       // Verify that glCanvas is ready, if not already built
+#ifdef ocpnUSE_GL
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
       }
-
+#endif
       config_array.Item(0)->canvas = cc;
 
       cc->ApplyCanvasConfig(config_array.Item(0));

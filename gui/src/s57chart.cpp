@@ -86,7 +86,9 @@
 #include <map>
 
 #include "ssl/sha1.h"
-#include "shaders.h"
+#ifdef ocpnUSE_GL
+    #include "shaders.h"
+#endif
 #include "chart_ctx_factory.h"
 
 #ifdef __MSVC__
@@ -6415,6 +6417,7 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
   }
 }
 
+#ifdef ocpnUSE_GL
 void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
                                   std::vector<s57Sector_t> &sectorlegs) {
   float rangeScale = 0.0;
@@ -6650,6 +6653,7 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
     }
   }
 }
+#endif
 
 bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
                                      ChartPlugInWrapper *target_plugin_chart,

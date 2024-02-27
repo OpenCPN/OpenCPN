@@ -277,7 +277,7 @@ void Piano::BuildGLTexture() {
   m_texh = NextPow2(m_texh);
   m_texw = NextPow2(m_texw);
 
-  if (!m_tex) glGenTextures(1, &m_tex);
+  if (!m_tex) glGenTextures(1, (GLuint *)&m_tex);
 
   glBindTexture(GL_TEXTURE_2D, m_tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

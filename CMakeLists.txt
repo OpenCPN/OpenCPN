@@ -824,7 +824,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/SendToGpsDlg.h
     ${GUI_HDR_DIR}/SendToPeerDlg.h
-    ${GUI_HDR_DIR}/shaders.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/svg_utils.h
@@ -944,7 +943,6 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/SencManager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
-    ${GUI_SRC_DIR}/shaders.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
@@ -977,6 +975,10 @@ list(APPEND GUI_SRC
   ${GUI_S57_DIR}/src/s57RegistrarMgr.cpp
 )
 
+if (OCPN_USE_GL)
+  list(APPEND GUI_HDRS${GUI_HDR_DIR}/shaders.h)
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/shaders.cpp)
+endif()
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")

@@ -14236,6 +14236,7 @@ WORD *g_pSavedGammaMap;
 
 int InitScreenBrightness(void) {
 #ifdef _WIN32
+#ifdef ocpnUSE_GL
   if (gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl) {
     HDC hDC;
     BOOL bbr;
@@ -14282,8 +14283,9 @@ int InitScreenBrightness(void) {
     g_brightness_init = true;
     return 1;
   }
+#endif
 
-  else {
+  {
     if (NULL == g_pcurtain) {
       if (gFrame->CanSetTransparent()) {
         //    Build the curtain window
@@ -14382,6 +14384,7 @@ int SetScreenBrightness(int brightness) {
   //    Under Windows, we use the SetDeviceGammaRamp function which exists in
   //    some (most modern?) versions of gdi32.dll Load the required library dll,
   //    if not already in place
+#ifdef ocpnUSE_GL
   if (gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl) {
     if (g_pcurtain) {
       g_pcurtain->Close();
@@ -14447,7 +14450,10 @@ int SetScreenBrightness(int brightness) {
     ReleaseDC(NULL, hDC);                    // Release the DC
 
     return 1;
-  } else {
+  }
+#endif
+
+  {
     if (g_pSavedGammaMap) {
       HDC hDC = GetDC(NULL);  // Get the full screen DC
       g_pSetDeviceGammaRamp(hDC,

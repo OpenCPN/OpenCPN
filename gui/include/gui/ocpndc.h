@@ -38,7 +38,9 @@
 
 #include "TexFont.h"
 #include "viewport.h"
-#include "shaders.h"
+#ifdef ocpnUSE_GL
+    #include "shaders.h"
+#endif
 
 class ViewPort;
 class GLUtesselator;
@@ -178,10 +180,12 @@ protected:
   unsigned int workBufIndex;
   double m_dpi_factor;
   ViewPort m_vp;
+#ifdef ocpnUSE_GL
   GLShaderProgram *m_pcolor_tri_shader_program;
   GLShaderProgram *m_pAALine_shader_program;
   GLShaderProgram *m_pcircle_filled_shader_program;
   GLShaderProgram *m_ptexture_2D_shader_program;
+#endif
 };
 
 #endif

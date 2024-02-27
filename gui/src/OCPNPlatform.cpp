@@ -214,7 +214,9 @@ extern BasePlatform *g_BasePlatform;
 extern PlatSpec android_plat_spc;
 #endif
 
+#ifdef ocpnUSE_GL
 OCPN_GLCaps *GL_Caps;
+#endif
 
 static const char *const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -606,6 +608,7 @@ void OCPNPlatform::Initialize_3(void) {
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
 
+#ifdef ocpnUSE_GL
   if ((g_bFirstRun || g_bUpgradeInProcess || bAndroid) && bcapable) {
     g_bopengl = true;
 
@@ -620,6 +623,7 @@ void OCPNPlatform::Initialize_3(void) {
     g_GLOptions.m_GLPolygonSmoothing = true;
     g_GLOptions.m_GLLineSmoothing = true;
   }
+#endif
 
   gFrame->SetGPSCompassScale();
 
@@ -667,6 +671,7 @@ void OCPNPlatform::OnExit_2(void) {
 }
 
 
+#ifdef ocpnUSE_GL
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   // Investigate OpenGL capabilities
   gFrame->Show();
@@ -758,9 +763,11 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   return true;
 }
-
+#endif
 
 bool OCPNPlatform::IsGLCapable() {
+#ifdef ocpnUSE_GL
+
 #ifdef __OCPN__ANDROID__
   return true;
 #elif defined(CLI)
@@ -815,6 +822,9 @@ bool OCPNPlatform::IsGLCapable() {
   pConfig->UpdateSettings();
 
   return true;
+#endif
+#else
+  return false;
 #endif
 }
 

@@ -1868,12 +1868,6 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
   m_pNMEAForm = AddPage(parent, _("NMEA"));
 
   comm_dialog = std::make_shared<ConnectionsDialog>(m_pNMEAForm, this);
-
-  //FIXME (dave)  Why is this here
-  pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                   wxCommandEventHandler(options::OnGLClicked), NULL, this);
-
-
 }
 
 
@@ -2926,6 +2920,8 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
 
     // OpenGL Options
+#ifdef ocpnUSE_GL
+
     wxBoxSizer* OpenGLSizer = new wxBoxSizer(wxVERTICAL);
     itemBoxSizerUI->Add(OpenGLSizer, 0, 0, 0);
 
@@ -2939,6 +2935,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     OpenGLSizer->Add(bOpenGL, inputFlags);
     bOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
 
+    pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                     wxCommandEventHandler(options::OnGLClicked), NULL, this);
+
+
+
 #ifdef __OCPN__ANDROID__
     pOpenGL->Hide();
     bOpenGL->Hide();
@@ -2946,6 +2947,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
+#endif
 
     //  Course Up display update period
     wxStaticText* crat = new wxStaticText(m_ChartDisplayPage, wxID_ANY,
@@ -3240,6 +3242,8 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
+#ifdef ocpnUSE_GL
+
     // OpenGL Options
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Graphics")),
@@ -3251,6 +3255,9 @@ With a higher value, the same zoom level shows a more detailed chart."));
                              _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
     pOpenGL->Enable(!g_bdisable_opengl && g_Platform->IsGLCapable());
+
+    pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                     wxCommandEventHandler(options::OnGLClicked), NULL, this);
 
 #ifdef __OCPN__ANDROID__
     pOpenGL->Disable();
@@ -3265,6 +3272,8 @@ With a higher value, the same zoom level shows a more detailed chart."));
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
+
+#endif
 
     // ChartBar Options
     itemBoxSizerUI->Add(
@@ -6005,7 +6014,9 @@ void options::SetInitialSettings(void) {
   // pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   // pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
+#ifdef ocpnUSE_GL
   pOpenGL->SetValue(g_bopengl);
+#endif
   if (pSmoothPanZoom) pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
   pCBTrueShow->SetValue(g_bShowTrue);
   pCBMagShow->SetValue(g_bShowMag);
@@ -6859,9 +6870,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   //  Any Font changes?
   if (m_bfontChanged){
+#ifdef ocpnUSE_GL
     if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
       gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
     }
+#endif
     m_returnChanges |= FONT_CHANGED;
   }
 
@@ -7208,8 +7221,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
   //g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();
 
+#ifdef ocpnUSE_GL
   if (g_bopengl != pOpenGL->GetValue()) m_returnChanges |= GL_CHANGED;
   g_bopengl = pOpenGL->GetValue();
+#endif
 
   g_bChartBarEx = pChartBarEX->GetValue();
 
@@ -9202,7 +9217,7 @@ wxString OpenGLOptionsDlg::GetTextureCacheSize(void) {
   mb = mb / 1024.0;
   return wxString::Format(_T( "%.1f GB" ), mb);
 }
-
+#endif
 //-------------------------------------------------------------------------------------------------
 //  CanvasConfig selection panel
 //-------------------------------------------------------------------------------------------------
@@ -9277,4 +9292,3 @@ void CanvasConfigSelect::OnPaint(wxPaintEvent& event) {
   dc.DrawBitmap(m_bmpNormal, m_borderWidth, m_borderWidth, false);
 }
 
-#endif  // ocpnUSE_GL

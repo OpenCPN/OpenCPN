@@ -170,9 +170,11 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
 
   {
     wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
+#ifdef ocpnUSE_GL
     if(glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
       p.SetDashes(2, &glChartCanvas::dash_map[style][0]);
     }
+#endif
     dc.SetPen(p);
     dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(col, wxBRUSHSTYLE_SOLID));
     for (std::list<std::list<wxPoint> >::iterator lines = pointlists.begin();

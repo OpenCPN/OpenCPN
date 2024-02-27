@@ -13,9 +13,11 @@ SET(SRC
     src/TexFont.cpp
     src/DepthFont.cpp
     src/mygeom.cpp
-    src/Cs52_shaders.cpp
     src/color_types.h
 )
+if (OCPN_USE_GL)
+    SET(SRC ${SRC} src/Cs52_shaders.cpp)
+endif()
 
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)
