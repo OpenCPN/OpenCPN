@@ -34,8 +34,8 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 
-#include "meteo_points.h"
-#include "navutil_base.h"
+#include "model/meteo_points.h"
+#include "model/navutil_base.h"
 
 #define SHIP_NAME_LEN 35
 #define DESTINATION_LEN 21

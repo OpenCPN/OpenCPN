@@ -41,7 +41,7 @@
 
 #include "gdal/gdal.h"
 #include "s57RegistrarMgr.h"
-#include "model/S57ClassRegistrar.h"
+#include "S57ClassRegistrar.h"
 #include "S57Light.h"
 #include "S57Sector.h"
 #include "OCPNRegion.h"

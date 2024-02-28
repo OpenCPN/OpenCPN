@@ -100,6 +100,7 @@
 #include "model/conn_params.h"
 #include "route_gui.h"
 #include "line_clip.h"
+#include "displays.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -346,6 +347,7 @@ extern int g_GUIScaleFactor;
 // Win DPI scale factor
 double g_scaler;
 wxString g_lastS52PLIBPluginMessage;
+extern bool g_bChartBarEx;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -1402,6 +1404,8 @@ void ChartCanvas::SetGroupIndex(int index, bool autoSwitch) {
   //    applying the prior ViewPort exactly
   canvasChartsRefresh(dbi_hint);
 
+  UpdateCanvasControlBar();
+
   if (!autoSwitch && bgroup_override) {
     // show a short timed message box
     wxString msg(_("Group \""));
@@ -1714,19 +1718,6 @@ bool ChartCanvas::DoCanvasUpdate(void) {
         if (pc) {
           SetQuiltRefChart(initial_db_index);
           m_pCurrentStack->SetCurrentEntryFromdbIndex(initial_db_index);
-        }
-
-        // Check proposed scale, see how much underzoom results
-        // Adjust as necessary to prevent slow loading on initial startup
-        // For MBTILES we skip this test because they are always shown in
-        // reasonable range of scale
-        if (pc) {
-          if (pc->GetChartType() != CHART_TYPE_MBTILES)
-            proposed_scale_onscreen =
-                wxMin(proposed_scale_onscreen, 4.0 * pc->GetNativeScale());
-          else
-            proposed_scale_onscreen =
-                wxMin(proposed_scale_onscreen, 32.0 * pc->GetNativeScale());
         }
       }
 
@@ -2366,7 +2357,10 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   m_pix_per_mm = (horizontal) / ((double)m_display_size_mm);
   m_canvas_scale_factor = (horizontal) / (m_display_size_mm / 1000.);
 
-  if (ps52plib) ps52plib->SetPPMM(m_pix_per_mm);
+  if (ps52plib) {
+    ps52plib->SetDisplayWidth(g_monitor_info[g_current_monitor].width);
+    ps52plib->SetPPMM(m_pix_per_mm);
+  }
 
   wxString msg;
   msg.Printf(
@@ -2376,8 +2370,9 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   wxLogMessage(msg);
 
   int ssx, ssy;
-  ::wxDisplaySize(&ssx, &ssy);
-  msg.Printf(_T("wxDisplaySize(): %d %d"), ssx, ssy);
+  ssx = g_monitor_info[g_current_monitor].width;
+  ssy = g_monitor_info[g_current_monitor].height;
+  msg.Printf(_T("monitor size: %d %d"), ssx, ssy);
   wxLogMessage(msg);
 
   m_focus_indicator_pix = /*std::round*/ wxRound(1 * GetPixPerMM());
@@ -2533,6 +2528,14 @@ void ChartCanvas::SetQuiltChartHiLiteIndex(int dbIndex) {
   m_pQuilt->SetHiliteIndex(dbIndex);
 }
 
+void ChartCanvas::SetQuiltChartHiLiteIndexArray(std::vector<int> hilite_array) {
+  m_pQuilt->SetHiliteIndexArray(hilite_array);
+}
+
+void ChartCanvas::ClearQuiltChartHiLiteIndexArray() {
+  m_pQuilt->ClearHiliteIndexArray();
+}
+
 std::vector<int> ChartCanvas::GetQuiltCandidatedbIndexArray(bool flag1,
                                                             bool flag2) {
   return m_pQuilt->GetCandidatedbIndexArray(flag1, flag2);
@@ -2542,8 +2545,12 @@ int ChartCanvas::GetQuiltRefChartdbIndex(void) {
   return m_pQuilt->GetRefChartdbIndex();
 }
 
-std::vector<int> ChartCanvas::GetQuiltExtendedStackdbIndexArray() {
+std::vector<int> &ChartCanvas::GetQuiltExtendedStackdbIndexArray() {
   return m_pQuilt->GetExtendedStackIndexArray();
+}
+
+std::vector<int> &ChartCanvas::GetQuiltFullScreendbIndexArray() {
+  return m_pQuilt->GetFullscreenIndexArray();
 }
 
 std::vector<int> ChartCanvas::GetQuiltEclipsedStackdbIndexArray() {
@@ -4482,6 +4489,18 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
       int new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
       if (new_db_index >= 0)
         pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+      else {  // for whatever reason, no reference chart is known
+              // Choose the smallest scale chart on the current stack
+              // and then adjust for scale range
+        int current_ref_stack_index = -1;
+        if (m_pCurrentStack->nEntry) {
+          int trial_index = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+          m_pQuilt->SetReferenceChart(trial_index);
+          new_db_index = m_pQuilt->AdjustRefOnZoomIn(proposed_scale_onscreen);
+          if (new_db_index >= 0)
+            pc = ChartData->OpenChartFromDB(new_db_index, FULL_INIT);
+        }
+      }
 
       if (m_pCurrentStack)
         m_pCurrentStack->SetCurrentEntryFromdbIndex(
@@ -4777,6 +4796,30 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
         double tweak_scale_ppm =
             pc->GetNearestPreferredScalePPM(VPoint.view_scale_ppm);
         SetVPScale(tweak_scale_ppm);
+      }
+    }
+
+    if(new_ref_dbIndex == -1) {
+      // for whatever reason, no reference chart is known
+      // Probably panned out of the coverage region
+      // If any charts are anywhere on-screen, choose the smallest
+      // scale chart on the screen to be a new reference chart.
+     int trial_index = -1;
+     if (m_pCurrentStack->nEntry) {
+        int trial_index =
+            m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+     }
+
+      if (trial_index < 0) {
+        auto full_screen_array = GetQuiltFullScreendbIndexArray();
+        if (full_screen_array.size())
+          trial_index = full_screen_array[full_screen_array.size()-1];
+     }
+
+      if (trial_index >= 0){
+        m_pQuilt->SetReferenceChart(trial_index);
+        SetViewPoint(dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation);
+        ReloadVP();
       }
     }
   }
@@ -6756,6 +6799,91 @@ void ChartCanvas::DestroyMuiBar() {
   if (m_muiBar) {
     m_muiBar->Destroy();
     m_muiBar = NULL;
+  }
+}
+
+void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale,
+                                          const std::vector<int> &index_vector) {
+  if (n_charts > 0) {
+    if (NULL == m_pCIWin) {
+      m_pCIWin = new ChInfoWin(this);
+      m_pCIWin->Hide();
+    }
+
+    if (!m_pCIWin->IsShown() || (m_pCIWin->chart_scale != scale)) {
+      wxString s;
+
+      s = _("Composite of ");
+
+      wxString s1;
+      s1.Printf( "%d ", n_charts);
+      if (n_charts > 1)
+        s1 += _("charts");
+      else
+        s1 += _("chart");
+      s += s1;
+      s += '\n';
+
+      s1.Printf(_("Chart scale"));
+      s1 += ": ";
+      wxString s2;
+      s2.Printf("1:%d\n", scale);
+      s += s1;
+      s += s2;
+
+      s1 = _("Zoom in for more information");
+      s += s1;
+      s += '\n';
+
+      int char_width = s1.Length();
+      int char_height = 3;
+
+      if (g_bChartBarEx) {
+        s += '\n';
+        int j = 0;
+        for (int i : index_vector ) {
+          const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+          wxString path = cte.GetFullSystemPath();
+          s += path;
+          s += '\n';
+          char_height++;
+          char_width = wxMax(char_width, path.Length());
+          if (j++ >= 9) break;
+        }
+        if (j >= 9) {
+          s += "   .\n   .\n   .\n";
+          char_height += 3;
+        }
+        s += '\n';
+        char_height += 1;
+
+        char_width += 4;      // Fluff
+      }
+
+      m_pCIWin->SetString(s);
+
+      m_pCIWin->FitToChars(char_width, char_height);
+
+      wxPoint p;
+      p.x = x / GetContentScaleFactor();
+      if ((p.x + m_pCIWin->GetWinSize().x) >
+          (m_canvas_width / GetContentScaleFactor()))
+        p.x = ((m_canvas_width / GetContentScaleFactor()) -
+               m_pCIWin->GetWinSize().x) /
+              2;  // centered
+
+      p.y = (m_canvas_height - m_Piano->GetHeight()) / GetContentScaleFactor() -
+            4 - m_pCIWin->GetWinSize().y;
+
+      m_pCIWin->dbIndex = 0;
+      m_pCIWin->chart_scale = 0;
+      m_pCIWin->SetPosition(p);
+      m_pCIWin->SetBitmap();
+      m_pCIWin->Refresh();
+      m_pCIWin->Show();
+    }
+  } else {
+    HideChartInfoWindow();
   }
 }
 
@@ -13466,7 +13594,9 @@ void ChartCanvas::AddTileOverlayIndexToNoShow(int index) {
 //
 //-------------------------------------------------------------------------------------------------------
 
-void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
+void ChartCanvas::HandlePianoClick(int selected_index,
+                                        const std::vector<int> &selected_dbIndex_array)
+{
   if (g_boptionsactive)
     return;  // Piano might be invalid due to chartset updates.
   if (!m_pCurrentStack) return;
@@ -13477,6 +13607,30 @@ void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
   // quickly click and display a chart, which may zoom in
   // but the delayed timer fires first and it zooms out again!
   StopMovement();
+
+  //  When switching by piano key click, we may appoint the new target chart to be
+  //  any chart in the composite array.
+  // As an improvement to UX, find the chart that is "closest" to the current vp,
+  //  and select that chart.  This will cause a jump to the centroid of that chart
+
+  double distance = 25000;  //RTW
+  int closest_index = -1;
+  for (int chart_index : selected_dbIndex_array) {
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(chart_index);
+    double chart_lat = (cte.GetLatMax() + cte.GetLatMin()) / 2;
+    double chart_lon = (cte.GetLonMax() + cte.GetLonMin()) / 2;
+
+    // measure distance as Manhattan style
+    double test_distance = abs(m_vLat - chart_lat) + abs(m_vLon - chart_lon);
+    if (test_distance < distance){
+      distance = test_distance;
+      closest_index = chart_index;
+    }
+  }
+
+  int selected_dbIndex = selected_dbIndex_array[0];
+  if (closest_index >= 0)
+    selected_dbIndex = closest_index;
 
   if (!GetQuiltMode()) {
     if (m_bpersistent_quilt /* && g_bQuiltEnable*/) {
@@ -13494,7 +13648,6 @@ void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
 
     if (m_singleChart)
       GetVP().SetProjectionType(m_singleChart->GetChartProjectionType());
-
   } else {
     // Handle MBTiles overlays first
     // Left click simply toggles the noshow array index entry
@@ -13582,19 +13735,21 @@ void ChartCanvas::HandlePianoClick(int selected_index, int selected_dbIndex) {
 }
 
 void ChartCanvas::HandlePianoRClick(int x, int y, int selected_index,
-                                    int selected_dbIndex) {
+                                    const std::vector<int> &selected_dbIndex_array)
+{
   if (g_boptionsactive)
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
 
-  PianoPopupMenu(x, y, selected_index, selected_dbIndex);
+  PianoPopupMenu(x, y, selected_index, selected_dbIndex_array);
   UpdateCanvasControlBar();
 
   SetQuiltChartHiLiteIndex(-1);
 }
 
 void ChartCanvas::HandlePianoRollover(int selected_index,
-                                      int selected_dbIndex) {
+                                      const std::vector<int> &selected_dbIndex_array,
+                                      int n_charts, int scale) {
   if (g_boptionsactive)
     return;  // Piano might be invalid due to chartset updates.
   if (!GetpCurrentStack()) return;
@@ -13605,28 +13760,54 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
   wxPoint key_location = m_Piano->GetKeyOrigin(selected_index);
 
   if (!GetQuiltMode()) {
-    ShowChartInfoWindow(key_location.x, selected_dbIndex);
+    ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
   } else {
-    std::vector<int> piano_chart_index_array =
-        GetQuiltExtendedStackdbIndexArray();
+    // Select the correct vector
+    std::vector<int> piano_chart_index_array;
+    if (m_Piano->GetPianoMode() == PIANO_MODE_LEGACY) {
+      piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
+      if ((GetpCurrentStack()->nEntry > 1) ||
+          (piano_chart_index_array.size() >= 1)) {
+        ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
 
-    if ((GetpCurrentStack()->nEntry > 1) ||
+        SetQuiltChartHiLiteIndexArray(selected_dbIndex_array);
+        ReloadVP(false);  // no VP adjustment allowed
+      } else if (GetpCurrentStack()->nEntry == 1) {
+        const ChartTableEntry &cte =
+            ChartData->GetChartTableEntry(GetpCurrentStack()->GetDBIndex(0));
+        if (CHART_TYPE_CM93COMP != cte.GetChartType()) {
+          ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
+          ReloadVP(false);
+        } else if ((-1 == selected_index) &&
+                   (0 == selected_dbIndex_array.size())) {
+          ShowChartInfoWindow(key_location.x, -1);
+        }
+      }
+    }
+    else {
+      piano_chart_index_array = GetQuiltFullScreendbIndexArray();
+
+      if ((GetpCurrentStack()->nEntry > 1) ||
         (piano_chart_index_array.size() >= 1)) {
-      ShowChartInfoWindow(key_location.x, selected_dbIndex);
-      SetQuiltChartHiLiteIndex(selected_dbIndex);
 
-      ReloadVP(false);  // no VP adjustment allowed
-    } else if (GetpCurrentStack()->nEntry == 1) {
-      const ChartTableEntry &cte =
-          ChartData->GetChartTableEntry(GetpCurrentStack()->GetDBIndex(0));
-      if (CHART_TYPE_CM93COMP != cte.GetChartType()) {
-        ShowChartInfoWindow(key_location.x, selected_dbIndex);
-        ReloadVP(false);
-      } else if ((-1 == selected_index) && (-1 == selected_dbIndex)) {
-        ShowChartInfoWindow(key_location.x, selected_dbIndex);
+        if(n_charts > 1)
+          ShowCompositeInfoWindow(key_location.x, n_charts, scale, selected_dbIndex_array);
+        else if(n_charts == 1)
+          ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
+
+        SetQuiltChartHiLiteIndexArray(selected_dbIndex_array);
+        ReloadVP(false);  // no VP adjustment allowed
       }
     }
   }
+}
+
+void ChartCanvas::ClearPianoRollover() {
+  ClearQuiltChartHiLiteIndexArray();
+  ShowChartInfoWindow(0, -1);
+  std::vector<int> vec;
+  ShowCompositeInfoWindow(0, 0, 0, vec);
+  ReloadVP(false);
 }
 
 void ChartCanvas::UpdateCanvasControlBar(void) {
@@ -13645,8 +13826,8 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
   wxString old_hash = m_Piano->GetStoredHash();
 
   if (GetQuiltMode()) {
-    piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
-    m_Piano->SetKeyArray(piano_chart_index_array);
+   m_Piano->SetKeyArray(GetQuiltExtendedStackdbIndexArray(),
+                         GetQuiltFullScreendbIndexArray());
 
     std::vector<int> piano_active_chart_index_array =
         GetQuiltCandidatedbIndexArray();
@@ -13663,7 +13844,7 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
     sel_family = ChartData->GetDBChartFamily(GetQuiltReferenceChartIndex());
   } else {
     piano_chart_index_array = ChartData->GetCSArray(GetpCurrentStack());
-    m_Piano->SetKeyArray(piano_chart_index_array);
+    m_Piano->SetKeyArray(piano_chart_index_array, piano_chart_index_array);
     // TODO refresh_Piano();
 
     if (m_singleChart) {
@@ -13741,37 +13922,49 @@ void ChartCanvas::UpdateCanvasControlBar(void) {
 void ChartCanvas::FormatPianoKeys(void) { m_Piano->FormatKeys(); }
 
 void ChartCanvas::PianoPopupMenu(int x, int y, int selected_index,
-                                 int selected_dbIndex) {
+                                 const std::vector<int> &selected_dbIndex_array) {
   if (!GetpCurrentStack()) return;
 
   //    No context menu if quilting is disabled
   if (!GetQuiltMode()) return;
 
-  menu_selected_dbIndex = selected_dbIndex;
-  menu_selected_index = selected_index;
-
   m_piano_ctx_menu = new wxMenu();
 
-  //    Search the no-show array
-  bool b_is_in_noshow = false;
-  for (unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++) {
-    if (m_quilt_noshow_index_array[i] ==
-        selected_dbIndex)  // chart is in the noshow list
-    {
-      b_is_in_noshow = true;
-      break;
-    }
+  if(m_Piano->GetPianoMode() == PIANO_MODE_COMPOSITE) {
+//    m_piano_ctx_menu->Append(ID_PIANO_EXPAND_PIANO, _("Legacy chartbar"));
+//    Connect(ID_PIANO_EXPAND_PIANO, wxEVT_COMMAND_MENU_SELECTED,
+//            wxCommandEventHandler(ChartCanvas::OnPianoMenuExpandChartbar));
   }
+  else {
+//    m_piano_ctx_menu->Append(ID_PIANO_CONTRACT_PIANO, _("Fullscreen chartbar"));
+//    Connect(ID_PIANO_CONTRACT_PIANO, wxEVT_COMMAND_MENU_SELECTED,
+//            wxCommandEventHandler(ChartCanvas::OnPianoMenuContractChartbar));
 
-  if (b_is_in_noshow) {
-    m_piano_ctx_menu->Append(ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart"));
-    Connect(ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler(ChartCanvas::OnPianoMenuEnableChart));
-  } else if (GetpCurrentStack()->nEntry > 1) {
-    m_piano_ctx_menu->Append(ID_PIANO_DISABLE_QUILT_CHART,
-                             _("Hide This Chart"));
-    Connect(ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
-            wxCommandEventHandler(ChartCanvas::OnPianoMenuDisableChart));
+    menu_selected_dbIndex = selected_dbIndex_array[0];
+    menu_selected_index = selected_index;
+
+    //    Search the no-show array
+    bool b_is_in_noshow = false;
+    for (unsigned int i = 0; i < m_quilt_noshow_index_array.size(); i++) {
+      if (m_quilt_noshow_index_array[i] ==
+          menu_selected_dbIndex)  // chart is in the noshow list
+      {
+        b_is_in_noshow = true;
+        break;
+      }
+    }
+
+    if (b_is_in_noshow) {
+      m_piano_ctx_menu->Append(ID_PIANO_ENABLE_QUILT_CHART,
+                               _("Show This Chart"));
+      Connect(ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
+              wxCommandEventHandler(ChartCanvas::OnPianoMenuEnableChart));
+    } else if (GetpCurrentStack()->nEntry > 1) {
+      m_piano_ctx_menu->Append(ID_PIANO_DISABLE_QUILT_CHART,
+                               _("Hide This Chart"));
+      Connect(ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
+              wxCommandEventHandler(ChartCanvas::OnPianoMenuDisableChart));
+    }
   }
 
   wxPoint pos = wxPoint(x, y - 30);
@@ -13787,6 +13980,7 @@ void ChartCanvas::PianoPopupMenu(int x, int y, int selected_index,
   m_Piano->ResetRollover();
 
   SetQuiltChartHiLiteIndex(-1);
+  ClearQuiltChartHiLiteIndexArray();
 
   ReloadVP();
 }
@@ -14042,6 +14236,7 @@ WORD *g_pSavedGammaMap;
 
 int InitScreenBrightness(void) {
 #ifdef _WIN32
+#ifdef ocpnUSE_GL
   if (gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl) {
     HDC hDC;
     BOOL bbr;
@@ -14088,8 +14283,9 @@ int InitScreenBrightness(void) {
     g_brightness_init = true;
     return 1;
   }
+#endif
 
-  else {
+  {
     if (NULL == g_pcurtain) {
       if (gFrame->CanSetTransparent()) {
         //    Build the curtain window
@@ -14188,6 +14384,7 @@ int SetScreenBrightness(int brightness) {
   //    Under Windows, we use the SetDeviceGammaRamp function which exists in
   //    some (most modern?) versions of gdi32.dll Load the required library dll,
   //    if not already in place
+#ifdef ocpnUSE_GL
   if (gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl) {
     if (g_pcurtain) {
       g_pcurtain->Close();
@@ -14253,7 +14450,10 @@ int SetScreenBrightness(int brightness) {
     ReleaseDC(NULL, hDC);                    // Release the DC
 
     return 1;
-  } else {
+  }
+#endif
+
+  {
     if (g_pSavedGammaMap) {
       HDC hDC = GetDC(NULL);  // Get the full screen DC
       g_pSetDeviceGammaRamp(hDC,

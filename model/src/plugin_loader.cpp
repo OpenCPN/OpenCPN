@@ -57,19 +57,20 @@
 #include <wx/process.h>
 
 #include "model/base_platform.h"
-#include "chartdb.h"
+#include "model/catalog_handler.h"
+#include "model/catalog_parser.h"
 #include "model/config_vars.h"
 #include "model/cmdline.h"
+#include "model/config_vars.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
-#include "observable_confvar.h"
 #include "model/plugin_blacklist.h"
 #include "model/plugin_cache.h"
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
 #include "model/plugin_paths.h"
 #include "model/safe_mode.h"
-#include "model/catalog_handler.h"
+#include "observable_confvar.h"
 
 
 #ifdef __ANDROID__
@@ -411,7 +412,7 @@ void PluginLoader::SortPlugins(int (*cmp_func)(PlugInContainer**,
   plugin_array.Sort(ComparePlugins);
 }
 
-bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
+bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   using namespace std;
 
   static const wxString sep = wxFileName::GetPathSeparator();
@@ -428,7 +429,7 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled) {
   // Read the default ocpn-plugins.xml, and update/merge the plugin array
   // This only needs to happen when the entire universe (enabled and disabled)
   // of plugins are loaded for management.
-  if (!load_enabled) UpdateManagedPlugins();
+  if (!load_enabled) UpdateManagedPlugins(keep_orphans);
 
   // Some additional actions needed after all plugins are loaded.
   evt_update_chart_types.Notify();
@@ -483,7 +484,6 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   }
 
   if (loaded) return true;
-
   // Avoid loading/testing legacy plugins installed in base plugin path.
   wxFileName fn_plugin_file(file_name);
   wxString plugin_file_path =
@@ -566,7 +566,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
 
       std::string found_version;
       for (const auto& p : PluginHandler::getInstance()->getInstalled()) {
-        if (p.name == pic->m_common_name.Lower()) {
+        if (ocpn::tolower(p.name) == pic->m_common_name.Lower()) {
           found_version = p.readonly ? "" : p.version;
           break;
         }
@@ -752,7 +752,8 @@ bool PluginLoader::UpdatePlugIns() {
       wxString msg("PluginLoader: Initializing PlugIn: ");
       msg += pic->m_plugin_file;
       wxLogMessage(msg);
-
+      if (pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
+        pic->m_has_setup_options = false;
       pic->m_cap_flag = pic->m_pplugin->Init();
       pic->m_pplugin->SetDefaults();
       pic->m_init_state = true;
@@ -838,6 +839,15 @@ PluginMetadata PluginLoader::MetadataByName(const std::string& name) {
   using namespace std;
   if (name.empty()) return {};
 
+  auto import_path = PluginHandler::ImportedMetadataPath(name.c_str());
+  if (isRegularFile(import_path.c_str())) {
+    std::ifstream f(import_path.c_str());
+    std::stringstream ss;
+    ss << f.rdbuf();
+    PluginMetadata pd;
+    ParsePlugin(ss.str(), pd);
+    return pd;
+  }
   auto available = PluginHandler::getInstance()->getCompatiblePlugins();
   vector<PluginMetadata> matches;
   copy_if(available.begin(), available.end(), back_inserter(matches),
@@ -880,7 +890,7 @@ void PluginLoader::UpdatePlugin(PlugInContainer* plugin,
   plugin->m_managed_metadata = md;
 }
 
-void PluginLoader::UpdateManagedPlugins() {
+void PluginLoader::UpdateManagedPlugins(bool keep_orphans) {
   std::vector<PlugInContainer*> loaded_plugins;
   for (size_t i = 0; i < plugin_array.GetCount(); i++)
     loaded_plugins.push_back(plugin_array.Item(i));
@@ -892,19 +902,20 @@ void PluginLoader::UpdateManagedPlugins() {
     bool is_system = found != SYSTEM_PLUGINS.end();
     p->m_status = is_system ? PluginStatus::System : PluginStatus::Unmanaged;
   }
-
-  // Remove any inactive/uninstalled managed plugins that are no longer
-  // available in the current catalog Usually due to reverting from Alpha/Beta
-  // catalog back to master
-  auto predicate = [](const PlugInContainer* pd) -> bool {
-    const auto md(
-        PluginLoader::MetadataByName(pd->m_common_name.ToStdString()));
-    return md.name.empty() && !pd->m_pplugin &&
-        !IsSystemPluginName(pd->m_common_name.ToStdString());
-  };
-  auto end =
-      std::remove_if(loaded_plugins.begin(), loaded_plugins.end(), predicate);
-  loaded_plugins.erase(end, loaded_plugins.end());
+  if (!keep_orphans) {
+    // Remove any inactive/uninstalled managed plugins that are no longer
+    // available in the current catalog Usually due to reverting from
+    // Alpha/Beta catalog back to master
+    auto predicate = [](const PlugInContainer* pd) -> bool {
+      const auto md(
+          PluginLoader::MetadataByName(pd->m_common_name.ToStdString()));
+      return md.name.empty() && !md.is_imported && !pd->m_pplugin &&
+          !IsSystemPluginName(pd->m_common_name.ToStdString());
+    };
+    auto end =
+        std::remove_if(loaded_plugins.begin(), loaded_plugins.end(), predicate);
+    loaded_plugins.erase(end, loaded_plugins.end());
+  }
 
   //  Update from the catalog metadata
   for (auto& plugin : loaded_plugins) {

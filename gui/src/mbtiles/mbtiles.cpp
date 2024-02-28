@@ -60,7 +60,9 @@
 #include "chcanv.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"
-#include "shaders.h"
+#ifdef ocpnUSE_GL
+    #include "shaders.h"
+#endif
 
 #include "mbtiles.h"
 
@@ -205,6 +207,7 @@ ChartMBTiles::ChartMBTiles() {
   m_pCOVRTable = NULL;
   m_pNoCOVRTablePoints = NULL;
   m_pNoCOVRTable = NULL;
+  m_tileCache = NULL;
 
   m_LonMin = LON_UNDEF;
   m_LonMax = LON_UNDEF;
@@ -617,7 +620,9 @@ void ChartMBTiles::FlushTiles() {
   // Delete all the tiles in the tile cache
   // Note that this function also deletes OpenGL texture memory associated to
   // the tiles
-  m_tileCache->Flush();
+  if (m_tileCache) {
+    m_tileCache->Flush();
+  }
 }
 
 bool ChartMBTiles::GetChartExtent(Extent *pext) {
@@ -750,6 +755,7 @@ wxPoint2DDouble ChartMBTiles::GetDoublePixFromLL(ViewPort &vp, double lat,
 
 bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
                               const ViewPort &VPoint) {
+#ifdef ocpnUSE_GL
   ViewPort vp = VPoint;
 
   bool btexture = getTileTexture(tile);
@@ -861,14 +867,17 @@ bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
   shader->UnBind();
 
   glDisable(GL_BLEND);
-
+#endif
   return true;
 }
+
 
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
                                         const ViewPort &VPoint,
                                         const OCPNRegion &RectRegion,
                                         const LLRegion &Region) {
+#ifdef ocpnUSE_GL
+
   // Reset the tile counter. This counter is used to know how many tile are
   // currently used to draw the chart and then to dimension the tile cache size
   // properly w.r.t the size of the screen and the level of details
@@ -1004,7 +1013,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   // Limit the cache size to 3 times the number of tiles to draw on a rendering
   m_tileCache->CleanCache(m_tileCount * 5);
-
+#endif
   return true;
 }
 

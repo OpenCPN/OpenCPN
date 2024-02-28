@@ -149,9 +149,7 @@ protected:
   wxLog* m_old_logger;
   wxString large_log_message;
 
-  wxSize m_displaySize;
-  wxSize m_displaySizeMM;
-  int m_displaySizeMMOverride;
+  std::vector<int> m_displaySizeMMOverride;
 
 
 #ifdef _MSC_VER

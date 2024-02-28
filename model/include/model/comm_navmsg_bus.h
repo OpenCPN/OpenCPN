@@ -36,7 +36,7 @@
 #include <wx/event.h>
 #include <wx/jsonreader.h>
 
-#include "comm_driver.h"
+#include "model/comm_driver.h"
 
 
 /** The raw message layer, a singleton. */

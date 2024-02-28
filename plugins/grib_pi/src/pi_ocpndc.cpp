@@ -92,12 +92,11 @@ int NextPow2(int size) {
 /* pass the dc to the constructor, or NULL to use opengl */
 pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
     : glcanvas(&canvas), dc(NULL), m_pen(wxNullPen), m_brush(wxNullBrush), m_buseGL(true) {
+#ifdef ocpnUSE_GL
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
-#ifdef ocpnUSE_GL
   m_textforegroundcolour = wxColour(0, 0, 0);
-#endif
   m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
@@ -111,7 +110,6 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
   s_odc_tess_work_buf = (GLfloat *)malloc(100 * sizeof(GLfloat));
   s_odc_tess_buf_len = 100;
 
-#if 1 //def USE_ANDROID_GLES2
   pi_loadShaders();
 #endif
 #endif
@@ -133,7 +131,9 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
   m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
+#ifdef ocpnUSE_GL
   s_odc_tess_work_buf = NULL;
+#endif
 }
 
 pi_ocpnDC::pi_ocpnDC()
@@ -145,9 +145,8 @@ pi_ocpnDC::pi_ocpnDC()
   m_buseTex = false; //GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
+#ifdef ocpnUSE_GL
   s_odc_tess_work_buf = NULL;
-
-#if 1 //def USE_ANDROID_GLES2
   pi_loadShaders();
 #endif
 }
@@ -157,8 +156,9 @@ pi_ocpnDC::~pi_ocpnDC() {
   if (pgc) delete pgc;
 #endif
   free(workBuf);
-
+#ifdef ocpnUSE_GL
   free(s_odc_tess_work_buf);
+#endif
 }
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {

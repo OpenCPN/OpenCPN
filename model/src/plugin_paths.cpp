@@ -5,11 +5,12 @@
 #include <wx/string.h>
 
 #include "config.h"
-#include "model/cmdline.h"
+
 #include "model/base_platform.h"
+#include "model/cmdline.h"
 #include "model/ocpn_utils.h"
-#include "ocpn_plugin.h"
 #include "model/plugin_paths.h"
+#include "ocpn_plugin.h"
 
 /*
  * The user-writable paths for libraries, binaries and plugin data,

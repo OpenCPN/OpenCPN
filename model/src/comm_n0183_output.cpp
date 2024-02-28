@@ -39,18 +39,18 @@
 
 #include "model/comm_driver.h"
 #include "model/comm_drv_factory.h"
+#include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_serial.h"
-#include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_n0183_output.h"
 #include "model/config_vars.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
-#include "nmea0183.h"
-#include "nmea_ctx_factory.h"
-#include "model/route.h"
+#include "model/nmea_ctx_factory.h"
 #include "model/nmea_log.h"
+#include "model/route.h"
+#include "nmea0183.h"
 
 #ifdef USE_GARMINHOST
 #include "model/garmin_wrapper.h"

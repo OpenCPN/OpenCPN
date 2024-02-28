@@ -390,7 +390,7 @@ int g_lastClientRecty;
 int g_lastClientRectw;
 int g_lastClientRecth;
 double g_display_size_mm;
-double g_config_display_size_mm;
+std::vector<size_t> g_config_display_size_mm;
 bool g_config_display_size_manual;
 
 int g_GUIScaleFactor;
@@ -406,7 +406,6 @@ bool g_bShowTide;
 bool g_bShowCurrent;
 
 s52plib *ps52plib;
-S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr *m_pRegistrarMan;
 
 CM93OffsetDialog *g_pCM93OffsetDialog;
@@ -473,6 +472,7 @@ bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;
 double g_plus_minus_zoom_factor;
+bool g_bChartBarEx;
 
 bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
@@ -543,7 +543,7 @@ double g_n_gps_antenna_offset_y;
 double g_n_gps_antenna_offset_x;
 int g_n_ownship_min_mm;
 
-int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away 
+int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
@@ -951,8 +951,11 @@ MyApp::MyApp()
 {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
+  if (wxGetEnv( "WAYLAND_DISPLAY", NULL)) {
     setenv("GDK_BACKEND", "x11", 1);
+  }
+  setenv("mesa_glthread", "false", 1); // Explicitly disable glthread. This may have some impact on OpenGL performance,
+                                       // but we know it is problematic for us. See #2889
 #endif   // __linux__
 }
 
@@ -1284,13 +1287,13 @@ bool MyApp::OnInit() {
   wxLogMessage(msg);
 
   // User override....
-  if ((g_config_display_size_mm > 0) && (g_config_display_size_manual)) {
-    g_display_size_mm = g_config_display_size_mm;
+  if (g_config_display_size_manual && g_config_display_size_mm.size() > g_current_monitor && g_config_display_size_mm[g_current_monitor] > 0) {
+    g_display_size_mm = g_config_display_size_mm[g_current_monitor];
     wxString msg;
     msg.Printf(_T("Display size (horizontal) config override: %d mm"),
                (int)g_display_size_mm);
     wxLogMessage(msg);
-    g_Platform->SetDisplaySizeMM(g_display_size_mm);
+    g_Platform->SetDisplaySizeMM(g_current_monitor, g_display_size_mm);
   }
 
   g_display_size_mm = wxMax(50, g_display_size_mm);

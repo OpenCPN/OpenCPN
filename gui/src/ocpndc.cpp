@@ -83,7 +83,9 @@ ocpnDC::ocpnDC(glChartCanvas &canvas)
   pgc = NULL;
 #endif
   Init();
+#ifdef ocpnUSE_GL
   m_canvasIndex = m_glchartCanvas->GetCanvasIndex();
+#endif
 }
 
 ocpnDC::ocpnDC(wxGLCanvas &canvas)
@@ -124,22 +126,26 @@ ocpnDC::~ocpnDC() {
 #endif
   free(workBuf);
 
+#ifdef ocpnUSE_GL
   free(s_odc_tess_work_buf);
 
   delete m_pcolor_tri_shader_program;
   delete m_pAALine_shader_program;
   delete m_pcircle_filled_shader_program;
   delete m_ptexture_2D_shader_program;
+#endif
 }
 
 void ocpnDC::Init(){
   m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
   workBuf = NULL;
   workBufSize = 0;
-  s_odc_tess_work_buf = NULL;
   m_dpi_factor = 1.0;
   m_canvasIndex = 0;
   m_textforegroundcolour = wxColour(0, 0, 0);
+#ifdef ocpnUSE_GL
+  s_odc_tess_work_buf = NULL;
+#endif
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
   s_odc_tess_vertex_idx = 0;
@@ -156,11 +162,12 @@ void ocpnDC::Init(){
 #endif
 
 }
-
+#ifdef ocpnUSE_GL
 void ocpnDC::SetGLCanvas(glChartCanvas *canvas) {
   m_glchartCanvas = canvas;
   m_canvasIndex = m_glchartCanvas->GetCanvasIndex();
 }
+#endif
 
 void ocpnDC::Clear() {
   if (dc)
@@ -1034,6 +1041,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
     return;
   }
 
+#ifdef ocpnUSE_GL
   glEnable(GL_BLEND);
 
   float coords[8];
@@ -1104,6 +1112,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   shader->UnBind();
+#endif
 }
 
 void ocpnDC::StrokeCircle(wxCoord x, wxCoord y, wxCoord radius) {
@@ -1899,7 +1908,7 @@ void ocpnDC::SetVP(ViewPort vp){
   // If not in DC mode, simply return
   if (!m_glchartCanvas && !m_glcanvas)
       return;
-
+#ifdef ocpnUSE_GL
   // Otherwise, prepare local shaders
   m_vp.SetVPTransformMatrix();
 
@@ -1944,10 +1953,11 @@ void ocpnDC::SetVP(ViewPort vp){
                                                       (GLfloat *)I);
     m_ptexture_2D_shader_program->UnBind();
   }
+#endif
 }
 
 
-
+#ifdef ocpnUSE_GL
 //  Private shaders, used when drawing to a context which is not a glChartCanvas (i.e. radar_pi)
 #ifdef USE_ANDROID_GLES2
 const GLchar* odc_preamble =
@@ -2063,6 +2073,7 @@ static const GLchar* odc_texture_2D_fragment_shader_source =
     "   gl_FragColor = texture2D(uTex, varCoord);\n"
     "}\n";
 
+#ifdef ocpnUSE_GL
 void ocpnDC::BuildShaders(){
 
   // Simple colored triangle shader
@@ -2107,3 +2118,5 @@ void ocpnDC::BuildShaders(){
   }
 
 }
+#endif
+#endif

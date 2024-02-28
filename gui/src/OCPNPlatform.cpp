@@ -50,6 +50,7 @@
 #include "gui_lib.h"
 #include "model/cutil.h"
 #include "model/config_vars.h"
+#include "displays.h"
 #include "model/logger.h"
 #include "snd_config.h"
 #include "styles.h"
@@ -150,7 +151,7 @@ extern bool g_boptionsactive;
 
 extern wxString *pInit_Chart_Dir;
 
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
 extern bool g_bFullScreenQuilt;
@@ -213,7 +214,9 @@ extern BasePlatform *g_BasePlatform;
 extern PlatSpec android_plat_spc;
 #endif
 
+#ifdef ocpnUSE_GL
 OCPN_GLCaps *GL_Caps;
+#endif
 
 static const char *const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -236,10 +239,11 @@ static bool checkIfFlatpacked() {
 OCPNPlatform::OCPNPlatform() {
   m_pt_per_pixel = 0;  // cached value
   m_bdisableWindowsDisplayEnum = false;
-  m_displaySize = wxSize(0, 0);
-  m_displaySizeMM = wxSize(0, 0);
   m_monitorWidth = m_monitorHeight = 0;
-  m_displaySizeMMOverride = 0;
+  EnumerateMonitors();
+  for (size_t i = 0; i < g_monitor_info.size(); i++) {
+    m_displaySizeMMOverride.push_back(0);
+  }
   m_pluginDataPath = "";
 }
 
@@ -604,6 +608,7 @@ void OCPNPlatform::Initialize_3(void) {
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
 
+#ifdef ocpnUSE_GL
   if ((g_bFirstRun || g_bUpgradeInProcess || bAndroid) && bcapable) {
     g_bopengl = true;
 
@@ -618,6 +623,7 @@ void OCPNPlatform::Initialize_3(void) {
     g_GLOptions.m_GLPolygonSmoothing = true;
     g_GLOptions.m_GLLineSmoothing = true;
   }
+#endif
 
   gFrame->SetGPSCompassScale();
 
@@ -665,6 +671,7 @@ void OCPNPlatform::OnExit_2(void) {
 }
 
 
+#ifdef ocpnUSE_GL
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   // Investigate OpenGL capabilities
   gFrame->Show();
@@ -756,9 +763,11 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   return true;
 }
-
+#endif
 
 bool OCPNPlatform::IsGLCapable() {
+#ifdef ocpnUSE_GL
+
 #ifdef __OCPN__ANDROID__
   return true;
 #elif defined(CLI)
@@ -813,6 +822,9 @@ bool OCPNPlatform::IsGLCapable() {
   pConfig->UpdateSettings();
 
   return true;
+#endif
+#else
+  return false;
 #endif
 }
 
@@ -1643,60 +1655,23 @@ wxSize OCPNPlatform::getDisplaySize() {
 #ifdef __OCPN__ANDROID__
   return getAndroidDisplayDimensions();
 #else
-  if (m_displaySize.x < 10)
-    m_displaySize = ::wxGetDisplaySize();  // default, for most platforms
-  return m_displaySize;
+  return wxSize(g_monitor_info[g_current_monitor].width,
+                g_monitor_info[g_current_monitor].height);
 #endif
 }
 
 double OCPNPlatform::GetDisplaySizeMM() {
-  if (m_displaySizeMMOverride > 0) return m_displaySizeMMOverride;
-
-  if (m_displaySizeMM.x < 1) m_displaySizeMM = wxGetDisplaySizeMM();
-
-  double ret = m_displaySizeMM.GetWidth();
-
-#if 0
-#ifdef __WXGTK__
-    GdkScreen *screen = gdk_screen_get_default();
-    wxSize resolution = getDisplaySize();
-    double gdk_monitor_mm;
-    double ratio = (double)resolution.GetWidth() / (double)resolution.GetHeight();
-    if( std::abs(ratio - 32.0/10.0) < std::abs(ratio - 16.0/10.0) ) {
-        // We suspect that when the resolution aspect ratio is closer to 32:10 than 16:10, there are likely 2 monitors side by side. This works nicely when they are landscape, but what if both are rotated 90 degrees...
-        gdk_monitor_mm = gdk_screen_get_width_mm(screen);
-    } else {
-        gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+  if (g_current_monitor < m_displaySizeMMOverride.size()) {
+    if (m_displaySizeMMOverride[g_current_monitor] > 0) {
+      return m_displaySizeMMOverride[g_current_monitor];
     }
-    if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
-        ret = gdk_monitor_mm;
-#endif
-#endif
-
-#ifdef __WXMSW__
-  int w, h;
-
-  if (!m_bdisableWindowsDisplayEnum) {
-    if (GetWindowsMonitorSize(&w, &h) && (w > 100)) {  // sanity check
-      m_displaySizeMM == wxSize(w, h);
-      ret = w;
-    } else
-      m_bdisableWindowsDisplayEnum = true;  // disable permanently
   }
 
-#endif
-
-#ifdef __WXOSX__
-  ret = GetMacMonitorSize();
-#endif
+  double ret = g_monitor_info[g_current_monitor].width_mm;
 
 #ifdef __OCPN__ANDROID__
   ret = GetAndroidDisplaySize();
 #endif
-
-  wxString msg;
-  msg.Printf(_T("Detected display size (horizontal): %d mm"), (int)ret);
-  //     wxLogMessage(msg);
 
   return ret;
 }
@@ -1715,8 +1690,10 @@ double OCPNPlatform::GetDisplayAreaCM2() {
   return area;
 }
 
-void OCPNPlatform::SetDisplaySizeMM(double sizeMM) {
-  m_displaySizeMMOverride = sizeMM;
+void OCPNPlatform::SetDisplaySizeMM(size_t monitor, double sizeMM) {
+  if (monitor < m_displaySizeMMOverride.size()) {
+    m_displaySizeMMOverride[monitor] = sizeMM;
+  }
 }
 
 double OCPNPlatform::GetDisplayDPmm() {
@@ -1865,7 +1842,7 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   //  This may be approximated in a device orientation-independent way as:
   //   45pixels * DENSITY
   double premult = 1.0;
-  if (g_config_display_size_manual && (g_config_display_size_mm > 0)) {
+  if (g_config_display_size_manual && g_config_display_size_mm[0] > 0) {
     double target_size = 9.0;  // mm
 
     double basic_tool_size_mm = tool_size / GetDisplayDPmm();

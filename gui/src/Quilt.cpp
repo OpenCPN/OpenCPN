@@ -1100,6 +1100,32 @@ bool Quilt::IsChartSmallestScale(int dbIndex) {
 
 LLRegion Quilt::GetHiliteRegion() {
   LLRegion r;
+
+  //TODO Idea:  convert this to an array of smaller regions.  Should be faster to compose...
+
+  for (auto &index : m_HiLiteIndexArray) {
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
+    LLRegion cell_region = GetChartQuiltRegion(cte, m_vp_quilt);
+    r.Union(cell_region);
+#if 0
+    xxx
+    // Walk the PatchList, looking for the target hilite index
+    for (unsigned int i = 0; i < m_PatchList.GetCount(); i++) {
+      wxPatchListNode *pcinode = m_PatchList.Item(i);
+      QuiltPatch *piqp = pcinode->GetData();
+      if ((index == piqp->dbIndex) && (piqp->b_Valid))  // found it
+      {
+        r.Union(piqp->ActiveRegion);
+      }
+    }
+#endif
+  }
+  return r;
+}
+
+#if 0
+LLRegion Quilt::GetHiliteRegion() {
+  LLRegion r;
   if (m_nHiLiteIndex >= 0) {
     // Walk the PatchList, looking for the target hilite index
     for (unsigned int i = 0; i < m_PatchList.GetCount(); i++) {
@@ -1147,6 +1173,7 @@ LLRegion Quilt::GetHiliteRegion() {
   }
   return r;
 }
+#endif
 
 const LLRegion &Quilt::GetTilesetRegion(int dbIndex) {
   LLRegion world_region(-90, -180, 90, 180);
@@ -1230,6 +1257,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
   EmptyCandidateArray();
   m_extended_stack_array.clear();
+  m_fullscreen_index_array.clear();
 
   int reference_scale = 1e8;
   int reference_type = -1;
@@ -1354,21 +1382,25 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
 
-    //  On android, SDK > 29, we require that the directory of charts be
-    //  "writable" as determined by Android Java file system
+    if (cte.GetChartType() == CHART_TYPE_CM93COMP)
+      m_fullscreen_index_array.push_back(i);
+
+    //  On android, SDK > 29, we require that the directory of charts be "writable"
+    //  as determined by Android Java file system
 #ifdef __OCPN__ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
     if (!androidIsDirWritable(fn.GetPath())) continue;
 #endif
-
-    if (reference_family != cte.GetChartFamily()) {
-      if (cte.GetChartType() != CHART_TYPE_MBTILES) continue;
-    }
-
     if (cte.GetChartType() == CHART_TYPE_CM93COMP) continue;
 
     const LLBBox &chart_box = cte.GetBBox();
     if ((viewbox.IntersectOut(chart_box))) continue;
+
+    m_fullscreen_index_array.push_back(i);
+
+    if (reference_family != cte.GetChartFamily()) {
+      if (cte.GetChartType() != CHART_TYPE_MBTILES) continue;
+    }
 
     if (!m_bquiltanyproj && quilt_proj != cte.GetChartProjectionType())
       continue;
@@ -1380,14 +1412,15 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     //    Special case for S57 ENC
     //    Add the chart only if the chart's fractional area exceeds n%
-    if (CHART_TYPE_S57 == cte.GetChartType()) {
-      // Get the fractional area of this candidate
+#if 0
+    if( CHART_TYPE_S57 == cte.GetChartType() ) {
+      //Get the fractional area of this candidate
       double chart_area = (cte.GetLonMax() - cte.GetLonMin()) *
                           (cte.GetLatMax() - cte.GetLatMin());
       double quilt_area = viewbox.GetLonRange() * viewbox.GetLatRange();
       if ((chart_area / quilt_area) < .01) continue;
     }
-
+#endif
     int candidate_chart_scale = cte.GetScale();
 
     //  Try to guarantee that there is one chart added with scale larger than

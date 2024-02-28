@@ -63,11 +63,10 @@
 
 #include "model/comm_drv_n0183_serial.h"
 #include "model/config_vars.h"
-#include "dychart.h"
 #include "model/garmin_wrapper.h"
 #include "model/garmin_protocol_mgr.h"
+#include "model/nmea_ctx_factory.h"
 #include "nmea0183.h"
-#include "nmea_ctx_factory.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

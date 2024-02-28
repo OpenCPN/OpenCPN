@@ -33,6 +33,7 @@
 #include "FontMgr.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
+#include "displays.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -338,7 +339,7 @@ void OCPN_TimedHTMLMessageDialog::RecalculateSize(void) {
   wxSize esize;
   esize.x = GetCharWidth() * 60;
   int sx, sy;
-  ::wxDisplaySize(&sx, &sy);
+  sx = g_monitor_info[g_current_monitor].width;
   esize.x = wxMin(esize.x, sx * 6 / 10);
   esize.y = -1;
   SetClientSize(esize);  // This will force a recalc of internal representation

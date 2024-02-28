@@ -56,7 +56,7 @@
 #include <netinet/in.h>
 #endif
 
-#include "comm_drv_n0183.h"
+#include "model/comm_drv_n0183.h"
 #include "model/conn_params.h"
 #include "observable.h"
 

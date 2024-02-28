@@ -43,6 +43,28 @@ WX_DECLARE_OBJARRAY(wxRect, RectArray);
 class MyFrame;
 class ChartCanvas;
 
+enum {
+  PIANO_MODE_COMPOSITE = 0,
+  PIANO_MODE_LEGACY
+};
+
+//----------------------------------------------------------------------------
+// PianoKeyElement
+//----------------------------------------------------------------------------
+class PianoKeyElement {
+public:
+  PianoKeyElement() {};
+  PianoKeyElement(int scale);
+  ~PianoKeyElement() {};
+
+  int chart_scale;
+  ChartTypeEnum chart_type;
+  ChartFamilyEnum chart_family;
+  std::vector<int> dbindex_list;
+};
+
+
+
 //----------------------------------------------------------------------------
 // Piano
 //----------------------------------------------------------------------------
@@ -57,7 +79,7 @@ public:
   void FormatKeys(void);
   bool MouseEvent(wxMouseEvent &event);
   void SetColorScheme(ColorScheme cs);
-  void SetKeyArray(std::vector<int> piano_chart_index_array);
+  void SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_array);
   void SetActiveKey(int iactive) { m_iactive = iactive; }
   void SetActiveKeyArray(std::vector<int> array);
   void SetNoshowIndexArray(std::vector<int> array);
@@ -66,6 +88,7 @@ public:
   void SetSkewIndexArray(std::vector<int> array);
   void SetTmercIndexArray(std::vector<int> array);
   void SetPolyIndexArray(std::vector<int> array);
+  int GetPianoMode() { return m_piano_mode;}
 
   std::vector<int> GetActiveKeyArray() { return m_active_index_array; }
 
@@ -108,14 +131,21 @@ public:
   int GetnKeys() { return m_nRegions; }
 
 private:
+  void SetPianoMode(int new_mode) {m_piano_mode = new_mode;}
+
   void DrawGLSL(int y);
   void BuildGLTexture();
   bool InArray(std::vector<int> &array, int key);
+  bool IsAnyActiveChartInPianoKeyElement(PianoKeyElement &pke);
+  bool IsAllEclipsedChartInPianoKeyElement(PianoKeyElement &pke);
 
   wxString GetStateHash();
   wxString m_hash;
 
   ChartCanvas *m_parentCanvas;
+  int m_piano_mode;
+
+  std::vector<PianoKeyElement> m_composite_array;
 
   int m_nRegions;
   int m_index_last;
@@ -142,10 +172,8 @@ private:
   bool m_bBusy;
   wxTimer m_eventTimer;
   int m_click_sel_index;
-  int m_click_sel_dbindex;
   int m_action;
 
-  // RectArray KeyRect;
   std::vector<wxRect> KeyRect;
 
   wxBitmap *m_pVizIconBmp;
@@ -158,10 +186,11 @@ private:
   bool m_brounded;
   bool m_bleaving;
 
-  GLuint m_tex, m_texw, m_texh, m_tex_piano_height;
+  unsigned int m_tex, m_texw, m_texh, m_tex_piano_height;
   int m_ref, m_pad, m_radius, m_texPitch;
 
   int m_width;
+  int m_width_avail;
 
   DECLARE_EVENT_TABLE()
 };

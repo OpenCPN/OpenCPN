@@ -736,6 +736,8 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
+set(GUI_S57_DIR ${CMAKE_SOURCE_DIR}/gui/src/s57)
+
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(GUI_HDRS
     ${GUI_HDR_DIR}/AboutFrame.h
@@ -766,6 +768,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connections_dialog.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/DetailSlider.h
+    ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
@@ -786,7 +789,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/nmea_ctx_factory.h
     ${GUI_HDR_DIR}/NMEALogWindow.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
@@ -822,7 +824,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/SendToGpsDlg.h
     ${GUI_HDR_DIR}/SendToPeerDlg.h
-    ${GUI_HDR_DIR}/shaders.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/svg_utils.h
@@ -850,9 +851,13 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/wx_instance_chk.h
 )
-
+list(APPEND  GUI_HDRS
+    ${GUI_S57_DIR}/include/ogr_s57.h
+    ${GUI_S57_DIR}/include/S57ClassRegistrar.h
+    ${GUI_S57_DIR}/include/s57.h
+    ${GUI_S57_DIR}/include/s57RegistrarMgr.h
+)
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
@@ -882,6 +887,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/connections_dialog.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
+    ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
@@ -932,13 +938,11 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/RoutePropDlg.cpp
     ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
-    ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/S57QueryDialog.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
     ${GUI_SRC_DIR}/SencManager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
-    ${GUI_SRC_DIR}/shaders.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
@@ -960,6 +964,21 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
 )
+
+list(APPEND GUI_SRC
+  ${GUI_S57_DIR}/src/ogrs57datasource.cpp
+  ${GUI_S57_DIR}/src/ogrs57layer.cpp
+  ${GUI_S57_DIR}/src/s57classregistrar.cpp
+  ${GUI_S57_DIR}/src/s57featuredefns.cpp
+  ${GUI_S57_DIR}/src/s57obj.cpp
+  ${GUI_S57_DIR}/src/s57reader.cpp
+  ${GUI_S57_DIR}/src/s57RegistrarMgr.cpp
+)
+
+if (OCPN_USE_GL)
+  list(APPEND GUI_HDRS${GUI_HDR_DIR}/shaders.h)
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/shaders.cpp)
+endif()
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1033,10 +1052,11 @@ set_target_properties(
 
 target_include_directories(
   ${PACKAGE_NAME} BEFORE
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gui/include/gui
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}/resources
           ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
+          ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/s57/include
 )
 
 if (QT_ANDROID)
@@ -1237,7 +1257,7 @@ if (UNIX)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARY})
     find_package(X11)
     if (X11_FOUND AND NOT APPLE)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES})
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} ${X11_Xrandr_LIB})
       set(OCPN_HAVE_X11 ON) # => config.h
     endif ()
     if (NOT APPLE)
@@ -1489,7 +1509,6 @@ if (MSVC)
 endif ()
 
 message(STATUS "S57 ENC support: enabled")
-add_subdirectory(s57)
 
 if (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
@@ -1513,7 +1532,9 @@ use_bundled_lib(USE_BUNDLED_LZ4 lz4)
 if (LZ4_FOUND AND NOT USE_BUNDLED_LZ4)
   message(STATUS "Building with system lz4")
   include_directories(${LZ4_INCLUDE_DIR})
-  target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+  if (OCPN_USE_GL)
+    target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+  endif ()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LZ4_LIBRARIES})
 else ()
   message(STATUS "Building with bundled lz4")
@@ -1531,7 +1552,6 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-##include(SoundConfig)
 configure_file(
   ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
   ${CMAKE_BINARY_DIR}/include/config.h
@@ -1550,6 +1570,7 @@ if (CMAKE_HOST_WIN32)
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
     target_link_libraries(${PACKAGE_NAME} PRIVATE gdiplus.lib)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE Shcore.lib)
   endif ()
 endif ()
 

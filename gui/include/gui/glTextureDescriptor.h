@@ -64,7 +64,7 @@ public:
 
   bool IsCompCompArrayComplete(int base_level);
 
-  GLuint tex_name;
+  unsigned int tex_name;
   int level_min;
   int x;
   int y;

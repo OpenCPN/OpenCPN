@@ -1150,9 +1150,6 @@ DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a, bool hi_precision) {
   return "";
 }
 wxString dummy_string;
-DECL_EXP wxString *GetpPrivateApplicationDataLocation() {
-  return &dummy_string;
-}
 DECL_EXP wxString GetOCPN_ExePath(void) { return wxString(""); }
 DECL_EXP wxString *GetpPlugInLocation() { return &dummy_string; }
 DECL_EXP wxString GetPlugInPath(opencpn_plugin *pplugin) {

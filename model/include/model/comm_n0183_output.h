@@ -30,8 +30,8 @@
 
 #include <wx/wxprec.h>
 
-#include "nmea_log.h"
-#include "multiplexer.h"
+#include "model/nmea_log.h"
+#include "model/multiplexer.h"
 #include "observable_evtvar.h"
 
 #ifndef WX_PRECOMP

@@ -1652,6 +1652,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       showRPD = (pRoutePropDialog && pRoutePropDialog->IsShown());
 
+      if (g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute)
+        g_pRouteMan->DeactivateRoute();
+
       m_pHead = new Route();
       m_pTail = new Route();
       m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx, _("_A"));

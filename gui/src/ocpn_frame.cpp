@@ -54,6 +54,7 @@
 
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
+#include <wx/display.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
@@ -70,6 +71,7 @@
 #include "model/gui.h"
 #include "model/idents.h"
 #include "model/local_api.h"
+#include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
@@ -97,6 +99,7 @@
 #include "compass.h"
 #include "concanv.h"
 #include "ConfigMgr.h"
+#include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "glChartCanvas.h"
@@ -259,7 +262,7 @@ extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
 extern ChartGroupArray *g_pGroupArray;
 extern bool g_bEnableZoomToCursor;
 extern double g_display_size_mm;
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern wxString ChartListFileName;
 extern bool g_bFullscreenToolbar;
 extern arrayofCanvasPtr g_canvasArray;
@@ -634,6 +637,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName)
       {
+  g_current_monitor = wxDisplay::GetFromWindow(this);
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
 
@@ -1169,12 +1173,13 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
         cc = g_canvasArray[0];
       }
 
+#ifdef ocpnUSE_GL
       // Verify that glCanvas is ready, if necessary
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
         cc->GetglCanvas()->Show();
       }
-
+#endif
       config_array.Item(0)->canvas = cc;
 
       cc->SetDisplaySizeMM(g_display_size_mm);
@@ -1205,10 +1210,11 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       }
 
       // Verify that glCanvas is ready, if not already built
+#ifdef ocpnUSE_GL
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
       }
-
+#endif
       config_array.Item(0)->canvas = cc;
 
       cc->ApplyCanvasConfig(config_array.Item(0));
@@ -1872,10 +1878,37 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 }
 
 void MyFrame::OnMove(wxMoveEvent &event) {
+  auto idx = wxDisplay::GetFromWindow(this);
+  if (idx != wxNOT_FOUND && g_current_monitor != static_cast<size_t>(idx) && static_cast<size_t>(idx) < g_monitor_info.size()) {
+    g_current_monitor = idx;
+    DEBUG_LOG << "Moved to " << idx
+#if wxCHECK_VERSION(3, 1, 6)
+    << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY() 
+    << " SF wxDisplay: " << wxDisplay(idx).GetScaleFactor()
+#endif
+    << " Size wxDisplay: " << wxDisplay(idx).GetGeometry().GetWidth() << "x" << wxDisplay(idx).GetGeometry().GetHeight()
+    << " MM wxDisplay: " << wxGetDisplaySizeMM().GetX() << "x" << wxGetDisplaySizeMM().GetY()
+    << " Name wxDisplay: " << wxDisplay(idx).GetName().c_str()
+    << " Real: " << g_monitor_info[idx].width_mm << "x" << g_monitor_info[idx].height_mm << "mm "
+    << g_monitor_info[idx].width_mm << "x" << g_monitor_info[idx].height_mm << "mm "
+    << g_monitor_info[idx].width << "x" << g_monitor_info[idx].height << "DIP "
+    << g_monitor_info[idx].width_px << "x" << g_monitor_info[idx].height_px << "px"
+    << g_monitor_info[idx].scale << "%";
+    if(g_config_display_size_manual) {
+      if(g_config_display_size_mm.size() > static_cast<size_t>(idx)) {
+        g_display_size_mm = g_config_display_size_mm[idx];
+      } // Do nothing if the user did not set any value for this monitor
+    } else {
+      g_display_size_mm = g_monitor_info[idx].width_mm;
+    }
+  }
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->SetMUIBarPosition();
+    if (cc) {
+      cc->SetMUIBarPosition();
+      cc->SetDisplaySizeMM(g_display_size_mm);
+    }
   }
 
 #ifdef __WXOSX__
@@ -4285,8 +4318,8 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   }
 #endif
 
-  if ((g_config_display_size_mm > 0)  && g_config_display_size_manual){
-    g_display_size_mm = g_config_display_size_mm;
+  if (g_config_display_size_manual && g_config_display_size_mm.size() > g_current_monitor && g_config_display_size_mm[g_current_monitor] > 0) {
+    g_display_size_mm = g_config_display_size_mm[g_current_monitor];
   } else {
     g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   }
@@ -8383,6 +8416,7 @@ void LoadS57() {
     ps52plib->SetPLIBColorScheme(global_color_scheme, ChartCtxFactory());
 
     if (gFrame){
+      ps52plib->SetDisplayWidth(g_monitor_info[g_current_monitor].width);
       ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());
       double dip_factor = g_BasePlatform->GetDisplayDIPMult(gFrame);
       ps52plib->SetDIPFactor(dip_factor);

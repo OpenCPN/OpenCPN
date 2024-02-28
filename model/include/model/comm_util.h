@@ -26,7 +26,7 @@
 #ifndef _COMM_UTIL_H
 #define _COMM_UTIL_H
 
-#include "comm_navmsg.h"
+#include "model/comm_navmsg.h"
 
 bool StopAndRemoveCommDriver(std::string ident, NavAddr::Bus = NavAddr::Bus::Undef);
 

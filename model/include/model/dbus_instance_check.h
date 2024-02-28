@@ -20,8 +20,8 @@
 #ifndef _INSTANCE_CHK_H__
 #define _INSTANCE_CHK_H__
 
-#include "instance_check.h"
-#include "dbus_server.h"
+#include "model/instance_check.h"
+#include "model/dbus_server.h"
 
 /** InstanceCheck implementation based on DBus */
 class DbusInstanceCheck : public InstanceCheck {

@@ -35,7 +35,7 @@
 #include <ostream>
 #include <vector>
 
-#include "catalog_parser.h"
+#include "model/catalog_parser.h"
 
 /**
  * A local proxy for the catalog server. The server has a number

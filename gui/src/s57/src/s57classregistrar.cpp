@@ -31,12 +31,14 @@
 
 #include "gdal/cpl_conv.h"
 #include "gdal/cpl_string.h"
-#include "model/s57.h"
-#include "model/S57ClassRegistrar.h"
+#include "s57.h"
+#include "S57ClassRegistrar.h"
 
 #ifdef S57_BUILTIN_CLASSES
 #include "s57tables.h"
 #endif
+
+S57ClassRegistrar *g_poRegistrar;
 
 /************************************************************************/
 /*                         S57ClassRegistrar()                          */

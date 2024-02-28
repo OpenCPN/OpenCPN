@@ -19,8 +19,8 @@
 #include <gtest/gtest.h>
 
 #include "model/ais_decoder.h"
-#include "model/ais_state_vars.h"
 #include "model/ais_defs.h"
+#include "model/ais_state_vars.h"
 #include "model/cli_platform.h"
 #include "model/comm_ais.h"
 #include "model/comm_appmsg_bus.h"
@@ -32,17 +32,16 @@
 #include "model/ipc_api.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
-#include "observable_confvar.h"
-#include "ocpn_plugin.h"
 #include "model/ocpn_types.h"
 #include "model/ocpn_utils.h"
 #include "model/own_ship.h"
-#include "model/S57ClassRegistrar.h"
 #include "model/routeman.h"
 #include "model/select.h"
 #include "model/std_instance_chk.h"
 #include "model/wait_continue.h"
-#include "wx_instance_chk.h"
+#include "model/wx_instance_chk.h"
+#include "observable_confvar.h"
+#include "ocpn_plugin.h"
 
 // Macos up to 10.13
 #if defined(__clang_major__) && (__clang_major__ < 15)

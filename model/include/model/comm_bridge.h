@@ -35,8 +35,8 @@
 #include <wx/log.h>
 #include <wx/timer.h>
 
-#include "comm_decoder.h"
-#include "comm_navmsg.h"
+#include "model/comm_decoder.h"
+#include "model/comm_navmsg.h"
 
 
 typedef struct{

@@ -5695,9 +5695,12 @@ void cm93compchart::SetSpecialCellIndexOffset(int cell_index, int object_id,
 bool cm93compchart::RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp,
                                                   ChartCanvas *cc) {
   if (m_cmscale >= 7) return false;
+#ifdef ocpnUSE_GL
   glChartCanvas *glcc = cc->GetglCanvas();
   if (!glcc) return false;
-
+#else
+  return false;
+#endif
 
   int nss_max;
 

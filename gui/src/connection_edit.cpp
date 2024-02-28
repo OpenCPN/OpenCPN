@@ -141,7 +141,7 @@ static void LoadSerialPorts(wxComboBox* box) {
 ConnectionEditDialog::ConnectionEditDialog() {}
 
 ConnectionEditDialog::ConnectionEditDialog( options *parent, ConnectionsDialog *client)
-    : wxDialog(parent, wxID_ANY, "Title", wxDefaultPosition,
+    : wxDialog(parent, wxID_ANY, _("Connection Edit"), wxDefaultPosition,
                wxSize(280, 420))
 {
   m_parent = parent;

@@ -349,9 +349,17 @@ void ConnectionParamsPanel::CreateControls(void) {
     switch (m_pConnectionParams->NetProtocol) {
       case UDP:
         proto = _T("UDP");
+        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+          proto << " N0183";
+        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+          proto << " N2000";
         break;
       case TCP:
         proto = _T("TCP");
+        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+          proto << " N0183";
+        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+          proto << " N2000";
         break;
       case GPSD:
         proto = _T("GPSD");
@@ -801,9 +809,17 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
     switch (m_pConnectionParams->NetProtocol) {
       case UDP:
         proto = _T("UDP");
+        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+          proto << " N0183";
+        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+          proto << " N2000";
         break;
       case TCP:
         proto = _T("TCP");
+        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+          proto << " N0183";
+        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+          proto << " N2000";
         break;
       case GPSD:
         proto = _T("GPSD");

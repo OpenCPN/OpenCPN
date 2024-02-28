@@ -17,8 +17,6 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 #*************************************************************************
 
-##set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
 
@@ -88,6 +86,7 @@ set(
   ${MODEL_HDR_DIR}/nav_object_database.h
   ${MODEL_HDR_DIR}/navutil_base.h
   ${MODEL_HDR_DIR}/nmea_log.h
+  ${MODEL_HDR_DIR}/nmea_ctx_factory.h
   ${MODEL_HDR_DIR}/ocpn_types.h
   ${MODEL_HDR_DIR}/ocpn_utils.h
   ${MODEL_HDR_DIR}/own_ship.h
@@ -103,8 +102,6 @@ set(
   ${MODEL_HDR_DIR}/route.h
   ${MODEL_HDR_DIR}/routeman.h
   ${MODEL_HDR_DIR}/route_point.h
-  ${MODEL_HDR_DIR}/s57.h
-  ${MODEL_HDR_DIR}/S57ClassRegistrar.h
   ${MODEL_HDR_DIR}/safe_mode.h
   ${MODEL_HDR_DIR}/select.h
   ${MODEL_HDR_DIR}/select_item.h
@@ -115,6 +112,7 @@ set(
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
   ${MODEL_HDR_DIR}/wait_continue.h
   ${MODEL_HDR_DIR}/wx28compat.h
+  ${MODEL_HDR_DIR}/wx_instance_chk.h
 )
 
 set(MODEL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -151,7 +149,6 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_navmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
-  ${MODEL_SRC_DIR}/comm_plugin_api.cpp
   ${MODEL_SRC_DIR}/comm_util.cpp
   ${MODEL_SRC_DIR}/comm_vars.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
@@ -177,6 +174,7 @@ set(SRC
   ${MODEL_SRC_DIR}/own_ship.cpp
   ${MODEL_SRC_DIR}/peer_client.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
+  ${MODEL_SRC_DIR}/plugin_api.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
   ${MODEL_SRC_DIR}/plugin_cache.cpp
   ${MODEL_SRC_DIR}/plugin_handler.cpp
@@ -250,6 +248,7 @@ target_include_directories(
   _OCPN_MODEL BEFORE INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/include
 )
 
@@ -292,6 +291,11 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif ()
 
+if (LINUX)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::gtk)
+  target_link_libraries(_OCPN_MODEL INTERFACE ${X11_LIBRARIES} ${X11_Xrandr_LIB})
+endif ()
+
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(_OCPN_MODEL INTERFACE -fsanitize=${ENABLE_SANITIZER})
 endif ()
@@ -312,7 +316,6 @@ target_link_libraries(
     ocpn::pugixml
     ocpn::rapidjson
     ocpn::s52plib
-    ocpn::s57enc
     ocpn::sound
     ocpn::wxjson
     ocpn::filesystem

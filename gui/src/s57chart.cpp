@@ -57,7 +57,7 @@
 #include "gdal/cpl_csv.h"
 #include "setjmp.h"
 
-#include "model/ogr_s57.h"
+#include "ogr_s57.h"
 
 #include "pluginmanager.h"  // for S57 lights overlay
 
@@ -86,7 +86,9 @@
 #include <map>
 
 #include "ssl/sha1.h"
-#include "shaders.h"
+#ifdef ocpnUSE_GL
+    #include "shaders.h"
+#endif
 #include "chart_ctx_factory.h"
 
 #ifdef __MSVC__
@@ -4742,6 +4744,8 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
   std::vector<ObjRazRules *> selected_rules;
 
+  PrepareForRender(VPoint, ps52plib);
+
   //    Iterate thru the razRules array, by object/rule type
 
   ObjRazRules *top;
@@ -6413,6 +6417,7 @@ void s57_DrawExtendedLightSectors(ocpnDC &dc, ViewPort &viewport,
   }
 }
 
+#ifdef ocpnUSE_GL
 void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
                                   std::vector<s57Sector_t> &sectorlegs) {
   float rangeScale = 0.0;
@@ -6648,6 +6653,7 @@ void s57_DrawExtendedLightSectorsGL(ocpnDC &dc, ViewPort &viewport,
     }
   }
 }
+#endif
 
 bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
                                      ChartPlugInWrapper *target_plugin_chart,

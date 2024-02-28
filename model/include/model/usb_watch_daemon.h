@@ -24,7 +24,7 @@
 
 #include <thread>
 
-#include "sys_events.h"
+#include "model/sys_events.h"
 
 /**
  * Listen to hardware events and notifies SystemEvents when new devices are

@@ -297,7 +297,6 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
-WX_DECLARE_OBJARRAY(ChartClassDescriptor, ArrayOfChartClassDescriptor);
 
 class ChartDatabase {
 public:
@@ -369,7 +368,7 @@ protected:
                                          wxString &utf8Path,
                                          ChartClassDescriptor &chart_desc);
 
-  ArrayOfChartClassDescriptor m_ChartClassDescriptorArray;
+  std::vector<ChartClassDescriptor> m_ChartClassDescriptorArray;
   ArrayOfCDI m_dir_array;
   bool m_b_busy;
 

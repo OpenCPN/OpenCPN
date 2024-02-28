@@ -42,9 +42,7 @@
 
 #include "model/conn_params.h"
 
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
-#include "options.h"
 
 #if !wxUSE_XLOCALE && wxCHECK_VERSION(3, 0, 0)
 #define wxAtoi(arg) atoi(arg)
