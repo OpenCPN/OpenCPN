@@ -90,6 +90,8 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
     wxLogMessage(_T("Loading UserIcons from ") + UserIconPath);
     wxArrayString FileList;
 
+    wxBitmap default_bm = wxBitmap(1,1);   //empty
+
     int n_files =
         wxDir::GetAllFiles(UserIconPath, &FileList, _T(""), wxDIR_FILES);
 
@@ -115,11 +117,43 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
       if (fn.GetExt().Lower() == _T("svg")) {
         unsigned int w, h;
         SVGDocumentPixelSize(name, w, h);
-        w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
-                                     // icons, 15px (approx 3mm) be it
-        const unsigned int bm_size = w; //SVGPixelsToDisplay(w);
-        wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size);
-        MarkIcon *pmi = ProcessIcon(iconSVG, iconname, iconname);
+
+        // This is to be a mark icon
+        // Make it a nominal size, but not less than 4 pixel
+        double bm_size_nom = wxMax(4.0, floor(displayDPmm * 12.0));
+        bm_size_nom /= OCPN_GetWinDIPScaleFactor();
+        bm_size_nom *= g_MarkScaleFactorExp;
+
+        // We want certain minimal size for the
+        // icons, 15px (approx 3mm) be it
+        bm_size_nom = wxMax(bm_size_nom, 15);
+
+        MarkIcon *pmi = NULL;
+        double aspect = h / w;
+
+        // Make the rendered icon square, if necessary
+        if (fabs(aspect - 1.0) > .05) {
+          wxImage image =
+              LoadSVG(name, (int)bm_size_nom,
+                            (int)bm_size_nom,
+                      &default_bm).ConvertToImage();
+
+          if (image.IsOk()) {
+            wxRect rClip = CropImageOnAlpha(image);
+            wxImage imageClip = image.GetSubImage(rClip);
+            imageClip.Rescale(bm_size_nom, bm_size_nom / aspect,
+                              wxIMAGE_QUALITY_BICUBIC);
+            wxBitmap iconSVG = wxBitmap(imageClip);
+            pmi = ProcessIcon(iconSVG, iconname, iconname);
+          }
+        }
+        else {
+          const unsigned int bm_size = bm_size_nom;  // horizontal
+          wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size,
+                                     &default_bm, false);
+          pmi = ProcessIcon(iconSVG, iconname, iconname);
+        }
+
         if (pmi) pmi->preScaled = true;
       }
     }
