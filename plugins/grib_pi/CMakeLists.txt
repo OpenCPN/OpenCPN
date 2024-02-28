@@ -106,8 +106,6 @@ set(SRC_GRIB
     src/msg.h
     src/email.h
     src/email.cpp
-    src/pi_TexFont.h
-    src/pi_TexFont.cpp
     src/GribTable.h
     src/GribTable.cpp
     src/CustomGrid.h
@@ -122,6 +120,14 @@ set(SRC_GRIB
     src/pi_ocpndc.cpp
     src/pi_ocpndc.h
 )
+
+if (OCPN_USE_GL)
+set(SRC_GRIB ${SRC_GRIB}
+  src/pi_TexFont.h
+  src/pi_TexFont.cpp
+)
+
+endif ()
 if (WIN32)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.h)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
