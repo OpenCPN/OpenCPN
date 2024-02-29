@@ -61,8 +61,7 @@ extern int m_ZoneSelMode;
 GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
     : GribRequestSettingBase(&parent), m_parent(parent) {
   m_Vp = 0;
-
-  m_oDC = new pi_ocpnDC();
+  m_oDC = nullptr;
 
   m_displayScale = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
@@ -142,7 +141,9 @@ GribRequestSetting::~GribRequestSetting() {
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
   delete m_Vp;
-  delete m_oDC;
+  if (m_oDC) {
+    delete m_oDC;
+  }
 }
 
 void GribRequestSetting::InitRequestConfig() {
@@ -1148,6 +1149,10 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   } else {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
+
+    if (!m_oDC) {
+      m_oDC = new pi_ocpnDC();
+    }
 
     m_oDC->SetVP(m_Vp);
     m_oDC->SetPen(wxPen(pen_color, 3));
