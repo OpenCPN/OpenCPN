@@ -200,6 +200,7 @@ private:
                       bool only_metadata = false);
   bool archive_check(int r, const char* msg, struct archive* a);
   std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
+  bool DoClearInstallData(const std::string plugin_name);
 };
 
 #endif  // PLUGIN_HANDLER_H__
