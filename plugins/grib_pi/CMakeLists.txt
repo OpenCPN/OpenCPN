@@ -60,6 +60,7 @@ endif (APPLE)
 if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+  ADD_DEFINITIONS(-DMAKING_PLUGIN)
 endif ()
 
 # QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
