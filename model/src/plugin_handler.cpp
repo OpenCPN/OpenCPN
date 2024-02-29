@@ -36,6 +36,17 @@
 
 #include "wx/wxprec.h"
 
+#if (defined(__clang_major__) && (__clang_major__ < 15))
+// MacOS 1.13
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
+#endif
+
+
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
@@ -137,7 +148,8 @@ static std::vector<std::string> glob_dir(const std::string& dir_path,
 static ssize_t PlugInIxByName(const std::string name,
                               const ArrayOfPlugIns* plugins) {
   for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
-    if (name == plugins->Item(i)->m_common_name.ToStdString()) {
+    auto lc_name = ocpn::tolower(name);
+    if (lc_name == plugins->Item(i)->m_common_name.Lower().ToStdString()) {
       return i;
     }
   }
@@ -1071,6 +1083,17 @@ const std::vector<PluginMetadata> PluginHandler::getAvailable() {
   return ctx->plugins;
 }
 
+std::vector<std::string> PluginHandler::GetInstalldataPlugins() {
+   std::vector<std::string> names;
+   fs::path dirpath(pluginsInstallDataPath());
+   for (const auto& entry: fs::directory_iterator(dirpath)) {
+     const std::string name(entry.path().filename().string());
+     if (ocpn::endswith(name, ".files"))
+       names.push_back(ocpn::split(name.c_str(), ".")[0]);
+   }
+   return names;
+}
+
 const std::vector<PluginMetadata> PluginHandler::getInstalled() {
   using namespace std;
   vector<PluginMetadata> plugins;
@@ -1176,6 +1199,40 @@ bool PluginHandler::ExtractMetadata(const std::string& path,
   return !metadata.name.empty();
 }
 
+bool PluginHandler::ClearInstallData(const std::string plugin_name) {
+  std::string path = PluginHandler::fileListPath(plugin_name);
+  if (!ocpn::exists(path)) {
+    wxLogWarning("Cannot find installation data for %s (%s)",
+                 plugin_name.c_str(), path);
+    return false;
+  }
+  auto ix = PlugInIxByName(plugin_name,
+                           PluginLoader::getInstance()->GetPlugInArray());
+  if (ix != -1) {
+    wxLogWarning("Attempt to remove installation data for loaded plugin");
+    return false;
+  }
+  std::vector<std::string> plug_paths = LoadLinesFromFile(path);
+  for (const auto& p : plug_paths) {
+    if (isRegularFile(p.c_str())) {
+      int r = remove(p.c_str());
+      if (r != 0) {
+        wxLogWarning("Cannot remove file %s: %s", p.c_str(), strerror(r));
+      }
+    }
+  }
+  for (const auto& p : plug_paths) PurgeEmptyDirs(p);
+  int r = remove(path.c_str());
+  if (r != 0) {
+    wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
+  }
+  // Best effort tries, failures are OK.
+  remove(dirListPath(plugin_name).c_str());
+  remove(PluginHandler::versionPath(plugin_name).c_str());
+  remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
+  return true;
+}
+
 bool PluginHandler::uninstall(const std::string plugin_name) {
   using namespace std;
 
@@ -1192,41 +1249,16 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   string libfile = pic->m_plugin_file.ToStdString();
   loader->UnLoadPlugIn(ix);
 
-  string path = PluginHandler::fileListPath(plugin_name);
-  if (!ocpn::exists(path)) {
-    wxLogWarning("Cannot find installation data for %s (%s)",
-                 plugin_name.c_str(), path);
-  }
-  else {
-    vector<string> plug_paths = LoadLinesFromFile(path);
-    for (const auto& p : plug_paths) {
-      if (isRegularFile(p.c_str())) {
-        int r = remove(p.c_str());
-        if (r != 0) {
-          wxLogWarning("Cannot remove file %s: %s", p.c_str(), strerror(r));
-        }
-      }
-    }
-    for (const auto& p : plug_paths) PurgeEmptyDirs(p);
-    int r = remove(path.c_str());
-    if (r != 0) {
-      wxLogWarning("Cannot remove file %s: %s", path.c_str(), strerror(r));
-    }
-    // Best effort tries, failures are OK.
-    remove(dirListPath(plugin_name).c_str());
-    remove(PluginHandler::versionPath(plugin_name).c_str());
-    remove(PluginHandler::ImportedMetadataPath(plugin_name).c_str());
-  }
+  bool ok = ClearInstallData(plugin_name);
 
-    //  If this is an orphan plugin, there may be no installation record
-    //  So make sure that the library file (.so/.dylib/.dll) is removed
-    //  as a minimum best effort requirement
-
+  //  If this is an orphan plugin, there may be no installation record
+  //  So make sure that the library file (.so/.dylib/.dll) is removed
+  //  as a minimum best effort requirement
   if (isRegularFile(libfile.c_str())) {
     remove(libfile.c_str());
   }
 
-  return true;
+  return ok;
 }
 
 using PluginMap = std::unordered_map<std::string, std::vector<std::string>>;
