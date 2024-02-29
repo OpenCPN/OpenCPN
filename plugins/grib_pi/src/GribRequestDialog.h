@@ -36,8 +36,6 @@
 #include "pi_ocpndc.h"
 #include "wx/jsonreader.h"
 
-#include "ocpn_plugin.h"
-
 enum GribDownloadType
 {
   WORLD,
