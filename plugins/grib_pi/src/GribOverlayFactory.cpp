@@ -242,7 +242,9 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
   m_last_vp_scale = 0.;
 
   m_oDC = NULL;
+  #if wxUSE_GRAPHICS_CONTEXT
   m_gdc = NULL;
+  #endif
   m_Font_Message = NULL;
 
   InitColorsTable();
