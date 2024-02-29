@@ -4340,11 +4340,12 @@ PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
                       wxALIGN_CENTER_VERTICAL | wxALL, 2);
   auto uninstall = [&](wxCommandEvent ev) {
     auto n = m_pName->GetLabel().ToStdString();
+    int result = OCPNMessageBox(gFrame,
+                                std::string(_("Uninstall plugin ")) + n + "?",
+                                _("Un-Installation"),
+                                wxICON_QUESTION | wxOK | wxCANCEL);
+    if (result != wxID_OK) return;
     PluginHandler::getInstance()->ClearInstallData(n);
-    auto msg(std::string("Uninstalling plugin ") + n);
-    OCPNMessageBox(gFrame, msg,
-                   _("Un-Installation complete"),
-                   wxICON_INFORMATION | wxOK);
     m_PluginListPanel->ReloadPluginPanels();
   };
   m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, uninstall);
