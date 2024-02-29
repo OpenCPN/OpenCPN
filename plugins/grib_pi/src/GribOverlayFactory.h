@@ -24,6 +24,9 @@
  ***************************************************************************
  */
 
+#ifndef _GRIBOVERLAYFACTORY_H_
+#define _GRIBOVERLAYFACTORY_H_
+
 #include <map>
 
 #include <wx/geometry.h>
@@ -207,6 +210,8 @@ private:
   wxString GetRefString(GribRecord *rec, int map);
   void DrawMessageWindow(wxString msg, int x, int y, wxFont *mfont);
 
+  void DrawProjectedPosition(int x, int y);
+
   void drawDoubleArrow(int x, int y, double ang, wxColour arrowColor,
                        int arrowWidth, int arrowSizeIdx, double scale);
   void drawSingleArrow(int x, int y, double ang, wxColour arrowColor,
@@ -270,3 +275,5 @@ private:
   double m_pixelMM;
   int windArrowSize;
 };
+
+#endif

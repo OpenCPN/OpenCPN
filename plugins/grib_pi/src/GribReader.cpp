@@ -420,7 +420,6 @@ void GribReader::copyMissingWaveRecords() {
 void GribReader::readGribFileContent() {
   fileSize = zu_filesize(file);
   readAllGribRecords();
-
   createListDates();
   //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
   // XXX should it be done after reading all files, rather than per file?

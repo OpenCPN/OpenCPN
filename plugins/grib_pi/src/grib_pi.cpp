@@ -131,12 +131,21 @@ int grib_pi::Init(void) {
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
   //    locally
-  if (m_bGRIBShowIcon) {
-    wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
+  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
                          wxFileName::GetPathSeparator() + _T("grib_pi") +
                          wxFileName::GetPathSeparator() + _T("data") +
                          wxFileName::GetPathSeparator();
-
+  //Initialize catalog file
+  wxString local_grib_catalog = "sources.json";
+  wxString data_path = *GetpPrivateApplicationDataLocation() + wxFileName::GetPathSeparator() + "grib_pi";
+  if (!wxDirExists(data_path)) {
+    wxMkdir(data_path);
+  }
+  m_local_sources_catalog = data_path + wxFileName::GetPathSeparator() + local_grib_catalog;
+  if (!wxFileExists(m_local_sources_catalog)) {
+      wxCopyFile(shareLocn + local_grib_catalog, m_local_sources_catalog);
+  }
+  if (m_bGRIBShowIcon) {
     wxString normalIcon = shareLocn + _T("grib.svg");
     wxString toggledIcon = shareLocn + _T("grib_toggled.svg");
     wxString rolloverIcon = shareLocn + _T("grib_rollover.svg");
@@ -174,7 +183,7 @@ int grib_pi::Init(void) {
   return (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
           WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
           WANTS_CONFIG | WANTS_PREFERENCES | WANTS_PLUGIN_MESSAGING |
-          WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS);
+          WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS | WANTS_NMEA_EVENTS);
 }
 
 bool grib_pi::DeInit(void) {
@@ -837,6 +846,18 @@ void grib_pi::SendTimelineMessage(wxDateTime time) {
   wxString out;
   w.Write(v, out);
   SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
+}
+
+void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {
+  m_boat_cog = pfix.Cog;
+  m_boat_sog = pfix.Sog;
+  m_boat_lat = pfix.Lat;
+  m_boat_lon = pfix.Lon;
+  if(pfix.FixTime != 0) {
+    m_boat_time = pfix.FixTime;
+  } else {
+    m_boat_time = wxDateTime::Now().GetTicks();
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------

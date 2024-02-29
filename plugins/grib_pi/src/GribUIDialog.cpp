@@ -250,6 +250,8 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
 
   Fit();
   SetMinSize(GetBestSize());
+  m_ProjectBoatPanel->SetSpeed(pPlugIn->m_boat_sog);
+  m_ProjectBoatPanel->SetCourse(pPlugIn->m_boat_cog);
 }
 
 GRIBUICtrlBar::~GRIBUICtrlBar() {
@@ -429,7 +431,6 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
 
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
   wxString title;
-
   if (m_bGRIBActiveFile->IsOK()) {
     wxFileName fn(m_bGRIBActiveFile->GetFileNames()[0]);
     title = (_("File: "));
@@ -1514,6 +1515,24 @@ GribTimelineRecordSet *GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time) {
   set->m_Reference_Time = time.GetTicks();
   //(1-interp_const)*GRS1.m_Reference_Time + interp_const*GRS2.m_Reference_Time;
   return set;
+}
+
+void GRIBUICtrlBar::GetProjectedLatLon(int &x, int &y)
+{
+  wxPoint p(0,0);
+  auto now = TimelineTime();
+  auto sog = m_ProjectBoatPanel->GetSpeed();
+  auto cog = m_ProjectBoatPanel->GetCourse();
+  double dist = static_cast<double>(now.GetTicks() - pPlugIn->m_boat_time) * sog / 3600.0;
+  PositionBearingDistanceMercator_Plugin(pPlugIn->m_boat_lat, pPlugIn->m_boat_lon,
+                                         cog,
+                                         dist, &m_projected_lat,
+                                         &m_projected_lon);
+  if(m_vp) {
+    GetCanvasPixLL(m_vp, &p, m_projected_lat, m_projected_lon);
+  }
+  x = p.x;
+  y = p.y;
 }
 
 double GRIBUICtrlBar::getTimeInterpolatedValue(int idx, double lon, double lat,

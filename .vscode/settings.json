@@ -1,6 +1,12 @@
 {
     "files.associations": {
-        "condition_variable": "cpp"
+        "*.gpx": "xml",
+        "condition_variable": "cpp",
+        "iosfwd": "cpp",
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "sstream": "cpp",
+        "*.xpm": "cpp"
     },
 
        "C_Cpp.default.includePath": [
@@ -18,5 +24,6 @@
         "libs/iso8211/include",
         "libs/wxcurl/include",
         "libs/wxJSON/include"
-    ]
+    ],
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/build/compile_commands.json"
 }
