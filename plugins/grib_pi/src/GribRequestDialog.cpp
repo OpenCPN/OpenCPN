@@ -291,7 +291,10 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
   // allow to be back to old value if changes have not been saved
   m_ZoneSelMode = m_SavedZoneSelMode;
   m_parent.SetRequestBitmap(m_ZoneSelMode);  // set appopriate bitmap
-
+  m_parent.m_highlight_latmax = 0;
+  m_parent.m_highlight_lonmax = 0;
+  m_parent.m_highlight_latmin = 0;
+  m_parent.m_highlight_lonmin = 0;
   this->Hide();
 }
 
@@ -604,12 +607,13 @@ enum LocalGribDownloadType
 };
 
 struct GribCatalogInfo : public wxTreeItemData {
-  GribCatalogInfo(LocalSourceItem type, wxString name, wxString description, wxString url, LocalGribDownloadType download_type, double latmin, double lonmin, double latmax, double lonmax) :
-   type(type), name(name), description(description), url(url), download_type(download_type), latmin(latmin), lonmin(lonmin), latmax(latmax), lonmax(lonmax) {}
+  GribCatalogInfo(LocalSourceItem type, wxString name, wxString description, wxString url, wxString filename, LocalGribDownloadType download_type, double latmin, double lonmin, double latmax, double lonmax) :
+   type(type), name(name), description(description), url(url), filename(filename), download_type(download_type), latmin(latmin), lonmin(lonmin), latmax(latmax), lonmax(lonmax) {}
   LocalSourceItem type;
   wxString name;
   wxString description;
   wxString url;
+  wxString filename;
   LocalGribDownloadType download_type;
   double latmin;
   double lonmin;
@@ -623,19 +627,19 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue & data) {
   if (data.HasMember("sources") && data["sources"].IsArray()) {
     for (int i = 0; i < data["sources"].Size(); i++) {
       wxJSONValue source = data["sources"][i];
-      auto info = new GribCatalogInfo(LocalSourceItem::SOURCE, source["source"].AsString(), source["description"].AsString(), source["url"].AsString(), LocalGribDownloadType::WEBPAGE, 0, 0, 0, 0);
+      auto info = new GribCatalogInfo(LocalSourceItem::SOURCE, source["source"].AsString(), source["description"].AsString(), source["url"].AsString(), wxEmptyString, LocalGribDownloadType::WEBPAGE, 0, 0, 0, 0);
       wxTreeItemId src_id = m_SourcesTreeCtrl1->AppendItem(
           root, source["source"].AsString(), -1, -1, info);
       if (source.HasMember("areas") && source["areas"].IsArray()) {
         for (int j = 0; j < source[_T("areas")].Size(); j++) {
           wxJSONValue area = source[_T("areas")][j];
-          auto info = new GribCatalogInfo(LocalSourceItem::AREA, area["name"].AsString(), source["description"].AsString(), source["url"].AsString(), LocalGribDownloadType::WEBPAGE, area["boundary"]["lat_min"].AsDouble(), area["boundary"]["lon_min"].AsDouble(), area["boundary"]["lat_max"].AsDouble(), area["boundary"]["lon_max"].AsDouble());
+          auto info = new GribCatalogInfo(LocalSourceItem::AREA, area["name"].AsString(), source["description"].AsString(), source["url"].AsString(), wxEmptyString, LocalGribDownloadType::WEBPAGE, area["boundary"]["lat_min"].AsDouble(), area["boundary"]["lon_min"].AsDouble(), area["boundary"]["lat_max"].AsDouble(), area["boundary"]["lon_max"].AsDouble());
           m_SourcesTreeCtrl1->AppendItem(
               src_id, area["name"].AsString(), -1, -1, info);
           if (area.HasMember("gribs") && area["gribs"].IsArray()) {
             for (int k = 0; k < area["gribs"].Size(); k++) {
               wxJSONValue grib = area["gribs"][k];
-              auto info = new GribCatalogInfo(LocalSourceItem::GRIB, grib["name"].AsString(), source["description"].AsString(), grib.HasMember("url") ? grib["url"].AsString() : grib["cat_url"].AsString(), grib.HasMember("url") ? LocalGribDownloadType::DIRECT : LocalGribDownloadType::MANIFEST, area["boundary"]["lat_min"].AsDouble(), area["boundary"]["lon_min"].AsDouble(), area["boundary"]["lat_max"].AsDouble(), area["boundary"]["lon_max"].AsDouble());
+              auto info = new GribCatalogInfo(LocalSourceItem::GRIB, grib["name"].AsString(), source["description"].AsString(), grib.HasMember("url") ? grib["url"].AsString() : grib["cat_url"].AsString(), grib.HasMember("filename") ? grib["filename"].AsString() : "", grib.HasMember("url") ? LocalGribDownloadType::DIRECT : LocalGribDownloadType::MANIFEST, area["boundary"]["lat_min"].AsDouble(), area["boundary"]["lon_min"].AsDouble(), area["boundary"]["lat_max"].AsDouble(), area["boundary"]["lon_max"].AsDouble());
               m_SourcesTreeCtrl1->AppendItem(
                   m_SourcesTreeCtrl1->GetLastChild(src_id),
                   grib[_T("name")].AsString(), -1, -1, info);
@@ -657,6 +661,13 @@ void GribRequestSetting::ReadLocalCatalog() {
   FillTreeCtrl(root);
 }
 
+void GribRequestSetting::HighlightArea(double latmax, double lonmax,double latmin, double lonmin) {
+  m_parent.m_highlight_latmax = latmax;
+  m_parent.m_highlight_lonmax = lonmax;
+  m_parent.m_highlight_latmin = latmin;
+  m_parent.m_highlight_lonmin = lonmin;
+}
+
 void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent& event) {
   wxTreeItemId item = m_SourcesTreeCtrl1->GetSelection();
   auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(item));
@@ -664,9 +675,11 @@ void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent& event) {
     if (src->type == LocalSourceItem::GRIB) {
       m_stLocalDownloadInfo->SetLabelText(_("Download grib..."));
       m_bLocal_source_selected = true;
+      HighlightArea(src->latmax, src->lonmax, src->latmin, src->lonmin);
     } else {
       m_stLocalDownloadInfo->SetLabelText(_("Select grib..."));
       m_bLocal_source_selected = false;
+      HighlightArea(src->latmax, src->lonmax, src->latmin, src->lonmin);
     }
   }
   EnableDownloadButtons();
@@ -826,7 +839,18 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
         wxEVT_DOWNLOAD_EVENT,
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
-  wxString filename = url.AfterLast('/');
+  wxString filename;
+  if (!src->filename.IsEmpty()) {
+    filename = src->filename;
+  } else {
+    filename = url.AfterLast('/'); // Get last part of the URL and try to sanitize the filename somewhat if we call some API...
+    filename.Replace("?", "_");
+    filename.Replace("&", "_");
+    if (! (filename.Contains(".grb2") || filename.Contains(".grib2") || filename.Contains(".grb") || filename.Contains(".grib") )) {
+      filename.Append(".grb");
+    }
+  }
+
   wxString path = m_parent.GetGribDir();
   path.Append(wxFileName::GetPathSeparator());
   path.Append(filename);

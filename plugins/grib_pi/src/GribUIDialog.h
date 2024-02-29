@@ -160,6 +160,10 @@ public:
 
   void GetProjectedLatLon(int &x, int &y);
   bool ProjectionEnabled() { return m_ProjectBoatPanel->ProjectionEnabled(); }
+  double m_highlight_latmax;
+  double m_highlight_lonmax;
+  double m_highlight_latmin;
+  double m_highlight_lonmin;
 
 private:
   void OnClose(wxCloseEvent &event);

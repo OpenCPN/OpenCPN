@@ -465,6 +465,7 @@ protected:
 
   // Virtual event handlers, overide them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
+  virtual void OnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
   virtual void OnWorldLengthChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnWorldDownload(wxCommandEvent& event) { event.Skip(); }
   virtual void OnLocalTreeItemExpanded(wxTreeEvent& event) { event.Skip(); }

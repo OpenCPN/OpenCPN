@@ -79,6 +79,7 @@ public:
   double m_Lon;
 
 private:
+  void HighlightArea(double latmax, double lonmax,double latmin, double lonmin);
   void ReadLocalCatalog();
   void FillTreeCtrl(wxJSONValue & data);
   void ApplyRequestConfig(unsigned rs, unsigned it, unsigned tr);
@@ -97,6 +98,7 @@ private:
     wxCommandEvent evt;
     OnAnyChange(evt);
   }
+  void OnNotebookPageChanged( wxNotebookEvent& event ) override { HighlightArea(0,0,0,0); }
   void OnTimeRangeChange(wxCommandEvent &event) override;
   void OnSendMaiL(wxCommandEvent &event) override;
   void OnSaveMail(wxCommandEvent &event) override;

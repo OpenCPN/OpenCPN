@@ -624,6 +624,27 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   m_Message_Hiden.Append(m_Message);
   DrawMessageWindow(m_Message_Hiden, vp->pix_width, vp->pix_height,
     m_Font_Message);
+
+  if (m_dlg.m_highlight_latmax - m_dlg.m_highlight_latmin > 0.01 &&
+      m_dlg.m_highlight_lonmax - m_dlg.m_highlight_lonmin > 0.01) {
+    wxPoint p1, p2;
+    GetCanvasPixLL(vp, &p1, m_dlg.m_highlight_latmin, m_dlg.m_highlight_lonmin);
+    GetCanvasPixLL(vp, &p2, m_dlg.m_highlight_latmax, m_dlg.m_highlight_lonmax);
+    if (m_pdc) {
+      m_pdc->SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+      m_pdc->SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
+                              wxBRUSHSTYLE_CROSSDIAG_HATCH));
+      m_pdc->DrawRectangle(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+    } else {
+      #ifdef ocpnUSE_GL
+      //GL
+      m_oDC->SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+      m_oDC->SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
+                              wxBRUSHSTYLE_CROSSDIAG_HATCH));
+      m_oDC->DrawRectangle(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+      #endif
+    }
+  }
   return true;
 }
 

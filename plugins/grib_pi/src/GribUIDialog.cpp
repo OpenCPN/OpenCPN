@@ -252,6 +252,10 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   SetMinSize(GetBestSize());
   m_ProjectBoatPanel->SetSpeed(pPlugIn->m_boat_sog);
   m_ProjectBoatPanel->SetCourse(pPlugIn->m_boat_cog);
+  m_highlight_latmax = 0;
+  m_highlight_lonmax = 0;
+  m_highlight_latmin = 0;
+  m_highlight_lonmin = 0;
 }
 
 GRIBUICtrlBar::~GRIBUICtrlBar() {

@@ -1,6 +1,194 @@
 {
     "sources": [
         {
+            "source": "MET.NO",
+            "url": "https://www.met.no/en/free-meteorological-data",
+            "areas": [
+                {
+                    "name": "Oslofjord",
+                    "boundary": {
+                        "lat_max": 60.0,
+                        "lon_max": 11.2,
+                        "lat_min": 58.9,
+                        "lon_min": 9.8
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=oslofjord",
+                            "filename": "meps_weatherapi_oslofjord.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=oslofjord",
+                            "filename": "norkyst800m_weatherapi_oslofjord.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=oslofjord",
+                            "filename": "wavewatch_4km_weatherapi_oslofjord.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Skagerrak",
+                    "boundary": {
+                        "lat_max": 59.4,
+                        "lon_max": 11.6,
+                        "lat_min": 57.7,
+                        "lon_min": 7.8
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=skagerrak",
+                            "filename": "meps_weatherapi_skagerrak.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=skagerrak",
+                            "filename": "norkyst800m_weatherapi_skagerrak.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=skagerrak",
+                            "filename": "wavewatch_4km_weatherapi_skagerrak.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sorlandet",
+                    "boundary": {
+                        "lat_max": 58.8,
+                        "lon_max": 9.4,
+                        "lat_min": 57.8,
+                        "lon_min": 7.0
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=sorlandet",
+                            "filename": "meps_weatherapi_sorlandet.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=sorlandet",
+                            "filename": "norkyst800m_weatherapi_sorlandet.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=sorlandet",
+                            "filename": "wavewatch_4km_weatherapi_sorlandet.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "West Norway",
+                    "boundary": {
+                        "lat_max": 63.0,
+                        "lon_max": 7.0,
+                        "lat_min": 58.0,
+                        "lon_min": 4.4
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=west_norway",
+                            "filename": "meps_weatherapi_west_norway.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=west_norway",
+                            "filename": "norkyst800m_weatherapi_west_norway.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=west_norway",
+                            "filename": "wavewatch_4km_weatherapi_west_norway.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "N-North Sea",
+                    "boundary": {
+                        "lat_max": 62.0,
+                        "lon_max": 6.0,
+                        "lat_min": 58.5,
+                        "lon_min": -2.0
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=n-northsea",
+                            "filename": "meps_weatherapi_n-northsea.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=n-northsea",
+                            "filename": "norkyst800m_weatherapi_n-northsea.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=n-northsea",
+                            "filename": "wavewatch_4km_weatherapi_n-northsea.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Troms-Finnmark",
+                    "boundary": {
+                        "lat_max": 71.5,
+                        "lon_max": 31.5,
+                        "lat_min": 69.0,
+                        "lon_min": 14.4
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=troms-finnmark",
+                            "filename": "meps_weatherapi_troms-finnmark.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=troms-finnmark",
+                            "filename": "norkyst800m_weatherapi_troms-finnmark.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=troms-finnmark",
+                            "filename": "wavewatch_4km_weatherapi_troms-finnmark.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Nordland",
+                    "boundary": {
+                        "lat_max": 69.0,
+                        "lon_max": 18.0,
+                        "lat_min": 63.0,
+                        "lon_min": 6.0
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=nordland",
+                            "filename": "meps_weatherapi_nordland.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=nordland",
+                            "filename": "norkyst800m_weatherapi_nordland.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=nordland",
+                            "filename": "wavewatch_4km_weatherapi_nordland.grb"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "source": "OpenSkiron ICON-D2",
             "url": "https://openskiron.org/en/cosmo-gribs",
             "areas": [
@@ -8,9 +196,9 @@
                     "name": "Aarhus",
                     "boundary": {
                         "lat_max": 56.95,
-                        "lon_max": 9.35,
+                        "lon_min": 9.35,
                         "lat_min": 55.21,
-                        "lon_min": 11.989999
+                        "lon_max": 11.989999
                     },
                     "gribs": [
                         {
@@ -23,9 +211,9 @@
                     "name": "Blight",
                     "boundary": {
                         "lat_max": 56.91,
-                        "lon_max": 6.97,
+                        "lon_min": 6.97,
                         "lat_min": 53.189999,
-                        "lon_min": 9.609999
+                        "lon_max": 9.609999
                     },
                     "gribs": [
                         {
@@ -38,9 +226,9 @@
                     "name": "Bornholm",
                     "boundary": {
                         "lat_max": 56.709999,
-                        "lon_max": 13.99,
+                        "lon_min": 13.99,
                         "lat_min": 53.31,
-                        "lon_min": 16.769999
+                        "lon_max": 16.769999
                     },
                     "gribs": [
                         {
@@ -53,9 +241,9 @@
                     "name": "Calais",
                     "boundary": {
                         "lat_max": 53.529999,
-                        "lon_max": 0.11,
+                        "lon_min": 0.11,
                         "lat_min": 48.99,
-                        "lon_min": 4.01
+                        "lon_max": 4.01
                     },
                     "gribs": [
                         {
@@ -68,9 +256,9 @@
                     "name": "Copenhagen",
                     "boundary": {
                         "lat_max": 56.389999,
-                        "lon_max": 11.49,
+                        "lon_min": 11.49,
                         "lat_min": 54.97,
-                        "lon_min": 14.51
+                        "lon_max": 14.51
                     },
                     "gribs": [
                         {
@@ -83,9 +271,9 @@
                     "name": "Kiel",
                     "boundary": {
                         "lat_max": 55.63,
-                        "lon_max": 9.35,
+                        "lon_min": 9.35,
                         "lat_min": 53.79,
-                        "lon_min": 11.669999
+                        "lon_max": 11.669999
                     },
                     "gribs": [
                         {
@@ -98,9 +286,9 @@
                     "name": "Netherlands",
                     "boundary": {
                         "lat_max": 55.01,
-                        "lon_max": 3.249999,
+                        "lon_min": 3.249999,
                         "lat_min": 51.25,
-                        "lon_min": 8.029999
+                        "lon_max": 8.029999
                     },
                     "gribs": [
                         {
@@ -113,9 +301,9 @@
                     "name": "Rostok",
                     "boundary": {
                         "lat_max": 55.15,
-                        "lon_max": 11.49,
+                        "lon_min": 11.49,
                         "lat_min": 53.589999,
-                        "lon_min": 14.51
+                        "lon_max": 14.51
                     },
                     "gribs": [
                         {
@@ -134,9 +322,9 @@
                     "name": "Adriatic",
                     "boundary": {
                         "lat_max": 46.59375,
-                        "lon_max": 11.96875,
+                        "lon_min": 11.96875,
                         "lat_min": 40.78125,
-                        "lon_min": 20.03125
+                        "lon_max": 20.03125
                     },
                     "gribs": [
                         {
@@ -149,9 +337,9 @@
                     "name": "Aegean",
                     "boundary": {
                         "lat_max": 42.03125,
-                        "lon_max": 19.96875,
+                        "lon_min": 19.96875,
                         "lat_min": 35.71875,
-                        "lon_min": 30.03125
+                        "lon_max": 30.03125
                     },
                     "gribs": [
                         {
@@ -164,9 +352,9 @@
                     "name": "Baleares",
                     "boundary": {
                         "lat_max": 44.03125,
-                        "lon_max": -1.03125,
+                        "lon_min": -1.03125,
                         "lat_min": 37.96875,
-                        "lon_min": 6.03125
+                        "lon_max": 6.03125
                     },
                     "gribs": [
                         {
@@ -179,9 +367,9 @@
                     "name": "Baltic Centre",
                     "boundary": {
                         "lat_max": 63.21875,
-                        "lon_max": 15.96875,
+                        "lon_min": 15.96875,
                         "lat_min": 57.96875,
-                        "lon_min": 23.03125
+                        "lon_max": 23.03125
                     },
                     "gribs": [
                         {
@@ -194,9 +382,9 @@
                     "name": "Baltic East",
                     "boundary": {
                         "lat_max": 61.71875,
-                        "lon_max": 20.96875,
+                        "lon_min": 20.96875,
                         "lat_min": 56.40625,
-                        "lon_min": 31.53125
+                        "lon_max": 31.53125
                     },
                     "gribs": [
                         {
@@ -209,9 +397,9 @@
                     "name": "Baltic North",
                     "boundary": {
                         "lat_max": 66.78125,
-                        "lon_max": 16.96875,
+                        "lon_min": 16.96875,
                         "lat_min": 61.96875,
-                        "lon_min": 26.03125
+                        "lon_max": 26.03125
                     },
                     "gribs": [
                         {
@@ -224,9 +412,9 @@
                     "name": "Baltic South",
                     "boundary": {
                         "lat_max": 59.03125,
-                        "lon_max": 12.96875,
+                        "lon_min": 12.96875,
                         "lat_min": 52.46875,
-                        "lon_min": 22.03125
+                        "lon_max": 22.03125
                     },
                     "gribs": [
                         {
@@ -239,9 +427,9 @@
                     "name": "Biscay",
                     "boundary": {
                         "lat_max": 49.09375,
-                        "lon_max": -10.03125,
+                        "lon_min": -10.03125,
                         "lat_min": 42.71875,
-                        "lon_min": 0.03125
+                        "lon_max": 0.03125
                     },
                     "gribs": [
                         {
@@ -254,9 +442,9 @@
                     "name": "Black Sea E",
                     "boundary": {
                         "lat_max": 48.03125,
-                        "lon_max": 33.96875,
+                        "lon_min": 33.96875,
                         "lat_min": 39.96875,
-                        "lon_min": 43.03125
+                        "lon_max": 43.03125
                     },
                     "gribs": [
                         {
@@ -269,9 +457,9 @@
                     "name": "Black Sea W",
                     "boundary": {
                         "lat_max": 47.53125,
-                        "lon_max": 26.46875,
+                        "lon_min": 26.46875,
                         "lat_min": 39.96875,
-                        "lon_min": 36.03125
+                        "lon_max": 36.03125
                     },
                     "gribs": [
                         {
@@ -284,9 +472,9 @@
                     "name": "Channel",
                     "boundary": {
                         "lat_max": 52.71875,
-                        "lon_max": -6.59375,
+                        "lon_min": -6.59375,
                         "lat_min": 47.21875,
-                        "lon_min": 3.03125
+                        "lon_max": 3.03125
                     },
                     "gribs": [
                         {
@@ -299,9 +487,9 @@
                     "name": "Crete",
                     "boundary": {
                         "lat_max": 38.03125,
-                        "lon_max": 19.96875,
+                        "lon_min": 19.96875,
                         "lat_min": 30.71875,
-                        "lon_min": 30.03125
+                        "lon_max": 30.03125
                     },
                     "gribs": [
                         {
@@ -314,9 +502,9 @@
                     "name": "Crusade",
                     "boundary": {
                         "lat_max": 37.40625,
-                        "lon_max": 26.71875,
+                        "lon_min": 26.71875,
                         "lat_min": 29.46875,
-                        "lon_min": 37.03125
+                        "lon_max": 37.03125
                     },
                     "gribs": [
                         {
@@ -329,9 +517,9 @@
                     "name": "Denmark",
                     "boundary": {
                         "lat_max": 60.03125,
-                        "lon_max": 5.78125,
+                        "lon_min": 5.78125,
                         "lat_min": 52.96875,
-                        "lon_min": 14.03125
+                        "lon_max": 14.03125
                     },
                     "gribs": [
                         {
@@ -344,9 +532,9 @@
                     "name": "Ionian",
                     "boundary": {
                         "lat_max": 42.03125,
-                        "lon_max": 15.96875,
+                        "lon_min": 15.96875,
                         "lat_min": 34.78125,
-                        "lon_min": 24.03125
+                        "lon_max": 24.03125
                     },
                     "gribs": [
                         {
@@ -359,9 +547,9 @@
                     "name": "Ireland",
                     "boundary": {
                         "lat_max": 56.40625,
-                        "lon_max": -11.28125,
+                        "lon_min": -11.28125,
                         "lat_min": 49.78125,
-                        "lon_min": -2.09375
+                        "lon_max": -2.09375
                     },
                     "gribs": [
                         {
@@ -374,9 +562,9 @@
                     "name": "Malaga",
                     "boundary": {
                         "lat_max": 40.03125,
-                        "lon_max": -8.03125,
+                        "lon_min": -8.03125,
                         "lat_min": 33.96875,
-                        "lon_min": 1.03125
+                        "lon_max": 1.03125
                     },
                     "gribs": [
                         {
@@ -389,9 +577,9 @@
                     "name": "North Sea NE",
                     "boundary": {
                         "lat_max": 60.03125,
-                        "lon_max": 0.96875,
+                        "lon_min": 0.96875,
                         "lat_min": 55.96875,
-                        "lon_min": 8.53125
+                        "lon_max": 8.53125
                     },
                     "gribs": [
                         {
@@ -404,9 +592,9 @@
                     "name": "North Sea NW",
                     "boundary": {
                         "lat_max": 61.34375,
-                        "lon_max": -4.59375,
+                        "lon_min": -4.59375,
                         "lat_min": 55.15625,
-                        "lon_min": 2.03125
+                        "lon_max": 2.03125
                     },
                     "gribs": [
                         {
@@ -419,9 +607,9 @@
                     "name": "North Sea SE",
                     "boundary": {
                         "lat_max": 56.71875,
-                        "lon_max": 1.96875,
+                        "lon_min": 1.96875,
                         "lat_min": 50.46875,
-                        "lon_min": 10.21875
+                        "lon_max": 10.21875
                     },
                     "gribs": [
                         {
@@ -434,9 +622,9 @@
                     "name": "North Sea SW",
                     "boundary": {
                         "lat_max": 56.40625,
-                        "lon_max": -2.03125,
+                        "lon_min": -2.03125,
                         "lat_min": 49.96875,
-                        "lon_min": 4.03125
+                        "lon_max": 4.03125
                     },
                     "gribs": [
                         {
@@ -449,9 +637,9 @@
                     "name": "Portugal",
                     "boundary": {
                         "lat_max": 45.09375,
-                        "lon_max": -12.09375,
+                        "lon_min": -12.09375,
                         "lat_min": 35.21875,
-                        "lon_min": -4.71875
+                        "lon_max": -4.71875
                     },
                     "gribs": [
                         {
@@ -464,9 +652,9 @@
                     "name": "Riviera",
                     "boundary": {
                         "lat_max": 44.53125,
-                        "lon_max": -0.03125,
+                        "lon_min": -0.03125,
                         "lat_min": 39.96875,
-                        "lon_min": 10.03125
+                        "lon_max": 10.03125
                     },
                     "gribs": [
                         {
@@ -479,9 +667,9 @@
                     "name": "Sardinia",
                     "boundary": {
                         "lat_max": 44.71875,
-                        "lon_max": 5.96875,
+                        "lon_min": 5.96875,
                         "lat_min": 37.96875,
-                        "lon_min": 13.03125
+                        "lon_max": 13.03125
                     },
                     "gribs": [
                         {
@@ -494,9 +682,9 @@
                     "name": "Scotland",
                     "boundary": {
                         "lat_max": 61.28125,
-                        "lon_max": -8.46875,
+                        "lon_min": -8.46875,
                         "lat_min": 54.71875,
-                        "lon_min": 0.03125
+                        "lon_max": 0.03125
                     },
                     "gribs": [
                         {
@@ -509,9 +697,9 @@
                     "name": "Sicily",
                     "boundary": {
                         "lat_max": 42.03125,
-                        "lon_max": 9.96875,
+                        "lon_min": 9.96875,
                         "lat_min": 34.96875,
-                        "lon_min": 18.03125
+                        "lon_max": 18.03125
                     },
                     "gribs": [
                         {
@@ -524,9 +712,9 @@
                     "name": "Tunisia",
                     "boundary": {
                         "lat_max": 39.03125,
-                        "lon_max": 5.96875,
+                        "lon_min": 5.96875,
                         "lat_min": 31.96875,
-                        "lon_min": 13.03125
+                        "lon_max": 13.03125
                     },
                     "gribs": [
                         {
@@ -545,9 +733,9 @@
                     "name": "Adriatic Central 4km",
                     "boundary": {
                         "lat_max": 43.846,
-                        "lon_max": 12.5980033,
+                        "lon_min": 12.5980033,
                         "lat_min": 42.01,
-                        "lon_min": 18.1049967
+                        "lon_max": 18.1049967
                     },
                     "gribs": [
                         {
@@ -560,9 +748,9 @@
                     "name": "Adriatic North 4km",
                     "boundary": {
                         "lat_max": 45.898,
-                        "lon_max": 12.0580045,
+                        "lon_min": 12.0580045,
                         "lat_min": 43.702,
-                        "lon_min": 16.0529955
+                        "lon_max": 16.0529955
                     },
                     "gribs": [
                         {
@@ -575,9 +763,9 @@
                     "name": "Adriatic South 4km",
                     "boundary": {
                         "lat_max": 42.854,
-                        "lon_max": 15.8569958,
+                        "lon_min": 15.8569958,
                         "lat_min": 39.686,
-                        "lon_min": 20.1420042
+                        "lon_max": 20.1420042
                     },
                     "gribs": [
                         {
@@ -590,9 +778,9 @@
                     "name": "Aegean 12km",
                     "boundary": {
                         "lat_max": 41.158,
-                        "lon_max": 22.0300068,
+                        "lon_min": 22.0300068,
                         "lat_min": 34.462,
-                        "lon_min": 30.0209932
+                        "lon_max": 30.0209932
                     },
                     "gribs": [
                         {
@@ -605,9 +793,9 @@
                     "name": "Aegean NE 4km",
                     "boundary": {
                         "lat_max": 41.5009948,
-                        "lon_max": 24.6069932,
+                        "lon_min": 24.6069932,
                         "lat_min": 38.0100052,
-                        "lon_min": 27.3080068
+                        "lon_max": 27.3080068
                     },
                     "gribs": [
                         {
@@ -620,9 +808,9 @@
                     "name": "Aegean NW 4km",
                     "boundary": {
                         "lat_max": 41.5009948,
-                        "lon_max": 22.0160061,
+                        "lon_min": 22.0160061,
                         "lat_min": 38.0100052,
-                        "lon_min": 25.0029939
+                        "lon_max": 25.0029939
                     },
                     "gribs": [
                         {
@@ -635,9 +823,9 @@
                     "name": "Aegean SE 4km",
                     "boundary": {
                         "lat_max": 38.386,
-                        "lon_max": 25.9900072,
+                        "lon_min": 25.9900072,
                         "lat_min": 35.182,
-                        "lon_min": 28.5089928
+                        "lon_max": 28.5089928
                     },
                     "gribs": [
                         {
@@ -650,9 +838,9 @@
                     "name": "Aegean SW 4km",
                     "boundary": {
                         "lat_max": 38.386,
-                        "lon_max": 22.498,
+                        "lon_min": 22.498,
                         "lat_min": 36.01,
-                        "lon_min": 26.314
+                        "lon_max": 26.314
                     },
                     "gribs": [
                         {
@@ -665,9 +853,9 @@
                     "name": "Almeria 4km",
                     "boundary": {
                         "lat_max": 38.7929952,
-                        "lon_max": -3.0099941,
+                        "lon_min": -3.0099941,
                         "lat_min": 35.0140048,
-                        "lon_min": 0.0849941
+                        "lon_max": 0.0849941
                     },
                     "gribs": [
                         {
@@ -680,9 +868,9 @@
                     "name": "Antalya 4km",
                     "boundary": {
                         "lat_max": 37.004,
-                        "lon_max": 27.507,
+                        "lon_min": 27.507,
                         "lat_min": 34.988,
-                        "lon_min": 33.015
+                        "lon_max": 33.015
                     },
                     "gribs": [
                         {
@@ -695,9 +883,9 @@
                     "name": "Atlantic Coast 12km",
                     "boundary": {
                         "lat_max": 51.022,
-                        "lon_max": -11.79,
+                        "lon_min": -11.79,
                         "lat_min": 41.95,
-                        "lon_min": -0.342
+                        "lon_max": -0.342
                     },
                     "gribs": [
                         {
@@ -710,9 +898,9 @@
                     "name": "Baleares 4km",
                     "boundary": {
                         "lat_max": 41.437006,
-                        "lon_max": -0.418,
+                        "lon_min": -0.418,
                         "lat_min": 38.375994,
-                        "lon_min": 4.586
+                        "lon_max": 4.586
                     },
                     "gribs": [
                         {
@@ -725,9 +913,9 @@
                     "name": "Bordeaux 4km",
                     "boundary": {
                         "lat_max": 46.306,
-                        "lon_max": -5.4910038,
+                        "lon_min": -5.4910038,
                         "lat_min": 43.102,
-                        "lon_min": -0.7379962
+                        "lon_max": -0.7379962
                     },
                     "gribs": [
                         {
@@ -740,9 +928,9 @@
                     "name": "Brest 4km",
                     "boundary": {
                         "lat_max": 49.005,
-                        "lon_max": -5.4910038,
+                        "lon_min": -5.4910038,
                         "lat_min": 45.657,
-                        "lon_min": -0.7379962
+                        "lon_max": -0.7379962
                     },
                     "gribs": [
                         {
@@ -755,9 +943,9 @@
                     "name": "Canaries 12km",
                     "boundary": {
                         "lat_max": 36.6580037,
-                        "lon_max": -22.0410034,
+                        "lon_min": -22.0410034,
                         "lat_min": 21.9689963,
-                        "lon_min": -5.8399966
+                        "lon_max": -5.8399966
                     },
                     "gribs": [
                         {
@@ -770,9 +958,9 @@
                     "name": "Canaries 4km",
                     "boundary": {
                         "lat_max": 30.2860042,
-                        "lon_max": -19.015997,
+                        "lon_min": -19.015997,
                         "lat_min": 26.0009958,
-                        "lon_min": -12.897003
+                        "lon_max": -12.897003
                     },
                     "gribs": [
                         {
@@ -785,9 +973,9 @@
                     "name": "Channel 12km",
                     "boundary": {
                         "lat_max": 55.909,
-                        "lon_max": -11.027,
+                        "lon_min": -11.027,
                         "lat_min": 45.973,
-                        "lon_min": 4.957
+                        "lon_max": 4.957
                     },
                     "gribs": [
                         {
@@ -800,9 +988,9 @@
                     "name": "Cherbourg 4km",
                     "boundary": {
                         "lat_max": 51.0839933,
-                        "lon_max": -2.9979945,
+                        "lon_min": -2.9979945,
                         "lat_min": 48.3490067,
-                        "lon_min": 0.3129945
+                        "lon_max": 0.3129945
                     },
                     "gribs": [
                         {
@@ -815,9 +1003,9 @@
                     "name": "Corsica 4km",
                     "boundary": {
                         "lat_max": 43.354,
-                        "lon_max": 7.356995,
+                        "lon_min": 7.356995,
                         "lat_min": 41.014,
-                        "lon_min": 10.994005
+                        "lon_max": 10.994005
                     },
                     "gribs": [
                         {
@@ -830,9 +1018,9 @@
                     "name": "Crete 4km",
                     "boundary": {
                         "lat_max": 36.514,
-                        "lon_max": 23.0020045,
+                        "lon_min": 23.0020045,
                         "lat_min": 34.606,
-                        "lon_min": 26.9969955
+                        "lon_max": 26.9969955
                     },
                     "gribs": [
                         {
@@ -845,9 +1033,9 @@
                     "name": "Crusade 12km",
                     "boundary": {
                         "lat_max": 37.018,
-                        "lon_max": 28.0799939,
+                        "lon_min": 28.0799939,
                         "lat_min": 26.974,
-                        "lon_min": 37.0450061
+                        "lon_max": 37.0450061
                     },
                     "gribs": [
                         {
@@ -860,9 +1048,9 @@
                     "name": "Cyprus 4km",
                     "boundary": {
                         "lat_max": 36.494,
-                        "lon_max": 32.0150068,
+                        "lon_min": 32.0150068,
                         "lat_min": 34.298,
-                        "lon_min": 34.7139932
+                        "lon_max": 34.7139932
                     },
                     "gribs": [
                         {
@@ -875,9 +1063,9 @@
                     "name": "Dunkirk 4km",
                     "boundary": {
                         "lat_max": 53.989,
-                        "lon_max": 1.755,
+                        "lon_min": 1.755,
                         "lat_min": 50.605,
-                        "lon_min": 4.995
+                        "lon_max": 4.995
                     },
                     "gribs": [
                         {
@@ -890,9 +1078,9 @@
                     "name": "France 12km",
                     "boundary": {
                         "lat_max": 44.754,
-                        "lon_max": 0.1140055,
+                        "lon_min": 0.1140055,
                         "lat_min": 36.006,
-                        "lon_min": 10.0489945
+                        "lon_max": 10.0489945
                     },
                     "gribs": [
                         {
@@ -905,9 +1093,9 @@
                     "name": "Gibraltar 4km",
                     "boundary": {
                         "lat_max": 37.354,
-                        "lon_max": -7.006,
+                        "lon_min": -7.006,
                         "lat_min": 35.014,
-                        "lon_min": -2.614
+                        "lon_max": -2.614
                     },
                     "gribs": [
                         {
@@ -920,9 +1108,9 @@
                     "name": "Gulf of Lion 4km",
                     "boundary": {
                         "lat_max": 43.818,
-                        "lon_max": 1.41,
+                        "lon_min": 1.41,
                         "lat_min": 40.902,
-                        "lon_min": 6.018
+                        "lon_max": 6.018
                     },
                     "gribs": [
                         {
@@ -935,9 +1123,9 @@
                     "name": "Hastings 4km",
                     "boundary": {
                         "lat_max": 53.9890036,
-                        "lon_max": -1.017,
+                        "lon_min": -1.017,
                         "lat_min": 48.9839964,
-                        "lon_min": 2.259
+                        "lon_max": 2.259
                     },
                     "gribs": [
                         {
@@ -950,9 +1138,9 @@
                     "name": "Ionian 12km",
                     "boundary": {
                         "lat_max": 42.5489928,
-                        "lon_max": 15.9780068,
+                        "lon_min": 15.9780068,
                         "lat_min": 34.9900072,
-                        "lon_min": 23.9689932
+                        "lon_max": 23.9689932
                     },
                     "gribs": [
                         {
@@ -965,9 +1153,9 @@
                     "name": "Ionian Islands 4km",
                     "boundary": {
                         "lat_max": 39.886,
-                        "lon_max": 19.29,
+                        "lon_min": 19.29,
                         "lat_min": 36.286,
-                        "lon_min": 22.602
+                        "lon_max": 22.602
                     },
                     "gribs": [
                         {
@@ -980,9 +1168,9 @@
                     "name": "Irish Sea N 4km",
                     "boundary": {
                         "lat_max": 56.011,
-                        "lon_max": -7.009,
+                        "lon_min": -7.009,
                         "lat_min": 53.203,
-                        "lon_min": -2.617
+                        "lon_max": -2.617
                     },
                     "gribs": [
                         {
@@ -995,9 +1183,9 @@
                     "name": "Irish Sea S 4km",
                     "boundary": {
                         "lat_max": 53.707,
-                        "lon_max": -7.261,
+                        "lon_min": -7.261,
                         "lat_min": 51.007,
-                        "lon_min": -2.293
+                        "lon_max": -2.293
                     },
                     "gribs": [
                         {
@@ -1010,9 +1198,9 @@
                     "name": "Israel 4km",
                     "boundary": {
                         "lat_max": 33.705,
-                        "lon_max": 33.013,
+                        "lon_min": 33.013,
                         "lat_min": 29.241,
-                        "lon_min": 36.613
+                        "lon_max": 36.613
                     },
                     "gribs": [
                         {
@@ -1025,9 +1213,9 @@
                     "name": "Italy 12km",
                     "boundary": {
                         "lat_max": 46.001,
-                        "lon_max": 7.5069956,
+                        "lon_min": 7.5069956,
                         "lat_min": 34.661,
-                        "lon_min": 19.9280044
+                        "lon_max": 19.9280044
                     },
                     "gribs": [
                         {
@@ -1040,9 +1228,9 @@
                     "name": "Ligurian 4km",
                     "boundary": {
                         "lat_max": 44.5049948,
-                        "lon_max": 7.357,
+                        "lon_min": 7.357,
                         "lat_min": 41.0140052,
-                        "lon_min": 12.253
+                        "lon_max": 12.253
                     },
                     "gribs": [
                         {
@@ -1055,9 +1243,9 @@
                     "name": "Nice 4km",
                     "boundary": {
                         "lat_max": 44.7169952,
-                        "lon_max": 5.5140056,
+                        "lon_min": 5.5140056,
                         "lat_min": 40.9020048,
-                        "lon_min": 8.7889944
+                        "lon_max": 8.7889944
                     },
                     "gribs": [
                         {
@@ -1070,9 +1258,9 @@
                     "name": "Patras Gulf 4km",
                     "boundary": {
                         "lat_max": 39.094,
-                        "lon_max": 20.19,
+                        "lon_min": 20.19,
                         "lat_min": 37.402,
-                        "lon_min": 23.358
+                        "lon_max": 23.358
                     },
                     "gribs": [
                         {
@@ -1085,9 +1273,9 @@
                     "name": "Plymouth 4km",
                     "boundary": {
                         "lat_max": 51.985,
-                        "lon_max": -5.914,
+                        "lon_min": -5.914,
                         "lat_min": 48.241,
-                        "lon_min": -1.99
+                        "lon_max": -1.99
                     },
                     "gribs": [
                         {
@@ -1100,9 +1288,9 @@
                     "name": "Sardinia 4km",
                     "boundary": {
                         "lat_max": 41.553,
-                        "lon_max": 7.356995,
+                        "lon_min": 7.356995,
                         "lat_min": 38.565,
-                        "lon_min": 10.994005
+                        "lon_max": 10.994005
                     },
                     "gribs": [
                         {
@@ -1115,9 +1303,9 @@
                     "name": "Sicily 4km",
                     "boundary": {
                         "lat_max": 38.766,
-                        "lon_max": 12.008,
+                        "lon_min": 12.008,
                         "lat_min": 35.706,
-                        "lon_min": 17.696
+                        "lon_max": 17.696
                     },
                     "gribs": [
                         {
@@ -1130,9 +1318,9 @@
                     "name": "Spain 12km",
                     "boundary": {
                         "lat_max": 43.006,
-                        "lon_max": -11.254,
+                        "lon_min": -11.254,
                         "lat_min": 34.042,
-                        "lon_min": 5.054
+                        "lon_max": 5.054
                     },
                     "gribs": [
                         {
@@ -1145,9 +1333,9 @@
                     "name": "Taurus 12km",
                     "boundary": {
                         "lat_max": 38.48,
-                        "lon_max": 25.023,
+                        "lon_min": 25.023,
                         "lat_min": 34.052,
-                        "lon_min": 36.039
+                        "lon_max": 36.039
                     },
                     "gribs": [
                         {
@@ -1160,9 +1348,9 @@
                     "name": "Tyrrhenian 4km",
                     "boundary": {
                         "lat_max": 41.79,
-                        "lon_max": 12.008,
+                        "lon_min": 12.008,
                         "lat_min": 38.01,
-                        "lon_min": 17.696
+                        "lon_max": 17.696
                     },
                     "gribs": [
                         {
@@ -1181,9 +1369,9 @@
                     "name": "Adriatic Central",
                     "boundary": {
                         "lat_max": 43.846,
-                        "lon_max": 12.5980033,
+                        "lon_min": 12.5980033,
                         "lat_min": 42.01,
-                        "lon_min": 18.1049967
+                        "lon_max": 18.1049967
                     },
                     "gribs": [
                         {
@@ -1196,9 +1384,9 @@
                     "name": "Adriatic North",
                     "boundary": {
                         "lat_max": 45.898,
-                        "lon_max": 12.0580045,
+                        "lon_min": 12.0580045,
                         "lat_min": 43.702,
-                        "lon_min": 16.0529955
+                        "lon_max": 16.0529955
                     },
                     "gribs": [
                         {
@@ -1211,9 +1399,9 @@
                     "name": "Adriatic South",
                     "boundary": {
                         "lat_max": 42.854,
-                        "lon_max": 15.8569958,
+                        "lon_min": 15.8569958,
                         "lat_min": 39.686,
-                        "lon_min": 20.1420042
+                        "lon_max": 20.1420042
                     },
                     "gribs": [
                         {
@@ -1226,9 +1414,9 @@
                     "name": "Aegean NE",
                     "boundary": {
                         "lat_max": 41.5009948,
-                        "lon_max": 24.6069932,
+                        "lon_min": 24.6069932,
                         "lat_min": 38.0100052,
-                        "lon_min": 27.3080068
+                        "lon_max": 27.3080068
                     },
                     "gribs": [
                         {
@@ -1241,9 +1429,9 @@
                     "name": "Aegean NW",
                     "boundary": {
                         "lat_max": 41.5009948,
-                        "lon_max": 22.0160061,
+                        "lon_min": 22.0160061,
                         "lat_min": 38.0100052,
-                        "lon_min": 25.0029939
+                        "lon_max": 25.0029939
                     },
                     "gribs": [
                         {
@@ -1256,9 +1444,9 @@
                     "name": "Aegean SE",
                     "boundary": {
                         "lat_max": 38.386,
-                        "lon_max": 25.9900072,
+                        "lon_min": 25.9900072,
                         "lat_min": 35.182,
-                        "lon_min": 28.5089928
+                        "lon_max": 28.5089928
                     },
                     "gribs": [
                         {
@@ -1271,9 +1459,9 @@
                     "name": "Aegean SW",
                     "boundary": {
                         "lat_max": 38.386,
-                        "lon_max": 22.498,
+                        "lon_min": 22.498,
                         "lat_min": 36.01,
-                        "lon_min": 26.314
+                        "lon_max": 26.314
                     },
                     "gribs": [
                         {
@@ -1286,9 +1474,9 @@
                     "name": "Almeria",
                     "boundary": {
                         "lat_max": 38.7929952,
-                        "lon_max": -3.0099941,
+                        "lon_min": -3.0099941,
                         "lat_min": 35.0140048,
-                        "lon_min": 0.0849941
+                        "lon_max": 0.0849941
                     },
                     "gribs": [
                         {
@@ -1301,9 +1489,9 @@
                     "name": "Antalya",
                     "boundary": {
                         "lat_max": 37.004,
-                        "lon_max": 27.507,
+                        "lon_min": 27.507,
                         "lat_min": 34.988,
-                        "lon_min": 33.015
+                        "lon_max": 33.015
                     },
                     "gribs": [
                         {
@@ -1316,9 +1504,9 @@
                     "name": "Baleares",
                     "boundary": {
                         "lat_max": 41.437006,
-                        "lon_max": -0.418,
+                        "lon_min": -0.418,
                         "lat_min": 38.375994,
-                        "lon_min": 4.586
+                        "lon_max": 4.586
                     },
                     "gribs": [
                         {
@@ -1331,9 +1519,9 @@
                     "name": "Bordeaux",
                     "boundary": {
                         "lat_max": 46.306,
-                        "lon_max": -5.4910038,
+                        "lon_min": -5.4910038,
                         "lat_min": 43.102,
-                        "lon_min": -0.7379962
+                        "lon_max": -0.7379962
                     },
                     "gribs": [
                         {
@@ -1346,9 +1534,9 @@
                     "name": "Brest",
                     "boundary": {
                         "lat_max": 49.005,
-                        "lon_max": -5.4910038,
+                        "lon_min": -5.4910038,
                         "lat_min": 45.657,
-                        "lon_min": -0.7379962
+                        "lon_max": -0.7379962
                     },
                     "gribs": [
                         {
@@ -1361,9 +1549,9 @@
                     "name": "Canaries",
                     "boundary": {
                         "lat_max": 30.2860042,
-                        "lon_max": -19.015997,
+                        "lon_min": -19.015997,
                         "lat_min": 26.0009958,
-                        "lon_min": -12.897003
+                        "lon_max": -12.897003
                     },
                     "gribs": [
                         {
@@ -1376,9 +1564,9 @@
                     "name": "Cherbourg",
                     "boundary": {
                         "lat_max": 51.0839933,
-                        "lon_max": -2.9979945,
+                        "lon_min": -2.9979945,
                         "lat_min": 48.3490067,
-                        "lon_min": 0.3129945
+                        "lon_max": 0.3129945
                     },
                     "gribs": [
                         {
@@ -1391,9 +1579,9 @@
                     "name": "Corsica",
                     "boundary": {
                         "lat_max": 43.354,
-                        "lon_max": 7.356995,
+                        "lon_min": 7.356995,
                         "lat_min": 41.014,
-                        "lon_min": 10.994005
+                        "lon_max": 10.994005
                     },
                     "gribs": [
                         {
@@ -1406,9 +1594,9 @@
                     "name": "Crete",
                     "boundary": {
                         "lat_max": 36.514,
-                        "lon_max": 23.0020045,
+                        "lon_min": 23.0020045,
                         "lat_min": 34.606,
-                        "lon_min": 26.9969955
+                        "lon_max": 26.9969955
                     },
                     "gribs": [
                         {
@@ -1421,9 +1609,9 @@
                     "name": "Cyprus",
                     "boundary": {
                         "lat_max": 36.494,
-                        "lon_max": 32.0150068,
+                        "lon_min": 32.0150068,
                         "lat_min": 34.298,
-                        "lon_min": 34.7139932
+                        "lon_max": 34.7139932
                     },
                     "gribs": [
                         {
@@ -1436,9 +1624,9 @@
                     "name": "Dunkirk",
                     "boundary": {
                         "lat_max": 53.989,
-                        "lon_max": 1.755,
+                        "lon_min": 1.755,
                         "lat_min": 50.605,
-                        "lon_min": 4.995
+                        "lon_max": 4.995
                     },
                     "gribs": [
                         {
@@ -1451,9 +1639,9 @@
                     "name": "Gibraltar",
                     "boundary": {
                         "lat_max": 37.354,
-                        "lon_max": -7.006,
+                        "lon_min": -7.006,
                         "lat_min": 35.014,
-                        "lon_min": -2.614
+                        "lon_max": -2.614
                     },
                     "gribs": [
                         {
@@ -1466,9 +1654,9 @@
                     "name": "Gulf of Lion",
                     "boundary": {
                         "lat_max": 43.818,
-                        "lon_max": 1.41,
+                        "lon_min": 1.41,
                         "lat_min": 40.902,
-                        "lon_min": 6.018
+                        "lon_max": 6.018
                     },
                     "gribs": [
                         {
@@ -1481,9 +1669,9 @@
                     "name": "Hastings",
                     "boundary": {
                         "lat_max": 53.9890036,
-                        "lon_max": -1.017,
+                        "lon_min": -1.017,
                         "lat_min": 48.9839964,
-                        "lon_min": 2.259
+                        "lon_max": 2.259
                     },
                     "gribs": [
                         {
@@ -1496,9 +1684,9 @@
                     "name": "Ionian Islands",
                     "boundary": {
                         "lat_max": 39.886,
-                        "lon_max": 19.29,
+                        "lon_min": 19.29,
                         "lat_min": 36.286,
-                        "lon_min": 22.602
+                        "lon_max": 22.602
                     },
                     "gribs": [
                         {
@@ -1511,9 +1699,9 @@
                     "name": "Irish Sea N",
                     "boundary": {
                         "lat_max": 56.011,
-                        "lon_max": -7.009,
+                        "lon_min": -7.009,
                         "lat_min": 53.203,
-                        "lon_min": -2.617
+                        "lon_max": -2.617
                     },
                     "gribs": [
                         {
@@ -1526,9 +1714,9 @@
                     "name": "Irish Sea S",
                     "boundary": {
                         "lat_max": 53.707,
-                        "lon_max": -7.261,
+                        "lon_min": -7.261,
                         "lat_min": 51.007,
-                        "lon_min": -2.293
+                        "lon_max": -2.293
                     },
                     "gribs": [
                         {
@@ -1541,9 +1729,9 @@
                     "name": "Israel",
                     "boundary": {
                         "lat_max": 33.705,
-                        "lon_max": 33.013,
+                        "lon_min": 33.013,
                         "lat_min": 29.241,
-                        "lon_min": 36.613
+                        "lon_max": 36.613
                     },
                     "gribs": [
                         {
@@ -1556,9 +1744,9 @@
                     "name": "Ligurian",
                     "boundary": {
                         "lat_max": 44.5049948,
-                        "lon_max": 7.357,
+                        "lon_min": 7.357,
                         "lat_min": 41.0140052,
-                        "lon_min": 12.253
+                        "lon_max": 12.253
                     },
                     "gribs": [
                         {
@@ -1571,9 +1759,9 @@
                     "name": "Nice",
                     "boundary": {
                         "lat_max": 44.7169952,
-                        "lon_max": 5.5140056,
+                        "lon_min": 5.5140056,
                         "lat_min": 40.9020048,
-                        "lon_min": 8.7889944
+                        "lon_max": 8.7889944
                     },
                     "gribs": [
                         {
@@ -1586,9 +1774,9 @@
                     "name": "Patras Gulf",
                     "boundary": {
                         "lat_max": 39.094,
-                        "lon_max": 20.19,
+                        "lon_min": 20.19,
                         "lat_min": 37.402,
-                        "lon_min": 23.358
+                        "lon_max": 23.358
                     },
                     "gribs": [
                         {
@@ -1601,9 +1789,9 @@
                     "name": "Plymouth",
                     "boundary": {
                         "lat_max": 51.985,
-                        "lon_max": -5.914,
+                        "lon_min": -5.914,
                         "lat_min": 48.241,
-                        "lon_min": -1.99
+                        "lon_max": -1.99
                     },
                     "gribs": [
                         {
@@ -1616,9 +1804,9 @@
                     "name": "Sardinia",
                     "boundary": {
                         "lat_max": 41.553,
-                        "lon_max": 7.356995,
+                        "lon_min": 7.356995,
                         "lat_min": 38.565,
-                        "lon_min": 10.994005
+                        "lon_max": 10.994005
                     },
                     "gribs": [
                         {
@@ -1631,9 +1819,9 @@
                     "name": "Sicily",
                     "boundary": {
                         "lat_max": 38.766,
-                        "lon_max": 12.008,
+                        "lon_min": 12.008,
                         "lat_min": 35.706,
-                        "lon_min": 17.696
+                        "lon_max": 17.696
                     },
                     "gribs": [
                         {
@@ -1646,9 +1834,9 @@
                     "name": "Tyrrhenian",
                     "boundary": {
                         "lat_max": 41.79,
-                        "lon_max": 12.008,
+                        "lon_min": 12.008,
                         "lat_min": 38.01,
-                        "lon_min": 17.696
+                        "lon_max": 17.696
                     },
                     "gribs": [
                         {
@@ -1667,9 +1855,9 @@
                     "name": "Aegean",
                     "boundary": {
                         "lat_max": 41.158,
-                        "lon_max": 22.0300068,
+                        "lon_min": 22.0300068,
                         "lat_min": 34.462,
-                        "lon_min": 30.0209932
+                        "lon_max": 30.0209932
                     },
                     "gribs": [
                         {
@@ -1682,9 +1870,9 @@
                     "name": "Atlantic Coast",
                     "boundary": {
                         "lat_max": 51.022,
-                        "lon_max": -11.79,
+                        "lon_min": -11.79,
                         "lat_min": 41.95,
-                        "lon_min": -0.342
+                        "lon_max": -0.342
                     },
                     "gribs": [
                         {
@@ -1697,9 +1885,9 @@
                     "name": "Canaries",
                     "boundary": {
                         "lat_max": 36.6580037,
-                        "lon_max": -22.0410034,
+                        "lon_min": -22.0410034,
                         "lat_min": 21.9689963,
-                        "lon_min": -5.8399966
+                        "lon_max": -5.8399966
                     },
                     "gribs": [
                         {
@@ -1712,9 +1900,9 @@
                     "name": "Channel",
                     "boundary": {
                         "lat_max": 55.909,
-                        "lon_max": -11.027,
+                        "lon_min": -11.027,
                         "lat_min": 45.973,
-                        "lon_min": 4.957
+                        "lon_max": 4.957
                     },
                     "gribs": [
                         {
@@ -1727,9 +1915,9 @@
                     "name": "Crusade",
                     "boundary": {
                         "lat_max": 37.018,
-                        "lon_max": 28.0799939,
+                        "lon_min": 28.0799939,
                         "lat_min": 26.974,
-                        "lon_min": 37.0450061
+                        "lon_max": 37.0450061
                     },
                     "gribs": [
                         {
@@ -1742,9 +1930,9 @@
                     "name": "France",
                     "boundary": {
                         "lat_max": 44.754,
-                        "lon_max": 0.1140055,
+                        "lon_min": 0.1140055,
                         "lat_min": 36.006,
-                        "lon_min": 10.0489945
+                        "lon_max": 10.0489945
                     },
                     "gribs": [
                         {
@@ -1757,9 +1945,9 @@
                     "name": "Ionian",
                     "boundary": {
                         "lat_max": 42.5489928,
-                        "lon_max": 15.9780068,
+                        "lon_min": 15.9780068,
                         "lat_min": 34.9900072,
-                        "lon_min": 23.9689932
+                        "lon_max": 23.9689932
                     },
                     "gribs": [
                         {
@@ -1772,9 +1960,9 @@
                     "name": "Italy",
                     "boundary": {
                         "lat_max": 46.001,
-                        "lon_max": 7.5069956,
+                        "lon_min": 7.5069956,
                         "lat_min": 34.661,
-                        "lon_min": 19.9280044
+                        "lon_max": 19.9280044
                     },
                     "gribs": [
                         {
@@ -1787,9 +1975,9 @@
                     "name": "Spain",
                     "boundary": {
                         "lat_max": 43.006,
-                        "lon_max": -11.254,
+                        "lon_min": -11.254,
                         "lat_min": 34.042,
-                        "lon_min": 5.054
+                        "lon_max": 5.054
                     },
                     "gribs": [
                         {
@@ -1802,9 +1990,9 @@
                     "name": "Taurus",
                     "boundary": {
                         "lat_max": 38.48,
-                        "lon_max": 25.023,
+                        "lon_min": 25.023,
                         "lat_min": 34.052,
-                        "lon_min": 36.039
+                        "lon_max": 36.039
                     },
                     "gribs": [
                         {
@@ -1823,9 +2011,9 @@
                     "name": "Adriatic",
                     "boundary": {
                         "lat_max": 46.05,
-                        "lon_max": 11.95,
+                        "lon_min": 11.95,
                         "lat_min": 40.95,
-                        "lon_min": 20.05
+                        "lon_max": 20.05
                     },
                     "gribs": [
                         {
@@ -1838,9 +2026,9 @@
                     "name": "Aegean",
                     "boundary": {
                         "lat_max": 41.55,
-                        "lon_max": 21.95,
+                        "lon_min": 21.95,
                         "lat_min": 35.95,
-                        "lon_min": 30.05
+                        "lon_max": 30.05
                     },
                     "gribs": [
                         {
@@ -1853,9 +2041,9 @@
                     "name": "Azov",
                     "boundary": {
                         "lat_max": 47.65,
-                        "lon_max": 33.95,
+                        "lon_min": 33.95,
                         "lat_min": 44.65,
-                        "lon_min": 40.05
+                        "lon_max": 40.05
                     },
                     "gribs": [
                         {
@@ -1868,9 +2056,9 @@
                     "name": "Baleares",
                     "boundary": {
                         "lat_max": 41.05,
-                        "lon_max": -0.05,
+                        "lon_min": -0.05,
                         "lat_min": 35.95,
-                        "lon_min": 12.05
+                        "lon_max": 12.05
                     },
                     "gribs": [
                         {
@@ -1883,9 +2071,9 @@
                     "name": "Black E",
                     "boundary": {
                         "lat_max": 45.55,
-                        "lon_max": 32.95,
+                        "lon_min": 32.95,
                         "lat_min": 40.45,
-                        "lon_min": 41.95
+                        "lon_max": 41.95
                     },
                     "gribs": [
                         {
@@ -1898,9 +2086,9 @@
                     "name": "Black W",
                     "boundary": {
                         "lat_max": 47.05,
-                        "lon_max": 26.95,
+                        "lon_min": 26.95,
                         "lat_min": 40.45,
-                        "lon_min": 34.05
+                        "lon_max": 34.05
                     },
                     "gribs": [
                         {
@@ -1913,9 +2101,9 @@
                     "name": "Crete",
                     "boundary": {
                         "lat_max": 38.05,
-                        "lon_max": 21.95,
+                        "lon_min": 21.95,
                         "lat_min": 30.95,
-                        "lon_min": 29.05
+                        "lon_max": 29.05
                     },
                     "gribs": [
                         {
@@ -1928,9 +2116,9 @@
                     "name": "Cyprus",
                     "boundary": {
                         "lat_max": 37.05,
-                        "lon_max": 26.95,
+                        "lon_min": 26.95,
                         "lat_min": 30.75,
-                        "lon_min": 36.35
+                        "lon_max": 36.35
                     },
                     "gribs": [
                         {
@@ -1943,9 +2131,9 @@
                     "name": "Ionian",
                     "boundary": {
                         "lat_max": 41.55,
-                        "lon_max": 16.95,
+                        "lon_min": 16.95,
                         "lat_min": 35.95,
-                        "lon_min": 23.05
+                        "lon_max": 23.05
                     },
                     "gribs": [
                         {
@@ -1958,9 +2146,9 @@
                     "name": "Malaga",
                     "boundary": {
                         "lat_max": 41.05,
-                        "lon_max": -7.05,
+                        "lon_min": -7.05,
                         "lat_min": 34.45,
-                        "lon_min": 1.05
+                        "lon_max": 1.05
                     },
                     "gribs": [
                         {
@@ -1973,9 +2161,9 @@
                     "name": "Riviera",
                     "boundary": {
                         "lat_max": 45.05,
-                        "lon_max": -0.05,
+                        "lon_min": -0.05,
                         "lat_min": 39.95,
-                        "lon_min": 13.05
+                        "lon_max": 13.05
                     },
                     "gribs": [
                         {
@@ -1988,9 +2176,9 @@
                     "name": "Sicily",
                     "boundary": {
                         "lat_max": 41.05,
-                        "lon_max": 10.95,
+                        "lon_min": 10.95,
                         "lat_min": 34.95,
-                        "lon_min": 19.05
+                        "lon_max": 19.05
                     },
                     "gribs": [
                         {
@@ -2003,9 +2191,9 @@
                     "name": "Tunisia",
                     "boundary": {
                         "lat_max": 38.05,
-                        "lon_max": 6.95,
+                        "lon_min": 6.95,
                         "lat_min": 32.45,
-                        "lon_min": 13.05
+                        "lon_max": 13.05
                     },
                     "gribs": [
                         {
