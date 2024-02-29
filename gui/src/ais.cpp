@@ -837,7 +837,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       GetCanvasPointPix(vp, cp, angle_lat, angle_lon, &AnglePoint);
 
       if (abs(AnglePoint.x - TargetPoint.x) > 0) {
-        if (target_sog > g_ShowMoored_Kts) {
+        if (target_sog > g_SOGminCOG_kts) {
           theta = atan2f((double)(AnglePoint.y - TargetPoint.y),
                          (double)(AnglePoint.x - TargetPoint.x));
           b_hdgValid = true;
@@ -849,7 +849,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         else {
           theta = (float)-PI /
                   2.;  //  valid COG 000 or speed is too low to resolve course
-          if (td->SOG >= g_ShowMoored_Kts)  //  valid COG 000 or speed is too
+          if (td->SOG >= g_SOGminCOG_kts)  //  valid COG 000 or speed is too
                                             //  low to resolve course
             b_hdgValid = true;
         }
@@ -1138,7 +1138,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
   //       Render the COG line if the speed is greater than moored speed defined
   //       by ais options dialog
-  if ((g_bShowCOG) && (target_sog > g_ShowMoored_Kts) && td->b_active) {
+  if ((g_bShowCOG) && (target_sog > g_SOGminCOG_kts) && td->b_active) {
     int pixx = TargetPoint.x;
     int pixy = TargetPoint.y;
     int pixx1 = PredPoint.x;
@@ -1234,7 +1234,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         float cog_angle = td->COG * PI / 180.;
 
         float theta2 = theta;  // ownship drawn angle
-        if (td->SOG >= g_ShowMoored_Kts)
+        if (td->SOG >= g_SOGminCOG_kts)
           theta2 = cog_angle - (PI / 2);  // actual cog angle
 
         float nv = 10;
@@ -1883,7 +1883,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
   //    This way, fast targets are not obscured by slow/stationary targets
   for (const auto &it : current_targets) {
     auto td = it.second;
-    if ((td->SOG < g_ShowMoored_Kts) &&
+    if ((td->SOG < g_SOGminCOG_kts) &&
         !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
       AISDrawTarget(td.get(), dc, vp, cp);
     }
@@ -1891,7 +1891,7 @@ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
 
   for (const auto &it : current_targets) {
     auto td = it.second;
-    if ((td->SOG >= g_ShowMoored_Kts) &&
+    if ((td->SOG >= g_SOGminCOG_kts) &&
         !((td->Class == AIS_GPSG_BUDDY) || (td->Class == AIS_DSC))) {
       AISDrawTarget(td.get(), dc, vp, cp);  // yes this is a doubling of code;(
       if (td->importance > 0) AISDrawTarget(td.get(), dc, vp, cp);

@@ -1150,6 +1150,10 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (Read(_T ( "MooredTargetMaxSpeedKnots" ), &s))
     s.ToDouble(&g_ShowMoored_Kts);
 
+  g_SOGminCOG_kts = 0.2;
+  if (Read(_T ( "SOGMinimumForCOGDisplay" ), &s))
+    s.ToDouble(&g_SOGminCOG_kts);
+
   Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled);
   Read(_T ( "AISScaledNumber" ), &g_ShowScaled_Num);
   Read(_T ( "AISScaledNumberWeightSOG" ), &g_ScaledNumWeightSOG);

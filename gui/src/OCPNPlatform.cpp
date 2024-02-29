@@ -1091,6 +1091,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   g_bSyncCogPredictors = false;
   g_bHideMoored = false;
   g_ShowMoored_Kts = 0.2;
+  g_SOGminCOG_kts = 0.2;
   g_bTrackDaily = false;
   g_PlanSpeed = 6.;
   g_bFullScreenQuilt = true;
