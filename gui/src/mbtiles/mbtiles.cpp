@@ -1012,7 +1012,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   glChartCanvas::DisableClipRegion();
 
   // Limit the cache size to 3 times the number of tiles to draw on a rendering
-  m_tileCache->CleanCache(m_tileCount * 5);
+  m_tileCache->CleanCache(m_tileCount * 3);
 #endif
   return true;
 }
