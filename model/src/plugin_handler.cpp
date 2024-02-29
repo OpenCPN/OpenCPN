@@ -1200,16 +1200,20 @@ bool PluginHandler::ExtractMetadata(const std::string& path,
 }
 
 bool PluginHandler::ClearInstallData(const std::string plugin_name) {
-  std::string path = PluginHandler::fileListPath(plugin_name);
-  if (!ocpn::exists(path)) {
-    wxLogWarning("Cannot find installation data for %s (%s)",
-                 plugin_name.c_str(), path);
-    return false;
-  }
   auto ix = PlugInIxByName(plugin_name,
                            PluginLoader::getInstance()->GetPlugInArray());
   if (ix != -1) {
     wxLogWarning("Attempt to remove installation data for loaded plugin");
+    return false;
+  }
+  return DoClearInstallData(plugin_name);
+}
+
+bool PluginHandler::DoClearInstallData(const std::string plugin_name) {
+  std::string path = PluginHandler::fileListPath(plugin_name);
+  if (!ocpn::exists(path)) {
+    wxLogWarning("Cannot find installation data for %s (%s)",
+                 plugin_name.c_str(), path);
     return false;
   }
   std::vector<std::string> plug_paths = LoadLinesFromFile(path);
@@ -1249,7 +1253,7 @@ bool PluginHandler::uninstall(const std::string plugin_name) {
   string libfile = pic->m_plugin_file.ToStdString();
   loader->UnLoadPlugIn(ix);
 
-  bool ok = ClearInstallData(plugin_name);
+  bool ok = DoClearInstallData(plugin_name);
 
   //  If this is an orphan plugin, there may be no installation record
   //  So make sure that the library file (.so/.dylib/.dll) is removed
