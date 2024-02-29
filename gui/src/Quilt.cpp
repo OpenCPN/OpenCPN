@@ -1325,7 +1325,12 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     double chart_native_ppm =
         m_canvas_scale_factor / (double)candidate_chart_scale;
     double zoom_factor = vp_local.view_scale_ppm / chart_native_ppm;
-    if (zoom_factor < zoom_test_val) {
+    if ((zoom_factor < zoom_test_val) &&
+      // MBTILES charts report the scale of their smallest layer (i.e. most
+      // detailed) as native chart scale, even if they are embedding many more
+      // layers. Since we don't know their maximum scale at this stage, we don't
+      // skip the chart if this native scale is apparently too small.
+        (cte.GetChartType() != CHART_TYPE_MBTILES)) {
       m_extended_stack_array.pop_back();
       continue;
     }
