@@ -158,8 +158,21 @@ void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
 }
 
 void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target) {
-   int audioType = AISAUDIO_NONE;
    if (!palert_target) return;
+
+   int audioType = AISAUDIO_NONE;
+
+   switch (palert_target->Class){
+    case AIS_DSC:
+      audioType = AISAUDIO_DSC;
+      break;
+    case AIS_SART:
+      audioType = AISAUDIO_SART;
+      break;
+    default:
+      audioType = AISAUDIO_CPA;
+      break;
+   }
 
    // If no alert dialog shown yet...
    if (!g_pais_alert_dialog_active) {
@@ -288,15 +301,15 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       m_bAIS_AlertPlaying = true;
       wxString soundFile;
       switch (audioType) {
-        case AISAUDIO_CPA:
-        default:
-          if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
-          break;
         case AISAUDIO_DSC:
           if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
           break;
         case AISAUDIO_SART:
           if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
+          break;
+        case AISAUDIO_CPA:
+        default:
+          if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
           break;
       }
 
