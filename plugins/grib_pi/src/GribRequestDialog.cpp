@@ -95,18 +95,25 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
         "Creative Commons CC-4.0-BY licence</p>"
         "<p>The GRIB files include information about surface temperature, "
         "atmospheric pressure, wind strength, wind direction, wave height and "
-        "direction for the whole world on a 0.4 degree resolution with 3 hour "
+        "direction for the whole world on a 0.4 and 0.25 degree resolution "
+        "grid with 3 hour "
         "step in the first 144 hours and 6 hour step up to 10 days.</p>"
         "<p>The data is updated twice a day as soon as the 00z and 12z model "
         "runs finish and the "
         "results are published by ECMWF, which usually means new forecast data "
         "is available shortly after 8AM and 8PM UTC.</p>"
         "<p>The grib downloaded covers the area of the primary chart canvas. "
-        "There is no limit on size up to 3 days, but to protect the limited "
+        "For 0.4 degree resolution there is no limit on size up to 3 days, but "
+        "to protect the limited "
         "computational resources available on the server producing the "
         "forecasts, the 10 day forecast area is limited to 2000 square "
         "degrees, "
         "or roughly 2500x2500 nautical miles.</p>"
+        "For 0.25 degree resolution there is no limit on size of the 24 hour "
+        "forecast, 3 day day forecast area is limited to 2000 square "
+        "degrees, "
+        "or 2500x2500 nautical miles and the 10 day forecast to 500 square "
+        "degrees, or 1300x1300 nautical miles.</p>"
         "<p>The service is provided on best effort basis and comes with no "
         "guarantees. The server is hosted by a volunteer and the service is "
         "provided free of charge. If you find the service useful, please "
@@ -124,11 +131,12 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
       ""
       ">" +
       _("<h1>Grib weather forecasts</h1>"
-        "<p>Collection of local weather models from various sources available for download over the internet.</p>"
+        "<p>Collection of local weather models from various sources available "
+        "for download over the internet.</p>"
         "</font></body></html>"));
-        ReadLocalCatalog();
-        m_bLocal_source_selected = false;
-        EnableDownloadButtons();
+  ReadLocalCatalog();
+  m_bLocal_source_selected = false;
+  EnableDownloadButtons();
 }
 
 GribRequestSetting::~GribRequestSetting() {
@@ -478,30 +486,32 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:
       if (ev.getTotal() != 0) {
-        switch(m_downloadType) {
+        switch (m_downloadType) {
           case GribDownloadType::WORLD:
-            m_staticTextInfo->SetLabelText(wxString::Format(
-            _("Downloading... %li / %li"), ev.getTransferred(), ev.getTotal()));
+            m_staticTextInfo->SetLabelText(
+                wxString::Format(_("Downloading... %li / %li"),
+                                 ev.getTransferred(), ev.getTotal()));
             break;
           case GribDownloadType::LOCAL:
           case GribDownloadType::LOCAL_CATALOG:
-            m_stLocalDownloadInfo->SetLabelText(wxString::Format(
-            _("Downloading... %li / %li"), ev.getTransferred(), ev.getTotal()));
+            m_stLocalDownloadInfo->SetLabelText(
+                wxString::Format(_("Downloading... %li / %li"),
+                                 ev.getTransferred(), ev.getTotal()));
             break;
           default:
             break;
         }
       } else {
         if (ev.getTransferred() > 0) {
-          switch(m_downloadType) {
+          switch (m_downloadType) {
             case GribDownloadType::WORLD:
               m_staticTextInfo->SetLabelText(wxString::Format(
-                _("Downloading... %li / ???"), ev.getTransferred()));
+                  _("Downloading... %li / ???"), ev.getTransferred()));
               break;
             case GribDownloadType::LOCAL:
             case GribDownloadType::LOCAL_CATALOG:
               m_stLocalDownloadInfo->SetLabelText(wxString::Format(
-                _("Downloading... %li / ???"), ev.getTransferred()));
+                  _("Downloading... %li / ???"), ev.getTransferred()));
               break;
             default:
               break;
@@ -540,17 +550,18 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   m_btnDownloadWorld->SetLabelText(_("Cancel"));
   m_staticTextInfo->SetLabelText(_("Preparing data on server..."));
   wxYieldIfNeeded();
+  wxString model =
+      (m_chECMWFResolution->GetSelection() <= 0 ? "ecmwf" : "ecmwf0p25");
   std::ostringstream oss;
   oss << "https://grib.bosun.io/grib?";
-  oss << "model="
-      << "ecmwf";
+  oss << "model=" << model;
   oss << "&latmin=" << m_Vp->lat_min;
   oss << "&latmax=" << m_Vp->lat_max;
   oss << "&lonmin=" << m_Vp->lon_min;
   oss << "&lonmax=" << m_Vp->lon_max;
   oss << "&length=" << LengthSelToHours(m_chForecastLength->GetSelection());
   wxString filename =
-      wxString::Format("ocpn_ecmwf_%li_%s.grb2",
+      wxString::Format("ocpn_%s_%li_%s.grb2", model.c_str(),
                        LengthSelToHours(m_chForecastLength->GetSelection()),
                        wxDateTime::Now().Format("%F-%H-%M"));
   wxString path = m_parent.GetGribDir();
@@ -577,9 +588,8 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
       m_parent.m_file_names.Clear();
       m_parent.m_file_names.Add(path);
       m_parent.OpenFile();
-      if (m_parent.pPlugIn){
-        if (m_parent.pPlugIn->m_bZoomToCenterAtInit)
-          m_parent.DoZoomToCenter();
+      if (m_parent.pPlugIn) {
+        if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
       }
       m_parent.SetDialogsStyleSizePosition(true);
       Close();
@@ -592,23 +602,25 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   EnableDownloadButtons();
 }
 
-enum LocalSourceItem
-{
-  SOURCE,
-  AREA,
-  GRIB
-};
+enum LocalSourceItem { SOURCE, AREA, GRIB };
 
-enum LocalGribDownloadType
-{
-  DIRECT,
-  MANIFEST,
-  WEBPAGE
-};
+enum LocalGribDownloadType { DIRECT, MANIFEST, WEBPAGE };
 
 struct GribCatalogInfo : public wxTreeItemData {
-  GribCatalogInfo(LocalSourceItem type, wxString name, wxString description, wxString url, wxString filename, LocalGribDownloadType download_type, double latmin, double lonmin, double latmax, double lonmax) :
-   type(type), name(name), description(description), url(url), filename(filename), download_type(download_type), latmin(latmin), lonmin(lonmin), latmax(latmax), lonmax(lonmax) {}
+  GribCatalogInfo(LocalSourceItem type, wxString name, wxString description,
+                  wxString url, wxString filename,
+                  LocalGribDownloadType download_type, double latmin,
+                  double lonmin, double latmax, double lonmax)
+      : type(type),
+        name(name),
+        description(description),
+        url(url),
+        filename(filename),
+        download_type(download_type),
+        latmin(latmin),
+        lonmin(lonmin),
+        latmax(latmax),
+        lonmax(lonmax) {}
   LocalSourceItem type;
   wxString name;
   wxString description;
@@ -621,25 +633,47 @@ struct GribCatalogInfo : public wxTreeItemData {
   double lonmax;
 };
 
-void GribRequestSetting::FillTreeCtrl(wxJSONValue & data) {
+void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
   m_SourcesTreeCtrl1->DeleteAllItems();
-  wxTreeItemId root = m_SourcesTreeCtrl1->AddRoot(_("Local high resolution forecasts"));
+  wxTreeItemId root =
+      m_SourcesTreeCtrl1->AddRoot(_("Local high resolution forecasts"));
   if (data.HasMember("sources") && data["sources"].IsArray()) {
     for (int i = 0; i < data["sources"].Size(); i++) {
       wxJSONValue source = data["sources"][i];
-      auto info = new GribCatalogInfo(LocalSourceItem::SOURCE, source["source"].AsString(), source["description"].AsString(), source["url"].AsString(), wxEmptyString, LocalGribDownloadType::WEBPAGE, 0, 0, 0, 0);
+      auto info = new GribCatalogInfo(
+          LocalSourceItem::SOURCE, source["source"].AsString(),
+          source["description"].AsString(), source["url"].AsString(),
+          wxEmptyString, LocalGribDownloadType::WEBPAGE, 0, 0, 0, 0);
       wxTreeItemId src_id = m_SourcesTreeCtrl1->AppendItem(
           root, source["source"].AsString(), -1, -1, info);
       if (source.HasMember("areas") && source["areas"].IsArray()) {
         for (int j = 0; j < source[_T("areas")].Size(); j++) {
           wxJSONValue area = source[_T("areas")][j];
-          auto info = new GribCatalogInfo(LocalSourceItem::AREA, area["name"].AsString(), source["description"].AsString(), source["url"].AsString(), wxEmptyString, LocalGribDownloadType::WEBPAGE, area["boundary"]["lat_min"].AsDouble(), area["boundary"]["lon_min"].AsDouble(), area["boundary"]["lat_max"].AsDouble(), area["boundary"]["lon_max"].AsDouble());
-          m_SourcesTreeCtrl1->AppendItem(
-              src_id, area["name"].AsString(), -1, -1, info);
+          auto info = new GribCatalogInfo(
+              LocalSourceItem::AREA, area["name"].AsString(),
+              source["description"].AsString(), source["url"].AsString(),
+              wxEmptyString, LocalGribDownloadType::WEBPAGE,
+              area["boundary"]["lat_min"].AsDouble(),
+              area["boundary"]["lon_min"].AsDouble(),
+              area["boundary"]["lat_max"].AsDouble(),
+              area["boundary"]["lon_max"].AsDouble());
+          m_SourcesTreeCtrl1->AppendItem(src_id, area["name"].AsString(), -1,
+                                         -1, info);
           if (area.HasMember("gribs") && area["gribs"].IsArray()) {
             for (int k = 0; k < area["gribs"].Size(); k++) {
               wxJSONValue grib = area["gribs"][k];
-              auto info = new GribCatalogInfo(LocalSourceItem::GRIB, grib["name"].AsString(), source["description"].AsString(), grib.HasMember("url") ? grib["url"].AsString() : grib["cat_url"].AsString(), grib.HasMember("filename") ? grib["filename"].AsString() : "", grib.HasMember("url") ? LocalGribDownloadType::DIRECT : LocalGribDownloadType::MANIFEST, area["boundary"]["lat_min"].AsDouble(), area["boundary"]["lon_min"].AsDouble(), area["boundary"]["lat_max"].AsDouble(), area["boundary"]["lon_max"].AsDouble());
+              auto info = new GribCatalogInfo(
+                  LocalSourceItem::GRIB, grib["name"].AsString(),
+                  source["description"].AsString(),
+                  grib.HasMember("url") ? grib["url"].AsString()
+                                        : grib["cat_url"].AsString(),
+                  grib.HasMember("filename") ? grib["filename"].AsString() : "",
+                  grib.HasMember("url") ? LocalGribDownloadType::DIRECT
+                                        : LocalGribDownloadType::MANIFEST,
+                  area["boundary"]["lat_min"].AsDouble(),
+                  area["boundary"]["lon_min"].AsDouble(),
+                  area["boundary"]["lat_max"].AsDouble(),
+                  area["boundary"]["lon_max"].AsDouble());
               m_SourcesTreeCtrl1->AppendItem(
                   m_SourcesTreeCtrl1->GetLastChild(src_id),
                   grib[_T("name")].AsString(), -1, -1, info);
@@ -661,14 +695,15 @@ void GribRequestSetting::ReadLocalCatalog() {
   FillTreeCtrl(root);
 }
 
-void GribRequestSetting::HighlightArea(double latmax, double lonmax,double latmin, double lonmin) {
+void GribRequestSetting::HighlightArea(double latmax, double lonmax,
+                                       double latmin, double lonmin) {
   m_parent.m_highlight_latmax = latmax;
   m_parent.m_highlight_lonmax = lonmax;
   m_parent.m_highlight_latmin = latmin;
   m_parent.m_highlight_lonmin = lonmin;
 }
 
-void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent& event) {
+void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent &event) {
   wxTreeItemId item = m_SourcesTreeCtrl1->GetSelection();
   auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(item));
   if (src) {
@@ -685,7 +720,7 @@ void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent& event) {
   EnableDownloadButtons();
 }
 
-void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent& event) {
+void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent &event) {
   if (m_downloading) {
     OCPN_cancelDownloadFileBackground(m_download_handle);
     m_downloading = false;
@@ -716,15 +751,17 @@ void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent& event) {
         wxEVT_DOWNLOAD_EVENT,
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
-  auto res =
-      OCPN_downloadFileBackground(CATALOG_URL, m_parent.pPlugIn->m_local_sources_catalog+"new", this, &m_download_handle);
+  auto res = OCPN_downloadFileBackground(
+      CATALOG_URL, m_parent.pPlugIn->m_local_sources_catalog + "new", this,
+      &m_download_handle);
   while (m_downloading) {
     wxTheApp->ProcessPendingEvents();
     wxMilliSleep(10);
   }
   if (!m_canceled) {
     if (m_bTransferSuccess) {
-      wxRenameFile(m_parent.pPlugIn->m_local_sources_catalog+"new", m_parent.pPlugIn->m_local_sources_catalog, true);
+      wxRenameFile(m_parent.pPlugIn->m_local_sources_catalog + "new",
+                   m_parent.pPlugIn->m_local_sources_catalog, true);
       ReadLocalCatalog();
       m_stLocalDownloadInfo->SetLabelText(_("Catalog update complete."));
     } else {
@@ -736,7 +773,7 @@ void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent& event) {
   EnableDownloadButtons();
 }
 
-void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
+void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
   if (m_downloading) {
     OCPN_cancelDownloadFileBackground(m_download_handle);
     m_downloading = false;
@@ -761,7 +798,8 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
   m_btnDownloadLocal->SetLabelText(_("Cancel"));
   m_staticTextInfo->SetLabelText(_("Downloading grib..."));
   wxYieldIfNeeded();
-  auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(m_SourcesTreeCtrl1->GetSelection()));
+  auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(
+      m_SourcesTreeCtrl1->GetSelection()));
   if (!src || src->type != LocalSourceItem::GRIB || src->url.IsEmpty()) {
     m_downloading = false;
     m_stLocalDownloadInfo->SetLabelText(_("Download can't be started."));
@@ -777,13 +815,13 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
   wxString url = src->url;
-  // If it is a grib that changes location and requires help of, download the manifest first
+  // If it is a grib that changes location and requires help of, download the
+  // manifest first
   if (src->download_type == LocalGribDownloadType::MANIFEST) {
     wxString path = m_parent.GetGribDir();
     path.Append(wxFileName::GetPathSeparator());
     path.Append("grib_manifest.json");
-    auto res =
-        OCPN_downloadFileBackground(url, path, this, &m_download_handle);
+    auto res = OCPN_downloadFileBackground(url, path, this, &m_download_handle);
     while (m_downloading) {
       wxTheApp->ProcessPendingEvents();
       wxMilliSleep(10);
@@ -803,9 +841,9 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
       wxFileInputStream str(path);
       wxJSONValue root;
       reader.Parse(str, &root);
-      if(root.HasMember("url")) {
+      if (root.HasMember("url")) {
         wxString parsed = root["url"].AsString();
-        if(parsed.StartsWith("http")) {
+        if (parsed.StartsWith("http")) {
           url = parsed;
         } else {
           m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
@@ -813,12 +851,13 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
         }
       }
     }
-    if (!success) { //Something went wrong, clean up and do not continue to the actual download
+    if (!success) {  // Something went wrong, clean up and do not continue to
+                     // the actual download
       m_downloading = false;
       m_download_handle = 0;
-      Disconnect(
-          wxEVT_DOWNLOAD_EVENT,
-          (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+      Disconnect(wxEVT_DOWNLOAD_EVENT,
+                 (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::
+                     onDLEvent);
       m_connected = false;
       m_btnDownloadLocal->SetLabelText(_("Download"));
       m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
@@ -843,10 +882,13 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
   if (!src->filename.IsEmpty()) {
     filename = src->filename;
   } else {
-    filename = url.AfterLast('/'); // Get last part of the URL and try to sanitize the filename somewhat if we call some API...
+    filename =
+        url.AfterLast('/');  // Get last part of the URL and try to sanitize the
+                             // filename somewhat if we call some API...
     filename.Replace("?", "_");
     filename.Replace("&", "_");
-    if (! (filename.Contains(".grb2") || filename.Contains(".grib2") || filename.Contains(".grb") || filename.Contains(".grib") )) {
+    if (!(filename.Contains(".grb2") || filename.Contains(".grib2") ||
+          filename.Contains(".grb") || filename.Contains(".grib"))) {
       filename.Append(".grb");
     }
   }
@@ -854,8 +896,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
   wxString path = m_parent.GetGribDir();
   path.Append(wxFileName::GetPathSeparator());
   path.Append(filename);
-  auto res =
-      OCPN_downloadFileBackground(url, path, this, &m_download_handle);
+  auto res = OCPN_downloadFileBackground(url, path, this, &m_download_handle);
   while (m_downloading) {
     wxTheApp->ProcessPendingEvents();
     wxMilliSleep(10);
@@ -868,11 +909,11 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
       wxFileName fn(path);
       m_parent.m_grib_dir = fn.GetPath();
       m_parent.m_file_names.Clear();
-      m_parent.m_file_names.Add(path); //("/home/nohal/Downloads/Cherbourg_4km_WRF_WAM_240228-12.grb.bz2");
+      m_parent.m_file_names.Add(
+          path);  //("/home/nohal/Downloads/Cherbourg_4km_WRF_WAM_240228-12.grb.bz2");
       m_parent.OpenFile();
-      if (m_parent.pPlugIn){
-        if (m_parent.pPlugIn->m_bZoomToCenterAtInit)
-          m_parent.DoZoomToCenter();
+      if (m_parent.pPlugIn) {
+        if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
       }
       m_parent.SetDialogsStyleSizePosition(true);
       Close();
@@ -885,26 +926,24 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent& event) {
   EnableDownloadButtons();
 }
 
-void GribRequestSetting::EnableDownloadButtons()
-{
-  switch (m_downloadType)
-  {
-  case GribDownloadType::WORLD:
-    m_btnDownloadWorld->Enable(true);
-    m_btnDownloadLocal->Enable(false);
-    m_buttonUpdateCatalog->Enable(false);
-    break;
-  case GribDownloadType::LOCAL:
-  case GribDownloadType::LOCAL_CATALOG:
-    m_btnDownloadWorld->Enable(false);
-    m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
-    m_buttonUpdateCatalog->Enable(false);
-    break;  
-  default:
-    m_btnDownloadWorld->Enable(true);
-    m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
-    m_buttonUpdateCatalog->Enable(true);
-    break;
+void GribRequestSetting::EnableDownloadButtons() {
+  switch (m_downloadType) {
+    case GribDownloadType::WORLD:
+      m_btnDownloadWorld->Enable(true);
+      m_btnDownloadLocal->Enable(false);
+      m_buttonUpdateCatalog->Enable(false);
+      break;
+    case GribDownloadType::LOCAL:
+    case GribDownloadType::LOCAL_CATALOG:
+      m_btnDownloadWorld->Enable(false);
+      m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
+      m_buttonUpdateCatalog->Enable(false);
+      break;
+    default:
+      m_btnDownloadWorld->Enable(true);
+      m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
+      m_buttonUpdateCatalog->Enable(true);
+      break;
   }
 }
 
