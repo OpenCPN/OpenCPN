@@ -169,7 +169,7 @@ public:
   /** Uninstall an installed  and loaded plugin. */
   bool uninstall(const std::string plugin);
 
-  /** Remove installation data for loaded plugin. */
+  /** Remove installation data for not loaded plugin. */
   bool ClearInstallData(const std::string plugin_name);
 
   /** Install plugin tarball from local cache. */

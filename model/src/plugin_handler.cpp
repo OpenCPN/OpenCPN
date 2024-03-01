@@ -145,10 +145,10 @@ static std::vector<std::string> glob_dir(const std::string& dir_path,
  * Return index in ArrayOfPlugins for plugin with given name,
  * or -1 if not found
  */
-static ssize_t PlugInIxByName(const std::string name,
+static ssize_t PlugInIxByName(const std::string& name,
                               const ArrayOfPlugIns* plugins) {
+  const auto lc_name = ocpn::tolower(name);
   for (unsigned i = 0; i < plugins->GetCount(); i += 1) {
-    auto lc_name = ocpn::tolower(name);
     if (lc_name == plugins->Item(i)->m_common_name.Lower().ToStdString()) {
       return i;
     }
@@ -1213,7 +1213,7 @@ bool PluginHandler::DoClearInstallData(const std::string plugin_name) {
   std::string path = PluginHandler::fileListPath(plugin_name);
   if (!ocpn::exists(path)) {
     wxLogWarning("Cannot find installation data for %s (%s)",
-                 plugin_name.c_str(), path);
+                 plugin_name.c_str(), path.c_str());
     return false;
   }
   std::vector<std::string> plug_paths = LoadLinesFromFile(path);
