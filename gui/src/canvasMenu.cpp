@@ -641,12 +641,14 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         }
         MenuAppend1(menuAIS, ID_DEF_MENU_AISTARGETLIST, _("Target List..."));
         if (myptarget->Class != AIS_METEO /*g_bAISShowTracks*/) {
-          if (myptarget && myptarget->b_show_track)
-            MenuAppend1(menuAIS, ID_DEF_MENU_AISSHOWTRACK,
-                        _("Hide Target Track"));
-          else
-            MenuAppend1(menuAIS, ID_DEF_MENU_AISSHOWTRACK,
-                        _("Show Target Track"));
+          if (myptarget && !myptarget->b_PersistTrack) {
+            if (myptarget->b_show_track)
+              MenuAppend1(menuAIS, ID_DEF_MENU_AISSHOWTRACK,
+                          _("Hide Target Track"));
+            else
+              MenuAppend1(menuAIS, ID_DEF_MENU_AISSHOWTRACK,
+                          _("Show Target Track"));
+          }
         }
 
         MenuAppend1(menuAIS, ID_DEF_MENU_COPY_MMSI, _("Copy Target MMSI"));
