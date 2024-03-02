@@ -1425,6 +1425,9 @@ After downloading the charts, please extract them to %s"),
 
       // if(g_pi && g_pi->m_dldrpanel)
       // g_pi->m_dldrpanel->Raise();
+      wxTheApp->ProcessPendingEvents();
+      wxYieldIfNeeded();
+      wxMilliSleep(10);
     }
 
     if (cancelled) {
@@ -2462,4 +2465,5 @@ void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
     default:
       break;
   }
+  wxYieldIfNeeded();
 }
