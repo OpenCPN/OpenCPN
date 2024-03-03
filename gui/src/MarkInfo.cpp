@@ -912,6 +912,20 @@ void MarkInfoDlg::InitialFocus(void) {
 
 void MarkInfoDlg::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
+void MarkInfoDlg::SetBulkEdit(bool bBulkEdit) {
+  m_textName->Enable(!bBulkEdit);
+  m_textLatitude->Enable(!bBulkEdit);
+  m_textLongitude->Enable(!bBulkEdit);
+  m_textDescription->Enable(!bBulkEdit);
+  m_textCtrlExtDescription->Enable(!bBulkEdit);
+}
+
+void MarkInfoDlg::SetRoutePoints(const std::vector<RoutePoint*> &points) {
+  m_pRoutePoints = points;
+  SetRoutePoint(m_pRoutePoints[0]);
+  SetBulkEdit(points.size() > 1);
+}
+
 void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
   m_pRoutePoint = pRP;
   if (m_pRoutePoint) {
@@ -945,6 +959,7 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
       }
     }
   }
+  SetBulkEdit(m_pRoutePoints.size() > 1);
 }
 
 void MarkInfoDlg::UpdateHtmlList() {
@@ -1126,6 +1141,7 @@ void MarkInfoDlg::OnPositionCtlUpdated(wxCommandEvent& event) {
 }
 
 void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
+  if (m_pRoutePoints.size() > 1) return;
 #ifndef __ANDROID__
   // SimpleHtmlList->HitTest doesn't seem to work under msWin, so we use a
   // custom made version
@@ -1433,6 +1449,8 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
     }
   }
 
+  m_pRoutePoints.clear();
+
   m_lasttspos.Clear();
 
 #ifdef __WXGTK__
@@ -1458,6 +1476,7 @@ void MarkInfoDlg::OnMarkInfoOKClick(wxCommandEvent& event) {
     OnPositionCtlUpdated(event);
     SaveChanges();  // write changes to globals and update config
   }
+  m_pRoutePoints.clear();
 
 #ifdef __WXGTK__
   gFrame->Raise();
@@ -1673,104 +1692,156 @@ void MarkInfoDlg::ValidateMark(void) {
 
 bool MarkInfoDlg::SaveChanges() {
   if (m_pRoutePoint) {
-    if (m_pRoutePoint->m_bIsInLayer) return true;
+    if (m_pRoutePoints.size() <= 1) {  // We are editing a single point, save everything
+      if (m_pRoutePoint->m_bIsInLayer) return true;
 
-    // Get User input Text Fields
-    m_pRoutePoint->SetName(m_textName->GetValue());
-    m_pRoutePoint->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
-    m_pRoutePoint->SetScaMin(m_textScaMin->GetValue());
-    m_pRoutePoint->SetUseSca(m_checkBoxScaMin->GetValue());
-    m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
-    m_pRoutePoint->SetVisible(m_checkBoxVisible->GetValue());
-    m_pRoutePoint->m_bShowName = m_checkBoxShowName->GetValue();
-    m_pRoutePoint->SetPosition(fromDMM(m_textLatitude->GetValue()),
-                               fromDMM(m_textLongitude->GetValue()));
-    wxString* icon_name =
-        pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
-    if (icon_name && icon_name->Length())
-      m_pRoutePoint->SetIconName(*icon_name);
-    m_pRoutePoint->ReLoadIcon();
-    m_pRoutePoint->SetShowWaypointRangeRings(
-        (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
-    m_pRoutePoint->SetWaypointRangeRingsNumber(
-        m_ChoiceWaypointRangeRingsNumber->GetSelection());
-    double value;
-    if (m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
-      m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
-    if (m_textArrivalRadius->GetValue().ToDouble(&value))
-      m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
+      // Get User input Text Fields
+      m_pRoutePoint->SetName(m_textName->GetValue());
+      m_pRoutePoint->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
+      m_pRoutePoint->SetScaMin(m_textScaMin->GetValue());
+      m_pRoutePoint->SetUseSca(m_checkBoxScaMin->GetValue());
+      m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
+      m_pRoutePoint->SetVisible(m_checkBoxVisible->GetValue());
+      m_pRoutePoint->m_bShowName = m_checkBoxShowName->GetValue();
+      m_pRoutePoint->SetPosition(fromDMM(m_textLatitude->GetValue()),
+                                 fromDMM(m_textLongitude->GetValue()));
+      wxString* icon_name =
+          pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
+      if (icon_name && icon_name->Length())
+        m_pRoutePoint->SetIconName(*icon_name);
+      m_pRoutePoint->ReLoadIcon();
+      m_pRoutePoint->SetShowWaypointRangeRings(
+          (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
+      m_pRoutePoint->SetWaypointRangeRingsNumber(
+          m_ChoiceWaypointRangeRingsNumber->GetSelection());
+      double value;
+      if (m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
+        m_pRoutePoint->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
+      if (m_textArrivalRadius->GetValue().ToDouble(&value))
+        m_pRoutePoint->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
 
-    if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
-      m_pRoutePoint->SetWaypointRangeRingsStepUnits(
-          m_RangeRingUnits->GetSelection());
+      if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND)
+        m_pRoutePoint->SetWaypointRangeRingsStepUnits(
+            m_RangeRingUnits->GetSelection());
 
-    m_pRoutePoint->m_TideStation = m_comboBoxTideStation->GetStringSelection();
-    if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
-      m_pRoutePoint->SetPlannedSpeed(0.0);
-    } else {
-      double spd;
-      if (m_textCtrlPlSpeed->GetValue().ToDouble(&spd)) {
-        m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
-      }
-    }
-
-    if (m_cbEtaPresent->GetValue()) {
-      wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
-      dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
-      dt.SetMinute(m_EtaTimePickerCtrl->GetValue().GetMinute());
-      dt.SetSecond(m_EtaTimePickerCtrl->GetValue().GetSecond());
-      if (dt.IsValid()) {
-        m_pRoutePoint->SetETD(dt.FormatISOCombined());
-      }
-    } else {
-      m_pRoutePoint->SetETD(wxEmptyString);
-    }
-    // Here is some logic....
-    // If the Markname is completely numeric, and is part of a route,
-    // Then declare it to be of attribute m_bDynamicName = true
-    // This is later used for re-numbering points on actions like
-    // Insert Point, Delete Point, Append Point, etc
-
-    if (m_pRoutePoint->m_bIsInRoute) {
-      bool b_name_is_numeric = true;
-      for (unsigned int i = 0; i < m_pRoutePoint->GetName().Len(); i++) {
-        if (i < 2 && wxChar('N') == m_pRoutePoint->GetName()[0] &&
-            wxChar('M') == m_pRoutePoint->GetName()[1] &&
-            m_pRoutePoint->GetName().Len() > 2)
-          continue;
-        if (wxChar('0') > m_pRoutePoint->GetName()[i])
-          b_name_is_numeric = false;
-        if (wxChar('9') < m_pRoutePoint->GetName()[i])
-          b_name_is_numeric = false;
-      }
-
-      m_pRoutePoint->m_bDynamicName = b_name_is_numeric;
-    } else
-      m_pRoutePoint->m_bDynamicName = false;
-
-    if (m_pRoutePoint->m_bIsInRoute) {
-      // Update the route segment selectables
-      pSelect->UpdateSelectableRouteSegments(m_pRoutePoint);
-
-      // Get an array of all routes using this point
-      wxArrayPtrVoid* pEditRouteArray =
-          g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
-
-      if (pEditRouteArray) {
-        for (unsigned int ir = 0; ir < pEditRouteArray->GetCount(); ir++) {
-          Route* pr = (Route*)pEditRouteArray->Item(ir);
-          pr->FinalizeForRendering();
-          pr->UpdateSegmentDistances();
-
-          pConfig->UpdateRoute(pr);
+      m_pRoutePoint->m_TideStation =
+          m_comboBoxTideStation->GetStringSelection();
+      if (m_textCtrlPlSpeed->GetValue() == wxEmptyString) {
+        m_pRoutePoint->SetPlannedSpeed(0.0);
+      } else {
+        double spd;
+        if (m_textCtrlPlSpeed->GetValue().ToDouble(&spd)) {
+          m_pRoutePoint->SetPlannedSpeed(fromUsrSpeed(spd));
         }
-        delete pEditRouteArray;
       }
-    } else
-      pConfig->UpdateWayPoint(m_pRoutePoint);
-    // No general settings need be saved pConfig->UpdateSettings();
+
+      if (m_cbEtaPresent->GetValue()) {
+        wxDateTime dt = m_EtaDatePickerCtrl->GetValue();
+        dt.SetHour(m_EtaTimePickerCtrl->GetValue().GetHour());
+        dt.SetMinute(m_EtaTimePickerCtrl->GetValue().GetMinute());
+        dt.SetSecond(m_EtaTimePickerCtrl->GetValue().GetSecond());
+        if (dt.IsValid()) {
+          m_pRoutePoint->SetETD(dt.FormatISOCombined());
+        }
+      } else {
+        m_pRoutePoint->SetETD(wxEmptyString);
+      }
+      // Here is some logic....
+      // If the Markname is completely numeric, and is part of a route,
+      // Then declare it to be of attribute m_bDynamicName = true
+      // This is later used for re-numbering points on actions like
+      // Insert Point, Delete Point, Append Point, etc
+
+      if (m_pRoutePoint->m_bIsInRoute) {
+        bool b_name_is_numeric = true;
+        for (unsigned int i = 0; i < m_pRoutePoint->GetName().Len(); i++) {
+          if (i < 2 && wxChar('N') == m_pRoutePoint->GetName()[0] &&
+              wxChar('M') == m_pRoutePoint->GetName()[1] &&
+              m_pRoutePoint->GetName().Len() > 2)
+            continue;
+          if (wxChar('0') > m_pRoutePoint->GetName()[i])
+            b_name_is_numeric = false;
+          if (wxChar('9') < m_pRoutePoint->GetName()[i])
+            b_name_is_numeric = false;
+        }
+
+        m_pRoutePoint->m_bDynamicName = b_name_is_numeric;
+      } else
+        m_pRoutePoint->m_bDynamicName = false;
+
+      if (m_pRoutePoint->m_bIsInRoute) {
+        // Update the route segment selectables
+        pSelect->UpdateSelectableRouteSegments(m_pRoutePoint);
+
+        // Get an array of all routes using this point
+        wxArrayPtrVoid* pEditRouteArray =
+            g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+
+        if (pEditRouteArray) {
+          for (unsigned int ir = 0; ir < pEditRouteArray->GetCount(); ir++) {
+            Route* pr = (Route*)pEditRouteArray->Item(ir);
+            pr->FinalizeForRendering();
+            pr->UpdateSegmentDistances();
+
+            pConfig->UpdateRoute(pr);
+          }
+          delete pEditRouteArray;
+        }
+      } else
+        pConfig->UpdateWayPoint(m_pRoutePoint);
+      // No general settings need be saved pConfig->UpdateSettings();
+    } else {
+      // We are modifying multiple points, just a subset of properties is to be
+      // modified for each of them and just in case they were actually changed
+      // We need to iterate in reverse order to save the first point in the vector until the end and be able to compere it's original values for changes...
+      for (std::vector<RoutePoint*>::reverse_iterator rit = m_pRoutePoints.rbegin(); rit != m_pRoutePoints.rend(); ++rit) {
+        RoutePoint* rp = *rit;
+        if (rp->m_bIsInLayer) continue; // Layer WP, skip it
+        if (m_pRoutePoint->m_WaypointArrivalRadius != wxAtof(m_textArrivalRadius->GetValue()))
+          rp->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
+        if (m_pRoutePoint->GetScaMin() != wxAtoi(m_textScaMin->GetValue()))
+          rp->SetScaMin(m_textScaMin->GetValue());
+        if (m_pRoutePoint-> GetUseSca() != m_checkBoxScaMin->GetValue())
+          rp->SetUseSca(m_checkBoxScaMin->GetValue());
+        if (m_pRoutePoint->GetNameShown() != m_checkBoxShowName->GetValue())
+          rp->SetNameShown(m_checkBoxShowName->GetValue());
+        if (m_pRoutePoint->IsVisible() != m_checkBoxVisible->GetValue())
+          rp->SetVisible(m_checkBoxVisible->GetValue());
+        wxString* icon_name =
+            pWayPointMan->GetIconKey(m_bcomboBoxIcon->GetSelection());
+        if (m_pRoutePoint->GetIconName() != *icon_name) {
+          if (icon_name && icon_name->Length()) rp->SetIconName(*icon_name);
+          rp->ReLoadIcon();
+        }
+        if (m_pRoutePoint->GetShowWaypointRangeRings() !=
+            (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0)) {
+          rp->SetShowWaypointRangeRings(
+            (bool)(m_ChoiceWaypointRangeRingsNumber->GetSelection() != 0));
+          rp->SetWaypointRangeRingsNumber(
+            m_ChoiceWaypointRangeRingsNumber->GetSelection());
+        }
+
+        double value;
+        if (m_pRoutePoint->GetWaypointRangeRingsStep() !=
+            fromUsrDistance(wxAtof(m_textWaypointRangeRingsStep->GetValue())))
+          if (m_textWaypointRangeRingsStep->GetValue().ToDouble(&value))
+            rp->SetWaypointRangeRingsStep(fromUsrDistance(value, -1));
+
+        if (m_pRoutePoint->GetWaypointRangeRingsStep() !=
+            fromUsrDistance(wxAtof(m_textArrivalRadius->GetValue())))
+          if (m_textArrivalRadius->GetValue().ToDouble(&value))
+            rp->SetWaypointArrivalRadius(fromUsrDistance(value, -1));
+
+        if (m_RangeRingUnits->GetSelection() != wxNOT_FOUND && m_pRoutePoint->GetWaypointRangeRingsStepUnits() != m_RangeRingUnits->GetSelection())
+          rp->SetWaypointRangeRingsStepUnits(m_RangeRingUnits->GetSelection());
+
+        if (m_pRoutePoint->m_TideStation != m_comboBoxTideStation->GetStringSelection())
+          rp->m_TideStation = m_comboBoxTideStation->GetStringSelection();
+        pConfig->UpdateWayPoint(rp);
+        //TODO: Something else? Will we bulk edit routepoints for example?
+      }
+    }
   }
-  // gFrame->GetFocusCanvas()->Refresh(false);
   return true;
 }
 

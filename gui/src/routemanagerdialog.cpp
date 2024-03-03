@@ -2550,7 +2550,7 @@ void RouteManagerDialog::UpdateWptButtons() {
     }
   }
 
-  btnWptProperties->Enable(enable1);
+  btnWptProperties->Enable(enablemultiple);
   btnWptZoomto->Enable(enable1);
   btnWptDeleteAll->Enable(m_pWptListCtrl->GetItemCount() > 0);
   btnWptDelete->Enable(b_delete_enable && enablemultiple);
@@ -2631,40 +2631,49 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
   g_pMarkInfoDialog->SetRoutePoint(pWP);
   g_pMarkInfoDialog->UpdateProperties();
 
-  WptShowPropertiesDialog(pWP, GetParent());
+  WptShowPropertiesDialog(std::vector<RoutePoint*> {pWP}, GetParent());
 }
 
 void RouteManagerDialog::OnWptPropertiesClick(wxCommandEvent &event) {
-  long item = -1;
-  item =
-      m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-  if (item == -1) return;
+  std::vector<RoutePoint *> wptlist;
+  long item = wxNOT_FOUND;
+  item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+  while (item != wxNOT_FOUND)
+  {
+    auto wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+    if (wp) {
+      wptlist.push_back(wp);
+    }
+    item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+  }
+      
+  if (wptlist.size() == 0) return;
 
-  RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-
-  if (!wp) return;
-
-  WptShowPropertiesDialog(wp, GetParent());
+  WptShowPropertiesDialog(wptlist, GetParent());
 
   UpdateWptListCtrl();
   m_bNeedConfigFlush = true;
 }
 
-void RouteManagerDialog::WptShowPropertiesDialog(RoutePoint *wp,
+void RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint *> wptlist,
                                                  wxWindow *parent) {
   if (!g_pMarkInfoDialog)  // There is one global instance of the MarkProp
                            // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(parent);
 
-  g_pMarkInfoDialog->SetRoutePoint(wp);
+  g_pMarkInfoDialog->SetRoutePoints(wptlist);
   g_pMarkInfoDialog->UpdateProperties();
-  if (wp->m_bIsInLayer) {
+  if (wptlist[0]->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
                                       _("Waypoint Properties"), _("Layer"),
-                                      GetLayerName(wp->m_LayerID)));
+                                      GetLayerName(wptlist[0]->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
-  } else
-    g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+  } else {
+    if (wptlist.size() > 1)
+      g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties") + wxString::Format(_(" (%lu points)"), wptlist.size()));
+    else
+      g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+  }
 
   if (!g_pMarkInfoDialog->IsShown()) g_pMarkInfoDialog->Show();
   g_pMarkInfoDialog->Raise();
