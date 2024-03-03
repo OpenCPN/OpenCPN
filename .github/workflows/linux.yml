@@ -58,10 +58,6 @@ jobs:
         run: cmake --build build --config ${{env.BUILD_TYPE}}
 
       - name: Test
-        if: runner.os != 'Linux'
-        # TODO: The tests do not work in headless Linux containers (GTK crashes) with wxWidgets 3.0 available in Ubuntu
-        # They seem to be fine with wx 3.1 though, so we will just remove the condition "later" when wx3.2 time comes
-        # On Windows, we would need opencpn.exe in the worjing directory to run the tests (and wxWidgets libs in the path)
         working-directory: build
-        run: ctest -C ${{env.BUILD_TYPE}}
+        run: make run-tests
 ...
