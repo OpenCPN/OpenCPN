@@ -48,6 +48,8 @@
 #include <math.h>
 #include <time.h>
 
+#include "model/sys_events.h"
+
 #ifndef __WXMSW__
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
@@ -210,8 +212,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   sprintf(port_char, "%d",params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
 
-
-  // Prepare the wxEventHandler to accept events from the actual hardware thread
+    // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_NET, &CommDriverN2KNet::handle_N2K_MSG, this);
 
   m_mrq_container = new MrqContainer;
@@ -223,6 +224,10 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   m_circle = new  circular_buffer(RX_BUFFER_SIZE_NET);
 
   fast_messages = new FastMessageMap();
+
+  // Establish the power events response
+  resume_listener.Init(SystemEvents::GetInstance().evt_resume,
+                       [&](ObservedEvt&) { OnTimerSocket(); });
 
   Open();
 }
@@ -389,21 +394,31 @@ void CommDriverN2KNet::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
       if (tcp_socket) {
         tcp_socket->Close();
       }
-      GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);  // schedule a reconnect
+      int n_reconnect_delay =  wxMax(N_DOG_TIMEOUT-2, 2);
+      wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.", n_reconnect_delay));
+      GetSocketTimer()->Start(n_reconnect_delay * 1000,
+                              wxTIMER_ONE_SHOT);  // schedule a reconnect
       GetSocketThreadWatchdogTimer()->Stop();
     }
   }
 }
 
-void CommDriverN2KNet::OnTimerSocket(wxTimerEvent& event) {
+void CommDriverN2KNet::OnTimerSocket() {
+  GetSocketThreadWatchdogTimer()->Stop();
+
   //  Attempt a connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
       SetBrxConnectEvent(false);
+
+      wxLogMessage(" Attempting reconnection...");
       tcp_socket->Connect(GetAddr(), FALSE);
-      GetSocketTimer()->Start(5000,
-                              wxTIMER_ONE_SHOT);  // schedule another attempt
+
+      // schedule another attempt, in case this one fails
+      int n_reconnect_delay =  wxMax(N_DOG_TIMEOUT-2, 2);
+      GetSocketTimer()->Start(n_reconnect_delay * 1000,
+                              wxTIMER_ONE_SHOT);
     }
   }
 }
