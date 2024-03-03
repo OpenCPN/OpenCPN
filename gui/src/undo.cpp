@@ -41,6 +41,7 @@
 #include "navutil.h"
 #include "styles.h"
 #include "model/routeman.h"
+#include "model/select.h"
 #include "MarkInfo.h"
 #include "routemanagerdialog.h"
 #include "undo.h"
@@ -51,9 +52,7 @@
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;
-extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
-extern WayPointman* pWayPointMan;
 extern MarkInfoDlg* g_pMarkInfoDialog;
 
 Undo::Undo(ChartCanvas* parent) {

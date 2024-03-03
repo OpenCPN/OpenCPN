@@ -29,6 +29,7 @@
 #include "MarkInfo.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
+#include "model/select.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
 #include "chcanv.h"
@@ -48,12 +49,10 @@
 
 extern wxString GetLayerName(int id);
 
-extern WayPointman* pWayPointMan;
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
 extern ColorScheme global_color_scheme;
 extern RouteList* pRouteList;
-extern Select* pSelect;
 extern MyFrame* gFrame;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern TCMgr* ptcmgr;

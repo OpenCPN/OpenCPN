@@ -29,6 +29,7 @@
 #include "model/georef.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
+#include "model/select.h"
 #include "routeman_gui.h"
 #include "routemanagerdialog.h"
 #include "trackprintout.h"
@@ -49,7 +50,6 @@
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
 extern Routeman* g_pRouteMan;
-extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;

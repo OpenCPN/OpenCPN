@@ -43,6 +43,7 @@
 
 #include "config.h"
 
+#include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/base_platform.h"
 #include "model/cmdline.h"
@@ -169,9 +170,7 @@ extern wxString g_toolbarConfig;
 extern bool g_bPreserveScaleOnX;
 extern bool g_running;
 
-extern Select *pSelect;
 extern Select *pSelectTC;
-extern Select *pSelectAIS;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;

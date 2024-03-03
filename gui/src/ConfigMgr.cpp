@@ -92,7 +92,6 @@ extern int g_restore_dbindex;
 extern LayerList *pLayerList;
 extern MyConfig *pConfig;
 extern int g_nbrightness;
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -102,7 +101,6 @@ extern wxString g_UserPresLibData;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
-extern wxString  g_TalkerIdText;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -126,7 +124,6 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
-extern int g_nTrackPrecision;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -254,8 +251,6 @@ extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
-
-extern int g_NMEAAPBPrecision;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;

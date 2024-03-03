@@ -156,7 +156,6 @@ extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ConsoleCanvas *console;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Routeman *g_pRouteMan;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
@@ -215,7 +214,6 @@ extern int g_ENCTextScaleFactor;
 extern bool g_bShowTide;
 extern bool g_bShowCurrent;
 extern bool g_bUIexpert;
-extern Select *pSelect;
 extern RouteList *pRouteList;
 extern wxString g_default_wp_icon;
 extern std::vector<std::string> TideCurrentDataSet;
@@ -273,7 +271,6 @@ extern unsigned int g_canvasConfig;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
 extern wxString *pInit_Chart_Dir;
-extern bool g_bShowAIS;
 extern bool g_bShowOutlines;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowStatusBar;
@@ -291,7 +288,6 @@ extern bool g_bAutoAnchorMark;
 extern wxDateTime g_start_time;
 extern bool g_bcompression_wait;
 extern bool g_bquiting;
-extern wxString g_AisTargetList_perspective;
 extern bool b_inCloseWindow;
 extern bool b_inCompressAllCharts;
 extern long g_maintoolbar_orient;
@@ -315,7 +311,6 @@ extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bVelocityValid;
 extern int gHDx_Watchdog;
-extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
 
 extern bool g_bUseGLL;
@@ -1883,7 +1878,7 @@ void MyFrame::OnMove(wxMoveEvent &event) {
     g_current_monitor = idx;
     DEBUG_LOG << "Moved to " << idx
 #if wxCHECK_VERSION(3, 1, 6)
-    << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY() 
+    << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY()
     << " SF wxDisplay: " << wxDisplay(idx).GetScaleFactor()
 #endif
     << " Size wxDisplay: " << wxDisplay(idx).GetGeometry().GetWidth() << "x" << wxDisplay(idx).GetGeometry().GetHeight()

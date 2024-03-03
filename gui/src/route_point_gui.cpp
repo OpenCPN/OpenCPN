@@ -28,7 +28,6 @@
 extern Multiplexer* g_pMUX;
 extern ocpnGLOptions g_GLOptions;
 extern float g_MarkScaleFactorExp;
-extern WayPointman* pWayPointMan;
 extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
 extern ocpnStyle::StyleManager* g_StyleManager;

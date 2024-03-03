@@ -87,6 +87,7 @@
 #include "MarkInfo.h"
 #include "model/multiplexer.h"
 #include "model/navutil_base.h"
+#include "model/own_ship.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
@@ -142,7 +143,6 @@ wxString GetOCPNKnownLanguage(const wxString lang_canonical);
 extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
-extern WayPointman* pWayPointMan;
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 
@@ -153,10 +153,8 @@ extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bChartBarEx;
 extern bool g_bsmoothpanzoom;
-extern double gVar;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
-extern int g_NMEAAPBPrecision;
 extern bool g_bUIexpert;
 
 extern wxString* pInit_Chart_Dir;
@@ -255,8 +253,6 @@ extern bool g_bGLexpert;
 
 extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_TCData_Dir;
-
-extern AisDecoder* g_pAIS;
 
 options* g_pOptions;
 
@@ -9291,4 +9287,3 @@ void CanvasConfigSelect::OnPaint(wxPaintEvent& event) {
 
   dc.DrawBitmap(m_bmpNormal, m_borderWidth, m_borderWidth, false);
 }
-

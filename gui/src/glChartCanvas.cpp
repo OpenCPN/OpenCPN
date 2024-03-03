@@ -200,7 +200,6 @@ extern ChartDB *ChartData;
 
 extern PlugInManager *g_pi_manager;
 
-extern WayPointman *pWayPointMan;
 extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern bool b_inCompressAllCharts;

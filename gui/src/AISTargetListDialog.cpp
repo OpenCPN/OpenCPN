@@ -50,12 +50,10 @@ static AisDecoder *s_p_sort_decoder;
 extern int g_AisTargetList_count;
 extern bool g_bAisTargetList_autosort;
 extern ocpnStyle::StyleManager *g_StyleManager;
-extern wxString g_AisTargetList_perspective;
 extern MyConfig *pConfig;
 extern AISTargetListDialog *g_pAISTargetList;
 extern MyFrame *gFrame;
 extern wxString g_default_wp_icon;
-extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 
 IMPLEMENT_CLASS(AISTargetListDialog, wxPanel)

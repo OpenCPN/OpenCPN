@@ -74,7 +74,6 @@
 #include "Quilt.h"
 #include "model/select_item.h"
 #include "model/select.h"
-#include "model/own_ship.h"
 #include "SystemCmdSound.h"
 #include "FontMgr.h"
 #include "model/ais_decoder.h"
@@ -160,8 +159,6 @@ extern void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
                           unsigned char transparency);
 
 extern double g_ChartNotRenderScaleFactor;
-extern double gLat, gLon, gCog, gSog, gHdt;
-// extern double           vLat, vLon;
 extern ChartDB *ChartData;
 extern bool bDBUpdateInProgress;
 extern ColorScheme global_color_scheme;
@@ -173,13 +170,10 @@ extern OCPNPlatform *g_Platform;
 extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern MyConfig *pConfig;
-extern Select *pSelect;
 extern Routeman *g_pRouteMan;
 extern ThumbWin *pthumbwin;
 extern TCMgr *ptcmgr;
 extern Select *pSelectTC;
-extern Select *pSelectAIS;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
@@ -203,8 +197,6 @@ extern s52plib *ps52plib;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
-
-extern AisDecoder *g_pAIS;
 
 extern MyFrame *gFrame;
 
@@ -341,7 +333,6 @@ wxString g_ObjQFileExt;
 
 // "Curtain" mode parameters
 wxDialog *g_pcurtain;
-extern double gLat, gLat;
 
 extern int g_GUIScaleFactor;
 // Win DPI scale factor

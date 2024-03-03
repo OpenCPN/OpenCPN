@@ -57,7 +57,6 @@ extern bool g_bopengl;
 extern MyFrame *gFrame;
 extern int g_ais_alert_dialog_y;
 extern wxString g_default_wp_icon;
-extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern OCPNPlatform *g_Platform;

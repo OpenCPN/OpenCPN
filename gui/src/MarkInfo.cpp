@@ -52,6 +52,7 @@
 #include "RoutePropDlgImpl.h"
 #include "chcanv.h"
 #include "model/position_parser.h"
+#include "model/select.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "model/route.h"
@@ -66,8 +67,6 @@
 
 extern TCMgr* ptcmgr;
 extern MyConfig* pConfig;
-extern WayPointman* pWayPointMan;
-extern Select* pSelect;
 extern Routeman* g_pRouteMan;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern RoutePropDlgImpl* pRoutePropDialog;

@@ -43,9 +43,7 @@
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ColorScheme global_color_scheme;
-extern AisDecoder *g_pAIS;
 extern wxString g_default_wp_icon;
-extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern std::vector<Track*> g_TrackList;

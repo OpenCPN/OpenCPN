@@ -63,7 +63,6 @@ extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 
 int g_ais_cog_predictor_width;
-extern AisDecoder *g_pAIS;
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
 int ImportanceSwitchPoint = 100;

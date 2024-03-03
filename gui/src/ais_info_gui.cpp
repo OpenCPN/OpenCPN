@@ -58,7 +58,6 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern AisDecoder *g_pAIS;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern bool g_bquiting;
 extern int g_iSoundDeviceIndex;

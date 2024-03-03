@@ -63,6 +63,7 @@
 #include "model/own_ship.h"
 #include "model/config_vars.h"
 #include "model/mDNS_query.h"
+#include "model/select.h"
 #include "SendToPeerDlg.h"
 
 #ifdef __ANDROID__
@@ -86,13 +87,10 @@ extern TrackPropDlg *pTrackPropDialog;
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
 extern ActiveTrack *g_pActiveTrack;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern MyFrame *gFrame;
-extern Select *pSelect;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
-extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxDateTime g_DNS_cache_time;

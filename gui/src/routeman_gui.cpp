@@ -56,8 +56,6 @@ extern bool g_bShowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 
 extern MyFrame* gFrame;
-extern Select *pSelect;
-extern AisDecoder *g_pAIS;
 
 extern ConsoleCanvas *console;
 

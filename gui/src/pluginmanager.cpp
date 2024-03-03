@@ -135,6 +135,7 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "s52utils.h"
 #include "model/safe_mode.h"
 #include "model/semantic_vers.h"
+#include "model/select.h"
 #include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "styles.h"
@@ -182,7 +183,6 @@ void catch_signals_PIM(int signo) {
 #endif
 
 extern MyConfig* pConfig;
-extern AisDecoder* g_pAIS;
 extern OCPN_AUIManager* g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -197,7 +197,6 @@ extern options* g_pOptions;
 extern Multiplexer* g_pMUX;
 extern bool g_bShowChartBar;
 extern Routeman* g_pRouteMan;
-extern WayPointman* pWayPointMan;
 extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern RouteList* pRouteList;

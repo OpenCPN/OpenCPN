@@ -123,15 +123,12 @@ extern int g_nbrightness;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
-extern wxString g_winPluginDir;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
-extern wxString g_TalkerIdText;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
-extern WayPointman *pWayPointMan;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -177,10 +174,8 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-extern wxString g_AisTargetList_perspective;
 extern bool g_bUseOnlyConfirmedAISName;
 extern int g_ScaledNumWeightSOG;
-extern int g_ScaledSizeMinimal;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 int g_S57_extradialog_sx, g_S57_extradialog_sy;
@@ -308,8 +303,6 @@ extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
-extern int g_NMEAAPBPrecision;
-
 extern bool g_bShowTrackPointTime;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
@@ -334,7 +327,6 @@ extern float g_ShipScaleFactorExp;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 
-extern bool g_bInlandEcdis;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
 extern bool g_bRollover;

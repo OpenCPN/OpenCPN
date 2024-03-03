@@ -81,6 +81,7 @@
 #include "peer_client_dlg.h"
 #include "model/mDNS_query.h"
 #include "model/own_ship.h"
+#include "model/select.h"
 #include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
@@ -94,7 +95,6 @@ extern void pupHandler_PasteRoute();
 extern void pupHandler_PasteTrack();
 extern void pupHandler_PasteWaypoint();
 
-extern AisDecoder *g_pAIS;
 extern Routeman *g_pRouteMan;
 extern bool g_bskew_comp;
 extern double vLat, vLon;
@@ -111,9 +111,7 @@ extern MarkInfoDlg *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern ActiveTrack *g_pActiveTrack;
 extern bool g_bConfirmObjectDelete;
-extern WayPointman *pWayPointMan;
 extern MyConfig *pConfig;
-extern Select *pSelect;
 extern OCPNPlatform *g_Platform;
 
 extern CM93OffsetDialog *g_pCM93OffsetDialog;
@@ -123,7 +121,6 @@ extern RouteList *pRouteList;
 extern wxString g_default_wp_icon;
 extern bool g_bBasicMenus;
 extern TrackPropDlg *pTrackPropDialog;
-extern double gHdt;
 extern bool g_FlushNavobjChanges;
 extern ColorScheme global_color_scheme;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;

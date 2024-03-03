@@ -41,6 +41,7 @@
 #include "gui_lib.h"
 #include "concanv.h"
 #include "styles.h"
+#include "model/own_ship.h"
 #include "model/routeman.h"
 #include "navutil.h"
 #include "model/navutil_base.h"
@@ -54,8 +55,6 @@
 extern Routeman* g_pRouteMan;
 extern MyFrame* gFrame;
 extern bool g_bShowActiveRouteHighway;
-extern double gCog;
-extern double gSog;
 extern BasePlatform* g_BasePlatform;
 
 bool g_bShowRouteTotal;
