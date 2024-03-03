@@ -62,6 +62,9 @@ jobs:
       - name: Configure and Build
         run: ci/generic-build-macos.sh
 
+      - name: Test
+        run: cd build && make run-tests
+
       - name: Upload
         env:
           CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
