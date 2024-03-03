@@ -34,6 +34,7 @@ bool g_bGarminHostUpload = false;
 bool g_bInlandEcdis = false;
 bool g_bMagneticAPB = false;
 bool g_bShowWptName = false;
+bool g_bUserIconsFirst = true;
 bool g_btouch = false;
 bool g_bShowMag = false;
 bool g_bShowTrue = false;

@@ -43,6 +43,7 @@ extern bool g_bShowTrue;
 extern bool g_bTrackDaily;
 extern bool g_bWplUsePosition;
 extern bool g_bShowWptName;
+extern bool g_bUserIconsFirst;
 extern bool g_btouch;
 extern bool g_bUseWptScaMin;
 extern bool g_persist_active_route;

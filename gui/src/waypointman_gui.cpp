@@ -68,6 +68,7 @@ typedef void (*  _GLUfuncptr)();
 extern BasePlatform* g_BasePlatform;
 extern float g_MarkScaleFactorExp;
 extern ocpnStyle::StyleManager *g_StyleManager;
+extern bool g_bUserIconsFirst;
 
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
   return (mi1->icon_name.CmpNoCase(mi2->icon_name));
@@ -98,7 +99,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
         wxDir::GetAllFiles(UserIconPath, &FileList, _T(""), wxDIR_FILES);
 
     for (int ifile = 0; ifile < n_files; ifile++) {
-      wxString name = FileList[ifile];
+      wxString name = g_bUserIconsFirst ? FileList[n_files - ifile - 1] : FileList[ifile];
 
       wxFileName fn(name);
       wxString iconname = fn.GetName();
@@ -107,13 +108,13 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
       if (fn.GetExt().Lower() == _T("xpm")) {
         if (icon1.LoadFile(name, wxBITMAP_TYPE_XPM)) {
           wxLogMessage(_T("Adding icon: ") + iconname);
-          ProcessIcon(icon1, iconname, iconname);
+          ProcessIcon(icon1, iconname, iconname, g_bUserIconsFirst);
         }
       }
       if (fn.GetExt().Lower() == _T("png")) {
         if (icon1.LoadFile(name, wxBITMAP_TYPE_PNG)) {
           wxLogMessage(_T("Adding icon: ") + iconname);
-          ProcessIcon(icon1, iconname, iconname);
+          ProcessIcon(icon1, iconname, iconname, g_bUserIconsFirst);
         }
       }
       if (fn.GetExt().Lower() == _T("svg")) {
@@ -146,14 +147,14 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
             imageClip.Rescale(bm_size_nom, bm_size_nom / aspect,
                               wxIMAGE_QUALITY_BICUBIC);
             wxBitmap iconSVG = wxBitmap(imageClip);
-            pmi = ProcessIcon(iconSVG, iconname, iconname);
+            pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
           }
         }
         else {
           const unsigned int bm_size = bm_size_nom;  // horizontal
           wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size,
                                      &default_bm, false);
-          pmi = ProcessIcon(iconSVG, iconname, iconname);
+          pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
         }
 
         if (pmi) pmi->preScaled = true;
@@ -163,7 +164,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
 }
 
 MarkIcon* WayPointmanGui::ProcessIcon(wxBitmap pimage, const wxString& key,
-                                      const wxString& description) {
+                                      const wxString& description, bool add_in_front) {
   MarkIcon *pmi = 0;
 
   bool newIcon = true;
@@ -181,7 +182,11 @@ MarkIcon* WayPointmanGui::ProcessIcon(wxBitmap pimage, const wxString& key,
   if (newIcon) {
     pmi = new MarkIcon;
     pmi->icon_name = key;  // Used for sorting
-    m_waypoint_man.m_pIconArray->Add(pmi);
+    if (add_in_front)
+      m_waypoint_man.m_pIconArray->Insert(pmi, 0);
+    else {
+      m_waypoint_man.m_pIconArray->Add(pmi);
+    }
   }
 
   wxBitmap *pbm = new wxBitmap(pimage);

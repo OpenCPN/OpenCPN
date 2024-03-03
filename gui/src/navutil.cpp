@@ -1441,6 +1441,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (!Read(_T("WaypointUseScaMinOverrule"), &g_bOverruleScaMin))
     g_bOverruleScaMin = false;
   if (!Read(_T("WaypointsShowName"), &g_bShowWptName)) g_bShowWptName = true;
+  if (!Read(_T("UserIconsFirst"), &g_bUserIconsFirst)) g_bUserIconsFirst = true;
 
   //  Support Version 3.0 and prior config setting for Radar Rings
   bool b300RadarRings = true;
@@ -2818,6 +2819,7 @@ void MyConfig::UpdateSettings() {
   Write(_T( "WaypointScaMinValue" ), g_iWpt_ScaMin);
   Write(_T( "WaypointUseScaMinOverrule" ), g_bOverruleScaMin);
   Write(_T("WaypointsShowName"), g_bShowWptName);
+  Write(_T("UserIconsFirst"), g_bUserIconsFirst);
 
   // Waypoint Radar rings
   Write(_T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber);
