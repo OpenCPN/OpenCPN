@@ -39,35 +39,34 @@
 #include <wx/clrpicker.h>
 #include <wx/bmpbuttn.h>
 
-#include "styles.h"
-#include "MarkInfo.h"
-#include "navutil.h"  // for Route
-#include "model/navutil_base.h"
-#include "model/georef.h"
+#include "chcanv.h"
 #include "gui_lib.h"
+#include "MarkInfo.h"
+#include "model/georef.h"
+#include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/position_parser.h"
+#include "model/route.h"
 #include "model/routeman.h"
+#include "model/select.h"
+#include "navutil.h"  // for Route
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "pluginmanager.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
-#include "chcanv.h"
-#include "model/position_parser.h"
-#include "pluginmanager.h"
-#include "OCPNPlatform.h"
-#include "model/route.h"
-#include "TCWin.h"
+#include "styles.h"
 #include "svg_utils.h"
-#include "ocpn_frame.h"
+#include "TCWin.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <QtWidgets/QScroller>
 #endif
 
 extern TCMgr* ptcmgr;
 extern MyConfig* pConfig;
-extern WayPointman* pWayPointMan;
-extern Select* pSelect;
 extern Routeman* g_pRouteMan;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern RoutePropDlgImpl* pRoutePropDialog;
@@ -227,7 +226,7 @@ MarkInfoDlg::MarkInfoDlg(wxWindow* parent, wxWindowID id, const wxString& title,
   SetFont(*qFont);
   int metric = GetCharHeight();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Set Dialog Font by custom crafted Qt Stylesheet.
   wxString wqs = getFontQtStylesheet(qFont);
   wxCharBuffer sbuf = wqs.ToUTF8();
@@ -279,7 +278,7 @@ void MarkInfoDlg::Create() {
   SetFont(*qFont);
   m_sizeMetric = GetCharHeight();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Set Dialog Font by custom crafted Qt Stylesheet.
 
   wxString wqs = getFontQtStylesheet(qFont);
@@ -309,7 +308,7 @@ void MarkInfoDlg::Create() {
   m_panelBasicProperties = new wxScrolledWindow(
       m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_panelBasicProperties->GetHandle()->setStyleSheet(
       getAdjustedDialogStyleSheet());
 #endif
@@ -452,7 +451,7 @@ void MarkInfoDlg::Create() {
 
   bSizerBasicProperties->Add(sbSizerProperties, 2, wxALL | wxEXPAND, 5);
 
-#ifndef __OCPN__ANDROID__  // wxSimpleHtmlListBox is broken on Android....
+#ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   wxStaticText* staticTextLinks =
       new wxStaticText(m_panelBasicProperties, wxID_ANY, _("Links"),
                        wxDefaultPosition, wxDefaultSize, 0);
@@ -532,7 +531,7 @@ void MarkInfoDlg::Create() {
   m_panelExtendedProperties = new wxScrolledWindow(
       m_notebookProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_panelExtendedProperties->GetHandle()->setStyleSheet(
       getAdjustedDialogStyleSheet());
 #endif
@@ -649,7 +648,7 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties1->Add(m_staticTextTideStation, 0,
                                   wxALIGN_CENTRE_VERTICAL, 5);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_choiceTideChoices.Add(_T(" "));
   m_comboBoxTideStation =
       new wxChoice(sbSizerExtProperties->GetStaticBox(), wxID_ANY,
@@ -762,7 +761,7 @@ void MarkInfoDlg::Create() {
   m_textLongitude->Connect(
       wxEVT_CONTEXT_MENU,
       wxCommandEventHandler(MarkInfoDlg::OnRightClickLatLon), NULL, this);
-#ifndef __OCPN__ANDROID__  // wxSimpleHtmlListBox is broken on Android....
+#ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   m_htmlList->Connect(wxEVT_RIGHT_DOWN,
                       wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu),
                       NULL, this);
@@ -841,7 +840,7 @@ void MarkInfoDlg::OnNotebookPageChanged(wxNotebookEvent& event) {
 }
 
 void MarkInfoDlg::RecalculateSize(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   Layout();
 
@@ -884,7 +883,7 @@ MarkInfoDlg::~MarkInfoDlg() {
   m_textLongitude->Disconnect(
       wxEVT_CONTEXT_MENU,
       wxCommandEventHandler(MarkInfoDlg::OnRightClickLatLon), NULL, this);
-#ifndef __OCPN__ANDROID__  // wxSimpleHtmlListBox is broken on Android....
+#ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   m_htmlList->Disconnect(
       wxEVT_RIGHT_DOWN, wxMouseEventHandler(MarkInfoDlg::m_htmlListContextMenu),
       NULL, this);
@@ -901,7 +900,7 @@ MarkInfoDlg::~MarkInfoDlg() {
       wxEVT_DATE_CHANGED, wxDateEventHandler(MarkInfoDlg::OnTimeChanged), NULL,
       this);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(true);
 #endif
 }
@@ -949,7 +948,7 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
 }
 
 void MarkInfoDlg::UpdateHtmlList() {
-#ifndef __OCPN__ANDROID__  // wxSimpleHtmlListBox is broken on Android....
+#ifndef __ANDROID__  // wxSimpleHtmlListBox is broken on Android....
   GetSimpleBox()->Clear();
   int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
 
@@ -1127,7 +1126,7 @@ void MarkInfoDlg::OnPositionCtlUpdated(wxCommandEvent& event) {
 }
 
 void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // SimpleHtmlList->HitTest doesn't seem to work under msWin, so we use a
   // custom made version
   wxPoint pos = event.GetPosition();
@@ -1445,7 +1444,7 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
   m_pMyLinkList = NULL;
   SetClientSize(m_defaultClientSize);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(true);
 #endif
 
@@ -1474,7 +1473,7 @@ void MarkInfoDlg::OnMarkInfoOKClick(wxCommandEvent& event) {
 
   SetClientSize(m_defaultClientSize);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(true);
 #endif
 
@@ -1635,7 +1634,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     UpdateHtmlList();
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
 #endif
 
@@ -1860,7 +1859,7 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   Fit();
   Layout();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   SetSize(parent->GetSize());
 #endif
 

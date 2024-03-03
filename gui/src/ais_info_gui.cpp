@@ -24,6 +24,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <memory>
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
@@ -31,7 +33,6 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <memory>
 
 #include <wx/datetime.h>
 #include <wx/event.h>
@@ -39,15 +40,16 @@
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
+#include "model/ais_target_data.h"
+#include "model/route_point.h"
+
 #include "ais_info_gui.h"
 #include "AISTargetAlertDialog.h"
-#include "model/ais_target_data.h"
 #include "chcanv.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "navutil.h"
 #include "routemanagerdialog.h"
-#include "model/route_point.h"
 #include "SoundFactory.h"
 #include "undo.h"
 
@@ -58,7 +60,6 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern AisDecoder *g_pAIS;
 extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern bool g_bquiting;
 extern int g_iSoundDeviceIndex;
@@ -69,7 +70,6 @@ extern MyConfig* pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern MyFrame* gFrame;
 extern AisInfoGui *g_pAISGUI;
-
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {

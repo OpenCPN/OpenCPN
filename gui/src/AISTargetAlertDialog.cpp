@@ -31,23 +31,23 @@
 
 #include <wx/html/htmlwin.h>
 
-
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "AISTargetAlertDialog.h"
 #include "model/ais_target_data.h"
+#include "model/ocpn_types.h"
+#include "model/ocpn_types.h"
+#include "model/route_point.h"
+#include "model/select.h"
+
+#include "AISTargetAlertDialog.h"
 #include "chcanv.h"
 #include "FontMgr.h"
 #include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
-#include "model/ocpn_types.h"
-#include "model/ocpn_types.h"
 #include "routemanagerdialog.h"
-#include "model/route_point.h"
-#include "model/select.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <QDebug>
 #include "androidUTIL.h"
 #endif
@@ -57,7 +57,6 @@ extern bool g_bopengl;
 extern MyFrame *gFrame;
 extern int g_ais_alert_dialog_y;
 extern wxString g_default_wp_icon;
-extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern OCPNPlatform *g_Platform;
@@ -174,7 +173,7 @@ void AISTargetAlertDialog::CreateControls() {
 
   m_pAlertTextCtl =
       new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pAlertTextCtl->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 

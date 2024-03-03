@@ -23,19 +23,21 @@
 
 #include <wx/clipbrd.h>
 
-#include "RoutePropDlgImpl.h"
-#include "navutil.h"
 #include "model/georef.h"
-#include "MarkInfo.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
+#include "model/select.h"
+
+#include "chcanv.h"
+#include "gui_lib.h"
+#include "MarkInfo.h"
+#include "model/navutil_base.h"
+#include "navutil.h"
+#include "ocpn_plugin.h"
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
-#include "chcanv.h"
-#include "model/navutil_base.h"
+#include "RoutePropDlgImpl.h"
 #include "tcmgr.h"
-#include "ocpn_plugin.h"
-#include "gui_lib.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_EDIT_WP 7014
@@ -48,12 +50,10 @@
 
 extern wxString GetLayerName(int id);
 
-extern WayPointman* pWayPointMan;
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
 extern ColorScheme global_color_scheme;
 extern RouteList* pRouteList;
-extern Select* pSelect;
 extern MyFrame* gFrame;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern TCMgr* ptcmgr;
@@ -416,7 +416,7 @@ void RoutePropDlgImpl::UpdatePoints() {
     }
 
     wxString schar = wxEmptyString;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     schar = wxString(" ");
 #endif
     data.push_back(wxVariant(name + schar));  // To
@@ -931,7 +931,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu(
         new wxMenuItem(&menu, ID_RCLK_MENU_MOVEDOWN_WP, _("Move Down"));
     wxMenuItem* delItem =
         new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxFont* pf = OCPNGetFont(_T("Menu"), 0);
     editItem->SetFont(*pf);
     moveUpItem->SetFont(*pf);

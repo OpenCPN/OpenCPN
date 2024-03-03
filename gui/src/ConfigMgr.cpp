@@ -47,35 +47,35 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
+#include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "navutil.h"
-#include "chcanv.h"
-#include "model/georef.h"
 #include "model/cutil.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "s52utils.h"
-#include "chartbase.h"
-#include "ocpndc.h"
 #include "model/geodesic.h"
+#include "model/georef.h"
 #include "model/multiplexer.h"
-#include "nmea0183.h"
-#include "ais.h"
+#include "model/nav_object_database.h"
 #include "model/route.h"
+#include "model/routeman.h"
 #include "model/select.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "CanvasConfig.h"
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chcanv.h"
+#include "cm93.h"
 #include "FontMgr.h"
 #include "Layer.h"
-#include "model/nav_object_database.h"
+#include "navutil.h"
+#include "nmea0183.h"
 #include "NMEALogWindow.h"
-#include "model/ais_decoder.h"
-#include "OCPNPlatform.h"
-#include "model/track.h"
-#include "chartdb.h"
-#include "CanvasConfig.h"
+#include "ocpndc.h"
 #include "ocpn_frame.h"
-
+#include "OCPNPlatform.h"
 #include "s52plib.h"
-#include "cm93.h"
+#include "s52utils.h"
+#include "styles.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -92,7 +92,6 @@ extern int g_restore_dbindex;
 extern LayerList *pLayerList;
 extern MyConfig *pConfig;
 extern int g_nbrightness;
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -102,7 +101,6 @@ extern wxString g_UserPresLibData;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
-extern wxString  g_TalkerIdText;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -126,7 +124,6 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
-extern int g_nTrackPrecision;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -254,8 +251,6 @@ extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
-
-extern int g_NMEAAPBPrecision;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
@@ -803,7 +798,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
 //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages
 //  provoked by Android security...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 

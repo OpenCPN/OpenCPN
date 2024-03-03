@@ -38,69 +38,74 @@
 
 #include <wx/listimpl.cpp>
 
-#include "chcanv.h"
-#include "model/cmdline.h"
-#include "TCWin.h"
-#include "model/geodesic.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "piano.h"
-#include "navutil.h"
-#include "model/navutil_base.h"
-#include "kml.h"
-#include "concanv.h"
-#include "thumbwin.h"
-#include "chartdb.h"
-#include "chartimg.h"
-#include "model/cutil.h"
-#include "MarkInfo.h"
-#include "model/nav_object_database.h"
-#include "RoutePropDlgImpl.h"
-#include "TrackPropDlg.h"
-#include "tcmgr.h"
-#include "model/own_ship.h"
-#include "routemanagerdialog.h"
-#include "route_point_gui.h"
-#include "pluginmanager.h"
-#include "ocpn_pixel.h"
-#include "ocpndc.h"
-#include "undo.h"
-#include "toolbar.h"
-#include "model/multiplexer.h"
-#include "timers.h"
-#include "tide_time.h"
-#include "glTextureDescriptor.h"
-#include "ChInfoWin.h"
-#include "Quilt.h"
-#include "model/select_item.h"
-#include "model/select.h"
-#include "model/own_ship.h"
-#include "SystemCmdSound.h"
-#include "FontMgr.h"
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
-#include "AISTargetAlertDialog.h"
-#include "SendToGpsDlg.h"
-#include "compass.h"
-#include "OCPNRegion.h"
-#include "gshhs.h"
-#include "canvasMenu.h"
-#include "model/wx28compat.h"
-#include "model/track.h"
-#include "track_gui.h"
-#include "model/route.h"
-#include "OCPN_AUIManager.h"
-#include "MUIBar.h"
-#include "CanvasConfig.h"
-#include "CanvasOptions.h"
-#include "mbtiles.h"
-#include "ocpn_frame.h"
-#include "model/idents.h"
+#include "model/cmdline.h"
 #include "model/conn_params.h"
-#include "route_gui.h"
-#include "line_clip.h"
+#include "model/cutil.h"
+#include "model/geodesic.h"
+#include "model/idents.h"
+#include "model/multiplexer.h"
+#include "model/nav_object_database.h"
+#include "model/navutil_base.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/select.h"
+#include "model/select_item.h"
+#include "model/track.h"
+#include "model/wx28compat.h"
+
+#include "ais.h"
+#include "AISTargetAlertDialog.h"
+#include "CanvasConfig.h"
+#include "canvasMenu.h"
+#include "CanvasOptions.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "ChInfoWin.h"
+#include "cm93.h"      // for chart outline draw
+#include "compass.h"
+#include "concanv.h"
 #include "displays.h"
+#include "FontMgr.h"
+#include "glTextureDescriptor.h"
+#include "gshhs.h"
+#include "kml.h"
+#include "line_clip.h"
+#include "MarkInfo.h"
+#include "mbtiles.h"
+#include "MUIBar.h"
+#include "navutil.h"
+#include "OCPN_AUIManager.h"
+#include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "ocpn_pixel.h"
+#include "OCPNRegion.h"
+#include "piano.h"
+#include "pluginmanager.h"
+#include "Quilt.h"
+#include "route_gui.h"
+#include "routemanagerdialog.h"
+#include "route_point_gui.h"
+#include "RoutePropDlgImpl.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "SendToGpsDlg.h"
+#include "styles.h"
+#include "SystemCmdSound.h"
+#include "tcmgr.h"
+#include "TCWin.h"
+#include "thumbwin.h"
+#include "tide_time.h"
+#include "timers.h"
+#include "toolbar.h"
+#include "track_gui.h"
+#include "TrackPropDlg.h"
+#include "undo.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -109,13 +114,6 @@
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
-
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-#include "s52utils.h"
-
-#include "ais.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
@@ -135,7 +133,6 @@ extern float g_ShipScaleFactorExp;
 extern double g_mouse_zoom_sensitivity;
 
 #include <vector>
-//#include <wx-3.0/wx/aui/auibar.h>
 
 #if defined(__MSVC__) && (_MSC_VER < 1700)
 #define trunc(d) ((d > 0) ? floor(d) : ceil(d))
@@ -160,8 +157,6 @@ extern void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
                           unsigned char transparency);
 
 extern double g_ChartNotRenderScaleFactor;
-extern double gLat, gLon, gCog, gSog, gHdt;
-// extern double           vLat, vLon;
 extern ChartDB *ChartData;
 extern bool bDBUpdateInProgress;
 extern ColorScheme global_color_scheme;
@@ -173,13 +168,10 @@ extern OCPNPlatform *g_Platform;
 extern RouteList *pRouteList;
 extern std::vector<Track*> g_TrackList;
 extern MyConfig *pConfig;
-extern Select *pSelect;
 extern Routeman *g_pRouteMan;
 extern ThumbWin *pthumbwin;
 extern TCMgr *ptcmgr;
 extern Select *pSelectTC;
-extern Select *pSelectAIS;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
@@ -203,8 +195,6 @@ extern s52plib *ps52plib;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowMenuBar;
 extern bool g_bShowCompassWin;
-
-extern AisDecoder *g_pAIS;
 
 extern MyFrame *gFrame;
 
@@ -341,7 +331,6 @@ wxString g_ObjQFileExt;
 
 // "Curtain" mode parameters
 wxDialog *g_pcurtain;
-extern double gLat, gLat;
 
 extern int g_GUIScaleFactor;
 // Win DPI scale factor
@@ -963,7 +952,7 @@ void ChartCanvas::CanvasApplyLocale() {
 }
 
 void ChartCanvas::SetupGlCanvas() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef ocpnUSE_GL
   if (!g_bdisable_opengl) {
     if (g_bopengl) {
@@ -995,7 +984,7 @@ void ChartCanvas::SetupGlCanvas() {
 #endif
 #endif
 
-#ifdef __OCPN__ANDROID__  // ocpnUSE_GL
+#ifdef __ANDROID__  // ocpnUSE_GL
   if (!g_bdisable_opengl) {
     if (g_bopengl) {
       // qDebug() << "SetupGlCanvas";
@@ -1042,7 +1031,7 @@ void ChartCanvas::OnKillFocus(wxFocusEvent &WXUNUSED(event)) {
 
   // On Android, we get a KillFocus on just about every keystroke.
   //  Why?
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return;
 #endif
 
@@ -4697,7 +4686,7 @@ void ChartCanvas::UpdateFollowButtonState(void) {
     }
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (!m_bFollow)
     androidSetFollowTool(0);
   else {
@@ -5321,7 +5310,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
           //                wxStopWatch sw;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
         // This is an optimization for panning on touch screen systems.
         //  The quilt composition is deferred until the OnPaint() message gets
         //  finally removed and processed from the message queue.
@@ -5383,7 +5372,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     if (m_singleChart)
       VPoint.ref_scale = m_singleChart->GetNativeScale();
     else {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       // This is an optimization for panning on touch screen systems.
       // See above.
       // Quilt might not be fully composed at this point, so for cm93
@@ -6939,7 +6928,7 @@ void ChartCanvas::HideChartInfoWindow(void) {
     m_pCIWin->Destroy();
     m_pCIWin = NULL;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     androidForceFullRepaint();
 #endif
   }
@@ -7231,7 +7220,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
 
   //      Retrigger the route leg / AIS target popup timer
   bool bRoll = !g_btouch;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bRoll = g_bRollover;
 #endif
   if (bRoll) {
@@ -7321,7 +7310,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
   slat = m_cursor_lat;
   slon = m_cursor_lon;
 
-#if defined(__WXMAC__) || defined(__OCPN__ANDROID__)
+#if defined(__WXMAC__) || defined(__ANDROID__)
   wxScreenDC sdc;
   ocpnDC dc(sdc);
 #else
@@ -10213,7 +10202,7 @@ void ChartCanvas::StartRoute(void) {
 
   HideGlobalToolbar();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidSetRouteAnnunciator(true);
 #endif
 }
@@ -10225,7 +10214,7 @@ void ChartCanvas::FinishRoute(void) {
 
   SetCanvasToolbarItemState(ID_ROUTE, false);
   gFrame->SetMasterToolbarItemState(ID_MENU_ROUTE_NEW, false);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidSetRouteAnnunciator(false);
 #endif
 
@@ -12384,7 +12373,7 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_icon_size_mm));  // nominal size, but not less than 4 pixel
 #endif
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // another method is simply to declare that the icon shall be x times the size
   // of a raster symbol (e.g.BOYLAT)
   //  This is a bit of a hack that will suffice until until we get fully
@@ -12701,7 +12690,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
     float pix_factor = nominal_icon_size_pixels / icon_pixelRefDim;
 #endif
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // or, x times size of text font
   wxScreenDC sdc;
   int height;
@@ -13112,7 +13101,7 @@ void ChartCanvas::OnToolLeftClick(wxCommandEvent &event) {
         FinishRoute();
       }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidSetRouteAnnunciator(m_routeState == 1);
 #endif
       break;

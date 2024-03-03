@@ -39,31 +39,33 @@
 #include <vector>
 #include <algorithm>
 
-#include "styles.h"
-#include "dychart.h"
-#include "navutil.h"
-#include "MarkInfo.h"
-#include "RoutePropDlgImpl.h"
+#include "model/ais_decoder.h"
+#include "model/config_vars.h"
+#include "model/georef.h"
+#include "model/mDNS_query.h"
+#include "model/navutil_base.h"
+#include "model/own_ship.h"
+#include "model/route.h"
 #include "model/routeman.h"
+#include "model/select.h"
+#include "model/track.h"
+
+#include "chartbase.h"
+#include "chcanv.h"
+#include "dychart.h"
+#include "Layer.h"
+#include "MarkInfo.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
-#include "model/georef.h"
-#include "chartbase.h"
-#include "Layer.h"
+#include "RoutePropDlgImpl.h"
 #include "SendToGpsDlg.h"
-#include "TrackPropDlg.h"
-#include "model/ais_decoder.h"
-#include "OCPNPlatform.h"
-#include "model/track.h"
-#include "model/route.h"
-#include "chcanv.h"
-#include "model/navutil_base.h"
-#include "svg_utils.h"
-#include "ocpn_frame.h"
-#include "model/own_ship.h"
-#include "model/config_vars.h"
-#include "model/mDNS_query.h"
 #include "SendToPeerDlg.h"
+#include "styles.h"
+#include "svg_utils.h"
+#include "TrackPropDlg.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -86,13 +88,10 @@ extern TrackPropDlg *pTrackPropDialog;
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
 extern ActiveTrack *g_pActiveTrack;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern MyFrame *gFrame;
-extern Select *pSelect;
 extern bool g_bShowLayers;
 extern wxString g_default_wp_icon;
-extern AisDecoder *g_pAIS;
 extern OCPNPlatform *g_Platform;
 extern std::vector<std::shared_ptr<ocpn_DNS_record_t>> g_DNS_cache;
 extern wxDateTime g_DNS_cache_time;
@@ -387,7 +386,7 @@ void RouteManagerDialog::Create() {
       new wxListCtrl(m_pPanelRte, -1, wxDefaultPosition, wxSize(-1, -1),
                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES |
                          wxBORDER_SUNKEN /*|wxLC_VRULES*/);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pRouteListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
@@ -566,7 +565,7 @@ void RouteManagerDialog::Create() {
                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES |
                          wxBORDER_SUNKEN /*|wxLC_VRULES*/);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pTrkListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
@@ -708,7 +707,7 @@ void RouteManagerDialog::Create() {
       new wxListCtrl(m_pPanelWpt, -1, wxDefaultPosition, wxDefaultSize,
                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES |
                          wxBORDER_SUNKEN /*|wxLC_VRULES*/);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pWptListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
@@ -901,7 +900,7 @@ void RouteManagerDialog::Create() {
       new wxListCtrl(m_pPanelLay, -1, wxDefaultPosition, wxDefaultSize,
                      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING |
                          wxLC_HRULES | wxBORDER_SUNKEN /*|wxLC_VRULES*/);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pLayListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
@@ -1023,7 +1022,7 @@ void RouteManagerDialog::Create() {
 
   m_pRouteListCtrl->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pRouteListCtrl->GetHandle()->setIconSize(QSize(imageRefSize, imageRefSize));
 #endif
 
