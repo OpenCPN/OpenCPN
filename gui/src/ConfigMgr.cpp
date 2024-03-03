@@ -47,35 +47,35 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
+#include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "navutil.h"
-#include "chcanv.h"
-#include "model/georef.h"
 #include "model/cutil.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "s52utils.h"
-#include "chartbase.h"
-#include "ocpndc.h"
 #include "model/geodesic.h"
+#include "model/georef.h"
 #include "model/multiplexer.h"
-#include "nmea0183.h"
-#include "ais.h"
+#include "model/nav_object_database.h"
 #include "model/route.h"
+#include "model/routeman.h"
 #include "model/select.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "CanvasConfig.h"
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chcanv.h"
+#include "cm93.h"
 #include "FontMgr.h"
 #include "Layer.h"
-#include "model/nav_object_database.h"
+#include "navutil.h"
+#include "nmea0183.h"
 #include "NMEALogWindow.h"
-#include "model/ais_decoder.h"
-#include "OCPNPlatform.h"
-#include "model/track.h"
-#include "chartdb.h"
-#include "CanvasConfig.h"
+#include "ocpndc.h"
 #include "ocpn_frame.h"
-
+#include "OCPNPlatform.h"
 #include "s52plib.h"
-#include "cm93.h"
+#include "s52utils.h"
+#include "styles.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -798,7 +798,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
 //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages
 //  provoked by Android security...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 

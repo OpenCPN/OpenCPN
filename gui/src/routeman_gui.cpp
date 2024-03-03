@@ -34,23 +34,24 @@
 #include <wx/utils.h>
 #include <wx/gdicmn.h>
 
-#include "model/ais_decoder.h"
+#include "model/georef.h"
+#include "model/nav_object_database.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/select.h"
+#include "model/track.h"
+
 #include "chcanv.h"
 #include "concanv.h"
-#include "routemanagerdialog.h"
-#include "routeman_gui.h"
-#include "model/route_point.h"
-#include "model/route.h"
-#include "model/select.h"
-#include "model/georef.h"
-#include "vector2D.h"
+#include "model/ais_decoder.h"
+#include "navutil.h"
 #include "ocpn_app.h"
 #include "ocpn_frame.h"
-#include "model/own_ship.h"
-#include "model/nav_object_database.h"
-#include "model/track.h"
+#include "routemanagerdialog.h"
+#include "routeman_gui.h"
 #include "TrackPropDlg.h"
-#include "navutil.h"
+#include "vector2D.h"
 
 extern bool g_bShowShipToActive;
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;

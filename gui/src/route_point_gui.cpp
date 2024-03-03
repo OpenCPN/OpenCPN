@@ -1,28 +1,52 @@
+#if defined(__ANDROID__)
+#include <qopengl.h>
+#include <GL/gl_private.h>  // this is a cut-down version of gl.h
+#include <GLES2/gl2.h>
+
+#elif defined(ocpnUSE_GL)
+
+#if defined(__MSVC__)
+#include "glew.h"
+#include <GL/glu.h>
+
+#elif defined(__WXOSX__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+typedef void (*  _GLUfuncptr)();
+#define GL_COMPRESSED_RGB_FXT1_3DFX       0x86B0
+
+#elif defined(__WXQT__) || defined(__WXGTK__)
+#include <GL/glew.h>
+#include <GL/glu.h>
+#endif  // ocpnUSE_GL
+#endif
+
 
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
 #include <wx/pen.h>
 #include <wx/brush.h>
 
-#include "color_handler.h"
 #include "model/comm_n0183_output.h"
-#include "navutil.h"
-#include "model/routeman.h"
 #include "model/georef.h"
-#include "route_point_gui.h"
-#include "ocpn_frame.h"
 #include "model/multiplexer.h"
-#include "n0183_ctx_factory.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
-#include "viewport.h"
-#include "OCPNPlatform.h"
 #include "model/own_ship.h"
 #include "model/route.h"
-#include "waypointman_gui.h"
-#include "svg_utils.h"
-#include "styles.h"
+#include "model/routeman.h"
+
+#include "color_handler.h"
+#include "FontMgr.h"
+#include "glChartCanvas.h"
+#include "n0183_ctx_factory.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
+#include "route_point_gui.h"
+#include "styles.h"
+#include "svg_utils.h"
+#include "viewport.h"
+#include "waypointman_gui.h"
 
 
 extern Multiplexer* g_pMUX;

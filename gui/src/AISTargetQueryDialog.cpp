@@ -26,20 +26,21 @@
 
 #include <wx/html/htmlwin.h>
 
-#include "AISTargetQueryDialog.h"
-#include "chcanv.h"
-#include "navutil.h"
-#include "ais.h"
-#include "FontMgr.h"
-#include "model/ais_target_data.h"
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "model/select.h"
-#include "routemanagerdialog.h"
-#include "OCPNPlatform.h"
-#include "model/track.h"
+#include "model/ais_target_data.h"
 #include "model/route_point.h"
+#include "model/select.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "AISTargetQueryDialog.h"
+#include "chcanv.h"
+#include "FontMgr.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "routemanagerdialog.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ColorScheme global_color_scheme;
@@ -377,7 +378,7 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
     target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // Now adjust the font size used for the control buttons.
   // This adjustment makes sure that the two horizontal buttons are not wider
   // than the platform display allows. This may be a problem on phones,

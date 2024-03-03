@@ -27,23 +27,24 @@
 #include <wx/tokenzr.h>
 #include <wx/clipbrd.h>
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
-#include "AISTargetListDialog.h"
-#include "ais.h"
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
-#include "OCPNListCtrl.h"
-#include "styles.h"
-#include "model/select.h"
-#include "routemanagerdialog.h"
-#include "OCPNPlatform.h"
 #include "model/route_point.h"
+#include "model/select.h"
+
+#include "ais.h"
+#include "AISTargetListDialog.h"
 #include "chcanv.h"
 #include "ocpn_frame.h"
+#include "OCPNListCtrl.h"
+#include "OCPNPlatform.h"
+#include "routemanagerdialog.h"
+#include "styles.h"
 
 static AisDecoder *s_p_sort_decoder;
 
@@ -490,7 +491,7 @@ void AISTargetListDialog::RecalculateSize() {
 void AISTargetListDialog::CreateControls() {
   wxBoxSizer *topSizer = new wxBoxSizer(wxHORIZONTAL);
   SetSizer(topSizer);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   this->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -832,7 +833,7 @@ void AISTargetListDialog::Shutdown(void) {
     Disconnect_decoder();
     pane.Show(false);
     m_pAuiManager->Update();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     GetParent()->Refresh(true);
 #endif
     Destroy();

@@ -72,22 +72,27 @@
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "ais.h"
 #include "model/ais_target_data.h"
+#include "model/cmdline.h"
+#include "model/config_vars.h"
+#include "model/idents.h"
+#include "model/multiplexer.h"
+#include "model/navutil_base.h"
+#include "model/own_ship.h"
+#include "model/routeman.h"
+#include "model/ser_ports.h"
+#include "model/wx28compat.h"
+
+#include "ais.h"
 #include "chart_ctx_factory.h"
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "cm93.h"
-#include "model/cmdline.h"
 #include "ConfigMgr.h"
-#include "model/config_vars.h"
+#include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
-#include "model/idents.h"
 #include "MarkInfo.h"
-#include "model/multiplexer.h"
-#include "model/navutil_base.h"
-#include "model/own_ship.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
@@ -95,18 +100,14 @@
 #include "OCPNPlatform.h"
 #include "OCPN_Sound.h"
 #include "options.h"
-#include "model/routeman.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "model/ser_ports.h"
 #include "SoundFactory.h"
 #include "styles.h"
 #include "svg_utils.h"
 #include "SystemCmdSound.h"
 #include "usb_devices.h"
 #include "waypointman_gui.h"
-#include "model/wx28compat.h"
-#include "displays.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -118,11 +119,11 @@ extern GLuint g_raster_format;
 #include "udev_rule_mgr.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <QtWidgets/QScroller>
 #endif
 
@@ -282,7 +283,7 @@ extern int osMajor, osMinor;
 extern bool g_bShowMuiZoomButtons;
 extern MyConfig* pConfig;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 extern int g_Android_SDK_Version;
 extern MigrateAssistantDialog* g_migrateDialog;
 #endif
@@ -526,7 +527,7 @@ OCPNChartDirPanel::OCPNChartDirPanel(wxWindow* parent, wxWindowID id,
 
   m_unselectedHeight = 2 * m_refHeight;
 
-  // #ifdef __OCPN__ANDROID__
+  // #ifdef __ANDROID__
   //     m_unselectedHeight = 2 * m_refHeight;
   // #endif
 
@@ -534,7 +535,7 @@ OCPNChartDirPanel::OCPNChartDirPanel(wxWindow* parent, wxWindowID id,
 
   Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(OCPNChartDirPanel::OnClickDown),
           NULL, this);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   Connect(wxEVT_LEFT_UP, wxMouseEventHandler(OCPNChartDirPanel::OnClickUp),
           NULL, this);
 #endif
@@ -543,12 +544,12 @@ OCPNChartDirPanel::OCPNChartDirPanel(wxWindow* parent, wxWindowID id,
 OCPNChartDirPanel::~OCPNChartDirPanel() {}
 
 static wxStopWatch swclick;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 static int downx, downy;
 #endif
 
 void OCPNChartDirPanel::OnClickDown(wxMouseEvent& event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   swclick.Start();
   event.GetPosition(&downx, &downy);
 #else
@@ -557,7 +558,7 @@ void OCPNChartDirPanel::OnClickDown(wxMouseEvent& event) {
 }
 
 void OCPNChartDirPanel::OnClickUp(wxMouseEvent& event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   qDebug() << swclick.Time();
   if (swclick.Time() < 200) {
     int upx, upy;
@@ -736,7 +737,7 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
                                  long style, const wxString& name) {
   if (!wxScrolledWindow::Create(parent, id, pt, sz, style, name)) return FALSE;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   GetHandle()->setObjectName("OCPNCheckedListCtrl");
   GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
@@ -1540,7 +1541,7 @@ options::~options(void) {
 
   delete m_pPlugInCtrl;
   if (g_pi_manager) g_pi_manager->SetListPanelPtr(NULL);
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   delete m_PluginCatalogMgrPanel;
 #endif
 }
@@ -1681,7 +1682,7 @@ void options::Init(void) {
   //FIXME Do this in CTOR of connections dialog
   //mSelectedConnection = NULL;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_scrollRate = 1;
 #else
   m_scrollRate = 15;
@@ -1819,7 +1820,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
     m_pListbook->DeletePage(parent + 1);
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   sw->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
@@ -2463,7 +2464,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   activeSizer->Add(m_scrollWinChartList, 1, wxALL | wxEXPAND, 5);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   m_scrollRate = 5;
 #else
   m_scrollRate = 1;
@@ -2505,7 +2506,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   m_compressBtn = NULL;
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (g_Android_SDK_Version >= 30) {
     m_migrateBtn =
         new wxButton(chartPanelWin, ID_BUTTONMIGRATE, _("Migrate Charts.."));
@@ -2579,7 +2580,7 @@ void options::UpdateChartDirList() {
   // scrollable range of the window.
   // Workarounds here...
   // n.b. according to wx docs, none of this should be necessary...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // This works on Android, but seems pretty drastic
   wxSize sza = GetSize();
   sza.y -= 1;
@@ -2936,7 +2937,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
 
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     pOpenGL->Hide();
     bOpenGL->Hide();
 #endif
@@ -2987,7 +2988,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     prepareSlider(m_pSlider_Zoom_Raster);
 #endif
 
@@ -3001,7 +3002,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     prepareSlider(m_pSlider_Zoom_Vector);
 #endif
 
@@ -3015,7 +3016,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                      -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     prepareSlider(m_pSlider_CM93_Zoom);
 #endif
 
@@ -3160,7 +3161,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
         new wxSlider(m_ChartDisplayPage, ID_RASTERZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     prepareSlider(m_pSlider_Zoom_Raster);
 #endif
 
@@ -3173,7 +3174,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
         new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     prepareSlider(m_pSlider_Zoom_Vector);
 #endif
 
@@ -3191,7 +3192,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
                      -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
                      wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     prepareSlider(m_pSlider_CM93_Zoom);
 #endif
 
@@ -3255,7 +3256,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(options::OnGLClicked), NULL, this);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     pOpenGL->Disable();
 #endif
 
@@ -3617,7 +3618,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pPointStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
                                wxSize(m_fontHeight * 3, m_fontHeight), 2,
                                pPointStyleStrings);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pPointStyle, m_fontHeight * 8 / 10);
 #endif
 
@@ -3632,7 +3633,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pBoundStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
                                wxSize(m_fontHeight * 3, m_fontHeight), 2,
                                pBoundStyleStrings);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pBoundStyle, m_fontHeight * 8 / 10);
 #endif
 
@@ -3648,7 +3649,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     p24Color = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
                             wxSize(m_fontHeight * 3, m_fontHeight), 2,
                             pColorNumStrings);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(p24Color, m_fontHeight * 8 / 10);
 #endif
     StyleColumn->Add(p24Color, inputFlags);
@@ -3834,7 +3835,7 @@ void ChartGroupsUI::CompletePanel(void) {
   wxBoxSizer* activeListSizer = new wxBoxSizer(wxVERTICAL);
   sizerCharts->Add(activeListSizer, 1, wxALL | wxEXPAND, 5);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   allAvailableCtl =
       new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""),
                            wxDefaultPosition, wxDefaultSize, wxVSCROLL);
@@ -4087,7 +4088,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     // MultiChart selection panel
     if (g_Platform->GetDisplayAreaCM2() > 100) {
       wxStaticBox* itemStaticBoxScreenConfig =
@@ -4204,7 +4205,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pEnableZoomToCursor->SetValue(FALSE);
     boxCtrls->Add(pEnableZoomToCursor, verticleInputFlags);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     pSmoothPanZoom->Hide();
     pEnableZoomToCursor->Hide();
 #endif
@@ -4272,7 +4273,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     if (g_Platform->GetDisplayAreaCM2() > 100) {
       // MultiChart selection panel
       wxStaticBox* itemStaticBoxScreenConfig =
@@ -4341,7 +4342,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), m_DistanceFormatsNChoices,
                      pDistanceFormats);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pDistanceFormat, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pDistanceFormat, inputFlags);
@@ -4354,7 +4355,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSpeedFormat = new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE,
                                 wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                 m_SpeedFormatsNChoices, pSpeedFormats);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pSpeedFormat, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
@@ -4369,7 +4370,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
         new wxChoice(panelUnits, ID_WINDSPEEDUNITCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), m_WindSpeedFormatsNChoices,
                      pWindSpeedFormats);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pWindSpeedFormat, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pWindSpeedFormat, inputFlags);
@@ -4385,7 +4386,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), 3, pDepthUnitStrings);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pDepthUnitSelect, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
@@ -4401,7 +4402,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pTempFormat =
         new wxChoice(panelUnits, ID_TEMPUNITSCHOICE, wxDefaultPosition,
                      wxSize(m_fontHeight * 4, -1), 3, pTempUnitStrings);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pTempFormat, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pTempFormat, inputFlags);
@@ -4420,7 +4421,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     pSDMMFormat = new wxChoice(panelUnits, ID_SDMMFORMATCHOICE,
                                wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                m_SDMMFormatsNChoices, pSDMMFormats);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     setChoiceStyleSheet(pSDMMFormat, m_fontHeight * 8 / 10);
 #endif
     unitsSizer->Add(pSDMMFormat, inputFlags);
@@ -4711,7 +4712,7 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
   // Sound file
   wxString LabelWrapped;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // Count the likely number of lines in the wrapped file name
   // to set the default wxStaticText size.
   ChartDirPanelHardBreakWrapper wrapper(this, m_sound_file, g_pOptions->GetSize().x * 8 / 10);
@@ -4780,7 +4781,7 @@ wxString OCPNSoundPanel::SelectSoundFile() {
   wxString sel_file;
   int response;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   wxFileDialog* popenDialog = new wxFileDialog(
       NULL, _("Select Sound File"), sound_dir, wxEmptyString,
       _T("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN);
@@ -5193,7 +5194,7 @@ public:
       : wxSlider(parent, wxID_ANY, 10, 1, 100, wxDefaultPosition, size,
                  SLIDER_STYLE) {
     Show();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
   }
@@ -5220,7 +5221,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
                               border_size);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_itemLangListBox->Disable();
 #endif
 
@@ -5230,7 +5231,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   wxSize fontChoiceSize = wxSize(-1, -1);
 
   int fLayout = wxHORIZONTAL;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // Compensate for very narrow displays on Android
   if (m_nCharWidthMax < 40) fLayout = wxVERTICAL;
 
@@ -5312,7 +5313,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pShowMenuBar, 0, wxALL, border_size);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   pShowMenuBar->Hide();
 #endif
 
@@ -5347,7 +5348,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
   pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (g_bUIexpert && (bool)dynamic_cast<SystemCmdSound*>(SoundFactory())) {
     wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
     pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
@@ -5408,7 +5409,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
     }
   }
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   stSoundDeviceIndex->Hide();
   pSoundDeviceIndex->Hide();
 #endif
@@ -5423,7 +5424,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pResponsive, 0, wxALL, border_size);
 
   //  These two options are always needed ON for Android
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   pMobile->Hide();
   pResponsive->Hide();
 #endif
@@ -5434,7 +5435,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pZoomButtons =
       new wxCheckBox(itemPanelFont, ID_ZOOMBUTTONS, _("Show Zoom buttons"));
   miscOptions->Add(pZoomButtons, 0, wxALL, border_size);
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   pZoomButtons->Hide();
 #endif
 
@@ -5447,7 +5448,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                    wxDefaultPosition, wxDefaultSize, 0);
   miscOptions->Add(itemEcdisHelp, 0, wxALL, border_size);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   pInlandEcdis->Hide();
   itemEcdisHelp->Hide();
 #endif
@@ -5470,7 +5471,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   sliderSizer->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   prepareSlider(m_pSlider_GUI_Factor);
 #endif
 
@@ -5484,7 +5485,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   prepareSlider(m_pSlider_Chart_Factor);
 #endif
 
@@ -5498,7 +5499,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5512,7 +5513,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   sliderSizer->Add(m_pSlider_Text_Factor, 0, wxALL, border_size);
   m_pSlider_Text_Factor->Show();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pSlider_Text_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5526,7 +5527,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   sliderSizer->Add(m_pSlider_ENCText_Factor, 0, wxALL, border_size);
   m_pSlider_ENCText_Factor->Show();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pSlider_ENCText_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -5668,7 +5669,7 @@ void options::CreateControls(void) {
   GetTextExtent(_T("0"), NULL, &font_size_y, &font_descent, &font_lead);
   m_fontHeight = font_size_y + font_descent + font_lead;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_sliderSize =
       wxSize(wxMin(m_fontHeight * 8, g_Platform->getDisplaySize().x / 2),
              m_fontHeight * 8 / 10);
@@ -5724,7 +5725,7 @@ void options::CreateControls(void) {
   wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
   itemDialog1->SetSizer(itemBoxSizer2);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Set Dialog Font by custom crafted Qt Stylesheet.
   wxFont* qFont = dialogFont;
 
@@ -5757,7 +5758,7 @@ void options::CreateControls(void) {
                        this);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  In wxQT, we can dynamically style the little scroll buttons on a small
   //  display, to make them bigger
   m_pListbook->GetHandle()->setStyleSheet(getListBookStyleSheet());
@@ -5816,7 +5817,7 @@ void options::CreateControls(void) {
     ConnTab = _("Connect");
 
   m_pageConnections = CreatePanel(ConnTab);
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
 #else
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
@@ -5828,7 +5829,7 @@ void options::CreateControls(void) {
   m_pageShips = CreatePanel(_("Ships"));
   CreatePanel_Ownship(m_pageShips, border_size, group_item_spacing);
   CreatePanel_AIS(m_pageShips, border_size, group_item_spacing);
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
 #endif
 
@@ -6374,7 +6375,7 @@ void options::SetInitialVectorSettings(void) {
     m_bVectorInit = true;
     resetMarStdList(true, false);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     ps57CtlListBox->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
@@ -6968,11 +6969,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // g_oz_vector_scale = !pOZScaleVector->GetValue();
 
   g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_bsmoothpanzoom = false;
 #endif
   if (pSmoothPanZoom) g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_bsmoothpanzoom = false;
 #endif
 
@@ -7078,7 +7079,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (pEnableZoomToCursor)
     g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_bEnableZoomToCursor = false;
 #endif
 
@@ -7717,7 +7718,7 @@ static bool CompressChart(wxString in, wxString out) {
 }
 
 void options::OnButtonmigrateClick(wxCommandEvent& event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   // Run the chart migration assistant
   g_migrateDialog =
@@ -7936,7 +7937,7 @@ void options::OnFontChoice(wxCommandEvent& event) {
 }
 
 void options::OnChooseFont(wxCommandEvent& event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
 #endif
 
@@ -7991,7 +7992,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     OnFontChoice(event);
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 
@@ -8007,7 +8008,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
 
   unsigned int cco = 0;
@@ -8130,7 +8131,7 @@ void options::DoOnPageChange(size_t page) {
 
   lastPage = i;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (0 == i) {  // Display
     if (m_sconfigSelect_single) m_sconfigSelect_single->Refresh(true);
     if (m_sconfigSelect_twovertical) m_sconfigSelect_twovertical->Refresh(true);
@@ -8307,7 +8308,7 @@ wxString options::SelectSoundFile() {
   wxString sel_file;
   int response;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   wxFileDialog* popenDialog = new wxFileDialog(
       NULL, _("Select Sound File"), sound_dir, wxEmptyString,
       _T("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN);
@@ -8766,7 +8767,7 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
 
   pd->Create(m_panel, _("Enter Group Name"), _("New Chart Group"));
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidDisableRotation();
 #endif
 
@@ -8786,7 +8787,7 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
   }
   delete pd;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableRotation();
 #endif
 }
@@ -8935,7 +8936,7 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   wxString sel_file;
   int response = wxID_CANCEL;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   wxFileDialog* popenDialog = new wxFileDialog(
       NULL, _("Select Tide/Current Data"), g_TCData_Dir, wxT(""),
       wxT("Tide/Current Data files (*.IDX; *.TCD)|*.IDX;*.idx;*.TCD;*.tcd|All ")
@@ -9133,7 +9134,7 @@ void OpenGLOptionsDlg::Populate(void) {
   m_cbPolygonSmoothing->SetValue(g_GLOptions.m_GLPolygonSmoothing);
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
-#if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
+#if defined(__UNIX__) && !defined(__ANDROID__) && !defined(__WXOSX__)
   if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
     if (gFrame->GetPrimaryCanvas()
             ->GetglCanvas()

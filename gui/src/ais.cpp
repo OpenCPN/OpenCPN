@@ -24,6 +24,10 @@
  ***************************************************************************
  */
 
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
@@ -35,29 +39,26 @@
 #include <wx/wfstream.h>
 #include <wx/imaglist.h>
 
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-
-#include "model/ais_state_vars.h"
-#include "model/cutil.h"
-#include "FontMgr.h"
-#include "ais.h"
-#include "navutil.h"  // for Select
-#include "model/georef.h"
-#include "styles.h"
-#include "model/select.h"
 #include "model/ais_decoder.h"
+#include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/own_ship.h"
+#include "model/select.h"
+#include "model/wx28compat.h"
+
+#include "ais.h"
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
-#include "model/own_ship.h"
-#include "model/wx28compat.h"
-#include "OCPNPlatform.h"
 #include "chcanv.h"
-#include "ocpn_frame.h"
+#include "FontMgr.h"
 #include "line_clip.h"
+#include "navutil.h"  // for Select
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
+#include "styles.h"
 
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
@@ -78,6 +79,7 @@ float AISImportanceSwitchPoint = 0.0;
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
+
 wxString ais8_001_22_notice_names[] = {
     // 128] = {
     _("Caution Area: Marine mammals habitat (implies whales NOT "

@@ -24,28 +24,36 @@
  **************************************************************************/
 #include "config.h"
 
-#include "navutil.h"
-#include "model/navutil_base.h"
 #include "model/georef.h"
+#include "model/navutil_base.h"
 #include "model/own_ship.h"
+#include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
-#include "routeman_gui.h"
-#include "routemanagerdialog.h"
-#include "trackprintout.h"
-#include "pluginmanager.h"
-#include "OCPNPlatform.h"
-#include "TrackPropDlg.h"
 #include "model/track.h"
-#include "model/route.h"
-#include "displays.h"
-#include "chcanv.h"
-#include "gui_lib.h"
-#include "ocpn_frame.h"
 
-#ifdef __OCPN__ANDROID__
+#include "chcanv.h"
+#include "displays.h"
+#include "gui_lib.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "pluginmanager.h"
+#include "routemanagerdialog.h"
+#include "routeman_gui.h"
+#include "trackprintout.h"
+#include "TrackPropDlg.h"
+
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+#define UTCINPUT 0
+#define LTINPUT 1   // i.e. this PC local time
+#define LMTINPUT 2  // i.e. the remote location LMT time
+#define INPUT_FORMAT 1
+#define DISPLAY_FORMAT 2
+#define TIMESTAMP_FORMAT 3
 
 extern std::vector<Track*> g_TrackList;
 extern ActiveTrack* g_pActiveTrack;
@@ -54,13 +62,6 @@ extern RouteManagerDialog* pRouteManagerDialog;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;
 extern PlugInManager* g_pi_manager;
-
-#define UTCINPUT 0
-#define LTINPUT 1   // i.e. this PC local time
-#define LMTINPUT 2  // i.e. the remote location LMT time
-#define INPUT_FORMAT 1
-#define DISPLAY_FORMAT 2
-#define TIMESTAMP_FORMAT 3
 
 wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
                      int format) {
@@ -118,7 +119,7 @@ TrackPropDlg::TrackPropDlg(wxWindow* parent, wxWindowID id,
 
   m_bcompact = false;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_bcompact = true;
   CreateControlsCompact();
 #else
@@ -320,7 +321,7 @@ void TrackPropDlg::CreateControlsCompact() {
                                      wxSize(-1, -1), wxVSCROLL);
   itemDialog1->SetScrollRate(0, 1);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Set Dialog Font by custom crafted Qt Stylesheet.
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
 
@@ -552,7 +553,7 @@ void TrackPropDlg::CreateControlsCompact() {
 
   // sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_lcPoints->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -569,7 +570,7 @@ void TrackPropDlg::CreateControlsCompact() {
 
   itemBoxSizerBottom->Add(itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 5);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 
   m_sdbBtmBtnsSizerPrint = new wxButton(this, wxID_ANY, _("Print"),
                                         wxDefaultPosition, wxDefaultSize, 0);
@@ -648,7 +649,7 @@ void TrackPropDlg::CreateControls(void) {
                                       wxSize(-1, -1),
                                       wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Set Dialog Font by custom crafted Qt Stylesheet.
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
 
@@ -663,7 +664,7 @@ void TrackPropDlg::CreateControls(void) {
 
 #endif
 
-  //#ifdef __OCPN__ANDROID__
+  //#ifdef __ANDROID__
   //    m_panelBasic->GetHandle()->setStyleSheet( getQtStyleSheet());
   //#endif
 
@@ -846,7 +847,7 @@ void TrackPropDlg::CreateControls(void) {
 
   sbSizerPoints->Add(m_lcPoints, 1, wxALL | wxEXPAND, 5);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_lcPoints->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
 
@@ -959,7 +960,7 @@ void TrackPropDlg::CreateControls(void) {
 
   itemBoxSizerBottom->Add(itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 5);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 
   m_sdbBtmBtnsSizerPrint = new wxButton(this, wxID_ANY, _("Print"),
                                         wxDefaultPosition, wxDefaultSize, 0);

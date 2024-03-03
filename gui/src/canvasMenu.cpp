@@ -38,53 +38,54 @@
 #include <wx/listimpl.cpp>
 #include <wx/menu.h>
 
-#include "FontMgr.h"
-#include "MarkInfo.h"
-#include "Quilt.h"
-#include "model/route.h"
-#include "RoutePropDlgImpl.h"
-#include "SendToGpsDlg.h"
-#include "SendToPeerDlg.h"
-#include "TCWin.h"
-#include "model/track.h"
-#include "TrackPropDlg.h"
-#include "ais.h"
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/config_vars.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/mDNS_query.h"
+#include "model/nav_object_database.h"
+#include "model/own_ship.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/select.h"
+#include "model/track.h"
+
+#include "ais.h"
 #include "canvasMenu.h"
 #include "chartdb.h"
 #include "chcanv.h"
 #include "cm93.h"  // for chart outline draw
 #include "config.h"
-#include "model/config_vars.h"
-#include "model/cutil.h"
-#include "model/georef.h"
+#include "FontMgr.h"
 #include "kml.h"
+#include "MarkInfo.h"
 #include "navutil.h"
-#include "model/nav_object_database.h"
 #include "ocpn_frame.h"
-#include "model/own_ship.h"
+#include "OCPNPlatform.h"
+#include "peer_client_dlg.h"
 #include "pluginmanager.h"
+#include "Quilt.h"
 #include "route_gui.h"
-#include "route_point_gui.h"
-#include "model/routeman.h"
-#include "routeman_gui.h"
 #include "routemanagerdialog.h"
+#include "routeman_gui.h"
+#include "route_point_gui.h"
+#include "RoutePropDlgImpl.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
+#include "SendToGpsDlg.h"
+#include "SendToPeerDlg.h"
 #include "styles.h"
 #include "tcmgr.h"
+#include "TCWin.h"
 #include "tide_time.h"
 #include "track_gui.h"
+#include "TrackPropDlg.h"
 #include "undo.h"
-#include "peer_client_dlg.h"
-#include "model/mDNS_query.h"
-#include "model/own_ship.h"
-#include "model/select.h"
-#include "OCPNPlatform.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -264,7 +265,7 @@ void CanvasMenuHandler::MenuPrepend1(wxMenu *menu, int id, wxString label) {
   item->SetFont(m_scaledFont);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
   item->SetFont(sFont);
 #endif
@@ -281,7 +282,7 @@ void CanvasMenuHandler::MenuAppend1(wxMenu *menu, int id, wxString label) {
   item->SetFont(m_scaledFont);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
   item->SetFont(sFont);
 #endif
@@ -297,7 +298,7 @@ void CanvasMenuHandler::SetMenuItemFont1(wxMenuItem *item) {
   item->SetFont(m_scaledFont);
 #endif
 
-#if defined(__OCPN__ANDROID__)
+#if defined(__ANDROID__)
   wxFont *qFont = GetOCPNScaledFont(_("Menu"));
   item->SetFont(*qFont);
 #endif
@@ -462,7 +463,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(contextMenu, ID_DEF_MENU_QUERY,
                   _("Object Query") + _T( "..." ));
     } else {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       if (!g_bBasicMenus && (nChartStack > 1)) {
         MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_IN,
                     _menuText(_("Scale In"), _T("Ctrl-Left")));
@@ -516,7 +517,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   if (!g_bBasicMenus) {
     bool full_toggle_added = false;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     if (g_btouch) {
       MenuAppend1(contextMenu, ID_DEF_MENU_TOGGLE_FULL,
                   _("Toggle Full Screen"));
@@ -567,7 +568,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   }  // if( !g_bBasicMenus){
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 // TODO stack
 //     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack &&
 //     pCurrentStack->b_valid ) ) {
@@ -747,7 +748,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(menuRoute, ID_RT_MENU_RESEQUENCE,
                   _("Resequence Waypoints..."));
 
-      // #ifndef __OCPN__ANDROID__
+      // #ifndef __ANDROID__
       wxString port = parent->FindValidUploadPort();
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
@@ -847,7 +848,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob"))
         MenuAppend1(menuWaypoint, ID_RT_MENU_DELPOINT, _("Delete"));
 
-      // #ifndef __OCPN__ANDROID__
+      // #ifndef __ANDROID__
       wxString port = parent->FindValidUploadPort();
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
@@ -898,7 +899,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       if (m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob"))
         MenuAppend1(menuWaypoint, ID_WP_MENU_DELPOINT, _("Delete"));
 
-      // #ifndef __OCPN__ANDROID__
+      // #ifndef __ANDROID__
       wxString port = parent->FindValidUploadPort();
       parent->m_active_upload_port = port;
       wxString item = _("Send to GPS");
@@ -1026,7 +1027,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         pmi->SetFont(m_scaledFont);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
         wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
         pmi->SetFont(sFont);
 #endif
@@ -1049,7 +1050,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     pmi->SetFont(m_scaledFont);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
     pmi->SetFont(sFont);
 #endif
@@ -1074,7 +1075,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   //        Invoke the correct focused drop-down menu
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionsMenu(false);
 
@@ -1086,7 +1087,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
 
   parent->PopupMenu(menuFocus, x, y);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(true);
   androidEnableOptionsMenu(true);
 #endif
@@ -1636,7 +1637,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       parent->m_bAppendingRoute = true;
 
       parent->SetCursor(*parent->pCursorPencil);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidSetRouteAnnunciator(true);
 #endif
 

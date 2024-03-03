@@ -22,8 +22,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <algorithm>
+#include <archive.h>
+#include <cstdio>
+#include <cstdio>
+#include <errno.h>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <stdint.h>
+#include <string>
+#include <unordered_map>
 
-#include <config.h>
+
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -60,22 +75,6 @@
 #include <cxxabi.h>
 #endif  // __WXMSW__
 
-#include <algorithm>
-#include <archive.h>
-#include <cstdio>
-#include <cstdio>
-#include <errno.h>
-#include <fcntl.h>
-#include <fstream>
-#include <iostream>
-#include <iostream>
-#include <memory>
-#include <set>
-#include <sstream>
-#include <stdint.h>
-#include <string>
-#include <unordered_map>
-
 #include <archive_entry.h>
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
@@ -85,71 +84,74 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include <gelf.h>
 #endif
 
-#include "model/ais_decoder.h"
-#include "ais.h"
+#include "config.h"
+
 #include "model/ais_target_data.h"
-#include "canvasMenu.h"
 #include "model/catalog_handler.h"
+#include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_n0183_serial.h"
+#include "model/comm_drv_n2k.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_vars.h"
+#include "model/config_vars.h"
+#include "model/downloader.h"
+#include "model/georef.h"
+#include "model/json_event.h"
+#include "model/logger.h"
+#include "model/multiplexer.h"
+#include "model/nav_object_database.h"
+#include "model/navutil_base.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_cache.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
+#include "model/plugin_paths.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/safe_mode.h"
+#include "model/select.h"
+#include "model/semantic_vers.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "canvasMenu.h"
 #include "cat_settings.h"
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
-#include "model/comm_navmsg_bus.h"
-#include "model/comm_vars.h"
 #include "config.h"
-#include "model/config_vars.h"
-#include "model/downloader.h"
 #include "download_mgr.h"
 #include "dychart.h"
 #include "FontMgr.h"
-#include "model/georef.h"
-#include "ocpn_pixel.h"
 #include "gshhs.h"
-#include "model/json_event.h"
-#include "model/logger.h"
-#include "model/multiplexer.h"
+#include "model/ais_decoder.h"
 #include "mygeom.h"
-#include "model/nav_object_database.h"
 #include "navutil.h"
-#include "model/navutil_base.h"
 #include "observable_confvar.h"
 #include "observable_globvar.h"
+#include "ocpn_app.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "ocpn_pixel.h"
 #include "OCPNPlatform.h"
 #include "OCPNRegion.h"
-#include "model/ocpn_utils.h"
 #include "options.h"
 #include "piano.h"
-#include "model/plugin_cache.h"
-#include "model/plugin_handler.h"
-#include "model/plugin_loader.h"
 #include "pluginmanager.h"
-#include "model/plugin_paths.h"
-#include "model/route.h"
 #include "routemanagerdialog.h"
-#include "model/routeman.h"
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "model/safe_mode.h"
-#include "model/semantic_vers.h"
-#include "model/select.h"
 #include "SoundFactory.h"
-#include "SystemCmdSound.h"
 #include "styles.h"
+#include "svg_utils.h"
+#include "SystemCmdSound.h"
 #include "toolbar.h"
-#include "model/track.h"
 #include "update_mgr.h"
 #include "waypointman_gui.h"
-#include "svg_utils.h"
-#include "ocpn_frame.h"
-#include "model/comm_drv_n0183_serial.h"
-#include "model/comm_drv_n0183_net.h"
-#include "model/comm_drv_registry.h"
-#include "model/comm_drv_n2k.h"
-#include "ocpn_app.h"
 
 #ifdef __ANDROID__
 #include <dlfcn.h>
@@ -3988,7 +3990,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
       pConfig->Read(_T("LatestCatalogDownloaded"), _T("default"));
   catalog += latestCatalog;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   //  Get the version from the currently active catalog, by which we mean
   //  the latest catalog parsed.
   auto pluginHandler = PluginHandler::getInstance();

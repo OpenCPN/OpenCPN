@@ -408,7 +408,7 @@ MyConfig::~MyConfig() {
 
 void MyConfig::CreateRotatingNavObjBackup() {
   // Avoid nonsense log errors...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
   // Monthly backup, keep max 3
@@ -907,7 +907,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
 //  "Responsive graphics" option deprecated in O58+
 //  Read(_T ( "ResponsiveGraphics" ), &g_bresponsive);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_bresponsive = true;
 #else
   g_bresponsive = false;
@@ -1959,7 +1959,7 @@ bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
   }
 
 // Avoid nonsense log errors...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 
@@ -2318,7 +2318,7 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
 void MyConfig::UpdateSettings() {
   //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages
   //  provoked by Android security...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 
@@ -2936,7 +2936,7 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXRoutesList(pRoutes);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -2959,7 +2959,7 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pTracks,
   if (fn.IsOk()) {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXTracksList(pTracks);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -2981,7 +2981,7 @@ bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXPointsList(pRoutePoints);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -3071,7 +3071,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
     // Android 5+ requires special handling to support native app file writes to
     // SDCard We need to use a two step copy process using a guaranteed
     // accessible location for the first step.
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -3097,7 +3097,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     //  Platform DoFileSelectorDialog method does not properly handle multiple
     //  selections So use native method if not Android, which means Android gets
     //  single selection only.
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     wxFileDialog *popenDialog =
         new wxFileDialog(NULL, _("Import GPX file"), g_gpx_path, wxT(""),
                          wxT("GPX files (*.gpx)|*.gpx|All files (*.*)|*.*"),

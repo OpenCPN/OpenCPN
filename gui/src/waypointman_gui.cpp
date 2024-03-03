@@ -29,7 +29,9 @@
 #include <GL/gl_private.h>  // this is a cut-down version of gl.h
 #include <GLES2/gl2.h>
 
-#elif defined(__MSVC__)
+#elif defined(ocpnUSE_GL)
+
+#if defined(__MSVC__)
 #include "glew.h"
 #include <GL/glu.h>
 
@@ -42,8 +44,8 @@ typedef void (*  _GLUfuncptr)();
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>
 #include <GL/glu.h>
+#endif  // ocpnUSE_GL
 #endif
-
 
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>

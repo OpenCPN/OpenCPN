@@ -57,15 +57,20 @@
 #include <wx/utils.h>
 #include <wx/window.h>
 
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/track.h"
 
 #include "ais.h"
 #include "chartbase.h"
+#include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chartimg.h"
-#include "chart_ctx_factory.h"
 #include "chcanv.h"
 #include "ChInfoWin.h"
 #include "cm93.h"  // for chart outline draw
+#include "color_handler.h"
 #include "compass.h"
 #include "config.h"
 #include "emboss_data.h"
@@ -77,16 +82,12 @@
 #include "mbtiles.h"
 #include "mipmap/mipmap.h"
 #include "navutil.h"
-#include "color_handler.h"
 #include "OCPNPlatform.h"
-#include "model/own_ship.h"
 #include "piano.h"
 #include "pluginmanager.h"
 #include "Quilt.h"
 #include "RolloverWin.h"
 #include "route_gui.h"
-#include "model/route.h"
-#include "model/routeman.h"
 #include "route_point_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
@@ -95,7 +96,6 @@
 #include "thumbwin.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "model/track.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -136,7 +136,7 @@ class OCPNStopWatch {
 };
 #endif
 
-#if defined(__OCPN__ANDROID__)
+#if defined(__ANDROID__)
 #include "androidUTIL.h"
 #elif defined(__WXQT__) || defined(__WXGTK__) || defined(FLATPAK)
 #include <GL/glew.h>
@@ -150,7 +150,7 @@ class OCPNStopWatch {
 
 #include "lz4.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 //  arm gcc compiler has a lot of trouble passing doubles as function aruments.
 //  We don't really need double precision here, so fix with a (faster) macro.
 extern "C" void glOrthof(float left, float right, float bottom, float top,
@@ -439,7 +439,7 @@ void glChartCanvas::Init() {
   m_displayScale = GetContentScaleFactor();
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Create/connect a dynamic event handler slot for gesture and some timer
   //  events
   Connect(
@@ -510,7 +510,7 @@ void glChartCanvas::Init() {
 }
 
 glChartCanvas::~glChartCanvas() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   unloadShaders();
 #endif
 }
@@ -525,7 +525,7 @@ void glChartCanvas::OnActivate(wxActivateEvent &event) {
 
 void glChartCanvas::OnSize(wxSizeEvent &event) {
 #if 0
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
      if(!g_running){
          wxLogMessage(_T("Got OnSize event while NOT running"));
          event.Skip();
@@ -575,7 +575,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
   if (m_pParentCanvas->MouseEventOverlayWindows(event)) return;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (m_pParentCanvas->MouseEventSetup(event))
     return;  // handled, no further action required
 
@@ -651,7 +651,7 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 
   if (m_b_DisableFBO) return false;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // We use the smallest possible (POT) FBO
   int rb_x = GetSize().x;
   int rb_y = GetSize().y;
@@ -983,7 +983,7 @@ void glChartCanvas::BuildFBO() {
   m_pParentCanvas->GetClientSize(&gl_width, &gl_height);
   int initialSize = NextPow2(gl_width * m_displayScale);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Some low mem-spec devices have trouble with 2048 FBO size.
   //  Detect here, and choose 1024 size instead
   wxString info = androidGetDeviceInfo();
@@ -1058,7 +1058,7 @@ void glChartCanvas::SetupOpenGL() {
   msg += m_GLSLversion;
   wxLogMessage(msg);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifndef __WXOSX__
   GLenum err = glewInit();
 #ifdef GLEW_ERROR_NO_GLX_DISPLAY
@@ -1142,14 +1142,14 @@ void glChartCanvas::SetupOpenGL() {
   wxLogMessage(wxString::Format(_T("OpenGL-> Texture rectangle format: %x"),
                                 g_texture_rectangle_format));
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_texture_rectangle_format = GL_TEXTURE_2D;
 #endif
 
   // VBO??
   g_b_EnableVBO = true;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_b_EnableVBO = false;
 #endif
 
@@ -1186,7 +1186,7 @@ void glChartCanvas::SetupOpenGL() {
   //      Maybe build FBO(s)
   BuildFBO();
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 
   if (m_b_BuiltFBO) {
     // Check framebuffer completeness at the end of initialization.
@@ -1270,7 +1270,7 @@ void glChartCanvas::SetupOpenGL() {
   }
 
   //  Android, even though using GLES, does not require all levels.
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_mipmap_max_level = 4;
 #endif
 
@@ -3729,7 +3729,7 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
           float yp = r.y;
 
           double scale = 1.0;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
           scale *= getAndroidDisplayDensity();
 #endif
           double width2 = scale * m_tideTexWidth / 2;
@@ -4269,7 +4269,7 @@ void glChartCanvas::Render() {
     useFBO = true;
   }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (VPoint.tilt) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -5009,7 +5009,7 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
   }
 }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 void glChartCanvas::OnEvtPanGesture(wxQT_PanGestureEvent &event) {
   // qDebug() << "OnEvtPanGesture" << m_pParentCanvas->m_canvasIndex <<
