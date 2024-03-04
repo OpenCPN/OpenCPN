@@ -1273,6 +1273,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
   CHECK_STR(_T( "TalkerIdText" ), g_TalkerIdText);
   CHECK_INT(_T( "MaxWaypointNameLength" ), &g_maxWPNameLength);
+  CHECK_INT(_T( "MbtilesMaxLayers" ), &g_mbtilesMaxLayers);
 
   /* opengl options */
 #ifdef ocpnUSE_GL
