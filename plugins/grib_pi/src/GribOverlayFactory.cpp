@@ -1051,6 +1051,20 @@ static ColorMap CAPEMap[] = {
     {3000, _T("#ad0430")},
 };
 
+static ColorMap WindyMap[] = {
+    {0, _T("#6271B7")},  {3, _T("#3961A9")},  {6, _T("#4A94A9")},
+    {9, _T("#4D8D7B")},  {12, _T("#53A553")}, {15, _T("#53A553")},
+    {18, _T("#359F35")}, {21, _T("#A79D51")}, {24, _T("#9F7F3A")},
+    {27, _T("#A16C5C")}, {30, _T("#A16C5C")}, {33, _T("#813A4E")},
+    {36, _T("#AF5088")}, {39, _T("#AF5088")}, {42, _T("#754A93")},
+    {45, _T("#754A93")}, {48, _T("#6D61A3")}, {51, _T("#44698D")},
+    {54, _T("#44698D")}, {57, _T("#5C9098")}, {60, _T("#7D44A5")},
+    {63, _T("#7D44A5")}, {66, _T("#7D44A5")}, {69, _T("#E7D7D7")},
+    {72, _T("#E7D7D7")}, {75, _T("#E7D7D7")}, {78, _T("#DBD483")},
+    {81, _T("#DBD483")}, {84, _T("#DBD483")}, {87, _T("#CDC470")},
+    {90, _T("#CDC470")}, {93, _T("#CDC470")}, {96, _T("#CDC470")},
+    {99, _T("#808080")}};
+
 #if 0
 static ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
 #endif
@@ -1064,7 +1078,8 @@ enum {
   CLOUD_GRAPHIC_INDEX,
   CURRENT_GRAPHIC_INDEX,
   CAPE_GRAPHIC_INDEX,
-  REFC_GRAPHIC_INDEX
+  REFC_GRAPHIC_INDEX,
+  WINDY_GRAPHIC_INDEX
 };
 
 static void InitColor(ColorMap *map, size_t maplen) {
@@ -1088,6 +1103,7 @@ void GRIBOverlayFactory::InitColorsTable() {
   InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
   InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
   InitColor(REFCMap, (sizeof REFCMap) / (sizeof *REFCMap));
+  InitColor(WindyMap, (sizeof WindyMap) / (sizeof *WindyMap));
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
@@ -1139,6 +1155,10 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
     case REFC_GRAPHIC_INDEX:
       map = REFCMap;
       maplen = (sizeof REFCMap) / (sizeof *REFCMap);
+      break;
+    case WINDY_GRAPHIC_INDEX:
+      map = WindyMap;
+      maplen = (sizeof WindyMap) / (sizeof *WindyMap);
       break;
     default:
       return;
