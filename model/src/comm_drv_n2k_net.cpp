@@ -227,7 +227,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
 
   // Establish the power events response
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
-                       [&](ObservedEvt&) { OnTimerSocket(); });
+                       [&](ObservedEvt&) { HandleResume(); });
 
   Open();
 }
@@ -404,7 +404,6 @@ void CommDriverN2KNet::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
 }
 
 void CommDriverN2KNet::OnTimerSocket() {
-  GetSocketThreadWatchdogTimer()->Stop();
 
   //  Attempt a connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
@@ -416,10 +415,29 @@ void CommDriverN2KNet::OnTimerSocket() {
       tcp_socket->Connect(GetAddr(), FALSE);
 
       // schedule another attempt, in case this one fails
-      int n_reconnect_delay =  wxMax(N_DOG_TIMEOUT-2, 2);
+      int n_reconnect_delay =  N_DOG_TIMEOUT;
       GetSocketTimer()->Start(n_reconnect_delay * 1000,
                               wxTIMER_ONE_SHOT);
     }
+  }
+}
+
+
+void CommDriverN2KNet::HandleResume() {
+
+  //  Attempt a stop and restart of connection
+  wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  if (tcp_socket) {
+    GetSocketThreadWatchdogTimer()->Stop();
+
+    tcp_socket->Close();
+
+    // schedule reconnect attempt
+    int n_reconnect_delay =  wxMax(N_DOG_TIMEOUT-2, 2);
+    wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.", n_reconnect_delay));
+
+    GetSocketTimer()->Start(n_reconnect_delay * 1000,
+                              wxTIMER_ONE_SHOT);
   }
 }
 

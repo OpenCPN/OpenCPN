@@ -126,6 +126,7 @@ public:
   void OpenNetworkTCP(unsigned int addr);
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+  void HandleResume();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
