@@ -1376,7 +1376,7 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str,
                                        GenericPosDatEx *pos,
                                        wxString *accumulator) {
   //  Make some simple tests for validity
-  if (str.Len() > 100) return AIS_NMEAVDX_TOO_LONG;
+  if (str.Len() > 128) return AIS_NMEAVDX_TOO_LONG;
 
   if (!NMEACheckSumOK(str)) return AIS_NMEAVDX_CHECKSUM_BAD;
 
