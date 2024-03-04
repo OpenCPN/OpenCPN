@@ -318,11 +318,10 @@ wxString& AbstractPlatform::GetPrivateDataDir() {
     m_PrivateDataDir = std_path.GetUserDataDir();    // should be ~/.opencpn
 #endif
 
-    if (g_bportable) {
-      m_PrivateDataDir = GetHomeDir();
-      if (m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
-        m_PrivateDataDir.RemoveLast();
-    }
+    if (g_bportable) m_PrivateDataDir = GetHomeDir();
+    if (!g_configdir.empty()) m_PrivateDataDir = g_configdir;
+    if (m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
+      m_PrivateDataDir.RemoveLast();
 
 #ifdef __ANDROID__
     m_PrivateDataDir = androidGetPrivateDir();

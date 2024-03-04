@@ -18,8 +18,6 @@
 
 using namespace std::literals::chrono_literals;
 
-bool g_bportable;
-
 static bool bool_result0;
 static std::string s_result;
 

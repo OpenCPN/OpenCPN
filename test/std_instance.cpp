@@ -8,8 +8,6 @@
 #include "model/std_instance_chk.h"
 #include "model/base_platform.h"
 
-bool g_bportable;
-
 class StdInstanceApp : public wxAppConsole {
 public:
 
