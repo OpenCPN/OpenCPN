@@ -3305,11 +3305,13 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             int lon_len = 25;
             int lat_len = 24;
             float pos_scale = 60000.0;
+            int prec_size = 3;
             if(dac == 366) { // Deprecated US format https://www.e-navigation.nl/content/area-notice-1
               subarea_len = 90;
               lon_len = 28;
               lat_len = 27;
               pos_scale = 600000.0;
+              prec_size = 0; // Not present in the in US format between coordinates and radius for some shapes
             }
 
             int subarea_count = (bstr->GetBitCount() - 111) / subarea_len;
@@ -3328,17 +3330,17 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
                 scale_factor = scale_multipliers[bstr->GetInt(base + 4, 2)];
                 switch (sa.shape) {
                   case AIS8_001_22_SHAPE_SECTOR:
-                    sa.left_bound_deg = bstr->GetInt(base + 6 + lon_len + lat_len + 12, 9);
-                    sa.right_bound_deg = bstr->GetInt(base + 6 + lon_len + lat_len + 12 + 9, 9);
+                    sa.left_bound_deg = bstr->GetInt(base + 6 + lon_len + lat_len + prec_size + 12, 9);
+                    sa.right_bound_deg = bstr->GetInt(base + 6 + lon_len + lat_len + prec_size + 12 + 9, 9);
                   case AIS8_001_22_SHAPE_CIRCLE:
                     sa.radius_m = bstr->GetInt(base + 6 + lon_len + lat_len + 3, 12) * scale_factor;
                     // FALL THROUGH
                   case AIS8_001_22_SHAPE_RECT:
                     sa.longitude = bstr->GetInt(base + 6, lon_len, true) / pos_scale;
                     sa.latitude = bstr->GetInt(base + 6 + lon_len, lat_len, true) / pos_scale;
-                    sa.e_dim_m = bstr->GetInt(base + 6 + lon_len + lat_len + 3, 8) * scale_factor;
-                    sa.n_dim_m = bstr->GetInt(base + 6 + lon_len + lat_len + 3 + 8, 8) * scale_factor;
-                    sa.orient_deg = bstr->GetInt(base + 6 + lon_len + lat_len + 3 + 8 + 8, 9);
+                    sa.e_dim_m = bstr->GetInt(base + 6 + lon_len + lat_len + prec_size, 8) * scale_factor;
+                    sa.n_dim_m = bstr->GetInt(base + 6 + lon_len + lat_len + prec_size + 8, 8) * scale_factor;
+                    sa.orient_deg = bstr->GetInt(base + 6 + lon_len + lat_len + prec_size + 8 + 8, 9);
                     break;
                   case AIS8_001_22_SHAPE_POLYLINE:
                   case AIS8_001_22_SHAPE_POLYGON:
