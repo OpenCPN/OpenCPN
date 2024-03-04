@@ -270,7 +270,6 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
 
   b_isEuroInland = false;
   b_blue_paddle = false;
-  b_hasImoDac = b_hasMeteoFi = false;
 
   b_NoTrack = false;
   b_OwnShip = false;
@@ -291,6 +290,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   for (unsigned int i = 0; i < AIS_TARGETDATA_MAX_CANVAS; i++)
     last_scale[i] = 50;
   met_data.original_mmsi = 0;
+  met_data.stationID = 0;
   met_data.month = 0;
   met_data.day = 0;
   met_data.hour = 24;
@@ -502,8 +502,14 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
          << _("Class") << _T("</font></td></tr>") << rowStartH << _T("<b>")
          << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart << _T("<b>ID: ")
-         << MMSI << rowEnd << _T("</b></table></td></tr>");
+         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart
+         << _T("<b>ID: ") << MMSI;
+    if (met_data.stationID) {  // Facilitate to find a Meteo target on SignalK
+      wxString SK_ID =
+          wxString::Format(_T("%06d"), (met_data.stationID - 1000000));
+      html << "<td>&nbsp;</td><td align=right>" << "SK-ID: " << SK_ID;
+    }
+    html << rowEnd << _T("</b></table></td></tr>");
   }
   else
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
@@ -525,11 +531,10 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("<font size=-1><b>")
          << GetCountryCode(true) << rowEnd << _T("</font></table></td></tr>");
 
-  html << vertSpacer;
-
   wxString navStatStr;
   if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
       (Class != AIS_METEO)) {
+    html << vertSpacer;
     if ((NavStatus <= 21) && (NavStatus >= 0))
       navStatStr = wxGetTranslation(ais_get_status(NavStatus));
   } else if (Class == AIS_SART) {
