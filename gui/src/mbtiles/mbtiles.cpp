@@ -63,8 +63,8 @@
 #ifdef ocpnUSE_GL
     #include "shaders.h"
 #endif
-
 #include "mbtiles.h"
+#include "model/config_vars.h"
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
@@ -926,6 +926,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   // VPoint.view_scale_ppm,  1. / VPoint.view_scale_ppm);
 
   int zoomFactor = m_minZoom;
+  zoomFactor = wxMax(zoomFactor, viewZoom - g_mbtilesMaxLayers);
 
   // DEBUG TODO   Show single zoom
   // zoomFactor = 5; //m_minZoom;
@@ -1012,7 +1013,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   glChartCanvas::DisableClipRegion();
 
   // Limit the cache size to 3 times the number of tiles to draw on a rendering
-  m_tileCache->CleanCache(m_tileCount * 5);
+  m_tileCache->CleanCache(m_tileCount * 3);
 #endif
   return true;
 }

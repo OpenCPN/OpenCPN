@@ -67,6 +67,7 @@ extern int g_iWpt_ScaMin;
 extern int g_iWaypointRangeRingsNumber;
 extern int g_iWaypointRangeRingsStepUnits;
 extern int g_maxWPNameLength;
+extern int g_mbtilesMaxLayers;
 extern int g_NMEAAPBPrecision;
 extern int g_nCOMPortCheck;
 extern int g_nDepthUnitDisplay;

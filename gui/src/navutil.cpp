@@ -864,6 +864,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read(_T( "TalkerIdText" ), &g_TalkerIdText);
   Read(_T( "MaxWaypointNameLength" ), &g_maxWPNameLength);
+  Read(_T( "MbtilesMaxLayers" ), &g_mbtilesMaxLayers);
 
   Read(_T( "ShowTrackPointTime" ), &g_bShowTrackPointTime, true);
   /* opengl options */
