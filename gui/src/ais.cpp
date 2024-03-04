@@ -350,10 +350,25 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
                          sa->n_dim_m / 1852.0, &lat, &lon);
                 GetCanvasPointPix(vp, cp, lat, lon, &target_point);
                 points.push_back(target_point);
-
-                dc.DrawPolygon(points.size(), &points.front());
-
+                draw_polygon = true;
                 break;
+              }
+              case AIS8_001_22_SHAPE_SECTOR: {
+                wxPoint target_point;
+                double lat, lon;
+                double lat1 = sa->latitude;
+                double lon1 = sa->longitude;
+                GetCanvasPointPix(vp, cp, lat1, lon1, &target_point);
+                points.push_back(target_point);
+                ll_gc_ll(lat1, lon1, sa->left_bound_deg, sa->radius_m / 1852.0,
+                         &lat, &lon);
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
+                ll_gc_ll(lat1, lon1, sa->right_bound_deg, sa->radius_m / 1852.0,
+                         &lat, &lon);
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
+                draw_polygon = true;
               }
               case AIS8_001_22_SHAPE_POLYGON:
                 draw_polygon = true;
@@ -368,6 +383,7 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
                   GetCanvasPointPix(vp, cp, lat, lon, &target_point);
                   points.push_back(target_point);
                 }
+                dc.DrawLines(points.size(), &points.front());
               }
             }
           }
@@ -851,7 +867,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           theta = (float)-PI /
                   2.;  //  valid COG 000 or speed is too low to resolve course
           if (td->SOG >= g_SOGminCOG_kts)  //  valid COG 000 or speed is too
-                                            //  low to resolve course
+                                           //  low to resolve course
             b_hdgValid = true;
         }
       }
