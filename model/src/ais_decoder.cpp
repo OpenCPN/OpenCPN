@@ -3197,6 +3197,11 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
                     sa.latitude = bstr->GetInt(base + 31, 24, true) / 60000.0;
                     break;
                   case AIS8_001_22_SHAPE_POLYLINE:
+                    for (int i = 0; i < 4; ++i) {
+                      sa.angles[i] = bstr->GetInt(base + 6 + i * 20, 10) * 0.5;
+                      sa.dists_m[i] =
+                          bstr->GetInt(base + 16 + i * 20, 10) * scale_factor;
+                    }
                   case AIS8_001_22_SHAPE_POLYGON:
                     for (int i = 0; i < 4; ++i) {
                       sa.angles[i] = bstr->GetInt(base + 6 + i * 20, 10) * 0.5;
