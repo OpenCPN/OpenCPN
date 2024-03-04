@@ -123,15 +123,12 @@ extern int g_nbrightness;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
-extern wxString g_winPluginDir;
 
 extern wxString g_SENCPrefix;
 extern wxString g_UserPresLibData;
-extern wxString g_TalkerIdText;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
-extern WayPointman *pWayPointMan;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -177,10 +174,8 @@ extern bool g_bShowLiveETA;
 extern double g_defaultBoatSpeed;
 extern double g_defaultBoatSpeedUserUnit;
 
-extern wxString g_AisTargetList_perspective;
 extern bool g_bUseOnlyConfirmedAISName;
 extern int g_ScaledNumWeightSOG;
-extern int g_ScaledSizeMinimal;
 
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 int g_S57_extradialog_sx, g_S57_extradialog_sy;
@@ -308,8 +303,6 @@ extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
-extern int g_NMEAAPBPrecision;
-
 extern bool g_bShowTrackPointTime;
 
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
@@ -334,7 +327,6 @@ extern float g_ShipScaleFactorExp;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 
-extern bool g_bInlandEcdis;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
 extern bool g_bRollover;
@@ -416,7 +408,7 @@ MyConfig::~MyConfig() {
 
 void MyConfig::CreateRotatingNavObjBackup() {
   // Avoid nonsense log errors...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
   // Monthly backup, keep max 3
@@ -915,7 +907,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
 //  "Responsive graphics" option deprecated in O58+
 //  Read(_T ( "ResponsiveGraphics" ), &g_bresponsive);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_bresponsive = true;
 #else
   g_bresponsive = false;
@@ -1449,6 +1441,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   if (!Read(_T("WaypointUseScaMinOverrule"), &g_bOverruleScaMin))
     g_bOverruleScaMin = false;
   if (!Read(_T("WaypointsShowName"), &g_bShowWptName)) g_bShowWptName = true;
+  if (!Read(_T("UserIconsFirst"), &g_bUserIconsFirst)) g_bUserIconsFirst = true;
 
   //  Support Version 3.0 and prior config setting for Radar Rings
   bool b300RadarRings = true;
@@ -1967,7 +1960,7 @@ bool MyConfig::UpdateChartDirs(ArrayOfCDI &dir_array) {
   }
 
 // Avoid nonsense log errors...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 
@@ -2326,7 +2319,7 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
 void MyConfig::UpdateSettings() {
   //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages
   //  provoked by Android security...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 
@@ -2826,6 +2819,7 @@ void MyConfig::UpdateSettings() {
   Write(_T( "WaypointScaMinValue" ), g_iWpt_ScaMin);
   Write(_T( "WaypointUseScaMinOverrule" ), g_bOverruleScaMin);
   Write(_T("WaypointsShowName"), g_bShowWptName);
+  Write(_T("UserIconsFirst"), g_bUserIconsFirst);
 
   // Waypoint Radar rings
   Write(_T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber);
@@ -2944,7 +2938,7 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXRoutesList(pRoutes);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -2967,7 +2961,7 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track*> *pTracks,
   if (fn.IsOk()) {
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXTracksList(pTracks);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -2989,7 +2983,7 @@ bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
     NavObjectCollection1 *pgpx = new NavObjectCollection1;
     pgpx->AddGPXPointsList(pRoutePoints);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -3079,7 +3073,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
     // Android 5+ requires special handling to support native app file writes to
     // SDCard We need to use a two step copy process using a guaranteed
     // accessible location for the first step.
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxString fns = androidGetCacheDir() + wxFileName::GetPathSeparator() +
                    fn.GetFullName();
     pgpx->SaveFile(fns);
@@ -3105,7 +3099,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     //  Platform DoFileSelectorDialog method does not properly handle multiple
     //  selections So use native method if not Android, which means Android gets
     //  single selection only.
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     wxFileDialog *popenDialog =
         new wxFileDialog(NULL, _("Import GPX file"), g_gpx_path, wxT(""),
                          wxT("GPX files (*.gpx)|*.gpx|All files (*.*)|*.*"),

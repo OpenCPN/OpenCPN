@@ -3626,9 +3626,8 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
     TrackPoint *tp1 =
         t->AddNewPoint(point, wxDateTime(ptrackpoint.m_time).ToUTC());
     if (tp) {
-      //Fixme (dave)  This is GUI related.
-//       pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
-//                                          tp1->m_lon, tp, tp1, t);
+       pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
+                                          tp1->m_lon, tp, tp1, t);
     }
 
     // We do not want dependency on the GUI here, do we?

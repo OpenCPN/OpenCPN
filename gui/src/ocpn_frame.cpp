@@ -156,7 +156,6 @@ extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ConsoleCanvas *console;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Routeman *g_pRouteMan;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
@@ -215,7 +214,6 @@ extern int g_ENCTextScaleFactor;
 extern bool g_bShowTide;
 extern bool g_bShowCurrent;
 extern bool g_bUIexpert;
-extern Select *pSelect;
 extern RouteList *pRouteList;
 extern wxString g_default_wp_icon;
 extern std::vector<std::string> TideCurrentDataSet;
@@ -273,7 +271,6 @@ extern unsigned int g_canvasConfig;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
 extern wxString *pInit_Chart_Dir;
-extern bool g_bShowAIS;
 extern bool g_bShowOutlines;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowStatusBar;
@@ -291,7 +288,6 @@ extern bool g_bAutoAnchorMark;
 extern wxDateTime g_start_time;
 extern bool g_bcompression_wait;
 extern bool g_bquiting;
-extern wxString g_AisTargetList_perspective;
 extern bool b_inCloseWindow;
 extern bool b_inCompressAllCharts;
 extern long g_maintoolbar_orient;
@@ -315,7 +311,6 @@ extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bVelocityValid;
 extern int gHDx_Watchdog;
-extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
 
 extern bool g_bUseGLL;
@@ -467,7 +462,7 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
 
   wxString vs = wxString::Format(wxT(" .. Version %s"), VERSION_FULL);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidShowDisclaimer(_("OpenCPN for Android") + vs, msg0);
   return true;
 #else
@@ -668,7 +663,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //      Direct the Toolbar Animation timer to this frame
   ToolbarAnimateTimer.SetOwner(this, TOOLBAR_ANIMATE_TIMER);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 //    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
 //    Connect( m_PrefTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler(
 //    MyFrame::OnPreferencesResultTimer ), NULL, this );
@@ -1268,7 +1263,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       g_pauimgr->GetPane(cc).RightDockable(true);
       g_pauimgr->GetPane(cc).Right();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       config_array.Item(1)->canvasSize =
           wxSize(GetClientSize().x / 2, GetClientSize().y);
       g_pauimgr->GetPane(cc).BestSize(GetClientSize().x / 2, GetClientSize().y);
@@ -1309,7 +1304,7 @@ void MyFrame::RequestNewToolbars(bool bforcenew) {
   BuildiENCToolbar(bforcenew);
   PositionIENCToolbar();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   DoChartUpdate();
 #endif
 }
@@ -1517,7 +1512,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   // The Options dialog, and other deferred init items, are not fully
   // initialized. Best to just cancel the close request. This is probably only
   // reachable on slow hardware, or on Android life-cycle events...
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (!g_bDeferredInitDone) return;
 #endif
 
@@ -1707,7 +1702,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pCM93OffsetDialog = NULL;
   }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // .. for each canvas...
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -1868,7 +1863,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   wxLogMessage(_T("gFrame destroyed."));
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #ifndef USE_ANDROID_GLES2
   qDebug() << "Calling OnExit()";
   wxTheApp->OnExit();
@@ -1883,7 +1878,7 @@ void MyFrame::OnMove(wxMoveEvent &event) {
     g_current_monitor = idx;
     DEBUG_LOG << "Moved to " << idx
 #if wxCHECK_VERSION(3, 1, 6)
-    << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY() 
+    << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY()
     << " SF wxDisplay: " << wxDisplay(idx).GetScaleFactor()
 #endif
     << " Size wxDisplay: " << wxDisplay(idx).GetGeometry().GetWidth() << "x" << wxDisplay(idx).GetGeometry().GetHeight()
@@ -1942,7 +1937,7 @@ void MyFrame::ProcessCanvasResize(void) {
 
   PositionIENCToolbar();
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   TriggerRecaptureTimer();
 #endif
 }
@@ -2116,7 +2111,7 @@ void MyFrame::ODoSetSize(void) {
     font_size =
         wxMax(font_size, min_font_size);  // minimum to stop it being unreadable
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     font_size = statusBarFont->GetPointSize();
 #endif
 
@@ -2132,7 +2127,7 @@ void MyFrame::ODoSetSize(void) {
     m_pStatusBar->SetFont(*pstat_font);
     m_pStatusBar->SetForegroundColour(
         FontMgr::Get().GetFontColor(_("StatusBar")));
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     min_height = (pstat_font->GetPointSize() * getAndroidDisplayDensity()) + 10;
     min_height =
         (min_height >> 1) * 2;  // force even number, makes GLCanvas happier...
@@ -2203,7 +2198,7 @@ void MyFrame::ODoSetSize(void) {
   options_lastWindowSize = wxSize(0, 0);
   options_lastWindowPos = wxPoint(0, 0);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // If the options dialog is displayed, this will have the effect of
   // raising the dialog above the main and canvas-GUI toolbars.
   // If the dialog is not shown, no harm done
@@ -2459,7 +2454,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     }
 
     case ID_MENU_SETTINGS_BASIC: {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       /// LoadS57();
       androidDisableFullScreen();
       g_MainToolbar->HideTooltip();
@@ -2620,7 +2615,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_CMD_APPLY_SETTINGS: {
       applySettingsString(event.GetString());
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidRestoreFullScreen();
 #endif
 
@@ -2983,7 +2978,7 @@ void MyFrame::TrackOn(void) {
 
   SetMenubarItemState(ID_MENU_NAV_TRACK, g_bTrackActive);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidSetTrackTool(true);
 #endif
 
@@ -3054,7 +3049,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
     g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Enable Tracking"));
   SetMenubarItemState(ID_MENU_NAV_TRACK, g_bTrackActive);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidSetTrackTool(false);
 #endif
 
@@ -3376,7 +3371,7 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
 wxString _menuText(wxString name, wxString shortcut) {
   wxString menutext;
   menutext << name;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   menutext << _T("\t") << shortcut;
 #endif
   return menutext;
@@ -3893,7 +3888,7 @@ int MyFrame::DoOptionsDialog() {
 
   g_options->SetInitialPage(options_lastPage, options_subpage);
 
-#ifndef __OCPN__ANDROID__  //    if(!g_bresponsive){
+#ifndef __ANDROID__  //    if(!g_bresponsive){
   g_options->lastWindowPos = options_lastWindowPos;
   if (options_lastWindowPos != wxPoint(0, 0)) {
     g_options->Move(options_lastWindowPos);
@@ -3916,7 +3911,7 @@ int MyFrame::DoOptionsDialog() {
 
   if (g_MainToolbar) g_MainToolbar->DisableTooltips();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionsMenu(false);
   androidDisableFullScreen();
@@ -3955,7 +3950,7 @@ int MyFrame::DoOptionsDialog() {
 
   int rr = g_options->ShowModal();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(true);
   androidEnableOptionsMenu(true);
   androidRestoreFullScreen();
@@ -3965,7 +3960,7 @@ int MyFrame::DoOptionsDialog() {
   if (g_MainToolbar) g_MainToolbar->EnableTooltips();
 
   options_lastPage = g_options->lastPage;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  This is necessary to force a manual change to charts page,
   //  in order to properly refresh the chart directory list.
   //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
@@ -3978,7 +3973,7 @@ int MyFrame::DoOptionsDialog() {
   options_lastWindowSize = g_options->lastWindowSize;
 
   if (1 /*b_sub*/) {  // always surface toolbar, and restart the timer if needed
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     g_MainToolbar->SetDockX(-1);
     g_MainToolbar->SetDockY(-1);
 #endif
@@ -4116,7 +4111,7 @@ int MyFrame::DoOptionsDialog() {
     RequestNewMasterToolbar(true);
 
   bool bMuiChange = false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bMuiChange = true;  // to pick up possible "zoom" button visibility change
 #endif
 
@@ -4151,7 +4146,7 @@ int MyFrame::DoOptionsDialog() {
   if (NMEALogWindow::Get().Active())
     NMEALogWindow::Get().GetTTYWindow()->Raise();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (g_pi_manager) g_pi_manager->NotifyAuiPlugIns();
 #endif
 
@@ -4936,7 +4931,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       GetPrimaryCanvas()->SetFocus();
       g_focusCanvas = GetPrimaryCanvas();
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       gFrame->Raise();
 #endif
 
@@ -4955,7 +4950,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidEnableBackButton(true);
       androidEnableRotation();
       androidEnableOptionItems(true);
@@ -5762,7 +5757,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     }
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   // Update the navobj file on a fixed schedule (5 minutes)
   // This will do nothing if the navobj.changes file is empty and clean
@@ -6095,7 +6090,7 @@ int g_lastMemTick = -1;
 /* Return total system RAM and size of program */
 /* Values returned are in kilobytes            */
 bool GetMemoryStatus(int *mem_total, int *mem_used) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidGetMemoryStatus(mem_total, mem_used);
 #endif
 
@@ -6814,7 +6809,7 @@ void MyFrame::applySettingsString(wxString settings) {
   }
 
   //  We do this is one case only to remove an orphan recovery window
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (previous_expert && !g_bUIexpert) {
     androidForceFullRepaint();
   }

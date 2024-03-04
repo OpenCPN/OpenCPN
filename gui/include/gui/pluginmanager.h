@@ -431,6 +431,7 @@ public:
 
 private:
   void AddPlugin(const PlugInData& pd);
+  void AddPlugin(const std::string& name);
   int ComputePluginSpace(ArrayOfPluginPanel plugins, wxBoxSizer* sizer);
   // void Clear();
 
@@ -464,6 +465,9 @@ public:
   /** Construct an entry reflecting a plugin available in the catalog. */
   PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
               const wxSize& size, PluginMetadata plugin);
+
+  /** Construct an entry reflecting a safe-loaded "uninstall-only" item */
+  PluginPanel(wxPanel* parent, const std::string&  name);
 
   ~PluginPanel();
 
@@ -503,6 +507,7 @@ private:
   WebsiteButton* m_info_btn;
   ActionVerb m_action;
   int m_penWidthUnselected, m_penWidthSelected;
+  bool m_is_safe_panel;
 };
 
 //  API 1.11 adds access to S52 Presentation library

@@ -27,7 +27,9 @@
 #include <vector>
 #include <string>
 
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+#include <winsock2.h>
+#else
 #include <netinet/in.h>
 #endif
 

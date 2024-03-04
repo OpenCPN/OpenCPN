@@ -119,12 +119,14 @@ public:
   bool SetOutputSocketOptions(wxSocketBase* tsock);
   bool SendSentenceNetwork(const wxString& payload);
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
-  void OnTimerSocket(wxTimerEvent& event);
+  void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
+  void OnTimerSocket();
   void OnSocketEvent(wxSocketEvent& event);
   void OpenNetworkGPSD();
   void OpenNetworkTCP(unsigned int addr);
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+  void HandleResume();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
@@ -211,6 +213,8 @@ private:
 
   FastMessageMap *fast_messages;
   N2K_Format m_n2k_format;
+
+  ObsListener resume_listener;
 
   DECLARE_EVENT_TABLE()
 };

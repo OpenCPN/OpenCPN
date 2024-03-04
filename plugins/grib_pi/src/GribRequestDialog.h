@@ -111,6 +111,7 @@ private:
   void OnMouseEventTimer(wxTimerEvent &event);
   void SetCoordinatesText();
   void OnWorldLengthChoice(wxCommandEvent& event) override { event.Skip(); }
+  void OnWorldResolutionChoice( wxCommandEvent& event ) override { event.Skip(); }
   void OnWorldDownload(wxCommandEvent& event) override;
   void OnLocalTreeItemExpanded(wxTreeEvent& event) override { event.Skip(); }
   void OnLocalTreeSelChanged(wxTreeEvent& event) override;

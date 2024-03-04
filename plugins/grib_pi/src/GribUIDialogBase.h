@@ -398,6 +398,8 @@ protected:
   wxStaticText* m_staticTextInfo;
   wxStaticText* m_stForecastLength;
   wxChoice* m_chForecastLength;
+  wxStaticText* m_stECMWFResolution;
+	wxChoice* m_chECMWFResolution;
   wxButton* m_btnDownloadWorld;
   wxPanel* m_panelLocalModels;
   wxTreeCtrl* m_SourcesTreeCtrl1;
@@ -467,6 +469,7 @@ protected:
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
   virtual void OnNotebookPageChanged( wxNotebookEvent& event ) { event.Skip(); }
   virtual void OnWorldLengthChoice(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnWorldResolutionChoice( wxCommandEvent& event ) { event.Skip(); }
   virtual void OnWorldDownload(wxCommandEvent& event) { event.Skip(); }
   virtual void OnLocalTreeItemExpanded(wxTreeEvent& event) { event.Skip(); }
   virtual void OnLocalTreeSelChanged(wxTreeEvent& event) { event.Skip(); }

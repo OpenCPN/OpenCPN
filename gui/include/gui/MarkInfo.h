@@ -206,6 +206,7 @@ class MarkInfoDlg : public DIALOG_PARENT {
 
 private:
   RoutePoint* m_pRoutePoint;
+  std::vector<RoutePoint*> m_pRoutePoints;
   static bool instanceFlag;
   int i_htmlList_item;
 
@@ -367,6 +368,8 @@ public:
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
   void SetRoutePoint(RoutePoint* pRP);
+  void SetRoutePoints(const std::vector<RoutePoint*> &);
+  void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();
   void SetDialogTitle(const wxString& title) { SetTitle(title); }
   bool UpdateProperties(bool positionOnly = false);

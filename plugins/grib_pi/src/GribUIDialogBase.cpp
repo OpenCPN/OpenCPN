@@ -2350,6 +2350,16 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_chForecastLength->SetSelection(0);
   bSizerWorld->Add(m_chForecastLength, 0, wxALL, 5);
 
+  m_stECMWFResolution = new wxStaticText( m_panelWorld, wxID_ANY, _("Resolution"), wxDefaultPosition, wxDefaultSize, 0 );
+  m_stECMWFResolution->Wrap( -1 );
+  bSizerWorld->Add( m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+  wxString m_chECMWFResolutionChoices[] = { _("0.4"), _("0.25") };
+  int m_chECMWFResolutionNChoices = sizeof( m_chECMWFResolutionChoices ) / sizeof( wxString );
+  m_chECMWFResolution = new wxChoice( m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0 );
+  m_chECMWFResolution->SetSelection( 0 );
+  bSizerWorld->Add( m_chECMWFResolution, 0, wxALL, 5 );
+
   bSizerWorld->Add(0, 0, 1, wxEXPAND, 5);
 
   m_btnDownloadWorld = new wxButton(m_panelWorld, wxID_ANY, _("Download"),

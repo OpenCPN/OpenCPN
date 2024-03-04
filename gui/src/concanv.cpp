@@ -38,24 +38,24 @@
 #include <time.h>
 #include <wx/datetime.h>
 
-#include "gui_lib.h"
-#include "concanv.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "navutil.h"
 #include "model/navutil_base.h"
-#include "FontMgr.h"
-#include "model/wx28compat.h"
+#include "model/own_ship.h"
 #include "model/route.h"
+#include "model/routeman.h"
+#include "model/wx28compat.h"
+
+#include "concanv.h"
+#include "FontMgr.h"
+#include "gui_lib.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
 #include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
+#include "styles.h"
 
 extern Routeman* g_pRouteMan;
 extern MyFrame* gFrame;
 extern bool g_bShowActiveRouteHighway;
-extern double gCog;
-extern double gSog;
 extern BasePlatform* g_BasePlatform;
 
 bool g_bShowRouteTotal;
@@ -527,7 +527,7 @@ void AnnunText::CalculateMinSize(void) {
   min.x = wl + wv;
 
   // Space is tight on Android....
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   min.x = wv * 1.2;
 #endif
 
@@ -659,7 +659,7 @@ CDI::CDI(wxWindow* parent, wxWindowID id, long style, const wxString& name)
 }
 
 void CDI::MouseEvent(wxMouseEvent& event) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (event.RightDown()) {
     qDebug() << "right down";
 
