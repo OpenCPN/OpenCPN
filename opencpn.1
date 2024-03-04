@@ -29,6 +29,9 @@ Set amount of logged information. Level is any of \fItrace\fR,
 defaulting to \fIinfo\fR if not set in environment; see ENVIRONMENT.
 
 .TP
+.B  \-c, \-\-configdir=<directory>
+Use alternative configuration directory instead  of \fI~/.openpcn\fR on
+Linux or MacOS.
 .B  \-f, \-\-fullscreen
 Switch to full screen mode on start.
 .TP
@@ -68,7 +71,7 @@ arguments and there already is a running instance.
 
 .TP
 .B \-e, \-\-get_rest_endpoint
-Print the url for connecting to the local opencpn REST server e. g. 
+Print the url for connecting to the local opencpn REST server e. g.
 http://localhost:8000. Requires \-\-remote.
 
 .TP
@@ -81,7 +84,7 @@ Plugin loading depends on that the opencpn main program can locate the
 plugin object file and that the plugin can locate it's own data.
 .P
 On Linux,  the main program searches for plugin .so-files  in two locatiosn.
-The first is \fI~/.local/lib/opencpn\fR. 
+The first is \fI~/.local/lib/opencpn\fR.
 
 The second is \fI@install-dir@/../lib/opencpn\fR where \fI@install-dir@\fR
 is the location where opencpn is installed.
@@ -90,7 +93,7 @@ from \fI/usr/lib/opencpn\fR.
 .P
 On other platforms plugins are also loaded from two different locations,
 one of which used primarely for system plugins and requiring administrative
-privileges. 
+privileges.
 The other is a user-writable locations used by the plugin manager.
 .P
 A plugin's data directory is a path ending with
