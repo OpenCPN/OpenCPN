@@ -1128,8 +1128,8 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
         wxString s_id;
         int id1, id2;
         s_id << meteo_SiteID;
-        s_id.Mid(1, 3).ToInt(&id1);
-        s_id.Mid(4, 3).ToInt(&id2);
+        id1 = wxAtoi(s_id.Mid(1, 3));
+        id2 = wxAtoi(s_id.Mid(4, 3));
         met_name = "METEO ";
         met_name << wxString::Format("%03d", (id1 + id2)).Right(3);
         strncpy(pTargetData->ShipName, met_name, SHIP_NAME_LEN - 1);
