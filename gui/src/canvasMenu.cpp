@@ -1310,8 +1310,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         }
 
         if (g_pMarkInfoDialog) {
-          g_pMarkInfoDialog->SetRoutePoint(NULL);
-          g_pMarkInfoDialog->UpdateProperties();
+          g_pMarkInfoDialog->ClearData();
         }
 
         if (RouteManagerDialog::getInstanceFlag()) {

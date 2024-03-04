@@ -2628,9 +2628,6 @@ void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
                            // Dialog
     g_pMarkInfoDialog = new MarkInfoDlg(GetParent());
 
-  g_pMarkInfoDialog->SetRoutePoint(pWP);
-  g_pMarkInfoDialog->UpdateProperties();
-
   WptShowPropertiesDialog(std::vector<RoutePoint*> {pWP}, GetParent());
 }
 
@@ -2750,8 +2747,7 @@ void RouteManagerDialog::OnWptDeleteClick(wxCommandEvent &event) {
     UpdateWptListCtrl(wp_next, true);
 
     if (g_pMarkInfoDialog) {
-      g_pMarkInfoDialog->SetRoutePoint(NULL);
-      g_pMarkInfoDialog->UpdateProperties();
+      g_pMarkInfoDialog->ClearData();
     }
 
     gFrame->InvalidateAllCanvasUndo();
@@ -2872,8 +2868,7 @@ void RouteManagerDialog::OnWptDeleteAllClick(wxCommandEvent &event) {
     pWayPointMan->DeleteAllWaypoints(false);  // only delete unused waypoints
 
   if (g_pMarkInfoDialog) {
-    g_pMarkInfoDialog->SetRoutePoint(NULL);
-    g_pMarkInfoDialog->UpdateProperties();
+    g_pMarkInfoDialog->ClearData();
   }
 
   m_lastWptItem = -1;
@@ -3085,8 +3080,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   if (g_pMarkInfoDialog) {
-    g_pMarkInfoDialog->SetRoutePoint(NULL);
-    g_pMarkInfoDialog->UpdateProperties();
+    g_pMarkInfoDialog->ClearData();
   }
 
   pLayerList->DeleteObject(layer);

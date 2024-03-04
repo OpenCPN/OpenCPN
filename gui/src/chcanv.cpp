@@ -9866,7 +9866,7 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
 
   markPoint->m_bRPIsBeingEdited = false;
 
-  g_pMarkInfoDialog->SetRoutePoint(markPoint);
+  g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint*> {markPoint});
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),

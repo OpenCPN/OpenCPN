@@ -926,6 +926,12 @@ void MarkInfoDlg::SetRoutePoints(const std::vector<RoutePoint*> &points) {
   SetBulkEdit(points.size() > 1);
 }
 
+void MarkInfoDlg::ClearData() {
+  m_pRoutePoint = NULL;
+  m_pRoutePoints.clear();
+  UpdateProperties();
+}
+
 void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
   m_pRoutePoint = pRP;
   if (m_pRoutePoint) {

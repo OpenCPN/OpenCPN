@@ -230,6 +230,7 @@ private:
   wxDateTime m_ArrETA_save;
   std::map<double, const IDX_entry*> m_tss;
   wxString m_lasttspos;
+  void SetRoutePoint(RoutePoint* pRP);
 
 protected:
   OCPNIconCombo* m_bcomboBoxIcon;
@@ -367,8 +368,8 @@ public:
   void RecalculateSize(void);
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
-  void SetRoutePoint(RoutePoint* pRP);
   void SetRoutePoints(const std::vector<RoutePoint*> &);
+  void ClearData();
   void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();
   void SetDialogTitle(const wxString& title) { SetTitle(title); }
