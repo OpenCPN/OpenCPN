@@ -193,6 +193,8 @@ R"""(Usage:
   opencpn --remote [-R] | -q] | -e] |-o <str>]
 
 Options for starting opencpn
+
+  -c, --configdir=<dirpath>     Use alternative configuration directory.
   -p, --portable               	Run in portable mode.
   -f, --fullscreen             	Switch to full screen mode on start.
   -G, --no_opengl              	Disable OpenGL video acceleration. This setting will
@@ -801,6 +803,7 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   // is hardcoded in kUsage;
   parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
   parser.AddSwitch("p", "portable");
+  parser.AddSwitch("c", "configdir", "", wxCMD_LINE_VAL_STRING);
   parser.AddSwitch("f", "fullscreen");
   parser.AddSwitch("G", "no_opengl");
   parser.AddSwitch("g", "rebuild_gl_raster_cache");
