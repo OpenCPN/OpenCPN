@@ -97,6 +97,8 @@ public:
   void updateMagneticVariance(const rapidjson::Value &value,
                               const wxString &sfixtime, NavData& temp_data);
 
+  std::string src_string;
+  std::unordered_map<std::string, int> GNSS_quality_map;
 
 };
 
