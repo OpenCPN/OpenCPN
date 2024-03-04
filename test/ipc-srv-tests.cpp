@@ -56,8 +56,6 @@
 
 using namespace std::literals::chrono_literals;
 
-bool g_bportable;
-
 /** Define an action to be performed when a KeyProvider is notified. */
 class IpcServerTest : public wxAppConsole {
 public:
