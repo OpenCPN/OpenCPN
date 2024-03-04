@@ -1676,7 +1676,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
 
   //  Make some simple tests for validity
 
-  if (str.Len() > 100) return AIS_NMEAVDX_TOO_LONG;
+  if (str.Len() > 128) return AIS_NMEAVDX_TOO_LONG;
 
   if (!NMEACheckSumOK(str)) {
     return AIS_NMEAVDX_CHECKSUM_BAD;
@@ -3260,7 +3260,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
           parse_result = true;
         }
       }
-      if (dac == 1)  // IMO
+      if (dac == 1 || dac == 366)  // IMO or US
       {
         if (fi == 22)  // Area Notice
         {
@@ -3300,50 +3300,53 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
                   an.start_time + wxTimeSpan::Minutes(an.duration_minutes);
             }
 
-            int subarea_count = (bstr->GetBitCount() - 111) / 87;
+            // Default case, the IMO format https://www.e-navigation.nl/content/area-notice-0
+            int subarea_len = 87;
+            int lon_len = 25;
+            int lat_len = 24;
+            float pos_scale = 60000.0;
+            if(dac == 366) { // Deprecated US format https://www.e-navigation.nl/content/area-notice-1
+              subarea_len = 90;
+              lon_len = 28;
+              lat_len = 27;
+              pos_scale = 600000.0;
+            }
+
+            int subarea_count = (bstr->GetBitCount() - 111) / subarea_len;
             for (int i = 0; i < subarea_count; ++i) {
-              int base = 111 + i * 87;
+              int base = 111 + i * subarea_len;
               Ais8_001_22_SubArea sa;
               sa.shape = bstr->GetInt(base + 1, 3);
               int scale_factor = 1;
               if (sa.shape == AIS8_001_22_SHAPE_TEXT) {
                 char t[15];
                 t[14] = 0;
-                bstr->GetStr(base + 4, 84, t, 14);
+                bstr->GetStr(base + 4, subarea_len - 3, t, 14);
                 sa.text = wxString(t, wxConvUTF8);
               } else {
                 int scale_multipliers[4] = {1, 10, 100, 1000};
                 scale_factor = scale_multipliers[bstr->GetInt(base + 4, 2)];
                 switch (sa.shape) {
-                  case AIS8_001_22_SHAPE_CIRCLE:
                   case AIS8_001_22_SHAPE_SECTOR:
-                    sa.radius_m = bstr->GetInt(base + 58, 12) * scale_factor;
+                    sa.left_bound_deg = bstr->GetInt(base + 6 + lon_len + lat_len + 12, 9);
+                    sa.right_bound_deg = bstr->GetInt(base + 6 + lon_len + lat_len + 12 + 9, 9);
+                  case AIS8_001_22_SHAPE_CIRCLE:
+                    sa.radius_m = bstr->GetInt(base + 6 + lon_len + lat_len + 3, 12) * scale_factor;
                     // FALL THROUGH
                   case AIS8_001_22_SHAPE_RECT:
-                    sa.longitude = bstr->GetInt(base + 6, 25, true) / 60000.0;
-                    sa.latitude = bstr->GetInt(base + 31, 24, true) / 60000.0;
+                    sa.longitude = bstr->GetInt(base + 6, lon_len, true) / pos_scale;
+                    sa.latitude = bstr->GetInt(base + 6 + lon_len, lat_len, true) / pos_scale;
+                    sa.e_dim_m = bstr->GetInt(base + 6 + lon_len + lat_len + 3, 8) * scale_factor;
+                    sa.n_dim_m = bstr->GetInt(base + 6 + lon_len + lat_len + 3 + 8, 8) * scale_factor;
+                    sa.orient_deg = bstr->GetInt(base + 6 + lon_len + lat_len + 3 + 8 + 8, 9);
                     break;
                   case AIS8_001_22_SHAPE_POLYLINE:
-                    for (int i = 0; i < 4; ++i) {
-                      sa.angles[i] = bstr->GetInt(base + 6 + i * 20, 10) * 0.5;
-                      sa.dists_m[i] =
-                          bstr->GetInt(base + 16 + i * 20, 10) * scale_factor;
-                    }
                   case AIS8_001_22_SHAPE_POLYGON:
                     for (int i = 0; i < 4; ++i) {
                       sa.angles[i] = bstr->GetInt(base + 6 + i * 20, 10) * 0.5;
                       sa.dists_m[i] =
                           bstr->GetInt(base + 16 + i * 20, 10) * scale_factor;
                     }
-                }
-                if (sa.shape == AIS8_001_22_SHAPE_RECT) {
-                  sa.e_dim_m = bstr->GetInt(base + 58, 8) * scale_factor;
-                  sa.n_dim_m = bstr->GetInt(base + 66, 8) * scale_factor;
-                  sa.orient_deg = bstr->GetInt(base + 74, 9);
-                }
-                if (sa.shape == AIS8_001_22_SHAPE_SECTOR) {
-                  sa.left_bound_deg = bstr->GetInt(70, 9);
-                  sa.right_bound_deg = bstr->GetInt(79, 9);
                 }
               }
               an.sub_areas.push_back(sa);

@@ -422,11 +422,27 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                   parent->GetCanvasPointPix(lat, lon, &target_point);
                   bbox.Expand(target_point);
                 }
+                break;
+              }
+              case AIS8_001_22_SHAPE_SECTOR: {
+                double lat1 = sa->latitude;
+                double lon1 = sa->longitude;
+                double lat, lon;
+                wxPoint target_point;
+                parent->GetCanvasPointPix(lat1, lon1, &target_point);
+                bbox.Expand(target_point);
+                for (int i = 0; i <= 6; ++i) {
+                  ll_gc_ll(lat1, lon1, sa->left_bound_deg + i * (sa->right_bound_deg - sa->left_bound_deg) / 6 , sa->radius_m / 1852.0,
+                         &lat, &lon);
+                  parent->GetCanvasPointPix(lat, lon, &target_point);
+                  bbox.Expand(target_point);
+                }
+                break;
               }
             }
           }
 
-          if (bbox.PointInBox(x, y)) {
+          if (bbox.GetValid() && bbox.PointInBox(x, y)) {
             ais_areanotice = true;
             break;
           }
