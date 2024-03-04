@@ -62,6 +62,7 @@ int g_iWpt_ScaMin = 0;
 int g_iWaypointRangeRingsNumber = 0;
 int g_iWaypointRangeRingsStepUnits = 0;
 int g_maxWPNameLength;
+int g_mbtilesMaxLayers = 2;
 int g_NMEAAPBPrecision = 3;
 int g_nCOMPortCheck = 32;
 int g_nDepthUnitDisplay = 0;

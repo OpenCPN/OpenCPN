@@ -30,7 +30,7 @@ public:
     nbZoom = (maxZoom - minZoom) + 1;
     zoomTable = new ZoomDescriptor[nbZoom];
 
-    // Compute cahe coverage for every zoom level in WMTS coordinates
+    // Compute cache coverage for every zoom level in WMTS coordinates
     for (int i = 0; i < nbZoom; i++) {
       int zoomFactor = minZoom + i;
       zoomTable[i].tile_x_min =
@@ -159,6 +159,8 @@ private:
       if (tile->prev == nullptr) {
         // Tile is at beginning of the list
         listStart = tile->next;
+      } else {
+        tile->prev->next = tile->next;
       }
 
       if (tile->next == nullptr) {
@@ -168,11 +170,9 @@ private:
         tile->next->prev = tile->prev;
       }
 
-      tile->prev->next = tile->next;
-      listSize--;
-
-      // Actually delete the tile
+      // Delete the tile
       delete tile;
+      listSize--;
     }
   }
 
