@@ -166,7 +166,6 @@ static std::string pluginsConfigDir() {
   if (!ocpn::exists(pluginDataDir)) {
     mkdir(pluginDataDir);
   }
-std::cout << "pluginsConfigDir: " << pluginDataDir << "\n";
   return pluginDataDir;
 }
 
