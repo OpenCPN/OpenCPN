@@ -4903,30 +4903,31 @@ void PluginPanel::OnPluginAction(wxCommandEvent& event) {
   return;
 }
 
+static void SetWindowFontStyle(wxWindow* window,  wxFontStyle style) {
+  auto font = window->GetFont();
+  font.SetStyle(style);
+  window->SetFont(font);
+}
+
+
 void PluginPanel::SetEnabled(bool enabled) {
   if (m_is_safe_panel) return;
   PluginLoader::getInstance()->SetEnabled(m_plugin.m_common_name, enabled);
   PluginLoader::getInstance()->UpdatePlugIns();
   NotifySetupOptionsPlugin(&m_plugin);
   if (!enabled && !m_bSelected) {
-    m_pName->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-    m_pVersion->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-    m_pDescription->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+    SetWindowFontStyle(m_pName, wxFONTSTYLE_ITALIC);
+    SetWindowFontStyle(m_pVersion, wxFONTSTYLE_ITALIC);
+    SetWindowFontStyle(m_pDescription, wxFONTSTYLE_ITALIC);
 #ifdef x__ANDROID__
     m_pName->Disable();
     m_pVersion->Disable();
     m_pDescription->Disable();
 #endif
   } else {
-    m_pName->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-    m_pVersion->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-    m_pDescription->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    SetWindowFontStyle(m_pName, wxFONTSTYLE_NORMAL);
+    SetWindowFontStyle(m_pVersion, wxFONTSTYLE_NORMAL);
+    SetWindowFontStyle(m_pDescription, wxFONTSTYLE_NORMAL);
 #ifdef x__ANDROID__
     m_pName->Enable();
     m_pVersion->Enable();
