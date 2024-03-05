@@ -459,6 +459,7 @@ bool AisDecoder::HandleN2K_129038( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
     pTargetData->b_positionOnceValid = true;
+    pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
     pTargetData->PositionReportTicks = now.GetTicks();
 
     pSelectAIS->DeleteSelectablePoint((void *)(long)mmsi, SELTYPE_AISTARGET);
@@ -539,6 +540,7 @@ bool AisDecoder::HandleN2K_129039( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->b_positionOnceValid = true;
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
+    pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
     pTargetData->PositionReportTicks = now.GetTicks();
     pTargetData->b_OwnShip =
         AISTransceiverInformation == tN2kAISTransceiverInformation::N2kaisown_information_not_broadcast;
@@ -635,6 +637,7 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     if (!N2kIsNA(data.Latitude)) pTargetData->Lat = data.Latitude;
     pTargetData->b_positionDoubtful = false;
     pTargetData->b_positionOnceValid = true;  // Got the position at least once
+    pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
     pTargetData->PositionReportTicks = now.GetTicks();
 
     //FIXME (dave) Populate more fiddly static data
@@ -890,6 +893,7 @@ bool AisDecoder::HandleN2K_129793( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     if (!N2kIsNA(Latitude)) pTargetData->Lat = Latitude;
     pTargetData->b_positionDoubtful = false;
     pTargetData->b_positionOnceValid = true;  // Got the position at least once
+    pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
     pTargetData->PositionReportTicks = now.GetTicks();
 
 
@@ -1188,6 +1192,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         now.MakeUTC();
         double lat = item["value"]["latitude"].GetDouble();
         double lon = item["value"]["longitude"].GetDouble();
+        pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
         pTargetData->Lat = lat;
@@ -2165,6 +2170,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
 
      if (pTargetData) {
       if (gpsg_mmsi) {
+        pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
         pTargetData->m_utc_hour = gpsg_utc_hour;
@@ -2213,6 +2219,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
           pTargetData->COG = arpa_cog;
           pTargetData->SOG = arpa_sog;
         }
+        pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
         pTargetData->b_positionOnceValid = true;
@@ -2242,6 +2249,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
             pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
           }
         }
+        pTargetData->LastPositionReportTicks = pTargetData->PositionReportTicks;
         pTargetData->PositionReportTicks = now.GetTicks();
         pTargetData->StaticReportTicks = now.GetTicks();
         pTargetData->Lat = aprs_lat;
@@ -2776,6 +2784,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->Lat = lat_tentative;
         ptd->b_positionDoubtful = false;
         ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
         ptd->PositionReportTicks = now.GetTicks();
       } else
         ptd->b_positionDoubtful = true;
@@ -2878,6 +2887,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->Lat = lat_tentative;
         ptd->b_positionDoubtful = false;
         ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
         ptd->PositionReportTicks = now.GetTicks();
       } else
         ptd->b_positionDoubtful = true;
@@ -2918,6 +2928,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->Lat = lat_tentative;
         ptd->b_positionDoubtful = false;
         ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
         ptd->PositionReportTicks = now.GetTicks();
       } else
         ptd->b_positionDoubtful = true;
@@ -3015,6 +3026,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 #ifdef AIS_DEBUG
           printf("Low latency position report.\r\n");
 #endif
+          ptd->LastPositionReportTicks = ptd->PositionReportTicks;
           ptd->PositionReportTicks = now.GetTicks();
         }
       } else
@@ -3117,6 +3129,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->Lat = lat_tentative;
         ptd->b_positionDoubtful = false;
         ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
         ptd->PositionReportTicks = now.GetTicks();
       } else
         ptd->b_positionDoubtful = true;
@@ -3152,6 +3165,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->Lat = lat_tentative;
         ptd->b_positionDoubtful = false;
         ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
         ptd->PositionReportTicks = now.GetTicks();
       } else
         ptd->b_positionDoubtful = true;
@@ -3234,6 +3248,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->Lat = lat_tentative;
         ptd->b_positionDoubtful = false;
         ptd->b_positionOnceValid = true;  // Got the position at least once
+        ptd->LastPositionReportTicks = ptd->PositionReportTicks;
         ptd->PositionReportTicks = now.GetTicks();
       } else
         ptd->b_positionDoubtful = true;
@@ -3454,6 +3469,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->b_positionDoubtful = false;
             ptd->b_positionOnceValid = true;
             b_posn_report = true;
+            ptd->LastPositionReportTicks = ptd->PositionReportTicks;
             ptd->PositionReportTicks = now.GetTicks();
             ptd->b_nameValid = true;
 
@@ -3606,6 +3622,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
             ptd->b_show_track = false;
             ptd->b_positionDoubtful = false;
             b_posn_report = true;
+            ptd->LastPositionReportTicks = ptd->PositionReportTicks;
             ptd->PositionReportTicks = now.GetTicks();
             ptd->b_nameValid = true;
 
@@ -3716,6 +3733,7 @@ void AisDecoder::UpdateAllTracks(void) {
   }
 }
 
+int gdup;
 void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
   if (!ptarget->b_positionOnceValid) return;
   // Reject for unbelievable jumps (corrupted/bad data)
@@ -3731,55 +3749,59 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
     }
   }
 
-  //    Add the newest point
-  AISTargetTrackPoint ptrackpoint;
-  ptrackpoint.m_lat = ptarget->Lat;
-  ptrackpoint.m_lon = ptarget->Lon;
-  ptrackpoint.m_time = wxDateTime::Now().GetTicks();
 
-  ptarget->m_ptrack.push_back(ptrackpoint);
+  // Avoid duplicate track points
+  // Do not add track point if time since last point is < 2 seconds.
+  if ((ptarget->PositionReportTicks - ptarget->LastPositionReportTicks) > 2) {
+    //    Create the newest point
+    AISTargetTrackPoint ptrackpoint;
+    ptrackpoint.m_lat = ptarget->Lat;
+    ptrackpoint.m_lon = ptarget->Lon;
+    ptrackpoint.m_time = wxDateTime::Now().GetTicks();
 
-  if (ptarget->b_PersistTrack || ptarget->b_mPropPersistTrack) {
-    Track *t;
-    if (0 == m_persistent_tracks.count(ptarget->MMSI)) {
-      t = new Track();
-      t->SetName(wxString::Format(_T("AIS %s (%u) %s %s"),
-                                  ptarget->GetFullName().c_str(), ptarget->MMSI,
-                                  wxDateTime::Now().FormatISODate().c_str(),
-                                  wxDateTime::Now().FormatISOTime().c_str()));
-      g_TrackList.push_back(t);
-      new_track.Notify(t);
-      m_persistent_tracks[ptarget->MMSI] = t;
+    ptarget->m_ptrack.push_back(ptrackpoint);
+
+    if (ptarget->b_PersistTrack || ptarget->b_mPropPersistTrack) {
+      Track *t;
+      if (0 == m_persistent_tracks.count(ptarget->MMSI)) {
+        t = new Track();
+        t->SetName(wxString::Format(
+            _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(),
+            ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(),
+            wxDateTime::Now().FormatISOTime().c_str()));
+        g_TrackList.push_back(t);
+        new_track.Notify(t);
+        m_persistent_tracks[ptarget->MMSI] = t;
+      } else {
+        t = m_persistent_tracks[ptarget->MMSI];
+      }
+      TrackPoint *tp = t->GetLastPoint();
+      vector2D point(ptrackpoint.m_lon, ptrackpoint.m_lat);
+      TrackPoint *tp1 =
+          t->AddNewPoint(point, wxDateTime(ptrackpoint.m_time).ToUTC());
+
+      if(tp)
+        pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
+                                           tp1->m_lon, tp, tp1, t);
+
+      // We do not want dependency on the GUI here, do we?
+      //        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+      //                pRouteManagerDialog->UpdateTrkListCtrl();
+
     } else {
-      t = m_persistent_tracks[ptarget->MMSI];
+
+        //    Walk the list, removing any track points that are older than the
+        //    stipulated time
+        time_t test_time =
+            wxDateTime::Now().GetTicks() - (time_t)(g_AISShowTracks_Mins * 60);
+
+        ptarget->m_ptrack.erase(
+            std::remove_if(ptarget->m_ptrack.begin(), ptarget->m_ptrack.end(),
+                           [=](const AISTargetTrackPoint &track) {
+                             return track.m_time < test_time;
+                           }),
+            ptarget->m_ptrack.end());
     }
-    TrackPoint *tp = t->GetLastPoint();
-    vector2D point(ptrackpoint.m_lon, ptrackpoint.m_lat);
-    TrackPoint *tp1 =
-        t->AddNewPoint(point, wxDateTime(ptrackpoint.m_time).ToUTC());
-    if (tp) {
-       pSelect->AddSelectableTrackSegment(tp->m_lat, tp->m_lon, tp1->m_lat,
-                                          tp1->m_lon, tp, tp1, t);
-    }
-
-    // We do not want dependency on the GUI here, do we?
-    //        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-    //                pRouteManagerDialog->UpdateTrkListCtrl();
-  }
-  else {
-
-    //    Walk the list, removing any track points that are older than the
-    //    stipulated time
-
-    time_t test_time =
-      wxDateTime::Now().GetTicks() - (time_t)( g_AISShowTracks_Mins * 60 );
-
-    ptarget->m_ptrack.erase(
-      std::remove_if(ptarget->m_ptrack.begin(), ptarget->m_ptrack.end(),
-                     [=](const AISTargetTrackPoint &track) {
-      return track.m_time < test_time;
-    }),
-      ptarget->m_ptrack.end());
   }
 }
 

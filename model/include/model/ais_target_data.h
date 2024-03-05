@@ -214,6 +214,7 @@ public:
   char Destination[DESTINATION_LEN];
 
   time_t PositionReportTicks;
+  time_t LastPositionReportTicks;
   time_t StaticReportTicks;
 
   int RecentPeriod;
