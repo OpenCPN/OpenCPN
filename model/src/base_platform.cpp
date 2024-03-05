@@ -292,6 +292,19 @@ wxString GetPluginDataDir(const char* plugin_name) {
 }
 
 wxString& AbstractPlatform::GetPrivateDataDir() {
+  if (!m_PrivateDataDir.IsEmpty() && g_configdir.empty())
+    return m_PrivateDataDir;
+  if (!g_configdir.empty()) {
+    wxString path  = g_configdir;
+    if (path.Last() == wxFileName::GetPathSeparator()) path.RemoveLast();
+    m_default_private_datadir = path;
+    return m_default_private_datadir;  // FIXME (leamas) normalize and trust
+                                       // g_configdir
+  }
+  return DefaultPrivateDataDir();
+}
+
+wxString& AbstractPlatform::DefaultPrivateDataDir() {
   if (m_PrivateDataDir.IsEmpty()) {
     //      Establish the prefix of the location of user specific data files
     wxStandardPaths& std_path = GetStdPaths();
@@ -319,7 +332,6 @@ wxString& AbstractPlatform::GetPrivateDataDir() {
 #endif
 
     if (g_bportable) m_PrivateDataDir = GetHomeDir();
-    if (!g_configdir.empty()) m_PrivateDataDir = g_configdir;
     if (m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
       m_PrivateDataDir.RemoveLast();
 
@@ -602,6 +614,10 @@ wxString& AbstractPlatform::GetConfigFileName() {
     appendOSDirSlash(&m_config_file_name);
     m_config_file_name += "opencpn.conf";
 #endif
+    if (!g_configdir.empty()) {
+      m_config_file_name = g_configdir;
+      m_config_file_name.Append("/opencpn.conf");
+    }
   }
   return m_config_file_name;
 }
