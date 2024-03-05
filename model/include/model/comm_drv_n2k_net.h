@@ -117,7 +117,6 @@ public:
   ConnectionParams GetParams() const { return m_params; }
 
   bool SetOutputSocketOptions(wxSocketBase* tsock);
-  bool SendSentenceNetwork(const wxString& payload);
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
   void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
   void OnTimerSocket();
@@ -181,6 +180,14 @@ private:
   bool ProcessActisense_RAW(std::vector<unsigned char> packet);
   bool ProcessActisense_NGT(std::vector<unsigned char> packet);
 
+
+  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg> &msg,
+                      std::shared_ptr<const NavAddr2000> dest_addr);
+
+  std::vector<std::vector<unsigned char>>
+      GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
+              std::shared_ptr<const NavAddr2000> dest_addr);
+
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
   wxIPV4address m_addr;
@@ -206,7 +213,7 @@ private:
   bool m_bok;
   int m_ib;
   bool m_bInMsg, m_bGotESC, m_bGotSOT;
-
+  
   circular_buffer *m_circle;
   unsigned char *rx_buffer;
   std::string m_sentence;

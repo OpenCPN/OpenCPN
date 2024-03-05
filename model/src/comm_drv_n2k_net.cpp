@@ -443,8 +443,9 @@ void CommDriverN2KNet::HandleResume() {
 
 bool CommDriverN2KNet::SendMessage(std::shared_ptr<const NavMsg> msg,
                                      std::shared_ptr<const NavAddr> addr) {
-  auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
-  return SendSentenceNetwork(msg_0183->payload.c_str());
+  auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+  auto dest_addr_n2k = std::static_pointer_cast<const NavAddr2000>(addr);
+  return SendN2KNetwork(msg_n2k, dest_addr_n2k);
 }
 
 std::vector<unsigned char> CommDriverN2KNet::PushCompleteMsg(const CanHeader header,
@@ -1032,6 +1033,99 @@ void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
   }
 }
 
+std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
+                                                                      std::shared_ptr<const NavAddr2000> dest_addr) {
+  std::vector<std::vector<unsigned char>> tx_vector;
+
+  // Branch based on detected network data format currently in use
+
+  switch(m_n2k_format) {
+    case N2KFormat_YD_RAW:
+      break;
+    case N2KFormat_Actisense_RAW_ASCII:
+      break;
+    case N2KFormat_Actisense_N2K_ASCII: {
+      // Source: Actisense own documentation `NMEA 2000 ASCII Output format.docx`
+      //
+      // Ahhmmss.ddd <SS><DD><P> <PPPPP> b0b1b2b3b4b5b6b7.....bn<CR><LF>
+      // A = message is N2K or J1939 message
+      // 173321.107 - time 17:33:21.107
+      // <SS> - source address
+      // <DD> - destination address
+      // <P> - priority
+      // <PPPPP> - PGN number
+      // b0b1b2b3b4b5b6b7.....bn - data payload in hex. NB: ISO TP payload could be up to 1786 bytes
+      //
+      // Example: `A173321.107 23FF7 1F513 012F3070002F30709F\n`
+      //                      1     2     3                  4
+
+      std::vector<unsigned char> ovec;
+
+      // Create the time field
+      wxDateTime now = wxDateTime::Now();
+      wxString stime = now.Format("%H%M%S");
+      stime += ".000 ";
+      std::string sstime = stime.ToStdString();
+      for (unsigned char s : sstime) ovec.push_back(s);
+
+      // src/dest/prio field
+      wxString sdp;
+      sdp.Printf( "%02X%02X%01X ",
+               3,       // source
+               (unsigned char)dest_addr->address,
+               (unsigned char)msg->priority);
+      std::string ssdp = sdp.ToStdString();
+      for (unsigned char s : ssdp) ovec.push_back(s);
+
+      //  PGN field
+      wxString spgn;
+      spgn.Printf("%X ", msg->PGN.pgn);
+      std::string sspgn = spgn.ToStdString();
+      for (unsigned char s : sspgn) ovec.push_back(s);
+
+      // Data payload
+      std::string sspl;
+      char tv[3];
+      for (unsigned char d : msg->payload){
+        snprintf(tv, 3, "%02X", d);
+        sspl += tv;
+      }
+      for (unsigned char s : sspl) ovec.push_back(s);
+
+      // term
+      ovec.push_back('\n');
+
+      //form the result
+      tx_vector.push_back(ovec);
+
+      int yyp = 4;
+
+      break;
+    }
+    case N2KFormat_Actisense_N2K:
+      break;
+    case N2KFormat_Actisense_RAW:
+      break;
+    case N2KFormat_Actisense_NGT:
+      break;
+    default:
+      break;
+  }
+
+
+  return tx_vector;
+}
+
+bool SendN2KMessage(std::shared_ptr<const NavMsg> msg,
+                    std::shared_ptr<const NavAddr2000> addr);
+
+bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg> &msg,
+                                      std::shared_ptr<const NavAddr2000> addr) {
+  std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
+  return true;
+};
+
+#if 0
 bool CommDriverN2KNet::SendSentenceNetwork(const wxString& payload) {
   if (m_txenter)
     return false;  // do not allow recursion, could happen with non-blocking
@@ -1080,6 +1174,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(const wxString& payload) {
   m_txenter--;
   return ret;
 }
+#endif
 
 void CommDriverN2KNet::Close() {
   wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
