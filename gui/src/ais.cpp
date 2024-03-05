@@ -361,12 +361,17 @@ void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
                 GetCanvasPointPix(vp, cp, lat1, lon1, &target_point);
                 points.push_back(target_point);
 
-                for (int i = 0; i <= 6; ++i) {
-                  ll_gc_ll(lat1, lon1, sa->left_bound_deg + i * (sa->right_bound_deg - sa->left_bound_deg) / 6 , sa->radius_m / 1852.0,
+                for (int i = 0; i < 18; ++i) {
+                  ll_gc_ll(lat1, lon1, sa->left_bound_deg + i * (sa->right_bound_deg - sa->left_bound_deg) / 18 , sa->radius_m / 1852.0,
                          &lat, &lon);
                   GetCanvasPointPix(vp, cp, lat, lon, &target_point);
                   points.push_back(target_point);
                 }
+                // Last angle explicitly to avoid any rounding errors
+                ll_gc_ll(lat1, lon1, sa->right_bound_deg , sa->radius_m / 1852.0,
+                         &lat, &lon);
+                GetCanvasPointPix(vp, cp, lat, lon, &target_point);
+                points.push_back(target_point);
 
                 draw_polygon = true;
                 break;
