@@ -41,6 +41,20 @@ static const int kEntryMaxAgeSecs = 100;
 
 typedef struct can_frame CanFrame;
 
+bool IsFastMessagePGN(unsigned pgn) {
+  static const std::vector<unsigned> haystack = {
+      // All known multiframe fast messages
+      65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
+      127496u, 127506u, 128275u, 129029u, 129038u, 129039u, 129040u, 129041u,
+      129284u, 129285u, 129540u, 129793u, 129794u, 129795u, 129797u, 129798u,
+      129801u, 129802u, 129808u, 129809u, 129810u, 130065u, 130074u, 130323u,
+      130577u, 130820u, 130822u, 130824u};
+
+  unsigned needle = static_cast<unsigned>(pgn);
+  auto found = std::find_if(haystack.begin(), haystack.end(),
+                            [needle](unsigned i) { return i == needle; });
+  return found != haystack.end();
+}
 
 unsigned long BuildCanID(int priority, int source, int destination, int pgn) {
   // build CanID
@@ -73,6 +87,8 @@ CanHeader::CanHeader(const CanFrame frame) {
 
 
 bool CanHeader::IsFastMessage() const {
+  return IsFastMessagePGN(static_cast<unsigned>(pgn));
+#if 0
   static const std::vector<unsigned> haystack = {
       // All known multiframe fast messages
       65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
@@ -85,6 +101,7 @@ bool CanHeader::IsFastMessage() const {
   auto found = std::find_if(haystack.begin(), haystack.end(),
                             [needle](unsigned i) { return i == needle; });
   return found != haystack.end();
+#endif
 }
 
 //  FastMessage implementation

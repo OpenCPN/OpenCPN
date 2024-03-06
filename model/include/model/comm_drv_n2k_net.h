@@ -76,6 +76,12 @@ typedef enum
   N2KFormat_Actisense_NGT
 } N2K_Format;
 
+typedef enum
+{
+  TX_FORMAT_YDEN = 0,
+  TX_FORMAT_ACTISENSE
+} GW_TX_FORMAT;
+
 class CommDriverN2KNetEvent;  // Internal
 class MrqContainer;
 class FastMessageMap;
@@ -187,6 +193,9 @@ private:
   std::vector<std::vector<unsigned char>>
       GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
               std::shared_ptr<const NavAddr2000> dest_addr);
+  bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
+  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char> &payload);
+  bool PrepareForTX();
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -213,13 +222,15 @@ private:
   bool m_bok;
   int m_ib;
   bool m_bInMsg, m_bGotESC, m_bGotSOT;
-  
+
   circular_buffer *m_circle;
   unsigned char *rx_buffer;
   std::string m_sentence;
 
   FastMessageMap *fast_messages;
   N2K_Format m_n2k_format;
+  uint8_t m_order;
+  char m_TX_flag;
 
   ObsListener resume_listener;
 
@@ -227,3 +238,4 @@ private:
 };
 
 #endif  // guard
+
