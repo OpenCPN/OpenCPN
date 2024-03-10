@@ -316,7 +316,7 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
       break;
   }
 
-  int font_size = wxMax(8, dFont->GetPointSize());
+  int font_size = wxMax(8 * g_current_monitor_dip_px_ratio, dFont->GetPointSize());
   font_size /= OCPN_GetWinDIPScaleFactor();
 
   m_plabelFont = FontMgr::Get().FindOrCreateFont(

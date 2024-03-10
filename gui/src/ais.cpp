@@ -425,7 +425,7 @@ static void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
   dc.SetPen(pen_save);
 }
 
-static void AtoN_Diamond(ocpnDC &dc, int x, int y, int radius,
+static void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius,
                          AisTargetData *td) {
   //    Constants?
   wxPen pen_save = dc.GetPen();
@@ -443,9 +443,9 @@ static void AtoN_Diamond(ocpnDC &dc, int x, int y, int radius,
   // Set the Pen for what is needed
   if ((td->NavStatus == ATON_VIRTUAL_OFFPOSITION) ||
       (td->NavStatus == ATON_REAL_OFFPOSITION))
-    aton_DrawPen = wxPen(GetGlobalColor(_T ( "URED" )), 2);
+    aton_DrawPen = wxPen(GetGlobalColor(_T ( "URED" )), pen.GetWidth());
   else
-    aton_DrawPen = wxPen(GetGlobalColor(_T ( "UBLCK" )), 2);
+    aton_DrawPen = wxPen(GetGlobalColor(_T ( "UBLCK" )), pen.GetWidth());
 
   bool b_virt = (td->NavStatus == ATON_VIRTUAL) |
                 (td->NavStatus == ATON_VIRTUAL_ONPOSITION) |
@@ -470,7 +470,7 @@ static void AtoN_Diamond(ocpnDC &dc, int x, int y, int radius,
   dc.DrawLines(5, diamond, x, y);
 
   aton_DrawPen = wxPen(GetGlobalColor(_T ( "UBLCK" )),
-                       1);  // Change drawing pen to Solid and width 1
+                       pen.GetWidth());  // Change drawing pen to Solid and width 1
   aton_WhiteBorderPen =
       wxPen(GetGlobalColor(_T ( "CHWHT" )), aton_DrawPen.GetWidth() + 2);
 
@@ -696,7 +696,7 @@ float AIS_icon_diameter;
 wxFont *AIS_NameFont;
 
 static void AISSetMetrics() {
-  AIS_scale_factor = 1.0;
+  AIS_scale_factor = g_current_monitor_dip_px_ratio;
   // Adapt for possible scaled display (Win)
   double DPIscale = 1.0;
   DPIscale = g_Platform->GetDisplayDIPMult(gFrame);
@@ -745,7 +745,7 @@ static void AISSetMetrics() {
   AIS_width_cogpredictor_base = 3 * AIS_nominal_line_width_pix;
   AIS_width_cogpredictor_line = 1.3 * AIS_nominal_line_width_pix;
   AIS_width_target_outline = 1.4 * AIS_nominal_line_width_pix;
-  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor;
+  AIS_icon_diameter = AIS_intercept_bar_circle_diameter * AIS_user_scale_factor * AIS_scale_factor;
 
   wxFont *font = FontMgr::Get().GetFont(_("AIS Target Name"), 12);
   double scaler = DPIscale;
@@ -1315,15 +1315,15 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
         TargetPoint.x + met_radius / 2, TargetPoint.y - met_radius / 2);
 
   } else if (td->Class == AIS_ATON) {  // Aid to Navigation
-    AtoN_Diamond(dc, TargetPoint.x, TargetPoint.y, 2.0 * AIS_icon_diameter, td);
+    AtoN_Diamond(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x, TargetPoint.y, AIS_icon_diameter * 1.5, td);
   } else if (td->Class == AIS_BASE) {  // Base Station
-    Base_Square(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 8);
+    Base_Square(dc, wxPen(UBLCK, AIS_width_target_outline), TargetPoint.x, TargetPoint.y, AIS_icon_diameter);
   } else if (td->Class == AIS_SART) {  // SART Target
     if (td->NavStatus == 14)           // active
-      SART_Render(dc, wxPen(URED, 2), TargetPoint.x, TargetPoint.y, 8);
+      SART_Render(dc, wxPen(URED, AIS_width_target_outline), TargetPoint.x, TargetPoint.y, AIS_icon_diameter);
     else
-      SART_Render(dc, wxPen(GetGlobalColor(_T ( "UGREN" )), 2), TargetPoint.x,
-                  TargetPoint.y, 8);
+      SART_Render(dc, wxPen(GetGlobalColor(_T ( "UGREN" )), AIS_width_target_outline), TargetPoint.x,
+                  TargetPoint.y, AIS_icon_diameter);
 
   } else if (td->b_SarAircraftPosnReport) {
     int airtype = (td->MMSI % 1000) / 100;  // xxxyyy5zz >> helicopter
