@@ -208,7 +208,6 @@ extern int g_ChartScaleFactor;
 extern int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
-extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 
 extern bool g_bShowTide;
@@ -633,6 +632,13 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
     : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName)
       {
   g_current_monitor = wxDisplay::GetFromWindow(this);
+#ifdef __WXOSX__
+  // On retina displays there is a difference between the physical size of the OpenGL canvas and the DIP
+  // This is not observed anywhere else so far, so g_current_monitor_dip_px_ratio cna be kept 1.0 everywhere else
+  if (g_bopengl) {
+    g_current_monitor_dip_px_ratio = g_monitor_info[g_current_monitor].width_px / g_monitor_info[g_current_monitor].width;
+  }
+#endif
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
 
@@ -1876,6 +1882,13 @@ void MyFrame::OnMove(wxMoveEvent &event) {
   auto idx = wxDisplay::GetFromWindow(this);
   if (idx != wxNOT_FOUND && g_current_monitor != static_cast<size_t>(idx) && static_cast<size_t>(idx) < g_monitor_info.size()) {
     g_current_monitor = idx;
+#ifdef __WXOSX__
+    // On retina displays there is a difference between the physical size of the OpenGL canvas and the DIP
+    // This is not observed anywhere else so far, so g_current_monitor_dip_px_ratio cna be kept 1.0 everywhere else
+    if (g_bopengl) {
+      g_current_monitor_dip_px_ratio = g_monitor_info[idx].width_px / g_monitor_info[idx].width;
+    }
+#endif
     DEBUG_LOG << "Moved to " << idx
 #if wxCHECK_VERSION(3, 1, 6)
     << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY()

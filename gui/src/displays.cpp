@@ -46,6 +46,7 @@
 
 size_t g_num_monitors = 0;
 size_t g_current_monitor = 0;
+double g_current_monitor_dip_px_ratio = 1.0;
 std::vector<OCPN_MonitorInfo> g_monitor_info;
 
 #if _WIN32

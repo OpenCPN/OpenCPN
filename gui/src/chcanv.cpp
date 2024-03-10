@@ -7656,7 +7656,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
     singleClickEventIsValid = false;
 
     double zlat, zlon;
-    GetCanvasPixPoint(x, y, zlat, zlon);
+    GetCanvasPixPoint(x * g_current_monitor_dip_px_ratio, y * g_current_monitor_dip_px_ratio, zlat, zlon);
 
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
     if (m_bShowAIS) {

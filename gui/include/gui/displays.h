@@ -51,7 +51,11 @@ struct OCPN_MonitorInfo {
 
 /// @brief Number of monitors connected to the system
 extern size_t g_num_monitors;
+/// @brief Current monitor displaying the main application frame
 extern size_t g_current_monitor;
+/// @brief ratio to convert between DIP and physical pixels
+/// This is important while using OpenGL canvas on macOS with Retina displays, where this ratio is 2.0
+extern double g_current_monitor_dip_px_ratio;
 /// @brief Information about the monitors connected to the system  
 extern std::vector<OCPN_MonitorInfo> g_monitor_info;
 
