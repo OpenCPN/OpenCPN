@@ -107,7 +107,6 @@ private:
 };
 
 //      WebSocket implementation
-static wxEvtHandler* s_wsSKConsumer;
 
 class WebSocketThread : public wxThread {
 public:
@@ -116,8 +115,8 @@ public:
   virtual void* Entry();
 
 private:
-  static void HandleMessage(const std::string& message);
-
+  void HandleMessage(const std::string& message);
+  wxEvtHandler* s_wsSKConsumer;
   wxIPV4address m_address;
   wxEvtHandler* m_consumer;
   CommDriverSignalKNet* m_parentStream;
