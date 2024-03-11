@@ -1390,7 +1390,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->met_data.dew_point = KelvinToC(item["value"].GetDouble());
     } else if (update_path == "environment.outside.pressure" &&
                item["value"].IsNumber()) {
-        pTargetData->met_data.airpress = item["value"].GetInt() / 100;
+        pTargetData->met_data.airpress = static_cast<int>(item["value"].GetDouble() / 100);
     } else if (update_path == "environment.water.level" &&
                item["value"].IsNumber()) {
         pTargetData->met_data.water_lev_dev = item["value"].GetDouble();
@@ -1402,7 +1402,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->met_data.curr_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
     } else if (update_path == "environment.water.levelTendencyValue" &&
                item["value"].IsNumber()) {
-          pTargetData->met_data.water_lev_trend = item["value"].GetInt();
+          pTargetData->met_data.water_lev_trend = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.water.levelTendency") {
       // Don't use this text we parse it ourself.
     } else if (update_path == "environment.water.waves.significantHeight" &&
@@ -1410,7 +1410,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->met_data.wave_height = item["value"].GetDouble();
     } else if (update_path == "environment.water.waves.period" &&
                item["value"].IsNumber()) {
-        pTargetData->met_data.wave_period = item["value"].GetInt();
+        pTargetData->met_data.wave_period = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.water.waves.directionTrue" &&
                item["value"].IsNumber()) {
         pTargetData->met_data.wave_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
@@ -1419,7 +1419,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         pTargetData->met_data.swell_height = item["value"].GetDouble();
     } else if (update_path == "environment.water.swell.period" &&
                item["value"].IsNumber()) {
-        pTargetData->met_data.swell_per = item["value"].GetInt();
+        pTargetData->met_data.swell_per = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.water.swell.directionTrue" &&
                item["value"].IsNumber()) {
         pTargetData->met_data.swell_dir = GEODESIC_RAD2DEG(item["value"].GetDouble());
@@ -1433,20 +1433,20 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         // Don't use. We parse it ourself
     } else if (update_path == "environment.water.iceValue" &&
                item["value"].IsNumber()) {
-          pTargetData->met_data.ice = item["value"].GetInt();
+          pTargetData->met_data.ice = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.water.seaStateValue" &&
                item["value"].IsNumber()) {
-          pTargetData->met_data.seastate = item["value"].GetInt();
+          pTargetData->met_data.seastate = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.water.seaState") {
         //This is the parsed (air!) Bf-scale. Don't use
     } else if (update_path == "environment.outside.precipitation") {
         // Don't use. We parse it ourself
     } else if (update_path == "environment.outside.precipitationValue" &&
                item["value"].IsNumber()) {
-          pTargetData->met_data.precipitation = item["value"].GetInt();
+          pTargetData->met_data.precipitation = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.outside.pressureTendencyValue" &&
                item["value"].IsNumber()) {
-        pTargetData->met_data.airpress_tend = item["value"].GetInt();
+        pTargetData->met_data.airpress_tend = static_cast<int>(item["value"].GetDouble());
     } else if (update_path == "environment.outside.pressureTendency") {
         // Parsed value, don't use, we do it ourself
     } else if (update_path == "environment.outside.horizontalVisibility" &&
