@@ -4164,6 +4164,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
 void PluginListPanel::AddPlugin(const std::string& name) {
   auto panel = new PluginPanel(this, name);
+  DimeControl(panel);
   panel->SetSelected(false);
   GetSizer()->Add(panel, 0, wxEXPAND);
   m_PluginItems.Add(panel);
