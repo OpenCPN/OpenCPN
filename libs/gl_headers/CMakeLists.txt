@@ -12,7 +12,7 @@ endif ()
 add_library(_GL_HEADERS INTERFACE)
 add_library(ocpn::gl-headers ALIAS _GL_HEADERS)
 
-if (QT_ANDROID OR ANDROID)
+if (ANDROID OR ANDROID)
   target_include_directories(_GL_HEADERS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/android)
 elseif (WIN32)
   target_include_directories(_GL_HEADERS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/windows)

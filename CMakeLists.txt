@@ -46,7 +46,7 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android")
   message(STATUS "Building for wxQt-Android")
   set(CMAKE_TOOLCHAIN_FILE buildandroid/build_android.cmake)
-  set(QT_ANDROID "ON")
+  set(ANDROID "ON")
   if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
     add_definitions("-DANDROID_ARM64")
   else ()
@@ -56,7 +56,7 @@ endif ()
 
 if (APPLE)
   set(PACKAGE_NAME OpenCPN)
-elseif (QT_ANDROID)
+elseif (ANDROID)
   set(PACKAGE_NAME gorp)
 else ()
   set(PACKAGE_NAME opencpn)
@@ -69,6 +69,7 @@ if (NOT DEFINED OCPN_VERBOSE OR OCPN_VERBOSE)
 endif ()
 
 message(STATUS "cmake version: ${CMAKE_VERSION}")
+message(STATUS "cmake_system_processor: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # Locations where cmake looks for cmake modules.
 set(
@@ -136,7 +137,7 @@ else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
 
-if (WIN32 OR APPLE OR QT_ANDROID)
+if (WIN32 OR APPLE OR ANDROID)
   set(PA_DEFAULT "OFF")
 else ()
   set(PA_DEFAULT "ON")
@@ -151,7 +152,7 @@ cmake_dependent_option(
 
 option(OCPN_USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 
-if (QT_ANDROID)
+if (ANDROID)
   set(OCPN_BUILD_TEST OFF)
 else ()
   option(OCPN_BUILD_TEST "Enable test subproject build" ON)
@@ -262,11 +263,11 @@ set(OCPN_SOUND_CMD "" CACHE STRING
     "Hardcoded value for CLI command used in SystemCmdSound backend"
 )
 
-if (UNIX AND NOT APPLE AND NOT QT_ANDROID)
+if (UNIX AND NOT APPLE AND NOT ANDROID)
   set(LINUX "1")
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   set(OCPN_NEW_SERIAL OFF)
   set(OCPN_USE_NEWSERIAL OFF)
   set(OCPN_USE_CURL ON)
@@ -426,7 +427,7 @@ if (MSVC)
   set(CMAKE_EXE_LINKER_FLAGS "/DEBUG /Release ${CMAKE_EXE_LINKER_FLAGS}")
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   set(CMAKE_BUILD_TYPE Debug)
   add_definitions(-D__WXQT__)
   add_definitions(-D__OCPN__ANDROID__)
@@ -523,7 +524,7 @@ endif ()
 
 # set a build flag for arm architecture, to catch any rPI runtime changes
 # required
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID))
+if (ARCH MATCHES "arm*" AND (NOT ANDROID))
   add_definitions(-DocpnARM)
   if (ARCH STREQUAL "armhf")
     add_definitions(-DocpnARMHF)
@@ -563,7 +564,7 @@ if (OPENGLES_FOUND)
   set(wxWidgets_FIND_COMPONENTS ${wxWidgets_FIND_COMPONENTS} gl)
 endif ()
 
-if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
+if ((NOT OPENGLES_FOUND) AND (NOT ANDROID))
   if (OCPN_USE_GL)
     find_package(OpenGL)
   else (OCPN_USE_GL)
@@ -610,7 +611,7 @@ elseif (OPENGL_FOUND AND NOT APPLE)
 endif ()
 
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
   # Find wxWidgets here, and the setting get inherited by all plugins. These
   # options can be used to set the linux widgets build type
   set(wxWidgets_USE_DEBUG OFF)
@@ -682,7 +683,7 @@ if (NOT QT_ANDROID)
   set(wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES})
 
   message(STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
-endif (NOT QT_ANDROID)
+endif (NOT ANDROID)
 
 # Handle #1500: Force NDEBUG on gtk3 for wxwidgets < 3.2 (all builds)
 if (GTK3_FOUND)
@@ -1000,7 +1001,7 @@ if (LINUX AND OCPN_USE_CRASHREPORT)
   list(APPEND GUI_SRC ${GUI_SRC_DIR}/crashprint.cpp)
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   list(APPEND GUI_HDRS android/androidUTIL.h)
   list(APPEND GUI_SRC ${CMAKE_SOURCE_DIR}/android/androidUTIL.cpp)
 endif ()
@@ -1012,14 +1013,14 @@ if (APPLE)
   add_executable(${PACKAGE_NAME} MACOSX_BUNDLE ${HDRS} ${SRCS})
 elseif (WIN32)
   add_executable(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
-elseif (QT_ANDROID)
+elseif (ANDROID)
   set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
   add_library(${PACKAGE_NAME} SHARED ${HDRS} ${SRCS})
 else ()
   add_executable(${PACKAGE_NAME} ${HDRS} ${SRCS})
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   include(libs/AndroidLibs.cmake)
 endif ()
 
@@ -1038,7 +1039,7 @@ elseif (APPLE)
   target_include_directories(
     _opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildosx/include
   )
-elseif (QT_ANDROID)
+elseif (ANDROID)
   target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/android)
 endif ()
 add_library(ocpn::opencpn ALIAS _opencpn)
@@ -1059,7 +1060,7 @@ target_include_directories(
           ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/s57/include
 )
 
-if (QT_ANDROID)
+if (ANDROID)
   target_include_directories(
     ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
   )
@@ -1160,7 +1161,7 @@ if (DEFINED _wx_selected_config)
     # message(STATUS "Building for wxQt-Android")
     # message(STATUS "Qt_Base: " # ${Qt_Base})
     # message(STATUS "wxQt_Base/Build:  ${wxQt_Base}/${wxQt_Build}")
-    # set(QT_ANDROID "ON")
+    # set(ANDROID "ON")
   endif ()
 endif ()
 
@@ -1170,7 +1171,7 @@ else ()
   set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
 endif ()
 
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
+if (ARCH MATCHES "arm*" AND (NOT ANDROID) AND OCPN_USE_GLES_SHIM)
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1184,7 +1185,7 @@ if (OPENGLES_FOUND)
   list(APPEND wxwidgets_FIND_COMPONENTS gl)
 endif ()
 
-if ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
+if ((NOT OPENGLES_FOUND) AND (NOT ANDROID))
   if (OCPN_USE_GL)
     find_package(OpenGL)
   else ()
@@ -1218,7 +1219,7 @@ elseif (APPLE)
   target_include_directories(
     ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildosx/include
   )
-elseif (QT_ANDROID)
+elseif (ANDROID)
   target_include_directories(
     ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
   )
@@ -1248,7 +1249,7 @@ add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
 
 if (UNIX)
-  if (NOT QT_ANDROID) # this should be detected by the grib plugin
+  if (NOT ANDROID) # this should be detected by the grib plugin
     find_package(BZip2 REQUIRED)
     target_include_directories(${PACKAGE_NAME} PRIVATE ${BZIP2_INCLUDE_DIR})
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${BZIP2_LIBRARIES})
@@ -1308,7 +1309,7 @@ if (OCPN_USE_CURL)
     set(OCPN_USE_EXTERN_CURL ON)
   endif ()
 
-  if (NOT QT_ANDROID)
+  if (NOT ANDROID)
     if (OCPN_USE_EXTERN_CURL)
       find_package(CURL REQUIRED)
       message(STATUS "ocpn: using external curl libraries...")
@@ -1358,7 +1359,7 @@ if (OCPN_USE_CURL)
   endif ()
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   target_include_directories(
     ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libexpat/include
   )
@@ -1374,7 +1375,7 @@ if (OCPN_USE_SVG)
   else ()
     message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
     set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
-    if (NOT QT_ANDROID)
+    if (NOT ANDROID)
       include(OcpnFindCairo)
       include(OcpnFindExpat)
       if (CMAKE_HOST_WIN32)
@@ -1433,7 +1434,7 @@ endif ()
 
 # Search for opengles, short of running a program to test the speed of
 # acceleration, I simply use gles on "native linux" arm systems
-if (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) AND OCPN_USE_GLES_SHIM)
+if (ARCH MATCHES "arm*" AND (NOT ANDROID) AND OCPN_USE_GLES_SHIM)
   find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h)
   if (OPENGLESv1_INCLUDE_DIR)
     message(STATUS "Found OpenGLESv1")
@@ -1462,10 +1463,10 @@ if (OPENGL_FOUND)
   )
 endif ()
 
-# Building for QT_ANDROID involves a cross-building environment, So the include
+# Building for ANDROID involves a cross-building environment, So the include
 # directories, flags, etc must be stated explicitly without trying to locate
 # them on the host build system.
-if (QT_ANDROID)
+if (ANDROID)
   add_definitions(-DocpnUSE_GLES)
   add_definitions(-DocpnUSE_GL)
 endif ()
@@ -1558,7 +1559,7 @@ configure_file(
 )
 include_directories(BEFORE "${CMAKE_BINARY_DIR}/include")
 
-if (NOT APPLE AND NOT QT_ANDROID)
+if (NOT APPLE AND NOT ANDROID)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
 endif ()
 
@@ -1578,7 +1579,7 @@ if (UNIX)
   target_link_libraries(
     ${PACKAGE_NAME} PRIVATE ${OPENGL_LIBRARIES} ${GETTEXT_LIBRARY} SQLITE_CPP
   )
-  if (NOT APPLE AND NOT QT_ANDROID AND NOT WIN32 AND NOT X11_FOUND)
+  if (NOT APPLE AND NOT ANDROID AND NOT WIN32 AND NOT X11_FOUND)
     message(STATUS "Did not find x11 libraries")
     message(
       STATUS "support for transparent toolbar in opengl mode not detected"
@@ -1875,7 +1876,7 @@ if (APPLE)
   )
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(${PACKAGE_NAME} PRIVATE GLESv2 EGL z)
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENGL_LIBRARIES})
@@ -1892,7 +1893,7 @@ if (LIBLZMA_FOUND)
 endif ()
 
 # Add targets used elsewhere, notably by model
-if (QT_ANDROID)
+if (ANDROID)
   add_subdirectory(libs/android_jvm)
 endif ()
 
@@ -2161,7 +2162,7 @@ if (GETTEXT_MSGFMT_EXECUTABLE)
   gettext_build_mo(po/opencpn_en_GB.po en_GB)
 
   add_custom_target( i18n COMMENT "i18n: Done." DEPENDS ${_gmoFiles})
-  if (NOT QT_ANDROID)
+  if (NOT ANDROID)
     add_dependencies(${PACKAGE_NAME} i18n)
   endif ()
 endif ()
@@ -2731,7 +2732,7 @@ endif ()
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
   add_subdirectory(cli)
 endif ()
 
@@ -2754,7 +2755,7 @@ else ()
   add_custom_target(run-tests COMMAND cmake -E echo "No tests available")
 endif ()
 
-if (QT_ANDROID)
+if (ANDROID)
   target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::java-jvm)
   target_include_directories(
     ${PACKAGE_NAME}

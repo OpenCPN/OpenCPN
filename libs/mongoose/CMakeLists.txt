@@ -9,7 +9,7 @@ add_library(MONGOOSE STATIC ${SRC})
 add_library(ocpn::mongoose ALIAS MONGOOSE)
 
 if (NOT WIN32)
- if (QT_ANDROID)
+ if (ANDROID)
     target_include_directories( MONGOOSE PRIVATE
         ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include)
     target_link_libraries(MONGOOSE PRIVATE
@@ -17,7 +17,7 @@ if (NOT WIN32)
       ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
       )
     add_definitions(-DMG_ENABLE_OPENSSL)
-  else (QT_ANDROID)
+  else (ANDROID)
     if(APPLE AND OCPN_USE_DEPS_BUNDLE)
       set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
     endif()
@@ -42,7 +42,7 @@ if (NOT WIN32)
         )
       endif (APPLE)
     endif (OPENSSL_FOUND)
-  endif (QT_ANDROID)
+  endif (ANDROID)
 else (NOT WIN32)
   target_include_directories(
     MONGOOSE

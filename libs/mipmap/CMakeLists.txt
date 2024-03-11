@@ -5,7 +5,7 @@ if (TARGET ocpn::mipmap)
 endif ()
 
 if (ANDROID)
-  set(QT_ANDROID 1)
+  set(ANDROID 1)
 endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
@@ -15,7 +15,7 @@ include(CompilerSupport)
 
 set(SRC include/mipmap/mipmap.h src/mipmap.c)
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
     set(SRC_IPML
         src/mipmap_sse.c
         src/mipmap_sse2.c
@@ -23,7 +23,7 @@ if (NOT QT_ANDROID)
         src/mipmap_avx2.c
         src/mipmap_neon.c
     )
-endif (NOT QT_ANDROID)
+endif (NOT ANDROID)
 
 add_library(MIPMAP STATIC ${SRC} ${SRC_IPML})
 add_library(ocpn::mipmap ALIAS MIPMAP)
@@ -32,7 +32,7 @@ target_include_directories(MIPMAP
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/mipmap
 )
 
-if( NOT QT_ANDROID)
+if( NOT ANDROID)
   # always use optimizations for the texture compression which is much faster
   if (NOT MSVC)
       set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
@@ -76,8 +76,8 @@ if( NOT QT_ANDROID)
               src/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "/arch:AVX")
       endif ()
   endif (NOT MSVC)
-else (NOT QT_ANDROID)
+else (NOT ANDROID)
   set_source_files_properties(
       src/mipmap/mipmap_neon.c
       PROPERTIES COMPILE_FLAGS "-mfloat-abi=softfp -mfpu=neon")
-endif (NOT QT_ANDROID)
+endif (NOT ANDROID)

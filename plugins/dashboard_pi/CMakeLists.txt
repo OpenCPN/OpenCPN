@@ -59,8 +59,8 @@ ENDIF(MSVC)
 
 
 
-#  QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and wxWidgets_USE_FILE is not useful.
-IF(NOT QT_ANDROID)
+#  ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and wxWidgets_USE_FILE is not useful.
+IF(NOT ANDROID)
 IF(NOT DEFINED wxWidgets_USE_FILE)
   SET(wxWidgets_USE_LIBS base core net xml html adv)
   SET(BUILD_SHARED_LIBS TRUE)
@@ -68,7 +68,7 @@ IF(NOT DEFINED wxWidgets_USE_FILE)
 ENDIF(NOT DEFINED wxWidgets_USE_FILE)
 
   INCLUDE(${wxWidgets_USE_FILE})
-ENDIF(NOT QT_ANDROID)
+ENDIF(NOT ANDROID)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -205,7 +205,7 @@ IF (WIN32 AND NOT MSVC)
 ENDIF()
 
 # On Android, PlugIns need a specific linkage set....
-IF (QT_ANDROID )
+IF (ANDROID )
     ADD_DEFINITIONS("-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression")
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ${CMAKE_CURRENT_BINARY_DIR}/../../libgorp.so )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so )
@@ -213,9 +213,9 @@ IF (QT_ANDROID )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME}  ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so )
     SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
     SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
-ELSE (QT_ANDROID )
+ELSE (ANDROID )
     target_link_libraries( ${PACKAGE_NAME} ocpn::opencpn )
-ENDIF(QT_ANDROID)
+ENDIF(ANDROID)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )

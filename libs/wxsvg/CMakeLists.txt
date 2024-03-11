@@ -99,7 +99,7 @@ endif ()
 
    # CMake has trouble finding libgobject-2.0.so, as required for static wxsvg library.
    # We look for and add it explicitely
-if (NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
+if (NOT WIN32 AND NOT APPLE AND NOT ANDROID)
         include(FindPkgConfig)
         # Assume pkg-config is available.
         pkg_search_module(GOBJECT REQUIRED gobject-2.0)

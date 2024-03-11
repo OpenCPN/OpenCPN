@@ -161,7 +161,7 @@ endif()
 
 if(BUILD_SHARED_LIBS)
     # Building shared library
-    
+
     if(MSVC)
         # Workaround for some projects
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -171,7 +171,7 @@ if(BUILD_SHARED_LIBS)
         ${IXWEBSOCKET_SOURCES}
         ${IXWEBSOCKET_HEADERS}
     )
-    
+
     # Set library version
     set(version 11.3.2)
     set_target_properties(ixwebsocket PROPERTIES VERSION ${version})
@@ -206,7 +206,7 @@ if (USE_TLS)
     message(STATUS "TLS configured to use openssl")
 
 if (NOT WIN32)
- if (QT_ANDROID)
+ if (ANDROID)
     target_include_directories(ixwebsocket PRIVATE
         ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include)
     target_link_libraries(ixwebsocket PRIVATE
@@ -214,7 +214,7 @@ if (NOT WIN32)
       ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
       )
     add_definitions(-DMG_ENABLE_OPENSSL)
-  else (QT_ANDROID)
+  else (ANDROID)
     if(APPLE AND OCPN_USE_DEPS_BUNDLE)
       set(OPENSSL_ROOT_DIR ${OCPN_DEPS_BUNDLE_PATH})
     endif()
@@ -239,7 +239,7 @@ if (NOT WIN32)
         )
       endif (APPLE)
     endif (OPENSSL_FOUND)
-  endif (QT_ANDROID)
+  endif (ANDROID)
 else (NOT WIN32)
   target_include_directories(
     ixwebsocket
@@ -261,11 +261,11 @@ set(OPENSSL_FOUND TRUE)
     # This MBEDTLS_FOUND check is to help find a cmake manually configured MbedTLS
     if (NOT MBEDTLS_FOUND)
       find_package(MbedTLS REQUIRED)
-      
+
       if (MBEDTLS_VERSION_GREATER_THAN_3)
         target_compile_definitions(ixwebsocket PRIVATE IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3)
       endif()
-      
+
     endif()
     target_include_directories(ixwebsocket PUBLIC $<BUILD_INTERFACE:${MBEDTLS_INCLUDE_DIRS}>)
     target_link_libraries(ixwebsocket PRIVATE ${MBEDTLS_LIBRARIES})
@@ -275,7 +275,7 @@ set(OPENSSL_FOUND TRUE)
   endif()
 endif()
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
   option(USE_ZLIB "Enable zlib support" TRUE)
 else()
   option(USE_ZLIB "Enable zlib support" FALSE)
@@ -302,7 +302,9 @@ endif()
 if (UNIX AND NOT APPLE)
   set(THREADS_PREFER_PTHREAD_FLAG TRUE)
   find_package(Threads)
-  target_link_libraries(ixwebsocket PRIVATE Threads::Threads)
+  if (TARGET Threads::Threads)
+    target_link_libraries(ixwebsocket PRIVATE Threads::Threads)
+  endif ()
 endif()
 
 
@@ -337,7 +339,7 @@ if (IXWEBSOCKET_INSTALL)
 
   configure_file("${CMAKE_CURRENT_LIST_DIR}/ixwebsocket-config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/ixwebsocket-config.cmake" @ONLY)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ixwebsocket-config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/ixwebsocket")
-  
+
   set(prefix ${CMAKE_INSTALL_PREFIX})
   configure_file("${CMAKE_CURRENT_LIST_DIR}/ixwebsocket.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/ixwebsocket.pc" @ONLY)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ixwebsocket.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
@@ -354,7 +356,7 @@ if (USE_WS OR USE_TEST)
   FetchContent_Declare(spdlog
       GIT_REPOSITORY "https://github.com/gabime/spdlog"
       GIT_TAG "v1.8.0"
-      GIT_SHALLOW 1) 
+      GIT_SHALLOW 1)
 
   FetchContent_MakeAvailable(spdlog)
 
@@ -367,7 +369,7 @@ if (USE_WS OR USE_TEST)
   endif()
 endif()
 
-if (BUILD_DEMO) 
+if (BUILD_DEMO)
   add_executable(demo main.cpp)
-  target_link_libraries(demo ixwebsocket) 
+  target_link_libraries(demo ixwebsocket)
 endif()

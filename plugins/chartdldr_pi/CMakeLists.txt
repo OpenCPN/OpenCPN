@@ -53,10 +53,10 @@ set(SRC_CHARTDLDR
     src/pugixml.cpp
 )
 
-if (QT_ANDROID)
+if (ANDROID)
   set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.h)
   set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
-endif (QT_ANDROID)
+endif (ANDROID)
 
 set(SRC_UNARR
     src/unarr/common/conv.c
@@ -179,13 +179,13 @@ if (LibArchive_FOUND)
   add_definitions(-DDLDR_USE_LIBARCHIVE)
 endif (LibArchive_FOUND)
 
-if (QT_ANDROID)
+if (ANDROID)
   add_definitions(-D__STDC_LIMIT_MACROS)
   add_definitions(-D__STDC_CONSTANT_MACROS)
   add_definitions(
     "-Wno-inconsistent-missing-override -Wno-potentially-evaluated-expression"
   )
-endif (QT_ANDROID)
+endif (ANDROID)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   # FIXME: This is to broad, needs better handling after 5.0.0
@@ -222,11 +222,11 @@ endif (LibArchive_FOUND)
 
 target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
-if (NOT QT_ANDROID)
+if (NOT ANDROID)
   target_link_libraries(
     ${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES} ocpn::wxjson ocpn::opencpn
   )
-else (NOT QT_ANDROID)
+else (NOT ANDROID)
   target_link_libraries(
     ${PACKAGE_NAME}
     PRIVATE ocpn::wxjson
@@ -240,7 +240,7 @@ else (NOT QT_ANDROID)
 
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-soname,lib${PACKAGE_NAME}.so ")
   # SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-s")
-endif (NOT QT_ANDROID)
+endif (NOT ANDROID)
 
 if (APPLE)
   target_compile_options(

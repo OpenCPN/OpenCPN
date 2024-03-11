@@ -12,7 +12,7 @@ add_library(_archive_if INTERFACE)
 add_library(ocpn::libarchive ALIAS _archive_if)
 
 # On Android, use precompiled stuff and be done with it.
-if (QT_ANDROID)
+if (ANDROID)
   set(_libarchive_root  ${CMAKE_SOURCE_DIR}/buildandroid/libarchive)
   set(_libarchive_lib "${_libarchive_root}/${ARCH}/libarchive.a")
   target_include_directories(

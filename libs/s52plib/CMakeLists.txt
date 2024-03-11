@@ -39,7 +39,7 @@ target_include_directories(
   ${PROJECT_SOURCE_DIR}/model/include
   ${PROJECT_SOURCE_DIR}/include
 )
-if (QT_ANDROID)
+if (ANDROID)
   target_include_directories(S52PLIB PRIVATE ${CMAKE_SOURCE_DIR}/android)
 endif ()
 if (MSVC)
