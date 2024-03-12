@@ -4,7 +4,7 @@ set -x
 
 # Install the stuff needed for upload to the Cloudsmith repository
 # before messing w /usr/local
-pip3 install --user  -q cloudsmith-cli
+/usr/bin/python3 -m venv $HOME/cs-venv
 
 #
 # Build the OSX artifacts

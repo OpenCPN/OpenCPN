@@ -46,6 +46,9 @@ else
         $SUDO python3 -m pip  install wheel
         $SUDO python3 -m pip install cloudsmith-cli
         pyenv rehash
+    elif test -d $HOME/cs-venv; then
+       source $HOME/cs-venv/bin/activate
+       python -m pip install cloudsmith-cli
     else
         # Assuming builders have installed python3 + pip
         $SUDO python3 -m pip install -q cloudsmith-cli
