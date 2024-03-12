@@ -30,7 +30,7 @@ CAUTION: This is experimental code available from 5.9+. You have been warned.
 
 The requirement to have access to both the server and client GUI is cumbersome
 when working with a headless server. In these cases it might be possible to
-make headless pairing using ssh. Prequisites:
+make headless pairing using ssh. Prerequisites:
 
   * The client needs to have access to the server without using a password,
     usually  configured using `ssh-copy-id`. Instructions for this is out
