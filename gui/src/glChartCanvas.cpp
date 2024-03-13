@@ -96,6 +96,7 @@
 #include "thumbwin.h"
 #include "toolbar.h"
 #include "track_gui.h"
+#include "MUIBar.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -3834,7 +3835,6 @@ void glChartCanvas::Render() {
   configureShaders(m_pParentCanvas->VPoint);
 #endif
 
-
 #ifdef USE_ANDROID_GLES2
 
   OCPNStopWatch sw;
@@ -3907,31 +3907,31 @@ void glChartCanvas::Render() {
 
   // Avoid some harmonic difficulties with odd-size glCanvas
   bool b_odd = false;
-  if (gl_height & 1){
+  if (gl_height & 1) {
     gl_height -= 1;
     ViewPort *vp = m_pParentCanvas->GetpVP();
     vp->pix_height = gl_height;
     b_odd = true;
   }
 
-  if (gl_width & 1){
+  if (gl_width & 1) {
     gl_width -= 1;
     ViewPort *vp = m_pParentCanvas->GetpVP();
     vp->pix_width = gl_width;
     b_odd = true;
   }
 
-   //  Set the shader viewport transform matrix
-   //  Using the adjusted dimensions
-  if(b_odd){
+  //  Set the shader viewport transform matrix
+  //  Using the adjusted dimensions
+  if (b_odd) {
     ViewPort *vp = m_pParentCanvas->GetpVP();
     mat4x4 m;
     mat4x4_identity(m);
     mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
-                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
-                      1.0);
-    mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform, -vp->pix_width / 2,
-                             -vp->pix_height / 2, 0);
+                       2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
+                       1.0);
+    mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
+                              -vp->pix_width / 2, -vp->pix_height / 2, 0);
   }
 
   ViewPort VPoint = m_pParentCanvas->VPoint;
@@ -3939,7 +3939,7 @@ void glChartCanvas::Render() {
   OCPNRegion screen_region(wxRect(0, 0, gl_width, gl_height));
   glViewport(0, 0, (GLint)gl_width, (GLint)gl_height);
 
-//#ifndef USE_ANDROID_GLES2
+// #ifndef USE_ANDROID_GLES2
 #if !defined(USE_ANDROID_GLES2)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -3973,7 +3973,6 @@ void glChartCanvas::Render() {
 
   //  If we plan to post process the display, don't use accelerated panning
   double scale_factor = VPoint.ref_scale / VPoint.chart_scale;
-
 
   bool bpost_hilite = !m_pParentCanvas->m_pQuilt->GetHiliteRegion().Empty();
   bool useFBO = false;
@@ -4021,7 +4020,6 @@ void glChartCanvas::Render() {
 #endif
 
     if (b_newview) {
-
       float dx = 0;
       float dy = 0;
 
@@ -4055,25 +4053,23 @@ void glChartCanvas::Render() {
         if ((fabs(deltax - dx) > 1e-2) || (fabs(deltay - dy) > 1e-2))
           b_whole_pixel = false;
 
-        accelerated_pan =
-            b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y
-            && (abs(dx) > 0 || (abs(dy) > 0));
+        accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x &&
+                          abs(dy) < m_cache_tex_y &&
+                          (abs(dx) > 0 || (abs(dy) > 0));
       }
 
       //  FBO swapping has trouble with Retina display on MacOS Monterey.
       //  So, disable accelerated pan ops on this case.
-      if (m_displayScale > 1)
-         accelerated_pan = false;
+      if (m_displayScale > 1) accelerated_pan = false;
 
       // FIXME (dave) There are some display artifact troubles using accPan on rotation.
       //  Especially seen on sparse RNC rendering
-      if(fabs(VPoint.rotation) > 0)
-        accelerated_pan = false;
+      if (fabs(VPoint.rotation) > 0) accelerated_pan = false;
 
-      // do we allow accelerated panning?  can we perform it here?
+        // do we allow accelerated panning?  can we perform it here?
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-#else  // GLES2
-       // enable rendering to texture in framebuffer object
+#else   // GLES2
+        // enable rendering to texture in framebuffer object
       glBindFramebuffer(GL_FRAMEBUFFER, m_fb0);
 
       if (VPoint.chart_scale < 5000) b_full = true;
@@ -4082,10 +4078,8 @@ void glChartCanvas::Render() {
 
       if (b_full) accelerated_pan = false;
 
-
       if (accelerated_pan) {
-        if ((dx != 0) || (dy != 0))
-        {   // Anything to do?
+        if ((dx != 0) || (dy != 0)) {  // Anything to do?
 
           // calculate the new regions to render
           // add extra pixels to avoid coordindate rounding issues at large
@@ -4098,14 +4092,14 @@ void glChartCanvas::Render() {
           if (VPoint.chart_scale < 10000) fluff = 8;
 
           if (dy > 0 && dy < gl_height)
-            update_region.Union(wxRect(0, gl_height - (dy + fluff),
-                                       gl_width, dy + fluff));
+            update_region.Union(
+                wxRect(0, gl_height - (dy + fluff), gl_width, dy + fluff));
           else if (dy < 0)
             update_region.Union(wxRect(0, 0, gl_width, -dy + fluff));
 
           if (dx > 0 && dx < gl_width)
-            update_region.Union(wxRect(gl_width - (dx + fluff), 0,
-                                       dx + fluff, gl_height));
+            update_region.Union(
+                wxRect(gl_width - (dx + fluff), 0, dx + fluff, gl_height));
           else if (dx < 0)
             update_region.Union(wxRect(0, 0, -dx + fluff, gl_height));
 
@@ -4113,27 +4107,24 @@ void glChartCanvas::Render() {
 
           // Bind the destination (target frame) texture to the frame buffer
           glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                 GL_TEXTURE_2D,
-                                 m_cache_tex[m_cache_page], 0);
+                                 GL_TEXTURE_2D, m_cache_tex[m_cache_page], 0);
 
           // Before rendering anything, clear the color buffers
-//           wxColour color = GetGlobalColor(_T ( "NODTA" ));
-//           glClearColor(color.Red() / 256., color.Green() / 256.,
-//                        color.Blue() / 256., 1.0);
-//           glClear(GL_COLOR_BUFFER_BIT);
-
+          //           wxColour color = GetGlobalColor(_T ( "NODTA" ));
+          //           glClearColor(color.Red() / 256., color.Green() / 256.,
+          //                        color.Blue() / 256., 1.0);
+          //           glClear(GL_COLOR_BUFFER_BIT);
 
           // First render the new content into the update region
           RenderCharts(m_gldc, update_region);
           glDisable(g_texture_rectangle_format);
           glUseProgram(0);
 
-
           // Next, render the cached texture as quad to FBO(m_blit_tex) with offsets
           glBindTexture(GL_TEXTURE_2D, m_cache_tex[!m_cache_page]);
           glEnable(GL_TEXTURE_2D);
 
-           // Blit the existing content onto the alternate FBO, at the correct location
+          // Blit the existing content onto the alternate FBO, at the correct location
           float x1, x2, y1, y2;
 
           if (dx > 0)
@@ -4179,7 +4170,8 @@ void glChartCanvas::Render() {
           coords[6] = -dx;
           coords[7] = dy + sy;
 
-          GLShaderProgram *shader = ptexture_2D_shader_program[GetCanvasIndex()];
+          GLShaderProgram *shader =
+              ptexture_2D_shader_program[GetCanvasIndex()];
           shader->Bind();
 
           // Set up the texture sampler to texture unit 0
@@ -4219,17 +4211,17 @@ void glChartCanvas::Render() {
           glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
           // restore the shader matrix
-          shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)VPoint.vp_matrix_transform);
+          shader->SetUniformMatrix4fv("MVMatrix",
+                                      (GLfloat *)VPoint.vp_matrix_transform);
 
           shader->UnBind();
           glBindTexture(g_texture_rectangle_format, 0);
-
 
           glDisable(g_texture_rectangle_format);
           glUseProgram(0);
         }
 
-      }  // accelerated pan
+      }       // accelerated pan
 
       else {  // must redraw the entire screen
         // qDebug() << "Fullpage";
@@ -4242,13 +4234,13 @@ void glChartCanvas::Render() {
         m_fbo_swidth = sx;
         m_fbo_sheight = sy;
 
-        //FIXME (dave) test on Android
-        // This can be annoying on Android pinch zoom
+        // FIXME (dave) test on Android
+        //  This can be annoying on Android pinch zoom
 
         // Clear the screen to NODTA color
-         wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-         glClearColor( color.Red() / 256., color.Green() / 256. ,
-         color.Blue()/ 256. ,1.0 );
+        wxColour color = GetGlobalColor(_T ( "NODTA" ));
+        glClearColor(color.Red() / 256., color.Green() / 256.,
+                     color.Blue() / 256., 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         OCPNRegion rscreen_region(VPoint.rv_rect);
@@ -4256,15 +4248,14 @@ void glChartCanvas::Render() {
 
         m_cache_page = !m_cache_page; /* page flip */
 
-      }  // full page render
+      }                               // full page render
 
       // Disable Render to FBO
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 #endif  // gles2 for accpan
 
-
-    }  // newview
+    }   // newview
 
     useFBO = true;
   }
@@ -4291,7 +4282,7 @@ void glChartCanvas::Render() {
 #endif
 
   if (useFBO) {
-#if 0  //#ifndef USE_ANDROID_GLES2
+#if 0  // #ifndef USE_ANDROID_GLES2
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fb0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, sx, sy, 0, 0, sx*2, sy*2, GL_COLOR_BUFFER_BIT, GL_LINEAR);
@@ -4341,9 +4332,9 @@ void glChartCanvas::Render() {
     coords[6] = 0;
     coords[7] = sy;
 
-    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-    glClearColor( color.Red() / 256., color.Green() / 256. ,
-         color.Blue()/ 256. ,1.0 );
+    wxColour color = GetGlobalColor(_T ( "NODTA" ));
+    glClearColor(color.Red() / 256., color.Green() / 256., color.Blue() / 256.,
+                 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
     RenderTextures(gldc, coords, uv, 4, m_pParentCanvas->GetpVP());
@@ -4358,7 +4349,7 @@ void glChartCanvas::Render() {
 
   } else  // useFBO
   {
-      RenderCharts(m_gldc, screen_region);
+    RenderCharts(m_gldc, screen_region);
   }
 
 #if 1
@@ -4369,7 +4360,7 @@ void glChartCanvas::Render() {
 
   // Render static overlay objects
   for (OCPNRegionIterator upd(screen_region); upd.HaveRects(); upd.NextRect()) {
-      wxRect rt = upd.GetRect();
+    wxRect rt = upd.GetRect();
     LLRegion region = VPoint.GetLLRegion(rt);
     ViewPort cvp = ClippedViewport(VPoint, region);
     DrawGroundedOverlayObjects(gldc, cvp);
@@ -4405,8 +4396,7 @@ void glChartCanvas::Render() {
       gldc.SetPen(ppBlue);
       gldc.SetBrush(ppBrush);
       int xw = m_pParentCanvas->GetClientSize().x * m_displayScale;
-      float rect_pix = m_pParentCanvas->m_focus_indicator_pix
-                            * m_displayScale;
+      float rect_pix = m_pParentCanvas->m_focus_indicator_pix * m_displayScale;
       wxPoint barPoints[4];
       barPoints[0].x = 0;
       barPoints[0].y = 0;
@@ -4457,6 +4447,13 @@ void glChartCanvas::Render() {
 
   if (m_pParentCanvas->m_pAISRolloverWin)
     m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
+
+
+  if (m_pParentCanvas->GetMUIBar()) {
+    m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
+    m_pParentCanvas->GetMUIBar()->Refresh( true );
+    m_pParentCanvas->GetMUIBar()->Update();
+  }
 
     //  On some platforms, the opengl context window is always on top of any
     //  standard DC windows, so we need to draw the Chart Info Window and the
