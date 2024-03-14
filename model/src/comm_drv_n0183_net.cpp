@@ -336,48 +336,39 @@ void CommDriverN0183Net::OpenNetworkGPSD() {
 
 void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   m_dog_value--;
-  if (m_dog_value <= 0) {  // No receive in n seconds, assume connection lost
-    wxString log =
-        wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s."),
-                         GetPort().c_str());
-    if (!GetParams().NoDataReconnect) {
-      log.Append(wxString::Format(
-          _T(" Reconnection is disabled, waiting another %d seconds."),
-          N_DOG_TIMEOUT));
-      m_dog_value = N_DOG_TIMEOUT;
-      wxLogMessage(log);
-      return;
-    }
-    wxLogMessage(log);
 
-    if (GetProtocol() == TCP) {
-      wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
-      if (tcp_socket) {
-        tcp_socket->Close();
+  if (m_dog_value <= 0) {  // No receive in n seconds
+    if (GetParams().NoDataReconnect) {
+      // Reconnect on NO DATA is true, so try to reconnect now.
+      if (GetProtocol() == TCP) {
+        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+        if (tcp_socket)
+          tcp_socket->Close();
+
+        int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
+        wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.",
+                                    n_reconnect_delay));
+        GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
+
+        //  Stop DATA watchdog, will be restarted on successful connection.
+        GetSocketThreadWatchdogTimer()->Stop();
       }
-      int n_reconnect_delay =  wxMax(N_DOG_TIMEOUT-2, 2);
-      wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.", n_reconnect_delay));
-      GetSocketTimer()->Start(n_reconnect_delay * 1000,
-                              wxTIMER_ONE_SHOT);
-
-      GetSocketThreadWatchdogTimer()->Stop();
     }
   }
 }
 
 void CommDriverN0183Net::OnTimerSocket() {
-  GetSocketThreadWatchdogTimer()->Stop();
-
   //  Attempt a connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
-      SetBrxConnectEvent(false);
-
       wxLogMessage(" Attempting reconnection...");
+      SetBrxConnectEvent(false);
+      //  Stop DATA watchdog, may be restarted on successful connection.
+      GetSocketThreadWatchdogTimer()->Stop();
       tcp_socket->Connect(GetAddr(), FALSE);
 
-      // schedule another attempt, in case this one fails
+      // schedule another connection attempt, in case this one fails
       int n_reconnect_delay =  N_DOG_TIMEOUT;
       GetSocketTimer()->Start(n_reconnect_delay * 1000,
                               wxTIMER_ONE_SHOT);
@@ -470,7 +461,6 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
                               // terminator, skip it to avoid infinite loop
             nmea_end = 1;
           std::string nmea_line = m_sock_buffer.substr(0, nmea_end);
-
           //  If, due to some logic error, the {nmea_end} parameter is larger
           //  than the length of the socket buffer, then std::string::substr()
           //  will throw an exception. We don't want that, so test for it. If
@@ -559,9 +549,14 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         wxLogMessage(wxString::Format(
             _T("TCP NetworkDataStream connection established: %s"),
             GetPort().c_str()));
+
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
-        if (GetPortType() != DS_TYPE_OUTPUT)
-          GetSocketThreadWatchdogTimer()->Start(1000);
+        if (GetPortType() != DS_TYPE_OUTPUT) {
+          ///start the DATA watchdog only if NODATA Reconnect is desired
+          if (GetParams().NoDataReconnect)
+            GetSocketThreadWatchdogTimer()->Start(1000);
+        }
+
         if (GetPortType() != DS_TYPE_INPUT && GetSock()->IsOk())
           (void)SetOutputSocketOptions(GetSock());
         GetSocketTimer()->Stop();
