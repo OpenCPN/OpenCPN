@@ -947,61 +947,27 @@ void MUIBar::CreateControls() {
 }
 
 void MUIBar::SetBestPosition(void) {
-#if 0  // for wxWindow
-    int x = (m_parent->GetClientSize().x - GetSize().x) / 2;
-    if(x > 0){
-        int bottomOffset = 0;
-
-        ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
-        bottomOffset += pcc->GetPianoHeight();
-
-        int y = m_parent->GetClientSize().y - GetSize().y - bottomOffset;
-        SetSize(x, y, -1, -1, wxSIZE_USE_EXISTING);
-    }
-
-#else  // for wxDialog
-  int x = (m_parent->GetClientSize().x - (GetSize().x + (2 * m_end_margin) * 1.00));
+  int x = (m_parent->GetClientSize().x - (GetSize().x + (m_end_margin) * 2.00));
 
 #ifndef __WXGTK__  // Adjust for wxNO_BORDER canvas window style
-  x -= 2;
+//  x -= 2;
 #endif
 
-  // if(x > 0)
-  {
-    int bottomOffset = 2;
+  int bottomOffset = 4;
 
-    ChartCanvas* pcc = wxDynamicCast(m_parent, ChartCanvas);
-    //         bottomOffset += pcc->GetPianoHeight();
+  ChartCanvas* pcc = wxDynamicCast(m_parent, ChartCanvas);
 
-    int y = m_parent->GetClientSize().y - GetSize().y - bottomOffset;
+  int y = m_parent->GetClientSize().y - GetSize().y - bottomOffset;
 
-    wxPoint m_position = wxPoint(x, y);
-#if 0
-    wxPoint screenPos = pcc->ClientToScreen(m_position);
+  wxPoint m_position = wxPoint(x, y);
+  wxPoint screenPos = m_position;
+  Move(screenPos);
 
-    //  GTK sometimes has trouble with ClientToScreen() if executed in the
-    //  context of an event handler The position of the window is calculated
-    //  incorrectly if a deferred Move() has not been processed yet. So work
-    //  around this here...
-
-#ifdef __WXGTK__
-    wxPoint pp = m_parent->GetPosition();
-    wxPoint ppg = m_parent->GetParent()->GetScreenPosition();
-    wxPoint screen_pos_fix = ppg + pp + m_position;
-    screenPos.x = screen_pos_fix.x;
-#endif
-#else
-    wxPoint screenPos = m_position;
-    Move(screenPos);
-
-    if (m_canvasOptions) {
-      m_canvasOptions->Destroy();
-      m_canvasOptions = 0;
-    }
-    Show();
+  if (m_canvasOptions) {
+    m_canvasOptions->Destroy();
+    m_canvasOptions = 0;
   }
-#endif
-#endif
+  Show();
 }
 
 void MUIBar::OnSize(wxSizeEvent& event) {
@@ -1227,25 +1193,27 @@ void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
 
   gldc.SetBrush(wxBrush(backColor));
   gldc.SetPen(wxPen(backColor));
+  //gldc.SetBrush(wxBrush(*wxGREEN));   //testing layout
+  //gldc.SetPen(wxPen(*wxGREEN));
 
   wxRect r = GetRect();
 #if 1
   if (m_orientation == wxHORIZONTAL)
-    gldc.DrawRoundedRectangle((r.x - 0)*displayScale,
-                                    (r.y-1)*displayScale,
-                                    (r.width + 0)*displayScale,
-                                    (r.height+2)*displayScale,
-                                    (m_end_margin)*displayScale);
+    gldc.DrawRoundedRectangle((r.x - m_end_margin/2)*displayScale,
+                                    (r.y-2)*displayScale,
+                                    (r.width + m_end_margin)*displayScale,
+                                    (r.height+4)*displayScale,
+                                    (m_end_margin * 1.5)*displayScale);
   else
     gldc.DrawRoundedRectangle((r.x-1)*displayScale,
-                              (r.y- m_end_margin)*displayScale,
+                              (r.y- m_end_margin/2)*displayScale,
                               (r.width + 2)*displayScale,
                               (r.height + 2 * m_end_margin)*displayScale,
-                              (m_end_margin));
+                              (m_end_margin * 1.5)*displayScale);
 #endif
 
 #if defined(__WXMSW__)
-    return;
+  return;
 #endif
 
   int width, height;
