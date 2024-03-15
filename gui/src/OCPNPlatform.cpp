@@ -608,7 +608,7 @@ void OCPNPlatform::Initialize_3(void) {
   if(!bcapable)
     g_bopengl = false;
   else {
-    g_bopengl = true;
+    //g_bopengl = true;
     g_bdisable_opengl = false;
     pConfig->UpdateSettings();
   }
@@ -923,7 +923,7 @@ bool OCPNPlatform::IsGLCapable() {
   wxLog::FlushActive();
 
   g_bdisable_opengl = false;
-  g_bopengl = true;
+  //g_bopengl = true;
 
   // Update and flush the config file
   pConfig->UpdateSettings();
