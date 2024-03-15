@@ -69,7 +69,7 @@
 
 #include "observable.h"
 
-#define N_DOG_TIMEOUT 5
+#define N_DOG_TIMEOUT 8
 
 // FIXME (dave)  This should be in some more "common" space, but where?
 bool CheckSumCheck(const std::string& sentence) {
@@ -362,7 +362,7 @@ void CommDriverN0183Net::OnTimerSocket() {
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
-      wxLogMessage(" Attempting reconnection...");
+      wxLogDebug(" Attempting reconnection...");
       SetBrxConnectEvent(false);
       //  Stop DATA watchdog, may be restarted on successful connection.
       GetSocketThreadWatchdogTimer()->Stop();

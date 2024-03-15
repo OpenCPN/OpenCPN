@@ -69,7 +69,7 @@
 #include "model/idents.h"
 #include "model/comm_drv_registry.h"
 
-#define N_DOG_TIMEOUT 5
+#define N_DOG_TIMEOUT 8
 
 static const int kNotFound = -1;
 
@@ -442,7 +442,7 @@ void CommDriverN2KNet::OnTimerSocket() {
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
-      wxLogMessage(" Attempting reconnection...");
+      wxLogDebug(" Attempting reconnection...");
       SetBrxConnectEvent(false);
       //  Stop DATA watchdog, may be restarted on successful connection.
       GetSocketThreadWatchdogTimer()->Stop();
