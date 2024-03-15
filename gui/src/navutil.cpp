@@ -2394,7 +2394,9 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider);
 
   Write(_T ( "SkewToNorthUp" ), g_bskew_comp);
-  Write(_T ( "OpenGL" ), g_bopengl);
+  if (!g_bdisable_opengl) { // Only modify the saved value if OpenGL is not force-disabled from the command line
+    Write(_T ( "OpenGL" ), g_bopengl);
+  }
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
   Write(_T ( "ShowFPS" ), g_bShowFPS);
 
