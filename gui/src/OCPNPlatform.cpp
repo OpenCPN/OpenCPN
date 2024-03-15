@@ -57,6 +57,8 @@
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
+#include <wx/jsonval.h>
+#include <wx/jsonreader.h>
 
 #include "config.h"
 
@@ -109,6 +111,15 @@
 #include "model/macutils.h"
 #endif
 
+#if (defined(__clang_major__) && (__clang_major__ < 15))
+// MacOS 1.13
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
+#endif
 
 class MyApp;
 DECLARE_APP(MyApp)
@@ -670,7 +681,113 @@ void OCPNPlatform::OnExit_2(void) {
 
 
 #ifdef ocpnUSE_GL
+
+bool HasGLExt(wxJSONValue &glinfo, const std::string ext) {
+  if (!glinfo.HasMember("GL_EXTENSIONS")) {
+    return false;
+  }
+  for (int i = 0; i < glinfo["GL_EXTENSIONS"].Size(); i++) {
+    if (glinfo["GL_EXTENSIONS"][i].AsString() == ext) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
+#ifndef __ANDROID__
+  fs::path ep(GetExePath().ToStdString());
+#ifndef __WXMSW__
+  std::string gl_util_exe = "opencpn-glutil";
+#else
+  std::string gl_util_exe = "bin\\opencpn-glutil.exe";
+#endif
+  fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
+
+  if (!fs::exists(gl_util_path)) { //TODO: What to do if the utility is not found (Which it is not for developer builds that are not installed)?
+    wxLogMessage("OpenGL test utility not found at %s.",  gl_util_path.c_str());
+    return false;
+  }
+
+  std::string gl_json = fs::path(GetPrivateDataDir().ToStdString()).append("gl_caps.json").string();
+
+  wxString cmd = wxString::Format(_T("%s opengl-info %s"), gl_util_path.c_str(), gl_json.c_str());
+
+  wxLogMessage("Starting OpenGL test utility: %s", cmd);
+
+  wxArrayString output;
+  if (long res = wxExecute(cmd, output); res != 0) {
+    wxLogMessage("OpenGL test utility failed with exit code %d", res);
+    for (const auto &l : output) {
+      wxLogMessage(l);
+    }
+    return false;
+  }
+
+  wxFileInputStream fis(gl_json);
+  wxJSONReader reader;
+  wxJSONValue root;
+  reader.Parse(fis, &root);
+  if (reader.GetErrorCount() > 0){
+    wxLogMessage("Failed to parse JSON output from OpenGL test utility.");
+    for(const auto &l : reader.GetErrors()) {
+      wxLogMessage(l);
+    }
+    return false;
+  }
+
+  OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
+
+  if(root.HasMember("GL_RENDERER")) {
+    pcaps->Renderer = root["GL_RENDERER"].AsString();
+  } else {
+    wxLogMessage("GL_RENDERER not found.");
+    return false;
+  }
+  if (root.HasMember("GL_VERSION")) {
+    pcaps->Version = root["GL_VERSION"].AsString();
+  } else {
+    wxLogMessage("GL_VERSION not found.");
+    return false;
+  }
+  if (root.HasMember("GL_SHADING_LANGUAGE_VERSION")) {
+    pcaps->GLSL_Version = root["GL_SHADING_LANGUAGE_VERSION"].AsString();
+  } else {
+    wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
+    return false;
+  }
+  pcaps->dGLSL_Version = 0;
+  pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
+  if (pcaps->dGLSL_Version < 1.2) {
+    wxString msg;
+    msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
+    msg += wxString(pcaps->GLSL_Version.c_str());
+    msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
+    wxLogMessage(msg);
+    pcaps->bCanDoGLSL = false;
+    return false;
+  }
+  pcaps->bCanDoGLSL = true;
+  if (HasGLExt(root, "GL_ARB_texture_non_power_of_two")) {
+    pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
+  } else if (HasGLExt(root, "GL_OES_texture_npot")) {
+    pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
+  } else if (HasGLExt(root, "GL_ARB_texture_rectangle")) {
+    pcaps->TextureRectangleFormat = GL_TEXTURE_RECTANGLE_ARB;
+  }
+
+  pcaps->bOldIntel = false;
+
+  pcaps->bCanDoFBO = HasGLExt(root,"GL_EXT_framebuffer_object");
+  if (!pcaps->TextureRectangleFormat) {
+    pcaps->bCanDoFBO = false;
+  }
+
+  pcaps->bCanDoVBO = HasGLExt(root, "GL_ARB_vertex_buffer_object"); //TODO: Or the old way where we enable it without querying the extension is right?
+  gFrame->Show();
+  return true;
+#else
+  // The original codepath doing direct probing in the main OpenCPN process, now only for Android
   // Investigate OpenGL capabilities
   gFrame->Show();
   glTestCanvas *tcanvas = new glTestCanvas(gFrame);
@@ -758,8 +875,8 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   delete tcanvas;
   delete pctx;
-
   return true;
+#endif
 }
 #endif
 
