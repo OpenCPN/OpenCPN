@@ -101,8 +101,6 @@ private:
   MUIButton *m_followButton;
   MUITextButton *m_scaleButton;
 
-  wxStaticText *m_scaleTextBox;
-
   CanvasOptions *m_canvasOptions;
   wxPoint m_targetCOPos;
   wxPoint m_currentCOPos;
