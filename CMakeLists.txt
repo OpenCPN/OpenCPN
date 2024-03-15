@@ -2716,7 +2716,7 @@ if (NOT QT_ANDROID)
   add_subdirectory(cli)
 endif ()
 
-if (NOT QT_ANDROID)
+if (NOT QT_ANDROID AND OCPN_USE_GL)
   add_subdirectory(glutil)
 endif ()
 
