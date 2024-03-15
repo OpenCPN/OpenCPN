@@ -892,14 +892,6 @@ bool OCPNPlatform::IsGLCapable() {
   if(g_bdisable_opengl)
     return false;
 
-  // Protect against fault in OpenGL caps test
-  // If this method crashes due to bad GL drivers,
-  // next startup will disable OpenGL
-  g_bdisable_opengl = true;
-
-  // Update and flush the config file
-  pConfig->UpdateSettings();
-
   wxLogMessage("Starting OpenGL test...");
   wxLog::FlushActive();
 

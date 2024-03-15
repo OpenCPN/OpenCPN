@@ -512,30 +512,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 #endif /* HAVE_WX_GESTURE_EVENTS */
 
   SetupGlCanvas();
-  /*
-  #ifdef ocpnUSE_GL
-      if ( !g_bdisable_opengl )
-      {
-          if(g_bopengl){
-              wxLogMessage( _T("Creating glChartCanvas") );
-              m_glcc = new glChartCanvas(this);
-
-          // We use one context for all GL windows, so that textures etc will be
-  automatically shared if(IsPrimaryCanvas()){ wxGLContext *pctx = new
-  wxGLContext(m_glcc); m_glcc->SetContext(pctx); g_pGLcontext = pctx; // Save a
-  copy of the common context
-              }
-              else{
-  #ifdef __WXOSX__
-                  m_glcc->SetContext(new wxGLContext(m_glcc, g_pGLcontext));
-  #else
-                  m_glcc->SetContext(g_pGLcontext);   // If not primary canvas,
-  use the saved common context #endif
-              }
-          }
-      }
-  #endif
-  */
+  
   singleClickEventIsValid = false;
 
   //    Build the cursors
