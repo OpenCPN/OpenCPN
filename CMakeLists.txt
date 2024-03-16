@@ -56,6 +56,7 @@ endif ()
 
 if (APPLE)
   set(PACKAGE_NAME OpenCPN)
+  string(REPLACE ";" "," CMAKE_OSX_ARCHITECTURES_COMMA_SEP "${CMAKE_OSX_ARCHITECTURES}")
 elseif (QT_ANDROID)
   set(PACKAGE_NAME gorp)
 else ()

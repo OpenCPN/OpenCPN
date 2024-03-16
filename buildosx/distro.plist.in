@@ -21,6 +21,6 @@
     <pkg-ref id="org.opencpn" version="0" onConclusion="none">
         OpenCPN.app.pkg
     </pkg-ref>
-    <options hostArchitectures="${CMAKE_OSX_ARCHITECTURES}" />
+    <options hostArchitectures="${CMAKE_OSX_ARCHITECTURES_COMMA_SEP}" />
 </installer-gui-script>
 
