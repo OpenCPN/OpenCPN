@@ -13076,11 +13076,13 @@ void ChartCanvas::OnToolLeftClick(wxCommandEvent &event) {
 
   switch (event.GetId()) {
     case ID_ZOOMIN: {
+      StopMovement();
       ZoomCanvasSimple(g_plus_minus_zoom_factor);
       break;
     }
 
     case ID_ZOOMOUT: {
+      StopMovement();
       ZoomCanvasSimple(1.0 / g_plus_minus_zoom_factor);
       break;
     }
