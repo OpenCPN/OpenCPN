@@ -39,15 +39,6 @@ for pkg in openssl cmake ; do
     brew link --overwrite $pkg || :
 done
 
-if brew list --cask --versions packages; then
-    version=$(pkg_version packages '--cask')
-    sudo installer \
-        -pkg /usr/local/Caskroom/packages/$version/packages/Packages.pkg \
-        -target /
-else
-    brew install --cask packages
-fi
-
 # Build, install and make package
 mkdir -p build
 cd build
