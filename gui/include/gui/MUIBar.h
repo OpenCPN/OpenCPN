@@ -27,6 +27,7 @@
 #ifndef __muibar_H__
 #define __muibar_H__
 
+#include <cstdint>
 
 //----------------------------------------------------------------------------
 //   constants
