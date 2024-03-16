@@ -107,7 +107,9 @@ dsymutil -o OpenCPN.dSYM /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/OpenCPN
 tar czf OpenCPN-$(git rev-parse --short HEAD).dSYM.tar.gz OpenCPN.dSYM
 
 make create-pkg
-make create-dmg
+if [[ ! -z "${CREATE_DMG+x}" ]]; then
+  make create-dmg
+fi
 
 # The build is over, if there is error now it is not ours
 set +e

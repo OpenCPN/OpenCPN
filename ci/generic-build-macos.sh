@@ -64,4 +64,6 @@ make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
 make create-pkg
-make create-dmg
+if [[ ! -z "${CREATE_DMG+x}" ]]; then
+  make create-dmg
+fi

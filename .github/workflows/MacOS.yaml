@@ -38,10 +38,17 @@ jobs:
             runner: macos-11
             pkg_mod: 11
             MACOSX_DEPLOYMENT_TARGET: 10.13
+            CREATE_DMG: 1
           - name: macOS Latest wxOSX
             runner: macos-latest
             pkg_mod: 11
             MACOSX_DEPLOYMENT_TARGET: 10.13
+            CREATE_DMG: 1
+          - name: macOS 14 wxOSX
+            runner: macos-latest
+            pkg_mod: 11
+            MACOSX_DEPLOYMENT_TARGET: 11
+            CREATE_DMG: 1
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
       pkg_mod: ${{ matrix.pkg_mod }}
