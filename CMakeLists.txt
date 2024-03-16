@@ -2617,7 +2617,7 @@ if (APPLE)
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
-      ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer"
+      create-dmg --volname "OpenCPN Installer"
       --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200
       120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150
       --hide-extension OpenCPN.app --app-drop-link 390 145 --no-internet-enable
