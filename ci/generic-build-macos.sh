@@ -29,6 +29,7 @@ brew install xz
 brew install zstd
 brew install libarchive
 brew install wxwidgets
+brew install create-dmg
 
 ln -s /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
 ln -s /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
