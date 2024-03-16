@@ -48,6 +48,7 @@ brew list --versions python3 || {
 # Install the build dependencies for OpenCPN
 brew install cmake
 brew install gettext
+brew install create-dmg
 
 for pkg in python3  cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
