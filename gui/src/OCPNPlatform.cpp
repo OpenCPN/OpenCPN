@@ -224,7 +224,7 @@ extern PlatSpec android_plat_spc;
 #endif
 
 #ifdef ocpnUSE_GL
-OCPN_GLCaps *GL_Caps;
+OCPN_GLCaps *GL_Caps = nullptr;
 #endif
 
 static const char *const DEFAULT_XDG_DATA_DIRS =
@@ -256,7 +256,13 @@ OCPNPlatform::OCPNPlatform() {
   m_pluginDataPath = "";
 }
 
-OCPNPlatform::~OCPNPlatform() {}
+OCPNPlatform::~OCPNPlatform() {
+#ifdef ocpnUSE_GL
+  if (GL_Caps) {
+    delete GL_Caps;
+  }
+#endif
+}
 
 //--------------------------------------------------------------------------
 //      Per-Platform Initialization support
@@ -895,26 +901,28 @@ bool OCPNPlatform::IsGLCapable() {
   wxLogMessage("Starting OpenGL test...");
   wxLog::FlushActive();
 
-  OCPN_GLCaps GL_Caps;
-  bool bcaps = BuildGLCaps(&GL_Caps);
+  if (!GL_Caps) {
+    GL_Caps = new OCPN_GLCaps();
+    bool bcaps = BuildGLCaps(GL_Caps);
 
-  wxLogMessage("OpenGL test complete.");
-  if (!bcaps){
-    wxLogMessage("BuildGLCaps fails.");
-    wxLog::FlushActive();
-    return false;
+    wxLogMessage("OpenGL test complete.");
+    if (!bcaps){
+      wxLogMessage("BuildGLCaps fails.");
+      wxLog::FlushActive();
+      return false;
+    }
   }
 
   // and so we decide....
 
   // Require a modern GLSL implementation
-  if (!GL_Caps.bCanDoGLSL) {
+  if (!GL_Caps->bCanDoGLSL) {
     return false;
   }
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!GL_Caps.bCanDoFBO)  {
+  if (!GL_Caps->bCanDoFBO)  {
     return false;
   }
 
