@@ -88,11 +88,10 @@ public:
 
   ~TestGLCanvas() final;
 
-private:
-  void InitGL();
-
   wxGLContext* m_glRC;
 
+private:
+  void InitGL();
 };
 
 TestGLCanvas::TestGLCanvas(wxWindow* parent, wxWindowID id, const wxPoint& pos,
@@ -101,7 +100,6 @@ TestGLCanvas::TestGLCanvas(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                  style | wxFULL_REPAINT_ON_RESIZE, name) {
   // Explicitly create a new rendering context instance for this canvas.
   m_glRC = new wxGLContext(this);
-  SetCurrent(*m_glRC);
 }
 
 TestGLCanvas::~TestGLCanvas() { delete m_glRC; }
@@ -186,6 +184,8 @@ public:
     wxLogDebug("Creating canvas");
     TestGLCanvas canvas(&frame, wxID_ANY, wxPoint(0, 0),
                                    frame.GetClientSize());
+    wxYield();
+    canvas.SetCurrent(*canvas.m_glRC);
     wxLogDebug("Collecting information");
 #ifndef __WXOSX__
     auto ret = glewInit();
