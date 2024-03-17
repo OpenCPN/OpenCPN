@@ -191,7 +191,11 @@ public:
     auto ret = glewInit();
     v["GL_ERROR_STRING"] = wxString(glewGetErrorString(ret));
     v["GL_ERROR"] = glGetError();
-    if (ret != GLEW_OK) {
+#ifdef GLEW_ERROR_NO_GLX_DISPLAY
+    if (GLEW_OK != ret && GLEW_ERROR_NO_GLX_DISPLAY != ret) {
+#else
+    if (GLEW_OK != ret) {
+#endif
       v["GL_USABLE"] = false;
       w.Write(v, out);
       cout << out << endl;
