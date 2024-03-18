@@ -55,7 +55,7 @@ class CanvasOptions;
 //----------------------------------------------------------------------------
 // MUIBar
 //----------------------------------------------------------------------------
-class MUIBar : public wxWindow {
+class MUIBar : public wxEvtHandler {
 public:
   MUIBar();
   MUIBar(ChartCanvas *parent, int orientation = wxHORIZONTAL,
@@ -82,12 +82,22 @@ public:
   void SetCanvasENCAvailable(bool avail);
   void OnScaleSelected(wxMouseEvent &event);
   void DrawGL(ocpnDC &gldc, double displayScale);
+  void DrawDC(ocpnDC &dc, double displayScale);
+  wxRect GetRect(){ return wxRect(m_screenPos, m_size); }
+
+  bool MouseEvent(wxMouseEvent &event);
+
+  wxPoint m_screenPos;
+  wxSize m_size;
 
 private:
   void Init(void);
   void CreateControls();
   void PullCanvasOptions();
   void PushCanvasOptions();
+  void HandleMenuClick();
+  wxBitmap &CreateBitmap(double displayScale);
+  void InvalidateBitmap();
 
   void CaptureCanvasOptionsBitmap();
   void CaptureCanvasOptionsBitmapChain(wxTimerEvent &event);
@@ -132,8 +142,8 @@ private:
 
   uint32_t m_texture;
   int m_end_margin;
-
-  DECLARE_EVENT_TABLE()
+  wxBitmap m_bitmap;
+  int m_scale;
 };
 
 #endif

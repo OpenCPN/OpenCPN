@@ -2032,12 +2032,6 @@ void MyFrame::OnIconize(wxIconizeEvent &event) {
   if (g_iENCToolbar) {
     g_iENCToolbar->Show(!event.IsIconized());
   }
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc && cc->GetMUIBar()) {
-      cc->GetMUIBar()->Show(!event.IsIconized());
-    }
-  }
 #endif
 }
 
@@ -3743,10 +3737,6 @@ void MyFrame::SurfaceAllCanvasToolbars(void) {
     }
   }
 
-#ifndef __WXQT__
-  //  removed to show MUIBars on MSVC
-  /// Raise();
-#endif
 }
 
 void MyFrame::JumpToPosition(ChartCanvas *cc, double lat, double lon,
@@ -3889,12 +3879,6 @@ int MyFrame::DoOptionsDialog() {
 #endif
 
 #ifdef __WXOSX__
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc && cc->GetMUIBar()) cc->GetMUIBar()->Hide();
-  }
-
   SubmergeAllCanvasToolbars();
   g_MainToolbar->Submerge();
 #endif
@@ -6863,12 +6847,6 @@ void MyFrame::applySettingsString(wxString settings) {
 
 #if defined(__WXOSX__) || defined(__WXQT__)
   if (g_MainToolbar) g_MainToolbar->Raise();
-
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc && cc->GetMUIBar()) cc->GetMUIBar()->Raise();
-  }
-
 #endif
 
   if (console) console->Raise();
