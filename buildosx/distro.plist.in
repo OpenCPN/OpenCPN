@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>OpenCPN</title>
+    <background mime-type="image/png">
+       ../buildosx/opencpn418x620.png
+    </background>
+    <pkg-ref id="org.opencpn"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="org.opencpn"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.opencpn" visible="false">
+        <pkg-ref id="org.opencpn"/>
+    </choice>
+    <allowed-os-versions>
+        <os-version min="${CMAKE_OSX_DEPLOYMENT_TARGET}"/>
+    </allowed-os-versions>
+    <pkg-ref id="org.opencpn" version="0" onConclusion="none">
+        OpenCPN.app.pkg
+    </pkg-ref>
+    <options hostArchitectures="${CMAKE_OSX_ARCHITECTURES_COMMA_SEP}" />
+</installer-gui-script>
+

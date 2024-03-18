@@ -61,16 +61,18 @@
 #include <wx/wx.h>
 #include <wx/sckaddr.h>
 
-#include "model/garmin_protocol_mgr.h"
-
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
+#include "model/sys_events.h"
 
-#define N_DOG_TIMEOUT 5
+#include "observable.h"
+
+#define N_DOG_TIMEOUT 8
 
 // FIXME (dave)  This should be in some more "common" space, but where?
-bool CheckSumCheck(const std::string &sentence) {
+bool CheckSumCheck(const std::string& sentence) {
   size_t check_start = sentence.find('*');
   if (check_start == wxString::npos || check_start > sentence.size() - 3)
     return false;  // * not found, or it didn't have 2 characters following it.
@@ -87,7 +89,7 @@ bool CheckSumCheck(const std::string &sentence) {
   return calculated_checksum == checksum;
 }
 
-class MrqContainer{
+class MrqContainer {
 public:
   struct ip_mreq m_mrq;
   void SetMrqAddr(unsigned int addr) {
@@ -163,7 +165,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
   this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
   char port_char[10];
-  sprintf(port_char, "%d",params->NetworkPort);
+  sprintf(port_char, "%d", params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
@@ -171,6 +173,9 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
 
   m_mrq_container = new MrqContainer;
 
+  // Establish the power events response
+  resume_listener.Init(SystemEvents::GetInstance().evt_resume,
+                       [&](ObservedEvt&) { HandleResume(); });
   Open();
 }
 
@@ -249,7 +254,8 @@ void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
     if ((ntohl(addr) & 0xf0000000) == 0xe0000000) {
       SetMulticast(true);
       m_mrq_container->SetMrqAddr(addr);
-      GetSock()->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP, &m_mrq_container->m_mrq,
+      GetSock()->SetOption(IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                           &m_mrq_container->m_mrq,
                            sizeof(m_mrq_container->m_mrq));
     }
 
@@ -330,39 +336,61 @@ void CommDriverN0183Net::OpenNetworkGPSD() {
 
 void CommDriverN0183Net::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   m_dog_value--;
-  if (m_dog_value <= 0) {  // No receive in n seconds, assume connection lost
-    wxString log = wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s."),
-      GetPort().c_str());
-    if (!GetParams().NoDataReconnect) {
-      log.Append(wxString::Format(_T(" Reconnection is disabled, waiting another %d seconds."),
-        N_DOG_TIMEOUT));
-      m_dog_value = N_DOG_TIMEOUT;
-      wxLogMessage(log);
-      return;
-    }
-    wxLogMessage(log);
 
-    if (GetProtocol() == TCP) {
-      wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
-      if (tcp_socket) {
-        tcp_socket->Close();
+  if (m_dog_value <= 0) {  // No receive in n seconds
+    if (GetParams().NoDataReconnect) {
+      // Reconnect on NO DATA is true, so try to reconnect now.
+      if (GetProtocol() == TCP) {
+        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+        if (tcp_socket)
+          tcp_socket->Close();
+
+        int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
+        wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.",
+                                    n_reconnect_delay));
+        GetSocketTimer()->Start(n_reconnect_delay * 1000, wxTIMER_ONE_SHOT);
+
+        //  Stop DATA watchdog, will be restarted on successful connection.
+        GetSocketThreadWatchdogTimer()->Stop();
       }
-      GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);  // schedule a reconnect
-      GetSocketThreadWatchdogTimer()->Stop();
     }
   }
 }
 
-void CommDriverN0183Net::OnTimerSocket(wxTimerEvent& event) {
+void CommDriverN0183Net::OnTimerSocket() {
   //  Attempt a connection
   wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
   if (tcp_socket) {
     if (tcp_socket->IsDisconnected()) {
+      wxLogDebug(" Attempting reconnection...");
       SetBrxConnectEvent(false);
+      //  Stop DATA watchdog, may be restarted on successful connection.
+      GetSocketThreadWatchdogTimer()->Stop();
       tcp_socket->Connect(GetAddr(), FALSE);
-      GetSocketTimer()->Start(5000,
-                              wxTIMER_ONE_SHOT);  // schedule another attempt
+
+      // schedule another connection attempt, in case this one fails
+      int n_reconnect_delay =  N_DOG_TIMEOUT;
+      GetSocketTimer()->Start(n_reconnect_delay * 1000,
+                              wxTIMER_ONE_SHOT);
     }
+  }
+}
+
+void CommDriverN0183Net::HandleResume() {
+
+  //  Attempt a stop and restart of connection
+  wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+  if (tcp_socket) {
+    GetSocketThreadWatchdogTimer()->Stop();
+
+    tcp_socket->Close();
+
+    // schedule reconnect attempt
+    int n_reconnect_delay =  wxMax(N_DOG_TIMEOUT-2, 2);
+    wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.", n_reconnect_delay));
+
+    GetSocketTimer()->Start(n_reconnect_delay * 1000,
+                            wxTIMER_ONE_SHOT);
   }
 }
 
@@ -372,9 +400,8 @@ bool CommDriverN0183Net::SendMessage(std::shared_ptr<const NavMsg> msg,
   return SendSentenceNetwork(msg_0183->payload.c_str());
 }
 
-
 void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
-  //#define RD_BUF_SIZE    200
+  // #define RD_BUF_SIZE    200
 #define RD_BUF_SIZE \
   4096  // Allows handling of high volume data streams, such as a National AIS
         // stream with 100s of msgs a second.
@@ -434,7 +461,6 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
                               // terminator, skip it to avoid infinite loop
             nmea_end = 1;
           std::string nmea_line = m_sock_buffer.substr(0, nmea_end);
-
           //  If, due to some logic error, the {nmea_end} parameter is larger
           //  than the length of the socket buffer, then std::string::substr()
           //  will throw an exception. We don't want that, so test for it. If
@@ -523,9 +549,14 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         wxLogMessage(wxString::Format(
             _T("TCP NetworkDataStream connection established: %s"),
             GetPort().c_str()));
+
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
-        if (GetPortType() != DS_TYPE_OUTPUT)
-          GetSocketThreadWatchdogTimer()->Start(1000);
+        if (GetPortType() != DS_TYPE_OUTPUT) {
+          ///start the DATA watchdog only if NODATA Reconnect is desired
+          if (GetParams().NoDataReconnect)
+            GetSocketThreadWatchdogTimer()->Start(1000);
+        }
+
         if (GetPortType() != DS_TYPE_INPUT && GetSock()->IsOk())
           (void)SetOutputSocketOptions(GetSock());
         GetSocketTimer()->Stop();

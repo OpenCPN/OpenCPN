@@ -386,6 +386,10 @@ void CommDecoder::handleUpdate(const rapidjson::Value &update, NavData& temp_dat
   if (update.HasMember("timestamp")) {
     sfixtime = update["timestamp"].GetString();
   }
+  if (update.HasMember("source") && update["source"].HasMember("src")) {
+    src_string = update["source"]["src"].GetString();
+  }
+
   if (update.HasMember("values") && update["values"].IsArray()) {
     for (rapidjson::Value::ConstValueIterator itr = update["values"].Begin(); itr != update["values"].End(); ++itr) {
       updateItem(*itr, sfixtime, temp_data);
@@ -399,11 +403,31 @@ void CommDecoder::updateItem(const rapidjson::Value &item,
   if (item.HasMember("path") && item.HasMember("value")) {
     const wxString &update_path = item["path"].GetString();
 
+    if (update_path == _T("navigation.gnss.methodQuality")) {
+      // Record statically the GNSS status for this source in a hashmap
+      if (src_string.size()) {
+        if (item["value"] == "no GPS") {  // no GPS GNSS Fix
+          GNSS_quality_map[src_string] = 0;
+        } else {
+          GNSS_quality_map[src_string] = 1;
+        }
+      }
+    }
+
     if (update_path == _T("navigation.position") && !item["value"].IsNull()) {
       bposValid = updateNavigationPosition(item["value"], sfixtime, temp_data);
     } else if (update_path == _T("navigation.speedOverGround") &&
                /*bposValid &&*/ !item["value"].IsNull()) {
       updateNavigationSpeedOverGround(item["value"], sfixtime, temp_data);
+
+      // If the tracked "methodQuality" exists for this source,
+      // and state was recorded as "no GPS", set SOG = 0
+      if (GNSS_quality_map.find(src_string) != GNSS_quality_map.end()) {
+        if (GNSS_quality_map[src_string] == 0) {
+          temp_data.gSog = 0;
+        }
+      }
+
     } else if (update_path == _T("navigation.courseOverGroundTrue") &&
                /*bposValid &&*/ !item["value"].IsNull()) {
       updateNavigationCourseOverGround(item["value"], sfixtime, temp_data);

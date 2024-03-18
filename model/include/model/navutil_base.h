@@ -30,7 +30,7 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "config_vars.h"
+#include "model/config_vars.h"
 
 
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
@@ -84,4 +84,7 @@ extern wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime);
 extern wxString formatTimeDelta(wxLongLong secs);
 
 extern double fromDMM(wxString sdms);
+
+extern double toMagnetic(double deg_true);
+extern double toMagnetic(double deg_true, double variation);
 #endif   // _NAVUTIL_BASE__

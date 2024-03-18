@@ -56,6 +56,7 @@ endif ()
 
 if (APPLE)
   set(PACKAGE_NAME OpenCPN)
+  string(REPLACE ";" "," CMAKE_OSX_ARCHITECTURES_COMMA_SEP "${CMAKE_OSX_ARCHITECTURES}")
 elseif (QT_ANDROID)
   set(PACKAGE_NAME gorp)
 else ()
@@ -736,6 +737,8 @@ message(STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 message(STATUS "*** Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 
+set(GUI_S57_DIR ${CMAKE_SOURCE_DIR}/gui/src/s57)
+
 set(GUI_HDR_DIR ${CMAKE_SOURCE_DIR}/gui/include/gui)
 set(GUI_HDRS
     ${GUI_HDR_DIR}/AboutFrame.h
@@ -762,9 +765,11 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/compass.h
     ${GUI_HDR_DIR}/concanv.h
     ${GUI_HDR_DIR}/ConfigMgr.h
+    ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dialog.h
     ${GUI_HDR_DIR}/conn_params_panel.h
     ${GUI_HDR_DIR}/DetailSlider.h
+    ${GUI_HDR_DIR}/displays.h
     ${GUI_HDR_DIR}/download_mgr.h
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
@@ -785,7 +790,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/MUIBar.h
     ${GUI_HDR_DIR}/n0183_ctx_factory.h
     ${GUI_HDR_DIR}/navutil.h
-    ${GUI_HDR_DIR}/nmea_ctx_factory.h
     ${GUI_HDR_DIR}/NMEALogWindow.h
     ${GUI_HDR_DIR}/ocpCursor.h
     ${GUI_HDR_DIR}/ocpndc.h
@@ -821,7 +825,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/safe_mode_gui.h
     ${GUI_HDR_DIR}/SendToGpsDlg.h
     ${GUI_HDR_DIR}/SendToPeerDlg.h
-    ${GUI_HDR_DIR}/shaders.h
     ${GUI_HDR_DIR}/Station_Data.h
     ${GUI_HDR_DIR}/styles.h
     ${GUI_HDR_DIR}/svg_utils.h
@@ -849,9 +852,13 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/wx_instance_chk.h
 )
-
+list(APPEND  GUI_HDRS
+    ${GUI_S57_DIR}/include/ogr_s57.h
+    ${GUI_S57_DIR}/include/S57ClassRegistrar.h
+    ${GUI_S57_DIR}/include/s57.h
+    ${GUI_S57_DIR}/include/s57RegistrarMgr.h
+)
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
 set(GUI_SRC
     ${GUI_SRC_DIR}/about.cpp
@@ -877,9 +884,11 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/ConfigMgr.cpp
+    ${GUI_SRC_DIR}/connection_edit.cpp
     ${GUI_SRC_DIR}/connections_dialog.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/DetailSlider.cpp
+    ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/FlexHash.cpp
     ${GUI_SRC_DIR}/FontDesc.cpp
@@ -894,7 +903,11 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/LinkPropDlg.cpp
     ${GUI_SRC_DIR}/load_errors_dlg.cpp
     ${GUI_SRC_DIR}/MarkInfo.cpp
-    ${GUI_SRC_DIR}/mbtiles.cpp
+    ${GUI_SRC_DIR}/mbtiles/mbtiles.cpp
+    ${GUI_SRC_DIR}/mbtiles/WorkerThread.hpp
+    ${GUI_SRC_DIR}/mbtiles/TileQueue.hpp
+    ${GUI_SRC_DIR}/mbtiles/TileDescriptor.hpp
+    ${GUI_SRC_DIR}/mbtiles/TileCache.hpp
     ${GUI_SRC_DIR}/MUIBar.cpp
     ${GUI_SRC_DIR}/navutil.cpp
     ${GUI_SRC_DIR}/NMEALogWindow.cpp
@@ -926,13 +939,11 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/RoutePropDlg.cpp
     ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
-    ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/S57QueryDialog.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
     ${GUI_SRC_DIR}/SencManager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
-    ${GUI_SRC_DIR}/shaders.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
@@ -954,6 +965,21 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
 )
+
+list(APPEND GUI_SRC
+  ${GUI_S57_DIR}/src/ogrs57datasource.cpp
+  ${GUI_S57_DIR}/src/ogrs57layer.cpp
+  ${GUI_S57_DIR}/src/s57classregistrar.cpp
+  ${GUI_S57_DIR}/src/s57featuredefns.cpp
+  ${GUI_S57_DIR}/src/s57obj.cpp
+  ${GUI_S57_DIR}/src/s57reader.cpp
+  ${GUI_S57_DIR}/src/s57RegistrarMgr.cpp
+)
+
+if (OCPN_USE_GL)
+  list(APPEND GUI_HDRS${GUI_HDR_DIR}/shaders.h)
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/shaders.cpp)
+endif()
 
 if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
@@ -1005,6 +1031,7 @@ target_include_directories(
   INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
             ${CMAKE_CURRENT_SOURCE_DIR}/include
             ${CMAKE_CURRENT_SOURCE_DIR}/resources
+            ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
 )
 if (MSVC)
   target_include_directories(_opencpn INTERFACE ${CMAKE_SOURCE_DIR}/buildwin)
@@ -1026,9 +1053,11 @@ set_target_properties(
 
 target_include_directories(
   ${PACKAGE_NAME} BEFORE
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gui/include/gui
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}/resources
+          ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
+          ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/s57/include
 )
 
 if (QT_ANDROID)
@@ -1059,6 +1088,10 @@ if (APPLE)
     target_include_directories(
       ${PACKAGE_NAME} PRIVATE "${OCPN_DEPS_BUNDLE_PATH}/include"
     )
+    set_target_properties(${PACKAGE_NAME} PROPERTIES
+      BUILD_RPATH "${OCPN_DEPS_BUNDLE_PATH}/lib"
+      INSTALL_RPATH "${OCPN_DEPS_BUNDLE_PATH}/lib"
+  )
   endif ()
 endif ()
 
@@ -1225,7 +1258,7 @@ if (UNIX)
     target_link_libraries(${PACKAGE_NAME} PRIVATE ${ZLIB_LIBRARY})
     find_package(X11)
     if (X11_FOUND AND NOT APPLE)
-      target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES})
+      target_link_libraries(${PACKAGE_NAME} PRIVATE ${X11_LIBRARIES} ${X11_Xrandr_LIB})
       set(OCPN_HAVE_X11 ON) # => config.h
     endif ()
     if (NOT APPLE)
@@ -1338,10 +1371,8 @@ if (OCPN_USE_SVG)
     message(STATUS "wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG")
     add_definitions(-DocpnUSE_SVG) # Goes into config.h, leave as global
     add_definitions(-DocpnUSE_wxBitmapBundle)
-    set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
   else ()
     message(STATUS "wxWidgets older than 3.1.6 detected, using wxSVG")
-    set(PKGPROJ_TEMPLATE OpenCPN.FrameDir.pkgproj.in)
     if (NOT QT_ANDROID)
       include(OcpnFindCairo)
       include(OcpnFindExpat)
@@ -1457,8 +1488,11 @@ if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
   set(LIBARCHIVE_COMMENT_END "-->")
 endif ()
 
-# Ensure we have boost::filesystem if std::filesystem is missing.
-include(StdFilesystem)
+# Add android and windows extra, bundled GL headers
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+
+# Ensure we have ghc::filesystem if std::filesystem is missing.
+add_subdirectory(libs/std_filesystem)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
 
 message(STATUS "    Adding local LIBTESS2")
@@ -1474,7 +1508,6 @@ if (MSVC)
 endif ()
 
 message(STATUS "S57 ENC support: enabled")
-add_subdirectory(s57)
 
 if (OCPN_USE_GARMINHOST)
   add_subdirectory("libs/garmin")
@@ -1498,7 +1531,9 @@ use_bundled_lib(USE_BUNDLED_LZ4 lz4)
 if (LZ4_FOUND AND NOT USE_BUNDLED_LZ4)
   message(STATUS "Building with system lz4")
   include_directories(${LZ4_INCLUDE_DIR})
-  target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+  if (OCPN_USE_GL)
+    target_link_directories(TEXCMP PRIVATE ${LZ4_LIBRARY_DIRS})
+  endif ()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${LZ4_LIBRARIES})
 else ()
   message(STATUS "Building with bundled lz4")
@@ -1516,7 +1551,6 @@ if ("${wxWidgets_LIBRARIES}" MATCHES "gtk3u")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
 endif ()
-include(SoundConfig)
 configure_file(
   ${CMAKE_SOURCE_DIR}/cmake/in-files/config.h.in
   ${CMAKE_BINARY_DIR}/include/config.h
@@ -1535,6 +1569,7 @@ if (CMAKE_HOST_WIN32)
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
     target_link_libraries(${PACKAGE_NAME} PRIVATE gdiplus.lib)
+    target_link_libraries(${PACKAGE_NAME} PRIVATE Shcore.lib)
   endif ()
 endif ()
 
@@ -1856,9 +1891,13 @@ if (LIBLZMA_FOUND)
 endif ()
 
 # Add targets used elsewhere, notably by model
+if (QT_ANDROID)
+  add_subdirectory(libs/android_jvm)
+endif ()
 
 add_subdirectory(libs/IXWebSocket)
 add_subdirectory(libs/gdal)
+add_subdirectory(libs/gl_headers)
 add_subdirectory(libs/geoprim)
 add_subdirectory(libs/iso8211)
 add_subdirectory(libs/mDNS)
@@ -1996,8 +2035,8 @@ if (NOT APPLE)
         message(STATUS \"Installed udev dongle rule\")
       else ()
         message(STATUS \"Skipped installing udev dongle rule\")
-      endif ()
-    endif ()
+  endif ()
+endif ()
   ")
 
 endif ()
@@ -2565,39 +2604,23 @@ if (APPLE)
     COMPONENT Runtime
   )
 
-  # Build standard MacOS installer package Copy a few generic files so the
-  # Packages installer builder can find them relative to
-  # ${CMAKE_CURRENT_BINARY_DIR} This avoids absolute paths in the XXX.pkgproj
-  # file
-  configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/${PKGPROJ_TEMPLATE}
-    ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
-  )
   configure_file(
     ${PROJECT_SOURCE_DIR}/COPYING.gplv2 ${CMAKE_CURRENT_BINARY_DIR}/GPLv2.txt
     COPYONLY
   )
-
-  set(OSX_PKG_FILE
-      ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.pkg
-  )
-  add_custom_command(
-    OUTPUT ${OSX_PKG_FILE}
-    COMMAND /usr/local/bin/packagesbuild -F ${CMAKE_CURRENT_BINARY_DIR}
-            ${CMAKE_CURRENT_BINARY_DIR}/OpenCPN.pkgproj
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS ${OSX_PKG_FILE}
-    COMMENT "create-pkg [${PACKAGE_NAME}]: Generating pkg: ${OSX_PKG_FILE}"
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/buildosx/distro.plist.in
+    ${CMAKE_CURRENT_BINARY_DIR}/distro.plist
   )
 
   # Build standard MacOS .dmg
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
     COMMAND
-      ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer"
+      create-dmg --volname "OpenCPN Installer"
       --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200
       120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150
-      --hide-extension OpenCPN.app --app-drop-link 390 145
+      --hide-extension OpenCPN.app --app-drop-link 390 145 --no-internet-enable
       ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}.dmg
       ${CMAKE_INSTALL_PREFIX}/bin/
     DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
@@ -2633,7 +2656,7 @@ if (APPLE)
     component-pkg
     COMMAND
       pkgbuild --root /tmp/opencpn/bin/OpenCPN.app --identifier org.opencpn
-      --install-location /Applications/OpenCPN.app --min-os-version 10.13
+      --install-location /Applications/OpenCPN.app
       --scripts "${CMAKE_SOURCE_DIR}/buildosx/scripts" OpenCPN.app.pkg
   )
   add_dependencies(component-pkg show-bundled-libs pkg-tmp)
@@ -2641,7 +2664,7 @@ if (APPLE)
   add_custom_target(
     build-macos-pkg
     COMMAND
-      productbuild --distribution ../buildosx/distro.plist --version
+      productbuild --distribution distro.plist --version
       ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} --identifier
       org.opencpn ${MACOS_PKG}
   )
@@ -2654,9 +2677,7 @@ if (APPLE)
   add_dependencies(macos-pkg remove-tmp-pkg)
 
   # Select what to do for the "create-pkg" target
-  if ("${APKG_MOD}" EQUAL 10)
-    add_custom_target(create-pkg DEPENDS ${OSX_PKG_FILE})
-  elseif ("${APKG_MOD}" EQUAL 11)
+  if ("${APKG_MOD}" EQUAL 11)
     add_custom_target(create-pkg)
     add_dependencies(create-pkg macos-pkg)
   else ()
@@ -2695,6 +2716,10 @@ if (NOT QT_ANDROID)
   add_subdirectory(cli)
 endif ()
 
+if (NOT QT_ANDROID AND OCPN_USE_GL)
+  add_subdirectory(glutil)
+endif ()
+
 if (OCPN_BUILD_TEST)
   add_subdirectory(libs/gtest)
   add_subdirectory(test)
@@ -2715,6 +2740,7 @@ else ()
 endif ()
 
 if (QT_ANDROID)
+  target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::java-jvm)
   target_include_directories(
     ${PACKAGE_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include

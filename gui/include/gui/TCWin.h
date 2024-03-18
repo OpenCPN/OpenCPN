@@ -121,6 +121,7 @@ private:
   wxPen *pblack_3;
   wxPen *pblack_4;
   wxPen *pred_2;
+  wxPen *pgraph;
   wxBrush *pltgray;
   wxBrush *pltgray2;
 

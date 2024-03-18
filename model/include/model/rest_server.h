@@ -34,14 +34,9 @@
 
 
 // MacOS 1.13:
-#if defined(__clang_major__) && (__clang_major__ < 15)
+#if (defined(__clang_major__) && (__clang_major__ < 15))
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
-
-// Ubuntu Bionic:
-#elif !defined(__clang_major__) && defined(__GNUC__) && (__GNUC__ < 8)
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
 
 #else
 #include <filesystem>
@@ -176,6 +171,45 @@ public:
  *    - Returns (example):
  *        {"version": "5.8.9" }
  *
+ *  GET /api/list-routes  <br>
+ *  Return list of available routes
+ *    - source=`<ip>` Mandatory, origin ip address or hostname.
+ *    - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *    - Returns json data
+ *      {
+ *        "version": "5.8.0",
+ *        "routes":  [ ["guid-1": "name1" ], ["guid-2": "name2" ], ... ]
+ *      }
+ *
+ *
+ *  GET /api/activate-route  <br>
+ *  Activate an existing route.
+ *    - source=`<ip>` Mandatory, origin ip address or hostname.
+ *    - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *    - guid=`<guid>` Route guid.
+ *    - Returns json data (activating already active route silently ignored)
+ *         {"result": `<code>`}
+ *
+ *  GET /api/reverse-route  <br>
+ *  Reverse an existing route
+ *    - source=`<ip>` Mandatory, origin ip address or hostname.
+ *    - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *    - guid=`<guid>` Route guid.
+ *    - Returns json data
+ *         {"result": `<code>`}
+ *
+ *  POST /api/plugin-msg
+ *  Upload string message forwarded to all plugins
+ *     - Parameters:
+ *         - source=`<ip>` Mandatory, origin ip address or hostname.
+ *         - api_key=`<key>` Mandatory, as obtained when pairing, see below.
+ *         - id=`<id>` Mandatory, message id used by listeners.
+ *     - Body:
+ *         - Arbitrary text.
+ *     - Returns:
+ *         {"result": `<code>`}
+ *
+ *
  * Authentication uses a pairing mechanism. When an unpaired device
  * tries to connect, the API generates a random pincode which is
  * sent to the connecting party where it is displayed to user. User
@@ -198,6 +232,9 @@ public:
 
   /** Notified with a string GUID when user wants to activate a route. */
   EventVar activate_route;
+
+  /** Notified with a string GUID when user wants to reverse a route. */
+  EventVar reverse_route;
 };
 
 /** AbstractRestServer implementation and interface to underlying IO thread. */
@@ -205,6 +242,7 @@ class RestServer : public AbstractRestServer, public wxEvtHandler {
   friend class RestServerObjectApp;  ///< Unit test hook
   friend class RestCheckWriteApp;    ///< Unit test hook
   friend class RestServerPingApp;    ///< Unit test hook
+  friend class RestPluginMsgApp;     ///< Unit test hook
 
 public:
   RestServer(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable);
@@ -232,12 +270,14 @@ public:
   /** Semi-static storage used by IoThread C code. */
   std::string m_key_file;
 
+  /** IoThread interface: body of return message, if any. */
+  std::string m_reply_body;
+
   /** IoThread interface: Guards return_status */
   std::mutex ret_mutex;
 
   /** IoThread interface: Guards return_status */
   std::condition_variable return_status_cv;
-
 
   /**
    * IoThread interface: Binary exit synchronization, released when

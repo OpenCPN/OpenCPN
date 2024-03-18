@@ -35,6 +35,7 @@ extern bool g_rebuild_gl_cache;
 extern bool g_parse_all_enc;
 extern bool g_bportable;
 extern bool g_bdisable_opengl;
+extern std::string g_configdir;
 extern std::vector<std::string> g_params;
 
 #endif  // _CMDLINE_H__

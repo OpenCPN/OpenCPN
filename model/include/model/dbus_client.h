@@ -26,8 +26,8 @@
 #include <thread>
 #include <utility>
 
-#include "dbus_server.h"
-#include "local_api.h"
+#include "model/dbus_server.h"
+#include "model/local_api.h"
 
 /** Implement LocalClientApi on linux using Dbus mechanisms.  */
 class DbusLocalClient : public LocalClientApi {

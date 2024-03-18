@@ -26,9 +26,9 @@
 #include <stdlib.h>
 
 #include "model/ipc_api.h"
-#include "wx_instance_chk.h"
+#include "model/wx_instance_chk.h"
 
-#ifdef __linux__
+#if defined(__linux__)  && !defined(__ANDROID__)
 #include "model/dbus_client.h"
 #include "model/dbus_server.h"
 #endif
@@ -38,7 +38,24 @@ static InstanceCheck& GetWxInstanceChk() {
   return wx_check;
 }
 
-#ifdef __linux__
+#ifdef __ANDROID__
+
+std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
+  return std::unique_ptr<LocalClientApi>(new DummyIpcClient());
+}
+
+LocalServerApi& LocalServerApi:: GetInstance() {
+  return DummyIpcServer::GetInstance();
+}
+
+void LocalServerApi::ReleaseInstance() {}
+
+InstanceCheck& InstanceCheck::GetInstance() {
+  return DummyInstanceChk::GetInstance();
+}
+
+
+#elif defined(__linux__)
 static bool UseDbus() {
   return getenv("FLATPAK_ID") != 0 || getenv("OCPN_FORCE_DBUS");
 }
@@ -55,6 +72,8 @@ LocalServerApi& LocalServerApi:: GetInstance() {
   return UseDbus() ? DbusServer::GetInstance() : IpcConnection::GetInstance();
 }
 
+void LocalServerApi::ReleaseInstance() {}
+
 InstanceCheck& InstanceCheck::GetInstance() {
   if (UseDbus())
     return DbusServer::GetInstance();
@@ -62,7 +81,7 @@ InstanceCheck& InstanceCheck::GetInstance() {
     return GetWxInstanceChk();
 }
 
-#else    // __linux__
+#else  // __linux__ nor __ANDROID__
 std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
   return std::unique_ptr<LocalClientApi>(new IpcClient());
 }
@@ -70,6 +89,8 @@ std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
 LocalServerApi& LocalServerApi:: GetInstance() {
   return IpcConnection::GetInstance();
 }
+
+void LocalServerApi::ReleaseInstance() { IpcConnection::ReleaseInstance(); }
 
 InstanceCheck& InstanceCheck::GetInstance() {
   return GetWxInstanceChk();

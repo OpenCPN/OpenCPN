@@ -31,8 +31,8 @@
 #include <wx/thread.h>
 
 #include "config.h"
-#include "comm_drv_n2k.h"
-#include "conn_params.h"
+#include "model/comm_drv_n2k.h"
+#include "model/conn_params.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"

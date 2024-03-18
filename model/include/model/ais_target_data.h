@@ -34,7 +34,8 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 
-#include "meteo_points.h"
+#include "model/meteo_points.h"
+#include "model/navutil_base.h"
 
 #define SHIP_NAME_LEN 35
 #define DESTINATION_LEN 21
@@ -146,7 +147,7 @@ struct Ais8_001_22 {
 
 struct AisTargetCallbacks {
   std::function<double(double)> get_mag;
-  AisTargetCallbacks(): get_mag([](double a) { return 1.0; }) {}
+  AisTargetCallbacks(): get_mag([](double a) { return toMagnetic(a); }) {}
 };
 
 
@@ -213,6 +214,7 @@ public:
   char Destination[DESTINATION_LEN];
 
   time_t PositionReportTicks;
+  time_t LastPositionReportTicks;
   time_t StaticReportTicks;
 
   int RecentPeriod;
@@ -257,7 +259,6 @@ public:
   bool b_show_track;
 
   AisMeteoData met_data;
-  bool b_hasImoDac, b_hasMeteoFi;
   std::vector<AISTargetTrackPoint> m_ptrack;
 
   std::unordered_map<int, Ais8_001_22> area_notices;

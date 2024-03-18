@@ -60,6 +60,7 @@ endif (APPLE)
 if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+  ADD_DEFINITIONS(-DMAKING_PLUGIN)
 endif ()
 
 # QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
@@ -106,8 +107,6 @@ set(SRC_GRIB
     src/msg.h
     src/email.h
     src/email.cpp
-    src/pi_TexFont.h
-    src/pi_TexFont.cpp
     src/GribTable.h
     src/GribTable.cpp
     src/CustomGrid.h
@@ -122,6 +121,14 @@ set(SRC_GRIB
     src/pi_ocpndc.cpp
     src/pi_ocpndc.h
 )
+
+if (OCPN_USE_GL)
+set(SRC_GRIB ${SRC_GRIB}
+  src/pi_TexFont.h
+  src/pi_TexFont.cpp
+)
+
+endif ()
 if (WIN32)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.h)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
@@ -251,6 +258,7 @@ else (NOT QT_ANDROID)
 endif (NOT QT_ANDROID)
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT WIN32)
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lz")
@@ -289,7 +297,7 @@ endif (
   AND NOT QT_ANDROID
 )
 
-target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET})
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (APPLE)
   target_compile_options(

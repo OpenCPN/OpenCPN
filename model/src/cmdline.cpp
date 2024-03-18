@@ -19,6 +19,7 @@
 
 #include "model/cmdline.h"
 
+
 int g_unit_test_1 = 0;
 int g_unit_test_2 = 0;
 bool g_start_fullscreen = false;
@@ -26,4 +27,5 @@ bool g_rebuild_gl_cache = false;
 bool g_parse_all_enc = false;
 bool g_bportable = false;
 bool g_bdisable_opengl = false;
+std::string g_configdir;
 std::vector<std::string> g_params;

@@ -54,6 +54,7 @@
 
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
+#include <wx/display.h>
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
@@ -67,8 +68,10 @@
 #include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui.h"
 #include "model/idents.h"
 #include "model/local_api.h"
+#include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
@@ -76,6 +79,7 @@
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "model/sys_events.h"
 #include "model/track.h"
 
 #include "AboutFrameImpl.h"
@@ -95,6 +99,7 @@
 #include "compass.h"
 #include "concanv.h"
 #include "ConfigMgr.h"
+#include "displays.h"
 #include "dychart.h"
 #include "FontMgr.h"
 #include "glChartCanvas.h"
@@ -151,7 +156,6 @@ extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ConsoleCanvas *console;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Routeman *g_pRouteMan;
-extern WayPointman *pWayPointMan;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern RoutePropDlgImpl *pRoutePropDialog;
 extern TrackPropDlg *pTrackPropDialog;
@@ -204,13 +208,11 @@ extern int g_ChartScaleFactor;
 extern int g_last_ChartScaleFactor;
 extern int g_ShipScaleFactor;
 extern float g_ShipScaleFactorExp;
-extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 
 extern bool g_bShowTide;
 extern bool g_bShowCurrent;
 extern bool g_bUIexpert;
-extern Select *pSelect;
 extern RouteList *pRouteList;
 extern wxString g_default_wp_icon;
 extern std::vector<std::string> TideCurrentDataSet;
@@ -251,13 +253,13 @@ extern int options_lastPage;
 extern int options_subpage;
 extern bool b_reloadForPlugins;
 extern ChartCanvas *g_focusCanvas;
-extern bool g_bNeedDBUpdate;
+extern int g_NeedDBUpdate;
 extern bool g_bFullscreen;
 extern wxString gWorldMapLocation, gDefaultWorldMapLocation;
 extern ChartGroupArray *g_pGroupArray;
 extern bool g_bEnableZoomToCursor;
 extern double g_display_size_mm;
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern wxString ChartListFileName;
 extern bool g_bFullscreenToolbar;
 extern arrayofCanvasPtr g_canvasArray;
@@ -268,7 +270,6 @@ extern unsigned int g_canvasConfig;
 extern bool g_bFullScreenQuilt;
 extern bool g_bQuiltEnable;
 extern wxString *pInit_Chart_Dir;
-extern bool g_bShowAIS;
 extern bool g_bShowOutlines;
 extern bool g_bTempShowMenuBar;
 extern bool g_bShowStatusBar;
@@ -286,7 +287,6 @@ extern bool g_bAutoAnchorMark;
 extern wxDateTime g_start_time;
 extern bool g_bcompression_wait;
 extern bool g_bquiting;
-extern wxString g_AisTargetList_perspective;
 extern bool b_inCloseWindow;
 extern bool b_inCompressAllCharts;
 extern long g_maintoolbar_orient;
@@ -310,7 +310,6 @@ extern bool g_bHasHwClock;
 extern bool s_bSetSystemTime;
 extern bool bVelocityValid;
 extern int gHDx_Watchdog;
-extern AisDecoder *g_pAIS;
 extern AisInfoGui *g_pAISGUI;
 
 extern bool g_bUseGLL;
@@ -462,7 +461,7 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
 
   wxString vs = wxString::Format(wxT(" .. Version %s"), VERSION_FULL);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidShowDisclaimer(_("OpenCPN for Android") + vs, msg0);
   return true;
 #else
@@ -630,8 +629,16 @@ static void onBellsFinishedCB(void *ptr) {
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
-    : wxFrame(frame, -1, title, pos, size, style)
+    : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName)
       {
+  g_current_monitor = wxDisplay::GetFromWindow(this);
+#ifdef __WXOSX__
+  // On retina displays there is a difference between the physical size of the OpenGL canvas and the DIP
+  // This is not observed anywhere else so far, so g_current_monitor_dip_px_ratio cna be kept 1.0 everywhere else
+  if (g_bopengl) {
+    g_current_monitor_dip_px_ratio = g_monitor_info[g_current_monitor].width_px / g_monitor_info[g_current_monitor].width;
+  }
+#endif
   m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
 
@@ -662,7 +669,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   //      Direct the Toolbar Animation timer to this frame
   ToolbarAnimateTimer.SetOwner(this, TOOLBAR_ANIMATE_TIMER);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 //    m_PrefTimer.SetOwner( this, ANDROID_PREF_TIMER );
 //    Connect( m_PrefTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler(
 //    MyFrame::OnPreferencesResultTimer ), NULL, this );
@@ -847,15 +854,15 @@ void MyFrame::RebuildChartDatabase() {
   if (ChartDirArray.GetCount()) {
     //              Create and Save a new Chart Database based on the hints
     //              given in the config file
-
-    wxString msg1(
+    if(g_NeedDBUpdate == 1) {
+      wxString msg1(
         _("OpenCPN needs to update the chart database from config file "
           "entries...."));
 
-    OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),
+      OCPNMessageDialog mdlg(gFrame, msg1, wxString(_("OpenCPN Info")),
                            wxICON_INFORMATION | wxOK);
-    int dlg_ret;
-    dlg_ret = mdlg.ShowModal();
+      mdlg.ShowModal();
+    }
 
     delete ChartData;
     ChartData = new ChartDB();
@@ -1167,12 +1174,13 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
         cc = g_canvasArray[0];
       }
 
+#ifdef ocpnUSE_GL
       // Verify that glCanvas is ready, if necessary
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
         cc->GetglCanvas()->Show();
       }
-
+#endif
       config_array.Item(0)->canvas = cc;
 
       cc->SetDisplaySizeMM(g_display_size_mm);
@@ -1203,10 +1211,11 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       }
 
       // Verify that glCanvas is ready, if not already built
+#ifdef ocpnUSE_GL
       if (g_bopengl) {
         if (!cc->GetglCanvas()) cc->SetupGlCanvas();
       }
-
+#endif
       config_array.Item(0)->canvas = cc;
 
       cc->ApplyCanvasConfig(config_array.Item(0));
@@ -1260,7 +1269,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       g_pauimgr->GetPane(cc).RightDockable(true);
       g_pauimgr->GetPane(cc).Right();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       config_array.Item(1)->canvasSize =
           wxSize(GetClientSize().x / 2, GetClientSize().y);
       g_pauimgr->GetPane(cc).BestSize(GetClientSize().x / 2, GetClientSize().y);
@@ -1301,7 +1310,7 @@ void MyFrame::RequestNewToolbars(bool bforcenew) {
   BuildiENCToolbar(bforcenew);
   PositionIENCToolbar();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   DoChartUpdate();
 #endif
 }
@@ -1509,7 +1518,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   // The Options dialog, and other deferred init items, are not fully
   // initialized. Best to just cancel the close request. This is probably only
   // reachable on slow hardware, or on Android life-cycle events...
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (!g_bDeferredInitDone) return;
 #endif
 
@@ -1677,7 +1686,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   pConfig->UpdateNavObj();
 
-  //    pConfig->m_pNavObjectChangesSet->Clear();
   pConfig->m_pNavObjectChangesSet->reset();
 
   // Remove any leftover Routes and Waypoints from config file as they were
@@ -1700,7 +1708,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pCM93OffsetDialog = NULL;
   }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // .. for each canvas...
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -1814,6 +1822,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   NMEALogWindow::Shutdown();
 
+  ReleaseApiListeners();
+
   g_MainToolbar = NULL;
   g_bTempShowMenuBar = false;
 
@@ -1859,7 +1869,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 
   wxLogMessage(_T("gFrame destroyed."));
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #ifndef USE_ANDROID_GLES2
   qDebug() << "Calling OnExit()";
   wxTheApp->OnExit();
@@ -1869,10 +1879,44 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 }
 
 void MyFrame::OnMove(wxMoveEvent &event) {
+  auto idx = wxDisplay::GetFromWindow(this);
+  if (idx != wxNOT_FOUND && g_current_monitor != static_cast<size_t>(idx) && static_cast<size_t>(idx) < g_monitor_info.size()) {
+    g_current_monitor = idx;
+#ifdef __WXOSX__
+    // On retina displays there is a difference between the physical size of the OpenGL canvas and the DIP
+    // This is not observed anywhere else so far, so g_current_monitor_dip_px_ratio cna be kept 1.0 everywhere else
+    if (g_bopengl) {
+      g_current_monitor_dip_px_ratio = g_monitor_info[idx].width_px / g_monitor_info[idx].width;
+    }
+#endif
+    DEBUG_LOG << "Moved to " << idx
+#if wxCHECK_VERSION(3, 1, 6)
+    << " PPI: " << wxDisplay(idx).GetPPI().GetX() << "x" << wxDisplay(idx).GetPPI().GetY()
+    << " SF wxDisplay: " << wxDisplay(idx).GetScaleFactor()
+#endif
+    << " Size wxDisplay: " << wxDisplay(idx).GetGeometry().GetWidth() << "x" << wxDisplay(idx).GetGeometry().GetHeight()
+    << " MM wxDisplay: " << wxGetDisplaySizeMM().GetX() << "x" << wxGetDisplaySizeMM().GetY()
+    << " Name wxDisplay: " << wxDisplay(idx).GetName().c_str()
+    << " Real: " << g_monitor_info[idx].width_mm << "x" << g_monitor_info[idx].height_mm << "mm "
+    << g_monitor_info[idx].width_mm << "x" << g_monitor_info[idx].height_mm << "mm "
+    << g_monitor_info[idx].width << "x" << g_monitor_info[idx].height << "DIP "
+    << g_monitor_info[idx].width_px << "x" << g_monitor_info[idx].height_px << "px"
+    << g_monitor_info[idx].scale << "%";
+    if(g_config_display_size_manual) {
+      if(g_config_display_size_mm.size() > static_cast<size_t>(idx)) {
+        g_display_size_mm = g_config_display_size_mm[idx];
+      } // Do nothing if the user did not set any value for this monitor
+    } else {
+      g_display_size_mm = g_monitor_info[idx].width_mm;
+    }
+  }
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->SetMUIBarPosition();
+    if (cc) {
+      cc->SetMUIBarPosition();
+      cc->SetDisplaySizeMM(g_display_size_mm);
+    }
   }
 
 #ifdef __WXOSX__
@@ -1906,7 +1950,7 @@ void MyFrame::ProcessCanvasResize(void) {
 
   PositionIENCToolbar();
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   TriggerRecaptureTimer();
 #endif
 }
@@ -2080,7 +2124,7 @@ void MyFrame::ODoSetSize(void) {
     font_size =
         wxMax(font_size, min_font_size);  // minimum to stop it being unreadable
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     font_size = statusBarFont->GetPointSize();
 #endif
 
@@ -2096,7 +2140,7 @@ void MyFrame::ODoSetSize(void) {
     m_pStatusBar->SetFont(*pstat_font);
     m_pStatusBar->SetForegroundColour(
         FontMgr::Get().GetFontColor(_("StatusBar")));
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     min_height = (pstat_font->GetPointSize() * getAndroidDisplayDensity()) + 10;
     min_height =
         (min_height >> 1) * 2;  // force even number, makes GLCanvas happier...
@@ -2167,7 +2211,7 @@ void MyFrame::ODoSetSize(void) {
   options_lastWindowSize = wxSize(0, 0);
   options_lastWindowPos = wxPoint(0, 0);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // If the options dialog is displayed, this will have the effect of
   // raising the dialog above the main and canvas-GUI toolbars.
   // If the dialog is not shown, no harm done
@@ -2423,7 +2467,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     }
 
     case ID_MENU_SETTINGS_BASIC: {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       /// LoadS57();
       androidDisableFullScreen();
       g_MainToolbar->HideTooltip();
@@ -2584,7 +2628,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_CMD_APPLY_SETTINGS: {
       applySettingsString(event.GetString());
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidRestoreFullScreen();
 #endif
 
@@ -2947,7 +2991,7 @@ void MyFrame::TrackOn(void) {
 
   SetMenubarItemState(ID_MENU_NAV_TRACK, g_bTrackActive);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidSetTrackTool(true);
 #endif
 
@@ -3018,7 +3062,7 @@ Track *MyFrame::TrackOff(bool do_add_point) {
     g_MainToolbar->SetToolShortHelp(ID_TRACK, _("Enable Tracking"));
   SetMenubarItemState(ID_MENU_NAV_TRACK, g_bTrackActive);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidSetTrackTool(false);
 #endif
 
@@ -3340,7 +3384,7 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
 wxString _menuText(wxString name, wxString shortcut) {
   wxString menutext;
   menutext << name;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   menutext << _T("\t") << shortcut;
 #endif
   return menutext;
@@ -3857,7 +3901,7 @@ int MyFrame::DoOptionsDialog() {
 
   g_options->SetInitialPage(options_lastPage, options_subpage);
 
-#ifndef __OCPN__ANDROID__  //    if(!g_bresponsive){
+#ifndef __ANDROID__  //    if(!g_bresponsive){
   g_options->lastWindowPos = options_lastWindowPos;
   if (options_lastWindowPos != wxPoint(0, 0)) {
     g_options->Move(options_lastWindowPos);
@@ -3880,7 +3924,7 @@ int MyFrame::DoOptionsDialog() {
 
   if (g_MainToolbar) g_MainToolbar->DisableTooltips();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionsMenu(false);
   androidDisableFullScreen();
@@ -3919,7 +3963,7 @@ int MyFrame::DoOptionsDialog() {
 
   int rr = g_options->ShowModal();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidEnableBackButton(true);
   androidEnableOptionsMenu(true);
   androidRestoreFullScreen();
@@ -3929,7 +3973,7 @@ int MyFrame::DoOptionsDialog() {
   if (g_MainToolbar) g_MainToolbar->EnableTooltips();
 
   options_lastPage = g_options->lastPage;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  This is necessary to force a manual change to charts page,
   //  in order to properly refresh the chart directory list.
   //  Root cause:  In Android, trouble with clearing the wxScrolledWindow
@@ -3942,7 +3986,7 @@ int MyFrame::DoOptionsDialog() {
   options_lastWindowSize = g_options->lastWindowSize;
 
   if (1 /*b_sub*/) {  // always surface toolbar, and restart the timer if needed
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     g_MainToolbar->SetDockX(-1);
     g_MainToolbar->SetDockY(-1);
 #endif
@@ -4080,7 +4124,7 @@ int MyFrame::DoOptionsDialog() {
     RequestNewMasterToolbar(true);
 
   bool bMuiChange = false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bMuiChange = true;  // to pick up possible "zoom" button visibility change
 #endif
 
@@ -4115,7 +4159,7 @@ int MyFrame::DoOptionsDialog() {
   if (NMEALogWindow::Get().Active())
     NMEALogWindow::Get().GetTTYWindow()->Raise();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (g_pi_manager) g_pi_manager->NotifyAuiPlugIns();
 #endif
 
@@ -4282,8 +4326,8 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   }
 #endif
 
-  if ((g_config_display_size_mm > 0)  && g_config_display_size_manual){
-    g_display_size_mm = g_config_display_size_mm;
+  if (g_config_display_size_manual && g_config_display_size_mm.size() > g_current_monitor && g_config_display_size_mm[g_current_monitor] > 0) {
+    g_display_size_mm = g_config_display_size_mm[g_current_monitor];
   } else {
     g_display_size_mm = wxMax(50, g_Platform->GetDisplaySizeMM());
   }
@@ -4636,7 +4680,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       g_Platform->SetFullscreen(g_bFullscreen);
 
       // Rebuild chart database, if necessary
-      if (g_bNeedDBUpdate) {
+      if (g_NeedDBUpdate > 0) {
         RebuildChartDatabase();
         for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
           ChartCanvas *cc = g_canvasArray.Item(i);
@@ -4663,7 +4707,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           }
         }
 
-        g_bNeedDBUpdate = false;
+        g_NeedDBUpdate = 0;
       }
 
       // Load the waypoints. Both of these routines are very slow to execute
@@ -4900,7 +4944,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       GetPrimaryCanvas()->SetFocus();
       g_focusCanvas = GetPrimaryCanvas();
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       gFrame->Raise();
 #endif
 
@@ -4919,7 +4963,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       androidEnableBackButton(true);
       androidEnableRotation();
       androidEnableOptionItems(true);
@@ -4941,6 +4985,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   wxLog::FlushActive();
 
   RefreshAllCanvas(true);
+  wxGetApp().m_usb_watcher.Start();
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
@@ -4974,6 +5019,7 @@ void MyFrame::InitAppMsgBusListener() {
 /** Setup handling of events from the local ipc/dbus API. */
 #ifdef __ANDROID__
 void MyFrame::InitApiListeners() {}
+void MyFrame::ReleaseApiListeners() {}
 
 #else
 void MyFrame::InitApiListeners() {
@@ -4986,6 +5032,8 @@ void MyFrame::InitApiListeners() {
       [](const std::string& path) { return wxGetApp().OpenFile(path); };
 
 }
+
+void MyFrame::ReleaseApiListeners() { LocalServerApi::ReleaseInstance(); }
 #endif
 
 void MyFrame::HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg) {
@@ -5206,7 +5254,7 @@ void MyFrame::UpdateStatusBar() {
       if (g_bShowTrue)
         cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
       if (g_bShowMag)
-        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)GetMag(gCog),
+        cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)toMagnetic(gCog),
                                  0x00B0);
     } else
       cogs.Printf(("COG ---%c"), 0x00B0);
@@ -5722,7 +5770,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     }
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   // Update the navobj file on a fixed schedule (5 minutes)
   // This will do nothing if the navobj.changes file is empty and clean
@@ -5750,20 +5798,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
 }
 
-double MyFrame::GetMag(double a) {
-  if (!std::isnan(gVar)) {
-    if ((a - gVar) > 360.)
-      return (a - gVar - 360.);
-    else
-      return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-  } else {
-    if ((a - g_UserVar) > 360.)
-      return (a - g_UserVar - 360.);
-    else
-      return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-  }
-}
-
 double MyFrame::GetMag(double a, double lat, double lon) {
   double Variance = std::isnan(gVar) ? g_UserVar : gVar;
   auto loader = PluginLoader::getInstance();
@@ -5779,10 +5813,7 @@ double MyFrame::GetMag(double a, double lat, double lon) {
     if (fabs(gQueryVar) < 360.0)  // Don't use WMM variance if not updated yet
       Variance = gQueryVar;
   }
-  if ((a - Variance) > 360.)
-    return (a - Variance - 360.);
-  else
-    return ((a - Variance) >= 0.) ? (a - Variance) : (a - Variance + 360.);
+  return toMagnetic(a, Variance);
 }
 
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,
@@ -6072,7 +6103,7 @@ int g_lastMemTick = -1;
 /* Return total system RAM and size of program */
 /* Values returned are in kilobytes            */
 bool GetMemoryStatus(int *mem_total, int *mem_used) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidGetMemoryStatus(mem_total, mem_used);
 #endif
 
@@ -6791,7 +6822,7 @@ void MyFrame::applySettingsString(wxString settings) {
   }
 
   //  We do this is one case only to remove an orphan recovery window
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (previous_expert && !g_bUIexpert) {
     androidForceFullRepaint();
   }
@@ -6871,12 +6902,13 @@ void MyFrame::OnSuspendCancel(wxPowerEvent &WXUNUSED(event)) {
 int g_last_resume_ticks;
 void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
   wxDateTime now = wxDateTime::Now();
-  //    printf("OnResume...%d\n", now.GetTicks());
   wxLogMessage(_T("System resumed from suspend."));
 
+
   if ((now.GetTicks() - g_last_resume_ticks) > 5) {
-    wxLogMessage(_T("Restarting streams."));
-    //       printf("   Restarting streams\n");
+    SystemEvents::GetInstance().evt_resume.Notify();
+
+    wxLogMessage("Restarting streams.");
     g_last_resume_ticks = now.GetTicks();
 //FIXME (dave)
 #if 0
@@ -8392,6 +8424,7 @@ void LoadS57() {
     ps52plib->SetPLIBColorScheme(global_color_scheme, ChartCtxFactory());
 
     if (gFrame){
+      ps52plib->SetDisplayWidth(g_monitor_info[g_current_monitor].width);
       ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());
       double dip_factor = g_BasePlatform->GetDisplayDIPMult(gFrame);
       ps52plib->SetDIPFactor(dip_factor);

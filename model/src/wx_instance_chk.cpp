@@ -22,7 +22,7 @@
 
 #include "model/base_platform.h"
 #include "model/logger.h"
-#include "wx_instance_chk.h"
+#include "model/wx_instance_chk.h"
 
 #ifdef _MSC_VER
 #include <process.h>

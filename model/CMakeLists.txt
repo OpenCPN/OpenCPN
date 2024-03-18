@@ -17,8 +17,6 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 #*************************************************************************
 
-##set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
 
@@ -72,6 +70,7 @@ set(
   ${MODEL_HDR_DIR}/garmin_wrapper.h
   ${MODEL_HDR_DIR}/geodesic.h
   ${MODEL_HDR_DIR}/georef.h
+  ${MODEL_HDR_DIR}/gui.h
   ${MODEL_HDR_DIR}/hyperlink.h
   ${MODEL_HDR_DIR}/idents.h
   ${MODEL_HDR_DIR}/instance_check.h
@@ -87,6 +86,7 @@ set(
   ${MODEL_HDR_DIR}/nav_object_database.h
   ${MODEL_HDR_DIR}/navutil_base.h
   ${MODEL_HDR_DIR}/nmea_log.h
+  ${MODEL_HDR_DIR}/nmea_ctx_factory.h
   ${MODEL_HDR_DIR}/ocpn_types.h
   ${MODEL_HDR_DIR}/ocpn_utils.h
   ${MODEL_HDR_DIR}/own_ship.h
@@ -102,15 +102,17 @@ set(
   ${MODEL_HDR_DIR}/route.h
   ${MODEL_HDR_DIR}/routeman.h
   ${MODEL_HDR_DIR}/route_point.h
-  ${MODEL_HDR_DIR}/s57.h
-  ${MODEL_HDR_DIR}/S57ClassRegistrar.h
   ${MODEL_HDR_DIR}/safe_mode.h
   ${MODEL_HDR_DIR}/select.h
   ${MODEL_HDR_DIR}/select_item.h
   ${MODEL_HDR_DIR}/semantic_vers.h
   ${MODEL_HDR_DIR}/ser_ports.h
+  ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/track.h
+  ${MODEL_HDR_DIR}/usb_watch_daemon.h
+  ${MODEL_HDR_DIR}/wait_continue.h
   ${MODEL_HDR_DIR}/wx28compat.h
+  ${MODEL_HDR_DIR}/wx_instance_chk.h
 )
 
 set(MODEL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -147,7 +149,6 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_navmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
-  ${MODEL_SRC_DIR}/comm_plugin_api.cpp
   ${MODEL_SRC_DIR}/comm_util.cpp
   ${MODEL_SRC_DIR}/comm_vars.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
@@ -157,6 +158,7 @@ set(SRC
   ${MODEL_SRC_DIR}/garmin_protocol_mgr.cpp
   ${MODEL_SRC_DIR}/geodesic.cpp
   ${MODEL_SRC_DIR}/georef.cpp
+  ${MODEL_SRC_DIR}/gui.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
   ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
@@ -172,6 +174,7 @@ set(SRC
   ${MODEL_SRC_DIR}/own_ship.cpp
   ${MODEL_SRC_DIR}/peer_client.cpp
   ${MODEL_SRC_DIR}/pincode.cpp
+  ${MODEL_SRC_DIR}/plugin_api.cpp
   ${MODEL_SRC_DIR}/plugin_blacklist.cpp
   ${MODEL_SRC_DIR}/plugin_cache.cpp
   ${MODEL_SRC_DIR}/plugin_handler.cpp
@@ -188,6 +191,7 @@ set(SRC
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
   ${MODEL_SRC_DIR}/track.cpp
+  ${MODEL_SRC_DIR}/usb_watch_factory.cpp
   ${MODEL_SRC_DIR}/wx_instance_chk.cpp
 )
 
@@ -196,20 +200,25 @@ if (NOT MSVC)
   list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
 endif ()
 
-if (NOT QT_ANDROID)
+#if (NOT QT_ANDROID)
   list(APPEND SRC ${MODEL_SRC_DIR}/ipc_factories.cpp)
-endif ()
+#endif ()
 
 if (LINUX)
   list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_socketcan.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n2k_socketcan.cpp)
 endif ()
 
-if (LINUX)
+if (LINUX AND NOT QT_ANDROID)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_client.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_client.cpp)
   list(APPEND HDRS ${MODEL_HDR_DIR}/dbus_server.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/dbus_server.cpp)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/linux_usb_watch.h)
+  list(APPEND SRC ${MODEL_SRC_DIR}/linux_usb_watch.cpp)
+elseif(WIN32)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/win_usb_watch.h )
+  list(APPEND SRC ${MODEL_SRC_DIR}/win_usb_watch.cpp)
 endif ()
 
 if (OCPN_USE_GARMINHOST)
@@ -219,6 +228,11 @@ endif ()
 if (APPLE)
   list(APPEND HDRS ${MODEL_HDR_DIR}/macutils.h )
   list(APPEND SRC ${MODEL_SRC_DIR}/macutils.c)
+endif ()
+
+if (QT_ANDROID)
+  list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_bt.cpp)
+  list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n0183_android_int.cpp)
 endif ()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -234,6 +248,7 @@ target_include_directories(
   _OCPN_MODEL BEFORE INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${CMAKE_SOURCE_DIR}/model/include
+    ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/include
 )
 
@@ -276,6 +291,11 @@ if (UNIX AND NOT APPLE)
   endif ()
 endif ()
 
+if (LINUX)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::gtk)
+  target_link_libraries(_OCPN_MODEL INTERFACE ${X11_LIBRARIES} ${X11_Xrandr_LIB})
+endif ()
+
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(_OCPN_MODEL INTERFACE -fsanitize=${ENABLE_SANITIZER})
 endif ()
@@ -296,9 +316,9 @@ target_link_libraries(
     ocpn::pugixml
     ocpn::rapidjson
     ocpn::s52plib
-    ocpn::s57enc
     ocpn::sound
     ocpn::wxjson
+    ocpn::filesystem
     pico_sha2
 )
 
@@ -312,6 +332,7 @@ if (MSVC)
 endif ()
 
 if (QT_ANDROID)
+  target_link_libraries(_OCPN_MODEL INTERFACE ocpn::java-jvm)
   target_include_directories(_OCPN_MODEL INTERFACE
     ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
   )

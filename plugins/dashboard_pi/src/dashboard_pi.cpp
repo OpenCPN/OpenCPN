@@ -228,6 +228,7 @@ enum {
   ID_DBP_I_ALTI,
   ID_DBP_D_ALTI,
   ID_DBP_I_VMGW,
+  ID_DBP_I_HUM,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -344,6 +345,8 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("Local CPU Clock");
     case ID_DBP_I_SUNLCL:
       return _("Local Sunrise/Sunset");
+    case ID_DBP_I_HUM:
+      return _("Humidity");
   }
   return _T("");
 }
@@ -384,6 +387,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
     case ID_DBP_I_PITCH:
     case ID_DBP_I_HEEL:
     case ID_DBP_I_ALTI:
+    case ID_DBP_I_HUM:
       item.SetImage(0);
       break;
     case ID_DBP_D_SOG:
@@ -503,6 +507,7 @@ int dashboard_pi::Init(void) {
   mPriAlt = 99;
   mPriRSA = 99;  //Rudder angle
   mPriPitchRoll = 99; //Pitch and roll
+  mPriHUM = 99;  // Humidity
   m_config_version = -1;
   mHDx_Watchdog = 2;
   mHDT_Watchdog = 2;
@@ -526,6 +531,7 @@ int dashboard_pi::Init(void) {
   mALT_Watchdog = 2;
   mLOG_Watchdog = 2;
   mTrLOG_Watchdog = 2;
+  mHUM_Watchdog = 2;
 
   g_pFontTitle = new wxFontData();
   g_pFontTitle->SetChosenFont(wxFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL));
@@ -663,6 +669,13 @@ int dashboard_pi::Init(void) {
   listener_130310 = GetListener(id_130310, EVT_N2K_130310, this);
   Bind(EVT_N2K_130310, [&](ObservedEvt ev) {
     HandleN2K_130310(ev);
+  });
+
+    // Envorinment   PGN 130313
+  wxDEFINE_EVENT(EVT_N2K_130313, ObservedEvt);
+  NMEA2000Id id_130313 = NMEA2000Id(130313);
+  listener_130313 = GetListener(id_130313, EVT_N2K_130313, this);
+  Bind(EVT_N2K_130313, [&](ObservedEvt ev) { HandleN2K_130313(ev);
   });
 
   Start(1000, wxTIMER_CONTINUOUS);
@@ -899,6 +912,12 @@ void dashboard_pi::Notify() {
   if (mTrLOG_Watchdog <= 0) {
     SendSentenceToAllInstruments(OCPN_DBP_STC_VLW1, NAN, _T("-"));
     mTrLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+  }
+  mHUM_Watchdog--;
+  if (mHUM_Watchdog <= 0) {
+    mPriHUM = 99;
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, NAN, _T("-"));
+    mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
   }
 }
 
@@ -1243,29 +1262,38 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         }
       }
     } else if (m_NMEA0183.LastSentenceIDReceived == _T("MDA") &&
-               mPriMDA >= 3) {  // Barometric pressure
+                (mPriMDA >= 5 || mPriATMP >= 5 || mPriHUM >= 4)) {
+      //    Barometric pressure  || HUmidity || Air temp
       if (m_NMEA0183.Parse()) {
         // TODO make posibilyti to select between Bar or InchHg
         /*
          double   m_NMEA0183.Mda.Pressure;
          wxString m_NMEA0183.Mda.UnitOfMeasurement;
          */
-        if (m_NMEA0183.Mda.Pressure > .8 && m_NMEA0183.Mda.Pressure < 1.1) {
-          SendSentenceToAllInstruments(
-              OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure * 1000,
-              _T("hPa"));  // Convert to hpa befor sending to instruments.
-          mPriMDA = 3;
+        if (mPriMDA >= 5 && m_NMEA0183.Mda.Pressure > .8 &&
+            m_NMEA0183.Mda.Pressure < 1.1) {
+          SendSentenceToAllInstruments( OCPN_DBP_STC_MDA,
+                m_NMEA0183.Mda.Pressure * 1000, _T("hPa"));
+          mPriMDA = 5;
           mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
         if (mPriATMP >= 5) {
           double airtemp = m_NMEA0183.Mda.AirTemp;
-          if (airtemp < 999.0) {
+          if (!std::isnan(airtemp) && airtemp < 999.0) {
             SendSentenceToAllInstruments(
               OCPN_DBP_STC_ATMP,
               toUsrTemp_Plugin(airtemp, g_iDashTempUnit),
               getUsrTempUnit_Plugin(g_iDashTempUnit));
             mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
             mPriATMP = 5;
+          }
+        }
+        if (mPriHUM >= 4) {
+          double humidity = m_NMEA0183.Mda.Humidity;
+          if (!std::isnan(humidity)) {
+            SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, humidity, "%");
+            mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
+            mPriHUM = 4;
           }
         }
       }
@@ -1730,9 +1758,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                     toUsrTemp_Plugin(xdrdata, g_iDashTempUnit),
                     getUsrTempUnit_Plugin(g_iDashTempUnit));
                 mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
+                continue;
               }
             }  // Water temp
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
                          .Contains("WATER") ||
                      m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
                          "WTHI") {
@@ -1745,11 +1774,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                         g_iDashTempUnit),
                     getUsrTempUnit_Plugin(g_iDashTempUnit));
                 mWTP_Watchdog = no_nav_watchdog_timeout_ticks;
+                continue;
               }
             }
           }
           // XDR Pressure
-          else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "P") {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "P") {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
                     .Contains(_T("BARO")) && mPriMDA >= 4) {
               if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == "B") {
@@ -1758,11 +1788,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                              _T("hPa"));
                 mPriMDA = 4;
                 mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
+                continue;
               }
             }
           }
           // XDR Pitch (=Nose up/down) or Heel (stb/port)
-          else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
                     _T("PTCH")) ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
@@ -1781,10 +1812,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                              xdrunit);
                 mPITCH_Watchdog = gps_watchdog_timeout_ticks;
                 mPriPitchRoll = 3;
+                continue;
               }
             }
             // XDR Heel
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.
                         Contains("ROLL")) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
@@ -1800,21 +1832,23 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                                              xdrunit);
                 mHEEL_Watchdog = gps_watchdog_timeout_ticks;
                 mPriPitchRoll = 3;
+                continue;
               }
             }
             // XDR Rudder Angle
-            else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
+            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.MakeUpper()
                          .Contains("RUDDER")) {
               if (mPriRSA > 4) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
                                              _T("\u00B0"));
                 mRSA_Watchdog = gps_watchdog_timeout_ticks;
                 mPriRSA = 4;
+                continue;
               }
             }
           }
           // Depth sounding
-          else if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D")) {
+          if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D")) {
             bool goodvalue = false;
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "XDHI"
                        && mPriDepth >= 6) {
@@ -1838,7 +1872,17 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                       toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
                       getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
                   mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
+                  continue;
                 }
+              }
+            }
+          } // Humidity
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "H") {
+            if (mPriHUM >= 3) {
+              if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == "P") {
+                SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, xdrdata, "%");
+                mPriHUM = 3;
+                mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
               }
             }
           }
@@ -2440,6 +2484,25 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
     }
   }
 }
+//    Humidity (Rel %)
+void dashboard_pi::HandleN2K_130313(ObservedEvt ev) {
+  NMEA2000Id id_130313(130313);
+  std::vector<uint8_t> v = GetN2000Payload(id_130313, ev);
+  unsigned char SID, HumidityInstance;
+  tN2kHumiditySource HumiditySource;
+  double ActualHumidity, SetHumidity;
+
+  if (ParseN2kPGN130313(v, SID, HumidityInstance, HumiditySource,
+                        ActualHumidity, SetHumidity)) {
+    if (mPriHUM >= 1) {
+      if (!N2kIsNA(ActualHumidity)) {
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, ActualHumidity, "%");
+        mPriHUM = 1;
+        mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
+      }
+    }
+  }
+}
 
 
 /****** Signal K *******/
@@ -2894,6 +2957,15 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           mPriATMP = 2;
           mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
+      }
+    } else if (update_path == _T("environment.outside.humidity") ||
+               update_path == _T("environment.outside.relativeHumidity")) {
+      if (mPriHUM >= 2) {
+        double m_hum = GetJsonDouble(value) * 100;  // ratio2%
+        if (std::isnan(m_hum)) return;
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, m_hum, "%");
+        mPriHUM = 2;
+        mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
       }
     } else if (update_path ==
                _T("environment.wind.directionTrue")) {  // relative true north
@@ -5707,6 +5779,11 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
         instrument = new DashboardInstrument_CPUClock(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
             _T( "%02i:%02i:%02i LCL" ));
+        break;
+      case ID_DBP_I_HUM:
+        instrument = new DashboardInstrument_Single(
+            this, wxID_ANY, getInstrumentCaption(id), Properties,
+            OCPN_DBP_STC_HUM, "%3.0f");
     }
     if (instrument) {
       instrument->instrumentTypeId = id;

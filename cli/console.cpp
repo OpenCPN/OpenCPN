@@ -341,6 +341,7 @@ public:
     key_map[hostname] = pincode.Hash();
     TheBaseConfig()->Write("ServerKeys", wxString(key_map.ToString()));
     TheBaseConfig()->Flush();
+    std::cout << pincode.Get() << "\n";
   }
 
   void store_key(const std::string& hostname, const std::string& key) {
@@ -348,7 +349,7 @@ public:
       std::cerr << USAGE << "\n";
       exit(1);
     }
-    TheBaseConfig()->SetPath("/Settings/RestServer");
+    TheBaseConfig()->SetPath("/Settings/RESTClient");
     wxString key_string;
     TheBaseConfig()->Read("ServerKeys", &key_string);
     Apikeys key_map = Apikeys::Parse(key_string.ToStdString());

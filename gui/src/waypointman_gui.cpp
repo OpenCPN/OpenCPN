@@ -29,7 +29,9 @@
 #include <GL/gl_private.h>  // this is a cut-down version of gl.h
 #include <GLES2/gl2.h>
 
-#elif defined(__MSVC__)
+#elif defined(ocpnUSE_GL)
+
+#if defined(__MSVC__)
 #include "glew.h"
 #include <GL/glu.h>
 
@@ -42,8 +44,8 @@ typedef void (*  _GLUfuncptr)();
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>
 #include <GL/glu.h>
+#endif  // ocpnUSE_GL
 #endif
-
 
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
@@ -66,6 +68,7 @@ typedef void (*  _GLUfuncptr)();
 extern BasePlatform* g_BasePlatform;
 extern float g_MarkScaleFactorExp;
 extern ocpnStyle::StyleManager *g_StyleManager;
+extern bool g_bUserIconsFirst;
 
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
   return (mi1->icon_name.CmpNoCase(mi2->icon_name));
@@ -90,11 +93,13 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
     wxLogMessage(_T("Loading UserIcons from ") + UserIconPath);
     wxArrayString FileList;
 
+    wxBitmap default_bm = wxBitmap(1,1);   //empty
+
     int n_files =
         wxDir::GetAllFiles(UserIconPath, &FileList, _T(""), wxDIR_FILES);
 
     for (int ifile = 0; ifile < n_files; ifile++) {
-      wxString name = FileList[ifile];
+      wxString name = g_bUserIconsFirst ? FileList[n_files - ifile - 1] : FileList[ifile];
 
       wxFileName fn(name);
       wxString iconname = fn.GetName();
@@ -103,23 +108,55 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
       if (fn.GetExt().Lower() == _T("xpm")) {
         if (icon1.LoadFile(name, wxBITMAP_TYPE_XPM)) {
           wxLogMessage(_T("Adding icon: ") + iconname);
-          ProcessIcon(icon1, iconname, iconname);
+          ProcessIcon(icon1, iconname, iconname, g_bUserIconsFirst);
         }
       }
       if (fn.GetExt().Lower() == _T("png")) {
         if (icon1.LoadFile(name, wxBITMAP_TYPE_PNG)) {
           wxLogMessage(_T("Adding icon: ") + iconname);
-          ProcessIcon(icon1, iconname, iconname);
+          ProcessIcon(icon1, iconname, iconname, g_bUserIconsFirst);
         }
       }
       if (fn.GetExt().Lower() == _T("svg")) {
         unsigned int w, h;
         SVGDocumentPixelSize(name, w, h);
-        w = wxMax(wxMax(w, h), 15);  // We want certain minimal size for the
-                                     // icons, 15px (approx 3mm) be it
-        const unsigned int bm_size = w; //SVGPixelsToDisplay(w);
-        wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size);
-        MarkIcon *pmi = ProcessIcon(iconSVG, iconname, iconname);
+
+        // This is to be a mark icon
+        // Make it a nominal size, but not less than 4 pixel
+        double bm_size_nom = wxMax(4.0, floor(displayDPmm * 12.0));
+        bm_size_nom /= OCPN_GetWinDIPScaleFactor();
+        bm_size_nom *= g_MarkScaleFactorExp;
+
+        // We want certain minimal size for the
+        // icons, 15px (approx 3mm) be it
+        bm_size_nom = wxMax(bm_size_nom, 15);
+
+        MarkIcon *pmi = NULL;
+        double aspect = h / w;
+
+        // Make the rendered icon square, if necessary
+        if (fabs(aspect - 1.0) > .05) {
+          wxImage image =
+              LoadSVG(name, (int)bm_size_nom,
+                            (int)bm_size_nom,
+                      &default_bm).ConvertToImage();
+
+          if (image.IsOk()) {
+            wxRect rClip = CropImageOnAlpha(image);
+            wxImage imageClip = image.GetSubImage(rClip);
+            imageClip.Rescale(bm_size_nom, bm_size_nom / aspect,
+                              wxIMAGE_QUALITY_BICUBIC);
+            wxBitmap iconSVG = wxBitmap(imageClip);
+            pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
+          }
+        }
+        else {
+          const unsigned int bm_size = bm_size_nom;  // horizontal
+          wxBitmap iconSVG = LoadSVG(name, bm_size, bm_size,
+                                     &default_bm, false);
+          pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
+        }
+
         if (pmi) pmi->preScaled = true;
       }
     }
@@ -127,7 +164,7 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
 }
 
 MarkIcon* WayPointmanGui::ProcessIcon(wxBitmap pimage, const wxString& key,
-                                      const wxString& description) {
+                                      const wxString& description, bool add_in_front) {
   MarkIcon *pmi = 0;
 
   bool newIcon = true;
@@ -145,7 +182,11 @@ MarkIcon* WayPointmanGui::ProcessIcon(wxBitmap pimage, const wxString& key,
   if (newIcon) {
     pmi = new MarkIcon;
     pmi->icon_name = key;  // Used for sorting
-    m_waypoint_man.m_pIconArray->Add(pmi);
+    if (add_in_front)
+      m_waypoint_man.m_pIconArray->Insert(pmi, 0);
+    else {
+      m_waypoint_man.m_pIconArray->Add(pmi);
+    }
   }
 
   wxBitmap *pbm = new wxBitmap(pimage);

@@ -1,28 +1,6 @@
-set(
-  SRC
-  src/cm93.cpp
-  src/Osenc.cpp
-  src/s57chart.cpp
-  src/s57obj.cpp
-  src/SencManager.cpp
-  src/ogrs57datasource.cpp
-  src/ogrs57layer.cpp
-  src/s57classregistrar.cpp
-  src/s57featuredefns.cpp
-  src/s57reader.cpp
-  src/s57RegistrarMgr.cpp
-)
+set(SRC )
 
-set(
-  HDRS
-  include/cm93.h
-  include/ogr_s57.h
-  include/Osenc.h
-  include/s57.h
-  include/s57chart.h
-  include/s57RegistrarMgr.h
-  include/SencManager.h
-)
+set(HDRS)
 
 add_library(S57ENC STATIC ${SRC})
 add_library(ocpn::s57enc ALIAS S57ENC)
@@ -32,6 +10,7 @@ target_link_libraries(
     ocpn::iso8211
     ocpn::nmea0183
     ocpn::gdal
+    ocpn::gl-headers
     ocpn::geoprim
     ocpn::N2KParser
     ocpn::pugixml
@@ -79,3 +58,7 @@ target_include_directories(
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${CMAKE_BINARY_DIR}/include
 )
+
+if (QT_ANDROID)
+  target_include_directories(S57ENC PUBLIC ${CMAKE_SOURCE_DIR}/android)
+endif ()

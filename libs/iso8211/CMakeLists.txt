@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+# FIXME: the s57.h header depends on S57ClassRegistrar, not in model.
+
 if (TARGET ocpn::iso8211)
     return ()
 endif ()
@@ -29,4 +31,4 @@ endif ()
 target_include_directories(ISO8211 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(ISO8211 PRIVATE ocpn::gdal)
-target_link_libraries(ISO8211 PRIVATE ocpn::s57enc)
+target_link_libraries(ISO8211 PRIVATE ocpn::model)

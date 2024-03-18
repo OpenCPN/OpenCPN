@@ -29,6 +29,7 @@
 
 #include <wx/string.h>
 
+#include "gui_lib.h"
 #include "SendToGpsDlg.h"
 #include "model/comm_n0183_output.h"
 

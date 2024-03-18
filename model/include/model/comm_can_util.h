@@ -57,6 +57,7 @@ struct can_frame {
 #endif
 
 unsigned long BuildCanID(int priority, int source, int destination, int pgn);
+bool IsFastMessagePGN(unsigned pgn);
 
 
 /// CAN v2.0 29 bit header as used by NMEA 2000
@@ -99,7 +100,8 @@ public:
     std::vector<unsigned char> data;  ///< Received data
   };
 
-  FastMessageMap() : dropped_frames(0) {}
+  FastMessageMap() : dropped_frames(0),
+                     last_gc_run(wxDateTime::Now()) {}
 
   Entry operator[](int i) const { return entries[i]; }  /// Getter
   Entry& operator[](int i) { return entries[i]; }       /// Setter
@@ -127,8 +129,8 @@ private:
   int GarbageCollector(void);
   void CheckGc();
 
-  wxDateTime last_gc_run;
   int dropped_frames;
+  wxDateTime last_gc_run;
   wxDateTime dropped_frame_time;
 };
 

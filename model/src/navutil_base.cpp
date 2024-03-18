@@ -35,8 +35,7 @@
 #include <wx/utils.h>
 
 #include "model/navutil_base.h"
-
-#include "model/navutil_base.h"
+#include "model/own_ship.h"
 #include "vector2D.h"
 
 wxString toSDMM(int NEflag, double a, bool hi_precision) {
@@ -803,4 +802,24 @@ double fromDMM(wxString sdms) {
   return sign * (stk[0] + (stk[1] + stk[2] / 60) / 60);
 }
 
+double toMagnetic(double deg_true) {
+  if (!std::isnan(gVar)) {
+    if ((deg_true - gVar) > 360.)
+      return (deg_true - gVar - 360.);
+    else
+      return ((deg_true - gVar) >= 0.) ? (deg_true - gVar) : (deg_true - gVar + 360.);
+  } else {
+    if ((deg_true - g_UserVar) > 360.)
+      return (deg_true - g_UserVar - 360.);
+    else
+      return ((deg_true - g_UserVar) >= 0.) ? (deg_true - g_UserVar) : (deg_true - g_UserVar + 360.);
+  }
+}
 
+double toMagnetic(double deg_true, double variation) {
+  double degm = deg_true - variation;
+  if (degm >= 360.)
+    return degm - 360.;
+  else
+    return degm >= 0. ? degm : degm + 360.;
+}

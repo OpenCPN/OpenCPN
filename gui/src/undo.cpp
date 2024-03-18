@@ -38,22 +38,22 @@
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
 
-#include "navutil.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "MarkInfo.h"
-#include "routemanagerdialog.h"
-#include "undo.h"
-#include "chcanv.h"
-#include "ocpn_frame.h"
 #include "model/route.h"
+#include "model/routeman.h"
+#include "model/select.h"
+
+#include "chcanv.h"
+#include "MarkInfo.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "routemanagerdialog.h"
+#include "styles.h"
+#include "undo.h"
 
 extern Routeman* g_pRouteMan;
 extern MyConfig* pConfig;
 extern MyFrame* gFrame;
-extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
-extern WayPointman* pWayPointMan;
 extern MarkInfoDlg* g_pMarkInfoDialog;
 
 Undo::Undo(ChartCanvas* parent) {

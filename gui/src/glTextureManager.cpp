@@ -750,6 +750,10 @@ glTextureManager::~glTextureManager() {
     delete(progList[i]);
   }
   progList.Clear();
+  for(auto hash : m_chart_texfactory_hash) {
+    delete hash.second;
+  }
+  m_chart_texfactory_hash.clear();
 }
 
 #define NBAR_LENGTH 40

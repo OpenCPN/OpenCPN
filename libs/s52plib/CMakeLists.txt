@@ -13,9 +13,11 @@ SET(SRC
     src/TexFont.cpp
     src/DepthFont.cpp
     src/mygeom.cpp
-    src/Cs52_shaders.cpp
     src/color_types.h
 )
+if (OCPN_USE_GL)
+    SET(SRC ${SRC} src/Cs52_shaders.cpp)
+endif()
 
 if (NOT wxWidgets_INCLUDE_DIRS)
     include(SimpleWxConfig)
@@ -48,6 +50,7 @@ target_include_directories(S52PLIB PRIVATE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(S52PLIB PRIVATE ${wxWidgets_LIBRARIES})
 
 target_link_libraries(S52PLIB PRIVATE ocpn::geoprim)
+target_link_libraries(S52PLIB PRIVATE ocpn::gl-headers)
 target_link_libraries(S52PLIB PRIVATE ocpn::pugixml)
 target_link_libraries(S52PLIB PRIVATE ocpn::gdal)
 target_link_libraries(S52PLIB PRIVATE ocpn::tess2)

@@ -400,7 +400,11 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
 
   wxPenStyle style = wxPENSTYLE_SOLID;
   if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
-  dc.SetPen(*wxThePenList->FindOrCreatePen(col, width, style));
+  wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
+  if(glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
+    p.SetDashes(2, &glChartCanvas::dash_map[style][0]);
+  }
+  dc.SetPen(p);
   dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(col, wxBRUSHSTYLE_SOLID));
 
   glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));

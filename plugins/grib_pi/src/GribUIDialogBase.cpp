@@ -240,6 +240,8 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     fgSizer50->Add(m_bpRequest, 0, wxALL, 1);
 
     fgSizer49->Add(fgSizer50, 1, wxEXPAND, 5);
+    m_ProjectBoatPanel = new ProjectBoatPanel(this);
+    fgSizer49->Add(m_ProjectBoatPanel, 0, wxALL, 1);
 
     m_fgCDataSizer = new wxFlexGridSizer(0, 2, 0, 0);
     m_fgCDataSizer->SetFlexibleDirection(wxBOTH);
@@ -1337,7 +1339,7 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   wxString m_cOverlayColorsChoices[] = {
       _("Generic"),  _("Wind"),        _("Air Temp"), _("Sea Temp"),
-      _("Rainfall"), _("Cloud Cover"), _("Current"), _("REFC")};
+      _("Rainfall"), _("Cloud Cover"), _("Current"), _("CAPE"), _("REFC"), _("Windy") };
   int m_cOverlayColorsNChoices =
       sizeof(m_cOverlayColorsChoices) / sizeof(wxString);
   m_cOverlayColors =
@@ -2308,13 +2310,124 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
     : wxDialog(parent, id, title, pos, size, style) {
   this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
+  wxBoxSizer* bSizerMain;
+  bSizerMain = new wxBoxSizer(wxVERTICAL);
+
+  m_notebookGetGrib =
+      new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+  m_panelWorld = new wxPanel(m_notebookGetGrib, wxID_ANY, wxDefaultPosition,
+                             wxDefaultSize, wxTAB_TRAVERSAL);
+  wxBoxSizer* bSizerWorldDownload;
+  bSizerWorldDownload = new wxBoxSizer(wxVERTICAL);
+
+  m_htmlWinWorld =
+      new wxHtmlWindow(m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                       wxHW_NO_SELECTION | wxHW_SCROLLBAR_AUTO);
+  bSizerWorldDownload->Add(m_htmlWinWorld, 1, wxALL | wxEXPAND, 5);
+
+  m_staticTextInfo =
+      new wxStaticText(m_panelWorld, wxID_ANY, _("Download grib..."),
+                       wxDefaultPosition, wxDefaultSize, 0);
+  m_staticTextInfo->Wrap(-1);
+  bSizerWorldDownload->Add(m_staticTextInfo, 0, wxALL, 5);
+
+  wxBoxSizer* bSizerWorld;
+  bSizerWorld = new wxBoxSizer(wxHORIZONTAL);
+
+  m_stForecastLength =
+      new wxStaticText(m_panelWorld, wxID_ANY, _("Forecast length"),
+                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stForecastLength->Wrap(-1);
+  bSizerWorld->Add(m_stForecastLength, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  wxString m_chForecastLengthChoices[] = {_("24 hours"), _("3 days"),
+                                          _("10 days")};
+  int m_chForecastLengthNChoices =
+      sizeof(m_chForecastLengthChoices) / sizeof(wxString);
+  m_chForecastLength =
+      new wxChoice(m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                   m_chForecastLengthNChoices, m_chForecastLengthChoices, 0);
+  m_chForecastLength->SetSelection(0);
+  bSizerWorld->Add(m_chForecastLength, 0, wxALL, 5);
+
+  m_stECMWFResolution = new wxStaticText( m_panelWorld, wxID_ANY, _("Resolution"), wxDefaultPosition, wxDefaultSize, 0 );
+  m_stECMWFResolution->Wrap( -1 );
+  bSizerWorld->Add( m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+  wxString m_chECMWFResolutionChoices[] = { _("0.4"), _("0.25") };
+  int m_chECMWFResolutionNChoices = sizeof( m_chECMWFResolutionChoices ) / sizeof( wxString );
+  m_chECMWFResolution = new wxChoice( m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0 );
+  m_chECMWFResolution->SetSelection( 0 );
+  bSizerWorld->Add( m_chECMWFResolution, 0, wxALL, 5 );
+
+  bSizerWorld->Add(0, 0, 1, wxEXPAND, 5);
+
+  m_btnDownloadWorld = new wxButton(m_panelWorld, wxID_ANY, _("Download"),
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  bSizerWorld->Add(m_btnDownloadWorld, 0, wxALL, 5);
+
+  bSizerWorldDownload->Add(bSizerWorld, 0, wxEXPAND, 5);
+
+  m_panelWorld->SetSizer(bSizerWorldDownload);
+  m_panelWorld->Layout();
+  bSizerWorldDownload->Fit(m_panelWorld);
+  m_notebookGetGrib->AddPage(m_panelWorld, _("World"), true);
+  m_panelLocalModels =
+      new wxPanel(m_notebookGetGrib, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                  wxTAB_TRAVERSAL);
+  wxBoxSizer* bMainSizer;
+  bMainSizer = new wxBoxSizer(wxVERTICAL);
+
+  wxBoxSizer* bSizerSource;
+  bSizerSource = new wxBoxSizer(wxHORIZONTAL);
+
+  m_SourcesTreeCtrl1 = new wxTreeCtrl(
+      m_panelLocalModels, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      wxTR_DEFAULT_STYLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_SINGLE);
+  bSizerSource->Add(m_SourcesTreeCtrl1, 1, wxALL | wxEXPAND, 5);
+
+  m_htmlInfoWin =
+      new wxHtmlWindow(m_panelLocalModels, wxID_ANY, wxDefaultPosition,
+                       wxDefaultSize, wxHW_NO_SELECTION | wxHW_SCROLLBAR_AUTO);
+  bSizerSource->Add(m_htmlInfoWin, 1, wxALL | wxEXPAND, 5);
+
+  bMainSizer->Add(bSizerSource, 1, wxEXPAND, 5);
+
+  m_stLocalDownloadInfo = new wxStaticText( m_panelLocalModels, wxID_ANY, _("Download grib..."), wxDefaultPosition, wxDefaultSize, 0 );
+  m_stLocalDownloadInfo->Wrap( -1 );
+  bMainSizer->Add( m_stLocalDownloadInfo, 0, wxALL, 5 );
+
+  wxBoxSizer* bSizerLocalButtons;
+  bSizerLocalButtons = new wxBoxSizer(wxHORIZONTAL);
+
+  m_buttonUpdateCatalog =
+      new wxButton(m_panelLocalModels, wxID_ANY, _("Update Catalog"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+  bSizerLocalButtons->Add(m_buttonUpdateCatalog, 0, wxALL, 5);
+
+  bSizerLocalButtons->Add(0, 0, 1, wxEXPAND, 5);
+
+  m_btnDownloadLocal = new wxButton(m_panelLocalModels, wxID_ANY, _("Download"),
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  bSizerLocalButtons->Add(m_btnDownloadLocal, 0, wxALL, 5);
+
+  bMainSizer->Add(bSizerLocalButtons, 0, wxEXPAND, 5);
+
+  m_panelLocalModels->SetSizer(bMainSizer);
+  m_panelLocalModels->Layout();
+  bMainSizer->Fit(m_panelLocalModels);
+  m_notebookGetGrib->AddPage(m_panelLocalModels, _("Local models"), false);
+
+  m_panelEmail = new wxPanel(m_notebookGetGrib, wxID_ANY, wxDefaultPosition,
+                             wxDefaultSize, wxTAB_TRAVERSAL);
+
   wxFlexGridSizer* fgSizer101;
   fgSizer101 = new wxFlexGridSizer(0, 1, 0, 0);
   fgSizer101->SetFlexibleDirection(wxBOTH);
   fgSizer101->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
   m_sScrolledDialog =
-      new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      new wxScrolledWindow(m_panelEmail, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                            wxHSCROLL | wxTAB_TRAVERSAL | wxVSCROLL);
   m_sScrolledDialog->SetScrollRate(0, 5);
   m_fgScrollSizer = new wxFlexGridSizer(0, 1, 0, 0);
@@ -2784,17 +2897,17 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_fgFixedSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
   wxStaticText* m_staticText181;
-  m_staticText181 = new wxStaticText(this, wxID_ANY, _("Estimated File Size"),
+  m_staticText181 = new wxStaticText(m_panelEmail, wxID_ANY, _("Estimated File Size"),
                                      wxDefaultPosition, wxDefaultSize, 0);
   m_staticText181->Wrap(-1);
   m_fgFixedSizer->Add(m_staticText181, 0, wxALL, 5);
 
-  m_tFileSize = new wxStaticText(this, wxID_ANY, wxEmptyString,
+  m_tFileSize = new wxStaticText(m_panelEmail, wxID_ANY, wxEmptyString,
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_tFileSize->Wrap(-1);
   m_fgFixedSizer->Add(m_tFileSize, 0, wxTOP | wxBOTTOM, 5);
 
-  m_tLimit = new wxStaticText(this, wxID_ANY, _(" (Max size )"),
+  m_tLimit = new wxStaticText(m_panelEmail, wxID_ANY, _(" (Max size )"),
                               wxDefaultPosition, wxDefaultSize, 0);
   m_tLimit->Wrap(-1);
   m_fgFixedSizer->Add(m_tLimit, 0, wxALL, 5);
@@ -2802,25 +2915,57 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   fgSizer101->Add(m_fgFixedSizer, 1, wxEXPAND, 5);
 
   m_rButton = new wxStdDialogButtonSizer();
-  m_rButtonYes = new wxButton(this, wxID_YES);
+  m_rButtonYes = new wxButton(m_panelEmail, wxID_YES);
   m_rButton->AddButton(m_rButtonYes);
-  m_rButtonApply = new wxButton(this, wxID_APPLY);
+  m_rButtonApply = new wxButton(m_panelEmail, wxID_APPLY);
   m_rButton->AddButton(m_rButtonApply);
-  m_rButtonCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
+  m_rButtonCancel = new wxButton(m_panelEmail, wxID_CANCEL, _("Cancel"));
   m_rButton->AddButton(m_rButtonCancel);
   m_rButton->Realize();
 
   fgSizer101->Add(m_rButton, 1, wxEXPAND, 5);
 
-  this->SetSizer(fgSizer101);
+  m_panelEmail->SetSizer( fgSizer101 );
+  m_panelEmail->Layout();
+  fgSizer101->Fit( m_panelEmail );
+  m_notebookGetGrib->AddPage( m_panelEmail, _("e-mail"), false );
+
+  bSizerMain->Add( m_notebookGetGrib, 1, wxEXPAND | wxALL, 5 );
+
+  this->SetSizer( bSizerMain );
   this->Layout();
-  fgSizer101->Fit(this);
+  //this->Fit();
+  bSizerMain->Fit( this );
 
   this->Centre(wxBOTH);
 
   // Connect Events
   this->Connect(wxEVT_CLOSE_WINDOW,
                 wxCloseEventHandler(GribRequestSettingBase::OnClose));
+  m_chForecastLength->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice), NULL,
+      this);
+  m_btnDownloadWorld->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), NULL,
+      this);
+  m_SourcesTreeCtrl1->Connect(
+      wxEVT_COMMAND_TREE_ITEM_EXPANDED,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded), NULL,
+      this);
+  m_SourcesTreeCtrl1->Connect(
+      wxEVT_COMMAND_TREE_SEL_CHANGED,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeSelChanged), NULL,
+      this);
+  m_buttonUpdateCatalog->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnUpdateLocalCatalog), NULL,
+      this);
+  m_btnDownloadLocal->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnDownloadLocal), NULL,
+      this);
   m_pMailTo->Connect(wxEVT_COMMAND_CHOICE_SELECTED,
                      wxCommandEventHandler(GribRequestSettingBase::OnTopChange),
                      NULL, this);
@@ -2942,6 +3087,30 @@ GribRequestSettingBase::~GribRequestSettingBase() {
   // Disconnect Events
   this->Disconnect(wxEVT_CLOSE_WINDOW,
                    wxCloseEventHandler(GribRequestSettingBase::OnClose));
+  m_chForecastLength->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice), NULL,
+      this);
+  m_btnDownloadWorld->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), NULL,
+      this);
+  m_SourcesTreeCtrl1->Disconnect(
+      wxEVT_COMMAND_TREE_ITEM_EXPANDED,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded), NULL,
+      this);
+  m_SourcesTreeCtrl1->Disconnect(
+      wxEVT_COMMAND_TREE_SEL_CHANGED,
+      wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeSelChanged), NULL,
+      this);
+  m_buttonUpdateCatalog->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnUpdateLocalCatalog), NULL,
+      this);
+  m_btnDownloadLocal->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnDownloadLocal), NULL,
+      this);
   m_pMailTo->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(GribRequestSettingBase::OnTopChange), NULL, this);
@@ -3140,4 +3309,62 @@ GRIBTableBase::~GRIBTableBase() {
   m_pButtonTableOK->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                                wxCommandEventHandler(GRIBTableBase::OnOKButton),
                                NULL, this);
+}
+
+ProjectBoatPanel::ProjectBoatPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxPanel( parent, id, pos, size, style, name )
+{
+	wxBoxSizer* bSizerProjectBoat;
+	bSizerProjectBoat = new wxBoxSizer( wxHORIZONTAL );
+
+	m_cbProjectPosition = new wxCheckBox( this, wxID_ANY, _("Project position"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizerProjectBoat->Add( m_cbProjectPosition, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_stCourse = new wxStaticText( this, wxID_ANY, _("Course"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stCourse->Wrap( -1 );
+	bSizerProjectBoat->Add( m_stCourse, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_tCourse = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizerProjectBoat->Add( m_tCourse, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_stSpeed = new wxStaticText( this, wxID_ANY, _("Speed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSpeed->Wrap( -1 );
+	bSizerProjectBoat->Add( m_stSpeed, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_tSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizerProjectBoat->Add( m_tSpeed, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_stSpeedUnit = new wxStaticText( this, wxID_ANY, wxT("kt"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSpeedUnit->Wrap( -1 );
+	bSizerProjectBoat->Add( m_stSpeedUnit, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+
+	this->SetSizer( bSizerProjectBoat );
+	this->Layout();
+}
+
+ProjectBoatPanel::~ProjectBoatPanel()
+{
+}
+
+double ProjectBoatPanel::GetCourse()
+{
+    double val;
+    if (m_tCourse->GetValue().ToDouble(&val)) {
+        return val;
+    } else {
+        return 0;
+    }
+}
+double ProjectBoatPanel::GetSpeed()
+{
+    double val;
+    if (m_tSpeed->GetValue().ToDouble(&val)) {
+        return val;
+    } else {
+        return 0;
+    }
+}
+bool ProjectBoatPanel::ProjectionEnabled()
+{
+    return m_cbProjectPosition->IsChecked();
 }

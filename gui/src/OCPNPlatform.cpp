@@ -23,6 +23,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <cstdlib>
+#include <string>
+#include <vector>
+
 #include <wx/wxprec.h>
 
 #ifdef __MINGW32__
@@ -34,39 +38,56 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+#endif
+
+#ifdef __WXMSW__
+#include <windows.h>
+#include <winioctl.h>
+#include <initguid.h>
+#include "setupapi.h"  // presently stored in opencpn/src
+#endif
+
+
 #include <wx/app.h>
 #include <wx/apptrait.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
+#include <wx/jsonval.h>
+#include <wx/jsonreader.h>
 
 #include "config.h"
 
+#include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/base_platform.h"
 #include "model/cmdline.h"
-#include "OCPNPlatform.h"
-#include "gui_lib.h"
-#include "model/cutil.h"
 #include "model/config_vars.h"
-#include "model/logger.h"
-#include "styles.h"
-#include "navutil.h"
-#include "model/ocpn_utils.h"
 #include "model/conn_params.h"
-#include "FontMgr.h"
-#include "s52s57.h"
-#include "options.h"
+#include "model/cutil.h"
+#include "model/logger.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_paths.h"
 #include "model/select.h"
+
 #include "AboutFrameImpl.h"
 #include "about.h"
-#include "model/plugin_paths.h"
+#include "displays.h"
+#include "FontMgr.h"
+#include "gui_lib.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
-#include <string>
-#include <vector>
+#include "OCPNPlatform.h"
+#include "options.h"
+#include "s52s57.h"
+#include "snd_config.h"
+#include "styles.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
@@ -86,27 +107,19 @@
 #include "crashprint.h"
 #endif
 
-#ifndef __WXMSW__
-#include <signal.h>
-#include <setjmp.h>
-#endif
-
-#ifdef __WXMSW__
-#include <windows.h>
-#include <winioctl.h>
-#include <initguid.h>
-#include "setupapi.h"  // presently stored in opencpn/src
-#endif
-
 #ifdef __WXOSX__
 #include "model/macutils.h"
 #endif
 
-#ifdef __WXGTK__
-//#include <gdk/gdk.h>
+#if (defined(__clang_major__) && (__clang_major__ < 15))
+// MacOS 1.13
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
 #endif
-
-#include <cstdlib>
 
 class MyApp;
 DECLARE_APP(MyApp)
@@ -149,7 +162,7 @@ extern bool g_boptionsactive;
 
 extern wxString *pInit_Chart_Dir;
 
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
 extern bool g_bFullScreenQuilt;
@@ -167,9 +180,7 @@ extern wxString g_toolbarConfig;
 extern bool g_bPreserveScaleOnX;
 extern bool g_running;
 
-extern Select *pSelect;
 extern Select *pSelectTC;
-extern Select *pSelectAIS;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -212,7 +223,9 @@ extern BasePlatform *g_BasePlatform;
 extern PlatSpec android_plat_spc;
 #endif
 
-OCPN_GLCaps *GL_Caps;
+#ifdef ocpnUSE_GL
+OCPN_GLCaps *GL_Caps = nullptr;
+#endif
 
 static const char *const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
@@ -235,14 +248,21 @@ static bool checkIfFlatpacked() {
 OCPNPlatform::OCPNPlatform() {
   m_pt_per_pixel = 0;  // cached value
   m_bdisableWindowsDisplayEnum = false;
-  m_displaySize = wxSize(0, 0);
-  m_displaySizeMM = wxSize(0, 0);
   m_monitorWidth = m_monitorHeight = 0;
-  m_displaySizeMMOverride = 0;
+  EnumerateMonitors();
+  for (size_t i = 0; i < g_monitor_info.size(); i++) {
+    m_displaySizeMMOverride.push_back(0);
+  }
   m_pluginDataPath = "";
 }
 
-OCPNPlatform::~OCPNPlatform() {}
+OCPNPlatform::~OCPNPlatform() {
+#ifdef ocpnUSE_GL
+  if (GL_Caps) {
+    delete GL_Caps;
+  }
+#endif
+}
 
 //--------------------------------------------------------------------------
 //      Per-Platform Initialization support
@@ -523,7 +543,7 @@ void OCPNPlatform::Initialize_1(void) {
 
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   qDebug() << "Initialize_1()";
 //#ifdef NOASSERT
   wxDisableAsserts( );      // No asserts at all in Release mode
@@ -536,7 +556,7 @@ void OCPNPlatform::Initialize_1(void) {
 //  Config is known to be loaded and stable
 //  Log is available
 void OCPNPlatform::Initialize_2(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogMessage(androidGetDeviceInfo());
 
   // Create some directories in App private directory
@@ -587,14 +607,14 @@ void OCPNPlatform::Initialize_3(void) {
 #endif
 
   bool bAndroid = false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bAndroid = true;
 #endif
 
   if(!bcapable)
     g_bopengl = false;
   else {
-    g_bopengl = true;
+    //g_bopengl = true;
     g_bdisable_opengl = false;
     pConfig->UpdateSettings();
   }
@@ -603,6 +623,7 @@ void OCPNPlatform::Initialize_3(void) {
   // Try to automatically switch to guaranteed usable GL mode on an OCPN upgrade
   // or fresh install
 
+#ifdef ocpnUSE_GL
   if ((g_bFirstRun || g_bUpgradeInProcess || bAndroid) && bcapable) {
     g_bopengl = true;
 
@@ -617,6 +638,7 @@ void OCPNPlatform::Initialize_3(void) {
     g_GLOptions.m_GLPolygonSmoothing = true;
     g_GLOptions.m_GLLineSmoothing = true;
   }
+#endif
 
   gFrame->SetGPSCompassScale();
 
@@ -636,7 +658,7 @@ void OCPNPlatform::Initialize_3(void) {
 
 //  Called from MyApp() just before end of MyApp::OnInit()
 void OCPNPlatform::Initialize_4(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (pSelect) pSelect->SetSelectPixelRadius(wxMax(25, 6.0 * getAndroidDPmm()));
   if (pSelectTC)
     pSelectTC->SetSelectPixelRadius(wxMax(25, 6.0 * getAndroidDPmm()));
@@ -664,7 +686,114 @@ void OCPNPlatform::OnExit_2(void) {
 }
 
 
+#ifdef ocpnUSE_GL
+
+bool HasGLExt(wxJSONValue &glinfo, const std::string ext) {
+  if (!glinfo.HasMember("GL_EXTENSIONS")) {
+    return false;
+  }
+  for (int i = 0; i < glinfo["GL_EXTENSIONS"].Size(); i++) {
+    if (glinfo["GL_EXTENSIONS"][i].AsString() == ext) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool OCPNPlatform::BuildGLCaps(void *pbuf) {
+#ifndef __ANDROID__
+  fs::path ep(GetExePath().ToStdString());
+#ifndef __WXMSW__
+  std::string gl_util_exe = "opencpn-glutil";
+#else
+  std::string gl_util_exe = "bin\\opencpn-glutil.exe";
+#endif
+  fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
+
+  if (!fs::exists(gl_util_path)) { //TODO: What to do if the utility is not found (Which it is not for developer builds that are not installed)?
+    wxLogMessage("OpenGL test utility not found at %s.",  gl_util_path.c_str());
+    return false;
+  }
+
+  std::string gl_json = fs::path(GetPrivateDataDir().ToStdString()).append("gl_caps.json").string();
+
+  wxString cmd = wxString::Format(_T("%s opengl-info %s"), gl_util_path.c_str(), gl_json.c_str());
+
+  wxLogMessage("Starting OpenGL test utility: %s", cmd);
+
+  wxArrayString output;
+  if (long res = wxExecute(cmd, output); res != 0) {
+    wxLogMessage("OpenGL test utility failed with exit code %d", res);
+    for (const auto &l : output) {
+      wxLogMessage(l);
+    }
+    return false;
+  }
+
+  wxFileInputStream fis(gl_json);
+  wxJSONReader reader;
+  wxJSONValue root;
+  reader.Parse(fis, &root);
+  if (reader.GetErrorCount() > 0){
+    wxLogMessage("Failed to parse JSON output from OpenGL test utility.");
+    for(const auto &l : reader.GetErrors()) {
+      wxLogMessage(l);
+    }
+    return false;
+  }
+
+  OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
+
+  if(root.HasMember("GL_RENDERER")) {
+    pcaps->Renderer = root["GL_RENDERER"].AsString();
+  } else {
+    wxLogMessage("GL_RENDERER not found.");
+    return false;
+  }
+  if (root.HasMember("GL_VERSION")) {
+    pcaps->Version = root["GL_VERSION"].AsString();
+  } else {
+    wxLogMessage("GL_VERSION not found.");
+    return false;
+  }
+  if (root.HasMember("GL_SHADING_LANGUAGE_VERSION")) {
+    pcaps->GLSL_Version = root["GL_SHADING_LANGUAGE_VERSION"].AsString();
+  } else {
+    wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
+    return false;
+  }
+  pcaps->dGLSL_Version = 0;
+  pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
+  if (pcaps->dGLSL_Version < 1.2) {
+    wxString msg;
+    msg.Printf(_T("GLCaps Probe: OpenGL-> GLSL Version reported:  "));
+    msg += wxString(pcaps->GLSL_Version.c_str());
+    msg += "\n OpenGL disabled due to insufficient OpenGL capabilities";
+    wxLogMessage(msg);
+    pcaps->bCanDoGLSL = false;
+    return false;
+  }
+  pcaps->bCanDoGLSL = true;
+  if (HasGLExt(root, "GL_ARB_texture_non_power_of_two")) {
+    pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
+  } else if (HasGLExt(root, "GL_OES_texture_npot")) {
+    pcaps->TextureRectangleFormat = GL_TEXTURE_2D;
+  } else if (HasGLExt(root, "GL_ARB_texture_rectangle")) {
+    pcaps->TextureRectangleFormat = GL_TEXTURE_RECTANGLE_ARB;
+  }
+
+  pcaps->bOldIntel = false;
+
+  pcaps->bCanDoFBO = HasGLExt(root,"GL_EXT_framebuffer_object");
+  if (!pcaps->TextureRectangleFormat) {
+    pcaps->bCanDoFBO = false;
+  }
+
+  pcaps->bCanDoVBO = HasGLExt(root, "GL_ARB_vertex_buffer_object"); //TODO: Or the old way where we enable it without querying the extension is right?
+  gFrame->Show();
+  return true;
+#else
+  // The original codepath doing direct probing in the main OpenCPN process, now only for Android
   // Investigate OpenGL capabilities
   gFrame->Show();
   glTestCanvas *tcanvas = new glTestCanvas(gFrame);
@@ -735,14 +864,14 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
   if (pcaps->bOldIntel) pcaps->bCanDoVBO = false;
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   pcaps->bCanDoVBO = false;
 #endif
 
   // Can we use FBO?
   pcaps->bCanDoFBO = true;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   //  We need NPOT to support FBO rendering
   if (!pcaps->TextureRectangleFormat) pcaps->bCanDoFBO = false;
 
@@ -752,13 +881,15 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   delete tcanvas;
   delete pctx;
-
   return true;
+#endif
 }
-
+#endif
 
 bool OCPNPlatform::IsGLCapable() {
-#ifdef __OCPN__ANDROID__
+#ifdef ocpnUSE_GL
+
+#ifdef __ANDROID__
   return true;
 #elif defined(CLI)
   return false;
@@ -767,37 +898,31 @@ bool OCPNPlatform::IsGLCapable() {
   if(g_bdisable_opengl)
     return false;
 
-  // Protect against fault in OpenGL caps test
-  // If this method crashes due to bad GL drivers,
-  // next startup will disable OpenGL
-  g_bdisable_opengl = true;
-
-  // Update and flush the config file
-  pConfig->UpdateSettings();
-
   wxLogMessage("Starting OpenGL test...");
   wxLog::FlushActive();
 
-  OCPN_GLCaps GL_Caps;
-  bool bcaps = BuildGLCaps(&GL_Caps);
+  if (!GL_Caps) {
+    GL_Caps = new OCPN_GLCaps();
+    bool bcaps = BuildGLCaps(GL_Caps);
 
-  wxLogMessage("OpenGL test complete.");
-  if (!bcaps){
-    wxLogMessage("BuildGLCaps fails.");
-    wxLog::FlushActive();
-    return false;
+    wxLogMessage("OpenGL test complete.");
+    if (!bcaps){
+      wxLogMessage("BuildGLCaps fails.");
+      wxLog::FlushActive();
+      return false;
+    }
   }
 
   // and so we decide....
 
   // Require a modern GLSL implementation
-  if (!GL_Caps.bCanDoGLSL) {
+  if (!GL_Caps->bCanDoGLSL) {
     return false;
   }
 
   // We insist on FBO support, since otherwise DC mode is always faster on
   // canvas panning..
-  if (!GL_Caps.bCanDoFBO)  {
+  if (!GL_Caps->bCanDoFBO)  {
     return false;
   }
 
@@ -806,12 +931,15 @@ bool OCPNPlatform::IsGLCapable() {
   wxLog::FlushActive();
 
   g_bdisable_opengl = false;
-  g_bopengl = true;
+  //g_bopengl = true;
 
   // Update and flush the config file
   pConfig->UpdateSettings();
 
   return true;
+#endif
+#else
+  return false;
 #endif
 }
 
@@ -838,7 +966,7 @@ void OCPNPlatform::SetLocaleSearchPrefixes(void) {
   imsg += locale_location;
   wxLogMessage(imsg);
 
-#elif defined(__OCPN__ANDROID__)
+#elif defined(__ANDROID__)
 
   wxString locale_location = GetSharedDataDir() + _T("locale");
   wxLocale::AddCatalogLookupPathPrefix(locale_location);
@@ -909,7 +1037,7 @@ wxString OCPNPlatform::GetDefaultSystemLocale() {
   if (languageInfoW) retval = languageInfoW->CanonicalName;
 #endif
 
-#if defined(__OCPN__ANDROID__)
+#if defined(__ANDROID__)
   retval = androidGetAndroidSystemLocale();
 #endif
 
@@ -941,7 +1069,7 @@ wxString OCPNPlatform::GetAdjustedAppLocale() {
       adjLocale = GetDefaultSystemLocale();
   }
 #endif
-#if defined(__OCPN__ANDROID__)
+#if defined(__ANDROID__)
   if (g_localeOverride.Length())
     adjLocale = g_localeOverride;
   else
@@ -992,7 +1120,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID,
     loc_lang_canonical = pli->CanonicalName;
 
     b_initok = locale->IsOk();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     b_initok = true;
 #endif
   }
@@ -1078,6 +1206,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   g_bSyncCogPredictors = false;
   g_bHideMoored = false;
   g_ShowMoored_Kts = 0.2;
+  g_SOGminCOG_kts = 0.2;
   g_bTrackDaily = false;
   g_PlanSpeed = 6.;
   g_bFullScreenQuilt = true;
@@ -1171,7 +1300,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
   }
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 #ifdef ocpnUSE_GL
   g_bopengl = true;
@@ -1272,7 +1401,7 @@ void OCPNPlatform::SetDefaultOptions(void) {
 //      boot are also allowed
 
 void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   qDebug() << "Upgrade check"
            << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
@@ -1380,7 +1509,7 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
 int OCPNPlatform::platformApplyPrivateSettingsString(wxString settings,
                                                      ArrayOfCDI *pDirArray) {
   int ret_val = 0;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   ret_val = androidApplySettingsString(settings, pDirArray);
 #endif
 
@@ -1388,7 +1517,7 @@ int OCPNPlatform::platformApplyPrivateSettingsString(wxString settings,
 }
 
 void OCPNPlatform::applyExpertMode(bool mode) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_bexpert = mode;  // toolbar only shows plugin icons if expert mode is false
   g_bBasicMenus = !mode;  //  simplified context menus in basic mode
 #endif
@@ -1396,7 +1525,7 @@ void OCPNPlatform::applyExpertMode(bool mode) {
 
 wxString OCPNPlatform::GetSupplementalLicenseString() {
   wxString lic;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   lic = androidGetSupplementalLicense();
 #endif
   return lic;
@@ -1417,7 +1546,7 @@ int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
   wxString file;
   int result = wxID_CANCEL;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Verify that initDir is traversable, fix it if not...
   wxString idir = initDir;
   if (initDir.StartsWith(
@@ -1468,7 +1597,7 @@ int OCPNPlatform::DoDirSelectorDialog(wxWindow *parent, wxString *file_spec,
   wxString dir;
   int result = wxID_CANCEL;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  Verify that initDir is traversable, fix it if not...
   wxString idir = initDir;
   if (initDir.StartsWith(
@@ -1525,7 +1654,7 @@ MyConfig *OCPNPlatform::GetConfigObject() {
 //--------------------------------------------------------------------------
 
 bool OCPNPlatform::hasInternalGPS(wxString profile) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bool t = androidDeviceHasGPS();
   //    qDebug() << "androidDeviceHasGPS" << t;
   return t;
@@ -1541,7 +1670,7 @@ bool OCPNPlatform::hasInternalGPS(wxString profile) {
 //--------------------------------------------------------------------------
 
 void OCPNPlatform::ShowBusySpinner(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidShowBusyIcon();
 #else
 #if wxCHECK_VERSION(2, 9, 0)
@@ -1552,7 +1681,7 @@ void OCPNPlatform::ShowBusySpinner(void) {
 }
 
 void OCPNPlatform::HideBusySpinner(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidHideBusyIcon();
 #else
 #if wxCHECK_VERSION(2, 9, 0)
@@ -1563,7 +1692,7 @@ void OCPNPlatform::HideBusySpinner(void) {
 }
 
 double OCPNPlatform::GetDisplayDensityFactor() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return getAndroidDisplayDensity();
 #else
   return 1.0;
@@ -1571,7 +1700,7 @@ double OCPNPlatform::GetDisplayDensityFactor() {
 }
 
 long OCPNPlatform::GetDefaultToolbarOrientation() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   return wxTB_VERTICAL;
 #else
   return wxTB_VERTICAL;
@@ -1579,7 +1708,7 @@ long OCPNPlatform::GetDefaultToolbarOrientation() {
 }
 
 int OCPNPlatform::GetStatusBarFieldCount() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   int count = 1;
 
   //  Make a horizontal measurement...
@@ -1610,7 +1739,7 @@ int OCPNPlatform::GetStatusBarFieldCount() {
 double OCPNPlatform::getFontPointsperPixel(void) {
   double pt_per_pixel = 1.0;
 
-  //#ifdef __OCPN__ANDROID__
+  //#ifdef __ANDROID__
   // On Android, this calculation depends on the density bucket in use.
   //  Also uses some magic numbers...
   //  For reference, see http://pixplicity.com/dp-px-converter/
@@ -1639,63 +1768,26 @@ double OCPNPlatform::getFontPointsperPixel(void) {
 }
 
 wxSize OCPNPlatform::getDisplaySize() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return getAndroidDisplayDimensions();
 #else
-  if (m_displaySize.x < 10)
-    m_displaySize = ::wxGetDisplaySize();  // default, for most platforms
-  return m_displaySize;
+  return wxSize(g_monitor_info[g_current_monitor].width,
+                g_monitor_info[g_current_monitor].height);
 #endif
 }
 
 double OCPNPlatform::GetDisplaySizeMM() {
-  if (m_displaySizeMMOverride > 0) return m_displaySizeMMOverride;
-
-  if (m_displaySizeMM.x < 1) m_displaySizeMM = wxGetDisplaySizeMM();
-
-  double ret = m_displaySizeMM.GetWidth();
-
-#if 0
-#ifdef __WXGTK__
-    GdkScreen *screen = gdk_screen_get_default();
-    wxSize resolution = getDisplaySize();
-    double gdk_monitor_mm;
-    double ratio = (double)resolution.GetWidth() / (double)resolution.GetHeight();
-    if( std::abs(ratio - 32.0/10.0) < std::abs(ratio - 16.0/10.0) ) {
-        // We suspect that when the resolution aspect ratio is closer to 32:10 than 16:10, there are likely 2 monitors side by side. This works nicely when they are landscape, but what if both are rotated 90 degrees...
-        gdk_monitor_mm = gdk_screen_get_width_mm(screen);
-    } else {
-        gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+  if (g_current_monitor < m_displaySizeMMOverride.size()) {
+    if (m_displaySizeMMOverride[g_current_monitor] > 0) {
+      return m_displaySizeMMOverride[g_current_monitor];
     }
-    if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
-        ret = gdk_monitor_mm;
-#endif
-#endif
-
-#ifdef __WXMSW__
-  int w, h;
-
-  if (!m_bdisableWindowsDisplayEnum) {
-    if (GetWindowsMonitorSize(&w, &h) && (w > 100)) {  // sanity check
-      m_displaySizeMM == wxSize(w, h);
-      ret = w;
-    } else
-      m_bdisableWindowsDisplayEnum = true;  // disable permanently
   }
 
-#endif
+  double ret = g_monitor_info[g_current_monitor].width_mm;
 
-#ifdef __WXOSX__
-  ret = GetMacMonitorSize();
-#endif
-
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   ret = GetAndroidDisplaySize();
 #endif
-
-  wxString msg;
-  msg.Printf(_T("Detected display size (horizontal): %d mm"), (int)ret);
-  //     wxLogMessage(msg);
 
   return ret;
 }
@@ -1714,12 +1806,14 @@ double OCPNPlatform::GetDisplayAreaCM2() {
   return area;
 }
 
-void OCPNPlatform::SetDisplaySizeMM(double sizeMM) {
-  m_displaySizeMMOverride = sizeMM;
+void OCPNPlatform::SetDisplaySizeMM(size_t monitor, double sizeMM) {
+  if (monitor < m_displaySizeMMOverride.size()) {
+    m_displaySizeMMOverride[monitor] = sizeMM;
+  }
 }
 
 double OCPNPlatform::GetDisplayDPmm() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return getAndroidDPmm();
 #else
   double r = getDisplaySize().x;  // dots
@@ -1734,7 +1828,7 @@ unsigned int OCPNPlatform::GetSelectRadiusPix() {
 
 bool OCPNPlatform::GetFullscreen() {
   bool bret = false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bret = androidGetFullscreen();
 #else
 
@@ -1745,7 +1839,7 @@ bool OCPNPlatform::GetFullscreen() {
 
 bool OCPNPlatform::SetFullscreen(bool bFull) {
   bool bret = false;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bret = androidSetFullscreen(bFull);
 #else
 #endif
@@ -1754,7 +1848,7 @@ bool OCPNPlatform::SetFullscreen(bool bFull) {
 }
 
 void OCPNPlatform::PositionAISAlert(wxWindow *alert_window) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (alert_window) {
     alert_window->SetSize(g_ais_alert_dialog_x, g_ais_alert_dialog_y,
                           g_ais_alert_dialog_sx, g_ais_alert_dialog_sy);
@@ -1845,7 +1939,7 @@ wxFileDialog *OCPNPlatform::AdjustFileDialogFont(wxWindow *container,
 
 double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   double rv = 1.0;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   // We try to arrange matters so that at GUIScaleFactor=0, the tool icons are
   // approximately 9 mm in size and that the value may range from 0.5 -> 2.0
@@ -1864,7 +1958,7 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   //  This may be approximated in a device orientation-independent way as:
   //   45pixels * DENSITY
   double premult = 1.0;
-  if (g_config_display_size_manual && (g_config_display_size_mm > 0)) {
+  if (g_config_display_size_manual && g_config_display_size_mm[0] > 0) {
     double target_size = 9.0;  // mm
 
     double basic_tool_size_mm = tool_size / GetDisplayDPmm();
@@ -1918,7 +2012,7 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
 
 double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
   double rv = 1.0;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   // We try to arrange matters so that at GUIScaleFactor=0, the compass icon is
   // approximately 9 mm in size and that the value may range from 0.5 -> 2.0
@@ -1981,7 +2075,7 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
 
 float OCPNPlatform::GetChartScaleFactorExp(float scale_linear) {
   double factor = 1.0;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   factor = exp(scale_linear * (log(3.0) / 5.0));
 
 #else
@@ -2019,7 +2113,7 @@ float OCPNPlatform::GetMarkScaleFactorExp(float scale_linear) {
 //--------------------------------------------------------------------------
 
 bool OCPNPlatform::hasInternalBT(wxString profile) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bool t = androidDeviceHasBlueTooth();
   //    qDebug() << "androidDeviceHasBluetooth" << t;
   return t;
@@ -2030,7 +2124,7 @@ bool OCPNPlatform::hasInternalBT(wxString profile) {
 }
 
 bool OCPNPlatform::startBluetoothScan() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidStartBluetoothScan();
 #else
 
@@ -2039,7 +2133,7 @@ bool OCPNPlatform::startBluetoothScan() {
 }
 
 bool OCPNPlatform::stopBluetoothScan() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidStopBluetoothScan();
 #else
 
@@ -2049,7 +2143,7 @@ bool OCPNPlatform::stopBluetoothScan() {
 
 wxArrayString OCPNPlatform::getBluetoothScanResults() {
   wxArrayString ret_val;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidGetBluetoothScanResults();
 #else
 
@@ -2066,7 +2160,7 @@ wxArrayString OCPNPlatform::getBluetoothScanResults() {
 //--------------------------------------------------------------------------
 
 bool OCPNPlatform::AllowAlertDialog(const wxString &class_name) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   //  allow if TopLevelWindow count is <=4, implying normal runtime screen
   //  layout
   int nTLW = 0;
@@ -2087,12 +2181,12 @@ bool OCPNPlatform::AllowAlertDialog(const wxString &class_name) {
 }
 
 void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   return androidSetChartTypeMaskSel(mask, indicator);
 #endif
 }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file) {
@@ -2118,7 +2212,7 @@ QString getQtStyleSheet(void) { return g_qtStyleSheet; }
 
 
 bool OCPNPlatform::isPlatformCapable(int flag) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   return true;
 #else
   if (flag == PLATFORM_CAP_PLUGINS) {
@@ -2140,7 +2234,7 @@ bool OCPNPlatform::isPlatformCapable(int flag) {
 }
 
 void OCPNPlatform::DoHelpDialog(void) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (!g_pAboutDlg) {
     g_pAboutDlg = new AboutFrameImpl(gFrame);
   } else {
@@ -2159,7 +2253,7 @@ void OCPNPlatform::DoHelpDialog(void) {
 }
 
 void OCPNPlatform::LaunchLocalHelp(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidLaunchHelpView();
 #else
   wxString def_lang_canonical = _T("en_US");
@@ -2188,7 +2282,7 @@ void OCPNPlatform::LaunchLocalHelp(void) {
 }
 
 void OCPNPlatform::platformLaunchDefaultBrowser(wxString URL) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   androidLaunchBrowser(URL);
 #else
   ::wxLaunchDefaultBrowser(URL);
@@ -2258,7 +2352,7 @@ void OCPNColourPickerCtrl::InitColourData() {
 }
 
 void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent &WXUNUSED(ev)) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   unsigned int cco = 0;
   cco |= 0xff;
   cco = cco << 8;
@@ -2292,7 +2386,7 @@ void OCPNColourPickerCtrl::OnButtonClick(wxCommandEvent &WXUNUSED(ev)) {
 }
 
 void OCPNColourPickerCtrl::UpdateColour() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   SetBitmapLabel(wxBitmap());
 #endif
 

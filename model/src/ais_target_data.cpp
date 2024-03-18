@@ -32,7 +32,6 @@
 #include "model/config_vars.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
-#include "ocpn_frame.h"
 
 static std::unordered_map<int, wxString> s_ERI_hash;
 
@@ -271,7 +270,6 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
 
   b_isEuroInland = false;
   b_blue_paddle = false;
-  b_hasImoDac = b_hasMeteoFi = false;
 
   b_NoTrack = false;
   b_OwnShip = false;
@@ -292,6 +290,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb ) : m_callbacks(cb)  {
   for (unsigned int i = 0; i < AIS_TARGETDATA_MAX_CANVAS; i++)
     last_scale[i] = 50;
   met_data.original_mmsi = 0;
+  met_data.stationID = 0;
   met_data.month = 0;
   met_data.day = 0;
   met_data.hour = 24;
@@ -503,8 +502,14 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
          << _("Class") << _T("</font></td></tr>") << rowStartH << _T("<b>")
          << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart << _T("<b>ID: ")
-         << MMSI << rowEnd << _T("</b></table></td></tr>");
+         << _T("<font size=-1>") << ClassStr << rowEnd << rowStart
+         << _T("<b>ID: ") << MMSI;
+    if (met_data.stationID) {  // Facilitate to find a Meteo target on SignalK
+      wxString SK_ID =
+          wxString::Format(_T("%06d"), (met_data.stationID - 1000000));
+      html << "<td>&nbsp;</td><td align=right>" << "SK-ID: " << SK_ID;
+    }
+    html << rowEnd << _T("</b></table></td></tr>");
   }
   else
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
@@ -526,11 +531,10 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("<font size=-1><b>")
          << GetCountryCode(true) << rowEnd << _T("</font></table></td></tr>");
 
-  html << vertSpacer;
-
   wxString navStatStr;
   if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
       (Class != AIS_METEO)) {
+    html << vertSpacer;
     if ((NavStatus <= 21) && (NavStatus >= 0))
       navStatStr = wxGetTranslation(ais_get_status(NavStatus));
   } else if (Class == AIS_SART) {
@@ -813,7 +817,7 @@ wxString AisTargetData::BuildQueryResult(void) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
-                                    static_cast<int>(m_callbacks.get_mag(COG)),
+                                    static_cast<int>(m_callbacks.get_mag(Brg)),
                                     0x00B0);
     if (g_bShowTrue)
       trueString << wxString::Format( wxString("%03d%c "), (int)Brg, 0x00B0 );
@@ -1386,7 +1390,7 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
   int tmpMmsi = met_data.original_mmsi ? met_data.original_mmsi : MMSI;
   // First check the most common case
   int nMID = tmpMmsi / 1000000;
-  if (!IsValidMID(nMID)){
+  if (!IsValidMID(nMID) || Class == AIS_ATON) {
     // SART, MOB, EPIRB starts with 97 and don't use MID (ITU-R M.1371-5)
     // or healthy check
     if (tmpMmsi < 1000 || 97 == tmpMmsi / 10000000) return wxEmptyString;
@@ -1395,7 +1399,9 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
     wxString s_mmsi;
     s_mmsi << tmpMmsi;
     bool foundMID = false;
-    for (size_t i = 0; i < s_mmsi.length() - 3; i++) {
+    size_t i;
+    i = Class == AIS_ATON ? 2 : 0;
+    for (i; i < s_mmsi.length() - 3; i++) {
       nMID = wxAtoi(s_mmsi.Mid(i, 3));
       if (IsValidMID(nMID)) {
         foundMID = true;

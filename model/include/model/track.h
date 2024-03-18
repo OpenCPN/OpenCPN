@@ -33,10 +33,8 @@
 #include <vector>
 
 #include "bbox.h"
-#include "chcanv.h"
 #include "hyperlink.h"
 #include "route.h"
-#include "viewport.h"
 #include "vector2D.h"
 
 extern std::vector<Track*> g_TrackList;

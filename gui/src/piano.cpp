@@ -109,6 +109,7 @@ Piano::Piano(ChartCanvas *parent) {
   m_eventTimer.SetOwner(this, PIANO_EVENT_TIMER);
 
   m_tex = m_tex_piano_height = 0;
+  m_piano_mode = PIANO_MODE_LEGACY;
 }
 
 Piano::~Piano() {
@@ -141,31 +142,29 @@ void Piano::Paint(int y, ocpnDC &dc, wxDC *shapeDC) {
 
   //    Create the Piano Keys
 
-  int nKeys = m_key_array.size();
+  int nKeys = m_composite_array.size();
 
   wxPen ppPen(GetGlobalColor(_T("CHBLK")), 1, wxPENSTYLE_SOLID);
   dc.SetPen(ppPen);
 
   for (int i = 0; i < nKeys; i++) {
-    int key_db_index = m_key_array[i];
+    int chart_family = m_composite_array[i].chart_family;
+    int chart_type = m_composite_array[i].chart_type;
 
-    if (-1 == key_db_index) continue;
+    bool selected = IsAnyActiveChartInPianoKeyElement(m_composite_array[i]);
 
-    bool selected = InArray(m_active_index_array, key_db_index);
-
-    if (ChartData->GetDBChartType(key_db_index) == CHART_TYPE_CM93 ||
-        ChartData->GetDBChartType(key_db_index) == CHART_TYPE_CM93COMP) {
+    if (chart_type == CHART_TYPE_CM93 ||
+        chart_type == CHART_TYPE_CM93COMP) {
       if (selected)
         dc.SetBrush(m_scBrush);
       else
         dc.SetBrush(m_cBrush);
-    } else if (ChartData->GetDBChartType(key_db_index) == CHART_TYPE_MBTILES) {
+    } else if (chart_type == CHART_TYPE_MBTILES) {
       if (selected)
         dc.SetBrush(m_tileBrush);
       else
         dc.SetBrush(m_utileBrush);
-    } else if (ChartData->GetDBChartFamily(key_db_index) ==
-               CHART_FAMILY_VECTOR) {
+    } else if (chart_family ==  CHART_FAMILY_VECTOR) {
       if (selected)
         dc.SetBrush(m_svBrush);
       else
@@ -193,13 +192,15 @@ void Piano::Paint(int y, ocpnDC &dc, wxDC *shapeDC) {
       if (shapeDC) shapeDC->DrawRectangle(box);
     }
 
-    if (InArray(m_eclipsed_index_array, key_db_index)) {
+    if (IsAllEclipsedChartInPianoKeyElement(m_composite_array[i])) {
+        //if (InArray(m_eclipsed_index_array, key_db_index)) {
       dc.SetBrush(m_backBrush);
       int w = 3;
       dc.DrawRoundedRectangle(box.x + w, box.y + w, box.width - (2 * w),
                               box.height - (2 * w), box.height / 5 - 1);
     }
 
+#if 0
     //    Look in the current noshow array for this index
     if (InArray(m_noshow_index_array, key_db_index) && m_pInVizIconBmp &&
         m_pInVizIconBmp->IsOk())
@@ -226,6 +227,7 @@ void Piano::Paint(int y, ocpnDC &dc, wxDC *shapeDC) {
       dc.DrawBitmap(ConvertTo24Bit(dc.GetBrush().GetColour(), *m_pPolyIconBmp),
                     box.x + box.width - m_pPolyIconBmp->GetWidth() - 4,
                     box.y + 2, false);
+#endif
   }
 }
 
@@ -275,7 +277,7 @@ void Piano::BuildGLTexture() {
   m_texh = NextPow2(m_texh);
   m_texw = NextPow2(m_texw);
 
-  if (!m_tex) glGenTextures(1, &m_tex);
+  if (!m_tex) glGenTextures(1, (GLuint *)&m_tex);
 
   glBindTexture(GL_TEXTURE_2D, m_tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -367,7 +369,8 @@ void Piano::DrawGL(int off) {
 }
 void Piano::DrawGLSL(int off) {
 #ifdef ocpnUSE_GL
-  unsigned int w = m_parentCanvas->GetClientSize().x * m_parentCanvas->GetContentScaleFactor();
+  unsigned int w = m_parentCanvas->GetClientSize().x *
+                   m_parentCanvas->GetContentScaleFactor();
   int h = GetHeight();
   unsigned int endx = 0;
 
@@ -377,7 +380,7 @@ void Piano::DrawGLSL(int off) {
 
   int y1 = off, y2 = y1 + h;
 
-  int nKeys = m_key_array.size();
+  int nKeys = m_composite_array.size();
 
   // we could cache the coordinates and recompute only when the piano hash
   // changes, but the performance is already fast enough at this point
@@ -388,20 +391,21 @@ void Piano::DrawGLSL(int off) {
 
   // draw the keys
   for (int i = 0; i < nKeys; i++) {
-    int key_db_index = m_key_array[i];
-
     int b;
-    if (ChartData->GetDBChartType(key_db_index) == CHART_TYPE_CM93 ||
-        ChartData->GetDBChartType(key_db_index) == CHART_TYPE_CM93COMP)
+    int chart_family = m_composite_array[i].chart_family;
+    int chart_type = m_composite_array[i].chart_type;
+
+    if (chart_type == CHART_TYPE_CM93 || chart_type == CHART_TYPE_CM93COMP)
       b = 0;
-    else if (ChartData->GetDBChartType(key_db_index) == CHART_TYPE_MBTILES)
+    else if (chart_type == CHART_TYPE_MBTILES)
       b = 6;
-    else if (ChartData->GetDBChartFamily(key_db_index) == CHART_FAMILY_VECTOR)
+    else if (chart_family == CHART_FAMILY_VECTOR)
       b = 2;
     else  // Raster Chart
       b = 4;
 
-    if (!InArray(m_active_index_array, key_db_index)) b++;
+    if (!IsAnyActiveChartInPianoKeyElement(m_composite_array[i]))
+      b++;  // render color inactive
 
     wxRect box = KeyRect[i];
     float y = h * b, v1 = (y + .5) / m_texh, v2 = (y + h - .5) / m_texh;
@@ -414,9 +418,10 @@ void Piano::DrawGLSL(int off) {
                               (float)m_ref,
                               (float)m_ref + 1,
                               (float)m_texPitch - 1};
+
     int uindex;
     if (m_brounded) {
-      if (InArray(m_eclipsed_index_array, key_db_index))
+      if (IsAllEclipsedChartInPianoKeyElement(m_composite_array[i]))
         uindex = 2;
       else
         uindex = 1;
@@ -473,80 +478,80 @@ void Piano::DrawGLSL(int off) {
 
   glEnable(GL_BLEND);
   m_parentCanvas->GetglCanvas()->RenderTextures(
-    m_parentCanvas->GetglCanvas()->m_gldc,
-    coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
+      m_parentCanvas->GetglCanvas()->m_gldc, coords, texcoords, vc / 2,
+      m_parentCanvas->GetpVP());
   glDisable(GL_BLEND);
 
   glDisable(GL_BLEND);
 
-    // draw the bitmaps
-  vc = tc = 0;
-  for (int i = 0; i < nKeys; i++) {
-    int key_db_index = m_key_array[i];
+  // draw the bitmaps, if any
+  if (GetPianoMode() == PIANO_MODE_LEGACY) {
+    vc = tc = 0;
+    for (int i = 0; i < nKeys; i++) {
+      int key_db_index = m_composite_array[i].dbindex_list[0];
 
-    if (-1 == key_db_index) continue;
+      if (-1 == key_db_index) continue;
 
-    wxRect box = KeyRect[i];
+      wxRect box = KeyRect[i];
 
-    wxBitmap *bitmaps[] = {m_pInVizIconBmp, m_pTmercIconBmp, m_pSkewIconBmp,
-                           m_pPolyIconBmp};
-    int index;
-    if (InArray(m_noshow_index_array, key_db_index))
-      index = 0;
-    else {
-      if (InArray(m_skew_index_array, key_db_index))
-        index = 2;
-      else if (InArray(m_tmerc_index_array, key_db_index))
-        index = 1;
-      else if (InArray(m_poly_index_array, key_db_index))
-        index = 3;
+      wxBitmap *bitmaps[] = {m_pInVizIconBmp, m_pTmercIconBmp, m_pSkewIconBmp,
+                             m_pPolyIconBmp};
+      int index;
+      if (InArray(m_noshow_index_array, key_db_index))
+        index = 0;
+      else {
+        if (InArray(m_skew_index_array, key_db_index))
+          index = 2;
+        else if (InArray(m_tmerc_index_array, key_db_index))
+          index = 1;
+        else if (InArray(m_poly_index_array, key_db_index))
+          index = 3;
+        else
+          continue;
+      }
+
+      int x1, y1, iw = bitmaps[index]->GetWidth(),
+                  ih = bitmaps[index]->GetHeight();
+      if (InArray(m_noshow_index_array, key_db_index))
+        x1 = box.x + 4, y1 = box.y + 3;
       else
-        continue;
+        x1 = box.x + box.width - iw - 4, y1 = box.y + 2;
+
+      y1 += off;
+      int x2 = x1 + iw, y2 = y1 + ih;
+
+      wxBrush brushes[] = {m_scBrush,   m_cBrush,     m_svBrush,
+                           m_vBrush,    m_srBrush,    m_rBrush,
+                           m_tileBrush, m_utileBrush, m_unavailableBrush};
+
+      float yoff = ((sizeof brushes) / (sizeof *brushes)) * h + 16 * index;
+      float u1 = 0, u2 = (float)iw / m_texw;
+      float v1 = yoff / m_texh, v2 = (yoff + ih) / m_texh;
+
+      texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1,
+      coords[vc++] = y1;
+      texcoords[tc++] = u2, texcoords[tc++] = v1, coords[vc++] = x2,
+      coords[vc++] = y1;
+      texcoords[tc++] = u2, texcoords[tc++] = v2, coords[vc++] = x2,
+      coords[vc++] = y2;
+      texcoords[tc++] = u1, texcoords[tc++] = v2, coords[vc++] = x1,
+      coords[vc++] = y2;
+
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, m_tex);
+      glEnable(GL_BLEND);
+
+      m_parentCanvas->GetglCanvas()->RenderTextures(
+          m_parentCanvas->GetglCanvas()->m_gldc, coords, texcoords, vc / 2,
+          m_parentCanvas->GetpVP());
     }
-
-    int x1, y1, iw = bitmaps[index]->GetWidth(),
-                ih = bitmaps[index]->GetHeight();
-    if (InArray(m_noshow_index_array, key_db_index))
-      x1 = box.x + 4, y1 = box.y + 3;
-    else
-      x1 = box.x + box.width - iw - 4, y1 = box.y + 2;
-
-    y1 += off;
-    int x2 = x1 + iw, y2 = y1 + ih;
-
-    wxBrush brushes[] = {m_scBrush,   m_cBrush,     m_svBrush,
-                         m_vBrush,    m_srBrush,    m_rBrush,
-                         m_tileBrush, m_utileBrush, m_unavailableBrush};
-
-    float yoff = ((sizeof brushes) / (sizeof *brushes)) * h + 16 * index;
-    float u1 = 0, u2 = (float)iw / m_texw;
-    float v1 = yoff / m_texh, v2 = (yoff + ih) / m_texh;
-
-    texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1,
-    coords[vc++] = y1;
-    texcoords[tc++] = u2, texcoords[tc++] = v1, coords[vc++] = x2,
-    coords[vc++] = y1;
-    texcoords[tc++] = u2, texcoords[tc++] = v2, coords[vc++] = x2,
-    coords[vc++] = y2;
-    texcoords[tc++] = u1, texcoords[tc++] = v2, coords[vc++] = x1,
-    coords[vc++] = y2;
-
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, m_tex);
-    glEnable(GL_BLEND);
-
-    m_parentCanvas->GetglCanvas()->RenderTextures(
-      m_parentCanvas->GetglCanvas()->m_gldc,
-      coords, texcoords, vc / 2, m_parentCanvas->GetpVP());
   }
 
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
   delete[] texcoords;
   delete[] coords;
-
-#endif
+#endif    //gl
 }
 
 void Piano::SetColorScheme(ColorScheme cs) {
@@ -586,7 +591,110 @@ void Piano::ShowBusy(bool busy) {
   //    Update();
 }
 
-void Piano::SetKeyArray(std::vector<int> array) { m_key_array = array; }
+bool Piano::IsAnyActiveChartInPianoKeyElement(PianoKeyElement &pke){
+  for (auto &index : m_active_index_array){
+    auto found = find(pke.dbindex_list.begin(), pke.dbindex_list.end(), index);
+    if (found != pke.dbindex_list.end())
+      return true;
+  }
+  return false;
+}
+
+bool Piano::IsAllEclipsedChartInPianoKeyElement(PianoKeyElement &pke){
+  bool bfound_all = true;
+  for (auto &index : pke.dbindex_list){
+    auto found = find(m_eclipsed_index_array.begin(), m_eclipsed_index_array.end(), index);
+    if (found == m_eclipsed_index_array.end())
+      bfound_all = false;
+  }
+  return bfound_all;
+}
+
+void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_array) {
+  // Measure the available space for keys, and so decide on mode
+  // To account for scaling, etc., measure in parent base character size.
+  if (center_array.size()) {
+    int refd = m_parentCanvas->GetCharWidth();
+
+    int nkeys = center_array.size();
+    int key_width = (m_width_avail / refd) / nkeys;
+    if (key_width < 8) {
+      m_piano_mode = PIANO_MODE_COMPOSITE;
+      m_key_array = full_array;
+    } else {
+      m_piano_mode = PIANO_MODE_LEGACY;
+      m_key_array = center_array;
+    }
+  } else {
+    m_piano_mode = PIANO_MODE_LEGACY;
+    m_key_array.clear();
+  }
+
+
+  // Create the composite array
+  m_composite_array.clear();
+
+  if (m_piano_mode == PIANO_MODE_COMPOSITE) {
+    for (size_t i = 0; i < m_key_array.size(); i++) {
+      const ChartTableEntry &cte = ChartData->GetChartTableEntry(m_key_array[i]);
+      int scale = cte.GetScale();
+      auto order = std::pow(10, std::floor(std::log10(scale)));
+      scale = std::ceil(scale / order) * order;
+
+      int chart_type = cte.GetChartType();
+      int chart_family = cte.GetChartFamily();
+
+      // Perform scale compositing only for vector-family charts
+      // and Raster Family charts..
+      // All other families/types retain legacy piano keys, implemented as
+      // PianoKeyElement with only one chart in the array.
+      if ((cte.GetChartFamily() == CHART_FAMILY_VECTOR) ||
+          (cte.GetChartFamily() == CHART_FAMILY_RASTER)) {
+        auto predicate = [scale, chart_family](const PianoKeyElement &pke) {
+          return ((scale == pke.chart_scale) && (chart_family == pke.chart_family));
+        };
+        auto found = find_if(m_composite_array.begin(), m_composite_array.end(),
+                             predicate);
+        if (found == m_composite_array.end()) {  // need a new PianoKeyElement
+          PianoKeyElement new_pke;
+          new_pke.chart_scale = scale;
+          new_pke.chart_family = (ChartFamilyEnum)cte.GetChartFamily();
+          new_pke.chart_type = (ChartTypeEnum)cte.GetChartType();
+          new_pke.dbindex_list.push_back(m_key_array[i]);
+          m_composite_array.push_back(new_pke);
+        } else {
+          PianoKeyElement &ex_pke = *found;
+          ex_pke.dbindex_list.push_back(m_key_array[i]);
+        }
+      } else {
+        PianoKeyElement new_pke;
+        new_pke.chart_scale = scale;
+        new_pke.chart_family = (ChartFamilyEnum)cte.GetChartFamily();
+        new_pke.chart_type = (ChartTypeEnum)cte.GetChartType();
+        new_pke.dbindex_list.push_back(m_key_array[i]);
+        m_composite_array.push_back(new_pke);
+      }
+    }
+  }
+  else {
+    for (size_t i = 0; i < m_key_array.size(); i++) {
+      const ChartTableEntry &cte = ChartData->GetChartTableEntry(m_key_array[i]);
+      int scale = cte.GetScale();
+      int chart_type = cte.GetChartType();
+      PianoKeyElement new_pke;
+      new_pke.chart_scale = scale;
+      new_pke.chart_family = (ChartFamilyEnum)cte.GetChartFamily();
+      new_pke.chart_type = (ChartTypeEnum)cte.GetChartType();
+      new_pke.dbindex_list.push_back(m_key_array[i]);
+      m_composite_array.push_back(new_pke);
+    }
+  }
+
+  // Sort the composite array
+  std::sort(m_composite_array.begin(),m_composite_array.end(),
+            [](PianoKeyElement &a, PianoKeyElement &b){ return a.chart_scale < b.chart_scale; });
+
+}
 
 void Piano::SetNoshowIndexArray(std::vector<int> array) {
   m_noshow_index_array = array;
@@ -683,7 +791,10 @@ void Piano::FormatKeys(void) {
   int height = GetHeight();
   width *= g_btouch ? 0.98f : 0.6f;
 
-  int nKeys = m_key_array.size();
+  // Max width available
+  m_width_avail = width;
+
+  int nKeys = m_composite_array.size();
   int kw = style->chartStatusIconWidth;
   if (nKeys) {
     if (!kw) kw = width / nKeys;
@@ -758,7 +869,6 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
     if (event.LeftUp()) {
       if (-1 != sel_index) {
         m_click_sel_index = sel_index;
-        m_click_sel_dbindex = sel_dbindex;
         if (!m_eventTimer.IsRunning()) {
           m_action = DEFERRED_KEY_CLICK_UP;
           m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
@@ -766,35 +876,47 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
       }
     } else if (event.RightDown()) {
       if (sel_index != m_hover_last) {
-        m_parentCanvas->HandlePianoRollover(sel_index, sel_dbindex);
+        if (sel_index >= 0)
+          m_parentCanvas->HandlePianoRollover(sel_index,
+                                            m_composite_array[sel_index].dbindex_list,
+                                              m_composite_array[sel_index].dbindex_list.size(),
+                                              m_composite_array[sel_index].chart_scale  );
         m_hover_last = sel_index;
 
         //                m_action = INFOWIN_TIMEOUT;
         //                m_eventTimer.Start(3000, wxTIMER_ONE_SHOT);
       }
     } else if (event.ButtonUp()) {
-      m_parentCanvas->HandlePianoRollover(-1, -1);
+      m_parentCanvas->ClearPianoRollover();
       ResetRollover();
     }
   } else {
     if (m_bleaving) {
-      m_parentCanvas->HandlePianoRollover(-1, -1);
+      m_parentCanvas->ClearPianoRollover();
       ResetRollover();
     } else if (event.LeftDown()) {
       if (-1 != sel_index) {
-        m_parentCanvas->HandlePianoClick(sel_index, sel_dbindex);
+        m_parentCanvas->HandlePianoClick(sel_index,
+                                            m_composite_array[sel_index].dbindex_list);
+
         m_parentCanvas->Raise();
       } else
         return false;
     } else if (event.RightDown()) {
       if (-1 != sel_index) {
-        m_parentCanvas->HandlePianoRClick(x, y, sel_index, sel_dbindex);
+        m_parentCanvas->HandlePianoRClick(x, y, sel_index,
+                                          m_composite_array[sel_index].dbindex_list);
         m_parentCanvas->Raise();
       } else
         return false;
     } else if (!event.ButtonUp()) {
       if (sel_index != m_hover_last) {
-        m_parentCanvas->HandlePianoRollover(sel_index, sel_dbindex);
+        if (sel_index >= 0)
+          m_parentCanvas->HandlePianoRollover(sel_index,
+                                              m_composite_array[sel_index].dbindex_list,
+                                              m_composite_array[sel_index].dbindex_list.size(),
+                                              m_composite_array[sel_index].chart_scale );
+
         m_hover_last = sel_index;
       }
     }
@@ -854,16 +976,16 @@ void Piano::onTimerEvent(wxTimerEvent &event) {
     case DEFERRED_KEY_CLICK_UP:
       ShowBusy(false);
       if ((m_hover_last >= 0) || !m_gotPianoDown) {  // turn it off, and return
-        m_parentCanvas->HandlePianoRollover(-1, -1);
+        m_parentCanvas->ClearPianoRollover();
         ResetRollover();
       } else {
         m_parentCanvas->HandlePianoClick(m_click_sel_index,
-                                         m_click_sel_dbindex);
+                                         m_composite_array[m_click_sel_index].dbindex_list);
         m_gotPianoDown = false;
       }
       break;
     case INFOWIN_TIMEOUT:
-      m_parentCanvas->HandlePianoRollover(-1, -1);
+      m_parentCanvas->ClearPianoRollover();
       ResetRollover();
       break;
     default:

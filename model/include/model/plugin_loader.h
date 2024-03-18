@@ -37,11 +37,11 @@
 
 #include "config.h"
 
-#include "catalog_parser.h"
+#include "model/catalog_parser.h"
+#include "model/plugin_blacklist.h"
+#include "model/semantic_vers.h"
 #include "observable_evtvar.h"
 #include "ocpn_plugin.h"
-#include "plugin_blacklist.h"
-#include "semantic_vers.h"
 
 enum class PluginStatus {
   System,     //!< One of the four system plugins, unmanaged.
@@ -195,9 +195,11 @@ public:
    * Update catalog with imported metadata and load all plugin library files.
    *
    * @param enabled_plugins If true, only load enabled plugins
+   * @param keep_orphans If true, don't scrub plugins not available in the
+   *                     catalog.
    * @return false on load errors, else true.
    */
-  bool LoadAllPlugIns(bool enabled_plugins);
+  bool LoadAllPlugIns(bool enabled_plugins, bool keep_orphans = false);
 
   const wxBitmap* GetPluginDefaultIcon();
   void SetPluginDefaultIcon(const wxBitmap* bitmap);
@@ -225,7 +227,7 @@ public:
   bool DeactivatePlugIn(PlugInContainer* pic);
   bool DeactivatePlugIn(const PlugInData& pic);
   bool UpdatePlugIns();
-  void UpdateManagedPlugins();
+  void UpdateManagedPlugins(bool keep_orphans);
   PlugInContainer* LoadPlugIn(const wxString& plugin_file);
   PlugInContainer* LoadPlugIn(const wxString& plugin_file,
                               PlugInContainer* pic);

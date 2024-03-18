@@ -75,9 +75,17 @@ public:
   AbstractPlatform() = default;
   virtual ~AbstractPlatform()  = default;
 
+  /** Return dir path for opencpn.log, etc., respecting -c cli option. */
   wxString& GetPrivateDataDir();
+
+  /** Return dir path for opencpn.log, etc., does not respect -c option. */
+  wxString& DefaultPrivateDataDir();
+
+
   wxString* GetPluginDirPtr();
   wxString* GetSharedDataDirPtr();
+
+  /** Legacy compatibility syntactic sugar for GetPrivateDataDir(). */
   wxString* GetPrivateDataDirPtr();
 
   /** The original in-tree plugin directory, sometimes not user-writable.*/
@@ -133,6 +141,7 @@ public:
 protected:
   bool DetectOSDetail(OCPN_OSDetail* detail);
 
+  wxString m_default_private_datadir;
   wxString m_PrivateDataDir;
   wxString m_PluginsDir;
   bool m_isFlatpacked;
@@ -149,9 +158,7 @@ protected:
   wxLog* m_old_logger;
   wxString large_log_message;
 
-  wxSize m_displaySize;
-  wxSize m_displaySizeMM;
-  int m_displaySizeMMOverride;
+  std::vector<int> m_displaySizeMMOverride;
 
 
 #ifdef _MSC_VER

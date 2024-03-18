@@ -1,13 +1,32 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+# Debug junk
+message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+
 if (TARGET ocpn::sound)
   return ()
 endif ()
 
-# Fixme (#3527) dependency on main opencpn
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-find_package(Portaudio)
+set(PORTAUDIO_MSG "Use portaudio(3) to play sounds if available")
+if (WIN32 OR APPLE OR QT_ANDROID)
+  option(OCPN_ENABLE_PORTAUDIO ${PORTAUDIO_MSG} OFF)
+else ()
+  option(OCPN_ENABLE_PORTAUDIO ${PORTAUDIO_MSG} ON)
+endif ()
+cmake_dependent_option(
+  OCPN_ENABLE_SNDFILE "Use libsndfile for portaudio if available." ON
+  "OCPN_ENABLE_PORTAUDIO" ON
+)
+
+option(OCPN_ENABLE_SYSTEM_CMD_SOUND
+       "Use aplay(1), afplay(1) etc. to play sounds if available"
+       ${cmd_snd_default}
+)
+set(OCPN_SOUND_CMD "" CACHE STRING
+    "Hardcoded value for CLI command used in SystemCmdSound backend"
+)
 
 set(SRC
   src/OCPN_Sound.cpp
@@ -23,6 +42,8 @@ set(SRC
   include/SoundLoaderFactory.h
   include/SystemCmdSound.h
 )
+find_package(Portaudio)
+find_package(LibSndfile)
 
 if (WIN32)
   list(APPEND SRC src/MswSound.cpp include/MswSound.h)
@@ -43,28 +64,26 @@ endif ()
 add_library(SOUND STATIC ${SRC})
 add_library(ocpn::sound ALIAS SOUND)
 
+include(SoundConfig)
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
   target_compile_options(SOUND PRIVATE -fvisibility=default -fPIC)
 endif ()
 
 target_include_directories(SOUND
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE
-        ${CMAKE_BINARY_DIR}/include
-#FIXME (#3527) Missing linkage
-        ${wxWidgets_INCLUDE_DIRS}
-#FIXME (#3527) Dependency on main OpenCPN
-        ${CMAKE_CURRENT_BINARY_DIR}/../../include
-        ${CMAKE_CURRENT_BINARY_DIR}/../../../include
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  PRIVATE
+    ${CMAKE_BINARY_DIR}/include
+    ${wxWidgets_INCLUDE_DIRS}
 )
+target_link_libraries(SOUND PRIVATE ${wxWidgets_LIBRARIES})
 
-#FIXME (#3527) Dependency on main OpenCPN
 if (QT_ANDROID)
-  target_include_directories(SOUND PUBLIC ${CMAKE_SOURCE_DIR}/android)
+  target_link_libraries(SOUND PRIVATE ocpn::java-jvm)
 endif ()
-
-target_link_libraries(SOUND PRIVATE "${SOUND_SUPPORT_LIBS}")
-if (PORTAUDIO_FOUND)
-  target_link_libraries(SOUND PRIVATE portaudio::portaudio)
-endif ()
+message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/snd_config.h.in
+  ${CMAKE_BINARY_DIR}/include/snd_config.h
+)

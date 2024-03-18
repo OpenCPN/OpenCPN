@@ -97,17 +97,7 @@ void S57QueryDialog::Init() {}
 bool S57QueryDialog::Create(wxWindow* parent, wxWindowID id,
                             const wxString& caption, const wxPoint& pos,
                             const wxSize& size, long style) {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
-
   long wstyle = wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT;
-
-  if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
-      (global_color_scheme != GLOBAL_COLOR_SCHEME_RGB))
-    wstyle |= (wxNO_BORDER);
 
   if (!wxFrame::Create(parent, id, caption, pos, size, wstyle)) return false;
 
@@ -284,17 +274,7 @@ S57ExtraQueryInfoDlg::S57ExtraQueryInfoDlg(wxWindow* parent, wxWindowID id,
 bool S57ExtraQueryInfoDlg::Create(wxWindow* parent, wxWindowID id,
                                   const wxString& caption, const wxPoint& pos,
                                   const wxSize& size, long style) {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
-
   long wstyle = wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT;
-
-  if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
-      (global_color_scheme != GLOBAL_COLOR_SCHEME_RGB))
-    wstyle |= (wxNO_BORDER);
 
   if (!wxFrame::Create(parent, id, caption, pos, size, wstyle)) return false;
 

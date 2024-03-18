@@ -35,6 +35,7 @@
 #include "config.h"
 
 #include "model/config_vars.h"
+#include "model/comm_navmsg_bus.h"
 #include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
@@ -56,18 +57,29 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
 static const char* const kVersionReply = R"""( { "version": "@version@" })""";
+static const char* const kListRoutesReply =
+    R"""( { "version": "@version@", "routes": "@routes@" })""";
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
 
 struct RestIoEvtData {
-  const enum class Cmd { Ping, Object, CheckWrite } cmd;
+  const enum class Cmd {
+    Ping,
+    Object,
+    CheckWrite,
+    ListRoutes,
+    ActivateRoute,
+    ReverseRoute,
+    PluginMsg,
+  } cmd;
   const std::string api_key;  ///< Rest API parameter apikey
   const std::string source;   ///< Rest API parameter source
+  const std::string id;       ///< rest API parameter id for PluginMsg.
   const bool force;           ///< rest API parameter force
   const bool activate;        ///< rest API parameter activate
 
-  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite */
+  /** GPX data for Cmd::Object, Guid for Cmd::CheckWrite, Activate, Reverse. */
   const std::string payload;
 
   /** Create a Cmd::Object instance. */
@@ -75,25 +87,55 @@ struct RestIoEvtData {
                                      const std::string& src,
                                      const std::string& gpx_data, bool _force,
                                      bool _activate) {
-    return {Cmd::Object, key, src, gpx_data, _force, _activate};
+    return RestIoEvtData(Cmd::Object, key, src, gpx_data, "", _force, _activate);
   }
 
   /** Create a Cmd::Ping instance: */
   static RestIoEvtData CreatePingData(const std::string& key,
                                       const std::string& src) {
-    return {Cmd::Ping, key, src, "", false, false};
+    return {Cmd::Ping, key, src, "", ""};
   }
 
   /** Create a Cmd::CheckWrite instance. */
   static RestIoEvtData CreateChkWriteData(const std::string& key,
                                           const std::string& src,
                                           const std::string& guid) {
-    return {Cmd::CheckWrite, key, src, guid, false, false};
+    return {Cmd::CheckWrite, key, src, "", guid};
+  }
+
+  /** Create a Cmd::ListRoutes instance. */
+  static RestIoEvtData CreateListRoutesData(const std::string& key,
+                                            const std::string& src) {
+    return {Cmd::ListRoutes, key, src, "", ""};
+  }
+
+  static RestIoEvtData CreateActivateRouteData(const std::string& key,
+                                               const std::string& src,
+                                               const std::string& guid) {
+    return {Cmd::ActivateRoute, key, src, guid, ""};
+  }
+
+  static RestIoEvtData CreatePluginMsgData(const std::string& key,
+                                           const std::string& src,
+                                           const std::string& id,
+                                           const std::string& msg) {
+    return {Cmd::PluginMsg, key, src, msg, id};
+  }
+
+  static RestIoEvtData CreateReverseRouteData(const std::string& key,
+                                              const std::string& src,
+                                              const std::string& guid) {
+    return {Cmd::ReverseRoute, key, src, guid, ""};
   }
 
 private:
+
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                bool _force, bool _activate);
+                std::string _id, bool _force, bool _activate) ;
+  RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
+                std::string id)
+      : RestIoEvtData(c, key, src, _payload, id, false, false) {}
+
 };
 
 /** Extract a HTTP variable from query string. */
@@ -189,6 +231,96 @@ static void HandleWritable(struct mg_connection* c, struct mg_http_message* hm,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
+static void HandleListRoutes(struct mg_connection* c,
+                             struct mg_http_message* hm, RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateListRoutesData(apikey, source));
+    PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
+    std::unique_lock<std::mutex> lock{parent->ret_mutex};
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+      return parent->GetReturnStatus() != RestServerResult::Void;
+    });
+    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+  }
+  mg_http_reply(c, 200, "", parent->m_reply_body.c_str());
+}
+
+static void HandleActivateRoute(struct mg_connection* c,
+                                struct mg_http_message* hm,
+                                RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  std::string guid = HttpVarToString(hm->query, "guid");
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateActivateRouteData(apikey, source, guid));
+    PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
+    std::unique_lock<std::mutex> lock{parent->ret_mutex};
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+      return parent->GetReturnStatus() != RestServerResult::Void;
+    });
+    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+  }
+  mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
+}
+
+static void HandlePluginMsg(struct mg_connection* c,
+                            struct mg_http_message* hm,
+                            RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  std::string id = HttpVarToString(hm->query, "id");
+  std::string message = HttpVarToString(hm->query, "message");
+  int chunk_status = hm->chunk.len ? ORS_CHUNK_N : ORS_CHUNK_LAST;
+  std::string content;
+  if (hm->chunk.len) content = std::string(hm->chunk.ptr, hm->chunk.len);
+  mg_http_delete_chunk(c, hm);
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreatePluginMsgData(apikey, source, id, content));
+    PostEvent(parent, data_ptr, chunk_status);
+    if (chunk_status == ORS_CHUNK_LAST) {
+      std::unique_lock<std::mutex> lock{parent->ret_mutex};
+      bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+        return parent->GetReturnStatus() != RestServerResult::Void;
+      });
+      if (!r) wxLogWarning("Timeout waiting for REST server condition");
+      mg_http_reply(c, 200, "", "{\"result\": %d}\n",
+                    parent->GetReturnStatus());
+    }
+  }
+}
+
+static void HandleReverseRoute(struct mg_connection* c,
+                               struct mg_http_message* hm,
+                               RestServer* parent) {
+  std::string apikey = HttpVarToString(hm->query, "apikey");
+  std::string source = HttpVarToString(hm->query, "source");
+  std::string guid = HttpVarToString(hm->query, "guid");
+  if (!source.empty()) {
+    assert(parent && "Null parent pointer");
+    parent->UpdateReturnStatus(RestServerResult::Void);
+    auto data_ptr = std::make_shared<RestIoEvtData>(
+        RestIoEvtData::CreateReverseRouteData(apikey, source, guid));
+    PostEvent(parent, data_ptr, ORS_CHUNK_LAST);
+    std::unique_lock<std::mutex> lock{parent->ret_mutex};
+    bool r = parent->return_status_cv.wait_for(lock, 10s, [&] {
+      return parent->GetReturnStatus() != RestServerResult::Void;
+    });
+    if (!r) wxLogWarning("Timeout waiting for REST server condition");
+  }
+  mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
+}
+
 // We use the same event handler function for HTTP and HTTPS connections
 // fn_data is NULL for plain HTTP, and non-NULL for HTTPS
 static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
@@ -215,8 +347,16 @@ static void fn(struct mg_connection* c, int ev, void* ev_data, void* fn_data) {
       std::string reply(kVersionReply);
       ocpn::replace(reply, "@version@", PACKAGE_VERSION);
       mg_http_reply(c, 200, "", reply.c_str());
+    } else if (mg_http_match_uri(hm, "/api/list-routes")) {
+      HandleListRoutes(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/activate-route")) {
+      HandleActivateRoute(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/reverse-route")) {
+      HandleReverseRoute(c, hm, parent);
+    } else if (mg_http_match_uri(hm, "/api/plugin-msg")) {
+      HandlePluginMsg(c, hm, parent);
     } else {
-      mg_http_reply(c, 404, "", "url: not found");
+      mg_http_reply(c, 404, "", "url: not found\n");
     }
   }
 }
@@ -225,25 +365,24 @@ std::string RestResultText(RestServerResult result) {
   wxString s;
   switch (result) {
     case RestServerResult::NoError:
-      s =  _("No error");
+      s = _("No error");
     case RestServerResult::GenericError:
-      s =  _("Server Generic Error");
+      s = _("Server Generic Error");
     case RestServerResult::ObjectRejected:
-      s =  _("Peer rejected object");
+      s = _("Peer rejected object");
     case RestServerResult::DuplicateRejected:
-      s =  _("Peer rejected duplicate object");
+      s = _("Peer rejected duplicate object");
     case RestServerResult::RouteInsertError:
-      s =  _("Peer internal error (insert)");
+      s = _("Peer internal error (insert)");
     case RestServerResult::NewPinRequested:
-      s =  _("Peer requests new pincode");
+      s = _("Peer requests new pincode");
     case RestServerResult::ObjectParseError:
-      s =  _("XML parse error");
+      s = _("XML parse error");
     case RestServerResult::Void:
-      s =  _("Unspecified error");
+      s = _("Unspecified error");
   }
   return s.ToStdString();
 }
-
 
 //========================================================================
 /*    RestServer implementation */
@@ -387,6 +526,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
 
 void RestServer::HandleServerMessage(ObservedEvt& event) {
   auto evt_data = UnpackEvtPointer<RestIoEvtData>(event);
+  m_reply_body = "";
   switch (event.GetId()) {
     case ORS_START_OF_SESSION:
       // Prepare a temp file to catch chuncks that might follow
@@ -417,9 +557,9 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
     return;
   }
 
-  UpdateReturnStatus(RestServerResult::NoError);
   switch (evt_data->cmd) {
     case RestIoEvtData::Cmd::Ping:
+      UpdateReturnStatus(RestServerResult::NoError);
       return;
     case RestIoEvtData::Cmd::CheckWrite: {
       auto guid = evt_data->payload;
@@ -453,6 +593,43 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
       }
       break;
     }
+    case RestIoEvtData::Cmd::ListRoutes: {
+      std::stringstream ss;
+      ss << "[";
+      for (auto& r : *pRouteList) {
+        if (ss.str() != "[") ss << ", ";
+        ss << "[ \"" << r->GetGUID() << "\", \"" << r->GetName() << "\"]";
+      }
+      ss << "]";
+      std::string reply(kListRoutesReply);
+      ocpn::replace(reply, "@version@", PACKAGE_VERSION);
+      ocpn::replace(reply, "@routes@", ss.str());
+      m_reply_body = reply;
+      UpdateReturnStatus(RestServerResult::NoError);
+    } break;
+    case RestIoEvtData::Cmd::ActivateRoute: {
+      auto guid = evt_data->payload;
+      activate_route.Notify(guid);
+      UpdateReturnStatus(RestServerResult::NoError);
+    } break;
+    case RestIoEvtData::Cmd::ReverseRoute: {
+      auto guid = evt_data->payload;
+      if (guid.empty()) {
+        UpdateReturnStatus(RestServerResult::ObjectRejected);
+      } else {
+        reverse_route.Notify(guid);
+        UpdateReturnStatus(RestServerResult::NoError);
+      }
+    } break;
+    case RestIoEvtData::Cmd::PluginMsg: {
+      std::ifstream f(m_upload_path);
+      m_upload_path.clear();  // empty for next time
+      std::stringstream ss;
+      ss << f.rdbuf();
+      auto msg = std::make_shared<PluginMsg>(PluginMsg(evt_data->id, ss.str()));
+      NavMsgBus::GetInstance().Notify(msg);
+      UpdateReturnStatus(RestServerResult::NoError);
+    } break;
   }
 }
 
@@ -485,7 +662,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
     }
     // Add the route to the global list
     NavObjectCollection1 pSet;
-    if (InsertRouteA(route, &pSet))  {
+    if (InsertRouteA(route, &pSet)) {
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
@@ -563,7 +740,7 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   }
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
-       m_route_ctx.delete_waypoint(duplicate);
+      m_route_ctx.delete_waypoint(duplicate);
     }
     if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force))
       UpdateReturnStatus(RestServerResult::NoError);
@@ -573,12 +750,13 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   }
 }
 
-RestIoEvtData::RestIoEvtData(RestIoEvtData::Cmd c, std::string key,
-                             std::string src, std::string _payload, bool _force,
+RestIoEvtData::RestIoEvtData(Cmd c, std::string key, std::string src,
+                             std::string _payload, std::string _id, bool _force,
                              bool _activate)
     : cmd(c),
       api_key(std::move(key)),
       source(std::move(src)),
+      id(_id),
       force(_force),
       activate(_activate),
       payload(std::move(_payload)) {}

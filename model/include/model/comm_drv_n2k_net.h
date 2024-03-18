@@ -32,9 +32,9 @@
 #include <wx/wx.h>
 #endif  // precompiled header
 
-#include "comm_can_util.h"
-#include "comm_drv_n2k.h"
-#include "conn_params.h"
+#include "model/comm_can_util.h"
+#include "model/comm_drv_n2k.h"
+#include "model/conn_params.h"
 
 #include <wx/datetime.h>
 
@@ -75,6 +75,12 @@ typedef enum
   N2KFormat_Actisense_RAW,
   N2KFormat_Actisense_NGT
 } N2K_Format;
+
+typedef enum
+{
+  TX_FORMAT_YDEN = 0,
+  TX_FORMAT_ACTISENSE
+} GW_TX_FORMAT;
 
 class CommDriverN2KNetEvent;  // Internal
 class MrqContainer;
@@ -117,14 +123,15 @@ public:
   ConnectionParams GetParams() const { return m_params; }
 
   bool SetOutputSocketOptions(wxSocketBase* tsock);
-  bool SendSentenceNetwork(const wxString& payload);
   void OnServerSocketEvent(wxSocketEvent& event);  // The listener
-  void OnTimerSocket(wxTimerEvent& event);
+  void OnTimerSocket(wxTimerEvent& event) { OnTimerSocket(); }
+  void OnTimerSocket();
   void OnSocketEvent(wxSocketEvent& event);
   void OpenNetworkGPSD();
   void OpenNetworkTCP(unsigned int addr);
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+  void HandleResume();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
@@ -179,6 +186,17 @@ private:
   bool ProcessActisense_RAW(std::vector<unsigned char> packet);
   bool ProcessActisense_NGT(std::vector<unsigned char> packet);
 
+
+  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg> &msg,
+                      std::shared_ptr<const NavAddr2000> dest_addr);
+
+  std::vector<std::vector<unsigned char>>
+      GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
+              std::shared_ptr<const NavAddr2000> dest_addr);
+  bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
+  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char> &payload);
+  bool PrepareForTX();
+
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
   wxIPV4address m_addr;
@@ -211,8 +229,13 @@ private:
 
   FastMessageMap *fast_messages;
   N2K_Format m_n2k_format;
+  uint8_t m_order;
+  char m_TX_flag;
+
+  ObsListener resume_listener;
 
   DECLARE_EVENT_TABLE()
 };
 
 #endif  // guard
+

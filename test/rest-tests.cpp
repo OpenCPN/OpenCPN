@@ -22,9 +22,11 @@
 
 #include <gtest/gtest.h>
 
+#include "ocpn_plugin.h"
 #include "model/certificates.h"
 #include "model/cli_platform.h"
 #include "model/config_vars.h"
+#include "model/comm_navmsg.h"
 #include "model/mDNS_query.h"
 #include "observable_confvar.h"
 #include "model/ocpn_types.h"
@@ -40,6 +42,7 @@ extern Select* pSelect;
 extern BasePlatform* g_BasePlatform;
 
 static std::string s_result;
+static std::string s_result2;
 static int int_result0;
 
 static void ConfigSetup() {
@@ -162,6 +165,75 @@ protected:
     }
   }
 };
+
+class RestPluginMsgApp : public RestServerApp {
+public:
+  RestPluginMsgApp(RestServerDlgCtx ctx, RouteCtx route_ctx, bool& portable)
+      : RestServerApp(ctx, route_ctx, portable) {}
+
+protected:
+  void Work() {
+    {
+      // Force sercer to generate new key:
+      std::this_thread::sleep_for(50ms);
+      fs::path curl_prog(CURLPROG);
+      std::stringstream ss;
+      auto path = fs::path(CMAKE_BINARY_DIR) / "curl-result";
+      ss << curl_prog.make_preferred() << " --insecure -o " << path
+	  << " \"https://localhost:8443/api/ping?source=1.2.3.4&apikey=bad\"";
+      system(CmdString(ss.str()).c_str());
+      std::this_thread::sleep_for(50ms);
+      ProcessPendingEvents();
+      std::ifstream f(path.string());
+      std::string result;
+      std::getline(f, result);
+      const char* expected =
+          "{\"result\": 5, \"version\": \"" VERSION_FULL "\"}";
+      EXPECT_EQ(result, expected);  // Bad api key
+    }{
+      // Check the internal API
+      s_result = "";
+      s_result2 = "";
+      fs::path curl_prog(CURLPROG);
+      ObsListener listener;
+      listener.Init(PluginMsg("msg1", ""), [&](ObservedEvt ev) {
+        auto msg = UnpackEvtPointer<PluginMsg>(ev);
+        s_result = msg->name;
+        s_result2 = msg->message; });
+      std::stringstream ss;
+      auto key = m_rest_server.m_key_map["1.2.3.4"];
+      ss << curl_prog.make_preferred() << " --insecure -X post --data foobar "
+         << " \"https://localhost:8443/api/plugin-msg?source=1.2.3.4&apikey="
+         << key << "&id=msg1" << "\"";
+      system(CmdString(ss.str()).c_str());
+      std::this_thread::sleep_for(50ms);
+      ProcessPendingEvents();
+      EXPECT_EQ(s_result, "msg1");
+      EXPECT_EQ(s_result2, "foobar");
+    }{
+      // Check plugin API
+      s_result = "";
+      s_result2 = "";
+      fs::path curl_prog(CURLPROG);
+      wxDEFINE_EVENT(EVT_BAR, ObservedEvt);
+      auto listener = GetListener(PluginMsgId("msg1"), EVT_BAR, this);
+      Bind(EVT_BAR, [&](ObservedEvt ev) {
+        auto msg = GetPluginMsgPayload(PluginMsgId("msg1"), ev);
+        s_result = msg; });
+      std::stringstream ss;
+      auto key = m_rest_server.m_key_map["1.2.3.4"];
+      ss << curl_prog.make_preferred() << " --insecure -X post --data foobar "
+         << " \"https://localhost:8443/api/plugin-msg?source=1.2.3.4&apikey="
+         << key << "&id=msg1" << "\"";
+      auto foo = ss.str();
+      system(CmdString(ss.str()).c_str());
+      std::this_thread::sleep_for(50ms);
+      ProcessPendingEvents();
+      EXPECT_EQ(s_result, "foobar");
+    }
+  }
+};
+
 
 class RestServer404App : public RestServerApp {
 public:
@@ -430,6 +502,16 @@ TEST(RestServer, CheckWrite) {
   RestServerDlgCtx dialog_ctx;
   RouteCtx route_ctx;
   RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
+  app.Run();
+  delete g_BasePlatform;
+  g_BasePlatform = 0;
+}
+
+TEST(RestServer, PluginMessage) {
+  wxDisableAsserts();
+  RestServerDlgCtx dialog_ctx;
+  RouteCtx route_ctx;
+  RestPluginMsgApp app(dialog_ctx, route_ctx, g_portable);
   app.Run();
   delete g_BasePlatform;
   g_BasePlatform = 0;

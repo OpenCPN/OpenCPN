@@ -68,7 +68,7 @@
 
 #include <archive.h>
 
-#include "catalog_parser.h"
+#include "model/catalog_parser.h"
 #include "observable_evtvar.h"
 
 bool isRegularFile(const char* path);
@@ -121,8 +121,14 @@ public:
   /** Check if given plugin can be installed/updated. */
   bool isPluginWritable(std::string name);
 
-  /** Return list of all installed plugins. */
+  /** Return list of all installed  and loaded plugins. */
   const std::vector<PluginMetadata> getInstalled();
+
+  /**
+   *  Return list of installed plugins lower case names, not necessarily
+   *  loaded
+   */
+  std::vector<std::string> GetInstalldataPlugins();
 
   /** Set metadata for an installed plugin */
   void SetInstalledMetadata(const PluginMetadata& pm);
@@ -160,8 +166,11 @@ public:
   /* Install a new, downloaded but not installed plugin tarball. */
   bool installPlugin(const std::string& path);
 
-  /** Uninstall an installed plugin. */
+  /** Uninstall an installed  and loaded plugin. */
   bool uninstall(const std::string plugin);
+
+  /** Remove installation data for not loaded plugin. */
+  bool ClearInstallData(const std::string plugin_name);
 
   /** Install plugin tarball from local cache. */
   bool installPluginFromCache(PluginMetadata plugin);
@@ -191,6 +200,7 @@ private:
                       bool only_metadata = false);
   bool archive_check(int r, const char* msg, struct archive* a);
   std::unordered_map<std::string, std::vector<std::string>> files_by_plugin;
+  bool DoClearInstallData(const std::string plugin_name);
 };
 
 #endif  // PLUGIN_HANDLER_H__

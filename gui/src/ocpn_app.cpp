@@ -61,6 +61,18 @@
 #include <X11/Xlib.h>
 #endif
 
+#if (defined(__clang_major__) && (__clang_major__ < 15))
+// MacOS 1.13
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
+#endif
+
+using namespace std::literals::chrono_literals;
+
 #include <wx/apptrait.h>
 #include <wx/arrimpl.cpp>
 #include <wx/artprov.h>
@@ -182,9 +194,7 @@ void RedirectIOToConsole();
 #include "serial/serial.h"
 #endif
 
-using namespace std::literals::chrono_literals;
 
-extern int ShowNavWarning();
 
 const char* const kUsage =
 R"""(Usage:
@@ -193,11 +203,14 @@ R"""(Usage:
   opencpn --remote [-R] | -q] | -e] |-o <str>]
 
 Options for starting opencpn
+
+  -c, --configdir=<dirpath>     Use alternative configuration directory.
   -p, --portable               	Run in portable mode.
   -f, --fullscreen             	Switch to full screen mode on start.
   -G, --no_opengl              	Disable OpenGL video acceleration. This setting will
                                 be remembered.
   -g, --rebuild_gl_raster_cache	Rebuild OpenGL raster cache on start.
+  -D, --rebuild_chart_db        Rescan chart directories and rebuild the chart database
   -P, --parse_all_enc          	Convert all S-57 charts to OpenCPN's internal format on start.
   -l, --loglevel=<str>         	Amount of logging: error, warning, message, info, debug or trace
   -u, --unit_test_1=<num>      	Display a slideshow of <num> charts and then exit.
@@ -356,6 +369,7 @@ bool g_bPermanentMOBIcon;
 bool g_bTempShowMenuBar;
 
 int g_iNavAidRadarRingsNumberVisible;
+bool g_bNavAidRadarRingsShown;
 float g_fNavAidRadarRingsStep;
 int g_pNavAidRadarRingsStepUnits;
 bool g_bWayPointPreventDragging;
@@ -388,7 +402,7 @@ int g_lastClientRecty;
 int g_lastClientRectw;
 int g_lastClientRecth;
 double g_display_size_mm;
-double g_config_display_size_mm;
+std::vector<size_t> g_config_display_size_mm;
 bool g_config_display_size_manual;
 
 int g_GUIScaleFactor;
@@ -404,7 +418,6 @@ bool g_bShowTide;
 bool g_bShowCurrent;
 
 s52plib *ps52plib;
-S57ClassRegistrar *g_poRegistrar;
 s57RegistrarMgr *m_pRegistrarMan;
 
 CM93OffsetDialog *g_pCM93OffsetDialog;
@@ -471,6 +484,7 @@ bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
 bool g_oz_vector_scale;
 double g_plus_minus_zoom_factor;
+bool g_bChartBarEx;
 
 bool g_b_legacy_input_filter_behaviour;  // Support original input filter
                                          // process or new process
@@ -541,7 +555,7 @@ double g_n_gps_antenna_offset_y;
 double g_n_gps_antenna_offset_x;
 int g_n_ownship_min_mm;
 
-bool g_bNeedDBUpdate;
+int g_NeedDBUpdate; // 0 - No update needed, 1 - Update needed because there is no chart database, inform user, 2 - Start update right away
 bool g_bPreserveScaleOnX;
 
 AboutFrameImpl *g_pAboutDlg;
@@ -646,6 +660,7 @@ ChartCanvas *g_focusCanvas;
 ChartCanvas *g_overlayCanvas;
 
 bool b_inCloseWindow;
+extern int ShowNavWarning();
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -744,14 +759,30 @@ static void ActivateRoute(const std::string &guid) {
     point = route->GetPoint(2);
   }
   g_pRouteMan->ActivateRoute(route, point);
+  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
   route->m_bRtIsSelected = false;
 }
+
+static void ReverseRoute(const std::string &guid) {
+  Route *route = g_pRouteMan->FindRouteByGUID(guid);
+  if (!route) {
+    wxLogMessage("Cannot activate guid: no such route");
+    return;
+  }
+  route->Reverse();
+  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+}
+
 
 void MyApp::InitRestListeners() {
   auto activate_route = [&](wxCommandEvent ev) {
     auto guid = ev.GetString().ToStdString();
     ActivateRoute(guid); };
-  rest_srv_listener.Init(m_rest_server.activate_route, activate_route);
+  rest_activate_listener.Init(m_rest_server.activate_route, activate_route);
+  auto reverse_route = [&](wxCommandEvent ev) {
+    auto guid = ev.GetString().ToStdString();
+    ReverseRoute(guid); };
+  rest_reverse_listener.Init(m_rest_server.reverse_route, reverse_route);
 }
 
   bool MyApp::OpenFile(const std::string& path) {
@@ -783,11 +814,14 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   // is hardcoded in kUsage;
   parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
   parser.AddSwitch("p", "portable");
+  parser.AddOption("c", "configdir",  "", wxCMD_LINE_VAL_STRING,
+                   wxCMD_LINE_PARAM_OPTIONAL);
   parser.AddSwitch("f", "fullscreen");
-  parser.AddSwitch( "G", "no_opengl");
+  parser.AddSwitch("G", "no_opengl");
   parser.AddSwitch("g", "rebuild_gl_raster_cache");
-  parser.AddSwitch( "P", "parse_all_enc");
-  parser.AddOption( "l", "loglevel");
+  parser.AddSwitch("D", "rebuild_chart_db");
+  parser.AddSwitch("P", "parse_all_enc");
+  parser.AddOption("l", "loglevel");
   parser.AddOption("u", "unit_test_1", "", wxCMD_LINE_VAL_NUMBER);
   parser.AddSwitch("U", "unit_test_2");
   parser.AddParam("import GPX files", wxCMD_LINE_VAL_STRING,
@@ -842,6 +876,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   g_start_fullscreen = parser.Found("fullscreen");
   g_bdisable_opengl = parser.Found("no_opengl");
   g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
+  g_NeedDBUpdate = parser.Found("rebuild_chart_db") ? 2 : 0;
   g_parse_all_enc = parser.Found("parse_all_enc");
   if (parser.Found("unit_test_1", &number)) {
     g_unit_test_1 = static_cast<int>(number);
@@ -849,11 +884,20 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   }
   safe_mode::set_mode(parser.Found("safe_mode"));
   ParseLoglevel(parser);
+  wxString wxstr;
+  if (parser.Found("configdir", &wxstr)) {
+    g_configdir = wxstr.ToStdString();
+    fs::path path(g_configdir);
+    if (!fs::exists(path) || !fs::is_directory(path)) {
+      std::cerr << g_configdir << " is not an existing directory.\n";
+      return false;
+    }
+  }
 
   bool has_start_options = false;
   static const std::vector<std::string> kStartOptions = {
     "unit_test_2", "p", "fullscreen", "no_opengl", "rebuild_gl_raster_cache",
-    "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
+    "rebuild_chart_db", "parse_all_enc", "unit_test_1", "safe_mode", "loglevel" };
   for (const auto& opt : kStartOptions) {
     if (parser.Found(opt)) has_start_options = true;
   }
@@ -926,11 +970,16 @@ MyApp::MyApp()
       m_rest_server(PINCreateDialog::GetDlgCtx(),
       RouteCtxFactory(),
       g_bportable),
-      m_exitcode(-2) {
+      m_usb_watcher(UsbWatchDaemon::GetInstance()),
+      m_exitcode(-2)
+{
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
-  if (wxGetEnv( "WAYLAND_DISPLAY", NULL))
+  if (wxGetEnv( "WAYLAND_DISPLAY", NULL)) {
     setenv("GDK_BACKEND", "x11", 1);
+  }
+  setenv("mesa_glthread", "false", 1); // Explicitly disable glthread. This may have some impact on OpenGL performance,
+                                       // but we know it is problematic for us. See #2889
 #endif   // __linux__
 }
 
@@ -1262,13 +1311,13 @@ bool MyApp::OnInit() {
   wxLogMessage(msg);
 
   // User override....
-  if ((g_config_display_size_mm > 0) && (g_config_display_size_manual)) {
-    g_display_size_mm = g_config_display_size_mm;
+  if (g_config_display_size_manual && g_config_display_size_mm.size() > g_current_monitor && g_config_display_size_mm[g_current_monitor] > 0) {
+    g_display_size_mm = g_config_display_size_mm[g_current_monitor];
     wxString msg;
     msg.Printf(_T("Display size (horizontal) config override: %d mm"),
                (int)g_display_size_mm);
     wxLogMessage(msg);
-    g_Platform->SetDisplaySizeMM(g_display_size_mm);
+    g_Platform->SetDisplaySizeMM(g_current_monitor, g_display_size_mm);
   }
 
   g_display_size_mm = wxMax(50, g_display_size_mm);
@@ -1637,8 +1686,8 @@ bool MyApp::OnInit() {
 
   //      Try to load the current chart list Data file
   ChartData = new ChartDB();
-  if (!ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
-    g_bNeedDBUpdate = true;
+  if (g_NeedDBUpdate == 0 && !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
+    g_NeedDBUpdate = 1;
   }
 
   //  Verify any saved chart database startup index
@@ -1872,6 +1921,7 @@ int MyApp::OnExit() {
 
   wxLogMessage(_T("opencpn::MyApp starting exit."));
   m_checker.OnExit();
+  m_usb_watcher.Stop();
   //  Send current nav status data to log file   // pjotrc 2010.02.09
 
   wxDateTime lognow = wxDateTime::Now();

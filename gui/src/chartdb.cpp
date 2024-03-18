@@ -1240,21 +1240,19 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
       //    Search the array of chart class descriptors to find a match
       //    bewteen the search mask and the the chart file extension
 
-      for (unsigned int i = 0; i < m_ChartClassDescriptorArray.GetCount();
-           i++) {
-        if (m_ChartClassDescriptorArray[i].m_descriptor_type ==
+      for (auto &cd : m_ChartClassDescriptorArray) {
+        if (cd.m_descriptor_type ==
             PLUGIN_DESCRIPTOR) {
-          if (m_ChartClassDescriptorArray[i].m_search_mask == ext_upper) {
-            chart_class_name = m_ChartClassDescriptorArray[i].m_class_name;
+          if (cd.m_search_mask == ext_upper) {
+            chart_class_name = cd.m_class_name;
             break;
           }
-          if (m_ChartClassDescriptorArray[i].m_search_mask == ext_lower) {
-            chart_class_name = m_ChartClassDescriptorArray[i].m_class_name;
+          if (cd.m_search_mask == ext_lower) {
+            chart_class_name = cd.m_class_name;
             break;
           }
-          if (ChartFullPath.Matches(
-                  m_ChartClassDescriptorArray.Item(i).m_search_mask)) {
-            chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+          if (ChartFullPath.Matches(cd.m_search_mask)) {
+            chart_class_name = cd.m_class_name;
             break;
           }
         }

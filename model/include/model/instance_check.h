@@ -46,4 +46,15 @@ public:
     virtual void OnExit () {};
 };
 
+/** Empty place holder, primarely for Android. */
+class DummyInstanceChk : public InstanceCheck {
+public:
+  static InstanceCheck& GetInstance() {
+    static DummyInstanceChk instance;
+    return instance;
+  }
+
+  virtual bool IsMainInstance()  { return true; }
+};
+
 #endif   // INSTANCE_CHECK_H__

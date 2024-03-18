@@ -1,0 +1,23 @@
+diff --git a/src/osx/slider_osx.cpp b/src/osx/slider_osx.cpp
+index 1d58526aa4..2689dae145 100644
+--- a/src/osx/slider_osx.cpp
++++ b/src/osx/slider_osx.cpp
+@@ -436,18 +436,6 @@ void wxSlider::DoSetSize(int x, int y, int w, int h, int sizeFlags)
+         if (ht > textheight)
+             textheight = ht;
+ 
+-        if (GetWindowStyle() & wxSL_HORIZONTAL)
+-        {
+-            if ( m_macMinimumStatic )
+-            {
+-                w -= minValWidth / 2;
+-                x += minValWidth / 2;
+-            }
+-
+-            if ( m_macMaximumStatic )
+-                w -= maxValWidth / 2;
+-        }
+-
+         // Labels have this control's parent as their parent
+         // so if this control is not at 0,0 relative to the parent
+         // the labels need to know the position of this control

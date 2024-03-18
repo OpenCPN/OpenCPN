@@ -65,6 +65,8 @@ public:
   /** @return Reference to a LocalServerApi implementation. */
   static LocalServerApi& GetInstance();
 
+  /** Release Instance */
+  static void ReleaseInstance();
 
   /** Notified on the Raise command. */
   EventVar on_raise;

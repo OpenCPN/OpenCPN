@@ -37,21 +37,19 @@ enum { TIDE_PLOT, CURRENT_PLOT };
 WX_DEFINE_LIST(SplineList);
 
 BEGIN_EVENT_TABLE(TCWin, wxWindow)
-EVT_PAINT(TCWin::OnPaint) EVT_SIZE(TCWin::OnSize) EVT_MOTION(TCWin::MouseEvent)
-    EVT_BUTTON(wxID_OK, TCWin::OKEvent) EVT_BUTTON(ID_TCWIN_NX, TCWin::NXEvent)
-        EVT_BUTTON(ID_TCWIN_PR, TCWin::PREvent) EVT_CLOSE(TCWin::OnCloseWindow)
-            EVT_TIMER(TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent)
-                END_EVENT_TABLE()
+EVT_PAINT(TCWin::OnPaint)
+EVT_SIZE(TCWin::OnSize)
+EVT_MOTION(TCWin::MouseEvent)
+EVT_BUTTON(wxID_OK, TCWin::OKEvent)
+EVT_BUTTON(ID_TCWIN_NX, TCWin::NXEvent)
+EVT_BUTTON(ID_TCWIN_PR, TCWin::PREvent)
+EVT_CLOSE(TCWin::OnCloseWindow)
+EVT_TIMER(TCWININF_TIMER, TCWin::OnTCWinPopupTimerEvent)
+END_EVENT_TABLE()
 
-    // Define a constructor
-    extern wxDateTime gTimeSource;
+// Define a constructor
+extern wxDateTime gTimeSource;
 TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
-
   m_created = false;
   xSpot = 0;
   ySpot = 0;
@@ -60,9 +58,6 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER |
                 wxFRAME_FLOAT_ON_PARENT;
-  if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
-      (global_color_scheme != GLOBAL_COLOR_SCHEME_RGB))
-    wstyle |= (wxNO_BORDER);
 
   pParent = parent;
   m_x = x;
@@ -170,7 +165,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   dc.SetFont(*qFont);
   dc.GetTextExtent(_T("W"), NULL, &text_height);
   m_refTextHeight = text_height;
-  m_button_height =  m_tsy;
+  m_button_height = m_tsy;
 
   // Build graphics tools
 
@@ -194,22 +189,31 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
       dlg_font_size + 1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
       wxFONTWEIGHT_BOLD, FALSE, wxString(_T ( "Arial" )));
 
+  // Secondary grid
   pblack_1 = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T ( "UINFD" )), wxMax(1, (int)(m_tcwin_scaler + 0.5)),
+      this->GetForegroundColour(), wxMax(1, (int)(m_tcwin_scaler + 0.5)),
       wxPENSTYLE_SOLID);
+  // Primary grid
   pblack_2 = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T ( "UINFD" )), wxMax(2, (int)(2 * m_tcwin_scaler + 0.5)),
+      this->GetForegroundColour(), wxMax(2, (int)(2 * m_tcwin_scaler + 0.5)),
       wxPENSTYLE_SOLID);
+  // Tide hours outline
   pblack_3 = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T ( "UWHIT" )), wxMax(1, (int)(m_tcwin_scaler + 0.5)),
-      wxPENSTYLE_SOLID);
+      wxSystemSettings::GetColour(wxSYS_COLOUR_BTNSHADOW),
+      wxMax(1, (int)(m_tcwin_scaler + 0.5)), wxPENSTYLE_SOLID);
+  // Current time vertical line
   pred_2 = wxThePenList->FindOrCreatePen(
-      GetGlobalColor(_T ( "UINFR" )), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
+      wxColor(230, 54, 54), wxMax(4, (int)(4 * m_tcwin_scaler + 0.5)),
       wxPENSTYLE_SOLID);
-  pltgray = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T ( "UIBCK" )),
+  // Graph background
+  pltgray = wxTheBrushList->FindOrCreateBrush(this->GetBackgroundColour(),
                                               wxBRUSHSTYLE_SOLID);
-  pltgray2 = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T ( "DILG1" )),
+  // Tide hours background
+  pltgray2 = wxTheBrushList->FindOrCreateBrush(this->GetBackgroundColour(),
                                                wxBRUSHSTYLE_SOLID);
+  pgraph = wxThePenList->FindOrCreatePen(
+      wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),
+      wxMax(1, (int)(m_tcwin_scaler + 0.5)), wxPENSTYLE_SOLID);
 
   DimeControl(this);
 
@@ -503,6 +507,15 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
   wxString tlocn(pIDX->IDX_station_name, wxConvUTF8);
 
+  // Adjust colors with current color scheme
+  // We use window class colors for that, they are modified by DimeControl
+  // depending on the current color scheme
+  pblack_1->SetColour(this->GetForegroundColour());
+  pblack_2->SetColour(this->GetForegroundColour());
+  pltgray->SetColour(this->GetBackgroundColour());
+  pltgray2->SetColour(this->GetBackgroundColour());
+  pred_2->SetColour(GetDimedColor(wxColor(230, 54, 54)));
+
   //     if(1/*bForceRedraw*/)
   {
     int x_textbox = x * 5 / 100;
@@ -672,7 +685,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
           thx.Set((time_t)tt - (m_diff_mins * 60));
           if (m_tzoneDisplay == 0)  // LMT @ Station
-                thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
+            thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
 
           s.Printf(thx.Format(_T("%H:%M  ")));
           s1.Printf(_T("%05.2f "), fabs(tcv[i]));  // write value
@@ -743,7 +756,8 @@ void TCWin::OnPaint(wxPaintEvent &event) {
       btc_valid = true;
     }
 
-    dc.SetTextForeground(GetGlobalColor(_T ( "DILG3" )));
+    // Graph legend
+    dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 
     //    Vertical Axis
 
@@ -770,7 +784,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     wxList *list = (wxList *)&m_sList;
 #endif
 
-    dc.SetPen(*pblack_2);
+    dc.SetPen(*pgraph);
 #if wxUSE_SPLINES
     dc.DrawSpline(list);
 #else
@@ -816,7 +830,8 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     int h;
     dc.SetFont(*pSFont);
     dc.GetTextExtent(m_stz, &w, &h);
-    dc.DrawText(m_stz, x / 2 - w / 2, y - (m_button_height * 15/10) - (m_refTextHeight * 2));
+    dc.DrawText(m_stz, x / 2 - w / 2,
+                y - (m_button_height * 15 / 10) - (m_refTextHeight * 2));
 
     wxString sdate;
     if (g_locale == _T("en_US"))
@@ -826,7 +841,8 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
     dc.SetFont(*pMFont);
     dc.GetTextExtent(sdate, &w, &h);
-    dc.DrawText(sdate, x / 2 - w / 2, y - (m_button_height * 15/10) - (m_refTextHeight * 1));
+    dc.DrawText(sdate, x / 2 - w / 2,
+                y - (m_button_height * 15 / 10) - (m_refTextHeight * 1));
 
     Station_Data *pmsd = pIDX->pref_sta_data;
     if (pmsd) {
@@ -868,7 +884,8 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
       dc.SetFont(*pSFont);
       dc.GetTextExtent(sday, &w, &h);
-      dc.DrawText(sday, 55 - w / 2, y - (m_button_height * 15/10) - (m_refTextHeight * 1));
+      dc.DrawText(sday, 55 - w / 2,
+                  y - (m_button_height * 15 / 10) - (m_refTextHeight * 1));
     }
 
     //  Render "Spot of interest"
@@ -901,7 +918,8 @@ void TCWin::OnSize(wxSizeEvent &event) {
   int x_graph = x * 1 / 10;
   int y_graph = y * 32 / 100;
   int x_graph_w = x * 8 / 10;
-  int y_graph_h = (y * 65 / 100) - (m_button_height * 15/10) - (m_refTextHeight * 2);
+  int y_graph_h =
+      (y * 65 / 100) - (m_button_height * 15 / 10) - (m_refTextHeight * 2);
   y_graph_h =
       wxMax(y_graph_h, 2);  // ensure minimum size is positive, at least.
 
@@ -924,13 +942,16 @@ void TCWin::OnSize(wxSizeEvent &event) {
   m_ptextctrl->SetSize(texc_size);
 
 #ifdef __WXOSX__
-  OK_button->Move(wxPoint(x - (4 * m_button_height + 10), y - (m_button_height * 12 / 10)));
+  OK_button->Move(
+      wxPoint(x - (4 * m_button_height + 10), y - (m_button_height * 12 / 10)));
 #else
-  OK_button->Move(wxPoint(x - (3 * m_button_height + 10), y - (m_button_height * 12 / 10)));
+  OK_button->Move(
+      wxPoint(x - (3 * m_button_height + 10), y - (m_button_height * 12 / 10)));
 #endif
   PR_button->Move(wxPoint(10, y - (m_button_height + 10)));
 
-  m_choiceTimezone->Move(wxPoint(x/2 - m_choiceSize_x/2, y - (m_button_height * 12 / 10)));
+  m_choiceTimezone->Move(
+      wxPoint(x / 2 - m_choiceSize_x / 2, y - (m_button_height * 12 / 10)));
 
   int bsx, bsy, bpx, bpy;
   PR_button->GetSize(&bsx, &bsy);

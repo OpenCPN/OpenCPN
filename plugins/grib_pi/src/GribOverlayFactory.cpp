@@ -242,6 +242,9 @@ GRIBOverlayFactory::GRIBOverlayFactory(GRIBUICtrlBar &dlg)
   m_last_vp_scale = 0.;
 
   m_oDC = NULL;
+  #if wxUSE_GRAPHICS_CONTEXT
+  m_gdc = NULL;
+  #endif
   m_Font_Message = NULL;
 
   InitColorsTable();
@@ -612,10 +615,36 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
         .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
         .Append(_T(" ! "));
   }
+  if(m_dlg.ProjectionEnabled()) {
+    int x, y;
+    m_dlg.GetProjectedLatLon(x, y);
+    DrawProjectedPosition(x, y);
+  }
   if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
   m_Message_Hiden.Append(m_Message);
   DrawMessageWindow(m_Message_Hiden, vp->pix_width, vp->pix_height,
     m_Font_Message);
+
+  if (m_dlg.m_highlight_latmax - m_dlg.m_highlight_latmin > 0.01 &&
+      m_dlg.m_highlight_lonmax - m_dlg.m_highlight_lonmin > 0.01) {
+    wxPoint p1, p2;
+    GetCanvasPixLL(vp, &p1, m_dlg.m_highlight_latmin, m_dlg.m_highlight_lonmin);
+    GetCanvasPixLL(vp, &p2, m_dlg.m_highlight_latmax, m_dlg.m_highlight_lonmax);
+    if (m_pdc) {
+      m_pdc->SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+      m_pdc->SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
+                              wxBRUSHSTYLE_CROSSDIAG_HATCH));
+      m_pdc->DrawRectangle(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+    } else {
+      #ifdef ocpnUSE_GL
+      //GL
+      m_oDC->SetPen(wxPen(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)));
+      m_oDC->SetBrush(wxBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT),
+                              wxBRUSHSTYLE_CROSSDIAG_HATCH));
+      m_oDC->DrawRectangle(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+      #endif
+    }
+  }
   return true;
 }
 
@@ -1022,6 +1051,20 @@ static ColorMap CAPEMap[] = {
     {3000, _T("#ad0430")},
 };
 
+static ColorMap WindyMap[] = {
+    {0, _T("#6271B7")},  {3, _T("#3961A9")},  {6, _T("#4A94A9")},
+    {9, _T("#4D8D7B")},  {12, _T("#53A553")}, {15, _T("#53A553")},
+    {18, _T("#359F35")}, {21, _T("#A79D51")}, {24, _T("#9F7F3A")},
+    {27, _T("#A16C5C")}, {30, _T("#A16C5C")}, {33, _T("#813A4E")},
+    {36, _T("#AF5088")}, {39, _T("#AF5088")}, {42, _T("#754A93")},
+    {45, _T("#754A93")}, {48, _T("#6D61A3")}, {51, _T("#44698D")},
+    {54, _T("#44698D")}, {57, _T("#5C9098")}, {60, _T("#7D44A5")},
+    {63, _T("#7D44A5")}, {66, _T("#7D44A5")}, {69, _T("#E7D7D7")},
+    {72, _T("#E7D7D7")}, {75, _T("#E7D7D7")}, {78, _T("#DBD483")},
+    {81, _T("#DBD483")}, {84, _T("#DBD483")}, {87, _T("#CDC470")},
+    {90, _T("#CDC470")}, {93, _T("#CDC470")}, {96, _T("#CDC470")},
+    {99, _T("#808080")}};
+
 #if 0
 static ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
 #endif
@@ -1035,7 +1078,8 @@ enum {
   CLOUD_GRAPHIC_INDEX,
   CURRENT_GRAPHIC_INDEX,
   CAPE_GRAPHIC_INDEX,
-  REFC_GRAPHIC_INDEX
+  REFC_GRAPHIC_INDEX,
+  WINDY_GRAPHIC_INDEX
 };
 
 static void InitColor(ColorMap *map, size_t maplen) {
@@ -1059,6 +1103,7 @@ void GRIBOverlayFactory::InitColorsTable() {
   InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
   InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
   InitColor(REFCMap, (sizeof REFCMap) / (sizeof *REFCMap));
+  InitColor(WindyMap, (sizeof WindyMap) / (sizeof *WindyMap));
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
@@ -1110,6 +1155,10 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
     case REFC_GRAPHIC_INDEX:
       map = REFCMap;
       maplen = (sizeof REFCMap) / (sizeof *REFCMap);
+      break;
+    case WINDY_GRAPHIC_INDEX:
+      map = WindyMap;
+      maplen = (sizeof WindyMap) / (sizeof *WindyMap);
       break;
     default:
       return;
@@ -2353,6 +2402,25 @@ void GRIBOverlayFactory::OnParticleTimer(wxTimerEvent &event) {
     GetCanvasByIndex(1)->Refresh(false);  // update the last rendered canvas
   else
     GetOCPNCanvasWindow()->Refresh(false);
+}
+
+void GRIBOverlayFactory::DrawProjectedPosition(int x, int y) {
+  if (m_pdc) {
+    wxDC &dc = *m_pdc;
+    dc.SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    dc.DrawRectangle(x,y,20,20);
+    dc.DrawLine(x,y,x+20,y+20);
+    dc.DrawLine(x,y+20,x+20,y);
+  } else {
+    if (m_oDC) {
+      m_oDC->SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+      m_oDC->SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+      m_oDC->DrawRectangle(x-10,y-10,20,20);
+      m_oDC->StrokeLine(x-10,y-10,x+10,y+10);
+      m_oDC->StrokeLine(x-10,y+10,x+10,y-10);
+    }
+  }
 }
 
 void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,

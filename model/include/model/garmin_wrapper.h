@@ -30,8 +30,8 @@
 
 #include <wx/string.h>
 
-#include "route.h"
-#include "comm_n0183_output.h"
+#include "model/route.h"
+#include "model/comm_n0183_output.h"
 
 /*  Wrapped interface from higher level objects   */
 int Garmin_GPS_Init(const wxString &port_name);

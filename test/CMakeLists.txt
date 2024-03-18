@@ -46,6 +46,7 @@ target_link_libraries(tests PRIVATE ocpn::model ocpn::model-src)
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(IPC_SRV_TESTS_SRC
     ipc-srv-tests.cpp
+    ${MODEL_SRC_DIR}/cmdline.cpp
     ${MODEL_SRC_DIR}/config_vars.cpp
     ${MODEL_SRC_DIR}/local_api.cpp
     ${MODEL_SRC_DIR}/ipc_api.cpp
@@ -58,12 +59,11 @@ if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   endif ()
   add_executable(ipc-srv-tests ${IPC_SRV_TESTS_SRC})
 
-
   # See note in ipc-srv-tests.cpp
   target_compile_options(ipc-srv-tests PRIVATE -O0)
-  target_link_libraries(ipc-srv-tests PRIVATE observable::observable)
-  target_link_libraries(ipc-srv-tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(ipc-srv-tests PRIVATE ocpn::gtest)
+  target_link_libraries(ipc-srv-tests PRIVATE ${wxWidgets_LIBRARIES})
+  target_link_libraries(ipc-srv-tests PRIVATE observable::observable)
   target_include_directories(ipc-srv-tests PRIVATE .
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include
@@ -86,10 +86,6 @@ if (MSVC)
   target_link_libraries(tests
 	  PRIVATE setupapi.lib psapi.lib ${CMAKE_SOURCE_DIR}/cache/buildwin/iphlpapi.lib
   )
-endif ()
-if (APPLE)
-  # 10.13 compat support
-  target_link_libraries(tests PUBLIC BOOST_SYSTEM BOOST_FILESYSTEM)
 endif ()
 
 target_include_directories(
@@ -141,6 +137,7 @@ if (LINUX)
     dbus_tests.cpp
     ${MODEL_SRC_DIR}/dbus_client.cpp
     ${MODEL_SRC_DIR}/dbus_server.cpp
+    ${MODEL_SRC_DIR}/cmdline.cpp
     ${MODEL_SRC_DIR}/config_vars.cpp
     ${MODEL_SRC_DIR}/ipc_api.cpp
     ${MODEL_SRC_DIR}/local_api.cpp
@@ -151,6 +148,7 @@ if (LINUX)
   target_link_libraries(dbus_tests PRIVATE observable::observable)
   target_link_libraries(dbus_tests PRIVATE ${wxWidgets_LIBRARIES})
   target_link_libraries(dbus_tests PRIVATE ocpn::gtest)
+  target_link_libraries(dbus_tests PRIVATE ocpn::model)
   target_link_libraries(dbus_tests PRIVATE glib::glib)
   target_include_directories(dbus_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/model/include
@@ -235,6 +233,7 @@ endif ()
 set (WX_INSTANCE_SRC
   wx_instance.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/cmdline.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/logger.cpp
@@ -244,7 +243,7 @@ if (APPLE)
 endif ()
 add_executable(wx-instance ${WX_INSTANCE_SRC})
 target_link_libraries(wx-instance PRIVATE ${wxWidgets_LIBRARIES})
-target_link_libraries(wx-instance PRIVATE ocpn::opencpn)
+target_link_libraries(wx-instance PRIVATE ocpn::opencpn ocpn::model)
 target_include_directories(wx-instance PRIVATE
   ${CMAKE_SOURCE_DIR}/model/include
   ${CMAKE_SOURCE_DIR}/include
@@ -262,6 +261,7 @@ if (UNIX)
     std_instance.cpp
     ${MODEL_SRC_DIR}/std_instance_chk.cpp
     ${MODEL_SRC_DIR}/base_platform.cpp
+    ${MODEL_SRC_DIR}/cmdline.cpp
     ${MODEL_SRC_DIR}/config_vars.cpp
     ${MODEL_SRC_DIR}/ocpn_utils.cpp
     ${MODEL_SRC_DIR}/logger.cpp
@@ -271,6 +271,7 @@ if (UNIX)
   endif ()
   add_executable(std-instance ${STD_INSTANCE_SRC})
   target_link_libraries(std-instance PRIVATE ${wxWidgets_LIBRARIES})
+  target_link_libraries(std-instance PRIVATE ocpn::model)
   target_include_directories(std-instance PRIVATE
     ${CMAKE_SOURCE_DIR}/model/include
     ${CMAKE_SOURCE_DIR}/include

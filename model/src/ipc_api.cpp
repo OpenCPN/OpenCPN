@@ -26,6 +26,8 @@
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 
+IpcServer* IpcConnection::s_instance = nullptr;
+
 // FIXME (leamas) Bad name
 std::string GetSocketPath() {
   auto const static sep = static_cast<char>(wxFileName::GetPathSeparator());
@@ -75,11 +77,16 @@ LocalApiResult IpcClient::GetRestEndpoint() {
 }
 
 LocalServerApi& IpcConnection::GetInstance() {
-  static IpcServer* factory = nullptr;
-  if (!factory) factory = new IpcServer(GetSocketPath());
-  return *factory;
+  if (!s_instance) s_instance = new IpcServer(GetSocketPath());
+  return *s_instance;
 }
 
+void IpcConnection::ReleaseInstance() {
+  if (s_instance) {
+    delete s_instance;
+    s_instance = nullptr;
+  }
+}
 
 bool IpcConnection::OnExec(const wxString&, const wxString& data) {
   if (data == "quit") {

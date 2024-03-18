@@ -212,9 +212,20 @@ wxColour FontMgr::GetDefaultFontColor( const wxString &TextElement ){
   // Special cases here
   if(TextElement.IsSameAs( "Console Legend") )
     defaultColor = wxColour( 0, 255, 0);
-  if(TextElement.IsSameAs( "Console Value") )
+  else if(TextElement.IsSameAs( "Console Value") )
     defaultColor = wxColour( 0, 255, 0);
-
+  else if(TextElement.IsSameAs( "Marks") )
+    defaultColor = wxColour( 0, 0, 0);
+  else if(TextElement.IsSameAs( "RouteLegInfoRollover") )
+    defaultColor = wxColour( 0, 0, 0);
+  else if(TextElement.IsSameAs( "AISRollover") )
+    defaultColor = wxColour( 0, 0, 0);
+  else if(TextElement.IsSameAs( "ExtendedTideIcon") )
+    defaultColor = wxColour( 0, 0, 0);
+  else if(TextElement.IsSameAs( "ChartTexts") )
+    defaultColor = wxColour( 0, 0, 0);
+  else if(TextElement.IsSameAs( "AIS Target Name") )
+    defaultColor = wxColour( 0, 0, 0);
 #ifdef __WXMAC__
   // Override, to adjust for light/dark mode
   return wxColour(0,0,0);

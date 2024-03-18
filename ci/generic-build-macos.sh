@@ -20,7 +20,6 @@ brew list --versions python3 || {
 }
 
 # Install the build dependencies for OpenCPN
-brew install boost   # Pre-10.15 compatibility
 brew install cmake
 brew install gettext
 brew install lame
@@ -30,6 +29,7 @@ brew install xz
 brew install zstd
 brew install libarchive
 brew install wxwidgets
+brew install create-dmg
 
 ln -s /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
 ln -s /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
@@ -39,15 +39,6 @@ for pkg in openssl cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || :
 done
-
-if brew list --cask --versions packages; then
-    version=$(pkg_version packages '--cask')
-    sudo installer \
-        -pkg /usr/local/Caskroom/packages/$version/packages/Packages.pkg \
-        -target /
-else
-    brew install --cask packages
-fi
 
 # Build, install and make package
 mkdir -p build
@@ -73,4 +64,6 @@ make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
 make create-pkg
-make create-dmg
+if [[ ! -z "${CREATE_DMG+x}" ]]; then
+  make create-dmg
+fi

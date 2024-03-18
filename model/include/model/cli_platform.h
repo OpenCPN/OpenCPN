@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 /** AbstractPlatform adapted for console/CLI usage */
-#include "base_platform.h"
+#include "model/base_platform.h"
 
 class CliPlatform : public AbstractPlatform {
   bool InitializeLogFile(void) override;

@@ -47,35 +47,35 @@
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
 
+#include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "navutil.h"
-#include "chcanv.h"
-#include "model/georef.h"
 #include "model/cutil.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "s52utils.h"
-#include "chartbase.h"
-#include "ocpndc.h"
 #include "model/geodesic.h"
+#include "model/georef.h"
 #include "model/multiplexer.h"
-#include "nmea0183.h"
-#include "ais.h"
+#include "model/nav_object_database.h"
 #include "model/route.h"
+#include "model/routeman.h"
 #include "model/select.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "CanvasConfig.h"
+#include "chartbase.h"
+#include "chartdb.h"
+#include "chcanv.h"
+#include "cm93.h"
 #include "FontMgr.h"
 #include "Layer.h"
-#include "model/nav_object_database.h"
+#include "navutil.h"
+#include "nmea0183.h"
 #include "NMEALogWindow.h"
-#include "model/ais_decoder.h"
-#include "OCPNPlatform.h"
-#include "model/track.h"
-#include "chartdb.h"
-#include "CanvasConfig.h"
+#include "ocpndc.h"
 #include "ocpn_frame.h"
-
+#include "OCPNPlatform.h"
 #include "s52plib.h"
-#include "cm93.h"
+#include "s52utils.h"
+#include "styles.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -92,7 +92,6 @@ extern int g_restore_dbindex;
 extern LayerList *pLayerList;
 extern MyConfig *pConfig;
 extern int g_nbrightness;
-extern bool g_bShowTrue, g_bShowMag;
 extern bool g_bShowStatusBar;
 extern bool g_bUIexpert;
 extern bool g_bFullscreen;
@@ -102,7 +101,6 @@ extern wxString g_UserPresLibData;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
-extern wxString  g_TalkerIdText;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -126,7 +124,6 @@ extern bool g_bShowActiveRouteHighway;
 extern bool g_bShowRouteTotal;
 extern int g_nAWDefault;
 extern int g_nAWMax;
-extern int g_nTrackPrecision;
 
 extern int g_nframewin_x;
 extern int g_nframewin_y;
@@ -146,6 +143,7 @@ extern double g_defaultBoatSpeed;
 extern int g_S57_dialog_sx, g_S57_dialog_sy;
 
 extern int g_iNavAidRadarRingsNumberVisible;
+extern bool g_bNavAidRadarRingsShown;
 extern float g_fNavAidRadarRingsStep;
 extern int g_pNavAidRadarRingsStepUnits;
 extern int g_iWaypointRangeRingsNumber;
@@ -254,11 +252,9 @@ extern ArrayOfMmsiProperties g_MMSI_Props_Array;
 extern int g_chart_zoom_modifier_raster;
 extern int g_chart_zoom_modifier_vector;
 
-extern int g_NMEAAPBPrecision;
-
 extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double g_display_size_mm;
-extern double g_config_display_size_mm;
+extern std::vector<size_t> g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 
 extern bool g_benable_rotate;
@@ -467,9 +463,7 @@ ConfigPanel::ConfigPanel(OCPNConfigObject *config, wxWindow *parent,
 
   SetMinSize(wxSize(-1, 6 * GetCharHeight()));
 
-  wxColour colour;
-  GetGlobalColor(_T("COMP1"), &colour);
-  SetBackgroundColour(colour);
+  SetBackgroundColour(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW));
   // Connect(wxEVT_LEFT_DOWN,
   // wxMouseEventHandler(ConfigPanel::OnConfigPanelMouseSelected), NULL, this);
 }
@@ -804,7 +798,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
 //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages
 //  provoked by Android security...
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxLogNull logNo;
 #endif
 
@@ -914,7 +908,12 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write(_T ( "AutoHideToolbar" ), g_bAutoHideToolbar);
   conf->Write(_T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar);
 
-  conf->Write(_T ( "DisplaySizeMM" ), g_config_display_size_mm);
+  wxString st0;
+  for (const auto &mm : g_config_display_size_mm) {
+    st0.Append(wxString::Format(_T ( "%zu," ), mm));
+  }
+  st0.RemoveLast(); //Strip last comma
+  conf->Write(_T ( "DisplaySizeMM" ), st0);
   conf->Write(_T ( "DisplaySizeManual" ), g_config_display_size_manual);
 
   conf->Write(_T ( "PlanSpeed" ), wxString::Format(_T("%.2f"), g_PlanSpeed));
@@ -1070,6 +1069,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
                                               0));  // 3.0.0 config support
   conf->Write(_T ( "RadarRingsNumberVisible" ),
               g_iNavAidRadarRingsNumberVisible);
+  g_bNavAidRadarRingsShown = g_iNavAidRadarRingsNumberVisible > 0;
   conf->Write(_T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep);
   conf->Write(_T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits);
   conf->Write(_T ( "RadarRingsColour" ),
@@ -1273,6 +1273,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
 
   CHECK_STR(_T( "TalkerIdText" ), g_TalkerIdText);
   CHECK_INT(_T( "MaxWaypointNameLength" ), &g_maxWPNameLength);
+  CHECK_INT(_T( "MbtilesMaxLayers" ), &g_mbtilesMaxLayers);
 
   /* opengl options */
 #ifdef ocpnUSE_GL

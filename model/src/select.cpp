@@ -25,12 +25,12 @@
 #include <wx/list.h>
 #include <wx/gdicmn.h>
 
-#include "model/select.h"
+#include "model/base_platform.h"
 #include "model/georef.h"
 #include "model/nav_object_database.h"
-#include "model/track.h"
 #include "model/route.h"
-#include "model/base_platform.h"
+#include "model/select.h"
+#include "model/track.h"
 
 #include "vector2D.h"
 
@@ -531,12 +531,15 @@ SelectItem *Select::FindSelection(SelectCtx& ctx, float slat, float slon,
         case SELTYPE_TIDEPOINT:
         case SELTYPE_CURRENTPOINT:
         case SELTYPE_AISTARGET:
-          a = fabs(slat - pFindSel->m_slat);
-          b = fabs(slon - pFindSel->m_slon);
-
           if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
-              (fabs(slon - pFindSel->m_slon) < selectRadius))
-            goto find_ok;
+              (fabs(slon - pFindSel->m_slon) < selectRadius)) {
+                if(fseltype == SELTYPE_ROUTEPOINT) {
+                    if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.chart_scale))
+                      goto find_ok;
+                } else {
+                    goto find_ok;
+                }
+          }
           break;
         case SELTYPE_ROUTESEGMENT:
         case SELTYPE_TRACKSEGMENT: {
@@ -619,7 +622,7 @@ SelectableItemList Select::FindSelectionList(SelectCtx& ctx, float slat,
           if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
               (fabs(slon - pFindSel->m_slon) < selectRadius))
             if (is_selectable_wp(ctx, (RoutePoint *)pFindSel->m_pData1))
-              if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.scale))
+              if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.chart_scale))
                 ret_list.Append(pFindSel);
           break;
         case SELTYPE_TIDEPOINT:

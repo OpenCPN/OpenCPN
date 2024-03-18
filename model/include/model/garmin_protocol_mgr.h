@@ -65,8 +65,8 @@
 #endif
 
 
-#include "conn_params.h"
-#include "ds_porttype.h"
+#include "model/conn_params.h"
+#include "model/ds_porttype.h"
 
 //----------------------------------------------------------------------------
 //   constants

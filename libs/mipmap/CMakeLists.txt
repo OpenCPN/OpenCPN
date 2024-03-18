@@ -1,26 +1,21 @@
 cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::mipmap)
-    return ()
+  return ()
 endif ()
 
-# Fixme (#3527) dependency on main opencpn
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+if (ANDROID)
+  set(QT_ANDROID 1)
 endif ()
 
-# Fixme (#3527) dependency on main opencpn
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 include(GetArch)
 GetArch()
-
 include(CompilerSupport)
 
-set(SRC
-  include/mipmap/mipmap.h
-  src/mipmap.c
-)
+set(SRC include/mipmap/mipmap.h src/mipmap.c)
 
-if( NOT QT_ANDROID)
+if (NOT QT_ANDROID)
     set(SRC_IPML
         src/mipmap_sse.c
         src/mipmap_sse2.c
@@ -28,7 +23,7 @@ if( NOT QT_ANDROID)
         src/mipmap_avx2.c
         src/mipmap_neon.c
     )
-endif( NOT QT_ANDROID)
+endif (NOT QT_ANDROID)
 
 add_library(MIPMAP STATIC ${SRC} ${SRC_IPML})
 add_library(ocpn::mipmap ALIAS MIPMAP)
@@ -37,8 +32,6 @@ target_include_directories(MIPMAP
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/mipmap
 )
 
-# Fixme (#3527) QT_ANDROID, HAVE_MSSE etc., are from main opencpn.
-# Options needed to make them independent
 if( NOT QT_ANDROID)
   # always use optimizations for the texture compression which is much faster
   if (NOT MSVC)

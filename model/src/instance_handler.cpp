@@ -24,9 +24,9 @@
 #include <wx/string.h>
 
 #include "model/base_platform.h"
+#include "model/nav_object_database.h"
 
 #include "bbox.h"
-#include "model/nav_object_database.h"
 
 class StConnection : public wxConnection {
 public:

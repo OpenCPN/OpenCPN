@@ -22,8 +22,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+#include <algorithm>
+#include <archive.h>
+#include <cstdio>
+#include <cstdio>
+#include <errno.h>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <stdint.h>
+#include <string>
+#include <unordered_map>
 
-#include <config.h>
+
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -60,22 +75,6 @@
 #include <cxxabi.h>
 #endif  // __WXMSW__
 
-#include <algorithm>
-#include <archive.h>
-#include <cstdio>
-#include <cstdio>
-#include <errno.h>
-#include <fcntl.h>
-#include <fstream>
-#include <iostream>
-#include <iostream>
-#include <memory>
-#include <set>
-#include <sstream>
-#include <stdint.h>
-#include <string>
-#include <unordered_map>
-
 #include <archive_entry.h>
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
@@ -85,72 +84,74 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include <gelf.h>
 #endif
 
-#include "model/ais_decoder.h"
-#include "ais.h"
+#include "config.h"
+
 #include "model/ais_target_data.h"
-#include "canvasMenu.h"
 #include "model/catalog_handler.h"
+#include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_n0183_serial.h"
+#include "model/comm_drv_n2k.h"
+#include "model/comm_drv_registry.h"
+#include "model/comm_navmsg_bus.h"
+#include "model/comm_vars.h"
+#include "model/config_vars.h"
+#include "model/downloader.h"
+#include "model/georef.h"
+#include "model/json_event.h"
+#include "model/logger.h"
+#include "model/multiplexer.h"
+#include "model/nav_object_database.h"
+#include "model/navutil_base.h"
+#include "model/ocpn_utils.h"
+#include "model/plugin_cache.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
+#include "model/plugin_paths.h"
+#include "model/route.h"
+#include "model/routeman.h"
+#include "model/safe_mode.h"
+#include "model/select.h"
+#include "model/semantic_vers.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "canvasMenu.h"
 #include "cat_settings.h"
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
-#include "model/comm_navmsg_bus.h"
-#include "model/comm_vars.h"
 #include "config.h"
-#include "model/config_vars.h"
-#include "model/downloader.h"
 #include "download_mgr.h"
 #include "dychart.h"
 #include "FontMgr.h"
-#include "model/georef.h"
-#include "ocpn_pixel.h"
 #include "gshhs.h"
-#include "model/json_event.h"
-#include "model/logger.h"
-#include "model/multiplexer.h"
+#include "model/ais_decoder.h"
 #include "mygeom.h"
-#include "model/nav_object_database.h"
 #include "navutil.h"
-#include "model/navutil_base.h"
 #include "observable_confvar.h"
 #include "observable_globvar.h"
+#include "ocpn_app.h"
 #include "OCPN_AUIManager.h"
 #include "ocpndc.h"
+#include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "OCPNPlatform.h"
 #include "OCPNRegion.h"
-#include "model/ocpn_utils.h"
 #include "options.h"
 #include "piano.h"
-#include "model/plugin_cache.h"
-#include "model/plugin_handler.h"
-#include "model/plugin_loader.h"
 #include "pluginmanager.h"
-#include "model/plugin_paths.h"
-#include "model/route.h"
 #include "routemanagerdialog.h"
-#include "model/routeman.h"
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "model/safe_mode.h"
-#include "model/semantic_vers.h"
 #include "SoundFactory.h"
-#include "SystemCmdSound.h"
 #include "styles.h"
+#include "svg_utils.h"
+#include "SystemCmdSound.h"
 #include "toolbar.h"
-#include "model/track.h"
 #include "update_mgr.h"
 #include "waypointman_gui.h"
-#include "svg_utils.h"
-#include "ocpn_frame.h"
-#include "model/comm_drv_registry.h"
-#include "model/comm_drv_n0183_serial.h"
-#include "model/comm_drv_n0183_net.h"
-#include "model/comm_drv_registry.h"
-#include "model/comm_drv_n2k.h"
-#include "ocpn_app.h"
 
 #ifdef __ANDROID__
 #include <dlfcn.h>
@@ -184,7 +185,6 @@ void catch_signals_PIM(int signo) {
 #endif
 
 extern MyConfig* pConfig;
-extern AisDecoder* g_pAIS;
 extern OCPN_AUIManager* g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
@@ -199,7 +199,6 @@ extern options* g_pOptions;
 extern Multiplexer* g_pMUX;
 extern bool g_bShowChartBar;
 extern Routeman* g_pRouteMan;
-extern WayPointman* pWayPointMan;
 extern Select* pSelect;
 extern RouteManagerDialog* pRouteManagerDialog;
 extern RouteList* pRouteList;
@@ -503,9 +502,10 @@ static void gui_uninstall(const PlugInData* pic, const char* plugin) {
   g_Platform->HideBusySpinner();
 }
 
-static bool LoadAllPlugIns(bool load_enabled) {
+static bool LoadAllPlugIns(bool load_enabled, bool keep_orphans = false) {
   g_Platform->ShowBusySpinner();
-  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled);
+  bool b = PluginLoader::getInstance()->LoadAllPlugIns(load_enabled,
+                                                       keep_orphans);
   g_Platform->HideBusySpinner();
   return b;
 }
@@ -1056,7 +1056,7 @@ void PlugInManager::HandlePluginLoaderEvents() {
                                       EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
     if (m_listPanel) m_listPanel->ReloadPluginPanels();
-    g_options->itemBoxSizerPanelPlugins->Layout();
+    if (g_options) g_options->itemBoxSizerPanelPlugins->Layout();
   });
 
   evt_load_directory_listener.Listen(loader->evt_load_directory, this,
@@ -1240,7 +1240,7 @@ bool PlugInManager::IsAnyPlugInChartEnabled() {
 }
 
 void PlugInManager::UpdateManagedPlugins() {
-  PluginLoader::getInstance()->UpdateManagedPlugins();
+  PluginLoader::getInstance()->UpdateManagedPlugins(false);
   PluginLoader::getInstance()->SortPlugins(ComparePlugins);
 
   if (m_listPanel) m_listPanel->ReloadPluginPanels();
@@ -1279,10 +1279,12 @@ void PlugInManager::FinalizePluginLoadall() {
   SendSKConfigToAllPlugIns();
 
   // Inform Plugins of OpenGL configuration, if enabled
+#ifdef ocpnUSE_GL
   if (g_bopengl) {
     if (gFrame->GetPrimaryCanvas()->GetglCanvas())
       gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
   }
+#endif
 
   //  And then reload all catalogs.
   ReloadLocale();
@@ -2702,10 +2704,6 @@ wxString* GetpSharedDataLocation(void) {
   return g_Platform->GetSharedDataDirPtr();
 }
 
-wxString* GetpPrivateApplicationDataLocation(void) {
-  return g_Platform->GetPrivateDataDirPtr();
-}
-
 ArrayOfPlugIn_AIS_Targets* GetAISTargetArray(void) {
   if (!g_pAIS) return NULL;
 
@@ -3272,7 +3270,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     if (prp) prp->ReLoadIcon();
 
     auto canvas = gFrame->GetPrimaryCanvas();
-    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(), canvas->GetScaleValue());
     SelectItem* pFind =
         pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {
@@ -3972,7 +3970,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
     WARNING_LOG << "Error saving metadata file: " << metadata_path
                 << " for imported plugin: " << metadata.name;
   }
-  LoadAllPlugIns(false);
+  LoadAllPlugIns(false, true);
   PluginHandler::getInstance()->SetInstalledMetadata(metadata);
   m_PluginListPanel->ReloadPluginPanels();
   wxString ws(_("Plugin"));
@@ -3992,7 +3990,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
       pConfig->Read(_T("LatestCatalogDownloaded"), _T("default"));
   catalog += latestCatalog;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   //  Get the version from the currently active catalog, by which we mean
   //  the latest catalog parsed.
   auto pluginHandler = PluginHandler::getInstance();
@@ -4073,13 +4071,20 @@ std::vector<const PlugInData*> GetInstalled() {
   return result;
 }
 
-/* Is plugin with given name present in loaded? */
+/* Is plugin with given name present in loaded or safe list if installed? */
 static bool IsPluginLoaded(const std::string& name) {
-  auto loaded = PluginLoader::getInstance()->GetPlugInArray();
-  for (size_t i = 0; i < loaded->GetCount(); i++) {
-    if (loaded->Item(i)->m_common_name.ToStdString() == name) return true;
+  if (safe_mode::get_mode()) {
+    auto installed = PluginHandler::getInstance()->GetInstalldataPlugins();
+    auto found =
+        std::find(installed.begin(), installed.end(), ocpn::tolower(name));
+    return found != installed.end();
+  } else {
+    auto loaded = PluginLoader::getInstance()->GetPlugInArray();
+    for (size_t i = 0; i < loaded->GetCount(); i++) {
+      if (loaded->Item(i)->m_common_name.ToStdString() == name) return true;
+    }
+    return false;
   }
-  return false;
 }
 
 void PluginListPanel::ReloadPluginPanels() {
@@ -4104,28 +4109,34 @@ void PluginListPanel::ReloadPluginPanels() {
   Hide();
   m_PluginSelected = 0;
 
-  /* The catalog entries. */
-  auto available = getCompatiblePlugins();
+  if (safe_mode::get_mode()) {
+    /** Add panels for installed, unloaded plugins. */
+    auto installed = PluginHandler::getInstance()->GetInstalldataPlugins();
+    for (const auto& name : installed) AddPlugin(name)  ;
+  } else {
+    /* The catalog entries. */
+    auto available = getCompatiblePlugins();
 
-  /* Remove those which are loaded. */
-  auto predicate = [](const PluginMetadata& md) {
-    return IsPluginLoaded(md.name);
-  };
-  auto end = std::remove_if(available.begin(), available.end(), predicate);
-  available.erase(end, available.end());
+    /* Remove those which are loaded or in safe list. */
+    auto predicate = [](const PluginMetadata& md) {
+      return IsPluginLoaded(md.name);
+    };
+    auto end = std::remove_if(available.begin(), available.end(), predicate);
+    available.erase(end, available.end());
 
-  /* Remove duplicates. */
-  struct Comp {
-    bool operator()(const PluginMetadata& lhs, const PluginMetadata rhs) const {
-      return lhs.name.compare(rhs.name) < 0;
-    }
-  } comp;
-  std::set<PluginMetadata, Comp> unique_entries(comp);
-  for (const auto& p : available) unique_entries.insert(p);
+    /* Remove duplicates. */
+    struct Comp {
+      bool operator()(const PluginMetadata& lhs, const PluginMetadata rhs) const {
+        return lhs.name.compare(rhs.name) < 0;
+      }
+    } comp;
+    std::set<PluginMetadata, Comp> unique_entries(comp);
+    for (const auto& p : available) unique_entries.insert(p);
 
-  /* Add panels for first loaded plugins and then catalog entries. */
-  for (const auto& p : GetInstalled()) AddPlugin(*p);
-  for (const auto& p : unique_entries) AddPlugin(PlugInData(p));
+    /* Add panels for first loaded plugins, then catalog entries. */
+    for (const auto& p : GetInstalled()) AddPlugin(*p);
+    for (const auto& p : unique_entries) AddPlugin(PlugInData(p));
+  }
 
   Show();
   Layout();
@@ -4133,6 +4144,15 @@ void PluginListPanel::ReloadPluginPanels() {
   Scroll(0, 0);
 
   m_is_loading.clear();
+}
+
+void PluginListPanel::AddPlugin(const std::string& name) {
+  auto panel = new PluginPanel(this, name);
+  panel->SetSelected(false);
+  GetSizer()->Add(panel, 0, wxEXPAND);
+  m_PluginItems.Add(panel);
+  m_pluginSpacer = g_Platform->GetDisplayDPmm() * 1.0;
+  GetSizer()->AddSpacer(m_pluginSpacer);
 }
 
 void PluginListPanel::AddPlugin(const PlugInData& pic) {
@@ -4285,13 +4305,62 @@ static bool canUninstall(std::string name) {
   return false;
 }
 
+PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+              wxBORDER_NONE),
+      m_is_safe_panel(true) {
+
+  m_PluginListPanel = dynamic_cast<PluginListPanel*>(parent);
+  wxASSERT(m_PluginListPanel != 0);
+  wxBoxSizer* top_sizer = new wxBoxSizer(wxVERTICAL);
+  SetSizer(top_sizer);
+  wxBoxSizer* top_horizontal = new wxBoxSizer(wxHORIZONTAL);
+  top_sizer->Add(top_horizontal, 0, wxEXPAND);
+
+  double iconSize = GetCharWidth() * 4;
+  double dpi_mult = g_Platform->GetDisplayDIPMult(this);
+  int icon_scale = iconSize * dpi_mult;
+  ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+  wxBitmap bitmap(style->GetIcon("default_pi", icon_scale, icon_scale));
+  m_itemStaticBitmap = new wxStaticBitmap(this, wxID_ANY, bitmap);
+  top_horizontal->Add(m_itemStaticBitmap, 0, wxEXPAND | wxALL, 10);
+
+  m_pName = new wxStaticText(this, wxID_ANY, name);
+  top_horizontal->Add(m_pName, wxID_ANY, wxALIGN_CENTER_VERTICAL);
+  m_pVersion = new wxStaticText(this, wxID_ANY, "");
+  top_horizontal->Add(m_pVersion);
+  m_pVersion->Hide();
+
+  m_pButtons = new wxBoxSizer(wxHORIZONTAL);
+  top_horizontal->Add(m_pButtons);
+  m_info_btn = new WebsiteButton(this, "https:\\opencpn.org");
+  top_horizontal->Add(m_info_btn);
+  m_pButtonUninstall = new wxButton(this, wxID_ANY, _("Uninstall"),
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  top_horizontal->Add(m_pButtonUninstall, 0,
+                      wxALIGN_CENTER_VERTICAL | wxALL, 2);
+  auto uninstall = [&](wxCommandEvent ev) {
+    auto n = m_pName->GetLabel().ToStdString();
+    int result = OCPNMessageBox(gFrame,
+                                std::string(_("Uninstall plugin ")) + n + "?",
+                                _("Un-Installation"),
+                                wxICON_QUESTION | wxOK | wxCANCEL);
+    if (result != wxID_OK) return;
+    PluginHandler::getInstance()->ClearInstallData(n);
+    m_PluginListPanel->ReloadPluginPanels();
+  };
+  m_pButtonUninstall->Bind(wxEVT_COMMAND_BUTTON_CLICKED, uninstall);
+}
+
 BEGIN_EVENT_TABLE(PluginPanel, wxPanel)
 EVT_PAINT(PluginPanel::OnPaint)
 END_EVENT_TABLE()
 
 PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
                          const wxSize& size, const PlugInData plugin)
-    : wxPanel(parent, id, pos, size, wxBORDER_NONE), m_plugin(plugin) {
+    : wxPanel(parent, id, pos, size, wxBORDER_NONE),
+      m_plugin(plugin),
+      m_is_safe_panel(false) {
   m_PluginListPanel = (PluginListPanel*)parent;  //->GetParent();
   m_PluginListPanel = dynamic_cast<PluginListPanel*>(parent /*->GetParent()*/);
   wxASSERT(m_PluginListPanel != 0);
@@ -4534,6 +4603,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
 PluginPanel::~PluginPanel() {
   Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+  if (m_is_safe_panel) return;
   m_itemStaticBitmap->Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected,
                              this);
   m_pName->Unbind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
@@ -4816,6 +4886,7 @@ void PluginPanel::OnPluginAction(wxCommandEvent& event) {
 }
 
 void PluginPanel::SetEnabled(bool enabled) {
+  if (m_is_safe_panel) return;
   PluginLoader::getInstance()->SetEnabled(m_plugin.m_common_name, enabled);
   PluginLoader::getInstance()->UpdatePlugIns();
   NotifySetupOptionsPlugin(&m_plugin);
@@ -7656,7 +7727,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     if (prp) prp->ReLoadIcon();
 
     auto canvas = gFrame->GetPrimaryCanvas();
-    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale());
+    SelectCtx ctx(canvas->m_bShowNavobjects, canvas->GetCanvasTrueScale(), canvas->GetScaleValue());
     SelectItem* pFind =
         pSelect->FindSelection(ctx, lat_save, lon_save, SELTYPE_ROUTEPOINT);
     if (pFind) {
@@ -7854,144 +7925,4 @@ double OCPN_GetWinDIPScaleFactor() {
   if (gFrame) scaler = (double)(gFrame->ToDIP(100)) / 100.;
 #endif
   return scaler;
-}
-
-/** Comm port plugin TX support methods  */
-
-std::vector<DriverHandle> GetActiveDrivers() {
-  std::vector<DriverHandle> result;
-
-  auto& registry = CommDriverRegistry::GetInstance();
-  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers =
-      registry.GetDrivers();
-
-  for (auto& driver : drivers) result.push_back(driver->Key());
-
-  return result;
-}
-
-const std::unordered_map<std::string, std::string> GetAttributes(
-    DriverHandle handle) {
-  auto& registry = CommDriverRegistry::GetInstance();
-  auto drivers = registry.GetDrivers();
-  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
-  auto found = std::find_if(drivers.begin(), drivers.end(), func);
-
-  std::unordered_map<std::string, std::string> rv;
-  if (found == drivers.end()) {
-    return rv;
-  }
-
-  return found->get()->GetAttributes();
-}
-
-CommDriverResult WriteCommDriver(
-    DriverHandle handle, const std::shared_ptr<std::vector<uint8_t>>& payload) {
-  // Find the driver from the handle
-  auto& registry = CommDriverRegistry::GetInstance();
-  auto drivers = registry.GetDrivers();
-  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
-  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
-
-  if (driver == drivers.end()) {
-    return RESULT_COMM_INVALID_HANDLE;
-  }
-
-  // Determine protocol
-  std::unordered_map<std::string, std::string> attributes =
-      GetAttributes(handle);
-  auto protocol_it = attributes.find("protocol");
-  if (protocol_it == attributes.end()) return RESULT_COMM_INVALID_PARMS;
-  std::string protocol = protocol_it->second;
-
-  if (!protocol.compare("nmea0183")) {
-    std::shared_ptr<CommDriverN0183> d0183 =
-        std::dynamic_pointer_cast<CommDriverN0183>(*driver);
-
-    std::string msg;
-    size_t data_len = payload.get()->size();
-    for (size_t i = 0; i < data_len; i++) {
-      msg += payload.get()->at(i);
-    }
-
-    std::string id = msg.substr(1, 5);
-    auto msg_out = std::make_shared<Nmea0183Msg>(
-        id, msg, std::make_shared<NavAddr0183>(d0183->iface));
-
-    bool bxmit_ok = d0183->SendMessage(
-        msg_out, std::make_shared<NavAddr0183>(d0183->iface));
-    if (bxmit_ok)
-      return RESULT_COMM_NO_ERROR;
-    else
-      return RESULT_COMM_TX_ERROR;
-  } else
-    return RESULT_COMM_INVALID_PARMS;
-}
-
-CommDriverResult WriteCommDriverN2K(
-    DriverHandle handle, int PGN, int destinationCANAddress, int priority,
-    const std::shared_ptr<std::vector<uint8_t>>& payload) {
-  uint64_t _PGN;
-  _PGN = PGN;
-
-  // Find the driver from the handle
-  auto& registry = CommDriverRegistry::GetInstance();
-  auto drivers = registry.GetDrivers();
-  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
-  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
-
-  if (driver == drivers.end()) {
-    return RESULT_COMM_INVALID_HANDLE;
-  }
-
-  auto dest_addr = std::make_shared<const NavAddr2000>(driver->get()->iface,
-                                                       destinationCANAddress);
-
-  const std::vector<uint8_t> load;
-  size_t data_len = payload.get()->size();
-
-  auto msg = std::make_shared<const Nmea2000Msg>(_PGN, *(payload), dest_addr,
-                                                 priority);
-
-  bool result = driver->get()->SendMessage(msg, dest_addr);
-
-  return RESULT_COMM_NO_ERROR;
-}
-
-CommDriverResult RegisterTXPGNs(DriverHandle handle,
-                                std::vector<int>& pgn_list) {
-  if (!pgn_list.size()) return RESULT_COMM_INVALID_PARMS;
-
-  // Find the driver from the handle
-  auto& registry = CommDriverRegistry::GetInstance();
-  auto drivers = registry.GetDrivers();
-  auto func = [handle](const DriverPtr d) { return d->Key() == handle; };
-  auto driver = std::find_if(drivers.begin(), drivers.end(), func);
-
-  if (driver == drivers.end()) {
-    return RESULT_COMM_INVALID_HANDLE;
-  }
-
-  std::shared_ptr<CommDriverN2K> dn2k =
-      std::dynamic_pointer_cast<CommDriverN2K>(*driver);
-
-  int nloop = 0;
-  for (size_t i = 0; i < pgn_list.size(); i++) {
-    int nTry = 5;
-    int iresult = -1;
-    nloop = 0;
-    while (nTry && iresult < 0) {
-      iresult = dn2k->SetTXPGN(pgn_list[i]);
-      nTry--;
-      nloop++;
-    }
-
-    if (iresult < 0) {
-      printf("####TXPGN Fail\n");
-      return RESULT_COMM_REGISTER_PGN_ERROR;
-    }
-  }
-
-  printf("----TXPGN PASS  nloop: %d \n", nloop);
-  return RESULT_COMM_NO_ERROR;
 }

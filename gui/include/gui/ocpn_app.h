@@ -39,7 +39,7 @@
 #include "model/comm_bridge.h"
 #include "model/local_api.h"
 #include "model/rest_server.h"
-
+#include "model/usb_watch_daemon.h"
 class Track;
 
 class MyApp : public wxApp {
@@ -74,6 +74,7 @@ public:
   CommBridge m_comm_bridge;
 
   RestServer m_rest_server;
+  UsbWatchDaemon& m_usb_watcher;
 
   DECLARE_EVENT_TABLE()
 private:
@@ -91,7 +92,8 @@ private:
   int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code)
 
   void InitRestListeners();
-  ObsListener rest_srv_listener;
+  ObsListener rest_activate_listener;
+  ObsListener rest_reverse_listener;
 
 };
 

@@ -46,6 +46,12 @@
 #include "observable_evtvar.h"
 #include "model/routeman.h"
 
+#ifdef __WXOSX__
+#define DIALOG_PARENT wxFrame
+#else
+#define DIALOG_PARENT wxDialog
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 
 
@@ -53,7 +59,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class RoutePropDlg
 ///////////////////////////////////////////////////////////////////////////////
-class RoutePropDlg : public wxFrame {
+class RoutePropDlg : public DIALOG_PARENT {
 private:
   ObservableListener navobj_del_track_listener;
   ObservableListener navobj_del_route_listener;

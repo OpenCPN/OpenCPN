@@ -58,7 +58,9 @@
 
 #include "gshhs.h"
 #include "chartbase.h"  // for projections
-#include "shaders.h"
+#ifdef ocpnUSE_GL
+    #include "shaders.h"
+#endif
 
 #ifdef __WXMSW__
 #define __CALL_CONVENTION  //__stdcall

@@ -6,8 +6,10 @@ on:
   workflow_run:
     # Must restrict to given workflows:
     # https://github.com/community/community/discussions/16059
-    workflows: [MacOS, Windows]
+    workflows: [MacOS, Windows, linux]
     types: [completed]
+    tags:
+      - '**'
   workflow_dispatch:
 
 env: 

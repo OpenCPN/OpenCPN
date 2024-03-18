@@ -33,7 +33,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "comm_navmsg.h"
+#include "model/comm_navmsg.h"
 
 class Multiplexer;  // forward
 

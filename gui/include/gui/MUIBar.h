@@ -27,6 +27,7 @@
 #ifndef __muibar_H__
 #define __muibar_H__
 
+#include <cstdint>
 
 //----------------------------------------------------------------------------
 //   constants
@@ -48,12 +49,13 @@ enum {
 class MyFrame;
 class ChartCanvas;
 class MUIButton;
+class MUITextButton;
 class CanvasOptions;
 
 //----------------------------------------------------------------------------
 // MUIBar
 //----------------------------------------------------------------------------
-class MUIBar : public wxFrame {
+class MUIBar : public wxWindow {
 public:
   MUIBar();
   MUIBar(ChartCanvas *parent, int orientation = wxHORIZONTAL,
@@ -79,6 +81,7 @@ public:
   void SetColorScheme(ColorScheme cs);
   void SetCanvasENCAvailable(bool avail);
   void OnScaleSelected(wxMouseEvent &event);
+  void DrawGL(ocpnDC &gldc, double displayScale);
 
 private:
   void Init(void);
@@ -97,7 +100,7 @@ private:
   MUIButton *m_zoutButton;
   MUIButton *m_menuButton;
   MUIButton *m_followButton;
-  wxStaticText *m_scaleTextBox;
+  MUITextButton *m_scaleButton;
 
   CanvasOptions *m_canvasOptions;
   wxPoint m_targetCOPos;
@@ -126,6 +129,9 @@ private:
   ColorScheme m_cs;
   bool m_CanvasENCAvail;
   bool m_bEffects;
+
+  uint32_t m_texture;
+  int m_end_margin;
 
   DECLARE_EVENT_TABLE()
 };

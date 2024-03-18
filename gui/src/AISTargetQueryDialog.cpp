@@ -26,26 +26,25 @@
 
 #include <wx/html/htmlwin.h>
 
-#include "AISTargetQueryDialog.h"
-#include "chcanv.h"
-#include "navutil.h"
-#include "ais.h"
-#include "FontMgr.h"
-#include "model/ais_target_data.h"
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
-#include "model/select.h"
-#include "routemanagerdialog.h"
-#include "OCPNPlatform.h"
-#include "model/track.h"
+#include "model/ais_target_data.h"
 #include "model/route_point.h"
+#include "model/select.h"
+#include "model/track.h"
+
+#include "ais.h"
+#include "AISTargetQueryDialog.h"
+#include "chcanv.h"
+#include "FontMgr.h"
+#include "navutil.h"
 #include "ocpn_frame.h"
+#include "OCPNPlatform.h"
+#include "routemanagerdialog.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern ColorScheme global_color_scheme;
-extern AisDecoder *g_pAIS;
 extern wxString g_default_wp_icon;
-extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern std::vector<Track*> g_TrackList;
@@ -85,7 +84,6 @@ void AISTargetQueryDialog::Init() {
   m_nl = 0;
   m_colorscheme = (ColorScheme)(-1);
   m_okButton = NULL;
-  m_bsize_set = false;
   m_bautoCentre = false;
   m_bautosize = false;
 }
@@ -141,6 +139,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
         td->b_PersistTrack = false;
         g_pAIS->m_persistent_tracks.erase(td->MMSI);
         m_createTrkBtn->SetLabel(_("Record Track"));
+        td->b_show_track = false;
       } else {
         TrackPoint *tp = NULL;
         TrackPoint *tp1 = NULL;
@@ -179,6 +178,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
                 _("OpenCPN Info"), wxYES_NO | wxCENTER, 60)) {
           td->b_PersistTrack = true;
           g_pAIS->m_persistent_tracks[td->MMSI] = t;
+          td->b_show_track = true;
         }
       }
     }
@@ -188,16 +188,7 @@ void AISTargetQueryDialog::OnIdTrkCreateClick(wxCommandEvent &event) {
 bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
                                   const wxString &caption, const wxPoint &pos,
                                   const wxSize &size, long style) {
-  //    As a display optimization....
-  //    if current color scheme is other than DAY,
-  //    Then create the dialog ..WITHOUT.. borders and title bar.
-  //    This way, any window decorations set by external themes, etc
-  //    will not detract from night-vision
-
   long wstyle = AIS_TARGET_QUERY_STYLE;
-  if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
-      (global_color_scheme != GLOBAL_COLOR_SCHEME_RGB))
-    wstyle |= (wxNO_BORDER);
 
   if (!wxFrame::Create(parent, id, caption, pos, size, wstyle)) return false;
 
@@ -213,7 +204,6 @@ bool AISTargetQueryDialog::Create(wxWindow *parent, wxWindowID id,
                                                wxFONTSTYLE_NORMAL,
                                                dFont->GetWeight(), false, face);
 
-  SetFont(*m_basefont);
   m_adjustedFontSize = dFont->GetPointSize();
   m_control_font_size = dFont->GetPointSize();
 
@@ -279,7 +269,8 @@ void AISTargetQueryDialog::CreateControls() {
       new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                        wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
   m_pQueryTextCtl->SetBorders(1);
-  topSizer->Add(m_pQueryTextCtl, 1, wxEXPAND, 5);
+  m_pQueryTextCtl->SetFont(*m_basefont);
+  topSizer->Add(m_pQueryTextCtl, 1, wxALL | wxEXPAND, 5);
 
   wxSizer *opt = new wxBoxSizer(wxHORIZONTAL);
   m_createWptBtn = new wxButton(this, xID_WPT_CREATE, _("Create Waypoint"),
@@ -326,7 +317,6 @@ void AISTargetQueryDialog::UpdateText() {
     else
       m_createTrkBtn->Enable();
 
-    AdjustBestSize(td.get());
     RenderHTMLQuery(td.get());
   }
 
@@ -353,13 +343,8 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
 
   wxSize origSize = GetSize();
 
-  //  First pass, try to set the size using the user specified font sizes
-  //  completely
-  if (!m_bsize_set) {
-    Fit();
-    RenderHTMLQuery(td);
-    m_bsize_set = true;
-  }
+  Fit();
+  RenderHTMLQuery(td);
 
   int target_x = -1;
   int target_y = -1;
@@ -383,17 +368,21 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
 
       m_adjustedFontSize--;
     }
+    target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
   } else {
     wxSize szv = m_pQueryTextCtl->GetVirtualSize();
     int csz = g_Platform->getDisplaySize().x * 8 / 10;
     if ((szv.x) < csz) {
       if (szv.x > m_pQueryTextCtl->GetSize().x) target_x = szv.x;  // * 11/10;
     }
+    target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
   }
 
+#ifdef __ANDROID__
   // Now adjust the font size used for the control buttons.
   // This adjustment makes sure that the two horizontal buttons are not wider
-  // than the platform display allows.
+  // than the platform display allows. This may be a problem on phones,
+  // but probably never on normal computer displays. some platforms also don't support this at all
 
   if (m_createWptBtn && m_createTrkBtn) {
     wxSize psz = g_Platform->getDisplaySize();
@@ -424,6 +413,7 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
       m_control_font_size = font_size;
     }
   }
+#endif
 
   // Height adjustments
   // Try to avoid vertical scroll bar if possible.
@@ -436,13 +426,10 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
   int csz = g_Platform->getDisplaySize().y * 85 / 100;
   if ((szyv.y + yb) < csz) {
     if (szyv.y > m_pQueryTextCtl->GetSize().y)
-      target_y = (szyv.y * 11 / 10) + yb;
-  } else {  // Probably going to be a vertical scroll bar, so adjust width
-            // slightly
+      target_y = szyv.y * 12 / 10 + yb;
+  } else {
     target_y = csz;
-    target_x = szyv.x * 11 / 10;
   }
-
   SetSize(target_x, target_y);
 
   wxSize nowSize = GetSize();

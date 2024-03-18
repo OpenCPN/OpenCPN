@@ -26,19 +26,21 @@
  */
 
 #include "wx/wx.h"
-
+#include <sstream>
 #include "email.h"
 
 #include "pi_gl.h"
 
 #include "GribRequestDialog.h"
 #include "GribOverlayFactory.h"
+#include <wx/wfstream.h>
+#include "grib_pi.h"
 
 #include <unordered_map>
 
 #define RESOLUTIONS 4
 
-enum { SAILDOCS, ZYGRIB };                // grib providers
+enum { SAILDOCS, ZYGRIB };                       // grib providers
 enum { GFS, COAMPS, RTOFS, HRRR, ICON, ECMWF };  // forecast models
 
 wxString toMailFormat(int NEflag,
@@ -59,8 +61,7 @@ extern int m_ZoneSelMode;
 GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
     : GribRequestSettingBase(&parent), m_parent(parent) {
   m_Vp = 0;
-
-  m_oDC = new pi_ocpnDC();
+  m_oDC = nullptr;
 
   m_displayScale = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
@@ -68,13 +69,87 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   m_displayScale = GetContentScaleFactor();
 #endif
 
-
   InitRequestConfig();
+  m_connected = false;
+  m_downloading = false;
+  m_bTransferSuccess = true;
+  m_downloadType = GribDownloadType::NONE;
+
+  auto bg = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW)
+                .GetAsString(wxC2S_HTML_SYNTAX);
+  auto fg = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT)
+                .GetAsString(wxC2S_HTML_SYNTAX);
+  m_htmlWinWorld->SetBorders(10);
+  m_htmlWinWorld->SetPage(
+      "<html><body bgcolor="
+      "" +
+      bg +
+      ""
+      "><font color="
+      "" +
+      fg +
+      ""
+      ">" +
+      _("<h1>OpenCPN ECMWF forecast</h1>"
+        "<p>Free service based on ECMWF Open Data published under the terms of "
+        "Creative Commons CC-4.0-BY licence</p>"
+        "<p>The GRIB files include information about surface temperature, "
+        "atmospheric pressure, wind strength, wind direction, wave height and "
+        "direction for the whole world on a 0.4 and 0.25 degree resolution "
+        "grid with 3 hour "
+        "step in the first 144 hours and 6 hour step up to 10 days.</p>"
+        "<p>The data is updated twice a day as soon as the 00z and 12z model "
+        "runs finish and the "
+        "results are published by ECMWF, which usually means new forecast data "
+        "is available shortly after 8AM and 8PM UTC.</p>"
+        "<p>The grib downloaded covers the area of the primary chart "
+        "canvas.</p>"
+        "<p>The service is provided on best effort basis and comes with no "
+        "guarantees. The server is hosted by a volunteer and the service is "
+        "provided free of charge and without accepting any liability "
+        "whatsoever for its continuous availability, or for any loss or damage "
+        "arising from its use. If you find the service useful, please "
+        "consider making a donation to the OpenCPN project.</p>"
+        "<p>This service is based on data and products of the European Centre "
+        "for Medium-Range Weather Forecasts (ECMWF).</p>"
+        "<p>Source: www.ecmwf.int</p>"
+        "<p>Disclaimer: ECMWF does not accept any liability whatsoever for any "
+        "error or omission in the data, their availability, or for any loss or "
+        "damage arising from their use.</p>"
+        "</font></body></html>"));
+  m_htmlInfoWin->SetBorders(10);
+  m_htmlInfoWin->SetPage(
+      "<html><body bgcolor="
+      "" +
+      bg +
+      ""
+      "><font color="
+      "" +
+      fg +
+      ""
+      ">" +
+      _("<h1>Grib weather forecasts</h1>"
+        "<p>Collection of local weather models from various sources available "
+        "for download over the internet.</p>"
+        "</font></body></html>"));
+  ReadLocalCatalog();
+  m_bLocal_source_selected = false;
+  EnableDownloadButtons();
 }
 
 GribRequestSetting::~GribRequestSetting() {
+  if (m_downloading) {
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+  }
+  if (m_connected) {
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
   delete m_Vp;
-  delete m_oDC;
+  if (m_oDC) {
+    delete m_oDC;
+  }
 }
 
 void GribRequestSetting::InitRequestConfig() {
@@ -125,8 +200,8 @@ void GribRequestSetting::InitRequestConfig() {
       m_RequestConfigBase = _T( "000220XX.............." );
   }
   // populate model, mail to, waves model choices
-  wxString s1[] = {_T("GFS"), _T("COAMPS"), _T("RTOFS"), _T("HRRR"),
-                   _T("ICON"), _T("ECMWF")};
+  wxString s1[] = {_T("GFS"),  _T("COAMPS"), _T("RTOFS"),
+                   _T("HRRR"), _T("ICON"),   _T("ECMWF")};
   for (unsigned int i = 0; i < (sizeof(s1) / sizeof(wxString)); i++)
     m_pModel->Append(s1[i]);
   wxString s2[] = {_T("Saildocs"), _T("zyGrib")};
@@ -206,13 +281,26 @@ void GribRequestSetting::InitRequestConfig() {
 
 wxWindow *GetGRIBCanvas();
 void GribRequestSetting::OnClose(wxCloseEvent &event) {
+  if (m_downloading) {
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+    m_downloading = false;
+    m_download_handle = 0;
+  }
+  if (m_connected) {
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
   m_RenderZoneOverlay = 0;  // eventually stop graphical zone display
   RequestRefresh(GetGRIBCanvas());
 
   // allow to be back to old value if changes have not been saved
   m_ZoneSelMode = m_SavedZoneSelMode;
   m_parent.SetRequestBitmap(m_ZoneSelMode);  // set appopriate bitmap
-
+  m_parent.m_highlight_latmax = 0;
+  m_parent.m_highlight_lonmax = 0;
+  m_parent.m_highlight_latmin = 0;
+  m_parent.m_highlight_lonmin = 0;
   this->Hide();
 }
 
@@ -267,16 +355,12 @@ void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
   }
 
   bool bnew_val = false;
-  if (m_spMaxLat->GetValue() != (int)ceil(vp->lat_max))
-    bnew_val = true;
-  if (m_spMinLon->GetValue() != (int)floor(lonmin))
-    bnew_val = true;
-  if (m_spMinLat->GetValue() != (int)floor(vp->lat_min))
-    bnew_val = true;
-  if (m_spMaxLon->GetValue() != (int)ceil(lonmax))
-    bnew_val = true;
+  if (m_spMaxLat->GetValue() != (int)ceil(vp->lat_max)) bnew_val = true;
+  if (m_spMinLon->GetValue() != (int)floor(lonmin)) bnew_val = true;
+  if (m_spMinLat->GetValue() != (int)floor(vp->lat_min)) bnew_val = true;
+  if (m_spMaxLon->GetValue() != (int)ceil(lonmax)) bnew_val = true;
 
-  if (bnew_val){
+  if (bnew_val) {
     m_spMaxLat->SetValue((int)ceil(vp->lat_max));
     m_spMinLon->SetValue((int)floor(lonmin));
     m_spMinLat->SetValue((int)floor(vp->lat_min));
@@ -325,13 +409,14 @@ bool GribRequestSetting::MouseEventHook(wxMouseEvent &event) {
 
   if (event.Dragging()) {
     if (m_RenderZoneOverlay < 2) {
-      m_StartPoint = wxPoint(xm,ym);  //event.GetPosition();  // starting selection point
+      m_StartPoint =
+          wxPoint(xm, ym);  // event.GetPosition();  // starting selection point
       m_RenderZoneOverlay = 2;
     }
     m_IsMaxLong = m_StartPoint.x > xm
                       ? true
                       : false;  // find if startpoint is max longitude
-    GetCanvasLLPix(m_Vp, wxPoint (xm, ym) /*event.GetPosition()*/, &m_Lat,
+    GetCanvasLLPix(m_Vp, wxPoint(xm, ym) /*event.GetPosition()*/, &m_Lat,
                    &m_Lon);  // extend selection
     if (!m_tMouseEventTimer.IsRunning())
       m_tMouseEventTimer.Start(20, wxTIMER_ONE_SHOT);
@@ -370,6 +455,496 @@ void GribRequestSetting::SetCoordinatesText() {
   m_stMinLatNS->SetLabel(m_spMinLat->GetValue() < 0 ? _("S") : _("N"));
 }
 
+size_t LengthSelToHours(int sel) {
+  switch (sel) {
+    case 1:
+      return 72;
+    case 2:
+      return 240;
+    default:
+      return 24;
+  }
+}
+
+void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
+  // std::cout << "onDLEvent  " << ev.getDLEventCondition() << " "
+  //           << ev.getDLEventStatus() << std::endl;
+  switch (ev.getDLEventCondition()) {
+    case OCPN_DL_EVENT_TYPE_END:
+      m_bTransferSuccess =
+          (ev.getDLEventStatus() == OCPN_DL_NO_ERROR) ? true : false;
+      Disconnect(wxEVT_DOWNLOAD_EVENT,
+                 (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::
+                     onDLEvent);
+      m_connected = false;
+      m_downloading = false;
+      m_download_handle = 0;
+      wxYieldIfNeeded();
+      break;
+
+    case OCPN_DL_EVENT_TYPE_PROGRESS:
+      if (ev.getTotal() != 0) {
+        switch (m_downloadType) {
+          case GribDownloadType::WORLD:
+            m_staticTextInfo->SetLabelText(
+                wxString::Format(_("Downloading... %li / %li"),
+                                 ev.getTransferred(), ev.getTotal()));
+            break;
+          case GribDownloadType::LOCAL:
+          case GribDownloadType::LOCAL_CATALOG:
+            m_stLocalDownloadInfo->SetLabelText(
+                wxString::Format(_("Downloading... %li / %li"),
+                                 ev.getTransferred(), ev.getTotal()));
+            break;
+          default:
+            break;
+        }
+      } else {
+        if (ev.getTransferred() > 0) {
+          switch (m_downloadType) {
+            case GribDownloadType::WORLD:
+              m_staticTextInfo->SetLabelText(wxString::Format(
+                  _("Downloading... %li / ???"), ev.getTransferred()));
+              break;
+            case GribDownloadType::LOCAL:
+            case GribDownloadType::LOCAL_CATALOG:
+              m_stLocalDownloadInfo->SetLabelText(wxString::Format(
+                  _("Downloading... %li / ???"), ev.getTransferred()));
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      wxYieldIfNeeded();
+      break;
+    default:
+      break;
+  }
+}
+
+void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
+  if (m_downloading) {
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+    m_downloading = false;
+    m_download_handle = 0;
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+    m_connected = false;
+    m_btnDownloadWorld->SetLabelText(_("Download"));
+    m_staticTextInfo->SetLabelText(_("Download canceled"));
+    m_canceled = true;
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxTheApp->ProcessPendingEvents();
+    wxYieldIfNeeded();
+    return;
+  }
+  m_canceled = false;
+  m_downloading = true;
+  m_downloadType = GribDownloadType::WORLD;
+  EnableDownloadButtons();
+  m_btnDownloadWorld->SetLabelText(_("Cancel"));
+  m_staticTextInfo->SetLabelText(_("Preparing data on server..."));
+  wxYieldIfNeeded();
+  wxString model =
+      (m_chECMWFResolution->GetSelection() <= 0 ? "ecmwf" : "ecmwf0p25");
+  std::ostringstream oss;
+  oss << "https://grib.bosun.io/grib?";
+  oss << "model=" << model;
+  oss << "&latmin=" << m_Vp->lat_min;
+  oss << "&latmax=" << m_Vp->lat_max;
+  oss << "&lonmin=" << m_Vp->lon_min;
+  oss << "&lonmax=" << m_Vp->lon_max;
+  oss << "&length=" << LengthSelToHours(m_chForecastLength->GetSelection());
+  wxString filename =
+      wxString::Format("ocpn_%s_%li_%s.grb2", model.c_str(),
+                       LengthSelToHours(m_chForecastLength->GetSelection()),
+                       wxDateTime::Now().Format("%F-%H-%M"));
+  wxString path = m_parent.GetGribDir();
+  path.Append(wxFileName::GetPathSeparator());
+  path.Append(filename);
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  auto res =
+      OCPN_downloadFileBackground(oss.str(), path, this, &m_download_handle);
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+  if (!m_canceled) {
+    if (m_bTransferSuccess) {
+      m_staticTextInfo->SetLabelText(
+          wxString::Format(_("Download complete: %s"), path.c_str()));
+      wxFileName fn(path);
+      m_parent.m_grib_dir = fn.GetPath();
+      m_parent.m_file_names.Clear();
+      m_parent.m_file_names.Add(path);
+      m_parent.OpenFile();
+      if (m_parent.pPlugIn) {
+        if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
+      }
+      m_parent.SetDialogsStyleSizePosition(true);
+      Close();
+    } else {
+      m_staticTextInfo->SetLabelText(_("Download failed"));
+    }
+  }
+  m_btnDownloadWorld->SetLabelText(_("Download"));
+  m_downloadType = GribDownloadType::NONE;
+  EnableDownloadButtons();
+}
+
+enum LocalSourceItem { SOURCE, AREA, GRIB };
+
+enum LocalGribDownloadType { DIRECT, MANIFEST, WEBPAGE };
+
+struct GribCatalogInfo : public wxTreeItemData {
+  GribCatalogInfo(LocalSourceItem type, wxString name, wxString description,
+                  wxString url, wxString filename,
+                  LocalGribDownloadType download_type, double latmin,
+                  double lonmin, double latmax, double lonmax)
+      : type(type),
+        name(name),
+        description(description),
+        url(url),
+        filename(filename),
+        download_type(download_type),
+        latmin(latmin),
+        lonmin(lonmin),
+        latmax(latmax),
+        lonmax(lonmax) {}
+  LocalSourceItem type;
+  wxString name;
+  wxString description;
+  wxString url;
+  wxString filename;
+  LocalGribDownloadType download_type;
+  double latmin;
+  double lonmin;
+  double latmax;
+  double lonmax;
+};
+
+void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
+  m_SourcesTreeCtrl1->DeleteAllItems();
+  wxTreeItemId root =
+      m_SourcesTreeCtrl1->AddRoot(_("Local high resolution forecasts"));
+  if (data.HasMember("sources") && data["sources"].IsArray()) {
+    for (int i = 0; i < data["sources"].Size(); i++) {
+      wxJSONValue source = data["sources"][i];
+      auto info = new GribCatalogInfo(
+          LocalSourceItem::SOURCE, source["source"].AsString(),
+          source["description"].AsString(), source["url"].AsString(),
+          wxEmptyString, LocalGribDownloadType::WEBPAGE, 0, 0, 0, 0);
+      wxTreeItemId src_id = m_SourcesTreeCtrl1->AppendItem(
+          root, source["source"].AsString(), -1, -1, info);
+      if (source.HasMember("areas") && source["areas"].IsArray()) {
+        for (int j = 0; j < source[_T("areas")].Size(); j++) {
+          wxJSONValue area = source[_T("areas")][j];
+          auto info = new GribCatalogInfo(
+              LocalSourceItem::AREA, area["name"].AsString(),
+              source["description"].AsString(), source["url"].AsString(),
+              wxEmptyString, LocalGribDownloadType::WEBPAGE,
+              area["boundary"]["lat_min"].AsDouble(),
+              area["boundary"]["lon_min"].AsDouble(),
+              area["boundary"]["lat_max"].AsDouble(),
+              area["boundary"]["lon_max"].AsDouble());
+          m_SourcesTreeCtrl1->AppendItem(src_id, area["name"].AsString(), -1,
+                                         -1, info);
+          if (area.HasMember("gribs") && area["gribs"].IsArray()) {
+            for (int k = 0; k < area["gribs"].Size(); k++) {
+              wxJSONValue grib = area["gribs"][k];
+              auto info = new GribCatalogInfo(
+                  LocalSourceItem::GRIB, grib["name"].AsString(),
+                  source["description"].AsString(),
+                  grib.HasMember("url") ? grib["url"].AsString()
+                                        : grib["cat_url"].AsString(),
+                  grib.HasMember("filename") ? grib["filename"].AsString() : "",
+                  grib.HasMember("url") ? LocalGribDownloadType::DIRECT
+                                        : LocalGribDownloadType::MANIFEST,
+                  area["boundary"]["lat_min"].AsDouble(),
+                  area["boundary"]["lon_min"].AsDouble(),
+                  area["boundary"]["lat_max"].AsDouble(),
+                  area["boundary"]["lon_max"].AsDouble());
+              m_SourcesTreeCtrl1->AppendItem(
+                  m_SourcesTreeCtrl1->GetLastChild(src_id),
+                  grib[_T("name")].AsString(), -1, -1, info);
+            }
+          }
+        }
+      }
+      m_SourcesTreeCtrl1->CollapseAllChildren(src_id);
+    }
+  }
+  m_SourcesTreeCtrl1->Expand(root);
+}
+
+void GribRequestSetting::ReadLocalCatalog() {
+  wxJSONReader reader;
+  wxFileInputStream str(m_parent.pPlugIn->m_local_sources_catalog);
+  wxJSONValue root;
+  reader.Parse(str, &root);
+  FillTreeCtrl(root);
+}
+
+void GribRequestSetting::HighlightArea(double latmax, double lonmax,
+                                       double latmin, double lonmin) {
+  m_parent.m_highlight_latmax = latmax;
+  m_parent.m_highlight_lonmax = lonmax;
+  m_parent.m_highlight_latmin = latmin;
+  m_parent.m_highlight_lonmin = lonmin;
+}
+
+void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent &event) {
+  wxTreeItemId item = m_SourcesTreeCtrl1->GetSelection();
+  auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(item));
+  if (src) {
+    if (src->type == LocalSourceItem::GRIB) {
+      m_stLocalDownloadInfo->SetLabelText(_("Download grib..."));
+      m_bLocal_source_selected = true;
+      HighlightArea(src->latmax, src->lonmax, src->latmin, src->lonmin);
+    } else {
+      m_stLocalDownloadInfo->SetLabelText(_("Select grib..."));
+      m_bLocal_source_selected = false;
+      HighlightArea(src->latmax, src->lonmax, src->latmin, src->lonmin);
+    }
+  }
+  EnableDownloadButtons();
+}
+
+void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent &event) {
+  if (m_downloading) {
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+    m_downloading = false;
+    m_download_handle = 0;
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+    m_connected = false;
+    m_btnDownloadLocal->SetLabelText(_("Download"));
+    m_stLocalDownloadInfo->SetLabelText(_("Download canceled"));
+    m_canceled = true;
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxTheApp->ProcessPendingEvents();
+    wxYieldIfNeeded();
+    return;
+  }
+  m_canceled = false;
+  m_downloading = true;
+  m_downloadType = GribDownloadType::LOCAL_CATALOG;
+  EnableDownloadButtons();
+  m_btnDownloadLocal->SetLabelText(_("Cancel"));
+  m_staticTextInfo->SetLabelText(_("Downloading catalog update..."));
+  wxYieldIfNeeded();
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  auto res = OCPN_downloadFileBackground(
+      CATALOG_URL, m_parent.pPlugIn->m_local_sources_catalog + "new", this,
+      &m_download_handle);
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+  if (!m_canceled) {
+    if (m_bTransferSuccess) {
+      wxRenameFile(m_parent.pPlugIn->m_local_sources_catalog + "new",
+                   m_parent.pPlugIn->m_local_sources_catalog, true);
+      ReadLocalCatalog();
+      m_stLocalDownloadInfo->SetLabelText(_("Catalog update complete."));
+    } else {
+      m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
+    }
+  }
+  m_btnDownloadLocal->SetLabelText(_("Download"));
+  m_downloadType = GribDownloadType::NONE;
+  EnableDownloadButtons();
+}
+
+void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
+  if (m_downloading) {
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+    m_downloading = false;
+    m_download_handle = 0;
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+    m_connected = false;
+    m_btnDownloadLocal->SetLabelText(_("Download"));
+    m_stLocalDownloadInfo->SetLabelText(_("Download canceled"));
+    m_canceled = true;
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxTheApp->ProcessPendingEvents();
+    wxYieldIfNeeded();
+    return;
+  }
+  m_canceled = false;
+  m_downloading = true;
+  m_downloadType = GribDownloadType::LOCAL;
+  EnableDownloadButtons();
+  m_btnDownloadLocal->SetLabelText(_("Cancel"));
+  m_staticTextInfo->SetLabelText(_("Downloading grib..."));
+  wxYieldIfNeeded();
+  auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(
+      m_SourcesTreeCtrl1->GetSelection()));
+  if (!src || src->type != LocalSourceItem::GRIB || src->url.IsEmpty()) {
+    m_downloading = false;
+    m_stLocalDownloadInfo->SetLabelText(_("Download can't be started."));
+    m_btnDownloadWorld->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    return;
+  }
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  wxString url = src->url;
+  // If it is a grib that changes location and requires help of, download the
+  // manifest first
+  if (src->download_type == LocalGribDownloadType::MANIFEST) {
+    wxString path = m_parent.GetGribDir();
+    path.Append(wxFileName::GetPathSeparator());
+    path.Append("grib_manifest.json");
+    auto res = OCPN_downloadFileBackground(url, path, this, &m_download_handle);
+    while (m_downloading) {
+      wxTheApp->ProcessPendingEvents();
+      wxMilliSleep(10);
+    }
+    bool success = true;
+    if (!m_canceled) {
+      if (!m_bTransferSuccess) {
+        success = false;
+        m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
+      }
+    } else {
+      success = false;
+      m_stLocalDownloadInfo->SetLabelText(_("Download canceled"));
+    }
+    if (success) {
+      wxJSONReader reader;
+      wxFileInputStream str(path);
+      wxJSONValue root;
+      reader.Parse(str, &root);
+      if (root.HasMember("url")) {
+        wxString parsed = root["url"].AsString();
+        if (parsed.StartsWith("http")) {
+          url = parsed;
+        } else {
+          m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
+          success = false;
+        }
+      }
+    }
+    if (!success) {  // Something went wrong, clean up and do not continue to
+                     // the actual download
+      m_downloading = false;
+      m_download_handle = 0;
+      Disconnect(wxEVT_DOWNLOAD_EVENT,
+                 (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::
+                     onDLEvent);
+      m_connected = false;
+      m_btnDownloadLocal->SetLabelText(_("Download"));
+      m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
+      m_canceled = true;
+      m_downloadType = GribDownloadType::NONE;
+      EnableDownloadButtons();
+      wxTheApp->ProcessPendingEvents();
+      wxYieldIfNeeded();
+      return;
+    }
+  }
+  // Download the actual grib
+  m_downloading = true;
+  wxYieldIfNeeded();
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  wxString filename;
+  if (!src->filename.IsEmpty()) {
+    filename = src->filename;
+  } else {
+    filename =
+        url.AfterLast('/');  // Get last part of the URL and try to sanitize the
+                             // filename somewhat if we call some API...
+    filename.Replace("?", "_");
+    filename.Replace("&", "_");
+    if (!(filename.Contains(".grb2") || filename.Contains(".grib2") ||
+          filename.Contains(".grb") || filename.Contains(".grib"))) {
+      filename.Append(".grb");
+    }
+  }
+
+  wxString path = m_parent.GetGribDir();
+  path.Append(wxFileName::GetPathSeparator());
+  path.Append(filename);
+  auto res = OCPN_downloadFileBackground(url, path, this, &m_download_handle);
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+  if (!m_canceled) {
+    if (m_bTransferSuccess) {
+      m_stLocalDownloadInfo->SetLabelText(_("Grib download complete."));
+      m_stLocalDownloadInfo->SetLabelText(
+          wxString::Format(_("Download complete: %s"), path.c_str()));
+      wxFileName fn(path);
+      m_parent.m_grib_dir = fn.GetPath();
+      m_parent.m_file_names.Clear();
+      m_parent.m_file_names.Add(
+          path);  //("/home/nohal/Downloads/Cherbourg_4km_WRF_WAM_240228-12.grb.bz2");
+      m_parent.OpenFile();
+      if (m_parent.pPlugIn) {
+        if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
+      }
+      m_parent.SetDialogsStyleSizePosition(true);
+      Close();
+    } else {
+      m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
+    }
+  }
+  m_btnDownloadWorld->SetLabelText(_("Download"));
+  m_downloadType = GribDownloadType::NONE;
+  EnableDownloadButtons();
+}
+
+void GribRequestSetting::EnableDownloadButtons() {
+  switch (m_downloadType) {
+    case GribDownloadType::WORLD:
+      m_btnDownloadWorld->Enable(true);
+      m_btnDownloadLocal->Enable(false);
+      m_buttonUpdateCatalog->Enable(false);
+      break;
+    case GribDownloadType::LOCAL:
+    case GribDownloadType::LOCAL_CATALOG:
+      m_btnDownloadWorld->Enable(false);
+      m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
+      m_buttonUpdateCatalog->Enable(false);
+      break;
+    default:
+      m_btnDownloadWorld->Enable(true);
+      m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
+      m_buttonUpdateCatalog->Enable(true);
+      break;
+  }
+}
+
 void GribRequestSetting::StopGraphicalZoneSelection() {
   m_RenderZoneOverlay = 0;  // eventually stop graphical zone display
 
@@ -394,10 +969,10 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   const wxString res[][RESOLUTIONS] = {
       {_T("0.25"), _T("0.5"), _T("1.0"), _T("2.0")},
       {_T("0.2"), _T("0.8"), _T("1.6"), wxEmptyString},
-      {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},        // RTOFS
-      {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString},        // HRRR
+      {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},         // RTOFS
+      {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString},         // HRRR
       {_T("0.0625"), _T("0.125"), wxEmptyString, wxEmptyString},  // ICON
-      {_T("0.4"), _T("1.0"), _T("2.0"), wxEmptyString}    //ECMWF
+      {_T("0.4"), _T("1.0"), _T("2.0"), wxEmptyString}            // ECMWF
   };
 
   IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
@@ -423,7 +998,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 
   unsigned l;
   // populate time interval choice
-  l = (IsGFS || IsRTOFS || IsICON || IsECMWF ) ? 3 : IsHRRR ? 1 : 6;
+  l = (IsGFS || IsRTOFS || IsICON || IsECMWF) ? 3 : IsHRRR ? 1 : 6;
 
   unsigned m;
   m = IsHRRR ? 2 : 25;
@@ -434,7 +1009,13 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pInterval->SetSelection(wxMin(it, m_pInterval->GetCount() - 1));
 
   // populate time range choice
-  l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : IsECMWF ? 10 : IsICON ? 7 : IsHRRR ? 2 : 3;
+  l = IsZYGRIB  ? 8
+      : IsGFS   ? 16
+      : IsRTOFS ? 6
+      : IsECMWF ? 10
+      : IsICON  ? 7
+      : IsHRRR  ? 2
+                : 3;
   m_pTimeRange->Clear();
   for (unsigned i = 2; i < l + 1; i++)
     m_pTimeRange->Append(wxString::Format(_T("%d"), i));
@@ -444,8 +1025,9 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pWind->SetValue(!IsRTOFS);
   m_pPress->SetValue(!IsRTOFS);
   m_pWaves->SetValue(m_RequestConfigBase.GetChar(8) == 'X' && IsGFS);
-  m_pWaves->Enable(IsECMWF || (IsGFS && m_pTimeRange->GetCurrentSelection() <7));
-     // gfs & time range less than 8 days
+  m_pWaves->Enable(IsECMWF ||
+                   (IsGFS && m_pTimeRange->GetCurrentSelection() < 7));
+  // gfs & time range less than 8 days
   m_pRainfall->SetValue(m_RequestConfigBase.GetChar(9) == 'X' &&
                         (IsGFS || IsHRRR));
   m_pRainfall->Enable(IsGFS || IsHRRR);
@@ -501,11 +1083,14 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 }
 
 void GribRequestSetting::OnTopChange(wxCommandEvent &event) {
-
-  //deactivate momentary ZyGrib option
-  if(m_pMailTo->GetCurrentSelection() == ZYGRIB) {
+  // deactivate momentary ZyGrib option
+  if (m_pMailTo->GetCurrentSelection() == ZYGRIB) {
     m_pMailTo->SetSelection(0);
-    int mes = OCPNMessageBox_PlugIn(this, _("Sorry...\nZyGrib momentary stopped providing this service...\nOnly Saildocs option is available"), _("Warning"),wxOK);
+    int mes = OCPNMessageBox_PlugIn(
+        this,
+        _("Sorry...\nZyGrib momentary stopped providing this service...\nOnly "
+          "Saildocs option is available"),
+        _("Warning"), wxOK);
   }
   ApplyRequestConfig(m_pResolution->GetCurrentSelection(),
                      m_pInterval->GetCurrentSelection(),
@@ -560,8 +1145,9 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   center.y = y + (zh / 2);
 
   wxFont fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
-  wxFont* font = &fo;
+  fo.SetPointSize(
+      (fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
+  wxFont *font = &fo;
   wxColour pen_color, back_color;
   GetGlobalColor(_T ( "DASHR" ), &pen_color);
   GetGlobalColor(_T ( "YELO1" ), &back_color);
@@ -625,6 +1211,10 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
 
+    if (!m_oDC) {
+      m_oDC = new pi_ocpnDC();
+    }
+
     m_oDC->SetVP(m_Vp);
     m_oDC->SetPen(wxPen(pen_color, 3));
 
@@ -645,8 +1235,8 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
     m_oDC->GetTextExtent("W", &ww, &hw);
 
     int label_offsetx = ww, label_offsety = 1;
-    int x = center.x - w/2;
-    int y = center.y - h/2;
+    int x = center.x - w / 2;
+    int y = center.y - h / 2;
 
     w += 2 * label_offsetx, h += 2 * label_offsety;
 
@@ -845,27 +1435,22 @@ wxString GribRequestSetting::WriteMail() {
   // some useful strings
   const wxString s[] = {_T(","), _T(" ")};  // separators
   const wxString p[][11] = {
-    // parameters GFS from Saildocs
-      {_T("APCP"), _T("TCDC"), _T("AIRTMP"),
-       _T("HTSGW,WVPER,WVDIR"),
+      // parameters GFS from Saildocs
+      {_T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVPER,WVDIR"),
        _T("SEATMP"), _T("GUST"), _T("CAPE"), wxEmptyString, wxEmptyString,
        _T("WIND500,HGT500"), wxEmptyString},
-      {}, //COAMPS
-      {}, //RTOFS
-      {}, //HRRR = same parameters as GFS
-      //parametres ICON
-      {_T(""), _T(""), _T("AIRTMP"), _T(""),
-      _T("SFCTMP"), _T("GUST"), _T(""), _T(""), _T(""),
-      _T("WIND500,HGT500"), _T("")},
-      //parametres ECMWF
-      {_T(""), _T(""), _T("TEMP"), _T("WAVES"),
-      _T(""), _T(""), _T(""), _T(""), _T(""),
-      _T("WIND500,HGT500"), _T("")},
+      {},  // COAMPS
+      {},  // RTOFS
+      {},  // HRRR = same parameters as GFS
+      // parametres ICON
+      {_T(""), _T(""), _T("AIRTMP"), _T(""), _T("SFCTMP"), _T("GUST"), _T(""),
+       _T(""), _T(""), _T("WIND500,HGT500"), _T("")},
+      // parametres ECMWF
+      {_T(""), _T(""), _T("TEMP"), _T("WAVES"), _T(""), _T(""), _T(""), _T(""),
+       _T(""), _T("WIND500,HGT500"), _T("")},
       // parameters GFS from zygrib
       {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString,
-       _T("GUST"),
-       _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")}
-  };
+       _T("GUST"), _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")}};
 
   wxString r_topmess, r_parameters, r_zone;
   // write the top part of the mail
@@ -972,53 +1557,42 @@ wxString GribRequestSetting::WriteMail() {
       r_parameters = wxT("WIND,PRMSL");  // the default parameters for this
                                          // model
       if (m_pRainfall->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[GFS][0]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][0]);
       if (m_pAirTemp->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[GFS][2]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][2]);
       if (m_pSeaTemp->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[GFS][4]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][4]);
       if (m_pWindGust->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[GFS][5]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][5]);
       if (m_pCAPE->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[GFS][6]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][6]);
       break;
     case ICON:
       r_parameters = wxT("WIND,PRMSL");  // the default parameters for this
                                          // model
       if (m_pAirTemp->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[ICON][2]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ICON][2]);
       if (m_pSeaTemp->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[ICON][4]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ICON][4]);
       if (m_pWindGust->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[ICON][5]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ICON][5]);
       if (m_pAltitudeData->IsChecked()) {
         if (m_p500hpa->IsChecked())
-          r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                              p[ICON][9]);
+          r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ICON][9]);
       }
       break;
     case ECMWF:
       r_parameters = wxT("WIND,MSLP");  // the default parameters for this
       // model
       if (m_pAirTemp->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-          p[ECMWF][2]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ECMWF][2]);
       if (m_pAltitudeData->IsChecked()) {
         if (m_p500hpa->IsChecked())
           r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-            p[ECMWF][9]);
+                              p[ECMWF][9]);
       }
       if (m_pWaves->IsChecked())
-        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
-                            p[ECMWF][3]);
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ECMWF][3]);
       break;
   }
   if (!IsZYGRIB && m_cMovingGribEnabled->IsChecked())  // moving grib

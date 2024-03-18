@@ -1012,6 +1012,7 @@ DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap,
                               opencpn_plugin *pplugin) {
   return 0;
 }
+DECL_EXP void SetToolbarToolViz(int item, bool viz) {}
 void DimeWindow(wxWindow *win) {}
 wxFont *OCPNGetFont(wxString TextElement, int default_size) { return 0; }
 void SetToolbarItemState(int item, bool toggle) {}
@@ -1149,9 +1150,6 @@ DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a, bool hi_precision) {
   return "";
 }
 wxString dummy_string;
-DECL_EXP wxString *GetpPrivateApplicationDataLocation() {
-  return &dummy_string;
-}
 DECL_EXP wxString GetOCPN_ExePath(void) { return wxString(""); }
 DECL_EXP wxString *GetpPlugInLocation() { return &dummy_string; }
 DECL_EXP wxString GetPlugInPath(opencpn_plugin *pplugin) {
@@ -1534,6 +1532,7 @@ DECL_EXP void PlugInHandleAutopilotRoute(bool enable) {}
 wxString *GetpSharedDataLocation(void) {
   return g_BasePlatform->GetSharedDataDirPtr();
 }
+DECL_EXP ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() { return 0; }
 DECL_EXP bool ShuttingDown(void) { return true; }
 
 DECL_EXP wxWindow *PluginGetFocusCanvas() { return 0; }
@@ -1580,7 +1579,10 @@ DECL_EXP int GetLatLonFormat(void) { return 0; }
 DECL_EXP void ZeroXTE() {}
 
 DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint() {}
+DECL_EXP PlugIn_Waypoint::PlugIn_Waypoint(double, double, const wxString&,
+                  const wxString&, const wxString&) {}
 DECL_EXP PlugIn_Waypoint::~PlugIn_Waypoint() {}
+
 DECL_EXP PlugIn_Waypoint_Ex::PlugIn_Waypoint_Ex() {}
 DECL_EXP PlugIn_Waypoint_Ex::PlugIn_Waypoint_Ex(
     double lat, double lon, const wxString &icon_ident, const wxString &wp_name,

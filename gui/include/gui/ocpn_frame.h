@@ -44,6 +44,7 @@
 #include "ocpn_print.h"
 #include "s52s57.h"
 #include "SencManager.h"
+#include "displays.h"
 
 wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
@@ -231,7 +232,9 @@ public:
   void ToggleChartOutlines(ChartCanvas *cc);
   void ToggleENCText(ChartCanvas *cc);
   void ToggleSoundings(ChartCanvas *cc);
+  #if 0
   void ToggleRocks(void);
+  #endif
   bool ToggleLights(ChartCanvas *cc);
   void ToggleAnchor(ChartCanvas *cc);
   void ToggleAISDisplay(ChartCanvas *cc);
@@ -278,7 +281,6 @@ public:
   void ChartsRefresh();
 
   bool CheckGroup(int igroup);
-  double GetMag(double a);
   double GetMag(double a, double lat, double lon);
   bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
 
@@ -346,6 +348,7 @@ public:
 
   void InitAppMsgBusListener();
   void InitApiListeners();
+  void ReleaseApiListeners();
   void UpdateStatusBar(void);
 
 private:

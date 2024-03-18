@@ -58,6 +58,12 @@
 #include "time_textbox.h"
 #endif
 
+#ifdef __WXOSX__
+#define DIALOG_PARENT wxFrame
+#else
+#define DIALOG_PARENT wxDialog
+#endif
+
 #define ID_WPT_RANGERINGS_NO 7507
 #define ID_RCLK_MENU_COPY_TEXT 7013
 #define ID_RCLK_MENU_DELETE 7015
@@ -194,12 +200,13 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MarkInfoDef
 ///////////////////////////////////////////////////////////////////////////////
-class MarkInfoDlg : public wxFrame {
+class MarkInfoDlg : public DIALOG_PARENT {
   DECLARE_EVENT_TABLE()
   friend class SaveDefaultsDialog;
 
 private:
   RoutePoint* m_pRoutePoint;
+  std::vector<RoutePoint*> m_pRoutePoints;
   static bool instanceFlag;
   int i_htmlList_item;
 
@@ -223,6 +230,7 @@ private:
   wxDateTime m_ArrETA_save;
   std::map<double, const IDX_entry*> m_tss;
   wxString m_lasttspos;
+  void SetRoutePoint(RoutePoint* pRP);
 
 protected:
   OCPNIconCombo* m_bcomboBoxIcon;
@@ -360,7 +368,9 @@ public:
   void RecalculateSize(void);
   RoutePoint* GetRoutePoint(void) { return m_pRoutePoint; }
   void SetColorScheme(ColorScheme cs);
-  void SetRoutePoint(RoutePoint* pRP);
+  void SetRoutePoints(const std::vector<RoutePoint*> &);
+  void ClearData();
+  void SetBulkEdit(bool bBulkEdit);
   void UpdateHtmlList();
   void SetDialogTitle(const wxString& title) { SetTitle(title); }
   bool UpdateProperties(bool positionOnly = false);

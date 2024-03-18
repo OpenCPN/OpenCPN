@@ -30,7 +30,7 @@ CAUTION: This is experimental code available from 5.9+. You have been warned.
 
 The requirement to have access to both the server and client GUI is cumbersome
 when working with a headless server. In these cases it might be possible to
-make headless pairing using ssh. Prequisites:
+make headless pairing using ssh. Prerequisites:
 
   * The client needs to have access to the server without using a password,
     usually  configured using `ssh-copy-id`. Instructions for this is out
@@ -78,10 +78,10 @@ ServerKeys=hemulen:104F8AAB;misan:1EFB3EF;DESKTOP-VPDSRM1:b5d8a55fb763;raspbian:
 Note the raspbian entry, here b572ebd3a02e. This is the key derived from the
 pincode which is used in the API.
 
-Verify using curl to make a pin command. `api_key` is as of above, hemulen is
+Verify using curl to make a ping command. `apikey` is as of above, hemulen is
 from step ①.  In my case:
 
-    $ curl --insecure "https://raspbian:8443/api/ping?api_key=bc45def81515&source=hemulen"
+    $ curl --insecure "https://raspbian:8443/api/ping?apikey=bc45def81515&source=hemulen"
     {"result": 0, "version": "5.9.0"}
 
 "result" is a `RestServerResult` defined in _model/include/model/rest_server.h_

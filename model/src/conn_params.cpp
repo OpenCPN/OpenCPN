@@ -42,9 +42,7 @@
 
 #include "model/conn_params.h"
 
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
-#include "options.h"
 
 #if !wxUSE_XLOCALE && wxCHECK_VERSION(3, 0, 0)
 #define wxAtoi(arg) atoi(arg)
@@ -388,10 +386,6 @@ NavAddr::Bus ConnectionParams::GetCommProtocol(){
   if (Type == NETWORK){
     if (NetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
-    else if (NetProtocol == UDP)
-      return NavAddr::Bus::N0183;
-    else if (NetProtocol == TCP)
-      return NavAddr::Bus::N0183;
     else if (NetProtocol == GPSD)
       return NavAddr::Bus::N0183;
   }
@@ -410,10 +404,6 @@ NavAddr::Bus ConnectionParams::GetLastCommProtocol(){
    if (Type == NETWORK){
     if (LastNetProtocol == SIGNALK)
       return NavAddr::Bus::Signalk;
-    else if (LastNetProtocol == UDP)
-      return NavAddr::Bus::N0183;
-    else if (LastNetProtocol == TCP)
-      return NavAddr::Bus::N0183;
     else if (LastNetProtocol == GPSD)
       return NavAddr::Bus::N0183;
   }

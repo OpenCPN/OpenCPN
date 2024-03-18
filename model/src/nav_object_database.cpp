@@ -26,7 +26,6 @@
 #include "model/nav_object_database.h"
 #include "model/routeman.h"
 #include "model/navutil_base.h"
-#include "model/nav_object_database.h"
 #include "model/select.h"
 #include "model/track.h"
 #include "model/route.h"
@@ -437,7 +436,7 @@ Track *GPXLoadTrack1(pugi::xml_node &trk_node, bool b_fullviz,
 
 Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
                             bool b_layer, bool b_layerviz, int layer_id,
-                            bool b_change) {
+                            bool b_change, bool load_points) {
   wxString RouteName;
   wxString DescString;
   bool b_propviz = false;
@@ -532,7 +531,7 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
           }
         }
       }  // extension
-      else if (ChildName == _T ( "rtept" )) {
+      else if (load_points && ChildName == _T ( "rtept" )) {
         RoutePoint *tpWp =
             ::GPXLoadWaypoint1(tschild, _T("square"), _T(""), b_fullviz,
                                b_layer, b_layerviz, layer_id);
@@ -547,9 +546,9 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
         // 3) in all other cases keep existing points if found and load new
         // points if not found
         bool new_wpt = true;
-        if (b_change)
+        if (b_change) {
           pWp = tpWp;
-        else {
+        } else {
           if (erp != NULL &&
               (!route_existing || (route_existing && tpWp->IsShared()))) {
             pWp = erp;
@@ -564,11 +563,13 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz,
         pWp->m_bIsInRoute = true;                // Hack
 
         if (new_wpt){
-          if (erp == NULL)
+          if (erp == NULL) {
             pWayPointMan->AddRoutePoint(pWp);
+          }
         }
-        else
+        else {
           delete tpWp;
+        }
       } else if (ChildName == _T ( "name" )) {
         RouteName = wxString::FromUTF8(tschild.first_child().value());
       } else if (ChildName == _T ( "desc" )) {
@@ -1467,9 +1468,15 @@ bool NavObjectCollection1::IsOpenCPN() {
 }
 
 bool NavObjectCollection1::SaveFile(const wxString filename) {
-  save_file(filename.fn_str(), "  ");
+  wxString tmp_filename = filename + ".tmp";
+  if (wxFileExists(tmp_filename)) {
+    wxRemoveFile(tmp_filename);
+  }
+  save_file(tmp_filename.fn_str(), "  ");
+  wxRenameFile(tmp_filename.fn_str(), filename.fn_str(), true);
   return true;
 }
+
 bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
                                              int &wpt_duplicates,
                                              bool b_compute_bbox) {
@@ -1669,13 +1676,21 @@ bool NavObjectChanges::ApplyChanges(void) {
       }
 
       else if (!strcmp(child.first_child().value(), "update")) {
-        if (pExisting) pWayPointMan->RemoveRoutePoint(pExisting);
-        pWayPointMan->AddRoutePoint(pWp);
-        pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
+        if (pExisting) {
+          pWayPointMan->RemoveRoutePoint(pExisting);
+          pWayPointMan->DestroyWaypoint(pExisting, false);
+          delete pExisting;
+          pWayPointMan->AddRoutePoint(pWp);
+          pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
+        } else {
+          delete pWp;
+        }
       }
 
       else if (!strcmp(child.first_child().value(), "delete")) {
         if (pExisting) pWayPointMan->DestroyWaypoint(pExisting, false);
+        delete pExisting;
+        delete pWp;
       } else
         delete pWp;
     } else if (!strcmp(object.name(), "trk") && g_pRouteMan) {
@@ -1692,12 +1707,17 @@ bool NavObjectChanges::ApplyChanges(void) {
             pExisting->m_TrackStartString = pTrack->m_TrackStartString;
             pExisting->m_TrackEndString = pTrack->m_TrackEndString;
           }
+          delete pTrack;
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
           if (pExisting) {
-            evt_delete_track.Notify(std::make_shared<Track>(*pExisting), "");
+            m_bSkipChangeSetUpdate = true;
+            //evt_delete_track.Notify(std::make_shared<Track>(*pExisting), ""); // Why were we doing this? pExisting got destroyed immediately...
+            g_pRouteMan->DeleteTrack(pExisting);
+            m_bSkipChangeSetUpdate = false;
           }
+          delete pTrack;
         }
 
         else if (!strcmp(child.first_child().value(), "add")) {
@@ -1710,31 +1730,42 @@ bool NavObjectChanges::ApplyChanges(void) {
     }
 
     else if (!strcmp(object.name(), "rte") && g_pRouteMan) {
-      Route *pRoute = GPXLoadRoute1(object, false, false, false, 0, true);
+      Route *pRoute = GPXLoadRoute1(object, false, false, false, 0, true, false);
 
       if (pRoute) {
+        Route *pExisting = RouteExists(pRoute->m_GUID);
         pugi::xml_node xchild = object.child("extensions");
         pugi::xml_node child = xchild.child("opencpn:action");
 
         if (!strcmp(child.first_child().value(), "add")) {
+          delete pRoute;
+          pRoute = GPXLoadRoute1(object, false, false, false, 0, true, true);
           ::UpdateRouteA(pRoute, this, this);
+          delete pRoute;
         }
 
         else if (!strcmp(child.first_child().value(), "update")) {
-          ::UpdateRouteA(pRoute, this, this);
+          if (pExisting) {
+            delete pRoute;
+            pRoute = GPXLoadRoute1(object, false, false, false, 0, true, true);
+            ::UpdateRouteA(pRoute, this, this);
+          }
+          delete pRoute;
         }
 
         else if (!strcmp(child.first_child().value(), "delete")) {
-          Route *pExisting = RouteExists(pRoute->m_GUID);
           if (pExisting) {
             m_bSkipChangeSetUpdate = true;
-            evt_delete_route.Notify(std::make_shared<Route>(*pExisting), "");
+            //evt_delete_route.Notify(std::make_shared<Route>(*pExisting), ""); // Why were we doing this? pExisting got destroyed immediately...
+            g_pRouteMan->DeleteRoute(pExisting, this);
             m_bSkipChangeSetUpdate = false;
           }
+          delete pRoute;
         }
 
-        else
+        else {
           delete pRoute;
+        }
       }
     } else if (!strcmp(object.name(), "tkpt") && pWayPointMan) {
       TrackPoint *pWp = ::GPXLoadTrackPoint1(object);

@@ -22,6 +22,7 @@
 set(SRC_CONSOLE console.cpp api_shim.cpp)
 add_executable(opencpn-cmd ${SRC_CONSOLE})
 
+target_link_libraries(opencpn-cmd PUBLIC -rdynamic)
 if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
   target_link_libraries(opencpn-cmd PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
