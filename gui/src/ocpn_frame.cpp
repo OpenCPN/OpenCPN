@@ -133,6 +133,7 @@
 #include "toolbar.h"
 #include "TrackPropDlg.h"
 #include "waypointman_gui.h"
+#include "CanvasOptions.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -2032,6 +2033,19 @@ void MyFrame::OnIconize(wxIconizeEvent &event) {
   if (g_iENCToolbar) {
     g_iENCToolbar->Show(!event.IsIconized());
   }
+
+  // .. for each canvas...
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc && cc->GetMUIBar()) {
+      if (cc->GetMUIBar()->GetCanvasOptions()) {
+        if (cc->GetMUIBar()->GetCanvasOptions()->IsShown()) {
+          cc->GetMUIBar()->PushCanvasOptions();  // hide it
+        }
+      }
+    }
+  }
+
 #endif
 }
 
