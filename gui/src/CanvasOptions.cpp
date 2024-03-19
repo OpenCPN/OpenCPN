@@ -74,7 +74,7 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
   SetFont(*qFont);
 
   // SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
-  long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+  long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxSTAY_ON_TOP;
   wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
                    mstyle);
 

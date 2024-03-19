@@ -66,10 +66,6 @@ public:
 
   ~MUIBar();
 
-  void OnSize(wxSizeEvent &event);
-  void OnPaint(wxPaintEvent &event);
-  void OnToolLeftClick(wxCommandEvent &event);
-  void OnEraseBackground(wxEraseEvent &event);
   void onCanvasOptionsAnimationTimerEvent(wxTimerEvent &event);
 
   void SetBestPosition(void);
