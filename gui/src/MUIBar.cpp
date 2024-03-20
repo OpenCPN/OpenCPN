@@ -514,19 +514,39 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   //  No good reason.....
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
+  // Really contorted logic to work around wxFont problems with Windows scaled displays,
+  // And the apparent failure of wxFont::Scale()
+  // Sorry...
+  int font_test_size = 12;
+  double target_size = 0.4;  // Referenced to height of m_styleToolSize
+  wxFont *t_font = wxTheFontList->FindOrCreateFont(
+      font_test_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 
-  m_font = parent->GetFont();     // Inherited from parent (canvas)
-  wxSize font_pix = m_font.GetPixelSize();
-  double r = m_styleToolSize.y / font_pix.y;
-  m_font.Scale(r * .6 * m_scaleFactor).MakeBold();
+  int w, h;
+  wxScreenDC sdc;
+  sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
+
+  double fraction = ((double)h) / (m_styleToolSize.y);
+  double new_font_size = font_test_size * (target_size /fraction) / OCPN_GetWinDIPScaleFactor();
+  new_font_size /= OCPN_GetWinDIPScaleFactor();
+  new_font_size *= m_scaleFactor;
+
+  m_font = *wxTheFontList->FindOrCreateFont(new_font_size, wxFONTFAMILY_MODERN,
+                                            wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
+#ifndef __WXMSW__
+  // Twek the font size on those platforms that correctly support wxFont::Scaled()
+  sdc.GetTextExtent("M", &w, &h, NULL, NULL, &m_font);
+  m_font = m_font.Scaled( 1.5 * target_size * (m_styleToolSize.y * m_scaleFactor) / h);
+#endif
 
   wxCoord descent, exlead, gw, gh;
-  parent->GetTextExtent(m_text, &gw, &gh, &descent, &exlead, &m_font);
+  sdc.GetTextExtent(m_text, &gw, &gh, &descent, &exlead, &m_font);
 
   int min_width = gw * 1.2;
   min_width *= OCPN_GetWinDIPScaleFactor();
 
   m_size = wxSize(min_width, (m_styleToolSize.y * m_scaleFactor) - 1);
+
 
   CreateControls();
   return true;
@@ -580,7 +600,7 @@ void MUITextButton::BuildBitmap(){
   wxMemoryDC mdc;
   wxBitmap bm(width, height);
   mdc.SelectObject(bm);
-  wxColour backColor = GetGlobalColor(_T("GREY3"));
+  wxColour backColor = *wxBLACK; //GetGlobalColor(_T("GREY3"));
   mdc.SetBackground(backColor);
   mdc.Clear();
 
