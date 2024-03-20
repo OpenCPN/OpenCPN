@@ -43,5 +43,5 @@ bool CommDriverSignalK::SendMessage(std::shared_ptr<const NavMsg> msg,
 void CommDriverSignalK::SetListener(DriverListener& l){};
 
 std::shared_ptr<NavAddr> CommDriverSignalK::GetAddress(const NavAddrSignalK& name) {
-    return std::make_shared<NavAddr>(NavAddrSignalK());
+    return std::make_shared<NavAddr>(NavAddrSignalK(name.iface));
 }

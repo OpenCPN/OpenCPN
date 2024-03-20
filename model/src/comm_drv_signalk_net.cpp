@@ -379,8 +379,12 @@ void CommDriverSignalKNet::handle_SK_sentence(
   }
 
   // Notify all listeners
+  auto pos = iface.find(":");
+  std::string interface = "";
+  if (pos != std::string::npos)
+    interface = iface.substr(pos + 1);
   auto navmsg =
-      std::make_shared<const SignalkMsg>(m_self, m_context, msgTerminated);
+      std::make_shared<const SignalkMsg>(m_self, m_context, msgTerminated, interface);
   m_listener.Notify(std::move(navmsg));
 }
 

@@ -1183,7 +1183,10 @@ std::string CommBridge::GetPriorityKey(std::shared_ptr <const NavMsg> msg){
   else if(msg->bus == NavAddr::Bus::Signalk){
     auto msg_sk = std::dynamic_pointer_cast<const SignalkMsg>(msg);
     if (msg_sk){
+      auto addr_sk = std::static_pointer_cast<const NavAddrSignalK>(msg->source);
+      source = addr_sk->to_string();
       this_identifier = "signalK";
+      this_address = msg->source->iface;
     }
   }
 

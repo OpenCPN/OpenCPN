@@ -177,10 +177,11 @@ public:
 };
 
 
-/** There is only support for a single signalK bus. */
 class NavAddrSignalK : public NavAddr {
 public:
-  NavAddrSignalK() : NavAddr(NavAddr::Bus::Signalk, "signalK"){};
+  NavAddrSignalK(std::string iface) : NavAddr(NavAddr::Bus::Signalk, iface){};
+
+  std::string to_string() const { return "signalK"; }
 };
 
 class NavAddrTest : public NavAddr {
@@ -321,9 +322,9 @@ public:
       : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
 
   SignalkMsg(std::string _context_self, std::string _context,
-             std::string _raw_message)
+             std::string _raw_message, std::string _iface)
       : NavMsg(NavAddr::Bus::Signalk,
-               std::make_shared<const NavAddr>(NavAddr::Bus::Signalk, "")),
+               std::make_shared<const NavAddr>(NavAddr::Bus::Signalk, _iface)),
         context_self(_context_self),
         context(_context),
         raw_message(_raw_message){};
