@@ -651,11 +651,7 @@ if (NOT QT_ANDROID)
     find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   endif ()
   if (NOT wxWidgets_FOUND)
-    message(
-      FATAL_ERROR
-        "Cannot find wxWidgets, giving up. On linux you might want to try"
-        " using -DOCPN_FORCE_GTK3."
-    )
+    message(FATAL_ERROR "Cannot find wxWidgets, giving up.")
   endif ()
   if (MSYS)
     # Convert msys to windows paths, and handle the missing /usr
