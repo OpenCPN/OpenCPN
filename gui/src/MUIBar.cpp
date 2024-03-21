@@ -240,6 +240,7 @@ public:
   void CreateControls();
 
   void SetState(int state);
+  int GetState(){ return mState; }
 
   void SetColorScheme(ColorScheme cs);
   void OnSize(wxSizeEvent& event);
@@ -933,7 +934,10 @@ void MUIBar::UpdateDynamicValues() {
 }
 
 void MUIBar::SetFollowButtonState(int state) {
-  if (m_followButton) m_followButton->SetState(state);
+  if (m_followButton && m_followButton->GetState() != state) {
+    m_followButton->SetState(state);
+    InvalidateBitmap();
+  }
 }
 
 
