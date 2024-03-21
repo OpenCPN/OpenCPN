@@ -513,6 +513,7 @@ int dashboard_pi::Init(void) {
   mHDT_Watchdog = 2;
   mSatsUsed_Wdog = 2;
   mSatStatus_Wdog = 2;
+  m_PriN2kTalker = 2;
   mVar_Watchdog = 2;
   mMWVA_Watchdog = 2;
   mMWVT_Watchdog = 2;
@@ -780,6 +781,8 @@ void dashboard_pi::Notify() {
     SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, _T(""));
     mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
   }
+  m_PriN2kTalker--;
+  if (m_PriN2kTalker < -1e6) m_PriN2kTalker = 0;
 
   mSatStatus_Wdog--;
   if (mSatStatus_Wdog <= 0) {
@@ -800,12 +803,12 @@ void dashboard_pi::Notify() {
   // Get current satellite priority identifier = item 4
   std::string satID = PriorityIDs[4];
   if (satID.find("nmea0183") != std::string::npos)
-    mPriSatStatus = 3; // GSV
-  else if (satID.find("SignalK") != std::string::npos)
-    mPriSatStatus = 2; // SignalK
+    mPriSatStatus = 3;  // GSV
+  else if (satID.find("ignal") != std::string::npos)
+    mPriSatStatus = 2;  // SignalK
   else if (satID.find("nmea2000") != std::string::npos) {
     prioN2kPGNsat = satID;
-    mPriSatStatus = 1; // N2k
+    mPriSatStatus = 1;  // N2k
   }
 
   mMWVA_Watchdog--;
@@ -2570,7 +2573,6 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     wxJSONValue &value = item["value"];
 
     // Container for last received sat-system info from SK-N2k
-    // TODO Watchdog?
     static wxString talkerID = wxEmptyString;
 
     if (update_path == _T("navigation.position")) {
@@ -2842,6 +2844,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       if (value.IsString() && value.AsString() != wxEmptyString) {
         talkerID = (value.AsString()); //Like "Combined GPS/GLONASS"
         talkerID.MakeUpper();
+        m_PriN2kTalker = gps_watchdog_timeout_ticks;
         if (( talkerID.Contains(_T("GPS")) ) && ( talkerID.Contains(_T("GLONASS")) ))
           talkerID = _T("GPSGLONAS");
         else if (talkerID.Contains(_T("GPS")))
@@ -2910,7 +2913,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                 SK_SatInfo[idx].SignalToNoiseRatio = iSNR;
               }
               if (idx > 0) {
-                if (talker != wxEmptyString && (talker.StartsWith(_T("G")) || talker.StartsWith(_T("BD"))) ) {
+                if (m_PriN2kTalker <= 0 && talker != wxEmptyString &&
+                    (talker.StartsWith(_T("G")) || talker.StartsWith(_T("BD")))) {
                   talkerID = talker; //Origin NMEA0183
                 }
                 SendSatInfoToAllInstruments(iNumSats, iMesNum + 1, talkerID, SK_SatInfo);
