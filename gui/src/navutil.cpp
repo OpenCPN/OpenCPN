@@ -2266,11 +2266,6 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
     Write(_T ( "canvasbFollow" ), cConfig->canvas->m_bFollow);
     Write(_T ( "ActiveChartGroup" ), cConfig->canvas->m_groupIndex);
 
-    Write(_T ( "canvasToolbarConfig" ),
-          cConfig->canvas->GetToolbarConfigString());
-    Write(_T ( "canvasShowToolbar" ),
-          0);  // cConfig->canvas->GetToolbarEnable() );
-
     Write(_T ( "canvasQuilt" ), cConfig->canvas->GetQuiltMode());
     Write(_T ( "canvasShowGrid" ), cConfig->canvas->GetShowGrid());
     Write(_T ( "canvasShowOutlines" ), cConfig->canvas->GetShowOutlines());

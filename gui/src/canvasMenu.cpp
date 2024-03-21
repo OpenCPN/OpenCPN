@@ -1407,7 +1407,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_DEF_MENU_DEACTIVATE_MEASURE:
       parent->CancelMeasureRoute();
-      gFrame->SurfaceAllCanvasToolbars();
+      //gFrame->SurfaceAllCanvasToolbars();
       parent->InvalidateGL();
       parent->Refresh(false);
       break;
@@ -1985,7 +1985,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_RC_MENU_FINISH:
       parent->FinishRoute();
-      gFrame->SurfaceAllCanvasToolbars();
+      //gFrame->SurfaceAllCanvasToolbars();
       parent->Refresh(false);
       g_FlushNavobjChanges = true;
       break;

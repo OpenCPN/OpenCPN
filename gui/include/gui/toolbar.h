@@ -81,32 +81,6 @@ public:
 
 typedef std::vector<ToolbarItemContainer *> ArrayOfToolbarItemContainer;
 
-//----------------------------------------------------------------------------
-// GrabberWindow Definition
-//----------------------------------------------------------------------------
-
-class GrabberWin : public wxPanel {
-public:
-  GrabberWin(wxWindow *parent, ocpnFloatingToolbarDialog *toolbar,
-             float scale_factor, wxString icon_name,
-             wxPoint position = wxDefaultPosition);
-  void OnPaint(wxPaintEvent &event);
-  void MouseEvent(wxMouseEvent &event);
-  void SetColorScheme(ColorScheme cs);
-  wxBitmap &GetBitmap() { return m_bitmap; }
-
-  wxBitmap m_bitmap;
-  bool m_bLeftDown;
-  bool m_bRightDown;
-  ocpnStyle::Style *m_style;
-  float m_scale_factor;
-  ocpnFloatingToolbarDialog *m_ptoolbar;
-  bool m_dragging;
-  wxString m_icon_name;
-
-  DECLARE_EVENT_TABLE()
-};
-
 #define TOOLTIPON_TIMER 10000
 #define TOOLTIPOFF_TIMER 10001
 
@@ -417,7 +391,6 @@ public:
   void FadeTimerEvent(wxTimerEvent &event);
   bool IsToolbarShown() { return (m_ptoolbar != 0); }
   float GetScaleFactor() { return m_sizefactor; }
-  void SetGrabber(wxString icon_name);
   void DestroyTimerEvent(wxTimerEvent &event);
 
   void EnableSubmerge(bool enable) { m_benableSubmerge = enable; }
@@ -436,12 +409,8 @@ public:
 
   void SetCornerRadius(int radius) { m_cornerRadius = radius; }
 
-  void SetGrabberEnable(bool bShow) { m_bGrabberEnable = bShow; }
   void Submerge();
-  void SubmergeToGrabber();
-  bool isSubmergedToGrabber();
   void Surface();
-  void SurfaceFromGrabber();
   void HideTooltip();
   void ShowTooltips();
   void EnableTooltips() {
@@ -497,8 +466,6 @@ public:
   bool GetCanToggleOrientation() { return b_canToggleOrientation; }
 
   bool toolbarConfigChanged;
-  GrabberWin *m_pRecoverwin;
-  bool m_bnavgrabber;
 
   wxMenu *m_FloatingToolbarConfigMenu;
 
@@ -522,12 +489,9 @@ private:
   void DoFade(int value);
 
   bool m_bsubmerged;
-  bool m_bsubmergedToGrabber;
 
   wxWindow *m_pparent;
   wxBoxSizer *m_topSizer;
-
-  GrabberWin *m_pGrabberwin;
 
   long m_orient;
   wxTimer m_fade_timer;
@@ -546,13 +510,11 @@ private:
   bool m_marginsInvisible;
   float m_sizefactor;
   wxTimer m_destroyTimer;
-  GrabberWin *m_destroyGrabber;
   wxSize m_recoversize;
 
   bool m_bAutoHideToolbar;
   int m_nAutoHideToolbar;
   bool m_benableSubmerge;
-  bool m_bGrabberEnable;
 
   wxString m_backcolorString;
   int m_cornerRadius;

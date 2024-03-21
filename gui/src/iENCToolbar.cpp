@@ -76,7 +76,6 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint position, long orient,
   SetCanToggleOrientation(false);
   EnableRolloverBitmaps(false);
   DisableTooltips();
-  SetGrabberEnable(false);
 
   m_nDensity = 0;
   SetDensityToolBitmap(m_nDensity);

@@ -66,6 +66,7 @@ extern double g_plus_minus_zoom_factor;
 extern int g_maintoolbar_x;
 extern int g_maintoolbar_y;
 
+#if 0
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
 //----------------------------------------------------------------------------
@@ -211,6 +212,7 @@ void GrabberWin::MouseEvent(wxMouseEvent &event) {}
 
 }
 #endif
+#endif
 
 class ocpnToolBarTool : public wxToolBarToolBase {
 public:
@@ -321,11 +323,6 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
 
   m_opacity = 255;
 
-  m_pGrabberwin =
-      NULL;  // new GrabberWin( this, this, size_factor, _T("grabber_hi") );
-  m_bGrabberEnable = true;  // default
-
-  m_pRecoverwin = NULL;
   m_position = position;
   m_orient = orient;
   m_sizefactor = size_factor;
@@ -365,14 +362,11 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   //    if(m_sizefactor > 1.0 )
   //       m_marginsInvisible = true;
 
-  m_bnavgrabber = false;
-
   m_FloatingToolbarConfigMenu = NULL;
 
   Hide();
 
   m_bsubmerged = false;
-  m_bsubmergedToGrabber = false;
 
   m_fade_timer.SetOwner(this, FADE_TIMER);
   if (g_bTransparentToolbar) m_fade_timer.Start(5000);
@@ -507,10 +501,11 @@ void ocpnFloatingToolbarDialog::OnWindowCreate(wxWindowCreateEvent &event) {
   // Realize();
 }
 
+#if 0
 void ocpnFloatingToolbarDialog::SetGrabber(wxString icon_name) {
   //    m_pGrabberwin->Destroy();
-  m_pGrabberwin = new GrabberWin(this, this, m_sizefactor, icon_name);
-  m_pGrabberwin->Hide();
+  //m_pGrabberwin = new GrabberWin(this, this, m_sizefactor, icon_name);
+  //m_pGrabberwin->Hide();
 
   Realize();
 
@@ -518,7 +513,9 @@ void ocpnFloatingToolbarDialog::SetGrabber(wxString icon_name) {
   m_pGrabberwin->Refresh();
 #endif
 }
+#endif
 
+#if 0
 void ocpnFloatingToolbarDialog::UpdateRecoveryWindow(bool b_toolbarEnable) {
   if (m_pRecoverwin) {
     if (b_toolbarEnable) {
@@ -528,6 +525,7 @@ void ocpnFloatingToolbarDialog::UpdateRecoveryWindow(bool b_toolbarEnable) {
       m_pRecoverwin->Hide();
   }
 }
+#endif
 
 void ocpnFloatingToolbarDialog::EnableTool(int toolid, bool enable) {
   if (m_ptoolbar) m_ptoolbar->EnableTool(toolid, enable);
@@ -551,11 +549,6 @@ void ocpnFloatingToolbarDialog::SetColorScheme(ColorScheme cs) {
 
     m_ptoolbar->SetColorScheme(cs);
     m_ptoolbar->Refresh(true);
-  }
-
-  if (m_pGrabberwin) {
-    m_pGrabberwin->SetColorScheme(cs);
-    m_pGrabberwin->Refresh();
   }
 
   Refresh(true);
@@ -704,6 +697,7 @@ void ocpnFloatingToolbarDialog::Submerge() {
   if (m_ptoolbar) m_ptoolbar->KillTooltip();
 }
 
+#if 0
 void ocpnFloatingToolbarDialog::SubmergeToGrabber() {
   if (!m_benableSubmerge) return;
 
@@ -766,13 +760,11 @@ bool ocpnFloatingToolbarDialog::CheckSurfaceRequest(wxMouseEvent &event) {
 
 void ocpnFloatingToolbarDialog::SurfaceFromGrabber() {}
 
-void ocpnFloatingToolbarDialog::DestroyTimerEvent(wxTimerEvent &event) {
-  delete m_destroyGrabber;
-  m_destroyGrabber = NULL;
-}
+#endif
 
-bool ocpnFloatingToolbarDialog::isSubmergedToGrabber() {
-  return (m_bsubmergedToGrabber);
+void ocpnFloatingToolbarDialog::DestroyTimerEvent(wxTimerEvent &event) {
+//  delete m_destroyGrabber;
+//  m_destroyGrabber = NULL;
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip() {
@@ -816,17 +808,11 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent &event) {
       }
     }
   } else {
-    if (m_bnavgrabber) {
-      m_fade_timer.Start(5000);  // do nothing if nav grabber is shown
-    } else {
+   {
       if (g_bTransparentToolbar &&
           (!g_bopengl || g_bTransparentToolbarInOpenGLOK)) {
         DoFade(128);
         m_fade_timer.Start(5000);  // retrigger the continuous timer
-      }
-
-      if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) && !m_bsubmerged) {
-        SubmergeToGrabber();
       }
     }
   }
@@ -912,6 +898,7 @@ void ocpnFloatingToolbarDialog::Realize() {
   if (m_ptoolbar) {
     m_ptoolbar->Realize();
 
+#if 0
     if (m_bGrabberEnable) {
       if (!m_pGrabberwin) {
         m_pGrabberwin =
@@ -922,7 +909,7 @@ void ocpnFloatingToolbarDialog::Realize() {
       m_pGrabberwin->Show();
       m_topSizer->Add(m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin());
     }
-
+#endif
     m_topSizer->Layout();
     Fit();
 
@@ -1116,12 +1103,14 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
     m_ptoolbar = NULL;
   }
 
+#if 0
   if (!m_destroyTimer.IsRunning()) {
     m_destroyGrabber = m_pRecoverwin;
     m_pRecoverwin = NULL;
     m_destroyTimer.Start(
         5, wxTIMER_ONE_SHOT);  //  Destor the unneeded recovery grabber
   }
+#endif
   for (auto it = m_Items.cbegin(); it != m_Items.cend(); it++) {
     delete *it;
   }

@@ -1145,7 +1145,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) {
       // pthumbwin = NULL;  // TODO
-      cc->DestroyToolbar();
+      //cc->DestroyToolbar();
       cc->Destroy();
     }
   }
@@ -1256,7 +1256,6 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->ApplyCanvasConfig(config_array.Item(1));
 
       cc->SetDisplaySizeMM(g_display_size_mm);
-      cc->SetToolbarOrientation(g_maintoolbar_orient);
       cc->ConfigureChartBar();
       cc->SetColorScheme(global_color_scheme);
       cc->SetShowGPS(true);
@@ -1325,17 +1324,6 @@ void MyFrame::UpdateAllToolbars(ColorScheme cs) {
 }
 
 void MyFrame::SetAllToolbarScale() {
-  double scale_factor = g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
-  g_toolbar_scalefactor = g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
-
-  //  Round to the nearest "quarter", to avoid rendering artifacts
-  scale_factor = wxRound(scale_factor * 4.0) / 4.0;
-
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->SetToolbarScaleFactor(scale_factor);
-  }
 }
 
 void MyFrame::SetGPSCompassScale() {
@@ -1710,13 +1698,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   }
 
 #ifndef __ANDROID__
-  // .. for each canvas...
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) cc->DestroyToolbar();
-  }
-
   if (g_MainToolbar) g_MainToolbar->Destroy();
   g_MainToolbar = NULL;
 #endif
@@ -2902,7 +2883,7 @@ void MyFrame::ToggleFullScreen() {
 #endif
 
   UpdateAllToolbars(global_color_scheme);
-  SurfaceAllCanvasToolbars();
+  //SurfaceAllCanvasToolbars();
   UpdateControlBar(GetPrimaryCanvas());
   Layout();
   TriggerRecaptureTimer();
@@ -3284,7 +3265,7 @@ void MyFrame::SetbFollow(ChartCanvas *cc) {
   JumpToPosition(cc, gLat, gLon, cc->GetVPScale());
   cc->m_bFollow = true;
 
-  cc->SetCanvasToolbarItemState(ID_FOLLOW, true);
+  //cc->SetCanvasToolbarItemState(ID_FOLLOW, true);
   SetMenubarItemState(ID_MENU_NAV_FOLLOW, true);
 
   DoChartUpdate();
@@ -3298,7 +3279,7 @@ void MyFrame::ClearbFollow(ChartCanvas *cc) {
   vLon = gLon;
 
   cc->m_bFollow = false;
-  cc->SetCanvasToolbarItemState(ID_FOLLOW, false);
+  //cc->SetCanvasToolbarItemState(ID_FOLLOW, false);
   SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
 
   DoChartUpdate();
@@ -3733,7 +3714,7 @@ void MyFrame::InvalidateAllCanvasUndo() {
     if (cc) cc->undo->InvalidateUndo();
   }
 }
-
+#if 0
 void MyFrame::SubmergeAllCanvasToolbars(void) {
   // .. for each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -3752,6 +3733,7 @@ void MyFrame::SurfaceAllCanvasToolbars(void) {
   }
 
 }
+#endif
 
 void MyFrame::JumpToPosition(ChartCanvas *cc, double lat, double lon,
                              double scale) {
@@ -3988,8 +3970,8 @@ int MyFrame::DoOptionsDialog() {
     g_MainToolbar->SetDockX(-1);
     g_MainToolbar->SetDockY(-1);
 #endif
-    g_MainToolbar->Surface();
-    SurfaceAllCanvasToolbars();
+    //g_MainToolbar->Surface();
+    //SurfaceAllCanvasToolbars();
     GetPrimaryCanvas()->SetFocus();
   }
 
@@ -4892,9 +4874,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #endif
       g_options =
           new options(optionsParent, -1, _("Options"), wxPoint(-1, -1), wxSize(sx, sy));
-
-      // needed to ensure that the chart window starts with keyboard focus
-      SurfaceAllCanvasToolbars();
 
       BuildiENCToolbar(true);
 
@@ -6296,7 +6275,6 @@ void MyFrame::DoPrint(void) {
    */
 
 #ifdef __WXGTK__
-  SurfaceAllCanvasToolbars();
   GetPrimaryCanvas()->SetFocus();
   Raise();  // I dunno why...
 #endif
@@ -6811,13 +6789,6 @@ void MyFrame::applySettingsString(wxString settings) {
 
   if (rr & TOOLBAR_CHANGED) b_newToolbar = true;
 
-  if (b_newToolbar) {
-    // .. for each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) cc->DestroyToolbar();
-    }
-  }
 
   //  We do this is one case only to remove an orphan recovery window
 #ifdef __ANDROID__
@@ -6849,8 +6820,6 @@ void MyFrame::applySettingsString(wxString settings) {
 
     RequestNewMasterToolbar(true);
   }
-
-  SurfaceAllCanvasToolbars();
 
   gFrame->Raise();
 
@@ -6963,7 +6932,6 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
     g_MainToolbar->SetToolbarHideMethod(TOOLBAR_HIDE_TO_FIRST_TOOL);
     g_MainToolbar->SetToolConfigString(g_toolbarConfig);
     g_MainToolbar->EnableRolloverBitmaps(false);
-    g_MainToolbar->SetGrabberEnable(false);
 
     g_MainToolbar->CreateConfigMenu();
     // g_MainToolbar->MoveDialogInScreenCoords(wxPoint(g_maintoolbar_x,
@@ -6973,9 +6941,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
 
   if (g_MainToolbar) {
     CreateMasterToolbar();
-    if (g_MainToolbar->isSubmergedToGrabber()) {
-      g_MainToolbar->SubmergeToGrabber();
-    } else {
+    {
       g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x, g_maintoolbar_y);
       g_MainToolbar->SetColorScheme(global_color_scheme);
       g_MainToolbar->Show(b_reshow && g_bshowToolbar);
