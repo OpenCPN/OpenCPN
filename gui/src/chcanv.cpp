@@ -3801,7 +3801,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
             << segShow_point_b->GetName() << _T("\n");
 
           if (g_bShowTrue)
-            s << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)floor(brg+0.5),
+            s << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8), (int)floor(brg+0.5),
                                   0x00B0);
           if (g_bShowMag) {
             double latAverage =
@@ -3810,7 +3810,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                 (segShow_point_b->m_lon + segShow_point_a->m_lon) / 2;
             double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
-            s << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)floor(varBrg+0.5),
+            s << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8), (int)floor(varBrg+0.5),
                                   0x00B0);
           }
 
@@ -4127,13 +4127,15 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   if (STAT_FIELD_CURSOR_BRGRNG < 0) return;
 
   double brg, dist;
-  wxString s;
+  wxString sm;
+  wxString st;
   DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
   if (g_bShowMag)
-    s.Printf("%03d%c(M)  ", (int)toMagnetic(brg), 0x00B0);
-  else
-    s.Printf("%03d%c  ", (int)brg, 0x00B0);
+    sm.Printf("%03d%c(M)  ", (int)toMagnetic(brg), 0x00B0);
+  if (g_bShowTrue)
+    st.Printf("%03d%c(T)  ", (int)brg, 0x00B0);
 
+  wxString s = st + sm;
   s << FormatDistanceAdaptive(dist);
 
   // CUSTOMIZATION - LIVE ETA OPTION
@@ -10705,7 +10707,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
 
   wxString routeInfo;
   if (g_bShowTrue)
-    routeInfo << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)brg,
+    routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8), (int)brg,
                                   0x00B0);
 
   if (g_bShowMag) {
@@ -10713,7 +10715,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
     double lonAverage = (m_cursor_lon + render_lon) / 2;
     double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
 
-    routeInfo << wxString::Format(wxString("%03d%c ", wxConvUTF8), (int)varBrg,
+    routeInfo << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8), (int)varBrg,
                                   0x00B0);
   }
 
