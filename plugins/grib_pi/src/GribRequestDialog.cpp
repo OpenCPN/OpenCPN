@@ -93,11 +93,14 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
       _("<h1>OpenCPN ECMWF forecast</h1>"
         "<p>Free service based on ECMWF Open Data published under the terms of "
         "Creative Commons CC-4.0-BY licence</p>"
-        "<p>The GRIB files include information about surface temperature, "
+        "<p>The IFS model GRIB files include information about surface "
+        "temperature, "
         "atmospheric pressure, wind strength, wind direction, wave height and "
         "direction for the whole world on a 0.4 and 0.25 degree resolution "
         "grid with 3 hour "
         "step in the first 144 hours and 6 hour step up to 10 days.</p>"
+        "The AIFS model contains data for wind, pressure and temperature on a "
+        "0.25 degree grid with 6 hour step for up to 15 days"
         "<p>The data is updated twice a day as soon as the 00z and 12z model "
         "runs finish and the "
         "results are published by ECMWF, which usually means new forecast data "
@@ -460,7 +463,7 @@ size_t LengthSelToHours(int sel) {
     case 1:
       return 72;
     case 2:
-      return 240;
+      return 999;
     default:
       return 24;
   }
@@ -548,8 +551,18 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   m_btnDownloadWorld->SetLabelText(_("Cancel"));
   m_staticTextInfo->SetLabelText(_("Preparing data on server..."));
   wxYieldIfNeeded();
-  wxString model =
-      (m_chECMWFResolution->GetSelection() <= 0 ? "ecmwf" : "ecmwf0p25");
+  wxString model;
+  switch (m_chECMWFResolution->GetSelection()) {
+    case 1:
+      model = "ecmwf0p25";
+      break;
+    case 2:
+      model = "ecmwfaifs0p25";
+      break;
+    default:
+      model = "ecmwf";
+      break;
+  }
   std::ostringstream oss;
   oss << "https://grib.bosun.io/grib?";
   oss << "model=" << model;

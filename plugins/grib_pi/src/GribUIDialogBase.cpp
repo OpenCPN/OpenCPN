@@ -2341,7 +2341,7 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   bSizerWorld->Add(m_stForecastLength, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
   wxString m_chForecastLengthChoices[] = {_("24 hours"), _("3 days"),
-                                          _("10 days")};
+                                          _("Maximum")};
   int m_chForecastLengthNChoices =
       sizeof(m_chForecastLengthChoices) / sizeof(wxString);
   m_chForecastLength =
@@ -2350,11 +2350,11 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_chForecastLength->SetSelection(0);
   bSizerWorld->Add(m_chForecastLength, 0, wxALL, 5);
 
-  m_stECMWFResolution = new wxStaticText( m_panelWorld, wxID_ANY, _("Resolution"), wxDefaultPosition, wxDefaultSize, 0 );
+  m_stECMWFResolution = new wxStaticText( m_panelWorld, wxID_ANY, _("Model"), wxDefaultPosition, wxDefaultSize, 0 );
   m_stECMWFResolution->Wrap( -1 );
   bSizerWorld->Add( m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-  wxString m_chECMWFResolutionChoices[] = { _("0.4"), _("0.25") };
+  wxString m_chECMWFResolutionChoices[] = { wxString::Format("0.4%c IFS", 0x00B0), wxString::Format("0.25%c IFS", 0x00B0), wxString::Format("0.25%c AIFS", 0x00B0) };
   int m_chECMWFResolutionNChoices = sizeof( m_chECMWFResolutionChoices ) / sizeof( wxString );
   m_chECMWFResolution = new wxChoice( m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0 );
   m_chECMWFResolution->SetSelection( 0 );
