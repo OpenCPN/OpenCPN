@@ -73,6 +73,7 @@
 #include "FontMgr.h"
 #include "glTextureDescriptor.h"
 #include "gshhs.h"
+#include "iENCToolbar.h"
 #include "kml.h"
 #include "line_clip.h"
 #include "MarkInfo.h"
@@ -301,8 +302,8 @@ int last_brightness;
 int g_cog_predictor_width;
 extern double g_display_size_mm;
 
-// extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
+extern iENCToolbar *g_iENCToolbar;
 extern wxColour g_colourOwnshipRangeRingsColour;
 
 // LIVE ETA OPTION
@@ -7033,11 +7034,18 @@ bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
       }
     }
 
+    if (MouseEventToolbar(event))
+      return true;
+
     if (MouseEventChartBar(event))
       return true;
 
     if (MouseEventMUIBar(event))
       return true;
+
+    if (MouseEventIENCBar(event))
+      return true;
+
   }
   return false;
 }
@@ -7050,6 +7058,31 @@ bool ChartCanvas::MouseEventChartBar(wxMouseEvent &event) {
   cursor_region = CENTER;
   if (!g_btouch) SetCanvasCursor(event);
   return true;
+}
+
+bool ChartCanvas::MouseEventToolbar(wxMouseEvent &event) {
+  if (g_MainToolbar) {
+    if (!g_MainToolbar->MouseEvent(event))
+      return false;
+    else
+      g_MainToolbar->RefreshToolbar();
+  }
+
+  cursor_region = CENTER;
+  if (!g_btouch) SetCanvasCursor(event);
+  return true;
+}
+
+bool ChartCanvas::MouseEventIENCBar(wxMouseEvent &event) {
+  if (g_iENCToolbar) {
+    if (!g_iENCToolbar->MouseEvent(event))
+      return false;
+    else {
+      g_iENCToolbar->RefreshToolbar();
+      return true;
+    }
+  }
+  return false;
 }
 
 bool ChartCanvas::MouseEventMUIBar(wxMouseEvent &event) {
@@ -11763,7 +11796,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator(ocpnDC &dc) {
     m_pEM_OverZoom->x = 4;
     m_pEM_OverZoom->y = 0;
     if (g_MainToolbar && IsPrimaryCanvas()) {
-      wxRect masterToolbarRect = g_MainToolbar->GetRect();
+      wxRect masterToolbarRect = g_MainToolbar->GetToolbarRect();
       m_pEM_OverZoom->x = masterToolbarRect.width + 4;
     }
   }
@@ -11824,6 +11857,14 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
   DrawEmboss(dc, EmbossOverzoomIndicator(dc));
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex, OVERLAY_OVER_EMBOSS);
+  }
+
+  if (IsPrimaryCanvas()) {
+    if (g_MainToolbar) g_MainToolbar->DrawDC(dc, 1.0);
+  }
+
+  if (IsPrimaryCanvas()) {
+    if (g_iENCToolbar) g_iENCToolbar->DrawDC(dc, 1.0);
   }
 
   if (m_muiBar)

@@ -97,6 +97,7 @@
 #include "toolbar.h"
 #include "track_gui.h"
 #include "MUIBar.h"
+#include "iENCToolbar.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -183,6 +184,7 @@ extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
+extern iENCToolbar *g_iENCToolbar;
 extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
@@ -4452,9 +4454,15 @@ void glChartCanvas::Render() {
   if (m_pParentCanvas->GetMUIBar())
     m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
 
+  if (g_MainToolbar)
+    g_MainToolbar->DrawGL(gldc, m_displayScale);
+
+  if (g_iENCToolbar)
+    g_iENCToolbar->DrawGL(gldc, m_displayScale);
+
     //  On some platforms, the opengl context window is always on top of any
-    //  standard DC windows, so we need to draw the Chart Info Window and the
-    //  Thumbnail as overlayed bmps.
+    //  standard DC windows, so we need to draw the Chart Info Window
+    //  as overlayed bmps.
 
 #ifdef __WXOSX__
   if (m_pParentCanvas->m_pCIWin && m_pParentCanvas->m_pCIWin->IsShown()) {
@@ -4487,21 +4495,6 @@ void glChartCanvas::Render() {
 
       m_gldc.DrawBitmap(bmp, x, y, false);
     }
-  }
-
-  if (pthumbwin && pthumbwin->IsShown()) {
-    int thumbx, thumby;
-    pthumbwin->GetPosition(&thumbx, &thumby);
-    if (pthumbwin->GetBitmap().IsOk())
-      m_gldc.DrawBitmap(pthumbwin->GetBitmap(), thumbx, thumby, false);
-  }
-
-  if (g_MainToolbar && g_MainToolbar->m_pRecoverwin) {
-    int recoverx, recovery;
-    g_MainToolbar->m_pRecoverwin->GetPosition(&recoverx, &recovery);
-    if (g_MainToolbar->m_pRecoverwin->GetBitmap().IsOk())
-      m_gldc.DrawBitmap(g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx,
-                        recovery, true);
   }
 
 #endif

@@ -149,6 +149,9 @@ public:
   bool MouseEventOverlayWindows(wxMouseEvent &event);
   bool MouseEventChartBar(wxMouseEvent &event);
   bool MouseEventMUIBar(wxMouseEvent &event);
+  bool MouseEventToolbar(wxMouseEvent &event);
+  bool MouseEventIENCBar(wxMouseEvent &event);
+
   bool MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick = true);
   bool MouseEventProcessObjects(wxMouseEvent &event);
   bool MouseEventProcessCanvas(wxMouseEvent &event);

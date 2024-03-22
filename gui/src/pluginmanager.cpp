@@ -2093,10 +2093,10 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
 
   // Some useful display metrics
   if (g_MainToolbar) {
-    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetSize().x;
-    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetSize().y;
-    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetPosition().x;
-    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetPosition().y;
+    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetToolbarRect().width;
+    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetToolbarRect().height;
+    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetToolbarRect().x;
+    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetToolbarRect().y;
   }
 
   // Some rendering parameters
@@ -7398,7 +7398,7 @@ int GetLatLonFormat() { return g_iSDMMFormat; }
 
 wxRect GetMasterToolbarRect() {
   if (g_MainToolbar)
-    return g_MainToolbar->GetRect();
+    return g_MainToolbar->GetToolbarRect();
   else
     return wxRect(0, 0, 1, 1);
 }

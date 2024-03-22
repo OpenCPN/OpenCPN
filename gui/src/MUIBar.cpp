@@ -616,17 +616,6 @@ void MUITextButton::BuildBitmap(){
   m_bitmap = bm;
 }
 
-#if 0
-void MUITextButton::OnLeftDown(wxMouseEvent& event) { event.Skip(); }
-
-void MUITextButton::OnLeftUp(wxMouseEvent& event) {
-  if (GetClientRect().Contains(event.GetPosition())) {
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, GetId());
-    GetParent()->GetEventHandler()->AddPendingEvent(evt);
-  }
-  event.Skip();
-}
-#endif
 
 #define CANVAS_OPTIONS_ANIMATION_TIMER_1 800
 #define CANVAS_OPTIONS_TIMER 801
