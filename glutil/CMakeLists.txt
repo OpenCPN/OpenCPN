@@ -51,7 +51,11 @@ if (CMAKE_HOST_WIN32)
 endif ()
 
 
-install(TARGETS opencpn-glutil RUNTIME DESTINATION ${PREFIX_BIN})
+if (WIN32)
+  install(TARGETS opencpn-glutil RUNTIME DESTINATION ".")
+else()
+  install(TARGETS opencpn-glutil RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif ()
 
 if (APPLE)
   install(

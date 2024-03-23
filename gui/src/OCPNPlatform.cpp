@@ -706,7 +706,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 #ifndef __WXMSW__
   std::string gl_util_exe = "opencpn-glutil";
 #else
-  std::string gl_util_exe = "bin\\opencpn-glutil.exe";
+  std::string gl_util_exe = "opencpn-glutil.exe";
 #endif
   fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
 

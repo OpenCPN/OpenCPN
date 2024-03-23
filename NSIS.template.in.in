@@ -822,8 +822,8 @@ SectionEnd
 
 ;# Install Section /hidden
 Section "-Install Section" SecInstall
-        File "@CPACK_BINDIR@\_CPack_Packages\win32\NSIS\opencpn_@CPACK_PACKAGE_VERSION@_setup\bin\opencpn-cmd.exe"
-		File "@CPACK_BINDIR@\_CPack_Packages\win32\NSIS\opencpn_@CPACK_PACKAGE_VERSION@_setup\bin\opencpn-glutil.exe"
+		;#File "@CPACK_BINDIR@\_CPack_Packages\win32\NSIS\opencpn_@CPACK_PACKAGE_VERSION@_setup\bin\opencpn-cmd.exe"
+		;#File "@CPACK_BINDIR@\_CPack_Packages\win32\NSIS\opencpn_@CPACK_PACKAGE_VERSION@_setup\bin\opencpn-glutil.exe"
 	@CPACK_NSIS_FULL_INSTALL@
 
 	@CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
@@ -927,8 +927,8 @@ Section "-un.Uninstall" UnSecUninstall
 		ReadRegStr $0 HKLM "${REG_KEY_UN}" "UninstallString"
 		${StrFilter} "$0" "" "" "$\"" $0
 		Delete $0
-		Delete $INSTDIR\opencpn-cmd.exe
-		Delete $INSTDIR\opencpn-glutil.exe
+		;#Delete $INSTDIR\opencpn-cmd.exe
+		;#Delete $INSTDIR\opencpn-glutil.exe
 		;# Remove the installation log file
 		Delete "$INSTDIR\install.log"
 		@CPACK_NSIS_DELETE_FILES@
