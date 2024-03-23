@@ -4124,18 +4124,31 @@ void PluginListPanel::ReloadPluginPanels() {
     auto end = std::remove_if(available.begin(), available.end(), predicate);
     available.erase(end, available.end());
 
-    /* Remove duplicates. */
-    struct Comp {
+    // Sort on case-insensitive name
+    struct CompSort {
       bool operator()(const PluginMetadata& lhs, const PluginMetadata rhs) const {
-        return lhs.name.compare(rhs.name) < 0;
+        std::string slhs, srhs;
+        for (auto &cl : lhs.name) slhs += toupper(cl);
+        for (auto &cr : rhs.name) srhs += toupper(cr);
+        return slhs.compare(srhs) < 0;
       }
-    } comp;
-    std::set<PluginMetadata, Comp> unique_entries(comp);
-    for (const auto& p : available) unique_entries.insert(p);
+    } comp_sort;
 
-    /* Add panels for first loaded plugins, then catalog entries. */
-    for (const auto& p : GetInstalled()) AddPlugin(*p);
-    for (const auto& p : unique_entries) AddPlugin(PlugInData(p));
+    std::set<PluginMetadata, CompSort> unique_sorted_entries(comp_sort);
+    for (const auto& p : available) unique_sorted_entries.insert(p);
+
+    // Build the list of panels.
+
+    // Add Installed and active plugins
+    for (const auto& p : GetInstalled())
+      if (p->m_enabled) AddPlugin(*p);
+
+    // Add Installed and inactive plugins
+    for (const auto& p : GetInstalled())
+      if (!p->m_enabled) AddPlugin(*p);
+
+    //  Add available plugins, sorted
+    for (const auto& p : unique_sorted_entries) AddPlugin(PlugInData(p));
   }
 
   Show();
