@@ -4065,7 +4065,10 @@ std::vector<const PlugInData*> GetInstalled() {
     result.push_back(item);
   }
   auto compare = [](const PlugInData* lhs, const PlugInData* rhs) {
-    return lhs->Key() < rhs->Key();
+    std::string slhs, srhs;
+    for (auto &cl : lhs->Key()) slhs += toupper(cl);
+    for (auto &cr : rhs->Key()) srhs += toupper(cr);
+    return slhs.compare(srhs) < 0;
   };
   std::sort(result.begin(), result.end(), compare);
   return result;
