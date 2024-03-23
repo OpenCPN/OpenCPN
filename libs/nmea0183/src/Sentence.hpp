@@ -78,6 +78,8 @@ class SENTENCE
       virtual TRANSDUCER_TYPE TransducerType( int field_number ) const;
       virtual SENTENCE& Add ( double value, int precision); // Added to allow precision to be changed
 
+      static wxString ToNmeaString(const wxString &str);
+
       /*
       ** Operators
       */
@@ -94,6 +96,10 @@ class SENTENCE
       virtual const SENTENCE& operator += ( TRANSDUCER_TYPE transducer );
       virtual const SENTENCE& operator += ( NMEA0183_BOOLEAN boolean );
       virtual const SENTENCE& operator += ( LATLONG& source );
+
+   protected:
+      static wxUniChar extCharTable[];
+      static char substCharTable[];
 };
 
 #endif // SENTENCE_CLASS_HEADER

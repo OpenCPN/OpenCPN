@@ -89,6 +89,7 @@ RoutePoint::RoutePoint() {
   m_IconName = wxEmptyString;
 
   m_MarkName = wxEmptyString;
+  m_NmeaMarkName = wxEmptyString;
 
   m_bIsInLayer = false;
   m_LayerID = 0;
@@ -118,6 +119,7 @@ RoutePoint::RoutePoint() {
 // Copy Constructor
 RoutePoint::RoutePoint(RoutePoint *orig) {
   m_MarkName = orig->GetName();
+  m_NmeaMarkName = SENTENCE::ToNmeaString(m_MarkName);
   m_lat = orig->m_lat;
   m_lon = orig->m_lon;
   m_seg_len = orig->m_seg_len;
@@ -286,6 +288,7 @@ void RoutePoint::SetName(const wxString &name) {
     m_iTextTexture = 0;
   }
   m_MarkName = name;
+  m_NmeaMarkName = SENTENCE::ToNmeaString(name);
   CalculateNameExtents();
 }
 

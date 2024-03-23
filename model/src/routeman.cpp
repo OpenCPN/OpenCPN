@@ -492,9 +492,9 @@ bool Routeman::UpdateAutopilot() {
     else
       m_NMEA0183.Rmb.DirectionToSteer = Right;
 
-    m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(maxName);
+    m_NMEA0183.Rmb.To = pActivePoint->GetNmeaName().Truncate(maxName);
     m_NMEA0183.Rmb.From =
-        pActiveRouteSegmentBeginPoint->GetName().Truncate(maxName);
+        pActiveRouteSegmentBeginPoint->GetNmeaName().Truncate(maxName);
 
     if (pActivePoint->m_lat < 0.)
       m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat,
@@ -610,7 +610,7 @@ bool Routeman::UpdateAutopilot() {
     //  reaching this point
     m_NMEA0183.Apb.IsPerpendicular = NFalse;
 
-    m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate(maxName);
+    m_NMEA0183.Apb.To = pActivePoint->GetNmeaName().Truncate(maxName);
 
     double brg1, dist1;
     DistanceBearingMercator(pActivePoint->m_lat, pActivePoint->m_lon,
