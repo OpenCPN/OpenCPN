@@ -380,7 +380,7 @@ wxString message_by_status(PluginStatus stat) {
 
 static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
     icon_by_status(
-        {{PluginStatus::System, "emblem-system.svg"},
+        {{PluginStatus::System, "emblem-default.svg"},
          {PluginStatus::Managed, "emblem-default.svg"},
          {PluginStatus::Unmanaged, "emblem-unmanaged.svg"},
          {PluginStatus::Ghost, "ghost.svg"},
@@ -4596,6 +4596,8 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
   m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
   m_itemStatusIconBitmap->SetToolTip(message_by_status(stat));
+  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
   itemBoxSizer01->Add(m_itemStatusIconBitmap, 0, wxEXPAND | wxALL, 20);
 
