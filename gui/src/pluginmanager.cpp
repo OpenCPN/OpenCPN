@@ -386,7 +386,7 @@ static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
          {PluginStatus::Ghost, "ghost.svg"},
          {PluginStatus::Unknown, "emblem-unmanaged.svg"},
          {PluginStatus::LegacyUpdateAvailable, "emblem-legacy-update.svg"},
-         {PluginStatus::ManagedInstallAvailable, "emblem-default.svg"},
+         {PluginStatus::ManagedInstallAvailable, "emblem-download.svg"},
          {PluginStatus::ManagedInstalledUpdateAvailable,
           "emblem-legacy-update.svg"},
          {PluginStatus::ManagedInstalledCurrentVersion, "emblem-default.svg"},
