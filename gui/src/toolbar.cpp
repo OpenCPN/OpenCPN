@@ -1607,6 +1607,7 @@ void ToolTipWin::SetBitmap() {
   offy *= scaler;
   mdc.DrawText(m_string, offx, offy);
 
+  SetClientSize(m_size.x, m_size.y);
   SetSize(m_position.x, m_position.y, m_size.x, m_size.y);
 }
 
