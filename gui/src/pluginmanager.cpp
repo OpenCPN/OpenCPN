@@ -3955,6 +3955,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
     handler->uninstall(metadata.name);
     return;
   }
+  g_pi_manager->ResetPluginBlacklist();   // See #3114
   UninstallPlugin(metadata.name);
   ok = handler->installPlugin(metadata, path.ToStdString());
   if (!ok) {
