@@ -6662,7 +6662,6 @@ void ChartCanvas::OnSize(wxSizeEvent &event) {
     SetMUIBarPosition();
     UpdateFollowButtonState();
     m_muiBar->SetCanvasENCAvailable(m_bENCGroup);
-    m_muiBar->Raise();
   }
 
   //    Set up the scroll margins
@@ -6707,7 +6706,7 @@ void ChartCanvas::OnSize(wxSizeEvent &event) {
 }
 
 void ChartCanvas::ProcessNewGUIScale() {
-  m_muiBar->Hide();
+  //m_muiBar->Hide();
   delete m_muiBar;
   m_muiBar = 0;
 
@@ -6723,7 +6722,7 @@ void ChartCanvas::CreateMUIBar() {
 
     m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
     m_muiBar->SetColorScheme(m_cs);
-    m_muiBarHOSize = m_muiBar->GetSize();
+    m_muiBarHOSize = m_muiBar->m_size;
   }
 
   if (m_muiBar) {
@@ -6731,7 +6730,6 @@ void ChartCanvas::CreateMUIBar() {
     UpdateFollowButtonState();
     m_muiBar->UpdateDynamicValues();
     m_muiBar->SetCanvasENCAvailable(m_bENCGroup);
-    m_muiBar->Raise();
   }
 }
 
@@ -6747,6 +6745,7 @@ void ChartCanvas::SetMUIBarPosition() {
       if (m_muiBarHOSize.x > (GetClientSize().x - pianoWidth)) {
         delete m_muiBar;
         m_muiBar = new MUIBar(this, wxVERTICAL, g_toolbar_scalefactor);
+        m_muiBar->SetColorScheme(m_cs);
       }
     }
 
@@ -6754,6 +6753,7 @@ void ChartCanvas::SetMUIBarPosition() {
       if (m_muiBarHOSize.x < (GetClientSize().x - pianoWidth)) {
         delete m_muiBar;
         m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
+        m_muiBar->SetColorScheme(m_cs);
       }
     }
 
@@ -6763,7 +6763,7 @@ void ChartCanvas::SetMUIBarPosition() {
 
 void ChartCanvas::DestroyMuiBar() {
   if (m_muiBar) {
-    m_muiBar->Destroy();
+    delete m_muiBar;
     m_muiBar = NULL;
   }
 }
@@ -7063,7 +7063,11 @@ bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
       }
     }
 
-    if (MouseEventChartBar(event)) return true;
+    if (MouseEventChartBar(event))
+      return true;
+
+    if (MouseEventMUIBar(event))
+      return true;
   }
   return false;
 }
@@ -7072,6 +7076,16 @@ bool ChartCanvas::MouseEventChartBar(wxMouseEvent &event) {
   if (!g_bShowChartBar) return false;
 
   if (!m_Piano->MouseEvent(event)) return false;
+
+  cursor_region = CENTER;
+  if (!g_btouch) SetCanvasCursor(event);
+  return true;
+}
+
+bool ChartCanvas::MouseEventMUIBar(wxMouseEvent &event) {
+  if (m_muiBar) {
+    if (!m_muiBar->MouseEvent(event)) return false;
+  }
 
   cursor_region = CENTER;
   if (!g_btouch) SetCanvasCursor(event);
@@ -11474,10 +11488,6 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
 
   dc.DestroyClippingRegion();
 
-  if (m_muiBar) {
-    m_muiBar->Refresh();
-  }
-
   PaintCleanup();
 }
 
@@ -11852,6 +11862,9 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex, OVERLAY_OVER_EMBOSS);
   }
+
+  if (m_muiBar)
+    m_muiBar->DrawDC( dc, 1.0);
 
   if (m_pTrackRolloverWin) {
     m_pTrackRolloverWin->Draw(dc);

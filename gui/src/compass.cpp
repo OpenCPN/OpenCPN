@@ -89,7 +89,7 @@ ocpnCompass::~ocpnCompass() {
 void ocpnCompass::Paint(ocpnDC& dc) {
   if (m_shown && m_StatBmp.IsOk()) {
 #if defined(ocpnUSE_GLES) || defined(ocpnUSE_GL)
-    if (!m_texobj){
+    if (g_bopengl && !m_texobj){
       // The glContext is known active here,
       // so safe to create a texture.
       glGenTextures(1, &m_texobj);

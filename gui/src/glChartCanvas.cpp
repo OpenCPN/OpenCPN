@@ -4449,11 +4449,8 @@ void glChartCanvas::Render() {
     m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
 
 
-  if (m_pParentCanvas->GetMUIBar()) {
+  if (m_pParentCanvas->GetMUIBar())
     m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
-    m_pParentCanvas->GetMUIBar()->Refresh( true );
-    m_pParentCanvas->GetMUIBar()->Update();
-  }
 
     //  On some platforms, the opengl context window is always on top of any
     //  standard DC windows, so we need to draw the Chart Info Window and the
