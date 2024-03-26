@@ -52,6 +52,7 @@
 #endif
 
 #include "model/comm_drv_factory.h"
+#include "model/comm_drv_signalk_net.h"
 #include "model/config_vars.h"
 #include "model/ser_ports.h"
 #include "model/sys_events.h"
@@ -702,9 +703,10 @@ void ConnectionEditDialog::Init() {
   m_cbCheckSKDiscover->SetToolTip(
       _("If checked, signal K server will be discovered automatically"));
   fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 2);
+  m_cbCheckSKDiscover->Hide(); // Hide it as the functionality is disabled and likely to be completely removed
 
   // signal K "Discover now" button
-  m_ButtonSKDiscover = new wxButton(m_scrolledwin, wxID_ANY, _("Discover now..."),
+  m_ButtonSKDiscover = new wxButton(m_scrolledwin, wxID_ANY, _("Discover local server..."),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_ButtonSKDiscover->Hide();
   fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 2);
@@ -1178,7 +1180,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
   ShowInFilter();
   ShowOutFilter();
 
-  m_cbCheckSKDiscover->Show();
+  m_cbCheckSKDiscover->Hide(); // The functionality is disabled and probably to be completely removed in the future
   m_stAuthToken->Show();
   m_tAuthToken->Show();
   m_ButtonSKDiscover->Show();
@@ -1642,7 +1644,6 @@ void ConnectionEditDialog::OnSelectDatasource(wxListEvent& event) {
 }
 
 void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
-#if 0  // FIXME (dave)
   wxString ip;
   int port;
   std::string serviceIdent =
@@ -1650,8 +1651,8 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
 
   g_Platform->ShowBusySpinner();
 
-  if (SignalKDataStream::DiscoverSKServer(serviceIdent, ip, port,
-                                          1))  // 1 second scan
+  if (CommDriverSignalKNet::DiscoverSKServer(serviceIdent, ip, port,
+                                             3))  // 3 second scan
   {
     m_tNetAddress->SetValue(ip);
     m_tNetPort->SetValue(wxString::Format(wxT("%i"), port));
@@ -1660,8 +1661,6 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
     UpdateDiscoverStatus(_("Signal K server not found."));
   }
   g_Platform->HideBusySpinner();
-#endif
-  event.Skip();
 }
 
 void ConnectionEditDialog::UpdateDiscoverStatus(wxString stat) {
@@ -2171,6 +2170,10 @@ void ConnectionEditDialog::ConnectControls(){
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ConnectionEditDialog::OnBtnOStcs), NULL, this);
 
+//Signal K server discovery
+  m_ButtonSKDiscover->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ConnectionEditDialog::OnDiscoverButton), NULL, this);
 
 #if 0
     m_tNetAddress->Connect(
@@ -2212,9 +2215,6 @@ void ConnectionEditDialog::ConnectControls(){
   m_cbCheckSKDiscover->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_ButtonSKDiscover->Connect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnDiscoverButton), NULL, this);
 
     m_rbOAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                        wxCommandEventHandler(ConnectionEditDialog::OnRbOutput),
