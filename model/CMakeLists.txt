@@ -319,6 +319,7 @@ target_link_libraries(
     ocpn::sound
     ocpn::wxjson
     ocpn::filesystem
+    ocpn::wxservdisc
     pico_sha2
 )
 

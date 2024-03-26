@@ -43,7 +43,7 @@ __int32    tv_sec;         /* seconds */
 __int32    tv_usec;        /* microseconds */
 };
 
-int gettimeofday(struct timeval *tv/*in*/, struct timezone2 *tz/*in*/)
+int mdnsd_gettimeofday(struct timeval *tv/*in*/, struct timezone2 *tz/*in*/)
 {
   FILETIME ft;
   __int64 tmpres = 0;
@@ -76,6 +76,8 @@ int gettimeofday(struct timeval *tv/*in*/, struct timezone2 *tz/*in*/)
 
   return 0;
 }
+#else
+#define mdnsd_gettimeofday gettimeofday
 #endif
 
 
@@ -438,7 +440,7 @@ mdnsd mdnsd_new(int class, int frame)
     mdnsd d;
     d = (mdnsd)malloc(sizeof(struct mdnsd_struct));
     bzero(d,sizeof(struct mdnsd_struct));
-    gettimeofday(&d->now,0);
+    mdnsd_gettimeofday(&d->now,0);
     d->expireall = d->now.tv_sec + GC;
     d->class = class;
     d->frame = frame;
@@ -485,7 +487,7 @@ void mdnsd_in(mdnsd d, struct message *m, unsigned long int ip, unsigned short i
 
     if(d->shutdown) return;
 
-    gettimeofday(&d->now,0);
+    mdnsd_gettimeofday(&d->now,0);
 
     if(m->header.qr == 0)
     {
@@ -530,7 +532,7 @@ int mdnsd_out(mdnsd d, struct message *m, unsigned long int *ip, unsigned short 
     mdnsdr r;
     int ret = 0;
 
-    gettimeofday(&d->now,0);
+    mdnsd_gettimeofday(&d->now,0);
     bzero(m,sizeof(struct message));
 
     // defaults, multicast
@@ -690,7 +692,7 @@ struct timeval *mdnsd_sleep(mdnsd d)
     // first check for any immediate items to handle
     if(d->uanswers || d->a_now) return &d->sleep;
 
-    gettimeofday(&d->now,0);
+    mdnsd_gettimeofday(&d->now,0);
 
     if(d->a_pause)
     { // then check for paused answers

@@ -1496,6 +1496,9 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
+message(STATUS "    Adding local wxserverdisc")
+add_subdirectory(libs/wxservdisc)
+
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
   install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
