@@ -72,7 +72,6 @@ private:
   wxStaticText *t12;
   wxStaticText *t14;
   wxStaticText *t16;
-  wxStaticText *t18;
 
   wxStaticText *t21;
 

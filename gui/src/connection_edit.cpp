@@ -508,6 +508,31 @@ void ConnectionEditDialog::Init() {
                                  wxDefaultPosition, wxDefaultSize, 0);
   gSizerNetProps->Add(m_tNetComment, 1, wxEXPAND | wxTOP, 5);
 
+  gSizerCanProps = new wxGridSizer(0, 1, 0, 0);
+
+  wxFlexGridSizer* fgSizer1C;
+  fgSizer1C = new wxFlexGridSizer(0, 2, 0, 0);
+  fgSizer1C->SetFlexibleDirection(wxBOTH);
+  fgSizer1C->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+
+
+  m_stCANSource = new wxStaticText(m_scrolledwin, wxID_ANY, _("socketCAN Source"),
+                                   wxDefaultPosition, wxDefaultSize, 0);
+  m_stCANSource->Wrap(-1);
+  fgSizer1C->Add(m_stCANSource, 0, wxALL, 5);
+
+  wxArrayString choices = GetAvailableSocketCANInterfaces();
+  m_choiceCANSource = new wxChoice(m_scrolledwin, wxID_ANY, wxDefaultPosition,
+                                   wxDefaultSize, choices);
+
+  m_choiceCANSource->SetSelection(0);
+  m_choiceCANSource->Enable(TRUE);
+  fgSizer1C->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
+
+  gSizerCanProps->Add(fgSizer1C, 0, wxEXPAND, 5);
+
+  sbSizerConnectionProps->Add(gSizerCanProps, 0, wxEXPAND, 5);
+
   gSizerSerProps = new wxGridSizer(0, 1, 0, 0);
   sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
 
@@ -578,20 +603,6 @@ void ConnectionEditDialog::Init() {
 
   m_choicePriority->SetSelection(9);
   fgSizer1->Add(m_choicePriority, 0, wxEXPAND | wxTOP, 5);
-
-  m_stCANSource = new wxStaticText(m_scrolledwin, wxID_ANY, _("socketCAN Source"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-  m_stCANSource->Wrap(-1);
-  fgSizer1->Add(m_stCANSource, 0, wxALL, 5);
-
-  wxArrayString choices = GetAvailableSocketCANInterfaces();
-  m_choiceCANSource = new wxChoice(m_scrolledwin, wxID_ANY, wxDefaultPosition,
-                                   wxDefaultSize, choices);
-  //m_choiceCANSource->Bind(wxEVT_MOUSEWHEEL, &ConnectionEditDialog::OnWheelChoice, this);
-
-  m_choiceCANSource->SetSelection(0);
-  m_choiceCANSource->Enable(TRUE);
-  fgSizer1->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
 
   gSizerSerProps->Add(fgSizer1, 0, wxEXPAND, 5);
 
@@ -1030,6 +1041,8 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   m_cbGarminHost->Show(visible);
   m_stSerialComment->Show(visible);
   m_tSerialComment->Show(visible);
+  m_choicePriority->Show(visible);
+  m_stPriority->Show(visible);
 }
 
 void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
@@ -1088,6 +1101,9 @@ void ConnectionEditDialog::SetNMEAFormToNet(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEACAN(FALSE);
+  m_choicePriority->Show(true);
+  m_stPriority->Show(true);
+
   SetDSFormRWStates();
 
   LayoutDialog();
@@ -1100,6 +1116,9 @@ void ConnectionEditDialog::SetNMEAFormToCAN(void) {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEACAN(TRUE);
+  m_choicePriority->Show(true);
+  m_stPriority->Show(true);
+
   sbSizerInFilter->Show(false);
   sbSizerOutFilter->Show(false);
   SetDSFormRWStates();

@@ -174,7 +174,7 @@ void ConnectionParamsPanel::CreateControls(void) {
   panelSizer->Add(parmSizer, 5);
 
   if (m_pConnectionParams->Type == SERIAL) {
-    wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 7, 0, metric / 2);
+    wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     serialGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(serialGrid, 0, wxALIGN_LEFT);
 
@@ -216,12 +216,6 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
-    serialGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
-    t17->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
     // line 2
     t2 = new ConnBoldLabel(this, _("Serial"));
     serialGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL);
@@ -255,10 +249,6 @@ void ConnectionParamsPanel::CreateControls(void) {
     t16 = new ConnBoldLabel(this, baudRate);
     serialGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL);
 
-    auto priority = wxString::Format("%d", m_pConnectionParams->Priority);
-    t18 = new ConnBoldLabel(this, priority);
-    serialGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL);
-
     wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                           wxDefaultSize, wxLI_HORIZONTAL);
     parmSizer->Add(line, 0, wxEXPAND);
@@ -278,7 +268,7 @@ void ConnectionParamsPanel::CreateControls(void) {
   else if (m_pConnectionParams->Type == NETWORK) {
     wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
-    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric / 2);
+    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
 
@@ -318,13 +308,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
-    netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
-    t17->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
-    // line 2
+     // line 2
     t2 = new wxStaticText(this, wxID_ANY, _("Network"));
     t2->SetFont(*bFont);
     netGrid->Add(t2, 0, wxALIGN_CENTER_HORIZONTAL);
@@ -396,15 +380,6 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxString priority;
-    priority.Printf(_T("%d"), m_pConnectionParams->Priority);
-    t18 = new wxStaticText(this, wxID_ANY, priority);
-    t18->SetFont(*bFont);
-    netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL);
-    t18->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
     wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                           wxDefaultSize, wxLI_HORIZONTAL);
     parmSizer->Add(line, 0, wxEXPAND);
@@ -423,7 +398,7 @@ void ConnectionParamsPanel::CreateControls(void) {
   else if (m_pConnectionParams->Type == INTERNAL_GPS) {
     wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
-    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric / 2);
+    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
 
@@ -460,12 +435,6 @@ void ConnectionParamsPanel::CreateControls(void) {
     wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
     netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL);
     t15->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
-    netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
-    t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
@@ -515,15 +484,6 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxString priority;
-    priority.Printf(_T("%d"), m_pConnectionParams->Priority);
-    t18 = new wxStaticText(this, wxID_ANY, priority);
-    t18->SetFont(*bFont);
-    netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL);
-    t18->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
     wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                           wxDefaultSize, wxLI_HORIZONTAL);
     parmSizer->Add(line, 0, wxEXPAND);
@@ -541,7 +501,7 @@ void ConnectionParamsPanel::CreateControls(void) {
   } else if (m_pConnectionParams->Type == INTERNAL_BT) {
     wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
 
-    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric / 2);
+    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
 
@@ -578,12 +538,6 @@ void ConnectionParamsPanel::CreateControls(void) {
     wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
     netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL);
     t15->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, _("List position"));
-    netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
-    t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
@@ -633,15 +587,6 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxString priority;
-    priority.Printf(_T("%d"), m_pConnectionParams->Priority);
-    t18 = new wxStaticText(this, wxID_ANY, priority);
-    t18->SetFont(*bFont);
-    netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL);
-    t18->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
     wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                           wxDefaultSize, wxLI_HORIZONTAL);
     parmSizer->Add(line, 0, wxEXPAND);
@@ -656,7 +601,7 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
   } else if (m_pConnectionParams->Type == SOCKETCAN) {
-    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 7, 0, metric / 2);
+    wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
 
@@ -693,12 +638,6 @@ void ConnectionParamsPanel::CreateControls(void) {
     wxStaticText *t15 = new wxStaticText(this, wxID_ANY, _T(""));
     netGrid->Add(t15, 0, wxALIGN_CENTER_HORIZONTAL);
     t15->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
-    wxStaticText *t17 = new wxStaticText(this, wxID_ANY, "");
-    netGrid->Add(t17, 0, wxALIGN_CENTER_HORIZONTAL);
-    t17->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
@@ -748,14 +687,6 @@ void ConnectionParamsPanel::CreateControls(void) {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxString priority;
-    t18 = new wxStaticText(this, wxID_ANY, "");
-    t18->SetFont(*bFont);
-    netGrid->Add(t18, 0, wxALIGN_CENTER_HORIZONTAL);
-    t18->Connect(wxEVT_LEFT_DOWN,
-                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
-                 this);
-
     wxStaticLine *line = new wxStaticLine(this, wxID_ANY, wxDefaultPosition,
                                           wxDefaultSize, wxLI_HORIZONTAL);
     parmSizer->Add(line, 0, wxEXPAND);
@@ -776,8 +707,6 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
   m_pConnectionParams = ConnectionParams;
 
   wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
-  wxString priority;
-  priority.Printf(_T("%d"), m_pConnectionParams->Priority);
 
   if (m_pConnectionParams->Type == SERIAL) {
     wxString baudRate;
@@ -801,7 +730,6 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
     t12->SetLabel(proto);
     t14->SetLabel(m_pConnectionParams->Port);
     t16->SetLabel(baudRate);
-    t18->SetLabel(priority);
 
     t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
   } else if (m_pConnectionParams->Type == NETWORK) {
@@ -839,7 +767,6 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
     t12->SetLabel(proto);
     t14->SetLabel(m_pConnectionParams->NetworkAddress);
     t16->SetLabel(port);
-    t18->SetLabel(priority);
 
     t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
   } else if (m_pConnectionParams->Type == INTERNAL_GPS) {

@@ -323,7 +323,7 @@ bool ConnectionsDialog::SortSourceList(void) {
       ConnectionParams* c1 = TheConnectionParams()->Item(ivec[j]);
       ConnectionParams* c2 = TheConnectionParams()->Item(ivec[j - 1]);
 
-      if (c1->Priority > c2->Priority) {
+      if (c1->Priority < c2->Priority) {
         int t = ivec[j - 1];
         ivec[j - 1] = ivec[j];
         ivec[j] = t;

@@ -137,7 +137,7 @@ public:
   options *m_parent;
   wxScrolledWindow *m_scrolledwin;
 
-  wxGridSizer *gSizerNetProps, *gSizerSerProps;
+  wxGridSizer *gSizerNetProps, *gSizerSerProps, *gSizerCanProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
   wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
