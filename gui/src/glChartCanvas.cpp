@@ -1073,7 +1073,7 @@ void glChartCanvas::SetupOpenGL() {
   }
   else
   {
-  printf("GLEW init success!n");
+  wxLogMessage("GLEW init success!n");
   }
 #endif
 #endif
