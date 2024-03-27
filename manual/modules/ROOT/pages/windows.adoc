@@ -41,9 +41,9 @@ using:
 ** `--target package` -- NSIS installer
 
 * It is perfectly possible to use `--config Debug` to create an executable with
-  debugging symbols etc. However, doing so might make the plugins in the
-  catalog incompatible if it is not possible to load optimized libraries into
-  a opencpn debug build. FIXME(leamas): what is the situation?
+  debugging symbols etc. However, doing so will make the plugins in the
+  catalog incompatible as it is not possible to load optimized libraries into
+  an opencpn debug build. Prefer `RelWithDebInfo` configuration in most cases.
 * _win_deps.bat_ stores files in the _cache_ directory. This can be removed
   safely,  it is re-created from scratch by _win_deps.bat_
 * The correct options to invoke cmake manually can be found  in
