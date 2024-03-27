@@ -965,10 +965,12 @@ void GribRequestSetting::StopGraphicalZoneSelection() {
 }
 
 void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp) {
-  if (!vp) return;
+  if (!vp || m_Vp == vp) return;
 
   delete m_Vp;
   m_Vp = new PlugIn_ViewPort(*vp);
+
+  GetCanvasPixLL(m_Vp, &m_StartPoint, m_spMaxLat->GetValue(), m_spMinLon->GetValue());
 
   if (!m_AllowSend) return;
   if (m_cManualZoneSel->GetValue()) return;

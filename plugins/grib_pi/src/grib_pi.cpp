@@ -553,7 +553,7 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
 
   m_pGRIBOverlayFactory->RenderGribOverlay(dc, vp);
 
-  if ((canvasIndex > 0) || (GetCanvasCount() == 1)) {
+  if ( GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse() ) {
     m_pGribCtrlBar->SetViewPort(vp);
     if (m_pGribCtrlBar->pReq_Dialog)
       m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay(dc);
@@ -573,7 +573,7 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
 
   m_pGRIBOverlayFactory->RenderGLGribOverlay(pcontext, vp);
 
-  if ((canvasIndex > 0) || (GetCanvasCount() == 1)) {
+  if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
     m_pGribCtrlBar->SetViewPort(vp);
     if (m_pGribCtrlBar->pReq_Dialog)
       m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();

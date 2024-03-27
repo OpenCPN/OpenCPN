@@ -1044,7 +1044,7 @@ void GRIBUICtrlBar::SetViewPort(PlugIn_ViewPort *vp) {
   m_vp = new PlugIn_ViewPort(*vp);
 
   if (pReq_Dialog)
-    if (pReq_Dialog->IsShown()) pReq_Dialog->OnVpChange(vp);
+    pReq_Dialog->OnVpChange(vp);
 }
 
 void GRIBUICtrlBar::OnClose(wxCloseEvent &event) {
