@@ -1,10 +1,13 @@
 = Compiling on Windows
 
-== 5.8.0 Fast Track
+== 5.8.0+ Fast Track
 
 From version 5.8.0 the windows build system has been revised.
 The fast track described here is simplified and without all the options
 provided by the procedure described from next section.
+To set up a complete directly usable local development environment,
+you should probably prefer the workflow implemented by the
+`winConfig.bat` script described in the next chapter.
 
 Steps to to make a build:
 
