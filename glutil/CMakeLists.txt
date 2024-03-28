@@ -20,46 +20,60 @@
 
 
 set(SRC_CONSOLE console.cpp)
-
+set(APP_TARGET  opencpn-glutil)
 if(WIN32)
-  add_executable(opencpn-glutil WIN32 ${SRC_CONSOLE})
+  add_executable(${APP_TARGET} WIN32 ${SRC_CONSOLE})
 else()
-  add_executable(opencpn-glutil ${SRC_CONSOLE})
+  add_executable(${APP_TARGET} ${SRC_CONSOLE})
 endif()
 
 if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-  target_link_libraries(opencpn-glutil PRIVATE -fsanitize=${ENABLE_SANITIZER})
+  target_link_libraries(${APP_TARGET} PRIVATE -fsanitize=${ENABLE_SANITIZER})
 endif ()
 
 target_include_directories(
-  opencpn-glutil
+  ${APP_TARGET}
     PRIVATE
       ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(opencpn-glutil PRIVATE ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARIES} ocpn::wxjson)
+target_link_libraries(${APP_TARGET} PRIVATE ${wxWidgets_LIBRARIES} ${OPENGL_LIBRARIES} ocpn::wxjson)
 
 if (CMAKE_HOST_WIN32)
   target_link_libraries(
-    opencpn-glutil PRIVATE setupapi.lib "GLU_static" psapi.lib
+    ${APP_TARGET} PRIVATE setupapi.lib "GLU_static" psapi.lib
       iphlpapi.lib # glu32.lib
   ) 
   # use gdi plus only on MSVC, it is not a free library
   if (MSVC)
-    target_link_libraries(opencpn-glutil PRIVATE gdiplus.lib)
+    target_link_libraries(${APP_TARGET} PRIVATE gdiplus.lib)
   endif ()
 endif ()
 
 
 if (WIN32)
-  install(TARGETS opencpn-glutil RUNTIME DESTINATION ".")
+  install(TARGETS ${APP_TARGET} RUNTIME DESTINATION ".")
 else()
-  install(TARGETS opencpn-glutil RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  install(TARGETS ${APP_TARGET} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif ()
+#
+# If this is a local MSVC Windows build, copy output products to
+# correct configuration runtime folder
+#
+if (WIN32 AND (NOT OCPN_CI_BUILD) AND MSVC)
+  add_custom_command(
+    TARGET ${APP_TARGET}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${APP_TARGET}>"
+              "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/$<TARGET_FILE_NAME:${APP_TARGET}>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${APP_TARGET}>"
+              "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/$<TARGET_PDB_FILE_NAME:${APP_TARGET}>"
+  )
+endif (WIN32 AND (NOT OCPN_CI_BUILD) AND MSVC)
 
 if (APPLE)
   install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/opencpn-glutil
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${APP_TARGET}
     DESTINATION "bin/OpenCPN.app/Contents/MacOS"
     PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       WORLD_EXECUTE GROUP_EXECUTE OWNER_EXECUTE
