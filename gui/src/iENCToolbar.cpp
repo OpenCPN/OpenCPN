@@ -50,11 +50,6 @@ extern OCPNPlatform *g_Platform;
 //---------------------------------------------------------------------------------------
 //          iENCToolbar Implementation
 //---------------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(iENCToolbar, ocpnFloatingToolbarDialog)
-EVT_MENU(wxID_ANY, iENCToolbar::OnToolLeftClick)
-EVT_TIMER(STATE_TIMER, iENCToolbar::StateTimerEvent)
-EVT_MOUSE_EVENTS(iENCToolbar::MouseEvent)
-END_EVENT_TABLE()
 
 iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint position, long orient,
                          float size_factor)
@@ -76,33 +71,32 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint position, long orient,
   SetCanToggleOrientation(false);
   EnableRolloverBitmaps(false);
   DisableTooltips();
-  SetGrabberEnable(false);
 
   m_nDensity = 0;
   SetDensityToolBitmap(m_nDensity);
+  m_range = 0;
+
+  m_ptoolbar->SetBackgroundColour(GetGlobalColor("DILG0"));
 
   // Realize() the toolbar
   Realize();
-  Hide();
-
   SetDefaultPosition();
-  Show(true);
 
   m_state_timer.SetOwner(this, STATE_TIMER);
-  m_state_timer.Start(500, wxTIMER_CONTINUOUS);
+  m_state_timer.Start(100, wxTIMER_CONTINUOUS);
+  this->Connect( wxEVT_TIMER, wxTimerEventHandler( iENCToolbar::StateTimerEvent ), NULL, this );
 }
 
 iENCToolbar::~iENCToolbar() {}
 
-void iENCToolbar::MouseEvent(wxMouseEvent &event) {
-  if (event.IsButton()) gFrame->Raise();
-}
-
 void iENCToolbar::SetColorScheme(ColorScheme cs) {
-  m_range = 0;  // Forcw a redraw of tools
   m_nDensity = -1;
-
+  m_ptoolbar->SetBackgroundColour(GetGlobalColor("DILG0"));
+  SetRangeToolBitmap();
   ocpnFloatingToolbarDialog::SetColorScheme(cs);
+  m_ptoolbar->InvalidateBitmaps();
+  RefreshToolbar();
+  m_range = 0;
 }
 
 void iENCToolbar::LoadToolBitmaps() {
@@ -124,10 +118,8 @@ void iENCToolbar::LoadToolBitmaps() {
 
     m_bmMinimum = wxBitmap(96, 32);
     m_bmStandard = wxBitmap(96, 32);
-    ;
     m_bmAll = wxBitmap(96, 32);
     m_bmUStd = wxBitmap(96, 32);
-
     m_bmRPlus = wxBitmap(96, 32);
     m_bmRMinus = wxBitmap(96, 32);
   }
@@ -147,7 +139,6 @@ void iENCToolbar::OnToolLeftClick(wxCommandEvent &event) {
       if (++m_nDensity > 3) m_nDensity = 0;
 
       SetDensityToolBitmap(m_nDensity);
-      m_ptoolbar->Refresh();
 
       switch (m_nDensity) {
         case 0:
@@ -219,6 +210,9 @@ void iENCToolbar::OnToolLeftClick(wxCommandEvent &event) {
     default:
       break;
   }
+  m_ptoolbar->InvalidateBitmaps();
+  RefreshToolbar();
+
 }
 
 void iENCToolbar::SetDensityToolBitmap(int nDensity) {
@@ -234,10 +228,56 @@ void iENCToolbar::SetDensityToolBitmap(int nDensity) {
     m_ptoolbar->SetToolBitmaps(ID_DENSITY, &m_bmUStd, &m_bmUStd);
 }
 
+void iENCToolbar::SetRangeToolBitmap() {
+  wxMemoryDC dc;
+  dc.SelectObject(*m_pbmScratch);
+  dc.SetBackground(wxBrush(GetGlobalColor("DILG0")));
+  dc.Clear();
+  dc.DrawBitmap(m_bmRMinus, wxPoint(0, 0));
+
+  //  Render the range as text onto the template
+  m_rangeFont = wxTheFontList->FindOrCreateFont(
+      12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+
+  wxString range_string;
+  range_string.Printf(_T("%4.0fm"), m_range);
+
+  dc.SetFont(*m_rangeFont);
+
+  //  Select a font that will fit into the allow space.
+  bool good = false;
+  int target_points = 12;
+  while (!good && (target_points > 4)) {
+    int width, height;
+    dc.GetTextExtent(range_string, &width, &height);
+    if (width < 50) {
+      good = true;
+      break;
+    } else {
+      target_points--;
+      m_rangeFont = wxTheFontList->FindOrCreateFont(
+          target_points, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL,
+          wxFONTWEIGHT_NORMAL);
+      dc.SetFont(*m_rangeFont);
+    }
+  }
+
+  dc.SetTextForeground(*wxBLACK);
+  dc.SetBackgroundMode(wxTRANSPARENT);
+
+  dc.DrawText(range_string, 42, 8);
+
+  dc.SelectObject(wxNullBitmap);
+
+  m_ptoolbar->SetToolBitmaps(ID_RMINUS, m_pbmScratch, m_pbmScratch);
+
+}
+
 void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
   ChartCanvas *cc = gFrame->GetPrimaryCanvas();
   if (!cc) return;
 
+  bool bRefresh = false;
   //  Keep the Density tool in sync
   if (ps52plib) {
     int nset = 1;
@@ -265,7 +305,7 @@ void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
         m_nDensity = nset;
         SetDensityToolBitmap(m_nDensity);
 
-        m_ptoolbar->Refresh();
+        bRefresh = true;
       }
     }
   }
@@ -277,75 +317,17 @@ void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
 
     if (range != m_range) {
       m_range = range;
-
-#if 0
-            // This DOES NOT WORK on Mac
-            //  None of it....
-
-//            wxImage image = m_bmRMinus.ConvertToImage();
-//            wxBitmap bmTemplate(image);
-
-            // Get the template bitmap
-            wxBitmap bmTemplate = m_bmRMinus;
-
-            wxMask *mask = new wxMask(bmTemplate, wxColour(wxTRANSPARENT));
-            bmTemplate.SetMask(mask);
-
-            wxMemoryDC dct(bmTemplate);
-
-            //  Make a deep copy by Blit
-            wxMemoryDC dc;
-            dc.SelectObject(*m_pbmScratch);
-            dc.SetBackground(wxBrush(GetGlobalColor(_T("GREY2"))));
-            dc.Clear();
-
-            dc.Blit(0, 0, m_pbmScratch->GetWidth(), m_pbmScratch->GetHeight(), &dct, 0, 0, wxCOPY, true);
-
-            dct.SelectObject(wxNullBitmap);
-#else
-      wxMemoryDC dc;
-      dc.SelectObject(*m_pbmScratch);
-      dc.SetBackground(wxBrush(GetGlobalColor(_T("GREY2"))));
-      dc.Clear();
-      dc.DrawBitmap(m_bmRMinus, wxPoint(0, 0));
-#endif
-      //  Render the range as text onto the template
-      m_rangeFont = wxTheFontList->FindOrCreateFont(
-          12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-
-      wxString range_string;
-      range_string.Printf(_T("%4.0fm"), range);
-
-      dc.SetFont(*m_rangeFont);
-
-      //  Select a font that will fit into the allow space.
-      bool good = false;
-      int target_points = 12;
-      while (!good && (target_points > 4)) {
-        int width, height;
-        dc.GetTextExtent(range_string, &width, &height);
-        if (width < 50) {
-          good = true;
-          break;
-        } else {
-          target_points--;
-          m_rangeFont = wxTheFontList->FindOrCreateFont(
-              target_points, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL,
-              wxFONTWEIGHT_NORMAL);
-          dc.SetFont(*m_rangeFont);
-        }
-      }
-
-      dc.SetTextForeground(*wxBLACK);
-      dc.SetBackgroundMode(wxTRANSPARENT);
-
-      dc.DrawText(range_string, 42, 8);
-
-      dc.SelectObject(wxNullBitmap);
-
-      m_ptoolbar->SetToolBitmaps(ID_RMINUS, m_pbmScratch, m_pbmScratch);
-
-      m_ptoolbar->Refresh();
+      SetRangeToolBitmap();
+      bRefresh = true;
     }
   }
+  if (bRefresh) {
+    RebuildToolbar();
+    m_ptoolbar->InvalidateBitmaps();
+    RefreshToolbar();
+  }
+
+  // Restore runtime timer frequency after startup
+  m_state_timer.Start(500, wxTIMER_CONTINUOUS);
+
 }

@@ -73,6 +73,7 @@
 #include "FontMgr.h"
 #include "glTextureDescriptor.h"
 #include "gshhs.h"
+#include "iENCToolbar.h"
 #include "kml.h"
 #include "line_clip.h"
 #include "MarkInfo.h"
@@ -301,8 +302,8 @@ int last_brightness;
 int g_cog_predictor_width;
 extern double g_display_size_mm;
 
-// extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
+extern iENCToolbar *g_iENCToolbar;
 extern wxColour g_colourOwnshipRangeRingsColour;
 
 // LIVE ETA OPTION
@@ -474,9 +475,6 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   m_glcc = NULL;
 
-  m_toolBar = NULL;
-  m_toolbar_scalefactor = 1.0;
-  m_toolbarOrientation = wxTB_HORIZONTAL;
   m_focus_indicator_pix = 1;
 
   m_pCurrentStack = NULL;
@@ -738,7 +736,6 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(m_bShowCompassWin);
 
-  m_bToolbarEnable = false;
   m_pianoFrozen = false;
 
   SetMinSize(wxSize(200, 200));
@@ -1212,18 +1209,6 @@ void ChartCanvas::SetShowGPSCompassWindow(bool bshow) {
   }
 }
 
-void ChartCanvas::SetToolbarEnable(bool bShow) {
-  return;
-
-  // if(GetToolbarEnable() != bShow)
-  {
-    m_bToolbarEnable = bShow;
-    //         if(!m_toolBar)
-    //             RequestNewCanvasToolbar( true );
-    if (GetToolbar()) GetToolbar()->Show(bShow);
-  }
-}
-
 int ChartCanvas::GetPianoHeight() {
   int height = 0;
   if (g_bShowChartBar && GetPiano()) height = m_Piano->GetHeight();
@@ -1250,16 +1235,11 @@ void ChartCanvas::ShowTides(bool bShow) {
 
   if (ptcmgr->IsReady()) {
     SetbShowTide(bShow);
-    if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_TIDE, bShow);
-    wxString tip = _("Show Tides");
-    if (bShow) tip = _("Hide Tides");
-    if (m_toolBar) m_toolBar->SetToolShortHelp(ID_TIDE, tip);
 
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_TIDES, bShow);
   } else {
     wxLogMessage(_T("Chart1::Event...TCMgr Not Available"));
     SetbShowTide(false);
-    if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_TIDE, false);
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_TIDES, false);
   }
 
@@ -1280,16 +1260,10 @@ void ChartCanvas::ShowCurrents(bool bShow) {
 
   if (ptcmgr->IsReady()) {
     SetbShowCurrent(bShow);
-    if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_CURRENT, bShow);
-    wxString tip = _("Show Currents");
-    if (bShow) tip = _("Hide Currents");
-    if (m_toolBar) m_toolBar->SetToolShortHelp(ID_CURRENT, tip);
-
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_CURRENTS, bShow);
   } else {
     wxLogMessage(_T("Chart1::Event...TCMgr Not Available"));
     SetbShowCurrent(false);
-    if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_CURRENT, false);
     parent_frame->SetMenubarItemState(ID_MENU_SHOW_CURRENTS, false);
   }
 
@@ -2759,7 +2733,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
         SetCursor(*pCursorArrow);
 
-        SurfaceToolbar();
+        //SurfaceToolbar();
         InvalidateGL();
         Refresh(false);
       }
@@ -3146,14 +3120,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
             SetCursor(*pCursorArrow);
 
-            SurfaceToolbar();
+            //SurfaceToolbar();
             gFrame->RefreshAllCanvas();
           }
 
           if (m_routeState)  // creating route?
           {
             FinishRoute();
-            SurfaceToolbar();
+            //SurfaceToolbar();
             InvalidateGL();
             Refresh(false);
           }
@@ -3582,7 +3556,7 @@ void ChartCanvas::SetColorScheme(ColorScheme cs) {
     }
 #endif
 
-  UpdateToolbarColorScheme(cs);
+  //UpdateToolbarColorScheme(cs);
 
   m_Piano->SetColorScheme(cs);
 
@@ -4621,7 +4595,6 @@ void ChartCanvas::TogglebFollow(void) {
 void ChartCanvas::ClearbFollow(void) {
   m_bFollow = false;  // update the follow flag
 
-  if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_FOLLOW, false);
   parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, false);
 
   UpdateFollowButtonState();
@@ -4635,7 +4608,6 @@ void ChartCanvas::SetbFollow(void) {
   JumpToPosition(gLat, gLon, GetVPScale());
   m_bFollow = true;
 
-  if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_FOLLOW, true);
   parent_frame->SetMenubarItemState(ID_MENU_NAV_FOLLOW, true);
 
   UpdateFollowButtonState();
@@ -4698,8 +4670,6 @@ void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
   }
 
   ReloadVP();
-
-  if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_FOLLOW, false);
 
   UpdateFollowButtonState();
 
@@ -4812,7 +4782,6 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
   if (m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
                     (fabs(m_OSoffsety) > VPoint.pix_height / 2))) {
     m_bFollow = false;  // update the follow flag
-    if (m_toolBar) m_toolBar->GetToolbar()->ToggleTool(ID_FOLLOW, false);
 
     UpdateFollowButtonState();
   }
@@ -7065,11 +7034,18 @@ bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
       }
     }
 
+    if (MouseEventToolbar(event))
+      return true;
+
     if (MouseEventChartBar(event))
       return true;
 
     if (MouseEventMUIBar(event))
       return true;
+
+    if (MouseEventIENCBar(event))
+      return true;
+
   }
   return false;
 }
@@ -7082,6 +7058,31 @@ bool ChartCanvas::MouseEventChartBar(wxMouseEvent &event) {
   cursor_region = CENTER;
   if (!g_btouch) SetCanvasCursor(event);
   return true;
+}
+
+bool ChartCanvas::MouseEventToolbar(wxMouseEvent &event) {
+  if (g_MainToolbar) {
+    if (!g_MainToolbar->MouseEvent(event))
+      return false;
+    else
+      g_MainToolbar->RefreshToolbar();
+  }
+
+  cursor_region = CENTER;
+  if (!g_btouch) SetCanvasCursor(event);
+  return true;
+}
+
+bool ChartCanvas::MouseEventIENCBar(wxMouseEvent &event) {
+  if (g_iENCToolbar) {
+    if (!g_iENCToolbar->MouseEvent(event))
+      return false;
+    else {
+      g_iENCToolbar->RefreshToolbar();
+      return true;
+    }
+  }
+  return false;
 }
 
 bool ChartCanvas::MouseEventMUIBar(wxMouseEvent &event) {
@@ -7252,13 +7253,6 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   if (!g_btouch) {
     if ((m_bMeasure_Active && (m_nMeasureState >= 2)) || (m_routeState > 1)) {
       wxPoint p = ClientToScreen(wxPoint(x, y));
-
-      // Submerge the toolbar if necessary
-      if (m_toolBar) {
-        wxRect rect = m_toolBar->GetScreenRect();
-        rect.Inflate(20);
-        if (rect.Contains(p.x, p.y)) m_toolBar->Submerge();
-      }
     }
   }
 
@@ -9327,7 +9321,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         m_bRouteEditing = false;
         m_pRoutePointEditTarget = NULL;
 
-        if (m_toolBar && !m_toolBar->IsToolbarShown()) SurfaceToolbar();
+        //if (m_toolBar && !m_toolBar->IsToolbarShown()) SurfaceToolbar();
         ret = true;
       }
 
@@ -9347,7 +9341,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         }
         m_pRoutePointEditTarget = NULL;
         m_bMarkEditing = false;
-        if (m_toolBar && !m_toolBar->IsToolbarShown()) SurfaceToolbar();
+        //if (m_toolBar && !m_toolBar->IsToolbarShown()) SurfaceToolbar();
         ret = true;
       }
 
@@ -10210,7 +10204,7 @@ void ChartCanvas::StartRoute(void) {
   m_routeState = 1;
   m_bDrawingRoute = false;
   SetCursor(*pCursorPencil);
-  SetCanvasToolbarItemState(ID_ROUTE, true);
+  //SetCanvasToolbarItemState(ID_ROUTE, true);
   gFrame->SetMasterToolbarItemState(ID_MENU_ROUTE_NEW, true);
 
   HideGlobalToolbar();
@@ -10225,7 +10219,7 @@ void ChartCanvas::FinishRoute(void) {
   m_prev_pMousePoint = NULL;
   m_bDrawingRoute = false;
 
-  SetCanvasToolbarItemState(ID_ROUTE, false);
+  //SetCanvasToolbarItemState(ID_ROUTE, false);
   gFrame->SetMasterToolbarItemState(ID_MENU_ROUTE_NEW, false);
 #ifdef __ANDROID__
   androidSetRouteAnnunciator(false);
@@ -11802,7 +11796,7 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator(ocpnDC &dc) {
     m_pEM_OverZoom->x = 4;
     m_pEM_OverZoom->y = 0;
     if (g_MainToolbar && IsPrimaryCanvas()) {
-      wxRect masterToolbarRect = g_MainToolbar->GetRect();
+      wxRect masterToolbarRect = g_MainToolbar->GetToolbarRect();
       m_pEM_OverZoom->x = masterToolbarRect.width + 4;
     }
   }
@@ -11863,6 +11857,14 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
   DrawEmboss(dc, EmbossOverzoomIndicator(dc));
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex, OVERLAY_OVER_EMBOSS);
+  }
+
+  if (IsPrimaryCanvas()) {
+    if (g_MainToolbar) g_MainToolbar->DrawDC(dc, 1.0);
+  }
+
+  if (IsPrimaryCanvas()) {
+    if (g_iENCToolbar) g_iENCToolbar->DrawDC(dc, 1.0);
   }
 
   if (m_muiBar)
@@ -13134,96 +13136,8 @@ void ChartCanvas::OnToolLeftClick(wxCommandEvent &event) {
   event.Skip();
 }
 
-void ChartCanvas::SetToolbarPosition(wxPoint position) {
-  m_toolbarPosition = position;
-}
 
-void ChartCanvas::SetToolbarOrientation(long orient) {
-  m_toolbarOrientation = orient;
-}
 
-wxPoint ChartCanvas::GetToolbarPosition() {
-  if (m_toolBar) {
-    wxPoint tbp = m_toolBar->GetPosition();  // toolbar is a TLW, so this is
-                                             // screen coordinates.
-    return ScreenToClient(tbp);
-  } else
-    return wxPoint(0, 0);
-}
-
-long ChartCanvas::GetToolbarOrientation() {
-  if (m_toolBar)
-    return m_toolBar->GetOrient();
-  else
-    return 0;
-}
-
-void ChartCanvas::SubmergeToolbar(void) {
-  if (m_toolBar) m_toolBar->Submerge();
-}
-
-void ChartCanvas::SurfaceToolbar(void) {
-  if (m_toolBar) m_toolBar->Surface();
-}
-
-bool ChartCanvas::IsToolbarShown() {
-  bool rv = false;
-  if (m_toolBar) rv = m_toolBar->IsShown();
-  return rv;
-}
-
-void ChartCanvas::ToggleToolbar(bool b_smooth) {
-  if (m_toolBar) {
-    if (m_toolBar->IsShown()) {
-      SubmergeToolbar();
-    } else {
-      SurfaceToolbar();
-      m_toolBar->Raise();
-    }
-  }
-}
-
-void ChartCanvas::DestroyToolbar() {
-  if (m_toolBar) m_toolBar->DestroyToolBar();
-}
-
-ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(
-    bool bforcenew) {
-  return NULL;
-}
-
-//      Update inplace the current toolbar with bitmaps corresponding to the
-//      current color scheme
-void ChartCanvas::UpdateToolbarColorScheme(ColorScheme cs) {
-  if (!m_toolBar) return;
-
-  if (m_toolBar) {
-    if (m_toolBar->GetColorScheme() != cs) {
-      m_toolBar->SetColorScheme(cs);
-
-      if (m_toolBar->IsToolbarShown()) {
-        m_toolBar->DestroyToolBar();
-        m_toolBar->CreateMyToolbar();
-        if (m_toolBar->isSubmergedToGrabber())
-          m_toolBar->SubmergeToGrabber();  // Surface(); //SubmergeToGrabber();
-      }
-    }
-  }
-
-  if (m_toolBar->GetToolbar()) {
-    //  Re-establish toggle states
-    m_toolBar->GetToolbar()->ToggleTool(ID_FOLLOW, m_bFollow);
-    m_toolBar->GetToolbar()->ToggleTool(ID_CURRENT, GetbShowCurrent());
-    m_toolBar->GetToolbar()->ToggleTool(ID_TIDE, GetbShowTide());
-  }
-
-  return;
-}
-
-void ChartCanvas::SetCanvasToolbarItemState(int tool_id, bool state) {
-  if (GetToolbar() && GetToolbar()->GetToolbar())
-    GetToolbar()->GetToolbar()->ToggleTool(tool_id, state);
-}
 
 void ChartCanvas::SetShowAIS(bool show) {
   m_bShowAIS = show;
@@ -13276,84 +13190,12 @@ void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx) {
   // Set found values to global and member variables
   m_bShowAIS = bShowAIS_Array[AIS_Toolbar_Switch];
   m_bShowAISScaled = bShowScaled_Array[AIS_Toolbar_Switch];
-  if (m_toolBar) {
-    m_toolBar->SetToolShortHelp(ID_AIS,
-                                ToolShortHelp_Array[AIS_Toolbar_Switch_Next]);
-    if (m_toolBar->m_pTBAISTool) {
-      m_toolBar->GetToolbar()->SetToolNormalBitmapEx(
-          m_toolBar->m_pTBAISTool, iconName_Array[AIS_Toolbar_Switch]);
-      m_toolBar->GetToolbar()->Refresh();
-      m_toolBar->m_tblastAISiconName = iconName_Array[AIS_Toolbar_Switch];
-    }
-  }
 }
 
 void ChartCanvas::TouchAISToolActive(void) {
-  if (!m_toolBar) return;
-
-  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-
-  if (m_toolBar->m_pTBAISTool) {
-    if ((!g_pAIS->IsAISSuppressed()) && (!g_pAIS->IsAISAlertGeneral())) {
-      g_nAIS_activity_timer = 5;  // seconds
-
-      wxString iconName = _T("AIS_Normal_Active");
-      if (g_pAIS->IsAISAlertGeneral()) iconName = _T("AIS_AlertGeneral_Active");
-      if (g_pAIS->IsAISSuppressed()) iconName = _T("AIS_Suppressed_Active");
-      if (!m_bShowAIS) iconName = _T("AIS_Disabled");
-
-      if (m_toolBar->m_tblastAISiconName != iconName) {
-        if (m_toolBar->GetToolbar()) {
-          m_toolBar->GetToolbar()->SetToolNormalBitmapEx(
-              m_toolBar->m_pTBAISTool, iconName);
-          m_toolBar->GetToolbar()->Refresh();
-          m_toolBar->m_tblastAISiconName = iconName;
-        }
-      }
-    }
-  }
-}
+ }
 
 void ChartCanvas::UpdateAISTBTool(void) {
-  if (!g_pAIS) return;
-  if (!m_toolBar) return;
-
-  ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-
-  wxString iconName;
-
-  if (m_toolBar->m_pTBAISTool) {
-    bool b_update = false;
-
-    iconName = _T("AIS");
-    if (g_pAIS->IsAISSuppressed()) iconName = _T("AIS_Suppressed");
-    if (g_pAIS->IsAISAlertGeneral()) iconName = _T("AIS_AlertGeneral");
-    if (!m_bShowAIS) iconName = _T("AIS_Disabled");
-
-    //  Manage timeout for AIS activity indicator
-    if (g_nAIS_activity_timer) {
-      g_nAIS_activity_timer--;
-
-      if (0 == g_nAIS_activity_timer)
-        b_update = true;
-      else {
-        iconName = _T("AIS_Normal_Active");
-        if (g_pAIS->IsAISSuppressed()) iconName = _T("AIS_Suppressed_Active");
-        if (g_pAIS->IsAISAlertGeneral())
-          iconName = _T("AIS_AlertGeneral_Active");
-        if (!m_bShowAIS) iconName = _T("AIS_Disabled");
-      }
-    }
-
-    if ((m_toolBar->m_tblastAISiconName != iconName)) b_update = true;
-
-    if (b_update && m_toolBar->GetToolbar()) {
-      m_toolBar->GetToolbar()->SetToolNormalBitmapEx(m_toolBar->m_pTBAISTool,
-                                                     iconName);
-      m_toolBar->GetToolbar()->Refresh();
-      m_toolBar->m_tblastAISiconName = iconName;
-    }
-  }
 }
 
 //---------------------------------------------------------------------------------
@@ -13377,34 +13219,7 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
                        g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
   wxRect tentative_rect(tentative_pt, rect.GetSize());
 
-  if (m_toolBar) {
-    //  If the toolbar location has changed, or the proposed compassDialog
-    //  location has changed
-    if (m_toolBar->GetScreenRect() != m_mainlast_tb_rect || b_force_new) {
-      wxRect tb_rect = m_toolBar->GetScreenRect();
-      wxPoint tentative_pt_in_screen(ClientToScreen(tentative_pt));
-      wxRect tentative_rect_in_screen(tentative_pt_in_screen.x,
-                                      tentative_pt_in_screen.y, rect.width,
-                                      rect.height);
-
-      //    if they would not intersect, go ahead and move it to the upper right
-      //      Else it has to be on lower right
-      if (!tb_rect.Intersects(tentative_rect_in_screen))
-        m_Compass->Move(tentative_pt);
-      else
-        m_Compass->Move(wxPoint(GetSize().x - rect.width - cc1_edge_comp,
-                                GetSize().y - (rect.height + cc1_edge_comp)));
-
-      if (rect != m_Compass->GetRect()) {
-        Refresh(true);
-        m_brepaint_piano = true;
-        b_update = true;
-      }
-      m_mainlast_tb_rect = tb_rect;
-    }
-  } else {  // No toolbar, so just place compass in upper right.
-    m_Compass->Move(tentative_pt);
-  }
+  m_Compass->Move(tentative_pt);
 
   if (m_Compass && m_Compass->IsShown())
     m_Compass->UpdateStatus(b_force_new | b_update);

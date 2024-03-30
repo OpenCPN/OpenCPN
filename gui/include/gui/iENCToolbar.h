@@ -36,7 +36,6 @@
 #define STATE_TIMER 3689
 
 class iENCToolbar : public ocpnFloatingToolbarDialog {
-  DECLARE_EVENT_TABLE()
 
 public:
   iENCToolbar(wxWindow *parent, wxPoint position, long orient,
@@ -46,9 +45,10 @@ public:
   void LoadToolBitmaps();
   void OnToolLeftClick(wxCommandEvent &event);
   void SetDensityToolBitmap(int nDensity);
+  void SetRangeToolBitmap();
+
   void StateTimerEvent(wxTimerEvent &event);
   void SetColorScheme(ColorScheme cs);
-  void MouseEvent(wxMouseEvent &event);
 
   wxBitmap m_bmMinimum, m_bmStandard, m_bmAll, m_bmUStd, m_bmRPlus, m_bmRMinus;
   wxBitmap *m_pbmScratch;

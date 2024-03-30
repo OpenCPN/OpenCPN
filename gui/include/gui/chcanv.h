@@ -51,7 +51,6 @@ class IDX_entry;
 class ocpnCompass;
 class TimedPopupWin;
 class Track;
-class ocpnFloatingToolbarDialog;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -150,6 +149,9 @@ public:
   bool MouseEventOverlayWindows(wxMouseEvent &event);
   bool MouseEventChartBar(wxMouseEvent &event);
   bool MouseEventMUIBar(wxMouseEvent &event);
+  bool MouseEventToolbar(wxMouseEvent &event);
+  bool MouseEventIENCBar(wxMouseEvent &event);
+
   bool MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick = true);
   bool MouseEventProcessObjects(wxMouseEvent &event);
   bool MouseEventProcessCanvas(wxMouseEvent &event);
@@ -397,7 +399,6 @@ public:
   void OnPianoMenuEnableChart(wxCommandEvent &event);
 
   bool IsPianoContextMenuActive() { return m_piano_ctx_menu != 0; }
-  void SetCanvasToolbarItemState(int tool_id, bool state);
   bool DoCanvasCOGSet(void);
   void UpdateFollowButtonState(void);
   void ApplyGlobalSettings();
@@ -474,28 +475,10 @@ public:
   Track *GetSelectedTrack() const { return m_pSelectedTrack; }
   RoutePoint *GetSelectedRoutePoint() const { return m_pFoundRoutePoint; }
 
-  ocpnFloatingToolbarDialog *RequestNewCanvasToolbar(bool bforcenew = true);
-  void UpdateToolbarColorScheme(ColorScheme cs);
   void SetAISCanvasDisplayStyle(int StyleIndx);
   void TouchAISToolActive(void);
   void UpdateAISTBTool(void);
-  void SetToolbarScaleFactor(double scale_factor) {
-    m_toolbar_scalefactor = scale_factor;
-  }
-  ocpnFloatingToolbarDialog *GetToolbar() { return m_toolBar; }
-  void SetToolbarConfigString(wxString &config) { m_toolbarConfig = config; }
-  wxString GetToolbarConfigString() { return m_toolbarConfig; }
 
-  void SetToolbarPosition(wxPoint position);
-  wxPoint GetToolbarPosition();
-  void SetToolbarOrientation(long orient);
-  long GetToolbarOrientation();
-
-  void SubmergeToolbar(void);
-  void SurfaceToolbar(void);
-  void ToggleToolbar(bool b_smooth = false);
-  bool IsToolbarShown();
-  void DestroyToolbar();
 
   void SelectChartFromStack(int index, bool bDir = false,
                             ChartTypeEnum New_Type = CHART_TYPE_DONTCARE,
@@ -516,8 +499,6 @@ public:
   bool GetShowOutlines() { return m_bShowOutlines; }
   void SetShowOutlines(bool show) { m_bShowOutlines = show; }
   bool GetShowChartbar() { return true; }
-  bool GetToolbarEnable() { return m_bToolbarEnable; }
-  void SetToolbarEnable(bool show);
   wxRect GetMUIBarRect();
   void SetMUIBarPosition();
   void DestroyMuiBar();
@@ -897,11 +878,6 @@ private:
 
   bool m_dragoffsetSet;
 
-  ocpnFloatingToolbarDialog *m_toolBar;
-  double m_toolbar_scalefactor;
-  wxString m_toolbarConfig;
-  wxPoint m_toolbarPosition;
-  long m_toolbarOrientation;
 
   bool m_bautofind;
   bool m_bFirstAuto;
@@ -926,7 +902,6 @@ private:
   bool m_bShowOutlines;
   bool m_bDisplayGrid;
   bool m_bShowDepthUnits;
-  bool m_bToolbarEnable;
   bool m_bShowAIS;
   bool m_bShowAISScaled;
 
