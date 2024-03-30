@@ -1006,7 +1006,8 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   m_cbCheckSKDiscover->Hide();  // Provisional
   m_ButtonSKDiscover->Hide();
 
-  ShowInFilter(visible);
+  const bool bin_enable = m_cbInput->IsChecked();
+  ShowInFilter(visible & bin_enable);
   const bool bout_enable = m_cbOutput->IsChecked();
   ShowOutFilter(visible && bout_enable);
 
@@ -1209,7 +1210,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbInput->Show();
       m_cbInput->Enable();
 
-      ShowInFilter();
+      ShowInFilter(m_cbInput->IsChecked());
       ShowOutFilter(m_cbOutput->IsChecked());
 
       m_stPrecision->Show(m_cbOutput->IsChecked());
@@ -1331,7 +1332,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
         m_stTalkerIdText->Enable(m_cbOutput->IsChecked());
         m_TalkerIdText->Enable(m_cbOutput->IsChecked());
 
-        ShowInFilter(true);
+        ShowInFilter(m_cbInput->IsChecked());
         ShowOutFilter(m_cbOutput->IsChecked());
       }
 
@@ -1714,6 +1715,12 @@ void ConnectionEditDialog::OnRbOutput(wxCommandEvent& event) {
 }
 
 void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
+  const bool checked = m_cbInput->IsChecked();
+  ShowInFilter(checked);
+
+  SetDSFormRWStates();
+  LayoutDialog();
+
   OnConnValChange(event);
 }
 
