@@ -1445,7 +1445,7 @@ void ocpnToolBarSimple::OnToolTipOffTimerEvent(wxTimerEvent &event) {
 
 bool ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event, wxPoint &position) {
 #ifdef __OCPN__ANDROID__
-  if (!event.IsButton()) return;
+  if (!event.IsButton()) return false;
 #endif
 
   wxCoord x, y;
