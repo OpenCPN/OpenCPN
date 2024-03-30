@@ -7061,6 +7061,9 @@ bool ChartCanvas::MouseEventChartBar(wxMouseEvent &event) {
 }
 
 bool ChartCanvas::MouseEventToolbar(wxMouseEvent &event) {
+  if (!IsPrimaryCanvas())
+    return false;
+
   if (g_MainToolbar) {
     if (!g_MainToolbar->MouseEvent(event))
       return false;
@@ -7074,6 +7077,9 @@ bool ChartCanvas::MouseEventToolbar(wxMouseEvent &event) {
 }
 
 bool ChartCanvas::MouseEventIENCBar(wxMouseEvent &event) {
+  if (!IsPrimaryCanvas())
+    return false;
+
   if (g_iENCToolbar) {
     if (!g_iENCToolbar->MouseEvent(event))
       return false;

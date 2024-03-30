@@ -4454,10 +4454,10 @@ void glChartCanvas::Render() {
   if (m_pParentCanvas->GetMUIBar())
     m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
 
-  if (g_MainToolbar)
+  if (g_MainToolbar && m_pParentCanvas->IsPrimaryCanvas())
     g_MainToolbar->DrawGL(gldc, m_displayScale);
 
-  if (g_iENCToolbar)
+  if (g_iENCToolbar && m_pParentCanvas->IsPrimaryCanvas())
     g_iENCToolbar->DrawGL(gldc, m_displayScale);
 
     //  On some platforms, the opengl context window is always on top of any
