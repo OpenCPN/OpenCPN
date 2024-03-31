@@ -148,6 +148,9 @@ void DashboardInstrument_BaroHistory::SetData(DASH_CAP st, double data,
       }
     }
     else m_SetNewData--;
+  } else {
+    //  Check for watchdog timeout
+    if (isnan(data)) m_Press = data;
   }
 }
 
@@ -434,7 +437,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
 
   */
   //---------------------------------------------------------------------------------
-  // Draw vertical timelines every 15 minutes
+  // Draw vertical timelines every 60 minutes
   //---------------------------------------------------------------------------------
   GetGlobalColor("DASHL", &col);
   pen.SetColour(col);
@@ -449,7 +452,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
       wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
       min = localTime.GetMinute();
-      if ((hour * 100 + min) != done && (min == 0 || min % 15 == 0)) {
+      if ((hour * 100 + min) != done && (min == 0)) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));
