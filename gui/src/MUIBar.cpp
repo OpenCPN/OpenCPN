@@ -917,7 +917,7 @@ void MUIBar::UpdateDynamicValues() {
   if (scale < 1e6)
     scaleString.Printf(_T("1:%d"), scale);
   else
-    scaleString.Printf(_T("1:%4.1f MM"), scale / 1e6);
+    scaleString.Printf(_T("1:%4.1f M"), scale / 1e6);
 
   if (m_scaleButton) m_scaleButton->SetText(scaleString);
 }
