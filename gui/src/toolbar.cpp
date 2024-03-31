@@ -2279,6 +2279,7 @@ void ocpnToolBarSimple::SetToolBitmaps(int id, wxBitmap *bmp,
       tool->SetNormalBitmap(*bmp);
       tool->bitmapOK = true;
     }
+    InvalidateBitmaps();
   }
 }
 
@@ -2291,6 +2292,7 @@ void ocpnToolBarSimple::SetToolBitmapsSVG(int id, wxString fileSVGNormal,
     tool->pluginRolloverIconSVG = fileSVGRollover;
     tool->pluginToggledIconSVG = fileSVGToggled;
     tool->bitmapOK = false;
+    InvalidateBitmaps();
   }
 }
 
