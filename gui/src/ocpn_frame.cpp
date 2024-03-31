@@ -1325,10 +1325,12 @@ void MyFrame::UpdateAllToolbars(ColorScheme cs) {
 
 void MyFrame::SetAllToolbarScale() {
   g_toolbar_scalefactor = g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
+  g_toolbar_scalefactor *= OCPN_GetWinDIPScaleFactor();
 }
 
 void MyFrame::SetGPSCompassScale() {
   g_compass_scalefactor = g_Platform->GetCompassScaleFactor(g_GUIScaleFactor);
+  g_compass_scalefactor *= OCPN_GetWinDIPScaleFactor();
 }
 
 ChartCanvas *MyFrame::GetCanvasUnderMouse() {
