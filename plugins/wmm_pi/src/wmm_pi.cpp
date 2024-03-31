@@ -556,8 +556,10 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   wxString NewVal = wxString::Format(_T("%.1f"), GeoMagneticElements.Decl);
   double scale = GetOCPNGUIToolScaleFactor_PlugIn();
   scale = wxRound(scale * 4.0) / 4.0;
-  scale =
-      wxMax(1.0, scale);  // Let the upstream processing handle minification.
+  scale *= OCPN_GetWinDIPScaleFactor();
+
+  //scale =
+    //  wxMax(1.0, scale);  // Let the upstream processing handle minification.
 
   if (m_bShowIcon && m_bShowLiveIcon &&
       ((m_LastVal != NewVal) || (scale != m_scale))) {
