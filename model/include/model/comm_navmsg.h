@@ -181,7 +181,7 @@ class NavAddrSignalK : public NavAddr {
 public:
   NavAddrSignalK(std::string iface) : NavAddr(NavAddr::Bus::Signalk, iface){};
 
-  std::string to_string() const { return "signalK"; }
+  std::string to_string() const { return NavAddr::to_string(); }
 };
 
 class NavAddrTest : public NavAddr {

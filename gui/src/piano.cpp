@@ -785,9 +785,12 @@ void Piano::FormatKeys(void) {
   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   int width = m_parentCanvas->GetClientSize().x;
 #ifdef __WXOSX__
-  if(g_bopengl)
+  if (g_bopengl)
     width *= m_parentCanvas->GetContentScaleFactor();
+#else
+  width *= m_parentCanvas->GetContentScaleFactor();
 #endif
+
   int height = GetHeight();
   width *= g_btouch ? 0.98f : 0.6f;
 
@@ -831,8 +834,9 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
     x *= OCPN_GetDisplayContentScaleFactor();
     y *= OCPN_GetDisplayContentScaleFactor();
   }
+#else
+  y *= OCPN_GetDisplayContentScaleFactor();
 #endif
-
   int ytop = m_parentCanvas->GetCanvasHeight() - GetHeight();
 #ifdef __WXOSX__
   if (!g_bopengl)
@@ -842,11 +846,11 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
   if (event.Leaving() || y < ytop) {
     if (m_bleaving) return false;
     m_bleaving = true;
-  } else
+  } else {
     m_bleaving = false;
+  }
 
   //    Check the regions
-
   int sel_index = -1;
   int sel_dbindex = -1;
 
