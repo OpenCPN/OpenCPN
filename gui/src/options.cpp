@@ -4901,6 +4901,85 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
         wxEVT_COMMAND_CHECKBOX_CLICKED,
         wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
         this);
+
+    //  Sound Device Configuration
+    wxStaticBox* StatBoxSoundConfig =
+        new wxStaticBox(panelSounds, wxID_ANY, _("Sound Device Configuration"));
+    wxStaticBoxSizer* StatBoxSoundConfigSizer =
+        new wxStaticBoxSizer(StatBoxSoundConfig, wxVERTICAL);
+    wrapperSizer->Add(StatBoxSoundConfigSizer, 0, wxALL | wxEXPAND, border_size);
+
+    auto sound = std::unique_ptr<OcpnSound>(SoundFactory());
+    int deviceCount = sound->DeviceCount();
+    wxLogMessage("options: got device count: %d", deviceCount);
+    if (deviceCount >= 1) {
+      wxArrayString labels;
+      for (int i = 0; i < deviceCount; i += 1) {
+        wxString label(sound->GetDeviceInfo(i));
+        if (label == "") {
+          std::ostringstream stm;
+          stm << i;
+          label = _("Unknown device :") + stm.str();
+        }
+        if (!sound->IsOutputDevice(i)) {
+          std::ostringstream stm;
+          stm << i;
+          label = _("Input device :") + stm.str();
+        }
+        labels.Add(label);
+      }
+
+    //  if sound device index is uninitialized, set to "default", if found.
+    // Otherwise, set to 0
+      int iDefault = labels.Index("default");
+
+      if (g_iSoundDeviceIndex == -1) {
+        if (iDefault >= 0)
+          g_iSoundDeviceIndex = iDefault;
+        else
+          g_iSoundDeviceIndex = 0;
+      }
+
+
+      pSoundDeviceIndex = new wxChoice();
+      if (pSoundDeviceIndex) {
+        pSoundDeviceIndex->Create(panelSounds, wxID_ANY, wxDefaultPosition,
+                                wxDefaultSize, labels);
+        pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+        pSoundDeviceIndex->Show();
+        wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
+        StatBoxSoundConfigSizer->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
+                       group_item_spacing);
+
+        stSoundDeviceIndex =
+          new wxStaticText(panelSounds, wxID_STATIC, _("Sound Device"));
+        pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
+        pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+      }
+    }
+
+#ifndef __ANDROID__
+    if ((bool)dynamic_cast<SystemCmdSound*>(SoundFactory())) {
+      wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
+      StatBoxSoundConfigSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
+      pCmdSoundString =
+        new wxTextCtrl(panelSounds, wxID_ANY, _T( "" ), wxDefaultPosition,
+                       wxSize(450, -1), wxTE_LEFT);
+      pSoundSizer->Add(
+        new wxStaticText(panelSounds, wxID_ANY, _("Audio Play command:")), 0,
+        wxALIGN_LEFT | wxALL);
+      pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
+    }
+#endif
+
+    if (!deviceCount)
+      StatBoxSoundConfig->Hide();
+
+#ifdef __ANDROID__
+    stSoundDeviceIndex->Hide();
+    pSoundDeviceIndex->Hide();
+#endif
+
 }
 
 void options::CreatePanel_MMSI(size_t parent, int border_size,
@@ -5347,72 +5426,6 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pPlayShipsBells =
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
   pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
-
-#ifndef __ANDROID__
-  if (g_bUIexpert && (bool)dynamic_cast<SystemCmdSound*>(SoundFactory())) {
-    wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
-    pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
-    pCmdSoundString =
-        new wxTextCtrl(itemPanelFont, wxID_ANY, _T( "" ), wxDefaultPosition,
-                       wxSize(450, -1), wxTE_LEFT);
-    pSoundSizer->Add(
-        new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")), 0,
-        wxALIGN_CENTER_HORIZONTAL | wxALL);
-    pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
-  }
-#endif
-
-  auto sound = std::unique_ptr<OcpnSound>(SoundFactory());
-  int deviceCount = sound->DeviceCount();
-  wxLogMessage("options: got device count: %d", deviceCount);
-  if (deviceCount >= 1) {
-    wxArrayString labels;
-    for (int i = 0; i < deviceCount; i += 1) {
-      wxString label(sound->GetDeviceInfo(i));
-      if (label == "") {
-        std::ostringstream stm;
-        stm << i;
-        label = _("Unknown device :") + stm.str();
-      }
-      if (!sound->IsOutputDevice(i)) {
-        std::ostringstream stm;
-        stm << i;
-        label = _("Input device :") + stm.str();
-      }
-      labels.Add(label);
-    }
-
-    //  if sound device index is uninitialized, set to "default", if found.
-    // Otherwise, set to 0
-    int iDefault = labels.Index("default");
-
-    if (g_iSoundDeviceIndex == -1) {
-      if (iDefault >= 0)
-        g_iSoundDeviceIndex = iDefault;
-      else
-        g_iSoundDeviceIndex = 0;
-    }
-
-    pSoundDeviceIndex = new wxChoice();
-    if (pSoundDeviceIndex) {
-      pSoundDeviceIndex->Create(itemPanelFont, wxID_ANY, wxDefaultPosition,
-                                wxDefaultSize, labels);
-      pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
-      pSoundDeviceIndex->Show();
-      wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
-      miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
-                       group_item_spacing);
-
-      stSoundDeviceIndex =
-          new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
-      pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-      pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
-    }
-  }
-#ifdef __ANDROID__
-  stSoundDeviceIndex->Hide();
-  pSoundDeviceIndex->Hide();
-#endif
 
   //  Mobile/Touchscreen checkboxes
   pMobile = new wxCheckBox(itemPanelFont, ID_MOBILEBOX,
@@ -6135,7 +6148,7 @@ void options::SetInitialSettings(void) {
   if (pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
 
-  if (g_bUIexpert && pCmdSoundString)
+  if (pCmdSoundString)
     pCmdSoundString->SetValue(g_CmdSoundString);
 
   if (pSoundDeviceIndex) pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
@@ -7024,7 +7037,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
-  if (g_bUIexpert && pCmdSoundString) {
+  if (pCmdSoundString) {
     g_CmdSoundString = pCmdSoundString->GetValue();
     if (wxIsEmpty(g_CmdSoundString)) {
       g_CmdSoundString = wxString(OCPN_SOUND_CMD);
