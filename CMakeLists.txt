@@ -2551,6 +2551,15 @@ if (UNIX AND NOT APPLE)
   set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 endif ()
 
+# Command line tools - must be added before the macOS bundle is defined, otherwise they do not get installed before fixup_bundle is performed
+if (NOT QT_ANDROID)
+  add_subdirectory(cli)
+endif ()
+
+if (NOT QT_ANDROID AND OCPN_USE_GL)
+  add_subdirectory(glutil)
+endif ()
+
 #
 # Apple application bundle
 #
@@ -2705,14 +2714,6 @@ endif ()
 
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
-
-if (NOT QT_ANDROID)
-  add_subdirectory(cli)
-endif ()
-
-if (NOT QT_ANDROID AND OCPN_USE_GL)
-  add_subdirectory(glutil)
-endif ()
 
 if (OCPN_BUILD_TEST)
   add_subdirectory(libs/gtest)
