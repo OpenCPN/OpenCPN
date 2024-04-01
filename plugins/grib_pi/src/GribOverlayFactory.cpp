@@ -49,6 +49,7 @@
 extern int m_Altitude;
 extern bool g_bpause;
 extern double g_ContentScaleFactor;
+float g_piGLMinSymbolLineWidth = 0.9;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
@@ -433,6 +434,16 @@ bool GRIBOverlayFactory::RenderGLGribOverlay(wxGLContext *pcontext,
     if (m_oDC) {
       delete m_oDC;
     }
+     #ifdef ocpnUSE_GL
+      //  Set the minimum line width
+      GLint parms[2];
+    #ifndef USE_ANDROID_GLES2
+      glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+    #else
+      glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+    #endif
+      g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+    #endif
     m_oDC = new pi_ocpnDC();
   }
 
