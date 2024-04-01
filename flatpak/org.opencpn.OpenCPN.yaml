@@ -7,16 +7,9 @@
 #
 
 # This manifest is used to build development snapshots (including
-# nightly builds) of the flatpak package.
+# nightly builds) of the flatpak package. The official packaging
+# lives in https://github.com/flathub/org.opencpn.OpenCPN
 #
-# For unknown reasons the tests fails when invoked as part of the build.
-# To run tests:
-#
-#   $ cd build
-#   $ make -f ../flatpak/Makefile build-only
-#   $ flatpak-builder --run app ../flatpak/org.opencpn.OpenCPN.yaml bash
-#   $ cd .flatpak-builder/build/opencpn/_flatpak_build
-#   $ make run-tests
 
 
 app-id: org.opencpn.OpenCPN
@@ -82,7 +75,7 @@ modules:
             - src/0011-rapidjson-1.1.0-do_not_include_gtest_src_dir.patch
             - src/0012-Fix-Wclass-memaccess-warnings-errors.patch
             - src/0013-gcc7.patch
- 
+
     - name: glew
       no-autogen: true
       make-args:
@@ -178,9 +171,7 @@ modules:
           env:
             BUILD_NUMBER: "0"
             CCACHE_DISABLE: "1"
-      # See comment at top
       run-tests: true
-      # test-commands: cd /run/build/opencpn/_flatpak_build; make run-tests
       test-rule: run-tests
       post-install:
           - install -d /app/extensions
