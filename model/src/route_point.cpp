@@ -47,7 +47,7 @@ int g_LayerIdx;
 wxRect g_blink_rect;
 
 std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
-    = [](unsigned, const unsigned*) { assert(false); };
+    = [](unsigned, const unsigned*) { assert(true); };
 
 RoutePoint::RoutePoint() {
   m_pbmIcon = NULL;

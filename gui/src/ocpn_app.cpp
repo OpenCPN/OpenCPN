@@ -1786,7 +1786,8 @@ bool MyApp::OnInit() {
   // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
   // glDeleteTextures. Truly awful.
 #ifdef ocpnUSE_GL
-  RoutePoint::delete_gl_textures =
+  if (g_bopengl)
+    RoutePoint::delete_gl_textures =
       [](unsigned n, const unsigned* texts) { glDeleteTextures(n, texts); };
 #else
   RoutePoint::delete_gl_textures = [](unsigned n, const unsigned* texts) { };

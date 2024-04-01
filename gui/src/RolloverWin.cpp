@@ -82,7 +82,8 @@ EVT_PAINT(RolloverWin::OnPaint) EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
 RolloverWin::~RolloverWin() {
   delete m_pbm;
 #ifdef ocpnUSE_GL
-  glDeleteTextures(1, &m_texture);
+  if (g_bopengl)
+    glDeleteTextures(1, &m_texture);
 #endif
 }
 void RolloverWin::OnTimer(wxTimerEvent &event) {
