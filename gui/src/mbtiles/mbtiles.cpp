@@ -667,7 +667,6 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
     return true;
   } else if (!tile->m_bAvailable) {
     // Tile is not in MbTiles file : no texture to render
-    m_tileCount--;
     return false;
   } else if (tile->m_teximage == 0) {
     if (tile->m_requested == false) {
@@ -1012,7 +1011,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glChartCanvas::DisableClipRegion();
 
-  // Limit the cache size to 3 times the number of tiles to draw on a rendering
+  // Limit the cache size to 3 times the number of tiles to draw on the current
+  // viewport. This dynamic limit allows to automatically adapt to the actual
+  // resolution of the screen and to handle tricky configuration with multiple
+  // screens or hdpi displays
   m_tileCache->CleanCache(m_tileCount * 3);
 #endif
   return true;
