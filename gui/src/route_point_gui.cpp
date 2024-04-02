@@ -401,6 +401,9 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
       scale = g_MarkScaleFactorExp;
     }
 
+    // Scale for MacOS Retina and GTK screen scaling
+    scale *= GetOCPNCanvasWindow()->GetContentScaleFactor();
+
     float ws = r1.width * scale;
     float hs = r1.height * scale;
     float xs = r.x - ws / 2.;
