@@ -11325,27 +11325,31 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
       SetAlertString(_("MBTile requires OpenGL to be enabled"));
   }
 
-  //    Draw the rest of the overlay objects directly on the scratch dc
-  ocpnDC scratch_dc(mscratch_dc);
-  DrawOverlayObjects(scratch_dc, ru);
+  // May get an unexpected OnPaint call while switching display modes
+  // Guard for that.
+  if (!g_bopengl) {
+    //    Draw the rest of the overlay objects directly on the scratch dc
+    ocpnDC scratch_dc(mscratch_dc);
+    DrawOverlayObjects(scratch_dc, ru);
 
-  if (m_bShowTide) {
-    RebuildTideSelectList(GetVP().GetBBox());
-    DrawAllTidesInBBox(scratch_dc, GetVP().GetBBox());
+    if (m_bShowTide) {
+      RebuildTideSelectList(GetVP().GetBBox());
+      DrawAllTidesInBBox(scratch_dc, GetVP().GetBBox());
+    }
+
+    if (m_bShowCurrent) {
+      RebuildCurrentSelectList(GetVP().GetBBox());
+      DrawAllCurrentsInBBox(scratch_dc, GetVP().GetBBox());
+    }
+
+    if (m_brepaint_piano && g_bShowChartBar) {
+      m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
+    }
+
+    if (m_Compass) m_Compass->Paint(scratch_dc);
+
+    RenderAlertMessage(mscratch_dc, GetVP());
   }
-
-  if (m_bShowCurrent) {
-    RebuildCurrentSelectList(GetVP().GetBBox());
-    DrawAllCurrentsInBBox(scratch_dc, GetVP().GetBBox());
-  }
-
-  if (m_brepaint_piano && g_bShowChartBar) {
-    m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
-  }
-
-  if (m_Compass) m_Compass->Paint(scratch_dc);
-
-  RenderAlertMessage(mscratch_dc, GetVP());
 
   // quiting?
   if (g_bquiting) {
