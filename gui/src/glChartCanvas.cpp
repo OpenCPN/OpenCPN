@@ -2299,6 +2299,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
       nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
 
+      scale_factor *= m_pParentCanvas->GetContentScaleFactor();
+
       float nominal_ownship_size_pixels =
           wxMax(20.0, m_pParentCanvas->GetPixPerMM() *
                           nominal_ownship_size_mm);  // nominal length, but not
@@ -2433,6 +2435,10 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         scale_factor_y = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
       }
 
+      // Correct for scaled displays, e.g. Retina
+      scale_factor_x *= m_pParentCanvas->GetContentScaleFactor();
+      scale_factor_y *= m_pParentCanvas->GetContentScaleFactor();
+
       // Set the size of the little circle showing the GPS reference position
       // Set a default early, adjust later based on render type
       float gps_circle_radius = 3.0;
@@ -2460,9 +2466,14 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
 
         float nominal_ownship_size_pixels =
-            wxMax(20.0, m_pParentCanvas->GetPixPerMM() *
-                            nominal_ownship_size_mm);  // nominal length, but
-                                                       // not less than 20 pixel
+            m_pParentCanvas->GetPixPerMM() * nominal_ownship_size_mm;
+
+
+        if (m_pParentCanvas->GetContentScaleFactor() == 1.0) {
+          nominal_ownship_size_pixels = wxMax(
+              20.0, nominal_ownship_size_pixels);  // not less than 20 pixel
+        }
+
         float h = nominal_ownship_size_pixels * scale_factor_y;
         float w = nominal_ownship_size_pixels * scale_factor_x *
                   ownship_size.x / ownship_size.y;
