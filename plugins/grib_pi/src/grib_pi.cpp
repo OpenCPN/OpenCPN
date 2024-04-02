@@ -60,7 +60,6 @@ extern int m_DialogStyle;
 
 grib_pi *g_pi;
 bool g_bpause;
-float g_piGLMinSymbolLineWidth;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -168,17 +167,6 @@ int grib_pi::Init(void) {
     m_CtrlBarxy = wxPoint(20, 60);  // reset to the default position
     m_CursorDataxy = wxPoint(20, 170);
   }
-
-#ifdef ocpnUSE_GL
-  //  Set the minimum line width
-  GLint parms[2];
-#ifndef USE_ANDROID_GLES2
-  glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-#else
-  glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-#endif
-  g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-#endif
 
   return (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
           WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |

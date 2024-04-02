@@ -41,7 +41,7 @@
 #include "qdebug.h"
 #endif
 
-float g_piGLMinSymbolLineWidth;
+float g_piGLMinSymbolLineWidth = 0.9;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
 extern "C" void WMMLogMessage(const char *s) {
@@ -226,17 +226,6 @@ int wmm_pi::Init(void) {
 
   m_pWmmDialog = NULL;
   m_oDC = NULL;
-
-#ifdef ocpnUSE_GL
-  //  Set the minimum line width
-  GLint parms[2];
-#ifndef USE_ANDROID_GLES2
-  glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-#else
-  glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-#endif
-  g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-#endif
 
   return ret_flag;
 }
@@ -423,7 +412,19 @@ bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
 bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return true;
 
-  if (!m_oDC) m_oDC = new pi_ocpnDC();
+  if (!m_oDC) {
+    #ifdef ocpnUSE_GL
+      //  Set the minimum line width
+      GLint parms[2];
+    #ifndef USE_ANDROID_GLES2
+      glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+    #else
+      glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+    #endif
+      g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+    #endif
+    m_oDC = new pi_ocpnDC();
+  }
 
   m_oDC->SetVP(vp);
   m_oDC->SetDC(NULL);
