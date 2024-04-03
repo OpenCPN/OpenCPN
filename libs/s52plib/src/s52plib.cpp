@@ -2865,6 +2865,8 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     scale_factor *= pix_factor;
   }
 
+  scale_factor *= m_ContentScaleFactor;
+
   // a few special cases here
   if (!strncmp(rzRules->obj->FeatureName, "notmrk", 6) ||
       !strncmp(rzRules->obj->FeatureName, "NOTMRK", 6) ||
