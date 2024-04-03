@@ -179,6 +179,9 @@ extern bool g_oz_vector_scale;
 extern wxString g_toolbarConfig;
 extern bool g_bPreserveScaleOnX;
 extern bool g_running;
+extern bool g_bEnableZoomToCursor;
+extern bool g_bsmoothpanzoom;
+extern bool g_bShowMenuBar;
 
 extern Select *pSelectTC;
 
@@ -1253,6 +1256,14 @@ void OCPNPlatform::SetDefaultOptions(void) {
     pConfig->Write(_T ( "ZoomDetailFactorVector" ), 3);
 
     pConfig->Write(_T ( "nColorScheme" ), 1);  // higher contrast on NOAA RNCs
+
+// A few more often requested defaults, not applicable to Android
+#ifndef __ANDROID__
+    g_bEnableZoomToCursor = true;
+    g_bsmoothpanzoom = true;
+    g_bShowMenuBar = true;
+#endif
+
   }
 
 #ifdef __WXMSW__
