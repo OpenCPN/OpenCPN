@@ -503,6 +503,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
   SetAlertString(_T(""));
   m_sector_glat = 0;
   m_sector_glon = 0;
+  g_PrintingInProgress = false;
 
 #ifdef HAVE_WX_GESTURE_EVENTS
   m_oldVPSScale = -1.0;
