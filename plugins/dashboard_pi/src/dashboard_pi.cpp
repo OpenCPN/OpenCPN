@@ -3847,11 +3847,20 @@ void dashboard_pi::ApplyConfig(void) {
 }
 
 void dashboard_pi::PopulateContextMenu(wxMenu *menu) {
+  int nvis = 0;
+  wxMenuItem *visItem = 0;
   for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i);
     wxMenuItem *item = menu->AppendCheckItem(i + 1, cont->m_sCaption);
     item->Check(cont->m_bIsVisible);
+    if (cont->m_bIsVisible) {
+      nvis++;
+      visItem = item;
+    }
   }
+  if( nvis == 1 && visItem)
+    visItem->Enable(false);
+
 }
 
 void dashboard_pi::ShowDashboard(size_t id, bool visible) {
@@ -5342,7 +5351,11 @@ void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
 
 void DashboardWindow::OnContextMenuSelect(wxCommandEvent &event) {
   if (event.GetId() < ID_DASH_PREFS) {  // Toggle dashboard visibility
-    m_plugin->ShowDashboard(event.GetId() - 1, event.IsChecked());
+    if (m_plugin->GetDashboardWindowShownCount() > 1 || event.IsChecked())
+      m_plugin->ShowDashboard(event.GetId() - 1, event.IsChecked());
+    else
+      m_plugin->ShowDashboard(event.GetId() - 1, true);
+
     SetToolbarItemState(m_plugin->GetToolbarItemId(),
                         m_plugin->GetDashboardWindowShownCount() != 0);
   }

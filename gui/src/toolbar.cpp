@@ -1914,6 +1914,7 @@ void ocpnToolBarSimple::DoToggleTool(wxToolBarToolBase *tool,
                                      bool WXUNUSED(toggle)) {
   ocpnToolBarTool *t = (ocpnToolBarTool *)tool;
   t->bitmapOK = false;
+  SetDirty(true);
 }
 
 
@@ -1980,6 +1981,8 @@ void ocpnToolBarSimple::ToggleTool(int id, bool toggle) {
 
   if (tool && tool->CanBeToggled() && tool->Toggle(toggle)) {
     DoToggleTool(tool, toggle);
+    InvalidateBitmaps();
+    gFrame->GetPrimaryCanvas()->Refresh(true);
   }
 }
 
