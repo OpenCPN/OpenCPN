@@ -338,6 +338,7 @@ extern int g_GUIScaleFactor;
 double g_scaler;
 wxString g_lastS52PLIBPluginMessage;
 extern bool g_bChartBarEx;
+bool g_PrintingInProgress;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
@@ -11858,33 +11859,33 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex, OVERLAY_OVER_EMBOSS);
   }
+  if(!g_PrintingInProgress){
+    if (IsPrimaryCanvas()) {
+      if (g_MainToolbar) g_MainToolbar->DrawDC(dc, 1.0);
+    }
 
-  if (IsPrimaryCanvas()) {
-    if (g_MainToolbar) g_MainToolbar->DrawDC(dc, 1.0);
+    if (IsPrimaryCanvas()) {
+      if (g_iENCToolbar) g_iENCToolbar->DrawDC(dc, 1.0);
+    }
+
+    if (m_muiBar)
+      m_muiBar->DrawDC( dc, 1.0);
+
+    if (m_pTrackRolloverWin) {
+      m_pTrackRolloverWin->Draw(dc);
+      m_brepaint_piano = true;
+    }
+
+    if (m_pRouteRolloverWin) {
+      m_pRouteRolloverWin->Draw(dc);
+      m_brepaint_piano = true;
+    }
+
+    if (m_pAISRolloverWin) {
+      m_pAISRolloverWin->Draw(dc);
+      m_brepaint_piano = true;
+    }
   }
-
-  if (IsPrimaryCanvas()) {
-    if (g_iENCToolbar) g_iENCToolbar->DrawDC(dc, 1.0);
-  }
-
-  if (m_muiBar)
-    m_muiBar->DrawDC( dc, 1.0);
-
-  if (m_pTrackRolloverWin) {
-    m_pTrackRolloverWin->Draw(dc);
-    m_brepaint_piano = true;
-  }
-
-  if (m_pRouteRolloverWin) {
-    m_pRouteRolloverWin->Draw(dc);
-    m_brepaint_piano = true;
-  }
-
-  if (m_pAISRolloverWin) {
-    m_pAISRolloverWin->Draw(dc);
-    m_brepaint_piano = true;
-  }
-
   if (g_pi_manager) {
     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex, OVERLAY_OVER_UI);
   }

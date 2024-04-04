@@ -319,7 +319,7 @@ extern Multiplexer *g_pMUX;
 extern int g_memUsed;
 extern int g_chart_zoom_modifier_vector;
 extern bool g_config_display_size_manual;
-
+extern bool g_PrintingInProgress;
 
 #ifdef __WXMSW__
 // System color control support
@@ -6238,6 +6238,8 @@ bool GetMemoryStatus(int *mem_total, int *mem_used) {
 }
 
 void MyFrame::DoPrint(void) {
+  g_PrintingInProgress = true;
+  Refresh();
   if (NULL == g_printData) {
     g_printData = new wxPrintData;
     g_printData->SetOrientation(wxLANDSCAPE);
@@ -6284,7 +6286,8 @@ void MyFrame::DoPrint(void) {
    frame->Initialize();
    frame->Show();
    */
-
+  g_PrintingInProgress = false;
+  Refresh();
 #ifdef __WXGTK__
   GetPrimaryCanvas()->SetFocus();
   Raise();  // I dunno why...
