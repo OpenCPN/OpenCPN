@@ -2426,6 +2426,10 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_MENU_AIS_CPADIALOG: {
       g_bAIS_CPA_Alert = !g_bAIS_CPA_Alert;
       SetMenubarItemState(ID_MENU_AIS_CPADIALOG, g_bAIS_CPA_Alert);
+      m_pMenuBar->Enable(ID_MENU_AIS_CPASOUND, g_bAIS_CPA_Alert);
+      if (g_bAIS_CPA_Alert){
+        SetMenubarItemState(ID_MENU_AIS_CPASOUND, g_bAIS_CPA_Alert_Audio);
+      }
       break;
     }
 
@@ -3611,7 +3615,15 @@ void MyFrame::UpdateGlobalMenuItems() {
   m_pMenuBar->FindItem(ID_MENU_AIS_SCALED_TARGETS)->Enable(g_bAllowShowScaled);
   m_pMenuBar->FindItem(ID_MENU_AIS_TRACKS)->Check(g_bAISShowTracks);
   m_pMenuBar->FindItem(ID_MENU_AIS_CPADIALOG)->Check(g_bAIS_CPA_Alert);
-  m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(g_bAIS_CPA_Alert_Audio);
+  if (g_bAIS_CPA_Alert) {
+    m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(g_bAIS_CPA_Alert_Audio);
+    m_pMenuBar->Enable(ID_MENU_AIS_CPASOUND, true);
+  }
+  else {
+    m_pMenuBar->FindItem(ID_MENU_AIS_CPASOUND)->Check(false);
+    m_pMenuBar->Enable(ID_MENU_AIS_CPASOUND, false);
+  }
+
   m_pMenuBar->FindItem(ID_MENU_AIS_CPAWARNING)->Check(g_bCPAWarn);
   m_pMenuBar->FindItem(ID_MENU_SHOW_NAVOBJECTS)
       ->Check(GetPrimaryCanvas()->m_bShowNavobjects);

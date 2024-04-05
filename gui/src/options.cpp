@@ -5555,7 +5555,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 }
 
 void options::OnAlertEnableButtonClick(wxCommandEvent& event) {
- }
+  m_pCheck_AlertAudio->Enable(event.IsChecked());
+  if (!event.IsChecked())
+    m_pCheck_AlertAudio->SetValue( false );
+}
 
 void options::OnAlertAudioEnableButtonClick(wxCommandEvent& event) {
   if (event.IsChecked()) {
@@ -6250,8 +6253,15 @@ void options::SetInitialSettings(void) {
 
   // Alerts
   m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
-  m_pCheck_AlertAudio->Enable();
-  m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
+  if (g_bAIS_CPA_Alert) {
+    m_pCheck_AlertAudio->Enable();
+    m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
+  }
+  else {
+    m_pCheck_AlertAudio->Disable();
+    m_pCheck_AlertAudio->SetValue(false);
+  }
+
 
   m_pCheck_Alert_Moored->SetValue(g_bAIS_CPA_Alert_Suppress_Moored);
 
