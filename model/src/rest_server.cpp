@@ -56,9 +56,9 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
-static const char* const kVersionReply = R"""( { "version": "@version@" })""";
+static const char* const kVersionReply = R"--({ "version": "@version@" })--";
 static const char* const kListRoutesReply =
-    R"""( { "version": "@version@", "routes": "@routes@" })""";
+    R"--( { "version": "@version@", "routes": "@routes@" })--";
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
