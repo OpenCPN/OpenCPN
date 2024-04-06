@@ -41,6 +41,7 @@ bool g_bShowTrue = false;
 bool g_bTrackDaily = false;
 bool g_bUseWptScaMin = false;
 bool g_bWplUsePosition = false;
+bool g_drop_comm_overruns = false;
 bool g_persist_active_route = false;
 
 double g_n_arrival_circle_radius = 0.0;

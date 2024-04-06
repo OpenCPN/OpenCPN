@@ -944,6 +944,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "FullscreenToolbar" ), &g_bFullscreenToolbar);
   Read(_T ( "PermanentMOBIcon" ), &g_bPermanentMOBIcon);
   Read(_T ( "ShowLayers" ), &g_bShowLayers);
+  Read("DropCommOverruns", &g_drop_comm_overruns);
   Read(_T ( "ShowDepthUnits" ), &g_bShowDepthUnits);
   Read(_T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark);
   Read(_T ( "ShowChartOutlines" ), &g_bShowOutlines);
@@ -2355,6 +2356,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "TransparentToolbar" ), g_bTransparentToolbar);
   Write(_T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon);
   Write(_T ( "ShowLayers" ), g_bShowLayers);
+  Write("DropCommOverruns", g_drop_comm_overruns);
   Write(_T ( "AutoAnchorDrop" ), g_bAutoAnchorMark);
   Write(_T ( "ShowChartOutlines" ), g_bShowOutlines);
   Write(_T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal);

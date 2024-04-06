@@ -46,6 +46,7 @@ extern bool g_bShowWptName;
 extern bool g_bUserIconsFirst;
 extern bool g_btouch;
 extern bool g_bUseWptScaMin;
+extern bool g_drop_comm_overruns;
 extern bool g_persist_active_route;
 
 extern double g_n_arrival_circle_radius;
