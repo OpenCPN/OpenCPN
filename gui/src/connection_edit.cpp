@@ -153,6 +153,17 @@ static void LoadSerialPorts(wxComboBox* box) {
   delete ports;
 }
 
+class DropOverrunsCheckBox: public wxCheckBox {
+public:
+  DropOverrunsCheckBox(wxWindow* parent)
+      : wxCheckBox(parent, wxID_ANY, "EXPERIMENTAL: Drop input overruns")
+  {
+    SetValue(g_drop_comm_overruns);
+    Bind(wxEVT_CHECKBOX,
+         [&](wxCommandEvent&){ g_drop_comm_overruns = GetValue(); });
+  }
+};
+
 //------------------------------------------------------------------------------
 //          ConnectionEditDialog Implementation
 //------------------------------------------------------------------------------
@@ -684,6 +695,9 @@ void ConnectionEditDialog::Init() {
                                       _("as autopilot or NMEA repeater")),
                      wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_cbOutput, 0, wxALL, 2);
+  fgSizer5->AddSpacer(1);
+  m_drop_overruns_cb = new DropOverrunsCheckBox(m_scrolledwin);
+  fgSizer5->Add(m_drop_overruns_cb, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
   m_stTalkerIdText = new wxStaticText(

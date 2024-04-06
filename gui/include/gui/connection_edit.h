@@ -144,6 +144,7 @@ public:
       *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
+  wxCheckBox* m_drop_overruns_cb;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
   wxButton  *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
