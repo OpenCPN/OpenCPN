@@ -145,3 +145,35 @@ std::string MeasuredCommOutQueue::pop() {
   pop_time = 0.95 * pop_time + 0.05 * us_time.count();  // LP filter.
   return item.line;
 }
+
+std::ostream& operator<<(std::ostream& os, const MeasuredCommOutQueue& q) {
+  os << "{";
+  os << "push_time: " << q.push_time << ", ";
+  os << "pop_time: " << q.pop_time << ", ";
+  os << "perf: " << q.perf << ", ";
+  os << "msg_perf: [";
+  for (const auto& kv : q.msg_perf) {
+    os << kv.first << ": " << kv.second << ", ";
+  }
+  os << "]";
+  os << "}";
+  return os;
+};
+
+std::ostream& operator<<(std::ostream& os, const PerfCounter& pc) {
+  os << "{";
+  os << "msgs_in: " << pc.msgs_in << ", ";
+  os << "msgs_out: " << pc.msgs_out << ", ";
+  os << "bytes_in: " << pc.bytes_in << ", ";
+  os << "bytes_out: " << pc.bytes_out << ", ";
+  os << "bps_in: " << pc.bps_in << ", ";
+  os << "mps_in: " << pc.mps_in << ", ";
+  os << "bps_out: " << pc.bps_out << ", ";
+  os << "mps_out: " << pc.mps_out << ", ";
+  os << "in_out_delay_us: " << pc.in_out_delay_us << ", ";
+  os << "overflow_msgs: " << pc.overflow_msgs << ", ";
+  os << "in_queue: " << pc.in_queue;
+  os << "}";
+  return os;
+};
+
