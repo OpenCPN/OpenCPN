@@ -1625,17 +1625,9 @@ void ocpnToolBarSimple::CreateToolBitmap(wxToolBarToolBase *toolBase) {
           bmp = wxNullBitmap;
         }
 
-        if (bmp.IsNull()) {  // Tool icon not found
-          if (tool->rollover) {
-            bmp =
-                m_style->BuildPluginIcon(tool->pluginRolloverIcon, toggleFlag);
-            if (!bmp.IsOk()) {
-              bmp =
-                  m_style->BuildPluginIcon(tool->pluginNormalIcon, toggleFlag);
-            }
-          } else {
-            bmp = m_style->BuildPluginIcon(tool->pluginNormalIcon, toggleFlag);
-          }
+        if (bmp.IsNull()) {  // Tool icon not found in style definition
+          //bmp = m_style->BuildPluginIcon(tool->pluginNormalIcon, toggleFlag);
+          bmp = tool->pluginNormalIcon;
           if (fabs(m_sizefactor - 1.0) > 0.01) {
             if (tool->m_width && tool->m_height) {
               wxImage scaled_image = bmp.ConvertToImage();
