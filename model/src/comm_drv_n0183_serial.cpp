@@ -99,27 +99,31 @@ private:
   mutable std::mutex m_mutex;
 };
 
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
+#define OUT_QUEUE_LENGTH 20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
 wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_SERIAL, CommDriverN0183SerialEvent);
 
-CommDriverN0183SerialEvent::CommDriverN0183SerialEvent( wxEventType commandType, int id = 0)
-      : wxEvent(id, commandType){};
+CommDriverN0183SerialEvent::CommDriverN0183SerialEvent(wxEventType commandType,
+                                                       int id = 0)
+    : wxEvent(id, commandType){};
 
 CommDriverN0183SerialEvent::~CommDriverN0183SerialEvent(){};
 
-void CommDriverN0183SerialEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
+void CommDriverN0183SerialEvent::SetPayload(
+    std::shared_ptr<std::vector<unsigned char>> data) {
+  m_payload = data;
 }
-std::shared_ptr<std::vector<unsigned char>> CommDriverN0183SerialEvent::GetPayload() { return m_payload; }
+std::shared_ptr<std::vector<unsigned char>>
+CommDriverN0183SerialEvent::GetPayload() {
+  return m_payload;
+}
 
-  // required for sending with wxPostEvent()
+// required for sending with wxPostEvent()
 wxEvent* CommDriverN0183SerialEvent::Clone() const {
-    CommDriverN0183SerialEvent* newevent =
-        new CommDriverN0183SerialEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
+  CommDriverN0183SerialEvent* newevent = new CommDriverN0183SerialEvent(*this);
+  newevent->m_payload = this->m_payload;
+  return newevent;
 };
 
 #ifndef __ANDROID__
@@ -217,12 +221,14 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_pSecondary_Thread(NULL),
       m_params(*params),
       m_listener(listener),
-      m_out_queue(std::unique_ptr<CommOutQueue>( [params]() {
+      m_out_queue(std::unique_ptr<CommOutQueue>([params]() {
         // Initiate the const pointer using a lambda call..
+        // FIXME (leamas) To be cleaned up once we settled on type of queue
         if (params->drop_overruns)
           return static_cast<CommOutQueue*>(new MeasuredCommOutQueue(100));
         else
-          return static_cast<CommOutQueue*>(new DummyCommOutQueue()); }())) {
+          return static_cast<CommOutQueue*>(new DummyCommOutQueue());
+      }())) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
   m_GarminHandler = NULL;
   this->attributes["commPort"] = params->Port.ToStdString();
@@ -239,24 +245,21 @@ CommDriverN0183Serial::~CommDriverN0183Serial() { Close(); }
 bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
-  if (comx.IsEmpty())
-    return false;
+  if (comx.IsEmpty()) return false;
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
-    m_GarminHandler = new GarminProtocolHandler( comx, this,  true);
-  }
-  else if( m_params.Garmin ) {
-    m_GarminHandler = new GarminProtocolHandler( comx, this,  false);
-  }
-  else {
-
+  if ((wxNOT_FOUND != port_uc.Find(_T("USB"))) &&
+      (wxNOT_FOUND != port_uc.Find(_T("GARMIN")))) {
+    m_GarminHandler = new GarminProtocolHandler(comx, this, true);
+  } else if (m_params.Garmin) {
+    m_GarminHandler = new GarminProtocolHandler(comx, this, false);
+  } else {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
 
 #ifndef __ANDROID__
-   //    Kick off the  RX thread
+    //    Kick off the  RX thread
     SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
     SetThreadRunFlag(1);
     std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
@@ -278,13 +281,12 @@ void CommDriverN0183Serial::Close() {
   // the secondary thread may not stop quickly enough.
   // It can then crash trying to send an event to its "parent".
 
-  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
-       this);
+  Unbind(wxEVT_COMMDRIVER_N0183_SERIAL,
+         &CommDriverN0183Serial::handle_N0183_MSG, this);
 
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
   if (m_pSecondary_Thread) {
-
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
       wxLogMessage(_T("Stopping Secondary Thread"));
@@ -319,11 +321,10 @@ void CommDriverN0183Serial::Close() {
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
   androidStopUSBSerial(comx);
 #endif
-
 }
 
 bool CommDriverN0183Serial::IsGarminThreadActive() {
-  if (m_GarminHandler){
+  if (m_GarminHandler) {
     // TODO expand for serial
 #ifdef __WXMSW__
     if (m_GarminHandler->m_usb_handle != INVALID_HANDLE_VALUE)
@@ -336,12 +337,11 @@ bool CommDriverN0183Serial::IsGarminThreadActive() {
   return false;
 }
 
-void CommDriverN0183Serial::StopGarminUSBIOThread(bool b_pause){
-  if (m_GarminHandler){
+void CommDriverN0183Serial::StopGarminUSBIOThread(bool b_pause) {
+  if (m_GarminHandler) {
     m_GarminHandler->StopIOThread(b_pause);
   }
 }
-
 
 void CommDriverN0183Serial::Activate() {
   CommDriverRegistry::GetInstance().Activate(shared_from_this());
@@ -350,48 +350,39 @@ void CommDriverN0183Serial::Activate() {
 
 bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                         std::shared_ptr<const NavAddr> addr) {
-
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
 
 #ifdef __ANDROID__
-    wxString payload = sentence;
-    if( !sentence.EndsWith(_T("\r\n")) )
-        payload += _T("\r\n");
+  wxString payload = sentence;
+  if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
 
-
-    wxString port = m_params.GetStrippedDSPort(); //GetPort().AfterFirst(':');
-    androidWriteSerial( port, payload );
-    return true;
+  wxString port = m_params.GetStrippedDSPort();  // GetPort().AfterFirst(':');
+  androidWriteSerial(port, payload);
+  return true;
 #else
-    if( GetSecondaryThread() ) {
-        if( IsSecThreadActive() )
-        {
-            int retry = 10;
-            while( retry ) {
-                if( GetSecondaryThread()->SetOutMsg( sentence ))
-                    return true;
-                else
-                    retry--;
-            }
-            return false;   // could not send after several tries....
-        }
+  if (GetSecondaryThread()) {
+    if (IsSecThreadActive()) {
+      int retry = 10;
+      while (retry) {
+        if (GetSecondaryThread()->SetOutMsg(sentence))
+          return true;
         else
-            return false;
-    }
-    return true;
+          retry--;
+      }
+      return false;  // could not send after several tries....
+    } else
+      return false;
+  }
+  return true;
 #endif
 }
 
-
-
 void CommDriverN0183Serial::handle_N0183_MSG(
     CommDriverN0183SerialEvent& event) {
-
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
-  if (m_params.IOSelect == DS_TYPE_OUTPUT)
-    return;
+  if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
 
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
@@ -422,7 +413,6 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   }
 }
 
-
 #ifndef __ANDROID__
 #define DS_RX_BUFFER_SIZE 4096
 
@@ -438,9 +428,9 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   long lbaud;
   if (strBaudRate.ToLong(&lbaud)) m_baud = (int)lbaud;
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
-                       [&](ObservedEvt&) {device_waiter.Continue(); });
+                       [&](ObservedEvt&) { device_waiter.Continue(); });
   new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
-                           [&](ObservedEvt&) {device_waiter.Continue(); });
+                           [&](ObservedEvt&) { device_waiter.Continue(); });
 }
 
 CommDriverN0183SerialThread::~CommDriverN0183SerialThread(void) {}
@@ -470,19 +460,18 @@ void CommDriverN0183SerialThread::CloseComPortPhysical() {
   }
 }
 
-bool CommDriverN0183SerialThread::SetOutMsg(const wxString &msg)
-{
-  if(out_que.size() < OUT_QUEUE_LENGTH){
+bool CommDriverN0183SerialThread::SetOutMsg(const wxString& msg) {
+  if (out_que.size() < OUT_QUEUE_LENGTH) {
     wxCharBuffer buf = msg.ToUTF8();
-    if(buf.data()){
-      char *qmsg = (char *)malloc(strlen(buf.data()) +1);
+    if (buf.data()) {
+      char* qmsg = (char*)malloc(strlen(buf.data()) + 1);
       strcpy(qmsg, buf.data());
       out_que.push(qmsg);
       return true;
     }
   }
 
-    return false;
+  return false;
 }
 
 void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
@@ -531,7 +520,7 @@ void* CommDriverN0183SerialThread::Entry() {
   static size_t retries = 0;
 
   while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+    if (m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
 
     uint8_t next_byte = 0;
     unsigned int newdata = 0;
@@ -564,13 +553,12 @@ void* CommDriverN0183SerialThread::Entry() {
     }
 
     if (newdata > 0) {
-      for (unsigned int i = 0; i < newdata; i++)
-        circle.put(rdata[i]);
+      for (unsigned int i = 0; i < newdata; i++) circle.put(rdata[i]);
     }
 
     // Process the queue until empty
     while (!circle.empty()) {
-      if ( m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+      if (m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
 
       uint8_t take_byte = circle.get();
       while ((take_byte != 0x0a) && !circle.empty()) {
@@ -578,36 +566,35 @@ void* CommDriverN0183SerialThread::Entry() {
         take_byte = circle.get();
       }
 
-      if (circle.empty() && take_byte != 0x0a){
+      if (circle.empty() && take_byte != 0x0a) {
         tmp_vec.push_back(take_byte);
         break;
       }
 
-      if (take_byte == 0x0a){
+      if (take_byte == 0x0a) {
         tmp_vec.push_back(take_byte);
 
         //    Copy the message into a vector for transmittal upstream
         auto buffer = std::make_shared<std::vector<unsigned char>>();
         std::vector<unsigned char>* vec = buffer.get();
 
-        for (size_t i=0; i < tmp_vec.size() ; i++)
+        for (size_t i = 0; i < tmp_vec.size(); i++)
           vec->push_back(tmp_vec.at(i));
 
-            //    Message is ready to parse and send out
-            //    Messages may be coming in as <blah blah><lf><cr>.
-            //    One example device is KVH1000 heading sensor.
-            //    If that happens, the first character of a new captured message
-            //    will the <cr>, and we need to discard it. This is out of spec,
-            //    but we should handle it anyway
+        //    Message is ready to parse and send out
+        //    Messages may be coming in as <blah blah><lf><cr>.
+        //    One example device is KVH1000 heading sensor.
+        //    If that happens, the first character of a new captured message
+        //    will the <cr>, and we need to discard it. This is out of spec,
+        //    but we should handle it anyway
         if (vec->at(0) == '\r') vec->erase(vec->begin());
 
         CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
         Nevent.SetPayload(buffer);
         m_pParentDriver->AddPendingEvent(Nevent);
         tmp_vec.clear();
-
       }
-    } //while
+    }  // while
 
     //      Check for any pending output message
 
@@ -632,7 +619,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
       b_qdata = !out_que.empty();
     }  // while b_qdata
-  }   // while not done.
+  }    // while not done.
 
 thread_exit:
   CloseComPortPhysical();
