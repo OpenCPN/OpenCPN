@@ -23,6 +23,7 @@ public:
         in_out_delay_us(0),
         overflow_msgs(0),
         in_queue(0) {}
+
   void in(const size_t bytes, bool ok) {
     auto t1 = std::chrono::steady_clock::now();
     std::chrono::duration<double, std::micro> us_time = t1 - last_in;
@@ -139,6 +140,36 @@ public:
   PerfCounter perf;
   double push_time;
   double pop_time;
+};
+
+/** Simple FIFO queue without added logic. */
+class DummyCommOutQueue :  public CommOutQueue {
+public:
+  DummyCommOutQueue() {};
+
+  bool push_back(const std::string& line) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    buff.insert(buff.begin(), line);
+    return true;
+  }
+
+  std::string pop() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (buff.size() <= 0)
+      throw std::underflow_error("Attempt to pop() from empty buffer");
+    auto line = buff.back();
+    buff.pop_back();
+    return line;
+  }
+
+  int size() const {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return buff.size();
+  }
+
+private:
+  mutable std::mutex m_mutex;
+  std::vector<std::string> buff;
 };
 
 std::ostream& operator<<(std::ostream& os, const MeasuredCommOutQueue& q);
