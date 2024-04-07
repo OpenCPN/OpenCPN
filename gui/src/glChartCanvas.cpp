@@ -223,6 +223,7 @@ extern unsigned int g_canvasConfig;
 extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;
 extern BasePlatform *g_BasePlatform;
+extern bool g_PrintingInProgress;
 
 ocpnGLOptions g_GLOptions;
 
@@ -3840,7 +3841,7 @@ void glChartCanvas::Render() {
                   // initial screen update
     SwapBuffers();
 #endif
-    return;
+    if(!g_PrintingInProgress) return;
   }
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -4451,25 +4452,26 @@ void glChartCanvas::Render() {
     g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
         m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_EMBOSS);
   }
+  if(!g_PrintingInProgress){
+    if (m_pParentCanvas->m_pTrackRolloverWin)
+      m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
 
-  if (m_pParentCanvas->m_pTrackRolloverWin)
-    m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
+    if (m_pParentCanvas->m_pRouteRolloverWin)
+      m_pParentCanvas->m_pRouteRolloverWin->Draw(gldc);
 
-  if (m_pParentCanvas->m_pRouteRolloverWin)
-    m_pParentCanvas->m_pRouteRolloverWin->Draw(gldc);
-
-  if (m_pParentCanvas->m_pAISRolloverWin)
-    m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
+    if (m_pParentCanvas->m_pAISRolloverWin)
+      m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
 
 
-  if (m_pParentCanvas->GetMUIBar())
-    m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
+    if (m_pParentCanvas->GetMUIBar())
+      m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
 
-  if (g_MainToolbar && m_pParentCanvas->IsPrimaryCanvas())
-    g_MainToolbar->DrawGL(gldc, m_displayScale);
+    if (g_MainToolbar && m_pParentCanvas->IsPrimaryCanvas())
+      g_MainToolbar->DrawGL(gldc, m_displayScale);
 
-  if (g_iENCToolbar && m_pParentCanvas->IsPrimaryCanvas())
-    g_iENCToolbar->DrawGL(gldc, m_displayScale);
+    if (g_iENCToolbar && m_pParentCanvas->IsPrimaryCanvas())
+      g_iENCToolbar->DrawGL(gldc, m_displayScale);
+  }
 
     //  On some platforms, the opengl context window is always on top of any
     //  standard DC windows, so we need to draw the Chart Info Window

@@ -6237,8 +6237,14 @@ bool GetMemoryStatus(int *mem_total, int *mem_used) {
 }
 
 void MyFrame::DoPrint(void) {
+  //avoid toolbars being printed
   g_PrintingInProgress = true;
-  Refresh();
+  if(g_bopengl){
+    GetPrimaryCanvas()->GetglCanvas()->Render();
+    GetPrimaryCanvas()->GetglCanvas()->SwapBuffers();
+  }else
+    Refresh();
+
   if (NULL == g_printData) {
     g_printData = new wxPrintData;
     g_printData->SetOrientation(wxLANDSCAPE);
