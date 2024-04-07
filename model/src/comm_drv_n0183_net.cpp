@@ -242,7 +242,7 @@ void CommDriverN0183Net::Open(void) {
 
 void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
   if (GetPortType() != DS_TYPE_OUTPUT) {
-    //  We need a local (bindable) address to create the Datagram receive socket
+    // We need a local (bindable) address to create the Datagram receive socket
     // Set up the receive socket
     wxIPV4address conn_addr;
     conn_addr.Service(GetNetPort());

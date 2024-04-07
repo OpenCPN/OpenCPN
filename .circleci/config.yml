@@ -154,6 +154,7 @@ std-filters: &std-filters
     branches:
      only:
         - master
+        - initwiz
         - build
         - flatpak
 

@@ -1,0 +1,42 @@
+# Generated objects
+*.o
+*.lo
+*.la
+
+# Backups
+**~
+
+# Local tarballs and Pyrex
+Pyrex-0*
+libdnet-*.tar.gz
+
+# Python Cache
+**/__pycache__/
+
+# Local Python virtual environment
+.virtualenv/
+
+# From configure
+config.log
+config.status
+dnet-config
+include/config.h
+include/stamp-h1
+libtool
+python/setup.py
+
+# Generated Makefiles
+Makefile
+include/Makefile
+include/dnet/Makefile
+man/Makefile
+python/Makefile
+src/Makefile
+test/Makefile
+test/check/Makefile
+test/dnet/Makefile
+
+# Generated libs/binaries from make
+src/.libs/
+test/dnet/.libs/
+test/dnet/dnet
