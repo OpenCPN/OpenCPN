@@ -157,7 +157,15 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_io_select(params->IOSelect),
       m_connection_type(params->Type),
-      m_bok(false)
+      m_bok(false),
+      m_out_queue(std::unique_ptr<CommOutQueue>([params]() {
+        // Initiate the const pointer using a lambda call..
+        // FIXME (leamas) To be cleaned up once we settled on type of queue
+        if (params->drop_overruns)
+          return static_cast<CommOutQueue*>(new MeasuredCommOutQueue(100));
+        else
+          return static_cast<CommOutQueue*>(new DummyCommOutQueue());
+      }()))
 
 {
   m_addr.Hostname(params->NetworkAddress);
@@ -194,8 +202,12 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    std::string identifier;
+    // Possibly drop overruns.
+    m_out_queue->push_back(full_sentence);
+    full_sentence = m_out_queue->pop();
+
     // We notify based on full message, including the Talker ID
+    std::string identifier;
     identifier = full_sentence.substr(1, 5);
 
     // notify message listener and also "ALL" N0183 messages, to support plugin
