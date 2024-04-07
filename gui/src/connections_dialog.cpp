@@ -541,6 +541,8 @@ void ConnectionsDialog::UpdateDatastreams() {
     // Connection has been disabled
     if (!cp->bEnabled) continue;
 
+    cp->drop_overruns = g_drop_comm_overruns;  // FIXME (alec) centralize
+
     // Make any new or re-enabled drivers
     MakeCommDriver(cp);
     cp->b_IsSetup = TRUE;

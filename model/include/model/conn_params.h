@@ -131,6 +131,7 @@ public:
 
   bool Valid;
   bool b_IsSetup;
+  bool drop_overruns;
   ConnectionParamsPanel *m_optionsPanel;
 
 private:
