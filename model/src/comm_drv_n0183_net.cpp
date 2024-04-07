@@ -29,6 +29,9 @@
 #include <windows.h>
 #endif
 
+#include <fstream>
+#include <vector>
+
 #ifdef __MSVC__
 #include "winsock2.h"
 #include <wx/msw/winundef.h>
@@ -53,7 +56,6 @@
 #include <netinet/tcp.h>
 #endif
 
-#include <vector>
 #include <wx/socket.h>
 #include <wx/log.h>
 #include <wx/memory.h>

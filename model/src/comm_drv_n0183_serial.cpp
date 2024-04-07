@@ -30,6 +30,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#include <fstream>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <thread>
@@ -215,7 +216,13 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
       m_params(*params),
-      m_listener(listener) {
+      m_listener(listener),
+      m_out_queue(std::unique_ptr<CommOutQueue>( [params]() {
+        // Initiate the const pointer using a lambda call..
+        if (params->drop_overruns)
+          return static_cast<CommOutQueue*>(new MeasuredCommOutQueue(100));
+        else
+          return static_cast<CommOutQueue*>(new DummyCommOutQueue()); }())) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
   m_GarminHandler = NULL;
   this->attributes["commPort"] = params->Port.ToStdString();
@@ -393,8 +400,13 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
   if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    std::string identifier;
+
+    // Possibly drop overruns.
+    m_out_queue->push_back(full_sentence);
+    full_sentence = m_out_queue->pop();
+
     // We notify based on full message, including the Talker ID
+    std::string identifier;
     identifier = full_sentence.substr(1, 5);
 
     // notify message listener and also "ALL" N0183 messages, to support plugin

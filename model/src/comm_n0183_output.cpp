@@ -190,6 +190,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     cp.Baudrate = baud;
     //cp.Garmin = bGarmin;
     cp.IOSelect = DS_TYPE_OUTPUT;
+    cp.drop_overruns = g_drop_comm_overruns;
 
     driver = MakeCommDriver(&cp);
     btempStream = true;
@@ -252,6 +253,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       ConnectionParams.NetProtocol = PROTO_UNDEFINED;
       ConnectionParams.Baudrate = 0;
 
+      ConnectionParams.drop_overruns = g_drop_comm_overruns;
       driver = MakeCommDriver(&ConnectionParams);
 
       btempStream = true;
@@ -276,6 +278,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       cp.NetworkAddress = address;
       cp.NetworkPort = port;
       cp.IOSelect = DS_TYPE_INPUT_OUTPUT;
+      cp.drop_overruns = g_drop_comm_overruns;
 
       driver = MakeCommDriver(&cp);
       btempStream = true;

@@ -45,6 +45,7 @@
 #include "model/comm_drv_n0183_android_bt.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
+#include "model/config_vars.h"
 
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
 #include "model/comm_drv_n2k_socketcan.h"
