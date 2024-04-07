@@ -88,7 +88,7 @@ public:
   virtual std::string pop();
 
   /** Return number of lines in queue. */
-  int size() const;
+  virtual int size() const;
 
   /**
    * Create a buffer which stores at most message_count items of each
@@ -101,6 +101,8 @@ public:
   // Disable copying and assignment
   CommOutQueue(const CommOutQueue& other) = delete;
   CommOutQueue& operator=(const CommOutQueue&) = delete;
+
+  virtual ~CommOutQueue() = default;
 
 protected:
   struct BufferItem {
@@ -134,9 +136,11 @@ public:
       : CommOutQueue(size), push_time(0), pop_time(0) {}
 
   bool push_back(const std::string& line) override;
+
   std::string pop() override;
 
   std::unordered_map<unsigned long, PerfCounter> msg_perf;
+
   PerfCounter perf;
   double push_time;
   double pop_time;
@@ -147,13 +151,13 @@ class DummyCommOutQueue :  public CommOutQueue {
 public:
   DummyCommOutQueue() {};
 
-  bool push_back(const std::string& line) {
+  bool push_back(const std::string& line) override {
     std::lock_guard<std::mutex> lock(m_mutex);
     buff.insert(buff.begin(), line);
     return true;
   }
 
-  std::string pop() {
+  std::string pop() override {
     std::lock_guard<std::mutex> lock(m_mutex);
     if (buff.size() <= 0)
       throw std::underflow_error("Attempt to pop() from empty buffer");
@@ -162,7 +166,7 @@ public:
     return line;
   }
 
-  int size() const {
+  int size() const override {
     std::lock_guard<std::mutex> lock(m_mutex);
     return buff.size();
   }
