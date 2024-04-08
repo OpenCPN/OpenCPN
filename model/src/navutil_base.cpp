@@ -27,6 +27,9 @@
 /*          Formats the coordinates to string                             */
 /**************************************************************************/
 
+#include <iomanip>
+#include <sstream>
+
 
 #include <wx/datetime.h>
 #include <wx/math.h>
@@ -37,6 +40,20 @@
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "vector2D.h"
+
+
+/** Return a timespan with minutes rounded w r t seconds. */
+static wxTimeSpan RoundToMinutes(const wxTimeSpan& span) {
+  auto hours = span.GetHours();
+  auto minutes = span.GetMinutes() % 60;
+  auto seconds = span.GetSeconds() % 60;
+  if (seconds > 30) minutes += 1;
+  if (minutes >= 60) {
+    hours += 1;
+    minutes = 0;
+  }
+  return wxTimeSpan(hours, minutes, seconds);
+}
 
 wxString toSDMM(int NEflag, double a, bool hi_precision) {
   wxString s;
@@ -634,22 +651,21 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
 }
 
 wxString formatTimeDelta(wxTimeSpan span) {
-  wxString timeStr;
-  int days = span.GetDays();
-  span -= wxTimeSpan::Days(days);
-  int hours = span.GetHours();
-  span -= wxTimeSpan::Hours(hours);
-  double minutes = (double)span.GetSeconds().ToLong() / 60.0;
-  span -= wxTimeSpan::Minutes(span.GetMinutes());
-  int seconds = (double)span.GetSeconds().ToLong();
-
-  timeStr =
-      (days ? wxString::Format(_("%dd "), days) : _T("")) +
-      (hours || days
-           ? wxString::Format(_("%2dH %2dM"), hours, (int)round(minutes))
-           : wxString::Format(_("%2dM %2dS"), (int)floor(minutes), seconds));
-
-  return timeStr;
+  using namespace std;
+  // wxTimeSpan is returns complete span in different units.
+  // FIXME: (leamas) Replace with sane std::chrono.
+  span = RoundToMinutes(span);
+  stringstream ss;
+  ss << setfill(' ');
+  if (span.GetDays() > 0) ss << setw(2) << span.GetDays() << "d ";
+  if (span.GetHours() > 0) {
+    ss << setw(2) << span.GetHours() % 24 << _("H ");
+    ss << setw(2) << span.GetMinutes() % 60 << _("M");
+  } else {
+    ss << setw(2) << span.GetMinutes() % 60 << _("M");
+    ss << setw(2) << span.GetSeconds() % 60 << _("S");
+  }
+  return ss.str();
 }
 
 wxString formatTimeDelta(wxDateTime startTime, wxDateTime endTime) {
