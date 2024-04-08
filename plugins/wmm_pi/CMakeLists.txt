@@ -84,6 +84,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   target_compile_options(
     ${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas -Wno-overloaded-virtual
   )
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  target_compile_options( ${PACKAGE_NAME} PRIVATE -Wno-unknown-pragmas)
 endif ()
 
 if (NOT QT_ANDROID)
