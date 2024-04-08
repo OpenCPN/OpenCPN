@@ -64,7 +64,7 @@
 #include <wx/socket.h>
 #endif
 
-
+#include "garminusb.h"
 #include "model/conn_params.h"
 #include "model/ds_porttype.h"
 
@@ -112,22 +112,7 @@ DEFINE_GUID(GARMIN_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b,
 #define GUSB_RESPONSE_PVT 51  /* PVT Data Packet */
 #define GUSB_RESPONSE_SDR 114 /* Satellite Data Record Packet */
 
-typedef union {
-  struct {
-    unsigned char type;
-    unsigned char reserved1;
-    unsigned char reserved2;
-    unsigned char reserved3;
-    unsigned char pkt_id[2];
-    unsigned char reserved6;
-    unsigned char reserved7;
-    unsigned char datasz[4];
-    unsigned char databuf[5]; /* actually a variable length array... */
-  } gusb_pkt;
-  unsigned char dbuf[1024];
-} garmin_usb_packet;
-
-typedef struct garmin_unit_info {
+typedef struct unit_info_type_ {
   unsigned long serial_number;
   unsigned long unit_id;
   unsigned long unit_version;
@@ -135,12 +120,8 @@ typedef struct garmin_unit_info {
   char *product_identifier; /* From the hardware itself. */
 } unit_info_type;
 
-/*              Packet structure for Pkt_ID = 51 (PVT Data Record)   */
-//#pragma pack(push)  /* push current alignment to stack */
-//#pragma pack(1)     /* set alignment to 1 byte boundary */
-#pragma pack( \
-    push,     \
-    1) /* push current alignment to stack, set alignment to 1 byte boundary */
+/* push current alignment to stack, set alignment to 1 byte boundary */
+#pragma pack(push, 1)
 
 typedef struct {
   float alt;
