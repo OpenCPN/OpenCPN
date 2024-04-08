@@ -947,4 +947,6 @@ TEST(FormatTime, Basic) {
   EXPECT_EQ(s, " 2H  0M");
   s = formatTimeDelta(wxLongLong(7184.1181798492389));
   EXPECT_EQ(s, " 2H  0M");
+  s = formatTimeDelta(wxLongLong(123.0));
+  EXPECT_EQ(s, " 2M  3S");
 }

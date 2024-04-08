@@ -662,7 +662,7 @@ wxString formatTimeDelta(wxTimeSpan span) {
     ss << setw(2) << span.GetHours() % 24 << _("H ");
     ss << setw(2) << span.GetMinutes() % 60 << _("M");
   } else {
-    ss << setw(2) << span.GetMinutes() % 60 << _("M");
+    ss << setw(2) << span.GetMinutes() % 60 << _("M ");
     ss << setw(2) << span.GetSeconds() % 60 << _("S");
   }
   return ss.str();
