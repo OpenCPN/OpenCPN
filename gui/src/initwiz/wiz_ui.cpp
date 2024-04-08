@@ -413,7 +413,6 @@ void FirstUseWizImpl::EnumerateTCP() {
 }
 
 void FirstUseWizImpl::EnumerateSignalK() {
-  /* TODO: Waiting for #3758
   wxString ip;
   int port;
   std::string serviceIdent =
@@ -434,7 +433,6 @@ void FirstUseWizImpl::EnumerateSignalK() {
         wxString::Format(_("Signal K: %s TCP port %d"), ip.c_str(), port);
     m_detected_connections.push_back(params);
   }
-  */
 }
 
 void FirstUseWizImpl::EnumerateCAN() {
