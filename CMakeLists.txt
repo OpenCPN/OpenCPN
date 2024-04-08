@@ -553,9 +553,9 @@ if (APPLE)
 elseif (_wx_selected_config MATCHES "qt-armv7")
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 elseif (OCPN_USE_WEBVIEW)
-  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base richtext webview)
 else ()
-  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base)
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base richtext)
 endif ()
 
 if (OPENGLES_FOUND)
@@ -846,6 +846,8 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
+    ${GUI_HDR_DIR}/wiz_ui_proto.h
+    ${GUI_HDR_DIR}/wiz_ui.h
 )
 list(APPEND  GUI_HDRS
     ${GUI_S57_DIR}/include/ogr_s57.h
@@ -958,6 +960,8 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
+    ${GUI_SRC_DIR}/initwiz/wiz_ui_proto.cpp
+    ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
 )
 
 list(APPEND GUI_SRC
@@ -1241,6 +1245,13 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
+
+if (NOT QT_ANDROID)
+  # TODO: On Linux libdnet may be available from system packages
+  add_subdirectory("libs/libdnet")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE dnet)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/libdnet/include)
+endif ()
 
 if (UNIX)
   if (NOT QT_ANDROID) # this should be detected by the grib plugin

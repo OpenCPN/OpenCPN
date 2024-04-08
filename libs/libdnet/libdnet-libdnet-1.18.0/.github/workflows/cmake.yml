@@ -1,0 +1,62 @@
+name: cmake
+
+'on':
+    pull_request:
+    push:
+        branches:
+          - master
+          - develop
+          - feature/**
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+          
+jobs:
+    build:
+        runs-on: ubuntu-${{ matrix.ubuntu_version }}
+        name: Ubuntu-${{ matrix.ubuntu_version }}
+        strategy:
+            fail-fast: false
+            matrix:
+                ubuntu_version: [22.04]
+                shared: [ON, OFF]
+
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+            with:
+                fetch-depth: 0
+
+
+          - name: Install packages
+            run: |
+                sudo apt-get install -y gcc g++ cmake wget git
+
+
+          - name: Configure
+            run: cmake -DCMAKE_BUILD_TYPE="${{env.BUILD_TYPE}}" -DBUILD_SHARED_LIBS=${{ matrix.shared }} -B "${{github.workspace}}/build" 
+
+          - name: Build
+            run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    MSVC:
+      name: windows-${{ matrix.win_version }}
+      runs-on: windows-${{ matrix.win_version }}
+      strategy:
+        fail-fast: false
+        matrix:
+          win_version: [2019, 2022]
+          shared: [ON, OFF]
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+          with:
+              fetch-depth: 0
+
+        - name: Configure CMake
+          run: cmake -DCMAKE_BUILD_TYPE="${{env.BUILD_TYPE}}" -DBUILD_SHARED_LIBS=${{ matrix.shared }} -B "${{github.workspace}}/build"
+
+        - name: Build
+          run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

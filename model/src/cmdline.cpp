@@ -27,5 +27,6 @@ bool g_rebuild_gl_cache = false;
 bool g_parse_all_enc = false;
 bool g_bportable = false;
 bool g_bdisable_opengl = false;
+bool g_config_wizard = false;
 std::string g_configdir;
 std::vector<std::string> g_params;
