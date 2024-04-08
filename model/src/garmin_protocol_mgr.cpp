@@ -119,30 +119,6 @@ BOOL IsUserAdmin(VOID)
   return (b);
 }
 
-void le_write16(void *addr, const unsigned value) {
-  unsigned char *p = (unsigned char *)addr;
-  p[0] = value;
-  p[1] = value >> 8;
-}
-
-void le_write32(void *addr, const unsigned value) {
-  unsigned char *p = (unsigned char *)addr;
-  p[0] = value;
-  p[1] = value >> 8;
-  p[2] = value >> 16;
-  p[3] = value >> 24;
-}
-
-signed int le_read16(const void *addr) {
-  const unsigned char *p = (const unsigned char *)addr;
-  return p[0] | (p[1] << 8);
-}
-
-signed int le_read32(const void *addr) {
-  const unsigned char *p = (const unsigned char *)addr;
-  return p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
-}
-
 #endif
 
 BEGIN_EVENT_TABLE(GarminProtocolHandler, wxEvtHandler)

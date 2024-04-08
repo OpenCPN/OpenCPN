@@ -99,7 +99,6 @@ xstrdup(const char *s)
 	return o;
 }
 
-
 void
             le_write16(void *addr, const unsigned value)
 {
@@ -132,6 +131,7 @@ signed int
       const unsigned char *p = (const unsigned char *)addr;
       return p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
 }
+
 
 
 #define DEV_PREFIX "\\\\.\\\\"
@@ -211,4 +211,3 @@ const char *fix_win_serial_name(const char *comname)
 {
       return fix_win_serial_name_r(comname, gb_com_buffer, sizeof(gb_com_buffer));
 }
-
