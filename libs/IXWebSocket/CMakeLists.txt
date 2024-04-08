@@ -123,7 +123,8 @@ set( IXWEBSOCKET_HEADERS
     ixwebsocket/IXWebSocketVersion.h
 )
 
-option(BUILD_SHARED_LIBS "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)" OFF)
+#option(BUILD_SHARED_LIBS "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)" OFF)
+set(BUILD_SHARED_LIBS OFF)
 option(USE_TLS "Enable TLS support" TRUE)
 option(USE_OPEN_SSL "Use OpenSSL for TLS" TRUE)
 
@@ -326,7 +327,7 @@ set_target_properties(ixwebsocket PROPERTIES PUBLIC_HEADER "${IXWEBSOCKET_HEADER
 
 add_library(ixwebsocket::ixwebsocket ALIAS ixwebsocket)
 
-option(IXWEBSOCKET_INSTALL "Install IXWebSocket" TRUE)
+option(IXWEBSOCKET_INSTALL "Install IXWebSocket" FALSE)
 
 if (IXWEBSOCKET_INSTALL)
   install(TARGETS ixwebsocket
