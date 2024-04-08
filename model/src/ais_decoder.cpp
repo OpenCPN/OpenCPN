@@ -83,6 +83,7 @@ Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
+extern Multiplexer *g_pMUX;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
@@ -1083,6 +1084,14 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   if (mmsi == 0) {
     return;  // Only handle ships with MMSI for now
   }
+
+  if (g_pMUX && g_pMUX->IsLogActive()) {
+    wxString logmsg;
+    logmsg.Printf("AIS :MMSI: %ld", mmsi);
+    std::string source = sK_msg->source->to_string();
+    g_pMUX->LogInputMessage( logmsg, source, false, false);
+  }
+
   // Stop here if the target shall be ignored
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     if (mmsi == g_MMSI_Props_Array[i]->MMSI) {

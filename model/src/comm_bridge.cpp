@@ -45,6 +45,7 @@
 #include "model/idents.h"
 #include "model/ocpn_types.h"
 #include "model/own_ship.h"
+#include "model/multiplexer.h"
 
 
 //  comm event definitions
@@ -69,6 +70,8 @@ wxDEFINE_EVENT(EVT_DRIVER_CHANGE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 #define N_ACTIVE_LOG_WATCHDOG 300
+
+extern Multiplexer* g_pMUX;
 
 bool debug_priority = 0;
 
@@ -1017,13 +1020,33 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     }
   }
 
+  bool sat_update = false;
   if (temp_data.n_satellites > 0){
     if (EvalPriority(sK_msg, active_priority_satellites, priority_map_satellites)) {
       g_SatsInView = temp_data.n_satellites;
       g_bSatValid = true;
-
+      sat_update = true;
       m_watchdogs.satellite_watchdog = sat_watchdog_timeout_ticks;
     }
+  }
+
+  if (g_pMUX && g_pMUX->IsLogActive()) {
+    std::string logmsg = "Self: ";
+    std::string content;
+    if (valid_flag & POS_UPDATE) content += "POS;";
+    if (valid_flag & POS_VALID) content += "POS_Valid;";
+    if (valid_flag & SOG_UPDATE) content += "SOG;";
+    if (valid_flag & COG_UPDATE) content += "COG;";
+    if (valid_flag & HDT_UPDATE) content += "HDT;";
+    if (valid_flag & VAR_UPDATE) content += "VAR;";
+    if (sat_update) content += "SAT;";
+
+    if (content.empty())
+      content = "Not used by OCPN, maybe passed to plugins";
+
+    logmsg += content;
+    std::string source = sK_msg->source->to_string();
+    g_pMUX->LogInputMessage( logmsg, source, false, false);
   }
 
   SendBasicNavdata(valid_flag);
