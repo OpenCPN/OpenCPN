@@ -86,19 +86,7 @@ static const wxString altitude_from_index[3][5] = {
     {_T("Std"), _T("637"), _T("525"), _T("375"), _T("225")},
     {_T("Std"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9")}};
 
-enum SettingsDisplay {
-  B_ARROWS,
-  ISO_LINE,
-  ISO_ABBR,
-  ISO_LINE_VISI,
-  ISO_LINE_SHORT,
-  D_ARROWS,
-  OVERLAY,
-  NUMBERS,
-  PARTICLES
-};
-
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 QString qtStyleSheet =
     "QScrollBar:horizontal {\
