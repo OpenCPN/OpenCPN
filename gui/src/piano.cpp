@@ -843,7 +843,7 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
     ytop = m_parentCanvas->GetClientSize().y - GetHeight();
 #endif
 
-  if (event.Leaving() || y < ytop) {
+  if (event.Leaving() || (y < ytop) || (x > GetWidth())) {
     if (m_bleaving) return false;
     m_bleaving = true;
   } else {
