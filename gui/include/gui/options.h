@@ -607,7 +607,9 @@ public:
   OCPNSoundPanel *m_soundPanelAIS;
   OCPNSoundPanel *m_soundPanelSART;
   OCPNSoundPanel *m_soundPanelDSC;
-  void OnUXAudioEnableButtonClick(wxCommandEvent &event);
+  void OnUXAudioEnableButtonClickAIS(wxCommandEvent &event);
+  void OnUXAudioEnableButtonClickSART(wxCommandEvent &event);
+  void OnUXAudioEnableButtonClickDSC(wxCommandEvent &event);
 
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   EventVar m_on_sound_done;
