@@ -654,9 +654,9 @@ wxString formatTimeDelta(wxTimeSpan span) {
   using namespace std;
   // wxTimeSpan is returns complete span in different units.
   // FIXME: (leamas) Replace with sane std::chrono.
-  span = RoundToMinutes(span);
   stringstream ss;
   ss << setfill(' ');
+  if (span.GetHours() > 0) span = RoundToMinutes(span);
   if (span.GetDays() > 0) ss << setw(2) << span.GetDays() << "d ";
   if (span.GetHours() > 0) {
     ss << setw(2) << span.GetHours() % 24 << _("H ");
