@@ -44,15 +44,10 @@
 
 /** Return a timespan with minutes rounded w r t seconds. */
 static wxTimeSpan RoundToMinutes(const wxTimeSpan& span) {
-  auto hours = span.GetHours();
   auto minutes = span.GetMinutes() % 60;
   auto seconds = span.GetSeconds() % 60;
   if (seconds > 30) minutes += 1;
-  if (minutes >= 60) {
-    hours += 1;
-    minutes = 0;
-  }
-  return wxTimeSpan(hours, minutes, seconds);
+  return wxTimeSpan(span.GetHours(), minutes, 0);
 }
 
 wxString toSDMM(int NEflag, double a, bool hi_precision) {
