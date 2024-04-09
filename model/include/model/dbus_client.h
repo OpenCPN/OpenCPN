@@ -42,6 +42,8 @@ public:
   LocalApiResult SendQuit();
 
   LocalApiResult GetRestEndpoint();
+
+  LocalApiResult SendDumpStats();
 };
 
 #endif  // DBUS_LOCAL_API_H__

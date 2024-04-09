@@ -91,6 +91,9 @@ static void HandleMethodCall(GDBusConnection*, const gchar* /* sender */,
   } else if (0 == g_strcmp0(method_name, "Raise")) {
     if (ctx) ctx->handler->on_raise.Notify();
     g_dbus_method_invocation_return_value(invocation, 0);
+  } else if (0 == g_strcmp0(method_name, "DumpStats")) {
+    if (ctx) ctx->handler->on_dump_stats.Notify();
+    g_dbus_method_invocation_return_value(invocation, 0);
   } else if (0 == g_strcmp0(method_name, "Quit")) {
     if (ctx) ctx->handler->on_quit.Notify();
     g_dbus_method_invocation_return_value(invocation, 0);

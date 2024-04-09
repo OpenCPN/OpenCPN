@@ -86,6 +86,15 @@ LocalApiResult LocalClientApi::HandleCmdline(CmdlineAction action,
           return result;
         }
         break;
+    case CmdlineAction::DumpStats: {
+          auto result = SendDumpStats();
+          if (!result.first) {
+            MESSAGE_LOG << "Error running remote dump_stats cmd: "
+                        << result.second;
+          }
+          return result;
+        }
+        break;
     case CmdlineAction::Open: {
           auto result = SendOpen(arg.c_str());
           if (!result.first) {

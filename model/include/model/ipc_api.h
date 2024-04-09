@@ -58,6 +58,7 @@ public:
   LocalApiResult SendOpen(const char* path);
   LocalApiResult SendQuit();
   LocalApiResult GetRestEndpoint();
+  LocalApiResult SendDumpStats();
   wxConnectionBase* OnMakeConnection() { return new IpcClientConnection; }
 
 private:
@@ -164,6 +165,10 @@ public:
 
   LocalApiResult GetRestEndpoint() {
     return LocalApiResult(false, "get_rest_endpoint command not implemented");
+  }
+
+  LocalApiResult SendDumpStats() {
+    return LocalApiResult(false, "dump_stats command not implemented");
   }
 
   wxConnectionBase* OnMakeConnection() {

@@ -30,6 +30,7 @@
  *   - Quit: Exit server application.
  *   - GetRestEndpoint: Returns an address/port tuple string like
  *     128.0.0.1/1503 giving the adress/port used by the REST server.
+ *   - DumpStats: Dump debugging info
  *
  * Besides GetRestAddress all commands returns a std::pair with a boolean and
  * a string. The boolean indicates successful completion, the string is either
@@ -45,7 +46,8 @@
 
 using LocalApiResult = std::pair<bool, std::string>;
 
-enum class CmdlineAction { Raise, Quit, Open, GetRestEndpoint, Fail, Skip };
+enum class CmdlineAction {
+    Raise, Quit, Open, GetRestEndpoint, DumpStats, Fail, Skip };
 
 
 class LocalApiException :  public std::exception {
@@ -73,6 +75,9 @@ public:
 
   /** Notified on the Quit command. */
   EventVar on_quit;
+
+  /** Notified on the DumpStats command. */
+  EventVar on_dump_stats;
 
   /** Callback invoked on open command with a file path argument. */
   std::function<bool(const std::string&)> open_file_cb;
@@ -105,6 +110,7 @@ public:
   virtual LocalApiResult SendRaise() = 0;
   virtual LocalApiResult SendOpen(const char* path) = 0;
   virtual LocalApiResult SendQuit() = 0;
+  virtual LocalApiResult SendDumpStats() = 0;
   virtual LocalApiResult GetRestEndpoint() = 0;
 
 protected:

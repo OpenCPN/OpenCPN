@@ -225,6 +225,7 @@ Options manipulating already started opencpn
   -q, --quit                   	Terminate already running opencpn
   -e, --get_rest_endpoint      	Print rest server endpoint and exit.
   -o, --open=<GPX file>         Open file in running opencpn
+  -d, --dump_stats              Dump debugging statistics
 
 Arguments:
   GPX  file                     GPX-formatted file with waypoints or routes.
@@ -832,6 +833,7 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   parser.AddSwitch("r", "remote");
   parser.AddSwitch("R", "raise");
   parser.AddSwitch("q", "quit");
+  parser.AddSwitch("d", "dump_stats");
   parser.AddSwitch("e", "get_rest_endpoint");
   parser.AddOption("o", "open", "", wxCMD_LINE_VAL_STRING,
                    wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
@@ -932,6 +934,8 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Quit);
   else if (parser.Found("get_rest_endpoint"))
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::GetRestEndpoint);
+  else if (parser.Found("dump_stats"))
+    m_parsed_cmdline = ParsedCmdline(CmdlineAction::DumpStats);
   else if (parser.Found("open", &optarg))
     m_parsed_cmdline = ParsedCmdline(CmdlineAction::Open,
                                      optarg.ToStdString());

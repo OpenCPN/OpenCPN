@@ -51,6 +51,13 @@ LocalApiResult IpcClient::SendQuit() {
   }
 }
 
+LocalApiResult IpcClient::SendDumpStats() {
+  if (connection->Execute(wxString("dump_stats"))) {
+    return LocalApiResult(true, "");
+  } else {
+    return LocalApiResult(false, "Server error running dump_stats command");
+  }
+}
 
 LocalApiResult IpcClient::SendRaise() {
   if (connection->Execute(wxString("raise"))) {
@@ -94,6 +101,9 @@ bool IpcConnection::OnExec(const wxString&, const wxString& data) {
     return true;
   } else if (data == "raise") {
     server.on_raise.Notify();
+    return true;
+  } else if (data == "dump_stats") {
+    server.on_dump_stats.Notify();
     return true;
   } else {
     return false;

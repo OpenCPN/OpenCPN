@@ -60,6 +60,10 @@ static const gchar introspection_xml[] = R"""(
       <annotation name='org.gtk.GDBus.Annotation' value='OnMethod'/>
       <!-- In the GUI case, raise application to top. -->
     </method>
+    <method name='DumpStats'>
+      <annotation name='org.gtk.GDBus.Annotation' value='OnMethod'/>
+      <!-- Dump debugging stats  -->
+    </method>
     <method name='Open'>
       <annotation name='org.gtk.GDBus.Annotation' value='OnMethod'/>
       <arg type='s' name='level' direction='in'/>

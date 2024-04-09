@@ -60,6 +60,27 @@ LocalApiResult DbusLocalClient::SendRaise() {
   return LocalApiResult(ok, message);
 }
 
+LocalApiResult DbusLocalClient::SendDumpStats() {
+  auto proxy = GetProxy();
+  if (!proxy) return LocalApiResult(false, "Cannot create proxy");
+  GError* error = 0;
+  GVariant* result = g_dbus_proxy_call_sync (proxy,
+                                             "DumpStats",
+                                             0 /* parameters */,
+                                             G_DBUS_CALL_FLAGS_NONE,
+                                             -1 /* timeout msec */,
+                                             0 /* cancellable */,
+                                             &error);
+  const std::string message(error ? error->message : "");
+  bool ok(error == 0 && g_variant_is_container(result)
+          && g_variant_n_children(result) == 0);
+  if (error) g_clear_error(&error);
+  g_variant_unref(result);
+  g_object_unref(proxy);
+  return LocalApiResult(ok, message);
+}
+
+
 LocalApiResult DbusLocalClient::SendQuit() {
   auto proxy = GetProxy();
   if (!proxy) return LocalApiResult(false, "Cannot create proxy");
