@@ -207,6 +207,7 @@ void FirstUseWizImpl::EnumerateUSB() {
         ConnectionParams params;
         params.Type = ConnectionType::SERIAL;
         params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
+        params.Protocol = device.protocol;
         params.LastDataProtocol = device.protocol;
         params.Port = port.port;
         params.UserComment = port.description;
@@ -229,6 +230,7 @@ void FirstUseWizImpl::EnumerateUSB() {
               ConnectionParams params;
               params.Type = ConnectionType::SERIAL;
               params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
+              params.Protocol = DataProtocol::PROTO_NMEA0183;
               params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
               if (flavor == NMEA0183Flavor::CRC) {
                 params.ChecksumCheck = true;
@@ -246,6 +248,7 @@ void FirstUseWizImpl::EnumerateUSB() {
             ConnectionParams params;
             params.Type = ConnectionType::SERIAL;
             params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
+            params.Protocol = DataProtocol::PROTO_NMEA2000;
             params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
             params.Port = port.port;
             params.UserComment = wxString::Format("NMEA2000: %s (%s)",
@@ -302,6 +305,7 @@ void FirstUseWizImpl::EnumerateUDP() {
       ConnectionParams params;
       params.Type = ConnectionType::NETWORK;
       params.NetProtocol = NetworkProtocol::UDP;
+      params.Protocol = DataProtocol::PROTO_NMEA0183;
       params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
       if (flavor == NMEA0183Flavor::CRC) {
         params.ChecksumCheck = true;
@@ -317,6 +321,7 @@ void FirstUseWizImpl::EnumerateUDP() {
       ConnectionParams params;
       params.Type = ConnectionType::NETWORK;
       params.NetProtocol = NetworkProtocol::UDP;
+      params.Protocol = DataProtocol::PROTO_NMEA2000;
       params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
       params.NetworkAddress = "0.0.0.0";
       params.NetworkPort = port;
@@ -379,6 +384,7 @@ void FirstUseWizImpl::EnumerateTCP() {
           ConnectionParams params;
           params.Type = ConnectionType::NETWORK;
           params.NetProtocol = NetworkProtocol::TCP;
+          params.Protocol = DataProtocol::PROTO_NMEA0183;
           params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
           if (flavor == NMEA0183Flavor::CRC) {
             params.ChecksumCheck = true;
@@ -395,6 +401,7 @@ void FirstUseWizImpl::EnumerateTCP() {
           ConnectionParams params;
           params.Type = ConnectionType::NETWORK;
           params.NetProtocol = NetworkProtocol::TCP;
+          params.Protocol = DataProtocol::PROTO_NMEA2000;
           params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
           params.NetworkAddress = ip;
           params.NetworkPort = port;
