@@ -198,10 +198,18 @@ void FirstUseWizImpl::EnumerateUSB() {
 #ifndef __ANDROID__
   for (const auto& port : serial::list_ports()) {
     bool known = false;
+    DEBUG_LOG << "Found port: " << port.port << ", " << port.description << ", " << port.hardware_id;
     for (const auto& device : known_usb_devices) {
-      std::stringstream stream;
-      stream << std::hex << device.vid << ":" << device.pid;
-      if (port.hardware_id.find(stream.str()) != std::string::npos) {
+      std::stringstream stream_vid;
+      std::stringstream stream_pid;
+      stream_vid << std::uppercase << std::hex << device.vid;
+      stream_pid << std::uppercase << std::hex << device.pid;
+      std::string hwid = port.hardware_id;
+      for (auto c = hwid.begin(); c != hwid.end(); ++c) {
+        *c = ::toupper(*c);
+      }
+      if (hwid.find(stream_vid.str()) != std::string::npos &&
+          hwid.find(stream_pid.str()) != std::string::npos) {
         DEBUG_LOG << "Known device: " << port.port << " " << port.description
                   << " " << port.hardware_id;
         ConnectionParams params;
@@ -220,9 +228,19 @@ void FirstUseWizImpl::EnumerateUSB() {
       for (auto sp : Speeds) {
         try {
           DEBUG_LOG << "Trying " << port.port << " at " << sp;
-          serial::Serial serial(port.port, sp,
-                                serial::Timeout::simpleTimeout(500));
-          std::string data = serial.read(256);
+          serial::Serial serial;
+          serial.setPort(port.port);
+          serial.setBaudrate(sp);
+          serial.open();
+          serial.setTimeout(500, 500, 0, 500, 0);
+          std::string data;
+          for (auto i = 0; i < 4; i++) {
+            try {
+              data.append(serial.read(64));
+            } catch (std::exception &e) {
+              DEBUG_LOG << "Serial read exception: " << e.what();
+            }
+          }
           DEBUG_LOG << "Read: " << data;
           if (!data.empty()) {
             auto flavor = SeemsN0183(data);
