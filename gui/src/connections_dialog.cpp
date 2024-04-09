@@ -50,6 +50,12 @@ extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 
+static ConnectionParamsPanel* GetOptionsPanel(const ConnectionParams* params) {
+  auto panel = dynamic_cast<ConnectionParamsPanel*>(params->m_optionsPanel);
+  assert(panel && "m_optionsPanel: wrong type");
+  return panel;
+}
+
 
 //------------------------------------------------------------------------------
 //          ConnectionsDialog Implementation
@@ -275,7 +281,7 @@ void ConnectionsDialog::SetSelectedConnectionPanel(
   //  Clear any selections
 
   if (mSelectedConnection && mSelectedConnection->m_optionsPanel)
-    mSelectedConnection->m_optionsPanel->SetSelected(false);
+    GetOptionsPanel(mSelectedConnection)->SetSelected(false);
 
   if (panel) {
     mSelectedConnection = panel->m_pConnectionParams;
@@ -340,7 +346,7 @@ bool ConnectionsDialog::SortSourceList(void) {
 
     for (size_t i = 0; i < ivec.size(); i++) {
       ConnectionParamsPanel* pPanel =
-          TheConnectionParams()->Item(ivec[i])->m_optionsPanel;
+          GetOptionsPanel(TheConnectionParams()->Item(ivec[i]));
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxRIGHT, 10);
     }
   }
@@ -362,7 +368,7 @@ void ConnectionsDialog::FillSourceList(void) {
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxRIGHT, 10);
       cp->m_optionsPanel = pPanel;
     } else {
-      cp->m_optionsPanel->Update(cp);
+      GetOptionsPanel(cp)->Update(cp);
     }
   }
   SortSourceList();
@@ -376,7 +382,8 @@ void ConnectionsDialog::FillSourceList(void) {
 void ConnectionsDialog::UpdateSourceList(bool bResort) {
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
-    ConnectionParamsPanel* panel = cp->m_optionsPanel;
+    ConnectionParamsPanel* panel = 0;
+    if (cp->m_optionsPanel) panel = GetOptionsPanel(cp);
     if (panel) panel->Update(TheConnectionParams()->Item(i));
   }
 
@@ -390,7 +397,7 @@ void ConnectionsDialog::UpdateSourceList(bool bResort) {
 void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
   //  Unselect all panels
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++)
-    TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
+    GetOptionsPanel(TheConnectionParams()->Item(i))->SetSelected(false);
 
   ConnectionEditDialog dialog(m_parent, this);
   dialog.SetSize(m_parent->GetSize());  // fill the entire "settings" dialog space
@@ -555,5 +562,3 @@ void ConnectionsDialog::OnPriorityDialog(wxCommandEvent& event) {
   pdlg->ShowModal();
   delete pdlg;
 }
-
-

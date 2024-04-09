@@ -34,6 +34,8 @@
 
 #include "config.h"
 
+#include <cassert>
+
 #include <wx/tokenzr.h>
 #include <wx/regex.h>
 
@@ -74,6 +76,12 @@ extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
 
 extern OCPNPlatform* g_Platform;
+
+static ConnectionParamsPanel* GetOptionsPanel(const ConnectionParams* params) {
+  auto panel = dynamic_cast<ConnectionParamsPanel*>(params->m_optionsPanel);
+  assert(panel && "m_optionsPanel: wrong type");
+  return panel;
+}
 
 static wxString StringArrayToString(wxArrayString arr) {
   wxString ret = wxEmptyString;
@@ -854,7 +862,7 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
   //  Clear any selections
 
   if (mSelectedConnection && mSelectedConnection->m_optionsPanel)
-    mSelectedConnection->m_optionsPanel->SetSelected(false);
+     GetOptionsPanel(mSelectedConnection)->SetSelected(false);
 
   if (panel) {
     mSelectedConnection = panel->m_pConnectionParams;
@@ -1609,8 +1617,7 @@ bool ConnectionEditDialog::SortSourceList(void) {
     m_scrollWinConnections->SetSizer(boxSizerConnections);
 
     for (size_t i = 0; i < ivec.size(); i++) {
-      ConnectionParamsPanel* pPanel =
-          TheConnectionParams()->Item(ivec[i])->m_optionsPanel;
+      auto pPanel = GetOptionsPanel(TheConnectionParams()->Item(ivec[i]));
       boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
     }
   }
@@ -1629,7 +1636,7 @@ void ConnectionEditDialog::LayoutDialog() {
 void ConnectionEditDialog::UpdateSourceList(bool bResort) {
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
-    ConnectionParamsPanel* panel = cp->m_optionsPanel;
+    ConnectionParamsPanel* panel = GetOptionsPanel(cp);
     if (panel) panel->Update(TheConnectionParams()->Item(i));
   }
 
@@ -2477,4 +2484,3 @@ void SentenceListDlg::OnCheckAllClick(wxCommandEvent& event) {
   for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
     m_clbSentences->Check(i, TRUE);
 }
-

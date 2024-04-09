@@ -35,6 +35,7 @@
 #endif  // precompiled headers
 
 #include "model/conn_params.h"
+#include "connections_dialog.h"
 
 class options;
 

@@ -37,6 +37,7 @@
 #include "model/conn_params.h"
 #include "model/comm_util.h"
 
+#include "connections_dialog.h"
 #include "observable.h"
 
 class options;

@@ -40,7 +40,6 @@
 #include "model/comm_navmsg.h"
 
 class ConnectionParams;
-class ConnectionsDialog;
 
 typedef enum {
   SERIAL = 0,
@@ -71,8 +70,6 @@ typedef enum {
 
 #define CONN_ENABLE_ID 47621
 
-
-class ConnectionParamsPanel;
 
 class ConnectionParams {
 public:
@@ -132,7 +129,7 @@ public:
   bool Valid;
   bool b_IsSetup;
   bool drop_overruns;
-  ConnectionParamsPanel *m_optionsPanel;
+  wxWindow* m_optionsPanel;   // A ConnectionParamsPanel.
 
 private:
   wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
