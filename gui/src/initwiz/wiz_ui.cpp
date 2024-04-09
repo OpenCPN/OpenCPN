@@ -347,6 +347,19 @@ static int print_route(const struct route_entry* entry, void* arg) {
   }
   return (0);
 }
+
+static int
+print_arp(const struct arp_entry *entry, void *arg)
+{
+  DEBUG_LOG << "ARP entry: " << addr_ntoa(&entry->arp_pa) << " "
+            << addr_ntoa(&entry->arp_ha);
+	auto ips = (std::vector<std::string>*)arg;
+  if (std::find(ips->begin(), ips->end(), addr_ntoa(&entry->arp_pa)) ==
+      ips->end()) {
+    ips->push_back(addr_ntoa(&entry->arp_pa));
+  }
+	return (0);
+}
 #endif
 
 void FirstUseWizImpl::EnumerateTCP() {
@@ -360,6 +373,15 @@ void FirstUseWizImpl::EnumerateTCP() {
   } else {
     if (route_loop(r, print_route, &ips) < 0) {
       DEBUG_LOG << "route_loop failed";
+    }
+  }
+
+	arp_t *arp;
+  if ((arp = arp_open()) == nullptr) {
+    DEBUG_LOG << "arp_open failed";
+  } else {
+    if (arp_loop(arp, print_arp, &ips) < 0) {
+			DEBUG_LOG << "arp_loop failed";
     }
   }
 
@@ -415,6 +437,7 @@ void FirstUseWizImpl::EnumerateTCP() {
     }
   }
   route_close(r);
+  arp_close(arp);
 #endif
 }
 
