@@ -406,6 +406,8 @@ private:
   ObsListener m_on_quit_listener;
   ObsListener m_routes_update_listener;
 
+  ObsListener m_dump_stats_lstnr;
+
   DECLARE_EVENT_TABLE()
 };
 

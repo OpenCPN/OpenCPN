@@ -5025,6 +5025,8 @@ void MyFrame::InitApiListeners() {
   auto& server = LocalServerApi::GetInstance();
   m_on_raise_listener.Init(server.on_raise, [&](ObservedEvt){ Raise(); });
   m_on_quit_listener.Init(server.on_quit, [&](ObservedEvt){ FastClose(); });
+  m_dump_stats_lstnr.Init(server.on_dump_stats,
+                             [&](ObservedEvt){ std::cout << "DUMP stats\n"; });
   server.SetGetRestApiEndpointCb(
     [&]{ return wxGetApp().m_rest_server.GetEndpoint(); });
   server.open_file_cb =
