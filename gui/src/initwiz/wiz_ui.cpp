@@ -354,8 +354,7 @@ void FirstUseWizImpl::EnumerateTCP() {
   route_t* r;
   std::vector<std::string> ips;
   ips.emplace_back("127.0.0.1");
-  ips.emplace_back("192.168.0.13");  // TODO: Remove, used just for local
-                                     // testing
+
   if ((r = route_open()) == nullptr) {
     DEBUG_LOG << "route_open failed";
   } else {
