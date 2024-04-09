@@ -243,19 +243,19 @@ void FirstUseWizImpl::EnumerateUSB() {
               params.Baudrate = sp;
               m_detected_connections.push_back(params);
               break;
+            } else if (SeemsN2000(data)) {
+              ConnectionParams params;
+              params.Type = ConnectionType::SERIAL;
+              params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
+              params.Protocol = DataProtocol::PROTO_NMEA2000;
+              params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+              params.Port = port.port;
+              params.UserComment = wxString::Format("NMEA2000: %s (%s)",
+                                                    port.description, port.port);
+              params.Baudrate = sp;
+              m_detected_connections.push_back(params);
+              break;
             }
-          } else if (SeemsN2000(data)) {
-            ConnectionParams params;
-            params.Type = ConnectionType::SERIAL;
-            params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
-            params.Protocol = DataProtocol::PROTO_NMEA2000;
-            params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
-            params.Port = port.port;
-            params.UserComment = wxString::Format("NMEA2000: %s (%s)",
-                                                  port.description, port.port);
-            params.Baudrate = sp;
-            m_detected_connections.push_back(params);
-            break;
           }
           serial.close();
         } catch (std::invalid_argument& e) {
