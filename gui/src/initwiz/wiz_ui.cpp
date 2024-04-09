@@ -433,6 +433,7 @@ void FirstUseWizImpl::EnumerateSignalK() {
     ConnectionParams params;
     params.Type = ConnectionType::NETWORK;
     params.NetProtocol = NetworkProtocol::SIGNALK;
+    params.Protocol = DataProtocol::PROTO_SIGNALK;
     params.LastDataProtocol = DataProtocol::PROTO_SIGNALK;
     params.NetworkAddress = ip;
     params.NetworkPort = port;
@@ -458,6 +459,7 @@ void FirstUseWizImpl::EnumerateGPSD() {
     ConnectionParams params;
     params.Type = ConnectionType::NETWORK;
     params.NetProtocol = NetworkProtocol::GPSD;
+    params.Protocol = DataProtocol::PROTO_NMEA0183;
     params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
     params.NetworkAddress = "127.0.0.1";
     params.NetworkPort = 2947;
