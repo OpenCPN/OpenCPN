@@ -38,6 +38,7 @@
 #include "model/comm_util.h"
 
 #include "observable.h"
+#include "AdapterInfo.h"
 
 class options;
 class ConnectionParamsPanel;
@@ -47,6 +48,11 @@ class ConnectionParamsPanel;
 //----------------------------------------------------------------------------
 class ConnectionEditDialog : public wxDialog {
 public:
+  const wxString DefaultTCPPort = "10110";
+  const wxString DefaultUDPPort = "10110";
+  const wxString DefaultGPSDPort = "2947";
+  const wxString DefaultSignalKPort = "3000";
+
   ConnectionEditDialog();
  // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
   ConnectionEditDialog(options *parent, ConnectionsDialog *client);
@@ -83,6 +89,8 @@ public:
   void OnBtnIStcs(wxCommandEvent &event);
   void OnCbInput(wxCommandEvent &event);
   void OnCbOutput(wxCommandEvent &event);
+  void OnCbMultiCast(wxCommandEvent &event);
+  void OnCbAdvanced(wxCommandEvent &event);
   void OnRbOutput(wxCommandEvent &event);
   void OnBtnOStcs(wxCommandEvent &event);
   void OnConnValChange(wxCommandEvent &event);
@@ -101,6 +109,13 @@ public:
   void FillSourceList();
   void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
+  void SetUDPNetAddressVisiblity(void);
+  bool IsAddressMultiCast(wxString &ip);
+  bool IsAddressBroadcast(wxString &ip);
+  wxString FindBroadCastAddress(void);
+  wxString FindGateWayAddress(void);
+  wxString FindIPAddress(void);
+  bool IsDefaultPort(wxString address);
 
   void ClearNMEAForm(void);
   void SetNMEAFormToSerial(void);
@@ -137,12 +152,14 @@ public:
   options *m_parent;
   wxScrolledWindow *m_scrolledwin;
 
+  
   wxGridSizer *gSizerNetProps, *gSizerSerProps, *gSizerCanProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
   wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
       *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
+  wxCheckBox *m_cbMultiCast, *m_cbAdvanced;
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
@@ -190,6 +207,8 @@ public:
   wxArrayString m_choice_CANSource_choices;
 
   ObsListener new_device_listener;
+
+  AdapterInfo adapterInfo;
 
   //DECLARE_EVENT_TABLE()
 
