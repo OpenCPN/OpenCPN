@@ -706,7 +706,7 @@ void ConnectionEditDialog::Init() {
   m_cbCheckSKDiscover->Hide(); // Hide it as the functionality is disabled and likely to be completely removed
 
   // signal K "Discover now" button
-  m_ButtonSKDiscover = new wxButton(m_scrolledwin, wxID_ANY, _("Discover local server..."),
+  m_ButtonSKDiscover = new wxButton(m_scrolledwin, wxID_ANY, _("Discover local server"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_ButtonSKDiscover->Hide();
   fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 2);
