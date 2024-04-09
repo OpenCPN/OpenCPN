@@ -40,6 +40,7 @@
 #include "model/comm_drv_signalk_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
+#include "model/mDNS_query.h"
 #include "navutil.h"
 #include "svg_utils.h"
 #ifndef __ANDROID__
@@ -48,6 +49,7 @@
 #endif
 
 extern OCPNPlatform* g_Platform;
+extern std::vector<ocpn_DNS_record_t> g_sk_servers;
 
 FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, wxWindowID id,
                                  const wxString& title, const wxBitmap& bitmap,
@@ -198,7 +200,8 @@ void FirstUseWizImpl::EnumerateUSB() {
 #ifndef __ANDROID__
   for (const auto& port : serial::list_ports()) {
     bool known = false;
-    DEBUG_LOG << "Found port: " << port.port << ", " << port.description << ", " << port.hardware_id;
+    DEBUG_LOG << "Found port: " << port.port << ", " << port.description << ", "
+              << port.hardware_id;
     for (const auto& device : known_usb_devices) {
       std::stringstream stream_vid;
       std::stringstream stream_pid;
@@ -237,7 +240,7 @@ void FirstUseWizImpl::EnumerateUSB() {
           for (auto i = 0; i < 4; i++) {
             try {
               data.append(serial.read(64));
-            } catch (std::exception &e) {
+            } catch (std::exception& e) {
               DEBUG_LOG << "Serial read exception: " << e.what();
             }
           }
@@ -268,8 +271,8 @@ void FirstUseWizImpl::EnumerateUSB() {
               params.Protocol = DataProtocol::PROTO_NMEA2000;
               params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
               params.Port = port.port;
-              params.UserComment = wxString::Format("NMEA2000: %s (%s)",
-                                                    port.description, port.port);
+              params.UserComment = wxString::Format(
+                  "NMEA2000: %s (%s)", port.description, port.port);
               params.Baudrate = sp;
               m_detected_connections.push_back(params);
               break;
@@ -366,17 +369,15 @@ static int print_route(const struct route_entry* entry, void* arg) {
   return (0);
 }
 
-static int
-print_arp(const struct arp_entry *entry, void *arg)
-{
+static int print_arp(const struct arp_entry* entry, void* arg) {
   DEBUG_LOG << "ARP entry: " << addr_ntoa(&entry->arp_pa) << " "
             << addr_ntoa(&entry->arp_ha);
-	auto ips = (std::vector<std::string>*)arg;
+  auto ips = (std::vector<std::string>*)arg;
   if (std::find(ips->begin(), ips->end(), addr_ntoa(&entry->arp_pa)) ==
       ips->end()) {
     ips->push_back(addr_ntoa(&entry->arp_pa));
   }
-	return (0);
+  return (0);
 }
 #endif
 
@@ -394,12 +395,12 @@ void FirstUseWizImpl::EnumerateTCP() {
     }
   }
 
-	arp_t *arp;
+  arp_t* arp;
   if ((arp = arp_open()) == nullptr) {
     DEBUG_LOG << "arp_open failed";
   } else {
     if (arp_loop(arp, print_arp, &ips) < 0) {
-			DEBUG_LOG << "arp_loop failed";
+      DEBUG_LOG << "arp_loop failed";
     }
   }
 
@@ -459,27 +460,7 @@ void FirstUseWizImpl::EnumerateTCP() {
 #endif
 }
 
-void FirstUseWizImpl::EnumerateSignalK() {
-  wxString ip;
-  int port;
-  std::string serviceIdent =
-      std::string("_signalk-ws._tcp.local.");  // Works for node.js server
-
-  if (CommDriverSignalKNet::DiscoverSKServer(serviceIdent, ip, port,
-                                          1))  // 1 second scan
-  {
-    ConnectionParams params;
-    params.Type = ConnectionType::NETWORK;
-    params.NetProtocol = NetworkProtocol::SIGNALK;
-    params.Protocol = DataProtocol::PROTO_SIGNALK;
-    params.LastDataProtocol = DataProtocol::PROTO_SIGNALK;
-    params.NetworkAddress = ip;
-    params.NetworkPort = port;
-    params.UserComment =
-        wxString::Format(_("Signal K: %s TCP port %d"), ip.c_str(), port);
-    m_detected_connections.push_back(params);
-  }
-}
+void FirstUseWizImpl::EnumerateSignalK() { FindAllSignalKServers(1); }
 
 void FirstUseWizImpl::EnumerateCAN() {
   // TODO look at the canX interfaces if we are on Linux
@@ -516,6 +497,11 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_clSources->Clear();
   m_detected_connections.clear();
   m_rtConnectionInfo->Clear();
+  wxTheApp->ProcessPendingEvents();
+  m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
+  m_rtConnectionInfo->Newline();
+  EnumerateSignalK();
+  wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();
   EnumerateUSB();
@@ -532,14 +518,23 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_rtConnectionInfo->Newline();
   EnumerateCAN();
   wxTheApp->ProcessPendingEvents();
-  m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
-  m_rtConnectionInfo->Newline();
-  EnumerateSignalK();
-  wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Looking for GPSD servers..."));
   m_rtConnectionInfo->Newline();
   EnumerateGPSD();
   wxTheApp->ProcessPendingEvents();
+  for (const auto& sks : g_sk_servers) {
+    ConnectionParams params;
+    params.Type = ConnectionType::NETWORK;
+    params.NetProtocol = NetworkProtocol::SIGNALK;
+    params.Protocol = DataProtocol::PROTO_SIGNALK;
+    params.LastDataProtocol = DataProtocol::PROTO_SIGNALK;
+    params.NetworkAddress = sks.ip;
+    params.NetworkPort = std::stoi(sks.port);
+    params.UserComment =
+        wxString::Format(_("SignalK: %s (%s port %d)"), sks.hostname,
+                         params.NetworkAddress, params.NetworkPort);
+    m_detected_connections.push_back(params);
+  }
   for (const auto& conn : m_detected_connections) {
     m_clSources->Append(conn.UserComment);
     m_clSources->Check(m_clSources->GetCount() - 1, true);
