@@ -425,8 +425,6 @@ void FirstUseWizImpl::EnumerateSignalK() {
   std::string serviceIdent =
       std::string("_signalk-ws._tcp.local.");  // Works for node.js server
 
-  g_Platform->ShowBusySpinner();
-
   if (CommDriverSignalKNet::DiscoverSKServer(serviceIdent, ip, port,
                                           1))  // 1 second scan
   {
