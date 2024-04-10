@@ -56,6 +56,9 @@ public:
   /** Notified by all driverlist updates. */
   EventVar evt_driverlist_change;
 
+  /** Notified when receiving --remote --dump_stat on local API. */
+  EventVar evt_dump_stats;
+
   /**
    *  Notified for messages from drivers. The generated event contains:
    *  - A wxLogLevel stored as an int.

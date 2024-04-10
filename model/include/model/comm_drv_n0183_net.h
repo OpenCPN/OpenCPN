@@ -59,6 +59,7 @@
 #include "model/comm_drv_n0183.h"
 #include "model/comm_out_queue.h"
 #include "model/conn_params.h"
+
 #include "observable.h"
 
 class CommDriverN0183NetEvent;  // Internal
@@ -153,6 +154,7 @@ private:
   bool m_bok;
 
   ObsListener resume_listener;
+  ObsListener dump_stats_lstnr;
   const std::unique_ptr<CommOutQueue> m_out_queue;
 
   DECLARE_EVENT_TABLE()

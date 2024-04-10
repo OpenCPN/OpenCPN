@@ -47,6 +47,7 @@
 #include "model/comm_drv_registry.h"
 #include "model/sys_events.h"
 #include "model/wait_continue.h"
+
 #include "observable.h"
 
 #ifndef __ANDROID__
@@ -236,6 +237,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N0183_SERIAL, &CommDriverN0183Serial::handle_N0183_MSG,
        this);
+  m_dump_stats_lstnr.Init(CommDriverRegistry::GetInstance().evt_dump_stats,
+                          [&](ObservedEvt&) { DumpStats(); });
 
   Open();
 }

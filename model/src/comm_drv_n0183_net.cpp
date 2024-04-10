@@ -64,6 +64,7 @@
 #include <wx/sckaddr.h>
 
 #include "model/comm_drv_n0183_net.h"
+#include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
@@ -186,6 +187,9 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   // Establish the power events response
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
                        [&](ObservedEvt&) { HandleResume(); });
+  dump_stats_lstnr.Init(CommDriverRegistry::GetInstance().evt_dump_stats,
+                        [&](ObservedEvt&) { DumpStats(); });
+
   Open();
 }
 

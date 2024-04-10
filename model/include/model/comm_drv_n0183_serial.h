@@ -31,6 +31,7 @@
 
 #include <wx/event.h>
 
+#include "observable.h"
 #include "model/comm_drv_n0183.h"
 #include "model/comm_out_queue.h"
 #include "model/conn_params.h"
@@ -110,6 +111,7 @@ private:
   DriverListener& m_listener;
   const std::unique_ptr<CommOutQueue> m_out_queue;
   void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
+  ObsListener m_dump_stats_lstnr;
 };
 
 #endif  // guard
