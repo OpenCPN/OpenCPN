@@ -242,6 +242,17 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
 
 CommDriverN0183Serial::~CommDriverN0183Serial() { Close(); }
 
+void CommDriverN0183Serial::DumpStats() const {
+  auto path = AbstractCommDriver::DumpFilePath();
+  auto queue = dynamic_cast<MeasuredCommOutQueue*>(m_out_queue.get());
+  std::ofstream f(path, std::ios_base::app);
+  if (queue) {
+    f << *queue << "\n";
+  } else {
+    f << "No stats available\n";
+  }
+}
+
 bool CommDriverN0183Serial::Open() {
   wxString comx;
   comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"

@@ -59,6 +59,9 @@ class AbstractCommDriver
 public:
   AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
 
+  /** Return path to dump file inn private data directory. */
+  static std::string DumpFilePath();
+
   virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) = 0;
 
@@ -83,7 +86,11 @@ public:
     return std::pair<CommStatus, std::string>(CommStatus::NotImplemented, "");
   }
 
+  /** Return unique string identifying driver instance. */
   std::string Key() const { return NavAddr::BusToString(bus) + "!@!" + iface; }
+
+  /** Possibly dump driver specific debug statistics. */
+  virtual void DumpStats() const {};
 
   const NavAddr::Bus bus;
   const std::string iface; /**< Physical device for 0183, else a

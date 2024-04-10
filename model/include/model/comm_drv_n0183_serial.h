@@ -65,6 +65,8 @@ public:
   /** Register driver and possibly do other post-ctor steps. */
   void Activate() override;
 
+  void DumpStats() const override;
+
   bool Open();
   void Close();
 

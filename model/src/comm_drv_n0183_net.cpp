@@ -194,6 +194,17 @@ CommDriverN0183Net::~CommDriverN0183Net() {
   Close();
 }
 
+void CommDriverN0183Net::DumpStats() const {
+  auto path = AbstractCommDriver::DumpFilePath();
+  auto queue = dynamic_cast<MeasuredCommOutQueue*>(m_out_queue.get());
+  std::ofstream f(path, std::ios_base::app);
+  if (queue) {
+    f << *queue << "\n";
+  } else {
+    f << "No stats available\n";
+  }
+}
+
 void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();

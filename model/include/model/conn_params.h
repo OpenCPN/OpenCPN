@@ -124,11 +124,12 @@ public:
   std::string GetStrippedDSPort();
   NavAddr::Bus GetCommProtocol();
 
-  bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
-
+  bool SentencePassesFilter(const wxString& sentence,
+                            FilterDirection direction);
   bool Valid;
-  bool b_IsSetup;
   bool drop_overruns;
+  bool b_IsSetup;
+  std::string m_dump_stats_path;  // Used by DumpStats() in driver
   wxWindow* m_optionsPanel;   // A ConnectionParamsPanel.
 
 private:

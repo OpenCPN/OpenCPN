@@ -135,6 +135,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_bridge.cpp
   ${MODEL_SRC_DIR}/comm_can_util.cpp
   ${MODEL_SRC_DIR}/comm_decoder.cpp
+  ${MODEL_SRC_DIR}/comm_driver.cpp
   ${MODEL_SRC_DIR}/comm_drv_factory.cpp
   ${MODEL_SRC_DIR}/comm_drv_file.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183.cpp

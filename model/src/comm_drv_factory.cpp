@@ -53,8 +53,7 @@
 
 std::shared_ptr<AbstractCommDriver> MakeCommDriver(
     const ConnectionParams* params) {
-  wxLogMessage(
-      wxString::Format(_T("MakeCommDriver: %s"), params->GetDSPort().c_str()));
+  wxLogMessage("MakeCommDriver: %s", params->GetDSPort().c_str());
 
   auto& msgbus = NavMsgBus::GetInstance();
   auto& registry = CommDriverRegistry::GetInstance();

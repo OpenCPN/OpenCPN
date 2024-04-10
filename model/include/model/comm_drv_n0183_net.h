@@ -73,6 +73,9 @@ public:
 
   void Open();
   void Close();
+
+  void DumpStats() const override;
+
   ConnectionParams GetParams() const { return m_params; }
 
   bool SetOutputSocketOptions(wxSocketBase* tsock);
