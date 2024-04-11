@@ -247,14 +247,16 @@ static std::string tmp_rule_path(const char* name) {
 
 std::string make_udev_link() {
   for (char ch : {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}) {
-    std::string path("/dev/opencpn");
-    path += ch;
-    if (!ocpn::exists(path)) {
-      ocpn::replace(path, "/dev/", "");
+    std::stringstream ss;
+    ss << "/etc/udev/rules.d/65-opencpn" << ch << ".rules";
+    if (!ocpn::exists(ss.str())) {
+      std::string path(ss.str());
+      ocpn::replace(path, "/etc/udev/rules.d/65-", "");
+      ocpn::replace(path, ".rules", "");
       return path;
     }
   }
-  WARNING_LOG << "Too many opencpn devices found (10). Giving up.";
+  WARNING_LOG << "Too many opencpn device rules found (10). Giving up.";
   return "";
 }
 
