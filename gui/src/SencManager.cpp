@@ -84,8 +84,7 @@ SENCThreadManager::SENCThreadManager() {
   m_max_jobs = wxMax(nCPU - 1, 1);
   // m_max_jobs = 1;
 
-  //    if(bthread_debug)
-  printf(" SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
+  wxLogDebug("SENC: nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
 
   //  Create/connect a dynamic event handler slot for messages from the worker
   //  threads
