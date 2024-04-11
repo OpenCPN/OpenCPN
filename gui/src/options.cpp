@@ -4820,8 +4820,8 @@ void OCPNSoundPanel::OnButtonSelectSound(wxCommandEvent& event) {
 
 void OCPNSoundPanel::OnButtonSPTestSound(wxCommandEvent& event) {
   auto sound = SoundFactory();
-  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
-  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
+  //auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  //if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback(
           [&](void* snd) { m_on_sp_sound_done.Notify(snd); });
   sound->Load(m_sound_file, g_iSoundDeviceIndex);
