@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2021 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,8 +16,8 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ ***************************************************************************/
+/** \file udev_rule_mgr.cpp Implement udev_rule_mgr.h */
 
 #include "config.h"
 
@@ -41,7 +38,6 @@
 
 #include "gui_lib.h"
 #include "udev_rule_mgr.h"
-
 
 static bool hide_dongle_dialog;
 static bool hide_device_dialog;
@@ -128,9 +124,9 @@ public:
   HideShowPanel(wxWindow* parent, wxWindow* child)
       : wxPanel(parent), m_show(true), m_child(child) {
     m_arrow = new wxStaticText(this, wxID_ANY, "");
-    m_arrow->Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent& ev) { toggle(); });
+    m_arrow->Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent& ev) { Toggle(); });
     if (m_child) {
-      toggle();
+      Toggle();
     }
   }
 
@@ -139,7 +135,7 @@ protected:
   wxWindow* m_child;
   wxStaticText* m_arrow;
 
-  void toggle() {
+  void Toggle() {
     static const auto ARROW_DOWN = L"\u25BC";
     static const auto ARROW_RIGHT = L"\u25BA";
 
@@ -156,8 +152,8 @@ class ManualInstructions : public HideShowPanel {
 public:
   ManualInstructions(wxWindow* parent, const char* cmd)
       : HideShowPanel(parent, 0) {
-    m_child = get_cmd(parent, cmd);
-    toggle();
+    m_child = GetCmd(parent, cmd);
+    Toggle();
     auto flags = wxSizerFlags().Expand();
 
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -176,7 +172,7 @@ public:
   }
 
 private:
-  wxTextCtrl* get_cmd(wxWindow* parent, const char* tmpl) {
+  wxTextCtrl* GetCmd(wxWindow* parent, const char* tmpl) {
     std::string cmd(tmpl);
     ocpn::replace(cmd, "@PATH@", GetDongleRule());
     auto ctrl = new wxTextCtrl(this, wxID_ANY, cmd);
@@ -194,7 +190,7 @@ public:
       : HideShowPanel(parent, 0) {
     int from = rule[0] == '\n' ? 1 : 0;
     m_child = new wxStaticText(this, wxID_ANY, rule.substr(from));
-    toggle();
+    Toggle();
 
     auto flags = wxSizerFlags().Expand();
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -213,7 +209,7 @@ public:
 };
 
 /** Read and return contents of file with given path. */
-static std::string get_rule(const std::string& path) {
+static std::string GetRule(const std::string& path) {
   std::ifstream input(path.c_str());
   std::ostringstream buf;
   buf << input.rdbuf();
@@ -234,7 +230,7 @@ public:
     ocpn::replace(cmd, "@pkexec@", "sudo");
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new ManualInstructions(this, cmd.c_str()));
-    std::string rule_text = get_rule(rule_path);
+    std::string rule_text = GetRule(rule_path);
     vbox->Add(new ReviewRule(this, rule_text.c_str()));
     SetAutoLayout(true);
     SetSizer(vbox);
@@ -251,7 +247,7 @@ public:
     ocpn::replace(cmd, "@pkexec@", "sudo");
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new ManualInstructions(this, cmd.c_str()));
-    vbox->Add(new ReviewRule(this, get_rule(rule_path)));
+    vbox->Add(new ReviewRule(this, GetRule(rule_path)));
     SetAutoLayout(true);
     SetSizer(vbox);
   }
@@ -267,7 +263,7 @@ public:
     sizer->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     auto install = new wxButton(this, wxID_ANY, _("Install rule"));
     install->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                  [&](wxCommandEvent& ev) { do_install(); });
+                  [&](wxCommandEvent& ev) { DoInstall(); });
     install->Enable(getenv("FLATPAK_ID") == NULL);
     sizer->Add(install, flags);
     auto quit = new wxButton(this, wxID_EXIT, _("Quit"));
@@ -285,14 +281,14 @@ public:
     Show();
   }
 
-  void do_install() {
+  void DoInstall() {
     using namespace std;
     string cmd(INSTRUCTIONS);
     ocpn::replace(cmd, "@PATH@", m_rule_path);
     ocpn::replace(cmd, "@pkexec@", "pkexec");
     ifstream f(m_rule_path);
-    auto rule = string(istreambuf_iterator<char>(f),
-                       istreambuf_iterator<char>());
+    auto rule =
+        string(istreambuf_iterator<char>(f), istreambuf_iterator<char>());
     int sts = system(cmd.c_str());
     int flags = wxOK | wxICON_WARNING;
     const char* msg = _("Errors encountered installing rule.");
@@ -336,7 +332,7 @@ public:
 };
 
 /** Return an intro based on DEVICE_INTRO with proper substitutions. */
-static std::string get_device_intro(const char* device, std::string symlink) {
+static std::string GetDeviceIntro(const char* device, std::string symlink) {
   std::string intro(DEVICE_INTRO);
   ocpn::replace(symlink, "/dev/", "");
   while (intro.find("@SYMLINK@") != std::string::npos) {
@@ -362,7 +358,7 @@ public:
     auto flags = wxSizerFlags().Expand().Border();
 
     std::string symlink(MakeUdevLink());
-    auto intro = get_device_intro(device_path, symlink.c_str());
+    auto intro = GetDeviceIntro(device_path, symlink.c_str());
     auto rule_path = GetDeviceRule(device_path, symlink.c_str());
     sizer->Add(new wxStaticText(this, wxID_ANY, intro), flags);
     sizer->Add(new wxStaticLine(this), flags);
