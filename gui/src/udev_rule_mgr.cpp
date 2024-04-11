@@ -75,7 +75,7 @@ Rule successfully installed. To activate the new rule restart the system.
 )");
 
 static const char* const RULE_SUCCESS_MSG = _(R"(
-Rule successfully installed. To activate the new rule:
+Rule successfully installed. To activate the new rule restart system or:
 - Exit opencpn.
 - Unplug and re-insert the USB device.
 - Restart opencpn
@@ -111,7 +111,6 @@ struct HidePanel : wxPanel {
   HidePanel(wxWindow* parent, const char* label, bool* state)
       : wxPanel(parent) {
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    //hbox->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     hbox->Add(new HideCheckbox(this, label, state), wxSizerFlags().Expand());
     SetSizer(hbox);
     Fit();
@@ -144,7 +143,7 @@ protected:
 
     m_show = !m_show;
     m_child->Show(m_show);
-    m_arrow->SetLabel(m_show ? ARROW_DOWN : ARROW_RIGHT);
+    m_arrow->SetLabel(std::string(" ") + (m_show ? ARROW_DOWN : ARROW_RIGHT));
     GetGrandParent()->Fit();
     GetGrandParent()->Layout();
   }
@@ -157,7 +156,7 @@ public:
       : HideShowPanel(parent, 0) {
     m_child = get_cmd(parent, cmd);
     toggle();
-    auto flags = wxSizerFlags().Expand().Right();
+    auto flags = wxSizerFlags().Expand();
 
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     const char* label = _("Manual command line instructions");
@@ -166,7 +165,6 @@ public:
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(hbox);
-    //auto indent = parent->GetTextExtent("aaa").GetWidth();
     flags = flags.Border(wxLEFT);
     vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
 
@@ -196,7 +194,7 @@ public:
     m_child = new wxStaticText(this, wxID_ANY, rule.substr(from));
     toggle();
 
-    auto flags = wxSizerFlags().Expand().Right();
+    auto flags = wxSizerFlags().Expand();
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Review rule")), flags);
     hbox->Add(m_arrow);
@@ -258,11 +256,12 @@ public:
 };
 
 /** Install/Quit buttons bottom-right */
-struct Buttons : public wxPanel {
+class Buttons : public wxPanel {
+public:
   Buttons(wxWindow* parent, const char* rule_path)
       : wxPanel(parent), m_rule_path(rule_path) {
     auto sizer = new wxBoxSizer(wxHORIZONTAL);
-    auto flags = wxSizerFlags().Right().Bottom();
+    auto flags = wxSizerFlags().Bottom().Border(wxLEFT);
     sizer->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     auto install = new wxButton(this, wxID_ANY, _("Install rule"));
     install->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -306,6 +305,7 @@ struct Buttons : public wxPanel {
     OCPNMessageBox(this, msg, _("OpenCPN Info"), flags);
   }
 
+private:
   std::string m_rule_path;
 };
 
@@ -366,7 +366,7 @@ public:
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new DeviceInfoPanel(this, rule_path), flags);
     sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL, &hide_device_dialog),
-               flags.Right());
+               flags);
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new Buttons(this, rule_path.c_str()), flags);
 
