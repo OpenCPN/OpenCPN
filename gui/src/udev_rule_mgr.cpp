@@ -178,7 +178,7 @@ public:
 private:
   wxTextCtrl* get_cmd(wxWindow* parent, const char* tmpl) {
     std::string cmd(tmpl);
-    ocpn::replace(cmd, "@PATH@", get_dongle_rule());
+    ocpn::replace(cmd, "@PATH@", GetDongleRule());
     auto ctrl = new wxTextCtrl(this, wxID_ANY, cmd);
     ctrl->SetEditable(false);
     ctrl->SetMinSize(parent->GetTextExtent(cmd + "aaa"));
@@ -229,7 +229,7 @@ class DongleInfoPanel : public wxPanel {
 public:
   DongleInfoPanel(wxWindow* parent) : wxPanel(parent) {
     std::string cmd(INSTRUCTIONS);
-    std::string rule_path(get_dongle_rule());
+    std::string rule_path(GetDongleRule());
     ocpn::replace(cmd, "@PATH@", rule_path.c_str());
     ocpn::replace(cmd, "@pkexec@", "sudo");
     auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -328,7 +328,7 @@ public:
     sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL, &hide_dongle_dialog),
                flags.Left());
     sizer->Add(new wxStaticLine(this), flags);
-    sizer->Add(new Buttons(this, get_dongle_rule().c_str()), flags);
+    sizer->Add(new Buttons(this, GetDongleRule().c_str()), flags);
     SetSizer(sizer);
     SetAutoLayout(true);
     Fit();
@@ -361,9 +361,9 @@ public:
     auto sizer = new wxBoxSizer(wxVERTICAL);
     auto flags = wxSizerFlags().Expand().Border();
 
-    std::string symlink(make_udev_link());
+    std::string symlink(MakeUdevLink());
     auto intro = get_device_intro(device_path, symlink.c_str());
-    auto rule_path = get_device_rule(device_path, symlink.c_str());
+    auto rule_path = GetDeviceRule(device_path, symlink.c_str());
     sizer->Add(new wxStaticText(this, wxID_ANY, intro), flags);
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new DeviceInfoPanel(this, rule_path), flags);
@@ -389,7 +389,7 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
     return false;
   }
   int result = 0;
-  if (!is_device_permissions_ok(device.c_str())) {
+  if (!IsDevicePermissionsOk(device.c_str())) {
     auto dialog = new DeviceRuleDialog(parent, device.c_str());
     result = dialog->ShowModal();
     delete dialog;
@@ -399,7 +399,7 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
 
 bool CheckDongleAccess(wxWindow* parent) {
   int result = 0;
-  if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
+  if (IsDonglePermissionsWrong() && !hide_dongle_dialog) {
     auto dialog = new DongleRuleDialog(parent);
     result = dialog->ShowModal();
     delete dialog;
