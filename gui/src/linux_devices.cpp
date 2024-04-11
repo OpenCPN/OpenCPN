@@ -58,7 +58,7 @@ typedef struct usbdata {
   std::string product;
   std::string serial_nr;
 
-  usbdata(const std::string& v, const std::string& p, const char* s = 0)
+  usbdata(std::string v, std::string p, const char* s = 0)
       : vendor_id(v), product_id(p), serial_nr(s ? s : "") {}
   bool is_ok() { return vendor_id.length() > 0; }
 } usbdata;
@@ -82,17 +82,11 @@ KERNEL=="ttyS@s_index@", MODE="0666", SYMLINK+="@symlink@"
 
 static const char* const DONGLE_RULE_NAME = "65-ocpn-dongle.rules";
 
+/** Add more data available using libusb. */
 static void read_usbdata(libusb_device* dev, libusb_device_handle* handle,
                          usbdata* data) {
   struct libusb_device_descriptor desc;
   libusb_get_device_descriptor(dev, &desc);
-
-  std::stringstream ss;
-  ss << std::setfill('0') << std::setw(4) << desc.idVendor;
-  data->vendor_id = std::string(ss.str());
-  ss.str("");
-  ss << std::setfill('0') << std::setw(4) << desc.idProduct;
-  data->vendor_id = std::string(ss.str());
 
   unsigned char buff[256];
   int r;
