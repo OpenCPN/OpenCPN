@@ -986,12 +986,8 @@ if (OCPN_USE_GARMINHOST)
 endif ()
 
 if (LINUX)
-  list(APPEND GUI_SRC ${GUI_SRC_DIR}/linux_devices.cpp
-       ${GUI_SRC_DIR}/udev_rule_mgr.cpp
-  )
-  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/linux_devices.h
-       ${GUI_HDR_DIR}/udev_rule_mgr.h
-  )
+  list(APPEND GUI_SRC ${GUI_SRC_DIR}/udev_rule_mgr.cpp)
+  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/udev_rule_mgr.h)
 endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)
@@ -1108,12 +1104,6 @@ endif ()
 
 if (OCPN_USE_SYSFS_PORTS)
   set(USE_SYSFS_PORTS 1)
-endif ()
-
-find_package(LIBUSB)
-if (LIBUSB_FOUND)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
-  set(HAVE_LIBUSB_10 1)
 endif ()
 
 if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")

@@ -47,7 +47,7 @@
 #endif
 #include <libusb.h>
 
-#include "linux_devices.h"
+#include "model/linux_devices.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 
