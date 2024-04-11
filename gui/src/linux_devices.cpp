@@ -5,7 +5,7 @@
  * Author:   Alec Leamas
  *
  ***************************************************************************
- *   Copyright (C) 2011 Alec Leamas                                        *
+ *   Copyright (C) 2011 - 2024 Alec Leamas                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +22,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file linux_devices.cpp Implement linux_devices.h. */
+
 #include "config.h"
 
 #include <string>
@@ -71,6 +74,11 @@ static const char* const DEVICE_RULE = R"--(
 ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
     MODE="0666", SYMLINK+="@symlink@"
 )--";
+
+static const char* const DEVICE_RULE_TTYS = R"--(
+KERNEL=="ttyS@s_index@", MODE="0666", SYMLINK+="@symlink@"
+)--";
+
 
 static const char* const DONGLE_RULE_NAME = "65-ocpn-dongle.rules";
 
@@ -268,12 +276,19 @@ static std::string create_tmpfile(const std::string& contents,
   return path;
 }
 
-static std::string create_udev_rule(usbdata data, const char* symlink) {
-  std::string rule(DEVICE_RULE);
-  ocpn::replace(rule, "@vendor@", data.vendor_id);
-  ocpn::replace(rule, "@product@", data.product_id);
-  ocpn::replace(rule, "@symlink@", symlink);
+static std::string create_udev_rule(const std::string& device, usbdata data,
+	                            const char* symlink) {
 
+  std::string rule(DEVICE_RULE);
+  if (device.find("ttyS") != std::string::npos) {
+    rule = std::string(DEVICE_RULE_TTYS);
+    auto index(device.substr(device.find("ttyS") + strlen("ttyS")));
+    ocpn::replace(rule, "@s_index@", index);
+  } else {
+    ocpn::replace(rule, "@vendor@", data.vendor_id);
+    ocpn::replace(rule, "@product@", data.product_id);
+  }
+  ocpn::replace(rule, "@symlink@", symlink);
   std::string name(symlink);
   name.insert(0, "65-");
   name += ".rules";
@@ -294,6 +309,6 @@ std::string get_dongle_rule() {
 
 std::string get_device_rule(const char* device, const char* symlink) {
   usbdata data = get_device_usbdata(device);
-  auto path = create_udev_rule(data, symlink);
+  auto path = create_udev_rule(device, data, symlink);
   return path;
 }

@@ -70,6 +70,10 @@ in particular on laptops.
 static const char* const HIDE_DIALOG_LABEL =
     _("Do not show this dialog next time");
 
+static const char* const RULE_SUCCESS_TTYS_MSG = _(R"(
+Rule successfully installed. To activate the new rule restart the system.
+)");
+
 static const char* const RULE_SUCCESS_MSG = _(R"(
 Rule successfully installed. To activate the new rule:
 - Exit opencpn.
@@ -281,14 +285,22 @@ struct Buttons : public wxPanel {
   }
 
   void do_install() {
-    std::string cmd(INSTRUCTIONS);
+    using namespace std;
+    string cmd(INSTRUCTIONS);
     ocpn::replace(cmd, "@PATH@", m_rule_path);
     ocpn::replace(cmd, "@pkexec@", "pkexec");
+    ifstream f(m_rule_path);
+    auto rule = string(istreambuf_iterator<char>(f),
+                       istreambuf_iterator<char>());
     int sts = system(cmd.c_str());
     int flags = wxOK | wxICON_WARNING;
     const char* msg = _("Errors encountered installing rule.");
     if (WIFEXITED(sts) && WEXITSTATUS(sts) == 0) {
-      msg = RULE_SUCCESS_MSG;
+      if (rule.find("ttyS") != std::string::npos) {
+        msg = RULE_SUCCESS_TTYS_MSG;
+      } else {
+        msg = RULE_SUCCESS_MSG;
+      }
       flags = wxOK | wxICON_INFORMATION;
     }
     OCPNMessageBox(this, msg, _("OpenCPN Info"), flags);
@@ -345,7 +357,7 @@ public:
   DeviceRuleDialog(wxWindow* parent, const char* device_path)
       : wxDialog(parent, wxID_ANY, _("Manage device udev rule")) {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand();
+    auto flags = wxSizerFlags().Expand().Border();
 
     std::string symlink(make_udev_link());
     auto intro = get_device_intro(device_path, symlink.c_str());
