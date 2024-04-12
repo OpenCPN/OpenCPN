@@ -159,25 +159,27 @@ static int isTTYreal(const char* dev) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
-  // Drop non-readable devices
-  std::string path = device_path(dev);
-  int fd = open(path.c_str(), O_RDONLY | O_NONBLOCK | O_NOCTTY);
-  if (fd < 0) return 0;
+  bool ok = false;
 
   // This original check does not work in kernels > 5.12.
   // See: https://github.com/torvalds/linux/commit/f64d74a59c476
-  bool ok = false;
-  struct serial_struct serinfo;
-  if (ioctl(fd, TIOCGSERIAL, &serinfo) == 0) {
-    ok = serinfo.type != PORT_UNKNOWN;
-  }
-  if (!ok) {
-    // Accept any device with hardware lines DSR or CTS set.
-    int modem_sts;
-    if (ioctl(fd, TIOCMGET, &modem_sts) == 0) {
-      ok = (modem_sts & (TIOCM_CTS | TIOCM_LE | TIOCM_DSR)) != 0;
+  std::string path = device_path(dev);
+  int fd = open(path.c_str(), O_RDONLY | O_NONBLOCK | O_NOCTTY);
+  if (fd >= 0) {
+    struct serial_struct serinfo;
+    if (ioctl(fd, TIOCGSERIAL, &serinfo) == 0) {
+      ok = serinfo.type != PORT_UNKNOWN;
+    }
+    if (!ok) {
+      // Accept any device with hardware lines DSR or CTS set.
+      int modem_sts;
+      if (ioctl(fd, TIOCMGET, &modem_sts) == 0) {
+        ok = (modem_sts & (TIOCM_CTS | TIOCM_LE | TIOCM_DSR)) != 0;
+      }
     }
   }
+  if (fd >= 0) close(fd);
+
   if (!ok) {
     // Accept standard ttyS0..ttyS3 + devices configured by udev:
     static const std::vector<std::regex> patterns = {
@@ -193,7 +195,6 @@ static int isTTYreal(const char* dev) {
       }
     }
   }
-  close(fd);
   return ok ? 1 : 0;
 
 #pragma GCC diagnostic pop
