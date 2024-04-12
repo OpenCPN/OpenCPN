@@ -32,6 +32,7 @@
 #undef HAVE_UNISTD_H
 #cmakedefine OCPN_USE_UDEV_PORTS
 #cmakedefine OCPN_USE_SYSFS_PORTS
+#cmakedefine HAVE_SYSFS_PORTS
 #cmakedefine HAVE_DIRENT_H
 #cmakedefine HAVE_LIBGEN_H
 #cmakedefine HAVE_LIBUDEV
