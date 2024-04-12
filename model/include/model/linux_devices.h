@@ -22,18 +22,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file linux_devices.h Low level udev usb device management. */
+
 #ifndef LINUX_DEVICES_H
 #define LINUX_DEVICES_H
 
-#include <string>
-
 #include "config.h"
 
-bool is_dongle_permissions_wrong();
-bool is_device_permissions_ok(const char* path);
+/** Return true if an existing dongle cannot be accessed. */
+bool IsDonglePermissionsWrong();
 
-std::string get_dongle_rule();
-std::string make_udev_link();
-std::string get_device_rule(const char* device, const char* symlink);
+/**
+ * Check device path permissions
+ * @param path complete device path
+ * @return True if device is exposing read/write permissions.
+ */
+bool IsDevicePermissionsOk(const char* path);
+
+/**
+ * @return udev rule which makes the dongle public read write (666)
+ */
+std::string GetDongleRule();
+
+/**
+ * Get next available udev rule base name
+ * @return first name not used in the sequence opencpn0..opencpn9
+ */
+std::string MakeUdevLink();
+
+/**
+ * Get device udev rule
+ * @param device  Complete device path
+ * @param symlink As returned by  MakeUdevLink()
+ * @return  udev rule which makes the device public read/write (0666)
+ */
+std::string GetDeviceRule(const char* device, const char* symlink);
 
 #endif

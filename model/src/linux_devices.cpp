@@ -1,11 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Low-level USB device management
- * Author:   Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2011 Alec Leamas                                        *
+ *   Copyright (C) 2011 - 2024 Alec Leamas                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +16,9 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file linux_devices.cpp Implement linux_devices.h. */
+
 #include "config.h"
 
 #include <string>
@@ -44,7 +41,7 @@
 #endif
 #include <libusb.h>
 
-#include "linux_devices.h"
+#include "model/linux_devices.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 
@@ -55,7 +52,7 @@ typedef struct usbdata {
   std::string product;
   std::string serial_nr;
 
-  usbdata(const std::string& v, const std::string& p, const char* s = 0)
+  usbdata(std::string v, std::string p, const char* s = 0)
       : vendor_id(v), product_id(p), serial_nr(s ? s : "") {}
   bool is_ok() { return vendor_id.length() > 0; }
 } usbdata;
@@ -72,19 +69,17 @@ ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
     MODE="0666", SYMLINK+="@symlink@"
 )--";
 
+static const char* const DEVICE_RULE_TTYS = R"--(
+KERNEL=="ttyS@s_index@", MODE="0666", SYMLINK+="@symlink@"
+)--";
+
 static const char* const DONGLE_RULE_NAME = "65-ocpn-dongle.rules";
 
-static void read_usbdata(libusb_device* dev, libusb_device_handle* handle,
-                         usbdata* data) {
+/** Add more data available using libusb. */
+static void ReadUsbdata(libusb_device* dev, libusb_device_handle* handle,
+                        usbdata* data) {
   struct libusb_device_descriptor desc;
   libusb_get_device_descriptor(dev, &desc);
-
-  std::stringstream ss;
-  ss << std::setfill('0') << std::setw(4) << desc.idVendor;
-  data->vendor_id = std::string(ss.str());
-  ss.str("");
-  ss << std::setfill('0') << std::setw(4) << desc.idProduct;
-  data->vendor_id = std::string(ss.str());
 
   unsigned char buff[256];
   int r;
@@ -105,7 +100,7 @@ static void read_usbdata(libusb_device* dev, libusb_device_handle* handle,
   }
 }
 
-static int try_open(int vendorId, int productId, usbdata* data = 0) {
+static int TryOpen(int vendorId, int productId, usbdata* data = 0) {
   libusb_context* ctx = 0;
   int r = libusb_init(&ctx);
   if (r != 0) {
@@ -131,7 +126,7 @@ static int try_open(int vendorId, int productId, usbdata* data = 0) {
     r = libusb_open(*dev, &dev_handle);
     if (r >= 0) {
       if (data) {
-        read_usbdata(*dev, dev_handle, data);
+        ReadUsbdata(*dev, dev_handle, data);
       }
       libusb_close(dev_handle);
     }
@@ -143,22 +138,22 @@ static int try_open(int vendorId, int productId, usbdata* data = 0) {
   return r;
 }
 
-static int try_open(const std::string vendorId, const std::string productId,
-                    usbdata* data = 0) {
+static int TryOpen(const std::string vendorId, const std::string productId,
+                   usbdata* data = 0) {
   int v;
   int p;
   std::istringstream(vendorId) >> std::hex >> v;
   std::istringstream(productId) >> std::hex >> p;
-  return try_open(v, p, data);
+  return TryOpen(v, p, data);
 }
 
-bool is_dongle_permissions_wrong() {
-  int rc = try_open(DONGLE_VENDOR, DONGLE_PRODUCT);
+bool IsDonglePermissionsWrong() {
+  int rc = TryOpen(DONGLE_VENDOR, DONGLE_PRODUCT);
   DEBUG_LOG << "Probing dongle permissions, result: " << rc;
   return rc == LIBUSB_ERROR_ACCESS;
 }
 
-bool is_device_permissions_ok(const char* path) {
+bool IsDevicePermissionsOk(const char* path) {
   int r = access(path, R_OK | W_OK);
   if (r < 0) {
     INFO_LOG << "access(3) fails on: " << path << ": " << strerror(errno);
@@ -167,7 +162,7 @@ bool is_device_permissions_ok(const char* path) {
 }
 
 /** Look for vendorId/ProductId in uevent file. */
-static usbdata parse_uevent(std::istream& is) {
+static usbdata ParseUevent(std::istream& is) {
   std::string line;
   while (std::getline(is, line)) {
     if (line.find('=') == std::string::npos) {
@@ -191,7 +186,7 @@ static usbdata parse_uevent(std::istream& is) {
   return usbdata("", "");
 }
 
-static usbdata get_device_usbdata(const char* path) {
+static usbdata GetDeviceUsbdata(const char* path) {
   // Get real path for node in /sys corresponding to path in /dev
   struct stat st;
   int r = stat(path, &st);
@@ -202,7 +197,10 @@ static usbdata get_device_usbdata(const char* path) {
   std::stringstream syspath("/sys/dev/char/");
   syspath << "/sys/dev/char/" << major(st.st_rdev) << ":" << minor(st.st_rdev);
   char buff[PATH_MAX];
-  realpath(syspath.str().c_str(), buff);
+  if (!realpath(syspath.str().c_str(), buff)) {
+      wxLogDebug("Error resolving link %s: %s", syspath.str().c_str(),
+                 strerror(errno));
+  }
   std::string real_path(buff);
 
   // Get the uevent file in each parent dir and parse it.
@@ -210,10 +208,10 @@ static usbdata get_device_usbdata(const char* path) {
     auto uevent_path = real_path + "/uevent";
     if (access(uevent_path.c_str(), R_OK) >= 0) {
       std::ifstream is(uevent_path);
-      auto data = parse_uevent(is);
+      auto data = ParseUevent(is);
       if (data.is_ok()) {
         // Add missing pieces (descriptions...) using libusb
-        try_open(data.vendor_id, data.product_id, &data);
+        TryOpen(data.vendor_id, data.product_id, &data);
         return data;
       }
     }
@@ -225,7 +223,7 @@ static usbdata get_device_usbdata(const char* path) {
   return usbdata("", "");
 }
 
-static std::string tmp_rule_path(const char* name) {
+static std::string TmpRulePath(const char* name) {
   std::string tmpdir =
       getenv("XDG_CACHE_HOME") ? getenv("XDG_CACHE_HOME") : "/tmp";
   tmpdir += "/udevXXXXXX";
@@ -243,22 +241,24 @@ static std::string tmp_rule_path(const char* name) {
   return path;
 }
 
-std::string make_udev_link() {
+std::string MakeUdevLink() {
   for (char ch : {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}) {
-    std::string path("/dev/opencpn");
-    path += ch;
-    if (!ocpn::exists(path)) {
-      ocpn::replace(path, "/dev/", "");
+    std::stringstream ss;
+    ss << "/etc/udev/rules.d/65-opencpn" << ch << ".rules";
+    if (!ocpn::exists(ss.str())) {
+      std::string path(ss.str());
+      ocpn::replace(path, "/etc/udev/rules.d/65-", "");
+      ocpn::replace(path, ".rules", "");
       return path;
     }
   }
-  WARNING_LOG << "Too many opencpn devices found (10). Giving up.";
+  WARNING_LOG << "Too many opencpn device rules found (10). Giving up.";
   return "";
 }
 
-static std::string create_tmpfile(const std::string& contents,
-                                  const char* name) {
-  auto path = tmp_rule_path(name);
+static std::string CreateTmpfile(const std::string& contents,
+                                 const char* name) {
+  auto path = TmpRulePath(name);
   std::ofstream of(path);
   of << contents;
   of.close();
@@ -268,19 +268,25 @@ static std::string create_tmpfile(const std::string& contents,
   return path;
 }
 
-static std::string create_udev_rule(usbdata data, const char* symlink) {
+static std::string CreateUdevRule(const std::string& device, usbdata data,
+                                  const char* symlink) {
   std::string rule(DEVICE_RULE);
-  ocpn::replace(rule, "@vendor@", data.vendor_id);
-  ocpn::replace(rule, "@product@", data.product_id);
+  if (device.find("ttyS") != std::string::npos) {
+    rule = std::string(DEVICE_RULE_TTYS);
+    auto index(device.substr(device.find("ttyS") + strlen("ttyS")));
+    ocpn::replace(rule, "@s_index@", index);
+  } else {
+    ocpn::replace(rule, "@vendor@", data.vendor_id);
+    ocpn::replace(rule, "@product@", data.product_id);
+  }
   ocpn::replace(rule, "@symlink@", symlink);
-
   std::string name(symlink);
   name.insert(0, "65-");
   name += ".rules";
-  return create_tmpfile(rule, name.c_str());
+  return CreateTmpfile(rule, name.c_str());
 }
 
-std::string get_dongle_rule() {
+std::string GetDongleRule() {
   std::string rule(DONGLE_RULE);
   std::ostringstream oss;
 
@@ -289,11 +295,11 @@ std::string get_dongle_rule() {
   oss.str("");
   oss << std::setw(4) << std::setfill('0') << std::hex << DONGLE_PRODUCT;
   ocpn::replace(rule, "@product@", oss.str());
-  return create_tmpfile(rule, DONGLE_RULE_NAME);
+  return CreateTmpfile(rule, DONGLE_RULE_NAME);
 }
 
-std::string get_device_rule(const char* device, const char* symlink) {
-  usbdata data = get_device_usbdata(device);
-  auto path = create_udev_rule(data, symlink);
+std::string GetDeviceRule(const char* device, const char* symlink) {
+  usbdata data = GetDeviceUsbdata(device);
+  auto path = CreateUdevRule(device, data, symlink);
   return path;
 }

@@ -28,7 +28,15 @@
 
 #include <wx/window.h>
 
+/** Runs checks and if required dialogs to make dongle accessible. */
 bool CheckDongleAccess(wxWindow* parent);
+
+/**
+ * Run checks and possible dialogs to ensure device is accessible
+ * @param parent  Dialogs parent window
+ * @param device  Full device path
+ * @return True if device can be accessed read/write.
+ */
 bool CheckSerialAccess(wxWindow* parent, const std::string device);
 
 #endif  // UDEV_RULE_MGR_H__
