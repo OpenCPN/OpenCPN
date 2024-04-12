@@ -116,6 +116,7 @@ protected:
   std::vector<BufferItem> m_buffer;
   mutable std::mutex m_mutex;
   int m_size;
+  bool m_overrun_reported;
 };
 
 /** A  CommOutQueue limited to one message of each kind. */

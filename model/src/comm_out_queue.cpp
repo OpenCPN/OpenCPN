@@ -4,7 +4,9 @@
 
 #include <sys/types.h>
 
+#include "model/comm_drv_registry.h"
 #include "model/comm_out_queue.h"
+#include "model/logger.h"
 
 // Both arm and intel are little endian, but better safe than sorry:
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -16,11 +18,13 @@ static const uint64_t kFirstFiveBytes = 0xffffffffff000000;
 #define PUBX 190459303248   //"PUBX,"
 #define STALK 323401897043  //"STALK"
 
-/** Return bytes 1..5 in line as an uint64_t with esceptions for u-blox GNSS and
- * converted Seatalk. Note: Some vendor extension messages also do not have 5
+/**
+ * Return bytes 1..5 in line as an uint64_t with exceptions for u-blox GNSS and
+ * converted Seatalk.
+ * Note: Some vendor extension messages also do not have 5
  * character talker ID + message ID, but 6 (PMGNST, PRWIZCH, PSMDST). This is
  * probably not critical as the last character seems to not be making any
- * difference in producing a uinique ID for the messages commonly seen.
+ * difference in producing a unique ID for the messages commonly seen.
  */
 static inline uint64_t GetNmeaType(const std::string& line) {
   size_t skipchars = 1;
@@ -45,6 +49,15 @@ static inline uint64_t GetNmeaType(const std::string& line) {
   }
 }
 
+static void ReportOverrun(const std::string& msg, bool overrun_reported) {
+  auto& registry = CommDriverRegistry::GetInstance();
+  std::string s;
+  if (msg.length() < 6) s = msg; else s = msg.substr(0, 5);
+  DEBUG_LOG << "CommOutQueue: Overrun on: " << msg;
+  if (!overrun_reported) registry.evt_comm_overrun.Notify(msg);
+}
+
+
 CommOutQueue::BufferItem::BufferItem(const std::string& _line)
     : type(GetNmeaType(_line)),
       line(_line),
@@ -55,7 +68,9 @@ CommOutQueue::BufferItem::BufferItem(const BufferItem& other)
       line(other.line),
       ts(std::chrono::steady_clock::now()) {}
 
-CommOutQueue::CommOutQueue(int size) : m_size(size - 1) {
+CommOutQueue::CommOutQueue(int size)
+    : m_size(size - 1),
+      m_overrun_reported(false) {
   assert(size >= 1 && "Illegal buffer size");
 }
 
@@ -66,6 +81,10 @@ bool CommOutQueue::push_back(const std::string& line) {
   std::lock_guard<std::mutex> lock(m_mutex);
   int found = std::count_if(m_buffer.begin(), m_buffer.end(), match);
   if (found > m_size) {
+    if (!m_overrun_reported) {
+      ReportOverrun(line, m_overrun_reported);
+      m_overrun_reported = true;
+    }
     // overflow: too many of these kind of messages
     // are still not processed. Drop so we keep m_size of them.
     int matches = 0;
@@ -176,4 +195,3 @@ std::ostream& operator<<(std::ostream& os, const PerfCounter& pc) {
   os << "}";
   return os;
 };
-

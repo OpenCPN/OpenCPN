@@ -59,6 +59,9 @@ public:
   /** Notified when receiving --remote --dump_stat on local API. */
   EventVar evt_dump_stats;
 
+  /** Notified with a printable message on first detected overrun. */
+  EventVar evt_comm_overrun;
+
   /**
    *  Notified for messages from drivers. The generated event contains:
    *  - A wxLogLevel stored as an int.

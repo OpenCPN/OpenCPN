@@ -136,6 +136,8 @@ set(BUF_TEST_SRC
   buffer_tests.cpp
   ${MODEL_SRC_DIR}/cmdline.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp
+  ${MODEL_SRC_DIR}/comm_drv_registry.cpp
+  ${MODEL_SRC_DIR}/comm_navmsg.cpp
   ${MODEL_SRC_DIR}/comm_out_queue.cpp
   ${MODEL_SRC_DIR}/ocpn_utils.cpp
   ${MODEL_SRC_DIR}/base_platform.cpp
