@@ -1106,6 +1106,10 @@ if (OCPN_USE_SYSFS_PORTS)
   set(USE_SYSFS_PORTS 1)
 endif ()
 
+if (EXISTS /sys/devices)
+  set(HAVE_SYSFS_PORTS 1)
+endif ()
+
 if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
   find_package(PANGO)
   if (PANGO_FOUND)
