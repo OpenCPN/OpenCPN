@@ -44,6 +44,7 @@
 #include <serial/serial.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include "dnet.h"
 #endif
 
 #ifdef __ANDROID__
@@ -85,15 +86,37 @@ static wxString StringArrayToString(wxArrayString arr) {
 
 // Check available SocketCAN interfaces
 
+#if defined(__linux__) && !defined(__ANDROID__)
+static intf_t   *intf;
+std::vector<std::string> can_if_candidates;
+static int print_intf(const struct intf_entry *entry, void *arg)
+{
+  std::string iface = entry->intf_name;
+  if (entry->intf_type == 1 && iface.find("can") != std::string::npos) {
+    can_if_candidates.push_back(entry->intf_name);
+  }
+  return 0;
+}
+#endif
+
 static wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
 
 #if defined(__linux__) && !defined(__ANDROID__)
-  wxString candidates[] = {"can0",   "can1",   "can2",  "can3",
-                           "slcan0", "slcan1", "vcan0", "vcan1"};
-  size_t ncandidates = sizeof(candidates) / sizeof(wxString);
+  struct intf_entry *entry;
 
-  for (size_t i = 0; i < ncandidates; i++) {
+  can_if_candidates.clear();
+
+  if ((intf = intf_open()) == NULL) {
+    wxLogWarning("Error opening interface list");
+  }
+
+  if (intf_loop(intf, print_intf, NULL) < 0) {
+    wxLogWarning("Error looping over interface list");
+  }
+  intf_close(intf);
+
+  for (const auto & iface : can_if_candidates) {
     int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (sock < 0) {
       continue;
@@ -101,7 +124,7 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
 
     // Get the interface index
     struct ifreq if_request;
-    strcpy(if_request.ifr_name, candidates[i].c_str());
+    strcpy(if_request.ifr_name, iface.c_str());
     if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
       continue;
     }
@@ -114,7 +137,7 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
       continue;
     }
     if (if_request.ifr_flags & IFF_UP) {
-      rv.Add(candidates[i]);
+      rv.Add(iface);
     } else {
       continue;
     }
