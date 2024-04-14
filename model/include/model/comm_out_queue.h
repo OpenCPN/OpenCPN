@@ -3,11 +3,14 @@
 
 #include <cstdint>
 #include <mutex>
+#include <set>
 #include <string>
 #include <vector>
 #include <chrono>
 #include <unordered_map>
 #include <iostream>
+
+using namespace std::literals::chrono_literals;
 
 class PerfCounter {
 public:
@@ -74,6 +77,8 @@ std::ostream& operator<<(std::ostream& os, const PerfCounter& pc);
  *  of each message type.
  */
 class CommOutQueue {
+
+
 public:
   /**
    * Insert valid line of NMEA0183 data in buffer.
@@ -91,12 +96,27 @@ public:
   virtual int size() const;
 
   /**
-   * Create a buffer which stores at most message_count items of each
-   * message.
+   * Create a buffer which stores at most max_buffered items of each
+   * message, applying rate limits if messages are entered "too" fast
+   *
+   * @param max_buffered Max number of messages of a type kept in buffer
+   *                     without discarding data as overrun.
+   * @param min_msg_gap  minimum time between two messages of the same
+   *                     type without applying rate limits.
    */
-  CommOutQueue(int message_count);
+  CommOutQueue(unsigned max_buffered,
+               std::chrono::duration<unsigned, std::milli> min_msg_gap);
+  /**
+   * Create a buffer which stores at most max_buffered items of each
+   * message
+   */
+  CommOutQueue(unsigned max_buffered) : CommOutQueue(max_buffered, 0ms) {}
 
-  CommOutQueue() : CommOutQueue(1) {}
+  /**
+   * Default buffer, allows 10 buffered messages of each type, applies
+   * rate limits when repeated with less than 600 ms intervals
+   */
+  CommOutQueue() : CommOutQueue(12) {}
 
   // Disable copying and assignment
   CommOutQueue(const CommOutQueue& other) = delete;
@@ -110,19 +130,22 @@ protected:
     std::string line;
     BufferItem(const std::string& line);
     BufferItem(const BufferItem& other);
-    std::chrono::time_point<std::chrono::steady_clock> ts;
+    std::chrono::time_point<std::chrono::steady_clock> stamp;
   };
 
   std::vector<BufferItem> m_buffer;
   mutable std::mutex m_mutex;
   int m_size;
+  using duration_ms = std::chrono::duration<unsigned, std::milli>;
+  duration_ms m_min_msg_gap;
   bool m_overrun_reported;
+  std::set<uint64_t> m_rate_limits_logged;;
 };
 
 /** A  CommOutQueue limited to one message of each kind. */
 class CommOutQueueSingle : public CommOutQueue {
 public:
-  CommOutQueueSingle() : CommOutQueue(1) {}
+  CommOutQueueSingle() : CommOutQueue(1, 0ms) {}
 
   /** Insert line of NMEA0183 data in buffer. */
   bool push_back(const std::string& line) override;
@@ -133,8 +156,12 @@ public:
 
 class MeasuredCommOutQueue : public CommOutQueue {
 public:
-  MeasuredCommOutQueue(int size)
-      : CommOutQueue(size), push_time(0), pop_time(0) {}
+  MeasuredCommOutQueue(unsigned max_buffered,
+                       std::chrono::duration<unsigned, std::milli> min_msg_gap)
+      : CommOutQueue(max_buffered, min_msg_gap), push_time(0), pop_time(0) {}
+
+  MeasuredCommOutQueue(unsigned max_buffered)
+      : MeasuredCommOutQueue(max_buffered, 0ms) {}
 
   bool push_back(const std::string& line) override;
 

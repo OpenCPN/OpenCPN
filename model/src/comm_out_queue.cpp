@@ -15,8 +15,10 @@ static const uint64_t kFirstFiveBytes = 0x000000ffffffffff;
 static const uint64_t kFirstFiveBytes = 0xffffffffff000000;
 #endif
 
-#define PUBX 190459303248   //"PUBX,"
-#define STALK 323401897043  //"STALK"
+#define PUBX 190459303248   // "PUBX,"
+#define STALK 323401897043  // "STALK"
+
+
 
 /**
  * Return bytes 1..5 in line as an uint64_t with exceptions for u-blox GNSS and
@@ -61,17 +63,20 @@ static void ReportOverrun(const std::string& msg, bool overrun_reported) {
 CommOutQueue::BufferItem::BufferItem(const std::string& _line)
     : type(GetNmeaType(_line)),
       line(_line),
-      ts(std::chrono::steady_clock::now()) {}
+      stamp(std::chrono::steady_clock::now()) {}
 
 CommOutQueue::BufferItem::BufferItem(const BufferItem& other)
     : type(other.type),
       line(other.line),
-      ts(std::chrono::steady_clock::now()) {}
+      stamp(std::chrono::steady_clock::now()) {}
 
-CommOutQueue::CommOutQueue(int size)
-    : m_size(size - 1),
+using duration_ms = std::chrono::duration<unsigned, std::milli>;
+
+CommOutQueue::CommOutQueue(unsigned max_buffered, duration_ms min_msg_gap)
+    : m_size(max_buffered - 1),
+      m_min_msg_gap(min_msg_gap),
       m_overrun_reported(false) {
-  assert(size >= 1 && "Illegal buffer size");
+  assert(max_buffered >= 1 && "Illegal buffer size");
 }
 
 bool CommOutQueue::push_back(const std::string& line) {
@@ -80,13 +85,26 @@ bool CommOutQueue::push_back(const std::string& line) {
   auto match = [item](const BufferItem& it) { return it.type == item.type; };
   std::lock_guard<std::mutex> lock(m_mutex);
   int found = std::count_if(m_buffer.begin(), m_buffer.end(), match);
+  if (found > 0) {
+    auto it = std::find_if(m_buffer.begin(), m_buffer.end(), match);
+    assert(it != m_buffer.end());
+    auto timespan = item.stamp - it->stamp;
+    if (timespan < m_min_msg_gap) {
+      m_buffer.erase(it);
+      if (m_rate_limits_logged.find(item.type) != m_rate_limits_logged.end()) {
+        m_rate_limits_logged.insert(item.type);
+        wxLogMessage("Limiting output rate for %u, message: %s", item.type,
+                     line.c_str());
+      }
+    }
+  }
   if (found > m_size) {
+    // overflow: too many of these kind of messages
+    // are still not processed. Drop so we keep m_size of them.
     if (!m_overrun_reported) {
       ReportOverrun(line, m_overrun_reported);
       m_overrun_reported = true;
     }
-    // overflow: too many of these kind of messages
-    // are still not processed. Drop so we keep m_size of them.
     int matches = 0;
     auto match_cnt = [&](const BufferItem& it) {
       return it.type == item.type && matches++ >= m_size;
@@ -155,8 +173,8 @@ std::string MeasuredCommOutQueue::pop() {
     throw std::underflow_error("Attempt to pop() from empty buffer");
   auto item = m_buffer.back();
   m_buffer.pop_back();
-  perf.out(item.line.size(), item.ts);
-  msg_perf[item.type].out(item.line.size(), item.ts);
+  perf.out(item.line.size(), item.stamp);
+  msg_perf[item.type].out(item.line.size(), item.stamp);
   auto t2 = steady_clock::now();
   duration<double, std::micro> us_time = t2 - t1;
   us_time = t2 - t1;

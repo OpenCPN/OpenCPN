@@ -3,6 +3,7 @@
 #include <chrono>
 #include <fstream>
 #include <string>
+#include <thread>
 
 #if (defined(__clang_major__) && (__clang_major__ < 15))   // MacOS 1.13
 #include <ghc/filesystem.hpp>
@@ -62,6 +63,8 @@ TEST(Buffer, Size_3 ) {
   EXPECT_THROW({ queue.pop(); }, std::underflow_error);
 }
 
+
+
 TEST(Buffer, Hakefjord) {
   const auto path = fs::path(TESTDATA) / "Hakefjord.log";
   std::ifstream stream(path.string());
@@ -80,4 +83,33 @@ TEST(Buffer, Hakefjord) {
   EXPECT_EQ(line, GPGGA) ;
   RecordProperty("push_time", std::to_string(queue.push_time));
   // writes to test_detail.xml if invoked with --gtest_output.xml
+}
+
+TEST(Buffer, RateLimit1) {
+  CommOutQueue queue(20, 1ms);
+  for (int i = 0; i < 20; i++) {
+    queue.push_back(GPGGL);
+    std::this_thread::sleep_for(2ms);
+  }
+  EXPECT_EQ(queue.size(), 20);
+}
+
+TEST(Buffer, RateLimit2) {
+  CommOutQueue queue(20, 5ms);
+  for (int i = 0; i < 20; i++) {
+    queue.push_back(GPGGL);
+    std::this_thread::sleep_for(4ms);
+  }
+  EXPECT_EQ(queue.size(), 1);
+  // might fail due to OS gitter i. e., sleep takes "too" long
+}
+
+TEST(Buffer, RateAndSizeLimit) {
+  CommOutQueue queue(10, 1ms);
+  for (int i = 0; i < 20; i++) {
+    queue.push_back(GPGGL);
+    std::this_thread::sleep_for(2ms);
+  }
+  EXPECT_EQ(queue.size(), 10);
+  // might fail due to OS gitter i. e., sleep takes "too" long
 }
