@@ -203,7 +203,7 @@ void CommDriverN0183Net::DumpStats() const {
   auto queue = dynamic_cast<MeasuredCommOutQueue*>(m_out_queue.get());
   std::ofstream f(path, std::ios_base::app);
   if (queue) {
-    f << *queue << "\n";
+    f << iface << ": " << *queue << "\n";
   } else {
     f << "No stats available\n";
   }
