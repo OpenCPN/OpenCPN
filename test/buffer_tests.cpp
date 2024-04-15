@@ -14,12 +14,17 @@ namespace fs = ghc::filesystem;
 namespace fs = std::filesystem;
 #endif
 
+#include <wx/app.h>
+
 #include <gtest/gtest.h>
 
 #include "model/base_platform.h"
+#include "model/comm_drv_registry.h"
 #include "model/comm_out_queue.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
+
+#include "observable.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -28,6 +33,25 @@ static std::string s_result;
 
 static const char* const GPGGA = "$GPGGA 00";
 static const char* const GPGGL = "$GPGGL 00";
+
+class OverrunEvent : public wxAppConsole {
+public:
+
+  OverrunEvent() {
+    bool result = false;
+    ObsListener listener;
+    listener.Init(CommDriverRegistry::GetInstance().evt_comm_overrun,
+		  [&](ObservedEvt&) { result = true; });
+
+    CommOutQueue queue(3);
+    for (int i = 0; i < 20; i++) queue.push_back(GPGGL);
+    EXPECT_EQ(queue.size(), 3);
+    EXPECT_TRUE(HasPendingEvents());
+    ProcessPendingEvents();
+    EXPECT_TRUE(result);
+  };
+};
+
 
 TEST(Buffer, Single) {
   CommOutQueueSingle queue;
@@ -112,4 +136,8 @@ TEST(Buffer, RateAndSizeLimit) {
   }
   EXPECT_EQ(queue.size(), 10);
   // might fail due to OS gitter i. e., sleep takes "too" long
+}
+
+TEST(Buffer, OverrunEvent) {
+  OverrunEvent event;
 }
