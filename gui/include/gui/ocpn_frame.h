@@ -37,6 +37,7 @@
 #include "model/ocpn_types.h"
 #include "model/comm_appmsg_bus.h"
 #include "bbox.h"
+#include "comm_overflow_dlg.h"
 #include "color_handler.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
@@ -407,6 +408,7 @@ private:
   ObsListener m_routes_update_listener;
 
   ObsListener m_dump_stats_lstnr;
+  CommOverflowDlg comm_overflow_dlg;
 
   DECLARE_EVENT_TABLE()
 };
