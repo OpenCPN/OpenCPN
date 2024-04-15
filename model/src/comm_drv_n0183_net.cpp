@@ -163,7 +163,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
         // Initiate the const pointer using a lambda call..
         // FIXME (leamas) To be cleaned up once we settled on type of queue
         if (params->drop_overruns)
-          return static_cast<CommOutQueue*>(new MeasuredCommOutQueue(100));
+          return static_cast<CommOutQueue*>(new MeasuredCommOutQueue(12));
         else
           return static_cast<CommOutQueue*>(new DummyCommOutQueue());
       }()))
