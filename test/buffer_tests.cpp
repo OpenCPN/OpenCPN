@@ -118,6 +118,9 @@ TEST(Buffer, RateLimit1) {
   EXPECT_EQ(queue.size(), 20);
 }
 
+#ifndef __APPLE__
+// The MacOS builders seems to have a lot of "too" long sleeps.
+// Disable for now.
 TEST(Buffer, RateLimit2) {
   CommOutQueue queue(20, 5ms);
   for (int i = 0; i < 20; i++) {
@@ -127,6 +130,7 @@ TEST(Buffer, RateLimit2) {
   EXPECT_EQ(queue.size(), 1);
   // might fail due to OS gitter i. e., sleep takes "too" long
 }
+#endif
 
 TEST(Buffer, RateAndSizeLimit) {
   CommOutQueue queue(10, 1ms);
