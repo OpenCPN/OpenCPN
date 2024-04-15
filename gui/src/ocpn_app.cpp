@@ -913,7 +913,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 
   bool has_remote_options = false;
   static const std::vector<std::string> kRemoteOptions = {
-    "raise", "quit", "open", "get_rest_endpoint"};
+    "raise", "quit", "open", "get_rest_endpoint", "dump_stats"};
   for (const auto& opt : kRemoteOptions) {
     if (parser.Found(opt)) has_remote_options = true;
   }
