@@ -122,7 +122,7 @@ TEST(Buffer, RateLimit2) {
   CommOutQueue queue(20, 5ms);
   for (int i = 0; i < 20; i++) {
     queue.push_back(GPGGL);
-    std::this_thread::sleep_for(4ms);
+    std::this_thread::sleep_for(2ms);
   }
   EXPECT_EQ(queue.size(), 1);
   // might fail due to OS gitter i. e., sleep takes "too" long
