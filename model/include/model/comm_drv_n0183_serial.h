@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file comm_drv_n0183_serial.h  NMEA0183 serial driver */
 
 #ifndef _COMMDRIVERN0183SERIAL_H
 #define _COMMDRIVERN0183SERIAL_H

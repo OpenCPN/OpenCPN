@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n0183_serial.h -- serial Nmea 0183 driver.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+ /** \file comm_drv_n0183_serial.cpp  Implement comm_drv_n0183_serial.h */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -138,8 +134,8 @@ private:
   void ThreadMessage(const wxString& msg);
   bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();
-  size_t WriteComPortPhysical(char* msg);
-  size_t WriteComPortPhysical(const wxString& string);
+  ssize_t WriteComPortPhysical(char* msg);
+  ssize_t WriteComPortPhysical(const wxString& string);
 
   CommDriverN0183Serial* m_pParentDriver;
   wxString m_PortName;
@@ -480,7 +476,7 @@ void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
   //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-size_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
+ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
   if (m_serial.isOpen()) {
     ssize_t status;
     try {
@@ -610,8 +606,7 @@ void* CommDriverN0183SerialThread::Entry() {
       strncpy(msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH - 1);
       free(qmsg);
 
-      if (static_cast<size_t>(-1) == WriteComPortPhysical(msg) &&
-          10 < retries++) {
+      if (-1 == WriteComPortPhysical(msg) && 10 < retries++) {
         // We failed to write the port 10 times, let's close the port so that
         // the reconnection logic kicks in and tries to fix our connection.
         retries = 0;
