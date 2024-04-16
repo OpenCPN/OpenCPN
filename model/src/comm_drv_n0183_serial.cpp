@@ -40,6 +40,7 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
+#include "model/logger.h"
 #include "model/sys_events.h"
 #include "model/wait_continue.h"
 #include "observable.h"
@@ -465,19 +466,31 @@ void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
 }
 
 ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
-  if (m_serial.isOpen()) {
-    ssize_t status;
+  if (!m_serial.isOpen())  return -1;
+  unsigned to_write = strlen(msg);
+  int retval = 0;
+  int tries = 0;
+  while (to_write > 0) {
+    ssize_t written = 0;
     try {
-      status = m_serial.write((uint8_t*)msg, strlen(msg));
+      written = m_serial.write(reinterpret_cast<uint8_t*>(msg), strlen(msg));
+      // FIXME (leamas) we should buffer unsigned chars, not chars.
     } catch (std::exception& e) {
-      //       std::cerr << "Unhandled Exception while writing to serial port: "
-      //       << e.what() << std::endl;
+      MESSAGE_LOG << "Exception while writing to serial port: " << e.what();
       return -1;
     }
-    return status;
-  } else {
-    return -1;
+    if (written < 0) return written;
+    to_write -= written;
+    msg += written;
+    retval += written;
+    if (tries++ > 20) {
+      MESSAGE_LOG << "Error writing data (output stalled?)";
+      return -1;
+    }
+    if (to_write > 0) std::this_thread::sleep_for(10ms);
+    // FIXME (leamas) really?
   }
+  return retval;
 }
 
 void* CommDriverN0183SerialThread::Entry() {
