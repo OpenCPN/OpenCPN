@@ -146,6 +146,7 @@ private:
   wxString m_FullPortName;
 
   int m_baud;
+  size_t m_send_retries;
 
   n0183_atomic_queue<char*> out_que;
   WaitContinue device_waiter;
@@ -499,7 +500,7 @@ void* CommDriverN0183SerialThread::Entry() {
   }
 
   //    The main loop
-  static size_t retries = 0;
+  m_send_retries = 0;
 
   while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
     if (m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
@@ -514,24 +515,24 @@ void* CommDriverN0183SerialThread::Entry() {
       } catch (std::exception&) {
         //        std::cerr << "Serial read exception: " << e.what() <<
         //        std::endl;
-        if (10 < retries++) {
+        if (10 < m_send_retries++) {
           // We timed out waiting for the next character 10 times, let's close
           // the port so that the reconnection logic kicks in and tries to fix
           // our connection.
           CloseComPortPhysical();
-          retries = 0;
+          m_send_retries = 0;
         }
       }
     } else {
       // Reconnection logic. Let's try to reopen the port while waiting longer
       // every time (until we simply keep trying every 2.5 seconds)
       // std::cerr << "Serial port seems closed." << std::endl;
-      device_waiter.Wait(250 * retries);
+      device_waiter.Wait(250 * m_send_retries);
       CloseComPortPhysical();
       if (OpenComPortPhysical(m_PortName, m_baud))
-        retries = 0;
-      else if (retries < 10)
-        retries++;
+        m_send_retries = 0;
+      else if (m_send_retries < 10)
+        m_send_retries++;
     }
 
     if (newdata > 0) {
@@ -591,10 +592,10 @@ void* CommDriverN0183SerialThread::Entry() {
       strncpy(msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH - 1);
       free(qmsg);
 
-      if (-1 == WriteComPortPhysical(msg) && 10 < retries++) {
+      if (-1 == WriteComPortPhysical(msg) && 10 < m_send_retries++) {
         // We failed to write the port 10 times, let's close the port so that
         // the reconnection logic kicks in and tries to fix our connection.
-        retries = 0;
+        m_send_retries = 0;
         CloseComPortPhysical();
       }
 
