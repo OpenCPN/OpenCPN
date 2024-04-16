@@ -236,8 +236,8 @@ bool CommDriverN0183Serial::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  if ((wxNOT_FOUND != port_uc.Find(_T("USB"))) &&
-      (wxNOT_FOUND != port_uc.Find(_T("GARMIN")))) {
+  if ((wxNOT_FOUND != port_uc.Find("USB")) &&
+      (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
     m_GarminHandler = new GarminProtocolHandler(comx, this, true);
   } else if (m_params.Garmin) {
     m_GarminHandler = new GarminProtocolHandler(comx, this, false);
@@ -261,7 +261,7 @@ bool CommDriverN0183Serial::Open() {
 
 void CommDriverN0183Serial::Close() {
   wxLogMessage(
-      wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
+      wxString::Format("Closing NMEA Driver %s", m_portstring.c_str()));
 
   // FIXME (dave)
   // If port is opened, and then closed immediately,
@@ -276,7 +276,7 @@ void CommDriverN0183Serial::Close() {
   if (m_pSecondary_Thread) {
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
-      wxLogMessage(_T("Stopping Secondary Thread"));
+      wxLogMessage("Stopping Secondary Thread");
 
       m_Thread_run_flag = 0;
 
@@ -285,9 +285,9 @@ void CommDriverN0183Serial::Close() {
 
       wxString msg;
       if (m_Thread_run_flag < 0)
-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+        msg.Printf("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf(_T("Not Stopped after 10 sec."));
+        msg.Printf("Not Stopped after 10 sec.");
       wxLogMessage(msg);
     }
 
@@ -342,7 +342,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
 #ifdef __ANDROID__
   wxString payload = sentence;
-  if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
+  if (!sentence.EndsWith("\r\n")) payload += "\r\n";
 
   wxString port = m_params.GetStrippedDSPort();  // GetPort().AfterFirst(':');
   androidWriteSerial(port, payload);
@@ -404,7 +404,7 @@ CommDriverN0183SerialThread::CommDriverN0183SerialThread(
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
-  m_FullPortName = _T("Serial:") + PortName;
+  m_FullPortName = "Serial:" + PortName;
 
   m_baud = 4800;  // default
   long lbaud;
@@ -488,7 +488,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
-    wxString msg(_T("NMEA input device open failed: "));
+    wxString msg("NMEA input device open failed: ");
     msg.Append(m_PortName);
     ThreadMessage(msg);
     // goto thread_exit; // This means we will not be trying to connect = The
