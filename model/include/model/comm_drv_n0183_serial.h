@@ -28,6 +28,7 @@
 #include <wx/event.h>
 
 #include "model/comm_drv_n0183.h"
+#include "model/comm_out_queue.h"
 #include "model/conn_params.h"
 #include "model/garmin_protocol_mgr.h"
 
@@ -101,6 +102,9 @@ private:
 
   ConnectionParams m_params;
   DriverListener& m_listener;
+
+  std::unique_ptr<CommOutQueue> m_out_queue;
+
   void handle_N0183_MSG(CommDriverN0183SerialEvent& event);
 };
 

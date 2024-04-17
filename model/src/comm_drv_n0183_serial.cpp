@@ -139,8 +139,7 @@ private:
   void ThreadMessage(const wxString& msg);
   bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
   void CloseComPortPhysical();
-  ssize_t WriteComPortPhysical(char* msg);
-  ssize_t WriteComPortPhysical(const wxString& string);
+  ssize_t WriteComPortPhysical(const std::string& msg);
 
   CommDriverN0183Serial* m_pParentDriver;
   wxString m_PortName;
@@ -217,7 +216,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_pSecondary_Thread(NULL),
       m_params(*params),
-      m_listener(listener) {
+      m_listener(listener),
+      m_out_queue(std::unique_ptr<CommOutQueue>(new MeasuredCommOutQueue(12))) {
   m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
   m_GarminHandler = NULL;
   this->attributes["commPort"] = params->Port.ToStdString();
@@ -465,32 +465,31 @@ void CommDriverN0183SerialThread::ThreadMessage(const wxString& msg) {
   //   if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
-ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(char* msg) {
+ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(const std::string& msg) {
   if (!m_serial.isOpen())  return -1;
-  unsigned to_write = strlen(msg);
-  int retval = 0;
+
+  auto ptr = reinterpret_cast<const uint8_t*>(msg.c_str());
+  size_t written = 0;
   int tries = 0;
-  while (to_write > 0) {
-    ssize_t written = 0;
+  while (written < msg.size()) {
+    int chunk_size;
     try {
-      written = m_serial.write(reinterpret_cast<uint8_t*>(msg), strlen(msg));
-      // FIXME (leamas) we should buffer unsigned chars, not chars.
+      chunk_size = m_serial.write(ptr, msg.size() - written);
     } catch (std::exception& e) {
       MESSAGE_LOG << "Exception while writing to serial port: " << e.what();
       return -1;
     }
-    if (written < 0) return written;
-    to_write -= written;
-    msg += written;
-    retval += written;
+    if (chunk_size < 0) return chunk_size;
+    written += chunk_size;
+    ptr += chunk_size;
     if (tries++ > 20) {
       MESSAGE_LOG << "Error writing data (output stalled?)";
       return -1;
     }
-    if (to_write > 0) std::this_thread::sleep_for(10ms);
+    if (written < msg.size()) std::this_thread::sleep_for(10ms);
     // FIXME (leamas) really?
   }
-  return retval;
+  return written;
 }
 
 void* CommDriverN0183SerialThread::Entry() {
