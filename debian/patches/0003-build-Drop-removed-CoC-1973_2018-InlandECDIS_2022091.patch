@@ -1,4 +1,3 @@
-From 56bccb6803bca4811f260aad5be07d6a1b9267b5 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 17 Apr 2024 14:03:26 +0200
 Subject: [PATCH 3/3] build: Drop removed
@@ -11,11 +10,11 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
- CMakeLists.txt | 24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+ CMakeLists.txt | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a31ec84f0..129398ff7 100644
+index 55996d6..a965e9f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1423,8 +1423,10 @@ if (OCPN_USE_SVG)
@@ -30,7 +29,7 @@ index a31ec84f0..129398ff7 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1494,13 +1496,11 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+@@ -1494,6 +1496,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
  add_subdirectory(libs/std_filesystem)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
  
@@ -38,14 +37,7 @@ index a31ec84f0..129398ff7 100644
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
- 
--add_subdirectory(libs/tinyxml)
--target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
--
- message(STATUS "    Adding local wxserverdisc")
- add_subdirectory(libs/wxservdisc)
- 
-@@ -1688,16 +1688,6 @@ if (APPLE)
+@@ -1687,16 +1690,6 @@ if (APPLE)
      data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
@@ -62,7 +54,7 @@ index a31ec84f0..129398ff7 100644
    set_source_files_properties(
      ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
                                                           SharedSupport
-@@ -1854,8 +1844,6 @@ if (APPLE)
+@@ -1853,8 +1846,6 @@ if (APPLE)
              data/authors.html
              data/opencpn.png
              data/ocpn-plugins.xml
@@ -71,7 +63,7 @@ index a31ec84f0..129398ff7 100644
              ${SOUND_FILES}
              buildosx/opencpn.icns
              buildosx/MainMenu.xib
-@@ -1971,10 +1959,6 @@ if (NOT APPLE)
+@@ -1970,10 +1961,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  
@@ -82,6 +74,3 @@ index a31ec84f0..129398ff7 100644
    install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
    install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
    install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
--- 
-2.43.0
-

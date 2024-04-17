@@ -1,4 +1,3 @@
-From 598df656702925869cfadb0d41b3edb6ceff401d Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 17 Apr 2024 13:59:24 +0200
 Subject: [PATCH 2/3] Add missing libs like tinyxml Debian work-around
@@ -12,14 +11,27 @@ the sources.
 
 Forwarded: not-needed
 ---
+ CMakeLists.txt             |  1 -
  cmake/SystemLibs.cmake     | 28 ++++++++++++++++++++++++++++
  cmake/in-files/config.h.in |  3 +++
- 2 files changed, 31 insertions(+)
+ 3 files changed, 31 insertions(+), 1 deletion(-)
  create mode 100644 cmake/SystemLibs.cmake
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a31ec84..55996d6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1498,7 +1498,6 @@ message(STATUS "    Adding local LIBTESS2")
+ add_subdirectory(libs/libtess2)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
+ 
+-add_subdirectory(libs/tinyxml)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
+ 
+ message(STATUS "    Adding local wxserverdisc")
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 000000000..473722c1b
+index 0000000..473722c
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
 @@ -0,0 +1,28 @@
@@ -52,7 +64,7 @@ index 000000000..473722c1b
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 47fcdd641..40d0a61ba 100644
+index 47fcdd6..40d0a61 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
 @@ -45,6 +45,9 @@
@@ -65,6 +77,3 @@ index 47fcdd641..40d0a61ba 100644
  
  // The os compatible plugins are are built for
  #define PKG_TARGET "${PKG_TARGET}"
--- 
-2.43.0
-
