@@ -1,4 +1,3 @@
 0001-build-Handle-missing-doc-files.patch
-0002-CMakeLists-ignore-non-existing-NSIS.template.in.in.patch
 0003-Add-missing-libs-tinyxml-Debian-work-around.patch
 0004-build-Drop-removed-CoC-1973_2018-InlandECDIS_2022091.patch

@@ -1,9 +1,8 @@
+From 56bccb6803bca4811f260aad5be07d6a1b9267b5 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Fri, 14 Apr 2023 09:30:47 +0200
-Subject: build: Drop removed CoC-1973_2018-InlandECDIS_20220912.pdf
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Date: Wed, 17 Apr 2024 14:03:26 +0200
+Subject: [PATCH 3/3] build: Drop removed
+ CoC-1973_2018-InlandECDIS_20220912.pdf
 
 Remove references to pdf file without sources which is
 excluded from upstream sources in d/copyright
@@ -12,15 +11,42 @@ Not acceptable upstream.
 
 Forwarded: not-needed
 ---
- CMakeLists.txt | 19 -------------------
- 1 file changed, 19 deletions(-)
+ CMakeLists.txt | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d256033..d1fecc7 100644
+index a31ec84f0..129398ff7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2022,16 +2022,6 @@ if (APPLE)
-     PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+@@ -1423,8 +1423,10 @@ if (OCPN_USE_SVG)
+   endif ()
+ endif ()
+ 
++include(SystemLibs)
++
+ if (OCPN_USE_NEWSERIAL)
+-  add_subdirectory("libs/serial")
++  # add_subdirectory("libs/serial")
+   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
+   message(STATUS "Using new serial library...")
+ endif ()
+@@ -1494,13 +1496,11 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+ add_subdirectory(libs/std_filesystem)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
+ 
++
+ message(STATUS "    Adding local LIBTESS2")
+ add_subdirectory(libs/libtess2)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
+ 
+-add_subdirectory(libs/tinyxml)
+-target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
+-
+ message(STATUS "    Adding local wxserverdisc")
+ add_subdirectory(libs/wxservdisc)
+ 
+@@ -1688,16 +1688,6 @@ if (APPLE)
+     data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
 -  set_source_files_properties(
@@ -34,28 +60,28 @@ index d256033..d1fecc7 100644
 -  )
 -
    set_source_files_properties(
-     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml
-     PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
-@@ -2217,8 +2207,6 @@ if (APPLE)
-     data/authors.html
-     data/opencpn.png
-     data/ocpn-plugins.xml
--    data/CoC-909_2013-InlandECDIS_20170308s.pdf
--    data/CoC-1973_2018-InlandECDIS_20220912.pdf
-     ${SOUND_FILES}
-     buildosx/opencpn.icns
-     buildosx/MainMenu.xib
-@@ -2331,13 +2319,6 @@ if (NOT APPLE)
+     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
+                                                          SharedSupport
+@@ -1854,8 +1844,6 @@ if (APPLE)
+             data/authors.html
+             data/opencpn.png
+             data/ocpn-plugins.xml
+-            data/CoC-909_2013-InlandECDIS_20170308s.pdf
+-            data/CoC-1973_2018-InlandECDIS_20220912.pdf
+             ${SOUND_FILES}
+             buildosx/opencpn.icns
+             buildosx/MainMenu.xib
+@@ -1971,10 +1959,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  
--  install(
--    FILES
--      data/CoC-909_2013-InlandECDIS_20170308s.pdf
--      data/CoC-1973_2018-InlandECDIS_20220912.pdf
--    DESTINATION ${PREFIX_PKGDATA}
+-  install(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf
+-                data/CoC-1973_2018-InlandECDIS_20220912.pdf
+-          DESTINATION ${PREFIX_PKGDATA}
 -  )
--
    install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
- 
    install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
+   install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
+-- 
+2.43.0
+
