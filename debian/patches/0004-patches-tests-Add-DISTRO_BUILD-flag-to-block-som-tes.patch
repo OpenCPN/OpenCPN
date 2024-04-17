@@ -1,0 +1,25 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 17 Apr 2024 14:58:11 +0200
+Subject: patches: tests: Add DISTRO_BUILD flag to block som tests
+
+---
+ test/CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 02eb222..60fb9ed 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -198,10 +198,10 @@ endif ()
+ target_link_libraries(tests PRIVATE ocpn::gtest)
+ include(GoogleTest)
+ gtest_add_tests(TARGET tests)
+-if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
+-  gtest_add_tests(TARGET ipc-srv-tests)
++if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
+   # We don't have a session bus available when testing flatpak
+   # so these can just be run in native builds
++  gtest_add_tests(TARGET ipc-srv-tests)
+   gtest_add_tests(TARGET dbus_tests)
+ endif ()
+ 
