@@ -66,7 +66,7 @@
 #include "options.h"
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
-#include "AdapterInfo.h"
+
 
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
@@ -1622,7 +1622,7 @@ void ConnectionEditDialog::SetDefaultConnectionParams(void) {
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
   m_choicePriority->Select(m_choicePriority->FindString("1"));
 
-  m_tNetAddress->SetValue(FindGateWayAddress());
+  m_tNetAddress->SetValue(DefaultIPAddress);
 
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
@@ -1810,25 +1810,25 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DefaultGPSDPort);
     }
-    m_tNetAddress->SetValue(FindGateWayAddress());
+    m_tNetAddress->SetValue(DefaultIPAddress);
   } else if (m_rbNetProtoUDP->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DefaultUDPPort);
     }
-    m_tNetAddress->SetValue(FindGateWayAddress());
+    m_tNetAddress->SetValue(DefaultIPAddress);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() && m_rbNetProtoUDP->GetValue())
-      m_tNetAddress->SetValue(FindIPAddress());
+      m_tNetAddress->SetValue(DefaultIPAddress);
 
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DefaultSignalKPort);
     }
-    m_tNetAddress->SetValue(FindGateWayAddress());
+    m_tNetAddress->SetValue(DefaultIPAddress);
   } else if (m_rbNetProtoTCP->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DefaultTCPPort);
     }
-    m_tNetAddress->SetValue(FindGateWayAddress());
+    m_tNetAddress->SetValue(DefaultIPAddress);
   }
 
 
@@ -1855,7 +1855,7 @@ void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
   if (checked && m_rbNetProtoUDP->GetValue() && m_rbTypeNet->GetValue()) {
     m_cbOutput->SetValue(FALSE);
  
-    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(FindIPAddress());
+    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(DefaultIPAddress);
     
   }
   SetDSFormRWStates();
@@ -1875,9 +1875,9 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
 
   if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
     if (checked) {
-      m_tNetAddress->SetValue(FindBroadCastAddress());
+      m_tNetAddress->SetValue(DefaultIPAddress); // IP address for output
     } else {
-      m_tNetAddress->SetValue("0.0.0.0");
+      m_tNetAddress->SetValue(DefaultIPAddress); // IP address for input
     }
   }
 
@@ -1897,9 +1897,9 @@ void ConnectionEditDialog::OnCbMultiCast(wxCommandEvent& event) {
       m_tNetAddress->SetValue("224.0.2.21");
     }
   } else if (m_cbOutput->IsChecked()) {
-      m_tNetAddress->SetValue(FindBroadCastAddress());
+      m_tNetAddress->SetValue(DefaultIPAddress); // IP address for output
     } else {
-      m_tNetAddress->SetValue("0.0.0.0");
+      m_tNetAddress->SetValue(DefaultIPAddress);  // IP address for input
     }
 
 
@@ -2464,18 +2464,7 @@ bool ConnectionEditDialog::IsAddressMultiCast(wxString& ip) {
   return ipNum >= multicastStart && ipNum <= multicastEnd;
 }
 
-wxString ConnectionEditDialog::FindBroadCastAddress() {
-  
-    return adapterInfo.GetBroadcastAddress(); 
-}
 
-wxString ConnectionEditDialog::FindGateWayAddress() {
-    return adapterInfo.GetGateWay();
-}
-
-wxString ConnectionEditDialog::FindIPAddress() {
-    return adapterInfo.GetIPAddress();
-}
 
 bool ConnectionEditDialog::IsDefaultPort(wxString address) {
     return  (address == DefaultTCPPort) || (address == DefaultUDPPort) || (address == DefaultSignalKPort) ||

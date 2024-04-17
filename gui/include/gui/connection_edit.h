@@ -38,7 +38,7 @@
 #include "model/comm_util.h"
 
 #include "observable.h"
-#include "AdapterInfo.h"
+
 
 class options;
 class ConnectionParamsPanel;
@@ -52,6 +52,7 @@ public:
   const wxString DefaultUDPPort = "10110";
   const wxString DefaultGPSDPort = "2947";
   const wxString DefaultSignalKPort = "3000";
+  const wxString DefaultIPAddress = "0.0.0.0";
 
   ConnectionEditDialog();
  // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
@@ -112,9 +113,6 @@ public:
   void SetUDPNetAddressVisiblity(void);
   bool IsAddressMultiCast(wxString &ip);
   bool IsAddressBroadcast(wxString &ip);
-  wxString FindBroadCastAddress(void);
-  wxString FindGateWayAddress(void);
-  wxString FindIPAddress(void);
   bool IsDefaultPort(wxString address);
 
   void ClearNMEAForm(void);
@@ -208,7 +206,6 @@ public:
 
   ObsListener new_device_listener;
 
-  AdapterInfo adapterInfo;
 
   //DECLARE_EVENT_TABLE()
 
