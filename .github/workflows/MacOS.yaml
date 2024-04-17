@@ -5,13 +5,11 @@ name: MacOS
   push:
     branches:
       - master
-      - v5.8.x
     paths-ignore:
       - 'buildandroid/**'
   pull_request:
     branches:
       - master
-      - v5.8.x
     paths-ignore:
       - 'buildandroid/**'
 
@@ -38,8 +36,19 @@ jobs:
           #  MACOSX_DEPLOYMENT_TARGET: 10.13
           - name: macOS 11 wxOSX
             runner: macos-11
-            pkg_mod: 10
+            pkg_mod: 11
             MACOSX_DEPLOYMENT_TARGET: 10.13
+            CREATE_DMG: 1
+          - name: macOS Latest wxOSX
+            runner: macos-latest
+            pkg_mod: 11
+            MACOSX_DEPLOYMENT_TARGET: 10.13
+            CREATE_DMG: 1
+          - name: macOS 14 wxOSX
+            runner: macos-latest
+            pkg_mod: 11
+            MACOSX_DEPLOYMENT_TARGET: 11
+            CREATE_DMG: 1
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
       pkg_mod: ${{ matrix.pkg_mod }}
@@ -55,17 +64,20 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Before build
-        run: ./ci/github-pre-build.sh
-        env:
-          USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
+      #- name: Before build
+      #  run: ./ci/github-pre-build.sh
+      #  env:
+      #    USE_HOMEBREW: ${{ matrix.use_homebrew && matrix.use_homebrew || 0 }}
 
       # required for CMake to find Ninja
       - name: Configure and Build
         run: ci/generic-build-macos.sh
 
-      - name: Upload
-        env:
-          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
-        run: ci/generic-upload.sh
+      - name: Test
+        run: cd build && make run-tests
+
+      #- name: Upload
+      #  env:
+      #    CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      #  run: ci/generic-upload.sh
 ...

@@ -1,0 +1,3 @@
+nginx: nginx -p . -c nginx.conf
+websocket_server: python echo_server.py
+send: sleep 1 ; ws send -x --verify_none wss://localhost:8765 /usr/local/bin/ws

@@ -1,0 +1,2366 @@
+{
+    "sources": [
+        {
+            "source": "MET.NO",
+            "url": "https://www.met.no/en/free-meteorological-data",
+            "areas": [
+                {
+                    "name": "Oslofjord",
+                    "boundary": {
+                        "lat_max": 60.0,
+                        "lon_max": 11.2,
+                        "lat_min": 58.9,
+                        "lon_min": 9.8
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=oslofjord",
+                            "filename": "meps_weatherapi_oslofjord.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=oslofjord",
+                            "filename": "norkyst800m_weatherapi_oslofjord.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=oslofjord",
+                            "filename": "wavewatch_4km_weatherapi_oslofjord.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Skagerrak",
+                    "boundary": {
+                        "lat_max": 59.4,
+                        "lon_max": 11.6,
+                        "lat_min": 57.7,
+                        "lon_min": 7.8
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=skagerrak",
+                            "filename": "meps_weatherapi_skagerrak.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=skagerrak",
+                            "filename": "norkyst800m_weatherapi_skagerrak.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=skagerrak",
+                            "filename": "wavewatch_4km_weatherapi_skagerrak.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sorlandet",
+                    "boundary": {
+                        "lat_max": 58.8,
+                        "lon_max": 9.4,
+                        "lat_min": 57.8,
+                        "lon_min": 7.0
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=sorlandet",
+                            "filename": "meps_weatherapi_sorlandet.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=sorlandet",
+                            "filename": "norkyst800m_weatherapi_sorlandet.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=sorlandet",
+                            "filename": "wavewatch_4km_weatherapi_sorlandet.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "West Norway",
+                    "boundary": {
+                        "lat_max": 63.0,
+                        "lon_max": 7.0,
+                        "lat_min": 58.0,
+                        "lon_min": 4.4
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=west_norway",
+                            "filename": "meps_weatherapi_west_norway.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=west_norway",
+                            "filename": "norkyst800m_weatherapi_west_norway.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=west_norway",
+                            "filename": "wavewatch_4km_weatherapi_west_norway.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "N-North Sea",
+                    "boundary": {
+                        "lat_max": 62.0,
+                        "lon_max": 6.0,
+                        "lat_min": 58.5,
+                        "lon_min": -2.0
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=n-northsea",
+                            "filename": "meps_weatherapi_n-northsea.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=n-northsea",
+                            "filename": "norkyst800m_weatherapi_n-northsea.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=n-northsea",
+                            "filename": "wavewatch_4km_weatherapi_n-northsea.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Troms-Finnmark",
+                    "boundary": {
+                        "lat_max": 71.5,
+                        "lon_max": 31.5,
+                        "lat_min": 69.0,
+                        "lon_min": 14.4
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=troms-finnmark",
+                            "filename": "meps_weatherapi_troms-finnmark.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=troms-finnmark",
+                            "filename": "norkyst800m_weatherapi_troms-finnmark.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=troms-finnmark",
+                            "filename": "wavewatch_4km_weatherapi_troms-finnmark.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Nordland",
+                    "boundary": {
+                        "lat_max": 69.0,
+                        "lon_max": 18.0,
+                        "lat_min": 63.0,
+                        "lon_min": 6.0
+                    },
+                    "gribs": [
+                        {
+                            "name": "Weather",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/weather?area=nordland",
+                            "filename": "meps_weatherapi_nordland.grb"
+                        },
+                        {
+                            "name": "Current",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/current?area=nordland",
+                            "filename": "norkyst800m_weatherapi_nordland.grb"
+                        },
+                        {
+                            "name": "Waves",
+                            "url": "https://api.met.no/weatherapi/gribfiles/1.1/waves?area=nordland",
+                            "filename": "wavewatch_4km_weatherapi_nordland.grb"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "OpenSkiron ICON-D2",
+            "url": "https://openskiron.org/en/cosmo-gribs",
+            "areas": [
+                {
+                    "name": "Aarhus",
+                    "boundary": {
+                        "lat_max": 56.95,
+                        "lon_min": 9.35,
+                        "lat_min": 55.21,
+                        "lon_max": 11.989999
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aarhus_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Blight",
+                    "boundary": {
+                        "lat_max": 56.91,
+                        "lon_min": 6.97,
+                        "lat_min": 53.189999,
+                        "lon_max": 9.609999
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Blight_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Bornholm",
+                    "boundary": {
+                        "lat_max": 56.709999,
+                        "lon_min": 13.99,
+                        "lat_min": 53.31,
+                        "lon_max": 16.769999
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Bornholm_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Calais",
+                    "boundary": {
+                        "lat_max": 53.529999,
+                        "lon_min": 0.11,
+                        "lat_min": 48.99,
+                        "lon_max": 4.01
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Calais_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Copenhagen",
+                    "boundary": {
+                        "lat_max": 56.389999,
+                        "lon_min": 11.49,
+                        "lat_min": 54.97,
+                        "lon_max": 14.51
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Copenhagen_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Kiel",
+                    "boundary": {
+                        "lat_max": 55.63,
+                        "lon_min": 9.35,
+                        "lat_min": 53.79,
+                        "lon_max": 11.669999
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Kiel_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Netherlands",
+                    "boundary": {
+                        "lat_max": 55.01,
+                        "lon_min": 3.249999,
+                        "lat_min": 51.25,
+                        "lon_max": 8.029999
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Netherlands_ICON-D2_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Rostok",
+                    "boundary": {
+                        "lat_max": 55.15,
+                        "lon_min": 11.49,
+                        "lat_min": 53.589999,
+                        "lon_max": 14.51
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Rostok_ICON-D2_EWAM.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "OpenSkiron ICON",
+            "url": "https://openskiron.org/en/icon-gribs",
+            "areas": [
+                {
+                    "name": "Adriatic",
+                    "boundary": {
+                        "lat_max": 46.59375,
+                        "lon_min": 11.96875,
+                        "lat_min": 40.78125,
+                        "lon_max": 20.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean",
+                    "boundary": {
+                        "lat_max": 42.03125,
+                        "lon_min": 19.96875,
+                        "lat_min": 35.71875,
+                        "lon_max": 30.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baleares",
+                    "boundary": {
+                        "lat_max": 44.03125,
+                        "lon_min": -1.03125,
+                        "lat_min": 37.96875,
+                        "lon_max": 6.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baleares_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baltic Centre",
+                    "boundary": {
+                        "lat_max": 63.21875,
+                        "lon_min": 15.96875,
+                        "lat_min": 57.96875,
+                        "lon_max": 23.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baltic_Centre_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baltic East",
+                    "boundary": {
+                        "lat_max": 61.71875,
+                        "lon_min": 20.96875,
+                        "lat_min": 56.40625,
+                        "lon_max": 31.53125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baltic_East_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baltic North",
+                    "boundary": {
+                        "lat_max": 66.78125,
+                        "lon_min": 16.96875,
+                        "lat_min": 61.96875,
+                        "lon_max": 26.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baltic_North_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baltic South",
+                    "boundary": {
+                        "lat_max": 59.03125,
+                        "lon_min": 12.96875,
+                        "lat_min": 52.46875,
+                        "lon_max": 22.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baltic_South_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Biscay",
+                    "boundary": {
+                        "lat_max": 49.09375,
+                        "lon_min": -10.03125,
+                        "lat_min": 42.71875,
+                        "lon_max": 0.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Biscay_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Black Sea E",
+                    "boundary": {
+                        "lat_max": 48.03125,
+                        "lon_min": 33.96875,
+                        "lat_min": 39.96875,
+                        "lon_max": 43.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Black_Sea_E_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Black Sea W",
+                    "boundary": {
+                        "lat_max": 47.53125,
+                        "lon_min": 26.46875,
+                        "lat_min": 39.96875,
+                        "lon_max": 36.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Black_Sea_W_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Channel",
+                    "boundary": {
+                        "lat_max": 52.71875,
+                        "lon_min": -6.59375,
+                        "lat_min": 47.21875,
+                        "lon_max": 3.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Channel_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crete",
+                    "boundary": {
+                        "lat_max": 38.03125,
+                        "lon_min": 19.96875,
+                        "lat_min": 30.71875,
+                        "lon_max": 30.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crete_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crusade",
+                    "boundary": {
+                        "lat_max": 37.40625,
+                        "lon_min": 26.71875,
+                        "lat_min": 29.46875,
+                        "lon_max": 37.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crusade_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Denmark",
+                    "boundary": {
+                        "lat_max": 60.03125,
+                        "lon_min": 5.78125,
+                        "lat_min": 52.96875,
+                        "lon_max": 14.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Denmark_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ionian",
+                    "boundary": {
+                        "lat_max": 42.03125,
+                        "lon_min": 15.96875,
+                        "lat_min": 34.78125,
+                        "lon_max": 24.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ionian_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ireland",
+                    "boundary": {
+                        "lat_max": 56.40625,
+                        "lon_min": -11.28125,
+                        "lat_min": 49.78125,
+                        "lon_max": -2.09375
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ireland_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Malaga",
+                    "boundary": {
+                        "lat_max": 40.03125,
+                        "lon_min": -8.03125,
+                        "lat_min": 33.96875,
+                        "lon_max": 1.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Malaga_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "North Sea NE",
+                    "boundary": {
+                        "lat_max": 60.03125,
+                        "lon_min": 0.96875,
+                        "lat_min": 55.96875,
+                        "lon_max": 8.53125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/North_Sea_NE_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "North Sea NW",
+                    "boundary": {
+                        "lat_max": 61.34375,
+                        "lon_min": -4.59375,
+                        "lat_min": 55.15625,
+                        "lon_max": 2.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/North_Sea_NW_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "North Sea SE",
+                    "boundary": {
+                        "lat_max": 56.71875,
+                        "lon_min": 1.96875,
+                        "lat_min": 50.46875,
+                        "lon_max": 10.21875
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/North_Sea_SE_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "North Sea SW",
+                    "boundary": {
+                        "lat_max": 56.40625,
+                        "lon_min": -2.03125,
+                        "lat_min": 49.96875,
+                        "lon_max": 4.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/North_Sea_SW_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Portugal",
+                    "boundary": {
+                        "lat_max": 45.09375,
+                        "lon_min": -12.09375,
+                        "lat_min": 35.21875,
+                        "lon_max": -4.71875
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Portugal_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Riviera",
+                    "boundary": {
+                        "lat_max": 44.53125,
+                        "lon_min": -0.03125,
+                        "lat_min": 39.96875,
+                        "lon_max": 10.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Riviera_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sardinia",
+                    "boundary": {
+                        "lat_max": 44.71875,
+                        "lon_min": 5.96875,
+                        "lat_min": 37.96875,
+                        "lon_max": 13.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sardinia_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Scotland",
+                    "boundary": {
+                        "lat_max": 61.28125,
+                        "lon_min": -8.46875,
+                        "lat_min": 54.71875,
+                        "lon_max": 0.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Scotland_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sicily",
+                    "boundary": {
+                        "lat_max": 42.03125,
+                        "lon_min": 9.96875,
+                        "lat_min": 34.96875,
+                        "lon_max": 18.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sicily_ICON_EU_EWAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Tunisia",
+                    "boundary": {
+                        "lat_max": 39.03125,
+                        "lon_min": 5.96875,
+                        "lat_min": 31.96875,
+                        "lon_max": 13.03125
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Tunisia_ICON_EU_EWAM.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "OpenSkiron openWRF Light",
+            "url": "https://openskiron.org/saildocs/",
+            "areas": [
+                {
+                    "name": "Adriatic Central 4km",
+                    "boundary": {
+                        "lat_max": 43.846,
+                        "lon_min": 12.5980033,
+                        "lat_min": 42.01,
+                        "lon_max": 18.1049967
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_Central_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Adriatic North 4km",
+                    "boundary": {
+                        "lat_max": 45.898,
+                        "lon_min": 12.0580045,
+                        "lat_min": 43.702,
+                        "lon_max": 16.0529955
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_North_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Adriatic South 4km",
+                    "boundary": {
+                        "lat_max": 42.854,
+                        "lon_min": 15.8569958,
+                        "lat_min": 39.686,
+                        "lon_max": 20.1420042
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_South_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean 12km",
+                    "boundary": {
+                        "lat_max": 41.158,
+                        "lon_min": 22.0300068,
+                        "lat_min": 34.462,
+                        "lon_max": 30.0209932
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean NE 4km",
+                    "boundary": {
+                        "lat_max": 41.5009948,
+                        "lon_min": 24.6069932,
+                        "lat_min": 38.0100052,
+                        "lon_max": 27.3080068
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_NE_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean NW 4km",
+                    "boundary": {
+                        "lat_max": 41.5009948,
+                        "lon_min": 22.0160061,
+                        "lat_min": 38.0100052,
+                        "lon_max": 25.0029939
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_NW_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean SE 4km",
+                    "boundary": {
+                        "lat_max": 38.386,
+                        "lon_min": 25.9900072,
+                        "lat_min": 35.182,
+                        "lon_max": 28.5089928
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_SE_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean SW 4km",
+                    "boundary": {
+                        "lat_max": 38.386,
+                        "lon_min": 22.498,
+                        "lat_min": 36.01,
+                        "lon_max": 26.314
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_SW_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Almeria 4km",
+                    "boundary": {
+                        "lat_max": 38.7929952,
+                        "lon_min": -3.0099941,
+                        "lat_min": 35.0140048,
+                        "lon_max": 0.0849941
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Almeria_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Antalya 4km",
+                    "boundary": {
+                        "lat_max": 37.004,
+                        "lon_min": 27.507,
+                        "lat_min": 34.988,
+                        "lon_max": 33.015
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Antalya_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Atlantic Coast 12km",
+                    "boundary": {
+                        "lat_max": 51.022,
+                        "lon_min": -11.79,
+                        "lat_min": 41.95,
+                        "lon_max": -0.342
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Atlantic_Coast_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baleares 4km",
+                    "boundary": {
+                        "lat_max": 41.437006,
+                        "lon_min": -0.418,
+                        "lat_min": 38.375994,
+                        "lon_max": 4.586
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baleares_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Bordeaux 4km",
+                    "boundary": {
+                        "lat_max": 46.306,
+                        "lon_min": -5.4910038,
+                        "lat_min": 43.102,
+                        "lon_max": -0.7379962
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Bordeaux_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Brest 4km",
+                    "boundary": {
+                        "lat_max": 49.005,
+                        "lon_min": -5.4910038,
+                        "lat_min": 45.657,
+                        "lon_max": -0.7379962
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Brest_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Canaries 12km",
+                    "boundary": {
+                        "lat_max": 36.6580037,
+                        "lon_min": -22.0410034,
+                        "lat_min": 21.9689963,
+                        "lon_max": -5.8399966
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Canaries_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Canaries 4km",
+                    "boundary": {
+                        "lat_max": 30.2860042,
+                        "lon_min": -19.015997,
+                        "lat_min": 26.0009958,
+                        "lon_max": -12.897003
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Canaries_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Channel 12km",
+                    "boundary": {
+                        "lat_max": 55.909,
+                        "lon_min": -11.027,
+                        "lat_min": 45.973,
+                        "lon_max": 4.957
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Channel_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cherbourg 4km",
+                    "boundary": {
+                        "lat_max": 51.0839933,
+                        "lon_min": -2.9979945,
+                        "lat_min": 48.3490067,
+                        "lon_max": 0.3129945
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Cherbourg_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Corsica 4km",
+                    "boundary": {
+                        "lat_max": 43.354,
+                        "lon_min": 7.356995,
+                        "lat_min": 41.014,
+                        "lon_max": 10.994005
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Corsica_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crete 4km",
+                    "boundary": {
+                        "lat_max": 36.514,
+                        "lon_min": 23.0020045,
+                        "lat_min": 34.606,
+                        "lon_max": 26.9969955
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crete_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crusade 12km",
+                    "boundary": {
+                        "lat_max": 37.018,
+                        "lon_min": 28.0799939,
+                        "lat_min": 26.974,
+                        "lon_max": 37.0450061
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crusade_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cyprus 4km",
+                    "boundary": {
+                        "lat_max": 36.494,
+                        "lon_min": 32.0150068,
+                        "lat_min": 34.298,
+                        "lon_max": 34.7139932
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Cyprus_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Dunkirk 4km",
+                    "boundary": {
+                        "lat_max": 53.989,
+                        "lon_min": 1.755,
+                        "lat_min": 50.605,
+                        "lon_max": 4.995
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Dunkirk_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "France 12km",
+                    "boundary": {
+                        "lat_max": 44.754,
+                        "lon_min": 0.1140055,
+                        "lat_min": 36.006,
+                        "lon_max": 10.0489945
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/France_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Gibraltar 4km",
+                    "boundary": {
+                        "lat_max": 37.354,
+                        "lon_min": -7.006,
+                        "lat_min": 35.014,
+                        "lon_max": -2.614
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Gibraltar_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Gulf of Lion 4km",
+                    "boundary": {
+                        "lat_max": 43.818,
+                        "lon_min": 1.41,
+                        "lat_min": 40.902,
+                        "lon_max": 6.018
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Gulf_of_Lion_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Hastings 4km",
+                    "boundary": {
+                        "lat_max": 53.9890036,
+                        "lon_min": -1.017,
+                        "lat_min": 48.9839964,
+                        "lon_max": 2.259
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Hastings_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ionian 12km",
+                    "boundary": {
+                        "lat_max": 42.5489928,
+                        "lon_min": 15.9780068,
+                        "lat_min": 34.9900072,
+                        "lon_max": 23.9689932
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ionian_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ionian Islands 4km",
+                    "boundary": {
+                        "lat_max": 39.886,
+                        "lon_min": 19.29,
+                        "lat_min": 36.286,
+                        "lon_max": 22.602
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ionian_Islands_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Irish Sea N 4km",
+                    "boundary": {
+                        "lat_max": 56.011,
+                        "lon_min": -7.009,
+                        "lat_min": 53.203,
+                        "lon_max": -2.617
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Irish_Sea_N_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Irish Sea S 4km",
+                    "boundary": {
+                        "lat_max": 53.707,
+                        "lon_min": -7.261,
+                        "lat_min": 51.007,
+                        "lon_max": -2.293
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Irish_Sea_S_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Israel 4km",
+                    "boundary": {
+                        "lat_max": 33.705,
+                        "lon_min": 33.013,
+                        "lat_min": 29.241,
+                        "lon_max": 36.613
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Israel_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Italy 12km",
+                    "boundary": {
+                        "lat_max": 46.001,
+                        "lon_min": 7.5069956,
+                        "lat_min": 34.661,
+                        "lon_max": 19.9280044
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Italy_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ligurian 4km",
+                    "boundary": {
+                        "lat_max": 44.5049948,
+                        "lon_min": 7.357,
+                        "lat_min": 41.0140052,
+                        "lon_max": 12.253
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ligurian_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Nice 4km",
+                    "boundary": {
+                        "lat_max": 44.7169952,
+                        "lon_min": 5.5140056,
+                        "lat_min": 40.9020048,
+                        "lon_max": 8.7889944
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Nice_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Patras Gulf 4km",
+                    "boundary": {
+                        "lat_max": 39.094,
+                        "lon_min": 20.19,
+                        "lat_min": 37.402,
+                        "lon_max": 23.358
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Patras_Gulf_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Plymouth 4km",
+                    "boundary": {
+                        "lat_max": 51.985,
+                        "lon_min": -5.914,
+                        "lat_min": 48.241,
+                        "lon_max": -1.99
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Plymouth_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sardinia 4km",
+                    "boundary": {
+                        "lat_max": 41.553,
+                        "lon_min": 7.356995,
+                        "lat_min": 38.565,
+                        "lon_max": 10.994005
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sardinia_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sicily 4km",
+                    "boundary": {
+                        "lat_max": 38.766,
+                        "lon_min": 12.008,
+                        "lat_min": 35.706,
+                        "lon_max": 17.696
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sicily_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Spain 12km",
+                    "boundary": {
+                        "lat_max": 43.006,
+                        "lon_min": -11.254,
+                        "lat_min": 34.042,
+                        "lon_max": 5.054
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Spain_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Taurus 12km",
+                    "boundary": {
+                        "lat_max": 38.48,
+                        "lon_min": 25.023,
+                        "lat_min": 34.052,
+                        "lon_max": 36.039
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Taurus_12km_WRF_MINIMAL.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Tyrrhenian 4km",
+                    "boundary": {
+                        "lat_max": 41.79,
+                        "lon_min": 12.008,
+                        "lat_min": 38.01,
+                        "lon_max": 17.696
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Tyrrhenian_4km_WRF_MINIMAL.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "OpenSkiron openWRF 4km",
+            "url": "https://openskiron.org/en/openwrf",
+            "areas": [
+                {
+                    "name": "Adriatic Central",
+                    "boundary": {
+                        "lat_max": 43.846,
+                        "lon_min": 12.5980033,
+                        "lat_min": 42.01,
+                        "lon_max": 18.1049967
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_Central_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Adriatic North",
+                    "boundary": {
+                        "lat_max": 45.898,
+                        "lon_min": 12.0580045,
+                        "lat_min": 43.702,
+                        "lon_max": 16.0529955
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_North_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Adriatic South",
+                    "boundary": {
+                        "lat_max": 42.854,
+                        "lon_min": 15.8569958,
+                        "lat_min": 39.686,
+                        "lon_max": 20.1420042
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_South_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean NE",
+                    "boundary": {
+                        "lat_max": 41.5009948,
+                        "lon_min": 24.6069932,
+                        "lat_min": 38.0100052,
+                        "lon_max": 27.3080068
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_NE_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean NW",
+                    "boundary": {
+                        "lat_max": 41.5009948,
+                        "lon_min": 22.0160061,
+                        "lat_min": 38.0100052,
+                        "lon_max": 25.0029939
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_NW_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean SE",
+                    "boundary": {
+                        "lat_max": 38.386,
+                        "lon_min": 25.9900072,
+                        "lat_min": 35.182,
+                        "lon_max": 28.5089928
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_SE_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean SW",
+                    "boundary": {
+                        "lat_max": 38.386,
+                        "lon_min": 22.498,
+                        "lat_min": 36.01,
+                        "lon_max": 26.314
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_SW_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Almeria",
+                    "boundary": {
+                        "lat_max": 38.7929952,
+                        "lon_min": -3.0099941,
+                        "lat_min": 35.0140048,
+                        "lon_max": 0.0849941
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Almeria_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Antalya",
+                    "boundary": {
+                        "lat_max": 37.004,
+                        "lon_min": 27.507,
+                        "lat_min": 34.988,
+                        "lon_max": 33.015
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Antalya_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baleares",
+                    "boundary": {
+                        "lat_max": 41.437006,
+                        "lon_min": -0.418,
+                        "lat_min": 38.375994,
+                        "lon_max": 4.586
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baleares_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Bordeaux",
+                    "boundary": {
+                        "lat_max": 46.306,
+                        "lon_min": -5.4910038,
+                        "lat_min": 43.102,
+                        "lon_max": -0.7379962
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Bordeaux_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Brest",
+                    "boundary": {
+                        "lat_max": 49.005,
+                        "lon_min": -5.4910038,
+                        "lat_min": 45.657,
+                        "lon_max": -0.7379962
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Brest_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Canaries",
+                    "boundary": {
+                        "lat_max": 30.2860042,
+                        "lon_min": -19.015997,
+                        "lat_min": 26.0009958,
+                        "lon_max": -12.897003
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Canaries_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cherbourg",
+                    "boundary": {
+                        "lat_max": 51.0839933,
+                        "lon_min": -2.9979945,
+                        "lat_min": 48.3490067,
+                        "lon_max": 0.3129945
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Cherbourg_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Corsica",
+                    "boundary": {
+                        "lat_max": 43.354,
+                        "lon_min": 7.356995,
+                        "lat_min": 41.014,
+                        "lon_max": 10.994005
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Corsica_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crete",
+                    "boundary": {
+                        "lat_max": 36.514,
+                        "lon_min": 23.0020045,
+                        "lat_min": 34.606,
+                        "lon_max": 26.9969955
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crete_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cyprus",
+                    "boundary": {
+                        "lat_max": 36.494,
+                        "lon_min": 32.0150068,
+                        "lat_min": 34.298,
+                        "lon_max": 34.7139932
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Cyprus_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Dunkirk",
+                    "boundary": {
+                        "lat_max": 53.989,
+                        "lon_min": 1.755,
+                        "lat_min": 50.605,
+                        "lon_max": 4.995
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Dunkirk_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Gibraltar",
+                    "boundary": {
+                        "lat_max": 37.354,
+                        "lon_min": -7.006,
+                        "lat_min": 35.014,
+                        "lon_max": -2.614
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Gibraltar_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Gulf of Lion",
+                    "boundary": {
+                        "lat_max": 43.818,
+                        "lon_min": 1.41,
+                        "lat_min": 40.902,
+                        "lon_max": 6.018
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Gulf_of_Lion_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Hastings",
+                    "boundary": {
+                        "lat_max": 53.9890036,
+                        "lon_min": -1.017,
+                        "lat_min": 48.9839964,
+                        "lon_max": 2.259
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Hastings_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ionian Islands",
+                    "boundary": {
+                        "lat_max": 39.886,
+                        "lon_min": 19.29,
+                        "lat_min": 36.286,
+                        "lon_max": 22.602
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ionian_Islands_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Irish Sea N",
+                    "boundary": {
+                        "lat_max": 56.011,
+                        "lon_min": -7.009,
+                        "lat_min": 53.203,
+                        "lon_max": -2.617
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Irish_Sea_N_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Irish Sea S",
+                    "boundary": {
+                        "lat_max": 53.707,
+                        "lon_min": -7.261,
+                        "lat_min": 51.007,
+                        "lon_max": -2.293
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Irish_Sea_S_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Israel",
+                    "boundary": {
+                        "lat_max": 33.705,
+                        "lon_min": 33.013,
+                        "lat_min": 29.241,
+                        "lon_max": 36.613
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Israel_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ligurian",
+                    "boundary": {
+                        "lat_max": 44.5049948,
+                        "lon_min": 7.357,
+                        "lat_min": 41.0140052,
+                        "lon_max": 12.253
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ligurian_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Nice",
+                    "boundary": {
+                        "lat_max": 44.7169952,
+                        "lon_min": 5.5140056,
+                        "lat_min": 40.9020048,
+                        "lon_max": 8.7889944
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Nice_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Patras Gulf",
+                    "boundary": {
+                        "lat_max": 39.094,
+                        "lon_min": 20.19,
+                        "lat_min": 37.402,
+                        "lon_max": 23.358
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Patras_Gulf_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Plymouth",
+                    "boundary": {
+                        "lat_max": 51.985,
+                        "lon_min": -5.914,
+                        "lat_min": 48.241,
+                        "lon_max": -1.99
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Plymouth_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sardinia",
+                    "boundary": {
+                        "lat_max": 41.553,
+                        "lon_min": 7.356995,
+                        "lat_min": 38.565,
+                        "lon_max": 10.994005
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sardinia_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sicily",
+                    "boundary": {
+                        "lat_max": 38.766,
+                        "lon_min": 12.008,
+                        "lat_min": 35.706,
+                        "lon_max": 17.696
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sicily_4km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Tyrrhenian",
+                    "boundary": {
+                        "lat_max": 41.79,
+                        "lon_min": 12.008,
+                        "lat_min": 38.01,
+                        "lon_max": 17.696
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Tyrrhenian_4km_WRF_WAM.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "OpenSkiron openWRF 12km",
+            "url": "https://openskiron.org/en/openwrf",
+            "areas": [
+                {
+                    "name": "Aegean",
+                    "boundary": {
+                        "lat_max": 41.158,
+                        "lon_min": 22.0300068,
+                        "lat_min": 34.462,
+                        "lon_max": 30.0209932
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Atlantic Coast",
+                    "boundary": {
+                        "lat_max": 51.022,
+                        "lon_min": -11.79,
+                        "lat_min": 41.95,
+                        "lon_max": -0.342
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Atlantic_Coast_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Canaries",
+                    "boundary": {
+                        "lat_max": 36.6580037,
+                        "lon_min": -22.0410034,
+                        "lat_min": 21.9689963,
+                        "lon_max": -5.8399966
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Canaries_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Channel",
+                    "boundary": {
+                        "lat_max": 55.909,
+                        "lon_min": -11.027,
+                        "lat_min": 45.973,
+                        "lon_max": 4.957
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Channel_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crusade",
+                    "boundary": {
+                        "lat_max": 37.018,
+                        "lon_min": 28.0799939,
+                        "lat_min": 26.974,
+                        "lon_max": 37.0450061
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crusade_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "France",
+                    "boundary": {
+                        "lat_max": 44.754,
+                        "lon_min": 0.1140055,
+                        "lat_min": 36.006,
+                        "lon_max": 10.0489945
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/France_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ionian",
+                    "boundary": {
+                        "lat_max": 42.5489928,
+                        "lon_min": 15.9780068,
+                        "lat_min": 34.9900072,
+                        "lon_max": 23.9689932
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ionian_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Italy",
+                    "boundary": {
+                        "lat_max": 46.001,
+                        "lon_min": 7.5069956,
+                        "lat_min": 34.661,
+                        "lon_max": 19.9280044
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Italy_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Spain",
+                    "boundary": {
+                        "lat_max": 43.006,
+                        "lon_min": -11.254,
+                        "lat_min": 34.042,
+                        "lon_max": 5.054
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Spain_12km_WRF_WAM.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Taurus",
+                    "boundary": {
+                        "lat_max": 38.48,
+                        "lon_min": 25.023,
+                        "lat_min": 34.052,
+                        "lon_max": 36.039
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Taurus_12km_WRF_WAM.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "OpenSkiron Gribs",
+            "url": "https://openskiron.org/en/openskiron",
+            "areas": [
+                {
+                    "name": "Adriatic",
+                    "boundary": {
+                        "lat_max": 46.05,
+                        "lon_min": 11.95,
+                        "lat_min": 40.95,
+                        "lon_max": 20.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Adriatic_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Aegean",
+                    "boundary": {
+                        "lat_max": 41.55,
+                        "lon_min": 21.95,
+                        "lat_min": 35.95,
+                        "lon_max": 30.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Aegean_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Azov",
+                    "boundary": {
+                        "lat_max": 47.65,
+                        "lon_min": 33.95,
+                        "lat_min": 44.65,
+                        "lon_max": 40.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Azov_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baleares",
+                    "boundary": {
+                        "lat_max": 41.05,
+                        "lon_min": -0.05,
+                        "lat_min": 35.95,
+                        "lon_max": 12.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Baleares_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Black E",
+                    "boundary": {
+                        "lat_max": 45.55,
+                        "lon_min": 32.95,
+                        "lat_min": 40.45,
+                        "lon_max": 41.95
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Black_E_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Black W",
+                    "boundary": {
+                        "lat_max": 47.05,
+                        "lon_min": 26.95,
+                        "lat_min": 40.45,
+                        "lon_max": 34.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Black_W_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Crete",
+                    "boundary": {
+                        "lat_max": 38.05,
+                        "lon_min": 21.95,
+                        "lat_min": 30.95,
+                        "lon_max": 29.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Crete_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cyprus",
+                    "boundary": {
+                        "lat_max": 37.05,
+                        "lon_min": 26.95,
+                        "lat_min": 30.75,
+                        "lon_max": 36.35
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Cyprus_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Ionian",
+                    "boundary": {
+                        "lat_max": 41.55,
+                        "lon_min": 16.95,
+                        "lat_min": 35.95,
+                        "lon_max": 23.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Ionian_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Malaga",
+                    "boundary": {
+                        "lat_max": 41.05,
+                        "lon_min": -7.05,
+                        "lat_min": 34.45,
+                        "lon_max": 1.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Malaga_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Riviera",
+                    "boundary": {
+                        "lat_max": 45.05,
+                        "lon_min": -0.05,
+                        "lat_min": 39.95,
+                        "lon_max": 13.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Riviera_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sicily",
+                    "boundary": {
+                        "lat_max": 41.05,
+                        "lon_min": 10.95,
+                        "lat_min": 34.95,
+                        "lon_max": 19.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Sicily_SKIRON.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "Tunisia",
+                    "boundary": {
+                        "lat_max": 38.05,
+                        "lon_min": 6.95,
+                        "lat_min": 32.45,
+                        "lon_max": 13.05
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "cat_url": "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/Tunisia_SKIRON.json"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "HARMONIE (NL)",
+            "url": "https://www.euroszeilen.utwente.nl/weer/grib/",
+            "areas": [
+                {
+                    "name": "IJsselmeer",
+                    "boundary": {
+                        "lat_min": 52.082,
+                        "lon_min": 4.107,
+                        "lat_max": 53.416,
+                        "lon_max": 5.994
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_ijmg.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_ijmg_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Waddenzee",
+                    "boundary": {
+                        "lat_min": 52.795,
+                        "lon_min": 4.218,
+                        "lat_max": 53.876,
+                        "lon_max": 7.548
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_wad.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_wad_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Zeeland",
+                    "boundary": {
+                        "lat_min": 51.047,
+                        "lon_min": 2.886,
+                        "lat_max": 52.197,
+                        "lon_max": 4.773
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_zld.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_zld_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Nederland",
+                    "boundary": {
+                        "lat_min": 50.725,
+                        "lon_min": 2.886,
+                        "lat_max": 53.876,
+                        "lon_max": 7.326
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_nl.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_nl_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Noordzee",
+                    "boundary": {
+                        "lat_min": 50.725,
+                        "lon_min": 0.370,
+                        "lat_max": 53.876,
+                        "lon_max": 4.810
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_nz.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_nz_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Duitse Bocht",
+                    "boundary": {
+                        "lat_min": 52.979,
+                        "lon_min": 4.292,
+                        "lat_max": 55.601,
+                        "lon_max": 9.657
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_db.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_db_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Dover",
+                    "boundary": {
+                        "lat_min": 49.322,
+                        "lon_min": 0.000,
+                        "lat_max": 51.392,
+                        "lon_max": 3.330
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_dov.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_dov_wind.grb"
+                        }
+                    ]
+                },
+                {
+                    "name": "Modelgebied",
+                    "boundary": {
+                        "lat_min": 49.000,
+                        "lon_min": 0.000,
+                        "lat_max": 55.877,
+                        "lon_max": 11.063
+                    },
+                    "gribs": [
+                        {
+                            "name": "All",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy.grb"
+                        },
+                        {
+                            "name": "Wind",
+                            "url": "https://www.euroszeilen.utwente.nl/weer/grib/download/harmonie_xy_wind.grb"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

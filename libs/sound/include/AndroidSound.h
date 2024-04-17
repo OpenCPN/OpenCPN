@@ -29,7 +29,6 @@
 #include <condition_variable>
 
 #include "OCPN_Sound.h"
-#include "androidUTIL.h"
 
 /**
  * Sound backend supports synchronous mode on Android devices.

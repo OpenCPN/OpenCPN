@@ -38,31 +38,30 @@
  *  basic set()/get() also provides notification events when value changes.
  *
  *  Client usage when reading, setting a value and notifying listeners:
+ *  \code
  *
  *    ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
  *    bool old_value = expert.Get(false);
  *    expert.Set(false);
+ *  \endcode
  *
  *  Client usage, listening to value changes.
+ *  \code
  *
  *    class Foo: public wxEventHandler {
  *    public:
  *      Foo(...) {
  *        ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
- *
- *        // expert sends a wxCommandEvent of type EVT_FOO to this on changes:
- *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        expert_listener.Listen(expert, this, EVT_FOO);
- *
- *        // Handle  EVT_FOO as any event when it arrives, for example:
- *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });
+ *        auto action = [](wxCommandEvent&) { cout << "value has changed"; });
+ *        expert_listener.Init(expert, action);
  *        ...
  *      }
  *    private:
- *      ObservableListener expert_listener;
+ *      ObsListener expert_listener;
  *      ...
  *    }
  *
+ *  \endcode
  */
 template <typename T = std::string>
 class ConfigVar : public Observable {

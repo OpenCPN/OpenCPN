@@ -26,7 +26,7 @@
 #define SYSTEM_CMD_SOUND_H__
 
 #include "OCPN_Sound.h"
-#include "config.h"
+#include "snd_config.h"
 
 /**
  * Sound backend based on running a external CLI tool using system(3).

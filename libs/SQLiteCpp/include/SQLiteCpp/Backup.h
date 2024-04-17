@@ -4,16 +4,18 @@
  * @brief   Backup is used to backup a database file in a safe and online way.
  *
  * Copyright (c) 2015 Shibao HONG (shibaohong@outlook.com)
- * Copyright (c) 2015-2018 Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ * Copyright (c) 2015-2023 Sebastien Rombauts (sebastien.rombauts@gmail.com)
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
  */
 #pragma once
 
+#include <SQLiteCpp/SQLiteCppExport.h>
 #include <SQLiteCpp/Database.h>
 
 #include <string>
+#include <memory>
 
 // Forward declaration to avoid inclusion of <sqlite3.h> in a header
 struct sqlite3_backup;
@@ -27,18 +29,10 @@ namespace SQLite
  * A Backup object is used to backup a source database file to a destination database file
  * in a safe and online way.
  *
- * Resource Acquisition Is Initialization (RAII) means that the Backup Resource
- * is allocated in the constructor and released in the destructor, so that there is
- * no need to worry about memory management or the validity of the underlying SQLite Backup.
- *
- * Thread-safety: a Backup object shall not be shared by multiple threads, because :
- * 1) in the SQLite "Thread Safe" mode, "SQLite can be safely used by multiple threads
- *    provided that no single database connection is used simultaneously in two or more threads."
- * 2) the SQLite "Serialized" mode is not supported by SQLiteC++,
- *    because of the way it shares the underling SQLite precompiled statement
- *    in a custom shared pointer (See the inner class "Statement::Ptr").
+ * See also the a reference implementation of live backup taken from the official site:
+ * https://www.sqlite.org/backup.html
  */
-class Backup
+class SQLITECPP_API Backup
 {
 public:
     /**
@@ -99,8 +93,9 @@ public:
     Backup(Database& aDestDatabase,
            Database& aSrcDatabase);
 
-    /// Release the SQLite Backup resource.
-    ~Backup();
+    // Backup is non-copyable
+    Backup(const Backup&) = delete;
+    Backup& operator=(const Backup&) = delete;
 
     /**
      * @brief Execute a step of backup with a given number of source pages to be copied
@@ -118,19 +113,19 @@ public:
     int executeStep(const int aNumPage = -1);
 
     /// Return the number of source pages still to be backed up as of the most recent call to executeStep().
-    int getRemainingPageCount();
+    int getRemainingPageCount() const;
 
     /// Return the total number of pages in the source database as of the most recent call to executeStep().
-    int getTotalPageCount();
+    int getTotalPageCount() const;
 
 private:
-    /// @{ Backup must be non-copyable
-    Backup(const Backup&);
-    Backup& operator=(const Backup&);
-    /// @}
+    // Deleter functor to use with smart pointers to close the SQLite database backup in an RAII fashion.
+    struct Deleter
+    {
+        void operator()(sqlite3_backup* apBackup);
+    };
 
-private:
-    sqlite3_backup* mpSQLiteBackup;   ///< Pointer to SQLite Database Backup Handle
+    std::unique_ptr<sqlite3_backup, Deleter> mpSQLiteBackup;    ///< Pointer to SQLite Database Backup Handle
 };
 
 }  // namespace SQLite

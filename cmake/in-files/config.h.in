@@ -20,6 +20,8 @@
 
 #cmakedefine ENABLE_VCAN_TESTS
 
+#cmakedefine OCPN_ENABLE_MDNS_DEBUG
+
 // Enable dark mode on modern MacOS.
 #cmakedefine OCPN_USE_DARKMODE
 
@@ -30,14 +32,12 @@
 #undef HAVE_UNISTD_H
 #cmakedefine OCPN_USE_UDEV_PORTS
 #cmakedefine OCPN_USE_SYSFS_PORTS
-#cmakedefine HAVE_LIBUSB_10
+#cmakedefine HAVE_SYSFS_PORTS
 #cmakedefine HAVE_DIRENT_H
 #cmakedefine HAVE_LIBGEN_H
 #cmakedefine HAVE_LIBUDEV
 #cmakedefine HAVE_PORTAUDIO
 #cmakedefine HAVE_READLINK
-#cmakedefine HAVE_SNDFILE
-#cmakedefine HAVE_SYSTEM_CMD_SOUND
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine USE_SYSFS_PORTS
 #cmakedefine HAVE_LINUX_SERIAL_H
@@ -52,17 +52,13 @@
 // The os version compatible plugins are are built for
 #define PKG_TARGET_VERSION "${PKG_TARGET_VERSION}"
 
-// The architecture compatible plugins are built for
-#define PKG_TARGET_ARCH "${ARCH}"
 
-// Command line to play a sound in system(3), like "aplay %s".
-#define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}
+#define CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}"
+
+#define TEST_ROOT "${CMAKE_CURRENT_LIST_DIR}/test"
 
 // Flag for ancient compilers without C++11 support
 #cmakedefine COMPILER_SUPPORTS_CXX11
-
-#define OCPN_LINUX_LOAD_PATH  "${OCPN_LINUX_LOAD_PATH}"
-
 
 #define VERSION_MAJOR ${VERSION_MAJOR}
 #define VERSION_MINOR ${VERSION_MINOR}

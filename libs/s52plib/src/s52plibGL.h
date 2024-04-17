@@ -31,7 +31,7 @@
 #ifndef _S52PLIBGL_H_
 #define _S52PLIBGL_H_
 
-#include "config.h"
+//#include "config.h"
 
 #include <cmath>
 #include <algorithm>
