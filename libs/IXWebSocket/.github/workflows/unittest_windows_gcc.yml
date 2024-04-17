@@ -1,0 +1,28 @@
+name: windows_gcc
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+  pull_request:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - uses: egor-tensin/setup-mingw@v2
+    - run: |
+        mkdir build
+        cd build
+        cmake -GNinja -DCMAKE_CXX_COMPILER=c++ -DCMAKE_C_COMPILER=cc -DUSE_WS=1 -DUSE_TEST=1 -DUSE_ZLIB=0 -DCMAKE_UNITY_BUILD=ON ..
+    - run: |
+        cd build
+        ninja
+    - run: |
+        cd build
+        ctest -V
+        # ninja test
+
+#- run: ../build/test/ixwebsocket_unittest.exe
+# working-directory: test

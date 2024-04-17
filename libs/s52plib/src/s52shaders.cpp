@@ -368,7 +368,9 @@ bool loadS52Shaders() {
   //GLint success;
 
   enum Consts { INFOLOG_LEN = 512 };
+#if 0
   GLchar infoLog[INFOLOG_LEN];
+#endif
 
   // Are the shaders ready?
   if(shadersLoaded)

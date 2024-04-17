@@ -34,16 +34,6 @@ extern int m_Altitude;
 extern double m_cursor_lat, m_cursor_lon;
 extern int m_DialogStyle;
 
-enum SettingsDisplay {
-  B_ARROWS,
-  ISO_LINE,
-  ISO_ABBR,
-  D_ARROWS,
-  OVERLAY,
-  NUMBERS,
-  PARTICLES
-};
-
 //---------------------------------------------------------------------------------------
 //               GRIB Cursor Data  implementation
 //---------------------------------------------------------------------------------------

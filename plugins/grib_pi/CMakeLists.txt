@@ -19,7 +19,7 @@
 # ***************************************************************************
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.1.1)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (COMMAND cmake_policy)
   if (POLICY CMP0043)
@@ -60,6 +60,7 @@ endif (APPLE)
 if (MSVC)
   add_definitions(-D__MSVC__)
   add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
+  ADD_DEFINITIONS(-DMAKING_PLUGIN)
 endif ()
 
 # QT_ANDROID is a cross-build, so the native FIND_PACKAGE(wxWidgets...) and
@@ -106,8 +107,6 @@ set(SRC_GRIB
     src/msg.h
     src/email.h
     src/email.cpp
-    src/pi_TexFont.h
-    src/pi_TexFont.cpp
     src/GribTable.h
     src/GribTable.cpp
     src/CustomGrid.h
@@ -122,6 +121,14 @@ set(SRC_GRIB
     src/pi_ocpndc.cpp
     src/pi_ocpndc.h
 )
+
+if (OCPN_USE_GL)
+set(SRC_GRIB ${SRC_GRIB}
+  src/pi_TexFont.h
+  src/pi_TexFont.cpp
+)
+
+endif ()
 if (WIN32)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.h)
   set(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
@@ -225,6 +232,9 @@ if (NOT QT_ANDROID)
   endif()
   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 else (NOT QT_ANDROID)
+  target_include_directories(
+    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/android
+  )
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lz")
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lGLESv1_CM")
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lGLESv2")
@@ -248,6 +258,7 @@ else (NOT QT_ANDROID)
 endif (NOT QT_ANDROID)
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::wxjson)
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT WIN32)
   target_link_libraries(${PACKAGE_NAME} PRIVATE "-lz")
@@ -286,7 +297,7 @@ endif (
   AND NOT QT_ANDROID
 )
 
-target_link_libraries(${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET})
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (APPLE)
   target_compile_options(
@@ -343,7 +354,9 @@ endif (UNIX AND NOT APPLE)
 
 if (WIN32)
   install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
-
+  if (NOT OCPN_CI_BUILD)
+    INSTALL(FILES $<TARGET_PDB_FILE:${PACKAGE_NAME}> DESTINATION "plugins")
+  endif (NOT OCPN_CI_BUILD)
   set(INSTALL_DIRECTORY "plugins/${PACKAGE_NAME}")
 
   if (EXISTS ${PROJECT_SOURCE_DIR}/data)
@@ -355,28 +368,26 @@ endif (WIN32)
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)
   if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DEBUG /OPT:REF /OPT:ICF")
     add_custom_command(
       TARGET ${PACKAGE_NAME}
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
       COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>"
-              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>"
-              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.dll"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.dll"
     )
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-      add_custom_command(
-        TARGET ${PACKAGE_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
-        COMMAND
-          ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
-          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-        COMMAND
-          ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
-          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      )
-    endif ()
+    add_custom_command(
+      TARGET ${PACKAGE_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.pdb"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.pdb"
+    )
   endif (MSVC)
 endif (NOT OCPN_CI_BUILD)
 

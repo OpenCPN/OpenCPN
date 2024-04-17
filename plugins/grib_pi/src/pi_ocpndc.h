@@ -122,16 +122,13 @@ public:
 
 #ifdef ocpnUSE_GL
   GLfloat *s_odc_tess_work_buf;
-#endif
 
-#if 1 //def USE_ANDROID_GLES2
   int s_odc_tess_vertex_idx;
   int s_odc_tess_vertex_idx_this;
   int s_odc_tess_buf_len;
   GLenum s_odc_tess_mode;
   int s_odc_nvertex;
   vec4 s_odc_tess_color;
-  // ViewPort    *s_odc_tessVP;
   GLUtesselator *m_tobj;
 
 #endif

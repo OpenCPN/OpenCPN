@@ -1,0 +1,262 @@
+.\" $Id$
+.\"
+.\" Copyright (c) 2001 Dug Song <dugsong@monkey.org>
+.\"
+.Dd October 17, 2001
+.Dt DNET 8
+.Os
+.Sh NAME
+.Nm dnet
+.Nd dumb networking library test program
+.Sh SYNOPSIS
+.Nm dnet Ar command Ar args Op ...
+.Sh DESCRIPTION
+.Nm
+is a simple test program for the
+.Xr dnet 3
+library. It can be used to compose and transmit network datagrams as a
+Unix-style filter (e.g. reading from or writing to files and pipes) or
+modify the local system network configuration (including the ARP
+cache, firewall ruleset, network interfaces, and routing table).
+.Pp
+.Ss Payload generation commands
+.Bl -tag -width "foo"
+.It Nm addr Ar address Op ...
+Convert the
+.Ar address
+(specified as a hostname, IP address, or MAC address)
+into its binary representation on standard output.
+.It Nm hex Ar string Op ...
+Convert the C-style escaped
+.Ar string
+(shellcode, for instance) into its binary representation on standard output.
+.It Nm rand Ar len
+Write
+.Ar len
+random bytes to standard output.
+.El
+.Ss Packet encapsulation commands
+.Bl -tag -width "foo"
+.It Xo
+.Nm eth
+.Op Nm type Ar type
+.Op Nm src Ar mac
+.Op Nm dst Ar mac
+.Xc
+Prepend the data read from standard input with an Ethernet header on
+standard output. The Ethernet
+.Ar type
+may be specified as
+.Ql arp ,
+.Ql ip ,
+or as a hex, octal, or decimal number.
+.It Xo
+.Nm arp
+.Op Nm op Ar op
+.Op Nm sha Ar mac
+.Op Nm spa Ar host
+.Op Nm tha Ar mac
+.Op Nm tpa Ar host
+.Xc
+Prepend the data read from standard input with an ARP header on
+standard output. The ARP
+.Ar op
+may be specified as
+.Ql req ,
+.Ql rep ,
+.Ql revreq ,
+.Ql revrep ,
+or as a hex, octal, or decimal number.
+.It Xo
+.Nm ip
+.Op Nm tos Ar num
+.Op Nm id Ar num
+.Op Nm off Ar offset
+.Op Nm ttl Ar num
+.Op Nm proto Ar protocol
+.Op Nm src Ar host
+.Bk -words
+.Op Nm dst Ar dst
+.Ek
+.Xc
+Prepend the data read from standard input with an IP header on
+standard output. The fragmentation
+.Ar offset
+may be specified as a decimal number (optionally concatenated with
+.Ql +
+to indicate more fragments) or as a hex number. The
+.Ar protocol
+may be specified by name, or as a hex, octal, or decimal number.
+.It Xo
+.Nm icmp
+.Op Nm type Ar num
+.Op Nm code Ar num
+.Xc
+Prepend the data read from standard input with an ICMP header on
+standard output.
+.It Xo
+.Nm tcp
+.Op Nm sport Ar port
+.Op Nm dport Ar port
+.Op Nm flags Ar flags
+.Op Nm seq Ar num
+.Op Nm ack Ar num
+.Op Nm win Ar num
+.Op Nm urp Ar num
+.Xc
+Prepend the data read from standard input with a TCP header on
+standard output. A
+.Ar port
+may be specified by name or hex, octal, or decimal number. The TCP
+.Ar flags
+may be specified as some combination of the characters in the set
+.Ql SAFRPU
+or as a hex number.
+.It Xo
+.Nm udp
+.Op Nm sport Ar port
+.Op Nm dport Ar port
+.Xc
+Prepend the data read from standard input with a UDP header on
+standard output. A
+.Ar port
+may be specified by name or hex, octal, or decimal number.
+.El
+.Ss Packet transmission commands
+.Bl -tag -width "foo"
+.It Nm send Op Ar device
+Read a packet from standard input and send it over the network. If no
+.Ar device
+is specified, the packet is assumed to be an IP datagram and routed
+to its destination. Otherwise, the packet is assumed to be an Ethernet
+frame and is transmitted on the specified interface.
+.El
+.Ss Kernel interface commands
+.Bl -tag -width "foo"
+.It Nm arp show
+Display the kernel ARP cache.
+.It Nm arp get Ar host
+Display the kernel ARP entry for
+.Ar host .
+.It Nm arp add Ar host Ar mac
+Add an ARP entry mapping the
+.Ar mac
+address for
+.Ar host .
+.It Nm arp delete Ar host
+Delete the ARP entry for
+.Ar host .
+.Pp
+.It Nm fw show
+Display the kernel firewall ruleset.
+.It Xo
+.Nm fw add Ns \&| Ns Nm delete
+.Ar action Ar direction Ar device
+.Ar protocol
+.Ar src Ns Op \&: Ns Ar port[-max]
+.Ar dst Ns Op \&: Ns Ar port[-max]
+.Op Ar type Ns Op /code
+.Xc
+Add a rule to or delete a rule from the active firewall ruleset. The
+.Ar action
+must be either
+.Ql allow
+or
+.Ql block .
+The direction must be either
+.Ql in
+or
+.Ql out .
+The
+.Ar device
+may specify an interface name, or
+.Ql any .
+The
+.Ar protocol
+may be specified by name, or as a decimal number. For TCP and
+UDP protocols, a
+.Ar port
+(or range, if specified with a
+.Ar max
+value) may be specified in decimal and appended to the source and/or
+destination address. For ICMP, a
+.Ar type
+(and optional
+.Ar code )
+may be specified in decimal.
+.It Nm intf show
+Display the configuration of all network interfaces.
+.It Nm intf get Ar device
+Display the configuration for the interface specified by
+.Ar device .
+.It Xo
+.Nm intf set
+.Ar device
+.Op Nm alias Ar host
+.Op Nm dst Ar host
+.Op Nm inet Ar host
+.Op Nm link Ar mac
+.Op Nm up Ns \&| Ns Nm down
+.Op Nm arp Ns \&| Ns Nm noarp
+.Xc
+Configure the interface specified by
+.Ar device .
+.It Nm route show
+Display the kernel routing table.
+.It Nm route get Ar dst
+Display the route for the destination
+.Ar dst ,
+specified as a hostname, IP address, or network prefix in CIDR notation.
+.It Nm route add Ar dst Ar gw
+Add a route for the destination
+.Ar dst
+through the gateway
+.Ar gw .
+.It Nm route delete Ar dst
+Delete the route for the destination
+.Ar dst .
+.El
+.Sh EXAMPLES
+Send a UDP datagram containing random shellcode:
+.Bd -literal -offset indent
+dnet hex "\\xeb\\x1f\\x5e\\x89\\x76\\x08\\x31\\xc0\\x88\\x46\\x07\\x89" \\
+"\\x46\\x0c\\xb0\\x0b\\x89\\xf3\\x8d\\x4e\\x08\\x8d\\x56\\x0c\\xcd\\x80" \\
+"\\x31\\xdb\\x89\\xd8\\x40\\xcd\\x80\\xe8\\xdc\\xff\\xff\\xff/bin/sh" | \\
+dnet udp sport 555 dport 666 | \\
+dnet ip proto udp src 1.2.3.4 dst 5.6.7.8 | dnet send
+.Ed
+.Pp
+Save an ARP request in a file and send it twice:
+.Bd -literal -offset indent
+dnet arp op req sha 0:d:e:a:d:0 spa 10.0.0.3 tpa 10.0.0.4 | \\
+dnet eth type arp src 0:d:e:a:d:0 dst ff:ff:ff:ff:ff:ff > arp.pkt
+dnet send fxp0 < arp.pkt
+dnet send fxp0 < arp.pkt
+.Ed
+.Pp
+Send a fragmented ping packet:
+.Bd -literal -offset indent
+# Create ping packet with IP header, to set ICMP checksum
+echo "monkey monkey monkey monkey" | dnet icmp type 8 code 0 | \\
+dnet ip proto icmp src 1.2.3.4 dst 5.6.7.8 > ping.pkt
+
+# Chop off IP header
+dd if=ping.pkt of=ping.data bs=20 skip=1
+
+# Fragment IP payload
+split \-b 24 ping.data p.
+
+# Send fragments
+dnet ip id 1 off 0+ proto icmp src 1.2.3.4 dst 5.6.7.8 < p.aa | \\
+dnet send
+dnet ip id 1 off 24 proto icmp src 1.2.3.4 dst 5.6.7.8 < p.ab | \\
+dnet send
+.Ed
+.Sh SEE ALSO
+.Xr dnet 3
+.Sh AUTHORS
+Dug Song
+.Aq dugsong@monkey.org
+
+Oliver Falk
+.Aq oliver@linux-kernel.at

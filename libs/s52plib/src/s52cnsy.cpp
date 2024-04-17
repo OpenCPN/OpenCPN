@@ -826,7 +826,7 @@ static void *DEPCNT02(void *param)
         S57Obj tempObj;
         LUPrec *safelup = ps52plib->S52_LUPLookup(PLAIN_BOUNDARIES, "SAFECD",
                                                   &tempObj, false);
-        if (safelup) safeCntr = *safelup->INST;
+        if (safelup) safeCntr = safelup->INST;
         rule_str = _T(";") + safeCntr;
       } else
         rule_str = _T(";LS(DASH,1,DEPCN)");
@@ -837,7 +837,7 @@ static void *DEPCNT02(void *param)
       S57Obj tempObj;
       LUPrec *safelup =
           ps52plib->S52_LUPLookup(PLAIN_BOUNDARIES, "SAFECN", &tempObj, false);
-      if (safelup) safeCntr = *safelup->INST;
+      if (safelup) safeCntr = safelup->INST;
       rule_str = _T(";") + safeCntr;
     } else
       rule_str = _T(";LS(SOLD,1,DEPCN)");

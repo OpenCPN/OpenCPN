@@ -35,9 +35,9 @@ extern int g_iDashDistanceUnit;
 //
 //----------------------------------------------------------------
 DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
-    wxWindow* pparent, wxWindowID id, wxString title, DASH_CAP cap_flag1,
+    wxWindow* pparent, wxWindowID id, wxString title, InstrumentProperties* Properties, DASH_CAP cap_flag1,
     DASH_CAP cap_flag2, DASH_CAP cap_flag3, DASH_CAP cap_flag4)
-    : DashboardInstrument(pparent, id, title, cap_flag1) {
+    : DashboardInstrument(pparent, id, title, cap_flag1, Properties) {
   m_cap_flag.set(cap_flag2);
   m_cap_flag.set(cap_flag3);
   m_cap_flag.set(cap_flag4);
@@ -54,7 +54,7 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
   wxColour cl;
 
-  dc->SetFont(*g_pFontData);
+  dc->SetFont((g_pFontData->GetChosenFont()));
   // dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
   GetGlobalColor(_T("DASHF"), &cl);
   dc->SetTextForeground(cl);
@@ -90,8 +90,10 @@ void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
 wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-  dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, g_pFontData);
+  wxFont f = g_pFontTitle->GetChosenFont();
+  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+  f = g_pFontData->GetChosenFont();
+  dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, &f);
 
   if (orient == wxHORIZONTAL) {
     return wxSize(w + 10, wxMax(hint.y, m_TitleHeight + m_DataHeight * 2));

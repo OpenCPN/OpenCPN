@@ -37,7 +37,7 @@
 #elif defined(__MSVC__)
  #include "glew.h"
  #include <GL/glu.h>
- //typedef void (__stdcall * _GLUfuncptr)(void);
+ // typedef void (__stdcall * _GLUfuncptr)(void);
 #elif defined(__WXOSX__)
  #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>

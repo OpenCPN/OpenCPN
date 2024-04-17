@@ -23,7 +23,7 @@ wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo apt-key add -
 sudo apt-key adv \
     --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
-sudo add-apt-repository -y ppa:alexlarsson/flatpak
+# Needed on 20.04: sudo add-apt-repository -y ppa:alexlarsson/flatpak
 sudo apt update -q -y
 
 # Avoid using outdated TLS certificates, see #2419.
@@ -70,10 +70,7 @@ cp ../ci/id_opencpn.tar.cpt .
 ccdecrypt --envvar FLATPAK_KEY id_opencpn.tar.cpt
 tar -xf id_opencpn.tar
 chmod 600 .ssh/id_opencpn
-rsync -a --info=stats --delete-after \
-    --rsh="ssh -o 'StrictHostKeyChecking no' -i .ssh/id_opencpn" \
-    website/  opencpnci@ocpnci.kalian.cz:web/flatpak-repo
-rm -f .ssh/id_opencpn*
+
 
 # Restore the patched file so the caching works.
 git checkout ../flatpak/org.opencpn.OpenCPN.yaml
@@ -86,3 +83,11 @@ flatpak remote-ls local
 
 # Validate the appstream data:
 appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml || :
+
+
+# build the single file bundle, the actual artifact.
+flatpak build-bundle repo \
+    opencpn+$(git rev-parse --short HEAD).flatpak org.opencpn.OpenCPN devel
+
+# Make sure upload script has what it needs.
+sudo apt-get --yes --force-yes install python3-pip python3-setuptools

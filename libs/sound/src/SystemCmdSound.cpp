@@ -29,9 +29,6 @@
 
 #include "SystemCmdSound.h"
 
-extern bool g_bquiting;     // Flag tells us O is shutting down
-
-
 #ifdef _WIN32
 #include <windows.h>
 

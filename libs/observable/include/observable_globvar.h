@@ -36,36 +36,36 @@
  *  Wrapper for global variable, supports notification events when value
  *  changes.
  *
- *  Client usage, writing a value + notifying listeners:
+ *  Client usage, writing a value + notifying listeners
+ *  \code
  *
  *    GlobalVar<wxString> compat_os(&g_compatOS);
  *    compat_os.Set("ubuntu-gtk3-x86_64");
+ *  \endcode
  *
  *  Client usage, modifying a value + notifying listeners:
+ *  \code
  *
  *    GlobalVar<wxString> plugin_array_var(&plugin_array);
  *    plugin_array.Add(new_pic);
  *    plugin_array_var.Notify();
+ *  \endcode
  *
  *  Client usage, listening to value changes:
+ *  \code
  *
  *    class Foo: public wxEvtHandler {
  *    public:
  *      Foo(...) {
  *        GlobalVar<wxString> compat_os(&g_compatOS);
- *
- *        // compat_os sends a wxCommandEvent type EVT_FOO to this on changes:
- *        wxDEFINE_EVENT(EVT_FOO, wxCommandEvent);
- *        compat_os_listener.Listen(compat_os, this, EVT_FOO);)
- *
- *        // Handle  EVT_FOO as any event when it arrives, for example:
- *        Bind(EVT_FOO, [](wxCommandEvent&) { cout << "value has changed"; });
- *        ...
+ *        auto action = [](wxCommandEvent&) { cout << "value has changed"; };
+ *        compat_os_listener.Init(compat_os, action);
  *      }
  *    private:
- *      ObservableListener compat_os_listener;
+ *      ObsListener compat_os_listener;
  *      ...
  *    }
+ *  \endcode
  */
 template <typename T>
 class GlobalVar : public Observable {

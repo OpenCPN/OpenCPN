@@ -44,7 +44,7 @@
 
 #include "instrument.h"
 
-#define ANGLE_OFFSET 90  // 0 degrees are at 12 oÂ´clock
+#define ANGLE_OFFSET 90  // 0 degrees are at 12 o´clock
 
 typedef enum {
   DIAL_LABEL_NONE,
@@ -83,6 +83,7 @@ extern double deg2rad(double angle);
 class DashboardInstrument_Dial : public DashboardInstrument {
 public:
   DashboardInstrument_Dial(wxWindow* parent, wxWindowID id, wxString title,
+                           InstrumentProperties* Properties,
                            DASH_CAP cap_flag, int s_angle, int r_angle,
                            int s_value, int e_value);
 
@@ -147,7 +148,7 @@ protected:
 
 /* Shared functions */
 void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
-                     bool showlabels);
+                     bool showlabels, InstrumentProperties* Properties);
 void DrawBoat(wxGCDC* dc, int cx, int cy, int radius);
 
 #endif  // __Dial_H__

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::mDNS)
     return ()
@@ -11,5 +11,15 @@ set (SRC
 )
 add_library(MDNS STATIC ${SRC})
 target_include_directories(MDNS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set_property(TARGET MDNS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(MDNS PRIVATE -fvisibility=default -fPIC)
+endif ()
+
+if (NOT "${wxWidgets_LIBRARIES}" STREQUAL "")
+  target_include_directories(MDNS PRIVATE ${wxWidgets_INCLUDE_DIRS})
+  target_link_libraries(MDNS PRIVATE ${wxWidgets_LIBRARIES})
+  target_compile_definitions(MDNS PRIVATE HAVE_WXWIDGETS)
+endif ()
+
 add_library(ocpn::mDNS ALIAS MDNS)

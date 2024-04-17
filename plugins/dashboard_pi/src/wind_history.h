@@ -50,7 +50,7 @@
 class DashboardInstrument_WindDirHistory : public DashboardInstrument {
 public:
   DashboardInstrument_WindDirHistory(wxWindow* parent, wxWindowID id,
-                                     wxString title);
+                                     wxString title, InstrumentProperties* Properties);
   ~DashboardInstrument_WindDirHistory(void) {}
   void SetData(DASH_CAP, double, wxString);
   wxSize GetSize(int orient, wxSize hint);
@@ -83,6 +83,7 @@ protected:
   int m_SampleCount;
   wxString m_WindSpeedUnit;
   int m_SetNewData;        // No need for data every second
+  int speedw, degw, degh;
 
   wxRect m_WindowRect;
   wxRect m_DrawAreaRect;  // the coordinates of the real darwing area

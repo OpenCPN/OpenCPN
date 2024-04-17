@@ -28,7 +28,7 @@
 #include <portaudio.h>
 #include <wx/log.h>
 
-#include "config.h"
+#include "snd_config.h"
 #include "PortAudioSound.h"
 
 
@@ -43,7 +43,7 @@
  */
 
 
-static const int BUFSIZE = 256;  // Frames per buffer.
+static const int BUFSIZE = 1024;  // Frames per buffer.
 static const int LOCK_SLEEP_MS = 2;
 static const int LOCK_MAX_TRIES = 100;
 
@@ -155,11 +155,13 @@ PortAudioSound::PortAudioSound()
     : m_soundLoader(SoundLoaderFactory()),
     m_lock(ATOMIC_FLAG_INIT)
 {
+    if (!getenv("OCPN_DEBUG_ALSA")) freopen("/dev/null","w",stderr);
     m_stream = NULL;
     m_isAsynch = false;
     m_isPaInitialized = false;
     PaError err = Pa_Initialize();
     if (err != paNoError) {
+        freopen("/dev/tty","w",stderr);
         wxLogError("PortAudio; cannot initialize: %s", Pa_GetErrorText(err));
         return;
     }
@@ -167,8 +169,9 @@ PortAudioSound::PortAudioSound()
     SetDeviceIndex(-1);
     for (int i = 0; i < DeviceCount(); i += 1) {
         const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
-	wxLogDebug("Device: %d: %s", i, info->name);
+        wxLogDebug("Device: %d: %s", i, info->name);
     }
+    freopen("/dev/tty","w",stderr);
 }
 
 

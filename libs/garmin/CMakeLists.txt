@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 if (TARGET ocpn::garminhost)
     return ()
@@ -69,4 +69,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 endif ()
 
 target_include_directories(GARMINHOST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jeeps)
+
 target_include_directories(GARMINHOST PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(GARMINHOST PRIVATE ${wxWidgets_LIBRARIES})

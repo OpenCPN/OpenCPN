@@ -312,4 +312,3 @@ DDFRecord * DDFRecordIndex::GetByIndex( int nIndex )
     else
         return pasRecords[nIndex].poRecord;
 }
-

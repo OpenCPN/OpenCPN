@@ -1,0 +1,35 @@
+= Compiling in a Linux container
+image::opencpn_dev_linux_0.png[width=50]
+
+== Documented platforms
+
+The documentation here covers building OpenCPN from source inside a container.
+This workflow allows for building on Linux for users using other operating systems
+and building for other architectures than the hardware on which the build is performed.
+
+
+[[build_docker]]
+== 
+
+=== 1. Download source code
+    $ git clone git://github.com/OpenCPN/OpenCPN.git
+
+=== 2. Run a container with the source tree connected as a volume
+
+    $ docker run -v <Path to your OpenCPN source tree>:/src:Z -it docker.io/nohal/opencpn-builder:latest bash
+
+=== 3. Build it
+
+The build in the container itself is exactly identical as on any other Linux system,
+follow the instructions from xref:linux.adoc[the Linux chapter].
+
+=== Cross-architecture builds
+
+If you want to build for a different architecture, specify it while starting the container.
+Images for ARM64 and AMD64 architectures are currently provided in https://hub.docker.com/r/nohal/opencpn-builder.
+
+    $ docker run --arch arm64 -v <Path to your OpenCPN source tree>:/src:Z -it docker.io/nohal/opencpn-builder:latest bash
+
+=== Building the images and contributing to them
+
+The `Dockerfile` used to build the images can be found in the `docker` subdirectory of the OpenCPN source tree.
