@@ -24,8 +24,8 @@ vorbis_version="1.3.7"
 flac_version="1.4.3"
 opus_version="1.4"
 blake2_version="0.98.1"
-zstd_version="1.5.5"
-libarchive_version="3.7.2"
+zstd_version="1.5.6"
+libarchive_version="3.7.3"
 mpg123_version="1.32.4"
 lame_version="3.100"
 libsndfile_version="1.2.2"
@@ -385,7 +385,7 @@ patch < $(dirname "${scriptpath}")/../buildosx/wx_slider_patch.diff
 # The following patch is required to build usable wxWidgets on Sonoma and new Xcode,
 # but breaks ABI compatibility with O 5.8. Bundle built with it applied (or containing wxWidgets newer than 3.2.4)
 # must not be used to build plugins until O 5.8 support is phased out.
-patch < $(dirname "${scriptpath}")/../buildosx/wx_sonoma_scrolled_window_clip.diff
+#patch < $(dirname "${scriptpath}")/../buildosx/wx_sonoma_scrolled_window_clip.diff
 
 ./configure \
       --with-cxx=11 \
