@@ -25,40 +25,126 @@ Files-Excluded:
  plugins/grib_pi/src/bzip2
 
 Files: *
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: LICENSING
 Copyright: The OpenCPN
 License: GPL-2+
 
-Files: data/copyright
+Files: cli/*
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: cli/CMakeLists.txt
+Copyright: 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2010, David S Register <bdbcat@yahoo.com>
+License: GPL-2+
+
+Files: cmake/*
+Copyright: 2011, Michael Jansen, <kde@michael-jansen.biz>
+ 2008, Alexander Neundorf, <neundorf@kde.org>
+ 2006, Matthias Kretz, <kretz@kde.org>
+License: BSD-2-clause
+
+Files: cmake/Curl.cmake
+Copyright: 2014, License: GPLv3+
+License: GPL-3
+
+Files: cmake/FindEXIF.cmake
+Copyright: 2011, Simone Rossetto <simros85@gmail.com>
+License: GPL-3+
+
+Files: cmake/FindGTK3.cmake
+Copyright: 2013, Igalia S.L.
+ 2012, Raphael Kubo da Costa <rakuco@webkit.org>
+License: BSD-2-clause
+
+Files: cmake/FindHarfBuzz.cmake
+Copyright: 2015, 2016, the openage authors. See copying.md for legal info.
+License: GPL-3+
+
+Files: cmake/FindPANGO.cmake
+Copyright: 2019, Alec Leamas <leamas.alec@gmail.com>
+ 2016, Evan Nemerson <evan@nemerson.com>
+License: Expat
+
+Files: cmake/Findgps.cmake
+Copyright: 2010, David Register
+ 2006-2009, Kitware, Inc.
+ 2006, Alexander Neundorf <neundorf@kde.org>
+ 2000-2009, Kitware, Inc., Insight Software Consortium
+License: BSD-3-clause
+
+Files: data/*
 Copyright: 2008-2018, David S Register <bdbcat@yahoo.com>
+ 1989, 1991, Free Software Foundation, Inc.
+License: GPL-2+
+
+Files: data/license.html
+ data/license.txt
+Copyright: 1989, 1991, Free Software Foundation, Inc.
 License: GPL-2
 
-Files: data/opencpn.appdata.xml.in
-Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
+Files: debian/*
+Copyright: usr/share/opencpn/LICENSING
 License: GPL-2+
 
-Files: include/*
-Copyright: 2010-2023, David S. Register
+Files: glutil/*
+Copyright: 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2010, David S Register <bdbcat@yahoo.com>
 License: GPL-2+
 
-Files: include/AboutFrame.h
-  include/RoutePropDlg.h
-  include/tzdata.h
+Files: glutil/console.cpp
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: gui/include/gui/cat_settings.h
+ gui/include/gui/catalog_mgr.h
+ gui/include/gui/chart_ctx_factory.h
+ gui/include/gui/download_mgr.h
+ gui/include/gui/load_errors_dlg.h
+ gui/include/gui/n0183_ctx_factory.h
+ gui/include/gui/route_ctx_factory.h
+ gui/include/gui/udev_rule_mgr.h
+ gui/include/gui/update_mgr.h
+ gui/include/gui/usb_devices.h
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: gui/include/gui/crashprint.h
+Copyright: 2004, wxCode
+License: wxWidgets
+
+Files: gui/include/gui/gshhs.h
+Copyright: zUGrib: meteorologic GRIB file data viewer
+ 2012, David S. Register
+ 2008, Jacques Zaninetti - http://www.zygrib.org
+License: GPL-2+
+
+Files: gui/include/gui/ocpndc.h
+Copyright: 2011, 2013-2016, Sean D'Epagnier
+License: GPL-2+
+
+Files: gui/include/gui/peer_client_dlg.h
+Copyright: 2020, 2022, David Register
+License: GPL-2+
+
+Files: gui/include/gui/route_gui.h
+ gui/include/gui/route_point_gui.h
+ gui/include/gui/routeman_gui.h
+ gui/include/gui/track_gui.h
+ gui/include/gui/waypointman_gui.h
+Copyright: 2022-2024, David Register, Alec Leamas
+License: GPL-2+
+
+Files: gui/include/gui/routemanagerdialog.h
+Copyright: 2010, Anders Lund <anders@alweb.dk>
+License: GPL-2+
+
+Files: gui/src/AboutFrame.cpp
+ gui/src/RoutePropDlg.cpp
+ gui/src/TCWin.cpp
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
  2010, Samuel R. Blackburn, David S Register
@@ -74,127 +160,161 @@ Copyright: 2011, 2014, Pavel Kalian
  1995-1998, Brian Paul
 License: GPL-2+
 
-Files: include/GL/*
-Copyright: 1999-2007, Brian Paul
-License: Expat
-
-Files: include/GL/glext.h
-Copyright: 2007-2012, The Khronos Group Inc.
-License: Khronos
-
-Files: include/GL/glu.h
-Copyright: 1991-2000, Silicon Graphics, Inc.
-License: SGI-B-1.1
-
-Files: include/REST_server.h
-  include/atomic_queue.h
-  include/comm_appmsg.h
-  include/comm_appmsg_bus.h
-  include/comm_bridge.h
-  include/comm_decoder.h
-  include/comm_driver.h
-  include/comm_drv_factory.h
-  include/comm_drv_file.h
-  include/comm_drv_n0183.h
-  include/comm_drv_n0183_net.h
-  include/comm_drv_n0183_serial.h
-  include/comm_drv_n2k.h
-  include/comm_drv_n2k_serial.h
-  include/comm_drv_n2k_socketcan.h
-  include/comm_drv_registry.h
-  include/comm_drv_signalk.h
-  include/comm_navmsg.h
-  include/comm_navmsg_bus.h
-  include/comm_util.h
-  include/mDNS_query.h
-  include/mDNS_service.h
-  include/route_gui.h
-  include/route_point_gui.h
-  include/routeman_gui.h
-  include/track_gui.h
-  include/waypointman_gui.h
-Copyright: 2022, David Register, Alec Leamas
+Files: gui/src/ais_info_gui.cpp
+Copyright: 2022, 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2010-2023, David S. Register
 License: GPL-2+
 
-Files: include/cat_settings.h
-  include/catalog_handler.h
-  include/catalog_mgr.h
-  include/catalog_parser.h
-  include/comm_vars.h
-  include/config_vars.h
-  include/download_mgr.h
-  include/downloader.h
-  include/linux_devices.h
-  include/load_errors_dlg.h
-  include/ocpn_utils.h
-  include/own_ship.h
-  include/plugin_blacklist.h
-  include/plugin_cache.h
-  include/plugin_handler.h
-  include/semantic_vers.h
-  include/udev_rule_mgr.h
-  include/update_mgr.h
-  include/usb_devices.h
-Copyright: 2011, 2019, 2021-2023, Alec Leamas
+Files: gui/src/cat_settings.cpp
+ gui/src/catalog_mgr.cpp
+ gui/src/download_mgr.cpp
+ gui/src/load_errors_dlg.cpp
+ gui/src/udev_rule_mgr.cpp
+ gui/src/update_mgr.cpp
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
-Files: include/color_handler.h
-  include/json_event.h
-  include/plugin_paths.h
-  include/safe_mode.h
-Copyright: 2010, 2012-2019, David S. Register
-License: GPL-2+
-
-Files: include/crashprint.h
+Files: gui/src/crashprint.cpp
 Copyright: 2004, wxCode
 License: wxWidgets
 
-Files: include/garmin_wrapper.h
-Copyright: 2010, David S Register
-License: GPL-2+
-
-Files: include/geodesic.h
-Copyright: 2012, Charles F. F. Karney (charles@karney.com)
-License: Expat
-Comment: https://geographiclib.sourceforge.io/
-
-Files: include/gshhs.h
+Files: gui/src/gshhs.cpp
 Copyright: zUGrib: meteorologic GRIB file data viewer
  2012, David S. Register
  2008, Jacques Zaninetti - http://www.zygrib.org
 License: GPL-2+
 
-Files: include/macutils.h
-Copyright: 2007
+Files: gui/src/ocpndc.cpp
+Copyright: 2011, 2013-2016, Sean D'Epagnier
 License: GPL-2+
 
-Files: include/ocpndc.h
-Copyright: 2011, 2013-2016, Sean DEpagnier
-License: GPL-2+
-
-Files: include/ogr_s57.h
-  include/s57.h
-Copyright: 1998-2003, Frank Warmerdam
-License: Expat
-
-Files: include/peer_client.h
+Files: gui/src/peer_client_dlg.cpp
 Copyright: 2020, 2022, David Register
 License: GPL-2+
 
-Files: include/routemanagerdialog.h
+Files: gui/src/routeman_gui.cpp
+ gui/src/waypointman_gui.cpp
+Copyright: 2022-2024, David Register, Alec Leamas
+License: GPL-2+
+
+Files: gui/src/routemanagerdialog.cpp
 Copyright: 2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
-Files: include/scrollingdialog.h
-Copyright: Julian Smart
+Files: gui/src/s57/*
+Copyright: 1998-2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: gui/src/s57/include/S57ClassRegistrar.h
+ gui/src/s57/include/s57RegistrarMgr.h
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
-Files: include/zeroconf-detail.hpp
-  include/zeroconf-util.hpp
-  include/zeroconf.hpp
-Copyright: 2016, Yuri Yakovlev <yvzmail@gmail.com>
-License: GPL-3
-Comment: https://github.com/yvz/zeroconf
+Files: gui/src/s57/src/s57RegistrarMgr.cpp
+ gui/src/s57/src/s57obj.cpp
+Copyright: 2010-2024, David S. Register
+License: GPL-2+
+
+Files: libs/*
+Copyright: 1998-2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: libs/IXWebSocket/*
+Copyright: 2017-2020, Machine Zone, Inc.
+License: BSD-3-clause
+
+Files: libs/IXWebSocket/ixwebsocket/IXBase64.h
+Copyright: 2016, tomykaira
+License: Expat
+
+Files: libs/IXWebSocket/ixwebsocket/IXGetFreePort.cpp
+ libs/IXWebSocket/ixwebsocket/IXGetFreePort.h
+ libs/IXWebSocket/ixwebsocket/IXNetSystem.cpp
+ libs/IXWebSocket/ixwebsocket/IXNetSystem.h
+ libs/IXWebSocket/ixwebsocket/IXStrCaseCompare.cpp
+ libs/IXWebSocket/ixwebsocket/IXStrCaseCompare.h
+ libs/IXWebSocket/ixwebsocket/IXUuid.cpp
+ libs/IXWebSocket/ixwebsocket/IXUuid.h
+Copyright: 2017-2020, 2022, Machine Zone.
+License: BSD-3-clause
+
+Files: libs/IXWebSocket/ixwebsocket/IXUrlParser.cpp
+Copyright: 2015, Sergey Kosarevsky (sk@linderdaum.com)
+License: Expat
+
+Files: libs/IXWebSocket/ixwebsocket/IXUtf8Validator.h
+Copyright: 2008, 2009, Bjoern Hoehrmann <bjoern@hoehrmann.de>
+License: Expat
+
+Files: libs/IXWebSocket/ixwebsocket/IXWebSocketHandshakeKeyGen.h
+Copyright: 2016, Alex Hultman and contributors
+License: Expat
+
+Files: libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp
+ libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h
+Copyright: 2015, Peter Thorson.
+License: BSD-3-clause
+
+Files: libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
+Copyright: 2012, 2013, <dhbaird@gmail.com>
+License: Expat
+
+Files: libs/IXWebSocket/test/Catch2/*
+Copyright: 2014, 2022, Two Blue Cubes Ltd.
+License: BSL-1.0
+
+Files: libs/IXWebSocket/test/Catch2/single_include/catch_reporter_automake.hpp
+Copyright: 2017, Justin R. Wilson.
+License: BSL-1.0
+
+Files: libs/IXWebSocket/test/Catch2/single_include/catch_reporter_tap.hpp
+Copyright: 2015, Martin Moene.
+License: BSL-1.0
+
+Files: libs/IXWebSocket/test/IXDNSLookupTest.cpp
+ libs/IXWebSocket/test/IXExponentialBackoffTest.cpp
+ libs/IXWebSocket/test/IXHttpClientTest.cpp
+ libs/IXWebSocket/test/IXHttpServerTest.cpp
+ libs/IXWebSocket/test/IXHttpTest.cpp
+ libs/IXWebSocket/test/IXSentryClientTest.cpp
+ libs/IXWebSocket/test/IXSocketConnectTest.cpp
+ libs/IXWebSocket/test/IXSocketTest.cpp
+ libs/IXWebSocket/test/IXStrCaseCompareTest.cpp
+ libs/IXWebSocket/test/IXStreamSqlTest.cpp
+ libs/IXWebSocket/test/IXTest.cpp
+ libs/IXWebSocket/test/IXTest.h
+ libs/IXWebSocket/test/IXUnityBuildsTest.cpp
+ libs/IXWebSocket/test/IXUrlParserTest.cpp
+ libs/IXWebSocket/test/IXWebSocketBroadcastTest.cpp
+ libs/IXWebSocket/test/IXWebSocketChatTest.cpp
+ libs/IXWebSocket/test/IXWebSocketCloseTest.cpp
+ libs/IXWebSocket/test/IXWebSocketPerMessageDeflateCompressorTest.cpp
+ libs/IXWebSocket/test/IXWebSocketPingTest.cpp
+ libs/IXWebSocket/test/IXWebSocketPingTimeoutTest.cpp
+ libs/IXWebSocket/test/IXWebSocketServerTest.cpp
+ libs/IXWebSocket/test/IXWebSocketSubProtocolTest.cpp
+ libs/IXWebSocket/test/IXWebSocketTestConnectionDisconnection.cpp
+ libs/IXWebSocket/test/test_runner.cpp
+Copyright: 2017-2020, 2022, Machine Zone.
+License: BSD-3-clause-MZ
+
+Files: libs/IXWebSocket/test/compatibility/cpp/*
+Copyright: 2017-2020, 2022, Machine Zone
+License: CC0-1.0
+
+Files: libs/IXWebSocket/third_party/cli11/*
+Copyright: 2017-2020, University of Cincinnati, developedHenry
+License: BSD-3-clause
+
+Files: libs/IXWebSocket/third_party/cpp-linenoise/*
+Copyright: 2015, yhirose
+ 2015, Yuji Hirose)
+License: BSD-2-clause
+
+Files: libs/IXWebSocket/third_party/cpp-linenoise/linenoise.cpp
+ libs/IXWebSocket/third_party/cpp-linenoise/linenoise.hpp
+Copyright: 2015, yhirose
+License: BSD-2-clause
 
 Files: libs/N2KParser/*
 Copyright: 2015-2022, Timo Lappalainen, Kave Oy, www.kave.fi
@@ -202,98 +322,51 @@ License: Expat
 
 Files: libs/N2KParser/include/N2KParser.h
 Copyright: 2022, David S. Register
+ 2015-2022, Timo Lappalainen, Kave Oy, www.kave.fi
 License: Expat
 
 Files: libs/N2KParser/src/N2KParser.cpp
 Copyright: 2022, David S. Register
+ 2015-2022, Timo Lappalainen, Kave Oy, www.kave.fi
 License: Expat
 
 Files: libs/SQLiteCpp/*
-Copyright: 2012-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+Copyright: 2012-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
 License: Expat
 
 Files: libs/SQLiteCpp/include/SQLiteCpp/Backup.h
-Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+Copyright: 2015-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
  2015, Shibao HONG (shibaohong@outlook.com)
 License: Expat
 
+Files: libs/SQLiteCpp/include/SQLiteCpp/ExecuteMany.h
+Copyright: 2019-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ 2019, Maximilian Bachmann (contact@maxbachmann.de)
+License: Expat
+
+Files: libs/SQLiteCpp/include/SQLiteCpp/Savepoint.h
+Copyright: 2020-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ 2020, Kelvin Hammond (hammond.kelvin@gmail.com)
+License: Expat
+
 Files: libs/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
-Copyright: 2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+Copyright: 2019, Maximilian Bachmann (contact@maxbachmann.de)
+ 2016-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
  2016, Paul Dreik (github@pauldreik.se)
 License: Expat
 
 Files: libs/SQLiteCpp/src/Backup.cpp
-Copyright: 2015-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+Copyright: 2015-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
  2015, Shibao HONG (shibaohong@outlook.com)
 License: Expat
 
-Files: libs/easywsclient/*
-Copyright: 2012, 2013, <dhbaird@gmail.com>
- 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
- 2012, 2013, <dhbaird@gmail.com>
- 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: Expat or GPL-2+
+Files: libs/SQLiteCpp/src/Savepoint.cpp
+Copyright: 2020-2023, Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ 2020, Kelvin Hammond (hammond.kelvin@gmail.com)
+License: Expat
 
-Files: libs/easywsclient/Makefile
-  libs/easywsclient/README.md
-  libs/easywsclient/easywsclient.cpp
-  libs/easywsclient/easywsclient.hpp
-  libs/easywsclient/example-client-cpp11.cpp
-  libs/easywsclient/example-client.cpp
-  libs/easywsclient/example-server.js
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: GPL-2+
-
-Files: libs/easywsclient/test/*
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
+Files: libs/android_jvm/*
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: libs/garmin/*
@@ -301,27 +374,27 @@ Copyright: 2004-2006, Robert Lipe, robertlipe@usa.net
 License: GPL-2+
 
 Files: libs/garmin/jeeps/garmin_gps.h
-  libs/garmin/jeeps/garmin_wrapper_utils.c
-  libs/garmin/jeeps/garmin_wrapper_utils.h
-Copyright: 2010, David S Register
+ libs/garmin/jeeps/garmin_wrapper_utils.c
+ libs/garmin/jeeps/garmin_wrapper_utils.h
+Copyright: 2010, David S Register <bdbcat@yahoo.com>
 License: GPL-2+
 
 Files: libs/garmin/jeeps/gpsapp.c
-  libs/garmin/jeeps/gpsapp.h
-  libs/garmin/jeeps/gpsdatum.h
-  libs/garmin/jeeps/gpsfmt.h
-  libs/garmin/jeeps/gpsinput.h
-  libs/garmin/jeeps/gpsmem.c
-  libs/garmin/jeeps/gpsmem.h
-  libs/garmin/jeeps/gpsport.h
-  libs/garmin/jeeps/gpsproj.h
+ libs/garmin/jeeps/gpsapp.h
+ libs/garmin/jeeps/gpsdatum.h
+ libs/garmin/jeeps/gpsfmt.h
+ libs/garmin/jeeps/gpsinput.h
+ libs/garmin/jeeps/gpsmem.c
+ libs/garmin/jeeps/gpsmem.h
+ libs/garmin/jeeps/gpsport.h
+ libs/garmin/jeeps/gpsproj.h
 Copyright: 2007, Achim Schumacher
  2004-2006, Robert Lipe
  1999, 2000, Alan Bleasby
 License: LGPL-2+
 
 Files: libs/garmin/jeeps/gpscom.c
-  libs/garmin/jeeps/gpscom.h
+ libs/garmin/jeeps/gpscom.h
 Copyright: 2010, Martin Buck
  2007, Achim Schumacher
  2005, 2006, Robert Lipe
@@ -329,32 +402,28 @@ Copyright: 2010, Martin Buck
 License: LGPL-2+
 
 Files: libs/garmin/jeeps/gpsmath.c
-  libs/garmin/jeeps/gpsmath.h
-  libs/garmin/jeeps/gpsutil.c
-  libs/garmin/jeeps/gpsutil.h
+ libs/garmin/jeeps/gpsmath.h
+ libs/garmin/jeeps/gpsutil.c
+ libs/garmin/jeeps/gpsutil.h
 Copyright: 1999, Alan Bleasby
 License: LGPL-2+
 
 Files: libs/garmin/jeeps/gpsprot.c
-  libs/garmin/jeeps/gpsprot.h
-  libs/garmin/jeeps/gpsread.c
-  libs/garmin/jeeps/gpsread.h
-  libs/garmin/jeeps/gpsrqst.c
-  libs/garmin/jeeps/gpsrqst.h
-  libs/garmin/jeeps/gpssend.c
-  libs/garmin/jeeps/gpssend.h
-  libs/garmin/jeeps/gpsserial.c
-  libs/garmin/jeeps/gpsserial.h
+ libs/garmin/jeeps/gpsprot.h
+ libs/garmin/jeeps/gpsread.c
+ libs/garmin/jeeps/gpsread.h
+ libs/garmin/jeeps/gpsrqst.c
+ libs/garmin/jeeps/gpsrqst.h
+ libs/garmin/jeeps/gpssend.c
+ libs/garmin/jeeps/gpssend.h
+ libs/garmin/jeeps/gpsserial.c
+ libs/garmin/jeeps/gpsserial.h
 Copyright: 2006, Robert Lipe
  1999, 2000, Alan Bleasby
 License: LGPL-2+
 
-Files: libs/gdal/*
-Copyright: 1998-2003, Frank Warmerdam
-License: Expat
-
 Files: libs/gdal/include/gdal/cpl_error.h
-  libs/gdal/include/gdal/cpl_string.h
+ libs/gdal/include/gdal/cpl_string.h
 Copyright: 1998, Daniel Morissette
 License: Expat
 
@@ -362,36 +431,32 @@ Files: libs/gdal/include/gdal/cpl_list.h
 Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
 License: Expat
 
-Files: libs/gdal/include/gdal/ogr_attrind.h
-Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
-License: Expat
-
 Files: libs/gdal/include/gdal/ogr_feature.h
-  libs/gdal/include/gdal/ogr_spatialref.h
-  libs/gdal/include/gdal/ogrsf_frmts.h
+ libs/gdal/include/gdal/ogr_spatialref.h
+ libs/gdal/include/gdal/ogrsf_frmts.h
 Copyright: 1999, Les Technologies SoftMap Inc.
 License: Expat
 
 Files: libs/gdal/src/cpl_error.cpp
-  libs/gdal/src/cpl_string.cpp
+ libs/gdal/src/cpl_string.cpp
 Copyright: 1998, Daniel Morissette
 License: Expat
 
 Files: libs/gdal/src/ogrfeature.cpp
-  libs/gdal/src/ogrfeaturedefn.cpp
-  libs/gdal/src/ogrfielddefn.cpp
-  libs/gdal/src/ogrlayer.cpp
+ libs/gdal/src/ogrfeaturedefn.cpp
+ libs/gdal/src/ogrfielddefn.cpp
+ libs/gdal/src/ogrlayer.cpp
 Copyright: 1999, Les Technologies SoftMap Inc.
 License: Expat
 
 Files: libs/geoprim/*
-Copyright: 2010-2023, David S. Register
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: libs/geoprim/src/LLRegion.cpp
-  libs/geoprim/src/LLRegion.h
-  libs/geoprim/src/bbox.h
-Copyright: 2011, 2013-2016, Sean DEpagnier
+ libs/geoprim/src/LLRegion.h
+ libs/geoprim/src/bbox.h
+Copyright: 2011, 2013-2016, Sean D'Epagnier
 License: GPL-2+
 
 Files: libs/geoprim/src/bbox.cpp
@@ -399,7 +464,7 @@ Copyright: 2000, Klaas Holwerda
 License: wxWidgets
 
 Files: libs/geoprim/src/line_clip.cpp
-  libs/geoprim/src/line_clip.h
+ libs/geoprim/src/line_clip.h
 Copyright: 1999-2003, Percy Zahl
 License: GPL-2+
 
@@ -419,6 +484,26 @@ Copyright: 2011, 2014, Pavel Kalian
  1995-1998, Brian Paul
 License: GPL-2+
 
+Files: libs/gl_headers/*
+Copyright: 1999-2007, Brian Paul
+License: Expat
+
+Files: libs/gl_headers/android/GL/glext.h
+Copyright: 2007-2013, The Khronos Group Inc.
+License: Khronos
+
+Files: libs/gl_headers/android/GL/glu.h
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/gl_headers/windows/GL/glext.h
+Copyright: 2007-2013, The Khronos Group Inc.
+License: Khronos
+
+Files: libs/gl_headers/windows/GL/glu.h
+Copyright: 1991-2000, Silicon Graphics, Inc.
+License: SGI-B-2.0
+
 Files: libs/glshim/*
 Copyright: 2013, Ryan Hileman
  2011, 2014, Pavel Kalian
@@ -435,6 +520,10 @@ Copyright: 2013, Ryan Hileman
  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
  1995-1998, Brian Paul
 License: Expat or GPL-2+
+
+Files: libs/glshim/LICENSE
+Copyright: 2013, Ryan Hileman
+License: Expat
 
 Files: libs/glshim/README.md
 Copyright: 2011, 2014, Pavel Kalian
@@ -453,7 +542,7 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: libs/glshim/include/*
-Copyright: 2007-2012, The Khronos Group Inc.
+Copyright: 2007-2013, The Khronos Group Inc.
 License: Khronos
 
 Files: libs/glshim/include/GL/*
@@ -482,8 +571,8 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: libs/glshim/include/GL/glext.h
-  libs/glshim/include/GL/glxext.h
-Copyright: 2007-2012, The Khronos Group Inc.
+ libs/glshim/include/GL/glxext.h
+Copyright: 2007-2013, The Khronos Group Inc.
 License: Khronos
 
 Files: libs/glshim/include/GL/glu.h
@@ -500,42 +589,6 @@ Copyright: 2007, 2008, Red Hat, Inc.
  1998, 1999, Precision Insight, Inc., Cedar Park, Texas.
 License: GPL-2+
 
-Files: libs/glshim/include/GLES/*
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: SGI-B-2.0
-
-Files: libs/glshim/include/GLES/egl.h
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: GPL-2+
-
-Files: libs/glshim/include/GLES/gl3.h
-Copyright: 2007-2012, The Khronos Group Inc.
-License: Khronos
-
 Files: libs/glshim/spec/*
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
@@ -551,6 +604,14 @@ Copyright: 2011, 2014, Pavel Kalian
  2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
  1995-1998, Brian Paul
 License: GPL-2+
+
+Files: libs/glshim/spec/xml/*
+Copyright: 2012, 2013, Wladimir J. van der Laan
+License: Expat
+
+Files: libs/glshim/spec/xml/egl.xml
+Copyright: 2007-2013, The Khronos Group Inc.
+License: Khronos
 
 Files: libs/glshim/src/*
 Copyright: 2011, 2014, Pavel Kalian
@@ -576,46 +637,256 @@ Files: libs/glshim/src/util/*
 Copyright: 2008, 2009, 2011, Attractive Chaos <attractor@live.co.uk>
 License: Expat
 
-Files: libs/glu/libtess/dict-list.h
-  libs/glu/libtess/dict.c
-  libs/glu/libtess/dict.h
-  libs/glu/libtess/geom.c
-  libs/glu/libtess/geom.h
-  libs/glu/libtess/memalloc.c
-  libs/glu/libtess/memalloc.h
-  libs/glu/libtess/mesh.c
-  libs/glu/libtess/mesh.h
-  libs/glu/libtess/normal.c
-  libs/glu/libtess/normal.h
-  libs/glu/libtess/priorityq-heap.c
-  libs/glu/libtess/priorityq-heap.h
-  libs/glu/libtess/priorityq-sort.h
-  libs/glu/libtess/priorityq.c
-  libs/glu/libtess/priorityq.h
-  libs/glu/libtess/render.c
-  libs/glu/libtess/render.h
-  libs/glu/libtess/sweep.c
-  libs/glu/libtess/sweep.h
-  libs/glu/libtess/tess.c
-  libs/glu/libtess/tess.h
-  libs/glu/libtess/tessmono.c
-  libs/glu/libtess/tessmono.h
+Files: libs/glu/*
 Copyright: 1991-2000, Silicon Graphics, Inc.
 License: SGI-B-2.0
 
-Files: libs/glu/libutil/*
-Copyright: 1991-2000, Silicon Graphics, Inc.
-License: SGI-B-2.0
+Files: libs/libdnet/*
+Copyright: 2000-2006, Dug Song <dugsong@monkey.org>
+License: BSD-3-clause
 
-Files: libs/iso8211/*
-Copyright: 1998-2003, Frank Warmerdam
-License: Expat
+Files: libs/libdnet/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
 
-Files: libs/iso8211/include/*
-Copyright: 1999, 2003, Frank Warmerdam <warmerdam@pobox.com>
-License: Expat
+Files: libs/libdnet/aclocal.m4
+Copyright: 1996-2021, Free Software Foundation, Inc.
+License: GPL-2+ with Autoconf-data exception
+
+Files: libs/libdnet/config/*
+Copyright: 1996-2021, Free Software Foundation, Inc.
+License: GPL-2+ with Autoconf-data exception
+
+Files: libs/libdnet/config/config.guess
+ libs/libdnet/config/config.sub
+Copyright: 1992-2021, Free Software Foundation, Inc.
+License: GPL-3+ with Autoconf-data exception
+
+Files: libs/libdnet/config/install-sh
+Copyright: 1994, X Consortium
+License: X11
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNEC-
+ TION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of the X Consortium shall not
+ be used in advertising or otherwise to promote the sale, use or other deal-
+ ings in this Software without prior written authorization from the X Consor-
+ tium.
+
+Files: libs/libdnet/config/libtool.m4
+Copyright: 1996-2001, 2003-2005, Free Software Foundation, Inc.
+License: FSFULLR
+
+Files: libs/libdnet/config/ltmain.sh
+Copyright: 1996-2019, 2021, 2022, Free Software Foundation, Inc.
+License: GPL-2+ with Libtool exception
+
+Files: libs/libdnet/configure
+Copyright: 1992-1996, 1998-2017, 2020-2023, Free Software Foundation
+License: FSFUL
+ This configure script is free software; the Free Software Foundation
+ gives unlimited permission to copy, distribute and modify it.
+
+Files: libs/libdnet/configure.ac
+Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
+License: BSD-3-clause
+
+Files: libs/libdnet/include/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: BSD-3-clause
+
+Files: libs/libdnet/include/dnet/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: BSD-3-clause
+
+Files: libs/libdnet/include/dnet/arp.h
+Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
+License: BSD-3-clause
+
+Files: libs/libdnet/include/dnet/rand.h
+Copyright: 2000, Dug Song <dugsong@monkey.org>
+ 1996, David Mazieres <dm@lcs.mit.edu>
+License: BSD-3-clause
+
+Files: libs/libdnet/include/dnet/sctp.h
+Copyright: 2008, 2009, Daniel Roethlisberger <daniel@roe.ch>
+License: BSD-3-clause
+
+Files: libs/libdnet/include/err.h
+Copyright: 2000, Dug Song <dugsong@monkey.org>
+ 1993, The Regents of the University of California.
+License: BSD-4-Clause-UC
+
+Files: libs/libdnet/include/queue.h
+Copyright: 1990, 1991, 1993, The Regents of the University of California.
+License: BSD-4-Clause-UC
+
+Files: libs/libdnet/m4/*
+Copyright: 2004, 2005, 2007-2009, 2011-2019, 2021, 2022, Free
+License: FSFULLR
+
+Files: libs/libdnet/m4/libtool.m4
+Copyright: 1996-2001, 2003-2019, 2021, 2022, Free Software
+License: GPL-2+ with Libtool exception
+
+Files: libs/libdnet/m4/ltsugar.m4
+Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
+License: FSFULLR
+
+Files: libs/libdnet/m4/ltversion.m4
+Copyright: 2004, 2011-2019, 2021, 2022, Free Software Foundation
+License: FSFULLR
+
+Files: libs/libdnet/man/*
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/man/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: FSFULR
+
+Files: libs/libdnet/man/dnet.3
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
+License: BSD-3-clause
+
+Files: libs/libdnet/python/*
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/python/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: FSFULR
+
+Files: libs/libdnet/python/dnet.pyx
+Copyright: 2023, 2024, Oliver Falk'
+License: BSD-3-clause
+
+Files: libs/libdnet/src/*
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
+License: BSD-4-Clause-UC
+
+Files: libs/libdnet/src/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/src/err.c
+Copyright: 2000, Dug Song <dugsong@monkey.org>
+ 1993, The Regents of the University of California.
+License: BSD-4-Clause-UC
+
+Files: libs/libdnet/src/fw-pktfilter.c
+Copyright: 2002, Dug Song <dugsong@monkey.org>
+ 2001, Jean-Baptiste Marchand, Hervé Schauer Consultants.
+License: BSD-3-clause
+
+Files: libs/libdnet/src/intf-win32.c
+Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
+License: BSD-3-clause
+
+Files: libs/libdnet/src/memcmp.c
+ libs/libdnet/src/strsep.c
+Copyright: 1990, 1991, 1993, The Regents of the University of California.
+License: BSD-4-Clause-UC
+
+Files: libs/libdnet/src/rand.c
+Copyright: 2023, 2024, Oliver Falk <oliver@linux-krenle.at>
+ 2000, Dug Song <dugsong@monkey.org>
+ 1996, David Mazieres <dm@lcs.mit.edu>
+License: BSD-3-clause
+
+Files: libs/libdnet/src/route-bsd.c
+Copyright: 2001, Dug Song <dugsong@monkey.org>
+ 1999, Masaki Hirabaru <masaki@merit.edu>
+License: BSD-3-clause
+
+Files: libs/libdnet/src/strlcat.c
+ libs/libdnet/src/strlcpy.c
+Copyright: 1998, Todd C. Miller <Todd.Miller@courtesan.com>
+License: BSD-3-clause
+
+Files: libs/libdnet/test/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: BSD-3-clause
+
+Files: libs/libdnet/test/check/*
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/test/check/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: FSFULR
+
+Files: libs/libdnet/test/dnet/Makefile.in
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: other
+ This Makefile.in is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+Files: libs/libdnet/test/dnet/fw.c
+Copyright: 2020, Oliver Falk <oliver@linux-kernel.at>
+ 2001, Dug Song <dugsong@monkey.org>
+License: BSD-3-clause
 
 Files: libs/libtess2/*
+Copyright: [dates of first publication] Silicon Graphics, Inc.
+License: SGI-B-2.0
+
+Files: libs/libtess2/Include/*
 Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
 License: GPL-2+
 
@@ -639,32 +910,28 @@ Files: libs/libtess2/Include/tesselator.h
 Copyright: [dates of first publication] Silicon Graphics, Inc.
 License: SGI-B-2.0
 
-Files: libs/libtess2/Source/*
-Copyright: [dates of first publication] Silicon Graphics, Inc.
-License: SGI-B-2.0
-
 Files: libs/libtess2/Source/Adjacency.cpp
-  libs/libtess2/Source/CustomArray.cpp
-  libs/libtess2/Source/RevisitedRadix.cpp
-  libs/libtess2/Source/Striper.cpp
+ libs/libtess2/Source/CustomArray.cpp
+ libs/libtess2/Source/RevisitedRadix.cpp
+ libs/libtess2/Source/Striper.cpp
 Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
 License: GPL-2+
 
 Files: libs/mDNS/*
-Copyright: 2023, David S Register
-License:  GPL-2+
+Copyright: 2009, The Android Open Source Project
+License: Apache-2.0
+
+Files: libs/mDNS/include/mdns.h
+ libs/mDNS/include/mdns_util.h
+Copyright: no-info-found
+License: public-domain
 
 Files: libs/mDNS/src/*
- libs/mDNS/include/*
 Copyright: 2022, David Register
-  2017 Mattias Jansson
-License:  public-domain
- This library is put in the public domain; you can redistribute it and/or
- modify it without any restrictions.
-
+License: public-domain
 
 Files: libs/mipmap/*
-Copyright: 2011, 2013-2016, Sean DEpagnier
+Copyright: 2011, 2013-2016, Sean D'Epagnier
 License: GPL-2+
 
 Files: libs/mongoose/*
@@ -677,15 +944,25 @@ Copyright: 2010, Samuel R. Blackburn, David S Register
 License: GPL-2+
 
 Files: libs/observable/*
+Copyright: Alec Leamas 2021-2022. It is distributed under
+ 1989, 1991, Free Software Foundation, Inc.
+License: GPL-2+
+
+Files: libs/observable/COPYING
 Copyright: 1989, 1991, Free Software Foundation, Inc.
 License: GPL-2
 
 Files: libs/observable/include/*
-Copyright: 2011, 2019, 2021-2023, Alec Leamas
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: libs/observable/manual/*
+Copyright: and License
+ Alec Leamas 2021-2023. It is distributed under
 License: GPL-2+
 
 Files: libs/observable/src/*
-Copyright: 2011, 2019, 2021-2023, Alec Leamas
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/picosha2/*
@@ -725,17 +1002,29 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: libs/pugixml/*
-Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+Copyright: 2006-2023, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+License: Expat
+
+Files: libs/pugixml/CMakeLists.txt
+Copyright: 2022, Dave Register
+License: GPL-3
+
+Files: libs/rapidjson/*
+Copyright: 2023, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-3+
+
+Files: libs/rapidjson/cmake/*
+Copyright: no-info-found
 License: Expat
 
 Files: libs/s52plib/*
-Copyright: 2010-2023, David S. Register
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: libs/s52plib/src/DepthFont.cpp
-  libs/s52plib/src/TexFont.cpp
-  libs/s52plib/src/TexFont.h
-Copyright: 2011, 2013-2016, Sean DEpagnier
+ libs/s52plib/src/TexFont.cpp
+ libs/s52plib/src/TexFont.h
+Copyright: 2011, 2013-2016, Sean D'Epagnier
 License: GPL-2+
 
 Files: libs/s52plib/src/DepthFont.h
@@ -743,9 +1032,9 @@ Copyright: 2020, 2022, David Register
 License: GPL-2+
 
 Files: libs/s52plib/src/s52cnsy.cpp
-  libs/s52plib/src/s52utils.cpp
+ libs/s52plib/src/s52utils.cpp
 Copyright: 2010, David S. Register
- 2000-2004, Sylvain Duclos
+ 2000-2004, Sylvain Duclos <sylvain_duclos@yahoo.com>
 License: GPL-2+
 
 Files: libs/s52plib/src/s52utils.h
@@ -753,32 +1042,52 @@ Copyright: 2000-2004, Sylvain Duclos sduclos@users.sourceforgue.net
 License: GPL-2+
 
 Files: libs/sound/*
-Copyright: 2010-2023, David S. Register
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
+
+Files: libs/sound/cmake/*
+Copyright: 2009-2015, JÃ¶rg MÃ¼ller.
+License: Apache-2.0
+
+Files: libs/sound/cmake/FindPortaudio.cmake
+Copyright: 2006, Andreas Schneider <mail@cynapses.org>
+License: BSD-3-clause
+
+Files: libs/sqlite/cmake/*
+Copyright: 2008, Gilles Caulier, <caulier.gilles@gmail.com>
+License: BSD-3-clause
 
 Files: libs/ssl_sha1/*
 Copyright: 2006-2014, Brainspark B.V.
 License: GPL-2+
 
-Files: libs/texcmp/*
-Copyright: 2013, Bartosz Taudul <wolf.pld@gmail.com>
-License: BSD-3-clause
+Files: libs/std_filesystem/*
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
 
-Files: libs/texcmp/squish/*
+Files: libs/std_filesystem/include/*
+Copyright: 2018, Steffen SchÃ¼mann <s.schuemann@pobox.com>
+License: Expat
+
+Files: libs/texcmp/*
 Copyright: 2006, Simon Brown si@sjbrown.co.uk
 License: Expat
 
+Files: libs/texcmp/etcpak.cpp
+Copyright: 2013, Bartosz Taudul <wolf.pld@gmail.com>
+License: BSD-3-clause
+
 Files: libs/texcmp/squish/clusterfit.cpp
-  libs/texcmp/squish/clusterfit.h
+ libs/texcmp/squish/clusterfit.h
 Copyright: 2007, Ignacio Castano icastano@nvidia.com
  2006, Simon Brown si@sjbrown.co.uk
 License: Expat
 
 Files: libs/texcmp/squish/singlecolourfitfast.cpp
-  libs/texcmp/squish/singlecolourfitfast.h
-  libs/texcmp/squish/twocolourfitfast.cpp
-  libs/texcmp/squish/twocolourfitfast.h
-Copyright: 2015, Sean DEPagnier
+ libs/texcmp/squish/singlecolourfitfast.h
+ libs/texcmp/squish/twocolourfitfast.cpp
+ libs/texcmp/squish/twocolourfitfast.h
+Copyright: 2015, Sean D'EPagnier
 License: Expat
 
 Files: libs/wxJSON/*
@@ -786,80 +1095,286 @@ Copyright: 2007, Luciano Cattani
 License: GPL-2+
 
 Files: libs/wxcurl/*
-Copyright: 2004, Casey ODonnell.
+Copyright: 1998-2014, Daniel Stenberg, <daniel@haxx.se>, et al.
+License: wxWidgets
+
+Files: libs/wxcurl/include/*
+Copyright: 2004, Casey O'Donnell.
 License: GPL-2+
 
 Files: libs/wxcurl/include/wx/curl/dialog.h
-  libs/wxcurl/include/wx/curl/panel.h
-  libs/wxcurl/include/wx/curl/thread.h
-  libs/wxcurl/include/wx/curl/utils.h
+ libs/wxcurl/include/wx/curl/panel.h
+ libs/wxcurl/include/wx/curl/thread.h
+ libs/wxcurl/include/wx/curl/utils.h
 Copyright: 2007, Francesco Montorsi
 License: GPL-2+
+
+Files: libs/wxcurl/src/base.cpp
+ libs/wxcurl/src/dav.cpp
+ libs/wxcurl/src/davtool.cpp
+ libs/wxcurl/src/ftp.cpp
+ libs/wxcurl/src/http.cpp
+ libs/wxcurl/src/telnet.cpp
+Copyright: 2004, Casey O'Donnell.
+License: wxWidgets
 
 Files: libs/wxcurl/src/dialog.cpp
-  libs/wxcurl/src/panel.cpp
-  libs/wxcurl/src/thread.cpp
-  libs/wxcurl/src/utils.cpp
+ libs/wxcurl/src/panel.cpp
+ libs/wxcurl/src/thread.cpp
+ libs/wxcurl/src/utils.cpp
 Copyright: 2007, Francesco Montorsi
 License: GPL-2+
 
-Files: libs/wxcurl/src/include/*
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: GPL-2+
-
-Files: libs/wxcurl/src/include/curl/*
-Copyright: 1998-2014, Daniel Stenberg, <daniel@haxx.se>, et al.
-License: GPL-2+
-
-Files: libs/wxservdisc/wxServDisc.cpp
-  libs/wxservdisc/wxServDisc.h
+Files: libs/wxservdisc/*
 Copyright: 2008, Christian Beier <dontmind@freeshell.org>
 License: GPL-2+
 
 Files: manual/*
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: GPL-2+
+Copyright: Alec Leamas <leamas.alec@gmail.com>
+License: BSD-2-clause
 
 Files: manual/modules/*
-Copyright: 2022-2023, Alec Leamas
+Copyright: 2022, 2023, Alec Leamas
+License: GPL-2+
+
+Files: manual/package-lock.json
+Copyright: no-info-found
+License: BSD-2-clause
+
+Files: manual/site.yml
+Copyright: 2022, Alec Leamas <leamas.alec@gmail.com>
+License: CC-BY-SA-4.0
+
+Files: model/CMakeLists.txt
+Copyright: 2022, 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2010-2023, David S. Register
+License: GPL-2+
+
+Files: model/cmake/*
+Copyright: 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2012, Raphael Kubo da Costa <rakuco@webkit.org>
+License: BSD-2-clause
+
+Files: model/cmake/FindLIBUSB.cmake
+Copyright: 2019, Alec Leamas <leamas.alec@gmail.com>
+License: Expat
+
+Files: model/include/model/ais_state_vars.h
+ model/include/model/peer_client.h
+ model/include/model/rest_server.h
+Copyright: 2022-2024, Alec Leamas <leamas.alec@gmail.com>
+ 2022, David Register
+License: GPL-2+
+
+Files: model/include/model/atomic_queue.h
+ model/include/model/cmdline.h
+ model/include/model/comm_appmsg.h
+ model/include/model/comm_appmsg_bus.h
+ model/include/model/comm_bridge.h
+ model/include/model/comm_can_util.h
+ model/include/model/comm_decoder.h
+ model/include/model/comm_driver.h
+ model/include/model/comm_drv_factory.h
+ model/include/model/comm_drv_file.h
+ model/include/model/comm_drv_n0183.h
+ model/include/model/comm_drv_n0183_android_bt.h
+ model/include/model/comm_drv_n0183_android_int.h
+ model/include/model/comm_drv_n0183_net.h
+ model/include/model/comm_drv_n0183_serial.h
+ model/include/model/comm_drv_n2k.h
+ model/include/model/comm_drv_n2k_net.h
+ model/include/model/comm_drv_n2k_serial.h
+ model/include/model/comm_drv_n2k_socketcan.h
+ model/include/model/comm_drv_registry.h
+ model/include/model/comm_drv_signalk.h
+ model/include/model/comm_navmsg.h
+ model/include/model/comm_navmsg_bus.h
+ model/include/model/comm_util.h
+ model/include/model/mDNS_query.h
+ model/include/model/mDNS_service.h
+Copyright: 2022-2024, David Register, Alec Leamas
+License: GPL-2+
+
+Files: model/include/model/catalog_handler.h
+ model/include/model/catalog_parser.h
+ model/include/model/cli_platform.h
+ model/include/model/comm_vars.h
+ model/include/model/config_vars.h
+ model/include/model/dbus_client.h
+ model/include/model/dbus_instance_check.h
+ model/include/model/dbus_server.h
+ model/include/model/downloader.h
+ model/include/model/gui.h
+ model/include/model/instance_check.h
+ model/include/model/ipc_api.h
+ model/include/model/linux_devices.h
+ model/include/model/linux_usb_watch.h
+ model/include/model/local_api.h
+ model/include/model/nmea_ctx_factory.h
+ model/include/model/ocpn_utils.h
+ model/include/model/own_ship.h
+ model/include/model/pincode.h
+ model/include/model/plugin_blacklist.h
+ model/include/model/plugin_cache.h
+ model/include/model/plugin_handler.h
+ model/include/model/semantic_vers.h
+ model/include/model/std_instance_chk.h
+ model/include/model/sys_events.h
+ model/include/model/usb_watch_daemon.h
+ model/include/model/wait_continue.h
+ model/include/model/win_usb_watch.h
+ model/include/model/wx_instance_chk.h
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: model/include/model/garmin_wrapper.h
+Copyright: 2010, David S Register <bdbcat@yahoo.com>
+License: GPL-2+
+
+Files: model/include/model/macutils.h
+Copyright: 2007, 2016
+License: GPL-2+
+
+Files: model/include/model/meteo_points.h
+Copyright: 2023, HÃ¥kan Svensson
+ 2023, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: model/include/model/plugin_loader.h
+Copyright: 2022, 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2010-2023, David S. Register
+License: GPL-2+
+
+Files: model/src/ais_state_vars.cpp
+ model/src/comm_navmsg.cpp
+ model/src/rest_server.cpp
+Copyright: 2022-2024, Alec Leamas <leamas.alec@gmail.com>
+ 2022, David Register
+License: GPL-2+
+
+Files: model/src/catalog_handler.cpp
+ model/src/catalog_parser.cpp
+ model/src/cli_platform.cpp
+ model/src/comm_vars.cpp
+ model/src/config_vars.cpp
+ model/src/dbus_client.cpp
+ model/src/dbus_server.cpp
+ model/src/downloader.cpp
+ model/src/gui.cpp
+ model/src/instance_handler.cpp
+ model/src/ipc_api.cpp
+ model/src/ipc_factories.cpp
+ model/src/linux_devices.cpp
+ model/src/linux_usb_watch.cpp
+ model/src/local_api.cpp
+ model/src/ocpn_utils.cpp
+ model/src/own_ship.cpp
+ model/src/pincode.cpp
+ model/src/plugin_blacklist.cpp
+ model/src/plugin_cache.cpp
+ model/src/plugin_handler.cpp
+ model/src/semantic_vers.cpp
+ model/src/std_instance_chk.cpp
+ model/src/usb_watch_factory.cpp
+ model/src/win_usb_watch.cpp
+ model/src/wx_instance_chk.cpp
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: model/src/cmdline.cpp
+ model/src/comm_appmsg.cpp
+ model/src/comm_appmsg_bus.cpp
+ model/src/comm_bridge.cpp
+ model/src/comm_can_util.cpp
+ model/src/comm_decoder.cpp
+ model/src/comm_drv_factory.cpp
+ model/src/comm_drv_file.cpp
+ model/src/comm_drv_n0183.cpp
+ model/src/comm_drv_n0183_android_bt.cpp
+ model/src/comm_drv_n0183_android_int.cpp
+ model/src/comm_drv_n0183_net.cpp
+ model/src/comm_drv_n0183_serial.cpp
+ model/src/comm_drv_n2k.cpp
+ model/src/comm_drv_n2k_net.cpp
+ model/src/comm_drv_n2k_serial.cpp
+ model/src/comm_drv_n2k_socketcan.cpp
+ model/src/comm_drv_registry.cpp
+ model/src/comm_drv_signalk.cpp
+ model/src/comm_drv_signalk_net.cpp
+ model/src/comm_navmsg_bus.cpp
+ model/src/comm_util.cpp
+ model/src/mDNS_query.cpp
+ model/src/mDNS_service.cpp
+ model/src/plugin_api.cpp
+Copyright: 2022-2024, David Register, Alec Leamas
+License: GPL-2+
+
+Files: model/src/garmin_wrapper.cpp
+Copyright: 2010, David S Register <bdbcat@yahoo.com>
+License: GPL-2+
+
+Files: model/src/geodesic.cpp
+Copyright: 2002-2008, Chris Veness
+License: Expat
+Comment: https://geographiclib.sourceforge.io/
+
+Files: model/src/macutils.c
+Copyright: 2007, 2016
+License: GPL-2+
+
+Files: model/src/peer_client.cpp
+Copyright: 2020, 2022, David Register
+License: GPL-2+
+
+Files: model/src/plugin_loader.cpp
+Copyright: 2022, 2023, Alec Leamas <leamas.alec@gmail.com>
+ 2010-2023, David S. Register
 License: GPL-2+
 
 Files: opencpn-cmd.1
-  opencpn.1
+ opencpn.1
 Copyright: 2018, 2022, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
-Files: plugins/chartdldr_pi/cmake/wxWTranslateCatalog.h.in
-Copyright: 2010-2023, David S. Register
+Files: org.opencpn.OpenCPN.yaml
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
+Files: plugins/*
+Copyright: 2010, Samuel R. Blackburn, David S Register
+License: GPL-2+
+
+Files: plugins/CMakeLists.txt
+Copyright: 2010, David S. Register
+License: GPL-2+
+
+Files: plugins/chartdldr_pi/*
+Copyright: 2011-2019, Pavel Kalian
+License: GPL-2+
+
+Files: plugins/chartdldr_pi/CMakeLists.txt
+Copyright: 2014, License: GPLv2 License
+License: GPL-2
+
+Files: plugins/chartdldr_pi/cmake/*
+Copyright: 2014, License: GPLv3+
+License: GPL-3
+
+Files: plugins/chartdldr_pi/cmake/gpl.txt
+Copyright: 1989, 1991, Free Software Foundation, Inc.
+License: GPL-2
+
+Files: plugins/chartdldr_pi/cmake/wxWTranslateCatalog.h.in
+Copyright: 2010-2024, David S. Register
+License: GPL-2+
+
+Files: plugins/chartdldr_pi/src/*
+Copyright: 2006-2023, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+License: Expat
+
 Files: plugins/chartdldr_pi/src/androidSupport.cpp
-  plugins/chartdldr_pi/src/androidSupport.h
-Copyright: 2010-2023, David S. Register
+ plugins/chartdldr_pi/src/androidSupport.h
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: plugins/chartdldr_pi/src/base64.h
@@ -867,29 +1382,55 @@ Copyright: 2005, Angelo Mandato (http://www.spaceblue.com)
 License: wxWidgets
 
 Files: plugins/chartdldr_pi/src/chartcatalog.cpp
-  plugins/chartdldr_pi/src/chartcatalog.h
-  plugins/chartdldr_pi/src/chartdldr_pi.cpp
-  plugins/chartdldr_pi/src/chartdldr_pi.h
+ plugins/chartdldr_pi/src/chartcatalog.h
+ plugins/chartdldr_pi/src/chartdldr_pi.cpp
+ plugins/chartdldr_pi/src/chartdldr_pi.h
 Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
-Files: plugins/chartdldr_pi/src/pugiconfig.hpp
-  plugins/chartdldr_pi/src/pugixml.cpp
-  plugins/chartdldr_pi/src/pugixml.hpp
-Copyright: 2006-2016, Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
-License: Expat
+Files: plugins/dashboard_pi/CMakeLists.txt
+Copyright: 2010-2024, David S. Register
+License: GPL-2+
 
 Files: plugins/dashboard_pi/include/*
 Copyright: 2007, Luciano Cattani
 License: GPL-2+
 
-Files: plugins/dashboard_pi/src/*
-Copyright: 2010-2023, David S. Register
+Files: plugins/dashboard_pi/src/altitude.cpp
+ plugins/dashboard_pi/src/altitude.h
+ plugins/dashboard_pi/src/baro_history.cpp
+ plugins/dashboard_pi/src/baro_history.h
+ plugins/dashboard_pi/src/clock.cpp
+ plugins/dashboard_pi/src/clock.h
+ plugins/dashboard_pi/src/compass.cpp
+ plugins/dashboard_pi/src/compass.h
+ plugins/dashboard_pi/src/dashboard_pi.cpp
+ plugins/dashboard_pi/src/dashboard_pi.h
+ plugins/dashboard_pi/src/depth.cpp
+ plugins/dashboard_pi/src/depth.h
+ plugins/dashboard_pi/src/dial.cpp
+ plugins/dashboard_pi/src/dial.h
+ plugins/dashboard_pi/src/from_ownship.cpp
+ plugins/dashboard_pi/src/from_ownship.h
+ plugins/dashboard_pi/src/gps.cpp
+ plugins/dashboard_pi/src/gps.h
+ plugins/dashboard_pi/src/icons.sh
+ plugins/dashboard_pi/src/instrument.cpp
+ plugins/dashboard_pi/src/instrument.h
+ plugins/dashboard_pi/src/rudder_angle.cpp
+ plugins/dashboard_pi/src/rudder_angle.h
+ plugins/dashboard_pi/src/speedometer.cpp
+ plugins/dashboard_pi/src/speedometer.h
+ plugins/dashboard_pi/src/wind.cpp
+ plugins/dashboard_pi/src/wind.h
+ plugins/dashboard_pi/src/wind_history.cpp
+ plugins/dashboard_pi/src/wind_history.h
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/icons.cpp
-  plugins/dashboard_pi/src/icons.h
-  plugins/dashboard_pi/src/iirfilter.cpp
+ plugins/dashboard_pi/src/icons.h
+ plugins/dashboard_pi/src/iirfilter.cpp
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
  2010, Samuel R. Blackburn, David S Register
@@ -906,27 +1447,40 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/iirfilter.h
-Copyright: 2016
-License: GPL-2+
-
-Files: plugins/dashboard_pi/src/nmea0183/*
-Copyright: 2010, Samuel R. Blackburn, David S Register
+Copyright: 2007, 2016
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/wxJSON/*
 Copyright: 2007, Luciano Cattani
 License: wxWidgets
 
+Files: plugins/demo_pi_sample/CMakeLists.txt
+Copyright: 2010-2024, David S. Register
+License: GPL-2+
+
+Files: plugins/demo_pi_sample/cmake/*
+Copyright: 2014, License: GPLv3+
+License: GPL-3
+
+Files: plugins/demo_pi_sample/cmake/gpl.txt
+Copyright: 1989, 1991, Free Software Foundation, Inc.
+License: GPL-2
+
 Files: plugins/demo_pi_sample/cmake/wxWTranslateCatalog.h.in
-Copyright: 2010-2023, David S. Register
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
-Files: plugins/demo_pi_sample/src/*
-Copyright: 2010-2023, David S. Register
+Files: plugins/demo_pi_sample/src/demo_pi.cpp
+ plugins/demo_pi_sample/src/demo_pi.h
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
-Files: plugins/demo_pi_sample/src/nmea0183/*
-Copyright: 2010, Samuel R. Blackburn, David S Register
+Files: plugins/grib_pi/*
+Copyright: 2010, David S. Register
+License: GPL-2+
+
+Files: plugins/grib_pi/CMakeLists.txt
+Copyright: 2010, David S. Register
 License: GPL-2+
 
 Files: plugins/grib_pi/libs/*
@@ -934,33 +1488,8 @@ Copyright: 2001-2004, Michael David Adams.
  1999, 2000, Image Power, Inc. and the University of
 License: GPL-2+
 
-Files: plugins/grib_pi/libs/jasper/src/base/*
-Copyright: 2001-2004, Michael David Adams.
-License: GPL-2+
-
-Files: plugins/grib_pi/libs/jasper/src/base/jas_getopt.c
-  plugins/grib_pi/libs/jasper/src/base/jas_image.c
-  plugins/grib_pi/libs/jasper/src/base/jas_malloc.c
-  plugins/grib_pi/libs/jasper/src/base/jas_seq.c
-  plugins/grib_pi/libs/jasper/src/base/jas_stream.c
-  plugins/grib_pi/libs/jasper/src/base/jas_string.c
-Copyright: 2001-2004, Michael David Adams.
- 1999, 2000, Image Power, Inc. and the University of
-License: GPL-2+
-
-Files: plugins/grib_pi/libs/jasper/src/include/jasper/jas_cm.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_config2.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_debug.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_icc.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_init.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_tmr.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_tvp.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jasper.h
-Copyright: 2001-2004, Michael David Adams.
-License: GPL-2+
-
 Files: plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h
-  plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
+ plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
  2010, Samuel R. Blackburn, David S Register
@@ -976,74 +1505,81 @@ Copyright: 2011, 2014, Pavel Kalian
  1995-1998, Brian Paul
 License: GPL-2+
 
-Files: plugins/grib_pi/libs/jasper/src/jpc/jpc_math.h
-  plugins/grib_pi/libs/jasper/src/jpc/jpc_util.h
-Copyright: 2001-2004, Michael David Adams.
-License: GPL-2+
-
 Files: plugins/grib_pi/src/*
-Copyright: 2010-2023, David S. Register
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: plugins/grib_pi/src/GribReader.cpp
-  plugins/grib_pi/src/GribReader.h
-  plugins/grib_pi/src/GribRecord.cpp
-  plugins/grib_pi/src/GribRecord.h
-  plugins/grib_pi/src/GribV1Record.cpp
-  plugins/grib_pi/src/GribV1Record.h
-  plugins/grib_pi/src/GribV2Record.cpp
-  plugins/grib_pi/src/GribV2Record.h
-  plugins/grib_pi/src/IsoLine.cpp
-  plugins/grib_pi/src/IsoLine.h
-  plugins/grib_pi/src/zuFile.cpp
-  plugins/grib_pi/src/zuFile.h
+ plugins/grib_pi/src/GribReader.h
+ plugins/grib_pi/src/GribRecord.cpp
+ plugins/grib_pi/src/GribRecord.h
+ plugins/grib_pi/src/GribV1Record.cpp
+ plugins/grib_pi/src/GribV1Record.h
+ plugins/grib_pi/src/GribV2Record.cpp
+ plugins/grib_pi/src/GribV2Record.h
+ plugins/grib_pi/src/IsoLine.cpp
+ plugins/grib_pi/src/IsoLine.h
+ plugins/grib_pi/src/zuFile.cpp
+ plugins/grib_pi/src/zuFile.h
 Copyright: 2008, Jacques Zaninetti - http://www.zygrib.org
 License: GPL-3+
 
 Files: plugins/grib_pi/src/GribSettingsDialog.cpp
-  plugins/grib_pi/src/GribSettingsDialog.h
-  plugins/grib_pi/src/pi_TexFont.cpp
-  plugins/grib_pi/src/pi_TexFont.h
-  plugins/grib_pi/src/pi_ocpndc.cpp
-  plugins/grib_pi/src/pi_ocpndc.h
-Copyright: 2011, 2013-2016, Sean DEpagnier
+ plugins/grib_pi/src/GribSettingsDialog.h
+ plugins/grib_pi/src/pi_TexFont.cpp
+ plugins/grib_pi/src/pi_TexFont.h
+ plugins/grib_pi/src/pi_ocpndc.cpp
+ plugins/grib_pi/src/pi_ocpndc.h
+Copyright: 2011, 2013-2016, Sean D'Epagnier
 License: GPL-2+
 
 Files: plugins/grib_pi/src/GribUIDialogBase.cpp
-  plugins/grib_pi/src/GribUIDialogBase.h
-  plugins/grib_pi/src/icons.cpp
-  plugins/grib_pi/src/icons.h
-  plugins/grib_pi/src/version.h
+ plugins/grib_pi/src/GribUIDialogBase.h
+ plugins/grib_pi/src/icons.cpp
+ plugins/grib_pi/src/icons.h
+ plugins/grib_pi/src/version.h
 Copyright: 2008, Jacques Zaninetti - http:www.zygrib.org
 License: GPL-3+
 
 Files: plugins/grib_pi/src/email.cpp
-  plugins/grib_pi/src/email.h
-  plugins/grib_pi/src/msg.h
+ plugins/grib_pi/src/email.h
+ plugins/grib_pi/src/msg.h
 Copyright: Julian Smart
 License: GPL-3+
 
 Files: plugins/grib_pi/src/json_defs.h
-  plugins/grib_pi/src/jsonreader.cpp
-  plugins/grib_pi/src/jsonreader.h
-  plugins/grib_pi/src/jsonval.cpp
-  plugins/grib_pi/src/jsonval.h
-  plugins/grib_pi/src/jsonwriter.cpp
-  plugins/grib_pi/src/jsonwriter.h
+ plugins/grib_pi/src/jsonreader.cpp
+ plugins/grib_pi/src/jsonreader.h
+ plugins/grib_pi/src/jsonval.cpp
+ plugins/grib_pi/src/jsonval.h
+ plugins/grib_pi/src/jsonwriter.cpp
+ plugins/grib_pi/src/jsonwriter.h
 Copyright: 2007, Luciano Cattani
 License: wxWidgets
 
-Files: plugins/grib_pi/src/linmath.h
-Copyright: 2010, 2012-2019, David S. Register
-License: GPL-2+
-
 Files: plugins/grib_pi/src/smapi.cpp
-  plugins/grib_pi/src/smapi.h
+ plugins/grib_pi/src/smapi.h
 Copyright: PJ Naughter
 License: wxWidgets
 
-Files: plugins/wmm_pi/cmake/wxWTranslateCatalog.h.in
+Files: plugins/wmm_pi/*
 Copyright: 2010-2023, David S. Register
+License: GPL-2+
+
+Files: plugins/wmm_pi/CMakeLists.txt
+Copyright: License: wxWidgets License
+License: GPL-3+
+
+Files: plugins/wmm_pi/cmake/*
+Copyright: 2014, License: GPLv3+
+License: GPL-3
+
+Files: plugins/wmm_pi/cmake/gpl.txt
+Copyright: 1989, 1991, Free Software Foundation, Inc.
+License: GPL-2
+
+Files: plugins/wmm_pi/cmake/wxWTranslateCatalog.h.in
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/*
@@ -1051,10 +1587,10 @@ Copyright: 2007, Luciano Cattani
 License: wxWidgets
 
 Files: plugins/wmm_pi/src/EGM9615.h
-  plugins/wmm_pi/src/GeomagnetismHeader.h
-  plugins/wmm_pi/src/icons.cpp
-  plugins/wmm_pi/src/icons.h
-  plugins/wmm_pi/src/icons.sh
+ plugins/wmm_pi/src/GeomagnetismHeader.h
+ plugins/wmm_pi/src/icons.cpp
+ plugins/wmm_pi/src/icons.h
+ plugins/wmm_pi/src/icons.sh
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
  2010, Samuel R. Blackburn, David S Register
@@ -1071,196 +1607,75 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/GeomagnetismLibrary.c
-Copyright: no-copyright
+Copyright: protection.
 License: public-domain
- The WMM source code is in the public domain and not licensed or under
- copyright. The information and software may be used freely by the public.
- As required by 17 U.S.C. 403, third parties producing copyrighted works
- consisting predominantly of the material produced by U.S. government
- agencies must provide notice with such work(s) identifying the
- U.S. Government material incorporated and stating that such material is not
- subject to copyright protection.
 
 Files: plugins/wmm_pi/src/MagneticPlotMap.cpp
-  plugins/wmm_pi/src/MagneticPlotMap.h
-  plugins/wmm_pi/src/pi_TexFont.cpp
-  plugins/wmm_pi/src/pi_TexFont.h
-  plugins/wmm_pi/src/pi_ocpndc.cpp
-  plugins/wmm_pi/src/pi_ocpndc.h
-Copyright: 2011, 2013-2016, Sean DEpagnier
+ plugins/wmm_pi/src/MagneticPlotMap.h
+ plugins/wmm_pi/src/pi_TexFont.cpp
+ plugins/wmm_pi/src/pi_TexFont.h
+ plugins/wmm_pi/src/pi_ocpndc.cpp
+ plugins/wmm_pi/src/pi_ocpndc.h
+Copyright: 2011, 2013-2016, Sean D'Epagnier
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/WmmUIDialog.cpp
-  plugins/wmm_pi/src/WmmUIDialog.h
+ plugins/wmm_pi/src/WmmUIDialog.h
 Copyright: 2014, ESA-VirES
 License: Expat
 Comment: https://github.com/ESA-VirES/WMM/blob/master/LICENSE
 
 Files: plugins/wmm_pi/src/pi_shaders.cpp
-  plugins/wmm_pi/src/pi_shaders.h
-Copyright: 2010-2023, David S. Register
+ plugins/wmm_pi/src/pi_shaders.h
+Copyright: 2010-2024, David S. Register
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/wmm_pi.cpp
-  plugins/wmm_pi/src/wmm_pi.h
+ plugins/wmm_pi/src/wmm_pi.h
 Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
-Files: src/*
-Copyright: 2010-2023, David S. Register
+Files: resources/opencpn.appdata.xml.in
+Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
 License: GPL-2+
 
-Files: src/AboutFrame.cpp
-  src/RoutePropDlg.cpp
-  src/TCWin.cpp
-  src/opencpn.rc.in
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
+Files: test/*
+Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
-Files: src/REST_server.cpp
-  src/comm_appmsg.cpp
-  src/comm_appmsg_bus.cpp
-  src/comm_bridge.cpp
-  src/comm_decoder.cpp
-  src/comm_drv_factory.cpp
-  src/comm_drv_file.cpp
-  src/comm_drv_n0183.cpp
-  src/comm_drv_n0183_net.cpp
-  src/comm_drv_n0183_serial.cpp
-  src/comm_drv_n2k.cpp
-  src/comm_drv_n2k_serial.cpp
-  src/comm_drv_n2k_socketcan.cpp
-  src/comm_drv_registry.cpp
-  src/comm_drv_signalk.cpp
-  src/comm_drv_signalk_net.cpp
-  src/comm_navmsg.cpp
-  src/comm_navmsg_bus.cpp
-  src/comm_plugin_api.cpp
-  src/comm_util.cpp
-  src/mDNS_query.cpp
-  src/mDNS_service.cpp
-  src/routeman_gui.cpp
-  src/waypointman_gui.cpp
-Copyright: 2022, David Register, Alec Leamas
-License: GPL-2+
+License: Apache-2.0
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS"BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ On Debian systems, the complete text of the Apache License,
+ Version 2.0 can be found in '/usr/share/common-licenses/Apache-2.0'.
 
-Files: src/ais_info_gui.cpp
-  src/plugin_loader.cpp
-Copyright: 2022, Alec Leamas
- 2010, David S. Register
-License: GPL-2+
-
-Files: src/api_shim.cpp
-  src/cat_settings.cpp
-  src/catalog_handler.cpp
-  src/catalog_mgr.cpp
-  src/catalog_parser.cpp
-  src/comm_vars.cpp
-  src/config_vars.cpp
-  src/console.cpp
-  src/download_mgr.cpp
-  src/downloader.cpp
-  src/linux_devices.cpp
-  src/load_errors_dlg.cpp
-  src/ocpn_utils.cpp
-  src/own_ship.cpp
-  src/plugin_blacklist.cpp
-  src/plugin_cache.cpp
-  src/plugin_handler.cpp
-  src/semantic_vers.cpp
-  src/udev_rule_mgr.cpp
-  src/update_mgr.cpp
-Copyright: 2011, 2019, 2021-2023, Alec Leamas
-License: GPL-2+
-
-Files: src/bitmaps/png2wx.pl
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
-License: GPL-2+
-
-Files: src/color_handler.cpp
-  src/plugin_paths.cpp
-  src/route_gui.cpp
-  src/route_point_gui.cpp
-  src/safe_mode.cpp
-  src/testvers.cpp
-  src/track_gui.cpp
-Copyright: 2010, 2012-2019, David S. Register
-License: GPL-2+
-
-Files: src/crashprint.cpp
-Copyright: 2004, wxCode
-License: wxWidgets
-
-Files: src/garmin_wrapper.cpp
-Copyright: 2010, David S Register
-License: GPL-2+
-
-Files: src/geodesic.cpp
-Copyright: 2002-2008, Chris Veness
-License: Expat
-Comment: https://geographiclib.sourceforge.io/
-
-Files: src/gshhs.cpp
-Copyright: zUGrib: meteorologic GRIB file data viewer
- 2012, David S. Register
- 2008, Jacques Zaninetti - http://www.zygrib.org
-License: GPL-2+
-
-Files: src/macutils.c
-Copyright: 2007
-License: GPL-2+
-
-Files: src/ocpndc.cpp
-Copyright: 2011, 2013-2016, Sean DEpagnier
-License: GPL-2+
-
-Files: src/ocpnhelper.c
-Copyright: 2006, dsr
-License: GPL-2+
-
-Files: src/ogrs57datasource.cpp
-  src/ogrs57layer.cpp
-  src/s57classregistrar.cpp
-  src/s57featuredefns.cpp
-  src/s57reader.cpp
-Copyright: 1998-2003, Frank Warmerdam
-License: Expat
-
-Files: src/peer_client.cpp
-Copyright: 2020, 2022, David Register
-License: GPL-2+
-
-Files: src/routemanagerdialog.cpp
-Copyright: 2010, Anders Lund <anders@alweb.dk>
-License: GPL-2+
-
-Files: src/scrollingdialog.cpp
-Copyright: Julian Smart
-License: GPL-2+
+License: BSD-2-clause
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+ .  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  . 
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: BSD-3-clause
  Redistribution and use in source and binary forms are permitted
@@ -1275,6 +1690,383 @@ License: BSD-3-clause
  THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+License: BSD-3-clause-MZ
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are
+ met:
+ . 
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the
+    distribution.
+ 3. Neither the name of the copyright holder nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+ . 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: BSD-4-Clause-UC
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. All advertising materials mentioning features or use of this software
+    must display the following acknowledgement:
+      This product includes software developed by the University of
+      California, Berkeley and its contributors.
+ 4. Neither the name of the University nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+License: BSL-1.0
+ Boost Software License - Version 1.0 - August 17th, 2003
+ . 
+ Permission is hereby granted, free of charge, to any person or organization
+ obtaining a copy of the software and accompanying documentation covered by
+ this license (the "Software") to use, reproduce, display, distribute,
+ execute, and transmit the Software, and to prepare derivative works of the
+ Software, and to permit third-parties to whom the Software is furnished to
+ do so, all subject to the following:
+ . 
+ The copyright notices in the Software and this entire statement, including
+ the above license grant, this restriction and the following disclaimer,
+ must be included in all copies of the Software, in whole or in part, and
+ all derivative works of the Software, unless such copies or derivative
+ works are solely in the form of machine-executable object code generated by
+ a source language processor.
+ . 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+ SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+
+License: CC-BY-SA-4.0
+ By exercising the Licensed Rights (defined below), You accept and agree
+ to be bound by the terms and conditions of this Creative Commons
+ Attribution-ShareAlike 4.0 International Public License ("Public
+ License"). To the extent this Public License may be interpreted as a
+ contract, You are granted the Licensed Rights in consideration of Your
+ acceptance of these terms and conditions, and the Licensor grants You
+ such rights in consideration of benefits the Licensor receives from
+ making the Licensed Material available under these terms and
+ conditions.
+ . 
+ Section 1 -- Definitions.
+   a. Adapted Material means material subject to Copyright and Similar
+      Rights that is derived from or based upon the Licensed Material
+      and in which the Licensed Material is translated, altered,
+      arranged, transformed, or otherwise modified in a manner requiring
+      permission under the Copyright and Similar Rights held by the
+      Licensor. For purposes of this Public License, where the Licensed
+      Material is a musical work, performance, or sound recording,
+      Adapted Material is always produced where the Licensed Material is
+      synched in timed relation with a moving image.
+ . 
+   b. Adapter's License means the license You apply to Your Copyright
+      and Similar Rights in Your contributions to Adapted Material in
+      accordance with the terms and conditions of this Public License.
+ . 
+   c. BY-SA Compatible License means a license listed at
+      creativecommons.org/compatiblelicenses, approved by Creative
+      Commons as essentially the equivalent of this Public License.
+ . 
+   d. Copyright and Similar Rights means copyright and/or similar rights
+      closely related to copyright including, without limitation,
+      performance, broadcast, sound recording, and Sui Generis Database
+      Rights, without regard to how the rights are labeled or
+      categorized. For purposes of this Public License, the rights
+      specified in Section 2(b)(1)-(2) are not Copyright and Similar
+      Rights.
+ . 
+   e. Effective Technological Measures means those measures that, in the
+      absence of proper authority, may not be circumvented under laws
+      fulfilling obligations under Article 11 of the WIPO Copyright
+      Treaty adopted on December 20, 1996, and/or similar international
+      agreements.
+ . 
+   f. Exceptions and Limitations means fair use, fair dealing, and/or
+      any other exception or limitation to Copyright and Similar Rights
+      that applies to Your use of the Licensed Material.
+ . 
+   g. License Elements means the license attributes listed in the name
+      of a Creative Commons Public License. The License Elements of this
+      Public License are Attribution and ShareAlike.
+ . 
+   h. Licensed Material means the artistic or literary work, database,
+      or other material to which the Licensor applied this Public
+      License.
+ . 
+   i. Licensed Rights means the rights granted to You subject to the
+      terms and conditions of this Public License, which are limited to
+      all Copyright and Similar Rights that apply to Your use of the
+      Licensed Material and that the Licensor has authority to license.
+ . 
+   j. Licensor means the individual(s) or entity(ies) granting rights
+      under this Public License.
+ . 
+   k. Share means to provide material to the public by any means or
+      process that requires permission under the Licensed Rights, such
+      as reproduction, public display, public performance, distribution,
+      dissemination, communication, or importation, and to make material
+      available to the public including in ways that members of the
+      public may access the material from a place and at a time
+      individually chosen by them.
+ . 
+   l. Sui Generis Database Rights means rights other than copyright
+      resulting from Directive 96/9/EC of the European Parliament and of
+      the Council of 11 March 1996 on the legal protection of databases,
+      as amended and/or succeeded, as well as other essentially
+      equivalent rights anywhere in the world.
+ . 
+   m. You means the individual or entity exercising the Licensed Rights
+      under this Public License. Your has a corresponding meaning.
+ . 
+ Section 2 -- Scope.
+   a. License grant.
+        1. Subject to the terms and conditions of this Public License,
+           the Licensor hereby grants You a worldwide, royalty-free,
+           non-sublicensable, non-exclusive, irrevocable license to
+           exercise the Licensed Rights in the Licensed Material to:
+             a. reproduce and Share the Licensed Material, in whole or
+                in part; and
+             b. produce, reproduce, and Share Adapted Material.
+        2. Exceptions and Limitations. For the avoidance of doubt, where
+           Exceptions and Limitations apply to Your use, this Public
+           License does not apply, and You do not need to comply with
+           its terms and conditions.
+        3. Term. The term of this Public License is specified in Section
+           6(a).
+        4. Media and formats; technical modifications allowed. The
+           Licensor authorizes You to exercise the Licensed Rights in
+           all media and formats whether now known or hereafter created,
+           and to make technical modifications necessary to do so. The
+           Licensor waives and/or agrees not to assert any right or
+           authority to forbid You from making technical modifications
+           necessary to exercise the Licensed Rights, including
+           technical modifications necessary to circumvent Effective
+           Technological Measures. For purposes of this Public License,
+           simply making modifications authorized by this Section 2(a)
+           (4) never produces Adapted Material.
+        5. Downstream recipients.
+             a. Offer from the Licensor -- Licensed Material. Every
+                recipient of the Licensed Material automatically
+                receives an offer from the Licensor to exercise the
+                Licensed Rights under the terms and conditions of this
+                Public License.
+             b. Additional offer from the Licensor -- Adapted Material.
+                Every recipient of Adapted Material from You
+                automatically receives an offer from the Licensor to
+                exercise the Licensed Rights in the Adapted Material
+                under the conditions of the Adapter's License You apply.
+             c. No downstream restrictions. You may not offer or impose
+                any additional or different terms or conditions on, or
+                apply any Effective Technological Measures to, the
+                Licensed Material if doing so restricts exercise of the
+                Licensed Rights by any recipient of the Licensed
+                Material.
+        6. No endorsement. Nothing in this Public License constitutes or
+           may be construed as permission to assert or imply that You
+           are, or that Your use of the Licensed Material is, connected
+           with, or sponsored, endorsed, or granted official status by,
+           the Licensor or others designated to receive attribution as
+           provided in Section 3(a)(1)(A)(i).
+   b. Other rights.
+        1. Moral rights, such as the right of integrity, are not
+           licensed under this Public License, nor are publicity,
+           privacy, and/or other similar personality rights; however, to
+           the extent possible, the Licensor waives and/or agrees not to
+           assert any such rights held by the Licensor to the limited
+           extent necessary to allow You to exercise the Licensed
+           Rights, but not otherwise.
+        2. Patent and trademark rights are not licensed under this
+           Public License.
+        3. To the extent possible, the Licensor waives any right to
+           collect royalties from You for the exercise of the Licensed
+           Rights, whether directly or through a collecting society
+           under any voluntary or waivable statutory or compulsory
+           licensing scheme. In all other cases the Licensor expressly
+           reserves any right to collect such royalties.
+ Section 3 -- License Conditions.
+ . 
+ Your exercise of the Licensed Rights is expressly made subject to the
+ following conditions.
+   a. Attribution.
+        1. If You Share the Licensed Material (including in modified
+           form), You must:
+             a. retain the following if it is supplied by the Licensor
+                with the Licensed Material:
+                  i. identification of the creator(s) of the Licensed
+                     Material and any others designated to receive
+                     attribution, in any reasonable manner requested by
+                     the Licensor (including by pseudonym if
+                     designated);
+                 ii. a copyright notice;
+                iii. a notice that refers to this Public License;
+                 iv. a notice that refers to the disclaimer of
+                     warranties;
+                  v. a URI or hyperlink to the Licensed Material to the
+                     extent reasonably practicable;
+             b. indicate if You modified the Licensed Material and
+                retain an indication of any previous modifications; and
+             c. indicate the Licensed Material is licensed under this
+                Public License, and include the text of, or the URI or
+                hyperlink to, this Public License.
+        2. You may satisfy the conditions in Section 3(a)(1) in any
+           reasonable manner based on the medium, means, and context in
+           which You Share the Licensed Material. For example, it may be
+           reasonable to satisfy the conditions by providing a URI or
+           hyperlink to a resource that includes the required
+           information.
+        3. If requested by the Licensor, You must remove any of the
+           information required by Section 3(a)(1)(A) to the extent
+           reasonably practicable.
+   b. ShareAlike.
+      In addition to the conditions in Section 3(a), if You Share
+      Adapted Material You produce, the following conditions also apply.
+        1. The Adapter's License You apply must be a Creative Commons
+           license with the same License Elements, this version or
+           later, or a BY-SA Compatible License.
+        2. You must include the text of, or the URI or hyperlink to, the
+           Adapter's License You apply. You may satisfy this condition
+           in any reasonable manner based on the medium, means, and
+           context in which You Share Adapted Material.
+        3. You may not offer or impose any additional or different terms
+           or conditions on, or apply any Effective Technological
+           Measures to, Adapted Material that restrict exercise of the
+           rights granted under the Adapter's License You apply.
+ . 
+ Section 4 -- Sui Generis Database Rights.
+ . 
+ Where the Licensed Rights include Sui Generis Database Rights that
+ apply to Your use of the Licensed Material:
+   a. for the avoidance of doubt, Section 2(a)(1) grants You the right
+      to extract, reuse, reproduce, and Share all or a substantial
+      portion of the contents of the database;
+   b. if You include all or a substantial portion of the database
+      contents in a database in which You have Sui Generis Database
+      Rights, then the database in which You have Sui Generis Database
+      Rights (but not its individual contents) is Adapted Material,
+      including for purposes of Section 3(b); and
+   c. You must comply with the conditions in Section 3(a) if You Share
+      all or a substantial portion of the contents of the database.
+ For the avoidance of doubt, this Section 4 supplements and does not
+ replace Your obligations under this Public License where the Licensed
+ Rights include other Copyright and Similar Rights.
+ . 
+ Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+ . 
+   a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
+      EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
+      AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
+      ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
+      IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
+      WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
+      PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
+      ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
+      KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
+      ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+   b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
+      TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
+      NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
+      INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
+      COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
+      USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
+      ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
+      DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
+      IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+   c. The disclaimer of warranties and limitation of liability provided
+      above shall be interpreted in a manner that, to the extent
+      possible, most closely approximates an absolute disclaimer and
+      waiver of all liability.
+ . 
+ Section 6 -- Term and Termination.
+ . 
+   a. This Public License applies for the term of the Copyright and
+      Similar Rights licensed here. However, if You fail to comply with
+      this Public License, then Your rights under this Public License
+      terminate automatically.
+   b. Where Your right to use the Licensed Material has terminated under
+      Section 6(a), it reinstates:
+        1. automatically as of the date the violation is cured, provided
+           it is cured within 30 days of Your discovery of the
+           violation; or
+        2. upon express reinstatement by the Licensor.
+      For the avoidance of doubt, this Section 6(b) does not affect any
+      right the Licensor may have to seek remedies for Your violations
+      of this Public License.
+   c. For the avoidance of doubt, the Licensor may also offer the
+      Licensed Material under separate terms or conditions or stop
+      distributing the Licensed Material at any time; however, doing so
+      will not terminate this Public License.
+   d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
+      License.
+ . 
+ Section 7 -- Other Terms and Conditions.
+ . 
+   a. The Licensor shall not be bound by any additional or different
+      terms or conditions communicated by You unless expressly agreed.
+   b. Any arrangements, understandings, or agreements regarding the
+      Licensed Material not stated herein are separate from and
+      independent of the terms and conditions of this Public License.
+ . 
+ Section 8 -- Interpretation.
+ . 
+   a. For the avoidance of doubt, this Public License does not, and
+      shall not be interpreted to, reduce, limit, restrict, or impose
+      conditions on any use of the Licensed Material that could lawfully
+      be made without permission under this Public License.
+   b. To the extent possible, if any provision of this Public License is
+      deemed unenforceable, it shall be automatically reformed to the
+      minimum extent necessary to make it enforceable. If the provision
+      cannot be reformed, it shall be severed from this Public License
+      without affecting the enforceability of the remaining terms and
+      conditions.
+   c. No term or condition of this Public License will be waived and no
+      failure to comply consented to unless expressly agreed to by the
+      Licensor.
+   d. Nothing in this Public License constitutes or may be interpreted
+      as a limitation upon, or waiver of, any privileges and immunities
+      that apply to the Licensor or You, including from the legal
+      processes of any jurisdiction or authority.
+
+License: CC0-1.0
+ To the extent possible under law, the author(s) have dedicated all
+ copyright and related and neighboring rights to this software to the public
+ domain worldwide. This software is distributed without any warranty.
+ On Debian systems, the complete text of the CC0 license, version 1.0,
+ can be found in /usr/share/common-licenses/CC0-1.0.
 
 License: Expat
  Permission is hereby granted, free of charge, to any person obtaining a
@@ -1295,6 +2087,25 @@ License: Expat
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
 
+License: FSFULLR
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
+License: FSFULR
+ This file is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+ even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.
+
 License: GPL-2
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1311,6 +2122,44 @@ License: GPL-2+
  On Debian systems, the full text of the GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/GPL-2'.
+
+License: GPL-2+ with Autoconf-data exception
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2, or (at your option)
+ any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ .
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program that contains a
+ configuration script generated by Autoconf, you may include it under
+ the same distribution terms that you use for the rest of that program.
+
+License: GPL-2+ with Libtool exception
+ GNU Libtool is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of of the License, or
+ (at your option) any later version.
+ .
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program or library that is built
+ using GNU Libtool, you may include this file under the  same
+ distribution terms that you use for the rest of that program.
+ . 
+ GNU Libtool is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ . 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 License: GPL-3
  This program is free software: you can redistribute it and/or modify
@@ -1330,6 +2179,27 @@ License: GPL-3+
  On Debian systems, the full text of the GNU General Public
  License version 3 can be found in the file
  `/usr/share/common-licenses/GPL-3'.
+
+License: GPL-3+ with Autoconf-data exception
+ This file is free software; you can redistribute it and/or modify it 
+ under the terms of the GNU General Public License as published by 
+ the Free Software Foundation; either version 3 of the License, or 
+ (at your option) any later version. 
+ . 
+ This program is distributed in the hope that it will be useful, but 
+ WITHOUT ANY WARRANTY; without even the implied warranty of 
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+ General Public License for more details. 
+ . 
+ You should have received a copy of the GNU General Public License 
+ along with this program; if not, see <https://www.gnu.org/licenses/>. 
+ . 
+ As a special exception to the GNU General Public License, if you 
+ distribute this file as part of a program that contains a 
+ configuration script generated by Autoconf, you may include it under 
+ the same distribution terms that you use for the rest of that 
+ program.  This Exception is an additional permission under section 7 
+ of the GNU General Public License, version 3 ("GPLv3"). 
 
 License: Khronos
  Permission is hereby granted, free of charge, to any person obtaining
@@ -1357,7 +2227,6 @@ License: Khronos
  OUT OF OR IN CONNECTION WITH THE MATERIALS OR THE USE OR OTHER DEALINGS
  IN THE MATERIALS.
 
-
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Library General Public
@@ -1367,34 +2236,6 @@ License: LGPL-2+
  On Debian systems, the full text of the Lesser GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/LGPL-2'.
-
-License: SGI-B-1.1
- License Applicability. Except to the extent portions of this file are
- made subject to an alternative license as permitted in the SGI Free
- Software License B, Version 1.1 (the "License"), the contents of this
- file are subject only to the provisions of the License. You may not use
- this file except in compliance with the License. You may obtain a copy
- of the License at Silicon Graphics, Inc., attn: Legal Services, 1600
- Amphitheatre Parkway, Mountain View, CA 94043-1351, or at
- :
- http://oss.sgi.com/projects/FreeB
- .
- Note that, as provided in the License, the Software is distributed on an
- "AS IS" basis, with ALL EXPRESS AND IMPLIED WARRANTIES AND CONDITIONS
- DISCLAIMED, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES AND
- CONDITIONS OF MERCHANTABILITY, SATISFACTORY QUALITY, FITNESS FOR A
- PARTICULAR PURPOSE, AND NON-INFRINGEMENT
- .
- Original Code. The Original Code is: OpenGL Sample Implementation,
- Version 1.2.1, released January 26, 2000, developed by Silicon Graphics,
- Inc. The Original Code is Copyright (c) 1991-2000 Silicon Graphics, Inc.
- Copyright in any portions created by third parties is as indicated
- elsewhere herein. All Rights Reserved
- .
- Additional Notice Provisions: This software was created using the
- OpenGL(R) version 1.2.1 Sample Implementation published by SGI, but has
- not been independently verified as being compliant with the OpenGL(R)
- version 1.2.1 Specification.
 
 License: SGI-B-2.0
  SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
@@ -1424,6 +2265,15 @@ License: SGI-B-2.0
  shall not be used in advertising or otherwise to promote the sale, use or
  other dealings in this Software without prior written authorization from
  Silicon Graphics, Inc.
+
+License: public-domain
+ The person who associated a work with this deed has dedicated the work
+ to the public domain by waiving all of his or her rights to the work
+ worldwide under copyright law, including all related and neighboring
+ rights, to the extent allowed by law.
+ .
+ You can copy, modify, distribute and perform the work, even for commercial
+ purposes, all without asking permission.
 
 License: wxWidgets
  wxWindows Library License, Version 3.1
