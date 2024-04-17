@@ -3,11 +3,25 @@ Date: Wed, 17 Apr 2024 14:58:11 +0200
 Subject: patches: tests: Add DISTRO_BUILD flag to block som tests
 
 ---
- test/CMakeLists.txt | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ cmake/in-files/config.h.in | 1 +
+ test/CMakeLists.txt        | 4 ++--
+ test/tests.cpp             | 2 +-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
+diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
+index 40d0a61..8e6e276 100644
+--- a/cmake/in-files/config.h.in
++++ b/cmake/in-files/config.h.in
+@@ -47,6 +47,7 @@
+ #cmakedefine HAVE_SYS_IOCTL_H
+ #cmakedefine HAVE_SYS_SERIAL_LIB
+ #cmakedefine HAVE_STDINT_H
++#cmakedefine OCPN_DISTRO_BUILD
+ 
+ 
+ // The os compatible plugins are are built for
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 02eb222..60fb9ed 100644
+index 02eb222..9ddf025 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
 @@ -198,10 +198,10 @@ endif ()
@@ -23,3 +37,16 @@ index 02eb222..60fb9ed 100644
    gtest_add_tests(TARGET dbus_tests)
  endif ()
  
+diff --git a/test/tests.cpp b/test/tests.cpp
+index 282ca68..336f781 100644
+--- a/test/tests.cpp
++++ b/test/tests.cpp
+@@ -908,7 +908,7 @@ TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
+ 
+ TEST(Instance, WxInstanceChk) { WxInstanceCheck check; }
+ 
+-#if !defined(FLATPAK) && defined(__unix__)
++#if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+ TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
+ 
+ TEST(IpcClient, Raise) { CliRaise run_test; }
