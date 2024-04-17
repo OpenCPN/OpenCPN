@@ -67,18 +67,18 @@ public:
   //    Secondary thread life toggle
   //    Used to inform launching object (this) to determine if the thread can
   //    be safely called or polled, e.g. wxThread->Destroy();
-  void SetSecThreadActive(void) { m_bsec_thread_active = true; }
-  void SetSecThreadInActive(void) { m_bsec_thread_active = false; }
-  bool IsSecThreadActive() const { return m_bsec_thread_active; }
+  void SetSecThreadActive(void) { m_sec_thread_active = true; }
+  void SetSecThreadInActive(void) { m_sec_thread_active = false; }
+  bool IsSecThreadActive() const { return m_sec_thread_active; }
 
   bool IsGarminThreadActive();
   void StopGarminUSBIOThread(bool bPause);
 
   void SetSecondaryThread(CommDriverN0183SerialThread* secondary_Thread) {
-    m_pSecondary_Thread = secondary_Thread;
+    m_secondary_thread = secondary_Thread;
   }
   CommDriverN0183SerialThread* GetSecondaryThread() {
-    return m_pSecondary_Thread;
+    return m_secondary_thread;
   }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
@@ -90,15 +90,15 @@ public:
                    std::shared_ptr<const NavAddr> addr) override;
 
 private:
-  bool m_bok;
+  bool m_ok;
   std::string m_portstring;
-  std::string m_BaudRate;
+  std::string m_baudrate;
   int m_handshake;
 
-  CommDriverN0183SerialThread* m_pSecondary_Thread;
-  bool m_bsec_thread_active;
+  CommDriverN0183SerialThread* m_secondary_thread;
+  bool m_sec_thread_active;
 
-  GarminProtocolHandler *m_GarminHandler;
+  GarminProtocolHandler * m_garmin_handler;
 
   ConnectionParams m_params;
   DriverListener& m_listener;

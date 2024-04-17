@@ -141,9 +141,9 @@ private:
   void CloseComPortPhysical();
   ssize_t WriteComPortPhysical(const std::string& msg);
 
-  CommDriverN0183Serial* m_pParentDriver;
-  wxString m_PortName;
-  wxString m_FullPortName;
+  CommDriverN0183Serial* m_parent_driver;
+  wxString m_port_name;
+  wxString m_full_port_name;
 
   int m_baud;
   size_t m_send_retries;
@@ -212,14 +212,15 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
     : CommDriverN0183(NavAddr::Bus::N0183,
                       ((ConnectionParams*)params)->GetStrippedDSPort()),
       m_Thread_run_flag(-1),
-      m_bok(false),
+      m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_pSecondary_Thread(NULL),
+      m_secondary_thread(NULL),
       m_params(*params),
       m_listener(listener),
       m_out_queue(std::unique_ptr<CommOutQueue>(new MeasuredCommOutQueue(12))) {
-  m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
-  m_GarminHandler = NULL;
+  m_baudrate = wxString::Format("%i", params->Baudrate);
+  SetSecThreadInActive();
+  m_garmin_handler = NULL;
   this->attributes["commPort"] = params->Port.ToStdString();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
@@ -240,21 +241,21 @@ bool CommDriverN0183Serial::Open() {
 
   if ((wxNOT_FOUND != port_uc.Find("USB")) &&
       (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
-    m_GarminHandler = new GarminProtocolHandler(comx, this, true);
+    m_garmin_handler = new GarminProtocolHandler(comx, this, true);
   } else if (m_params.Garmin) {
-    m_GarminHandler = new GarminProtocolHandler(comx, this, false);
+    m_garmin_handler = new GarminProtocolHandler(comx, this, false);
   } else {
     // strip off any description provided by Windows
     comx = comx.BeforeFirst(' ');
 
 #ifndef __ANDROID__
     //    Kick off the  RX thread
-    SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_BaudRate));
+    SetSecondaryThread(new CommDriverN0183SerialThread(this, comx, m_baudrate));
     SetThreadRunFlag(1);
     std::thread t(&CommDriverN0183SerialThread::Entry, GetSecondaryThread());
     t.detach();
 #else
-    androidStartUSBSerial(comx, m_BaudRate, this);
+    androidStartUSBSerial(comx, m_baudrate, this);
 #endif
   }
 
@@ -275,8 +276,8 @@ void CommDriverN0183Serial::Close() {
 
 #ifndef __ANDROID__
   //    Kill off the Secondary RX Thread if alive
-  if (m_pSecondary_Thread) {
-    if (m_bsec_thread_active)  // Try to be sure thread object is still alive
+  if (m_secondary_thread) {
+    if (m_sec_thread_active)  // Try to be sure thread object is still alive
     {
       wxLogMessage("Stopping Secondary Thread");
 
@@ -293,16 +294,16 @@ void CommDriverN0183Serial::Close() {
       wxLogMessage(msg);
     }
 
-    delete m_pSecondary_Thread;
-    m_pSecondary_Thread = NULL;
-    m_bsec_thread_active = false;
+    delete m_secondary_thread;
+    m_secondary_thread = NULL;
+    m_sec_thread_active = false;
   }
 
   //  Kill off the Garmin handler, if alive
-  if (m_GarminHandler) {
-    m_GarminHandler->Close();
-    delete m_GarminHandler;
-    m_GarminHandler = NULL;
+  if (m_garmin_handler) {
+    m_garmin_handler->Close();
+    delete m_garmin_handler;
+    m_garmin_handler = NULL;
   }
 
 #else
@@ -313,10 +314,10 @@ void CommDriverN0183Serial::Close() {
 }
 
 bool CommDriverN0183Serial::IsGarminThreadActive() {
-  if (m_GarminHandler) {
+  if (m_garmin_handler) {
     // TODO expand for serial
 #ifdef __WXMSW__
-    if (m_GarminHandler->m_usb_handle != INVALID_HANDLE_VALUE)
+    if (m_garmin_handler->m_usb_handle != INVALID_HANDLE_VALUE)
       return true;
     else
       return false;
@@ -327,8 +328,8 @@ bool CommDriverN0183Serial::IsGarminThreadActive() {
 }
 
 void CommDriverN0183Serial::StopGarminUSBIOThread(bool b_pause) {
-  if (m_GarminHandler) {
-    m_GarminHandler->StopIOThread(b_pause);
+  if (m_garmin_handler) {
+    m_garmin_handler->StopIOThread(b_pause);
   }
 }
 
@@ -403,10 +404,10 @@ void CommDriverN0183Serial::handle_N0183_MSG(
 CommDriverN0183SerialThread::CommDriverN0183SerialThread(
     CommDriverN0183Serial* Launcher, const wxString& PortName,
     const wxString& strBaudRate) {
-  m_pParentDriver = Launcher;  // This thread's immediate "parent"
+  m_parent_driver = Launcher;  // This thread's immediate "parent"
 
-  m_PortName = PortName;
-  m_FullPortName = "Serial:" + PortName;
+  m_port_name = PortName;
+  m_full_port_name = "Serial:" + PortName;
 
   m_baud = 4800;  // default
   long lbaud;
@@ -494,15 +495,15 @@ ssize_t CommDriverN0183SerialThread::WriteComPortPhysical(const std::string& msg
 
 void* CommDriverN0183SerialThread::Entry() {
   bool not_done = true;
-  m_pParentDriver->SetSecThreadActive();  // I am alive
+  m_parent_driver->SetSecThreadActive();  // I am alive
   wxString msg;
   circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
   std::vector<uint8_t> tmp_vec;
 
   //    Request the com port from the comm manager
-  if (!OpenComPortPhysical(m_PortName, m_baud)) {
+  if (!OpenComPortPhysical(m_port_name, m_baud)) {
     wxString msg("NMEA input device open failed: ");
-    msg.Append(m_PortName);
+    msg.Append(m_port_name);
     ThreadMessage(msg);
     // goto thread_exit; // This means we will not be trying to connect = The
     // device must be connected when the thread is created. Does not seem to be
@@ -514,8 +515,8 @@ void* CommDriverN0183SerialThread::Entry() {
   //    The main loop
   m_send_retries = 0;
 
-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
-    if (m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+  while ((not_done) && (m_parent_driver->m_Thread_run_flag > 0)) {
+    if (m_parent_driver->m_Thread_run_flag == 0) goto thread_exit;
 
     uint8_t next_byte = 0;
     unsigned int newdata = 0;
@@ -541,7 +542,7 @@ void* CommDriverN0183SerialThread::Entry() {
       // std::cerr << "Serial port seems closed." << std::endl;
       device_waiter.Wait(250 * m_send_retries);
       CloseComPortPhysical();
-      if (OpenComPortPhysical(m_PortName, m_baud))
+      if (OpenComPortPhysical(m_port_name, m_baud))
         m_send_retries = 0;
       else if (m_send_retries < 10)
         m_send_retries++;
@@ -553,7 +554,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
     // Process the queue until empty
     while (!circle.empty()) {
-      if (m_pParentDriver->m_Thread_run_flag == 0) goto thread_exit;
+      if (m_parent_driver->m_Thread_run_flag == 0) goto thread_exit;
 
       uint8_t take_byte = circle.get();
       while ((take_byte != 0x0a) && !circle.empty()) {
@@ -586,7 +587,7 @@ void* CommDriverN0183SerialThread::Entry() {
 
         CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
         Nevent.SetPayload(buffer);
-        m_pParentDriver->AddPendingEvent(Nevent);
+        m_parent_driver->AddPendingEvent(Nevent);
         tmp_vec.clear();
       }
     }  // while
@@ -617,8 +618,8 @@ void* CommDriverN0183SerialThread::Entry() {
 
 thread_exit:
   CloseComPortPhysical();
-  m_pParentDriver->SetSecThreadInActive();  // I am dead
-  m_pParentDriver->m_Thread_run_flag = -1;
+  m_parent_driver->SetSecThreadInActive();  // I am dead
+  m_parent_driver->m_Thread_run_flag = -1;
 
   return 0;
 }
