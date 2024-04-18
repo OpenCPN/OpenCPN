@@ -4077,7 +4077,8 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
     defaultBoatSpeedSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed ")),
+        new wxStaticText(pDisplayPanel, wxID_ANY,
+                    _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ") "),
         groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
