@@ -159,6 +159,18 @@ void ConnectionEditDialog::SetInitialSettings(void) {
 }
 
 void ConnectionEditDialog::Init() {
+
+  MORE = "<span foreground=\'blue\'>";
+  MORE += _("More");
+  MORE += "...</span>";
+  LESS = "<span foreground=\'blue\'>";
+  LESS += _("Less");
+  LESS += "...</span>";
+
+  //  For small displays, skip the "More" text.
+  if (g_Platform->getDisplaySize().x < 80 * GetCharWidth()) MORE = "";
+
+
   // Setup some inital values
   m_buttonScanBT = 0;
   m_stBTPairs = 0;
@@ -726,7 +738,7 @@ void ConnectionEditDialog::Init() {
     new wxCheckBox(m_scrolledwin, wxID_ANY, _(" UDP Multicast"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_cbMultiCast->SetValue(FALSE);
-  m_cbMultiCast->SetToolTip(_("Advanced Use Only. Enable UDP Multicast."));
+  // m_cbMultiCast->SetToolTip(_("Advanced Use Only. Enable UDP Multicast."));
 
   fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
@@ -855,9 +867,18 @@ void ConnectionEditDialog::Init() {
 
   bSizer12->AddSpacer(GetCharWidth() * 5);
 
-  m_cbAdvanced = new wxCheckBox(m_scrolledwin, wxID_ANY, _("Advanced Options"),
-                                wxDefaultPosition, wxDefaultSize, 0);
-  sbSizerConnectionProps->Add(m_cbAdvanced, 0, wxALL, 2);
+  // m_cbAdvanced = new wxCheckBox(m_scrolledwin, wxID_ANY, _("Advanced Options"),
+  //                              wxDefaultPosition, wxDefaultSize, 0);
+  // sbSizerConnectionProps->Add(m_cbAdvanced, 0, wxALL, 2);
+
+  // m_cbAdvanced->Show(false);
+  sbSizerConnectionProps->AddSpacer(20);
+
+  m_more = new wxStaticText(m_scrolledwin, wxID_ANY, "4 chars",
+                            wxDefaultPosition,
+                            wxDefaultSize, wxALIGN_LEFT);
+  m_more->SetLabelMarkup(MORE);
+  sbSizerConnectionProps->Add(m_more,wxSizerFlags());
 
   ConnectControls();
 
@@ -1053,13 +1074,13 @@ void ConnectionEditDialog::ShowTypeCommon(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEACommon(bool visible) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   m_cbInput->Show(visible);
   m_cbOutput->Show(visible);
   m_stPrecision->Show(visible && advanced);
   m_choicePrecision->Show(visible && advanced);
-  m_choicePriority->Show(visible && advanced);
-  m_stPriority->Show(visible && advanced);
+  //m_choicePriority->Show(visible);
+  //m_stPriority->Show(visible);
   m_stPrecision->Show(visible && advanced);
   m_stTalkerIdText->Show(visible && advanced);
   m_TalkerIdText->Show(visible && advanced);
@@ -1091,7 +1112,7 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEANet(bool visible) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   m_stNetAddr->Show(visible);
   m_tNetAddress->Show(visible);
   m_stNetDataProtocol->Show(visible);
@@ -1110,7 +1131,7 @@ void ConnectionEditDialog::ShowNMEANet(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEASerial(bool visible) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   m_stSerBaudrate->Show(visible);
   m_choiceBaudRate->Show(visible);
   m_stSerPort->Show(visible);
@@ -1120,8 +1141,8 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   m_cbGarminHost->Show(visible && advanced);
   m_stSerialComment->Show(visible);
   m_tSerialComment->Show(visible);
-  m_choicePriority->Show(visible && advanced);
-  m_stPriority->Show(visible && advanced);
+  //m_choicePriority->Show(visible);
+  //m_stPriority->Show(visible);
 }
 
 void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
@@ -1162,29 +1183,25 @@ void ConnectionEditDialog::ShowNMEABT(bool visible) {
 }
 
 void ConnectionEditDialog::SetNMEAFormToSerial(void) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(TRUE);
   ShowNMEACAN(FALSE);
-  m_choicePriority->Show(advanced);
-  m_stPriority->Show(advanced);
   SetDSFormRWStates();
   LayoutDialog();
 }
 
 void ConnectionEditDialog::SetNMEAFormToNet(void) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   ShowNMEACommon(TRUE);
   ShowNMEANet(TRUE);
   ShowNMEAGPS(FALSE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEACAN(FALSE);
-  m_choicePriority->Show(advanced);
-  m_stPriority->Show(advanced);
   SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
 
@@ -1192,16 +1209,13 @@ void ConnectionEditDialog::SetNMEAFormToNet(void) {
 }
 
 void ConnectionEditDialog::SetNMEAFormToCAN(void) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   ShowNMEACommon(FALSE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEACAN(TRUE);
-  m_choicePriority->Show(advanced);
-  m_stPriority->Show(advanced);
-
   sbSizerInFilter->Show(false);
   sbSizerOutFilter->Show(false);
   SetDSFormRWStates();
@@ -1249,12 +1263,13 @@ void ConnectionEditDialog::ClearNMEAForm(void) {
 }
 
 void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
+  m_more->Show(true);
   m_cbInput->Show();
   m_cbOutput->Show();
   m_cbCheckCRC->Show(advanced);
-  m_stPrecision->Show(advanced);
-  m_choicePrecision->Show(advanced);
+  m_stPrecision->Show(true);
+  m_choicePrecision->Show(true);
   m_stTalkerIdText->Show(advanced);
   m_TalkerIdText->Show(advanced);
 
@@ -1264,7 +1279,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
   m_cbCheckSKDiscover->Show();
   m_stAuthToken->Show(advanced);
   m_tAuthToken->Show(advanced);
-  m_ButtonSKDiscover->Show(advanced);
+  m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show(advanced);
 
   if (m_rbTypeSerial->GetValue()) {
@@ -1360,7 +1375,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbOutput->Hide();
       ShowInFilter(false);
       ShowOutFilter(false);
-
+      m_cbCheckCRC->Hide();
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
       m_stTalkerIdText->Hide();
@@ -1371,6 +1386,8 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_tAuthToken->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
+      m_cbGarminHost->Hide();
+      m_more->Hide();
 
 
     } else if (m_rbNetProtoSignalK->GetValue()) {
@@ -1386,6 +1403,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_TalkerIdText->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
+      m_cbGarminHost->Hide();
 
     } else {    // tcp or udp
       m_stAuthToken->Hide();
@@ -1408,16 +1426,17 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
         ShowInFilter(false);
         ShowOutFilter(false);
+        if (m_rbNetProtoTCP->GetValue()) m_more->Hide();
       }
       if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
           DataProtocol::PROTO_NMEA0183) {
-        m_cbCheckCRC->Hide();
+        
 
         m_stPrecision->Show(advanced);
         m_choicePrecision->Show(advanced);
         m_stTalkerIdText->Show(advanced);
         m_TalkerIdText->Show(advanced);
-
+        m_cbGarminHost->Show(advanced);
         m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
         m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
         m_stTalkerIdText->Enable(m_cbOutput->IsChecked() && advanced);
@@ -1599,7 +1618,7 @@ void ConnectionEditDialog::SetUDPNetAddressVisiblity(void) {
     m_tNetAddress->Show(TRUE);
     m_tNetAddress->Enable(TRUE);
   }
-  if (m_rbNetProtoUDP->GetValue() && m_cbAdvanced->GetValue()) {
+  if (m_rbNetProtoUDP->GetValue() && m_advanced) {
     m_cbMultiCast->Show();
   } else
     m_cbMultiCast->Hide();
@@ -1907,6 +1926,17 @@ void ConnectionEditDialog::OnCbMultiCast(wxCommandEvent& event) {
   LayoutDialog();
 }
 
+void ConnectionEditDialog::OnClickMore(wxMouseEvent& event) {
+  // m_cbAdvanced->SetValue(!m_cbAdvanced->IsChecked());
+  m_advanced = !m_advanced;
+  m_more->SetLabelMarkup(m_advanced ? LESS : MORE);
+  if (m_rbTypeNet->GetValue())
+      SetNMEAFormForNetProtocol();
+  else
+      SetNMEAFormForSerialProtocol();
+  LayoutDialog();
+}
+
 void ConnectionEditDialog::OnCbAdvanced(wxCommandEvent& event) {
   if (m_rbTypeNet->GetValue())
       SetNMEAFormForNetProtocol();
@@ -1941,11 +1971,11 @@ void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
 void ConnectionEditDialog::SetNMEAFormForSerialProtocol() {
   bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
                          DataProtocol::PROTO_NMEA0183;
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   ShowNMEACommon(n0183ctlenabled && advanced);
   m_cbGarminHost->Show(n0183ctlenabled && advanced);
-  m_stPriority->Show(advanced);
-  m_choicePriority->Show(advanced);
+  m_stPriority->Show(true);
+  m_choicePriority->Show(true);
 
   SetDSFormRWStates();
   LayoutDialog();
@@ -1954,11 +1984,11 @@ void ConnectionEditDialog::SetNMEAFormForSerialProtocol() {
 void ConnectionEditDialog::SetNMEAFormForNetProtocol() {
   bool n0183ctlenabled = (DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
                          DataProtocol::PROTO_NMEA0183;
-  bool advanced = m_cbAdvanced->IsChecked();
+  bool advanced = m_advanced;
   ShowNMEACommon(n0183ctlenabled && advanced);
   m_cbGarminHost->Show(n0183ctlenabled && advanced);
-  m_stPriority->Show(true && advanced);
-  m_choicePriority->Show(true && advanced);
+  m_stPriority->Show(true);
+  m_choicePriority->Show(true);
 
   SetDSFormRWStates();
 
@@ -2326,10 +2356,10 @@ void ConnectionEditDialog::ConnectControls(){
   m_cbMultiCast->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                       wxCommandEventHandler(ConnectionEditDialog::OnCbMultiCast),
                       NULL, this);
-  m_cbAdvanced->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnCbAdvanced), NULL, this);
-
+  // m_cbAdvanced->Connect(
+  //    wxEVT_COMMAND_CHECKBOX_CLICKED,
+  //    wxCommandEventHandler(ConnectionEditDialog::OnCbAdvanced), NULL, this);
+  m_more->Bind(wxEVT_LEFT_DOWN, &ConnectionEditDialog::OnClickMore, this);
 
 // input/output control
   m_cbInput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,

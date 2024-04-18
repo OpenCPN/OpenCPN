@@ -92,6 +92,7 @@ public:
   void OnCbOutput(wxCommandEvent &event);
   void OnCbMultiCast(wxCommandEvent &event);
   void OnCbAdvanced(wxCommandEvent &event);
+  void OnClickMore(wxMouseEvent &event);
   void OnRbOutput(wxCommandEvent &event);
   void OnBtnOStcs(wxCommandEvent &event);
   void OnConnValChange(wxCommandEvent &event);
@@ -197,6 +198,7 @@ public:
 #endif
 
   bool connectionsaved;
+  bool m_advanced = false;
   bool m_connection_enabled;
   bool m_bNMEAParams_shown;
   int m_btNoChangeCounter, m_btlastResultCount, m_BTscanning;
@@ -208,6 +210,9 @@ public:
 
 
   //DECLARE_EVENT_TABLE()
+protected:
+  wxString MORE, LESS;
+  wxStaticText *m_more;
 
 };
 
