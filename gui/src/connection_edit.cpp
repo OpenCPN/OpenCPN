@@ -374,13 +374,14 @@ void ConnectionEditDialog::Init() {
 
   m_rbTypeCAN = new wxRadioButton(m_scrolledwin, wxID_ANY, "socketCAN",
                                   wxDefaultPosition, wxDefaultSize, 0);
-#if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
+ #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
   bSizer15->Add(m_rbTypeCAN, 0, wxALL, 5);
-#else
+ #else
   m_rbTypeCAN->Hide();
-#endif
+ #endif
 
-  if (OCPNPlatform::hasInternalGPS()) {
+   if (OCPNPlatform::hasInternalGPS()) {
+ 
     m_rbTypeInternalGPS =
         new wxRadioButton(m_scrolledwin, wxID_ANY, _("Built-in GPS"),
                           wxDefaultPosition, wxDefaultSize, 0);
@@ -389,7 +390,8 @@ void ConnectionEditDialog::Init() {
     m_rbTypeInternalGPS = NULL;
 
   // has built-in Bluetooth
-  if (OCPNPlatform::hasInternalBT()) {
+   if (OCPNPlatform::hasInternalBT()) {
+ 
     m_rbTypeInternalBT =
         new wxRadioButton(m_scrolledwin, wxID_ANY, _("Built-in Bluetooth SPP"),
                           wxDefaultPosition, wxDefaultSize, 0);
@@ -416,14 +418,15 @@ void ConnectionEditDialog::Init() {
 
     wxArrayString mt;
     mt.Add("unscanned");
-    int ref_size = m_parent->GetCharWidth();
+    
+    int ref_size = m_scrolledwin->GetCharWidth();
     m_choiceBTDataSources =
         new wxChoice(m_scrolledwin, wxID_ANY, wxDefaultPosition,
-                     wxSize(30 * ref_size, 2 * ref_size), mt);
+                      wxSize(40 * ref_size, 2 * ref_size), mt);
     //m_choiceBTDataSources->Bind(wxEVT_MOUSEWHEEL, &ConnectionEditDialog::OnWheelChoice, this);
-
+    m_choiceBTDataSources->SetSelection(0);
     m_choiceBTDataSources->Hide();
-    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, /*wxEXPAND |*/ wxTOP,
+    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP,
                                 5);
 
   } else
@@ -867,11 +870,7 @@ void ConnectionEditDialog::Init() {
 
   bSizer12->AddSpacer(GetCharWidth() * 5);
 
-  // m_cbAdvanced = new wxCheckBox(m_scrolledwin, wxID_ANY, _("Advanced Options"),
-  //                              wxDefaultPosition, wxDefaultSize, 0);
-  // sbSizerConnectionProps->Add(m_cbAdvanced, 0, wxALL, 2);
-
-  // m_cbAdvanced->Show(false);
+ 
   sbSizerConnectionProps->AddSpacer(20);
 
   m_more = new wxStaticText(m_scrolledwin, wxID_ANY, "4 chars",
@@ -897,7 +896,7 @@ void ConnectionEditDialog::Init() {
   new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
                            [&](ObservedEvt&) { LoadSerialPorts(m_comboPort); });
 
-  // adapterInfo = new AdapterInfo();
+
 }
 
 
@@ -1079,8 +1078,6 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   m_cbOutput->Show(visible);
   m_stPrecision->Show(visible && advanced);
   m_choicePrecision->Show(visible && advanced);
-  //m_choicePriority->Show(visible);
-  //m_stPriority->Show(visible);
   m_stPrecision->Show(visible && advanced);
   m_stTalkerIdText->Show(visible && advanced);
   m_TalkerIdText->Show(visible && advanced);
@@ -1141,8 +1138,6 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   m_cbGarminHost->Show(visible && advanced);
   m_stSerialComment->Show(visible);
   m_tSerialComment->Show(visible);
-  //m_choicePriority->Show(visible);
-  //m_stPriority->Show(visible);
 }
 
 void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
@@ -1151,11 +1146,13 @@ void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
   m_stAuthToken->Hide();
   m_tAuthToken->Hide();
   m_cbOutput->Hide();
+ 
 }
 
 void ConnectionEditDialog::ShowNMEACAN(bool visible) {
   m_stCANSource->Show(visible);
   m_choiceCANSource->Show(visible);
+  
 }
 
 void ConnectionEditDialog::ShowNMEABT(bool visible) {
@@ -1234,6 +1231,7 @@ void ConnectionEditDialog::SetNMEAFormToGPS(void) {
   //m_container->FitInside();
   // Fit();
   SetDSFormRWStates();
+  LayoutDialog();
 }
 
 void ConnectionEditDialog::SetNMEAFormToBT(void) {
@@ -1248,6 +1246,7 @@ void ConnectionEditDialog::SetNMEAFormToBT(void) {
   //m_container->FitInside();
   // Fit();
   SetDSFormRWStates();
+  LayoutDialog();
 }
 
 void ConnectionEditDialog::ClearNMEAForm(void) {
@@ -1327,11 +1326,17 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     m_cbOutput->Hide();
+    m_cbInput->Hide();
     ShowOutFilter( false );
+    ShowInFilter(false);
     m_stTalkerIdText->Hide();
     m_TalkerIdText->Hide();
     m_stPrecision->Hide();
     m_choicePrecision->Hide();
+    m_cbCheckCRC->Hide();
+    m_cbGarminHost->Hide();
+    m_more->Hide();
+    
   }
 
   if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue()) {
@@ -1341,6 +1346,14 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
     m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
+
+    ShowInFilter(m_cbInput->IsChecked() && advanced);
+    ShowOutFilter(m_cbOutput->IsChecked() && advanced);
+
+    m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
+    m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
+    m_stTalkerIdText->Show(m_cbOutput->IsChecked() && advanced);
+    m_TalkerIdText->Show(m_cbOutput->IsChecked() && advanced);
   }
 
   if (m_rbTypeCAN->GetValue()) {
@@ -1350,7 +1363,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
     m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
-
+    m_cbGarminHost->Hide();
     m_cbInput->Hide();
     m_cbOutput->Hide();
 
@@ -1365,6 +1378,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
     m_stNetDataProtocol->Hide();
     m_choiceNetDataProtocol->Hide();
+    m_more->Hide();
   }
 
   if (m_rbTypeNet->GetValue()) {
@@ -1458,7 +1472,7 @@ void ConnectionEditDialog::SetDSFormRWStates(void) {
     ShowOutFilter(m_cbOutput->IsChecked());
   } else if (m_rbNetProtoGPSD->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(DefaultGPSDPort);
+      m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
 //    m_cbOutput->SetValue(FALSE);
@@ -1468,7 +1482,7 @@ void ConnectionEditDialog::SetDSFormRWStates(void) {
     m_btnOutputStcList->Enable(FALSE);
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(DefaultSignalKPort);
+      m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
     m_cbInput->SetValue(TRUE);
     m_cbInput->Enable(FALSE);
 //   m_cbOutput->SetValue(FALSE);
@@ -1479,9 +1493,9 @@ void ConnectionEditDialog::SetDSFormRWStates(void) {
   } else {
     if (m_tNetPort->GetValue() == wxEmptyString)
       if (m_rbNetProtoTCP->GetValue()) {
-        m_tNetPort->SetValue(DefaultTCPPort);
+        m_tNetPort->SetValue(DEFAULT_TCP_PORT);
       } else {
-        m_tNetPort->SetValue(DefaultUDPPort);
+        m_tNetPort->SetValue(DEFAULT_UDP_PORT);
       }
     m_cbInput->Enable(TRUE);
     m_cbOutput->Enable(TRUE);
@@ -1641,7 +1655,7 @@ void ConnectionEditDialog::SetDefaultConnectionParams(void) {
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
   m_choicePriority->Select(m_choicePriority->FindString("1"));
 
-  m_tNetAddress->SetValue(DefaultIPAddress);
+  m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
 
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
@@ -1827,27 +1841,27 @@ void ConnectionEditDialog::OnBtnOStcs(wxCommandEvent& event) {
 void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
   if (m_rbNetProtoGPSD->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DefaultGPSDPort);
+      m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
     }
-    m_tNetAddress->SetValue(DefaultIPAddress);
+    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
   } else if (m_rbNetProtoUDP->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DefaultUDPPort);
+      m_tNetPort->SetValue(DEFAULT_UDP_PORT);
     }
-    m_tNetAddress->SetValue(DefaultIPAddress);
+    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() && m_rbNetProtoUDP->GetValue())
-      m_tNetAddress->SetValue(DefaultIPAddress);
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
 
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DefaultSignalKPort);
+      m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
     }
-    m_tNetAddress->SetValue(DefaultIPAddress);
+    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
   } else if (m_rbNetProtoTCP->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DefaultTCPPort);
+      m_tNetPort->SetValue(DEFAULT_TCP_PORT);
     }
-    m_tNetAddress->SetValue(DefaultIPAddress);
+    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
   }
 
 
@@ -1874,7 +1888,7 @@ void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
   if (checked && m_rbNetProtoUDP->GetValue() && m_rbTypeNet->GetValue()) {
     m_cbOutput->SetValue(FALSE);
  
-    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(DefaultIPAddress);
+    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     
   }
   SetDSFormRWStates();
@@ -1894,9 +1908,9 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
 
   if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
     if (checked) {
-      m_tNetAddress->SetValue(DefaultIPAddress); // IP address for output
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS); // IP address for output
     } else {
-      m_tNetAddress->SetValue(DefaultIPAddress); // IP address for input
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS); // IP address for input
     }
   }
 
@@ -1916,9 +1930,9 @@ void ConnectionEditDialog::OnCbMultiCast(wxCommandEvent& event) {
       m_tNetAddress->SetValue("224.0.2.21");
     }
   } else if (m_cbOutput->IsChecked()) {
-      m_tNetAddress->SetValue(DefaultIPAddress); // IP address for output
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS); // IP address for output
     } else {
-      m_tNetAddress->SetValue(DefaultIPAddress);  // IP address for input
+      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
     }
 
 
@@ -2497,8 +2511,8 @@ bool ConnectionEditDialog::IsAddressMultiCast(wxString& ip) {
 
 
 bool ConnectionEditDialog::IsDefaultPort(wxString address) {
-    return  (address == DefaultTCPPort) || (address == DefaultUDPPort) || (address == DefaultSignalKPort) ||
-           (address == DefaultGPSDPort);
+    return  (address == DEFAULT_TCP_PORT) || (address == DEFAULT_UDP_PORT) || (address == DEFAULT_SIGNALK_PORT) ||
+           (address == DEFAULT_GPSD_PORT);
 }
 
 bool ConnectionEditDialog::IsAddressBroadcast(wxString& ip) {

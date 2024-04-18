@@ -48,11 +48,11 @@ class ConnectionParamsPanel;
 //----------------------------------------------------------------------------
 class ConnectionEditDialog : public wxDialog {
 public:
-  const wxString DefaultTCPPort = "10110";
-  const wxString DefaultUDPPort = "10110";
-  const wxString DefaultGPSDPort = "2947";
-  const wxString DefaultSignalKPort = "3000";
-  const wxString DefaultIPAddress = "0.0.0.0";
+  const wxString DEFAULT_TCP_PORT = "10110";
+  const wxString DEFAULT_UDP_PORT = "10110";
+  const wxString DEFAULT_GPSD_PORT = "2947";
+  const wxString DEFAULT_SIGNALK_PORT = "3000";
+  const wxString DEFAULT_IP_ADDRESS = "0.0.0.0";
 
   ConnectionEditDialog();
  // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
