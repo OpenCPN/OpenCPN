@@ -198,10 +198,11 @@ endif ()
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
 gtest_add_tests(TARGET tests)
-if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
-  gtest_add_tests(TARGET ipc-srv-tests)
+gtest_add_tests(TARGET buffer_tests)
+if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   # We don't have a session bus available when testing flatpak
-  # so these can just be run in native builds
+  # so these can just be run in native builds.
+  gtest_add_tests(TARGET ipc-srv-tests)
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 

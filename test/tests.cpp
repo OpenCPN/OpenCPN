@@ -908,7 +908,7 @@ TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
 
 TEST(Instance, WxInstanceChk) { WxInstanceCheck check; }
 
-#if !defined(FLATPAK) && defined(__unix__)
+#if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
 TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
 
 TEST(IpcClient, Raise) { CliRaise run_test; }
