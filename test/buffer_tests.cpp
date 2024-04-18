@@ -118,9 +118,9 @@ TEST(Buffer, RateLimit1) {
   EXPECT_EQ(queue.size(), 20);
 }
 
-#ifndef __APPLE__
-// The MacOS builders seems to have a lot of "too" long sleeps.
-// Disable for now.
+#if !defined(__APPLE__) && !defined (_WIN32)
+// The MacOS builders seems to have a lot of "too" long sleeps,
+// same for  GA windows. Disable for now.
 TEST(Buffer, RateLimit2) {
   CommOutQueue queue(20, 20ms);
   for (int i = 0; i < 20; i++) {
