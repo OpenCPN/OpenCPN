@@ -96,6 +96,7 @@
 #include "s52utils.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "SendToGpsDlg.h"
+#include "shapefile_basemap.h"
 #include "styles.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
@@ -282,6 +283,8 @@ extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
 extern bool g_boptionsactive;
+ShapeBaseChartSet gShapeBasemap;
+
 
 //  TODO why are these static?
 static int mouse_x;
@@ -589,6 +592,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   //    Create the default world chart
   pWorldBackgroundChart = new GSHHSChart;
+  gShapeBasemap.Reset();
 
   //    Create the default depth unit emboss maps
   m_pEM_Feet = NULL;
@@ -11200,6 +11204,8 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
       SetVPRotation(VPoint.skew);
 
       pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
+      gShapeBasemap.RenderViewOnDC(bgdc, VPoint);
+
       SetVPRotation(r);
     }
   }  // temp_dc.IsOk();

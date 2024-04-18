@@ -940,6 +940,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/SencManager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
+    ${GUI_SRC_DIR}/shapefile_basemap.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
@@ -1239,6 +1240,14 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
+
+add_subdirectory("libs/shapelib")
+target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
+
+add_subdirectory("libs/ShapefileCpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::ShapefileCpp)
+target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
+target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
   # TODO: On Linux libdnet may be available from system packages
@@ -1599,6 +1608,20 @@ if (OCPN_BUNDLE_GSHHS)
   )
 endif ()
 
+set(basemap_shp
+        data/basemap_shp/basemap_crude_10x10.cpg
+        data/basemap_shp/basemap_crude_10x10.prj
+        data/basemap_shp/basemap_crude_10x10.shp
+        data/basemap_shp/basemap_crude_10x10.dbf
+        data/basemap_shp/basemap_crude_10x10.qmd
+        data/basemap_shp/basemap_crude_10x10.shx
+        data/basemap_shp/basemap_low.cpg
+        data/basemap_shp/basemap_low.prj
+        data/basemap_shp/basemap_low.shx
+        data/basemap_shp/basemap_low.dbf
+        data/basemap_shp/basemap_low.shp
+        )
+
 # Various data files
 
 set(uiData
@@ -1663,7 +1686,9 @@ if (APPLE)
   set_source_files_properties(
     ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
   )
-
+  set_source_files_properties(
+    ${basemap_shp} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/basemap_shp
+  )
   set_source_files_properties(
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
@@ -1967,6 +1992,8 @@ if (NOT APPLE)
   if (OCPN_BUNDLE_GSHHS)
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   endif ()
+
+  install(FILES ${basemap_shp} DESTINATION ${PREFIX_PKGDATA}/basemap_shp)
 
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")

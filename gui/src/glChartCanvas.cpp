@@ -98,6 +98,7 @@
 #include "track_gui.h"
 #include "MUIBar.h"
 #include "iENCToolbar.h"
+#include "shapefile_basemap.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -228,6 +229,7 @@ extern bool g_PrintingInProgress;
 ocpnGLOptions g_GLOptions;
 
 wxColor s_regionColor;
+extern ShapeBaseChartSet gShapeBasemap;
 
 //    For VBO(s)
 bool g_b_EnableVBO;
@@ -3635,7 +3637,8 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
     }
   }
 
-  m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+  //m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+  gShapeBasemap.RenderViewOnDC(dc, vp);
 
   glDisable(GL_SCISSOR_TEST);
 
@@ -4762,6 +4765,7 @@ void glChartCanvas::RenderCanvasBackingChart(ocpnDC &dc,
 
   bool world_view = false;
   RenderWorldChart(dc, cvp, rtex, world_view);
+  gShapeBasemap.RenderViewOnDC(dc, cvp);
 
   //    dc.SetPen(wxPen(wxColour(254,254,0), 3));
   //    dc.DrawLine( 0, 0, m_cache_tex_x, m_cache_tex_y);
