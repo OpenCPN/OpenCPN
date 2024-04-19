@@ -33,10 +33,19 @@
 #include <map>
 #include <thread>
 #include <future>
-#include <filesystem>
 #include "ShapefileReader.hpp"
 #include "poly_math.h"
 #include "ocpndc.h"
+
+#if (defined(__clang_major__) && (__clang_major__ < 15))
+// MacOS 1.13
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
+#endif
 
 /// @brief latitude/longitude key for 1 degree cells
 class LatLonKey {
@@ -99,7 +108,7 @@ public:
         _filename(filename),
         _reader(nullptr),
         _color(color){
-    _is_usable = std::filesystem::exists(filename);
+    _is_usable = fs::exists(filename);
   }
 
   ShapeBaseChart(const ShapeBaseChart &t) {
@@ -122,7 +131,7 @@ public:
   void RenderViewOnDC(ocpnDC &dc, ViewPort &vp) { DrawPolygonFilled(dc, vp); }
   static const std::string ConstructPath(const std::string &dir,
                                          const std::string &quality_suffix) {
-    return dir + std::filesystem::path::preferred_separator + "basemap_" +
+    return dir + fs::path::preferred_separator + "basemap_" +
            quality_suffix + ".shp";
   }
 

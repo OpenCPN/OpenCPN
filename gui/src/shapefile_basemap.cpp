@@ -194,31 +194,31 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
   _loaded = false;
   _basemap_map.clear();
 
-  if (std::filesystem::exists(ShapeBaseChart::ConstructPath(dir, "crude_10x10"))) {
+  if (fs::exists(ShapeBaseChart::ConstructPath(dir, "crude_10x10"))) {
     auto c = ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "crude_10x10"), 300000000,
                *wxBLUE);
     c._dmod= 10;
     _basemap_map.insert(std::make_pair(Quality::crude, c));
   }
 
-  if (std::filesystem::exists(ShapeBaseChart::ConstructPath(dir, "low"))) {
+  if (fs::exists(ShapeBaseChart::ConstructPath(dir, "low"))) {
     _basemap_map.insert(std::make_pair(
         Quality::low, ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "low"),
                                      15000000, *wxBLACK)));
   }
-  if (std::filesystem::exists(ShapeBaseChart::ConstructPath(dir, "medium"))) {
+  if (fs::exists(ShapeBaseChart::ConstructPath(dir, "medium"))) {
     _basemap_map.insert(std::make_pair(
         Quality::medium,
         ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "medium"), 1000000,
                        *wxGREEN)));
   }
-  if (std::filesystem::exists(ShapeBaseChart::ConstructPath(dir, "high"))) {
+  if (fs::exists(ShapeBaseChart::ConstructPath(dir, "high"))) {
     _basemap_map.insert(std::make_pair(
         Quality::high,
         ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "high"), 300000,
                        *wxCYAN)));
   }
-  if (std::filesystem::exists(ShapeBaseChart::ConstructPath(dir, "full"))) {
+  if (fs::exists(ShapeBaseChart::ConstructPath(dir, "full"))) {
     _basemap_map.insert(std::make_pair(
         Quality::full,
         ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "full"), 100000,
