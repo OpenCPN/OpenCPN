@@ -2,7 +2,6 @@ project(ShapefileCppLib)
 
 set(ShapefileCppLib_SOURCES 
 	src/ShapefileReader.cpp
-	src/ShapefileWriter.cpp
 	src/Schema.cpp
 	src/FeatureIterator.cpp
 	src/GeometryType.cpp
