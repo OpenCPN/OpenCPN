@@ -112,8 +112,8 @@ public:
   void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
   void SetUDPNetAddressVisiblity(void);
-  bool IsAddressMultiCast(wxString &ip);
-  bool IsAddressBroadcast(wxString &ip);
+  bool IsAddressMultiCast(wxString ip);
+  bool IsAddressBroadcast(wxString ip);
   bool IsDefaultPort(wxString address);
 
   void ClearNMEAForm(void);

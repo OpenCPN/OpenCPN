@@ -1514,12 +1514,13 @@ void ConnectionEditDialog::SetDSFormRWStates(void) {
     m_rbOIgnore->Enable(FALSE);
     UpdateDiscoverStatus(wxEmptyString);
   } else {
-    if (m_tNetPort->GetValue() == wxEmptyString)
+    if (m_tNetPort->GetValue() == wxEmptyString) {
       if (m_rbNetProtoTCP->GetValue()) {
         m_tNetPort->SetValue(DEFAULT_TCP_PORT);
       } else {
         m_tNetPort->SetValue(DEFAULT_UDP_PORT);
       }
+    }
     m_cbInput->Enable(TRUE);
     m_cbOutput->Enable(TRUE);
     m_rbOAccept->Enable(TRUE);
@@ -2519,7 +2520,7 @@ void ConnectionEditDialog::ConnectControls(){
 }
 
 
-bool ConnectionEditDialog::IsAddressMultiCast(wxString& ip) {
+bool ConnectionEditDialog::IsAddressMultiCast(wxString ip) {
   wxArrayString bytes = wxSplit(ip, '.');
   if (bytes.size() != 4) {
     return false;
@@ -2538,7 +2539,7 @@ bool ConnectionEditDialog::IsDefaultPort(wxString address) {
            (address == DEFAULT_GPSD_PORT);
 }
 
-bool ConnectionEditDialog::IsAddressBroadcast(wxString& ip) {
+bool ConnectionEditDialog::IsAddressBroadcast(wxString ip) {
   wxArrayString bytes = wxSplit(ip, '.');
   if (bytes.size() != 4) {
     std::cerr << "Invalid IP format." << std::endl;
