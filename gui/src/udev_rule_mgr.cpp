@@ -313,7 +313,7 @@ public:
   DongleRuleDialog(wxWindow* parent)
       : wxDialog(parent, wxID_ANY, _("Manage dongle udev rule")) {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand();
+    auto flags = wxSizerFlags().Expand().Border();
     std::string intro(DONGLE_INTRO);
     if (getenv("FLATPAK_ID")) {
       intro += FLATPAK_INTRO_TRAILER;

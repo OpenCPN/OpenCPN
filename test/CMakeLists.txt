@@ -132,6 +132,46 @@ if (HAVE_LIBUDEV)
   target_link_libraries(tests PRIVATE ocpn::libudev)
 endif ()
 
+set(BUF_TEST_SRC
+  buffer_tests.cpp
+  ${MODEL_SRC_DIR}/cmdline.cpp
+  ${MODEL_SRC_DIR}/config_vars.cpp
+  ${MODEL_SRC_DIR}/comm_drv_registry.cpp
+  ${MODEL_SRC_DIR}/comm_navmsg.cpp
+  ${MODEL_SRC_DIR}/comm_out_queue.cpp
+  ${MODEL_SRC_DIR}/ocpn_utils.cpp
+  ${MODEL_SRC_DIR}/base_platform.cpp
+  ${MODEL_SRC_DIR}/logger.cpp
+  ${MODEL_SRC_DIR}/ocpn_plugin.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+)
+
+if (APPLE)
+  list(APPEND BUF_TEST_SRC ${MODEL_SRC_DIR}/macutils.c)
+endif ()
+
+add_executable(buffer_tests ${BUF_TEST_SRC})
+
+target_link_libraries(buffer_tests PRIVATE observable::observable)
+target_link_libraries(buffer_tests PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(buffer_tests PRIVATE ocpn::gtest)
+if (MSVC)
+  target_link_libraries(buffer_tests PRIVATE setupapi.lib)
+endif ()
+if (APPLE)
+target_link_libraries(buffer_tests PRIVATE ocpn::filesystem)
+endif ()
+
+
+target_include_directories(buffer_tests PRIVATE
+  ${CMAKE_SOURCE_DIR}/model/include
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/resources
+)
+target_compile_definitions(
+  buffer_tests PUBLIC TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"
+)
+
 if (LINUX)
   add_executable(dbus_tests
     dbus_tests.cpp
@@ -198,10 +238,11 @@ endif ()
 target_link_libraries(tests PRIVATE ocpn::gtest)
 include(GoogleTest)
 gtest_add_tests(TARGET tests)
-if (LINUX AND NOT DEFINED ENV{FLATPAK_ID})
-  gtest_add_tests(TARGET ipc-srv-tests)
+gtest_add_tests(TARGET buffer_tests)
+if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   # We don't have a session bus available when testing flatpak
-  # so these can just be run in native builds
+  # so these can just be run in native builds.
+  gtest_add_tests(TARGET ipc-srv-tests)
   gtest_add_tests(TARGET dbus_tests)
 endif ()
 
