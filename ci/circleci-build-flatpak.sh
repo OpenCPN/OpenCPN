@@ -87,7 +87,7 @@ appstreamcli validate app/files/share/appdata/org.opencpn.OpenCPN.appdata.xml ||
 
 # build the single file bundle, the actual artifact.
 flatpak build-bundle repo \
-    opencpn+$(git rev-parse --short HEAD).flatpak org.opencpn.OpenCPN devel
+    opencpn+$(git rev-parse --short HEAD).flatpak org.opencpn.OpenCPN ci
 
 # Make sure upload script has what it needs.
 sudo apt-get --yes --force-yes install python3-pip python3-setuptools
