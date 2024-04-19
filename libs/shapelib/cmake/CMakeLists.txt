@@ -29,11 +29,11 @@ get_filename_component (PROJECT_ROOT_DIR "${PROJECT_ROOT_DIR}/." PATH)
 configure_file (project-config.cmake.in project-config.cmake @ONLY)
 configure_file (project-config-version.cmake.in
   project-config-version.cmake @ONLY)
-install (FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/project-config.cmake"
-  DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
-  RENAME "${PROJECT_NAME}-config.cmake")
-install (FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/project-config-version.cmake"
-  DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
-  RENAME "${PROJECT_NAME}-config-version.cmake")
+#install (FILES
+#  "${CMAKE_CURRENT_BINARY_DIR}/project-config.cmake"
+#  DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
+#  RENAME "${PROJECT_NAME}-config.cmake")
+#install (FILES
+#  "${CMAKE_CURRENT_BINARY_DIR}/project-config-version.cmake"
+#  DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
+#  RENAME "${PROJECT_NAME}-config-version.cmake")

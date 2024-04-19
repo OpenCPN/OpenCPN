@@ -47,23 +47,23 @@ if(BUILD_SHAPELIB_CONTRIB)
   target_link_libraries(shpwkb shp)
   set_target_properties(shpwkb PROPERTIES FOLDER "contrib")
 
-  install(
-    TARGETS
-      csv2shp
-      dbfcat
-      dbfinfo
-      shpcat
-      shpdxf
-      shpfix
-      shpsort
-      Shape_PointInPoly
-      shpcentrd
-      shpdata
-      shpinfo
-      shpwkb
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  )
+#  install(
+#    TARGETS
+#      csv2shp
+#      dbfcat
+#      dbfinfo
+#      shpcat
+#      shpdxf
+#      shpfix
+#      shpsort
+#      Shape_PointInPoly
+#      shpcentrd
+#      shpdata
+#      shpinfo
+#      shpwkb
+#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#  )
 endif()
