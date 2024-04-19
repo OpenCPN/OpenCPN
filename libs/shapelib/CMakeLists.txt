@@ -81,11 +81,11 @@ endif()
 # Export build information to help other projects link installed
 # shapelib software.  Only one of these signatures is required
 # for the export_shp name.
-install(EXPORT targets
-  NAMESPACE ${PROJECT_NAME}::
-  DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
-  FILE "${PROJECT_NAME}-targets.cmake"
-)
+#install(EXPORT targets
+#  NAMESPACE ${PROJECT_NAME}::
+#  DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
+#  FILE "${PROJECT_NAME}-targets.cmake"
+#)
 
 # Initial boilerplate done, now build library and executables.
 
@@ -146,12 +146,12 @@ if(USE_RPATH)
   )
 endif()
 
-install(TARGETS ${PACKAGE}
-  EXPORT targets
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+#install(TARGETS ${PACKAGE}
+#  EXPORT targets
+#  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#)
 
 # executables to be built and installed.
 set(executables
@@ -223,14 +223,14 @@ foreach(executable ${executables})
   endif()
 endforeach(executable ${executables})
 
-install(TARGETS ${executables}
-  EXPORT targets DESTINATION ${CMAKE_INSTALL_BINDIR})
+#install(TARGETS ${executables}
+#  EXPORT targets DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Install header
-install(FILES shapefil.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#install(FILES shapefil.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # For compatibility with older installation
-install(FILES shapefil.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/shapelib)
+#install(FILES shapefil.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/shapelib)
 
 if(BUILD_TESTING)
   # Set up tests:
