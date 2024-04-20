@@ -177,7 +177,6 @@ ConnectionEditDialog::~ConnectionEditDialog() {}
 
 
 void ConnectionEditDialog::SetInitialSettings(void) {
-  m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
   LoadSerialPorts(m_comboPort);
 }
 
@@ -769,19 +768,6 @@ void ConnectionEditDialog::Init() {
   fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
-  m_stTalkerIdText = new wxStaticText(
-      m_scrolledwin, wxID_ANY,
-      wxString::Format("%s (%s)", _("Talker ID"), _("blank = default ID")),
-      wxDefaultPosition, wxDefaultSize, 0);
-  m_stTalkerIdText->Wrap(-1);
-  fgSizer5->Add(m_stTalkerIdText, 0, wxALL, 2);
-
-  // FIXME Verify "-1" ID is OK
-  m_TalkerIdText = new wxTextCtrl(m_scrolledwin, -1, "", wxDefaultPosition,
-                                  wxSize(50, -1), 0);
-  m_TalkerIdText->SetMaxLength(2);
-  fgSizer5->Add(m_TalkerIdText, 0, wxALIGN_LEFT | wxALL, group_item_spacing);
-
   m_stPrecision =
       new wxStaticText(m_scrolledwin, wxID_ANY, _("APB bearing precision"),
                        wxDefaultPosition, wxDefaultSize, 0);
@@ -1102,8 +1088,6 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   m_stPrecision->Show(visible && advanced);
   m_choicePrecision->Show(visible && advanced);
   m_stPrecision->Show(visible && advanced);
-  m_stTalkerIdText->Show(visible && advanced);
-  m_TalkerIdText->Show(visible && advanced);
   m_cbCheckCRC->Show(visible && advanced);
   m_stAuthToken->Show(visible && advanced);
   m_tAuthToken->Show(visible && advanced);
@@ -1111,8 +1095,6 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
     const bool bout_enable = (m_cbOutput->IsChecked() && advanced);
     m_stPrecision->Enable(bout_enable);
     m_choicePrecision->Enable(bout_enable);
-    m_stTalkerIdText->Enable(bout_enable);
-    m_TalkerIdText->Enable(bout_enable);
   } else {
     sbSizerOutFilter->SetDimension(0, 0, 0, 0);
     sbSizerInFilter->SetDimension(0, 0, 0, 0);
@@ -1292,8 +1274,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
   m_cbCheckCRC->Show(advanced);
   m_stPrecision->Show(true);
   m_choicePrecision->Show(true);
-  m_stTalkerIdText->Show(advanced);
-  m_TalkerIdText->Show(advanced);
 
   ShowInFilter(advanced);
   ShowOutFilter(advanced);
@@ -1321,8 +1301,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       ShowInFilter(false);
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
-      m_stTalkerIdText->Hide();
-      m_TalkerIdText->Hide();
       m_cbCheckCRC->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
@@ -1336,8 +1314,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
       m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
       m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
-      m_stTalkerIdText->Show(m_cbOutput->IsChecked() && advanced);
-      m_TalkerIdText->Show(m_cbOutput->IsChecked() && advanced);
     }
   }
 
@@ -1352,8 +1328,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
     m_cbInput->Hide();
     ShowOutFilter( false );
     ShowInFilter(false);
-    m_stTalkerIdText->Hide();
-    m_TalkerIdText->Hide();
     m_stPrecision->Hide();
     m_choicePrecision->Hide();
     m_cbCheckCRC->Hide();
@@ -1375,8 +1349,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
     m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
     m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
-    m_stTalkerIdText->Show(m_cbOutput->IsChecked() && advanced);
-    m_TalkerIdText->Show(m_cbOutput->IsChecked() && advanced);
   }
 
   if (m_rbTypeCAN->GetValue()) {
@@ -1395,8 +1367,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
     m_stPrecision->Hide();
     m_choicePrecision->Hide();
-    m_stTalkerIdText->Hide();
-    m_TalkerIdText->Hide();
     m_cbCheckCRC->Hide();
 
     m_stNetDataProtocol->Hide();
@@ -1415,8 +1385,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbCheckCRC->Hide();
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
-      m_stTalkerIdText->Hide();
-      m_TalkerIdText->Hide();
       m_ButtonSKDiscover->Hide();
       m_StaticTextSKServerStatus->Hide();
       m_stAuthToken->Hide();
@@ -1436,8 +1404,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_cbCheckCRC->Hide();
       m_stPrecision->Hide();
       m_choicePrecision->Hide();
-      m_stTalkerIdText->Hide();
-      m_TalkerIdText->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
       m_cbGarminHost->Hide();
@@ -1458,8 +1424,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
         m_cbCheckCRC->Hide();
         m_stPrecision->Hide();
         m_choicePrecision->Hide();
-        m_stTalkerIdText->Hide();
-        m_TalkerIdText->Hide();
 
         ShowInFilter(false);
         ShowOutFilter(false);
@@ -1471,13 +1435,9 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
         m_stPrecision->Show(advanced);
         m_choicePrecision->Show(advanced);
-        m_stTalkerIdText->Show(advanced);
-        m_TalkerIdText->Show(advanced);
         m_cbGarminHost->Show(advanced);
         m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
         m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
-        m_stTalkerIdText->Enable(m_cbOutput->IsChecked() && advanced);
-        m_TalkerIdText->Enable(m_cbOutput->IsChecked() && advanced);
 
         ShowInFilter(m_cbInput->IsChecked() && advanced);
         ShowOutFilter(m_cbOutput->IsChecked() && advanced);
@@ -1926,8 +1886,6 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   const bool checked = m_cbOutput->IsChecked();
   m_stPrecision->Enable(checked);
   m_choicePrecision->Enable(checked);
-  m_stTalkerIdText->Enable(checked);
-  m_TalkerIdText->Enable(checked);
   ShowOutFilter(checked);
 
   if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
@@ -2619,9 +2577,10 @@ wxString SentenceListDlg::GetBoxLabel(void) const {
 
 void SentenceListDlg::Populate(const wxArrayString& list) {
   if (m_dir == FILTER_OUTPUT) {
-    m_sentences.Add("ECRMB");
-    m_sentences.Add("ECRMC");
-    m_sentences.Add("ECAPB");
+    wxString s;
+    m_sentences.Add(g_TalkerIdText + wxString("RMB"));
+    m_sentences.Add(g_TalkerIdText + wxString("RMC"));
+    m_sentences.Add(g_TalkerIdText + wxString("APB"));
   }
   m_sentences.Add("AIVDM");
   m_sentences.Add("AIVDO");
