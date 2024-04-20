@@ -521,6 +521,7 @@ public:
 
   CanvasConfigSelect *m_sconfigSelect_single;
   CanvasConfigSelect *m_sconfigSelect_twovertical;
+  wxStaticText *m_Text_def_boat_speed;
 
   // For Configuration Template panel
   wxScrolledWindow *m_scrollWinConfigList;
