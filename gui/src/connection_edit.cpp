@@ -769,9 +769,9 @@ void ConnectionEditDialog::Init() {
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_cbMultiCast->SetValue(FALSE);
   // m_cbMultiCast->SetToolTip(_("Advanced Use Only. Enable UDP Multicast."));
-  // Don't use Multicast for now
-  // fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
-  // fgSizer5->AddSpacer(1);
+
+   fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
+   fgSizer5->AddSpacer(1);
 
   m_stTalkerIdText = new wxStaticText(
       m_scrolledwin, wxID_ANY,
@@ -1458,7 +1458,7 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_choiceNetDataProtocol->Show();
       m_cbGarminHost->Hide();
 
-      if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
+ //     if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
 
       if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
           DataProtocol::PROTO_NMEA2000) {
@@ -1664,7 +1664,7 @@ void ConnectionEditDialog::SetUDPNetAddressVisiblity(void) {
     m_tNetAddress->Enable(TRUE);
   }
   if (m_rbNetProtoUDP->GetValue() && m_advanced) {
-    m_cbMultiCast->Show();
+   // m_cbMultiCast->Show();
   } else
     m_cbMultiCast->Hide();
 }
