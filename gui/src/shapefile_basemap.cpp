@@ -26,10 +26,13 @@
  */
 
 #include "shapefile_basemap.h"
-#include "shaders.h"
 #include "chartbase.h"
 #include "glChartCanvas.h"
 #include "OCPNPlatform.h"
+
+#ifdef ocpnUSE_GL
+#include "shaders.h"
+#endif
 
 #ifdef __WXMSW__
 #define __CALL_CONVENTION  //__stdcall
@@ -38,6 +41,8 @@
 #endif
 
 extern OCPNPlatform* g_Platform;
+
+#ifdef ocpnUSE_GL
 
 typedef union {
   GLdouble data[6];
@@ -118,6 +123,7 @@ void __CALL_CONVENTION shpsvertexCallback(GLvoid *arg) {
   g_pvshp.push_back(p);
   g_posshp++;
 }
+#endif
 
 ShapeBaseChartSet::ShapeBaseChartSet() : _loaded(false) {
 }
@@ -291,6 +297,8 @@ void ShapeBaseChart::DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
 
 void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
                                         GLUtesselator *tobj, bool idl) {
+#ifdef ocpnUSE_GL
+
   wxPoint2DDouble q;
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
     q = ShapeBaseChartSet::GetDoublePixFromLL(vp, point.getY(), point.getX());
@@ -317,10 +325,13 @@ void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
   vertex->info.y = q.m_y;
 
   gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
+#endif
 }
 
 void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                                            const shp::Feature &feature) {
+#ifdef ocpnUSE_GL
+
   bool idl =
       vp.GetBBox().GetMinLon() <= -180 || vp.GetBBox().GetMaxLon() >= 180;
   auto polygon = static_cast<shp::Polygon *>(feature.getGeometry());
@@ -394,6 +405,7 @@ void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
   delete[] pvt;
   glDeleteBuffers(1, &vbo);
   shader->UnBind();
+#endif
 }
 
 void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
