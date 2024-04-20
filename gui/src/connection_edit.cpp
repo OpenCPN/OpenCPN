@@ -812,14 +812,14 @@ void ConnectionEditDialog::Init() {
   m_cbCheckSKDiscover->SetValue(TRUE);
   m_cbCheckSKDiscover->SetToolTip(
       _("If checked, signal K server will be discovered automatically"));
-  // Disabled until actually working.
-  // fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 2);
+  
+  fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 2);
 
   // signal K "Discover now" button
   m_ButtonSKDiscover = new wxButton(m_scrolledwin, wxID_ANY, _("Discover now..."),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_ButtonSKDiscover->Hide();
-  // fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 2);
+  fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 2);
 
   // signalK Server Status
   m_StaticTextSKServerStatus = new wxStaticText(
@@ -1303,11 +1303,11 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
   ShowInFilter(advanced);
   ShowOutFilter(advanced);
-
-  m_cbCheckSKDiscover->Show();
+  // Discovery hidden until it works.
+  // m_cbCheckSKDiscover->Show();
   m_stAuthToken->Show(advanced);
   m_tAuthToken->Show(advanced);
-  m_ButtonSKDiscover->Show();
+  // m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show(advanced);
 
   if (m_rbTypeSerial->GetValue()) {
