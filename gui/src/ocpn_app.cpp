@@ -303,6 +303,7 @@ bool bDrawCurrentValues;
 
 wxString ChartListFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
+wxString gWorldShapefileLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
 wxString g_SENCPrefix;
