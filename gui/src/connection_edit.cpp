@@ -1442,13 +1442,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
         m_stPrecision->Show(advanced);
         m_choicePrecision->Show(advanced);
-//<<<<<<< master
-//        m_stTalkerIdText->Show(advanced);
-//        m_TalkerIdText->Show(advanced);
-//        m_cbGarminHost->Show(advanced);
-//=======
-//        m_cbGarminHost->Show(advanced);
-//>>>>>>> master
         m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
         m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
 
