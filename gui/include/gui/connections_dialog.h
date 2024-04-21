@@ -85,7 +85,7 @@ public:
   wxBoxSizer *boxSizerConnections;
   wxBoxSizer *m_bSizerOuterContainer;
   wxStaticBoxSizer *m_sbSizerLB;
-
+  wxTextCtrl *m_TalkerIdText;
 
 #ifdef __ANDROID__
   wxPanel *m_scrollWinConnections;

@@ -41,6 +41,7 @@
 #endif
 
 extern OCPNPlatform* g_Platform;
+extern wxString gWorldShapefileLocation;
 
 #ifdef ocpnUSE_GL
 
@@ -191,8 +192,13 @@ ShapeBaseChart &ShapeBaseChartSet::SelectBaseMap(const size_t &scale) {
 
 void ShapeBaseChartSet::Reset() {
   //      Establish the Shapefile basemap location
-  wxString basemap_dir = g_Platform->GetSharedDataDir();
-  basemap_dir.Append("basemap_shp");
+  wxString basemap_dir;
+  if (gWorldShapefileLocation.empty()) {
+    basemap_dir = g_Platform->GetSharedDataDir();
+    basemap_dir.Append("basemap_shp");
+  } else {
+    basemap_dir = gWorldShapefileLocation;
+  }
 
   LoadBasemaps(basemap_dir.ToStdString());
 }
@@ -227,7 +233,7 @@ void ShapeBaseChartSet::LoadBasemaps(const std::string &dir) {
   if (fs::exists(ShapeBaseChart::ConstructPath(dir, "full"))) {
     _basemap_map.insert(std::make_pair(
         Quality::full,
-        ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "full"), 100000,
+        ShapeBaseChart(ShapeBaseChart::ConstructPath(dir, "full"), 50000,
                        *wxLIGHT_GREY)));
   }
   _loaded = true;

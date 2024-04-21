@@ -172,6 +172,27 @@ void ConnectionsDialog::Init() {
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
 
+  wxSizer *talkerSizer = new wxBoxSizer(wxHORIZONTAL);
+  bSizer161->Add(talkerSizer, 0, wxALL, 1);
+
+  talkerSizer->AddSpacer(3 * m_container->GetCharWidth());
+
+  wxStaticText *stTalkerIdText = new wxStaticText(
+          m_container, wxID_ANY,
+          wxString::Format("%s", _("NMEA0183 Talker ID")),
+          wxDefaultPosition, wxDefaultSize, 0);
+  stTalkerIdText->Wrap(-1);
+  talkerSizer->Add(stTalkerIdText, 0, wxALL, 2);
+
+  talkerSizer->AddSpacer(2 * m_container->GetCharWidth());
+
+  m_TalkerIdText = new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
+            wxSize(50, 3 * m_container->GetCharWidth()), 0);
+  m_TalkerIdText->SetMaxLength(2);
+  m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
+  talkerSizer->Add(m_TalkerIdText, 0,  wxALL | wxALIGN_CENTER_VERTICAL, 2);
+
+
   m_ButtonPriorityDialog = new wxButton(m_container, wxID_ANY,
                                         _("Adjust communication priorities..."),
                                         wxDefaultPosition, wxDefaultSize, 0);
@@ -511,7 +532,7 @@ void ConnectionsDialog::ApplySettings() {
   g_SOGFilterSec = g_COGFilterSec;
 
   g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
-  //g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+  g_TalkerIdText = m_TalkerIdText->GetValue();
 
   g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
   g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";

@@ -43,6 +43,7 @@
 #include "mygeom.h"  // For DouglasPeucker();
 #include "FlexHash.h"
 #include "LOD_reduce.h"
+#include "shapefile_basemap.h"
 
 #ifndef UINT32
 #define UINT32 unsigned int
@@ -54,6 +55,8 @@
 
 extern PlugInManager *g_pi_manager;
 extern wxString gWorldMapLocation;
+extern wxString gWorldShapefileLocation;
+extern ShapeBaseChartSet gShapeBasemap;
 
 static int s_dbVersion;  //    Database version currently in use at runtime
                          //  Needed for ChartTableEntry::GetChartType() only
@@ -1529,6 +1532,12 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
         // TODO: We should probably compare the version and maybe resolutions
         // available with what is currently used...
         gWorldMapLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
+      }
+    }
+    if (dir_info.fullpath.Find(_T("OSMSHP")) != wxNOT_FOUND) {
+      if (!wxDir::FindFirst(dir_info.fullpath, "basemap_*.shp").empty()) {
+        gWorldShapefileLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
+        gShapeBasemap.Reset();
       }
     }
 

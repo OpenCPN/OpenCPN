@@ -101,6 +101,7 @@ extern wxString g_UserPresLibData;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
+extern wxString gWorldShapefileLocation;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -1504,6 +1505,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_STR(_T ( "GPXIODir" ), g_gpx_path);     // Get the Directory name
   CHECK_STR(_T ( "TCDataDir" ), g_TCData_Dir);  // Get the Directory name
   CHECK_STR(_T ( "BasemapDir"), gWorldMapLocation);
+  CHECK_STR(_T ( "BaseShapefileDir"), gWorldShapefileLocation);
 
   //    Fonts
 
