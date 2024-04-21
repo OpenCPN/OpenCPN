@@ -190,7 +190,7 @@ void ConnectionEditDialog::Init() {
   LESS += "...</span>";
 
   //  For small displays, skip the "More" text.
-  if (g_Platform->getDisplaySize().x < 80 * GetCharWidth()) MORE = "";
+  // if (g_Platform->getDisplaySize().x < 80 * GetCharWidth()) MORE = "";
 
 
   // Setup some inital values
@@ -524,8 +524,8 @@ void ConnectionEditDialog::Init() {
     m_stNetAddr = new wxStaticText(m_scrolledwin, wxID_ANY, _("Address"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_stNetAddr->Wrap(-1);
-  int column1Width = 16 * m_stNetProto->GetCharWidth();
-  m_stNetAddr->SetMinSize(wxSize(column1Width, -1));
+  int column1width = 16 * m_stNetProto->GetCharWidth();
+  m_stNetAddr->SetMinSize(wxSize(column1width, -1));
   gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
 
   m_tNetAddress = new wxTextCtrl(m_scrolledwin, wxID_ANY, wxEmptyString,
@@ -549,19 +549,6 @@ void ConnectionEditDialog::Init() {
   gSizerNetProps->AddSpacer(1);
     gSizerNetProps->AddSpacer(1);
   
-  // Authentication token
-  m_stAuthToken = new wxStaticText(m_scrolledwin, wxID_ANY, _("Auth Token"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-  m_stAuthToken->Wrap(-1);
-  gSizerNetProps->Add(m_stAuthToken, 0, wxALL, 5);
-  m_stAuthToken->Hide();
-
-  m_tAuthToken = new wxTextCtrl(m_scrolledwin, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
-  gSizerNetProps->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
-  m_tAuthToken->Hide();
 
  
   gSizerCanProps = new wxGridSizer(0, 1, 0, 0);
@@ -575,7 +562,7 @@ void ConnectionEditDialog::Init() {
   m_stCANSource = new wxStaticText(m_scrolledwin, wxID_ANY, _("socketCAN Source"),
                                    wxDefaultPosition, wxDefaultSize, 0);
   m_stCANSource->Wrap(-1);
-  m_stCANSource->SetMinSize(wxSize(column1Width, -1));
+  m_stCANSource->SetMinSize(wxSize(column1width, -1));
   fgSizer1C->Add(m_stCANSource, 0, wxALL, 5);
 
   wxArrayString choices = GetAvailableSocketCANInterfaces();
@@ -603,7 +590,7 @@ void ConnectionEditDialog::Init() {
   m_stSerPort =
       new wxStaticText(m_scrolledwin, wxID_ANY, _("Data port"),
                        wxDefaultPosition, wxDefaultSize, wxST_ELLIPSIZE_END);
-  m_stSerPort->SetMinSize(wxSize(column1Width, -1));
+  m_stSerPort->SetMinSize(wxSize(column1width, -1));
   m_stSerPort->Wrap(-1);
  
   fgSizer1->Add(m_stSerPort, 0, wxALL, 5);
@@ -670,7 +657,7 @@ void ConnectionEditDialog::Init() {
   m_stNetComment = new wxStaticText(m_scrolledwin, wxID_ANY, _("User Comment"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   m_stNetComment->Wrap(-1);
-  m_stNetComment->SetMinSize(wxSize(column1Width, -1));
+  m_stNetComment->SetMinSize(wxSize(column1width, -1));
   commentSizer->Add(m_stNetComment, 0, wxALL, 5);
 
   m_tNetComment = new wxTextCtrl(m_scrolledwin, wxID_ANY, wxEmptyString,
@@ -685,7 +672,7 @@ void ConnectionEditDialog::Init() {
   m_stSerialComment = new wxStaticText(m_scrolledwin, wxID_ANY, _("User Comment"),
                                        wxDefaultPosition, wxDefaultSize, 0);
   m_stSerialComment->Wrap(-1);
-  m_stSerialComment->SetMinSize(wxSize(column1Width, -1));
+  m_stSerialComment->SetMinSize(wxSize(column1width, -1));
   commentSizer->Add(m_stSerialComment, 0, wxALL, 5);
 
   m_tSerialComment = new wxTextCtrl(m_scrolledwin, wxID_ANY, wxEmptyString,
@@ -737,6 +724,23 @@ void ConnectionEditDialog::Init() {
   fgSizer5->Add(m_cbOutput, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
+    // Authentication token
+  
+  m_stAuthToken = new wxStaticText(m_scrolledwin, wxID_ANY, _("Auth Token"),
+                                   wxDefaultPosition, wxDefaultSize, 0);
+  m_stAuthToken->SetMinSize(wxSize(column1width, -1));
+  m_stAuthToken->Wrap(-1);
+  fgSizer5->Add(m_stAuthToken, 0, wxALL, 5);
+  m_stAuthToken->Hide();
+
+  m_tAuthToken = new wxTextCtrl(m_scrolledwin, wxID_ANY, wxEmptyString,
+                                wxDefaultPosition, wxDefaultSize, 0);
+  m_tAuthToken->SetMinSize(wxSize(column2width, -1));
+  fgSizer5->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
+
+  m_tAuthToken->Hide();
+
+
   m_cbCheckCRC = new wxCheckBox(m_scrolledwin, wxID_ANY, _("Control checksum"),
                                 wxDefaultPosition, wxDefaultSize, 0);
   m_cbCheckCRC->SetValue(TRUE);
@@ -765,8 +769,8 @@ void ConnectionEditDialog::Init() {
   m_cbMultiCast->SetValue(FALSE);
   // m_cbMultiCast->SetToolTip(_("Advanced Use Only. Enable UDP Multicast."));
 
-  fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
-  fgSizer5->AddSpacer(1);
+   fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
+   fgSizer5->AddSpacer(1);
 
   m_stPrecision =
       new wxStaticText(m_scrolledwin, wxID_ANY, _("APB bearing precision"),
@@ -794,6 +798,7 @@ void ConnectionEditDialog::Init() {
   m_cbCheckSKDiscover->SetValue(TRUE);
   m_cbCheckSKDiscover->SetToolTip(
       _("If checked, signal K server will be discovered automatically"));
+  
   fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 2);
 
   // signal K "Discover now" button
@@ -1130,6 +1135,7 @@ void ConnectionEditDialog::ShowNMEANet(bool visible) {
   m_tNetComment->Show(visible);
   m_stAuthToken->Show(visible);
   m_tAuthToken->Show(visible);
+  m_cbGarminHost->Hide();
 }
 
 void ConnectionEditDialog::ShowNMEASerial(bool visible) {
@@ -1277,11 +1283,11 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
   ShowInFilter(advanced);
   ShowOutFilter(advanced);
-
-  m_cbCheckSKDiscover->Show();
+  // Discovery hidden until it works.
+  // m_cbCheckSKDiscover->Show();
   m_stAuthToken->Show(advanced);
   m_tAuthToken->Show(advanced);
-  m_ButtonSKDiscover->Show();
+  // m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show(advanced);
 
   if (m_rbTypeSerial->GetValue()) {
@@ -1416,8 +1422,9 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
       m_StaticTextSKServerStatus->Hide();
       m_stNetDataProtocol->Show();
       m_choiceNetDataProtocol->Show();
+      m_cbGarminHost->Hide();
 
-      if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
+ //     if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
 
       if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
           DataProtocol::PROTO_NMEA2000) {
@@ -1435,7 +1442,13 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
         m_stPrecision->Show(advanced);
         m_choicePrecision->Show(advanced);
-        m_cbGarminHost->Show(advanced);
+//<<<<<<< master
+//        m_stTalkerIdText->Show(advanced);
+//        m_TalkerIdText->Show(advanced);
+//        m_cbGarminHost->Show(advanced);
+//=======
+//        m_cbGarminHost->Show(advanced);
+//>>>>>>> master
         m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
         m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
 
@@ -1617,7 +1630,7 @@ void ConnectionEditDialog::SetUDPNetAddressVisiblity(void) {
     m_tNetAddress->Enable(TRUE);
   }
   if (m_rbNetProtoUDP->GetValue() && m_advanced) {
-    m_cbMultiCast->Show();
+   // m_cbMultiCast->Show();
   } else
     m_cbMultiCast->Hide();
 }
@@ -1835,6 +1848,8 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() && m_rbNetProtoUDP->GetValue())
       m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+    if (m_cbInput->GetValue() && m_cbOutput->GetValue())
+      m_cbOutput->SetValue(false);
 
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
