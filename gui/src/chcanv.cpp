@@ -10613,19 +10613,19 @@ void ChartCanvas::RenderShipToActive(ocpnDC &dc, bool Use_Opengl) {
 
 #ifdef ocpnUSE_GL
     else {
-      glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));
-      dc.SetGLStipple();
 
 #ifdef USE_ANDROID_GLES2
       dc.DrawLine(pa.m_x, pa.m_y, pb.m_x, pb.m_y);
 #else
-      glColor3ub(color.Red(), color.Green(), color.Blue());
-      glBegin(GL_LINES);
-      glVertex2f(pa.m_x, pa.m_y);
-      glVertex2f(pb.m_x, pb.m_y);
-      glEnd();
+      if (style != wxPENSTYLE_SOLID) {
+        if (glChartCanvas::dash_map.find(style) !=
+            glChartCanvas::dash_map.end()) {
+          mypen->SetDashes(2, &glChartCanvas::dash_map[style][0]);
+          dc.SetPen(*mypen);
+        }
+      }
+      dc.DrawLine(pa.m_x, pa.m_y, pb.m_x, pb.m_y);
 #endif
-      glDisable(GL_LINE_STIPPLE);
 
       RouteGui(*rt).RenderSegmentArrowsGL(dc, (int)pa.m_x, (int)pa.m_y, (int)pb.m_x,
                                 (int)pb.m_y, GetVP());
