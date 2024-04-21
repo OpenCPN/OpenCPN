@@ -2581,6 +2581,7 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
     m_sentences.Add(g_TalkerIdText + wxString("RMB"));
     m_sentences.Add(g_TalkerIdText + wxString("RMC"));
     m_sentences.Add(g_TalkerIdText + wxString("APB"));
+    m_sentences.Add(g_TalkerIdText + wxString("XTE"));
   }
   m_sentences.Add("AIVDM");
   m_sentences.Add("AIVDO");
