@@ -105,7 +105,7 @@ void FirstUseWizImpl::OnWizardFinished(wxWizardEvent& event) {
   cfg->Write("SDMMFormat", m_cPosition->GetSelection());
   cfg->Write("DistanceFormat", m_cDistance->GetSelection());
   cfg->Write("SpeedFormat", m_cSpeed->GetSelection());
-  // cfg->Write("WindSpeedFormat", m_cSpeed->GetSelection());
+  cfg->Write("WindSpeedFormat", m_cWind->GetSelection());
   //  True/magnetic
   cfg->Write("ShowTrue", m_cbShowTrue->GetValue());
   cfg->Write("ShowMag", m_cbShowMagnetic->GetValue());

@@ -59,6 +59,18 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 	m_cSpeed->SetSelection( 0 );
 	fgSizerUnits->Add( m_cSpeed, 0, wxALL, 5 );
 
+  m_stWind = new wxStaticText(sbSizerUnits->GetStaticBox(), wxID_ANY, _("Wind speed"),
+                                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stWind->Wrap(-1);
+  fgSizerUnits->Add(m_stWind, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  wxString m_cWindChoices[] = {_("Knots"), _("m/s"), _("mph"), _("km/h") };
+  int m_cWindNChoices = sizeof(m_cWindChoices) / sizeof(wxString);
+  m_cWind = new wxChoice(sbSizerUnits->GetStaticBox(), wxID_ANY, wxDefaultPosition,
+                                wxDefaultSize, m_cWindNChoices, m_cWindChoices, 0);
+  m_cWind->SetSelection(0);
+  fgSizerUnits->Add(m_cWind, 0, wxALL, 5);
+
 	m_stPosition = new wxStaticText( sbSizerUnits->GetStaticBox(), wxID_ANY, _("Position"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stPosition->Wrap( -1 );
 	fgSizerUnits->Add( m_stPosition, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
