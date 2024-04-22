@@ -3347,7 +3347,7 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
 
       // Restore size of docked pane
       if (pane.IsShown() && pane.IsDocked()) {
-        pane.BestSize(cont->m_size);
+        pane.BestSize(cont->m_best_size);
         m_pauimgr->Update();
       }
 
@@ -3540,6 +3540,7 @@ bool dashboard_pi::LoadConfig(void) {
       // Version 2
       m_config_version = 2;
       bool b_onePersisted = false;
+      wxSize best_size;
       for (int k = 0; k < d_cnt; k++) {
         pConf->SetPath(
             wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), k + 1));
@@ -3553,6 +3554,11 @@ bool dashboard_pi::LoadConfig(void) {
         pConf->Read(_T("InstrumentCount"), &i_cnt, -1);
         bool b_persist;
         pConf->Read(_T("Persistence"), &b_persist, 1);
+        int val;
+        pConf->Read(_T("BestSizeX"), &val, DefaultWidth);
+        best_size.x = val;
+        pConf->Read(_T("BestSizeY"), &val, DefaultWidth);
+        best_size.y = val;
 
         wxArrayInt ar;
         wxArrayOfInstrumentProperties Property;
@@ -3616,6 +3622,7 @@ bool dashboard_pi::LoadConfig(void) {
         DashboardWindowContainer *cont =
             new DashboardWindowContainer(NULL, name, caption, orient, ar, Property);
         cont->m_bPersVisible = b_persist;
+        cont->m_conf_best_size = best_size;
 
         if (b_persist) b_onePersisted = true;
 
@@ -3692,6 +3699,9 @@ bool dashboard_pi::SaveConfig(void) {
       pConf->Write(_T("Persistence"), cont->m_bPersVisible);
       pConf->Write(_T("InstrumentCount"),
                    (int)cont->m_aInstrumentList.GetCount());
+      pConf->Write(_T("BestSizeX"), cont->m_best_size.x);
+      pConf->Write(_T("BestSizeY"), cont->m_best_size.y);
+
       // Delete old Instruments
       for (size_t i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
           if (pConf->Exists(wxString::Format(_T("Instrument%zu"), i + 1)))
@@ -3797,6 +3807,10 @@ void dashboard_pi::ApplyConfig(void) {
       cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
       bool vertical = orient == wxVERTICAL;
       wxSize sz = cont->m_pDashboardWindow->GetMinSize();
+      wxSize best = cont->m_conf_best_size;
+      if (best.x < 100)
+        best = sz;
+
 // Mac has a little trouble with initial Layout() sizing...
 #ifdef __WXOSX__
       if (sz.x == 0) sz.IncTo(wxSize(160, 388));
@@ -3810,7 +3824,7 @@ void dashboard_pi::ApplyConfig(void) {
                             .LeftDockable(vertical)
                             .RightDockable(vertical)
                             .MinSize(sz)
-                            .BestSize(sz)
+                            .BestSize(best)
                             .FloatingSize(sz)
                             .FloatingPosition(100, 100)
                             .Float()
@@ -5313,7 +5327,7 @@ void DashboardWindow::OnSize(wxSizeEvent &event) {
   Layout();
   Refresh();
   //  Capture the user adjusted docked Dashboard size
-  this->m_Container->m_size = event.GetSize();
+  this->m_Container->m_best_size = event.GetSize();
 }
 
 void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
