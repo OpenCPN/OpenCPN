@@ -167,7 +167,7 @@ void ConnectionsDialog::Init() {
 
   m_cbAPBMagnetic =
       new wxCheckBox(m_container, wxID_ANY,
-                     _("Use magnetic bearings in output sentence ECAPB"),
+                     _("Use magnetic bearings in output sentence APB"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
