@@ -991,7 +991,6 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx) {
     q = tcvalue[0];
     *tm += 60;
   }
-  return 0;
 }
 
 std::map<double, const IDX_entry *> TCMgr::GetStationsForLL(double xlat,
