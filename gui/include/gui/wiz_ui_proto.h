@@ -47,8 +47,10 @@ class FirstUseWiz : public wxWizard
 		wxChoice* m_cDepth;
 		wxStaticText* m_stDistance;
 		wxChoice* m_cDistance;
-		wxStaticText* m_stSpeed;
-		wxChoice* m_cSpeed;
+    wxStaticText* m_stSpeed;
+    wxChoice* m_cSpeed;
+    wxStaticText* m_stWind;
+    wxChoice* m_cWind;
 		wxStaticText* m_stPosition;
 		wxChoice* m_cPosition;
 		wxCheckBox* m_cbShowTrue;
