@@ -542,12 +542,29 @@ void ConnectionsDialog::ApplySettings() {
 
 void ConnectionsDialog::UpdateDatastreams() {
   // Recreate datastreams that are new, or have been edited
+  std::vector<std::string>enabled_conns;
+
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
 
-    if (cp->b_IsSetup) continue;
+    // Connection already setup?
+    if (cp->b_IsSetup){
+      if(cp->bEnabled){
+        enabled_conns.push_back(cp->GetStrippedDSPort());
+      }
+      continue;
+    }
 
-    // Connection is new, or edited, or disabled
+    // Check to see if this connection port has been
+    // already enabled in this loop.
+    // If so, then leave this connection alone.
+    // This will handle multiple connections with same port,
+    // but possibly different filters
+    // Also protect against some user config errors
+    if ( std::find(enabled_conns.begin(), enabled_conns.end(),
+                  cp->GetStrippedDSPort()) != enabled_conns.end()) {
+      continue;
+    }
 
     // Terminate and remove any existing driver, if present in registry
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
@@ -565,9 +582,9 @@ void ConnectionsDialog::UpdateDatastreams() {
     // Make any new or re-enabled drivers
     MakeCommDriver(cp);
     cp->b_IsSetup = TRUE;
+    enabled_conns.push_back(cp->GetStrippedDSPort());
   }
 }
-
 
 void ConnectionsDialog::OnPriorityDialog(wxCommandEvent& event) {
   PriorityDlg* pdlg = new PriorityDlg(m_parent);
