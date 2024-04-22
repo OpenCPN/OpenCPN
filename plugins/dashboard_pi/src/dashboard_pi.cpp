@@ -3345,6 +3345,12 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
           pane.Show(false);
       }
 
+      // Restore size of docked pane
+      if (pane.IsShown() && pane.IsDocked()) {
+        pane.BestSize(cont->m_size);
+        m_pauimgr->Update();
+      }
+
       //  This patch fixes a bug in wxAUIManager
       //  FS#548
       // Dropping a DashBoard Window right on top on the (supposedly fixed)
@@ -3362,6 +3368,7 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
   SetToolbarItemState(m_toolbar_item_id,
                       GetDashboardWindowShownCount() != 0 /*cnt==0*/);
   m_pauimgr->Update();
+
 }
 
 void dashboard_pi::UpdateAuiStatus(void) {
@@ -5305,6 +5312,8 @@ void DashboardWindow::OnSize(wxSizeEvent &event) {
   }
   Layout();
   Refresh();
+  //  Capture the user adjusted docked Dashboard size
+  this->m_Container->m_size = event.GetSize();
 }
 
 void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
@@ -5820,6 +5829,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
   //  DashboardInstrument_Position
 
   wxSize Hint = wxSize(DefaultWidth, DefaultWidth);
+
   for (unsigned int i = 0; i < m_ArrayOfInstrument.size(); i++) {
     DashboardInstrument *inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
     inst->SetMinSize(inst->GetSize(itemBoxSizer->GetOrientation(), Hint));

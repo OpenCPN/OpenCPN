@@ -170,6 +170,7 @@ public:
   wxString m_sOrientation;
   wxArrayInt m_aInstrumentList;
   wxArrayOfInstrumentProperties m_aInstrumentPropertyList;
+  wxSize m_size;
 };
 
 class DashboardInstrumentContainer {
