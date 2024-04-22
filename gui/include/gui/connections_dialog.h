@@ -52,7 +52,7 @@ public:
 
   void Init(void);
   void SetInitialSettings(void);
-  void ApplySettings(bool bFinal = false);
+  void ApplySettings();
   void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
   void OnAddDatasourceClick(wxCommandEvent &event);
   void OnEditDatasourceClick(wxCommandEvent &event);
@@ -66,7 +66,7 @@ public:
   void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
 
-  void UpdateDatastreams(bool bfinal = false);
+  void UpdateDatastreams();
   void OnSize(wxSizeEvent &ev);
 
 //private:

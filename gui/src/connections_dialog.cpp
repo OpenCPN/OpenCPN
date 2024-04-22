@@ -520,7 +520,7 @@ void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   }
 }
 
-void ConnectionsDialog::ApplySettings(bool bFinal) {
+void ConnectionsDialog::ApplySettings() {
   g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
 
   long filter_val = 1;
@@ -537,31 +537,17 @@ void ConnectionsDialog::ApplySettings(bool bFinal) {
   g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
   g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
 
-  UpdateDatastreams(bFinal);
+  UpdateDatastreams();
 }
 
-void ConnectionsDialog::UpdateDatastreams(bool bFinal) {
+void ConnectionsDialog::UpdateDatastreams() {
   // Recreate datastreams that are new, or have been edited
-  std::vector<std::string>enabled_conns;
-
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
 
-    if (!bFinal){
-      if (cp->b_IsSetup) continue;
-    }
+    if (cp->b_IsSetup) continue;
 
     // Connection is new, or edited, or disabled
-
-    // Check to see if this connection port has been
-    // already enabled in this loop.
-    // If so, then leave this connection alone.
-    // This will handle multiple connections with same port,
-    // but possibly different filters
-    if ( std::find(enabled_conns.begin(), enabled_conns.end(),
-                  cp->GetStrippedDSPort()) != enabled_conns.end()) {
-      continue;
-    }
 
     // Terminate and remove any existing driver, if present in registry
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
@@ -579,7 +565,6 @@ void ConnectionsDialog::UpdateDatastreams(bool bFinal) {
     // Make any new or re-enabled drivers
     MakeCommDriver(cp);
     cp->b_IsSetup = TRUE;
-    enabled_conns.push_back(cp->GetStrippedDSPort());
   }
 }
 

@@ -682,7 +682,6 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
-  bool m_bfinal;
 
   std::shared_ptr<ConnectionsDialog>comm_dialog;
 
