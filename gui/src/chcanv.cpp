@@ -12921,7 +12921,7 @@ void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
     int pos_y = g_ais_query_dialog_y;
 
     if (g_pais_query_dialog_active) {
-      delete g_pais_query_dialog_active;
+      g_pais_query_dialog_active->Destroy();
       g_pais_query_dialog_active = new AISTargetQueryDialog();
     } else {
       g_pais_query_dialog_active = new AISTargetQueryDialog();
