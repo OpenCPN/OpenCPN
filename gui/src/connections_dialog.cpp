@@ -212,11 +212,11 @@ void ConnectionsDialog::Init() {
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
   m_sbSizerLB->Add(bSizer18, 0, wxEXPAND, 5);
 
-  m_buttonAdd = new wxButton(m_container, wxID_ANY, _("Add Connection"),
+  m_buttonAdd = new wxButton(m_container, wxID_ANY, _("Add Connection..."),
                              wxDefaultPosition, wxDefaultSize, 0);
   bSizer18->Add(m_buttonAdd, 0, wxALL, 5);
 
-  m_buttonEdit = new wxButton(m_container, wxID_ANY, _("Edit Connection"),
+  m_buttonEdit = new wxButton(m_container, wxID_ANY, _("Edit Connection..."),
                               wxDefaultPosition, wxDefaultSize, 0);
   m_buttonEdit->Enable(FALSE);
   bSizer18->Add(m_buttonEdit, 0, wxALL, 5);
