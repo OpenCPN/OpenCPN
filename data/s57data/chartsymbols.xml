@@ -14306,7 +14306,7 @@
             <disp-prio>Routing</disp-prio>
             <radar-prio>On Top</radar-prio>
             <table-name>Simplified</table-name>
-            <instruction>SY(DISMAR03);TX(INFORM,3,2,2,'14106',1,-1,CHMGD,21)</instruction>
+            <instruction>SY(DISMAR03);TX(INFORM,3,1,2,'14106',2,0,CHMGD,21)</instruction>
             <display-cat>Other</display-cat>
             <comment>32430</comment>
         </lookup>
@@ -22509,7 +22509,7 @@
             <disp-prio>Routing</disp-prio>
             <radar-prio>On Top</radar-prio>
             <table-name>Paper</table-name>
-            <instruction>SY(DISMAR03);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
+            <instruction>SY(DISMAR03);TX(INFORM,3,1,2,'14106',2,0,CHMGD,21)</instruction>
             <display-cat>Other</display-cat>
             <comment>32430</comment>
         </lookup>
@@ -27268,7 +27268,7 @@
             <disp-prio>Routing</disp-prio>
             <radar-prio>On Top</radar-prio>
             <table-name>Paper</table-name>
-            <instruction>SY(DISMAR03);TX(INFORM,3,2,2,'14106',1,0,CHMGD,21)</instruction>
+            <instruction>SY(DISMAR03);TX(INFORM,3,1,2,'14106',2,0,CHMGD,21)</instruction>
             <display-cat>Other</display-cat>
             <comment>32430</comment>
         </lookup>
@@ -34875,9 +34875,10 @@
                 <distance min="0" max="0" />
                 <pivot x="825" y="756" />
                 <origin x="335" y="494" />
-                <HPGL>SPA;SW1;PU650,494;PD650,894;SPA;SW1;PU785,644;PD650,794;SPA;SW1;PU695,744;PD800,894;SPA;SW1;PU900,644;PD900,894;SPA;SW1;PU900,684;PD935,649;PD965,639;PD985,639;PD1027,659;PD1050,689;PD1050,894;SPA;SW1;PU1050,694;PD1070,654;PD1110,636;PD1135,636;PD1177,654;PD1200,694;PD1200,894;SPA;SW1;PU419,765;CI84;</HPGL>
+                <HPGL>SPA;SW2;PU810,765;CI140;</HPGL>
             </vector>
             <definition>V</definition>
+            <prefer-bitmap>no</prefer-bitmap>
         </symbol>
 
         <symbol RCID="3386">
