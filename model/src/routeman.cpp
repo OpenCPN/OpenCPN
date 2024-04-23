@@ -449,6 +449,9 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 }
 
 bool Routeman::UpdateAutopilot() {
+  if (!bGPSValid)
+    return false;
+
   // Send all known Autopilot messages upstream
 
   // Set max WP name length
