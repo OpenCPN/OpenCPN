@@ -4,8 +4,8 @@ LangString Installer ${LANG_PORTUGUESEBR} "instalador"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_PORTUGUESEBR} "desinstalador"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
-LangString Installer_Unsupported_Windows_Version ${LANG_PORTUGUESEBR} "Sua versão do Windows não é suportada (Ela é muito antiga)!$\r$\nVocê precisa pelo menos o Windows XP SP3."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
+LangString Installer_Unsupported_Windows_Version ${LANG_PORTUGUESEBR} "Sua versão do Windows não é suportada (Ela é muito antiga)!$\r$\nVocê precisa pelo menos o Windows 7."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_PORTUGUESEBR} "A instalação esta em execução."

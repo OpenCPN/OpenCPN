@@ -954,16 +954,10 @@ SectionEnd
 ;##################################################################################################
 ;#  .onInit Function
 Function .onInit
-	;# Check if Windows version is at least XP (not Win 98, Win 2000 or older)
-	${IfNot} ${AtLeastWinXP}
+	;# Check if Windows version is at least Win7 (not XP, 98, Win 2000 or older)
+	${IfNot} ${AtLeastWin7}
 		MessageBox MB_OK|MB_ICONEXCLAMATION "$(Installer_Unsupported_Windows_Version)"
 		Abort
-	${Else}
-		${If} ${IsWinXP}
-		${AndIf} ${AtMostServicePack} 2
-		MessageBox MB_OK|MB_ICONEXCLAMATION "$(Installer_Unsupported_XP_SP_Version)"
-		Abort
-		${EndIf}
 	${EndIf}
 
 	;Prevent multiple instances of the installer
