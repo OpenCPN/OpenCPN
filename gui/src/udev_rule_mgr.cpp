@@ -178,8 +178,7 @@ private:
   wxTextCtrl* GetCmd(wxWindow* parent, const char* tmpl) {
     std::string cmd(tmpl);
     ocpn::replace(cmd, "@PATH@", GetDongleRule());
-    auto ctrl = new wxTextCtrl(this, wxID_ANY, cmd);
-    ctrl->SetEditable(false);
+    auto ctrl = new CopyableText(this, cmd.c_str());
     ctrl->SetMinSize(parent->GetTextExtent(cmd + "aaa"));
     return ctrl;
   }
