@@ -4321,7 +4321,7 @@ Var explArrCount
 	LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 
   ;Installer running on unsupported version of Windows
-	LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+	LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
 
   ;Installer running on Windows XP without SP3
 	LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
