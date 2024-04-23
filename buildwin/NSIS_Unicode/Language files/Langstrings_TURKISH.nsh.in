@@ -5,7 +5,7 @@ LangString Installer ${LANG_TURKISH} "Kur"
 LangString Uninstaller ${LANG_TURKISH} "Kurulumu kaldýr"
 	
 #LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP with SP3"
-LangString Installer_Unsupported_Windows_Version ${LANG_TURKISH} "Windows sürümünüz desteklenmiyor(çok eski)!$\r$\nEn az Windows XP SP3 sürümünüz olmasý gerekiyor."
+LangString Installer_Unsupported_Windows_Version ${LANG_TURKISH} "Windows sürümünüz desteklenmiyor(çok eski)!$\r$\nEn az Windows 7 sürümünüz olmasý gerekiyor."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_TURKISH} "Kurulum sürüyor"

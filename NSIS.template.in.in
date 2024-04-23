@@ -954,16 +954,10 @@ SectionEnd
 ;##################################################################################################
 ;#  .onInit Function
 Function .onInit
-	;# Check if Windows version is at least XP (not Win 98, Win 2000 or older)
-	${IfNot} ${AtLeastWinXP}
+	;# Check if Windows version is at least Win7 (not XP, 98, Win 2000 or older)
+	${IfNot} ${AtLeastWin7}
 		MessageBox MB_OK|MB_ICONEXCLAMATION "$(Installer_Unsupported_Windows_Version)"
 		Abort
-	${Else}
-		${If} ${IsWinXP}
-		${AndIf} ${AtMostServicePack} 2
-		MessageBox MB_OK|MB_ICONEXCLAMATION "$(Installer_Unsupported_XP_SP_Version)"
-		Abort
-		${EndIf}
 	${EndIf}
 
 	;Prevent multiple instances of the installer
@@ -4327,7 +4321,7 @@ Var explArrCount
 	LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 
   ;Installer running on unsupported version of Windows
-	LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+	LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
 
   ;Installer running on Windows XP without SP3
 	LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."

@@ -4,8 +4,8 @@ LangString Installer ${LANG_NORWEGIAN} "installatør"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_NORWEGIAN} "avinstaller"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
-LangString Installer_Unsupported_Windows_Version ${LANG_NORWEGIAN} "Din Windows versjon er ikke støttet (for gammel)!$\r$\nDu trenger minst Windows XP SP3."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
+LangString Installer_Unsupported_Windows_Version ${LANG_NORWEGIAN} "Din Windows versjon er ikke støttet (for gammel)!$\r$\nDu trenger minst Windows 7."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_NORWEGIAN} "Installasjonen kjører allerede."
