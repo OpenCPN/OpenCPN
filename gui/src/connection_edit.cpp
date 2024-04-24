@@ -1320,6 +1320,8 @@ void ConnectionEditDialog::SetDSFormOptionVizStates(void) {
 
       m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
       m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
+
+      m_cbGarminHost->Show(m_cbInput->IsChecked() && advanced);
     }
   }
 
