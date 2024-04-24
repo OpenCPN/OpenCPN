@@ -2319,7 +2319,8 @@ FunctionEnd
 		StrCmp $CONFIG_SET_LANG 1 0 +2
 		${NSD_SetState} $CheckBox_Language_SetConfig ${BST_CHECKED}
 
-		cont:
+		#Omit chart installer function. Now performed by the First time user Wizard
+		/*cont:
 		${NSD_CreateGroupBox} 0 55u 100% 85u "$(GB_ChartDir_SetConfig_Text)"
 		Pop $GroupBox_ChartDir_SetConfig
 
@@ -2379,9 +2380,10 @@ FunctionEnd
 					SendMessage $ListBox_SetConfig ${LB_ADDSTRING} 0 "STR:$2"
 				${Next}
 			${EndIf}
-		${EndIf}
+		${EndIf}*/
 
-		cont2:
+		#cont2:
+		cont:
 			Call ListBox_SetConfig_Change
 			nsDialogs::Show
 	FunctionEnd
