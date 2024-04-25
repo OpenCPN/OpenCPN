@@ -23,8 +23,9 @@ https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-dow
 
 === Download pdb file
 Debugging symbols in Windows are contained in a pdb file. Pdb files for
-OpenCPN can be downloaded from TBD. This file should be downloaded and
-installed in the same directory as OpenCPN, by default
+OpenCPN can be downloaded from the latest github release artifacts directory,
+currently  https://github.com/OpenCPN/OpenCPN/releases/tag/Release_5.8.4.
+This file should be downloaded and installed in the same directory as OpenCPN, by default
 _C:\Program Files (x86)\OpenCPN\_.
 
 === Start OpenCPN and make it crash

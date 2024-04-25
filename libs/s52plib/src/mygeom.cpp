@@ -51,18 +51,16 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
-#include "config.h"
-
 #include "gdal/ogr_geometry.h"
 
-#include "cutil.h"
+#include "model/cutil.h"
 
 #include "vector2D.h"
 
 #include "s52s57.h"
 
 #include "mygeom.h"
-#include "georef.h"
+#include "model/georef.h"
 #include "LOD_reduce.h"
 
 #include <stdio.h>

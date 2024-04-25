@@ -56,12 +56,6 @@
 
 #include "s52plib.h"
 
-extern bool g_bopengl;
-
-#ifdef ocpnUSE_GL
-extern GLenum g_texture_rectangle_format;
-#endif
-
 //--------------------------------------------------------------------------------------
 
 ChartSymbols::ChartSymbols(void) {}
@@ -246,10 +240,9 @@ void ChartSymbols::ProcessLookups(pugi::xml_node &node) {
       else if (!strcmp(lookupNode.name(), "attrib-code")) {
         int nc = strlen(nodeText);
         if (nc >= 6) {  //  ignore spurious short fields
-          char *attVal = (char *)calloc(nc + 2, sizeof(char));
-          memcpy(attVal, nodeText, nc);
-
-          if (attVal[6] == '\0') attVal[6] = ' ';
+          std::string attVal = std::string(nodeText);
+          if(attVal.length() == 6)
+            attVal += ' ';
           lookup.attributeCodeArray.push_back(attVal);
         }
       }
@@ -481,8 +474,7 @@ void ChartSymbols::ProcessSymbols(pugi::xml_node &node) {
 
 
 void ChartSymbols::BuildLookup(Lookup &lookup) {
-  LUPrec *LUP = (LUPrec *)calloc(1, sizeof(LUPrec));
-  plib->pAlloc->Add(LUP);
+  auto LUP = new LUPrec();
 
   LUP->RCID = lookup.RCID;
   LUP->nSequence = lookup.id;
@@ -496,7 +488,7 @@ void ChartSymbols::BuildLookup(Lookup &lookup) {
 
   LUP->ATTArray = lookup.attributeCodeArray;
 
-  LUP->INST = new wxString(lookup.instruction);
+  LUP->INST = lookup.instruction;
   LUP->LUCM = lookup.comment;
 
   // Add LUP to array
@@ -509,7 +501,7 @@ void ChartSymbols::BuildLookup(Lookup &lookup) {
   wxArrayOfLUPrec *pLUPARRAYtyped = plib->SelectLUPARRAY(LUP->TNAM);
 
   while (index < pLUPARRAYtyped->GetCount()) {
-    LUPrec *pLUPCandidate = pLUPARRAYtyped->Item(index);
+    auto pLUPCandidate = pLUPARRAYtyped->Item(index);
     if (LUP->RCID == pLUPCandidate->RCID) {
       pLUPARRAYtyped->RemoveAt(index);
       plib->DestroyLUP(pLUPCandidate);  // empties the LUP
@@ -517,7 +509,6 @@ void ChartSymbols::BuildLookup(Lookup &lookup) {
     }
     index++;
   }
-
   pLUPARRAYtyped->Add(LUP);
 }
 
@@ -728,17 +719,19 @@ bool ChartSymbols::LoadConfigFile(s52plib *plibArg,
 
   return true;
 }
-void ChartSymbols::SetColorTableIndex(int index) {
+void ChartSymbols::SetColorTableIndex(int index, bool flush,
+                                      const ChartCtx& ctx) {
   ColorTableIndex = index;
-  LoadRasterFileForColorTable(ColorTableIndex);
+  LoadRasterFileForColorTable(ColorTableIndex, flush, ctx);
 }
 
-int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
+int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush,
+                                              const ChartCtx& ctx) {
   if (tableNo == rasterSymbolsLoadedColorMapNumber && !flush) {
-    if (g_bopengl) {
+    if (ctx.m_use_opengl) {
       if (rasterSymbolsTexture) return true;
 #ifdef ocpnUSE_GL
-      else if (!g_texture_rectangle_format && rasterSymbols.IsOk())
+      if (!ctx.m_texture_rectangle_format && rasterSymbols.IsOk())
         return true;
 #endif
     }
@@ -754,7 +747,7 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
   if (rasterFileImg.LoadFile(filename, wxBITMAP_TYPE_PNG)) {
 #ifdef ocpnUSE_GL
     /* for opengl mode, load the symbols into a texture */
-    if (g_bopengl && g_texture_rectangle_format) {
+    if (ctx.m_use_opengl && ctx.m_texture_rectangle_format) {
       int w = rasterFileImg.GetWidth();
       int h = rasterFileImg.GetHeight();
 
@@ -777,11 +770,11 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
       }
       if (!rasterSymbolsTexture) glGenTextures(1, &rasterSymbolsTexture);
 
-      glBindTexture(g_texture_rectangle_format, rasterSymbolsTexture);
+      glBindTexture(ctx.m_texture_rectangle_format, rasterSymbolsTexture);
 
       /* unfortunately this texture looks terrible with compression */
       GLuint format = GL_RGBA;
-      glTexImage2D(g_texture_rectangle_format, 0, format, w, h, 0, GL_RGBA,
+      glTexImage2D(ctx.m_texture_rectangle_format, 0, format, w, h, 0, GL_RGBA,
                    GL_UNSIGNED_BYTE, e);
 
       //             glTexParameteri( g_texture_rectangle_format,
@@ -789,14 +782,14 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush) {
       //             g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER,
       //             GL_NEAREST );
 
-      glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_WRAP_S,
+      glTexParameteri(ctx.m_texture_rectangle_format, GL_TEXTURE_WRAP_S,
                       GL_CLAMP_TO_EDGE);
-      glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_WRAP_T,
+      glTexParameteri(ctx.m_texture_rectangle_format, GL_TEXTURE_WRAP_T,
                       GL_CLAMP_TO_EDGE);
 
-      glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER,
+      glTexParameteri(ctx.m_texture_rectangle_format, GL_TEXTURE_MAG_FILTER,
                       GL_NEAREST);  // No mipmapping
-      glTexParameteri(g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER,
+      glTexParameteri(ctx.m_texture_rectangle_format, GL_TEXTURE_MIN_FILTER,
                       GL_NEAREST);
 
       rasterSymbolsTextureSize = wxSize(w, h);

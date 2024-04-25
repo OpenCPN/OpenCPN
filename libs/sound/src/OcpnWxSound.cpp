@@ -30,6 +30,11 @@
 #include "OcpnWxSound.h"
 
 
+std::string OcpnWxSound::GetDeviceInfo(int deviceIndex)
+{
+  return "OcpnWxSound";
+}
+
 bool OcpnWxSound::Load(const char* path, int deviceIndex)
 {
     m_OK = m_sound.Create(path);

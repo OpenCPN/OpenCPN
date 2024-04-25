@@ -21,7 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
-#include "config.h"
+#include "snd_config.h"
 #include "SoundFileLoader.h"
 
 #ifdef HAVE_SNDFILE

@@ -51,6 +51,7 @@ class OcpnWxSound: public OcpnSound
         void UnLoad() override {};
         bool Play() override;
         bool Stop() override;
+        std::string GetDeviceInfo(int deviceIndex) override;
 
     private:
         void worker();

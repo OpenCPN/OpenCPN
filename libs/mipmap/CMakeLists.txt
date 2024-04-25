@@ -1,24 +1,21 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::mipmap)
-    return ()
+  return ()
 endif ()
 
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+if (ANDROID)
+  set(QT_ANDROID 1)
 endif ()
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 include(GetArch)
 GetArch()
-
 include(CompilerSupport)
 
-set(SRC
-  include/mipmap/mipmap.h
-  src/mipmap.c
-)
+set(SRC include/mipmap/mipmap.h src/mipmap.c)
 
-if( NOT QT_ANDROID)
+if (NOT QT_ANDROID)
     set(SRC_IPML
         src/mipmap_sse.c
         src/mipmap_sse2.c
@@ -26,7 +23,7 @@ if( NOT QT_ANDROID)
         src/mipmap_avx2.c
         src/mipmap_neon.c
     )
-endif( NOT QT_ANDROID)
+endif (NOT QT_ANDROID)
 
 add_library(MIPMAP STATIC ${SRC} ${SRC_IPML})
 add_library(ocpn::mipmap ALIAS MIPMAP)
@@ -39,23 +36,32 @@ if( NOT QT_ANDROID)
   # always use optimizations for the texture compression which is much faster
   if (NOT MSVC)
       set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
+      if (NOT APPLE)
+          set_source_files_properties(
+            src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
+      endif()
       if (HAVE_MSSE)
+          message(STATUS "mipmap SSE support enabled")
           set_source_files_properties(
               src/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
       endif ()
       if (HAVE_MSSE2)
+          message(STATUS "mipmap SSE2 support enabled")
           set_source_files_properties(
               src/mipmap_sse2.c PROPERTIES COMPILE_FLAGS "-msse2")
       endif ()
-      if (HAVE_MSSE3)
+      if (HAVE_MSSSE3)
+          message(STATUS "mipmap SSSE3 support enabled")
           set_source_files_properties(
               src/mipmap_ssse3.c PROPERTIES COMPILE_FLAGS "-mssse3")
       endif ()
       if (HAVE_MAVX2)
+          message(STATUS "mipmap AVX2 support enabled")
           set_source_files_properties(
               src/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
       endif ()
       if (HAVE_MFPU_NEON)
+          message(STATUS "mipmap NEON support enabled")
           set_source_files_properties(
               src/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       endif ()

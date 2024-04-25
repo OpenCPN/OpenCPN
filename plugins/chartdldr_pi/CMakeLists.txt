@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.1.1)
+cmake_minimum_required(VERSION 3.5.0)
 cmake_policy(SET CMP0043 NEW)
 
 project(chartdldr_pi)
@@ -158,40 +158,18 @@ endif ()
 
 add_library(${PACKAGE_NAME} SHARED ${SRC_UNARR} ${SRC_CHARTDLDR})
 
-if (QT_ANDROID)
-  target_include_directories(
-    ${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/include
-  )
-  target_link_libraries(
-    ${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libarchive/${ARCH}/libarchive.a
-  )
-elseif (APPLE)
-  if (OCPN_USE_SYSTEM_LIBARCHIVE)
-    list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
-    find_package(LibArchive REQUIRED)
-    target_include_directories(
-      ${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS}
-    )
-    target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-    # If we use system libarchive, we do not bundel the dylib and need to
-    # comment it out from the pkg project file
-    set(LIBARCHIVE_COMMENT_START "<!--")
-    set(LIBARCHIVE_COMMENT_END "-->")
-  else ()
-    # TODO This is a hack, due to the way libarchive is built and installed in
-    # CI build environment
-    set(LibArchive_INCLUDE_DIRS /usr/local/include )
-    set(LibArchive_LIBRARIES /usr/local/lib/libarchive.13.dylib )
-    set(LibArchive_FOUND 1)
-  endif ()
-else ()
-  find_package(LibArchive REQUIRED)
-  target_include_directories(${PACKAGE_NAME} PRIVATE ${LibArchive_INCLUDE_DIRS})
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ${LibArchive_LIBRARIES})
-endif (QT_ANDROID)
+find_package(OcpnLibarchive)
+if (NOT TARGET ocpn::libarchive)
+  message(FATAL:_ERROR "No libarchive!!!")
+endif ()
+target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::libarchive)
+if (APPLE AND OCPN_USE_SYSTEM_LIBARCHIVE)
+  # If we use system libarchive, we do not bundle the dylib and need to
+  # comment it out from the pkg project file
+  set(LIBARCHIVE_COMMENT_START "<!--")
+  set(LIBARCHIVE_COMMENT_END "-->")
+endif ()
 
-# FIND_PACKAGE(LibArchive)
 if (LibArchive_FOUND)
   message(STATUS "chartdldr_pi: going to use LibArchive...")
   message(STATUS "chartdldr_pi: " ${LibArchive_INCLUDE_DIRS})
@@ -242,7 +220,7 @@ endif (LibArchive_FOUND)
 
 # TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} PRIVATE wxjson::wxjson )
 
-# target_link_libraries( ${PACKAGE_NAME} PRIVATE ${OPENCPN_LINK_TARGET} )
+target_link_libraries( ${PACKAGE_NAME} PRIVATE ocpn::opencpn)
 
 if (NOT QT_ANDROID)
   target_link_libraries(
@@ -281,28 +259,26 @@ endif (APPLE)
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)
   if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DEBUG /OPT:REF /OPT:ICF")
     add_custom_command(
       TARGET ${PACKAGE_NAME}
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "Copying dll file"
       COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:${PACKAGE_NAME}>"
-              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PACKAGE_NAME}>"
-              "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.dll"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.dll"
     )
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-      add_custom_command(
-        TARGET ${PACKAGE_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
-        COMMAND
-          ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
-          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-        COMMAND
-          ${CMAKE_COMMAND} -E copy "$<TARGET_PDB_FILE_NAME:${PACKAGE_NAME}>"
-          "${CMAKE_BINARY_DIR}/$(configuration)/plugins"
-      )
-    endif ()
+    add_custom_command(
+      TARGET ${PACKAGE_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "Copying pdb file"
+      COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.pdb"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${PACKAGE_NAME}>"
+                "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/plugins/${PACKAGE_NAME}.pdb"
+    )
   endif (MSVC)
 endif (NOT OCPN_CI_BUILD)
 

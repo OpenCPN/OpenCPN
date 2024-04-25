@@ -3,13 +3,11 @@
  * @ingroup SQLiteCpp
  * @brief   A prepared SQLite Statement is a compiled SQL query ready to be executed, pointing to a row of result.
  *
- * Copyright (c) 2012-2018 Sebastien Rombauts (sebastien.rombauts@gmail.com)
+ * Copyright (c) 2012-2023 Sebastien Rombauts (sebastien.rombauts@gmail.com)
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
  */
-#include <sqlite3.h>
-
 #include <SQLiteCpp/Statement.h>
 
 #include <SQLiteCpp/Database.h>
@@ -17,39 +15,46 @@
 #include <SQLiteCpp/Assertion.h>
 #include <SQLiteCpp/Exception.h>
 
+#include <sqlite3.h>
+
+// check for if SQLite3 version >= 3.14.0
+#if SQLITE_VERSION_NUMBER < 3014000
+    #warning "SQLite3 version is less than 3.14.0, so expanded SQL is not available"
+    #warning "To use expanded SQL, please upgrade to SQLite3 version 3.14.0 or later"
+    #warning "If you want to disable this warning, define SQLITECPP_DISABLE_SQLITE3_EXPANDED_SQL"
+    #warning "or use the specific project option in your build system"
+    #warning "disabling expanded SQL support"
+    #define SQLITECPP_DISABLE_SQLITE3_EXPANDED_SQL
+#endif
+
+
 namespace SQLite
 {
 
-// Compile and register the SQL query for the provided SQLite Database Connection
-Statement::Statement(Database &aDatabase, const char* apQuery) :
+Statement::Statement(const Database& aDatabase, const char* apQuery) :
     mQuery(apQuery),
-    mStmtPtr(aDatabase.mpSQLite, mQuery), // prepare the SQL query, and ref count (needs Database friendship)
-    mColumnCount(0),
-    mbHasRow(false),
-    mbDone(false)
+    mpSQLite(aDatabase.getHandle()),
+    mpPreparedStatement(prepareStatement()) // prepare the SQL query (needs Database friendship)
 {
-    mColumnCount = sqlite3_column_count(mStmtPtr);
+    mColumnCount = sqlite3_column_count(mpPreparedStatement.get());
 }
 
-// Compile and register the SQL query for the provided SQLite Database Connection
-Statement::Statement(Database &aDatabase, const std::string& aQuery) :
-    mQuery(aQuery),
-    mStmtPtr(aDatabase.mpSQLite, mQuery), // prepare the SQL query, and ref count (needs Database friendship)
-    mColumnCount(0),
-    mbHasRow(false),
-    mbDone(false)
+Statement::Statement(Statement&& aStatement) noexcept :
+    mQuery(std::move(aStatement.mQuery)),
+    mpSQLite(aStatement.mpSQLite),
+    mpPreparedStatement(std::move(aStatement.mpPreparedStatement)),
+    mColumnCount(aStatement.mColumnCount),
+    mbHasRow(aStatement.mbHasRow),
+    mbDone(aStatement.mbDone),
+    mColumnNames(std::move(aStatement.mColumnNames))
 {
-    mColumnCount = sqlite3_column_count(mStmtPtr);
+    aStatement.mpSQLite = nullptr;
+    aStatement.mColumnCount = 0;
+    aStatement.mbHasRow = false;
+    aStatement.mbDone = false;
 }
 
-
-// Finalize and unregister the SQL query from the SQLite Database Connection.
-Statement::~Statement()
-{
-    // the finalization will be done by the destructor of the last shared pointer
-}
-
-// Reset the statement to make it ready for a new execution (see also #clearBindings() bellow)
+// Reset the statement to make it ready for a new execution (see also #clearBindings() below)
 void Statement::reset()
 {
     const int ret = tryReset();
@@ -60,48 +65,53 @@ int Statement::tryReset() noexcept
 {
     mbHasRow = false;
     mbDone = false;
-    return sqlite3_reset(mStmtPtr);
+    return sqlite3_reset(mpPreparedStatement.get());
 }
 
 // Clears away all the bindings of a prepared statement (can be associated with #reset() above).
 void Statement::clearBindings()
 {
-    const int ret = sqlite3_clear_bindings(mStmtPtr);
+    const int ret = sqlite3_clear_bindings(getPreparedStatement());
     check(ret);
 }
 
-// Bind an int value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const int aIndex, const int aValue)
+int Statement::getIndex(const char * const apName) const
 {
-    const int ret = sqlite3_bind_int(mStmtPtr, aIndex, aValue);
+    return sqlite3_bind_parameter_index(getPreparedStatement(), apName);
+}
+
+// Bind an 32bits int value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
+void Statement::bind(const int aIndex, const int32_t aValue)
+{
+    const int ret = sqlite3_bind_int(getPreparedStatement(), aIndex, aValue);
     check(ret);
 }
 
 // Bind a 32bits unsigned int value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const int aIndex, const unsigned aValue)
+void Statement::bind(const int aIndex, const uint32_t aValue)
 {
-    const int ret = sqlite3_bind_int64(mStmtPtr, aIndex, aValue);
+    const int ret = sqlite3_bind_int64(getPreparedStatement(), aIndex, aValue);
     check(ret);
 }
 
 // Bind a 64bits int value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const int aIndex, const long long aValue)
+void Statement::bind(const int aIndex, const int64_t aValue)
 {
-    const int ret = sqlite3_bind_int64(mStmtPtr, aIndex, aValue);
+    const int ret = sqlite3_bind_int64(getPreparedStatement(), aIndex, aValue);
     check(ret);
 }
 
 // Bind a double (64bits float) value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bind(const int aIndex, const double aValue)
 {
-    const int ret = sqlite3_bind_double(mStmtPtr, aIndex, aValue);
+    const int ret = sqlite3_bind_double(getPreparedStatement(), aIndex, aValue);
     check(ret);
 }
 
 // Bind a string value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bind(const int aIndex, const std::string& aValue)
 {
-    const int ret = sqlite3_bind_text(mStmtPtr, aIndex, aValue.c_str(),
+    const int ret = sqlite3_bind_text(getPreparedStatement(), aIndex, aValue.c_str(),
                                       static_cast<int>(aValue.size()), SQLITE_TRANSIENT);
     check(ret);
 }
@@ -109,21 +119,21 @@ void Statement::bind(const int aIndex, const std::string& aValue)
 // Bind a text value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bind(const int aIndex, const char* apValue)
 {
-    const int ret = sqlite3_bind_text(mStmtPtr, aIndex, apValue, -1, SQLITE_TRANSIENT);
+    const int ret = sqlite3_bind_text(getPreparedStatement(), aIndex, apValue, -1, SQLITE_TRANSIENT);
     check(ret);
 }
 
 // Bind a binary blob value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bind(const int aIndex, const void* apValue, const int aSize)
 {
-    const int ret = sqlite3_bind_blob(mStmtPtr, aIndex, apValue, aSize, SQLITE_TRANSIENT);
+    const int ret = sqlite3_bind_blob(getPreparedStatement(), aIndex, apValue, aSize, SQLITE_TRANSIENT);
     check(ret);
 }
 
 // Bind a string value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bindNoCopy(const int aIndex, const std::string& aValue)
 {
-    const int ret = sqlite3_bind_text(mStmtPtr, aIndex, aValue.c_str(),
+    const int ret = sqlite3_bind_text(getPreparedStatement(), aIndex, aValue.c_str(),
                                       static_cast<int>(aValue.size()), SQLITE_STATIC);
     check(ret);
 }
@@ -131,112 +141,21 @@ void Statement::bindNoCopy(const int aIndex, const std::string& aValue)
 // Bind a text value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bindNoCopy(const int aIndex, const char* apValue)
 {
-    const int ret = sqlite3_bind_text(mStmtPtr, aIndex, apValue, -1, SQLITE_STATIC);
+    const int ret = sqlite3_bind_text(getPreparedStatement(), aIndex, apValue, -1, SQLITE_STATIC);
     check(ret);
 }
 
 // Bind a binary blob value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bindNoCopy(const int aIndex, const void* apValue, const int aSize)
 {
-    const int ret = sqlite3_bind_blob(mStmtPtr, aIndex, apValue, aSize, SQLITE_STATIC);
+    const int ret = sqlite3_bind_blob(getPreparedStatement(), aIndex, apValue, aSize, SQLITE_STATIC);
     check(ret);
 }
 
 // Bind a NULL value to a parameter "?", "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
 void Statement::bind(const int aIndex)
 {
-    const int ret = sqlite3_bind_null(mStmtPtr, aIndex);
-    check(ret);
-}
-
-
-// Bind an int value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const int aValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_int(mStmtPtr, index, aValue);
-    check(ret);
-}
-
-// Bind a 32bits unsigned int value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const unsigned aValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_int64(mStmtPtr, index, aValue);
-    check(ret);
-}
-
-// Bind a 64bits int value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const long long aValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_int64(mStmtPtr, index, aValue);
-    check(ret);
-}
-
-// Bind a double (64bits float) value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const double aValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_double(mStmtPtr, index, aValue);
-    check(ret);
-}
-
-// Bind a string value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const std::string& aValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_text(mStmtPtr, index, aValue.c_str(),
-                                      static_cast<int>(aValue.size()), SQLITE_TRANSIENT);
-    check(ret);
-}
-
-// Bind a text value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const char* apValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_text(mStmtPtr, index, apValue, -1, SQLITE_TRANSIENT);
-    check(ret);
-}
-
-// Bind a binary blob value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName, const void* apValue, const int aSize)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_blob(mStmtPtr, index, apValue, aSize, SQLITE_TRANSIENT);
-    check(ret);
-}
-
-// Bind a string value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bindNoCopy(const char* apName, const std::string& aValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_text(mStmtPtr, index, aValue.c_str(),
-                                      static_cast<int>(aValue.size()), SQLITE_STATIC);
-    check(ret);
-}
-
-// Bind a text value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bindNoCopy(const char* apName, const char* apValue)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_text(mStmtPtr, index, apValue, -1, SQLITE_STATIC);
-    check(ret);
-}
-
-// Bind a binary blob value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bindNoCopy(const char* apName, const void* apValue, const int aSize)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_blob(mStmtPtr, index, apValue, aSize, SQLITE_STATIC);
-    check(ret);
-}
-
-// Bind a NULL value to a parameter "?NNN", ":VVV", "@VVV" or "$VVV" in the SQL prepared statement
-void Statement::bind(const char* apName)
-{
-    const int index = sqlite3_bind_parameter_index(mStmtPtr, apName);
-    const int ret = sqlite3_bind_null(mStmtPtr, index);
+    const int ret = sqlite3_bind_null(getPreparedStatement(), aIndex);
     check(ret);
 }
 
@@ -247,13 +166,20 @@ bool Statement::executeStep()
     const int ret = tryExecuteStep();
     if ((SQLITE_ROW != ret) && (SQLITE_DONE != ret)) // on row or no (more) row ready, else it's a problem
     {
-        throw SQLite::Exception(mStmtPtr, ret);
+        if (ret == sqlite3_errcode(mpSQLite))
+        {
+            throw SQLite::Exception(mpSQLite, ret);
+        }
+        else
+        {
+            throw SQLite::Exception("Statement needs to be reseted", ret);
+        }
     }
 
     return mbHasRow; // true only if one row is accessible by getColumn(N)
 }
 
-// Execute a one-step query with no expected result
+// Execute a one-step query with no expected result, and return the number of changes.
 int Statement::exec()
 {
     const int ret = tryExecuteStep();
@@ -263,66 +189,61 @@ int Statement::exec()
         {
             throw SQLite::Exception("exec() does not expect results. Use executeStep.");
         }
+        else if (ret == sqlite3_errcode(mpSQLite))
+        {
+            throw SQLite::Exception(mpSQLite, ret);
+        }
         else
         {
-            throw SQLite::Exception(mStmtPtr, ret);
+            throw SQLite::Exception("Statement needs to be reseted", ret);
         }
     }
 
     // Return the number of rows modified by those SQL statements (INSERT, UPDATE or DELETE)
-    return sqlite3_changes(mStmtPtr);
+    return sqlite3_changes(mpSQLite);
 }
 
 int Statement::tryExecuteStep() noexcept
 {
-    if (false == mbDone)
+    if (mbDone)
     {
-        const int ret = sqlite3_step(mStmtPtr);
-        if (SQLITE_ROW == ret) // one row is ready : call getColumn(N) to access it
-        {
-            mbHasRow = true;
-        }
-        else if (SQLITE_DONE == ret) // no (more) row ready : the query has finished executing
-        {
-            mbHasRow = false;
-            mbDone = true;
-        }
-        else
-        {
-            mbHasRow = false;
-            mbDone = false;
-        }
+        return SQLITE_MISUSE; // Statement needs to be reseted !
+    }
 
-        return ret;
+    const int ret = sqlite3_step(mpPreparedStatement.get());
+    if (SQLITE_ROW == ret) // one row is ready : call getColumn(N) to access it
+    {
+        mbHasRow = true;
     }
     else
     {
-        // Statement needs to be reseted !
-        return SQLITE_MISUSE;
+        mbHasRow = false;
+        mbDone = SQLITE_DONE == ret; // check if the query has finished executing
     }
+    return ret;
 }
 
 
 // Return a copy of the column data specified by its index starting at 0
 // (use the Column copy-constructor)
-Column Statement::getColumn(const int aIndex)
+Column Statement::getColumn(const int aIndex) const
 {
     checkRow();
     checkIndex(aIndex);
 
     // Share the Statement Object handle with the new Column created
-    return Column(mStmtPtr, aIndex);
+    return Column(mpPreparedStatement, aIndex);
 }
 
 // Return a copy of the column data specified by its column name starting at 0
 // (use the Column copy-constructor)
-Column  Statement::getColumn(const char* apName)
+Column Statement::getColumn(const char* apName) const
 {
     checkRow();
     const int index = getColumnIndex(apName);
 
     // Share the Statement Object handle with the new Column created
-    return Column(mStmtPtr, index);
+    return Column(mpPreparedStatement, index);
 }
 
 // Test if the column is NULL
@@ -330,21 +251,21 @@ bool Statement::isColumnNull(const int aIndex) const
 {
     checkRow();
     checkIndex(aIndex);
-    return (SQLITE_NULL == sqlite3_column_type(mStmtPtr, aIndex));
+    return (SQLITE_NULL == sqlite3_column_type(getPreparedStatement(), aIndex));
 }
 
 bool Statement::isColumnNull(const char* apName) const
 {
     checkRow();
     const int index = getColumnIndex(apName);
-    return (SQLITE_NULL == sqlite3_column_type(mStmtPtr, index));
+    return (SQLITE_NULL == sqlite3_column_type(getPreparedStatement(), index));
 }
 
 // Return the named assigned to the specified result column (potentially aliased)
 const char* Statement::getColumnName(const int aIndex) const
 {
     checkIndex(aIndex);
-    return sqlite3_column_name(mStmtPtr, aIndex);
+    return sqlite3_column_name(getPreparedStatement(), aIndex);
 }
 
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
@@ -352,7 +273,7 @@ const char* Statement::getColumnName(const int aIndex) const
 const char* Statement::getColumnOriginName(const int aIndex) const
 {
     checkIndex(aIndex);
-    return sqlite3_column_origin_name(mStmtPtr, aIndex);
+    return sqlite3_column_origin_name(getPreparedStatement(), aIndex);
 }
 #endif
 
@@ -364,103 +285,101 @@ int Statement::getColumnIndex(const char* apName) const
     {
         for (int i = 0; i < mColumnCount; ++i)
         {
-            const char* pName = sqlite3_column_name(mStmtPtr, i);
+            const char* pName = sqlite3_column_name(getPreparedStatement(), i);
             mColumnNames[pName] = i;
         }
     }
 
-    const TColumnNames::const_iterator iIndex = mColumnNames.find(apName);
+    const auto iIndex = mColumnNames.find(apName);
     if (iIndex == mColumnNames.end())
     {
         throw SQLite::Exception("Unknown column name.");
     }
 
-    return (*iIndex).second;
+    return iIndex->second;
+}
+
+const char* Statement::getColumnDeclaredType(const int aIndex) const
+{
+    checkIndex(aIndex);
+    const char * result = sqlite3_column_decltype(getPreparedStatement(), aIndex);
+    if (!result)
+    {
+        throw SQLite::Exception("Could not determine declared column type.");
+    }
+    else
+    {
+        return result;
+    }
+}
+
+// Get number of rows modified by last INSERT, UPDATE or DELETE statement (not DROP table).
+int Statement::getChanges() const noexcept
+{
+    return sqlite3_changes(mpSQLite);
+}
+
+int Statement::getBindParameterCount() const noexcept
+{
+    return sqlite3_bind_parameter_count(mpPreparedStatement.get());
 }
 
 // Return the numeric result code for the most recent failed API call (if any).
-int Statement::getErrorCode() const noexcept // nothrow
+int Statement::getErrorCode() const noexcept
 {
-    return sqlite3_errcode(mStmtPtr);
+    return sqlite3_errcode(mpSQLite);
 }
+
 // Return the extended numeric result code for the most recent failed API call (if any).
-int Statement::getExtendedErrorCode() const noexcept // nothrow
+int Statement::getExtendedErrorCode() const noexcept
 {
-    return sqlite3_extended_errcode(mStmtPtr);
+    return sqlite3_extended_errcode(mpSQLite);
 }
+
 // Return UTF-8 encoded English language explanation of the most recent failed API call (if any).
-const char* Statement::getErrorMsg() const noexcept // nothrow
+const char* Statement::getErrorMsg() const noexcept
 {
-    return sqlite3_errmsg(mStmtPtr);
+    return sqlite3_errmsg(mpSQLite);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Internal class : shared pointer to the sqlite3_stmt SQLite Statement Object
-////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @brief Prepare the statement and initialize its reference counter
- *
- * @param[in] apSQLite  The sqlite3 database connexion
- * @param[in] aQuery    The SQL query string to prepare
- */
-Statement::Ptr::Ptr(sqlite3* apSQLite, std::string& aQuery) :
-    mpSQLite(apSQLite),
-    mpStmt(NULL),
-    mpRefCount(NULL)
+// Return a UTF-8 string containing the SQL text of prepared statement with bound parameters expanded.
+std::string Statement::getExpandedSQL() const {
+    #ifdef SQLITECPP_DISABLE_SQLITE3_EXPANDED_SQL
+    throw SQLite::Exception("this version of SQLiteCpp does not support expanded SQL");
+    #else
+    char* expanded = sqlite3_expanded_sql(getPreparedStatement());
+    std::string expandedString(expanded);
+    sqlite3_free(expanded);
+    return expandedString;
+    #endif
+}
+
+
+// Prepare SQLite statement object and return shared pointer to this object
+Statement::TStatementPtr Statement::prepareStatement()
 {
-    const int ret = sqlite3_prepare_v2(apSQLite, aQuery.c_str(), static_cast<int>(aQuery.size()), &mpStmt, NULL);
+    sqlite3_stmt* statement;
+    const int ret = sqlite3_prepare_v2(mpSQLite, mQuery.c_str(), static_cast<int>(mQuery.size()), &statement, nullptr);
     if (SQLITE_OK != ret)
     {
-        throw SQLite::Exception(apSQLite, ret);
+        throw SQLite::Exception(mpSQLite, ret);
     }
-    // Initialize the reference counter of the sqlite3_stmt :
-    // used to share the mStmtPtr between Statement and Column objects;
-    // This is needed to enable Column objects to live longer than the Statement objet it refers to.
-    mpRefCount = new unsigned int(1);  // NOLINT(readability/casting)
+    return Statement::TStatementPtr(statement, [](sqlite3_stmt* stmt)
+        {
+            sqlite3_finalize(stmt);
+        });
 }
 
-/**
- * @brief Copy constructor increments the ref counter
- *
- * @param[in] aPtr Pointer to copy
- */
-Statement::Ptr::Ptr(const Statement::Ptr& aPtr) :
-    mpSQLite(aPtr.mpSQLite),
-    mpStmt(aPtr.mpStmt),
-    mpRefCount(aPtr.mpRefCount)
+// Return prepered statement object or throw
+sqlite3_stmt* Statement::getPreparedStatement() const
 {
-    assert(NULL != mpRefCount);
-    assert(0 != *mpRefCount);
-
-    // Increment the reference counter of the sqlite3_stmt,
-    // asking not to finalize the sqlite3_stmt during the lifetime of the new objet
-    ++(*mpRefCount);
-}
-
-/**
- * @brief Decrement the ref counter and finalize the sqlite3_stmt when it reaches 0
- */
-Statement::Ptr::~Ptr()
-{
-    assert(NULL != mpRefCount);
-    assert(0 != *mpRefCount);
-
-    // Decrement and check the reference counter of the sqlite3_stmt
-    --(*mpRefCount);
-    if (0 == *mpRefCount)
+    sqlite3_stmt* ret = mpPreparedStatement.get();
+    if (ret)
     {
-        // If count reaches zero, finalize the sqlite3_stmt, as no Statement nor Column objet use it anymore.
-        // No need to check the return code, as it is the same as the last statement evaluation.
-        sqlite3_finalize(mpStmt);
-
-        // and delete the reference counter
-        delete mpRefCount;
-        mpRefCount = NULL;
-        mpStmt = NULL;
+        return ret;
     }
-    // else, the finalization will be done later, by the last object
+    throw SQLite::Exception("Statement was not prepared.");
 }
-
 
 }  // namespace SQLite

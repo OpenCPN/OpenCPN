@@ -29,7 +29,7 @@ Dessin des données GRIB (avec QT)
 #include <list>
 #include <set>
 
-#include "../../../include/ocpn_plugin.h"
+#include "ocpn_plugin.h"
 
 #include "GribReader.h"
 
