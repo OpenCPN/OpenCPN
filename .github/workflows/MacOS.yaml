@@ -42,7 +42,7 @@ jobs:
           - name: macOS Latest wxOSX
             runner: macos-latest
             pkg_mod: 11
-            MACOSX_DEPLOYMENT_TARGET: 10.13
+            MACOSX_DEPLOYMENT_TARGET: 10.15
             CREATE_DMG: 1
           - name: macOS 14 wxOSX
             runner: macos-latest
