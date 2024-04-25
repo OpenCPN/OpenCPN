@@ -414,7 +414,7 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
     TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
 
   ConnectionEditDialog dialog(m_parent, this);
-  dialog.SetSize(m_parent->GetSize());  // fill the entire "settings" dialog space
+  dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
   dialog.SetPropsLabel(_("Configure new connection"));
   dialog.SetDefaultConnectionParams();
 
@@ -474,7 +474,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
     if ((index >= 0) && (cp)) {
       ConnectionEditDialog dialog(m_parent, this);
-      dialog.SetSize(m_parent->GetSize());  // fill the entire "settings" dialog space
+      dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
       dialog.SetPropsLabel(_("Edit Selected Connection"));
       // Preload the dialog contents
       dialog.PreloadControls(cp);
