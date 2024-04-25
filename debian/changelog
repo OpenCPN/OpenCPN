@@ -1,3 +1,10 @@
+opencpn (5.8.10~alpha2+dfsg-1) UNRELEASED; urgency=medium
+
+  * Local build
+  * Temporary test build of soon to be released 5.10
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 25 Apr 2024 10:15:45 +0200
+
 opencpn (5.8.4+dfsg-1) unstable; urgency=medium
 
   * New upstream release.
