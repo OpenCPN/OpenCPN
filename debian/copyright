@@ -18,6 +18,7 @@ Files-Excluded:
  libs/serial
  libs/tinyxml
  libs/wxsvg
+ libs/shapelib/web/shapelib-tools.html
  plugins/chartdldr_pi/src/tinyxml
  plugins/chartdldr_pi/src/unarr
  plugins/chartdldr_pi/data/doc/MathJax.js
