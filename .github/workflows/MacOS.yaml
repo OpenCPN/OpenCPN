@@ -45,7 +45,7 @@ jobs:
             MACOSX_DEPLOYMENT_TARGET: 10.15
             CREATE_DMG: 1
           - name: macOS 14 wxOSX
-            runner: macos-latest
+            runner: macos-14
             pkg_mod: 11
             MACOSX_DEPLOYMENT_TARGET: 11
             CREATE_DMG: 1
