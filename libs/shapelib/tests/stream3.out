@@ -1,0 +1,37 @@
+Shapefile Type: Polygon   # of Shapes: 3
+
+File Bounds: (0,0,0,0)
+         to  (180,170,0,0)
+
+Shape:0 (Polygon)  nVertices=9, nParts=2
+  Bounds:(0,0, 0)
+      to (100,100, 0)
+     (0,0, 0) Ring 
+     (100,0, 0)  
+     (100,100, 0)  
+     (0,100, 0)  
+     (0,0, 0)  
+   + (20,20, 0) Ring 
+     (20,30, 0)  
+     (30,30, 0)  
+     (20,20, 0)  
+
+Shape:1 (Polygon)  nVertices=4, nParts=1
+  Bounds:(150,150, 0)
+      to (180,170, 0)
+     (150,150, 0) Ring 
+     (160,150, 0)  
+     (180,170, 0)  
+     (150,150, 0)  
+
+Shape:2 (Polygon)  nVertices=4, nParts=1
+  Bounds:(150,150, 0)
+      to (180,170, 0)
+     (150,150, 0) Ring 
+     (160,150, 0)  
+     (180,170, 0)  
+     (150,150, 0)  
+Descriptio                     TestInt       TestDouble 
+Square with triangle missing        1           2.50000 
+Smaller triangle                  100        1000.25000 
+(NULL)                         (NULL)            (NULL) 

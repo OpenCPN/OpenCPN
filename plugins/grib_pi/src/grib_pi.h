@@ -34,13 +34,13 @@
 #include <wx/glcanvas.h>
 #endif  // precompiled headers
 
-#define PLUGIN_VERSION_MAJOR 4
-#define PLUGIN_VERSION_MINOR 1
+#define PLUGIN_VERSION_MAJOR 5
+#define PLUGIN_VERSION_MINOR 0
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 16
 
-#include "../../../include/ocpn_plugin.h"
+#include "ocpn_plugin.h"
 
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
@@ -63,6 +63,18 @@ class GribPreferencesDialog;
 #define ATTACHED_NO_CAPTION 1      // dialog attached don't have caption
 #define SEPARATED_HORIZONTAL 2     // dialog separated shown honrizontaly
 #define SEPARATED_VERTICAL 3       // dialog separated shown vaerticaly
+
+enum SettingsDisplay {
+  B_ARROWS,
+  ISO_LINE,
+  ISO_ABBR,
+  ISO_LINE_SHORT,
+  ISO_LINE_VISI,
+  D_ARROWS,
+  OVERLAY,
+  NUMBERS,
+  PARTICLES
+};
 
 class grib_pi : public opencpn_plugin_116 {
 public:
@@ -99,6 +111,7 @@ public:
   void OnToolbarToolCallback(int id);
   bool QualifyCtrlBarPosition(wxPoint position, wxSize size);
   void MoveDialog(wxDialog *dialog, wxPoint position);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
   // Other public methods
   void SetCtrlBarXY(wxPoint p) { m_CtrlBarxy = p; }
@@ -131,6 +144,10 @@ public:
   wxSize m_coreToolbarSize;
   wxPoint m_coreToolbarPosn;
   bool m_bZoomToCenterAtInit;
+  wxString m_local_sources_catalog;
+  double m_boat_lat, m_boat_lon;
+  double m_boat_cog, m_boat_sog;
+  time_t m_boat_time;
 
 private:
   bool LoadConfig(void);

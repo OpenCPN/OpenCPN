@@ -1,11 +1,7 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
 if (TARGET ocpn::nmea0183)
     return ()
-endif ()
-
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
 SET(SRC
@@ -64,6 +60,11 @@ endif ()
 add_library(NMEA0183 STATIC ${SRC})
 add_library(ocpn::nmea0183 ALIAS NMEA0183)
 
-set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(NMEA0183 PRIVATE -fvisibility=default -fPIC)
+endif ()
+
 target_include_directories(NMEA0183 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 target_include_directories(NMEA0183 PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(NMEA0183 PRIVATE ${wxWidgets_LIBRARIES})

@@ -1025,6 +1025,9 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum) {
             case 6:
               ret = GRB_DEWPOINT;
               break;  // DATA_TO_GRBV2[DATA_DEWPOINT] = grb2DataType(0,0,6);
+            case 17:
+              ret = GRB_WTMP; //Skin temperature [C] SFC="Ground or water surface"
+              break;  // DATA_TO_GRBV2[DATA_DEWPOINT] = grb2DataType(0,0,17);
           }
           break;
         case 1:  // dataCat Moisture

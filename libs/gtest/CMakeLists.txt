@@ -4,10 +4,6 @@ if (TARGET ocpn::gtest)
     return ()
 endif ()
 
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
-endif ()
-
 add_library(_OCPN_GTEST_IF INTERFACE)
 add_library(ocpn::gtest ALIAS _OCPN_GTEST_IF)
 

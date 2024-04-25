@@ -1,0 +1,4 @@
+#cmakedefine HAVE_PORTAUDIO
+#cmakedefine HAVE_SNDFILE
+#cmakedefine HAVE_SYSTEM_CMD_SOUND
+#define OCPN_SOUND_CMD  ${OCPN_SOUND_CMD}

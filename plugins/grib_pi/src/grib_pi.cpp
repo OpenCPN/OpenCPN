@@ -60,7 +60,6 @@ extern int m_DialogStyle;
 
 grib_pi *g_pi;
 bool g_bpause;
-float g_piGLMinSymbolLineWidth;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -131,12 +130,21 @@ int grib_pi::Init(void) {
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
   //    locally
-  if (m_bGRIBShowIcon) {
-    wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
+  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
                          wxFileName::GetPathSeparator() + _T("grib_pi") +
                          wxFileName::GetPathSeparator() + _T("data") +
                          wxFileName::GetPathSeparator();
-
+  //Initialize catalog file
+  wxString local_grib_catalog = "sources.json";
+  wxString data_path = *GetpPrivateApplicationDataLocation() + wxFileName::GetPathSeparator() + "grib_pi";
+  if (!wxDirExists(data_path)) {
+    wxMkdir(data_path);
+  }
+  m_local_sources_catalog = data_path + wxFileName::GetPathSeparator() + local_grib_catalog;
+  if (!wxFileExists(m_local_sources_catalog)) {
+      wxCopyFile(shareLocn + local_grib_catalog, m_local_sources_catalog);
+  }
+  if (m_bGRIBShowIcon) {
     wxString normalIcon = shareLocn + _T("grib.svg");
     wxString toggledIcon = shareLocn + _T("grib_toggled.svg");
     wxString rolloverIcon = shareLocn + _T("grib_rollover.svg");
@@ -160,21 +168,10 @@ int grib_pi::Init(void) {
     m_CursorDataxy = wxPoint(20, 170);
   }
 
-#ifdef ocpnUSE_GL
-  //  Set the minimum line width
-  GLint parms[2];
-#ifndef USE_ANDROID_GLES2
-  glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-#else
-  glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-#endif
-  g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-#endif
-
   return (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
           WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
           WANTS_CONFIG | WANTS_PREFERENCES | WANTS_PLUGIN_MESSAGING |
-          WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS);
+          WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS | WANTS_NMEA_EVENTS);
 }
 
 bool grib_pi::DeInit(void) {
@@ -544,7 +541,7 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
 
   m_pGRIBOverlayFactory->RenderGribOverlay(dc, vp);
 
-  if ((canvasIndex > 0) || (GetCanvasCount() == 1)) {
+  if ( GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse() ) {
     m_pGribCtrlBar->SetViewPort(vp);
     if (m_pGribCtrlBar->pReq_Dialog)
       m_pGribCtrlBar->pReq_Dialog->RenderZoneOverlay(dc);
@@ -564,7 +561,7 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
 
   m_pGRIBOverlayFactory->RenderGLGribOverlay(pcontext, vp);
 
-  if ((canvasIndex > 0) || (GetCanvasCount() == 1)) {
+  if (GetCanvasByIndex(canvasIndex) == GetCanvasUnderMouse()) {
     m_pGribCtrlBar->SetViewPort(vp);
     if (m_pGribCtrlBar->pReq_Dialog)
       m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
@@ -837,6 +834,18 @@ void grib_pi::SendTimelineMessage(wxDateTime time) {
   wxString out;
   w.Write(v, out);
   SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
+}
+
+void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex& pfix) {
+  m_boat_cog = pfix.Cog;
+  m_boat_sog = pfix.Sog;
+  m_boat_lat = pfix.Lat;
+  m_boat_lon = pfix.Lon;
+  if(pfix.FixTime != 0) {
+    m_boat_time = pfix.FixTime;
+  } else {
+    m_boat_time = wxDateTime::Now().GetTicks();
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------

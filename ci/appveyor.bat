@@ -42,6 +42,10 @@ if errorlevel 1 (
 if exist build (rmdir /s /q build)
 mkdir build && cd build
 
+:: This id done in win_deps.bat, but for some reason stopped
+:: working since 2024-02-28, so work it around here
+set "PATH=%PATH%;C:\Program Files (x86)\Poedit\Gettexttools\bin"
+
 cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DCMAKE_GENERATOR_PLATFORM=Win32 ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
@@ -52,7 +56,8 @@ cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DOCPN_CI_BUILD=ON ^
     -DOCPN_BUNDLE_WXDLLS=ON ^
     -DOCPN_RELEASE=0 ^
-    -DOCPN_BUILD_TEST=OFF ^
+    -DCMAKE_INSTALL_PREFIX="%cd%/test/%CONFIGURATION%" ^
+    -DOCPN_BUILD_TEST=ON ^
     ..
 
 cmake --build . --target package --config %CONFIGURATION%

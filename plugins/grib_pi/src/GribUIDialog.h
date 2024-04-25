@@ -90,6 +90,7 @@ public:
 //    GRIB CtrlBar Specification
 //----------------------------------------------------------------------------------------------------------
 class GRIBUICtrlBar : public GRIBUICtrlBarBase {
+friend class GribRequestSetting;
 public:
   GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString &title,
                 const wxPoint &pos, const wxSize &size, long style,
@@ -147,6 +148,22 @@ public:
   int m_old_DialogStyle;
   double m_ScaledFactor;
   void DoZoomToCenter();
+  const wxString GetGribDir() {
+    if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir)) {
+      m_grib_dir = GetpSharedDataLocation()->Append(wxFileName::GetPathSeparator()).Append("grib");
+      if (!wxDirExists(m_grib_dir)) {
+        wxMkdir(m_grib_dir);
+      }
+    }
+    return m_grib_dir;
+  }
+
+  void GetProjectedLatLon(int &x, int &y);
+  bool ProjectionEnabled() { return m_ProjectBoatPanel->ProjectionEnabled(); }
+  double m_highlight_latmax;
+  double m_highlight_lonmax;
+  double m_highlight_latmin;
+  double m_highlight_lonmin;
 
 private:
   void OnClose(wxCloseEvent &event);
@@ -215,6 +232,8 @@ private:
   wxArrayString m_file_names; /* selected files */
   wxString m_grib_dir;
   wxSize m_DialogsOffset;
+  double m_projected_lat;
+  double m_projected_lon;
 };
 
 //----------------------------------------------------------------------------------------------------------

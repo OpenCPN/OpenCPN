@@ -47,6 +47,7 @@ extern int g_iUTCOffset;  // get offset from dashboard_pi.cpp
 class DashboardInstrument_Clock : public DashboardInstrument_Single {
 public:
   DashboardInstrument_Clock(wxWindow *parent, wxWindowID id, wxString title,
+                            InstrumentProperties* Properties,
                             DASH_CAP cap_flag = OCPN_DBP_STC_CLK,
                             wxString format = _T("%02i:%02i:%02i UTC"));
 
@@ -58,6 +59,7 @@ public:
   wxString GetDisplayTime(wxDateTime UTCtime);
   bool getUTC() { return bUTC; }
   void setUTC(bool flag) { bUTC = flag; }
+  InstrumentProperties* m_Properties;
 
 private:
   bool bUTC;
@@ -65,7 +67,7 @@ private:
 
 class DashboardInstrument_Moon : public DashboardInstrument_Clock {
 public:
-  DashboardInstrument_Moon(wxWindow *parent, wxWindowID id, wxString title);
+  DashboardInstrument_Moon(wxWindow *parent, wxWindowID id, wxString title, InstrumentProperties* Properties);
   ~DashboardInstrument_Moon() {}
 
   wxSize GetSize(int orient, wxSize hint);
@@ -83,6 +85,7 @@ private:
 class DashboardInstrument_Sun : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_Sun(wxWindow *parent, wxWindowID id, wxString title,
+                          InstrumentProperties* Properties,
                           wxString format = _T( "%02i:%02i:%02i UTC" ));
 
   ~DashboardInstrument_Sun() {}
@@ -106,6 +109,7 @@ private:
 class DashboardInstrument_CPUClock : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_CPUClock(wxWindow *parent, wxWindowID id, wxString title,
+                               InstrumentProperties* Properties,
                                wxString format = _T( "%02i:%02i:%02i UTC" ));
 
   ~DashboardInstrument_CPUClock() {}

@@ -739,6 +739,8 @@ mdns_string_make(void* buffer, size_t capacity, void* data, const char* name, si
                  mdns_string_table_t* string_table) {
 	size_t last_pos = 0;
 	size_t remain = capacity - MDNS_POINTER_DIFF(data, buffer);
+        if ((length == 0) || (name == 0))
+                return 0;
 	if (name[length - 1] == '.')
 		--length;
 	while (last_pos < length) {

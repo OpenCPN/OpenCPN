@@ -25,6 +25,7 @@
 
 #include <wx/wx.h>
 
+#ifdef ocpnUSE_GL
 #ifdef __OCPN_USE_GLEW__
  #ifndef __OCPN__ANDROID__
   #if defined(_WIN32)
@@ -37,7 +38,6 @@
 
 
 #if defined(__OCPN__ANDROID__)
- //#include <GLES2/gl2.h>
  #include <qopengl.h>
  #include <GL/gl_private.h>  // this is a cut-down version of gl.h
  #include <GLES2/gl2.h>
@@ -57,13 +57,16 @@
  #include <GL/gl.h>
  #include <GL/glx.h>
 #endif
+#endif
 
 #include "TexFont.h"
 #include "linmath.h"
 #include "ocpn_plugin.h"
-#include "Cs52_shaders.h"
+#ifdef ocpnUSE_GL
+    #include "Cs52_shaders.h"
 
 CGLShaderProgram *m_TexFontShader;
+#endif
 
 TexFont::TexFont() {
   texobj = 0;
@@ -182,10 +185,13 @@ void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool b
 
   wxImage image = tbmp.ConvertToImage();
 
-  GLuint format, internalformat;
+  unsigned int format = 0, internalformat = 0;
   int stride;
 
+#ifdef ocpnUSE_GL
   format = GL_ALPHA;
+#endif
+
   internalformat = format;
   stride = 1;
 
@@ -202,6 +208,7 @@ void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool b
 
     Delete();
 
+#ifdef ocpnUSE_GL
     glGenTextures(1, &texobj);
     glBindTexture(GL_TEXTURE_2D, texobj);
 
@@ -213,8 +220,9 @@ void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool b
 
     glTexImage2D(GL_TEXTURE_2D, 0, internalformat, tex_w, tex_h, 0, format,
                  GL_UNSIGNED_BYTE, teximage);
-
+#endif
     free(teximage);
+
   }
 
   m_built = true;
@@ -222,7 +230,9 @@ void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool b
 
 void TexFont::Delete() {
   if (texobj) {
+#ifdef ocpnUSE_GL
     glDeleteTextures(1, &texobj);
+#endif
     texobj = 0;
   }
   m_built = false;
@@ -256,6 +266,7 @@ void TexFont::GetTextExtent(const wxString &string, int *width, int *height) {
 }
 
 void TexFont::RenderGlyph(int c) {
+#ifdef ocpnUSE_GL
   if (c < MIN_GLYPH || c >= MAX_GLYPH) return;
 
   TexGlyphInfo &tgic = tgi[c];
@@ -361,9 +372,12 @@ void TexFont::RenderGlyph(int c) {
 
   m_dx += tgic.advance; // * cos(m_angle); // + tgic.advance * sin(m_angle);
   //m_dy += tgic.advance * sin(m_angle); // - tgic.advance * cos(m_angle);
+#endif
 }
 
 void TexFont::RenderString(const char *string, int x, int y, float angle) {
+#ifdef ocpnUSE_GL
+
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
 
   glPushMatrix();
@@ -421,14 +435,18 @@ void TexFont::RenderString(const char *string, int x, int y, float angle) {
   }
 
 #endif
+#endif
 }
 
 void TexFont::RenderString(const wxString &string, int x, int y, float angle) {
+#ifdef ocpnUSE_GL
   LoadTexFontShaders();
+#endif
   RenderString((const char *)string.ToUTF8(), x, y, angle);
 }
 
 void TexFont::PrepareShader(int width, int height, double rotation){
+#ifdef ocpnUSE_GL
   if(!m_TexFontShader)
     LoadTexFontShaders();
 
@@ -451,10 +469,10 @@ void TexFont::PrepareShader(int width, int height, double rotation){
   m_TexFontShader->Bind();
   m_TexFontShader->SetUniformMatrix4fv( "MVMatrix", (GLfloat *)Q);
   m_TexFontShader->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)I);
-
+#endif
 }
 
-
+#ifdef ocpnUSE_GL
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 
 #ifdef USE_ANDROID_GLES2
@@ -501,8 +519,6 @@ static const GLchar *TexFont_fragment_shader_source =
 bool TexFont::LoadTexFontShaders() {
   bool ret_val = true;
 
-  int success;
-
   // Are the shaders ready?
   if(m_TexFontShader)
     return true;
@@ -524,5 +540,6 @@ bool TexFont::LoadTexFontShaders() {
 }
 
 
+#endif
 #endif
 #endif

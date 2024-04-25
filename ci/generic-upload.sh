@@ -46,12 +46,17 @@ else
         $SUDO python3 -m pip  install wheel
         $SUDO python3 -m pip install cloudsmith-cli
         pyenv rehash
+    elif test -d $HOME/cs-venv; then
+       source $HOME/cs-venv/bin/activate
+       python -m pip install cloudsmith-cli
     else
         # Assuming builders have installed python3 + pip
         $SUDO python3 -m pip install -q cloudsmith-cli
     fi
     if test -f Release/opencpn.pdb; then cp Release/opencpn.pdb .; fi
-    for src in $(expand *.dmg *setup.exe *.deb *.pkg *pdb*gz *.dSYM.tar.gz); do
+    for src in \
+        $(expand *.dmg *setup.exe *.deb *.pkg *pdb*gz *.dSYM.tar.gz *.flatpak)
+    do
         old=$(basename $src)
         new=$(echo $old | sed "s/+/+${BUILD_NR}./")
         if [ "$old" != "$new" ]; then $SUDO mv "$old" "$new"; fi

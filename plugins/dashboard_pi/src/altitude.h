@@ -48,7 +48,7 @@
 
 class DashboardInstrument_Altitude : public DashboardInstrument {
 public:
-  DashboardInstrument_Altitude(wxWindow* parent, wxWindowID id, wxString title);
+  DashboardInstrument_Altitude(wxWindow* parent, wxWindowID id, wxString title, InstrumentProperties* Properties);
 
   ~DashboardInstrument_Altitude(void) {}
 

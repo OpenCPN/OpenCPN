@@ -1,0 +1,15 @@
+name: linux
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+  pull_request:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - name: make test
+      run: make -f makefile.dev test

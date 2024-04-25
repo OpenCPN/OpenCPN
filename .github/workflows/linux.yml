@@ -1,0 +1,63 @@
+---
+# yamllint disable rule:line-length
+name: Linux build
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'manual/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'manual/**'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu latest wxGTK 3
+            runner: ubuntu-latest
+            cmake_generator: Unix Makefiles
+          - name: Ubuntu latest wxGTK 3 no OpenGL
+            runner: ubuntu-latest
+            cmake_generator: Unix Makefiles
+            cmake_defines: -DOCPN_USE_GL:BOOL=OFF
+
+    env:
+      wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
+
+    # Use bash as the shell, even under MSW where the default is PowerShell.
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Before build
+        run: |
+          ./ci/github-pre-build.sh
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{ matrix.cmake_defines }}
+
+      - name: Build
+        run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+      - name: Test
+        working-directory: build
+        run: make run-tests
+...

@@ -28,8 +28,8 @@ is the ultimate source for how to build on Linux.
 
 Notes:
 
-  * On Debian Buster and Ubuntu Bionic it is possible to build OpenCPN linked
-    against gtk2 or gtk3. The default alternative is to use gtk2.
+  * On old systems like Debian Buster and Ubuntu Bionic it is possible to build
+    OpenCPN linked against gtk2 or gtk3. The default alternative is to use gtk3.
   * The build setup is generally updated for Debian and Ubuntu LTS
     releases.
 
@@ -75,12 +75,12 @@ Install flatpak and flatpak-builder as described in https://flatpak.org/setup/[]
 
 === 2. Install runtime and SDK
 
-At the time of writing version 20.08 is used. Check
+At the time of writing version 22.08 is used. Check
 _flatpak/org.opencpn.OpenCPN.yaml_ for the version actually used, look for
 _runtime-version:_. Install the proper runtime and Sdk, for example:
 
-    $ sudo flatpak install flathub org.freedesktop.Platform//20.08
-    $ sudo flatpak install flathub org.freedesktop.Sdk//20.08
+    $ sudo flatpak install flathub org.freedesktop.Platform//22.08
+    $ sudo flatpak install flathub org.freedesktop.Sdk//22.08
 
 === 3. Build and install:
 
@@ -103,17 +103,21 @@ See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
 
 From RPi 4 the board has resources enough to run a native build, which is
 performed according to the instructions for xref:#build_debian[Debian].
-At the time of writing, it is unclear if this is possible on a rPI 3
-with 1MB of RAM.
 
-NOTE: Fixme
+For RPi 3 with 1GB of ram builds are usually done utilizing cross-compiling on Linux, 
+often using docker and, for 32-bit armhf builds, also qemu. 
+A description of these builds is out of scope for this document.
 
 == Fedora
 
-To install the dependencies required to build OpenCPN from source on Fedora (Tested on 38), run the following command 
+To install the dependencies required to build OpenCPN from source on Fedora
+(Tested on 38), run the following command:
 
 ```
-sudo dnf install wxGTK-devel cmake gcc-c++ git glew-devel openssl-devel libcurl-devel libarchive-devel elfutils-libelf-devel redhat-lsb-core libusb1-devel
+sudo dnf install wxGTK-devel cmake gcc-c++ git glew-devel openssl-devel \
+libcurl-devel libarchive-devel elfutils-libelf-devel redhat-lsb-core \
+libusb1-devel tinyxml-devel systemd-devel portaudio-devel libsndfile-devel \
+gtest-devel sqlite-devel rapidjson-devel
 ```
 
 Then use whichever build method you prefer.
@@ -128,7 +132,7 @@ folder of the OpenCPN source tree.
 
 === https://github.com/eclipse-cdt/[Eclipse]
 
-The current version 2021-06 (4.20.0) has native support for cmake projects.
+The current version has native support for cmake projects.
 It is thus possible to just create a new CMake project based on current
 sources out of the box. There is thus no need to use the
 unmaintained `cmake -G "Eclipse CDT4 - Unix Makefiles" ../` cmake
@@ -148,14 +152,16 @@ tools.
 
 === https://www.jetbrains.com/clion/[CLion]
 
-There are some reports without details from users using CLion for OpenCPN
-development. CLion is commercial software, but are giving out
-free licenses for open source development in certain cases.
+The CLion IDE is currently used by some of the core project developers 
+with good results.
 
-=== https://sourceforge.net/projects/wxformbuilder/[wxFormBuilder]
+CLion is commercial software, but are giving out free licenses for open
+source development in certain cases.
+
+=== https://github.com/wxFormBuilder/wxFormBuilder[wxFormBuilder]
 
 Initially, many of the dialogs was developed using
-https://sourceforge.net/projects/wxformbuilder/[wxFormBuilder].
+https://github.com/wxFormBuilder/wxFormBuilder[wxFormBuilder].
 However, the sources has since long been patched "manually" and it is
 not possible to maintain them using this tool which basically has
 been abandoned in the project.

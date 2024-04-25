@@ -30,15 +30,13 @@
 #endif  // precompiled headers
 
 #include "androidSupport.h"
+#include "android_jvm.h"
 #include <wx/tokenzr.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 #include "qdebug.h"
 
 extern int g_Android_SDK_Version;
-
-extern JavaVM *java_vm;  // found in androidUtil.cpp, accidentally exported....
-extern JNIEnv *jenv;
 
 bool CheckPendingJNIException() {
   JNIEnv *jenv;
@@ -396,4 +394,3 @@ int androidGetSDKVersion() {
   }
   return g_Android_SDK_Version;
 }
-

@@ -67,7 +67,7 @@ message(STATUS ${_msg})
 
 # Set some target-related support variables, notably to build a .deb package:
 set(LIB_INSTALL_DIR "lib")
-if (${PKG_TARGET} MATCHES "ubuntu|debian|raspbian")
+if (${PKG_TARGET} MATCHES "ubuntu|debian|raspbian|linuxmint")
     set(PACKAGE_FORMAT "DEB")
     set(PACKAGE_RECS "xcalib,xdg-utils")
     set(TENTATIVE_PREFIX "/usr/local")
