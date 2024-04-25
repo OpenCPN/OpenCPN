@@ -51,10 +51,13 @@
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_sk_servers;
 
-FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, wxWindowID id,
+FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig *pConfig,
+                                 wxWindowID id,
                                  const wxString& title, const wxBitmap& bitmap,
                                  const wxPoint& pos, long style)
     : FirstUseWiz(parent, id, title, bitmap, pos, style) {
+  m_pConfig = pConfig;
+
   wxString svgDir = g_Platform->GetSharedDataDir() + _T("uidata") +
                     wxFileName::GetPathSeparator() + "MUI_flat" +
                     wxFileName::GetPathSeparator();
@@ -99,7 +102,11 @@ FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, wxWindowID id,
 FirstUseWizImpl::~FirstUseWizImpl() = default;
 
 void FirstUseWizImpl::OnWizardFinished(wxWizardEvent& event) {
-  auto cfg = g_Platform->GetConfigObject();
+  auto cfg = m_pConfig;
+
+  if (!cfg)
+    cfg = g_Platform->GetConfigObject();
+
   // Units
   cfg->SetPath(_T("/Settings"));
   cfg->Write("SDMMFormat", m_cPosition->GetSelection());

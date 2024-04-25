@@ -1172,14 +1172,6 @@ bool MyApp::OnInit() {
   //    Initialize embedded PNG icon graphics
   ::wxInitAllImageHandlers();
 
-  if (g_config_wizard || !wxFileExists(g_Platform->GetConfigFileName())) {
-    FirstUseWizImpl wiz(gFrame);
-    auto res = wiz.Run();
-    if(res) {
-      g_NeedDBUpdate = 2;
-    }
-  }
-
 #ifdef __WXQT__
   //  Now we can configure the Qt StyleSheets, if present
   prepareAndroidStyleSheets();
@@ -1284,6 +1276,14 @@ bool MyApp::OnInit() {
   //  Override for some safe and nice default values if the config file was
   //  created from scratch
   if (b_initial_load) g_Platform->SetDefaultOptions();
+
+  if (g_config_wizard || b_initial_load) {
+    FirstUseWizImpl wiz(gFrame, pConfig);
+    auto res = wiz.Run();
+    if(res) {
+      g_NeedDBUpdate = 2;
+    }
+  }
 
   g_Platform->applyExpertMode(g_bUIexpert);
 
