@@ -1,0 +1,76 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Thu, 25 Apr 2024 12:12:48 +0200
+Subject: Add missing libs like tinyxml Debian work-around
+
+Since we remove some bundled libs when repacking the sources,
+references to these libs causes build problems which must
+be patched in the cmake files.
+
+Not acceptable upstream, it's our problem that we remove stuff from
+the sources.
+---
+ CMakeLists.txt             |  1 -
+ cmake/SystemLibs.cmake     | 28 ++++++++++++++++++++++++++++
+ cmake/in-files/config.h.in |  2 ++
+ 3 files changed, 30 insertions(+), 1 deletion(-)
+ create mode 100644 cmake/SystemLibs.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2094453..9161694 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1509,7 +1509,6 @@ message(STATUS "    Adding local LIBTESS2")
+ add_subdirectory(libs/libtess2)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
+ 
+-add_subdirectory(libs/tinyxml)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
+ 
+ message(STATUS "    Adding local wxserverdisc")
+diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
+new file mode 100644
+index 0000000..473722c
+--- /dev/null
++++ b/cmake/SystemLibs.cmake
+@@ -0,0 +1,28 @@
++# Dummy definitions for systems like Debian which removes some bundled libs
++# in the packaging
++
++find_package(TinyXML REQUIRED)
++message(STATUS "Building with system tinyxml")
++add_library(TINYXML INTERFACE)
++target_include_directories(TINYXML INTERFACE ${TINYXML_INCLUDE_DIR})
++target_link_libraries(TINYXML INTERFACE ${TINYXML_LIBRARIES})
++add_library(ocpn::tinyxml ALIAS TINYXML)
++
++message(STATUS "Building with system serial lib")
++add_library(SERIAL_IF INTERFACE)
++find_library(LibSerial cxx-serial REQUIRED)
++find_file(SerialHeader NAME serial.h  REQUIRED)
++target_link_libraries(SERIAL_IF INTERFACE ${LibSerial})
++add_library(ocpn::serial ALIAS SERIAL_IF)
++set(HAVE_SYS_SERIAL_LIB ON CACHE BOOL "")
++
++# The system libserial serial.h lives in /usr/include, not
++# /usr/includ/7serial. Create a link which make the source code using
++# "#include serial/serial.h" work.
++if (NOT EXISTS ${CMAKE_BINARY_DIR}/include)
++  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
++endif ()
++execute_process(COMMAND ln -s /usr/include ${CMAKE_BINARY_DIR}/include/serial)
++
++find_path(HAVE_STDINT_H NAMES stdint.h)
++find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
+diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
+index 25ec4ee..bc6ea96 100644
+--- a/cmake/in-files/config.h.in
++++ b/cmake/in-files/config.h.in
+@@ -46,6 +46,8 @@
+ #cmakedefine HAVE_SYS_FCNTL_H
+ #cmakedefine HAVE_SYS_IOCTL_H
+ #cmakedefine OCPN_DISTRO_BUILD
++#cmakedefine HAVE_SYS_SERIAL_LIB
++#cmakedefine HAVE_STDINT_H
+ 
+ // The os compatible plugins are are built for
+ #define PKG_TARGET "${PKG_TARGET}"

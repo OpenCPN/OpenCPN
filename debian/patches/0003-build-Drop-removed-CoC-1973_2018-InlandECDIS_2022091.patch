@@ -1,0 +1,75 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 17 Apr 2024 14:03:26 +0200
+Subject: build: Drop removed CoC-1973_2018-InlandECDIS_20220912.pdf
+
+Remove references to pdf file without sources which is
+excluded from upstream sources in d/copyright
+
+Not acceptable upstream.
+
+Forwarded: not-needed
+---
+ CMakeLists.txt | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9161694..cff0c17 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1434,8 +1434,10 @@ if (OCPN_USE_SVG)
+   endif ()
+ endif ()
+ 
++include(SystemLibs)
++
+ if (OCPN_USE_NEWSERIAL)
+-  add_subdirectory("libs/serial")
++  # add_subdirectory("libs/serial")
+   target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
+   message(STATUS "Using new serial library...")
+ endif ()
+@@ -1505,6 +1507,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+ add_subdirectory(libs/std_filesystem)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
+ 
++
+ message(STATUS "    Adding local LIBTESS2")
+ add_subdirectory(libs/libtess2)
+ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
+@@ -1714,16 +1717,6 @@ if (APPLE)
+     data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+   )
+ 
+-  set_source_files_properties(
+-    data/CoC-909_2013-InlandECDIS_20170308.pdf
+-    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+-  )
+-
+-  set_source_files_properties(
+-    data/CoC-1973_2018-InlandECDIS_20220912.pdf
+-    PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
+-  )
+-
+   set_source_files_properties(
+     ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
+                                                          SharedSupport
+@@ -1880,8 +1873,6 @@ if (APPLE)
+             data/authors.html
+             data/opencpn.png
+             data/ocpn-plugins.xml
+-            data/CoC-909_2013-InlandECDIS_20170308s.pdf
+-            data/CoC-1973_2018-InlandECDIS_20220912.pdf
+             ${SOUND_FILES}
+             buildosx/opencpn.icns
+             buildosx/MainMenu.xib
+@@ -1999,10 +1990,6 @@ if (NOT APPLE)
+   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
+   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
+ 
+-  install(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf
+-                data/CoC-1973_2018-InlandECDIS_20220912.pdf
+-          DESTINATION ${PREFIX_PKGDATA}
+-  )
+   install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
+   install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
+   install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
