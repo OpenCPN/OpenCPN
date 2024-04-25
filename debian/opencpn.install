@@ -1,8 +1,9 @@
-lib/udev/rules.d/98-sglock-ocpn.rules
 usr/bin/opencpn
 usr/bin/opencpn-cmd
+usr/bin/opencpn-glutil
 usr/lib/opencpn/*.so
 usr/share/applications/opencpn.desktop
 usr/share/icons/hicolor/*/apps/opencpn.*
+usr/share/opencpn/basemap_shp/basemap*
 usr/share/metainfo/opencpn.appdata.xml
 usr/share/doc/opencpn/changelog
