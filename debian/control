@@ -33,8 +33,8 @@ Build-Depends: debhelper-compat (= 13),
  portaudio19-dev,
  rapidjson-dev
 Standards-Version: 4.6.2
-Vcs-Browser: https://gitlab.com/leamas/opencpn
-Vcs-Git: https://gitlab.com/leamas/opencpn.git -b debian/sid
+Vcs-Browser: https://github.com/opencpn/opencpn
+Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/master
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
