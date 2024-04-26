@@ -106,7 +106,6 @@ jobs:
   build-macos-universal:
     macos:
       xcode: "15.1.0"
-    resource_class: macos.m1.medium.gen1
     environment:
       - OCPN_TARGET:  macos
       - pkg_mod: 11
@@ -128,7 +127,6 @@ jobs:
   build-macos-intel-legacy:
     macos:
       xcode: "13.4.1"
-    resource_class: macos.m1.medium.gen1
     environment:
       - OCPN_TARGET:  macos
       - pkg_mod: 11
