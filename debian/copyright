@@ -24,6 +24,8 @@ Files-Excluded:
  plugins/chartdldr_pi/data/doc/MathJax.js
  plugins/chartdldr_pi/data/doc/highlight.min.js
  plugins/grib_pi/src/bzip2
+ libs/shapelib/web/index.html
+ libs/shapelib/web/maptools.css
 
 Files: *
 Copyright: 2010-2024, David S. Register
@@ -308,8 +310,7 @@ Copyright: 2017-2020, University of Cincinnati, developedHenry
 License: BSD-3-clause
 
 Files: libs/IXWebSocket/third_party/cpp-linenoise/*
-Copyright: 2015, yhirose
- 2015, Yuji Hirose)
+Copyright: 2015, Yuji Hirose
 License: BSD-2-clause
 
 Files: libs/IXWebSocket/third_party/cpp-linenoise/linenoise.cpp
@@ -329,6 +330,77 @@ License: Expat
 Files: libs/N2KParser/src/N2KParser.cpp
 Copyright: 2022, David S. Register
  2015-2022, Timo Lappalainen, Kave Oy, www.kave.fi
+License: Expat
+
+Files: libs/shapelib/*
+Copyright: 1998-2003, 2007, Frank Warmerdam <warmerdam@pobox.com>
+ 1991, Free Software Foundation, Inc.
+License: Expat or LGPL-2+
+
+Files: libs/shapelib/CMakeLists.txt
+Copyright: 2012, 2013, Alan W. Irwin
+License: Expat
+
+Files: libs/shapelib/dbfadd.c
+ libs/shapelib/dbfcreate.c
+ libs/shapelib/dbfdump.c
+ libs/shapelib/safileio.c
+ libs/shapelib/shpadd.c
+ libs/shapelib/shpcreate.c
+ libs/shapelib/shpdump.c
+ libs/shapelib/shprewind.c
+ libs/shapelib/shptest.c
+ libs/shapelib/shptreedump.c
+ libs/shapelib/shputils.c
+Copyright: 1998-2003, 2007, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: libs/shapelib/contrib/*
+Copyright: 1999, Carl Anderson
+License: Expat
+
+Files: libs/shapelib/contrib/ShapeFileII.pas
+Copyright: 2002, Keven Meyer (Kevin@CyberTracker.co.za)
+License: Expat
+
+Files: libs/shapelib/contrib/Shape_PointInPoly.cpp
+Copyright: 2004, Marko Podgorsek, d-mon@siol.net
+License: Expat
+
+Files: libs/shapelib/contrib/csv2shp.c
+Copyright: 2005, Springs Rescue Mission
+License: GPL-2+
+
+Files: libs/shapelib/contrib/dbfcat.c
+Copyright: 1995, Frank Warmerdam <warmerdam@pobox.com>
+License: public-domain
+
+Files: libs/shapelib/contrib/dbfinfo.c
+Copyright: 1999, Carl Anderson
+License: public-domain
+
+Files: libs/shapelib/contrib/doc/Shape_PointInPoly_README.txt
+Copyright: 2004, Marko Podgorsek, d-mon@siol.net
+License: Expat
+
+Files: libs/shapelib/contrib/shpsort.c
+Copyright: 2004, Eric G. Miller
+License: Expat
+
+Files: libs/shapelib/dbfopen.c
+ libs/shapelib/shapefil.h
+ libs/shapelib/shpopen.c
+ libs/shapelib/shptree.c
+Copyright: 2011-2019, Even Rouault <even dot rouault at spatialys.com>
+ 1999, 2001, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
+Files: libs/shapelib/sbnsearch.c
+Copyright: 2012-2014, Even Rouault <even dot rouault at spatialys.com>
+License: Expat
+
+Files: libs/shapelib/web/*
+Copyright: 1998-2003, 2007, Frank Warmerdam <warmerdam@pobox.com>
 License: Expat
 
 Files: libs/SQLiteCpp/*
