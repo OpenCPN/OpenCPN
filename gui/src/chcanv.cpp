@@ -5725,9 +5725,14 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
   // Draw radar rings if activated
   if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible > 0) {
     double factor = 1.00;
-    if (g_pNavAidRadarRingsStepUnits == 1)  // nautical miles
+    if (g_pNavAidRadarRingsStepUnits == 1)  // kilometers
       factor = 1 / 1.852;
-
+    else if  (g_pNavAidRadarRingsStepUnits == 2){  // minutes (time)
+      if (std::isnan(gSog))
+        factor = 0.0;
+      else
+        factor = gSog/60;
+    }
     factor *= g_fNavAidRadarRingsStep;
 
     double tlat, tlon;
