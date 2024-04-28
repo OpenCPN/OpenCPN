@@ -61,6 +61,6 @@ class SystemCmdSound: public OcpnSound
         std::string m_path;
 };
 
-const unsigned maxPlayTime = 200;   // maximum stall time time is 200mS
+constexpr unsigned maxPlayTime = 200;   // maximum stall time time is 200mS
 
 #endif // SYSTEM_CMD_SOUND_H__

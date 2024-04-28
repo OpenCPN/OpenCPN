@@ -1019,7 +1019,7 @@ proj_strtod(char *nptr, char **endptr)
 /************************************************************************/
 
 static const char*sym = "NnEeSsWw";
-static const double vm[] = { 1.0, 0.0166666666667, 0.00027777778 };
+static constexpr double vm[] = { 1.0, 0.0166666666667, 0.00027777778 };
 
 double CPLDMSToDec( const char *is )
 

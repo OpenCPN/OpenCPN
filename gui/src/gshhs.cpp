@@ -91,11 +91,11 @@ static const GLchar *fragment_shader_source =
     "   gl_FragColor = fragColor;\n"
     "}\n";
 
-static const GLfloat vertices2[] = {
+static constexpr GLfloat vertices2[] = {
     0.0f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
 };
 
-static const GLfloat vertices3[] = {
+static constexpr GLfloat vertices3[] = {
     0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f,
 };
 

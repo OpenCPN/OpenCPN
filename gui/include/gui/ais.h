@@ -82,8 +82,8 @@ enum {
 
 //      Describe NavStatus variable
 // IMO Circ. 289 Area Notices, based on libais
-const size_t AIS8_001_22_NUM_NAMES = 128;
-const size_t AIS8_001_22_SUBAREA_SIZE = 87;
+constexpr size_t AIS8_001_22_NUM_NAMES = 128;
+constexpr size_t AIS8_001_22_SUBAREA_SIZE = 87;
 
 extern wxString ais8_001_22_notice_names[];
 // WX_DECLARE_LIST(Ais8_001_22_SubArea, Ais8_001_22_SubAreaList);

@@ -573,7 +573,7 @@ void LLRegion::Optimize() {
     }
 
     // Round coordinates to avoid numerical errors in region computations
-    const double eps = 6e-6;  // about 1cm on earth's surface at equator
+    constexpr double eps = 6e-6;  // about 1cm on earth's surface at equator
     for (poly_contour::iterator j = i->begin(); j != i->end(); j++) {
       // j->x -= fmod(j->x, 1e-8);
       j->x = round(j->x / eps) * eps;

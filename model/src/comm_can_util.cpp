@@ -28,16 +28,16 @@
 
 #include "model/comm_can_util.h"
 
-static const int kNotFound = -1;
+static constexpr int kNotFound = -1;
 
 /// Number of fast messsages stored triggering Garbage Collection.
-static const int kGcThreshold = 100;
+static constexpr int kGcThreshold = 100;
 
 /// Max time between garbage collection runs.
-static const int kGcIntervalSecs = 10;
+static constexpr int kGcIntervalSecs = 10;
 
 /// Max entry age before garbage collected
-static const int kEntryMaxAgeSecs = 100;
+static constexpr int kEntryMaxAgeSecs = 100;
 
 typedef struct can_frame CanFrame;
 

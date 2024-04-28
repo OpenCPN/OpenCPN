@@ -47,7 +47,7 @@
 #define N_DOG_TIMEOUT 5             // seconds
 #define N_DOG_TIMEOUT_RECONNECT 10  // seconds
 
-static const double ms_to_knot_factor = 1.9438444924406;
+static constexpr double ms_to_knot_factor = 1.9438444924406;
 
 class WebSocketThread;
 class OCPN_WebSocketMessageHandler;

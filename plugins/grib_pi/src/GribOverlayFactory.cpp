@@ -1726,7 +1726,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap(int settings, GribRecord **pGR,
                                               PlugIn_ViewPort *vp) {
   if (!m_Settings.Settings[settings].m_bOverlayMap) return;
 
-  const int grib_pixel_size = 4;
+  constexpr int grib_pixel_size = 4;
   bool polar;
   int idx, idy;
   SettingsIdToGribId(settings, idx, idy, polar);
@@ -2067,8 +2067,8 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
 
   std::vector<Particle> &particles = m_ParticleMap->m_Particles;
 
-  const int max_duration = 50;
-  const int run_count = 6;
+  constexpr int max_duration = 50;
+  constexpr int run_count = 6;
 
   double density = m_Settings.Settings[settings].m_dParticleDensity;
   //    density = density * sqrt(vp.view_scale_ppm);

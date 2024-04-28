@@ -35,7 +35,7 @@
 #define ID_CM93ZOOMG 102
 
 //    ToolBar Constants
-const int ID_TOOLBAR = 500;
+constexpr int ID_TOOLBAR = 500;
 
 enum {
   // The following constants represent the toolbar items (some are also used in
@@ -67,7 +67,7 @@ enum {
   ID_PLUGIN_BASE  // This MUST be the last item in the enum
 };
 
-static const long TOOLBAR_STYLE = wxTB_FLAT | wxTB_DOCKABLE | wxTB_TEXT;
+static constexpr long TOOLBAR_STYLE = wxTB_FLAT | wxTB_DOCKABLE | wxTB_TEXT;
 
 enum {
   IDM_TOOLBAR_TOGGLETOOLBARSIZE = 200,

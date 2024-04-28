@@ -61,7 +61,7 @@ protected:
   Track* myTrack;
   std::vector<bool> toPrintOut;  // list of fields of bool, if certain element
                                  // should be print out.
-  static const int pN = 5;       // number of fields sofar
+  static constexpr int pN = 5;       // number of fields sofar
   int pageToPrint;
   int numberOfPages;
   int marginX;

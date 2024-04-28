@@ -1122,7 +1122,7 @@ void ocpnMemDC::SelectObject(wxDIB &dib) {
  * Adapted to static and modified for improved performance by dsr
  */
 
-static const double wxROTATE_EPSILON = 1e-10;
+static constexpr double wxROTATE_EPSILON = 1e-10;
 
 // Auxiliary function to rotate a point (x,y) with respect to point p0
 // make it inline and use a straight return to facilitate optimization

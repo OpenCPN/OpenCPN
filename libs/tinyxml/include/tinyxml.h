@@ -89,9 +89,9 @@ class TiXmlText;
 class TiXmlDeclaration;
 class TiXmlParsingData;
 
-const int TIXML_MAJOR_VERSION = 2;
-const int TIXML_MINOR_VERSION = 6;
-const int TIXML_PATCH_VERSION = 2;
+constexpr int TIXML_MAJOR_VERSION = 2;
+constexpr int TIXML_MINOR_VERSION = 6;
+constexpr int TIXML_PATCH_VERSION = 2;
 
 /*	Internal structure for tracking location of items
 	in the XML file.
@@ -167,7 +167,7 @@ enum TiXmlEncoding
 	TIXML_ENCODING_LEGACY
 };
 
-const TiXmlEncoding TIXML_DEFAULT_ENCODING = TIXML_ENCODING_UNKNOWN;
+constexpr TiXmlEncoding TIXML_DEFAULT_ENCODING = TIXML_ENCODING_UNKNOWN;
 
 /** TiXmlBase is a base class for every class in TinyXml.
 	It does little except to establish that TinyXml classes

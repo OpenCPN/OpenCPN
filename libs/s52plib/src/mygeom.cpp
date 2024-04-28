@@ -75,7 +75,7 @@
 #include <windows.h>
 #endif
 
-static const double CM93_semimajor_axis_meters =
+static constexpr double CM93_semimajor_axis_meters =
     6378388.0;  // CM93 semimajor axis
 
 //      Module Internal Prototypes
@@ -742,7 +742,7 @@ int PolyTessGeo::BuildTess(void) {
 
   TESSalloc ma;
   TESStesselator *tess = 0;
-  const int nvp = 3;
+  constexpr int nvp = 3;
 //    unsigned char* vflags = 0;
 #ifdef USE_POOL
   struct MemPool pool;

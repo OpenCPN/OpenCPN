@@ -48,8 +48,8 @@ WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
 
 ///////////////////////////////////////////////////////////////////////
 
-static const int DB_VERSION_PREVIOUS = 17;
-static const int DB_VERSION_CURRENT = 18;
+static constexpr int DB_VERSION_PREVIOUS = 17;
+static constexpr int DB_VERSION_CURRENT = 18;
 
 class ChartDatabase;
 class ChartGroupArray;

@@ -136,7 +136,7 @@ static int s_bInS57;  // Exclusion flag to prvent recursion in this class init
 int s_cnt;
 
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed) {
-  const uint64_t m = 0x880355f21e6d1965ULL;
+  constexpr uint64_t m = 0x880355f21e6d1965ULL;
   const uint64_t *pos = (const uint64_t *)buf;
   const uint64_t *end = pos + (len >> 3);
   const unsigned char *pc;

@@ -25,8 +25,8 @@ namespace ix
         memset(&zs, 0, sizeof(zs));
 
         // deflateInit2 configure the file format: request gzip instead of deflate
-        const int windowBits = 15;
-        const int GZIP_ENCODING = 16;
+        constexpr int windowBits = 15;
+        constexpr int GZIP_ENCODING = 16;
 
         deflateInit2(&zs,
                      Z_DEFAULT_COMPRESSION,
@@ -93,7 +93,7 @@ namespace ix
         inflateState.avail_in = (uInt) in.size();
         inflateState.next_in = (unsigned char*) (const_cast<char*>(in.data()));
 
-        const int kBufferSize = 1 << 14;
+        constexpr int kBufferSize = 1 << 14;
         std::array<unsigned char, kBufferSize> compressBuffer;
 
         do

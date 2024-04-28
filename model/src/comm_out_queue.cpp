@@ -10,7 +10,7 @@
 
 // Both arm and intel are little endian, but better safe than sorry:
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-static const uint64_t kFirstFiveBytes = 0x000000ffffffffff;
+static constexpr uint64_t kFirstFiveBytes = 0x000000ffffffffff;
 #else
 static const uint64_t kFirstFiveBytes = 0xffffffffff000000;
 #endif

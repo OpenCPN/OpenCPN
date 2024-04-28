@@ -14,7 +14,7 @@
 
 namespace safe_mode {
 
-static const int TIMEOUT_SECONDS = 15;
+static constexpr int TIMEOUT_SECONDS = 15;
 
 static const char* LAST_RUN_ERROR_MSG =
     _("<p>The last opencpn run seems to have failed. Do you want to run\n"

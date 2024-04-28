@@ -1840,7 +1840,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   // Quilted regions can be simplified to reduce the cost of region operations,
   // in this case allow a maximum error of 8 pixels (the rendered display is
   // much better, this is only for composing the quilt)
-  const double z = 111274.96299695622;  ////WGS84_semimajor_axis_meters *
+  constexpr double z = 111274.96299695622;  ////WGS84_semimajor_axis_meters *
                                         /// mercator_k0 * DEGREE;
   double factor = 8.0 / (vp_local.view_scale_ppm * z);
 

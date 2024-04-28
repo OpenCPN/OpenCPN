@@ -23,7 +23,7 @@
 namespace ix
 {
 #ifdef _WIN32
-    const DWORD MS_VC_EXCEPTION = 0x406D1388;
+    constexpr DWORD MS_VC_EXCEPTION = 0x406D1388;
 
 #pragma pack(push, 8)
     typedef struct tagTHREADNAME_INFO

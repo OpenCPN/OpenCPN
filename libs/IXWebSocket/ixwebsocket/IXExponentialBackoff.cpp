@@ -16,7 +16,7 @@ namespace ix
     {
         // It's easy with a power function to go beyond 2^32, and then 
         // have unexpected results, so prepare for that
-        const uint32_t maxRetryCountWithoutOverflow = 26;
+        constexpr uint32_t maxRetryCountWithoutOverflow = 26;
 
         uint32_t waitTime = 0;
         if (retryCount < maxRetryCountWithoutOverflow)

@@ -14,12 +14,12 @@ namespace ix
 {
     /// Default values as defined in the RFC
     const uint8_t WebSocketPerMessageDeflateOptions::kDefaultServerMaxWindowBits = 15;
-    static const uint8_t minServerMaxWindowBits = 8;
-    static const uint8_t maxServerMaxWindowBits = 15;
+    static constexpr uint8_t minServerMaxWindowBits = 8;
+    static constexpr uint8_t maxServerMaxWindowBits = 15;
 
     const uint8_t WebSocketPerMessageDeflateOptions::kDefaultClientMaxWindowBits = 15;
-    static const uint8_t minClientMaxWindowBits = 8;
-    static const uint8_t maxClientMaxWindowBits = 15;
+    static constexpr uint8_t minClientMaxWindowBits = 8;
+    static constexpr uint8_t maxClientMaxWindowBits = 15;
 
     WebSocketPerMessageDeflateOptions::WebSocketPerMessageDeflateOptions(
         bool enabled,

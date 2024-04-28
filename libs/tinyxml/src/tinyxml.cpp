@@ -1051,8 +1051,8 @@ bool TiXmlDocument::LoadFile( FILE* file, TiXmlEncoding encoding )
 
 	const char* p = buf;	// the read head
 	char* q = buf;			// the write head
-	const char CR = 0x0d;
-	const char LF = 0x0a;
+        constexpr char CR = 0x0d;
+        constexpr char LF = 0x0a;
 
 	buf[length] = 0;
 	while( *p ) {
@@ -1099,9 +1099,9 @@ bool TiXmlDocument::SaveFile( FILE* fp ) const
 {
 	if ( useMicrosoftBOM )
 	{
-		const unsigned char TIXML_UTF_LEAD_0 = 0xefU;
-		const unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
-		const unsigned char TIXML_UTF_LEAD_2 = 0xbfU;
+          constexpr unsigned char TIXML_UTF_LEAD_0 = 0xefU;
+          constexpr unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
+          constexpr unsigned char TIXML_UTF_LEAD_2 = 0xbfU;
 
 		fputc( TIXML_UTF_LEAD_0, fp );
 		fputc( TIXML_UTF_LEAD_1, fp );

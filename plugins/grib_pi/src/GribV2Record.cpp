@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <jasper/jasper.h>
 #endif
 
-const double GRIB_MISSING_VALUE = GRIB_NOTDEF;
+constexpr double GRIB_MISSING_VALUE = GRIB_NOTDEF;
 
 class GRIBStatproc {
 public:
@@ -945,7 +945,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
             grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
         }
       } else if (grib_msg->md.precision == 2) {  // IEEE754 single precision
-        static const int one = 1;
+        static constexpr int one = 1;
         bool const is_lsb = *((char *)&one) == 1;
         grib_msg->grids.gridpoints = new double[npoints];
         for (l = 0; l < npoints; l++) {

@@ -361,7 +361,7 @@ void toSM(double lat, double lon, double lat0, double lon0, double *x,
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
   }
 
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   *x = (xlon - lon0) * DEGREE * z;
 
@@ -375,7 +375,7 @@ void toSM(double lat, double lon, double lat0, double lon0, double *x,
 }
 
 double toSMcache_y30(double lat0) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
   const double s0 = sin(lat0 * DEGREE);
   const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
   return y30;
@@ -391,7 +391,7 @@ void toSMcache(double lat, double lon, double y30, double lon0, double *x,
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
   }
 
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   *x = (xlon - lon0) * DEGREE * z;
 
@@ -404,7 +404,7 @@ void toSMcache(double lat, double lon, double y30, double lon0, double *x,
 
 void fromSM(double x, double y, double lat0, double lon0, double *lat,
             double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   // lat = arcsin((e^2(y+y0) - 1)/(e^2(y+y0) + 1))
   /*
@@ -439,11 +439,11 @@ void fromSMR(double x, double y, double lat0, double lon0, double axis_meters,
 
 void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x,
               double *y) {
-  const double f = 1.0 / WGSinvf;   // WGS84 ellipsoid flattening parameter
+  constexpr double f = 1.0 / WGSinvf;   // WGS84 ellipsoid flattening parameter
   const double e2 = 2 * f - f * f;  // eccentricity^2  .006700
   const double e = sqrt(e2);
 
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   *x = (lon - lon0) * DEGREE * z;
 
@@ -465,11 +465,11 @@ void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x,
 
 void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat,
                 double *lon) {
-  const double f = 1.0 / WGSinvf;   // WGS84 ellipsoid flattening parameter
+  constexpr double f = 1.0 / WGSinvf;   // WGS84 ellipsoid flattening parameter
   const double es = 2 * f - f * f;  // eccentricity^2  .006700
   const double e = sqrt(es);
 
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   *lon = lon0 + (x / (DEGREE * z));
 
@@ -503,7 +503,7 @@ void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat,
 
 void toPOLY(double lat, double lon, double lat0, double lon0, double *x,
             double *y) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   if (fabs((lat - lat0) * DEGREE) <= TOL) {
     *x = (lon - lon0) * DEGREE * z;
@@ -531,7 +531,7 @@ void toPOLY(double lat, double lon, double lat0, double lon0, double *x,
 
 void fromPOLY(double x, double y, double lat0, double lon0, double *lat,
               double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   double yp = y - (lat0 * DEGREE * z);
   if (fabs(yp) <= TOL) {
@@ -577,9 +577,9 @@ void fromPOLY(double x, double y, double lat0, double lon0, double *lat,
 
 void toTM(float lat, float lon, float lat0, float lon0, double *x, double *y) {
   // constants for WGS-84
-  const double f = 1.0 / WGSinvf; /* WGS84 ellipsoid flattening parameter */
-  const double a = WGS84_semimajor_axis_meters;
-  const double k0 = 1.; /*  Scaling factor    */
+  constexpr double f = 1.0 / WGSinvf; /* WGS84 ellipsoid flattening parameter */
+  constexpr double a = WGS84_semimajor_axis_meters;
+  constexpr double k0 = 1.; /*  Scaling factor    */
 
   const double eccSquared = 2 * f - f * f;
   const double eccPrimeSquared = (eccSquared) / (1 - eccSquared);
@@ -630,12 +630,12 @@ void toTM(float lat, float lon, float lat0, float lon0, double *x, double *y) {
 
 void fromTM(double x, double y, double lat0, double lon0, double *lat,
             double *lon) {
-  const double rad2deg = 1. / DEGREE;
+  constexpr double rad2deg = 1. / DEGREE;
   // constants for WGS-84
 
-  const double f = 1.0 / WGSinvf; /* WGS84 ellipsoid flattening parameter */
-  const double a = WGS84_semimajor_axis_meters;
-  const double k0 = 1.; /*  Scaling factor    */
+  constexpr double f = 1.0 / WGSinvf; /* WGS84 ellipsoid flattening parameter */
+  constexpr double a = WGS84_semimajor_axis_meters;
+  constexpr double k0 = 1.; /*  Scaling factor    */
 
   const double eccSquared = 2 * f - f * f;
 
@@ -691,7 +691,7 @@ void cache_phi0(double lat0, double *sin_phi0, double *cos_phi0) {
 
 void toORTHO(double lat, double lon, double sin_phi0, double cos_phi0,
              double lon0, double *x, double *y) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
@@ -718,7 +718,7 @@ void toORTHO(double lat, double lon, double sin_phi0, double cos_phi0,
 
 void fromORTHO(double x, double y, double lat0, double lon0, double *lat,
                double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   double vx = x / z;
   double vw = y / z;
@@ -749,7 +749,7 @@ double toPOLARcache_e(double lat0) {
 
 void toPOLAR(double lat, double lon, double e, double lat0, double lon0,
              double *x, double *y) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
@@ -767,7 +767,7 @@ void toPOLAR(double lat, double lon, double e, double lat0, double lon0,
 
 void fromPOLAR(double x, double y, double lat0, double lon0, double *lat,
                double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
   double pole = lat0 > 0 ? 90 : -90;
 
   double e = tan((pole - lat0) * DEGREE / 2);
@@ -814,7 +814,7 @@ static inline void fromSTEREO1(double *lat, double *lon, double lat0,
 
 void toSTEREO(double lat, double lon, double sin_phi0, double cos_phi0,
               double lon0, double *x, double *y) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   double u, v, w;
   toSTEREO1(u, v, w, lat, lon, sin_phi0, cos_phi0, lon0);
@@ -826,7 +826,7 @@ void toSTEREO(double lat, double lon, double sin_phi0, double cos_phi0,
 
 void fromSTEREO(double x, double y, double lat0, double lon0, double *lat,
                 double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   x /= z, y /= z;
 
@@ -841,7 +841,7 @@ void fromSTEREO(double x, double y, double lat0, double lon0, double *lat,
 
 void toGNO(double lat, double lon, double sin_phi0, double cos_phi0,
            double lon0, double *x, double *y) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   double u, v, w;
   toSTEREO1(u, v, w, lat, lon, sin_phi0, cos_phi0, lon0);
@@ -857,7 +857,7 @@ void toGNO(double lat, double lon, double sin_phi0, double cos_phi0,
 
 void fromGNO(double x, double y, double lat0, double lon0, double *lat,
              double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   x /= z, y /= z;
 
@@ -870,7 +870,7 @@ void fromGNO(double x, double y, double lat0, double lon0, double *lat,
 
 void toEQUIRECT(double lat, double lon, double lat0, double lon0, double *x,
                 double *y) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
   if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.))
@@ -882,7 +882,7 @@ void toEQUIRECT(double lat, double lon, double lat0, double lon0, double *x,
 
 void fromEQUIRECT(double x, double y, double lat0, double lon0, double *lat,
                   double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   *lat = lat0 + (y / (DEGREE * z));
   //    if(fabs(*lat) > 90) *lat = NAN;
@@ -929,7 +929,7 @@ void MolodenskyTransform(double lat, double lon, double *to_lat, double *to_lon,
         gEllipsoid[gDatum[to_datum_index].ellipsoid].a;  // semimajor axis
     const double da = to_a - from_a;
     const double df = to_f - from_f;
-    const double from_h = 0;
+    constexpr double from_h = 0;
 
     const double slat = sin(from_lat);
     const double clat = cos(from_lat);
@@ -2146,7 +2146,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
     }
 
     // O** the inner loop.
-    const double kP0001 = 1.0e-4;
+    constexpr double kP0001 = 1.0e-4;
     double ratio = 0.0;
     do {
 #if BUG
@@ -2187,7 +2187,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
 #endif
 
       // OI* compute the scaled actual reduction.
-      const double kP1 = 0.1;
+      constexpr double kP1 = 0.1;
       const double actred = kP1 * fnorm1 < fnorm ? 1 - SQR(fnorm1 / fnorm) : -1;
 
       // OI* compute the scaled predicted reduction and
@@ -2214,9 +2214,9 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
 #endif
 
       // OI* update the step bound.
-      const double kP5 = 0.5;
-      const double kP25 = 0.25;
-      const double kP75 = 0.75;
+      constexpr double kP5 = 0.5;
+      constexpr double kP25 = 0.25;
+      constexpr double kP75 = 0.75;
 
       if (ratio <= kP25) {
         double temp =
@@ -2386,7 +2386,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag, double *qtb,
 
   double dxnorm = lm_enorm(n, wa2);
   double fp = dxnorm - delta;
-  const double kP1 = 0.1;
+  constexpr double kP1 = 0.1;
   if (fp <= kP1 * delta) {
 #if BUG
     printf("lmpar/ terminate (fp<delta/10\n");
@@ -2437,7 +2437,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag, double *qtb,
 
   for (;; iter++) {
     // *** evaluate the function at the current value of par.
-    const double kP001 = 0.001;
+    constexpr double kP001 = 0.001;
     if (*par == 0.) *par = MAX(LM_DWARF, kP001 * paru);
     double temp = sqrt(*par);
     for (int j = 0; j < n; j++) wa1[j] = temp * diag[j];
@@ -2605,7 +2605,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt, double *rdiag,
         temp = MAX(0., 1 - temp * temp);
         rdiag[k] *= sqrt(temp);
         temp = rdiag[k] / wa[k];
-        const double kP05 = 0.05;
+        constexpr double kP05 = 0.05;
         if (kP05 * SQR(temp) <= LM_MACHEP) {
           rdiag[k] = lm_enorm(m - j - 1, &a[m * k + j + 1]);
           wa[k] = rdiag[k];
@@ -2712,8 +2712,8 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag, double *qtb,
     //     beyond the first n, which is initially 0..
 
     for (int k = j; k < n; k++) {
-      const double p25 = 0.25;
-      const double p5 = 0.5;
+      constexpr double p25 = 0.25;
+      constexpr double p5 = 0.5;
 
       //        determine a givens rotation which eliminates the
       //        appropriate element in the current row of d.

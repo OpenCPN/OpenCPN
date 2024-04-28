@@ -83,10 +83,10 @@ struct GeoRef {
 #define DATUM_INDEX_WGS84 101
 #define DATUM_INDEX_UNKNOWN -1
 
-static const double WGS84_semimajor_axis_meters =
+static constexpr double WGS84_semimajor_axis_meters =
     6378137.0;  // WGS84 semimajor axis
-static const double mercator_k0 = 0.9996;
-static const double WGSinvf = 298.257223563; /* WGS84 1/f */
+static constexpr double mercator_k0 = 0.9996;
+static constexpr double WGSinvf = 298.257223563; /* WGS84 1/f */
 
 void datumParams(short datum, double *a, double *es);
 

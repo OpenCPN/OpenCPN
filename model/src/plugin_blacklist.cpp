@@ -44,7 +44,7 @@
 
 
 #ifdef _WIN32
-static const char SEP = '\\';
+static constexpr char SEP = '\\';
 #else
 static const char SEP = '/';
 #endif

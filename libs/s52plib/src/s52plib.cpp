@@ -63,9 +63,9 @@ void catch_signals_plib(int signo) {
 #define DEGREE (PI / 180.0)
 #define RADIAN (180.0 / PI)
 
-static const double WGS84_semimajor_axis_meters =
+static constexpr double WGS84_semimajor_axis_meters =
     6378137.0;  // WGS84 semimajor axis
-static const double mercator_k0 = 0.9996;
+static constexpr double mercator_k0 = 0.9996;
 
 #include "s52plib.h"
 #include "mygeom.h"
@@ -10238,7 +10238,7 @@ void toSM_plib(double lat, double lon, double lat0, double lon0, double *x,
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
   }
 
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   *x = (xlon - lon0) * DEGREE * z;
 
@@ -10253,7 +10253,7 @@ void toSM_plib(double lat, double lon, double lat0, double lon0, double *x,
 
 void fromSM_plib(double x, double y, double lat0, double lon0, double *lat,
             double *lon) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
   const double s0 = sin(lat0 * DEGREE);
   const double y0 = (.5 * log((1 + s0) / (1 - s0))) * z;

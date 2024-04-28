@@ -547,7 +547,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 #ifndef __WXMSW__
     const int hour_delta = 4;
 #else
-    const int hour_delta = 1;
+    constexpr int hour_delta = 1;
 #endif
 
     int hour_start = 0;

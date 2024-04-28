@@ -529,7 +529,7 @@ static double heading_diff(double x) {
    a simplistic flat projection, it might be useful to
    add a mercator or other term, but this works in practice */
 double Track::ComputeScale(int left, int right) {
-  const double z = WGS84_semimajor_axis_meters * mercator_k0;
+  constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
   const double mult = DEGREE * z;
   // could multiply by a smaller factor to get
   // better performance with loss of rendering track accuracy
@@ -728,7 +728,7 @@ double Track::Length() {
   for (size_t i = 0; i < TrackPoints.size(); i++) {
     TrackPoint *t = TrackPoints[i];
     if (l) {
-      const double offsetLat = 1e-6;
+      constexpr double offsetLat = 1e-6;
       const double deltaLat = l->m_lat - t->m_lat;
       if (fabs(deltaLat) > offsetLat)
         total += DistGreatCircle(l->m_lat, l->m_lon, t->m_lat, t->m_lon);

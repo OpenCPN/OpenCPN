@@ -107,7 +107,7 @@ EVT_TIMER(TIMER_AIS1, AisDecoder::OnTimerAIS)
 EVT_TIMER(TIMER_DSC, AisDecoder::OnTimerDSC)
 END_EVENT_TABLE()
 
-static const double ms_to_knot_factor = 1.9438444924406;
+static constexpr double ms_to_knot_factor = 1.9438444924406;
 
 static int n_msgs;
 static int n_msg1;
@@ -2047,8 +2047,8 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
           // Check for a valid message size before further handling
         const int size = strbit.GetBitCount();
         if (size < 168) return AIS_GENERIC_ERROR;
-        const int startb = 56;
-        const int slot_size = 112;
+          constexpr int startb = 56;
+          constexpr int slot_size = 112;
         const int extra_bits = (size - startb) % slot_size;
         if (extra_bits > 0) return AIS_GENERIC_ERROR;
 
@@ -3497,8 +3497,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         if (size >= 168) {
             //  Change to meteo mmsi-ID
           if (met_mmsi != 666) ptd->MMSI = met_mmsi;
-          const int startbits = 56;
-          const int slotsize = 112;
+            constexpr int startbits = 56;
+            constexpr int slotsize = 112;
           const int slots_count = (size - startbits) / slotsize;
           int slotbit;
           for (int slot = 0; slot < slots_count; slot++) {

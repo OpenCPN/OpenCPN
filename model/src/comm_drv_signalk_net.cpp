@@ -45,7 +45,7 @@
 #include "ixwebsocket/IXUserAgent.h"
 #include "ixwebsocket/IXSocketTLSOptions.h"
 
-const int kTimerSocket = 9006;
+constexpr int kTimerSocket = 9006;
 
 class CommDriverSignalKNetEvent;  // fwd
 

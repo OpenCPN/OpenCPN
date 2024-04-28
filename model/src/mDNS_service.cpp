@@ -95,7 +95,7 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 	if (entry != MDNS_ENTRYTYPE_QUESTION)
 		return 0;
 
-	const char dns_sd[] = "_services._dns-sd._udp.local.";
+        constexpr char dns_sd[] = "_services._dns-sd._udp.local.";
 	const service_t* service = (const service_t*)user_data;
 
 	mdns_string_t fromaddrstr = ip_address_to_string(addrbuffer, sizeof(addrbuffer), from, addrlen);

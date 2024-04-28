@@ -112,7 +112,7 @@ namespace ix
         std::string remoteUrl(url);
 
         WebSocketInitResult result;
-        const int maxRedirections = 10;
+        constexpr int maxRedirections = 10;
 
         for (int i = 0; i < maxRedirections; ++i)
         {
@@ -533,7 +533,7 @@ namespace ix
             }
 
             // Prevent integer overflow in the next conditional
-            const uint64_t maxFrameSize(1ULL << 63);
+            constexpr uint64_t maxFrameSize(1ULL << 63);
             if (ws.N > maxFrameSize)
             {
                 return;

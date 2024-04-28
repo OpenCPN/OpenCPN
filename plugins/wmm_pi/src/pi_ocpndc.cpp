@@ -296,7 +296,7 @@ void pi_ocpnDC::SetGLStipple() const {
 /* draw a half circle using triangles */
 void piDrawEndCap(float x1, float y1, float t1, float angle) {
 #ifndef USE_ANDROID_GLES2
-  const int steps = 16;
+  constexpr int steps = 16;
   float xa, ya;
   bool first = true;
   for (int i = 0; i <= steps; i++) {

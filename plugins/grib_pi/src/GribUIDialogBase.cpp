@@ -16,7 +16,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 #ifdef __OCPN__ANDROID__
   const bool m_bcompact = true;
 #else
-  const bool m_bcompact = false;
+    constexpr bool m_bcompact = false;
 #endif
 
   {

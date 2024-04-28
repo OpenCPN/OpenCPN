@@ -211,7 +211,7 @@ void DDFModule::Close()
 int DDFModule::Open( const char * pszFilename, int bFailQuietly )
 
 {
-    static const size_t nLeaderSize = 24;
+    static constexpr size_t nLeaderSize = 24;
 
 /* -------------------------------------------------------------------- */
 /*      Close the existing file if there is one.                        */

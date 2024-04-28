@@ -42,9 +42,9 @@
 namespace ix
 {
     /// State that represents a valid utf8 input sequence
-    static unsigned int const utf8_accept = 0;
+    static constexpr unsigned int utf8_accept = 0;
     /// State that represents an invalid utf8 input sequence
-    static unsigned int const utf8_reject = 1;
+    static constexpr unsigned int utf8_reject = 1;
 
     /// Lookup table for the UTF8 decode state machine
     static uint8_t const utf8d[] = {

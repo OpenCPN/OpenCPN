@@ -409,19 +409,19 @@ PUGI__NS_BEGIN
 #ifdef PUGIXML_COMPACT
 static const uintptr_t xml_memory_block_alignment = 4;
 #else
-static const uintptr_t xml_memory_block_alignment = sizeof(void*);
+static constexpr uintptr_t xml_memory_block_alignment = sizeof(void*);
 #endif
 
 // extra metadata bits
-static const uintptr_t xml_memory_page_contents_shared_mask = 64;
-static const uintptr_t xml_memory_page_name_allocated_mask = 32;
-static const uintptr_t xml_memory_page_value_allocated_mask = 16;
-static const uintptr_t xml_memory_page_type_mask = 15;
+static constexpr uintptr_t xml_memory_page_contents_shared_mask = 64;
+static constexpr uintptr_t xml_memory_page_name_allocated_mask = 32;
+static constexpr uintptr_t xml_memory_page_value_allocated_mask = 16;
+static constexpr uintptr_t xml_memory_page_type_mask = 15;
 
 // combined masks for string uniqueness
-static const uintptr_t xml_memory_page_name_allocated_or_shared_mask =
+static constexpr uintptr_t xml_memory_page_name_allocated_or_shared_mask =
     xml_memory_page_name_allocated_mask | xml_memory_page_contents_shared_mask;
-static const uintptr_t xml_memory_page_value_allocated_or_shared_mask =
+static constexpr uintptr_t xml_memory_page_value_allocated_or_shared_mask =
     xml_memory_page_value_allocated_mask | xml_memory_page_contents_shared_mask;
 
 #ifdef PUGIXML_COMPACT
@@ -479,7 +479,7 @@ struct xml_memory_page {
 #endif
 };
 
-static const size_t xml_memory_page_size =
+static constexpr size_t xml_memory_page_size =
 #ifdef PUGIXML_MEMORY_PAGE_SIZE
     (PUGIXML_MEMORY_PAGE_SIZE)
 #else
@@ -615,7 +615,7 @@ struct xml_allocator {
   }
 
   char_t* allocate_string(size_t length) {
-    static const size_t max_encoded_offset =
+    static constexpr size_t max_encoded_offset =
         (1 << 16) * xml_memory_block_alignment;
 
     PUGI__STATIC_ASSERT(xml_memory_page_size <= max_encoded_offset);
@@ -701,7 +701,7 @@ struct xml_allocator {
 
 PUGI__FN_NO_INLINE void* xml_allocator::allocate_memory_oob(
     size_t size, xml_memory_page*& out_page) {
-  const size_t large_allocation_threshold = xml_memory_page_size / 4;
+  constexpr size_t large_allocation_threshold = xml_memory_page_size / 4;
 
   xml_memory_page* page = allocate_page(
       size <= large_allocation_threshold ? xml_memory_page_size : size);
@@ -1516,7 +1516,7 @@ struct utf8_decoder {
   static inline typename Traits::value_type process(
       const uint8_t* data, size_t size, typename Traits::value_type result,
       Traits) {
-    const uint8_t utf8_byte_mask = 0x3f;
+    constexpr uint8_t utf8_byte_mask = 0x3f;
 
     while (size) {
       uint8_t lead = *data;
@@ -2289,7 +2289,7 @@ inline bool strcpy_insitu_allow(size_t length, const Header& header,
   if ((header & header_mask) == 0) return target_length >= length;
 
   // reuse heap memory if waste is not too great
-  const size_t reuse_threshold = 32;
+  constexpr size_t reuse_threshold = 32;
 
   return target_length >= length &&
          (target_length < reuse_threshold ||
@@ -6607,7 +6607,7 @@ PUGI__FN void xml_document::_create() {
 #ifdef PUGIXML_COMPACT
   const size_t page_offset = sizeof(uint32_t);
 #else
-  const size_t page_offset = 0;
+  constexpr size_t page_offset = 0;
 #endif
 
   // initialize sentinel page
@@ -7149,7 +7149,7 @@ PUGI__NS_END
 
 // Allocator used for AST and evaluation stacks
 PUGI__NS_BEGIN
-static const size_t xpath_memory_page_size =
+static constexpr size_t xpath_memory_page_size =
 #ifdef PUGIXML_MEMORY_XPATH_PAGE_SIZE
     PUGIXML_MEMORY_XPATH_PAGE_SIZE
 #else
@@ -7157,10 +7157,10 @@ static const size_t xpath_memory_page_size =
 #endif
     ;
 
-static const uintptr_t xpath_memory_block_alignment = sizeof(double) >
-                                                              sizeof(void*)
-                                                          ? sizeof(double)
-                                                          : sizeof(void*);
+static constexpr uintptr_t xpath_memory_block_alignment = sizeof(double) >
+                                                          sizeof(void*)
+                                                            ? sizeof(double)
+                                                            : sizeof(void*);
 
 struct xpath_memory_block {
   xpath_memory_block* next;
@@ -11722,7 +11722,7 @@ PUGI__FN void xpath_variable_set::_swap(xpath_variable_set& rhs) {
 }
 
 PUGI__FN xpath_variable* xpath_variable_set::_find(const char_t* name) const {
-  const size_t hash_size = sizeof(_data) / sizeof(_data[0]);
+  constexpr size_t hash_size = sizeof(_data) / sizeof(_data[0]);
   size_t hash = impl::hash_string(name) % hash_size;
 
   // look for existing variable
@@ -11770,7 +11770,7 @@ PUGI__FN void xpath_variable_set::_destroy(xpath_variable* var) {
 
 PUGI__FN xpath_variable* xpath_variable_set::add(const char_t* name,
                                                  xpath_value_type type) {
-  const size_t hash_size = sizeof(_data) / sizeof(_data[0]);
+  constexpr size_t hash_size = sizeof(_data) / sizeof(_data[0]);
   size_t hash = impl::hash_string(name) % hash_size;
 
   // look for existing variable

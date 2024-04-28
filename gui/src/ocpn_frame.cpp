@@ -7652,7 +7652,7 @@ double AnchorDistFix(double const d, double const AnchorPointMinDist,
 //      Console supporting printf functionality for Windows GUI app
 
 #ifdef __WXMSW__
-static const WORD MAX_CONSOLE_LINES =
+static constexpr WORD MAX_CONSOLE_LINES =
     500;  // maximum mumber of lines the output console should have
 
 //#ifdef _DEBUG

@@ -123,20 +123,20 @@ extern int g_chart_zoom_modifier_raster;
 
 // A "nominal" scale value, by zoom factor.  Estimated at equator, with monitor
 // pixel size of 0.3mm
-static const double OSM_zoomScale[] = {5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7,
-                                       1.0e7, 4.0e6, 2.0e6, 1.0e6, 5.0e5, 2.5e5,
-                                       1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3,
-                                       2.0e3, 1.0e3, 5.0e2, 2.5e2};
+static constexpr double OSM_zoomScale[] = {5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7,
+                                           1.0e7, 4.0e6, 2.0e6, 1.0e6, 5.0e5, 2.5e5,
+                                           1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3,
+                                           2.0e3, 1.0e3, 5.0e2, 2.5e2};
 
 //  Meters per pixel, by zoom factor
-static const double OSM_zoomMPP[] = {
+static constexpr double OSM_zoomMPP[] = {
     156412, 78206,   39103,   19551,  9776,   4888,   2444,  1222,
     610,    305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773,
     2.387,  1.193,   0.596,   0.298,  0.149,  0.075};
 
 extern MyFrame *gFrame;
 
-static const double eps = 6e-6;  // about 1cm on earth's surface at equator
+static constexpr double eps = 6e-6;  // about 1cm on earth's surface at equator
 
 // Private tile shader source
 static const GLchar *tile_vertex_shader_source =
@@ -715,7 +715,7 @@ wxPoint2DDouble ChartMBTiles::GetDoublePixFromLL(ViewPort &vp, double lat,
     case PROJECTION_MERCATOR:
     case PROJECTION_WEB_MERCATOR:
     default:
-      const double z = WGS84_semimajor_axis_meters * mercator_k0;
+      constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
       easting = (xlon - vp.clon) * DEGREE * z;
 

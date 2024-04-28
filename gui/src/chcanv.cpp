@@ -3416,7 +3416,7 @@ void ChartCanvas::DoMovement(long dt) {
   }
 
   if (m_panx || m_pany) {
-    const double slowpan = .1, maxpan = 2;
+    constexpr constexpr double slowpan = .1, maxpan = 2;
     if (m_modkeys == wxMOD_ALT)
       m_panspeed = slowpan;
     else {
@@ -11658,7 +11658,7 @@ void ChartCanvas::Update() {
 void ChartCanvas::DrawEmboss(ocpnDC &dc, emboss_data *pemboss) {
   if (!pemboss) return;
   int x = pemboss->x, y = pemboss->y;
-  const double factor = 200;
+  constexpr double factor = 200;
 
   wxASSERT_MSG(dc.GetDC(), wxT("DrawEmboss has no dc (opengl?)"));
   wxMemoryDC *pmdc = dynamic_cast<wxMemoryDC *>(dc.GetDC());

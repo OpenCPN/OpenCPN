@@ -71,7 +71,7 @@
 
 #define N_DOG_TIMEOUT 8
 
-static const int kNotFound = -1;
+static constexpr int kNotFound = -1;
 
 class MrqContainer{
 public:
