@@ -6,19 +6,15 @@
 #include <wx/thread.h>
 #include <wx/mstream.h>
 
+#include "mbtiles.h"
 #include "chartbase.h"
 #include "ocpn_frame.h"
+#include "ocpn_app.h"
 
 #include <sqlite3.h>
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include "TileQueue.hpp"
-
-// Pointer to the ChartCanvas object owning our MbTiles ChartBase object.
-// Since ChartBase class does not have a pointer to the parent widget, we have
-// to use a direct link to the chart canvas object to force a refresh of the
-// widget when a new tile has been loaded
-extern ChartCanvas *g_focusCanvas;
 
 /// @brief Worker thread of the MbTiles chart decoder. It receives requests from
 /// the MbTile front-end to load and uncompress tiles from an MbTiles file. Once
@@ -31,7 +27,6 @@ public:
       : wxThread(wxTHREAD_DETACHED),
         m_exitThread(false),
         m_finished(false),
-        m_condition(m_mutex),
         m_pDB(pDB) {}
 
   virtual ~MbtTilesThread() {}
@@ -50,10 +45,8 @@ public:
     m_exitThread = true;
     // Force worker thread to wake-up
     m_tileQueue.Push(nullptr);
-    // Wait for the thread to be deleted
-    m_mutex.Lock();
-    if (!m_finished) m_condition.Wait();
-    m_mutex.Unlock();
+    while (!m_finished) {
+    }
   }
 
 private:
@@ -61,8 +54,6 @@ private:
   bool m_exitThread;
   // Set to true when the thread has finished
   bool m_finished;
-  wxMutex m_mutex;
-  wxCondition m_condition;
   // The queue storing all the tile requests
   TileQueue m_tileQueue;
   // Pointer the SQL object managing the MbTiles file
@@ -72,6 +63,7 @@ private:
   /// @return Always 0
   virtual ExitCode Entry() {
     mbTileDescriptor *tile;
+    SetName("mbtiles-worker");
 
     do {
       // Wait for the next job
@@ -80,22 +72,19 @@ private:
       // thread to check for a deletion request
       if (tile != nullptr) {
         LoadTile(tile);
-        // Only request a refresh of the display if there is no more tiles in
-        // the queue. This avoid annoying flickering effects on the screen when
-        // the computer is fast and able to redraw very quickly
-        if (m_tileQueue.GetSize() == 0) {
-          g_focusCanvas->Refresh();
-        }
+      }
+      // Only request a refresh of the display when there is no more tiles in
+      // the queue.
+      if (m_tileQueue.GetSize() == 0) {
+        wxGetApp().GetTopWindow()->GetEventHandler()->CallAfter(
+            &MyFrame::RefreshAllCanvas, true);
       }
       // Check if the thread has been requested to be destroyed
     } while ((TestDestroy() == false) && (m_exitThread == false));
 
-    // Since the worker is a detached thread, we nee a special mecanism to allow
-    // the main thread to wait for its deletion
-    m_mutex.Lock();
+    // Since the worker is a detached thread, we need a special mecanism to
+    // allow the main thread to wait for its deletion
     m_finished = true;
-    m_condition.Signal();
-    m_mutex.Unlock();
 
     return (wxThread::ExitCode)0;
   }
