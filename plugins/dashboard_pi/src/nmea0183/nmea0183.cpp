@@ -226,7 +226,7 @@ bool NMEA0183::IsGood( void ) const
 
    if ( sentence.Sentence[ 0 ] != '$' )
    {
-      return( FALSE );
+      return FALSE;
    }
 
    /*
@@ -245,7 +245,7 @@ bool NMEA0183::IsGood( void ) const
    }
    */
 
-   return( TRUE );
+   return TRUE;
 }
 
 
@@ -358,7 +358,7 @@ bool NMEA0183::Parse( void )
       return_value = FALSE;
    }
 
-   return( return_value );
+   return return_value;
 }
 
 NMEA0183& NMEA0183::operator << ( wxString & source )
@@ -367,7 +367,7 @@ NMEA0183& NMEA0183::operator << ( wxString & source )
 
    sentence = source;
 
-   return( *this );
+   return*this;
 }
 
 NMEA0183& NMEA0183::operator >> ( wxString& destination )
@@ -376,5 +376,5 @@ NMEA0183& NMEA0183::operator >> ( wxString& destination )
 
    destination = sentence;
 
-   return( *this );
+   return*this;
 }

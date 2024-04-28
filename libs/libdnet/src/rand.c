@@ -54,9 +54,9 @@ rand_addrandom(rand_t *rand, u_char *buf, int len)
 	
 	rand->i--;
 	for (i = 0; i < 256; i++) {
-		rand->i = (rand->i + 1);
+		rand->i = rand->i + 1;
 		si = rand->s[rand->i];
-		rand->j = (rand->j + si + buf[i % len]);
+		rand->j = rand->j + si + buf[i % len];
 		rand->s[rand->i] = rand->s[rand->j];
 		rand->s[rand->j] = si;
 	}
@@ -98,7 +98,7 @@ rand_open(void)
 		r->tmp = NULL;
 		r->tmplen = 0;
 	}
-	return (r);
+	return r;
 }
 
 static uint8_t
@@ -106,13 +106,13 @@ rand_getbyte(rand_t *r)
 {
 	uint8_t si, sj;
 
-	r->i = (r->i + 1);
+	r->i = r->i + 1;
 	si = r->s[r->i];
-	r->j = (r->j + si);
+	r->j = r->j + si;
 	sj = r->s[r->j];
 	r->s[r->i] = sj;
 	r->s[r->j] = si;
-	return (r->s[(si + sj) & 0xff]);
+	return r->s[si + sj & 0xff];
 }
 
 int
@@ -124,7 +124,7 @@ rand_get(rand_t *r, void *buf, size_t len)
 	for (p = buf, i = 0; i < len; i++) {
 		p[i] = rand_getbyte(r);
 	}
-	return (0);
+	return 0;
 }
 
 int
@@ -133,20 +133,20 @@ rand_set(rand_t *r, const void *buf, size_t len)
 	rand_init(r);
 	rand_addrandom(r, (u_char *)buf, len);
 	rand_addrandom(r, (u_char *)buf, len);
-	return (0);
+	return 0;
 }
 
 int
 rand_add(rand_t *r, const void *buf, size_t len)
 {
 	rand_addrandom(r, (u_char *)buf, len);
-	return (0);
+	return 0;
 }
 
 uint8_t
 rand_uint8(rand_t *r)
 {
-	return (rand_getbyte(r));
+	return rand_getbyte(r);
 }
 
 uint16_t
@@ -156,7 +156,7 @@ rand_uint16(rand_t *r)
 
 	val = rand_getbyte(r) << 8;
 	val |= rand_getbyte(r);
-	return (val);
+	return val;
 }
 
 uint32_t
@@ -168,7 +168,7 @@ rand_uint32(rand_t *r)
 	val |= rand_getbyte(r) << 16;
 	val |= rand_getbyte(r) << 8;
 	val |= rand_getbyte(r);
-	return (val);
+	return val;
 }
 
 int
@@ -178,14 +178,14 @@ rand_shuffle(rand_t *r, void *base, size_t nmemb, size_t size)
 	u_int i, j;
 
 	if (nmemb < 2)
-		return (0);
+		return 0;
 	
 	if ((u_int)r->tmplen < size) {
 		if (r->tmp == NULL) {
 			if ((save = malloc(size)) == NULL)
-				return (-1);
+				return -1;
 		} else if ((save = realloc(r->tmp, size)) == NULL)
-			return (-1);
+			return -1;
 		
 		r->tmp = save;
 		r->tmplen = size;
@@ -194,14 +194,14 @@ rand_shuffle(rand_t *r, void *base, size_t nmemb, size_t size)
 	
 	for (i = 0; i < nmemb; i++) {
 		if ((j = rand_uint32(r) % (nmemb - 1)) != i) {
-			src = start + (size * i);
-			dst = start + (size * j);
+			src = start + size * i;
+			dst = start + size * j;
 			memcpy(save, dst, size);
 			memcpy(dst, src, size);
 			memcpy(src, save, size);
 		}
 	}
-	return (0);
+	return 0;
 }
 
 rand_t *
@@ -212,5 +212,5 @@ rand_close(rand_t *r)
 			free(r->tmp);
 		free(r);
 	}
-	return (NULL);
+	return NULL;
 }

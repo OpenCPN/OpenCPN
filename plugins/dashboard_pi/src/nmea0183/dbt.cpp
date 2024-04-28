@@ -90,14 +90,14 @@ bool DBT::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 7 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    DepthFeet    = sentence.Double( 1 );
    DepthMeters  = sentence.Double( 3 );
    DepthFathoms = sentence.Double( 5 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool DBT::Write( SENTENCE& sentence )
@@ -119,7 +119,7 @@ bool DBT::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const DBT& DBT::operator = ( const DBT& source )
@@ -130,5 +130,5 @@ const DBT& DBT::operator = ( const DBT& source )
    DepthMeters  = source.DepthMeters;
    DepthFathoms = source.DepthFathoms;
 
-   return( *this );
+   return*this;
 }

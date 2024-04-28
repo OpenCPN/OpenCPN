@@ -62,7 +62,7 @@ namespace ix
         memset(fds, 0, sizeof(fds));
 
         fds[0].fd = sockfd;
-        fds[0].events = (readyToRead) ? POLLIN : POLLOUT;
+        fds[0].events = readyToRead ? POLLIN : POLLOUT;
 
         // this is ignored by poll, but our select based poll wrapper on Windows needs it
         fds[0].events |= POLLERR;

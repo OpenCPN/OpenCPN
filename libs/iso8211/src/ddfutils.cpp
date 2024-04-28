@@ -73,7 +73,7 @@ long DDFScanInt( const char * pszString, int nMaxChars )
     memcpy( szWorking, pszString, nMaxChars );
     szWorking[nMaxChars] = '\0';
 
-    return( atoi(szWorking) );
+    return atoi(szWorking);
 }
 
 /************************************************************************/

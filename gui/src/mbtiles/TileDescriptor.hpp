@@ -71,7 +71,7 @@ public:
   /// @param y y coordinate of the tile
   /// @return Unique 64 bit key of the tile
   static uint64_t GetMapKey(int z, int x, int y) {
-    return ((uint64_t)z << 40) | ((uint64_t)y << 20) | x;
+    return (uint64_t)z << 40 | (uint64_t)y << 20 | x;
   }
 
   /// @brief Generates a unique 64 bit key/identifier of the tile. This key can
@@ -85,14 +85,14 @@ public:
   static int long2tilex(double lon, int z) {
     if (lon < -180) lon += 360;
 
-    return (int)(floor((lon + 180.0) / 360.0 * (1 << z)));
+    return (int)floor((lon + 180.0) / 360.0 * (1 << z));
   }
 
   static int lat2tiley(double lat, int z) {
-    int y = (int)(floor(
+    int y = (int)floor(
         (1.0 -
          log(tan(lat * M_PI / 180.0) + 1.0 / cos(lat * M_PI / 180.0)) / M_PI) /
-        2.0 * (1 << z)));
+        2.0 * (1 << z));
     int ymax = 1 << z;
     y = ymax - y - 1;
     return y;
@@ -107,7 +107,7 @@ public:
     double n = 1 << z;
     int ymax = 1 << z;
     y = ymax - y - 1;
-    double latRad = atan(sinh(M_PI * (1 - (2 * y / n))));
+    double latRad = atan(sinh(M_PI * (1 - 2 * y / n)));
     return 180.0 / M_PI * latRad;
   }
 

@@ -820,8 +820,8 @@ void ConnectionParamsPanel::OnPaint(wxPaintEvent &event) {
     dc.SetPen(wxPen(c, 1));
 
     int offset = height / 10;
-    dc.DrawRectangle(offset, offset, width - (2 * offset),
-                     height - (2 * offset));
+    dc.DrawRectangle(offset, offset, width - 2 * offset,
+                     height - 2 * offset);
 
     dc.SetTextForeground(wxColour(128, 128, 128));
   }

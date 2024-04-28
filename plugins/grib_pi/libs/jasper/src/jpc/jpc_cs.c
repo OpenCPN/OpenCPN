@@ -526,7 +526,7 @@ static int jpc_siz_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
             jas_free(siz->comps);
             return -1;
         }
-        siz->comps[i].sgnd = (tmp >> 7) & 1;
+        siz->comps[i].sgnd = tmp >> 7 & 1;
         siz->comps[i].prec = (tmp & 0x7f) + 1;
     }
     if (jas_stream_eof(in)) {
@@ -559,8 +559,8 @@ static int jpc_siz_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
         return -1;
     }
     for (i = 0; i < siz->numcomps; ++i) {
-        if (jpc_putuint8(out, ((siz->comps[i].sgnd & 1) << 7) |
-          ((siz->comps[i].prec - 1) & 0x7f)) ||
+        if (jpc_putuint8(out, (siz->comps[i].sgnd & 1) << 7 |
+          siz->comps[i].prec - 1 & 0x7f) ||
           jpc_putuint8(out, siz->comps[i].hsamp) ||
           jpc_putuint8(out, siz->comps[i].vsamp)) {
             return -1;
@@ -769,7 +769,7 @@ static int jpc_cox_getcompparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
                 return -1;
             }
             compparms->rlvls[i].parwidthval = tmp & 0xf;
-            compparms->rlvls[i].parheightval = (tmp >> 4) & 0xf;
+            compparms->rlvls[i].parheightval = tmp >> 4 & 0xf;
         }
 /* Sigh.  This bit should be in the same field in both COC and COD mrk segs. */
 compparms->csty |= JPC_COX_PRT;
@@ -802,8 +802,8 @@ static int jpc_cox_putcompparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
     if (prtflag) {
         for (i = 0; i < compparms->numrlvls; ++i) {
             if (jpc_putuint8(out,
-              ((compparms->rlvls[i].parheightval & 0xf) << 4) |
-              (compparms->rlvls[i].parwidthval & 0xf))) {
+              (compparms->rlvls[i].parheightval & 0xf) << 4 |
+              compparms->rlvls[i].parwidthval & 0xf)) {
                 return -1;
             }
         }
@@ -989,13 +989,13 @@ static int jpc_qcx_getcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
     jpc_getuint8(in, &tmp);
     ++n;
     compparms->qntsty = tmp & 0x1f;
-    compparms->numguard = (tmp >> 5) & 7;
+    compparms->numguard = tmp >> 5 & 7;
     switch (compparms->qntsty) {
     case JPC_QCX_SIQNT:
         compparms->numstepsizes = 1;
         break;
     case JPC_QCX_NOQNT:
-        compparms->numstepsizes = (len - n);
+        compparms->numstepsizes = len - n;
         break;
     case JPC_QCX_SEQNT:
         /* XXX - this is a hack */
@@ -1035,7 +1035,7 @@ static int jpc_qcx_putcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
     /* Eliminate compiler warning about unused variables. */
     cstate = 0;
 
-    jpc_putuint8(out, ((compparms->numguard & 7) << 5) | compparms->qntsty);
+    jpc_putuint8(out, (compparms->numguard & 7) << 5 | compparms->qntsty);
     for (i = 0; i < compparms->numstepsizes; ++i) {
         if (compparms->qntsty == JPC_QCX_NOQNT) {
             jpc_putuint8(out, JPC_QCX_GETEXPN(
@@ -1245,8 +1245,8 @@ static int jpc_poc_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
     jpc_pocpchg_t *pchg;
     int pchgno;
     uint_fast8_t tmp;
-    poc->numpchgs = (cstate->numcomps > 256) ? (ms->len / 9) :
-      (ms->len / 7);
+    poc->numpchgs = cstate->numcomps > 256 ? ms->len / 9 :
+      ms->len / 7;
     if (!(poc->pchgs = jas_alloc2(poc->numpchgs, sizeof(jpc_pocpchg_t)))) {
         goto error;
     }
@@ -1302,12 +1302,12 @@ static int jpc_poc_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
     for (pchgno = 0, pchg = poc->pchgs; pchgno < poc->numpchgs; ++pchgno,
       ++pchg) {
         if (jpc_putuint8(out, pchg->rlvlnostart) ||
-          ((cstate->numcomps > 256) ?
+          (cstate->numcomps > 256 ?
           jpc_putuint16(out, pchg->compnostart) :
           jpc_putuint8(out, pchg->compnostart)) ||
           jpc_putuint16(out, pchg->lyrnoend) ||
           jpc_putuint8(out, pchg->rlvlnoend) ||
-          ((cstate->numcomps > 256) ?
+          (cstate->numcomps > 256 ?
           jpc_putuint16(out, pchg->compnoend) :
           jpc_putuint8(out, pchg->compnoend)) ||
           jpc_putuint8(out, pchg->prgord)) {
@@ -1563,7 +1563,7 @@ int jpc_getuint16(jas_stream_t *in, uint_fast16_t *val)
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if (val) {
         *val = v;
     }
@@ -1590,15 +1590,15 @@ int jpc_getuint32(jas_stream_t *in, uint_fast32_t *val)
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if (val) {
         *val = v;
     }
@@ -1649,7 +1649,7 @@ int jpc_validate(jas_stream_t *in)
     if (n < 2) {
         return -1;
     }
-    if (buf[0] == (JPC_MS_SOC >> 8) && buf[1] == (JPC_MS_SOC & 0xff)) {
+    if (buf[0] == JPC_MS_SOC >> 8 && buf[1] == (JPC_MS_SOC & 0xff)) {
         return 0;
     }
     return -1;

@@ -313,7 +313,7 @@ PluginLoader::PluginLoader()
 bool PluginLoader::IsPlugInAvailable(const wxString& commonName) {
   for (unsigned int i = 0; i < plugin_array.GetCount(); i++) {
     PlugInContainer* pic = plugin_array[i];
-    if (pic && pic->m_enabled && (pic->m_common_name == commonName))
+    if (pic && pic->m_enabled && pic->m_common_name == commonName)
       return true;
   }
   return false;
@@ -707,7 +707,7 @@ bool PluginLoader::LoadPlugInDirectory(const wxString& plugin_dir,
 
   //  Remove any list items marked
   size_t i = 0;
-  while ((i >= 0) && (i < plugin_array.GetCount())) {
+  while (i >= 0 && i < plugin_array.GetCount()) {
     PlugInContainer* pict = plugin_array.Item(i);
     if (pict->m_status == PluginStatus::PendingListRemoval) {
       plugin_array.RemoveAt(i);
@@ -972,7 +972,7 @@ DWORD Rva2Offset(DWORD rva, PIMAGE_SECTION_HEADER psh, PIMAGE_NT_HEADERS pnt) {
   size_t i = 0;
   PIMAGE_SECTION_HEADER pSeh;
   if (rva == 0) {
-    return (rva);
+    return rva;
   }
   pSeh = psh;
   for (i = 0; i < pnt->FileHeader.NumberOfSections; i++) {
@@ -982,7 +982,7 @@ DWORD Rva2Offset(DWORD rva, PIMAGE_SECTION_HEADER psh, PIMAGE_NT_HEADERS pnt) {
     }
     pSeh++;
   }
-  return (rva - pSeh->VirtualAddress + pSeh->PointerToRawData);
+  return rva - pSeh->VirtualAddress + pSeh->PointerToRawData;
 }
 #endif
 
@@ -1166,7 +1166,7 @@ bool PluginLoader::CheckPluginCompatibility(const wxString& plugin_file) {
       HMODULE hMods[1024];
       DWORD cbNeeded;
       if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
-        for (int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
+        for (int i = 0; i < cbNeeded / sizeof(HMODULE); i++) {
           TCHAR szModName[MAX_PATH];
           if (GetModuleFileNameEx(hProcess, hMods[i], szModName,
                                   sizeof(szModName) / sizeof(TCHAR))) {
@@ -1481,7 +1481,7 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
 
   int api_major = plug_in->GetAPIVersionMajor();
   int api_minor = plug_in->GetAPIVersionMinor();
-  int api_ver = (api_major * 100) + api_minor;
+  int api_ver = api_major * 100 + api_minor;
   pic->m_api_version = api_ver;
 
   int pi_major = plug_in->GetPlugInVersionMajor();

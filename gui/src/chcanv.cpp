@@ -1306,7 +1306,7 @@ void ChartCanvas::SetGroupIndex(int index, bool autoSwitch) {
     bgroup_override = true;
   }
 
-  if (!autoSwitch && (index <= (int)g_pGroupArray->GetCount()))
+  if (!autoSwitch && index <= (int)g_pGroupArray->GetCount())
     new_index = index;
 
   //    Get the currently displayed chart native scale, and the current ViewPort
@@ -1339,7 +1339,7 @@ void ChartCanvas::SetGroupIndex(int index, bool autoSwitch) {
   int dbi_hint = FindClosestCanvasChartdbIndex(current_chart_native_scale);
 
   // If a new reference chart is indicated, set a good scale for it.
-  if ((dbi_now != dbi_hint) || !GetQuiltMode()) {
+  if (dbi_now != dbi_hint || !GetQuiltMode()) {
     double best_scale = GetBestStartScale(dbi_hint, vp);
     SetVPScale(best_scale);
   }
@@ -1537,7 +1537,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
       fromSM(d_east, d_north, gLat, gLon, &vpLat, &vpLon);
     } else {
       double offset_angle = atan2(d_north, d_east);
-      double offset_distance = sqrt((d_north * d_north) + (d_east * d_east));
+      double offset_distance = sqrt(d_north * d_north + d_east * d_east);
       double chart_angle = GetVPRotation();
       double target_angle = chart_angle + offset_angle;
       double d_east_mod = offset_distance * cos(target_angle);
@@ -1547,14 +1547,14 @@ bool ChartCanvas::DoCanvasUpdate(void) {
 
     // on lookahead mode, adjust the vp center point
     if (m_bLookAhead && bGPSValid && !m_MouseDragging) {
-      double angle = g_COGAvg + (GetVPRotation() * 180. / PI);
+      double angle = g_COGAvg + GetVPRotation() * 180. / PI;
 
       double pixel_deltay =
           fabs(cos(angle * PI / 180.)) * GetCanvasHeight() / 4;
       double pixel_deltax = fabs(sin(angle * PI / 180.)) * GetCanvasWidth() / 4;
 
       double pixel_delta_tent =
-          sqrt((pixel_deltay * pixel_deltay) + (pixel_deltax * pixel_deltax));
+          sqrt(pixel_deltay * pixel_deltay + pixel_deltax * pixel_deltax);
 
       double pixel_delta = 0;
 
@@ -1604,7 +1604,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
     //  This logic added to enable opening a chart when there is no
     //  previous chart indication, either from inital startup, or from adding
     //  new chart directory
-    if (m_bautofind && (-1 == GetQuiltReferenceChartIndex()) &&
+    if (m_bautofind && -1 == GetQuiltReferenceChartIndex() &&
         m_pCurrentStack) {
       if (m_pCurrentStack->nEntry) {
         int new_dbIndex = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry -
@@ -1647,11 +1647,11 @@ bool ChartCanvas::DoCanvasUpdate(void) {
           int stack_index = 0;
 
           if (stack_index >= 0) {
-            while ((stack_index < m_pCurrentStack->nEntry - 1)) {
+            while (stack_index < m_pCurrentStack->nEntry - 1) {
               int test_db_index = m_pCurrentStack->GetDBIndex(stack_index);
               if (IsChartQuiltableRef(test_db_index) &&
-                  (initial_type ==
-                   ChartData->GetDBChartType(initial_db_index))) {
+                  initial_type ==
+                  ChartData->GetDBChartType(initial_db_index)) {
                 initial_db_index = test_db_index;
                 break;
               }
@@ -1764,8 +1764,8 @@ bool ChartCanvas::DoCanvasUpdate(void) {
 
         //    A special case:  If panning at high scale, open largest scale
         //    chart first
-        if ((LastStack.CurrentStackEntry == LastStack.nEntry - 1) ||
-            (LastStack.nEntry == 0)) {
+        if (LastStack.CurrentStackEntry == LastStack.nEntry - 1 ||
+            LastStack.nEntry == 0) {
           search_direction = true;
           start_index = m_pCurrentStack->nEntry - 1;
         }
@@ -1774,7 +1774,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
         if (bOpenSpecified) {
           search_direction = false;
           start_index = 0;
-          if ((start_index < 0) | (start_index >= m_pCurrentStack->nEntry))
+          if (start_index < 0 | start_index >= m_pCurrentStack->nEntry)
             start_index = 0;
 
           new_open_type = CHART_TYPE_DONTCARE;
@@ -1880,7 +1880,7 @@ bool ChartCanvas::DoCanvasUpdate(void) {
 
   else  // No change in Chart Stack
   {
-    if ((m_bFollow) && m_singleChart)
+    if (m_bFollow && m_singleChart)
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(),
                                m_singleChart->GetChartSkew() * PI / 180.,
                                GetVPRotation());
@@ -1943,8 +1943,8 @@ double ChartCanvas::GetBestVPScale(ChartBase *pchart) {
   if (pchart) {
     double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale();
 
-    if ((g_bPreserveScaleOnX) ||
-        (CHART_TYPE_CM93COMP == pchart->GetChartType())) {
+    if (g_bPreserveScaleOnX ||
+        CHART_TYPE_CM93COMP == pchart->GetChartType()) {
       double new_scale_ppm = GetVPScale();
       proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
     } else {
@@ -2014,15 +2014,15 @@ void ChartCanvas::SetupCanvasQuiltMode(void) {
           // walk the stack up looking for a satisfactory chart
           int stack_index = m_pCurrentStack->CurrentStackEntry;
 
-          while ((stack_index < m_pCurrentStack->nEntry - 1) &&
-                 (stack_index >= 0)) {
+          while (stack_index < m_pCurrentStack->nEntry - 1 &&
+                 stack_index >= 0) {
             int proj_tent = ChartData->GetDBChartProj(
                 m_pCurrentStack->GetDBIndex(stack_index));
             int type_tent = ChartData->GetDBChartType(
                 m_pCurrentStack->GetDBIndex(stack_index));
 
             if (IsChartQuiltableRef(m_pCurrentStack->GetDBIndex(stack_index))) {
-              if ((proj == proj_tent) && (type_tent == type)) {
+              if (proj == proj_tent && type_tent == type) {
                 target_new_dbindex = m_pCurrentStack->GetDBIndex(stack_index);
                 break;
               }
@@ -2146,8 +2146,8 @@ bool ChartCanvas::IsTempMenuBarEnabled() {
 #ifdef __WXMSW__
   int major;
   wxGetOsVersion(&major);
-  return (major >
-          5);  //  For Windows, function is only available on Vista and above
+  return major >
+         5;  //  For Windows, function is only available on Vista and above
 #else
   return true;
 #endif
@@ -2158,7 +2158,7 @@ double ChartCanvas::GetCanvasRangeMeters() {
   GetSize(&width, &height);
   int minDimension = wxMin(width, height);
 
-  double range = (minDimension / GetVP().view_scale_ppm) / 2;
+  double range = minDimension / GetVP().view_scale_ppm / 2;
   range *= cos(GetVP().clat * PI / 180.);
   return range;
 }
@@ -2300,8 +2300,8 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
   // Set DPI (Win) scale factor
   g_scaler = g_Platform->GetDisplayDIPMult(this);
 
-  m_pix_per_mm = (horizontal) / ((double)m_display_size_mm);
-  m_canvas_scale_factor = (horizontal) / (m_display_size_mm / 1000.);
+  m_pix_per_mm = horizontal / (double)m_display_size_mm;
+  m_canvas_scale_factor = horizontal / (m_display_size_mm / 1000.);
 
   if (ps52plib) {
     ps52plib->SetDisplayWidth(g_monitor_info[g_current_monitor].width);
@@ -2374,7 +2374,7 @@ int ChartCanvas::GetCanvasChartNativeScale() {
 
 ChartBase *ChartCanvas::GetChartAtCursor() {
   ChartBase *target_chart;
-  if (m_singleChart && (m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR))
+  if (m_singleChart && m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR)
     target_chart = m_singleChart;
   else if (VPoint.b_quilt)
     target_chart = m_pQuilt->GetChartAtPix(VPoint, wxPoint(mouse_x, mouse_y));
@@ -2415,8 +2415,8 @@ int ChartCanvas::FindClosestCanvasChartdbIndex(int scale) {
       for (unsigned int is = 0; is < im; is++) {
         const ChartTableEntry &m = ChartData->GetChartTableEntry(
             m_pQuilt->GetExtendedStackIndexArray()[is]);
-        if ((m.Scale_ge(
-                scale)) /* && (m_reference_family == m.GetChartFamily())*/) {
+        if (m.Scale_ge(
+            scale) /* && (m_reference_family == m.GetChartFamily())*/) {
           new_dbIndex = m_pQuilt->GetExtendedStackIndexArray()[is];
           break;
         }
@@ -2516,7 +2516,7 @@ bool ChartCanvas::IsChartQuiltableRef(int db_index) {
 bool ChartCanvas::IsChartLargeEnoughToRender(ChartBase *chart, ViewPort &vp) {
   double chartMaxScale =
       chart->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth());
-  return (chartMaxScale * g_ChartNotRenderScaleFactor > vp.chart_scale);
+  return chartMaxScale * g_ChartNotRenderScaleFactor > vp.chart_scale;
 }
 
 void ChartCanvas::StartMeasureRoute() {
@@ -2803,7 +2803,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
     case WXK_F12: {
       if (m_modkeys == wxMOD_ALT)
-        m_nMeasureState = *(volatile int *)(0);  // generate a fault for testing
+        m_nMeasureState = *(volatile int *)0;  // generate a fault for testing
 
       ToggleChartOutlines();
       break;
@@ -2949,8 +2949,8 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
               }
             }
             // If a charttype is found show the popupslider
-            if ((ChartType != CHART_TYPE_UNKNOWN) ||
-                (ChartFam != CHART_FAMILY_UNKNOWN)) {
+            if (ChartType != CHART_TYPE_UNKNOWN ||
+                ChartFam != CHART_FAMILY_UNKNOWN) {
               pPopupDetailSlider = new PopUpDSlide(
                   this, -1, ChartType, ChartFam,
                   wxPoint(g_detailslider_dialog_x, g_detailslider_dialog_y),
@@ -3046,7 +3046,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
         {
           if (Route *r = g_pRouteMan->GetpActiveRoute()) {
             int indexActive = r->GetIndexOf(r->m_pRouteActivePoint);
-            if ((indexActive + 1) <= r->GetnPoints()) {
+            if (indexActive + 1 <= r->GetnPoints()) {
               g_pRouteMan->ActivateNextPoint(r, true);
               InvalidateGL();
               Refresh(false);
@@ -3142,19 +3142,19 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
 
         case 7:  // Ctrl G
           switch (gamma_state) {
-            case (0):
+            case 0:
               r_gamma_mult = 0;
               g_gamma_mult = 1;
               b_gamma_mult = 0;
               gamma_state = 1;
               break;
-            case (1):
+            case 1:
               r_gamma_mult = 1;
               g_gamma_mult = 0;
               b_gamma_mult = 0;
               gamma_state = 2;
               break;
-            case (2):
+            case 2:
               r_gamma_mult = 1;
               g_gamma_mult = 1;
               b_gamma_mult = 1;
@@ -3309,7 +3309,7 @@ void ChartCanvas::SetUpMode(int mode) {
     g_COGAvg = stuff;
     gFrame->FrameCOGTimer.Start(100, wxTIMER_CONTINUOUS);
   } else {
-    if (!g_bskew_comp && (fabs(GetVPSkew()) > 0.0001))
+    if (!g_bskew_comp && fabs(GetVPSkew()) > 0.0001)
       SetVPRotation(GetVPSkew());
     else
       SetVPRotation(0); /* reset to north up */
@@ -3329,7 +3329,7 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
 
   double old_VPRotate = m_VPRotate;
 
-  if ((GetUpMode() == HEAD_UP_MODE) && !std::isnan(gHdt)) {
+  if (GetUpMode() == HEAD_UP_MODE && !std::isnan(gHdt)) {
     m_VPRotate = -gHdt * PI / 180.;
   } else if (GetUpMode() == COURSE_UP_MODE)
     m_VPRotate = -g_COGAvg * PI / 180.;
@@ -3337,7 +3337,7 @@ bool ChartCanvas::DoCanvasCOGSet(void) {
   SetVPRotation(m_VPRotate);
   bool bnew_chart = DoCanvasUpdate();
 
-  if ((bnew_chart) || (old_VPRotate != m_VPRotate)) ReloadVP();
+  if (bnew_chart || old_VPRotate != m_VPRotate) ReloadVP();
 
   return true;
 }
@@ -3807,7 +3807,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           if (segShow_point_a != pr->pRoutePointList->GetFirst()->GetData()) {
             wxRoutePointListNode *node =
-                (pr->pRoutePointList)->GetFirst()->GetNext();
+                pr->pRoutePointList->GetFirst()->GetNext();
             RoutePoint *prp;
             float dist_to_endleg = 0;
             wxString t;
@@ -3845,7 +3845,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                     cos((g_pRouteMan->GetCurrentBrgToActivePoint() - gCog) *
                         PI / 180.);
             if (vmg > 0.) {
-              float ttg_sec = (shiptoEndLeg / gSog) * 3600.;
+              float ttg_sec = shiptoEndLeg / gSog * 3600.;
               wxTimeSpan ttg_span = wxTimeSpan::Seconds((long)ttg_sec);
               s << _T(" - ")
                 << wxString(ttg_sec > SECONDS_PER_DAY
@@ -4251,14 +4251,14 @@ void ChartCanvas::GetDoubleCanvasPointPixVP(ViewPort &vp, double rlat,
   // If for some reason the chart rejects the request by returning an error,
   // then fall back to Viewport Projection estimate from canvas parameters
   if (!g_bopengl && m_singleChart &&
-      (m_singleChart->GetChartFamily() == CHART_FAMILY_RASTER) &&
-      (((fabs(vp.rotation) < .0001) && (fabs(vp.skew) < .0001)) ||
-       ((m_singleChart->GetChartProjectionType() != PROJECTION_MERCATOR) &&
-        (m_singleChart->GetChartProjectionType() !=
-         PROJECTION_TRANSVERSE_MERCATOR) &&
-        (m_singleChart->GetChartProjectionType() != PROJECTION_POLYCONIC))) &&
-      (m_singleChart->GetChartProjectionType() == vp.m_projection_type) &&
-      (m_singleChart->GetChartType() != CHART_TYPE_PLUGIN)) {
+      m_singleChart->GetChartFamily() == CHART_FAMILY_RASTER &&
+      ((fabs(vp.rotation) < .0001 && fabs(vp.skew) < .0001) ||
+       (m_singleChart->GetChartProjectionType() != PROJECTION_MERCATOR &&
+        m_singleChart->GetChartProjectionType() !=
+        PROJECTION_TRANSVERSE_MERCATOR &&
+        m_singleChart->GetChartProjectionType() != PROJECTION_POLYCONIC)) &&
+      m_singleChart->GetChartProjectionType() == vp.m_projection_type &&
+      m_singleChart->GetChartType() != CHART_TYPE_PLUGIN) {
     ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>(m_singleChart);
     //                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint *
     //                        ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
@@ -4305,7 +4305,7 @@ bool ChartCanvas::GetCanvasPointPixVP(ViewPort &vp, double rlat, double rlon,
     return false;
   }
 
-  if( (abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6) )
+  if( abs(p.m_x) < 1e6 && abs(p.m_y) < 1e6 )
     *r = wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   else
     *r = wxPoint(INVALID_COORD, INVALID_COORD);
@@ -4328,14 +4328,14 @@ void ChartCanvas::GetCanvasPixPoint(double x, double y, double &lat,
   bool bUseVP = true;
 
   if (!g_bopengl && m_singleChart &&
-      (m_singleChart->GetChartFamily() == CHART_FAMILY_RASTER) &&
-      (((fabs(GetVP().rotation) < .0001) && (fabs(GetVP().skew) < .0001)) ||
-       ((m_singleChart->GetChartProjectionType() != PROJECTION_MERCATOR) &&
-        (m_singleChart->GetChartProjectionType() !=
-         PROJECTION_TRANSVERSE_MERCATOR) &&
-        (m_singleChart->GetChartProjectionType() != PROJECTION_POLYCONIC))) &&
-      (m_singleChart->GetChartProjectionType() == GetVP().m_projection_type) &&
-      (m_singleChart->GetChartType() != CHART_TYPE_PLUGIN)) {
+      m_singleChart->GetChartFamily() == CHART_FAMILY_RASTER &&
+      ((fabs(GetVP().rotation) < .0001 && fabs(GetVP().skew) < .0001) ||
+       (m_singleChart->GetChartProjectionType() != PROJECTION_MERCATOR &&
+        m_singleChart->GetChartProjectionType() !=
+        PROJECTION_TRANSVERSE_MERCATOR &&
+        m_singleChart->GetChartProjectionType() != PROJECTION_POLYCONIC)) &&
+      m_singleChart->GetChartProjectionType() == GetVP().m_projection_type &&
+      m_singleChart->GetChartType() != CHART_TYPE_PLUGIN) {
     ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>(m_singleChart);
 
     // TODO     maybe need iterative process to validate bInside
@@ -4463,7 +4463,7 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
           g_maxzoomin;  // Roughly, latitude dependent for mercator charts
 
       if (proposed_scale_onscreen < min_allowed_scale) {
-        if (min_allowed_scale == GetCanvasScaleFactor() / (GetVPScale())) {
+        if (min_allowed_scale == GetCanvasScaleFactor() / GetVPScale()) {
           m_zoom_factor = 1; /* stop zooming */
           b_do_zoom = false;
         } else
@@ -4520,14 +4520,14 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
 
       b_smallest = m_pQuilt->IsChartSmallestScale(new_db_index);
 
-      if (b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+      if (b_smallest || 0 == m_pQuilt->GetExtendedStackCount())
         proposed_scale_onscreen =
             wxMin(proposed_scale_onscreen,
                   GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
     }
 
     // set a minimum scale
-    if ((GetCanvasScaleFactor() / proposed_scale_onscreen) <
+    if (GetCanvasScaleFactor() / proposed_scale_onscreen <
         m_absolute_min_scale_ppm)
       b_do_zoom = false;
   }
@@ -4618,8 +4618,8 @@ void ChartCanvas::SetbFollow(void) {
 
   // Is the OWNSHIP on-screen?
   // If not, then reset the OWNSHIP offset to 0 (center screen)
-  if ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
-      (fabs(m_OSoffsety) > VPoint.pix_height / 2)) {
+  if (fabs(m_OSoffsetx) > VPoint.pix_width / 2 ||
+      fabs(m_OSoffsety) > VPoint.pix_height / 2) {
     m_OSoffsetx = 0;
     m_OSoffsety = 0;
   }
@@ -4667,7 +4667,7 @@ void ChartCanvas::JumpToPosition(double lat, double lon, double scale_ppm) {
   } else {
     if (scale_ppm != GetVPScale()) {
       // XXX should be done in SetViewPoint
-      VPoint.chart_scale = m_canvas_scale_factor / (scale_ppm);
+      VPoint.chart_scale = m_canvas_scale_factor / scale_ppm;
       AdjustQuiltRefChart();
     }
     SetViewPoint(lat, lon, scale_ppm, 0, GetVPRotation());
@@ -4731,7 +4731,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
 
   if (VPoint.b_quilt) {
     int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
-    if ((new_ref_dbIndex != cur_ref_dbIndex) && (new_ref_dbIndex != -1)) {
+    if (new_ref_dbIndex != cur_ref_dbIndex && new_ref_dbIndex != -1) {
       // Tweak the scale slightly for a new ref chart
       ChartBase *pc = ChartData->OpenChartFromDB(new_ref_dbIndex, FULL_INIT);
       if (pc) {
@@ -4771,7 +4771,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
   toSM(dlat, dlon, gLat, gLon, &offx, &offy);
 
   double offset_angle = atan2(offy, offx);
-  double offset_distance = sqrt((offy * offy) + (offx * offx));
+  double offset_distance = sqrt(offy * offy + offx * offx);
   double chart_angle = GetVPRotation();
   double target_angle = chart_angle - offset_angle;
   double d_east_mod = offset_distance * cos(target_angle);
@@ -4783,8 +4783,8 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
   //   m_OSoffsetx = offx * VPoint.view_scale_ppm;
   //   m_OSoffsety = offy * VPoint.view_scale_ppm;
 
-  if (m_bFollow && ((fabs(m_OSoffsetx) > VPoint.pix_width / 2) ||
-                    (fabs(m_OSoffsety) > VPoint.pix_height / 2))) {
+  if (m_bFollow && (fabs(m_OSoffsetx) > VPoint.pix_width / 2 ||
+                    fabs(m_OSoffsety) > VPoint.pix_height / 2)) {
     m_bFollow = false;  // update the follow flag
 
     UpdateFollowButtonState();
@@ -4879,13 +4879,13 @@ int ChartCanvas::AdjustQuiltRefChart() {
 
           int extended_array_count =
               m_pQuilt->GetExtendedStackIndexArray().size();
-          while ((!brender_ok) &&
-                 ((int)target_stack_index < (extended_array_count - 1))) {
+          while (!brender_ok &&
+                 (int)target_stack_index < extended_array_count - 1) {
             target_stack_index++;
             int test_db_index =
                 m_pQuilt->GetExtendedStackIndexArray()[target_stack_index];
 
-            if ((ref_family == ChartData->GetDBChartFamily(test_db_index)) &&
+            if (ref_family == ChartData->GetDBChartFamily(test_db_index) &&
                 IsChartQuiltableRef(test_db_index)) {
               //    open the target, and check the min_scale
               ChartBase *ptest_chart =
@@ -4899,7 +4899,7 @@ int ChartCanvas::AdjustQuiltRefChart() {
           if (brender_ok) {  // found a better reference chart
             int new_db_index =
                 m_pQuilt->GetExtendedStackIndexArray()[target_stack_index];
-            if ((ref_family == ChartData->GetDBChartFamily(new_db_index)) &&
+            if (ref_family == ChartData->GetDBChartFamily(new_db_index) &&
                 IsChartQuiltableRef(new_db_index)) {
               m_pQuilt->SetReferenceChart(new_db_index);
               ret = new_db_index;
@@ -4988,10 +4988,10 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
   //  Any sensible change?
   if (VPoint.IsValid()) {
-    if ((fabs(VPoint.view_scale_ppm - scale_ppm) / scale_ppm < 1e-5) &&
-        (fabs(VPoint.skew - skew) < 1e-9) &&
-        (fabs(VPoint.rotation - rotation) < 1e-9) &&
-        (fabs(VPoint.clat - lat) < 1e-9) && (fabs(VPoint.clon - lon) < 1e-9) &&
+    if (fabs(VPoint.view_scale_ppm - scale_ppm) / scale_ppm < 1e-5 &&
+        fabs(VPoint.skew - skew) < 1e-9 &&
+        fabs(VPoint.rotation - rotation) < 1e-9 &&
+        fabs(VPoint.clat - lat) < 1e-9 && fabs(VPoint.clon - lon) < 1e-9 &&
         (VPoint.m_projection_type == projection ||
          projection == PROJECTION_UNKNOWN))
       return false;
@@ -5033,8 +5033,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   if (!g_bopengl)  // tilt is not possible without opengl
     VPoint.tilt = 0;
 
-  if ((VPoint.pix_width <= 0) ||
-      (VPoint.pix_height <= 0))  // Canvas parameters not yet set
+  if (VPoint.pix_width <= 0 ||
+      VPoint.pix_height <= 0)  // Canvas parameters not yet set
     return false;
 
   bool bwasValid = VPoint.IsValid();
@@ -5047,7 +5047,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   }
 
   //  A preliminary value, may be tweaked below
-  VPoint.chart_scale = m_canvas_scale_factor / (scale_ppm);
+  VPoint.chart_scale = m_canvas_scale_factor / scale_ppm;
 
   // recompute cursor position
   // and send to interested plugins if the mouse is actually in this window
@@ -5055,8 +5055,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   const wxPoint pt = wxGetMousePosition();
   int mouseX = pt.x - GetScreenPosition().x;
   int mouseY = pt.y - GetScreenPosition().y;
-  if ((mouseX > 0) && (mouseX < VPoint.pix_width) && (mouseY > 0) &&
-      (mouseY < VPoint.pix_height)) {
+  if (mouseX > 0 && mouseX < VPoint.pix_width && mouseY > 0 &&
+      mouseY < VPoint.pix_height) {
     double lat, lon;
     GetCanvasPixPoint(mouseX, mouseY, lat, lon);
     m_cursor_lat = lat;
@@ -5073,8 +5073,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
     // If there is a sensible change in the chart render, refresh the whole
     // screen
-    if ((!m_cache_vp.IsValid()) ||
-        (m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm)) {
+    if (!m_cache_vp.IsValid() ||
+        m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm) {
       Refresh(false);
       b_ret = true;
     } else {
@@ -5133,8 +5133,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
       bool b_needNewRef = false;
 
       //    If the new stack does not contain the current ref chart....
-      if ((-1 == current_ref_stack_index) &&
-          (m_pQuilt->GetRefChartdbIndex() >= 0))
+      if (-1 == current_ref_stack_index &&
+          m_pQuilt->GetRefChartdbIndex() >= 0)
         b_needNewRef = true;
 
       // Would the current Ref Chart be excessively underzoomed?
@@ -5172,8 +5172,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
           int candidate_scale = cte_candidate.GetScale();
           int candidate_type = cte_candidate.GetChartType();
 
-          if ((candidate_scale >= target_scale) &&
-              (candidate_type == target_type)) {
+          if (candidate_scale >= target_scale &&
+              candidate_type == target_type) {
             bool renderable = true;
             ChartBase *tentative_referenceChart = ChartData->OpenChartFromDB(
                 m_pCurrentStack->GetDBIndex(candidate_stack_index), FULL_INIT);
@@ -5202,8 +5202,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
               int candidate_scale = cte_candidate.GetScale();
               int candidate_type = cte_candidate.GetChartType();
 
-              if ((candidate_scale <= target_scale) &&
-                  (candidate_type == target_type))
+              if (candidate_scale <= target_scale &&
+                  candidate_type == target_type)
                 break;
             }
             candidate_stack_index--;
@@ -5211,8 +5211,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
         }
 
         // and if that did not work, chose stack entry 0
-        if ((candidate_stack_index >= m_pCurrentStack->nEntry) ||
-            (candidate_stack_index < 0))
+        if (candidate_stack_index >= m_pCurrentStack->nEntry ||
+            candidate_stack_index < 0)
           candidate_stack_index = 0;
 
         int new_ref_index = m_pCurrentStack->GetDBIndex(candidate_stack_index);
@@ -5240,7 +5240,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
           proj = PROJECTION_MERCATOR;
 
         VPoint.b_MercatorProjectionOverride =
-            (m_pQuilt->GetnCharts() == 0 || !renderable);
+            m_pQuilt->GetnCharts() == 0 || !renderable;
 
         if (VPoint.b_MercatorProjectionOverride) proj = PROJECTION_MERCATOR;
 
@@ -5344,12 +5344,12 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     wxPoint2DDouble r, r1;
 
     double delta_check =
-        (VPoint.pix_height / VPoint.view_scale_ppm) / (1852. * 60);
+        VPoint.pix_height / VPoint.view_scale_ppm / (1852. * 60);
     delta_check /= 8.;
 
     double check_point = wxMin(89., VPoint.clat);
 
-    while ((delta_check + check_point) > 90.) delta_check /= 2.;
+    while (delta_check + check_point > 90.) delta_check /= 2.;
 
     double rhumbDist;
     DistanceBearingMercator(check_point, VPoint.clon, check_point + delta_check,
@@ -5357,8 +5357,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
     GetDoubleCanvasPointPix(check_point, VPoint.clon, &r1);
     GetDoubleCanvasPointPix(check_point + delta_check, VPoint.clon, &r);
-    double delta_p = sqrt(((r1.m_y - r.m_y) * (r1.m_y - r.m_y)) +
-                          ((r1.m_x - r.m_x) * (r1.m_x - r.m_x)));
+    double delta_p = sqrt((r1.m_y - r.m_y) * (r1.m_y - r.m_y) +
+                          (r1.m_x - r.m_x) * (r1.m_x - r.m_x));
 
     m_true_scale_ppm = delta_p / (rhumbDist * 1852);
 
@@ -5373,7 +5373,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     if (scale_ppm < 1e-4) m_true_scale_ppm = scale_ppm;
 
     if (m_true_scale_ppm)
-      VPoint.chart_scale = m_canvas_scale_factor / (m_true_scale_ppm);
+      VPoint.chart_scale = m_canvas_scale_factor / m_true_scale_ppm;
     else
       VPoint.chart_scale = 1.0;
 
@@ -5437,7 +5437,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     if (m_muiBar) m_muiBar->UpdateDynamicValues();
 
     if (m_bShowScaleInStatusBar && parent_frame->GetStatusBar() &&
-        (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE)) {
+        parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) {
       // Check to see if the text will fit in the StatusBar field...
       bool b_noshow = false;
       {
@@ -5660,14 +5660,14 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
 
       for (int i = 0; i < 4; i++) {
         int j = i * 2;
-        double pxa = (double)(s_png_pred_icon[j]);
-        double pya = (double)(s_png_pred_icon[j + 1]);
+        double pxa = (double)s_png_pred_icon[j];
+        double pya = (double)s_png_pred_icon[j + 1];
 
         pya *= png_pred_icon_scale_factor;
         pxa *= png_pred_icon_scale_factor;
 
-        double px = (pxa * sin(cog_rad)) + (pya * cos(cog_rad));
-        double py = (pya * sin(cog_rad)) - (pxa * cos(cog_rad));
+        double px = pxa * sin(cog_rad) + pya * cos(cog_rad);
+        double py = pya * sin(cog_rad) - pxa * cos(cog_rad);
 
         icon[i].x = (int)wxRound(px) + lPredPoint.x + GPSOffsetPixels.x;
         icon[i].y = (int)wxRound(py) + lPredPoint.y + GPSOffsetPixels.y;
@@ -5854,7 +5854,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
                           (float)(osd_head_point.x - lShipMidPoint.x));
   icon_rad += (float)PI;
 
-  if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + GetVP().rotation;
+  if (pSog < 0.2) icon_rad = (icon_hdt + 90.) * PI / 180 + GetVP().rotation;
 
   //    Another draw test ,based on pixels, assuming the ship icon is a fixed
   //    nominal size and is just barely outside the viewport        ....
@@ -5914,7 +5914,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
                             wxIMAGE_QUALITY_HIGH);
           wxPoint rot_ctr(pos_image.GetWidth() / 2, pos_image.GetHeight() / 2);
           wxImage rot_image =
-              pos_image.Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
+              pos_image.Rotate(-(icon_rad - PI / 2.), rot_ctr, true);
 
           // Simple sharpening algorithm.....
           for (int ip = 0; ip < rot_image.GetWidth(); ip++)
@@ -5942,16 +5942,16 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
 
           for (int i = 0; i < 10; i++) {
             int j = i * 2;
-            float pxa = (float)(s_ownship_icon[j]);
-            float pya = (float)(s_ownship_icon[j + 1]);
+            float pxa = (float)s_ownship_icon[j];
+            float pya = (float)s_ownship_icon[j + 1];
             pya *= scale_factor_y;
             pxa *= scale_factor_x;
 
-            float px = (pxa * sinf(icon_rad)) + (pya * cosf(icon_rad));
-            float py = (pya * sinf(icon_rad)) - (pxa * cosf(icon_rad));
+            float px = pxa * sinf(icon_rad) + pya * cosf(icon_rad);
+            float py = pya * sinf(icon_rad) - pxa * cosf(icon_rad);
 
-            ownship_icon[i].x = (int)(px) + lShipMidPoint.x;
-            ownship_icon[i].y = (int)(py) + lShipMidPoint.y;
+            ownship_icon[i].x = (int)px + lShipMidPoint.x;
+            ownship_icon[i].y = (int)py + lShipMidPoint.y;
           }
 
           wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
@@ -5980,7 +5980,7 @@ void ChartCanvas::ShipDraw(ocpnDC &dc) {
         /* non opengl, or suboptimal opengl via ocpndc: */
         wxPoint rot_ctr(pos_image.GetWidth() / 2, pos_image.GetHeight() / 2);
         wxImage rot_image =
-            pos_image.Rotate(-(icon_rad - (PI / 2.)), rot_ctr, true);
+            pos_image.Rotate(-(icon_rad - PI / 2.), rot_ctr, true);
 
         // Simple sharpening algorithm.....
         for (int ip = 0; ip < rot_image.GetWidth(); ip++)
@@ -6058,7 +6058,7 @@ void CalcGridSpacing(float view_scale_ppm, float &MajorSpacing,
                             {1e10f, 0.1f / 60.0f, 0.05f / 60.0f}};
 
   unsigned int tabi;
-  for (tabi = 0; tabi < ((sizeof lltab) / (sizeof *lltab)) - 1; tabi++)
+  for (tabi = 0; tabi < sizeof lltab / sizeof *lltab - 1; tabi++)
     if (view_scale_ppm < lltab[tabi][0]) break;
   MajorSpacing = lltab[tabi][1];  // major latitude distance
   MinorSpacing = lltab[tabi][2];  // minor latitude distance
@@ -6101,7 +6101,7 @@ wxString CalcGridText(float latlon, float spacing, bool bPostfix) {
   wxString ret;
   if (spacing >= 1.0) {
     ret.Printf(_T("%3d%c %c"), deg, 0x00b0, postfix);
-  } else if (spacing >= (1.0 / 60.0)) {
+  } else if (spacing >= 1.0 / 60.0) {
     ret.Printf(_T("%3d%c%02.0f %c"), deg, 0x00b0, min, postfix);
   } else {
     ret.Printf(_T("%3d%c%02.2f %c"), deg, 0x00b0, min, postfix);
@@ -6122,7 +6122,7 @@ wxString CalcGridText(float latlon, float spacing, bool bPostfix) {
  ** @return [void]
  ************************************************************************/
 void ChartCanvas::GridDraw(ocpnDC &dc) {
-  if (!(m_bDisplayGrid && (fabs(GetVP().rotation) < 1e-5))) return;
+  if (!(m_bDisplayGrid && fabs(GetVP().rotation) < 1e-5)) return;
 
   double nlat, elon, slat, wlon;
   float lat, lon;
@@ -6240,7 +6240,7 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     int unit = g_iDistanceFormat;
     if (d < .5 &&
         (unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI))
-      unit = (unit == DISTANCE_MI) ? DISTANCE_FT : DISTANCE_M;
+      unit = unit == DISTANCE_MI ? DISTANCE_FT : DISTANCE_M;
 
     // nice number
     float dist = toUsrDistance(d, unit), logdist = log(dist) / log(10.F);
@@ -6300,12 +6300,12 @@ void ChartCanvas::JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
   int i = 0;
 
   while (angle < 360.) {
-    double da = da_min + (((double)rand() / RAND_MAX) * (da_max - da_min));
+    double da = da_min + (double)rand() / RAND_MAX * (da_max - da_min);
     angle += da;
 
     if (angle > 360.) angle = 360.;
 
-    double ra = ra_min + (((double)rand() / RAND_MAX) * (ra_max - ra_min));
+    double ra = ra_min + (double)rand() / RAND_MAX * (ra_max - ra_min);
 
     double r;
     if (i & 1)
@@ -6560,7 +6560,7 @@ void ChartCanvas::ToggleCPAWarn() {
 void ChartCanvas::OnActivate(wxActivateEvent &event) { ReloadVP(); }
 
 void ChartCanvas::OnSize(wxSizeEvent &event) {
-  if ((event.m_size.GetWidth() < 1) || (event.m_size.GetHeight() < 1))
+  if (event.m_size.GetWidth() < 1 || event.m_size.GetHeight() < 1)
     return;
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
@@ -6680,16 +6680,16 @@ void ChartCanvas::SetMUIBarPosition() {
     //        if(m_Piano)
     //            pianoWidth = m_Piano->GetWidth();
 
-    if ((m_muiBar->GetOrientation() == wxHORIZONTAL)) {
-      if (m_muiBarHOSize.x > (GetClientSize().x - pianoWidth)) {
+    if (m_muiBar->GetOrientation() == wxHORIZONTAL) {
+      if (m_muiBarHOSize.x > GetClientSize().x - pianoWidth) {
         delete m_muiBar;
         m_muiBar = new MUIBar(this, wxVERTICAL, g_toolbar_scalefactor);
         m_muiBar->SetColorScheme(m_cs);
       }
     }
 
-    if ((m_muiBar->GetOrientation() == wxVERTICAL)) {
-      if (m_muiBarHOSize.x < (GetClientSize().x - pianoWidth)) {
+    if (m_muiBar->GetOrientation() == wxVERTICAL) {
+      if (m_muiBarHOSize.x < GetClientSize().x - pianoWidth) {
         delete m_muiBar;
         m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
         m_muiBar->SetColorScheme(m_cs);
@@ -6715,7 +6715,7 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale,
       m_pCIWin->Hide();
     }
 
-    if (!m_pCIWin->IsShown() || (m_pCIWin->chart_scale != scale)) {
+    if (!m_pCIWin->IsShown() || m_pCIWin->chart_scale != scale) {
       wxString s;
 
       s = _("Composite of ");
@@ -6771,9 +6771,9 @@ void ChartCanvas::ShowCompositeInfoWindow(int x, int n_charts, int scale,
 
       wxPoint p;
       p.x = x / GetContentScaleFactor();
-      if ((p.x + m_pCIWin->GetWinSize().x) >
-          (m_canvas_width / GetContentScaleFactor()))
-        p.x = ((m_canvas_width / GetContentScaleFactor()) -
+      if (p.x + m_pCIWin->GetWinSize().x >
+          m_canvas_width / GetContentScaleFactor())
+        p.x = (m_canvas_width / GetContentScaleFactor() -
                m_pCIWin->GetWinSize().x) /
               2;  // centered
 
@@ -6799,14 +6799,14 @@ void ChartCanvas::ShowChartInfoWindow(int x, int dbIndex) {
       m_pCIWin->Hide();
     }
 
-    if (!m_pCIWin->IsShown() || (m_pCIWin->dbIndex != dbIndex)) {
+    if (!m_pCIWin->IsShown() || m_pCIWin->dbIndex != dbIndex) {
       wxString s;
       ChartBase *pc = NULL;
 
       // TOCTOU race but worst case will reload chart.
       // need to lock it or the background spooler may evict charts in
       // OpenChartFromDBAndLock
-      if ((ChartData->IsChartInCache(dbIndex)) && ChartData->IsValid())
+      if (ChartData->IsChartInCache(dbIndex) && ChartData->IsValid())
         pc = ChartData->OpenChartFromDBAndLock(
             dbIndex, FULL_INIT);  // this must come from cache
 
@@ -6819,8 +6819,8 @@ void ChartCanvas::ShowChartInfoWindow(int x, int dbIndex) {
 
       wxPoint p;
       p.x = x / GetContentScaleFactor();
-      if ((p.x + m_pCIWin->GetWinSize().x) > (m_canvas_width / GetContentScaleFactor()))
-        p.x = ((m_canvas_width / GetContentScaleFactor())
+      if (p.x + m_pCIWin->GetWinSize().x > m_canvas_width / GetContentScaleFactor())
+        p.x = (m_canvas_width / GetContentScaleFactor()
                 - m_pCIWin->GetWinSize().x) / 2;  // centered
 
       p.y =
@@ -6909,7 +6909,7 @@ bool ChartCanvas::CheckEdgePan(int x, int y, bool bdragging, int margin,
         bft = false;
     }
   }
-  if ((bft) && !pPanTimer->IsRunning()) {
+  if (bft && !pPanTimer->IsRunning()) {
     PanCanvas(pan_x, pan_y);
     pPanTimer->Start(pan_timer_set, wxTIMER_ONE_SHOT);
     return true;
@@ -6917,11 +6917,11 @@ bool ChartCanvas::CheckEdgePan(int x, int y, bool bdragging, int margin,
 
   //    This mouse event must not be due to pan timer event injector
   //    Mouse is out of the pan zone, so prevent any orphan event injection
-  if ((!bft) && pPanTimer->IsRunning()) {
+  if (!bft && pPanTimer->IsRunning()) {
     pPanTimer->Stop();
   }
 
-  return (false);
+  return false;
 }
 
 // Look for waypoints at the current position.
@@ -7086,7 +7086,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   //  processing (FS#1748)
 #ifdef __WXMSW__
   if (event.Dragging()) {
-    if ((x == mouse_x) && (y == mouse_y)) return true;
+    if (x == mouse_x && y == mouse_y) return true;
   }
 #endif
 
@@ -7129,7 +7129,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
       // Clicking will hide it, and do nothing else.
       g_bTempShowMenuBar = false;
       parent_frame->ApplyGlobalSettings(false);
-      return (true);
+      return true;
     }
   }
 #endif
@@ -7147,7 +7147,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
 
   if (g_pi_manager)
     if (g_pi_manager->SendMouseEventToPlugins(event))
-      return (true);  // PlugIn did something, and does not want the canvas to
+      return true;  // PlugIn did something, and does not want the canvas to
                       // do anything else
 
   // Capture LeftUp's and time them, unless it already came from the timer.
@@ -7156,14 +7156,14 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
     // Ignore the second LeftUp after the DClick.
     if (m_DoubleClickTimer->IsRunning()) {
       m_DoubleClickTimer->Stop();
-      return (true);
+      return true;
     }
 
     // Save the event for later running if there is no DClick.
     m_DoubleClickTimer->Start(350, wxTIMER_ONE_SHOT);
     singleClickEvent = event;
     singleClickEventIsValid = true;
-    return (true);
+    return true;
   }
 
   //  This logic is necessary on MSW to handle the case where
@@ -7174,7 +7174,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   if (event.LeftDown() || event.LeftUp() || event.Dragging()) {
     if (g_click_stop > 0) {
       g_click_stop--;
-      return (true);
+      return true;
     }
   }
 #endif
@@ -7220,12 +7220,12 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
   if (g_pi_manager) {
     //  Occasionally, MSW will produce nonsense events on right click....
     //  This results in an error in cursor geo position, so we skip this case
-    if ((x >= 0) && (y >= 0))
+    if (x >= 0 && y >= 0)
       g_pi_manager->SendCursorLatLonToAllPlugIns(m_cursor_lat, m_cursor_lon);
   }
 
   if (!g_btouch) {
-    if ((m_bMeasure_Active && (m_nMeasureState >= 2)) || (m_routeState > 1)) {
+    if ((m_bMeasure_Active && m_nMeasureState >= 2) || m_routeState > 1) {
       wxPoint p = ClientToScreen(wxPoint(x, y));
     }
   }
@@ -7242,7 +7242,7 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
     }
 
     //    Measure Tool Rubber Banding
-    if (m_bMeasure_Active && (m_nMeasureState >= 2)) {
+    if (m_bMeasure_Active && m_nMeasureState >= 2) {
       r_rband.x = x;
       r_rband.y = y;
       m_bDrawingRoute = true;
@@ -7380,7 +7380,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       } else
         brp_viz = prp->IsVisible();  // isolated point
 
-      if ((NULL == pFirstVizPoint) && brp_viz) pFirstVizPoint = prp;
+      if (NULL == pFirstVizPoint && brp_viz) pFirstVizPoint = prp;
 
       // Use route array to choose the appropriate route
       // Give preference to any active route, otherwise select the first visible
@@ -7524,13 +7524,13 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       //      Default is first entry
       wxSelectableItemListNode *node = SelList.GetFirst();
       pFind = node->GetData();
-      pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
+      pIDX_best_candidate = (IDX_entry *)pFind->m_pData1;
 
       if (SelList.GetCount() > 1) {
         node = node->GetNext();
         while (node) {
           pFind = node->GetData();
-          IDX_entry *pIDX_candidate = (IDX_entry *)(pFind->m_pData1);
+          IDX_entry *pIDX_candidate = (IDX_entry *)pFind->m_pData1;
           if (pIDX_candidate->IDX_type == 'c') {
             pIDX_best_candidate = pIDX_candidate;
             break;
@@ -7541,7 +7541,7 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
       } else {
         wxSelectableItemListNode *node = SelList.GetFirst();
         pFind = node->GetData();
-        pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
+        pIDX_best_candidate = (IDX_entry *)pFind->m_pData1;
       }
 
       m_pIDXCandidate = pIDX_best_candidate;
@@ -7612,7 +7612,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
   // timer and is remembered, then we actually do something if there is a
   // LeftDClick. If there is, the two single clicks are ignored.
 
-  if (event.LeftDClick() && (cursor_region == CENTER)) {
+  if (event.LeftDClick() && cursor_region == CENTER) {
     m_DoubleClickTimer->Start();
     singleClickEventIsValid = false;
 
@@ -7641,7 +7641,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
     while (node) {
       SelectItem *pFind = node->GetData();
       RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
-      if (m_pRoutePointEditTarget && (frp == m_pRoutePointEditTarget)) {
+      if (m_pRoutePointEditTarget && frp == m_pRoutePointEditTarget) {
         b_onRPtarget = true;
         break;
       }
@@ -7769,7 +7769,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
-        if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
+        if (pNearbyPoint && pNearbyPoint != m_prev_pMousePoint &&
             !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
           wxArrayPtrVoid *proute_array =
               g_pRouteMan->GetRouteArrayContaining(pNearbyPoint);
@@ -8020,7 +8020,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         ret = true;
       }
 
-      else if (m_bMeasure_Active && (m_nMeasureState >= 1))  // measure tool?
+      else if (m_bMeasure_Active && m_nMeasureState >= 1)  // measure tool?
       {
         SetCursor(*pCursorPencil);
 
@@ -8059,7 +8059,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
     }       // !g_btouch
     else {  // g_btouch
 
-      if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
+      if ((m_bMeasure_Active && m_nMeasureState) || m_routeState) {
         // if near screen edge, pan with injection
         //                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
         //                    return;
@@ -8121,7 +8121,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         DraggingAllowed = false;
 
       if (m_pRoutePointEditTarget &&
-          (m_pRoutePointEditTarget->GetIconName() == _T("mob")))
+          m_pRoutePointEditTarget->GetIconName() == _T("mob"))
         DraggingAllowed = false;
 
       if (m_pRoutePointEditTarget->m_bIsInLayer) DraggingAllowed = false;
@@ -8180,7 +8180,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         }
 
         //    Update the MarkProperties Dialog, if currently shown
-        if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown())) {
+        if (NULL != g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown()) {
           if (m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint())
             g_pMarkInfoDialog->UpdateProperties(true);
         }
@@ -8223,7 +8223,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         DraggingAllowed = false;
 
       if (m_pRoutePointEditTarget &&
-          (m_pRoutePointEditTarget->GetIconName() == _T("mob")))
+          m_pRoutePointEditTarget->GetIconName() == _T("mob"))
         DraggingAllowed = false;
 
       if (m_pRoutePointEditTarget->m_bIsInLayer) DraggingAllowed = false;
@@ -8251,9 +8251,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         wxRect pre_rect;
         if (!g_bopengl) {
           RoutePointGui(*m_pRoutePointEditTarget).CalculateDCRect(m_dc_route, this, &pre_rect);
-          if ((lppmax > pre_rect.width / 2) || (lppmax > pre_rect.height / 2))
-            pre_rect.Inflate((int)(lppmax - (pre_rect.width / 2)),
-                             (int)(lppmax - (pre_rect.height / 2)));
+          if (lppmax > pre_rect.width / 2 || lppmax > pre_rect.height / 2)
+            pre_rect.Inflate((int)(lppmax - pre_rect.width / 2),
+                             (int)(lppmax - pre_rect.height / 2));
         }
 
         // update the point itself
@@ -8279,7 +8279,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         }
 
         //    Update the MarkProperties Dialog, if currently shown
-        if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown())) {
+        if (NULL != g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown()) {
           if (m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint())
             g_pMarkInfoDialog->UpdateProperties(true);
         }
@@ -8293,9 +8293,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           wxRect post_rect;
           RoutePointGui(*m_pRoutePointEditTarget).CalculateDCRect(m_dc_route, this,
                                                    &post_rect);
-          if ((lppmax > post_rect.width / 2) || (lppmax > post_rect.height / 2))
-            post_rect.Inflate((int)(lppmax - (post_rect.width / 2)),
-                              (int)(lppmax - (post_rect.height / 2)));
+          if (lppmax > post_rect.width / 2 || lppmax > post_rect.height / 2)
+            post_rect.Inflate((int)(lppmax - post_rect.width / 2),
+                              (int)(lppmax - post_rect.height / 2));
 
           //    Invalidate the union region
           pre_rect.Union(post_rect);
@@ -8363,7 +8363,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
-        if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
+        if (pNearbyPoint && pNearbyPoint != m_prev_pMousePoint &&
             !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
           int dlg_return;
 #ifndef __WXOSX__
@@ -8860,7 +8860,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   current = FindRouteContainingWaypoint(
                       m_pRoutePointEditTarget);
 
-                  if (tail && current && (tail != current)) {
+                  if (tail && current && tail != current) {
                     int dlg_return1;
                     connect = tail->GetIndexOf(pNearbyPoint);
                     int index_current_route =
@@ -8914,7 +8914,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         _("Do you really want to delete and replace this "
                           "WayPoint") +
                             _T("\n") + _("which has been created manually?"),
-                        ("OpenCPN RoutePoint warning"),
+                        "OpenCPN RoutePoint warning",
                         (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                   }
                 }
@@ -8985,7 +8985,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             pConfig->DeleteWayPoint(m_pRoutePointEditTarget);
             pWayPointMan->RemoveRoutePoint(m_pRoutePointEditTarget);
             // Hide mark properties dialog if open on the replaced point
-            if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown()))
+            if (NULL != g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown())
               if (m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint())
                 g_pMarkInfoDialog->Hide();
 
@@ -9120,7 +9120,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   current = FindRouteContainingWaypoint(
                       m_pRoutePointEditTarget);
 
-                  if (tail && current && (tail != current)) {
+                  if (tail && current && tail != current) {
                     int dlg_return1;
                     connect = tail->GetIndexOf(pNearbyPoint);
                     int index_current_route =
@@ -9174,7 +9174,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         _("Do you really want to delete and replace this "
                           "WayPoint") +
                             _T("\n") + _("which has been created manually?"),
-                        ("OpenCPN RoutePoint warning"),
+                        "OpenCPN RoutePoint warning",
                         (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                   }
                 }
@@ -9273,7 +9273,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             pConfig->DeleteWayPoint(m_pRoutePointEditTarget);
             pWayPointMan->RemoveRoutePoint(m_pRoutePointEditTarget);
             // Hide mark properties dialog if open on the replaced point
-            if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown()))
+            if (NULL != g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown())
               if (m_pRoutePointEditTarget == g_pMarkInfoDialog->GetRoutePoint())
                 g_pMarkInfoDialog->Hide();
 
@@ -9379,7 +9379,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     if (wheel_dir < 0) factor = 1 / factor;
 
     if (g_bsmoothpanzoom) {
-      if ((m_wheelstopwatch.Time() < m_wheelzoom_stop_oneshot)) {
+      if (m_wheelstopwatch.Time() < m_wheelzoom_stop_oneshot) {
         if (wheel_dir == m_last_wheel_dir) {
           m_wheelzoom_stop_oneshot += mouse_wheel_oneshot;
           //                    m_zoom_target /= factor;
@@ -9399,7 +9399,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
 
   if (event.LeftDown()) {
     // Skip the first left click if it will cause a canvas focus shift
-    if ((GetCanvasCount() > 1) && (this != g_focusCanvas)) {
+    if (GetCanvasCount() > 1 && this != g_focusCanvas) {
       // printf("focus shift\n");
       return false;
     }
@@ -9471,7 +9471,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
       }
     }
 
-    if ((last_drag.x != x) || (last_drag.y != y)) {
+    if (last_drag.x != x || last_drag.y != y) {
       if(!m_routeState){        // Correct fault on wx32/gtk3, uncommanded dragging on route create.
                                 //   github #2994
         m_bChartDragging = true;
@@ -9483,7 +9483,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
       }
 
       if (g_btouch) {
-        if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
+        if ((m_bMeasure_Active && m_nMeasureState) || m_routeState) {
           // deactivate next LeftUp to ovoid creating an unexpected point
           m_DoubleClickTimer->Start();
           singleClickEventIsValid = false;
@@ -9509,8 +9509,8 @@ void ChartCanvas::SetCanvasCursor(wxMouseEvent &event) {
   wxCursor *ptarget_cursor = pCursorArrow;
   if (!pPlugIn_Cursor) {
     ptarget_cursor = pCursorArrow;
-    if ((!m_routeState) &&
-        (!m_bMeasure_Active) /*&& ( !m_bCM93MeasureOffset_Active )*/) {
+    if (!m_routeState &&
+        !m_bMeasure_Active /*&& ( !m_bCM93MeasureOffset_Active )*/) {
       if (cursor_region == MID_RIGHT) {
         ptarget_cursor = pCursorRight;
       } else if (cursor_region == MID_LEFT) {
@@ -9545,8 +9545,8 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
   ChartBase *target_chart = GetChartAtCursor();
   if (target_chart) {
     file.Assign(target_chart->GetFullPath());
-    if ((target_chart->GetChartType() == CHART_TYPE_PLUGIN) &&
-        (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR))
+    if (target_chart->GetChartType() == CHART_TYPE_PLUGIN &&
+        target_chart->GetChartFamily() == CHART_FAMILY_VECTOR)
       target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
     else
       Chs57 = dynamic_cast<s57chart *>(target_chart);
@@ -9785,11 +9785,11 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
     objText << _T("</font>");
     objText << _T("</body></html>");
 
-    if (Chs57 || target_plugin_chart || (filecount > 1)) {
+    if (Chs57 || target_plugin_chart || filecount > 1) {
       g_pObjectQueryDialog->SetHTMLPage(objText);
       g_pObjectQueryDialog->Show();
     }
-    if ((!Chs57 && filecount == 1)){  // only one file?, show direktly
+    if (!Chs57 && filecount == 1){  // only one file?, show direktly
       //generate an event to avoid double code
       wxHtmlLinkInfo hli(filenameOK);
       wxHtmlLinkEvent hle(1, hli);
@@ -10182,7 +10182,7 @@ void ChartCanvas::FinishRoute(void) {
     if (m_pMouseRoute) m_pMouseRoute->SetHiLite(0);
 
     if (RoutePropDlgImpl::getInstanceFlag() && pRoutePropDialog &&
-        (pRoutePropDialog->IsShown())) {
+        pRoutePropDialog->IsShown()) {
       pRoutePropDialog->SetRouteAndUpdate(m_pMouseRoute, true);
     }
 
@@ -10262,7 +10262,7 @@ void ChartCanvas::RenderAllChartOutlines(ocpnDC &dc, ViewPort &vp) {
         break;
       }
   } else if (m_singleChart &&
-             (m_singleChart->GetChartType() == CHART_TYPE_CM93COMP))
+             m_singleChart->GetChartType() == CHART_TYPE_CM93COMP)
     pcm93 = (cm93compchart *)m_singleChart;
 
   if (pcm93) {
@@ -10417,7 +10417,7 @@ void ChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
         if (vp.chart_scale > 5e7) {
           //    calculate projected distance between these two points in meters
           double dist = sqrt((double)((pixx1 - pixx) * (pixx1 - pixx)) +
-                             ((pixy1 - pixy) * (pixy1 - pixy))) /
+                             (pixy1 - pixy) * (pixy1 - pixy)) /
                         vp.view_scale_ppm;
           if (dist > 0.0) {
             //    calculate GC distance between these two points in meters
@@ -10485,11 +10485,11 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   if (second.Len()) dc.GetTextExtent(second, &w2, &h2);
 #endif
 
-  h1 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
-  h2 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+  h1 *= OCPN_GetWinDIPScaleFactor() * 100. / 100;
+  h2 *= OCPN_GetWinDIPScaleFactor() * 100. / 100;
 
-  w = wxMax(w1, w2) + (h1 / 2); // Add a little right pad
-  w *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+  w = wxMax(w1, w2) + h1 / 2; // Add a little right pad
+  w *= OCPN_GetWinDIPScaleFactor() * 100. / 100;
 
   h = h1 + h2;
 
@@ -10564,7 +10564,7 @@ void ChartCanvas::RenderShipToActive(ocpnDC &dc, bool Use_Opengl) {
 void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   Route *route = 0;
   if (m_routeState >= 2) route = m_pMouseRoute;
-  if (m_pMeasureRoute && m_bMeasure_Active && (m_nMeasureState >= 2))
+  if (m_pMeasureRoute && m_bMeasure_Active && m_nMeasureState >= 2)
     route = m_pMeasureRoute;
 
   if (!route) return;
@@ -10578,7 +10578,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
 
   int np = route->GetnPoints();
   if (np) {
-    if (g_btouch && (np > 1)) np--;
+    if (g_btouch && np > 1) np--;
     RoutePoint rp = route->GetPoint(np);
     render_lat = rp.m_lat;
     render_lon = rp.m_lon;
@@ -10598,7 +10598,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
                                   &gcBearing2);
     double gcDistm = gcDist / 1852.0;
 
-    if ((render_lat == m_cursor_lat) && (render_lon == m_cursor_lon))
+    if (render_lat == m_cursor_lat && render_lon == m_cursor_lon)
       rhumbBearing = 90.;
 
     wxPoint destPoint, lastPoint;
@@ -10810,7 +10810,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   }
 #endif
 
-  if ((GetVP().pix_width == 0) || (GetVP().pix_height == 0)) return;
+  if (GetVP().pix_width == 0 || GetVP().pix_height == 0) return;
 
   wxRegion ru = GetUpdateRegion();
 
@@ -10874,9 +10874,9 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   //  Is this viewpoint the same as the previously painted one?
   bool b_newview = true;
 
-  if ((m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm) &&
-      (m_cache_vp.rotation == VPoint.rotation) &&
-      (m_cache_vp.clat == VPoint.clat) && (m_cache_vp.clon == VPoint.clon) &&
+  if (m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm &&
+      m_cache_vp.rotation == VPoint.rotation &&
+      m_cache_vp.clat == VPoint.clat && m_cache_vp.clon == VPoint.clon &&
       m_cache_vp.IsValid()) {
     b_newview = false;
   }
@@ -10919,8 +10919,8 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
       busy = true;
     }
 
-    if ((m_working_bm.GetWidth() != svp.pix_width) ||
-        (m_working_bm.GetHeight() != svp.pix_height))
+    if (m_working_bm.GetWidth() != svp.pix_width ||
+        m_working_bm.GetHeight() != svp.pix_height)
       m_working_bm.Create(svp.pix_width, svp.pix_height,
                           -1);  // make sure the target is big enoug
 
@@ -11141,7 +11141,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   wxMemoryDC *pChartDC = &temp_dc;
   wxMemoryDC rotd_dc;
 
-  if (((fabs(GetVP().rotation) > 0.01)) || (fabs(GetVP().skew) > 0.01)) {
+  if (fabs(GetVP().rotation) > 0.01 || fabs(GetVP().skew) > 0.01) {
     //  Can we use the current rotated image cache?
     if (!b_rcache_ok) {
 #ifdef __WXMSW__
@@ -11174,10 +11174,10 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
             wxPoint(GetVP().rv_rect.width / 2, GetVP().rv_rect.height / 2),
             m_b_rot_hidef, &m_roffset);
 
-        if ((rot_vp.view_scale_ppm == VPoint.view_scale_ppm) &&
-            (rot_vp.rotation == VPoint.rotation) &&
-            (rot_vp.clat == VPoint.clat) && (rot_vp.clon == VPoint.clon) &&
-            rot_vp.IsValid() && (ri.IsOk())) {
+        if (rot_vp.view_scale_ppm == VPoint.view_scale_ppm &&
+            rot_vp.rotation == VPoint.rotation &&
+            rot_vp.clat == VPoint.clat && rot_vp.clon == VPoint.clon &&
+            rot_vp.IsValid() && ri.IsOk()) {
           b_rot_ok = true;
         }
       }
@@ -11678,20 +11678,20 @@ void ChartCanvas::DrawEmboss(ocpnDC &dc, emboss_data *pemboss) {
   unsigned char *pdata = snip_img.GetData();
   if (pdata) {
     for (int y = 0; y < pemboss->height; y++) {
-      int map_index = (y * pemboss->width);
+      int map_index = y * pemboss->width;
       for (int x = 0; x < pemboss->width; x++) {
-        double val = (pemboss->pmap[map_index] * factor) / 256.;
+        double val = pemboss->pmap[map_index] * factor / 256.;
 
-        int nred = (int)((*pdata) + val);
-        nred = nred > 255 ? 255 : (nred < 0 ? 0 : nred);
+        int nred = (int)(*pdata + val);
+        nred = nred > 255 ? 255 : nred < 0 ? 0 : nred;
         *pdata++ = (unsigned char)nred;
 
-        int ngreen = (int)((*pdata) + val);
-        ngreen = ngreen > 255 ? 255 : (ngreen < 0 ? 0 : ngreen);
+        int ngreen = (int)(*pdata + val);
+        ngreen = ngreen > 255 ? 255 : ngreen < 0 ? 0 : ngreen;
         *pdata++ = (unsigned char)ngreen;
 
-        int nblue = (int)((*pdata) + val);
-        nblue = nblue > 255 ? 255 : (nblue < 0 ? 0 : nblue);
+        int nblue = (int)(*pdata + val);
+        nblue = nblue > 255 ? 255 : nblue < 0 ? 0 : nblue;
         *pdata++ = (unsigned char)nblue;
 
         map_index++;
@@ -11880,7 +11880,7 @@ emboss_data *ChartCanvas::EmbossDepthScale() {
       return NULL;
   }
 
-  ped->x = (GetVP().pix_width - ped->width);
+  ped->x = GetVP().pix_width - ped->width;
 
   if (m_Compass && m_bShowCompassWin) {
     wxRect r = m_Compass->GetRect();
@@ -12025,7 +12025,7 @@ emboss_data *ChartCanvas::CreateEmbossMapData(wxFont &font, int width,
       val =
           img.GetRed(x + 1, y + 1) - img.GetRed(x - 1, y - 1);  // range +/- 256
       val = (int)(val * val_factor);
-      index = (y * w) + x;
+      index = y * w + x;
       pmap[index] = val;
     }
   }
@@ -12116,7 +12116,7 @@ void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
       else {
         // Are Range Rings enabled?
         if (pWP->GetShowWaypointRangeRings() &&
-            (pWP->GetWaypointRangeRingsNumber() > 0)) {
+            pWP->GetWaypointRangeRingsNumber() > 0) {
           double factor = 1.00;
           if (pWP->GetWaypointRangeRingsStepUnits() ==
               1)  // convert kilometers to NMi
@@ -12218,7 +12218,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint) {
   double tlat1, tlon1;
 
   if (pAnchorWatchPoint) {
-    (pAnchorWatchPoint->GetName()).ToDouble(&d1);
+    pAnchorWatchPoint->GetName().ToDouble(&d1);
     d1 = AnchorDistFix(d1, AnchorPointMinDist, g_nAWMax);
     dabs = fabs(d1 / 1852.);
     ll_gc_ll(pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, 0, dabs,
@@ -12249,7 +12249,7 @@ void ChartCanvas::RebuildTideSelectList(LLBBox &BBox) {
     double lat = pIDX->IDX_lat;
 
     char type = pIDX->IDX_type;  // Entry "TCtcIUu" identifier
-    if ((type == 't') || (type == 'T')) {
+    if (type == 't' || type == 'T') {
       if (BBox.Contains(lat, lon)) {
         //    Manage the point selection list
         pSelectTC->AddSelectablePoint(lat, lon, pIDX, SELTYPE_TIDEPOINT);
@@ -12347,7 +12347,7 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   sdc.GetTextExtent("M", NULL, &height, NULL, NULL, plabelFont);
   height *= g_Platform->GetDisplayDIPMult(this);
   float nominal_icon_size_pixels = 48;  // 3 x 16
-  float pix_factor = (2 * height) / nominal_icon_size_pixels;
+  float pix_factor = 2 * height / nominal_icon_size_pixels;
 
 
 #else
@@ -12386,8 +12386,8 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
       const IDX_entry *pIDX = ptcmgr->GetIDX_entry(i);
 
-      char type = pIDX->IDX_type;          // Entry "TCtcIUu" identifier
-      if ((type == 't') || (type == 'T'))  // only Tides
+      char type = pIDX->IDX_type;     // Entry "TCtcIUu" identifier
+      if (type == 't' || type == 'T') // only Tides
       {
         double lon = pIDX->IDX_lon;
         double lat = pIDX->IDX_lat;
@@ -12476,13 +12476,13 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                   // height = 45
                   int width = (int)(12 * scale_factor + 0.5);
                   int height = (int)(45 * scale_factor + 0.5);
-                  int linew = wxMax(1, (int)(scale_factor));
-                  int xDraw = r.x - (width / 2);
-                  int yDraw = r.y - (height / 2);
+                  int linew = wxMax(1, (int)scale_factor);
+                  int xDraw = r.x - width / 2;
+                  int yDraw = r.y - height / 2;
 
                   // process tide state  ( %height and flow sens )
-                  float ts = 1 - ((nowlev - ltleve) / (htleve - ltleve));
-                  int hs = (httime > lttime) ? -4 : 4;
+                  float ts = 1 - (nowlev - ltleve) / (htleve - ltleve);
+                  int hs = httime > lttime ? -4 : 4;
                   hs *= (int)(scale_factor + 0.5);
                   if (ts > 0.995 || ts < 0.005) hs = 0;
                   int ht_y = (int)(height * ts);
@@ -12497,8 +12497,8 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                   // yellow rectangle
                   dc.SetPen(*pblue_pen);
                   dc.SetBrush(*pblue_brush);
-                  dc.DrawRectangle((xDraw + 2 * linew), yDraw + ht_y,
-                                   (width - (4 * linew)), height - ht_y);
+                  dc.DrawRectangle(xDraw + 2 * linew, yDraw + ht_y,
+                                   width - 4 * linew, height - ht_y);
 
                   // draw sens arrows (ensure they are not "under-drawn" by top
                   // line of blue rectangle )
@@ -12553,7 +12553,7 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                   int wx1;
                   dc.GetTextExtent(s, &wx1, NULL);
                   wx1 *= g_Platform->GetDisplayDIPMult(this);
-                  dc.DrawText(s, r.x - (wx1 / 2), yDraw + height);
+                  dc.DrawText(s, r.x - wx1 / 2, yDraw + height);
                 }
               }
             }
@@ -12579,8 +12579,8 @@ void ChartCanvas::RebuildCurrentSelectList(LLBBox &BBox) {
     double lat = pIDX->IDX_lat;
 
     char type = pIDX->IDX_type;  // Entry "TCtcIUu" identifier
-    if (((type == 'c') || (type == 'C')) && (!pIDX->b_skipTooDeep)) {
-      if ((BBox.Contains(lat, lon))) {
+    if ((type == 'c' || type == 'C') && !pIDX->b_skipTooDeep) {
+      if (BBox.Contains(lat, lon)) {
         //    Manage the point selection list
         pSelectTC->AddSelectablePoint(lat, lon, pIDX, SELTYPE_CURRENTPOINT);
       }
@@ -12657,7 +12657,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
   sdc.GetTextExtent("M", NULL, &height, NULL, NULL, pTCFont);
   height *= g_Platform->GetDisplayDIPMult(this);
   float nominal_icon_size_pixels = 15;
-  float pix_factor = (1 * height) / nominal_icon_size_pixels;
+  float pix_factor = 1 * height / nominal_icon_size_pixels;
 
 #else
   //  Yet another method goes like this:
@@ -12697,8 +12697,8 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
       double lat = pIDX->IDX_lat;
 
       char type = pIDX->IDX_type;  // Entry "TCtcIUu" identifier
-      if (((type == 'c') || (type == 'C'))) {
-        if (!pIDX->b_skipTooDeep && (BBox.ContainsMarge(lat, lon, marge))) {
+      if (type == 'c' || type == 'C') {
+        if (!pIDX->b_skipTooDeep && BBox.ContainsMarge(lat, lon, marge)) {
           wxPoint r;
           GetCanvasPointPix(lat, lon, &r);
 
@@ -12748,7 +12748,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
                 porange_pen->SetWidth(wxMax(2, (int)(scale_factor + 0.5)));
                 dc.SetPen(*porange_pen);
-                DrawArrow(dc, pixxc, pixyc, dir - 90 + (skew_angle * 180. / PI),
+                DrawArrow(dc, pixxc, pixyc, dir - 90 + skew_angle * 180. / PI,
                           cscale);
                 // Draw text, if enabled
 
@@ -12797,8 +12797,8 @@ void ChartCanvas::DrawArrow(ocpnDC &dc, int x, int y, double rot_angle,
     float xt = CurrentArrowArray[0].x;
     float yt = CurrentArrowArray[0].y;
 
-    float xp = (xt * cos_rot) - (yt * sin_rot);
-    float yp = (xt * sin_rot) + (yt * cos_rot);
+    float xp = xt * cos_rot - yt * sin_rot;
+    float yp = xt * sin_rot + yt * cos_rot;
     int x1 = (int)(xp * scale);
     int y1 = (int)(yp * scale);
 
@@ -12807,8 +12807,8 @@ void ChartCanvas::DrawArrow(ocpnDC &dc, int x, int y, double rot_angle,
       xt = CurrentArrowArray[ip].x;
       yt = CurrentArrowArray[ip].y;
 
-      float xp = (xt * cos_rot) - (yt * sin_rot);
-      float yp = (xt * sin_rot) + (yt * cos_rot);
+      float xp = xt * cos_rot - yt * sin_rot;
+      float yp = xt * sin_rot + yt * cos_rot;
       int x2 = (int)(xp * scale);
       int y2 = (int)(yp * scale);
 
@@ -12833,7 +12833,7 @@ wxString ChartCanvas::FindValidUploadPort() {
     // then use the first available serial connection which has output defined.
     for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
       ConnectionParams *cp = TheConnectionParams()->Item(i);
-      if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == SERIAL)
+      if (cp->IOSelect != DS_TYPE_INPUT && cp->Type == SERIAL)
         port << _T("Serial:") << cp->Port;
     }
   }
@@ -12932,8 +12932,8 @@ void ChartCanvas::ToggleCanvasQuiltMode(void) {
 void ChartCanvas::DoCanvasStackDelta(int direction) {
   if (!GetQuiltMode()) {
     int current_stack_index = GetpCurrentStack()->CurrentStackEntry;
-    if ((current_stack_index + direction) >= GetpCurrentStack()->nEntry) return;
-    if ((current_stack_index + direction) < 0) return;
+    if (current_stack_index + direction >= GetpCurrentStack()->nEntry) return;
+    if (current_stack_index + direction < 0) return;
 
     if (m_bpersistent_quilt /*&& g_bQuiltEnable*/) {
       int new_dbIndex =
@@ -12974,7 +12974,7 @@ void ChartCanvas::DoCanvasStackDelta(int direction) {
     //      When quilted. switch within the same chart family
     while (!found &&
            (unsigned int)check_index < piano_chart_index_array.size() &&
-           (check_index >= 0)) {
+           check_index >= 0) {
       check_dbIndex = piano_chart_index_array[check_index];
       const ChartTableEntry &cte = ChartData->GetChartTableEntry(check_dbIndex);
       if (target_family == cte.GetChartFamily()) {
@@ -13112,12 +13112,12 @@ void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx) {
   if (StyleIndx == -1) {  // -1 means coming from toolbar button
     // find current state of switch
     for (int i = 1; i < ArraySize; i++) {
-      if ((bShowAIS_Array[i] == m_bShowAIS) &&
-          (bShowScaled_Array[i] == m_bShowAISScaled))
+      if (bShowAIS_Array[i] == m_bShowAIS &&
+          bShowScaled_Array[i] == m_bShowAISScaled)
         AIS_Toolbar_Switch = i;
     }
     AIS_Toolbar_Switch++;  // we did click so continu with next item
-    if ((!g_bAllowShowScaled) && (AIS_Toolbar_Switch == 1))
+    if (!g_bAllowShowScaled && AIS_Toolbar_Switch == 1)
       AIS_Toolbar_Switch++;
 
   } else {  // coming from menu bar.
@@ -13128,7 +13128,7 @@ void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx) {
 
   int AIS_Toolbar_Switch_Next =
       AIS_Toolbar_Switch + 1;  // Find out what will happen at next click
-  if ((!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == 1))
+  if (!g_bAllowShowScaled && AIS_Toolbar_Switch_Next == 1)
     AIS_Toolbar_Switch_Next++;
   if (AIS_Toolbar_Switch_Next >= ArraySize)
     AIS_Toolbar_Switch_Next = 0;  // If at end of cycle start at 0
@@ -13210,7 +13210,7 @@ void ChartCanvas::SelectChartFromStack(int index, bool bDir,
     double oldskew = GetVPSkew();
     double newskew = m_singleChart->GetChartSkew() * PI / 180.0;
 
-    if (!g_bskew_comp && (GetUpMode() == NORTH_UP_MODE)) {
+    if (!g_bskew_comp && GetUpMode() == NORTH_UP_MODE) {
       if (fabs(oldskew) > 0.0001) rotation = 0.0;
       if (fabs(newskew) > 0.0001) rotation = newskew;
     }
@@ -13530,8 +13530,8 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
     std::vector<int> piano_chart_index_array;
     if (m_Piano->GetPianoMode() == PIANO_MODE_LEGACY) {
       piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
-      if ((GetpCurrentStack()->nEntry > 1) ||
-          (piano_chart_index_array.size() >= 1)) {
+      if (GetpCurrentStack()->nEntry > 1 ||
+          piano_chart_index_array.size() >= 1) {
         ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
 
         SetQuiltChartHiLiteIndexArray(selected_dbIndex_array);
@@ -13542,8 +13542,8 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
         if (CHART_TYPE_CM93COMP != cte.GetChartType()) {
           ShowChartInfoWindow(key_location.x, selected_dbIndex_array[0]);
           ReloadVP(false);
-        } else if ((-1 == selected_index) &&
-                   (0 == selected_dbIndex_array.size())) {
+        } else if (-1 == selected_index &&
+                   0 == selected_dbIndex_array.size()) {
           ShowChartInfoWindow(key_location.x, -1);
         }
       }
@@ -13551,8 +13551,8 @@ void ChartCanvas::HandlePianoRollover(int selected_index,
     else {
       piano_chart_index_array = GetQuiltFullScreendbIndexArray();
 
-      if ((GetpCurrentStack()->nEntry > 1) ||
-        (piano_chart_index_array.size() >= 1)) {
+      if (GetpCurrentStack()->nEntry > 1 ||
+        piano_chart_index_array.size() >= 1) {
 
         if(n_charts > 1)
           ShowCompositeInfoWindow(key_location.x, n_charts, scale, selected_dbIndex_array);
@@ -13924,7 +13924,7 @@ void ChartCanvas::RenderAlertMessage(wxDC &dc, const ViewPort &vp) {
 
     wxRect sbr = GetScaleBarRect();
     int xp = sbr.x + sbr.width + 10;
-    int yp = (sbr.y + sbr.height) - h;
+    int yp = sbr.y + sbr.height - h;
 
     int wdraw = w + 10;
     dc.DrawRectangle(xp, yp, wdraw, h);
@@ -14016,8 +14016,8 @@ int InitScreenBrightness(void) {
             hGDI32DLL, "GetDeviceGammaRamp");
 
         //    If the functions are not found, unload the DLL and return false
-        if ((NULL == g_pSetDeviceGammaRamp) ||
-            (NULL == g_pGetDeviceGammaRamp)) {
+        if (NULL == g_pSetDeviceGammaRamp ||
+            NULL == g_pGetDeviceGammaRamp) {
           FreeLibrary(hGDI32DLL);
           hGDI32DLL = NULL;
           return 0;
@@ -14172,8 +14172,8 @@ int SetScreenBrightness(int brightness) {
             hGDI32DLL, "GetDeviceGammaRamp");
 
         //    If the functions are not found, unload the DLL and return false
-        if ((NULL == g_pSetDeviceGammaRamp) ||
-            (NULL == g_pGetDeviceGammaRamp)) {
+        if (NULL == g_pSetDeviceGammaRamp ||
+            NULL == g_pGetDeviceGammaRamp) {
           FreeLibrary(hGDI32DLL);
           hGDI32DLL = NULL;
           return 0;

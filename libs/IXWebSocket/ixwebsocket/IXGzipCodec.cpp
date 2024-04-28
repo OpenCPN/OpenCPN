@@ -91,7 +91,7 @@ namespace ix
         }
 
         inflateState.avail_in = (uInt) in.size();
-        inflateState.next_in = (unsigned char*) (const_cast<char*>(in.data()));
+        inflateState.next_in = (unsigned char*) const_cast<char*>(in.data());
 
         constexpr int kBufferSize = 1 << 14;
         std::array<unsigned char, kBufferSize> compressBuffer;

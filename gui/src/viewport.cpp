@@ -143,7 +143,7 @@ void ViewPort::PixelScale(float scale){
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
   wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
   if (wxFinite(p.m_x) && wxFinite(p.m_y)){
-    if( (abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6) )
+    if( abs(p.m_x) < 1e6 && abs(p.m_y) < 1e6 )
       return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   }
   return wxPoint(INVALID_COORD, INVALID_COORD);
@@ -261,13 +261,13 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL(double lat, double lon) {
     dyr = npix * cos(angle) - epix * sin(angle);
   }
 
-  return wxPoint2DDouble((pix_width / 2.0) + dxr, (pix_height / 2.0) - dyr);
+  return wxPoint2DDouble(pix_width / 2.0 + dxr, pix_height / 2.0 - dyr);
 }
 
 void ViewPort::GetLLFromPix(const wxPoint2DDouble &p, double *lat,
                             double *lon) {
-  double dx = p.m_x - (pix_width / 2.0);
-  double dy = (pix_height / 2.0) - p.m_y;
+  double dx = p.m_x - pix_width / 2.0;
+  double dy = pix_height / 2.0 - p.m_y;
 
   double xpr = dx;
   double ypr = dy;
@@ -276,8 +276,8 @@ void ViewPort::GetLLFromPix(const wxPoint2DDouble &p, double *lat,
   double angle = rotation;
 
   if (angle) {
-    xpr = (dx * cos(angle)) - (dy * sin(angle));
-    ypr = (dy * cos(angle)) + (dx * sin(angle));
+    xpr = dx * cos(angle) - dy * sin(angle);
+    ypr = dy * cos(angle) + dx * sin(angle);
   }
   double d_east = xpr / view_scale_ppm;
   double d_north = ypr / view_scale_ppm;
@@ -612,17 +612,17 @@ OCPNRegion ViewPort::GetVPRegionIntersect(const OCPNRegion &Region, int nPoints,
       int y0 = pp[i].y;
       int y1 = pp[i + 1].y;
 
-      if (((y0 < rect.y) && (y1 < rect.y)) ||
-          ((y0 > rect.y + rect.height) && (y1 > rect.y + rect.height)))
+      if ((y0 < rect.y && y1 < rect.y) ||
+          (y0 > rect.y + rect.height && y1 > rect.y + rect.height))
         continue;  // both ends of line outside of box, top or bottom
 
       //  Look harder
       float_2Dpt f0;
       f0.y = llpoints[i * 2];
-      f0.x = llpoints[(i * 2) + 1];
+      f0.x = llpoints[i * 2 + 1];
       float_2Dpt f1;
       f1.y = llpoints[(i + 1) * 2];
-      f1.x = llpoints[((i + 1) * 2) + 1];
+      f1.x = llpoints[(i + 1) * 2 + 1];
       b_intersect |= Intersect_FL(p0, p1, f0, f1) != 0;
       if (b_intersect) break;
       b_intersect |= Intersect_FL(p1, p2, f0, f1) != 0;
@@ -650,7 +650,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect(const OCPNRegion &Region, int nPoints,
     if (!b_intersect) {
       float_2Dpt f0;
       f0.y = llpoints[(nPoints - 1) * 2];
-      f0.x = llpoints[((nPoints - 1) * 2) + 1];
+      f0.x = llpoints[(nPoints - 1) * 2 + 1];
       float_2Dpt f1;
       f1.y = llpoints[0];
       f1.x = llpoints[1];
@@ -683,8 +683,8 @@ OCPNRegion ViewPort::GetVPRegionIntersect(const OCPNRegion &Region, int nPoints,
         int x0 = pp[i].x;
         int y0 = pp[i].y;
 
-        if ((x0 < rect.x) || (x0 > rect.x + rect.width) || (y0 < rect.y) ||
-            (y0 > rect.y + rect.height))
+        if (x0 < rect.x || x0 > rect.x + rect.width || y0 < rect.y ||
+            y0 > rect.y + rect.height)
           continue;
 
         b_contained = true;
@@ -825,23 +825,23 @@ void ViewPort::SetBoxes(void) {
 
   //  Specify the minimum required rectangle in unrotated screen space which
   //  will supply full screen data after specified rotation
-  if ((fabs(skew) > .0001) || (fabs(rotation) > .0001)) {
+  if (fabs(skew) > .0001 || fabs(rotation) > .0001) {
     double rotator = rotation;
     double lpixh = pix_height;
     double lpixw = pix_width;
 
     lpixh = wxMax(lpixh,
-                  (fabs(pix_height * cos(skew)) + fabs(pix_width * sin(skew))));
+                  fabs(pix_height * cos(skew)) + fabs(pix_width * sin(skew)));
     lpixw = wxMax(lpixw,
-                  (fabs(pix_width * cos(skew)) + fabs(pix_height * sin(skew))));
+                  fabs(pix_width * cos(skew)) + fabs(pix_height * sin(skew)));
 
     int dy = wxRound(fabs(lpixh * cos(rotator)) + fabs(lpixw * sin(rotator)));
     int dx = wxRound(fabs(lpixw * cos(rotator)) + fabs(lpixh * sin(rotator)));
 
     //  It is important for MSW build that viewport pixel dimensions be
     //  multiples of 4.....
-    if (dy % 4) dy += 4 - (dy % 4);
-    if (dx % 4) dx += 4 - (dx % 4);
+    if (dy % 4) dy += 4 - dy % 4;
+    if (dx % 4) dx += 4 - dx % 4;
 
     int inflate_x = wxMax((dx - pix_width) / 2, 0);
     int inflate_y = wxMax((dy - pix_height) / 2, 0);

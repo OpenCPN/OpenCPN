@@ -126,8 +126,8 @@ void NMEALogWindow::SetPos(int x, int y) {
 }
 
 void NMEALogWindow::CheckPos(int display_width, int display_height) {
-  if ((pos_x < 0) || (pos_x > display_width)) pos_x = 5;
-  if ((pos_y < 0) || (pos_y > display_height)) pos_y = 5;
+  if (pos_x < 0 || pos_x > display_width) pos_x = 5;
+  if (pos_y < 0 || pos_y > display_height) pos_y = 5;
 }
 
 void NMEALogWindow::DestroyWindow() {

@@ -303,8 +303,8 @@ void ConsoleCanvas::UpdateRouteData() {
         float nrng = g_pRouteMan->GetCurrentRngToActiveNormalArrival();
         wxString srng;
         double deltarng = fabs(rng - nrng);
-        if ((deltarng > .01) && ((deltarng / rng) > .10) &&
-            (rng < 10.0))  // show if there is more than 10% difference in
+        if (deltarng > .01 && deltarng / rng > .10 &&
+            rng < 10.0)  // show if there is more than 10% difference in
                            // ranges, etc...
         {
           if (nrng < 10.0)
@@ -335,8 +335,8 @@ void ConsoleCanvas::UpdateRouteData() {
         // In all cases, ttg/eta are declared invalid if VMG <= 0.
         // If showing only "this leg", use VMG for calculation of ttg
         wxString ttg_s;
-        if ((speed > 0.) && !std::isnan(gCog) && !std::isnan(gSog)) {
-          float ttg_sec = (rng / speed) * 3600.;
+        if (speed > 0. && !std::isnan(gCog) && !std::isnan(gSog)) {
+          float ttg_sec = rng / speed * 3600.;
           wxTimeSpan ttg_span(0, 0, long(ttg_sec), 0);
           ttg_s = ttg_span.Format();
         } else
@@ -353,7 +353,7 @@ void ConsoleCanvas::UpdateRouteData() {
         float trng = rng;
 
         Route* prt = g_pRouteMan->GetpActiveRoute();
-        wxRoutePointListNode* node = (prt->pRoutePointList)->GetFirst();
+        wxRoutePointListNode* node = prt->pRoutePointList->GetFirst();
         RoutePoint* prp;
 
         int n_addflag = 0;
@@ -382,7 +382,7 @@ void ConsoleCanvas::UpdateRouteData() {
         wxTimeSpan tttg_span;
         float tttg_sec = 0.0;
         if (speed > 0.) {
-          tttg_sec = (trng / gSog) * 3600.;
+          tttg_sec = trng / gSog * 3600.;
           tttg_span = wxTimeSpan::Seconds((long)tttg_sec);
           // Show also #days if TTG > 24 h
           tttg_s = tttg_sec > SECONDS_PER_DAY ? tttg_span.Format(_("%Dd %H:%M"))
@@ -578,15 +578,15 @@ void AnnunText::RefreshFonts() {
     wxColour back_color = m_backBrush.GetColour();
 
     wxColour legend_color = m_legend_color;
-    if ((abs(legend_color.Red() - back_color.Red()) < 5) &&
-        (abs(legend_color.Green() - back_color.Blue()) < 5) &&
-        (abs(legend_color.Blue() - back_color.Blue()) < 5))
+    if (abs(legend_color.Red() - back_color.Red()) < 5 &&
+        abs(legend_color.Green() - back_color.Blue()) < 5 &&
+        abs(legend_color.Blue() - back_color.Blue()) < 5)
       m_legend_color = m_default_text_color;
 
     wxColour value_color = m_val_color;
-    if ((abs(value_color.Red() - back_color.Red()) < 5) &&
-        (abs(value_color.Green() - back_color.Blue()) < 5) &&
-        (abs(value_color.Blue() - back_color.Blue()) < 5))
+    if (abs(value_color.Red() - back_color.Red()) < 5 &&
+        abs(value_color.Green() - back_color.Blue()) < 5 &&
+        abs(value_color.Blue() - back_color.Blue()) < 5)
       m_val_color = m_default_text_color;
   }
 }

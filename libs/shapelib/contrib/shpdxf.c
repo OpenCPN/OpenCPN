@@ -145,7 +145,7 @@ static void dxf_ent_preamble(int dxf_type, char *id, FILE *df)
 static void dxf_ent(char *id, double x, double y, double z, int dxf_type,
                     FILE *df)
 {
-    if ((dxf_type == SHPT_ARC) || (dxf_type == SHPT_POLYGON))
+    if (dxf_type == SHPT_ARC || dxf_type == SHPT_POLYGON)
     {
         fprintf(df, "  0\r\n");
         fprintf(df, "VERTEX\r\n");
@@ -165,7 +165,7 @@ static void dxf_ent(char *id, double x, double y, double z, int dxf_type,
 
 static void dxf_ent_postamble(int dxf_type, FILE *df)
 {
-    if ((dxf_type == SHPT_ARC) || (dxf_type == SHPT_POLYGON))
+    if (dxf_type == SHPT_ARC || dxf_type == SHPT_POLYGON)
         fprintf(df, "  0\r\nSEQEND\r\n  8\r\n0\r\n");
 }
 
@@ -283,7 +283,7 @@ int main(int argc, char **argv)
     char id[255];
 
     // Proceed to process data.
-    for (int recNum = 0; (recNum < shp_numrec) && (recNum < (int)MaxElem);
+    for (int recNum = 0; recNum < shp_numrec && recNum < (int)MaxElem;
          recNum++)
     {
         if (idfld >= 0)
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
                             DBFReadDoubleAttribute(dbf, recNum, idfld));
             }
         else
-            sprintf(id, "lvl_%-20d", (recNum + 1));
+            sprintf(id, "lvl_%-20d", recNum + 1);
 
         double elev = 0.0;
         if (zfld < 0)
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
             dxf_ent(id, shape->padfX[vrtx], shape->padfY[vrtx], elev, shp_type,
                     dxf);
 
-            if (panParts[part] == (vrtx + 1) || vrtx == (nVertices - 1))
+            if (panParts[part] == vrtx + 1 || vrtx == nVertices - 1)
             {
                 dxf_ent_postamble(shp_type, dxf);
                 part++;

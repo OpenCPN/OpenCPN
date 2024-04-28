@@ -91,7 +91,7 @@ bool MDA::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( sentence.GetNumberOfDataFields() +1) == TRUE || FALSE ) //diferent vendors have different length of data message and not 24 field as in standard.
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
 Pressure       = sentence.Double( 3 );
@@ -106,7 +106,7 @@ if(UnitOfMeasurement==wxT("B"))
 }
 
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool MDA::Write( SENTENCE& sentence )
@@ -124,7 +124,7 @@ bool MDA::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const MDA& MDA::operator = ( const MDA& source )
@@ -134,5 +134,5 @@ const MDA& MDA::operator = ( const MDA& source )
    Pressure       = source.Pressure;
    UnitOfMeasurement = source.UnitOfMeasurement;
 
-   return( *this );
+   return*this;
 }

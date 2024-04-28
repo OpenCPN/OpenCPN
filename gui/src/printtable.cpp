@@ -106,7 +106,7 @@ void PrintCell::Adjust() {
     wxString tmp2 = tmp + token;
     words_number++;
     dc->GetMultiLineTextExtent(tmp2, &w, &h);
-    if ((w < width - 2 * cellpadding) || words_number == 1) {
+    if (w < width - 2 * cellpadding || words_number == 1) {
       list[list.size() - 1] = tmp2;
     } else {
       list.push_back(wxString());
@@ -183,7 +183,7 @@ Table& Table::operator<<(const wxString& cellcontent) {
     state = TABLE_FILL_DATA;
   }
 
-  if ((cellcontent == "\n")) {
+  if (cellcontent == "\n") {
     create_next_row = true;
     return *this;
   }
@@ -212,7 +212,7 @@ ostream& operator<<(ostream& out, Table& table) {
 
   for (vector<vector<wxString> >::iterator iter = data.begin();
        iter != data.end(); iter++) {
-    vector<wxString> row = (*iter);
+    vector<wxString> row = *iter;
     for (vector<wxString>::iterator rowiter = row.begin(); rowiter != row.end();
          rowiter++) {
       out << (*rowiter).fn_str() << " ";

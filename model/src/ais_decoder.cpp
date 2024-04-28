@@ -723,7 +723,7 @@ bool AisDecoder::HandleN2K_129794( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     Destination[sizeof(Destination) - 1] = 0;
 
     if (!N2kIsNA(ETAdate) && !N2kIsNA(ETAtime)) {
-      long secs = (ETAdate * 24 * 3600) + wxRound(ETAtime);
+      long secs = ETAdate * 24 * 3600 + wxRound(ETAtime);
       wxDateTime t((time_t)secs);
       if (t.IsValid()) {
         wxDateTime tz = t.ToUTC();
@@ -1036,8 +1036,8 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   if (root.HasMember("self")) {
     // m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
     m_signalk_selfid =
-        (root["self"]
-             .GetString());  // Verified for OpenPlotter node.js server 1.20
+        root["self"]
+        .GetString();  // Verified for OpenPlotter node.js server 1.20
   }
   if (m_signalk_selfid.IsEmpty()) {
     return;  // Don't handle any messages (with out self) until we know how we
@@ -1141,7 +1141,7 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
         id1 = wxAtoi(s_id.Mid(1, 3));
         id2 = wxAtoi(s_id.Mid(4, 3));
         met_name = "METEO ";
-        met_name << wxString::Format("%03d", (id1 + id2)).Right(3);
+        met_name << wxString::Format("%03d", id1 + id2).Right(3);
         strncpy(pTargetData->ShipName, met_name, SHIP_NAME_LEN - 1);
       }
       pTargetData->b_nameValid = true;
@@ -1475,7 +1475,7 @@ void AisDecoder::updateItem(std::shared_ptr<AisTargetData> pTargetData, bool bne
         strncpy(pTargetData->CallSign, callsign.c_str(), 7);
       }
       if (item["value"].HasMember("mmsi") &&
-          1994 != (pTargetData->MMSI) / 100000) { //Meteo
+          1994 != pTargetData->MMSI / 100000) { //Meteo
         long mmsi;
         wxString tmp = item["value"]["mmsi"].GetString();
         if (tmp.ToLong(&mmsi)) {
@@ -1554,7 +1554,7 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str,
 
   //  Simple case first
   //  First and only part of a one-part sentence
-  if ((1 == nsentences) && (1 == isentence)) {
+  if (1 == nsentences && 1 == isentence) {
     string_to_parse = tkz.GetNextToken();  // the encapsulated data
   }
 
@@ -1573,7 +1573,7 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str,
   }
 
   if (string_to_parse.IsEmpty() &&
-      (nsentences > 1)) {             // not ready, so return with NAN
+      nsentences > 1) {             // not ready, so return with NAN
     return AIS_INCOMPLETE_MULTIPART;  // and non-zero return
   }
 
@@ -1883,7 +1883,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
       aprs_name_str[len] = 0;
       for (i = 0; i < len; i++) {
         hash = hash * 10;
-        hash += (int)(aprs_name_str[i]);
+        hash += (int)aprs_name_str[i];
         while (hash >= 100000) hash = hash / 100000;
       }
       mmsi = aprs_mmsi = 199300000 + hash;
@@ -1960,7 +1960,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     gpsg_name_str[len] = 0;
     for (i = 0; i < len; i++) {
       hash = hash * 10;
-      hash += (int)(token[i]);
+      hash += (int)token[i];
       while (hash >= 100000) hash = hash / 100000;
     }
     // 199 is INMARSAT-A MID, should not occur ever in AIS stream
@@ -1998,7 +1998,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
 
   //  Simple case first
   //  First and only part of a one-part sentence
-  if ((1 == nsentences) && (1 == isentence)) {
+  if (1 == nsentences && 1 == isentence) {
     string_to_parse = tkz.GetNextToken();  // the encapsulated data
   }
 
@@ -2017,7 +2017,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
   }
 
   if (mmsi || (!string_to_parse.IsEmpty() &&
-               (string_to_parse.Len() < AIS_MAX_MESSAGE_LEN))) {
+               string_to_parse.Len() < AIS_MAX_MESSAGE_LEN)) {
     //  Create the bit accessible string
     wxCharBuffer abuf = string_to_parse.ToUTF8();
     if (!abuf.data())  // badly formed sentence?
@@ -2118,7 +2118,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
             int message_ID = strbit.GetInt(1, 6);  // Parse on message ID
             // Only translate the dynamic positionreport messages (1, 2, 3 or
             // 18)
-            if ((message_ID <= 3) || (message_ID == 18)) {
+            if (message_ID <= 3 || message_ID == 18) {
               // set OwnShip to prevent target from being drawn
               pTargetData->b_OwnShip = true;
               // Rename nmea sentence to AIVDO and calc a new checksum
@@ -2207,7 +2207,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         if (str.Mid(3, 3).IsSameAs(_T("TLL"))) {
           if (!bnewtarget) {
             int age_of_last =
-                (now.GetTicks() - pTargetData->PositionReportTicks);
+                now.GetTicks() - pTargetData->PositionReportTicks;
             if (age_of_last > 0) {
               ll_gc_ll_reverse(pTargetData->Lat, pTargetData->Lon, arpa_lat,
                                arpa_lon, &pTargetData->COG, &pTargetData->SOG);
@@ -2248,7 +2248,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
         pTargetData->MMSI = aprs_mmsi;
         pTargetData->NavStatus = 15;  // undefined
         if (!bnewtarget) {
-          int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
+          int age_of_last = now.GetTicks() - pTargetData->PositionReportTicks;
           if (age_of_last > 0) {
             ll_gc_ll_reverse(pTargetData->Lat, pTargetData->Lon, aprs_lat,
                              aprs_lon, &pTargetData->COG, &pTargetData->SOG);
@@ -2664,10 +2664,10 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str, bool 
       if (dse_mmsi) {
         m_ptentative_dsctarget->Lat =
             m_ptentative_dsctarget->Lat +
-            ((m_ptentative_dsctarget->Lat) >= 0 ? dse_lat : -dse_lat);
+            (m_ptentative_dsctarget->Lat >= 0 ? dse_lat : -dse_lat);
         m_ptentative_dsctarget->Lon =
             m_ptentative_dsctarget->Lon +
-            ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
+            (m_ptentative_dsctarget->Lon >= 0 ? dse_lon : -dse_lon);
         if (dse_shipName.length() > 0) {
             memset(m_ptentative_dsctarget->ShipName,'\0',SHIP_NAME_LEN);
             snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
@@ -2770,7 +2770,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       n_msg1++;
 
       ptd->NavStatus = bstr->GetInt(39, 4);
-      ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
+      ptd->SOG = 0.1 * bstr->GetInt(51, 10);
 
       int lon = bstr->GetInt(62, 28);
       if (lon & 0x08000000)  // negative?
@@ -2782,9 +2782,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -2796,8 +2796,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->b_positionDoubtful = true;
 
       //    decode balance of message....
-      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(129, 9));
+      ptd->COG = 0.1 * bstr->GetInt(117, 12);
+      ptd->HDG = 1.0 * bstr->GetInt(129, 9);
 
       ptd->ROTAIS = bstr->GetInt(43, 8);
       double rot_dir = 1.0;
@@ -2809,24 +2809,24 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         rot_dir = -1.0;
       }
 
-      ptd->ROTIND = wxRound(rot_dir * pow((((double)ptd->ROTAIS) / 4.733),
+      ptd->ROTIND = wxRound(rot_dir * pow((double)ptd->ROTAIS / 4.733,
                                           2));  // Convert to indicated ROT
 
       ptd->m_utc_sec = bstr->GetInt(138, 6);
 
-      if ((1 == message_ID) ||
-          (2 == message_ID))  // decode SOTDMA per 7.6.7.2.2
+      if (1 == message_ID ||
+          2 == message_ID)  // decode SOTDMA per 7.6.7.2.2
       {
         ptd->SyncState = bstr->GetInt(151, 2);
         ptd->SlotTO = bstr->GetInt(153, 2);
-        if ((ptd->SlotTO == 1) && (ptd->SyncState == 0))  // UTCDirect follows
+        if (ptd->SlotTO == 1 && ptd->SyncState == 0)  // UTCDirect follows
         {
           ptd->m_utc_hour = bstr->GetInt(155, 5);
 
           ptd->m_utc_min = bstr->GetInt(160, 7);
 
-          if ((ptd->m_utc_hour < 24) && (ptd->m_utc_min < 60) &&
-              (ptd->m_utc_sec < 60)) {
+          if (ptd->m_utc_hour < 24 && ptd->m_utc_min < 60 &&
+              ptd->m_utc_sec < 60) {
             wxDateTime rx_time(ptd->m_utc_hour, ptd->m_utc_min, ptd->m_utc_sec);
             rx_ticks = rx_time.GetTicks();
             if (!b_firstrx) {
@@ -2839,7 +2839,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 
       //    Capture Euro Inland special passing arrangement signal ("stbd-stbd")
       ptd->blue_paddle = bstr->GetInt(144, 2);
-      ptd->b_blue_paddle = (ptd->blue_paddle == 2);  // paddle is set
+      ptd->b_blue_paddle = ptd->blue_paddle == 2;  // paddle is set
 
       if (!ptd->b_isDSCtarget)
         ptd->Class = AIS_CLASS_A;
@@ -2873,7 +2873,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       ptd->NavStatus =
           UNDEFINED;  // Class B targets have no status.  Enforce this...
 
-      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
+      ptd->SOG = 0.1 * bstr->GetInt(47, 10);
 
       int lon = bstr->GetInt(58, 28);
       if (lon & 0x08000000)  // negative?
@@ -2885,9 +2885,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -2898,8 +2898,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       } else
         ptd->b_positionDoubtful = true;
 
-      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
+      ptd->COG = 0.1 * bstr->GetInt(113, 12);
+      ptd->HDG = 1.0 * bstr->GetInt(125, 9);
 
       ptd->m_utc_sec = bstr->GetInt(134, 6);
 
@@ -2915,7 +2915,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
     case 19: {  // Class B mes_ID 19 Is same as mes_ID 18 until bit 139
       ptd->NavStatus =
           UNDEFINED;  // Class B targets have no status.  Enforce this...
-      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
+      ptd->SOG = 0.1 * bstr->GetInt(47, 10);
       int lon = bstr->GetInt(58, 28);
       if (lon & 0x08000000)  // negative?
         lon |= 0xf0000000;
@@ -2926,9 +2926,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -2939,8 +2939,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       } else
         ptd->b_positionDoubtful = true;
 
-      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
+      ptd->COG = 0.1 * bstr->GetInt(113, 12);
+      ptd->HDG = 1.0 * bstr->GetInt(125, 9);
       ptd->m_utc_sec = bstr->GetInt(134, 6);
       // From bit 140 and forward data as of mes 5
       bstr->GetStr(144, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
@@ -2996,13 +2996,13 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       lon_tentative = lon;
 
       // Negative latitude?
-      if (lat >= (0x4000000 >> bitCorrection)) {
+      if (lat >= 0x4000000 >> bitCorrection) {
         lat_tentative = (0x8000000 >> bitCorrection) - lat;
         lat_tentative *= -1;
       }
 
       // Negative longitude?
-      if (lon >= (0x8000000 >> bitCorrection)) {
+      if (lon >= 0x8000000 >> bitCorrection) {
         lon_tentative = (0x10000000 >> bitCorrection) - lon;
         lon_tentative *= -1;
       }
@@ -3019,9 +3019,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       // Get the latency of the position report.
       int positionLatency = bstr->GetInt(95, 1);
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -3038,8 +3038,8 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       } else
         ptd->b_positionDoubtful = true;
 
-      ptd->SOG = 1.0 * (bstr->GetInt(80, 6));
-      ptd->COG = 1.0 * (bstr->GetInt(85, 9));
+      ptd->SOG = 1.0 * bstr->GetInt(80, 6);
+      ptd->COG = 1.0 * bstr->GetInt(85, 9);
 
       b_posn_report = true;
       parse_result = true;
@@ -3076,7 +3076,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->ETA_Hr = bstr->GetInt(284, 5);
         ptd->ETA_Min = bstr->GetInt(289, 6);
 
-        ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
+        ptd->Draft = (double)bstr->GetInt(295, 8) / 10.0;
 
         bstr->GetStr(303, 120, &ptd->Destination[0], DESTINATION_LEN - 1);
 
@@ -3127,9 +3127,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -3163,9 +3163,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -3177,7 +3177,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         ptd->b_positionDoubtful = true;
 
       //    decode balance of message....
-      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
+      ptd->COG = 0.1 * bstr->GetInt(117, 12);
 
       int alt_tent = bstr->GetInt(39, 12);
       ptd->altitude = alt_tent;
@@ -3221,7 +3221,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       // short name only, extension wont fit in Ship structure
 
       if (bstr->GetBitCount() > 276) {
-        int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
+        int nx = (bstr->GetBitCount() - 272) / 6 * 6;
         bstr->GetStr(273, nx, &ptd->ShipNameExtension[0], 14);
         ptd->ShipNameExtension[14] = 0;
       } else {
@@ -3246,9 +3246,9 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) &&
-          (lat_tentative <=
-           90.))  // Ship does not report Lat or Lon "unavailable"
+      if (lon_tentative <= 180. &&
+          lat_tentative <=
+          90.)  // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
         ptd->Lat = lat_tentative;
@@ -3274,10 +3274,10 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
           ptd->b_isEuroInland = true;
 
           bstr->GetStr(57, 48, &ptd->Euro_VIN[0], 8);
-          ptd->Euro_Length = ((double)bstr->GetInt(105, 13)) / 10.0;
-          ptd->Euro_Beam = ((double)bstr->GetInt(118, 10)) / 10.0;
+          ptd->Euro_Length = (double)bstr->GetInt(105, 13) / 10.0;
+          ptd->Euro_Beam = (double)bstr->GetInt(118, 10) / 10.0;
           ptd->UN_shiptype = bstr->GetInt(128, 14);
-          ptd->Euro_Draft = ((double)bstr->GetInt(145, 11)) / 100.0;
+          ptd->Euro_Draft = (double)bstr->GetInt(145, 11) / 100.0;
           parse_result = true;
         }
       }
@@ -3450,7 +3450,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
 
             ptd->met_data.hor_vis = horVis / 10.0;
 
-            ptd->met_data.water_lev_dev = (bstr->GetInt(202, 12) / 100.) - 10.;
+            ptd->met_data.water_lev_dev = bstr->GetInt(202, 12) / 100. - 10.;
             ptd->met_data.water_lev_trend = bstr->GetInt(214, 2);
             ptd->met_data.current = bstr->GetInt(216, 8) / 10.;
             ptd->met_data.curr_dir = bstr->GetInt(224, 9);
@@ -3649,7 +3649,7 @@ bool AisDecoder::Parse_VDXBitstring(AisBitstring *bstr,
       //  Always capture the MSG_14 text
       char msg_14_text[968];
       if (bstr->GetBitCount() > 40) {
-        int nx = ((bstr->GetBitCount() - 40) / 6) * 6;
+        int nx = (bstr->GetBitCount() - 40) / 6 * 6;
         int nd = bstr->GetStr(41, nx, msg_14_text, 968);
         nd = wxMax(0, nd);
         nd = wxMin(nd, 967);
@@ -3699,8 +3699,8 @@ bool AisDecoder::NMEACheckSumOK(const wxString &str_in) {
   int string_length = strlen(str_ascii);
 
   int payload_length = 0;
-  while ((payload_length < string_length) &&
-         (str_ascii[payload_length] != '*'))  // look for '*'
+  while (payload_length < string_length &&
+         str_ascii[payload_length] != '*')  // look for '*'
     payload_length++;
 
   if (payload_length == string_length)
@@ -3763,7 +3763,7 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
 
   // Avoid duplicate track points
   // Do not add track point if time since last point is < 2 seconds.
-  if ((ptarget->PositionReportTicks - ptarget->LastPositionReportTicks) > 2) {
+  if (ptarget->PositionReportTicks - ptarget->LastPositionReportTicks > 2) {
     //    Create the newest point
     AISTargetTrackPoint ptrackpoint;
     ptrackpoint.m_lat = ptarget->Lat;
@@ -3860,27 +3860,27 @@ void AisDecoder::UpdateAllAlarms(void) {
       //  Maintain General Alert
       if (!m_bGeneralAlert) {
         //    Quick check on basic condition
-        if ((td->CPA < g_CPAWarn_NM) && (td->TCPA > 0) &&
-            (td->Class != AIS_ATON) && (td->Class != AIS_BASE))
+        if (td->CPA < g_CPAWarn_NM && td->TCPA > 0 &&
+            td->Class != AIS_ATON && td->Class != AIS_BASE)
           m_bGeneralAlert = true;
 
         //    Some options can suppress general alerts
-        if (g_bAIS_CPA_Alert_Suppress_Moored && (td->SOG <= g_ShowMoored_Kts))
+        if (g_bAIS_CPA_Alert_Suppress_Moored && td->SOG <= g_ShowMoored_Kts)
           m_bGeneralAlert = false;
 
         //    Skip distant targets if requested
-        if ((g_bCPAMax) && (td->Range_NM > g_CPAMax_NM))
+        if (g_bCPAMax && td->Range_NM > g_CPAMax_NM)
           m_bGeneralAlert = false;
 
         //    Skip if TCPA is too long
-        if ((g_bTCPA_Max) && (td->TCPA > g_TCPA_Max)) m_bGeneralAlert = false;
+        if (g_bTCPA_Max && td->TCPA > g_TCPA_Max) m_bGeneralAlert = false;
 
         //  SART targets always alert if "Active"
         if (td->Class == AIS_SART && td->NavStatus == 14)
           m_bGeneralAlert = true;
 
         //  DSC Distress targets always alert
-        if (( td->Class == AIS_DSC ) && ( ( td->ShipType == 12 ) || ( td->ShipType == 16 ) ))
+        if (td->Class == AIS_DSC && ( td->ShipType == 12 || td->ShipType == 16 ))
           m_bGeneralAlert = true;
       }
 
@@ -3891,14 +3891,14 @@ void AisDecoder::UpdateAllAlarms(void) {
         this_alarm = AIS_ALERT_SET;
 
       //  DSC Distress targets always alert
-      if ((td->Class == AIS_DSC) && (( td->ShipType == 12 ) || ( td->ShipType == 16 )) )
+      if (td->Class == AIS_DSC && (td->ShipType == 12 || td->ShipType == 16) )
         this_alarm = AIS_ALERT_SET;
 
       if (g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
-          (td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
+          td->Class != AIS_SART && td->Class != AIS_DSC) {
         //      Skip anchored/moored(interpreted as low speed) targets if
         //      requested
-        if ((g_bHideMoored) && (td->SOG <= g_ShowMoored_Kts)) {  // dsr
+        if (g_bHideMoored && td->SOG <= g_ShowMoored_Kts) {  // dsr
           td->n_alert_state = AIS_NO_ALERT;
           continue;
         }
@@ -3906,7 +3906,7 @@ void AisDecoder::UpdateAllAlarms(void) {
         //    No Alert on moored(interpreted as low speed) targets if so
         //    requested
         if (g_bAIS_CPA_Alert_Suppress_Moored &&
-            (td->SOG <= g_ShowMoored_Kts)) {  // dsr
+            td->SOG <= g_ShowMoored_Kts) {  // dsr
           td->n_alert_state = AIS_NO_ALERT;
           continue;
         }
@@ -3919,9 +3919,9 @@ void AisDecoder::UpdateAllAlarms(void) {
           }
         }
 
-        if ((td->CPA < g_CPAWarn_NM) && (td->TCPA > 0) &&
-            (td->Class != AIS_ATON) && (td->Class != AIS_BASE) &&
-            (td->Class != AIS_METEO)) {
+        if (td->CPA < g_CPAWarn_NM && td->TCPA > 0 &&
+            td->Class != AIS_ATON && td->Class != AIS_BASE &&
+            td->Class != AIS_METEO) {
           if (g_bTCPA_Max) {
             if (td->TCPA < g_TCPA_Max) {
               if (td->b_isFollower)
@@ -3941,8 +3941,8 @@ void AisDecoder::UpdateAllAlarms(void) {
       //    Maintain the timer for in_ack flag
       //  SART and DSC targets always maintain ack timeout
 
-      if (g_bAIS_ACK_Timeout || (td->Class == AIS_SART) ||
-          ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) )) {
+      if (g_bAIS_ACK_Timeout || td->Class == AIS_SART ||
+          (td->Class == AIS_DSC && (td->ShipType == 12 || td->ShipType == 16) )) {
         if (td->b_in_ack_timeout) {
           wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
           if (delta.GetMinutes() > g_AckTimeout_Mins)
@@ -4004,7 +4004,7 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   double cpa_calc_target_cog = ptarget->COG;
 
   //    Ownship is not reporting valid SOG, so no way to calculate CPA
-  if (std::isnan(gSog) || (gSog > 102.2)) {
+  if (std::isnan(gSog) || gSog > 102.2) {
     ptarget->bCPA_Valid = false;
     return;
   }
@@ -4040,7 +4040,7 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   double v0 = gSog * 1852.;
   double v1 = ptarget->SOG * 1852.;
 
-  if ((v0 < 1e-6) && (v1 < 1e-6)) {
+  if (v0 < 1e-6 && v1 < 1e-6) {
     ptarget->TCPA = 0.;
     ptarget->CPA = 0.;
 
@@ -4054,7 +4054,7 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
     double east1 = (ptarget->Lon - gLon) * 60 * 1852;
     double north1 = (ptarget->Lat - gLat) * 60 * 1852;
 
-    double east = east1 * (cos(gLat * PI / 180.));
+    double east = east1 * cos(gLat * PI / 180.);
 
     double north = north1;
 
@@ -4065,10 +4065,10 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
     double sinb = sin((90. - cpa_calc_target_cog) * PI / 180.);
 
     //    These will be useful
-    double fc = (v0 * cosa) - (v1 * cosb);
-    double fs = (v0 * sina) - (v1 * sinb);
+    double fc = v0 * cosa - v1 * cosb;
+    double fs = v0 * sina - v1 * sinb;
 
-    double d = (fc * fc) + (fs * fs);
+    double d = fc * fc + fs * fs;
     double tcpa;
 
     // the tracks are almost parallel
@@ -4076,7 +4076,7 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
       tcpa = 0.;
     else
       //    Here is the equation for t, which will be in hours
-      tcpa = ((fc * east) + (fs * north)) / d;
+      tcpa = (fc * east + fs * north) / d;
 
     //    Convert to minutes
     ptarget->TCPA = tcpa * 60.;
@@ -4146,19 +4146,19 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     //      Mark lost targets if specified
     double removelost_Mins = fmax(g_RemoveLost_Mins, g_MarkLost_Mins);
 
-    if (g_bInlandEcdis && (xtd->Class != AIS_ARPA)) {
+    if (g_bInlandEcdis && xtd->Class != AIS_ARPA) {
       double iECD_LostTimeOut = 0.0;
       // special rules apply for europe inland ecdis timeout settings. overrule
       // option settings Won't apply for ARPA targets where the radar has all
       // control
       if (xtd->Class == AIS_CLASS_B) {
-        if ((xtd->NavStatus == MOORED) || (xtd->NavStatus == AT_ANCHOR))
+        if (xtd->NavStatus == MOORED || xtd->NavStatus == AT_ANCHOR)
           iECD_LostTimeOut = 18 * 60;
         else
           iECD_LostTimeOut = 180;
       }
       if (xtd->Class == AIS_CLASS_A) {
-        if ((xtd->NavStatus == MOORED) || (xtd->NavStatus == AT_ANCHOR)) {
+        if (xtd->NavStatus == MOORED || xtd->NavStatus == AT_ANCHOR) {
           if (xtd->SOG < 3.)
             iECD_LostTimeOut = 18 * 60;
           else
@@ -4167,13 +4167,13 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
           iECD_LostTimeOut = 60;
       }
 
-      if ((target_posn_age > iECD_LostTimeOut) && (xtd->Class != AIS_GPSG_BUDDY))
+      if (target_posn_age > iECD_LostTimeOut && xtd->Class != AIS_GPSG_BUDDY)
         xtd->b_active = false;
 
-      removelost_Mins = (2 * iECD_LostTimeOut) / 60.;
+      removelost_Mins = 2 * iECD_LostTimeOut / 60.;
     } else if (g_bMarkLost) {
-      if ((target_posn_age > g_MarkLost_Mins * 60) &&
-          (xtd->Class != AIS_GPSG_BUDDY))
+      if (target_posn_age > g_MarkLost_Mins * 60 &&
+          xtd->Class != AIS_GPSG_BUDDY)
         xtd->b_active = false;
     }
 
@@ -4184,10 +4184,10 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
 
     if (g_bRemoveLost || g_bInlandEcdis) {
       bool b_arpalost =
-          (xtd->Class == AIS_ARPA &&
-           xtd->b_lost);  // A lost ARPA target would be deleted at once
-      if (((target_posn_age > removelost_Mins * 60) &&
-           (xtd->Class != AIS_GPSG_BUDDY)) ||
+          xtd->Class == AIS_ARPA &&
+          xtd->b_lost;  // A lost ARPA target would be deleted at once
+      if ((target_posn_age > removelost_Mins * 60 &&
+           xtd->Class != AIS_GPSG_BUDDY) ||
           b_arpalost) {
         //      So mark the target as lost, with unknown position, and make it
         //      not selectable
@@ -4273,18 +4273,18 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     for (it = current_targets.begin(); it != current_targets.end(); ++it) {
       std::shared_ptr<AisTargetData> td = it->second;
       if (td) {
-        if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
+        if (td->Class != AIS_SART && td->Class != AIS_DSC) {
           if (g_bAIS_CPA_Alert && td->b_active) {
-            if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
+            if (AIS_ALERT_SET == td->n_alert_state && !td->b_in_ack_timeout) {
               if (td->TCPA < tcpa_min) {
                 tcpa_min = td->TCPA;
                 palert_target_cpa = td;
               }
             }
           }
-        } else if ((td->Class == AIS_DSC) && ((td->ShipType == 12) || (td->ShipType == 16)) ) {
+        } else if (td->Class == AIS_DSC && (td->ShipType == 12 || td->ShipType == 16) ) {
           if (td->b_active) {
-            if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
+            if (AIS_ALERT_SET == td->n_alert_state && !td->b_in_ack_timeout) {
               palert_target_dsc = td;
             }
             else {  // Reset DCS flag to open for a real AIS for the same target
@@ -4295,7 +4295,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
 
         else if (td->Class == AIS_SART) {
           if (td->b_active) {
-            if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
+            if (AIS_ALERT_SET == td->n_alert_state && !td->b_in_ack_timeout) {
               if (td->Range_NM < sart_range) {
                 tcpa_min = sart_range;
                 palert_target_sart = td;
@@ -4479,10 +4479,10 @@ void AISshipNameCache(AisTargetData *pTargetData,
       }
     }
     // else there IS a valid name, lets check if it is in one of the hash lists.
-    else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) ||
-             (pTargetData->MID == 19) ||
-             (pTargetData->MID == 123) ||   // 123: Has got a name from SignalK
-             (pTargetData->MID == 124) ) {  // 124: Has got a name from n2k
+    else if (pTargetData->MID == 5 || pTargetData->MID == 24 ||
+             pTargetData->MID == 19 ||
+             pTargetData->MID == 123 ||  // 123: Has got a name from SignalK
+             pTargetData->MID == 124 ) { // 124: Has got a name from n2k
       //  This message contains ship static data, so has a name field
       pTargetData->b_nameFromCache = false;
       ship_name = trimAISField(pTargetData->ShipName);

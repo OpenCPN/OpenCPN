@@ -34,7 +34,7 @@ RangeFit::RangeFit( ColourSet * colours, int flags )
   : ColourFit( colours, flags )
 {
 	// initialise the metric
-	bool perceptual = ( ( m_flags & kColourMetricPerceptual ) != 0 );
+	bool perceptual = ( m_flags & kColourMetricPerceptual ) != 0;
 	if( perceptual )
 		m_metric = Vec3( 0.2126f, 0.7152f, 0.0722f );
 	else
@@ -156,8 +156,8 @@ void RangeFit::Compress4( void* block )
 	Vec3 codes[4];
 	codes[0] = m_start;
 	codes[1] = m_end;
-	codes[2] = ( 2.0f/3.0f )*m_start + ( 1.0f/3.0f )*m_end;
-	codes[3] = ( 1.0f/3.0f )*m_start + ( 2.0f/3.0f )*m_end;
+	codes[2] = 2.0f/3.0f*m_start + 1.0f/3.0f*m_end;
+	codes[3] = 1.0f/3.0f*m_start + 2.0f/3.0f*m_end;
 
 	// match each point to the closest code
 	u8 closest[16];

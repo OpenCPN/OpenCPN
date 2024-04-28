@@ -106,14 +106,14 @@ bool RoutemanGui::UpdateProgress() {
     double a = atan(north / east);
     if (fabs(m_routeman.pActivePoint->m_lon - gLon) < 180.) {
       if (m_routeman.pActivePoint->m_lon > gLon)
-        m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
+        m_routeman.CurrentBrgToActivePoint = 90. - a * 180 / PI;
       else
-        m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
+        m_routeman.CurrentBrgToActivePoint = 270. - a * 180 / PI;
     } else {
       if (m_routeman.pActivePoint->m_lon > gLon)
-        m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
+        m_routeman.CurrentBrgToActivePoint = 270. - a * 180 / PI;
       else
-        m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
+        m_routeman.CurrentBrgToActivePoint = 90. - a * 180 / PI;
     }
 
     //      Calculate range using Great Circle Formula
@@ -162,7 +162,7 @@ bool RoutemanGui::UpdateProgress() {
          m_routeman.pActiveRouteSegmentBeginPoint->m_lat,
          m_routeman.pActiveRouteSegmentBeginPoint->m_lon, &x2, &y2);
 
-    double e1 = atan2((x2 - x1), (y2 - y1));
+    double e1 = atan2(x2 - x1, y2 - y1);
     m_routeman.CurrentSegmentCourse = e1 * 180 / PI;
     if (m_routeman.CurrentSegmentCourse < 0)
         m_routeman.CurrentSegmentCourse += 360;
@@ -170,9 +170,9 @@ bool RoutemanGui::UpdateProgress() {
     //      Compute XTE direction
     double h = atan(vn.y / vn.x);
     if (vn.x > 0)
-      m_routeman.CourseToRouteSegment = 90. - (h * 180 / PI);
+      m_routeman.CourseToRouteSegment = 90. - h * 180 / PI;
     else
-      m_routeman.CourseToRouteSegment = 270. - (h * 180 / PI);
+      m_routeman.CourseToRouteSegment = 270. - h * 180 / PI;
 
     h = m_routeman.CurrentBrgToActivePoint - m_routeman.CourseToRouteSegment;
     if (h < 0) h = h + 360;
@@ -192,7 +192,7 @@ bool RoutemanGui::UpdateProgress() {
         double tlat, tlon;
         wxPoint r, r1;
         ll_gc_ll(gLat, gLon, m_routeman.CourseToRouteSegment,
-                 (m_routeman.CurrentXTEToActivePoint / 1.852), &tlat, &tlon);
+                 m_routeman.CurrentXTEToActivePoint / 1.852, &tlat, &tlon);
         gFrame->GetFocusCanvas()->GetCanvasPointPix(gLat, gLon, &r1);
         gFrame->GetFocusCanvas()->GetCanvasPointPix(tlat, tlon, &r);
         double xtepix =
@@ -200,7 +200,7 @@ bool RoutemanGui::UpdateProgress() {
         // xte in mm
         double xtemm = xtepix / gFrame->GetFocusCanvas()->GetPixPerMM();
         // allow display (or not)
-        g_bAllowShipToActive = (xtemm > 3.0) ? true : false;
+        g_bAllowShipToActive = xtemm > 3.0 ? true : false;
       }
     }
 
@@ -223,7 +223,7 @@ bool RoutemanGui::UpdateProgress() {
         //      Test to see if we are moving away from the arrival point, and
         //      have been moving away for 2 seconds.
         //      If so, we should declare "Arrival"
-        if ((m_routeman.CurrentRangeToActiveNormalCrossing - m_routeman.m_arrival_min) >
+        if (m_routeman.CurrentRangeToActiveNormalCrossing - m_routeman.m_arrival_min >
             m_routeman.pActivePoint->GetWaypointArrivalRadius()) {
           if (++m_routeman.m_arrival_test > 2 &&
               !g_bAdvanceRouteWaypointOnArrivalOnly)
@@ -267,12 +267,12 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
       pprog->Centre();
     }
     if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
-        (pTrackPropDialog->IsShown()) &&
-        (pTrack == pTrackPropDialog->GetTrack())) {
+        pTrackPropDialog->IsShown() &&
+        pTrack == pTrackPropDialog->GetTrack()) {
       pTrackPropDialog->Hide();
     }
 
-    if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()){
+    if (pTrack == g_pActiveTrack && pTrack->IsRunning()){
       pTrack = gFrame->TrackOff();
     }
     //    Remove the track from associated lists

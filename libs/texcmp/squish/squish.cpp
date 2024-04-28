@@ -169,8 +169,8 @@ int GetStorageRequirements( int width, int height, int flags )
 	flags = FixFlags( flags );
 
 	// compute the storage requirements
-	int blockcount = ( ( width + 3 )/4 ) * ( ( height + 3 )/4 );
-	int blocksize = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+	int blockcount = ( width + 3 )/4 * ( ( height + 3 )/4 );
+	int blocksize = ( flags & kDxt1 ) != 0 ? 8 : 16;
 	return blockcount*blocksize;
 }
 
@@ -181,7 +181,7 @@ void CompressImage( u8 const* rgba, int width, int height, void* blocks, int fla
 
 	// initialise the block output
 	u8* targetBlock = reinterpret_cast< u8* >( blocks );
-	int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+	int bytesPerBlock = ( flags & kDxt1 ) != 0 ? 8 : 16;
 
 	// loop over blocks
 	for( int y = 0; y < height; y += 4 )
@@ -209,7 +209,7 @@ void CompressImage( u8 const* rgba, int width, int height, void* blocks, int fla
 							*targetPixel++ = *sourcePixel++;
 
 						// enable this pixel
-						mask |= ( 1 << ( 4*py + px ) );
+						mask |= 1 << 4*py + px;
 					}
 					else
 					{
@@ -235,7 +235,7 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
 
 	// initialise the block output
 	u8* targetBlock = reinterpret_cast< u8* >( blocks );
-	int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+	int bytesPerBlock = ( flags & kDxt1 ) != 0 ? 8 : 16;
 
 	// loop over blocks
 	for( int y = 0; y < height; y += 4 )
@@ -264,7 +264,7 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
                                                 *targetPixel++ = 255;
 
 						// enable this pixel
-						mask |= ( 1 << ( 4*py + px ) );
+						mask |= 1 << 4*py + px;
 					}
 					else
 					{
@@ -291,7 +291,7 @@ void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int 
 
     // initialise the block output
     u8* targetBlock = reinterpret_cast< u8* >( blocks );
-    int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+    int bytesPerBlock = ( flags & kDxt1 ) != 0 ? 8 : 16;
 
     u8 r_flat_mask = 0xff;
     u8 g_flat_mask = 0xff;
@@ -322,8 +322,8 @@ void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int 
                 for( int px = 0; px < 4; ++px )
                 {
                     // get the source pixel in the image
-                    int sx = x + (px % bw);
-                    int sy = y + (py % bh);
+                    int sx = x + px % bw;
+                    int sy = y + py % bh;
 
                     // copy the rgba value
                     u8 const* sourcePixel = rgb + 3*( width*sy + sx );
@@ -358,7 +358,7 @@ void DecompressImage( u8* rgba, int width, int height, void const* blocks, int f
 
 	// initialise the block input
 	u8 const* sourceBlock = reinterpret_cast< u8 const* >( blocks );
-	int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+	int bytesPerBlock = ( flags & kDxt1 ) != 0 ? 8 : 16;
 
 	// loop over blocks
 	for( int y = 0; y < height; y += 4 )

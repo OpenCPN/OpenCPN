@@ -78,7 +78,7 @@ void ConnectionParams::Deserialize(const wxString &configStr) {
   Baudrate = wxAtoi(prms[6]);
   ChecksumCheck = wxAtoi(prms[7]);
   int iotval = wxAtoi(prms[8]);
-  IOSelect = ((iotval <= 2) ? static_cast<dsPortType>(iotval) : DS_TYPE_INPUT);
+  IOSelect = iotval <= 2 ? static_cast<dsPortType>(iotval) : DS_TYPE_INPUT;
   InputSentenceListType = (ListType)wxAtoi(prms[9]);
   InputSentenceList = wxStringTokenize(prms[10], _T(","));
   OutputSentenceListType = (ListType)wxAtoi(prms[11]);

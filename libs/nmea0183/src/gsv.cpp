@@ -105,7 +105,7 @@ Where:
    MessageNumber = sentence.Integer( 2 );
    SatsInView = sentence.Integer( 3 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool GSV::Write( SENTENCE& sentence )
@@ -122,12 +122,12 @@ bool GSV::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const GSV& GSV::operator = ( const GSV& source )
 {
       SatsInView = source.SatsInView;
 
-   return( *this );
+   return*this;
 }

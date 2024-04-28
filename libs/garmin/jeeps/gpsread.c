@@ -158,7 +158,7 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 		    for(i=0,p=(*packet)->data;i<(*packet)->n;++i)
 			chk -= *p++;
 		    chk -= (*packet)->type;
-		    chk -= (UC)((*packet)->n);
+		    chk -= (UC)(*packet)->n;
 		    if(chk != chk_read)
 		    {
 			GPS_Error("CHECKSUM: Read error\n");

@@ -676,7 +676,7 @@ private:
      */
     void checkIndex(const int aIndex) const
     {
-        if ((aIndex < 0) || (aIndex >= mColumnCount))
+        if (aIndex < 0 || aIndex >= mColumnCount)
         {
             throw SQLite::Exception("Column index out of range.");
         }

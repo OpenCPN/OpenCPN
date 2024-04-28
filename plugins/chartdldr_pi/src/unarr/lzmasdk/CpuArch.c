@@ -149,16 +149,16 @@ Bool CPU_Is_InOrder()
   firm = x86cpuid_GetFirm(&p);
   switch (firm)
   {
-    case CPU_FIRM_INTEL: return (family < 6 || (family == 6 && (
-        /* Atom CPU */
-           model == 0x100C  /* 45 nm, N4xx, D4xx, N5xx, D5xx, 230, 330 */
-        || model == 0x2006  /* 45 nm, Z6xx */
-        || model == 0x2007  /* 32 nm, Z2460 */
-        || model == 0x3005  /* 32 nm, Z2760 */
-        || model == 0x3006  /* 32 nm, N2xxx, D2xxx */
-        )));
-    case CPU_FIRM_AMD: return (family < 5 || (family == 5 && (model < 6 || model == 0xA)));
-    case CPU_FIRM_VIA: return (family < 6 || (family == 6 && model < 0xF));
+    case CPU_FIRM_INTEL: return family < 6 || (family == 6 && (
+                                                 /* Atom CPU */
+                                                 model == 0x100C  /* 45 nm, N4xx, D4xx, N5xx, D5xx, 230, 330 */
+                                                 || model == 0x2006  /* 45 nm, Z6xx */
+                                                 || model == 0x2007  /* 32 nm, Z2460 */
+                                                 || model == 0x3005  /* 32 nm, Z2760 */
+                                                 || model == 0x3006  /* 32 nm, N2xxx, D2xxx */
+                                               ));
+    case CPU_FIRM_AMD: return family < 5 || (family == 5 && (model < 6 || model == 0xA));
+    case CPU_FIRM_VIA: return family < 6 || (family == 6 && model < 0xF);
   }
   return True;
 }
@@ -171,7 +171,7 @@ static Bool CPU_Sys_Is_SSE_Supported()
   vi.dwOSVersionInfoSize = sizeof(vi);
   if (!GetVersionEx(&vi))
     return False;
-  return (vi.dwMajorVersion >= 5);
+  return vi.dwMajorVersion >= 5;
 }
 #define CHECK_SYS_SSE_SUPPORT if (!CPU_Sys_Is_SSE_Supported()) return False;
 #else
@@ -184,7 +184,7 @@ Bool CPU_Is_Aes_Supported()
   CHECK_SYS_SSE_SUPPORT
   if (!x86cpuid_CheckAndRead(&p))
     return False;
-  return (p.c >> 25) & 1;
+  return p.c >> 25 & 1;
 }
 
 #endif

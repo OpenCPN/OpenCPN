@@ -175,7 +175,7 @@ bool GetIntAttr(S57Obj *obj, const char *AttrName, int &val) {
     S57attVal *v = obj->attVal->Item(idx);
 
     assert(v->valType == OGR_INT);
-    val = *(int *)(v->value);
+    val = *(int *)v->value;
 
     return true;
   } else
@@ -268,7 +268,7 @@ bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val) {
 
     S57attVal *v = obj->attVal->Item(idx);
     assert(v->valType == OGR_REAL);
-    val = *(double *)(v->value);
+    val = *(double *)v->value;
 
     return true;
   } else
@@ -283,7 +283,7 @@ bool GetStringAttr(S57Obj *obj, const char *AttrName, char *pval, int nc) {
     S57attVal *v = obj->attVal->Item(idx);
 
     assert(v->valType == OGR_STR);
-    char *val = (char *)(v->value);
+    char *val = (char *)v->value;
 
     strncpy(pval, val, nc);
 
@@ -300,7 +300,7 @@ wxString *GetStringAttrWXS(S57Obj *obj, const char *AttrName) {
     S57attVal *v = obj->attVal->Item(idx);
 
     assert(v->valType == OGR_STR);
-    char *val = (char *)(v->value);
+    char *val = (char *)v->value;
 
     return new wxString(val, wxConvUTF8);
   } else
@@ -354,7 +354,7 @@ static int _atPtPos(S57Obj *objNew, wxArrayPtrVoid *curntList, int bSectorCheck)
   for (i = 0; i < curntList->GetCount(); i++) {
     S57Obj *objOld = (S57Obj *)curntList->Item(i);
 
-    if ((objOld->x == objNew->x) && (objOld->y == objNew->y)) {
+    if (objOld->x == objNew->x && objOld->y == objNew->y) {
       if (!bSectorCheck) return TRUE;
       /*
                   else {
@@ -590,7 +590,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
     int watlev = 0;  // Enum 0 invalid
     GetIntAttr(obj, "WATLEV", watlev);
 
-    if ((1 == watlev) || (2 == watlev)) {
+    if (1 == watlev || 2 == watlev) {
       // dry
       //                  udwhaz03str = _T(";OP(--D14050)");
     } else {
@@ -752,7 +752,7 @@ static void *DEPCNT02(void *param)
         //if(obj->Index == 5014)
               //int tty = 5;
 
-  if ((!strncmp(obj->FeatureName, "DEPARE", 6)) &&
+  if (!strncmp(obj->FeatureName, "DEPARE", 6) &&
       GEO_LINE == obj->Primitive_type) {
     drval1 = 0.0;  // default values
     GetDoubleAttr(obj, "DRVAL1", drval1);
@@ -1129,7 +1129,7 @@ static void *LIGHTS06(void *param)
   GetDoubleAttr(obj, "SECTR1", sectr1);
   GetDoubleAttr(obj, "SECTR2", sectr2);
 
-  if ((-9 == sectr1) || (-9 == sectr2)) {
+  if (-9 == sectr1 || -9 == sectr2) {
     // This is not a sector light
 
     wxString ssym;
@@ -1181,7 +1181,7 @@ static void *LIGHTS06(void *param)
     sectr1 = 0.0;
     sectr2 = 0.0;
   } else
-    sweep = (sectr1 > sectr2) ? sectr2 - sectr1 + 360 : sectr2 - sectr1;
+    sweep = sectr1 > sectr2 ? sectr2 - sectr1 + 360 : sectr2 - sectr1;
 
   if (sweep < 1.0 || sweep == 360.0) {
     // handle all round light
@@ -2423,7 +2423,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
   }
 
   // FIXME: test to fix the rounding error (!?)
-  depth_value += (depth_value > 0.0) ? 0.01 : -0.01;
+  depth_value += depth_value > 0.0 ? 0.01 : -0.01;
   leading_digit = (int)fabs(depth_value);
 
   if (depth_value <= safety_depth)  // S52_getMarinerParam(S52_MAR_SAFETY_DEPTH)
@@ -2463,7 +2463,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
   // Continuation A
   if (fabs(depth_value) < 10.0) {
     //      If showing as "feet", round off to one digit only
-    if ((ps52plib->m_nDepthUnitDisplay == 0) && (depth_value > 0)) {
+    if (ps52plib->m_nDepthUnitDisplay == 0 && depth_value > 0) {
       double r1 = depth_value;
       depth_value = wxRound(r1);
       leading_digit = (int)depth_value;
@@ -2496,7 +2496,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     double depth_value_pos = fabs(depth_value);
 
     //      If showing as "feet", round off to two digits only
-    if ((ps52plib->m_nDepthUnitDisplay == 0) && (depth_value_pos > 0)) {
+    if (ps52plib->m_nDepthUnitDisplay == 0 && depth_value_pos > 0) {
       double r1 = depth_value;
       depth_value = wxRound(r1);
       leading_digit = (int)depth_value_pos;
@@ -2514,7 +2514,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
       }
 
       double first_digit = floor(leading_digit / 10);
-      int secnd_digit = (int)(floor(leading_digit - (first_digit * 10)));
+      int secnd_digit = (int)floor(leading_digit - first_digit * 10);
       chk_snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a,
                    secnd_digit /*(int)leading_digit*/);
       sndfrm02.Append(wxString(temp_str, wxConvUTF8));
@@ -2541,7 +2541,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     leading_digit = fabs(leading_digit);
 
     double first_digit = floor(leading_digit / 10);
-    double secnd_digit = floor(leading_digit - (first_digit * 10));
+    double secnd_digit = floor(leading_digit - first_digit * 10);
 
     if (depth_value < 0.0) {
       chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a,
@@ -2565,9 +2565,9 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 
   if (depth_value < 1000.0) {
     double first_digit = floor(leading_digit / 100);
-    double secnd_digit = floor((leading_digit - (first_digit * 100)) / 10);
+    double secnd_digit = floor((leading_digit - first_digit * 100) / 10);
     double third_digit =
-        floor(leading_digit - (first_digit * 100) - (secnd_digit * 10));
+        floor(leading_digit - first_digit * 100 - secnd_digit * 10);
 
     chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a,
                  (int)first_digit);
@@ -2584,11 +2584,11 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 
   if (depth_value < 10000.0) {
     double first_digit = floor(leading_digit / 1000);
-    double secnd_digit = floor((leading_digit - (first_digit * 1000)) / 100);
+    double secnd_digit = floor((leading_digit - first_digit * 1000) / 100);
     double third_digit = floor(
-        (leading_digit - (first_digit * 1000) - (secnd_digit * 100)) / 10);
-    double last_digit = floor(leading_digit - (first_digit * 1000) -
-                              (secnd_digit * 100) - (third_digit * 10));
+        (leading_digit - first_digit * 1000 - secnd_digit * 100) / 10);
+    double last_digit = floor(leading_digit - first_digit * 1000 -
+                              secnd_digit * 100 - third_digit * 10);
 
     chk_snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a,
                  (int)first_digit);
@@ -2609,15 +2609,15 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
   // Continuation C
   {
     double first_digit = floor(leading_digit / 10000);
-    double secnd_digit = floor((leading_digit - (first_digit * 10000)) / 1000);
+    double secnd_digit = floor((leading_digit - first_digit * 10000) / 1000);
     double third_digit = floor(
-        (leading_digit - (first_digit * 10000) - (secnd_digit * 1000)) / 100);
-    double fourth_digit = floor((leading_digit - (first_digit * 10000) -
-                                 (secnd_digit * 1000) - (third_digit * 100)) /
+        (leading_digit - first_digit * 10000 - secnd_digit * 1000) / 100);
+    double fourth_digit = floor((leading_digit - first_digit * 10000 -
+                                 secnd_digit * 1000 - third_digit * 100) /
                                 10);
     double last_digit =
-        floor(leading_digit - (first_digit * 10000) - (secnd_digit * 1000) -
-              (third_digit * 100) - (fourth_digit * 10));
+        floor(leading_digit - first_digit * 10000 - secnd_digit * 1000 -
+              third_digit * 100 - fourth_digit * 10);
 
     chk_snprintf(temp_str, LISTSIZE, ";SY(%s3%1i)", symbol_prefix_a,
                  (int)first_digit);
@@ -2671,7 +2671,7 @@ static void *TOPMAR01(void *param)
     sy = _T(";SY(QUESMRK1)");
   else {
     int floating = FALSE;  // not a floating platform
-    int topshp = (!battr) ? 0 : top_int;
+    int topshp = !battr ? 0 : top_int;
 
     if (TRUE == _atPtPos(obj, GetChartFloatingATONArray(rzRules), false))
        floating = TRUE;
@@ -3106,8 +3106,8 @@ static void *WRECKS02(void *param)
                         else
                             wrecks02str = wxString(";SY(DANGER52)");
         */
-        if ((valsou <
-             safety_contour) /* || (2 == catwrk)*/)  // maybe redundant, seems
+        if (valsou <
+            safety_contour /* || (2 == catwrk)*/)  // maybe redundant, seems
                                                      // like wrecks with valsou
                                                      // < 20 are always coded as
                                                      // "dangerous wrecks"
@@ -3438,10 +3438,10 @@ static wxString _LITDSN01(S57Obj *obj)
       wxStringTokenizer tkz(ss, _T("()"));
 
       int n_tok = 0;
-      while (tkz.HasMoreTokens() && (n_tok < 2)) {
+      while (tkz.HasMoreTokens() && n_tok < 2) {
         wxString s = tkz.GetNextToken();
         if (s.Len()) {
-          if ((n_tok == 0) && (nfirst_grp > 0)) {
+          if (n_tok == 0 && nfirst_grp > 0) {
             return_value[nfirst_grp] = s[0];
           } else {
             if (s != _T("1")) {

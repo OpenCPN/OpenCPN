@@ -1392,7 +1392,7 @@ bool MyApp::OnInit() {
 
   // Is this an upgrade?
   wxString vs = wxString("Version ") + VERSION_FULL + " Build " + VERSION_DATE;
-  g_bUpgradeInProcess = (vs != g_config_version_string);
+  g_bUpgradeInProcess = vs != g_config_version_string;
 
   g_Platform->SetUpgradeOptions(vs, g_config_version_string);
 
@@ -1467,11 +1467,11 @@ bool MyApp::OnInit() {
   //  Check the global Tide/Current data source array
   //  If empty, preset default (US + ROW) data sources
   wxString default_tcdata0 =
-      (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("harmonics-dwf-20210110-free.tcd"));
+      g_Platform->GetSharedDataDir() + _T("tcdata") +
+      wxFileName::GetPathSeparator() + _T("harmonics-dwf-20210110-free.tcd");
   wxString default_tcdata1 =
-      (g_Platform->GetSharedDataDir() + _T("tcdata") +
-       wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX"));
+      g_Platform->GetSharedDataDir() + _T("tcdata") +
+      wxFileName::GetPathSeparator() + _T("HARMONICS_NO_US.IDX");
 
   if (TideCurrentDataSet.empty()) {
     TideCurrentDataSet.push_back(g_Platform->NormalizePath(default_tcdata0).ToStdString());
@@ -1482,8 +1482,8 @@ bool MyApp::OnInit() {
   //  If empty, preset default
   if (g_sAIS_Alert_Sound_File.IsEmpty()) {
     wxString default_sound =
-        (g_Platform->GetSharedDataDir() + _T("sounds") +
-         wxFileName::GetPathSeparator() + _T("2bells.wav"));
+        g_Platform->GetSharedDataDir() + _T("sounds") +
+        wxFileName::GetPathSeparator() + _T("2bells.wav");
     g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
   }
 
@@ -1507,8 +1507,8 @@ bool MyApp::OnInit() {
     wxLogWarning("Cannot initiate plugin default jigsaw icon.");
 
 
-  if ((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) &&
-      (g_nframewin_y <= ch))
+  if (g_nframewin_x > 100 && g_nframewin_y > 100 && g_nframewin_x <= cw &&
+      g_nframewin_y <= ch)
     new_frame_size.Set(g_nframewin_x, g_nframewin_y);
   else
     new_frame_size.Set(cw * 7 / 10, ch * 7 / 10);
@@ -1517,8 +1517,8 @@ bool MyApp::OnInit() {
   //  This can happen when drivers are changed, for instance....
   //  and can confuse the WUI layout perspective stored in the config file.
   //  If detected, force a nominal window size and position....
-  if ((g_lastClientRectx != cx) || (g_lastClientRecty != cy) ||
-      (g_lastClientRectw != cw) || (g_lastClientRecth != ch)) {
+  if (g_lastClientRectx != cx || g_lastClientRecty != cy ||
+      g_lastClientRectw != cw || g_lastClientRecth != ch) {
     new_frame_size.Set(cw * 7 / 10, ch * 7 / 10);
     g_bframemax = false;
   }
@@ -1536,7 +1536,7 @@ bool MyApp::OnInit() {
   g_nframewin_posy = wxMax(g_nframewin_posy, 22);
 #endif
 
-  if ((g_nframewin_posx < dsize.x) && (g_nframewin_posy < dsize.y))
+  if (g_nframewin_posx < dsize.x && g_nframewin_posy < dsize.y)
     position = wxPoint(g_nframewin_posx, g_nframewin_posy);
 
 #ifdef __WXMSW__
@@ -1657,7 +1657,7 @@ bool MyApp::OnInit() {
   //  Windows installer may have left hints regarding the initial chart dir
   //  selection
 #ifdef __WXMSW__
-  if (g_bFirstRun && (ChartDirArray.GetCount() == 0)) {
+  if (g_bFirstRun && ChartDirArray.GetCount() == 0) {
     int ndirs = 0;
 
     wxRegKey RegKey(wxString(_T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN")));
@@ -1713,7 +1713,7 @@ bool MyApp::OnInit() {
     if (ChartData->GetChartTableEntries() == 0)
       g_restore_dbindex = -1;
 
-    else if (g_restore_dbindex > (ChartData->GetChartTableEntries() - 1))
+    else if (g_restore_dbindex > ChartData->GetChartTableEntries() - 1)
       g_restore_dbindex = 0;
   }
 
@@ -1747,8 +1747,8 @@ bool MyApp::OnInit() {
 
   //      establish GPS timeout value as multiple of frame timer
   //      This will override any nonsense or unset value from the config file
-  if ((gps_watchdog_timeout_ticks > 60) || (gps_watchdog_timeout_ticks <= 0))
-    gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
+  if (gps_watchdog_timeout_ticks > 60 || gps_watchdog_timeout_ticks <= 0)
+    gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS * 1000 / TIMER_GFRAME_1;
 
   wxString dogmsg;
   dogmsg.Printf(_T("GPS Watchdog Timeout is: %d sec."),
@@ -1792,7 +1792,7 @@ bool MyApp::OnInit() {
     glChartCanvas *pgl =
         (glChartCanvas *)gFrame->GetPrimaryCanvas()->GetglCanvas();
     if (pgl &&
-        (pgl->GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND)) {
+        pgl->GetRendererString().Find(_T("UniChrome")) != wxNOT_FOUND) {
       gFrame->m_defer_size = gFrame->GetSize();
       gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
       g_pauimgr->Update();
@@ -1875,7 +1875,7 @@ bool MyApp::OnInit() {
   //  Send the Welcome/warning message if it has never been sent before,
   //  or if the version string has changed at all
   //  We defer until here to allow for localization of the message
-  if (!n_NavMessageShown || (vs != g_config_version_string)) {
+  if (!n_NavMessageShown || vs != g_config_version_string) {
     if (wxID_CANCEL == ShowNavWarning()) return false;
     n_NavMessageShown = 1;
   }

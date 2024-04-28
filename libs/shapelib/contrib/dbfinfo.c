@@ -85,5 +85,5 @@ int main(int argc, char **argv)
 
     DBFClose(hDBF);
 
-    return (0);
+    return 0;
 }

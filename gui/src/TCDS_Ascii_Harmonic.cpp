@@ -48,8 +48,8 @@ typedef struct {
 static int hhmm2seconds(char *hhmm) {
   int h, m;
   char s;
-  if (sscanf(hhmm, "%d:%d", &h, &m) != 2) return (0);
-  if (sscanf(hhmm, "%c", &s) != 1) return (0);
+  if (sscanf(hhmm, "%d:%d", &h, &m) != 2) return 0;
+  if (sscanf(hhmm, "%c", &s) != 1) return 0;
   if (h < 0 || s == '-') m = -m;
   return h * 3600 + m * 60;
 }
@@ -124,7 +124,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file() {
 
   if (IndexFileIO(IFF_OPEN, 0)) {
     while (IndexFileIO(IFF_READ, 0)) {
-      if ((index_line_buffer[0] == '#') || (index_line_buffer[0] <= ' '))
+      if (index_line_buffer[0] == '#' || index_line_buffer[0] <= ' ')
         ;  // Skip comment lines
       else if (!have_index && !xref_start) {
         if (!strncmp(index_line_buffer, "XREF", 4))
@@ -132,7 +132,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file() {
       } else if (!have_index && !strncmp(index_line_buffer, "*END*", 5)) {
         if (m_abbreviation_array.empty()) {
           IndexFileIO(IFF_CLOSE, 0);
-          return (TC_INDEX_FILE_CORRUPT);  // missing at least some data so no
+          return TC_INDEX_FILE_CORRUPT;  // missing at least some data so no
                                            // valid index
         }
         // We're done with abbreviation list (and no errors)
@@ -163,7 +163,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file() {
 
       }
 
-      else if (have_index && (strchr("TtCcIUu", index_line_buffer[0]))) {
+      else if (have_index && strchr("TtCcIUu", index_line_buffer[0])) {
         // Load index file data .
         num_IDX++;  // Keep counting entries for harmonic file stuff
         IDX_entry *pIDX = new IDX_entry;
@@ -211,7 +211,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::init_index_file() {
   //   if (hwndBusy) DestroyWindow(hwndBusy);
 
   //   max_IDX = num_IDX;
-  return (TC_NO_ERROR);
+  return TC_NO_ERROR;
 }
 
 // ----------------------------------
@@ -231,7 +231,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX) {
   if (7 != sscanf(index_line_buffer, "%c%s%lf%lf%d:%d%*c%[^\r\n]",
                   &pIDX->IDX_type, &pIDX->IDX_zone[0], &pIDX->IDX_lon,
                   &pIDX->IDX_lat, &TZHr, &TZMin, &pIDX->IDX_station_name[0]))
-    return (TC_INDEX_ENTRY_BAD);
+    return TC_INDEX_ENTRY_BAD;
 
   if (TZHr < 0 && TZMin > 0)
     TZMin = -TZMin;  // correct for negative timezones with fractional hours
@@ -251,7 +251,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX) {
                        &pIDX->IDX_lt_mpy, &pIDX->IDX_lt_off, &pIDX->IDX_sta_num,
                        &pIDX->IDX_flood_dir, &pIDX->IDX_ebb_dir,
                        &pIDX->IDX_ref_file_num, pIDX->IDX_reference_name))
-        return (TC_INDEX_ENTRY_BAD);
+        return TC_INDEX_ENTRY_BAD;
 
       if (abs(pIDX->IDX_ht_time_off) > 1000)  // useable?
         pIDX->IDX_Useable = 0;
@@ -281,7 +281,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX) {
                          &pIDX->IDX_lt_mpy, &pIDX->IDX_lt_off,
                          &pIDX->IDX_sta_num, stz, &pIDX->IDX_ref_file_num,
                          pIDX->IDX_reference_name))
-          return (TC_INDEX_ENTRY_BAD);
+          return TC_INDEX_ENTRY_BAD;
 
         if (NULL != (pIDX->IDX_tzname = (char *)malloc(strlen(stz) + 1)))
           strcpy(pIDX->IDX_tzname, stz);
@@ -323,7 +323,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX) {
   pIDX->station_tz_offset =
       0;  // ASCII Harmonic data is (always??) corrected to Ref Station TZ
 
-  return (TC_NO_ERROR);
+  return TC_NO_ERROR;
 }
 
 //    Load the Harmonic Constant Invariants
@@ -353,7 +353,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(
   /* Load constituent speeds */
   for (a = 0; a < num_csts; a++) {
     read_next_line(fp, linrec, 0);
-    sscanf(linrec, "%s %lf", junk, &(m_cst_speeds[a]));
+    sscanf(linrec, "%s %lf", junk, &m_cst_speeds[a]);
     m_cst_speeds[a] *= M_PI / 648000; /* Convert to radians per second */
   }
 
@@ -373,7 +373,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(
   for (int i = 0; i < num_csts; i++) {
     if (1 != fscanf(fp, "%s", linrec)) goto error;
     for (int b = 0; b < num_epochs; b++) {
-      if (1 != fscanf(fp, "%lf", &(m_cst_epochs[i][b]))) goto error;
+      if (1 != fscanf(fp, "%lf", &m_cst_epochs[i][b])) goto error;
       m_cst_epochs[i][b] *= M_PI / 180.0;
     }
   }
@@ -394,7 +394,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(
   for (int a = 0; a < num_csts; a++) {
     int ignore = fscanf(fp, "%s", linrec);
     for (b = 0; b < num_nodes; b++)
-      ignore = fscanf(fp, "%lf", &(m_cst_nodes[a][b]));
+      ignore = fscanf(fp, "%lf", &m_cst_nodes[a][b]);
   }
 
   fclose(fp);
@@ -423,8 +423,8 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
     //                 psd_station_name:      The Narrows, Midchannel, New York
     //                 Harbor, New York Current
     //                            as found in HARMONIC
-    if ((!slackcmp(psd->station_name, pIDX->IDX_reference_name)) &&
-        (toupper(pIDX->IDX_type) == psd->station_type)) {
+    if (!slackcmp(psd->station_name, pIDX->IDX_reference_name) &&
+        toupper(pIDX->IDX_type) == psd->station_type) {
       pIDX->pref_sta_data = psd;  // save for later
       return TC_NO_ERROR;
     }
@@ -485,7 +485,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
 
     /* Get DATUM and units */
     read_next_line(fp, linrec, 0);
-    if (sscanf(nojunk(linrec), "%lf %s", &(psd->DATUM), psd->unit) < 2)
+    if (sscanf(nojunk(linrec), "%lf %s", &psd->DATUM, psd->unit) < 2)
       strcpy(psd->unit, "unknown");
 
     if ((a = findunit(psd->unit)) == -1) {
@@ -494,8 +494,8 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
       //                        strcpy (psd->units_conv, known_units[a].name);
     }
 
-    psd->have_BOGUS = (findunit(psd->unit) != -1) &&
-                      (known_units[findunit(psd->unit)].type == BOGUS);
+    psd->have_BOGUS = findunit(psd->unit) != -1 &&
+                      known_units[findunit(psd->unit)].type == BOGUS;
 
     int unit_c;
     if (psd->have_BOGUS)
@@ -544,32 +544,32 @@ long TCDS_Ascii_Harmonic::IndexFileIO(int func, long value) {
     case IFF_CLOSE:
       if (m_IndexFile) fclose(m_IndexFile);
       m_IndexFile = NULL;
-      return (0);
+      return 0;
 
       // Open
     case IFF_OPEN:
       m_IndexFile = fopen(m_indexfile_name.mb_str(), "rt");
-      if (m_IndexFile == NULL) return (0);
-      return (1);
+      if (m_IndexFile == NULL) return 0;
+      return 1;
 
       // Return file pointer only happens with master file
     case IFF_TELL:
-      return (ftell(m_IndexFile));
+      return ftell(m_IndexFile);
 
       // Seek
     case IFF_SEEK:
-      return (fseek(m_IndexFile, value, SEEK_SET));
+      return fseek(m_IndexFile, value, SEEK_SET);
 
       // Read until EOF .
     case IFF_READ:
       str = fgets(index_line_buffer, 1024, m_IndexFile);
 
       if (str != NULL)
-        return (1);
+        return 1;
       else
-        return (0);
+        return 0;
   }
-  return (0);
+  return 0;
 }
 
 /* Read a line from the harmonics file, skipping comment lines */
@@ -597,10 +597,10 @@ int TCDS_Ascii_Harmonic::skipnl(FILE *fp) {
 /* Get rid of trailing garbage in buffer */
 char *TCDS_Ascii_Harmonic::nojunk(char *line) {
   char *a;
-  a = &(line[strlen(line)]);
+  a = &line[strlen(line)];
   while (a > line)
     if (*(a - 1) == '\n' || *(a - 1) == '\r' || *(a - 1) == ' ')
-      *(--a) = '\0';
+      *--a = '\0';
     else
       break;
   return line;
@@ -614,12 +614,12 @@ char *TCDS_Ascii_Harmonic::nojunk(char *line) {
 int TCDS_Ascii_Harmonic::slackcmp(char *a, char *b) {
   int c, cmp, n;
   n = strlen(b);
-  if ((int)(strlen(a)) < n) return 1;
+  if ((int)strlen(a) < n) return 1;
   for (c = 0; c < n; c++) {
     if (b[c] == '?') continue;
 
-    cmp = ((a[c] >= 'A' && a[c] <= 'Z') ? a[c] - 'A' + 'a' : a[c]) -
-          ((b[c] >= 'A' && b[c] <= 'Z') ? b[c] - 'A' + 'a' : b[c]);
+    cmp = (a[c] >= 'A' && a[c] <= 'Z' ? a[c] - 'A' + 'a' : a[c]) -
+          (b[c] >= 'A' && b[c] <= 'Z' ? b[c] - 'A' + 'a' : b[c]);
     if (cmp) return cmp;
   }
   return 0;

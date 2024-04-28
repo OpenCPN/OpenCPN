@@ -357,7 +357,7 @@ wxJSONWriter::DoWrite( wxOutputStream& os, const wxJSONValue& value, const wxStr
     //
     // or -1 if comments have not to be written
     int commentPos = -1;
-    if ( value.GetCommentCount() > 0 && (m_style & wxJSONWRITER_WRITE_COMMENTS))  {
+    if ( value.GetCommentCount() > 0 && m_style & wxJSONWRITER_WRITE_COMMENTS)  {
         commentPos = value.GetCommentPos();
         if ( ( m_style & wxJSONWRITER_COMMENTS_BEFORE) != 0 ) {
             commentPos = wxJSONVALUE_COMMENT_BEFORE;
@@ -628,11 +628,11 @@ int
 wxJSONWriter::WriteIndent( wxOutputStream& os, int num )
 {
     int lastChar = 0;
-    if ( !(m_style & wxJSONWRITER_STYLED) || (m_style & wxJSONWRITER_NO_INDENTATION))  {
+    if ( !(m_style & wxJSONWRITER_STYLED) || m_style & wxJSONWRITER_NO_INDENTATION)  {
         return lastChar;
     }
 
-    int numChars = m_indent + ( m_step * num );
+    int numChars = m_indent + m_step * num;
     char c = ' ';
     if ( m_style & wxJSONWRITER_TAB_INDENT ) {
         c = '\t';
@@ -776,7 +776,7 @@ wxJSONWriter::WriteStringValue( wxOutputStream& os, const wxString& str )
                     shouldEscape = false;
                 }
             }
-            if ( shouldEscape && (m_style & wxJSONWRITER_MULTILINE_STRING))  {
+            if ( shouldEscape && m_style & wxJSONWRITER_MULTILINE_STRING)  {
                 if ( ch == '\n' || ch == '\t' )  {
                     shouldEscape = false;
                 }
@@ -802,7 +802,7 @@ wxJSONWriter::WriteStringValue( wxOutputStream& os, const wxString& str )
 
         // check if SPLIT_STRING flag is set and if the string has to
         // be splitted
-        if ( (m_style & wxJSONWRITER_STYLED) && (m_style & wxJSONWRITER_SPLIT_STRING))   {
+        if ( m_style & wxJSONWRITER_STYLED && m_style & wxJSONWRITER_SPLIT_STRING)   {
             // split the string if the character written is LF
             if ( ch == '\n' ) {
                 // close quotes and CR
@@ -816,8 +816,8 @@ wxJSONWriter::WriteStringValue( wxOutputStream& os, const wxString& str )
             // split the string only if there is at least wxJSONWRITER_MIN_LENGTH
             // character to write and the character written is a punctuation or space
             // BUG: the following does not work because the columns are not counted
-            else if ( (m_colNo >= wxJSONWRITER_SPLIT_COL)
-                     && (tempCol <= wxJSONWRITER_LAST_COL )) {
+            else if ( m_colNo >= wxJSONWRITER_SPLIT_COL
+                      && tempCol <= wxJSONWRITER_LAST_COL) {
                 if ( IsSpace( ch ) || IsPunctuation( ch ))  {
                     if ( len - i > wxJSONWRITER_MIN_LENGTH )  {
                         // close quotes and CR
@@ -1129,8 +1129,8 @@ wxJSONWriter::WriteMemoryBuff( wxOutputStream& os, const wxMemoryBuffer& buff )
     // the string is splitted only for the special meory buffer type, not for array of INTs
     int bytesWritten = 0;
     bool splitString = false;
-    if ( (m_style & wxJSONWRITER_STYLED) &&
-               (m_style & wxJSONWRITER_SPLIT_STRING))   {
+    if ( m_style & wxJSONWRITER_STYLED &&
+               m_style & wxJSONWRITER_SPLIT_STRING)   {
         splitString = true;
     }
 
@@ -1190,7 +1190,7 @@ wxJSONWriter::WriteMemoryBuff( wxOutputStream& os, const wxMemoryBuffer& buff )
                 ++bytesWritten;
             }
 
-            if (( bytesWritten >= MAX_BYTES_PER_ROW ) && ((buffLen - i ) >= 5 ))   {
+            if (bytesWritten >= MAX_BYTES_PER_ROW && buffLen - i >= 5)   {
                 // split the string if we wrote 20 bytes, but only is we have to
                 // write at least 5 bytes
                 os.Write( "\'\n", 2 );
@@ -1225,7 +1225,7 @@ int
 wxJSONWriter::WriteSeparator( wxOutputStream& os )
 {
     int lastChar = '\n';
-    if ( (m_style & wxJSONWRITER_STYLED) && !(m_style & wxJSONWRITER_NO_LINEFEEDS ))  {
+    if ( m_style & wxJSONWRITER_STYLED && !(m_style & wxJSONWRITER_NO_LINEFEEDS ))  {
         os.PutC( '\n' );
     }
     return lastChar;

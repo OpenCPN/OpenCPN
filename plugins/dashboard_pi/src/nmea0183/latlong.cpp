@@ -66,11 +66,11 @@ bool LATLONG::Parse( int LatitudePositionFieldNumber, int NorthingFieldNumber, i
 
    if ( Latitude.IsDataValid() && Longitude.IsDataValid() )
    {
-      return( TRUE );
+      return TRUE;
    }
    else
    {
-      return( FALSE );
+      return FALSE;
    }
 }
 
@@ -87,5 +87,5 @@ const LATLONG& LATLONG::operator = ( const LATLONG& source )
    Latitude  = source.Latitude;
    Longitude = source.Longitude;
 
-   return( *this );
+   return*this;
 }

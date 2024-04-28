@@ -132,7 +132,7 @@ const char *CPLFindFile( const char *pszClass, const char *pszBasename )
     {
         const char * pszResult;
 
-        pszResult = (papfnFinders[i])( pszClass, pszBasename );
+        pszResult = papfnFinders[i]( pszClass, pszBasename );
         if( pszResult != NULL )
             return pszResult;
     }

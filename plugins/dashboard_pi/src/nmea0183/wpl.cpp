@@ -84,13 +84,13 @@ bool WPL::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 6 ) == NTrue )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    Position.Parse( 1, 2, 3, 4, sentence );
    To = sentence.Field( 5 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool WPL::Write( SENTENCE& sentence )
@@ -106,7 +106,7 @@ bool WPL::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const WPL& WPL::operator = ( const WPL& source )
@@ -115,5 +115,5 @@ const WPL& WPL::operator = ( const WPL& source )
    Position = source.Position;
    To       = source.To;
 
-   return( *this );
+   return*this;
 }

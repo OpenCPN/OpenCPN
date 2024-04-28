@@ -527,7 +527,7 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   wxScreenDC sdc;
   sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
 
-  double fraction = ((double)h) / (m_styleToolSize.y);
+  double fraction = (double)h / m_styleToolSize.y;
   double new_font_size = font_test_size * (target_size /fraction) / OCPN_GetWinDIPScaleFactor();
   new_font_size /= OCPN_GetWinDIPScaleFactor();
   new_font_size *= m_scaleFactor;
@@ -546,7 +546,7 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   int min_width = gw * 1.2;
   min_width *= OCPN_GetWinDIPScaleFactor();
 
-  m_size = wxSize(min_width, (m_styleToolSize.y * m_scaleFactor) - 1);
+  m_size = wxSize(min_width, m_styleToolSize.y * m_scaleFactor - 1);
 
 
   CreateControls();
@@ -884,7 +884,7 @@ void MUIBar::CreateControls() {
 }
 
 void MUIBar::SetBestPosition(void) {
-  int x = (m_parentCanvas->GetClientSize().x - (m_size.x + (m_end_margin) * 2.00));
+  int x = m_parentCanvas->GetClientSize().x - (m_size.x + m_end_margin * 2.00);
 
   int bottomOffset = 6;
 
@@ -1112,13 +1112,13 @@ void MUIBar::DrawGL(ocpnDC &gldc, double displayScale) {
                                     (r.y-1)*displayScale,
                                     (r.width + m_end_margin)*displayScale,
                                     (r.height+2)*displayScale,
-                                    (m_end_margin * 1)*displayScale);
+                                    m_end_margin * 1*displayScale);
   else
     gldc.DrawRoundedRectangle((r.x-1)*displayScale,
                               (r.y- m_end_margin/2)*displayScale,
                               (r.width + 2)*displayScale,
                               (r.height + 2 * m_end_margin)*displayScale,
-                              (m_end_margin * 1.5)*displayScale);
+                              m_end_margin * 1.5*displayScale);
 
   int width = m_size.x;
   int height = m_size.y;
@@ -1311,7 +1311,7 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent(wxTimerEvent& event) {
   if (m_pushPull == CO_PULL)
     size_x = abs(dx);
   else
-    size_x = (m_targetCOPos.x - m_startCOPos.x) - abs(dx);
+    size_x = m_targetCOPos.x - m_startCOPos.x - abs(dx);
 
   if (!m_coAnimateByBitmaps) {
     m_canvasOptions->SetSize(newPos.x, newPos.y, size_x, wxDefaultCoord,
@@ -1371,16 +1371,16 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent(wxTimerEvent& event) {
 
 double bounceMaker(double t, double c, double a) {
   if (t == 1.0) return c;
-  if (t < (4 / 11.0)) {
+  if (t < 4 / 11.0) {
     return c * (7.5625 * t * t);
-  } else if (t < (8 / 11.0)) {
-    t -= (6 / 11.0);
+  } else if (t < 8 / 11.0) {
+    t -= 6 / 11.0;
     return -a * (1. - (7.5625 * t * t + .75)) + c;
-  } else if (t < (10 / 11.0)) {
-    t -= (9 / 11.0);
+  } else if (t < 10 / 11.0) {
+    t -= 9 / 11.0;
     return -a * (1. - (7.5625 * t * t + .9375)) + c;
   } else {
-    t -= (21 / 22.0);
+    t -= 21 / 22.0;
     return -a * (1. - (7.5625 * t * t + .984375)) + c;
   }
 }

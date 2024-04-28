@@ -24,7 +24,7 @@ struct arp_handle {
 arp_t *
 arp_open(void)
 {
-	return (calloc(1, sizeof(arp_t)));
+	return calloc(1, sizeof(arp_t));
 }
 
 int
@@ -35,7 +35,7 @@ arp_add(arp_t *arp, const struct arp_entry *entry)
 	
 	if (GetBestRoute(entry->arp_pa.addr_ip,
 	    IP_ADDR_ANY, &ipfrow) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	iprow.dwIndex = ipfrow.dwForwardIfIndex;
 	iprow.dwPhysAddrLen = ETH_ADDR_LEN;
@@ -44,9 +44,9 @@ arp_add(arp_t *arp, const struct arp_entry *entry)
 	iprow.dwType = 4;	/* XXX - static */
 
 	if (CreateIpNetEntry(&iprow) != NO_ERROR)
-		return (-1);
+		return -1;
 
-	return (0);
+	return 0;
 }
 
 int
@@ -57,7 +57,7 @@ arp_delete(arp_t *arp, const struct arp_entry *entry)
 
 	if (GetBestRoute(entry->arp_pa.addr_ip,
 	    IP_ADDR_ANY, &ipfrow) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	memset(&iprow, 0, sizeof(iprow));
 	iprow.dwIndex = ipfrow.dwForwardIfIndex;
@@ -65,9 +65,9 @@ arp_delete(arp_t *arp, const struct arp_entry *entry)
 
 	if (DeleteIpNetEntry(&iprow) != NO_ERROR) {
 		errno = ENXIO;
-		return (-1);
+		return -1;
 	}
-	return (0);
+	return 0;
 }
 
 static int
@@ -77,9 +77,9 @@ _arp_get_entry(const struct arp_entry *entry, void *arg)
 	
 	if (addr_cmp(&entry->arp_pa, &e->arp_pa) == 0) {
 		memcpy(&e->arp_ha, &entry->arp_ha, sizeof(e->arp_ha));
-		return (1);
+		return 1;
 	}
-	return (0);
+	return 0;
 }
 
 int
@@ -88,9 +88,9 @@ arp_get(arp_t *arp, struct arp_entry *entry)
 	if (arp_loop(arp, _arp_get_entry, entry) != 1) {
 		errno = ENXIO;
 		SetLastError(ERROR_NO_DATA);
-		return (-1);
+		return -1;
 	}
-	return (0);
+	return 0;
 }
 
 int
@@ -108,7 +108,7 @@ arp_loop(arp_t *arp, arp_handler callback, void *arg)
 		if (ret == NO_ERROR)
 			break;
 		else if (ret != ERROR_INSUFFICIENT_BUFFER)
-			return (-1);
+			return -1;
 	}
 	entry.arp_pa.addr_type = ADDR_TYPE_IP;
 	entry.arp_pa.addr_bits = IP_ADDR_BITS;
@@ -127,9 +127,9 @@ arp_loop(arp_t *arp, arp_handler callback, void *arg)
 		    arp->iptable->table[i].bPhysAddr, ETH_ADDR_LEN);
 		
 		if ((ret = (*callback)(&entry, arg)) != 0)
-			return (ret);
+			return ret;
 	}
-	return (0);
+	return 0;
 }
 
 arp_t *
@@ -140,5 +140,5 @@ arp_close(arp_t *arp)
 			free(arp->iptable);
 		free(arp);
 	}
-	return (NULL);
+	return NULL;
 }

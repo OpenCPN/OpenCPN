@@ -529,7 +529,7 @@ OGRFeature *S57Reader::ReadNextFeature(OGRFeatureDefn *poTarget)
 
     poFeature = ReadFeature(nNextFEIndex++, poTarget);
     if (poFeature != NULL) {
-      if ((nOptionFlags & S57M_SPLIT_MULTIPOINT) &&
+      if (nOptionFlags & S57M_SPLIT_MULTIPOINT &&
           poFeature->GetGeometryRef() != NULL &&
           wkbFlatten(poFeature->GetGeometryRef()->getGeometryType()) ==
               wkbMultiPoint) {
@@ -851,7 +851,7 @@ void S57Reader::ApplyObjectClassAttributes(DDFRecord *poRecord,
           //  Make the new length a multiple of 2, so that
           //  later stages will count chars correctly
           //  Also, be sure that the string ends with 00 00
-          int new_len = ((nLength / 2) + 2) * 2;
+          int new_len = (nLength / 2 + 2) * 2;
           char *aa = (char *)calloc(new_len, 1);
           memcpy(aa, pszValue, nLength);
 
@@ -1212,7 +1212,7 @@ int S57Reader::FetchPoint(int nRCNM, int nRCID, double *pdfX, double *pdfY,
   if (NULL != pnquality) {
     DDFField *f;
     if ((f = poSRecord->FindField("ATTV")) != NULL) {
-      DDFSubfieldDefn *sfd = (f->GetFieldDefn())->FindSubfieldDefn("ATVL");
+      DDFSubfieldDefn *sfd = f->GetFieldDefn()->FindSubfieldDefn("ATVL");
       if (NULL != sfd) {
         int nSuccess;
         char *s = (char *)poSRecord->GetStringSubfield("ATTV", 0, "ATVL", 0,

@@ -17,7 +17,7 @@ uint32_t ar_crc32(uint32_t crc32, const unsigned char *data, size_t data_len)
         uint32_t h = 1;
         crc_table[0] = 0;
         for (i = 128; i; i >>= 1) {
-            h = (h >> 1) ^ ((h & 1) ? 0xEDB88320 : 0);
+            h = h >> 1 ^ (h & 1 ? 0xEDB88320 : 0);
             for (j = 0; j < 256; j += 2 * i) {
                 crc_table[i + j] = crc_table[j] ^ h;
             }
@@ -27,7 +27,7 @@ uint32_t ar_crc32(uint32_t crc32, const unsigned char *data, size_t data_len)
 
     crc32 = crc32 ^ 0xFFFFFFFF;
     while (data_len-- > 0) {
-        crc32 = (crc32 >> 8) ^ crc_table[(crc32 ^ *data++) & 0xFF];
+        crc32 = crc32 >> 8 ^ crc_table[(crc32 ^ *data++) & 0xFF];
     }
     return crc32 ^ 0xFFFFFFFF;
 }

@@ -206,7 +206,7 @@ bool NMEA0183::IsGood( void ) const
 
    if ( sentence.Sentence[ 0 ] != '$' )
    {
-      return( FALSE );
+      return FALSE;
    }
 
    /*
@@ -231,7 +231,7 @@ bool NMEA0183::IsGood( void ) const
 //TODO: GPSD messages are not terminated with CR/LF   if ( (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1 ) != _T("\r") ))
 //      return false;
 
-   return( TRUE );
+   return TRUE;
 }
 
 
@@ -344,7 +344,7 @@ bool NMEA0183::Parse( void )
       return_value = FALSE;
    }
 
-   return( return_value );
+   return return_value;
 }
 
 wxArrayString NMEA0183::GetRecognizedArray(void)
@@ -372,7 +372,7 @@ NMEA0183& NMEA0183::operator << ( wxString & source )
 
    sentence = source;
 
-   return( *this );
+   return*this;
 }
 
 NMEA0183& NMEA0183::operator >> ( wxString& destination )
@@ -381,5 +381,5 @@ NMEA0183& NMEA0183::operator >> ( wxString& destination )
 
    destination = sentence;
 
-   return( *this );
+   return*this;
 }

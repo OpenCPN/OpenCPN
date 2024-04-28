@@ -137,8 +137,8 @@ void CursorData::AddTrackingControl(wxControl *ctrl1, wxControl *ctrl2,
 void CursorData::PopulateTrackingControls(bool vertical) {
   m_fgTrackingControls->Clear();
   if (!vertical) {
-    wxFlexGridSizer *ps = (wxFlexGridSizer *)(m_gparent.GetSizer());
-    if (ps && (ps->GetCols() == 1))
+    wxFlexGridSizer *ps = (wxFlexGridSizer *)m_gparent.GetSizer();
+    if (ps && ps->GetCols() == 1)
       m_fgTrackingControls->SetCols(4);  // compact mode
     else
       m_fgTrackingControls->SetCols(12);
@@ -388,7 +388,7 @@ void CursorData::UpdateTrackingControls(void) {
                 wxString::Format(_T("%2d bf"), (int)round(vk))));
     }
 
-    m_tcWindDirection->SetValue(wxString::Format(_T("%03d%c"), (int)(ang), 0x00B0));
+    m_tcWindDirection->SetValue(wxString::Format(_T("%03d%c"), (int)ang, 0x00B0));
   } else {
     m_tcWindSpeed->SetValue(_("N/A"));
     m_tcWindSpeedBf->SetValue(_("N/A"));
@@ -420,14 +420,14 @@ void CursorData::UpdateTrackingControls(void) {
       press = m_gparent.m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::PRESSURE, press);
       int p =
-          (m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
-               .m_Units == 2)
+          m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
+          .m_Units == 2
               ? 2
               : 1;  // if PRESSURE & inHG = two decimals
       m_tcPressure->SetValue(wxString::Format(
           _T("%2.*f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(
                              GribOverlaySettings::PRESSURE),
-          p, (press)));
+          p, press));
     } else
       m_tcPressure->SetValue(_("N/A"));
   }
@@ -494,7 +494,7 @@ void CursorData::UpdateTrackingControls(void) {
         vkn));
 
     m_tcCurrentDirection->SetValue(
-        wxString::Format(_T("%03d%c"), (int)(ang), 0x00B0));
+        wxString::Format(_T("%03d%c"), (int)ang, 0x00B0));
   } else {
     m_tcCurrentVelocity->SetValue(_("N/A"));
     m_tcCurrentDirection->SetValue(_("N/A"));
@@ -833,7 +833,7 @@ void CursorData::OnMouseEvent(wxMouseEvent &event) {
     } else if (pos_in_parent.x > pos_in_parent_old.x) {  // moving right
       int max_right =
           GetOCPNCanvasWindow()->GetClientSize().x - GetParent()->GetSize().x;
-      if (pos_in_parent.x > (max_right - 10)) {
+      if (pos_in_parent.x > max_right - 10) {
         pos_in_parent.x = max_right;
       }
     }
@@ -846,7 +846,7 @@ void CursorData::OnMouseEvent(wxMouseEvent &event) {
     } else if (pos_in_parent.y > pos_in_parent_old.y) {  // moving dow
       int max_down =
           GetOCPNCanvasWindow()->GetClientSize().y - GetParent()->GetSize().y;
-      if (pos_in_parent.y > (max_down - 10)) {
+      if (pos_in_parent.y > max_down - 10) {
         pos_in_parent.y = max_down;
       }
     }

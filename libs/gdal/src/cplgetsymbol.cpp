@@ -185,7 +185,7 @@ void *CPLGetSymbol( const char * pszLibrary, const char * pszSymbolName )
         return NULL;
     }
 
-    return( pSymbol );
+    return pSymbol;
 }
 
 #endif /* def _WIN32 */

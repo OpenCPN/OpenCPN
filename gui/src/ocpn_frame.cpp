@@ -419,12 +419,12 @@ void BuildiENCToolbar(bool bnew) {
 
       // Overlapping main toolbar?
       if (g_MainToolbar) {
-        if ((g_iENCToolbarPosY > g_maintoolbar_y) &&
-            (g_iENCToolbarPosY < g_maintoolbar_y + g_MainToolbar->GetToolSize().y))
+        if (g_iENCToolbarPosY > g_maintoolbar_y &&
+            g_iENCToolbarPosY < g_maintoolbar_y + g_MainToolbar->GetToolSize().y)
           g_iENCToolbarPosY = -1;  // force a reposition
       }
 
-      if ((g_iENCToolbarPosX < 0) || (g_iENCToolbarPosY < 0)) {
+      if (g_iENCToolbarPosX < 0 || g_iENCToolbarPosY < 0) {
         posn.x = 0;
         posn.y = 100;
 
@@ -485,7 +485,7 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"));
 
   infoDlg.ShowModal();
 
-  return (infoDlg.GetReturnCode());
+  return infoDlg.GetReturnCode();
 #endif
 }
 
@@ -1344,14 +1344,14 @@ ChartCanvas *MyFrame::GetCanvasUnderMouse() {
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
-                /*canvas->ScreenToClient*/ (screenPoint)))
+                /*canvas->ScreenToClient*/ screenPoint))
           return canvas;
       }
       cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
-                /*canvas->ScreenToClient*/ (screenPoint)))
+                /*canvas->ScreenToClient*/ screenPoint))
           return canvas;
       }
       break;
@@ -1379,14 +1379,14 @@ int MyFrame::GetCanvasIndexUnderMouse() {
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
-                /*canvas->ScreenToClient*/ (screenPoint)))
+                /*canvas->ScreenToClient*/ screenPoint))
           return 0;
       }
       cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
       if (cc) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
-                /*canvas->ScreenToClient*/ (screenPoint)))
+                /*canvas->ScreenToClient*/ screenPoint))
           return 1;
       }
       break;
@@ -1453,7 +1453,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
         cc = ConfigMgr::Get().GetCanvasConfigArray().Item(0);
         if (cc) {
           ChartCanvas *canvas = cc->canvas;
-          if (canvas && (canvas == test)) {
+          if (canvas && canvas == test) {
             nTarget = 1;
             nTargetGTK = 0;
           }
@@ -1461,7 +1461,7 @@ void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
         cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
         if (cc) {
           ChartCanvas *canvas = cc->canvas;
-          if (canvas && (canvas == test)) {
+          if (canvas && canvas == test) {
             nTarget = 0;
             nTargetGTK = 1;
           }
@@ -1620,17 +1620,17 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   if (g_bAutoAnchorMark) {
     bool watching_anchor = false;  // pjotrc 2010.02.15
     if (pAnchorWatchPoint1)        // pjotrc 2010.02.15
-      watching_anchor = (pAnchorWatchPoint1->GetIconName().StartsWith(
-          _T("anchor")));    // pjotrc 2010.02.15
+      watching_anchor = pAnchorWatchPoint1->GetIconName().StartsWith(
+          _T("anchor"));    // pjotrc 2010.02.15
     if (pAnchorWatchPoint2)  // pjotrc 2010.02.15
-      watching_anchor |= (pAnchorWatchPoint2->GetIconName().StartsWith(
-          _T("anchor")));  // pjotrc 2010.02.15
+      watching_anchor |= pAnchorWatchPoint2->GetIconName().StartsWith(
+          _T("anchor"));  // pjotrc 2010.02.15
 
     wxDateTime now = wxDateTime::Now();
     wxTimeSpan uptime = now.Subtract(g_start_time);
 
-    if (!watching_anchor && (g_bCruising) && (gSog < 0.5) &&
-        (uptime.IsLongerThan(wxTimeSpan(0, 30, 0, 0))))  // pjotrc 2010.02.15
+    if (!watching_anchor && g_bCruising && gSog < 0.5 &&
+        uptime.IsLongerThan(wxTimeSpan(0, 30, 0, 0)))  // pjotrc 2010.02.15
     {
       //    First, delete any single anchorage waypoint closer than 0.25 NM from
       //    this point This will prevent clutter and database congestion....
@@ -1641,10 +1641,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
         if (pr->GetName().StartsWith(_T("Anchorage"))) {
           double a = gLat - pr->m_lat;
           double b = gLon - pr->m_lon;
-          double l = sqrt((a * a) + (b * b));
+          double l = sqrt(a * a + b * b);
 
           // caveat: this is accurate only on the Equator
-          if ((l * 60. * 1852.) < (.25 * 1852.)) {
+          if (l * 60. * 1852. < .25 * 1852.) {
             pConfig->DeleteWayPoint(pr);
             pSelect->DeleteSelectablePoint(pr, SELTYPE_ROUTEPOINT);
             delete pr;
@@ -2047,7 +2047,7 @@ void MyFrame::ODoSetSize(void) {
     m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
     int currentCount = m_pStatusBar->GetFieldsCount();
     if (currentCount != m_StatusBarFieldCount) {
-      if ((currentCount > 0) && (currentCount < 7)) {
+      if (currentCount > 0 && currentCount < 7) {
         // reset the widths very small to avoid auto-resizing of the frame
         // The sizes will be reset later in this method
         int widths[] = {2, 2, 2, 2, 2, 2};
@@ -2094,7 +2094,7 @@ void MyFrame::ODoSetSize(void) {
     m_pStatusBar->GetFieldRect(0, stat_box);
     // maximum size is 1/28 of the box width, or the box height - whicever is
     // less
-    int max_font_size = wxMin((stat_box.width / 28), (stat_box.height));
+    int max_font_size = wxMin(stat_box.width / 28, stat_box.height);
 
     wxFont sys_font = *wxNORMAL_FONT;
     int try_font_size = sys_font.GetPointSize();
@@ -2740,7 +2740,7 @@ void MyFrame::ScheduleSettingsDialog() {
 }
 
 ChartCanvas *MyFrame::GetFocusCanvas() {
-  if ((g_canvasConfig != 0) && g_focusCanvas)  // multi-canvas?
+  if (g_canvasConfig != 0 && g_focusCanvas)  // multi-canvas?
     return g_focusCanvas;
   else
     return GetPrimaryCanvas();
@@ -3638,20 +3638,20 @@ void MyFrame::UpdateGlobalMenuItems() {
     if (ps52plib) {
       for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
            iPtr++) {
-        OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+        OBJLElement *pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
         if (!strncmp(pOLE->OBJLName, "LIGHTS", 6)) {
-          light_state = (pOLE->nViz == 1);
+          light_state = pOLE->nViz == 1;
           break;
         }
       }
     }
     m_pMenuBar->FindItem(ID_MENU_ENC_LIGHTS)
-        ->Check((!ps52plib->IsObjNoshow("LIGHTS")) && light_state);
+        ->Check(!ps52plib->IsObjNoshow("LIGHTS") && light_state);
 
     // Menu "Anchor Info" entry is only accessible in "All" or "User Standard"
     // categories
     DisCat nset = ps52plib->GetDisplayCategory();
-    if ((nset == MARINERS_STANDARD) || (nset == OTHER)) {
+    if (nset == MARINERS_STANDARD || nset == OTHER) {
       m_pMenuBar->FindItem(ID_MENU_ENC_ANCHOR)
           ->Check(!ps52plib->IsObjNoshow("SBDARE"));
       m_pMenuBar->Enable(ID_MENU_ENC_ANCHOR, true);
@@ -3701,7 +3701,7 @@ void MyFrame::UpdateGlobalMenuItems(ChartCanvas *cc) {
     if (ps52plib) {
       for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
            iPtr++) {
-        OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+        OBJLElement *pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
         if (!strncmp(pOLE->OBJLName, "LIGHTS", 6)) {
           break;
         }
@@ -3712,7 +3712,7 @@ void MyFrame::UpdateGlobalMenuItems(ChartCanvas *cc) {
     // Menu "Anchor Info" entry is only accessible in "All" or "UserStandard"
     // categories
     DisCat nset = (DisCat)cc->GetENCDisplayCategory();
-    if ((nset == MARINERS_STANDARD) || (nset == OTHER)) {
+    if (nset == MARINERS_STANDARD || nset == OTHER) {
       m_pMenuBar->FindItem(ID_MENU_ENC_ANCHOR)->Check(cc->GetShowENCAnchor());
       m_pMenuBar->Enable(ID_MENU_ENC_ANCHOR, true);
       m_pMenuBar->FindItem(ID_MENU_ENC_DATA_QUALITY)
@@ -4019,10 +4019,10 @@ int MyFrame::DoOptionsDialog() {
     }
 #endif
 
-  if ((g_canvasConfig != last_canvasConfig) || (rr & GL_CHANGED)) {
+  if (g_canvasConfig != last_canvasConfig || rr & GL_CHANGED) {
     UpdateCanvasConfigDescriptors();
 
-    if ((g_canvasConfig > 0) && (last_canvasConfig == 0))
+    if (g_canvasConfig > 0 && last_canvasConfig == 0)
       CreateCanvasLayout(true);
     else
       CreateCanvasLayout();
@@ -4081,7 +4081,7 @@ int MyFrame::DoOptionsDialog() {
     bDBUpdateInProgress = true;
     b_refresh |= ProcessOptionsDialog(rr, g_options->GetWorkDirListPtr());
     ChartData->GetChartDirArray() =
-        *(g_options->GetWorkDirListPtr());  // Perform a deep copy back to main
+        *g_options->GetWorkDirListPtr();  // Perform a deep copy back to main
                                             // database.
     bDBUpdateInProgress = false;
     ret_val = true;
@@ -4121,7 +4121,7 @@ int MyFrame::DoOptionsDialog() {
   if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
     b_masterScaleChange = true;
 
-  if ((rr & TOOLBAR_CHANGED) || b_masterScaleChange)
+  if (rr & TOOLBAR_CHANGED || b_masterScaleChange)
     RequestNewMasterToolbar(true);
 
   bool bMuiChange = false;
@@ -4166,7 +4166,7 @@ int MyFrame::DoOptionsDialog() {
 
   //  Force reload of options dialog to pick up font changes or other major
   //  layout changes
-  if ((rr & FONT_CHANGED) || (rr & NEED_NEW_OPTIONS)) {
+  if (rr & FONT_CHANGED || rr & NEED_NEW_OPTIONS) {
     delete g_options;
     g_options = NULL;
     g_pOptions = NULL;
@@ -4218,11 +4218,11 @@ int MyFrame::DoOptionsDialog() {
 bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   bool b_need_refresh = false;  // Do we need a full reload?
 
-  if ((rr & VISIT_CHARTS) &&
-      ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) {
+  if (rr & VISIT_CHARTS &&
+      (rr & CHANGE_CHARTS || rr & FORCE_UPDATE || rr & SCAN_UPDATE)) {
     if (pNewDirArray) {
       UpdateChartDatabaseInplace(*pNewDirArray,
-                                 ((rr & FORCE_UPDATE) == FORCE_UPDATE), true,
+                                 (rr & FORCE_UPDATE) == FORCE_UPDATE, true,
                                  ChartListFileName);
 
       b_need_refresh = true;
@@ -4237,9 +4237,9 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   }
 
   bool b_groupchange = false;
-  if (((rr & VISIT_CHARTS) &&
-       ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||
-      (rr & GROUPS_CHANGED)) {
+  if ((rr & VISIT_CHARTS &&
+       (rr & CHANGE_CHARTS || rr & FORCE_UPDATE || rr & SCAN_UPDATE)) ||
+      rr & GROUPS_CHANGED) {
     b_groupchange = ScrubGroupArray();
     ChartData->ApplyGroupArray(g_pGroupArray);
     RefreshGroupIndices();
@@ -4342,8 +4342,8 @@ bool MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     g_pi_manager->SendBaseConfigToAllPlugIns();
     int rrt = rr & S52_CHANGED;
     g_pi_manager->SendS52ConfigToAllPlugIns(
-        (rrt == S52_CHANGED) ||
-        (g_last_ChartScaleFactor != g_ChartScaleFactor));
+        rrt == S52_CHANGED ||
+        g_last_ChartScaleFactor != g_ChartScaleFactor);
   }
 
   if (g_MainToolbar) {
@@ -4462,7 +4462,7 @@ void MyFrame::RefreshCanvasOther(ChartCanvas *ccThis) {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc && (cc != ccThis)) cc->Refresh();
+    if (cc && cc != ccThis) cc->Refresh();
   }
 }
 
@@ -5070,7 +5070,7 @@ void MyFrame::HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg) {
         if (std::isnan(adder)) continue;
 
         if (fabs(adder - g_COGAvg) > 180.) {
-          if ((adder - g_COGAvg) > 0.)
+          if (adder - g_COGAvg > 0.)
             adder -= 360.;
           else
             adder += 360.;
@@ -5250,14 +5250,14 @@ void MyFrame::UpdateStatusBar() {
 
     wxString cogs;
     // We show COG only if SOG is > 0.05
-    if (!std::isnan(gCog) && !std::isnan(gSog) && (gSog > 0.05)) {
+    if (!std::isnan(gCog) && !std::isnan(gSog) && gSog > 0.05) {
       if (g_bShowTrue)
         cogs << wxString::Format(wxString("COG %03d%c  "), (int)gCog, 0x00B0);
       if (g_bShowMag)
         cogs << wxString::Format(wxString("COG %03d%c(M)  "), (int)toMagnetic(gCog),
                                  0x00B0);
     } else
-      cogs.Printf(("COG ---%c"), 0x00B0);
+      cogs.Printf("COG ---%c", 0x00B0);
 
     sogcog.Append(cogs);
     SetStatusText(sogcog, STAT_FIELD_SOGCOG);
@@ -5276,7 +5276,7 @@ void MyFrame::OnMemFootTimer(wxTimerEvent &event) {
   printf("Memsize: %d  \n", memsize);
   // The application memory usage has exceeded the target, so try to manage it
   // down....
-  if (memsize > (g_MemFootMB * 1000)) {
+  if (memsize > g_MemFootMB * 1000) {
     ChartCanvas *cc = GetPrimaryCanvas();
     if (ChartData && cc) {
       //    Get a local copy of the cache info
@@ -5285,7 +5285,7 @@ void MyFrame::OnMemFootTimer(wxTimerEvent &event) {
       CacheEntry *pcea = new CacheEntry[nCache];
 
       for (unsigned int i = 0; i < nCache; i++) {
-        CacheEntry *pce = (CacheEntry *)(pCache->Item(i));
+        CacheEntry *pce = (CacheEntry *)pCache->Item(i);
         pcea[i] = *pce;  // ChartBase *Ch = (ChartBase *)pce->pChart;
       }
 
@@ -5315,9 +5315,9 @@ void MyFrame::OnMemFootTimer(wxTimerEvent &event) {
         unsigned int minimum_cache = 1;
         if (cc->GetQuiltMode()) minimum_cache = cc->GetQuiltChartCount();
 
-        while ((memsize > (g_MemFootMB * 1000)) &&
-               (pCache->GetCount() > minimum_cache) &&
-               (idelete < idelete_max)) {
+        while (memsize > g_MemFootMB * 1000 &&
+               pCache->GetCount() > minimum_cache &&
+               idelete < idelete_max) {
           int memsizeb = memsize;
 
           ChartData->DeleteCacheChart((ChartBase *)pcea[idelete].pChart);
@@ -5375,7 +5375,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     cc->m_bFollow = false;
     if (g_MainToolbar && g_MainToolbar->GetToolbar())
       g_MainToolbar->GetToolbar()->ToggleTool(ID_FOLLOW, cc->m_bFollow);
-    int ut_index_max = ((g_unit_test_1 > 0) ? (g_unit_test_1 - 1) : INT_MAX);
+    int ut_index_max = g_unit_test_1 > 0 ? g_unit_test_1 - 1 : INT_MAX;
 
     if (ChartData) {
       if (cc->m_groupIndex > 0) {
@@ -5494,12 +5494,12 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     DistanceBearingMercator(pAnchorWatchPoint1->m_lat,
                             pAnchorWatchPoint1->m_lon, gLat, gLon, &brg, &dist);
     double d = g_nAWMax;
-    (pAnchorWatchPoint1->GetName()).ToDouble(&d);
+    pAnchorWatchPoint1->GetName().ToDouble(&d);
     d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
     bool toofar = false;
     bool tooclose = false;
-    if (d >= 0.0) toofar = (dist * 1852. > d);
-    if (d < 0.0) tooclose = (dist * 1852 < -d);
+    if (d >= 0.0) toofar = dist * 1852. > d;
+    if (d < 0.0) tooclose = dist * 1852 < -d;
 
     if (tooclose || toofar)
       AnchorAlertOn1 = true;
@@ -5515,12 +5515,12 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
                             pAnchorWatchPoint2->m_lon, gLat, gLon, &brg, &dist);
 
     double d = g_nAWMax;
-    (pAnchorWatchPoint2->GetName()).ToDouble(&d);
+    pAnchorWatchPoint2->GetName().ToDouble(&d);
     d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
     bool toofar = false;
     bool tooclose = false;
-    if (d >= 0) toofar = (dist * 1852. > d);
-    if (d < 0) tooclose = (dist * 1852 < -d);
+    if (d >= 0) toofar = dist * 1852. > d;
+    if (d < 0) tooclose = dist * 1852 < -d;
 
     if (tooclose || toofar)
       AnchorAlertOn2 = true;
@@ -5543,8 +5543,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   int second = lognow.GetSecond();
 
   wxTimeSpan logspan = lognow.Subtract(g_loglast_time);
-  if ((logspan.IsLongerThan(wxTimeSpan(0, 30, 0, 0))) || (minuteUTC == 0) ||
-      (minuteUTC == 30)) {
+  if (logspan.IsLongerThan(wxTimeSpan(0, 30, 0, 0)) || minuteUTC == 0 ||
+      minuteUTC == 30) {
     if (logspan.IsLongerThan(wxTimeSpan(0, 1, 0, 0))) {
       wxString day = lognow.FormatISODate();
       wxString utc = lognow.FormatISOTime();
@@ -5581,11 +5581,11 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
       wxLogMessage(navmsg);
       g_loglast_time = lognow;
 
-      int bells = (hourLOC % 4) * 2;  // 2 bells each hour
+      int bells = hourLOC % 4 * 2;  // 2 bells each hour
       if (minuteLOC != 0) bells++;    // + 1 bell on 30 minutes
       if (!bells) bells = 8;          // 0 is 8 bells
 
-      if (g_bPlayShipsBells && ((minuteLOC == 0) || (minuteLOC == 30))) {
+      if (g_bPlayShipsBells && (minuteLOC == 0 || minuteLOC == 30)) {
         m_BellsToPlay = bells;
         wxCommandEvent ev(BELLS_PLAYED_EVTYPE);
         wxPostEvent(this, ev);
@@ -5629,7 +5629,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   //    Do the chart update based on the global update period currently set
   //    If in COG UP mode, the chart update is handled by COG Update timer
-  if (/*!g_bCourseUp &&*/ (0 != g_ChartUpdatePeriod)) {
+  if (/*!g_bCourseUp &&*/ 0 != g_ChartUpdatePeriod) {
     if (0 == m_ChartUpdatePeriod--) {
       bnew_view = DoChartUpdate();
       m_ChartUpdatePeriod = g_ChartUpdatePeriod;
@@ -5670,8 +5670,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
       if (!bGPSValid) cc->SetOwnShipState(SHIP_INVALID);
 
-      if ((bGPSValid != m_last_bGPSValid) ||
-            (bVelocityValid != m_last_bVelocityValid)) {
+      if (bGPSValid != m_last_bGPSValid ||
+            bVelocityValid != m_last_bVelocityValid) {
         if (!g_bopengl) cc->UpdateShips();
 
         bnew_view = true;  // force a full Refresh()
@@ -5727,7 +5727,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
         //    ownship or AIS,
         //       since they will be always drawn on the full screen paint.
 
-        if ((!cc->m_bFollow) || (cc->GetUpMode() != NORTH_UP_MODE)) {
+        if (!cc->m_bFollow || cc->GetUpMode() != NORTH_UP_MODE) {
           cc->UpdateShips();
           cc->UpdateAIS();
           cc->UpdateAlerts();
@@ -5745,7 +5745,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     g_pais_query_dialog_active->UpdateText();
 
   // Refresh AIS target list every 5 seconds to avoid blinking
-  if (g_pAISTargetList && (0 == (g_tick % (5))))
+  if (g_pAISTargetList && 0 == g_tick % 5)
     g_pAISTargetList->UpdateAISTargetList();
 
   //  Pick up any change Toolbar status displays
@@ -5762,7 +5762,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   //  So we set a trigger to generate a resize after 5 seconds....
   //  See the "UniChrome" hack elsewhere
   if (m_bdefer_resize) {
-    if (0 == (g_tick % (5))) {
+    if (0 == g_tick % 5) {
       printf("___RESIZE\n");
       SetSize(m_defer_size);
       g_pauimgr->Update();
@@ -5868,7 +5868,7 @@ void MyFrame::OnFrameCOGTimer(wxTimerEvent &event) {
   bool b_rotate = false;
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc) b_rotate |= (cc->GetUpMode() != NORTH_UP_MODE);
+    if (cc) b_rotate |= cc->GetUpMode() != NORTH_UP_MODE;
   }
 
   if (!b_rotate) {
@@ -6283,7 +6283,7 @@ void MyFrame::DoPrint(void) {
     //        else
     //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
   } else {
-    (*g_printData) = printer.GetPrintDialogData().GetPrintData();
+    *g_printData = printer.GetPrintDialogData().GetPrintData();
   }
 
   // Pass two printout objects: for preview, and possible printing.
@@ -6578,7 +6578,7 @@ void MyFrame::FilterCogSog(void) {
         if (std::isnan(adder)) continue;
 
         if (fabs(adder - cog_last) > 180.) {
-          if ((adder - cog_last) > 0.)
+          if (adder - cog_last > 0.)
             adder -= 360.;
           else
             adder += 360.;
@@ -6892,7 +6892,7 @@ void MyFrame::OnResume(wxPowerEvent &WXUNUSED(event)) {
   wxLogMessage(_T("System resumed from suspend."));
 
 
-  if ((now.GetTicks() - g_last_resume_ticks) > 5) {
+  if (now.GetTicks() - g_last_resume_ticks > 5) {
     SystemEvents::GetInstance().evt_resume.Notify();
 
     wxLogMessage("Restarting streams.");
@@ -6936,7 +6936,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
   if (g_MainToolbar) {
     b_reshow = true; //g_MainToolbar->IsShown();
     float ff = fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor);
-    if ((ff > 0.01f) || bforcenew) {
+    if (ff > 0.01f || bforcenew) {
       g_MainToolbar->DestroyToolBar();
       delete g_MainToolbar;
       g_MainToolbar = NULL;
@@ -7126,7 +7126,7 @@ bool MyFrame::CheckAndAddPlugInTool() {
       }
 
       ToolbarItemContainer *tic = new ToolbarItemContainer(
-          pttc->id, *(ptool_bmp), pttc->kind, pttc->shortHelp, _T(""));
+          pttc->id, *ptool_bmp, pttc->kind, pttc->shortHelp, _T(""));
 
       tic->m_NormalIconSVG = pttc->pluginNormalIconSVG;
       tic->m_RolloverIconSVG = pttc->pluginRolloverIconSVG;
@@ -7182,7 +7182,7 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
       }
 
       ToolbarItemContainer *tic = new ToolbarItemContainer(
-          pttc->id, *(ptool_bmp), pttc->kind, pttc->shortHelp, _T(""));
+          pttc->id, *ptool_bmp, pttc->kind, pttc->shortHelp, _T(""));
 
       tic->m_NormalIconSVG = pttc->pluginNormalIconSVG;
       tic->m_RolloverIconSVG = pttc->pluginRolloverIconSVG;
@@ -7443,12 +7443,12 @@ void InitializeUserColors(void) {
   ct->color = new wxArrayPtrVoid;
   UserColorTableArray->Add((void *)ct);
 
-  while ((get_static_line(buf, p, index, sizeof(buf) - 1))) {
+  while (get_static_line(buf, p, index, sizeof(buf) - 1)) {
     if (!strncmp(buf, "Table", 5)) {
       sscanf(buf, "Table:%s", TableName);
 
       for (unsigned int it = 0; it < UserColorTableArray->GetCount(); it++) {
-        ctp = (colTable *)(UserColorTableArray->Item(it));
+        ctp = (colTable *)UserColorTableArray->Item(it);
         if (!strcmp(TableName, ctp->tableName->mb_str())) {
           ct = ctp;
           break;
@@ -7484,10 +7484,10 @@ void InitializeUserColors(void) {
     wxColorHashMap *phash = new wxColorHashMap;
     UserColourHashTableArray->Add((void *)phash);
 
-    colTable *ctp = (colTable *)(UserColorTableArray->Item(its));
+    colTable *ctp = (colTable *)UserColorTableArray->Item(its);
 
     for (unsigned int ic = 0; ic < ctp->color->GetCount(); ic++) {
-      S52color *c2 = (S52color *)(ctp->color->Item(ic));
+      S52color *c2 = (S52color *)ctp->color->Item(ic);
 
       wxColour c(c2->R, c2->G, c2->B);
       wxString key(c2->colName, wxConvUTF8);
@@ -7587,7 +7587,7 @@ void SetSystemColors(ColorScheme cs) {  //---------------
   int element[NCOLORS];
   int rgbcolor[NCOLORS];
   int i = 0;
-  if ((GLOBAL_COLOR_SCHEME_DUSK == cs) || (GLOBAL_COLOR_SCHEME_NIGHT == cs)) {
+  if (GLOBAL_COLOR_SCHEME_DUSK == cs || GLOBAL_COLOR_SCHEME_NIGHT == cs) {
     MSW_COLOR_SPEC *pcspec = &color_spec[0];
     while (pcspec->COLOR_NAME != -1) {
       wxColour color = GetGlobalColor(pcspec->S52_RGB_COLOR);
@@ -7609,8 +7609,8 @@ void SetSystemColors(ColorScheme cs) {  //---------------
 }
 
 wxColor GetDimColor(wxColor c) {
-  if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DAY) ||
-      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB))
+  if (global_color_scheme == GLOBAL_COLOR_SCHEME_DAY ||
+      global_color_scheme == GLOBAL_COLOR_SCHEME_RGB)
     return c;
 
   float factor = 1.0;
@@ -7725,7 +7725,7 @@ bool TestGLCanvas(wxString prog_dir) {
     else
       printf("GLCanvas failed to start, disabling OpenGL.\n");
 
-    return (proc_return == 0);
+    return proc_return == 0;
   } else
     return true;
 #else
@@ -8169,8 +8169,8 @@ bool ReloadLocale() {
 
 #if wxUSE_XLOCALE
   ret =
-      (!g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang)
-            .IsEmpty());
+      !g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang)
+                 .IsEmpty();
 #endif
   return ret;
 }
@@ -8397,7 +8397,7 @@ void LoadS57() {
     //  They may be overridden in LoadS57Config
     for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
          iPtr++) {
-      OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+      OBJLElement *pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
       if (!strncmp(pOLE->OBJLName, "DEPARE", 6)) pOLE->nViz = 1;
       if (!strncmp(pOLE->OBJLName, "LNDARE", 6)) pOLE->nViz = 1;
       if (!strncmp(pOLE->OBJLName, "COALNE", 6)) pOLE->nViz = 1;

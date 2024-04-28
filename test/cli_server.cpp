@@ -35,7 +35,7 @@ public:
   bool OnExec(const wxString&, const wxString& data) {
     std::cout << data << "\n" << std::flush;
     exit_timer.Start(200, wxTIMER_ONE_SHOT);
-    return (data == "raise" || data == "quit");
+    return data == "raise" || data == "quit";
   }
 
   const void* OnRequest(const wxString& topic, const wxString& wxitem,

@@ -110,18 +110,18 @@ static double sign(double x) {
     return 1.;
 }
 
-static double FNipart(double x) { return (sign(x) * (int)(fabs(x))); }
+static double FNipart(double x) { return sign(x) * (int)fabs(x); }
 
 static double FNday(int y, int m, int d, int h) {
-  long fd = (367 * y - 7 * (y + (m + 9) / 12) / 4 + 275 * m / 9 + d);
-  return ((double)fd - 730531.5 + h / 24.);
+  long fd = 367 * y - 7 * (y + (m + 9) / 12) / 4 + 275 * m / 9 + d;
+  return (double)fd - 730531.5 + h / 24.;
 }
 
 static double FNrange(double x) {
   double b = x / TPI;
   double a = TPI * (b - FNipart(b));
   if (a < 0.) a = TPI + a;
-  return (a);
+  return a;
 }
 
 static double getDaylightEvent(double glat, double glong, int riset,
@@ -137,8 +137,8 @@ static double getDaylightEvent(double glat, double glong, int riset,
   double g = glong * RADS;
   double t, L, G, ec, lambda, E, obl, delta, GHA, cosc;
   int limit = 12;
-  while ((fabs(utold - utnew) > .001)) {
-    if (limit-- <= 0) return (-1.);
+  while (fabs(utold - utnew) > .001) {
+    if (limit-- <= 0) return -1.;
     days = day + utnew / TPI;
     t = days / 36525.;
     //     get arguments of Sun's orbit
@@ -161,29 +161,29 @@ static double getDaylightEvent(double glat, double glong, int riset,
     utnew = FNrange(utold - (GHA + g + riset * correction));
     utold = tmp;
   }
-  return (utnew * DEGS / 15.);  // returns decimal hours UTC
+  return utnew * DEGS / 15.;  // returns decimal hours UTC
 }
 
 static double getLMT(double ut, double lon) {
   double t = ut + lon / 15.;
   if (t >= 0.)
     if (t <= 24.)
-      return (t);
+      return t;
     else
-      return (t - 24.);
+      return t - 24.;
   else
-    return (t + 24.);
+    return t + 24.;
 }
 
 static int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime) {
-  if (fabs(lat) > 60.) return (0);
+  if (fabs(lat) > 60.) return 0;
   int y = utcDateTime.GetYear();
   int m = utcDateTime.GetMonth() + 1;  // wxBug? months seem to run 0..11 ?
   int d = utcDateTime.GetDay();
   int h = utcDateTime.GetHour();
   int n = utcDateTime.GetMinute();
   int s = utcDateTime.GetSecond();
-  if (y < 2000 || y > 2100) return (0);
+  if (y < 2000 || y > 2100) return 0;
 
   double ut = (double)h + (double)n / 60. + (double)s / 3600.;
   double lt = getLMT(ut, lon);
@@ -193,38 +193,38 @@ static int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime) {
   if (lt <= 12.) {
     double sunrise = getDaylightEvent(lat, lon, +1, rsalt, y, m, d);
     if (sunrise < 0.)
-      return (0);
+      return 0;
     else
       sunrise = getLMT(sunrise, lon);
 
-    if (fabs(lt - sunrise) < 0.15) return (SUNRISE);
-    if (lt > sunrise) return (DAY);
+    if (fabs(lt - sunrise) < 0.15) return SUNRISE;
+    if (lt > sunrise) return DAY;
     double twilight = getDaylightEvent(lat, lon, +1, twalt, y, m, d);
     if (twilight < 0.)
-      return (0);
+      return 0;
     else
       twilight = getLMT(twilight, lon);
     if (lt > twilight)
-      return (MOTWILIGHT);
+      return MOTWILIGHT;
     else
-      return (NIGHT);
+      return NIGHT;
   } else {
     double sunset = getDaylightEvent(lat, lon, -1, rsalt, y, m, d);
     if (sunset < 0.)
-      return (0);
+      return 0;
     else
       sunset = getLMT(sunset, lon);
-    if (fabs(lt - sunset) < 0.15) return (SUNSET);
-    if (lt < sunset) return (DAY);
+    if (fabs(lt - sunset) < 0.15) return SUNSET;
+    if (lt < sunset) return DAY;
     double twilight = getDaylightEvent(lat, lon, -1, twalt, y, m, d);
     if (twilight < 0.)
-      return (0);
+      return 0;
     else
       twilight = getLMT(twilight, lon);
     if (lt < twilight)
-      return (EVTWILIGHT);
+      return EVTWILIGHT;
     else
-      return (NIGHT);
+      return NIGHT;
   }
 }
 
@@ -1041,7 +1041,7 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
   if (m_pRoute->m_bIsInLayer) return;
 
   int nSelected = m_dvlcWaypoints->GetSelectedRow() + 1;
-  if ((nSelected > 1) && (nSelected < m_pRoute->GetnPoints())) {
+  if (nSelected > 1 && nSelected < m_pRoute->GetnPoints()) {
     m_pHead = new Route();
     m_pTail = new Route();
     m_pHead->CloneRoute(m_pRoute, 1, nSelected, _("_A"));
@@ -1110,7 +1110,7 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   int i;
   for (i = pEditRouteArray->GetCount(); i > 0; i--) {
     Route* p = (Route*)pEditRouteArray->Item(i - 1);
-    if (!p->IsVisible() || (p->m_GUID == m_pRoute->m_GUID))
+    if (!p->IsVisible() || p->m_GUID == m_pRoute->m_GUID)
       pEditRouteArray->RemoveAt(i - 1);
   }
   if (pEditRouteArray->GetCount() == 1) {
@@ -1133,7 +1133,7 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
           // remove invisible & own routes from choices
           for (i = pEditRouteArray->GetCount(); i > 0; i--) {
             Route* p = (Route*)pEditRouteArray->Item(i - 1);
-            if (!p->IsVisible() || (p->m_GUID == m_pRoute->m_GUID))
+            if (!p->IsVisible() || p->m_GUID == m_pRoute->m_GUID)
               pEditRouteArray->RemoveAt(i - 1);
           }
         }

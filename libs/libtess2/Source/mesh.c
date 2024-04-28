@@ -719,7 +719,7 @@ int tessMeshMergeConvexFaces( TESSmesh *mesh, int maxVertsPerFace )
 
 		leftNv = CountFaceVerts( e->Lface );
 		rightNv = CountFaceVerts( eSym->Lface );
-		if( (leftNv+rightNv-2) > maxVertsPerFace )
+		if( leftNv+rightNv-2 > maxVertsPerFace )
 			continue;
 
 		// Merge if the resulting poly is convex.

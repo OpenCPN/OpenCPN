@@ -48,11 +48,11 @@ class WebSocketHandshakeKeyGen
     {
         static inline uint32_t rol(uint32_t value, size_t bits)
         {
-            return (value << bits) | (value >> (32 - bits));
+            return value << bits | value >> 32 - bits;
         }
         static inline uint32_t blk(uint32_t b[16], size_t i)
         {
-            return rol(b[(i + 13) & 15] ^ b[(i + 8) & 15] ^ b[(i + 2) & 15] ^ b[i], 1);
+            return rol(b[i + 13 & 15] ^ b[i + 8 & 15] ^ b[i + 2 & 15] ^ b[i], 1);
         }
 
         template<int i>
@@ -62,14 +62,14 @@ class WebSocketHandshakeKeyGen
             {
                 case 1:
                     a[i % 5] +=
-                        ((a[(3 + i) % 5] & (a[(2 + i) % 5] ^ a[(1 + i) % 5])) ^ a[(1 + i) % 5]) +
+                        (a[(3 + i) % 5] & (a[(2 + i) % 5] ^ a[(1 + i) % 5]) ^ a[(1 + i) % 5]) +
                         b[i] + 0x5a827999 + rol(a[(4 + i) % 5], 5);
                     a[(3 + i) % 5] = rol(a[(3 + i) % 5], 30);
                     break;
                 case 2:
                     b[i] = blk(b, i);
                     a[(1 + i) % 5] +=
-                        ((a[(4 + i) % 5] & (a[(3 + i) % 5] ^ a[(2 + i) % 5])) ^ a[(2 + i) % 5]) +
+                        (a[(4 + i) % 5] & (a[(3 + i) % 5] ^ a[(2 + i) % 5]) ^ a[(2 + i) % 5]) +
                         b[i] + 0x5a827999 + rol(a[(5 + i) % 5], 5);
                     a[(4 + i) % 5] = rol(a[(4 + i) % 5], 30);
                     break;
@@ -81,8 +81,8 @@ class WebSocketHandshakeKeyGen
                     break;
                 case 4:
                     b[(i + 8) % 16] = blk(b, (i + 8) % 16);
-                    a[i % 5] += (((a[(3 + i) % 5] | a[(2 + i) % 5]) & a[(1 + i) % 5]) |
-                                 (a[(3 + i) % 5] & a[(2 + i) % 5])) +
+                    a[i % 5] += ((a[(3 + i) % 5] | a[(2 + i) % 5]) & a[(1 + i) % 5] |
+                                 a[(3 + i) % 5] & a[(2 + i) % 5]) +
                                 b[(i + 8) % 16] + 0x8f1bbcdc + rol(a[(4 + i) % 5], 5);
                     a[(3 + i) % 5] = rol(a[(3 + i) % 5], 30);
                     break;
@@ -113,13 +113,13 @@ class WebSocketHandshakeKeyGen
         const char* b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         for (int i = 0; i < 18; i += 3)
         {
-            *dst++ = b64[(src[i] >> 2) & 63];
-            *dst++ = b64[((src[i] & 3) << 4) | ((src[i + 1] & 240) >> 4)];
-            *dst++ = b64[((src[i + 1] & 15) << 2) | ((src[i + 2] & 192) >> 6)];
+            *dst++ = b64[src[i] >> 2 & 63];
+            *dst++ = b64[(src[i] & 3) << 4 | (src[i + 1] & 240) >> 4];
+            *dst++ = b64[(src[i + 1] & 15) << 2 | (src[i + 2] & 192) >> 6];
             *dst++ = b64[src[i + 2] & 63];
         }
-        *dst++ = b64[(src[18] >> 2) & 63];
-        *dst++ = b64[((src[18] & 3) << 4) | ((src[19] & 240) >> 4)];
+        *dst++ = b64[src[18] >> 2 & 63];
+        *dst++ = b64[(src[18] & 3) << 4 | (src[19] & 240) >> 4];
         *dst++ = b64[((src[19] & 15) << 2)];
         *dst++ = '=';
     }
@@ -151,7 +151,7 @@ public:
 
         for (int i = 0; i < 6; i++)
         {
-            b_input[i] = (input[4 * i + 3] & 0xff) | (input[4 * i + 2] & 0xff) << 8 |
+            b_input[i] = input[4 * i + 3] & 0xff | (input[4 * i + 2] & 0xff) << 8 |
                          (input[4 * i + 1] & 0xff) << 16 | (input[4 * i + 0] & 0xff) << 24;
         }
         sha1(b_output, b_input);
@@ -162,9 +162,9 @@ public:
             uint32_t tmp = b_output[i];
             char* bytes = (char*) &b_output[i];
             bytes[3] = tmp & 0xff;
-            bytes[2] = (tmp >> 8) & 0xff;
-            bytes[1] = (tmp >> 16) & 0xff;
-            bytes[0] = (tmp >> 24) & 0xff;
+            bytes[2] = tmp >> 8 & 0xff;
+            bytes[1] = tmp >> 16 & 0xff;
+            bytes[0] = tmp >> 24 & 0xff;
         }
         base64((unsigned char*) b_output, output);
     }

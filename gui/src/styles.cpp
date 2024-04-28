@@ -63,7 +63,7 @@ wxBitmap MergeBitmaps(wxBitmap back, wxBitmap front, wxSize offset) {
   //  nothing So, simply return the bitmap intact However, if the bitmaps are
   //  different sizes, do the render anyway.
   wxImage im_front = front.ConvertToImage();
-  if (!im_front.HasAlpha() && (front.GetWidth() == back.GetWidth()))
+  if (!im_front.HasAlpha() && front.GetWidth() == back.GetWidth())
     return front;
 
 #ifdef __WXMSW__
@@ -122,9 +122,9 @@ wxBitmap MergeBitmaps(wxBitmap back, wxBitmap front, wxSize offset) {
 
         if (inFront) {
           double alphaF = 1.0;
-          if (afront) alphaF = (double)(*afront++) / 255.0;
+          if (afront) alphaF = (double)*afront++ / 255.0;
           double alphaB = 1.0;
-          if (aback) alphaB = (double)(*aback++) / 255.0;
+          if (aback) alphaB = (double)*aback++ / 255.0;
           double alphaRes = alphaF + alphaB * (1.0 - alphaF);
           if (aresult) {
             unsigned char a = alphaRes * 255;
@@ -190,7 +190,7 @@ wxBitmap ConvertTo24Bit(wxColor bgColor, wxBitmap front) {
   for (int i = 0; i < front.GetWidth(); i++) {
     for (int j = 0; j < front.GetHeight(); j++) {
       double alphaF = 1.0;
-      if (afront) alphaF = (double)(*afront++) / 256.0;
+      if (afront) alphaF = (double)*afront++ / 256.0;
       unsigned char r = *pfront++ * alphaF + bgColor.Red() * (1.0 - alphaF);
       *presult++ = r;
       unsigned char g = *pfront++ * alphaF + bgColor.Green() * (1.0 - alphaF);
@@ -253,7 +253,7 @@ wxBitmap Style::GetIcon(const wxString& name, int width, int height,
   if (icon->size.x == 0) icon->size = toolSize[currentOrientation];
 
   wxSize retSize = icon->size;
-  if ((width > 0) && (height > 0)) retSize = wxSize(width, height);
+  if (width > 0 && height > 0) retSize = wxSize(width, height);
 
   wxBitmap bm;
 #ifdef ocpnUSE_SVG
@@ -298,7 +298,7 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
   if (size.x == 0) size = toolSize[currentOrientation];
 
   wxSize retSize = size;
-  if ((width > 0) && (height > 0)) retSize = wxSize(width, height);
+  if (width > 0 && height > 0) retSize = wxSize(width, height);
 
   switch (iconType) {
     case TOOLICON_NORMAL: {
@@ -311,7 +311,7 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
 
       //  If rollover icon does not exist, use the defult icon
       if (rollover) {
-        if ((tool->rolloverLoc.x != 0) || (tool->rolloverLoc.y != 0))
+        if (tool->rolloverLoc.x != 0 || tool->rolloverLoc.y != 0)
           location = wxRect(tool->rolloverLoc, size);
       }
 
@@ -424,8 +424,8 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
           bm = LoadSVG(fullFilePath, retSize.x, retSize.y);
 
           wxBitmap bmBack = GetToggledBG();
-          if ((bmBack.GetWidth() != retSize.x) ||
-              (bmBack.GetHeight() != retSize.y)) {
+          if (bmBack.GetWidth() != retSize.x ||
+              bmBack.GetHeight() != retSize.y) {
             wxImage scaled_back = bmBack.ConvertToImage();
             bmBack = wxBitmap(
                 scaled_back.Scale(retSize.x, retSize.y, wxIMAGE_QUALITY_HIGH));
@@ -515,8 +515,8 @@ wxBitmap Style::BuildPluginIcon(wxBitmap& bm, int iconType, double factor) {
         else
           bg = GetToggledBG();
 
-        if ((bg.GetWidth() >= bm.GetWidth()) &&
-            (bg.GetHeight() >= bm.GetHeight())) {
+        if (bg.GetWidth() >= bm.GetWidth() &&
+            bg.GetHeight() >= bm.GetHeight()) {
           int w = bg.GetWidth() * factor;
           int h = bg.GetHeight() * factor;
           wxImage scaled_image = bg.ConvertToImage();
@@ -528,7 +528,7 @@ wxBitmap Style::BuildPluginIcon(wxBitmap& bm, int iconType, double factor) {
           iconbm = MergeBitmaps(bg, bm, offset);
         } else {
           // A bit of contorted logic for non-square backgrounds...
-          double factor = ((double)bm.GetHeight()) / bg.GetHeight();
+          double factor = (double)bm.GetHeight() / bg.GetHeight();
           int nw = bg.GetWidth() * factor;
           int nh = bm.GetHeight();
           if (bg.GetWidth() == bg.GetHeight()) nw = nh;
@@ -650,7 +650,7 @@ void Style::DrawToolbarLineStart(wxBitmap& bmp, double scale) {
   if (fabs(scale - 1.0) > 0.01) {
     int h = sbmp.GetHeight() * scale;
     int w = sbmp.GetWidth() * scale;
-    if ((h > 0) && (w > 0)) {
+    if (h > 0 && w > 0) {
       wxImage scaled_image = sbmp.ConvertToImage();
       sbmp = wxBitmap(scaled_image.Scale(w, h, wxIMAGE_QUALITY_HIGH));
     }
@@ -666,7 +666,7 @@ void Style::DrawToolbarLineEnd(wxBitmap& bmp, double scale) {
   if (fabs(scale - 1.0) > 0.01) {
     int h = sbmp.GetHeight() * scale;
     int w = sbmp.GetWidth() * scale;
-    if ((h > 0) && (w > 0)) {
+    if (h > 0 && w > 0) {
       wxImage scaled_image = sbmp.ConvertToImage();
       sbmp = wxBitmap(scaled_image.Scale(w, h, wxIMAGE_QUALITY_HIGH));
     }
@@ -694,7 +694,7 @@ void Style::SetColorScheme(ColorScheme cs) {
   colorscheme = cs;
   Unload();
 
-  if ((consoleTextBackgroundSize.x) && (consoleTextBackgroundSize.y)) {
+  if (consoleTextBackgroundSize.x && consoleTextBackgroundSize.y) {
     wxBitmap bm = graphics->GetSubBitmap(
         wxRect(consoleTextBackgroundLoc, consoleTextBackgroundSize));
 
@@ -746,12 +746,12 @@ Style::Style(void) {
 
 Style::~Style(void) {
   for (unsigned int i = 0; i < tools.Count(); i++) {
-    delete (Tool*)(tools[i]);
+    delete (Tool*)tools[i];
   }
   tools.Clear();
 
   for (unsigned int i = 0; i < icons.Count(); i++) {
-    delete (Icon*)(icons[i]);
+    delete (Icon*)icons[i];
   }
   icons.Clear();
 
@@ -786,7 +786,7 @@ StyleManager::StyleManager(const wxString& configDir) {
 
 StyleManager::~StyleManager(void) {
   for (unsigned int i = 0; i < styles.Count(); i++) {
-    delete (Style*)(styles[i]);
+    delete (Style*)styles[i];
   }
   styles.Clear();
 }
@@ -884,7 +884,7 @@ void StyleManager::Init(const wxString& fromPath) {
           if (nodeType == _T("embossed-indicators")) {
             style->embossFont =
                 wxString(subNode->Attribute("font"), wxConvUTF8);
-            subNode->QueryIntAttribute("size", &(style->embossHeight));
+            subNode->QueryIntAttribute("size", &style->embossHeight);
             continue;
           }
           if (nodeType == _T("graphics-file")) {
@@ -973,7 +973,7 @@ void StyleManager::Init(const wxString& fromPath) {
                         "left", &style->toolMarginLeft[orientation]);
                     wxString invis =
                         wxString(attrNode->Attribute("invisible"), wxConvUTF8);
-                    style->marginsInvisible = (invis.Lower() == _T("true"));
+                    style->marginsInvisible = invis.Lower() == _T("true");
                     continue;
                     ;
                   }
@@ -1141,17 +1141,17 @@ void StyleManager::SetStyle(wxString name) {
   bool bstyleFound = false;
 
   for (unsigned int i = 0; i < styles.Count(); i++) {
-    style = (Style*)(styles.Item(i));
+    style = (Style*)styles.Item(i);
     if (style->name == name) {
       bstyleFound = true;
       break;
     }
   }
 
-  if ((name.Length() == 0) || !bstyleFound) selectFirst = true;
+  if (name.Length() == 0 || !bstyleFound) selectFirst = true;
 
   for (unsigned int i = 0; i < styles.Count(); i++) {
-    style = (Style*)(styles[i]);
+    style = (Style*)styles[i];
     if (style->name == name || selectFirst) {
       if (style->graphics) {
         currentStyle = style;
@@ -1196,8 +1196,8 @@ void StyleManager::SetStyle(wxString name) {
   }
 
   if (currentStyle) {
-    if ((currentStyle->consoleTextBackgroundSize.x) &&
-        (currentStyle->consoleTextBackgroundSize.y)) {
+    if (currentStyle->consoleTextBackgroundSize.x &&
+        currentStyle->consoleTextBackgroundSize.y) {
       currentStyle->consoleTextBackground =
           currentStyle->graphics->GetSubBitmap(
               wxRect(currentStyle->consoleTextBackgroundLoc,

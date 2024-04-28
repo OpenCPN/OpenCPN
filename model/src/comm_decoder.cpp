@@ -50,9 +50,9 @@ bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
   if (!std::isnan(llt)) {
     int lat_deg_int = (int)(llt / 100);
     double lat_deg = lat_deg_int;
-    double lat_min = llt - (lat_deg * 100);
+    double lat_min = llt - lat_deg * 100;
 
-    lat = lat_deg + (lat_min / 60.);
+    lat = lat_deg + lat_min / 60.;
     if (Position.Latitude.Northing == South) lat = -lat;
   } else
     ll_valid = false;
@@ -61,9 +61,9 @@ bool CommDecoder::ParsePosition(const LATLONG& Position, double& lat,
   if (!std::isnan(lln)) {
     int lon_deg_int = (int)(lln / 100);
     double lon_deg = lon_deg_int;
-    double lon_min = lln - (lon_deg * 100);
+    double lon_min = lln - lon_deg * 100;
 
-    lon = lon_deg + (lon_min / 60.);
+    lon = lon_deg + lon_min / 60.;
     if (Position.Longitude.Easting == West) lon = -lon;
   } else
     ll_valid = false;
@@ -92,7 +92,7 @@ bool CommDecoder::DecodeRMC(std::string s, NavData& temp_data) {
       if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
         temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
       }
-      if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0.05)) {
+      if (!std::isnan(temp_data.gSog) && temp_data.gSog > 0.05) {
         temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
       } else {
         temp_data.gCog = NAN;
@@ -101,7 +101,7 @@ bool CommDecoder::DecodeRMC(std::string s, NavData& temp_data) {
     // Any device sending VAR=0.0 can be assumed to not really know
     // what the actual variation is, so in this case we use WMM if
     // available
-    if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
+    if (!std::isnan(m_NMEA0183.Rmc.MagneticVariation) &&
         0.0 != m_NMEA0183.Rmc.MagneticVariation) {
       if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
         temp_data.gVar = m_NMEA0183.Rmc.MagneticVariation;
@@ -158,7 +158,7 @@ bool CommDecoder::DecodeHDG(std::string s, NavData& temp_data) {
   // Any device sending VAR=0.0 can be assumed to not really know
   // what the actual variation is, so in this case we use WMM if
   // available
-  if ((!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
+  if (!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees) &&
       0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
     if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
       temp_data.gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
@@ -300,9 +300,9 @@ bool CommDecoder::DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_d
     //  One supposes that PGN 129540 should be used instead
     //  Here we decide that if a fix is valid, nSatellites must be > 0 to be
     //  reported in this PGN 129029
-    if ( (GNSSmethod == N2kGNSSm_GNSSfix) ||
-         (GNSSmethod == N2kGNSSm_DGNSS) ||
-         (GNSSmethod == N2kGNSSm_PreciseGNSS)){
+    if ( GNSSmethod == N2kGNSSm_GNSSfix ||
+         GNSSmethod == N2kGNSSm_DGNSS ||
+         GNSSmethod == N2kGNSSm_PreciseGNSS){
       if (nSatellites > 0)
         temp_data.n_satellites = nSatellites;
     }
@@ -468,7 +468,7 @@ void CommDecoder::updateItem(const rapidjson::Value &item,
 
 bool CommDecoder::updateNavigationPosition(
     const rapidjson::Value &value, const wxString &sfixtime, NavData& temp_data) {
-  if ((value.HasMember("latitude") && value["latitude"].IsDouble()) &&
+  if (value.HasMember("latitude") && value["latitude"].IsDouble() &&
       (value.HasMember("longitude") && value["longitude"].IsDouble())) {
     // wxLogMessage(_T(" ***** Position Update"));
     temp_data.gLat = value["latitude"].GetDouble();
@@ -504,7 +504,7 @@ void CommDecoder::updateGnssSatellites(const rapidjson::Value &value,
     if (value.GetInt() > 0) {
       temp_data.n_satellites = value.GetInt();
     }
-  } else if ((value.HasMember("count") && value["count"].IsInt())) {
+  } else if (value.HasMember("count") && value["count"].IsInt()) {
     temp_data.n_satellites = value["count"].GetInt();
   }
   //  If "gnss.methodQuality" is "no GPS", then clear the satellite count

@@ -315,7 +315,7 @@ OGRErr OGRMultiPolygon::exportToWkt( char ** ppszDstText ) const
 
     for( iLine = 0; iLine < getNumGeometries(); iLine++ )
     {
-        eErr = getGeometryRef(iLine)->exportToWkt( &(papszLines[iLine]) );
+        eErr = getGeometryRef(iLine)->exportToWkt( &papszLines[iLine] );
         if( eErr != OGRERR_NONE )
             return eErr;
 

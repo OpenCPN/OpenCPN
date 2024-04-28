@@ -28,7 +28,7 @@ static bool br_fill(ar_archive_rar *rar, int bits)
     }
     rar->progress.data_left -= count;
     for (i = 0; i < count; i++) {
-        rar->uncomp.br.bits = (rar->uncomp.br.bits << 8) | bytes[i];
+        rar->uncomp.br.bits = rar->uncomp.br.bits << 8 | bytes[i];
     }
     rar->uncomp.br.available += 8 * count;
     return true;
@@ -41,7 +41,7 @@ static inline bool br_check(ar_archive_rar *rar, int bits)
 
 static inline uint64_t br_bits(ar_archive_rar *rar, int bits)
 {
-    return (rar->uncomp.br.bits >> (rar->uncomp.br.available -= bits)) & (((uint64_t)1 << bits) - 1);
+    return rar->uncomp.br.bits >> (rar->uncomp.br.available -= bits) & ((uint64_t)1 << bits) - 1;
 }
 
 static Byte ByteIn_Read(void *p)
@@ -64,7 +64,7 @@ static void PpmdRAR_RangeDec_Init(struct CPpmdRAR_RangeDec *p)
     p->Low = 0;
     p->Range = 0xFFFFFFFF;
     for (i = 0; i < 4; i++) {
-        p->Code = (p->Code << 8) | p->Stream->Read(p->Stream);
+        p->Code = p->Code << 8 | p->Stream->Read(p->Stream);
     }
 }
 
@@ -81,12 +81,12 @@ static void Range_Decode_RAR(void *p, UInt32 start, UInt32 size)
     self->Code -= start * self->Range;
     self->Range *= size;
     for (;;) {
-        if ((self->Low ^ (self->Low + self->Range)) >= (1 << 24)) {
-            if (self->Range >= (1 << 15))
+        if ((self->Low ^ self->Low + self->Range) >= 1 << 24) {
+            if (self->Range >= 1 << 15)
                 break;
-            self->Range = ((uint32_t)(-(int32_t)self->Low)) & ((1 << 15) - 1);
+            self->Range = (uint32_t)-(int32_t)self->Low & (1 << 15) - 1;
         }
-        self->Code = (self->Code << 8) | self->Stream->Read(self->Stream);
+        self->Code = self->Code << 8 | self->Stream->Read(self->Stream);
         self->Range <<= 8;
         self->Low <<= 8;
     }
@@ -253,7 +253,7 @@ static bool rar_parse_codes_v2(ar_archive_rar *rar)
         if (val < 0)
             goto PrecodeError;
         if (val < 16) {
-            uncomp_v2->lengthtable[i] = (uncomp_v2->lengthtable[i] + val) & 0x0F;
+            uncomp_v2->lengthtable[i] = uncomp_v2->lengthtable[i] + val & 0x0F;
             i++;
         }
         else if (val == 16) {
@@ -319,8 +319,8 @@ static uint8_t rar_decode_audio(struct AudioState *state, int8_t *channeldelta, 
     state->delta[1] = state->lastdelta - state->delta[0];
     state->delta[0] = state->lastdelta;
 
-    predbyte = ((8 * state->lastbyte + state->weight[0] * state->delta[0] + state->weight[1] * state->delta[1] + state->weight[2] * state->delta[2] + state->weight[3] * state->delta[3] + state->weight[4] * *channeldelta) >> 3) & 0xFF;
-    byte = (predbyte - delta) & 0xFF;
+    predbyte = 8 * state->lastbyte + state->weight[0] * state->delta[0] + state->weight[1] * state->delta[1] + state->weight[2] * state->delta[2] + state->weight[3] * state->delta[3] + state->weight[4] * *channeldelta >> 3 & 0xFF;
+    byte = predbyte - delta & 0xFF;
 
     prederror = delta << 3;
     state->error[0] += abs(prederror);
@@ -431,7 +431,7 @@ int64_t rar_expand_v2(ar_archive_rar *rar, int64_t end)
         else if (symbol <= 260) {
             int idx = symbol - 256;
             int lensymbol = rar_read_next_symbol(rar, &uncomp_v2->lengthcode);
-            offs = uncomp_v2->oldoffset[(uncomp_v2->oldoffsetindex - idx) & 0x03];
+            offs = uncomp_v2->oldoffset[uncomp_v2->oldoffsetindex - idx & 0x03];
             if (lensymbol < 0 || lensymbol > (int)(sizeof(lengthbases) / sizeof(lengthbases[0])) || lensymbol > (int)(sizeof(lengthbits) / sizeof(lengthbits[0]))) {
                 warn("Invalid data in bitstream");
                 return -1;
@@ -538,17 +538,17 @@ static bool rar_parse_codes(ar_archive_rar *rar)
         if (!br_check(rar, 7))
             return false;
         ppmd_flags = (uint8_t)br_bits(rar, 7);
-        if ((ppmd_flags & 0x20)) {
+        if (ppmd_flags & 0x20) {
             if (!br_check(rar, 8))
                 return false;
-            max_alloc = ((uint8_t)br_bits(rar, 8) + 1) << 20;
+            max_alloc = (uint8_t)br_bits(rar, 8) + 1 << 20;
         }
-        if ((ppmd_flags & 0x40)) {
+        if (ppmd_flags & 0x40) {
             if (!br_check(rar, 8))
                 return false;
             uncomp_v3->ppmd_escape = (uint8_t)br_bits(rar, 8);
         }
-        if ((ppmd_flags & 0x20)) {
+        if (ppmd_flags & 0x20) {
             uint32_t maxorder = (ppmd_flags & 0x1F) + 1;
             if (maxorder == 1)
                 return false;
@@ -611,7 +611,7 @@ static bool rar_parse_codes(ar_archive_rar *rar)
             if (val < 0)
                 goto PrecodeError;
             if (val < 16) {
-                uncomp_v3->lengthtable[i] = (uncomp_v3->lengthtable[i] + val) & 0x0F;
+                uncomp_v3->lengthtable[i] = uncomp_v3->lengthtable[i] + val & 0x0F;
                 i++;
             }
             else if (val < 18) {

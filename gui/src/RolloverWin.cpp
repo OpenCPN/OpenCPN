@@ -345,14 +345,14 @@ void RolloverWin::SetBestPosition(int x, int y, int off_x, int off_y,
   m_size *= OCPN_GetWinDIPScaleFactor(); //g_BasePlatform->GetDisplayDPIMult(this);
 
   int xp, yp;
-  if ((x + off_x + m_size.x) > parent_size.x) {
-    xp = x - (off_x / 2) - m_size.x;
+  if (x + off_x + m_size.x > parent_size.x) {
+    xp = x - off_x / 2 - m_size.x;
     xp = wxMax(0, xp);
   } else
     xp = x + off_x;
 
-  if ((y + off_y + m_size.y) > parent_size.y) {
-    yp = y - (off_y / 2) - m_size.y;
+  if (y + off_y + m_size.y > parent_size.y) {
+    yp = y - off_y / 2 - m_size.y;
   } else
     yp = y + off_y;
 

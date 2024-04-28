@@ -71,7 +71,7 @@ bool wxCurlDAV::Mkcol(const wxString& szRemoteCol /*= wxEmptyString*/)
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 	}
 
@@ -87,7 +87,7 @@ bool wxCurlDAV::Propfind(const wxArrayString& arrTags, const wxString& szRemoteL
 {
 	wxString szXml = ConstructPropfindXml(arrTags);
 
-	return Propfind((const char*)(szXml.c_str()), szXml.Len(), szRemoteLoc);
+	return Propfind((const char*)szXml.c_str(), szXml.Len(), szRemoteLoc);
 }
 
 bool wxCurlDAV::Propfind(const char* buffer, size_t size, const wxString& szRemoteLoc /*= wxEmptyString*/)
@@ -103,7 +103,7 @@ bool wxCurlDAV::Propfind(wxInputStream& buffer, const wxString& szRemoteLoc /*= 
 
 	if(m_pCURL && buffer.IsOk())
 	{
-		if(iSize == (~(ssize_t)0))	// wxCurlDAV does not know how to upload unknown length streams.
+		if(iSize == ~(ssize_t)0)	// wxCurlDAV does not know how to upload unknown length streams.
 			return false;
 
 		SetCurlHandleToDefaults(szRemoteLoc);
@@ -127,7 +127,7 @@ bool wxCurlDAV::Propfind(wxInputStream& buffer, const wxString& szRemoteLoc /*= 
 		{
 			ResetHeaders();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetHeaders();
@@ -149,7 +149,7 @@ bool wxCurlDAV::Proppatch(wxInputStream& buffer, const wxString& szRemoteLoc /*=
 
 	if(m_pCURL && buffer.IsOk())
 	{
-		if(iSize == (~(ssize_t)0))	// wxCurlDAV does not know how to upload unknown length streams.
+		if(iSize == ~(ssize_t)0)	// wxCurlDAV does not know how to upload unknown length streams.
 			return false;
 
 		SetCurlHandleToDefaults(szRemoteLoc);
@@ -172,7 +172,7 @@ bool wxCurlDAV::Proppatch(wxInputStream& buffer, const wxString& szRemoteLoc /*=
 		{
 			ResetHeaders();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetHeaders();
@@ -202,7 +202,7 @@ bool wxCurlDAV::Copy(const wxString& szRemoteLocDest, const bool& bOverwrite /*=
 		{
 			ResetHeaders();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetHeaders();
@@ -232,7 +232,7 @@ bool wxCurlDAV::Move(const wxString& szRemoteLocDest, const bool& bOverwrite /*=
 		{
 			ResetHeaders();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetHeaders();

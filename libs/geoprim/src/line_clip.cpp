@@ -29,13 +29,13 @@ void CompOutCode(double x, double y, outcode *code,
   /*Compute outcode for the point (x,y) */
   *code = 0;
   if (y > LINK->ymax)
-    *code = 1L << ((long)TOP);
+    *code = 1L << (long)TOP;
   else if (y < LINK->ymin)
-    *code = 1L << ((long)BOTTOM);
+    *code = 1L << (long)BOTTOM;
   if (x > LINK->xmax)
-    *code |= 1L << ((long)RIGHT);
+    *code |= 1L << (long)RIGHT;
   else if (x < LINK->xmin)
-    *code |= 1L << ((long)LEFT);
+    *code |= 1L << (long)LEFT;
 }
 
 ClipResult cohen_sutherland_line_clip_d(double *x0, double *y0, double *x1,
@@ -76,19 +76,19 @@ from an outside point to an intersection with clip edge.*/
       /*Now find intersection point;
 use formulas y=y0+slope*(x-x0),x=x0+(1/slope)*(y-y0).*/
 
-      if (((1L << ((long)TOP)) & outcodeOut) != 0) {
+      if ((1L << (long)TOP & outcodeOut) != 0) {
         /*Divide line at top of clip rectangle*/
         x = *x0 + (*x1 - *x0) * (V.ymax - *y0) / (*y1 - *y0);
         y = V.ymax;
-      } else if (((1L << ((long)BOTTOM)) & outcodeOut) != 0) {
+      } else if ((1L << (long)BOTTOM & outcodeOut) != 0) {
         /*Divide line at bottom of clip rectangle*/
         x = *x0 + (*x1 - *x0) * (V.ymin - *y0) / (*y1 - *y0);
         y = V.ymin;
-      } else if (((1L << ((long)RIGHT)) & outcodeOut) != 0) {
+      } else if ((1L << (long)RIGHT & outcodeOut) != 0) {
         /*Divide line at right edge of clip rectangle*/
         y = *y0 + (*y1 - *y0) * (V.xmax - *x0) / (*x1 - *x0);
         x = V.xmax;
-      } else if (((1L << ((long)LEFT)) & outcodeOut) != 0) {
+      } else if ((1L << (long)LEFT & outcodeOut) != 0) {
         /*Divide line at left edge of clip rectangle*/
         y = *y0 + (*y1 - *y0) * (V.xmin - *x0) / (*x1 - *x0);
         x = V.xmin;

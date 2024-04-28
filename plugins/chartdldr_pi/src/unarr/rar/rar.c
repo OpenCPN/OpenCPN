@@ -37,16 +37,16 @@ static bool rar_parse_entry(ar_archive *ar, off64_t offset)
 
         switch (header.type) {
         case TYPE_MAIN_HEADER:
-            if ((header.flags & MHD_PASSWORD)) {
+            if (header.flags & MHD_PASSWORD) {
                 warn("Encrypted archives aren't supported");
                 return false;
             }
             ar_skip(ar->stream, 6 /* reserved data */);
-            if ((header.flags & MHD_ENCRYPTVER)) {
+            if (header.flags & MHD_ENCRYPTVER) {
                 log("MHD_ENCRYPTVER is set");
                 ar_skip(ar->stream, 1);
             }
-            if ((header.flags & MHD_COMMENT))
+            if (header.flags & MHD_COMMENT)
                 log("MHD_COMMENT is set");
             if (ar_tell(ar->stream) - ar->entry_offset > header.size) {
                 warn("Invalid RAR header size: %d", header.size);
@@ -58,7 +58,7 @@ static bool rar_parse_entry(ar_archive *ar, off64_t offset)
         case TYPE_FILE_ENTRY:
             if (!rar_parse_header_entry(rar, &header, &entry))
                 return false;
-            if ((header.flags & LHD_PASSWORD))
+            if (header.flags & LHD_PASSWORD)
                 warn("Encrypted entries will fail to uncompress");
             if ((header.flags & LHD_DIRECTORY) == LHD_DIRECTORY) {
                 if (header.datasize == 0) {
@@ -67,7 +67,7 @@ static bool rar_parse_entry(ar_archive *ar, off64_t offset)
                 }
                 warn("Can't skip directory entries containing data");
             }
-            if ((header.flags & (LHD_SPLIT_BEFORE | LHD_SPLIT_AFTER)))
+            if (header.flags & (LHD_SPLIT_BEFORE | LHD_SPLIT_AFTER))
                 warn("Splitting files isn't really supported");
             ar->entry_size_uncompressed = (size_t)entry.size;
             ar->entry_filetime = ar_conv_dosdate_to_filetime(entry.dosdate);

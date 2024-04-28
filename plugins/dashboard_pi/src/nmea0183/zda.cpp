@@ -90,7 +90,7 @@ bool ZDA::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 7 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    UTCTime               = sentence.Field( 1 );
@@ -100,7 +100,7 @@ bool ZDA::Parse( const SENTENCE& sentence )
    LocalHourDeviation    = sentence.Integer( 5 );
    LocalMinutesDeviation = sentence.Integer( 6 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool ZDA::Write( SENTENCE& sentence )
@@ -122,7 +122,7 @@ bool ZDA::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const ZDA& ZDA::operator = ( const ZDA& source )
@@ -136,5 +136,5 @@ const ZDA& ZDA::operator = ( const ZDA& source )
    LocalHourDeviation    = source.LocalHourDeviation;
    LocalMinutesDeviation = source.LocalMinutesDeviation;
 
-   return( *this );
+   return*this;
 }

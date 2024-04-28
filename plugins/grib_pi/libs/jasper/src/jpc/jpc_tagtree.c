@@ -147,7 +147,7 @@ jpc_tagtree_t *jpc_tagtree_create(int numleafsh, int numleafsv)
                 }
                 ++parentnode;
             }
-            if ((j & 1) || j == nplv[i] - 1) {
+            if (j & 1 || j == nplv[i] - 1) {
                 parentnode0 = parentnode;
             } else {
                 parentnode = parentnode0;
@@ -318,7 +318,7 @@ int jpc_tagtree_encode(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
         node = *--stkptr;
 
     }
-    return (leaf->low_ < threshold) ? 1 : 0;
+    return leaf->low_ < threshold ? 1 : 0;
 
 }
 
@@ -370,7 +370,7 @@ int jpc_tagtree_decode(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
         node = *--stkptr;
     }
 
-    return (node->value_ < threshold) ? 1 : 0;
+    return node->value_ < threshold ? 1 : 0;
 }
 
 /******************************************************************************\

@@ -93,7 +93,7 @@ bool VHW::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 9 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    DegreesTrue       = sentence.Double( 1 );
@@ -101,7 +101,7 @@ bool VHW::Parse( const SENTENCE& sentence )
    Knots             = sentence.Double( 5 );
    KilometersPerHour = sentence.Double( 7 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool VHW::Write( SENTENCE& sentence )
@@ -125,7 +125,7 @@ bool VHW::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const VHW& VHW::operator = ( const VHW& source )
@@ -137,5 +137,5 @@ const VHW& VHW::operator = ( const VHW& source )
    Knots             = source.Knots;
    KilometersPerHour = source.KilometersPerHour;
 
-   return( *this );
+   return*this;
 }

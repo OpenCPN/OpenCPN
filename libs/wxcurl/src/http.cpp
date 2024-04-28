@@ -62,7 +62,7 @@ wxCurlHTTP::~wxCurlHTTP()
 
 bool wxCurlHTTP::IsResponseOk() const
 {
-    return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+    return m_iResponseCode > 199 && m_iResponseCode < 300;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ bool wxCurlHTTP::AddForm(const bool& bClear, const wxString& szName,
     if (outErr != NULL)
         *outErr = res;  // sometimes you want to/need to see what's going on
 
-    return (res == CURL_FORMADD_OK);
+    return res == CURL_FORMADD_OK;
 }
 
 bool wxCurlHTTP::AddBufferToForm(const bool& bClear, const wxString& szName,
@@ -127,7 +127,7 @@ bool wxCurlHTTP::AddBufferToForm(const bool& bClear, const wxString& szName,
     if (outErr != NULL)
         *outErr = res;  // sometimes you want to/need to see what's going on
 
-    return (res == CURL_FORMADD_OK);
+    return res == CURL_FORMADD_OK;
 
 
 }
@@ -190,7 +190,7 @@ bool wxCurlHTTP::Post(wxInputStream& buffer, const wxString& szRemoteFile /*= wx
         SetHeaders();
         iSize = buffer.GetSize();
 
-        if(iSize == (~(ssize_t)0))	// wxCurlHTTP does not know how to upload unknown length streams.
+        if(iSize == ~(ssize_t)0)	// wxCurlHTTP does not know how to upload unknown length streams.
             return false;
 
         SetOpt(CURLOPT_POST, TRUE);
@@ -330,7 +330,7 @@ bool wxCurlHTTP::Put(wxInputStream& buffer, const wxString& szRemoteFile /*= wxE
 
         iSize = buffer.GetSize();
 
-        if(iSize == (~(ssize_t)0))	// wxCurlHTTP does not know how to upload unknown length streams.
+        if(iSize == ~(ssize_t)0)	// wxCurlHTTP does not know how to upload unknown length streams.
             return false;
 
         SetOpt(CURLOPT_UPLOAD, TRUE);

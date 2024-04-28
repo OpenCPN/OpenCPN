@@ -176,8 +176,8 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
 
    // If no alert dialog shown yet...
    if (!g_pais_alert_dialog_active) {
-      bool b_jumpto = (palert_target->Class == AIS_SART) ||
-                      (palert_target->Class == AIS_DSC);
+      bool b_jumpto = palert_target->Class == AIS_SART ||
+                      palert_target->Class == AIS_DSC;
       bool b_createWP = palert_target->Class == AIS_DSC;
       bool b_ack = palert_target->Class != AIS_DSC;
 
@@ -229,9 +229,9 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     for (auto& it : current_targets) {
       auto td = it.second;
       if (td) {
-        if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
+        if (td->Class != AIS_SART && td->Class != AIS_DSC) {
           if (g_bAIS_CPA_Alert && td->b_active) {
-            if ((AIS_ALERT_SET == td->n_alert_state) && !td->b_in_ack_timeout) {
+            if (AIS_ALERT_SET == td->n_alert_state && !td->b_in_ack_timeout) {
               if (td->TCPA < tcpa_min) {
                 tcpa_min = td->TCPA;
                 palert_target_lowestcpa = td.get();
@@ -261,9 +261,9 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
 
     if (palert_target) {
       wxDateTime now = wxDateTime::Now();
-      if (((AIS_ALERT_SET == palert_target->n_alert_state) &&
+      if ((AIS_ALERT_SET == palert_target->n_alert_state &&
            !palert_target->b_in_ack_timeout) ||
-          (palert_target->Class == AIS_SART) ) {
+          palert_target->Class == AIS_SART ) {
         alert_dlg_active->UpdateText();
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
@@ -272,7 +272,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       }
       //  In "expiry delay"?
       else if (!palert_target->b_in_ack_timeout &&
-               (now.IsEarlierThan(alert_dlg_active->dtAlertExpireTime))) {
+               now.IsEarlierThan(alert_dlg_active->dtAlertExpireTime)) {
         alert_dlg_active->UpdateText();
       } else {
         alert_dlg_active->Close();
@@ -330,7 +330,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
   }
   //  If a SART Alert is active, check to see if the MMSI has special properties
   //  set indicating that this Alert is a MOB for THIS ship.
-  if (palert_target && (palert_target->Class == AIS_SART)) {
+  if (palert_target && palert_target->Class == AIS_SART) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)

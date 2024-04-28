@@ -174,12 +174,12 @@ extern "C"
             len = strlen(*pStr);
             if(len >= iRealSize)
             {
-                strncpy((char*)ptr, (const char*)(*pStr), iRealSize);
+                strncpy((char*)ptr, (const char*)*pStr, iRealSize);
                 iRetVal = iRealSize;
             }
             else
             {
-                strncpy((char*)ptr, (const char*)(*pStr), len);
+                strncpy((char*)ptr, (const char*)*pStr, len);
                 iRetVal = len;
             }
 
@@ -480,7 +480,7 @@ bool wxCurlBase::SetOpt(CURLoption option, ...)
     va_end(arg);
 
     DumpErrorIfNeed(res);
-    return (res == CURLE_OK);
+    return res == CURLE_OK;
 #pragma clang diagnostic pop
 }
 
@@ -515,7 +515,7 @@ bool wxCurlBase::GetInfo(CURLINFO info, ...) const
 
     DumpErrorIfNeed(res);
     va_end(arg);
-    return (res == CURLE_OK);
+    return res == CURLE_OK;
 #pragma clang diagnostic pop
 }
 
@@ -523,7 +523,7 @@ bool wxCurlBase::Perform()
 {
     CURLcode res = CURLE_OK;
 
-    if((m_nFlags & wxCURL_SEND_BEGINEND_EVENTS) && m_pEvtHandler)
+    if(m_nFlags & wxCURL_SEND_BEGINEND_EVENTS && m_pEvtHandler)
     {
         wxString s = wxCURL_BUF2STRING(m_szCurrFullURL);
         wxCurlBeginPerformEvent bgnEvent(m_nId, std::string(s.mb_str()));
@@ -540,7 +540,7 @@ bool wxCurlBase::Perform()
     // get the response code of the server
     GetInfo(CURLINFO_RESPONSE_CODE, &m_iResponseCode);
 
-    if((m_nFlags & wxCURL_SEND_BEGINEND_EVENTS) && m_pEvtHandler)
+    if(m_nFlags & wxCURL_SEND_BEGINEND_EVENTS && m_pEvtHandler)
     {
         wxString s = wxCURL_BUF2STRING(m_szCurrFullURL);
         wxCurlEndPerformEvent endEvent(m_nId, std::string(s.mb_str()), m_iResponseCode);
@@ -548,7 +548,7 @@ bool wxCurlBase::Perform()
     }
 
     DumpErrorIfNeed(res);
-    return (res == CURLE_OK);
+    return res == CURLE_OK;
 }
 
 bool wxCurlBase::InitHandle()
@@ -558,7 +558,7 @@ bool wxCurlBase::InitHandle()
 
     m_pCURL = curl_easy_init();
 
-    return (m_pCURL != NULL);
+    return m_pCURL != NULL;
 }
 
 bool wxCurlBase::ReInitHandle()
@@ -842,7 +842,7 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
         SetOpt(CURLOPT_SSL_VERIFYPEER, false); //cURL does not support Authority Information Access (AIA) X.509 extension (https://github.com/curl/curl/issues/2793). Unfortunately as of 2021/07 at least LINZ does not provide full trust chain in their TLS certificate and depends on the client's ability to use AIA and download the missing certs which makes the site untrusted for us (And we have to ignore it here to be able to download the chart archives)
         SetOpt(CURLOPT_ENCODING, "gzip,deflate"); //Save bandwidth by using compression
 
-        if(m_pEvtHandler && (m_nFlags & wxCURL_SEND_PROGRESS_EVENTS))
+        if(m_pEvtHandler && m_nFlags & wxCURL_SEND_PROGRESS_EVENTS)
         {
             SetOpt(CURLOPT_NOPROGRESS, FALSE);
             SetOpt(CURLOPT_PROGRESSFUNCTION, m_progressCallback);
@@ -869,7 +869,7 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
             SetStringOpt(CURLOPT_PROXY, m_szProxyHost);
         }
 
-        if(m_bUseProxy && (m_iProxyPort != -1))
+        if(m_bUseProxy && m_iProxyPort != -1)
         {
             SetOpt(CURLOPT_PROXYPORT, m_iProxyPort);
         }
@@ -958,12 +958,12 @@ wxDateTime wxCurlBase::GetDateFromString(const wxString& szDate)
 {
     time_t now = wxDateTime::Now().GetTicks();
 
-    return wxDateTime(curl_getdate((const char*)(szDate.c_str()), &now));
+    return wxDateTime(curl_getdate((const char*)szDate.c_str(), &now));
 }
 
 std::string wxCurlBase::GetURLEncodedString(const wxString& szData)
 {
-    char* pszRetVal = curl_escape((const char*)(szData.c_str()), szData.Len());
+    char* pszRetVal = curl_escape((const char*)szData.c_str(), szData.Len());
 
     if(pszRetVal)
     {
@@ -979,7 +979,7 @@ std::string wxCurlBase::GetURLEncodedString(const wxString& szData)
 
 std::string wxCurlBase::GetStringFromURLEncoded(const wxString& szData)
 {
-    char* pszRetVal = curl_unescape((const char*)(szData.c_str()), szData.Len());
+    char* pszRetVal = curl_unescape((const char*)szData.c_str(), szData.Len());
 
     if(pszRetVal)
     {

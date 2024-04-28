@@ -1125,7 +1125,7 @@ restart_tracks:
                 GPS_Track_Del(&ctk[j]);
             }
             memmove(&ctk[i], &ctk[j], (*n_ctk-j)*sizeof(*ctk));
-            *(n_ctk) -= j-i;
+            *n_ctk -= j-i;
             goto restart_tracks;
         }
     }

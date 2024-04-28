@@ -237,8 +237,8 @@ bool Adjacencies::UpdateLink(udword firsttri, udword secondtri, udword ref0, udw
 	ubyte EdgeNb1 = Tri1->FindEdge(ref0, ref1);		if(EdgeNb1==0xff)	return false;
 
 	// Update links. The two most significant bits contain the counterpart edge's ID.
-	Tri0->ATri[EdgeNb0] = secondtri	|(udword(EdgeNb1)<<30);
-	Tri1->ATri[EdgeNb1] = firsttri	|(udword(EdgeNb0)<<30);
+	Tri0->ATri[EdgeNb0] = secondtri	|udword(EdgeNb1)<<30;
+	Tri1->ATri[EdgeNb1] = firsttri	|udword(EdgeNb0)<<30;
 
 	return true;
 }

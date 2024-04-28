@@ -34,16 +34,16 @@ size_t ar_conv_rune_to_utf8(wchar_t rune, char *out, size_t size)
         return 1;
     }
     if (rune < 0x0800 && size >= 2) {
-        *out++ = 0xC0 | ((rune >> 6) & 0x1F);
-        *out++ = 0x80 | (rune & 0x3F);
+        *out++ = 0xC0 | rune >> 6 & 0x1F;
+        *out++ = 0x80 | rune & 0x3F;
         return 2;
     }
     if (size >= 3) {
         if ((0xD800 <= rune && rune <= 0xDFFF) || rune >= 0x10000)
             rune = 0xFFFD;
-        *out++ = 0xE0 | ((rune >> 12) & 0x0F);
-        *out++ = 0x80 | ((rune >> 6) & 0x3F);
-        *out++ = 0x80 | (rune & 0x3F);
+        *out++ = 0xE0 | rune >> 12 & 0x0F;
+        *out++ = 0x80 | rune >> 6 & 0x3F;
+        *out++ = 0x80 | rune & 0x3F;
         return 3;
     }
     *out++ = '?';
@@ -82,11 +82,11 @@ time64_t ar_conv_dosdate_to_filetime(uint32_t dosdate)
     time_t t1, t2;
 
     tm.tm_sec = (dosdate & 0x1F) * 2;
-    tm.tm_min = (dosdate >> 5) & 0x3F;
-    tm.tm_hour = (dosdate >> 11) & 0x1F;
-    tm.tm_mday = (dosdate >> 16) & 0x1F;
-    tm.tm_mon = ((dosdate >> 21) & 0x0F) - 1;
-    tm.tm_year = ((dosdate >> 25) & 0x7F) + 80;
+    tm.tm_min = dosdate >> 5 & 0x3F;
+    tm.tm_hour = dosdate >> 11 & 0x1F;
+    tm.tm_mday = dosdate >> 16 & 0x1F;
+    tm.tm_mon = (dosdate >> 21 & 0x0F) - 1;
+    tm.tm_year = (dosdate >> 25 & 0x7F) + 80;
     tm.tm_isdst = -1;
 
     t1 = mktime(&tm);

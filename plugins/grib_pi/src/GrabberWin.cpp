@@ -99,7 +99,7 @@ void GribGrabberWin::OnMouseEvent(wxMouseEvent& event) {
     } else if (pos_in_parent.x > pos_in_parent_old.x) {  // moving right
       int max_right =
           GetOCPNCanvasWindow()->GetClientSize().x - GetParent()->GetSize().x;
-      if (pos_in_parent.x > (max_right - 10)) {
+      if (pos_in_parent.x > max_right - 10) {
         pos_in_parent.x = max_right;
       }
     }
@@ -112,7 +112,7 @@ void GribGrabberWin::OnMouseEvent(wxMouseEvent& event) {
     } else if (pos_in_parent.y > pos_in_parent_old.y) {  // moving dow
       int max_down =
           GetOCPNCanvasWindow()->GetClientSize().y - GetParent()->GetSize().y;
-      if (pos_in_parent.y > (max_down - 10)) {
+      if (pos_in_parent.y > max_down - 10) {
         pos_in_parent.y = max_down;
       }
     }
@@ -131,7 +131,7 @@ void GribGrabberWin::OnPaint(wxPaintEvent& event) {
 }
 
 void GribGrabberWin::Size() {
-  wxBitmap bitmap = (wxBitmap(grabber));
+  wxBitmap bitmap = wxBitmap(grabber);
   int height = GetParent()->GetSize().y - 2; //keep a small margin of 2
   int width = height / 2;
 

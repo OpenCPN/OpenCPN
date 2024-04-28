@@ -747,7 +747,7 @@ glTextureManager::~glTextureManager() {
   //    ClearAllRasterTextures();
   ClearJobList();
   for (int i = 0; i < m_max_jobs; i++) {
-    delete(progList[i]);
+    delete progList[i];
   }
   progList.Clear();
   for(auto hash : m_chart_texfactory_hash) {
@@ -803,7 +803,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
         wxString block = wxString::Format(_T("%c"), 0x2588);
         float cutoff = -1.;
         if (event.nstat_max != 0)
-          cutoff = ((event.nstat + 1) / (float)event.nstat_max) * bar_length;
+          cutoff = (event.nstat + 1) / (float)event.nstat_max * bar_length;
         for (int i = 0; i < bar_length; i++) {
           if (i <= cutoff)
             msgx += block;
@@ -968,7 +968,7 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
     wxJobListNode *node = todo_list.GetFirst();
     while (node) {
       JobTicket *ticket = node->GetData();
-      if ((ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
+      if (ticket->m_ChartPath == chart_path && ticket->m_rect == rect) {
         // bump to front
         todo_list.DeleteNode(node);
         todo_list.Insert(ticket);
@@ -1264,10 +1264,10 @@ bool glTextureManager::FactoryCrunch(double factor) {
   ChartPathHashTexfactType::iterator it0;
 
   bool bMemCrunch =
-      (g_memCacheLimit &&
-       ((mem_used > (double)(g_memCacheLimit)*factor * hysteresis &&
-         mem_used > (double)(m_prevMemUsed)*factor * hysteresis) ||
-        (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY)));
+      g_memCacheLimit &&
+      ((mem_used > (double)g_memCacheLimit*factor * hysteresis &&
+        mem_used > (double)m_prevMemUsed*factor * hysteresis) ||
+       m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
 
   if (!bMemCrunch) return false;
 
@@ -1319,10 +1319,10 @@ bool glTextureManager::FactoryCrunch(double factor) {
 
   GetMemoryStatus(0, &mem_used);
 
-  bMemCrunch = (g_memCacheLimit &&
-                ((mem_used > (double)(g_memCacheLimit)*factor * hysteresis &&
-                  mem_used > (double)(m_prevMemUsed)*factor * hysteresis) ||
-                 (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY)));
+  bMemCrunch = g_memCacheLimit &&
+               ((mem_used > (double)g_memCacheLimit*factor * hysteresis &&
+                 mem_used > (double)m_prevMemUsed*factor * hysteresis) ||
+                m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
 
   if (!bMemCrunch) return false;
 
@@ -1462,7 +1462,7 @@ void glTextureManager::BuildCompressedCache() {
   int height, width;
   sdc.GetTextExtent(_T("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]"), &width, &height,
                     NULL, NULL, sFont);
-  if (width > (csz.x / 2)) m_bcompact = true;
+  if (width > csz.x / 2) m_bcompact = true;
 
   m_progDialog->Create(_("OpenCPN Compressed Cache Update"), msg0, count + 1,
                        NULL, style);

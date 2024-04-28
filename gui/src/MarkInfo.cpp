@@ -384,7 +384,7 @@ void MarkInfoDlg::Create() {
 
   //  Accomodate scaling of icon
   int min_size = m_sizeMetric * 2;
-  min_size = wxMax(min_size, (32 * g_MarkScaleFactorExp) + 4);
+  min_size = wxMax(min_size, 32 * g_MarkScaleFactorExp + 4);
   m_bcomboBoxIcon->SetMinSize(wxSize(-1, min_size));
 
   bSizer8->Add(m_bcomboBoxIcon, 1, wxALL, 5);
@@ -1162,8 +1162,8 @@ void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
   }
 
   wxMenu* popup = new wxMenu();
-  if ((GetSimpleBox()->GetCount()) > 0 && (i_htmlList_item > -1) &&
-      (i_htmlList_item < (int)GetSimpleBox()->GetCount())) {
+  if (GetSimpleBox()->GetCount() > 0 && i_htmlList_item > -1 &&
+      i_htmlList_item < (int)GetSimpleBox()->GetCount()) {
     popup->Append(ID_RCLK_MENU_DELETE_LINK, _("Delete"));
     popup->Append(ID_RCLK_MENU_EDIT_LINK, _("Edit"));
   }
@@ -1868,8 +1868,8 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   wxFlexGridSizer* fgSizer1 = new wxFlexGridSizer(2);
 
   wxString s =
-      (g_pMarkInfoDialog->m_checkBoxShowName->GetValue() ? _("Do use")
-                                                         : _("Don't use"));
+      g_pMarkInfoDialog->m_checkBoxShowName->GetValue() ? _("Do use")
+        : _("Don't use");
   NameCB =
       new wxCheckBox(this, wxID_ANY, _("Show Waypoint Name"), wxDefaultPosition,
                      wxDefaultSize, 0, wxDefaultValidator);
@@ -1887,13 +1887,13 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   stIcon->Wrap(-1);
   fgSizer1->Add(stIcon, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
-  s = (g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection()
-           ? _("Do use") +
-                 wxString::Format(
-                     _T(" (%i) "),
-                     g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber
-                         ->GetSelection())
-           : _("Don't use"));
+  s = g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber->GetSelection()
+        ? _("Do use") +
+          wxString::Format(
+              _T(" (%i) "),
+              g_pMarkInfoDialog->m_ChoiceWaypointRangeRingsNumber
+                               ->GetSelection())
+        : _("Don't use");
   RangRingsCB = new wxCheckBox(this, wxID_ANY, _("Range rings"));
   fgSizer1->Add(RangRingsCB, 0, wxALL, 5);
   stRR = new wxStaticText(this, wxID_ANY, _T("[") + s + _T("]"),
@@ -1901,7 +1901,7 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   stRR->Wrap(-1);
   fgSizer1->Add(stRR, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
-  s = (g_pMarkInfoDialog->m_textArrivalRadius->GetValue());
+  s = g_pMarkInfoDialog->m_textArrivalRadius->GetValue();
   ArrivalRCB = new wxCheckBox(this, wxID_ANY, _("Arrival radius"));
   fgSizer1->Add(ArrivalRCB, 0, wxALL, 5);
   stArrivalR = new wxStaticText(
@@ -1912,10 +1912,10 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   fgSizer1->Add(stArrivalR, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL,
                 5);
 
-  s = (g_pMarkInfoDialog->m_checkBoxScaMin->GetValue()
-           ? _("Show only if") + _T(" < ") +
-                 g_pMarkInfoDialog->m_textScaMin->GetValue()
-           : _("Show always"));
+  s = g_pMarkInfoDialog->m_checkBoxScaMin->GetValue()
+        ? _("Show only if") + _T(" < ") +
+          g_pMarkInfoDialog->m_textScaMin->GetValue()
+        : _("Show always");
   ScaleCB = new wxCheckBox(this, wxID_ANY, _("Show only at scale"));
   fgSizer1->Add(ScaleCB, 0, wxALL, 5);
   stScale = new wxStaticText(this, wxID_ANY, _T("[") + s + _T("]"),

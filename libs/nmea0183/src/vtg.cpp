@@ -106,7 +106,7 @@ bool VTG::Parse( const SENTENCE& sentence )
             if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
             {
                   SetErrorMessage( _T("Invalid Checksum") );
-                  return( FALSE );
+                  return FALSE;
             }
 
            else
@@ -116,7 +116,7 @@ bool VTG::Parse( const SENTENCE& sentence )
                   if( check == NTrue)
                   {
                         SetErrorMessage( _T("Invalid Checksum") );
-                        return( FALSE );
+                        return FALSE;
                   }
             }
       }
@@ -126,7 +126,7 @@ bool VTG::Parse( const SENTENCE& sentence )
    if ( sentence.GetNumberOfDataFields() != target_field_count )
    {
          SetErrorMessage( _T("Invalid FieldCount") );
-         return( FALSE );
+         return FALSE;
    }
 
 
@@ -135,7 +135,7 @@ bool VTG::Parse( const SENTENCE& sentence )
    SpeedKnots             = sentence.Double( 5 );
    SpeedKilometersPerHour = sentence.Double( 7 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool VTG::Write( SENTENCE& sentence )
@@ -159,7 +159,7 @@ bool VTG::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const VTG& VTG::operator = ( const VTG& source )
@@ -171,5 +171,5 @@ const VTG& VTG::operator = ( const VTG& source )
    SpeedKnots             = source.SpeedKnots;
    SpeedKilometersPerHour = source.SpeedKilometersPerHour;
 
-   return( *this );
+   return*this;
 }

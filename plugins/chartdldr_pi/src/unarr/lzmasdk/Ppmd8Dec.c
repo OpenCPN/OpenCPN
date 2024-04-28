@@ -18,8 +18,8 @@ Bool Ppmd8_RangeDec_Init(CPpmd8 *p)
   p->Range = 0xFFFFFFFF;
   p->Code = 0;
   for (i = 0; i < 4; i++)
-    p->Code = (p->Code << 8) | p->Stream.In->Read(p->Stream.In);
-  return (p->Code < 0xFFFFFFFF);
+    p->Code = p->Code << 8 | p->Stream.In->Read(p->Stream.In);
+  return p->Code < 0xFFFFFFFF;
 }
 
 static UInt32 RangeDec_GetThreshold(CPpmd8 *p, UInt32 total)
@@ -34,10 +34,10 @@ static void RangeDec_Decode(CPpmd8 *p, UInt32 start, UInt32 size)
   p->Code -= start;
   p->Range *= size;
 
-  while ((p->Low ^ (p->Low + p->Range)) < kTop ||
-      (p->Range < kBot && ((p->Range = (0 - p->Low) & (kBot - 1)), 1)))
+  while ((p->Low ^ p->Low + p->Range) < kTop ||
+      (p->Range < kBot && (p->Range = 0 - p->Low & kBot - 1, 1)))
   {
-    p->Code = (p->Code << 8) | p->Stream.In->Read(p->Stream.In);
+    p->Code = p->Code << 8 | p->Stream.In->Read(p->Stream.In);
     p->Range <<= 8;
     p->Low <<= 8;
   }
@@ -88,7 +88,7 @@ int Ppmd8_DecodeSymbol(CPpmd8 *p)
   else
   {
     UInt16 *prob = Ppmd8_GetBinSumm(p);
-    if (((p->Code / (p->Range >>= 14)) < *prob))
+    if (p->Code / (p->Range >>= 14) < *prob)
     {
       Byte symbol;
       RangeDec_Decode(p, 0, *prob);
@@ -124,8 +124,8 @@ int Ppmd8_DecodeSymbol(CPpmd8 *p)
     num = p->MinContext->NumStats - numMasked;
     do
     {
-      int k = (int)(MASK(s->Symbol));
-      hiCnt += (s->Freq & k);
+      int k = (int)MASK(s->Symbol);
+      hiCnt += s->Freq & k;
       ps[i] = s++;
       i -= k;
     }

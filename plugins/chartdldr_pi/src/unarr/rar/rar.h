@@ -34,7 +34,7 @@ enum archive_flags {
 enum entry_flags {
     LHD_SPLIT_BEFORE = 1 << 0, LHD_SPLIT_AFTER = 1 << 1, LHD_PASSWORD = 1 << 2,
     LHD_COMMENT = 1 << 3, LHD_SOLID = 1 << 4,
-    LHD_DIRECTORY = (1 << 5) | (1 << 6) | (1 << 7),
+    LHD_DIRECTORY = 1 << 5 | 1 << 6 | 1 << 7,
     LHD_LARGE = 1 << 8, LHD_UNICODE = 1 << 9, LHD_SALT = 1 << 10,
     LHD_VERSION = 1 << 11, LHD_EXTTIME = 1 << 12, LHD_EXTFLAGS = 1 << 13,
     LHD_LONG_BLOCK = 1 << 15,

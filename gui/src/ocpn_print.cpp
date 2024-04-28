@@ -60,7 +60,7 @@ void MyPrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
   *selPageTo = 1;
 }
 
-bool MyPrintout::HasPage(int pageNum) { return (pageNum == 1); }
+bool MyPrintout::HasPage(int pageNum) { return pageNum == 1; }
 
 void MyPrintout::DrawPageOne(wxDC *dc) {
   // Get the Size of the Chart Canvas
@@ -75,8 +75,8 @@ void MyPrintout::DrawPageOne(wxDC *dc) {
   float marginY = 50;
 
   // Add the margin to the graphic size
-  maxX += (2 * marginX);
-  maxY += (2 * marginY);
+  maxX += 2 * marginX;
+  maxY += 2 * marginY;
 
   // Get the size of the DC in pixels
   int w, h;
@@ -90,8 +90,8 @@ void MyPrintout::DrawPageOne(wxDC *dc) {
   float actualScale = wxMin(scaleX, scaleY);
 
   // Calculate the position on the DC for centring the graphic
-  float posX = (float)((w - (maxX * actualScale)) / 2.0);
-  float posY = (float)((h - (maxY * actualScale)) / 2.0);
+  float posX = (float)((w - maxX * actualScale) / 2.0);
+  float posY = (float)((h - maxY * actualScale) / 2.0);
 
   posX = wxMax(posX, marginX);
   posY = wxMax(posY, marginY);
@@ -114,7 +114,7 @@ void MyPrintout::DrawPageOne(wxDC *dc) {
   } else {
     //  And Blit/scale it onto the Printer DC
     wxMemoryDC mdc;
-    mdc.SelectObject(*(gFrame->GetFocusCanvas()->pscratch_bm));
+    mdc.SelectObject(*gFrame->GetFocusCanvas()->pscratch_bm);
 
     dc->Blit(0, 0, gFrame->GetFocusCanvas()->pscratch_bm->GetWidth(),
              gFrame->GetFocusCanvas()->pscratch_bm->GetHeight(), &mdc, 0, 0);

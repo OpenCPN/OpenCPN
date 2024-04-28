@@ -63,7 +63,7 @@ void TwoColourFitFast::Compress3( void* block )
 	u8* bytes = ( u8* )block;
 
         for(int i=0; i<2; i++) {
-            int a = (m_colour[i][0] << 8) | (m_colour[i][1] << 3) | (m_colour[i][2] >> 3);
+            int a = m_colour[i][0] << 8 | m_colour[i][1] << 3 | m_colour[i][2] >> 3;
 
             // write the endpoints
             bytes[0] = ( u8 )( a & 0xff );
@@ -77,7 +77,7 @@ void TwoColourFitFast::Compress3( void* block )
 	for( int i = 0; i < 4; ++i )
 	{
 		u8 const* ind = m_indices + 4*i;
-		bytes[i] = ind[0] | ( ind[1] << 2 ) | ( ind[2] << 4 ) | ( ind[3] << 6 );
+		bytes[i] = ind[0] | ind[1] << 2 | ind[2] << 4 | ind[3] << 6;
 	}
 }
 

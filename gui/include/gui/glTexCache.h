@@ -164,7 +164,7 @@ private:
                                         ColorScheme color_scheme);
   bool AddCacheEntryValue(const CatalogEntry &p);
   int ArrayIndex(int x, int y) const {
-    return ((y / m_tex_dim) * m_stride) + (x / m_tex_dim);
+    return y / m_tex_dim * m_stride + x / m_tex_dim;
   }
   void ArrayXY(wxRect *r, int index) const;
 

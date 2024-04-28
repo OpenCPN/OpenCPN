@@ -266,7 +266,7 @@ OGRFeatureDefn *S57GenerateObjectClassDefn(S57ClassRegistrar *poCR, int nOBJL,
   /*      Do we need to add DEPTH attributes to soundings?                */
   /* -------------------------------------------------------------------- */
   if (EQUAL(poCR->GetAcronym(), "SOUNDG") &&
-      (nOptionFlags & S57M_ADD_SOUNDG_DEPTH)) {
+      nOptionFlags & S57M_ADD_SOUNDG_DEPTH) {
     OGRFieldDefn oField("DEPTH", OFTReal);
     poFDefn->AddFieldDefn(&oField);
   }

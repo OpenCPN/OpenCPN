@@ -117,10 +117,10 @@ public:
     InstrumentProperties(int aInstrument, int Listplace) {
         m_aInstrument = aInstrument;
         m_Listplace = Listplace;
-        m_TitelFont = *(g_pFontTitle);
-        m_DataFont = *(g_pFontData);
-        m_LabelFont = *(g_pFontLabel);
-        m_SmallFont = *(g_pFontSmall);
+        m_TitelFont = *g_pFontTitle;
+        m_DataFont = *g_pFontData;
+        m_LabelFont = *g_pFontLabel;
+        m_SmallFont = *g_pFontSmall;
         GetGlobalColor(_T("DASHL"), &m_TitlelBackgroundColour);
         GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
         GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
@@ -131,10 +131,10 @@ public:
     {
         m_aInstrument = -1;
         m_Listplace = -1;
-        m_TitelFont = *(g_pFontTitle);
-        m_DataFont = *(g_pFontData);
-        m_LabelFont = *(g_pFontLabel);
-        m_SmallFont = *(g_pFontSmall);
+        m_TitelFont = *g_pFontTitle;
+        m_DataFont = *g_pFontData;
+        m_LabelFont = *g_pFontLabel;
+        m_SmallFont = *g_pFontSmall;
         GetGlobalColor(_T("DASHL"), &m_TitlelBackgroundColour);
         GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
         GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);

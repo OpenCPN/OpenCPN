@@ -183,8 +183,8 @@ void GribReader::readAllGribRecords() {
              rec->getLevelValue() == 500 || rec->getLevelValue() == 300)))
       storeRecordInMap(rec);
 
-    else if ((RecordIsGust(rec) && rec->getLevelType() == LV_GND_SURF &&
-              rec->getLevelValue() == 0))
+    else if (RecordIsGust(rec) && rec->getLevelType() == LV_GND_SURF &&
+             rec->getLevelValue() == 0)
       storeRecordInMap(rec);
 
     else if (RecordIsWind(rec) && rec->getLevelType() == LV_GND_SURF)
@@ -235,9 +235,9 @@ void GribReader::readAllGribRecords() {
     else if (rec->getDataType() == GRB_CRAIN)  // Catagorical Rain  1/0
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_WTMP) &&
-             (rec->getLevelType() == LV_GND_SURF) &&
-             (rec->getLevelValue() == 0))
+    else if (rec->getDataType() == GRB_WTMP &&
+             rec->getLevelType() == LV_GND_SURF &&
+             rec->getLevelValue() == 0)
       storeRecordInMap(rec);  // rtofs Water Temp + translated gfs Water Temp
 
     else if (RecordIsCurrent(rec))  // rtofs model sea current current
@@ -248,15 +248,15 @@ void GribReader::readAllGribRecords() {
              rec->getLevelValue() == 0)  // Potential energy
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_GEOPOT_HGT &&
-              rec->getLevelType() ==
-                  LV_ISOBARIC)  // geopotentiel geight at x hpa
+    else if (rec->getDataType() == GRB_GEOPOT_HGT &&
+             rec->getLevelType() ==
+             LV_ISOBARIC  // geopotentiel geight at x hpa
              && (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
                  rec->getLevelValue() == 500 || rec->getLevelValue() == 300))
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_HUMID_REL &&
-              rec->getLevelType() == LV_ISOBARIC)  // relative humidity at x hpa
+    else if (rec->getDataType() == GRB_HUMID_REL &&
+             rec->getLevelType() == LV_ISOBARIC  // relative humidity at x hpa
              && (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
                  rec->getLevelValue() == 500 || rec->getLevelValue() == 300))
       storeRecordInMap(rec);

@@ -413,7 +413,7 @@ bool OCPNwxFontList::isCached(font_cache_record& record, int pointSize, wxFontFa
     } else {
       same = font->GetFamily() == family;
     }
-    if (same && (encoding != wxFONTENCODING_DEFAULT)) {
+    if (same && encoding != wxFONTENCODING_DEFAULT) {
       // have to match the encoding too
       same = font->GetEncoding() == encoding;
     }

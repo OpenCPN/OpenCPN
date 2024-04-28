@@ -316,7 +316,7 @@ static int32 GPS_A000(const char *port)
     GPS_Send_Ack(fd, &tra, &rec);
 
     id = GPS_Util_Get_Short(rec->data);
-    version = GPS_Util_Get_Short((rec->data)+2);
+    version = GPS_Util_Get_Short(rec->data+2);
 
     (void) strcpy(gps_save_string,(char *)rec->data+4);
     gps_save_id = id;
@@ -889,7 +889,7 @@ int32 GPS_A100_Get(const char *port, GPS_PWay **way, int (*cb)(int, GPS_PWay *))
     n = GPS_Util_Get_Short(rec->data);
 
     if(n)
-	if(!((*way)=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
+	if(!(*way=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
 	{
 	    GPS_Error("A100_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -911,52 +911,52 @@ int32 GPS_A100_Get(const char *port, GPS_PWay **way, int (*cb)(int, GPS_PWay *))
 	switch(gps_waypt_type)
 	{
 	case pD100:
-	    GPS_D100_Get(&((*way)[i]),rec->data);
+	    GPS_D100_Get(&(*way)[i],rec->data);
 	    break;
 	case pD101:
-	    GPS_D101_Get(&((*way)[i]),rec->data);
+	    GPS_D101_Get(&(*way)[i],rec->data);
 	    break;
 	case pD102:
-	    GPS_D102_Get(&((*way)[i]),rec->data);
+	    GPS_D102_Get(&(*way)[i],rec->data);
 	    break;
 	case pD103:
-	    GPS_D103_Get(&((*way)[i]),rec->data);
+	    GPS_D103_Get(&(*way)[i],rec->data);
 	    break;
 	case pD104:
-	    GPS_D104_Get(&((*way)[i]),rec->data);
+	    GPS_D104_Get(&(*way)[i],rec->data);
 	    break;
 	case pD105:
-	    GPS_D105_Get(&((*way)[i]),rec->data);
+	    GPS_D105_Get(&(*way)[i],rec->data);
 	    break;
 	case pD106:
-	    GPS_D106_Get(&((*way)[i]),rec->data);
+	    GPS_D106_Get(&(*way)[i],rec->data);
 	    break;
 	case pD107:
-	    GPS_D107_Get(&((*way)[i]),rec->data);
+	    GPS_D107_Get(&(*way)[i],rec->data);
 	    break;
 	case pD108:
-	    GPS_D108_Get(&((*way)[i]),rec->data);
+	    GPS_D108_Get(&(*way)[i],rec->data);
 	    break;
 	case pD109:
-	    GPS_D109_Get(&((*way)[i]),rec->data, 109);
+	    GPS_D109_Get(&(*way)[i],rec->data, 109);
 	    break;
 	case pD110:
-	    GPS_D109_Get(&((*way)[i]),rec->data, 110);
+	    GPS_D109_Get(&(*way)[i],rec->data, 110);
 	    break;
 	case pD150:
-	    GPS_D150_Get(&((*way)[i]),rec->data);
+	    GPS_D150_Get(&(*way)[i],rec->data);
 	    break;
 	case pD151:
-	    GPS_D151_Get(&((*way)[i]),rec->data);
+	    GPS_D151_Get(&(*way)[i],rec->data);
 	    break;
 	case pD152:
-	    GPS_D152_Get(&((*way)[i]),rec->data);
+	    GPS_D152_Get(&(*way)[i],rec->data);
 	    break;
 	case pD154:
-	    GPS_D154_Get(&((*way)[i]),rec->data);
+	    GPS_D154_Get(&(*way)[i],rec->data);
 	    break;
 	case pD155:
-	    GPS_D155_Get(&((*way)[i]),rec->data);
+	    GPS_D155_Get(&(*way)[i],rec->data);
 	    break;
 	default:
 	    GPS_Error("A100_GET: Unknown waypoint protocol: %d", gps_waypt_type);
@@ -964,7 +964,7 @@ int32 GPS_A100_Get(const char *port, GPS_PWay **way, int (*cb)(int, GPS_PWay *))
 	}
 	/* Issue callback for status updates. */
 	if (cb) {
-		cb(n, &((*way)[i]));
+		cb(n, &(*way)[i]);
 	}
     }
 
@@ -1606,7 +1606,7 @@ static void GPS_D109_Get(GPS_PWay *way, UC *s, int protoid)
     p++;				/* data packet type */
     (*way)->wpt_class = *p++;
     (*way)->colour    = *p & 0x1f;
-    (*way)->dspl      = (*p++ >> 5) & 3;
+    (*way)->dspl      = *p++ >> 5 & 3;
     (*way)->attr      = *p++;
     (*way)->smbl = GPS_Util_Get_Short(p);
     p+=sizeof(int16);
@@ -2335,7 +2335,7 @@ static void GPS_D109_Send(UC *data, GPS_PWay way, int32 *len, int protoid)
     *p++ = 1; /* data packet type; must be 1 for D109 and D110 */
     *p++ = way->wpt_class;
 
-    *p++ = ((way->dspl & 3) << 5) | 0x1f;	/* colour & display */
+    *p++ = (way->dspl & 3) << 5 | 0x1f;	/* colour & display */
 
     if (protoid == 109) {	/* attr */
 	*p++ = 0x70;
@@ -2691,7 +2691,7 @@ int32 GPS_A200_Get(const char *port, GPS_PWay **way)
     n = GPS_Util_Get_Short(rec->data);
 
     if(n)
-	if(!((*way)=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
+	if(!(*way=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
 	{
 	    GPS_Error("A200_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -2713,13 +2713,13 @@ int32 GPS_A200_Get(const char *port, GPS_PWay **way)
 	    switch(gps_rte_hdr_type)
 	    {
 	    case pD200:
-		GPS_D200_Get(&((*way)[i]),rec->data);
+		GPS_D200_Get(&(*way)[i],rec->data);
 		break;
 	    case pD201:
-		GPS_D201_Get(&((*way)[i]),rec->data);
+		GPS_D201_Get(&(*way)[i],rec->data);
 		break;
 	    case pD202:
-		GPS_D202_Get(&((*way)[i]),rec->data);
+		GPS_D202_Get(&(*way)[i],rec->data);
 		break;
 	    default:
 		GPS_Error("A200_GET: Unknown route protocol");
@@ -2740,52 +2740,52 @@ int32 GPS_A200_Get(const char *port, GPS_PWay **way)
 	switch(gps_rte_type)
 	{
 	case pD100:
-	    GPS_D100_Get(&((*way)[i]),rec->data);
+	    GPS_D100_Get(&(*way)[i],rec->data);
 	    break;
 	case pD101:
-	    GPS_D101_Get(&((*way)[i]),rec->data);
+	    GPS_D101_Get(&(*way)[i],rec->data);
 	    break;
 	case pD102:
-	    GPS_D102_Get(&((*way)[i]),rec->data);
+	    GPS_D102_Get(&(*way)[i],rec->data);
 	    break;
 	case pD103:
-	    GPS_D103_Get(&((*way)[i]),rec->data);
+	    GPS_D103_Get(&(*way)[i],rec->data);
 	    break;
 	case pD104:
-	    GPS_D104_Get(&((*way)[i]),rec->data);
+	    GPS_D104_Get(&(*way)[i],rec->data);
 	    break;
 	case pD105:
-	    GPS_D105_Get(&((*way)[i]),rec->data);
+	    GPS_D105_Get(&(*way)[i],rec->data);
 	    break;
 	case pD106:
-	    GPS_D106_Get(&((*way)[i]),rec->data);
+	    GPS_D106_Get(&(*way)[i],rec->data);
 	    break;
 	case pD107:
-	    GPS_D107_Get(&((*way)[i]),rec->data);
+	    GPS_D107_Get(&(*way)[i],rec->data);
 	    break;
 	case pD108:
-	    GPS_D108_Get(&((*way)[i]),rec->data);
+	    GPS_D108_Get(&(*way)[i],rec->data);
 	    break;
 	case pD109:
-	    GPS_D109_Get(&((*way)[i]),rec->data,109);
+	    GPS_D109_Get(&(*way)[i],rec->data,109);
 	    break;
 	case pD110:
-	    GPS_D109_Get(&((*way)[i]),rec->data,110);
+	    GPS_D109_Get(&(*way)[i],rec->data,110);
 	    break;
 	case pD150:
-	    GPS_D150_Get(&((*way)[i]),rec->data);
+	    GPS_D150_Get(&(*way)[i],rec->data);
 	    break;
 	case pD151:
-	    GPS_D151_Get(&((*way)[i]),rec->data);
+	    GPS_D151_Get(&(*way)[i],rec->data);
 	    break;
 	case pD152:
-	    GPS_D152_Get(&((*way)[i]),rec->data);
+	    GPS_D152_Get(&(*way)[i],rec->data);
 	    break;
 	case pD154:
-	    GPS_D154_Get(&((*way)[i]),rec->data);
+	    GPS_D154_Get(&(*way)[i],rec->data);
 	    break;
 	case pD155:
-	    GPS_D155_Get(&((*way)[i]),rec->data);
+	    GPS_D155_Get(&(*way)[i],rec->data);
 	    break;
 	default:
 	    GPS_Error("A200_GET: Unknown route protocol");
@@ -2866,7 +2866,7 @@ int32 GPS_A201_Get(const char *port, GPS_PWay **way)
     n = GPS_Util_Get_Short(rec->data);
 
     if(n)
-	if(!((*way)=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
+	if(!(*way=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
 	{
 	    GPS_Error("A201_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -2888,13 +2888,13 @@ int32 GPS_A201_Get(const char *port, GPS_PWay **way)
 	    switch(gps_rte_hdr_type)
 	    {
 	    case pD200:
-		GPS_D200_Get(&((*way)[i]),rec->data);
+		GPS_D200_Get(&(*way)[i],rec->data);
 		break;
 	    case pD201:
-		GPS_D201_Get(&((*way)[i]),rec->data);
+		GPS_D201_Get(&(*way)[i],rec->data);
 		break;
 	    case pD202:
-		GPS_D202_Get(&((*way)[i]),rec->data);
+		GPS_D202_Get(&(*way)[i],rec->data);
 		break;
 	    default:
 		GPS_Error("A201_GET: Unknown route protocol");
@@ -2910,7 +2910,7 @@ int32 GPS_A201_Get(const char *port, GPS_PWay **way)
 	    switch(gps_rte_link_type)
 	    {
 	    case pD210:
-		GPS_D210_Get(&((*way)[i]),rec->data);
+		GPS_D210_Get(&(*way)[i],rec->data);
 		break;
 	    default:
 		GPS_Error("A201_GET: Unknown route protocol");
@@ -2933,52 +2933,52 @@ int32 GPS_A201_Get(const char *port, GPS_PWay **way)
 	switch(gps_rte_type)
 	{
 	case pD100:
-	    GPS_D100_Get(&((*way)[i]),rec->data);
+	    GPS_D100_Get(&(*way)[i],rec->data);
 	    break;
 	case pD101:
-	    GPS_D101_Get(&((*way)[i]),rec->data);
+	    GPS_D101_Get(&(*way)[i],rec->data);
 	    break;
 	case pD102:
-	    GPS_D102_Get(&((*way)[i]),rec->data);
+	    GPS_D102_Get(&(*way)[i],rec->data);
 	    break;
 	case pD103:
-	    GPS_D103_Get(&((*way)[i]),rec->data);
+	    GPS_D103_Get(&(*way)[i],rec->data);
 	    break;
 	case pD104:
-	    GPS_D104_Get(&((*way)[i]),rec->data);
+	    GPS_D104_Get(&(*way)[i],rec->data);
 	    break;
 	case pD105:
-	    GPS_D105_Get(&((*way)[i]),rec->data);
+	    GPS_D105_Get(&(*way)[i],rec->data);
 	    break;
 	case pD106:
-	    GPS_D106_Get(&((*way)[i]),rec->data);
+	    GPS_D106_Get(&(*way)[i],rec->data);
 	    break;
 	case pD107:
-	    GPS_D107_Get(&((*way)[i]),rec->data);
+	    GPS_D107_Get(&(*way)[i],rec->data);
 	    break;
 	case pD108:
-	    GPS_D108_Get(&((*way)[i]),rec->data);
+	    GPS_D108_Get(&(*way)[i],rec->data);
 	    break;
 	case pD109:
-	    GPS_D109_Get(&((*way)[i]),rec->data,109);
+	    GPS_D109_Get(&(*way)[i],rec->data,109);
 	    break;
 	case pD110:
-	    GPS_D109_Get(&((*way)[i]),rec->data,110);
+	    GPS_D109_Get(&(*way)[i],rec->data,110);
 	    break;
 	case pD150:
-	    GPS_D150_Get(&((*way)[i]),rec->data);
+	    GPS_D150_Get(&(*way)[i],rec->data);
 	    break;
 	case pD151:
-	    GPS_D151_Get(&((*way)[i]),rec->data);
+	    GPS_D151_Get(&(*way)[i],rec->data);
 	    break;
 	case pD152:
-	    GPS_D152_Get(&((*way)[i]),rec->data);
+	    GPS_D152_Get(&(*way)[i],rec->data);
 	    break;
 	case pD154:
-	    GPS_D154_Get(&((*way)[i]),rec->data);
+	    GPS_D154_Get(&(*way)[i],rec->data);
 	    break;
 	case pD155:
-	    GPS_D155_Get(&((*way)[i]),rec->data);
+	    GPS_D155_Get(&(*way)[i],rec->data);
 	    break;
 	default:
 	    GPS_Error("A200_GET: Unknown route protocol");
@@ -3599,7 +3599,7 @@ int32 GPS_A300_Get(const char *port, GPS_PTrack **trk, pcb_fn cb)
     n = GPS_Util_Get_Short(rec->data);
 
     if(n)
-	if(!((*trk)=(GPS_PTrack *)malloc(n*sizeof(GPS_PTrack))))
+	if(!(*trk=(GPS_PTrack *)malloc(n*sizeof(GPS_PTrack))))
 	{
 	    GPS_Error("A300_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -3759,7 +3759,7 @@ int32 GPS_A301_Get(const char *port, GPS_PTrack **trk, pcb_fn cb, int protoid)
     n = GPS_Util_Get_Short(rec->data);
 
     if(n)
-	if(!((*trk)=(GPS_PTrack *)malloc(n*sizeof(GPS_PTrack))))
+	if(!(*trk=(GPS_PTrack *)malloc(n*sizeof(GPS_PTrack))))
 	{
 	    GPS_Error("A301_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -3780,10 +3780,10 @@ int32 GPS_A301_Get(const char *port, GPS_PTrack **trk, pcb_fn cb, int protoid)
 	    {
 	    case pD310:
 	    case pD312:
-		GPS_D310_Get(&((*trk)[i]),rec->data);
+		GPS_D310_Get(&(*trk)[i],rec->data);
 		break;
 	    case pD311:
-		GPS_D311_Get(&((*trk)[i]),rec->data);
+		GPS_D311_Get(&(*trk)[i],rec->data);
 		break;
 	    default:
 		GPS_Error("A301_Get: Unknown track protocol");
@@ -3804,17 +3804,17 @@ int32 GPS_A301_Get(const char *port, GPS_PTrack **trk, pcb_fn cb, int protoid)
 	switch(trk_type)
 	{
 	case pD300:
-	    GPS_D300b_Get(&((*trk)[i]),rec->data);
+	    GPS_D300b_Get(&(*trk)[i],rec->data);
 	    break;
 	case pD301:
-	    GPS_D301b_Get(&((*trk)[i]),rec->data);
+	    GPS_D301b_Get(&(*trk)[i],rec->data);
 	    break;
 	case pD302:
-	    GPS_D302b_Get(&((*trk)[i]),rec->data);
+	    GPS_D302b_Get(&(*trk)[i],rec->data);
 	    break;
 	case pD303:
 	case pD304:
-	    GPS_D303b_Get(&((*trk)[i]),rec->data);
+	    GPS_D303b_Get(&(*trk)[i],rec->data);
 	    /* Fitness devices don't send track segment markers, so we have
 	     * to create them ourselves. We do so at the beginning of the
 	     * track or if the device signals a pause by sending two
@@ -4072,7 +4072,7 @@ int32 GPS_A301_Send(const char *port, GPS_PTrack *trk, int32 n, int protoid,
                break;
 	    case pD303:
 	    case pD304:
-		GPS_D303_Send(data,trk[i],&len,(trk_type==pD303) ? 303 : 304);
+		GPS_D303_Send(data,trk[i],&len,trk_type==pD303 ? 303 : 304);
 		break;
 	    default:
 		GPS_Error("A301_Send: Unknown track protocol");
@@ -4342,17 +4342,17 @@ void GPS_D303b_Get(GPS_PTrack *trk, UC *data)
     switch (gps_trk_type) {
     case pD304:
 	(*trk)->distance = GPS_Util_Get_Float(p);
-	(*trk)->distance_populated = ((*trk)->distance <= 1e24);
+	(*trk)->distance_populated = (*trk)->distance <= 1e24;
 	p+=sizeof(float); /* A float indicating number of meters travelled. */
 
-	(*trk)->heartrate = (*p++);
+	(*trk)->heartrate = *p++;
 	/* crank cadence, RPM, 0xff if invalid.  */
 	if (*p != 0xff) {
-		(*trk)->cadence = (*p);
+		(*trk)->cadence = *p;
 	}
 	p++;
 
-	(*trk)->wsensor_pres = (*p++);
+	(*trk)->wsensor_pres = *p++;
 
 	break;
     case pD303:
@@ -4700,7 +4700,7 @@ int32 GPS_A400_Get(const char *port, GPS_PWay **way)
     n = GPS_Util_Get_Short(rec->data);
 
     if(n)
-	if(!((*way)=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
+	if(!(*way=(GPS_PWay *)malloc(n*sizeof(GPS_PWay))))
 	{
 	    GPS_Error("A400_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -4721,52 +4721,52 @@ int32 GPS_A400_Get(const char *port, GPS_PWay **way)
 	switch(gps_prx_waypt_type)
 	{
 	case pD400:
-	    GPS_D400_Get(&((*way)[i]),rec->data);
+	    GPS_D400_Get(&(*way)[i],rec->data);
 	    break;
 	case pD101:
-	    GPS_D101_Get(&((*way)[i]),rec->data);
+	    GPS_D101_Get(&(*way)[i],rec->data);
 	    break;
 	case pD102:
-	    GPS_D102_Get(&((*way)[i]),rec->data);
+	    GPS_D102_Get(&(*way)[i],rec->data);
 	    break;
 	case pD403:
-	    GPS_D403_Get(&((*way)[i]),rec->data);
+	    GPS_D403_Get(&(*way)[i],rec->data);
 	    break;
 	case pD104:
-	    GPS_D104_Get(&((*way)[i]),rec->data);
+	    GPS_D104_Get(&(*way)[i],rec->data);
 	    break;
 	case pD105:
-	    GPS_D105_Get(&((*way)[i]),rec->data);
+	    GPS_D105_Get(&(*way)[i],rec->data);
 	    break;
 	case pD106:
-	    GPS_D106_Get(&((*way)[i]),rec->data);
+	    GPS_D106_Get(&(*way)[i],rec->data);
 	    break;
 	case pD107:
-	    GPS_D107_Get(&((*way)[i]),rec->data);
+	    GPS_D107_Get(&(*way)[i],rec->data);
 	    break;
 	case pD108:
-	    GPS_D108_Get(&((*way)[i]),rec->data);
+	    GPS_D108_Get(&(*way)[i],rec->data);
 	    break;
 	case pD109:
-	    GPS_D109_Get(&((*way)[i]),rec->data,109);
+	    GPS_D109_Get(&(*way)[i],rec->data,109);
 	    break;
 	case pD110:
-	    GPS_D109_Get(&((*way)[i]),rec->data,110);
+	    GPS_D109_Get(&(*way)[i],rec->data,110);
 	    break;
 	case pD450:
-	    GPS_D450_Get(&((*way)[i]),rec->data);
+	    GPS_D450_Get(&(*way)[i],rec->data);
 	    break;
 	case pD151:
-	    GPS_D151_Get(&((*way)[i]),rec->data);
+	    GPS_D151_Get(&(*way)[i],rec->data);
 	    break;
 	case pD152:
-	    GPS_D152_Get(&((*way)[i]),rec->data);
+	    GPS_D152_Get(&(*way)[i],rec->data);
 	    break;
 	case pD154:
-	    GPS_D154_Get(&((*way)[i]),rec->data);
+	    GPS_D154_Get(&(*way)[i],rec->data);
 	    break;
 	case pD155:
-	    GPS_D155_Get(&((*way)[i]),rec->data);
+	    GPS_D155_Get(&(*way)[i],rec->data);
 	    break;
 	default:
 	    GPS_Error("A400_GET: Unknown prx waypoint protocol");
@@ -5209,7 +5209,7 @@ int32 GPS_A500_Get(const char *port, GPS_PAlmanac **alm)
     n = GPS_Util_Get_Short(recpkt->data);
 
     if(n)
-	if(!((*alm)=(GPS_PAlmanac *)malloc(n*sizeof(GPS_PAlmanac))))
+	if(!(*alm=(GPS_PAlmanac *)malloc(n*sizeof(GPS_PAlmanac))))
 	{
 	    GPS_Error("A500_Get: Insufficient memory");
 	    return MEMORY_ERROR;
@@ -5228,19 +5228,19 @@ int32 GPS_A500_Get(const char *port, GPS_PAlmanac **alm)
 
 		switch(gps_almanac_type) {
     case pD500:
-	GPS_A500_Translate(recpkt->data, &((*alm)[i]));
+	GPS_A500_Translate(recpkt->data, &(*alm)[i]);
 	break;
     case pD501:
-	GPS_A500_Translate(recpkt->data, &((*alm)[i]));
+	GPS_A500_Translate(recpkt->data, &(*alm)[i]);
 	(*alm)[i]->hlth=recpkt->data[42];
 	break;
     case pD550:
 	(*alm)[i]->svid = recpkt->data[0];
-	GPS_A500_Translate(recpkt->data+1, &((*alm)[i]));
+	GPS_A500_Translate(recpkt->data+1, &(*alm)[i]);
 	break;
     case pD551:
 	(*alm)[i]->svid = recpkt->data[0];
-	GPS_A500_Translate(recpkt->data+1, &((*alm)[i]));
+	GPS_A500_Translate(recpkt->data+1, &(*alm)[i]);
 	(*alm)[i]->hlth = recpkt->data[43];
 	break;
     default:
@@ -6267,7 +6267,7 @@ int32 GPS_A906_Get(const char *port, GPS_PLap **lap, pcb_fn cb)
     n = GPS_Util_Get_Short(recpkt->data);
 
     if(n)
-        if(!((*lap)=(GPS_PLap *)malloc(n*sizeof(GPS_PLap))))
+        if(!(*lap=(GPS_PLap *)malloc(n*sizeof(GPS_PLap))))
         {
             GPS_Error("A906_Get: Insufficient memory");
             return MEMORY_ERROR;
@@ -6289,7 +6289,7 @@ int32 GPS_A906_Get(const char *port, GPS_PLap **lap, pcb_fn cb)
 		    case pD1001:
 		    case pD1011:
 		    case pD1015:
-			    GPS_D1011b_Get(&((*lap)[i]),recpkt->data);
+			    GPS_D1011b_Get(&(*lap)[i],recpkt->data);
 		break;
 	    default:
 		GPS_Error("A906_Get: Unknown Lap protocol %d\n", gps_lap_type);
@@ -6479,7 +6479,7 @@ int32  GPS_A1006_Get
 
 
     if(n)
-        if(!((*crs)=(GPS_PCourse *)malloc(n*sizeof(GPS_PCourse))))
+        if(!(*crs=(GPS_PCourse *)malloc(n*sizeof(GPS_PCourse))))
         {
             GPS_Error("A1006_Get: Insufficient memory");
             return MEMORY_ERROR;
@@ -6498,7 +6498,7 @@ int32  GPS_A1006_Get
 
        switch(gps_course_type) {
             case pD1006:
-                GPS_D1006_Get(&((*crs)[i]),recpkt->data);
+                GPS_D1006_Get(&(*crs)[i],recpkt->data);
                break;
            default:
                GPS_Error("A1006_Get: Unknown Course protocol %d\n",
@@ -6717,7 +6717,7 @@ int32 GPS_A1007_Get(const char *port, GPS_PCourse_Lap **clp, pcb_fn cb)
 
 
     if(n)
-        if(!((*clp)=(GPS_PCourse_Lap *)malloc(n*sizeof(GPS_PCourse_Lap))))
+        if(!(*clp=(GPS_PCourse_Lap *)malloc(n*sizeof(GPS_PCourse_Lap))))
         {
             GPS_Error("A1007_Get: Insufficient memory");
             return MEMORY_ERROR;
@@ -6736,7 +6736,7 @@ int32 GPS_A1007_Get(const char *port, GPS_PCourse_Lap **clp, pcb_fn cb)
 
        switch(gps_course_lap_type) {
             case pD1007:
-                GPS_D1007_Get(&((*clp)[i]),recpkt->data);
+                GPS_D1007_Get(&(*clp)[i],recpkt->data);
                break;
            default:
                GPS_Error("A1007_Get: Unknown Course Lap protocol %d\n",
@@ -6992,7 +6992,7 @@ int32 GPS_A1008_Get(const char *port, GPS_PCourse_Point **cpt, pcb_fn cb)
 
 
     if(n)
-        if(!((*cpt)=(GPS_PCourse_Point *)malloc(n*sizeof(GPS_PCourse_Point))))
+        if(!(*cpt=(GPS_PCourse_Point *)malloc(n*sizeof(GPS_PCourse_Point))))
         {
             GPS_Error("A1008_Get: Insufficient memory");
             return MEMORY_ERROR;
@@ -7011,7 +7011,7 @@ int32 GPS_A1008_Get(const char *port, GPS_PCourse_Point **cpt, pcb_fn cb)
 
        switch(gps_course_point_type) {
             case pD1012:
-                GPS_D1012_Get(&((*cpt)[i]),recpkt->data);
+                GPS_D1012_Get(&(*cpt)[i],recpkt->data);
                break;
            default:
                GPS_Error("A1008_Get: Unknown Course Point protocol %d\n",
@@ -7459,7 +7459,7 @@ void GPS_Prepare_Track_For_Device(GPS_PTrack **trk, int32 *n)
 		    if (!Is_Trackpoint_Invalid((*trk)[j]))
 		    {
 			GPS_PTrack trkpt = GPS_Track_New();
-			*trkpt = *((*trk)[j]);
+			*trkpt = *(*trk)[j];
 			trkpt->no_latlon = 1;
 			trkpt->alt = (float)1e25;
 			trkpt->distance_populated = 0;

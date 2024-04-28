@@ -373,7 +373,7 @@ static int print_route(const struct route_entry* entry, void* arg) {
       ips->push_back(addr_ntoa(&entry->route_gw));
     }
   }
-  return (0);
+  return 0;
 }
 
 static int print_arp(const struct arp_entry* entry, void* arg) {
@@ -384,7 +384,7 @@ static int print_arp(const struct arp_entry* entry, void* arg) {
       ips->end()) {
     ips->push_back(addr_ntoa(&entry->arp_pa));
   }
-  return (0);
+  return 0;
 }
 #endif
 

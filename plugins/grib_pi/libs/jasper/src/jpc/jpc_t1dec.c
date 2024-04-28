@@ -261,7 +261,7 @@ if (bpno < 0) {
             assert(bpno >= 0 && bpno < 31);
             switch (passtype) {
             case JPC_SIGPASS:
-                ret = (seg->type == JPC_SEG_MQ) ? dec_sigpass(dec,
+                ret = seg->type == JPC_SEG_MQ ? dec_sigpass(dec,
                   cblk->mqdec, bpno, band->orient,
                   (tile->cp->ccps[compno].cblkctx & JPC_COX_VSC) != 0,
                   cblk->flags, cblk->data) :
@@ -270,7 +270,7 @@ if (bpno < 0) {
                   cblk->flags, cblk->data);
                 break;
             case JPC_REFPASS:
-                ret = (seg->type == JPC_SEG_MQ) ?
+                ret = seg->type == JPC_SEG_MQ ?
                   dec_refpass(dec, cblk->mqdec, bpno,
                   (tile->cp->ccps[compno].cblkctx & JPC_COX_VSC) != 0,
                   cblk->flags, cblk->data) :
@@ -603,7 +603,7 @@ static int dec_refpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos,
 
     one = 1 << bitpos;
     poshalf = one >> 1;
-    neghalf = (bitpos > 0) ? (-poshalf) : (-1);
+    neghalf = bitpos > 0 ? -poshalf : -1;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -701,7 +701,7 @@ static int dec_rawrefpass(jpc_dec_t *dec, jpc_bitstream_t *in, int bitpos, int v
 
     one = 1 << bitpos;
     poshalf = one >> 1;
-    neghalf = (bitpos > 0) ? (-poshalf) : (-1);
+    neghalf = bitpos > 0 ? -poshalf : -1;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -825,11 +825,11 @@ static int dec_clnpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos, 
         vscanlen = JAS_MIN(4, height - i);
         for (j = width; j > 0; --j, ++fvscanstart, ++dvscanstart) {
             fp = fvscanstart;
-            if (vscanlen >= 4 && (!((*fp) & (JPC_SIG | JPC_VISIT |
-              JPC_OTHSIGMSK))) && (fp += frowstep, !((*fp) & (JPC_SIG |
-              JPC_VISIT | JPC_OTHSIGMSK))) && (fp += frowstep, !((*fp) &
+            if (vscanlen >= 4 && !(*fp & (JPC_SIG | JPC_VISIT |
+                                          JPC_OTHSIGMSK)) && (fp += frowstep, !(*fp & (JPC_SIG |
+              JPC_VISIT | JPC_OTHSIGMSK))) && (fp += frowstep, !(*fp &
               (JPC_SIG | JPC_VISIT | JPC_OTHSIGMSK))) && (fp += frowstep,
-              !((*fp) & (JPC_SIG | JPC_VISIT | JPC_OTHSIGMSK)))) {
+              !(*fp & (JPC_SIG | JPC_VISIT | JPC_OTHSIGMSK)))) {
 
                 jpc_mqdec_setcurctx(mqdec, JPC_AGGCTXNO);
                 JPC_T1D_GETBIT(mqdec, v, "CLN", "AGG");
@@ -840,7 +840,7 @@ static int dec_clnpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos, 
                 JPC_T1D_GETBITNOSKEW(mqdec, v, "CLN", "RL");
                 runlen = v;
                 JPC_T1D_GETBITNOSKEW(mqdec, v, "CLN", "RL");
-                runlen = (runlen << 1) | v;
+                runlen = runlen << 1 | v;
                 f = *(fp = fvscanstart + frowstep * runlen);
                 dp = dvscanstart + drowstep * runlen;
                 k = vscanlen - runlen;
@@ -903,13 +903,13 @@ static int dec_clnpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos, 
         segsymval = 0;
         jpc_mqdec_setcurctx(mqdec, JPC_UCTXNO);
         JPC_T1D_GETBITNOSKEW(mqdec, v, "CLN", "SEGSYM");
-        segsymval = (segsymval << 1) | (v & 1);
+        segsymval = segsymval << 1 | v & 1;
         JPC_T1D_GETBITNOSKEW(mqdec, v, "CLN", "SEGSYM");
-        segsymval = (segsymval << 1) | (v & 1);
+        segsymval = segsymval << 1 | v & 1;
         JPC_T1D_GETBITNOSKEW(mqdec, v, "CLN", "SEGSYM");
-        segsymval = (segsymval << 1) | (v & 1);
+        segsymval = segsymval << 1 | v & 1;
         JPC_T1D_GETBITNOSKEW(mqdec, v, "CLN", "SEGSYM");
-        segsymval = (segsymval << 1) | (v & 1);
+        segsymval = segsymval << 1 | v & 1;
         if (segsymval != 0xa) {
             jas_eprintf("warning: bad segmentation symbol\n");
         }

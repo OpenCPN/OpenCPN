@@ -82,7 +82,7 @@ ZUFILE *zu_open(const char *fname, const char *mode, int type) {
         int bzerror = BZ_OK;
         f->zfile = (void *)BZ2_bzReadOpen(&bzerror, f->faux, 0, 0, NULL, 0);
         if (bzerror != BZ_OK) {
-          BZ2_bzReadClose(&bzerror, (BZFILE *)(f->zfile));
+          BZ2_bzReadClose(&bzerror, (BZFILE *)f->zfile);
           fclose(f->faux);
           f->zfile = NULL;
         }
@@ -108,13 +108,13 @@ int zu_read(ZUFILE *f, void *buf, long len) {
   int bzerror = BZ_OK;
   switch (f->type) {
     case ZU_COMPRESS_NONE:
-      nb = fread(buf, 1, len, (FILE *)(f->zfile));
+      nb = fread(buf, 1, len, (FILE *)f->zfile);
       break;
     case ZU_COMPRESS_GZIP:
-      nb = gzread((gzFile)(f->zfile), buf, len);
+      nb = gzread((gzFile)f->zfile, buf, len);
       break;
     case ZU_COMPRESS_BZIP:
-      nb = BZ2_bzRead(&bzerror, (BZFILE *)(f->zfile), buf, len);
+      nb = BZ2_bzRead(&bzerror, (BZFILE *)f->zfile, buf, len);
       break;
   }
   f->pos += nb;
@@ -131,13 +131,13 @@ int zu_close(ZUFILE *f) {
     if (f->zfile) {
       switch (f->type) {
         case ZU_COMPRESS_NONE:
-          fclose((FILE *)(f->zfile));
+          fclose((FILE *)f->zfile);
           break;
         case ZU_COMPRESS_GZIP:
-          gzclose((gzFile)(f->zfile));
+          gzclose((gzFile)f->zfile);
           break;
         case ZU_COMPRESS_BZIP:
-          BZ2_bzReadClose(&bzerror, (BZFILE *)(f->zfile));
+          BZ2_bzReadClose(&bzerror, (BZFILE *)f->zfile);
           if (f->faux) {
             fclose(f->faux);
           }
@@ -174,17 +174,17 @@ int zu_seek(ZUFILE *f, long offset, int whence) {
 
   switch (f->type) {  // SEEK_SET, SEEK_CUR
     case ZU_COMPRESS_NONE:
-      res = fseek((FILE *)(f->zfile), offset, whence);
-      f->pos = ftell((FILE *)(f->zfile));
+      res = fseek((FILE *)f->zfile, offset, whence);
+      f->pos = ftell((FILE *)f->zfile);
       break;
     case ZU_COMPRESS_GZIP:
       if (whence == SEEK_SET) {
-        res = gzseek((gzFile)(f->zfile), offset, whence);
+        res = gzseek((gzFile)f->zfile, offset, whence);
       } else {  // !!! BUG with SEEK_CUR in ZLIB !!!
-        int p1 = gztell((gzFile)(f->zfile));
-        res = gzseek((gzFile)(f->zfile), p1 + offset, SEEK_SET);
+        int p1 = gztell((gzFile)f->zfile);
+        res = gzseek((gzFile)f->zfile, p1 + offset, SEEK_SET);
       }
-      f->pos = gztell((gzFile)(f->zfile));
+      f->pos = gztell((gzFile)f->zfile);
       if (res >= 0) res = 0;
       break;
     case ZU_COMPRESS_BZIP:
@@ -193,13 +193,13 @@ int zu_seek(ZUFILE *f, long offset, int whence) {
       } else if (whence == SEEK_CUR) {
         res = zu_bzSeekForward(f, offset);
       } else {  // BAD : reopen file
-        BZ2_bzReadClose(&bzerror, (BZFILE *)(f->zfile));
+        BZ2_bzReadClose(&bzerror, (BZFILE *)f->zfile);
         bzerror = BZ_OK;
         rewind(f->faux);
         f->pos = 0;
         f->zfile = (void *)BZ2_bzReadOpen(&bzerror, f->faux, 0, 0, NULL, 0);
         if (bzerror != BZ_OK) {
-          BZ2_bzReadClose(&bzerror, (BZFILE *)(f->zfile));
+          BZ2_bzReadClose(&bzerror, (BZFILE *)f->zfile);
           fclose(f->faux);
           f->zfile = NULL;
           f->ok = 0;
@@ -221,12 +221,12 @@ int zu_bzSeekForward(ZUFILE *f, unsigned long nbytes_)
   int nb;
   int bzerror = BZ_OK;
   while (bzerror == BZ_OK && nbytes >= ZU_BUFREADSIZE) {
-    nb = BZ2_bzRead(&bzerror, (BZFILE *)(f->zfile), buf, ZU_BUFREADSIZE);
+    nb = BZ2_bzRead(&bzerror, (BZFILE *)f->zfile, buf, ZU_BUFREADSIZE);
     nbytes -= nb;
     nbread += nb;
   }
   if (bzerror == BZ_OK && nbytes > 0) {
-    nb = BZ2_bzRead(&bzerror, (BZFILE *)(f->zfile), buf, nbytes);
+    nb = BZ2_bzRead(&bzerror, (BZFILE *)f->zfile, buf, nbytes);
     nbread += nb;
   }
   f->pos += nbread;

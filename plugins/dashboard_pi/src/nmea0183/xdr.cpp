@@ -87,12 +87,12 @@ bool XDR::Parse( const SENTENCE& sentence )
    cksumFieldNr=sentence.GetNumberOfDataFields()+1;
    if (TransducerCnt == 0 || TransducerCnt > MaxTransducerCnt) {
       SetErrorMessage( _T("Invalid Field count" ));
-      return( FALSE );
+      return FALSE;
    }
 
    if ( sentence.IsChecksumBad( cksumFieldNr ) == NTrue ) {
       SetErrorMessage( _T("Invalid Checksum" ));
-      return( FALSE );
+      return FALSE;
    }
     for (int idx = 0; idx < TransducerCnt; idx++)
    {
@@ -102,7 +102,7 @@ bool XDR::Parse( const SENTENCE& sentence )
          TransducerInfo[idx].TransducerName = sentence.Field( idx*4+4 );
    }
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool XDR::Write( SENTENCE& sentence )
@@ -126,7 +126,7 @@ bool XDR::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const XDR& XDR::operator = ( const XDR& source )
@@ -142,5 +142,5 @@ const XDR& XDR::operator = ( const XDR& source )
    }
 
 
-  return( *this );
+  return*this;
 }

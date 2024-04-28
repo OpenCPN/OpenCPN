@@ -62,10 +62,10 @@ bool LONGITUDE::IsDataValid( void )
 {
    if ( Easting != East && Easting != West )
    {
-      return( FALSE );
+      return FALSE;
    }
 
-   return( TRUE );
+   return TRUE;
 }
 
 void LONGITUDE::Parse( int position_field_number, int east_or_west_field_number, const SENTENCE& sentence )
@@ -140,5 +140,5 @@ const LONGITUDE& LONGITUDE::operator = ( const LONGITUDE& source )
    Longitude = source.Longitude;
    Easting   = source.Easting;
 
-   return( *this );
+   return*this;
 }

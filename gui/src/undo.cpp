@@ -110,7 +110,7 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
   selectable->m_slat = currentPoint->m_lat;
   selectable->m_slon = currentPoint->m_lon;
 
-  if ((NULL != g_pMarkInfoDialog) && (g_pMarkInfoDialog->IsShown())) {
+  if (NULL != g_pMarkInfoDialog && g_pMarkInfoDialog->IsShown()) {
     if (currentPoint == g_pMarkInfoDialog->GetRoutePoint())
       g_pMarkInfoDialog->UpdateProperties(true);
   }
@@ -151,7 +151,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   Route* route = (Route*)action->after[0];
 
   bool noRouteLeftToRedo = false;
-  if ((route->GetnPoints() == 2) && (cc->m_routeState == 0))
+  if (route->GetnPoints() == 2 && cc->m_routeState == 0)
     noRouteLeftToRedo = true;
 
   g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);

@@ -112,11 +112,11 @@ jpc_bitstream_t *jpc_bitstream_sopen(jas_stream_t *stream, char *mode)
     bitstream->flags_ = JPC_BITSTREAM_NOCLOSE;
 
     bitstream->stream_ = stream;
-    bitstream->openmode_ = (mode[0] == 'w') ? JPC_BITSTREAM_WRITE :
+    bitstream->openmode_ = mode[0] == 'w' ? JPC_BITSTREAM_WRITE :
       JPC_BITSTREAM_READ;
 
     /* Mark the data buffer as empty. */
-    bitstream->cnt_ = (bitstream->openmode_ == JPC_BITSTREAM_READ) ? 0 : 8;
+    bitstream->cnt_ = bitstream->openmode_ == JPC_BITSTREAM_READ ? 0 : 8;
     bitstream->buf_ = 0;
 
     return bitstream;
@@ -203,7 +203,7 @@ long jpc_bitstream_getbits(jpc_bitstream_t *bitstream, int n)
         if ((u = jpc_bitstream_getbit(bitstream)) < 0) {
             return -1;
         }
-        v = (v << 1) | u;
+        v = v << 1 | u;
     }
     return v;
 }
@@ -253,14 +253,14 @@ int jpc_bitstream_fillbuf(jpc_bitstream_t *bitstream)
         return 1;
     }
 
-    bitstream->buf_ = (bitstream->buf_ << 8) & 0xffff;
+    bitstream->buf_ = bitstream->buf_ << 8 & 0xffff;
     if ((c = jas_stream_getc((bitstream)->stream_)) == EOF) {
         bitstream->flags_ |= JPC_BITSTREAM_EOF;
         return 1;
     }
-    bitstream->cnt_ = (bitstream->buf_ == 0xff00) ? 6 : 7;
-    bitstream->buf_ |= c & ((1 << (bitstream->cnt_ + 1)) - 1);
-    return (bitstream->buf_ >> bitstream->cnt_) & 1;
+    bitstream->cnt_ = bitstream->buf_ == 0xff00 ? 6 : 7;
+    bitstream->buf_ |= c & (1 << bitstream->cnt_ + 1) - 1;
+    return bitstream->buf_ >> bitstream->cnt_ & 1;
 }
 
 
@@ -278,7 +278,7 @@ int jpc_bitstream_needalign(jpc_bitstream_t *bitstream)
           previous byte forced a stuffed bit, alignment is
           required. */
         if ((bitstream->cnt_ < 8 && bitstream->cnt_ > 0) ||
-          ((bitstream->buf_ >> 8) & 0xff) == 0xff) {
+          (bitstream->buf_ >> 8 & 0xff) == 0xff) {
             return 1;
         }
     } else if (bitstream->openmode_ & JPC_BITSTREAM_WRITE) {
@@ -287,7 +287,7 @@ int jpc_bitstream_needalign(jpc_bitstream_t *bitstream)
           previous byte forced a stuffed bit, alignment is
           required. */
         if ((bitstream->cnt_ < 8 && bitstream->cnt_ >= 0) ||
-          ((bitstream->buf_ >> 8) & 0xff) == 0xff) {
+          (bitstream->buf_ >> 8 & 0xff) == 0xff) {
             return 1;
         }
     } else {
@@ -354,7 +354,7 @@ int jpc_bitstream_inalign(jpc_bitstream_t *bitstream, int fillmask,
     if (bitstream->cnt_ > 0) {
         n = bitstream->cnt_;
     } else if (!bitstream->cnt_) {
-        n = ((bitstream->buf_ & 0xff) == 0xff) ? 7 : 0;
+        n = (bitstream->buf_ & 0xff) == 0xff ? 7 : 0;
     } else {
         n = 0;
     }
@@ -363,13 +363,13 @@ int jpc_bitstream_inalign(jpc_bitstream_t *bitstream, int fillmask,
             return -1;
         }
         m += n;
-        v = (v << n) | u;
+        v = v << n | u;
     }
     if ((bitstream->buf_ & 0xff) == 0xff) {
         if ((u = jpc_bitstream_getbits(bitstream, 7)) < 0) {
             return -1;
         }
-        v = (v << 7) | u;
+        v = v << 7 | u;
         m += 7;
     }
     if (m > numfill) {
@@ -378,7 +378,7 @@ int jpc_bitstream_inalign(jpc_bitstream_t *bitstream, int fillmask,
         filldata >>= numfill - m;
         fillmask >>= numfill - m;
     }
-    if (((~(v ^ filldata)) & fillmask) != fillmask) {
+    if ((~(v ^ filldata) & fillmask) != fillmask) {
         /* The actual fill pattern does not match the expected one. */
         return 1;
     }
@@ -411,7 +411,7 @@ int jpc_bitstream_outalign(jpc_bitstream_t *bitstream, int filldata)
         }
     } else if (bitstream->cnt_ > 0 && bitstream->cnt_ < 8) {
         n = bitstream->cnt_;
-        v = filldata >> (7 - n);
+        v = filldata >> 7 - n;
     } else {
         n = 0;
         v = 0;
@@ -433,7 +433,7 @@ int jpc_bitstream_outalign(jpc_bitstream_t *bitstream, int filldata)
             return -1;
         }
         bitstream->cnt_ = 8;
-        bitstream->buf_ = (bitstream->buf_ << 8) & 0xffff;
+        bitstream->buf_ = bitstream->buf_ << 8 & 0xffff;
     }
 
     return 0;

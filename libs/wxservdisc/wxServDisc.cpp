@@ -423,7 +423,7 @@ SOCKET wxServDisc::msock()
 
       /* Specify the multicast group */
       memcpy(&multicastRequest.imr_multiaddr,
-	     &((struct sockaddr_in*)(multicastAddr->ai_addr))->sin_addr,
+	     &((struct sockaddr_in*)multicastAddr->ai_addr)->sin_addr,
 	     sizeof(multicastRequest.imr_multiaddr));
 
       /* Accept multicast from any interface */
@@ -443,7 +443,7 @@ SOCKET wxServDisc::msock()
 
       /* Specify the multicast group */
       memcpy(&multicastRequest.ipv6mr_multiaddr,
-	     &((struct sockaddr_in6*)(multicastAddr->ai_addr))->sin6_addr,
+	     &((struct sockaddr_in6*)multicastAddr->ai_addr)->sin6_addr,
 	     sizeof(multicastRequest.ipv6mr_multiaddr));
 
       /* Accept multicast from any interface */

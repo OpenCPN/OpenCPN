@@ -81,7 +81,7 @@ AisError DecodeSingleVDO(const wxString &str,
 
   //  Simple case only
   //  First and only part of a one-part sentence
-  if ((1 == nsentences) && (1 == isentence)) {
+  if (1 == nsentences && 1 == isentence) {
     string_to_parse = tkz.GetNextToken();  // the encapsulated data
   }
   else {
@@ -162,7 +162,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
     case 3: {
 
       ptd->NavStatus = bstr->GetInt(39, 4);
-      ptd->SOG = 0.1 * (bstr->GetInt(51, 10));
+      ptd->SOG = 0.1 * bstr->GetInt(51, 10);
 
       int lon = bstr->GetInt(62, 28);
       if (lon & 0x08000000)  // negative?
@@ -174,7 +174,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) && (lat_tentative <= 90.))
+      if (lon_tentative <= 180. && lat_tentative <= 90.)
           // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
@@ -186,8 +186,8 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
         ptd->b_positionDoubtful = true;
 
       //    decode balance of message....
-      ptd->COG = 0.1 * (bstr->GetInt(117, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(129, 9));
+      ptd->COG = 0.1 * bstr->GetInt(117, 12);
+      ptd->HDG = 1.0 * bstr->GetInt(129, 9);
 
       ptd->ROTAIS = bstr->GetInt(43, 8);
       double rot_dir = 1.0;
@@ -200,23 +200,23 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
       }
 
       // Convert to indicated ROT
-      ptd->ROTIND = round(rot_dir * pow((((double)ptd->ROTAIS) / 4.733), 2));
+      ptd->ROTIND = round(rot_dir * pow((double)ptd->ROTAIS / 4.733, 2));
 
       ptd->m_utc_sec = bstr->GetInt(138, 6);
 
-      if ((1 == message_ID) || (2 == message_ID))
+      if (1 == message_ID || 2 == message_ID)
       // decode SOTDMA per 7.6.7.2.2
       {
         ptd->SyncState = bstr->GetInt(151, 2);
         ptd->SlotTO = bstr->GetInt(153, 2);
-        if ((ptd->SlotTO == 1) && (ptd->SyncState == 0))  // UTCDirect follows
+        if (ptd->SlotTO == 1 && ptd->SyncState == 0)  // UTCDirect follows
         {
           ptd->m_utc_hour = bstr->GetInt(155, 5);
 
           ptd->m_utc_min = bstr->GetInt(160, 7);
 
-          if ((ptd->m_utc_hour < 24) && (ptd->m_utc_min < 60) &&
-              (ptd->m_utc_sec < 60)) {
+          if (ptd->m_utc_hour < 24 && ptd->m_utc_min < 60 &&
+              ptd->m_utc_sec < 60) {
             wxDateTime rx_time(ptd->m_utc_hour, ptd->m_utc_min, ptd->m_utc_sec);
 #ifdef AIS_DEBUG
             rx_ticks = rx_time.GetTicks();
@@ -231,7 +231,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
 
       //    Capture Euro Inland special passing arrangement signal ("stbd-stbd")
       ptd->blue_paddle = bstr->GetInt(144, 2);
-      ptd->b_blue_paddle = (ptd->blue_paddle == 2);  // paddle is set
+      ptd->b_blue_paddle = ptd->blue_paddle == 2;  // paddle is set
 
       if (!ptd->b_isDSCtarget)
         ptd->Class = AIS_CLASS_A;
@@ -265,7 +265,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
       // Class B targets have no status.  Enforce this...
       ptd->NavStatus = UNDEFINED;
 
-      ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
+      ptd->SOG = 0.1 * bstr->GetInt(47, 10);
 
       int lon = bstr->GetInt(58, 28);
       if (lon & 0x08000000)  // negative?
@@ -277,7 +277,7 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
         lat |= 0xf8000000;
       double lat_tentative = lat / 600000.;
 
-      if ((lon_tentative <= 180.) && (lat_tentative <= 90.))
+      if (lon_tentative <= 180. && lat_tentative <= 90.)
           // Ship does not report Lat or Lon "unavailable"
       {
         ptd->Lon = lon_tentative;
@@ -288,8 +288,8 @@ bool Parse_VDXBitstring(AisBitstring* bstr,
       } else
         ptd->b_positionDoubtful = true;
 
-      ptd->COG = 0.1 * (bstr->GetInt(113, 12));
-      ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
+      ptd->COG = 0.1 * bstr->GetInt(113, 12);
+      ptd->HDG = 1.0 * bstr->GetInt(125, 9);
 
       ptd->m_utc_sec = bstr->GetInt(134, 6);
 
@@ -332,8 +332,8 @@ bool NMEA_AISCheckSumOK(const wxString &str_in) {
   int string_length = strlen(str_ascii);
 
   int payload_length = 0;
-  while ((payload_length < string_length) &&
-         (str_ascii[payload_length] != '*'))  // look for '*'
+  while (payload_length < string_length &&
+         str_ascii[payload_length] != '*')  // look for '*'
     payload_length++;
 
   if (payload_length == string_length)

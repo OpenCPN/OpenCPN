@@ -144,7 +144,7 @@ static int EdgeLeq( GLUtesselator *tess, ActiveRegion *reg1,
   /* General case - compute signed distance *from* e1, e2 to event */
   t1 = EdgeEval( e1->Dst, event, e1->Org );
   t2 = EdgeEval( e2->Dst, event, e2->Org );
-  return (t1 >= t2);
+  return t1 >= t2;
 }
 
 
@@ -239,15 +239,15 @@ static GLboolean IsWindingInside( GLUtesselator *tess, int n )
 {
   switch( tess->windingRule ) {
   case GLU_TESS_WINDING_ODD:
-    return (n & 1);
+    return n & 1;
   case GLU_TESS_WINDING_NONZERO:
-    return (n != 0);
+    return n != 0;
   case GLU_TESS_WINDING_POSITIVE:
-    return (n > 0);
+    return n > 0;
   case GLU_TESS_WINDING_NEGATIVE:
-    return (n < 0);
+    return n < 0;
   case GLU_TESS_WINDING_ABS_GEQ_TWO:
-    return (n >= 2) || (n <= -2);
+    return n >= 2 || n <= -2;
   }
   /*LINTED*/
   assert( FALSE );

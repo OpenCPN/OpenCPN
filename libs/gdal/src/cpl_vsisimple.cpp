@@ -116,7 +116,7 @@ FILE *VSIFOpen( const char * pszFilename, const char * pszAccess )
 
     VSIDebug3( "VSIFOpen(%s,%s) = %p", pszFilename, pszAccess, fp );
 
-    return( fp );
+    return fp;
 }
 
 /************************************************************************/
@@ -128,7 +128,7 @@ int VSIFClose( FILE * fp )
 {
     VSIDebug1( "VSIClose(%p)", fp );
 
-    return( fclose(fp) );
+    return fclose(fp);
 }
 
 /************************************************************************/
@@ -157,7 +157,7 @@ int VSIFSeek( FILE * fp, long nOffset, int nWhence )
     }
 #endif
 
-    return( fseek( fp, nOffset, nWhence ) );
+    return fseek( fp, nOffset, nWhence );
 }
 
 /************************************************************************/
@@ -169,7 +169,7 @@ long VSIFTell( FILE * fp )
 {
     VSIDebug2( "VSIFTell(%p) = %ld", fp, ftell(fp) );
 
-    return( ftell( fp ) );
+    return ftell( fp );
 }
 
 /************************************************************************/
@@ -231,7 +231,7 @@ void VSIFFlush( FILE * fp )
 char *VSIFGets( char *pszBuffer, int nBufferSize, FILE * fp )
 
 {
-    return( fgets( pszBuffer, nBufferSize, fp ) );
+    return fgets( pszBuffer, nBufferSize, fp );
 }
 
 /************************************************************************/
@@ -241,7 +241,7 @@ char *VSIFGets( char *pszBuffer, int nBufferSize, FILE * fp )
 int VSIFGetc( FILE * fp )
 
 {
-    return( fgetc( fp ) );
+    return fgetc( fp );
 }
 
 /************************************************************************/
@@ -251,7 +251,7 @@ int VSIFGetc( FILE * fp )
 int VSIUngetc( int c, FILE * fp )
 
 {
-    return( ungetc( c, fp ) );
+    return ungetc( c, fp );
 }
 
 /************************************************************************/
@@ -272,7 +272,7 @@ int     VSIFPrintf( FILE * fp, const char * pszFormat, ... )
     nReturn = vfprintf( fp, pszFormat, args );
     va_end( args );
 
-    return( nReturn );
+    return nReturn;
 }
 
 /************************************************************************/
@@ -282,7 +282,7 @@ int     VSIFPrintf( FILE * fp, const char * pszFormat, ... )
 int VSIFEof( FILE * fp )
 
 {
-    return( feof( fp ) );
+    return feof( fp );
 }
 
 /************************************************************************/
@@ -302,7 +302,7 @@ int VSIFPuts( const char * pszString, FILE * fp )
 int VSIFPutc( int nChar, FILE * fp )
 
 {
-    return( fputc( nChar, fp ) );
+    return fputc( nChar, fp );
 }
 
 /************************************************************************/
@@ -312,7 +312,7 @@ int VSIFPutc( int nChar, FILE * fp )
 void *VSICalloc( size_t nCount, size_t nSize )
 
 {
-    return( calloc( nCount, nSize ) );
+    return calloc( nCount, nSize );
 }
 
 /************************************************************************/
@@ -322,7 +322,7 @@ void *VSICalloc( size_t nCount, size_t nSize )
 void *VSIMalloc( size_t nSize )
 
 {
-    return( malloc( nSize ) );
+    return malloc( nSize );
 }
 
 /************************************************************************/
@@ -332,7 +332,7 @@ void *VSIMalloc( size_t nSize )
 void * VSIRealloc( void * pData, size_t nNewSize )
 
 {
-    return( realloc( pData, nNewSize ) );
+    return realloc( pData, nNewSize );
 }
 
 /************************************************************************/
@@ -353,7 +353,7 @@ void VSIFree( void * pData )
 char *VSIStrdup( const char * pszString )
 
 {
-    return( strdup( pszString ) );
+    return strdup( pszString );
 }
 
 /************************************************************************/
@@ -366,7 +366,7 @@ int VSIStat( const char * pszFilename, VSIStatBuf * pStatBuf )
 #if defined(macos_pre10)
     return -1;
 #else
-    return( stat( pszFilename, pStatBuf ) );
+    return stat( pszFilename, pStatBuf );
 #endif
 }
 

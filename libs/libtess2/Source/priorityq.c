@@ -196,7 +196,7 @@ PQhandle pqHeapInsert( TESSalloc* alloc, PriorityQHeap *pq, PQkey keyNew )
 	PQhandle free;
 
 	curr = ++ pq->size;
-	if( (curr*2) > pq->max ) {
+	if( curr*2 > pq->max ) {
 		if (!alloc->memrealloc)
 		{
 			return INV_HANDLE;
@@ -460,7 +460,7 @@ PQkey pqExtractMin( PriorityQ *pq )
 	if( pq->size == 0 ) {
 		return pqHeapExtractMin( pq->heap );
 	}
-	sortMin = *(pq->order[pq->size-1]);
+	sortMin = *pq->order[pq->size-1];
 	if( ! pqHeapIsEmpty( pq->heap )) {
 		heapMin = pqHeapMinimum( pq->heap );
 		if( LEQ( heapMin, sortMin )) {
@@ -469,7 +469,7 @@ PQkey pqExtractMin( PriorityQ *pq )
 	}
 	do {
 		-- pq->size;
-	} while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL );
+	} while( pq->size > 0 && *pq->order[pq->size-1] == NULL );
 	return sortMin;
 }
 
@@ -481,7 +481,7 @@ PQkey pqMinimum( PriorityQ *pq )
 	if( pq->size == 0 ) {
 		return pqHeapMinimum( pq->heap );
 	}
-	sortMin = *(pq->order[pq->size-1]);
+	sortMin = *pq->order[pq->size-1];
 	if( ! pqHeapIsEmpty( pq->heap )) {
 		heapMin = pqHeapMinimum( pq->heap );
 		if( LEQ( heapMin, sortMin )) {
@@ -494,7 +494,7 @@ PQkey pqMinimum( PriorityQ *pq )
 /* really tessPqSortIsEmpty */
 int pqIsEmpty( PriorityQ *pq )
 {
-	return (pq->size == 0) && pqHeapIsEmpty( pq->heap );
+	return pq->size == 0 && pqHeapIsEmpty( pq->heap );
 }
 
 /* really tessPqSortDelete */
@@ -508,7 +508,7 @@ void pqDelete( PriorityQ *pq, PQhandle curr )
 	assert( curr < pq->max && pq->keys[curr] != NULL );
 
 	pq->keys[curr] = NULL;
-	while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL ) {
+	while( pq->size > 0 && *pq->order[pq->size-1] == NULL ) {
 		-- pq->size;
 	}
 }

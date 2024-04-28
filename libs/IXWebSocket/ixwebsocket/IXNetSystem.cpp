@@ -141,7 +141,8 @@ namespace ix
                     // mapping
                     long networkEvents = 0;
                     if (fd->events & (POLLIN                               )) networkEvents |= FD_READ  | FD_ACCEPT;
-                    if (fd->events & (POLLOUT /*| POLLWRNORM | POLLWRBAND*/)) networkEvents |= FD_WRITE | FD_CONNECT;
+                    if (fd->events & POLLOUT
+                        /*| POLLWRNORM | POLLWRBAND*/) networkEvents |= FD_WRITE | FD_CONNECT;
                     //if (fd->events & (POLLPRI | POLLRDBAND               )) networkEvents |= FD_OOB;
 
                     if (WSAEventSelect(fd->fd, handle, networkEvents) != 0)
@@ -224,15 +225,15 @@ namespace ix
                 {
                     maxfd = fd->fd;
                 }
-                if ((fd->events & POLLIN))
+                if (fd->events & POLLIN)
                 {
                     FD_SET(fd->fd, &readfds);
                 }
-                if ((fd->events & POLLOUT))
+                if (fd->events & POLLOUT)
                 {
                     FD_SET(fd->fd, &writefds);
                 }
-                if ((fd->events & POLLERR))
+                if (fd->events & POLLERR)
                 {
                     FD_SET(fd->fd, &errorfds);
                 }
@@ -240,7 +241,7 @@ namespace ix
 
             struct timeval tv;
             tv.tv_sec = timeout / 1000;
-            tv.tv_usec = (timeout % 1000) * 1000;
+            tv.tv_usec = timeout % 1000 * 1000;
 
             int ret = select(maxfd + 1, &readfds, &writefds, &errorfds, timeout != -1 ? &tv : NULL);
 
@@ -450,7 +451,7 @@ namespace ix
     {
         #if defined(_WIN32)
           unsigned char* value_p = reinterpret_cast<unsigned char*>(&value);
-          unsigned short result = (static_cast<unsigned short>(value_p[0]) << 8)
+          unsigned short result = static_cast<unsigned short>(value_p[0]) << 8
             | static_cast<unsigned short>(value_p[1]);
           return result;
         #else // defined(_WIN32)

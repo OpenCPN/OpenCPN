@@ -67,7 +67,7 @@ std::vector<std::string> split(const char* token_string,
 
 bool exists(const std::string& name) {
 #ifdef __MSVC__
-  return (_access(name.c_str(), 0) != -1);
+  return _access(name.c_str(), 0) != -1;
 #else
   return (access(name.c_str(), F_OK) != -1);
 #endif

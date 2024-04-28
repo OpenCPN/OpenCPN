@@ -100,7 +100,7 @@ bool GLL::Parse( const SENTENCE& sentence )
             if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
             {
                   SetErrorMessage( _T("Invalid Checksum") );
-                  return( FALSE );
+                  return FALSE;
             }
 
             else
@@ -110,7 +110,7 @@ bool GLL::Parse( const SENTENCE& sentence )
                   if( check == NTrue)
                   {
                         SetErrorMessage( _T("Invalid Checksum") );
-                        return( FALSE );
+                        return FALSE;
                   }
             }
       }
@@ -122,7 +122,7 @@ bool GLL::Parse( const SENTENCE& sentence )
             UTCTime     = sentence.Field( 5 );
             IsDataValid = sentence.Boolean( 6 );
 
-            return( TRUE );
+            return TRUE;
       }
 
       //    May be old style GLL sentence
@@ -131,12 +131,12 @@ bool GLL::Parse( const SENTENCE& sentence )
             Position.Parse( 1, 2, 3, 4, sentence );
             IsDataValid = NTrue;
 
-            return( TRUE );
+            return TRUE;
       }
 
       //    A real error...
       SetErrorMessage( _T("Invalid FieldCount") );
-      return( FALSE );
+      return FALSE;
 }
 
 
@@ -159,7 +159,7 @@ const wxString& GLL::PlainEnglish( void )
 
    return_string = temp_string;
 */
-   return( return_string );
+   return return_string;
 }
 
 
@@ -179,7 +179,7 @@ bool GLL::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const GLL& GLL::operator = ( const GLL& source )
@@ -190,5 +190,5 @@ const GLL& GLL::operator = ( const GLL& source )
    UTCTime     = source.UTCTime;
    IsDataValid = source.IsDataValid;
 
-   return( *this );
+   return*this;
 }

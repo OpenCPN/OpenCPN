@@ -63,9 +63,9 @@ TESSreal tesedgeEval( TESSvertex *u, TESSvertex *v, TESSvertex *w )
 
 	if( gapL + gapR > 0 ) {
 		if( gapL < gapR ) {
-			return (v->t - u->t) + (u->t - w->t) * (gapL / (gapL + gapR));
+			return v->t - u->t + (u->t - w->t) * (gapL / (gapL + gapR));
 		} else {
-			return (v->t - w->t) + (w->t - u->t) * (gapR / (gapL + gapR));
+			return v->t - w->t + (w->t - u->t) * (gapR / (gapL + gapR));
 		}
 	}
 	/* vertical line */
@@ -118,9 +118,9 @@ TESSreal testransEval( TESSvertex *u, TESSvertex *v, TESSvertex *w )
 
 	if( gapL + gapR > 0 ) {
 		if( gapL < gapR ) {
-			return (v->s - u->s) + (u->s - w->s) * (gapL / (gapL + gapR));
+			return v->s - u->s + (u->s - w->s) * (gapL / (gapL + gapR));
 		} else {
-			return (v->s - w->s) + (w->s - u->s) * (gapR / (gapL + gapR));
+			return v->s - w->s + (w->s - u->s) * (gapR / (gapL + gapR));
 		}
 	}
 	/* vertical line */
@@ -156,7 +156,7 @@ int tesvertCCW( TESSvertex *u, TESSvertex *v, TESSvertex *w )
 	* on some degenerate inputs, so the client must have some way to
 	* handle this situation.
 	*/
-	return (u->s*(v->t - w->t) + v->s*(w->t - u->t) + w->s*(u->t - v->t)) >= 0;
+	return u->s*(v->t - w->t) + v->s*(w->t - u->t) + w->s*(u->t - v->t) >= 0;
 }
 
 /* Given parameters a,x,b,y returns the value (b*x+a*y)/(a+b),

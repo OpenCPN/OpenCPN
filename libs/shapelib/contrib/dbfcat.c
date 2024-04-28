@@ -113,7 +113,7 @@ int main(int argc, char **argv)
         }
     }
 
-    if ((matches == 0) && !force)
+    if (matches == 0 && !force)
     {
         printf("ERROR: No field names match for tables, cannot proceed\n   use "
                "-f to force processing using blank records\n");
@@ -178,5 +178,5 @@ int main(int argc, char **argv)
     DBFClose(hDBF);
     DBFClose(cDBF);
 
-    return (0);
+    return 0;
 }

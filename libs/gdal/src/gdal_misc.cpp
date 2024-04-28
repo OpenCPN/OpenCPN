@@ -197,7 +197,7 @@ void __pure_virtual()
         sprintf( szResult, "GDAL %s, released %d/%02d/%02d",
                  GDAL_RELEASE_NAME,
                  GDAL_RELEASE_DATE / 10000,
-                 (GDAL_RELEASE_DATE % 10000) / 100,
+                 GDAL_RELEASE_DATE % 10000 / 100,
                  GDAL_RELEASE_DATE % 100 );
 
     return szResult;

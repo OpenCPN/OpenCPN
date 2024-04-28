@@ -222,7 +222,7 @@ unsigned long CustomArray::GetOffset()
 	// Add offset from last cell
 	Offset+=p->Item.Size;
 
-	return(Offset);
+	return Offset;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -931,7 +931,7 @@ CustomArray& CustomArray::StoreASCII(const char *String)
 bool CustomArray::PushAddress()
 {
 	// Check available space and resize if needed.
-	if((mNbPushedAddies+1)>mNbAllocatedAddies)
+	if(mNbPushedAddies+1>mNbAllocatedAddies)
 	{
 		// Here we must resize. We get twice as much bytes as already allocated in order to minimize total #resizes.
 		udword NewSize = mNbAllocatedAddies ? mNbAllocatedAddies * 2 : 1;

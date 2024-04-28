@@ -301,7 +301,7 @@ ConfigMgr *ConfigMgr::instance = NULL;
 //--------------------------------------------------------------------------
 int GetRandomNumber(int range_min, int range_max) {
   long u = (long)wxRound(
-      ((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) +
+      (double)rand() / ((double)RAND_MAX + 1) * (range_max - range_min) +
       range_min);
   return (int)u;
 }
@@ -774,11 +774,11 @@ wxString ConfigMgr::GetUUID(void) {
 
   /* Set the two most significant bits (bits 6 and 7) of the
    * clock_seq_hi_and_rsv to zero and one, respectively. */
-  uuid.clock_seq_hi_and_rsv = (uuid.clock_seq_hi_and_rsv & 0x3F) | 0x80;
+  uuid.clock_seq_hi_and_rsv = uuid.clock_seq_hi_and_rsv & 0x3F | 0x80;
 
   /* Set the four most significant bits (bits 12 through 15) of the
    * time_hi_and_version field to 4 */
-  uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
+  uuid.time_hi_and_version = uuid.time_hi_and_version & 0x0fff | 0x4000;
 
   str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
              uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
@@ -944,7 +944,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   if (ps52plib) {
     for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
          iPtr++) {
-      OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+      OBJLElement *pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
 
       wxString st1(_T ( "viz" ));
       char name[7];
@@ -1122,7 +1122,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 #endif
 
 #ifdef __WXMSW__
-  font_path = (_T ( "/Settings/MSWFonts" ));
+  font_path = L"/Settings/MSWFonts";
 #endif
 
 #ifdef __WXMAC__
@@ -1670,7 +1670,7 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
         if (str.StartsWith(_T ( "viz" ), &sObj)) {
           for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
                iPtr++) {
-            pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+            pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
             if (!strncmp(pOLE->OBJLName, sObj.mb_str(), 6)) {
               bfound = true;
               if (pOLE->nViz != val) {

@@ -24,7 +24,7 @@ struct route_handle {
 route_t *
 route_open(void)
 {
-	return (calloc(1, sizeof(route_t)));
+	return calloc(1, sizeof(route_t));
 }
 
 int
@@ -37,11 +37,11 @@ route_add(route_t *route, const struct route_entry *entry)
 
 	if (GetBestInterface(entry->route_gw.addr_ip,
 	    &ipfrow.dwForwardIfIndex) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	if (addr_net(&entry->route_dst, &net) < 0 ||
 	    net.addr_type != ADDR_TYPE_IP)
-		return (-1);
+		return -1;
 	
 	ipfrow.dwForwardDest = net.addr_ip;
 	addr_btom(entry->route_dst.addr_bits,
@@ -51,9 +51,9 @@ route_add(route_t *route, const struct route_entry *entry)
 	ipfrow.dwForwardProto = 3;	/* XXX - MIB_PROTO_NETMGMT */
 	
 	if (CreateIpForwardEntry(&ipfrow) != NO_ERROR)
-		return (-1);
+		return -1;
 	
-	return (0);
+	return 0;
 }
 
 int
@@ -65,7 +65,7 @@ route_delete(route_t *route, const struct route_entry *entry)
 	if (entry->route_dst.addr_type != ADDR_TYPE_IP ||
 	    GetBestRoute(entry->route_dst.addr_ip,
 	    IP_ADDR_ANY, &ipfrow) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	addr_btom(entry->route_dst.addr_bits, &mask, IP_ADDR_LEN);
 	
@@ -73,12 +73,12 @@ route_delete(route_t *route, const struct route_entry *entry)
 	    ipfrow.dwForwardMask != mask) {
 		errno = ENXIO;
 		SetLastError(ERROR_NO_DATA);
-		return (-1);
+		return -1;
 	}
 	if (DeleteIpForwardEntry(&ipfrow) != NO_ERROR)
-		return (-1);
+		return -1;
 	
-	return (0);
+	return 0;
 }
 
 int
@@ -90,7 +90,7 @@ route_get(route_t *route, struct route_entry *entry)
 	if (entry->route_dst.addr_type != ADDR_TYPE_IP ||
 	    GetBestRoute(entry->route_dst.addr_ip,
 	    IP_ADDR_ANY, &ipfrow) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	if (ipfrow.dwForwardProto == 2 &&	/* XXX - MIB_IPPROTO_LOCAL */
 	    (ipfrow.dwForwardNextHop|IP_CLASSA_NET) !=
@@ -98,7 +98,7 @@ route_get(route_t *route, struct route_entry *entry)
 	    !IP_LOCAL_GROUP(ipfrow.dwForwardNextHop)) { 
 		errno = ENXIO;
 		SetLastError(ERROR_NO_DATA);
-		return (-1);
+		return -1;
 	}
 	addr_btom(entry->route_dst.addr_bits, &mask, IP_ADDR_LEN);
 	
@@ -106,7 +106,7 @@ route_get(route_t *route, struct route_entry *entry)
 	entry->route_gw.addr_bits = IP_ADDR_BITS;
 	entry->route_gw.addr_ip = ipfrow.dwForwardNextHop;
 	
-	return (0);
+	return 0;
 }
 
 int
@@ -124,7 +124,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		if (ret == NO_ERROR)
 			break;
 		else if (ret != ERROR_INSUFFICIENT_BUFFER)
-			return (-1);
+			return -1;
 	}
 	entry.route_dst.addr_type = ADDR_TYPE_IP;
 	entry.route_dst.addr_bits = IP_ADDR_BITS;
@@ -140,9 +140,9 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		    r->ipftable->table[i].dwForwardNextHop;
 		
 		if ((ret = (*callback)(&entry, arg)) != 0)
-			return (ret);
+			return ret;
 	}
-	return (0);
+	return 0;
 }
 
 route_t *
@@ -153,5 +153,5 @@ route_close(route_t *r)
 			free(r->ipftable);
 		free(r);
 	}
-	return (NULL);
+	return NULL;
 }

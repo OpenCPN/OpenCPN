@@ -376,13 +376,13 @@ void about::RecalculateSize(void) {
   esize.y = GetCharHeight() * 44;
 
   wxSize dsize = GetParent()->GetSize();
-  esize.y = wxMin(esize.y, dsize.y - (0 * GetCharHeight()));
-  esize.x = wxMin(esize.x, dsize.x - (0 * GetCharHeight()));
+  esize.y = wxMin(esize.y, dsize.y - 0 * GetCharHeight());
+  esize.x = wxMin(esize.x, dsize.x - 0 * GetCharHeight());
   SetClientSize(esize);
 
   wxSize fsize = GetSize();
-  fsize.y = wxMin(fsize.y, dsize.y - (0 * GetCharHeight()));
-  fsize.x = wxMin(fsize.x, dsize.x - (0 * GetCharHeight()));
+  fsize.y = wxMin(fsize.y, dsize.y - 0 * GetCharHeight());
+  fsize.x = wxMin(fsize.x, dsize.x - 0 * GetCharHeight());
 
   SetSize(fsize);
 
@@ -513,7 +513,7 @@ void about::OnNBPageChange(wxNotebookEvent& event) {
     pNotebook->ChangeSelection(0);
   }
 
-  else if ((i == 2) && !m_blicensePageSet) {  // license
+  else if (i == 2 && !m_blicensePageSet) {  // license
 
     wxColor bg = GetBackgroundColour();
     wxColor fg = wxColour(0, 0, 0);

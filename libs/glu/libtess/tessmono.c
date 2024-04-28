@@ -186,7 +186,7 @@ int __gl_meshSetWindingNumber( GLUmesh *mesh, int value,
     if( e->Rface->inside != e->Lface->inside ) {
 
       /* This is a boundary edge (one side is interior, one is exterior). */
-      e->winding = (e->Lface->inside) ? value : -value;
+      e->winding = e->Lface->inside ? value : -value;
     } else {
 
       /* Both regions are interior, or both are exterior. */

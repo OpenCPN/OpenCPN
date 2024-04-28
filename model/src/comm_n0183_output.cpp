@@ -200,11 +200,11 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     auto drv_serial_n0183 =
         std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
     if (drv_serial_n0183) {
-      if ((wxNOT_FOUND != com_name.Upper().Find("USB")) &&
-          (wxNOT_FOUND != com_name.Upper().Find("GARMIN"))) {
+      if (wxNOT_FOUND != com_name.Upper().Find("USB") &&
+          wxNOT_FOUND != com_name.Upper().Find("GARMIN")) {
         //  Wait up to 1 seconds for serial Driver secondary thread to come up
         int timeout = 0;
-        while (!drv_serial_n0183->IsGarminThreadActive() && (timeout < 50)) {
+        while (!drv_serial_n0183->IsGarminThreadActive() && timeout < 50) {
           wxMilliSleep(100);
           wxYield();
           timeout++;
@@ -217,7 +217,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       } else {
         //  Wait up to 1 seconds for serial Driver secondary thread to come up
         int timeout = 0;
-        while (!drv_serial_n0183->IsSecThreadActive() && (timeout < 50)) {
+        while (!drv_serial_n0183->IsSecThreadActive() && timeout < 50) {
           wxMilliSleep(100);
           timeout++;
         }
@@ -276,7 +276,7 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       if (drv_net_n0183) {
         int loopCount = 10;  // seconds
         bool bconnected = false;
-        while (!bconnected && (loopCount > 0)) {
+        while (!bconnected && loopCount > 0) {
           if (drv_net_n0183->GetSock()->IsConnected()) {
             bconnected = true;
             break;
@@ -559,7 +559,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         msg.Trim();
         wxLogMessage(msg);
 
-        dlg_ctx.set_value((ip * 100) / nProg);
+        dlg_ctx.set_value(ip * 100 / nProg);
 
         wxMilliSleep(progress_stall);
 
@@ -623,9 +623,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
     oNMEA0183.Rte.Write(snt);
 
-    if ((snt.Sentence.Len() > max_length) ||
-        (pr->pRoutePointList->GetCount() >
-         max_wp))  // Do we need split sentences?
+    if (snt.Sentence.Len() > max_length ||
+        pr->pRoutePointList->GetCount() >
+        max_wp)  // Do we need split sentences?
     {
       // Make a route with zero waypoints to get tare load.
       NMEA0183 tNMEA0183(NmeaCtxFactory());
@@ -674,7 +674,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           wp_count = 1;
 
         } else {
-          if ((sent_len + name_len > max_length) || (wp_count >= max_wp)) {
+          if (sent_len + name_len > max_length || wp_count >= max_wp) {
             n_total++;
             bnew_sentence = true;
           } else {
@@ -733,7 +733,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           oNMEA0183.Rte.AddWaypoint(name);
           node = node->GetNext();
         } else {
-          if ((sent_len + name_len > max_length) || (wp_count >= max_wp)) {
+          if (sent_len + name_len > max_length || wp_count >= max_wp) {
             n_run++;
             bnew_sentence = true;
 

@@ -81,12 +81,12 @@ bool HDM::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 3 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    DegreesMagnetic = sentence.Double( 1 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool HDM::Write( SENTENCE& sentence )
@@ -102,12 +102,12 @@ bool HDM::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const HDM& HDM::operator = ( const HDM& source )
 {
       DegreesMagnetic = source.DegreesMagnetic;
 
-   return( *this );
+   return*this;
 }

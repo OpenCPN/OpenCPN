@@ -1223,11 +1223,11 @@ void gdk_region_shrink(OGdkRegion *region, int dx, int dy) {
   s = gdk_region_new();
   t = gdk_region_new();
 
-  grow = (dx < 0);
+  grow = dx < 0;
   if (grow) dx = -dx;
   if (dx) Compress(region, s, t, (unsigned)2 * dx, TRUE, grow);
 
-  grow = (dy < 0);
+  grow = dy < 0;
   if (grow) dy = -dy;
   if (dy) Compress(region, s, t, (unsigned)2 * dy, FALSE, grow);
 
@@ -1262,7 +1262,7 @@ static void miIntersectO(OGdkRegion *pReg, OGdkRegionBox *r1,
 
   pNextRect = &pReg->rects[pReg->numRects];
 
-  while ((r1 != r1End) && (r2 != r2End)) {
+  while (r1 != r1End && r2 != r2End) {
     x1 = MAX(r1->x1, r2->x1);
     x2 = MIN(r1->x2, r2->x2);
 
@@ -1316,8 +1316,8 @@ void gdk_region_intersect(OGdkRegion *source1, const OGdkRegion *source2) {
   ///            g_return_if_fail (source2 != NULL);
 
   /* check for trivial reject */
-  if ((!(source1->numRects)) || (!(source2->numRects)) ||
-      (!EXTENTCHECK(&source1->extents, &source2->extents)))
+  if (!source1->numRects || !source2->numRects ||
+      !EXTENTCHECK(&source1->extents, &source2->extents))
     source1->numRects = 0;
   else
     miRegionOp(source1, source1, source2, miIntersectO, (nonOverlapFunc)NULL,
@@ -1397,7 +1397,7 @@ static int miCoalesce(OGdkRegion *pReg, /* Region to coalesce */
    */
   pCurBox = &pReg->rects[curStart];
   bandY1 = pCurBox->y1;
-  for (curNumRects = 0; (pCurBox != pRegEnd) && (pCurBox->y1 == bandY1);
+  for (curNumRects = 0; pCurBox != pRegEnd && pCurBox->y1 == bandY1;
        curNumRects++) {
     pCurBox++;
   }
@@ -1417,7 +1417,7 @@ static int miCoalesce(OGdkRegion *pReg, /* Region to coalesce */
     pRegEnd = pReg->rects + pReg->numRects;
   }
 
-  if ((curNumRects == prevNumRects) && (curNumRects != 0)) {
+  if (curNumRects == prevNumRects && curNumRects != 0) {
     pCurBox -= curNumRects;
     /*
      * The bands may only be coalesced if the bottom of the previous
@@ -1431,11 +1431,11 @@ static int miCoalesce(OGdkRegion *pReg, /* Region to coalesce */
        * have some horizontal space between them.
        */
       do {
-        if ((pPrevBox->x1 != pCurBox->x1) || (pPrevBox->x2 != pCurBox->x2)) {
+        if (pPrevBox->x1 != pCurBox->x1 || pPrevBox->x2 != pCurBox->x2) {
           /*
            * The bands don't line up so they can't be coalesced.
            */
-          return (curStart);
+          return curStart;
         }
         pPrevBox++;
         pCurBox++;
@@ -1602,12 +1602,12 @@ static void miRegionOp(
      * respective regions.
      */
     r1BandEnd = r1;
-    while ((r1BandEnd != r1End) && (r1BandEnd->y1 == r1->y1)) {
+    while (r1BandEnd != r1End && r1BandEnd->y1 == r1->y1) {
       r1BandEnd++;
     }
 
     r2BandEnd = r2;
-    while ((r2BandEnd != r2End) && (r2BandEnd->y1 == r2->y1)) {
+    while (r2BandEnd != r2End && r2BandEnd->y1 == r2->y1) {
       r2BandEnd++;
     }
 
@@ -1623,9 +1623,9 @@ static void miRegionOp(
       top = MAX(r1->y1, ybot);
       bot = MIN(r1->y2, r2->y1);
 
-      if ((top != bot) &&
-          (nonOverlap1Fn != (void (*)(OGdkRegion *, OGdkRegionBox *,
-                                      OGdkRegionBox *, int, int))NULL)) {
+      if (top != bot &&
+          nonOverlap1Fn != (void (*)(OGdkRegion *, OGdkRegionBox *,
+                                     OGdkRegionBox *, int, int))NULL) {
         (*nonOverlap1Fn)(newReg, r1, r1BandEnd, top, bot);
       }
 
@@ -1634,9 +1634,9 @@ static void miRegionOp(
       top = MAX(r2->y1, ybot);
       bot = MIN(r2->y2, r1->y1);
 
-      if ((top != bot) &&
-          (nonOverlap2Fn != (void (*)(OGdkRegion *, OGdkRegionBox *,
-                                      OGdkRegionBox *, int, int))NULL)) {
+      if (top != bot &&
+          nonOverlap2Fn != (void (*)(OGdkRegion *, OGdkRegionBox *,
+                                     OGdkRegionBox *, int, int))NULL) {
         (*nonOverlap2Fn)(newReg, r2, r2BandEnd, top, bot);
       }
 
@@ -1679,7 +1679,7 @@ static void miRegionOp(
     if (r2->y2 == ybot) {
       r2 = r2BandEnd;
     }
-  } while ((r1 != r1End) && (r2 != r2End));
+  } while (r1 != r1End && r2 != r2End);
 
   /*
    * Deal with whichever region still has rectangles left.
@@ -1689,17 +1689,17 @@ static void miRegionOp(
     if (nonOverlap1Fn != (nonOverlapFunc)NULL) {
       do {
         r1BandEnd = r1;
-        while ((r1BandEnd < r1End) && (r1BandEnd->y1 == r1->y1)) {
+        while (r1BandEnd < r1End && r1BandEnd->y1 == r1->y1) {
           r1BandEnd++;
         }
         (*nonOverlap1Fn)(newReg, r1, r1BandEnd, MAX(r1->y1, ybot), r1->y2);
         r1 = r1BandEnd;
       } while (r1 != r1End);
     }
-  } else if ((r2 != r2End) && (nonOverlap2Fn != (nonOverlapFunc)NULL)) {
+  } else if (r2 != r2End && nonOverlap2Fn != (nonOverlapFunc)NULL) {
     do {
       r2BandEnd = r2;
-      while ((r2BandEnd < r2End) && (r2BandEnd->y1 == r2->y1)) {
+      while (r2BandEnd < r2End && r2BandEnd->y1 == r2->y1) {
         r2BandEnd++;
       }
       (*nonOverlap2Fn)(newReg, r2, r2BandEnd, MAX(r2->y1, ybot), r2->y2);
@@ -1719,7 +1719,7 @@ static void miRegionOp(
    * Only do this stuff if the number of rectangles allocated is more than
    * twice the number of rectangles in the region (a simple optimization...).
    */
-  if (newReg->numRects < (newReg->size >> 1)) {
+  if (newReg->numRects < newReg->size >> 1) {
     if (REGION_NOT_EMPTY(newReg)) {
       newReg->size = newReg->numRects;
       //                               newReg->rects = g_renew (GdkRegionBox,
@@ -1826,7 +1826,7 @@ static void miUnionO(OGdkRegion *pReg, OGdkRegionBox *r1, OGdkRegionBox *r1End,
   r++;
 
   ///                   g_assert (y1<y2);
-  while ((r1 != r1End) && (r2 != r2End)) {
+  while (r1 != r1End && r2 != r2End) {
     if (r1->x1 < r2->x1) {
       MERGERECT(r1);
     } else {
@@ -1862,12 +1862,12 @@ void gdk_region_union(OGdkRegion *source1, const OGdkRegion *source2) {
   /*
    * source1 and source2 are the same or source2 is empty
    */
-  if ((source1 == source2) || (!(source2->numRects))) return;
+  if (source1 == source2 || !source2->numRects) return;
 
   /*
    * source1 is empty
    */
-  if (!(source1->numRects)) {
+  if (!source1->numRects) {
     miRegionCopy(source1, source2);
     return;
   }
@@ -1875,21 +1875,21 @@ void gdk_region_union(OGdkRegion *source1, const OGdkRegion *source2) {
   /*
    * source1 completely subsumes source2
    */
-  if ((source1->numRects == 1) &&
-      (source1->extents.x1 <= source2->extents.x1) &&
-      (source1->extents.y1 <= source2->extents.y1) &&
-      (source1->extents.x2 >= source2->extents.x2) &&
-      (source1->extents.y2 >= source2->extents.y2))
+  if (source1->numRects == 1 &&
+      source1->extents.x1 <= source2->extents.x1 &&
+      source1->extents.y1 <= source2->extents.y1 &&
+      source1->extents.x2 >= source2->extents.x2 &&
+      source1->extents.y2 >= source2->extents.y2)
     return;
 
   /*
    * source2 completely subsumes source1
    */
-  if ((source2->numRects == 1) &&
-      (source2->extents.x1 <= source1->extents.x1) &&
-      (source2->extents.y1 <= source1->extents.y1) &&
-      (source2->extents.x2 >= source1->extents.x2) &&
-      (source2->extents.y2 >= source1->extents.y2)) {
+  if (source2->numRects == 1 &&
+      source2->extents.x1 <= source1->extents.x1 &&
+      source2->extents.y1 <= source1->extents.y1 &&
+      source2->extents.x2 >= source1->extents.x2 &&
+      source2->extents.y2 >= source1->extents.y2) {
     miRegionCopy(source1, source2);
     return;
   }
@@ -1971,7 +1971,7 @@ static void miSubtractO(OGdkRegion *pReg, OGdkRegionBox *r1,
   ///                      g_assert(y1<y2);
   pNextRect = &pReg->rects[pReg->numRects];
 
-  while ((r1 != r1End) && (r2 != r2End)) {
+  while (r1 != r1End && r2 != r2End) {
     if (r2->x2 <= x1) {
       /*
        * Subtrahend missed the boat: go to next subtrahend.
@@ -2079,8 +2079,8 @@ void gdk_region_subtract(OGdkRegion *source1, const OGdkRegion *source2) {
   //                      g_return_if_fail (source2 != NULL);
 
   /* check for trivial reject */
-  if ((!(source1->numRects)) || (!(source2->numRects)) ||
-      (!EXTENTCHECK(&source1->extents, &source2->extents)))
+  if (!source1->numRects || !source2->numRects ||
+      !EXTENTCHECK(&source1->extents, &source2->extents))
     return;
 
   miRegionOp(source1, source1, source2, miSubtractO, miSubtractNonO1,
@@ -2223,7 +2223,7 @@ OGdkOverlapType gdk_region_rect_in(const OGdkRegion *region,
   prect->y2 = ry + rectangle->height;
 
   /* this is (just) a useful optimization */
-  if ((region->numRects == 0) || !EXTENTCHECK(&region->extents, prect))
+  if (region->numRects == 0 || !EXTENTCHECK(&region->extents, prect))
     return OGDK_OVERLAP_RECTANGLE_OUT;
 
   partOut = FALSE;
@@ -2237,7 +2237,7 @@ OGdkOverlapType gdk_region_rect_in(const OGdkRegion *region,
 
     if (pbox->y1 > ry) {
       partOut = TRUE; /* missed part of rectangle above */
-      if (partIn || (pbox->y1 >= prect->y2)) break;
+      if (partIn || pbox->y1 >= prect->y2) break;
       ry = pbox->y1; /* x guaranteed to be == prect->x1 */
     }
 
@@ -2269,9 +2269,9 @@ OGdkOverlapType gdk_region_rect_in(const OGdkRegion *region,
     }
   }
 
-  return (partIn ? ((ry < prect->y2) ? OGDK_OVERLAP_RECTANGLE_PART
-                                     : OGDK_OVERLAP_RECTANGLE_IN)
-                 : OGDK_OVERLAP_RECTANGLE_OUT);
+  return partIn ? (ry < prect->y2 ? OGDK_OVERLAP_RECTANGLE_PART
+                     : OGDK_OVERLAP_RECTANGLE_IN)
+           : OGDK_OVERLAP_RECTANGLE_OUT;
 }
 
 #if 0
@@ -2510,7 +2510,7 @@ static void InsertEdgeInET(OEdgeTable *ET, OEdgeTableEntry *ETE, int scanline,
    */
   pPrevSLL = &ET->scanlines;
   pSLL = pPrevSLL->next;
-  while (pSLL && (pSLL->scanline < scanline)) {
+  while (pSLL && pSLL->scanline < scanline) {
     pPrevSLL = pSLL;
     pSLL = pSLL->next;
   }
@@ -2518,7 +2518,7 @@ static void InsertEdgeInET(OEdgeTable *ET, OEdgeTableEntry *ETE, int scanline,
   /*
    * reassign pSLL (pointer to ScanLineList) if necessary
    */
-  if ((!pSLL) || (pSLL->scanline > scanline)) {
+  if (!pSLL || pSLL->scanline > scanline) {
     if (*iSLLBlock > SLLSPERBLOCK - 1) {
       tmpSLLBlock = (OScanLineListBlock *)malloc(sizeof(OScanLineListBlock));
       (*SLLBlock)->next = tmpSLLBlock;
@@ -2526,7 +2526,7 @@ static void InsertEdgeInET(OEdgeTable *ET, OEdgeTableEntry *ETE, int scanline,
       *SLLBlock = tmpSLLBlock;
       *iSLLBlock = 0;
     }
-    pSLL = &((*SLLBlock)->SLLs[(*iSLLBlock)++]);
+    pSLL = &(*SLLBlock)->SLLs[(*iSLLBlock)++];
 
     pSLL->next = pPrevSLL->next;
     pSLL->edgelist = (OEdgeTableEntry *)NULL;
@@ -2539,7 +2539,7 @@ static void InsertEdgeInET(OEdgeTable *ET, OEdgeTableEntry *ETE, int scanline,
    */
   prev = (OEdgeTableEntry *)NULL;
   start = pSLL->edgelist;
-  while (start && (start->bres.minor_axis < ETE->bres.minor_axis)) {
+  while (start && start->bres.minor_axis < ETE->bres.minor_axis) {
     prev = start;
     start = start->next;
   }
@@ -2662,7 +2662,7 @@ static void loadAET(OEdgeTableEntry *AET, OEdgeTableEntry *ETEs) {
   pPrevAET = AET;
   AET = AET->next;
   while (ETEs) {
-    while (AET && (AET->bres.minor_axis < ETEs->bres.minor_axis)) {
+    while (AET && AET->bres.minor_axis < ETEs->bres.minor_axis) {
       pPrevAET = AET;
       AET = AET->next;
     }
@@ -2755,7 +2755,7 @@ static int InsertionSort(OEdgeTableEntry *AET) {
       changed = 1;
     }
   }
-  return (changed);
+  return changed;
 }
 
 /*
@@ -2790,7 +2790,7 @@ static int PtsToRegion(int numFullPtBlocks, int iCurPtBlock,
 
   extents = &reg->extents;
 
-  numRects = ((numFullPtBlocks * NUMPTSTOBUFFER) + iCurPtBlock) >> 1;
+  numRects = numFullPtBlocks * NUMPTSTOBUFFER + iCurPtBlock >> 1;
 
   OGROWREGION(reg, numRects);
 
@@ -2835,7 +2835,7 @@ static int PtsToRegion(int numFullPtBlocks, int iCurPtBlock,
   }
   reg->numRects = numRects;
 
-  return (TRUE);
+  return TRUE;
 }
 
 /**
@@ -2872,22 +2872,22 @@ OGdkRegion *gdk_region_polygon(const OGdkPoint *points, int n_points,
   region = gdk_region_new();
 
   /* special case a rectangle */
-  if (((n_points == 4) || ((n_points == 5) && (points[4].x == points[0].x) &&
-                           (points[4].y == points[0].y))) &&
-      (((points[0].y == points[1].y) && (points[1].x == points[2].x) &&
-        (points[2].y == points[3].y) && (points[3].x == points[0].x)) ||
-       ((points[0].x == points[1].x) && (points[1].y == points[2].y) &&
-        (points[2].x == points[3].x) && (points[3].y == points[0].y)))) {
+  if ((n_points == 4 || (n_points == 5 && points[4].x == points[0].x &&
+                         points[4].y == points[0].y)) &&
+      ((points[0].y == points[1].y && points[1].x == points[2].x &&
+        points[2].y == points[3].y && points[3].x == points[0].x) ||
+       (points[0].x == points[1].x && points[1].y == points[2].y &&
+        points[2].x == points[3].x && points[3].y == points[0].y))) {
     region->extents.x1 = MIN(points[0].x, points[2].x);
     region->extents.y1 = MIN(points[0].y, points[2].y);
     region->extents.x2 = MAX(points[0].x, points[2].x);
     region->extents.y2 = MAX(points[0].y, points[2].y);
-    if ((region->extents.x1 != region->extents.x2) &&
-        (region->extents.y1 != region->extents.y2)) {
+    if (region->extents.x1 != region->extents.x2 &&
+        region->extents.y1 != region->extents.y2) {
       region->numRects = 1;
-      *(region->rects) = region->extents;
+      *region->rects = region->extents;
     }
-    return (region);
+    return region;
   }
 
   pETEs = (OEdgeTableEntry *)malloc(sizeof(OEdgeTableEntry) * n_points);
@@ -3001,7 +3001,7 @@ OGdkRegion *gdk_region_polygon(const OGdkPoint *points, int n_points,
     curPtBlock = tmpPtBlock;
   }
   free(pETEs);
-  return (region);
+  return region;
 }
 
 // #define __GDK_POLYREG_GENERIC_C__

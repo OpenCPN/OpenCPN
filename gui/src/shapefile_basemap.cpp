@@ -258,7 +258,7 @@ bool ShapeBaseChart::LoadSHP() {
       has_y = true;
     }
   }
-  _is_tiled = (has_x && has_y);
+  _is_tiled = has_x && has_y;
   if (_is_usable && _is_tiled) {
     size_t feat{0};
     for (auto const &feature : *_reader) {
@@ -317,7 +317,7 @@ void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
     // need to correctly pick +180 or -180 longitude for projections
     // that have a discontiguous date line
 
-    if (idl && (point.getX() == 180)) {
+    if (idl && point.getX() == 180) {
       if (vp.m_projection_type == PROJECTION_MERCATOR ||
           vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) {
         // q.m_x -= 40058986 * 4096.0;  // 360 degrees in normalized
@@ -384,14 +384,14 @@ void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                      2.0 / (float)vp.pix_height, 1.0);
   mat4x4_translate_in_place(mvp, -vp.pix_width / 2, vp.pix_height / 2, 0);
 
-  float *pvt = new float[2 * (polycnt)];
+  float *pvt = new float[2 * polycnt];
   for (size_t i = 0; i < polycnt; i++) {
     float_2Dpt *pc = polyv + i;
     // wxPoint2DDouble q(pc->y, pc->x);// = vp.GetDoublePixFromLL(pc->y, pc->x);
     wxPoint2DDouble q = vp.GetDoublePixFromLL(pc->y, pc->x);
 
     pvt[i * 2] = q.m_x;
-    pvt[(i * 2) + 1] = q.m_y;
+    pvt[i * 2 + 1] = q.m_y;
   }
 
   GLShaderProgram *shader = pcolor_tri_shader_program[pnt.m_canvasIndex];
@@ -440,15 +440,15 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
 
   int lat_start = floor(bbox.GetMinLat());
   if (lat_start < 0)
-    lat_start = lat_start - (pmod + (lat_start % pmod));
+    lat_start = lat_start - (pmod + lat_start % pmod);
   else
-    lat_start = lat_start - (lat_start % pmod);
+    lat_start = lat_start - lat_start % pmod;
 
   int lon_start = floor(bbox.GetMinLon());
   if (lon_start < 0)
-    lon_start = lon_start - (pmod + (lon_start % pmod));
+    lon_start = lon_start - (pmod + lon_start % pmod);
   else
-    lon_start = lon_start - (lon_start % pmod);
+    lon_start = lon_start - lon_start % pmod;
 
 
   if (_is_tiled) {
@@ -530,12 +530,12 @@ bool ShapeBaseChart::LineLineIntersect(const std::pair<double, double> &A,
   // Line AB represented as a1x + b1y = c1
   double a1 = B.second - A.second;
   double b1 = A.first - B.first;
-  double c1 = a1 * (A.first) + b1 * (A.second);
+  double c1 = a1 * A.first + b1 * A.second;
 
   // Line CD represented as a2x + b2y = c2
   double a2 = D.second - C.second;
   double b2 = C.first - D.first;
-  double c2 = a2 * (C.first) + b2 * (C.second);
+  double c2 = a2 * C.first + b2 * C.second;
 
   double determinant = a1 * b2 - a2 * b1;
 

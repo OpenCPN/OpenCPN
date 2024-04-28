@@ -87,7 +87,7 @@ bool RESPONSE::Write( SENTENCE& sentence )
 
     sentence.Sentence.Append(Mnemonic);
 
-   return( TRUE );
+   return TRUE;
 }
 
 const wxString& RESPONSE::PlainEnglish( void )
@@ -96,5 +96,5 @@ const wxString& RESPONSE::PlainEnglish( void )
 
    return_string.Empty();
 
-   return( return_string );
+   return return_string;
 }

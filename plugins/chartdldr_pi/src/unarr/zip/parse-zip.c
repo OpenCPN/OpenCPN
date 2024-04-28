@@ -299,7 +299,7 @@ const char *zip_get_name(ar_archive *ar)
         }
         name[entry.namelen] = '\0';
 
-        if ((entry.flags & (1 << 11))) {
+        if (entry.flags & 1 << 11) {
             zip->entry.name = name;
         }
         else {

@@ -207,7 +207,7 @@ PQkey pqExtractMin( PriorityQ *pq )
   if( pq->size == 0 ) {
     return __gl_pqHeapExtractMin( pq->heap );
   }
-  sortMin = *(pq->order[pq->size-1]);
+  sortMin = *pq->order[pq->size-1];
   if( ! __gl_pqHeapIsEmpty( pq->heap )) {
     heapMin = __gl_pqHeapMinimum( pq->heap );
     if( LEQ( heapMin, sortMin )) {
@@ -216,7 +216,7 @@ PQkey pqExtractMin( PriorityQ *pq )
   }
   do {
     -- pq->size;
-  } while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL );
+  } while( pq->size > 0 && *pq->order[pq->size-1] == NULL );
   return sortMin;
 }
 
@@ -228,7 +228,7 @@ PQkey pqMinimum( PriorityQ *pq )
   if( pq->size == 0 ) {
     return __gl_pqHeapMinimum( pq->heap );
   }
-  sortMin = *(pq->order[pq->size-1]);
+  sortMin = *pq->order[pq->size-1];
   if( ! __gl_pqHeapIsEmpty( pq->heap )) {
     heapMin = __gl_pqHeapMinimum( pq->heap );
     if( LEQ( heapMin, sortMin )) {
@@ -241,7 +241,7 @@ PQkey pqMinimum( PriorityQ *pq )
 /* really __gl_pqSortIsEmpty */
 int pqIsEmpty( PriorityQ *pq )
 {
-  return (pq->size == 0) && __gl_pqHeapIsEmpty( pq->heap );
+  return pq->size == 0 && __gl_pqHeapIsEmpty( pq->heap );
 }
 
 /* really __gl_pqSortDelete */
@@ -255,7 +255,7 @@ void pqDelete( PriorityQ *pq, PQhandle curr )
   assert( curr < pq->max && pq->keys[curr] != NULL );
 
   pq->keys[curr] = NULL;
-  while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL ) {
+  while( pq->size > 0 && *pq->order[pq->size-1] == NULL ) {
     -- pq->size;
   }
 }

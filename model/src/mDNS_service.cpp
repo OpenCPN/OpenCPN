@@ -120,9 +120,9 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 		return 0;
 	printf("Query %s %.*s\n", record_name, MDNS_STRING_FORMAT(name));
 
-	if ((name.length == (sizeof(dns_sd) - 1)) &&
-	    (strncmp(name.str, dns_sd, sizeof(dns_sd) - 1) == 0)) {
-		if ((rtype == MDNS_RECORDTYPE_PTR) || (rtype == MDNS_RECORDTYPE_ANY)) {
+	if (name.length == sizeof(dns_sd) - 1 &&
+	    strncmp(name.str, dns_sd, sizeof(dns_sd) - 1) == 0) {
+		if (rtype == MDNS_RECORDTYPE_PTR || rtype == MDNS_RECORDTYPE_ANY) {
 			// The PTR query was for the DNS-SD domain, send answer with a PTR record for the
 			// service name we advertise, typically on the "<_service-name>._tcp.local." format
 
@@ -134,7 +134,7 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 			answer.data.ptr.name = service->service;
 
 			// Send the answer, unicast or multicast depending on flag in query
-			uint16_t unicast = (rclass & MDNS_UNICAST_RESPONSE);
+			uint16_t unicast = rclass & MDNS_UNICAST_RESPONSE;
 			printf("  --> answer %.*s (%s)\n", MDNS_STRING_FORMAT(answer.data.ptr.name),
 			       (unicast ? "unicast" : "multicast"));
 
@@ -147,9 +147,9 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 				                            0);
 			}
 		}
-	} else if ((name.length == service->service.length) &&
-	           (strncmp(name.str, service->service.str, name.length) == 0)) {
-		if ((rtype == MDNS_RECORDTYPE_PTR) || (rtype == MDNS_RECORDTYPE_ANY)) {
+	} else if (name.length == service->service.length &&
+	           strncmp(name.str, service->service.str, name.length) == 0) {
+		if (rtype == MDNS_RECORDTYPE_PTR || rtype == MDNS_RECORDTYPE_ANY) {
 			// The PTR query was for our service (usually "<_service-name._tcp.local"), answer a PTR
 			// record reverse mapping the queried service name to our service instance name
 			// (typically on the "<hostname>.<_service-name>._tcp.local." format), and add
@@ -180,7 +180,7 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 			//additional[additional_count++] = service->txt_record[1];
 
 			// Send the answer, unicast or multicast depending on flag in query
-			uint16_t unicast = (rclass & MDNS_UNICAST_RESPONSE);
+			uint16_t unicast = rclass & MDNS_UNICAST_RESPONSE;
 			printf("  --> answer %.*s (%s)\n",
 			       MDNS_STRING_FORMAT(service->record_ptr.data.ptr.name),
 			       (unicast ? "unicast" : "multicast"));
@@ -194,9 +194,9 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 				                            additional, additional_count);
 			}
 		}
-	} else if ((name.length == service->service_instance.length) &&
-	           (strncmp(name.str, service->service_instance.str, name.length) == 0)) {
-		if ((rtype == MDNS_RECORDTYPE_SRV) || (rtype == MDNS_RECORDTYPE_ANY)) {
+	} else if (name.length == service->service_instance.length &&
+	           strncmp(name.str, service->service_instance.str, name.length) == 0) {
+		if (rtype == MDNS_RECORDTYPE_SRV || rtype == MDNS_RECORDTYPE_ANY) {
 			// The SRV query was for our service instance (usually
 			// "<hostname>.<_service-name._tcp.local"), answer a SRV record mapping the service
 			// instance name to our qualified hostname (typically "<hostname>.local.") and port, as
@@ -222,7 +222,7 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 			additional[additional_count++] = service->txt_record[1];
 
 			// Send the answer, unicast or multicast depending on flag in query
-			uint16_t unicast = (rclass & MDNS_UNICAST_RESPONSE);
+			uint16_t unicast = rclass & MDNS_UNICAST_RESPONSE;
 			printf("  --> answer %.*s port %d (%s)\n",
 			       MDNS_STRING_FORMAT(service->record_srv.data.srv.name), service->port,
 			       (unicast ? "unicast" : "multicast"));
@@ -236,10 +236,10 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 				                            additional, additional_count);
 			}
 		}
-	} else if ((name.length == service->hostname_qualified.length) &&
-	           (strncmp(name.str, service->hostname_qualified.str, name.length) == 0)) {
-		if (((rtype == MDNS_RECORDTYPE_A) || (rtype == MDNS_RECORDTYPE_ANY)) &&
-		    (service->address_ipv4.sin_family == AF_INET)) {
+	} else if (name.length == service->hostname_qualified.length &&
+	           strncmp(name.str, service->hostname_qualified.str, name.length) == 0) {
+		if ((rtype == MDNS_RECORDTYPE_A || rtype == MDNS_RECORDTYPE_ANY) &&
+		    service->address_ipv4.sin_family == AF_INET) {
 			// The A query was for our qualified hostname (typically "<hostname>.local.") and we
 			// have an IPv4 address, answer with an A record mappiing the hostname to an IPv4
 			// address, as well as any IPv6 address for the hostname, and two test TXT records
@@ -260,7 +260,7 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 			additional[additional_count++] = service->txt_record[1];
 
 			// Send the answer, unicast or multicast depending on flag in query
-			uint16_t unicast = (rclass & MDNS_UNICAST_RESPONSE);
+			uint16_t unicast = rclass & MDNS_UNICAST_RESPONSE;
 			mdns_string_t addrstr = ip_address_to_string(
 			    addrbuffer, sizeof(addrbuffer), (struct sockaddr*)&service->record_a.data.a.addr,
 			    sizeof(service->record_a.data.a.addr));
@@ -275,8 +275,8 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 				mdns_query_answer_multicast(sock, sendbuffer, sizeof(sendbuffer), answer, 0, 0,
 				                            additional, additional_count);
 			}
-		} else if (((rtype == MDNS_RECORDTYPE_AAAA) || (rtype == MDNS_RECORDTYPE_ANY)) &&
-		           (service->address_ipv6.sin6_family == AF_INET6)) {
+		} else if ((rtype == MDNS_RECORDTYPE_AAAA || rtype == MDNS_RECORDTYPE_ANY) &&
+		           service->address_ipv6.sin6_family == AF_INET6) {
 			// The AAAA query was for our qualified hostname (typically "<hostname>.local.") and we
 			// have an IPv6 address, answer with an AAAA record mappiing the hostname to an IPv6
 			// address, as well as any IPv4 address for the hostname, and two test TXT records
@@ -297,7 +297,7 @@ ocpn_service_callback(int sock, const struct sockaddr* from, size_t addrlen, mdn
 			additional[additional_count++] = service->txt_record[1];
 
 			// Send the answer, unicast or multicast depending on flag in query
-			uint16_t unicast = (rclass & MDNS_UNICAST_RESPONSE);
+			uint16_t unicast = rclass & MDNS_UNICAST_RESPONSE;
 			mdns_string_t addrstr =
 			    ip_address_to_string(addrbuffer, sizeof(addrbuffer),
 			                         (struct sockaddr*)&service->record_aaaa.data.aaaa.addr,

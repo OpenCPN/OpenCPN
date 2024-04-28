@@ -24,7 +24,7 @@ namespace ix
             if (requestInitCancellation) return true;
 
             auto now = std::chrono::system_clock::now();
-            if ((now - start) > timeout) return true;
+            if (now - start > timeout) return true;
 
             // No cancellation request
             return false;

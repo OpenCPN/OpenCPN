@@ -120,7 +120,7 @@ OGRFieldDefn::OGRFieldDefn( OGRFieldDefn *poPrototype )
 OGRFieldDefnH OGR_Fld_Create( const char *pszName, OGRFieldType eType )
 
 {
-    return (OGRFieldDefnH) (new OGRFieldDefn(pszName,eType));
+    return (OGRFieldDefnH) new OGRFieldDefn(pszName,eType);
 }
 
 /************************************************************************/

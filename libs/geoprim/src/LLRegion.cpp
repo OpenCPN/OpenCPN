@@ -291,7 +291,7 @@ static void /*APIENTRY*/ LLcombineCallback(GLdouble coords[3],
                                            void *user_data) {
   work *w = (work *)user_data;
   GLdouble *vertex = w->NewData();
-  memcpy(vertex, coords, 3 * (sizeof *coords));
+  memcpy(vertex, coords, 3 * sizeof *coords);
   *dataOut = vertex;
 }
 

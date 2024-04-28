@@ -244,14 +244,14 @@ Int32 BZ2_decompress ( DState* s )
       if (uc != BZ_HDR_h) RETURN(BZ_DATA_ERROR_MAGIC);
 
       GET_BITS(BZ_X_MAGIC_4, s->blockSize100k, 8)
-      if (s->blockSize100k < (BZ_HDR_0 + 1) ||
-          s->blockSize100k > (BZ_HDR_0 + 9)) RETURN(BZ_DATA_ERROR_MAGIC);
+      if (s->blockSize100k < BZ_HDR_0 + 1 ||
+          s->blockSize100k > BZ_HDR_0 + 9) RETURN(BZ_DATA_ERROR_MAGIC);
       s->blockSize100k -= BZ_HDR_0;
 
       if (s->smallDecompress) {
          s->ll16 = (UInt16 *)BZALLOC( s->blockSize100k * 100000 * sizeof(UInt16) );
          s->ll4  = (UChar *)BZALLOC(
-                      ((1 + s->blockSize100k * 100000) >> 1) * sizeof(UChar)
+                      ( 1 + s->blockSize100k * 100000 >> 1) * sizeof(UChar)
                    );
          if (s->ll16 == NULL || s->ll4 == NULL) RETURN(BZ_MEM_ERROR);
       } else {
@@ -280,23 +280,23 @@ Int32 BZ2_decompress ( DState* s )
 
       s->storedBlockCRC = 0;
       GET_UCHAR(BZ_X_BCRC_1, uc);
-      s->storedBlockCRC = (s->storedBlockCRC << 8) | ((UInt32)uc);
+      s->storedBlockCRC = s->storedBlockCRC << 8 | (UInt32)uc;
       GET_UCHAR(BZ_X_BCRC_2, uc);
-      s->storedBlockCRC = (s->storedBlockCRC << 8) | ((UInt32)uc);
+      s->storedBlockCRC = s->storedBlockCRC << 8 | (UInt32)uc;
       GET_UCHAR(BZ_X_BCRC_3, uc);
-      s->storedBlockCRC = (s->storedBlockCRC << 8) | ((UInt32)uc);
+      s->storedBlockCRC = s->storedBlockCRC << 8 | (UInt32)uc;
       GET_UCHAR(BZ_X_BCRC_4, uc);
-      s->storedBlockCRC = (s->storedBlockCRC << 8) | ((UInt32)uc);
+      s->storedBlockCRC = s->storedBlockCRC << 8 | (UInt32)uc;
 
       GET_BITS(BZ_X_RANDBIT, s->blockRandomised, 1);
 
       s->origPtr = 0;
       GET_UCHAR(BZ_X_ORIGPTR_1, uc);
-      s->origPtr = (s->origPtr << 8) | ((Int32)uc);
+      s->origPtr = s->origPtr << 8 | (Int32)uc;
       GET_UCHAR(BZ_X_ORIGPTR_2, uc);
-      s->origPtr = (s->origPtr << 8) | ((Int32)uc);
+      s->origPtr = s->origPtr << 8 | (Int32)uc;
       GET_UCHAR(BZ_X_ORIGPTR_3, uc);
-      s->origPtr = (s->origPtr << 8) | ((Int32)uc);
+      s->origPtr = s->origPtr << 8 | (Int32)uc;
 
       if (s->origPtr < 0)
          RETURN(BZ_DATA_ERROR);
@@ -377,10 +377,10 @@ Int32 BZ2_decompress ( DState* s )
             if (s->len[t][i] < minLen) minLen = s->len[t][i];
          }
          BZ2_hbCreateDecodeTables (
-            &(s->limit[t][0]),
-            &(s->base[t][0]),
-            &(s->perm[t][0]),
-            &(s->len[t][0]),
+            &s->limit[t][0],
+            &s->base[t][0],
+            &s->perm[t][0],
+            &s->len[t][0],
             minLen, maxLen, alphaSize
          );
          s->minLens[t] = minLen;
@@ -465,14 +465,14 @@ Int32 BZ2_decompress ( DState* s )
                   uc = s->mtfa[pp+nn];
                   while (nn > 3) {
                      Int32 z = pp+nn;
-                     s->mtfa[(z)  ] = s->mtfa[(z)-1];
-                     s->mtfa[(z)-1] = s->mtfa[(z)-2];
-                     s->mtfa[(z)-2] = s->mtfa[(z)-3];
-                     s->mtfa[(z)-3] = s->mtfa[(z)-4];
+                     s->mtfa[z  ] = s->mtfa[z-1];
+                     s->mtfa[z-1] = s->mtfa[z-2];
+                     s->mtfa[z-2] = s->mtfa[z-3];
+                     s->mtfa[z-3] = s->mtfa[z-4];
                      nn -= 4;
                   }
                   while (nn > 0) {
-                     s->mtfa[(pp+nn)] = s->mtfa[(pp+nn)-1]; nn--;
+                     s->mtfa[(pp+nn)] = s->mtfa[pp+nn-1]; nn--;
                   };
                   s->mtfa[pp] = uc;
                } else {
@@ -509,8 +509,8 @@ Int32 BZ2_decompress ( DState* s )
 
             s->unzftab[s->seqToUnseq[uc]]++;
             if (s->smallDecompress)
-               s->ll16[nblock] = (UInt16)(s->seqToUnseq[uc]); else
-               s->tt[nblock]   = (UInt32)(s->seqToUnseq[uc]);
+               s->ll16[nblock] = (UInt16)s->seqToUnseq[uc]; else
+               s->tt[nblock]   = (UInt32)s->seqToUnseq[uc];
             nblock++;
 
             GET_MTF_VAL(BZ_X_MTF_5, BZ_X_MTF_6, nextSym);
@@ -542,7 +542,7 @@ Int32 BZ2_decompress ( DState* s )
 
          /*-- compute the T vector --*/
          for (i = 0; i < nblock; i++) {
-            uc = (UChar)(s->ll16[i]);
+            uc = (UChar)s->ll16[i];
             SET_LL(i, s->cftabCopy[uc]);
             s->cftabCopy[uc]++;
          }
@@ -573,7 +573,7 @@ Int32 BZ2_decompress ( DState* s )
          /*-- compute the T^(-1) vector --*/
          for (i = 0; i < nblock; i++) {
             uc = (UChar)(s->tt[i] & 0xff);
-            s->tt[s->cftab[uc]] |= (i << 8);
+            s->tt[s->cftab[uc]] |= i << 8;
             s->cftab[uc]++;
          }
 
@@ -608,13 +608,13 @@ Int32 BZ2_decompress ( DState* s )
 
       s->storedCombinedCRC = 0;
       GET_UCHAR(BZ_X_CCRC_1, uc);
-      s->storedCombinedCRC = (s->storedCombinedCRC << 8) | ((UInt32)uc);
+      s->storedCombinedCRC = s->storedCombinedCRC << 8 | (UInt32)uc;
       GET_UCHAR(BZ_X_CCRC_2, uc);
-      s->storedCombinedCRC = (s->storedCombinedCRC << 8) | ((UInt32)uc);
+      s->storedCombinedCRC = s->storedCombinedCRC << 8 | (UInt32)uc;
       GET_UCHAR(BZ_X_CCRC_3, uc);
-      s->storedCombinedCRC = (s->storedCombinedCRC << 8) | ((UInt32)uc);
+      s->storedCombinedCRC = s->storedCombinedCRC << 8 | (UInt32)uc;
       GET_UCHAR(BZ_X_CCRC_4, uc);
-      s->storedCombinedCRC = (s->storedCombinedCRC << 8) | ((UInt32)uc);
+      s->storedCombinedCRC = s->storedCombinedCRC << 8 | (UInt32)uc;
 
       s->state = BZ_X_IDLE;
       RETURN(BZ_STREAM_END);

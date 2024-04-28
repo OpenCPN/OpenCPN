@@ -372,14 +372,14 @@ static const long long lNaN = 0xfff8000000000000;
 
 wxString GetLayerName(int id) {
   wxString name(_T("unknown layer"));
-  if (id <= 0) return (name);
+  if (id <= 0) return name;
   LayerList::iterator it;
   int index = 0;
   for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it, ++index) {
-    Layer *lay = (Layer *)(*it);
-    if (lay->m_LayerID == id) return (lay->m_LayerName);
+    Layer *lay = (Layer *)*it;
+    if (lay->m_LayerID == id) return lay->m_LayerName;
   }
-  return (name);
+  return name;
 }
 
 // Helper conditional file name dir slash
@@ -673,13 +673,13 @@ int MyConfig::LoadMyConfig() {
     g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector, -5);
     g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor, CM93_ZOOM_FACTOR_MAX_RANGE);
     g_cm93_zoom_factor =
-        wxMax(g_cm93_zoom_factor, (-CM93_ZOOM_FACTOR_MAX_RANGE));
+        wxMax(g_cm93_zoom_factor, -CM93_ZOOM_FACTOR_MAX_RANGE);
 
-    if ((g_detailslider_dialog_x < 0) ||
-        (g_detailslider_dialog_x > display_width))
+    if (g_detailslider_dialog_x < 0 ||
+        g_detailslider_dialog_x > display_width)
       g_detailslider_dialog_x = 5;
-    if ((g_detailslider_dialog_y < 0) ||
-        (g_detailslider_dialog_y > display_height))
+    if (g_detailslider_dialog_y < 0 ||
+        g_detailslider_dialog_y > display_height)
       g_detailslider_dialog_y = 5;
 
     g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
@@ -694,13 +694,13 @@ int MyConfig::LoadMyConfig() {
 
     g_Show_Target_Name_Scale = wxMax(5000, g_Show_Target_Name_Scale);
 
-    if ((g_ais_alert_dialog_x < 0) || (g_ais_alert_dialog_x > display_width))
+    if (g_ais_alert_dialog_x < 0 || g_ais_alert_dialog_x > display_width)
       g_ais_alert_dialog_x = 5;
-    if ((g_ais_alert_dialog_y < 0) || (g_ais_alert_dialog_y > display_height))
+    if (g_ais_alert_dialog_y < 0 || g_ais_alert_dialog_y > display_height)
       g_ais_alert_dialog_y = 5;
-    if ((g_ais_query_dialog_x < 0) || (g_ais_query_dialog_x > display_width))
+    if (g_ais_query_dialog_x < 0 || g_ais_query_dialog_x > display_width)
       g_ais_query_dialog_x = 5;
-    if ((g_ais_query_dialog_y < 0) || (g_ais_query_dialog_y > display_height))
+    if (g_ais_query_dialog_y < 0 || g_ais_query_dialog_y > display_height)
       g_ais_query_dialog_y = 5;
 
     SwitchInlandEcdisMode(g_bInlandEcdis);
@@ -1506,7 +1506,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     }
   }
 
-  return (0);
+  return 0;
 }
 
 void MyConfig::LoadS57Config() {
@@ -1611,7 +1611,7 @@ void MyConfig::LoadS57Config() {
       if (str.StartsWith(_T ( "viz" ), &sObj)) {
         for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
              iPtr++) {
-          pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+          pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
           if (!strncmp(pOLE->OBJLName, sObj.mb_str(), 6)) {
             pOLE->nViz = val;
             bNeedNew = false;
@@ -1773,10 +1773,10 @@ bool MyConfig::LoadLayers(wxString &path) {
         l->m_LayerID = ++g_LayerIdx;
         l->m_LayerFileName = file_array[0];
         if (file_array.GetCount() <= 1)
-          wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName),
+          wxFileName::SplitPath(file_array[0], NULL, NULL, &l->m_LayerName,
                                 NULL, NULL);
         else
-          wxFileName::SplitPath(filename, NULL, NULL, &(l->m_LayerName), NULL,
+          wxFileName::SplitPath(filename, NULL, NULL, &l->m_LayerName, NULL,
                                 NULL);
 
         bool bLayerViz = g_bShowLayers;
@@ -2254,7 +2254,7 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
       Write(_T ( "canvasVPLatLon" ), st1);
       st1.Printf(_T ( "%g" ), vp.view_scale_ppm);
       Write(_T ( "canvasVPScale" ), st1);
-      st1.Printf(_T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360);
+      st1.Printf(_T ( "%i" ), (int)(vp.rotation * 180 / PI) % 360);
       Write(_T ( "canvasVPRotation" ), st1);
     }
 
@@ -2520,16 +2520,16 @@ void MyConfig::UpdateSettings() {
     LayerList::iterator it;
     int index = 0;
     for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it, ++index) {
-      Layer *lay = (Layer *)(*it);
+      Layer *lay = (Layer *)*it;
       if (lay->IsVisibleOnChart())
-        vis += (lay->m_LayerName) + _T(";");
+        vis += lay->m_LayerName + _T(";");
       else
-        invis += (lay->m_LayerName) + _T(";");
+        invis += lay->m_LayerName + _T(";");
 
       if (lay->HasVisibleNames() == wxCHK_CHECKED) {
-        visnames += (lay->m_LayerName) + _T(";");
+        visnames += lay->m_LayerName + _T(";");
       } else if (lay->HasVisibleNames() == wxCHK_UNCHECKED) {
-        invisnames += (lay->m_LayerName) + _T(";");
+        invisnames += lay->m_LayerName + _T(";");
       }
     }
     Write(_T ( "VisibleLayers" ), vis);
@@ -2557,7 +2557,7 @@ void MyConfig::UpdateSettings() {
   if (ps52plib) {
     for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
          iPtr++) {
-      OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
+      OBJLElement *pOLE = (OBJLElement *)ps52plib->pOBJLArray->Item(iPtr);
 
       wxString st1(_T ( "viz" ));
       char name[7];
@@ -2770,7 +2770,7 @@ void MyConfig::UpdateSettings() {
 #endif
 
 #ifdef __WXMSW__
-  font_path = (_T ( "/Settings/MSWFonts" ));
+  font_path = L"/Settings/MSWFonts";
 #endif
 
 #ifdef __WXMAC__
@@ -3156,14 +3156,14 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
       l->m_LayerID = ++g_LayerIdx;
       l->m_LayerFileName = file_array[0];
       if (file_array.GetCount() <= 1)
-        wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName),
+        wxFileName::SplitPath(file_array[0], NULL, NULL, &l->m_LayerName,
                               NULL, NULL);
       else {
         if (dirpath.IsSameAs(_T("")))
-          wxFileName::SplitPath(g_gpx_path, NULL, NULL, &(l->m_LayerName), NULL,
+          wxFileName::SplitPath(g_gpx_path, NULL, NULL, &l->m_LayerName, NULL,
                                 NULL);
         else
-          wxFileName::SplitPath(dirpath, NULL, NULL, &(l->m_LayerName), NULL,
+          wxFileName::SplitPath(dirpath, NULL, NULL, &l->m_LayerName, NULL,
                                 NULL);
       }
 
@@ -3462,13 +3462,13 @@ void AlphaBlending(ocpnDC &dc, int x, int y, int size_x, int size_y,
     for (int i = 0; i < sb; i++) {
       float a = alpha;
       if (*box == 0 && radius > 0.0) a = 1.0;
-      int r = ((*bg++) * a) + (1.0 - a) * color.Red();
+      int r = *bg++ * a + (1.0 - a) * color.Red();
       *d++ = r;
       box++;
-      int g = ((*bg++) * a) + (1.0 - a) * color.Green();
+      int g = *bg++ * a + (1.0 - a) * color.Green();
       *d++ = g;
       box++;
-      int b = ((*bg++) * a) + (1.0 - a) * color.Blue();
+      int b = *bg++ * a + (1.0 - a) * color.Blue();
       *d++ = b;
       box++;
     }
@@ -3561,7 +3561,7 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 
   // Are we in dusk or night mode? (Used below in several places.)
   bool darkMode =
-      (cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT);
+      cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT;
 
   static int depth = 0;  // recursion count
   if (depth == 0) {      // only for the window root, not for every child
@@ -3658,15 +3658,13 @@ wxColor GetDimedColor(const wxColor& c)
 {
     switch (global_color_scheme) {
     case ColorScheme::GLOBAL_COLOR_SCHEME_NIGHT:
-        return (
-            wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_NIGHT, 255)),
-                wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_NIGHT, 255)),
-                wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_NIGHT, 255))));
+        return wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_NIGHT, 255)),
+                       wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_NIGHT, 255)),
+                       wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_NIGHT, 255)));
     case ColorScheme::GLOBAL_COLOR_SCHEME_DUSK:
-        return (
-            wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_DUSK, 255)),
-                wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_DUSK, 255)),
-                wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_DUSK, 255))));
+        return wxColor(wxMax(0, wxMin(c.Red() + c.Red() * LUMIMOSITY_DUSK, 255)),
+                       wxMax(0, wxMin(c.Green() + c.Green() * LUMIMOSITY_DUSK, 255)),
+                       wxMax(0, wxMin(c.Blue() + c.Blue() * LUMIMOSITY_DUSK, 255)));
     default:
         return c;
     }

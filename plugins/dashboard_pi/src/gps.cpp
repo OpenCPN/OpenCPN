@@ -53,7 +53,7 @@ DashboardInstrument_GPS::DashboardInstrument_GPS(wxWindow* parent,
   m_cy = m_refDim * 35 / 10;
   m_radius = m_refDim * 2;
   m_scaleDelta = m_refDim / 2;
-  m_scaleBase = (m_radius * 2) + (2 * m_refDim);
+  m_scaleBase = m_radius * 2 + 2 * m_refDim;
 
   for (int idx = 0; idx < 12; idx++) {
     m_SatInfo[idx].SatNumber = 0;
@@ -82,14 +82,14 @@ wxSize DashboardInstrument_GPS::GetSize(int orient, wxSize hint) {
   else
       f = g_pFontTitle->GetChosenFont();
   dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-  w = (12 * m_refDim);  // Max 12 vertical bars
+  w = 12 * m_refDim;  // Max 12 vertical bars
   if (orient == wxHORIZONTAL) {
     m_cx = w / 2;
-    return wxSize(w, wxMax(hint.y, m_TitleHeight + (m_refDim * 84 / 10)));
+    return wxSize(w, wxMax(hint.y, m_TitleHeight + m_refDim * 84 / 10));
   } else {
     w = wxMax(hint.x, w);
     m_cx = w / 2;
-    return wxSize(w, m_TitleHeight + (m_refDim * 84 / 10));
+    return wxSize(w, m_TitleHeight + m_refDim * 84 / 10);
   }
 }
 
@@ -230,9 +230,9 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
 
   dc->DrawCircle(m_cx, m_cy, m_radius);
   if (m_Properties)
-      dc->SetFont((m_Properties->m_SmallFont.GetChosenFont()));
+      dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
   else
-      dc->SetFont((g_pFontSmall->GetChosenFont()));
+      dc->SetFont(g_pFontSmall->GetChosenFont());
 
   wxScreenDC sdc;
   int height, width;
@@ -353,9 +353,9 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   tdc.SelectObject(wxNullBitmap);
 
   int scaleDelta = m_refDim / 2;
-  int scaleBase = (m_radius * 2) + (2 * m_refDim);
+  int scaleBase = m_radius * 2 + 2 * m_refDim;
 
-  dc->DrawBitmap(tbm, 0, scaleBase + (scaleDelta * 45 / 10), false);
+  dc->DrawBitmap(tbm, 0, scaleBase + scaleDelta * 45 / 10, false);
 }
 
 void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
@@ -384,7 +384,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   dc->SetTextBackground(cb);
 
   int m_scaleDelta = m_refDim / 2;
-  int m_scaleBase = (m_radius * 2) + (2 * m_refDim);
+  int m_scaleBase = m_radius * 2 + 2 * m_refDim;
   int pitch = m_refDim;
   int offset = m_refDim * 12 / 100;
 
@@ -392,7 +392,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
       int h = m_SatInfo[idx].SignalToNoiseRatio * m_refDim / 24;  // 0.4;
       dc->DrawRectangle(idx * pitch + offset,
-                        m_scaleBase + (4 * m_scaleDelta) - h, pitch * 60 / 100, h);
+                        m_scaleBase + 4 * m_scaleDelta - h, pitch * 60 / 100, h);
     }
   }
 

@@ -226,5 +226,5 @@ int main(int argc, char **argv)
     DBFClose(hDBF);
     free(panWidth);
 
-    return (0);
+    return 0;
 }

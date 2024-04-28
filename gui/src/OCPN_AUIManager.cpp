@@ -115,7 +115,7 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event) {
     // It's necessary to reset m_actionPart since it destroyed
     // by the Update within DoEndResizeAction.
     if (m_currentDragItem != -1)
-      m_actionPart = &(m_uiParts.Item(m_currentDragItem));
+      m_actionPart = &m_uiParts.Item(m_currentDragItem);
     else
       m_currentDragItem = m_uiParts.Index(*m_actionPart);
 
@@ -146,8 +146,8 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event) {
 
       if (OAuiManager_HasLiveResize(*this)) {
         m_frame->ReleaseMouse();
-        if ((used_width < client_size.x * 9 / 10) &&
-            (used_width > client_size.x * 1 / 10))
+        if (used_width < client_size.x * 9 / 10 &&
+            used_width > client_size.x * 1 / 10)
           DoEndResizeAction(event);
 
         m_frame->CaptureMouse();
@@ -360,7 +360,7 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event) {
     }
 
     // calculate the new proportion of the pane
-    int new_proportion = (new_pixsize * total_proportion) / dock_pixels;
+    int new_proportion = new_pixsize * total_proportion / dock_pixels;
 
     // default minimum size
     int min_size = 0;
@@ -372,7 +372,7 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event) {
     if (pane.min_size.IsFullySpecified()) {
       min_size = 0;
 
-      if (pane.HasBorder()) min_size += (pane_borderSize * 2);
+      if (pane.HasBorder()) min_size += pane_borderSize * 2;
 
       // calculate minimum size with decorations (border,caption)
       if (pane_part->orientation == wxVERTICAL) {
@@ -389,7 +389,7 @@ bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event) {
     // determine what's causing this.
     min_size++;
 
-    int min_proportion = (min_size * total_proportion) / dock_pixels;
+    int min_proportion = min_size * total_proportion / dock_pixels;
 
     if (new_proportion < min_proportion) new_proportion = min_proportion;
 
@@ -429,7 +429,7 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event) {
       ODrawResizeHint(dc, m_0actionHintRect);
     }
     if (m_currentDragItem != -1 && OAuiManager_HasLiveResize(*this))
-      m_actionPart = &(m_uiParts.Item(m_currentDragItem));
+      m_actionPart = &m_uiParts.Item(m_currentDragItem);
 
     DoEndResizeAction(event);
 
@@ -568,8 +568,8 @@ bool OCPN_AUIManager::ProcessDockResult(wxAuiPaneInfo& target,
   // the docking action
   if (new_pos.window->GetName().IsSameAs(_T("panel"))) {
     // Dashboards can not go on the left( interferes with global toolbar )
-    if (/*(new_pos.dock_layer != 1)  ||*/ (new_pos.dock_direction ==
-                                           wxAUI_DOCK_LEFT))
+    if (/*(new_pos.dock_layer != 1)  ||*/ new_pos.dock_direction ==
+                                          wxAUI_DOCK_LEFT)
       return false;
 
     // Also, in multi-canvas mode, the dashboard  is restricted to layer 1 in

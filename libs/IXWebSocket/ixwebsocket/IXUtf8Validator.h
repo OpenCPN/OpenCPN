@@ -86,7 +86,7 @@ namespace ix
     {
         uint32_t type = utf8d[byte];
 
-        *codep = (*state != utf8_accept) ? (byte & 0x3fu) | (*codep << 6) : (0xff >> type) & (byte);
+        *codep = *state != utf8_accept ? byte & 0x3fu | *codep << 6 : 0xff >> type & byte;
 
         *state = utf8d[256 + *state * 16 + type];
         return *state;

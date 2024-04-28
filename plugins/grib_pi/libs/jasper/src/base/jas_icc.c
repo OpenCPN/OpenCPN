@@ -435,7 +435,7 @@ int jas_iccprof_save(jas_iccprof_t *prof, jas_stream_t *out)
         while (i < JAS_CAST(int, tagtab->numents) &&
           tagtab->ents[i].first)
             ++i;
-        newoff = (i < JAS_CAST(int, tagtab->numents)) ?
+        newoff = i < JAS_CAST(int, tagtab->numents) ?
           tagtab->ents[i].off : prof->hdr.size;
         reloff = newoff - curoff;
         assert(reloff >= 0);
@@ -1575,7 +1575,7 @@ static int jas_iccgetuint(jas_stream_t *in, int n, ulonglong *val)
     for (i = n; i > 0; --i) {
         if ((c = jas_stream_getc(in)) == EOF)
             return -1;
-        v = (v << 8) | c;
+        v = v << 8 | c;
     }
     *val = v;
     return 0;
@@ -1604,8 +1604,8 @@ static int jas_iccgetsint32(jas_stream_t *in, jas_iccsint32_t *val)
     ulonglong tmp;
     if (jas_iccgetuint(in, 4, &tmp))
         return -1;
-    *val = (tmp & 0x80000000) ? (-JAS_CAST(longlong, (((~tmp) &
-      0x7fffffff) + 1))) : JAS_CAST(longlong, tmp);
+    *val = tmp & 0x80000000 ? -JAS_CAST(longlong, (~tmp &
+                                          0x7fffffff) + 1) : JAS_CAST(longlong, tmp);
     return 0;
 }
 
@@ -1632,7 +1632,7 @@ static int jas_iccputuint(jas_stream_t *out, int n, ulonglong val)
     int i;
     int c;
     for (i = n; i > 0; --i) {
-        c = (val >> (8 * (i - 1))) & 0xff;
+        c = val >> 8 * (i - 1) & 0xff;
         if (jas_stream_putc(out, c) == EOF)
             return -1;
     }
@@ -1642,7 +1642,7 @@ static int jas_iccputuint(jas_stream_t *out, int n, ulonglong val)
 static int jas_iccputsint(jas_stream_t *out, int n, longlong val)
 {
     ulonglong tmp;
-    tmp = (val < 0) ? (abort(), 0) : val;
+    tmp = val < 0 ? (abort(), 0) : val;
     return jas_iccputuint(out, n, tmp);
 }
 
@@ -1657,7 +1657,7 @@ static char *jas_iccsigtostr(int sig, char *buf)
     char *bufptr;
     bufptr = buf;
     for (n = 4; n > 0; --n) {
-        c = (sig >> 24) & 0xff;
+        c = sig >> 24 & 0xff;
         if (isalpha(c) || isdigit(c)) {
             *bufptr++ = c;
         }
@@ -1669,7 +1669,7 @@ static char *jas_iccsigtostr(int sig, char *buf)
 
 static long jas_iccpadtomult(long x, long y)
 {
-    return ((x + y - 1) / y) * y;
+    return (x + y - 1) / y * y;
 }
 
 static long jas_iccpowi(int x, int n)

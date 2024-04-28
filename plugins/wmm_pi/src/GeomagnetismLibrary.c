@@ -145,7 +145,7 @@ elements
       MagneticResultsSphVar, MagneticResultsGeoVar;
 
   NumTerms =
-      ((TimedMagneticModel->nMax + 1) * (TimedMagneticModel->nMax + 2) / 2);
+      (TimedMagneticModel->nMax + 1) * (TimedMagneticModel->nMax + 2) / 2;
   LegendreFunction = MAG_AllocateLegendreFunctionMemory(
       NumTerms); /* For storing the ALF functions */
   SphVariables = MAG_AllocateSphVarMemory(TimedMagneticModel->nMax);
@@ -241,7 +241,7 @@ void MAG_Gradient(MAGtype_Ellipsoid Ellip, MAGtype_CoordGeodetic CoordGeodetic,
 
   MAG_GeodeticToSpherical(Ellip, CoordGeodetic, &AdjCoordSpherical);
   MAG_GradY(Ellip, AdjCoordSpherical, CoordGeodetic, TimedMagneticModel,
-            GeomagneticElements, &(Gradient->GradLambda));
+            GeomagneticElements, &Gradient->GradLambda);
 
   /*Gradient along z*/
   AdjCoordGeodetic.HeightAboveEllipsoid =
@@ -283,9 +283,9 @@ int MAG_SetDefaults(MAGtype_Ellipsoid *Ellip, MAGtype_Geoid *Geoid)
   Ellip->a = 6378.137;            /*semi-major axis of the ellipsoid in */
   Ellip->b = 6356.7523142;        /*semi-minor axis of the ellipsoid in */
   Ellip->fla = 1 / 298.257223563; /* flattening */
-  Ellip->eps = sqrt(1 - (Ellip->b * Ellip->b) /
+  Ellip->eps = sqrt(1 - Ellip->b * Ellip->b /
                             (Ellip->a * Ellip->a)); /*first eccentricity */
-  Ellip->epssq = (Ellip->eps * Ellip->eps); /*first eccentricity squared */
+  Ellip->epssq = Ellip->eps * Ellip->eps; /*first eccentricity squared */
   Ellip->re = 6371.2;                       /* Earth's radius */
 
   /* Sets EGM-96 model file parameters */
@@ -1427,7 +1427,7 @@ void MAG_AssignMagneticModelCoeffs(MAGtype_MagneticModel *Assignee,
   assert(nMaxSecVar <= Assignee->nMaxSecVar);
   for (n = 1; n <= nMaxSecVar; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       Assignee->Main_Field_Coeff_G[index] = Source->Main_Field_Coeff_G[index];
       Assignee->Main_Field_Coeff_H[index] = Source->Main_Field_Coeff_H[index];
       Assignee->Secular_Var_Coeff_G[index] = Source->Secular_Var_Coeff_G[index];
@@ -1436,7 +1436,7 @@ void MAG_AssignMagneticModelCoeffs(MAGtype_MagneticModel *Assignee,
   }
   for (n = nMaxSecVar + 1; n <= nMax; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       Assignee->Main_Field_Coeff_G[index] = Source->Main_Field_Coeff_G[index];
       Assignee->Main_Field_Coeff_H[index] = Source->Main_Field_Coeff_H[index];
     }
@@ -1830,7 +1830,7 @@ int MAG_readMagneticModel(char *filename,
       break;
     }
     /* CHECK FOR LAST LINE IN FILE */
-    for (i = 0; i < 4 && (c_str[i] != '\0'); i++) {
+    for (i = 0; i < 4 && c_str[i] != '\0'; i++) {
       c_new[i] = c_str[i];
       c_new[i + 1] = '\0';
     }
@@ -1842,7 +1842,7 @@ int MAG_readMagneticModel(char *filename,
     /* END OF FILE NOT ENCOUNTERED, GET VALUES */
     sscanf(c_str, "%d%d%lf%lf%lf%lf", &n, &m, &gnm, &hnm, &dgnm, &dhnm);
     if (m <= n) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       MagneticModel->Main_Field_Coeff_G[index] = gnm;
       MagneticModel->Secular_Var_Coeff_G[index] = dgnm;
       MagneticModel->Main_Field_Coeff_H[index] = hnm;
@@ -1914,7 +1914,7 @@ int MAG_readMagneticModel_Large(char *filename, char *filenameSV,
     }
     sscanf(c_str2, "%d%d%lf%lf", &n, &m, &dgnm, &dhnm);
     if (m <= n) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       MagneticModel->Main_Field_Coeff_G[index] = gnm;
       MagneticModel->Secular_Var_Coeff_G[index] = dgnm;
       MagneticModel->Main_Field_Coeff_H[index] = hnm;
@@ -1929,7 +1929,7 @@ int MAG_readMagneticModel_Large(char *filename, char *filenameSV,
     }
     sscanf(c_str, "%d%d%lf%lf", &n, &m, &gnm, &hnm);
     if (m <= n) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       MagneticModel->Main_Field_Coeff_G[index] = gnm;
       MagneticModel->Main_Field_Coeff_H[index] = hnm;
     }
@@ -2059,7 +2059,7 @@ int MAG_readMagneticModel_SHDF(char *filename,
         return _DEGREE_NOT_FOUND;
       }
       if (m <= n) {
-        index = (n * (n + 1) / 2 + m);
+        index = n * (n + 1) / 2 + m;
         (*magneticmodels)[header_index]->Main_Field_Coeff_G[index] = gnm;
         (*magneticmodels)[header_index]->Secular_Var_Coeff_G[index] = dgnm;
         (*magneticmodels)[header_index]->Main_Field_Coeff_H[index] = hnm;
@@ -2110,7 +2110,7 @@ void MAG_BaseErrors(double DeclCoef, double DeclBaseline, double InclOffset,
                     double FOffset, double Multiplier, double H,
                     double *DeclErr, double *InclErr, double *FErr) {
   double declHorizontalAdjustmentSq;
-  declHorizontalAdjustmentSq = (DeclCoef / H) * (DeclCoef / H);
+  declHorizontalAdjustmentSq = DeclCoef / H * (DeclCoef / H);
   *DeclErr = sqrt(declHorizontalAdjustmentSq + DeclBaseline * DeclBaseline) *
              Multiplier;
   *InclErr = InclOffset * Multiplier;
@@ -2288,12 +2288,12 @@ void MAG_CartesianToGeodetic(MAGtype_Ellipsoid Ellip, double x, double y,
    *   3.0 find solution to:
    *       t^4 + 2*E*t^3 + 2*F*t - 1 = 0
    */
-  p = (4.0 / 3.0) * (e * f + 1.0);
+  p = 4.0 / 3.0 * (e * f + 1.0);
   q = 2.0 * (e * e - f * f);
   d = p * p * p + q * q;
 
   if (d >= 0.0) {
-    v = pow((sqrt(d) - q), (1.0 / 3.0)) - pow((sqrt(d) + q), (1.0 / 3.0));
+    v = pow(sqrt(d) - q, 1.0 / 3.0) - pow(sqrt(d) + q, 1.0 / 3.0);
   } else {
     v = 2.0 * sqrt(-p) * cos(acos(q / (p * sqrt(-p))) / 3.0);
   }
@@ -2307,7 +2307,7 @@ void MAG_CartesianToGeodetic(MAGtype_Ellipsoid Ellip, double x, double y,
   g = (sqrt(e * e + v) + e) / 2.0;
   t = sqrt(g * g + (f - v * g) / (2.0 * g - e)) - g;
 
-  rlat = atan((Ellip.a * (1.0 - t * t)) / (2.0 * modified_b * t));
+  rlat = atan(Ellip.a * (1.0 - t * t) / (2.0 * modified_b * t));
   CoordGeodetic->phi = RAD2DEG(rlat);
 
   /*
@@ -2713,41 +2713,41 @@ int MAG_GetUTMParameters(double Latitude, double Longitude, int *Zone,
   long temp_zone;
   int Error_Code = 0;
 
-  if ((Latitude < DEG2RAD(MAG_UTM_MIN_LAT_DEGREE)) ||
-      (Latitude >
-       DEG2RAD(MAG_UTM_MAX_LAT_DEGREE))) { /* Latitude out of range */
+  if (Latitude < DEG2RAD(MAG_UTM_MIN_LAT_DEGREE) ||
+      Latitude >
+      DEG2RAD(MAG_UTM_MAX_LAT_DEGREE)) { /* Latitude out of range */
     MAG_Error(23);
     Error_Code = 1;
   }
-  if ((Longitude < -M_PI) ||
-      (Longitude > (2 * M_PI))) { /* Longitude out of range */
+  if (Longitude < -M_PI ||
+      Longitude > 2 * M_PI) { /* Longitude out of range */
     MAG_Error(24);
     Error_Code = 1;
   }
   if (!Error_Code) { /* no errors */
-    if (Longitude < 0) Longitude += (2 * M_PI) + 1.0e-10;
+    if (Longitude < 0) Longitude += 2 * M_PI + 1.0e-10;
     Lat_Degrees = (long)(Latitude * 180.0 / M_PI);
     Long_Degrees = (long)(Longitude * 180.0 / M_PI);
 
     if (Longitude < M_PI)
-      temp_zone = (long)(31 + ((Longitude * 180.0 / M_PI) / 6.0));
+      temp_zone = (long)(31 + Longitude * 180.0 / M_PI / 6.0);
     else
-      temp_zone = (long)(((Longitude * 180.0 / M_PI) / 6.0) - 29);
+      temp_zone = (long)(Longitude * 180.0 / M_PI / 6.0 - 29);
     if (temp_zone > 60) temp_zone = 1;
     /* UTM special cases */
-    if ((Lat_Degrees > 55) && (Lat_Degrees < 64) && (Long_Degrees > -1) &&
-        (Long_Degrees < 3))
+    if (Lat_Degrees > 55 && Lat_Degrees < 64 && Long_Degrees > -1 &&
+        Long_Degrees < 3)
       temp_zone = 31;
-    if ((Lat_Degrees > 55) && (Lat_Degrees < 64) && (Long_Degrees > 2) &&
-        (Long_Degrees < 12))
+    if (Lat_Degrees > 55 && Lat_Degrees < 64 && Long_Degrees > 2 &&
+        Long_Degrees < 12)
       temp_zone = 32;
-    if ((Lat_Degrees > 71) && (Long_Degrees > -1) && (Long_Degrees < 9))
+    if (Lat_Degrees > 71 && Long_Degrees > -1 && Long_Degrees < 9)
       temp_zone = 31;
-    if ((Lat_Degrees > 71) && (Long_Degrees > 8) && (Long_Degrees < 21))
+    if (Lat_Degrees > 71 && Long_Degrees > 8 && Long_Degrees < 21)
       temp_zone = 33;
-    if ((Lat_Degrees > 71) && (Long_Degrees > 20) && (Long_Degrees < 33))
+    if (Lat_Degrees > 71 && Long_Degrees > 20 && Long_Degrees < 33)
       temp_zone = 35;
-    if ((Lat_Degrees > 71) && (Long_Degrees > 32) && (Long_Degrees < 42))
+    if (Lat_Degrees > 71 && Long_Degrees > 32 && Long_Degrees < 42)
       temp_zone = 37;
 
     if (!Error_Code) {
@@ -2762,7 +2762,7 @@ int MAG_GetUTMParameters(double Latitude, double Longitude, int *Zone,
         *Hemisphere = 'N';
     }
   } /* END OF if (!Error_Code) */
-  return (Error_Code);
+  return Error_Code;
 } /* MAG_GetUTMParameters */
 
 int MAG_isNaN(double d) { return d != d; }
@@ -2799,7 +2799,7 @@ CALLS : none
 {
   double Psi;
   /* Difference between the spherical and Geodetic latitudes */
-  Psi = (M_PI / 180) * (CoordSpherical.phig - CoordGeodetic.phi);
+  Psi = M_PI / 180 * (CoordSpherical.phig - CoordGeodetic.phi);
 
   /* Rotate spherical field components to the Geodetic system */
   MagneticResultsGeo->Bz =
@@ -3122,7 +3122,7 @@ OUTPUT  LegendreFunction  Calculated Legendre variables in the data structure
 
   sin_phi = sin(DEG2RAD(CoordSpherical.phig)); /* sin  (geocentric latitude) */
 
-  if (nMax <= 16 || (1 - fabs(sin_phi)) <
+  if (nMax <= 16 || 1 - fabs(sin_phi) <
                         1.0e-10) /* If nMax is less tha 16 or at the poles */
     FLAG = MAG_PcupLow(LegendreFunction->Pcup, LegendreFunction->dPcup, sin_phi,
                        nMax);
@@ -3151,12 +3151,12 @@ latitude) CALLS : none
 
  */
 {
-  CoordGeodetic->phi = CoordGeodetic->phi < (-90.0 + MAG_GEO_POLE_TOLERANCE)
-                           ? (-90.0 + MAG_GEO_POLE_TOLERANCE)
-                           : CoordGeodetic->phi;
-  CoordGeodetic->phi = CoordGeodetic->phi > (90.0 - MAG_GEO_POLE_TOLERANCE)
-                           ? (90.0 - MAG_GEO_POLE_TOLERANCE)
-                           : CoordGeodetic->phi;
+  CoordGeodetic->phi = CoordGeodetic->phi < -90.0 + MAG_GEO_POLE_TOLERANCE
+                         ? -90.0 + MAG_GEO_POLE_TOLERANCE
+                         : CoordGeodetic->phi;
+  CoordGeodetic->phi = CoordGeodetic->phi > 90.0 - MAG_GEO_POLE_TOLERANCE
+                         ? 90.0 - MAG_GEO_POLE_TOLERANCE
+                         : CoordGeodetic->phi;
   return TRUE;
 } /*MAG_CheckGeographicPole*/
 
@@ -3197,7 +3197,7 @@ int MAG_ComputeSphericalHarmonicVariables(
   r)^(n+2) for n  1..nMax-1 (this is much faster than calling pow MAX_N+1
   times).      */
   SphVariables->RelativeRadiusPower[0] =
-      (Ellip.re / CoordSpherical.r) * (Ellip.re / CoordSpherical.r);
+      Ellip.re / CoordSpherical.r * (Ellip.re / CoordSpherical.r);
   for (n = 1; n <= nMax; n++) {
     SphVariables->RelativeRadiusPower[n] =
         SphVariables->RelativeRadiusPower[n - 1] *
@@ -3236,7 +3236,7 @@ void MAG_GradY(MAGtype_Ellipsoid Ellip, MAGtype_CoordSpherical CoordSpherical,
   MAGtype_MagneticResults GradYResultsSph, GradYResultsGeo;
 
   NumTerms =
-      ((TimedMagneticModel->nMax + 1) * (TimedMagneticModel->nMax + 2) / 2);
+      (TimedMagneticModel->nMax + 1) * (TimedMagneticModel->nMax + 2) / 2;
   LegendreFunction = MAG_AllocateLegendreFunctionMemory(
       NumTerms); /* For storing the ALF functions */
   SphVariables = MAG_AllocateSphVarMemory(TimedMagneticModel->nMax);
@@ -3273,14 +3273,14 @@ void MAG_GradYSummation(MAGtype_LegendreFunction *LegendreFunction,
   GradY->Bx = 0.0;
   for (n = 1; n <= MagneticModel->nMax; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
 
       GradY->Bz -= SphVariables.RelativeRadiusPower[n] *
                    (-1 * MagneticModel->Main_Field_Coeff_G[index] *
                         SphVariables.sin_mlambda[m] +
                     MagneticModel->Main_Field_Coeff_H[index] *
                         SphVariables.cos_mlambda[m]) *
-                   (double)(n + 1) * (double)(m)*LegendreFunction->Pcup[index] *
+                   (double)(n + 1) * (double)m*LegendreFunction->Pcup[index] *
                    (1 / CoordSpherical.r);
       GradY->By += SphVariables.RelativeRadiusPower[n] *
                    (MagneticModel->Main_Field_Coeff_G[index] *
@@ -3294,7 +3294,7 @@ void MAG_GradYSummation(MAGtype_LegendreFunction *LegendreFunction,
                         SphVariables.sin_mlambda[m] +
                     MagneticModel->Main_Field_Coeff_H[index] *
                         SphVariables.cos_mlambda[m]) *
-                   (double)(m)*LegendreFunction->dPcup[index] *
+                   (double)m*LegendreFunction->dPcup[index] *
                    (1 / CoordSpherical.r);
     }
   }
@@ -3302,8 +3302,8 @@ void MAG_GradYSummation(MAGtype_LegendreFunction *LegendreFunction,
   cos_phi = cos(DEG2RAD(CoordSpherical.phig));
   if (fabs(cos_phi) > 1.0e-10) {
     GradY->By = GradY->By / (cos_phi * cos_phi);
-    GradY->Bx = GradY->Bx / (cos_phi);
-    GradY->Bz = GradY->Bz / (cos_phi);
+    GradY->Bx = GradY->Bx / cos_phi;
+    GradY->Bz = GradY->Bz / cos_phi;
   } else
   /* Special calculation for component - By - at Geographic poles.
    * If the user wants to avoid using this function,  please make sure that
@@ -3364,7 +3364,7 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
   double *f1, *f2, *PreSqr;
   int k, kstart, m, n, NumTerms;
 
-  NumTerms = ((nMax + 1) * (nMax + 2) / 2);
+  NumTerms = (nMax + 1) * (nMax + 2) / 2;
 
   if (fabs(x) == 1.0) {
     printf("Error in PcupHigh: derivative cannot be calculated at poles\n");
@@ -3394,15 +3394,15 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
   scalef = 1.0e-280;
 
   for (n = 0; n <= 2 * nMax + 1; ++n) {
-    PreSqr[n] = sqrt((double)(n));
+    PreSqr[n] = sqrt((double)n);
   }
 
   k = 2;
 
   for (n = 2; n <= nMax; n++) {
     k = k + 1;
-    f1[k] = (double)(2 * n - 1) / (double)(n);
-    f2[k] = (double)(n - 1) / (double)(n);
+    f1[k] = (double)(2 * n - 1) / (double)n;
+    f2[k] = (double)(n - 1) / (double)n;
     for (m = 1; m <= n - 2; m++) {
       k = k + 1;
       f1[k] = (double)(2 * n - 1) / PreSqr[n + m] / PreSqr[n - m];
@@ -3427,7 +3427,7 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
     k = k + n;
     plm = f1[k] * x * pm1 - f2[k] * pm2;
     Pcup[k] = plm;
-    dPcup[k] = (double)(n) * (pm1 - x * plm) / z;
+    dPcup[k] = (double)n * (pm1 - x * plm) / z;
     pm2 = pm1;
     pm1 = plm;
   }
@@ -3443,14 +3443,14 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
     kstart = kstart + m + 1;
     pmm = pmm * PreSqr[2 * m + 1] / PreSqr[2 * m];
     Pcup[kstart] = pmm * rescalem / PreSqr[2 * m + 1];
-    dPcup[kstart] = -((double)(m)*x * Pcup[kstart] / z);
+    dPcup[kstart] = -((double)m*x * Pcup[kstart] / z);
     pm2 = pmm / PreSqr[2 * m + 1];
     /* Calculate Pcup(m+1,m)*/
     k = kstart + m + 1;
     pm1 = x * PreSqr[2 * m + 1] * pm2;
     Pcup[k] = pm1 * rescalem;
     dPcup[k] =
-        ((pm2 * rescalem) * PreSqr[2 * m + 1] - x * (double)(m + 1) * Pcup[k]) /
+        (pm2 * rescalem * PreSqr[2 * m + 1] - x * (double)(m + 1) * Pcup[k]) /
         z;
     /* Calculate Pcup(n,m)*/
     for (n = m + 2; n <= nMax; ++n) {
@@ -3458,7 +3458,7 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
       plm = x * f1[k] * pm1 - f2[k] * pm2;
       Pcup[k] = plm * rescalem;
       dPcup[k] = (PreSqr[n + m] * PreSqr[n - m] * (pm1 * rescalem) -
-                  (double)(n)*x * Pcup[k]) /
+                  (double)n*x * Pcup[k]) /
                  z;
       pm2 = pm1;
       pm1 = plm;
@@ -3470,7 +3470,7 @@ int MAG_PcupHigh(double *Pcup, double *dPcup, double x, int nMax)
   kstart = kstart + m + 1;
   pmm = pmm / PreSqr[2 * nMax];
   Pcup[kstart] = pmm * rescalem;
-  dPcup[kstart] = -(double)(nMax)*x * Pcup[kstart] / z;
+  dPcup[kstart] = -(double)nMax*x * Pcup[kstart] / z;
   free(f1);
   free(PreSqr);
   free(f2);
@@ -3511,7 +3511,7 @@ int MAG_PcupLow(double *Pcup, double *dPcup, double x, int nMax)
   /*sin (geocentric latitude) - sin_phi */
   z = sqrt((1.0 - x) * (1.0 + x));
 
-  NumTerms = ((nMax + 1) * (nMax + 2) / 2);
+  NumTerms = (nMax + 1) * (nMax + 2) / 2;
   schmidtQuasiNorm = (double *)malloc((NumTerms + 1) * sizeof(double));
 
   if (schmidtQuasiNorm == NULL) {
@@ -3522,7 +3522,7 @@ int MAG_PcupLow(double *Pcup, double *dPcup, double x, int nMax)
   /*   First, Compute the Gauss-normalized associated Legendre  functions*/
   for (n = 1; n <= nMax; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       if (n == m) {
         index1 = (n - 1) * n / 2 + m - 1;
         Pcup[index] = z * Pcup[index1];
@@ -3538,7 +3538,7 @@ int MAG_PcupLow(double *Pcup, double *dPcup, double x, int nMax)
           Pcup[index] = x * Pcup[index2];
           dPcup[index] = x * dPcup[index2] - z * Pcup[index2];
         } else {
-          k = (double)(((n - 1) * (n - 1)) - (m * m)) /
+          k = (double)((n - 1) * (n - 1) - m * m) /
               (double)((2 * n - 1) * (2 * n - 3));
           Pcup[index] = x * Pcup[index2] - k * Pcup[index1];
           dPcup[index] =
@@ -3552,15 +3552,15 @@ int MAG_PcupLow(double *Pcup, double *dPcup, double x, int nMax)
 
   schmidtQuasiNorm[0] = 1.0;
   for (n = 1; n <= nMax; n++) {
-    index = (n * (n + 1) / 2);
+    index = n * (n + 1) / 2;
     index1 = (n - 1) * n / 2;
     /* for m = 0 */
     schmidtQuasiNorm[index] =
         schmidtQuasiNorm[index1] * (double)(2 * n - 1) / (double)n;
 
     for (m = 1; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
-      index1 = (n * (n + 1) / 2 + m - 1);
+      index = n * (n + 1) / 2 + m;
+      index1 = n * (n + 1) / 2 + m - 1;
       schmidtQuasiNorm[index] =
           schmidtQuasiNorm[index1] *
           sqrt((double)((n - m + 1) * (m == 1 ? 2 : 1)) / (double)(n + m));
@@ -3573,7 +3573,7 @@ int MAG_PcupLow(double *Pcup, double *dPcup, double x, int nMax)
 
   for (n = 1; n <= nMax; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       Pcup[index] = Pcup[index] * schmidtQuasiNorm[index];
       dPcup[index] = -dPcup[index] * schmidtQuasiNorm[index];
       /* The sign is changed since the new WMM routines use derivative with
@@ -3607,7 +3607,7 @@ int MAG_SecVarSummation(MAGtype_LegendreFunction *LegendreFunction,
   MagneticResults->Bx = 0.0;
   for (n = 1; n <= MagneticModel->nMaxSecVar; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
 
       /*          nMax    (n+2)     n     m            m           m
               Bz =   -SUM (a/r)   (n+1) SUM  [g cos(m p) + h sin(m p)] P
@@ -3629,7 +3629,7 @@ int MAG_SecVarSummation(MAGtype_LegendreFunction *LegendreFunction,
                                   SphVariables.sin_mlambda[m] -
                               MagneticModel->Secular_Var_Coeff_H[index] *
                                   SphVariables.cos_mlambda[m]) *
-                             (double)(m)*LegendreFunction->Pcup[index];
+                             (double)m*LegendreFunction->Pcup[index];
       /*         nMax  (n+2) n     m            m           m
               Bx = - SUM (a/r)   SUM  [g cos(m p) + h sin(m p)] dP (sin(phi))
                          n=1         m=0   n            n           n  */
@@ -3688,7 +3688,7 @@ int MAG_SecVarSummationSpecial(MAGtype_MagneticModel *MagneticModel,
   sin_phi = sin(DEG2RAD(CoordSpherical.phig));
 
   for (n = 1; n <= MagneticModel->nMaxSecVar; n++) {
-    index = (n * (n + 1) / 2 + 1);
+    index = n * (n + 1) / 2 + 1;
     schmidtQuasiNorm2 = schmidtQuasiNorm1 * (double)(2 * n - 1) / (double)n;
     schmidtQuasiNorm3 =
         schmidtQuasiNorm2 * sqrt((double)(n * 2) / (double)(n + 1));
@@ -3696,7 +3696,7 @@ int MAG_SecVarSummationSpecial(MAGtype_MagneticModel *MagneticModel,
     if (n == 1) {
       PcupS[n] = PcupS[n - 1];
     } else {
-      k = (double)(((n - 1) * (n - 1)) - 1) /
+      k = (double)((n - 1) * (n - 1) - 1) /
           (double)((2 * n - 1) * (2 * n - 3));
       PcupS[n] = sin_phi * PcupS[n - 1] - k * PcupS[n - 2];
     }
@@ -3754,7 +3754,7 @@ int MAG_Summation(MAGtype_LegendreFunction *LegendreFunction,
   MagneticResults->Bx = 0.0;
   for (n = 1; n <= MagneticModel->nMax; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
 
       /*          nMax    (n+2)     n     m            m           m
               Bz =   -SUM (a/r)   (n+1) SUM  [g cos(m p) + h sin(m p)] P
@@ -3778,7 +3778,7 @@ int MAG_Summation(MAGtype_LegendreFunction *LegendreFunction,
                                   SphVariables.sin_mlambda[m] -
                               MagneticModel->Main_Field_Coeff_H[index] *
                                   SphVariables.cos_mlambda[m]) *
-                             (double)(m)*LegendreFunction->Pcup[index];
+                             (double)m*LegendreFunction->Pcup[index];
       /*         nMax  (n+2) n     m            m           m
               Bx = - SUM (a/r)   SUM  [g cos(m p) + h sin(m p)] dP (sin(phi))
                          n=1         m=0   n            n           n  */
@@ -3846,7 +3846,7 @@ See Section 1.4, "SINGULARITIES AT THE GEOGRAPHIC POLES", WMM Technical report
 functions and the Schmidt quasi-normalized version. This is equivalent to
 sqrt((m==0?1:2)*(n-m)!/(n+m!))*(2n-1)!!/(n-m)!  */
 
-    index = (n * (n + 1) / 2 + 1);
+    index = n * (n + 1) / 2 + 1;
     schmidtQuasiNorm2 = schmidtQuasiNorm1 * (double)(2 * n - 1) / (double)n;
     schmidtQuasiNorm3 =
         schmidtQuasiNorm2 * sqrt((double)(n * 2) / (double)(n + 1));
@@ -3854,7 +3854,7 @@ sqrt((m==0?1:2)*(n-m)!/(n+m!))*(2n-1)!!/(n-m)!  */
     if (n == 1) {
       PcupS[n] = PcupS[n - 1];
     } else {
-      k = (double)(((n - 1) * (n - 1)) - 1) /
+      k = (double)((n - 1) * (n - 1) - 1) /
           (double)((2 * n - 1) * (2 * n - 3));
       PcupS[n] = sin_phi * PcupS[n - 1] - k * PcupS[n - 2];
     }
@@ -3900,11 +3900,11 @@ CALLS : none
   TimedMagneticModel->nMax = MagneticModel->nMax;
   TimedMagneticModel->nMaxSecVar = MagneticModel->nMaxSecVar;
   a = TimedMagneticModel->nMaxSecVar;
-  b = (a * (a + 1) / 2 + a);
+  b = a * (a + 1) / 2 + a;
   strcpy(TimedMagneticModel->ModelName, MagneticModel->ModelName);
   for (n = 1; n <= MagneticModel->nMax; n++) {
     for (m = 0; m <= n; m++) {
-      index = (n * (n + 1) / 2 + m);
+      index = n * (n + 1) / 2 + m;
       if (index <= b) {
         TimedMagneticModel->Main_Field_Coeff_H[index] =
             MagneticModel->Main_Field_Coeff_H[index] +
@@ -3978,7 +3978,7 @@ However MAG_GetGeoidHeight returns Geoid height in meters - Hence division by
     CoordGeodetic->HeightAboveEllipsoid = CoordGeodetic->HeightAboveGeoid;
     Error_Code = TRUE;
   }
-  return (Error_Code);
+  return Error_Code;
 } /* MAG_ConvertGeoidToEllipsoidHeight*/
 
 int MAG_GetGeoidHeight(double Latitude, double Longitude, double *DeltaHeight,
@@ -4006,12 +4006,12 @@ int MAG_GetGeoidHeight(double Latitude, double Longitude, double *DeltaHeight,
 
   if (!Geoid->Geoid_Initialized) {
     MAG_Error(5);
-    return (FALSE);
+    return FALSE;
   }
-  if ((Latitude < -90) || (Latitude > 90)) { /* Latitude out of range */
+  if (Latitude < -90 || Latitude > 90) { /* Latitude out of range */
     Error_Code |= 1;
   }
-  if ((Longitude < -180) || (Longitude > 360)) { /* Longitude out of range */
+  if (Longitude < -180 || Longitude > 360) { /* Longitude out of range */
     Error_Code |= 1;
   }
 
@@ -4030,9 +4030,9 @@ int MAG_GetGeoidHeight(double Latitude, double Longitude, double *DeltaHeight,
     /*  Assumes that (0,0) of Geoid Height Array is at Northwest corner: */
 
     PostX = floor(OffsetX);
-    if ((PostX + 1) == Geoid->NumbGeoidCols) PostX--;
+    if (PostX + 1 == Geoid->NumbGeoidCols) PostX--;
     PostY = floor(OffsetY);
-    if ((PostY + 1) == Geoid->NumbGeoidRows) PostY--;
+    if (PostY + 1 == Geoid->NumbGeoidRows) PostY--;
 
     Index = (long)(PostY * Geoid->NumbGeoidCols + PostX);
     ElevationNW = (double)Geoid->GeoidHeightBuffer[Index];
@@ -4053,7 +4053,7 @@ int MAG_GetGeoidHeight(double Latitude, double Longitude, double *DeltaHeight,
     *DeltaHeight = UpperY + DeltaY * (LowerY - UpperY);
   } else {
     MAG_Error(17);
-    return (FALSE);
+    return FALSE;
   }
   return TRUE;
 } /*MAG_GetGeoidHeight*/
@@ -4092,8 +4092,8 @@ void MAG_WMMErrorCalc(double H, MAGtype_GeoMagneticElements *Uncertainty) {
   Uncertainty->Z = WMM_UNCERTAINTY_Z;
   Uncertainty->Incl = WMM_UNCERTAINTY_I;
   Uncertainty->Y = WMM_UNCERTAINTY_Y;
-  decl_variable = (WMM_UNCERTAINTY_D_COEF / H);
-  decl_constant = (WMM_UNCERTAINTY_D_OFFSET);
+  decl_variable = WMM_UNCERTAINTY_D_COEF / H;
+  decl_constant = WMM_UNCERTAINTY_D_OFFSET;
   Uncertainty->Decl =
       sqrt(decl_constant * decl_constant + decl_variable * decl_variable);
   if (Uncertainty->Decl > 180) {
@@ -4277,7 +4277,7 @@ int MAG_GetAltitude(char *Query_String, MAGtype_Geoid *Geoid,
       printf("%s", Query_String);
     }
     j = 0;
-    if ((AltitudeSetting != MSLON) &&
+    if (AltitudeSetting != MSLON &&
         (buffer[0] == 'e' || buffer[0] == 'E' ||
          AltitudeSetting ==
              WGS84ON)) /* User entered height above WGS-84 ellipsoid, copy it to

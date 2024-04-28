@@ -44,7 +44,7 @@ void SingleColourFitFast::Compress3( void* block )
 	// get the block as bytes
 	u8* bytes = ( u8* )block;
 
-        int a = (m_colour[0] << 8) | (m_colour[1] << 3) | (m_colour[2] >> 3);
+        int a = m_colour[0] << 8 | m_colour[1] << 3 | m_colour[2] >> 3;
 
 	// write the endpoints
 	bytes[0] = ( u8 )( a & 0xff );

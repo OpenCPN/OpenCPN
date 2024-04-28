@@ -164,7 +164,7 @@ void BZ2_hbMakeCodeLengths ( UChar *len,
 
       for (i = 1; i < alphaSize; i++) {
          j = weight[i] >> 8;
-         j = 1 + (j / 2);
+         j = 1 + j / 2;
          weight[i] = j << 8;
       }
    }
@@ -214,12 +214,12 @@ void BZ2_hbCreateDecodeTables ( Int32 *limit,
    vec = 0;
 
    for (i = minLen; i <= maxLen; i++) {
-      vec += (base[i+1] - base[i]);
+      vec += base[i+1] - base[i];
       limit[i] = vec-1;
       vec <<= 1;
    }
    for (i = minLen + 1; i <= maxLen; i++)
-      base[i] = ((limit[i-1] + 1) << 1) - base[i];
+      base[i] = (limit[i-1] + 1 << 1) - base[i];
 }
 
 

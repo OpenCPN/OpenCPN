@@ -114,7 +114,7 @@ bool GGA::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 15 ) ==NTrue )
    {
       SetErrorMessage( _T("Invalid Checksum" ));
-      return( FALSE );
+      return FALSE;
    }
 
    UTCTime                         = sentence.Field( 1 );
@@ -127,7 +127,7 @@ bool GGA::Parse( const SENTENCE& sentence )
    AgeOfDifferentialGPSDataSeconds = sentence.Double( 13 );
    DifferentialReferenceStationID  = sentence.Integer( 14 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool GGA::Write( SENTENCE& sentence )
@@ -154,7 +154,7 @@ bool GGA::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const GGA& GGA::operator = ( const GGA& source )
@@ -171,5 +171,5 @@ const GGA& GGA::operator = ( const GGA& source )
    AgeOfDifferentialGPSDataSeconds = source.AgeOfDifferentialGPSDataSeconds;
    DifferentialReferenceStationID  = source.DifferentialReferenceStationID;
 
-   return( *this );
+   return*this;
 }

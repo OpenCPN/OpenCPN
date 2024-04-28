@@ -367,8 +367,8 @@ void ActiveTrack::OnTimerTrack(wxTimerEvent &event) {
 
   bool b_addpoint = false;
 
-  if ((m_TrackTimerSec > 0.) && ((double)m_track_run >= m_TrackTimerSec) &&
-      (m_prev_dist > m_minTrackpoint_delta)) {
+  if (m_TrackTimerSec > 0. && (double)m_track_run >= m_TrackTimerSec &&
+      m_prev_dist > m_minTrackpoint_delta) {
     b_addpoint = true;
     m_track_run = 0;
   }
@@ -376,7 +376,7 @@ void ActiveTrack::OnTimerTrack(wxTimerEvent &event) {
   if (b_addpoint)
     AddPointNow();
   else  // continuously update track beginning point timestamp if no movement.
-      if ((trackPointState == firstPoint) && !g_bTrackDaily) {
+      if (trackPointState == firstPoint && !g_bTrackDaily) {
     wxDateTime now = wxDateTime::Now();
     if (TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
   }
@@ -828,7 +828,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
     DistanceBearingMercator(prp->m_lat, prp->m_lon, pWP_prev->m_lat,
                             pWP_prev->m_lon, &delta_hdg, &delta_dist);
 
-    if ((delta_dist > (leg_speed * 6.0)) && !prp_OK) {
+    if (delta_dist > leg_speed * 6.0 && !prp_OK) {
       int delta_inserts = floor(delta_dist / (leg_speed * 4.0));
       delta_dist = delta_dist / (delta_inserts + 1);
       double tlat = 0.0;
@@ -858,14 +858,14 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
       isProminent = true;
     } else {
       isProminent = false;
-      if (delta_dist >= (leg_speed * 4.0)) isProminent = true;
+      if (delta_dist >= leg_speed * 4.0) isProminent = true;
       if (!prp_OK) prp_OK = prp;
     }
     while (prpnodeX < TrackPoints.size()) {
       TrackPoint *prpX = TrackPoints[prpnodeX];
       //            TrackPoint src(pWP_prev->m_lat, pWP_prev->m_lon);
       xte = GetXTE(pWP_src, prpX, prp);
-      if (isProminent || (xte > g_TrackDeltaDistance)) {
+      if (isProminent || xte > g_TrackDeltaDistance) {
         pWP_dst = new RoutePoint(prp_OK->m_lat, prp_OK->m_lon, icon, _T ( "" ),
                                  wxEmptyString);
 
@@ -898,12 +898,12 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
     DistanceBearingMercator(prp->m_lat, prp->m_lon, pWP_prev->m_lat,
                             pWP_prev->m_lon, NULL, &delta_dist);
 
-    if (!((delta_dist > (g_TrackDeltaDistance)) && !prp_OK)) {
+    if (!(delta_dist > g_TrackDeltaDistance && !prp_OK)) {
       i++;
       next_ic++;
     }
-    int iProg = (i * 100) / nPoints;
-    if (pprog && (iProg > dProg)) {
+    int iProg = i * 100 / nPoints;
+    if (pprog && iProg > dProg) {
       dProg = iProg;
       pprog->Update(dProg);
     }

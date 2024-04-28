@@ -118,7 +118,7 @@ double Geodesic::GreatCircleDistBear(double Lon1, double Lat1, double Lon2,
             (sigma + C * sinsigma *
                          (cos2sigmam +
                           C * cossigma * (-1.0 + 2.0 * pow(cos2sigmam, 2.0))));
-  } while (fabs(lambda - lambdaprime) > 1e-12 && (itersleft--));
+  } while (fabs(lambda - lambdaprime) > 1e-12 && itersleft--);
 
   if (itersleft == 0) {
     /* It didn't converge.  Assume antipodal points. */
@@ -217,12 +217,12 @@ void Geodesic::GreatCircleTravel(double Lon1, double Lat1, double Dist,
   sinalpha = cosrLat1 * sinalpha1; /* Eq. 2 */
   sin2alpha = sinalpha * sinalpha;
 
-  cos2alpha = 1 - (sin2alpha); /* cos2=1-sin2 */
-  u2 = cos2alpha * ((a * a) - (b * b)) / (b * b);
+  cos2alpha = 1 - sin2alpha; /* cos2=1-sin2 */
+  u2 = cos2alpha * (a * a - b * b) / (b * b);
   A = 1 +
-      (u2 / 16384) * (4096 + u2 * (-768 + u2 * (320 - 175 * u2))); /* Eq. 3 */
+      u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2))); /* Eq. 3 */
 
-  B = (u2 / 1024) * (256 + u2 * (-128 + u2 * (74 - 47 * u2))); /* Eq. 4 */
+  B = u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2))); /* Eq. 4 */
 
   distoverba = Dist / (b * A);
   sigma = distoverba;
@@ -234,9 +234,9 @@ void Geodesic::GreatCircleTravel(double Lon1, double Lat1, double Dist,
     sinsigma = sin(sigma);
 
     deltasigma = B * sinsigma *
-                 (costwosigmam + (B / 4.0) * /* Eq. 6 */
+                 (costwosigmam + B / 4.0 * /* Eq. 6 */
                                      (cos(sigma) * (-1 + 2 * cos2twosigmam) -
-                                      (B / 6.0) * costwosigmam *
+                                      B / 6.0 * costwosigmam *
                                           (-3 + 4 * sinsigma * sinsigma) *
                                           (-3 + 4 * cos2twosigmam)));
 
@@ -263,7 +263,7 @@ void Geodesic::GreatCircleTravel(double Lon1, double Lat1, double Dist,
     lambda = atan2(sinsigma * sinalpha1, /* Eq. 9 */
                    cosrLat1 * cossigma - sinrLat1 * sinsigma * cosalpha1);
 
-    C = (f / 16.0) * cos2alpha * (4 + f * (4 - 3 * cos2alpha)); /* Eq. 10 */
+    C = f / 16.0 * cos2alpha * (4 + f * (4 - 3 * cos2alpha)); /* Eq. 10 */
 
     L = lambda - (1 - C) * f * sinalpha *
                      (sigma + C * sinsigma * /* Eq. 11 */

@@ -65,5 +65,5 @@ strlcpy(dst, src, siz)
 			;
 	}
 
-	return(s - src - 1);	/* count does not include NUL */
+	return s - src - 1;	/* count does not include NUL */
 }

@@ -90,7 +90,7 @@ bool RSA::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 5 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    Starboard            = sentence.Double(  1 );
@@ -98,7 +98,7 @@ bool RSA::Parse( const SENTENCE& sentence )
    Port                 = sentence.Double(  3 );
    IsPortDataValid      = sentence.Boolean( 4 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool RSA::Write( SENTENCE& sentence )
@@ -118,7 +118,7 @@ bool RSA::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const RSA& RSA::operator = ( const RSA& source )
@@ -130,5 +130,5 @@ const RSA& RSA::operator = ( const RSA& source )
    Port                 = source.Port;
    IsPortDataValid      = source.IsPortDataValid;
 
-   return( *this );
+   return*this;
 }

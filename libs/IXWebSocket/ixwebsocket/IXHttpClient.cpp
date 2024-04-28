@@ -365,7 +365,7 @@ namespace ix
         }
 
         // Redirect ?
-        if ((code >= 301 && code <= 308) && args->followRedirects)
+        if (code >= 301 && code <= 308 && args->followRedirects)
         {
             if (headers.find("Location") == headers.end())
             {
@@ -680,7 +680,7 @@ namespace ix
 
         for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i)
         {
-            std::string::value_type c = (*i);
+            std::string::value_type c = *i;
 
             // Keep alphanumeric and other accepted characters intact
             if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
@@ -708,7 +708,7 @@ namespace ix
         {
             ss << urlEncode(it.first) << "=" << urlEncode(it.second);
 
-            if (i++ < (count - 1))
+            if (i++ < count - 1)
             {
                 ss << "&";
             }

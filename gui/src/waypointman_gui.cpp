@@ -71,7 +71,7 @@ extern ocpnStyle::StyleManager *g_StyleManager;
 extern bool g_bUserIconsFirst;
 
 static int CompareMarkIcons(MarkIcon *mi1, MarkIcon *mi2) {
-  return (mi1->icon_name.CmpNoCase(mi2->icon_name));
+  return mi1->icon_name.CmpNoCase(mi2->icon_name);
 }
 
 
@@ -660,11 +660,11 @@ wxRect WayPointmanGui::CropImageOnAlpha(wxImage &image) {
     int lineStartIndex = i * w;
 
     int j = 0;
-    while ((j < w) && (pAlpha[lineStartIndex + j] == 0)) j++;
+    while (j < w && pAlpha[lineStartIndex + j] == 0) j++;
     leftCrop = wxMin(leftCrop, j);
 
     int k = w - 1;
-    while (k && (pAlpha[lineStartIndex + k] == 0)) k--;
+    while (k && pAlpha[lineStartIndex + k] == 0) k--;
     rightCrop = wxMin(rightCrop, image.GetWidth() - k - 2);
   }
 
@@ -673,11 +673,11 @@ wxRect WayPointmanGui::CropImageOnAlpha(wxImage &image) {
     int columnStartIndex = i;
 
     int j = 0;
-    while ((j < h) && (pAlpha[columnStartIndex + (j * w)] == 0)) j++;
+    while (j < h && pAlpha[columnStartIndex + j * w] == 0) j++;
     topCrop = wxMin(topCrop, j);
 
     int k = h - 1;
-    while (k && (pAlpha[columnStartIndex + (k * w)] == 0)) k--;
+    while (k && pAlpha[columnStartIndex + k * w] == 0) k--;
     bottomCrop = wxMin(bottomCrop, h - k - 2);
   }
 
@@ -686,7 +686,7 @@ wxRect WayPointmanGui::CropImageOnAlpha(wxImage &image) {
   int crop = wxMin(xcrop, ycrop);
 
   rv.x = wxMax(crop, 0);
-  rv.width = wxMax(1, w - (2 * crop));
+  rv.width = wxMax(1, w - 2 * crop);
   rv.width = wxMin(rv.width, w);
   rv.y = rv.x;
   rv.height = rv.width;
@@ -741,7 +741,7 @@ unsigned int WayPointmanGui::GetIconTexture(const wxBitmap *pbm, int &glw,
     for (int y = 0; y < h; y++) {
       for (int x = 0; x < w; x++) {
         unsigned char r, g, b;
-        int off = (y * w + x);
+        int off = y * w + x;
         r = d[off * 3 + 0];
         g = d[off * 3 + 1];
         b = d[off * 3 + 2];
@@ -750,7 +750,7 @@ unsigned int WayPointmanGui::GetIconTexture(const wxBitmap *pbm, int &glw,
         e[off * 4 + 2] = b;
 
         e[off * 4 + 3] =
-            a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+            a ? a[off] : r == mr && g == mg && b == mb ? 0 : 255;
       }
     }
 

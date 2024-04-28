@@ -193,7 +193,7 @@ static int jpc_dec_decodepkt(jpc_dec_t *dec, jas_stream_t *pkthdrstream, jas_str
       variable. */
     bodylen = 0;
 
-    discard = (lyrno >= dec->maxlyrs);
+    discard = lyrno >= dec->maxlyrs;
 
     tile = dec->curtile;
     cp = tile->cp;

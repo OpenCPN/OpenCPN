@@ -152,7 +152,7 @@ void DouglasPeuckerDI(double *PointList, int fp, int lp, double epsilon,
     // Distance from point to line.
     // ref.  https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
     double d = (y2 - y1) * PointList[3 * i] - (x2 - x1) * PointList[3 * i + 1] +
-               (x2 * y1) - (y2 * x1);
+               x2 * y1 - y2 * x1;
 
     d = fabs(d / da);
 

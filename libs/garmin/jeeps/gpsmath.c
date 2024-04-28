@@ -121,7 +121,7 @@ void GPS_Math_Deg_To_DegMin(double v, int32 *d, double *m)
 void GPS_Math_DegMin_To_Deg(int32 d, double m, double *deg)
 {
 
-    *deg = ((double)abs(d)) + m / (double)60.0;
+    *deg = (double)abs(d) + m / (double)60.0;
     if(d<0)
 	*deg = -*deg;
 
@@ -198,7 +198,7 @@ void GPS_Math_Deg_To_DegMinSec(double v, int32 *d, int32 *m, double *s)
 void GPS_Math_DegMinSec_To_Deg(int32 d, int32 m, double s, double *deg)
 {
 
-    *deg = ((double)abs(d)) + ((double)m + s / (double)60.0) / (double)60.0;
+    *deg = (double)abs(d) + ((double)m + s / (double)60.0) / (double)60.0;
     if(d<0)
 	*deg = -*deg;
 
@@ -250,7 +250,7 @@ double GPS_Math_Feet_To_Metres(double v)
 
 int32 GPS_Math_Deg_To_Semi(double v)
 {
-    return (int32)(( (double)(1U<<31) / (double)180) * v);
+    return (int32)((double)(1U<<31) / (double)180 * v);
 }
 
 
@@ -266,7 +266,7 @@ int32 GPS_Math_Deg_To_Semi(double v)
 
 double GPS_Math_Semi_To_Deg(int32 v)
 {
-    return (double) (((double)v / (double)(1U<<31)) * (double)180);
+    return (double) ((double)v / (double)(1U<<31) * (double)180);
 }
 
 
@@ -331,9 +331,9 @@ void GPS_Math_LatLonH_To_XYZ(double phi, double lambda, double H,
     lambda = GPS_Math_Deg_To_Rad(lambda);
 
 
-    esq   = ((a*a)-(b*b)) / (a*a);
+    esq   = (a*a-b*b) / (a*a);
 
-    nu    = a / pow(((double)1.0-esq*sin(phi)*sin(phi)),(double)0.5);
+    nu    = a / pow((double)1.0-esq*sin(phi)*sin(phi),(double)0.5);
     *x    = (nu+H) * cos(phi) * cos(lambda);
     *y    = (nu+H) * cos(phi) * sin(lambda);
     *z    = (((double)1.0-esq)*nu+H) * sin(phi);
@@ -374,20 +374,20 @@ void GPS_Math_XYZ_To_LatLonH(double *phi, double *lambda, double *H,
     if(x<(double)0 && y>=(double)0) t1=1;
     if(x<(double)0 && y<(double)0)  t2=1;
 
-    rho  = pow(((x*x)+(y*y)),(double)0.5);
-    esq  = ((a*a)-(b*b)) / (a*a);
+    rho  = pow(x*x+y*y,(double)0.5);
+    esq  = (a*a-b*b) / (a*a);
     phix = atan(z/(((double)1.0 - esq) * rho));
     nphi = (double)1e20;
 
     while(fabs(phix-nphi)>(double)0.00000000001)
     {
 	nphi  = phix;
-	nu    = a / pow(((double)1.0-esq*sin(nphi)*sin(nphi)),(double)0.5);
+	nu    = a / pow((double)1.0-esq*sin(nphi)*sin(nphi),(double)0.5);
 	phix  = atan((z+esq*nu*sin(nphi))/rho);
     }
 
     *phi    = GPS_Math_Rad_To_Deg(phix);
-    *H      = (rho / cos(phix)) - nu;
+    *H      = rho / cos(phix) - nu;
     *lambda = GPS_Math_Rad_To_Deg(atan(y/x));
 
     if(t1) *lambda += (double)180.0;
@@ -552,57 +552,57 @@ void GPS_Math_LatLon_To_EN(double *E, double *N, double phi,
     phi     = GPS_Math_Deg_To_Rad(phi);
     lambda  = GPS_Math_Deg_To_Rad(lambda);
 
-    esq = ((a*a)-(b*b)) / (a*a);
+    esq = (a*a-b*b) / (a*a);
     n   = (a-b) / (a+b);
 
-    tmp  = (double)1.0 - (esq * sin(phi) * sin(phi));
+    tmp  = (double)1.0 - esq * sin(phi) * sin(phi);
     nu   = a * F0 * pow(tmp,(double)-0.5);
     rho  = a * F0 * ((double)1.0 - esq) * pow(tmp,(double)-1.5);
-    etasq = (nu / rho) - (double)1.0;
+    etasq = nu / rho - (double)1.0;
 
     fdf   = (double)5.0 / (double)4.0;
-    tmp   = (double)1.0 + n + (fdf * n * n) + (fdf * n * n * n);
-    tmp  *= (phi - phi0);
-    tmp2  = (double)3.0*n + (double)3.0*n*n + ((double)21./(double)8.)*n*n*n;
-    tmp2 *= (sin(phi-phi0) * cos(phi+phi0));
+    tmp   = (double)1.0 + n + fdf * n * n + fdf * n * n * n;
+    tmp  *= phi - phi0;
+    tmp2  = (double)3.0*n + (double)3.0*n*n + (double)21./(double)8.*n*n*n;
+    tmp2 *= sin(phi-phi0) * cos(phi+phi0);
     tmp  -= tmp2;
 
-    fde   = ((double)15.0 / (double)8.0);
-    tmp2  = ((fde*n*n) + (fde*n*n*n)) * sin((double)2.0 * (phi-phi0));
+    fde   = (double)15.0 / (double)8.0;
+    tmp2  = (fde*n*n + fde*n*n*n) * sin((double)2.0 * (phi-phi0));
     tmp2 *= cos((double)2.0 * (phi+phi0));
     tmp  += tmp2;
 
-    tmp2  = ((double)35.0/(double)24.0) * n * n * n;
+    tmp2  = (double)35.0/(double)24.0 * n * n * n;
     tmp2 *= sin((double)3.0 * (phi-phi0));
     tmp2 *= cos((double)3.0 * (phi+phi0));
     tmp  -= tmp2;
 
     M     = b * F0 * tmp;
     I     = M + N0;
-    II    = (nu / (double)2.0) * sin(phi) * cos(phi);
-    III   = (nu / (double)24.0) * sin(phi) * cos(phi) * cos(phi) * cos(phi);
-    III  *= ((double)5.0 - (tan(phi) * tan(phi)) + ((double)9.0 * etasq));
-    IIIA  = (nu / (double)720.0) * sin(phi) * pow(cos(phi),(double)5.0);
-    IIIA *= ((double)61.0 - ((double)58.0*tan(phi)*tan(phi)) +
-	     pow(tan(phi),(double)4.0));
+    II    = nu / (double)2.0 * sin(phi) * cos(phi);
+    III   = nu / (double)24.0 * sin(phi) * cos(phi) * cos(phi) * cos(phi);
+    III  *= (double)5.0 - tan(phi) * tan(phi) + (double)9.0 * etasq;
+    IIIA  = nu / (double)720.0 * sin(phi) * pow(cos(phi),(double)5.0);
+    IIIA *= (double)61.0 - (double)58.0*tan(phi)*tan(phi) +
+        pow(tan(phi),(double)4.0);
     IV    = nu * cos(phi);
 
     tmp   = pow(cos(phi),(double)3.0);
-    tmp  *= ((nu/rho) - tan(phi) * tan(phi));
-    V     = (nu/(double)6.0) * tmp;
+    tmp  *= nu/rho - tan(phi) * tan(phi);
+    V     = nu/(double)6.0 * tmp;
 
-    tmp   = (double)5.0 - ((double)18.0 * tan(phi) * tan(phi));
-    tmp  += tan(phi)*tan(phi)*tan(phi)*tan(phi) + ((double)14.0 * etasq);
-    tmp  -= ((double)58.0 * tan(phi) * tan(phi) * etasq);
+    tmp   = (double)5.0 - (double)18.0 * tan(phi) * tan(phi);
+    tmp  += tan(phi)*tan(phi)*tan(phi)*tan(phi) + (double)14.0 * etasq;
+    tmp  -= (double)58.0 * tan(phi) * tan(phi) * etasq;
     tmp2  = cos(phi)*cos(phi)*cos(phi)*cos(phi)*cos(phi) * tmp;
-    VI    = (nu / (double)120.0) * tmp2;
+    VI    = nu / (double)120.0 * tmp2;
 
     *N = I + II*(lambda-lambda0)*(lambda-lambda0) +
-	     III*pow((lambda-lambda0),(double)4.0) +
-	     IIIA*pow((lambda-lambda0),(double)6.0);
+	     III*pow(lambda-lambda0,(double)4.0) +
+	     IIIA*pow(lambda-lambda0,(double)6.0);
 
-    *E = E0 + IV*(lambda-lambda0) + V*pow((lambda-lambda0),(double)3.0) +
-	 VI * pow((lambda-lambda0),(double)5.0);
+    *E = E0 + IV*(lambda-lambda0) + V*pow(lambda-lambda0,(double)3.0) +
+	 VI * pow(lambda-lambda0,(double)5.0);
 
     return;
 }
@@ -696,7 +696,7 @@ int32 GPS_Math_WGS84_To_Swiss_EN(double lat, double lon, double *E,
 	if (lon < -0.16386312) return 0;
 
 	a = GPS_Ellipse[4].a;
-	b = a - (a / GPS_Ellipse[4].invf);
+	b = a - a / GPS_Ellipse[4].invf;
 
 	GPS_Math_WGS84_To_Known_Datum_M(lat, lon, 0, &phi, &lambda, &alt, 123);
 	GPS_Math_Swiss_LatLon_To_EN(phi, lambda, E, N, phi0, lambda0, E0, N0, a, b);
@@ -726,7 +726,7 @@ void GPS_Math_Swiss_EN_To_WGS84(double E, double N, double *lat, double *lon)
 	double phi, lambda, alt, a, b;
 
 	a = GPS_Ellipse[4].a;
-	b = a - (a / GPS_Ellipse[4].invf);
+	b = a - a / GPS_Ellipse[4].invf;
 
 	GPS_Math_Swiss_EN_To_LatLon(E, N, &phi, &lambda, phi0, lambda0, E0, N0, a, b);
 	GPS_Math_Known_Datum_To_WGS84_M(phi, lambda, 0, lat, lon, &alt, 123);
@@ -867,9 +867,9 @@ void GPS_Math_Cassini_LatLon_To_EN(double phi, double lambda, double *E,
     phis6 = c3 * sin((double)6.*phi);
     MM = a * (lat-phis2+phis4-phis6);
 
-    *E = NN*(WW-(TT*WW3/(double)6.)-((double)8.-TT+(double)8.*CC)*
+    *E = NN*(WW-TT*WW3/(double)6.-((double)8.-TT+(double)8.*CC)*
 	     (TT*WW5/(double)120.)) + E0;
-    *N = MM-AM0+NN*phit*((WW2/(double)2.)+((double)5.-TT+(double)6.*CC) *
+    *N = MM-AM0+NN*phit*(WW2/(double)2.+((double)5.-TT+(double)6.*CC) *
 			 WW4/(double)24.) + N0;
     return;
 }
@@ -1003,12 +1003,12 @@ void GPS_Math_Cassini_EN_To_LatLon(double E, double N, double *phi,
     mus8 = A3 * sin((double)8.*mu);
     phi1 = mu + mus2 + mus4 + mus6 + mus8;
 
-    if((((po2-tol)<phi1)&&(phi1<(po2+tol))))
+    if(po2-tol<phi1&&phi1<po2+tol)
     {
 	*phi = po2;
 	*lambda = M0;
     }
-    else if((((-po2-tol)<phi1)&&(phi1<(-po2+tol))))
+    else if(-po2-tol<phi1&&phi1<-po2+tol)
     {
 	*phi = -po2;
 	*lambda = M0;
@@ -1028,7 +1028,7 @@ void GPS_Math_Cassini_EN_To_LatLon(double E, double N, double *phi,
 	D4 = DD*D3;
 	D5 = DD*D4;
 	T = (double)1. + (double)3.*T1;
-	*phi = phi1-(N1*phi1t/R1)*(D2/(double)2.-T*D4/(double)24.);
+	*phi = phi1-N1*phi1t/R1*(D2/(double)2.-T*D4/(double)24.);
 	*lambda = M0+(DD-T1*D3/(double)3.+T*T1*D5/(double)15.)/phi1c;
 
 	if(*phi>po2)
@@ -1083,7 +1083,7 @@ int32 GPS_Math_WGS84_To_ICS_EN(double lat, double lon, double *E,
     int32 ellipse = GPS_Datum[datum].ellipse;
 
     a = GPS_Ellipse[ellipse].a;
-    b = a - (a / GPS_Ellipse[ellipse].invf);
+    b = a - a / GPS_Ellipse[ellipse].invf;
 
     GPS_Math_WGS84_To_Known_Datum_M(lat, lon, 0, &phi, &lambda, &alt, datum);
     GPS_Math_Cassini_LatLon_To_EN(phi, lambda, E, N,
@@ -1116,7 +1116,7 @@ void GPS_Math_ICS_EN_To_WGS84(double E, double N, double *lat, double *lon)
     int32 ellipse = GPS_Datum[datum].ellipse;
 
     a = GPS_Ellipse[ellipse].a;
-    b = a - (a / GPS_Ellipse[ellipse].invf);
+    b = a - a / GPS_Ellipse[ellipse].invf;
 
     GPS_Math_Cassini_EN_To_LatLon(E, N, &phi, &lambda, phi0, lambda0,
                                                              E0, N0, a, b);
@@ -1174,17 +1174,17 @@ void GPS_Math_EN_To_LatLon(double E, double N, double *phi,
 
     n     = (a-b) / (a+b);
     fdf   = (double)5.0 / (double)4.0;
-    fde   = ((double)15.0 / (double)8.0);
+    fde   = (double)15.0 / (double)8.0;
 
-    esq = ((a*a)-(b*b)) / (a*a);
+    esq = (a*a-b*b) / (a*a);
 
 
-    phix = ((N-N0)/(a*F0)) + phi0;
+    phix = (N-N0)/(a*F0) + phi0;
 
-    tmp  = (double)1.0 - (esq * sin(phix) * sin(phix));
+    tmp  = (double)1.0 - esq * sin(phix) * sin(phix);
     nu   = a * F0 * pow(tmp,(double)-0.5);
     rho  = a * F0 * ((double)1.0 - esq) * pow(tmp,(double)-1.5);
-    etasq = (nu / rho) - (double)1.0;
+    etasq = nu / rho - (double)1.0;
 
     M = (double)-1e20;
 
@@ -1192,19 +1192,19 @@ void GPS_Math_EN_To_LatLon(double E, double N, double *phi,
     {
 	nphi = phix;
 
-	tmp   = (double)1.0 + n + (fdf * n * n) + (fdf * n * n * n);
-	tmp  *= (nphi - phi0);
+	tmp   = (double)1.0 + n + fdf * n * n + fdf * n * n * n;
+	tmp  *= nphi - phi0;
 	tmp2  = (double)3.0*n + (double)3.0*n*n +
-	        ((double)21./(double)8.)*n*n*n;
-	tmp2 *= (sin(nphi-phi0) * cos(nphi+phi0));
+	        (double)21./(double)8.*n*n*n;
+	tmp2 *= sin(nphi-phi0) * cos(nphi+phi0);
 	tmp  -= tmp2;
 
 
-	tmp2  = ((fde*n*n) + (fde*n*n*n)) * sin((double)2.0 * (nphi-phi0));
+	tmp2  = (fde*n*n + fde*n*n*n) * sin((double)2.0 * (nphi-phi0));
 	tmp2 *= cos((double)2.0 * (nphi+phi0));
 	tmp  += tmp2;
 
-	tmp2  = ((double)35.0/(double)24.0) * n * n * n;
+	tmp2  = (double)35.0/(double)24.0 * n * n * n;
 	tmp2 *= sin((double)3.0 * (nphi-phi0));
 	tmp2 *= cos((double)3.0 * (nphi+phi0));
 	tmp  -= tmp2;
@@ -1212,7 +1212,7 @@ void GPS_Math_EN_To_LatLon(double E, double N, double *phi,
 	M     = b * F0 * tmp;
 
 	if(N-N0-M > (double)0.000001)
-	    phix = ((N-N0-M)/(a*F0)) + nphi;
+	    phix = (N-N0-M)/(a*F0) + nphi;
     }
 
 
@@ -1220,7 +1220,7 @@ void GPS_Math_EN_To_LatLon(double E, double N, double *phi,
 
     tmp  = (double)5.0 + (double)3.0 * tan(nphi) * tan(nphi) + etasq;
     tmp -= (double)9.0 * tan(nphi) * tan(nphi) * etasq;
-    VIII = (tan(nphi)*tmp) / ((double)24.0 * rho * nu*nu*nu);
+    VIII = tan(nphi)*tmp / ((double)24.0 * rho * nu*nu*nu);
 
     tmp  = (double)61.0 + (double)90.0 * tan(nphi) * tan(nphi);
     tmp += (double)45.0 * pow(tan(nphi),(double)4.0);
@@ -1228,25 +1228,25 @@ void GPS_Math_EN_To_LatLon(double E, double N, double *phi,
 
     X    = (double)1.0 / (cos(nphi) * nu);
 
-    tmp  = (nu / rho) + (double)2.0 * tan(nphi) * tan(nphi);
-    XI   = ((double)1.0 / (cos(nphi) * (double)6.0 * nu*nu*nu)) * tmp;
+    tmp  = nu / rho + (double)2.0 * tan(nphi) * tan(nphi);
+    XI   = (double)1.0 / (cos(nphi) * (double)6.0 * nu*nu*nu) * tmp;
 
     tmp  = (double)5.0 + (double)28.0 * tan(nphi)*tan(nphi);
     tmp += (double)24.0 * pow(tan(nphi),(double)4.0);
-    XII  = ((double)1.0 / ((double)120.0 * pow(nu,(double)5.0) * cos(nphi)))
+    XII  = (double)1.0 / ((double)120.0 * pow(nu,(double)5.0) * cos(nphi))
 	   * tmp;
 
     tmp  = (double)61.0 + (double)662.0 * tan(nphi) * tan(nphi);
     tmp += (double)1320.0 * pow(tan(nphi),(double)4.0);
     tmp += (double)720.0  * pow(tan(nphi),(double)6.0);
-    XIIA = ((double)1.0 / (cos(nphi) * (double)5040.0 * pow(nu,(double)7.0)))
+    XIIA = (double)1.0 / (cos(nphi) * (double)5040.0 * pow(nu,(double)7.0))
 	   * tmp;
 
-    *phi = nphi - VII*pow((E-E0),(double)2.0) + VIII*pow((E-E0),(double)4.0) -
-	   IX*pow((E-E0),(double)6.0);
+    *phi = nphi - VII*pow(E-E0,(double)2.0) + VIII*pow(E-E0,(double)4.0) -
+	   IX*pow(E-E0,(double)6.0);
 
-    *lambda = lambda0 + X*(E-E0) - XI*pow((E-E0),(double)3.0) +
-	      XII*pow((E-E0),(double)5.0) - XIIA*pow((E-E0),(double)7.0);
+    *lambda = lambda0 + X*(E-E0) - XI*pow(E-E0,(double)3.0) +
+	      XII*pow(E-E0,(double)5.0) - XIIA*pow(E-E0,(double)7.0);
 
     *phi    = GPS_Math_Rad_To_Deg(*phi);
     *lambda = GPS_Math_Rad_To_Deg(*lambda);
@@ -1340,13 +1340,13 @@ int32 GPS_Math_EN_To_UKOSNG_Map(double E, double N, double *mE,
        N>=(double)1300000.0)
 	return 0;
 
-    idx = ((int32)N/100000)*7 + (int32)E/100000;
+    idx = (int32)N/100000*7 + (int32)E/100000;
     (void) strcpy(map,UKNG[idx]);
 
-    t = ((int32)E / 100000) * 100000;
+    t = (int32)E / 100000 * 100000;
     *mE = E - (double)t;
 
-    t = ((int32)N / 100000) * 100000;
+    t = (int32)N / 100000 * 100000;
     *mN = N - (double)t;
 
     return 1;
@@ -1388,10 +1388,10 @@ int32 GPS_Math_UKOSNG_Map_To_EN(char *map, double mapE, double mapN, double *E,
 	return 0;
 
 
-    t = (idx / 7) * 100000;
+    t = idx / 7 * 100000;
     *N = mapN + (double)t;
 
-    t = (idx % 7) * 100000;
+    t = idx % 7 * 100000;
     *E = mapE + (double)t;
 
     return 1;
@@ -1460,12 +1460,12 @@ void GPS_Math_Molodensky(double Sphi, double Slam, double SH, double Sa,
 
     N = Sa /  sqrt((double)1.0 - esq*pow(phis,(double)2.0));
 
-    tmp = ((double)1.0-esq) /pow(((double)1.0-esq*pow(phis,(double)2.0)),1.5);
+    tmp = ((double)1.0-esq) /pow((double)1.0-esq*pow(phis,(double)2.0),1.5);
     M   = Sa * tmp;
 
-    tmp  = df * ((M/bda)+N*bda) * phis * phic;
+    tmp  = df * (M/bda+N*bda) * phis * phic;
     tmp2 = da * N * esq * phis * phic / Sa;
-    tmp2 += ((-dx*phis*lamc-dy*phis*lams) + dz*phic);
+    tmp2 += -dx*phis*lamc-dy*phis*lams + dz*phic;
     dphi = (tmp2 + tmp) / (M + SH);
 
     dlambda = (-dx*lams+dy*lamc) / ((N+SH)*phic);
@@ -1607,12 +1607,12 @@ void GPS_Math_Known_Datum_To_WGS84_C(double Sphi, double Slam, double SH,
 
     Da  = (double) 6378137.0;
     Dif = (double) 298.257223563;
-    Db  = Da - (Da / Dif);
+    Db  = Da - Da / Dif;
 
     idx  = GPS_Datum[n].ellipse;
     Sa   = GPS_Ellipse[idx].a;
     Sif  = GPS_Ellipse[idx].invf;
-    Sb   = Sa - (Sa / Sif);
+    Sb   = Sa - Sa / Sif;
 
     x    = GPS_Datum[n].dx;
     y    = GPS_Datum[n].dy;
@@ -1664,12 +1664,12 @@ void GPS_Math_WGS84_To_Known_Datum_C(double Sphi, double Slam, double SH,
 
     Sa  = (double) 6378137.0;
     Sif = (double) 298.257223563;
-    Sb   = Sa - (Sa / Sif);
+    Sb   = Sa - Sa / Sif;
 
     idx  = GPS_Datum[n].ellipse;
     Da   = GPS_Ellipse[idx].a;
     Dif  = GPS_Ellipse[idx].invf;
-    Db  = Da - (Da / Dif);
+    Db  = Da - Da / Dif;
 
     x    = -GPS_Datum[n].dx;
     y    = -GPS_Datum[n].dy;
@@ -1791,7 +1791,7 @@ void GPS_Math_Known_Datum_To_Known_Datum_C(double Sphi, double Slam, double SH,
     idx1  = GPS_Datum[n1].ellipse;
     Sa    = GPS_Ellipse[idx1].a;
     Sif   = GPS_Ellipse[idx1].invf;
-    Sb    = Sa - (Sa / Sif);
+    Sb    = Sa - Sa / Sif;
 
     x1    = GPS_Datum[n1].dx;
     y1    = GPS_Datum[n1].dy;
@@ -1800,7 +1800,7 @@ void GPS_Math_Known_Datum_To_Known_Datum_C(double Sphi, double Slam, double SH,
     idx2  = GPS_Datum[n2].ellipse;
     Da    = GPS_Ellipse[idx2].a;
     Dif   = GPS_Ellipse[idx2].invf;
-    Db    = Da - (Da / Dif);
+    Db    = Da - Da / Dif;
 
     x2    = GPS_Datum[n2].dx;
     y2    = GPS_Datum[n2].dy;
@@ -1993,13 +1993,13 @@ static int32 GPS_Math_LatLon_To_UTM_Param(double lat, double lon, int32 *zone,
 
     if(!lsign)
     {
-	*zone = 31 + (ilon / 6);
-	*Mc   = (double)((ilon / 6) * 6 + 3);
+	*zone = 31 + ilon / 6;
+	*Mc   = (double)(ilon / 6 * 6 + 3);
     }
     else
     {
-	*zone = 30 - (ilon / 6);
-	*Mc   = -(double)((ilon / 6) * 6 + 3);
+	*zone = 30 - ilon / 6;
+	*Mc   = -(double)(ilon / 6 * 6 + 3);
     }
 
     if(!psign)
@@ -2090,7 +2090,7 @@ int32 GPS_Math_NAD83_To_UTM_EN(double lat, double lon, double *E,
     phi0 = (double)0.0;
 
     a = (double) GPS_Ellipse[21].a;
-    b = a - (a/GPS_Ellipse[21].invf);
+    b = a - a/GPS_Ellipse[21].invf;
 
     GPS_Math_LatLon_To_EN(E,N,lat,lon,N0,E0,phi0,lambda0,F0,a,b);
 
@@ -2152,7 +2152,7 @@ static int32 GPS_Math_UTM_Param_To_Mc(int32 zone, char zc, double *Mc,
     if(zone > 30)
 	*Mc = (double)((zone-31)*6) + (double)3.0;
     else
-	*Mc = (double) -(((30-zone)*6)+3);
+	*Mc = (double) -((30-zone)*6+3);
 
     if(zone==32 && zc=='V')
 	*Mc = (double)9.0;
@@ -2262,7 +2262,7 @@ int32 GPS_Math_Known_Datum_To_UTM_EN(double lat, double lon, double *E,
 
     idx  = GPS_Datum[n].ellipse;
     a = (double) GPS_Ellipse[idx].a;
-    b = a - (a/GPS_Ellipse[idx].invf);
+    b = a - a/GPS_Ellipse[idx].invf;
 
     GPS_Math_LatLon_To_EN(E,N,lat,lon,N0,E0,phi0,lambda0,F0,a,b);
 
@@ -2350,7 +2350,7 @@ void GPS_Math_Swiss_LatLon_To_EN(double phi, double lambda, double *E,
     esq = (a2-b2)/a2;
     e   = pow(esq,(double)0.5);
 
-    c = sqrt(1+((esq*pow(cos(phi0),(double)4.))/((double)1.-esq)));
+    c = sqrt(1+esq*pow(cos(phi0),(double)4.)/((double)1.-esq));
 
     ephi0p = asin(sin(phi0)/c);
 
@@ -2436,8 +2436,8 @@ void GPS_Math_Swiss_EN_To_LatLon(double E, double N, double *phi,
     phid = (double)2.*(atan(exp((N - N0)/R)) - po4);
     lambdad = (E - E0)/R;
 
-    c = sqrt((double)1.+((esq * pow(cos(phi0), (double)4.)) /
-			 ((double)1.-esq)));
+    c = sqrt((double)1.+esq * pow(cos(phi0), (double)4.) /
+             ((double)1.-esq));
     ephi0p = asin(sin(phi0) / c);
 
     sphip = cos(ephi0p)*sin(phid) + sin(ephi0p)*cos(phid)*cos(lambdad);
@@ -2446,7 +2446,7 @@ void GPS_Math_Swiss_EN_To_LatLon(double E, double N, double *phi,
     slambda1 = cos(phid)*sin(lambdad)/cos(phi1);
     lambda1  = asin(slambda1);
 
-    *lambda = GPS_Math_Rad_To_Deg((lambda1/c + lambda0));
+    *lambda = GPS_Math_Rad_To_Deg(lambda1/c + lambda0);
 
     K = log(tan(po4 + ephi0p/(double)2.)) -c*(log(tan(po4 + phi0/(double)2.))
 	- e/(double)2. * log(((double)1.+e*sin(phi0)) /
@@ -2457,7 +2457,7 @@ void GPS_Math_Swiss_EN_To_LatLon(double E, double N, double *phi,
     {
 	cr = (C + log(tan(po4 + phi1/(double)2.)) - e/(double)2. *
 	      log(((double)1.+e*sin(phi1)) / ((double)1.-e*sin(phi1)))) *
-		  ((((double)1.-esq*sin(phi1)*sin(phi1)) * cos(phi1)) /
+		  (((double)1.-esq*sin(phi1)*sin(phi1)) * cos(phi1) /
 		   ((double)1.-esq));
 	phi1 -= cr;
     }
@@ -2501,14 +2501,14 @@ void GPS_Math_UTM_EN_to_LatLon(int ReferenceEllipsoid,
 	x = UTMEasting - E0; //remove false easting
 	y = UTMNorthing - N0; //remove false northing
 
-	eccPrimeSquared = (eccSquared)/(1-eccSquared);
+	eccPrimeSquared = eccSquared/(1-eccSquared);
 
 	M = y / k0;
 	mu = M/(a*(1-eccSquared/4-3*eccSquared*eccSquared/64-5*eccSquared*eccSquared*eccSquared/256));
 
 	phi1Rad = mu+ (3*e1/2-27*e1*e1*e1/32)*sin(2*mu) +
 		(21*e1*e1/16-55*e1*e1*e1*e1/32)*sin(4*mu) +
-		(151*e1*e1*e1/96)*sin(6*mu);
+		151*e1*e1*e1/96*sin(6*mu);
 	phi1 = GPS_Math_Rad_To_Deg(phi1Rad);
 
 	N1 = a/sqrt(1-eccSquared*sin(phi1Rad)*sin(phi1Rad));
@@ -2517,8 +2517,8 @@ void GPS_Math_UTM_EN_to_LatLon(int ReferenceEllipsoid,
 	R1 = a*(1-eccSquared)/pow(1-eccSquared*sin(phi1Rad)*sin(phi1Rad), 1.5);
 	D = x/(N1*k0);
 
-	*Lat = phi1Rad - (N1*tan(phi1Rad)/R1)*(D*D/2-(5+3*T1+10*C1-4*C1*C1-9*eccPrimeSquared)*D*D*D*D/24
-		+(61+90*T1+298*C1+45*T1*T1-252*eccPrimeSquared-3*C1*C1)*D*D*D*D*D*D/720);
+	*Lat = phi1Rad - N1*tan(phi1Rad)/R1*(D*D/2-(5+3*T1+10*C1-4*C1*C1-9*eccPrimeSquared)*D*D*D*D/24
+                                             +(61+90*T1+298*C1+45*T1*T1-252*eccPrimeSquared-3*C1*C1)*D*D*D*D*D*D/720);
 	*Lat = GPS_Math_Rad_To_Deg(*Lat);
 
 	*Lon = (D-(1+2*T1+C1)*D*D*D/6+(5-2*C1+28*T1-3*C1*C1+8*eccPrimeSquared+24*T1*T1)*D*D*D*D*D/120)/cos(phi1Rad);

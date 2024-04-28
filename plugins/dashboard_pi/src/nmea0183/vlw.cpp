@@ -83,13 +83,13 @@ bool VLW::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 5 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    TotalMileage = sentence.Double( 1 );
    TripMileage  = sentence.Double( 3 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool VLW::Write( SENTENCE& sentence )
@@ -106,12 +106,12 @@ bool VLW::Write( SENTENCE& sentence )
    sentence += _T("N");
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const VLW& VLW::operator = ( const VLW& source )
 {
    TotalMileage = source.TotalMileage;
    TripMileage  = source.TripMileage;
-      return( *this );
+      return*this;
 }

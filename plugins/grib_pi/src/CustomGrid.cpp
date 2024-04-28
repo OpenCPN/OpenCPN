@@ -198,11 +198,11 @@ void CustomGrid::DrawCornerLabel(wxDC& dc) {
   ////scale bitmap to near col label height
   double hc = m_colLabelHeight;
   double hb = wxBitmap(now).GetHeight();
-  double scfac = ((hc / hb) * 4) / 4;
+  double scfac = hc / hb * 4 / 4;
   wxBitmap bmp = m_gParent->GetScaledBitmap(wxBitmap(now), _T("now"), scfac);
   // center bitmap
   int x = (m_rowLabelWidth - bmp.GetWidth()) / 2;
-  int y = (m_colLabelHeight == bmp.GetHeight())
+  int y = m_colLabelHeight == bmp.GetHeight()
               ? 0
               : wxMax(0, (m_colLabelHeight - bmp.GetHeight()) / 2);
   dc.DrawBitmap(bmp, x, y);
@@ -400,8 +400,8 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
     double si = sin((m_dDir - 90) * M_PI / 180.);
     double co = cos((m_dDir - 90) * M_PI / 180.);
 
-    int i = rect.GetTopLeft().x + (rect.GetWidth() / 2);
-    int j = rect.GetTopLeft().y + (rect.GetHeight() / 2);
+    int i = rect.GetTopLeft().x + rect.GetWidth() / 2;
+    int j = rect.GetTopLeft().y + rect.GetHeight() / 2;
 
     int arrowSize = rect.GetHeight() - 3;
     int dec = -arrowSize / 2;
@@ -459,8 +459,8 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
 void CustomRenderer::GetArrowsPoints(double si, double co, int di, int dj,
                                      int i, int j, int k, int l, double& ii,
                                      double& jj, double& kk, double& ll) {
-  ii = (i * co - j * si + 0.5) + di;
-  jj = (i * si + j * co + 0.5) + dj;
-  kk = (k * co - l * si + 0.5) + di;
-  ll = (k * si + l * co + 0.5) + dj;
+  ii = i * co - j * si + 0.5 + di;
+  jj = i * si + j * co + 0.5 + dj;
+  kk = k * co - l * si + 0.5 + di;
+  ll = k * si + l * co + 0.5 + dj;
 }

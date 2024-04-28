@@ -54,7 +54,7 @@ namespace ix
 
         if (ret != Z_OK) return false;
 
-        _flush = (clientNoContextTakeOver) ? Z_FULL_FLUSH : Z_SYNC_FLUSH;
+        _flush = clientNoContextTakeOver ? Z_FULL_FLUSH : Z_SYNC_FLUSH;
 
         return true;
 #else
@@ -198,7 +198,7 @@ namespace ix
 
         if (ret != Z_OK) return false;
 
-        _flush = (clientNoContextTakeOver) ? Z_FULL_FLUSH : Z_SYNC_FLUSH;
+        _flush = clientNoContextTakeOver ? Z_FULL_FLUSH : Z_SYNC_FLUSH;
 
         return true;
 #else
@@ -223,7 +223,7 @@ namespace ix
         inFixed += kEmptyUncompressedBlock;
 
         _inflateState.avail_in = (uInt) inFixed.size();
-        _inflateState.next_in = (unsigned char*) (const_cast<char*>(inFixed.data()));
+        _inflateState.next_in = (unsigned char*) const_cast<char*>(inFixed.data());
 
         // Clear output
         out.clear();

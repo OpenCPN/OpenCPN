@@ -132,7 +132,7 @@ static void RenderMaximumFaceGroup( GLUtesselator *tess, GLUface *fOrig )
     newFace = MaximumStrip( e->Lnext ); if( newFace.size > max.size ) { max = newFace; }
     newFace = MaximumStrip( e->Lprev ); if( newFace.size > max.size ) { max = newFace; }
   }
-  (*(max.render))( tess, max.eStart, max.size );
+  (*max.render)( tess, max.eStart, max.size );
 }
 
 

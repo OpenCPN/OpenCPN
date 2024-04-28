@@ -248,8 +248,8 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
     stream->openmode_ = jas_strtoopenmode(mode);
 
     /* Determine the correct flags to use for opening the file. */
-    if ((stream->openmode_ & JAS_STREAM_READ) &&
-      (stream->openmode_ & JAS_STREAM_WRITE)) {
+    if (stream->openmode_ & JAS_STREAM_READ &&
+      stream->openmode_ & JAS_STREAM_WRITE) {
         openflags = O_RDWR;
     } else if (stream->openmode_ & JAS_STREAM_READ) {
         openflags = O_RDONLY;
@@ -310,8 +310,8 @@ jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
     stream->openmode_ = jas_strtoopenmode(mode);
 
     /* Determine the correct flags to use for opening the file. */
-    if ((stream->openmode_ & JAS_STREAM_READ) &&
-      (stream->openmode_ & JAS_STREAM_WRITE)) {
+    if (stream->openmode_ & JAS_STREAM_READ &&
+      stream->openmode_ & JAS_STREAM_WRITE) {
         openflags = O_RDWR;
     } else if (stream->openmode_ & JAS_STREAM_READ) {
         openflags = O_RDONLY;
@@ -453,7 +453,7 @@ static void jas_stream_destroy(jas_stream_t *stream)
 {
     /* If the memory for the buffer was allocated with malloc, free
     this memory. */
-    if ((stream->bufmode_ & JAS_STREAM_FREEBUF) && stream->bufbase_) {
+    if (stream->bufmode_ & JAS_STREAM_FREEBUF && stream->bufbase_) {
         jas_free(stream->bufbase_);
         stream->bufbase_ = 0;
     }
@@ -791,7 +791,7 @@ int jas_stream_fillbuf(jas_stream_t *stream, int getflag)
 
     assert(stream->cnt_ > 0);
     /* Get or peek at the first character in the buffer. */
-    c = (getflag) ? jas_stream_getc2(stream) : (*stream->ptr_);
+    c = getflag ? jas_stream_getc2(stream) : *stream->ptr_;
 
     return c;
 }
@@ -877,7 +877,7 @@ int jas_stream_copy(jas_stream_t *out, jas_stream_t *in, int n)
     int c;
     int m;
 
-    all = (n < 0) ? 1 : 0;
+    all = n < 0 ? 1 : 0;
 
     m = n;
     while (all || m > 0) {
@@ -886,7 +886,7 @@ int jas_stream_copy(jas_stream_t *out, jas_stream_t *in, int n)
             /* Return with an error if an I/O error occured
               (not including EOF) or if an explicit copy count
               was specified. */
-            return (!all || jas_stream_error(in)) ? (-1) : 0;
+            return !all || jas_stream_error(in) ? -1 : 0;
         }
         if (jas_stream_putc_macro(out, c) == EOF) {
             return -1;
@@ -915,12 +915,12 @@ int jas_stream_display(jas_stream_t *stream, FILE *fp, int n)
     int display;
     int cnt;
 
-    cnt = n - (n % 16);
+    cnt = n - n % 16;
     display = 1;
 
     for (i = 0; i < n; i += 16) {
         if (n > 16 && i > 0) {
-            display = (i >= cnt) ? 1 : 0;
+            display = i >= cnt ? 1 : 0;
         }
         if (display) {
             fprintf(fp, "%08x:", i);

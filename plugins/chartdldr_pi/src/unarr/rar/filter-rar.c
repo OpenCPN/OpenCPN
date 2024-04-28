@@ -43,7 +43,7 @@ struct RARFilter {
 static bool br_fill(struct MemBitReader *br, int bits)
 {
     while (br->available < bits && br->offset < br->length) {
-        br->bits = (br->bits << 8) | br->bytes[br->offset++];
+        br->bits = br->bits << 8 | br->bytes[br->offset++];
         br->available += 8;
     }
     if (bits > br->available) {
@@ -57,7 +57,7 @@ static inline uint32_t br_bits(struct MemBitReader *br, int bits)
 {
     if (bits > br->available && (br->at_eof || !br_fill(br, bits)))
         return 0;
-    return (uint32_t)((br->bits >> (br->available -= bits)) & (((uint64_t)1 << bits) - 1));
+    return (uint32_t)(br->bits >> (br->available -= bits) & ((uint64_t)1 << bits) - 1);
 }
 
 static inline bool br_available(struct MemBitReader *br, int bits)
@@ -75,7 +75,7 @@ static uint32_t br_next_rarvm_number(struct MemBitReader *br)
         val = br_bits(br, 8);
         if (val >= 16)
             return val;
-        return 0xFFFFFF00 | (val << 4) | br_bits(br, 4);
+        return 0xFFFFFF00 | val << 4 | br_bits(br, 4);
     case 2:
         return br_bits(br, 16);
     default:
@@ -86,9 +86,9 @@ static uint32_t br_next_rarvm_number(struct MemBitReader *br)
 static void bw_write32le(uint8_t *dst, uint32_t value)
 {
     dst[0] = value & 0xFF;
-    dst[1] = (value >> 8) & 0xFF;
-    dst[2] = (value >> 16) & 0xFF;
-    dst[3] = (value >> 24) & 0xFF;
+    dst[1] = value >> 8 & 0xFF;
+    dst[2] = value >> 16 & 0xFF;
+    dst[3] = value >> 24 & 0xFF;
 }
 
 static void rar_delete_program(struct RARProgramCode *prog)
@@ -171,7 +171,7 @@ static struct RARProgramCode *rar_compile_program(const uint8_t *bytes, size_t l
         rar_delete_program(prog);
         return NULL;
     }
-    prog->fingerprint = ar_crc32(0, bytes, length) | ((uint64_t)length << 32);
+    prog->fingerprint = ar_crc32(0, bytes, length) | (uint64_t)length << 32;
 
     if (br_bits(&br, 1)) {
         prog->staticdatalen = br_next_rarvm_number(&br) + 1;
@@ -192,8 +192,8 @@ static struct RARProgramCode *rar_compile_program(const uint8_t *bytes, size_t l
         uint8_t addrmode1 = 0, addrmode2 = 0;
         uint32_t value1 = 0, value2 = 0;
 
-        if ((instruction & 0x08))
-            instruction = ((instruction << 2) | (uint8_t)br_bits(&br, 2)) - 24;
+        if (instruction & 0x08)
+            instruction = (instruction << 2 | (uint8_t)br_bits(&br, 2)) - 24;
         if (RARInstructionHasByteMode(instruction))
             bytemode = br_bits(&br, 1) != 0;
         ok = RARProgramAddInstr(prog->prog, instruction, bytemode);
@@ -408,8 +408,8 @@ static bool rar_execute_filter_audio(struct RARFilter *filter, RARVirtualMachine
             state.delta[2] = state.delta[1];
             state.delta[1] = state.lastdelta - state.delta[0];
             state.delta[0] = state.lastdelta;
-            predbyte = ((8 * state.lastbyte + state.weight[0] * state.delta[0] + state.weight[1] * state.delta[1] + state.weight[2] * state.delta[2]) >> 3) & 0xFF;
-            byte = (predbyte - delta) & 0xFF;
+            predbyte = 8 * state.lastbyte + state.weight[0] * state.delta[0] + state.weight[1] * state.delta[1] + state.weight[2] * state.delta[2] >> 3 & 0xFF;
+            byte = predbyte - delta & 0xFF;
             prederror = delta << 3;
             state.error[0] += abs(prederror);
             state.error[1] += abs(prederror - state.delta[0]); state.error[2] += abs(prederror + state.delta[0]);
@@ -518,7 +518,7 @@ bool rar_parse_filter(ar_archive_rar *rar, const uint8_t *bytes, uint16_t length
     for (prog = filters->progs; prog; prog = prog->next)
         numprogs++;
 
-    if ((flags & 0x80)) {
+    if (flags & 0x80) {
         num = br_next_rarvm_number(&br);
         if (num == 0) {
             rar_delete_filter(filters->stack);
@@ -544,9 +544,9 @@ bool rar_parse_filter(ar_archive_rar *rar, const uint8_t *bytes, uint16_t length
         prog->usagecount++;
 
     blockstartpos = br_next_rarvm_number(&br) + (size_t)lzss_position(&rar->uncomp.lzss);
-    if ((flags & 0x40))
+    if (flags & 0x40)
         blockstartpos += 258;
-    if ((flags & 0x20))
+    if (flags & 0x20)
         blocklength = br_next_rarvm_number(&br);
     else
         blocklength = prog ? prog->oldfilterlength : 0;
@@ -556,10 +556,10 @@ bool rar_parse_filter(ar_archive_rar *rar, const uint8_t *bytes, uint16_t length
     registers[5] = prog ? prog->usagecount : 0;
     registers[7] = RARProgramMemorySize;
 
-    if ((flags & 0x10)) {
+    if (flags & 0x10) {
         uint8_t mask = (uint8_t)br_bits(&br, 7);
         for (i = 0; i < 7; i++) {
-            if ((mask & (1 << i)))
+            if (mask & 1 << i)
                 registers[i] = br_next_rarvm_number(&br);
         }
     }
@@ -593,7 +593,7 @@ bool rar_parse_filter(ar_archive_rar *rar, const uint8_t *bytes, uint16_t length
 
     globaldata = NULL;
     globaldatalen = 0;
-    if ((flags & 0x08)) {
+    if (flags & 0x08) {
         globaldatalen = br_next_rarvm_number(&br);
         if (globaldatalen > RARProgramUserGlobalSize) {
             warn("Invalid RARVM data length");

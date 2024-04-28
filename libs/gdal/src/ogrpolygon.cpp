@@ -723,7 +723,7 @@ OGRErr OGRPolygon::exportToWkt( char ** ppszDstText ) const
 
     for( iRing = 0; iRing < nRingCount; iRing++ )
     {
-        eErr = papoRings[iRing]->exportToWkt( &(papszRings[iRing]) );
+        eErr = papoRings[iRing]->exportToWkt( &papszRings[iRing] );
         if( eErr != OGRERR_NONE )
             return eErr;
 

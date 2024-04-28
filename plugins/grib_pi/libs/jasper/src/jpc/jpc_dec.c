@@ -590,7 +590,7 @@ static int jpc_dec_process_sod(jpc_dec_t *dec, jpc_ms_t *ms)
         jpc_dec_dump(dec, stderr);
     }
 
-    if (jpc_dec_decodepkts(dec, (tile->pkthdrstream) ? tile->pkthdrstream :
+    if (jpc_dec_decodepkts(dec, tile->pkthdrstream ? tile->pkthdrstream :
       dec->in, dec->in)) {
         jas_eprintf("jpc_dec_decodepkts failed\n");
         return -1;
@@ -733,9 +733,9 @@ rlvl->bands = 0;
               rlvl->prcwidthexpn) << rlvl->prcwidthexpn;
             brprcyend = JPC_CEILDIVPOW2(rlvl->yend,
               rlvl->prcheightexpn) << rlvl->prcheightexpn;
-            rlvl->numhprcs = (brprcxend - tlprcxstart) >>
+            rlvl->numhprcs = brprcxend - tlprcxstart >>
               rlvl->prcwidthexpn;
-            rlvl->numvprcs = (brprcyend - tlprcystart) >>
+            rlvl->numvprcs = brprcyend - tlprcystart >>
               rlvl->prcheightexpn;
             rlvl->numprcs = rlvl->numhprcs * rlvl->numvprcs;
 
@@ -766,15 +766,15 @@ rlvl->bands = 0;
             rlvl->cblkheightexpn = JAS_MIN(ccp->cblkheightexpn,
               rlvl->cbgheightexpn);
 
-            rlvl->numbands = (!rlvlno) ? 1 : 3;
+            rlvl->numbands = !rlvlno ? 1 : 3;
             if (!(rlvl->bands = jas_alloc2(rlvl->numbands,
               sizeof(jpc_dec_band_t)))) {
                 return -1;
             }
             for (bandno = 0, band = rlvl->bands;
               bandno < rlvl->numbands; ++bandno, ++band) {
-                bndno = (!rlvlno) ? 0 : (3 * (rlvlno - 1) +
-                  bandno + 1);
+                bndno = !rlvlno ? 0 : 3 * (rlvlno - 1) +
+                                      bandno + 1;
                 bnd = &bnds[bndno];
 
                 band->orient = bnd->orient;
@@ -785,8 +785,7 @@ rlvl->bands = 0;
                   cmpt->prec + band->analgain);
                 band->numbps = ccp->numguardbits +
                   JPC_QCX_GETEXPN(band->stepsize) - 1;
-                band->roishift = (ccp->roishift + band->numbps >= JPC_PREC) ?
-                  (JPC_PREC - 1 - band->numbps) : ccp->roishift;
+                band->roishift = ccp->roishift + band->numbps >= JPC_PREC ? JPC_PREC - 1 - band->numbps : ccp->roishift;
                 band->data = 0;
                 band->prcs = 0;
                 if (bnd->xstart == bnd->xend || bnd->ystart == bnd->yend) {
@@ -824,9 +823,9 @@ rlvl->bands = 0;
               rlvl->cblkwidthexpn) << rlvl->cblkwidthexpn;
             brcblkyend = JPC_CEILDIVPOW2(prc->yend,
               rlvl->cblkheightexpn) << rlvl->cblkheightexpn;
-            prc->numhcblks = (brcblkxend - tlcblkxstart) >>
+            prc->numhcblks = brcblkxend - tlcblkxstart >>
               rlvl->cblkwidthexpn;
-            prc->numvcblks = (brcblkyend - tlcblkystart) >>
+            prc->numvcblks = brcblkyend - tlcblkystart >>
               rlvl->cblkheightexpn;
             prc->numcblks = prc->numhcblks * prc->numvcblks;
             assert(prc->numcblks > 0);
@@ -1100,7 +1099,7 @@ static int jpc_dec_tiledecode(jpc_dec_t *dec, jpc_dec_tile_t *tile)
     /* Perform level shift. */
     for (compno = 0, tcomp = tile->tcomps, cmpt = dec->cmpts; compno <
       dec->numcomps; ++compno, ++tcomp, ++cmpt) {
-        adjust = cmpt->sgnd ? 0 : (1 << (cmpt->prec - 1));
+        adjust = cmpt->sgnd ? 0 : 1 << cmpt->prec - 1;
         for (i = 0; i < jas_matrix_numrows(tcomp->data); ++i) {
             for (j = 0; j < jas_matrix_numcols(tcomp->data); ++j) {
                 *jas_matrix_getref(tcomp->data, i, j) += adjust;
@@ -1113,9 +1112,9 @@ static int jpc_dec_tiledecode(jpc_dec_t *dec, jpc_dec_tile_t *tile)
       dec->numcomps; ++compno, ++tcomp, ++cmpt) {
         jpc_fix_t mn;
         jpc_fix_t mx;
-        mn = cmpt->sgnd ? (-(1 << (cmpt->prec - 1))) : (0);
-        mx = cmpt->sgnd ? ((1 << (cmpt->prec - 1)) - 1) : ((1 <<
-          cmpt->prec) - 1);
+        mn = cmpt->sgnd ? -(1 << cmpt->prec - 1) : 0;
+        mx = cmpt->sgnd ? (1 << cmpt->prec - 1) - 1 : (1 <<
+                 cmpt->prec) - 1;
         jas_matrix_clip(tcomp->data, mn, mx);
     }
 
@@ -1401,7 +1400,7 @@ static int jpc_dec_process_poc(jpc_dec_t *dec, jpc_ms_t *ms)
             return -1;
         }
         if (!tile->partno) {
-            if (jpc_dec_cp_setfrompoc(tile->cp, poc, (!tile->partno))) {
+            if (jpc_dec_cp_setfrompoc(tile->cp, poc, !tile->partno)) {
                 return -1;
             }
         } else {
@@ -1554,7 +1553,7 @@ static void jpc_dec_cp_resetflags(jpc_dec_cp_t *cp)
 {
     int compno;
     jpc_dec_ccp_t *ccp;
-    cp->flags &= (JPC_CSET | JPC_QSET);
+    cp->flags &= JPC_CSET | JPC_QSET;
     for (compno = 0, ccp = cp->ccps; compno < cp->numcomps;
       ++compno, ++ccp) {
         ccp->flags = 0;
@@ -1604,7 +1603,7 @@ static void calcstepsizes(uint_fast16_t refstepsize, int numrlvls,
     numbands = 3 * numrlvls - 2;
     for (bandno = 0; bandno < numbands; ++bandno) {
         stepsizes[bandno] = JPC_QCX_MANT(mant) | JPC_QCX_EXPN(expn +
-          (numrlvls - 1) - (numrlvls - 1 - ((bandno > 0) ? ((bandno + 2) / 3) : (0))));
+          (numrlvls - 1) - (numrlvls - 1 - ( bandno > 0 ? (bandno + 2) / 3 : 0)));
     }
 }
 
@@ -1635,7 +1634,7 @@ static int jpc_dec_cp_setfromcod(jpc_dec_cp_t *cp, jpc_cod_t *cod)
     cp->flags |= JPC_CSET;
     cp->prgord = cod->prg;
     if (cod->mctrans) {
-        cp->mctid = (cod->compparms.qmfbid == JPC_COX_INS) ? (JPC_MCT_ICT) : (JPC_MCT_RCT);
+        cp->mctid = cod->compparms.qmfbid == JPC_COX_INS ? JPC_MCT_ICT : JPC_MCT_RCT;
     } else {
         cp->mctid = JPC_MCT_NONE;
     }
@@ -1663,7 +1662,7 @@ static int jpc_dec_cp_setfromcox(jpc_dec_cp_t *cp, jpc_dec_ccp_t *ccp,
     /* Eliminate compiler warnings about unused variables. */
     cp = 0;
 
-    if ((flags & JPC_COC) || !(ccp->flags & JPC_COC)) {
+    if (flags & JPC_COC || !(ccp->flags & JPC_COC)) {
         ccp->numrlvls = compparms->numdlvls + 1;
         ccp->cblkwidthexpn = JPC_COX_GETCBLKSIZEEXPN(
           compparms->cblkwidthval);
@@ -1708,7 +1707,7 @@ static int jpc_dec_cp_setfromqcx(jpc_dec_cp_t *cp, jpc_dec_ccp_t *ccp,
     /* Eliminate compiler warnings about unused variables. */
     cp = 0;
 
-    if ((flags & JPC_QCC) || !(ccp->flags & JPC_QCC)) {
+    if (flags & JPC_QCC || !(ccp->flags & JPC_QCC)) {
         ccp->flags |= flags | JPC_QSET;
         for (bandno = 0; bandno < compparms->numstepsizes; ++bandno) {
             ccp->stepsizes[bandno] = compparms->stepsizes[bandno];
@@ -1771,10 +1770,9 @@ static jpc_fix_t jpc_calcabsstepsize(int stepsize, int numbits)
 
     absstepsize = jpc_inttofix(1);
     n = JPC_FIX_FRACBITS - 11;
-    absstepsize |= (n >= 0) ? (JPC_QCX_GETMANT(stepsize) << n) :
-      (JPC_QCX_GETMANT(stepsize) >> (-n));
+    absstepsize |= n >= 0 ? JPC_QCX_GETMANT(stepsize) << n : JPC_QCX_GETMANT(stepsize) >> -n;
     n = numbits - JPC_QCX_GETEXPN(stepsize);
-    absstepsize = (n >= 0) ? (absstepsize << n) : (absstepsize >> (-n));
+    absstepsize = n >= 0 ? absstepsize << n : absstepsize >> -n;
     return absstepsize;
 }
 
@@ -1826,7 +1824,7 @@ static void jpc_undo_roi(jas_matrix_t *x, int roishift, int bgshift, int numbps)
             if (mag >= thresh) {
                 /* We are dealing with ROI data. */
                 mag >>= roishift;
-                val = (val < 0) ? (-mag) : mag;
+                val = val < 0 ? -mag : mag;
                 jas_matrix_set(x, i, j, val);
             } else {
                 /* We are dealing with non-ROI (i.e., background) data. */
@@ -1836,14 +1834,14 @@ static void jpc_undo_roi(jas_matrix_t *x, int roishift, int bgshift, int numbps)
                 /* Some implementations write garbage in the unused
                   most-significant bit planes introduced by ROI shifting.
                   Here we ensure that any such bits are masked off. */
-                if (mag & (~mask)) {
+                if (mag & ~mask) {
                     if (!warn) {
                         jas_eprintf("warning: possibly corrupt code stream\n");
                         warn = true;
                     }
                     mag &= mask;
                 }
-                val = (val < 0) ? (-mag) : mag;
+                val = val < 0 ? -mag : mag;
                 jas_matrix_set(x, i, j, val);
             }
         }
@@ -1926,7 +1924,7 @@ void jpc_seglist_insert(jpc_dec_seglist_t *list, jpc_dec_seg_t *ins, jpc_dec_seg
 
     prev = ins;
     node->prev = prev;
-    next = prev ? (prev->next) : 0;
+    next = prev ? prev->next : 0;
     node->prev = prev;
     node->next = next;
     if (prev) {
@@ -2079,7 +2077,7 @@ int jpc_streamlist_insert(jpc_streamlist_t *streamlist, int streamno,
     if (streamlist->numstreams >= streamlist->maxstreams) {
         newmaxstreams = streamlist->maxstreams + 1024;
         if (!(newstreams = jas_realloc2(streamlist->streams,
-          (newmaxstreams + 1024), sizeof(jas_stream_t *)))) {
+          newmaxstreams + 1024, sizeof(jas_stream_t *)))) {
             return -1;
         }
         for (i = streamlist->numstreams; i < streamlist->maxstreams; ++i) {
@@ -2239,7 +2237,7 @@ jpc_streamlist_t *jpc_ppmstabtostreams(jpc_ppxstab_t *tab)
           stream)) {
             goto error;
         }
-        tpcnt = (dataptr[0] << 24) | (dataptr[1] << 16) | (dataptr[2] << 8)
+        tpcnt = dataptr[0] << 24 | dataptr[1] << 16 | dataptr[2] << 8
           | dataptr[3];
         datacnt -= 4;
         dataptr += 4;

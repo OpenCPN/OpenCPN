@@ -363,7 +363,7 @@ bool RoutePoint::IsSame(RoutePoint *pOtherRP) {
 }
 
 double RoutePoint::GetWaypointArrivalRadius() {
-  if ((m_WaypointArrivalRadius >= 0) && (m_WaypointArrivalRadius < 0.001)) {
+  if (m_WaypointArrivalRadius >= 0 && m_WaypointArrivalRadius < 0.001) {
     SetWaypointArrivalRadius(g_n_arrival_circle_radius);
     return m_WaypointArrivalRadius;
   } else
@@ -425,8 +425,8 @@ double RoutePoint::GetPlannedSpeed() {
     // In case there was speed encoded in the name of the waypoint, do the
     // conversion here.
     wxString s_vmg =
-        (m_MarkDescription.Mid(m_MarkDescription.Find(_T("VMG=")) + 4))
-            .BeforeFirst(';');
+        m_MarkDescription.Mid(m_MarkDescription.Find(_T("VMG=")) + 4)
+                         .BeforeFirst(';');
     double vmg;
     if (!s_vmg.ToDouble(&vmg)) {
       m_MarkDescription.Replace(_T("VMG=") + s_vmg + ";", wxEmptyString);
@@ -447,8 +447,8 @@ wxDateTime RoutePoint::GetETD() {
     if (m_MarkDescription.Find(_T("ETD=")) != wxNOT_FOUND) {
       wxDateTime etd = wxInvalidDateTime;
       wxString s_etd =
-          (m_MarkDescription.Mid(m_MarkDescription.Find(_T("ETD=")) + 4))
-              .BeforeFirst(';');
+          m_MarkDescription.Mid(m_MarkDescription.Find(_T("ETD=")) + 4)
+                           .BeforeFirst(';');
       const wxChar *parse_return = etd.ParseDateTime(s_etd);
       if (parse_return) {
         wxString tz(parse_return);
@@ -458,7 +458,7 @@ wxDateTime RoutePoint::GetETD() {
         } else {
           if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
             m_seg_etd = etd;
-            long lmt_offset = (long)((m_lon * 3600.) / 15.);
+            long lmt_offset = (long)(m_lon * 3600. / 15.);
             wxTimeSpan lmt(0, 0, (int)lmt_offset, 0);
             m_seg_etd -= lmt;
           } else {

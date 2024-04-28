@@ -357,10 +357,10 @@ GLboolean QueryExtension(const char *extName) {
 
   while (p < end) {
     int n = strcspn(p, " ");
-    if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
+    if (extNameLen == n && strncmp(extName, p, n) == 0) {
       return GL_TRUE;
     }
-    p += (n + 1);
+    p += n + 1;
   }
   return GL_FALSE;
 }
@@ -1105,7 +1105,7 @@ void glChartCanvas::SetupOpenGL() {
     GLfloat parf;
     glGetFloatv(GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf);
 
-    g_GLMinSymbolLineWidth = wxMax(((float)parms[0] + parf), 1);
+    g_GLMinSymbolLineWidth = wxMax((float)parms[0] + parf, 1);
   }
 
   s_b_useScissorTest = true;
@@ -1137,7 +1137,7 @@ void glChartCanvas::SetupOpenGL() {
   glDisable(GL_STENCIL_TEST);
 
   s_b_useStencil = false;
-  if (stencil && (sb == 8)) s_b_useStencil = true;
+  if (stencil && sb == 8) s_b_useStencil = true;
 
   if (QueryExtension("GL_ARB_texture_non_power_of_two"))
     g_texture_rectangle_format = GL_TEXTURE_2D;
@@ -1339,8 +1339,8 @@ void glChartCanvas::SetupCompression() {
        us to load this texture type which is enough because we
        compress in software using libsquish for superior quality anyway */
 
-    if ((QueryExtension("GL_EXT_texture_compression_s3tc") ||
-         QueryExtension("GL_EXT_texture_compression_dxt1"))
+    if (QueryExtension("GL_EXT_texture_compression_s3tc") ||
+        QueryExtension("GL_EXT_texture_compression_dxt1")
         ) {
       /* buggy opensource nvidia driver, renders incorrectly,
          workaround is to use format with alpha... */
@@ -1592,7 +1592,7 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints(ViewPort &vp) {
              pWayPointMan->GetWaypointList()->GetFirst();
          pnode; pnode = pnode->GetNext()) {
       RoutePoint *pWP = pnode->GetData();
-      if (pWP && (!pWP->m_bRPIsBeingEdited) && (!pWP->m_bIsInRoute))
+      if (pWP && !pWP->m_bRPIsBeingEdited && !pWP->m_bIsInRoute)
         if (vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
           RoutePointGui(*pWP).DrawGL(vp, m_pParentCanvas, dc);
 //          pWP->DrawGL(vp, m_pParentCanvas, dc);
@@ -1852,7 +1852,7 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
 
     if (points_vector.size()) {
       std::vector<int>::iterator it = points_vector.begin();
-      dc.DrawLines(points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
+      dc.DrawLines(points_vector.size() / 2, (wxPoint *)&*it, 0, 0, true);
     }
   }
 
@@ -1889,7 +1889,7 @@ void glChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
 
       if (points_vector.size()) {
         std::vector<int>::iterator it = points_vector.begin();
-        dc.DrawLines(points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
+        dc.DrawLines(points_vector.size() / 2, (wxPoint *)&*it, 0, 0, true);
       }
     }
   }
@@ -2179,10 +2179,10 @@ void glChartCanvas::DrawEmboss(ocpnDC &dc, emboss_data *emboss) {
     for (int i = 0; i < h; i++) {
       for (int j = 0; j < emboss->glwidth; j++) {
         if (j < w) {
-          data[2 * ((i * emboss->glwidth) + j)] =
-              (char)(emboss->pmap[(i * w) + j] > 0 ? 0 : 255);
-          data[2 * ((i * emboss->glwidth) + j) + 1] =
-              (char)abs((emboss->pmap[(i * w) + j]));
+          data[2 * (i * emboss->glwidth + j)] =
+              (char)(emboss->pmap[i * w + j] > 0 ? 0 : 255);
+          data[2 * (i * emboss->glwidth + j) + 1] =
+              (char)abs(emboss->pmap[i * w + j]);
         }
       }
     }
@@ -2273,7 +2273,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
 
   if (pSog < 0.2)
     icon_rad =
-        ((icon_hdt + 90.) * PI / 180.) + m_pParentCanvas->GetVP().rotation;
+        (icon_hdt + 90.) * PI / 180. + m_pParentCanvas->GetVP().rotation;
 
   //    Another draw test ,based on pixels, assuming the ship icon is a fixed
   //    nominal size and is just barely outside the viewport        ....
@@ -2292,7 +2292,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
     {
       float scale_factor = 1.0;
       // Scale the generic icon to ChartScaleFactor, slightly softened....
-      if ((g_ChartScaleFactorExp > 1.0) && (g_OwnShipIconType == 0))
+      if (g_ChartScaleFactorExp > 1.0 && g_OwnShipIconType == 0)
         scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;
 
       float nominal_ownship_size_mm = m_pParentCanvas->m_display_size_mm / 44.0;
@@ -2305,7 +2305,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
           wxMax(20.0, m_pParentCanvas->GetPixPerMM() *
                           nominal_ownship_size_mm);  // nominal length, but not
                                                      // less than 20 pixel
-      float v = (nominal_ownship_size_pixels * scale_factor) / 3;
+      float v = nominal_ownship_size_pixels * scale_factor / 3;
 
       wxPen ppSmallScaleShip;
       if (SHIP_NORMAL == m_pParentCanvas->m_ownship_state)
@@ -2317,10 +2317,10 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       dc.SetBrush(wxBrush(GetGlobalColor(_T ( "URED" )), wxBRUSHSTYLE_TRANSPARENT));
 
       // start with cross
-      dc.DrawLine((-v * 1.2) + lShipMidPoint.x, lShipMidPoint.y,
-                  (v * 1.2) + lShipMidPoint.x, lShipMidPoint.y);
-      dc.DrawLine(lShipMidPoint.x, (-v * 1.2) + lShipMidPoint.y,
-                  lShipMidPoint.x, (v * 1.2) + lShipMidPoint.y);
+      dc.DrawLine(-v * 1.2 + lShipMidPoint.x, lShipMidPoint.y,
+                  v * 1.2 + lShipMidPoint.x, lShipMidPoint.y);
+      dc.DrawLine(lShipMidPoint.x, -v * 1.2 + lShipMidPoint.y,
+                  lShipMidPoint.x, v * 1.2 + lShipMidPoint.y);
 
       //  Two circles
       dc.StrokeCircle(lShipMidPoint.x, lShipMidPoint.y, v);
@@ -2334,8 +2334,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         draw_color = SHIP_LOWACCURACY;
 
       if (!ownship_tex ||
-          (draw_color !=
-           ownship_color)) { /* initial run, create texture for ownship,
+          draw_color !=
+          ownship_color) { /* initial run, create texture for ownship,
                                 also needed at colorscheme changes (not
                                 implemented) */
 
@@ -2430,7 +2430,7 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       int x = lShipMidPoint.x, y = lShipMidPoint.y;
 
       // Scale the generic icon to ChartScaleFactor, slightly softened....
-      if ((g_ShipScaleFactorExp > 1.0) && (g_OwnShipIconType == 0)) {
+      if (g_ShipScaleFactorExp > 1.0 && g_OwnShipIconType == 0) {
         scale_factor_x = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
         scale_factor_y = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
       }
@@ -2615,13 +2615,13 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         double p1y = 0;
         double p2y = 0;
         double p1xr =
-            ((p1x)*cos(icon_rad - PI / 2)) - ((p1y)*sin(icon_rad - PI / 2));
+            p1x*cos(icon_rad - PI / 2) - p1y*sin(icon_rad - PI / 2);
         double p2xr =
-            ((p2x)*cos(icon_rad - PI / 2)) - ((p2y)*sin(icon_rad - PI / 2));
+            p2x*cos(icon_rad - PI / 2) - p2y*sin(icon_rad - PI / 2);
         double p1yr =
-            ((p1y)*cos(icon_rad - PI / 2)) + ((p1x)*sin(icon_rad - PI / 2));
+            p1y*cos(icon_rad - PI / 2) + p1x*sin(icon_rad - PI / 2);
         double p2yr =
-            ((p2y)*cos(icon_rad - PI / 2)) + ((p2x)*sin(icon_rad - PI / 2));
+            p2y*cos(icon_rad - PI / 2) + p2x*sin(icon_rad - PI / 2);
         dc.DrawLine(p1xr + lShipMidPoint.x, p1yr + lShipMidPoint.y,
                     p2xr + lShipMidPoint.x, p2yr + lShipMidPoint.y);
 
@@ -2629,10 +2629,10 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         p2x = 0;
         p1y = -42 * scale_factor_y;
         p2y = 42 * scale_factor_y;
-        p1xr = ((p1x)*cos(icon_rad - PI / 2)) - ((p1y)*sin(icon_rad - PI / 2));
-        p2xr = ((p2x)*cos(icon_rad - PI / 2)) - ((p2y)*sin(icon_rad - PI / 2));
-        p1yr = ((p1y)*cos(icon_rad - PI / 2)) + ((p1x)*sin(icon_rad - PI / 2));
-        p2yr = ((p2y)*cos(icon_rad - PI / 2)) + ((p2x)*sin(icon_rad - PI / 2));
+        p1xr = p1x*cos(icon_rad - PI / 2) - p1y*sin(icon_rad - PI / 2);
+        p2xr = p2x*cos(icon_rad - PI / 2) - p2y*sin(icon_rad - PI / 2);
+        p1yr = p1y*cos(icon_rad - PI / 2) + p1x*sin(icon_rad - PI / 2);
+        p2yr = p2y*cos(icon_rad - PI / 2) + p2x*sin(icon_rad - PI / 2);
         dc.DrawLine(p1xr + lShipMidPoint.x, p1yr + lShipMidPoint.y,
                     p2xr + lShipMidPoint.x, p2yr + lShipMidPoint.y);
       }
@@ -2796,7 +2796,7 @@ static void combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
                              GLfloat weight[4], GLdouble **dataOut) {
   double *vertex = new double[3];
   combine_work_data.push_back(vertex);
-  memcpy(vertex, coords, 3 * (sizeof *coords));
+  memcpy(vertex, coords, 3 * sizeof *coords);
   *dataOut = vertex;
 }
 
@@ -3489,7 +3489,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region) {
 
   LLRegion chart_region;
   if (!vp.b_quilt &&
-      (m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_PLUGIN)) {
+      m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_PLUGIN) {
     if (m_pParentCanvas->m_singleChart->GetChartFamily() ==
         CHART_FAMILY_RASTER) {
       // We do this the hard way, since PlugIn Raster charts do not understand
@@ -3686,7 +3686,7 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
         for (int y = 0; y < h; y++)
           for (int x = 0; x < w; x++) {
             unsigned char r, g, b;
-            int off = (y * w + x);
+            int off = y * w + x;
             r = d[off * 3 + 0];
             g = d[off * 3 + 1];
             b = d[off * 3 + 2];
@@ -3696,7 +3696,7 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
             e[off * 4 + 2] = b;
 
             e[off * 4 + 3] =
-                a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+                a ? a[off] : r == mr && g == mg && b == mb ? 0 : 255;
           }
       }
 
@@ -3730,8 +3730,8 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
     for (int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++) {
       const IDX_entry *pIDX = ptcmgr->GetIDX_entry(i);
 
-      char type = pIDX->IDX_type;          // Entry "TCtcIUu" identifier
-      if ((type == 't') || (type == 'T'))  // only Tides
+      char type = pIDX->IDX_type;     // Entry "TCtcIUu" identifier
+      if (type == 't' || type == 'T') // only Tides
       {
         double lon = pIDX->IDX_lon;
         double lat = pIDX->IDX_lat;
@@ -3814,7 +3814,7 @@ void glChartCanvas::RenderGLAlertMessage() {
     h += 2;
     w += 4;
     int yp =
-        m_pParentCanvas->VPoint.pix_height - GetChartbarHeight() - h - (h / 4);
+        m_pParentCanvas->VPoint.pix_height - GetChartbarHeight() - h - h / 4;
 
     wxRect sbr = m_pParentCanvas->GetScaleBarRect();
     int xp = sbr.x + sbr.width + 5;
@@ -4064,12 +4064,12 @@ void glChartCanvas::Render() {
         double deltay = c_new.m_y - c_old.m_y;
 
         bool b_whole_pixel = true;
-        if ((fabs(deltax - dx) > 1e-2) || (fabs(deltay - dy) > 1e-2))
+        if (fabs(deltax - dx) > 1e-2 || fabs(deltay - dy) > 1e-2)
           b_whole_pixel = false;
 
         accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x &&
                           abs(dy) < m_cache_tex_y &&
-                          (abs(dx) > 0 || (abs(dy) > 0));
+                          (abs(dx) > 0 || abs(dy) > 0);
       }
 
       //  FBO swapping has trouble with Retina display on MacOS Monterey.
@@ -4093,7 +4093,7 @@ void glChartCanvas::Render() {
       if (b_full) accelerated_pan = false;
 
       if (accelerated_pan) {
-        if ((dx != 0) || (dy != 0)) {  // Anything to do?
+        if (dx != 0 || dy != 0) {  // Anything to do?
 
           // calculate the new regions to render
           // add extra pixels to avoid coordindate rounding issues at large
@@ -4545,7 +4545,7 @@ void glChartCanvas::Render() {
 
       // Simple low pass filter
       g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) +
-                          ((double)(g_glstopwatch.Time()) * filter);
+                          (double)g_glstopwatch.Time() * filter;
                   if(g_gl_ms_per_frame > 0)
                       printf(" OpenGL frame time: %3.0f ms-->  %3.0fFPS\n",
                       g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
@@ -4569,7 +4569,7 @@ void glChartCanvas::RenderS57TextOverlay(ViewPort &VPoint) {
     if (m_pParentCanvas->m_pQuilt->IsQuiltVector() && ps52plib &&
         ps52plib->GetShowS57Text()) {
       ChartBase *chart = m_pParentCanvas->m_pQuilt->GetRefChart();
-      if (chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)) {
+      if (chart && chart->GetChartType() != CHART_TYPE_CM93COMP) {
         //        Clear the text Global declutter list
         if (chart) {
           ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper *>(chart);
@@ -4666,7 +4666,7 @@ void glChartCanvas::RenderMBTilesOverlay(ViewPort &VPoint) {
       wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
 
       if (!ChartData->CheckAnyCanvasExclusiveTileGroup() ||
-          (tileSizeMB.GetLo() > 5000)) {
+          tileSizeMB.GetLo() > 5000) {
         // Check to see if the tile has been "clicked".
         // If so, do not add to no-show array again.
         if (!m_pParentCanvas->IsTileOverlayIndexInYesShow(*rit)) {
@@ -4864,7 +4864,7 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth,
   RenderColorRect(r, color);
 
   // top stripe
-  wxRect rt(0, 0, w, sy - (ht + (sy * sy / sheight)));
+  wxRect rt(0, 0, w, sy - (ht + sy * sy / sheight));
   RenderColorRect(rt, color);
 
   // left
@@ -4888,7 +4888,7 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth,
 void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event) {
   // If m_zoomFinal is set, shortcut the timer sequence.
 
-  if ((m_nRun < m_nTotal) && !m_zoomFinal) {
+  if (m_nRun < m_nTotal && !m_zoomFinal) {
     m_runoffsetx += m_offsetxStep;
     if (m_offsetxStep > 0)
       m_runoffsetx = wxMin(m_runoffsetx, m_fbo_offsetx);
@@ -4959,14 +4959,14 @@ void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x,
     //        fy = 0.5;
   }
 
-  float fbo_ctr_x = curr_fbo_offset_x + (curr_fbo_swidth * fx);
-  float fbo_ctr_y = curr_fbo_offset_y + (curr_fbo_sheight * fy);
+  float fbo_ctr_x = curr_fbo_offset_x + curr_fbo_swidth * fx;
+  float fbo_ctr_y = curr_fbo_offset_y + curr_fbo_sheight * fy;
 
   m_fbo_swidth = curr_fbo_swidth / factor;
   m_fbo_sheight = curr_fbo_sheight / factor;
 
-  m_fbo_offsetx = fbo_ctr_x - (m_fbo_swidth * fx);
-  m_fbo_offsety = fbo_ctr_y - (m_fbo_sheight * fy);
+  m_fbo_offsetx = fbo_ctr_x - m_fbo_swidth * fx;
+  m_fbo_offsety = fbo_ctr_y - m_fbo_sheight * fy;
 
   m_fbo_offsetx += post_x;
   m_fbo_offsety += post_y;

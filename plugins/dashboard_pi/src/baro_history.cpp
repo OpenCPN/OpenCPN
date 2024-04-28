@@ -187,7 +187,7 @@ void DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc) {
 
   if (m_TotalMinPress < 930) m_TotalMinPress = 930;
 
-  m_MaxPressScale = (int)((m_MaxPress + 15) - (m_TotalMinPress - 15));
+  m_MaxPressScale = (int)(m_MaxPress + 15 - (m_TotalMinPress - 15));
 
   if (!m_IsRunning) {
     label1 = _T("-- hPa");
@@ -216,7 +216,7 @@ void DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc) {
     label4.Printf(_T("%.0f hPa"), m_MaxPressScale / 4 + (m_TotalMinPress - 18));
 
     // bottom legend for min wind
-    label5.Printf(_T("%.0f hPa"), (m_TotalMinPress - 18));
+    label5.Printf(_T("%.0f hPa"), m_TotalMinPress - 18);
   }
   wxFont f;
   if (m_Properties)
@@ -391,7 +391,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   int ls = 0;
   bdDraw[ls].x = 1 * m_ratioW + 3 + m_LeftLegend;
   bdDraw[ls].y = m_TopLineHeight + m_DrawAreaRect.height -
-    ((m_ArrayPressHistory[1] - (double)m_TotalMinPress + 18) * ratioH);
+    (m_ArrayPressHistory[1] - (double)m_TotalMinPress + 18) * ratioH;
 
   //---------------------------------------------------------------------------------
   // live pressure data
@@ -401,7 +401,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
     pointsSpd[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
     // Print the smoothed value to avoid jumps in the single line.
     pointsSpd[idx].y = m_TopLineHeight + m_DrawAreaRect.height -
-        ((m_ExpSmoothArrayPressure[idx] - m_TotalMinPress + 18.0) * ratioH);
+        (m_ExpSmoothArrayPressure[idx] - m_TotalMinPress + 18.0) * ratioH;
     if (BARO_RECORD_COUNT - m_SampleCount <= idx &&
       pointsSpd[idx].y > m_TopLineHeight &&
       pointsSpd[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
@@ -444,7 +444,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
   pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
   dc->SetTextForeground(col);
-  dc->SetFont((g_pFontSmall->GetChosenFont()));
+  dc->SetFont(g_pFontSmall->GetChosenFont());
   int done = -1;
   wxPoint pointTime;
   for (int idx = 0; idx < BARO_RECORD_COUNT; idx++) {
@@ -452,10 +452,10 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
       wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
       min = localTime.GetMinute();
-      if ((hour * 100 + min) != done && (min == 0)) {
+      if (hour * 100 + min != done && min == 0) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
-                     (m_TopLineHeight + m_DrawAreaRect.height + 1));
+                     m_TopLineHeight + m_DrawAreaRect.height + 1);
         label.Printf(_T("%02d:%02d"), hour, min);
         f = g_pFontSmall->GetChosenFont();
         dc->GetTextExtent(label, &width, &height, 0, 0, &f);

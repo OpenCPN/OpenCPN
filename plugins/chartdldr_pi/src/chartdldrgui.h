@@ -167,10 +167,10 @@ public:
   wxDataViewListCtrl* m_scrollWinChartList;
   virtual wxDataViewListCtrl* getChartList() { return m_scrollWinChartList; }
   virtual bool isNew(int item) {
-    return (m_scrollWinChartList->GetTextValue(item, 1) == _("New"));
+    return m_scrollWinChartList->GetTextValue(item, 1) == _("New");
   }
   virtual bool isUpdated(int item) {
-    return (m_scrollWinChartList->GetTextValue(item, 1) == _("Out of date"));
+    return m_scrollWinChartList->GetTextValue(item, 1) == _("Out of date");
   }
   virtual void clearChartList() { m_scrollWinChartList->DeleteAllItems(); }
 #else

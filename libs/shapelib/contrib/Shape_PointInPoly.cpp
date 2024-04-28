@@ -60,8 +60,8 @@ loopDir LoopDirection(DPoint2d *vertices, int vertsize)
     double sum = 0.0;
     for (i = 0; i < vertsize - 1; i++)
     {
-        sum += (vertices[i].x * vertices[i + 1].y) -
-               (vertices[i].y * vertices[i + 1].x);
+        sum += vertices[i].x * vertices[i + 1].y -
+               vertices[i].y * vertices[i + 1].x;
     }
 
     if (sum > 0)
@@ -128,10 +128,10 @@ DPoint2d CreatePointInPoly(SHPObject *psShape, int quality)
                     {
                         point1.x =
                             xmin +
-                            (((((x4 - x3) * (y - y3)) -
-                               ((y4 - y3) * (xmin - x3))) /
-                              ((y4 - y3) * dx)) *
-                             dx);  //striped down calculation of intersection of 2 lines
+                            ((x4 - x3) * (y - y3) -
+                             (y4 - y3) * (xmin - x3)) /
+                            ((y4 - y3) * dx) *
+                            dx;  //striped down calculation of intersection of 2 lines
                         point1.y = y;
                     }
                     points[pointpos++] = point1;

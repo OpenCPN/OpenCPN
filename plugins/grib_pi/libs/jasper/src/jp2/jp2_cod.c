@@ -501,7 +501,7 @@ int jp2_box_put(jp2_box_t *box, jas_stream_t *out)
         box->len = jas_stream_tell(tmpstream) + JP2_BOX_HDRLEN(false);
         jas_stream_rewind(tmpstream);
     }
-    extlen = (box->len >= (((uint_fast64_t)1) << 32)) != 0;
+    extlen = box->len >= (uint_fast64_t)1 << 32 != 0;
     if (jp2_putuint32(out, extlen ? 1 : box->len)) {
         goto error;
     }
@@ -649,7 +649,7 @@ static int jp2_getuint16(jas_stream_t *in, uint_fast16_t *val)
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if (val) {
         *val = v;
     }
@@ -667,15 +667,15 @@ static int jp2_getuint32(jas_stream_t *in, uint_fast32_t *val)
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if ((c = jas_stream_getc(in)) == EOF) {
         return -1;
     }
-    v = (v << 8) | c;
+    v = v << 8 | c;
     if (val) {
         *val = v;
     }
@@ -694,7 +694,7 @@ static int jp2_getuint64(jas_stream_t *in, uint_fast64_t *val)
         if ((c = jas_stream_getc(in)) == EOF) {
             return -1;
         }
-        tmpval |= (c & 0xff);
+        tmpval |= c & 0xff;
     }
     *val = tmpval;
 
@@ -735,7 +735,7 @@ static int jp2_putuint32(jas_stream_t *out, uint_fast32_t val)
 
 static int jp2_putuint64(jas_stream_t *out, uint_fast64_t val)
 {
-    if (jp2_putuint32(out, (val >> 32) & 0xffffffffUL) ||
+    if (jp2_putuint32(out, val >> 32 & 0xffffffffUL) ||
       jp2_putuint32(out, val & 0xffffffffUL)) {
         return -1;
     }
@@ -775,7 +775,7 @@ static int jp2_cmap_getdata(jp2_box_t *box, jas_stream_t *in)
     jp2_cmapent_t *ent;
     unsigned int i;
 
-    cmap->numchans = (box->datalen) / 4;
+    cmap->numchans = box->datalen / 4;
     if (!(cmap->ents = jas_alloc2(cmap->numchans, sizeof(jp2_cmapent_t)))) {
         return -1;
     }
@@ -950,13 +950,13 @@ static int jp2_getint(jas_stream_t *in, int s, int n, int_fast32_t *val)
         if ((c = jas_stream_getc(in)) == EOF) {
             return -1;
         }
-        v = (v << 8) | c;
+        v = v << 8 | c;
     }
     v &= ONES(n);
     if (s) {
         int sb;
-        sb = v & (1 << (8 * m - 1));
-        *val = ((~v) + 1) & ONES(8 * m);
+        sb = v & 1 << 8 * m - 1;
+        *val = ~v + 1 & ONES(8 * m);
         if (sb) {
             *val = -*val;
         }

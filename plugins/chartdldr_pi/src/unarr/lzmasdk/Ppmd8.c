@@ -66,15 +66,15 @@ void Ppmd8_Construct(CPpmd8 *p)
 
   for (i = 0, k = 0; i < PPMD_NUM_INDEXES; i++)
   {
-    unsigned step = (i >= 12 ? 4 : (i >> 2) + 1);
+    unsigned step = i >= 12 ? 4 : (i >> 2) + 1;
     do { p->Units2Indx[k++] = (Byte)i; } while(--step);
     p->Indx2Units[i] = (Byte)k;
   }
 
-  p->NS2BSIndx[0] = (0 << 1);
-  p->NS2BSIndx[1] = (1 << 1);
-  memset(p->NS2BSIndx + 2, (2 << 1), 9);
-  memset(p->NS2BSIndx + 11, (3 << 1), 256 - 11);
+  p->NS2BSIndx[0] = 0 << 1;
+  p->NS2BSIndx[1] = 1 << 1;
+  memset(p->NS2BSIndx + 2, 2 << 1, 9);
+  memset(p->NS2BSIndx + 11, 3 << 1, 256 - 11);
 
   for (i = 0; i < 5; i++)
     p->NS2Indx[i] = (Byte)i;
@@ -82,7 +82,7 @@ void Ppmd8_Construct(CPpmd8 *p)
   {
     p->NS2Indx[i] = (Byte)m;
     if (--k == 0)
-      k = (++m) - 4;
+      k = ++m - 4;
   }
 }
 
@@ -100,7 +100,7 @@ Bool Ppmd8_Alloc(CPpmd8 *p, UInt32 size, ISzAlloc *alloc)
     Ppmd8_Free(p, alloc);
     p->AlignOffset =
       #ifdef PPMD_32BIT
-        (4 - size) & 3;
+        4 - size & 3;
       #else
         4 - (size & 3);
       #endif
@@ -135,7 +135,7 @@ static void SplitBlock(CPpmd8 *p, void *ptr, unsigned oldIndx, unsigned newIndx)
   if (I2U(i = U2I(nu)) != nu)
   {
     unsigned k = I2U(--i);
-    InsertNode(p, ((Byte *)ptr) + U2B(k), nu - k - 1);
+    InsertNode(p, (Byte *)ptr + U2B(k), nu - k - 1);
   }
   InsertNode(p, ptr, i);
 }
@@ -166,7 +166,7 @@ static void GlueFreeBlocks(CPpmd8 *p)
       {
         CPpmd8_Node *node2;
         *prev = next;
-        prev = &(node->Next);
+        prev = &node->Next;
         while ((node2 = node + node->NU)->Stamp == EMPTY_NODE)
         {
           node->NU += node2->NU;
@@ -215,7 +215,7 @@ static void *AllocUnitsRare(CPpmd8 *p, unsigned indx)
     {
       UInt32 numBytes = U2B(I2U(indx));
       p->GlueCount--;
-      return ((UInt32)(p->UnitsStart - p->Text) > numBytes) ? (p->UnitsStart -= numBytes) : (NULL);
+      return (UInt32)(p->UnitsStart - p->Text) > numBytes ? (p->UnitsStart -= numBytes) : NULL;
     }
   }
   while (p->FreeList[i] == 0);
@@ -334,8 +334,8 @@ static void ExpandTextArea(CPpmd8 *p)
 
 static void SetSuccessor(CPpmd_State *p, CPpmd_Void_Ref v)
 {
-  (p)->SuccessorLow = (UInt16)((UInt32)(v) & 0xFFFF);
-  (p)->SuccessorHigh = (UInt16)(((UInt32)(v) >> 16) & 0xFFFF);
+  p->SuccessorLow = (UInt16)((UInt32)v & 0xFFFF);
+  p->SuccessorHigh = (UInt16)((UInt32)v >> 16 & 0xFFFF);
 }
 
 #define RESET_TEXT(offs) { p->Text = p->Base + p->AlignOffset + (offs); }
@@ -352,7 +352,7 @@ static void RestartModel(CPpmd8 *p)
   p->GlueCount = 0;
 
   p->OrderFall = p->MaxOrder;
-  p->RunLength = p->InitRL = -(Int32)((p->MaxOrder < 12) ? p->MaxOrder : 12) - 1;
+  p->RunLength = p->InitRL = -(Int32)(p->MaxOrder < 12 ? p->MaxOrder : 12) - 1;
   p->PrevSuccess = 0;
 
   p->MinContext = p->MaxContext = (CTX_PTR)(p->HiUnit -= UNIT_SIZE); /* AllocContext(p); */
@@ -391,7 +391,7 @@ static void RestartModel(CPpmd8 *p)
     for (k = 0; k < 32; k++)
     {
       CPpmd_See *s = &p->See[m][k];
-      s->Summ = (UInt16)((2 * i + 5) << (s->Shift = PPMD_PERIOD_BITS - 4));
+      s->Summ = (UInt16)(2 * i + 5 << (s->Shift = PPMD_PERIOD_BITS - 4));
       s->Count = 7;
     }
   }
@@ -410,23 +410,23 @@ void Ppmd8_Init(CPpmd8 *p, unsigned maxOrder, unsigned restoreMethod)
 static void Refresh(CPpmd8 *p, CTX_PTR ctx, unsigned oldNU, unsigned scale)
 {
   unsigned i = ctx->NumStats, escFreq, sumFreq, flags;
-  CPpmd_State *s = (CPpmd_State *)ShrinkUnits(p, STATS(ctx), oldNU, (i + 2) >> 1);
+  CPpmd_State *s = (CPpmd_State *)ShrinkUnits(p, STATS(ctx), oldNU, i + 2 >> 1);
   ctx->Stats = REF(s);
   #ifdef PPMD8_FREEZE_SUPPORT
   /* fixed over Shkarin's code. Fixed code is not compatible with original code for some files in FREEZE mode. */
   scale |= (ctx->SummFreq >= ((UInt32)1 << 15));
   #endif
-  flags = (ctx->Flags & (0x10 + 0x04 * scale)) + 0x08 * (s->Symbol >= 0x40);
+  flags = (ctx->Flags & 0x10 + 0x04 * scale) + 0x08 * (s->Symbol >= 0x40);
   escFreq = ctx->SummFreq - s->Freq;
-  sumFreq = (s->Freq = (Byte)((s->Freq + scale) >> scale));
+  sumFreq = s->Freq = (Byte)(s->Freq + scale >> scale);
   do
   {
     escFreq -= (++s)->Freq;
-    sumFreq += (s->Freq = (Byte)((s->Freq + scale) >> scale));
+    sumFreq += s->Freq = (Byte)(s->Freq + scale >> scale);
     flags |= 0x08 * (s->Symbol >= 0x40);
   }
   while (--i);
-  ctx->SummFreq = (UInt16)(sumFreq + ((escFreq + scale) >> scale));
+  ctx->SummFreq = (UInt16)(sumFreq + (escFreq + scale >> scale));
   ctx->Flags = (Byte)flags;
 }
 
@@ -459,12 +459,12 @@ static CPpmd_Void_Ref CutOff(CPpmd8 *p, CTX_PTR ctx, unsigned order)
     return 0;
   }
 
-  ctx->Stats = STATS_REF(MoveUnitsUp(p, STATS(ctx), tmp = ((unsigned)ctx->NumStats + 2) >> 1));
+  ctx->Stats = STATS_REF(MoveUnitsUp(p, STATS(ctx), tmp = (unsigned)ctx->NumStats + 2 >> 1));
 
   for (s = STATS(ctx) + (i = ctx->NumStats); s >= STATS(ctx); s--)
     if ((Byte *)Ppmd8_GetPtr(p, SUCCESSOR(s)) < p->UnitsStart)
     {
-      CPpmd_State *s2 = STATS(ctx) + (i--);
+      CPpmd_State *s2 = STATS(ctx) + i--;
       SetSuccessor(s, 0);
       SwapStates(s, s2);
     }
@@ -553,22 +553,22 @@ static void RestoreModel(CPpmd8 *p, CTX_PTR c1
   CPpmd_State *s;
   RESET_TEXT(0);
   for (c = p->MaxContext; c != c1; c = SUFFIX(c))
-    if (--(c->NumStats) == 0)
+    if (--c->NumStats == 0)
     {
       s = STATS(c);
       c->Flags = (c->Flags & 0x10) + 0x08 * (s->Symbol >= 0x40);
       *ONE_STATE(c) = *s;
       SpecialFreeUnit(p, s);
-      ONE_STATE(c)->Freq = (ONE_STATE(c)->Freq + 11) >> 3;
+      ONE_STATE(c)->Freq = ONE_STATE(c)->Freq + 11 >> 3;
     }
     else
-      Refresh(p, c, (c->NumStats+3) >> 1, 0);
+      Refresh(p, c, c->NumStats+3 >> 1, 0);
 
   for (; c != p->MinContext; c = SUFFIX(c))
     if (!c->NumStats)
       ONE_STATE(c)->Freq -= ONE_STATE(c)->Freq >> 1;
     else if ((c->SummFreq += 4) > 128 + 4 * c->NumStats)
-      Refresh(p, c, (c->NumStats + 2) >> 1, 1);
+      Refresh(p, c, c->NumStats + 2 >> 1, 1);
 
   #ifdef PPMD8_FREEZE_SUPPORT
   if (p->RestoreMethod > PPMD8_RESTORE_METHOD_FREEZE)
@@ -587,7 +587,7 @@ static void RestoreModel(CPpmd8 *p, CTX_PTR c1
   }
   else
   #endif
-  if (p->RestoreMethod == PPMD8_RESTORE_METHOD_RESTART || GetUsedMemory(p) < (p->Size >> 1))
+  if (p->RestoreMethod == PPMD8_RESTORE_METHOD_RESTART || GetUsedMemory(p) < p->Size >> 1)
     RestartModel(p);
   else
   {
@@ -638,7 +638,7 @@ static CTX_PTR CreateSuccessors(CPpmd8 *p, Bool skip, CPpmd_State *s1, CTX_PTR c
     else
     {
       s = ONE_STATE(c);
-      s->Freq += (!SUFFIX(c)->NumStats & (s->Freq < 24));
+      s->Freq += !SUFFIX(c)->NumStats & s->Freq < 24;
     }
     successor = SUCCESSOR(s);
     if (successor != upBranch)
@@ -664,7 +664,7 @@ static CTX_PTR CreateSuccessors(CPpmd8 *p, Bool skip, CPpmd_State *s1, CTX_PTR c
     for (s = STATS(c); s->Symbol != upState.Symbol; s++);
     cf = s->Freq - 1;
     s0 = c->SummFreq - c->NumStats - cf;
-    upState.Freq = (Byte)(1 + ((2 * cf <= s0) ? (5 * cf > s0) : ((cf + 2 * s0 - 3) / s0)));
+    upState.Freq = (Byte)(1 + (2 * cf <= s0 ? 5 * cf > s0 : (cf + 2 * s0 - 3) / s0));
   }
 
   do
@@ -745,7 +745,7 @@ static CTX_PTR ReduceOrder(CPpmd8 *p, CPpmd_State *s1, CTX_PTR c)
       else
       {
         s = ONE_STATE(c);
-        s->Freq += (s->Freq < 32);
+        s->Freq += s->Freq < 32;
       }
     }
     if (SUCCESSOR(s))
@@ -879,7 +879,7 @@ static void UpdateModel(CPpmd8 *p)
   if (--p->OrderFall == 0)
   {
     successor = fSuccessor;
-    p->Text -= (p->MaxContext != p->MinContext);
+    p->Text -= p->MaxContext != p->MinContext;
   }
   #ifdef PPMD8_FREEZE_SUPPORT
   else if (p->RestoreMethod > PPMD8_RESTORE_METHOD_FREEZE)
@@ -902,7 +902,7 @@ static void UpdateModel(CPpmd8 *p)
       if ((ns1 & 1) != 0)
       {
         /* Expand for one UNIT */
-        unsigned oldNU = (ns1 + 1) >> 1;
+        unsigned oldNU = ns1 + 1 >> 1;
         unsigned i = U2I(oldNU);
         if (i != U2I(oldNU + 1))
         {
@@ -974,19 +974,15 @@ static void Rescale(CPpmd8 *p)
   }
   escFreq = p->MinContext->SummFreq - s->Freq;
   s->Freq += 4;
-  adder = (p->OrderFall != 0
-      #ifdef PPMD8_FREEZE_SUPPORT
-      || p->RestoreMethod > PPMD8_RESTORE_METHOD_FREEZE
-      #endif
-      );
-  s->Freq = (Byte)((s->Freq + adder) >> 1);
+  adder = p->OrderFall != 0;
+  s->Freq = (Byte)(s->Freq + adder >> 1);
   sumFreq = s->Freq;
 
   i = p->MinContext->NumStats;
   do
   {
     escFreq -= (++s)->Freq;
-    s->Freq = (Byte)((s->Freq + adder) >> 1);
+    s->Freq = (Byte)(s->Freq + adder >> 1);
     sumFreq += s->Freq;
     if (s[0].Freq > s[-1].Freq)
     {
@@ -1013,13 +1009,13 @@ static void Rescale(CPpmd8 *p)
       tmp.Freq = (Byte)((2 * tmp.Freq + escFreq - 1) / escFreq);
       if (tmp.Freq > MAX_FREQ / 3)
         tmp.Freq = MAX_FREQ / 3;
-      InsertNode(p, stats, U2I((numStats + 2) >> 1));
+      InsertNode(p, stats, U2I(numStats + 2 >> 1));
       p->MinContext->Flags = (p->MinContext->Flags & 0x10) + 0x08 * (tmp.Symbol >= 0x40);
       *(p->FoundState = ONE_STATE(p->MinContext)) = tmp;
       return;
     }
-    n0 = (numStats + 2) >> 1;
-    n1 = (p->MinContext->NumStats + 2) >> 1;
+    n0 = numStats + 2 >> 1;
+    n1 = p->MinContext->NumStats + 2 >> 1;
     if (n0 != n1)
       p->MinContext->Stats = STATS_REF(ShrinkUnits(p, stats, n0, n1));
     p->MinContext->Flags &= ~0x08;
@@ -1040,10 +1036,10 @@ CPpmd_See *Ppmd8_MakeEscFreq(CPpmd8 *p, unsigned numMasked1, UInt32 *escFreq)
     see = p->See[p->NS2Indx[p->MinContext->NumStats + 2] - 3] +
         (p->MinContext->SummFreq > 11 * ((unsigned)p->MinContext->NumStats + 1)) +
         2 * (2 * (unsigned)p->MinContext->NumStats <
-        ((unsigned)SUFFIX(p->MinContext)->NumStats + numMasked1)) +
+        (unsigned)SUFFIX(p->MinContext)->NumStats + numMasked1) +
         p->MinContext->Flags;
     {
-      unsigned r = (see->Summ >> see->Shift);
+      unsigned r = see->Summ >> see->Shift;
       see->Summ = (UInt16)(see->Summ - r);
       *escFreq = r + (r == 0);
     }
@@ -1085,7 +1081,7 @@ void Ppmd8_Update1(CPpmd8 *p)
 
 void Ppmd8_Update1_0(CPpmd8 *p)
 {
-  p->PrevSuccess = (2 * p->FoundState->Freq >= p->MinContext->SummFreq);
+  p->PrevSuccess = 2 * p->FoundState->Freq >= p->MinContext->SummFreq;
   p->RunLength += p->PrevSuccess;
   p->MinContext->SummFreq += 4;
   if ((p->FoundState->Freq += 4) > MAX_FREQ)

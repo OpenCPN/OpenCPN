@@ -41,7 +41,7 @@ DepthFont::~DepthFont() { Delete(); }
 
 void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
   /* avoid rebuilding if the parameters are the same */
-  if (m_built && (*font == m_font)) return;
+  if (m_built && *font == m_font) return;
 
   m_font = *font;
   m_scaleFactor = scale;
@@ -171,7 +171,7 @@ bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex) {
   if (symIndex < 10) {
     texrect.x = tgi[symIndex].x;
     texrect.y = tgi[symIndex].y;
-    texrect.width = tgi[symIndex].width + (m_width_one / 10);
+    texrect.width = tgi[symIndex].width + m_width_one / 10;
     texrect.height = tgi[symIndex].height;
     return true;
   } else {

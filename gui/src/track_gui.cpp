@@ -164,7 +164,7 @@ void TrackGui::Draw(ChartCanvas* cc, ocpnDC& dc, ViewPort& VP,
   if (g_bHighliteTracks) {
     double radius_meters = 20;  // 1.5 mm at original scale
     double scale = VP.view_scale_ppm;
-    radius = wxMax((radius_meters * wxMin(scale, 1.1)), 6.0);
+    radius = wxMax(radius_meters * wxMin(scale, 1.1), 6.0);
     if (scale  < 0.004) radius = 0;
   }
 
@@ -273,6 +273,6 @@ void TrackGui::AddPointToList(ChartCanvas *cc,
   else {
     wxPoint l = pointlist.back();
     // ensure the segment is at least 2 pixels
-    if ((abs(r.x - l.x) > 1) || (abs(r.y - l.y) > 1)) pointlist.push_back(r);
+    if (abs(r.x - l.x) > 1 || abs(r.y - l.y) > 1) pointlist.push_back(r);
   }
 }

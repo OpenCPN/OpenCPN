@@ -328,7 +328,7 @@ CompatOs::CompatOs() : _name(PKG_TARGET), _version(PKG_TARGET_VERSION) {
     if (g_compatOsVersion != "") {
       _version = g_compatOsVersion;
     }
-  } else if (ocpn::startswith(_name, "ubuntu") && (_version == "22.04")) {
+  } else if (ocpn::startswith(_name, "ubuntu") && _version == "22.04") {
     int wxv = wxMAJOR_VERSION * 10 + wxMINOR_VERSION;
     if (wxv >= 32) {
       auto tokens = ocpn::split(_name.c_str(), "-");
@@ -371,7 +371,7 @@ bool PluginHandler::isCompatible(const PluginMetadata& metadata, const char* os,
   auto found = std::find(simple_abis.begin(), simple_abis.end(), plugin.abi());
   if (found != simple_abis.end()) {
     bool ok = plugin.abi() == host.abi();
-    wxLogDebug("Returning %s for %s", (ok ? "ok" : "fail"), host.abi());
+    wxLogDebug("Returning %s for %s", ok ? "ok" : "fail", host.abi());
     wxLogDebug(" ");
     return ok;
   }
@@ -475,16 +475,16 @@ static int copy_data(struct archive* ar, struct archive* aw) {
 
   while (true) {
     r = archive_read_data_block(ar, &buff, &size, &offset);
-    if (r == ARCHIVE_EOF) return (ARCHIVE_OK);
+    if (r == ARCHIVE_EOF) return ARCHIVE_OK;
     if (r < ARCHIVE_OK) {
       std::string s(archive_error_string(ar));
-      return (r);
+      return r;
     }
     r = archive_write_data_block(aw, buff, size, offset);
     if (r < ARCHIVE_OK) {
       std::string s(archive_error_string(aw));
       wxLogWarning("Error copying install data: %s", archive_error_string(aw));
-      return (r);
+      return r;
     }
   }
 }
@@ -713,12 +713,12 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
     return false;
   }
 
-  if ((location == "lib") && ocpn::startswith(suffix, "opencpn")) {
+  if (location == "lib" && ocpn::startswith(suffix, "opencpn")) {
     auto parts = split(suffix, "/");
     if (parts.size() == 2) suffix = parts[1];
   }
 
-  if ((location == "share") && ocpn::startswith(suffix, "opencpn")) {
+  if (location == "share" && ocpn::startswith(suffix, "opencpn")) {
     auto parts = split(suffix, "opencpn/");
     if (parts.size() == 2) suffix = parts[1];
   }

@@ -176,7 +176,7 @@ public:
 #endif /* HAVE_WX_GESTURE_EVENTS */
 
   void PopupMenuHandler(wxCommandEvent &event);
-  bool IsPrimaryCanvas() { return (m_canvasIndex == 0); }
+  bool IsPrimaryCanvas() { return m_canvasIndex == 0; }
 
   bool SetUserOwnship();
 

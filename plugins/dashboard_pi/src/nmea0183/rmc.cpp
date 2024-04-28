@@ -117,7 +117,7 @@ bool RMC::Parse( const SENTENCE& sentence )
        if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
        {
            SetErrorMessage( _T("Invalid Checksum") );
-           return( FALSE );
+           return FALSE;
        }
    }
 
@@ -125,7 +125,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    bool bext_valid = true;
    wxString checksum_in_sentence = sentence.Field( nFields );
    if(!checksum_in_sentence.StartsWith(_T("*"))) {
-       if((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S")))
+       if(checksum_in_sentence == _T("N") || checksum_in_sentence == _T("S"))
            bext_valid = false;
    }
 
@@ -141,7 +141,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    MagneticVariation          = sentence.Double( 10 );
    MagneticVariationDirection = sentence.EastOrWest( 11 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool RMC::Write( SENTENCE& sentence )
@@ -165,7 +165,7 @@ bool RMC::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const RMC& RMC::operator = ( const RMC& source )
@@ -181,5 +181,5 @@ const RMC& RMC::operator = ( const RMC& source )
    MagneticVariation          = source.MagneticVariation;
    MagneticVariationDirection = source.MagneticVariationDirection;
 
-  return( *this );
+  return*this;
 }

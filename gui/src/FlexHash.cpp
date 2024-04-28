@@ -52,8 +52,8 @@ void FlexHash::Finish(void) {
     size_t remaining_octets = this->m_Output.size() - available_octets;
     while (remaining_octets) {
       size_t current_octets =
-          ((remaining_octets > FLEXHASH_INTERNAL_SIZE) ? FLEXHASH_INTERNAL_SIZE
-                                                       : remaining_octets);
+          remaining_octets > FLEXHASH_INTERNAL_SIZE ? FLEXHASH_INTERNAL_SIZE
+            : remaining_octets;
       sha1_starts(&this->m_Context);
       sha1_update(&this->m_Context,
                   reinterpret_cast<const unsigned char*>(&this->m_Output[0]),
@@ -95,8 +95,8 @@ bool FlexHash::Test(void) {
       0x2f, 0xd4, 0xe1, 0xc6, 0x7a, 0x2d, 0x28, 0xfc, 0xed, 0x84, 0x9e,
       0xe1, 0xbb, 0x76, 0xe7, 0x39, 0x1b, 0x93, 0xeb, 0x12, 0xa4, 0xe4,
       0xd2, 0x6f, 0xd0, 0xc6, 0x45, 0x5e, 0x23, 0xe2, 0x18, 0x7c};
-  char output_current[(sizeof output_reference)];
-  Compute(input, (sizeof input), output_current, (sizeof output_current));
-  return (memcmp(output_current, output_reference, (sizeof output_reference)) ==
-          0);
+  char output_current[sizeof output_reference];
+  Compute(input, sizeof input, output_current, sizeof output_current);
+  return memcmp(output_current, output_reference, sizeof output_reference) ==
+         0;
 }

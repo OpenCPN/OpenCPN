@@ -291,8 +291,8 @@ void jas_matrix_divpow2(jas_matrix_t *matrix, int n)
       rowstart += rowstep) {
         for (j = matrix->numcols_, data = rowstart; j > 0; --j,
           ++data) {
-            *data = (*data >= 0) ? ((*data) >> n) :
-              (-((-(*data)) >> n));
+            *data = *data >= 0 ? *data >> n :
+              -(-*data >> n);
         }
     }
 }
@@ -472,7 +472,7 @@ int jas_seq2d_output(jas_matrix_t *matrix, FILE *out)
     for (i = 0; i < jas_matrix_numrows(matrix); ++i) {
         for (j = 0; j < jas_matrix_numcols(matrix); ++j) {
             x = jas_matrix_get(matrix, i, j);
-            sprintf(sbuf, "%s%4ld", (strlen(buf) > 0) ? " " : "",
+            sprintf(sbuf, "%s%4ld", strlen(buf) > 0 ? " " : "",
               JAS_CAST(long, x));
             n = strlen(buf);
             if (n + strlen(sbuf) > MAXLINELEN) {

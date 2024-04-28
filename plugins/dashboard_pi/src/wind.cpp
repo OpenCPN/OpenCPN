@@ -228,14 +228,14 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc) {
                   (m_MainValueMax - m_MainValueMin)) +
           deg2rad(m_AngleStart - ANGLE_OFFSET);
 
-  points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
-  points[0].y = m_cy + (m_radius * 0.95 * sin(value - .010));
-  points[1].x = m_cx + (m_radius * 0.95 * cos(value + .015));
-  points[1].y = m_cy + (m_radius * 0.95 * sin(value + .015));
-  points[2].x = m_cx + (m_radius * 0.22 * cos(value + 2.8));
-  points[2].y = m_cy + (m_radius * 0.22 * sin(value + 2.8));
-  points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
-  points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
+  points[0].x = m_cx + m_radius * 0.95 * cos(value - .010);
+  points[0].y = m_cy + m_radius * 0.95 * sin(value - .010);
+  points[1].x = m_cx + m_radius * 0.95 * cos(value + .015);
+  points[1].y = m_cy + m_radius * 0.95 * sin(value + .015);
+  points[2].x = m_cx + m_radius * 0.22 * cos(value + 2.8);
+  points[2].y = m_cy + m_radius * 0.22 * sin(value + 2.8);
+  points[3].x = m_cx + m_radius * 0.22 * cos(value - 2.8);
+  points[3].y = m_cy + m_radius * 0.22 * sin(value - 2.8);
   dc->DrawPolygon(4, points, 0, 0);
 
   /* Apparent Wind*/
@@ -268,14 +268,14 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc) {
                   (m_MainValueMax - m_MainValueMin)) +
           deg2rad(m_AngleStart - ANGLE_OFFSET);
 
-  points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
-  points[0].y = m_cy + (m_radius * 0.95 * sin(value - .010));
-  points[1].x = m_cx + (m_radius * 0.95 * cos(value + .015));
-  points[1].y = m_cy + (m_radius * 0.95 * sin(value + .015));
-  points[2].x = m_cx + (m_radius * 0.22 * cos(value + 2.8));
-  points[2].y = m_cy + (m_radius * 0.22 * sin(value + 2.8));
-  points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
-  points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
+  points[0].x = m_cx + m_radius * 0.95 * cos(value - .010);
+  points[0].y = m_cy + m_radius * 0.95 * sin(value - .010);
+  points[1].x = m_cx + m_radius * 0.95 * cos(value + .015);
+  points[1].y = m_cy + m_radius * 0.95 * sin(value + .015);
+  points[2].x = m_cx + m_radius * 0.22 * cos(value + 2.8);
+  points[2].y = m_cy + m_radius * 0.22 * sin(value + 2.8);
+  points[3].x = m_cx + m_radius * 0.22 * cos(value - 2.8);
+  points[3].y = m_cy + m_radius * 0.22 * sin(value - 2.8);
   dc->DrawPolygon(4, points, 0, 0);
 }
 void DashboardInstrument_AppTrueWindAngle::DrawData(
@@ -339,8 +339,8 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
       // to avoid compiler warning.
       return;
     case DIAL_POSITION_INSIDE: {
-      TextPoint.x = m_cx - (width / 2) - 1;
-      TextPoint.y = (size.y * .75) - height;
+      TextPoint.x = m_cx - width / 2 - 1;
+      TextPoint.y = size.y * .75 - height;
       GetGlobalColor(_T("DASHL"), &cl);
       int penwidth = size.x / 100;
       wxPen* pen =

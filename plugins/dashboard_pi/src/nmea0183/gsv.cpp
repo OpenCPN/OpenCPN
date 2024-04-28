@@ -114,13 +114,13 @@ Where:
     if (satInfoCnt < 1)
     {
         SetErrorMessage(_T("Invalid Field count"));
-        return(FALSE);
+        return FALSE;
     }
 
     if (sentence.IsChecksumBad(nNumberOfDataFields + 1) == NTrue)
     {
         SetErrorMessage( _T("Invalid Checksum" ));
-        return( FALSE );
+        return FALSE;
     }
 
     NumberOfMessages = sentence.Integer( 1 );
@@ -133,7 +133,7 @@ Where:
       SatInfo[idx].AzimuthDegreesTrue = sentence.Integer(idx * 4 + 6);
       SatInfo[idx].SignalToNoiseRatio = sentence.Integer(idx * 4 + 7);
     }
-    return( TRUE );
+    return TRUE;
 }
 
 bool GSV::Write( SENTENCE& sentence )
@@ -158,7 +158,7 @@ bool GSV::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const GSV& GSV::operator = ( const GSV& source )
@@ -175,5 +175,5 @@ const GSV& GSV::operator = ( const GSV& source )
          SatInfo[idx].SignalToNoiseRatio = source.SatInfo[idx].SignalToNoiseRatio;
    }
 
-   return( *this );
+   return*this;
 }

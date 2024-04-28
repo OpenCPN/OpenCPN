@@ -168,7 +168,7 @@ static void copy_related(const char *inName, const char *outName,
         free(out);
         return;
     }
-    memcpy(out, outName, (name_len - old_len));
+    memcpy(out, outName, name_len - old_len);
     strcpy(&out[(name_len - old_len)], new_ext);
 
     FILE *outFile = fopen(out, "wb");
@@ -253,8 +253,8 @@ static double shp_length(SHPObject *feat)
                 n = feat->nVertices - feat->panPartStart[part];
             }
             length +=
-                length2d_polyline(n, &(feat->padfX[feat->panPartStart[part]]),
-                                  &(feat->padfY[feat->panPartStart[part]]));
+                length2d_polyline(n, &feat->padfX[feat->panPartStart[part]],
+                                  &feat->padfY[feat->panPartStart[part]]);
         }
     }
     return length;
@@ -290,8 +290,8 @@ static double shp_area(SHPObject *feat)
             {
                 n = feat->nVertices - feat->panPartStart[part];
             }
-            area += area2d_polygon(n, &(feat->padfX[feat->panPartStart[part]]),
-                                   &(feat->padfY[feat->panPartStart[part]]));
+            area += area2d_polygon(n, &feat->padfX[feat->panPartStart[part]],
+                                   &feat->padfY[feat->panPartStart[part]]);
         }
     }
     /* our area function computes in opposite direction */
@@ -311,11 +311,11 @@ static int compare(const void *A, const void *B)
         }
         if (a->value[i].null && !b->value[i].null)
         {
-            return (fldOrder[i]) ? 1 : -1;
+            return fldOrder[i] ? 1 : -1;
         }
         if (!a->value[i].null && b->value[i].null)
         {
-            return (fldOrder[i]) ? -1 : 1;
+            return fldOrder[i] ? -1 : 1;
         }
         switch (fldType[i])
         {
@@ -324,22 +324,22 @@ static int compare(const void *A, const void *B)
             case LogicalType:
                 if (a->value[i].u.i < b->value[i].u.i)
                 {
-                    return (fldOrder[i]) ? -1 : 1;
+                    return fldOrder[i] ? -1 : 1;
                 }
                 if (a->value[i].u.i > b->value[i].u.i)
                 {
-                    return (fldOrder[i]) ? 1 : -1;
+                    return fldOrder[i] ? 1 : -1;
                 }
                 break;
             case DoubleType:
             case SHPType:
                 if (a->value[i].u.d < b->value[i].u.d)
                 {
-                    return (fldOrder[i]) ? -1 : 1;
+                    return fldOrder[i] ? -1 : 1;
                 }
                 if (a->value[i].u.d > b->value[i].u.d)
                 {
-                    return (fldOrder[i]) ? 1 : -1;
+                    return fldOrder[i] ? 1 : -1;
                 }
                 break;
             case StringType:
@@ -347,7 +347,7 @@ static int compare(const void *A, const void *B)
                 const int result = strcmp(a->value[i].u.s, b->value[i].u.s);
                 if (result)
                 {
-                    return (fldOrder[i]) ? result : -result;
+                    return fldOrder[i] ? result : -result;
                 }
                 break;
             }

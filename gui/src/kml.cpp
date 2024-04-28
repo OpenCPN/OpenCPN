@@ -583,7 +583,7 @@ void Kml::CopyRouteToClipboard(Route* route) {
 
   if (format != wxID_CANCEL) {
     format = formatDlg->GetSelectedFormat();
-    bool extradata = (format == KML_COPY_EXTRADATA);
+    bool extradata = format == KML_COPY_EXTRADATA;
 
     ::wxBeginBusyCursor();
     if (wxTheClipboard->Open()) {

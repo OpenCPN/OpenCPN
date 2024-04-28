@@ -83,15 +83,15 @@ bool PopUpDSlide::Create(wxWindow* parent, wxWindowID id, ChartTypeEnum ChartT,
   ChartFam = ChartF;
   wxString WindowText;
   int value;
-  if ((ChartType == CHART_TYPE_CM93COMP) || (ChartType == CHART_TYPE_CM93)) {
+  if (ChartType == CHART_TYPE_CM93COMP || ChartType == CHART_TYPE_CM93) {
     value = g_cm93_zoom_factor;
     WindowText = _("CM93 Detail Level");
-  } else if ((ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) ||
-             (ChartFam == CHART_FAMILY_RASTER)) {
+  } else if (ChartType == CHART_TYPE_KAP || ChartType == CHART_TYPE_GEO ||
+             ChartFam == CHART_FAMILY_RASTER) {
     value = g_chart_zoom_modifier_raster;
     WindowText = _("Rasterchart Zoom/Scale Weighting");
-  } else if ((ChartType == CHART_TYPE_S57) ||
-             (ChartFam == CHART_FAMILY_VECTOR)) {
+  } else if (ChartType == CHART_TYPE_S57 ||
+             ChartFam == CHART_FAMILY_VECTOR) {
     value = g_chart_zoom_modifier_vector;
     WindowText = _("Vectorchart Zoom/Scale Weighting");
   } else {
@@ -164,7 +164,7 @@ void PopUpDSlide::OnChangeValue(wxScrollEvent& event)
 {
   ::wxBeginBusyCursor();
 
-  if ((ChartType == CHART_TYPE_CM93COMP) || (ChartType == CHART_TYPE_CM93)) {
+  if (ChartType == CHART_TYPE_CM93COMP || ChartType == CHART_TYPE_CM93) {
     g_cm93_zoom_factor = m_p_DetailSlider->GetValue();
     ChartCanvas* parentCanvas = dynamic_cast<ChartCanvas*>(GetParent());
 
@@ -174,12 +174,12 @@ void PopUpDSlide::OnChangeValue(wxScrollEvent& event)
     return;
   }
 
-  if ((ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) ||
-      (ChartFam == CHART_FAMILY_RASTER)) {
+  if (ChartType == CHART_TYPE_KAP || ChartType == CHART_TYPE_GEO ||
+      ChartFam == CHART_FAMILY_RASTER) {
     g_chart_zoom_modifier_raster = m_p_DetailSlider->GetValue();
   }
 
-  if ((ChartType == CHART_TYPE_S57) || (ChartFam == CHART_FAMILY_VECTOR)) {
+  if (ChartType == CHART_TYPE_S57 || ChartFam == CHART_FAMILY_VECTOR) {
     g_chart_zoom_modifier_vector = m_p_DetailSlider->GetValue();
   }
 

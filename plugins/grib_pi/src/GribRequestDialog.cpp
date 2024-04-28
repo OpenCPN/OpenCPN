@@ -205,13 +205,13 @@ void GribRequestSetting::InitRequestConfig() {
   // populate model, mail to, waves model choices
   wxString s1[] = {_T("GFS"),  _T("COAMPS"), _T("RTOFS"),
                    _T("HRRR"), _T("ICON"),   _T("ECMWF")};
-  for (unsigned int i = 0; i < (sizeof(s1) / sizeof(wxString)); i++)
+  for (unsigned int i = 0; i < sizeof(s1) / sizeof(wxString); i++)
     m_pModel->Append(s1[i]);
   wxString s2[] = {_T("Saildocs"), _T("zyGrib")};
-  for (unsigned int i = 0; i < (sizeof(s2) / sizeof(wxString)); i++)
+  for (unsigned int i = 0; i < sizeof(s2) / sizeof(wxString); i++)
     m_pMailTo->Append(s2[i]);
   wxString s3[] = {_T("WW3-GLOBAL"), _T("WW3-MEDIT")};
-  for (unsigned int i = 0; i < (sizeof(s3) / sizeof(wxString)); i++)
+  for (unsigned int i = 0; i < sizeof(s3) / sizeof(wxString); i++)
     m_pWModel->Append(s3[i]);
   m_rButtonYes->SetLabel(_("Send"));
   m_rButtonApply->SetLabel(_("Save"));
@@ -312,7 +312,7 @@ void GribRequestSetting::SetRequestDialogSize() {
   /*first let's size the mail display space*/
   GetTextExtent(_T("abc"), NULL, &y, 0, 0, OCPNGetFont(_("Dialog"), 10));
   m_MailImage->SetMinSize(
-      wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
+      wxSize(-1, y * m_MailImage->GetNumberOfLines() + 10));
 
   /*then as default sizing do not work with wxScolledWindow let's compute it*/
   wxSize scroll =
@@ -327,8 +327,8 @@ void GribRequestSetting::SetRequestDialogSize() {
   int w = frame->GetClientSize().x;  // the display size
   int h = frame->GetClientSize().y;
   int dMargin = 80;  // set a margin
-  h -= (m_rButton->GetSize().GetY() +
-        dMargin);  // height available for the scrolled window
+  h -= m_rButton->GetSize().GetY() +
+      dMargin;  // height available for the scrolled window
   w -= dMargin;    // width available for the scrolled window
   m_sScrolledDialog->SetMinSize(
       wxSize(wxMin(w, scroll.x),
@@ -348,11 +348,11 @@ void GribRequestSetting::SetRequestDialogSize() {
 void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
   double lonmax = vp->lon_max;
   double lonmin = vp->lon_min;
-  if ((fabs(vp->lat_max) < 90.) && (fabs(lonmax) < 360.)) {
+  if (fabs(vp->lat_max) < 90. && fabs(lonmax) < 360.) {
     if (lonmax < -180.) lonmax += 360.;
     if (lonmax > 180.) lonmax -= 360.;
   }
-  if ((fabs(vp->lat_min) < 90.) && (fabs(lonmin) < 360.)) {
+  if (fabs(vp->lat_min) < 90. && fabs(lonmin) < 360.) {
     if (lonmin < -180.) lonmin += 360.;
     if (lonmin > 180.) lonmin -= 360.;
   }
@@ -475,7 +475,7 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
   switch (ev.getDLEventCondition()) {
     case OCPN_DL_EVENT_TYPE_END:
       m_bTransferSuccess =
-          (ev.getDLEventStatus() == OCPN_DL_NO_ERROR) ? true : false;
+          ev.getDLEventStatus() == OCPN_DL_NO_ERROR ? true : false;
       Disconnect(wxEVT_DOWNLOAD_EVENT,
                  (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::
                      onDLEvent);
@@ -716,7 +716,7 @@ void GribRequestSetting::HighlightArea(double latmax, double lonmax,
 
 void GribRequestSetting::OnLocalTreeSelChanged(wxTreeEvent &event) {
   wxTreeItemId item = m_SourcesTreeCtrl1->GetSelection();
-  auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(item));
+  auto src = (GribCatalogInfo *)m_SourcesTreeCtrl1->GetItemData(item);
   if (src) {
     if (src->type == LocalSourceItem::GRIB) {
       m_stLocalDownloadInfo->SetLabelText(_("Download grib..."));
@@ -809,8 +809,8 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
   m_btnDownloadLocal->SetLabelText(_("Cancel"));
   m_staticTextInfo->SetLabelText(_("Downloading grib..."));
   wxYieldIfNeeded();
-  auto src = (GribCatalogInfo *)(m_SourcesTreeCtrl1->GetItemData(
-      m_SourcesTreeCtrl1->GetSelection()));
+  auto src = (GribCatalogInfo *)m_SourcesTreeCtrl1->GetItemData(
+      m_SourcesTreeCtrl1->GetSelection());
   if (!src || src->type != LocalSourceItem::GRIB || src->url.IsEmpty()) {
     m_downloading = false;
     m_stLocalDownloadInfo->SetLabelText(_("Download can't be started."));
@@ -1013,7 +1013,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 
   unsigned l;
   // populate time interval choice
-  l = (IsGFS || IsRTOFS || IsICON || IsECMWF) ? 3 : IsHRRR ? 1 : 6;
+  l = IsGFS || IsRTOFS || IsICON || IsECMWF ? 3 : IsHRRR ? 1 : 6;
 
   unsigned m;
   m = IsHRRR ? 2 : 25;
@@ -1063,7 +1063,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pReflectivity->Enable(IsGFS || IsHRRR);
 
   m_pAltitudeData->SetValue(
-      (IsGFS || IsICON || IsECMWF)
+      IsGFS || IsICON || IsECMWF
           ? m_RequestConfigBase.GetChar(17) == 'X'
           : false);  // altitude data zigrib + saildocs GFS and ICON
   m_pAltitudeData->Enable(IsGFS || IsICON || IsECMWF);
@@ -1073,7 +1073,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_p700hpa->SetValue(IsZYGRIB ? m_RequestConfigBase.GetChar(19) == 'X'
                                : false);  // only zigrib
   m_p700hpa->Enable(IsZYGRIB);
-  m_p500hpa->SetValue((IsGFS || IsICON || IsECMWF)
+  m_p500hpa->SetValue(IsGFS || IsICON || IsECMWF
                           ? m_RequestConfigBase.GetChar(20) == 'X'
                           : false);  // zigrib + saildocs GFS ICON ECMWF
   m_p500hpa->Enable(IsGFS || IsICON || IsECMWF);
@@ -1149,19 +1149,19 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   wxPoint p;
   GetCanvasPixLL(m_Vp, &p, m_Lat, m_Lon);
 
-  int x = (m_StartPoint.x < p.x) ? m_StartPoint.x : p.x;
-  int y = (m_StartPoint.y < p.y) ? m_StartPoint.y : p.y;
+  int x = m_StartPoint.x < p.x ? m_StartPoint.x : p.x;
+  int y = m_StartPoint.y < p.y ? m_StartPoint.y : p.y;
 
   int zw = fabs((double)p.x - m_StartPoint.x);
   int zh = fabs((double)p.y - m_StartPoint.y);
 
   wxPoint center;
-  center.x = x + (zw / 2);
-  center.y = y + (zh / 2);
+  center.x = x + zw / 2;
+  center.y = y + zh / 2;
 
   wxFont fo = *OCPNGetFont(_("Dialog"), 10);
   fo.SetPointSize(
-      (fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
+      fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor());
   wxFont *font = &fo;
   wxColour pen_color, back_color;
   GetGlobalColor(_T ( "DASHR" ), &pen_color);
@@ -1178,7 +1178,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   label.Append(toMailFormat(1, m_spMinLat->GetValue()) + _T(" "));
   label.Append(toMailFormat(0, m_spMaxLon->GetValue()) + _T("\n"));
   label.Append(_T("Estim. Size "))
-      .Append((wxString::Format(_T("%1.2f " ), size) + _("MB")));
+      .Append(wxString::Format(_T("%1.2f " ), size) + _("MB"));
 
   if (m_pdc) {
     wxPen pen(pen_color);
@@ -1197,8 +1197,8 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
     h *= OCPN_GetWinDIPScaleFactor();
 #endif
     w += 2 * label_offsetx, h += 2 * label_offsety;
-    x = center.x - (w / 2);
-    y = center.y - (h / 2);
+    x = center.x - w / 2;
+    y = center.y - h / 2;
 
     h *= m_displayScale;
     w *= m_displayScale;
@@ -1489,8 +1489,8 @@ wxString GribRequestSetting::WriteMail() {
       r_topmess.Append(wxString::Format(_T("..%d"), (int)v * 24) + _T("|=\n"));
       break;
     case ZYGRIB:  // Zygrib
-      double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() &&
-                       m_spMaxLon->GetValue() < 0)
+      double maxlon = m_spMinLon->GetValue() > m_spMaxLon->GetValue() &&
+                      m_spMaxLon->GetValue() < 0
                           ? m_spMaxLon->GetValue() + 360
                           : m_spMaxLon->GetValue();
       r_zone = toMailFormat(1, m_spMinLat->GetValue()) +
@@ -1659,29 +1659,29 @@ int GribRequestSetting::EstimateFileSize(double *size) {
   double maxlat = m_spMaxLat->GetValue(), minlat = m_spMinLat->GetValue();
   if (maxlat - minlat < 0) return 3;  // maxlat must be > minlat
   double wlon = (maxlon > minlon ? 0 : 360) + maxlon - minlon;
-  if (wlon > 180 || (maxlat - minlat > 180)) return 4;  // ovoid too big area
+  if (wlon > 180 || maxlat - minlat > 180) return 4;  // ovoid too big area
 
   if (fabs(wlon) < 2 * reso || maxlat - minlat < 2 * reso)
     return 5;  // ovoid too small area
 
-  int npts = (int)(ceil(((double)(maxlat - minlat) / reso)) *
-                   ceil(((double)(wlon) / reso)));
+  int npts = (int)(ceil((double)(maxlat - minlat) / reso) *
+                   ceil((double)wlon / reso));
 
   if (m_pModel->GetCurrentSelection() == COAMPS)  // limited area for COAMPS
     npts = wxMin(npts, (int)(ceil(40.0 / reso) * ceil(40.0 / reso)));
 
   // Nombre de GribRecords
   int nbrec = (int)(time * 24 / inter) + 1;
-  int nbPress = (m_pPress->IsChecked()) ? nbrec : 0;
-  int nbWind = (m_pWind->IsChecked()) ? 2 * nbrec : 0;
-  int nbwave = (m_pWaves->IsChecked()) ? 2 * nbrec : 0;
-  int nbRain = (m_pRainfall->IsChecked()) ? nbrec - 1 : 0;
-  int nbCloud = (m_pCloudCover->IsChecked()) ? nbrec - 1 : 0;
-  int nbTemp = (m_pAirTemp->IsChecked()) ? nbrec : 0;
-  int nbSTemp = (m_pSeaTemp->IsChecked()) ? nbrec : 0;
-  int nbGUSTsfc = (m_pWindGust->IsChecked()) ? nbrec : 0;
-  int nbCurrent = (m_pCurrent->IsChecked()) ? nbrec : 0;
-  int nbCape = (m_pCAPE->IsChecked()) ? nbrec : 0;
+  int nbPress = m_pPress->IsChecked() ? nbrec : 0;
+  int nbWind = m_pWind->IsChecked() ? 2 * nbrec : 0;
+  int nbwave = m_pWaves->IsChecked() ? 2 * nbrec : 0;
+  int nbRain = m_pRainfall->IsChecked() ? nbrec - 1 : 0;
+  int nbCloud = m_pCloudCover->IsChecked() ? nbrec - 1 : 0;
+  int nbTemp = m_pAirTemp->IsChecked() ? nbrec : 0;
+  int nbSTemp = m_pSeaTemp->IsChecked() ? nbrec : 0;
+  int nbGUSTsfc = m_pWindGust->IsChecked() ? nbrec : 0;
+  int nbCurrent = m_pCurrent->IsChecked() ? nbrec : 0;
+  int nbCape = m_pCAPE->IsChecked() ? nbrec : 0;
   int nbAltitude =
       IsZYGRIB ? 5 * nbrec : 3 * nbrec;  // five data types are included in each
                                          // ZyGrib altitude request and only
@@ -1691,30 +1691,30 @@ int GribRequestSetting::EstimateFileSize(double *size) {
   int nbits;
 
   nbits = 13;
-  estime += nbWind * (head + (nbits * npts) / 8 + 2);
-  estime += nbCurrent * (head + (nbits * npts) / 8 + 2);
+  estime += nbWind * (head + nbits * npts / 8 + 2);
+  estime += nbCurrent * (head + nbits * npts / 8 + 2);
 
   nbits = 11;
-  estime += nbTemp * (head + (nbits * npts) / 8 + 2);
-  estime += nbSTemp * (head + (nbits * npts) / 8 + 2);
+  estime += nbTemp * (head + nbits * npts / 8 + 2);
+  estime += nbSTemp * (head + nbits * npts / 8 + 2);
 
   nbits = 4;
-  estime += nbRain * (head + (nbits * npts) / 8 + 2);
+  estime += nbRain * (head + nbits * npts / 8 + 2);
 
   nbits = 15;
-  estime += nbPress * (head + (nbits * npts) / 8 + 2);
+  estime += nbPress * (head + nbits * npts / 8 + 2);
 
   nbits = 4;
-  estime += nbCloud * (head + (nbits * npts) / 8 + 2);
+  estime += nbCloud * (head + nbits * npts / 8 + 2);
 
   nbits = 7;
-  estime += nbGUSTsfc * (head + (nbits * npts) / 8 + 2);
+  estime += nbGUSTsfc * (head + nbits * npts / 8 + 2);
 
   nbits = 5;
-  estime += nbCape * (head + (nbits * npts) / 8 + 2);
+  estime += nbCape * (head + nbits * npts / 8 + 2);
 
   nbits = 6;
-  estime += nbwave * (head + (nbits * npts) / 8 + 2);
+  estime += nbwave * (head + nbits * npts / 8 + 2);
 
   if (m_pAltitudeData->IsChecked()) {
     int nbalt = 0;
@@ -1724,7 +1724,7 @@ int GribRequestSetting::EstimateFileSize(double *size) {
     if (m_p300hpa->IsChecked()) nbalt++;
 
     nbits = 12;
-    estime += nbAltitude * nbalt * (head + (nbits * npts) / 8 + 2);
+    estime += nbAltitude * nbalt * (head + nbits * npts / 8 + 2);
   }
 
   *size = estime / (1024. * 1024.);
@@ -1822,10 +1822,10 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
       m_pSenderAddress->GetValue());
 #else
   wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
+      m_pMailTo->GetCurrentSelection() == SAILDOCS
           ? _T("grib-request")
           : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
+      m_pMailTo->GetCurrentSelection() == SAILDOCS
           ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
           : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
       WriteMail(),  // message image

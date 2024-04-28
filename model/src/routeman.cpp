@@ -140,7 +140,7 @@ Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP) {
   while (node) {
     Route *proute = node->GetData();
 
-    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *pnode = proute->pRoutePointList->GetFirst();
     while (pnode) {
       RoutePoint *prp = pnode->GetData();
       if (prp == pWP) return proute;
@@ -159,7 +159,7 @@ Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
   while (node) {
     Route *proute = node->GetData();
     if (proute->IsVisible()) {
-      wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
+      wxRoutePointListNode *pnode = proute->pRoutePointList->GetFirst();
       while (pnode) {
         RoutePoint *prp = pnode->GetData();
         if (prp == pWP) return proute;
@@ -180,7 +180,7 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining(RoutePoint *pWP) {
   while (route_node) {
     Route *proute = route_node->GetData();
 
-    wxRoutePointListNode *waypoint_node = (proute->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *waypoint_node = proute->pRoutePointList->GetFirst();
     while (waypoint_node) {
       RoutePoint *prp = waypoint_node->GetData();
       if (prp == pWP) {  // success
@@ -237,7 +237,7 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
   RoutePoint *best_point = NULL;
   double min_time_found = 1e6;
 
-  wxRoutePointListNode *node = (pR->pRoutePointList)->GetFirst();
+  wxRoutePointListNode *node = pR->pRoutePointList->GetFirst();
   while (node) {
     RoutePoint *pn = node->GetData();
 
@@ -274,7 +274,7 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   if (pStartPoint) {
     pActivePoint = pStartPoint;
   } else {
-    wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *node = pActiveRoute->pRoutePointList->GetFirst();
     pActivePoint = node->GetData();  // start at beginning
   }
 
@@ -307,7 +307,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   pActivePoint = pRP_target;
   pActiveRoute->m_pRouteActivePoint = pRP_target;
 
-  wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
+  wxRoutePointListNode *node = pActiveRoute->pRoutePointList->GetFirst();
   while (node) {
     RoutePoint *pn = node->GetData();
     pn->m_bBlink = false;  // turn off all blinking points
@@ -316,7 +316,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
     node = node->GetNext();
   }
 
-  node = (pActiveRoute->pRoutePointList)->GetFirst();
+  node = pActiveRoute->pRoutePointList->GetFirst();
   RoutePoint *prp_first = node->GetData();
 
   //  If activating first point in route, create a "virtual" waypoint at present
@@ -380,7 +380,7 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     v[_T("WP_arrived")] = pActivePoint->GetName();
   }
   int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
-  if ((n_index_active + 1) <= pActiveRoute->GetnPoints()) {
+  if (n_index_active + 1 <= pActiveRoute->GetnPoints()) {
     pActiveRouteSegmentBeginPoint = pActivePoint;
 
     pActiveRoute->m_pRouteActivePoint =
@@ -456,7 +456,7 @@ bool Routeman::UpdateAutopilot() {
 
   // Set max WP name length
   int maxName = 6;
-  if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
+  if (g_maxWPNameLength >= 3 && g_maxWPNameLength <= 32)
     maxName = g_maxWPNameLength;
 
   // Avoid a possible not initiated SOG/COG. APs can be confused if in NAV mode
@@ -630,10 +630,10 @@ bool Routeman::UpdateAutopilot() {
 
     if (g_bMagneticAPB && !std::isnan(gVar)) {
       double brg1m =
-          ((brg1 - gVar) >= 0.) ? (brg1 - gVar) : (brg1 - gVar + 360.);
-      double bapm = ((CurrentBrgToActivePoint - gVar) >= 0.)
-                        ? (CurrentBrgToActivePoint - gVar)
-                        : (CurrentBrgToActivePoint - gVar + 360.);
+          brg1 - gVar >= 0. ? brg1 - gVar : brg1 - gVar + 360.;
+      double bapm = CurrentBrgToActivePoint - gVar >= 0.
+                        ? CurrentBrgToActivePoint - gVar
+                        : CurrentBrgToActivePoint - gVar + 360.;
 
       m_NMEA0183.Apb.BearingOriginToDestination = brg1m;
       m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("M");
@@ -693,7 +693,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   if (pRoute) {
     // walk the route, looking at each point to see if it is used by another
     // route or is isolated
-    wxRoutePointListNode *pnode = (pRoute->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *pnode = pRoute->pRoutePointList->GetFirst();
     while (pnode) {
       RoutePoint *prp = pnode->GetData();
 
@@ -714,7 +714,7 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
     }
 
     //      Now walk the route again, looking for isolated type shared waypoints
-    pnode = (pRoute->pRoutePointList)->GetFirst();
+    pnode = pRoute->pRoutePointList->GetFirst();
     while (pnode) {
       RoutePoint *prp = pnode->GetData();
       if (prp->IsShared()) return true;
@@ -791,7 +791,7 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
 
     // walk the route, tentatively deleting/marking points used only by this
     // route
-    wxRoutePointListNode *pnode = (pRoute->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *pnode = pRoute->pRoutePointList->GetFirst();
     while (pnode) {
       RoutePoint *prp = pnode->GetData();
 
@@ -1041,7 +1041,7 @@ bool WayPointman::RemoveRoutePoint(RoutePoint *prp) {
 
 wxImageList *WayPointman::Getpmarkicon_image_list(int nominal_height) {
   // Cached version available?
-  if (pmarkicon_image_list && (nominal_height == m_iconListHeight)) {
+  if (pmarkicon_image_list && nominal_height == m_iconListHeight) {
     return pmarkicon_image_list;
   }
 
@@ -1243,7 +1243,7 @@ wxString WayPointman::GetIconDescription(wxString icon_key) {
 wxString *WayPointman::GetIconKey(int index) {
   wxString *pret = NULL;
 
-  if ((index >= 0) && ((unsigned int)index < m_pIconArray->GetCount())) {
+  if (index >= 0 && (unsigned int)index < m_pIconArray->GetCount()) {
     MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(index);
     pret = &pmi->icon_name;
   }
@@ -1388,7 +1388,7 @@ RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid) {
   while (prpnode) {
     RoutePoint *prp = prpnode->GetData();
 
-    if (prp->m_GUID == guid) return (prp);
+    if (prp->m_GUID == guid) return prp;
 
     prpnode = prpnode->GetNext();  // RoutePoint
   }
@@ -1406,9 +1406,9 @@ RoutePoint *WayPointman::GetNearbyWaypoint(double lat, double lon,
 
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
-    double l = sqrt((a * a) + (b * b));
+    double l = sqrt(a * a + b * b);
 
-    if ((l * 60. * 1852.) < radius_meters) return pr;
+    if (l * 60. * 1852. < radius_meters) return pr;
 
     node = node->GetNext();
   }
@@ -1426,9 +1426,9 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint(double lat, double lon,
 
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
-    double l = sqrt((a * a) + (b * b));
+    double l = sqrt(a * a + b * b);
 
-    if ((l * 60. * 1852.) < radius_meters)
+    if (l * 60. * 1852. < radius_meters)
       if (pr->m_GUID != guid) return pr;
 
     node = node->GetNext();
@@ -1489,9 +1489,9 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   while (node) {
     RoutePoint *prp = node->GetData();
     // if argument is false, then only delete non-route waypoints
-    if (!prp->m_bIsInLayer && (prp->GetIconName() != _T("mob")) &&
+    if (!prp->m_bIsInLayer && prp->GetIconName() != _T("mob") &&
         ((b_delete_used && prp->IsShared()) ||
-         ((!prp->m_bIsInRoute) && !(prp == pAnchorWatchPoint1) &&
+         (!prp->m_bIsInRoute && !(prp == pAnchorWatchPoint1) &&
           !(prp == pAnchorWatchPoint2)))) {
       DestroyWaypoint(prp);
       delete prp;

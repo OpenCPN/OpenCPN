@@ -164,7 +164,7 @@ void Statement::bind(const int aIndex)
 bool Statement::executeStep()
 {
     const int ret = tryExecuteStep();
-    if ((SQLITE_ROW != ret) && (SQLITE_DONE != ret)) // on row or no (more) row ready, else it's a problem
+    if (SQLITE_ROW != ret && SQLITE_DONE != ret) // on row or no (more) row ready, else it's a problem
     {
         if (ret == sqlite3_errcode(mpSQLite))
         {
@@ -251,14 +251,14 @@ bool Statement::isColumnNull(const int aIndex) const
 {
     checkRow();
     checkIndex(aIndex);
-    return (SQLITE_NULL == sqlite3_column_type(getPreparedStatement(), aIndex));
+    return SQLITE_NULL == sqlite3_column_type(getPreparedStatement(), aIndex);
 }
 
 bool Statement::isColumnNull(const char* apName) const
 {
     checkRow();
     const int index = getColumnIndex(apName);
-    return (SQLITE_NULL == sqlite3_column_type(getPreparedStatement(), index));
+    return SQLITE_NULL == sqlite3_column_type(getPreparedStatement(), index);
 }
 
 // Return the named assigned to the specified result column (potentially aliased)

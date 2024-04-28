@@ -35,13 +35,13 @@ ClusterFit::ClusterFit( ColourSet * colours, int flags )
   : ColourFit( colours, flags )
 {
 	// set the iteration count
-	m_iterationCount = ( m_flags & kColourIterativeClusterFit ) ? kMaxIterations : 1;
+	m_iterationCount = m_flags & kColourIterativeClusterFit ? kMaxIterations : 1;
 
 	// initialise the best error
 	m_besterror = VEC4_CONST( FLT_MAX );
 
 	// initialise the metric
-	bool perceptual = ( ( m_flags & kColourMetricPerceptual ) != 0 );
+	bool perceptual = ( m_flags & kColourMetricPerceptual ) != 0;
 	if( perceptual )
 		m_metric = Vec4( 0.2126f, 0.7152f, 0.0722f, 0.0f );
 	else
@@ -147,8 +147,8 @@ void ClusterFit::Compress3( void* block )
 		for( int i = 0; i < count; ++i )
 		{
 			// second cluster [i,j) is half along
-			Vec4 part1 = ( i == 0 ) ? m_points_weights[0] : VEC4_CONST( 0.0f );
-			int jmin = ( i == 0 ) ? 1 : i;
+			Vec4 part1 = i == 0 ? m_points_weights[0] : VEC4_CONST( 0.0f );
+			int jmin = i == 0 ? 1 : i;
 			for( int j = jmin;; )
 			{
 				// last cluster [j,count) is at the end
@@ -282,8 +282,8 @@ void ClusterFit::Compress4( void* block )
 			for( int j = i;; )
 			{
 				// third cluster [j,k) is two thirds along
-				Vec4 part2 = ( j == 0 ) ? m_points_weights[0] : VEC4_CONST( 0.0f );
-				int kmin = ( j == 0 ) ? 1 : j;
+				Vec4 part2 = j == 0 ? m_points_weights[0] : VEC4_CONST( 0.0f );
+				int kmin = j == 0 ? 1 : j;
 				for( int k = kmin;; )
 				{
 					// last cluster [k,count) is at the end

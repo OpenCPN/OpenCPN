@@ -167,7 +167,7 @@ public:
 
   bool empty() const {
     // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
+    return !full_ && head_ == tail_;
   }
 
   bool full() const {
@@ -239,8 +239,8 @@ bool CommDriverN0183Serial::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  if ((wxNOT_FOUND != port_uc.Find("USB")) &&
-      (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
+  if (wxNOT_FOUND != port_uc.Find("USB") &&
+      wxNOT_FOUND != port_uc.Find("GARMIN")) {
     m_garmin_handler = new GarminProtocolHandler(comx, this, true);
   } else if (m_params.Garmin) {
     m_garmin_handler = new GarminProtocolHandler(comx, this, false);
@@ -284,7 +284,7 @@ void CommDriverN0183Serial::Close() {
       m_Thread_run_flag = 0;
 
       int tsec = 10;
-      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+      while (m_Thread_run_flag >= 0 && tsec--) wxSleep(1);
 
       wxString msg;
       if (m_Thread_run_flag < 0)
@@ -380,7 +380,7 @@ void CommDriverN0183Serial::handle_N0183_MSG(
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+  if (full_sentence[0] == '$' || full_sentence[0] == '!') {  // Sanity check
     std::string identifier;
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
@@ -515,7 +515,7 @@ void* CommDriverN0183SerialThread::Entry() {
   //    The main loop
   m_send_retries = 0;
 
-  while ((not_done) && (m_parent_driver->m_Thread_run_flag > 0)) {
+  while (not_done && m_parent_driver->m_Thread_run_flag > 0) {
     if (m_parent_driver->m_Thread_run_flag == 0) goto thread_exit;
 
     uint8_t next_byte = 0;
@@ -557,7 +557,7 @@ void* CommDriverN0183SerialThread::Entry() {
       if (m_parent_driver->m_Thread_run_flag == 0) goto thread_exit;
 
       uint8_t take_byte = circle.get();
-      while ((take_byte != 0x0a) && !circle.empty()) {
+      while (take_byte != 0x0a && !circle.empty()) {
         tmp_vec.push_back(take_byte);
         take_byte = circle.get();
       }

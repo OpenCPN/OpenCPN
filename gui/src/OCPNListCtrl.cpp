@@ -79,8 +79,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
   if (pAISTarget) {
     switch (column) {
       case tlTRK:
-        if ((pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
+        if (pAISTarget->Class == AIS_ATON ||
+            pAISTarget->Class == AIS_BASE || pAISTarget->Class == AIS_METEO)
           ret = _("-");
         else if (pAISTarget->b_show_track && !pAISTarget->b_NoTrack)
           ret = _("Yes");
@@ -89,8 +89,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
         break;
 
       case tlNAME:
-        if ((!pAISTarget->b_nameValid && (pAISTarget->Class == AIS_BASE)) ||
-            (pAISTarget->Class == AIS_SART))
+        if ((!pAISTarget->b_nameValid && pAISTarget->Class == AIS_BASE) ||
+            pAISTarget->Class == AIS_SART)
           ret = _("-");
         else {
           wxString uret = trimAISField(pAISTarget->ShipName);
@@ -117,16 +117,16 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
 
       case tlCLASS:
         if (pAISTarget->b_SarAircraftPosnReport) {
-          int airtype = (pAISTarget->MMSI % 1000) / 100;
+          int airtype = pAISTarget->MMSI % 1000 / 100;
           ret = airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft");
         } else
           ret = wxGetTranslation(pAISTarget->Get_class_string(true));
         break;
 
       case tlTYPE:
-        if ((pAISTarget->Class == AIS_BASE) ||
-            (pAISTarget->Class == AIS_SART) ||
-            (pAISTarget->Class == AIS_METEO) ||
+        if (pAISTarget->Class == AIS_BASE ||
+            pAISTarget->Class == AIS_SART ||
+            pAISTarget->Class == AIS_METEO ||
             pAISTarget->b_SarAircraftPosnReport)
           ret = _("-");
         else
@@ -140,16 +140,16 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
           else if (pAISTarget->NavStatus == UNDEFINED)
             ret = _("Testing");
         } else {
-          if ((pAISTarget->NavStatus <= 20) && (pAISTarget->NavStatus >= 0))
+          if (pAISTarget->NavStatus <= 20 && pAISTarget->NavStatus >= 0)
             ret = wxGetTranslation(ais_get_status(pAISTarget->NavStatus));
           else
             ret = _("-");
         }
 
-        if ((pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE) ||
-            (pAISTarget->Class == AIS_CLASS_B) ||
-            (pAISTarget->Class == AIS_METEO) ||
+        if (pAISTarget->Class == AIS_ATON ||
+            pAISTarget->Class == AIS_BASE ||
+            pAISTarget->Class == AIS_CLASS_B ||
+            pAISTarget->Class == AIS_METEO ||
             pAISTarget->b_SarAircraftPosnReport)
           ret = _("-");
         break;
@@ -157,7 +157,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
 
       case tlBRG: {
         if (pAISTarget->b_positionOnceValid && bGPSValid &&
-            (pAISTarget->Brg >= 0.) && (fabs(pAISTarget->Lat) < 85.)) {
+            pAISTarget->Brg >= 0. && fabs(pAISTarget->Lat) < 85.) {
           int brg = (int)wxRound(pAISTarget->Brg);
           if (pAISTarget->Brg > 359.5) brg = 0;
 
@@ -168,8 +168,8 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       }
 
       case tlCOG: {
-        if ((pAISTarget->COG >= 360.0) || (pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
+        if (pAISTarget->COG >= 360.0 || pAISTarget->Class == AIS_ATON ||
+            pAISTarget->Class == AIS_BASE || pAISTarget->Class == AIS_METEO)
           ret = _("-");
         else {
           int crs = wxRound(pAISTarget->COG);
@@ -182,25 +182,25 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       }
 
       case tlSOG: {
-        if (((pAISTarget->SOG > 100.) && !pAISTarget->b_SarAircraftPosnReport) ||
-            (pAISTarget->Class == AIS_ATON) || (pAISTarget->Class == AIS_BASE) ||
-            (pAISTarget->Class == AIS_METEO))
+        if ((pAISTarget->SOG > 100. && !pAISTarget->b_SarAircraftPosnReport) ||
+            pAISTarget->Class == AIS_ATON || pAISTarget->Class == AIS_BASE ||
+            pAISTarget->Class == AIS_METEO)
           ret = _("-");
         else
           ret.Printf(_T("%5.1f"), toUsrSpeed(pAISTarget->SOG));
         break;
       }
       case tlCPA: {
-        if ((!pAISTarget->bCPA_Valid) || (pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
+        if (!pAISTarget->bCPA_Valid || pAISTarget->Class == AIS_ATON ||
+            pAISTarget->Class == AIS_BASE || pAISTarget->Class == AIS_METEO)
           ret = _("-");
         else
           ret.Printf(_T("%5.2f"), toUsrDistance(pAISTarget->CPA));
         break;
       }
       case tlTCPA: {
-        if ((!pAISTarget->bCPA_Valid) || (pAISTarget->Class == AIS_ATON) ||
-            (pAISTarget->Class == AIS_BASE) || (pAISTarget->Class == AIS_METEO))
+        if (!pAISTarget->bCPA_Valid || pAISTarget->Class == AIS_ATON ||
+            pAISTarget->Class == AIS_BASE || pAISTarget->Class == AIS_METEO)
           ret = _("-");
         else
           ret.Printf(_T("%5.0f"), pAISTarget->TCPA);
@@ -208,7 +208,7 @@ wxString OCPNListCtrl::GetTargetColumnData(AisTargetData* pAISTarget,
       }
       case tlRNG: {
         if (pAISTarget->b_positionOnceValid && bGPSValid &&
-            (pAISTarget->Range_NM >= 0.))
+            pAISTarget->Range_NM >= 0.)
           ret.Printf(_T("%5.2f"), toUsrDistance(pAISTarget->Range_NM));
         else
           ret = _("-");

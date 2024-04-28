@@ -87,11 +87,11 @@ bool SemanticVersion::operator>(const SemanticVersion& other) {
 }
 
 bool SemanticVersion::operator<=(const SemanticVersion& other) {
-  return (*this == other) || (*this < other);
+  return *this == other || *this < other;
 }
 
 bool SemanticVersion::operator>=(const SemanticVersion& other) {
-  return (*this == other) || (*this > other);
+  return *this == other || *this > other;
 }
 
 bool SemanticVersion::operator!=(const SemanticVersion& other) {
@@ -99,7 +99,7 @@ bool SemanticVersion::operator!=(const SemanticVersion& other) {
 }
 
 std::ostream& operator<<(std::ostream& s, const SemanticVersion& v) {
-  if ((v.major == 0) && (v.minor == 0) && (v.patch == 0))
+  if (v.major == 0 && v.minor == 0 && v.patch == 0)
     return s;
 
   s << v.major << '.' << v.minor;

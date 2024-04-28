@@ -230,7 +230,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
   if (theChart.GetCOVREntries() == 1) {
     nPlyEntries = theChart.GetCOVRTablePoints(0);
 
-    if (nPlyEntries > 5 && (LOD_meters > .01)) {
+    if (nPlyEntries > 5 && LOD_meters > .01) {
       std::vector<int> index_keep{0, nPlyEntries - 1, 1, nPlyEntries - 2};
 
       double *DPbuffer = (double *)malloc(2 * nPlyEntries * sizeof(double));
@@ -260,7 +260,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
       for (int i = 0; i < nPlyEntries; i++) {
         if (DPbuffer[2 * i] > 1000.) {
           *pfe++ = DPbuffer[2 * i] - 2000.;
-          *pfe++ = DPbuffer[(2 * i) + 1];
+          *pfe++ = DPbuffer[2 * i + 1];
         }
       }
 
@@ -314,7 +314,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
     for (int j = 0; j < nAuxPlyEntries; j++) {
       int nPE = theChart.GetCOVRTablePoints(j);
 
-      if (nPE > 5 && (LOD_meters > .01)) {
+      if (nPE > 5 && LOD_meters > .01) {
         std::vector<int> index_keep{0, nPE - 1, 1, nPE - 2};
 
         double *DPbuffer = (double *)malloc(2 * nPE * sizeof(double));
@@ -344,7 +344,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
         for (int i = 0; i < nPE; i++) {
           if (DPbuffer[2 * i] > 1000.) {
             *pfe++ = DPbuffer[2 * i] - 2000.;
-            *pfe++ = DPbuffer[(2 * i) + 1];
+            *pfe++ = DPbuffer[2 * i + 1];
           }
         }
 
@@ -418,7 +418,7 @@ bool ChartTableEntry::IsEarlierThan(const ChartTableEntry &cte) const {
   if (!mine.IsValid() || !theirs.IsValid())
     return false;  // will have the effect of keeping all questionable charts
 
-  return (mine.IsEarlierThan(theirs));
+  return mine.IsEarlierThan(theirs);
 }
 
 bool ChartTableEntry::IsEqualTo(const ChartTableEntry &cte) const {
@@ -428,7 +428,7 @@ bool ChartTableEntry::IsEqualTo(const ChartTableEntry &cte) const {
   if (!mine.IsValid() || !theirs.IsValid())
     return true;  // will have the effect of keeping all questionable charts
 
-  return (mine.IsEqualTo(theirs));
+  return mine.IsEqualTo(theirs);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1156,7 +1156,7 @@ bool ChartDatabase::CompareChartDirArray(ArrayOfCDI &test_array) {
     if (bfound_inner) nfound_outer++;
   }
 
-  return (nfound_outer == test_array.GetCount());
+  return nfound_outer == test_array.GetCount();
 }
 
 wxString ChartDatabase::GetMagicNumberCached(wxString dir) {
@@ -1285,7 +1285,7 @@ wxString SplitPath(wxString s, wxString tkd, int nchar, int offset,
   wxStringTokenizer tkz(s, tkd);
   while (tkz.HasMoreTokens()) {
     wxString token = tkz.GetNextToken();
-    if ((rlen + (int)token.Len() + 1) < nchar) {
+    if (rlen + (int)token.Len() + 1 < nchar) {
       r += token;
       r += tkd[0];
       rlen += token.Len() + 1;
@@ -1319,7 +1319,7 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex,
   {
     wxString line;
     line = _(" ChartFile:  ");
-    wxString longline = *(cte.GetpsFullPath());
+    wxString longline = *cte.GetpsFullPath();
 
     if (longline.Len() > target_width) {
       line += SplitPath(longline, _T("/,\\"), target_width, 15, &ncr);
@@ -1725,8 +1725,8 @@ bool ChartDatabase::DetectDirChange(const wxString &dir_path,
   // Traverse the list of files, getting their interesting stuff to add to
   // accumulator
   for (int ifile = 0; ifile < n_files; ifile++) {
-    if (pprog && (ifile % (n_files / 60 + 1)) == 0)
-      pprog->Update(wxMin((ifile * 100) / n_files, 100), prog_label);
+    if (pprog && ifile % (n_files / 60 + 1) == 0)
+      pprog->Update(wxMin(ifile * 100 / n_files, 100), prog_label);
 
     wxFileName file(FileList[ifile]);
 
@@ -1739,13 +1739,13 @@ bool ChartDatabase::DetectDirChange(const wxString &dir_path,
 
     //    File Size;
     wxULongLong size = file.GetSize();
-    wxULongLong fileSize = ((size != wxInvalidSize) ? size : 0);
-    hash.Update(&fileSize, (sizeof fileSize));
+    wxULongLong fileSize = size != wxInvalidSize ? size : 0;
+    hash.Update(&fileSize, sizeof fileSize);
 
     //    Mod time, in ticks
     wxDateTime t = file.GetModificationTime();
     wxULongLong fileTime = t.GetTicks();
-    hash.Update(&fileTime, (sizeof fileTime));
+    hash.Update(&fileTime, sizeof fileTime);
   }
 
   hash.Finish();
@@ -1797,7 +1797,7 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name) {
   bool b_cont = dirt.GetFirst(&candidate);
 
   while (b_cont) {
-    if (test.Matches(candidate) && (candidate.Len() == 8)) {
+    if (test.Matches(candidate) && candidate.Len() == 8) {
       b_maybe_found_cm93 = true;
       break;
     }
@@ -1818,7 +1818,7 @@ bool ChartDatabase::Check_CM93_Structure(wxString dir_name) {
         bool b_probably_found_cm93 = false;
         bool b_cont_n = dir_n.IsOpened() && dir_n.GetFirst(&candidate_n);
         while (b_cont_n) {
-          if (test_n.Matches(candidate_n) && (candidate_n.Len() == 1)) {
+          if (test_n.Matches(candidate_n) && candidate_n.Len() == 1) {
             b_probably_found_cm93 = true;
             break;
           }
@@ -2111,7 +2111,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       continue;
     }
 
-    if (pprog && ((ifile % nFileProgressQuantum) == 0))
+    if (pprog && ifile % nFileProgressQuantum == 0)
       pprog->Update(static_cast<int>(ifile * rFileProgressRatio), utf8_path);
 
     ChartTableEntry *pnewChart = NULL;
@@ -2122,7 +2122,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     // one.
     ChartCollisionsHashMap::const_iterator collision_ptr =
         collision_map.find(file_name);
-    bool collision = (collision_ptr != collision_map.end());
+    bool collision = collision_ptr != collision_map.end();
     bool file_path_is_same = false;
     bool file_time_is_same = false;
     ChartTableEntry *pEntry = NULL;
@@ -2246,7 +2246,7 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
   //        continue;
 
   if (pprog)
-    pprog->Update(wxMin((m_pdifile * 100) / m_pdnFile, 100), full_name);
+    pprog->Update(wxMin(m_pdifile * 100 / m_pdnFile, 100), full_name);
 
   ChartTableEntry *pnewChart = NULL;
   bool bAddFinal = true;
@@ -2576,7 +2576,7 @@ bool ChartDatabase::GetCentroidOfLargestScaleChart(double *clat, double *clon,
 //    Get DBChart Projection
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartProj(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size())
     return active_chartTable[dbIndex].GetChartProjectionType();
   else
     return PROJECTION_UNKNOWN;
@@ -2586,7 +2586,7 @@ int ChartDatabase::GetDBChartProj(int dbIndex) {
 //    Get DBChart Family
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartFamily(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size())
     return active_chartTable[dbIndex].GetChartFamily();
   else
     return CHART_FAMILY_UNKNOWN;
@@ -2596,7 +2596,7 @@ int ChartDatabase::GetDBChartFamily(int dbIndex) {
 //    Get DBChart FullFileName
 //-------------------------------------------------------------------
 wxString ChartDatabase::GetDBChartFileName(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     return wxString(active_chartTable[dbIndex].GetFullSystemPath());
   } else
     return _T("");
@@ -2606,7 +2606,7 @@ wxString ChartDatabase::GetDBChartFileName(int dbIndex) {
 //    Get DBChart Type
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartType(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size())
     return active_chartTable[dbIndex].GetChartType();
   else
     return 0;
@@ -2616,7 +2616,7 @@ int ChartDatabase::GetDBChartType(int dbIndex) {
 //    Get DBChart Skew
 //-------------------------------------------------------------------
 float ChartDatabase::GetDBChartSkew(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size())
     return active_chartTable[dbIndex].GetChartSkew();
   else
     return 0.;
@@ -2626,7 +2626,7 @@ float ChartDatabase::GetDBChartSkew(int dbIndex) {
 //    Get DBChart Scale
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartScale(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size())
     return active_chartTable[dbIndex].GetScale();
   else
     return 1;
@@ -2636,7 +2636,7 @@ int ChartDatabase::GetDBChartScale(int dbIndex) {
 //    Get Lat/Lon Bounding Box from db
 //-------------------------------------------------------------------
 bool ChartDatabase::GetDBBoundingBox(int dbIndex, LLBBox &box) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
     box.Set(entry.GetLatMin(), entry.GetLonMin(), entry.GetLatMax(),
             entry.GetLonMax());
@@ -2646,7 +2646,7 @@ bool ChartDatabase::GetDBBoundingBox(int dbIndex, LLBBox &box) {
 }
 
 const LLBBox &ChartDatabase::GetDBBoundingBox(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0)) {
+  if (bValid && dbIndex >= 0) {
     const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
     return entry.GetBBox();
   } else {
@@ -2659,7 +2659,7 @@ const LLBBox &ChartDatabase::GetDBBoundingBox(int dbIndex) {
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBPlyPoint(int dbIndex, int plyindex, float *lat,
                                  float *lon) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
     if (entry.GetnPlyEntries()) {
       float *fp = entry.GetpPlyTable();
@@ -2678,7 +2678,7 @@ int ChartDatabase::GetDBPlyPoint(int dbIndex, int plyindex, float *lat,
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBAuxPlyPoint(int dbIndex, int plyindex, int ply,
                                     float *lat, float *lon) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
     if (entry.GetnAuxPlyEntries()) {
       float *fp = entry.GetpAuxPlyTableEntry(ply);
@@ -2695,7 +2695,7 @@ int ChartDatabase::GetDBAuxPlyPoint(int dbIndex, int plyindex, int ply,
 }
 
 int ChartDatabase::GetnAuxPlyEntries(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
     return entry.GetnAuxPlyEntries();
   } else
@@ -2706,7 +2706,7 @@ int ChartDatabase::GetnAuxPlyEntries(int dbIndex) {
 //      Get vector of reduced Plypoints
 //-------------------------------------------------------------------
 std::vector<float> ChartDatabase::GetReducedPlyPoints(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
     if (pentry) return pentry->GetReducedPlyPoints();
   }
@@ -2720,7 +2720,7 @@ std::vector<float> ChartDatabase::GetReducedPlyPoints(int dbIndex) {
 //-------------------------------------------------------------------
 std::vector<float> ChartDatabase::GetReducedAuxPlyPoints(int dbIndex,
                                                          int iTable) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
     if (pentry) return pentry->GetReducedAuxPlyPoints(iTable);
   }
@@ -2730,7 +2730,7 @@ std::vector<float> ChartDatabase::GetReducedAuxPlyPoints(int dbIndex,
 }
 
 bool ChartDatabase::IsChartAvailable(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+  if (bValid && dbIndex >= 0 && dbIndex < (int)active_chartTable.size()) {
     ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
 
     //      If not PLugIn chart, assume always available

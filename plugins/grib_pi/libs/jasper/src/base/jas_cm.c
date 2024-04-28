@@ -204,9 +204,9 @@ static jas_cmprof_t *jas_cmprof_createsycc()
     fwdshapmat->mat[2][0] = 1.0;
     fwdshapmat->mat[2][1] = 1.772;
     fwdshapmat->mat[2][2] = 0.0;
-    fwdshapmat->mat[0][3] = -0.5 * (1.402);
+    fwdshapmat->mat[0][3] = -0.5 * 1.402;
     fwdshapmat->mat[1][3] = -0.5 * (-0.34413 - 0.71414);
-    fwdshapmat->mat[2][3] = -0.5 * (1.772);
+    fwdshapmat->mat[2][3] = -0.5 * 1.772;
     if (!(revpxform = jas_cmpxform_createshapmat()))
         goto error;
     revpxform->numinchans = 3;
@@ -528,7 +528,7 @@ int jas_cmxform_apply(jas_cmxform_t *xform, jas_cmpixmap_t *in, jas_cmpixmap_t *
         for (i = 0; i < xform->numinchans; ++i) {
             fmt = &in->cmptfmts[i];
             scale = (double)((1 << fmt->prec) - 1);
-            bias = fmt->sgnd ? (1 << (fmt->prec - 1)) : 0;
+            bias = fmt->sgnd ? 1 << fmt->prec - 1 : 0;
             dataptr = &fmt->buf[n];
             bufptr = &inbuf[i];
             for (j = 0; j < m; ++j) {
@@ -544,7 +544,7 @@ int jas_cmxform_apply(jas_cmxform_t *xform, jas_cmpixmap_t *in, jas_cmpixmap_t *
         for (i = 0; i < pxformseq->numpxforms; ++i) {
             pxform = pxformseq->pxforms[i];
             if (pxform->numoutchans > pxform->numinchans) {
-                outbuf = (inbuf == &buf[0][0]) ? &buf[1][0] : &buf[0][0];
+                outbuf = inbuf == &buf[0][0] ? &buf[1][0] : &buf[0][0];
             } else {
                 outbuf = inbuf;
             }
@@ -556,11 +556,11 @@ int jas_cmxform_apply(jas_cmxform_t *xform, jas_cmpixmap_t *in, jas_cmpixmap_t *
         for (i = 0; i < xform->numoutchans; ++i) {
             fmt = &out->cmptfmts[i];
             scale = (double)((1 << fmt->prec) - 1);
-            bias = fmt->sgnd ? (1 << (fmt->prec - 1)) : 0;
+            bias = fmt->sgnd ? 1 << fmt->prec - 1 : 0;
             bufptr = &outbuf[i];
             dataptr = &fmt->buf[n];
             for (j = 0; j < m; ++j) {
-                v = (*bufptr) * scale + bias;
+                v = *bufptr * scale + bias;
                 bufptr += xform->numoutchans;
                 if (jas_cmputint(&dataptr, fmt->sgnd, fmt->prec, v))
                     goto error;
@@ -953,7 +953,7 @@ static int jas_cmshapmatlut_invert(jas_cmshapmatlut_t *invlut,
         return -1;
     invlut->size = n;
     for (i = 0; i < invlut->size; ++i) {
-        sy = ((double) i) / (invlut->size - 1);
+        sy = (double) i / (invlut->size - 1);
         sx = 1.0;
         for (j = 0; j < lut->size; ++j) {
             ay = lut->data[j];
@@ -968,8 +968,8 @@ assert(0);
                 }
                 if (k < lut->size) {
                     --k;
-                    ax = ((double) j) / (lut->size - 1);
-                    bx = ((double) k) / (lut->size - 1);
+                    ax = (double) j / (lut->size - 1);
+                    bx = (double) k / (lut->size - 1);
                     sx = (ax + bx) / 2.0;
                 }
                 break;
@@ -977,7 +977,7 @@ assert(0);
             if (j < lut->size - 1) {
                 by = lut->data[j + 1];
                 if (sy > ay && sy < by) {
-                    ax = ((double) j) / (lut->size - 1);
+                    ax = (double) j / (lut->size - 1);
                     bx = ((double) j + 1) / (lut->size - 1);
                     sx = ax +
                       (sy - ay) / (by - ay) * (bx - ax);
@@ -1224,14 +1224,14 @@ static int jas_cmgetint(long **bufptr, int sgnd, int prec, long *val)
     int m;
     v = **bufptr;
     if (sgnd) {
-        m = (1 << (prec - 1));
+        m = 1 << prec - 1;
         if (v < -m || v >= m)
             return -1;
     } else {
-        if (v < 0 || v >= (1 << prec))
+        if (v < 0 || v >= 1 << prec)
             return -1;
     }
-    ++(*bufptr);
+    ++*bufptr;
     *val = v;
     return 0;
 }
@@ -1240,15 +1240,15 @@ static int jas_cmputint(long **bufptr, int sgnd, int prec, long val)
 {
     int m;
     if (sgnd) {
-        m = (1 << (prec - 1));
+        m = 1 << prec - 1;
         if (val < -m || val >= m)
             return -1;
     } else {
-        if (val < 0 || val >= (1 << prec))
+        if (val < 0 || val >= 1 << prec)
             return -1;
     }
     **bufptr = val;
-    ++(*bufptr);
+    ++*bufptr;
     return 0;
 }
 

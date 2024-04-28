@@ -355,7 +355,7 @@ FORCE_INLINE void LZ4_initHC (LZ4HC_Data_Structure* hc4, const BYTE* base)
 
 int LZ4_resetStreamStateHC(void* state, const char* inputBuffer)
 {
-    if ((((size_t)state) & (sizeof(void*)-1)) != 0) return 1;   /* Error : pointer is not aligned for pointer (32 or 64 bits) */
+    if (((size_t)state & sizeof(void*)-1) != 0) return 1;   /* Error : pointer is not aligned for pointer (32 or 64 bits) */
     LZ4_initHC((LZ4HC_Data_Structure*)state, (const BYTE*)inputBuffer);
     return 0;
 }
@@ -372,7 +372,7 @@ void* LZ4_createHC (const char* inputBuffer)
 int LZ4_freeHC (void* LZ4HC_Data)
 {
     FREEMEM(LZ4HC_Data);
-    return (0);
+    return 0;
 }
 
 
@@ -386,10 +386,10 @@ FORCE_INLINE void LZ4HC_Insert (LZ4HC_Data_Structure* hc4, const BYTE* ip)
     while(hc4->nextToUpdate < ip)
     {
         const BYTE* const p = hc4->nextToUpdate;
-        size_t delta = (p) - HASH_POINTER(p);
+        size_t delta = p - HASH_POINTER(p);
         if (delta>MAX_DISTANCE) delta = MAX_DISTANCE;
         DELTANEXT(p) = (U16)delta;
-        HashTable[HASH_VALUE(p)] = (HTYPE)((p) - base);
+        HashTable[HASH_VALUE(p)] = (HTYPE)(p - base);
         hc4->nextToUpdate++;
     }
 }
@@ -399,7 +399,7 @@ char* LZ4_slideInputBufferHC(void* LZ4HC_Data)
 {
     LZ4HC_Data_Structure* hc4 = (LZ4HC_Data_Structure*)LZ4HC_Data;
     U32 distance = (U32)(hc4->end - hc4->inputBuffer) - 64 KB;
-    distance = (distance >> 16) << 16;   /* Must be a multiple of 64 KB */
+    distance = distance >> 16 << 16;   /* Must be a multiple of 64 KB */
     LZ4HC_Insert(hc4, hc4->end - MINMATCH);
     memcpy((void*)(hc4->end - 64 KB - distance), (const void*)(hc4->end - 64 KB), 64 KB);
     hc4->nextToUpdate -= distance;
@@ -411,7 +411,7 @@ char* LZ4_slideInputBufferHC(void* LZ4HC_Data)
         for (i=0; i<HASHTABLESIZE; i++) hc4->hashTable[i] -= 1 GB;
     }
     hc4->end -= distance;
-    return (char*)(hc4->end);
+    return (char*)hc4->end;
 }
 
 
@@ -424,11 +424,11 @@ FORCE_INLINE size_t LZ4HC_CommonLength (const BYTE* p1, const BYTE* p2, const BY
         size_t diff = AARCH(p2) ^ AARCH(p1t);
         if (!diff) { p1t+=STEPSIZE; p2+=STEPSIZE; continue; }
         p1t += LZ4_NbCommonBytes(diff);
-        return (p1t - p1);
+        return p1t - p1;
     }
-    if ((p1t<(matchlimit-1)) && (A16(p2) == A16(p1t))) { p1t+=2; p2+=2; }
-    if ((p1t<matchlimit) && (*p2 == *p1t)) p1t++;
-    return (p1t - p1);
+    if (p1t<matchlimit-1 && A16(p2) == A16(p1t)) { p1t+=2; p2+=2; }
+    if (p1t<matchlimit && *p2 == *p1t) p1t++;
+    return p1t - p1;
 }
 
 
@@ -461,7 +461,7 @@ FORCE_INLINE int LZ4HC_InsertAndFindBestMatch (LZ4HC_Data_Structure* hc4, const 
     }
 #endif
 
-    while (((U32)(ip-ref) <= MAX_DISTANCE) && (nbAttempts))
+    while ((U32)(ip-ref) <= MAX_DISTANCE && nbAttempts)
     {
         nbAttempts--;
         if (*(ref+ml) == *(ip+ml))
@@ -489,7 +489,7 @@ FORCE_INLINE int LZ4HC_InsertAndFindBestMatch (LZ4HC_Data_Structure* hc4, const 
         do
         {
             DELTANEXT(ptr) = delta;
-            HashTable[HASH_VALUE(ptr)] = (HTYPE)((ptr) - base);     /* Head of chain */
+            HashTable[HASH_VALUE(ptr)] = (HTYPE)(ptr - base);     /* Head of chain */
             ptr++;
         } while(ptr < end);
         hc4->nextToUpdate = end;
@@ -513,7 +513,7 @@ FORCE_INLINE int LZ4HC_InsertAndGetWiderMatch (LZ4HC_Data_Structure* hc4, const 
     LZ4HC_Insert(hc4, ip);
     ref = HASH_POINTER(ip);
 
-    while (((U32)(ip-ref) <= MAX_DISTANCE) && (nbAttempts))
+    while ((U32)(ip-ref) <= MAX_DISTANCE && nbAttempts)
     {
         nbAttempts--;
         if (*(startLimit + longest) == *(ref - delta + longest))
@@ -531,8 +531,8 @@ FORCE_INLINE int LZ4HC_InsertAndGetWiderMatch (LZ4HC_Data_Structure* hc4, const 
                 ipt += LZ4_NbCommonBytes(diff);
                 goto _endCount;
             }
-            if ((ipt<(matchlimit-1)) && (A16(reft) == A16(ipt))) { ipt+=2; reft+=2; }
-            if ((ipt<matchlimit) && (*reft == *ipt)) ipt++;
+            if (ipt<matchlimit-1 && A16(reft) == A16(ipt)) { ipt+=2; reft+=2; }
+            if (ipt<matchlimit && *reft == *ipt) ipt++;
 _endCount:
             reft = ref;
 #else
@@ -542,9 +542,9 @@ _endCount:
             const BYTE* ipt = ip + MINMATCH + LZ4HC_CommonLength(ip+MINMATCH, ref+MINMATCH, matchlimit);
 #endif
 
-            while ((startt>startLimit) && (reft > hc4->inputBuffer) && (startt[-1] == reft[-1])) {startt--; reft--;}
+            while (startt>startLimit && reft > hc4->inputBuffer && startt[-1] == reft[-1]) {startt--; reft--;}
 
-            if ((ipt-startt) > longest)
+            if (ipt-startt > longest)
             {
                 longest = (int)(ipt-startt);
                 *matchpos = reft;
@@ -575,8 +575,8 @@ FORCE_INLINE int LZ4HC_encodeSequence (
     /* Encode Literal length */
     length = (int)(*ip - *anchor);
     token = (*op)++;
-    if ((limitedOutputBuffer) && ((*op + length + (2 + 1 + LASTLITERALS) + (length>>8)) > oend)) return 1;   /* Check output limit */
-    if (length>=(int)RUN_MASK) { int len; *token=(RUN_MASK<<ML_BITS); len = length-RUN_MASK; for(; len > 254 ; len-=255) *(*op)++ = 255;  *(*op)++ = (BYTE)len; }
+    if (limitedOutputBuffer && *op + length + (2 + 1 + LASTLITERALS) + (length>>8) > oend) return 1;   /* Check output limit */
+    if (length>=(int)RUN_MASK) { int len; *token= RUN_MASK <<ML_BITS; len = length-RUN_MASK; for(; len > 254 ; len-=255) *(*op)++ = 255;  *(*op)++ = (BYTE)len; }
     else *token = (BYTE)(length<<ML_BITS);
 
     /* Copy Literals */
@@ -587,9 +587,9 @@ FORCE_INLINE int LZ4HC_encodeSequence (
 
     /* Encode MatchLength */
     length = (int)(matchLength-MINMATCH);
-    if ((limitedOutputBuffer) && (*op + (1 + LASTLITERALS) + (length>>8) > oend)) return 1;   /* Check output limit */
+    if (limitedOutputBuffer && *op + (1 + LASTLITERALS) + (length>>8) > oend) return 1;   /* Check output limit */
     if (length>=(int)ML_MASK) { *token+=ML_MASK; length-=ML_MASK; for(; length > 509 ; length-=510) { *(*op)++ = 255; *(*op)++ = 255; } if (length > 254) { length-=255; *(*op)++ = 255; } *(*op)++ = (BYTE)length; }
-    else *token += (BYTE)(length);
+    else *token += (BYTE)length;
 
     /* Prepare next loop */
     *ip += matchLength;
@@ -615,12 +615,12 @@ static int LZ4HC_compress_generic (
     const BYTE* anchor = ip;
     const BYTE* const iend = ip + inputSize;
     const BYTE* const mflimit = iend - MFLIMIT;
-    const BYTE* const matchlimit = (iend - LASTLITERALS);
+    const BYTE* const matchlimit = iend - LASTLITERALS;
 
     BYTE* op = (BYTE*) dest;
     BYTE* const oend = op + maxOutputSize;
 
-    const int maxNbAttempts = compressionLevel > MAX_COMPRESSION_LEVEL ? 1 << MAX_COMPRESSION_LEVEL : compressionLevel ? 1<<(compressionLevel-1) : 1<<LZ4HC_DEFAULT_COMPRESSIONLEVEL;
+    const int maxNbAttempts = compressionLevel > MAX_COMPRESSION_LEVEL ? 1 << MAX_COMPRESSION_LEVEL : compressionLevel ? 1<<compressionLevel-1 : 1<<LZ4HC_DEFAULT_COMPRESSIONLEVEL;
     int   ml, ml2, ml3, ml0;
     const BYTE* ref=NULL;
     const BYTE* start2=NULL;
@@ -640,7 +640,7 @@ static int LZ4HC_compress_generic (
     /* Main Loop */
     while (ip < mflimit)
     {
-        ml = LZ4HC_InsertAndFindBestMatch (ctx, ip, matchlimit, (&ref), maxNbAttempts);
+        ml = LZ4HC_InsertAndFindBestMatch (ctx, ip, matchlimit, &ref, maxNbAttempts);
         if (!ml) { ip++; continue; }
 
         /* saved, in case we would skip too much */
@@ -670,7 +670,7 @@ _Search2:
         }
 
         /* Here, start0==ip */
-        if ((start2 - ip) < 3)   /* First Match too small : removed */
+        if (start2 - ip < 3)   /* First Match too small : removed */
         {
             ml = ml2;
             ip = start2;
@@ -684,7 +684,7 @@ _Search3:
          * ml2 > ml1, and
          * ip1+3 <= ip2 (usually < ip1+ml1)
          */
-        if ((start2 - ip) < OPTIMAL_ML)
+        if (start2 - ip < OPTIMAL_ML)
         {
             int correction;
             int new_ml = ml;
@@ -717,7 +717,7 @@ _Search3:
 
         if (start3 < ip+ml+3) /* Not enough space for match 2 : remove it */
         {
-            if (start3 >= (ip+ml)) /* can write Seq1 immediately ==> Seq2 is removed, so Seq3 becomes Seq1 */
+            if (start3 >= ip+ml) /* can write Seq1 immediately ==> Seq2 is removed, so Seq3 becomes Seq1 */
             {
                 if (start2 < ip+ml)
                 {
@@ -756,7 +756,7 @@ _Search3:
          */
         if (start2 < ip+ml)
         {
-            if ((start2 - ip) < (int)ML_MASK)
+            if (start2 - ip < (int)ML_MASK)
             {
                 int correction;
                 if (ml > OPTIMAL_ML) ml = OPTIMAL_ML;
@@ -791,15 +791,15 @@ _Search3:
     /* Encode Last Literals */
     {
         int lastRun = (int)(iend - anchor);
-        if ((limit) && (((char*)op - dest) + lastRun + 1 + ((lastRun+255-RUN_MASK)/255) > (U32)maxOutputSize)) return 0;  /* Check output limit */
-        if (lastRun>=(int)RUN_MASK) { *op++=(RUN_MASK<<ML_BITS); lastRun-=RUN_MASK; for(; lastRun > 254 ; lastRun-=255) *op++ = 255; *op++ = (BYTE) lastRun; }
+        if (limit && (char*)op - dest + lastRun + 1 + (lastRun+255-RUN_MASK)/255 > (U32)maxOutputSize) return 0;  /* Check output limit */
+        if (lastRun>=(int)RUN_MASK) { *op++= RUN_MASK <<ML_BITS; lastRun-=RUN_MASK; for(; lastRun > 254 ; lastRun-=255) *op++ = 255; *op++ = (BYTE) lastRun; }
         else *op++ = (BYTE)(lastRun<<ML_BITS);
         memcpy(op, anchor, iend - anchor);
         op += iend-anchor;
     }
 
     /* End */
-    return (int) (((char*)op)-dest);
+    return (int) ((char*)op-dest);
 }
 
 
@@ -843,7 +843,7 @@ int LZ4_sizeofStateHC() { return sizeof(LZ4HC_Data_Structure); }
 
 int LZ4_compressHC2_withStateHC (void* state, const char* source, char* dest, int inputSize, int compressionLevel)
 {
-    if (((size_t)(state)&(sizeof(void*)-1)) != 0) return 0;   /* Error : state is not aligned for pointers (32 or 64 bits) */
+    if (((size_t)state&sizeof(void*)-1) != 0) return 0;   /* Error : state is not aligned for pointers (32 or 64 bits) */
     LZ4_initHC ((LZ4HC_Data_Structure*)state, (const BYTE*)source);
     return LZ4HC_compress_generic (state, source, dest, inputSize, 0, compressionLevel, noLimit);
 }
@@ -854,7 +854,7 @@ int LZ4_compressHC_withStateHC (void* state, const char* source, char* dest, int
 
 int LZ4_compressHC2_limitedOutput_withStateHC (void* state, const char* source, char* dest, int inputSize, int maxOutputSize, int compressionLevel)
 {
-    if (((size_t)(state)&(sizeof(void*)-1)) != 0) return 0;   /* Error : state is not aligned for pointers (32 or 64 bits) */
+    if (((size_t)state&sizeof(void*)-1) != 0) return 0;   /* Error : state is not aligned for pointers (32 or 64 bits) */
     LZ4_initHC ((LZ4HC_Data_Structure*)state, (const BYTE*)source);
     return LZ4HC_compress_generic (state, source, dest, inputSize, maxOutputSize, compressionLevel, limitedOutput);
 }

@@ -124,15 +124,15 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
     wxString netident;
 
-    if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
-        (cp->NetProtocol == TCP)) {
+    if (cp->IOSelect != DS_TYPE_INPUT && cp->Type == NETWORK &&
+        cp->NetProtocol == TCP) {
       netident << _T("TCP:") << cp->NetworkAddress << _T(":")
                << cp->NetworkPort;
       m_itemCommListBox->Append(netident);
       netconns.Add(netident);
     }
-    if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == NETWORK &&
-        (cp->NetProtocol == UDP)) {
+    if (cp->IOSelect != DS_TYPE_INPUT && cp->Type == NETWORK &&
+        cp->NetProtocol == UDP) {
       netident << _T("UDP:") << cp->NetworkAddress << _T(":")
                << cp->NetworkPort;
       m_itemCommListBox->Append(netident);
@@ -147,7 +147,7 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
       wxArrayString btscanResults = g_Platform->getBluetoothScanResults();
 
       unsigned int i = 1;
-      while ((i + 1) < btscanResults.GetCount()) {
+      while (i + 1 < btscanResults.GetCount()) {
         wxString item1 = btscanResults[i] + _T(";");
         wxString item2 = btscanResults.Item(i + 1);
         wxString port = item1 + item2;

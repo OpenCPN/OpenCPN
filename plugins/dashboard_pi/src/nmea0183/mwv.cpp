@@ -91,7 +91,7 @@ bool MWV::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 6 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    WindAngle      = sentence.Double( 1 );
@@ -100,7 +100,7 @@ bool MWV::Parse( const SENTENCE& sentence )
    WindSpeedUnits = sentence.Field( 4 );
    IsDataValid    = sentence.Boolean( 5 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool MWV::Write( SENTENCE& sentence )
@@ -121,7 +121,7 @@ bool MWV::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const MWV& MWV::operator = ( const MWV& source )
@@ -134,5 +134,5 @@ const MWV& MWV::operator = ( const MWV& source )
    WindSpeedUnits = source.WindSpeedUnits;
    IsDataValid    = source.IsDataValid;
 
-   return( *this );
+   return*this;
 }

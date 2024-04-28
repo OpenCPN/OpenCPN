@@ -54,8 +54,8 @@ bool BoundingBox::And(BoundingBox* _bbox, double Marge) {
   m_maxx = wxMin(m_maxx, _bbox->m_maxx);
   m_miny = wxMax(m_miny, _bbox->m_miny);
   m_maxy = wxMin(m_maxy, _bbox->m_maxy);
-  return (bool)(((m_minx - Marge) < (m_maxx + Marge)) &&
-                ((m_miny - Marge) < (m_maxy + Marge)));
+  return (bool)(m_minx - Marge < m_maxx + Marge &&
+                m_miny - Marge < m_maxy + Marge);
 }
 
 // Shrink the boundingbox with the given marge
@@ -139,15 +139,15 @@ OVERLAP BoundingBox::Intersect(const BoundingBox& other,
   // other boundingbox exists, it is a reference:
   // assert (&other);
 
-  if (((m_minx - Marge) > (other.m_maxx + Marge)) ||
-      ((m_maxx + Marge) < (other.m_minx - Marge)) ||
-      ((m_maxy + Marge) < (other.m_miny - Marge)) ||
-      ((m_miny - Marge) > (other.m_maxy + Marge)))
+  if (m_minx - Marge > other.m_maxx + Marge ||
+      m_maxx + Marge < other.m_minx - Marge ||
+      m_maxy + Marge < other.m_miny - Marge ||
+      m_miny - Marge > other.m_maxy + Marge)
     return _OUT;
 
   // Check if other.bbox is inside this bbox
-  if ((m_minx <= other.m_minx) && (m_maxx >= other.m_maxx) &&
-      (m_maxy >= other.m_maxy) && (m_miny <= other.m_miny))
+  if (m_minx <= other.m_minx && m_maxx >= other.m_maxx &&
+      m_maxy >= other.m_maxy && m_miny <= other.m_miny)
     return _IN;
 
   // Boundingboxes intersect
@@ -159,18 +159,18 @@ bool BoundingBox::LineIntersect(const wxPoint2DDouble& begin,
                                   const wxPoint2DDouble& end) const {
   assert(m_validbbox == TRUE);
 
-  return (bool)!(((begin.m_y > m_maxy) && (end.m_y > m_maxy)) ||
-                 ((begin.m_y < m_miny) && (end.m_y < m_miny)) ||
-                 ((begin.m_x > m_maxx) && (end.m_x > m_maxx)) ||
-                 ((begin.m_x < m_minx) && (end.m_x < m_minx)));
+  return (bool)!((begin.m_y > m_maxy && end.m_y > m_maxy) ||
+                 (begin.m_y < m_miny && end.m_y < m_miny) ||
+                 (begin.m_x > m_maxx && end.m_x > m_maxx) ||
+                 (begin.m_x < m_minx && end.m_x < m_minx));
 }
 
 // Is the given point in the boundingbox ??
 bool BoundingBox::PointInBox(double x, double y, double Marge) const {
   assert(m_validbbox == TRUE);
 
-  if (x >= (m_minx - Marge) && x <= (m_maxx + Marge) && y >= (m_miny - Marge) &&
-      y <= (m_maxy + Marge))
+  if (x >= m_minx - Marge && x <= m_maxx + Marge && y >= m_miny - Marge &&
+      y <= m_maxy + Marge)
     return TRUE;
   return FALSE;
 }
@@ -396,7 +396,7 @@ bool LLBBox::Contains(double lat, double lon) const {
 }
 
 bool LLBBox::ContainsMarge(double lat, double lon, double Marge) const {
-  if (lat < (m_minlat - Marge) || lat > (m_maxlat + Marge)) return FALSE;
+  if (lat < m_minlat - Marge || lat > m_maxlat + Marge) return FALSE;
 
   //    Box is centered in East lon, crossing IDL
   if (m_maxlon > 180.) {
@@ -407,13 +407,13 @@ bool LLBBox::ContainsMarge(double lat, double lon, double Marge) const {
     if (lon > m_minlon + 360.) lon -= 360.;
   }
 
-  return lon >= (m_minlon - Marge) && lon <= (m_maxlon + Marge);
+  return lon >= m_minlon - Marge && lon <= m_maxlon + Marge;
 }
 
 bool LLBBox::IntersectIn(const LLBBox& other) const {
   if (!GetValid() || !other.GetValid()) return false;
 
-  if ((m_maxlat <= other.m_maxlat) || (m_minlat >= other.m_minlat))
+  if (m_maxlat <= other.m_maxlat || m_minlat >= other.m_minlat)
     return false;
 
   double minlon = m_minlon, maxlon = m_maxlon;
@@ -422,14 +422,14 @@ bool LLBBox::IntersectIn(const LLBBox& other) const {
   else if (m_minlon > other.m_maxlon)
     minlon -= 360, maxlon -= 360;
 
-  return (other.m_minlon > minlon) && (other.m_maxlon < maxlon);
+  return other.m_minlon > minlon && other.m_maxlon < maxlon;
 }
 
 bool LLBBox::IntersectOutGetBias(const LLBBox& other, double bias) const {
   // allow -180 to 180 or 0 to 360
   if (!GetValid() || !other.GetValid()) return true;
 
-  if ((m_maxlat < other.m_minlat) || (m_minlat > other.m_maxlat)) return true;
+  if (m_maxlat < other.m_minlat || m_minlat > other.m_maxlat) return true;
 
   if (m_maxlon < other.m_minlon)
     bias = 360;
@@ -438,8 +438,8 @@ bool LLBBox::IntersectOutGetBias(const LLBBox& other, double bias) const {
   else
     bias = 0;
 
-  return (m_minlon + bias > other.m_maxlon) ||
-         (m_maxlon + bias < other.m_minlon);
+  return m_minlon + bias > other.m_maxlon ||
+         m_maxlon + bias < other.m_minlon;
 }
 
 #if 0  // use if needed...

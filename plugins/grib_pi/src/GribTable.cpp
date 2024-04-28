@@ -274,23 +274,23 @@ void GRIBTable::SetTableSizePosition(int vpWidth, int vpHeight) {
   wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen(wxPoint(x, y));
   // set a default size & position if saved values are outside of limits
   bool refit = false;
-  wxSize scw = wxSize(vpWidth, (vpHeight - GetChartbarHeight()));
+  wxSize scw = wxSize(vpWidth, vpHeight - GetChartbarHeight());
   wxPoint pcw = GetOCPNCanvasWindow()->ClientToScreen(
       GetOCPNCanvasWindow()->GetPosition());
-  if (!(wxRect(pcw, scw).Contains(wxRect(final_pos, wxSize(w, h)))))
+  if (!wxRect(pcw, scw).Contains(wxRect(final_pos, wxSize(w, h))))
     refit = true;
-  if (w < (m_pGribTable->GetRowLabelSize() + (m_pGribTable->GetColSize(0))) ||
-      h < (m_pGribTable->GetColLabelSize() + (m_pGribTable->GetRowSize(0))))
+  if (w < m_pGribTable->GetRowLabelSize() + m_pGribTable->GetColSize(0) ||
+      h < m_pGribTable->GetColLabelSize() + m_pGribTable->GetRowSize(0))
     refit = true;
 
 #ifdef __ANDROID__
   refit = true;
 #endif
   if (refit) {
-    w = (scw.GetWidth() / 10) * 9;  // 10% less than canvas
-    h = (scw.GetHeight() / 10) * 9;
-    x = (scw.GetWidth() / 20);   // centered horizontally
-    y = (scw.GetHeight() / 50);  // a bit out-centered toward the top
+    w = scw.GetWidth() / 10 * 9;  // 10% less than canvas
+    h = scw.GetHeight() / 10 * 9;
+    x = scw.GetWidth() / 20;  // centered horizontally
+    y = scw.GetHeight() / 50; // a bit out-centered toward the top
 #ifdef __ANDROID__
     // Position directly below GRIB control dialog
     y = m_pGDialog->GetSize().GetHeight() * 11 / 10;
@@ -300,10 +300,10 @@ void GRIBTable::SetTableSizePosition(int vpWidth, int vpHeight) {
   }  //
   // in case client size too large for the grib
   int w1 = m_pGribTable->GetRowLabelSize() +
-           (m_pGribTable->GetColSize(0) * m_pGribTable->GetNumberCols());
+           m_pGribTable->GetColSize(0) * m_pGribTable->GetNumberCols();
   w = wxMin(w, w1);
   int h1 = m_pGribTable->GetColLabelSize() +
-           (m_pGribTable->GetRowSize(0) * (m_pGribTable->GetNumberRows() + 4));
+           m_pGribTable->GetRowSize(0) * (m_pGribTable->GetNumberRows() + 4);
   h = wxMin(h, h1);
 
   this->SetClientSize(w, h);
@@ -439,14 +439,14 @@ wxString GRIBTable::GetPressure(GribRecord **recordarray) {
       press = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::PRESSURE, press);
       int p =
-          (m_pGDialog->m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
-               .m_Units == 2)
+          m_pGDialog->m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE]
+          .m_Units == 2
               ? 2
               : 0;  // if PRESSURE & inHG = two decimals
       skn.Printf(wxString::Format(
           _T("%2.*f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
                              GribOverlaySettings::PRESSURE),
-          p, (press)));
+          p, press));
     }
   }
   return skn;
@@ -645,7 +645,7 @@ wxString GRIBTable::GetTimeRowsStrings(wxDateTime date_time, int time_zone,
   wxDateTime t(date_time);
   switch (time_zone) {
     case 0:
-      if ((wxDateTime::Now() == (wxDateTime::Now().ToGMT())) &&
+      if (wxDateTime::Now() == wxDateTime::Now().ToGMT() &&
           t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
         t.Add(wxTimeSpan(1, 0, 0, 0));
       switch (type) {

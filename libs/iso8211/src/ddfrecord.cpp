@@ -214,7 +214,7 @@ int DDFRecord::Read()
 /* -------------------------------------------------------------------- */
     if( !nReuseHeader )
     {
-        return( ReadHeader() );
+        return ReadHeader();
     }
 
 /* -------------------------------------------------------------------- */
@@ -396,7 +396,7 @@ int DDFRecord::ReadHeader()
 /* -------------------------------------------------------------------- */
     if(( _recLength < 24 || _recLength > 100000000
          || _fieldAreaStart < 24 || _fieldAreaStart > 100000 )
-       && (_recLength != 0))
+       && _recLength != 0)
     {
         CPLError( CE_Failure, CPLE_FileIO,
                   "Data record appears to be corrupt on DDF file.\n"
@@ -455,7 +455,7 @@ int DDFRecord::ReadHeader()
 
     if( pachData[nDataSize-1] != DDF_FIELD_TERMINATOR )
     {
-        if( (pachData[nDataSize-2] == DDF_FIELD_TERMINATOR) && (pachData[nDataSize-1] == 0) )
+        if( pachData[nDataSize-2] == DDF_FIELD_TERMINATOR && pachData[nDataSize-1] == 0 )
         {
             nDataSize++;
             pachData = (char *) CPLRealloc(pachData,nDataSize);
@@ -593,7 +593,7 @@ int DDFRecord::ReadHeader()
         // Okay, now let's populate the heck out of pachData...
         // --------------------------------------------------------------------
         for(i=0; i<nFieldCount; i++) {
-            int nEntryOffset = (i*nFieldEntryWidth) + _sizeFieldTag;
+            int nEntryOffset = i*nFieldEntryWidth + _sizeFieldTag;
             int nFieldLength = DDFScanInt(pachData + nEntryOffset,
                                           _sizeFieldLength);
             char *tmpBuf = (char*)CPLMalloc(nFieldLength);
@@ -786,7 +786,7 @@ int DDFRecord::GetIntSubfield( const char * pszField, int iFieldIndex,
 /* -------------------------------------------------------------------- */
     *pnSuccess = TRUE;
 
-    return( poSFDefn->ExtractIntData( pachData, nBytesRemaining, NULL ) );
+    return poSFDefn->ExtractIntData( pachData, nBytesRemaining, NULL );
 }
 
 /************************************************************************/
@@ -852,7 +852,7 @@ double DDFRecord::GetFloatSubfield( const char * pszField, int iFieldIndex,
 /* -------------------------------------------------------------------- */
     *pnSuccess = TRUE;
 
-    return( poSFDefn->ExtractFloatData( pachData, nBytesRemaining, NULL ) );
+    return poSFDefn->ExtractFloatData( pachData, nBytesRemaining, NULL );
 }
 
 /************************************************************************/
@@ -921,7 +921,7 @@ DDFRecord::GetStringSubfield( const char * pszField, int iFieldIndex,
 /* -------------------------------------------------------------------- */
     *pnSuccess = TRUE;
 
-    return( poSFDefn->ExtractStringData( pachData, nBytesRemaining, NULL ) );
+    return poSFDefn->ExtractStringData( pachData, nBytesRemaining, NULL );
 }
 
 /************************************************************************/
@@ -964,7 +964,7 @@ DDFRecord * DDFRecord::Clone()
     {
         int     nOffset;
 
-        nOffset = (paoFields[i].GetData() - pachData);
+        nOffset = paoFields[i].GetData() - pachData;
         poNR->paoFields[i].Initialize( paoFields[i].GetFieldDefn(),
                                        poNR->pachData + nOffset,
                                        paoFields[i].GetDataSize() );
@@ -1081,7 +1081,7 @@ DDFRecord * DDFRecord::Copy()
     {
         int     nOffset;
 
-        nOffset = (paoFields[i].GetData() - pachData);
+        nOffset = paoFields[i].GetData() - pachData;
         poNR->paoFields[i].Initialize( paoFields[i].GetFieldDefn(),
                                        poNR->pachData + nOffset,
                                        paoFields[i].GetDataSize() );
@@ -1390,7 +1390,7 @@ DDFRecord::SetFieldRaw( DDFField *poField, int iIndexWithinField,
 
         bool b_new_16 = false;
         // is the new data UTF-16?
-        if( pachRawData && (pachRawData[nRawDataSize-1] == 0) && (pachRawData[nRawDataSize-2] == DDF_UNIT_TERMINATOR)){
+        if( pachRawData && pachRawData[nRawDataSize-1] == 0 && pachRawData[nRawDataSize-2] == DDF_UNIT_TERMINATOR){
             b_new_16 = true;
         }
 
@@ -1430,10 +1430,10 @@ DDFRecord::SetFieldRaw( DDFField *poField, int iIndexWithinField,
 
 
         //      We may be appending to a UTF-16 field
-            if( (pachFieldData[nOldSize-1] == 0) && (pachFieldData[nOldSize-2] == DDF_UNIT_TERMINATOR)){
+            if( pachFieldData[nOldSize-1] == 0 && pachFieldData[nOldSize-2] == DDF_UNIT_TERMINATOR){
                 memcpy( pachFieldData + nOldSize, pachRawData, nRawDataSize );
             }
-            else if( (pachFieldData[nOldSize-1] == 0) && (pachFieldData[nOldSize-2] == DDF_FIELD_TERMINATOR)){
+            else if( pachFieldData[nOldSize-1] == 0 && pachFieldData[nOldSize-2] == DDF_FIELD_TERMINATOR){
                 memcpy( pachFieldData + nOldSize - 2, pachRawData, nRawDataSize );
             }
             else{
@@ -1563,10 +1563,10 @@ DDFRecord::UpdateFieldRaw( DDFField *poField, int iIndexWithinField,
 /* -------------------------------------------------------------------- */
     if( nRawDataSize < nOldSize )
     {
-        memcpy( ((char*) poField->GetData()) + nPreBytes,
+        memcpy( (char*) poField->GetData() + nPreBytes,
                 pachRawData, nRawDataSize );
-        memmove( ((char *) poField->GetData()) + nPreBytes + nRawDataSize,
-                 ((char *) poField->GetData()) + nPreBytes + nOldSize,
+        memmove( (char *) poField->GetData() + nPreBytes + nRawDataSize,
+                 (char *) poField->GetData() + nPreBytes + nOldSize,
                  nPostBytes );
     }
 
@@ -1583,10 +1583,10 @@ DDFRecord::UpdateFieldRaw( DDFField *poField, int iIndexWithinField,
 /* -------------------------------------------------------------------- */
     if( nRawDataSize >= nOldSize )
     {
-        memmove( ((char *) poField->GetData()) + nPreBytes + nRawDataSize,
-                 ((char *) poField->GetData()) + nPreBytes + nOldSize,
+        memmove( (char *) poField->GetData() + nPreBytes + nRawDataSize,
+                 (char *) poField->GetData() + nPreBytes + nOldSize,
                  nPostBytes );
-        memcpy( ((char*) poField->GetData()) + nPreBytes,
+        memcpy( (char*) poField->GetData() + nPreBytes,
                 pachRawData, nRawDataSize );
     }
 

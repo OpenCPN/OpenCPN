@@ -365,7 +365,7 @@ void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
   else{
     shader = m_pcolor_tri_shader_program;
     shader->Bind();
-    shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+    shader->SetUniformMatrix4fv("MVMatrix", (float *)&m_vp.vp_matrix_transform);
   }
 
     wxColor c = pen.GetColour();
@@ -397,7 +397,7 @@ void ocpnDC::DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
       float xb = xa + ldraw * cosf(angle);
       float yb = ya + ldraw * sinf(angle);
 
-      if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+      if (lrun + ldraw >= lpix)  // last segment is partial draw
       {
         xb = x2;
         yb = y2;
@@ -599,7 +599,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
       else{
         shader = m_pcolor_tri_shader_program;
         shader->Bind();
-        shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+        shader->SetUniformMatrix4fv("MVMatrix", (float *)&m_vp.vp_matrix_transform);
       }
 
       float colorv[4];
@@ -640,7 +640,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
           float xb = xa + ldraw * cosa;
           float yb = ya + ldraw * sina;
 
-          if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+          if (lrun + ldraw >= lpix)  // last segment is partial draw
           {
             xb = x2;
             yb = y2;
@@ -758,13 +758,13 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
 
     //  Grow the work buffer as necessary
     if (workBufSize < (size_t)n * 2) {
-      workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
+      workBuf = (float *)realloc(workBuf, n * 4 * sizeof(float));
       workBufSize = n * 4;
     }
 
     for (int i = 0; i < n; i++) {
       workBuf[i * 2] = points[i].x + xoffset;
-      workBuf[(i * 2) + 1] = points[i].y + yoffset;
+      workBuf[i * 2 + 1] = points[i].y + yoffset;
     }
 
 #if 0     // Use AA lines
@@ -807,7 +807,7 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
       else{
         shader = m_pcolor_tri_shader_program;
         shader->Bind();
-        shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+        shader->SetUniformMatrix4fv("MVMatrix", (float *)&m_vp.vp_matrix_transform);
       }
 
 
@@ -1064,7 +1064,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
   else{
     shader = m_pcircle_filled_shader_program;
     shader->Bind();
-    shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+    shader->SetUniformMatrix4fv("MVMatrix", (float *)&m_vp.vp_matrix_transform);
   }
 
 //   GLShaderProgram *shader = pcircle_filled_shader_program[m_canvasIndex];
@@ -1086,7 +1086,7 @@ void ocpnDC::DrawCircle(wxCoord x, wxCoord y, wxCoord radius) {
     colorv[0] = m_brush.GetColour().Red() / float(256);
     colorv[1] = m_brush.GetColour().Green() / float(256);
     colorv[2] = m_brush.GetColour().Blue() / float(256);
-    colorv[3] = (m_brush.GetStyle() == wxBRUSHSTYLE_TRANSPARENT) ? 0.0 : 1.0;
+    colorv[3] = m_brush.GetStyle() == wxBRUSHSTYLE_TRANSPARENT ? 0.0 : 1.0;
   }
   shader->SetUniform4fv("circle_color", colorv);
 
@@ -1174,11 +1174,11 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
     if(m_glchartCanvas){
       line_shader = pAALine_shader_program[m_canvasIndex];
-      mvmatrix = (float *)&(m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+      mvmatrix = (float *)&m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform;
     }
     else{
       line_shader = m_pAALine_shader_program;
-      mvmatrix = (float *)&(m_vp.vp_matrix_transform);
+      mvmatrix = (float *)&m_vp.vp_matrix_transform;
     }
 
     {
@@ -1233,13 +1233,13 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       // Draw the polygon ouline
       //  Grow the work buffer as necessary
       if (workBufSize < (size_t)n * 2) {
-        workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
+        workBuf = (float *)realloc(workBuf, n * 4 * sizeof(float));
         workBufSize = n * 4;
       }
 
       for (int i = 0; i < n; i++) {
-        workBuf[i * 2] = (points[i].x * scale);
-        workBuf[i * 2 + 1] = (points[i].y * scale);
+        workBuf[i * 2] = points[i].x * scale;
+        workBuf[i * 2 + 1] = points[i].y * scale;
       }
 
       line_shader->Bind();
@@ -1258,13 +1258,13 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       //  Grow the work buffer as necessary
       if (workBufSize < (size_t)n * 2) {
-        workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
+        workBuf = (float *)realloc(workBuf, n * 4 * sizeof(float));
         workBufSize = n * 4;
       }
 
       for (int i = 0; i < n; i++) {
-        workBuf[i * 2] = (points[i].x * scale);      // + xoffset;
-        workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
+        workBuf[i * 2] = points[i].x * scale;     // + xoffset;
+        workBuf[i * 2 + 1] = points[i].y * scale; // + yoffset;
       }
 
       // Draw the triangle fill
@@ -1273,11 +1273,11 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       if(m_glchartCanvas){
         shader = pcolor_tri_shader_program[m_canvasIndex];
-        mvmatrix = (float *)&(m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+        mvmatrix = (float *)&m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform;
       }
       else{
         shader = m_pcolor_tri_shader_program;
-        mvmatrix = (float *)&(m_vp.vp_matrix_transform);
+        mvmatrix = (float *)&m_vp.vp_matrix_transform;
       }
       shader->Bind();
 
@@ -1330,8 +1330,8 @@ void ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
 
       // Reset the workbuf, corrupted in swizzle above
       for (int i = 0; i < n; i++) {
-        workBuf[i * 2] = (points[i].x * scale);      // + xoffset;
-        workBuf[i * 2 + 1] = (points[i].y * scale);  // + yoffset;
+        workBuf[i * 2] = points[i].x * scale;     // + xoffset;
+        workBuf[i * 2 + 1] = points[i].y * scale; // + yoffset;
       }
 
       line_shader->Bind();
@@ -1430,7 +1430,7 @@ void odc_endCallbackD_GLSL(void *data) {
   colorv[3] = c.Alpha() / float(256);
   shader->SetUniform4fv("color", colorv);
 
-  float *bufPt = &(pDC->s_odc_tess_work_buf[pDC->s_odc_tess_vertex_idx_this]);
+  float *bufPt = &pDC->s_odc_tess_work_buf[pDC->s_odc_tess_vertex_idx_this];
   shader->SetAttributePointerf("position", bufPt);
 
   glDrawArrays(pDC->s_odc_tess_mode, 0, pDC->s_odc_nvertex);
@@ -1551,8 +1551,8 @@ void ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
                         bool usemask) {
   wxBitmap bmp;
   if (x < 0 || y < 0) {
-    int dx = (x < 0 ? -x : 0);
-    int dy = (y < 0 ? -y : 0);
+    int dx = x < 0 ? -x : 0;
+    int dy = y < 0 ? -y : 0;
     int w = bitmap.GetWidth() - dx;
     int h = bitmap.GetHeight() - dy;
     /* picture is out of viewport */
@@ -1657,8 +1657,8 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
         wxImage image = bmp.ConvertToImage();
         if (x < 0 ||
             y < 0) { // Allow Drawing text which is offset to start off screen
-          int dx = (x < 0 ? -x : 0);
-          int dy = (y < 0 ? -y : 0);
+          int dx = x < 0 ? -x : 0;
+          int dy = y < 0 ? -y : 0;
           w = bmp.GetWidth() - dx;
           h = bmp.GetHeight() - dy;
           /* picture is out of viewport */
@@ -1677,11 +1677,11 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
           unsigned int b = m_textforegroundcolour.Blue();
           for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-              unsigned int index = ((i * w) + j) * 4;
+              unsigned int index = (i * w + j) * 4;
               data[index] = r;
               data[index + 1] = g;
               data[index + 2] = b;
-              data[index + 3] = im[((i * w) + j) * 3];
+              data[index + 3] = im[(i * w + j) * 3];
             }
           }
         }
@@ -1741,7 +1741,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
         else{
           shader = m_ptexture_2D_shader_program;
           shader->Bind();
-          shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
+          shader->SetUniformMatrix4fv("MVMatrix", (float *)&m_vp.vp_matrix_transform);
         }
 
         // Set up the texture sampler to texture unit 0
@@ -1826,8 +1826,8 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
 
   //  Sometimes GetTextExtent returns really wrong, uninitialized results.
   //  Dunno why....
-  if (w && (*w > 500)) *w = 500;
-  if (h && (*h > 500)) *h = 500;
+  if (w && *w > 500) *w = 500;
+  if (h && *h > 500) *h = 500;
 }
 
 void ocpnDC::ResetBoundingBox() {

@@ -364,8 +364,8 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_) {
     }
 
     // Another special case, where zero padding is used between records.
-    if ((strgrib[0] == 0) && (strgrib[1] == 0) && (strgrib[2] == 0) &&
-        (strgrib[3] == 0)) {
+    if (strgrib[0] == 0 && strgrib[1] == 0 && strgrib[2] == 0 &&
+        strgrib[3] == 0) {
       b_len_add_8 = false;
       b_haveReadGRIB = 0;
     }
@@ -428,9 +428,9 @@ static zuint readPackedBits(zuchar* buf, zuint first, zuint nbBits) {
   zuint bit = first % 8;
 
   zuint val = (buf[oct] << 24) + (buf[oct + 1] << 16) + (buf[oct + 2] << 8) +
-              (buf[oct + 3]);
+              buf[oct + 3];
   val = val << bit;
-  val = val >> (32 - nbBits);
+  val = val >> 32 - nbBits;
   return val;
 }
 
@@ -447,7 +447,7 @@ bool GribV1Record::readGribSection0_IS(ZUFILE* file,
 
   if (b_skip_initial_GRIB == 0) {
     // Cherche le 1er 'G'
-    while ((zu_read(file, strgrib, 1) == 1) && (strgrib[0] != 'G')) {
+    while (zu_read(file, strgrib, 1) == 1 && strgrib[0] != 'G') {
     }
 
     if (strgrib[0] != 'G') {
@@ -534,7 +534,7 @@ bool GribV1Record::readGribSection1_PDS(ZUFILE* file) {
   // if (dataType == GRB_PRECIP_TOT) printf("P1=%d p2=%d\n", periodP1,periodP2);
 
   int decim;
-  decim = (int)(((((zuint)data1[26] & 0x7F) << 8) + (zuint)data1[27]) & 0x7FFF);
+  decim = (int)((((zuint)data1[26] & 0x7F) << 8) + (zuint)data1[27] & 0x7FFF);
   if (data1[26] & 0x80) decim *= -1;
   decimalFactorD = pow(10.0, decim);
 

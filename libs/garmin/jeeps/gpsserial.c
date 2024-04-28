@@ -225,7 +225,7 @@ int32 GPS_Serial_Chars_Ready(gpsdevh *dh)
 	win_serial_data *wsd = (win_serial_data*)dh;
 
 	ClearCommError(wsd->comport, &lpErrors, &lpStat);
-	return (lpStat.cbInQue > 0);
+	return lpStat.cbInQue > 0;
 }
 
 int32 GPS_Serial_Wait(gpsdevh *fd)
@@ -248,7 +248,7 @@ int32 GPS_Serial_Flush(gpsdevh *fd)
 
     GPS_Diag("Flush:");
     n=0;
-    while( (GPS_Serial_Chars_Ready(fd)) && (n < 1000))
+    while( GPS_Serial_Chars_Ready(fd) && n < 1000)
     {
         GPS_Serial_Read(fd,&u,1);
         GPS_Diag("%02x ", u);

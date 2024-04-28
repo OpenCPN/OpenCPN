@@ -37,7 +37,7 @@ static inline int lzss_current_window_offset(LZSS *self) { return lzss_offset_fo
 
 static inline uint8_t *lzss_current_window_pointer(LZSS *self) { return lzss_window_pointer_for_position(self, self->position); }
 
-static inline int64_t lzss_next_window_edge_after_position(LZSS *self, int64_t pos) { return (pos + lzss_size(self)) & ~(int64_t)lzss_mask(self); }
+static inline int64_t lzss_next_window_edge_after_position(LZSS *self, int64_t pos) { return pos + lzss_size(self) & ~(int64_t)lzss_mask(self); }
 
 static inline int64_t lzss_next_window_edge(LZSS *self) { return lzss_next_window_edge_after_position(self, self->position); }
 
@@ -53,7 +53,7 @@ static inline void lzss_emit_match(LZSS *self, int offset, int length) {
     int windowoffs = lzss_current_window_offset(self);
     int i;
     for (i = 0; i < length; i++) {
-        self->window[(windowoffs + i) & lzss_mask(self)] = self->window[(windowoffs + i - offset) & lzss_mask(self)];
+        self->window[windowoffs + i & lzss_mask(self)] = self->window[windowoffs + i - offset & lzss_mask(self)];
     }
     self->position += length;
 }

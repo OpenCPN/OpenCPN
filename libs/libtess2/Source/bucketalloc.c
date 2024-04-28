@@ -80,7 +80,7 @@ static int CreateBucket( struct BucketAlloc* ba )
 	{
 		it -= ba->itemSize;
 		// Store pointer to next free item.
-		*((void**)it) = freelist;
+		*(void**)it = freelist;
 		// Pointer to next location containing a free item.
 		freelist = (void*)it;
 	}

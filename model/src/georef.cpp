@@ -311,7 +311,7 @@ double fromDMS(char *dms) {
 
   sscanf(dms, "%d%[ ]%d%[ ']%lf%[ \"NSWEnswe]", &d, buf, &m, buf, &s, buf);
 
-  s = (double)(abs(d)) + ((double)m + s / 60.0) / 60.0;
+  s = (double)abs(d) + ((double)m + s / 60.0) / 60.0;
 
   if (d >= 0 && strpbrk(buf, "SWsw") == NULL) return s;
 
@@ -332,10 +332,10 @@ void todmm(int flag, double a, char *bufp, int bufplen) {
     snprintf(bufp, bufplen, "%d %02d.%03d'", (int)a, m / 1000, m % 1000);
   else {
     if (flag == 1) {
-      snprintf(bufp, bufplen, "%02d %02d.%03d %c", (int)a, m / 1000, (m % 1000),
+      snprintf(bufp, bufplen, "%02d %02d.%03d %c", (int)a, m / 1000, m % 1000,
                bNeg ? 'S' : 'N');
     } else if (flag == 2) {
-      snprintf(bufp, bufplen, "%03d %02d.%03d %c", (int)a, m / 1000, (m % 1000),
+      snprintf(bufp, bufplen, "%03d %02d.%03d %c", (int)a, m / 1000, m % 1000,
                bNeg ? 'W' : 'E');
     }
   }
@@ -357,7 +357,7 @@ void toSM(double lat, double lon, double lat0, double lon0, double *x,
 
   /*  Make sure lon and lon0 are same phase */
 
-  if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.)) {
+  if (lon * lon0 < 0. && fabs(lon - lon0) > 180.) {
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
   }
 
@@ -367,17 +367,17 @@ void toSM(double lat, double lon, double lat0, double lon0, double *x,
 
   // y =.5 ln( (1 + sin t) / (1 - sin t) )
   const double s = sin(lat * DEGREE);
-  const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
+  const double y3 = .5 * log((1 + s) / (1 - s)) * z;
 
   const double s0 = sin(lat0 * DEGREE);
-  const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
+  const double y30 = .5 * log((1 + s0) / (1 - s0)) * z;
   *y = y3 - y30;
 }
 
 double toSMcache_y30(double lat0) {
   constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
   const double s0 = sin(lat0 * DEGREE);
-  const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
+  const double y30 = .5 * log((1 + s0) / (1 - s0)) * z;
   return y30;
 }
 
@@ -387,7 +387,7 @@ void toSMcache(double lat, double lon, double y30, double lon0, double *x,
 
   /*  Make sure lon and lon0 are same phase */
 
-  if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.)) {
+  if (lon * lon0 < 0. && fabs(lon - lon0) > 180.) {
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
   }
 
@@ -397,7 +397,7 @@ void toSMcache(double lat, double lon, double y30, double lon0, double *x,
 
   // y =.5 ln( (1 + sin t) / (1 - sin t) )
   const double s = sin(lat * DEGREE);
-  const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
+  const double y3 = .5 * log((1 + s) / (1 - s)) * z;
 
   *y = y3 - y30;
 }
@@ -418,23 +418,23 @@ void fromSM(double x, double y, double lat0, double lon0, double *lat,
   //    which is the same as....
 
   const double s0 = sin(lat0 * DEGREE);
-  const double y0 = (.5 * log((1 + s0) / (1 - s0))) * z;
+  const double y0 = .5 * log((1 + s0) / (1 - s0)) * z;
 
   *lat = (2.0 * atan(exp((y0 + y) / z)) - PI / 2.) / DEGREE;
 
   // lon = x + lon0
-  *lon = lon0 + (x / (DEGREE * z));
+  *lon = lon0 + x / (DEGREE * z);
 }
 
 void fromSMR(double x, double y, double lat0, double lon0, double axis_meters,
              double *lat, double *lon) {
   const double s0 = sin(lat0 * DEGREE);
-  const double y0 = (.5 * log((1 + s0) / (1 - s0))) * axis_meters;
+  const double y0 = .5 * log((1 + s0) / (1 - s0)) * axis_meters;
 
   *lat = (2.0 * atan(exp((y0 + y) / axis_meters)) - PI / 2.) / DEGREE;
 
   // lon = x + lon0
-  *lon = lon0 + (x / (DEGREE * axis_meters));
+  *lon = lon0 + x / (DEGREE * axis_meters);
 }
 
 void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x,
@@ -471,25 +471,25 @@ void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat,
 
   constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
-  *lon = lon0 + (x / (DEGREE * z));
+  *lon = lon0 + x / (DEGREE * z);
 
   const double s0 = sin(lat0 * DEGREE);
 
   const double falsen = z * log(tan(PI / 4 + lat0 * DEGREE / 2) *
                                 pow((1. - e * s0) / (1. + e * s0), e / 2.));
-  const double t = exp((y + falsen) / (z));
-  const double xi = (PI / 2.) - 2.0 * atan(t);
+  const double t = exp((y + falsen) / z);
+  const double xi = PI / 2. - 2.0 * atan(t);
 
   //    Add eccentricity terms
 
-  double esf = (es / 2. + (5 * es * es / 24.) + (es * es * es / 12.) +
-                (13.0 * es * es * es * es / 360.)) *
+  double esf = (es / 2. + 5 * es * es / 24. + es * es * es / 12. +
+                13.0 * es * es * es * es / 360.) *
                sin(2 * xi);
-  esf += ((7. * es * es / 48.) + (29. * es * es * es / 240.) +
-          (811. * es * es * es * es / 11520.)) *
+  esf += (7. * es * es / 48. + 29. * es * es * es / 240. +
+          811. * es * es * es * es / 11520.) *
          sin(4. * xi);
-  esf += ((7. * es * es * es / 120.) + (81 * es * es * es * es / 1120.) +
-          (4279. * es * es * es * es / 161280.)) *
+  esf += (7. * es * es * es / 120. + 81 * es * es * es * es / 1120. +
+          4279. * es * es * es * es / 161280.) *
          sin(8. * xi);
 
   *lat = -(xi + esf) / DEGREE;
@@ -513,7 +513,7 @@ void toPOLY(double lat, double lon, double lat0, double lon0, double *x,
     const double E = (lon - lon0) * DEGREE * sin(lat * DEGREE);
     const double cot = 1. / tan(lat * DEGREE);
     *x = sin(E) * cot;
-    *y = (lat * DEGREE) - (lat0 * DEGREE) + cot * (1. - cos(E));
+    *y = lat * DEGREE - lat0 * DEGREE + cot * (1. - cos(E));
 
     *x *= z;
     *y *= z;
@@ -533,16 +533,16 @@ void fromPOLY(double x, double y, double lat0, double lon0, double *lat,
               double *lon) {
   constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
-  double yp = y - (lat0 * DEGREE * z);
+  double yp = y - lat0 * DEGREE * z;
   if (fabs(yp) <= TOL) {
-    *lon = lon0 + (x / (DEGREE * z));
+    *lon = lon0 + x / (DEGREE * z);
     *lat = lat0;
   } else {
     yp = y / z;
     const double xp = x / z;
 
     double lat3 = yp;
-    const double B = (xp * xp) + (yp * yp);
+    const double B = xp * xp + yp * yp;
     int i = N_ITER;
     double dphi;
     do {
@@ -582,7 +582,7 @@ void toTM(float lat, float lon, float lat0, float lon0, double *x, double *y) {
   constexpr double k0 = 1.; /*  Scaling factor    */
 
   const double eccSquared = 2 * f - f * f;
-  const double eccPrimeSquared = (eccSquared) / (1 - eccSquared);
+  const double eccPrimeSquared = eccSquared / (1 - eccSquared);
   const double LatRad = lat * DEGREE;
   const double LongOriginRad = lon0 * DEGREE;
   const double LongRad = lon * DEGREE;
@@ -603,19 +603,19 @@ void toTM(float lat, float lon, float lat0, float lon0, double *x, double *y) {
        (15 * eccSquared * eccSquared / 256 +
         45 * eccSquared * eccSquared * eccSquared / 1024) *
            sin(4 * LatRad) -
-       (35 * eccSquared * eccSquared * eccSquared / 3072) * sin(6 * LatRad));
+       35 * eccSquared * eccSquared * eccSquared / 3072 * sin(6 * LatRad));
 
-  *x = (k0 * N *
-        (A + (1 - T + C) * A * A * A / 6 +
-         (5 - 18 * T + T * T + 72 * C - 58 * eccPrimeSquared) * A * A * A * A *
-             A / 120));
+  *x = k0 * N *
+       (A + (1 - T + C) * A * A * A / 6 +
+        (5 - 18 * T + T * T + 72 * C - 58 * eccPrimeSquared) * A * A * A * A *
+        A / 120);
 
   *y =
-      (k0 *
-       (MM + N * tan(LatRad) *
-                 (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A * A * A * A / 24 +
-                  (61 - 58 * T + T * T + 600 * C - 330 * eccPrimeSquared) * A *
-                      A * A * A * A * A / 720)));
+      k0 *
+      (MM + N * tan(LatRad) *
+       (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A * A * A * A / 24 +
+        (61 - 58 * T + T * T + 600 * C - 330 * eccPrimeSquared) * A *
+        A * A * A * A * A / 720));
 }
 
 /* ---------------------------------------------------------------------------------
@@ -639,7 +639,7 @@ void fromTM(double x, double y, double lat0, double lon0, double *lat,
 
   const double eccSquared = 2 * f - f * f;
 
-  const double eccPrimeSquared = (eccSquared) / (1 - eccSquared);
+  const double eccPrimeSquared = eccSquared / (1 - eccSquared);
   const double e1 =
       (1.0 - sqrt(1.0 - eccSquared)) / (1.0 + sqrt(1.0 - eccSquared));
 
@@ -651,7 +651,7 @@ void fromTM(double x, double y, double lat0, double lon0, double *lat,
   const double phi1Rad =
       mu + (3 * e1 / 2 - 27 * e1 * e1 * e1 / 32) * sin(2 * mu) +
       (21 * e1 * e1 / 16 - 55 * e1 * e1 * e1 * e1 / 32) * sin(4 * mu) +
-      (151 * e1 * e1 * e1 / 96) * sin(6 * mu);
+      151 * e1 * e1 * e1 / 96 * sin(6 * mu);
 
   const double N1 = a / sqrt(1 - eccSquared * sin(phi1Rad) * sin(phi1Rad));
   const double T1 = tan(phi1Rad) * tan(phi1Rad);
@@ -661,14 +661,14 @@ void fromTM(double x, double y, double lat0, double lon0, double *lat,
   const double D = x / (N1 * k0);
 
   *lat = phi1Rad -
-         (N1 * tan(phi1Rad) / R1) *
+         N1 * tan(phi1Rad) / R1 *
              (D * D / 2 -
               (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * D *
                   D * D * D / 24 +
               (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared -
                3 * C1 * C1) *
                   D * D * D * D * D * D / 720);
-  *lat = lat0 + (*lat * rad2deg);
+  *lat = lat0 + *lat * rad2deg;
 
   *lon = (D - (1 + 2 * T1 + C1) * D * D * D / 6 +
           (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eccPrimeSquared +
@@ -695,7 +695,7 @@ void toORTHO(double lat, double lon, double sin_phi0, double cos_phi0,
 
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
-  if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.))
+  if (lon * lon0 < 0. && fabs(lon - lon0) > 180.)
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
 
   double theta = (xlon - lon0) * DEGREE;
@@ -753,7 +753,7 @@ void toPOLAR(double lat, double lon, double e, double lat0, double lon0,
 
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
-  if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.))
+  if (lon * lon0 < 0. && fabs(lon - lon0) > 180.)
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
 
   double theta = (xlon - lon0) * DEGREE;
@@ -789,7 +789,7 @@ static inline void toSTEREO1(double &u, double &v, double &w, double lat,
                              double lon0) {
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
-  if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.))
+  if (lon * lon0 < 0. && fabs(lon - lon0) > 180.)
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
 
   double theta = (xlon - lon0) * DEGREE, phi = lat * DEGREE;
@@ -873,7 +873,7 @@ void toEQUIRECT(double lat, double lon, double lat0, double lon0, double *x,
   constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
   double xlon = lon;
   /*  Make sure lon and lon0 are same phase */
-  if ((lon * lon0 < 0.) && (fabs(lon - lon0) > 180.))
+  if (lon * lon0 < 0. && fabs(lon - lon0) > 180.)
     lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
 
   *x = (xlon - lon0) * DEGREE * z;
@@ -884,9 +884,9 @@ void fromEQUIRECT(double x, double y, double lat0, double lon0, double *lat,
                   double *lon) {
   constexpr double z = WGS84_semimajor_axis_meters * mercator_k0;
 
-  *lat = lat0 + (y / (DEGREE * z));
+  *lat = lat0 + y / (DEGREE * z);
   //    if(fabs(*lat) > 90) *lat = NAN;
-  *lon = lon0 + (x / (DEGREE * z));
+  *lon = lon0 + x / (DEGREE * z);
 }
 
 /* ---------------------------------------------------------------------------------
@@ -940,11 +940,11 @@ void MolodenskyTransform(double lat, double lon, double *to_lat, double *to_lon,
 
     const double rn = from_a / sqrt(1.0 - from_esq * ssqlat);
     const double rm =
-        from_a * (1. - from_esq) / pow((1.0 - from_esq * ssqlat), 1.5);
+        from_a * (1. - from_esq) / pow(1.0 - from_esq * ssqlat, 1.5);
 
-    dlat = (((((-dx * slat * clon - dy * slat * slon) + dz * clat) +
-              (da * ((rn * from_esq * slat * clat) / from_a))) +
-             (df * (rm * adb + rn / adb) * slat * clat))) /
+    dlat = (-dx * slat * clon - dy * slat * slon + dz * clat +
+            da * (rn * from_esq * slat * clat / from_a) +
+            df * (rm * adb + rn / adb) * slat * clat) /
            (rm + from_h);
 
     dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
@@ -996,11 +996,11 @@ void MolodenskyTransform(double lat, double lon, double *to_lat, double *to_lon,
 #define MERI_TOL 1e-9
 
 double adjlon(double lon) {
-  if (fabs(lon) <= SPI) return (lon);
+  if (fabs(lon) <= SPI) return lon;
   lon += ONEPI;                      /* adjust to 0..2pi rad */
   lon -= TWOPI * floor(lon / TWOPI); /* remove integral # of 'revolutions'*/
   lon -= ONEPI;                      /* adjust back to -pi..pi rad */
-  return (lon);
+  return lon;
 }
 
 /* ---------------------------------------------------------------------------------
@@ -1017,7 +1017,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat,
   double th1, costh1, sinth1, sina12, cosa12, M, N, c1, c2, D, P, s1;
   int merid, signS;
 
-  if((brg == 90.) || (brg == 180.)){
+  if(brg == 90. || brg == 180.){
     brg += 1e-9;
   }
 
@@ -1083,9 +1083,9 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat,
     if (merid)
       s1 = HALFPI - th1;
     else {
-      s1 = (fabs(M) >= 1.) ? 0. : acos(M);
+      s1 = fabs(M) >= 1. ? 0. : acos(M);
       s1 = sinth1 / sin(s1);
-      s1 = (fabs(s1) >= 1.) ? 0. : acos(s1);
+      s1 = fabs(s1) >= 1. ? 0. : acos(s1);
     }
   }
 
@@ -1136,7 +1136,7 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat,
       al21 = adjlon(al21);
       phi2 = atan(-(sinth1 * cosds + N * sinds) * sin(al21) /
                   (ellipse ? onef * M : M));
-      de = atan2(sinds * sina12, (costh1 * cosds - sinth1 * sinds * cosa12));
+      de = atan2(sinds * sina12, costh1 * cosds - sinth1 * sinds * cosa12);
       if (ellipse) {
         if (signS)
           de += c1 * ((1. - c2) * ds + c2 * sinds * cos(ss));
@@ -1155,7 +1155,7 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                       double *bearing, double *dist) {
   // For small distances do an ordinary mercator calc. (To prevent return of
   // nan's )
-  if ((fabs(lon2 - lon1) < 0.1) && (fabs(lat2 - lat1) < 0.1)) {
+  if (fabs(lon2 - lon1) < 0.1 && fabs(lat2 - lat1) < 0.1) {
     DistanceBearingMercator(lat2, lon2, lat1, lon1, bearing, dist);
     return;
   } else {
@@ -1247,8 +1247,8 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
         geod_S = geod_a * d;
         tandlammp = tan(dlamm);
       }
-      u = atan2(sindthm, (tandlammp * costhm));
-      v = atan2(cosdthm, (tandlammp * sinthm));
+      u = atan2(sindthm, tandlammp * costhm);
+      v = atan2(cosdthm, tandlammp * sinthm);
       al12 = adjlon(TWOPI + v - u);
       al21 = adjlon(TWOPI - v - u);
       if (al12 < 0) al12 += 2 * PI;
@@ -1385,8 +1385,8 @@ void DistanceBearingMercator(double lat1, double lon1, double lat0, double lon0,
                              double *brg, double *dist) {
   // Calculate bearing and distance between two points
   double latm = (lat0 + lat1) / 2 * DEGREE;  // median of latitude
-  double delta_lat = (lat1 - lat0);
-  double delta_lon = (lon1 - lon0);
+  double delta_lat = lat1 - lat0;
+  double delta_lon = lon1 - lon0;
   double ex_lat0, ex_lat1;
   double bearing, distance;
   // make sure we calc the shortest route, even if this across the date line.
@@ -1556,7 +1556,7 @@ int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon) {
   int r1 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp_lon, cp->tx, cp->ty, cp->lon, cp->pwx,
       cp->lonmin -
-          (cp->txmin * (cp->lonmax - cp->lonmin) / (cp->txmax - cp->txmin)),
+          cp->txmin * (cp->lonmax - cp->lonmin) / (cp->txmax - cp->txmin),
       (cp->lonmax - cp->lonmin) / (cp->txmax - cp->txmin), 0.);
 
   //      if blin_lon > 0, force cross terms in latitude equation coefficients
@@ -1566,7 +1566,7 @@ int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon) {
   int r2 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp_lat, px, cp->ty, cp->lat, cp->pwy,
       cp->latmin -
-          (cp->tymin * (cp->latmax - cp->latmin) / (cp->tymax - cp->tymin)),
+          cp->tymin * (cp->latmax - cp->latmin) / (cp->tymax - cp->tymin),
       0., (cp->latmax - cp->latmin) / (cp->tymax - cp->tymin));
 
   //      (lat,lon) to pixel(tx,ty)
@@ -1575,7 +1575,7 @@ int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon) {
   int r3 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp_lon, cp->lon, cp->lat, cp->tx, cp->wpx,
       cp->txmin -
-          ((cp->txmax - cp->txmin) * cp->lonmin / (cp->lonmax - cp->lonmin)),
+          (cp->txmax - cp->txmin) * cp->lonmin / (cp->lonmax - cp->lonmin),
       (cp->txmax - cp->txmin) / (cp->lonmax - cp->lonmin), 0.0);
 
   //      if blin_lon > 0, force cross terms in latitude equation coefficients
@@ -1585,11 +1585,11 @@ int Georef_Calculate_Coefficients(struct GeoRef *cp, int nlin_lon) {
   int r4 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp_lat, &pnull[0] /*cp->lon*/, cp->lat, cp->ty, cp->wpy,
       cp->tymin -
-          ((cp->tymax - cp->tymin) * cp->latmin / (cp->latmax - cp->latmin)),
+          (cp->tymax - cp->tymin) * cp->latmin / (cp->latmax - cp->latmin),
       0.0, (cp->tymax - cp->tymin) / (cp->latmax - cp->latmin));
 
-  if ((r1) && (r1 < 4) && (r2) && (r2 < 4) && (r3) && (r3 < 4) && (r4) &&
-      (r4 < 4))
+  if (r1 && r1 < 4 && r2 && r2 < 4 && r3 && r3 < 4 && r4 &&
+      r4 < 4)
     return 0;
 
   return 1;
@@ -1619,13 +1619,13 @@ int Georef_Calculate_Coefficients_Proj(struct GeoRef *cp) {
   r1 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp, cp->tx, cp->ty, cp->lon, cp->pwx,
       cp->lonmin -
-          (cp->txmin * (cp->lonmax - cp->lonmin) / (cp->txmax - cp->txmin)),
+          cp->txmin * (cp->lonmax - cp->lonmin) / (cp->txmax - cp->txmin),
       (cp->lonmax - cp->lonmin) / (cp->txmax - cp->txmin), 0.);
 
   r2 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp, cp->tx, cp->ty, cp->lat, cp->pwy,
       cp->latmin -
-          (cp->tymin * (cp->latmax - cp->latmin) / (cp->tymax - cp->tymin)),
+          cp->tymin * (cp->latmax - cp->latmin) / (cp->tymax - cp->tymin),
       0., (cp->latmax - cp->latmin) / (cp->tymax - cp->tymin));
 
   //      (northing/easting) to pixel(tx,ty)
@@ -1634,17 +1634,17 @@ int Georef_Calculate_Coefficients_Proj(struct GeoRef *cp) {
   r3 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp, cp->lon, cp->lat, cp->tx, cp->wpx,
       cp->txmin -
-          ((cp->txmax - cp->txmin) * cp->lonmin / (cp->lonmax - cp->lonmin)),
+          (cp->txmax - cp->txmin) * cp->lonmin / (cp->lonmax - cp->lonmin),
       (cp->txmax - cp->txmin) / (cp->lonmax - cp->lonmin), 0.0);
 
   r4 = Georef_Calculate_Coefficients_Onedir(
       cp->count, mp, cp->lon, cp->lat, cp->ty, cp->wpy,
       cp->tymin -
-          ((cp->tymax - cp->tymin) * cp->latmin / (cp->latmax - cp->latmin)),
+          (cp->tymax - cp->tymin) * cp->latmin / (cp->latmax - cp->latmin),
       0.0, (cp->tymax - cp->tymin) / (cp->latmax - cp->latmin));
 
-  if ((r1) && (r1 < 4) && (r2) && (r2 < 4) && (r3) && (r3 < 4) && (r4) &&
-      (r4 < 4))
+  if (r1 && r1 < 4 && r2 && r2 < 4 && r3 && r3 < 4 && r4 &&
+      r4 < 4)
     return 0;
   else
     return 1;
@@ -1715,9 +1715,9 @@ void lm_print_default(int n_par, double *par, int m_dat, double *fvec,
     if (iflag == -1) {
       printf("  fitting data as follows:\n");
       for (int i = 0; i < m_dat; ++i) {
-        const double tx = (mydata->user_tx)[i];
-        const double ty = (mydata->user_ty)[i];
-        const double y = (mydata->user_y)[i];
+        const double tx = mydata->user_tx[i];
+        const double ty = mydata->user_ty[i];
+        const double y = mydata->user_y[i];
         const double f = mydata->user_func(tx, ty, mydata->n_par, par);
         printf(
             "    tx[%2d]=%8g     ty[%2d]=%8g     y=%12g fit=%12g     "
@@ -1762,7 +1762,7 @@ void lm_minimize(int m_dat, int n_par, double *par, lm_evaluate_ftype *evaluate,
   // this goes through the modified legacy interface:
   lm_lmdif(m_dat, n_par, par, &fvec[0], control->ftol, control->xtol,
            control->gtol, control->maxcall * (n_par + 1), control->epsilon,
-           &diag[0], 1, control->stepbound, &(control->info), &(control->nfev),
+           &diag[0], 1, control->stepbound, &control->info, &control->nfev,
            &fjac[0], &ipvt[0], &qtf[0], &wa1[0], &wa2[0], &wa3[0], &wa4[0],
            evaluate, printout, data);
 
@@ -2013,8 +2013,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
 
   // *** check the input parameters for errors.
 
-  if ((n <= 0) || (m < n) || (ftol < 0.) || (xtol < 0.) || (gtol < 0.) ||
-      (maxfev <= 0) || (factor <= 0.)) {
+  if (n <= 0 || m < n || ftol < 0. || xtol < 0. || gtol < 0. ||
+      maxfev <= 0 || factor <= 0.) {
     *info = 0;  // invalid parameter
     return;
   }
@@ -2037,7 +2037,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
 
   *info = 0;
   (*evaluate)(x, m, fvec, data, info);
-  (*printout)(n, x, m, fvec, data, 0, 0, ++(*nfev));
+  (*printout)(n, x, m, fvec, data, 0, 0, ++*nfev);
   if (*info < 0) return;
 
   // *** the outer loop.
@@ -2065,7 +2065,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
       x[j] = temp + step;
       *info = 0;
       (*evaluate)(x, m, wa4, data, info);
-      (*printout)(n, x, m, wa4, data, 1, iter, ++(*nfev));
+      (*printout)(n, x, m, wa4, data, 1, iter, ++*nfev);
       if (*info < 0) return;  // user requested break
       x[j] = temp;
       for (int i = 0; i < m; i++) fjac[j * m + i] = (wa4[i] - fvec[i]) / step;
@@ -2175,7 +2175,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol, double xtol,
 
       *info = 0;
       (*evaluate)(wa2, m, wa4, data, info);
-      (*printout)(n, x, m, wa4, data, 2, iter, ++(*nfev));
+      (*printout)(n, x, m, wa4, data, 2, iter, ++*nfev);
       if (*info < 0) return;  // user requested break
 
       double fnorm1 = lm_enorm(m, wa4);
@@ -2801,7 +2801,7 @@ double lm_enorm(int n, double *x) {
 
   double s1 = 0.0, s2 = 0.0, s3 = 0.0;
   double x1max = 0.0, x3max = 0.0;
-  const double agiant = LM_SQRT_GIANT / ((double)n);
+  const double agiant = LM_SQRT_GIANT / (double)n;
 
   for (int i = 0; i < n; i++) {
     double xabs = fabs(x[i]);
@@ -2834,10 +2834,10 @@ double lm_enorm(int n, double *x) {
 
   // *** calculation of norm.
 
-  if (s1 != 0) return x1max * sqrt(s1 + (s2 / x1max) / x1max);
+  if (s1 != 0) return x1max * sqrt(s1 + s2 / x1max / x1max);
   if (s2 != 0) {
-    if (s2 >= x3max) return sqrt(s2 * (1 + (x3max / s2) * (x3max * s3)));
-    return sqrt(x3max * ((s2 / x3max) + (x3max * s3)));
+    if (s2 >= x3max) return sqrt(s2 * (1 + x3max / s2 * (x3max * s3)));
+    return sqrt(x3max * (s2 / x3max + x3max * s3));
   }
 
   return x3max * sqrt(s3);

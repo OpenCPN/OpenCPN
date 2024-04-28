@@ -106,7 +106,7 @@ static wxString TToString(const wxDateTime date_time, const int time_zone) {
   wxDateTime t(date_time);
   switch (time_zone) {
     case 0:
-      if ((wxDateTime::Now() == (wxDateTime::Now().ToGMT())) &&
+      if (wxDateTime::Now() == wxDateTime::Now().ToGMT() &&
           t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
         t.Add(wxTimeSpan(1, 0, 0, 0));
       return t.Format(_T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local) +
@@ -437,7 +437,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   wxString title;
   if (m_bGRIBActiveFile->IsOK()) {
     wxFileName fn(m_bGRIBActiveFile->GetFileNames()[0]);
-    title = (_("File: "));
+    title = _("File: ");
     title.Append(fn.GetFullName());
     if (rsa->GetCount() == 0) {  // valid but empty file
       delete m_bGRIBActiveFile;
@@ -529,41 +529,41 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
 
   bool bconfigOK = false;
   if (m_bDataPlot[GribOverlaySettings::WIND] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::WIND_GUST] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::PRESSURE] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::WAVE] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::WAVE] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::CURRENT] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) !=
-       wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) !=
+      wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::PRECIPITATION] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::CLOUD] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::CAPE] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND)
     bconfigOK = true;
   if (m_bDataPlot[GribOverlaySettings::COMP_REFL] &&
-      (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND))
+      m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_COMP_REFL) != wxNOT_FOUND)
     bconfigOK = true;
 
   //  If no parameter seems to be enabled by config, enable them all just to be
@@ -642,8 +642,8 @@ void GRIBUICtrlBar::SetCursorLatLon(double lat, double lon) {
   m_cursor_lon = lon;
   m_cursor_lat = lat;
 
-  if (m_vp && ((lat > m_vp->lat_min) && (lat < m_vp->lat_max)) &&
-      ((lon > m_vp->lon_min) && (lon < m_vp->lon_max)))
+  if (m_vp && (lat > m_vp->lat_min && lat < m_vp->lat_max) &&
+      (lon > m_vp->lon_min && lon < m_vp->lon_max))
     UpdateTrackingControl();
 }
 
@@ -689,7 +689,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
   /* first hide grabber, detach cursordata and set ctrl/buttons visibility to
   have CtrlBar in his "alone" version altitude button visibility is a special
   case ( i == 0 ) */
-  int state = (m_DialogStyle >> 1 == ATTACHED && m_CDataIsShown) ? 0 : 1;
+  int state = m_DialogStyle >> 1 == ATTACHED && m_CDataIsShown ? 0 : 1;
   for (unsigned i = 0; i < m_OverlaySettings.m_iCtrlBarCtrlVisible[state].Len();
        i++) {
     bool vis = i > 0 ? true : m_HasAltitude ? true : false;
@@ -822,11 +822,11 @@ void GRIBUICtrlBar::OnAltitude(wxCommandEvent &event) {
                  wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this);
 
   for (int i = 0; i < 5; i++) {
-    if (((m_pTimelineSet &&
-          m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) !=
-              wxNOT_FOUND &&
-          m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) !=
-              wxNOT_FOUND)) ||
+    if ((m_pTimelineSet &&
+         m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) !=
+         wxNOT_FOUND &&
+         m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) !=
+         wxNOT_FOUND) ||
         i == 0) {
       MenuAppend(
           amenu, ID_CTRLALTITUDE + 1000 + i,
@@ -937,11 +937,11 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
                      this);
 
       for (int i = 0; i < 5; i++) {
-        if (((m_pTimelineSet &&
-              m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) !=
-                  wxNOT_FOUND &&
-              m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) !=
-                  wxNOT_FOUND)) ||
+        if ((m_pTimelineSet &&
+             m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) !=
+             wxNOT_FOUND &&
+             m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) !=
+             wxNOT_FOUND) ||
             i == 0) {
           MenuAppend(smenu, ID_CTRLALTITUDE + 1000 + i,
                          m_OverlaySettings.GetAltitudeFromIndex(
@@ -1145,7 +1145,7 @@ void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
   pPlugIn->SetDialogFont(dialog);
   for (size_t i = 0; i < dialog->m_nSettingsBook->GetPageCount(); i++) {
     wxScrolledWindow *sc =
-        ((wxScrolledWindow *)dialog->m_nSettingsBook->GetPage(i));
+        (wxScrolledWindow *)dialog->m_nSettingsBook->GetPage(i);
     pPlugIn->SetDialogFont(sc);
   }  // end set font
 
@@ -1254,7 +1254,7 @@ void GRIBUICtrlBar::OpenFileFromJSON(wxString json) {
     return;
   }
 
-  wxString file = root[(_T("grib_file"))].AsString();
+  wxString file = root[L"grib_file"].AsString();
 
   if (file.Length() && wxFileExists(file)) {
     wxFileName fn(file);
@@ -1374,7 +1374,7 @@ int GRIBUICtrlBar::GetNearestIndex(wxDateTime time, int model) {
     ip1time = rsa->Item(i + 1).m_Reference_Time;
     if (ip1time >= time) break;
   }
-  if (!model) return (time - itime > (ip1time - time) * 3) ? i + 1 : i;
+  if (!model) return time - itime > (ip1time - time) * 3 ? i + 1 : i;
 
   return model == 1 ? time == ip1time ? i : i + 1 : time == ip1time ? i + 1 : i;
 }
@@ -1388,12 +1388,12 @@ int GRIBUICtrlBar::GetNearestValue(wxDateTime time, int model) {
   wxTimeSpan span = time - MinTime();
   int t = span.GetMinutes() / stepmin;
   itime = MinTime() +
-          wxTimeSpan(t * stepmin / 60, (t * stepmin) % 60);  // time at t
+          wxTimeSpan(t * stepmin / 60, t * stepmin % 60);  // time at t
   ip1time = itime + wxTimeSpan(stepmin / 60, stepmin % 60);  // time at t+1
 
   if (model == 1) return time == ip1time ? t + 1 : t;
 
-  return (time - itime > (ip1time - time) * 3) ? t + 1 : t;
+  return time - itime > (ip1time - time) * 3 ? t + 1 : t;
 }
 
 wxDateTime GRIBUICtrlBar::GetNow() {
@@ -1403,19 +1403,19 @@ wxDateTime GRIBUICtrlBar::GetNow() {
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
   // verifie if we are outside of the file time range
-  now = (now > rsa->Item(rsa->GetCount() - 1).m_Reference_Time)
+  now = now > rsa->Item(rsa->GetCount() - 1).m_Reference_Time
             ? rsa->Item(rsa->GetCount() - 1).m_Reference_Time
-        : (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time
+        : now < rsa->Item(0).m_Reference_Time ? rsa->Item(0).m_Reference_Time
                                                 : now;
   return now;
 }
 
 wxDateTime GRIBUICtrlBar::TimelineTime() {
   if (m_InterpolateMode) {
-    int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
+    int tl = m_TimeLineHours == 0 ? 0 : m_sTimeline->GetValue();
     int stepmin =
         m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
-    return MinTime() + wxTimeSpan(tl * stepmin / 60, (tl * stepmin) % 60);
+    return MinTime() + wxTimeSpan(tl * stepmin / 60, tl * stepmin % 60);
   }
 
   ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
@@ -2236,7 +2236,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
             GribRecord *oRec =
                 m_GribRecordSetArray.Item(j).m_GribRecordPtrArray[idx];
             if (idx == Idx_PRESSURE) {
-              skip = (oRec->getLevelType() == LV_MSL);
+              skip = oRec->getLevelType() == LV_MSL;
             } else {
               // we favor UV over DIR/SPEED
               if (polarWind) {
@@ -2251,7 +2251,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
               }
               // favor average aka timeRange == 3 (HRRR subhourly subsets have
               // both 3 and 0 records for winds)
-              if (!skip && (oRec->getTimeRange() == 3)) {
+              if (!skip && oRec->getTimeRange() == 3) {
                 skip = true;
               }
               // we favor significant Wave other wind wave.

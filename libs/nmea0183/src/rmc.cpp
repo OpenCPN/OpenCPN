@@ -117,7 +117,7 @@ bool RMC::Parse( const SENTENCE& sentence )
        if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
        {
          SetErrorMessage( _T("Invalid Checksum") );
-         return( FALSE );
+         return FALSE;
        }
    }
 
@@ -126,7 +126,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    if(nFields >= 12){
        wxString mode_string = sentence.Field( 12 );
        if(!mode_string.StartsWith(_T("*"))) {
-           if((mode_string == _T("N")) || (mode_string == _T("S")))     // Not valid, or simulator mode
+           if(mode_string == _T("N") || mode_string == _T("S"))     // Not valid, or simulator mode
                mode_valid = false;
        }
    }
@@ -145,7 +145,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    MagneticVariation          = sentence.Double( 10 );
    MagneticVariationDirection = sentence.EastOrWest( 11 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool RMC::Write( SENTENCE& sentence )
@@ -175,7 +175,7 @@ bool RMC::Write( SENTENCE& sentence )
    sentence += FAAModeIndicator;
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const RMC& RMC::operator = ( const RMC& source )
@@ -192,5 +192,5 @@ const RMC& RMC::operator = ( const RMC& source )
    MagneticVariationDirection = source.MagneticVariationDirection;
    FAAModeIndicator           = source.FAAModeIndicator;
 
-  return( *this );
+  return*this;
 }

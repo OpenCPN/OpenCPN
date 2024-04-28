@@ -95,7 +95,7 @@ bool XTE::Parse( const SENTENCE& sentence )
    if ( check == NTrue )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    /*
@@ -108,7 +108,7 @@ bool XTE::Parse( const SENTENCE& sentence )
    DirectionToSteer                         = sentence.LeftOrRight( 4 );
    CrossTrackUnits                          = sentence.Field( 5 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool XTE::Write( SENTENCE& sentence )
@@ -134,7 +134,7 @@ bool XTE::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const XTE& XTE::operator = ( const XTE& source )
@@ -147,5 +147,5 @@ const XTE& XTE::operator = ( const XTE& source )
    DirectionToSteer                         = source.DirectionToSteer;
    CrossTrackUnits                          = source.CrossTrackUnits;
 
-   return( *this );
+   return*this;
 }

@@ -291,7 +291,7 @@ int jpc_mqenc_putbit_func(jpc_mqenc_t *mqenc, int bit)
     JAS_DBGLOG(100, ("jpc_mqenc_putbit(%p, %d)\n", mqenc, bit));
     JPC_MQENC_CALL(100, jpc_mqenc_dump(mqenc, stderr));
 
-    state = *(mqenc->curctx);
+    state = *mqenc->curctx;
 
     if (state->mps == bit) {
         /* Apply the CODEMPS algorithm as defined in the standard. */
@@ -306,7 +306,7 @@ int jpc_mqenc_putbit_func(jpc_mqenc_t *mqenc, int bit)
         jpc_mqenc_codelps2(mqenc->areg, mqenc->creg, mqenc->ctreg, mqenc->curctx, mqenc);
     }
 
-    return jpc_mqenc_error(mqenc) ? (-1) : 0;
+    return jpc_mqenc_error(mqenc) ? -1 : 0;
 }
 
 int jpc_mqenc_codemps2(jpc_mqenc_t *mqenc)
@@ -315,7 +315,7 @@ int jpc_mqenc_codemps2(jpc_mqenc_t *mqenc)
     the CODEMPS algorithm from the standard.  Some of the work is also
     performed by the caller. */
 
-    jpc_mqstate_t *state = *(mqenc->curctx);
+    jpc_mqstate_t *state = *mqenc->curctx;
     if (mqenc->areg < state->qeval) {
         mqenc->areg = state->qeval;
     } else {
@@ -323,13 +323,13 @@ int jpc_mqenc_codemps2(jpc_mqenc_t *mqenc)
     }
     *mqenc->curctx = state->nmps;
     jpc_mqenc_renorme(mqenc->areg, mqenc->creg, mqenc->ctreg, mqenc);
-    return jpc_mqenc_error(mqenc) ? (-1) : 0;
+    return jpc_mqenc_error(mqenc) ? -1 : 0;
 }
 
 int jpc_mqenc_codelps(jpc_mqenc_t *mqenc)
 {
     jpc_mqenc_codelps2(mqenc->areg, mqenc->creg, mqenc->ctreg, mqenc->curctx, mqenc);
-    return jpc_mqenc_error(mqenc) ? (-1) : 0;
+    return jpc_mqenc_error(mqenc) ? -1 : 0;
 }
 
 /******************************************************************************\

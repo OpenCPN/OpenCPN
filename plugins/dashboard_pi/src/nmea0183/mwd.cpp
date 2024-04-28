@@ -85,7 +85,7 @@ bool MWD::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 9 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    WindAngleTrue      = sentence.Double( 1 );
@@ -93,7 +93,7 @@ bool MWD::Parse( const SENTENCE& sentence )
    WindSpeedKnots     = sentence.Double( 5 );
    WindSpeedms        = sentence.Double( 7 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool MWD::Write( SENTENCE& sentence )
@@ -117,7 +117,7 @@ bool MWD::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const MWD& MWD::operator = ( const MWD& source )
@@ -129,5 +129,5 @@ const MWD& MWD::operator = ( const MWD& source )
    WindSpeedKnots     = source.WindSpeedKnots;
    WindSpeedms        = source.WindSpeedms;
 
-   return( *this );
+   return*this;
 }

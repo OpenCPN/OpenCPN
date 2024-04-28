@@ -479,7 +479,7 @@ void GribRecord::setRecordCurrentDate(time_t t) {
 
 //----------------------------------------------
 static bool isleapyear(zuint y) {
-  return ((y % 4 == 0) && (y % 100 != 0)) || (y % 400 == 0);
+  return (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
 }
 
 time_t GribRecord::makeDate(zuint year, zuint month, zuint day, zuint hour,

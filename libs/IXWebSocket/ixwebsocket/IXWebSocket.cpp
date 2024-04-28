@@ -480,7 +480,7 @@ namespace ix
                                       bool binary,
                                       const OnProgressCallback& onProgressCallback)
     {
-        return (binary) ? sendBinary(data, onProgressCallback) : sendText(data, onProgressCallback);
+        return binary ? sendBinary(data, onProgressCallback) : sendText(data, onProgressCallback);
     }
 
     WebSocketSendInfo WebSocket::sendBinary(const std::string& data,

@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    char *DBFRow = (char *)malloc((old_DBF->nRecordLength) + 15);
+    char *DBFRow = (char *)malloc(old_DBF->nRecordLength + 15);
 
     int byRing = 1;
     for (int i = 0; i < nEntities; i++)
@@ -103,8 +103,8 @@ int main(int argc, char **argv)
 
                 SHPObject *cent_pt;
                 cent_pt =
-                    SHPCreateSimpleObject(SHPT_POINT, 1, (double *)&(Centrd.x),
-                                          (double *)&(Centrd.y), NULL);
+                    SHPCreateSimpleObject(SHPT_POINT, 1, (double *)&Centrd.x,
+                                          (double *)&Centrd.y, NULL);
 
                 SHPWriteObject(new_SHP, -1, cent_pt);
 
@@ -122,8 +122,8 @@ int main(int argc, char **argv)
             PT Centrd = SHPCentrd_2d(psCShape);
 
             SHPObject *cent_pt =
-                SHPCreateSimpleObject(SHPT_POINT, 1, (double *)&(Centrd.x),
-                                      (double *)&(Centrd.y), NULL);
+                SHPCreateSimpleObject(SHPT_POINT, 1, (double *)&Centrd.x,
+                                      (double *)&Centrd.y, NULL);
 
             SHPWriteObject(new_SHP, -1, cent_pt);
 

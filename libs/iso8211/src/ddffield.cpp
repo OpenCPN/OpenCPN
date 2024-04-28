@@ -386,7 +386,7 @@ const char *DDFField::GetInstanceData( int nInstance,
         poLastSubfield->GetDataLength( pachLastData, nBytesRemaining2,
                                        &nLastSubfieldWidth );
 
-        if((pachLastData[nLastSubfieldWidth-1] == 0) && (pachLastData[nLastSubfieldWidth - 2] == DDF_FIELD_TERMINATOR))
+        if(pachLastData[nLastSubfieldWidth-1] == 0 && pachLastData[nLastSubfieldWidth - 2] == DDF_FIELD_TERMINATOR)
             nLastSubfieldWidth -= 2;
 
         *pnInstanceSize =

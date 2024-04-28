@@ -207,7 +207,7 @@ public:
         PlugInByName(metadata.name, loader->GetPlugInArray());
     std::string label(_("Install"));
     if (found &&
-        ((found->m_version_major > 0) || (found->m_version_minor > 0))) {
+        (found->m_version_major > 0 || found->m_version_minor > 0)) {
       label = getUpdateLabel(found, metadata);
       m_remove = true;
     }
@@ -338,7 +338,7 @@ public:
 
     std::string name_reduced = plugin->name;
     if(plugin->name.size() * GetCharWidth() > (size_t)m_widthDescription * 7 / 10){
-      int nc = (m_widthDescription *7 / 10) / GetCharWidth();
+      int nc = m_widthDescription *7 / 10 / GetCharWidth();
       if (nc > 3){
         name_reduced = plugin->name.substr(0, nc-3) + "...";
       }

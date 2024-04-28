@@ -63,7 +63,7 @@ do_over:
 	 * The one caller that doesn't want this hidden is device discovery
 	 * in the A000 handler.
 	 */
-	if ((n == 0) && eat_bulk)  {
+	if (n == 0 && eat_bulk)  {
 		goto do_over;
 	}
 

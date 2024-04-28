@@ -177,7 +177,7 @@ const char *S57ClassRegistrar::OCPLReadLine(FILE *fp)
            pszRLBuffer[nRLBufferSize - 2] != 13 &&
            pszRLBuffer[nRLBufferSize - 2] != 10);
 
-  return (pszRLBuffer);
+  return pszRLBuffer;
 }
 
 /************************************************************************/

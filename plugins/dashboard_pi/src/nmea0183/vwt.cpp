@@ -93,7 +93,7 @@ bool VWT::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 9 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    WindDirectionMagnitude = sentence.Double( 1 );
@@ -102,7 +102,7 @@ bool VWT::Parse( const SENTENCE& sentence )
    WindSpeedms = sentence.Double( 5 );
    WindSpeedKmh = sentence.Double( 7 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool VWT::Write( SENTENCE& sentence )
@@ -122,7 +122,7 @@ bool VWT::Write( SENTENCE& sentence )
    sentence += WindSpeedms;
    sentence += WindSpeedKmh;
 
-   return( TRUE );
+   return TRUE;
 }
 
 const VWT& VWT::operator = ( const VWT& source )
@@ -135,5 +135,5 @@ const VWT& VWT::operator = ( const VWT& source )
    WindSpeedms              = source.WindSpeedms;
    WindSpeedKmh             = source.WindSpeedKmh;
 
-   return( *this );
+   return*this;
 }

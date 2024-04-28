@@ -55,26 +55,26 @@ addr_cmp(const struct addr *a, const struct addr *b)
 
 	/* XXX */
 	if ((i = a->addr_type - b->addr_type) != 0)
-		return (i);
+		return i;
 	
 	/* XXX - 10.0.0.1 is "smaller" than 10.0.0.0/8? */
 	if ((i = a->addr_bits - b->addr_bits) != 0)
-		return (i);
+		return i;
 	
 	j = b->addr_bits / 8;
 
 	for (i = 0; i < j; i++) {
 		if ((k = a->addr_data8[i] - b->addr_data8[i]) != 0)
-			return (k);
+			return k;
 	}
 	if ((k = b->addr_bits % 8) == 0)
-		return (0);
+		return 0;
 
-	k = ~0 << (8 - k);
+	k = ~0 << 8 - k;
 	i = b->addr_data8[j] & k;
 	j = a->addr_data8[j] & k;
 	
-	return (j - i);
+	return j - i;
 }
 
 int
@@ -98,7 +98,7 @@ addr_net(const struct addr *a, struct addr *b)
 		b->addr_bits = IP6_ADDR_BITS;
 		memset(&b->addr_ip6, 0, IP6_ADDR_LEN);
 		
-		switch ((i = a->addr_bits / 32)) {
+		switch (i = a->addr_bits / 32) {
 		case 4: b->addr_data32[3] = a->addr_data32[3];
 		case 3: b->addr_data32[2] = a->addr_data32[2];
 		case 2: b->addr_data32[1] = a->addr_data32[1];
@@ -109,9 +109,9 @@ addr_net(const struct addr *a, struct addr *b)
 			b->addr_data32[i] = a->addr_data32[i] & mask;
 		}
 	} else
-		return (-1);
+		return -1;
 	
-	return (0);
+	return 0;
 }
 
 int
@@ -123,8 +123,8 @@ addr_bcast(const struct addr *a, struct addr *b)
 		addr_btom(a->addr_bits, &mask.addr_ip, IP_ADDR_LEN);
 		b->addr_type = ADDR_TYPE_IP;
 		b->addr_bits = IP_ADDR_BITS;
-		b->addr_ip = (a->addr_ip & mask.addr_ip) |
-		    (~0L & ~mask.addr_ip);
+		b->addr_ip = a->addr_ip & mask.addr_ip |
+		    ~0L & ~mask.addr_ip;
 	} else if (a->addr_type == ADDR_TYPE_ETH) {
 		b->addr_type = ADDR_TYPE_ETH;
 		b->addr_bits = ETH_ADDR_BITS;
@@ -132,9 +132,9 @@ addr_bcast(const struct addr *a, struct addr *b)
 	} else {
 		/* XXX - no broadcast addresses in IPv6 */
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
-	return (0);
+	return 0;
 }
 
 char *
@@ -145,21 +145,21 @@ addr_ntop(const struct addr *src, char *dst, size_t size)
 			if (src->addr_bits != IP_ADDR_BITS)
 				sprintf(dst + strlen(dst), "/%d",
 				    src->addr_bits);
-			return (dst);
+			return dst;
 		}
 	} else if (src->addr_type == ADDR_TYPE_IP6 && size >= 42) {
 		if (ip6_ntop(&src->addr_ip6, dst, size) != NULL) {
 			if (src->addr_bits != IP6_ADDR_BITS)
 				sprintf(dst + strlen(dst), "/%d",
 				    src->addr_bits);
-			return (dst);
+			return dst;
 		}
 	} else if (src->addr_type == ADDR_TYPE_ETH && size >= 18) {
 		if (src->addr_bits == ETH_ADDR_BITS)
-			return (eth_ntop(&src->addr_eth, dst, size));
+			return eth_ntop(&src->addr_eth, dst, size);
 	}
 	errno = EINVAL;
-	return (NULL);
+	return NULL;
 }
 
 int
@@ -178,7 +178,7 @@ addr_pton(const char *src, struct addr *dst)
 				/* XXX - mask is specified like /255.0.0.0 */
 				if (ip_pton(&src[i + 1], &m) != 0) {
 					errno = EINVAL;
-					return (-1);
+					return -1;
 				}
 				addr_mtob(&m, sizeof(m), &b);
 				bits = b;
@@ -186,7 +186,7 @@ addr_pton(const char *src, struct addr *dst)
 				bits = strtol(&src[i + 1], &ep, 10);
 				if (ep == src || *ep != '\0' || bits < 0) {
 					errno = EINVAL;
-					return (-1);
+					return -1;
 				}
 			}
 			break;
@@ -204,16 +204,16 @@ addr_pton(const char *src, struct addr *dst)
 		dst->addr_bits = IP6_ADDR_BITS;
 	} else {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 	if (bits >= 0) {
 		if (bits > dst->addr_bits) {
 			errno = EINVAL;
-			return (-1);
+			return -1;
 		}
 		dst->addr_bits = (uint16_t)bits;
 	}
-	return (0);
+	return 0;
 }
 
 char *
@@ -225,11 +225,11 @@ addr_ntoa(const struct addr *a)
 	if (p == NULL || p > buf + sizeof(buf) - 64 /* XXX */)
 		p = buf;
 	
-	if (addr_ntop(a, p, (buf + sizeof(buf)) - p) != NULL) {
+	if (addr_ntop(a, p, buf + sizeof(buf) - p) != NULL) {
 		q = p;
 		p += strlen(p) + 1;
 	}
-	return (q);
+	return q;
 }
 
 int
@@ -281,9 +281,9 @@ addr_ntos(const struct addr *a, struct sockaddr *sa)
 		break;
 	default:
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
-	return (0);
+	return 0;
 }
 
 int
@@ -335,9 +335,9 @@ addr_ston(const struct sockaddr *sa, struct addr *a)
 		break;
 	default:
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
-	return (0);
+	return 0;
 }
 
 int
@@ -361,10 +361,10 @@ addr_btos(uint16_t bits, struct sockaddr *sa)
 		so->sin.sin_len = IP_ADDR_LEN + (bits / 8) + (bits % 8);
 #endif
 		so->sin.sin_family = AF_INET;
-		return (addr_btom(bits, &so->sin.sin_addr, IP_ADDR_LEN));
+		return addr_btom(bits, &so->sin.sin_addr, IP_ADDR_LEN);
 	}
 	errno = EINVAL;
-	return (-1);
+	return -1;
 }
 
 int
@@ -403,13 +403,13 @@ addr_stob(const struct sockaddr *sa, uint16_t *bits)
 	}
 	if (i != len && p[i]) {
 		for (j = 7; j > 0; j--, n++) {
-			if ((p[i] & (1 << j)) == 0)
+			if ((p[i] & 1 << j) == 0)
 				break;
 		}
 	}
 	*bits = n;
 	
-	return (0);
+	return 0;
 }
 	
 int
@@ -421,14 +421,14 @@ addr_btom(uint16_t bits, void *mask, size_t size)
 	if (size == IP_ADDR_LEN) {
 		if (bits > IP_ADDR_BITS) {
 			errno = EINVAL;
-			return (-1);
+			return -1;
 		}
 		*(uint32_t *)mask = bits ?
-		    htonl(~0 << (IP_ADDR_BITS - bits)) : 0;
+		    htonl(~0 << IP_ADDR_BITS - bits) : 0;
 	} else {
 		if (size * 8 < bits) {
 			errno = EINVAL;
-			return (-1);
+			return -1;
 		}
 		p = (u_char *)mask;
 		
@@ -436,12 +436,12 @@ addr_btom(uint16_t bits, void *mask, size_t size)
 			memset(p, 0xff, net);
 		
 		if ((host = bits % 8) > 0) {
-			p[net] = 0xff << (8 - host);
+			p[net] = 0xff << 8 - host;
 			memset(&p[net + 1], 0, size - net - 1);
 		} else
 			memset(&p[net], 0, size - net);
 	}
-	return (0);
+	return 0;
 }
 
 int
@@ -459,11 +459,11 @@ addr_mtob(const void *mask, size_t size, uint16_t *bits)
 	}
 	if (i != (int)size && p[i]) {
 		for (j = 7; j > 0; j--, n++) {
-			if ((p[i] & (1 << j)) == 0)
+			if ((p[i] & 1 << j) == 0)
 				break;
 		}
 	}
 	*bits = n;
 
-	return (0);
+	return 0;
 }

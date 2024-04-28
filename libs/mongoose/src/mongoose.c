@@ -61,10 +61,10 @@ int mg_base64_update(unsigned char ch, char *to, int n) {
     to[n] = (char) mg_b64idx(ch >> 2);
     to[++n] = (char) ((ch & 3) << 4);
   } else if (rem == 1) {
-    to[n] = (char) mg_b64idx(to[n] | (ch >> 4));
+    to[n] = (char) mg_b64idx(to[n] | ch >> 4);
     to[++n] = (char) ((ch & 15) << 2);
   } else {
-    to[n] = (char) mg_b64idx(to[n] | (ch >> 6));
+    to[n] = (char) mg_b64idx(to[n] | ch >> 6);
     to[++n] = (char) mg_b64idx(ch & 63);
     n++;
   }
@@ -96,10 +96,10 @@ int mg_base64_decode(const char *src, int n, char *dst) {
     int a = mg_b64rev(src[0]), b = mg_b64rev(src[1]), c = mg_b64rev(src[2]),
         d = mg_b64rev(src[3]);
     if (a == 64 || a < 0 || b == 64 || b < 0 || c < 0 || d < 0) return 0;
-    dst[len++] = (char) ((a << 2) | (b >> 4));
+    dst[len++] = (char) (a << 2 | b >> 4);
     if (src[2] != '=') {
-      dst[len++] = (char) ((b << 4) | (c >> 2));
-      if (src[3] != '=') dst[len++] = (char) ((c << 6) | d);
+      dst[len++] = (char) (b << 4 | c >> 2);
+      if (src[3] != '=') dst[len++] = (char) (c << 6 | d);
     }
     src += 4;
   }
@@ -155,7 +155,7 @@ static size_t mg_dns_parse_name_depth(const uint8_t *s, size_t len, size_t ofs,
       break;
     }
     if (n & 0xc0) {
-      size_t ptr = (((n & 0x3f) << 8) | s[ofs + i + 1]);  // 12 is hdr len
+      size_t ptr = (n & 0x3f) << 8 | s[ofs + i + 1];  // 12 is hdr len
       // MG_INFO(("PTR %lx", (unsigned long) ptr));
       if (ptr + 1 < len && (s[ptr] & 0xc0) == 0 &&
           mg_dns_parse_name_depth(s, len, ptr, to, tolen, j, depth + 1) == 0)
@@ -196,13 +196,13 @@ size_t mg_dns_parse_rr(const uint8_t *buf, size_t len, size_t ofs,
     return 0;
   s += rr->nlen + 4;
   if (s > e) return 0;
-  rr->atype = (uint16_t) (((uint16_t) s[-4] << 8) | s[-3]);
-  rr->aclass = (uint16_t) (((uint16_t) s[-2] << 8) | s[-1]);
+  rr->atype = (uint16_t) ((uint16_t) s[-4] << 8 | s[-3]);
+  rr->aclass = (uint16_t) ((uint16_t) s[-2] << 8 | s[-1]);
   if (is_question) return (size_t) (rr->nlen + 4);
 
   s += 6;
   if (s > e) return 0;
-  rr->alen = (uint16_t) (((uint16_t) s[-2] << 8) | s[-1]);
+  rr->alen = (uint16_t) ((uint16_t) s[-2] << 8 | s[-1]);
   if (s + rr->alen > e) return 0;
   return (size_t) (rr->nlen + rr->alen + 10);
 }
@@ -493,7 +493,7 @@ static int xisinf(double x) {
     uint64_t u;
   } ieee754 = {x};
   return ((unsigned) (ieee754.u >> 32) & 0x7fffffff) == 0x7ff00000 &&
-         ((unsigned) ieee754.u == 0);
+         (unsigned) ieee754.u == 0;
 }
 
 static int xisnan(double x) {
@@ -569,7 +569,7 @@ static size_t mg_lld(char *buf, int64_t val, bool is_signed, bool is_hex) {
   const char *letters = "0123456789abcdef";
   uint64_t v = (uint64_t) val;
   size_t s = 0, n, i;
-  if (is_signed && val < 0) buf[s++] = '-', v = (uint64_t) (-val);
+  if (is_signed && val < 0) buf[s++] = '-', v = (uint64_t) -val;
   // This loop prints a number in reverse order. I guess this is because we
   // write numbers from right to left: least significant digit comes last.
   // Maybe because we use Arabic numbers, and Arabs write RTL?
@@ -638,8 +638,8 @@ static size_t bcpy(void (*out)(char, void *), void *ptr, uint8_t *buf,
   for (i = 0; i < len; i += 3) {
     uint8_t c1 = buf[i], c2 = i + 1 < len ? buf[i + 1] : 0,
             c3 = i + 2 < len ? buf[i + 2] : 0;
-    char tmp[4] = {t[c1 >> 2], t[(c1 & 3) << 4 | (c2 >> 4)], '=', '='};
-    if (i + 1 < len) tmp[2] = t[(c2 & 15) << 2 | (c3 >> 6)];
+    char tmp[4] = {t[c1 >> 2], t[(c1 & 3) << 4 | c2 >> 4], '=', '='};
+    if (i + 1 < len) tmp[2] = t[(c2 & 15) << 2 | c3 >> 6];
     if (i + 2 < len) tmp[3] = t[c3 & 63];
     n += scpy(out, ptr, tmp, sizeof(tmp));
   }
@@ -676,7 +676,7 @@ size_t mg_vxprintf(void (*out)(char, void *), void *param, const char *fmt,
       if (c == 'p') x = 1, is_long = 1;
       if (c == 'd' || c == 'u' || c == 'x' || c == 'X' || c == 'p' ||
           c == 'g' || c == 'f') {
-        bool s = (c == 'd'), h = (c == 'x' || c == 'X' || c == 'p');
+        bool s = c == 'd', h = c == 'x' || c == 'X' || c == 'p';
         char tmp[40];
         size_t xl = x ? 2 : 0;
         if (c == 'g' || c == 'f') {
@@ -716,7 +716,7 @@ size_t mg_vxprintf(void (*out)(char, void *), void *param, const char *fmt,
         const char *hex = "0123456789abcdef";
         n += scpy(out, param, (char *) &dquote, 1);
         for (j = 0; j < bl; j++) {
-          n += scpy(out, param, (char *) &hex[(p[j] >> 4) & 15], 1);
+          n += scpy(out, param, (char *) &hex[p[j] >> 4 & 15], 1);
           n += scpy(out, param, (char *) &hex[p[j] & 15], 1);
         }
         n += scpy(out, param, (char *) &dquote, 1);
@@ -1179,7 +1179,7 @@ DIR *opendir(const char *name) {
   } else {
     to_wchar(name, wpath, sizeof(wpath) / sizeof(wpath[0]));
     attrs = GetFileAttributesW(wpath);
-    if (attrs != 0Xffffffff && (attrs & FILE_ATTRIBUTE_DIRECTORY)) {
+    if (attrs != 0Xffffffff && attrs & FILE_ATTRIBUTE_DIRECTORY) {
       (void) wcscat(wpath, L"\\*");
       d->handle = FindFirstFileW(wpath, &d->info);
       d->result.d_name[0] = '\0';
@@ -1231,7 +1231,7 @@ static void p_list(const char *dir, void (*fn)(const char *, void *),
 #if MG_ENABLE_DIRLIST
   struct dirent *dp;
   DIR *dirp;
-  if ((dirp = (opendir(dir))) == NULL) return;
+  if ((dirp = opendir(dir)) == NULL) return;
   while ((dp = readdir(dirp)) != NULL) {
     if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) continue;
     fn(dp->d_name, userdata);
@@ -2010,7 +2010,7 @@ static int uri_to_path2(struct mg_connection *c, struct mg_http_message *hm,
               flags));
   if (flags == 0) {
     // Do nothing - let's caller decide
-  } else if ((flags & MG_FS_DIR) && hm->uri.len > 0 &&
+  } else if (flags & MG_FS_DIR && hm->uri.len > 0 &&
              hm->uri.ptr[hm->uri.len - 1] != '/') {
     mg_printf(c,
               "HTTP/1.1 301 Moved\r\n"
@@ -2020,15 +2020,15 @@ static int uri_to_path2(struct mg_connection *c, struct mg_http_message *hm,
               (int) hm->uri.len, hm->uri.ptr);
     flags = -1;
   } else if (flags & MG_FS_DIR) {
-    if (((mg_snprintf(path + n, path_size - n, "/" MG_HTTP_INDEX) > 0 &&
-          (tmp = fs->st(path, NULL, NULL)) != 0) ||
-         (mg_snprintf(path + n, path_size - n, "/index.shtml") > 0 &&
-          (tmp = fs->st(path, NULL, NULL)) != 0))) {
+    if ((mg_snprintf(path + n, path_size - n, "/" MG_HTTP_INDEX) > 0 &&
+         (tmp = fs->st(path, NULL, NULL)) != 0) ||
+        (mg_snprintf(path + n, path_size - n, "/index.shtml") > 0 &&
+         (tmp = fs->st(path, NULL, NULL)) != 0)) {
       flags = tmp;
-    } else if ((mg_snprintf(path + n, path_size - n, "/" MG_HTTP_INDEX ".gz") >
-                    0 &&
-                (tmp = fs->st(path, NULL, NULL)) !=
-                    0)) {  // check for gzipped index
+    } else if (mg_snprintf(path + n, path_size - n, "/" MG_HTTP_INDEX ".gz") >
+               0 &&
+               (tmp = fs->st(path, NULL, NULL)) !=
+               0) {  // check for gzipped index
       flags = tmp;
       path[n + 1 + strlen(MG_HTTP_INDEX)] =
           '\0';  // Remove appended .gz in index file name
@@ -2224,7 +2224,7 @@ static void deliver_chunked_chunks(struct mg_connection *c, size_t hlen,
   //  |      hlen        |           chunk1         | ......
   char *buf = (char *) &c->recv.buf[hlen], *p = buf;
   size_t len = c->recv.len - hlen;
-  size_t processed = ((size_t) c->pfn_data) & ~MG_DMARK;
+  size_t processed = (size_t) c->pfn_data & ~MG_DMARK;
   size_t mark, pl, dl, del = 0, ofs = 0;
   bool last = false;
   if (processed <= len) len -= processed, buf += processed;
@@ -2238,10 +2238,10 @@ static void deliver_chunked_chunks(struct mg_connection *c, size_t hlen,
     processed += dl;
     if (c->recv.len != saved) processed -= dl, buf -= dl;
     mg_hexdump(c->recv.buf, hlen + processed);
-    last = (dl == 0);
+    last = dl == 0;
   }
   mg_iobuf_del(&c->recv, hlen + processed, del);
-  mark = ((size_t) c->pfn_data) & MG_DMARK;
+  mark = (size_t) c->pfn_data & MG_DMARK;
   c->pfn_data = (void *) (processed | mark);
   if (last) {
     hm->body.len = processed;
@@ -2255,8 +2255,8 @@ static void deliver_chunked_chunks(struct mg_connection *c, size_t hlen,
 
 static void deliver_normal_chunks(struct mg_connection *c, size_t hlen,
                                   struct mg_http_message *hm, bool *next) {
-  size_t left, processed = ((size_t) c->pfn_data) & ~MG_DMARK;
-  size_t deleted = ((size_t) c->pfn_data) & MG_DMARK;
+  size_t left, processed = (size_t) c->pfn_data & ~MG_DMARK;
+  size_t deleted = (size_t) c->pfn_data & MG_DMARK;
   hm->chunk = mg_str_n((char *) &c->recv.buf[hlen], c->recv.len - hlen);
   if (processed <= hm->chunk.len && !deleted) {
     hm->chunk.len -= processed;
@@ -2266,7 +2266,7 @@ static void deliver_normal_chunks(struct mg_connection *c, size_t hlen,
   if (hm->chunk.len > left) hm->chunk.len = left;
   if (hm->chunk.len > 0) mg_call(c, MG_EV_HTTP_CHUNK, hm);
   processed += hm->chunk.len;
-  deleted = ((size_t) c->pfn_data) & MG_DMARK;  // Re-evaluate after user call
+  deleted = (size_t) c->pfn_data & MG_DMARK;  // Re-evaluate after user call
   if (processed >= hm->body.len) {              // Last, 0-len chunk
     hm->chunk.len = 0;                          // Reset length
     mg_call(c, MG_EV_HTTP_CHUNK, hm);           // Call user handler
@@ -2550,7 +2550,7 @@ int mg_json_get(struct mg_str json, const char *path, int *toklen) {
           i += 3;
         } else if (c == 'f' && i + 4 < len && memcmp(&s[i], "false", 5) == 0) {
           i += 4;
-        } else if (c == '-' || ((c >= '0' && c <= '9'))) {
+        } else if (c == '-' || (c >= '0' && c <= '9')) {
           int numlen = 0;
           mg_atod(&s[i], len - i, &numlen);
           i += numlen - 1;
@@ -2606,7 +2606,7 @@ int mg_json_get(struct mg_str json, const char *path, int *toklen) {
         if (depth <= 0) {
           return MG_JSON_INVALID;
         } else if (c == ',') {
-          expecting = (nesting[depth - 1] == '{') ? S_KEY : S_VALUE;
+          expecting = nesting[depth - 1] == '{' ? S_KEY : S_VALUE;
         } else if (c == ']' || c == '}') {
           MG_EOO('O');
           if (depth == ed && ei >= 0) ci++;
@@ -2778,12 +2778,12 @@ void mg_hexdump(const void *buf, size_t len) {
   unsigned char ascii[16], alen = 0;
   size_t i;
   for (i = 0; i < len; i++) {
-    if ((i % 16) == 0) {
+    if (i % 16 == 0) {
       // Print buffered ascii chars
       if (i > 0) logs("  ", 2), logs((char *) ascii, 16), logc('\n'), alen = 0;
       // Print hex address, then \t
-      logc(nibble((i >> 12) & 15)), logc(nibble((i >> 8) & 15)),
-          logc(nibble((i >> 4) & 15)), logc('0'), logs("   ", 3);
+      logc(nibble(i >> 12 & 15)), logc(nibble(i >> 8 & 15)),
+          logc(nibble(i >> 4 & 15)), logc('0'), logs("   ", 3);
     }
     logc(nibble(p[i] >> 4)), logc(nibble(p[i] & 15));  // Two nibbles, e.g. c5
     logc(' ');                                         // Space after hex number
@@ -2923,7 +2923,7 @@ void mg_md5_update(mg_md5_ctx *ctx, const unsigned char *buf, size_t len) {
   if ((ctx->bits[0] = t + ((uint32_t) len << 3)) < t) ctx->bits[1]++;
   ctx->bits[1] += (uint32_t) len >> 29;
 
-  t = (t >> 3) & 0x3f;
+  t = t >> 3 & 0x3f;
 
   if (t) {
     unsigned char *p = (unsigned char *) ctx->in + t;
@@ -2956,7 +2956,7 @@ void mg_md5_final(mg_md5_ctx *ctx, unsigned char digest[16]) {
   unsigned char *p;
   uint32_t *a;
 
-  count = (ctx->bits[0] >> 3) & 0x3F;
+  count = ctx->bits[0] >> 3 & 0x3F;
 
   p = ctx->in + count;
   *p++ = 0x80;
@@ -3002,7 +3002,7 @@ void mg_md5_final(mg_md5_ctx *ctx, unsigned char digest[16]) {
 void mg_mqtt_send_header(struct mg_connection *c, uint8_t cmd, uint8_t flags,
                          uint32_t len) {
   uint8_t buf[1 + sizeof(len)], *vlen = &buf[1];
-  buf[0] = (uint8_t) ((cmd << 4) | flags);
+  buf[0] = (uint8_t) (cmd << 4 | flags);
   do {
     *vlen = len % 0x80;
     len /= 0x80;
@@ -3078,7 +3078,7 @@ void mg_mqtt_login(struct mg_connection *c, const struct mg_mqtt_opts *opts) {
 
 void mg_mqtt_pub(struct mg_connection *c, struct mg_str topic,
                  struct mg_str data, int qos, bool retain) {
-  uint8_t flags = (uint8_t) (((qos & 3) << 1) | (retain ? 1 : 0)), zero = 0;
+  uint8_t flags = (uint8_t) ((qos & 3) << 1 | (retain ? 1 : 0)), zero = 0;
   uint32_t len = 2 + (uint32_t) topic.len + (uint32_t) data.len;
   MG_DEBUG(("%lu [%.*s] -> [%.*s]", c->id, (int) topic.len, (char *) topic.ptr,
             (int) data.len, (char *) data.ptr));
@@ -3116,19 +3116,19 @@ int mg_mqtt_parse(const uint8_t *buf, size_t len, uint8_t version,
   m->dgram.ptr = (char *) buf;
   if (len < 2) return MQTT_INCOMPLETE;
   m->cmd = (uint8_t) (buf[0] >> 4);
-  m->qos = (buf[0] >> 1) & 3;
+  m->qos = buf[0] >> 1 & 3;
 
   n = len_len = 0;
   p = (uint8_t *) buf + 1;
   while ((size_t) (p - buf) < len) {
-    lc = *((uint8_t *) p++);
+    lc = *(uint8_t *) p++;
     n += (uint32_t) ((lc & 0x7f) << 7 * len_len);
     len_len++;
     if (!(lc & 0x80)) break;
     if (len_len >= 4) return MQTT_MALFORMED;
   }
   end = p + n;
-  if ((lc & 0x80) || (end > buf + len)) return MQTT_INCOMPLETE;
+  if (lc & 0x80 || end > buf + len) return MQTT_INCOMPLETE;
   m->dgram.len = (size_t) (end - buf);
 
   switch (m->cmd) {
@@ -3145,18 +3145,18 @@ int mg_mqtt_parse(const uint8_t *buf, size_t len, uint8_t version,
     case MQTT_CMD_UNSUBSCRIBE:
     case MQTT_CMD_UNSUBACK:
       if (p + 2 > end) return MQTT_MALFORMED;
-      m->id = (uint16_t) ((((uint16_t) p[0]) << 8) | p[1]);
+      m->id = (uint16_t) ((uint16_t) p[0] << 8 | p[1]);
       p += 2;
       break;
     case MQTT_CMD_PUBLISH: {
       if (p + 2 > end) return MQTT_MALFORMED;
-      m->topic.len = (uint16_t) ((((uint16_t) p[0]) << 8) | p[1]);
+      m->topic.len = (uint16_t) ((uint16_t) p[0] << 8 | p[1]);
       m->topic.ptr = (char *) p + 2;
       p += 2 + m->topic.len;
       if (p > end) return MQTT_MALFORMED;
       if (m->qos > 0) {
         if (p + 2 > end) return MQTT_MALFORMED;
-        m->id = (uint16_t) ((((uint16_t) p[0]) << 8) | p[1]);
+        m->id = (uint16_t) ((uint16_t) p[0] << 8 | p[1]);
         p += 2;
       }
       if (p >= end) return MQTT_MALFORMED;
@@ -3361,7 +3361,7 @@ static bool mg_aton6(struct mg_str str, struct mg_addr *addr) {
       if (i > j + 3) return false;
       // MG_DEBUG(("%zu %zu [%.*s]", i, j, (int) (i - j + 1), &str.ptr[j]));
       val = mg_unhexn(&str.ptr[j], i - j + 1);
-      addr->ip6[n] = (uint8_t) ((val >> 8) & 255);
+      addr->ip6[n] = (uint8_t) (val >> 8 & 255);
       addr->ip6[n + 1] = (uint8_t) (val & 255);
     } else if (str.ptr[i] == ':') {
       j = i + 1;
@@ -3429,7 +3429,7 @@ struct mg_connection *mg_connect(struct mg_mgr *mgr, const char *url,
     MG_ERROR(("OOM"));
   } else {
     LIST_ADD_HEAD(struct mg_connection, &mgr->conns, c);
-    c->is_udp = (strncmp(url, "udp:", 4) == 0);
+    c->is_udp = strncmp(url, "udp:", 4) == 0;
     c->fn = fn;
     c->is_client = true;
     c->fn_data = fn_data;
@@ -3798,9 +3798,9 @@ void mg_sha1_update(mg_sha1_ctx *context, const unsigned char *data,
   j = context->count[0];
   if ((context->count[0] += (uint32_t) len << 3) < j) context->count[1]++;
   context->count[1] += (uint32_t) (len >> 29);
-  j = (j >> 3) & 63;
-  if ((j + len) > 63) {
-    memcpy(&context->buffer[j], data, (i = 64 - j));
+  j = j >> 3 & 63;
+  if (j + len > 63) {
+    memcpy(&context->buffer[j], data, i = 64 - j);
     mg_sha1_transform(context->state, context->buffer);
     for (; i + 63 < len; i += 64) {
       mg_sha1_transform(context->state, &data[i]);
@@ -3816,8 +3816,8 @@ void mg_sha1_final(unsigned char digest[20], mg_sha1_ctx *context) {
   unsigned char finalcount[8], c;
 
   for (i = 0; i < 8; i++) {
-    finalcount[i] = (unsigned char) ((context->count[(i >= 4 ? 0 : 1)] >>
-                                      ((3 - (i & 3)) * 8)) &
+    finalcount[i] = (unsigned char) (context->count[(i >= 4 ? 0 : 1)] >>
+                                     (3 - (i & 3)) * 8 &
                                      255);
   }
   c = 0200;
@@ -3829,7 +3829,7 @@ void mg_sha1_final(unsigned char digest[20], mg_sha1_ctx *context) {
   mg_sha1_update(context, finalcount, 8);
   for (i = 0; i < 20; i++) {
     digest[i] =
-        (unsigned char) ((context->state[i >> 2] >> ((3 - (i & 3)) * 8)) & 255);
+        (unsigned char) (context->state[i >> 2] >> (3 - (i & 3)) * 8 & 255);
   }
   memset(context, '\0', sizeof(*context));
   memset(&finalcount, '\0', sizeof(finalcount));
@@ -3850,13 +3850,13 @@ void mg_sha1_final(unsigned char digest[20], mg_sha1_ctx *context) {
 static int64_t gettimestamp(const uint32_t *data) {
   uint32_t sec = mg_ntohl(data[0]), frac = mg_ntohl(data[1]);
   if (sec) sec -= SNTP_TIME_OFFSET;
-  return ((int64_t) sec) * 1000 + (int64_t) (frac / SNTP_MAX_FRAC * 1000.0);
+  return (int64_t) sec * 1000 + (int64_t) (frac / SNTP_MAX_FRAC * 1000.0);
 }
 
 int64_t mg_sntp_parse(const unsigned char *buf, size_t len) {
   int64_t res = -1;
   int mode = len > 0 ? buf[0] & 7 : 0;
-  int version = len > 0 ? (buf[0] >> 3) & 7 : 0;
+  int version = len > 0 ? buf[0] >> 3 & 7 : 0;
   if (len < 48) {
     MG_ERROR(("%s", "corrupt packet"));
   } else if (mode != 4 && mode != 5) {
@@ -3869,7 +3869,7 @@ int64_t mg_sntp_parse(const unsigned char *buf, size_t len) {
     int64_t t1 = gettimestamp((uint32_t *) &buf[32]);
     int64_t t2 = gettimestamp((uint32_t *) &buf[40]);
     int64_t t3 = (int64_t) mg_millis();
-    int64_t delta = (t3 - t0) - (t2 - t1);
+    int64_t delta = t3 - t0 - (t2 - t1);
     MG_VERBOSE(("%lld %lld %lld %lld delta:%lld", t0, t1, t2, t3, delta));
     res = t2 + delta / 2;
   } else {
@@ -3903,8 +3903,8 @@ void mg_sntp_request(struct mg_connection *c) {
     int64_t now = (int64_t) mg_millis();  // Use int64_t, for vc98
     uint8_t buf[48] = {0};
     uint32_t *t = (uint32_t *) &buf[40];
-    double frac = ((double) (now % 1000)) / 1000.0 * SNTP_MAX_FRAC;
-    buf[0] = (0 << 6) | (4 << 3) | 3;
+    double frac = (double) (now % 1000) / 1000.0 * SNTP_MAX_FRAC;
+    buf[0] = 0 << 6 | 4 << 3 | 3;
     t[0] = mg_htonl((uint32_t) (now / 1000) + SNTP_TIME_OFFSET);
     t[1] = mg_htonl((uint32_t) frac);
     mg_send(c, buf, sizeof(buf));
@@ -4177,8 +4177,8 @@ bool mg_open_listener(struct mg_connection *c, const char *url) {
 #endif
     } else if (bind(fd, &usa.sa, slen) != 0) {
       MG_ERROR(("bind: %d", MG_SOCK_ERRNO));
-    } else if ((type == SOCK_STREAM &&
-                listen(fd, MG_SOCK_LISTEN_BACKLOG_SIZE) != 0)) {
+    } else if (type == SOCK_STREAM &&
+               listen(fd, MG_SOCK_LISTEN_BACKLOG_SIZE) != 0) {
       // NOTE(lsm): FreeRTOS uses backlog value as a connection limit
       // In case port was set to 0, get the real port number
       MG_ERROR(("listen: %d", MG_SOCK_ERRNO));
@@ -4436,7 +4436,7 @@ static bool can_write(const struct mg_connection *c) {
 }
 
 static bool skip_iotest(const struct mg_connection *c) {
-  return (c->is_closing || c->is_resolving || FD(c) == INVALID_SOCKET) ||
+  return c->is_closing || c->is_resolving || FD(c) == INVALID_SOCKET ||
          (can_read(c) == false && can_write(c) == false);
 }
 
@@ -4525,7 +4525,7 @@ static void mg_iotest(struct mg_mgr *mgr, int ms) {
     }
   }
 #else
-  struct timeval tv = {ms / 1000, (ms % 1000) * 1000}, tv_zero = {0, 0};
+  struct timeval tv = {ms / 1000, ms % 1000 * 1000}, tv_zero = {0, 0};
   struct mg_connection *c;
   fd_set rset, wset, eset;
   SOCKET maxfd = 0;
@@ -4594,7 +4594,7 @@ void mg_mgr_poll(struct mg_mgr *mgr, int ms) {
     } else if (c->is_connecting) {
       if (c->is_readable || c->is_writable) connect_conn(c);
     } else if (c->is_tls_hs) {
-      if ((c->is_readable || c->is_writable)) mg_tls_handshake(c);
+      if (c->is_readable || c->is_writable) mg_tls_handshake(c);
     } else {
       if (c->is_readable) read_conn(c);
       if (c->is_writable) write_conn(c);
@@ -4743,14 +4743,14 @@ int mg_casecmp(const char *s1, const char *s2) {
 
 int mg_vcmp(const struct mg_str *s1, const char *s2) {
   size_t n2 = strlen(s2), n1 = s1->len;
-  int r = strncmp(s1->ptr, s2, (n1 < n2) ? n1 : n2);
+  int r = strncmp(s1->ptr, s2, n1 < n2 ? n1 : n2);
   if (r == 0) return (int) (n1 - n2);
   return r;
 }
 
 int mg_vcasecmp(const struct mg_str *str1, const char *str2) {
   size_t n2 = strlen(str2), n1 = str1->len;
-  int r = mg_ncasecmp(str1->ptr, str2, (n1 < n2) ? n1 : n2);
+  int r = mg_ncasecmp(str1->ptr, str2, n1 < n2 ? n1 : n2);
   if (r == 0) return (int) (n1 - n2);
   return r;
 }
@@ -4881,8 +4881,8 @@ char *mg_hex(const void *buf, size_t len, char *to) {
 }
 
 static unsigned char mg_unhex_nimble(unsigned char c) {
-  return (c >= '0' && c <= '9')   ? (unsigned char) (c - '0')
-         : (c >= 'A' && c <= 'F') ? (unsigned char) (c - '7')
+  return c >= '0' && c <= '9'   ? (unsigned char) (c - '0')
+         : c >= 'A' && c <= 'F' ? (unsigned char) (c - '7')
                                   : (unsigned char) (c - 'W');
 }
 
@@ -4919,7 +4919,7 @@ int64_t mg_to64(struct mg_str str) {
   while (i < str.len && str.ptr[i] >= '0' && str.ptr[i] <= '9') {
     if (result > max) return 0;
     result *= 10;
-    result += (str.ptr[i] - '0');
+    result += str.ptr[i] - '0';
     i++;
   }
   return result * neg;
@@ -4968,22 +4968,22 @@ void mg_timer_free(struct mg_timer **head, struct mg_timer *t) {
 
 // t: expiration time, prd: period, now: current time. Return true if expired
 bool mg_timer_expired(uint64_t *t, uint64_t prd, uint64_t now) {
-  if (now + prd < *t) *t = 0;                    // Time wrapped? Reset timer
-  if (*t == 0) *t = now + prd;                   // Firt poll? Set expiration
-  if (*t > now) return false;                    // Not expired yet, return
-  *t = (now - *t) > prd ? now + prd : *t + prd;  // Next expiration time
-  return true;                                   // Expired, return true
+  if (now + prd < *t) *t = 0;                 // Time wrapped? Reset timer
+  if (*t == 0) *t = now + prd;                // Firt poll? Set expiration
+  if (*t > now) return false;                 // Not expired yet, return
+  *t = now - *t > prd ? now + prd : *t + prd; // Next expiration time
+  return true;                                // Expired, return true
 }
 
 void mg_timer_poll(struct mg_timer **head, uint64_t now_ms) {
   struct mg_timer *t, *tmp;
   for (t = *head; t != NULL; t = tmp) {
-    bool once = t->expire == 0 && (t->flags & MG_TIMER_RUN_NOW) &&
+    bool once = t->expire == 0 && t->flags & MG_TIMER_RUN_NOW &&
                 !(t->flags & MG_TIMER_CALLED);  // Handle MG_TIMER_NOW only once
     bool expired = mg_timer_expired(&t->expire, t->period_ms, now_ms);
     tmp = t->next;
     if (!once && !expired) continue;
-    if ((t->flags & MG_TIMER_REPEAT) || !(t->flags & MG_TIMER_CALLED)) {
+    if (t->flags & MG_TIMER_REPEAT || !(t->flags & MG_TIMER_CALLED)) {
       t->fn(t->arg);
     }
     t->flags |= MG_TIMER_CALLED;
@@ -5515,14 +5515,14 @@ char *mg_random_str(char *buf, size_t len) {
 uint32_t mg_ntohl(uint32_t net) {
   uint8_t data[4] = {0, 0, 0, 0};
   memcpy(&data, &net, sizeof(data));
-  return (((uint32_t) data[3]) << 0) | (((uint32_t) data[2]) << 8) |
-         (((uint32_t) data[1]) << 16) | (((uint32_t) data[0]) << 24);
+  return (uint32_t) data[3] << 0 | (uint32_t) data[2] << 8 |
+         (uint32_t) data[1] << 16 | (uint32_t) data[0] << 24;
 }
 
 uint16_t mg_ntohs(uint16_t net) {
   uint8_t data[2] = {0, 0};
   memcpy(&data, &net, sizeof(data));
-  return (uint16_t) ((uint16_t) data[1] | (((uint16_t) data[0]) << 8));
+  return (uint16_t) ((uint16_t) data[1] | (uint16_t) data[0] << 8);
 }
 
 uint32_t mg_crc32(uint32_t crc, const char *buf, size_t len) {
@@ -5530,7 +5530,7 @@ uint32_t mg_crc32(uint32_t crc, const char *buf, size_t len) {
   crc = ~crc;
   while (len--) {
     crc ^= *(unsigned char *) buf++;
-    for (i = 0; i < 8; i++) crc = crc & 1 ? (crc >> 1) ^ 0xedb88320 : crc >> 1;
+    for (i = 0; i < 8; i++) crc = crc & 1 ? crc >> 1 ^ 0xedb88320 : crc >> 1;
   }
   return ~crc;
 }
@@ -5546,9 +5546,9 @@ static int parse_net(const char *spec, uint32_t *net, uint32_t *mask) {
       isbyte(a) && isbyte(b) && isbyte(c) && isbyte(d) && slash >= 0 &&
       slash < 33) {
     len = n;
-    *net = ((uint32_t) a << 24) | ((uint32_t) b << 16) | ((uint32_t) c << 8) |
+    *net = (uint32_t) a << 24 | (uint32_t) b << 16 | (uint32_t) c << 8 |
            (uint32_t) d;
-    *mask = slash ? (uint32_t) (0xffffffffU << (32 - slash)) : (uint32_t) 0;
+    *mask = slash ? (uint32_t) (0xffffffffU << 32 - slash) : (uint32_t) 0;
   }
   return len;
 }
@@ -5672,8 +5672,8 @@ static void ws_handshake(struct mg_connection *c, const struct mg_str *wskey,
 }
 
 static uint32_t be32(const uint8_t *p) {
-  return (((uint32_t) p[3]) << 0) | (((uint32_t) p[2]) << 8) |
-         (((uint32_t) p[1]) << 16) | (((uint32_t) p[0]) << 24);
+  return (uint32_t) p[3] << 0 | (uint32_t) p[2] << 8 |
+         (uint32_t) p[1] << 16 | (uint32_t) p[0] << 24;
 }
 
 static size_t ws_process(uint8_t *buf, size_t len, struct ws_msg *msg) {
@@ -5688,7 +5688,7 @@ static size_t ws_process(uint8_t *buf, size_t len, struct ws_msg *msg) {
       msg->header_len = 2 + mask_len;
     } else if (n == 126 && len >= 4 + mask_len) {
       msg->header_len = 4 + mask_len;
-      msg->data_len = (((size_t) buf[2]) << 8) | buf[3];
+      msg->data_len = (size_t) buf[2] << 8 | buf[3];
     } else if (len >= 10 + mask_len) {
       msg->header_len = 10 + mask_len;
       msg->data_len =
@@ -5720,7 +5720,7 @@ static size_t mkhdr(size_t len, int op, bool is_client, uint8_t *buf) {
   } else {
     uint32_t tmp;
     buf[1] = 127;
-    tmp = mg_htonl((uint32_t) (((uint64_t) len) >> 32));
+    tmp = mg_htonl((uint32_t) ((uint64_t) len >> 32));
     memcpy(&buf[2], &tmp, sizeof(tmp));
     tmp = mg_htonl((uint32_t) (len & 0xffffffffU));
     memcpy(&buf[6], &tmp, sizeof(tmp));

@@ -53,5 +53,5 @@ int HexValue( const wxString& hex_string )
    sscanf( abuf.data(), "%lx",  &scan_value );
 
    return_value = (int)scan_value;
-   return( return_value );
+   return return_value;
 }

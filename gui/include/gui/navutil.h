@@ -122,12 +122,12 @@ public:
 
   /** Convert a slider scale 1-100 value to configuration value 1.02..3.0. */
   static double ui_to_config(int slider_pos) {
-    return (2.0/100) * static_cast<double>(slider_pos) + 1.02;
+    return 2.0/100 * static_cast<double>(slider_pos) + 1.02;
   }
 
   /** Convert configuration 1.02..3.0 value to slider scale 1..100. */
   static int config_to_ui(double value) {
-    return std::round((100.0 * (static_cast<double>(value) - 1.02)) / 2.0);
+    return std::round(100.0 * (static_cast<double>(value) - 1.02) / 2.0);
   }
 };
 

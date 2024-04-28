@@ -58,15 +58,15 @@ void CompressAlphaDxt3( u8 const* rgba, int mask, void* block )
 		int quant2 = FloatToInt( alpha2, 15 );
 
 		// set alpha to zero where masked
-		int bit1 = 1 << ( 2*i );
-		int bit2 = 1 << ( 2*i + 1 );
+		int bit1 = 1 << 2*i;
+		int bit2 = 1 << 2*i + 1;
 		if( ( mask & bit1 ) == 0 )
 			quant1 = 0;
 		if( ( mask & bit2 ) == 0 )
 			quant2 = 0;
 
 		// pack into the byte
-		bytes[i] = ( u8 )( quant1 | ( quant2 << 4 ) );
+		bytes[i] = ( u8 )( quant1 | quant2 << 4 );
 	}
 }
 
@@ -85,8 +85,8 @@ void DecompressAlphaDxt3( u8* rgba, void const* block )
 		u8 hi = quant & 0xf0;
 
 		// convert back up to bytes
-		rgba[8*i + 3] = lo | ( lo << 4 );
-		rgba[8*i + 7] = hi | ( hi >> 4 );
+		rgba[8*i + 3] = lo | lo << 4;
+		rgba[8*i + 7] = hi | hi >> 4;
 	}
 }
 
@@ -158,13 +158,13 @@ static void WriteAlphaBlock( int alpha0, int alpha1, u8 const* indices, void* bl
 		for( int j = 0; j < 8; ++j )
 		{
 			int index = *src++;
-			value |= ( index << 3*j );
+			value |= index << 3*j;
 		}
 
 		// store in 3 bytes
 		for( int j = 0; j < 3; ++j )
 		{
-			int byte = ( value >> 8*j ) & 0xff;
+			int byte = value >> 8*j & 0xff;
 			*dest++ = ( u8 )byte;
 		}
 	}
@@ -330,13 +330,13 @@ void DecompressAlphaDxt5( u8* rgba, void const* block )
 		for( int j = 0; j < 3; ++j )
 		{
 			int byte = *src++;
-			value |= ( byte << 8*j );
+			value |= byte << 8*j;
 		}
 
 		// unpack 8 3-bit values from it
 		for( int j = 0; j < 8; ++j )
 		{
-			int index = ( value >> 3*j ) & 0x7;
+			int index = value >> 3*j & 0x7;
 			*dest++ = ( u8 )index;
 		}
 	}

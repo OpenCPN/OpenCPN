@@ -155,9 +155,9 @@ SBNSearchHandle SBNOpenDiskTree(const char *pszSBNFilename,
         STATIC_CAST(SBNSearchHandle, calloc(sizeof(struct SBNSearchInfo), 1));
 
     if (psHooks == SHPLIB_NULLPTR)
-        SASetupDefaultHooks(&(hSBN->sHooks));
+        SASetupDefaultHooks(&hSBN->sHooks);
     else
-        memcpy(&(hSBN->sHooks), psHooks, sizeof(SAHooks));
+        memcpy(&hSBN->sHooks, psHooks, sizeof(SAHooks));
 
     hSBN->fpSBN =
         hSBN->sHooks.FOpen(pszSBNFilename, "rb", hSBN->sHooks.pvUserData);
@@ -260,7 +260,7 @@ SBNSearchHandle SBNOpenDiskTree(const char *pszSBNFilename,
     /* each bin descriptor is made of 2 ints */
     const int nNodeDescCount = nNodeDescSize / 8;
 
-    if ((nNodeDescSize % 8) != 0 || nNodeDescCount < 0 ||
+    if (nNodeDescSize % 8 != 0 || nNodeDescCount < 0 ||
         nNodeDescCount > nMaxNodes)
     {
         char szErrorMsg[64];
@@ -370,7 +370,7 @@ SBNSearchHandle SBNOpenDiskTree(const char *pszSBNFilename,
 
         /* Bins are always limited to 100 features */
         /* If there are more, then they are located in continuous bins */
-        if ((nBinSize % 8) != 0 || nBinSize <= 0 || nBinSize > 100 * 8)
+        if (nBinSize % 8 != 0 || nBinSize <= 0 || nBinSize > 100 * 8)
         {
             hSBN->sHooks.Error("Unexpected bin size");
             SBNCloseDiskTree(hSBN);
@@ -435,7 +435,7 @@ static bool SBNAddShapeId(SearchStruct *psSearch, int nShapeId)
     if (psSearch->nShapeCount == psSearch->nShapeAlloc)
     {
         psSearch->nShapeAlloc =
-            STATIC_CAST(int, ((psSearch->nShapeCount + 100) * 5) / 4);
+            STATIC_CAST(int, (psSearch->nShapeCount + 100) * 5 / 4);
         int *pNewPtr =
             STATIC_CAST(int *, realloc(psSearch->panShapeId,
                                        psSearch->nShapeAlloc * sizeof(int)));
@@ -478,7 +478,7 @@ static bool SBNSearchDiskInternal(SearchStruct *psSearch, int nDepth,
 
     SBNSearchHandle hSBN = psSearch->hSBN;
 
-    SBNNodeDescriptor *psNode = &(hSBN->pasNodeDescriptor[nNodeId]);
+    SBNNodeDescriptor *psNode = &hSBN->pasNodeDescriptor[nNodeId];
 
     /* -------------------------------------------------------------------- */
     /*      Check if this node contains shapes that intersect the search    */
@@ -570,7 +570,7 @@ static bool SBNSearchDiskInternal(SearchStruct *psSearch, int nDepth,
             int nShapes = nBinSize / 8;
 
             /* Bins are always limited to 100 features */
-            if ((nBinSize % 8) != 0 || nShapes <= 0 || nShapes > 100)
+            if (nBinSize % 8 != 0 || nShapes <= 0 || nShapes > 100)
             {
                 hSBN->sHooks.Error("Unexpected bin size");
                 free(psNode->pabyShapeDesc);
@@ -698,7 +698,7 @@ static bool SBNSearchDiskInternal(SearchStruct *psSearch, int nDepth,
     {
         nNodeId = nNodeId * 2 + 1;
 
-        if ((nDepth % 2) == 0) /* x split */
+        if (nDepth % 2 == 0) /* x split */
         {
             const coord bMid = STATIC_CAST(
                 coord, 1 + (STATIC_CAST(int, bNodeMinX) + bNodeMaxX) / 2);

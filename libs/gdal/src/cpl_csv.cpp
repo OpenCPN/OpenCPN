@@ -95,7 +95,7 @@ CSVTable *CSVAccess( const char * pszFilename )
              * the list to accelerate frequently accessed tables.
              */
 
-            return( psTable );
+            return psTable;
         }
     }
 
@@ -123,7 +123,7 @@ CSVTable *CSVAccess( const char * pszFilename )
 /* -------------------------------------------------------------------- */
     psTable->papszFieldNames = CSVReadParseLine( fp );
 
-    return( psTable );
+    return psTable;
 }
 
 /************************************************************************/
@@ -289,7 +289,7 @@ static char *CSVFindNextLine( char *pszThisLine )
             nQuoteCount++;
 
         if( (pszThisLine[i] == 10 || pszThisLine[i] == 13)
-            && (nQuoteCount % 2) == 0 )
+            && nQuoteCount % 2 == 0 )
             break;
     }
 
@@ -410,11 +410,11 @@ char **CSVReadParseLine( FILE * fp )
 
     CPLAssert( fp != NULL );
     if( fp == NULL )
-        return( NULL );
+        return NULL;
 
     pszLine = CPLReadLine( fp );
     if( pszLine == NULL )
-        return( NULL );
+        return NULL;
 
 /* -------------------------------------------------------------------- */
 /*      If there are no quotes, then this is the simple case.           */
@@ -473,15 +473,15 @@ static int CSVCompare( const char * pszFieldValue, const char * pszTarget,
 {
     if( eCriteria == CC_ExactString )
     {
-        return( strcmp( pszFieldValue, pszTarget ) == 0 );
+        return strcmp( pszFieldValue, pszTarget ) == 0;
     }
     else if( eCriteria == CC_ApproxString )
     {
-        return( EQUAL( pszFieldValue, pszTarget ) );
+        return EQUAL(pszFieldValue, pszTarget);
     }
     else if( eCriteria == CC_Integer )
     {
-        return( atoi(pszFieldValue) == atoi(pszTarget) );
+        return atoi(pszFieldValue) == atoi(pszTarget);
     }
 
     return FALSE;
@@ -511,7 +511,7 @@ char **CSVScanLines( FILE *fp, int iKeyField, const char * pszValue,
     while( !bSelected ) {
         papszFields = CSVReadParseLine( fp );
         if( papszFields == NULL )
-            return( NULL );
+            return NULL;
 
         if( CSLCount( papszFields ) < iKeyField+1 )
         {
@@ -535,7 +535,7 @@ char **CSVScanLines( FILE *fp, int iKeyField, const char * pszValue,
         }
     }
 
-    return( papszFields );
+    return papszFields;
 }
 
 /************************************************************************/
@@ -642,7 +642,7 @@ CSVScanLinesIngested( CSVTable *psTable, int iKeyField, const char * pszValue,
         }
     }
 
-    return( papszFields );
+    return papszFields;
 }
 
 /************************************************************************/
@@ -702,7 +702,7 @@ char **CSVScanFile( const char * pszFilename, int iKeyField,
             CSVScanLines( psTable->fp, iKeyField, pszValue, eCriteria );
     }
 
-    return( psTable->papszRecFields );
+    return psTable->papszRecFields;
 }
 
 /************************************************************************/
@@ -799,7 +799,7 @@ char **CSVScanFileByName( const char * pszFilename,
     if( iKeyField == -1 )
         return NULL;
 
-    return( CSVScanFile( pszFilename, iKeyField, pszValue, eCriteria ) );
+    return CSVScanFile( pszFilename, iKeyField, pszValue, eCriteria );
 }
 
 /************************************************************************/
@@ -849,7 +849,7 @@ const char *CSVGetField( const char * pszFilename,
     if( iTargetField >= CSLCount( papszRecord ) )
         return "";
 
-    return( papszRecord[iTargetField] );
+    return papszRecord[iTargetField];
 }
 
 /************************************************************************/
@@ -899,7 +899,7 @@ const char * GDALDefaultCSVFilename( const char *pszBasename )
     if( fp != NULL )
         fclose( fp );
 
-    return( szPath );
+    return szPath;
 }
 
 /************************************************************************/
@@ -917,7 +917,7 @@ const char * CSVFilename( const char *pszBasename )
     if( pfnCSVFilenameHook == NULL )
         return GDALDefaultCSVFilename( pszBasename );
     else
-        return( pfnCSVFilenameHook( pszBasename ) );
+        return pfnCSVFilenameHook( pszBasename );
 }
 
 /************************************************************************/

@@ -140,7 +140,7 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
       RoutePoint *ps = (RoutePoint *)pFindSel->m_pData1;
 
       //    inner loop iterates on the route's point list
-      wxRoutePointListNode *pnode = (pr->pRoutePointList)->GetFirst();
+      wxRoutePointListNode *pnode = pr->pRoutePointList->GetFirst();
       while (pnode) {
         RoutePoint *prp = pnode->GetData();
 
@@ -166,7 +166,7 @@ bool Select::DeleteAllSelectableRoutePoints(Route *pr) {
 
 bool Select::AddAllSelectableRoutePoints(Route *pr) {
   if (pr->pRoutePointList->GetCount()) {
-    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
 
     while (node) {
       RoutePoint *prp = node->GetData();
@@ -183,7 +183,7 @@ bool Select::AddAllSelectableRouteSegments(Route *pr) {
   float slat1, slon1, slat2, slon2;
 
   if (pr->pRoutePointList->GetCount()) {
-    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst();
+    wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
 
     RoutePoint *prp0 = node->GetData();
     slat1 = prp0->m_lat;
@@ -461,7 +461,7 @@ bool Select::IsSegmentSelected(float a, float b, float c, float d, float slat,
   if (slat > 90.0) slat -= 180.0;
   if (slon > 180.0) slon -= 360.0;
 
-  if ((c * d) < 0.) {
+  if (c * d < 0.) {
     //    Arrange for points to be increasing longitude, c to d
     double dist, brg;
     DistanceBearingMercator(a, c, b, d, &brg, &dist);
@@ -483,10 +483,10 @@ bool Select::IsSegmentSelected(float a, float b, float c, float d, float slat,
   }
 
   //    As a course test, use segment bounding box test
-  if ((slat >= (fmin(a, b) - selectRadius)) &&
-      (slat <= (fmax(a, b) + selectRadius)) &&
-      ((slon + adder) >= (fmin(c, d) - selectRadius)) &&
-      ((slon + adder) <= (fmax(c, d) + selectRadius))) {
+  if (slat >= fmin(a, b) - selectRadius &&
+      slat <= fmax(a, b) + selectRadius &&
+      slon + adder >= fmin(c, d) - selectRadius &&
+      slon + adder <= fmax(c, d) + selectRadius) {
     //    Use vectors to do hit test....
     vector2D va, vb, vn;
 
@@ -504,7 +504,7 @@ bool Select::IsSegmentSelected(float a, float b, float c, float d, float slat,
     vb.y = bp - ap;
 
     double delta = vGetLengthOfNormal(&va, &vb, &vn);
-    if (fabs(delta) < (selectRadius * 1852 * 60)) return true;
+    if (fabs(delta) < selectRadius * 1852 * 60) return true;
   }
   return false;
 }
@@ -531,8 +531,8 @@ SelectItem *Select::FindSelection(SelectCtx& ctx, float slat, float slon,
         case SELTYPE_TIDEPOINT:
         case SELTYPE_CURRENTPOINT:
         case SELTYPE_AISTARGET:
-          if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
-              (fabs(slon - pFindSel->m_slon) < selectRadius)) {
+          if (fabs(slat - pFindSel->m_slat) < selectRadius &&
+              fabs(slon - pFindSel->m_slon) < selectRadius) {
                 if(fseltype == SELTYPE_ROUTEPOINT) {
                     if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.chart_scale))
                       goto find_ok;
@@ -619,8 +619,8 @@ SelectableItemList Select::FindSelectionList(SelectCtx& ctx, float slat,
     if (pFindSel->m_seltype == fseltype) {
       switch (fseltype) {
         case SELTYPE_ROUTEPOINT:
-          if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
-              (fabs(slon - pFindSel->m_slon) < selectRadius))
+          if (fabs(slat - pFindSel->m_slat) < selectRadius &&
+              fabs(slon - pFindSel->m_slon) < selectRadius)
             if (is_selectable_wp(ctx, (RoutePoint *)pFindSel->m_pData1))
               if (((RoutePoint *)pFindSel->m_pData1)->IsVisibleSelectable(ctx.chart_scale))
                 ret_list.Append(pFindSel);
@@ -629,8 +629,8 @@ SelectableItemList Select::FindSelectionList(SelectCtx& ctx, float slat,
         case SELTYPE_CURRENTPOINT:
         case SELTYPE_AISTARGET:
         case SELTYPE_DRAGHANDLE:
-          if ((fabs(slat - pFindSel->m_slat) < selectRadius) &&
-              (fabs(slon - pFindSel->m_slon) < selectRadius)) {
+          if (fabs(slat - pFindSel->m_slat) < selectRadius &&
+              fabs(slon - pFindSel->m_slon) < selectRadius) {
             if (is_selectable_wp(ctx, (RoutePoint *)pFindSel->m_pData1))
               ret_list.Append(pFindSel);
           }

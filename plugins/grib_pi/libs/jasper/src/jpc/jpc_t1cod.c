@@ -169,7 +169,7 @@ int JPC_SEGTYPE(int passno, int firstpassno, int bypass)
         if (passtype == JPC_CLNPASS) {
             return JPC_SEG_MQ;
         }
-        return ((passno < firstpassno + 10) ? JPC_SEG_MQ : JPC_SEG_RAW);
+        return passno < firstpassno + 10 ? JPC_SEG_MQ : JPC_SEG_RAW;
     } else {
         return JPC_SEG_MQ;
     }
@@ -219,7 +219,7 @@ int JPC_ISTERMINATED(int passno, int firstpassno, int numpasses, int termall,
         ret = 1;
     } else {
         n = JPC_SEGPASSCNT(passno, firstpassno, numpasses, lazy, termall);
-        ret = (n <= 1) ? 1 : 0;
+        ret = n <= 1 ? 1 : 0;
     }
 
     return ret;
@@ -243,7 +243,7 @@ jpc_initmqctxs();
 
     for (orient = 0; orient < 4; ++orient) {
         for (i = 0; i < 256; ++i) {
-            jpc_zcctxnolut[(orient << 8) | i] = jpc_getzcctxno(i, orient);
+            jpc_zcctxnolut[orient << 8 | i] = jpc_getzcctxno(i, orient);
         }
     }
 
@@ -261,22 +261,22 @@ jpc_initmqctxs();
         }
     }
 
-    for (i = 0; i < (1 << JPC_NMSEDEC_BITS); ++i) {
+    for (i = 0; i < 1 << JPC_NMSEDEC_BITS; ++i) {
         t = i * jpc_pow2i(-JPC_NMSEDEC_FRACBITS);
         u = t;
         v = t - 1.5;
         jpc_signmsedec[i] = jpc_dbltofix(floor((u * u - v * v) * jpc_pow2i(JPC_NMSEDEC_FRACBITS) + 0.5) / jpc_pow2i(JPC_NMSEDEC_FRACBITS));
 /* XXX - this calc is not correct */
-        jpc_signmsedec0[i] = jpc_dbltofix(floor((u * u) * jpc_pow2i(JPC_NMSEDEC_FRACBITS) + 0.5) / jpc_pow2i(JPC_NMSEDEC_FRACBITS));
+        jpc_signmsedec0[i] = jpc_dbltofix(floor( u * u * jpc_pow2i(JPC_NMSEDEC_FRACBITS) + 0.5) / jpc_pow2i(JPC_NMSEDEC_FRACBITS));
         u = t - 1.0;
-        if (i & (1 << (JPC_NMSEDEC_BITS - 1))) {
+        if (i & 1 << JPC_NMSEDEC_BITS - 1) {
             v = t - 1.5;
         } else {
             v = t - 0.5;
         }
         jpc_refnmsedec[i] = jpc_dbltofix(floor((u * u - v * v) * jpc_pow2i(JPC_NMSEDEC_FRACBITS) + 0.5) / jpc_pow2i(JPC_NMSEDEC_FRACBITS));
 /* XXX - this calc is not correct */
-        jpc_refnmsedec0[i] = jpc_dbltofix(floor((u * u) * jpc_pow2i(JPC_NMSEDEC_FRACBITS) + 0.5) / jpc_pow2i(JPC_NMSEDEC_FRACBITS));
+        jpc_refnmsedec0[i] = jpc_dbltofix(floor( u * u * jpc_pow2i(JPC_NMSEDEC_FRACBITS) + 0.5) / jpc_pow2i(JPC_NMSEDEC_FRACBITS));
     }
 }
 
@@ -384,7 +384,7 @@ int jpc_getspb(int f)
     if (!hc && !vc) {
         n = 0;
     } else {
-        n = (!(hc > 0 || (!hc && vc > 0)));
+        n = !(hc > 0 || (!hc && vc > 0));
     }
     return n;
 }
@@ -435,7 +435,7 @@ int jpc_getmagctxno(int f)
     int n;
 
     if (!(f & JPC_REFINE)) {
-        n = (f & (JPC_OTHSIGMSK)) ? 1 : 0;
+        n = f & (JPC_OTHSIGMSK) ? 1 : 0;
     } else {
         n = 2;
     }

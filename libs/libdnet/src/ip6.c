@@ -26,7 +26,7 @@ ip6_checksum(void *buf, size_t len)
 	
 	nxt = ip6->ip6_nxt;
 	
-	for (i = IP6_HDR_LEN; IP6_IS_EXT(nxt); i += (ext->ext_len + 1) << 3) {
+	for (i = IP6_HDR_LEN; IP6_IS_EXT(nxt); i += ext->ext_len + 1 << 3) {
 		if (i >= (int)len) return;
 		ext = (struct ip6_ext_hdr *)((u_char *)buf + i);
 		nxt = ext->ext_nxt;
@@ -84,7 +84,7 @@ ip6_add_option(void *buf, size_t len, int proto,
 
 	if (proto != IP_PROTO_TCP) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 
 	ip6 = (struct ip6_hdr *)buf;
@@ -97,14 +97,14 @@ ip6_add_option(void *buf, size_t len, int proto,
 	datalen = ntohs(ip6->ip6_plen) + IP6_HDR_LEN - (p - (u_char *)buf);
 
 	/* Compute padding to next word boundary. */
-	if ((padlen = 4 - (optlen % 4)) == 4)
+	if ((padlen = 4 - optlen % 4) == 4)
 		padlen = 0;
 
 	/* XXX - IP_HDR_LEN_MAX == TCP_HDR_LEN_MAX */
 	if (hl + optlen + padlen > IP_HDR_LEN_MAX ||
 	    ntohs(ip6->ip6_plen) + IP6_HDR_LEN + optlen + padlen > len) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 
 	/* Shift any existing data. */
@@ -120,9 +120,9 @@ ip6_add_option(void *buf, size_t len, int proto,
 	p += optlen;
 	optlen += padlen;
 
-	tcp->th_off = (p - (u_char *)tcp) >> 2;
+	tcp->th_off = p - (u_char *)tcp >> 2;
 
 	ip6->ip6_plen = htons(ntohs(ip6->ip6_plen) + optlen);
 
-	return (optlen);
+	return optlen;
 }

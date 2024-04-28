@@ -62,10 +62,10 @@ bool LATITUDE::IsDataValid( void )
 {
    if ( Northing != North && Northing != South )
    {
-      return( FALSE );
+      return FALSE;
    }
 
-   return( TRUE );
+   return TRUE;
 }
 
 void LATITUDE::Parse( int position_field_number, int north_or_south_field_number, const SENTENCE& sentence )
@@ -139,5 +139,5 @@ const LATITUDE& LATITUDE::operator = ( const LATITUDE& source )
    Latitude = source.Latitude;
    Northing = source.Northing;
 
-   return( *this );
+   return*this;
 }

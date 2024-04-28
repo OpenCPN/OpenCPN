@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
     int cShapeType;
     double adBounds[4];
-    SHPGetInfo(cSHP, NULL, &cShapeType, &(adBounds[0]), &(adBounds[2]));
+    SHPGetInfo(cSHP, NULL, &cShapeType, &adBounds[0], &adBounds[2]);
 
     // Skim over the list of shapes, printing all the vertices.
     for (int i = 0; i < nEntities; i++)

@@ -662,8 +662,8 @@ void OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
     dc.SetPen(wxPen(wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOWFRAME), 1));
 
     int offset = height / 10;
-    dc.DrawRoundedRectangle(offset, offset, width - (2 * offset),
-                            height - (2 * offset), height / 10);
+    dc.DrawRoundedRectangle(offset, offset, width - 2 * offset,
+                            height - 2 * offset, height / 10);
 
     int text_x = offset * 2;
 
@@ -1560,7 +1560,7 @@ void options::RecalculateSize(int hint_x, int hint_y) {
 
     // Protect against unreasonable small size
     // And also handle the empty config file init case.
-    if ((hint_x < 200) || (hint_y < 200)){
+    if (hint_x < 200 || hint_y < 200){
 
       // Constrain size on small displays
       int display_width, display_height;
@@ -2032,7 +2032,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                         wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
 
   wxString m_LineColorChoices[] = {
-      ("Default color"), _("Black"),     _("Dark Red"),     _("Dark Green"),
+      "Default color", _("Black"),     _("Dark Red"),     _("Dark Green"),
       _("Dark Yellow"),  _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"),
       _("Light Gray"),   _("Dark Gray"), _("Red"),          _("Green"),
       _("Yellow"),       _("Blue"),      _("Magenta"),      _("Cyan"),
@@ -2221,7 +2221,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   //  Accomodate scaling of icon
   int min_size = GetCharHeight() * 2;
-  min_size = wxMax(min_size, (32 * g_MarkScaleFactorExp) + 4);
+  min_size = wxMax(min_size, 32 * g_MarkScaleFactorExp + 4);
   pRoutepointDefaultIconChoice->SetMinSize(
       wxSize(GetCharHeight() * 15, min_size));
 
@@ -2284,7 +2284,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   //  Accomodate scaling of icon
   int rmin_size = GetCharHeight() * 2;
-  min_size = wxMax(rmin_size, (32 * g_MarkScaleFactorExp) + 4);
+  min_size = wxMax(rmin_size, 32 * g_MarkScaleFactorExp + 4);
   pWaypointDefaultIconChoice->SetMinSize(
       wxSize(GetCharHeight() * 15, rmin_size));
 
@@ -3143,7 +3143,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
 
     smallFont = *dialogFont;  // we can't use Smaller() because
                               // wx2.8 doesn't support it
-    smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +
+    smallFont.SetPointSize(smallFont.GetPointSize() / 1.2 +
                            0.5);  // + 0.5 to round instead of truncate
     zoomText->SetFont(smallFont);
     itemBoxSizerUI->Add(zoomText, 0, wxALL | wxEXPAND, group_item_spacing);
@@ -4617,7 +4617,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                          _(" To set the magnetic variation manually,\n you "
                            "must disable the WMM plugin."));
     smallFont = *dialogFont;
-    smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +
+    smallFont.SetPointSize(smallFont.GetPointSize() / 1.2 +
                            0.5);  // + 0.5 to round instead of truncate
     varText->SetFont(smallFont);
 
@@ -6083,7 +6083,7 @@ void options::SetInitialSettings(void) {
   int newLength = itemStaticTextUserVar->GetLabel().Length();
 
   // size hack to adjust change in static text size
-  if ((newLength != oldLength) || (b_oldhaveWMM != b_haveWMM)) {
+  if (newLength != oldLength || b_oldhaveWMM != b_haveWMM) {
     wxSize sz = GetSize();
     SetSize(sz.x + 1, sz.y);
     SetSize(sz);
@@ -6367,7 +6367,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
 
     for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
          iPtr++) {
-      OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
+      OBJLElement* pOLE = (OBJLElement*)ps52plib->pOBJLArray->Item(iPtr);
 
       wxString item;
       if (iPtr < ps52plib->OBJLDescriptions.size()) {
@@ -6383,10 +6383,10 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd) {
       DisCat cata = ps52plib->findLUPDisCat(pOLE->OBJLName, PLAIN_BOUNDARIES);
       DisCat catl = ps52plib->findLUPDisCat(pOLE->OBJLName, LINES);
 
-      if ((catp == DISPLAYBASE) || (cata == DISPLAYBASE) ||
-          (catl == DISPLAYBASE))
+      if (catp == DISPLAYBASE || cata == DISPLAYBASE ||
+          catl == DISPLAYBASE)
         cat = DISPLAYBASE;
-      else if ((catp == STANDARD) || (cata == STANDARD) || (catl == STANDARD))
+      else if (catp == STANDARD || cata == STANDARD || catl == STANDARD)
         cat = STANDARD;
 
       bool benable = true;
@@ -6434,16 +6434,16 @@ void options::SetInitialVectorSettings(void) {
 
     int nset = 2;  // default OTHER
     switch (ps52plib->GetDisplayCategory()) {
-      case (DISPLAYBASE):
+      case DISPLAYBASE:
         nset = 0;
         break;
-      case (STANDARD):
+      case STANDARD:
         nset = 1;
         break;
-      case (OTHER):
+      case OTHER:
         nset = 2;
         break;
-      case (MARINERS_STANDARD):
+      case MARINERS_STANDARD:
         nset = 3;
         break;
       default:
@@ -6820,8 +6820,8 @@ void options::UpdateWorkArrayFromDisplayPanel(void) {
       if (!dirname.IsEmpty()) {
         //    This is a fix for OSX, which appends EOL to results of
         //    GetLineText()
-        while ((dirname.Last() == wxChar(_T('\n'))) ||
-               (dirname.Last() == wxChar(_T('\r'))))
+        while (dirname.Last() == wxChar(_T('\n')) ||
+               dirname.Last() == wxChar(_T('\r')))
           dirname.RemoveLast();
 
         //    scan the current array to find a match
@@ -7298,8 +7298,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       }
     }
     assert(itemIndex >= 0);
-    OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(itemIndex));
-    if (pOLE->nViz != (int)(ps57CtlListBox->IsChecked(iPtr)))
+    OBJLElement* pOLE = (OBJLElement*)ps52plib->pOBJLArray->Item(itemIndex);
+    if (pOLE->nViz != (int)ps57CtlListBox->IsChecked(iPtr))
       bUserStdChange = true;
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
@@ -7363,7 +7363,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->m_nTextFactor = m_pSlider_ENCText_Factor->GetValue();
 
     S52_setMarinerParam(S52_MAR_TWO_SHADES,
-                        (p24Color->GetSelection() == 0) ? 1.0 : 0.0);
+                        p24Color->GetSelection() == 0 ? 1.0 : 0.0);
 
     // Depths
     double dval;
@@ -7393,7 +7393,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     ps52plib->GenerateStateHash();
 
     // Detect a change to S52 library config
-    if ((stateHash != ps52plib->GetStateHash()) || bUserStdChange)
+    if (stateHash != ps52plib->GetStateHash() || bUserStdChange)
       m_returnChanges |= S52_CHANGED;
 
     if (bchange_scale)
@@ -8413,99 +8413,99 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
     dir_suffix = _T("en");
     return_string = wxString("English (U.S.)", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("cs_CZ")) || (lang_canonical == _T("cs"))) {
+  } else if (lang_canonical == _T("cs_CZ") || lang_canonical == _T("cs")) {
     dir_suffix = _T("cs");
     return_string = wxString("Čeština", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("da_DK")) || (lang_canonical == _T("da"))) {
+  } else if (lang_canonical == _T("da_DK") || lang_canonical == _T("da")) {
     dir_suffix = _T("da");
     return_string = wxString("Dansk", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("de_DE")) || (lang_canonical == _T("de"))) {
+  } else if (lang_canonical == _T("de_DE") || lang_canonical == _T("de")) {
     dir_suffix = _T("de");
     return_string = wxString("Deutsch", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("et_EE")) || (lang_canonical == _T("et"))) {
+  } else if (lang_canonical == _T("et_EE") || lang_canonical == _T("et")) {
     dir_suffix = _T("et");
     return_string = wxString("Eesti", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("es_ES")) || (lang_canonical == _T("es"))) {
+  } else if (lang_canonical == _T("es_ES") || lang_canonical == _T("es")) {
     dir_suffix = _T("es");
     return_string = wxString("Español", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("fr_FR")) || (lang_canonical == _T("fr"))) {
+  } else if (lang_canonical == _T("fr_FR") || lang_canonical == _T("fr")) {
     dir_suffix = _T("fr");
     return_string = wxString("Français", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("it_IT")) || (lang_canonical == _T("it"))) {
+  } else if (lang_canonical == _T("it_IT") || lang_canonical == _T("it")) {
     dir_suffix = _T("it");
     return_string = wxString("Italiano", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("nl_NL")) || (lang_canonical == _T("nl"))) {
+  } else if (lang_canonical == _T("nl_NL") || lang_canonical == _T("nl")) {
     dir_suffix = _T("nl");
     return_string = wxString("Nederlands", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("pl_PL")) || (lang_canonical == _T("pl"))) {
+  } else if (lang_canonical == _T("pl_PL") || lang_canonical == _T("pl")) {
     dir_suffix = _T("pl");
     return_string = wxString("Polski", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("pt_PT")) || (lang_canonical == _T("pt"))) {
+  } else if (lang_canonical == _T("pt_PT") || lang_canonical == _T("pt")) {
     dir_suffix = _T("pt_PT");
     return_string = wxString("Português", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("pt_BR")) || (lang_canonical == _T("pt_BR"))) {
+  } else if (lang_canonical == _T("pt_BR") || lang_canonical == _T("pt_BR")) {
     dir_suffix = _T("pt_BR");
     return_string = wxString("Português  Brasileiro", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("ru_RU")) || (lang_canonical == _T("ru"))) {
+  } else if (lang_canonical == _T("ru_RU") || lang_canonical == _T("ru")) {
     dir_suffix = _T("ru");
     return_string = wxString("Русский", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("sv_SE")) || (lang_canonical == _T("sv"))) {
+  } else if (lang_canonical == _T("sv_SE") || lang_canonical == _T("sv")) {
     dir_suffix = _T("sv");
     return_string = wxString("Svenska", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("fi_FI")) || (lang_canonical == _T("fi"))) {
+  } else if (lang_canonical == _T("fi_FI") || lang_canonical == _T("fi")) {
     dir_suffix = _T("fi_FI");
     return_string = wxString("Suomi", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("nb_NO")) || (lang_canonical == _T("nb"))) {
+  } else if (lang_canonical == _T("nb_NO") || lang_canonical == _T("nb")) {
     dir_suffix = _T("nb_NO");
     return_string = wxString("Norsk", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("tr_TR")) || (lang_canonical == _T("tr"))) {
+  } else if (lang_canonical == _T("tr_TR") || lang_canonical == _T("tr")) {
     dir_suffix = _T("tr_TR");
     return_string = wxString("Türkçe", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("el_GR")) || (lang_canonical == _T("el"))) {
+  } else if (lang_canonical == _T("el_GR") || lang_canonical == _T("el")) {
     dir_suffix = _T("el_GR");
     return_string = wxString("Ελληνικά", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("hu_HU")) || (lang_canonical == _T("hu"))) {
+  } else if (lang_canonical == _T("hu_HU") || lang_canonical == _T("hu")) {
     dir_suffix = _T("hu_HU");
     return_string = wxString("Magyar", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("zh_TW")) || (lang_canonical == _T("zh_TW"))) {
+  } else if (lang_canonical == _T("zh_TW") || lang_canonical == _T("zh_TW")) {
     dir_suffix = _T("zh_TW");
     return_string = wxString("正體字", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("zh_CN")) || (lang_canonical == _T("zh_CN"))) {
+  } else if (lang_canonical == _T("zh_CN") || lang_canonical == _T("zh_CN")) {
       dir_suffix = _T("zh_CN");
       return_string = wxString("Simplified Chinese", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("ca_ES")) || (lang_canonical == _T("ca"))) {
+  } else if (lang_canonical == _T("ca_ES") || lang_canonical == _T("ca")) {
     dir_suffix = _T("ca_ES");
     return_string = wxString("Catalan", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("gl_ES")) || (lang_canonical == _T("gl_ES"))) {
+  } else if (lang_canonical == _T("gl_ES") || lang_canonical == _T("gl_ES")) {
     dir_suffix = _T("gl_ES");
     return_string = wxString("Galician", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("ja_JP")) || (lang_canonical == _T("ja_JP"))) {
+  } else if (lang_canonical == _T("ja_JP") || lang_canonical == _T("ja_JP")) {
     dir_suffix = _T("ja_JP");
     return_string = wxString("Japanese", wxConvUTF8);
 
-  } else if ((lang_canonical == _T("vi_VN")) || (lang_canonical == _T("vi_VN"))) {
+  } else if (lang_canonical == _T("vi_VN") || lang_canonical == _T("vi_VN")) {
     dir_suffix = _T("vi_VN");
     return_string = wxString("Vietnamese", wxConvUTF8);
 
@@ -8669,7 +8669,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
   wxString insert_candidate = allAvailableCtl->GetPath();
   if (!insert_candidate.IsEmpty()) {
     if (m_DirCtrlArray.GetCount()) {
-      wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
+      wxGenericDirCtrl* pDirCtrl = m_DirCtrlArray[m_GroupSelectedPage];
       ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
       if (pDirCtrl) {
         wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
@@ -8699,7 +8699,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
   allAvailableCtl->GetTreeCtrl()->UnselectAll();
   m_pAddButton->Disable();
 
-  wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
+  wxGenericDirCtrl* pDirCtrl = m_DirCtrlArray[m_GroupSelectedPage];
   if (pDirCtrl) {
     wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
     if (ptree) ptree->Refresh();
@@ -8708,7 +8708,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
 
 void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
   if (m_DirCtrlArray.GetCount()) {
-    wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
+    wxGenericDirCtrl* pDirCtrl = m_DirCtrlArray[m_GroupSelectedPage];
     ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
 
     if (pDirCtrl) {
@@ -8755,7 +8755,7 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
         lastSelectedCtl = 0;
         m_pRemoveButton->Disable();
 
-        wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
+        wxGenericDirCtrl* pDirCtrl = m_DirCtrlArray[m_GroupSelectedPage];
         if (pDirCtrl) {
           wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
           if (ptree) ptree->Refresh();
@@ -8786,7 +8786,7 @@ void ChartGroupsUI::OnGroupPageChange(wxNotebookEvent& event) {
 
 void ChartGroupsUI::OnAvailableSelection(wxTreeEvent& event) {
   wxObject* evtObj = event.GetEventObject();
-  if (allAvailableCtl && (evtObj == allAvailableCtl->GetTreeCtrl())) {
+  if (allAvailableCtl && evtObj == allAvailableCtl->GetTreeCtrl()) {
     wxTreeItemId item = allAvailableCtl->GetTreeCtrl()->GetSelection();
     if (item && item.IsOk() && m_GroupSelectedPage > 0) {
       m_pAddButton->Enable();
@@ -8900,7 +8900,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   wxTreeItemId node = event.GetItem();
 
   if (m_GroupSelectedPage <= 0) return;
-  wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
+  wxGenericDirCtrl* pDirCtrl = m_DirCtrlArray[m_GroupSelectedPage];
   ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
   if (!pDirCtrl) return;
 

@@ -85,13 +85,13 @@ bool MTW::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 3 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    Temperature       = sentence.Double( 1 );
    UnitOfMeasurement = sentence.Field( 2 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool MTW::Write( SENTENCE& sentence )
@@ -109,7 +109,7 @@ bool MTW::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const MTW& MTW::operator = ( const MTW& source )
@@ -119,5 +119,5 @@ const MTW& MTW::operator = ( const MTW& source )
    Temperature       = source.Temperature;
    UnitOfMeasurement = source.UnitOfMeasurement;
 
-   return( *this );
+   return*this;
 }

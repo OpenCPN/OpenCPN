@@ -68,7 +68,7 @@ case_ignore_strcmp(const char *s1, const char *s2)
 		if (*s1 == 0)
 			return 0;
 	}
-	return (toupper(*s1) < toupper(*s2)) ? -1 : +1;
+	return toupper(*s1) < toupper(*s2) ? -1 : +1;
 
 }
 
@@ -77,7 +77,7 @@ case_ignore_strncmp(const char *s1, const char *s2, int n)
 {
 	int rv = 0;
 
-	while (n && ((rv = toupper(*s1) - toupper(*s2)) == 0)
+	while (n && (rv = toupper(*s1) - toupper(*s2)) == 0
 		&& *s1) {
 		s1++;
 		s2++;
@@ -122,14 +122,14 @@ signed int
             le_read16(const void *addr)
 {
       const unsigned char *p = (const unsigned char *)addr;
-      return p[0] | (p[1] << 8);
+      return p[0] | p[1] << 8;
 }
 
 signed int
             le_read32(const void *addr)
 {
       const unsigned char *p = (const unsigned char *)addr;
-      return p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
+      return p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
 }
 
 
@@ -188,8 +188,8 @@ const char *
 fix_win_serial_name_r(const char *comname, char *obuf, size_t len)
 {
       if (!gbser_is_serial(comname) ||
-           ((strlen(comname) == 5) && (comname[4] == ':')) ||
-           ((strlen(comname) == 4) && (case_ignore_strncmp(comname, "com", 3) == 0))
+           (strlen(comname) == 5 && comname[4] == ':') ||
+           (strlen(comname) == 4 && case_ignore_strncmp(comname, "com", 3) == 0)
          ) {
             strncpy(obuf, comname, len - 1);
             obuf[len - 1] = '\0';

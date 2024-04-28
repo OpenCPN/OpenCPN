@@ -53,7 +53,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 RoutePropDlgCtx RoutePropDlg::GetDlgCtx() {
   struct RoutePropDlgCtx ctx;
   ctx.set_route_and_update = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+    if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
       pRoutePropDialog->SetRouteAndUpdate(r, true);
     }
   };
@@ -65,8 +65,8 @@ RoutePropDlgCtx RoutePropDlg::GetDlgCtx() {
     }
   };
   ctx.hide = [&](Route* r) {
-    if (pRoutePropDialog && (pRoutePropDialog->IsShown()) &&
-        (r == pRoutePropDialog->GetRoute())) {
+    if (pRoutePropDialog && pRoutePropDialog->IsShown() &&
+        r == pRoutePropDialog->GetRoute()) {
       pRoutePropDialog->Hide();
     }
   };

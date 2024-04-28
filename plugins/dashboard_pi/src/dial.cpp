@@ -170,10 +170,10 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
     double angle1 = deg2rad(270);  // 305-ANGLE_OFFSET
     double angle2 = deg2rad(90);   // 55-ANGLE_OFFSET
     int radi = m_radius - 1 - penwidth;
-    wxCoord x1 = m_cx + ((radi)*cos(angle1));
-    wxCoord y1 = m_cy + ((radi)*sin(angle1));
-    wxCoord x2 = m_cx + ((radi)*cos(angle2));
-    wxCoord y2 = m_cy + ((radi)*sin(angle2));
+    wxCoord x1 = m_cx + radi*cos(angle1);
+    wxCoord y1 = m_cy + radi*sin(angle1);
+    wxCoord x2 = m_cx + radi*cos(angle2);
+    wxCoord y2 = m_cy + radi*sin(angle2);
     dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
 
     GetGlobalColor(_T("DASHG"), &cl);
@@ -181,10 +181,10 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
     dc->SetPen(pen);
     angle1 = deg2rad(89);   // 305-ANGLE_OFFSET
     angle2 = deg2rad(271);  // 55-ANGLE_OFFSET
-    x1 = m_cx + ((radi)*cos(angle1));
-    y1 = m_cy + ((radi)*sin(angle1));
-    x2 = m_cx + ((radi)*cos(angle2));
-    y2 = m_cy + ((radi)*sin(angle2));
+    x1 = m_cx + radi*cos(angle1);
+    y1 = m_cy + radi*sin(angle1);
+    x2 = m_cx + radi*cos(angle2);
+    y2 = m_cy + radi*sin(angle2);
     dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
 
     // Some platforms have trouble with transparent pen.
@@ -197,10 +197,10 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
     angle2 = deg2rad(180);
     radi = m_radius - 1;
 
-    x1 = m_cx + ((radi)*cos(angle1));
-    y1 = m_cy + ((radi)*sin(angle1));
-    x2 = m_cx + ((radi)*cos(angle2));
-    y2 = m_cy + ((radi)*sin(angle2));
+    x1 = m_cx + radi*cos(angle1);
+    y1 = m_cy + radi*sin(angle1);
+    x2 = m_cx + radi*cos(angle2);
+    y2 = m_cy + radi*sin(angle2);
     dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
     dc->DrawArc(x2, y2, x1, y1, m_cx, m_cy);
 
@@ -234,7 +234,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
       int a = int(angle + ANGLE_OFFSET) % 360;
       if (a > 180)
         GetGlobalColor(_T("DASHR"), &cl);
-      else if ((a > 0) && (a < 180))
+      else if (a > 0 && a < 180)
         GetGlobalColor(_T("DASHG"), &cl);
       else
         GetGlobalColor(_T("DASHF"), &cl);
@@ -249,10 +249,10 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
     }
     offset++;
 
-    dc->DrawLine(m_cx + ((m_radius - 1) * size * cos(deg2rad(angle))),
-                 m_cy + ((m_radius - 1) * size * sin(deg2rad(angle))),
-                 m_cx + ((m_radius - 1) * cos(deg2rad(angle))),
-                 m_cy + ((m_radius - 1) * sin(deg2rad(angle))));
+    dc->DrawLine(m_cx + (m_radius - 1) * size * cos(deg2rad(angle)),
+                 m_cy + (m_radius - 1) * size * sin(deg2rad(angle)),
+                 m_cx + (m_radius - 1) * cos(deg2rad(angle)),
+                 m_cy + (m_radius - 1) * sin(deg2rad(angle)));
   }
   // We must reset pen color so following drawings are fine
   if (m_MarkerOption == DIAL_MARKER_REDGREEN) {
@@ -294,8 +294,8 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
   for (double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle;
        angle += abm) {
     wxString label =
-        (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
-                                 : wxString::Format(_T("%d"), value));
+        m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
+          : wxString::Format(_T("%d"), value);
     if (m_Properties)
         f = m_Properties->m_SmallFont.GetChosenFont();
     else
@@ -307,9 +307,9 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
       // double delta = sqrt(width*width+height*height);
       double delta = sqrt(halfW * halfW + halfH * halfH);
       TextPoint.x =
-          m_cx + ((m_radius * 0.90) - delta) * cos(deg2rad(angle)) - halfW;
+          m_cx + (m_radius * 0.90 - delta) * cos(deg2rad(angle)) - halfW;
       TextPoint.y =
-          m_cy + ((m_radius * 0.90) - delta) * sin(deg2rad(angle)) - halfH;
+          m_cy + (m_radius * 0.90 - delta) * sin(deg2rad(angle)) - halfH;
         dc->DrawText(label, TextPoint);
 
     } else if (m_LabelOption == DIAL_LABEL_ROTATED) {
@@ -389,8 +389,8 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       // to avoid compiler warning.
       return;
     case DIAL_POSITION_INSIDE: {
-      TextPoint.x = m_cx - (width / 2) - 1;
-      TextPoint.y = (size.y * .75) - height;
+      TextPoint.x = m_cx - width / 2 - 1;
+      TextPoint.y = size.y * .75 - height;
       if (m_Properties)
           cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
       else
@@ -497,14 +497,14 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
                  deg2rad(m_AngleStart - ANGLE_OFFSET);
 
   wxPoint points[4];
-  points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
-  points[0].y = m_cy + (m_radius * 0.95 * sin(value - .010));
-  points[1].x = m_cx + (m_radius * 0.95 * cos(value + .015));
-  points[1].y = m_cy + (m_radius * 0.95 * sin(value + .015));
-  points[2].x = m_cx + (m_radius * 0.22 * cos(value + 2.8));
-  points[2].y = m_cy + (m_radius * 0.22 * sin(value + 2.8));
-  points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
-  points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
+  points[0].x = m_cx + m_radius * 0.95 * cos(value - .010);
+  points[0].y = m_cy + m_radius * 0.95 * sin(value - .010);
+  points[1].x = m_cx + m_radius * 0.95 * cos(value + .015);
+  points[1].y = m_cy + m_radius * 0.95 * sin(value + .015);
+  points[2].x = m_cx + m_radius * 0.22 * cos(value + 2.8);
+  points[2].y = m_cy + m_radius * 0.22 * sin(value + 2.8);
+  points[3].x = m_cx + m_radius * 0.22 * cos(value - 2.8);
+  points[3].y = m_cy + m_radius * 0.22 * sin(value - 2.8);
   dc->DrawPolygon(4, points, 0, 0);
 }
 
@@ -517,9 +517,9 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
   wxString CompassArray[] = {_("N"),  _("NE"), _("E"),  _("SE"), _("S"),
                              _("SW"), _("W"),  _("NW"), _("N")};
   if (Properties)
-      dc->SetFont((Properties->m_SmallFont.GetChosenFont()));
+      dc->SetFont(Properties->m_SmallFont.GetChosenFont());
   else
-      dc->SetFont((g_pFontSmall->GetChosenFont()));
+      dc->SetFont(g_pFontSmall->GetChosenFont());
 
   wxColour cl;
   wxPen* pen;
@@ -548,7 +548,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
         dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
       }
       double x = width / 2;
-      long double anglefortext = tmpangle - rad2deg(asin((x / radius)));
+      long double anglefortext = tmpangle - rad2deg(asin(x / radius));
       pt.x = cx + radius * cos(deg2rad(anglefortext));
       pt.y = cy + radius * sin(deg2rad(anglefortext));
       dc->DrawRotatedText(Value, pt.x, pt.y, -90 - tmpangle);
@@ -561,7 +561,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
         dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
       }
       x = width / 2;
-      anglefortext = tmpangle - rad2deg(asin((x / radius))) + 45;
+      anglefortext = tmpangle - rad2deg(asin(x / radius)) + 45;
       pt.x = cx + radius * cos(deg2rad(anglefortext));
       pt.y = cy + radius * sin(deg2rad(anglefortext));
       dc->DrawRotatedText(Value, pt.x, pt.y, -135 - tmpangle);

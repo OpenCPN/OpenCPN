@@ -224,7 +224,7 @@ void Multiplexer::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
         wxString bin_print;
         bin_print.Printf(_T("<0x%02X>"), *it);
         fmsg += bin_print;
-        if ((*it != 0x0a) && (*it != 0x0d)) b_error = true;
+        if (*it != 0x0a && *it != 0x0d) b_error = true;
       }
     }
 

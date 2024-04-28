@@ -289,7 +289,7 @@ protected:
 
 	inline static bool IsWhiteSpace( char c )
 	{
-		return ( isspace( (unsigned char) c ) || c == '\n' || c == '\r' );
+		return isspace( (unsigned char) c ) || c == '\n' || c == '\r';
 	}
 	inline static bool IsWhiteSpace( int c )
 	{
@@ -329,7 +329,7 @@ protected:
 		assert( p );
 		if ( encoding == TIXML_ENCODING_UTF8 )
 		{
-			*length = utf8ByteTable[ *((const unsigned char*)p) ];
+			*length = utf8ByteTable[ *(const unsigned char*)p ];
 			assert( *length >= 0 && *length < 5 );
 		}
 		else
@@ -351,7 +351,7 @@ protected:
 			for( int i=0; p[i] && i<*length; ++i ) {
 				_value[i] = p[i];
 			}
-			return p + (*length);
+			return p + *length;
 		}
 		else
 		{
@@ -526,14 +526,14 @@ public:
 	TiXmlNode* FirstChild( const char * _value ) {
 		// Call through to the const version - safe since nothing is changed. Exiting syntax: cast this to a const (always safe)
 		// call the method, cast the return back to non-const.
-		return const_cast< TiXmlNode* > ((const_cast< const TiXmlNode* >(this))->FirstChild( _value ));
+		return const_cast< TiXmlNode* > (const_cast< const TiXmlNode* >(this)->FirstChild( _value ));
 	}
 	const TiXmlNode* LastChild() const	{ return lastChild; }		/// The last child of this node. Will be null if there are no children.
 	TiXmlNode* LastChild()	{ return lastChild; }
 
 	const TiXmlNode* LastChild( const char * value ) const;			/// The last child of this node matching 'value'. Will be null if there are no children.
 	TiXmlNode* LastChild( const char * _value ) {
-		return const_cast< TiXmlNode* > ((const_cast< const TiXmlNode* >(this))->LastChild( _value ));
+		return const_cast< TiXmlNode* > (const_cast< const TiXmlNode* >(this)->LastChild( _value ));
 	}
 
     #ifdef TIXML_USE_STL
@@ -561,13 +561,13 @@ public:
 	*/
 	const TiXmlNode* IterateChildren( const TiXmlNode* previous ) const;
 	TiXmlNode* IterateChildren( const TiXmlNode* previous ) {
-		return const_cast< TiXmlNode* >( (const_cast< const TiXmlNode* >(this))->IterateChildren( previous ) );
+		return const_cast< TiXmlNode* >( const_cast< const TiXmlNode* >(this)->IterateChildren( previous ) );
 	}
 
 	/// This flavor of IterateChildren searches for children with a particular 'value'
 	const TiXmlNode* IterateChildren( const char * value, const TiXmlNode* previous ) const;
 	TiXmlNode* IterateChildren( const char * _value, const TiXmlNode* previous ) {
-		return const_cast< TiXmlNode* >( (const_cast< const TiXmlNode* >(this))->IterateChildren( _value, previous ) );
+		return const_cast< TiXmlNode* >( const_cast< const TiXmlNode* >(this)->IterateChildren( _value, previous ) );
 	}
 
     #ifdef TIXML_USE_STL
@@ -617,7 +617,7 @@ public:
 	/// Navigate to a sibling node.
 	const TiXmlNode* PreviousSibling( const char * ) const;
 	TiXmlNode* PreviousSibling( const char *_prev ) {
-		return const_cast< TiXmlNode* >( (const_cast< const TiXmlNode* >(this))->PreviousSibling( _prev ) );
+		return const_cast< TiXmlNode* >( const_cast< const TiXmlNode* >(this)->PreviousSibling( _prev ) );
 	}
 
     #ifdef TIXML_USE_STL
@@ -634,7 +634,7 @@ public:
 	/// Navigate to a sibling node with the given 'value'.
 	const TiXmlNode* NextSibling( const char * ) const;
 	TiXmlNode* NextSibling( const char* _next ) {
-		return const_cast< TiXmlNode* >( (const_cast< const TiXmlNode* >(this))->NextSibling( _next ) );
+		return const_cast< TiXmlNode* >( const_cast< const TiXmlNode* >(this)->NextSibling( _next ) );
 	}
 
 	/** Convenience function to get through elements.
@@ -643,7 +643,7 @@ public:
 	*/
 	const TiXmlElement* NextSiblingElement() const;
 	TiXmlElement* NextSiblingElement() {
-		return const_cast< TiXmlElement* >( (const_cast< const TiXmlNode* >(this))->NextSiblingElement() );
+		return const_cast< TiXmlElement* >( const_cast< const TiXmlNode* >(this)->NextSiblingElement() );
 	}
 
 	/** Convenience function to get through elements.
@@ -652,7 +652,7 @@ public:
 	*/
 	const TiXmlElement* NextSiblingElement( const char * ) const;
 	TiXmlElement* NextSiblingElement( const char *_next ) {
-		return const_cast< TiXmlElement* >( (const_cast< const TiXmlNode* >(this))->NextSiblingElement( _next ) );
+		return const_cast< TiXmlElement* >( const_cast< const TiXmlNode* >(this)->NextSiblingElement( _next ) );
 	}
 
     #ifdef TIXML_USE_STL
@@ -663,13 +663,13 @@ public:
 	/// Convenience function to get through elements.
 	const TiXmlElement* FirstChildElement()	const;
 	TiXmlElement* FirstChildElement() {
-		return const_cast< TiXmlElement* >( (const_cast< const TiXmlNode* >(this))->FirstChildElement() );
+		return const_cast< TiXmlElement* >( const_cast< const TiXmlNode* >(this)->FirstChildElement() );
 	}
 
 	/// Convenience function to get through elements.
 	const TiXmlElement* FirstChildElement( const char * _value ) const;
 	TiXmlElement* FirstChildElement( const char * _value ) {
-		return const_cast< TiXmlElement* >( (const_cast< const TiXmlNode* >(this))->FirstChildElement( _value ) );
+		return const_cast< TiXmlElement* >( const_cast< const TiXmlNode* >(this)->FirstChildElement( _value ) );
 	}
 
     #ifdef TIXML_USE_STL
@@ -688,7 +688,7 @@ public:
 	*/
 	const TiXmlDocument* GetDocument() const;
 	TiXmlDocument* GetDocument() {
-		return const_cast< TiXmlDocument* >( (const_cast< const TiXmlNode* >(this))->GetDocument() );
+		return const_cast< TiXmlDocument* >( const_cast< const TiXmlNode* >(this)->GetDocument() );
 	}
 
 	/// Returns true if this node has no children.
@@ -848,13 +848,13 @@ public:
 	/// Get the next sibling attribute in the DOM. Returns null at end.
 	const TiXmlAttribute* Next() const;
 	TiXmlAttribute* Next() {
-		return const_cast< TiXmlAttribute* >( (const_cast< const TiXmlAttribute* >(this))->Next() );
+		return const_cast< TiXmlAttribute* >( const_cast< const TiXmlAttribute* >(this)->Next() );
 	}
 
 	/// Get the previous sibling attribute in the DOM. Returns null at beginning.
 	const TiXmlAttribute* Previous() const;
 	TiXmlAttribute* Previous() {
-		return const_cast< TiXmlAttribute* >( (const_cast< const TiXmlAttribute* >(this))->Previous() );
+		return const_cast< TiXmlAttribute* >( const_cast< const TiXmlAttribute* >(this)->Previous() );
 	}
 
 	bool operator==( const TiXmlAttribute& rhs ) const { return rhs.name == name; }
@@ -909,10 +909,10 @@ public:
 	void Add( TiXmlAttribute* attribute );
 	void Remove( TiXmlAttribute* attribute );
 
-	const TiXmlAttribute* First()	const	{ return ( sentinel.next == &sentinel ) ? 0 : sentinel.next; }
-	TiXmlAttribute* First()					{ return ( sentinel.next == &sentinel ) ? 0 : sentinel.next; }
-	const TiXmlAttribute* Last() const		{ return ( sentinel.prev == &sentinel ) ? 0 : sentinel.prev; }
-	TiXmlAttribute* Last()					{ return ( sentinel.prev == &sentinel ) ? 0 : sentinel.prev; }
+	const TiXmlAttribute* First()	const	{ return sentinel.next == &sentinel ? 0 : sentinel.next; }
+	TiXmlAttribute* First()					{ return sentinel.next == &sentinel ? 0 : sentinel.next; }
+	const TiXmlAttribute* Last() const		{ return sentinel.prev == &sentinel ? 0 : sentinel.prev; }
+	TiXmlAttribute* Last()					{ return sentinel.prev == &sentinel ? 0 : sentinel.prev; }
 
 	TiXmlAttribute*	Find( const char* _name ) const;
 	TiXmlAttribute* FindOrCreate( const char* _name );
@@ -1685,13 +1685,13 @@ public:
 	TiXmlNode* ToNode() const			{ return node; }
 	/** Return the handle as a TiXmlElement. This may return null.
 	*/
-	TiXmlElement* ToElement() const		{ return ( ( node && node->ToElement() ) ? node->ToElement() : 0 ); }
+	TiXmlElement* ToElement() const		{ return node && node->ToElement() ? node->ToElement() : 0; }
 	/**	Return the handle as a TiXmlText. This may return null.
 	*/
-	TiXmlText* ToText() const			{ return ( ( node && node->ToText() ) ? node->ToText() : 0 ); }
+	TiXmlText* ToText() const			{ return node && node->ToText() ? node->ToText() : 0; }
 	/** Return the handle as a TiXmlUnknown. This may return null.
 	*/
-	TiXmlUnknown* ToUnknown() const		{ return ( ( node && node->ToUnknown() ) ? node->ToUnknown() : 0 ); }
+	TiXmlUnknown* ToUnknown() const		{ return node && node->ToUnknown() ? node->ToUnknown() : 0; }
 
 	/** @deprecated use ToNode.
 		Return the handle as a TiXmlNode. This may return null.

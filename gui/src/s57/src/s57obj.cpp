@@ -204,7 +204,7 @@ bool S57Obj::AddIntegerAttribute(const char *acronym, int val) {
   pattValTmp->value = pAVI;
 
   att_array = (char *)realloc(att_array, 6 * (n_attr + 1));
-  strncpy(att_array + (6 * sizeof(char) * n_attr), acronym, 6);
+  strncpy(att_array + 6 * sizeof(char) * n_attr, acronym, 6);
   n_attr++;
 
   attVal->Add(pattValTmp);
@@ -229,7 +229,7 @@ bool S57Obj::AddDoubleAttribute(const char *acronym, double val) {
   pattValTmp->value = pAVI;
 
   att_array = (char *)realloc(att_array, 6 * (n_attr + 1));
-  strncpy(att_array + (6 * sizeof(char) * n_attr), acronym, 6);
+  strncpy(att_array + 6 * sizeof(char) * n_attr, acronym, 6);
   n_attr++;
 
   attVal->Add(pattValTmp);
@@ -252,7 +252,7 @@ bool S57Obj::AddStringAttribute(const char *acronym, char *val) {
   pattValTmp->value = pAVS;
 
   att_array = (char *)realloc(att_array, 6 * (n_attr + 1));
-  strncpy(att_array + (6 * sizeof(char) * n_attr), acronym, 6);
+  strncpy(att_array + 6 * sizeof(char) * n_attr, acronym, 6);
   n_attr++;
 
   attVal->Add(pattValTmp);
@@ -354,7 +354,7 @@ bool S57Obj::SetMultipointGeometry(MultipointGeometryDescriptor *pGeo,
   double *pdd = geoPtz;
   double *pdl = geoPtMulti;
 
-  float *pfs = (float *)(pGeo->pointTable);  // start of point data
+  float *pfs = (float *)pGeo->pointTable;  // start of point data
   for (int ip = 0; ip < npt; ip++) {
     float easting, northing;
     easting = *pfs++;
@@ -407,17 +407,17 @@ wxString S57Obj::GetAttrValueAsString(const char *AttrName) {
 
     switch (v->valType) {
       case OGR_STR: {
-        char *val = (char *)(v->value);
+        char *val = (char *)v->value;
         str.Append(wxString(val, wxConvUTF8));
         break;
       }
       case OGR_REAL: {
-        double dval = *(double *)(v->value);
+        double dval = *(double *)v->value;
         str.Printf(_T("%g"), dval);
         break;
       }
       case OGR_INT: {
-        int ival = *((int *)v->value);
+        int ival = *(int *)v->value;
         str.Printf(_T("%d"), ival);
         break;
       }

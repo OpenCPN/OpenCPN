@@ -56,7 +56,7 @@ static bool zip_parse_local_entry(ar_archive *ar, off64_t offset)
         log("Skipping directory entry \"%s\"", zip->entry.name);
         return zip_parse_local_entry(ar, ar->entry_offset_next);
     }
-    if (entry.datasize == 0 && entry.uncompressed == 0 && (entry.flags & (1 << 3))) {
+    if (entry.datasize == 0 && entry.uncompressed == 0 && entry.flags & 1 << 3) {
         warn("Deferring sizes to data descriptor isn't supported");
         ar->entry_size_uncompressed = 1;
     }
@@ -100,7 +100,7 @@ static bool zip_parse_entry(ar_archive *ar, off64_t offset)
     zip->progress.data_left = (size_t)entry.datasize;
     zip_clear_uncompress(&zip->uncomp);
 
-    if (entry.datasize == 0 && ((entry.version >> 8) == 0 || (entry.version >> 8) == 3) && (entry.attr_external & 0x40000010)) {
+    if (entry.datasize == 0 && (entry.version >> 8 == 0 || entry.version >> 8 == 3) && entry.attr_external & 0x40000010) {
         log("Skipping directory entry \"%s\"", zip_get_name(ar));
         return zip_parse_entry(ar, ar->entry_offset_next);
     }
@@ -127,7 +127,7 @@ static bool zip_uncompress(ar_archive *ar, void *buffer, size_t count)
 {
     ar_archive_zip *zip = (ar_archive_zip *)ar;
     if (zip->progress.bytes_done == 0) {
-        if ((zip->entry.flags & ((1 << 0) | (1 << 6)))) {
+        if (zip->entry.flags & (1 << 0 | 1 << 6)) {
             warn("Encrypted archives aren't supported");
             return false;
         }

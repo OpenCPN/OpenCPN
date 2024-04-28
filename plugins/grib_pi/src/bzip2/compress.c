@@ -117,7 +117,7 @@ __inline__
 void bsW ( EState* s, Int32 n, UInt32 v )
 {
    bsNEEDW ( n );
-   s->bsBuff |= (v << (32 - s->bsLive - n));
+   s->bsBuff |= v << 32 - s->bsLive - n;
    s->bsLive += n;
 }
 
@@ -126,9 +126,9 @@ void bsW ( EState* s, Int32 n, UInt32 v )
 static
 void bsPutUInt32 ( EState* s, UInt32 u )
 {
-   bsW ( s, 8, (u >> 24) & 0xffL );
-   bsW ( s, 8, (u >> 16) & 0xffL );
-   bsW ( s, 8, (u >>  8) & 0xffL );
+   bsW ( s, 8, u >> 24 & 0xffL );
+   bsW ( s, 8, u >> 16 & 0xffL );
+   bsW ( s, 8, u >>  8 & 0xffL );
    bsW ( s, 8,  u        & 0xffL );
 }
 
@@ -236,7 +236,7 @@ void generateMTFValues ( EState* s )
             register UChar  rll_i;
             rtmp  = yy[1];
             yy[1] = yy[0];
-            ryy_j = &(yy[1]);
+            ryy_j = &yy[1];
             rll_i = ll_i;
             while ( rll_i != rtmp ) {
                register UChar rtmp2;
@@ -246,7 +246,7 @@ void generateMTFValues ( EState* s )
                *ryy_j = rtmp2;
             };
             yy[0] = rtmp;
-            j = ryy_j - &(yy[0]);
+            j = ryy_j - &yy[0];
             mtfv[wr] = j+1; wr++; s->mtfFreq[j+1]++;
          }
 
@@ -338,16 +338,16 @@ void sendMTFValues ( EState* s )
 
          if (ge > gs
              && nPart != nGroups && nPart != 1
-             && ((nGroups-nPart) % 2 == 1)) {
+             && (nGroups-nPart) % 2 == 1) {
             aFreq -= s->mtfFreq[ge];
             ge--;
          }
 
          if (s->verbosity >= 3)
-            VPrintf5( "      initial group %d, [%d .. %d], "
+           VPrintf5( "      initial group %d, [%d .. %d], "
                       "has %d syms (%4.1f%%)\n",
                       nPart, gs, ge, aFreq,
-                      (100.0 * (float)aFreq) / (float)(s->nMTF) );
+                      100.0 * (float)aFreq / (float) s->nMTF);
 
          for (v = 0; v < alphaSize; v++)
             if (v >= gs && v <= ge)
@@ -377,9 +377,9 @@ void sendMTFValues ( EState* s )
       ---*/
       if (nGroups == 6) {
          for (v = 0; v < alphaSize; v++) {
-            s->len_pack[v][0] = (s->len[1][v] << 16) | s->len[0][v];
-            s->len_pack[v][1] = (s->len[3][v] << 16) | s->len[2][v];
-            s->len_pack[v][2] = (s->len[5][v] << 16) | s->len[4][v];
+            s->len_pack[v][0] = s->len[1][v] << 16 | s->len[0][v];
+            s->len_pack[v][1] = s->len[3][v] << 16 | s->len[2][v];
+            s->len_pack[v][2] = s->len[5][v] << 16 | s->len[4][v];
 	 }
       }
 
@@ -489,7 +489,7 @@ void sendMTFValues ( EState* s )
         Recompute the tables based on the accumulated frequencies.
       --*/
       for (t = 0; t < nGroups; t++)
-         BZ2_hbMakeCodeLengths ( &(s->len[t][0]), &(s->rfreq[t][0]),
+         BZ2_hbMakeCodeLengths ( &s->len[t][0], &s->rfreq[t][0],
                                  alphaSize, 20 );
    }
 
@@ -529,7 +529,7 @@ void sendMTFValues ( EState* s )
       }
       AssertH ( !(maxLen > 20), 3004 );
       AssertH ( !(minLen < 1),  3005 );
-      BZ2_hbAssignCodes ( &(s->code[t][0]), &(s->len[t][0]),
+      BZ2_hbAssignCodes ( &s->code[t][0], &s->len[t][0],
                           minLen, maxLen, alphaSize );
    }
 
@@ -597,9 +597,9 @@ void sendMTFValues ( EState* s )
             /*--- fast track the common case ---*/
             UInt16 mtfv_i;
             UChar* s_len_sel_selCtr
-               = &(s->len[s->selector[selCtr]][0]);
+               = &s->len[s->selector[selCtr]][0];
             Int32* s_code_sel_selCtr
-               = &(s->code[s->selector[selCtr]][0]);
+               = &s->code[s->selector[selCtr]][0];
 
 #           define BZ_ITAH(nn)                      \
                mtfv_i = mtfv[gs+(nn)];              \
@@ -646,7 +646,7 @@ void BZ2_compressBlock ( EState* s, Bool is_last_block )
    if (s->nblock > 0) {
 
       BZ_FINALISE_CRC ( s->blockCRC );
-      s->combinedCRC = (s->combinedCRC << 1) | (s->combinedCRC >> 31);
+      s->combinedCRC = s->combinedCRC << 1 | s->combinedCRC >> 31;
       s->combinedCRC ^= s->blockCRC;
       if (s->blockNo > 1) s->numZ = 0;
 
@@ -658,7 +658,7 @@ void BZ2_compressBlock ( EState* s, Bool is_last_block )
       BZ2_blockSort ( s );
    }
 
-   s->zbits = (UChar*) (&((UChar*)s->arr2)[s->nblock]);
+   s->zbits = (UChar*) &((UChar*)s->arr2)[s->nblock];
 
    /*-- If this is the first block, create the stream header. --*/
    if (s->blockNo == 1) {

@@ -70,7 +70,7 @@ gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
 
     deltaZ = zFar - zNear;
     sine = sin(radians);
-    if ((deltaZ == 0) || (sine == 0) || (aspect == 0)) {
+    if (deltaZ == 0 || sine == 0 || aspect == 0) {
 	return;
     }
     cotangent = COS(radians) / sine;
@@ -246,7 +246,7 @@ gluProject(GLdouble objx, GLdouble objy, GLdouble objz,
     in[3]=1.0;
     __gluMultMatrixVecd(modelMatrix, in, out);
     __gluMultMatrixVecd(projMatrix, out, in);
-    if (in[3] == 0.0) return(GL_FALSE);
+    if (in[3] == 0.0) return GL_FALSE;
     in[0] /= in[3];
     in[1] /= in[3];
     in[2] /= in[3];
@@ -262,7 +262,7 @@ gluProject(GLdouble objx, GLdouble objy, GLdouble objz,
     *winx=in[0];
     *winy=in[1];
     *winz=in[2];
-    return(GL_TRUE);
+    return GL_TRUE;
 }
 
 GLint /*GLAPIENTRY*/
@@ -277,7 +277,7 @@ gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
     double out[4];
 
     __gluMultMatricesd(modelMatrix, projMatrix, finalMatrix);
-    if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return(GL_FALSE);
+    if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return GL_FALSE;
 
     in[0]=winx;
     in[1]=winy;
@@ -294,14 +294,14 @@ gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
     in[2] = in[2] * 2 - 1;
 
     __gluMultMatrixVecd(finalMatrix, in, out);
-    if (out[3] == 0.0) return(GL_FALSE);
+    if (out[3] == 0.0) return GL_FALSE;
     out[0] /= out[3];
     out[1] /= out[3];
     out[2] /= out[3];
     *objx = out[0];
     *objy = out[1];
     *objz = out[2];
-    return(GL_TRUE);
+    return GL_TRUE;
 }
 
 GLint /*GLAPIENTRY*/
@@ -318,7 +318,7 @@ gluUnProject4(GLdouble winx, GLdouble winy, GLdouble winz, GLdouble clipw,
     double out[4];
 
     __gluMultMatricesd(modelMatrix, projMatrix, finalMatrix);
-    if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return(GL_FALSE);
+    if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return GL_FALSE;
 
     in[0]=winx;
     in[1]=winy;
@@ -336,12 +336,12 @@ gluUnProject4(GLdouble winx, GLdouble winy, GLdouble winz, GLdouble clipw,
     in[2] = in[2] * 2 - 1;
 
     __gluMultMatrixVecd(finalMatrix, in, out);
-    if (out[3] == 0.0) return(GL_FALSE);
+    if (out[3] == 0.0) return GL_FALSE;
     *objx = out[0];
     *objy = out[1];
     *objz = out[2];
     *objw = out[3];
-    return(GL_TRUE);
+    return GL_TRUE;
 }
 
 void /*GLAPIENTRY*/

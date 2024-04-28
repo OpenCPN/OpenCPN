@@ -41,7 +41,7 @@ int AisBitstring::GetBitCount() { return byte_length * 6; }
 unsigned char AisBitstring::to_6bit(const char c) {
   if (c < 0x30) return (unsigned char)-1;
   if (c > 0x77) return (unsigned char)-1;
-  if ((0x57 < c) && (c < 0x60)) return (unsigned char)-1;
+  if (0x57 < c && c < 0x60) return (unsigned char)-1;
 
   unsigned char cp = c;
   cp += 0x28;
@@ -64,7 +64,7 @@ int AisBitstring::GetInt(int sp, int len, bool signed_flag) {
     acc = acc << 1;
     cp = (s0p + i) / 6;
     cx = bitbytes[cp];  // what if cp >= byte_length?
-    c0 = (cx >> (5 - ((s0p + i) % 6))) & 1;
+    c0 = cx >> 5 - (s0p + i) % 6 & 1;
     if (i == 0 && signed_flag &&
         c0)  // if signed value and first bit is 1, pad with 1's
       acc = ~acc;
@@ -91,8 +91,8 @@ int AisBitstring::GetStr(int sp, int bit_len, char *dest, int max_len) {
       acc = acc << 1;
       cp = (s0p + i) / 6;
       cx = bitbytes[cp];  // what if cp >= byte_length?
-      cs = 5 - ((s0p + i) % 6);
-      c0 = (cx >> cs) & 1;
+      cs = 5 - (s0p + i) % 6;
+      c0 = cx >> cs & 1;
       acc |= c0;
 
       i++;

@@ -157,7 +157,7 @@ int str_to_ndecimals(const char *s)
     }
 
     const char *decimalPoint = strchr(s, '.');
-    if ((decimalPoint == NULL) || (strchr(decimalPoint + 1, '.') != NULL))
+    if (decimalPoint == NULL || strchr(decimalPoint + 1, '.') != NULL)
     {
         return -1;
     }

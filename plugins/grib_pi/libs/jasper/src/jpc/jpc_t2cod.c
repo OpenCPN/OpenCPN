@@ -168,7 +168,7 @@ static int jpc_pi_nextlrcp(register jpc_pi_t *pi)
                   ++prclyrno) {
                     if (pi->lyrno >= *prclyrno) {
                         *prclyrno = pi->lyrno;
-                        ++(*prclyrno);
+                        ++*prclyrno;
                         return 0;
                     }
 skip:
@@ -209,7 +209,7 @@ static int jpc_pi_nextrlcp(register jpc_pi_t *pi)
                   pi->prcno < pi->pirlvl->numprcs; ++pi->prcno, ++prclyrno) {
                     if (pi->lyrno >= *prclyrno) {
                         *prclyrno = pi->lyrno;
-                        ++(*prclyrno);
+                        ++*prclyrno;
                         return 0;
                     }
 skip:
@@ -249,12 +249,12 @@ static int jpc_pi_nextrpcl(register jpc_pi_t *pi)
           ++compno, ++picomp) {
             for (rlvlno = 0, pirlvl = picomp->pirlvls; rlvlno <
               picomp->numrlvls; ++rlvlno, ++pirlvl) {
-                xstep = picomp->hsamp * (1 << (pirlvl->prcwidthexpn +
-                  picomp->numrlvls - rlvlno - 1));
-                ystep = picomp->vsamp * (1 << (pirlvl->prcheightexpn +
-                  picomp->numrlvls - rlvlno - 1));
-                pi->xstep = (!pi->xstep) ? xstep : JAS_MIN(pi->xstep, xstep);
-                pi->ystep = (!pi->ystep) ? ystep : JAS_MIN(pi->ystep, ystep);
+                xstep = picomp->hsamp * (1 << pirlvl->prcwidthexpn +
+                                         picomp->numrlvls - rlvlno - 1);
+                ystep = picomp->vsamp * (1 << pirlvl->prcheightexpn +
+                                         picomp->numrlvls - rlvlno - 1);
+                pi->xstep = !pi->xstep ? xstep : JAS_MIN(pi->xstep, xstep);
+                pi->ystep = !pi->ystep ? ystep : JAS_MIN(pi->ystep, ystep);
             }
         }
         pi->prgvolfirst = 0;
@@ -263,9 +263,9 @@ static int jpc_pi_nextrpcl(register jpc_pi_t *pi)
     for (pi->rlvlno = pchg->rlvlnostart; pi->rlvlno < pchg->rlvlnoend &&
       pi->rlvlno < pi->maxrlvls; ++pi->rlvlno) {
         for (pi->y = pi->ystart; pi->y < pi->yend; pi->y +=
-          pi->ystep - (pi->y % pi->ystep)) {
+          pi->ystep - pi->y % pi->ystep) {
             for (pi->x = pi->xstart; pi->x < pi->xend; pi->x +=
-              pi->xstep - (pi->x % pi->xstep)) {
+              pi->xstep - pi->x % pi->xstep) {
                 for (pi->compno = pchg->compnostart,
                   pi->picomp = &pi->picomps[pi->compno];
                   pi->compno < JAS_CAST(int, pchg->compnoend) && pi->compno <
@@ -282,9 +282,9 @@ static int jpc_pi_nextrpcl(register jpc_pi_t *pi)
                     rpy = r + pi->pirlvl->prcheightexpn;
                     trx0 = JPC_CEILDIV(pi->xstart, pi->picomp->hsamp << r);
                     try0 = JPC_CEILDIV(pi->ystart, pi->picomp->vsamp << r);
-                    if (((pi->x == pi->xstart && ((trx0 << r) % (1 << rpx)))
+                    if (((pi->x == pi->xstart && (trx0 << r) % (1 << rpx))
                       || !(pi->x % (1 << rpx))) &&
-                      ((pi->y == pi->ystart && ((try0 << r) % (1 << rpy)))
+                      ((pi->y == pi->ystart && (try0 << r) % (1 << rpy))
                       || !(pi->y % (1 << rpy)))) {
                         prchind = JPC_FLOORDIVPOW2(JPC_CEILDIV(pi->x, pi->picomp->hsamp
                           << r), pi->pirlvl->prcwidthexpn) - JPC_FLOORDIVPOW2(trx0,
@@ -299,7 +299,7 @@ static int jpc_pi_nextrpcl(register jpc_pi_t *pi)
                           pi->numlyrs && pi->lyrno < JAS_CAST(int, pchg->lyrnoend); ++pi->lyrno) {
                             prclyrno = &pi->pirlvl->prclyrnos[pi->prcno];
                             if (pi->lyrno >= *prclyrno) {
-                                ++(*prclyrno);
+                                ++*prclyrno;
                                 return 0;
                             }
 skip:
@@ -342,14 +342,14 @@ static int jpc_pi_nextpcrl(register jpc_pi_t *pi)
             for (rlvlno = 0, pirlvl = picomp->pirlvls; rlvlno <
               picomp->numrlvls; ++rlvlno, ++pirlvl) {
                 xstep = picomp->hsamp * (1 <<
-                  (pirlvl->prcwidthexpn + picomp->numrlvls -
-                  rlvlno - 1));
+                  pirlvl->prcwidthexpn + picomp->numrlvls -
+                  rlvlno - 1);
                 ystep = picomp->vsamp * (1 <<
-                  (pirlvl->prcheightexpn + picomp->numrlvls -
-                  rlvlno - 1));
-                pi->xstep = (!pi->xstep) ? xstep :
+                  pirlvl->prcheightexpn + picomp->numrlvls -
+                  rlvlno - 1);
+                pi->xstep = !pi->xstep ? xstep :
                   JAS_MIN(pi->xstep, xstep);
-                pi->ystep = (!pi->ystep) ? ystep :
+                pi->ystep = !pi->ystep ? ystep :
                   JAS_MIN(pi->ystep, ystep);
             }
         }
@@ -357,9 +357,9 @@ static int jpc_pi_nextpcrl(register jpc_pi_t *pi)
     }
 
     for (pi->y = pi->ystart; pi->y < pi->yend; pi->y += pi->ystep -
-      (pi->y % pi->ystep)) {
+      pi->y % pi->ystep) {
         for (pi->x = pi->xstart; pi->x < pi->xend; pi->x += pi->xstep -
-          (pi->x % pi->xstep)) {
+          pi->x % pi->xstep) {
             for (pi->compno = pchg->compnostart, pi->picomp =
               &pi->picomps[pi->compno]; pi->compno < pi->numcomps
               && pi->compno < JAS_CAST(int, pchg->compnoend); ++pi->compno,
@@ -377,9 +377,9 @@ static int jpc_pi_nextpcrl(register jpc_pi_t *pi)
                     try0 = JPC_CEILDIV(pi->ystart, pi->picomp->vsamp << r);
                     rpx = r + pi->pirlvl->prcwidthexpn;
                     rpy = r + pi->pirlvl->prcheightexpn;
-                    if (((pi->x == pi->xstart && ((trx0 << r) % (1 << rpx))) ||
+                    if (((pi->x == pi->xstart && (trx0 << r) % (1 << rpx)) ||
                       !(pi->x % (pi->picomp->hsamp << rpx))) &&
-                      ((pi->y == pi->ystart && ((try0 << r) % (1 << rpy))) ||
+                      ((pi->y == pi->ystart && (try0 << r) % (1 << rpy)) ||
                       !(pi->y % (pi->picomp->vsamp << rpy)))) {
                         prchind = JPC_FLOORDIVPOW2(JPC_CEILDIV(pi->x, pi->picomp->hsamp
                           << r), pi->pirlvl->prcwidthexpn) - JPC_FLOORDIVPOW2(trx0,
@@ -393,7 +393,7 @@ static int jpc_pi_nextpcrl(register jpc_pi_t *pi)
                           pi->lyrno < JAS_CAST(int, pchg->lyrnoend); ++pi->lyrno) {
                             prclyrno = &pi->pirlvl->prclyrnos[pi->prcno];
                             if (pi->lyrno >= *prclyrno) {
-                                ++(*prclyrno);
+                                ++*prclyrno;
                                 return 0;
                             }
 skip:
@@ -433,9 +433,9 @@ static int jpc_pi_nextcprl(register jpc_pi_t *pi)
       ++pi->picomp) {
         pirlvl = pi->picomp->pirlvls;
         pi->xstep = pi->picomp->hsamp * (JAS_CAST(uint_fast32_t, 1) <<
-          (pirlvl->prcwidthexpn + pi->picomp->numrlvls - 1));
+          pirlvl->prcwidthexpn + pi->picomp->numrlvls - 1);
         pi->ystep = pi->picomp->vsamp * (JAS_CAST(uint_fast32_t, 1) <<
-          (pirlvl->prcheightexpn + pi->picomp->numrlvls - 1));
+          pirlvl->prcheightexpn + pi->picomp->numrlvls - 1);
         for (rlvlno = 1, pirlvl = &pi->picomp->pirlvls[1];
           rlvlno < pi->picomp->numrlvls; ++rlvlno, ++pirlvl) {
             pi->xstep = JAS_MIN(pi->xstep, pi->picomp->hsamp *
@@ -446,9 +446,9 @@ static int jpc_pi_nextcprl(register jpc_pi_t *pi)
               pi->picomp->numrlvls - rlvlno - 1)));
         }
         for (pi->y = pi->ystart; pi->y < pi->yend;
-          pi->y += pi->ystep - (pi->y % pi->ystep)) {
+          pi->y += pi->ystep - pi->y % pi->ystep) {
             for (pi->x = pi->xstart; pi->x < pi->xend;
-              pi->x += pi->xstep - (pi->x % pi->xstep)) {
+              pi->x += pi->xstep - pi->x % pi->xstep) {
                 for (pi->rlvlno = pchg->rlvlnostart,
                   pi->pirlvl = &pi->picomp->pirlvls[pi->rlvlno];
                   pi->rlvlno < pi->picomp->numrlvls && pi->rlvlno <
@@ -461,9 +461,9 @@ static int jpc_pi_nextcprl(register jpc_pi_t *pi)
                     try0 = JPC_CEILDIV(pi->ystart, pi->picomp->vsamp << r);
                     rpx = r + pi->pirlvl->prcwidthexpn;
                     rpy = r + pi->pirlvl->prcheightexpn;
-                    if (((pi->x == pi->xstart && ((trx0 << r) % (1 << rpx))) ||
+                    if (((pi->x == pi->xstart && (trx0 << r) % (1 << rpx)) ||
                       !(pi->x % (pi->picomp->hsamp << rpx))) &&
-                      ((pi->y == pi->ystart && ((try0 << r) % (1 << rpy))) ||
+                      ((pi->y == pi->ystart && (try0 << r) % (1 << rpy)) ||
                       !(pi->y % (pi->picomp->vsamp << rpy)))) {
                         prchind = JPC_FLOORDIVPOW2(JPC_CEILDIV(pi->x, pi->picomp->hsamp
                           << r), pi->pirlvl->prcwidthexpn) - JPC_FLOORDIVPOW2(trx0,
@@ -480,7 +480,7 @@ static int jpc_pi_nextcprl(register jpc_pi_t *pi)
                           pi->numlyrs && pi->lyrno < JAS_CAST(int, pchg->lyrnoend); ++pi->lyrno) {
                             prclyrno = &pi->pirlvl->prclyrnos[pi->prcno];
                             if (pi->lyrno >= *prclyrno) {
-                                ++(*prclyrno);
+                                ++*prclyrno;
                                 return 0;
                             }
 skip:

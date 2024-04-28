@@ -99,12 +99,12 @@ struct N2kName {
 
   void SetUniqueNumber(uint32_t _UniqueNumber) {
     value.UnicNumberAndManCode =
-        (value.UnicNumberAndManCode & 0xffe00000) | (_UniqueNumber & 0x1fffff);
+        value.UnicNumberAndManCode & 0xffe00000 | _UniqueNumber & 0x1fffff;
   }
   void SetManufacturerCode(uint16_t _ManufacturerCode) {
     value.UnicNumberAndManCode =
-        (value.UnicNumberAndManCode & 0x1fffff) |
-        (((unsigned long)(_ManufacturerCode & 0x7ff)) << 21);
+        value.UnicNumberAndManCode & 0x1fffff |
+        (unsigned long)(_ManufacturerCode & 0x7ff) << 21;
   }
   void SetDeviceInstance(unsigned char _DeviceInstance) {
     value.DeviceInstance = _DeviceInstance;
@@ -113,17 +113,17 @@ struct N2kName {
     value.DeviceFunction = _DeviceFunction;
   }
   void SetDeviceClass(unsigned char _DeviceClass) {
-    value.DeviceClass = ((_DeviceClass & 0x7f) << 1);
+    value.DeviceClass = (_DeviceClass & 0x7f) << 1;
   }
   void SetIndustryGroup(unsigned char _IndustryGroup) {
     value.IndustryGroupAndSystemInstance =
-        (value.IndustryGroupAndSystemInstance & 0x0f) | (_IndustryGroup << 4) |
+        value.IndustryGroupAndSystemInstance & 0x0f | _IndustryGroup << 4 |
         0x80;
   }
   void SetSystemInstance(unsigned char _SystemInstance) {
     value.IndustryGroupAndSystemInstance =
-        (value.IndustryGroupAndSystemInstance & 0xf0) |
-        (_SystemInstance & 0x0f);
+        value.IndustryGroupAndSystemInstance & 0xf0 |
+        _SystemInstance & 0x0f;
   }
 
   uint64_t GetName() const { return value.Name; }

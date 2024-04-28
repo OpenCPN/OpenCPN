@@ -99,7 +99,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   wxString *TClist = NULL;
   m_tList = new wxListCtrl(this, -1, wxPoint(sx * 65 / 100, 11),
-                           wxSize((sx * 32 / 100), (sy * 20 / 100)),
+                           wxSize(sx * 32 / 100, sy * 20 / 100),
                            wxLC_REPORT | wxLC_NO_HEADER);
 
   // Add first column
@@ -119,7 +119,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   //  In the interest of readability, if the width of the dialog is too narrow,
   //  simply skip showing the "Hi/Lo" list control.
 
-  if ((m_tsy * 15) > sx) m_tList->Hide();
+  if (m_tsy * 15 > sx) m_tList->Hide();
 
   OK_button = new wxButton(this, wxID_OK, _("OK"),
                            wxPoint(sx - (2 * m_tsy + 10), sy - (m_tsy + 10)),
@@ -128,9 +128,9 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   PR_button = new wxButton(this, ID_TCWIN_PR, _("Prev"),
                            wxPoint(10, sy - (m_tsy + 10)), wxSize(-1, -1));
 
-  wxSize texc_size = wxSize((sx * 60 / 100), (sy * 29 / 100));
+  wxSize texc_size = wxSize(sx * 60 / 100, sy * 29 / 100);
   if (!m_tList->IsShown()) {
-    texc_size = wxSize((sx * 90 / 100), (sy * 29 / 100));
+    texc_size = wxSize(sx * 90 / 100, sy * 29 / 100);
   }
 
   m_ptextctrl =
@@ -148,7 +148,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   int m_choiceTimezoneNChoices =
       sizeof(m_choiceTimezoneChoices) / sizeof(wxString);
   m_choiceTimezone = new wxChoice(
-      this, wxID_ANY, wxPoint((sx - (bsx * 2)) / 2, sy - (m_tsy * 12 / 10)),
+      this, wxID_ANY, wxPoint((sx - bsx * 2) / 2, sy - m_tsy * 12 / 10),
       wxSize(2 * bsx, bsy), m_choiceTimezoneNChoices, m_choiceTimezoneChoices,
       0);
   m_choiceSize_x = bsx * 2;
@@ -247,7 +247,7 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   m_ptextctrl->AppendText(_T("\n"));
 
   // Reference to the master station
-  if (('t' == pIDX->IDX_type) || ('c' == pIDX->IDX_type)) {
+  if ('t' == pIDX->IDX_type || 'c' == pIDX->IDX_type) {
     wxString mref(pIDX->IDX_reference_name, wxConvUTF8);
     mref.Prepend(_T(" "));
 
@@ -321,7 +321,7 @@ void TCWin::SetTimeFactors() {
 
   time_t ttNow = this_now.GetTicks();
   time_t tt_at_station =
-      ttNow - (m_diff_mins * 60) + (m_stationOffset_mins * 60);
+      ttNow - m_diff_mins * 60 + m_stationOffset_mins * 60;
   wxDateTime atStation(tt_at_station);
   int day_at_station = atStation.GetDayOfYear();
 
@@ -378,8 +378,8 @@ void TCWin::RecalculateSize() {
 
   //  Arrange for tcWindow to be always totally visible
   //  by shifting left and/or up
-  if ((m_x + 8 + m_tc_size.x) > parent_size.x) xc = xc - m_tc_size.x - 16;
-  if ((m_y + m_tc_size.y) > parent_size.y) yc = yc - m_tc_size.y;
+  if (m_x + 8 + m_tc_size.x > parent_size.x) xc = xc - m_tc_size.x - 16;
+  if (m_y + m_tc_size.y > parent_size.y) yc = yc - m_tc_size.y;
 
   //  Don't let the window origin move out of client area
   if (yc < 0) yc = 0;
@@ -558,14 +558,14 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     //    Horizontal axis
     dc.SetFont(*pSFont);
     for (i = 0; i < 25; i++) {
-      int xd = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
+      int xd = m_graph_rect.x + i*m_graph_rect.width / 25;
       {
         dc.SetPen(*pblack_1);
         dc.DrawLine(xd, m_graph_rect.y, xd,
                     m_graph_rect.y + m_graph_rect.height + 5);
         wxString sst;
         sst.Printf(_T("%02d"), i);
-        dc.DrawRotatedText(sst, xd + (m_graph_rect.width / 25) / 2,
+        dc.DrawRotatedText(sst, xd + m_graph_rect.width / 25 / 2,
                            m_graph_rect.y + m_graph_rect.height + 8, 270.);
       }
     }
@@ -585,7 +585,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
     // must eliminate line outside the graph (in that case put it outside the
     // window)
-    int xnow = (t_ratio < 0 || t_ratio > m_graph_rect.width)
+    int xnow = t_ratio < 0 || t_ratio > m_graph_rect.width
                    ? -1
                    : m_graph_rect.x + (int)t_ratio;
     dc.SetPen(*pred_2);
@@ -608,7 +608,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
       // The tide/current modules calculate values based on PC local time
       // We want UTC, so adjust accordingly
-      int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
+      int tt_localtz = m_t_graphday_GMT + m_diff_mins * 60;
 
       // get tide flow sens ( flood or ebb ? )
       ptcmgr->GetTideFlowSens(tt_localtz, BACKWARD_TEN_MINUTES_STEP,
@@ -618,7 +618,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
         tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
 
       for (i = 0; i < 26; i++) {
-        int tt = tt_localtz + (i * FORWARD_ONE_HOUR_STEP);
+        int tt = tt_localtz + i * FORWARD_ONE_HOUR_STEP;
 
         ptcmgr->GetTideOrCurrent(tt, pIDX->IDX_rec_num, tcv[i], dir);
         tt_tcv[i] = tt;  // store the corresponding time_t value
@@ -626,7 +626,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
         if (tcv[i] < tcmin) tcmin = tcv[i];
         if (TIDE_PLOT == m_plot_type) {
-          if (!((tcv[i] > val) == wt) && (i > 0))  // if tide flow sense change
+          if (!(tcv[i] > val == wt) && i > 0)  // if tide flow sense change
           {
             float tcvalue;  // look backward for HW or LW
             time_t tctime;
@@ -637,7 +637,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
                                         // presently shown
               wxDateTime tcd;           // write date
               wxString s, s1;
-              tcd.Set(tctime - (m_diff_mins * 60));
+              tcd.Set(tctime - m_diff_mins * 60);
               if (m_tzoneDisplay == 0)  // LMT @ Station
                 tcd.Set(tctime + (m_stationOffset_mins - m_diff_mins) * 60);
 
@@ -647,7 +647,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
               Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
               if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
               s.Append(_T("   "));
-              (wt) ? s.Append(_("HW")) : s.Append(_("LW"));  // write HW or LT
+              wt ? s.Append(_("HW")) : s.Append(_("LW"));  // write HW or LT
 
               wxListItem li;
               li.SetId(list_index);
@@ -665,7 +665,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
           wxDateTime thx;  // write date
           wxString s, s1;
 
-          thx.Set((time_t)tt - (m_diff_mins * 60));
+          thx.Set((time_t)tt - m_diff_mins * 60);
           if (m_tzoneDisplay == 0)  // LMT @ Station
             thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
 
@@ -703,7 +703,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
         it = (int)tcmax + 1;
 
         im = it - ib;  // abs ( ib ) + abs ( it );
-        m_plot_y_offset = (m_graph_rect.height * (it - ib)) / im;
+        m_plot_y_offset = m_graph_rect.height * (it - ib) / im;
         val_off = ib;
       }
 
@@ -728,8 +728,8 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
       for (i = 0; i < 26; i++) {
         wxPoint *pp = new wxPoint;
-        pp->x = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
-        pp->y = m_graph_rect.y + (m_plot_y_offset) -
+        pp->x = m_graph_rect.x + i*m_graph_rect.width / 25;
+        pp->y = m_graph_rect.y + m_plot_y_offset -
                 (int)((tcv[i] - val_off) * m_graph_rect.height / im);
 
         m_sList.Append(pp);
@@ -745,10 +745,10 @@ void TCWin::OnPaint(wxPaintEvent &event) {
 
     i = ib;
     while (i < it + 1) {
-      int yd = m_graph_rect.y + (m_plot_y_offset) -
-               ((i - val_off) * m_graph_rect.height / im);
+      int yd = m_graph_rect.y + m_plot_y_offset -
+               (i - val_off) * m_graph_rect.height / im;
 
-      if ((m_plot_y_offset + m_graph_rect.y) == yd)
+      if (m_plot_y_offset + m_graph_rect.y == yd)
         dc.SetPen(*pblack_2);
       else
         dc.SetPen(*pblack_1);
@@ -777,7 +777,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     if (m_tzoneDisplay == 0) {
       int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
       int h = station_offset / 60;
-      int m = station_offset - (h * 60);
+      int m = station_offset - h * 60;
       if (m_graphday.IsDST()) h += 1;
       m_stz.Printf(_T("UTC %+03d:%02d"), h, m);
 
@@ -813,7 +813,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     dc.SetFont(*pSFont);
     dc.GetTextExtent(m_stz, &w, &h);
     dc.DrawText(m_stz, x / 2 - w / 2,
-                y - (m_button_height * 15 / 10) - (m_refTextHeight * 2));
+                y - m_button_height * 15 / 10 - m_refTextHeight * 2);
 
     wxString sdate;
     if (g_locale == _T("en_US"))
@@ -824,7 +824,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     dc.SetFont(*pMFont);
     dc.GetTextExtent(sdate, &w, &h);
     dc.DrawText(sdate, x / 2 - w / 2,
-                y - (m_button_height * 15 / 10) - (m_refTextHeight * 1));
+                y - m_button_height * 15 / 10 - m_refTextHeight * 1);
 
     Station_Data *pmsd = pIDX->pref_sta_data;
     if (pmsd) {
@@ -834,7 +834,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     }
 
     //      Show flood and ebb directions
-    if ((strchr("c", pIDX->IDX_type)) || (strchr("C", pIDX->IDX_type))) {
+    if (strchr("c", pIDX->IDX_type) || strchr("C", pIDX->IDX_type)) {
       dc.SetFont(*pSFont);
 
       wxString fdir;
@@ -849,7 +849,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     }
 
     //    Today or tomorrow
-    if ((m_button_height * 15) < x && cur_time) {  // large enough horizontally?
+    if (m_button_height * 15 < x && cur_time) {  // large enough horizontally?
       wxString sday;
 
       int day = m_graphday.GetDayOfYear();
@@ -867,7 +867,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
       dc.SetFont(*pSFont);
       dc.GetTextExtent(sday, &w, &h);
       dc.DrawText(sday, 55 - w / 2,
-                  y - (m_button_height * 15 / 10) - (m_refTextHeight * 1));
+                  y - m_button_height * 15 / 10 - m_refTextHeight * 1);
     }
 
     //  Render "Spot of interest"
@@ -901,7 +901,7 @@ void TCWin::OnSize(wxSizeEvent &event) {
   int y_graph = y * 32 / 100;
   int x_graph_w = x * 8 / 10;
   int y_graph_h =
-      (y * 65 / 100) - (m_button_height * 15 / 10) - (m_refTextHeight * 2);
+      y * 65 / 100 - m_button_height * 15 / 10 - m_refTextHeight * 2;
   y_graph_h =
       wxMax(y_graph_h, 2);  // ensure minimum size is positive, at least.
 
@@ -910,16 +910,16 @@ void TCWin::OnSize(wxSizeEvent &event) {
   //  In the interest of readability, if the width of the dialog is too narrow,
   //  simply skip showing the "Hi/Lo" list control.
 
-  if ((m_tsy * 15) > x)
+  if (m_tsy * 15 > x)
     m_tList->Hide();
   else {
     m_tList->Move(wxPoint(x * 65 / 100, 11));
     m_tList->Show();
   }
 
-  wxSize texc_size = wxSize((x * 60 / 100), (y * 29 / 100));
+  wxSize texc_size = wxSize(x * 60 / 100, y * 29 / 100);
   if (!m_tList->IsShown()) {
-    texc_size = wxSize((x * 90 / 100), (y * 29 / 100));
+    texc_size = wxSize(x * 90 / 100, y * 29 / 100);
   }
   m_ptextctrl->SetSize(texc_size);
 
@@ -928,12 +928,12 @@ void TCWin::OnSize(wxSizeEvent &event) {
       wxPoint(x - (4 * m_button_height + 10), y - (m_button_height * 12 / 10)));
 #else
   OK_button->Move(
-      wxPoint(x - (3 * m_button_height + 10), y - (m_button_height * 12 / 10)));
+      wxPoint(x - (3 * m_button_height + 10), y - m_button_height * 12 / 10));
 #endif
   PR_button->Move(wxPoint(10, y - (m_button_height + 10)));
 
   m_choiceTimezone->Move(
-      wxPoint(x / 2 - m_choiceSize_x / 2, y - (m_button_height * 12 / 10)));
+      wxPoint(x / 2 - m_choiceSize_x / 2, y - m_button_height * 12 / 10));
 
   int bsx, bsy, bpx, bpy;
   PR_button->GetSize(&bsx, &bsy);
@@ -974,7 +974,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
     float t, d;
     wxString p, s;
     // set time on x cursor position
-    t = (25 / ((float)x * 8 / 10)) * ((float)curs_x - ((float)x * 1 / 10));
+    t = 25 / ((float)x * 8 / 10) * ((float)curs_x - (float)x * 1 / 10);
 
     int tt = m_t_graphday_GMT + (int)(t * 3600);
     time_t ths = tt;
@@ -986,7 +986,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // The tide/current modules calculate values based on PC local time
     // We want UTC, so adjust accordingly
-    int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
+    int tt_localtz = m_t_graphday_GMT + m_diff_mins * 60;
 
     int ttv = tt_localtz + (int)(t * 3600);
     if (m_tzoneDisplay == 0) {
@@ -997,7 +997,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     // set tide level or current speed at that time
     ptcmgr->GetTideOrCurrent(tts, pIDX->IDX_rec_num, t, d);
-    s.Printf(_T("%3.2f "), (t < 0 && CURRENT_PLOT == m_plot_type)
+    s.Printf(_T("%3.2f "), t < 0 && CURRENT_PLOT == m_plot_type
                                ? -t
                                : t);  // always positive if current
     p.Append(s);
@@ -1031,7 +1031,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
 
     int idx = 1;  // in case m_graph_rect.width is weird ie ppx never > curs_x
     for (int i = 0; i < 26; i++) {
-      float ppx = m_graph_rect.x + ((i)*m_graph_rect.width / 25.f);
+      float ppx = m_graph_rect.x + i*m_graph_rect.width / 25.f;
       if (ppx > curs_x) {
         idx = i;
         break;
@@ -1042,7 +1042,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
     wxPoint *a = list->Item(idx - 1)->GetData();
     wxPoint *b = list->Item(idx)->GetData();
 
-    float pct = (curs_x - a->x) / (float)((b->x - a->x));
+    float pct = (curs_x - a->x) / (float)(b->x - a->x);
     float dy = pct * (b->y - a->y);
 
     ySpot = a->y + dy;

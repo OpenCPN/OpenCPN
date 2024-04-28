@@ -49,7 +49,7 @@ void bind(SQLite::Statement& query, const Args& ... args)
 {
     int pos = 0;
     (void)std::initializer_list<int>{
-        ((void)query.bind(++pos, std::forward<decltype(args)>(args)), 0)...
+        (void)query.bind(++pos, std::forward<decltype(args)>(args)), 0 ...
     };
 }
 

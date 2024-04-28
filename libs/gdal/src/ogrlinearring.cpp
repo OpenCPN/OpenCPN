@@ -225,8 +225,8 @@ OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D,
     {
         for( int i = 0; i < nPointCount; i++ )
         {
-            memcpy( &(paoPoints[i].x), pabyData + 4 + 24 * i, 8 );
-            memcpy( &(paoPoints[i].y), pabyData + 4 + 24 * i + 8, 8 );
+            memcpy( &paoPoints[i].x, pabyData + 4 + 24 * i, 8 );
+            memcpy( &paoPoints[i].y, pabyData + 4 + 24 * i + 8, 8 );
             memcpy( padfZ + i, pabyData + 4 + 24 * i + 16, 8 );
         }
     }
@@ -238,8 +238,8 @@ OGRErr OGRLinearRing::_importFromWkb( OGRwkbByteOrder eByteOrder, int b3D,
     {
         for( i = 0; i < nPointCount; i++ )
         {
-            CPL_SWAPDOUBLE( &(paoPoints[i].x) );
-            CPL_SWAPDOUBLE( &(paoPoints[i].y) );
+            CPL_SWAPDOUBLE( & paoPoints[i].x);
+            CPL_SWAPDOUBLE( & paoPoints[i].y);
 
             if( b3D )
             {
@@ -277,8 +277,8 @@ OGRErr  OGRLinearRing::_exportToWkb( OGRwkbByteOrder eByteOrder, int b3D,
         nWords = 3 * nPointCount;
         for( i = 0; i < nPointCount; i++ )
         {
-            memcpy( pabyData+4+i*24, &(paoPoints[i].x), 8 );
-            memcpy( pabyData+4+i*24+8, &(paoPoints[i].y), 8 );
+            memcpy( pabyData+4+i*24, &paoPoints[i].x, 8 );
+            memcpy( pabyData+4+i*24+8, &paoPoints[i].y, 8 );
             if( padfZ == NULL )
                 memset( pabyData+4+i*24+16, 0, 8 );
             else

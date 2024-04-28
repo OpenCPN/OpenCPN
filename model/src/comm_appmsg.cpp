@@ -56,7 +56,7 @@ std::string DegreesToString(double degrees) {
   std::stringstream buf;
   buf << setw(2) << static_cast<int>(trunc(degrees)) << "\u00B0"
       << static_cast<int>(trunc(degrees * 100)) % 100 << "," << setw(2)
-      << (static_cast<int>(trunc(degrees * 10000)) % 10000) % 100;
+      << static_cast<int>(trunc(degrees * 10000)) % 10000 % 100;
   return buf.str();
 }
 

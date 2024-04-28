@@ -132,7 +132,7 @@ static int EdgeLeq( TESStesselator *tess, ActiveRegion *reg1, ActiveRegion *reg2
 	/* General case - compute signed distance *from* e1, e2 to event */
 	t1 = EdgeEval( e1->Dst, event, e1->Org );
 	t2 = EdgeEval( e2->Dst, event, e2->Org );
-	return (t1 >= t2);
+	return t1 >= t2;
 }
 
 
@@ -226,21 +226,21 @@ static int IsWindingInside( TESStesselator *tess, int n )
 {
 	switch( tess->windingRule ) {
 		case TESS_WINDING_ODD:
-			return (n & 1);
+			return n & 1;
 		case TESS_WINDING_NONZERO:
-			return (n != 0);
+			return n != 0;
 		case TESS_WINDING_POSITIVE:
-			return (n > 0);
+			return n > 0;
 		case TESS_WINDING_NEGATIVE:
-			return (n < 0);
+			return n < 0;
 		case TESS_WINDING_ABS_GEQ_TWO:
-			return (n >= 2) || (n <= -2);
+			return n >= 2 || n <= -2;
 	}
 	/*LINTED*/
 	assert( FALSE );
 	/*NOTREACHED*/
 
-	return( FALSE );
+	return FALSE;
 }
 
 
@@ -1119,8 +1119,8 @@ static void InitEdgeDict( TESStesselator *tess )
 	if (tess->dict == NULL) longjmp(tess->env,1);
 
 	/* If the bbox is empty, ensure that sentinels are not coincident by slightly enlarging it. */
-	w = (tess->bmax[0] - tess->bmin[0]) + (TESSreal)0.01;
-	h = (tess->bmax[1] - tess->bmin[1]) + (TESSreal)0.01;
+	w = tess->bmax[0] - tess->bmin[0] + (TESSreal)0.01;
+	h = tess->bmax[1] - tess->bmin[1] + (TESSreal)0.01;
 
 	smin = tess->bmin[0] - w;
     smax = tess->bmax[0] + w;

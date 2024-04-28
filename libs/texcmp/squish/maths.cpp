@@ -169,11 +169,11 @@ Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
 	float c2 = matrix[0] + matrix[3] + matrix[5];
 
 	// compute the quadratic coefficients
-	float a = c1 - ( 1.0f/3.0f )*c2*c2;
-	float b = ( -2.0f/27.0f )*c2*c2*c2 + ( 1.0f/3.0f )*c1*c2 - c0;
+	float a = c1 - 1.0f/3.0f*c2*c2;
+	float b = -2.0f/27.0f*c2*c2*c2 + 1.0f/3.0f*c1*c2 - c0;
 
 	// compute the root count check
-	float Q = 0.25f*b*b + ( 1.0f/27.0f )*a*a*a;
+	float Q = 0.25f*b*b + 1.0f/27.0f*a*a*a;
 
 	// test the multiplicity
 	if( FLT_EPSILON < Q )
@@ -191,9 +191,9 @@ Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
 		float ct = std::cos( theta/3.0f );
 		float st = std::sin( theta/3.0f );
 
-		float l1 = ( 1.0f/3.0f )*c2 + 2.0f*rt*ct;
-		float l2 = ( 1.0f/3.0f )*c2 - rt*( ct + ( float )sqrt( 3.0f )*st );
-		float l3 = ( 1.0f/3.0f )*c2 - rt*( ct - ( float )sqrt( 3.0f )*st );
+		float l1 = 1.0f/3.0f*c2 + 2.0f*rt*ct;
+		float l2 = 1.0f/3.0f*c2 - rt*( ct + ( float )sqrt( 3.0f )*st );
+		float l3 = 1.0f/3.0f*c2 - rt*( ct - ( float )sqrt( 3.0f )*st );
 
 		// pick the larger
 		if( std::fabs( l2 ) > std::fabs( l1 ) )
@@ -213,8 +213,8 @@ Vec3 ComputePrincipleComponent( Sym3x3 const& matrix )
 		else
 			rt = std::pow( 0.5f*b, 1.0f/3.0f );
 
-		float l1 = ( 1.0f/3.0f )*c2 + rt;		// repeated
-		float l2 = ( 1.0f/3.0f )*c2 - 2.0f*rt;
+		float l1 = 1.0f/3.0f*c2 + rt;		// repeated
+		float l2 = 1.0f/3.0f*c2 - 2.0f*rt;
 
 		// get the eigenvector
 		if( std::fabs( l1 ) > std::fabs( l2 ) )

@@ -65,12 +65,12 @@ double BOGUS_amplitude(double mpy, IDX_entry *pIDX) {
   Station_Data *pmsd = pIDX->pref_sta_data;
 
   if (!pmsd->have_BOGUS)  // || !convert_BOGUS)   // Added mgh
-    return (mpy * pIDX->max_amplitude);
+    return mpy * pIDX->max_amplitude;
   else {
     if (mpy >= 0.0)
-      return (sqrt(mpy * pIDX->max_amplitude));
+      return sqrt(mpy * pIDX->max_amplitude);
     else
-      return (-sqrt(-mpy * pIDX->max_amplitude));
+      return -sqrt(-mpy * pIDX->max_amplitude);
   }
 }
 
@@ -98,7 +98,7 @@ int next_big_event(time_t *tm, IDX_entry *pIDX) {
   while (1) {
     if ((slope == 1 && q < p) || (slope == 0 && p < q)) {
       /* Tide event */
-      flags |= (1 << slope);
+      flags |= 1 << slope;
     }
     /* Modes in which to return mark transitions: */
     /*    -text (no -graph)   */
@@ -183,7 +183,7 @@ double time2asecondary(time_t t, IDX_entry *pIDX) {
   time_t tadj = t + pIDX->station_tz_offset;
 
   /* Get rid of the normals. */
-  if (!(pIDX->have_offsets)) return time2atide(tadj, pIDX);
+  if (!pIDX->have_offsets) return time2atide(tadj, pIDX);
 
   {
     /* Intervalwidth of 14 (was originally 13) failed on this input:
@@ -299,8 +299,8 @@ double time2asecondary(time_t t, IDX_entry *pIDX) {
     else
       magicnum = 0.5 * S / fabs(lowlvl - Z);
     //    T = T - magicnum * (httimeoff - lttimeoff);
-    T = T - (time_t)(magicnum * ((pIDX->IDX_ht_time_off * 60) -
-                                 (pIDX->IDX_lt_time_off * 60)));
+    T = T - (time_t)(magicnum * (pIDX->IDX_ht_time_off * 60 -
+                                 pIDX->IDX_lt_time_off * 60));
     HI = time2tide(T, pIDX);
 
     //    Correct the amplitude offsets for BOGUS knot^2 units
@@ -430,7 +430,7 @@ static double blend_weight(double x, int deriv) {
     case 2:
       return (x2 - 1.0) * x * (15.0 / 4.0);
   }
-  return (0);  // mgh+ to get rid of compiler warning
+  return 0;  // mgh+ to get rid of compiler warning
 }
 
 /*
@@ -584,16 +584,16 @@ time_t tm2gmt(struct tm *ht) {
   struct tm *gt;
 
   guess = 0;
-  loopcounter = (sizeof(time_t) * 8) - 1;
-  thebit = ((time_t)1) << (loopcounter - 1);
+  loopcounter = sizeof(time_t) * 8 - 1;
+  thebit = (time_t)1 << loopcounter - 1;
 
   /* For simplicity, I'm going to insist that the time_t we want is
    *       positive.  If time_t is signed, skip the sign bit.
    */
-  if ((signed long)thebit < (time_t)(0)) {
+  if ((signed long)thebit < (time_t)0) {
     /* You can't just shift thebit right because it propagates the sign bit. */
     loopcounter--;
-    thebit = ((time_t)1) << (loopcounter - 1);
+    thebit = (time_t)1 << loopcounter - 1;
   }
 
   for (; loopcounter; loopcounter--) {
@@ -609,7 +609,7 @@ time_t tm2gmt(struct tm *ht) {
   return guess;
 }
 
-int yearoftimet(time_t t) { return ((gmtime(&t))->tm_year) + 1900; }
+int yearoftimet(time_t t) { return gmtime(&t)->tm_year + 1900; }
 
 /* Calculate time_t of the epoch. */
 void set_epoch(IDX_entry *pIDX, int year) {
@@ -758,7 +758,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float &dir) {
   if (!pIDX->IDX_Useable) {
     dir = 0;
     tcvalue = 0;
-    return (false);  // no error, but unuseable
+    return false;  // no error, but unuseable
   }
 
   if (pIDX->pDataSource) {
@@ -772,7 +772,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float &dir) {
 
   //    Finally, calculate the tide/current
 
-  double level = time2asecondary(t + (00 * 60), pIDX);  // 300. 240
+  double level = time2asecondary(t + 00 * 60, pIDX);  // 300. 240
   if (level >= 0)
     dir = pIDX->IDX_flood_dir;
   else
@@ -780,7 +780,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float &dir) {
 
   tcvalue = level;
 
-  return (true);  // Got it!
+  return true;  // Got it!
 }
 
 extern wxDateTime gTimeSource;
@@ -810,10 +810,10 @@ bool TCMgr::GetTideOrCurrent15(time_t t_d, int idx, float &tcvalue, float &dir,
   wxDateTime today_00 = this_now;
   today_00.ResetTime();
   int t_today_00 = today_00.GetTicks();
-  int t_today_00_at_station = t_today_00 - (corr_mins * 60);
+  int t_today_00_at_station = t_today_00 - corr_mins * 60;
 
   int t_at_station =
-      this_gmt.GetTicks() - (station_offset * 60) + (corr_mins * 60);
+      this_gmt.GetTicks() - station_offset * 60 + corr_mins * 60;
 
   int t_mins = (t_at_station - t_today_00_at_station) / 60;
   int t_15s = t_mins / 15;
@@ -923,23 +923,23 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2,
 
   // Finally, calculate the Hight and low tides
   double newval = tide_val;
-  double oldval = (w_t) ? newval - 1 : newval + 1;
+  double oldval = w_t ? newval - 1 : newval + 1;
   int j = 0;
   int k = 0;
   int ttt = 0;
-  while ((newval > oldval) == w_t)  // searching each ten minute
+  while (newval > oldval == w_t)  // searching each ten minute
   {
     j++;
     oldval = newval;
-    ttt = t + (sch_step_1 * j);
+    ttt = t + sch_step_1 * j;
     newval = time2asecondary(ttt, pIDX);
   }
-  oldval = (w_t) ? newval - 1 : newval + 1;
-  while ((newval > oldval) == w_t)  // searching back each minute
+  oldval = w_t ? newval - 1 : newval + 1;
+  while (newval > oldval == w_t)  // searching back each minute
   {
     oldval = newval;
     k++;
-    ttt = t + (sch_step_1 * j) - (sch_step_2 * k);
+    ttt = t + sch_step_1 * j - sch_step_2 * k;
     newval = time2asecondary(ttt, pIDX);
   }
   tcvalue = newval;
@@ -978,7 +978,7 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx) {
   while (1) {
     if ((slope == 1 && q < p) || (slope == 0 && p < q)) {
       /* Tide event */
-      flags |= (1 << slope);
+      flags |= 1 << slope;
     }
     if (flags) {
       *tm -= 60;
@@ -1028,8 +1028,8 @@ int TCMgr::GetStationIDXbyName(const wxString &prefix, double xlat,
     char type = lpIDX->IDX_type;  // Entry "TCtcIUu" identifier
     wxString locnx(lpIDX->IDX_station_name, wxConvUTF8);
 
-    if (((type == 't') || (type == 'T'))  // only Tides
-        && (locnx.StartsWith(prefix))) {
+    if ((type == 't' || type == 'T')  // only Tides
+        && locnx.StartsWith(prefix)) {
       double brg, dist;
       DistanceBearingMercator(xlat, xlon, lpIDX->IDX_lat, lpIDX->IDX_lon, &brg,
                               &dist);
@@ -1040,7 +1040,7 @@ int TCMgr::GetStationIDXbyName(const wxString &prefix, double xlat,
     }
   }  // end for loop
   //} // end if @~~ found in WP
-  return (jx);
+  return jx;
 }
 
 int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
@@ -1059,7 +1059,7 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
     char typep = lpIDX->IDX_type;  // Entry "TCtcIUu" identifier
     wxString locnx(lpIDX->IDX_station_name, wxConvUTF8);
 
-    if ((type == typep) && (locnx.StartsWith(prefix))) {
+    if (type == typep && locnx.StartsWith(prefix)) {
       double brg, dist;
       DistanceBearingMercator(xlat, xlon, lpIDX->IDX_lat, lpIDX->IDX_lon, &brg,
                               &dist);
@@ -1069,7 +1069,7 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
       }
     }
   }  // end for loop
-  return (jx);
+  return jx;
 }
 
 /* $Id: tide_db_default.h 1092 2006-11-16 03:02:42Z flaterco $ */
@@ -2409,8 +2409,8 @@ const NV_CHAR *get_country(NV_INT32 num) {
         "libtcd error: attempt to access database when database not open\n");
     exit(-1);
   }
-  if (num >= 0 && num < (NV_INT32)hd.pub.countries) return (hd.country[num]);
-  return ("Unknown");
+  if (num >= 0 && num < (NV_INT32)hd.pub.countries) return hd.country[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2436,8 +2436,8 @@ const NV_CHAR *get_tzfile(NV_INT32 num) {
         "libtcd error: attempt to access database when database not open\n");
     exit(-1);
   }
-  if (num >= 0 && num < (NV_INT32)hd.pub.tzfiles) return (hd.tzfile[num]);
-  return ("Unknown");
+  if (num >= 0 && num < (NV_INT32)hd.pub.tzfiles) return hd.tzfile[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2464,8 +2464,8 @@ const NV_CHAR *get_station(NV_INT32 num) {
     exit(-1);
   }
   if (num >= 0 && num < (NV_INT32)hd.pub.number_of_records)
-    return (tindex[num].name);
-  return ("Unknown");
+    return tindex[num].name;
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2493,8 +2493,8 @@ const NV_CHAR *get_constituent(NV_INT32 num) {
     exit(-1);
   }
   if (num >= 0 && num < (NV_INT32)hd.pub.constituents)
-    return (hd.constituent[num]);
-  return ("Unknown");
+    return hd.constituent[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2522,8 +2522,8 @@ const NV_CHAR *get_level_units(NV_INT32 num) {
     exit(-1);
   }
   if (num >= 0 && num < (NV_INT32)hd.pub.level_unit_types)
-    return (hd.level_unit[num]);
-  return ("Unknown");
+    return hd.level_unit[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2551,8 +2551,8 @@ const NV_CHAR *get_dir_units(NV_INT32 num) {
     exit(-1);
   }
   if (num >= 0 && num < (NV_INT32)hd.pub.dir_unit_types)
-    return (hd.dir_unit[num]);
-  return ("Unknown");
+    return hd.dir_unit[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2580,8 +2580,8 @@ const NV_CHAR *get_restriction(NV_INT32 num) {
     exit(-1);
   }
   if (num >= 0 && num < (NV_INT32)hd.pub.restriction_types)
-    return (hd.restriction[num]);
-  return ("Unknown");
+    return hd.restriction[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2629,8 +2629,8 @@ const NV_CHAR *get_datum(NV_INT32 num) {
         "libtcd error: attempt to access database when database not open\n");
     exit(-1);
   }
-  if (num >= 0 && num < (NV_INT32)hd.pub.datum_types) return (hd.datum[num]);
-  return ("Unknown");
+  if (num >= 0 && num < (NV_INT32)hd.pub.datum_types) return hd.datum[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2642,8 +2642,8 @@ const NV_CHAR *get_legalese(NV_INT32 num) {
         "libtcd error: attempt to access database when database not open\n");
     exit(-1);
   }
-  if (num >= 0 && num < (NV_INT32)hd.pub.legaleses) return (hd.legalese[num]);
-  return ("Unknown");
+  if (num >= 0 && num < (NV_INT32)hd.pub.legaleses) return hd.legalese[num];
+  return "Unknown";
 }
 
 /*****************************************************************************\
@@ -2790,7 +2790,7 @@ NV_BOOL get_partial_tide_record(NV_INT32 num, TIDE_STATION_HEADER *rec) {
     return NVFalse;
   }
 
-  if (num < 0 || num >= (NV_INT32)hd.pub.number_of_records) return (NVFalse);
+  if (num < 0 || num >= (NV_INT32)hd.pub.number_of_records) return NVFalse;
 
   assert(rec);
 
@@ -2805,7 +2805,7 @@ NV_BOOL get_partial_tide_record(NV_INT32 num, TIDE_STATION_HEADER *rec) {
 
   current_index = num;
 
-  return (NVTrue);
+  return NVTrue;
 }
 
 /*****************************************************************************\
@@ -2827,9 +2827,9 @@ NV_BOOL get_partial_tide_record(NV_INT32 num, TIDE_STATION_HEADER *rec) {
 \*****************************************************************************/
 
 NV_INT32 get_next_partial_tide_record(TIDE_STATION_HEADER *rec) {
-  if (!get_partial_tide_record(current_index + 1, rec)) return (-1);
+  if (!get_partial_tide_record(current_index + 1, rec)) return -1;
 
-  return (current_index);
+  return current_index;
 }
 
 /*****************************************************************************\
@@ -2870,8 +2870,8 @@ NV_INT32 get_nearest_partial_tide_record(NV_FLOAT64 lat, NV_FLOAT64 lon,
     }
   }
 
-  if (!get_partial_tide_record(shortest, rec)) return (-1);
-  return (shortest);
+  if (!get_partial_tide_record(shortest, rec)) return -1;
+  return shortest;
 }
 
 /*****************************************************************************\
@@ -2908,7 +2908,7 @@ NV_INT32 get_time(const NV_CHAR *string) {
     hhmm = hour * 100 + minute;
   }
 
-  return (hhmm);
+  return hhmm;
 }
 
 /*****************************************************************************\
@@ -3007,7 +3007,7 @@ DB_HEADER_PUBLIC get_tide_db_header() {
         "libtcd error: attempt to access database when database not open\n");
     exit(-1);
   }
-  return (hd.pub);
+  return hd.pub;
 }
 
 /*****************************************************************************\
@@ -3135,7 +3135,7 @@ NV_INT32 search_station(const NV_CHAR *string) {
       name[i] = tolower(tindex[j].name[i]);
 
     ++j;
-    if (strstr(name, search)) return (j - 1);
+    if (strstr(name, search)) return j - 1;
   }
 
   j = 0;
@@ -3171,10 +3171,10 @@ NV_INT32 find_station(const NV_CHAR *name) {
 
   assert(name);
   for (i = 0; i < hd.pub.number_of_records; ++i) {
-    if (!strcmp(name, tindex[i].name)) return (i);
+    if (!strcmp(name, tindex[i].name)) return i;
   }
 
-  return (-1);
+  return -1;
 }
 
 /*****************************************************************************\
@@ -3216,7 +3216,7 @@ NV_INT32 find_tzfile(const NV_CHAR *name) {
     }
   }
 
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3258,7 +3258,7 @@ NV_INT32 find_country(const NV_CHAR *name) {
     }
   }
 
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3300,7 +3300,7 @@ NV_INT32 find_level_units(const NV_CHAR *name) {
     }
   }
 
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3342,7 +3342,7 @@ NV_INT32 find_dir_units(const NV_CHAR *name) {
     }
   }
 
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3406,7 +3406,7 @@ NV_INT32 find_datum(const NV_CHAR *name) {
     }
   }
 
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3433,7 +3433,7 @@ NV_INT32 find_legalese(const NV_CHAR *name) {
     }
   }
 
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3468,10 +3468,10 @@ NV_INT32 find_constituent(const NV_CHAR *name) {
   temp = clip_string(name);
 
   for (i = 0; i < hd.pub.constituents; ++i) {
-    if (!strcmp(get_constituent(i), temp)) return (i);
+    if (!strcmp(get_constituent(i), temp)) return i;
   }
 
-  return (-1);
+  return -1;
 }
 
 /*****************************************************************************\
@@ -3512,7 +3512,7 @@ NV_INT32 find_restriction(const NV_CHAR *name) {
       break;
     }
   }
-  return (j);
+  return j;
 }
 
 /*****************************************************************************\
@@ -3703,7 +3703,7 @@ NV_INT32 add_tzfile(const NV_CHAR *name, DB_HEADER_PUBLIC *db) {
   strcpy(hd.tzfile[hd.pub.tzfiles++], c_name);
   if (db) *db = hd.pub;
   modified = NVTrue;
-  return (hd.pub.tzfiles - 1);
+  return hd.pub.tzfiles - 1;
 }
 
 /*****************************************************************************\
@@ -3762,7 +3762,7 @@ NV_INT32 add_country(const NV_CHAR *name, DB_HEADER_PUBLIC *db) {
   strcpy(hd.country[hd.pub.countries++], c_name);
   if (db) *db = hd.pub;
   modified = NVTrue;
-  return (hd.pub.countries - 1);
+  return hd.pub.countries - 1;
 }
 
 /*****************************************************************************\
@@ -3820,7 +3820,7 @@ NV_INT32 add_datum(const NV_CHAR *name, DB_HEADER_PUBLIC *db) {
   strcpy(hd.datum[hd.pub.datum_types++], c_name);
   if (db) *db = hd.pub;
   modified = NVTrue;
-  return (hd.pub.datum_types - 1);
+  return hd.pub.datum_types - 1;
 }
 
 /*****************************************************************************\
@@ -3864,7 +3864,7 @@ NV_INT32 add_legalese(const NV_CHAR *name, DB_HEADER_PUBLIC *db) {
   strcpy(hd.legalese[hd.pub.legaleses++], c_name);
   if (db) *db = hd.pub;
   modified = NVTrue;
-  return (hd.pub.legaleses - 1);
+  return hd.pub.legaleses - 1;
 }
 
 /*****************************************************************************\
@@ -3924,7 +3924,7 @@ NV_INT32 add_restriction(const NV_CHAR *name, DB_HEADER_PUBLIC *db) {
   strcpy(hd.restriction[hd.pub.restriction_types++], c_name);
   if (db) *db = hd.pub;
   modified = NVTrue;
-  return (hd.pub.restriction_types - 1);
+  return hd.pub.restriction_types - 1;
 }
 
 /*****************************************************************************\
@@ -4104,7 +4104,7 @@ static NV_U_INT32 header_checksum() {
   assert(hd.header_size > 0);
   chk_fread(buf, hd.header_size, 1, fp);
   for (i = 0; i < (NV_U_INT32)hd.header_size; ++i) {
-    checksum = crc_table[(checksum ^ buf[i]) & 0xff] ^ (checksum >> 8);
+    checksum = crc_table[(checksum ^ buf[i]) & 0xff] ^ checksum >> 8;
   }
   checksum ^= ~0;
 
@@ -4112,7 +4112,7 @@ static NV_U_INT32 header_checksum() {
 
   fseek(fp, save_pos, SEEK_SET);
 
-  return (checksum);
+  return checksum;
 }
 
 /*****************************************************************************\
@@ -4600,7 +4600,7 @@ static void unpack_string(NV_U_BYTE *buf, NV_U_INT32 bufsize, NV_U_INT32 *pos,
   for (i = 0; c; ++i) {
     assert(*pos < bufsize); /* Catch unterminated strings */
     c = bit_unpack(buf, *pos, 8);
-    (*pos) += 8;
+    *pos += 8;
     if (i < outbuflen) {
       outbuf[i] = c;
     } else if (i == outbuflen) {
@@ -4711,7 +4711,7 @@ static NV_INT32 read_partial_tide_record(NV_INT32 num, TIDE_RECORD *rec) {
 
   maximum_possible_size = hd.record_size_bits + hd.record_type_bits +
                           hd.latitude_bits + hd.longitude_bits +
-                          hd.tzfile_bits + (ONELINER_LENGTH * 8) +
+                          hd.tzfile_bits + ONELINER_LENGTH * 8 +
                           hd.station_bits;
   maximum_possible_size = bits2bytes(maximum_possible_size);
 
@@ -4730,7 +4730,7 @@ static NV_INT32 read_partial_tide_record(NV_INT32 num, TIDE_RECORD *rec) {
   size_t size = fread(buf, 1, maximum_possible_size, fp);
   unpack_partial_tide_record(buf, size, rec, &pos);
   free(buf);
-  return (num);
+  return num;
 }
 
 /*****************************************************************************\
@@ -5110,7 +5110,7 @@ database should be rebuilt from the original data if possible.\n");
   pos = 0;
   /* wasted byte bug in V1 */
   if (hd.pub.major_rev < 2)
-    size = ((hd.pub.constituents * hd.speed_bits) / 8) + 1;
+    size = hd.pub.constituents * hd.speed_bits / 8 + 1;
   else
     size = bits2bytes(hd.pub.constituents * hd.speed_bits);
 
@@ -5143,8 +5143,8 @@ database should be rebuilt from the original data if possible.\n");
   /* wasted byte bug in V1 */
   if (hd.pub.major_rev < 2)
     size =
-        ((hd.pub.constituents * hd.pub.number_of_years * hd.equilibrium_bits) /
-         8) +
+        hd.pub.constituents * hd.pub.number_of_years * hd.equilibrium_bits /
+        8 +
         1;
   else
     size = bits2bytes(hd.pub.constituents * hd.pub.number_of_years *
@@ -5181,7 +5181,7 @@ database should be rebuilt from the original data if possible.\n");
   /* wasted byte bug in V1 */
   if (hd.pub.major_rev < 2)
     size =
-        ((hd.pub.constituents * hd.pub.number_of_years * hd.node_bits) / 8) + 1;
+        hd.pub.constituents * hd.pub.number_of_years * hd.node_bits / 8 + 1;
   else
     size =
         bits2bytes(hd.pub.constituents * hd.pub.number_of_years * hd.node_bits);
@@ -5249,7 +5249,7 @@ database should be rebuilt from the original data if possible.\n");
   current_record = -1;
   current_index = -1;
 
-  return (NVTrue);
+  return NVTrue;
 }
 
 /*****************************************************************************\
@@ -5280,11 +5280,11 @@ NV_BOOL open_tide_db(const NV_CHAR *file) {
       close_tide_db();
   }
   if ((fp = fopen(file, "rb+")) == NULL) {
-    if ((fp = fopen(file, "rb")) == NULL) return (NVFalse);
+    if ((fp = fopen(file, "rb")) == NULL) return NVFalse;
   }
   boundscheck_monologue(file);
   strcpy(filename, file);
-  return (read_tide_db_header());
+  return read_tide_db_header();
 }
 
 /*****************************************************************************\
@@ -5475,7 +5475,7 @@ NV_BOOL create_tide_db(const NV_CHAR *file, NV_U_INT32 constituents,
 
   if ((fp = fopen(file, "wb+")) == NULL) {
     perror(file);
-    return (NVFalse);
+    return NVFalse;
   }
 
   /*  Zero out the header structure.  */
@@ -5524,7 +5524,7 @@ NV_BOOL create_tide_db(const NV_CHAR *file, NV_U_INT32 constituents,
   /* DWF fixed sign reversal 2003-11-16 */
   /* DWF harmonized rounding with the way it is done in write_tide_db_header
      2007-01-22 */
-  hd.speed_offset = (NINT(min_value * hd.speed_scale));
+  hd.speed_offset = NINT(min_value * hd.speed_scale);
   temp_int = NINT(max_value * hd.speed_scale) - hd.speed_offset;
   assert(temp_int >= 0);
   hd.speed_bits = calculate_bits((NV_U_INT32)temp_int);
@@ -5553,7 +5553,7 @@ NV_BOOL create_tide_db(const NV_CHAR *file, NV_U_INT32 constituents,
   /* DWF fixed sign reversal 2003-11-16 */
   /* DWF harmonized rounding with the way it is done in write_tide_db_header
      2007-01-22 */
-  hd.equilibrium_offset = (NINT(min_value * hd.equilibrium_scale));
+  hd.equilibrium_offset = NINT(min_value * hd.equilibrium_scale);
   temp_int = NINT(max_value * hd.equilibrium_scale) - hd.equilibrium_offset;
   assert(temp_int >= 0);
   hd.equilibrium_bits = calculate_bits((NV_U_INT32)temp_int);
@@ -5580,7 +5580,7 @@ NV_BOOL create_tide_db(const NV_CHAR *file, NV_U_INT32 constituents,
   /* DWF fixed sign reversal 2003-11-16 */
   /* DWF harmonized rounding with the way it is done in write_tide_db_header
      2007-01-22 */
-  hd.node_offset = (NINT(min_value * hd.node_scale));
+  hd.node_offset = NINT(min_value * hd.node_scale);
   temp_int = NINT(max_value * hd.node_scale) - hd.node_offset;
   assert(temp_int >= 0);
   hd.node_bits = calculate_bits((NV_U_INT32)temp_int);
@@ -5728,7 +5728,7 @@ NV_BOOL create_tide_db(const NV_CHAR *file, NV_U_INT32 constituents,
 
   /*  Re-open it and read the header from the file.  */
 
-  i = (open_tide_db(file));
+  i = open_tide_db(file);
 
   /*  Set the correct end of file position since the one in the header is
       set to 0.  */
@@ -5738,7 +5738,7 @@ NV_BOOL create_tide_db(const NV_CHAR *file, NV_U_INT32 constituents,
      end_of_file. */
   write_tide_db_header();
 
-  return (i);
+  return i;
 }
 
 /*****************************************************************************\
@@ -6002,12 +6002,12 @@ static NV_U_INT32 figure_size(TIDE_RECORD *rec) {
 
   rec->header.record_size =
       hd.record_size_bits + hd.record_type_bits + hd.latitude_bits +
-      hd.longitude_bits + hd.station_bits + hd.tzfile_bits + (name_size * 8) +
+      hd.longitude_bits + hd.station_bits + hd.tzfile_bits + name_size * 8 +
 
-      hd.country_bits + (source_size * 8) + hd.restriction_bits +
-      (comments_size * 8) + (notes_size * 8) + hd.legalese_bits +
-      (station_id_context_size * 8) + (station_id_size * 8) + hd.date_bits +
-      (xfields_size * 8) + hd.dir_unit_bits + hd.direction_bits +
+      hd.country_bits + source_size * 8 + hd.restriction_bits +
+      comments_size * 8 + notes_size * 8 + hd.legalese_bits +
+      station_id_context_size * 8 + station_id_size * 8 + hd.date_bits +
+      xfields_size * 8 + hd.dir_unit_bits + hd.direction_bits +
       hd.direction_bits + hd.level_unit_bits;
 
   switch (rec->header.record_type) {
@@ -6023,8 +6023,8 @@ static NV_U_INT32 figure_size(TIDE_RECORD *rec) {
       }
 
       rec->header.record_size +=
-          (count * hd.constituent_bits + count * hd.amplitude_bits +
-           count * hd.epoch_bits);
+          count * hd.constituent_bits + count * hd.amplitude_bits +
+          count * hd.epoch_bits;
 
       break;
 
@@ -6326,7 +6326,7 @@ static NV_BOOL write_tide_record(NV_INT32 num, TIDE_RECORD *rec) {
 \*****************************************************************************/
 
 NV_INT32 read_next_tide_record(TIDE_RECORD *rec) {
-  return (read_tide_record(current_record + 1, rec));
+  return read_tide_record(current_record + 1, rec);
 }
 
 /*****************************************************************************\
@@ -6988,7 +6988,7 @@ NV_BOOL update_tide_record(NV_INT32 num, TIDE_RECORD *rec, DB_HEADER_PUBLIC *db)
   if (db) *db = hd.pub;
 #endif
 
-  return (NVTrue);
+  return NVTrue;
 }
 
 /*****************************************************************************\
@@ -7033,7 +7033,7 @@ NV_BOOL infer_constituents(TIDE_RECORD *rec) {
 
   if (rec->amplitude[m2] == 0.0 || rec->amplitude[s2] == 0.0 ||
       rec->amplitude[k1] == 0.0 || rec->amplitude[o1] == 0.0)
-    return (NVFalse);
+    return NVFalse;
 
   epoch_m2 = rec->epoch[m2];
   epoch_s2 = rec->epoch[s2];
@@ -7047,7 +7047,7 @@ NV_BOOL infer_constituents(TIDE_RECORD *rec) {
           /*  Compute the inferred semi-diurnal constituent.  */
 
           rec->amplitude[i] =
-              (semi_diurnal_coeff[j] / coeff[0]) * rec->amplitude[m2];
+              semi_diurnal_coeff[j] / coeff[0] * rec->amplitude[m2];
 
           if (fabs((NV_FLOAT64)(epoch_s2 - epoch_m2)) > 180.0) {
             if (epoch_s2 < epoch_m2) {
@@ -7056,8 +7056,8 @@ NV_BOOL infer_constituents(TIDE_RECORD *rec) {
               epoch_m2 += 360.0;
             }
           }
-          rec->epoch[i] = epoch_m2 + ((hd.speed[i] - hd.speed[m2]) /
-                                      (hd.speed[s2] - hd.speed[m2])) *
+          rec->epoch[i] = epoch_m2 + (hd.speed[i] - hd.speed[m2]) /
+                          (hd.speed[s2] - hd.speed[m2]) *
                                          (epoch_s2 - epoch_m2);
         }
       }
@@ -7067,7 +7067,7 @@ NV_BOOL infer_constituents(TIDE_RECORD *rec) {
           /*  Compute the inferred diurnal constituent.  */
 
           rec->amplitude[i] =
-              (diurnal_coeff[j] / coeff[1]) * rec->amplitude[o1];
+              diurnal_coeff[j] / coeff[1] * rec->amplitude[o1];
 
           if (fabs((NV_FLOAT64)(epoch_k1 - epoch_o1)) > 180.0) {
             if (epoch_k1 < epoch_o1) {
@@ -7076,15 +7076,15 @@ NV_BOOL infer_constituents(TIDE_RECORD *rec) {
               epoch_o1 += 360.0;
             }
           }
-          rec->epoch[i] = epoch_o1 + ((hd.speed[i] - hd.speed[o1]) /
-                                      (hd.speed[k1] - hd.speed[o1])) *
+          rec->epoch[i] = epoch_o1 + (hd.speed[i] - hd.speed[o1]) /
+                          (hd.speed[k1] - hd.speed[o1]) *
                                          (epoch_k1 - epoch_o1);
         }
       }
     }
   }
 
-  return (NVTrue);
+  return NVTrue;
 }
 
 /* $Id: bit_pack.c 1805 2007-01-22 15:36:20Z flaterco $ */
@@ -7210,7 +7210,7 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
     /*  have shifted the value left past the end bit.                   */
 
     buffer[start_byte] |=
-        (value << (8 - end_bit)) & (notmask[start_bit] & mask[end_bit]);
+        value << 8 - end_bit & (notmask[start_bit] & mask[end_bit]);
   }
 
   /*  If the value covers more than 1 byte, store it.                     */
@@ -7227,7 +7227,7 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
     /*  the first byte.                                                 */
 
     buffer[start_byte++] |=
-        (value >> (numbits - (8 - start_bit))) & notmask[start_bit];
+        value >> numbits - (8 - start_bit) & notmask[start_bit];
 
     /*  Loop while decrementing the byte counter.                       */
 
@@ -7238,7 +7238,7 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
 
       /*  Get the next 8 bits from the value.                         */
 
-      buffer[start_byte++] |= (value >> ((i << 3) + end_bit)) & 255;
+      buffer[start_byte++] |= value >> (i << 3) + end_bit & 255;
     }
 
     /*  For the last byte we mask out anything after the end bit.       */
@@ -7249,7 +7249,7 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
     /*  The left shift effectively erases anything above 8 - end_bit    */
     /*  bits in the value so that it will fit in the last byte.         */
 
-    buffer[start_byte] |= (value << (8 - end_bit));
+    buffer[start_byte] |= value << 8 - end_bit;
   }
 }
 
@@ -7314,7 +7314,7 @@ NV_U_INT32 bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
 
     /*  Now we shift the value to the right.                            */
 
-    value >>= (8 - end_bit);
+    value >>= 8 - end_bit;
   }
 
   /*  If the value covers more than 1 byte, retrieve it.                  */
@@ -7324,24 +7324,24 @@ NV_U_INT32 bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
     /*  and shift to the left the necessary amount.                     */
 
     value = (NV_U_INT32)(buffer[start_byte++] & notmask[start_bit])
-            << (numbits - (8 - start_bit));
+            << numbits - (8 - start_bit);
 
     /*  Loop while decrementing the byte counter.                       */
 
     while (i--) {
       /*  Get the next 8 bits from the buffer.                        */
 
-      value += (NV_U_INT32)buffer[start_byte++] << ((i << 3) + end_bit);
+      value += (NV_U_INT32)buffer[start_byte++] << (i << 3) + end_bit;
     }
 
     /*  For the last byte we mask out anything after the end bit and    */
     /*  then shift to the right (8 - end_bit) bits.                     */
     if (mask[end_bit]) {
-      value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+      value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> 8 - end_bit;
     }
   }
 
-  return (value);
+  return value;
 }
 
 /***************************************************************************\
@@ -7380,7 +7380,7 @@ NV_INT32 signed_bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
 
   value = bit_unpack(buffer, start, numbits);
 
-  if (value & (1 << (numbits - 1))) value |= (extend_mask << numbits);
+  if (value & 1 << numbits - 1) value |= extend_mask << numbits;
 
-  return (value);
+  return value;
 }

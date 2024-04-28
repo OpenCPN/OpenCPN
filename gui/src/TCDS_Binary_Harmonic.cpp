@@ -125,7 +125,7 @@ char *tz_time2sec(char *psrc, long *timesec) {
 
   do {
     temp = 0;
-    while (isdigit(*psrc)) temp = temp * 10 + (*(psrc++) - '0');
+    while (isdigit(*psrc)) temp = temp * 10 + (*psrc++ - '0');
 
     *timesec = *timesec + temp * mpy;
 
@@ -137,7 +137,7 @@ char *tz_time2sec(char *psrc, long *timesec) {
 
   if (neg) *timesec = 0 - *timesec;
 
-  return (psrc);
+  return psrc;
 }
 
 /*-----------------9/24/2002 8:16AM-----------------
@@ -151,12 +151,12 @@ static char *tz_parse_name(char *psrc, char *pdst, int maxlen) {
   while (*psrc == ' ') psrc++; /* Skip leading blanks */
 
   while (isalpha(*psrc) && nReturn < maxlen) {
-    *(pdst++) = *(psrc++);
+    *pdst++ = *psrc++;
     nReturn++;
   }
 
   *pdst = 0;
-  return (psrc);
+  return psrc;
 }
 
 /*-----------------9/24/2002 8:38AM-----------------
@@ -181,9 +181,9 @@ static char *tz_parse_rule(char *psrc, SYSTEMTIME *st) {
   if (*psrc == 'J') { /* Julian day (1 <= n <= 365) no leap */
     psrc++;           /* Gobble 'J' */
     temp = 0;
-    while (isdigit(*psrc)) temp = temp * 10 + (*(psrc++) - '0');
+    while (isdigit(*psrc)) temp = temp * 10 + (*psrc++ - '0');
 
-    if (temp < 1 || temp > 365) return (0);
+    if (temp < 1 || temp > 365) return 0;
     temp--;
     for (mo = 0; temp >= mol[mo]; mo++) temp -= mol[mo];
     st->wMonth = mo + 1;
@@ -195,35 +195,35 @@ static char *tz_parse_rule(char *psrc, SYSTEMTIME *st) {
     psrc++; /* Gobble 'M' */
 
     temp = 0;
-    while (isdigit(*psrc)) temp = temp * 10 + (*(psrc++) - '0'); /* Get month */
-    if (temp < 1 || temp > 12 || *psrc != '.') return (0);
+    while (isdigit(*psrc)) temp = temp * 10 + (*psrc++ - '0'); /* Get month */
+    if (temp < 1 || temp > 12 || *psrc != '.') return 0;
     st->wMonth = (unsigned short)temp;
 
     psrc++; /* Gobble '.' */
     temp = 0;
     while (isdigit(*psrc))
-      temp = temp * 10 + (*(psrc++) - '0'); /* Get week number */
-    if (temp < 1 || temp > 5 || *psrc != '.') return (0);
+      temp = temp * 10 + (*psrc++ - '0'); /* Get week number */
+    if (temp < 1 || temp > 5 || *psrc != '.') return 0;
     st->wDay = (unsigned short)temp;
 
     psrc++; /* Gobble '.' */
     temp = 0;
     while (isdigit(*psrc))
-      temp = temp * 10 + (*(psrc++) - '0'); /* Get day of week number */
-    if (temp < 0 || temp > 6) return (0);
+      temp = temp * 10 + (*psrc++ - '0'); /* Get day of week number */
+    if (temp < 0 || temp > 6) return 0;
     st->wDayOfWeek = (unsigned short)temp;
   }
 
   if (*psrc == '/') { /* time is specified */
     psrc++;           /* Gobble '/' */
     psrc = tz_time2sec(psrc, &temp);
-    if (temp < 0 || temp >= 86400) return (0);
+    if (temp < 0 || temp >= 86400) return 0;
     st->wHour = temp / 3600;
     temp = temp % 3600;
     st->wMinute = temp / 60;
     st->wSecond = temp % 60;
   }
-  return (psrc);
+  return psrc;
 }
 
 /*-----------------9/24/2002 3:38PM-----------------
@@ -277,7 +277,7 @@ static void change_time_zone(const char *tz) {
       /* Not found. */
       break;
     }
-    if (!strcmp(tz_names[index][0], (tz))) {
+    if (!strcmp(tz_names[index][0], tz)) {
       char tz[40];
       strncpy(tz, tz_names[index][1], 39);
       tz_load_rule(tz, &tz_info_remote);
@@ -421,7 +421,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
         pIDX->IDX_type = 'T';
 
       int t1 = ptiderec->zone_offset;
-      double zone_offset = (double)(t1 / 100) + ((double)(t1 % 100)) / 60.;
+      double zone_offset = (double)(t1 / 100) + (double)(t1 % 100) / 60.;
       //            pIDX->IDX_time_zone = t1a;
 
       pIDX->IDX_ht_time_off = pIDX->IDX_lt_time_off = 0;
@@ -449,8 +449,8 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
       strncpy(psd->unit, get_level_units(ptiderec->level_units), 40 - 1);
       psd->unit[40 - 1] = '\0';
 
-      psd->have_BOGUS = (findunit(psd->unit) != -1) &&
-                        (known_units[findunit(psd->unit)].type == BOGUS);
+      psd->have_BOGUS = findunit(psd->unit) != -1 &&
+                        known_units[findunit(psd->unit)].type == BOGUS;
 
       int unit_c;
       if (psd->have_BOGUS)
@@ -492,7 +492,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
         pIDX->IDX_type = 't';
 
       int t1 = ptiderec->max_time_add;
-      double t1a = (double)(t1 / 100) + ((double)(t1 % 100)) / 60.;
+      double t1a = (double)(t1 / 100) + (double)(t1 % 100) / 60.;
       t1a *= 60;  // Minutes
       pIDX->IDX_ht_time_off = t1a;
       pIDX->IDX_ht_mpy = ptiderec->max_level_multiply;
@@ -500,7 +500,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
       pIDX->IDX_ht_off = ptiderec->max_level_add;
 
       t1 = ptiderec->min_time_add;
-      t1a = (double)(t1 / 100) + ((double)(t1 % 100)) / 60.;
+      t1a = (double)(t1 / 100) + (double)(t1 % 100) / 60.;
       t1a *= 60;  // Minutes
       pIDX->IDX_lt_time_off = t1a;
       pIDX->IDX_lt_mpy = ptiderec->min_level_multiply;
@@ -559,7 +559,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
     Station_Data *pRefSta = pIDX_Ref->pref_sta_data;
     pIDX->pref_sta_data = pRefSta;
     pIDX->station_tz_offset =
-        -pRefSta->meridian + (pRefSta->zone_offset * 3600);
+        -pRefSta->meridian + pRefSta->zone_offset * 3600;
   }
   return TC_NO_ERROR;
 }

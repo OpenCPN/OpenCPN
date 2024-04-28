@@ -169,7 +169,7 @@ static void AddEdgeToRing( OGRLinearRing * poRing, OGRLineString * poLine,
 
     poRing->setNumPoints( iOutVertex + ABS(iEnd-iStart) + 1 );
 
-    for( int i = iStart; i != (iEnd+iStep); i += iStep )
+    for( int i = iStart; i != iEnd+iStep; i += iStep )
     {
         poRing->setPoint( iOutVertex++,
                           poLine->getX(i), poLine->getY(i), poLine->getZ(i) );

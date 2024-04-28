@@ -98,7 +98,7 @@ circular_buffer::circular_buffer(size_t size)
 
 bool circular_buffer::empty() const {
     // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
+    return !full_ && head_ == tail_;
 }
 
 bool circular_buffer::full() const {
@@ -370,7 +370,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
     // but for consistency with broadcast behaviour, we will
     // instead rely on setting priority levels to ignore
     // sentences read back that have just been transmitted
-    if ((!GetMulticast()) && (GetAddr().IPAddress().EndsWith(_T("255")))) {
+    if (!GetMulticast() && GetAddr().IPAddress().EndsWith(_T("255"))) {
       int broadcastEnable = 1;
       bool bam = GetTSock()->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
@@ -382,7 +382,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
 }
 
 void CommDriverN2KNet::OpenNetworkTCP(unsigned int addr) {
-  int isServer = ((addr == INADDR_ANY) ? 1 : 0);
+  int isServer = addr == INADDR_ANY ? 1 : 0;
   wxLogMessage(wxString::Format(_T("Opening TCP Server %d"), isServer));
 
   if (isServer) {
@@ -398,7 +398,7 @@ void CommDriverN2KNet::OpenNetworkTCP(unsigned int addr) {
     GetSockServer()->SetTimeout(1);  // Short timeout
   } else {
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
-    int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
+    int notify_flags = wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG;
     if (GetPortType() != DS_TYPE_INPUT) notify_flags |= wxSOCKET_OUTPUT_FLAG;
     if (GetPortType() != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
     GetSock()->SetNotify(notify_flags);
@@ -490,8 +490,8 @@ std::vector<unsigned char> CommDriverN2KNet::PushCompleteMsg(const CanHeader hea
   data.push_back(0x13);
   data.push_back(header.priority);
   data.push_back(header.pgn & 0xFF);
-  data.push_back((header.pgn >> 8) & 0xFF);
-  data.push_back((header.pgn >> 16) & 0xFF);
+  data.push_back(header.pgn >> 8 & 0xFF);
+  data.push_back(header.pgn >> 16 & 0xFF);
   data.push_back(header.destination);
   data.push_back(header.source);
   data.push_back(0xFF);  // FIXME (dave) generate the time fields
@@ -511,8 +511,8 @@ std::vector<unsigned char> CommDriverN2KNet::PushFastMsgFragment(const CanHeader
   data.push_back(fast_messages->entries[position].expected_length + 11);
   data.push_back(header.priority);
   data.push_back(header.pgn & 0xFF);
-  data.push_back((header.pgn >> 8) & 0xFF);
-  data.push_back((header.pgn >> 16) & 0xFF);
+  data.push_back(header.pgn >> 8 & 0xFF);
+  data.push_back(header.pgn >> 16 & 0xFF);
   data.push_back(header.destination);
   data.push_back(header.source);
   data.push_back(0xFF);  // FIXME (dave) Could generate the time fields
@@ -630,7 +630,7 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
         }
       }
 
-      if (bGotESC && (ENDOFTEXT == next_byte)) {
+      if (bGotESC && ENDOFTEXT == next_byte) {
         // Process packet
         // first 3 bytes are: 1 byte for message type, 2 bytes for rest of message length
         unsigned int msg_length = (uint32_t)data[1] + ((uint32_t)data[2]<<8);
@@ -641,7 +641,7 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
           uint8_t source = data[4];
 
           uint8_t dprp = data[7];
-          uint8_t priority = (dprp >> 2) & 7;  // priority bits are 3,4,5th bit
+          uint8_t priority = dprp >> 2 & 7;  // priority bits are 3,4,5th bit
           uint8_t rAndDP = dprp & 3;  // data page + reserved is first 2 bits
 
           // PGN
@@ -657,8 +657,8 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
           o_payload.push_back(0x13);
           o_payload.push_back(priority);  // priority;
           o_payload.push_back(pgn & 0xFF);
-          o_payload.push_back((pgn >> 8) & 0xFF);
-          o_payload.push_back((pgn >> 16) & 0xFF);
+          o_payload.push_back(pgn >> 8 & 0xFF);
+          o_payload.push_back(pgn >> 16 & 0xFF);
           o_payload.push_back(destination);  // destination;
           o_payload.push_back(source);       // source);
           o_payload.push_back(0xFF);  // FIXME (dave) generate the time fields
@@ -686,7 +686,7 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
         data.clear();
 
       } else {
-        bGotESC = (next_byte == ESCAPE);
+        bGotESC = next_byte == ESCAPE;
 
         if (!bGotESC) {
           data.push_back(next_byte);
@@ -701,7 +701,7 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
           bGotSOT = true;
         }
       } else {
-        bGotESC = (next_byte == ESCAPE);
+        bGotESC = next_byte == ESCAPE;
         if (bGotSOT) {
           bGotSOT = false;
           bInMsg = true;
@@ -736,7 +736,7 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
           }
         }
 
-        if (bGotESC && (ENDOFTEXT == next_byte)) {
+        if (bGotESC && ENDOFTEXT == next_byte) {
           // Process packet
           // Create a can_frame, to assemble fast packets.
 
@@ -761,7 +761,7 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
             }
           }
         } else {
-          bGotESC = (next_byte == ESCAPE);
+          bGotESC = next_byte == ESCAPE;
 
           if (!bGotESC) {
             data.push_back(next_byte);
@@ -776,7 +776,7 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
             bGotSOT = true;
           }
         } else {
-          bGotESC = (next_byte == ESCAPE);
+          bGotESC = next_byte == ESCAPE;
           if (bGotSOT) {
             bGotSOT = false;
             bInMsg = true;
@@ -799,7 +799,7 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(std::vector<unsigned char> pac
 
   while (!m_circle->empty()) {
     char b = m_circle->get();
-    if ((b != 0x0a) && (b != 0x0d)) {
+    if (b != 0x0a && b != 0x0d) {
       m_sentence += b;
     }
     if (b == 0x0a) {  // end of sentence
@@ -848,7 +848,7 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(std::vector<unsigned char> pac
 
   while (!m_circle->empty()) {
     char b = m_circle->get();
-    if ((b != 0x0a) && (b != 0x0d)) {
+    if (b != 0x0a && b != 0x0d) {
       sentence += b;
     }
     if (b == 0x0a) {  // end of sentence
@@ -893,8 +893,8 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(std::vector<unsigned char> pac
       o_payload.push_back(0x13);
       o_payload.push_back(priority);      //priority;
       o_payload.push_back(PGN & 0xFF);
-      o_payload.push_back((PGN >> 8) & 0xFF);
-      o_payload.push_back((PGN >> 16) & 0xFF);
+      o_payload.push_back(PGN >> 8 & 0xFF);
+      o_payload.push_back(PGN >> 16 & 0xFF);
       o_payload.push_back(destination);   //destination;
       o_payload.push_back(source);        // header.source);
       o_payload.push_back(0xFF);  // FIXME (dave) generate the time fields
@@ -1014,7 +1014,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
         //  the connect request then stretch the time a bit.  This happens on
         //  Windows if there is no dafault IP on any interface
 
-        if (!GetBrxConnectEvent() && (since_connect.GetSeconds() < 5))
+        if (!GetBrxConnectEvent() && since_connect.GetSeconds() < 5)
           retry_time = 10000;  // 10 secs
 
         GetSocketThreadWatchdogTimer()->Stop();
@@ -1065,7 +1065,7 @@ void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
         GetSock()->SetTimeout(2);
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
-        int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
+        int notify_flags = wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG;
         if (GetPortType() != DS_TYPE_INPUT) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(GetSock());
@@ -1130,7 +1130,7 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(const std:
         unsigned char temp[8];  // {0,0,0,0,0,0,0,0};
         int cur = 0;
         int nframes =
-            (payload_size > 6 ? (payload_size - 6 - 1) / 7 + 1 + 1 : 1);
+            payload_size > 6 ? (payload_size - 6 - 1) / 7 + 1 + 1 : 1;
         bool result = true;
         for (int i = 0; i < nframes && result; i++) {
           temp[0] = i | m_order;          //frame counter
@@ -1504,7 +1504,7 @@ bool CommDriverN2KNet::SetOutputSocketOptions(wxSocketBase* tsock) {
   //  quickly fill the output buffer, and thus fail the write() call
   //  within a few seconds.
   unsigned long outbuf_size = 1024;  // Smallest allowable value on Linux
-  return (tsock->SetOption(SOL_SOCKET, SO_SNDBUF, &outbuf_size,
-                           sizeof(outbuf_size)) &&
-          ret);
+  return tsock->SetOption(SOL_SOCKET, SO_SNDBUF, &outbuf_size,
+                          sizeof(outbuf_size)) &&
+         ret;
 }

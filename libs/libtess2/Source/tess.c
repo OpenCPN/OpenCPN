@@ -254,8 +254,8 @@ void tessProjectPolygon( TESStesselator *tess )
 	sUnit[(i+2)%3] = S_UNIT_Y;
 
 	tUnit[i] = 0;
-	tUnit[(i+1)%3] = (norm[i] > 0) ? -S_UNIT_Y : S_UNIT_Y;
-	tUnit[(i+2)%3] = (norm[i] > 0) ? S_UNIT_X : -S_UNIT_X;
+	tUnit[(i+1)%3] = norm[i] > 0 ? -S_UNIT_Y : S_UNIT_Y;
+	tUnit[(i+2)%3] = norm[i] > 0 ? S_UNIT_X : -S_UNIT_X;
 #endif
 
 	/* Project the vertices onto the sweep plane */
@@ -546,7 +546,7 @@ int tessMeshSetWindingNumber( TESSmesh *mesh, int value,
 		if( e->Rface->inside != e->Lface->inside ) {
 
 			/* This is a boundary edge (one side is interior, one is exterior). */
-			e->winding = (e->Lface->inside) ? value : -value;
+			e->winding = e->Lface->inside ? value : -value;
 		} else {
 
 			/* Both regions are interior, or both are exterior. */

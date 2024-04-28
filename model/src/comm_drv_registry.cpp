@@ -70,7 +70,7 @@ const DriverPtr FindDriver(const std::vector<DriverPtr>& drivers,
                            const std::string& iface, const NavAddr::Bus _bus) {
   if (_bus != NavAddr::Bus::Undef){
     auto func = [iface, _bus](const DriverPtr d) {
-      return ((d->iface == iface) && (d->bus == _bus));
+      return d->iface == iface && d->bus == _bus;
       };
     auto found = std::find_if(drivers.begin(), drivers.end(), func);
     return found != drivers.end() ? *found : kNoDriver;

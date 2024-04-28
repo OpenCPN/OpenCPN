@@ -80,7 +80,7 @@ extern GLint texture_2D_shader_program;
 int NextPow2(int size) {
   int n = size - 1;  // compute dimensions needed as next larger power of 2
   int shift = 1;
-  while ((n + 1) & n) {
+  while (n + 1 & n) {
     n |= n >> shift;
     shift <<= 1;
   }
@@ -354,7 +354,7 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
       float xb = xa + ldraw * cosf(angle);
       float yb = ya + ldraw * sinf(angle);
 
-      if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+      if (lrun + ldraw >= lpix)  // last segment is partial draw
       {
         xb = x2;
         yb = y2;
@@ -631,7 +631,7 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
           float xb = xa + ldraw * cosa;
           float yb = ya + ldraw * sina;
 
-          if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+          if (lrun + ldraw >= lpix)  // last segment is partial draw
           {
             xb = x2;
             yb = y2;
@@ -898,13 +898,13 @@ void pi_ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
 
     //  Grow the work buffer as necessary
     if (workBufSize < (size_t)n * 2) {
-      workBuf = (float *)realloc(workBuf, (n * 4) * sizeof(float));
+      workBuf = (float *)realloc(workBuf, n * 4 * sizeof(float));
       workBufSize = n * 4;
     }
 
     for (int i = 0; i < n; i++) {
       workBuf[i * 2] = points[i].x + xoffset;
-      workBuf[(i * 2) + 1] = points[i].y + yoffset;
+      workBuf[i * 2 + 1] = points[i].y + yoffset;
     }
 
     glUseProgram(GRIBpi_color_tri_shader_program);
@@ -1520,8 +1520,8 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glEnable(GL_POLYGON_SMOOTH);
       glBegin(GL_POLYGON);
       for (int i = 0; i < n; i++)
-        glVertex2f((points[i].x * scale) + xoffset,
-                   (points[i].y * scale) + yoffset);
+        glVertex2f(points[i].x * scale + xoffset,
+                   points[i].y * scale + yoffset);
       glEnd();
       glDisable(GL_POLYGON_SMOOTH);
     }
@@ -1530,8 +1530,8 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glEnable(GL_LINE_SMOOTH);
       glBegin(GL_LINE_LOOP);
       for (int i = 0; i < n; i++)
-        glVertex2f((points[i].x * scale) + xoffset,
-                   (points[i].y * scale) + yoffset);
+        glVertex2f(points[i].x * scale + xoffset,
+                   points[i].y * scale + yoffset);
       glEnd();
       glDisable(GL_LINE_SMOOTH);
     }
@@ -1654,7 +1654,7 @@ void pi_odc_endCallbackD_GLSL(void *data) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  float *bufPt = &(pDC->s_odc_tess_work_buf[pDC->s_odc_tess_vertex_idx_this]);
+  float *bufPt = &pDC->s_odc_tess_work_buf[pDC->s_odc_tess_vertex_idx_this];
   GLint pos = glGetAttribLocation(GRIBpi_color_tri_shader_program, "position");
   glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), bufPt);
   glEnableVertexAttribArray(pos);
@@ -1807,8 +1807,8 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
                            bool usemask) {
   wxBitmap bmp;
   if (x < 0 || y < 0) {
-    int dx = (x < 0 ? -x : 0);
-    int dy = (y < 0 ? -y : 0);
+    int dx = x < 0 ? -x : 0;
+    int dy = y < 0 ? -y : 0;
     int w = bitmap.GetWidth() - dx;
     int h = bitmap.GetHeight() - dy;
     /* picture is out of viewport */
@@ -1850,7 +1850,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
         for (int y = 0; y < h; y++)
           for (int x = 0; x < w; x++) {
             unsigned char r, g, b;
-            int off = (y * image.GetWidth() + x);
+            int off = y * image.GetWidth() + x;
             r = d[off * 3 + 0];
             g = d[off * 3 + 1];
             b = d[off * 3 + 2];
@@ -1860,7 +1860,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
             e[off * 4 + 2] = b;
 
             e[off * 4 + 3] =
-                a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+                a ? a[off] : r == mr && g == mg && b == mb ? 0 : 255;
             //                        e[off * 4 + 3] = ( ( r == mr ) && ( g ==
             //                        mg ) && ( b == mb ) ? 0 : 255 );
           }
@@ -1868,7 +1868,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
 
       glColor4f(1, 1, 1, 1);
       GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-      delete[](e);
+      delete[]e;
     } else {
       glRasterPos2i(x, y);
       glPixelZoom(1, -1); /* draw data from top to bottom */
@@ -1947,8 +1947,8 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       wxImage image = bmp.ConvertToImage();
       if (x < 0 ||
           y < 0) {  // Allow Drawing text which is offset to start off screen
-        int dx = (x < 0 ? -x : 0);
-        int dy = (y < 0 ? -y : 0);
+        int dx = x < 0 ? -x : 0;
+        int dy = y < 0 ? -y : 0;
         w = bmp.GetWidth() - dx;
         h = bmp.GetHeight() - dy;
         /* picture is out of viewport */
@@ -1967,11 +1967,11 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         unsigned int b = m_textforegroundcolour.Blue();
         for (int i = 0; i < h; i++) {
           for (int j = 0; j < w; j++) {
-            unsigned int index = ((i * w) + j) * 4;
+            unsigned int index = (i * w + j) * 4;
             data[index] = r;
             data[index + 1] = g;
             data[index + 2] = b;
-            data[index + 3] = im[((i * w) + j) * 3];
+            data[index + 3] = im[(i * w + j) * 3];
           }
         }
       }
@@ -2162,15 +2162,15 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
     } else {
       wxMemoryDC temp_dc;
       temp_dc.GetMultiLineTextExtent(string, w, h, NULL, &f);
-      if (w) (*w) *= OCPN_GetWinDIPScaleFactor();
-      if (h) (*h) *= OCPN_GetWinDIPScaleFactor();
+      if (w) *w *= OCPN_GetWinDIPScaleFactor();
+      if (h) *h *= OCPN_GetWinDIPScaleFactor();
     }
   }
 
   //  Sometimes GetTextExtent returns really wrong, uninitialized results.
   //  Dunno why....
-  if (w && (*w > 2000)) *w = 2000;
-  if (h && (*h > 500)) *h = 500;
+  if (w && *w > 2000) *w = 2000;
+  if (h && *h > 500) *h = 500;
 }
 
 void pi_ocpnDC::ResetBoundingBox() {

@@ -1292,7 +1292,7 @@ void RouteManagerDialog::UpdateRouteListCtrl() {
         wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
   }
 
-  if ((m_lastRteItem >= 0) && (m_pRouteListCtrl->GetItemCount()))
+  if (m_lastRteItem >= 0 && m_pRouteListCtrl->GetItemCount())
     m_pRouteListCtrl->EnsureVisible(m_lastRteItem);
   UpdateRteButtons();
 
@@ -1519,7 +1519,7 @@ void RouteManagerDialog::OnRteReverseClick(wxCommandEvent &event) {
   int ask_return = OCPNMessageBox(this, g_pRouteMan->GetRouteReverseMessage(),
                                   _("Rename Waypoints?"), wxYES_NO | wxCANCEL);
   if (ask_return != wxID_CANCEL) {
-    bool rename = (ask_return == wxID_YES);
+    bool rename = ask_return == wxID_YES;
 
     pSelect->DeleteAllSelectableRouteSegments(route);
     route->Reverse(rename);
@@ -1605,7 +1605,7 @@ void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
             bDNScacheStale = false;
         }
 
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        if (g_DNS_cache.size() == 0 || bDNScacheStale)
            dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);     // seconds
@@ -1645,7 +1645,7 @@ void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
             bDNScacheStale = false;
         }
 
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        if (g_DNS_cache.size() == 0 || bDNScacheStale)
            dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);     // seconds
@@ -1685,7 +1685,7 @@ void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
             bDNScacheStale = false;
         }
 
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        if (g_DNS_cache.size() == 0 || bDNScacheStale)
            dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);     // seconds
@@ -2120,7 +2120,7 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
                                  wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
   }
 
-  if ((m_lastTrkItem >= 0) && (m_pTrkListCtrl->GetItemCount()))
+  if (m_lastTrkItem >= 0 && m_pTrkListCtrl->GetItemCount())
     m_pTrkListCtrl->EnsureVisible(m_lastTrkItem);
 
   m_cbShowAllTrk->SetValue(!bpartialViz);
@@ -2465,7 +2465,7 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
                                  wxLIST_STATE_SELECTED | wxLIST_STATE_FOCUSED);
   }
 
-  if ((m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()))
+  if (m_lastWptItem >= 0 && m_pWptListCtrl->GetItemCount())
     m_pWptListCtrl->EnsureVisible(m_lastWptItem);
 
   if (pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetImageCount()) {
@@ -2525,8 +2525,8 @@ void RouteManagerDialog::UpdateWptButtons() {
   long item = -1;
   item =
       m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-  bool enable1 = (m_pWptListCtrl->GetSelectedItemCount() == 1);
-  bool enablemultiple = (m_pWptListCtrl->GetSelectedItemCount() >= 1);
+  bool enable1 = m_pWptListCtrl->GetSelectedItemCount() == 1;
+  bool enablemultiple = m_pWptListCtrl->GetSelectedItemCount() >= 1;
 
   if (enable1)
     m_lastWptItem = item;
@@ -2599,8 +2599,8 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
   } else  //  clicked on ScaMin column??
     if (clicked_index > -1 &&
         event.GetX() > m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) &&
-        event.GetX() < (m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
-                        m_pWptListCtrl->GetColumnWidth(colWPTSCALE)) &&
+        event.GetX() < m_pWptListCtrl->GetColumnWidth(colTRKVISIBLE) +
+        m_pWptListCtrl->GetColumnWidth(colWPTSCALE) &&
         !g_bOverruleScaMin) {
       RoutePoint *wp = (RoutePoint *)m_pWptListCtrl->GetItemData(clicked_index);
       wp->SetUseSca(!wp->GetUseSca());
@@ -2896,7 +2896,7 @@ void RouteManagerDialog::UpdateLayButtons() {
   long item = -1;
   item =
       m_pLayListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-  bool enable = (item != -1);
+  bool enable = item != -1;
 
   // btnLayProperties->Enable(false);
   btnLayDelete->Enable(enable);
@@ -3045,7 +3045,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   while (node1) {
     Route *pRoute = node1->GetData();
     wxRouteListNode *next_node = node1->GetNext();
-    if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
+    if (pRoute->m_bIsInLayer && pRoute->m_LayerID == layer->m_LayerID) {
       pRoute->m_bIsInLayer = false;
       pRoute->m_LayerID = 0;
       g_pRouteMan->DeleteRoute(pRoute, NavObjectChanges::getInstance());
@@ -3054,7 +3054,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   for (Track *pTrack : g_TrackList) {
-    if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID)) {
+    if (pTrack->m_bIsInLayer && pTrack->m_LayerID == layer->m_LayerID) {
       pTrack->m_bIsInLayer = false;
       pTrack->m_LayerID = 0;
       RoutemanGui(*g_pRouteMan).DeleteTrack(pTrack);
@@ -3068,7 +3068,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   while (node) {
     node3 = node->GetNext();
     RoutePoint *rp = node->GetData();
-    if (rp && (rp->m_LayerID == layer->m_LayerID)) {
+    if (rp && rp->m_LayerID == layer->m_LayerID) {
       rp->m_bIsInLayer = false;
       rp->m_LayerID = 0;
       pWayPointMan->DestroyWaypoint(
@@ -3114,14 +3114,14 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   wxRouteListNode *node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
-    if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
+    if (pRoute->m_bIsInLayer && pRoute->m_LayerID == layer->m_LayerID) {
       pRoute->SetVisible(layer->IsVisibleOnChart());
     }
     node1 = node1->GetNext();
   }
 
   for (Track* pTrack : g_TrackList) {
-    if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
+    if (pTrack->m_bIsInLayer && pTrack->m_LayerID == layer->m_LayerID)
       pTrack->SetVisible(layer->IsVisibleOnChart());
   }
 
@@ -3130,7 +3130,7 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
 
   while (node) {
     RoutePoint *rp = node->GetData();
-    if (rp && (rp->m_LayerID == layer->m_LayerID)) {
+    if (rp && rp->m_LayerID == layer->m_LayerID) {
       rp->SetVisible(layer->IsVisibleOnChart());
     }
 
@@ -3164,14 +3164,14 @@ void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
   wxRouteListNode *node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
-    if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
+    if (pRoute->m_bIsInLayer && pRoute->m_LayerID == layer->m_LayerID) {
       wxRoutePointListNode *node = pRoute->pRoutePointList->GetFirst();
       RoutePoint *prp1 = node->GetData();
       while (node) {
         if (layer->HasVisibleNames() == wxCHK_UNDETERMINED) {
           prp1->m_bShowName = prp1->m_bShowNameData;
         } else {
-          prp1->m_bShowName = (layer->HasVisibleNames() == wxCHK_CHECKED);
+          prp1->m_bShowName = layer->HasVisibleNames() == wxCHK_CHECKED;
         }
         node = node->GetNext();
       }
@@ -3184,7 +3184,7 @@ void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
 
   while (node) {
     RoutePoint *rp = node->GetData();
-    if (rp && (rp->m_LayerID == layer->m_LayerID)) {
+    if (rp && rp->m_LayerID == layer->m_LayerID) {
       rp->SetNameShown(layer->HasVisibleNames() == wxCHK_CHECKED ||
                        (rp->m_bShowNameData &&
                         layer->HasVisibleNames() == wxCHK_UNDETERMINED));
@@ -3221,14 +3221,14 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
   wxRouteListNode *node1 = pRouteList->GetFirst();
   while (node1) {
     Route *pRoute = node1->GetData();
-    if (pRoute->m_bIsInLayer && (pRoute->m_LayerID == layer->m_LayerID)) {
+    if (pRoute->m_bIsInLayer && pRoute->m_LayerID == layer->m_LayerID) {
       pRoute->SetListed(layer->IsVisibleOnListing());
     }
     node1 = node1->GetNext();
   }
 
   for (Track *pTrack : g_TrackList) {
-    if (pTrack->m_bIsInLayer && (pTrack->m_LayerID == layer->m_LayerID))
+    if (pTrack->m_bIsInLayer && pTrack->m_LayerID == layer->m_LayerID)
       pTrack->SetListed(layer->IsVisibleOnListing());
   }
 
@@ -3240,7 +3240,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
 
   while (node) {
     RoutePoint *rp = node->GetData();
-    if (rp && rp->m_bIsolatedMark && (rp->m_LayerID == layer->m_LayerID)) {
+    if (rp && rp->m_bIsolatedMark && rp->m_LayerID == layer->m_LayerID) {
       rp->SetListed(layer->IsVisibleOnListing());
     }
 
@@ -3276,7 +3276,7 @@ void RouteManagerDialog::UpdateLayListCtrl() {
   int index = 0;
   bool b_anyHidden = false;
   for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it, ++index) {
-    Layer *lay = (Layer *)(*it);
+    Layer *lay = (Layer *)*it;
 
     if (!lay->m_LayerName.Upper().Contains(m_tFilterLay->GetValue().Upper())) {
       continue;

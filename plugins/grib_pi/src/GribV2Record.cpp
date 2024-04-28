@@ -250,7 +250,7 @@ static int dec_jpeg2000(char *injpc, int bufsize, int *outfld)
   //
   if (image->numcmpts_ != 1) {
     printf("dec_jpeg2000: Found color image.  Grayscale expected.\n");
-    return (-5);
+    return -5;
   }
 
   //
@@ -280,12 +280,12 @@ static int dec_jpeg2000(char *injpc, int bufsize, int *outfld)
 static unsigned int uint2(unsigned char const *p) { return (p[0] << 8) + p[1]; }
 
 static unsigned int uint4(unsigned const char *p) {
-  return ((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
+  return (p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3];
 }
 
 static int int2(unsigned const char *p) {
   int i;
-  if ((p[0] & 0x80)) {
+  if (p[0] & 0x80) {
     i = -(((p[0] & 0x7f) << 8) + p[1]);
   } else {
     i = (p[0] << 8) + p[1];
@@ -295,7 +295,7 @@ static int int2(unsigned const char *p) {
 
 static int int4(unsigned const char *p) {
   int i;
-  if ((p[0] & 0x80)) {
+  if (p[0] & 0x80) {
     i = -(((p[0] & 0x7f) << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
   } else {
     i = (p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3];
@@ -315,7 +315,7 @@ static float ieee2flt(unsigned const char *ieee) {
                    (int)((ieee[1] | 128) << 16));
   if (ieee[0] & 128) fmant = -fmant;
 
-  return (float)(ldexp(fmant, (int)(exp - 128 - 22)));
+  return (float)ldexp(fmant, (int)(exp - 128 - 22));
 }
 
 static inline void getBits(unsigned const char *buf, int *loc, size_t first,
@@ -330,9 +330,9 @@ static inline void getBits(unsigned const char *buf, int *loc, size_t first,
   zuint bit = first % 8;
 
   zuint val = (buf[oct] << 24) + (buf[oct + 1] << 16) + (buf[oct + 2] << 8) +
-              (buf[oct + 3]);
+              buf[oct + 3];
   val = val << bit;
-  val = val >> (32 - nbBits);
+  val = val >> 32 - nbBits;
   *loc = val;
 }
 
@@ -815,7 +815,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
                 grib_msg->md.pack_width);
         off += grib_msg->md.pack_width;
       }
-      off = (off + 7) & ~7;  // byte boundary padding
+      off = off + 7 & ~7;  // byte boundary padding
 
       for (n = 0; n < grib_msg->md.complex_pack.num_groups; ++n) {
         getBits(grib_msg->buffer, &groups.widths[n], off,
@@ -823,14 +823,14 @@ static bool unpackDS(GRIBMessage *grib_msg) {
         groups.widths[n] += grib_msg->md.complex_pack.width.ref;
         off += grib_msg->md.complex_pack.width.pack_width;
       }
-      off = (off + 7) & ~7;
+      off = off + 7 & ~7;
 
       for (n = 0; n < grib_msg->md.complex_pack.num_groups; ++n) {
         getBits(grib_msg->buffer, &groups.lengths[n], off,
                 grib_msg->md.complex_pack.length.pack_width);
         off += grib_msg->md.complex_pack.length.pack_width;
       }
-      off = (off + 7) & ~7;
+      off = off + 7 & ~7;
 
       groups.max_length = 0;
       for (n = 0; n < grib_msg->md.complex_pack.num_groups - 1; ++n) {
@@ -946,7 +946,7 @@ static bool unpackDS(GRIBMessage *grib_msg) {
         }
       } else if (grib_msg->md.precision == 2) {  // IEEE754 single precision
         static constexpr int one = 1;
-        bool const is_lsb = *((char *)&one) == 1;
+        bool const is_lsb = *(char *)&one == 1;
         grib_msg->grids.gridpoints = new double[npoints];
         for (l = 0; l < npoints; l++) {
           if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
@@ -1207,11 +1207,11 @@ static int mapStatisticalEndTime(GRIBMessage *grid) {
         return grid->md.fcst_time + grid->md.stat_proc.t[0].time_length;
         // return (grid->md.stat_proc.etime/10000- grid->time/10000);
       case 2:  // Day
-        return (grid->md.stat_proc.edy - grid->dy);
+        return grid->md.stat_proc.edy - grid->dy;
       case 3:
-        return (grid->md.stat_proc.emo - grid->mo);
+        return grid->md.stat_proc.emo - grid->mo;
       case 4:
-        return (grid->md.stat_proc.eyr - grid->yr);
+        return grid->md.stat_proc.eyr - grid->yr;
       default:
         fprintf(stderr, "Unable to map end time with units %d to GRIB1\n",
                 grid->md.time_unit);
@@ -1224,7 +1224,7 @@ static int mapStatisticalEndTime(GRIBMessage *grid) {
   }
 
   if (grid->md.time_unit == 1 && grid->md.stat_proc.t[0].time_unit == 0 &&
-      (grid->md.stat_proc.t[0].time_unit % 60) != 0) {
+      grid->md.stat_proc.t[0].time_unit % 60 != 0) {
     // convert in hour
     return grid->md.fcst_time + grid->md.stat_proc.t[0].time_length / 60;
   }
@@ -1721,8 +1721,8 @@ GribV2Record::GribV2Record(ZUFILE *file, int id_) {
   }
 
   // Another special case, where zero padding is used between records.
-  if ((strgrib[0] == 0) && (strgrib[1] == 0) && (strgrib[2] == 0) &&
-      (strgrib[3] == 0)) {
+  if (strgrib[0] == 0 && strgrib[1] == 0 && strgrib[2] == 0 &&
+      strgrib[3] == 0) {
     b_len_add_8 = false;
     b_haveReadGRIB = false;
   }
@@ -1750,7 +1750,7 @@ GribV2Record::GribV2Record(ZUFILE *file, int id_) {
   refmonth = grib_msg->mo;
   refday = grib_msg->dy;
   refhour = grib_msg->time / 10000;
-  refminute = (grib_msg->time / 100) % 100;
+  refminute = grib_msg->time / 100 % 100;
   refDate = makeDate(refyear, refmonth, refday, refhour, refminute, 0);
   sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear, refmonth, refday,
           refhour, refminute);
@@ -1818,7 +1818,7 @@ static bool unpackIS(ZUFILE *fp, GRIBMessage *grib_msg) {
 
   getBits(temp, &grib_msg->total_len, 96, 32);
   // too small or overflow
-  if (grib_msg->total_len < 16 || grib_msg->total_len > (INT_MAX - 4))
+  if (grib_msg->total_len < 16 || grib_msg->total_len > INT_MAX - 4)
     return false;
 
   grib_msg->md.nx = grib_msg->md.ny = 0;
@@ -1843,7 +1843,7 @@ bool GribV2Record::readGribSection0_IS(ZUFILE *file, bool b_skip_initial_GRIB) {
 
   if (!b_skip_initial_GRIB) {
     // Cherche le 1er 'G'
-    while ((zu_read(file, strgrib, 1) == 1) && (strgrib[0] != 'G')) {
+    while (zu_read(file, strgrib, 1) == 1 && strgrib[0] != 'G') {
     }
 
     if (strgrib[0] != 'G') {

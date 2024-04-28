@@ -26,7 +26,7 @@ bool rar_parse_header(ar_archive *ar, struct rar_header *header)
     header->size = uint16le(header_data + 5);
 
     header->datasize = 0;
-    if ((header->flags & LHD_LONG_BLOCK) || header->type == 0x74) {
+    if (header->flags & LHD_LONG_BLOCK || header->type == 0x74) {
         unsigned char size_data[4];
         if (!(header->flags & LHD_LONG_BLOCK))
             log("File header without LHD_LONG_BLOCK set");
@@ -85,7 +85,7 @@ bool rar_parse_header_entry(ar_archive_rar *rar, struct rar_header *header, stru
     entry->method = uint8le(data + 14);
     entry->namelen = uint16le(data + 15);
     entry->attrs = uint32le(data + 17);
-    if ((header->flags & LHD_LARGE)) {
+    if (header->flags & LHD_LARGE) {
         unsigned char more_data[8];
         if (ar_read(rar->super.stream, more_data, sizeof(more_data)) != sizeof(more_data))
             return false;
@@ -94,7 +94,7 @@ bool rar_parse_header_entry(ar_archive_rar *rar, struct rar_header *header, stru
     }
     if (!ar_skip(rar->super.stream, entry->namelen))
         return false;
-    if ((header->flags & LHD_SALT)) {
+    if (header->flags & LHD_SALT) {
         log("Skipping LHD_SALT");
         ar_skip(rar->super.stream, 8);
     }
@@ -103,7 +103,7 @@ bool rar_parse_header_entry(ar_archive_rar *rar, struct rar_header *header, stru
     rar->entry.method = entry->method;
     rar->entry.crc = entry->crc;
     rar->entry.header_size = header->size;
-    rar->entry.solid = entry->version < 20 ? (rar->archive_flags & MHD_SOLID) : (header->flags & LHD_SOLID);
+    rar->entry.solid = entry->version < 20 ? rar->archive_flags & MHD_SOLID : header->flags & LHD_SOLID;
     free(rar->entry.name);
     rar->entry.name = NULL;
 
@@ -140,7 +140,7 @@ static char *rar_conv_unicode_to_utf8(const char *data, uint16_t len)
             flagbits = 8;
         }
         flagbits -= 2;
-        switch ((flagbyte >> flagbits) & 3) {
+        switch (flagbyte >> flagbits & 3) {
         case 0:
             Check(in + 1 <= end_in);
             out += ar_conv_rune_to_utf8(*in++, out, end_out - out);
@@ -148,23 +148,23 @@ static char *rar_conv_unicode_to_utf8(const char *data, uint16_t len)
             break;
         case 1:
             Check(in + 1 <= end_in);
-            out += ar_conv_rune_to_utf8(((uint16_t)highbyte << 8) | *in++, out, end_out - out);
+            out += ar_conv_rune_to_utf8((uint16_t)highbyte << 8 | *in++, out, end_out - out);
             size++;
             break;
         case 2:
             Check(in + 2 <= end_in);
-            out += ar_conv_rune_to_utf8(((uint16_t)*(in + 1) << 8) | *in, out, end_out - out);
+            out += ar_conv_rune_to_utf8((uint16_t)*(in + 1) << 8 | *in, out, end_out - out);
             in += 2;
             size++;
             break;
         case 3:
             Check(in + 1 <= end_in);
             length = *in++;
-            if ((length & 0x80)) {
+            if (length & 0x80) {
                 uint8_t correction = *in++;
                 for (i = 0; i < (length & 0x7F) + 2; i++) {
                     Check(size < len);
-                    out += ar_conv_rune_to_utf8(((uint16_t)highbyte << 8) | (data[size] + (correction & 0xFF)), out, end_out - out);
+                    out += ar_conv_rune_to_utf8((uint16_t)highbyte << 8 | data[size] + (correction & 0xFF), out, end_out - out);
                     size++;
                 }
             }
@@ -199,7 +199,7 @@ const char *rar_get_name(ar_archive *ar)
             return NULL;
         if (ar_read(ar->stream, data, sizeof(data)) != sizeof(data))
             return NULL;
-        if ((header.flags & LHD_LARGE) && !ar_skip(ar->stream, 8))
+        if (header.flags & LHD_LARGE && !ar_skip(ar->stream, 8))
             return NULL;
 
         namelen = uint16le(data + 15);

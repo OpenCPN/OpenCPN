@@ -225,7 +225,7 @@ gluTessProperty( GLUtesselator *tess, GLenum which, GLdouble value )
     }
 
   case GLU_TESS_BOUNDARY_ONLY:
-    tess->boundaryOnly = (value != 0);
+    tess->boundaryOnly = value != 0;
     return;
 
   default:
@@ -277,56 +277,56 @@ gluTessCallback( GLUtesselator *tess, GLenum which, _GLUfuncptr fn)
 {
   switch( which ) {
   case GLU_TESS_BEGIN:
-    tess->callBegin = (fn == NULL) ? &noBegin : (void (/*GLAPIENTRY*/ *)(GLenum)) fn;
+    tess->callBegin = fn == NULL ? &noBegin : (void (/*GLAPIENTRY*/ *)(GLenum)) fn;
     return;
   case GLU_TESS_BEGIN_DATA:
-    tess->callBeginData = (fn == NULL) ?
+    tess->callBeginData = fn == NULL ?
 	&__gl_noBeginData : (void (/*GLAPIENTRY*/ *)(GLenum, void *)) fn;
     return;
   case GLU_TESS_EDGE_FLAG:
-    tess->callEdgeFlag = (fn == NULL) ? &noEdgeFlag :
+    tess->callEdgeFlag = fn == NULL ? &noEdgeFlag :
 					(void (/*GLAPIENTRY*/ *)(GLboolean)) fn;
     /* If the client wants boundary edges to be flagged,
      * we render everything as separate triangles (no strips or fans).
      */
-    tess->flagBoundary = (fn != NULL);
+    tess->flagBoundary = fn != NULL;
     return;
   case GLU_TESS_EDGE_FLAG_DATA:
-    tess->callEdgeFlagData= (fn == NULL) ?
+    tess->callEdgeFlagData= fn == NULL ?
 	&__gl_noEdgeFlagData : (void (/*GLAPIENTRY*/ *)(GLboolean, void *)) fn;
     /* If the client wants boundary edges to be flagged,
      * we render everything as separate triangles (no strips or fans).
      */
-    tess->flagBoundary = (fn != NULL);
+    tess->flagBoundary = fn != NULL;
     return;
   case GLU_TESS_VERTEX:
-    tess->callVertex = (fn == NULL) ? &noVertex :
+    tess->callVertex = fn == NULL ? &noVertex :
 				      (void (/*GLAPIENTRY*/ *)(void *)) fn;
     return;
   case GLU_TESS_VERTEX_DATA:
-    tess->callVertexData = (fn == NULL) ?
+    tess->callVertexData = fn == NULL ?
 	&__gl_noVertexData : (void (/*GLAPIENTRY*/ *)(void *, void *)) fn;
     return;
   case GLU_TESS_END:
-    tess->callEnd = (fn == NULL) ? &noEnd : (void (/*GLAPIENTRY*/ *)(void)) fn;
+    tess->callEnd = fn == NULL ? &noEnd : (void (/*GLAPIENTRY*/ *)(void)) fn;
     return;
   case GLU_TESS_END_DATA:
-    tess->callEndData = (fn == NULL) ? &__gl_noEndData :
+    tess->callEndData = fn == NULL ? &__gl_noEndData :
 				       (void (/*GLAPIENTRY*/ *)(void *)) fn;
     return;
   case GLU_TESS_ERROR:
-    tess->callError = (fn == NULL) ? &noError : (void (/*GLAPIENTRY*/ *)(GLenum)) fn;
+    tess->callError = fn == NULL ? &noError : (void (/*GLAPIENTRY*/ *)(GLenum)) fn;
     return;
   case GLU_TESS_ERROR_DATA:
-    tess->callErrorData = (fn == NULL) ?
+    tess->callErrorData = fn == NULL ?
 	&__gl_noErrorData : (void (/*GLAPIENTRY*/ *)(GLenum, void *)) fn;
     return;
   case GLU_TESS_COMBINE:
-    tess->callCombine = (fn == NULL) ? &noCombine :
+    tess->callCombine = fn == NULL ? &noCombine :
 	(void (/*GLAPIENTRY*/ *)(GLdouble [3],void *[4], GLfloat [4], void ** )) fn;
     return;
   case GLU_TESS_COMBINE_DATA:
-    tess->callCombineData = (fn == NULL) ? &__gl_noCombineData :
+    tess->callCombineData = fn == NULL ? &__gl_noCombineData :
 					   (void (/*GLAPIENTRY*/ *)(GLdouble [3],
 						     void *[4],
 						     GLfloat [4],
@@ -334,7 +334,7 @@ gluTessCallback( GLUtesselator *tess, GLenum which, _GLUfuncptr fn)
 						     void *)) fn;
     return;
   case GLU_TESS_MESH:
-    tess->callMesh = (fn == NULL) ? &noMesh : (void (/*GLAPIENTRY*/ *)(GLUmesh *)) fn;
+    tess->callMesh = fn == NULL ? &noMesh : (void (/*GLAPIENTRY*/ *)(GLUmesh *)) fn;
     return;
   default:
     CALL_ERROR_OR_ERROR_DATA( GLU_INVALID_ENUM );

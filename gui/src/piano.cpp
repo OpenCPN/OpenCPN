@@ -196,8 +196,8 @@ void Piano::Paint(int y, ocpnDC &dc, wxDC *shapeDC) {
         //if (InArray(m_eclipsed_index_array, key_db_index)) {
       dc.SetBrush(m_backBrush);
       int w = 3;
-      dc.DrawRoundedRectangle(box.x + w, box.y + w, box.width - (2 * w),
-                              box.height - (2 * w), box.height / 5 - 1);
+      dc.DrawRoundedRectangle(box.x + w, box.y + w, box.width - 2 * w,
+                              box.height - 2 * w, box.height / 5 - 1);
     }
 
 #if 0
@@ -266,12 +266,12 @@ void Piano::BuildGLTexture() {
   m_ref = h;
   m_pad = h / 7;  // spacing between buttons
   m_radius = h / 4;
-  m_texPitch = ((2 * m_ref) + (2 * m_pad));
+  m_texPitch = 2 * m_ref + 2 * m_pad;
 
   m_tex_piano_height = h;
   m_texw = m_texPitch * 3;
 
-  m_texh = ((sizeof brushes) / (sizeof *brushes)) * h;
+  m_texh = sizeof brushes / sizeof *brushes * h;
   m_texh += 4 * m_ref;  // for icons;
 
   m_texh = NextPow2(m_texh);
@@ -299,7 +299,7 @@ void Piano::BuildGLTexture() {
   wxPen ppPen(GetGlobalColor(_T("CHBLK")), nominal_line_width_pix,
               wxPENSTYLE_SOLID);
   dc.SetPen(ppPen);
-  for (unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
+  for (unsigned int b = 0; b < sizeof brushes / sizeof *brushes; b++) {
     unsigned int x = 0, y = h * b;
 
     dc.SetBrush(brushes[b]);
@@ -315,7 +315,7 @@ void Piano::BuildGLTexture() {
     x += m_texPitch;
     dc.DrawRoundedRectangle(x + m_pad, y + v, 2 * m_ref, h - 2 * v, m_radius);
     dc.SetBrush(m_backBrush);
-    dc.DrawRoundedRectangle(x + m_pad + w, y + v + w, (2 * m_ref) - (2 * w),
+    dc.DrawRoundedRectangle(x + m_pad + w, y + v + w, 2 * m_ref - 2 * w,
                             h - 2 * v - 2 * w,
                             m_radius * (h - 2 * v - 2 * w) /
                                 (h - 2 * v));  // slightly smaller radius
@@ -356,7 +356,7 @@ void Piano::BuildGLTexture() {
       *d = *a, d++, a++;
     }
 
-    int off = ((sizeof brushes) / (sizeof *brushes)) * h + m_ref * i;
+    int off = sizeof brushes / sizeof *brushes * h + m_ref * i;
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, off, iw, ih, GL_RGBA, GL_UNSIGNED_BYTE,
                     data);
     delete[] data;
@@ -444,8 +444,8 @@ void Piano::DrawGLSL(int off) {
     }
 
     for (int i = 0; i < 3; i++) {
-      float u1 = ((uindex * m_texPitch) + texcord[2 * i] + .5) / m_texw,
-            u2 = ((uindex * m_texPitch) + texcord[2 * i + 1] + .5) / m_texw;
+      float u1 = (uindex * m_texPitch + texcord[2 * i] + .5) / m_texw,
+            u2 = (uindex * m_texPitch + texcord[2 * i + 1] + .5) / m_texw;
       int x1 = x[i], x2 = x[i + 1];
       texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1,
       coords[vc++] = y1;
@@ -524,7 +524,7 @@ void Piano::DrawGLSL(int off) {
                            m_vBrush,    m_srBrush,    m_rBrush,
                            m_tileBrush, m_utileBrush, m_unavailableBrush};
 
-      float yoff = ((sizeof brushes) / (sizeof *brushes)) * h + 16 * index;
+      float yoff = sizeof brushes / sizeof *brushes * h + 16 * index;
       float u1 = 0, u2 = (float)iw / m_texw;
       float v1 = yoff / m_texh, v2 = (yoff + ih) / m_texh;
 
@@ -617,7 +617,7 @@ void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_a
     int refd = m_parentCanvas->GetCharWidth();
 
     int nkeys = center_array.size();
-    int key_width = (m_width_avail / refd) / nkeys;
+    int key_width = m_width_avail / refd / nkeys;
     if (key_width < 8) {
       m_piano_mode = PIANO_MODE_COMPOSITE;
       m_key_array = full_array;
@@ -648,10 +648,10 @@ void Piano::SetKeyArray(std::vector<int> &center_array, std::vector<int> &full_a
       // and Raster Family charts..
       // All other families/types retain legacy piano keys, implemented as
       // PianoKeyElement with only one chart in the array.
-      if ((cte.GetChartFamily() == CHART_FAMILY_VECTOR) ||
-          (cte.GetChartFamily() == CHART_FAMILY_RASTER)) {
+      if (cte.GetChartFamily() == CHART_FAMILY_VECTOR ||
+          cte.GetChartFamily() == CHART_FAMILY_RASTER) {
         auto predicate = [scale, chart_family](const PianoKeyElement &pke) {
-          return ((scale == pke.chart_scale) && (chart_family == pke.chart_family));
+          return scale == pke.chart_scale && chart_family == pke.chart_family;
         };
         auto found = find_if(m_composite_array.begin(), m_composite_array.end(),
                              predicate);
@@ -802,7 +802,7 @@ void Piano::FormatKeys(void) {
   if (nKeys) {
     if (!kw) kw = width / nKeys;
 
-    kw = wxMin(kw, (width * 3 / 4) / nKeys);
+    kw = wxMin(kw, width * 3 / 4 / nKeys);
     kw = wxMax(kw, 6);
 
     //    Build the Key Regions
@@ -810,7 +810,7 @@ void Piano::FormatKeys(void) {
     KeyRect.clear();
     m_width = 0;
     for (int i = 0; i < nKeys; i++) {
-      wxRect r((i * kw) + 3, 2, kw - 6, height - 4);
+      wxRect r(i * kw + 3, 2, kw - 6, height - 4);
       KeyRect.push_back(r);
       m_width = r.x + r.width;
     }
@@ -819,7 +819,7 @@ void Piano::FormatKeys(void) {
 }
 
 wxPoint Piano::GetKeyOrigin(int key_index) {
-  if ((key_index >= 0) && (key_index <= (int)m_key_array.size() - 1)) {
+  if (key_index >= 0 && key_index <= (int)m_key_array.size() - 1) {
     wxRect box = KeyRect[key_index];
     return wxPoint(box.x, box.y);
   } else
@@ -843,7 +843,7 @@ bool Piano::MouseEvent(wxMouseEvent &event) {
     ytop = m_parentCanvas->GetClientSize().y - GetHeight();
 #endif
 
-  if (event.Leaving() || (y < ytop) || (x > GetWidth())) {
+  if (event.Leaving() || y < ytop || x > GetWidth()) {
     if (m_bleaving) return false;
     m_bleaving = true;
   } else {
@@ -979,7 +979,7 @@ void Piano::onTimerEvent(wxTimerEvent &event) {
       break;
     case DEFERRED_KEY_CLICK_UP:
       ShowBusy(false);
-      if ((m_hover_last >= 0) || !m_gotPianoDown) {  // turn it off, and return
+      if (m_hover_last >= 0 || !m_gotPianoDown) {  // turn it off, and return
         m_parentCanvas->ClearPianoRollover();
         ResetRollover();
       } else {

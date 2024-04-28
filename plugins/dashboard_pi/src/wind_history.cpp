@@ -260,7 +260,7 @@ void DashboardInstrument_WindDirHistory::SetMinMaxWindScale() {
   if (fulldeg == 0)
     fulldeg = m_MinWindDir < 0 ? -1 : 0;
   else
-    fulldeg = m_MinWindDir > 0 ? fulldeg : (fulldeg - 1);
+    fulldeg = m_MinWindDir > 0 ? fulldeg : fulldeg - 1;
   m_MinWindDir = fulldeg * 90;
 
   // limit the visible wind dir range to 360  degr remove the extra range on the
@@ -597,7 +597,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   //---------------------------------------------------------------------------------
   // wind direction
   //---------------------------------------------------------------------------------
-  dc->SetFont((g_pFontSmall->GetChosenFont()));
+  dc->SetFont(g_pFontSmall->GetChosenFont());
   col = wxColour(204, 41, 41, 255);  // red, opaque Set TWD to DataFonf + Color, TWS to LabelFOnt + Color
   if (m_Properties)
   {
@@ -760,7 +760,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   }
   dc->DrawText(WindSpeed, m_LeftLegend, 3);
 
-  dc->SetFont((g_pFontSmall->GetChosenFont()));
+  dc->SetFont(g_pFontSmall->GetChosenFont());
   int labelw, labelh;
   if (m_Properties)
   {
@@ -795,7 +795,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   int statw, stath;
   dc->GetTextExtent(statistics, &statw, &stath, 0, 0, &f);
   if (statw <
-      (m_WindowRect.width - m_LeftLegend - speedw - degw - m_RightLegend)) {
+      m_WindowRect.width - m_LeftLegend - speedw - degw - m_RightLegend) {
     dc->DrawText(statistics, speedw + m_LeftLegend, 3);
   }
 
@@ -900,7 +900,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   pen.SetStyle(wxPENSTYLE_DOT);
   dc->SetPen(pen);
   dc->SetTextForeground(col);
-  dc->SetFont((g_pFontSmall->GetChosenFont()));
+  dc->SetFont(g_pFontSmall->GetChosenFont());
   int done = -1;
   wxPoint pointTime;
   for (int idx = 0; idx < WIND_RECORD_COUNT; idx++) {
@@ -908,10 +908,10 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       wxDateTime localTime(m_ArrayRecTime[idx]);
       hour = localTime.GetHour();
       min = localTime.GetMinute();
-      if ((hour * 100 + min) != done && (min % 15 == 0)) {
+      if (hour * 100 + min != done && min % 15 == 0) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
-                     (m_TopLineHeight + m_DrawAreaRect.height + 1));
+                     m_TopLineHeight + m_DrawAreaRect.height + 1);
         label.Printf(_T("%02d:%02d"), hour, min);
         f = g_pFontSmall->GetChosenFont();
         dc->GetTextExtent(label, &width, &height, 0, 0, &f);

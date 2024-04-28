@@ -472,7 +472,7 @@ int jp2_validate(jas_stream_t *in)
     }
 
     /* Is the box type correct? */
-    if (((buf[4] << 24) | (buf[5] << 16) | (buf[6] << 8) | buf[7]) !=
+    if ((buf[4] << 24 | buf[5] << 16 | buf[6] << 8 | buf[7]) !=
       JP2_BOX_JP)
     {
         return -1;

@@ -365,7 +365,7 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
       }
       else
       {    // read completed immediately without error
-        return (size_t) (bytes_read);
+        return (size_t) bytes_read;
       }
     }
   }
@@ -407,7 +407,7 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
 //     ss << "Error while reading from the serial port: " << GetLastError();
 //     THROW (IOException, ss.str().c_str());
 //   }
-  return (size_t) (bytes_read);
+  return (size_t) bytes_read;
 }
 
 size_t
@@ -446,7 +446,7 @@ Serial::SerialImpl::write (const uint8_t *data, size_t length)
 //    ss << "Error while writing to the serial port: " << GetLastError();
 //    THROW (IOException, ss.str().c_str());
 //  }
-  return (size_t) (bytes_written);
+  return (size_t) bytes_written;
 }
 
 void

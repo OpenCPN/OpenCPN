@@ -147,7 +147,7 @@ public:
 
   bool UpdateAutopilot();
   bool DeactivateRoute(bool b_arrival = false);
-  bool IsAnyRouteActive(void) { return (pActiveRoute != NULL); }
+  bool IsAnyRouteActive(void) { return pActiveRoute != NULL; }
 
   Route *GetpActiveRoute() { return pActiveRoute; }
   RoutePoint *GetpActivePoint() { return pActivePoint; }

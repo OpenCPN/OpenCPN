@@ -250,11 +250,11 @@ static void EmitShape(SHPObject *psObject, const char *pszPrefix,
     printf("%s  ShapeId = %d\n", pszPrefix, psObject->nShapeId);
 
     printf("%s  Min = (", pszPrefix);
-    EmitCoordinate(&(psObject->dfXMin), nDimension);
+    EmitCoordinate(&psObject->dfXMin, nDimension);
     printf(")\n");
 
     printf("%s  Max = (", pszPrefix);
-    EmitCoordinate(&(psObject->dfXMax), nDimension);
+    EmitCoordinate(&psObject->dfXMax, nDimension);
     printf(")\n");
 
     for (int i = 0; i < psObject->nVertices; i++)
@@ -379,7 +379,7 @@ static void SHPTreeNodeSearchAndDump(SHPTree *hTree, double *padfBoundsMin,
             continue;
 
         if (!SHPCheckBoundsOverlap(padfBoundsMin, padfBoundsMax,
-                                   &(psObject->dfXMin), &(psObject->dfXMax),
+                                   &psObject->dfXMin, &psObject->dfXMax,
                                    hTree->nDimension))
         {
             printf("Shape %d: not in area of interest, but fetched.\n",

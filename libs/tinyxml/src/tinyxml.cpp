@@ -58,7 +58,7 @@ void TiXmlBase::EncodeString( const TIXML_STRING& str, TIXML_STRING* outString )
 		unsigned char c = (unsigned char) str[i];
 
 		if (    c == '&'
-		     && i < ( (int)str.length() - 2 )
+		     && i < (int)str.length() - 2
 			 && str[i+1] == '#'
 			 && str[i+2] == 'x' )
 		{
@@ -1108,7 +1108,7 @@ bool TiXmlDocument::SaveFile( FILE* fp ) const
 		fputc( TIXML_UTF_LEAD_2, fp );
 	}
 	Print( fp, 0 );
-	return (ferror(fp) == 0);
+	return ferror(fp) == 0;
 }
 
 
@@ -1219,7 +1219,7 @@ void TiXmlAttribute::Print( FILE* cfile, int /*depth*/, TIXML_STRING* str ) cons
 			fprintf (cfile, "%s=\"%s\"", n.c_str(), v.c_str() );
 		}
 		if ( str ) {
-			(*str) += n; (*str) += "=\""; (*str) += v; (*str) += "\"";
+			*str += n; *str += "=\""; *str += v; *str += "\"";
 		}
 	}
 	else {
@@ -1227,7 +1227,7 @@ void TiXmlAttribute::Print( FILE* cfile, int /*depth*/, TIXML_STRING* str ) cons
 			fprintf (cfile, "%s='%s'", n.c_str(), v.c_str() );
 		}
 		if ( str ) {
-			(*str) += n; (*str) += "='"; (*str) += v; (*str) += "'";
+			*str += n; *str += "='"; *str += v; *str += "'";
 		}
 	}
 }
@@ -1418,22 +1418,22 @@ TiXmlDeclaration& TiXmlDeclaration::operator=( const TiXmlDeclaration& copy )
 void TiXmlDeclaration::Print( FILE* cfile, int /*depth*/, TIXML_STRING* str ) const
 {
 	if ( cfile ) fprintf( cfile, "<?xml " );
-	if ( str )	 (*str) += "<?xml ";
+	if ( str )	 *str += "<?xml ";
 
 	if ( !version.empty() ) {
 		if ( cfile ) fprintf (cfile, "version=\"%s\" ", version.c_str ());
-		if ( str ) { (*str) += "version=\""; (*str) += version; (*str) += "\" "; }
+		if ( str ) { *str += "version=\""; *str += version; *str += "\" "; }
 	}
 	if ( !encoding.empty() ) {
 		if ( cfile ) fprintf (cfile, "encoding=\"%s\" ", encoding.c_str ());
-		if ( str ) { (*str) += "encoding=\""; (*str) += encoding; (*str) += "\" "; }
+		if ( str ) { *str += "encoding=\""; *str += encoding; *str += "\" "; }
 	}
 	if ( !standalone.empty() ) {
 		if ( cfile ) fprintf (cfile, "standalone=\"%s\" ", standalone.c_str ());
-		if ( str ) { (*str) += "standalone=\""; (*str) += standalone; (*str) += "\" "; }
+		if ( str ) { *str += "standalone=\""; *str += standalone; *str += "\" "; }
 	}
 	if ( cfile ) fprintf( cfile, "?>" );
-	if ( str )	 (*str) += "?>";
+	if ( str )	 *str += "?>";
 }
 
 

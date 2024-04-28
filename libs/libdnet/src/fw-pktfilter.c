@@ -58,8 +58,8 @@ static int
 parse_addr(char *p, struct addr *a)
 {
 	if (strcmp(p, "any") == 0)
-		return (addr_aton("0.0.0.0/0", a));
-	return (addr_aton(p, a));
+		return addr_aton("0.0.0.0/0", a);
+	return addr_aton(p, a);
 }
 
 static int
@@ -78,11 +78,11 @@ parse_portspec(char *str, uint16_t *ports)
 		if (p[1] != '=') ports[0]++;
 	} else if (p[0] != '\0') {
 		if (strcmp(strsep(&str, " "), "><") != 0)
-			return (-1);
+			return -1;
 		ports[0] = atoi(p) + 1;
 		ports[1] = atoi(strsep(&str, " ")) - 1;
 	}
-	return (0);
+	return 0;
 }
 
 static int
@@ -97,7 +97,7 @@ parse_icmpspec(char *str, uint16_t *type, uint16_t *code)
 	if (icmp_types[i] == NULL) {
 		i = strtol(p, &e, 10);
 		if (*e != '\0')
-			return (-1);
+			return -1;
 	}
 	type[0] = i;
 	type[1] = 0xff;
@@ -107,11 +107,11 @@ parse_icmpspec(char *str, uint16_t *type, uint16_t *code)
 		p = strsep(&str, " ");
 		i = strtol(p, &e, 10);
 		if (*e != '\0')
-			return (-1);
+			return -1;
 		code[0] = i;
 		code[1] = 0xff;
 	}
-	return (0);
+	return 0;
 }
 
 /*
@@ -134,7 +134,7 @@ parse_rule(char *str, struct fw_rule *rule)
 		rule->fw_op = FW_OP_BLOCK;
 	else if (strcmp(p, "pass") == 0)
 		rule->fw_op = FW_OP_ALLOW;
-	else return (-1);
+	else return -1;
 	
 	/* direction */
 	p = strsep(&str, " ");
@@ -142,11 +142,11 @@ parse_rule(char *str, struct fw_rule *rule)
 		rule->fw_dir = FW_DIR_IN;
 	else if (strcmp(p, "out") == 0)
 		rule->fw_dir = FW_DIR_OUT;
-	else return (-1);
+	else return -1;
 
 	/* device */
 	if (strcmp(strsep(&str, " "), "on") != 0)
-		return (-1);
+		return -1;
 	p = strsep(&str, " ");
 	/* XXX - handle bug in pktfltsrv.c */
 	if ((q = strstr(p, "proto")) != NULL)
@@ -161,7 +161,7 @@ parse_rule(char *str, struct fw_rule *rule)
 		p = strsep(&str, " ");
 	/* XXX - handle default rules */
 	if (strcmp(p, "all") == 0)
-		return (0);
+		return 0;
 	if (strcmp(p, "icmp") == 0)
 		rule->fw_proto = IP_PROTO_ICMP;
 	else if (strcmp(p, "tcp") == 0)
@@ -173,42 +173,42 @@ parse_rule(char *str, struct fw_rule *rule)
 	/* source */
 	p = strsep(&str, " ");
 	if (strcmp(p, "all") == 0)
-		return (0);
+		return 0;
 	if (strcmp(p, "from") != 0)
 		goto icmp_type_code;
 	p = strsep(&str, " ");
 	if (parse_addr(p, &rule->fw_src) < 0)
-		return (-1);
+		return -1;
 	
 	/* source port */
 	p = strsep(&str, " ");
 	if (strcmp(p, "port") == 0) {
 		if ((p = strstr(str, " to ")) == NULL)
-			return (-1);
+			return -1;
 		*p++ = '\0';
 		if (parse_portspec(str, rule->fw_sport) < 0)
-			return (-1);
+			return -1;
 		str = p + 3;
 	} else if (strcmp(p, "to") != 0)
-		return (-1);
+		return -1;
 	
 	/* destination */
 	p = strsep(&str, " ");
 	if (parse_addr(p, &rule->fw_dst) < 0)
-		return (-1);
+		return -1;
 
 	/* destination port */
 	p = strsep(&str, " ");
 	if (strcmp(p, "port") == 0)
-		return (parse_portspec(str, rule->fw_dport));
+		return parse_portspec(str, rule->fw_dport);
 
  icmp_type_code:
 	/* icmp-type, code */
 	if (strcmp(p, "icmp-type") == 0) {
 		if (parse_icmpspec(str, rule->fw_sport, rule->fw_dport) < 0)
-			return (-1);
+			return -1;
 	}
-	return (0);
+	return 0;
 }
 
 static int
@@ -216,8 +216,8 @@ format_rule(const struct fw_rule *rule, char *buf, int len)
 {
 	char tmp[128];
 	
-	strlcpy(buf, (rule->fw_op == FW_OP_ALLOW) ? "pass " : "block ", len);
-	strlcat(buf, (rule->fw_dir == FW_DIR_IN) ? "in " : "out ", len);
+	strlcpy(buf, rule->fw_op == FW_OP_ALLOW ? "pass " : "block ", len);
+	strlcat(buf, rule->fw_dir == FW_DIR_IN ? "in " : "out ", len);
 	snprintf(tmp, sizeof(tmp), "on %s ", rule->fw_device);
 	strlcat(buf, tmp, len);
 	if (rule->fw_proto != 0) {
@@ -271,7 +271,7 @@ format_rule(const struct fw_rule *rule, char *buf, int len)
 			}
 		}
 	}
-	return (strlen(buf));
+	return strlen(buf);
 }
 
 static char *
@@ -284,7 +284,7 @@ call_pipe(const char *msg, int len)
 	if (!WaitNamedPipe(PKTFILTER_PIPE, NMPWAIT_USE_DEFAULT_WAIT) ||
 	    (pipe = CreateFile(PKTFILTER_PIPE, GENERIC_READ | GENERIC_WRITE,
 		0, NULL, OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE) {
-		return (NULL);
+		return NULL;
 	}
 	reply = NULL;
 	
@@ -309,7 +309,7 @@ call_pipe(const char *msg, int len)
 		}
 	}
 	CloseHandle(pipe);
-	return (reply);
+	return reply;
 }
 
 fw_t *
@@ -320,7 +320,7 @@ fw_open(void)
 	ULONG size;
 	
 	if ((f = calloc(1, sizeof(*f))) == NULL)
-		return (NULL);
+		return NULL;
 	
 	size = sizeof(*f->ifinfo);
 	f->ifinfo = malloc(size);
@@ -348,7 +348,7 @@ fw_open(void)
 			fmt = "if";
 		sprintf(ifinfo->AdapterName, "%s%lu", fmt, ifinfo->ComboIndex);
 	}
-	return (f);
+	return f;
 }
 
 int
@@ -360,9 +360,9 @@ fw_add(fw_t *f, const struct fw_rule *rule)
 	len = format_rule(rule, buf, sizeof(buf));
 	
 	if ((p = call_pipe(buf, len)) == NULL)
-		return (-1);
+		return -1;
 	free(p);
-	return (0);
+	return 0;
 }
 
 int
@@ -376,7 +376,7 @@ fw_delete(fw_t *f, const struct fw_rule *rule)
 	
 	len = snprintf(cmd, sizeof(cmd), "List on %s", rule->fw_device);
 	if ((msg = call_pipe(cmd, len)) == NULL)
-		return (-1);
+		return -1;
 
 	for (ruleno = 0, p = msg; (line = strsep(&p, "\r\n")) != NULL; ) {
 		if (strncmp(line, "rule ", 5) == 0) {
@@ -393,15 +393,15 @@ fw_delete(fw_t *f, const struct fw_rule *rule)
 	if (ruleno == 0) {
 		errno = ENXIO;
 		SetLastError(ERROR_NO_DATA);
-		return (-1);
+		return -1;
 	}
 	len = snprintf(cmd, sizeof(cmd), "delete %d on %s",
 	    ruleno, rule->fw_device);
 	if ((p = call_pipe(cmd, len)) == NULL)
-		return (-1);
+		return -1;
 	free(p);
 
-	return (0);
+	return 0;
 }
 
 int
@@ -417,7 +417,7 @@ fw_loop(fw_t *f, fw_handler callback, void *arg)
 		len = snprintf(buf, sizeof(buf), "list on %s",
 		    ifinfo->AdapterName);
 		if ((msg = call_pipe(buf, len)) == NULL)
-			return (-1);
+			return -1;
 		
 		/* parse msg */
 		for (p = msg; (line = strsep(&p, "\r\n")) != NULL; ) {
@@ -430,7 +430,7 @@ fw_loop(fw_t *f, fw_handler callback, void *arg)
 		}
 		free(msg);
 	}
-	return (ret);
+	return ret;
 }
 
 fw_t *
@@ -440,5 +440,5 @@ fw_close(fw_t *f)
 		free(f->ifinfo);
 		free(f);
 	}
-	return (NULL);
+	return NULL;
 }

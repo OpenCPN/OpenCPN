@@ -57,13 +57,13 @@ void CompOutCode(double x, double y, outcode *code,
   /*Compute outcode for the point (x,y) */
   *code = 0;
   if (y > LINK->ymax)
-    *code = 1L << ((long)TOP);
+    *code = 1L << (long)TOP;
   else if (y < LINK->ymin)
-    *code = 1L << ((long)BOTTOM);
+    *code = 1L << (long)BOTTOM;
   if (x > LINK->xmax)
-    *code |= 1L << ((long)RIGHT);
+    *code |= 1L << (long)RIGHT;
   else if (x < LINK->xmin)
-    *code |= 1L << ((long)LEFT);
+    *code |= 1L << (long)LEFT;
 }
 
 ClipResult cohen_sutherland_line_clip_d(double *x0, double *y0, double *x1,
@@ -104,19 +104,19 @@ ClipResult cohen_sutherland_line_clip_d(double *x0, double *y0, double *x1,
       /*Now find intersection point;
        *            use formulas y=y0+slope*(x-x0),x=x0+(1/slope)*(y-y0).*/
 
-      if (((1L << ((long)TOP)) & outcodeOut) != 0) {
+      if ((1L << (long)TOP & outcodeOut) != 0) {
         /*Divide line at top of clip rectangle*/
         x = *x0 + (*x1 - *x0) * (V.ymax - *y0) / (*y1 - *y0);
         y = V.ymax;
-      } else if (((1L << ((long)BOTTOM)) & outcodeOut) != 0) {
+      } else if ((1L << (long)BOTTOM & outcodeOut) != 0) {
         /*Divide line at bottom of clip rectangle*/
         x = *x0 + (*x1 - *x0) * (V.ymin - *y0) / (*y1 - *y0);
         y = V.ymin;
-      } else if (((1L << ((long)RIGHT)) & outcodeOut) != 0) {
+      } else if ((1L << (long)RIGHT & outcodeOut) != 0) {
         /*Divide line at right edge of clip rectangle*/
         y = *y0 + (*y1 - *y0) * (V.xmax - *x0) / (*x1 - *x0);
         x = V.xmax;
-      } else if (((1L << ((long)LEFT)) & outcodeOut) != 0) {
+      } else if ((1L << (long)LEFT & outcodeOut) != 0) {
         /*Divide line at left edge of clip rectangle*/
         y = *y0 + (*y1 - *y0) * (V.xmin - *x0) / (*x1 - *x0);
         x = V.xmin;
@@ -156,7 +156,7 @@ ClipResult cohen_sutherland_line_clip_i(int *x0_, int *y0_, int *x1_, int *y1_,
   return ret;
 }
 
-double round_msvc(double x) { return (floor(x + 0.5)); }
+double round_msvc(double x) { return floor(x + 0.5); }
 
 //---------------------------------------------------------------
 IsoLine::IsoLine(double val, double coeff, double offset,
@@ -262,15 +262,15 @@ MySegList *IsoLine::BuildContinuousSegment(void) {
     while (node) {
       seg = node->GetData();
 
-      if ((!seg->bUsed) && (seg->py1 == tseg->py2) &&
-          (seg->px1 == tseg->px2))  // fits without reverse
+      if (!seg->bUsed && seg->py1 == tseg->py2 &&
+          seg->px1 == tseg->px2)  // fits without reverse
       {
         seg->bUsed = true;
         segjoin2.Append(seg);
         badded = true;
         break;
-      } else if ((!seg->bUsed) && (seg->py2 == tseg->py2) &&
-                 (seg->px2 == tseg->px2))  // fits, needs reverse
+      } else if (!seg->bUsed && seg->py2 == tseg->py2 &&
+                 seg->px2 == tseg->px2)  // fits, needs reverse
       {
         seg->bUsed = true;
         double a = seg->px2;
@@ -310,15 +310,15 @@ MySegList *IsoLine::BuildContinuousSegment(void) {
     while (node) {
       seg = node->GetData();
 
-      if ((!seg->bUsed) && (seg->py2 == tseg->py1) &&
-          (seg->px2 == tseg->px1))  // fits without reverse
+      if (!seg->bUsed && seg->py2 == tseg->py1 &&
+          seg->px2 == tseg->px1)  // fits without reverse
       {
         seg->bUsed = true;
         segjoin1.Append(seg);
         badded = true;
         break;
-      } else if ((!seg->bUsed) && (seg->py1 == tseg->py1) &&
-                 (seg->px1 == tseg->px1))  // fits, needs reverse
+      } else if (!seg->bUsed && seg->py1 == tseg->py1 &&
+                 seg->px1 == tseg->px1)  // fits, needs reverse
       {
         seg->bUsed = true;
         double a = seg->px2;
@@ -824,7 +824,7 @@ void ocpn_wx_spline_push(double x1, double y1, double x2, double y2, double x3,
 
 int ocpn_wx_spline_pop(double *x1, double *y1, double *x2, double *y2,
                        double *x3, double *y3, double *x4, double *y4) {
-  if (ocpn_wx_stack_count == 0) return (0);
+  if (ocpn_wx_stack_count == 0) return 0;
   ocpn_wx_stack_top--;
   ocpn_wx_stack_count--;
   *x1 = ocpn_wx_stack_top->x1;
@@ -835,7 +835,7 @@ int ocpn_wx_spline_pop(double *x1, double *y1, double *x2, double *y2,
   *y3 = ocpn_wx_stack_top->y3;
   *x4 = ocpn_wx_stack_top->x4;
   *y4 = ocpn_wx_stack_top->y4;
-  return (1);
+  return 1;
 }
 
 static bool ocpn_wx_spline_add_point(double x, double y) {

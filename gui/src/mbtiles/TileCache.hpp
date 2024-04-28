@@ -27,7 +27,7 @@ public:
             float LatMax) {
     this->minZoom = minZoom;
     this->maxZoom = maxZoom;
-    nbZoom = (maxZoom - minZoom) + 1;
+    nbZoom = maxZoom - minZoom + 1;
     zoomTable = new ZoomDescriptor[nbZoom];
 
     // Compute cache coverage for every zoom level in WMTS coordinates
@@ -116,8 +116,8 @@ public:
       index = mbTileDescriptor::GetMapKey(listEnd->m_zoomLevel, listEnd->tile_x,
                                           listEnd->tile_y);
       auto ref = tileMap.find(index);
-      if ((ref->second->m_bAvailable) && (ref->second->m_teximage == 0) &&
-          (ref->second->glTextureName == 0)) {
+      if (ref->second->m_bAvailable && ref->second->m_teximage == 0 &&
+          ref->second->glTextureName == 0) {
         // If the tile is currently used by worker thread, we must not delete
         // it. Practically, this case is not supposed to happen, unless the
         // system is really, really slow. In that case we exit the function and

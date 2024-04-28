@@ -991,7 +991,7 @@ void ConnectionEditDialog::onBTScanTimer(wxTimerEvent& event) {
     m_choiceBTDataSources->Append(m_BTscan_results[0]);  // scan status
 
     unsigned int i = 1;
-    while ((i + 1) < m_BTscan_results.GetCount()) {
+    while (i + 1 < m_BTscan_results.GetCount()) {
       wxString item1 = m_BTscan_results[i] + ";";
       wxString item2 = m_BTscan_results.Item(i + 1);
       m_choiceBTDataSources->Append(item1 + item2);
@@ -1097,7 +1097,7 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   m_stAuthToken->Show(visible && advanced);
   m_tAuthToken->Show(visible && advanced);
   if (visible) {
-    const bool bout_enable = (m_cbOutput->IsChecked() && advanced);
+    const bool bout_enable = m_cbOutput->IsChecked() && advanced;
     m_stPrecision->Enable(bout_enable);
     m_choicePrecision->Enable(bout_enable);
   } else {
@@ -1110,9 +1110,9 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   m_cbCheckSKDiscover->Hide();  // Provisional
   m_ButtonSKDiscover->Hide();
 
-  const bool bin_enable = (m_cbInput->IsChecked() && advanced);
+  const bool bin_enable = m_cbInput->IsChecked() && advanced;
   ShowInFilter(visible && bin_enable);
-  const bool bout_enable = (m_cbOutput->IsChecked() && advanced);
+  const bool bout_enable = m_cbOutput->IsChecked() && advanced;
   ShowOutFilter(visible && bout_enable);
 
   m_bNMEAParams_shown = visible;
@@ -1955,7 +1955,7 @@ void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
     NMEALogWindow::Get().DestroyWindow();
   } else {
-    NMEALogWindow::Get().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::Get().Create((wxWindow*)m_parent->pParent, 35);
 
     // Try to ensure that the log window is a least a little bit visible
     wxRect logRect(
@@ -2495,7 +2495,7 @@ bool ConnectionEditDialog::IsAddressMultiCast(wxString ip) {
   }
   unsigned long ipNum = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
                         (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
-  unsigned long multicastStart = (224 << 24);
+  unsigned long multicastStart = 224 << 24;
   unsigned long multicastEnd = (239 << 24) + (255 << 16) + (255 << 8) + 255;
   return ipNum >= multicastStart && ipNum <= multicastEnd;
 }
@@ -2503,8 +2503,8 @@ bool ConnectionEditDialog::IsAddressMultiCast(wxString ip) {
 
 
 bool ConnectionEditDialog::IsDefaultPort(wxString address) {
-    return  (address == DEFAULT_TCP_PORT) || (address == DEFAULT_UDP_PORT) || (address == DEFAULT_SIGNALK_PORT) ||
-           (address == DEFAULT_GPSD_PORT);
+    return  address == DEFAULT_TCP_PORT || address == DEFAULT_UDP_PORT || address == DEFAULT_SIGNALK_PORT ||
+           address == DEFAULT_GPSD_PORT;
 }
 
 bool ConnectionEditDialog::IsAddressBroadcast(wxString ip) {

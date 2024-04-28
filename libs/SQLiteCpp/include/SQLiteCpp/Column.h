@@ -119,27 +119,27 @@ public:
     /// Test if the column is an integer type value (meaningful only before any conversion)
     bool isInteger() const noexcept
     {
-        return (SQLite::INTEGER == getType());
+        return SQLite::INTEGER == getType();
     }
     /// Test if the column is a floating point type value (meaningful only before any conversion)
     bool isFloat() const noexcept
     {
-        return (SQLite::FLOAT == getType());
+        return SQLite::FLOAT == getType();
     }
     /// Test if the column is a text type value (meaningful only before any conversion)
     bool isText() const noexcept
     {
-        return (SQLite::TEXT == getType());
+        return SQLite::TEXT == getType();
     }
     /// Test if the column is a binary blob type value (meaningful only before any conversion)
     bool isBlob() const noexcept
     {
-        return (SQLite::BLOB == getType());
+        return SQLite::BLOB == getType();
     }
     /// Test if the column is NULL (meaningful only before any conversion)
     bool isNull() const noexcept
     {
-        return (SQLite::Null == getType());
+        return SQLite::Null == getType();
     }
 
     /**

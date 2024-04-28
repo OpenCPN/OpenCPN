@@ -100,7 +100,7 @@ static __forceinline bool br_ensure(inflate_state *state, int bits)
     while (state->in.available < bits) {
         if (*state->in.avail_in == 0)
             return false;
-        state->in.bits |= ((uint64_t)*state->in.data_in++ << state->in.available);
+        state->in.bits |= (uint64_t)*state->in.data_in++ << state->in.available;
         (*state->in.avail_in)--;
         state->in.available += 8;
     }
@@ -109,7 +109,7 @@ static __forceinline bool br_ensure(inflate_state *state, int bits)
 
 static __forceinline uint64_t br_bits(inflate_state *state, int bits)
 {
-    uint64_t res = state->in.bits & (((uint64_t)1 << bits) - 1);
+    uint64_t res = state->in.bits & ((uint64_t)1 << bits) - 1;
     state->in.available -= bits;
     state->in.bits >>= bits;
     return res;
@@ -119,14 +119,14 @@ static __forceinline void output(inflate_state *state, uint8_t value)
 {
     *state->out.data_out++ = value;
     (*state->out.avail_out)--;
-    state->out.window[state->out.offset++ & (sizeof(state->out.window) - 1)] = value;
+    state->out.window[state->out.offset++ & sizeof(state->out.window) - 1] = value;
 }
 
 static bool tree_add_value(struct tree *tree, int key, int bits, int value)
 {
     int rkey = 0, i;
     for (i = 0; i < bits; i++)
-        rkey = (rkey << 1) | ((key >> i) & 1);
+        rkey = rkey << 1 | key >> i & 1;
 
     if (bits <= TREE_FAST_BITS) {
         if (tree->nodes[rkey].length)
@@ -134,10 +134,10 @@ static bool tree_add_value(struct tree *tree, int key, int bits, int value)
         tree->nodes[rkey].length = bits;
         tree->nodes[rkey].value = value;
         tree->nodes[rkey].is_value = true;
-        for (i = 1; i < (1 << (TREE_FAST_BITS - bits)); i++) {
-            if (tree->nodes[rkey | (i << bits)].length)
+        for (i = 1; i < 1 << TREE_FAST_BITS - bits; i++) {
+            if (tree->nodes[rkey | i << bits].length)
                 return false;
-            tree->nodes[rkey | (i << bits)] = tree->nodes[rkey];
+            tree->nodes[rkey | i << bits] = tree->nodes[rkey];
         }
         return true;
     }
@@ -152,7 +152,7 @@ static bool tree_add_value(struct tree *tree, int key, int bits, int value)
     bits -= TREE_FAST_BITS;
 
     while (bits > 1) {
-        i |= (key >> (bits - 1)) & 1;
+        i |= key >> bits - 1 & 1;
         if (tree->nodes[i].is_value)
             return false;
         if (!tree->nodes[i].value) {
@@ -175,11 +175,11 @@ static bool tree_add_value(struct tree *tree, int key, int bits, int value)
 static __forceinline int tree_get_value(inflate_state *state, const struct tree *tree, bool not_fast)
 {
     if (state->state.tree_idx == 0) {
-        int key = state->in.bits & ((1 << TREE_FAST_BITS) - 1);
+        int key = state->in.bits & (1 << TREE_FAST_BITS) - 1;
         while (not_fast && state->in.available < TREE_FAST_BITS && state->in.available < (int)tree->nodes[key].length) {
             if (!br_ensure(state, tree->nodes[key].length))
                 return RESULT_NOT_DONE;
-            key = state->in.bits & ((1 << TREE_FAST_BITS) - 1);
+            key = state->in.bits & (1 << TREE_FAST_BITS) - 1;
         }
         if (tree->nodes[key].is_value) {
             state->state.value = tree->nodes[key].value;
@@ -239,7 +239,7 @@ static bool setup_dynamic_tree(struct tree *tree, int *clens, int count)
 
     code = 0;
     for (i = 1; i < MAX_BITS; i++) {
-        code = (code + bl_count[i - 1]) << 1;
+        code = code + bl_count[i - 1] << 1;
         next_code[i] = code;
     }
 
@@ -392,7 +392,7 @@ int inflate_process(inflate_state *state, const void *data_in, size_t *avail_in,
             while (state->state.length > 0) {
                 if (*avail_out == 0)
                     return RESULT_NOT_DONE;
-                output(state, state->out.window[(state->out.offset - state->state.dist) & (sizeof(state->out.window) - 1)]);
+                output(state, state->out.window[state->out.offset - state->state.dist & sizeof(state->out.window) - 1]);
                 state->state.length--;
             }
             goto STEP_INFLATE_START;
@@ -476,7 +476,7 @@ int inflate_flush(inflate_state *state, unsigned char data_in[8])
     int count = 0;
     int keep = state->in.available & 0x7;
     while (count < state->in.available / 8) {
-        data_in[count] = (state->in.bits >> (count * 8 + keep)) & 0xFF;
+        data_in[count] = state->in.bits >> count * 8 + keep & 0xFF;
         count++;
     }
     state->in.available = keep;

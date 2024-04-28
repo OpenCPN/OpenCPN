@@ -1158,7 +1158,7 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
   // Create pointer-based array to accelerate access to wxImage's data
   unsigned char **data = new unsigned char *[h];
   data[0] = base_image.GetData();
-  for (i = 1; i < h; i++) data[i] = data[i - 1] + (3 * w);
+  for (i = 1; i < h; i++) data[i] = data[i - 1] + 3 * w;
 
   // Same for alpha channel
   unsigned char **alpha = NULL;
@@ -1284,72 +1284,72 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
 
           // d1,d2,d3,d4 are positive -- no need for abs()
           if (d1 < wxROTATE_EPSILON) {
-            unsigned char *p = data[y1] + (3 * x1);
-            *(dst++) = *(p++);
-            *(dst++) = *(p++);
-            *(dst++) = *p;
+            unsigned char *p = data[y1] + 3 * x1;
+            *dst++ = *p++;
+            *dst++ = *p++;
+            *dst++ = *p;
 
-            if (has_alpha) *(alpha_dst++) = *(alpha[y1] + x1);
+            if (has_alpha) *alpha_dst++ = *(alpha[y1] + x1);
           } else if (d2 < wxROTATE_EPSILON) {
-            unsigned char *p = data[y1] + (3 * x2);
-            *(dst++) = *(p++);
-            *(dst++) = *(p++);
-            *(dst++) = *p;
+            unsigned char *p = data[y1] + 3 * x2;
+            *dst++ = *p++;
+            *dst++ = *p++;
+            *dst++ = *p;
 
-            if (has_alpha) *(alpha_dst++) = *(alpha[y1] + x2);
+            if (has_alpha) *alpha_dst++ = *(alpha[y1] + x2);
           } else if (d3 < wxROTATE_EPSILON) {
-            unsigned char *p = data[y2] + (3 * x2);
-            *(dst++) = *(p++);
-            *(dst++) = *(p++);
-            *(dst++) = *p;
+            unsigned char *p = data[y2] + 3 * x2;
+            *dst++ = *p++;
+            *dst++ = *p++;
+            *dst++ = *p;
 
-            if (has_alpha) *(alpha_dst++) = *(alpha[y2] + x2);
+            if (has_alpha) *alpha_dst++ = *(alpha[y2] + x2);
           } else if (d4 < wxROTATE_EPSILON) {
-            unsigned char *p = data[y2] + (3 * x1);
-            *(dst++) = *(p++);
-            *(dst++) = *(p++);
-            *(dst++) = *p;
+            unsigned char *p = data[y2] + 3 * x1;
+            *dst++ = *p++;
+            *dst++ = *p++;
+            *dst++ = *p;
 
-            if (has_alpha) *(alpha_dst++) = *(alpha[y2] + x1);
+            if (has_alpha) *alpha_dst++ = *(alpha[y2] + x1);
           } else {
             // weights for the weighted average are proportional to the inverse
             // of the distance
-            unsigned char *v1 = data[y1] + (3 * x1);
-            unsigned char *v2 = data[y1] + (3 * x2);
-            unsigned char *v3 = data[y2] + (3 * x2);
-            unsigned char *v4 = data[y2] + (3 * x1);
+            unsigned char *v1 = data[y1] + 3 * x1;
+            unsigned char *v2 = data[y1] + 3 * x2;
+            unsigned char *v3 = data[y2] + 3 * x2;
+            unsigned char *v4 = data[y2] + 3 * x1;
 
             const double w1 = 1 / d1, w2 = 1 / d2, w3 = 1 / d3, w4 = 1 / d4;
 
             // GRG: Unrolled.
 
-            *(dst++) = (unsigned char)((w1 * *(v1++) + w2 * *(v2++) +
-                                        w3 * *(v3++) + w4 * *(v4++)) /
-                                       (w1 + w2 + w3 + w4));
-            *(dst++) = (unsigned char)((w1 * *(v1++) + w2 * *(v2++) +
-                                        w3 * *(v3++) + w4 * *(v4++)) /
-                                       (w1 + w2 + w3 + w4));
-            *(dst++) =
+            *dst++ = (unsigned char)((w1 * *v1++ + w2 * *v2++ +
+                                      w3 * *v3++ + w4 * *v4++) /
+                                     (w1 + w2 + w3 + w4));
+            *dst++ = (unsigned char)((w1 * *v1++ + w2 * *v2++ +
+                                      w3 * *v3++ + w4 * *v4++) /
+                                     (w1 + w2 + w3 + w4));
+            *dst++ =
                 (unsigned char)((w1 * *v1 + w2 * *v2 + w3 * *v3 + w4 * *v4) /
                                 (w1 + w2 + w3 + w4));
 
             if (has_alpha) {
-              v1 = alpha[y1] + (x1);
-              v2 = alpha[y1] + (x2);
-              v3 = alpha[y2] + (x2);
-              v4 = alpha[y2] + (x1);
+              v1 = alpha[y1] + x1;
+              v2 = alpha[y1] + x2;
+              v3 = alpha[y2] + x2;
+              v4 = alpha[y2] + x1;
 
-              *(alpha_dst++) =
+              *alpha_dst++ =
                   (unsigned char)((w1 * *v1 + w2 * *v2 + w3 * *v3 + w4 * *v4) /
                                   (w1 + w2 + w3 + w4));
             }
           }
         } else {
-          *(dst++) = blank_r;
-          *(dst++) = blank_g;
-          *(dst++) = blank_b;
+          *dst++ = blank_r;
+          *dst++ = blank_g;
+          *dst++ = blank_b;
 
-          if (has_alpha) *(alpha_dst++) = 0;
+          if (has_alpha) *alpha_dst++ = 0;
         }
       }
     }
@@ -1401,18 +1401,18 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
         //                                               closest integer
 
         if (0 <= xs && xs < w && 0 <= ys && ys < h) {
-          unsigned char *p = data[ys] + (3 * xs);
-          *(dst++) = *(p++);
-          *(dst++) = *(p++);
-          *(dst++) = *p;
+          unsigned char *p = data[ys] + 3 * xs;
+          *dst++ = *p++;
+          *dst++ = *p++;
+          *dst++ = *p;
 
-          if (has_alpha) *(alpha_dst++) = *(alpha[ys] + (xs));
+          if (has_alpha) *alpha_dst++ = *(alpha[ys] + xs);
         } else {
-          *(dst++) = blank_r;
-          *(dst++) = blank_g;
-          *(dst++) = blank_b;
+          *dst++ = blank_r;
+          *dst++ = blank_g;
+          *dst++ = blank_b;
 
-          if (has_alpha) *(alpha_dst++) = 255;
+          if (has_alpha) *alpha_dst++ = 255;
         }
       }
     }

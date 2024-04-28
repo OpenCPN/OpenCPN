@@ -102,7 +102,7 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
 
     // save FLOPS by just accumulating the FIFO changes
     m_meanAltitude += (m_Altitude - m_ArrayAltitude[0]) / ALTITUDE_RECORD_COUNT;
-    m_sum2Altitude += (m_Altitude*m_Altitude - m_ArrayAltitude[0]*m_ArrayAltitude[0]);
+    m_sum2Altitude += m_Altitude*m_Altitude - m_ArrayAltitude[0]*m_ArrayAltitude[0];
     
     for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
       m_ArrayAltitude[idx - 1] = m_ArrayAltitude[idx];      // shift FIFO

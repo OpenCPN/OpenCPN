@@ -44,7 +44,7 @@ bool rar_add_value(struct huffman_code *code, int value, int codebits, int lengt
 
     lastnode = 0;
     for (bitpos = length - 1; bitpos >= 0; bitpos--) {
-        bit = (codebits >> bitpos) & 1;
+        bit = codebits >> bitpos & 1;
         if (rar_is_leaf_node(code, lastnode)) {
             warn("Invalid data in bitstream"); /* prefix found */
             return false;
@@ -91,7 +91,7 @@ bool rar_create_code(struct huffman_code *code, uint8_t *lengths, int numsymbols
 
 static bool rar_make_table_rec(struct huffman_code *code, int node, int offset, int depth, int maxdepth)
 {
-    int currtablesize = 1 << (maxdepth - depth);
+    int currtablesize = 1 << maxdepth - depth;
 
     if (node < 0 || code->numentries <= node) {
         warn("Invalid data in bitstream"); /* invalid location to Huffman tree specified */

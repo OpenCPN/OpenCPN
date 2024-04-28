@@ -243,7 +243,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
     }
     else
     {
-        dc.SetFont((g_pFontTitle->GetChosenFont()));
+        dc.SetFont(g_pFontTitle->GetChosenFont());
         dc.SetTextForeground(GetColourSchemeFont(g_pFontTitle->GetColour()));
         GetGlobalColor(_T("DASHL"), &cl);
         dc.SetTextBackground(cl);
@@ -302,7 +302,7 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc) {
   wxColour cl;
   if (m_Properties)
   {
-      dc->SetFont((m_Properties->m_DataFont.GetChosenFont()));
+      dc->SetFont(m_Properties->m_DataFont.GetChosenFont());
       dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
   }
   else
@@ -402,12 +402,12 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc) {
   wxColour cl;
   if (m_Properties)
   {
-      dc->SetFont((m_Properties->m_DataFont.GetChosenFont()));
+      dc->SetFont(m_Properties->m_DataFont.GetChosenFont());
       dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
   }
   else
   {
-      dc->SetFont((g_pFontData->GetChosenFont()));
+      dc->SetFont(g_pFontData->GetChosenFont());
       dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
   }
   //GetGlobalColor(_T("DASHF"), &cl);
@@ -461,7 +461,7 @@ wxString toSDMM(int NEflag, double a) {
         c = 'S';
       }
 
-      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, (m % 1000), c);
+      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, m % 1000, c);
     } else if (NEflag == 2) {
       char c = 'E';
 
@@ -469,7 +469,7 @@ wxString toSDMM(int NEflag, double a) {
         d = -d;
         c = 'W';
       }
-      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, (m % 1000), c);
+      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, m % 1000, c);
     }
   }
   return s;

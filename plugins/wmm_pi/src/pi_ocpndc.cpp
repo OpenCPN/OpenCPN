@@ -77,7 +77,7 @@ extern GLint pi_circle_filled_shader_program;
 int NextPow2(int size) {
   int n = size - 1;  // compute dimensions needed as next larger power of 2
   int shift = 1;
-  while ((n + 1) & n) {
+  while (n + 1 & n) {
     n |= n >> shift;
     shift <<= 1;
   }
@@ -347,7 +347,7 @@ void piDrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
       float xb = xa + ldraw * cosf(angle);
       float yb = ya + ldraw * sinf(angle);
 
-      if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+      if (lrun + ldraw >= lpix)  // last segment is partial draw
       {
         xb = x2;
         yb = y2;
@@ -680,7 +680,7 @@ void pi_ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
           float xb = xa + ldraw * cosa;
           float yb = ya + ldraw * sina;
 
-          if ((lrun + ldraw) >= lpix)  // last segment is partial draw
+          if (lrun + ldraw >= lpix)  // last segment is partial draw
           {
             xb = x2;
             yb = y2;
@@ -1477,8 +1477,8 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glEnable(GL_POLYGON_SMOOTH);
       glBegin(GL_POLYGON);
       for (int i = 0; i < n; i++)
-        glVertex2f((points[i].x * scale) + xoffset,
-                   (points[i].y * scale) + yoffset);
+        glVertex2f(points[i].x * scale + xoffset,
+                   points[i].y * scale + yoffset);
       glEnd();
       glDisable(GL_POLYGON_SMOOTH);
     }
@@ -1487,8 +1487,8 @@ void pi_ocpnDC::DrawPolygon(int n, wxPoint points[], wxCoord xoffset,
       glEnable(GL_LINE_SMOOTH);
       glBegin(GL_LINE_LOOP);
       for (int i = 0; i < n; i++)
-        glVertex2f((points[i].x * scale) + xoffset,
-                   (points[i].y * scale) + yoffset);
+        glVertex2f(points[i].x * scale + xoffset,
+                   points[i].y * scale + yoffset);
       glEnd();
       glDisable(GL_LINE_SMOOTH);
     }
@@ -1540,7 +1540,7 @@ void APIENTRY pi_ocpnDCcombineCallback(GLdouble coords[3],
         weight[0] * vertex_data[0][i] + weight[1] * vertex_data[1][i];
   }
 
-  *dataOut = &(vertex->data[0]);
+  *dataOut = &vertex->data[0];
 }
 
 void APIENTRY ocpnDCvertexCallback(GLvoid *arg) {
@@ -1767,8 +1767,8 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
                            bool usemask) {
   wxBitmap bmp;
   if (x < 0 || y < 0) {
-    int dx = (x < 0 ? -x : 0);
-    int dy = (y < 0 ? -y : 0);
+    int dx = x < 0 ? -x : 0;
+    int dy = y < 0 ? -y : 0;
     int w = bitmap.GetWidth() - dx;
     int h = bitmap.GetHeight() - dy;
     /* picture is out of viewport */
@@ -1810,7 +1810,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
         for (int y = 0; y < h; y++)
           for (int x = 0; x < w; x++) {
             unsigned char r, g, b;
-            int off = (y * image.GetWidth() + x);
+            int off = y * image.GetWidth() + x;
             r = d[off * 3 + 0];
             g = d[off * 3 + 1];
             b = d[off * 3 + 2];
@@ -1820,7 +1820,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
             e[off * 4 + 2] = b;
 
             e[off * 4 + 3] =
-                a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+                a ? a[off] : r == mr && g == mg && b == mb ? 0 : 255;
             //                        e[off * 4 + 3] = ( ( r == mr ) && ( g ==
             //                        mg ) && ( b == mb ) ? 0 : 255 );
           }
@@ -1828,7 +1828,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
 
       glColor4f(1, 1, 1, 1);
       GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-      delete[](e);
+      delete[]e;
     } else {
       glRasterPos2i(x, y);
       glPixelZoom(1, -1); /* draw data from top to bottom */
@@ -1899,8 +1899,8 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
       wxImage image = bmp.ConvertToImage();
       if (x < 0 ||
           y < 0) {  // Allow Drawing text which is offset to start off screen
-        int dx = (x < 0 ? -x : 0);
-        int dy = (y < 0 ? -y : 0);
+        int dx = x < 0 ? -x : 0;
+        int dy = y < 0 ? -y : 0;
         w = bmp.GetWidth() - dx;
         h = bmp.GetHeight() - dy;
         /* picture is out of viewport */
@@ -1919,11 +1919,11 @@ void pi_ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y) {
         unsigned int b = m_textforegroundcolour.Blue();
         for (int i = 0; i < h; i++) {
           for (int j = 0; j < w; j++) {
-            unsigned int index = ((i * w) + j) * 4;
+            unsigned int index = (i * w + j) * 4;
             data[index] = r;
             data[index + 1] = g;
             data[index + 2] = b;
-            data[index + 3] = im[((i * w) + j) * 3];
+            data[index + 3] = im[(i * w + j) * 3];
           }
         }
       }
@@ -2012,8 +2012,8 @@ void pi_ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
 
   //  Sometimes GetTextExtent returns really wrong, uninitialized results.
   //  Dunno why....
-  if (w && (*w > 2000)) *w = 2000;
-  if (h && (*h > 500)) *h = 500;
+  if (w && *w > 2000) *w = 2000;
+  if (h && *h > 500) *h = 500;
 }
 
 void pi_ocpnDC::ResetBoundingBox() {

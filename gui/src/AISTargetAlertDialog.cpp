@@ -293,7 +293,7 @@ void AISTargetAlertDialog::RecalculateSize(void) {
   //    SetSize(esize);
 
   int height = m_pAlertTextCtl->GetInternalRepresentation()->GetHeight();
-  int adj_height = height + (GetCharHeight() * 6);
+  int adj_height = height + GetCharHeight() * 6;
   m_adj_height = wxMax(m_adj_height, adj_height);
 
   esize.y = wxMin(esize.y, m_adj_height);

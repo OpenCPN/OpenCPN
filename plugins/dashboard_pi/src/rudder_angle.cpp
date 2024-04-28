@@ -111,17 +111,17 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc) {
 
   double angle1 = deg2rad(215);  // 305-ANGLE_OFFSET
   double angle2 = deg2rad(-35);  // 55-ANGLE_OFFSET
-  wxCoord x1 = m_cx + (m_radius * cos(angle1));
-  wxCoord y1 = m_cy + (m_radius * sin(angle1));
-  wxCoord x2 = m_cx + (m_radius * cos(angle2));
-  wxCoord y2 = m_cy + (m_radius * sin(angle2));
+  wxCoord x1 = m_cx + m_radius * cos(angle1);
+  wxCoord y1 = m_cy + m_radius * sin(angle1);
+  wxCoord x2 = m_cx + m_radius * cos(angle2);
+  wxCoord y2 = m_cy + m_radius * sin(angle2);
   dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
   dc->DrawLine(x1, y1, x2, y2);
 }
 
 void DashboardInstrument_RudderAngle::DrawBackground(wxGCDC* dc) {
-  wxCoord x = m_cx - (m_radius * 0.3);
-  wxCoord y = m_cy - (m_radius * 1.1);
+  wxCoord x = m_cx - m_radius * 0.3;
+  wxCoord y = m_cy - m_radius * 1.1;
   wxColour cl;
   GetGlobalColor(_T("DASH1"), &cl);
   dc->SetBrush(cl);

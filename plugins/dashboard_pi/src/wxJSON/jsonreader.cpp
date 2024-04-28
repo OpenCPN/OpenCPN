@@ -806,7 +806,7 @@ wxJSONReader::StoreValue( int ch, const wxString& key, wxJSONValue& value, wxJSO
                 wxLogTrace( traceMask, _T("(%s) adding value to key:%s"),
                      __PRETTY_FUNCTION__, key.c_str());
                 parent[key] = value;
-                m_lastStored = &(parent[key]);
+                m_lastStored = &parent[key];
                 m_lastStored->SetLineNo( m_lineNo );
             }
         }
@@ -822,7 +822,7 @@ wxJSONReader::StoreValue( int ch, const wxString& key, wxJSONValue& value, wxJSO
             parent.Append( value );
             const wxJSONInternalArray* arr = parent.AsArray();
             wxJSON_ASSERT( arr );
-            m_lastStored = &(arr->Last());
+            m_lastStored = &arr->Last();
             m_lastStored->SetLineNo( m_lineNo );
         }
         else  {
@@ -1891,7 +1891,7 @@ wxJSONReader::ReadMemoryBuff( wxInputStream& is, wxJSONValue& val )
             ++errors;
         }
         else {
-            byte = (c1 * 16) + c2;
+            byte = c1 * 16 + c2;
             buff.AppendByte( byte );
         }
     }   // end while

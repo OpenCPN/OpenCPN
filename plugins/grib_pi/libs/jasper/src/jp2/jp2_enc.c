@@ -367,7 +367,7 @@ int jp2_write_codestream(jas_image_t *image, jas_stream_t *out, char *optstr)
     /* Output the JPEG-2000 code stream. */
 
     overhead = jas_stream_getrwcount(out);
-    sprintf(buf, "%s\n_jp2overhead=%lu\n", (optstr ? optstr : ""),
+    sprintf(buf, "%s\n_jp2overhead=%lu\n", optstr ? optstr : "",
       (unsigned long) overhead);
 
     if (jpc_encode(image, out, buf)) {
@@ -462,7 +462,7 @@ static uint_fast32_t jp2_gettypeasoc(int colorspace, int ctype)
     }
 
 done:
-    return (type << 16) | asoc;
+    return type << 16 | asoc;
 }
 
 static int clrspctojp2(jas_clrspc_t clrspc)

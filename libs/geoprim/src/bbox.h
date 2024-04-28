@@ -62,8 +62,8 @@ public:
   /* this routine is used very heavily, so this is a lightweight
      version for when we only care if the other box is out */
   virtual inline bool IntersectOut(const BoundingBox& other) const {
-    return (m_minx > other.m_maxx) || (m_maxx < other.m_minx) ||
-           (m_maxy < other.m_miny) || (m_miny > other.m_maxy);
+    return m_minx > other.m_maxx || m_maxx < other.m_minx ||
+           m_maxy < other.m_miny || m_miny > other.m_maxy;
   }
 
   bool LineIntersect(const wxPoint2DDouble& begin,
@@ -130,8 +130,8 @@ public:
     // allow -180 to 180 or 0 to 360
     if (!GetValid() || !other.GetValid()) return true;
 
-    if ((m_maxlat + 1e-6 < other.m_minlat) ||
-        (m_minlat - 1e-6 > other.m_maxlat))
+    if (m_maxlat + 1e-6 < other.m_minlat ||
+        m_minlat - 1e-6 > other.m_maxlat)
       return true;
 
     double minlon = m_minlon, maxlon = m_maxlon;
@@ -140,7 +140,7 @@ public:
     else if (m_minlon > other.m_maxlon)
       minlon -= 360, maxlon -= 360;
 
-    return (minlon - 1e-6 > other.m_maxlon) || (maxlon + 1e-6 < other.m_minlon);
+    return minlon - 1e-6 > other.m_maxlon || maxlon + 1e-6 < other.m_minlon;
   }
   bool IntersectOutGetBias(const LLBBox& other, double bias) const;
 

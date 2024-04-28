@@ -226,7 +226,7 @@ void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event)) {
 void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event)) {
   // Allow cancellation via ESC/Close button except if
   // only YES and NO are specified.
-  if ((m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL)) {
+  if ((m_style & wxYES_NO) != wxYES_NO || m_style & wxCANCEL) {
     SetReturnCode(wxID_CANCEL);
     EndModal(wxID_CANCEL);
   }
@@ -255,7 +255,7 @@ TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
   int ret = dlg->GetReturnCode();
 
   //  Not sure why we need this, maybe on wx3?
-  if (((style & wxYES_NO) == wxYES_NO) && (ret == wxID_OK)) ret = wxID_YES;
+  if ((style & wxYES_NO) == wxYES_NO && ret == wxID_OK) ret = wxID_YES;
 
   delete dlg;
   dlg = NULL;
@@ -372,7 +372,7 @@ void OCPN_TimedHTMLMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event)) {
 void OCPN_TimedHTMLMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event)) {
   // Allow cancellation via ESC/Close button except if
   // only YES and NO are specified.
-  if ((m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL)) {
+  if ((m_style & wxYES_NO) != wxYES_NO || m_style & wxCANCEL) {
     SetReturnCode(wxID_CANCEL);
     EndModal(wxID_CANCEL);
   }

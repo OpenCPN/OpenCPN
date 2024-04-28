@@ -168,10 +168,10 @@ int grib_pi::Init(void) {
     m_CursorDataxy = wxPoint(20, 170);
   }
 
-  return (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
-          WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
-          WANTS_CONFIG | WANTS_PREFERENCES | WANTS_PLUGIN_MESSAGING |
-          WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS | WANTS_NMEA_EVENTS);
+  return WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
+         WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
+         WANTS_CONFIG | WANTS_PREFERENCES | WANTS_PLUGIN_MESSAGING |
+         WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS | WANTS_NMEA_EVENTS;
 }
 
 bool grib_pi::DeInit(void) {
@@ -225,7 +225,7 @@ void grib_pi::SetDefaults(void) {}
 int grib_pi::GetToolBarToolCount(void) { return 1; }
 
 bool grib_pi::MouseEventHook(wxMouseEvent &event) {
-  if ((m_pGribCtrlBar && m_pGribCtrlBar->pReq_Dialog))
+  if (m_pGribCtrlBar && m_pGribCtrlBar->pReq_Dialog)
     return m_pGribCtrlBar->pReq_Dialog->MouseEventHook(event);
   return false;
 }
@@ -246,7 +246,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
 #ifdef __WXMSW__
-  int val = (m_GribIconsScaleFactor * 10.) - 10;
+  int val = m_GribIconsScaleFactor * 10. - 10;
   Pref->m_sIconSizeFactor->SetValue(val);
 #endif
 
@@ -291,7 +291,7 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
   m_bZoomToCenterAtInit = Pref->m_cZoomToCenterAtInit->GetValue();
 #ifdef __WXMSW__
   double val = Pref->m_sIconSizeFactor->GetValue();
-  m_GribIconsScaleFactor = 1. + (val / 10);
+  m_GribIconsScaleFactor = 1. + val / 10;
 #endif
 
   if (m_pGRIBOverlayFactory)

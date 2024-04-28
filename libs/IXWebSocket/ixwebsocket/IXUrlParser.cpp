@@ -229,7 +229,7 @@ namespace
             CurrentString++;
         }
 
-        bool bHasBracket = (*CurrentString == '[');
+        bool bHasBracket = *CurrentString == '[';
 
         // go ahead, read the host name
         LocalString = CurrentString;

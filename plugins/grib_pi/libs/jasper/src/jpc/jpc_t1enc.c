@@ -218,7 +218,7 @@ int jpc_enc_enccblk(jpc_enc_t *enc, jas_stream_t *out, jpc_enc_tcmpt_t *tcmpt, j
     assert(cblk->mqenc);
     jpc_mqenc_setctxs(cblk->mqenc, JPC_NUMCTXS, jpc_mqctxs);
 
-    cblk->numpasses = (cblk->numbps > 0) ? (3 * cblk->numbps - 2) : 0;
+    cblk->numpasses = cblk->numbps > 0 ? 3 * cblk->numbps - 2 : 0;
     if (cblk->numpasses > 0) {
         cblk->passes = jas_alloc2(cblk->numpasses, sizeof(jpc_enc_pass_t));
         assert(cblk->passes);
@@ -271,21 +271,21 @@ assert(jas_stream_tell(cblk->stream) == jas_stream_getrwcount(cblk->stream));
         vcausal = (tcmpt->cblksty & JPC_COX_VSC) != 0;
         segsym = (tcmpt->cblksty & JPC_COX_SEGSYM) != 0;
         if (pass->term) {
-            termmode = ((tcmpt->cblksty & JPC_COX_PTERM) ?
+            termmode = (tcmpt->cblksty & JPC_COX_PTERM ?
               JPC_MQENC_PTERM : JPC_MQENC_DEFTERM) + 1;
         } else {
             termmode = 0;
         }
         switch (passtype) {
         case JPC_SIGPASS:
-            ret = (pass->type == JPC_SEG_MQ) ? jpc_encsigpass(cblk->mqenc,
+            ret = pass->type == JPC_SEG_MQ ? jpc_encsigpass(cblk->mqenc,
               bitpos, band->orient, vcausal, cblk->flags,
               cblk->data, termmode, &pass->nmsedec) :
               jpc_encrawsigpass(bout, bitpos, vcausal, cblk->flags,
               cblk->data, termmode, &pass->nmsedec);
             break;
         case JPC_REFPASS:
-            ret = (pass->type == JPC_SEG_MQ) ? jpc_encrefpass(cblk->mqenc,
+            ret = pass->type == JPC_SEG_MQ ? jpc_encrefpass(cblk->mqenc,
               bitpos, vcausal, cblk->flags, cblk->data, termmode,
               &pass->nmsedec) : jpc_encrawrefpass(bout, bitpos,
               vcausal, cblk->flags, cblk->data, termmode,
@@ -339,7 +339,7 @@ assert(jas_stream_tell(cblk->stream) == jas_stream_getrwcount(cblk->stream));
           jpc_fixtodbl(band->synweight) *
           jpc_fixtodbl(band->synweight) *
           jpc_fixtodbl(band->absstepsize) * jpc_fixtodbl(band->absstepsize) *
-          ((double) (1 << bitpos)) * ((double)(1 << bitpos)) *
+          (double) (1 << bitpos) * (double)(1 << bitpos) *
           jpc_fixtodbl(pass->nmsedec);
         pass->cumwmsedec = pass->wmsedec;
         if (pass != cblk->passes) {
@@ -371,7 +371,7 @@ dump_passes(cblk->passes, cblk->numpasses, cblk);
                 ++termpass;
             }
             if (pass->type == JPC_SEG_MQ) {
-                t = (pass->mqencstate.lastbyte == 0xff) ? 1 : 0;
+                t = pass->mqencstate.lastbyte == 0xff ? 1 : 0;
                 if (pass->mqencstate.ctreg >= 5) {
                     adjust = 4 + t;
                 } else {
@@ -459,7 +459,7 @@ static int jpc_encsigpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int vcausa
     fstripestep = frowstep << 2;
     dstripestep = drowstep << 2;
 
-    one = 1 << (bitpos + JPC_NUMEXTRABITS);
+    one = 1 << bitpos + JPC_NUMEXTRABITS;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -504,7 +504,7 @@ static int jpc_encsigpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int vcausa
         jpc_mqenc_flush(mqenc, term - 1);
     }
 
-    return jpc_mqenc_error(mqenc) ? (-1) : 0;
+    return jpc_mqenc_error(mqenc) ? -1 : 0;
 }
 
 #define rawsigpass_step(fp, frowstep, dp, bitpos, one, nmsedec, out, vcausalflag) \
@@ -558,7 +558,7 @@ static int jpc_encrawsigpass(jpc_bitstream_t *out, int bitpos, int vcausalflag, 
     fstripestep = frowstep << 2;
     dstripestep = drowstep << 2;
 
-    one = 1 << (bitpos + JPC_NUMEXTRABITS);
+    one = 1 << bitpos + JPC_NUMEXTRABITS;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -661,7 +661,7 @@ int k;
     fstripestep = frowstep << 2;
     dstripestep = drowstep << 2;
 
-    one = 1 << (bitpos + JPC_NUMEXTRABITS);
+    one = 1 << bitpos + JPC_NUMEXTRABITS;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -706,7 +706,7 @@ int k;
         jpc_mqenc_flush(mqenc, term - 1);
     }
 
-    return jpc_mqenc_error(mqenc) ? (-1) : 0;
+    return jpc_mqenc_error(mqenc) ? -1 : 0;
 }
 
 #define rawrefpass_step(fp, dp, bitpos, one, nmsedec, out, vcausalflag) \
@@ -753,7 +753,7 @@ static int jpc_encrawrefpass(jpc_bitstream_t *out, int bitpos, int vcausalflag, 
     fstripestep = frowstep << 2;
     dstripestep = drowstep << 2;
 
-    one = 1 << (bitpos + JPC_NUMEXTRABITS);
+    one = 1 << bitpos + JPC_NUMEXTRABITS;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -861,7 +861,7 @@ static int jpc_encclnpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int vcausa
     fstripestep = frowstep << 2;
     dstripestep = drowstep << 2;
 
-    one = 1 << (bitpos + JPC_NUMEXTRABITS);
+    one = 1 << bitpos + JPC_NUMEXTRABITS;
 
     fstripestart = jas_matrix_getref(flags, 1, 1);
     dstripestart = jas_matrix_getref(data, 0, 0);
@@ -873,14 +873,14 @@ static int jpc_encclnpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int vcausa
         for (j = width; j > 0; --j, ++fvscanstart, ++dvscanstart) {
 
             fp = fvscanstart;
-            if (vscanlen >= 4 && !((*fp) & (JPC_SIG | JPC_VISIT |
-              JPC_OTHSIGMSK)) && (fp += frowstep, !((*fp) & (JPC_SIG |
-              JPC_VISIT | JPC_OTHSIGMSK))) && (fp += frowstep, !((*fp) &
+            if (vscanlen >= 4 && !(*fp & (JPC_SIG | JPC_VISIT |
+                                          JPC_OTHSIGMSK)) && (fp += frowstep, !(*fp & (JPC_SIG |
+              JPC_VISIT | JPC_OTHSIGMSK))) && (fp += frowstep, !(*fp &
               (JPC_SIG | JPC_VISIT | JPC_OTHSIGMSK))) && (fp += frowstep,
-              !((*fp) & (JPC_SIG | JPC_VISIT | JPC_OTHSIGMSK)))) {
+              !(*fp & (JPC_SIG | JPC_VISIT | JPC_OTHSIGMSK)))) {
                 dp = dvscanstart;
                 for (k = 0; k < vscanlen; ++k) {
-                    v = (abs(*dp) & one) ? 1 : 0;
+                    v = abs(*dp) & one ? 1 : 0;
                     if (v) {
                         break;
                     }
@@ -955,5 +955,5 @@ static int jpc_encclnpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int vcausa
         jpc_mqenc_flush(mqenc, term - 1);
     }
 
-    return jpc_mqenc_error(mqenc) ? (-1) : 0;
+    return jpc_mqenc_error(mqenc) ? -1 : 0;
 }

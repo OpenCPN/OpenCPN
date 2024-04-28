@@ -203,7 +203,7 @@ char *CPLStrdup( const char * pszString )
 
     }
 
-    return( pszReturn );
+    return pszReturn;
 }
 
 /************************************************************************/
@@ -394,7 +394,7 @@ const char *CPLReadLine( FILE * fp )
              && pszRLBuffer[nRLBufferSize-2] != 13
              && pszRLBuffer[nRLBufferSize-2] != 10 );
 
-    return( pszRLBuffer );
+    return pszRLBuffer;
 }
 
 /************************************************************************/
@@ -1069,7 +1069,7 @@ double CPLDMSToDec( const char *is )
     }
     /* postfix sign */
     if (*s && (p = (char *) strchr(sym, *s))) {
-        sign = (p - sym) >= 4 ? '-' : '+';
+        sign = p - sym >= 4 ? '-' : '+';
         ++s;
     }
     if (sign == '-')
@@ -1096,7 +1096,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
     static char szBuffer[50];
     const char  *pszHemisphere;
 
-    dfEpsilon = (0.5/3600.0) * pow(0.1,nPrecision);
+    dfEpsilon = 0.5/3600.0 * pow(0.1,nPrecision);
 
     dfABSAngle = ABS(dfAngle) + dfEpsilon;
 
@@ -1119,7 +1119,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
     sprintf( szFormat, "%%3dd%%2d\'%%.%df\"%s", nPrecision, pszHemisphere );
     sprintf( szBuffer, szFormat, nDegrees, nMinutes, dfSeconds );
 
-    return( szBuffer );
+    return szBuffer;
 }
 
 /************************************************************************/
@@ -1173,7 +1173,7 @@ double CPLPackedDMSToDec( double dfPacked )
 {
     double  dfDegrees, dfMinutes, dfSeconds, dfSign;
 
-    dfSign = ( dfPacked < 0.0 )? -1 : 1;
+    dfSign = dfPacked < 0.0? -1 : 1;
 
     dfSeconds = ABS( dfPacked );
     dfDegrees = floor(dfSeconds / 1000000.0);
@@ -1209,7 +1209,7 @@ double CPLDecToPackedDMS( double dfDec )
 {
     double  dfDegrees, dfMinutes, dfSeconds, dfSign;
 
-    dfSign = ( dfDec < 0.0 )? -1 : 1;
+    dfSign = dfDec < 0.0? -1 : 1;
 
     dfDec = ABS( dfDec );
     dfDegrees = floor( dfDec );

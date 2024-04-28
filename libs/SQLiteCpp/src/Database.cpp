@@ -134,7 +134,7 @@ bool Database::tableExists(const char* apTableName) const
     Statement query(*this, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?");
     query.bind(1, apTableName);
     (void)query.executeStep(); // Cannot return false, as the above query always return a result
-    return (1 == query.getColumn(0).getInt());
+    return 1 == query.getColumn(0).getInt();
 }
 
 // Get the rowid of the most recent successful INSERT into the database from the current connection.
@@ -325,7 +325,7 @@ Header Database::getHeaderInfo(const std::string& aFilename)
         throw SQLite::Exception("Invalid or encrypted SQLite header in file " + aFilename);
     }
 
-    h.pageSizeBytes = (buf[16] << 8) | buf[17];
+    h.pageSizeBytes = buf[16] << 8 | buf[17];
     h.fileFormatWriteVersion = buf[18];
     h.fileFormatReadVersion = buf[19];
     h.reservedSpaceBytes = buf[20];
@@ -334,88 +334,88 @@ Header Database::getHeaderInfo(const std::string& aFilename)
     h.leafPayloadFrac = buf[23];
 
     h.fileChangeCounter =
-        (buf[24] << 24) |
-        (buf[25] << 16) |
-        (buf[26] << 8)  |
-        (buf[27] << 0);
+        buf[24] << 24 |
+        buf[25] << 16 |
+        buf[26] << 8  |
+        buf[27] << 0;
 
     h.databaseSizePages =
-        (buf[28] << 24) |
-        (buf[29] << 16) |
-        (buf[30] << 8)  |
-        (buf[31] << 0);
+        buf[28] << 24 |
+        buf[29] << 16 |
+        buf[30] << 8  |
+        buf[31] << 0;
 
     h.firstFreelistTrunkPage =
-        (buf[32] << 24) |
-        (buf[33] << 16) |
-        (buf[34] << 8)  |
-        (buf[35] << 0);
+        buf[32] << 24 |
+        buf[33] << 16 |
+        buf[34] << 8  |
+        buf[35] << 0;
 
     h.totalFreelistPages =
-        (buf[36] << 24) |
-        (buf[37] << 16) |
-        (buf[38] << 8)  |
-        (buf[39] << 0);
+        buf[36] << 24 |
+        buf[37] << 16 |
+        buf[38] << 8  |
+        buf[39] << 0;
 
     h.schemaCookie =
-        (buf[40] << 24) |
-        (buf[41] << 16) |
-        (buf[42] << 8)  |
-        (buf[43] << 0);
+        buf[40] << 24 |
+        buf[41] << 16 |
+        buf[42] << 8  |
+        buf[43] << 0;
 
     h.schemaFormatNumber =
-        (buf[44] << 24) |
-        (buf[45] << 16) |
-        (buf[46] << 8)  |
-        (buf[47] << 0);
+        buf[44] << 24 |
+        buf[45] << 16 |
+        buf[46] << 8  |
+        buf[47] << 0;
 
     h.defaultPageCacheSizeBytes =
-        (buf[48] << 24) |
-        (buf[49] << 16) |
-        (buf[50] << 8)  |
-        (buf[51] << 0);
+        buf[48] << 24 |
+        buf[49] << 16 |
+        buf[50] << 8  |
+        buf[51] << 0;
 
     h.largestBTreePageNumber =
-        (buf[52] << 24) |
-        (buf[53] << 16) |
-        (buf[54] << 8)  |
-        (buf[55] << 0);
+        buf[52] << 24 |
+        buf[53] << 16 |
+        buf[54] << 8  |
+        buf[55] << 0;
 
     h.databaseTextEncoding =
-        (buf[56] << 24) |
-        (buf[57] << 16) |
-        (buf[58] << 8)  |
-        (buf[59] << 0);
+        buf[56] << 24 |
+        buf[57] << 16 |
+        buf[58] << 8  |
+        buf[59] << 0;
 
     h.userVersion =
-        (buf[60] << 24) |
-        (buf[61] << 16) |
-        (buf[62] << 8)  |
-        (buf[63] << 0);
+        buf[60] << 24 |
+        buf[61] << 16 |
+        buf[62] << 8  |
+        buf[63] << 0;
 
     h.incrementalVaccumMode =
-        (buf[64] << 24) |
-        (buf[65] << 16) |
-        (buf[66] << 8)  |
-        (buf[67] << 0);
+        buf[64] << 24 |
+        buf[65] << 16 |
+        buf[66] << 8  |
+        buf[67] << 0;
 
     h.applicationId =
-        (buf[68] << 24) |
-        (buf[69] << 16) |
-        (buf[70] << 8)  |
-        (buf[71] << 0);
+        buf[68] << 24 |
+        buf[69] << 16 |
+        buf[70] << 8  |
+        buf[71] << 0;
 
     h.versionValidFor =
-        (buf[92] << 24) |
-        (buf[93] << 16) |
-        (buf[94] << 8)  |
-        (buf[95] << 0);
+        buf[92] << 24 |
+        buf[93] << 16 |
+        buf[94] << 8  |
+        buf[95] << 0;
 
     h.sqliteVersion =
-        (buf[96] << 24) |
-        (buf[97] << 16) |
-        (buf[98] << 8)  |
-        (buf[99] << 0);
+        buf[96] << 24 |
+        buf[97] << 16 |
+        buf[98] << 8  |
+        buf[99] << 0;
 
     return h;
 }
@@ -426,8 +426,8 @@ void Database::backup(const char* apFilename, BackupType aType)
     Database otherDatabase(apFilename, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
     // For a 'Save' operation, data is copied from the current Database to the other. A 'Load' is the reverse.
-    Database& src = (aType == BackupType::Save ? *this : otherDatabase);
-    Database& dest = (aType == BackupType::Save ? otherDatabase : *this);
+    Database& src = aType == BackupType::Save ? *this : otherDatabase;
+    Database& dest = aType == BackupType::Save ? otherDatabase : *this;
 
     // Set up the backup procedure to copy between the "main" databases of each connection
     Backup bkp(dest, src);

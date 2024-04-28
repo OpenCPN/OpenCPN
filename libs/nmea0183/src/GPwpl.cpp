@@ -84,13 +84,13 @@ bool GPWPL::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 6 ) == NTrue )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    Position.Parse( 1, 2, 3, 4, sentence );
    To = sentence.Field( 5 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool GPWPL::Write( SENTENCE& sentence )
@@ -115,7 +115,7 @@ bool GPWPL::Write( SENTENCE& sentence )
    temp_string.Printf(_T("%c%c"), CARRIAGE_RETURN, LINE_FEED );
    sentence += temp_string;
 
-   return( TRUE );
+   return TRUE;
 }
 
 const GPWPL& GPWPL::operator = ( const GPWPL& source )
@@ -124,5 +124,5 @@ const GPWPL& GPWPL::operator = ( const GPWPL& source )
    Position = source.Position;
    To       = source.To;
 
-   return( *this );
+   return*this;
 }

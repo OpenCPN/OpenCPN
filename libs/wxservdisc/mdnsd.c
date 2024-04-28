@@ -63,7 +63,7 @@ int mdnsd_gettimeofday(struct timeval *tv/*in*/, struct timezone2 *tz/*in*/)
     tmpres /= 10;  /*convert into microseconds*/
     tmpres -= DELTA_EPOCH_IN_MICROSECS;
     tv->tv_sec = (__int32)(tmpres*0.000001);
-    tv->tv_usec =(tmpres%1000000);
+    tv->tv_usec =tmpres%1000000;
 
 
     if(!tz)
@@ -71,8 +71,8 @@ int mdnsd_gettimeofday(struct timeval *tv/*in*/, struct timezone2 *tz/*in*/)
 
     //_tzset(),don't work properly, so we use GetTimeZoneInformation
     rez=GetTimeZoneInformation(&tz_winapi);
-    tz->tz_dsttime=(rez==2)?TRUE:FALSE;
-    tz->tz_minuteswest = tz_winapi.Bias + ((rez==2)?tz_winapi.DaylightBias:0);
+    tz->tz_dsttime=rez==2?TRUE:FALSE;
+    tz->tz_minuteswest = tz_winapi.Bias + (rez==2?tz_winapi.DaylightBias:0);
 
   return 0;
 }
@@ -144,9 +144,9 @@ int _namehash(const char *s)
 
     while (*name)
     { /* do some fancy bitwanking on the string */
-        h = (h << 4) + (unsigned long)(*name++);
-        if ((g = (h & 0xF0000000UL))!=0)
-            h ^= (g >> 24);
+        h = (h << 4) + (unsigned long)*name++;
+        if ((g = h & 0xF0000000UL)!=0)
+            h ^= g >> 24;
         h &= ~g;
     }
 
@@ -206,7 +206,7 @@ int _tvdiff(struct timeval old, struct timeval new)
 {
     int udiff = 0;
     if(old.tv_sec != new.tv_sec) udiff = (new.tv_sec - old.tv_sec) * 1000000;
-    return (new.tv_usec - old.tv_usec) + udiff;
+    return new.tv_usec - old.tv_usec + udiff;
 }
 
 // make sure not already on the list, then insert
@@ -248,7 +248,7 @@ void _r_send(mdnsd d, mdnsdr r)
     }
     // set d->pause.tv_usec to random 20-120 msec
     d->pause.tv_sec = d->now.tv_sec;
-    d->pause.tv_usec = d->now.tv_usec + (d->now.tv_usec % 100) + 20;
+    d->pause.tv_usec = d->now.tv_usec + d->now.tv_usec % 100 + 20;
     _r_push(&d->a_pause,r);
 }
 
@@ -380,7 +380,7 @@ void _cache(mdnsd d, struct resource *r)
     bzero(c,sizeof(struct cached));
     c->rr.name = strdup(r->name);
     c->rr.type = r->type;
-    c->rr.ttl = d->now.tv_sec + (r->ttl / 2) + 8; // XXX hack for now, BAD SPEC, start retrying just after half-waypoint, then expire
+    c->rr.ttl = d->now.tv_sec + r->ttl / 2 + 8; // XXX hack for now, BAD SPEC, start retrying just after half-waypoint, then expire
     c->rr.rdlen = r->rdlength;
     c->rr.rdata = (unsigned char *)malloc(r->rdlength);
     memcpy(c->rr.rdata,r->rdata,r->rdlength);

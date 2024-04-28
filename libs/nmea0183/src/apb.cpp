@@ -111,7 +111,7 @@ bool APB::Parse( const SENTENCE& sentence )
    if ( check == NTrue )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    /*
@@ -133,7 +133,7 @@ bool APB::Parse( const SENTENCE& sentence )
    HeadingToSteer                           = sentence.Double( 13 );
    HeadingToSteerUnits                      = sentence.Field( 14 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool APB::Write( SENTENCE& sentence )
@@ -173,7 +173,7 @@ bool APB::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const APB& APB::operator = ( const APB& source )
@@ -195,5 +195,5 @@ const APB& APB::operator = ( const APB& source )
    HeadingToSteer                           = source.HeadingToSteer;
    HeadingToSteerUnits                      = source.HeadingToSteerUnits;
 
-   return( *this );
+   return*this;
 }

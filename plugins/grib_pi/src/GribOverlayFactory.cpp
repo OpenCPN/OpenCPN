@@ -60,15 +60,15 @@ enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 static GRIB_OVERLAP Intersect(PlugIn_ViewPort *vp, double lat_min,
                               double lat_max, double lon_min, double lon_max,
                               double Marge) {
-  if (((vp->lon_min - Marge) > (lon_max + Marge)) ||
-      ((vp->lon_max + Marge) < (lon_min - Marge)) ||
-      ((vp->lat_max + Marge) < (lat_min - Marge)) ||
-      ((vp->lat_min - Marge) > (lat_max + Marge)))
+  if (vp->lon_min - Marge > lon_max + Marge ||
+      vp->lon_max + Marge < lon_min - Marge ||
+      vp->lat_max + Marge < lat_min - Marge ||
+      vp->lat_min - Marge > lat_max + Marge)
     return _GOUT;
 
   // Check if other.bbox is inside this bbox
-  if ((vp->lon_min <= lon_min) && (vp->lon_max >= lon_max) &&
-      (vp->lat_max >= lat_max) && (vp->lat_min <= lat_min))
+  if (vp->lon_min <= lon_min && vp->lon_max >= lon_max &&
+      vp->lat_max >= lat_max && vp->lat_min <= lat_min)
     return _GIN;
 
   // Boundingboxes intersect
@@ -179,19 +179,19 @@ void LineBuffer::pushLine(float x0, float y0, float x1, float y1) {
 }
 
 void LineBuffer::pushPetiteBarbule(int b, int l) {
-  int tilt = (l * 100) / 250;
+  int tilt = l * 100 / 250;
   pushLine(b, 0, b + tilt, -l);
 }
 
 void LineBuffer::pushGrandeBarbule(int b, int l) {
-  int tilt = (l * 100) / 250;
+  int tilt = l * 100 / 250;
   pushLine(b, 0, b + tilt, -l);
 }
 
 void LineBuffer::pushTriangle(int b, int l) {
-  int dim = (l * 100) / 250;
+  int dim = l * 100 / 250;
   pushLine(b, 0, b + dim, -l);
-  pushLine(b + (dim * 2), 0, b + dim, -l);
+  pushLine(b + dim * 2, 0, b + dim, -l);
 }
 
 void LineBuffer::Finalize() {
@@ -399,7 +399,7 @@ void GRIBOverlayFactory::SetMessageFont() {
   fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
 #else
   fo = *OCPNGetFont(_("Dialog"), 10);
-  fo.SetPointSize((fo.GetPointSize()  * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor()));
+  fo.SetPointSize(fo.GetPointSize()  * g_ContentScaleFactor / OCPN_GetWinDIPScaleFactor());
 #endif
   if (m_Font_Message)
     delete m_Font_Message;
@@ -548,7 +548,7 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy,
 
 bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
   if (!m_pGribTimelineRecordSet) {
-    DrawMessageWindow((m_Message), vp->pix_width, vp->pix_height, m_Font_Message);
+    DrawMessageWindow(m_Message, vp->pix_width, vp->pix_height, m_Font_Message);
     return false;
   }
 
@@ -661,8 +661,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
 
 // isClearSky checks that there is no rain or clouds at all.
 static inline bool isClearSky(int settings, double v) {
-  return ((settings == GribOverlaySettings::PRECIPITATION) ||
-          (settings == GribOverlaySettings::CLOUD)) &&
+  return (settings == GribOverlaySettings::PRECIPITATION ||
+          settings == GribOverlaySettings::CLOUD) &&
          v < 0.01;
 }
 
@@ -680,7 +680,7 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in,
          settings == GribOverlaySettings::CLOUD) &&
         val_in < 0.01)
       a = 0;
-    if ((settings == GribOverlaySettings::COMP_REFL) &&
+    if (settings == GribOverlaySettings::COMP_REFL &&
         val_in < 5)
       a = 0;
     
@@ -709,8 +709,8 @@ bool GRIBOverlayFactory::CreateGribGLTexture(GribOverlay *pGO, int settings,
     tw = pGR->getNi();
     th = pGR->getNj();
     double dw, dh;
-    dw = (tw > 1022) ? 1022. / tw : 1.;
-    dh = (th > 1022) ? 1022. / th : 1.;
+    dw = tw > 1022 ? 1022. / tw : 1.;
+    dh = th > 1022 ? 1022. / th : 1.;
     delta = wxMin(dw, dh);
     th *= delta;
     tw *= delta;
@@ -930,9 +930,9 @@ wxImage GRIBOverlayFactory::CreateGribImage(int settings, GribRecord *pGR,
   gr_image.InitAlpha();
 
   wxPoint p;
-  for (int ipix = 0; ipix < (width - grib_pixel_size + 1);
+  for (int ipix = 0; ipix < width - grib_pixel_size + 1;
        ipix += grib_pixel_size) {
-    for (int jpix = 0; jpix < (height - grib_pixel_size + 1);
+    for (int jpix = 0; jpix < height - grib_pixel_size + 1;
          jpix += grib_pixel_size) {
       double lat, lon;
       p.x = ipix + porg.x;
@@ -1104,17 +1104,17 @@ static void InitColor(ColorMap *map, size_t maplen) {
 }
 
 void GRIBOverlayFactory::InitColorsTable() {
-  InitColor(CurrentMap, (sizeof CurrentMap) / (sizeof *CurrentMap));
-  InitColor(GenericMap, (sizeof GenericMap) / (sizeof *GenericMap));
-  InitColor(WindMap, (sizeof WindMap) / (sizeof *WindMap));
-  InitColor(AirTempMap, (sizeof AirTempMap) / (sizeof *AirTempMap));
-  InitColor(SeaTempMap, (sizeof SeaTempMap) / (sizeof *SeaTempMap));
+  InitColor(CurrentMap, sizeof CurrentMap / sizeof *CurrentMap);
+  InitColor(GenericMap, sizeof GenericMap / sizeof *GenericMap);
+  InitColor(WindMap, sizeof WindMap / sizeof *WindMap);
+  InitColor(AirTempMap, sizeof AirTempMap / sizeof *AirTempMap);
+  InitColor(SeaTempMap, sizeof SeaTempMap / sizeof *SeaTempMap);
   InitColor(PrecipitationMap,
-            (sizeof PrecipitationMap) / (sizeof *PrecipitationMap));
-  InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
-  InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
-  InitColor(REFCMap, (sizeof REFCMap) / (sizeof *REFCMap));
-  InitColor(WindyMap, (sizeof WindyMap) / (sizeof *WindyMap));
+            sizeof PrecipitationMap / sizeof *PrecipitationMap);
+  InitColor(CloudMap, sizeof CloudMap / sizeof *CloudMap);
+  InitColor(CAPEMap, sizeof CAPEMap / sizeof *CAPEMap);
+  InitColor(REFCMap, sizeof REFCMap / sizeof *REFCMap);
+  InitColor(WindyMap, sizeof WindyMap / sizeof *WindyMap);
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
@@ -1133,43 +1133,43 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
   switch (colormap_index) {
     case CURRENT_GRAPHIC_INDEX:
       map = CurrentMap;
-      maplen = (sizeof CurrentMap) / (sizeof *CurrentMap);
+      maplen = sizeof CurrentMap / sizeof *CurrentMap;
       break;
     case GENERIC_GRAPHIC_INDEX:
       map = GenericMap;
-      maplen = (sizeof GenericMap) / (sizeof *GenericMap);
+      maplen = sizeof GenericMap / sizeof *GenericMap;
       break;
     case WIND_GRAPHIC_INDEX:
       map = WindMap;
-      maplen = (sizeof WindMap) / (sizeof *WindMap);
+      maplen = sizeof WindMap / sizeof *WindMap;
       break;
     case AIRTEMP__GRAPHIC_INDEX:
       map = AirTempMap;
-      maplen = (sizeof AirTempMap) / (sizeof *AirTempMap);
+      maplen = sizeof AirTempMap / sizeof *AirTempMap;
       break;
     case SEATEMP_GRAPHIC_INDEX:
       map = SeaTempMap;
-      maplen = (sizeof SeaTempMap) / (sizeof *SeaTempMap);
+      maplen = sizeof SeaTempMap / sizeof *SeaTempMap;
       break;
     case PRECIPITATION_GRAPHIC_INDEX:
       map = PrecipitationMap;
-      maplen = (sizeof PrecipitationMap) / (sizeof *PrecipitationMap);
+      maplen = sizeof PrecipitationMap / sizeof *PrecipitationMap;
       break;
     case CLOUD_GRAPHIC_INDEX:
       map = CloudMap;
-      maplen = (sizeof CloudMap) / (sizeof *CloudMap);
+      maplen = sizeof CloudMap / sizeof *CloudMap;
       break;
     case CAPE_GRAPHIC_INDEX:
       map = CAPEMap;
-      maplen = (sizeof CAPEMap) / (sizeof *CAPEMap);
+      maplen = sizeof CAPEMap / sizeof *CAPEMap;
       break;
     case REFC_GRAPHIC_INDEX:
       map = REFCMap;
-      maplen = (sizeof REFCMap) / (sizeof *REFCMap);
+      maplen = sizeof REFCMap / sizeof *REFCMap;
       break;
     case WINDY_GRAPHIC_INDEX:
       map = WindyMap;
-      maplen = (sizeof WindyMap) / (sizeof *WindyMap);
+      maplen = sizeof WindyMap / sizeof *WindyMap;
       break;
     default:
       return;
@@ -1272,7 +1272,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings,
   int xd = 0;
   int yd = 0;
   //    mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h+2, -.25);
-  mdc.DrawRectangle(xd, yd, w + (label_offset * 2), h + 2);
+  mdc.DrawRectangle(xd, yd, w + label_offset * 2, h + 2);
   mdc.DrawText(labels, label_offset + xd, yd + 1);
 
   mdc.SelectObject(wxNullBitmap);
@@ -1331,15 +1331,15 @@ void GRIBOverlayFactory::RenderGribBarbedArrows(int settings, GribRecord **pGR,
 
     int arrowSize = 16;
 
-    for (int i = 0; i < m_ParentSize.GetWidth(); i += (space + arrowSize)) {
-      for (int j = 0; j < m_ParentSize.GetHeight(); j += (space + arrowSize)) {
+    for (int i = 0; i < m_ParentSize.GetWidth(); i += space + arrowSize) {
+      for (int j = 0; j < m_ParentSize.GetHeight(); j += space + arrowSize) {
         double lat, lon;
         GetCanvasLLPix(vp, wxPoint(i, j), &lat, &lon);
 
         double vkn, ang;
         if (GribRecord::getInterpolatedValues(vkn, ang, pGRX, pGRY, lon, lat))
           drawWindArrowWithBarbs(settings, i, j, vkn * 3.6 / 1.852,
-                                 (ang - 90) * M_PI / 180, (lat < 0.), colour,
+                                 (ang - 90) * M_PI / 180, lat < 0., colour,
                                  vp->rotation);
       }
     }
@@ -1399,7 +1399,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows(int settings, GribRecord **pGR,
           vkn = sqrt(vx * vx + vy * vy);
           ang = atan2(vy, -vx);
           drawWindArrowWithBarbs(settings, p.x, p.y, vkn * 3.6 / 1.852, ang,
-                                 (lat < 0.), colour, vp->rotation);
+                                 lat < 0., colour, vp->rotation);
         }
       }
     }
@@ -1451,13 +1451,13 @@ void GRIBOverlayFactory::RenderGribIsobar(int settings, GribRecord **pGR,
     double max = m_Settings.GetMax(settings);
 
     /* convert min and max to units being used */
-    double factor = (settings == GribOverlaySettings::PRESSURE &&
-                     m_Settings.Settings[settings].m_Units == 2)
+    double factor = settings == GribOverlaySettings::PRESSURE &&
+                    m_Settings.Settings[settings].m_Units == 2
                         ? 0.03
                         : 1.;  // divide spacing by 1/33 for PRESURRE & inHG
 
     for (double press = min; press <= max;
-         press += (m_Settings.Settings[settings].m_iIsoBarSpacing * factor)) {
+         press += m_Settings.Settings[settings].m_iIsoBarSpacing * factor) {
       if (progressdialog)
         progressdialog->Update(press - min);
       else {
@@ -1600,8 +1600,8 @@ void GRIBOverlayFactory::RenderGribDirectionArrows(int settings,
     // Set spacing between arrows
     int space = adjustSpacing(m_Settings.Settings[settings].m_iDirArrSpacing);
 
-    for (int i = 0; i < m_ParentSize.GetWidth(); i += (space + arrowSize)) {
-      for (int j = 0; j < m_ParentSize.GetHeight(); j += (space + arrowSize)) {
+    for (int i = 0; i < m_ParentSize.GetWidth(); i += space + arrowSize) {
+      for (int j = 0; j < m_ParentSize.GetHeight(); j += space + arrowSize) {
         double lat, lon, sh, dir;
         double scale = 1.0;
         GetCanvasLLPix(vp, wxPoint(i, j), &lat, &lon);
@@ -1694,7 +1694,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows(int settings,
                                                      lat, false))
                 continue;
 
-              wdh = (8 / 2.5 * sh) + 0.5;
+              wdh = 8 / 2.5 * sh + 0.5;
               scale = wxMax(1.0, sh);  // Size depends on magnitude.
             }
 
@@ -1808,13 +1808,13 @@ void GRIBOverlayFactory::RenderGribOverlayMap(int settings, GribRecord **pGR,
             //    Create a Bitmap
             pGO->m_pDCBitmap = new wxBitmap(bl_image);
             wxMask *gr_mask =
-                new wxMask(*(pGO->m_pDCBitmap), wxColour(0, 0, 0));
+                new wxMask(*pGO->m_pDCBitmap, wxColour(0, 0, 0));
             pGO->m_pDCBitmap->SetMask(gr_mask);
           }
         }
 
         if (pGO->m_pDCBitmap)
-          m_pdc->DrawBitmap(*(pGO->m_pDCBitmap), porg.x, porg.y, true);
+          m_pdc->DrawBitmap(*pGO->m_pDCBitmap, porg.x, porg.y, true);
         else
           m_Message_Hiden.IsEmpty()
               ? m_Message_Hiden
@@ -1881,9 +1881,9 @@ void GRIBOverlayFactory::RenderGribNumbers(int settings, GribRecord **pGR,
     }
 
     for (int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth());
-         i += (space + wstring)) {
+         i += space + wstring) {
       for (int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight());
-           j += (space + wstring)) {
+           j += space + wstring) {
         double lat, lon, val;
         GetCanvasLLPix(vp, wxPoint(i, j), &lat, &lon);
         val = pGRA->getInterpolatedValue(lon, lat, true);
@@ -2326,7 +2326,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
         float cf[4];
         cf[0] = ci[0] / 256.;
         cf[1] = ci[1] / 256.;
-        cf[2] = ((unsigned char)(ci[2] + 240 - alpha / 2)) / 256.;
+        cf[2] = (unsigned char)(ci[2] + 240 - alpha / 2) / 256.;
         cf[3] = alpha / 256.;
 
         if (lp && fabsf(lp[0] - sp[0]) < vp->pix_width) {
@@ -2452,7 +2452,7 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
     int yp = y - (ScaleBare_H + GetChartbarHeight() + h);
 
     int label_offset = 10;
-    int wdraw = w + (label_offset * 2);
+    int wdraw = w + label_offset * 2;
     dc.DrawRectangle(0, yp, wdraw, h);
     dc.DrawLabel(msg, wxRect(label_offset, yp, wdraw, h),
                  wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
@@ -2467,7 +2467,7 @@ void GRIBOverlayFactory::DrawMessageWindow(wxString msg, int x, int y,
       h += 2;
 
       int label_offset = 10;
-      int wdraw = w + (label_offset * 2);
+      int wdraw = w + label_offset * 2;
       wdraw *= g_ContentScaleFactor;
       h *= g_ContentScaleFactor;
       int yp = y - (ScaleBare_H + GetChartbarHeight() + h);
@@ -2806,7 +2806,7 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
   // certainly not for all projections, and may result in
   // more tiles than actually needed in some cases
 
-  double pw = vp->view_scale_ppm * 1e6 / (pow(2, fabs(vp->clat) / 25));
+  double pw = vp->view_scale_ppm * 1e6 / pow(2, fabs(vp->clat) / 25);
   if (pw < 20)  // minimum 20 pixel to avoid too many tiles
     pw = 20;
 
@@ -2854,8 +2854,8 @@ void GRIBOverlayFactory::DrawGLTexture(GribOverlay *pGO, GribRecord *pGR,
       }
 
       lva[i][j][0] =
-          (((lon - lon_min) / lonstep - repeat + 1.5) / tw) * potNormX;
-      lva[i][j][1] = (((lat - lat_min) / latstep + 1.5) / th) * potNormY;
+          ((lon - lon_min) / lonstep - repeat + 1.5) / tw * potNormX;
+      lva[i][j][1] = ((lat - lat_min) / latstep + 1.5) / th * potNormY;
 
       if (pGR->getDj() < 0) lva[i][j][1] = 1 - lva[i][j][1];
 

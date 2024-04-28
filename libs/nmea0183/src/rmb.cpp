@@ -109,7 +109,7 @@ bool RMB::Parse( const SENTENCE& sentence )
    if ( check == NTrue )
    {
        SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    // If sentence is at least Version 2.3, check the extra FAA mode indicator field
@@ -117,7 +117,7 @@ bool RMB::Parse( const SENTENCE& sentence )
    if (nFields >= 14) {
      wxString mode_string = sentence.Field(14);
      if (!mode_string.StartsWith(_T("*"))) {
-       if ((mode_string == _T("N")) || (mode_string == _T("S")))     // Not valid, or simulator mode
+       if (mode_string == _T("N") || mode_string == _T("S"))     // Not valid, or simulator mode
          mode_valid = false;
      }
    }
@@ -140,7 +140,7 @@ bool RMB::Parse( const SENTENCE& sentence )
    DestinationClosingVelocityKnots = sentence.Double( 12 );
    IsArrivalCircleEntered          = sentence.Boolean( 13 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool RMB::Write( SENTENCE& sentence )
@@ -173,7 +173,7 @@ bool RMB::Write( SENTENCE& sentence )
 
 //   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( 14 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 const RMB& RMB::operator = ( const RMB& source )
@@ -191,5 +191,5 @@ const RMB& RMB::operator = ( const RMB& source )
    IsArrivalCircleEntered          = source.IsArrivalCircleEntered;
    FAAModeIndicator                = source.FAAModeIndicator;
 
-  return( *this );
+  return*this;
 }

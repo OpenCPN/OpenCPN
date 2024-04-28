@@ -100,14 +100,14 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
         if (hi_precision)
           if (NEflag == 1)
             s.Printf(_T ( "%02d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
-                     (m % 10000), c);
+                     m % 10000, c);
           else
             s.Printf(_T ( "%03d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
-                     (m % 10000), c);
+                     m % 10000, c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
+          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, m % 10, c);
         else
-          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10), c);
+          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, m % 10, c);
       }
       break;
     case 1:
@@ -123,7 +123,7 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       m = (long)((a - (double)d) * 60);
       mpy = 10.0;
       if (hi_precision) mpy = mpy * 100;
-      long sec = (long)((a - (double)d - (((double)m) / 60)) * 3600 * mpy);
+      long sec = (long)((a - (double)d - (double)m / 60) * 3600 * mpy);
 
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
@@ -244,7 +244,7 @@ double toUsrTemp(double cel_temp, int unit) {
       ret = cel_temp;
       break;
     case TEMPERATURE_F:  // Fahrenheit
-      ret = (cel_temp * 9.0 / 5.0) + 32;
+      ret = cel_temp * 9.0 / 5.0 + 32;
       break;
     case TEMPERATURE_K:
       ret = cel_temp + 273.15;
@@ -362,7 +362,7 @@ wxString FormatDistanceAdaptive(double distance) {
   double usrDistance = toUsrDistance(distance, unit);
   if (usrDistance < 0.1 &&
       (unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI)) {
-    unit = (unit == DISTANCE_MI) ? DISTANCE_FT : DISTANCE_M;
+    unit = unit == DISTANCE_MI ? DISTANCE_FT : DISTANCE_M;
     usrDistance = toUsrDistance(distance, unit);
   }
   wxString format;
@@ -512,16 +512,16 @@ double vGetLengthOfNormal(pVector2D a, pVector2D b, pVector2D n) {
   //
   *n = vNormal;
 
-  return (vVectorMagnitude(&vNormal));
+  return vVectorMagnitude(&vNormal);
 }
 
 double vDotProduct(pVector2D v0, pVector2D v1) {
   double dotprod;
 
   dotprod =
-      (v0 == NULL || v1 == NULL) ? 0.0 : (v0->x * v1->x) + (v0->y * v1->y);
+      v0 == NULL || v1 == NULL ? 0.0 : v0->x * v1->x + v0->y * v1->y;
 
-  return (dotprod);
+  return dotprod;
 }
 
 pVector2D vAddVectors(pVector2D v0, pVector2D v1, pVector2D v) {
@@ -531,7 +531,7 @@ pVector2D vAddVectors(pVector2D v0, pVector2D v1, pVector2D v) {
     v->x = v0->x + v1->x;
     v->y = v0->y + v1->y;
   }
-  return (v);
+  return v;
 }
 
 pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v) {
@@ -541,7 +541,7 @@ pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v) {
     v->x = v0->x - v1->x;
     v->y = v0->y - v1->y;
   }
-  return (v);
+  return v;
 }
 
 double vVectorSquared(pVector2D v0) {
@@ -550,8 +550,8 @@ double vVectorSquared(pVector2D v0) {
   if (v0 == NULL)
     dS = 0.0;
   else
-    dS = ((v0->x * v0->x) + (v0->y * v0->y));
-  return (dS);
+    dS = v0->x * v0->x + v0->y * v0->y;
+  return dS;
 }
 
 double vVectorMagnitude(pVector2D v0) {
@@ -561,7 +561,7 @@ double vVectorMagnitude(pVector2D v0) {
     dMagnitude = 0.0;
   else
     dMagnitude = sqrt(vVectorSquared(v0));
-  return (dMagnitude);
+  return dMagnitude;
 }
 
 
@@ -705,11 +705,11 @@ wxString GpxDocument::GetUUID(void) {
 
   /* Set the two most significant bits (bits 6 and 7) of the
    * clock_seq_hi_and_rsv to zero and one, respectively. */
-  uuid.clock_seq_hi_and_rsv = (uuid.clock_seq_hi_and_rsv & 0x3F) | 0x80;
+  uuid.clock_seq_hi_and_rsv = uuid.clock_seq_hi_and_rsv & 0x3F | 0x80;
 
   /* Set the four most significant bits (bits 12 through 15) of the
    * time_hi_and_version field to 4 */
-  uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
+  uuid.time_hi_and_version = uuid.time_hi_and_version & 0x0fff | 0x4000;
 
   str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
              uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
@@ -720,7 +720,7 @@ wxString GpxDocument::GetUUID(void) {
 
 int GpxDocument::GetRandomNumber(int range_min, int range_max) {
   long u = (long)wxRound(
-      ((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) +
+      (double)rand() / ((double)RAND_MAX + 1) * (range_max - range_min) +
       range_min);
   return (int)u;
 }
@@ -815,15 +815,15 @@ double fromDMM(wxString sdms) {
 
 double toMagnetic(double deg_true) {
   if (!std::isnan(gVar)) {
-    if ((deg_true - gVar) > 360.)
-      return (deg_true - gVar - 360.);
+    if (deg_true - gVar > 360.)
+      return deg_true - gVar - 360.;
     else
-      return ((deg_true - gVar) >= 0.) ? (deg_true - gVar) : (deg_true - gVar + 360.);
+      return deg_true - gVar >= 0. ? deg_true - gVar : deg_true - gVar + 360.;
   } else {
-    if ((deg_true - g_UserVar) > 360.)
-      return (deg_true - g_UserVar - 360.);
+    if (deg_true - g_UserVar > 360.)
+      return deg_true - g_UserVar - 360.;
     else
-      return ((deg_true - g_UserVar) >= 0.) ? (deg_true - g_UserVar) : (deg_true - g_UserVar + 360.);
+      return deg_true - g_UserVar >= 0. ? deg_true - g_UserVar : deg_true - g_UserVar + 360.;
   }
 }
 

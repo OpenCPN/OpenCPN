@@ -740,7 +740,7 @@ OGRErr OGRGeometryCollection::exportToWkt( char ** ppszDstText ) const
 
     for( iGeom = 0; iGeom < nGeomCount; iGeom++ )
     {
-        eErr = papoGeoms[iGeom]->exportToWkt( &(papszGeoms[iGeom]) );
+        eErr = papoGeoms[iGeom]->exportToWkt( &papszGeoms[iGeom] );
         if( eErr != OGRERR_NONE )
             return eErr;
 

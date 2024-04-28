@@ -126,7 +126,7 @@ struct MemPool {
 
 void *poolAlloc(void *userData, unsigned int size) {
   struct MemPool *pool = (struct MemPool *)userData;
-  size = (size + 0x7) & ~0x7;
+  size = size + 0x7 & ~0x7;
   if (pool->size + size < pool->cap) {
     unsigned char *ptr = pool->buf + pool->size;
     pool->size += size;
@@ -447,7 +447,7 @@ int PolyTessGeo::BuildTessGLU() {
 
   //  Grow the work buffer if necessary
 
-  if ((npta * 4) > m_buf_len) {
+  if (npta * 4 > m_buf_len) {
     m_pwork_buf = (GLdouble *)realloc(m_pwork_buf, npta * 4 * sizeof(GLdouble));
     m_buf_len = npta * 4;
   }
@@ -490,7 +490,7 @@ int PolyTessGeo::BuildTessGLU() {
     x = pp[pidx].m_x;
     y = pp[pidx].m_y;
 
-    if ((fabs(x - x0) > EQUAL_EPS) || (fabs(y - y0) > EQUAL_EPS)) {
+    if (fabs(x - x0) > EQUAL_EPS || fabs(y - y0) > EQUAL_EPS) {
       if (m_tess_orient == TESS_VERT) {
         *ppt++ = x;
         *ppt++ = y;
@@ -509,7 +509,7 @@ int PolyTessGeo::BuildTessGLU() {
 
   //  Apply LOD reduction
 
-  if (ptValid > 20 && (m_LOD_meters > .01)) {
+  if (ptValid > 20 && m_LOD_meters > .01) {
     std::vector<bool> bool_keep(ptValid, false);
 
     // Keep a few key points
@@ -521,14 +521,14 @@ int PolyTessGeo::BuildTessGLU() {
     DouglasPeuckerDI(geoPt, 1, ptValid - 2, m_LOD_meters, bool_keep);
 
     // Create a new buffer
-    double *LOD_result = (double *)malloc((m_cntr[0]) * 3 * sizeof(double));
+    double *LOD_result = (double *)malloc(m_cntr[0] * 3 * sizeof(double));
     double *plod = LOD_result;
     int kept_LOD = 0;
 
     for (unsigned int i = 0; i < ptValid; i++) {
       if (bool_keep[i]) {
         double x = geoPt[i * 3];
-        double y = geoPt[(i * 3) + 1];
+        double y = geoPt[i * 3 + 1];
         *plod++ = x;
         *plod++ = y;
         *plod++ = 0;
@@ -590,7 +590,7 @@ int PolyTessGeo::BuildTessGLU() {
       x = pp[pidx].m_x;
       y = pp[pidx].m_y;
 
-      if ((fabs(x - x0) > EQUAL_EPS) || (fabs(y - y0) > EQUAL_EPS)) {
+      if (fabs(x - x0) > EQUAL_EPS || fabs(y - y0) > EQUAL_EPS) {
         if (m_tess_orient == TESS_VERT) {
           *ppt++ = x;
           *ppt++ = y;
@@ -706,7 +706,7 @@ int PolyTessGeo::BuildTessGLU() {
     GLdouble *pdouble_buf = (GLdouble *)p_tp->p_vertex;
 
     for (int i = 0; i < p_tp->nVert * 2; ++i) {
-      float x = (float)(*((GLdouble *)pdouble_buf));
+      float x = (float)*(GLdouble *)pdouble_buf;
       pdouble_buf++;
       *p_run++ = x;
     }
@@ -791,7 +791,7 @@ int PolyTessGeo::BuildTess(void) {
   }
 
   TESSreal *geoPt = (TESSreal *)malloc(
-      (npta)*2 * sizeof(TESSreal));  // tess input vertex array
+      npta*2 * sizeof(TESSreal));  // tess input vertex array
   TESSreal *ppt = geoPt;
 
   //      Create input structures
@@ -831,7 +831,7 @@ int PolyTessGeo::BuildTess(void) {
     x = pp[pidx].m_x;
     y = pp[pidx].m_y;
 
-    if ((fabs(x - x0) > EQUAL_EPS) || (fabs(y - y0) > EQUAL_EPS)) {
+    if (fabs(x - x0) > EQUAL_EPS || fabs(y - y0) > EQUAL_EPS) {
       if (m_tess_orient == TESS_VERT) {
         *ppt++ = x;
         *ppt++ = y;
@@ -851,7 +851,7 @@ int PolyTessGeo::BuildTess(void) {
   int afterLOD = beforeLOD;
 
   std::vector<bool> bool_keep;
-  if (ptValid > 5 && (m_LOD_meters > .01)) {
+  if (ptValid > 5 && m_LOD_meters > .01) {
     for (unsigned int i = 0; i < ptValid; i++) bool_keep.push_back(false);
 
     // Keep a few key points
@@ -863,14 +863,14 @@ int PolyTessGeo::BuildTess(void) {
     DouglasPeuckerFI(geoPt, 1, ptValid - 2, m_LOD_meters, bool_keep);
 
     // Create a new buffer
-    float *LOD_result = (float *)malloc((npte)*2 * sizeof(float));
+    float *LOD_result = (float *)malloc(npte*2 * sizeof(float));
     float *plod = LOD_result;
     int kept_LOD = 0;
 
     for (unsigned int i = 0; i < ptValid; i++) {
       if (bool_keep[i]) {
         float x = geoPt[i * 2];
-        float y = geoPt[(i * 2) + 1];
+        float y = geoPt[i * 2 + 1];
         *plod++ = x;
         *plod++ = y;
         kept_LOD++;
@@ -920,7 +920,7 @@ int PolyTessGeo::BuildTess(void) {
       x = pp[pidx].m_x;
       y = pp[pidx].m_y;
 
-      if ((fabs(x - x0) > EQUAL_EPS) || (fabs(y - y0) > EQUAL_EPS)) {
+      if (fabs(x - x0) > EQUAL_EPS || fabs(y - y0) > EQUAL_EPS) {
         if (m_tess_orient == TESS_VERT) {
           *ppt++ = x;
           *ppt++ = y;
@@ -1066,14 +1066,14 @@ int PolyTessGeo::BuildTess(void) {
 
             // Calculate LLBox bounding box for each Tri-prim
             if (m_bmerc_transform) {
-              double valx = (xd * mx_rate) + mx_offset;
-              double valy = (yd * my_rate) + my_offset;
+              double valx = xd * mx_rate + mx_offset;
+              double valy = yd * my_rate + my_offset;
 
               //    quickly convert to lat/lon
               double lat = (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) -
                             PI / 2.) /
                            DEGREE;
-              double lon = (valx / (DEGREE * CM93_semimajor_axis_meters));
+              double lon = valx / (DEGREE * CM93_semimajor_axis_meters);
 
               sxmax = wxMax(lon, sxmax);
               sxmin = wxMin(lon, sxmin);
@@ -1089,8 +1089,8 @@ int PolyTessGeo::BuildTess(void) {
             //  Append this point to TriPrim vbo
 
             *vbo_run++ =
-                (xd) + m_feature_easting;  // adjust to chart ref coordinates
-            *vbo_run++ = (yd) + m_feature_northing;
+                xd + m_feature_easting;  // adjust to chart ref coordinates
+            *vbo_run++ = yd + m_feature_northing;
           }  // For
 
           // Compute the final LLbbox for this TriPrim chain
@@ -1150,14 +1150,14 @@ int PolyTessGeo::BuildTess(void) {
 
         // Calculate LLBox bounding box for each Tri-prim
         if (m_bmerc_transform) {
-          double valx = (xd * mx_rate) + mx_offset;
-          double valy = (yd * my_rate) + my_offset;
+          double valx = xd * mx_rate + mx_offset;
+          double valy = yd * my_rate + my_offset;
 
           //    quickly convert to lat/lon
           double lat =
               (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) - PI / 2.) /
               DEGREE;
-          double lon = (valx / (DEGREE * CM93_semimajor_axis_meters));
+          double lon = valx / (DEGREE * CM93_semimajor_axis_meters);
 
           sxmax = wxMax(lon, sxmax);
           sxmin = wxMin(lon, sxmin);
@@ -1199,7 +1199,7 @@ int PolyTessGeo::BuildTess(void) {
       p_tp = p_tp->p_next;  // pick up the next in chain
     }
 
-    if ((nTri + nStrip) > 10000) {
+    if (nTri + nStrip > 10000) {
       printf("LOD:  %d/%d\n", afterLOD, beforeLOD);
 
       printf("Tess time(ms): %f\n", tessTime);
@@ -1331,16 +1331,16 @@ void endCallback(void *polyData) {
 
         if (pThis->m_bcm93) {
           // cm93 hits here
-          double valx = (xd * pThis->mx_rate) + pThis->mx_offset +
+          double valx = xd * pThis->mx_rate + pThis->mx_offset +
                         pThis->m_feature_easting;
-          double valy = (yd * pThis->my_rate) + pThis->my_offset +
+          double valy = yd * pThis->my_rate + pThis->my_offset +
                         pThis->m_feature_northing;
 
           //    Convert to lat/lon
           double lat =
               (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) - PI / 2.) /
               DEGREE;
-          double lon = (valx / (DEGREE * CM93_semimajor_axis_meters));
+          double lon = valx / (DEGREE * CM93_semimajor_axis_meters);
 
           sxmax = wxMax(lon, sxmax);
           sxmin = wxMin(lon, sxmin);
@@ -1348,9 +1348,9 @@ void endCallback(void *polyData) {
           symin = wxMin(lat, symin);
         } else {
           // ENC hits here, values are SM measures from feature reference point
-          double valx = (xd * pThis->mx_rate) + pThis->mx_offset +
+          double valx = xd * pThis->mx_rate + pThis->mx_offset +
                         pThis->m_feature_easting;
-          double valy = (yd * pThis->my_rate) + pThis->my_offset +
+          double valy = yd * pThis->my_rate + pThis->my_offset +
                         pThis->m_feature_northing;
 
           sxmax = wxMax(valx, sxmax);

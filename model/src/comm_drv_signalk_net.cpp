@@ -411,13 +411,13 @@ void CommDriverSignalKNet::handle_SK_sentence(
   // such as the sK version, "self" context, and target context
   if (root.HasMember("version")) {
     wxString msg = _T("Connected to Signal K server version: ");
-    msg << (root["version"].GetString());
+    msg << root["version"].GetString();
     wxLogMessage(msg);
   }
 
   if (root.HasMember("self")) {
     if (strncmp(root["self"].GetString(), "vessels.", 8) == 0)
-      m_self = (root["self"].GetString());  // for java server, and OpenPlotter
+      m_self = root["self"].GetString();  // for java server, and OpenPlotter
                                             // node.js server 1.20
     else
       m_self = std::string("vessels.")

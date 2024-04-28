@@ -395,7 +395,7 @@ public:
   void OldMouseEvent(wxMouseEvent &event);
   bool MouseEvent(wxMouseEvent &event);
   void FadeTimerEvent(wxTimerEvent &event);
-  bool IsToolbarShown() { return (m_ptoolbar != 0); }
+  bool IsToolbarShown() { return m_ptoolbar != 0; }
   float GetScaleFactor() { return m_sizefactor; }
   void DestroyTimerEvent(wxTimerEvent &event);
   void DrawDC(ocpnDC &dc, double displayScale);

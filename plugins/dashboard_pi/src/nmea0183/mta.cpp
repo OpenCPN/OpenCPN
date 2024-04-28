@@ -84,13 +84,13 @@ bool MTA::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 3 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    Temperature       = sentence.Double( 1 );
    UnitOfMeasurement = sentence.Field( 2 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool MTA::Write( SENTENCE& sentence )
@@ -108,7 +108,7 @@ bool MTA::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const MTA& MTA::operator = ( const MTA& source )
@@ -118,5 +118,5 @@ const MTA& MTA::operator = ( const MTA& source )
    Temperature       = source.Temperature;
    UnitOfMeasurement = source.UnitOfMeasurement;
 
-   return( *this );
+   return*this;
 }

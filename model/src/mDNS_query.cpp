@@ -87,15 +87,15 @@ static int ocpn_query_callback(int sock, const struct sockaddr* from,
   mdns_string_t fromaddrstr =
       ip_address_to_string(addrbuffer, sizeof(addrbuffer), from, addrlen);
   const char* entrytype =
-      (entry == MDNS_ENTRYTYPE_ANSWER)
+      entry == MDNS_ENTRYTYPE_ANSWER
           ? "answer"
-          : ((entry == MDNS_ENTRYTYPE_AUTHORITY) ? "authority" : "additional");
+          : entry == MDNS_ENTRYTYPE_AUTHORITY ? "authority" : "additional";
   mdns_string_t entrystr = mdns_string_extract(
       data, size, &name_offset, entrybuffer, sizeof(entrybuffer));
   bool is_ipv4 =
       from->sa_family == AF_INET;  // Only ipv4 responses are to be used.
 
-  if ((rtype == MDNS_RECORDTYPE_PTR) && is_ipv4) {
+  if (rtype == MDNS_RECORDTYPE_PTR && is_ipv4) {
     mdns_string_t namestr =
         mdns_record_parse_ptr(data, size, record_offset, record_length,
                               namebuffer, sizeof(namebuffer));
@@ -157,15 +157,15 @@ static int sk_query_callback(int sock, const struct sockaddr* from,
   mdns_string_t fromaddrstr =
       ip_address_to_string(addrbuffer, sizeof(addrbuffer), from, addrlen);
   const char* entrytype =
-      (entry == MDNS_ENTRYTYPE_ANSWER)
+      entry == MDNS_ENTRYTYPE_ANSWER
           ? "answer"
-          : ((entry == MDNS_ENTRYTYPE_AUTHORITY) ? "authority" : "additional");
+          : entry == MDNS_ENTRYTYPE_AUTHORITY ? "authority" : "additional";
   mdns_string_t entrystr = mdns_string_extract(
       data, size, &name_offset, entrybuffer, sizeof(entrybuffer));
   bool is_ipv4 =
       from->sa_family == AF_INET;  // Only ipv4 responses are to be used.
 
-  if ((rtype == MDNS_RECORDTYPE_PTR) && is_ipv4) {
+  if (rtype == MDNS_RECORDTYPE_PTR && is_ipv4) {
     mdns_string_t namestr =
         mdns_record_parse_ptr(data, size, record_offset, record_length,
                               namebuffer, sizeof(namebuffer));
@@ -192,12 +192,12 @@ static int sk_query_callback(int sock, const struct sockaddr* from,
       sk_server.hostname = hostname;
       g_sk_servers.push_back(sk_server);
     }
-  } else if ((rtype == MDNS_RECORDTYPE_SRV) && is_ipv4) {
+  } else if (rtype == MDNS_RECORDTYPE_SRV && is_ipv4) {
     mdns_record_srv_t srv =
         mdns_record_parse_srv(data, size, record_offset, record_length,
                               namebuffer, sizeof(namebuffer));
     g_sk_servers.back().port = std::to_string(srv.port);
-  } else if ((rtype == MDNS_RECORDTYPE_A) && is_ipv4) {
+  } else if (rtype == MDNS_RECORDTYPE_A && is_ipv4) {
     sockaddr_in addr;
     mdns_record_parse_a(data, size, record_offset, record_length, &addr);
     mdns_string_t addrstr = ipv4_address_to_string(
@@ -347,7 +347,7 @@ std::vector<std::string> get_local_ipv4_addresses() {
     }
   } while (num_retries-- > 0);
 
-  if (!adapter_address || (ret != NO_ERROR)) {
+  if (!adapter_address || ret != NO_ERROR) {
     free(adapter_address);
     printf("Failed to get network adapter addresses\n");
     return ret_vec;
@@ -365,10 +365,10 @@ std::vector<std::string> get_local_ipv4_addresses() {
       if (unicast->Address.lpSockaddr->sa_family == AF_INET) {
         struct sockaddr_in* saddr =
             (struct sockaddr_in*)unicast->Address.lpSockaddr;
-        if ((saddr->sin_addr.S_un.S_un_b.s_b1 != 127) ||
-            (saddr->sin_addr.S_un.S_un_b.s_b2 != 0) ||
-            (saddr->sin_addr.S_un.S_un_b.s_b3 != 0) ||
-            (saddr->sin_addr.S_un.S_un_b.s_b4 != 1)) {
+        if (saddr->sin_addr.S_un.S_un_b.s_b1 != 127 ||
+            saddr->sin_addr.S_un.S_un_b.s_b2 != 0 ||
+            saddr->sin_addr.S_un.S_un_b.s_b3 != 0 ||
+            saddr->sin_addr.S_un.S_un_b.s_b4 != 1) {
           int log_addr = 0;
           if (first_ipv4) {
             service_address_ipv4 = *saddr;

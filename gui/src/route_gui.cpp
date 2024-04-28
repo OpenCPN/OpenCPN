@@ -230,22 +230,22 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
     double lpp = sqrt(pow((double)(xa - xb), 2) + pow((double)(ya - yb), 2));
 
     double icon_size = icon_scale_factor * nom_arrow_size;
-    if (icon_size > (lpp * max_arrow_to_leg))
-      icon_scale_factor = (lpp * max_arrow_to_leg) / nom_arrow_size;
+    if (icon_size > lpp * max_arrow_to_leg)
+      icon_scale_factor = lpp * max_arrow_to_leg / nom_arrow_size;
 
     for (int i = 0; i < 7; i++) {
       int j = i * 2;
-      double pxa = (double)(s_arrow_icon[j]);
-      double pya = (double)(s_arrow_icon[j + 1]);
+      double pxa = (double)s_arrow_icon[j];
+      double pya = (double)s_arrow_icon[j + 1];
 
       pya *= icon_scale_factor;
       pxa *= icon_scale_factor;
 
-      double px = (pxa * sin(theta)) + (pya * cos(theta));
-      double py = (pya * sin(theta)) - (pxa * cos(theta));
+      double px = pxa * sin(theta) + pya * cos(theta);
+      double py = pya * sin(theta) - pxa * cos(theta);
 
-      icon[i].x = (int)(px) + xb;
-      icon[i].y = (int)(py) + yb;
+      icon[i].x = (int)px + xb;
+      icon[i].y = (int)py + yb;
     }
     wxPen savePen = dc.GetPen();
     dc.SetPen(*wxTRANSPARENT_PEN);
@@ -269,8 +269,8 @@ void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
   float lpp = sqrtf(powf((float)(xa - xb), 2) + powf((float)(ya - yb), 2));
 
   float icon_size = icon_scale_factor * nom_arrow_size;
-  if (icon_size > (lpp * max_arrow_to_leg))
-    icon_scale_factor = (lpp * max_arrow_to_leg) / nom_arrow_size;
+  if (icon_size > lpp * max_arrow_to_leg)
+    icon_scale_factor = lpp * max_arrow_to_leg / nom_arrow_size;
 
   float theta = atan2f((float)yb - ya, (float)xb - xa);
   theta -= (float)PI;
@@ -511,8 +511,8 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
       //  properly
 
       double adder = 0;
-      if ((vp.m_projection_type == PROJECTION_MERCATOR ||
-           vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)) {
+      if (vp.m_projection_type == PROJECTION_MERCATOR ||
+          vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) {
         float olon = vp.clon > 0 ? vp.clon - 180 : vp.clon + 180;
 
         if (prp1->m_lon < prp2->m_lon) {
@@ -603,5 +603,5 @@ int RouteGui::SendToGPS(const wxString& com_name, bool bsend_waypoints,
 
     OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
   }
-  return (result == 0);
+  return result == 0;
 }

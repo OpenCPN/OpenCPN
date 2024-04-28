@@ -161,7 +161,7 @@ const char *OGRWktReadToken( const char * pszInput, char * pszToken )
                    || *pszInput == '+'
                    || *pszInput == '-') )
         {
-            pszToken[iChar++] = *(pszInput++);
+            pszToken[iChar++] = *pszInput++;
         }
 
         pszToken[iChar++] = '\0';
@@ -173,7 +173,7 @@ const char *OGRWktReadToken( const char * pszInput, char * pszToken )
     while( *pszInput == ' ' || *pszInput == '\t' )
         pszInput++;
 
-    return( pszInput );
+    return pszInput;
 }
 
 /************************************************************************/

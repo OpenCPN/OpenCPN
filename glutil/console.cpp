@@ -155,10 +155,10 @@ public:
 
     while (p < end) {
       size_t n = strcspn(p, " ");
-      if ((extNameLen == n) && (strncmp(extName, p, n) == 0)) {
+      if (extNameLen == n && strncmp(extName, p, n) == 0) {
         return GL_TRUE;
       }
-      p += (n + 1);
+      p += n + 1;
     }
     return GL_FALSE;
   }

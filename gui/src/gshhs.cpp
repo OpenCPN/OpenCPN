@@ -250,7 +250,7 @@ void GshhsPolyCell::ReadPolygonFile() {
   int pos_data;
   int tab_data;
 
-  tab_data = (x0cell / header->pasx) * (180 / header->pasy) +
+  tab_data = x0cell / header->pasx * (180 / header->pasy) +
              (y0cell + 90) / header->pasy;
   fseek(fpoly, sizeof(PolygonFileHeader) + tab_data * sizeof(int), SEEK_SET);
   if (fread(&pos_data, sizeof(int), 1, fpoly) != 1) goto fail;
@@ -552,12 +552,12 @@ void GshhsPolyCell::DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt
     glDrawArrays(GL_TRIANGLES, 0, *pvc);
 #endif
   } else {
-    float *pvt = new float[2 * (*pvc)];
+    float *pvt = new float[2 * *pvc];
     for (int i = 0; i < *pvc; i++) {
       float_2Dpt *pc = *pv + i;
       wxPoint2DDouble q = vp.GetDoublePixFromLL(pc->y, pc->x);
       pvt[i * 2] = q.m_x;
-      pvt[(i * 2) + 1] = q.m_y;
+      pvt[i * 2 + 1] = q.m_y;
     }
 
     GLShaderProgram *shader = pcolor_tri_shader_program[pnt.m_canvasIndex];
@@ -633,8 +633,8 @@ void GshhsPolyCell::DrawPolygonContour(ocpnDC &pnt, contour_list *p, double dx,
 
   long_min = (double)x0cell;
   lat_min = (double)y0cell;
-  long_max = ((double)x0cell + (double)header->pasx);
-  lat_max = ((double)y0cell + (double)header->pasy);
+  long_max = (double)x0cell + (double)header->pasx;
+  lat_max = (double)y0cell + (double)header->pasy;
 
   // qWarning()  << long_min << "," << lat_min << long_max << "," << lat_max;
 
@@ -642,15 +642,15 @@ void GshhsPolyCell::DrawPolygonContour(ocpnDC &pnt, contour_list *p, double dx,
     if (!p->at(i).size()) continue;
 
     unsigned int v;
-    for (v = 0; v < (p->at(i).size() - 1); v++) {
+    for (v = 0; v < p->at(i).size() - 1; v++) {
       x1 = p->at(i).at(v).x;
       y1 = p->at(i).at(v).y;
       x2 = p->at(i).at(v + 1).x;
       y2 = p->at(i).at(v + 1).y;
 
       // Elimination des traits verticaux et horizontaux
-      if ((((x1 == x2) && ((x1 == long_min) || (x1 == long_max))) ||
-           ((y1 == y2) && ((y1 == lat_min) || (y1 == lat_max)))) == 0) {
+      if (((x1 == x2 && (x1 == long_min || x1 == long_max)) ||
+           (y1 == y2 && (y1 == lat_min || y1 == lat_max))) == 0) {
         wxPoint2DDouble AB = GetDoublePixFromLL(vp, x1 + dx, y1);
         wxPoint2DDouble CD = GetDoublePixFromLL(vp, x2 + dx, y1);
         pnt.DrawLine(AB.m_x, AB.m_y, CD.m_x, CD.m_y);
@@ -662,8 +662,8 @@ void GshhsPolyCell::DrawPolygonContour(ocpnDC &pnt, contour_list *p, double dx,
     x2 = p->at(i).at(0).x;
     y2 = p->at(i).at(0).y;
 
-    if ((((x1 == x2) && ((x1 == long_min) || (x1 == long_max))) ||
-         ((y1 == y2) && ((y1 == lat_min) || (y1 == lat_max)))) == 0) {
+    if (((x1 == x2 && (x1 == long_min || x1 == long_max)) ||
+         (y1 == y2 && (y1 == lat_min || y1 == lat_max))) == 0) {
       wxPoint2DDouble AB = GetDoublePixFromLL(vp, x1 + dx, y1);
       wxPoint2DDouble CD = GetDoublePixFromLL(vp, x2 + dx, y1);
       pnt.DrawLine(AB.m_x, AB.m_y, CD.m_x, CD.m_y);
@@ -1083,13 +1083,13 @@ GshhsPolygon::GshhsPolygon(FILE *file_) {
   north = readInt4() * 1e-6;
   area = readInt4();
 
-  if (((flag >> 8) & 255) >= 7) {  // GSHHS Release 2.0
+  if ((flag >> 8 & 255) >= 7) {  // GSHHS Release 2.0
     areaFull = readInt4();
     container = readInt4();
     ancestor = readInt4();
 
-    greenwich = (flag >> 16) & 1;
-    antarctic = (west == 0 && east == 360);
+    greenwich = flag >> 16 & 1;
+    antarctic = west == 0 && east == 360;
     if (ok) {
       double x = 0, y = 0;
       for (int i = 0; i < n; i++) {
@@ -1105,8 +1105,8 @@ GshhsPolygon::GshhsPolygon(FILE *file_) {
       }
     }
   } else {
-    greenwich = (flag >> 16) & 1;
-    antarctic = (west == 0 && east == 360);
+    greenwich = flag >> 16 & 1;
+    antarctic = west == 0 && east == 360;
     if (ok) {
       for (int i = 0; i < n; i++) {
         double x = 0, y = 0;
@@ -1351,7 +1351,7 @@ int GshhsReader::GSHHS_scaledPoints(GshhsPolygon *pol, wxPoint *pts,
   int xx, yy, oxx = 0, oyy = 0;
   int j = 0;
 
-  for (itp = (pol->lsPoints).begin(); itp != (pol->lsPoints).end(); itp++) {
+  for (itp = pol->lsPoints.begin(); itp != pol->lsPoints.end(); itp++) {
     x = (*itp)->lon + declon;
     y = (*itp)->lat;
     wxPoint2DDouble p = GetDoublePixFromLL(vp, y, x);

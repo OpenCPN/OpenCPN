@@ -86,7 +86,7 @@ wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset,
       s.Append(ts.Add(lmt).Format(f));
       if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
   }
-  return (s);
+  return s;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -279,13 +279,13 @@ void TrackPropDlg::RecalculateSize(void) {
   esize.y = GetCharHeight() * 40;
 
   wxSize dsize = GetParent()->GetClientSize();
-  esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
-  esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+  esize.y = wxMin(esize.y, dsize.y - 2 * GetCharHeight());
+  esize.x = wxMin(esize.x, dsize.x - 2 * GetCharHeight());
   SetClientSize(esize);
 
   wxSize fsize = GetSize();
-  fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
-  fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+  fsize.y = wxMin(fsize.y, dsize.y - 2 * GetCharHeight());
+  fsize.x = wxMin(fsize.x, dsize.x - 2 * GetCharHeight());
   SetSize(fsize);
 
   if (m_bcompact) {
@@ -1054,7 +1054,7 @@ void TrackPropDlg::InitializeList() {
   if (m_pTrack->GetnPoints()) {
     TrackPoint* prp = m_pTrack->GetPoint(0);
     if (prp)
-      m_lcPoints->m_LMT_Offset = long((prp->m_lon) * 3600. / 15.);  // estimated
+      m_lcPoints->m_LMT_Offset = long(prp->m_lon * 3600. / 15.);  // estimated
     else
       m_lcPoints->m_LMT_Offset = 0;
   }
@@ -1260,7 +1260,7 @@ bool TrackPropDlg::IsThisTrackExtendable() {
   }
 
   for (Track* ptrack : g_TrackList) {
-    if (ptrack->IsVisible() && (ptrack->m_GUID != m_pTrack->m_GUID)) {
+    if (ptrack->IsVisible() && ptrack->m_GUID != m_pTrack->m_GUID) {
       TrackPoint* track_node = ptrack->GetLastPoint();
       if (track_node) {
         if (track_node->GetCreateTime().IsValid()) {
@@ -1276,7 +1276,7 @@ bool TrackPropDlg::IsThisTrackExtendable() {
     }
   }
   if (m_pExtendTrack) {
-    return (!m_pExtendTrack->m_bIsInLayer);
+    return !m_pExtendTrack->m_bIsInLayer;
   } else {
     return false;
   }
@@ -1312,7 +1312,7 @@ void TrackPropDlg::OnSplitBtnClick(wxCommandEvent& event) {
     return;
   }
 
-  if ((m_nSelected > 1) && (m_nSelected < m_pTrack->GetnPoints())) {
+  if (m_nSelected > 1 && m_nSelected < m_pTrack->GetnPoints()) {
     Track* pHead = new Track();
     Track* pTail = new Track();
     pHead->Clone(m_pTrack, 0, m_nSelected - 1, _("_A"));
@@ -1424,7 +1424,7 @@ void TrackPropDlg::OnTrackPropListClick(wxListEvent& event) {
     if (prp) {
       m_pTrack->m_HighlightedTrackPoint = itemno;  // highlight the trackpoint
 
-      if (!(m_pTrack->m_bIsInLayer) && !(m_pTrack == g_pActiveTrack)) {
+      if (!m_pTrack->m_bIsInLayer && !(m_pTrack == g_pActiveTrack)) {
         m_nSelected = selected_no + 1;
         m_sdbBtmBtnsSizerSplit->Enable(true);
       }
@@ -1849,7 +1849,7 @@ wxString OCPNTrackListCtrl::OnGetItemText(long item, long column) const {
     } break;
 
     case 6:
-      if ((item > 0) && this_point->GetCreateTime().IsValid() &&
+      if (item > 0 && this_point->GetCreateTime().IsValid() &&
           prev_point->GetCreateTime().IsValid()) {
         DistanceBearingMercator(this_point->m_lat, this_point->m_lon, slat,
                                 slon, &gt_brg, &gt_leg_dist);

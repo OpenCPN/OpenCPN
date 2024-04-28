@@ -185,7 +185,7 @@ int wmm_pi::Init(void) {
         nMax = MagneticModels[i]->nMax;
       }
     }
-    NumTerms = ((nMax + 1) * (nMax + 2) / 2);
+    NumTerms = (nMax + 1) * (nMax + 2) / 2;
 
     TimedMagneticModel = MAG_AllocateModelMemory(
         NumTerms); /* For storing the time modified WMM Model parameters */
@@ -209,9 +209,9 @@ int wmm_pi::Init(void) {
   }
 
   int ret_flag =
-      (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
-       WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | WANTS_NMEA_EVENTS |
-       WANTS_PREFERENCES | WANTS_CONFIG | WANTS_PLUGIN_MESSAGING);
+      WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
+      WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | WANTS_NMEA_EVENTS |
+      WANTS_PREFERENCES | WANTS_CONFIG | WANTS_PLUGIN_MESSAGING;
 
   if (m_bShowIcon) {
     //    This PlugIn needs a toolbar icon, so request its insertion
@@ -563,7 +563,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
     //  wxMax(1.0, scale);  // Let the upstream processing handle minification.
 
   if (m_bShowIcon && m_bShowLiveIcon &&
-      ((m_LastVal != NewVal) || (scale != m_scale))) {
+      (m_LastVal != NewVal || scale != m_scale)) {
     m_scale = scale;
     m_LastVal = NewVal;
     int w = _img_wmm_live->GetWidth() * scale;
@@ -602,7 +602,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
         wxScreenDC sdc;
         sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
 
-        while ((w > (icon.GetWidth() * 8 / 10)) && (point_size >= 8)) {
+        while (w > icon.GetWidth() * 8 / 10 && point_size >= 8) {
           point_size--;
           pFontSmall->SetPointSize(point_size);
           sdc.GetTextExtent(NewVal, &w, NULL, NULL, NULL, pFontSmall);
@@ -630,7 +630,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
 
       for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
-          int index = (i * w) + j;
+          int index = i * w + j;
           target[index] = alive[index];
         }
       }
@@ -804,9 +804,9 @@ bool wmm_pi::LoadConfig(void) {
     m_wmm_dialog_x = pConf->Read(_T ( "DialogPosX" ), 20L);
     m_wmm_dialog_y = pConf->Read(_T ( "DialogPosY" ), 20L);
 
-    if ((m_wmm_dialog_x < 0) || (m_wmm_dialog_x > m_display_width))
+    if (m_wmm_dialog_x < 0 || m_wmm_dialog_x > m_display_width)
       m_wmm_dialog_x = 5;
-    if ((m_wmm_dialog_y < 0) || (m_wmm_dialog_y > m_display_height))
+    if (m_wmm_dialog_y < 0 || m_wmm_dialog_y > m_display_height)
       m_wmm_dialog_y = 5;
 
     pConf->SetPath(_T( "/Settings/WMM/Plot" ));

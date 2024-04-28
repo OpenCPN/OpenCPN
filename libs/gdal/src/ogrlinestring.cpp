@@ -366,7 +366,7 @@ double OGRLineString::getZ( int i ) const
 
 {
     if( padfZ != NULL && i >= 0 && i < nPointCount )
-        return( padfZ[i] );
+        return padfZ[i];
     else
         return 0.0;
 }
@@ -731,8 +731,8 @@ OGRErr OGRLineString::importFromWkb( unsigned char * pabyData,
     {
         for( i = 0; i < nPointCount; i++ )
         {
-            CPL_SWAPDOUBLE( &(paoPoints[i].x) );
-            CPL_SWAPDOUBLE( &(paoPoints[i].y) );
+            CPL_SWAPDOUBLE( & paoPoints[i].x);
+            CPL_SWAPDOUBLE( & paoPoints[i].y);
         }
 
         if( bIs3D )
@@ -1026,8 +1026,8 @@ void OGRLineString::Value( double dfDistance, OGRPoint * poPoint ) const
 
         if (dfSegLength > 0)
         {
-            if( (dfLength <= dfDistance) && ((dfLength + dfSegLength) >=
-                                             dfDistance) )
+            if( dfLength <= dfDistance && dfLength + dfSegLength >=
+                dfDistance )
             {
                 double      dfRatio;
 

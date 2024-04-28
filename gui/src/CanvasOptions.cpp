@@ -399,16 +399,16 @@ void CanvasOptions::RefreshControlValues(void) {
   //  Display category
   int nset = 2;  // default OTHER
   switch (parentCanvas->GetENCDisplayCategory()) {
-    case (DISPLAYBASE):
+    case DISPLAYBASE:
       nset = 0;
       break;
-    case (STANDARD):
+    case STANDARD:
       nset = 1;
       break;
-    case (OTHER):
+    case OTHER:
       nset = 2;
       break;
-    case (MARINERS_STANDARD):
+    case MARINERS_STANDARD:
       nset = 3;
       break;
     default:
@@ -428,8 +428,8 @@ void CanvasOptions::RefreshControlValues(void) {
 
   //  Anchor conditions  and dateQuality are only available if display category
   //  is "All" or "User Standard"
-  pCBENCDataQuality->Enable(m_ENCAvail && (nset > 1));
-  pCBENCAnchorDetails->Enable(m_ENCAvail && (nset > 1));
+  pCBENCDataQuality->Enable(m_ENCAvail && nset > 1);
+  pCBENCAnchorDetails->Enable(m_ENCAvail && nset > 1);
 
   //  Many options are not valid if display category is "Base"
   if (nset == 0) {
@@ -561,16 +561,16 @@ void CanvasOptions::UpdateCanvasOptions(void) {
 
   int nset = 2;
   switch (parentCanvas->GetENCDisplayCategory()) {
-    case (DISPLAYBASE):
+    case DISPLAYBASE:
       nset = 0;
       break;
-    case (STANDARD):
+    case STANDARD:
       nset = 1;
       break;
-    case (OTHER):
+    case OTHER:
       nset = 2;
       break;
-    case (MARINERS_STANDARD):
+    case MARINERS_STANDARD:
       nset = 3;
       break;
     default:

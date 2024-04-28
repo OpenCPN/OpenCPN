@@ -147,7 +147,7 @@ wxSize DashboardInstrument_Moon::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Moon::SetData(DASH_CAP st, double value,
                                        wxString format) {
   if (st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
-    m_hemisphere = (value < 0 ? _T("S") : _T("N"));
+    m_hemisphere = value < 0 ? _T("S") : _T("N");
   }
 }
 
@@ -173,7 +173,7 @@ void DashboardInstrument_Moon::Draw(wxGCDC *dc) {
   int y = m_TitleHeight + m_radius + 5;
 
   /* Moon phases are seen upside-down on the southern hemisphere */
-  int startangle = (m_hemisphere == _("N") ? -90 : 90);
+  int startangle = m_hemisphere == _("N") ? -90 : 90;
 
   GetGlobalColor(_T("DASH2"), &cl0);
   GetGlobalColor(_T("DASH1"), &cl1);
@@ -325,7 +325,7 @@ wxSize DashboardInstrument_Sun::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Sun::Draw(wxGCDC *dc) {
   wxColour cl;
 
-  dc->SetFont((g_pFontData->GetChosenFont()));
+  dc->SetFont(g_pFontData->GetChosenFont());
   GetGlobalColor(_T("DASHF"), &cl);
   dc->SetTextForeground(cl);
 
@@ -336,7 +336,7 @@ void DashboardInstrument_Sun::Draw(wxGCDC *dc) {
 void DashboardInstrument_Sun::SetUtcTime(wxDateTime data) {
   if (data.IsValid()) m_dt = data;
 
-  if ((m_lat != 999.9) && (m_lon != 999.9)) {
+  if (m_lat != 999.9 && m_lon != 999.9) {
     wxDateTime sunrise, sunset;
     calculateSun(m_lat, m_lon, sunrise, sunset);
     if (sunrise.GetYear() != 999)
@@ -410,16 +410,16 @@ void DashboardInstrument_Sun::calculateSun(double latit, double longit,
         t = N + ((18 - lngHour) / 24)
   */
   double lngHour = longit / 15;
-  double tris = n + ((6 - lngHour) / 24);
-  double tset = n + ((18 - lngHour) / 24);
+  double tris = n + (6 - lngHour) / 24;
+  double tset = n + (18 - lngHour) / 24;
   /*
 
   3. calculate the Sun's mean anomaly
 
       M = (0.9856 * t) - 3.289
   */
-  double mris = (0.9856 * tris) - 3.289;
-  double mset = (0.9856 * tset) - 3.289;
+  double mris = 0.9856 * tris - 3.289;
+  double mset = 0.9856 * tset - 3.289;
   /*
   4. calculate the Sun's true longitude
 
@@ -427,12 +427,12 @@ void DashboardInstrument_Sun::calculateSun(double latit, double longit,
       NOTE: L potentially needs to be adjusted into the range [0,360) by
   adding/subtracting 360
   */
-  double lris = mris + (1.916 * sin(DEGREE * mris)) +
-                (0.020 * sin(2 * DEGREE * mris)) + 282.634;
+  double lris = mris + 1.916 * sin(DEGREE * mris) +
+                0.020 * sin(2 * DEGREE * mris) + 282.634;
   if (lris > 360) lris -= 360;
   if (lris < 0) lris += 360;
-  double lset = mset + (1.916 * sin(DEGREE * mset)) +
-                (0.020 * sin(2 * DEGREE * mset)) + 282.634;
+  double lset = mset + 1.916 * sin(DEGREE * mset) +
+                0.020 * sin(2 * DEGREE * mset) + 282.634;
   if (lset > 360) lset -= 360;
   if (lset < 0) lset += 360;
   /*
@@ -455,11 +455,11 @@ void DashboardInstrument_Sun::calculateSun(double latit, double longit,
       RAquadrant = (floor(RA/90)) * 90
       RA = RA + (Lquadrant - RAquadrant)
   */
-  double lqris = (floor(lris / 90)) * 90;
-  double raqris = (floor(raris / 90)) * 90;
+  double lqris = floor(lris / 90) * 90;
+  double raqris = floor(raris / 90) * 90;
   raris = raris + (lqris - raqris);
-  double lqset = (floor(lset / 90)) * 90;
-  double raqset = (floor(raset / 90)) * 90;
+  double lqset = floor(lset / 90) * 90;
+  double raqset = floor(raset / 90) * 90;
   raset = raset + (lqset - raqset);
   /*
   5c. right ascension value needs to be converted into hours
@@ -489,9 +489,9 @@ void DashboardInstrument_Sun::calculateSun(double latit, double longit,
         the sun never sets on this location (on the specified date)
   */
   double cosZenith = cos(DEGREE * ZENITH_OFFICIAL);
-  double coshris = (cosZenith - (sinDecris * sin(DEGREE * latit))) /
+  double coshris = (cosZenith - sinDecris * sin(DEGREE * latit)) /
                    (cosDecris * cos(DEGREE * latit));
-  double coshset = (cosZenith - (sinDecset * sin(DEGREE * latit))) /
+  double coshset = (cosZenith - sinDecset * sin(DEGREE * latit)) /
                    (cosDecset * cos(DEGREE * latit));
   bool neverrises = false;
   if (coshris > 1) neverrises = true;
@@ -522,8 +522,8 @@ void DashboardInstrument_Sun::calculateSun(double latit, double longit,
 
       T = H + RA - (0.06571 * t) - 6.622
   */
-  tris = hris + raris - (0.06571 * tris) - 6.622;
-  tset = hset + raset - (0.06571 * tset) - 6.622;
+  tris = hris + raris - 0.06571 * tris - 6.622;
+  tset = hset + raset - 0.06571 * tset - 6.622;
   /*
   9. adjust back to UTC
 

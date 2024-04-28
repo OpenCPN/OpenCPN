@@ -50,7 +50,7 @@ static int FloatTo565( Vec3::Arg colour )
 	int b = FloatToInt( 31.0f*colour.Z(), 31 );
 
 	// pack into a single value
-	return ( r << 11 ) | ( g << 5 ) | b;
+	return r << 11 | g << 5 | b;
 }
 
 static void WriteColourBlock( int a, int b, u8* indices, void* block )
@@ -68,7 +68,7 @@ static void WriteColourBlock( int a, int b, u8* indices, void* block )
 	for( int i = 0; i < 4; ++i )
 	{
 		u8 const* ind = indices + 4*i;
-		bytes[4 + i] = ind[0] | ( ind[1] << 2 ) | ( ind[2] << 4 ) | ( ind[3] << 6 );
+		bytes[4 + i] = ind[0] | ind[1] << 2 | ind[2] << 4 | ind[3] << 6;
 	}
 }
 
@@ -140,17 +140,17 @@ void WriteColourBlock4( Vec3::Arg start, Vec3::Arg end, u8 const* indices, void*
 static int Unpack565( u8 const* packed, u8* colour )
 {
 	// build the packed value
-	int value = ( int )packed[0] | ( ( int )packed[1] << 8 );
+	int value = ( int )packed[0] | ( int )packed[1] << 8;
 
 	// get the components in the stored range
-	u8 red = ( u8 )( ( value >> 11 ) & 0x1f );
-	u8 green = ( u8 )( ( value >> 5 ) & 0x3f );
+	u8 red = ( u8 )( value >> 11 & 0x1f );
+	u8 green = ( u8 )( value >> 5 & 0x3f );
 	u8 blue = ( u8 )( value & 0x1f );
 
 	// scale up to 8 bits
-	colour[0] = ( red << 3 ) | ( red >> 2 );
-	colour[1] = ( green << 2 ) | ( green >> 4 );
-	colour[2] = ( blue << 3 ) | ( blue >> 2 );
+	colour[0] = red << 3 | red >> 2;
+	colour[1] = green << 2 | green >> 4;
+	colour[2] = blue << 3 | blue >> 2;
 	colour[3] = 255;
 
 	// return the value
@@ -187,7 +187,7 @@ void DecompressColour( u8* rgba, void const* block, bool isDxt1 )
 
 	// fill in alpha for the intermediate values
 	codes[8 + 3] = 255;
-	codes[12 + 3] = ( isDxt1 && a <= b ) ? 0 : 255;
+	codes[12 + 3] = isDxt1 && a <= b ? 0 : 255;
 
 	// unpack the indices
 	u8 indices[16];
@@ -197,9 +197,9 @@ void DecompressColour( u8* rgba, void const* block, bool isDxt1 )
 		u8 packed = bytes[4 + i];
 
 		ind[0] = packed & 0x3;
-		ind[1] = ( packed >> 2 ) & 0x3;
-		ind[2] = ( packed >> 4 ) & 0x3;
-		ind[3] = ( packed >> 6 ) & 0x3;
+		ind[1] = packed >> 2 & 0x3;
+		ind[2] = packed >> 4 & 0x3;
+		ind[3] = packed >> 6 & 0x3;
 	}
 
 	// store out the colours

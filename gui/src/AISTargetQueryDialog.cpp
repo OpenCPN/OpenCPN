@@ -82,7 +82,7 @@ void AISTargetQueryDialog::Init() {
   m_MMSI = -1;
   m_pQueryTextCtl = NULL;
   m_nl = 0;
-  m_colorscheme = (ColorScheme)(-1);
+  m_colorscheme = (ColorScheme)-1;
   m_okButton = NULL;
   m_bautoCentre = false;
   m_bautosize = false;
@@ -355,8 +355,8 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
     //  Reduce the font size if necessary to eliminate horizontal scroll bars.
     wxSize szv = m_pQueryTextCtl->GetVirtualSize();
     if (szv.x > m_pQueryTextCtl->GetSize().x) {
-      while ((szv.x > m_pQueryTextCtl->GetSize().x) &&
-             (m_adjustedFontSize > 8)) {  // fluff
+      while (szv.x > m_pQueryTextCtl->GetSize().x &&
+             m_adjustedFontSize > 8) {  // fluff
         m_adjustedFontSize--;
 
         RenderHTMLQuery(td);
@@ -372,7 +372,7 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
   } else {
     wxSize szv = m_pQueryTextCtl->GetVirtualSize();
     int csz = g_Platform->getDisplaySize().x * 8 / 10;
-    if ((szv.x) < csz) {
+    if (szv.x < csz) {
       if (szv.x > m_pQueryTextCtl->GetSize().x) target_x = szv.x;  // * 11/10;
     }
     target_x = szv.x * 12/10; // Making the winfow a bit wider than absolutely nesessary gives a little better results in real world
@@ -424,7 +424,7 @@ void AISTargetQueryDialog::AdjustBestSize(AisTargetData *td) {
 
   wxSize szyv = m_pQueryTextCtl->GetVirtualSize();
   int csz = g_Platform->getDisplaySize().y * 85 / 100;
-  if ((szyv.y + yb) < csz) {
+  if (szyv.y + yb < csz) {
     if (szyv.y > m_pQueryTextCtl->GetSize().y)
       target_y = szyv.y * 12 / 10 + yb;
   } else {

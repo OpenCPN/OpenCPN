@@ -162,10 +162,10 @@ bool wxCurlFTP::SetQuoteList(const wxArrayString& arrQuote)
 
 	for(unsigned int i = 0; i < arrQuote.Count(); i++)
 	{
-		m_pQuote = curl_slist_append(m_pQuote, (const char*)(arrQuote[i].c_str()));
+		m_pQuote = curl_slist_append(m_pQuote, (const char*)arrQuote[i].c_str());
 	}
 
-	return (m_pQuote != NULL);
+	return m_pQuote != NULL;
 }
 
 bool wxCurlFTP::AppendQuote(const wxString& szQuote, const bool& bClear /*= false*/)
@@ -173,9 +173,9 @@ bool wxCurlFTP::AppendQuote(const wxString& szQuote, const bool& bClear /*= fals
 	if(bClear)
 		ResetQuoteList();
 
-	m_pQuote = curl_slist_append(m_pQuote, (const char*)(szQuote.c_str()));
+	m_pQuote = curl_slist_append(m_pQuote, (const char*)szQuote.c_str());
 
-	return (m_pQuote != NULL);
+	return m_pQuote != NULL;
 }
 
 bool wxCurlFTP::SetPreQuoteList(const wxArrayString& arrQuote)
@@ -184,10 +184,10 @@ bool wxCurlFTP::SetPreQuoteList(const wxArrayString& arrQuote)
 
 	for(unsigned int i = 0; i < arrQuote.Count(); i++)
 	{
-		m_pPreQuote = curl_slist_append(m_pPreQuote, (const char*)(arrQuote[i].c_str()));
+		m_pPreQuote = curl_slist_append(m_pPreQuote, (const char*)arrQuote[i].c_str());
 	}
 
-	return (m_pPreQuote != NULL);
+	return m_pPreQuote != NULL;
 }
 
 bool wxCurlFTP::AppendPreQuote(const wxString& szQuote, const bool& bClear /*= false*/)
@@ -195,9 +195,9 @@ bool wxCurlFTP::AppendPreQuote(const wxString& szQuote, const bool& bClear /*= f
 	if(bClear)
 		ResetPreQuoteList();
 
-	m_pPreQuote = curl_slist_append(m_pPreQuote, (const char*)(szQuote.c_str()));
+	m_pPreQuote = curl_slist_append(m_pPreQuote, (const char*)szQuote.c_str());
 
-	return (m_pPreQuote != NULL);
+	return m_pPreQuote != NULL;
 }
 
 bool wxCurlFTP::SetPostQuoteList(const wxArrayString& arrQuote)
@@ -206,10 +206,10 @@ bool wxCurlFTP::SetPostQuoteList(const wxArrayString& arrQuote)
 
 	for(unsigned int i = 0; i < arrQuote.Count(); i++)
 	{
-		m_pPostQuote = curl_slist_append(m_pPostQuote, (const char*)(arrQuote[i].c_str()));
+		m_pPostQuote = curl_slist_append(m_pPostQuote, (const char*)arrQuote[i].c_str());
 	}
 
-	return (m_pPostQuote != NULL);
+	return m_pPostQuote != NULL;
 }
 
 bool wxCurlFTP::AppendPostQuote(const wxString& szQuote, const bool& bClear /*= false*/)
@@ -217,9 +217,9 @@ bool wxCurlFTP::AppendPostQuote(const wxString& szQuote, const bool& bClear /*= 
 	if(bClear)
 		ResetPostQuoteList();
 
-	m_pPostQuote = curl_slist_append(m_pPostQuote, (const char*)(szQuote.c_str()));
+	m_pPostQuote = curl_slist_append(m_pPostQuote, (const char*)szQuote.c_str());
 
-	return (m_pPostQuote != NULL);
+	return m_pPostQuote != NULL;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -270,7 +270,7 @@ bool wxCurlFTP::Get(wxOutputStream& buffer, const wxString& szRemoteFile /*= wxE
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 299));
+			return m_iResponseCode > 199 && m_iResponseCode < 299;
 		}
 	}
 
@@ -301,7 +301,7 @@ bool wxCurlFTP::Put(wxInputStream& buffer, const wxString& szRemoteFile /*= wxEm
 
 		iSize = buffer.GetSize();
 
-		if(iSize == (~(ssize_t)0))
+		if(iSize == ~(ssize_t)0)
 			return false;
 
 		SetOpt(CURLOPT_UPLOAD, TRUE);
@@ -310,7 +310,7 @@ bool wxCurlFTP::Put(wxInputStream& buffer, const wxString& szRemoteFile /*= wxEm
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 	}
 
@@ -332,7 +332,7 @@ bool wxCurlFTP::MkDir(const wxString& szRemoteLoc /*= wxEmptyString*/)
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 	}
 
@@ -365,7 +365,7 @@ bool wxCurlFTP::RmDir(const wxString& szRemoteLoc /*= wxEmptyString*/)
 		{
 			ResetAllQuoteLists();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetAllQuoteLists();
@@ -397,7 +397,7 @@ bool wxCurlFTP::Delete(const wxString& szRemoteLoc /*= wxEmptyString*/)
 		{
 			ResetAllQuoteLists();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetAllQuoteLists();
@@ -431,7 +431,7 @@ bool wxCurlFTP::Rename(const wxString& szRemoteLocName,
 		{
 			ResetAllQuoteLists();
 
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 
 		ResetAllQuoteLists();
@@ -451,7 +451,7 @@ bool wxCurlFTP::List(const wxString& szRemoteLoc /*= wxEmptyString*/)
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 	}
 
@@ -469,7 +469,7 @@ bool wxCurlFTP::Nlst(const wxString& szRemoteLoc /*= wxEmptyString*/)
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 300));
+			return m_iResponseCode > 199 && m_iResponseCode < 300;
 		}
 	}
 
@@ -488,7 +488,7 @@ bool wxCurlFTP::Info(const wxString& szRemoteLoc /*= wxEmptyString*/)
 
 		if(Perform())
 		{
-			return ((m_iResponseCode > 199) && (m_iResponseCode < 299));
+			return m_iResponseCode > 199 && m_iResponseCode < 299;
 		}
 	}
 

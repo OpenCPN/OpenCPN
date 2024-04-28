@@ -93,21 +93,21 @@ bool DPT::Parse( const SENTENCE& sentence )
        if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
        {
             SetErrorMessage( _T("Invalid Checksum") );
-            return( FALSE );
+            return FALSE;
        }
        else
        {
            if( sentence.IsChecksumBad( 4 ) == TRUE)
            {
                SetErrorMessage( _T("Invalid Checksum") );
-               return( FALSE );
+               return FALSE;
            }
        }
    }
 
    DepthMeters                = sentence.Double( 1 );
    OffsetFromTransducerMeters = sentence.Double( 2 );
-   return( TRUE );
+   return TRUE;
 }
 
 bool DPT::Write( SENTENCE& sentence )
@@ -125,7 +125,7 @@ bool DPT::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const DPT& DPT::operator = ( const DPT& source )
@@ -135,5 +135,5 @@ const DPT& DPT::operator = ( const DPT& source )
    DepthMeters                = source.DepthMeters;
    OffsetFromTransducerMeters = source.OffsetFromTransducerMeters;
 
-   return( *this );
+   return*this;
 }

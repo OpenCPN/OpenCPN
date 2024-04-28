@@ -33,7 +33,7 @@
 #include "model/cutil.h"
 
 
-double round_msvc(double x) { return (floor(x + 0.5)); }
+double round_msvc(double x) { return floor(x + 0.5); }
 
 #ifdef __MSVC__
 #include <windows.h>
@@ -77,7 +77,7 @@ int mysnprintf(char *buffer, int count, const char *format, ...) {
 int NextPow2(int size) {
   int n = size - 1;  // compute dimensions needed as next larger power of 2
   int shift = 1;
-  while ((n + 1) & n) {
+  while (n + 1 & n) {
     n |= n >> shift;
     shift <<= 1;
   }

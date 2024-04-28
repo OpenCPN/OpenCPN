@@ -310,8 +310,8 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   double rose_angle = -999.;
 
-  if ((fabs(m_parent->GetVPRotation()) > .01) ||
-      (fabs(m_parent->GetVPSkew()) > .01)) {
+  if (fabs(m_parent->GetVPRotation()) > .01 ||
+      fabs(m_parent->GetVPSkew()) > .01) {
     rose_angle = -m_parent->GetVPRotation();
   } else
     rose_angle = 0.;
@@ -342,7 +342,7 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
     sdc.SetBrush(*wxBLACK_BRUSH);
     sdc.SetPen(*wxBLACK_PEN);
     wxSize maskSize = wxSize(m_MaskBmp.GetWidth() - leftmargin,
-                             m_MaskBmp.GetHeight() - (2 * topmargin));
+                             m_MaskBmp.GetHeight() - 2 * topmargin);
     sdc.DrawRoundedRectangle(wxPoint(leftmargin, topmargin), maskSize, radius);
     sdc.SelectObject(wxNullBitmap);
   } else if (radius) {
@@ -389,8 +389,8 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
     BMPRose = style->GetIcon(_T("CompassRoseMag"), cwidth, cheight);
   else
     BMPRose = style->GetIcon(_T("CompassRoseBlue"), cwidth, cheight);
-  if ((fabs(m_parent->GetVPRotation()) > .01) ||
-      (fabs(m_parent->GetVPSkew()) > .01)) {
+  if (fabs(m_parent->GetVPRotation()) > .01 ||
+      fabs(m_parent->GetVPSkew()) > .01) {
     wxImage rose_img = BMPRose.ConvertToImage();
     wxPoint rot_ctr(cwidth / 2, cheight / 2);
     wxImage rot_image =
@@ -462,7 +462,7 @@ void ocpnCompass::CreateTexture() {
     int height_pot = m_tex_h;
 
     int xp = image.GetWidth();
-    if (((xp != 0) && !(xp & (xp - 1))))  // detect POT
+    if (xp != 0 && !(xp & xp - 1))  // detect POT
       width_pot = xp;
     else {
       int a = 0;
@@ -474,7 +474,7 @@ void ocpnCompass::CreateTexture() {
     }
 
     xp = image.GetHeight();
-    if (((xp != 0) && !(xp & (xp - 1))))
+    if (xp != 0 && !(xp & xp - 1))
       height_pot = xp;
     else {
       int a = 0;
@@ -498,8 +498,8 @@ void ocpnCompass::CreateTexture() {
 
       for (int i = 0; i < m_image_height; i++) {
         for (int j = 0; j < m_image_width; j++) {
-          int s = (i * 3 * m_image_width) + (j * 3);
-          int d = (i * stride * m_tex_w) + (j * stride);
+          int s = i * 3 * m_image_width + j * 3;
+          int d = i * stride * m_tex_w + j * stride;
 
           teximage[d + 0] = imgdata[s + 0];
           teximage[d + 1] = imgdata[s + 1];
@@ -545,7 +545,7 @@ void ocpnCompass::UpdateTexture() {
     int height_pot = m_tex_h;
 
     int xp = image.GetWidth();
-    if (((xp != 0) && !(xp & (xp - 1))))  // detect POT
+    if (xp != 0 && !(xp & xp - 1))  // detect POT
       width_pot = xp;
     else {
       int a = 0;
@@ -557,7 +557,7 @@ void ocpnCompass::UpdateTexture() {
     }
 
     xp = image.GetHeight();
-    if (((xp != 0) && !(xp & (xp - 1))))
+    if (xp != 0 && !(xp & xp - 1))
       height_pot = xp;
     else {
       int a = 0;
@@ -581,8 +581,8 @@ void ocpnCompass::UpdateTexture() {
 
       for (int i = 0; i < m_image_height; i++) {
         for (int j = 0; j < m_image_width; j++) {
-          int s = (i * 3 * m_image_width) + (j * 3);
-          int d = (i * stride * m_tex_w) + (j * stride);
+          int s = i * 3 * m_image_width + j * 3;
+          int d = i * stride * m_tex_w + j * stride;
 
           teximage[d + 0] = imgdata[s + 0];
           teximage[d + 1] = imgdata[s + 1];

@@ -241,7 +241,7 @@ const char * CSLGetField( char ** papszStrList, int iField )
     int         i;
 
     if( papszStrList == NULL || iField < 0 )
-        return( "" );
+        return"";
 
     for( i = 0; i < iField+1; i++ )
     {
@@ -249,7 +249,7 @@ const char * CSLGetField( char ** papszStrList, int iField )
             return "";
     }
 
-    return( papszStrList[iField] );
+    return papszStrList[iField];
 }
 
 /**********************************************************************
@@ -673,8 +673,8 @@ char ** CSLTokenizeString2( const char * pszString,
     int         nRetMax = 0, nRetLen = 0;
     char        *pszToken;
     int         nTokenMax, nTokenLen;
-    int         bHonourStrings = (nCSLTFlags & CSLT_HONOURSTRINGS);
-    int         bAllowEmptyTokens = (nCSLTFlags & CSLT_ALLOWEMPTYTOKENS);
+    int         bHonourStrings = nCSLTFlags & CSLT_HONOURSTRINGS;
+    int         bAllowEmptyTokens = nCSLTFlags & CSLT_ALLOWEMPTYTOKENS;
 
     pszToken = (char *) CPLCalloc(10,1);
     nTokenMax = 10;
@@ -761,7 +761,7 @@ char ** CSLTokenizeString2( const char * pszString,
          * it now, otherwise we won't reenter the loop and it will be lost.
          */
 
-        if( (pszToken[0] != '\0' || bAllowEmptyTokens)
+        if( pszToken[0] != '\0' || bAllowEmptyTokens
             || (*pszString == '\0' && bAllowEmptyTokens
                 && strchr(pszDelimiters, *(pszString-1)) ) )
         {
@@ -939,7 +939,7 @@ const char *CSLFetchNameValue(char **papszStrList, const char *pszName)
             && ( (*papszStrList)[nLen] == '=' ||
                  (*papszStrList)[nLen] == ':' ) )
         {
-            return (*papszStrList)+nLen+1;
+            return *papszStrList+nLen+1;
         }
         papszStrList++;
     }
@@ -1035,7 +1035,7 @@ char **CSLFetchNameValueMultiple(char **papszStrList, const char *pszName)
                  (*papszStrList)[nLen] == ':' ) )
         {
             papszValues = CSLAddString(papszValues,
-                                          (*papszStrList)+nLen+1);
+                                          *papszStrList+nLen+1);
         }
         papszStrList++;
     }

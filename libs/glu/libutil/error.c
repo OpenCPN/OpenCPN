@@ -71,10 +71,10 @@ gluErrorString(GLenum errorCode)
         if (Errors[i].Token == errorCode)
             return (const GLubyte *) Errors[i].String;
     }
-    if ((errorCode >= GLU_NURBS_ERROR1) && (errorCode <= GLU_NURBS_ERROR37)) {
+    if (errorCode >= GLU_NURBS_ERROR1 && errorCode <= GLU_NURBS_ERROR37) {
 	return (const GLubyte *) __gluNURBSErrorString(errorCode - (GLU_NURBS_ERROR1 - 1));
     }
-    if ((errorCode >= GLU_TESS_ERROR1) && (errorCode <= GLU_TESS_ERROR6)) {
+    if (errorCode >= GLU_TESS_ERROR1 && errorCode <= GLU_TESS_ERROR6) {
 	return (const GLubyte *) __gluTessErrorString(errorCode - (GLU_TESS_ERROR1 - 1));
     }
     return (const GLubyte *) 0;

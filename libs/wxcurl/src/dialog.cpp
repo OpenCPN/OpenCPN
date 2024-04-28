@@ -87,7 +87,7 @@ bool wxCurlTransferDialog::Create(const wxString &url, const wxString& title, co
                               const wxString &sizeLabel, const wxBitmap& bitmap, wxWindow *parent, long style)
 {
     if (!wxDialog::Create(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
-                          (wxDEFAULT_DIALOG_STYLE |wxRESIZE_BORDER)))
+                          wxDEFAULT_DIALOG_STYLE |wxRESIZE_BORDER))
         return false;
 
     // save&check our style

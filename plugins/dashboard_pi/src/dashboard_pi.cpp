@@ -416,7 +416,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
 /*  These two function were taken from gpxdocument.cpp */
 int GetRandomNumber(int range_min, int range_max) {
   long u = (long)wxRound(
-      ((double)rand() / ((double)(RAND_MAX) + 1) * (range_max - range_min)) +
+      (double)rand() / ((double)RAND_MAX + 1) * (range_max - range_min) +
       range_min);
   return (int)u;
 }
@@ -446,11 +446,11 @@ wxString GetUUID(void) {
 
   /* Set the two most significant bits (bits 6 and 7) of the
    * clock_seq_hi_and_rsv to zero and one, respectively. */
-  uuid.clock_seq_hi_and_rsv = (uuid.clock_seq_hi_and_rsv & 0x3F) | 0x80;
+  uuid.clock_seq_hi_and_rsv = uuid.clock_seq_hi_and_rsv & 0x3F | 0x80;
 
   /* Set the four most significant bits (bits 12 through 15) of the
    * time_hi_and_version field to 4 */
-  uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
+  uuid.time_hi_and_version = uuid.time_hi_and_version & 0x0fff | 0x4000;
 
   str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
              uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
@@ -681,9 +681,9 @@ int dashboard_pi::Init(void) {
 
   Start(1000, wxTIMER_CONTINUOUS);
 
-  return (WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
-          WANTS_PREFERENCES | WANTS_CONFIG | WANTS_NMEA_SENTENCES |
-          WANTS_NMEA_EVENTS | USES_AUI_MANAGER | WANTS_PLUGIN_MESSAGING);
+  return WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL |
+         WANTS_PREFERENCES | WANTS_CONFIG | WANTS_NMEA_SENTENCES |
+         WANTS_NMEA_EVENTS | USES_AUI_MANAGER | WANTS_PLUGIN_MESSAGING;
 }
 
 bool dashboard_pi::DeInit(void) {
@@ -1063,8 +1063,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               float llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
               int lat_deg_int = (int)(llt / 100);
               float lat_deg = lat_deg_int;
-              float lat_min = llt - (lat_deg * 100);
-              lat = lat_deg + (lat_min / 60.);
+              float lat_min = llt - lat_deg * 100;
+              lat = lat_deg + lat_min / 60.;
               if (m_NMEA0183.Gga.Position.Latitude.Northing == South)
                 lat = -lat;
               SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
@@ -1072,8 +1072,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               float lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
               int lon_deg_int = (int)(lln / 100);
               float lon_deg = lon_deg_int;
-              float lon_min = lln - (lon_deg * 100);
-              lon = lon_deg + (lon_min / 60.);
+              float lon_min = lln - lon_deg * 100;
+              lon = lon_deg + lon_min / 60.;
               if (m_NMEA0183.Gga.Position.Longitude.Easting == West) lon = -lon;
               SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
             }
@@ -1103,16 +1103,16 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             float llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
             int lat_deg_int = (int)(llt / 100);
             float lat_deg = lat_deg_int;
-            float lat_min = llt - (lat_deg * 100);
-            lat = lat_deg + (lat_min / 60.);
+            float lat_min = llt - lat_deg * 100;
+            lat = lat_deg + lat_min / 60.;
             if (m_NMEA0183.Gll.Position.Latitude.Northing == South) lat = -lat;
             SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
 
             float lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
             int lon_deg_int = (int)(lln / 100);
             float lon_deg = lon_deg_int;
-            float lon_min = lln - (lon_deg * 100);
-            lon = lon_deg + (lon_min / 60.);
+            float lon_min = lln - lon_deg * 100;
+            lon = lon_deg + lon_min / 60.;
             if (m_NMEA0183.Gll.Position.Longitude.Easting == West) lon = -lon;
             SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
 
@@ -1163,7 +1163,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             // Any device sending VAR=0.0 can be assumed to not really know
             // what the actual variation is, so in this case we use WMM if
             // available
-            if ((!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees)) &&
+            if (!std::isnan(m_NMEA0183.Hdg.MagneticVariationDegrees) &&
                 0.0 != m_NMEA0183.Hdg.MagneticVariationDegrees) {
               mPriVar = 3;
               if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
@@ -1188,7 +1188,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //      If Variation is available, no higher priority HDT is
           //      available, then calculate and propagate calculated HDT
           if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees)) {
-            if (!std::isnan(mVar) && (mPriHeadingT >= 7)) {
+            if (!std::isnan(mVar) && mPriHeadingT >= 7) {
               mPriHeadingT = 7;
               double heading = mHdm + mVar;
               if (heading < 0)
@@ -1220,7 +1220,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //      If Variation is available, no higher priority HDT is
           //      available, then calculate and propagate calculated HDT
           if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic)) {
-            if (!std::isnan(mVar) && (mPriHeadingT >= 5)) {
+            if (!std::isnan(mVar) && mPriHeadingT >= 5) {
               mPriHeadingT = 5;
               double heading = mHdm + mVar;
               if (heading < 0)
@@ -1447,7 +1447,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   // If no TWD with higher priority is present
                   // and true heading is available calculate it.
                   if (g_dHDT < 361. && g_dHDT >= 0.0) {
-                    double g_dCalWdir = (m_NMEA0183.Mwv.WindAngle) + g_dHDT;
+                    double g_dCalWdir = m_NMEA0183.Mwv.WindAngle + g_dHDT;
                     if (g_dCalWdir > 360.) {
                       g_dCalWdir -= 360;
                     } else if (g_dCalWdir < 0.) {
@@ -1489,8 +1489,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               float llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
               int lat_deg_int = (int)(llt / 100);
               float lat_deg = lat_deg_int;
-              float lat_min = llt - (lat_deg * 100);
-              lat = lat_deg + (lat_min / 60.);
+              float lat_min = llt - lat_deg * 100;
+              lat = lat_deg + lat_min / 60.;
               if (m_NMEA0183.Rmc.Position.Latitude.Northing == South)
                 lat = -lat;
               SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
@@ -1498,8 +1498,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               float lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
               int lon_deg_int = (int)(lln / 100);
               float lon_deg = lon_deg_int;
-              float lon_min = lln - (lon_deg * 100);
-              lon = lon_deg + (lon_min / 60.);
+              float lon_min = lln - lon_deg * 100;
+              lon = lon_deg + lon_min / 60.;
               if (m_NMEA0183.Rmc.Position.Longitude.Easting == West) lon = -lon;
               SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
             }
@@ -1542,7 +1542,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               // Any device sending VAR=0.0 can be assumed to not really know
               // what the actual variation is, so in this case we use WMM if
               // available
-              if ((!std::isnan(m_NMEA0183.Rmc.MagneticVariation)) &&
+              if (!std::isnan(m_NMEA0183.Rmc.MagneticVariation) &&
                   0.0 != m_NMEA0183.Rmc.MagneticVariation) {
                 mPriVar = 4;
                 if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
@@ -1846,7 +1846,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
           }
           // Depth sounding
-          if ((m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D")) {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "D") {
             bool goodvalue = false;
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "XDHI"
                        && mPriDepth >= 6) {
@@ -1946,7 +1946,7 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
     // Ownship velocity vector, relative to head-up
     double bsx = 0;
     double bsy = 0;
-    if ((!std::isnan(g_dSOG)) && (!std::isnan(g_dCOG))) {
+    if (!std::isnan(g_dSOG) && !std::isnan(g_dCOG)) {
       bsx = g_dSOG * cos((g_dCOG - g_dHDT) * PI / 180.);
       bsy = g_dSOG * sin((g_dCOG - g_dHDT) * PI / 180.);
       ;
@@ -1957,7 +1957,7 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
     double twdy = awsy - bsy;
 
     // Calculate the speed (magnitude of the vector)
-    double tws = pow(((twdx * twdx) + (twdy * twdy)), 0.5);
+    double tws = pow(twdx * twdx + twdy * twdy, 0.5);
 
     // calculate the True Wind Angle
     double twd = atan2(twdy, twdx) * 180. / PI;
@@ -2111,7 +2111,7 @@ void dashboard_pi::HandleN2K_128267(ObservedEvt ev) {
         double depth = DepthBelowTransducer;
         // Set prio to sensor's offset
         if (!std::isnan(Offset) && !N2kIsNA(Offset)) depth += Offset;
-        else (depth += g_dDashDBTOffset);
+        else depth += g_dDashDBTOffset;
 
         SendSentenceToAllInstruments(OCPN_DBP_STC_DPT,
           toUsrDistance_Plugin(depth / 1852.0, g_iDashDepthUnit),
@@ -2349,7 +2349,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
             double m_twdT = GEODESIC_RAD2DEG(WindAngle);
             // Make it true if variation is available
             if (!std::isnan(mVar)) {
-              m_twdT = (m_twdT)+mVar;
+              m_twdT = m_twdT+mVar;
               if (m_twdT > 360.) {
                 m_twdT -= 360;
               }
@@ -2517,11 +2517,11 @@ void dashboard_pi::ParseSignalK(wxString &msg) {
 
   if (root.HasMember("self")) {
     if (root["self"].AsString().StartsWith(_T("vessels.")))
-      m_self = (root["self"].AsString());  // for java server, and OpenPlotter
+      m_self = root["self"].AsString();  // for java server, and OpenPlotter
                                            // node.js server 1.20
     else if (root["self"].AsString().Length())
       m_self =
-          _T("vessels.") + (root["self"].AsString());  // for Node.js server
+          _T("vessels.") + root["self"].AsString();  // for Node.js server
 
   }
 
@@ -2622,7 +2622,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
         // If no higher priority HDT, calculate it here.
-        if (mPriHeadingT >= 6 && ( !std::isnan(mVar) )) {
+        if (mPriHeadingT >= 6 && !std::isnan(mVar)) {
           double heading = hdm + mVar;
           if (heading < 0)
             heading += 360;
@@ -2713,7 +2713,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           // If no TWD with higher priority is present and
           // true heading is available calculate it.
           if (g_dHDT < 361. && g_dHDT >= 0.0) {
-            double g_dCalWdir = (m_twaangle_raw)+g_dHDT;
+            double g_dCalWdir = m_twaangle_raw+g_dHDT;
             if (g_dCalWdir > 360.) {
               g_dCalWdir -= 360;
             }
@@ -2828,7 +2828,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     else if (update_path ==
              _T("navigation.gnss.satellites")) {  // GNSS satellites in use
       if (mPriSatUsed >= 2) {
-        int usedSats = ( value ).AsInt();
+        int usedSats = value.AsInt();
         if (usedSats < 1 ) return;
         SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, usedSats, _T (""));
         mPriSatUsed = 2;
@@ -2837,10 +2837,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     }
     else if (update_path == _T("navigation.gnss.type") ) {
       if (value.IsString() && value.AsString() != wxEmptyString) {
-        talkerID = (value.AsString()); //Like "Combined GPS/GLONASS"
+        talkerID = value.AsString(); //Like "Combined GPS/GLONASS"
         talkerID.MakeUpper();
         m_PriN2kTalker = gps_watchdog_timeout_ticks;
-        if (( talkerID.Contains(_T("GPS")) ) && ( talkerID.Contains(_T("GLONASS")) ))
+        if (talkerID.Contains(_T("GPS")) && talkerID.Contains(_T("GLONASS")))
           talkerID = _T("GPSGLONAS");
         else if (talkerID.Contains(_T("GPS")))
           talkerID = _T("GP");
@@ -2857,7 +2857,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                                                           // view
       if (mPriSatUsed >= 4 ) {
         if (value.HasMember("count") && value["count"].IsInt()) {
-          double m_SK_SatsInView = (value["count"].AsInt());
+          double m_SK_SatsInView = value["count"].AsInt();
           SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, m_SK_SatsInView,
                                        _T (""));
           mPriSatUsed = 4;
@@ -2869,7 +2869,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           // Update satellites data.
           int iNumSats;
           if (value.HasMember("count") && value["count"].IsInt()) {
-            iNumSats = ( value["count"].AsInt() );
+            iNumSats = value["count"].AsInt();
           }
           else iNumSats = value[_T ("satellites")].Size();
 
@@ -2935,7 +2935,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     } else if (update_path == _T("navigation.datetime")) {
       if (mPriDateTime >= 1) {
         mPriDateTime = 1;
-        wxString s_dt = (value.AsString());  //"2019-12-28T09:26:58.000Z"
+        wxString s_dt = value.AsString();  //"2019-12-28T09:26:58.000Z"
         s_dt.Replace('-', wxEmptyString);
         s_dt.Replace(':', wxEmptyString);
         wxString utc_dt = s_dt.BeforeFirst('T');      // Date
@@ -2985,7 +2985,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         m_twdM = GEODESIC_RAD2DEG(m_twdM);
         // Make it true if variation is available
         if (!std::isnan(mVar)) {
-          m_twdM = (m_twdM) + mVar;
+          m_twdM = m_twdM + mVar;
           if (m_twdM > 360.) {
             m_twdM -= 360;
           }
@@ -3192,25 +3192,25 @@ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
       scaler = 1.0 + OCPN_GetWinDIPScaleFactor() / 4;
     scaler = wxMax(1.0, scaler);
 
-    g_USFontTitle = *(dialog->m_pFontPickerTitle->GetFontData());
+    g_USFontTitle = *dialog->m_pFontPickerTitle->GetFontData();
     g_FontTitle = *g_pUSFontTitle;
     g_FontTitle.SetChosenFont(g_pUSFontTitle->GetChosenFont().Scaled(scaler));
     g_FontTitle.SetColour(g_pUSFontTitle->GetColour());
     g_USFontTitle = *g_pUSFontTitle;
 
-    g_USFontData = *(dialog->m_pFontPickerData->GetFontData());
+    g_USFontData = *dialog->m_pFontPickerData->GetFontData();
     g_FontData = *g_pUSFontData;
     g_FontData.SetChosenFont(g_pUSFontData->GetChosenFont().Scaled(scaler));
     g_FontData.SetColour(g_pUSFontData->GetColour());
     g_USFontData = *g_pUSFontData;
 
-    g_USFontLabel = *(dialog->m_pFontPickerLabel->GetFontData());
+    g_USFontLabel = *dialog->m_pFontPickerLabel->GetFontData();
     g_FontLabel = *g_pUSFontLabel;
     g_FontLabel.SetChosenFont(g_pUSFontLabel->GetChosenFont().Scaled(scaler));
     g_FontLabel.SetColour(g_pUSFontLabel->GetColour());
     g_USFontLabel = *g_pUSFontLabel;
 
-    g_USFontSmall = *(dialog->m_pFontPickerSmall->GetFontData());
+    g_USFontSmall = *dialog->m_pFontPickerSmall->GetFontData();
     g_FontSmall = *g_pUSFontSmall;
     g_FontSmall.SetChosenFont(g_pUSFontSmall->GetChosenFont().Scaled(scaler));
     g_FontSmall.SetColour(g_pUSFontSmall->GetColour());
@@ -3354,7 +3354,7 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
       // grabbable... Workaround:  detect this case, and force the pane to be on
       // a different Row. so that the display is corrected by toggling the
       // dashboard off and back on.
-      if ((pane.dock_direction == wxAUI_DOCK_BOTTOM) && pane.IsDocked())
+      if (pane.dock_direction == wxAUI_DOCK_BOTTOM && pane.IsDocked())
         pane.Row(2);
     }
   }
@@ -3377,7 +3377,7 @@ void dashboard_pi::UpdateAuiStatus(void) {
     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i);
     wxAuiPaneInfo &pane = m_pauimgr->GetPane(cont->m_pDashboardWindow);
     // Initialize visible state as perspective is loaded now
-    cont->m_bIsVisible = (pane.IsOk() && pane.IsShown());
+    cont->m_bIsVisible = pane.IsOk() && pane.IsShown();
 
 #ifdef __WXQT__
     if (pane.IsShown()) {
@@ -3753,7 +3753,7 @@ bool dashboard_pi::SaveConfig(void) {
               }
           }
           Inst = NULL;
-          for (size_t i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+          for (size_t i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
           {
               Inst = cont->m_aInstrumentPropertyList.Item(i);
               if (Inst->m_Listplace == (int)j)
@@ -3784,7 +3784,7 @@ void dashboard_pi::ApplyConfig(void) {
   // Reverse order to handle deletes
   for (size_t i = m_ArrayOfDashboardWindow.GetCount(); i > 0; i--) {
     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i - 1);
-    int orient = (cont->m_sOrientation == _T("V") ? wxVERTICAL : wxHORIZONTAL);
+    int orient = cont->m_sOrientation == _T("V") ? wxVERTICAL : wxHORIZONTAL;
     if (cont->m_bIsDeleted) {
       if (cont->m_pDashboardWindow) {
         m_pauimgr->DetachPane(cont->m_pDashboardWindow);
@@ -3799,7 +3799,7 @@ void dashboard_pi::ApplyConfig(void) {
       // A new dashboard is created
       cont->m_pDashboardWindow = new DashboardWindow(
           GetOCPNCanvasWindow(), wxID_ANY, m_pauimgr, this, orient, cont);
-      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
+      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &cont->m_aInstrumentPropertyList);
       bool vertical = orient == wxVERTICAL;
       wxSize sz = cont->m_pDashboardWindow->GetMinSize();
       wxSize best = cont->m_conf_best_size;
@@ -3844,7 +3844,7 @@ void dashboard_pi::ApplyConfig(void) {
       pane.Caption(cont->m_sCaption).Show(cont->m_bIsVisible);
       if (!cont->m_pDashboardWindow->isInstrumentListEqual(
               cont->m_aInstrumentList)) {
-        cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
+        cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &cont->m_aInstrumentPropertyList);
         wxSize sz = cont->m_pDashboardWindow->GetMinSize();
         pane.MinSize(sz).BestSize(sz).FloatingSize(sz);
       }
@@ -4558,7 +4558,7 @@ void DashboardPreferencesDialog::UpdateDashboardButtonsState() {
   long item = -1;
   item = m_pListCtrlDashboards->GetNextItem(item, wxLIST_NEXT_ALL,
                                             wxLIST_STATE_SELECTED);
-  bool enable = (item != -1);
+  bool enable = item != -1;
 
   //  Disable the Dashboard Delete button if the parent(Dashboard) of this
   //  dialog is selected.
@@ -4613,25 +4613,25 @@ void DashboardPreferencesDialog::OnDashboarddefaultFont(wxCommandEvent& event){
         scaler = 1.0 + OCPN_GetWinDIPScaleFactor() / 4;
     scaler = wxMax(1.0, scaler);
 
-    g_USFontTitle = *(m_pFontPickerTitle->GetFontData());
+    g_USFontTitle = *m_pFontPickerTitle->GetFontData();
     g_FontTitle = *g_pUSFontTitle;
     g_FontTitle.SetChosenFont(g_pUSFontTitle->GetChosenFont().Scaled(scaler));
     g_FontTitle.SetColour(g_pUSFontTitle->GetColour());
     g_USFontTitle = *g_pUSFontTitle;
 
-    g_USFontData = *(m_pFontPickerData->GetFontData());
+    g_USFontData = *m_pFontPickerData->GetFontData();
     g_FontData = *g_pUSFontData;
     g_FontData.SetChosenFont(g_pUSFontData->GetChosenFont().Scaled(scaler));
     g_FontData.SetColour(g_pUSFontData->GetColour());
     g_USFontData = *g_pUSFontData;
 
-    g_USFontLabel = *(m_pFontPickerLabel->GetFontData());
+    g_USFontLabel = *m_pFontPickerLabel->GetFontData();
     g_FontLabel = *g_pUSFontLabel;
     g_FontLabel.SetChosenFont(g_pUSFontLabel->GetChosenFont().Scaled(scaler));
     g_FontLabel.SetColour(g_pUSFontLabel->GetColour());
     g_USFontLabel = *g_pUSFontLabel;
 
-    g_USFontSmall = *(m_pFontPickerSmall->GetFontData());
+    g_USFontSmall = *m_pFontPickerSmall->GetFontData();
     g_FontSmall = *g_pUSFontSmall;
     g_FontSmall.SetChosenFont(g_pUSFontSmall->GetChosenFont().Scaled(scaler));
     g_FontSmall.SetColour(g_pUSFontSmall->GetColour());
@@ -4670,7 +4670,7 @@ void DashboardPreferencesDialog::UpdateButtonsState() {
   long item = -1;
   item = m_pListCtrlInstruments->GetNextItem(item, wxLIST_NEXT_ALL,
                                              wxLIST_STATE_SELECTED);
-  bool enable = (item != -1);
+  bool enable = item != -1;
 
   m_pButtonDelete->Enable(enable);
   m_pButtonEdit->Enable(enable); // TODO: Properties ... done Bernd Cirotzki
@@ -4720,7 +4720,7 @@ void DashboardPreferencesDialog::OnInstrumentDelete(wxCommandEvent &event) {
   if (cont)
   {
       InstrumentProperties *Inst = NULL;
-      for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+      for (unsigned int i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
       {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
           if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID) &&
@@ -4740,7 +4740,7 @@ void DashboardPreferencesDialog::OnInstrumentDelete(wxCommandEvent &event) {
   m_pListCtrlInstruments->DeleteItem(itemID);
   if (InstDel)
   {
-      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));      
+      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &cont->m_aInstrumentPropertyList);      
       delete InstDel;
   }
   UpdateButtonsState();
@@ -4762,7 +4762,7 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
     DashboardWindowContainer* cont = m_Config.Item(m_pListCtrlDashboards->GetItemData(itemIDWindow));
     if (!cont) return;
     InstrumentProperties* Inst = NULL;
-    for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+    for (unsigned int i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
     {
         Inst = cont->m_aInstrumentPropertyList.Item(i); // m_pListCtrlInstruments->GetItemData(itemID)
         if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID)) // Is for right Instrumenttype.
@@ -4807,13 +4807,13 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
             cont->m_aInstrumentPropertyList.Remove(Inst);
         else
         {                      
-            Inst->m_TitelFont = *(Edit->m_fontPicker2->GetFontData());
+            Inst->m_TitelFont = *Edit->m_fontPicker2->GetFontData();
             Inst->m_TitelFont.SetChosenFont(Inst->m_TitelFont.GetChosenFont().Scaled(scaler));
-            Inst->m_DataFont = *(Edit->m_fontPicker4->GetFontData());
+            Inst->m_DataFont = *Edit->m_fontPicker4->GetFontData();
             Inst->m_DataFont.SetChosenFont(Inst->m_DataFont.GetChosenFont().Scaled(scaler));
-            Inst->m_LabelFont = *(Edit->m_fontPicker5->GetFontData());
+            Inst->m_LabelFont = *Edit->m_fontPicker5->GetFontData();
             Inst->m_LabelFont.SetChosenFont(Inst->m_LabelFont.GetChosenFont().Scaled(scaler));
-            Inst->m_SmallFont = *(Edit->m_fontPicker6->GetFontData());
+            Inst->m_SmallFont = *Edit->m_fontPicker6->GetFontData();
             Inst->m_SmallFont.SetChosenFont(Inst->m_SmallFont.GetChosenFont().Scaled(scaler));
             Inst->m_DataBackgroundColour = Edit->m_colourPicker2->GetColour();
             Inst->m_TitlelBackgroundColour = Edit->m_colourPicker1->GetColour();
@@ -4823,7 +4823,7 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
     }
     delete Edit;
     if (cont->m_pDashboardWindow) {
-      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
+      cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &cont->m_aInstrumentPropertyList);
     }
     if (DefaultFont) delete Inst;
 }
@@ -4846,10 +4846,10 @@ void DashboardPreferencesDialog::OnInstrumentUp(wxCommandEvent &event) {
   if (cont)
   {
       InstrumentProperties* Inst = NULL;
-      for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+      for (unsigned int i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
       {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
-          if (Inst->m_Listplace  == (itemID - 1))
+          if (Inst->m_Listplace  == itemID - 1)
               Inst->m_Listplace = itemID;
           if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID) &&
               Inst->m_Listplace == itemID)
@@ -4888,10 +4888,10 @@ void DashboardPreferencesDialog::OnInstrumentDown(wxCommandEvent &event) {
   if (cont)
   {
       InstrumentProperties* Inst = NULL;
-      for (unsigned int i = 0; i < (cont->m_aInstrumentPropertyList.GetCount()); i++)
+      for (unsigned int i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
       {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
-          if (Inst->m_Listplace == (itemID + 1) && Inst->m_aInstrument != (int)m_pListCtrlInstruments->GetItemData(itemID))
+          if (Inst->m_Listplace == itemID + 1 && Inst->m_aInstrument != (int)m_pListCtrlInstruments->GetItemData(itemID))
               Inst->m_Listplace = itemID;
           if (Inst->m_aInstrument == (int)m_pListCtrlInstruments->GetItemData(itemID) &&
               Inst->m_Listplace == itemID)
@@ -5862,7 +5862,7 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq,
                                                   wxString talk,
                                                   SAT_INFO sats[4]) {
   for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++) {
-    if ((m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_GPS)) &&
+    if (m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_GPS) &&
         m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(
             CLASSINFO(DashboardInstrument_GPS)))
       ((DashboardInstrument_GPS *)m_ArrayOfInstrument.Item(i)->m_pInstrument)
@@ -5872,7 +5872,7 @@ void DashboardWindow::SendSatInfoToAllInstruments(int cnt, int seq,
 
 void DashboardWindow::SendUtcTimeToAllInstruments(wxDateTime value) {
   for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++) {
-    if ((m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_CLK)) &&
+    if (m_ArrayOfInstrument.Item(i)->m_cap_flag.test(OCPN_DBP_STC_CLK) &&
         m_ArrayOfInstrument.Item(i)->m_pInstrument->IsKindOf(
             CLASSINFO(DashboardInstrument_Clock)))
       //                  || m_ArrayOfInstrument.Item( i
@@ -5905,8 +5905,8 @@ bool OCPNFontButton::Create(wxWindow *parent, wxWindowID id,
                             const wxSize &size, long style,
                             const wxValidator &validator,
                             const wxString &name) {
-  wxString label = (style & wxFNTP_FONTDESC_AS_LABEL)
-                       ? wxString()
+  wxString label = style & wxFNTP_FONTDESC_AS_LABEL
+                     ? wxString()
                        :  // label will be updated by UpdateFont
                        _("Choose font");
   label = name;

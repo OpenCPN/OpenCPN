@@ -71,13 +71,13 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
   if (!RoutePointGui(m_point).IsVisibleSelectable(canvas, boverride_viz)) return;
 
   // If waypoint is well off screen, skip the drawing
-  if( (abs(r.x) > canvas->GetCanvasWidth() * 4 ) ||
-      (abs(r.y) > canvas->GetCanvasHeight() * 4))
+  if( abs(r.x) > canvas->GetCanvasWidth() * 4 ||
+      abs(r.y) > canvas->GetCanvasHeight() * 4)
     return;
 
   // If waypoint pixel location is invalid, skip the drawing
-  if ((abs(r.x) == INVALID_COORD ) ||
-      (abs(r.y) == INVALID_COORD) )
+  if (abs(r.x) == INVALID_COORD ||
+      abs(r.y) == INVALID_COORD )
   return;
 
 
@@ -97,13 +97,13 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
   //  Substitue icon?
   if (m_point.m_IconIsDirty) ReLoadIcon();
   wxBitmap *pbm;
-  if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+  if (m_point.m_bIsActive && m_point.m_IconName != _T("mob"))
     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
   else
     pbm = m_point.m_pbmIcon;
 
   wxBitmap *pbms = NULL;
-  if ((g_MarkScaleFactorExp > 1.0) && !m_point.m_bPreScaled) {
+  if (g_MarkScaleFactorExp > 1.0 && !m_point.m_bPreScaled) {
     if (m_point.m_IconScaleFactor != g_MarkScaleFactorExp) {
       wxImage scaled_image = pbm->ConvertToImage();
       int new_width = pbm->GetWidth() * g_MarkScaleFactorExp;
@@ -170,9 +170,9 @@ void RoutePointGui::Draw(ocpnDC& dc, ChartCanvas* canvas, wxPoint* rpn,
 
   bool bDrawHL = false;
 
-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+  if (m_point.m_bBlink && gFrame->nBlinkerTick & 1) bDrawHL = true;
 
-  if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
+  if (!bDrawHL && NULL != m_point.m_pbmIcon) {
     dc.DrawBitmap(*pbm, r.x - sx2, r.y - sy2, true);
     // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
     // Do it explicitely here for all platforms.
@@ -247,7 +247,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
     LLBBox vpBBox = vp.GetBBox();
     if (vpBBox.IntersectOut(m_point.m_wpBBox)) {
       // Are Range Rings enabled?
-      if (m_point.m_bShowWaypointRangeRings && (m_point.m_iWaypointRangeRingsNumber > 0)) {
+      if (m_point.m_bShowWaypointRangeRings && m_point.m_iWaypointRangeRingsNumber > 0) {
         double factor = 1.00;
         if (m_point.m_iWaypointRangeRingsStepUnits == 1)  // convert kilometers to NMi
           factor = 1 / 1.852;
@@ -279,7 +279,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   //    Substitute icon?
   if (m_point.m_IconIsDirty) ReLoadIcon();
   wxBitmap *pbm;
-  if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+  if (m_point.m_bIsActive && m_point.m_IconName != _T("mob"))
     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
   else
     pbm = m_point.m_pbmIcon;
@@ -379,9 +379,9 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
   bool bDrawHL = false;
 
-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+  if (m_point.m_bBlink && gFrame->nBlinkerTick & 1) bDrawHL = true;
 
-  if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
+  if (!bDrawHL && NULL != m_point.m_pbmIcon) {
     int glw, glh;
     unsigned int IconTexture =
        WayPointmanGui(*pWayPointMan).GetIconTexture(pbm, glw, glh);
@@ -505,11 +505,11 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
         unsigned int b = m_point.m_FontColor.Blue();
         for (int i = 0; i < h; i++) {
           for (int j = 0; j < w; j++) {
-            unsigned int index = ((i * w) + j) * 4;
+            unsigned int index = (i * w + j) * 4;
             data[index] = r;
             data[index + 1] = g;
             data[index + 2] = b;
-            data[index + 3] = im[((i * w) + j) * 3];
+            data[index + 3] = im[(i * w + j) * 3];
           }
         }
       }
@@ -815,7 +815,7 @@ void RoutePointGui::EnableDragHandle(bool bEnable) {
           for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++) {
               unsigned char r, g, b;
-              int off = (y * image.GetWidth() + x);
+              int off = y * image.GetWidth() + x;
               r = d[off * 3 + 0];
               g = d[off * 3 + 1];
               b = d[off * 3 + 2];
@@ -824,7 +824,7 @@ void RoutePointGui::EnableDragHandle(bool bEnable) {
               e[off * 4 + 2] = b;
 
               e[off * 4 + 3] =
-                  a ? a[off] : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+                  a ? a[off] : r == mr && g == mg && b == mb ? 0 : 255;
             }
         }
 
@@ -911,7 +911,7 @@ bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
 
   OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
-  return (result == 0);
+  return result == 0;
 }
 
 int RoutePointGui::GetIconImageIndex() {
@@ -932,19 +932,19 @@ int RoutePointGui::GetIconImageIndex() {
     }
 
     if (brp_viz)
-      return (pWayPointMan->GetFIconImageListIndex(GetIconBitmap()));
+      return pWayPointMan->GetFIconImageListIndex(GetIconBitmap());
     else {
       if (m_point.IsVisible())
-        return (pWayPointMan->GetIconImageListIndex(GetIconBitmap()));
+        return pWayPointMan->GetIconImageListIndex(GetIconBitmap());
       else
-        return (pWayPointMan->GetXIconImageListIndex(GetIconBitmap()));
+        return pWayPointMan->GetXIconImageListIndex(GetIconBitmap());
     }
   }
 
   else {  // point is not shared
     if (m_point.IsVisible())
-      return (pWayPointMan->GetIconImageListIndex(GetIconBitmap()));
+      return pWayPointMan->GetIconImageListIndex(GetIconBitmap());
     else
-      return (pWayPointMan->GetXIconImageListIndex(GetIconBitmap()));
+      return pWayPointMan->GetXIconImageListIndex(GetIconBitmap());
   }
 }

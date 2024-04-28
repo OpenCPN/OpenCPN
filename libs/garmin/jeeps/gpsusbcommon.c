@@ -128,12 +128,12 @@ top:
 		}
 
 		m1 = Get_Pkt_Type(pkt_id, pkttype, &m2);
-if ((rv == 0)  &&  (receive_state == rs_frombulk) ) {m1= "RET2INTR";m2=NULL;};
+if (rv == 0  &&  receive_state == rs_frombulk ) {m1= "RET2INTR";m2=NULL;};
 		GPS_Diag("(%-8s%s)\n", m1, m2 ? m2 : "");
 	}
 
 	/* Adjust internal state and retry the read */
-	if ((rv > 0) && (pkt_id == GUSB_REQUEST_BULK)) {
+	if (rv > 0 && pkt_id == GUSB_REQUEST_BULK) {
 		receive_state = rs_frombulk;
 		goto top;
 	}
@@ -145,7 +145,7 @@ if ((rv == 0)  &&  (receive_state == rs_frombulk) ) {m1= "RET2INTR";m2=NULL;};
 	 * there's another packet coming.   That works in every case
 	 * except the A000 discovery sequence.
 	*/
-	if ((receive_state == rs_frombulk) && (rv <= 0)) {
+	if (receive_state == rs_frombulk && rv <= 0) {
 		receive_state = rs_fromintr;
 	}
 
@@ -189,7 +189,7 @@ gusb_cmd_send(const garmin_usb_packet *opkt, size_t sz)
 		gusb_cmd_send(opkt, 0);
 	}
 
-	return (rv);
+	return rv;
 }
 
 void
@@ -260,8 +260,8 @@ gusb_syncup(void)
 		gusb_cmd_send((const garmin_usb_packet *) oinit, sizeof(oinit));
 		gusb_cmd_get(&iresp, sizeof(iresp));
 
-		if ((le_read16(iresp.gusb_pkt.pkt_id) == GUSB_SESSION_ACK) &&
-			(le_read32(iresp.gusb_pkt.datasz) == 4)) {
+		if (le_read16(iresp.gusb_pkt.pkt_id) == GUSB_SESSION_ACK &&
+			le_read32(iresp.gusb_pkt.datasz) == 4) {
 			unsigned serial_number = le_read32(iresp.gusb_pkt.databuf);
 			garmin_unit_info[unit_number].serial_number = serial_number;
 			gusb_id_unit(&garmin_unit_info[unit_number]);

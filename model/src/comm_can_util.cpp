@@ -61,10 +61,10 @@ unsigned long BuildCanID(int priority, int source, int destination, int pgn) {
   unsigned long cid = 0;
   unsigned char pf = (unsigned char) (pgn >> 8);
   if (pf < 240){
-    cid = ((unsigned long)(priority & 0x7))<<26 | pgn<<8 | ((unsigned long)destination)<<8 | (unsigned long)source;
+    cid = (unsigned long)(priority & 0x7)<<26 | pgn<<8 | (unsigned long)destination<<8 | (unsigned long)source;
   }
   else {
-    cid = ((unsigned long)(priority & 0x7))<<26 | pgn<<8 | (unsigned long)source;
+    cid = (unsigned long)(priority & 0x7)<<26 | pgn<<8 | (unsigned long)source;
   }
   return cid;
 }
@@ -75,13 +75,13 @@ unsigned long BuildCanID(int priority, int source, int destination, int pgn) {
 CanHeader::CanHeader(const CanFrame frame) {
   unsigned char buf[4];
   buf[0] = frame.can_id & 0xFF;
-  buf[1] = (frame.can_id >> 8) & 0xFF;
-  buf[2] = (frame.can_id >> 16) & 0xFF;
-  buf[3] = (frame.can_id >> 24) & 0xFF;
+  buf[1] = frame.can_id >> 8 & 0xFF;
+  buf[2] = frame.can_id >> 16 & 0xFF;
+  buf[3] = frame.can_id >> 24 & 0xFF;
 
   source = buf[0];
   destination = buf[2] < 240 ? buf[1] : 255;
-  pgn = (buf[3] & 0x01) << 16 | (buf[2] << 8) | (buf[2] < 240 ? 0 : buf[1]);
+  pgn = (buf[3] & 0x01) << 16 | buf[2] << 8 | (buf[2] < 240 ? 0 : buf[1]);
   priority = (buf[3] & 0x1c) >> 2;
 }
 
@@ -107,12 +107,12 @@ bool CanHeader::IsFastMessage() const {
 //  FastMessage implementation
 
 bool FastMessageMap::IsEntryExpired(unsigned int i) {
-    return (wxDateTime::Now() - entries[i].time_arrived
-              > wxTimeSpan(0, 0, kEntryMaxAgeSecs));
+    return wxDateTime::Now() - entries[i].time_arrived
+           > wxTimeSpan(0, 0, kEntryMaxAgeSecs);
 }
 
 void FastMessageMap::CheckGc() {
-  bool last_run_over_age = (wxDateTime::Now() - last_gc_run) > wxTimeSpan(0, 0, kGcIntervalSecs);
+  bool last_run_over_age = wxDateTime::Now() - last_gc_run > wxTimeSpan(0, 0, kGcIntervalSecs);
   if (last_run_over_age || entries.size() > kGcThreshold) {
     GarbageCollector();
     last_gc_run = wxDateTime::Now();
@@ -122,10 +122,10 @@ void FastMessageMap::CheckGc() {
 int FastMessageMap::FindMatchingEntry(const CanHeader header,
                                       const unsigned char sid) {
   for (unsigned i = 0; i < entries.size(); i++) {
-    if (((sid & 0xE0) == (entries[i].sid & 0xE0)) &&
-        (entries[i].header.pgn == header.pgn) &&
-        (entries[i].header.source == header.source) &&
-        (entries[i].header.destination == header.destination)) {
+    if ((sid & 0xE0) == (entries[i].sid & 0xE0) &&
+        entries[i].header.pgn == header.pgn &&
+        entries[i].header.source == header.source &&
+        entries[i].header.destination == header.destination) {
       return i;
     }
   }
@@ -169,7 +169,7 @@ bool FastMessageMap::InsertEntry(const CanHeader header,
     int total_data_len;  // will also include padding as we memcpy all of the
                          // frame, because I'm lazy
     total_data_len = static_cast<unsigned int>(data[1]);
-    total_data_len += 7 - ((total_data_len - 6) % 7);
+    total_data_len += 7 - (total_data_len - 6) % 7;
 
     entries[index].sid = static_cast<unsigned int>(data[0]);
     entries[index].expected_length = static_cast<unsigned int>(data[1]);
@@ -193,7 +193,7 @@ bool FastMessageMap::InsertEntry(const CanHeader header,
 bool FastMessageMap::AppendEntry(const CanHeader header,
                                  const unsigned char* data, int position) {
   // Check that this is the next message in the sequence
-  if ((entries[position].sid + 1) == data[0]) {
+  if (entries[position].sid + 1 == data[0]) {
     memcpy(&entries[position].data[entries[position].cursor], &data[1], 7);
     entries[position].sid = data[0];
     // Subsequent messages contains seven data bytes (last message may be padded

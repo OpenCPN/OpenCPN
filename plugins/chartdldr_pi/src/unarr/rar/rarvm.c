@@ -62,7 +62,7 @@ bool RARProgramAddInstr(RARProgram *prog, uint8_t instruction, bool bytemode)
     if (instruction == RARMovzxInstruction || instruction == RARMovsxInstruction)
         prog->opcodes[prog->length].bytemode = 2; /* second argument only */
     else if (bytemode)
-        prog->opcodes[prog->length].bytemode = (1 | 2);
+        prog->opcodes[prog->length].bytemode = 1 | 2;
     else
         prog->opcodes[prog->length].bytemode = 0;
     prog->length++;
@@ -177,7 +177,7 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
             NextInstruction();
 
         case RARJzInstruction:
-            if ((flags & ZeroFlag))
+            if (flags & ZeroFlag)
                 Jump(GetOperand1());
             NextInstruction();
 
@@ -220,7 +220,7 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
             NextInstruction();
 
         case RARJsInstruction:
-            if ((flags & SignFlag))
+            if (flags & SignFlag)
                 Jump(GetOperand1());
             NextInstruction();
 
@@ -230,12 +230,12 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
             NextInstruction();
 
         case RARJbInstruction:
-            if ((flags & CarryFlag))
+            if (flags & CarryFlag)
                 Jump(GetOperand1());
             NextInstruction();
 
         case RARJbeInstruction:
-            if ((flags & (CarryFlag | ZeroFlag)))
+            if (flags & (CarryFlag | ZeroFlag))
                 Jump(GetOperand1());
             NextInstruction();
 
@@ -278,19 +278,19 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
         case RARShlInstruction:
             op1 = GetOperand1();
             op2 = GetOperand2();
-            SetOperand1AndFlagsWithCarry(op1 << op2, ((op1 << (op2 - 1)) & 0x80000000) != 0);
+            SetOperand1AndFlagsWithCarry(op1 << op2, ( op1 << op2 - 1 & 0x80000000) != 0);
             NextInstruction();
 
         case RARShrInstruction:
             op1 = GetOperand1();
             op2 = GetOperand2();
-            SetOperand1AndFlagsWithCarry(op1 >> op2, ((op1 >> (op2 - 1)) & 1) != 0);
+            SetOperand1AndFlagsWithCarry(op1 >> op2, ((op1 >> op2 - 1) & 1) != 0);
             NextInstruction();
 
         case RARSarInstruction:
             op1 = GetOperand1();
             op2 = GetOperand2();
-            SetOperand1AndFlagsWithCarry(((int32_t)op1) >> op2, ((op1 >> (op2 - 1)) & 1) != 0);
+            SetOperand1AndFlagsWithCarry((int32_t)op1 >> op2, ((op1 >> op2 - 1) & 1) != 0);
             NextInstruction();
 
         case RARNegInstruction:
@@ -346,7 +346,7 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
 
         case RARAdcInstruction:
             op1 = GetOperand1();
-            carry = (flags & CarryFlag);
+            carry = flags & CarryFlag;
             if (opcode->bytemode)
                 SetOperand1AndFlagsWithCarry((op1 + GetOperand2() + carry) & 0xFF, result < op1 || (result == op1 && carry)); /* does not correctly set sign bit */
             else
@@ -355,7 +355,7 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
 
         case RARSbbInstruction:
             op1 = GetOperand1();
-            carry = (flags & CarryFlag);
+            carry = flags & CarryFlag;
             if (opcode->bytemode)
                 SetOperand1AndFlagsWithCarry((op1 - GetOperand2() - carry) & 0xFF, result > op1 || (result == op1 && carry)); /* does not correctly set sign bit */
             else
@@ -375,14 +375,14 @@ bool RARExecuteProgram(RARVirtualMachine *vm, RARProgram *prog)
 
 static uint32_t _RARRead32(const uint8_t *b)
 {
-    return ((uint32_t)b[3] << 24) | ((uint32_t)b[2] << 16) | ((uint32_t)b[1] << 8) | (uint32_t)b[0];
+    return (uint32_t)b[3] << 24 | (uint32_t)b[2] << 16 | (uint32_t)b[1] << 8 | (uint32_t)b[0];
 }
 
 static void _RARWrite32(uint8_t *b, uint32_t n)
 {
-    b[3] = (n >> 24) & 0xFF;
-    b[2] = (n >> 16) & 0xFF;
-    b[1] = (n >> 8) & 0xFF;
+    b[3] = n >> 24 & 0xFF;
+    b[2] = n >> 16 & 0xFF;
+    b[1] = n >> 8 & 0xFF;
     b[0] = n & 0xFF;
 }
 

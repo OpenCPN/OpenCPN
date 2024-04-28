@@ -247,7 +247,7 @@ void iENCToolbar::SetRangeToolBitmap() {
   //  Select a font that will fit into the allow space.
   bool good = false;
   int target_points = 12;
-  while (!good && (target_points > 4)) {
+  while (!good && target_points > 4) {
     int width, height;
     dc.GetTextExtent(range_string, &width, &height);
     if (width < 50) {
@@ -283,16 +283,16 @@ void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
     int nset = 1;
 
     switch (gFrame->GetPrimaryCanvas()->GetENCDisplayCategory()) {
-      case (DISPLAYBASE):
+      case DISPLAYBASE:
         nset = 0;
         break;
-      case (STANDARD):
+      case STANDARD:
         nset = 1;
         break;
-      case (OTHER):
+      case OTHER:
         nset = 2;
         break;
-      case (MARINERS_STANDARD):
+      case MARINERS_STANDARD:
         nset = 3;
         break;
       default:

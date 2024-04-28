@@ -164,7 +164,7 @@ jas_image_t *jas_image_create(int numcmpts, jas_image_cmptparm_t *cmptparms,
     }
     /* Decide whether to buffer the image data in memory, based on the
       raw size of the image. */
-    inmem = (rawsize < JAS_IMAGE_INMEMTHRESH);
+    inmem = rawsize < JAS_IMAGE_INMEMTHRESH;
 
     /* Create the individual image components. */
     for (cmptno = 0, cmptparm = cmptparms; cmptno < numcmpts; ++cmptno,
@@ -322,7 +322,7 @@ static jas_image_cmpt_t *jas_image_cmpt_create(uint_fast32_t tlx, uint_fast32_t 
     cmpt->cps_ = (depth + 7) / 8;
 
     size = cmpt->width_ * cmpt->height_ * cmpt->cps_;
-    cmpt->stream_ = (inmem) ? jas_stream_memopen(0, size) : jas_stream_tmpfile();
+    cmpt->stream_ = inmem ? jas_stream_memopen(0, size) : jas_stream_tmpfile();
     if (!cmpt->stream_) {
         jas_image_cmpt_destroy(cmpt);
         return 0;
@@ -396,8 +396,8 @@ int jas_image_encode(jas_image_t *image, jas_stream_t *out, int fmt, char *optst
     if (!(fmtinfo = jas_image_lookupfmtbyid(fmt))) {
         return -1;
     }
-    return (fmtinfo->ops.encode) ? (*fmtinfo->ops.encode)(image, out,
-      optstr) : (-1);
+    return fmtinfo->ops.encode ? (*fmtinfo->ops.encode)(image, out,
+      optstr) : -1;
 }
 
 /******************************************************************************\
@@ -453,7 +453,7 @@ int jas_image_readcmpt(jas_image_t *image, int cmptno, jas_image_coord_t x,
                 if ((c = jas_stream_getc(cmpt->stream_)) == EOF) {
                     return -1;
                 }
-                v = (v << 8) | (c & 0xff);
+                v = v << 8 | c & 0xff;
             }
             *d = bitstoint(v, cmpt->prec_, cmpt->sgnd_);
         }
@@ -505,7 +505,7 @@ int jas_image_writecmpt(jas_image_t *image, int cmptno, jas_image_coord_t x, jas
         for (j = width; j > 0; --j, ++d) {
             v = inttobits(*d, cmpt->prec_, cmpt->sgnd_);
             for (k = cmpt->cps_; k > 0; --k) {
-                c = (v >> (8 * (cmpt->cps_ - 1))) & 0xff;
+                c = v >> 8 * (cmpt->cps_ - 1) & 0xff;
                 if (jas_stream_putc(cmpt->stream_,
                   (unsigned char) c) == EOF) {
                     return -1;
@@ -607,7 +607,7 @@ int jas_image_getfmt(jas_stream_t *in)
             }
         }
     }
-    return found ? fmtinfo->id : (-1);
+    return found ? fmtinfo->id : -1;
 }
 
 int jas_image_fmtfromname(char *name)
@@ -728,7 +728,7 @@ jas_image_fmtinfo_t *jas_image_lookupfmtbyname(const char *name)
 static uint_fast32_t inttobits(jas_seqent_t v, int prec, bool sgnd)
 {
     uint_fast32_t ret;
-    ret = ((sgnd && v < 0) ? ((1 << prec) + v) : v) & JAS_ONES(prec);
+    ret = (sgnd && v < 0 ? (1 << prec) + v : v) & JAS_ONES(prec);
     return ret;
 }
 
@@ -736,7 +736,7 @@ static jas_seqent_t bitstoint(uint_fast32_t v, int prec, bool sgnd)
 {
     jas_seqent_t ret;
     v &= JAS_ONES(prec);
-    ret = (sgnd && (v & (1 << (prec - 1)))) ? (v - (1 << prec)) : v;
+    ret = sgnd && v & 1 << prec - 1 ? v - (1 << prec) : v;
     return ret;
 }
 
@@ -913,7 +913,7 @@ int jas_image_readcmptsample(jas_image_t *image, int cmptno, int x, int y)
         if ((c = jas_stream_getc(cmpt->stream_)) == EOF) {
             return -1;
         }
-        v = (v << 8) | (c & 0xff);
+        v = v << 8 | c & 0xff;
     }
     return bitstoint(v, cmpt->prec_, cmpt->sgnd_);
 }
@@ -934,7 +934,7 @@ void jas_image_writecmptsample(jas_image_t *image, int cmptno, int x, int y,
     }
     t = inttobits(v, cmpt->prec_, cmpt->sgnd_);
     for (k = cmpt->cps_; k > 0; --k) {
-        c = (t >> (8 * (cmpt->cps_ - 1))) & 0xff;
+        c = t >> 8 * (cmpt->cps_ - 1) & 0xff;
         if (jas_stream_putc(cmpt->stream_, (unsigned char) c) == EOF) {
             return;
         }
@@ -1220,9 +1220,9 @@ static int getint(jas_stream_t *in, int sgnd, int prec, long *val)
     while (--n >= 0) {
         if ((c = jas_stream_getc(in)) == EOF)
             return -1;
-        v = (v << 8) | c;
+        v = v << 8 | c;
     }
-    v &= ((1 << prec) - 1);
+    v &= (1 << prec) - 1;
     if (sgnd) {
         /* XXX - Do something here. */
         abort();
@@ -1243,7 +1243,7 @@ static int putint(jas_stream_t *out, int sgnd, int prec, long val)
     val &= (1 << prec) - 1;
     n = (prec + 7) / 8;
     while (--n >= 0) {
-        c = (val >> (n * 8)) & 0xff;
+        c = val >> n * 8 & 0xff;
         if (jas_stream_putc(out, c) != c)
             return -1;
     }
@@ -1268,13 +1268,13 @@ static long convert(long val, int oldsgnd, int oldprec, int newsgnd,
 static long downtomult(long x, long y)
 {
     assert(x >= 0);
-    return (x / y) * y;
+    return x / y * y;
 }
 
 static long uptomult(long x, long y)
 {
     assert(x >= 0);
-    return ((x + y - 1) / y) * y;
+    return (x + y - 1) / y * y;
 }
 
 jas_image_t *jas_image_chclrspc(jas_image_t *image, jas_cmprof_t *outprof,

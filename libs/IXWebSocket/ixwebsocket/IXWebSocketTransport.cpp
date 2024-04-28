@@ -328,7 +328,7 @@ namespace ix
 
         // No timeout if state is not OPEN, otherwise computed
         // pingIntervalOrTimeoutGCD (equals to -1 if no ping and no ping timeout are set)
-        int lastingTimeoutDelayInMs = (_readyState != ReadyState::OPEN) ? 0 : _pingIntervalSecs;
+        int lastingTimeoutDelayInMs = _readyState != ReadyState::OPEN ? 0 : _pingIntervalSecs;
 
         if (_pingIntervalSecs > 0)
         {
@@ -337,7 +337,7 @@ namespace ix
             int timeSinceLastPingMs = (int) std::chrono::duration_cast<std::chrono::milliseconds>(
                                           now - _lastSendPingTimePoint)
                                           .count();
-            lastingTimeoutDelayInMs = (1000 * _pingIntervalSecs) - timeSinceLastPingMs;
+            lastingTimeoutDelayInMs = 1000 * _pingIntervalSecs - timeSinceLastPingMs;
         }
 
         // The platform may not have select interrupt capabilities, so wait with a small timeout
@@ -466,7 +466,7 @@ namespace ix
             ws.rsv3 = (data[0] & 0x10) == 0x10;
             ws.opcode = (wsheader_type::opcode_type)(data[0] & 0x0f);
             ws.mask = (data[1] & 0x80) == 0x80;
-            ws.N0 = (data[1] & 0x7f);
+            ws.N0 = data[1] & 0x7f;
             ws.header_size =
                 2 + (ws.N0 == 126 ? 2 : 0) + (ws.N0 == 127 ? 8 : 0) + (ws.mask ? 4 : 0);
             if (_rxbuf.size() < ws.header_size) break; /* Need: ws.header_size - _rxbuf.size() */
@@ -494,21 +494,21 @@ namespace ix
             else if (ws.N0 == 126)
             {
                 ws.N = 0;
-                ws.N |= ((uint64_t) data[2]) << 8;
-                ws.N |= ((uint64_t) data[3]) << 0;
+                ws.N |= (uint64_t) data[2] << 8;
+                ws.N |= (uint64_t) data[3] << 0;
                 i = 4;
             }
             else if (ws.N0 == 127)
             {
                 ws.N = 0;
-                ws.N |= ((uint64_t) data[2]) << 56;
-                ws.N |= ((uint64_t) data[3]) << 48;
-                ws.N |= ((uint64_t) data[4]) << 40;
-                ws.N |= ((uint64_t) data[5]) << 32;
-                ws.N |= ((uint64_t) data[6]) << 24;
-                ws.N |= ((uint64_t) data[7]) << 16;
-                ws.N |= ((uint64_t) data[8]) << 8;
-                ws.N |= ((uint64_t) data[9]) << 0;
+                ws.N |= (uint64_t) data[2] << 56;
+                ws.N |= (uint64_t) data[3] << 48;
+                ws.N |= (uint64_t) data[4] << 40;
+                ws.N |= (uint64_t) data[5] << 32;
+                ws.N |= (uint64_t) data[6] << 24;
+                ws.N |= (uint64_t) data[7] << 16;
+                ws.N |= (uint64_t) data[8] << 8;
+                ws.N |= (uint64_t) data[9] << 0;
                 i = 10;
             }
             else
@@ -519,10 +519,10 @@ namespace ix
 
             if (ws.mask)
             {
-                ws.masking_key[0] = ((uint8_t) data[i + 0]) << 0;
-                ws.masking_key[1] = ((uint8_t) data[i + 1]) << 0;
-                ws.masking_key[2] = ((uint8_t) data[i + 2]) << 0;
-                ws.masking_key[3] = ((uint8_t) data[i + 3]) << 0;
+                ws.masking_key[0] = (uint8_t) data[i + 0] << 0;
+                ws.masking_key[1] = (uint8_t) data[i + 1] << 0;
+                ws.masking_key[2] = (uint8_t) data[i + 2] << 0;
+                ws.masking_key[3] = (uint8_t) data[i + 3] << 0;
             }
             else
             {
@@ -564,7 +564,7 @@ namespace ix
             {
                 if (ws.opcode != wsheader_type::CONTINUATION)
                 {
-                    _fragmentedMessageKind = (ws.opcode == wsheader_type::TEXT_FRAME)
+                    _fragmentedMessageKind = ws.opcode == wsheader_type::TEXT_FRAME
                                                  ? MessageKind::MSG_TEXT
                                                  : MessageKind::MSG_BINARY;
 
@@ -657,8 +657,8 @@ namespace ix
                 if (ws.N >= 2)
                 {
                     // Extract the close code first, available as the first 2 bytes
-                    code |= ((uint64_t) _rxbuf[ws.header_size]) << 8;
-                    code |= ((uint64_t) _rxbuf[ws.header_size + 1]) << 0;
+                    code |= (uint64_t) _rxbuf[ws.header_size] << 8;
+                    code |= (uint64_t) _rxbuf[ws.header_size + 1] << 0;
 
                     // Get the reason.
                     if (ws.N > 2)
@@ -890,7 +890,7 @@ namespace ix
             for (uint64_t i = 0; i < steps; ++i)
             {
                 bool firstStep = i == 0;
-                bool lastStep = (i + 1) == steps;
+                bool lastStep = i + 1 == steps;
                 bool fin = lastStep;
 
                 end = begin + kChunkSize;
@@ -946,10 +946,10 @@ namespace ix
 
         unsigned x = getRandomUnsigned();
         uint8_t masking_key[4] = {};
-        masking_key[0] = (x >> 24);
-        masking_key[1] = (x >> 16) & 0xff;
-        masking_key[2] = (x >> 8) & 0xff;
-        masking_key[3] = (x) &0xff;
+        masking_key[0] = x >> 24;
+        masking_key[1] = x >> 16 & 0xff;
+        masking_key[2] = x >> 8 & 0xff;
+        masking_key[3] = x &0xff;
 
         std::vector<uint8_t> header;
         header.assign(2 + (message_size >= 126 ? 2 : 0) + (message_size >= 65536 ? 6 : 0) +
@@ -972,7 +972,7 @@ namespace ix
 
         if (message_size < 126)
         {
-            header[1] = (message_size & 0xff) | (_useMask ? 0x80 : 0);
+            header[1] = message_size & 0xff | (_useMask ? 0x80 : 0);
 
             if (_useMask)
             {
@@ -985,8 +985,8 @@ namespace ix
         else if (message_size < 65536)
         {
             header[1] = 126 | (_useMask ? 0x80 : 0);
-            header[2] = (message_size >> 8) & 0xff;
-            header[3] = (message_size >> 0) & 0xff;
+            header[2] = message_size >> 8 & 0xff;
+            header[3] = message_size >> 0 & 0xff;
 
             if (_useMask)
             {
@@ -999,14 +999,14 @@ namespace ix
         else
         { // TODO: run coverage testing here
             header[1] = 127 | (_useMask ? 0x80 : 0);
-            header[2] = (message_size >> 56) & 0xff;
-            header[3] = (message_size >> 48) & 0xff;
-            header[4] = (message_size >> 40) & 0xff;
-            header[5] = (message_size >> 32) & 0xff;
-            header[6] = (message_size >> 24) & 0xff;
-            header[7] = (message_size >> 16) & 0xff;
-            header[8] = (message_size >> 8) & 0xff;
-            header[9] = (message_size >> 0) & 0xff;
+            header[2] = message_size >> 56 & 0xff;
+            header[3] = message_size >> 48 & 0xff;
+            header[4] = message_size >> 40 & 0xff;
+            header[5] = message_size >> 32 & 0xff;
+            header[6] = message_size >> 24 & 0xff;
+            header[7] = message_size >> 16 & 0xff;
+            header[8] = message_size >> 8 & 0xff;
+            header[9] = message_size >> 0 & 0xff;
 
             if (_useMask)
             {

@@ -327,7 +327,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   popx = x;
   popy = y;
 
-  if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
+  if (!g_bBasicMenus || seltype != SELTYPE_ROUTECREATE) {
     bool bsubMenus = false;
 
     if (bsubMenus) {
@@ -469,7 +469,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     }
 
     if ((parent->m_singleChart &&
-         (parent->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR)) ||
+         parent->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR) ||
         ais_areanotice) {
       MenuAppend1(contextMenu, ID_DEF_MENU_QUERY,
                   _("Object Query") + _T( "..." ));
@@ -478,13 +478,13 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   } else {
     ChartBase *pChartTest =
         parent->m_pQuilt->GetChartAtPix(parent->GetVP(), wxPoint(x, y));
-    if ((pChartTest && (pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR)) ||
+    if ((pChartTest && pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR) ||
         ais_areanotice) {
       MenuAppend1(contextMenu, ID_DEF_MENU_QUERY,
                   _("Object Query") + _T( "..." ));
     } else {
 #ifndef __ANDROID__
-      if (!g_bBasicMenus && (nChartStack > 1)) {
+      if (!g_bBasicMenus && nChartStack > 1) {
         MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_IN,
                     _menuText(_("Scale In"), _T("Ctrl-Left")));
         MenuAppend1(contextMenu, ID_DEF_MENU_SCALE_OUT,
@@ -494,7 +494,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     }
   }
 
-  if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
+  if (!g_bBasicMenus || seltype != SELTYPE_ROUTECREATE) {
     bool b_dm_add = true;
     if (g_btouch && parent->IsMeasureActive()) b_dm_add = false;
 
@@ -510,7 +510,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   }
 
   if (!g_bBasicMenus &&
-      (!(g_pRouteMan->GetpActiveRoute() || (seltype & SELTYPE_MARKPOINT))))
+      !(g_pRouteMan->GetpActiveRoute() || seltype & SELTYPE_MARKPOINT))
     MenuAppend1(contextMenu, ID_DEF_MENU_GOTO_HERE, _("Navigate To Here"));
 
   if (!g_bBasicMenus)
@@ -528,7 +528,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       }
     } else {
       if (parent->m_singleChart &&
-          (fabs(parent->m_singleChart->GetChartSkew()) > .01) && !g_bskew_comp)
+          fabs(parent->m_singleChart->GetChartSkew()) > .01 && !g_bskew_comp)
         MenuAppend1(contextMenu, ID_DEF_MENU_NORTHUP, _("Chart Up Mode"));
       else
         MenuAppend1(contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode"));
@@ -581,7 +581,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     delete kml;
 
     if (!parent->GetVP().b_quilt && parent->m_singleChart &&
-        (parent->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP)) {
+        parent->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP) {
       MenuAppend1(contextMenu, ID_DEF_MENU_CM93OFFSET_DIALOG,
                   _("CM93 Offset Dialog..."));
     }
@@ -638,9 +638,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   menuFocus = contextMenu;
 
   wxString name;
-  if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
+  if (!g_bBasicMenus || seltype != SELTYPE_ROUTECREATE) {
     if (g_pAIS) {
-      if (parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET)) {
+      if (parent->GetShowAIS() && seltype & SELTYPE_AISTARGET) {
         auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
@@ -651,7 +651,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         menuAIS = new wxMenu(_("AIS") + name);
         MenuAppend1(menuAIS, ID_DEF_MENU_AIS_QUERY, _("Target Query..."));
         if (myptarget && myptarget->bCPA_Valid &&
-            (myptarget->n_alert_state != AIS_ALERT_SET)) {
+            myptarget->n_alert_state != AIS_ALERT_SET) {
           if (myptarget->b_show_AIS_CPA)
             MenuAppend1(menuAIS, ID_DEF_MENU_AIS_CPA, _("Hide Target CPA"));
           else
@@ -673,17 +673,17 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         menuAIS->AppendSeparator();
 
         if (!parent->GetVP().b_quilt) {
-          if ((parent->m_singleChart &&
-               (parent->m_singleChart->GetChartFamily() ==
-                CHART_FAMILY_VECTOR))) {
+          if (parent->m_singleChart &&
+              parent->m_singleChart->GetChartFamily() ==
+              CHART_FAMILY_VECTOR) {
             MenuAppend1(menuAIS, ID_DEF_MENU_QUERY, _("Object Query..."));
           }
 
         } else {
           ChartBase *pChartTest =
               parent->m_pQuilt->GetChartAtPix(parent->GetVP(), wxPoint(x, y));
-          if ((pChartTest &&
-               (pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR))) {
+          if (pChartTest &&
+              pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR) {
             MenuAppend1(menuAIS, ID_DEF_MENU_QUERY, _("Object Query..."));
           }
         }
@@ -718,7 +718,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         if (m_pSelectedRoute->IsActive()) {
           int indexActive = m_pSelectedRoute->GetIndexOf(
               m_pSelectedRoute->m_pRouteActivePoint);
-          if ((indexActive + 1) <= m_pSelectedRoute->GetnPoints()) {
+          if (indexActive + 1 <= m_pSelectedRoute->GetnPoints()) {
             MenuAppend1(menuRoute, ID_RT_MENU_ACTNXTPOINT,
                         _("Activate Next Waypoint"));
           }
@@ -736,7 +736,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         if (m_pSelectedRoute->IsActive()) {
           int indexActive = m_pSelectedRoute->GetIndexOf(
               m_pSelectedRoute->m_pRouteActivePoint);
-          if ((indexActive + 1) <= m_pSelectedRoute->GetnPoints()) {
+          if (indexActive + 1 <= m_pSelectedRoute->GetnPoints()) {
             MenuAppend1(menuRoute, ID_RT_MENU_ACTNXTPOINT,
                         _("Activate Next Waypoint"));
           }
@@ -849,7 +849,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         if (m_pSelectedRoute->m_pRouteActivePoint == m_pFoundRoutePoint) {
           int indexActive = m_pSelectedRoute->GetIndexOf(
               m_pSelectedRoute->m_pRouteActivePoint);
-          if ((indexActive + 1) <= m_pSelectedRoute->GetnPoints())
+          if (indexActive + 1 <= m_pSelectedRoute->GetnPoints())
             MenuAppend1(menuWaypoint, ID_RT_MENU_ACTNXTPOINT,
                         _("Activate Next Waypoint"));
         }
@@ -934,13 +934,13 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                   SYMBOL_STP_TITLE);  // Send to Peer
       // #endif
 
-      if ((m_pFoundRoutePoint == pAnchorWatchPoint1) ||
-          (m_pFoundRoutePoint == pAnchorWatchPoint2))
+      if (m_pFoundRoutePoint == pAnchorWatchPoint1 ||
+          m_pFoundRoutePoint == pAnchorWatchPoint2)
         MenuAppend1(menuWaypoint, ID_WP_MENU_CLEAR_ANCHORWATCH,
                     _("Clear Anchor Watch"));
       else {
-        if (m_pFoundRoutePoint && !(m_pFoundRoutePoint->m_bIsInLayer) &&
-            ((NULL == pAnchorWatchPoint1) || (NULL == pAnchorWatchPoint2))) {
+        if (m_pFoundRoutePoint && !m_pFoundRoutePoint->m_bIsInLayer &&
+            (NULL == pAnchorWatchPoint1 || NULL == pAnchorWatchPoint2)) {
           double dist;
           double brg;
           DistanceBearingMercator(m_pFoundRoutePoint->m_lat,
@@ -1308,8 +1308,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         g_AW2GUID.Clear();
       }
 
-      if (m_pFoundRoutePoint && !(m_pFoundRoutePoint->m_bIsInLayer) &&
-          (m_pFoundRoutePoint->GetIconName() != _T("mob"))) {
+      if (m_pFoundRoutePoint && !m_pFoundRoutePoint->m_bIsInLayer &&
+          m_pFoundRoutePoint->GetIconName() != _T("mob")) {
         // If the WP belongs to an invisible route, we come here instead of to
         // ID_RT_MENU_DELPOINT
         //  Check it, and if so then remove the point from its routes
@@ -1419,7 +1419,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       cm93compchart *pch = NULL;
       if (!parent->GetVP().b_quilt && parent->m_singleChart &&
-          (parent->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP)) {
+          parent->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP) {
         pch = (cm93compchart *)parent->m_singleChart;
       }
 
@@ -1502,7 +1502,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         pConfig->UpdateRoute(m_pSelectedRoute);
 
-        if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+        if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
           pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute);
           // pNew->UpdateProperties();
         }
@@ -1630,7 +1630,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
        */
       pConfig->UpdateRoute(m_pSelectedRoute);
 
-      if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+      if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
         pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute, true);
       }
 
@@ -1669,7 +1669,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       dupFirstWpt = false;
     case ID_RT_MENU_SPLIT_WPT:  // split route at a wpt
 
-      showRPD = (pRoutePropDialog && pRoutePropDialog->IsShown());
+      showRPD = pRoutePropDialog && pRoutePropDialog->IsShown();
 
       if (g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute)
         g_pRouteMan->DeactivateRoute();
@@ -1701,7 +1701,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         pRoutePropDialog->Show();
       }
       if (RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog &&
-          (pRouteManagerDialog->IsShown()))
+          pRouteManagerDialog->IsShown())
         pRouteManagerDialog->UpdateRouteListCtrl();
       break;
 
@@ -1759,7 +1759,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           if (delta.GetMinutes() < 5) bDNScacheStale = false;
         }
 
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        if (g_DNS_cache.size() == 0 || bDNScacheStale)
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
@@ -1810,7 +1810,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           if (delta.GetMinutes() < 5) bDNScacheStale = false;
         }
 
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        if (g_DNS_cache.size() == 0 || bDNScacheStale)
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
@@ -1838,7 +1838,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         pWayPointMan->DestroyWaypoint(m_pFoundRoutePoint);
 
-        if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+        if (pRoutePropDialog && pRoutePropDialog->IsShown()) {
           //    Selected route may have been deleted as one-point route, so
           //    check it
           if (g_pRouteMan->IsRouteValid(m_pSelectedRoute)) {
@@ -1918,8 +1918,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         RoutemanGui(*g_pRouteMan).DeleteTrack(m_pSelectedTrack);
 
         if (TrackPropDlg::getInstanceFlag() && pTrackPropDialog &&
-            (pTrackPropDialog->IsShown()) &&
-            (m_pSelectedTrack == pTrackPropDialog->GetTrack())) {
+            pTrackPropDialog->IsShown() &&
+            m_pSelectedTrack == pTrackPropDialog->GetTrack()) {
           pTrackPropDialog->Hide();
         }
 
@@ -1949,7 +1949,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           if (delta.GetMinutes() < 5) bDNScacheStale = false;
         }
 
-        if ((g_DNS_cache.size() == 0) || bDNScacheStale)
+        if (g_DNS_cache.size() == 0 || bDNScacheStale)
           dlg.SetScanOnCreate(true);
 
         dlg.SetScanTime(5);  // seconds
@@ -2015,9 +2015,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
   }  // switch
 
   //  Chart Groups....
-  if ((event.GetId() >= ID_DEF_MENU_GROUPBASE) &&
-      (event.GetId() <=
-       ID_DEF_MENU_GROUPBASE + (int)g_pGroupArray->GetCount())) {
+  if (event.GetId() >= ID_DEF_MENU_GROUPBASE &&
+      event.GetId() <=
+      ID_DEF_MENU_GROUPBASE + (int)g_pGroupArray->GetCount()) {
     parent->SetGroupIndex(event.GetId() - ID_DEF_MENU_GROUPBASE);
   }
 

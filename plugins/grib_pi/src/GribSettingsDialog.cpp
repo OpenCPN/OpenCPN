@@ -199,7 +199,7 @@ void GribOverlaySettings::Read() {
     for (j = 0; !unit_names[unittype[i]][j].empty(); j++)
       ;
     Settings[i].m_Units =
-        (units < 0 || units > j - 1) ? (SettingsType)0 : (SettingsType)units;
+        units < 0 || units > j - 1 ? (SettingsType)0 : (SettingsType)units;
 
     pConf->Read(Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows,
                 i == WIND);
@@ -396,7 +396,7 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input,
         case KPH:
           return 3.6;
         case BFS:
-          return (reverse) ? GetbftomsFactor(input) : GetmstobfFactor(input);
+          return reverse ? GetbftomsFactor(input) : GetmstobfFactor(input);
       }
       break;
     case 1:
@@ -700,7 +700,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   m_sSlicesPerUpdate->SetSelection(m_Settings.m_SlicesPerUpdate);
   m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
   m_sTransparency->SetValue(
-      100. - ((float)m_Settings.m_iOverlayTransparency * 100. / 254.));
+      100. - (float)m_Settings.m_iOverlayTransparency * 100. / 254.);
   if (!m_cInterpolate->IsChecked()) {  // eventually disable parameters
     m_tSlicesPerUpdate->Disable();
     m_sSlicesPerUpdate->Disable();
@@ -715,7 +715,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   m_rbCurDataIsolHoriz->SetValue(m_Settings.m_iCtrlandDataStyle == 2);
   m_rbCurDataIsolVertic->SetValue(m_Settings.m_iCtrlandDataStyle == 3);
 
-  for (unsigned int i = 0; i < (m_Settings.m_iCtrlBarCtrlVisible[0].Len() * 2);
+  for (unsigned int i = 0; i < m_Settings.m_iCtrlBarCtrlVisible[0].Len() * 2;
        i += 2) {
     ((wxCheckBox *)FindWindow(i + AC0))
         ->SetValue(m_Settings.m_iCtrlBarCtrlVisible[0].GetChar(i / 2) ==
@@ -778,7 +778,7 @@ void GribSettingsDialog::SetSettingsDialogSize() {
   int h = frame->GetClientSize().y;
   int dMargin = 80;  // set a margin
   w -= dMargin;      // width available for the scrolled window
-  h -= (2 * m_sButton->GetSize().GetY()) +
+  h -= 2 * m_sButton->GetSize().GetY() +
        dMargin;  // height available for the scrolled window
                  // two times the button's height to handle pages tab's height
 #endif
@@ -791,7 +791,7 @@ void GribSettingsDialog::SetSettingsDialogSize() {
 
   for (size_t i = 0; i < m_nSettingsBook->GetPageCount();
        i++) {  // compute and set scrolled windows size
-    wxScrolledWindow *sc = ((wxScrolledWindow *)m_nSettingsBook->GetPage(i));
+    wxScrolledWindow *sc = (wxScrolledWindow *)m_nSettingsBook->GetPage(i);
     sc->SetMinSize(wxSize(0, 0));
     wxSize scr;
     if ((int)i == m_SetBookpageIndex) {
@@ -850,7 +850,7 @@ void GribSettingsDialog::WriteSettings() {
       : m_rbCurDataIsolHoriz->GetValue() ? SEPARATED_HORIZONTAL
                                          : SEPARATED_VERTICAL;
 
-  for (unsigned int i = 0; i < (m_Settings.m_iCtrlBarCtrlVisible[0].Len() * 2);
+  for (unsigned int i = 0; i < m_Settings.m_iCtrlBarCtrlVisible[0].Len() * 2;
        i += 2) {
     m_Settings.m_iCtrlBarCtrlVisible[0].SetChar(
         i / 2,
@@ -1001,8 +1001,8 @@ void GribSettingsDialog::ShowFittingSettings(int settings) {
       break;
   }
 
-  wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE &&
-                m_cDataUnits->GetSelection() == GribOverlaySettings::INHG)
+  wxString l = m_lastdatatype == GribOverlaySettings::PRESSURE &&
+               m_cDataUnits->GetSelection() == GribOverlaySettings::INHG
                    ? _T("(0.03 " )
                    : _T("(");
   m_tIsoBarSpacing->SetLabel(
@@ -1065,7 +1065,7 @@ void GribSettingsDialog::PopulateUnits(int settings) {
   m_cDataUnits->Clear();
   for (int i = 0; !unit_names[unittype[m_lastdatatype]][i].empty(); i++)
     m_cDataUnits->Append(
-        wxGetTranslation((unit_names[unittype[m_lastdatatype]][i])));
+        wxGetTranslation(unit_names[unittype[m_lastdatatype]][i]));
 }
 
 void GribSettingsDialog::OnDataTypeChoice(wxCommandEvent &event) {
@@ -1078,8 +1078,8 @@ void GribSettingsDialog::OnDataTypeChoice(wxCommandEvent &event) {
 
 void GribSettingsDialog::OnUnitChange(wxCommandEvent &event) {
   m_Settings.Settings[m_lastdatatype].m_Units = m_cDataUnits->GetSelection();
-  wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE &&
-                m_cDataUnits->GetSelection() == GribOverlaySettings::INHG)
+  wxString l = m_lastdatatype == GribOverlaySettings::PRESSURE &&
+               m_cDataUnits->GetSelection() == GribOverlaySettings::INHG
                    ? _T("(0.03 " )
                    : _T("(");
   m_tIsoBarSpacing->SetLabel(
@@ -1092,16 +1092,16 @@ void GribSettingsDialog::OnUnitChange(wxCommandEvent &event) {
 
 void GribSettingsDialog::OnTransparencyChange(wxScrollEvent &event) {
   m_Settings.m_iOverlayTransparency =
-      254. - ((long)m_sTransparency->GetValue() * 254. / 100.);
+      254. - (long)m_sTransparency->GetValue() * 254. / 100.;
   m_extSettings.m_iOverlayTransparency = m_Settings.m_iOverlayTransparency;
   m_parent.SetFactoryOptions();
 }
 
 void GribSettingsDialog::OnCtrlandDataStyleChanged(wxCommandEvent &event) {
   wxString messages;
-  if ((m_Settings.m_iCtrlandDataStyle == 0 && !m_rbCurDataAttaWCap->GetValue()))
+  if (m_Settings.m_iCtrlandDataStyle == 0 && !m_rbCurDataAttaWCap->GetValue())
     messages.Printf(_("You want to remove the dialog title/drag bar\n"));
-  if ((m_Settings.m_iCtrlandDataStyle != 0 && m_rbCurDataAttaWCap->GetValue()))
+  if (m_Settings.m_iCtrlandDataStyle != 0 && m_rbCurDataAttaWCap->GetValue())
     messages.Printf(_("You want to add a title/drag bar to the dialog\n"));
   if (!messages.IsEmpty()) {
     m_parent.pPlugIn->m_DialogStyleChanged = true;
@@ -1319,7 +1319,7 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
       long units = -1;
       s.ToLong(&units);
       for (int j = 0; !unit_names[unittype[i]][j].empty(); j++)
-        Settings[i].m_Units = (units < 0 || units > j - 1)
+        Settings[i].m_Units = units < 0 || units > j - 1
                                   ? (SettingsType)0
                                   : (SettingsType)units;
     }

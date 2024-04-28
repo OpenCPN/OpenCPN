@@ -117,11 +117,11 @@ static int jpc_putnumnewpasses(jpc_bitstream_t *out, int n)
     } else if (n == 2) {
         ret = jpc_bitstream_putbits(out, 2, 2);
     } else if (n <= 5) {
-        ret = jpc_bitstream_putbits(out, 4, 0xc | (n - 3));
+        ret = jpc_bitstream_putbits(out, 4, 0xc | n - 3);
     } else if (n <= 36) {
-        ret = jpc_bitstream_putbits(out, 9, 0x1e0 | (n - 6));
+        ret = jpc_bitstream_putbits(out, 9, 0x1e0 | n - 6);
     } else if (n <= 164) {
-        ret = jpc_bitstream_putbits(out, 16, 0xff80 | (n - 37));
+        ret = jpc_bitstream_putbits(out, 16, 0xff80 | n - 37);
     } else {
         /* The standard has no provision for encoding a larger value.
         In practice, however, it is highly unlikely that this
@@ -129,7 +129,7 @@ static int jpc_putnumnewpasses(jpc_bitstream_t *out, int n)
         return -1;
     }
 
-    return (ret != EOF) ? 0 : (-1);
+    return ret != EOF ? 0 : -1;
 }
 
 int jpc_enc_encpkts(jpc_enc_t *enc, jas_stream_t *out)
@@ -231,8 +231,8 @@ int jpc_enc_encpkt(jpc_enc_t *enc, jas_stream_t *out, int compno, int lvlno, int
                 jpc_tagtree_setvalue(prc->nlibtree, leaf, cblk->numimsbs);
             }
             pass = cblk->curpass;
-            included = (pass && pass->lyrno == lyrno);
-            if (included && (!cblk->numencpasses)) {
+            included = pass && pass->lyrno == lyrno;
+            if (included && !cblk->numencpasses) {
                 assert(pass->lyrno == lyrno);
                 leaf = jpc_tagtree_getleaf(prc->incltree,
                   cblk - prc->cblks);
@@ -243,7 +243,7 @@ int jpc_enc_encpkt(jpc_enc_t *enc, jas_stream_t *out, int compno, int lvlno, int
         endcblks = &prc->cblks[prc->numcblks];
         for (cblk = prc->cblks; cblk != endcblks; ++cblk) {
             pass = cblk->curpass;
-            included = (pass && pass->lyrno == lyrno);
+            included = pass && pass->lyrno == lyrno;
             if (!cblk->numencpasses) {
                 leaf = jpc_tagtree_getleaf(prc->incltree,
                   cblk - prc->cblks);
@@ -376,7 +376,7 @@ assert(jpc_firstone(datalen) < cblk->numlenbits + jpc_floorlog2(passcount));
             if (jas_stream_copy(out, cblk->stream, lastpass->end - startpass->start)) {
                 return -1;
             }
-            cblk->curpass = (endpass != endpasses) ? endpass : 0;
+            cblk->curpass = endpass != endpasses ? endpass : 0;
             cblk->numencpasses += numnewpasses;
 
         }
@@ -525,7 +525,7 @@ void jpc_init_t2state(jpc_enc_t *enc, int raflag)
                         if (jas_stream_rewind(cblk->stream)) {
                             assert(0);
                         }
-                        cblk->curpass = (cblk->numpasses > 0) ? cblk->passes : 0;
+                        cblk->curpass = cblk->numpasses > 0 ? cblk->passes : 0;
                         cblk->numencpasses = 0;
                         cblk->numlenbits = 3;
                         cblk->numimsbs = band->numbps - cblk->numbps;

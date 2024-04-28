@@ -140,7 +140,7 @@ static int jpc_tsfb_analyze2(jpc_tsfb_t *tsfb, jas_seqent_t *a, int xstart, int 
 
 int jpc_tsfb_analyze(jpc_tsfb_t *tsfb, jas_seq2d_t *a)
 {
-    return (tsfb->numlvls > 0) ? jpc_tsfb_analyze2(tsfb, jas_seq2d_getref(a,
+    return tsfb->numlvls > 0 ? jpc_tsfb_analyze2(tsfb, jas_seq2d_getref(a,
       jas_seq2d_xstart(a), jas_seq2d_ystart(a)), jas_seq2d_xstart(a),
       jas_seq2d_ystart(a), jas_seq2d_width(a),
       jas_seq2d_height(a), jas_seq2d_rowstep(a), tsfb->numlvls - 1) : 0;
@@ -168,10 +168,10 @@ static int jpc_tsfb_synthesize2(jpc_tsfb_t *tsfb, jas_seqent_t *a, int xstart,
 
 int jpc_tsfb_synthesize(jpc_tsfb_t *tsfb, jas_seq2d_t *a)
 {
-    return (tsfb->numlvls > 0) ? jpc_tsfb_synthesize2(tsfb,
-      jas_seq2d_getref(a, jas_seq2d_xstart(a), jas_seq2d_ystart(a)),
-      jas_seq2d_xstart(a), jas_seq2d_ystart(a), jas_seq2d_width(a),
-      jas_seq2d_height(a), jas_seq2d_rowstep(a), tsfb->numlvls - 1) : 0;
+    return tsfb->numlvls > 0 ? jpc_tsfb_synthesize2(tsfb,
+                                                    jas_seq2d_getref(a, jas_seq2d_xstart(a), jas_seq2d_ystart(a)),
+                                                    jas_seq2d_xstart(a), jas_seq2d_ystart(a), jas_seq2d_width(a),
+                                                    jas_seq2d_height(a), jas_seq2d_rowstep(a), tsfb->numlvls - 1) : 0;
 }
 
 int jpc_tsfb_getbands(jpc_tsfb_t *tsfb, uint_fast32_t xstart,
@@ -234,7 +234,7 @@ void jpc_tsfb_getbands2(jpc_tsfb_t *tsfb, int locxstart, int locystart,
         band->synenergywt = jpc_dbltofix(tsfb->qmfb->hpenergywts[
           tsfb->numlvls - numlvls] * tsfb->qmfb->lpenergywts[
           tsfb->numlvls - numlvls]);
-        ++(*bands);
+        ++*bands;
 
         band = *bands;
         band->xstart = newxstart;
@@ -249,7 +249,7 @@ void jpc_tsfb_getbands2(jpc_tsfb_t *tsfb, int locxstart, int locystart,
         band->synenergywt = jpc_dbltofix(tsfb->qmfb->lpenergywts[
           tsfb->numlvls - numlvls] * tsfb->qmfb->hpenergywts[
           tsfb->numlvls - numlvls]);
-        ++(*bands);
+        ++*bands;
 
         band = *bands;
         band->xstart = JPC_FLOORDIVPOW2(xstart, 1);
@@ -264,7 +264,7 @@ void jpc_tsfb_getbands2(jpc_tsfb_t *tsfb, int locxstart, int locystart,
         band->synenergywt = jpc_dbltofix(tsfb->qmfb->hpenergywts[
           tsfb->numlvls - numlvls] * tsfb->qmfb->hpenergywts[
           tsfb->numlvls - numlvls]);
-        ++(*bands);
+        ++*bands;
 
     } else {
 
@@ -281,7 +281,7 @@ void jpc_tsfb_getbands2(jpc_tsfb_t *tsfb, int locxstart, int locystart,
         band->synenergywt = jpc_dbltofix(tsfb->qmfb->lpenergywts[
           tsfb->numlvls - numlvls - 1] * tsfb->qmfb->lpenergywts[
           tsfb->numlvls - numlvls - 1]);
-        ++(*bands);
+        ++*bands;
 
     }
 

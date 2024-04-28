@@ -204,7 +204,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   if (m_watchdogs.velocity_watchdog <= 0) {
     gSog = NAN;
     gCog = NAN;
-    if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0))
+    if (g_nNMEADebug && m_watchdogs.velocity_watchdog == 0)
       wxLogMessage(_T("   ***Velocity Watchdog timeout..."));
     if (m_watchdogs.velocity_watchdog % 5 == 0) {
       // Send AppMsg telling of watchdog expiry
@@ -222,7 +222,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   m_watchdogs.heading_watchdog--;
   if (m_watchdogs.heading_watchdog <= 0) {
     gHdt = NAN;
-    if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
+    if (g_nNMEADebug && m_watchdogs.heading_watchdog == 0)
       wxLogMessage(_T("   ***HDT Watchdog timeout..."));
 
     // Are there any other lower priority sources?
@@ -234,7 +234,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
   m_watchdogs.variation_watchdog--;
   if (m_watchdogs.variation_watchdog <= 0) {
     g_bVAR_Rx = false;
-    if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
+    if (g_nNMEADebug && m_watchdogs.variation_watchdog == 0)
       wxLogMessage(_T("   ***VAR Watchdog timeout..."));
 
     // Are there any other lower priority sources?
@@ -248,7 +248,7 @@ void CommBridge::OnWatchdogTimer(wxTimerEvent& event) {
     g_bSatValid = false;
     g_SatsInView = 0;
     g_priSats = 99;
-    if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
+    if (g_nNMEADebug && m_watchdogs.satellite_watchdog == 0)
       wxLogMessage(_T("   ***SAT Watchdog timeout..."));
 
     // Are there any other lower priority sources?
@@ -264,7 +264,7 @@ void CommBridge::MakeHDTFromHDM() {
   if (!std::isnan(gHdm)) {
     // Set gVar if needed from manual entry. gVar will be overwritten if
     // WMM plugin is available
-    if (std::isnan(gVar) && (g_UserVar != 0.0)) gVar = g_UserVar;
+    if (std::isnan(gVar) && g_UserVar != 0.0) gVar = g_UserVar;
     gHdt = gHdm + gVar;
     if (!std::isnan(gHdt)) {
       if (gHdt < 0)
@@ -420,7 +420,7 @@ std::string CommBridge::GetPriorityMap(std::unordered_map<std::string, int> &map
   std::string result;
 
   for (auto& it: map) {
-    if ((it.second >= 0) && (it.second < MAX_SOURCES))
+    if (it.second >= 0 && it.second < MAX_SOURCES)
       sa[it.second] = it.first;
   }
 
@@ -987,7 +987,7 @@ bool CommBridge::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
     if (EvalPriority(sK_msg, active_priority_velocity, priority_map_velocity)) {
       gSog = temp_data.gSog;
       valid_flag += SOG_UPDATE;
-      if((gSog > 0.05) && !std::isnan(temp_data.gCog)){
+      if(gSog > 0.05 && !std::isnan(temp_data.gCog)){
         gCog = temp_data.gCog;
         valid_flag += COG_UPDATE;
       }

@@ -66,7 +66,7 @@ strsep(stringp, delim)
 	char *tok;
 
 	if ((s = *stringp) == NULL)
-		return (NULL);
+		return NULL;
 	for (tok = s;;) {
 		c = *s++;
 		spanp = delim;
@@ -77,7 +77,7 @@ strsep(stringp, delim)
 				else
 					s[-1] = 0;
 				*stringp = s;
-				return (tok);
+				return tok;
 			}
 		} while (sc != 0);
 	}

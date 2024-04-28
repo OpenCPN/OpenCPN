@@ -760,7 +760,7 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush,
       if (d && a) {
         for (int y = 0; y < h; y++)
           for (int x = 0; x < w; x++) {
-            int off = (y * w + x);
+            int off = y * w + x;
 
             e[off * 4 + 0] = d[off * 3 + 0];
             e[off * 4 + 1] = d[off * 3 + 1];
@@ -816,7 +816,7 @@ S52color *ChartSymbols::GetColor(const char *colorName, int fromTable) {
   colTable *colortable;
   wxString key(colorName, wxConvUTF8, 5);
   colortable = (colTable *)m_colorTables.Item(fromTable);
-  return &(colortable->colors[key]);
+  return &colortable->colors[key];
 }
 
 wxColor ChartSymbols::GetwxColor(const wxString &colorName, int fromTable) {

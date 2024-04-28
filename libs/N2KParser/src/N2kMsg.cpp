@@ -216,7 +216,7 @@ void tN2kMsg::AddStr(const char *str, int len, bool UsePgm) {
 
 //*****************************************************************************
 void tN2kMsg::AddVarStr(const char *str, bool UsePgm) {
-  int len=(str!=0?strlen(str):0);
+  int len=str!=0?strlen(str):0;
   AddByte(len+2);
   AddByte(1);
   if ( len>0 ) SetBufStr(str,len,DataLen,Data,UsePgm,0xff);
@@ -462,7 +462,7 @@ int8_t byteswap(int8_t val) {
 
 template<>
 uint16_t byteswap(uint16_t val) {
-  return (val << 8) | (val >> 8);
+  return val << 8 | val >> 8;
 }
 
 template<>
@@ -473,10 +473,10 @@ int16_t byteswap(int16_t val)
 
 template<>
 uint32_t byteswap(uint32_t val) {
-  return ((val << 24)) |
-         ((val << 8)  & 0xff0000UL) |
-         ((val >> 8)  & 0xff00UL) |
-         ((val >> 24));
+  return val << 24 |
+         val << 8  & 0xff0000UL |
+         val >> 8  & 0xff00UL |
+         val >> 24;
 }
 
 template<>
@@ -486,14 +486,14 @@ int32_t byteswap(int32_t val) {
 
 template<>
 uint64_t byteswap(uint64_t val) {
-  return ((val << 56)) |
-      ((val << 40) & 0xff000000000000ULL) |
-      ((val << 24) & 0xff0000000000ULL) |
-      ((val << 8)  & 0xff00000000ULL) |
-      ((val >> 8)  & 0xff000000ULL) |
-      ((val >> 24) & 0xff0000ULL) |
-      ((val >> 40) & 0xff00ULL) |
-      ((val >> 56));
+  return val << 56 |
+      val << 40 & 0xff000000000000ULL |
+      val << 24 & 0xff0000000000ULL |
+      val << 8  & 0xff00000000ULL |
+      val >> 8  & 0xff000000ULL |
+      val >> 24 & 0xff0000ULL |
+      val >> 40 & 0xff00ULL |
+      val >> 56;
 }
 
 template<>
@@ -582,21 +582,21 @@ void SetBuf8ByteDouble(double v, double precision, int &index, unsigned char *bu
 //*****************************************************************************
 void SetBuf4ByteDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  int32_t vi = (vd>=N2kInt32Min && vd<N2kInt32OR)?(int32_t)vd:N2kInt32OR;
+  int32_t vi = vd>=N2kInt32Min && vd<N2kInt32OR?(int32_t)vd:N2kInt32OR;
   SetBuf<int32_t>(vi, 4, index, buf);
 }
 
 //*****************************************************************************
 void SetBuf4ByteUDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  uint32_t vi = (vd>=0 && vd<N2kUInt32OR)?(uint32_t)vd:N2kUInt32OR;
+  uint32_t vi = vd>=0 && vd<N2kUInt32OR?(uint32_t)vd:N2kUInt32OR;
   SetBuf<uint32_t>(vi, 4, index, buf);
 }
 
 //*****************************************************************************
 void SetBuf3ByteDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  int32_t vi = (vd>=N2kInt24Min && vd<N2kInt24OR)?(int32_t)vd:N2kInt24OR;
+  int32_t vi = vd>=N2kInt24Min && vd<N2kInt24OR?(int32_t)vd:N2kInt24OR;
   SetBuf<int32_t>(vi, 3, index, buf);
 }
 
@@ -719,28 +719,28 @@ double GetBuf4ByteUDouble(double precision, int &index, const unsigned char *buf
 //*****************************************************************************
 void SetBuf2ByteDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  int16_t vi = (vd>=N2kInt16Min && vd<N2kInt16OR)?(int16_t)vd:N2kInt16OR;
+  int16_t vi = vd>=N2kInt16Min && vd<N2kInt16OR?(int16_t)vd:N2kInt16OR;
   SetBuf(vi, 2, index, buf);
 }
 
 //*****************************************************************************
 void SetBuf2ByteUDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  uint16_t vi = (vd>=0 && vd<N2kUInt16OR)?(uint16_t)vd:N2kUInt16OR;
+  uint16_t vi = vd>=0 && vd<N2kUInt16OR?(uint16_t)vd:N2kUInt16OR;
   SetBuf(vi, 2, index, buf);
 }
 
 //*****************************************************************************
 void SetBuf1ByteDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  int8_t vi = (vd>=N2kInt8Min && vd<N2kInt8OR)?(int8_t)vd:N2kInt8OR;
+  int8_t vi = vd>=N2kInt8Min && vd<N2kInt8OR?(int8_t)vd:N2kInt8OR;
   SetBuf(vi, 1, index, buf);
 }
 
 //*****************************************************************************
 void SetBuf1ByteUDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  uint8_t vi = (vd>=0 && vd<N2kUInt8OR)?(uint8_t)vd:N2kUInt8OR;
+  uint8_t vi = vd>=0 && vd<N2kUInt8OR?(uint8_t)vd:N2kUInt8OR;
   SetBuf(vi, 1, index, buf);
 }
 
@@ -774,7 +774,7 @@ void SetBufStr(const char *str, int len, int &index, unsigned char *buf, bool Us
   int i=0;
   if ( UsePgm ) {
     for (; i<len && str[i]!=0; i++, index++) {
-      buf[index]=pgm_read_byte(&(str[i]));
+      buf[index]=pgm_read_byte(&str[i]);
     }
   } else {
     for (; i<len && str[i]!=0; i++, index++) {

@@ -258,12 +258,12 @@ bool ChartMBTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
 
 double ChartMBTiles::GetNormalScaleMin(double canvas_scale_factor,
                                        bool b_allow_overzoom) {
-  return (1);  // allow essentially unlimited overzoom
+  return 1;  // allow essentially unlimited overzoom
 }
 
 double ChartMBTiles::GetNormalScaleMax(double canvas_scale_factor,
                                        int canvas_width) {
-  return (canvas_scale_factor / m_ppm_avg) *
+  return canvas_scale_factor / m_ppm_avg *
          40.0;  // excessive underscale is slow, and unreadable
 }
 
@@ -471,7 +471,7 @@ InitReturn ChartMBTiles::Init(const wxString &name, ChartInitFlag init_flags) {
   bool covr_populated = false;
 
   m_nTiles = 0;
-  while ((zoomFactor <= m_maxZoom) && (minRegionZoom < 0)) {
+  while (zoomFactor <= m_maxZoom && minRegionZoom < 0) {
     LLRegion covrRegionZoom;
     wxRegion regionZoom;
     char qrs[100];
@@ -721,10 +721,10 @@ wxPoint2DDouble ChartMBTiles::GetDoublePixFromLL(ViewPort &vp, double lat,
 
       // y =.5 ln( (1 + sin t) / (1 - sin t) )
       const double s = sin(lat * DEGREE);
-      const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
+      const double y3 = .5 * log((1 + s) / (1 - s)) * z;
 
       const double s0 = sin(vp.clat * DEGREE);
-      const double y30 = (.5 * log((1 + s0) / (1 - s0))) * z;
+      const double y30 = .5 * log((1 + s0) / (1 - s0)) * z;
       northing = y3 - y30;
 
       break;
@@ -746,8 +746,8 @@ wxPoint2DDouble ChartMBTiles::GetDoublePixFromLL(ViewPort &vp, double lat,
   // printf("  gdpll:  %g  %g  %g\n", vp.clon, (vp.pix_width / 2.0 ) + dxr, (
   // vp.pix_height / 2.0 ) - dyr);
 
-  return wxPoint2DDouble((vp.pix_width / 2.0) + dxr,
-                         (vp.pix_height / 2.0) - dyr);
+  return wxPoint2DDouble(vp.pix_width / 2.0 + dxr,
+                         vp.pix_height / 2.0 - dyr);
 }
 
 bool ChartMBTiles::RenderTile(mbTileDescriptor *tile, int zoomLevel,
@@ -881,7 +881,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   m_tileCount = 0;
 
   // Do not render if significantly underzoomed
-  if (VPoint.chart_scale > (20 * OSM_zoomScale[m_minZoom])) {
+  if (VPoint.chart_scale > 20 * OSM_zoomScale[m_minZoom]) {
     if (m_nTiles > 500) {
       return true;
     }
@@ -893,7 +893,7 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   LLRegion screenLLRegion = vp.GetLLRegion(screen_region);
   LLBBox screenBox = screenLLRegion.GetBox();
 
-  if ((m_LonMax - m_LonMin) > 180) {  // big chart
+  if (m_LonMax - m_LonMin > 180) {  // big chart
     LLRegion validRegion = m_minZoomRegion;
     validRegion.Intersect(screenLLRegion);
     glChartCanvas::SetClipRegion(vp, validRegion);
@@ -936,8 +936,8 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
   // if the full screen box spans IDL,
   // we need to render the entire screen in two passes.
   bool btwoPass = false;
-  if (((screenBox.GetMinLon() < -180) && (screenBox.GetMaxLon() > -180)) ||
-      ((screenBox.GetMinLon() < 180) && (screenBox.GetMaxLon() > 180))) {
+  if ((screenBox.GetMinLon() < -180 && screenBox.GetMaxLon() > -180) ||
+      (screenBox.GetMinLon() < 180 && screenBox.GetMaxLon() > 180)) {
     btwoPass = true;
     box = screenBox;
   }

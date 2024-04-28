@@ -503,7 +503,7 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 		}
 	} while (num_retries-- > 0);
 
-	if (!adapter_address || (ret != NO_ERROR)) {
+	if (!adapter_address || ret != NO_ERROR) {
 		free(adapter_address);
 		printf("Failed to get network adapter addresses\n");
 		return num_sockets;
@@ -521,10 +521,10 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 		     unicast = unicast->Next) {
 			if (unicast->Address.lpSockaddr->sa_family == AF_INET) {
 				struct sockaddr_in* saddr = (struct sockaddr_in*)unicast->Address.lpSockaddr;
-				if ((saddr->sin_addr.S_un.S_un_b.s_b1 != 127) ||
-				    (saddr->sin_addr.S_un.S_un_b.s_b2 != 0) ||
-				    (saddr->sin_addr.S_un.S_un_b.s_b3 != 0) ||
-				    (saddr->sin_addr.S_un.S_un_b.s_b4 != 1)) {
+				if (saddr->sin_addr.S_un.S_un_b.s_b1 != 127 ||
+				    saddr->sin_addr.S_un.S_un_b.s_b2 != 0 ||
+				    saddr->sin_addr.S_un.S_un_b.s_b3 != 0 ||
+				    saddr->sin_addr.S_un.S_un_b.s_b4 != 1) {
 					int log_addr = 0;
 					if (first_ipv4) {
 						service_address_ipv4 = *saddr;
@@ -558,7 +558,7 @@ open_client_sockets(int* sockets, int max_sockets, int port) {
 				                                          0, 0, 0, 0, 0, 0, 0, 1};
 				static const unsigned char localhost_mapped[] = {0, 0, 0,    0,    0,    0, 0, 0,
 				                                                 0, 0, 0xff, 0xff, 0x7f, 0, 0, 1};
-				if ((unicast->DadState == NldsPreferred) &&
+				if (unicast->DadState == NldsPreferred &&
 				    memcmp(saddr->sin6_addr.s6_addr, localhost, 16) &&
 				    memcmp(saddr->sin6_addr.s6_addr, localhost_mapped, 16)) {
 					int log_addr = 0;

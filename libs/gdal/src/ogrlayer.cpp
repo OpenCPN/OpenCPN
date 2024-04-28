@@ -202,7 +202,7 @@ OGRErr OGRLayer::GetExtent(OGREnvelope *psExtent, int bForce )
     }
     ResetReading();
 
-    return (bExtentSet ? OGRERR_NONE : OGRERR_FAILURE);
+    return bExtentSet ? OGRERR_NONE : OGRERR_FAILURE;
 }
 
 /************************************************************************/

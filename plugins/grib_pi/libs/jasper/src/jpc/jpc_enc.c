@@ -184,7 +184,7 @@ static uint_fast32_t jpc_abstorelstepsize(jpc_fix_t absdelta, int scaleexpn)
 
     p = jpc_firstone(absdelta) - JPC_FIX_FRACBITS;
     n = 11 - jpc_firstone(absdelta);
-    mant = ((n < 0) ? (absdelta >> (-n)) : (absdelta << n)) & 0x7ff;
+    mant = (n < 0 ? absdelta >> -n : absdelta << n) & 0x7ff;
     expn = scaleexpn - p;
     if (scaleexpn < p) {
         abort();
@@ -493,7 +493,7 @@ static jpc_enc_cp_t *cp_create(char *optstr, jas_image_t *image)
                 jas_eprintf("ignoring invalid mode %s\n",
                   jas_tvparser_getval(tvp));
             } else {
-                tcp->intmode = (tagid == MODE_INT);
+                tcp->intmode = tagid == MODE_INT;
             }
             break;
         case OPT_PRG:
@@ -567,8 +567,8 @@ static jpc_enc_cp_t *cp_create(char *optstr, jas_image_t *image)
     tvp = 0;
 
     if (cp->totalsize != UINT_FAST32_MAX) {
-        cp->totalsize = (cp->totalsize > jp2overhead) ?
-          (cp->totalsize - jp2overhead) : 0;
+        cp->totalsize = cp->totalsize > jp2overhead ?
+          cp->totalsize - jp2overhead : 0;
     }
 
     if (cp->imgareatlx == UINT_FAST32_MAX) {
@@ -619,11 +619,11 @@ static jpc_enc_cp_t *cp_create(char *optstr, jas_image_t *image)
         jas_eprintf("warning: color space apparently not RGB\n");
     }
     if (mctvalid && enablemct && jas_clrspc_fam(jas_image_clrspc(image)) == JAS_CLRSPC_FAM_RGB) {
-        tcp->mctid = (tcp->intmode) ? (JPC_MCT_RCT) : (JPC_MCT_ICT);
+        tcp->mctid = tcp->intmode ? JPC_MCT_RCT : JPC_MCT_ICT;
     } else {
         tcp->mctid = JPC_MCT_NONE;
     }
-    tccp->qmfbid = (tcp->intmode) ? (JPC_COX_RFT) : (JPC_COX_INS);
+    tccp->qmfbid = tcp->intmode ? JPC_COX_RFT : JPC_COX_INS;
 
     for (rlvlno = 0; rlvlno < tccp->maxrlvls; ++rlvlno) {
         tccp->prcwidthexpns[rlvlno] = prcwidthexpn;
@@ -664,7 +664,7 @@ static jpc_enc_cp_t *cp_create(char *optstr, jas_image_t *image)
 
     if (ilyrrates && numilyrrates > 0) {
         tcp->numlyrs = numilyrrates + 1;
-        if (!(tcp->ilyrrates = jas_alloc2((tcp->numlyrs - 1),
+        if (!(tcp->ilyrrates = jas_alloc2(tcp->numlyrs - 1,
           sizeof(jpc_fix_t)))) {
             goto error;
         }
@@ -675,7 +675,7 @@ static jpc_enc_cp_t *cp_create(char *optstr, jas_image_t *image)
 
     /* Ensure that the integer mode is used in the case of lossless
       coding. */
-    if (cp->totalsize == UINT_FAST32_MAX && (!cp->tcp.intmode)) {
+    if (cp->totalsize == UINT_FAST32_MAX && !cp->tcp.intmode) {
         jas_eprintf("cannot use real mode for lossless coding\n");
         goto error;
     }
@@ -747,7 +747,7 @@ static jpc_enc_cp_t *cp_create(char *optstr, jas_image_t *image)
         /* The intermediate layer rates must be less than the overall rate. */
         if (cp->totalsize != UINT_FAST32_MAX) {
             for (lyrno = 0; lyrno < tcp->numlyrs - 1; ++lyrno) {
-                if (jpc_fixtodbl(tcp->ilyrrates[lyrno]) > ((double) cp->totalsize)
+                if (jpc_fixtodbl(tcp->ilyrrates[lyrno]) > (double) cp->totalsize
                   / cp->rawsize) {
                     jas_eprintf("warning: intermediate layer rates must be less than overall rate\n");
                     goto error;
@@ -1009,12 +1009,12 @@ startoff = jas_stream_getrwcount(enc->out);
         numbands = 3 * tccp->maxrlvls - 2;
         for (bandno = 0, bandinfo = bandinfos; bandno < numbands;
           ++bandno, ++bandinfo) {
-            rlvlno = (bandno) ? ((bandno - 1) / 3 + 1) : 0;
+            rlvlno = bandno ? (bandno - 1) / 3 + 1 : 0;
             analgain = JPC_NOMINALGAIN(tccp->qmfbid, tccp->maxrlvls,
               rlvlno, bandinfo->orient);
             if (!tcp->intmode) {
                 absstepsize = jpc_fix_div(jpc_inttofix(1 <<
-                  (analgain + 1)), bandinfo->synenergywt);
+                                            analgain + 1), bandinfo->synenergywt);
             } else {
                 absstepsize = jpc_inttofix(1);
             }
@@ -1039,7 +1039,7 @@ startoff = jas_stream_getrwcount(enc->out);
     cod->compparms.cblkheightval = JPC_COX_CBLKSIZEEXPN(cp->tccp.cblkheightexpn);
     cod->compparms.cblksty = cp->tccp.cblksty;
     cod->compparms.qmfbid = cp->tccp.qmfbid;
-    cod->mctrans = (cp->tcp.mctid != JPC_MCT_NONE);
+    cod->mctrans = cp->tcp.mctid != JPC_MCT_NONE;
     if (tccp->csty & JPC_COX_PRT) {
         for (rlvlno = 0; rlvlno < tccp->maxrlvls; ++rlvlno) {
             cod->compparms.rlvls[rlvlno].parwidthval = tccp->prcwidthexpns[rlvlno];
@@ -1057,7 +1057,7 @@ startoff = jas_stream_getrwcount(enc->out);
         return -1;
     }
     qcd = &enc->mrk->parms.qcd;
-    qcd->compparms.qntsty = (tccp->qmfbid == JPC_COX_INS) ?
+    qcd->compparms.qntsty = tccp->qmfbid == JPC_COX_INS ?
       JPC_QCX_SEQNT : JPC_QCX_NOQNT;
     qcd->compparms.numstepsizes = cp->ccps[0].numstepsizes;
     qcd->compparms.numguard = cp->tccp.numgbits;
@@ -1077,7 +1077,7 @@ startoff = jas_stream_getrwcount(enc->out);
         }
         qcc = &enc->mrk->parms.qcc;
         qcc->compno = cmptno;
-        qcc->compparms.qntsty = (tccp->qmfbid == JPC_COX_INS) ?
+        qcc->compparms.qntsty = tccp->qmfbid == JPC_COX_INS ?
           JPC_QCX_SEQNT : JPC_QCX_NOQNT;
         qcc->compparms.numstepsizes = cp->ccps[cmptno].numstepsizes;
         qcc->compparms.numguard = cp->tccp.numgbits;
@@ -1097,8 +1097,8 @@ startoff = jas_stream_getrwcount(enc->out);
     if (enc->cp->totalsize != UINT_FAST32_MAX) {
         uint_fast32_t overhead;
         overhead = mainhdrlen + MAINTLRLEN;
-        enc->mainbodysize = (enc->cp->totalsize >= overhead) ?
-          (enc->cp->totalsize - overhead) : 0;
+        enc->mainbodysize = enc->cp->totalsize >= overhead ?
+          enc->cp->totalsize - overhead : 0;
     } else {
         enc->mainbodysize = UINT_FAST32_MAX;
     }
@@ -1167,7 +1167,7 @@ int numgbits;
         endcomps = &tile->tcmpts[tile->numtcmpts];
         for (cmptno = 0, comp = tile->tcmpts; cmptno < tile->numtcmpts; ++cmptno, ++comp) {
             if (!cp->ccps[cmptno].sgnd) {
-                adjust = 1 << (cp->ccps[cmptno].prec - 1);
+                adjust = 1 << cp->ccps[cmptno].prec - 1;
                 for (i = 0; i < jas_matrix_numrows(comp->data); ++i) {
                     for (j = 0; j < jas_matrix_numcols(comp->data); ++j) {
                         *jas_matrix_getref(comp->data, i, j) -= adjust;
@@ -1250,7 +1250,7 @@ jas_eprintf("%d %d mag=%d actual=%d numgbits=%d\n", cp->ccps[cmptno].prec, band-
                     }
                     if (!tile->intmode) {
                         band->absstepsize = jpc_fix_div(jpc_inttofix(1
-                          << (band->analgain + 1)),
+                          << band->analgain + 1),
                           band->synweight);
                     } else {
                         band->absstepsize = jpc_inttofix(1);
@@ -1261,7 +1261,7 @@ jas_eprintf("%d %d mag=%d actual=%d numgbits=%d\n", cp->ccps[cmptno].prec, band-
                     band->numbps = cp->tccp.numgbits +
                       JPC_QCX_GETEXPN(band->stepsize) - 1;
 
-                    if ((!tile->intmode) && band->data) {
+                    if (!tile->intmode && band->data) {
                         jpc_quantize(band->data, band->absstepsize);
                     }
 
@@ -1331,7 +1331,7 @@ and other characteristics */
                 cod->compparms.cblkheightval = JPC_COX_CBLKSIZEEXPN(comp->cblkheightexpn);
                 cod->compparms.cblksty = comp->cblksty;
                 cod->compparms.qmfbid = comp->qmfbid;
-                cod->mctrans = (tile->mctid != JPC_MCT_NONE);
+                cod->mctrans = tile->mctid != JPC_MCT_NONE;
                 for (i = 0; i < comp->numrlvls; ++i) {
                     cod->compparms.rlvls[i].parwidthval = comp->rlvls[i].prcwidthexpn;
                     cod->compparms.rlvls[i].parheightval = comp->rlvls[i].prcheightexpn;
@@ -1364,7 +1364,7 @@ and other characteristics */
                 qcc = &enc->mrk->parms.qcc;
                 qcc->compno = cmptno;
                 qcc->compparms.numguard = cp->tccp.numgbits;
-                qcc->compparms.qntsty = (comp->qmfbid == JPC_COX_INS) ?
+                qcc->compparms.qntsty = comp->qmfbid == JPC_COX_INS ?
                   JPC_QCX_SEQNT : JPC_QCX_NOQNT;
                 qcc->compparms.numstepsizes = comp->numstepsizes;
                 qcc->compparms.stepsizes = comp->stepsizes;
@@ -1407,8 +1407,8 @@ if (jpc_enc_enccblks(enc)) {
             tile->lyrsizes[lyrno] = tile->rawsize * jpc_fixtodbl(
               cp->tcp.ilyrrates[lyrno]);
         }
-        tile->lyrsizes[tile->numlyrs - 1] = (cp->totalsize != UINT_FAST32_MAX) ?
-          (rho * enc->mainbodysize) : UINT_FAST32_MAX;
+        tile->lyrsizes[tile->numlyrs - 1] = cp->totalsize != UINT_FAST32_MAX ?
+          rho * enc->mainbodysize : UINT_FAST32_MAX;
         for (lyrno = 0; lyrno < tile->numlyrs; ++lyrno) {
             if (tile->lyrsizes[lyrno] != UINT_FAST32_MAX) {
                 if (tilehdrlen <= JAS_CAST(long, tile->lyrsizes[lyrno])) {
@@ -2218,7 +2218,7 @@ static jpc_enc_rlvl_t *rlvl_create(jpc_enc_rlvl_t *rlvl, jpc_enc_cp_t *cp,
         return rlvl;
     }
 
-    rlvl->numbands = (!rlvlno) ? 1 : 3;
+    rlvl->numbands = !rlvlno ? 1 : 3;
     rlvl->prcwidthexpn = cp->tccp.prcwidthexpns[rlvlno];
     rlvl->prcheightexpn = cp->tccp.prcheightexpns[rlvlno];
     if (!rlvlno) {
@@ -2304,7 +2304,7 @@ static jpc_enc_band_t *band_create(jpc_enc_band_t *band, jpc_enc_cp_t *cp,
     /* Deduce the resolution level and band number. */
     rlvlno = rlvl - rlvl->tcmpt->rlvls;
     bandno = band - rlvl->bands;
-    gblbandno = (!rlvlno) ? 0 : (3 * (rlvlno - 1) + bandno + 1);
+    gblbandno = !rlvlno ? 0 : 3 * (rlvlno - 1) + bandno + 1;
 
     bandinfo = &bandinfos[gblbandno];
 

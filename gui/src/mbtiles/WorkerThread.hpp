@@ -88,7 +88,7 @@ private:
         }
       }
       // Check if the thread has been requested to be destroyed
-    } while ((TestDestroy() == false) && (m_exitThread == false));
+    } while (TestDestroy() == false && m_exitThread == false);
 
     // Since the worker is a detached thread, we nee a special mecanism to allow
     // the main thread to wait for its deletion
@@ -148,7 +148,7 @@ private:
           blobWidth = blobImage.GetWidth();
           blobHeight = blobImage.GetHeight();
           // Support MapTiler HiDPI tiles, 512x512
-          if ((blobWidth != 256) || (blobHeight != 256))
+          if (blobWidth != 256 || blobHeight != 256)
             blobImage.Rescale(256, 256, wxIMAGE_QUALITY_NORMAL);
           imgdata = blobImage.GetData();
         } else {

@@ -54,5 +54,5 @@
       }
    }
 
-   return( return_string );
+   return return_string;
 }

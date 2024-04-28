@@ -455,8 +455,8 @@ wxString AisTargetData::BuildQueryResult(void) {
     html << _T("</b></i></font>&nbsp;&nbsp;<b>");
   }
 
-  if ((Class != AIS_ATON) && (Class != AIS_BASE) && (Class != AIS_GPSG_BUDDY) &&
-      (Class != AIS_SART) && (Class != AIS_METEO)) {
+  if (Class != AIS_ATON && Class != AIS_BASE && Class != AIS_GPSG_BUDDY &&
+      Class != AIS_SART && Class != AIS_METEO) {
     html << trimAISField(CallSign) << _T("</b>") << rowEnd;
 
     if (Class != AIS_CLASS_B) {
@@ -479,7 +479,7 @@ wxString AisTargetData::BuildQueryResult(void) {
   }
 
   if (b_SarAircraftPosnReport) {
-    int airtype = (MMSI % 1000) / 100;
+    int airtype = MMSI % 1000 / 100;
     ClassStr = airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft");
   }
 
@@ -506,7 +506,7 @@ wxString AisTargetData::BuildQueryResult(void) {
          << _T("<b>ID: ") << MMSI;
     if (met_data.stationID) {  // Facilitate to find a Meteo target on SignalK
       wxString SK_ID =
-          wxString::Format(_T("%06d"), (met_data.stationID - 1000000));
+          wxString::Format(_T("%06d"), met_data.stationID - 1000000);
       html << "<td>&nbsp;</td><td align=right>" << "SK-ID: " << SK_ID;
     }
     html << rowEnd << _T("</b></table></td></tr>");
@@ -520,11 +520,11 @@ wxString AisTargetData::BuildQueryResult(void) {
          << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
          << ClassStr << rowEnd << _T("</table></td></tr>");
 
-  if ((Class != AIS_SART))  //&& (Class != AIS_DSC))
+  if (Class != AIS_SART)  //&& (Class != AIS_DSC))
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
             _T("cellspacing=0>")
          << rowStart
-         << ((Class == AIS_BASE || Class == AIS_ATON || Class == AIS_METEO)
+         << (Class == AIS_BASE || Class == AIS_ATON || Class == AIS_METEO
                  ? _("Nation")
                  : _("Flag"))
          << rowEnd << _T("</font></td></tr>") << rowStartH
@@ -532,10 +532,10 @@ wxString AisTargetData::BuildQueryResult(void) {
          << GetCountryCode(true) << rowEnd << _T("</font></table></td></tr>");
 
   wxString navStatStr;
-  if ((Class != AIS_BASE) && (Class != AIS_CLASS_B) && (Class != AIS_SART) &&
-      (Class != AIS_METEO)) {
+  if (Class != AIS_BASE && Class != AIS_CLASS_B && Class != AIS_SART &&
+      Class != AIS_METEO) {
     html << vertSpacer;
-    if ((NavStatus <= 21) && (NavStatus >= 0))
+    if (NavStatus <= 21 && NavStatus >= 0)
       navStatStr = wxGetTranslation(ais_get_status(NavStatus));
   } else if (Class == AIS_SART) {
     if (NavStatus == RESERVED_14)
@@ -564,8 +564,8 @@ wxString AisTargetData::BuildQueryResult(void) {
   }
 
   wxString AISTypeStr, UNTypeStr, sizeString;
-  if ((Class != AIS_BASE) && (Class != AIS_SART) && (Class != AIS_DSC) &&
-      (Class != AIS_METEO)) {
+  if (Class != AIS_BASE && Class != AIS_SART && Class != AIS_DSC &&
+      Class != AIS_METEO) {
     //      Ship type
     AISTypeStr = wxGetTranslation(Get_vessel_type_string());
 
@@ -596,11 +596,11 @@ wxString AisTargetData::BuildQueryResult(void) {
     //  Dimensions
 
     if (NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS) {
-      if ((Class == AIS_CLASS_B) || (Class == AIS_ATON)) {
+      if (Class == AIS_CLASS_B || Class == AIS_ATON) {
         sizeString =
-            wxString::Format(_T("%dm x %dm"), (DimA + DimB), (DimC + DimD));
+            wxString::Format(_T("%dm x %dm"), DimA + DimB, DimC + DimD);
       } else if (!b_SarAircraftPosnReport) {
-        if ((DimA + DimB + DimC + DimD) == 0) {
+        if (DimA + DimB + DimC + DimD == 0) {
           if (b_isEuroInland) {
             if (Euro_Length == 0.0) {
               if (Euro_Draft > 0.01) {
@@ -627,11 +627,11 @@ wxString AisTargetData::BuildQueryResult(void) {
             }
           }
         } else if (Draft < 0.01) {
-          sizeString << wxString::Format(_T("%dm x %dm x ---m"), (DimA + DimB),
-                                         (DimC + DimD));
+          sizeString << wxString::Format(_T("%dm x %dm x ---m"), DimA + DimB,
+                                         DimC + DimD);
         } else {
           sizeString << wxString::Format(_T("%dm x %dm x %4.1fm"),
-                                         (DimA + DimB), (DimC + DimD), Draft);
+                                         DimA + DimB, DimC + DimD, Draft);
         }
       }
     }
@@ -668,7 +668,7 @@ wxString AisTargetData::BuildQueryResult(void) {
            << _T("<b>") << sizeString << rowEnd << _T("<tr><td colspan=2>");
     }
   }
-  else if ((Class != AIS_BASE) && (Class != AIS_DSC)) {
+  else if (Class != AIS_BASE && Class != AIS_DSC) {
     html << _T("<tr><td colspan=2>")
          << _T("<b>") << AISTypeStr;
     if (navStatStr.Length()) html << _T(", ") << navStatStr;
@@ -733,9 +733,9 @@ wxString AisTargetData::BuildQueryResult(void) {
         html << _T("---");
       html << _T("</b></td><td nowrap align=right><b>");
 
-      if ((ETA_Mo) && (ETA_Hr < 24)) {
+      if (ETA_Mo && ETA_Hr < 24) {
         int yearOffset = 0;
-        if (now.GetMonth() > (ETA_Mo - 1)) yearOffset = 1;
+        if (now.GetMonth() > ETA_Mo - 1) yearOffset = 1;
         wxDateTime eta(ETA_Day, wxDateTime::Month(ETA_Mo - 1),
                        now.GetYear() + yearOffset, ETA_Hr, ETA_Min);
         html << eta.Format(_T("%b %d %H:%M"));
@@ -764,7 +764,7 @@ wxString AisTargetData::BuildQueryResult(void) {
 
       double speed_show = toUsrSpeed(SOG);
 
-      if ((SOG <= 102.2) || b_SarAircraftPosnReport) {
+      if (SOG <= 102.2 || b_SarAircraftPosnReport) {
         if (speed_show < 10.0)
           sogStr =
               wxString::Format(_T("%.2f "), speed_show) + getUsrSpeedUnit();
@@ -805,15 +805,15 @@ wxString AisTargetData::BuildQueryResult(void) {
     }
   }
 
-  if (b_positionOnceValid && bGPSValid && (Range_NM >= 0.))
+  if (b_positionOnceValid && bGPSValid && Range_NM >= 0.)
     rngStr = FormatDistanceAdaptive(Range_NM);
   else
     rngStr = _T("---");
 
   int brg = (int)wxRound(Brg);
   if (Brg > 359.5) brg = 0;
-  if (b_positionOnceValid && bGPSValid && (Brg >= 0.) && (Range_NM > 0.) &&
-      (fabs(Lat) < 85.)) {
+  if (b_positionOnceValid && bGPSValid && Brg >= 0. && Range_NM > 0. &&
+      fabs(Lat) < 85.) {
     wxString magString, trueString;
     if (g_bShowMag)
       magString << wxString::Format(wxString("%03d%c(M)"),
@@ -827,8 +827,8 @@ wxString AisTargetData::BuildQueryResult(void) {
     brgStr = _T("---");
 
   wxString turnRateHdr;  // Blank if ATON or BASE or Special Position Report (9)
-  if ((Class != AIS_ATON) && (Class != AIS_BASE) && (Class != AIS_DSC) &&
-      (Class != AIS_METEO)) {
+  if (Class != AIS_ATON && Class != AIS_BASE && Class != AIS_DSC &&
+      Class != AIS_METEO) {
     html << vertSpacer
          << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 ")
             _T("cellspacing=0>")
@@ -1020,7 +1020,7 @@ wxString AisTargetData::BuildQueryResult(void) {
 
       double userVisDist = toUsrDistance(met_data.hor_vis);
       wxString horVis =
-          wxString::Format("%s%.1f %s", (met_data.hor_vis_GT ? ">" : ""),
+          wxString::Format("%s%.1f %s", met_data.hor_vis_GT ? ">" : "",
                            userVisDist, getUsrDistanceUnit());
       if (met_data.hor_vis >= 12.7) horVis = wxEmptyString;
       html << vertSpacer << rowStart << _("Precipitation")
@@ -1069,7 +1069,7 @@ wxString AisTargetData::GetRolloverString(void) {
     result.Append(t);
     result.Append(_T(")"));
   }
-  if (g_bAISRolloverShowClass || (Class == AIS_SART)) {
+  if (g_bAISRolloverShowClass || Class == AIS_SART) {
     if (result.Len()) result.Append(_T("\n"));
     result.Append(_T("["));
     if (Class == AIS_ATON) {
@@ -1077,13 +1077,13 @@ wxString AisTargetData::GetRolloverString(void) {
       result.Append(_T(": "));
       result.Append(wxGetTranslation(Get_vessel_type_string(false)));
     } else if (b_SarAircraftPosnReport) {
-      int airtype = (MMSI % 1000) / 100;
+      int airtype = MMSI % 1000 / 100;
       result.Append(airtype == 5 ? _("SAR Helicopter") : _("SAR Aircraft"));
     } else
       result.Append(wxGetTranslation(Get_class_string(false)));
 
     result.Append(_T("] "));
-    if ((Class != AIS_ATON) && (Class != AIS_BASE)) {
+    if (Class != AIS_ATON && Class != AIS_BASE) {
       if (Class == AIS_SART) {
         int mmsi_start = MMSI / 1000000;
         switch (mmsi_start) {
@@ -1106,9 +1106,9 @@ wxString AisTargetData::GetRolloverString(void) {
           result.Append(wxGetTranslation(Get_vessel_type_string(false)));
       }
 
-      if ((Class != AIS_CLASS_B) && (Class != AIS_SART) && Class != AIS_DSC &&
+      if (Class != AIS_CLASS_B && Class != AIS_SART && Class != AIS_DSC &&
           Class != AIS_METEO && !b_SarAircraftPosnReport) {
-        if ((NavStatus <= 15) && (NavStatus >= 0)) {
+        if (NavStatus <= 15 && NavStatus >= 0) {
           result.Append(_T(" ("));
           result.Append(wxGetTranslation(ais_get_status(NavStatus)));
           result.Append(_T(")"));
@@ -1128,8 +1128,8 @@ wxString AisTargetData::GetRolloverString(void) {
     }
   }
 
-  if (g_bAISRolloverShowCOG && ((SOG <= 102.2) || b_SarAircraftPosnReport) &&
-      !((Class == AIS_ATON) || (Class == AIS_BASE) || (Class == AIS_METEO))) {
+  if (g_bAISRolloverShowCOG && (SOG <= 102.2 || b_SarAircraftPosnReport) &&
+      !(Class == AIS_ATON || Class == AIS_BASE || Class == AIS_METEO)) {
     if (result.Len()) result << _T("\n");
 
     double speed_show = toUsrSpeed(SOG);
@@ -1237,7 +1237,7 @@ wxString AisTargetData::GetRolloverString(void) {
       if (result.Len()) result << "\n";
       double userVisDist = toUsrDistance(met_data.hor_vis);
       wxString horVis =
-          wxString::Format(": %s%.1f %s", (met_data.hor_vis_GT ? ">" : ""),
+          wxString::Format(": %s%.1f %s", met_data.hor_vis_GT ? ">" : "",
                            userVisDist, getUsrDistanceUnit());
       result << _("Visibility") << horVis;
     }
@@ -1301,14 +1301,14 @@ wxString AisTargetData::Get_vessel_type_string(bool b_short) {
         break;
     }
 
-  if ((Class == AIS_CLASS_B) || (Class == AIS_CLASS_A)) {
-    if ((ShipType >= 40) && (ShipType < 50)) i = 8;
+  if (Class == AIS_CLASS_B || Class == AIS_CLASS_A) {
+    if (ShipType >= 40 && ShipType < 50) i = 8;
 
-    if ((ShipType >= 60) && (ShipType < 70)) i = 16;
+    if (ShipType >= 60 && ShipType < 70) i = 16;
 
-    if ((ShipType >= 70) && (ShipType < 80)) i = 17;
+    if (ShipType >= 70 && ShipType < 80) i = 17;
 
-    if ((ShipType >= 80) && (ShipType < 90)) i = 18;
+    if (ShipType >= 80 && ShipType < 90) i = 18;
   } else if (Class == AIS_GPSG_BUDDY)
     i = 52;
   else if (Class == AIS_ARPA)
@@ -1316,7 +1316,7 @@ wxString AisTargetData::Get_vessel_type_string(bool b_short) {
   else if (Class == AIS_APRS)
     i = 56;
   else if (Class == AIS_DSC)
-    i = (ShipType == 12 || ShipType == 16) ? 54 : 53;  // 12 & 16 is distress
+    i = ShipType == 12 || ShipType == 16 ? 54 : 53;  // 12 & 16 is distress
 
   if (!b_short)
     return ais_get_type(i);

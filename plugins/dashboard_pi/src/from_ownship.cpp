@@ -54,7 +54,7 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
   wxColour cl;
 
-  dc->SetFont((g_pFontData->GetChosenFont()));
+  dc->SetFont(g_pFontData->GetChosenFont());
   // dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
   GetGlobalColor(_T("DASHF"), &cl);
   dc->SetTextForeground(cl);

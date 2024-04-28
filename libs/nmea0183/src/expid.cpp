@@ -425,5 +425,5 @@ wxString& expand_talker_id( const wxString &identifier )
          break;
    }
 
-   return( expanded_identifier );
+   return expanded_identifier;
 }

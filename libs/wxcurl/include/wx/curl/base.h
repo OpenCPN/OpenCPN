@@ -85,7 +85,7 @@ public:     // misc getters
 
     //! Returns a number in [0;100] range indicating how much has been transferred so far.
     double GetPercent() const
-        { return GetTotalBytes() == 0 ? 0 : (100.0 * (GetTransferredBytes()/GetTotalBytes())); }
+        { return GetTotalBytes() == 0 ? 0 : 100.0 * (GetTransferredBytes()/GetTotalBytes()); }
 
     //! Returns the current transfer speed in bytes/second.
     virtual double GetSpeed() const
@@ -310,7 +310,7 @@ public:
     long GetResponseCode() const { return m_iResponseCode; }
 
     //! Returns true if the response code indicates a valid transfer.
-    bool IsSuccessful() const { return ((m_iResponseCode > 199) && (m_iResponseCode < 300)); }
+    bool IsSuccessful() const { return m_iResponseCode > 199 && m_iResponseCode < 300; }
 
 protected:
     std::string	m_szURL;

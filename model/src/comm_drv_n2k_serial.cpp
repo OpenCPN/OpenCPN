@@ -89,7 +89,7 @@ public:
 
   bool empty() const {
     // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
+    return !full_ && head_ == tail_;
   }
 
   bool full() const {
@@ -309,7 +309,7 @@ void CommDriverN2KSerial::Close() {
 
       m_Thread_run_flag = 0;
       int tsec = 10;
-      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+      while (m_Thread_run_flag >= 0 && tsec--) wxSleep(1);
 
       wxString msg;
       if (m_Thread_run_flag < 0)
@@ -514,7 +514,7 @@ int CommDriverN2KSerial::SendMgmtMsg( unsigned char *string, size_t string_size,
 
   // checksum
   byteSum %= 256;
-  CheckSum = (uint8_t)((byteSum == 0) ? 0 : (256 - byteSum));
+  CheckSum = (uint8_t)(byteSum == 0 ? 0 : 256 - byteSum);
   msg.push_back(CheckSum);
 
   msg.push_back(ESCAPE);
@@ -985,7 +985,7 @@ void* CommDriverN2KSerialThread::Entry() {
   bool bGotESC = false;
   bool bGotSOT = false;
 
-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
+  while (not_done && m_pParentDriver->m_Thread_run_flag > 0) {
     if (TestDestroy()) not_done = false;  // smooth exit
 
     uint8_t next_byte = 0;
@@ -1033,13 +1033,13 @@ void* CommDriverN2KSerialThread::Entry() {
           if (bGotESC) {
             if (ESCAPE == next_byte) {
               *put_ptr++ = next_byte;
-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+              if (put_ptr - rx_buffer > DS_RX_BUFFER_SIZE)
                 put_ptr = rx_buffer;
               bGotESC = false;
             }
           }
 
-          if (bGotESC && (ENDOFTEXT == next_byte)) {
+          if (bGotESC && ENDOFTEXT == next_byte) {
             // Process packet
             //    Copy the message into a std::vector
 
@@ -1049,9 +1049,9 @@ void* CommDriverN2KSerialThread::Entry() {
             unsigned char* tptr;
             tptr = tak_ptr;
 
-            while ((tptr != put_ptr)) {
+            while (tptr != put_ptr) {
               vec->push_back(*tptr++);
-              if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
+              if (tptr - rx_buffer > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
             }
 
             tak_ptr = tptr;
@@ -1067,11 +1067,11 @@ void* CommDriverN2KSerialThread::Entry() {
             m_pParentDriver->AddPendingEvent(Nevent);
 
           } else {
-            bGotESC = (next_byte == ESCAPE);
+            bGotESC = next_byte == ESCAPE;
 
             if (!bGotESC) {
               *put_ptr++ = next_byte;
-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+              if (put_ptr - rx_buffer > DS_RX_BUFFER_SIZE)
                 put_ptr = rx_buffer;
             }
           }
@@ -1084,13 +1084,13 @@ void* CommDriverN2KSerialThread::Entry() {
               bGotSOT = true;
             }
           } else {
-            bGotESC = (next_byte == ESCAPE);
+            bGotESC = next_byte == ESCAPE;
             if (bGotSOT) {
               bGotSOT = false;
               bInMsg = true;
 
               *put_ptr++ = next_byte;
-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+              if (put_ptr - rx_buffer > DS_RX_BUFFER_SIZE)
                 put_ptr = rx_buffer;
             }
           }
@@ -1177,7 +1177,7 @@ std::vector<unsigned char> BufferToActisenseFormat( tN2kMsg &msg){
     AddByteEscapedToBuf(msg.Data[i],msgIdx,ActisenseMsgBuf,byteSum);
   byteSum %= 256;
 
-  CheckSum = (uint8_t)((byteSum == 0) ? 0 : (256 - byteSum));
+  CheckSum = (uint8_t)(byteSum == 0 ? 0 : 256 - byteSum);
   ActisenseMsgBuf[msgIdx++]=CheckSum;
   if (CheckSum==ESCAPE) ActisenseMsgBuf[msgIdx++]=CheckSum;
 

@@ -129,11 +129,11 @@ bool RTE::Parse( const SENTENCE& sentence )
 
    while( field_number < number_of_data_fields )
    {
-      Waypoints.Add( ( sentence.Field( field_number ) )) ;
+      Waypoints.Add( sentence.Field( field_number )) ;
       field_number++;
    }
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool RTE::Write( SENTENCE& sentence )
@@ -181,14 +181,14 @@ bool RTE::Write( SENTENCE& sentence )
    else
        sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool RTE::AddWaypoint(const wxString& name)
 {
       Waypoints.Add(name);
 
-      return( TRUE );
+      return TRUE;
 }
 
 void RTE::delete_all_entries( void )

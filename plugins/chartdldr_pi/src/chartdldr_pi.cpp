@@ -216,7 +216,7 @@ int chartdldr_pi::Init(void) {
     if (!s2.IsEmpty())  // scrub empty sources.
       m_ChartSources.push_back(std::make_unique<ChartSource>(s1, s2, s3));
   }
-  return (WANTS_PREFERENCES | WANTS_CONFIG | INSTALLS_TOOLBOX_PAGE);
+  return WANTS_PREFERENCES | WANTS_CONFIG | INSTALLS_TOOLBOX_PAGE;
 }
 
 bool chartdldr_pi::DeInit(void) {
@@ -873,7 +873,7 @@ void ChartDldrPanelImpl::AppendCatalog(std::unique_ptr<ChartSource> &cs) {
 void ChartDldrPanelImpl::UpdateAllCharts(wxCommandEvent &event) {
   int failed_to_update = 0;
   int attempted_to_update = 0;
-  if ((pPlugIn->m_preselect_new) && (pPlugIn->m_preselect_updated)) {
+  if (pPlugIn->m_preselect_new && pPlugIn->m_preselect_updated) {
     wxMessageDialog mess(
         this,
         _("You have chosen to update all chart catalogs.\nThen download all "
@@ -1050,7 +1050,7 @@ void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
                         // possible cases of ret
   }
 
-  if ((ret == OCPN_DL_NO_ERROR) && bok) m_DLoadNB->SetSelection(1);
+  if (ret == OCPN_DL_NO_ERROR && bok) m_DLoadNB->SetSelection(1);
 }
 
 void ChartSource::GetLocalFiles() {
@@ -1473,7 +1473,7 @@ After downloading the charts, please extract them to %s"),
     OCPNMessageBox_PlugIn(this, _("Chart download cancelled."),
                           _("Chart Downloader"), wxOK | wxICON_INFORMATION);
 
-  if ((m_downloading - m_failed_downloads > 0) && !updatingAll)
+  if (m_downloading - m_failed_downloads > 0 && !updatingAll)
     ForceChartDBUpdate();
 }
 
@@ -1589,7 +1589,7 @@ void ChartDldrPanelImpl::AddSource(wxCommandEvent &event) {
     AppendCatalog(cs);
     bool covered = false;
     for (size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++) {
-      if (cs->GetDir().StartsWith((GetChartDBDirArrayString().Item(i)))) {
+      if (cs->GetDir().StartsWith(GetChartDBDirArrayString().Item(i))) {
         covered = true;
         break;
       }
@@ -1654,7 +1654,7 @@ void ChartDldrPanelImpl::DoEditSource() {
       bool covered = false;
       for (size_t i = 0; i < GetChartDBDirArrayString().GetCount(); i++) {
         if (pPlugIn->m_ChartSources.at(cat)->GetDir().StartsWith(
-                (GetChartDBDirArrayString().Item(i)))) {
+                GetChartDBDirArrayString().Item(i))) {
           covered = true;
           break;
         }
@@ -1798,14 +1798,14 @@ static int copy_data(struct archive *ar, struct archive *aw) {
 
   for (;;) {
     r = archive_read_data_block(ar, &buff, &size, &offset);
-    if (r == ARCHIVE_EOF) return (ARCHIVE_OK);
-    if (r < ARCHIVE_OK) return (r);
+    if (r == ARCHIVE_EOF) return ARCHIVE_OK;
+    if (r < ARCHIVE_OK) return r;
     r = archive_write_data_block(aw, buff, size, offset);
     if (r < ARCHIVE_OK) {
       // fprintf(stderr, "%s\n", archive_error_string(aw));
       wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s",
                                   archive_error_string(aw)));
-      return (r);
+      return r;
     }
   }
 }
@@ -2281,7 +2281,7 @@ void ChartDldrGuiAddSourceDlg::OnChangeType(wxCommandEvent &event) {
 
 void ChartDldrGuiAddSourceDlg::OnSourceSelected(wxTreeEvent &event) {
   wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
-  ChartSource *cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
+  ChartSource *cs = (ChartSource *)m_treeCtrlPredefSrcs->GetItemData(item);
   if (cs) {
     m_dirExpanded = FixPath(cs->GetDir());
 
@@ -2348,7 +2348,7 @@ void ChartDldrGuiAddSourceDlg::OnOkClick(wxCommandEvent &event) {
     wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
     if (m_treeCtrlPredefSrcs->GetSelection().IsOk()) {
       ChartSource *cs =
-          (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
+          (ChartSource *)m_treeCtrlPredefSrcs->GetItemData(item);
       if (!cs)
         msg +=
             _("You must select one of the predefined chart sources or create "
@@ -2454,7 +2454,7 @@ void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
     case OCPN_DL_EVENT_TYPE_END:
       m_bTransferComplete = true;
       m_bTransferSuccess =
-          (ev.getDLEventStatus() == OCPN_DL_NO_ERROR) ? true : false;
+          ev.getDLEventStatus() == OCPN_DL_NO_ERROR ? true : false;
       break;
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:

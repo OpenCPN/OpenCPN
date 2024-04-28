@@ -210,7 +210,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   m_fade_timer.SetOwner(this);
   this->Connect( wxEVT_TIMER, wxTimerEventHandler( ocpnFloatingToolbarDialog::FadeTimerEvent ), NULL, this );
 
-  if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0))
+  if (m_bAutoHideToolbar && m_nAutoHideToolbar > 0)
     m_fade_timer.Start(m_nAutoHideToolbar * 1000);
 
   m_bsubmerged = false;
@@ -226,7 +226,7 @@ ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog() {
 void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent &event) {
   if (n_toolbarHideMethod == TOOLBAR_HIDE_TO_FIRST_TOOL) {
     if (g_bmasterToolbarFull) {
-      if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) /*&& !m_bsubmerged*/ ) {
+      if (m_bAutoHideToolbar && m_nAutoHideToolbar > 0 /*&& !m_bsubmerged*/ ) {
 
         // Double check the mouse position
         wxPoint mp = gFrame->GetPrimaryCanvas()->ScreenToClient(::wxGetMousePosition());
@@ -410,8 +410,8 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid) {
                       10;  // this is compass window, if shown
       }
 
-      max_rows = (m_pparent->GetClientSize().y /
-                  (tool_size.y + m_style->GetToolSeparation())) -
+      max_rows = m_pparent->GetClientSize().y /
+                 (tool_size.y + m_style->GetToolSeparation()) -
                  2;
 
       max_cols = (avoid_start - grabber_width) /
@@ -541,7 +541,7 @@ void ocpnFloatingToolbarDialog::SetAutoHideTimer(int time) {
 }
 
 void ocpnFloatingToolbarDialog::RefreshFadeTimer() {
-  if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0)) {
+  if (m_bAutoHideToolbar && m_nAutoHideToolbar > 0) {
     m_fade_timer.Start(m_nAutoHideToolbar * 1000);
   }
 }
@@ -585,13 +585,13 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
                               (r.y-1)*displayScale,
                               (r.width + m_end_margin)*displayScale,
                               (r.height+2)*displayScale,
-                              (m_end_margin * 1)*displayScale);
+                              m_end_margin * 1*displayScale);
   else
     gldc.DrawRoundedRectangle((r.x-1)*displayScale,
                               (r.y- m_end_margin/2)*displayScale,
                               (r.width + 2)*displayScale,
                               (r.height + m_end_margin)*displayScale,
-                              (m_end_margin * 1.5)*displayScale);
+                              m_end_margin * 1.5*displayScale);
 
 
   int width = GetToolbarSize().x;
@@ -778,7 +778,7 @@ bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool(ocpnToolBarSimple *tb) {
       }
 
       wxToolBarToolBase *tool =
-          tb->AddTool(pttc->id, wxString(pttc->label), *(ptool_bmp),
+          tb->AddTool(pttc->id, wxString(pttc->label), *ptool_bmp,
                       wxString(pttc->shortHelp), pttc->kind);
 
       tb->SetToolBitmapsSVG(pttc->id, pttc->pluginNormalIconSVG,
@@ -918,8 +918,8 @@ void ToolTipWin::SetBitmap() {
   mdc.SetBrush(bback);
 
   if (m_hiviz) {
-    if ((m_cs == GLOBAL_COLOR_SCHEME_DUSK) ||
-        (m_cs == GLOBAL_COLOR_SCHEME_NIGHT)) {
+    if (m_cs == GLOBAL_COLOR_SCHEME_DUSK ||
+        m_cs == GLOBAL_COLOR_SCHEME_NIGHT) {
       wxBrush hv_back(wxColour(200, 200, 200));
       mdc.SetBrush(hv_back);
     }
@@ -1113,15 +1113,15 @@ bool ocpnToolBarSimple::DoInsertTool(size_t WXUNUSED(pos),
     tool->SetSize(GetToolSize());
 
     // Calculate reasonable max size in case Layout() not called
-    if ((tool->m_x + tool->GetNormalBitmap().GetWidth() +
-         m_style->GetLeftMargin()) > m_maxWidth)
+    if (tool->m_x + tool->GetNormalBitmap().GetWidth() +
+        m_style->GetLeftMargin() > m_maxWidth)
       m_maxWidth =
-          (wxCoord)((tool->m_x + tool->GetWidth() + m_style->GetLeftMargin()));
+          (wxCoord)(tool->m_x + tool->GetWidth() + m_style->GetLeftMargin());
 
-    if ((tool->m_y + tool->GetNormalBitmap().GetHeight() +
-         m_style->GetTopMargin()) > m_maxHeight)
+    if (tool->m_y + tool->GetNormalBitmap().GetHeight() +
+        m_style->GetTopMargin() > m_maxHeight)
       m_maxHeight =
-          (wxCoord)((tool->m_y + tool->GetHeight() + m_style->GetTopMargin()));
+          (wxCoord)(tool->m_y + tool->GetHeight() + m_style->GetTopMargin());
   }
 
   else if (tool->IsControl()) {
@@ -1318,7 +1318,7 @@ bool ocpnToolBarSimple::Realize() {
         tool->m_y = (wxCoord)m_lastY;
 
         tool->trect = wxRect(tool->m_x, tool->m_y, toolSize.x, toolSize.y);
-        tool->trect.Inflate((separatorSize / 2), topMargin);
+        tool->trect.Inflate(separatorSize / 2, topMargin);
 
         m_lastY += toolSize.y + separatorSize;
       }
@@ -1402,7 +1402,7 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent &event) {
     return;
 
   if (m_btooltip_show /*&& IsShown()*/ && m_pToolTipWin &&
-      (!m_pToolTipWin->IsShown())) {
+      !m_pToolTipWin->IsShown()) {
     if (m_last_ro_tool) {
       wxString s = m_last_ro_tool->GetShortHelp();
 
@@ -1851,9 +1851,9 @@ wxToolBarToolBase *ocpnToolBarSimple::FindToolForPosition(wxCoord x,
   wxToolBarToolsList::compatibility_iterator node = m_tools.GetFirst();
   while (node) {
     ocpnToolBarTool *tool = (ocpnToolBarTool *)node->GetData();
-    if ((x >= tool->m_x) && (y >= tool->m_y) &&
-        (x < (tool->m_x + tool->GetWidth())) &&
-        (y < (tool->m_y + tool->GetHeight()))) {
+    if (x >= tool->m_x && y >= tool->m_y &&
+        x < tool->m_x + tool->GetWidth() &&
+        y < tool->m_y + tool->GetHeight()) {
       return tool;
     }
 
@@ -2529,15 +2529,15 @@ void ToolbarChoicesDialog::RecalculateSize(void) {
 
   if (GetParent()) {
     wxSize dsize = GetParent()->GetClientSize();
-    esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
-    esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+    esize.y = wxMin(esize.y, dsize.y - 4 * GetCharHeight());
+    esize.x = wxMin(esize.x, dsize.x - 2 * GetCharHeight());
     SetSize(esize);
     Centre();
 
   } else {
     wxSize fsize = g_Platform->getDisplaySize();
-    fsize.y = wxMin(esize.y, fsize.y - (4 * GetCharHeight()));
-    fsize.x = wxMin(esize.x, fsize.x - (2 * GetCharHeight()));
+    fsize.y = wxMin(esize.y, fsize.y - 4 * GetCharHeight());
+    fsize.x = wxMin(esize.x, fsize.x - 2 * GetCharHeight());
     SetSize(fsize);
     CentreOnScreen();
 #ifdef __OCPN__ANDROID__

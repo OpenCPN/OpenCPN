@@ -86,7 +86,7 @@ bool HDG::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 6 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    MagneticSensorHeadingDegrees = sentence.Double( 1 );
@@ -95,7 +95,7 @@ bool HDG::Parse( const SENTENCE& sentence )
    MagneticVariationDegrees     = sentence.Double( 4 );
    MagneticVariationDirection   = sentence.EastOrWest( 5 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool HDG::Write( SENTENCE& sentence )
@@ -114,7 +114,7 @@ bool HDG::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const HDG& HDG::operator = ( const HDG& source )
@@ -125,5 +125,5 @@ const HDG& HDG::operator = ( const HDG& source )
    MagneticVariationDegrees     = source.MagneticVariationDegrees;
    MagneticVariationDirection   = source.MagneticVariationDirection;
 
-   return( *this );
+   return*this;
 }

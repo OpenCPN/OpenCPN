@@ -191,7 +191,7 @@ void CommDriverN0183Net::handle_N0183_MSG(CommDriverN0183NetEvent& event) {
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
 
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
+  if (full_sentence[0] == '$' || full_sentence[0] == '!') {  // Sanity check
     std::string identifier;
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
@@ -278,7 +278,7 @@ void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
     // but for consistency with broadcast behaviour, we will
     // instead rely on setting priority levels to ignore
     // sentences read back that have just been transmitted
-    if ((!GetMulticast()) && (GetAddr().IPAddress().EndsWith(_T("255")))) {
+    if (!GetMulticast() && GetAddr().IPAddress().EndsWith(_T("255"))) {
       int broadcastEnable = 1;
       bool bam = GetTSock()->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
@@ -290,7 +290,7 @@ void CommDriverN0183Net::OpenNetworkUDP(unsigned int addr) {
 }
 
 void CommDriverN0183Net::OpenNetworkTCP(unsigned int addr) {
-  int isServer = ((addr == INADDR_ANY) ? 1 : 0);
+  int isServer = addr == INADDR_ANY ? 1 : 0;
   wxLogMessage(wxString::Format(_T("Opening TCP Server %d"), isServer));
 
   if (isServer) {
@@ -306,7 +306,7 @@ void CommDriverN0183Net::OpenNetworkTCP(unsigned int addr) {
     GetSockServer()->SetTimeout(1);  // Short timeout
   } else {
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
-    int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
+    int notify_flags = wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG;
     if (GetPortType() != DS_TYPE_INPUT) notify_flags |= wxSOCKET_OUTPUT_FLAG;
     if (GetPortType() != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
     GetSock()->SetNotify(notify_flags);
@@ -429,7 +429,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         if (count) {
           if (1 /*FIXME !g_benableUDPNullHeader*/) {
             data[count] = 0;
-            m_sock_buffer += (&data.front());
+            m_sock_buffer += &data.front();
           }
         }
       }
@@ -523,7 +523,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
         //  the connect request then stretch the time a bit.  This happens on
         //  Windows if there is no dafault IP on any interface
 
-        if (!GetBrxConnectEvent() && (since_connect.GetSeconds() < 5))
+        if (!GetBrxConnectEvent() && since_connect.GetSeconds() < 5)
           retry_time = 10000;  // 10 secs
 
         GetSocketThreadWatchdogTimer()->Stop();
@@ -576,7 +576,7 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
         GetSock()->SetTimeout(2);
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
-        int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
+        int notify_flags = wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG;
         if (GetPortType() != DS_TYPE_INPUT) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(GetSock());
@@ -688,9 +688,9 @@ bool CommDriverN0183Net::SetOutputSocketOptions(wxSocketBase* tsock) {
   //  quickly fill the output buffer, and thus fail the write() call
   //  within a few seconds.
   unsigned long outbuf_size = 1024;  // Smallest allowable value on Linux
-  return (tsock->SetOption(SOL_SOCKET, SO_SNDBUF, &outbuf_size,
-                           sizeof(outbuf_size)) &&
-          ret);
+  return tsock->SetOption(SOL_SOCKET, SO_SNDBUF, &outbuf_size,
+                          sizeof(outbuf_size)) &&
+         ret;
 }
 
 bool CommDriverN0183Net::ChecksumOK(const std::string& sentence) {

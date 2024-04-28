@@ -165,7 +165,7 @@ void DLDR_OCPNChartDirPanel::SetText(wxString text) {
   wxArrayString nameWrapped = wrapper.GetLineArray();
   int lineCount = nameWrapped.GetCount();
   if (lineCount > 1) lineCount++;
-  SetMinSize(wxSize(-1, (lineCount * m_refHeight * 3 / 2)));
+  SetMinSize(wxSize(-1, lineCount * m_refHeight * 3 / 2));
   GetParent()->Layout();
   Refresh();
 }
@@ -362,7 +362,7 @@ void AddSourceDlg::OnNbPage(wxNotebookEvent& event) {
     wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
     ChartSource* cs = nullptr;
     if (item.IsOk())
-      cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
+      cs = (ChartSource *)m_treeCtrlPredefSrcs->GetItemData(item);
     if(!cs)
       m_buttonChartDirectory->Disable();
   }
@@ -738,7 +738,7 @@ void ChartDldrPanel::OnSize(wxSizeEvent& event) {
   if (GetGrandParent()) sz = GetGrandParent()->GetSize();
   // qDebug() << "MetricSize: " << sz.x << sz.y;
 
-  int yAvail = sz.y - (8 * GetCharHeight());  // Roughly 8 chars of decoration
+  int yAvail = sz.y - 8 * GetCharHeight();  // Roughly 8 chars of decoration
                                               // on-screen for this dialog.
   double ratio = 0.7;
   if (sz.y > sz.x)  // Portait mode

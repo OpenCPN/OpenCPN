@@ -155,7 +155,7 @@ unsigned long cache_size() {
     }
     cont = dir.GetNext(&file);
   }
-  total /= (1024 * 1024);
+  total /= 1024 * 1024;
   return total.ToULong();
 }
 

@@ -101,13 +101,13 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlNAME:
       s1 = trimAISField(t1->ShipName);
-      if ((!t1->b_nameValid && (t1->Class == AIS_BASE)) ||
-          (t1->Class == AIS_SART))
+      if ((!t1->b_nameValid && t1->Class == AIS_BASE) ||
+          t1->Class == AIS_SART)
         s1 = _T("-");
 
       s2 = trimAISField(t2->ShipName);
-      if ((!t2->b_nameValid && (t2->Class == AIS_BASE)) ||
-          (t2->Class == AIS_SART))
+      if ((!t2->b_nameValid && t2->Class == AIS_BASE) ||
+          t2->Class == AIS_SART)
         s2 = _T("-");
       break;
 
@@ -129,18 +129,18 @@ static int ItemCompare(AisTargetData *pAISTarget1,
 
     case tlTYPE:
       s1 = t1->Get_vessel_type_string(false);
-      if ((t1->Class == AIS_BASE) ||
-          (t1->Class == AIS_SART || (t1->Class == AIS_METEO)))
+      if (t1->Class == AIS_BASE ||
+          (t1->Class == AIS_SART || t1->Class == AIS_METEO))
         s1 = _T("-");
 
       s2 = t2->Get_vessel_type_string(false);
-      if ((t1->Class == AIS_BASE) || (t1->Class == AIS_SART) ||
-          (t1->Class == AIS_METEO))
+      if (t1->Class == AIS_BASE || t1->Class == AIS_SART ||
+          t1->Class == AIS_METEO)
         s2 = _T("-");
       break;
 
     case tlNAVSTATUS: {
-      if ((t1->NavStatus <= 15) && (t1->NavStatus >= 0)) {
+      if (t1->NavStatus <= 15 && t1->NavStatus >= 0) {
         if (t1->Class == AIS_SART) {
           if (t1->NavStatus == RESERVED_14)
             s1 = _("Active");
@@ -151,10 +151,10 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       } else
         s1 = _("-");
 
-      if ((t1->Class == AIS_ATON) || (t1->Class == AIS_BASE) ||
-          (t1->Class == AIS_CLASS_B) || (t1->Class == AIS_METEO)) s1 = _T("-");
+      if (t1->Class == AIS_ATON || t1->Class == AIS_BASE ||
+          t1->Class == AIS_CLASS_B || t1->Class == AIS_METEO) s1 = _T("-");
 
-      if ((t2->NavStatus <= 15) && (t2->NavStatus >= 0)) {
+      if (t2->NavStatus <= 15 && t2->NavStatus >= 0) {
         if (t2->Class == AIS_SART) {
           if (t2->NavStatus == RESERVED_14)
             s2 = _("Active");
@@ -165,8 +165,8 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       } else
         s2 = _("-");
 
-      if ((t2->Class == AIS_ATON) || (t2->Class == AIS_BASE) ||
-          (t2->Class == AIS_CLASS_B) || (t2->Class == AIS_METEO)) s2 = _T("-");
+      if (t2->Class == AIS_ATON || t2->Class == AIS_BASE ||
+          t2->Class == AIS_CLASS_B || t2->Class == AIS_METEO) s2 = _T("-");
 
       break;
     }
@@ -189,8 +189,8 @@ static int ItemCompare(AisTargetData *pAISTarget1,
     }
 
     case tlCOG: {
-      if ((t1->COG >= 360.0) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
+      if (t1->COG >= 360.0 || t1->Class == AIS_ATON ||
+          t1->Class == AIS_BASE || t1->Class == AIS_METEO)
         n1 = -1.0;
       else {
         int crs = wxRound(t1->COG);
@@ -200,8 +200,8 @@ static int ItemCompare(AisTargetData *pAISTarget1,
           n1 = crs;
       }
 
-      if ((t2->COG >= 360.0) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
+      if (t2->COG >= 360.0 || t2->Class == AIS_ATON ||
+          t2->Class == AIS_BASE || t2->Class == AIS_METEO)
         n2 = -1.0;
       else {
         int crs = wxRound(t2->COG);
@@ -216,14 +216,14 @@ static int ItemCompare(AisTargetData *pAISTarget1,
     }
 
     case tlSOG: {
-      if ((t1->SOG > 100.) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
+      if (t1->SOG > 100. || t1->Class == AIS_ATON ||
+          t1->Class == AIS_BASE || t1->Class == AIS_METEO)
         n1 = -1.0;
       else
         n1 = t1->SOG;
 
-      if ((t2->SOG > 100.) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
+      if (t2->SOG > 100. || t2->Class == AIS_ATON ||
+          t2->Class == AIS_BASE || t2->Class == AIS_METEO)
         n2 = -1.0;
       else
         n2 = t2->SOG;
@@ -232,14 +232,14 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       break;
     }
     case tlCPA: {
-      if ((!t1->bCPA_Valid) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
+      if (!t1->bCPA_Valid || t1->Class == AIS_ATON ||
+          t1->Class == AIS_BASE || t1->Class == AIS_METEO)
         n1 = 99999.0;
       else
         n1 = t1->CPA;
 
-      if ((!t2->bCPA_Valid) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE))
+      if (!t2->bCPA_Valid || t2->Class == AIS_ATON ||
+          t2->Class == AIS_BASE)
         n2 = 99999.0;
       else
         n2 = t2->CPA;
@@ -248,14 +248,14 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       break;
     }
     case tlTCPA: {
-      if ((!t1->bCPA_Valid) || (t1->Class == AIS_ATON) ||
-          (t1->Class == AIS_BASE) || (t1->Class == AIS_METEO))
+      if (!t1->bCPA_Valid || t1->Class == AIS_ATON ||
+          t1->Class == AIS_BASE || t1->Class == AIS_METEO)
         n1 = 99999.0;
       else
         n1 = t1->TCPA;
 
-      if ((!t2->bCPA_Valid) || (t2->Class == AIS_ATON) ||
-          (t2->Class == AIS_BASE) || (t2->Class == AIS_METEO))
+      if (!t2->bCPA_Valid || t2->Class == AIS_ATON ||
+          t2->Class == AIS_BASE || t2->Class == AIS_METEO)
         n2 = 99999.0;
       else
         n2 = t2->TCPA;
@@ -285,14 +285,14 @@ static int ItemCompare(AisTargetData *pAISTarget1,
       else if (n2 < n1)
         return -1;
       else
-        return (t1->Range_NM > t2->Range_NM);  // 0;
+        return t1->Range_NM > t2->Range_NM;  // 0;
     } else {
       if (n2 > n1)
         return -1;
       else if (n2 < n1)
         return 1;
       else
-        return (t1->Range_NM > t2->Range_NM);  // 0;
+        return t1->Range_NM > t2->Range_NM;  // 0;
     }
   }
 }
@@ -382,7 +382,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
     }
 
     bool b_reset_pos = false;
-    if ((pane.floating_size.x != -1) && (pane.floating_size.y != -1)) {
+    if (pane.floating_size.x != -1 && pane.floating_size.y != -1) {
 #ifdef __WXMSW__
       //  Support MultiMonitor setups which an allow negative window positions.
       //  If the requested window title bar does not intersect any installed
@@ -420,7 +420,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
 
     //    If the list got accidentally dropped on top of the chart bar, move it
     //    away....
-    if (pane.IsDocked() && (pane.dock_row == 0)) {
+    if (pane.IsDocked() && pane.dock_row == 0) {
       pane.Float();
       pane.Row(1);
       pane.Position(0);
@@ -465,13 +465,13 @@ void AISTargetListDialog::RecalculateSize() {
   esize.y = GetCharHeight() * 40;
 
   wxSize dsize = gFrame->GetClientSize();
-  esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
-  esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
+  esize.y = wxMin(esize.y, dsize.y - 4 * GetCharHeight());
+  esize.x = wxMin(esize.x, dsize.x - 2 * GetCharHeight());
   SetClientSize(esize);
 
   wxSize fsize = GetSize();
-  fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
-  fsize.x = wxMin(fsize.x, dsize.x - (2 * GetCharHeight()));
+  fsize.y = wxMin(fsize.y, dsize.y - 2 * GetCharHeight());
+  fsize.x = wxMin(fsize.x, dsize.x - 2 * GetCharHeight());
   SetSize(fsize);
 
   if (m_pAuiManager) {
@@ -844,13 +844,13 @@ void AISTargetListDialog::UpdateButtons() {
   long item = -1;
   item = m_pListCtrlAISTargets->GetNextItem(item, wxLIST_NEXT_ALL,
                                             wxLIST_STATE_SELECTED);
-  bool enable = (item != -1);
+  bool enable = item != -1;
 
   m_pButtonInfo->Enable(enable);
 
   if (m_pdecoder && item != -1) {
     auto pAISTargetSel =  m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(item));
-    if (pAISTargetSel && (!pAISTargetSel->b_positionOnceValid)) enable = false;
+    if (pAISTargetSel && !pAISTargetSel->b_positionOnceValid) enable = false;
   }
   m_pButtonJumpTo->Enable(enable);
   m_pButtonJumpTo_Close->Enable(enable);
@@ -1100,8 +1100,8 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
 
       if (NULL != pAISTarget) {
         bool b_add = false;
-        if ((pAISTarget->b_positionOnceValid) &&
-            (pAISTarget->Range_NM <= g_AisTargetList_range))
+        if (pAISTarget->b_positionOnceValid &&
+            pAISTarget->Range_NM <= g_AisTargetList_range)
           b_add = true;
         else if (!pAISTarget->b_positionOnceValid)
           b_add = true;
@@ -1118,14 +1118,14 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
 
     g_AisTargetList_count = m_pMMSI_array->GetCount();
 
-    if ((g_AisTargetList_count > 1000) && !m_bautosort_force)
+    if (g_AisTargetList_count > 1000 && !m_bautosort_force)
       g_bAisTargetList_autosort = false;
 
     m_pCBAutosort->SetValue(g_bAisTargetList_autosort);
 
     //    Restore selected item
     long item_sel = 0;
-    if ((selItemID != -1) && (selMMSI != -1)) {
+    if (selItemID != -1 && selMMSI != -1) {
       for (unsigned int i = 0; i < m_pMMSI_array->GetCount(); i++) {
         if (m_pMMSI_array->Item(i) == selMMSI) {
           item_sel = i;
@@ -1174,8 +1174,8 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
 
       if (NULL != pAISTarget) {
         bool b_add = false;
-        if ((pAISTarget->b_positionOnceValid) &&
-            (pAISTarget->Range_NM <= g_AisTargetList_range))
+        if (pAISTarget->b_positionOnceValid &&
+            pAISTarget->Range_NM <= g_AisTargetList_range)
           b_add = true;
         else if (!pAISTarget->b_positionOnceValid)
           b_add = true;
@@ -1203,14 +1203,14 @@ void AISTargetListDialog::UpdateNVAISTargetList(void) {
       }
     }
 
-    if ((g_AisTargetList_count > 1000) && !m_bautosort_force)
+    if (g_AisTargetList_count > 1000 && !m_bautosort_force)
       g_bAisTargetList_autosort = false;
 
     m_pCBAutosort->SetValue(g_bAisTargetList_autosort);
 
     //    Restore selected item
     long item_sel = 0;
-    if ((selItemID != -1) && (selMMSI != -1)) {
+    if (selItemID != -1 && selMMSI != -1) {
       for (unsigned int i = 0; i < m_pMMSI_array->GetCount(); i++) {
         if (m_pMMSI_array->Item(i) == selMMSI) {
           item_sel = i;

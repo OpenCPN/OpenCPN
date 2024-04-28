@@ -444,7 +444,7 @@ void ConnectionsDialog::OnRemoveDatasourceClick(wxCommandEvent& event) {
       }
     }
 
-    if ((index >= 0) && (cp)) {
+    if (index >= 0 && cp) {
       delete TheConnectionParams()->Item(index)->m_optionsPanel;
       TheConnectionParams()->RemoveAt(index);
       StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
@@ -472,7 +472,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
       }
     }
 
-    if ((index >= 0) && (cp)) {
+    if (index >= 0 && cp) {
       ConnectionEditDialog dialog(m_parent, this);
       dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
       dialog.SetPropsLabel(_("Edit Selected Connection"));
@@ -501,7 +501,7 @@ void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
     NMEALogWindow::Get().DestroyWindow();
   } else {
-    NMEALogWindow::Get().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::Get().Create((wxWindow*)m_parent->pParent, 35);
 
     // Try to ensure that the log window is a least a little bit visible
     wxRect logRect(
@@ -511,8 +511,8 @@ void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
     if (m_container->GetRect().Contains(logRect)) {
       NMEALogWindow::Get().SetPos(
           m_container->GetRect().x / 2,
-          (m_container->GetRect().y +
-           (m_container->GetRect().height - logRect.height) / 2));
+          m_container->GetRect().y +
+          (m_container->GetRect().height - logRect.height) / 2);
       NMEALogWindow::Get().Move();
     }
 

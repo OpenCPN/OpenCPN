@@ -200,7 +200,7 @@ void PriorityDlg::AddLeaves(const std::vector<std::string> &map_list,
     wxTreeItemId id_tk = m_prioTree->AppendItem(leaf_parent, item_string, -1, -1, pe);
 
     //  Set bold text on item currently active (usually 0)
-    if ( (size_t)(pc.active_priority) == index)
+    if ( (size_t)pc.active_priority == index)
       m_prioTree->SetItemBold(id_tk);
 
     index++;
@@ -246,7 +246,7 @@ void PriorityDlg::Populate() {
   int i = m_selmap_index;
   wxTreeItemId cid = m_prioTree->GetFirstChild(rootID, cookie);
 
-  while ((i > 0) && cid.IsOk()){
+  while (i > 0 && cid.IsOk()){
     cid = m_prioTree->GetNextChild( rootID, cookie);
     i--;
   }
@@ -254,7 +254,7 @@ void PriorityDlg::Populate() {
   wxTreeItemId ccid = m_prioTree->GetFirstChild(cid, cookie);
 
   int j = m_selIndex;
-  while ((j > 0) && ccid.IsOk()){
+  while (j > 0 && ccid.IsOk()){
     ccid = m_prioTree->GetNextChild( cid, cookie);
     j--;
   }

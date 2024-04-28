@@ -73,13 +73,13 @@ int G_PtInPolygon(MyPoint *rgpts, int wnumpts, float x, float y) {
   for (i = 0, ppt = rgpts; i < wnumpts - 1; i++, ppt++) {
     ppt1 = ppt;
     ppt1++;
-    if (Intersect(pt0, pt2, *ppt, *(ppt1))) wnumintsct++;
+    if (Intersect(pt0, pt2, *ppt, *ppt1)) wnumintsct++;
   }
 
   // And the last line
   if (Intersect(pt0, pt2, *ppt, *rgpts)) wnumintsct++;
 
-  return (wnumintsct & 1);
+  return wnumintsct & 1;
 }
 
 /*************************************************************************
@@ -100,8 +100,8 @@ int Intersect(MyPoint p1, MyPoint p2, MyPoint p3, MyPoint p4) {
   i = CCW(p1, p2, p4);
   i = CCW(p3, p4, p1);
   i = CCW(p3, p4, p2);
-  return (((CCW(p1, p2, p3) * CCW(p1, p2, p4)) <= 0) &&
-          ((CCW(p3, p4, p1) * CCW(p3, p4, p2) <= 0)));
+  return CCW(p1, p2, p3) * CCW(p1, p2, p4) <= 0 &&
+         CCW(p3, p4, p1) * CCW(p3, p4, p2) <= 0;
 }
 /*************************************************************************
 
@@ -130,7 +130,7 @@ int CCW(MyPoint p0, MyPoint p1, MyPoint p2) {
    * of divide by zero possibilities with pure horizontal and pure
    * vertical lines.
    */
-  return ((dx1 * dy2 > dy1 * dx2) ? 1 : -1);
+  return dx1 * dy2 > dy1 * dx2 ? 1 : -1;
 }
 
 int G_PtInPolygon_FL(float_2Dpt *rgpts, int wnumpts, float x, float y) {
@@ -150,13 +150,13 @@ int G_PtInPolygon_FL(float_2Dpt *rgpts, int wnumpts, float x, float y) {
   for (i = 0, ppt = rgpts; i < wnumpts - 1; i++, ppt++) {
     ppt1 = ppt;
     ppt1++;
-    if (Intersect_FL(pt0, pt2, *ppt, *(ppt1))) wnumintsct++;
+    if (Intersect_FL(pt0, pt2, *ppt, *ppt1)) wnumintsct++;
   }
 
   // And the last line
   if (Intersect_FL(pt0, pt2, *ppt, *rgpts)) wnumintsct++;
 
-  return (wnumintsct & 1);
+  return wnumintsct & 1;
 }
 
 /*************************************************************************
@@ -176,8 +176,8 @@ int Intersect_FL(float_2Dpt p1, float_2Dpt p2, float_2Dpt p3, float_2Dpt p4) {
   i = CCW_FL(p1, p2, p4);
   i = CCW_FL(p3, p4, p1);
   i = CCW_FL(p3, p4, p2);
-  return (((CCW_FL(p1, p2, p3) * CCW_FL(p1, p2, p4)) <= 0) &&
-          ((CCW_FL(p3, p4, p1) * CCW_FL(p3, p4, p2) <= 0)));
+  return CCW_FL(p1, p2, p3) * CCW_FL(p1, p2, p4) <= 0 &&
+         CCW_FL(p3, p4, p1) * CCW_FL(p3, p4, p2) <= 0;
 }
 /*************************************************************************
 
@@ -206,6 +206,6 @@ int CCW_FL(float_2Dpt p0, float_2Dpt p1, float_2Dpt p2) {
    * of divide by zero possibilities with pure horizontal and pure
    * vertical lines.
    */
-  return ((dx1 * dy2 > dy1 * dx2) ? 1 : -1);
+  return dx1 * dy2 > dy1 * dx2 ? 1 : -1;
 }
 

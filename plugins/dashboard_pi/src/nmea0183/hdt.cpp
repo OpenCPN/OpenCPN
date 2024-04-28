@@ -81,12 +81,12 @@ bool HDT::Parse( const SENTENCE& sentence )
    if ( sentence.IsChecksumBad( 3 ) == TRUE )
    {
       SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
+      return FALSE;
    }
 
    DegreesTrue = sentence.Double( 1 );
 
-   return( TRUE );
+   return TRUE;
 }
 
 bool HDT::Write( SENTENCE& sentence )
@@ -102,12 +102,12 @@ bool HDT::Write( SENTENCE& sentence )
 
    sentence.Finish();
 
-   return( TRUE );
+   return TRUE;
 }
 
 const HDT& HDT::operator = ( const HDT& source )
 {
    DegreesTrue = source.DegreesTrue;
 
-   return( *this );
+   return*this;
 }

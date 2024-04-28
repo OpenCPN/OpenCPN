@@ -31,10 +31,10 @@ _crc32c(unsigned char *buf, int len)
 	result = ~crc32;
 
 	byte0 =  result        & 0xff;
-	byte1 = (result >>  8) & 0xff;
-	byte2 = (result >> 16) & 0xff;
-	byte3 = (result >> 24) & 0xff;
-	crc32 = ((byte0 << 24) | (byte1 << 16) | (byte2 <<  8) | byte3);
+	byte1 = result >>  8 & 0xff;
+	byte2 = result >> 16 & 0xff;
+	byte3 = result >> 24 & 0xff;
+	crc32 = byte0 << 24 | byte1 << 16 | byte2 <<  8 | byte3;
 	return crc32;
 }
 
@@ -49,7 +49,7 @@ ip_add_option(void *buf, size_t len, int proto,
 	
 	if (proto != IP_PROTO_IP && proto != IP_PROTO_TCP) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 	ip = (struct ip_hdr *)buf;
 	hl = ip->ip_hl << 2;
@@ -63,14 +63,14 @@ ip_add_option(void *buf, size_t len, int proto,
 	datalen = ntohs(ip->ip_len) - (p - (u_char *)buf);
 	
 	/* Compute padding to next word boundary. */
-	if ((padlen = 4 - (optlen % 4)) == 4)
+	if ((padlen = 4 - optlen % 4) == 4)
 		padlen = 0;
 
 	/* XXX - IP_HDR_LEN_MAX == TCP_HDR_LEN_MAX */
 	if (hl + optlen + padlen > IP_HDR_LEN_MAX ||
 	    ntohs(ip->ip_len) + optlen + padlen > len) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 	/* XXX - IP_OPT_TYPEONLY() == TCP_OPT_TYPEONLY */
 	if (IP_OPT_TYPEONLY(((struct ip_opt *)optbuf)->opt_type))
@@ -90,13 +90,13 @@ ip_add_option(void *buf, size_t len, int proto,
 	optlen += padlen;
 	
 	if (proto == IP_PROTO_IP)
-		ip->ip_hl = (p - (u_char *)ip) >> 2;
+		ip->ip_hl = p - (u_char *)ip >> 2;
 	else if (proto == IP_PROTO_TCP)
-		tcp->th_off = (p - (u_char *)tcp) >> 2;
+		tcp->th_off = p - (u_char *)tcp >> 2;
 
 	ip->ip_len = htons(ntohs(ip->ip_len) + optlen);
 	
-	return (optlen);
+	return optlen;
 }
 
 void
@@ -209,5 +209,5 @@ ip_cksum_add(const void *buf, size_t len, int cksum)
 	if (len & 1)
 		cksum += htons(*(u_char *)sp << 8);
 
-	return (cksum);
+	return cksum;
 }

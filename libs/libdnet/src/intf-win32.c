@@ -51,7 +51,7 @@ _ifcombo_name(int type)
 	} else if (type == MIB_IF_TYPE_TUNNEL) {
 		name = "tun";
 	}
-	return (name);
+	return name;
 }
 
 static int
@@ -74,7 +74,7 @@ _ifcombo_type(const char *device)
 	} else if (strncmp(device, "tun", 3) == 0) {
 		type = INTF_TYPE_TUN;
 	}
-	return (type);
+	return type;
 }
 
 static void
@@ -138,8 +138,8 @@ _ifrow_to_entry(intf_t *intf, MIB_IFROW *ifrow, struct intf_entry *entry)
 	}
 	/* Get addresses. */
 	ap = entry->intf_alias_addrs;
-	lap = ap + ((entry->intf_len - sizeof(*entry)) /
-	    sizeof(entry->intf_alias_addrs[0]));
+	lap = ap + (entry->intf_len - sizeof(*entry)) /
+              sizeof(entry->intf_alias_addrs[0]);
 	for (i = 0; i < (int)intf->iptable->dwNumEntries; i++) {
 		if (intf->iptable->table[i].dwIndex == ifrow->dwIndex &&
 		    intf->iptable->table[i].dwAddr != 0) {
@@ -179,7 +179,7 @@ _refresh_tables(intf_t *intf)
 		if (ret == NO_ERROR)
 			break;
 		else if (ret != ERROR_INSUFFICIENT_BUFFER)
-			return (-1);
+			return -1;
 	}
 	/* Get IP address table. */
 	for (len = sizeof(intf->iptable[0]); ; ) {
@@ -190,7 +190,7 @@ _refresh_tables(intf_t *intf)
 		if (ret == NO_ERROR)
 			break;
 		else if (ret != ERROR_INSUFFICIENT_BUFFER)
-			return (-1);
+			return -1;
 	}
 	/*
 	 * Map "unfriendly" win32 interface indices to ours.
@@ -202,9 +202,9 @@ _refresh_tables(intf_t *intf)
 			_ifcombo_add(&intf->ifcombo[ifrow->dwType],
 			    ifrow->dwIndex);
 		} else
-			return (-1);
+			return -1;
 	}
-	return (0);
+	return 0;
 }
 
 static int
@@ -216,13 +216,13 @@ _find_ifindex(intf_t *intf, const char *device)
 	while (isalpha((int) (unsigned char) *p)) p++;
 	n = atoi(p);
 
-	return (intf->ifcombo[type].idx[n]);
+	return intf->ifcombo[type].idx[n];
 }
 
 intf_t *
 intf_open(void)
 {
-	return (calloc(1, sizeof(intf_t)));
+	return calloc(1, sizeof(intf_t));
 }
 
 int
@@ -231,16 +231,16 @@ intf_get(intf_t *intf, struct intf_entry *entry)
 	MIB_IFROW ifrow;
 	
 	if (_refresh_tables(intf) < 0)
-		return (-1);
+		return -1;
 	
 	ifrow.dwIndex = _find_ifindex(intf, entry->intf_name);
 	
 	if (GetIfEntry(&ifrow) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	_ifrow_to_entry(intf, &ifrow, entry);
 	
-	return (0);
+	return 0;
 }
 
 int
@@ -252,23 +252,23 @@ intf_get_src(intf_t *intf, struct intf_entry *entry, struct addr *src)
 
 	if (src->addr_type != ADDR_TYPE_IP) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 	if (_refresh_tables(intf) < 0)
-		return (-1);
+		return -1;
 	
 	for (i = 0; i < (int)intf->iptable->dwNumEntries; i++) {
 		iprow = &intf->iptable->table[i];
 		if (iprow->dwAddr == src->addr_ip) {
 			ifrow.dwIndex = iprow->dwIndex;
 			if (GetIfEntry(&ifrow) != NO_ERROR)
-				return (-1);
+				return -1;
 			_ifrow_to_entry(intf, &ifrow, entry);
-			return (0);
+			return 0;
 		}
 	}
 	errno = ENXIO;
-	return (-1);
+	return -1;
 }
 
 int
@@ -278,20 +278,20 @@ intf_get_dst(intf_t *intf, struct intf_entry *entry, struct addr *dst)
 	
 	if (dst->addr_type != ADDR_TYPE_IP) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 	if (GetBestInterface(dst->addr_ip, &ifrow.dwIndex) != NO_ERROR)
-		return (-1);
+		return -1;
 
 	if (GetIfEntry(&ifrow) != NO_ERROR)
-		return (-1);
+		return -1;
 	
 	if (_refresh_tables(intf) < 0)
-		return (-1);
+		return -1;
 	
 	_ifrow_to_entry(intf, &ifrow, entry);
 	
-	return (0);
+	return 0;
 }
 
 int
@@ -321,7 +321,7 @@ intf_set(intf_t *intf, const struct intf_entry *entry)
 #endif
 	errno = ENOSYS;
 	SetLastError(ERROR_NOT_SUPPORTED);
-	return (-1);
+	return -1;
 }
 
 int
@@ -332,7 +332,7 @@ intf_loop(intf_t *intf, intf_handler callback, void *arg)
 	int i, ret = 0;
 
 	if (_refresh_tables(intf) < 0)
-		return (-1);
+		return -1;
 	
 	entry = (struct intf_entry *)ebuf;
 	
@@ -342,7 +342,7 @@ intf_loop(intf_t *intf, intf_handler callback, void *arg)
 		if ((ret = (*callback)(entry, arg)) != 0)
 			break;
 	}
-	return (ret);
+	return ret;
 }
 
 intf_t *
@@ -361,5 +361,5 @@ intf_close(intf_t *intf)
 			free(intf->iptable);
 		free(intf);
 	}
-	return (NULL);
+	return NULL;
 }

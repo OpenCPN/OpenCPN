@@ -218,7 +218,7 @@ RoutePoint *Route::GetPoint(int nWhichPoint) {
     node = node->GetNext();
   }
 
-  return (NULL);
+  return NULL;
 }
 
 RoutePoint *Route::GetPoint(const wxString &guid) {
@@ -232,7 +232,7 @@ RoutePoint *Route::GetPoint(const wxString &guid) {
     node = node->GetNext();
   }
 
-  return (NULL);
+  return NULL;
 }
 
 static void TestLongitude(double lon, double min, double max, bool &lonl,
@@ -292,7 +292,7 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
   FinalizeForRendering();
   UpdateSegmentDistances();
 
-  return (newpoint);
+  return newpoint;
 }
 
 RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
@@ -314,7 +314,7 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
   FinalizeForRendering();
   UpdateSegmentDistances();
 
-  return (newpoint);
+  return newpoint;
 }
 
 wxString Route::GetNewMarkSequenced(void) {
@@ -675,8 +675,8 @@ void Route::RenameRoutePoints(void) {
 //    Is this route equal to another, meaning,
 //    Do all routepoint positions and names match?
 bool Route::IsEqualTo(Route *ptargetroute) {
-  wxRoutePointListNode *pthisnode = (this->pRoutePointList)->GetFirst();
-  wxRoutePointListNode *pthatnode = (ptargetroute->pRoutePointList)->GetFirst();
+  wxRoutePointListNode *pthisnode = this->pRoutePointList->GetFirst();
+  wxRoutePointListNode *pthatnode = ptargetroute->pRoutePointList->GetFirst();
 
   if (NULL == pthisnode) return false;
 
@@ -690,8 +690,8 @@ bool Route::IsEqualTo(Route *ptargetroute) {
     RoutePoint *pthisrp = pthisnode->GetData();
     RoutePoint *pthatrp = pthatnode->GetData();
 
-    if ((fabs(pthisrp->m_lat - pthatrp->m_lat) > 1.0e-6) ||
-        (fabs(pthisrp->m_lon - pthatrp->m_lon) > 1.0e-6))
+    if (fabs(pthisrp->m_lat - pthatrp->m_lat) > 1.0e-6 ||
+        fabs(pthisrp->m_lon - pthatrp->m_lon) > 1.0e-6)
       return false;
 
     if (!pthisrp->GetName().IsSameAs(pthatrp->GetName())) return false;
