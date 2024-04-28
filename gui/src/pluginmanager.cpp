@@ -2906,7 +2906,6 @@ wxScrolledWindow* AddOptionsPage(OptionsParentPI parent, wxString title) {
       wxLogMessage(
           _T("Error in PluginManager::AddOptionsPage: Unknown parent"));
       return NULL;
-      break;
   }
 
   return g_pOptions->AddPage(parentid, title);

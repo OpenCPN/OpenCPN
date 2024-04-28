@@ -901,11 +901,6 @@ void CPLVerifyConfiguration()
     CPLAssert( sizeof(GInt16) == 2 );
     CPLAssert( sizeof(GByte) == 1 );
 
-    if( sizeof(GInt32) != 4 )
-        CPLError( CE_Fatal, CPLE_AppDefined,
-                  "sizeof(GInt32) == %d ... yow!\n",
-                  sizeof(GInt32) );
-
 /* -------------------------------------------------------------------- */
 /*      Verify byte order                                               */
 /* -------------------------------------------------------------------- */

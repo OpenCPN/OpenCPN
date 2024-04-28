@@ -539,38 +539,30 @@ static int jp2_getct(int colorspace, int type, int assoc)
             switch (assoc) {
             case JP2_CDEF_RGB_R:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R);
-                break;
-            case JP2_CDEF_RGB_G:
+              case JP2_CDEF_RGB_G:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_G);
-                break;
-            case JP2_CDEF_RGB_B:
+              case JP2_CDEF_RGB_B:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_B);
-                break;
             }
             break;
         case JAS_CLRSPC_FAM_YCBCR:
             switch (assoc) {
             case JP2_CDEF_YCBCR_Y:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_YCBCR_Y);
-                break;
-            case JP2_CDEF_YCBCR_CB:
+              case JP2_CDEF_YCBCR_CB:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_YCBCR_CB);
-                break;
-            case JP2_CDEF_YCBCR_CR:
+              case JP2_CDEF_YCBCR_CR:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_YCBCR_CR);
-                break;
             }
             break;
         case JAS_CLRSPC_FAM_GRAY:
             switch (assoc) {
             case JP2_CDEF_GRAY_Y:
                 return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_GRAY_Y);
-                break;
             }
             break;
         default:
             return JAS_IMAGE_CT_COLOR(assoc - 1);
-            break;
         }
     }
     return JAS_IMAGE_CT_UNKNOWN;
@@ -582,13 +574,10 @@ static int jp2_getcs(jp2_colr_t *colr)
         switch (colr->csid) {
         case JP2_COLR_SRGB:
             return JAS_CLRSPC_SRGB;
-            break;
-        case JP2_COLR_SYCC:
+          case JP2_COLR_SYCC:
             return JAS_CLRSPC_SYCBCR;
-            break;
-        case JP2_COLR_SGRAY:
+          case JP2_COLR_SGRAY:
             return JAS_CLRSPC_SGRAY;
-            break;
         }
     }
     return JAS_CLRSPC_UNKNOWN;
@@ -599,13 +588,10 @@ static int fromiccpcs(int cs)
     switch (cs) {
     case ICC_CS_RGB:
         return JAS_CLRSPC_GENRGB;
-        break;
-    case ICC_CS_YCBCR:
+      case ICC_CS_YCBCR:
         return JAS_CLRSPC_GENYCBCR;
-        break;
-    case ICC_CS_GRAY:
+      case ICC_CS_GRAY:
         return JAS_CLRSPC_GENGRAY;
-        break;
     }
     return JAS_CLRSPC_UNKNOWN;
 }

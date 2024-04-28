@@ -80,7 +80,6 @@ size_t wxCompressedFFileInputStream::OnSysRead(void *buffer, size_t size) {
       return 0;
     }
   }
-  return 0;
 }
 
 wxFileOffset wxCompressedFFileInputStream::OnSysSeek(wxFileOffset pos,

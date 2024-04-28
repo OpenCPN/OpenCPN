@@ -370,7 +370,6 @@ int wxJSONReader::Parse(wxInputStream& is, wxJSONValue* val) {
     default:
       AddError(_T("Cannot find a start object/array character" ));
       return m_errors.size();
-      break;
   }
 
   // returning from DoRead() could be for EOF or for
@@ -404,10 +403,8 @@ int wxJSONReader::GetStart(wxInputStream& is) {
         break;
       case '{':
         return ch;
-        break;
       case '[':
         return ch;
-        break;
       case '/':
         ch = SkipComment(is);
         StoreComment(0);
@@ -608,7 +605,6 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
         m_current->SetLineNo(m_lineNo);
         ch = ReadChar(is);
         return ch;
-        break;
 
       case '[':
         if (parent.IsObject()) {
@@ -642,7 +638,6 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
         m_next = 0;
         m_current->SetLineNo(m_lineNo);
         return 0;  // returning ZERO for reading the next char
-        break;
 
       case ',':
         // store the value, if any
@@ -1256,7 +1251,6 @@ int wxJSONReader::ReadToken(wxInputStream& is, int ch, wxString& s) {
         wxLogTrace(traceMask, _T("(%s) token read=%s"), __PRETTY_FUNCTION__,
                    s.c_str());
         return nextCh;
-        break;
       default:
         s.Append((unsigned char)nextCh, 1);
         break;
@@ -1442,7 +1436,6 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
 
   // the value is not syntactically correct
   AddError(_T( "Literal \'%s\' is incorrect (did you forget quotes?)"), s);
-  return nextCh;
   return nextCh;
 }
 

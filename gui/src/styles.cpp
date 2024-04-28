@@ -556,7 +556,6 @@ wxBitmap Style::BuildPluginIcon(wxBitmap& bm, int iconType, double factor) {
     }
     default:
       return wxNullBitmap;
-      break;
   }
   return SetBitmapBrightness(iconbm, colorscheme);
 }

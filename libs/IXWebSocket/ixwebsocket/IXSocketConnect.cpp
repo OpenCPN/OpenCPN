@@ -37,11 +37,6 @@ namespace ix
         errMsg = "no error";
 
         socket_t fd = socket(address->ai_family, address->ai_socktype, address->ai_protocol);
-        if (fd < 0)
-        {
-            errMsg = "Cannot create a socket";
-            return -1;
-        }
 
         // Set the socket to non blocking mode, so that slow responses cannot
         // block us for too long

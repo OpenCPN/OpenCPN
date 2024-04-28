@@ -64,14 +64,11 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
           auto driver = std::make_shared<CommDriverN2KSerial>(params, msgbus);
           registry.Activate(driver);
           return driver;
-          break;
         }
         default: {
           auto driver = std::make_shared<CommDriverN0183Serial>(params, msgbus);
           registry.Activate(driver);
           return driver;
-
-          break;
         }
       }
     case NETWORK:
@@ -80,7 +77,6 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
           auto driver = std::make_shared<CommDriverSignalKNet>(params, msgbus);
           registry.Activate(driver);
           return driver;
-          break;
         }
         default: {
           switch (params->Protocol) {
@@ -89,15 +85,12 @@ std::shared_ptr<AbstractCommDriver> MakeCommDriver(
                   std::make_shared<CommDriverN0183Net>(params, msgbus);
               registry.Activate(driver);
               return driver;
-              break;
             }
             case PROTO_NMEA2000:{
               auto driver =
                   std::make_shared<CommDriverN2KNet>(params, msgbus);
               registry.Activate(driver);
               return driver;
-
-              break;
             }
             default:
               break;

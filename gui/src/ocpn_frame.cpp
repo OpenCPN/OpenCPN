@@ -6243,10 +6243,6 @@ bool GetMemoryStatus(int *mem_total, int *mem_used) {
 
   return true;
 #endif
-
-  if (mem_used) *mem_used = 0;
-  if (mem_total) *mem_total = 0;
-  return false;
 }
 
 void MyFrame::DoPrint(void) {

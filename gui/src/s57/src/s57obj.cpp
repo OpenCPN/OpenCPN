@@ -387,7 +387,6 @@ int S57Obj::GetAttributeIndex(const char *AttrSeek) {
   for (int i = 0; i < n_attr; i++) {
     if (!strncmp(patl, AttrSeek, 6)) {
       return i;
-      break;
     }
 
     patl += 6;

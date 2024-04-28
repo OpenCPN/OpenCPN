@@ -820,8 +820,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
           wxFileName fn(ticket->m_ChartPath);
           msgx += fn.GetFullName();
         }
-      } else
-        msgx.Printf(_T("\n %3d/%3d"), event.nstat + 1, event.nstat_max);
+      }
 
       item->msgx = msgx;
     }

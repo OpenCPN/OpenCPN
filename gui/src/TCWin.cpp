@@ -559,25 +559,7 @@ void TCWin::OnPaint(wxPaintEvent &event) {
     dc.SetFont(*pSFont);
     for (i = 0; i < 25; i++) {
       int xd = m_graph_rect.x + ((i)*m_graph_rect.width / 25);
-      if (hour_delta != 1) {
-        if (i % hour_delta == 0) {
-          dc.SetPen(*pblack_2);
-          dc.DrawLine(xd, m_graph_rect.y, xd,
-                      m_graph_rect.y + m_graph_rect.height + 5);
-          char sbuf[16];
-          int hour_show = hour_start + i;
-          if (hour_show >= 24) hour_show -= 24;
-          sprintf(sbuf, "%02d", hour_show);
-          int x_shim = -20;
-          dc.DrawText(wxString(sbuf, wxConvUTF8),
-                      xd + x_shim + (m_graph_rect.width / 25) / 2,
-                      m_graph_rect.y + m_graph_rect.height + 8);
-        } else {
-          dc.SetPen(*pblack_1);
-          dc.DrawLine(xd, m_graph_rect.y, xd,
-                      m_graph_rect.y + m_graph_rect.height + 5);
-        }
-      } else {
+      {
         dc.SetPen(*pblack_1);
         dc.DrawLine(xd, m_graph_rect.y, xd,
                     m_graph_rect.y + m_graph_rect.height + 5);

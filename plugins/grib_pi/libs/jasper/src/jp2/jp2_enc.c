@@ -282,7 +282,6 @@ int sgnd;
         break;
     default:
         abort();
-        break;
     }
 
     if (needcdef) {
@@ -477,7 +476,5 @@ static int clrspctojp2(jas_clrspc_t clrspc)
         return JP2_COLR_SGRAY;
     default:
         abort();
-        break;
     }
-    return 0;
 }

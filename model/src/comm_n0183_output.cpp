@@ -239,22 +239,6 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     if (!driver) {
       // Force Android Bluetooth to use only already enabled driver
       return driver;
-
-      ConnectionParams ConnectionParams;
-      ConnectionParams.Type = INTERNAL_BT;
-      wxStringTokenizer tkz(com_name, ";");
-      wxString name = tkz.GetNextToken();
-      wxString mac = tkz.GetNextToken();
-
-      ConnectionParams.NetworkAddress = name;
-      ConnectionParams.Port = mac;
-      ConnectionParams.NetworkPort = 0;
-      ConnectionParams.NetProtocol = PROTO_UNDEFINED;
-      ConnectionParams.Baudrate = 0;
-
-      driver = MakeCommDriver(&ConnectionParams);
-
-      btempStream = true;
     }
   } else if (com_name.Lower().StartsWith("udp") ||
              com_name.Lower().StartsWith("tcp")) {

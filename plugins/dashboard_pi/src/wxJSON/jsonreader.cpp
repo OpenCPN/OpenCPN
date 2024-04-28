@@ -376,7 +376,6 @@ wxJSONReader::Parse( wxInputStream& is, wxJSONValue* val )
     default :
         AddError( _T("Cannot find a start object/array character" ));
         return m_errors.size();
-        break;
     }
 
     // returning from DoRead() could be for EOF or for
@@ -413,11 +412,9 @@ wxJSONReader::GetStart( wxInputStream& is )
                 break;
             case '{' :
                 return ch;
-                break;
-            case '[' :
+              case '[' :
                 return ch;
-                break;
-            case '/' :
+              case '/' :
                 ch = SkipComment( is );
                 StoreComment( 0 );
                 break;
@@ -648,9 +645,8 @@ wxJSONReader::DoRead( wxInputStream& is, wxJSONValue& parent )
                 m_current->SetLineNo( m_lineNo );
                 ch = ReadChar( is );
                 return ch;
-                break;
 
-            case '[' :
+              case '[' :
                 if ( parent.IsObject() ) {
                     if ( key.empty() )   {
                         AddError( _T("\'[\' is not allowed here (\'name\' is missing") );
@@ -683,9 +679,8 @@ wxJSONReader::DoRead( wxInputStream& is, wxJSONValue& parent )
                 m_next    = 0;
                 m_current->SetLineNo( m_lineNo );
                 return 0;   // returning ZERO for reading the next char
-                break;
 
-            case ',' :
+              case ',' :
                 // store the value, if any
                 StoreValue( ch, key, value, parent );
                 key.clear();
@@ -1309,8 +1304,7 @@ wxJSONReader::ReadToken( wxInputStream& is, int ch, wxString& s )
                 wxLogTrace( traceMask, _T("(%s) token read=%s"),
                      __PRETTY_FUNCTION__, s.c_str() );
                 return nextCh;
-                break;
-            default :
+              default :
                 s.Append( (unsigned char) nextCh, 1 );
                 break;
         }
@@ -1499,7 +1493,6 @@ wxJSONReader::ReadValue( wxInputStream& is, int ch, wxJSONValue& val )
     // the value is not syntactically correct
     AddError( _T( "Literal \'%s\' is incorrect (did you forget quotes?)"), s );
     return nextCh;
-  return nextCh;
 }
 
 

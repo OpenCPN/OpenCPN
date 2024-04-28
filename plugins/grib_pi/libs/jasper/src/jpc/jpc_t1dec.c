@@ -847,16 +847,12 @@ static int dec_clnpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos, 
                 switch (runlen) {
                 case 0:
                     goto clnpass_partial0;
-                    break;
-                case 1:
+                  case 1:
                     goto clnpass_partial1;
-                    break;
-                case 2:
+                  case 2:
                     goto clnpass_partial2;
-                    break;
-                case 3:
+                  case 3:
                     goto clnpass_partial3;
-                    break;
                 }
             } else {
                 f = *(fp = fvscanstart);

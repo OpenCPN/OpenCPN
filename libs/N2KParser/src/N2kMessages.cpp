@@ -1201,7 +1201,7 @@ void SetN2kPGN129540(tN2kMsg& N2kMsg, unsigned char SID, tN2kRangeResidualMode M
     N2kMsg.SetPGN(129540L);
     N2kMsg.Priority=6;
     N2kMsg.AddByte(SID);
-    N2kMsg.AddByte(0xfc || Mode);
+    N2kMsg.AddByte(0xfc);
     N2kMsg.AddByte(0); // Init satellite count to 0
 }
 

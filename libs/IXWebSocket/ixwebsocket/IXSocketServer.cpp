@@ -78,13 +78,6 @@ namespace ix
         }
 
         // Get a socket for accepting connections.
-        if ((_serverFd = socket(_addressFamily, SOCK_STREAM, 0)) < 0)
-        {
-            std::stringstream ss;
-            ss << "SocketServer::listen() error creating socket): " << strerror(Socket::getErrno());
-
-            return std::make_pair(false, ss.str());
-        }
 
         // Make that socket reusable. (allow restarting this server at will)
         int enable = 1;

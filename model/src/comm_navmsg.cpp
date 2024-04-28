@@ -37,25 +37,18 @@ std::string NavAddr::BusToString(NavAddr::Bus b) {
   switch (b) {
     case NavAddr::Bus::N0183:
       return "nmea0183";
-      break;
     case NavAddr::Bus::N2000:
       return "nmea2000";
-      break;
     case NavAddr::Bus::Signalk:
       return "SignalK";
-      break;
     case NavAddr::Bus::Onenet:
       return "Onenet";
-      break;
     case NavAddr::Bus::Plugin:
       return "Plugin";
-      break;
     case NavAddr::Bus::TestBus:
       return "TestBus";
-      break;
     case NavAddr::Bus::Undef:
       return "??";
-      break;
   }
   return "????";
 }

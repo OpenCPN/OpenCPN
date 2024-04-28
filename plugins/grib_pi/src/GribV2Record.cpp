@@ -957,8 +957,6 @@ static bool unpackDS(GRIBMessage *grib_msg) {
                 temp[j] = grib_msg->buffer[off / 8 + 7 - j];
               }
               memcpy(&d, temp, 8);
-            } else {
-              memcpy(&d, grib_msg->buffer + off / 8, 8);
             }
             grib_msg->grids.gridpoints[l] = d;
             off += 64;
@@ -1675,18 +1673,6 @@ void GribV2Record::readDataSet(ZUFILE *file) {
   }
 
   // ok = false;
-  if (false) {
-    // if (true) {
-    printf("==== GV2 %d\n", ok);
-    printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", Lo1, Lo2, La1, La2);
-    printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", grib_msg->md.slon,
-           grib_msg->md.lons.elon, grib_msg->md.slat, grib_msg->md.lats.elat);
-    printf("Ni=%d Nj=%d\n", Ni, Nj);
-    printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di, Dj);
-    printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",
-           isScanIpositive, isScanJpositive, isAdjacentI);
-    printf("hasBMS=%d\n", hasBMS);
-  }
   if (ok) {
     if (!skip) {
       translateDataType();

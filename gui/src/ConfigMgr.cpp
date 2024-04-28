@@ -689,7 +689,6 @@ OCPNConfigObject *ConfigMgr::GetConfig(wxString GUID) {
     OCPNConfigObject *look = node->GetData();
     if (look->m_GUID == GUID) {
       return look;
-      break;
     }
   }
 
@@ -702,7 +701,6 @@ wxString ConfigMgr::GetTemplateTitle(wxString GUID) {
     OCPNConfigObject *look = node->GetData();
     if (look->m_GUID == GUID) {
       return look->m_title;
-      break;
     }
   }
 

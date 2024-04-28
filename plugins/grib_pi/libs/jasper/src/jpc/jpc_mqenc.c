@@ -368,7 +368,6 @@ int jpc_mqenc_flush(jpc_mqenc_t *mqenc, int termmode)
         break;
     default:
         abort();
-        break;
     }
     return 0;
 }

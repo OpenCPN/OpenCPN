@@ -114,65 +114,46 @@ int SHPOGisType(int GeomType, int toOGis)
         {
             case (OGIST_POINT):
                 return (SHPT_POINT);
-                break;
-            case (OGIST_LINESTRING):
+              case (OGIST_LINESTRING):
                 return (SHPT_ARC);
-                break;
-            case (OGIST_POLYGON):
+              case (OGIST_POLYGON):
                 return (SHPT_POLYGON);
-                break;
-            case (OGIST_MULTIPOINT):
+              case (OGIST_MULTIPOINT):
                 return (SHPT_MULTIPOINT);
-                break;
-            case (OGIST_MULTILINE):
+              case (OGIST_MULTILINE):
                 return (SHPT_ARC);
-                break;
-            case (OGIST_MULTIPOLYGON):
+              case (OGIST_MULTIPOLYGON):
                 return (SHPT_POLYGON);
-                break;
         }
     else /* ok so its SHP->OGis types 									*/
         switch (GeomType)
         {
             case (SHPT_POINT):
                 return (OGIST_POINT);
-                break;
-            case (SHPT_POINTM):
+              case (SHPT_POINTM):
                 return (OGIST_POINT);
-                break;
-            case (SHPT_POINTZ):
+              case (SHPT_POINTZ):
                 return (OGIST_POINT);
-                break;
-            case (SHPT_ARC):
+              case (SHPT_ARC):
                 return (OGIST_LINESTRING);
-                break;
-            case (SHPT_ARCZ):
+              case (SHPT_ARCZ):
                 return (OGIST_LINESTRING);
-                break;
-            case (SHPT_ARCM):
+              case (SHPT_ARCM):
                 return (OGIST_LINESTRING);
-                break;
-            case (SHPT_POLYGON):
+              case (SHPT_POLYGON):
                 return (OGIST_MULTIPOLYGON);
-                break;
-            case (SHPT_POLYGONZ):
+              case (SHPT_POLYGONZ):
                 return (OGIST_MULTIPOLYGON);
-                break;
-            case (SHPT_POLYGONM):
+              case (SHPT_POLYGONM):
                 return (OGIST_MULTIPOLYGON);
-                break;
-            case (SHPT_MULTIPOINT):
+              case (SHPT_MULTIPOINT):
                 return (OGIST_MULTIPOINT);
-                break;
-            case (SHPT_MULTIPOINTZ):
+              case (SHPT_MULTIPOINTZ):
                 return (OGIST_MULTIPOINT);
-                break;
-            case (SHPT_MULTIPOINTM):
+              case (SHPT_MULTIPOINTM):
                 return (OGIST_MULTIPOINT);
-                break;
-            case (SHPT_MULTIPATCH):
+              case (SHPT_MULTIPATCH):
                 return (OGIST_GEOMCOLL);
-                break;
         }
 
     return 0;

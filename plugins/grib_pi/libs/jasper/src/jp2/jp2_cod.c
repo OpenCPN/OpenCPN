@@ -312,9 +312,8 @@ jp2_box_t *jp2_box_get(jas_stream_t *in)
     }
 
     return box;
-    abort();
 
-error:
+  error:
     if (box) {
         jp2_box_destroy(box);
     }
@@ -523,9 +522,8 @@ int jp2_box_put(jp2_box_t *box, jas_stream_t *out)
     }
 
     return 0;
-    abort();
 
-error:
+  error:
 
     if (tmpstream) {
         jas_stream_close(tmpstream);

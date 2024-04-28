@@ -803,7 +803,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       drawit++;  // yep
     else {
       //  If AIS tracks are shown, is the first point of the track on-screen?
-      if (1 /*g_bAISShowTracks*/ && td->b_show_track) {
+      if (td->b_show_track) {
         if (td->m_ptrack.size() > 0) {
           const AISTargetTrackPoint &ptrack_point = td->m_ptrack.front();
           if (vp.GetBBox().Contains(ptrack_point.m_lat, ptrack_point.m_lon))
@@ -1591,7 +1591,6 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
           dc.StrokeCircle(TargetPoint.x,
                           TargetPoint.y - (22 * AIS_scale_factor),
                           4 * AIS_scale_factor);
-          break;
           break;
         }
         case CONSTRAINED_BY_DRAFT: {

@@ -1279,8 +1279,6 @@ void MUIBar::PushCanvasOptions() {
 
   if (1)
     m_targetCOPos = m_parentCanvas->ClientToScreen(wxPoint(cox, coy));
-  else
-    m_targetCOPos = wxPoint(cox, coy);
 
   //  Start Position
   m_startCOPos = m_canvasOptions->GetPosition();

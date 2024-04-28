@@ -89,20 +89,15 @@ std::string  Position::TypeToStr(const Type t) const {
   switch (t) {
     case Type::NE:
       return "NE";
-      break;
     case Type::NW:
       return "NW";
-      break;
     case Type::SE:
       return "SE";
-      break;
     case Type::SW:
       return "SW";
-      break;
     case Type::Undef:
       return "Undefined";
-      break;
-   }
+  }
   return "??";     // Not reached, but compiler complains.
 }
 
@@ -157,25 +152,18 @@ std::string AppMsg::TypeToString(const AppMsg::Type t) const {
   switch (t) {
     case AppMsg::Type::AisData:
       return "ais-data";
-      break;
     case AppMsg::Type::BasicNavData:
       return "basic-nav-data";
-      break;
     case AppMsg::Type::CustomMsg:
       return "custom-msg";
-      break;
     case AppMsg::Type::DataPrioNeeded:
       return "data-prio-needed";
-      break;
     case AppMsg::Type::GnssFix:
       return "gnss-fix";
-      break;
     case AppMsg::Type::GPSWatchdog:
       return "gps-watchdog";
-      break;
     case AppMsg::Type::Undef:
       return "??";
-      break;
   }
   return "????";  // Not reached, for the compiler.
 }

@@ -428,14 +428,12 @@ if (!tile->pkthdrstream || jas_stream_peekc(tile->pkthdrstream) == EOF) {
         case JPC_MS_EOC:
         case JPC_MS_SOT:
             return 0;
-            break;
-        case JPC_MS_SOP:
+          case JPC_MS_SOP:
         case JPC_MS_EPH:
         case 0:
             break;
         default:
             return -1;
-            break;
         }
 }
         if ((ret = jpc_pi_next(pi))) {
@@ -457,8 +455,6 @@ if (dec->maxpkts >= 0 && dec->numpkts >= dec->maxpkts) {
         }
 ++dec->numpkts;
     }
-
-    return 0;
 }
 
 jpc_pi_t *jpc_dec_pi_create(jpc_dec_t *dec, jpc_dec_tile_t *tile)

@@ -533,7 +533,7 @@ void SetBuf(T v, size_t len, int& index, unsigned char* buf) {
 
 //*****************************************************************************
 void SetBufDouble(double v, int &index, unsigned char *buf) {
-  if ( sizeof(double)==8 && !N2kIsNA(v) ) {
+  if ( !N2kIsNA(v) ) {
     int64_t iv;
     memcpy(&iv,&v,8);
     SetBuf(iv, 8, index, buf);
@@ -570,12 +570,7 @@ void SetBufFloat(float v, int &index, unsigned char *buf) {
 void SetBuf8ByteDouble(double v, double precision, int &index, unsigned char *buf) {
   int64_t vll;
   if ( !N2kIsNA(v) ) {
-    if ( sizeof(double)<8 ) {
-      double fp=precision*1e6;
-      int64_t fpll=1/fp;
-      vll=v*1e6L;
-      vll*=fpll;
-    } else {
+    {
       vll=v/precision;
     }
   } else {
@@ -675,7 +670,7 @@ double GetBufDouble(int &index, const unsigned char *buf, double def) {
   int64_t vl = GetBuf<int64_t>(8, index, buf);
   double ret;
    // On avr double==float, so we test it also. Currently no handling for avr.
-  if ( sizeof(double)==8 && !N2kIsNA(vl) ) {
+  if ( !N2kIsNA(vl) ) {
     memcpy(&ret,&vl,8);
     if ( isnan(ret) ) ret=def;
   } else {

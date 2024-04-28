@@ -426,7 +426,6 @@ FORCE_INLINE size_t LZ4HC_CommonLength (const BYTE* p1, const BYTE* p2, const BY
         p1t += LZ4_NbCommonBytes(diff);
         return (p1t - p1);
     }
-    if (LZ4_ARCH64) if ((p1t<(matchlimit-3)) && (A32(p2) == A32(p1t))) { p1t+=4; p2+=4; }
     if ((p1t<(matchlimit-1)) && (A16(p2) == A16(p1t))) { p1t+=2; p2+=2; }
     if ((p1t<matchlimit) && (*p2 == *p1t)) p1t++;
     return (p1t - p1);
@@ -532,7 +531,6 @@ FORCE_INLINE int LZ4HC_InsertAndGetWiderMatch (LZ4HC_Data_Structure* hc4, const 
                 ipt += LZ4_NbCommonBytes(diff);
                 goto _endCount;
             }
-            if (LZ4_ARCH64) if ((ipt<(matchlimit-3)) && (A32(reft) == A32(ipt))) { ipt+=4; reft+=4; }
             if ((ipt<(matchlimit-1)) && (A16(reft) == A16(ipt))) { ipt+=2; reft+=2; }
             if ((ipt<matchlimit) && (*reft == *ipt)) ipt++;
 _endCount:

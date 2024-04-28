@@ -1041,11 +1041,6 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
     // TODO: GBS - GPS Satellite fault detection
     else if (m_NMEA0183.LastSentenceIDReceived == _T("GGA")) {
-      if (0)  // debug output
-        printf("GGA mPriPosition=%d mPriSatUsed=%d \tnSat=%d alt=%3.2f\n",
-                mPriPosition, mPriSatUsed,
-                m_NMEA0183.Gga.NumberOfSatellitesInUse,
-                m_NMEA0183.Gga.AntennaAltitudeMeters);
       if (mPriAlt >= 3 && (mPriPosition >= 1 || mPriSatUsed >= 1)) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gga.GPSQuality > 0 &&

@@ -3462,8 +3462,6 @@ bool s57chart::CreateHeaderDataFromoSENC(void) {
 //    Read the .S57 SENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromSENC(void) {
   if (CURRENT_SENC_FORMAT_VERSION >= 200) return CreateHeaderDataFromoSENC();
-
-  return false;
 }
 
 /*    This method returns the smallest chart DEPCNT:VALDCO value which
@@ -5584,19 +5582,14 @@ static const char *type2str(GeoPrim_t type) {
   switch (type) {
     case GEO_POINT:
       return "Point";
-      break;
     case GEO_LINE:
       return "Line";
-      break;
     case GEO_AREA:
       return "Area";
-      break;
     case GEO_META:
       return "Meta";
-      break;
     case GEO_PRIM:
       return "Prim";
-      break;
   }
   return r;
 }

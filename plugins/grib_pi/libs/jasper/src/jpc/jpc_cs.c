@@ -1628,8 +1628,6 @@ static jpc_mstabent_t *jpc_mstab_lookup(int id)
             return mstabent;
         }
     }
-    assert(0);
-    return 0;
 }
 
 int jpc_validate(jas_stream_t *in)

@@ -903,16 +903,12 @@ static int jpc_encclnpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int vcausa
                 switch (runlen) {
                 case 0:
                     goto clnpass_partial0;
-                    break;
-                case 1:
+                  case 1:
                     goto clnpass_partial1;
-                    break;
-                case 2:
+                  case 2:
                     goto clnpass_partial2;
-                    break;
-                case 3:
+                  case 3:
                     goto clnpass_partial3;
-                    break;
                 }
             } else {
                 runlen = 0;

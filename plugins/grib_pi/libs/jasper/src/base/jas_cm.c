@@ -643,9 +643,6 @@ static int jas_cmpxformseq_appendcnvt(jas_cmpxformseq_t *pxformseq,
     if (dstclrspc == srcclrspc)
         return 0;
     abort();
-    /* Avoid compiler warnings about unused parameters. */
-    pxformseq = 0;
-    return -1;
 }
 
 static int jas_cmpxformseq_insertpxform(jas_cmpxformseq_t *pxformseq,
@@ -1049,7 +1046,6 @@ static int icctoclrspc(int iccclrspc, int refflag)
             return JAS_CLRSPC_CIELAB;
         default:
             abort();
-            break;
         }
     } else {
         switch (iccclrspc) {
@@ -1061,10 +1057,8 @@ static int icctoclrspc(int iccclrspc, int refflag)
             return JAS_CLRSPC_GENGRAY;
         default:
             abort();
-            break;
         }
     }
-    return JAS_CLRSPC_UNKNOWN;
 }
 
 static int mono(jas_iccprof_t *iccprof, int op, jas_cmpxformseq_t **retpxformseq)
@@ -1266,15 +1260,11 @@ int jas_clrspc_numchans(int clrspc)
     case JAS_CLRSPC_FAM_RGB:
     case JAS_CLRSPC_FAM_YCBCR:
         return 3;
-        break;
-    case JAS_CLRSPC_FAM_GRAY:
+      case JAS_CLRSPC_FAM_GRAY:
         return 1;
-        break;
-    default:
+      default:
         abort();
-        break;
     }
-    return 0;
 }
 
 jas_iccprof_t *jas_iccprof_createfromcmprof(jas_cmprof_t *prof)

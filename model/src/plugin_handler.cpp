@@ -815,7 +815,6 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
       return false;
     }
   }
-  return false;  // notreached
 }
 
 /*

@@ -949,8 +949,6 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
           if (1 /*FIXME !g_benableUDPNullHeader*/) {
             data[count] = 0;
             newdata = count;
-          } else {
-            // XXX FIXME: is it reliable?
           }
         }
       }

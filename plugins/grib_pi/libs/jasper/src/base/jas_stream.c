@@ -929,7 +929,6 @@ int jas_stream_display(jas_stream_t *stream, FILE *fp, int n)
         for (j = 0; j < m; ++j) {
             if ((c = jas_stream_getc(stream)) == EOF) {
                 abort();
-                return -1;
             }
             buf[j] = c;
         }
@@ -1066,7 +1065,6 @@ static long mem_seek(jas_stream_obj_t *obj, long offset, int origin)
         break;
     default:
         abort();
-        break;
     }
     if (newpos < 0) {
         return -1;

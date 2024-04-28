@@ -1632,22 +1632,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
     wxCoord h = 0;
 
     //FIXME Dave Re-enable, and fix rotation logic.
-    if (0/*m_buseTex*/) {
-      m_texfont.Build(m_font, 1.0, m_dpi_factor);  // make sure the font is ready
-      m_texfont.GetTextExtent(text, &w, &h);
-      m_texfont.SetColor(m_textforegroundcolour);
-
-      if (w && h) {
-        glEnable(GL_BLEND);
-        glEnable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        m_texfont.RenderString(text, x, y, angle);
-
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-      }
-    } else {
+    {
       wxScreenDC sdc;
       sdc.SetFont(m_font);
       sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
@@ -1671,7 +1656,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
         and set the color to text foreground */
         wxImage image = bmp.ConvertToImage();
         if (x < 0 ||
-            y < 0) {  // Allow Drawing text which is offset to start off screen
+            y < 0) { // Allow Drawing text which is offset to start off screen
           int dx = (x < 0 ? -x : 0);
           int dy = (y < 0 ? -y : 0);
           w = bmp.GetWidth() - dx;
@@ -1712,7 +1697,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
         int TextureWidth = NextPow2(w);
         int TextureHeight = NextPow2(h);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureWidth, TextureHeight, 0,
-                    GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                     GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE,
                         data);
 
@@ -1759,7 +1744,7 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
           shader->SetUniformMatrix4fv("MVMatrix", (float *)&(m_vp.vp_matrix_transform));
         }
 
-      // Set up the texture sampler to texture unit 0
+        // Set up the texture sampler to texture unit 0
         shader->SetUniform1i("uTex", 0);
 
         // Rotate
@@ -1778,10 +1763,10 @@ void ocpnDC::DrawText(const wxString &text, wxCoord x, wxCoord y, float angle) {
 
 
 
-    // Perform the actual drawing.
+        // Perform the actual drawing.
 
-    // For some reason, glDrawElements is busted on Android
-    // So we do this a hard ugly way, drawing two triangles...
+        // For some reason, glDrawElements is busted on Android
+        // So we do this a hard ugly way, drawing two triangles...
         co1[0] = coords[0];
         co1[1] = coords[1];
         co1[2] = coords[2];
@@ -1833,15 +1818,7 @@ void ocpnDC::GetTextExtent(const wxString &string, wxCoord *w, wxCoord *h,
     if (font) f = *font;
 
     //FIXME Dave Re-enable, and fix rotation logic.
-    if (0/*m_buseTex*/) {
-#ifdef ocpnUSE_GL
-      m_texfont.Build(f, 1.0, m_dpi_factor);  // make sure the font is ready
-      m_texfont.GetTextExtent(string, w, h);
-#else
-      wxMemoryDC temp_dc;
-      temp_dc.GetTextExtent(string, w, h, descent, externalLeading, &f);
-#endif
-    } else {
+    {
       wxMemoryDC temp_dc;
       temp_dc.GetTextExtent(string, w, h, descent, externalLeading, &f);
     }

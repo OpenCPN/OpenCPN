@@ -1395,7 +1395,6 @@ tilehdrlen = jas_stream_getrwcount(enc->tmpstream);
 
 if (jpc_enc_enccblks(enc)) {
     abort();
-    return -1;
 }
 
         cp = enc->cp;

@@ -77,16 +77,14 @@ LocalApiResult LocalClientApi::HandleCmdline(CmdlineAction action,
           }
           return result;
         }
-        break;
-    case CmdlineAction::Raise: {
+      case CmdlineAction::Raise: {
           auto result = SendRaise();
           if (!result.first) {
             MESSAGE_LOG << "Error running remote raise cmd: " << result.second;
           }
           return result;
         }
-        break;
-    case CmdlineAction::Open: {
+      case CmdlineAction::Open: {
           auto result = SendOpen(arg.c_str());
           if (!result.first) {
             MESSAGE_LOG << "Error running remote open of file \"" << arg
@@ -94,8 +92,7 @@ LocalApiResult LocalClientApi::HandleCmdline(CmdlineAction action,
           }
           return result;
         }
-        break;
-    case CmdlineAction::GetRestEndpoint: {
+      case CmdlineAction::GetRestEndpoint: {
           auto result = GetRestEndpoint();
           if (result.first)
             std::cout << result.second << "\n" << std::flush;

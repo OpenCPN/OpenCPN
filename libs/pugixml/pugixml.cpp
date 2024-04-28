@@ -1941,9 +1941,7 @@ PUGI_IMPL_NS_BEGIN
 
 		if (sizeof(wchar_t) == 2)
 			return is_little_endian() ? encoding_utf16_le : encoding_utf16_be;
-		else
-			return is_little_endian() ? encoding_utf32_le : encoding_utf32_be;
-	}
+        }
 
 	PUGI_IMPL_FN bool parse_declaration_encoding(const uint8_t* data, size_t size, const uint8_t*& out_encoding, size_t& out_length)
 	{

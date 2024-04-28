@@ -305,7 +305,6 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
               ip = addrscanResult.ip;
               delete addrscan;
               return true;
-              break;
             } else {
               wxYield();
               wxMilliSleep(1000*tSec/10);

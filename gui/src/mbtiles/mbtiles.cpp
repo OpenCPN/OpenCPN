@@ -701,8 +701,6 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
 
     return true;
   }
-
-  return false;
 }
 
 class wxPoint2DDouble;

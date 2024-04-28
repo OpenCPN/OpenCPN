@@ -1181,7 +1181,6 @@ CALLS : none
             break;
         }
       }
-      break;
 
     case 4: /*Date outside the recommended range*/
       printf(
@@ -1220,7 +1219,6 @@ CALLS : none
             break;
         }
       }
-      break;
     case 5: /*Elevation outside the allowable range*/
       printf(
           "\nError: The value you have entered of %f km for the elevation is "
@@ -1249,7 +1247,6 @@ CALLS : none
             break;
         }
       }
-      break;
   }
   return 2;
 } /*MAG_Warnings*/

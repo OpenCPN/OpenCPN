@@ -2657,8 +2657,6 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, double &pixx,
     }
     return 0;
   }
-
-  return 1;
 }
 
 void ChartBaseBSB::latlong_to_chartpix(double lat, double lon, double &pixx,

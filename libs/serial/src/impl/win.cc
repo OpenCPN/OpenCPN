@@ -331,7 +331,6 @@ bool
 Serial::SerialImpl::waitReadable (uint32_t /*timeout*/)
 {
   THROW (IOException, "waitReadable is not implemented on Windows.");
-  return false;
 }
 
 void
@@ -395,9 +394,8 @@ Serial::SerialImpl::read (uint8_t *buf, size_t size)
                     bytes_read = 0;
                     ss << "Error while reading from the serial port: " << GetLastError();
                     THROW (IOException, ss.str().c_str());
-                    break;
 
-                default:                // error of some kind with handles
+                  default:                // error of some kind with handles
                     fWaitingOnRead = FALSE;
                     bytes_read = 0;
                     break;

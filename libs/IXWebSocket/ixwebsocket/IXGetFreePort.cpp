@@ -32,10 +32,6 @@ namespace ix
     int getAnyFreePort()
     {
         socket_t sockfd;
-        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        {
-            return getAnyFreePortRandom();
-        }
 
         int enable = 1;
         if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char*) &enable, sizeof(enable)) < 0)
@@ -91,7 +87,5 @@ namespace ix
                 return port;
             }
         }
-
-        return -1;
     }
 } // namespace ix

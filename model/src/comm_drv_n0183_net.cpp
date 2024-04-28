@@ -430,11 +430,6 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
           if (1 /*FIXME !g_benableUDPNullHeader*/) {
             data[count] = 0;
             m_sock_buffer += (&data.front());
-          } else {
-            // XXX FIXME: is it reliable?
-            // copy all received bytes
-            // there's 0 in furuno UDP tags before NMEA sentences.
-            m_sock_buffer.append(&data.front(), count);
           }
         }
       }

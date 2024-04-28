@@ -106,11 +106,9 @@ TC_Error_Code TCDataSource::LoadHarmonicData(IDX_entry *pIDX) {
   switch (pIDX->source_data_type) {
     case SOURCE_TYPE_ASCII_HARMONIC:
       return pTCDS_Ascii_Harmonic->LoadHarmonicData(pIDX);
-      break;
 
     case SOURCE_TYPE_BINARY_HARMONIC:
       return pTCDS_Binary_Harmonic->LoadHarmonicData(pIDX);
-      break;
 
     default:
       return TC_GENERIC_ERROR;

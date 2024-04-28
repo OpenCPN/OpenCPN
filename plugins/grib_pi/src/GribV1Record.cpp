@@ -616,15 +616,6 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
     Dj = (La2 - La1) / (Nj - 1);
   }
 
-  if (false) {
-    printf("==== GV1 \n");
-    printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", Lo1, Lo2, La1, La2);
-    printf("Ni=%d Nj=%d\n", Ni, Nj);
-    printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di, Dj);
-    printf("hasBMS=%d\n", hasBMS);
-    printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",
-           isScanIpositive, isScanJpositive, isAdjacentI);
-  }
   return ok;
 }
 

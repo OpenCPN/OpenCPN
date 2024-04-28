@@ -109,7 +109,6 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Decode(const wxString &str) {
     if (ch == ' ') ch = '+';
 
     ch = base64_reverse_table[(int)ch];  // CHECK
-    if (ch < 0) continue;
 
     switch (i % 4) {
       case 0:

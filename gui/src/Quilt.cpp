@@ -728,22 +728,6 @@ void Quilt::InvalidateAllQuiltPatchs(void) {
 
 std::vector<int> Quilt::GetQuiltIndexArray(void) {
   return m_index_array;
-
-  std::vector<int> ret;
-
-  if (m_bbusy) return ret;
-
-  m_bbusy = true;
-
-  wxPatchListNode *cnode = m_PatchList.GetFirst();
-  while (cnode) {
-    ret.push_back(cnode->GetData()->dbIndex);
-    cnode = cnode->GetNext();
-  }
-
-  m_bbusy = false;
-
-  return ret;
 }
 
 bool Quilt::IsQuiltDelta(ViewPort &vp) {

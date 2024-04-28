@@ -7769,7 +7769,6 @@ static bool CompressChart(wxString in, wxString out) {
 
   return success;
 #endif
-  return false;
 }
 
 void options::OnButtonmigrateClick(wxCommandEvent& event) {

@@ -504,7 +504,6 @@ _next_match:
             ip += LZ4_NbCommonBytes(diff);
             goto _endCount;
         }
-        if (LZ4_ARCH64) if ((ip<(matchlimit-3)) && (A32(ref) == A32(ip))) { ip+=4; ref+=4; }
         if ((ip<(matchlimit-1)) && (A16(ref) == A16(ip))) { ip+=2; ref+=2; }
         if ((ip<matchlimit) && (*ref == *ip)) ip++;
 _endCount:
@@ -566,7 +565,7 @@ int LZ4_compress(const char* source, char* dest, int inputSize)
     if (inputSize < (int)LZ4_64KLIMIT)
         result = LZ4_compress_generic((void*)ctx, source, dest, inputSize, 0, notLimited, byU16, noPrefix);
     else
-        result = LZ4_compress_generic((void*)ctx, source, dest, inputSize, 0, notLimited, (sizeof(void*)==8) ? byU32 : byPtr, noPrefix);
+        result = LZ4_compress_generic((void*)ctx, source, dest, inputSize, 0, notLimited, byPtr, noPrefix);
 
 #if (HEAPMODE)
     FREEMEM(ctx);
@@ -586,7 +585,7 @@ int LZ4_compress_limitedOutput(const char* source, char* dest, int inputSize, in
     if (inputSize < (int)LZ4_64KLIMIT)
         result = LZ4_compress_generic((void*)ctx, source, dest, inputSize, maxOutputSize, limited, byU16, noPrefix);
     else
-        result = LZ4_compress_generic((void*)ctx, source, dest, inputSize, maxOutputSize, limited, (sizeof(void*)==8) ? byU32 : byPtr, noPrefix);
+        result = LZ4_compress_generic((void*)ctx, source, dest, inputSize, maxOutputSize, limited, byPtr, noPrefix);
 
 #if (HEAPMODE)
     FREEMEM(ctx);
@@ -610,7 +609,7 @@ int LZ4_compress_withState (void* state, const char* source, char* dest, int inp
     if (inputSize < (int)LZ4_64KLIMIT)
         return LZ4_compress_generic(state, source, dest, inputSize, 0, notLimited, byU16, noPrefix);
     else
-        return LZ4_compress_generic(state, source, dest, inputSize, 0, notLimited, (sizeof(void*)==8) ? byU32 : byPtr, noPrefix);
+        return LZ4_compress_generic(state, source, dest, inputSize, 0, notLimited, byPtr, noPrefix);
 }
 
 
@@ -622,7 +621,7 @@ int LZ4_compress_limitedOutput_withState (void* state, const char* source, char*
     if (inputSize < (int)LZ4_64KLIMIT)
         return LZ4_compress_generic(state, source, dest, inputSize, maxOutputSize, limited, byU16, noPrefix);
     else
-        return LZ4_compress_generic(state, source, dest, inputSize, maxOutputSize, limited, (sizeof(void*)==8) ? byU32 : byPtr, noPrefix);
+        return LZ4_compress_generic(state, source, dest, inputSize, maxOutputSize, limited, byPtr, noPrefix);
 }
 
 
@@ -809,7 +808,7 @@ FORCE_INLINE int LZ4_decompress_generic(
         /* copy repeated sequence */
         if (unlikely((op-ref)<(int)STEPSIZE))
         {
-            const size_t dec64 = dec64table[(sizeof(void*)==4) ? 0 : op-ref];
+            const size_t dec64 = dec64table[0];
             op[0] = ref[0];
             op[1] = ref[1];
             op[2] = ref[2];

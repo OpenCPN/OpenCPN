@@ -2809,8 +2809,6 @@ static void mg_byte_reverse(unsigned char *buf, unsigned longs) {
       *(uint32_t *) buf = t;
       buf += 4;
     } while (--longs);
-  } else {
-    (void) buf, (void) longs;  // Little endian. Do nothing
   }
 }
 
@@ -3645,9 +3643,6 @@ union char64long16 {
 
 static uint32_t blk0(union char64long16 *block, int i) {
   if (MG_BIG_ENDIAN) {
-  } else {
-    block->l[i] = (rol(block->l[i], 24) & 0xFF00FF00) |
-                  (rol(block->l[i], 8) & 0x00FF00FF);
   }
   return block->l[i];
 }

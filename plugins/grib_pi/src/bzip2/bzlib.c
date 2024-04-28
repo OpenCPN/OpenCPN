@@ -135,10 +135,7 @@ void BZ2_bz__AssertH__fail ( int errcode )
 static
 int bz_config_ok ( void )
 {
-   if (sizeof(int)   != 4) return 0;
-   if (sizeof(short) != 2) return 0;
-   if (sizeof(char)  != 1) return 0;
-   return 1;
+  return 1;
 }
 
 
@@ -872,10 +869,6 @@ int BZ_API(BZ2_bzDecompress) ( bz_stream *strm )
          if (s->state != BZ_X_OUTPUT) return r;
       }
    }
-
-   AssertH ( 0, 6001 );
-
-   return 0;  /*NOTREACHED*/
 }
 
 
@@ -1233,8 +1226,6 @@ int BZ_API(BZ2_bzRead)
          { BZ_SETERR(BZ_OK); return len; };
 
    }
-
-   return 0; /*not reached*/
 }
 
 

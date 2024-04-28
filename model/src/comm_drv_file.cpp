@@ -102,19 +102,15 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
 //        return make_shared<Nmea2000Msg>(name, payload, src);
         return make_shared<NullNavMsg>();
       }
-      break;
     case NavAddr::Bus::N0183:
       if (true) {  // Create a separate scope.
         const string id(words[2]);
         return make_shared<Nmea0183Msg>(id, words[3], src);
       }
-      break;
     default:
       std::cerr << "Cannot parse line: \"" << line << "\"\n" << flush;
       return make_shared<NullNavMsg>();
-      break;
   }
-  return make_shared<NullNavMsg>();  // for the compiler.
 }
 
 void FileCommDriver::Activate() {

@@ -1447,9 +1447,6 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
 bool glChartCanvas::HasNormalizedViewPort(const ViewPort &vp) {
   return false;
 #ifndef USE_ANDROID_GLES2
-  return vp.m_projection_type == PROJECTION_MERCATOR ||
-         vp.m_projection_type == PROJECTION_POLAR ||
-         vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
 #else
   return false;
 #endif

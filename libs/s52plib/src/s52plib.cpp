@@ -4216,8 +4216,7 @@ int s52plib::RenderLSLegacy(ObjRazRules *rzRules, Rules *rules) {
 
             l = r;
             lastvalid = true;
-          } else
-            lastvalid = false;
+          }
         } else
           lastvalid = false;
       }  //for
@@ -5168,7 +5167,6 @@ int s52plib::RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules) {
             pdp[idouble++] = ppt[vbo_index + 1];
 
             nls++;
-          } else {  // sKipping point
           }
 
           lp = r;
@@ -10015,23 +10013,6 @@ bool s52plib::EnableGLLS(bool b_enable) {
 
 void s52plib::AdjustTextList(int dx, int dy, int screenw, int screenh) {
   return;
-  wxRect rScreen(0, 0, screenw, screenh);
-  //    Iterate over the text rectangle list
-  //        1.  Apply the specified offset to the list elements
-  //        2.. Remove any list elements that are off screen after applied
-  //        offset
-
-  TextObjList::Node *node = m_textObjList.GetFirst();
-  TextObjList::Node *next;
-  while (node) {
-    next = node->GetNext();
-    wxRect *pcurrent = &(node->GetData()->rText);
-    pcurrent->Offset(dx, dy);
-    if (!pcurrent->Intersects(rScreen)) {
-      m_textObjList.DeleteNode(node);
-    }
-    node = next;
-  }
 }
 
 bool s52plib::GetPointPixArray(ObjRazRules *rzRules, wxPoint2DDouble *pd,

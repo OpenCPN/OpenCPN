@@ -4104,8 +4104,6 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   if (STAT_FIELD_CURSOR_LL >= 0)
     parent_frame->SetStatusText(s1, STAT_FIELD_CURSOR_LL);
 
-  if (STAT_FIELD_CURSOR_BRGRNG < 0) return;
-
   double brg, dist;
   wxString sm;
   wxString st;
@@ -6218,48 +6216,7 @@ void ChartCanvas::GridDraw(ocpnDC &dc) {
 }
 
 void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
-  if (0 /*!g_bsimplifiedScalebar*/) {
-    double blat, blon, tlat, tlon;
-    wxPoint r;
-
-    int x_origin = m_bDisplayGrid ? 60 : 20;
-    int y_origin = m_canvas_height - 50;
-
-    float dist;
-    int count;
-    wxPen pen1, pen2;
-
-    if (GetVP().chart_scale > 80000)  // Draw 10 mile scale as SCALEB11
-    {
-      dist = 10.0;
-      count = 5;
-      pen1 = wxPen(GetGlobalColor(_T ( "SNDG2" )), 3, wxPENSTYLE_SOLID);
-      pen2 = wxPen(GetGlobalColor(_T ( "SNDG1" )), 3, wxPENSTYLE_SOLID);
-    } else  // Draw 1 mile scale as SCALEB10
-    {
-      dist = 1.0;
-      count = 10;
-      pen1 = wxPen(GetGlobalColor(_T ( "SCLBR" )), 3, wxPENSTYLE_SOLID);
-      pen2 = wxPen(GetGlobalColor(_T ( "CHGRD" )), 3, wxPENSTYLE_SOLID);
-    }
-
-    GetCanvasPixPoint(x_origin, y_origin, blat, blon);
-    double rotation = -VPoint.rotation;
-
-    ll_gc_ll(blat, blon, rotation * 180 / PI, dist, &tlat, &tlon);
-    GetCanvasPointPix(tlat, tlon, &r);
-    int l1 = (y_origin - r.y) / count;
-
-    for (int i = 0; i < count; i++) {
-      int y = l1 * i;
-      if (i & 1)
-        dc.SetPen(pen1);
-      else
-        dc.SetPen(pen2);
-
-      dc.DrawLine(x_origin, y_origin - y, x_origin, y_origin - (y + l1));
-    }
-  } else {
+  {
     double blat, blon, tlat, tlon;
 
     int x_origin = 5.0 * GetPixPerMM();
@@ -6306,7 +6263,7 @@ void ChartCanvas::ScaleBarDraw(ocpnDC &dc) {
     int l1 = r.x - x_origin;
 
     m_scaleBarRect = wxRect(x_origin, y_origin - 12, l1,
-                            12);  // Store this for later reference
+                            12); // Store this for later reference
 
     dc.SetPen(pen1);
 
@@ -6589,7 +6546,7 @@ void ChartCanvas::ToggleCPAWarn() {
     mess = _("OFF");
   }
   // Print to status bar if available.
-  if (STAT_FIELD_SCALE >= 4 && parent_frame->GetStatusBar()) {
+  if (parent_frame->GetStatusBar()) {
     parent_frame->SetStatusText(_("CPA alarm ") + mess, STAT_FIELD_SCALE);
   } else {
     if (!g_AisFirstTimeUse) {
@@ -9914,41 +9871,6 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route *selected) {
   pRoutePropDialog->Show();
   pRoutePropDialog->Raise();
   return;
-  pRoutePropDialog = RoutePropDlgImpl::getInstance(
-      this);  // There is one global instance of the RouteProp Dialog
-
-  if (g_bresponsive) {
-    wxSize canvas_size = GetSize();
-    wxPoint canvas_pos = GetPosition();
-    wxSize fitted_size = pRoutePropDialog->GetSize();
-    ;
-
-    if (canvas_size.x < fitted_size.x) {
-      fitted_size.x = canvas_size.x;
-      if (canvas_size.y < fitted_size.y)
-        fitted_size.y -= 20;  // scrollbar added
-    }
-    if (canvas_size.y < fitted_size.y) {
-      fitted_size.y = canvas_size.y;
-      if (canvas_size.x < fitted_size.x)
-        fitted_size.x -= 20;  // scrollbar added
-    }
-
-    pRoutePropDialog->SetSize(fitted_size);
-    pRoutePropDialog->Centre();
-
-    //        int xp = (canvas_size.x - fitted_size.x)/2;
-    //        int yp = (canvas_size.y - fitted_size.y)/2;
-
-    wxPoint xxp = ClientToScreen(canvas_pos);
-    //        pRoutePropDialog->Move(xxp.x + xp, xxp.y + yp);
-  }
-
-  pRoutePropDialog->SetRouteAndUpdate(selected);
-
-  pRoutePropDialog->Show();
-
-  Refresh(false);
 }
 
 void ChartCanvas::ShowTrackPropertiesDialog(Track *selected) {
@@ -12775,7 +12697,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
       double lat = pIDX->IDX_lat;
 
       char type = pIDX->IDX_type;  // Entry "TCtcIUu" identifier
-      if (((type == 'c') || (type == 'C')) && (1 /*pIDX->IDX_Useable*/)) {
+      if (((type == 'c') || (type == 'C'))) {
         if (!pIDX->b_skipTooDeep && (BBox.ContainsMarge(lat, lon, marge))) {
           wxPoint r;
           GetCanvasPointPix(lat, lon, &r);
@@ -14215,8 +14137,6 @@ int RestoreScreenBrightness(void) {
 
   return 1;
 #endif
-
-  return 0;
 }
 
 //    Set brightness. [0..100]
@@ -14376,8 +14296,6 @@ int SetScreenBrightness(int brightness) {
   last_brightness = brightness;
 
 #endif
-
-  return 0;
 }
 
 #ifdef __OPCPN_USEICC__
