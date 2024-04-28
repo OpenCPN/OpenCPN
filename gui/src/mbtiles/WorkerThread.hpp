@@ -63,7 +63,6 @@ private:
   /// @return Always 0
   virtual ExitCode Entry() {
     mbTileDescriptor *tile;
-    SetName("mbtiles-worker");
 
     do {
       // Wait for the next job
