@@ -1705,7 +1705,8 @@ void options::Init(void) {
   int width, height;
   dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, dialogFont);
 
-  m_colourPickerDefaultSize = wxSize(4 * height, height * 2);
+  m_colourPickerDefaultSize =
+      wxSize(4 * height, height* 2 * OCPN_GetWinDIPScaleFactor());
 
   m_bcompact = false;
 
