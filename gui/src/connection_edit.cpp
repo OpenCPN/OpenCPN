@@ -2600,15 +2600,21 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
   m_clbSentences->Clear();
   m_clbSentences->InsertItems(m_sentences, 0);
 
+  wxArrayString new_strings;
+
   if (list.Count() == 0) {
     for (size_t i = 0; i < m_clbSentences->GetCount(); ++i)
       m_clbSentences->Check(i, m_type == WHITELIST);
   } else {
-    m_clbSentences->InsertItems(list, m_sentences.GetCount());
     for (size_t i = 0; i < list.Count(); ++i) {
       int item = m_clbSentences->FindString(list[i]);
-      if (item != wxNOT_FOUND) m_clbSentences->Check(item);
+      if (item != wxNOT_FOUND)
+        m_clbSentences->Check(item);
+      else
+        new_strings.Add(list[i]);
     }
+    if(new_strings.GetCount())
+      m_clbSentences->InsertItems(new_strings, m_clbSentences->GetCount());
   }
 }
 
