@@ -96,7 +96,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
         "<p>The IFS model GRIB files include information about surface "
         "temperature, "
         "atmospheric pressure, wind strength, wind direction, wave height and "
-        "direction for the whole world on a 0.4 and 0.25 degree resolution "
+        "direction for the whole world on a 0.25 degree resolution "
         "grid with 3 hour "
         "step in the first 144 hours and 6 hour step up to 10 days.</p>"
         "The AIFS model contains data for wind, pressure and temperature on a "
@@ -553,14 +553,14 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   wxYieldIfNeeded();
   wxString model;
   switch (m_chECMWFResolution->GetSelection()) {
-    case 1:
+    case 0:
       model = "ecmwf0p25";
       break;
-    case 2:
+    case 1:
       model = "ecmwfaifs0p25";
       break;
     default:
-      model = "ecmwf";
+      model = "ecmwf0p25";
       break;
   }
   std::ostringstream oss;

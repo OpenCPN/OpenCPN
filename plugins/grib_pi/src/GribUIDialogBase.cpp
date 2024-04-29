@@ -2354,7 +2354,7 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_stECMWFResolution->Wrap( -1 );
   bSizerWorld->Add( m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-  wxString m_chECMWFResolutionChoices[] = { wxString::Format("0.4%c IFS", 0x00B0), wxString::Format("0.25%c IFS", 0x00B0), wxString::Format("0.25%c AIFS", 0x00B0) };
+  wxString m_chECMWFResolutionChoices[] = { wxString::Format("0.25%c IFS", 0x00B0), wxString::Format("0.25%c AIFS", 0x00B0) };
   int m_chECMWFResolutionNChoices = sizeof( m_chECMWFResolutionChoices ) / sizeof( wxString );
   m_chECMWFResolution = new wxChoice( m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0 );
   m_chECMWFResolution->SetSelection( 0 );

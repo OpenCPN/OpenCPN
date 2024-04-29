@@ -6,6 +6,7 @@
 ** xref:windows.adoc[Windows]
 ** xref:mac-osx.adoc[MacOS]
 ** xref:docker.adoc[Docker container]
+** xref:create-deb-package.adoc[Create Debian packages]
 * xref:unit-tests.adoc[Unit tests]
 * xref:rest-interface.adoc[REST server]
 * xref:odraw-messaging.adoc[Odraw Messaging]

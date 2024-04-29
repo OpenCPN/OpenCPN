@@ -25,12 +25,10 @@ public:
   /// method is thread safe.
   /// @return A pointer to a tile descriptor
   mbTileDescriptor *Pop() {
-    mbTileDescriptor *tile;
     m_tileCounter.Wait();
-    m_queueMutex.Lock();
-    tile = m_tileList.at(0);
+    wxMutexLocker lock(m_queueMutex);
+    mbTileDescriptor *tile = m_tileList.at(0);
     m_tileList.erase(m_tileList.cbegin());
-    m_queueMutex.Unlock();
     return tile;
   }
 
@@ -38,9 +36,10 @@ public:
   /// @return Queue size in tiles
   uint32_t GetSize() {
     uint32_t size;
-    m_queueMutex.Lock();
+    wxMutexLocker lock(m_queueMutex);
+
     size = m_tileList.size();
-    m_queueMutex.Unlock();
+
     return size;
   }
 
