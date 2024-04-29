@@ -30,6 +30,8 @@ finish-args:
     - --device=all
     - --allow=canbus
     - --talk-name=org.opencpn.OpenCPN.*
+    - --system-talk-name=org.freedesktop.systemd1
+    - --system-talk-name=org.freedesktop.login1
 
 add-extensions:
     org.opencpn.OpenCPN.Plugin:
