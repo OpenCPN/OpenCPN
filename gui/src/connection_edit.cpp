@@ -1843,8 +1843,7 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() && m_rbNetProtoUDP->GetValue())
       m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-    if (m_cbInput->GetValue() && m_cbOutput->GetValue())
-      m_cbOutput->SetValue(false);
+
 
   } else if (m_rbNetProtoSignalK->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
@@ -1879,12 +1878,7 @@ void ConnectionEditDialog::OnRbOutput(wxCommandEvent& event) {
 void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
   const bool checked = m_cbInput->IsChecked();
   ShowInFilter(checked);
-  if (checked && m_rbNetProtoUDP->GetValue() && m_rbTypeNet->GetValue()) {
-    m_cbOutput->SetValue(FALSE);
- 
-    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-    
-  }
+
   SetDSFormRWStates();
   LayoutDialog();
   if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
@@ -1906,9 +1900,6 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
     }
   }
 
-  if (checked && m_rbNetProtoUDP->GetValue()) {
-    m_cbInput->SetValue(FALSE);
-  }
 
   if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
