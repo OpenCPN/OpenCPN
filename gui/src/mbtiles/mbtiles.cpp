@@ -154,8 +154,9 @@ private:
 
 ChartMBTiles::ChartMBTiles() {
   // Compute scale & MPP for each zoom level
-  OSM_zoomScale[0] = 4.0030e+07;
-  OSM_zoomMPP[0] = 156370;
+  // Initial constants taken from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  OSM_zoomScale[0] = 554680041;
+  OSM_zoomMPP[0] = 156543.03;
   for (int i = 1; i < (int)(sizeof(OSM_zoomScale) / sizeof(double)); i++) {
     OSM_zoomScale[i] = OSM_zoomScale[i - 1] / 2;
     OSM_zoomMPP[i] = OSM_zoomMPP[i - 1] / 2;
