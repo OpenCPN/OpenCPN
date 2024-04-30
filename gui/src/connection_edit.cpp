@@ -2613,8 +2613,13 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
       else
         new_strings.Add(list[i]);
     }
-    if(new_strings.GetCount())
+    if(new_strings.GetCount()) {
       m_clbSentences->InsertItems(new_strings, m_clbSentences->GetCount());
+      for (size_t i = 0; i < new_strings.GetCount(); ++i) {
+        int item = m_clbSentences->FindString(new_strings[i]);
+        if (item != wxNOT_FOUND) m_clbSentences->Check(item);
+      }
+    }
   }
 }
 
