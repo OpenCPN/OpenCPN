@@ -1687,11 +1687,7 @@ void Quilt::UnlockQuilt() {
   // unlocked only charts owned by the Quilt
   for (unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
     QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
-    // if (pqc->b_locked == true)
-    {
-      ChartData->UnLockCacheChart(pqc->dbIndex);
-      pqc->b_locked = false;
-    }
+    ChartData->UnLockCacheChart(pqc->dbIndex);
   }
 }
 
@@ -2373,6 +2369,29 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   //  a refresh on the new Quilt anyway...
   m_parent->EnablePaint(false);
 
+  // Load and lock all required charts
+  //  First lock required charts already in the cache
+  //  otherwise under memory pressure if chart1 and chart2
+  //  are in the quilt loading chart1 could evict chart2
+  //
+  for (ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
+    QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
+    if ((pqc->b_include) && (!pqc->b_eclipsed)) {
+      if (!ChartData->IsChartLocked(pqc->dbIndex))
+        ChartData->LockCacheChart(pqc->dbIndex);
+    }
+  }
+
+  // Now load and lock any new charts required by the quilt
+  for (ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
+    QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
+    if ((pqc->b_include) && (!pqc->b_eclipsed)) {
+      if (!ChartData->IsChartLocked(pqc->dbIndex))  //Not locked, or not loaded
+        ChartData->OpenChartFromDBAndLock(pqc->dbIndex, FULL_INIT, true);
+    }
+  }
+
+#if 0
   //  first lock charts already in the cache
   //  otherwise under memory pressure if chart1 and chart2
   //  are in the quilt loading chart1 could evict chart2
@@ -2401,6 +2420,7 @@ bool Quilt::Compose(const ViewPort &vp_in) {
         pqc->b_locked = true;
     }
   }
+#endif
 
   m_parent->EnablePaint(true);
   //    Build and maintain the array of indexes in this quilt
