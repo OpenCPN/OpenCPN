@@ -26,6 +26,7 @@
  */
 
 #include "wx/wx.h"
+#include <wx/utils.h>
 #include <sstream>
 #include "email.h"
 
@@ -499,6 +500,10 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
                 wxString::Format(_("Downloading... %li / %li"),
                                  ev.getTransferred(), ev.getTotal()));
             break;
+          case GribDownloadType::XYGRIB:
+            m_xygribPanel->m_progress_gauge->SetValue(
+                100 * ev.getTransferred() / ev.getTotal());
+            break;
           default:
             break;
         }
@@ -950,10 +955,14 @@ void GribRequestSetting::EnableDownloadButtons() {
       m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
       m_buttonUpdateCatalog->Enable(false);
       break;
+    case GribDownloadType::XYGRIB:
+      m_xygribPanel->m_download_button->Enable(true);
+      break;
     default:
       m_btnDownloadWorld->Enable(true);
       m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
       m_buttonUpdateCatalog->Enable(true);
+      m_xygribPanel->m_download_button->Enable(true);
       break;
   }
 }
@@ -970,7 +979,8 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp) {
   delete m_Vp;
   m_Vp = new PlugIn_ViewPort(*vp);
 
-  GetCanvasPixLL(m_Vp, &m_StartPoint, m_spMaxLat->GetValue(), m_spMinLon->GetValue());
+  GetCanvasPixLL(m_Vp, &m_StartPoint, m_spMaxLat->GetValue(),
+                 m_spMinLon->GetValue());
 
   if (!m_AllowSend) return;
   if (m_cManualZoneSel->GetValue()) return;
@@ -1864,4 +1874,253 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
   SetRequestDialogSize();
   delete message;
   ::wxEndBusyCursor();
+}
+
+void GribRequestSetting::BuildXygribGFSUrl(wxString &urlStr) {
+  urlStr = urlStr.Append("model=gfs_p25_");
+  urlStr = urlStr.Append(wxString::Format("&la1=%.0f", floor(m_Vp->lat_min)));
+  urlStr = urlStr.Append(wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max)));
+  urlStr = urlStr.Append(wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min)));
+  urlStr = urlStr.Append(wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max)));
+
+  wxString selStr = m_xygribPanel->m_interval_choice->GetStringSelection();
+  if (selStr.IsSameAs("12h", false)) {
+    urlStr = urlStr.Append("&intv=12");
+  } else if (selStr.IsSameAs("6h", false)) {
+    urlStr = urlStr.Append("&intv=6");
+  } else {
+    urlStr = urlStr.Append("&intv=3");
+  }
+
+  selStr = m_xygribPanel->m_days_choice->GetStringSelection();
+  long value = 0;
+  if (!selStr.ToLong(&value)) {
+    value = 3;
+  }
+  urlStr = urlStr.Append(wxString::Format("&days=%ld", value));
+
+  selStr = m_xygribPanel->m_run_choice->GetStringSelection();
+  if (selStr.IsSameAs("18h", false)) {
+    urlStr = urlStr.Append("&cyc=18");
+  } else if (selStr.IsSameAs("12h", false)) {
+    urlStr = urlStr.Append("&cyc=12");
+  } else if (selStr.IsSameAs("6h", false)) {
+    urlStr = urlStr.Append("&cyc=06");
+  } else if (selStr.IsSameAs("0h", false)) {
+    urlStr = urlStr.Append("&cyc=00");
+  } else {
+    urlStr = urlStr.Append("&cyc=last");
+  }
+
+  urlStr = urlStr.Append("&par=");
+  if (m_xygribPanel->m_wind_cbox->IsChecked()) urlStr = urlStr.Append("W;");
+  if (m_xygribPanel->m_pressure_cbox->IsChecked()) urlStr = urlStr.Append("P;");
+  if (m_xygribPanel->m_precipitation_cbox->IsChecked())
+    urlStr = urlStr.Append("R;");
+  if (m_xygribPanel->m_cloudcover_cbox->IsChecked())
+    urlStr = urlStr.Append("C;");
+  if (m_xygribPanel->m_temperature_cbox->IsChecked())
+    urlStr = urlStr.Append("T;");
+  if (m_xygribPanel->m_cape_cbox->IsChecked()) urlStr = urlStr.Append("c;");
+  if (m_xygribPanel->m_reflectivity_cbox->IsChecked())
+    urlStr = urlStr.Append("r;");
+  if (m_xygribPanel->m_windgust_cbox->IsChecked()) urlStr = urlStr.Append("G;");
+
+  printf("url : %s\n", urlStr.c_str().AsChar());
+}
+
+wxString GribRequestSetting::BuildXygribUrl() {
+  wxString urlStr =
+      wxString::Format("http://grbsrv.opengribs.org/getmygribs2.php?");
+
+  wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
+  wxString waveModel = m_xygribPanel->m_wavemodel_choice->GetStringSelection();
+
+  if (atmModel.IsSameAs("GFS", false)) {
+    BuildXygribGFSUrl(urlStr);
+  } else {
+    urlStr = urlStr.Append("&model=none");
+  }
+
+  wxString wParams = "";
+  if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
+    wParams = wParams.Append("h;d;p;");
+  }
+  if (m_xygribPanel->m_waveheight_cbox->IsChecked()) {
+    wParams = wParams.Append("s;");
+  }
+  if (wParams.length() > 0) {
+    if (waveModel.IsSameAs("NOAA-WW3", false)) {
+      urlStr =
+          urlStr.Append(wxString::Format("&wmdl=ww3_p50_&wpar=%s", wParams.c_str()));
+    } else if (waveModel.IsSameAs("DWD-GWAM", false)) {
+      urlStr =
+          urlStr.Append(wxString::Format("&wmdl=gwam_p25_&wpar=%s", wParams.c_str()));
+    } else if (waveModel.IsSameAs("DWD-EWAM", false)) {
+      urlStr =
+          urlStr.Append(wxString::Format("&wmdl=ewam_p05_&wpar=%s", wParams.c_str()));
+    } else {
+      urlStr = urlStr.Append("&wmdl=none");
+    }
+  } else {
+    urlStr = urlStr.Append("&wmdl=none");
+  }
+
+  return urlStr;
+}
+
+void GribRequestSetting::OnXyGribDownload(wxCommandEvent &event) {
+  if (m_downloading) {
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+    m_downloading = false;
+    m_download_handle = 0;
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+    m_connected = false;
+    m_xygribPanel->m_progress_gauge->SetValue(0);
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_xygribPanel->m_status_text->SetLabelText(_("Download cancelled"));
+    m_canceled = true;
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxTheApp->ProcessPendingEvents();
+    wxYieldIfNeeded();
+    return;
+  }
+  m_canceled = false;
+  m_downloading = true;
+  m_downloadType = GribDownloadType::XYGRIB;
+  EnableDownloadButtons();
+  m_xygribPanel->m_download_button->SetLabelText(_("Cancel"));
+  m_xygribPanel->m_status_text->SetLabelText(
+      _("Building GRIB file on server..."));
+  wxYieldIfNeeded();
+
+  wxString requestUrl = BuildXygribUrl();
+
+  // TODO : use more elaborated file name
+  wxString filename = wxString::Format("ocpn_xygrib_%s.xml",
+                                       wxDateTime::Now().Format("%F-%H-%M"));
+  wxString path = m_parent.GetGribDir();
+  path.Append(wxFileName::GetPathSeparator());
+  path.Append(filename);
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  auto res = OCPN_downloadFileBackground(requestUrl.c_str(), path, this,
+                                         &m_download_handle);
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+
+  if ((m_canceled) || (!m_bTransferSuccess)) {
+    m_xygribPanel->m_status_text->SetLabelText(_("Grib request failed"));
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxRemoveFile(path);
+    return;
+  }
+
+  wxFile xmlFile;
+  wxString strXml;
+  bool readOk = xmlFile.Open(path);
+  if (readOk) {
+    readOk &= xmlFile.ReadAll(&strXml);
+    if (readOk) {
+      xmlFile.Close();
+    }
+  }
+
+  wxString url;
+  if (readOk && (((int)strXml.find("\"status\":true") == wxNOT_FOUND))) {
+    wxString errorStr;
+    int errPos = strXml.find("\"message\":\"");
+    int errEnd = strXml.find("\"}");
+    if ((errPos != wxNOT_FOUND) && (errEnd != wxNOT_FOUND)) {
+      errPos += 11;
+      errorStr = strXml.Mid(errPos, errEnd - errPos);
+    } else {
+      errorStr = "Unknown server error";
+    }
+
+    m_xygribPanel->m_status_text->SetLabelText(
+        wxString::Format("%s (%s)", _("Server Error"), errorStr));
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxRemoveFile(path);
+    return;
+  } else {
+    int urlPos = strXml.find("\"url\":\"http:");
+    int urlEnd = strXml.find(".grb2\"");
+    if ((urlPos != wxNOT_FOUND) && (urlEnd != wxNOT_FOUND)) {
+      urlPos += 7;
+      urlEnd += 5;
+      url = strXml.Mid(urlPos, urlEnd - urlPos);
+      url.Replace("\\/", "/");
+    } else {
+      readOk = false;
+    }
+  }
+
+  wxRemoveFile(path);
+
+  if (!readOk) {
+    m_xygribPanel->m_status_text->SetLabelText(
+        _("Error parsing XML file from server"));
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    return;
+  }
+
+  m_xygribPanel->m_status_text->SetLabelText(_("Downloading GRIB file..."));
+
+  filename = wxString::Format("ocpn_xygrib_%s.grb2",
+                              wxDateTime::Now().Format("%F-%H-%M"));
+  path = m_parent.GetGribDir();
+  path.Append(wxFileName::GetPathSeparator());
+  path.Append(filename);
+  m_canceled = false;
+  m_downloading = true;
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  res =
+      OCPN_downloadFileBackground(url.c_str(), path, this, &m_download_handle);
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+
+  m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+
+  if (!m_canceled) {
+    if (m_bTransferSuccess) {
+      m_xygribPanel->m_status_text->SetLabelText(_("Download complete"));
+      wxFileName fn(path);
+      m_parent.m_grib_dir = fn.GetPath();
+      m_parent.m_file_names.Clear();
+      m_parent.m_file_names.Add(path);
+      m_parent.OpenFile();
+      if (m_parent.pPlugIn) {
+        if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
+      }
+      m_parent.SetDialogsStyleSizePosition(true);
+      Close();
+    } else {
+      m_xygribPanel->m_status_text->SetLabelText(_("Download failed"));
+    }
+  }
+  m_downloadType = GribDownloadType::NONE;
+  EnableDownloadButtons();
 }

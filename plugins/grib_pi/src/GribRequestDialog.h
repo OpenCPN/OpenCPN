@@ -41,6 +41,7 @@ enum GribDownloadType
   WORLD,
   LOCAL,
   LOCAL_CATALOG,
+  XYGRIB,
   NONE
 };
 
@@ -119,6 +120,10 @@ private:
   void OnDownloadLocal(wxCommandEvent& event) override;
   void onDLEvent(OCPN_downloadEvent& ev);
   void EnableDownloadButtons();
+
+  void BuildXygribGFSUrl(wxString &urlStr);
+  wxString BuildXygribUrl();
+  void OnXyGribDownload(wxCommandEvent& event) override;
 
   GRIBUICtrlBar &m_parent;
 

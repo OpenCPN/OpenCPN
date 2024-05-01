@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "GribUIDialogBase.h"
+#include "XyGribPanel.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -2930,6 +2931,11 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   fgSizer101->Fit( m_panelEmail );
   m_notebookGetGrib->AddPage( m_panelEmail, _("e-mail"), false );
 
+  m_xygribPanel = new XyGribPanel(m_notebookGetGrib, wxID_ANY, wxDefaultPosition,
+                             wxDefaultSize, wxTAB_TRAVERSAL);
+  m_notebookGetGrib->AddPage( m_xygribPanel, _("XyGrib"), false );
+
+
   bSizerMain->Add( m_notebookGetGrib, 1, wxEXPAND | wxALL, 5 );
 
   this->SetSizer( bSizerMain );
@@ -3081,6 +3087,11 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_rButtonYes->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+  m_xygribPanel->m_download_button->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownload), NULL,
+      this);
+
 }
 
 GribRequestSettingBase::~GribRequestSettingBase() {
@@ -3226,6 +3237,11 @@ GribRequestSettingBase::~GribRequestSettingBase() {
   m_rButtonYes->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+  m_xygribPanel->m_download_button->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownload), NULL,
+      this);
+
 }
 
 GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
