@@ -36,16 +36,11 @@
 #include "pi_ocpndc.h"
 #include "wx/jsonreader.h"
 
-enum GribDownloadType
-{
-  WORLD,
-  LOCAL,
-  LOCAL_CATALOG,
-  XYGRIB,
-  NONE
-};
+enum GribDownloadType { WORLD, LOCAL, LOCAL_CATALOG, XYGRIB, NONE };
 
-const std::string CATALOG_URL = "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/sources.json";
+const std::string CATALOG_URL =
+    "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/"
+    "sources.json";
 
 //----------------------------------------------------------------------------------------------------------
 //    Request setting Specification
@@ -80,9 +75,10 @@ public:
   double m_Lon;
 
 private:
-  void HighlightArea(double latmax, double lonmax,double latmin, double lonmin);
+  void HighlightArea(double latmax, double lonmax, double latmin,
+                     double lonmin);
   void ReadLocalCatalog();
-  void FillTreeCtrl(wxJSONValue & data);
+  void FillTreeCtrl(wxJSONValue &data);
   void ApplyRequestConfig(unsigned rs, unsigned it, unsigned tr);
   wxString WriteMail();
   int EstimateFileSize(double *size);
@@ -99,7 +95,9 @@ private:
     wxCommandEvent evt;
     OnAnyChange(evt);
   }
-  void OnNotebookPageChanged( wxNotebookEvent& event ) override { HighlightArea(0,0,0,0); }
+  void OnNotebookPageChanged(wxNotebookEvent &event) override {
+    HighlightArea(0, 0, 0, 0);
+  }
   void OnTimeRangeChange(wxCommandEvent &event) override;
   void OnSendMaiL(wxCommandEvent &event) override;
   void OnSaveMail(wxCommandEvent &event) override;
@@ -111,24 +109,25 @@ private:
   void OnCoordinatesChange(wxSpinEvent &event) override;
   void OnMouseEventTimer(wxTimerEvent &event);
   void SetCoordinatesText();
-  void OnWorldLengthChoice(wxCommandEvent& event) override { event.Skip(); }
-  void OnWorldResolutionChoice( wxCommandEvent& event ) override { event.Skip(); }
-  void OnWorldDownload(wxCommandEvent& event) override;
-  void OnLocalTreeItemExpanded(wxTreeEvent& event) override { event.Skip(); }
-  void OnLocalTreeSelChanged(wxTreeEvent& event) override;
-  void OnUpdateLocalCatalog(wxCommandEvent& event) override;
-  void OnDownloadLocal(wxCommandEvent& event) override;
-  void onDLEvent(OCPN_downloadEvent& ev);
+  void OnWorldLengthChoice(wxCommandEvent &event) override { event.Skip(); }
+  void OnWorldResolutionChoice(wxCommandEvent &event) override { event.Skip(); }
+  void OnWorldDownload(wxCommandEvent &event) override;
+  void OnLocalTreeItemExpanded(wxTreeEvent &event) override { event.Skip(); }
+  void OnLocalTreeSelChanged(wxTreeEvent &event) override;
+  void OnUpdateLocalCatalog(wxCommandEvent &event) override;
+  void OnDownloadLocal(wxCommandEvent &event) override;
+  void onDLEvent(OCPN_downloadEvent &ev);
   void EnableDownloadButtons();
 
-  void BuildXygribGFSUrl(wxString &urlStr);
-  wxString BuildXygribUrl();
-  void OnXyGribDownload(wxCommandEvent& event) override;
+  void AddXyGribGFSUrlParams(wxString &urlStr);
+  wxString BuildXyGribUrl();
+  wxString BuildGribFileName();
+  void OnXyGribDownloadButton(wxCommandEvent &event) override;
 
   GRIBUICtrlBar &m_parent;
 
   wxDC *m_pdc;
-  pi_ocpnDC *m_oDC;   // Used for selection overlay on GL
+  pi_ocpnDC *m_oDC;  // Used for selection overlay on GL
 
   wxTimer m_tMouseEventTimer;
   wxTimer m_tMouseClickTimer;

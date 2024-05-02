@@ -503,6 +503,10 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
           case GribDownloadType::XYGRIB:
             m_xygribPanel->m_progress_gauge->SetValue(
                 100 * ev.getTransferred() / ev.getTotal());
+            m_xygribPanel->m_status_text->SetLabel(wxString::Format(
+                "%s (%ld kB / %ld kB)",
+                _("Downloading GRIB file").c_str().AsChar(),
+                ev.getTransferred() / 1000, ev.getTotal() / 1000));
             break;
           default:
             break;
@@ -1876,20 +1880,23 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
   ::wxEndBusyCursor();
 }
 
-void GribRequestSetting::BuildXygribGFSUrl(wxString &urlStr) {
-  urlStr = urlStr.Append("model=gfs_p25_");
-  urlStr = urlStr.Append(wxString::Format("&la1=%.0f", floor(m_Vp->lat_min)));
-  urlStr = urlStr.Append(wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max)));
-  urlStr = urlStr.Append(wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min)));
-  urlStr = urlStr.Append(wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max)));
-
-  wxString selStr = m_xygribPanel->m_interval_choice->GetStringSelection();
-  if (selStr.IsSameAs("12h", false)) {
-    urlStr = urlStr.Append("&intv=12");
-  } else if (selStr.IsSameAs("6h", false)) {
-    urlStr = urlStr.Append("&intv=6");
+void GribRequestSetting::AddXyGribGFSUrlParams(wxString &urlStr) {
+  wxString selStr = m_xygribPanel->m_resolution_choice->GetStringSelection();
+  if (selStr.IsSameAs("0.25°", false)) {
+    urlStr << "&model=gfs_p25_";
+  } else if (selStr.IsSameAs("0.5°", false)) {
+    urlStr << "&model=gfs_p50_";
   } else {
-    urlStr = urlStr.Append("&intv=3");
+    urlStr << "&model=gfs_1p0_";
+  }
+
+  selStr = m_xygribPanel->m_interval_choice->GetStringSelection();
+  if (selStr.IsSameAs("12h", false)) {
+    urlStr << "&intv=12";
+  } else if (selStr.IsSameAs("6h", false)) {
+    urlStr << "&intv=6";
+  } else {
+    urlStr << "&intv=3";
   }
 
   selStr = m_xygribPanel->m_days_choice->GetStringSelection();
@@ -1897,79 +1904,94 @@ void GribRequestSetting::BuildXygribGFSUrl(wxString &urlStr) {
   if (!selStr.ToLong(&value)) {
     value = 3;
   }
-  urlStr = urlStr.Append(wxString::Format("&days=%ld", value));
+  urlStr << wxString::Format("&days=%ld", value);
 
   selStr = m_xygribPanel->m_run_choice->GetStringSelection();
   if (selStr.IsSameAs("18h", false)) {
-    urlStr = urlStr.Append("&cyc=18");
+    urlStr << "&cyc=18";
   } else if (selStr.IsSameAs("12h", false)) {
-    urlStr = urlStr.Append("&cyc=12");
+    urlStr << "&cyc=12";
   } else if (selStr.IsSameAs("6h", false)) {
-    urlStr = urlStr.Append("&cyc=06");
+    urlStr << "&cyc=06";
   } else if (selStr.IsSameAs("0h", false)) {
-    urlStr = urlStr.Append("&cyc=00");
+    urlStr << "&cyc=00";
   } else {
-    urlStr = urlStr.Append("&cyc=last");
+    urlStr << "&cyc=last";
   }
 
-  urlStr = urlStr.Append("&par=");
-  if (m_xygribPanel->m_wind_cbox->IsChecked()) urlStr = urlStr.Append("W;");
-  if (m_xygribPanel->m_pressure_cbox->IsChecked()) urlStr = urlStr.Append("P;");
-  if (m_xygribPanel->m_precipitation_cbox->IsChecked())
-    urlStr = urlStr.Append("R;");
-  if (m_xygribPanel->m_cloudcover_cbox->IsChecked())
-    urlStr = urlStr.Append("C;");
-  if (m_xygribPanel->m_temperature_cbox->IsChecked())
-    urlStr = urlStr.Append("T;");
-  if (m_xygribPanel->m_cape_cbox->IsChecked()) urlStr = urlStr.Append("c;");
-  if (m_xygribPanel->m_reflectivity_cbox->IsChecked())
-    urlStr = urlStr.Append("r;");
-  if (m_xygribPanel->m_windgust_cbox->IsChecked()) urlStr = urlStr.Append("G;");
+  urlStr << "&par=";
+  if (m_xygribPanel->m_wind_cbox->IsChecked()) urlStr << "W;";
+  if (m_xygribPanel->m_pressure_cbox->IsChecked()) urlStr << "P;";
+  if (m_xygribPanel->m_precipitation_cbox->IsChecked()) urlStr << "R;";
+  if (m_xygribPanel->m_cloudcover_cbox->IsChecked()) urlStr << "C;";
+  if (m_xygribPanel->m_temperature_cbox->IsChecked()) urlStr << "T;";
+  if (m_xygribPanel->m_cape_cbox->IsChecked()) urlStr << "c;";
+  if (m_xygribPanel->m_reflectivity_cbox->IsChecked()) urlStr << "r;";
+  if (m_xygribPanel->m_windgust_cbox->IsChecked()) urlStr << "G;";
 
   printf("url : %s\n", urlStr.c_str().AsChar());
 }
 
-wxString GribRequestSetting::BuildXygribUrl() {
+wxString GribRequestSetting::BuildXyGribUrl() {
   wxString urlStr =
       wxString::Format("http://grbsrv.opengribs.org/getmygribs2.php?");
+  urlStr << wxString::Format("la1=%.0f", floor(m_Vp->lat_min));
+  urlStr << wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max));
+  urlStr << wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min));
+  urlStr << wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max));
 
   wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
   wxString waveModel = m_xygribPanel->m_wavemodel_choice->GetStringSelection();
 
   if (atmModel.IsSameAs("GFS", false)) {
-    BuildXygribGFSUrl(urlStr);
+    AddXyGribGFSUrlParams(urlStr);
   } else {
-    urlStr = urlStr.Append("&model=none");
+    urlStr << "&model=none";
   }
 
   wxString wParams = "";
   if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
-    wParams = wParams.Append("h;d;p;");
+    wParams << "h;d;p;";
   }
   if (m_xygribPanel->m_waveheight_cbox->IsChecked()) {
-    wParams = wParams.Append("s;");
+    wParams << "s;";
   }
   if (wParams.length() > 0) {
     if (waveModel.IsSameAs("NOAA-WW3", false)) {
-      urlStr =
-          urlStr.Append(wxString::Format("&wmdl=ww3_p50_&wpar=%s", wParams.c_str()));
+      urlStr << wxString::Format("&wmdl=ww3_p50_&wpar=%s", wParams.c_str());
     } else if (waveModel.IsSameAs("DWD-GWAM", false)) {
-      urlStr =
-          urlStr.Append(wxString::Format("&wmdl=gwam_p25_&wpar=%s", wParams.c_str()));
+      urlStr << wxString::Format("&wmdl=gwam_p25_&wpar=%s", wParams.c_str());
     } else if (waveModel.IsSameAs("DWD-EWAM", false)) {
-      urlStr =
-          urlStr.Append(wxString::Format("&wmdl=ewam_p05_&wpar=%s", wParams.c_str()));
+      urlStr << wxString::Format("&wmdl=ewam_p05_&wpar=%s", wParams.c_str());
     } else {
-      urlStr = urlStr.Append("&wmdl=none");
+      urlStr << "&wmdl=none";
     }
   } else {
-    urlStr = urlStr.Append("&wmdl=none");
+    urlStr << "&wmdl=none";
   }
 
   return urlStr;
 }
 
-void GribRequestSetting::OnXyGribDownload(wxCommandEvent &event) {
+wxString GribRequestSetting::BuildGribFileName() {
+  wxString resStr;
+  wxString selStr = m_xygribPanel->m_resolution_choice->GetStringSelection();
+  if (selStr.IsSameAs("0.25°", false)) {
+    resStr << "0P25";
+  } else if (selStr.IsSameAs("0.5°", false)) {
+    resStr << "0P50";
+  } else {
+    resStr << "1P0";
+  }
+
+  wxString fileName = wxString::Format(
+      "XyGrib_%s_%s_%s.grb2", wxDateTime::Now().Format("%F-%H-%M"),
+      m_xygribPanel->m_atmmodel_choice->GetStringSelection(), resStr);
+
+  return fileName;
+}
+
+void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
   if (m_downloading) {
     OCPN_cancelDownloadFileBackground(m_download_handle);
     m_downloading = false;
@@ -1997,14 +2019,13 @@ void GribRequestSetting::OnXyGribDownload(wxCommandEvent &event) {
       _("Building GRIB file on server..."));
   wxYieldIfNeeded();
 
-  wxString requestUrl = BuildXygribUrl();
+  wxString requestUrl = BuildXyGribUrl();
 
-  // TODO : use more elaborated file name
   wxString filename = wxString::Format("ocpn_xygrib_%s.xml",
                                        wxDateTime::Now().Format("%F-%H-%M"));
   wxString path = m_parent.GetGribDir();
-  path.Append(wxFileName::GetPathSeparator());
-  path.Append(filename);
+  path << wxFileName::GetPathSeparator();
+  path << filename;
   if (!m_connected) {
     m_connected = true;
     Connect(
@@ -2080,13 +2101,11 @@ void GribRequestSetting::OnXyGribDownload(wxCommandEvent &event) {
     return;
   }
 
-  m_xygribPanel->m_status_text->SetLabelText(_("Downloading GRIB file..."));
+  m_xygribPanel->m_status_text->SetLabelText(_("Downloading GRIB file"));
 
-  filename = wxString::Format("ocpn_xygrib_%s.grb2",
-                              wxDateTime::Now().Format("%F-%H-%M"));
   path = m_parent.GetGribDir();
-  path.Append(wxFileName::GetPathSeparator());
-  path.Append(filename);
+  path << wxFileName::GetPathSeparator();
+  path << BuildGribFileName();
   m_canceled = false;
   m_downloading = true;
   if (!m_connected) {

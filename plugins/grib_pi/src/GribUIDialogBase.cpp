@@ -3089,7 +3089,7 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
   m_xygribPanel->m_download_button->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownload), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton), NULL,
       this);
 
 }
@@ -3239,7 +3239,7 @@ GribRequestSettingBase::~GribRequestSettingBase() {
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
   m_xygribPanel->m_download_button->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownload), NULL,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton), NULL,
       this);
 
 }

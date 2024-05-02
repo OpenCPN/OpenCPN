@@ -489,7 +489,7 @@ protected:
   virtual void OnSaveMail(wxCommandEvent& event) { event.Skip(); }
   virtual void OnCancel(wxCommandEvent& event) { event.Skip(); }
   virtual void OnSendMaiL(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnXyGribDownload(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnXyGribDownloadButton(wxCommandEvent& event) { event.Skip(); }
   
 public:
   wxScrolledWindow* m_sScrolledDialog;
