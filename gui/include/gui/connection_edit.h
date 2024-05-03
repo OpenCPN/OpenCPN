@@ -53,6 +53,7 @@ public:
   const wxString DEFAULT_GPSD_PORT = "2947";
   const wxString DEFAULT_SIGNALK_PORT = "3000";
   const wxString DEFAULT_IP_ADDRESS = "0.0.0.0";
+  const wxString DEFAULT_SIGNALK_IP_ADDRESS = "localhost";
 
   ConnectionEditDialog();
  // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
