@@ -59,6 +59,9 @@ The device @DEVICE@ exists but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. Once installed,
 the rules file will fix the permissions problem.
+)");
+
+static const char* const DEVICE_LINK_INTRO = _(R"(
 
 It will also create a new device called @SYMLINK@. It is recommended to use
 @SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,
@@ -334,17 +337,21 @@ public:
 /** Return an intro based on DEVICE_INTRO with proper substitutions. */
 static std::string GetDeviceIntro(const char* device, std::string symlink) {
   std::string intro(DEVICE_INTRO);
+
+  std::string dev_name(device);
+  ocpn::replace(dev_name, "/dev/", "");
+  if (!ocpn::startswith(dev_name, "ttyS")) {
+    intro += DEVICE_LINK_INTRO;
+  }
+  if (getenv("FLATPAK_ID")) {
+    intro += FLATPAK_INTRO_TRAILER;
+  }
   ocpn::replace(symlink, "/dev/", "");
   while (intro.find("@SYMLINK@") != std::string::npos) {
     ocpn::replace(intro, "@SYMLINK@", symlink);
   }
-  std::string dev_name(device);
-  ocpn::replace(dev_name, "/dev/", "");
   while (intro.find("@DEVICE@") != std::string::npos) {
     ocpn::replace(intro, "@DEVICE@", dev_name.c_str());
-  }
-  if (getenv("FLATPAK_ID")) {
-    intro += FLATPAK_INTRO_TRAILER;
   }
   return intro;
 }
