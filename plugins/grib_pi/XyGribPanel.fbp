@@ -475,7 +475,7 @@
             <property name="caption"></property>
             <property name="caption_visible">1</property>
             <property name="center_pane">0</property>
-            <property name="choices">&quot;GFS&quot; &quot;ICON&quot; &quot;ARPEGE&quot; &quot;ECMWF&quot; &quot;ICON-EU&quot; &quot;ARPEGE-HD&quot; &quot;AROME&quot; &quot;NAM CONUS&quot; &quot;NAM CACBN&quot; &quot;NAM PACIFIC&quot;</property>
+            <property name="choices"></property>
             <property name="close_button">1</property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -543,7 +543,7 @@
             <property name="caption"></property>
             <property name="caption_visible">1</property>
             <property name="center_pane">0</property>
-            <property name="choices">&quot;DWD-GWAM&quot; &quot;DWD-EWAM&quot; &quot;NOAA-WW3&quot; &quot;None&quot;</property>
+            <property name="choices"></property>
             <property name="close_button">1</property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -611,7 +611,7 @@
             <property name="caption"></property>
             <property name="caption_visible">1</property>
             <property name="center_pane">0</property>
-            <property name="choices">&quot;3h&quot; &quot;6h&quot; &quot;12h&quot;</property>
+            <property name="choices"></property>
             <property name="close_button">1</property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -679,7 +679,7 @@
             <property name="caption"></property>
             <property name="caption_visible">1</property>
             <property name="center_pane">0</property>
-            <property name="choices">&quot;0.25°&quot; &quot;0.5°&quot; &quot;1°&quot; &quot;&quot;</property>
+            <property name="choices"></property>
             <property name="close_button">1</property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -747,7 +747,7 @@
             <property name="caption"></property>
             <property name="caption_visible">1</property>
             <property name="center_pane">0</property>
-            <property name="choices">&quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot; &quot;6&quot; &quot;7&quot; &quot;8&quot; &quot;9&quot; &quot;10&quot;</property>
+            <property name="choices"></property>
             <property name="close_button">1</property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -815,7 +815,7 @@
             <property name="caption"></property>
             <property name="caption_visible">1</property>
             <property name="center_pane">0</property>
-            <property name="choices">&quot;Latest&quot; &quot;0h&quot; &quot;6h&quot; &quot;12h&quot; &quot;18h&quot;</property>
+            <property name="choices"></property>
             <property name="close_button">1</property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -1590,7 +1590,7 @@
                       <property name="caption"></property>
                       <property name="caption_visible">1</property>
                       <property name="center_pane">0</property>
-                      <property name="checked">1</property>
+                      <property name="checked">0</property>
                       <property name="close_button">1</property>
                       <property name="context_help"></property>
                       <property name="context_menu">1</property>

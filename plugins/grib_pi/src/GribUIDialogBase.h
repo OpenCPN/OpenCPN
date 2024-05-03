@@ -491,6 +491,7 @@ protected:
   virtual void OnSendMaiL(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribDownloadButton(wxCommandEvent& event) { event.Skip(); }
   virtual void OnXyGribAtmModelChoice(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnXyGribWaveModelChoice(wxCommandEvent& event) { event.Skip(); }
   
 public:
   wxScrolledWindow* m_sScrolledDialog;

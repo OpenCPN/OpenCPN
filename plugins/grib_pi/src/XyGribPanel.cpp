@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 4.1.0-0-g733bf3d-dirty)
+// C++ code generated with wxFormBuilder (version 4.1.0-0-g733bf3d)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -40,39 +40,33 @@ XyGribPanel::XyGribPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, c
 	m_interval_label->Wrap( -1 );
 	m_separator_line->Add( m_interval_label, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL, 5 );
 
-	wxString m_atmmodel_choiceChoices[] = { _("GFS"), _("ICON"), _("ARPEGE"), _("ECMWF"), _("ICON-EU"), _("ARPEGE-HD"), _("AROME"), _("NAM CONUS"), _("NAM CACBN"), _("NAM PACIFIC") };
-	int m_atmmodel_choiceNChoices = sizeof( m_atmmodel_choiceChoices ) / sizeof( wxString );
-	m_atmmodel_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_atmmodel_choiceNChoices, m_atmmodel_choiceChoices, 0 );
+	wxArrayString m_atmmodel_choiceChoices;
+	m_atmmodel_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_atmmodel_choiceChoices, 0 );
 	m_atmmodel_choice->SetSelection( 0 );
 	m_separator_line->Add( m_atmmodel_choice, wxGBPosition( 0, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
-	wxString m_wavemodel_choiceChoices[] = { _("DWD-GWAM"), _("DWD-EWAM"), _("NOAA-WW3"), _("None") };
-	int m_wavemodel_choiceNChoices = sizeof( m_wavemodel_choiceChoices ) / sizeof( wxString );
-	m_wavemodel_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_wavemodel_choiceNChoices, m_wavemodel_choiceChoices, 0 );
+	wxArrayString m_wavemodel_choiceChoices;
+	m_wavemodel_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_wavemodel_choiceChoices, 0 );
 	m_wavemodel_choice->SetSelection( 0 );
 	m_separator_line->Add( m_wavemodel_choice, wxGBPosition( 1, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
-	wxString m_interval_choiceChoices[] = { _("3h"), _("6h"), _("12h") };
-	int m_interval_choiceNChoices = sizeof( m_interval_choiceChoices ) / sizeof( wxString );
-	m_interval_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_interval_choiceNChoices, m_interval_choiceChoices, 0 );
+	wxArrayString m_interval_choiceChoices;
+	m_interval_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_interval_choiceChoices, 0 );
 	m_interval_choice->SetSelection( 0 );
 	m_separator_line->Add( m_interval_choice, wxGBPosition( 5, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
-	wxString m_resolution_choiceChoices[] = { _("0.25°"), _("0.5°"), _("1°"), wxEmptyString };
-	int m_resolution_choiceNChoices = sizeof( m_resolution_choiceChoices ) / sizeof( wxString );
-	m_resolution_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_resolution_choiceNChoices, m_resolution_choiceChoices, 0 );
+	wxArrayString m_resolution_choiceChoices;
+	m_resolution_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_resolution_choiceChoices, 0 );
 	m_resolution_choice->SetSelection( 0 );
 	m_separator_line->Add( m_resolution_choice, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
-	wxString m_days_choiceChoices[] = { _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("9"), _("10") };
-	int m_days_choiceNChoices = sizeof( m_days_choiceChoices ) / sizeof( wxString );
-	m_days_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_days_choiceNChoices, m_days_choiceChoices, 0 );
+	wxArrayString m_days_choiceChoices;
+	m_days_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_days_choiceChoices, 0 );
 	m_days_choice->SetSelection( 0 );
 	m_separator_line->Add( m_days_choice, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
-	wxString m_run_choiceChoices[] = { _("Latest"), _("0h"), _("6h"), _("12h"), _("18h") };
-	int m_run_choiceNChoices = sizeof( m_run_choiceChoices ) / sizeof( wxString );
-	m_run_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_run_choiceNChoices, m_run_choiceChoices, 0 );
+	wxArrayString m_run_choiceChoices;
+	m_run_choice = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_run_choiceChoices, 0 );
 	m_run_choice->SetSelection( 0 );
 	m_separator_line->Add( m_run_choice, wxGBPosition( 4, 1 ), wxGBSpan( 1, 1 ), wxALL|wxEXPAND, 5 );
 
@@ -112,7 +106,6 @@ XyGribPanel::XyGribPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, c
 	m_surfacetab_sizer->Add( m_waveheight_cbox, 0, wxALL, 5 );
 
 	m_windwave_cbox = new wxCheckBox( m_surfacetab_panel, wxID_ANY, _("Wind waves"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_windwave_cbox->SetValue(true);
 	m_surfacetab_sizer->Add( m_windwave_cbox, 0, wxALL, 5 );
 
 

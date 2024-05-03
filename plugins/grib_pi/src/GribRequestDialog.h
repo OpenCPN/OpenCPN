@@ -119,31 +119,18 @@ private:
   void onDLEvent(OCPN_downloadEvent &ev);
   void EnableDownloadButtons();
 
-  void AddXyGribGFSUrlParams(wxString &urlStr);
-  void AddXyGribICONUrlParams(wxString &urlStr);
-  void AddXyGribARPEGEUrlParams(wxString &urlStr);
-  void AddXyGribECMWFUrlParams(wxString &urlStr);
-  void AddXyGribICONEUUrlParams(wxString &urlStr);
-  void AddXyGribARPEGEHDUrlParams(wxString &urlStr);
-  void AddXyGribAROMEUrlParams(wxString &urlStr);
-  void AddXyGribNAMCONUSUrlParams(wxString &urlStr);
-  void AddXyGribNAMCACBNUrlParams(wxString &urlStr);
-  void AddXyGribNAMPACIFICUrlParams(wxString &urlStr);
-
+  // Xygrib internal methods
+  void PopulateXygribDialog();
   wxString BuildXyGribUrl();
   wxString BuildGribFileName();
+  // XyGrib GUI callbacks
   void OnXyGribDownloadButton(wxCommandEvent &event) override;
   void OnXyGribAtmModelChoice(wxCommandEvent &event) override;
-  void PopulateGFSDialog();
-  void PopulateICONDialog();
-  void PopulateARPEGEDialog();
-  void PopulateECMWFDialog();
-  void PopulateICONEUDialog();
-  void PopulateARPEGEHDDialog();
-  void PopulateAROMEDialog();
-  void PopulateNAMCONUSDialog();
-  void PopulateNAMCACBNDialog();
-  void PopulateNAMPACIFICDialog();
+  void OnXyGribWaveModelChoice(wxCommandEvent &event) override;
+  // Index of currently selected XyGrib atmospheric model
+  int selectedAtmModelIndex;
+  // Index of currently selected XyGrib wave model
+  int selectedWaveModelIndex;
 
   GRIBUICtrlBar &m_parent;
 

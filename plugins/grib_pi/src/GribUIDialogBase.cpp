@@ -2944,9 +2944,11 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   fgSizer101->Fit(m_panelEmail);
   m_notebookGetGrib->AddPage(m_panelEmail, _("e-mail"), false);
 
+  // Create XyGrib panel object
   m_xygribPanel =
       new XyGribPanel(m_notebookGetGrib, wxID_ANY, wxDefaultPosition,
                       wxDefaultSize, wxTAB_TRAVERSAL);
+  // Add the XyGrib panel to the download notebook
   m_notebookGetGrib->AddPage(m_xygribPanel, _("XyGrib"), false);
 
   bSizerMain->Add(m_notebookGetGrib, 1, wxEXPAND | wxALL, 5);
@@ -3100,14 +3102,19 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_rButtonYes->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+  // Connect XyGrib related callbacks
   m_xygribPanel->m_download_button->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton),
       NULL, this);
   m_xygribPanel->m_atmmodel_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice), NULL,
-      this);
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice),
+      NULL, this);
+  m_xygribPanel->m_wavemodel_choice->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribWaveModelChoice),
+      NULL, this);
 }
 
 GribRequestSettingBase::~GribRequestSettingBase() {
@@ -3253,14 +3260,20 @@ GribRequestSettingBase::~GribRequestSettingBase() {
   m_rButtonYes->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+
+  // Disconnect XyGrib related callbacks
   m_xygribPanel->m_download_button->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton),
       NULL, this);
   m_xygribPanel->m_atmmodel_choice->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice), NULL,
-      this);
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice),
+      NULL, this);
+  m_xygribPanel->m_wavemodel_choice->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribWaveModelChoice),
+      NULL, this);
 }
 
 GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
