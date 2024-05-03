@@ -120,9 +120,30 @@ private:
   void EnableDownloadButtons();
 
   void AddXyGribGFSUrlParams(wxString &urlStr);
+  void AddXyGribICONUrlParams(wxString &urlStr);
+  void AddXyGribARPEGEUrlParams(wxString &urlStr);
+  void AddXyGribECMWFUrlParams(wxString &urlStr);
+  void AddXyGribICONEUUrlParams(wxString &urlStr);
+  void AddXyGribARPEGEHDUrlParams(wxString &urlStr);
+  void AddXyGribAROMEUrlParams(wxString &urlStr);
+  void AddXyGribNAMCONUSUrlParams(wxString &urlStr);
+  void AddXyGribNAMCACBNUrlParams(wxString &urlStr);
+  void AddXyGribNAMPACIFICUrlParams(wxString &urlStr);
+
   wxString BuildXyGribUrl();
   wxString BuildGribFileName();
   void OnXyGribDownloadButton(wxCommandEvent &event) override;
+  void OnXyGribAtmModelChoice(wxCommandEvent &event) override;
+  void PopulateGFSDialog();
+  void PopulateICONDialog();
+  void PopulateARPEGEDialog();
+  void PopulateECMWFDialog();
+  void PopulateICONEUDialog();
+  void PopulateARPEGEHDDialog();
+  void PopulateAROMEDialog();
+  void PopulateNAMCONUSDialog();
+  void PopulateNAMCACBNDialog();
+  void PopulateNAMPACIFICDialog();
 
   GRIBUICtrlBar &m_parent;
 

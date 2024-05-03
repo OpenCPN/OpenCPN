@@ -1889,20 +1889,94 @@ void GribRequestSetting::AddXyGribGFSUrlParams(wxString &urlStr) {
   } else {
     urlStr << "&model=gfs_1p0_";
   }
+}
 
-  selStr = m_xygribPanel->m_interval_choice->GetStringSelection();
-  if (selStr.IsSameAs("12h", false)) {
+void GribRequestSetting::AddXyGribICONUrlParams(wxString &urlStr) {
+  urlStr << "&model=icon_p25_";
+}
+
+void GribRequestSetting::AddXyGribARPEGEUrlParams(wxString &urlStr) {
+  urlStr << "&model=arpege_p50_";
+}
+
+void GribRequestSetting::AddXyGribECMWFUrlParams(wxString &urlStr) {
+  urlStr << "&model=ecmwf_p50_";
+}
+
+void GribRequestSetting::AddXyGribICONEUUrlParams(wxString &urlStr) {
+  urlStr << "&model=icon_eu_p06_";
+}
+
+void GribRequestSetting::AddXyGribARPEGEHDUrlParams(wxString &urlStr) {
+  urlStr << "&model=arpege_eu_p10_";
+}
+
+void GribRequestSetting::AddXyGribAROMEUrlParams(wxString &urlStr) {
+  urlStr << "&model=arome_p025_";
+}
+
+void GribRequestSetting::AddXyGribNAMCONUSUrlParams(wxString &urlStr) {
+  urlStr << "&model=nam_conus_12km_";
+}
+
+void GribRequestSetting::AddXyGribNAMCACBNUrlParams(wxString &urlStr) {
+  urlStr << "&model=nam_cacbn_12km_";
+}
+
+void GribRequestSetting::AddXyGribNAMPACIFICUrlParams(wxString &urlStr) {
+  urlStr << "&model=nam_pacific_12km_";
+}
+
+wxString GribRequestSetting::BuildXyGribUrl() {
+  wxString urlStr =
+      wxString::Format("http://grbsrv.opengribs.org/getmygribs2.php?");
+  urlStr << wxString::Format("la1=%.0f", floor(m_Vp->lat_min));
+  urlStr << wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max));
+  urlStr << wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min));
+  urlStr << wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max));
+
+  wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
+  wxString waveModel = m_xygribPanel->m_wavemodel_choice->GetStringSelection();
+
+  if (atmModel.IsSameAs("ICON", false)) {
+    AddXyGribICONUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("ARPEGE", false)) {
+    AddXyGribARPEGEUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("ECMWF", false)) {
+    AddXyGribECMWFUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("ICON-EU", false)) {
+    AddXyGribICONEUUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("ARPEGE-HD", false)) {
+    AddXyGribARPEGEHDUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("AROME", false)) {
+    AddXyGribAROMEUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("NAM CONUS", false)) {
+    AddXyGribNAMCONUSUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("NAM CACBN", false)) {
+    AddXyGribNAMCACBNUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("NAM PACIFIC", false)) {
+    AddXyGribNAMPACIFICUrlParams(urlStr);
+  } else if (atmModel.IsSameAs("GFS", false)) {
+    AddXyGribGFSUrlParams(urlStr);
+  }
+
+  wxString selStr = m_xygribPanel->m_interval_choice->GetStringSelection();
+  if (selStr.IsSameAs("24h", false)) {
+    urlStr << "&intv=24";
+  } else if (selStr.IsSameAs("12h", false)) {
     urlStr << "&intv=12";
   } else if (selStr.IsSameAs("6h", false)) {
     urlStr << "&intv=6";
-  } else {
+  } else if (selStr.IsSameAs("3h", false)) {
     urlStr << "&intv=3";
+  } else {
+    urlStr << "&intv=1";
   }
 
   selStr = m_xygribPanel->m_days_choice->GetStringSelection();
   long value = 0;
   if (!selStr.ToLong(&value)) {
-    value = 3;
+    value = 2;
   }
   urlStr << wxString::Format("&days=%ld", value);
 
@@ -1920,34 +1994,30 @@ void GribRequestSetting::AddXyGribGFSUrlParams(wxString &urlStr) {
   }
 
   urlStr << "&par=";
-  if (m_xygribPanel->m_wind_cbox->IsChecked()) urlStr << "W;";
-  if (m_xygribPanel->m_pressure_cbox->IsChecked()) urlStr << "P;";
-  if (m_xygribPanel->m_precipitation_cbox->IsChecked()) urlStr << "R;";
-  if (m_xygribPanel->m_cloudcover_cbox->IsChecked()) urlStr << "C;";
-  if (m_xygribPanel->m_temperature_cbox->IsChecked()) urlStr << "T;";
-  if (m_xygribPanel->m_cape_cbox->IsChecked()) urlStr << "c;";
-  if (m_xygribPanel->m_reflectivity_cbox->IsChecked()) urlStr << "r;";
-  if (m_xygribPanel->m_windgust_cbox->IsChecked()) urlStr << "G;";
-
-  printf("url : %s\n", urlStr.c_str().AsChar());
-}
-
-wxString GribRequestSetting::BuildXyGribUrl() {
-  wxString urlStr =
-      wxString::Format("http://grbsrv.opengribs.org/getmygribs2.php?");
-  urlStr << wxString::Format("la1=%.0f", floor(m_Vp->lat_min));
-  urlStr << wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max));
-  urlStr << wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min));
-  urlStr << wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max));
-
-  wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
-  wxString waveModel = m_xygribPanel->m_wavemodel_choice->GetStringSelection();
-
-  if (atmModel.IsSameAs("GFS", false)) {
-    AddXyGribGFSUrlParams(urlStr);
-  } else {
-    urlStr << "&model=none";
-  }
+  if (m_xygribPanel->m_wind_cbox->IsEnabled() &&
+      m_xygribPanel->m_wind_cbox->IsChecked())
+    urlStr << "W;";
+  if (m_xygribPanel->m_pressure_cbox->IsEnabled() &&
+      m_xygribPanel->m_pressure_cbox->IsChecked())
+    urlStr << "P;";
+  if (m_xygribPanel->m_precipitation_cbox->IsEnabled() &&
+      m_xygribPanel->m_precipitation_cbox->IsChecked())
+    urlStr << "R;";
+  if (m_xygribPanel->m_cloudcover_cbox->IsEnabled() &&
+      m_xygribPanel->m_cloudcover_cbox->IsChecked())
+    urlStr << "C;";
+  if (m_xygribPanel->m_temperature_cbox->IsEnabled() &&
+      m_xygribPanel->m_temperature_cbox->IsChecked())
+    urlStr << "T;";
+  if (m_xygribPanel->m_cape_cbox->IsEnabled() &&
+      m_xygribPanel->m_cape_cbox->IsChecked())
+    urlStr << "c;";
+  if (m_xygribPanel->m_reflectivity_cbox->IsEnabled() &&
+      m_xygribPanel->m_reflectivity_cbox->IsChecked())
+    urlStr << "r;";
+  if (m_xygribPanel->m_windgust_cbox->IsEnabled() &&
+      m_xygribPanel->m_windgust_cbox->IsChecked())
+    urlStr << "G;";
 
   wxString wParams = "";
   if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
@@ -1989,6 +2059,31 @@ wxString GribRequestSetting::BuildGribFileName() {
       m_xygribPanel->m_atmmodel_choice->GetStringSelection(), resStr);
 
   return fileName;
+}
+
+void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
+  wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
+  if (atmModel.IsSameAs("ICON", false)) {
+    PopulateICONDialog();
+  } else if (atmModel.IsSameAs("ARPEGE", false)) {
+    PopulateARPEGEDialog();
+  } else if (atmModel.IsSameAs("ECMWF", false)) {
+    PopulateECMWFDialog();
+  } else if (atmModel.IsSameAs("ICON-EU", false)) {
+    PopulateICONEUDialog();
+  } else if (atmModel.IsSameAs("ARPEGE-HD", false)) {
+    PopulateARPEGEHDDialog();
+  } else if (atmModel.IsSameAs("AROME", false)) {
+    PopulateAROMEDialog();
+  } else if (atmModel.IsSameAs("NAM CONUS", false)) {
+    PopulateNAMCONUSDialog();
+  } else if (atmModel.IsSameAs("NAM CACBN", false)) {
+    PopulateNAMCACBNDialog();
+  } else if (atmModel.IsSameAs("NAM PACIFIC", false)) {
+    PopulateNAMPACIFICDialog();
+  } else if (atmModel.IsSameAs("GFS", false)) {
+    PopulateGFSDialog();
+  }
 }
 
 void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
@@ -2142,4 +2237,297 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
   }
   m_downloadType = GribDownloadType::NONE;
   EnableDownloadButtons();
+}
+
+void GribRequestSetting::PopulateGFSDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Enable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.25°", 0);
+  m_xygribPanel->m_resolution_choice->Insert("0.5°", 1);
+  m_xygribPanel->m_resolution_choice->Insert("1°", 2);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->Insert("5", 4);
+  m_xygribPanel->m_days_choice->Insert("6", 5);
+  m_xygribPanel->m_days_choice->Insert("7", 6);
+  m_xygribPanel->m_days_choice->Insert("8", 7);
+  m_xygribPanel->m_days_choice->Insert("9", 8);
+  m_xygribPanel->m_days_choice->Insert("10", 9);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("3h", 0);
+  m_xygribPanel->m_interval_choice->Insert("6h", 1);
+  m_xygribPanel->m_interval_choice->Insert("12h", 2);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateICONDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.25°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->Insert("5", 4);
+  m_xygribPanel->m_days_choice->Insert("6", 5);
+  m_xygribPanel->m_days_choice->Insert("7", 6);
+  m_xygribPanel->m_days_choice->Insert("8", 7);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("3h", 0);
+  m_xygribPanel->m_interval_choice->Insert("6h", 1);
+  m_xygribPanel->m_interval_choice->Insert("12h", 2);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateARPEGEDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.5°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("3h", 0);
+  m_xygribPanel->m_interval_choice->Insert("6h", 1);
+  m_xygribPanel->m_interval_choice->Insert("12h", 2);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateECMWFDialog() {
+  m_xygribPanel->m_wind_cbox->Disable();
+  m_xygribPanel->m_windgust_cbox->Disable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Disable();
+  m_xygribPanel->m_cape_cbox->Disable();
+  m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->Disable();
+  m_xygribPanel->m_precipitation_cbox->Disable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.5°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->Insert("5", 4);
+  m_xygribPanel->m_days_choice->Insert("6", 5);
+  m_xygribPanel->m_days_choice->Insert("7", 6);
+  m_xygribPanel->m_days_choice->Insert("8", 7);
+  m_xygribPanel->m_days_choice->Insert("9", 8);
+  m_xygribPanel->m_days_choice->Insert("10", 9);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("24h", 0);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateICONEUDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.06°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->Insert("5", 4);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("1h", 0);
+  m_xygribPanel->m_interval_choice->Insert("3h", 1);
+  m_xygribPanel->m_interval_choice->Insert("6h", 2);
+  m_xygribPanel->m_interval_choice->Insert("12h", 3);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateARPEGEHDDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Disable();
+  m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.1°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("1h", 0);
+  m_xygribPanel->m_interval_choice->Insert("3h", 1);
+  m_xygribPanel->m_interval_choice->Insert("6h", 2);
+  m_xygribPanel->m_interval_choice->Insert("12h", 3);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateAROMEDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Disable();
+  m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.025°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("1h", 0);
+  m_xygribPanel->m_interval_choice->Insert("3h", 1);
+  m_xygribPanel->m_interval_choice->Insert("6h", 2);
+  m_xygribPanel->m_interval_choice->Insert("12h", 3);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateNAMCONUSDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Enable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.11°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("1h", 0);
+  m_xygribPanel->m_interval_choice->Insert("3h", 1);
+  m_xygribPanel->m_interval_choice->Insert("6h", 2);
+  m_xygribPanel->m_interval_choice->Insert("12h", 3);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateNAMCACBNDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Enable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.11°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("3h", 0);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
+}
+
+void GribRequestSetting::PopulateNAMPACIFICDialog() {
+  m_xygribPanel->m_wind_cbox->Enable();
+  m_xygribPanel->m_windgust_cbox->Enable();
+  m_xygribPanel->m_pressure_cbox->Enable();
+  m_xygribPanel->m_temperature_cbox->Enable();
+  m_xygribPanel->m_cape_cbox->Enable();
+  m_xygribPanel->m_reflectivity_cbox->Enable();
+  m_xygribPanel->m_cloudcover_cbox->Enable();
+  m_xygribPanel->m_precipitation_cbox->Enable();
+
+  m_xygribPanel->m_resolution_choice->Clear();
+  m_xygribPanel->m_resolution_choice->Insert("0.11°", 0);
+  m_xygribPanel->m_resolution_choice->SetSelection(0);
+
+  m_xygribPanel->m_days_choice->Clear();
+  m_xygribPanel->m_days_choice->Insert("1", 0);
+  m_xygribPanel->m_days_choice->Insert("2", 1);
+  m_xygribPanel->m_days_choice->Insert("3", 2);
+  m_xygribPanel->m_days_choice->Insert("4", 3);
+  m_xygribPanel->m_days_choice->SetSelection(0);
+
+  m_xygribPanel->m_interval_choice->Clear();
+  m_xygribPanel->m_interval_choice->Insert("3h", 0);
+  m_xygribPanel->m_interval_choice->SetSelection(0);
 }
