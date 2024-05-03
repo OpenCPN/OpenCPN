@@ -1850,7 +1850,7 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
     }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+    m_tNetAddress->SetValue(DEFAULT_SIGNALK_IP_ADDRESS);
   } else if (m_rbNetProtoTCP->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DEFAULT_TCP_PORT);
