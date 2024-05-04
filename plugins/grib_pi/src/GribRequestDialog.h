@@ -120,17 +120,21 @@ private:
   void EnableDownloadButtons();
 
   // Xygrib internal methods
-  void PopulateXygribDialog();
+  void InitializeXygribDialog();
   wxString BuildXyGribUrl();
   wxString BuildGribFileName();
   // XyGrib GUI callbacks
   void OnXyGribDownloadButton(wxCommandEvent &event) override;
   void OnXyGribAtmModelChoice(wxCommandEvent &event) override;
   void OnXyGribWaveModelChoice(wxCommandEvent &event) override;
+  // Manage XyGrib UI Configuration
+  void ApplyXyGribConfiguration();
+  void MemorizeXyGribConfiguration();
+
   // Index of currently selected XyGrib atmospheric model
-  int selectedAtmModelIndex;
+  int m_selectedAtmModelIndex;
   // Index of currently selected XyGrib wave model
-  int selectedWaveModelIndex;
+  int m_selectedWaveModelIndex;
 
   GRIBUICtrlBar &m_parent;
 

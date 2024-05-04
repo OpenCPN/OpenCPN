@@ -141,9 +141,9 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   m_bLocal_source_selected = false;
   EnableDownloadButtons();
 
-  selectedAtmModelIndex = 0;
-  selectedWaveModelIndex = 0;
-  PopulateXygribDialog();
+  m_selectedAtmModelIndex = 0;
+  m_selectedWaveModelIndex = 0;
+  InitializeXygribDialog();
 }
 
 GribRequestSetting::~GribRequestSetting() {
@@ -1902,12 +1902,12 @@ wxString GribRequestSetting::BuildXyGribUrl() {
   // Atmospheric Model & resolution reference
   urlStr << wxString::Format(
       "&model=%s",
-      xygribAtmModelList[selectedAtmModelIndex]
+      xygribAtmModelList[m_selectedAtmModelIndex]
           ->reqName[m_xygribPanel->m_resolution_choice->GetSelection()]);
   // Interval
   urlStr << wxString::Format(
       "&intv=%d",
-      xygribAtmModelList[selectedAtmModelIndex]
+      xygribAtmModelList[m_selectedAtmModelIndex]
           ->interval[m_xygribPanel->m_interval_choice->GetSelection()]);
   // Length in days
   urlStr << wxString::Format("&days=%d",
@@ -1935,7 +1935,7 @@ wxString GribRequestSetting::BuildXyGribUrl() {
     urlStr << "W;";
   if (m_xygribPanel->m_pressure_cbox->IsEnabled() &&
       m_xygribPanel->m_pressure_cbox->IsChecked()) {
-    if (xygribAtmModelList[selectedAtmModelIndex]->altPressure) {
+    if (xygribAtmModelList[m_selectedAtmModelIndex]->altPressure) {
       urlStr << "p;";
     } else {
       urlStr << "P;";
@@ -1961,9 +1961,9 @@ wxString GribRequestSetting::BuildXyGribUrl() {
     urlStr << "G;";
 
   // Wave model a data fields
-  if (selectedWaveModelIndex >= 0) {
+  if (m_selectedWaveModelIndex >= 0) {
     wxString modelStr = wxString::Format(
-        "&wmdl=%s", xygribWaveModelList[selectedWaveModelIndex]->reqName);
+        "&wmdl=%s", xygribWaveModelList[m_selectedWaveModelIndex]->reqName);
     wxString wParams = "";
     if (m_xygribPanel->m_waveheight_cbox->IsChecked()) {
       wParams << "s;";
@@ -1991,7 +1991,7 @@ wxString GribRequestSetting::BuildGribFileName() {
   selStr.Replace(".", "P");
 
   wxString fileName;
-  if (selectedWaveModelIndex < 0) {
+  if (m_selectedWaveModelIndex < 0) {
     fileName = wxString::Format(
         "XyGrib_%s_%s_%s.grb2", wxDateTime::Now().Format("%F-%H-%M"),
         m_xygribPanel->m_atmmodel_choice->GetStringSelection(), selStr);
@@ -2033,6 +2033,9 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
     return;
   }
   // No : start a new download
+  // First we memorize the current configuration. This is the one which will be
+  // saved in OpenCPN' config file at exit
+  MemorizeXyGribConfiguration();
   m_canceled = false;
   m_downloading = true;
   m_downloadType = GribDownloadType::XYGRIB;
@@ -2040,7 +2043,7 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
   // Change "Download" button into "Cancel" button
   m_xygribPanel->m_download_button->SetLabelText(_("Cancel"));
   m_xygribPanel->m_status_text->SetLabelText(
-      _("Building GRIB file on server..."));
+      _("Preparing GRIB file on server..."));
   wxYieldIfNeeded();
 
   // Build the XyGrib DownloadURL from the current GUI configuration
@@ -2195,87 +2198,84 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
 /// This function update the GUI according to the selected atmospheric model
 /// @param event Event data from the GUI loop
 void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
-  AtmModelDef_t *selectedModel = nullptr;
+  AtmModelDef_t *selectedAtmModel = nullptr;
 
   // Find the model descriptor associated to the selected atmospheric model
   wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
   int modelIndex = 0;
-  while ((selectedModel = xygribAtmModelList[modelIndex]) != nullptr) {
-    if (selectedModel->name.IsSameAs(atmModel, true)) {
-      selectedAtmModelIndex = modelIndex;
+  while ((selectedAtmModel = xygribAtmModelList[modelIndex]) != nullptr) {
+    if (selectedAtmModel->name.IsSameAs(atmModel, true)) {
       break;
     }
     modelIndex++;
   }
 
   // If not found, use the first one. This is not supposed to happen.
-  if (selectedModel == nullptr) {
-    selectedModel = xygribAtmModelList[0];
-    selectedAtmModelIndex = 0;
+  if (selectedAtmModel == nullptr) {
+    selectedAtmModel = xygribAtmModelList[0];
+    modelIndex = 0;
   }
 
   // Enable or disable parameters according to the model definition
-  if (selectedModel->wind)
+  if (selectedAtmModel->wind)
     m_xygribPanel->m_wind_cbox->Enable();
   else
     m_xygribPanel->m_wind_cbox->Disable();
 
-  if (selectedModel->windGust)
+  if (selectedAtmModel->windGust)
     m_xygribPanel->m_windgust_cbox->Enable();
   else
     m_xygribPanel->m_windgust_cbox->Disable();
 
-  if ((selectedModel->pressure) || (selectedModel->altPressure))
+  if (selectedAtmModel->pressure)
     m_xygribPanel->m_pressure_cbox->Enable();
   else
     m_xygribPanel->m_pressure_cbox->Disable();
 
-  if (selectedModel->airTemp)
+  if (selectedAtmModel->airTemp)
     m_xygribPanel->m_temperature_cbox->Enable();
   else
     m_xygribPanel->m_temperature_cbox->Disable();
 
-  if (selectedModel->CAPE)
+  if (selectedAtmModel->CAPE)
     m_xygribPanel->m_cape_cbox->Enable();
   else
     m_xygribPanel->m_cape_cbox->Disable();
 
-  if (selectedModel->reflectivity)
+  if (selectedAtmModel->reflectivity)
     m_xygribPanel->m_reflectivity_cbox->Enable();
   else
     m_xygribPanel->m_reflectivity_cbox->Disable();
 
-  if (selectedModel->cloudCover)
+  if (selectedAtmModel->cloudCover)
     m_xygribPanel->m_cloudcover_cbox->Enable();
   else
     m_xygribPanel->m_cloudcover_cbox->Disable();
 
-  if (selectedModel->rainfall)
+  if (selectedAtmModel->rainfall)
     m_xygribPanel->m_precipitation_cbox->Enable();
   else
     m_xygribPanel->m_precipitation_cbox->Disable();
 
   // Fill the resolution choice selection
   m_xygribPanel->m_resolution_choice->Clear();
-  for (int i = 0; i < selectedModel->nbRes; i++) {
-    m_xygribPanel->m_resolution_choice->Insert(selectedModel->resolution[i], i);
+  for (int i = 0; i < selectedAtmModel->nbRes; i++) {
+    m_xygribPanel->m_resolution_choice->Insert(selectedAtmModel->resolution[i],
+                                               i);
   }
-  m_xygribPanel->m_resolution_choice->SetSelection(0);
 
   // Fill the duration choice selection
   m_xygribPanel->m_days_choice->Clear();
-  for (int i = 0; i < selectedModel->maxDays; i++) {
+  for (int i = 0; i < selectedAtmModel->maxDays; i++) {
     m_xygribPanel->m_days_choice->Insert(wxString::Format("%d", i + 1), i);
   }
-  m_xygribPanel->m_days_choice->SetSelection(selectedModel->maxDays - 1);
 
   // Fill the interval choice selection
   m_xygribPanel->m_interval_choice->Clear();
-  for (int i = 0; i < selectedModel->nbInter; i++) {
+  for (int i = 0; i < selectedAtmModel->nbInter; i++) {
     m_xygribPanel->m_interval_choice->Insert(
-        wxString::Format("%dh", selectedModel->interval[i]), i);
+        wxString::Format("%dh", selectedAtmModel->interval[i]), i);
   }
-  m_xygribPanel->m_interval_choice->SetSelection(0);
 
   // Fill the run choice selection
   m_xygribPanel->m_run_choice->Clear();
@@ -2284,7 +2284,17 @@ void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
   m_xygribPanel->m_run_choice->Insert("12h", 2);
   m_xygribPanel->m_run_choice->Insert("18h", 3);
   m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
-  m_xygribPanel->m_run_choice->SetSelection(4);
+
+  if (modelIndex == m_parent.xyGribConfig.atmModelIndex) {
+    ApplyXyGribConfiguration();
+  } else {
+    m_selectedAtmModelIndex = modelIndex;
+    m_xygribPanel->m_resolution_choice->SetSelection(0);
+    m_xygribPanel->m_days_choice->SetSelection(selectedAtmModel->maxDays - 1);
+    m_xygribPanel->m_interval_choice->SetSelection(0);
+    m_xygribPanel->m_run_choice->SetSelection(4);
+  }
+  MemorizeXyGribConfiguration();
 }
 
 /// @brief Handle action of changing wave model selection.
@@ -2298,7 +2308,6 @@ void GribRequestSetting::OnXyGribWaveModelChoice(wxCommandEvent &event) {
   int modelIndex = 0;
   while ((selectedModel = xygribWaveModelList[modelIndex]) != nullptr) {
     if (selectedModel->name.IsSameAs(waveModel, true)) {
-      selectedWaveModelIndex = modelIndex;
       break;
     }
     modelIndex++;
@@ -2307,29 +2316,35 @@ void GribRequestSetting::OnXyGribWaveModelChoice(wxCommandEvent &event) {
   // Model found in the table ?
   if (selectedModel == nullptr) {
     // If the model is not found in the table, disable wave model downloading
-    selectedWaveModelIndex = -1;
+    m_selectedWaveModelIndex = -1;
     m_xygribPanel->m_waveheight_cbox->Disable();
     m_xygribPanel->m_windwave_cbox->Disable();
-  } else {
-    // Else configure parameters according to model definition
-    if (selectedModel->significantHeight)
-      m_xygribPanel->m_waveheight_cbox->Enable();
-    else
-      m_xygribPanel->m_waveheight_cbox->Disable();
-
-    if (selectedModel->windWaves)
-      m_xygribPanel->m_windwave_cbox->Enable();
-    else
-      m_xygribPanel->m_windwave_cbox->Disable();
+    return;
   }
+
+  m_selectedWaveModelIndex = modelIndex;
+
+  // Else configure parameters according to model definition
+  if (selectedModel->significantHeight) {
+    m_xygribPanel->m_waveheight_cbox->Enable();
+  } else {
+    m_xygribPanel->m_waveheight_cbox->Disable();
+  }
+
+  if (selectedModel->windWaves) {
+    m_xygribPanel->m_windwave_cbox->Enable();
+  } else {
+    m_xygribPanel->m_windwave_cbox->Disable();
+  }
+  MemorizeXyGribConfiguration();
 }
 
-/// @brief Initialize GUI configuration at startup
-void GribRequestSetting::PopulateXygribDialog() {
+/// @brief Initialize GUI configuration with value read from configuration
+void GribRequestSetting::InitializeXygribDialog() {
   AtmModelDef_t *selectedAtmModel = nullptr;
   WaveModelDef_t *selectedWaveModel = nullptr;
 
-  // Fill selection of atmospheric models with the ones found in the table
+  // Fill selection of atmospheric models with the ones found in the model table
   m_xygribPanel->m_atmmodel_choice->Clear();
   int modelIndex = 0;
   while ((selectedAtmModel = xygribAtmModelList[modelIndex]) != nullptr) {
@@ -2337,7 +2352,9 @@ void GribRequestSetting::PopulateXygribDialog() {
                                              modelIndex);
     modelIndex++;
   }
-  m_xygribPanel->m_atmmodel_choice->SetSelection(0);
+  // Select the initial value from configuration
+  m_selectedAtmModelIndex = m_parent.xyGribConfig.atmModelIndex;
+  selectedAtmModel = xygribAtmModelList[m_selectedAtmModelIndex];
 
   // Fill selection of wave models with the ones found in the table
   m_xygribPanel->m_wavemodel_choice->Clear();
@@ -2349,10 +2366,149 @@ void GribRequestSetting::PopulateXygribDialog() {
   }
   // Add the "None" selection
   m_xygribPanel->m_wavemodel_choice->Insert("None", modelIndex);
-  m_xygribPanel->m_wavemodel_choice->SetSelection(0);
+  m_selectedWaveModelIndex = m_parent.xyGribConfig.waveModelIndex;
+  selectedWaveModel = xygribWaveModelList[m_selectedWaveModelIndex];
 
-  // Trigger GUI update
-  wxCommandEvent event;
-  OnXyGribAtmModelChoice(event);
-  OnXyGribWaveModelChoice(event);
+  // Fill the resolution choice selection
+  m_xygribPanel->m_resolution_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->nbRes; i++) {
+    m_xygribPanel->m_resolution_choice->Insert(selectedAtmModel->resolution[i],
+                                               i);
+  }
+
+  // Fill the duration choice selection
+  m_xygribPanel->m_days_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->maxDays; i++) {
+    m_xygribPanel->m_days_choice->Insert(wxString::Format("%d", i + 1), i);
+  }
+
+  // Fill the interval choice selection
+  m_xygribPanel->m_interval_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->nbInter; i++) {
+    m_xygribPanel->m_interval_choice->Insert(
+        wxString::Format("%dh", selectedAtmModel->interval[i]), i);
+  }
+
+  // Fill the run choice selection
+  m_xygribPanel->m_run_choice->Clear();
+  m_xygribPanel->m_run_choice->Insert("0h", 0);
+  m_xygribPanel->m_run_choice->Insert("6h", 1);
+  m_xygribPanel->m_run_choice->Insert("12h", 2);
+  m_xygribPanel->m_run_choice->Insert("18h", 3);
+  m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+
+  ApplyXyGribConfiguration();
+}
+
+/// @brief Apply the configuration stored into the configuration structure to
+/// the UI
+void GribRequestSetting::ApplyXyGribConfiguration() {
+  m_xygribPanel->m_atmmodel_choice->SetSelection(
+      m_parent.xyGribConfig.atmModelIndex);
+  m_xygribPanel->m_wavemodel_choice->SetSelection(
+      m_parent.xyGribConfig.waveModelIndex);
+
+  if (m_parent.xyGribConfig.wind)
+    m_xygribPanel->m_wind_cbox->Enable();
+  else
+    m_xygribPanel->m_wind_cbox->Disable();
+  m_xygribPanel->m_wind_cbox->SetValue(m_parent.xyGribConfig.wind);
+
+  if (m_parent.xyGribConfig.gust)
+    m_xygribPanel->m_windgust_cbox->Enable();
+  else
+    m_xygribPanel->m_windgust_cbox->Disable();
+  m_xygribPanel->m_windgust_cbox->SetValue(m_parent.xyGribConfig.gust);
+
+  if (m_parent.xyGribConfig.pressure)
+    m_xygribPanel->m_pressure_cbox->Enable();
+  else
+    m_xygribPanel->m_pressure_cbox->Disable();
+  m_xygribPanel->m_pressure_cbox->SetValue(m_parent.xyGribConfig.pressure);
+
+  if (m_parent.xyGribConfig.temperature)
+    m_xygribPanel->m_temperature_cbox->Enable();
+  else
+    m_xygribPanel->m_temperature_cbox->Disable();
+  m_xygribPanel->m_temperature_cbox->SetValue(
+      m_parent.xyGribConfig.temperature);
+
+  if (m_parent.xyGribConfig.cape)
+    m_xygribPanel->m_cape_cbox->Enable();
+  else
+    m_xygribPanel->m_cape_cbox->Disable();
+  m_xygribPanel->m_cape_cbox->SetValue(m_parent.xyGribConfig.cape);
+
+  if (m_parent.xyGribConfig.reflectivity)
+    m_xygribPanel->m_reflectivity_cbox->Enable();
+  else
+    m_xygribPanel->m_reflectivity_cbox->Disable();
+  m_xygribPanel->m_reflectivity_cbox->SetValue(
+      m_parent.xyGribConfig.reflectivity);
+
+  if (m_parent.xyGribConfig.cloudCover)
+    m_xygribPanel->m_cloudcover_cbox->Enable();
+  else
+    m_xygribPanel->m_cloudcover_cbox->Disable();
+  m_xygribPanel->m_cloudcover_cbox->SetValue(m_parent.xyGribConfig.cloudCover);
+
+  if (m_parent.xyGribConfig.precipitation)
+    m_xygribPanel->m_precipitation_cbox->Enable();
+  else
+    m_xygribPanel->m_precipitation_cbox->Disable();
+  m_xygribPanel->m_precipitation_cbox->SetValue(
+      m_parent.xyGribConfig.precipitation);
+
+  if (m_parent.xyGribConfig.waveHeight)
+    m_xygribPanel->m_waveheight_cbox->Enable();
+  else
+    m_xygribPanel->m_waveheight_cbox->Disable();
+  m_xygribPanel->m_waveheight_cbox->SetValue(m_parent.xyGribConfig.waveHeight);
+
+  if (m_parent.xyGribConfig.windWaves)
+    m_xygribPanel->m_windwave_cbox->Enable();
+  else
+    m_xygribPanel->m_windwave_cbox->Disable();
+  m_xygribPanel->m_windwave_cbox->SetValue(m_parent.xyGribConfig.windWaves);
+
+  m_xygribPanel->m_resolution_choice->SetSelection(
+      m_parent.xyGribConfig.resolutionIndex);
+  m_xygribPanel->m_days_choice->SetSelection(
+      m_parent.xyGribConfig.durationIndex);
+  m_xygribPanel->m_interval_choice->SetSelection(
+      m_parent.xyGribConfig.intervalIndex);
+  m_xygribPanel->m_run_choice->SetSelection(m_parent.xyGribConfig.runIndex);
+}
+
+/// @brief Apply the configuration stored into the configuration structure to
+/// the UI
+void GribRequestSetting::MemorizeXyGribConfiguration() {
+  m_parent.xyGribConfig.atmModelIndex =
+      m_xygribPanel->m_atmmodel_choice->GetSelection();
+  m_parent.xyGribConfig.waveModelIndex =
+      m_xygribPanel->m_wavemodel_choice->GetSelection();
+
+  m_parent.xyGribConfig.wind = m_xygribPanel->m_wind_cbox->IsChecked();
+  m_parent.xyGribConfig.gust = m_xygribPanel->m_windgust_cbox->IsChecked();
+  m_parent.xyGribConfig.pressure = m_xygribPanel->m_pressure_cbox->IsChecked();
+  m_parent.xyGribConfig.temperature =
+      m_xygribPanel->m_temperature_cbox->IsChecked();
+  m_parent.xyGribConfig.cape = m_xygribPanel->m_cape_cbox->IsChecked();
+  m_parent.xyGribConfig.reflectivity =
+      m_xygribPanel->m_reflectivity_cbox->IsChecked();
+  m_parent.xyGribConfig.cloudCover =
+      m_xygribPanel->m_cloudcover_cbox->IsChecked();
+  m_parent.xyGribConfig.precipitation =
+      m_xygribPanel->m_precipitation_cbox->IsChecked();
+  m_parent.xyGribConfig.waveHeight =
+      m_xygribPanel->m_waveheight_cbox->IsChecked();
+  m_parent.xyGribConfig.windWaves = m_xygribPanel->m_windwave_cbox->IsChecked();
+
+  m_parent.xyGribConfig.resolutionIndex =
+      m_xygribPanel->m_resolution_choice->GetSelection();
+  m_parent.xyGribConfig.durationIndex =
+      m_xygribPanel->m_days_choice->GetSelection();
+  m_parent.xyGribConfig.intervalIndex =
+      m_xygribPanel->m_interval_choice->GetSelection();
+  m_parent.xyGribConfig.runIndex = m_xygribPanel->m_run_choice->GetSelection();
 }
