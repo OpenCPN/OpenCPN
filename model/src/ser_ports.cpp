@@ -353,8 +353,10 @@ static wxArrayString* EnumerateUdevSerialPorts(void) {
   struct udev* udev = udev_new();
   auto dev_items = enumerate_udev_ports(udev);
   wxArrayString* ports = new wxArrayString;
-  for (auto item : dev_items) {
-    ports->Add((item.path + " - " + item.info).c_str());
+  for (const auto& item : dev_items) {
+    std::string port(item.path);
+    if (item.info.size() > 0) port += std::string(" - ") + item.info;
+    ports->Add(port);
   }
   return ports;
 }
