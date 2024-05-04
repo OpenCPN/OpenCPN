@@ -43,6 +43,7 @@ typedef struct {
   bool wind;
   bool windGust;
   bool pressure;
+  bool altPressure;
   bool airTemp;
   bool CAPE;
   bool reflectivity;

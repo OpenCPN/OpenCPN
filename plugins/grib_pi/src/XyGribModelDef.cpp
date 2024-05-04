@@ -41,6 +41,7 @@ AtmModelDef_t xyGribGFSModelDef = {
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     true,   // CAPE
     true,   // Reflectivity
@@ -61,6 +62,7 @@ AtmModelDef_t xyGribICONModelDef = {"ICON",
                                     true,   // Wind
                                     true,   // Gusts
                                     true,   // Pressure
+                                    false,  // Alternative pressure
                                     true,   // Air temp
                                     true,   // CAPE
                                     false,  // Reflectivity
@@ -82,6 +84,7 @@ AtmModelDef_t xyGribARPEGEModelDef = {
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     true,   // CAPE
     false,  // Reflectivity
@@ -102,7 +105,8 @@ AtmModelDef_t xyGribECMWFModelDef = {
     10,
     false,   // Wind
     false,   // Gusts
-    true,    // Pressure
+    false,   // Pressure
+    true,    // Alternative pressure
     false,   // Air temp
     false,   // CAPE
     false,   // Reflectivity
@@ -124,6 +128,7 @@ AtmModelDef_t xyGribICONEUModelDef = {
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     true,   // CAPE
     false,  // Reflectivity
@@ -145,6 +150,7 @@ AtmModelDef_t xyGribARPEGEHDModelDef = {
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     false,  // CAPE
     false,  // Reflectivity
@@ -166,6 +172,7 @@ AtmModelDef_t xyGribAROMEModelDef = {
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     false,  // CAPE
     false,  // Reflectivity
@@ -187,6 +194,7 @@ AtmModelDef_t xyGribNAMCONUSModelDef = {
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     true,   // CAPE
     true,   // Reflectivity
@@ -208,6 +216,7 @@ AtmModelDef_t xyGribNAMCACBNModelDef = {
     true,   // Wind
     false,  // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     true,   // CAPE
     true,   // Reflectivity
@@ -229,6 +238,7 @@ AtmModelDef_t xyGribNAMPACIFICModelDef = {
     true,   // Wind
     false,  // Gusts
     true,   // Pressure
+    false,  // Alternative pressure
     true,   // Air temp
     true,   // CAPE
     true,   // Reflectivity

@@ -1934,8 +1934,13 @@ wxString GribRequestSetting::BuildXyGribUrl() {
       m_xygribPanel->m_wind_cbox->IsChecked())
     urlStr << "W;";
   if (m_xygribPanel->m_pressure_cbox->IsEnabled() &&
-      m_xygribPanel->m_pressure_cbox->IsChecked())
-    urlStr << "P;";
+      m_xygribPanel->m_pressure_cbox->IsChecked()) {
+    if (xygribAtmModelList[selectedAtmModelIndex]->altPressure) {
+      urlStr << "p;";
+    } else {
+      urlStr << "P;";
+    }
+  }
   if (m_xygribPanel->m_precipitation_cbox->IsEnabled() &&
       m_xygribPanel->m_precipitation_cbox->IsChecked())
     urlStr << "R;";
@@ -2220,7 +2225,7 @@ void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
   else
     m_xygribPanel->m_windgust_cbox->Disable();
 
-  if (selectedModel->pressure)
+  if ((selectedModel->pressure) || (selectedModel->altPressure))
     m_xygribPanel->m_pressure_cbox->Enable();
   else
     m_xygribPanel->m_pressure_cbox->Disable();
