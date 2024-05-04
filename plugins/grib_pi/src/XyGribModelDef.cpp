@@ -34,19 +34,23 @@
 wxString gfsResolutions[] = {"0.25", "0.5", "1.0"};
 wxString gfsReqNames[] = {"gfs_p25_", "gfs_p50_", "gfs_1p0_"};
 int gfsInterval[] = {3, 6, 12};
-AtmModelDef_t xyGribGFSModelDef = {
-    "GFS",       sizeof(gfsResolutions) / sizeof(wxString), gfsResolutions,
-    gfsReqNames, sizeof(gfsInterval) / sizeof(int),         gfsInterval,
-    10,
-    true,   // Wind
-    true,   // Gusts
-    true,   // Pressure
-    false,  // Alternative pressure
-    true,   // Air temp
-    true,   // CAPE
-    true,   // Reflectivity
-    true,   // Cloud cover
-    true};  // Rain fall
+AtmModelDef_t xyGribGFSModelDef = {"GFS",
+                                   sizeof(gfsResolutions) / sizeof(wxString),
+                                   gfsResolutions,
+                                   gfsReqNames,
+                                   sizeof(gfsInterval) / sizeof(int),
+                                   gfsInterval,
+                                   10,
+                                   XYGRIB_RUN_ALL,
+                                   true,   // Wind
+                                   true,   // Gusts
+                                   true,   // Pressure
+                                   false,  // Alternative pressure
+                                   true,   // Air temp
+                                   true,   // CAPE
+                                   true,   // Reflectivity
+                                   true,   // Cloud cover
+                                   true};  // Rain fall
 
 // ICON Model definition
 wxString iconResolutions[] = {"0.25"};
@@ -59,6 +63,7 @@ AtmModelDef_t xyGribICONModelDef = {"ICON",
                                     sizeof(iconInterval) / sizeof(int),
                                     iconInterval,
                                     8,
+                                    XYGRIB_RUN_0_12,
                                     true,   // Wind
                                     true,   // Gusts
                                     true,   // Pressure
@@ -81,6 +86,7 @@ AtmModelDef_t xyGribARPEGEModelDef = {
     sizeof(arpegeInterval) / sizeof(int),
     arpegeInterval,
     4,
+    XYGRIB_RUN_0_12,
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
@@ -103,6 +109,7 @@ AtmModelDef_t xyGribECMWFModelDef = {
     sizeof(ecmwfInterval) / sizeof(int),
     ecmwfInterval,
     10,
+    XYGRIB_RUN_0_12,
     false,   // Wind
     false,   // Gusts
     false,   // Pressure
@@ -125,6 +132,7 @@ AtmModelDef_t xyGribICONEUModelDef = {
     sizeof(iconEuInterval) / sizeof(int),
     iconEuInterval,
     4,
+    XYGRIB_RUN_ALL,
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
@@ -147,6 +155,7 @@ AtmModelDef_t xyGribARPEGEHDModelDef = {
     sizeof(arpegeHDInterval) / sizeof(int),
     arpegeHDInterval,
     4,
+    XYGRIB_RUN_ALL,
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
@@ -169,6 +178,7 @@ AtmModelDef_t xyGribAROMEModelDef = {
     sizeof(aromeInterval) / sizeof(int),
     aromeInterval,
     2,
+    XYGRIB_RUN_ALL,
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
@@ -191,6 +201,7 @@ AtmModelDef_t xyGribNAMCONUSModelDef = {
     sizeof(namConusInterval) / sizeof(int),
     namConusInterval,
     2,
+    XYGRIB_RUN_ALL,
     true,   // Wind
     true,   // Gusts
     true,   // Pressure
@@ -213,6 +224,7 @@ AtmModelDef_t xyGribNAMCACBNModelDef = {
     sizeof(namCacbnInterval) / sizeof(int),
     namCacbnInterval,
     4,
+    XYGRIB_RUN_ALL,
     true,   // Wind
     false,  // Gusts
     true,   // Pressure
@@ -235,6 +247,7 @@ AtmModelDef_t xyGribNAMPACIFICModelDef = {
     sizeof(namPacificInterval) / sizeof(int),
     namPacificInterval,
     4,
+    XYGRIB_RUN_ALL,
     true,   // Wind
     false,  // Gusts
     true,   // Pressure

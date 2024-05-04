@@ -2222,7 +2222,7 @@ void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
   else
     m_xygribPanel->m_wind_cbox->Disable();
 
-  if (selectedAtmModel->windGust)
+  if (selectedAtmModel->gust)
     m_xygribPanel->m_windgust_cbox->Enable();
   else
     m_xygribPanel->m_windgust_cbox->Disable();
@@ -2232,12 +2232,12 @@ void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
   else
     m_xygribPanel->m_pressure_cbox->Disable();
 
-  if (selectedAtmModel->airTemp)
+  if (selectedAtmModel->temperature)
     m_xygribPanel->m_temperature_cbox->Enable();
   else
     m_xygribPanel->m_temperature_cbox->Disable();
 
-  if (selectedAtmModel->CAPE)
+  if (selectedAtmModel->cape)
     m_xygribPanel->m_cape_cbox->Enable();
   else
     m_xygribPanel->m_cape_cbox->Disable();
@@ -2252,7 +2252,7 @@ void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
   else
     m_xygribPanel->m_cloudcover_cbox->Disable();
 
-  if (selectedAtmModel->rainfall)
+  if (selectedAtmModel->precipitation)
     m_xygribPanel->m_precipitation_cbox->Enable();
   else
     m_xygribPanel->m_precipitation_cbox->Disable();
@@ -2266,33 +2266,39 @@ void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
 
   // Fill the duration choice selection
   m_xygribPanel->m_days_choice->Clear();
-  for (int i = 0; i < selectedAtmModel->maxDays; i++) {
+  for (int i = 0; i < selectedAtmModel->duration; i++) {
     m_xygribPanel->m_days_choice->Insert(wxString::Format("%d", i + 1), i);
   }
 
   // Fill the interval choice selection
   m_xygribPanel->m_interval_choice->Clear();
-  for (int i = 0; i < selectedAtmModel->nbInter; i++) {
+  for (int i = 0; i < selectedAtmModel->nbInterval; i++) {
     m_xygribPanel->m_interval_choice->Insert(
         wxString::Format("%dh", selectedAtmModel->interval[i]), i);
   }
 
   // Fill the run choice selection
   m_xygribPanel->m_run_choice->Clear();
-  m_xygribPanel->m_run_choice->Insert("0h", 0);
-  m_xygribPanel->m_run_choice->Insert("6h", 1);
-  m_xygribPanel->m_run_choice->Insert("12h", 2);
-  m_xygribPanel->m_run_choice->Insert("18h", 3);
-  m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+  if (selectedAtmModel->runMask == XYGRIB_RUN_0_12) {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("12h", 1);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 2);
+  } else {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("6h", 1);
+    m_xygribPanel->m_run_choice->Insert("12h", 2);
+    m_xygribPanel->m_run_choice->Insert("18h", 3);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+  }
 
   if (modelIndex == m_parent.xyGribConfig.atmModelIndex) {
     ApplyXyGribConfiguration();
   } else {
     m_selectedAtmModelIndex = modelIndex;
     m_xygribPanel->m_resolution_choice->SetSelection(0);
-    m_xygribPanel->m_days_choice->SetSelection(selectedAtmModel->maxDays - 1);
+    m_xygribPanel->m_days_choice->SetSelection(m_xygribPanel->m_days_choice->GetCount() - 1);
     m_xygribPanel->m_interval_choice->SetSelection(0);
-    m_xygribPanel->m_run_choice->SetSelection(4);
+    m_xygribPanel->m_run_choice->SetSelection(m_xygribPanel->m_run_choice->GetCount() - 1);
   }
   MemorizeXyGribConfiguration();
 }
@@ -2378,24 +2384,30 @@ void GribRequestSetting::InitializeXygribDialog() {
 
   // Fill the duration choice selection
   m_xygribPanel->m_days_choice->Clear();
-  for (int i = 0; i < selectedAtmModel->maxDays; i++) {
+  for (int i = 0; i < selectedAtmModel->duration; i++) {
     m_xygribPanel->m_days_choice->Insert(wxString::Format("%d", i + 1), i);
   }
 
   // Fill the interval choice selection
   m_xygribPanel->m_interval_choice->Clear();
-  for (int i = 0; i < selectedAtmModel->nbInter; i++) {
+  for (int i = 0; i < selectedAtmModel->nbInterval; i++) {
     m_xygribPanel->m_interval_choice->Insert(
         wxString::Format("%dh", selectedAtmModel->interval[i]), i);
   }
 
   // Fill the run choice selection
   m_xygribPanel->m_run_choice->Clear();
-  m_xygribPanel->m_run_choice->Insert("0h", 0);
-  m_xygribPanel->m_run_choice->Insert("6h", 1);
-  m_xygribPanel->m_run_choice->Insert("12h", 2);
-  m_xygribPanel->m_run_choice->Insert("18h", 3);
-  m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+  if (selectedAtmModel->runMask == XYGRIB_RUN_0_12) {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("12h", 1);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 2);
+  } else {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("6h", 1);
+    m_xygribPanel->m_run_choice->Insert("12h", 2);
+    m_xygribPanel->m_run_choice->Insert("18h", 3);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+  }
 
   ApplyXyGribConfiguration();
 }

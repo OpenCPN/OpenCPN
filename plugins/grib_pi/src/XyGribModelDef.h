@@ -28,27 +28,27 @@
 #ifndef __XYGRIBMODELDEF_H__
 #define __XYGRIBMODELDEF_H__
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#define XYGRIB_RUN_ALL 0x01
+#define XYGRIB_RUN_0_12 0x02
 
 typedef struct {
   wxString name;
   int nbRes;
   wxString *resolution;
   wxString *reqName;
-  int nbInter;
+  int nbInterval;
   int *interval;
-  int maxDays;
+  int duration;
+  int runMask;
   bool wind;
-  bool windGust;
+  bool gust;
   bool pressure;
   bool altPressure;
-  bool airTemp;
-  bool CAPE;
+  bool temperature;
+  bool cape;
   bool reflectivity;
   bool cloudCover;
-  bool rainfall;
+  bool precipitation;
 } AtmModelDef_t;
 
 typedef struct {
