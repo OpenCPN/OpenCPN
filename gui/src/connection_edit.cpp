@@ -78,7 +78,7 @@ extern int g_SOGFilterSec;
 
 extern OCPNPlatform* g_Platform;
 
-static wxString StringArrayToString(wxArrayString arr) {
+static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
   for (size_t i = 0; i < arr.Count(); i++) {
     if (i > 0) ret.Append(",");
@@ -2545,6 +2545,7 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
       m_type(type),
       m_dir(dir),
       m_sentences(NMEA0183().GetRecognizedArray()) {
+  m_sentences.Sort();
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxBoxSizer* secondSizer = new wxBoxSizer(wxHORIZONTAL);
   wxStaticBox* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());
@@ -2619,6 +2620,7 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
   m_sentences.Add("AIVDO");
   m_sentences.Add("FRPOS");
   m_sentences.Add("CD");
+  m_sentences.Sort();
   m_clbSentences->Clear();
   m_clbSentences->InsertItems(m_sentences, 0);
 
