@@ -65,6 +65,11 @@ std::vector<std::string> split(const char* token_string,
   return tokens;
 }
 
+std::vector<std::string> split(const std::string& string,
+                               const std::string& delimiter) {
+  return split(string.c_str(), delimiter);
+}
+
 bool exists(const std::string& name) {
 #ifdef __MSVC__
   return (_access(name.c_str(), 0) != -1);
