@@ -837,7 +837,7 @@ void ConnectionEditDialog::Init() {
 
   sbSizerInFilter = new wxStaticBoxSizer(
       new wxStaticBox(m_scrolledwin, wxID_ANY, _("Input filtering")), wxVERTICAL);
-  sbSizerConnectionProps->Add(sbSizerInFilter, 0, wxEXPAND, 5);
+  sbSizerConnectionProps->Add(sbSizerInFilter, wxSizerFlags().Expand().Border());
 
   wxBoxSizer* bSizer9;
   bSizer9 = new wxBoxSizer(wxHORIZONTAL);
@@ -913,7 +913,7 @@ void ConnectionEditDialog::Init() {
                             wxDefaultPosition,
                             wxDefaultSize, wxALIGN_LEFT);
   m_more->SetLabelMarkup(MORE);
-  sbSizerConnectionProps->Add(m_more,wxSizerFlags());
+  sbSizerConnectionProps->Add(m_more, wxSizerFlags().Border());
 
   ConnectControls();
 
