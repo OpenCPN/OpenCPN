@@ -288,7 +288,7 @@ public:
     using namespace std;
     string cmd(INSTRUCTIONS);
     ocpn::replace(cmd, "@PATH@", m_rule_path);
-    ocpn::replace(cmd, "@pkexec@", "pkexec");
+    ocpn::replace(cmd, "@pkexec@", "sudo");
     ifstream f(m_rule_path);
     auto rule =
         string(istreambuf_iterator<char>(f), istreambuf_iterator<char>());
