@@ -33,12 +33,10 @@
 #include <wx/stattext.h>
 #include <wx/timer.h>
 
-
 #include "model/conn_params.h"
 #include "model/comm_util.h"
 
 #include "observable.h"
-
 
 class options;
 class ConnectionParamsPanel;
@@ -55,15 +53,15 @@ public:
   const wxString DEFAULT_IP_ADDRESS = "0.0.0.0";
 
   ConnectionEditDialog();
- // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
+  // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
   ConnectionEditDialog(options *parent, ConnectionsDialog *client);
 
   ~ConnectionEditDialog();
 
   void Init(void);
   void SetInitialSettings(void);
-  void PreloadControls(ConnectionParams* cp);
-  ConnectionParams* GetParamsFromControls();
+  void PreloadControls(ConnectionParams *cp);
+  ConnectionParams *GetParamsFromControls();
   void SetPropsLabel(wxString label);
 
   void ApplySettings();
@@ -98,7 +96,7 @@ public:
   void OnConnValChange(wxCommandEvent &event);
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
-  void OnShowGpsWindowCheckboxClick(wxCommandEvent& event);
+  void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
@@ -137,21 +135,19 @@ public:
   void onBTScanTimer(wxTimerEvent &event);
   void StopBTScan(void);
 
-  void OnWheelChoice(wxMouseEvent& event);
+  void OnWheelChoice(wxMouseEvent &event);
 
   void ShowInFilter(bool bshow = true);
   void ShowOutFilter(bool bshow = true);
   void LayoutDialog();
 
-
   void CreateControls();
   void ConnectControls();
 
-//private:
+  // private:
   options *m_parent;
   wxScrolledWindow *m_scrolledwin;
 
-  
   wxGridSizer *gSizerNetProps, *gSizerSerProps, *gSizerCanProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc;
@@ -162,7 +158,7 @@ public:
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton  *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
+  wxButton *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
   wxStaticText *m_StaticTextSKServerStatus;
 
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
@@ -179,7 +175,8 @@ public:
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
   wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource, *m_stAuthToken;
+  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource,
+      *m_stAuthToken;
   wxTextCtrl *m_tNetComment, *m_tSerialComment, *m_tAuthToken;
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
@@ -208,14 +205,11 @@ public:
 
   ObsListener new_device_listener;
 
-
-  //DECLARE_EVENT_TABLE()
+  // DECLARE_EVENT_TABLE()
 protected:
   wxString MORE, LESS;
   wxStaticText *m_more;
-
 };
-
 
 class SentenceListDlg : public wxDialog {
 public:
@@ -239,10 +233,6 @@ private:
   ListType m_type;
   FilterDirection m_dir;
   wxArrayString m_sentences;
-
 };
 
-
-
-
-#endif    //_CONNECT_DIALOG_H
+#endif  //_CONNECT_DIALOG_H
