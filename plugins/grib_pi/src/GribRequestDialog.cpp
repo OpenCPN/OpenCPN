@@ -2549,21 +2549,21 @@ void GribRequestSetting::MemorizeXyGribConfiguration() {
 /// Code taken from XyGrib application (https://github.com/opengribs/XyGrib)
 void GribRequestSetting::UpdateGribSizeEstimate() {
   double resolution;
-  int days;
-  int interval;
+  long days;
+  long interval;
 
   if (!m_xygribPanel->m_resolution_choice->GetStringSelection().ToCDouble(
           &resolution)) {
     m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
     return;
   }
-  if (!m_xygribPanel->m_duration_choice->GetStringSelection().ToInt(&days)) {
+  if (!m_xygribPanel->m_duration_choice->GetStringSelection().ToCLong(&days)) {
     m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
     return;
   }
   wxString intvStr = m_xygribPanel->m_interval_choice->GetStringSelection();
   intvStr.Replace("h", "");
-  if (!intvStr.ToInt(&interval)) {
+  if (!intvStr.ToCLong(&interval)) {
     m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
     return;
   }
