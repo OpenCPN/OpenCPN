@@ -1727,28 +1727,47 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
 
   if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
     if (checked) {
-      m_tNetAddress->SetValue(DEFAULT_UDP_OUT_ADDRESS); // IP address for output
-      // Check for an UDP input on the same port
+      m_tNetAddress->SetValue(
+          DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
+       // Check for an UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
         ConnectionParams* cp = TheConnectionParams()->Item(i);
         if (cp->NetProtocol == proto &&
-            cp->NetworkPort == wxAtoi(DEFAULT_UDP_PORT) &&
+            cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
             cp->IOSelect == DS_TYPE_INPUT) {
           //  More: View the filter handler
           m_advanced = true;
           m_more->SetLabelMarkup(m_advanced ? LESS : MORE);
           SetNMEAFormForNetProtocol();
           LayoutDialog();
-          wxString mes =
-              _("There is an UDP Input connection using the same Dataport.");
-          mes << "\n"
-              << _("Please use a filter on both connections to avoid a "
-                   "feedback loop.")
-              << "\n"
-              << _("Or considere using another Dataport for one of them");
 
-          OCPNMessageBox(this, mes, _("Warning"), 4, 60);
+          wxString mes;
+          bool warn = false;
+          if (cp->bEnabled) {
+            mes = _("There is an enabled UDP input connection that uses the "
+                   "same data port.");
+            mes << "\n"
+                 << _("Please apply a filter on both connections to avoid a "
+                      "feedback loop.");
+            warn = true;
+          }
+          else {
+            mes = _("There is an unenabled UDP Input connection that uses the "
+                   "same Dataport.");
+            mes
+                << "\n"
+                << _("If you enable that input please apply a filter on both "
+                     "connections to avoid a  feedback loop.");
+          }
+          mes << "\n"
+               << _("Or consider using a different data port for one of them");
+          if (warn)
+            OCPNMessageBox(this, mes, _("OpenCPN Warning"),
+                         wxOK | wxICON_EXCLAMATION, 60);
+          else
+            OCPNMessageBox(this, mes, _("OpenCPN info"),
+                           wxOK | wxICON_INFORMATION, 60);
           break;
         }
       }
