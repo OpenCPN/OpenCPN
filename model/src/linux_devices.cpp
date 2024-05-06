@@ -70,7 +70,7 @@ ATTRS{idVendor}=="@vendor@", ATTRS{idProduct}=="@product@", \
 )--";
 
 static const char* const DEVICE_RULE_TTYS = R"--(
-KERNEL=="ttyS@s_index@", MODE="0666", SYMLINK+="@symlink@"
+KERNEL=="ttyS@s_index@", MODE="0666"
 )--";
 
 static const char* const DONGLE_RULE_NAME = "65-ocpn-dongle.rules";

@@ -364,32 +364,14 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       b_restoreStream = true;
       drv_serial_n0183->Close();    // Fast close
       registry.Deactivate(drv_serial_n0183);
+      btempStream = true;
   }
-  else {
-      driver = CreateOutputConnection(com_name, params_save, btempStream,
+  driver = CreateOutputConnection(com_name, params_save, btempStream,
                                       b_restoreStream, dlg_ctx);
-      if (!driver)
-        return 1;
-  }
+  if (!driver)
+    return 1;
 
   auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
-
-#if 0
-
-  if (g_GPS_Ident == "FurunoGP3X") {
-    if (pr->pRoutePointList->GetCount() > 30) {
-      long style = wxOK;
-      auto dlg = new OCPN_TimedHTMLMessageDialog(
-          0,
-          _("Routes containing more than 30 waypoints must be split before "
-            "uploading."),
-          _("Route Upload"), 10, style, false, wxDefaultPosition);
-      int reply = dlg->ShowModal();
-      return 1;
-    }
-  }
-
-#endif
 
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
@@ -841,13 +823,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
     ret_val = 0;
 
-    //  All finished with the temp port
-    if (btempStream) registry.Deactivate(driver);
-
-    if (g_GPS_Ident == "FurunoGP3X") g_TalkerIdText = talker_save;
+     if (g_GPS_Ident == "FurunoGP3X") g_TalkerIdText = talker_save;
   }
 #endif
 ret_point_1:
+  //  All finished with the temp port
+  if (btempStream)
+     registry.Deactivate(driver);
 
   if (b_restoreStream) {
     wxMilliSleep(500);  // Give temp driver a chance to die
@@ -900,13 +882,12 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     b_restoreStream = true;
     drv_serial_n0183->Close();    // Fast close
     registry.Deactivate(drv_serial_n0183);
+    btempStream = true;
   }
-  else {
-    driver = CreateOutputConnection(com_name, params_save, btempStream,
+  driver = CreateOutputConnection(com_name, params_save, btempStream,
                                     b_restoreStream, dlg_ctx);
-    if (!driver)
-        return 1;
-  }
+  if (!driver)
+    return 1;
 
   auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
 
@@ -1065,13 +1046,15 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
     wxMilliSleep(500);
 
-    //  All finished with the temp port
-    if (btempStream) registry.Deactivate(driver);
 
     ret_val = 0;
   }
 
 ret_point:
+  //  All finished with the temp port
+  if (btempStream)
+    registry.Deactivate(driver);
+
   if (b_restoreStream) {
     MakeCommDriver(&params_save);
   }

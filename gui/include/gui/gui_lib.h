@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,8 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef MESSAGEBOX_H
-#define MESSAGEBOX_H
+ /** \file gui_lib.h General purpose GUI support. */
+
+#ifndef GUI_LIB_H__
+#define GUI_LIB_H__
 
 #include <wx/font.h>
 #include <wx/html/htmlwin.h>
@@ -33,6 +29,13 @@
 #include <wx/timer.h>
 #include <wx/window.h>
 #include <wx/utils.h>
+
+/** Non-editable TextCtrl, used like wxStaticText but is copyable. */
+class CopyableText : public wxTextCtrl {
+public:
+  CopyableText(wxWindow* parent, const char* text);
+};
+
 
 wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
 wxFont GetOCPNGUIScaledFont(wxString item);
@@ -145,4 +148,4 @@ public:
 };
 
 
-#endif  // MESSAGE_BOX_H
+#endif  // GUI_LIB_H__
