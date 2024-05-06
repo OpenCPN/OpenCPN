@@ -50,7 +50,10 @@ public:
   const wxString DEFAULT_UDP_PORT = "10110";
   const wxString DEFAULT_GPSD_PORT = "2947";
   const wxString DEFAULT_SIGNALK_PORT = "3000";
-  const wxString DEFAULT_IP_ADDRESS = "0.0.0.0";
+  const wxString DEFAULT_IP_ADDRESS = "localhost";
+  // "LIMITED BROADCAST" address
+  //  Deprecated, but still useful on simple mobile networks.
+  const wxString DEFAULT_UDP_OUT_ADDRESS = "255.255.255.255";
 
   ConnectionEditDialog();
   // ConnectionEditDialog(wxScrolledWindow *container, options *parent);

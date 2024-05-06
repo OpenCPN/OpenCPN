@@ -1667,8 +1667,11 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     }
     m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
     if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() &&
-        m_rbNetProtoUDP->GetValue())
-      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+            m_rbNetProtoUDP->GetValue())
+         m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+    else if (m_cbOutput->GetValue() && !m_cbMultiCast->GetValue())
+         m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
+
     if (m_cbInput->GetValue() && m_cbOutput->GetValue())
       m_cbOutput->SetValue(false);
 
@@ -1724,7 +1727,31 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
 
   if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
     if (checked) {
-      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for output
+      m_tNetAddress->SetValue(DEFAULT_UDP_OUT_ADDRESS); // IP address for output
+      // Check for an UDP input on the same port
+      NetworkProtocol proto = UDP;
+      for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
+        ConnectionParams* cp = TheConnectionParams()->Item(i);
+        if (cp->NetProtocol == proto &&
+            cp->NetworkPort == wxAtoi(DEFAULT_UDP_PORT) &&
+            cp->IOSelect == DS_TYPE_INPUT) {
+          //  More: View the filter handler
+          m_advanced = true;
+          m_more->SetLabelMarkup(m_advanced ? LESS : MORE);
+          SetNMEAFormForNetProtocol();
+          LayoutDialog();
+          wxString mes =
+              _("There is an UDP Input connection using the same Dataport.");
+          mes << "\n"
+              << _("Please use a filter on both connections to avoid a "
+                   "feedback loop.")
+              << "\n"
+              << _("Or considere using another Dataport for one of them");
+
+          OCPNMessageBox(this, mes, _("Warning"), 4, 60);
+          break;
+        }
+      }
     } else {
       m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
     }
@@ -2424,6 +2451,7 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
   m_sentences.Add("AIVDM");
   m_sentences.Add("AIVDO");
   m_sentences.Add("FRPOS");
+  m_sentences.Add(g_TalkerIdText);
   m_sentences.Add("CD");
   m_sentences.Sort();
   m_clbSentences->Clear();
