@@ -127,9 +127,12 @@ private:
   void OnXyGribDownloadButton(wxCommandEvent &event) override;
   void OnXyGribAtmModelChoice(wxCommandEvent &event) override;
   void OnXyGribWaveModelChoice(wxCommandEvent &event) override;
+  void OnXyGribConfigChange(wxCommandEvent &event) override;
   // Manage XyGrib UI Configuration
   void ApplyXyGribConfiguration();
   void MemorizeXyGribConfiguration();
+  // Calculate estimated size of GRIB file
+  void UpdateGribSizeEstimate();
 
   // Index of currently selected XyGrib atmospheric model
   int m_selectedAtmModelIndex;

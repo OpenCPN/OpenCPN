@@ -24,9 +24,9 @@
 #include <wx/image.h>
 #include <wx/icon.h>
 #include <wx/notebook.h>
+#include <wx/statline.h>
 #include <wx/button.h>
 #include <wx/gauge.h>
-#include <wx/statline.h>
 #include <wx/gbsizer.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -40,25 +40,26 @@ class XyGribPanel : public wxPanel
 
 	protected:
 		wxStaticText* m_wavemodel_label;
-		wxStaticText* m_staticText31;
+		wxStaticText* m_atmmodel_label;
 		wxStaticText* m_weathermodel;
-		wxStaticText* m_days_label;
+		wxStaticText* m_duration_label;
 		wxStaticText* m_run_label;
 		wxStaticText* m_interval_label;
 		wxNotebook* m_dataconfig_nbook;
 		wxPanel* m_surfacetab_panel;
+		wxStaticLine* m_separator_1;
 		wxStaticText* m_status_label;
-		wxStaticLine* m_staticline1;
+		wxStaticText* m_sizeestimate_label;
 
 	public:
 		wxChoice* m_atmmodel_choice;
 		wxChoice* m_wavemodel_choice;
 		wxChoice* m_interval_choice;
 		wxChoice* m_resolution_choice;
-		wxChoice* m_days_choice;
+		wxChoice* m_duration_choice;
 		wxChoice* m_run_choice;
 		wxCheckBox* m_wind_cbox;
-		wxCheckBox* m_windgust_cbox;
+		wxCheckBox* m_gust_cbox;
 		wxCheckBox* m_pressure_cbox;
 		wxCheckBox* m_temperature_cbox;
 		wxCheckBox* m_cape_cbox;
@@ -70,6 +71,7 @@ class XyGribPanel : public wxPanel
 		wxButton* m_download_button;
 		wxGauge* m_progress_gauge;
 		wxStaticText* m_status_text;
+		wxStaticText* m_sizeestimate_text;
 
 		XyGribPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxTAB_TRAVERSAL, const wxString& name = wxEmptyString );
 
