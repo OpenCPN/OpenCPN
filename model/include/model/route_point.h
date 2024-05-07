@@ -92,6 +92,7 @@ public:
   void SetNameShown(bool viz = true) { m_bShowName = viz; }
   bool GetNameShown() { return m_bShowName; }
   virtual wxString GetName(void) { return m_MarkName; }
+  virtual wxString GetNmeaName(void) { return m_NmeaMarkName; }
   wxString GetDescription(void) { return m_MarkDescription; }
 
   wxDateTime GetCreateTime(void);
@@ -230,6 +231,7 @@ public:
 private:
 
   wxString m_MarkName;
+  wxString m_NmeaMarkName;
   wxBitmap *m_pbmIcon;
   wxString m_IconName;
 
