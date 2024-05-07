@@ -1753,7 +1753,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
             warn = true;
           }
           else {
-            mes = _("There is an unenabled UDP Input connection that uses the "
+            mes = _("There is a disabled UDP Input connection that uses the "
                    "same Dataport.");
             mes
                 << "\n"
