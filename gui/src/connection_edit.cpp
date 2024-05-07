@@ -730,7 +730,7 @@ void ConnectionEditDialog::Init() {
   bSizer10 = new wxBoxSizer(wxHORIZONTAL);
 
   m_rbOAccept =
-      new wxRadioButton(m_scrolledwin, wxID_ANY, _("Transmit sentences"),
+      new wxRadioButton(m_scrolledwin, wxID_ANY, _("Transmit only sentences"),
                         wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
   bSizer10->Add(m_rbOAccept, 0, wxALL, 5);
 
@@ -2480,7 +2480,7 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
 
   if (list.Count() == 0) {
     for (size_t i = 0; i < m_clbSentences->GetCount(); ++i)
-      m_clbSentences->Check(i, m_type == WHITELIST);
+      m_clbSentences->Check(i, m_type == BLACKLIST);
   } else {
     for (size_t i = 0; i < list.Count(); ++i) {
       int item = m_clbSentences->FindString(list[i]);
