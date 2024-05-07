@@ -42,6 +42,8 @@ const std::string CATALOG_URL =
     "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/"
     "sources.json";
 
+#define XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB 10
+
 //----------------------------------------------------------------------------------------------------------
 //    Request setting Specification
 //----------------------------------------------------------------------------------------------------------
@@ -138,6 +140,8 @@ private:
   int m_selectedAtmModelIndex;
   // Index of currently selected XyGrib wave model
   int m_selectedWaveModelIndex;
+  // Last size estimation of the GRIB file
+  int m_gribSizeEstimate;
 
   GRIBUICtrlBar &m_parent;
 

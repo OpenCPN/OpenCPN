@@ -2036,6 +2036,13 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
     return;
   }
   // No : start a new download
+  if (m_gribSizeEstimate > XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB * 1024 * 1024) {
+    m_xygribPanel->m_status_text->SetLabelText(
+        wxString::Format(_("Can't download GRIB file bigger than %d MB"),
+                         (int)XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB));
+    return;
+  }
+
   // First we memorize the current configuration. This is the one which will be
   // saved in OpenCPN' config file at exit
   MemorizeXyGribConfiguration();
@@ -2545,8 +2552,9 @@ void GribRequestSetting::MemorizeXyGribConfiguration() {
   UpdateGribSizeEstimate();
 }
 
-/// @brief Estimates the size of the GRIB file to be downloaded and prints it onto GUI
-/// Code taken from XyGrib application (https://github.com/opengribs/XyGrib)
+/// @brief Estimates the size of the GRIB file to be downloaded and prints it
+/// onto GUI Code taken from XyGrib application
+/// (https://github.com/opengribs/XyGrib)
 void GribRequestSetting::UpdateGribSizeEstimate() {
   double resolution;
   long days;
@@ -2584,16 +2592,39 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
   // Number of GribRecords
   int nbrec = (int)days * 24 / interval + 1;
 
-  int nbPress = (m_xygribPanel->m_pressure_cbox->IsChecked() && m_xygribPanel->m_pressure_cbox->IsEnabled()) ? nbrec : 0;
-  int nbWind = (m_xygribPanel->m_wind_cbox->IsChecked() && m_xygribPanel->m_wind_cbox->IsEnabled())? 2 * nbrec : 0;
-  int nbRain = (m_xygribPanel->m_precipitation_cbox->IsChecked() && m_xygribPanel->m_precipitation_cbox->IsEnabled()) ? nbrec - 1 : 0;
-  int nbCloud = (m_xygribPanel->m_cloudcover_cbox->IsChecked() && m_xygribPanel->m_cloudcover_cbox->IsEnabled()) ? nbrec - 1 : 0;
-  int nbTemp = (m_xygribPanel->m_temperature_cbox->IsChecked() && m_xygribPanel->m_temperature_cbox->IsEnabled()) ? nbrec : 0;
+  int nbPress = (m_xygribPanel->m_pressure_cbox->IsChecked() &&
+                 m_xygribPanel->m_pressure_cbox->IsEnabled())
+                    ? nbrec
+                    : 0;
+  int nbWind = (m_xygribPanel->m_wind_cbox->IsChecked() &&
+                m_xygribPanel->m_wind_cbox->IsEnabled())
+                   ? 2 * nbrec
+                   : 0;
+  int nbRain = (m_xygribPanel->m_precipitation_cbox->IsChecked() &&
+                m_xygribPanel->m_precipitation_cbox->IsEnabled())
+                   ? nbrec - 1
+                   : 0;
+  int nbCloud = (m_xygribPanel->m_cloudcover_cbox->IsChecked() &&
+                 m_xygribPanel->m_cloudcover_cbox->IsEnabled())
+                    ? nbrec - 1
+                    : 0;
+  int nbTemp = (m_xygribPanel->m_temperature_cbox->IsChecked() &&
+                m_xygribPanel->m_temperature_cbox->IsEnabled())
+                   ? nbrec
+                   : 0;
 
-  int nbCAPEsfc = (m_xygribPanel->m_cape_cbox->IsChecked() && m_xygribPanel->m_cape_cbox->IsEnabled()) ? nbrec : 0;
-  int nbReflectivity =
-      (m_xygribPanel->m_reflectivity_cbox->IsChecked() && m_xygribPanel->m_reflectivity_cbox->IsEnabled()) ? nbrec : 0;
-  int nbGUSTsfc = (m_xygribPanel->m_gust_cbox->IsChecked() && m_xygribPanel->m_gust_cbox->IsEnabled()) ? nbrec : 0;
+  int nbCAPEsfc = (m_xygribPanel->m_cape_cbox->IsChecked() &&
+                   m_xygribPanel->m_cape_cbox->IsEnabled())
+                      ? nbrec
+                      : 0;
+  int nbReflectivity = (m_xygribPanel->m_reflectivity_cbox->IsChecked() &&
+                        m_xygribPanel->m_reflectivity_cbox->IsEnabled())
+                           ? nbrec
+                           : 0;
+  int nbGUSTsfc = (m_xygribPanel->m_gust_cbox->IsChecked() &&
+                   m_xygribPanel->m_gust_cbox->IsEnabled())
+                      ? nbrec
+                      : 0;
 
   int head = 179;
   int estimate = 0;
@@ -2678,6 +2709,13 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
   // adjust for packing ~ 65%
   estimate = estimate * 0.65;
 
+  wxString warningStr = "";
+  if (estimate / (1024 * 1024) > XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB) {
+    warningStr = wxString::Format("(Warning GRIB exceeds %d MB limit)", XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB);
+  }
+
   m_xygribPanel->m_sizeestimate_text->SetLabel(
-      wxString::Format("%d kB", estimate / 1024));
+      wxString::Format("%d kB %s", estimate / 1024, warningStr));
+
+  m_gribSizeEstimate = estimate;
 }
