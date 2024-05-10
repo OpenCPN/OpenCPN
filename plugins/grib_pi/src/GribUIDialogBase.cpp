@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "GribUIDialogBase.h"
+#include "XyGribPanel.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -1339,7 +1340,8 @@ GribSettingsDialogBase::GribSettingsDialogBase(wxWindow* parent, wxWindowID id,
 
   wxString m_cOverlayColorsChoices[] = {
       _("Generic"),  _("Wind"),        _("Air Temp"), _("Sea Temp"),
-      _("Rainfall"), _("Cloud Cover"), _("Current"), _("CAPE"), _("REFC"), _("Windy") };
+      _("Rainfall"), _("Cloud Cover"), _("Current"),  _("CAPE"),
+      _("REFC"),     _("Windy")};
   int m_cOverlayColorsNChoices =
       sizeof(m_cOverlayColorsChoices) / sizeof(wxString);
   m_cOverlayColors =
@@ -2055,15 +2057,15 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
     : wxDialog(parent, id, title, pos, size, style) {
   this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 
-  wxBoxSizer *itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer* itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
   SetSizer(itemBoxSizerMainPanel);
 
-  wxScrolledWindow *scrollWin = new wxScrolledWindow(
-     this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
+  wxScrolledWindow* scrollWin = new wxScrolledWindow(
+      this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
   scrollWin->SetScrollRate(1, 1);
   itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
-  wxBoxSizer *bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer* bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(bSizerPrefsMain);
 
   wxStdDialogButtonSizer* m_sdbSizer2;
@@ -2092,13 +2094,14 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
                      wxDefaultPosition, wxDefaultSize, 0);
   fgSizer46->Add(m_cbUseHiDef, 0, wxALL, 5);
 
-  m_cbUseGradualColors = new wxCheckBox(scrollWin, wxID_ANY, _("Use Gradual Colors"),
-                                        wxDefaultPosition, wxDefaultSize, 0);
+  m_cbUseGradualColors =
+      new wxCheckBox(scrollWin, wxID_ANY, _("Use Gradual Colors"),
+                     wxDefaultPosition, wxDefaultSize, 0);
   fgSizer46->Add(m_cbUseGradualColors, 0, wxALL, 5);
 
-  m_cbCopyFirstCumulativeRecord =
-      new wxCheckBox(scrollWin, wxID_ANY, _("Copy First Cumulative Missing Record"),
-                     wxDefaultPosition, wxDefaultSize, 0);
+  m_cbCopyFirstCumulativeRecord = new wxCheckBox(
+      scrollWin, wxID_ANY, _("Copy First Cumulative Missing Record"),
+      wxDefaultPosition, wxDefaultSize, 0);
   fgSizer46->Add(m_cbCopyFirstCumulativeRecord, 0, wxALL, 5);
 
   m_cbCopyMissingWaveRecord =
@@ -2125,9 +2128,10 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
       _("Load the Last Opened File")};
   int m_rbLoadOptionsNChoices =
       sizeof(m_rbLoadOptionsChoices) / sizeof(wxString);
-  m_rbLoadOptions = new wxRadioBox(
-      scrollWin, wxID_ANY, _("Load File Options"), wxDefaultPosition, wxDefaultSize,
-      m_rbLoadOptionsNChoices, m_rbLoadOptionsChoices, 1, wxRA_SPECIFY_COLS);
+  m_rbLoadOptions =
+      new wxRadioBox(scrollWin, wxID_ANY, _("Load File Options"),
+                     wxDefaultPosition, wxDefaultSize, m_rbLoadOptionsNChoices,
+                     m_rbLoadOptionsChoices, 1, wxRA_SPECIFY_COLS);
   m_rbLoadOptions->SetSelection(0);
   bSizerPrefsMain->Add(m_rbLoadOptions, 0, wxALL | wxEXPAND, 5);
 
@@ -2152,16 +2156,17 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   bSizerPrefsMain->Add(m_rbTimeFormat, 0, wxALL | wxEXPAND, 5);
 
 #ifdef __WXMSW__
-  wxFlexGridSizer * fgSizer47;
+  wxFlexGridSizer* fgSizer47;
   fgSizer47 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer47->SetFlexibleDirection(wxBOTH);
   fgSizer47->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-  wxStaticText * text = new wxStaticText(scrollWin, wxID_ANY, _("Icons Size Factor")
-    , wxDefaultPosition, wxDefaultSize);
+  wxStaticText* text =
+      new wxStaticText(scrollWin, wxID_ANY, _("Icons Size Factor"),
+                       wxDefaultPosition, wxDefaultSize);
   fgSizer47->Add(text, 0, wxALL | wxEXPAND, 5);
   m_sIconSizeFactor =
-    new wxSlider(scrollWin, wxID_ANY, 0, -8, 8, wxDefaultPosition,
-      wxDefaultSize, wxSL_BOTTOM | wxSL_HORIZONTAL | wxSL_LABELS);
+      new wxSlider(scrollWin, wxID_ANY, 0, -8, 8, wxDefaultPosition,
+                   wxDefaultSize, wxSL_BOTTOM | wxSL_HORIZONTAL | wxSL_LABELS);
   fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
   bSizerPrefsMain->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
 #endif
@@ -2350,15 +2355,21 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_chForecastLength->SetSelection(0);
   bSizerWorld->Add(m_chForecastLength, 0, wxALL, 5);
 
-  m_stECMWFResolution = new wxStaticText( m_panelWorld, wxID_ANY, _("Model"), wxDefaultPosition, wxDefaultSize, 0 );
-  m_stECMWFResolution->Wrap( -1 );
-  bSizerWorld->Add( m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_stECMWFResolution = new wxStaticText(m_panelWorld, wxID_ANY, _("Model"),
+                                         wxDefaultPosition, wxDefaultSize, 0);
+  m_stECMWFResolution->Wrap(-1);
+  bSizerWorld->Add(m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  wxString m_chECMWFResolutionChoices[] = { wxString::Format("0.25%c IFS", 0x00B0), wxString::Format("0.25%c AIFS", 0x00B0) };
-  int m_chECMWFResolutionNChoices = sizeof( m_chECMWFResolutionChoices ) / sizeof( wxString );
-  m_chECMWFResolution = new wxChoice( m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0 );
-  m_chECMWFResolution->SetSelection( 0 );
-  bSizerWorld->Add( m_chECMWFResolution, 0, wxALL, 5 );
+  wxString m_chECMWFResolutionChoices[] = {
+      wxString::Format("0.25%c IFS", 0x00B0),
+      wxString::Format("0.25%c AIFS", 0x00B0)};
+  int m_chECMWFResolutionNChoices =
+      sizeof(m_chECMWFResolutionChoices) / sizeof(wxString);
+  m_chECMWFResolution =
+      new wxChoice(m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                   m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0);
+  m_chECMWFResolution->SetSelection(0);
+  bSizerWorld->Add(m_chECMWFResolution, 0, wxALL, 5);
 
   bSizerWorld->Add(0, 0, 1, wxEXPAND, 5);
 
@@ -2393,9 +2404,11 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
 
   bMainSizer->Add(bSizerSource, 1, wxEXPAND, 5);
 
-  m_stLocalDownloadInfo = new wxStaticText( m_panelLocalModels, wxID_ANY, _("Download grib..."), wxDefaultPosition, wxDefaultSize, 0 );
-  m_stLocalDownloadInfo->Wrap( -1 );
-  bMainSizer->Add( m_stLocalDownloadInfo, 0, wxALL, 5 );
+  m_stLocalDownloadInfo =
+      new wxStaticText(m_panelLocalModels, wxID_ANY, _("Download grib..."),
+                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stLocalDownloadInfo->Wrap(-1);
+  bMainSizer->Add(m_stLocalDownloadInfo, 0, wxALL, 5);
 
   wxBoxSizer* bSizerLocalButtons;
   bSizerLocalButtons = new wxBoxSizer(wxHORIZONTAL);
@@ -2426,9 +2439,9 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   fgSizer101->SetFlexibleDirection(wxBOTH);
   fgSizer101->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-  m_sScrolledDialog =
-      new wxScrolledWindow(m_panelEmail, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                           wxHSCROLL | wxTAB_TRAVERSAL | wxVSCROLL);
+  m_sScrolledDialog = new wxScrolledWindow(
+      m_panelEmail, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+      wxHSCROLL | wxTAB_TRAVERSAL | wxVSCROLL);
   m_sScrolledDialog->SetScrollRate(0, 5);
   m_fgScrollSizer = new wxFlexGridSizer(0, 1, 0, 0);
   m_fgScrollSizer->SetFlexibleDirection(wxBOTH);
@@ -2897,8 +2910,9 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_fgFixedSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
   wxStaticText* m_staticText181;
-  m_staticText181 = new wxStaticText(m_panelEmail, wxID_ANY, _("Estimated File Size"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
+  m_staticText181 =
+      new wxStaticText(m_panelEmail, wxID_ANY, _("Estimated File Size"),
+                       wxDefaultPosition, wxDefaultSize, 0);
   m_staticText181->Wrap(-1);
   m_fgFixedSizer->Add(m_staticText181, 0, wxALL, 5);
 
@@ -2925,17 +2939,24 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
 
   fgSizer101->Add(m_rButton, 1, wxEXPAND, 5);
 
-  m_panelEmail->SetSizer( fgSizer101 );
+  m_panelEmail->SetSizer(fgSizer101);
   m_panelEmail->Layout();
-  fgSizer101->Fit( m_panelEmail );
-  m_notebookGetGrib->AddPage( m_panelEmail, _("e-mail"), false );
+  fgSizer101->Fit(m_panelEmail);
+  m_notebookGetGrib->AddPage(m_panelEmail, _("e-mail"), false);
 
-  bSizerMain->Add( m_notebookGetGrib, 1, wxEXPAND | wxALL, 5 );
+  // Create XyGrib panel object
+  m_xygribPanel =
+      new XyGribPanel(m_notebookGetGrib, wxID_ANY, wxDefaultPosition,
+                      wxDefaultSize, wxTAB_TRAVERSAL);
+  // Add the XyGrib panel to the download notebook
+  m_notebookGetGrib->AddPage(m_xygribPanel, _("XyGrib"), false);
 
-  this->SetSizer( bSizerMain );
+  bSizerMain->Add(m_notebookGetGrib, 1, wxEXPAND | wxALL, 5);
+
+  this->SetSizer(bSizerMain);
   this->Layout();
-  //this->Fit();
-  bSizerMain->Fit( this );
+  // this->Fit();
+  bSizerMain->Fit(this);
 
   this->Centre(wxBOTH);
 
@@ -3081,6 +3102,72 @@ GribRequestSettingBase::GribRequestSettingBase(wxWindow* parent, wxWindowID id,
   m_rButtonYes->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+
+  // Connect XyGrib related callbacks
+  m_xygribPanel->m_download_button->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton),
+      NULL, this);
+  m_xygribPanel->m_atmmodel_choice->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice),
+      NULL, this);
+  m_xygribPanel->m_wavemodel_choice->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribWaveModelChoice),
+      NULL, this);
+  m_xygribPanel->m_wind_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_gust_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_reflectivity_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_precipitation_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_cape_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_pressure_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_cloudcover_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_temperature_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_waveheight_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_windwave_cbox->Connect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_resolution_choice->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_duration_choice->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_interval_choice->Connect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
 }
 
 GribRequestSettingBase::~GribRequestSettingBase() {
@@ -3226,6 +3313,72 @@ GribRequestSettingBase::~GribRequestSettingBase() {
   m_rButtonYes->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this);
+
+  // Disconnect XyGrib related callbacks
+  m_xygribPanel->m_download_button->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribDownloadButton),
+      NULL, this);
+  m_xygribPanel->m_atmmodel_choice->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribAtmModelChoice),
+      NULL, this);
+  m_xygribPanel->m_wavemodel_choice->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribWaveModelChoice),
+      NULL, this);
+  m_xygribPanel->m_wind_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_gust_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_reflectivity_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_precipitation_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_cape_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_pressure_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_cloudcover_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_temperature_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_waveheight_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_windwave_cbox->Disconnect(
+      wxEVT_COMMAND_CHECKBOX_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_resolution_choice->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_duration_choice->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
+  m_xygribPanel->m_interval_choice->Disconnect(
+      wxEVT_COMMAND_CHOICE_SELECTED,
+      wxCommandEventHandler(GribRequestSettingBase::OnXyGribConfigChange),
+      NULL, this);
 }
 
 GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
@@ -3311,60 +3464,63 @@ GRIBTableBase::~GRIBTableBase() {
                                NULL, this);
 }
 
-ProjectBoatPanel::ProjectBoatPanel( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name ) : wxPanel( parent, id, pos, size, style, name )
-{
-	wxBoxSizer* bSizerProjectBoat;
-	bSizerProjectBoat = new wxBoxSizer( wxHORIZONTAL );
+ProjectBoatPanel::ProjectBoatPanel(wxWindow* parent, wxWindowID id,
+                                   const wxPoint& pos, const wxSize& size,
+                                   long style, const wxString& name)
+    : wxPanel(parent, id, pos, size, style, name) {
+  wxBoxSizer* bSizerProjectBoat;
+  bSizerProjectBoat = new wxBoxSizer(wxHORIZONTAL);
 
-	m_cbProjectPosition = new wxCheckBox( this, wxID_ANY, _("Project position"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerProjectBoat->Add( m_cbProjectPosition, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_cbProjectPosition = new wxCheckBox(this, wxID_ANY, _("Project position"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  bSizerProjectBoat->Add(m_cbProjectPosition, 0,
+                         wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-	m_stCourse = new wxStaticText( this, wxID_ANY, _("Course"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_stCourse->Wrap( -1 );
-	bSizerProjectBoat->Add( m_stCourse, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_stCourse = new wxStaticText(this, wxID_ANY, _("Course"), wxDefaultPosition,
+                                wxDefaultSize, 0);
+  m_stCourse->Wrap(-1);
+  bSizerProjectBoat->Add(m_stCourse, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-	m_tCourse = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerProjectBoat->Add( m_tCourse, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_tCourse = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                             wxDefaultSize, 0);
+  bSizerProjectBoat->Add(m_tCourse, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-	m_stSpeed = new wxStaticText( this, wxID_ANY, _("Speed"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_stSpeed->Wrap( -1 );
-	bSizerProjectBoat->Add( m_stSpeed, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_stSpeed = new wxStaticText(this, wxID_ANY, _("Speed"), wxDefaultPosition,
+                               wxDefaultSize, 0);
+  m_stSpeed->Wrap(-1);
+  bSizerProjectBoat->Add(m_stSpeed, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-	m_tSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerProjectBoat->Add( m_tSpeed, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_tSpeed = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                            wxDefaultSize, 0);
+  bSizerProjectBoat->Add(m_tSpeed, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-	m_stSpeedUnit = new wxStaticText( this, wxID_ANY, wxT("kt"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_stSpeedUnit->Wrap( -1 );
-	bSizerProjectBoat->Add( m_stSpeedUnit, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+  m_stSpeedUnit = new wxStaticText(this, wxID_ANY, wxT("kt"), wxDefaultPosition,
+                                   wxDefaultSize, 0);
+  m_stSpeedUnit->Wrap(-1);
+  bSizerProjectBoat->Add(m_stSpeedUnit, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-
-	this->SetSizer( bSizerProjectBoat );
-	this->Layout();
+  this->SetSizer(bSizerProjectBoat);
+  this->Layout();
 }
 
-ProjectBoatPanel::~ProjectBoatPanel()
-{
-}
+ProjectBoatPanel::~ProjectBoatPanel() {}
 
-double ProjectBoatPanel::GetCourse()
-{
-    double val;
-    if (m_tCourse->GetValue().ToDouble(&val)) {
-        return val;
-    } else {
-        return 0;
-    }
+double ProjectBoatPanel::GetCourse() {
+  double val;
+  if (m_tCourse->GetValue().ToDouble(&val)) {
+    return val;
+  } else {
+    return 0;
+  }
 }
-double ProjectBoatPanel::GetSpeed()
-{
-    double val;
-    if (m_tSpeed->GetValue().ToDouble(&val)) {
-        return val;
-    } else {
-        return 0;
-    }
+double ProjectBoatPanel::GetSpeed() {
+  double val;
+  if (m_tSpeed->GetValue().ToDouble(&val)) {
+    return val;
+  } else {
+    return 0;
+  }
 }
-bool ProjectBoatPanel::ProjectionEnabled()
-{
-    return m_cbProjectPosition->IsChecked();
+bool ProjectBoatPanel::ProjectionEnabled() {
+  return m_cbProjectPosition->IsChecked();
 }
