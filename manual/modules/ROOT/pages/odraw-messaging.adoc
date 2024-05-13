@@ -1,15 +1,54 @@
-= Messaging
+= API
 
-Between ODrawi (OD, Ocpn_Draw_pi), Watchdog_pi (WD) and
-Weather_routing_pi (WR). +
+There are two methods of interacting programatically with Ocpn_Draw_pi (OD),
+json messages via the OpenCPN message procees and binary, exposed API.
+All interactions have to start with a json message to ascertain critical
+information abou the API, after this json messages can continue to be used
+or access to the binary API can be sought. For all interactions there
+will always be the json messages, but for performance the binary API
+is preferred if it is usable. Both API's uses the same information and
+for simplicity in the descriptions the json message will be used.
+
+Currently the OD API is used by:
+
+* Watchdog_pi (WD)
+* Weather_routing_pi (WR)
+* Squiddio_pi (SQ)
+* Testplugin_pi (TP, FE2)
+
+TP and FE2 refer to the same plugin but for two different purposes. *TP* is
+for testing the OD API, it can also be used as a template to create another
+pluign as it is complete and interacts with all the required OCPN API's to 
+establish a toolbar icon, have preferences in the main *settings/plugins*
+tab for the plugin and to use the OD API. *FE2* is the name given to plugin
+when used for the templated build environment which trys to simplify the 
+whole build process. The template allows local builds and installs for initial 
+builds, testing and changes. It also gives a build process which will
+generate packages for all the currrent supported environments and create
+the cloudsmith objects that allow yourself and others to install and test
+the plugin. 
+
+WD and WR both use the binary API if it is available, SQ only uses the json
+API as it is used infrequently. TP uses the binary API exclusively apart 
+from the initial contact with OD which uses the json API.
+
+The binary API assumes that the caller has all the correct information as 
+there are no checks on the parameters passed. The json API uses a json 
+schema to check for validity so can be more robust of the two.
+
+It is important to understand that OD only provides the information about
+geo-referenced objects (lines, points, straight lined areas and
+circles), or allows though the API's the management of 
+these objects. The plugins using the API know what they are trying
+todo with this information. So WD knows when and how to sound alarms,
+WR knows what to do with areas that are exclusions and builds 
+appropriate routes, and SQ knows about location information which
+it loads into OD through the API so it can be displayed, but SQ 
+has the information which is used. +
  +
-*OpenCPn Draw and Watchdog* +
+*Ocpn_Draw and Watchdog* +
  +
 *User aspects* +
-
-First of all, we should see OD and WD as separate plugins. In OD you can
-draw geo-referenced objects (lines, points, straight lined areas and
-circles). WD knows when and how to sound alarms. +
 
 In OD, a graphical indication (crosshatching or shading) may be added to
 areas, to indicate whether these are intended to avoid (crosshatched
@@ -38,7 +77,9 @@ an AIS target is inside it. +
 Beside the 4 types of Boundary Alarms mentioned above, WD has the
 following alarm functionality:
 
-. Alarm when approaching coastlines (Landfall Alarm; 2 types: time and
+. Alarm when approaching coastlines (Landfall AFirst of all, we should see OD and WD as separate plugins. In OD you can
+draw geo-referenced objects (lines, points, straight lined areas and
+circles). WD knows when and how to sound alarms. +larm; 2 types: time and
 distance)
 . Alarm when NMEA-data stream stops (NMEA Alarm)
 . Deadman Alarm
@@ -49,7 +90,9 @@ types: only port deviation, only starboard deviation or a general
 deviation);
 . Alarms when speed deviates more then set (Speed Alarm; two types:
 overspeed for more than set maximum, and underspeed for less than set
-minimum).
+minimum).First of all, we should see OD and WD as separate plugins. In OD you can
+draw geo-referenced objects (lines, points, straight lined areas and
+circles). WD knows when and how to sound alarms. +
 
 In total there are 14 different types of alarms. +
 
@@ -59,7 +102,7 @@ In total there are 14 different types of alarms. +
 WD and OD are independent plugins. OD knows about drawing geo-referenced
 objects, WD knows how to sound alarms. Now the two can work together by
 passing and receiving messages, in this case JSON messages (basically a
-text string of elements and values). +
+text string of elements and values), or by using the binary API provided. +
 
 For the alarms, when WD needs boundary information, WD asks OD, via a
 message, whether a Lat/Lon is inside a boundary. WD can add further
@@ -176,3 +219,27 @@ Please note that a JSON message does not have a “structure” per se, the
 message consists of element/value pairs written as delimited strings.
 The elements can occur in any order. So “structure” in the sense used in
 this document really refers to required elements.
+
+
+*API Definitions* 
+
+There is an API json definition and an API binary header file available in 
+*opencpn-libs/odapi*, 
+* ODJSONSchemas.h
+* ODAPI.h
+
+The *ODJSONSchemas.h* contains the definition against which the input
+json message will be validated. If the validation fails the json message
+will be rejected. +
+
+The *ODAPI.h* should be included in any cpp file that you are going to
+use to call  the OD binary API. It gives all the definitions for 
+the calls and expected contents of the parameter lists and return
+parameter lists. +
+
+For and example of how these calls are structured you can look 
+in the three current plugins that make use of the API, or you 
+can look in https://github.com/jongough/testplugin_pi[testplugin_pi]
+which was used in the development of this API and is also the 
+base for the Front End 2 (FE2) build process for plugins.
+
