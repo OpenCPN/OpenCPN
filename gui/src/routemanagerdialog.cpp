@@ -74,7 +74,7 @@
 #define DIALOG_MARGIN 10
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
-enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
+enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH, colTRKDATE };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
 enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
@@ -173,6 +173,19 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
 {
   return SortDouble(sort_track_len_dir, ((Track *)item1)->Length(),
                     ((Track *)item2)->Length());
+}
+
+// sort callback. Sort by track start date.
+static int sort_track_date_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+static int wxCALLBACK SortTracksOnDate(wxIntPtr item1, wxIntPtr item2,
+                                       wxIntPtr list)
+#else
+int wxCALLBACK SortTracksOnDate(long item1, long item2, long list)
+#endif
+{
+  return SortRouteTrack(sort_track_date_dir, ((Track *)item1)->GetDate(),
+                        ((Track *)item2)->GetDate());
 }
 
 static int sort_wp_key;
@@ -598,6 +611,8 @@ void RouteManagerDialog::Create() {
   m_pTrkListCtrl->InsertColumn(colTRKVISIBLE, _("Show"), wxLIST_FORMAT_LEFT,
                                4 * char_width);
   m_pTrkListCtrl->InsertColumn(colTRKNAME, _("Track Name"), wxLIST_FORMAT_LEFT,
+                               20 * char_width);
+  m_pTrkListCtrl->InsertColumn(colTRKDATE, _("Start Date"), wxLIST_FORMAT_LEFT,
                                20 * char_width);
   m_pTrkListCtrl->InsertColumn(colTRKLENGTH, _("Length"), wxLIST_FORMAT_LEFT,
                                5 * char_width);
@@ -2080,6 +2095,7 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
     long idx = m_pTrkListCtrl->InsertItem(li);
 
     m_pTrkListCtrl->SetItem(idx, colTRKNAME, trk->GetName(true));
+    m_pTrkListCtrl->SetItem(idx, colTRKDATE, trk->GetDate(true));
 
     wxString len;
     len.Printf(wxT("%5.2f"), trk->Length());
@@ -2101,6 +2117,9 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
   switch (sort_track_key) {
     case SORT_ON_DISTANCE:
       m_pTrkListCtrl->SortItems(SortTracksOnDistance, (wxIntPtr)NULL);
+      break;
+    case SORT_ON_DATE:
+      m_pTrkListCtrl->SortItems(SortTracksOnDate, (wxIntPtr)NULL);
       break;
     case SORT_ON_NAME:
     default:
@@ -2140,6 +2159,10 @@ void RouteManagerDialog::OnTrkColumnClicked(wxListEvent &event) {
     sort_track_key = SORT_ON_DISTANCE;
     sort_track_len_dir++;
     m_pTrkListCtrl->SortItems(SortTracksOnDistance, (wxIntPtr)NULL);
+  } else if (event.m_col == 3) {
+    sort_track_key = SORT_ON_DATE;
+    sort_track_date_dir++;
+    m_pTrkListCtrl->SortItems(SortTracksOnDate, (wxIntPtr)NULL);
   }
 }
 
