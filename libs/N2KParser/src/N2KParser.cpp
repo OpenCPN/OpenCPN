@@ -36,7 +36,7 @@ uint32_t millis() {
   return 42;
 }
 
-void MakeN2kMsg(std::vector<unsigned char> &v, tN2kMsg &Msg) {
+static void MakeN2kMsg(std::vector<unsigned char> &v, tN2kMsg &Msg) {
 
   Msg.Clear();
 
