@@ -2998,10 +2998,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           parent_frame->ToggleTestPause();
           break;
         case 'R':
-            g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
-            if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible == 0)
-                g_iNavAidRadarRingsNumberVisible = 1;
-            break;
+          g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
+          if (g_bNavAidRadarRingsShown &&
+              g_iNavAidRadarRingsNumberVisible == 0)
+            g_iNavAidRadarRingsNumberVisible = 1;
+          else if (!g_bNavAidRadarRingsShown &&
+               g_iNavAidRadarRingsNumberVisible == 1)
+            g_iNavAidRadarRingsNumberVisible = 0;
+          break;
         case 'S':
           SetShowENCDepth(!m_encShowDepth);
           ReloadVP();
