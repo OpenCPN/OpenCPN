@@ -169,7 +169,7 @@ void TTYWindow::CreateLegendBitmap() {
   dc.SelectObject(wxNullBitmap);
 }
 
-void TTYWindow::OnPauseClick(wxCommandEvent& event) {
+void TTYWindow::OnPauseClick(wxCommandEvent&) {
   if (!m_is_paused) {
     m_is_paused = true;
     m_tty_scroll->Pause(true);
@@ -182,9 +182,9 @@ void TTYWindow::OnPauseClick(wxCommandEvent& event) {
   }
 }
 
-void TTYWindow::OnCopyClick(wxCommandEvent& event) { m_tty_scroll->Copy(); }
+void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
 
-void TTYWindow::OnCloseWindow(wxCloseEvent& event) {
+void TTYWindow::OnCloseWindow(wxCloseEvent&) {
   if (m_window_destroy_listener) {
     m_window_destroy_listener->DestroyWindow();
   } else {
