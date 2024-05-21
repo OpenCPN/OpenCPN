@@ -193,6 +193,7 @@ private:
   ObservableListener listener_N0183_TLL;
   ObservableListener listener_N0183_TTM;
   ObservableListener listener_N0183_OSD;
+  ObservableListener listener_N0183_WPL;
   ObservableListener listener_SignalK;
 
   ObservableListener listener_N2K_129038;

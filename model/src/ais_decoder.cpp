@@ -93,6 +93,7 @@ wxDEFINE_EVENT(EVT_N0183_CDDSE, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_WPL, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129038, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129039, ObservedEvt);
@@ -305,6 +306,15 @@ void AisDecoder::InitCommListeners(void) {
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
+
+  //WPL
+  Nmea0183Msg n0183_msg_WPL("WPL");
+  listener_N0183_WPL.Listen(n0183_msg_WPL, this, EVT_N0183_WPL);
+  Bind(EVT_N0183_WPL, [&](ObservedEvt ev) {
+    auto ptr = ev.GetSharedPtr();
+    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+    HandleN0183_AIS( n0183_msg );
+  });
 
   //SignalK
   SignalkMsg sk_msg;
@@ -1894,14 +1904,10 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
                  // we make sure we are out of the hashes for GPSGate buddies
                  // and ARPA by being above 1993*
     } else if (1 == g_WplAction) {  // Create mark
-
-      //FIXME (dave) This is a GUI thing...
-
-//       RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, g_default_wp_icon,
-//                                        aprs_name_str, wxEmptyString);
-//       pWP->m_bIsolatedMark = true;  // This is an isolated mark
-//       pSelect->AddSelectableRoutePoint(aprs_lat, aprs_lon, pWP);
-//       new_ais_wp.notify(pWP);
+       RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, wxEmptyString,
+                                        aprs_name_str, wxEmptyString, false);
+       pWP->m_bIsolatedMark = true;
+       InsertWpt(pWP, true);
     }
   } else if (str.Mid(1, 5).IsSameAs(_T("FRPOS"))) {
     // parse a GpsGate Position message            $FRPOS,.....
