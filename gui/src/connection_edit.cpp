@@ -1822,14 +1822,15 @@ void ConnectionEditDialog::OnCbAdvanced(wxCommandEvent& event) {
 
 void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::Get().DestroyWindow();
+    NMEALogWindow::GetInstance().DestroyWindow();
   } else {
-    NMEALogWindow::Get().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
 
     // Try to ensure that the log window is a least a little bit visible
-    wxRect logRect(
-        NMEALogWindow::Get().GetPosX(), NMEALogWindow::Get().GetPosY(),
-        NMEALogWindow::Get().GetSizeW(), NMEALogWindow::Get().GetSizeH());
+    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
+                   NMEALogWindow::GetInstance().GetPosY(),
+                   NMEALogWindow::GetInstance().GetSizeW(),
+                   NMEALogWindow::GetInstance().GetSizeH());
 
 #if 0
     if (m_container->GetRect().Contains(logRect)) {

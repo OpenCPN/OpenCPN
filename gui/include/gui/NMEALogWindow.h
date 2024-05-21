@@ -47,7 +47,9 @@
  */
 class NMEALogWindow : public NmeaLog, public WindowDestroyListener {
 public:
-  static NMEALogWindow &Get();
+  static NMEALogWindow &GetInstance();
+  NMEALogWindow(const NMEALogWindow &) = delete;
+  NMEALogWindow &operator=(const NMEALogWindow &) = delete;
   bool Active() const;
   void Create(wxWindow *parent, int num_lines = 35);
   void Add(const wxString &s);
@@ -66,14 +68,11 @@ public:
   static void Shutdown();
   wxWindow *GetTTYWindow(void) { return static_cast<wxWindow*>(m_window); }
 
-private:  // prevent class from being copied, needed by singleton
+private:
   NMEALogWindow();
-  NMEALogWindow(const NMEALogWindow &) {}
   virtual ~NMEALogWindow(){};
-  NMEALogWindow &operator=(const NMEALogWindow &) { return *this; }
   void UpdateGeometry();
 
-private:
   static NMEALogWindow *instance;
   TTYWindow *m_window;
   int m_width;
