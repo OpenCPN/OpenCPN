@@ -34,7 +34,7 @@ extern OCPNPlatform *g_Platform;
 
 NMEALogWindow *NMEALogWindow::instance = NULL;
 
-NMEALogWindow &NMEALogWindow::Get() {
+NMEALogWindow &NMEALogWindow::GetInstance() {
   if (instance == NULL) {
     instance = new NMEALogWindow;
   }
