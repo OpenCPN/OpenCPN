@@ -25,14 +25,14 @@
 #ifndef __NMEALOGWINDOW_H__
 #define __NMEALOGWINDOW_H__
 
-#include "WindowDestroyListener.h"
+#include <wx/gdicmn.h>
+#include <wx/string.h>
+#include <wx/window.h>
+
 #include "model/nmea_log.h"
 
-class wxWindow;
-class wxString;
-class wxSize;
-class wxPoint;
-class TTYWindow;
+#include "WindowDestroyListener.h"
+#include "TTYWindow.h"
 
 /**
  * This class provides access to the NMEA log/debug window.
@@ -64,7 +64,7 @@ public:
   void Move();
   virtual void DestroyWindow();
   static void Shutdown();
-  wxWindow *GetTTYWindow(void) { return (wxWindow *)window; }
+  wxWindow *GetTTYWindow(void) { return static_cast<wxWindow*>(m_window); }
 
 private:  // prevent class from being copied, needed by singleton
   NMEALogWindow();
@@ -75,11 +75,11 @@ private:  // prevent class from being copied, needed by singleton
 
 private:
   static NMEALogWindow *instance;
-  TTYWindow *window;
-  int width;
-  int height;
-  int pos_x;
-  int pos_y;
+  TTYWindow *m_window;
+  int m_width;
+  int m_height;
+  int m_pos_x;
+  int m_pos_y;
 };
 
 #endif
