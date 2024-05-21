@@ -135,6 +135,7 @@ void NMEALogWindow::DestroyWindow() {
     UpdateGeometry();
     m_window->Destroy();
     m_window = NULL;
+    nmea_window_close_evt.Notify();
   }
 }
 
