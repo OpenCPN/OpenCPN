@@ -398,6 +398,7 @@ private:
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
+  wxWindow* m_options_dlg;
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
 

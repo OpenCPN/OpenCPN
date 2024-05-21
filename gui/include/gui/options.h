@@ -31,6 +31,7 @@
 #include <windows.h>
 #endif
 
+#include <functional>
 #include <memory>
 
 #include <wx/listbook.h>
@@ -252,6 +253,7 @@ enum {
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
+
 class Uncopyable {
 protected:
   Uncopyable(void) {}
@@ -262,14 +264,8 @@ private:
   Uncopyable &operator=(const Uncopyable &);
 };
 
-#ifndef bert  // wxCHECK_VERSION(2, 9, 0)
-class options : private Uncopyable,
-                public wxDialog
-#else
-class options : private Uncopyable,
-                public wxScrollingDialog
-#endif
-{
+
+class options : public wxDialog {
 public:
   explicit options(wxWindow *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
@@ -277,14 +273,21 @@ public:
                    const wxSize &size = SYMBOL_OPTIONS_SIZE,
                    long style = SYMBOL_OPTIONS_STYLE);
 
+  options(const options&) = delete;
+  options& operator=(const options&) = delete;
+
   ~options(void);
-#if wxCHECK_VERSION(3, 0, 0)
   bool SendIdleEvents(wxIdleEvent &event);
-#endif
   void SetInitialPage(int page_sel, int sub_page = -1);
   void Finish(void);
 
   void OnClose(wxCloseEvent &event);
+
+  /** Set function invoked when closing. */
+  void SetOnCloseCb(std::function<void()> cb) { m_on_close_cb = cb; }
+
+  /**  Clear function invoked when closing. */
+  void ClearOnCloseCb() { m_on_close_cb = []{}; }
 
   void CreateListbookIcons();
   void CreateControls(void);
@@ -682,6 +685,7 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
+  std::function<void()> m_on_close_cb;
 
   std::shared_ptr<ConnectionsDialog>comm_dialog;
 

@@ -3962,7 +3962,20 @@ int MyFrame::DoOptionsDialog() {
     }
   }
 
-  int rr = g_options->ShowModal();
+  // options opens a modeless nmea debug window and cannot use ShowModal()
+  // OTOH, here are dragons: options is overall written to be recreated from
+  // scratch for each invocation. Hence this "semi-modal"  approach for now
+  // See also #3923
+  {
+    bool done = false;
+    g_options->SetOnCloseCb([&done] { done = true; });
+    g_options->Show();
+    while (!done) {
+      wxYield();
+    }
+    g_options->ClearOnCloseCb();
+    g_options->Hide();
+  }
 
 #ifdef __ANDROID__
   androidEnableBackButton(true);
@@ -4001,7 +4014,7 @@ int MyFrame::DoOptionsDialog() {
 #endif
 
   bool ret_val = false;
-  rr = g_options->GetReturnCode();
+  int rr = g_options->GetReturnCode();
 
   if (g_last_ChartScaleFactor != g_ChartScaleFactor) rr |= S52_CHANGED;
 

@@ -7518,8 +7518,7 @@ void options::Finish(void) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  SetReturnCode(m_returnChanges);
-  EndModal(m_returnChanges);
+  m_on_close_cb();
 }
 
 ArrayOfCDI options::GetSelectedChartDirs() {
@@ -7959,9 +7958,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  int rv = 0;
-  if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
-  EndModal(rv);
+  m_on_close_cb();
 }
 
 void options::OnClose(wxCloseEvent& event) {
@@ -7977,7 +7974,7 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  EndModal(0);
+  m_on_close_cb();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {
