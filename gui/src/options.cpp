@@ -1492,7 +1492,8 @@ EVT_CHAR_HOOK(options::OnCharHook)
 END_EVENT_TABLE()
 
 options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
-                 const wxPoint& pos, const wxSize& size, long style) {
+                 const wxPoint& pos, const wxSize& size, long style)
+     : pTrackRotateTime(0) {
   Init();
 
   pParent = parent;
@@ -7093,7 +7094,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_track_rotate_time = 0;
 #if wxUSE_TIMEPICKCTRL
   int h, m, s;
-  if (pTrackRotateTime->GetTime(&h, &m, &s))
+  if (pTrackRotateTime && pTrackRotateTime->GetTime(&h, &m, &s))
     g_track_rotate_time = h * 3600 + m * 60 + s;
 #endif
 
