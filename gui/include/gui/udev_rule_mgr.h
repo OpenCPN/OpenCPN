@@ -39,4 +39,7 @@ bool CheckDongleAccess(wxWindow* parent);
  */
 bool CheckSerialAccess(wxWindow* parent, const std::string device);
 
+/** Destroy all open "Device not found" dialog windows. */
+void DestroyDeviceNotFoundDialogs();
+
 #endif  // UDEV_RULE_MGR_H__
