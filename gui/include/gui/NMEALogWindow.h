@@ -25,14 +25,15 @@
 #ifndef __NMEALOGWINDOW_H__
 #define __NMEALOGWINDOW_H__
 
-#include "WindowDestroyListener.h"
-#include "model/nmea_log.h"
+#include <wx/gdicmn.h>
+#include <wx/string.h>
+#include <wx/window.h>
 
-class wxWindow;
-class wxString;
-class wxSize;
-class wxPoint;
-class TTYWindow;
+#include "model/nmea_log.h"
+#include "observable_evtvar.h"
+
+#include "WindowDestroyListener.h"
+#include "TTYWindow.h"
 
 /**
  * This class provides access to the NMEA log/debug window.
@@ -47,7 +48,9 @@ class TTYWindow;
  */
 class NMEALogWindow : public NmeaLog, public WindowDestroyListener {
 public:
-  static NMEALogWindow &Get();
+  static NMEALogWindow &GetInstance();
+  NMEALogWindow(const NMEALogWindow &) = delete;
+  NMEALogWindow &operator=(const NMEALogWindow &) = delete;
   bool Active() const;
   void Create(wxWindow *parent, int num_lines = 35);
   void Add(const wxString &s);
@@ -64,22 +67,22 @@ public:
   void Move();
   virtual void DestroyWindow();
   static void Shutdown();
-  wxWindow *GetTTYWindow(void) { return (wxWindow *)window; }
+  wxWindow *GetTTYWindow(void) { return static_cast<wxWindow*>(m_window); }
 
-private:  // prevent class from being copied, needed by singleton
-  NMEALogWindow();
-  NMEALogWindow(const NMEALogWindow &) {}
-  virtual ~NMEALogWindow(){};
-  NMEALogWindow &operator=(const NMEALogWindow &) { return *this; }
-  void UpdateGeometry();
+  /** Notified when m_window is closing. */
+  EventVar nmea_window_close_evt;
 
 private:
+  NMEALogWindow();
+  virtual ~NMEALogWindow(){};
+  void UpdateGeometry();
+
   static NMEALogWindow *instance;
-  TTYWindow *window;
-  int width;
-  int height;
-  int pos_x;
-  int pos_y;
+  TTYWindow *m_window;
+  int m_width;
+  int m_height;
+  int m_pos_x;
+  int m_pos_y;
 };
 
 #endif

@@ -1194,7 +1194,7 @@ bool MyApp::OnInit() {
   //      Init the Route Manager
 
  g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
-                            NMEALogWindow::Get());
+                   NMEALogWindow::GetInstance());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();

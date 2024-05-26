@@ -606,6 +606,8 @@ N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
       return N2KFormat_Actisense_RAW;
     else if (packet[2] == 0xd0)
       return N2KFormat_Actisense_N2K;
+    else if (packet[2] == 0x93)
+      return N2KFormat_Actisense_NGT;
   }
   return N2KFormat_Undefined;
 }
@@ -624,67 +626,71 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
 
     if (bInMsg) {
       if (bGotESC) {
-        if (ESCAPE == next_byte) {
+        if ( next_byte == ESCAPE ) {
           data.push_back(next_byte);
           bGotESC = false;
+        } else if ( next_byte == ENDOFTEXT ) {
+          // Process packet
+          // first 3 bytes are: 1 byte for message type, 2 bytes for rest of message length
+          unsigned int msg_length = (uint32_t)data[1] + ((uint32_t)data[2]<<8);
+
+          // As a sanity check, verify message length
+          if (msg_length == data.size()-1) {
+            uint8_t destination = data[3];
+            uint8_t source = data[4];
+
+            uint8_t dprp = data[7];
+            uint8_t priority = (dprp >> 2) & 7;  // priority bits are 3,4,5th bit
+            uint8_t rAndDP = dprp & 3;  // data page + reserved is first 2 bits
+
+            // PGN
+            uint8_t pduFormat = data[6];  // PF (PDU Format)
+            uint32_t pgn = (rAndDP << 16) + (pduFormat << 8);
+            if (pduFormat >=
+                240)  // message is broadcast, PS contains group extension
+              pgn += data[5];  // +PS (PDU Specific)
+
+            // Create the OCPN payload
+            std::vector<uint8_t> o_payload;
+            o_payload.push_back(0x93);
+            o_payload.push_back(0x13);
+            o_payload.push_back(priority);  // priority;
+            o_payload.push_back(pgn & 0xFF);
+            o_payload.push_back((pgn >> 8) & 0xFF);
+            o_payload.push_back((pgn >> 16) & 0xFF);
+            o_payload.push_back(destination);  // destination;
+            o_payload.push_back(source);       // source);
+            o_payload.push_back(0xFF);  // FIXME (dave) generate the time fields
+            o_payload.push_back(0xFF);
+            o_payload.push_back(0xFF);
+            o_payload.push_back(0xFF);
+            o_payload.push_back(data.size());
+
+            // Data starts at offset 13
+            for (size_t n = 13; n < data.size() - 1; n++)
+              o_payload.push_back(data[n]);
+
+            o_payload.push_back(0x55);  // CRC dummy, not checked
+
+            // Message is ready
+            CommDriverN2KNetEvent Nevent(wxEVT_COMMDRIVER_N2K_NET, 0);
+            auto n2k_payload = std::make_shared<std::vector<uint8_t>>(o_payload);
+            Nevent.SetPayload(n2k_payload);
+            AddPendingEvent(Nevent);
+          }
+
+          // reset for next packet
+          bInMsg = false;
+          bGotESC = false;
+          data.clear();
+        } else if (next_byte == STARTOFTEXT) {
+          bGotESC = false;
+          data.clear();
+        } else {
+          data.clear();
+          bInMsg = false;
+          bGotESC = false;
         }
-      }
-
-      if (bGotESC && (ENDOFTEXT == next_byte)) {
-        // Process packet
-        // first 3 bytes are: 1 byte for message type, 2 bytes for rest of message length
-        unsigned int msg_length = (uint32_t)data[1] + ((uint32_t)data[2]<<8);
-
-        // As a sanity check, verify message length
-        if (msg_length == data.size()-1) {
-          uint8_t destination = data[3];
-          uint8_t source = data[4];
-
-          uint8_t dprp = data[7];
-          uint8_t priority = (dprp >> 2) & 7;  // priority bits are 3,4,5th bit
-          uint8_t rAndDP = dprp & 3;  // data page + reserved is first 2 bits
-
-          // PGN
-          uint8_t pduFormat = data[6];  // PF (PDU Format)
-          uint32_t pgn = (rAndDP << 16) + (pduFormat << 8);
-          if (pduFormat >=
-              240)  // message is broadcast, PS contains group extension
-            pgn += data[5];  // +PS (PDU Specific)
-
-          // Create the OCPN payload
-          std::vector<uint8_t> o_payload;
-          o_payload.push_back(0x93);
-          o_payload.push_back(0x13);
-          o_payload.push_back(priority);  // priority;
-          o_payload.push_back(pgn & 0xFF);
-          o_payload.push_back((pgn >> 8) & 0xFF);
-          o_payload.push_back((pgn >> 16) & 0xFF);
-          o_payload.push_back(destination);  // destination;
-          o_payload.push_back(source);       // source);
-          o_payload.push_back(0xFF);  // FIXME (dave) generate the time fields
-          o_payload.push_back(0xFF);
-          o_payload.push_back(0xFF);
-          o_payload.push_back(0xFF);
-          o_payload.push_back(data.size());
-
-          // Data starts at offset 13
-          for (size_t n = 13; n < data.size() - 1; n++)
-            o_payload.push_back(data[n]);
-
-          o_payload.push_back(0x55);  // CRC dummy, not checked
-
-          // Message is ready
-          CommDriverN2KNetEvent Nevent(wxEVT_COMMDRIVER_N2K_NET, 0);
-          auto n2k_payload = std::make_shared<std::vector<uint8_t>>(o_payload);
-          Nevent.SetPayload(n2k_payload);
-          AddPendingEvent(Nevent);
-        }
-
-        // reset for next packet
-        bInMsg = false;
-        bGotESC = false;
-        data.clear();
-
       } else {
         bGotESC = (next_byte == ESCAPE);
 
@@ -730,35 +736,40 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
 
       if (bInMsg) {
         if (bGotESC) {
-          if (ESCAPE == next_byte) {
+          if ( next_byte == ESCAPE ) {
             data.push_back(next_byte);
             bGotESC = false;
-          }
-        }
+          } else if ( next_byte == ENDOFTEXT ) {
+            // Process packet
+            // Create a can_frame, to assemble fast packets.
 
-        if (bGotESC && (ENDOFTEXT == next_byte)) {
-          // Process packet
-          // Create a can_frame, to assemble fast packets.
+            // As a sanity check, verify message length
+            if (data.size() >= 8) {
+              size_t dLen = data[1];
 
-          // As a sanity check, verify message length
-          if (data.size() >= 8) {
-            size_t dLen = data[1];
+              if (dLen+3 == data.size()) {
 
-            if (dLen+3 == data.size()) {
+                // can_id
+                memcpy(&frame.can_id, &data.data()[4], 4);
 
-              // can_id
-              memcpy(&frame.can_id, &data.data()[4], 4);
+                // data
+                memcpy(&frame.data, &data.data()[8], 8);
 
-              // data
-              memcpy(&frame.data, &data.data()[8], 8);
+                HandleCanFrameInput(frame);
 
-              HandleCanFrameInput(frame);
-
-              // reset for next packet
-              bInMsg = false;
-              bGotESC = false;
-              data.clear();
+                // reset for next packet
+                bInMsg = false;
+                bGotESC = false;
+                data.clear();
+              }
             }
+          } else if (next_byte == STARTOFTEXT) {
+            bGotESC = false;
+            data.clear();
+          } else {
+            data.clear();
+            bInMsg = false;
+            bGotESC = false;
           }
         } else {
           bGotESC = (next_byte == ESCAPE);
@@ -791,6 +802,65 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
 }
 
 bool CommDriverN2KNet::ProcessActisense_NGT(std::vector<unsigned char> packet) {
+  std::vector<unsigned char> data;
+  bool bInMsg = false;
+  bool bGotESC = false;
+  bool bGotSOT = false;
+
+  while (!m_circle->empty()) {
+    uint8_t next_byte = m_circle->get();
+
+    if (bInMsg) {
+      if (bGotESC) {
+        if ( next_byte == ESCAPE ) {
+          data.push_back(next_byte);
+          bGotESC = false;
+        } else if ( next_byte == ENDOFTEXT ) {
+          // Process packet
+          CommDriverN2KNetEvent Nevent(wxEVT_COMMDRIVER_N2K_NET, 0);
+          auto n2k_payload = std::make_shared<std::vector<uint8_t>>(data);
+          Nevent.SetPayload(n2k_payload);
+          AddPendingEvent(Nevent);
+
+          // reset for next packet
+          bInMsg = false;
+          bGotESC = false;
+          data.clear();
+        } else if (next_byte == STARTOFTEXT) {
+          bGotESC = false;
+          data.clear();
+        } else {
+          data.clear();
+          bInMsg = false;
+          bGotESC = false;
+        }
+      } else {
+        bGotESC = (next_byte == ESCAPE);
+
+        if (!bGotESC) {
+          data.push_back(next_byte);
+        }
+      }
+    }
+
+    else {
+      if (STARTOFTEXT == next_byte) {
+        bGotSOT = false;
+        if (bGotESC) {
+          bGotSOT = true;
+        }
+      } else {
+        bGotESC = (next_byte == ESCAPE);
+        if (bGotSOT) {
+          bGotSOT = false;
+          bInMsg = true;
+
+          data.push_back(next_byte);
+        }
+      }
+    }
+  }  // while
+
   return true;
 }
 
