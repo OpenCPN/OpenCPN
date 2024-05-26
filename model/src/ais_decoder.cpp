@@ -1863,7 +1863,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     // 8) Vessel drift (speed) - Manually entered
     // 9) Speed Units K = km/h; N = Knots; S = statute miles/h
 
-  } else if (str.Mid(3, 3).IsSameAs(_T("WPL"))) {
+  } else if (g_bWplUsePosition && str.Mid(3, 3).IsSameAs(_T("WPL"))) {
     //** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
     wxString string(str);
     wxStringTokenizer tkz(string, _T(",*"));
