@@ -46,6 +46,19 @@
 #include "gui_lib.h"
 #include "udev_rule_mgr.h"
 
+
+#if !defined(__linux__) || defined(__ANDROID__)
+
+// non-linux  platforms: Empty place holders.
+bool CheckDongleAccess(wxWindow* parent) { return true; }
+bool CheckSerialAccess(wxWindow* parent, const std::string device) {
+  return true;
+}
+void DestroyDeviceNotFoundDialogs() {}
+
+
+#else
+
 static bool hide_dongle_dialog;
 static bool hide_device_dialog;
 
@@ -492,3 +505,5 @@ bool CheckDongleAccess(wxWindow* parent) {
   }
   return result == 0;
 }
+
+#endif  // !defined(__linux__) || defined(__ANDROID__)
