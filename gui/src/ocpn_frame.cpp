@@ -134,6 +134,7 @@
 #include "TrackPropDlg.h"
 #include "waypointman_gui.h"
 #include "CanvasOptions.h"
+#include "udev_rule_mgr.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -795,6 +796,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
 MyFrame::~MyFrame() {
   FrameTimer1.Stop();
+  DestroyDeviceNotFoundDialogs();
+
   delete ChartData;
   // delete pCurrentStack;
 

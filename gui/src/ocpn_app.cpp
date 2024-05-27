@@ -163,9 +163,7 @@ using namespace std::literals::chrono_literals;
 #include "tcmgr.h"
 #include "thumbwin.h"
 #include "TrackPropDlg.h"
-#ifdef __linux__
 #include "udev_rule_mgr.h"
-#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -1900,18 +1898,16 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
-      if (cp->GetDSPort().Contains(_T("Serial"))) {
+      if (cp->GetDSPort().Contains("Serial")) {
         std::string port(cp->Port.ToStdString());
         CheckSerialAccess(gFrame, port);
       }
     }
   }
   CheckDongleAccess(gFrame);
-#endif
 
   // Initialize the CommBridge
   m_comm_bridge.Initialize();

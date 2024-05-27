@@ -1008,34 +1008,6 @@ void AisDecoder::BuildERIShipTypeHash(void) {
   make_hash_ERI(1910, _("Hydrofoil"));
 }
 
-#if 0
-//FIXME delete
-//----------------------------------------------------------------------------------
-//     Handle events from AIS DataStream
-//----------------------------------------------------------------------------------
-void AisDecoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
-  wxString message = event.ProcessNMEA4Tags();
-
-  int nr = 0;
-  if (!message.IsEmpty()) {
-    if (message.Mid(3, 3).IsSameAs(_T("VDM")) ||
-        message.Mid(3, 3).IsSameAs(_T("VDO")) ||
-        message.Mid(1, 5).IsSameAs(_T("FRPOS")) ||
-        message.Mid(1, 2).IsSameAs(_T("CD")) ||
-        message.Mid(3, 3).IsSameAs(_T("TLL")) ||
-        message.Mid(3, 3).IsSameAs(_T("TTM")) ||
-        message.Mid(3, 3).IsSameAs(_T("OSD")) ||
-        (g_bWplUsePosition && message.Mid(3, 3).IsSameAs(_T("WPL")))) {
-      nr = Decode(message);
-      if (nr == AIS_NoError) {
-        g_pi_manager->SendAISSentenceToAllPlugIns(message);
-      }
-      gFrame->TouchAISActive();
-    }
-  }
-}
-#endif
-
 //----------------------------------------------------------------------------------
 //     Handle events from SignalK
 //----------------------------------------------------------------------------------
@@ -1863,7 +1835,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     // 8) Vessel drift (speed) - Manually entered
     // 9) Speed Units K = km/h; N = Knots; S = statute miles/h
 
-  } else if (str.Mid(3, 3).IsSameAs(_T("WPL"))) {
+  } else if (g_bWplUsePosition && str.Mid(3, 3).IsSameAs(_T("WPL"))) {
     //** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
     wxString string(str);
     wxStringTokenizer tkz(string, _T(",*"));
