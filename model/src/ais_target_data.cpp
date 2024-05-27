@@ -1400,7 +1400,7 @@ wxString AisTargetData::GetCountryCode( bool b_CntryLongStr) {
     s_mmsi << tmpMmsi;
     bool foundMID = false;
     size_t i;
-    i = Class == AIS_ATON ? 2 : 0;
+    i = nMID > 900 ? 2 : 0;  // AIS_ATON or others where MMSI starts with 9x
     for (i; i < s_mmsi.length() - 3; i++) {
       nMID = wxAtoi(s_mmsi.Mid(i, 3));
       if (IsValidMID(nMID)) {
