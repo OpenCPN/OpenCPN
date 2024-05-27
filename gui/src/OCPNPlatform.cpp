@@ -720,7 +720,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   std::string gl_json = fs::path(GetPrivateDataDir().ToStdString()).append("gl_caps.json").string();
 
-  wxString cmd = wxString::Format(_T("%s opengl-info %s"), gl_util_path.c_str(), gl_json.c_str());
+  wxString cmd = wxString::Format("\"%s\" opengl-info \"%s\"", gl_util_path.c_str(), gl_json.c_str());
 
   wxLogMessage("Starting OpenGL test utility: %s", cmd);
 
