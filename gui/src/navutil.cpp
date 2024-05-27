@@ -145,7 +145,6 @@ extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -857,8 +856,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "COGUPAvgSeconds" ), &g_COGAvgSec);
   Read(_T ( "LookAheadMode" ), &g_bLookAhead);
   Read(_T ( "SkewToNorthUp" ), &g_bskew_comp);
-
-  Read(_T ( "ShowFPS" ), &g_bShowFPS);
 
   Read(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 
@@ -2395,7 +2392,6 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "OpenGL" ), g_bopengl);
   }
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
-  Write(_T ( "ShowFPS" ), g_bShowFPS);
 
   Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);

@@ -777,7 +777,6 @@ public:
   bool GetTextureCompression(void) const;
   bool GetPolygonSmoothing(void) const;
   bool GetLineSmoothing(void) const;
-  bool GetShowFPS(void) const;
   bool GetSoftwareGL(void) const;
   bool GetTextureCompressionCaching(void) const;
   bool GetRebuildCache(void) const;
@@ -790,7 +789,7 @@ private:
   wxString GetTextureCacheSize(void);
 
   wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
-  wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL,
+  wxCheckBox *m_cbTextureCompressionCaching, *m_cbSoftwareGL,
       *m_cbPolygonSmoothing, *m_cbLineSmoothing;
   wxSpinCtrl *m_sTextureDimension, *m_sTextureMemorySize;
   wxStaticText *m_cacheSize, *m_memorySize;

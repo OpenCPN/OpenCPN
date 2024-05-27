@@ -145,7 +145,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 
 extern bool g_bShowOutlines;
 extern bool g_bShowChartBar;
@@ -6645,7 +6644,6 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
                                                        ->CanAcceleratePanning();
     }
 
-    g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
 
     g_GLOptions.m_GLPolygonSmoothing = dlg.GetPolygonSmoothing();
@@ -9054,7 +9052,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   btnRebuild->Enable(g_GLOptions.m_bTextureCompressionCaching);
   if (!g_bopengl || g_raster_format == GL_RGB) btnRebuild->Disable();
   btnClear->Enable(g_GLOptions.m_bTextureCompressionCaching);
-  m_cbShowFPS = new wxCheckBox(this, wxID_ANY, _("Show FPS"));
   m_cbPolygonSmoothing = new wxCheckBox(this, wxID_ANY, _("Polygon Smoothing"));
   m_cbLineSmoothing = new wxCheckBox(this, wxID_ANY, _("Line Smoothing"));
   m_cbSoftwareGL =
@@ -9082,7 +9079,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbLineSmoothing, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
-  flexSizer->Add(m_cbShowFPS, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbSoftwareGL, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
@@ -9121,10 +9117,6 @@ bool OpenGLOptionsDlg::GetLineSmoothing(void) const {
   return m_cbLineSmoothing->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetShowFPS(void) const {
-  return m_cbShowFPS->GetValue();
-}
-
 bool OpenGLOptionsDlg::GetSoftwareGL(void) const {
   return m_cbSoftwareGL->GetValue();
 }
@@ -9157,7 +9149,6 @@ void OpenGLOptionsDlg::Populate(void) {
         g_GLOptions.m_bTextureCompressionCaching);
     m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
   }
-  m_cbShowFPS->SetValue(g_bShowFPS);
   m_cbPolygonSmoothing->SetValue(g_GLOptions.m_GLPolygonSmoothing);
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
