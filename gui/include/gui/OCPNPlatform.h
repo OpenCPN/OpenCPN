@@ -23,18 +23,21 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+ // This file is part of the OpenCPN Chart Plotter and should be included
+// first in any source file that needs to include platform specific information
 #ifndef OCPNPLATFORM_H
-#define OCPNPLATFORM_H
-
-#include <cstdio>
-#include <string>
-#include <vector>
-
+// if wxWidgets headers have not been included, include them now
+#ifndef _WX_DEFS_H_
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
+
+#endif // _WX_DEFS_H_
+
+#define OCPNPLATFORM_H
+
 
 #include <wx/bmpbuttn.h>
 #include <wx/clrpicker.h>
@@ -50,6 +53,9 @@
 #include <wx/window.h>
 
 #include "model/base_platform.h"
+#include <cstdio>
+#include <string>
+#include <vector>
 
 class MyConfig;
 class ArrayOfCDI;

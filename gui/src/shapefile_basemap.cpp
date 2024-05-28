@@ -25,10 +25,10 @@
  *
  */
 
+#include "OCPNPlatform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
 #include "glChartCanvas.h"
-#include "OCPNPlatform.h"
 
 #ifdef ocpnUSE_GL
 #include "shaders.h"
