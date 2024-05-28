@@ -97,6 +97,8 @@
 #include "toolbar.h"
 #include "track_gui.h"
 #include "MUIBar.h"
+#include "iENCToolbar.h"
+#include "shapefile_basemap.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -180,9 +182,9 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern bool g_bDebugOGL;
-extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
+extern iENCToolbar *g_iENCToolbar;
 extern bool g_bShowChartBar;
 extern glTextureManager *g_glTextureManager;
 extern bool b_inCompressAllCharts;
@@ -221,10 +223,12 @@ extern unsigned int g_canvasConfig;
 extern ChartCanvas *g_focusCanvas;
 extern ChartCanvas *g_overlayCanvas;
 extern BasePlatform *g_BasePlatform;
+extern bool g_PrintingInProgress;
 
 ocpnGLOptions g_GLOptions;
 
 wxColor s_regionColor;
+extern ShapeBaseChartSet gShapeBasemap;
 
 //    For VBO(s)
 bool g_b_EnableVBO;
@@ -1073,7 +1077,7 @@ void glChartCanvas::SetupOpenGL() {
   }
   else
   {
-  printf("GLEW init success!n");
+  wxLogMessage("GLEW init success!n");
   }
 #endif
 #endif
@@ -2297,6 +2301,8 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
       nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
       nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
 
+      scale_factor *= m_pParentCanvas->GetContentScaleFactor();
+
       float nominal_ownship_size_pixels =
           wxMax(20.0, m_pParentCanvas->GetPixPerMM() *
                           nominal_ownship_size_mm);  // nominal length, but not
@@ -2431,6 +2437,10 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         scale_factor_y = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
       }
 
+      // Correct for scaled displays, e.g. Retina
+      scale_factor_x *= m_pParentCanvas->GetContentScaleFactor();
+      scale_factor_y *= m_pParentCanvas->GetContentScaleFactor();
+
       // Set the size of the little circle showing the GPS reference position
       // Set a default early, adjust later based on render type
       float gps_circle_radius = 3.0;
@@ -2458,9 +2468,14 @@ void glChartCanvas::ShipDraw(ocpnDC &dc) {
         nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
 
         float nominal_ownship_size_pixels =
-            wxMax(20.0, m_pParentCanvas->GetPixPerMM() *
-                            nominal_ownship_size_mm);  // nominal length, but
-                                                       // not less than 20 pixel
+            m_pParentCanvas->GetPixPerMM() * nominal_ownship_size_mm;
+
+
+        if (m_pParentCanvas->GetContentScaleFactor() == 1.0) {
+          nominal_ownship_size_pixels = wxMax(
+              20.0, nominal_ownship_size_pixels);  // not less than 20 pixel
+        }
+
         float h = nominal_ownship_size_pixels * scale_factor_y;
         float w = nominal_ownship_size_pixels * scale_factor_x *
                   ownship_size.x / ownship_size.y;
@@ -3621,7 +3636,8 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
     }
   }
 
-  m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+  //m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+  gShapeBasemap.RenderViewOnDC(dc, vp);
 
   glDisable(GL_SCISSOR_TEST);
 
@@ -3827,7 +3843,7 @@ void glChartCanvas::Render() {
                   // initial screen update
     SwapBuffers();
 #endif
-    return;
+    if(!g_PrintingInProgress) return;
   }
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -3887,12 +3903,6 @@ void glChartCanvas::Render() {
       !g_GLOptions.m_bTextureCompressionCaching)
     g_glTextureManager->ClearJobList();
 
-  if (b_timeGL && g_bShowFPS) {
-    if (n_render % 10) {
-      glFinish();
-      g_glstopwatch.Start();
-    }
-  }
   wxPaintDC(this);
 
   ocpnDC gldc(*this);
@@ -4438,23 +4448,30 @@ void glChartCanvas::Render() {
     g_pi_manager->RenderAllGLCanvasOverlayPlugIns(
         m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_EMBOSS);
   }
+  if(!g_PrintingInProgress){
+    if (m_pParentCanvas->m_pTrackRolloverWin)
+      m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
 
-  if (m_pParentCanvas->m_pTrackRolloverWin)
-    m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
+    if (m_pParentCanvas->m_pRouteRolloverWin)
+      m_pParentCanvas->m_pRouteRolloverWin->Draw(gldc);
 
-  if (m_pParentCanvas->m_pRouteRolloverWin)
-    m_pParentCanvas->m_pRouteRolloverWin->Draw(gldc);
-
-  if (m_pParentCanvas->m_pAISRolloverWin)
-    m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
+    if (m_pParentCanvas->m_pAISRolloverWin)
+      m_pParentCanvas->m_pAISRolloverWin->Draw(gldc);
 
 
-  if (m_pParentCanvas->GetMUIBar())
-    m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
+    if (m_pParentCanvas->GetMUIBar())
+      m_pParentCanvas->GetMUIBar()->DrawGL(gldc, m_displayScale);
+
+    if (g_MainToolbar && m_pParentCanvas->IsPrimaryCanvas())
+      g_MainToolbar->DrawGL(gldc, m_displayScale);
+
+    if (g_iENCToolbar && m_pParentCanvas->IsPrimaryCanvas())
+      g_iENCToolbar->DrawGL(gldc, m_displayScale);
+  }
 
     //  On some platforms, the opengl context window is always on top of any
-    //  standard DC windows, so we need to draw the Chart Info Window and the
-    //  Thumbnail as overlayed bmps.
+    //  standard DC windows, so we need to draw the Chart Info Window
+    //  as overlayed bmps.
 
 #ifdef __WXOSX__
   if (m_pParentCanvas->m_pCIWin && m_pParentCanvas->m_pCIWin->IsShown()) {
@@ -4489,21 +4506,6 @@ void glChartCanvas::Render() {
     }
   }
 
-  if (pthumbwin && pthumbwin->IsShown()) {
-    int thumbx, thumby;
-    pthumbwin->GetPosition(&thumbx, &thumby);
-    if (pthumbwin->GetBitmap().IsOk())
-      m_gldc.DrawBitmap(pthumbwin->GetBitmap(), thumbx, thumby, false);
-  }
-
-  if (g_MainToolbar && g_MainToolbar->m_pRecoverwin) {
-    int recoverx, recovery;
-    g_MainToolbar->m_pRecoverwin->GetPosition(&recoverx, &recovery);
-    if (g_MainToolbar->m_pRecoverwin->GetBitmap().IsOk())
-      m_gldc.DrawBitmap(g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx,
-                        recovery, true);
-  }
-
 #endif
   // render the chart bar
   if (g_bShowChartBar) DrawChartBar(m_gldc);
@@ -4531,20 +4533,6 @@ void glChartCanvas::Render() {
   if (g_b_needFinish) glFinish();
 
   SwapBuffers();
-  if (b_timeGL && g_bShowFPS) {
-    if (n_render % 10) {
-      glFinish();
-
-      double filter = .05;
-
-      // Simple low pass filter
-      g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) +
-                          ((double)(g_glstopwatch.Time()) * filter);
-                  if(g_gl_ms_per_frame > 0)
-                      printf(" OpenGL frame time: %3.0f ms-->  %3.0fFPS\n",
-                      g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
-    }
-  }
 
   g_glTextureManager->TextureCrunch(0.8);
   g_glTextureManager->FactoryCrunch(0.6);
@@ -4756,6 +4744,7 @@ void glChartCanvas::RenderCanvasBackingChart(ocpnDC &dc,
 
   bool world_view = false;
   RenderWorldChart(dc, cvp, rtex, world_view);
+  gShapeBasemap.RenderViewOnDC(dc, cvp);
 
   //    dc.SetPen(wxPen(wxColour(254,254,0), 3));
   //    dc.DrawLine( 0, 0, m_cache_tex_x, m_cache_tex_y);

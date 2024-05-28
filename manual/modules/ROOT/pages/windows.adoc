@@ -1,10 +1,13 @@
 = Compiling on Windows
 
-== 5.8.0 Fast Track
+== 5.8.0+ Fast Track
 
 From version 5.8.0 the windows build system has been revised.
 The fast track described here is simplified and without all the options
 provided by the procedure described from next section.
+To set up a complete directly usable local development environment,
+you should probably prefer the workflow implemented by the
+`winConfig.bat` script described in the next chapter.
 
 Steps to to make a build:
 
@@ -32,16 +35,18 @@ using:
 *Notes:*
 
 * `--target opencpn` creates the main executable. Other targets which can be
-  built includes
+  built include
 
 ** `--target opencpn-cmd` -- Command line tool
+** `--target opencpn-glutil` -- Command line tool for testing OpenGL capabilities of the system
+   (The `opencpn-glutil.exe` build product is required in the runtime folder for OpenGL to work)
 ** `--target tests` -- Command line unit tests
 ** `--target package` -- NSIS installer
 
 * It is perfectly possible to use `--config Debug` to create an executable with
-  debugging symbols etc. However, doing so might make the plugins in the
-  catalog incompatible if it is not possible to load optimized libraries into
-  a opencpn debug build. FIXME(leamas): what is the situation?
+  debugging symbols etc. However, doing so will make the plugins in the
+  catalog incompatible as it is not possible to load optimized libraries into
+  an opencpn debug build. Prefer `RelWithDebInfo` configuration in most cases.
 * _win_deps.bat_ stores files in the _cache_ directory. This can be removed
   safely,  it is re-created from scratch by _win_deps.bat_
 * The correct options to invoke cmake manually can be found  in

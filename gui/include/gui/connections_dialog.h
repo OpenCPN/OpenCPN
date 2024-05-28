@@ -35,7 +35,7 @@
 #include "model/conn_params.h"
 #include "model/comm_util.h"
 
-#include "observable.h"
+#include "observable_evtvar.h"
 
 class options;
 class ConnectionParamsPanel;
@@ -69,7 +69,7 @@ public:
   void UpdateDatastreams();
   void OnSize(wxSizeEvent &ev);
 
-//private:
+private:
   wxScrolledWindow *m_container;
   options *m_parent;
   ConnectionParams *mSelectedConnection;
@@ -85,13 +85,14 @@ public:
   wxBoxSizer *boxSizerConnections;
   wxBoxSizer *m_bSizerOuterContainer;
   wxStaticBoxSizer *m_sbSizerLB;
-
+  wxTextCtrl *m_TalkerIdText;
 
 #ifdef __ANDROID__
   wxPanel *m_scrollWinConnections;
 #else
   wxScrolledWindow *m_scrollWinConnections;
 #endif
+  ObsListener nmea_window_close_listener;
 
 };
 

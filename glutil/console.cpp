@@ -1,11 +1,8 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- * Purpose:  Simple CLI application to check OpenGL capabilities.
- *
- ***************************************************************************
+ /** \file console.cpp  Simple CLI application to check OpenGL capabilities. */
+
+ /**************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
+ *   Copyright (C) 2024 Pavel Kalian                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -117,7 +114,7 @@ public:
 
   void OnInitCmdLine(wxCmdLineParser& parser) override {
     parser.AddSwitch("h", "help", "Print help");
-    parser.AddSwitch("v", "verbose", "Verbose output"); // Actually not used, but prevents wxWidgets from asserting 
+    parser.AddSwitch("v", "verbose", "Verbose output"); // Actually not used, but prevents wxWidgets from asserting
     parser.AddSwitch("d", "debug", "Debug output");
     parser.AddParam("<command>", wxCMD_LINE_VAL_STRING,
                     wxCMD_LINE_PARAM_OPTIONAL);

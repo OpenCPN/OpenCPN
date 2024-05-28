@@ -145,7 +145,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 
 extern bool g_bShowOutlines;
 extern bool g_bShowChartBar;
@@ -224,7 +223,7 @@ extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 extern wxLocale* plocale_def_lang;
 #endif
 
@@ -293,7 +292,7 @@ extern wxString GetShipNameFromFile(int);
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 static int lang_list[] = {
     wxLANGUAGE_DEFAULT, wxLANGUAGE_ABKHAZIAN, wxLANGUAGE_AFAR,
     wxLANGUAGE_AFRIKAANS, wxLANGUAGE_ALBANIAN, wxLANGUAGE_AMHARIC,
@@ -396,12 +395,8 @@ void prepareSlider(wxSlider* slider) {
 #endif
 
 // sort callback for Connections list  Sort by priority.
-#if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(wxIntPtr item1, wxIntPtr item2,
                                         wxIntPtr list)
-#else
-int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
-#endif
 {
   wxListCtrl* lc = reinterpret_cast<wxListCtrl*>(list);
 
@@ -1496,7 +1491,8 @@ EVT_CHAR_HOOK(options::OnCharHook)
 END_EVENT_TABLE()
 
 options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
-                 const wxPoint& pos, const wxSize& size, long style) {
+                 const wxPoint& pos, const wxSize& size, long style)
+     : pTrackRotateTime(0) {
   Init();
 
   pParent = parent;
@@ -1547,12 +1543,10 @@ options::~options(void) {
 }
 
 // with AIS it's called very often
-#if wxCHECK_VERSION(3, 0, 0)
 bool options::SendIdleEvents(wxIdleEvent& event) {
   if (IsShown()) return wxDialog::SendIdleEvents(event);
   return false;
 }
-#endif
 
 void options::RecalculateSize(int hint_x, int hint_y) {
   if (!g_bresponsive) {
@@ -1705,7 +1699,8 @@ void options::Init(void) {
   int width, height;
   dc.GetTextExtent(_T("H"), &width, &height, NULL, NULL, dialogFont);
 
-  m_colourPickerDefaultSize = wxSize(4 * height, height * 2);
+  m_colourPickerDefaultSize =
+      wxSize(4 * height, height* 2 * OCPN_GetWinDIPScaleFactor());
 
   m_bcompact = false;
 
@@ -1985,10 +1980,10 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxStaticText(itemPanelShip, wxID_STATIC, _("Distance Unit"));
   radarGrid->Add(unitText, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  wxString pDistUnitsStrings[] = {_("Nautical miles"), _("Kilometers")};
+  wxString pDistUnitsStrings[] = {_("Nautical miles"), _("Kilometers"), _("Minutes (time)")};
   m_itemRadarRingsUnits =
       new wxChoice(itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition,
-                   m_pShipIconType->GetSize(), 2, pDistUnitsStrings);
+                   m_pShipIconType->GetSize(), 3, pDistUnitsStrings);
   radarGrid->Add(m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size);
 
   wxStaticText* colourText =
@@ -2059,7 +2054,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   trackSizer1->Add(0, 0, 1, wxEXPAND, 0);
 
-#if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
   pTrackDaily->SetLabel(_("Automatic Daily Tracks at"));
 #ifdef __WXGTK__
@@ -2067,16 +2061,15 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new TimeCtrl(itemPanelShip, ID_TRACKROTATETIME,
                    wxDateTime((time_t)g_track_rotate_time).ToUTC(),
                    wxDefaultPosition, wxDefaultSize, 0);
+  trackSizer1->Add(pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
+                   border_size);
 #else
   pTrackRotateTime =
       new wxTimePickerCtrl(itemPanelShip, ID_TRACKROTATETIME,
                            wxDateTime((time_t)g_track_rotate_time).ToUTC(),
                            wxDefaultPosition, wxDefaultSize, 0);
-#endif
-  trackSizer1->Add(pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
-                   border_size);
-#endif
-#endif
+#endif  // __WXGTK__
+#endif  // wxUSE_TIMEPICKCTRL
 
   pTrackRotateComputerTime =
       new wxRadioButton(itemPanelShip, ID_TRACKROTATECOMPUTER, _("Computer"),
@@ -2918,7 +2911,6 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     // OpenGL Options
 #ifdef ocpnUSE_GL
-
     wxBoxSizer* OpenGLSizer = new wxBoxSizer(wxVERTICAL);
     itemBoxSizerUI->Add(OpenGLSizer, 0, 0, 0);
 
@@ -2934,17 +2926,13 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(options::OnGLClicked), NULL, this);
-
-
-
 #ifdef __ANDROID__
     pOpenGL->Hide();
     bOpenGL->Hide();
 #endif
-
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
-#endif
+#endif   // ocpnUSE_GL
 
     //  Course Up display update period
     wxStaticText* crat = new wxStaticText(m_ChartDisplayPage, wxID_ANY,
@@ -3405,7 +3393,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
                        labelFlags);
     pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
-                                   _("Additonal detail reduction at Small Scale"));
+                                   _("Additional detail reduction at Small Scale"));
     pCheck_SuperSCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
 
@@ -3593,7 +3581,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, ""),
                        labelFlags);
     pCheck_SuperSCAMIN = new wxCheckBox(ps57Ctl, ID_SUPERSCAMINCHECKBOX,
-                                   _("Additonal detail reduction at Small Scale"));
+                                   _("Additional detail reduction at Small Scale"));
     pCheck_SuperSCAMIN->SetValue(FALSE);
     optionsColumn->Add(pCheck_SuperSCAMIN, inputFlags);
 
@@ -3721,15 +3709,8 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow2);
 
-    // #if defined(__WXMSW__) || defined(__WXOSX__)
-    //     wxString* ps57CtlListBoxStrings = NULL;
-    //     ps57CtlListBox = new wxCheckListBox(
-    //         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
-    //         ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
-    // #else
     ps57CtlListBox = new OCPNCheckedListCtrl(
         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350));
-    // #endif
 
     marinersSizer->Add(ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing);
   }
@@ -4076,9 +4057,11 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    defaultBoatSpeedSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed ")),
-        groupLabelFlagsHoriz);
+
+    m_Text_def_boat_speed = new wxStaticText( pDisplayPanel, wxID_ANY,
+        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+
+    defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
     pSDefaultBoatSpeed =
         new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""),
                        wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
@@ -4636,7 +4619,7 @@ public:
                     wxString *pSoundFile
                   );
 
-    ~OCPNSoundPanel() {};
+    ~OCPNSoundPanel() { delete m_sound; }
 
     void OnButtonSelectSound(wxCommandEvent& event);
     void OnButtonSPTestSound(wxCommandEvent& event);
@@ -4653,11 +4636,13 @@ public:
 
     wxButton* SelSound;
     wxButton* TestSound;
+    OcpnSound *m_sound;
 
     /** Notified with a OCPN_Sound* pointer when sound has completed. */
     EventVar m_on_sp_sound_done;
 
     ObsListener m_sound_sp_done_listener;
+    bool m_soundPlaying;
 
     DECLARE_EVENT_TABLE()
 };
@@ -4678,7 +4663,8 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
               wxString checkLegend,
               wxString selectLegend,
               wxString *pSoundFile)
-:wxPanel(parent, id, pos, size, wxBORDER_NONE)
+:wxPanel(parent, id, pos, size, wxBORDER_NONE),
+      m_soundPlaying(false)
 {
   wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
   SetFont( *pif );
@@ -4686,6 +4672,8 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
   m_pSoundFile = pSoundFile;
   if(pSoundFile)
     m_sound_file = *pSoundFile;
+
+  m_sound = SoundFactory();
 
   int border_size = 4;
   int group_item_spacing = 2;
@@ -4745,9 +4733,8 @@ OCPNSoundPanel::OCPNSoundPanel( wxWindow *parent, wxWindowID id, const wxPoint &
         wxDefaultPosition, m_small_button_size, 0);
   soundSizer1->Add(TestSound, 0, wxALL | wxALIGN_RIGHT,
                      group_item_spacing);
-  auto sound_action = [] (ObservedEvt ev) {
-    auto sound = static_cast<OcpnSound*>(ev.GetClientData());
-    delete sound;
+  auto sound_action = [this] (ObservedEvt ev) {
+    m_soundPlaying = false;
   };
   m_sound_sp_done_listener.Init(m_on_sp_sound_done, sound_action);
 
@@ -4819,24 +4806,48 @@ void OCPNSoundPanel::OnButtonSelectSound(wxCommandEvent& event) {
 }
 
 void OCPNSoundPanel::OnButtonSPTestSound(wxCommandEvent& event) {
-  auto sound = SoundFactory();
-  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
-  if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
-  sound->SetFinishedCallback(
-          [&](void* snd) { m_on_sp_sound_done.Notify(snd); });
-  sound->Load(m_sound_file, g_iSoundDeviceIndex);
-  sound->Play();
+  if (!m_soundPlaying) {
+    m_sound->SetFinishedCallback(
+        [&](void* snd) { m_on_sp_sound_done.Notify(snd); });
+    if (m_sound->Load(m_sound_file, g_iSoundDeviceIndex)) {
+      m_soundPlaying = true;
+      m_sound->Play();
+    }
+  }
 }
 
 
 
 
-void options::OnUXAudioEnableButtonClick(wxCommandEvent &event) {
+void options::OnUXAudioEnableButtonClickAIS(wxCommandEvent &event) {
   if (event.IsChecked())
     m_pCheck_AlertAudio->SetValue( true );
+  else {
+    if (!m_soundPanelSART->GetCheckBox()->GetValue()
+        && !m_soundPanelDSC->GetCheckBox()->GetValue())
+      m_pCheck_AlertAudio->SetValue( false );
+  }
 }
 
+void options::OnUXAudioEnableButtonClickSART(wxCommandEvent &event) {
+  if (event.IsChecked())
+    m_pCheck_AlertAudio->SetValue( true );
+  else {
+    if (!m_soundPanelAIS->GetCheckBox()->GetValue()
+        && !m_soundPanelDSC->GetCheckBox()->GetValue())
+      m_pCheck_AlertAudio->SetValue( false );
+  }
+}
 
+void options::OnUXAudioEnableButtonClickDSC(wxCommandEvent &event) {
+  if (event.IsChecked())
+    m_pCheck_AlertAudio->SetValue( true );
+  else {
+    if (!m_soundPanelAIS->GetCheckBox()->GetValue()
+        && !m_soundPanelSART->GetCheckBox()->GetValue())
+      m_pCheck_AlertAudio->SetValue( false );
+  }
+}
 
 void options::CreatePanel_Sounds(size_t parent, int border_size,
                                  int group_item_spacing) {
@@ -4869,7 +4880,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_soundPanelAIS->GetCheckBox()->Connect(
         wxEVT_COMMAND_CHECKBOX_CLICKED,
-        wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
+        wxCommandEventHandler(options::OnUXAudioEnableButtonClickAIS), NULL,
         this);
 
     // SART Alert
@@ -4884,7 +4895,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_soundPanelSART->GetCheckBox()->Connect(
         wxEVT_COMMAND_CHECKBOX_CLICKED,
-        wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
+        wxCommandEventHandler(options::OnUXAudioEnableButtonClickSART), NULL,
         this);
 
     // DSC Call
@@ -4899,8 +4910,87 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
 
     m_soundPanelDSC->GetCheckBox()->Connect(
         wxEVT_COMMAND_CHECKBOX_CLICKED,
-        wxCommandEventHandler(options::OnUXAudioEnableButtonClick), NULL,
+        wxCommandEventHandler(options::OnUXAudioEnableButtonClickDSC), NULL,
         this);
+
+    //  Sound Device Configuration
+    wxStaticBox* StatBoxSoundConfig =
+        new wxStaticBox(panelSounds, wxID_ANY, _("Sound Device Configuration"));
+    wxStaticBoxSizer* StatBoxSoundConfigSizer =
+        new wxStaticBoxSizer(StatBoxSoundConfig, wxVERTICAL);
+    wrapperSizer->Add(StatBoxSoundConfigSizer, 0, wxALL | wxEXPAND, border_size);
+
+    auto sound = std::unique_ptr<OcpnSound>(SoundFactory());
+    int deviceCount = sound->DeviceCount();
+    wxLogMessage("options: got device count: %d", deviceCount);
+    if (deviceCount >= 1) {
+      wxArrayString labels;
+      for (int i = 0; i < deviceCount; i += 1) {
+        wxString label(sound->GetDeviceInfo(i));
+        if (label == "") {
+          std::ostringstream stm;
+          stm << i;
+          label = _("Unknown device :") + stm.str();
+        }
+        if (!sound->IsOutputDevice(i)) {
+          std::ostringstream stm;
+          stm << i;
+          label = _("Input device :") + stm.str();
+        }
+        labels.Add(label);
+      }
+
+    //  if sound device index is uninitialized, set to "default", if found.
+    // Otherwise, set to 0
+      int iDefault = labels.Index("default");
+
+      if (g_iSoundDeviceIndex == -1) {
+        if (iDefault >= 0)
+          g_iSoundDeviceIndex = iDefault;
+        else
+          g_iSoundDeviceIndex = 0;
+      }
+
+
+      pSoundDeviceIndex = new wxChoice();
+      if (pSoundDeviceIndex) {
+        pSoundDeviceIndex->Create(panelSounds, wxID_ANY, wxDefaultPosition,
+                                wxDefaultSize, labels);
+        pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
+        pSoundDeviceIndex->Show();
+        wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
+        StatBoxSoundConfigSizer->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
+                       group_item_spacing);
+
+        stSoundDeviceIndex =
+          new wxStaticText(panelSounds, wxID_STATIC, _("Sound Device"));
+        pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
+        pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
+      }
+    }
+
+#ifndef __ANDROID__
+    if ((bool)dynamic_cast<SystemCmdSound*>(SoundFactory())) {
+      wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
+      StatBoxSoundConfigSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
+      pCmdSoundString =
+        new wxTextCtrl(panelSounds, wxID_ANY, _T( "" ), wxDefaultPosition,
+                       wxSize(450, -1), wxTE_LEFT);
+      pSoundSizer->Add(
+        new wxStaticText(panelSounds, wxID_ANY, _("Audio Play command:")), 0,
+        wxALIGN_LEFT | wxALL);
+      pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
+    }
+#endif
+
+    if (!deviceCount)
+      StatBoxSoundConfig->Hide();
+
+#ifdef __ANDROID__
+    stSoundDeviceIndex->Hide();
+    pSoundDeviceIndex->Hide();
+#endif
+
 }
 
 void options::CreatePanel_MMSI(size_t parent, int border_size,
@@ -5348,72 +5438,6 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       new wxCheckBox(itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
   pShipsBellsSizer->Add(pPlayShipsBells, 0, wxALL | wxEXPAND, border_size);
 
-#ifndef __ANDROID__
-  if (g_bUIexpert && (bool)dynamic_cast<SystemCmdSound*>(SoundFactory())) {
-    wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
-    pShipsBellsSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND, group_item_spacing);
-    pCmdSoundString =
-        new wxTextCtrl(itemPanelFont, wxID_ANY, _T( "" ), wxDefaultPosition,
-                       wxSize(450, -1), wxTE_LEFT);
-    pSoundSizer->Add(
-        new wxStaticText(itemPanelFont, wxID_ANY, _("Audio Play command:")), 0,
-        wxALIGN_CENTER_HORIZONTAL | wxALL);
-    pSoundSizer->Add(pCmdSoundString, 1, wxEXPAND | wxALIGN_LEFT, border_size);
-  }
-#endif
-
-  auto sound = std::unique_ptr<OcpnSound>(SoundFactory());
-  int deviceCount = sound->DeviceCount();
-  wxLogMessage("options: got device count: %d", deviceCount);
-  if (deviceCount >= 1) {
-    wxArrayString labels;
-    for (int i = 0; i < deviceCount; i += 1) {
-      wxString label(sound->GetDeviceInfo(i));
-      if (label == "") {
-        std::ostringstream stm;
-        stm << i;
-        label = _("Unknown device :") + stm.str();
-      }
-      if (!sound->IsOutputDevice(i)) {
-        std::ostringstream stm;
-        stm << i;
-        label = _("Input device :") + stm.str();
-      }
-      labels.Add(label);
-    }
-
-    //  if sound device index is uninitialized, set to "default", if found.
-    // Otherwise, set to 0
-    int iDefault = labels.Index("default");
-
-    if (g_iSoundDeviceIndex == -1) {
-      if (iDefault >= 0)
-        g_iSoundDeviceIndex = iDefault;
-      else
-        g_iSoundDeviceIndex = 0;
-    }
-
-    pSoundDeviceIndex = new wxChoice();
-    if (pSoundDeviceIndex) {
-      pSoundDeviceIndex->Create(itemPanelFont, wxID_ANY, wxDefaultPosition,
-                                wxDefaultSize, labels);
-      pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
-      pSoundDeviceIndex->Show();
-      wxFlexGridSizer* pSoundDeviceIndexGrid = new wxFlexGridSizer(2);
-      miscOptions->Add(pSoundDeviceIndexGrid, 0, wxALL | wxEXPAND,
-                       group_item_spacing);
-
-      stSoundDeviceIndex =
-          new wxStaticText(itemPanelFont, wxID_STATIC, _("Sound Device"));
-      pSoundDeviceIndexGrid->Add(stSoundDeviceIndex, 0, wxALL, 5);
-      pSoundDeviceIndexGrid->Add(pSoundDeviceIndex, 0, wxALL, border_size);
-    }
-  }
-#ifdef __ANDROID__
-  stSoundDeviceIndex->Hide();
-  pSoundDeviceIndex->Hide();
-#endif
-
   //  Mobile/Touchscreen checkboxes
   pMobile = new wxCheckBox(itemPanelFont, ID_MOBILEBOX,
                            _("Enable Touchscreen interface"));
@@ -5542,7 +5566,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 }
 
 void options::OnAlertEnableButtonClick(wxCommandEvent& event) {
- }
+  m_pCheck_AlertAudio->Enable(event.IsChecked());
+  if (!event.IsChecked())
+    m_pCheck_AlertAudio->SetValue( false );
+}
 
 void options::OnAlertAudioEnableButtonClick(wxCommandEvent& event) {
   if (event.IsChecked()) {
@@ -6135,7 +6162,7 @@ void options::SetInitialSettings(void) {
   if (pPreserveScale) pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
 
-  if (g_bUIexpert && pCmdSoundString)
+  if (pCmdSoundString)
     pCmdSoundString->SetValue(g_CmdSoundString);
 
   if (pSoundDeviceIndex) pSoundDeviceIndex->SetSelection(g_iSoundDeviceIndex);
@@ -6237,8 +6264,15 @@ void options::SetInitialSettings(void) {
 
   // Alerts
   m_pCheck_AlertDialog->SetValue(g_bAIS_CPA_Alert);
-  m_pCheck_AlertAudio->Enable();
-  m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
+  if (g_bAIS_CPA_Alert) {
+    m_pCheck_AlertAudio->Enable();
+    m_pCheck_AlertAudio->SetValue(g_bAIS_CPA_Alert_Audio);
+  }
+  else {
+    m_pCheck_AlertAudio->Disable();
+    m_pCheck_AlertAudio->SetValue(false);
+  }
+
 
   m_pCheck_Alert_Moored->SetValue(g_bAIS_CPA_Alert_Suppress_Moored);
 
@@ -6615,7 +6649,6 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
                                                        ->CanAcceleratePanning();
     }
 
-    g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
 
     g_GLOptions.m_GLPolygonSmoothing = dlg.GetPolygonSmoothing();
@@ -7024,7 +7057,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (pPreserveScale) g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
-  if (g_bUIexpert && pCmdSoundString) {
+  if (pCmdSoundString) {
     g_CmdSoundString = pCmdSoundString->GetValue();
     if (wxIsEmpty(g_CmdSoundString)) {
       g_CmdSoundString = wxString(OCPN_SOUND_CMD);
@@ -7047,6 +7080,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   if (pSDefaultBoatSpeed)
     pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
   g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
+  m_Text_def_boat_speed->SetLabel(_("Default Boat Speed ") + "(" +
+                                  getUsrSpeedUnit() + ")");
 
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
@@ -7060,12 +7095,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bTrackDaily = pTrackDaily->GetValue();
 
   g_track_rotate_time = 0;
-#if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
   int h, m, s;
-  if (pTrackRotateTime->GetTime(&h, &m, &s))
+  if (pTrackRotateTime && pTrackRotateTime->GetTime(&h, &m, &s))
     g_track_rotate_time = h * 3600 + m * 60 + s;
-#endif
 #endif
 
   if (pTrackRotateUTC->GetValue())
@@ -7462,8 +7495,7 @@ void options::Finish(void) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  SetReturnCode(m_returnChanges);
-  EndModal(m_returnChanges);
+  m_on_close_cb();
 }
 
 ArrayOfCDI options::GetSelectedChartDirs() {
@@ -7903,9 +7935,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  int rv = 0;
-  if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
-  EndModal(rv);
+  m_on_close_cb();
 }
 
 void options::OnClose(wxCloseEvent& event) {
@@ -7921,7 +7951,7 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  EndModal(0);
+  m_on_close_cb();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {
@@ -9027,7 +9057,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   btnRebuild->Enable(g_GLOptions.m_bTextureCompressionCaching);
   if (!g_bopengl || g_raster_format == GL_RGB) btnRebuild->Disable();
   btnClear->Enable(g_GLOptions.m_bTextureCompressionCaching);
-  m_cbShowFPS = new wxCheckBox(this, wxID_ANY, _("Show FPS"));
   m_cbPolygonSmoothing = new wxCheckBox(this, wxID_ANY, _("Polygon Smoothing"));
   m_cbLineSmoothing = new wxCheckBox(this, wxID_ANY, _("Line Smoothing"));
   m_cbSoftwareGL =
@@ -9055,7 +9084,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbLineSmoothing, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
-  flexSizer->Add(m_cbShowFPS, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbSoftwareGL, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
@@ -9094,10 +9122,6 @@ bool OpenGLOptionsDlg::GetLineSmoothing(void) const {
   return m_cbLineSmoothing->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetShowFPS(void) const {
-  return m_cbShowFPS->GetValue();
-}
-
 bool OpenGLOptionsDlg::GetSoftwareGL(void) const {
   return m_cbSoftwareGL->GetValue();
 }
@@ -9130,7 +9154,6 @@ void OpenGLOptionsDlg::Populate(void) {
         g_GLOptions.m_bTextureCompressionCaching);
     m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
   }
-  m_cbShowFPS->SetValue(g_bShowFPS);
   m_cbPolygonSmoothing->SetValue(g_GLOptions.m_GLPolygonSmoothing);
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 

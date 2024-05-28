@@ -89,11 +89,3 @@ The installer will place nice default files for your use.  The first
 execution of opencpn will update as needed.  If for some reason the
 config file is not found, opencpn will offer to create a useable
 starting configuration.
-
-
-----------------------------------------------------------------------
-6. Serial Port GPS/AIS Data Input and Autopilot Output
-----------------------------------------------------------------------
-
-See the file LINUX_DEVICES.md in the distribution or at
-https://github.com/OpenCPN/OpenCPN/blob/master/LINUX_DEVICES.md

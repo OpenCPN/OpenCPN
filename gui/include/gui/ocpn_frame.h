@@ -37,6 +37,7 @@
 #include "model/ocpn_types.h"
 #include "model/comm_appmsg_bus.h"
 #include "bbox.h"
+#include "comm_overflow_dlg.h"
 #include "color_handler.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
@@ -397,6 +398,7 @@ private:
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
+  wxWindow* m_options_dlg;
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
 
@@ -405,6 +407,8 @@ private:
   ObsListener m_on_raise_listener;
   ObsListener m_on_quit_listener;
   ObsListener m_routes_update_listener;
+
+  CommOverflowDlg comm_overflow_dlg;
 
   DECLARE_EVENT_TABLE()
 };

@@ -263,7 +263,6 @@ extern bool g_bAutoAnchorMark;
 extern wxAuiManager *g_pauimgr;
 extern wxString g_AisTargetList_perspective;
 
-extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
@@ -4473,16 +4472,14 @@ int doAndroidPersistState() {
   }
 
   if (g_MainToolbar) {
-    wxPoint tbp = g_MainToolbar->GetPosition();
-    wxPoint tbp_incanvas = gFrame->GetPrimaryCanvas()->ScreenToClient(tbp);
+    wxPoint tbp_incanvas = g_MainToolbar->GetToolbarPosition();
     g_maintoolbar_x = tbp_incanvas.x;
     g_maintoolbar_y = tbp_incanvas.y;
     g_maintoolbar_orient = g_MainToolbar->GetOrient();
   }
 
   if (g_iENCToolbar) {
-    wxPoint locn = g_iENCToolbar->GetPosition();
-    wxPoint tbp_incanvas = gFrame->GetPrimaryCanvas()->ScreenToClient(locn);
+    wxPoint tbp_incanvas = g_iENCToolbar->GetToolbarPosition();
     g_iENCToolbarPosY = tbp_incanvas.y;
     g_iENCToolbarPosX = tbp_incanvas.x;
   }

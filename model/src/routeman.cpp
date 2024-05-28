@@ -449,6 +449,9 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 }
 
 bool Routeman::UpdateAutopilot() {
+  if (!bGPSValid)
+    return false;
+
   // Send all known Autopilot messages upstream
 
   // Set max WP name length
@@ -478,51 +481,42 @@ bool Routeman::UpdateAutopilot() {
 
   // RMB
   {
-    m_NMEA0183.TalkerID = _T("EC");
-
+    m_NMEA0183.TalkerID = "EC";
     SENTENCE snt;
-    m_NMEA0183.Rmb.IsDataValid = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Rmb.IsDataValid = NFalse;
-
+    m_NMEA0183.Rmb.IsDataValid = bGPSValid ? NTrue : NFalse;
     m_NMEA0183.Rmb.CrossTrackError = CurrentXTEToActivePoint;
-
-    if (XTEDir < 0)
-      m_NMEA0183.Rmb.DirectionToSteer = Left;
-    else
-      m_NMEA0183.Rmb.DirectionToSteer = Right;
-
-    m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(maxName);
-    m_NMEA0183.Rmb.From =
-        pActiveRouteSegmentBeginPoint->GetName().Truncate(maxName);
-
-    if (pActivePoint->m_lat < 0.)
-      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat,
-                                                      _T("S"));
-    else
-      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(pActivePoint->m_lat,
-                                                      _T("N"));
-
-    if (pActivePoint->m_lon < 0.)
-      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(-pActivePoint->m_lon,
-                                                       _T("W"));
-    else
-      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(pActivePoint->m_lon,
-                                                       _T("E"));
-
+    m_NMEA0183.Rmb.DirectionToSteer = XTEDir < 0 ? Left : Right;
     m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
     m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
+
+    if (pActivePoint->m_lat < 0.)
+      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(
+        -pActivePoint->m_lat, "S");
+    else
+      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(
+        pActivePoint->m_lat, "N");
+
+    if (pActivePoint->m_lon < 0.)
+      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(
+         -pActivePoint->m_lon, "W");
+    else
+      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(
+         pActivePoint->m_lon, "E");
+
     m_NMEA0183.Rmb.DestinationClosingVelocityKnots =
         r_Sog * cos((r_Cog - CurrentBrgToActivePoint) * PI / 180.0);
-
-    if (m_bArrival)
-      m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
-    else
-      m_NMEA0183.Rmb.IsArrivalCircleEntered = NFalse;
-
-    m_NMEA0183.Rmb.FAAModeIndicator = "A";
-
-    m_NMEA0183.Rmb.Write(snt);
+    m_NMEA0183.Rmb.IsArrivalCircleEntered = m_bArrival ? NTrue : NFalse;
+    m_NMEA0183.Rmb.FAAModeIndicator = bGPSValid ? "A" : "N";
+      // RMB is close to NMEA0183 length limit
+      // Restrict WP names further if necessary
+    int wp_len = maxName;
+    do {
+      m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(wp_len);
+      m_NMEA0183.Rmb.From =
+          pActiveRouteSegmentBeginPoint->GetName().Truncate(wp_len);
+      m_NMEA0183.Rmb.Write(snt);
+      wp_len -= 1;
+    } while (snt.Sentence.size() > 82 && wp_len > 0);
 
     BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
   }
@@ -575,6 +569,9 @@ bool Routeman::UpdateAutopilot() {
     }
 
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
+    if (!bGPSValid)
+      m_NMEA0183.Rmc.FAAModeIndicator = "N";
+
     m_NMEA0183.Rmc.Write(snt);
 
     BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
@@ -591,6 +588,8 @@ bool Routeman::UpdateAutopilot() {
       m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
 
     m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
+    if (!bGPSValid)
+      m_NMEA0183.Apb.IsLoranCCycleLockOK = NFalse;
 
     m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
 
@@ -655,8 +654,13 @@ bool Routeman::UpdateAutopilot() {
 
     SENTENCE snt;
 
-    m_NMEA0183.Xte.IsLoranBlinkOK = NTrue;
+    m_NMEA0183.Xte.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid)
+      m_NMEA0183.Xte.IsLoranBlinkOK = NFalse;
+
     m_NMEA0183.Xte.IsLoranCCycleLockOK = NTrue;
+    if (!bGPSValid)
+      m_NMEA0183.Xte.IsLoranCCycleLockOK = NFalse;
 
     m_NMEA0183.Xte.CrossTrackErrorDistance = CurrentXTEToActivePoint;
 

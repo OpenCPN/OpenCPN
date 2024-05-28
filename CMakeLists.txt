@@ -463,8 +463,6 @@ if (EXISTS /etc/debian_version AND NOT DEFINED CMAKE_INSTALL_LIBDIR)
 endif ()
 include(GNUInstallDirs)
 
-set(PREFIX_BIN ${CMAKE_INSTALL_BINDIR})
-set(PREFIX_INCLUDE ${CMAKE_INSTALL_INCLUDEDIR})
 set(PREFIX_DATA ${CMAKE_INSTALL_DATADIR})
 set(PREFIX_PKGDATA ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME})
 set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
@@ -555,9 +553,9 @@ if (APPLE)
 elseif (_wx_selected_config MATCHES "qt-armv7")
   set(wxWidgets_FIND_COMPONENTS base core xml html adv aui)
 elseif (OCPN_USE_WEBVIEW)
-  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base webview)
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base richtext webview)
 else ()
-  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base)
+  set(wxWidgets_FIND_COMPONENTS net xml html adv aui core base richtext)
 endif ()
 
 if (OPENGLES_FOUND)
@@ -651,11 +649,7 @@ if (NOT QT_ANDROID)
     find_package(wxWidgets COMPONENTS ${wxWidgets_FIND_COMPONENTS})
   endif ()
   if (NOT wxWidgets_FOUND)
-    message(
-      FATAL_ERROR
-        "Cannot find wxWidgets, giving up. On linux you might want to try"
-        " using -DOCPN_FORCE_GTK3."
-    )
+    message(FATAL_ERROR "Cannot find wxWidgets, giving up.")
   endif ()
   if (MSYS)
     # Convert msys to windows paths, and handle the missing /usr
@@ -762,6 +756,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/chcanv.h
     ${GUI_HDR_DIR}/ChInfoWin.h
     ${GUI_HDR_DIR}/color_handler.h
+    ${GUI_HDR_DIR}/comm_overflow_dlg.h
     ${GUI_HDR_DIR}/compass.h
     ${GUI_HDR_DIR}/concanv.h
     ${GUI_HDR_DIR}/ConfigMgr.h
@@ -845,6 +840,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/TrackPropDlg.h
     ${GUI_HDR_DIR}/TTYScroll.h
     ${GUI_HDR_DIR}/TTYWindow.h
+    ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
     ${GUI_HDR_DIR}/usb_devices.h
@@ -852,6 +848,8 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/waypointman_gui.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
     ${GUI_HDR_DIR}/WindowDestroyListener.h
+    ${GUI_HDR_DIR}/wiz_ui_proto.h
+    ${GUI_HDR_DIR}/wiz_ui.h
 )
 list(APPEND  GUI_HDRS
     ${GUI_S57_DIR}/include/ogr_s57.h
@@ -881,6 +879,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ChInfoWin.cpp
     ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
+    ${GUI_SRC_DIR}/comm_overflow_dlg.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/ConfigMgr.cpp
@@ -944,6 +943,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/SencManager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
+    ${GUI_SRC_DIR}/shapefile_basemap.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
@@ -960,10 +960,13 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
     ${GUI_SRC_DIR}/TTYScroll.cpp
     ${GUI_SRC_DIR}/TTYWindow.cpp
+    ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
+    ${GUI_SRC_DIR}/initwiz/wiz_ui_proto.cpp
+    ${GUI_SRC_DIR}/initwiz/wiz_ui.cpp
 )
 
 list(APPEND GUI_SRC
@@ -985,15 +988,6 @@ if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
   list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/garmin_wrapper.cpp)
-endif ()
-
-if (LINUX)
-  list(APPEND GUI_SRC ${GUI_SRC_DIR}/linux_devices.cpp
-       ${GUI_SRC_DIR}/udev_rule_mgr.cpp
-  )
-  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/linux_devices.h
-       ${GUI_HDR_DIR}/udev_rule_mgr.h
-  )
 endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)
@@ -1112,10 +1106,8 @@ if (OCPN_USE_SYSFS_PORTS)
   set(USE_SYSFS_PORTS 1)
 endif ()
 
-find_package(LIBUSB)
-if (LIBUSB_FOUND)
-  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::libusb)
-  set(HAVE_LIBUSB_10 1)
+if (EXISTS /sys/devices)
+  set(HAVE_SYSFS_PORTS 1)
 endif ()
 
 if (wxWidgets_VERSION_STRING VERSION_LESS "3.1.6")
@@ -1247,6 +1239,21 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
+
+add_subdirectory("libs/shapelib")
+target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
+
+add_subdirectory("libs/ShapefileCpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::ShapefileCpp)
+target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
+target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
+
+if (NOT QT_ANDROID)
+  # TODO: On Linux libdnet may be available from system packages
+  add_subdirectory("libs/libdnet")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE dnet)
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/libdnet/include)
+endif ()
 
 if (UNIX)
   if (NOT QT_ANDROID) # this should be detected by the grib plugin
@@ -1502,6 +1509,9 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
 add_subdirectory(libs/tinyxml)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
 
+message(STATUS "    Adding local wxserverdisc")
+add_subdirectory(libs/wxservdisc)
+
 if (MSVC)
   install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
   install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
@@ -1597,6 +1607,20 @@ if (OCPN_BUNDLE_GSHHS)
   )
 endif ()
 
+set(basemap_shp
+        data/basemap_shp/basemap_crude_10x10.cpg
+        data/basemap_shp/basemap_crude_10x10.prj
+        data/basemap_shp/basemap_crude_10x10.shp
+        data/basemap_shp/basemap_crude_10x10.dbf
+        data/basemap_shp/basemap_crude_10x10.qmd
+        data/basemap_shp/basemap_crude_10x10.shx
+        data/basemap_shp/basemap_low.cpg
+        data/basemap_shp/basemap_low.prj
+        data/basemap_shp/basemap_low.shx
+        data/basemap_shp/basemap_low.dbf
+        data/basemap_shp/basemap_low.shp
+        )
+
 # Various data files
 
 set(uiData
@@ -1661,7 +1685,9 @@ if (APPLE)
   set_source_files_properties(
     ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
   )
-
+  set_source_files_properties(
+    ${basemap_shp} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/basemap_shp
+  )
   set_source_files_properties(
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
@@ -1865,7 +1891,7 @@ if (APPLE)
             ${DOC_FILES}
             ${CONFIG_FILES}
   )
-  install(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${PREFIX_BIN})
+  install(TARGETS ${PACKAGE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
   target_link_libraries(${PACKAGE_NAME} PRIVATE ${wxWidgets_LIBRARIES})
   set_target_properties(
@@ -1928,7 +1954,7 @@ if (NOT APPLE)
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ".")
   endif ()
   if (LINUX)
-    install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN})
+    install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
     install(FILES LINUX_DEVICES.md DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
   endif ()
 
@@ -1965,6 +1991,8 @@ if (NOT APPLE)
   if (OCPN_BUNDLE_GSHHS)
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   endif ()
+
+  install(FILES ${basemap_shp} DESTINATION ${PREFIX_PKGDATA}/basemap_shp)
 
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
@@ -2557,6 +2585,15 @@ if (UNIX AND NOT APPLE)
   set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 endif ()
 
+# Command line tools - must be added before the macOS bundle is defined, otherwise they do not get installed before fixup_bundle is performed
+if (NOT QT_ANDROID)
+  add_subdirectory(cli)
+endif ()
+
+if (NOT QT_ANDROID AND OCPN_USE_GL)
+  add_subdirectory(glutil)
+endif ()
+
 #
 # Apple application bundle
 #
@@ -2711,14 +2748,6 @@ endif ()
 
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
-
-if (NOT QT_ANDROID)
-  add_subdirectory(cli)
-endif ()
-
-if (NOT QT_ANDROID AND OCPN_USE_GL)
-  add_subdirectory(glutil)
-endif ()
 
 if (OCPN_BUILD_TEST)
   add_subdirectory(libs/gtest)

@@ -43,7 +43,7 @@
  */
 
 
-static const int BUFSIZE = 256;  // Frames per buffer.
+static const int BUFSIZE = 1024;  // Frames per buffer.
 static const int LOCK_SLEEP_MS = 2;
 static const int LOCK_MAX_TRIES = 100;
 

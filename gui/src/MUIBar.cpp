@@ -240,10 +240,10 @@ public:
   void CreateControls();
 
   void SetState(int state);
+  int GetState(){ return mState; }
 
   void SetColorScheme(ColorScheme cs);
   void OnSize(wxSizeEvent& event);
-  void OnPaint(wxPaintEvent& event);
   void OnLeftDown(wxMouseEvent& event);
   void OnLeftUp(wxMouseEvent& event);
 
@@ -436,72 +436,7 @@ wxSize MUIButton::DoGetBestSize() const {
                 m_styleToolSize.y * m_scaleFactor);
 }
 
-#if 0
-void MUIButton::OnPaint(wxPaintEvent& event) {
-  wxPaintDC dc(this);
-  dc.Clear();
 
-  if (m_bitmap.IsOk()) {
-    dc.DrawBitmap(m_bitmap, 0, 0, true);
-  }
-
-#if 0
-    wxBufferedPaintDC dc(this);
-
-    wxRect clientRect = GetClientRect();
-    wxRect gradientRect = clientRect;
-    gradientRect.SetHeight(gradientRect.GetHeight()/2 + ((GetCapture() == this) ? 1 : 0));
-    if(GetCapture() != this)
-    {
-        dc.GradientFillLinear(gradientRect,
-                              m_GradientTopStartColour, m_GradientTopEndColour, wxSOUTH);
-    }
-    else
-    {
-        dc.SetPen(wxPen(m_PressedColourTop));
-        dc.SetBrush(wxBrush(m_PressedColourTop));
-        dc.DrawRectangle(gradientRect);
-    }
-
-    gradientRect.Offset(0, gradientRect.GetHeight());
-
-    if(GetCapture() != this)
-    {
-        dc.GradientFillLinear(gradientRect,
-                              m_GradientBottomStartColour, m_GradientBottomEndColour, wxSOUTH);
-    }
-    else
-    {
-        dc.SetPen(wxPen(m_PressedColourBottom));
-        dc.SetBrush(wxBrush(m_PressedColourBottom));
-        dc.DrawRectangle(gradientRect);
-    }
-    dc.SetPen(wxPen(GetBackgroundColour()));
-    dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    dc.DrawRectangle(0, 0, clientRect.GetWidth(), clientRect.GetHeight());
-    dc.SetFont(GetFont());
-    dc.SetTextForeground(GetForegroundColour());
-    if(GetCapture() == this)
-    {
-        clientRect.Offset(1, 1);
-    }
-    dc.DrawLabel(m_Label, clientRect, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL);
-#endif
-}
-#endif
-
-
-#if 0
-void MUIButton::OnLeftDown(wxMouseEvent& event) { event.Skip(); }
-
-void MUIButton::OnLeftUp(wxMouseEvent& event) {
-  if (GetClientRect().Contains(event.GetPosition())) {
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, GetId());
-    GetParent()->GetEventHandler()->AddPendingEvent(evt);
-  }
-  event.Skip();
-}
-#endif
 
 //------------------------------------------------------------------------------
 //    MUITextButton
@@ -532,7 +467,6 @@ public:
 
   void SetColorScheme(ColorScheme cs);
   void OnSize(wxSizeEvent& event);
-  void OnPaint(wxPaintEvent& event);
   void OnLeftDown(wxMouseEvent& event);
   void OnLeftUp(wxMouseEvent& event);
   void SetText( const wxString &text);
@@ -581,19 +515,39 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   //  No good reason.....
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
+  // Really contorted logic to work around wxFont problems with Windows scaled displays,
+  // And the apparent failure of wxFont::Scale()
+  // Sorry...
+  int font_test_size = 12;
+  double target_size = 0.4;  // Referenced to height of m_styleToolSize
+  wxFont *t_font = wxTheFontList->FindOrCreateFont(
+      font_test_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 
-  m_font = parent->GetFont();     // Inherited from parent (canvas)
-  wxSize font_pix = m_font.GetPixelSize();
-  double r = m_styleToolSize.y / font_pix.y;
-  m_font.Scale(r * .6 * m_scaleFactor).MakeBold();
+  int w, h;
+  wxScreenDC sdc;
+  sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
+
+  double fraction = ((double)h) / (m_styleToolSize.y);
+  double new_font_size = font_test_size * (target_size /fraction) / OCPN_GetWinDIPScaleFactor();
+  new_font_size /= OCPN_GetWinDIPScaleFactor();
+  new_font_size *= m_scaleFactor;
+
+  m_font = *wxTheFontList->FindOrCreateFont(new_font_size, wxFONTFAMILY_MODERN,
+                                            wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
+#ifndef __WXMSW__
+  // Twek the font size on those platforms that correctly support wxFont::Scaled()
+  sdc.GetTextExtent("M", &w, &h, NULL, NULL, &m_font);
+  m_font = m_font.Scaled( 1.5 * target_size * (m_styleToolSize.y * m_scaleFactor) / h);
+#endif
 
   wxCoord descent, exlead, gw, gh;
-  parent->GetTextExtent(m_text, &gw, &gh, &descent, &exlead, &m_font);
+  sdc.GetTextExtent(m_text, &gw, &gh, &descent, &exlead, &m_font);
 
   int min_width = gw * 1.2;
   min_width *= OCPN_GetWinDIPScaleFactor();
 
   m_size = wxSize(min_width, (m_styleToolSize.y * m_scaleFactor) - 1);
+
 
   CreateControls();
   return true;
@@ -638,15 +592,6 @@ void MUITextButton::OnSize(wxSizeEvent& event) {
   return;
 }
 
-#if 0
-void MUITextButton::OnPaint(wxPaintEvent& event) {
-  wxPaintDC dc(this);
-  dc.Clear();
-
-  if (m_bitmap.IsOk())
-    dc.DrawBitmap(m_bitmap, 0, 0, true);
-}
-#endif
 
 void MUITextButton::BuildBitmap(){
   int width = m_size.x;
@@ -656,7 +601,7 @@ void MUITextButton::BuildBitmap(){
   wxMemoryDC mdc;
   wxBitmap bm(width, height);
   mdc.SelectObject(bm);
-  wxColour backColor = GetGlobalColor(_T("GREY3"));
+  wxColour backColor = *wxBLACK; //GetGlobalColor(_T("GREY3"));
   mdc.SetBackground(backColor);
   mdc.Clear();
 
@@ -671,17 +616,6 @@ void MUITextButton::BuildBitmap(){
   m_bitmap = bm;
 }
 
-#if 0
-void MUITextButton::OnLeftDown(wxMouseEvent& event) { event.Skip(); }
-
-void MUITextButton::OnLeftUp(wxMouseEvent& event) {
-  if (GetClientRect().Contains(event.GetPosition())) {
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, GetId());
-    GetParent()->GetEventHandler()->AddPendingEvent(evt);
-  }
-  event.Skip();
-}
-#endif
 
 #define CANVAS_OPTIONS_ANIMATION_TIMER_1 800
 #define CANVAS_OPTIONS_TIMER 801
@@ -775,23 +709,6 @@ void MUIBar::InvalidateBitmap() {
 bool MUIBar::MouseEvent(wxMouseEvent &event) {
   int x, y;
   event.GetPosition(&x, &y);
-#ifdef __WXOSX__
-  if (g_bopengl) {
-    x *= OCPN_GetDisplayContentScaleFactor();
-    y *= OCPN_GetDisplayContentScaleFactor();
-  }
-#endif
-
-  //int ytop = m_parentCanvas->GetCanvasHeight() - GetHeight();
-#ifdef __WXOSX__
-  //if (!g_bopengl) ytop = m_parentCanvas->GetClientSize().y - GetHeight();
-#endif
-
-//  if (event.Leaving() || y < ytop) {
-//    if (m_bleaving) return false;
-//    m_bleaving = true;
-//  } else
-//    m_bleaving = false;
 
   //    Check the regions
   wxRect r = wxRect(m_screenPos, m_size);
@@ -986,25 +903,6 @@ void MUIBar::SetBestPosition(void) {
   }
 }
 
-void MUIBar::OnSize(wxSizeEvent& event) {
-  // int buttonSize = event.GetSize().y / 2;
-  //Layout();
-
-#if 0 //!defined(__WXMAC__) && !defined(__OCPN__ANDROID__)
-  if (1) {
-    wxBitmap m_MaskBmp = wxBitmap(GetSize().x, GetSize().y);
-    wxMemoryDC sdc(m_MaskBmp);
-    sdc.SetBackground(*wxWHITE_BRUSH);
-    sdc.Clear();
-    sdc.SetBrush(*wxBLACK_BRUSH);
-    sdc.SetPen(*wxBLACK_PEN);
-    sdc.DrawRoundedRectangle(0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(),
-                             5);
-    sdc.SelectObject(wxNullBitmap);
-    SetShape(wxRegion(m_MaskBmp, *wxWHITE, 0));
-  }
-#endif
-}
 
 void MUIBar::UpdateDynamicValues() {
   if (!m_scaleButton) return;
@@ -1019,101 +917,18 @@ void MUIBar::UpdateDynamicValues() {
   if (scale < 1e6)
     scaleString.Printf(_T("1:%d"), scale);
   else
-    scaleString.Printf(_T("1:%4.1f MM"), scale / 1e6);
+    scaleString.Printf(_T("1:%4.1f M"), scale / 1e6);
 
   if (m_scaleButton) m_scaleButton->SetText(scaleString);
 }
 
 void MUIBar::SetFollowButtonState(int state) {
-  if (m_followButton) m_followButton->SetState(state);
-}
-
-void MUIBar::OnToolLeftClick(wxCommandEvent& event) {
-#if 0
-  //  Handle the MUIButton clicks here
-  ChartCanvas* pcc = wxDynamicCast(m_parent, ChartCanvas);
-
-  switch (event.GetId()) {
-    case ID_ZOOMIN:
-    case ID_ZOOMOUT: {
-      wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
-      GetParent()->GetEventHandler()->AddPendingEvent(evt);
-
-      if (g_focusCanvas) g_focusCanvas->TriggerDeferredFocus();
-      break;
-    }
-
-    case ID_FOLLOW: {
-      wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
-      GetParent()->GetEventHandler()->AddPendingEvent(evt);
-
-      if (g_focusCanvas) g_focusCanvas->TriggerDeferredFocus();
-      break;
-    }
-
-    case ID_MUI_MENU: {
-      if (!m_canvasOptions) {
-        m_canvasOptions = new CanvasOptions(m_parent);
-
-        // calculate best size for CanvasOptions dialog
-
-        wxPoint parentClientUpperRight =
-            m_parent->ClientToScreen(wxPoint(m_parent->GetSize().x, 0));
-        wxRect rmui = m_parentCanvas->GetMUIBarRect();
-        int size_y = rmui.y - (parentClientUpperRight.y + m_COTopOffset);
-        size_y -= GetCharHeight();
-        size_y = wxMax(size_y, 100);  // ensure always big enough to see
-
-        m_canvasOptions->SetSize(wxSize(-1, size_y));
-        m_canvasOptionsFullSize = m_canvasOptions->GetSize();
-        m_canvasOptionsFullSize.x +=
-            m_canvasOptions->GetCharWidth();  // Allow for scroll bar, since
-                                              // sizer won't do it.
-
-        if (1)
-          m_currentCOPos = m_parent->ClientToScreen(
-              wxPoint(m_parent->GetSize().x, m_COTopOffset));
-        else
-          m_currentCOPos = wxPoint(m_parent->GetSize().x, 20);
-
-        m_canvasOptions->Move(m_currentCOPos);
-        m_canvasOptions->Hide();
-      }
-
-      m_canvasOptions->SetENCAvailable(m_CanvasENCAvail);
-
-      if (m_canvasOptions->IsShown())
-        PushCanvasOptions();  // hide it
-      else {
-        // Grab the backing bitmap, if available
-
-        if (m_coAnimateByBitmaps && m_capture_size_y) {
-          int overShoot_x = m_canvasOptions->GetSize().x * 2 / 10;  // 20%
-          m_backingPoint =
-              wxPoint(m_capturePoint.x - overShoot_x, m_capturePoint.y);
-
-          m_backingBitmap = wxBitmap(m_canvasOptionsFullSize.x + overShoot_x,
-                                     m_capture_size_y, -1);
-          wxMemoryDC mdcb;
-          mdcb.SelectObject(m_backingBitmap);
-          wxScreenDC sdc;
-          mdcb.Blit(0, 0, m_canvasOptionsFullSize.x + overShoot_x,
-                    m_capture_size_y, &sdc, m_capturePoint.x - overShoot_x,
-                    m_capturePoint.y, wxCOPY);
-          mdcb.SelectObject(wxNullBitmap);
-        }
-        PullCanvasOptions();
-      }
-
-      break;
-    }
-
-    default:
-      break;
+  if (m_followButton && m_followButton->GetState() != state) {
+    m_followButton->SetState(state);
+    InvalidateBitmap();
   }
-  // event.Skip();
-#endif
 }
+
 
 void MUIBar::HandleMenuClick(){
   if (!m_canvasOptions) {
@@ -1123,8 +938,8 @@ void MUIBar::HandleMenuClick(){
 
     wxPoint parentClientUpperRight =
         m_parentCanvas->ClientToScreen(wxPoint(m_parentCanvas->GetSize().x, 0));
-    wxRect rmui = m_parentCanvas->GetMUIBarRect();
-    int size_y = rmui.y - (parentClientUpperRight.y + m_COTopOffset);
+    wxPoint muibar_top = m_parentCanvas->ClientToScreen(m_screenPos);
+    int size_y = muibar_top.y - (parentClientUpperRight.y + m_COTopOffset);
     size_y -= m_parentCanvas->GetCharHeight();
     size_y = wxMax(size_y, 100);  // ensure always big enough to see
 
@@ -1134,11 +949,8 @@ void MUIBar::HandleMenuClick(){
         m_canvasOptions->GetCharWidth();  // Allow for scroll bar, since
                                           // sizer won't do it.
 
-    if (1)
-      m_currentCOPos = m_parentCanvas->ClientToScreen(
-          wxPoint(m_parentCanvas->GetSize().x, m_COTopOffset));
-    else
-      m_currentCOPos = wxPoint(m_parentCanvas->GetSize().x, 20);
+    m_currentCOPos = m_parentCanvas->ClientToScreen(
+        wxPoint(m_parentCanvas->GetSize().x, m_COTopOffset));
 
     m_canvasOptions->Move(m_currentCOPos);
     m_canvasOptions->Hide();
@@ -1224,45 +1036,7 @@ void MUIBar::CaptureCanvasOptionsBitmapChain(wxTimerEvent& event) {
   }
 }
 
-//void MUIBar::OnEraseBackground(wxEraseEvent& event) {}
 
-void MUIBar::OnPaint(wxPaintEvent& event) {
-#if 0
-  //return;
-
-  int width, height;
-  GetSize(&width, &height);
-  wxPaintDC dc(this);
-  dc.Clear();
-  return;
-
-
-
-      dc.SetBackgroundMode(wxTRANSPARENT);
-      dc.SetBackground(*wxTRANSPARENT_BRUSH);
-
-       dc.SetPen( *wxTRANSPARENT_PEN );
-       dc.SetBrush( *wxTRANSPARENT_BRUSH );
-       dc.DrawRectangle( 0, 0, width, height);
-
-  wxColour backColor = GetGlobalColor(m_backcolorString);
-
-  dc.SetBrush(wxBrush(/*backColor*/ wxColour(200, 0, 200)));
-  dc.SetPen(wxPen(backColor));
-  //dc.DrawRoundedRectangle(0, 0, width + 10, height + 10, 8);
-
-  wxMemoryDC mdc;
-  wxBitmap *m_pbm = new wxBitmap(width, height);
-  mdc.SelectObject(*m_pbm);
-  ocpnDC odc(mdc);
-
-  AlphaBlending(odc, 0, 0, width, height, 20,
-                GetGlobalColor(_T ( "YELO1" )), 172);
-  mdc.SelectObject(wxNullBitmap);
-
-  dc.DrawBitmap(*m_pbm, 0, 0, false);
-#endif
-}
 wxBitmap &MUIBar::CreateBitmap(double displayScale) {
   if (m_bitmap.IsOk())
     return m_bitmap;

@@ -416,6 +416,15 @@ void CommDecoder::updateItem(const rapidjson::Value &item,
 
     if (update_path == _T("navigation.position") && !item["value"].IsNull()) {
       bposValid = updateNavigationPosition(item["value"], sfixtime, temp_data);
+
+      // if "gnss.methodQuality" is reported as "no GPS", then invalidate gLat
+      // This will flow upstream, eventually triggering the GPS watchdog
+      if (GNSS_quality_map.find(src_string) != GNSS_quality_map.end()) {
+        if (GNSS_quality_map[src_string] == 0) {
+          temp_data.gLat = NAN;
+        }
+      }
+
     } else if (update_path == _T("navigation.speedOverGround") &&
                /*bposValid &&*/ !item["value"].IsNull()) {
       updateNavigationSpeedOverGround(item["value"], sfixtime, temp_data);
@@ -497,6 +506,12 @@ void CommDecoder::updateGnssSatellites(const rapidjson::Value &value,
     }
   } else if ((value.HasMember("count") && value["count"].IsInt())) {
     temp_data.n_satellites = value["count"].GetInt();
+  }
+  //  If "gnss.methodQuality" is "no GPS", then clear the satellite count
+  if (GNSS_quality_map.find(src_string) != GNSS_quality_map.end()) {
+    if (GNSS_quality_map[src_string] == 0) {
+      temp_data.n_satellites = 0;
+    }
   }
 }
 

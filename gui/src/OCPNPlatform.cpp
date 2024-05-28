@@ -179,6 +179,9 @@ extern bool g_oz_vector_scale;
 extern wxString g_toolbarConfig;
 extern bool g_bPreserveScaleOnX;
 extern bool g_running;
+extern bool g_bEnableZoomToCursor;
+extern bool g_bsmoothpanzoom;
+extern bool g_bShowMenuBar;
 
 extern Select *pSelectTC;
 
@@ -706,7 +709,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 #ifndef __WXMSW__
   std::string gl_util_exe = "opencpn-glutil";
 #else
-  std::string gl_util_exe = "bin\\opencpn-glutil.exe";
+  std::string gl_util_exe = "opencpn-glutil.exe";
 #endif
   fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
 
@@ -717,7 +720,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   std::string gl_json = fs::path(GetPrivateDataDir().ToStdString()).append("gl_caps.json").string();
 
-  wxString cmd = wxString::Format(_T("%s opengl-info %s"), gl_util_path.c_str(), gl_json.c_str());
+  wxString cmd = wxString::Format("\"%s\" opengl-info \"%s\"", gl_util_path.c_str(), gl_json.c_str());
 
   wxLogMessage("Starting OpenGL test utility: %s", cmd);
 
@@ -1253,6 +1256,14 @@ void OCPNPlatform::SetDefaultOptions(void) {
     pConfig->Write(_T ( "ZoomDetailFactorVector" ), 3);
 
     pConfig->Write(_T ( "nColorScheme" ), 1);  // higher contrast on NOAA RNCs
+
+// A few more often requested defaults, not applicable to Android
+#ifndef __ANDROID__
+    g_bEnableZoomToCursor = true;
+    g_bsmoothpanzoom = true;
+    g_bShowMenuBar = true;
+#endif
+
   }
 
 #ifdef __WXMSW__

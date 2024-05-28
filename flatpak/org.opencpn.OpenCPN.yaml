@@ -7,16 +7,9 @@
 #
 
 # This manifest is used to build development snapshots (including
-# nightly builds) of the flatpak package.
+# nightly builds) of the flatpak package. The official packaging
+# lives in https://github.com/flathub/org.opencpn.OpenCPN
 #
-# For unknown reasons the tests fails when invoked as part of the build.
-# To run tests:
-#
-#   $ cd build
-#   $ make -f ../flatpak/Makefile build-only
-#   $ flatpak-builder --run app ../flatpak/org.opencpn.OpenCPN.yaml bash
-#   $ cd .flatpak-builder/build/opencpn/_flatpak_build
-#   $ make run-tests
 
 
 app-id: org.opencpn.OpenCPN
@@ -37,6 +30,8 @@ finish-args:
     - --device=all
     - --allow=canbus
     - --talk-name=org.opencpn.OpenCPN.*
+    - --system-talk-name=org.freedesktop.systemd1
+    - --system-talk-name=org.freedesktop.login1
 
 add-extensions:
     org.opencpn.OpenCPN.Plugin:
@@ -82,7 +77,7 @@ modules:
             - src/0011-rapidjson-1.1.0-do_not_include_gtest_src_dir.patch
             - src/0012-Fix-Wclass-memaccess-warnings-errors.patch
             - src/0013-gcc7.patch
- 
+
     - name: glew
       no-autogen: true
       make-args:
@@ -135,8 +130,8 @@ modules:
     - name: wxGTK3
       sources:
           - type: archive
-            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.tar.bz2
-            sha256: 0640e1ab716db5af2ecb7389dbef6138d7679261fbff730d23845ba838ca133e
+            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
+            sha256: 0ad86a3ad3e2e519b6a705248fc9226e3a09bbf069c6c692a02acf7c2d1c6b51
       config-opts:
           - --with-gtk=3
           - --with-opengl
@@ -178,9 +173,7 @@ modules:
           env:
             BUILD_NUMBER: "0"
             CCACHE_DISABLE: "1"
-      # See comment at top
       run-tests: true
-      # test-commands: cd /run/build/opencpn/_flatpak_build; make run-tests
       test-rule: run-tests
       post-install:
           - install -d /app/extensions

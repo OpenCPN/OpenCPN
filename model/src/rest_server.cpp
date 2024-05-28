@@ -56,9 +56,9 @@ static const char* const kHttpsAddr = "http://0.0.0.0:8443";
 
 static const char* const kHttpPortableAddr = "http://0.0.0.0:8001";
 static const char* const kHttpsPortableAddr = "http://0.0.0.0:8444";
-static const char* const kVersionReply = R"""( { "version": "@version@" })""";
+static const char* const kVersionReply = R"--({ "version": "@version@" })--";
 static const char* const kListRoutesReply =
-    R"""( { "version": "@version@", "routes": "@routes@" })""";
+    R"--( { "version": "@version@", "routes": "@routes@" })--";
 
 /** Kind of messages sent from io thread to main code. */
 enum { ORS_START_OF_SESSION, ORS_CHUNK_N, ORS_CHUNK_LAST };
@@ -635,7 +635,7 @@ void RestServer::HandleServerMessage(ObservedEvt& event) {
 
 void RestServer::HandleRoute(pugi::xml_node object,
                              const RestIoEvtData& evt_data) {
-  Route* route = GPXLoadRoute1(object, true, false, false, 0, true);
+  Route* route = GPXLoadRoute1(object, false, false, false, 0, true);
   // Check for duplicate GUID
   bool add = true;
   bool overwrite_one = false;

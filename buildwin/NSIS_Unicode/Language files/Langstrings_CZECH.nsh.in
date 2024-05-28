@@ -4,8 +4,8 @@ LangString Installer ${LANG_CZECH} "instalátor"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_CZECH} "deinstalátor"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_CZECH} "Vaše verze Windows není podporována (je moc stará)!$\r$\nPotřebujete alespoň Windows NT/2000."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
+LangString Installer_Unsupported_Windows_Version ${LANG_CZECH} "Vaše verze Windows není podporována (je moc stará)!$\r$\nPotřebujete alespoň Windows 7."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_CZECH} "Instalátor již je spuštěn."

@@ -4,8 +4,8 @@ LangString Installer ${LANG_HUNGARIAN} ""
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_HUNGARIAN} ""
 	
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP with SP3"
-LangString Installer_Unsupported_Windows_Version ${LANG_HUNGARIAN} ""
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7"
+LangString Installer_Unsupported_Windows_Version ${LANG_HUNGARIAN} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7"
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_HUNGARIAN} ""

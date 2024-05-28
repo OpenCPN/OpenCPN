@@ -1,8 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+
+/**************************************************************************
  *   Copyright (C) 2021 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,10 +16,17 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ ***************************************************************************/
+/** \file udev_rule_mgr.cpp Implement udev_rule_mgr.h */
 
 #include "config.h"
+
+#include <algorithm>
+#include <cassert>
+#include <sstream>
+#include <vector>
+
+#include <stdlib.h>
 
 #include <wx/button.h>
 #include <wx/checkbox.h>
@@ -35,11 +39,25 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
-#include "udev_rule_mgr.h"
-#include "linux_devices.h"
+#include "model/linux_devices.h"
 #include "model/logger.h"
-#include "gui_lib.h"
 #include "model/ocpn_utils.h"
+
+#include "gui_lib.h"
+#include "udev_rule_mgr.h"
+
+
+#if !defined(__linux__) || defined(__ANDROID__)
+
+// non-linux  platforms: Empty place holders.
+bool CheckDongleAccess(wxWindow* parent) { return true; }
+bool CheckSerialAccess(wxWindow* parent, const std::string device) {
+  return true;
+}
+void DestroyDeviceNotFoundDialogs() {}
+
+
+#else
 
 static bool hide_dongle_dialog;
 static bool hide_device_dialog;
@@ -61,6 +79,9 @@ The device @DEVICE@ exists but cannot be used due to missing permissions.
 
 This problem can be fixed by installing a udev rules file. Once installed,
 the rules file will fix the permissions problem.
+)");
+
+static const char* const DEVICE_LINK_INTRO = _(R"(
 
 It will also create a new device called @SYMLINK@. It is recommended to use
 @SYMLINK@ instead of @DEVICE@ to avoid problems with changing device names,
@@ -70,8 +91,12 @@ in particular on laptops.
 static const char* const HIDE_DIALOG_LABEL =
     _("Do not show this dialog next time");
 
+static const char* const RULE_SUCCESS_TTYS_MSG = _(R"(
+Rule successfully installed. To activate the new rule restart the system.
+)");
+
 static const char* const RULE_SUCCESS_MSG = _(R"(
-Rule successfully installed. To activate the new rule:
+Rule successfully installed. To activate the new rule restart system or:
 - Exit opencpn.
 - Unplug and re-insert the USB device.
 - Restart opencpn
@@ -87,8 +112,87 @@ To do after installing the rule according to instructions:
 static const char* const DEVICE_NOT_FOUND =
     _("The device @device@ can not be found (disconnected?)");
 
+static const char* const INSTRUCTIONS = "@pkexec@ cp @PATH@ /etc/udev/rules.d";
+
+/** The modeless "Device not found" dialog. */
+class DeviceNotFoundDlg : public wxFrame {
+public:
+  /** Construct and show a dialog for given device. */
+  static void Create(wxWindow* parent, const std::string& device) {
+    wxWindow* dlg = new DeviceNotFoundDlg(parent, device);
+    dlg->Show();
+  }
+
+  /** Destroy all open dialog windows, overall destructor helper. */
+  static void DestroyOpenWindows() {
+    for (const auto& name : open_windows) {
+      auto window = wxWindow::FindWindowByName(name);
+      if (window) window->Destroy();
+    }
+    open_windows.clear();
+  }
+
+private:
+  static std::vector<std::string> open_windows;
+
+  class ButtonsSizer : public wxStdDialogButtonSizer {
+  public:
+    ButtonsSizer(DeviceNotFoundDlg* parent) : wxStdDialogButtonSizer() {
+      auto button = new wxButton(parent, wxID_OK);
+      AddButton(button);
+      Realize();
+    }
+  };
+
+  DeviceNotFoundDlg(wxWindow* parent, const std::string& device)
+      : wxFrame(parent, wxID_ANY, _("Opencpn: device not found"),
+                wxDefaultPosition, wxDefaultSize,
+                wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT) {
+    std::stringstream ss;
+    ss << "dlg-id-" << rand();
+    SetName(ss.str());
+    open_windows.push_back(ss.str());
+
+    Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent& e) {
+      OnClose();
+      e.Skip();
+    });
+    Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) { OnClose(); });
+
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    SetSizer(vbox);
+    auto flags = wxSizerFlags().Expand().Border();
+    std::string txt(DEVICE_NOT_FOUND);
+    ocpn::replace(txt, "@device@", device);
+    vbox->Add(0, 0, 1);  // vertical space
+    vbox->Add(new wxStaticText(this, wxID_ANY, txt), flags);
+    vbox->Add(0, 0, 1);
+    vbox->Add(new wxStaticLine(this), wxSizerFlags().Expand());
+    vbox->Add(new ButtonsSizer(this), flags);
+    Layout();
+    CenterOnScreen();
+    SetFocus();
+  }
+
+  void OnClose() {
+    const std::string name(GetName().ToStdString());
+    auto found =
+        std::find_if(open_windows.begin(), open_windows.end(),
+                     [name](const std::string& s) { return s == name; });
+    assert(found != std::end(open_windows) &&
+           "Cannot find dialog in window list");
+    open_windows.erase(found);
+    Destroy();
+  }
+};
+
+std::vector<std::string> DeviceNotFoundDlg::open_windows;
+
+void DestroyDeviceNotFoundDialogs() { DeviceNotFoundDlg::DestroyOpenWindows(); }
+
 /** The "Dont show this message next time" checkbox. */
-struct HideCheckbox : public wxCheckBox {
+class HideCheckbox : public wxCheckBox {
+public:
   HideCheckbox(wxWindow* parent, const char* label, bool* state)
       : wxCheckBox(parent, wxID_ANY, label, wxDefaultPosition, wxDefaultSize,
                    wxALIGN_LEFT),
@@ -103,11 +207,11 @@ private:
 };
 
 /**  Line with  "Don't show this message..." checkbox  */
-struct HidePanel : wxPanel {
+class HidePanel : public wxPanel {
+public:
   HidePanel(wxWindow* parent, const char* label, bool* state)
       : wxPanel(parent) {
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    //hbox->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     hbox->Add(new HideCheckbox(this, label, state), wxSizerFlags().Expand());
     SetSizer(hbox);
     Fit();
@@ -115,17 +219,15 @@ struct HidePanel : wxPanel {
   }
 };
 
-static const char* const INSTRUCTIONS = "@pkexec@ cp @PATH@ /etc/udev/rules.d";
-
 /** A clickable triangle which controls child window hide/show. */
 class HideShowPanel : public wxPanel {
 public:
   HideShowPanel(wxWindow* parent, wxWindow* child)
       : wxPanel(parent), m_show(true), m_child(child) {
     m_arrow = new wxStaticText(this, wxID_ANY, "");
-    m_arrow->Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent& ev) { toggle(); });
+    m_arrow->Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent& ev) { Toggle(); });
     if (m_child) {
-      toggle();
+      Toggle();
     }
   }
 
@@ -134,13 +236,13 @@ protected:
   wxWindow* m_child;
   wxStaticText* m_arrow;
 
-  void toggle() {
+  void Toggle() {
     static const auto ARROW_DOWN = L"\u25BC";
     static const auto ARROW_RIGHT = L"\u25BA";
 
     m_show = !m_show;
     m_child->Show(m_show);
-    m_arrow->SetLabel(m_show ? ARROW_DOWN : ARROW_RIGHT);
+    m_arrow->SetLabel(std::string(" ") + (m_show ? ARROW_DOWN : ARROW_RIGHT));
     GetGrandParent()->Fit();
     GetGrandParent()->Layout();
   }
@@ -151,9 +253,9 @@ class ManualInstructions : public HideShowPanel {
 public:
   ManualInstructions(wxWindow* parent, const char* cmd)
       : HideShowPanel(parent, 0) {
-    m_child = get_cmd(parent, cmd);
-    toggle();
-    auto flags = wxSizerFlags().Expand().Right();
+    m_child = GetCmd(parent, cmd);
+    Toggle();
+    auto flags = wxSizerFlags().Expand();
 
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     const char* label = _("Manual command line instructions");
@@ -161,8 +263,8 @@ public:
     hbox->Add(m_arrow);
 
     auto vbox = new wxBoxSizer(wxVERTICAL);
+
     vbox->Add(hbox);
-    //auto indent = parent->GetTextExtent("aaa").GetWidth();
     flags = flags.Border(wxLEFT);
     vbox->Add(m_child, flags.ReserveSpaceEvenIfHidden());
 
@@ -172,11 +274,10 @@ public:
   }
 
 private:
-  wxTextCtrl* get_cmd(wxWindow* parent, const char* tmpl) {
+  wxTextCtrl* GetCmd(wxWindow* parent, const char* tmpl) {
     std::string cmd(tmpl);
-    ocpn::replace(cmd, "@PATH@", get_dongle_rule());
-    auto ctrl = new wxTextCtrl(this, wxID_ANY, cmd);
-    ctrl->SetEditable(false);
+    ocpn::replace(cmd, "@PATH@", GetDongleRule());
+    auto ctrl = new CopyableText(this, cmd.c_str());
     ctrl->SetMinSize(parent->GetTextExtent(cmd + "aaa"));
     return ctrl;
   }
@@ -190,9 +291,9 @@ public:
       : HideShowPanel(parent, 0) {
     int from = rule[0] == '\n' ? 1 : 0;
     m_child = new wxStaticText(this, wxID_ANY, rule.substr(from));
-    toggle();
+    Toggle();
 
-    auto flags = wxSizerFlags().Expand().Right();
+    auto flags = wxSizerFlags().Expand();
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Review rule")), flags);
     hbox->Add(m_arrow);
@@ -209,7 +310,7 @@ public:
 };
 
 /** Read and return contents of file with given path. */
-static std::string get_rule(const std::string& path) {
+static std::string GetRule(const std::string& path) {
   std::ifstream input(path.c_str());
   std::ostringstream buf;
   buf << input.rdbuf();
@@ -225,12 +326,12 @@ class DongleInfoPanel : public wxPanel {
 public:
   DongleInfoPanel(wxWindow* parent) : wxPanel(parent) {
     std::string cmd(INSTRUCTIONS);
-    std::string rule_path(get_dongle_rule());
+    std::string rule_path(GetDongleRule());
     ocpn::replace(cmd, "@PATH@", rule_path.c_str());
     ocpn::replace(cmd, "@pkexec@", "sudo");
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new ManualInstructions(this, cmd.c_str()));
-    std::string rule_text = get_rule(rule_path);
+    std::string rule_text = GetRule(rule_path);
     vbox->Add(new ReviewRule(this, rule_text.c_str()));
     SetAutoLayout(true);
     SetSizer(vbox);
@@ -247,22 +348,23 @@ public:
     ocpn::replace(cmd, "@pkexec@", "sudo");
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new ManualInstructions(this, cmd.c_str()));
-    vbox->Add(new ReviewRule(this, get_rule(rule_path)));
+    vbox->Add(new ReviewRule(this, GetRule(rule_path)));
     SetAutoLayout(true);
     SetSizer(vbox);
   }
 };
 
 /** Install/Quit buttons bottom-right */
-struct Buttons : public wxPanel {
+class Buttons : public wxPanel {
+public:
   Buttons(wxWindow* parent, const char* rule_path)
       : wxPanel(parent), m_rule_path(rule_path) {
     auto sizer = new wxBoxSizer(wxHORIZONTAL);
-    auto flags = wxSizerFlags().Right().Bottom();
+    auto flags = wxSizerFlags().Bottom().Border(wxLEFT);
     sizer->Add(1, 1, 100, wxEXPAND);  // Expanding spacer
     auto install = new wxButton(this, wxID_ANY, _("Install rule"));
     install->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                  [&](wxCommandEvent& ev) { do_install(); });
+                  [&](wxCommandEvent& ev) { DoInstall(); });
     install->Enable(getenv("FLATPAK_ID") == NULL);
     sizer->Add(install, flags);
     auto quit = new wxButton(this, wxID_EXIT, _("Quit"));
@@ -280,20 +382,29 @@ struct Buttons : public wxPanel {
     Show();
   }
 
-  void do_install() {
-    std::string cmd(INSTRUCTIONS);
+  void DoInstall() {
+    using namespace std;
+    string cmd(INSTRUCTIONS);
     ocpn::replace(cmd, "@PATH@", m_rule_path);
-    ocpn::replace(cmd, "@pkexec@", "pkexec");
+    ocpn::replace(cmd, "@pkexec@", "sudo");
+    ifstream f(m_rule_path);
+    auto rule =
+        string(istreambuf_iterator<char>(f), istreambuf_iterator<char>());
     int sts = system(cmd.c_str());
     int flags = wxOK | wxICON_WARNING;
     const char* msg = _("Errors encountered installing rule.");
     if (WIFEXITED(sts) && WEXITSTATUS(sts) == 0) {
-      msg = RULE_SUCCESS_MSG;
+      if (rule.find("ttyS") != std::string::npos) {
+        msg = RULE_SUCCESS_TTYS_MSG;
+      } else {
+        msg = RULE_SUCCESS_MSG;
+      }
       flags = wxOK | wxICON_INFORMATION;
     }
     OCPNMessageBox(this, msg, _("OpenCPN Info"), flags);
   }
 
+private:
   std::string m_rule_path;
 };
 
@@ -303,7 +414,7 @@ public:
   DongleRuleDialog(wxWindow* parent)
       : wxDialog(parent, wxID_ANY, _("Manage dongle udev rule")) {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand();
+    auto flags = wxSizerFlags().Expand().Border();
     std::string intro(DONGLE_INTRO);
     if (getenv("FLATPAK_ID")) {
       intro += FLATPAK_INTRO_TRAILER;
@@ -314,7 +425,7 @@ public:
     sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL, &hide_dongle_dialog),
                flags.Left());
     sizer->Add(new wxStaticLine(this), flags);
-    sizer->Add(new Buttons(this, get_dongle_rule().c_str()), flags);
+    sizer->Add(new Buttons(this, GetDongleRule().c_str()), flags);
     SetSizer(sizer);
     SetAutoLayout(true);
     Fit();
@@ -322,19 +433,23 @@ public:
 };
 
 /** Return an intro based on DEVICE_INTRO with proper substitutions. */
-static std::string get_device_intro(const char* device, std::string symlink) {
+static std::string GetDeviceIntro(const char* device, std::string symlink) {
   std::string intro(DEVICE_INTRO);
+
+  std::string dev_name(device);
+  ocpn::replace(dev_name, "/dev/", "");
+  if (!ocpn::startswith(dev_name, "ttyS")) {
+    intro += DEVICE_LINK_INTRO;
+  }
+  if (getenv("FLATPAK_ID")) {
+    intro += FLATPAK_INTRO_TRAILER;
+  }
   ocpn::replace(symlink, "/dev/", "");
   while (intro.find("@SYMLINK@") != std::string::npos) {
     ocpn::replace(intro, "@SYMLINK@", symlink);
   }
-  std::string dev_name(device);
-  ocpn::replace(dev_name, "/dev/", "");
   while (intro.find("@DEVICE@") != std::string::npos) {
     ocpn::replace(intro, "@DEVICE@", dev_name.c_str());
-  }
-  if (getenv("FLATPAK_ID")) {
-    intro += FLATPAK_INTRO_TRAILER;
   }
   return intro;
 }
@@ -345,16 +460,16 @@ public:
   DeviceRuleDialog(wxWindow* parent, const char* device_path)
       : wxDialog(parent, wxID_ANY, _("Manage device udev rule")) {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Expand();
+    auto flags = wxSizerFlags().Expand().Border();
 
-    std::string symlink(make_udev_link());
-    auto intro = get_device_intro(device_path, symlink.c_str());
-    auto rule_path = get_device_rule(device_path, symlink.c_str());
+    std::string symlink(MakeUdevLink());
+    auto intro = GetDeviceIntro(device_path, symlink.c_str());
+    auto rule_path = GetDeviceRule(device_path, symlink.c_str());
     sizer->Add(new wxStaticText(this, wxID_ANY, intro), flags);
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new DeviceInfoPanel(this, rule_path), flags);
     sizer->Add(new HidePanel(this, HIDE_DIALOG_LABEL, &hide_device_dialog),
-               flags.Right());
+               flags);
     sizer->Add(new wxStaticLine(this), flags);
     sizer->Add(new Buttons(this, rule_path.c_str()), flags);
 
@@ -369,13 +484,11 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
     return true;
   }
   if (!ocpn::exists(device)) {
-    std::string msg(DEVICE_NOT_FOUND);
-    ocpn::replace(msg, "@device@", device);
-    OCPNMessageBox(parent, msg, _("OpenCPN device error"));
+    DeviceNotFoundDlg::Create(parent, device);
     return false;
   }
   int result = 0;
-  if (!is_device_permissions_ok(device.c_str())) {
+  if (!IsDevicePermissionsOk(device.c_str())) {
     auto dialog = new DeviceRuleDialog(parent, device.c_str());
     result = dialog->ShowModal();
     delete dialog;
@@ -385,10 +498,12 @@ bool CheckSerialAccess(wxWindow* parent, const std::string device) {
 
 bool CheckDongleAccess(wxWindow* parent) {
   int result = 0;
-  if (is_dongle_permissions_wrong() && !hide_dongle_dialog) {
+  if (IsDonglePermissionsWrong() && !hide_dongle_dialog) {
     auto dialog = new DongleRuleDialog(parent);
     result = dialog->ShowModal();
     delete dialog;
   }
   return result == 0;
 }
+
+#endif  // !defined(__linux__) || defined(__ANDROID__)

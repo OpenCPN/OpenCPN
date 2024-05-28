@@ -170,6 +170,8 @@ public:
   wxString m_sOrientation;
   wxArrayInt m_aInstrumentList;
   wxArrayOfInstrumentProperties m_aInstrumentPropertyList;
+  wxSize m_best_size;
+  wxSize m_conf_best_size;
 };
 
 class DashboardInstrumentContainer {
@@ -313,6 +315,7 @@ private:
   int mHDT_Watchdog;
   int mSatsUsed_Wdog;
   int mSatStatus_Wdog;
+  int m_PriN2kTalker;
   int mVar_Watchdog;
   int mMWVA_Watchdog;
   int mMWVT_Watchdog;

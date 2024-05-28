@@ -57,7 +57,6 @@ public:
   QuiltCandidate() {
     b_include = false;
     b_eclipsed = false;
-    b_locked = false;
     last_factor = -1;
   }
 
@@ -72,7 +71,6 @@ public:
   int rounding;
   bool b_include;
   bool b_eclipsed;
-  bool b_locked;
 
 private:
   double last_factor;

@@ -295,7 +295,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
 
   if (m_bAIS_Audio_Alert_On) {
     if (!m_AIS_Sound) {
-      m_AIS_Sound = SoundFactory(g_CmdSoundString.mb_str(wxConvUTF8));
+      m_AIS_Sound = SoundFactory(/*g_CmdSoundString.mb_str(wxConvUTF8)*/);
     }
     if (!AIS_AlertPlaying()) {
       m_bAIS_AlertPlaying = true;

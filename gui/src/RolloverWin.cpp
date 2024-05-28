@@ -82,7 +82,8 @@ EVT_PAINT(RolloverWin::OnPaint) EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
 RolloverWin::~RolloverWin() {
   delete m_pbm;
 #ifdef ocpnUSE_GL
-  glDeleteTextures(1, &m_texture);
+  if (g_bopengl)
+    glDeleteTextures(1, &m_texture);
 #endif
 }
 void RolloverWin::OnTimer(wxTimerEvent &event) {
@@ -183,10 +184,6 @@ void RolloverWin::SetBitmap(int rollover) {
 
     } else
       glBindTexture(g_texture_rectangle_format, m_texture);
-
-    wxString msg;
-    msg.Printf(_T("Render texture  %d"), m_texture);
-    wxLogMessage(msg);
 
     // make texture data
     wxImage image = m_pbm->ConvertToImage();

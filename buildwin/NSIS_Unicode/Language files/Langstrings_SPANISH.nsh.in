@@ -4,8 +4,8 @@ LangString Installer ${LANG_SPANISH} "Programa de instalación"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_SPANISH} "Programa de Desinstalación"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_SPANISH} "Su versión de Windows es demasiado antigua)!$\r$\nSe requiere como mínimo Windows NT/2000."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
+LangString Installer_Unsupported_Windows_Version ${LANG_SPANISH} "Su versión de Windows es demasiado antigua)!$\r$\nSe requiere como mínimo Windows 7."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_SPANISH} "El programa de instalación ya se está ejecutando."

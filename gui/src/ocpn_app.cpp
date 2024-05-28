@@ -163,9 +163,7 @@ using namespace std::literals::chrono_literals;
 #include "tcmgr.h"
 #include "thumbwin.h"
 #include "TrackPropDlg.h"
-#ifdef __linux__
 #include "udev_rule_mgr.h"
-#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -193,7 +191,7 @@ void RedirectIOToConsole();
 #else
 #include "serial/serial.h"
 #endif
-
+#include "wiz_ui.h"
 
 
 const char* const kUsage =
@@ -217,6 +215,7 @@ Options for starting opencpn
                                 Zero or negative <num> specifies no limit.
   -U, --unit_test_2
   -s, --safe_mode              	Run without plugins, opengl and other "dangerous" stuff
+  -W, --config_wizard          	Start with initial configuration wizard
 
 Options manipulating already started opencpn
   -r, --remote                 	Execute commands on already running instance
@@ -302,6 +301,7 @@ bool bDrawCurrentValues;
 
 wxString ChartListFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
+wxString gWorldShapefileLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
 wxString g_SENCPrefix;
@@ -478,7 +478,6 @@ bool g_bLookAhead;
 bool g_bskew_comp;
 bool g_bopengl;
 bool g_bSoftwareGL;
-bool g_bShowFPS;
 bool g_bsmoothpanzoom;
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
@@ -818,6 +817,7 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
                    wxCMD_LINE_PARAM_OPTIONAL);
   parser.AddSwitch("f", "fullscreen");
   parser.AddSwitch("G", "no_opengl");
+  parser.AddSwitch("W", "config_wizard");
   parser.AddSwitch("g", "rebuild_gl_raster_cache");
   parser.AddSwitch("D", "rebuild_chart_db");
   parser.AddSwitch("P", "parse_all_enc");
@@ -878,6 +878,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
   g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
   g_NeedDBUpdate = parser.Found("rebuild_chart_db") ? 2 : 0;
   g_parse_all_enc = parser.Found("parse_all_enc");
+  g_config_wizard = parser.Found("config_wizard");
   if (parser.Found("unit_test_1", &number)) {
     g_unit_test_1 = static_cast<int>(number);
     if (g_unit_test_1 == 0) g_unit_test_1 = -1;
@@ -1161,12 +1162,12 @@ bool MyApp::OnInit() {
                  like0.mb_str());
   wxLogMessage(msgplat);
 
-  //    Initialize embedded PNG icon graphics
-  ::wxInitAllImageHandlers();
-
   wxString imsg = _T("SData_Locn is ");
   imsg += g_Platform->GetSharedDataDir();
   wxLogMessage(imsg);
+
+  //    Initialize embedded PNG icon graphics
+  ::wxInitAllImageHandlers();
 
 #ifdef __WXQT__
   //  Now we can configure the Qt StyleSheets, if present
@@ -1190,7 +1191,7 @@ bool MyApp::OnInit() {
   //      Init the Route Manager
 
  g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
-                            NMEALogWindow::Get());
+                   NMEALogWindow::GetInstance());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
@@ -1273,6 +1274,14 @@ bool MyApp::OnInit() {
   //  created from scratch
   if (b_initial_load) g_Platform->SetDefaultOptions();
 
+  if (g_config_wizard || b_initial_load) {
+    FirstUseWizImpl wiz(gFrame, pConfig);
+    auto res = wiz.Run();
+    if(res) {
+      g_NeedDBUpdate = 2;
+    }
+  }
+
   g_Platform->applyExpertMode(g_bUIexpert);
 
   // Now initialize UI Style.
@@ -1348,6 +1357,12 @@ bool MyApp::OnInit() {
 
   wxString cflmsg = _T("Config file language:  ") + g_locale;
   wxLogMessage(cflmsg);
+
+  if (g_locale.IsEmpty()) {
+    g_locale = def_lang_canonical;
+    cflmsg = _T("Config file language empty, using system default:  ") + g_locale;
+    wxLogMessage(cflmsg);
+  }
 
   //  Make any adjustments necessary
   g_locale = g_Platform->GetAdjustedAppLocale();
@@ -1786,7 +1801,8 @@ bool MyApp::OnInit() {
   // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
   // glDeleteTextures. Truly awful.
 #ifdef ocpnUSE_GL
-  RoutePoint::delete_gl_textures =
+  if (g_bopengl)
+    RoutePoint::delete_gl_textures =
       [](unsigned n, const unsigned* texts) { glDeleteTextures(n, texts); };
 #else
   RoutePoint::delete_gl_textures = [](unsigned n, const unsigned* texts) { };
@@ -1882,18 +1898,16 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
-      if (cp->GetDSPort().Contains(_T("Serial"))) {
+      if (cp->GetDSPort().Contains("Serial")) {
         std::string port(cp->Port.ToStdString());
         CheckSerialAccess(gFrame, port);
       }
     }
   }
   CheckDongleAccess(gFrame);
-#endif
 
   // Initialize the CommBridge
   m_comm_bridge.Initialize();

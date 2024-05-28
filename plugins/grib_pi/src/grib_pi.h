@@ -64,6 +64,18 @@ class GribPreferencesDialog;
 #define SEPARATED_HORIZONTAL 2     // dialog separated shown honrizontaly
 #define SEPARATED_VERTICAL 3       // dialog separated shown vaerticaly
 
+enum SettingsDisplay {
+  B_ARROWS,
+  ISO_LINE,
+  ISO_ABBR,
+  ISO_LINE_SHORT,
+  ISO_LINE_VISI,
+  D_ARROWS,
+  OVERLAY,
+  NUMBERS,
+  PARTICLES
+};
+
 class grib_pi : public opencpn_plugin_116 {
 public:
   grib_pi(void *ppimgr);

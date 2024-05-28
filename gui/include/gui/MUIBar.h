@@ -66,10 +66,6 @@ public:
 
   ~MUIBar();
 
-  void OnSize(wxSizeEvent &event);
-  void OnPaint(wxPaintEvent &event);
-  void OnToolLeftClick(wxCommandEvent &event);
-  void OnEraseBackground(wxEraseEvent &event);
   void onCanvasOptionsAnimationTimerEvent(wxTimerEvent &event);
 
   void SetBestPosition(void);
@@ -86,6 +82,7 @@ public:
   wxRect GetRect(){ return wxRect(m_screenPos, m_size); }
 
   bool MouseEvent(wxMouseEvent &event);
+  void PushCanvasOptions();
 
   wxPoint m_screenPos;
   wxSize m_size;
@@ -94,7 +91,6 @@ private:
   void Init(void);
   void CreateControls();
   void PullCanvasOptions();
-  void PushCanvasOptions();
   void HandleMenuClick();
   wxBitmap &CreateBitmap(double displayScale);
   void InvalidateBitmap();

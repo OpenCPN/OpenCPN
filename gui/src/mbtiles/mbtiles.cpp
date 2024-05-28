@@ -61,7 +61,7 @@
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"
 #ifdef ocpnUSE_GL
-    #include "shaders.h"
+#include "shaders.h"
 #endif
 #include "mbtiles.h"
 #include "model/config_vars.h"
@@ -95,44 +95,12 @@ extern int g_chart_zoom_modifier_raster;
 #define LON_UNDEF NAN
 #define LAT_UNDEF NAN
 
-// The OpenStreetMaps zommlevel translation tables
-//  https://wiki.openstreetmap.org/wiki/Zoom_levels
-
-/*Level   Degree  Area          m / pixel       ~Scale          # Tiles
-0       360     whole world     156,412         1:500 million   1
-1       180                     78,206          1:250 million   4
-2       90                      39,103          1:150 million   16
-3       45                      19,551          1:70 million    64
-4       22.5                    9,776           1:35 million    256
-5       11.25                   4,888           1:15 million    1,024
-6       5.625                   2,444           1:10 million    4,096
-7       2.813                   1,222           1:4 million     16,384
-8       1.406                   610.984         1:2 million     65,536
-9       0.703   wide area       305.492         1:1 million     262,144
-10      0.352                   152.746         1:500,000       1,048,576
-11      0.176   area            76.373          1:250,000       4,194,304
-12      0.088                   38.187          1:150,000       16,777,216
-13      0.044  village or town  19.093          1:70,000        67,108,864
-14      0.022                   9.547           1:35,000        268,435,456
-15      0.011                   4.773           1:15,000        1,073,741,824
-16      0.005   small road      2.387           1:8,000         4,294,967,296
-17      0.003                   1.193           1:4,000         17,179,869,184
-18      0.001                   0.596           1:2,000         68,719,476,736
-19      0.0005                  0.298           1:1,000         274,877,906,944
-*/
-
 // A "nominal" scale value, by zoom factor.  Estimated at equator, with monitor
 // pixel size of 0.3mm
-static const double OSM_zoomScale[] = {5e8,   2.5e8, 1.5e8, 7.0e7, 3.5e7, 1.5e7,
-                                       1.0e7, 4.0e6, 2.0e6, 1.0e6, 5.0e5, 2.5e5,
-                                       1.5e5, 7.0e4, 3.5e4, 1.5e4, 8.0e3, 4.0e3,
-                                       2.0e3, 1.0e3, 5.0e2, 2.5e2};
+static double OSM_zoomScale[22];
 
 //  Meters per pixel, by zoom factor
-static const double OSM_zoomMPP[] = {
-    156412, 78206,   39103,   19551,  9776,   4888,   2444,  1222,
-    610,    305.492, 152.746, 76.373, 38.187, 19.093, 9.547, 4.773,
-    2.387,  1.193,   0.596,   0.298,  0.149,  0.075};
+static double OSM_zoomMPP[22];
 
 extern MyFrame *gFrame;
 
@@ -185,6 +153,15 @@ private:
 // ============================================================================
 
 ChartMBTiles::ChartMBTiles() {
+  // Compute scale & MPP for each zoom level
+  // Initial constants taken from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  OSM_zoomScale[0] = 554680041;
+  OSM_zoomMPP[0] = 156543.03;
+  for (int i = 1; i < (int)(sizeof(OSM_zoomScale) / sizeof(double)); i++) {
+    OSM_zoomScale[i] = OSM_zoomScale[i - 1] / 2;
+    OSM_zoomMPP[i] = OSM_zoomMPP[i - 1] / 2;
+  }
+
   //    Init some private data
   m_workerThread = nullptr;
   m_ChartFamily = CHART_FAMILY_RASTER;
@@ -667,11 +644,10 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
     return true;
   } else if (!tile->m_bAvailable) {
     // Tile is not in MbTiles file : no texture to render
-    m_tileCount--;
     return false;
   } else if (tile->m_teximage == 0) {
     if (tile->m_requested == false) {
-      // The tile has not loaded and decompressed previously : request it
+      // The tile has not been loaded and decompressed yet : request it
       // to the worker thread
       m_workerThread->RequestTile(tile);
     }
@@ -679,9 +655,6 @@ bool ChartMBTiles::getTileTexture(mbTileDescriptor *tile) {
   } else {
     // The tile has been decompressed to memory : load it into OpenGL texture
     // memory
-    if (tile->glTextureName > 0) {
-      glDeleteTextures(1, &tile->glTextureName);
-    }
 #ifndef __OCPN__ANDROID__
     glEnable(GL_COLOR_MATERIAL);
 #endif
@@ -1012,7 +985,10 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc,
 
   glChartCanvas::DisableClipRegion();
 
-  // Limit the cache size to 3 times the number of tiles to draw on a rendering
+  // Limit the cache size to 3 times the number of tiles to draw on the current
+  // viewport. This dynamic limit allows to automatically adapt to the actual
+  // resolution of the screen and to handle tricky configuration with multiple
+  // screens or hdpi displays
   m_tileCache->CleanCache(m_tileCount * 3);
 #endif
   return true;

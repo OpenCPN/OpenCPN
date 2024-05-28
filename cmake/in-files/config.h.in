@@ -32,7 +32,7 @@
 #undef HAVE_UNISTD_H
 #cmakedefine OCPN_USE_UDEV_PORTS
 #cmakedefine OCPN_USE_SYSFS_PORTS
-#cmakedefine HAVE_LIBUSB_10
+#cmakedefine HAVE_SYSFS_PORTS
 #cmakedefine HAVE_DIRENT_H
 #cmakedefine HAVE_LIBGEN_H
 #cmakedefine HAVE_LIBUDEV
@@ -45,6 +45,7 @@
 #cmakedefine HAVE_SYS_TYPES_H
 #cmakedefine HAVE_SYS_FCNTL_H
 #cmakedefine HAVE_SYS_IOCTL_H
+#cmakedefine OCPN_DISTRO_BUILD
 
 // The os compatible plugins are are built for
 #define PKG_TARGET "${PKG_TARGET}"

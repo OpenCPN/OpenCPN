@@ -4,8 +4,8 @@ LangString Installer ${LANG_SWEDISH} "Installationsprogrammet"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_SWEDISH} "Avinstallera"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
-LangString Installer_Unsupported_Windows_Version ${LANG_SWEDISH} "Din Windowsversion stöds ej av programmet!$\r$\nDu behöver minst Windows XP SP3."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
+LangString Installer_Unsupported_Windows_Version ${LANG_SWEDISH} "Din Windowsversion stöds ej av programmet!$\r$\nDu behöver minst Windows 7."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_SWEDISH} "Installationen körs redan."

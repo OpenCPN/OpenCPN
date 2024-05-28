@@ -36,6 +36,7 @@
 #include "model/comm_drv_registry.h"
 #include "model/geodesic.h"
 #include "model/sys_events.h"
+#include "wxServDisc.h"
 
 #include "observable.h"
 
@@ -279,6 +280,56 @@ void CommDriverSignalKNet::Open(void) {
 }
 void CommDriverSignalKNet::Close() { CloseWebSocket(); }
 
+bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
+                                            wxString& ip, int& port, int tSec) {
+  wxServDisc* servscan =
+      new wxServDisc(0, wxString(serviceIdent.c_str()), QTYPE_PTR);
+
+  for (int i = 0; i < 10; i++) {
+    if (servscan->getResultCount()) {
+      auto result = servscan->getResults().at(0);
+      delete servscan;
+
+      wxServDisc* namescan = new wxServDisc(0, result.name, QTYPE_SRV);
+      for (int j = 0; j < 10; j++) {
+        if (namescan->getResultCount()) {
+          auto namescanResult = namescan->getResults().at(0);
+          port = namescanResult.port;
+          delete namescan;
+
+          wxServDisc* addrscan =
+              new wxServDisc(0, namescanResult.name, QTYPE_A);
+          for (int k = 0; k < 10; k++) {
+            if (addrscan->getResultCount()) {
+              auto addrscanResult = addrscan->getResults().at(0);
+              ip = addrscanResult.ip;
+              delete addrscan;
+              return true;
+              break;
+            } else {
+              wxYield();
+              wxMilliSleep(1000*tSec/10);
+            }
+          }
+          delete addrscan;
+          return false;
+        } else {
+          wxYield();
+          wxMilliSleep(1000*tSec/10);
+        }
+      }
+      delete namescan;
+      return false;
+    } else {
+      wxYield();
+      wxMilliSleep(1000*tSec/10);
+    }
+  }
+
+  delete servscan;
+  return false;
+}
+
 void CommDriverSignalKNet::OpenWebSocket() {
   // printf("OpenWebSocket\n");
   wxLogMessage(wxString::Format(_T("Opening Signal K WebSocket client: %s"),
@@ -379,8 +430,12 @@ void CommDriverSignalKNet::handle_SK_sentence(
   }
 
   // Notify all listeners
+  auto pos = iface.find(":");
+  std::string comm_interface = "";
+  if (pos != std::string::npos)
+    comm_interface = iface.substr(pos + 1);
   auto navmsg =
-      std::make_shared<const SignalkMsg>(m_self, m_context, msgTerminated);
+      std::make_shared<const SignalkMsg>(m_self, m_context, msgTerminated, comm_interface);
   m_listener.Notify(std::move(navmsg));
 }
 

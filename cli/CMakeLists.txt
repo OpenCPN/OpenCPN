@@ -102,7 +102,11 @@ if (MSVC)
 endif ()
 
 
-install(TARGETS opencpn-cmd RUNTIME DESTINATION ${PREFIX_BIN})
+if (WIN32)
+  install(TARGETS opencpn-cmd RUNTIME DESTINATION ".")
+else()
+  install(TARGETS opencpn-cmd RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif ()
 
 if (APPLE)
   install(

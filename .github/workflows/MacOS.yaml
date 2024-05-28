@@ -42,10 +42,10 @@ jobs:
           - name: macOS Latest wxOSX
             runner: macos-latest
             pkg_mod: 11
-            MACOSX_DEPLOYMENT_TARGET: 10.13
+            MACOSX_DEPLOYMENT_TARGET: 10.15
             CREATE_DMG: 1
           - name: macOS 14 wxOSX
-            runner: macos-latest
+            runner: macos-14
             pkg_mod: 11
             MACOSX_DEPLOYMENT_TARGET: 11
             CREATE_DMG: 1
@@ -76,8 +76,8 @@ jobs:
       - name: Test
         run: cd build && make run-tests
 
-      - name: Upload
-        env:
-          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
-        run: ci/generic-upload.sh
+      #- name: Upload
+      #  env:
+      #    CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      #  run: ci/generic-upload.sh
 ...

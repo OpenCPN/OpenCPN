@@ -4,8 +4,8 @@ LangString Installer ${LANG_TRADCHINESE} "安裝程式"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_TRADCHINESE} "移除安裝程式"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3"
-LangString Installer_Unsupported_Windows_Version ${LANG_TRADCHINESE} "不支援您使用的Windows版本(太老舊了)!$\r$\n您至少需要 Windows XP SP3."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7"
+LangString Installer_Unsupported_Windows_Version ${LANG_TRADCHINESE} "不支援您使用的Windows版本(太老舊了)!$\r$\n您至少需要 Windows 7."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_TRADCHINESE} "安裝程式已經在執行中."

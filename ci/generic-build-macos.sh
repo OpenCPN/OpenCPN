@@ -31,9 +31,11 @@ brew install libarchive
 brew install wxwidgets
 brew install create-dmg
 
-ln -s /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
-ln -s /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
-ln -s /usr/local/opt/libarchive/lib/libarchive.13.dylib /usr/local/lib/libarchive.13.dylib
+if [ -d /usr/local/include ]; then
+  ln -s /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
+  ln -s /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
+  ln -s /usr/local/opt/libarchive/lib/libarchive.13.dylib /usr/local/lib/libarchive.13.dylib
+fi
 
 for pkg in openssl cmake ; do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :

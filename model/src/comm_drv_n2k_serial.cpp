@@ -1036,35 +1036,40 @@ void* CommDriverN2KSerialThread::Entry() {
               if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                 put_ptr = rx_buffer;
               bGotESC = false;
+            } else if ( ENDOFTEXT == next_byte ) {
+              // Process packet
+              //    Copy the message into a std::vector
+
+              auto buffer = std::make_shared<std::vector<unsigned char>>();
+              std::vector<unsigned char>* vec = buffer.get();
+
+              unsigned char* tptr;
+              tptr = tak_ptr;
+
+              while ((tptr != put_ptr)) {
+                vec->push_back(*tptr++);
+                if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
+              }
+
+              tak_ptr = tptr;
+              bInMsg = false;
+              bGotESC = false;
+
+              // Message is finished
+              // Send the captured raw data vector pointer to the thread's
+              // "parent"
+              //  thereby releasing the thread for further data capture
+              CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
+              Nevent.SetPayload(buffer);
+              m_pParentDriver->AddPendingEvent(Nevent);
+            } else if (next_byte == STARTOFTEXT) {
+              put_ptr = rx_buffer;
+              bGotESC = false;
+            } else {
+              put_ptr = rx_buffer;
+              bInMsg = false;
+              bGotESC = false;
             }
-          }
-
-          if (bGotESC && (ENDOFTEXT == next_byte)) {
-            // Process packet
-            //    Copy the message into a std::vector
-
-            auto buffer = std::make_shared<std::vector<unsigned char>>();
-            std::vector<unsigned char>* vec = buffer.get();
-
-            unsigned char* tptr;
-            tptr = tak_ptr;
-
-            while ((tptr != put_ptr)) {
-              vec->push_back(*tptr++);
-              if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
-            }
-
-            tak_ptr = tptr;
-            bInMsg = false;
-            bGotESC = false;
-
-            // Message is finished
-            // Send the captured raw data vector pointer to the thread's
-            // "parent"
-            //  thereby releasing the thread for further data capture
-            CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
-            Nevent.SetPayload(buffer);
-            m_pParentDriver->AddPendingEvent(Nevent);
 
           } else {
             bGotESC = (next_byte == ESCAPE);

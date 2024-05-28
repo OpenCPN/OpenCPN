@@ -513,6 +513,7 @@ int dashboard_pi::Init(void) {
   mHDT_Watchdog = 2;
   mSatsUsed_Wdog = 2;
   mSatStatus_Wdog = 2;
+  m_PriN2kTalker = 2;
   mVar_Watchdog = 2;
   mMWVA_Watchdog = 2;
   mMWVT_Watchdog = 2;
@@ -780,6 +781,8 @@ void dashboard_pi::Notify() {
     SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, _T(""));
     mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
   }
+  m_PriN2kTalker--;
+  if (m_PriN2kTalker < -1e6) m_PriN2kTalker = 0;
 
   mSatStatus_Wdog--;
   if (mSatStatus_Wdog <= 0) {
@@ -800,12 +803,12 @@ void dashboard_pi::Notify() {
   // Get current satellite priority identifier = item 4
   std::string satID = PriorityIDs[4];
   if (satID.find("nmea0183") != std::string::npos)
-    mPriSatStatus = 3; // GSV
-  else if (satID.find("SignalK") != std::string::npos)
-    mPriSatStatus = 2; // SignalK
+    mPriSatStatus = 3;  // GSV
+  else if (satID.find("ignal") != std::string::npos)
+    mPriSatStatus = 2;  // SignalK
   else if (satID.find("nmea2000") != std::string::npos) {
     prioN2kPGNsat = satID;
-    mPriSatStatus = 1; // N2k
+    mPriSatStatus = 1;  // N2k
   }
 
   mMWVA_Watchdog--;
@@ -2570,7 +2573,6 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
     wxJSONValue &value = item["value"];
 
     // Container for last received sat-system info from SK-N2k
-    // TODO Watchdog?
     static wxString talkerID = wxEmptyString;
 
     if (update_path == _T("navigation.position")) {
@@ -2842,6 +2844,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
       if (value.IsString() && value.AsString() != wxEmptyString) {
         talkerID = (value.AsString()); //Like "Combined GPS/GLONASS"
         talkerID.MakeUpper();
+        m_PriN2kTalker = gps_watchdog_timeout_ticks;
         if (( talkerID.Contains(_T("GPS")) ) && ( talkerID.Contains(_T("GLONASS")) ))
           talkerID = _T("GPSGLONAS");
         else if (talkerID.Contains(_T("GPS")))
@@ -2910,7 +2913,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
                 SK_SatInfo[idx].SignalToNoiseRatio = iSNR;
               }
               if (idx > 0) {
-                if (talker != wxEmptyString && (talker.StartsWith(_T("G")) || talker.StartsWith(_T("BD"))) ) {
+                if (m_PriN2kTalker <= 0 && talker != wxEmptyString &&
+                    (talker.StartsWith(_T("G")) || talker.StartsWith(_T("BD")))) {
                   talkerID = talker; //Origin NMEA0183
                 }
                 SendSatInfoToAllInstruments(iNumSats, iMesNum + 1, talkerID, SK_SatInfo);
@@ -3341,6 +3345,12 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
           pane.Show(false);
       }
 
+      // Restore size of docked pane
+      if (pane.IsShown() && pane.IsDocked()) {
+        pane.BestSize(cont->m_best_size);
+        m_pauimgr->Update();
+      }
+
       //  This patch fixes a bug in wxAUIManager
       //  FS#548
       // Dropping a DashBoard Window right on top on the (supposedly fixed)
@@ -3358,6 +3368,7 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
   SetToolbarItemState(m_toolbar_item_id,
                       GetDashboardWindowShownCount() != 0 /*cnt==0*/);
   m_pauimgr->Update();
+
 }
 
 void dashboard_pi::UpdateAuiStatus(void) {
@@ -3529,6 +3540,7 @@ bool dashboard_pi::LoadConfig(void) {
       // Version 2
       m_config_version = 2;
       bool b_onePersisted = false;
+      wxSize best_size;
       for (int k = 0; k < d_cnt; k++) {
         pConf->SetPath(
             wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), k + 1));
@@ -3542,6 +3554,11 @@ bool dashboard_pi::LoadConfig(void) {
         pConf->Read(_T("InstrumentCount"), &i_cnt, -1);
         bool b_persist;
         pConf->Read(_T("Persistence"), &b_persist, 1);
+        int val;
+        pConf->Read(_T("BestSizeX"), &val, DefaultWidth);
+        best_size.x = val;
+        pConf->Read(_T("BestSizeY"), &val, DefaultWidth);
+        best_size.y = val;
 
         wxArrayInt ar;
         wxArrayOfInstrumentProperties Property;
@@ -3605,6 +3622,7 @@ bool dashboard_pi::LoadConfig(void) {
         DashboardWindowContainer *cont =
             new DashboardWindowContainer(NULL, name, caption, orient, ar, Property);
         cont->m_bPersVisible = b_persist;
+        cont->m_conf_best_size = best_size;
 
         if (b_persist) b_onePersisted = true;
 
@@ -3681,6 +3699,9 @@ bool dashboard_pi::SaveConfig(void) {
       pConf->Write(_T("Persistence"), cont->m_bPersVisible);
       pConf->Write(_T("InstrumentCount"),
                    (int)cont->m_aInstrumentList.GetCount());
+      pConf->Write(_T("BestSizeX"), cont->m_best_size.x);
+      pConf->Write(_T("BestSizeY"), cont->m_best_size.y);
+
       // Delete old Instruments
       for (size_t i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
           if (pConf->Exists(wxString::Format(_T("Instrument%zu"), i + 1)))
@@ -3786,6 +3807,10 @@ void dashboard_pi::ApplyConfig(void) {
       cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
       bool vertical = orient == wxVERTICAL;
       wxSize sz = cont->m_pDashboardWindow->GetMinSize();
+      wxSize best = cont->m_conf_best_size;
+      if (best.x < 100)
+        best = sz;
+
 // Mac has a little trouble with initial Layout() sizing...
 #ifdef __WXOSX__
       if (sz.x == 0) sz.IncTo(wxSize(160, 388));
@@ -3799,7 +3824,7 @@ void dashboard_pi::ApplyConfig(void) {
                             .LeftDockable(vertical)
                             .RightDockable(vertical)
                             .MinSize(sz)
-                            .BestSize(sz)
+                            .BestSize(best)
                             .FloatingSize(sz)
                             .FloatingPosition(100, 100)
                             .Float()
@@ -3843,11 +3868,20 @@ void dashboard_pi::ApplyConfig(void) {
 }
 
 void dashboard_pi::PopulateContextMenu(wxMenu *menu) {
+  int nvis = 0;
+  wxMenuItem *visItem = 0;
   for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i);
     wxMenuItem *item = menu->AppendCheckItem(i + 1, cont->m_sCaption);
     item->Check(cont->m_bIsVisible);
+    if (cont->m_bIsVisible) {
+      nvis++;
+      visItem = item;
+    }
   }
+  if( nvis == 1 && visItem)
+    visItem->Enable(false);
+
 }
 
 void dashboard_pi::ShowDashboard(size_t id, bool visible) {
@@ -5292,6 +5326,8 @@ void DashboardWindow::OnSize(wxSizeEvent &event) {
   }
   Layout();
   Refresh();
+  //  Capture the user adjusted docked Dashboard size
+  this->m_Container->m_best_size = event.GetSize();
 }
 
 void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
@@ -5338,7 +5374,11 @@ void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
 
 void DashboardWindow::OnContextMenuSelect(wxCommandEvent &event) {
   if (event.GetId() < ID_DASH_PREFS) {  // Toggle dashboard visibility
-    m_plugin->ShowDashboard(event.GetId() - 1, event.IsChecked());
+    if (m_plugin->GetDashboardWindowShownCount() > 1 || event.IsChecked())
+      m_plugin->ShowDashboard(event.GetId() - 1, event.IsChecked());
+    else
+      m_plugin->ShowDashboard(event.GetId() - 1, true);
+
     SetToolbarItemState(m_plugin->GetToolbarItemId(),
                         m_plugin->GetDashboardWindowShownCount() != 0);
   }
@@ -5803,6 +5843,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
   //  DashboardInstrument_Position
 
   wxSize Hint = wxSize(DefaultWidth, DefaultWidth);
+
   for (unsigned int i = 0; i < m_ArrayOfInstrument.size(); i++) {
     DashboardInstrument *inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
     inst->SetMinSize(inst->GetSize(itemBoxSizer->GetOrientation(), Hint));

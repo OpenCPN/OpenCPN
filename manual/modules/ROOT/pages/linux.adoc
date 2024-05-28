@@ -28,8 +28,8 @@ is the ultimate source for how to build on Linux.
 
 Notes:
 
-  * On Debian Buster and Ubuntu Bionic it is possible to build OpenCPN linked
-    against gtk2 or gtk3. The default alternative is to use gtk2.
+  * On old systems like Debian Buster and Ubuntu Bionic it is possible to build
+    OpenCPN linked against gtk2 or gtk3. The default alternative is to use gtk3.
   * The build setup is generally updated for Debian and Ubuntu LTS
     releases.
 

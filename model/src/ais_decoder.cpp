@@ -83,6 +83,7 @@ Select* pSelectAIS;
 bool g_bUseOnlyConfirmedAISName;
 wxString GetShipNameFromFile(int);
 wxString AISTargetNameFileName;
+extern Multiplexer *g_pMUX;
 
 wxDEFINE_EVENT(EVT_N0183_VDO, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_VDM, ObservedEvt);
@@ -92,6 +93,7 @@ wxDEFINE_EVENT(EVT_N0183_CDDSE, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TLL, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_TTM, ObservedEvt);
 wxDEFINE_EVENT(EVT_N0183_OSD, ObservedEvt);
+wxDEFINE_EVENT(EVT_N0183_WPL, ObservedEvt);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129038, ObservedEvt);
 wxDEFINE_EVENT(EVT_N2K_129039, ObservedEvt);
@@ -304,6 +306,15 @@ void AisDecoder::InitCommListeners(void) {
         auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
         HandleN0183_AIS( n0183_msg );
       });
+
+  //WPL
+  Nmea0183Msg n0183_msg_WPL("WPL");
+  listener_N0183_WPL.Listen(n0183_msg_WPL, this, EVT_N0183_WPL);
+  Bind(EVT_N0183_WPL, [&](ObservedEvt ev) {
+    auto ptr = ev.GetSharedPtr();
+    auto n0183_msg = std::static_pointer_cast<const Nmea0183Msg>(ptr);
+    HandleN0183_AIS( n0183_msg );
+  });
 
   //SignalK
   SignalkMsg sk_msg;
@@ -997,34 +1008,6 @@ void AisDecoder::BuildERIShipTypeHash(void) {
   make_hash_ERI(1910, _("Hydrofoil"));
 }
 
-#if 0
-//FIXME delete
-//----------------------------------------------------------------------------------
-//     Handle events from AIS DataStream
-//----------------------------------------------------------------------------------
-void AisDecoder::OnEvtAIS(OCPN_DataStreamEvent &event) {
-  wxString message = event.ProcessNMEA4Tags();
-
-  int nr = 0;
-  if (!message.IsEmpty()) {
-    if (message.Mid(3, 3).IsSameAs(_T("VDM")) ||
-        message.Mid(3, 3).IsSameAs(_T("VDO")) ||
-        message.Mid(1, 5).IsSameAs(_T("FRPOS")) ||
-        message.Mid(1, 2).IsSameAs(_T("CD")) ||
-        message.Mid(3, 3).IsSameAs(_T("TLL")) ||
-        message.Mid(3, 3).IsSameAs(_T("TTM")) ||
-        message.Mid(3, 3).IsSameAs(_T("OSD")) ||
-        (g_bWplUsePosition && message.Mid(3, 3).IsSameAs(_T("WPL")))) {
-      nr = Decode(message);
-      if (nr == AIS_NoError) {
-        g_pi_manager->SendAISSentenceToAllPlugIns(message);
-      }
-      gFrame->TouchAISActive();
-    }
-  }
-}
-#endif
-
 //----------------------------------------------------------------------------------
 //     Handle events from SignalK
 //----------------------------------------------------------------------------------
@@ -1083,6 +1066,14 @@ void AisDecoder::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg){
   if (mmsi == 0) {
     return;  // Only handle ships with MMSI for now
   }
+
+  if (g_pMUX && g_pMUX->IsLogActive()) {
+    wxString logmsg;
+    logmsg.Printf("AIS :MMSI: %ld", mmsi);
+    std::string source = sK_msg->source->to_string();
+    g_pMUX->LogInputMessage( logmsg, source, false, false);
+  }
+
   // Stop here if the target shall be ignored
   for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
     if (mmsi == g_MMSI_Props_Array[i]->MMSI) {
@@ -1844,7 +1835,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     // 8) Vessel drift (speed) - Manually entered
     // 9) Speed Units K = km/h; N = Knots; S = statute miles/h
 
-  } else if (str.Mid(3, 3).IsSameAs(_T("WPL"))) {
+  } else if (g_bWplUsePosition && str.Mid(3, 3).IsSameAs(_T("WPL"))) {
     //** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
     wxString string(str);
     wxStringTokenizer tkz(string, _T(",*"));
@@ -1885,14 +1876,10 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
                  // we make sure we are out of the hashes for GPSGate buddies
                  // and ARPA by being above 1993*
     } else if (1 == g_WplAction) {  // Create mark
-
-      //FIXME (dave) This is a GUI thing...
-
-//       RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, g_default_wp_icon,
-//                                        aprs_name_str, wxEmptyString);
-//       pWP->m_bIsolatedMark = true;  // This is an isolated mark
-//       pSelect->AddSelectableRoutePoint(aprs_lat, aprs_lon, pWP);
-//       new_ais_wp.notify(pWP);
+       RoutePoint *pWP = new RoutePoint(aprs_lat, aprs_lon, wxEmptyString,
+                                        aprs_name_str, wxEmptyString, false);
+       pWP->m_bIsolatedMark = true;
+       InsertWpt(pWP, true);
     }
   } else if (str.Mid(1, 5).IsSameAs(_T("FRPOS"))) {
     // parse a GpsGate Position message            $FRPOS,.....

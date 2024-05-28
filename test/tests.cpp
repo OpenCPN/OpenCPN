@@ -32,6 +32,7 @@
 #include "model/ipc_api.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
+#include "model/navutil_base.h"
 #include "model/ocpn_types.h"
 #include "model/ocpn_utils.h"
 #include "model/own_ship.h"
@@ -907,7 +908,7 @@ TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
 
 TEST(Instance, WxInstanceChk) { WxInstanceCheck check; }
 
-#if !defined(FLATPAK) && defined(__unix__)
+#if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
 TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
 
 TEST(IpcClient, Raise) { CliRaise run_test; }
@@ -935,3 +936,21 @@ TEST(WaitContinue, Basic) {
   EXPECT_NEAR(elapsed.count(), 0, 5);
 }
 #endif
+
+TEST(FormatTime, Basic) {
+  wxTimeSpan span(0, 0, 7200, 0);
+  auto s = formatTimeDelta(span).ToStdString();
+  EXPECT_EQ(s, " 2H  0M");
+  span =  wxTimeSpan(1, 60, 0, 0);
+  span += wxTimeSpan(0, 0, 0, 10);
+  s = formatTimeDelta(span).ToStdString();
+  EXPECT_EQ(s, " 2H  0M");
+  s = formatTimeDelta(wxLongLong(7184.1181798492389));
+  EXPECT_EQ(s, " 2H  0M");
+  s = formatTimeDelta(wxLongLong(123.0));
+  EXPECT_EQ(s, " 2M  3S");
+  s = formatTimeDelta(wxLongLong(120.0));
+  EXPECT_EQ(s, " 2M  0S");
+  s = formatTimeDelta(wxLongLong(110.0));
+  EXPECT_EQ(s, " 1M 50S");
+}

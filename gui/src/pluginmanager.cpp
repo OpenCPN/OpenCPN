@@ -380,13 +380,13 @@ wxString message_by_status(PluginStatus stat) {
 
 static const std::unordered_map<PluginStatus, const char*, EnumClassHash>
     icon_by_status(
-        {{PluginStatus::System, "emblem-system.svg"},
+        {{PluginStatus::System, "emblem-default.svg"},
          {PluginStatus::Managed, "emblem-default.svg"},
          {PluginStatus::Unmanaged, "emblem-unmanaged.svg"},
          {PluginStatus::Ghost, "ghost.svg"},
          {PluginStatus::Unknown, "emblem-unmanaged.svg"},
          {PluginStatus::LegacyUpdateAvailable, "emblem-legacy-update.svg"},
-         {PluginStatus::ManagedInstallAvailable, "emblem-default.svg"},
+         {PluginStatus::ManagedInstallAvailable, "emblem-download.svg"},
          {PluginStatus::ManagedInstalledUpdateAvailable,
           "emblem-legacy-update.svg"},
          {PluginStatus::ManagedInstalledCurrentVersion, "emblem-default.svg"},
@@ -2093,10 +2093,10 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
 
   // Some useful display metrics
   if (g_MainToolbar) {
-    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetSize().x;
-    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetSize().y;
-    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetPosition().x;
-    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetPosition().y;
+    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetToolbarRect().width;
+    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetToolbarRect().height;
+    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetToolbarRect().x;
+    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetToolbarRect().y;
   }
 
   // Some rendering parameters
@@ -4065,7 +4065,10 @@ std::vector<const PlugInData*> GetInstalled() {
     result.push_back(item);
   }
   auto compare = [](const PlugInData* lhs, const PlugInData* rhs) {
-    return lhs->Key() < rhs->Key();
+    std::string slhs, srhs;
+    for (auto &cl : lhs->Key()) slhs += toupper(cl);
+    for (auto &cr : rhs->Key()) srhs += toupper(cr);
+    return slhs.compare(srhs) < 0;
   };
   std::sort(result.begin(), result.end(), compare);
   return result;
@@ -4124,18 +4127,31 @@ void PluginListPanel::ReloadPluginPanels() {
     auto end = std::remove_if(available.begin(), available.end(), predicate);
     available.erase(end, available.end());
 
-    /* Remove duplicates. */
-    struct Comp {
+    // Sort on case-insensitive name
+    struct CompSort {
       bool operator()(const PluginMetadata& lhs, const PluginMetadata rhs) const {
-        return lhs.name.compare(rhs.name) < 0;
+        std::string slhs, srhs;
+        for (auto &cl : lhs.name) slhs += toupper(cl);
+        for (auto &cr : rhs.name) srhs += toupper(cr);
+        return slhs.compare(srhs) < 0;
       }
-    } comp;
-    std::set<PluginMetadata, Comp> unique_entries(comp);
-    for (const auto& p : available) unique_entries.insert(p);
+    } comp_sort;
 
-    /* Add panels for first loaded plugins, then catalog entries. */
-    for (const auto& p : GetInstalled()) AddPlugin(*p);
-    for (const auto& p : unique_entries) AddPlugin(PlugInData(p));
+    std::set<PluginMetadata, CompSort> unique_sorted_entries(comp_sort);
+    for (const auto& p : available) unique_sorted_entries.insert(p);
+
+    // Build the list of panels.
+
+    // Add Installed and active plugins
+    for (const auto& p : GetInstalled())
+      if (p->m_enabled) AddPlugin(*p);
+
+    // Add Installed and inactive plugins
+    for (const auto& p : GetInstalled())
+      if (!p->m_enabled) AddPlugin(*p);
+
+    //  Add available plugins, sorted
+    for (const auto& p : unique_sorted_entries) AddPlugin(PlugInData(p));
   }
 
   Show();
@@ -4148,6 +4164,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
 void PluginListPanel::AddPlugin(const std::string& name) {
   auto panel = new PluginPanel(this, name);
+  DimeControl(panel);
   panel->SetSelected(false);
   GetSizer()->Add(panel, 0, wxEXPAND);
   m_PluginItems.Add(panel);
@@ -4580,6 +4597,8 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
   m_itemStatusIconBitmap = new wxStaticBitmap(this, wxID_ANY, statusBitmap);
   m_itemStatusIconBitmap->SetToolTip(message_by_status(stat));
+  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_DOWN, &PluginPanel::OnPluginSelected, this);
+  m_itemStatusIconBitmap->Bind(wxEVT_LEFT_UP, &PluginPanel::OnPluginSelectedUp, this);
 
   itemBoxSizer01->Add(m_itemStatusIconBitmap, 0, wxEXPAND | wxALL, 20);
 
@@ -4885,30 +4904,31 @@ void PluginPanel::OnPluginAction(wxCommandEvent& event) {
   return;
 }
 
+static void SetWindowFontStyle(wxWindow* window,  wxFontStyle style) {
+  auto font = window->GetFont();
+  font.SetStyle(style);
+  window->SetFont(font);
+}
+
+
 void PluginPanel::SetEnabled(bool enabled) {
   if (m_is_safe_panel) return;
   PluginLoader::getInstance()->SetEnabled(m_plugin.m_common_name, enabled);
   PluginLoader::getInstance()->UpdatePlugIns();
   NotifySetupOptionsPlugin(&m_plugin);
   if (!enabled && !m_bSelected) {
-    m_pName->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-    m_pVersion->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
-    m_pDescription->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+    SetWindowFontStyle(m_pName, wxFONTSTYLE_ITALIC);
+    SetWindowFontStyle(m_pVersion, wxFONTSTYLE_ITALIC);
+    SetWindowFontStyle(m_pDescription, wxFONTSTYLE_ITALIC);
 #ifdef x__ANDROID__
     m_pName->Disable();
     m_pVersion->Disable();
     m_pDescription->Disable();
 #endif
   } else {
-    m_pName->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-    m_pVersion->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-    m_pDescription->SetForegroundColour(
-        wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+    SetWindowFontStyle(m_pName, wxFONTSTYLE_NORMAL);
+    SetWindowFontStyle(m_pVersion, wxFONTSTYLE_NORMAL);
+    SetWindowFontStyle(m_pDescription, wxFONTSTYLE_NORMAL);
 #ifdef x__ANDROID__
     m_pName->Enable();
     m_pVersion->Enable();
@@ -7398,7 +7418,7 @@ int GetLatLonFormat() { return g_iSDMMFormat; }
 
 wxRect GetMasterToolbarRect() {
   if (g_MainToolbar)
-    return g_MainToolbar->GetRect();
+    return g_MainToolbar->GetToolbarRect();
   else
     return wxRect(0, 0, 1, 1);
 }

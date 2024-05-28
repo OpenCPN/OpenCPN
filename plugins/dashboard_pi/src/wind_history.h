@@ -83,6 +83,7 @@ protected:
   int m_SampleCount;
   wxString m_WindSpeedUnit;
   int m_SetNewData;        // No need for data every second
+  int speedw, degw, degh;
 
   wxRect m_WindowRect;
   wxRect m_DrawAreaRect;  // the coordinates of the real darwing area

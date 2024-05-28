@@ -1,0 +1,856 @@
+.\"
+.\" Copyright (c) 2000 Dug Song <dugsong@monkey.org>
+.\"
+.\" $Id$
+.\"
+.Dd August 21, 2001
+.Dt DNET 3
+.Os
+.Sh NAME
+.Nm dnet
+.Nd dumb networking library
+.Sh SYNOPSIS
+.Fd #include <dnet.h>
+.Ss Network addressing
+.Ft int
+.Fn addr_cmp "const struct addr *a" "const struct addr *b"
+.Ft int
+.Fn addr_bcast "const struct addr *a" "struct addr *b"
+.Ft int
+.Fn addr_net "const struct addr *a" "struct addr *b"
+.Ft char *
+.Fn addr_ntop "const struct addr *src" "char *dst" "size_t size"
+.Ft int
+.Fn addr_pton "const char *src" "struct addr *dst"
+.Ft char *
+.Fn addr_ntoa "const struct addr *a"
+.Ft int
+.Fn addr_aton "const char *src" "struct addr *dst"
+.Ft int
+.Fn addr_ntos "const struct addr *a" "struct sockaddr *sa"
+.Ft int
+.Fn addr_ston "const struct sockaddr *sa" "struct addr *a"
+.Ft int
+.Fn addr_btos "uint16_t bits" "struct sockaddr *sa"
+.Ft int
+.Fn addr_stob "const struct sockaddr *sa" "uint16_t *bits"
+.Ft int
+.Fn addr_btom "uint16_t bits" "void *mask" "size_t size"
+.Ft int
+.Fn addr_mtob "const void *mask" "size_t size" "uint16_t *bits"
+.Ss Address Resolution Protocol
+.Pp
+.Li typedef Ar int Fn (*arp_handler) "const struct arp_entry *entry" "void *arg"
+.Ft arp_t *
+.Fn arp_open "void"
+.Ft int
+.Fn arp_add "arp_t *a" "const struct arp_entry *entry"
+.Ft int
+.Fn arp_delete "arp_t *a" "const struct arp_entry *entry"
+.Ft int
+.Fn arp_get "arp_t *a" "struct arp_entry *entry"
+.Ft int
+.Fn arp_loop "arp_t *a" "arp_handler callback" "void *arg"
+.Ft arp_t *
+.Fn arp_close "arp_t *a"
+.Ss Binary buffers
+.Ft blob_t *
+.Fn blob_new "void"
+.Ft int
+.Fn blob_read "blob_t *b" "void *buf" "int len"
+.Ft int
+.Fn blob_write "blob_t *b" "const void *buf" "int len"
+.Ft int
+.Fn blob_seek "blob_t *b" "int off" "int whence"
+.Ft int
+.Fn blob_index "blob_t *b" "const void *buf" "int len"
+.Ft int
+.Fn blob_rindex "blob_t *b" "const void *buf" "int len"
+.Ft int
+.Fn blob_pack "blob_t *b" "const void *fmt" "..."
+.Ft int
+.Fn blob_unpack "blob_t *b" "const void *fmt" "..."
+.Ft int
+.Fn blob_print "blob_t *b" "char *style" "int len"
+.Ft blob_t *
+.Fn blob_free "blob_t *b"
+.Ss Ethernet
+.Ft eth_t *
+.Fn eth_open "const char *device"
+.Ft int
+.Fn eth_get "eth_t *e" "eth_addr_t *ea"
+.Ft int
+.Fn eth_set "eth_t *e" "const eth_addr_t *ea"
+.Ft ssize_t
+.Fn eth_send "eth_t *e" "const void *buf" "size_t len"
+.Ft eth_t *
+.Fn eth_close "eth_t *e"
+.Ss Firewalling
+.Pp
+.Li typedef Ar int Fn (*fw_handler) "const struct fw_rule *rule" "void *arg"
+.Ft fw_t *
+.Fn fw_open "void"
+.Ft int
+.Fn fw_add "fw_t *f" "const struct fw_rule *rule"
+.Ft int
+.Fn fw_delete "fw_t *f" "const struct fw_rule *rule"
+.Ft int
+.Fn fw_loop "fw_t *f" "fw_handler callback" "void *arg"
+.Ft fw_t *
+.Fn fw_close "fw_t *f"
+.Ss Network interfaces
+.Pp
+.Li typedef Ar int Fn (*intf_handler) "const struct intf_entry *entry" "void *arg"
+.Ft intf_t *
+.Fn intf_open "void"
+.Ft int
+.Fn intf_get "intf_t *i" "struct intf_entry *entry"
+.Ft int
+.Fn intf_get_src "intf_t *i" "struct intf_entry *entry" "struct addr *src"
+.Ft int
+.Fn intf_get_dst "intf_t *i" "struct intf_entry *entry" "struct addr *dst"
+.Ft int
+.Fn intf_set "intf_t *i" "const struct intf_entry *entry"
+.Ft int
+.Fn intf_loop "intf_t *i" "intf_handler callback" "void *arg"
+.Ft intf_t *
+.Fn intf_close "intf_t *i"
+.Ss Internet Protocol
+.Ft ip_t *
+.Fn ip_open "void"
+.Ft ssize_t
+.Fn ip_add_option "void *buf" "size_t len" "int proto" "const void *optbuf" "size_t optlen"
+.Ft void
+.Fn ip_checksum "void *buf" "size_t len"
+.Ft ssize_t
+.Fn ip_send "ip_t *i" "const void *buf" "size_t len"
+.Ft ip_t *
+.Fn ip_close "ip_t *i"
+.Ss Internet Protocol Version 6
+.Ft void
+.Fn ip6_checksum "void *buf" "size_t len"
+.Ss Random number generation
+.Pp
+.Ft rand_t *
+.Fn rand_open "void"
+.Ft int
+.Fn rand_get "rand_t *r" "void *buf" "size_t len"
+.Ft int
+.Fn rand_set "rand_t *r" "const void *seed" "size_t len"
+.Ft int
+.Fn rand_add "rand_t *r" "const void *buf" "size_t len"
+.Ft uint8_t
+.Fn rand_uint8 "rand_t *r"
+.Ft uint16_t
+.Fn rand_uint16 "rand_t *r"
+.Ft uint32_t
+.Fn rand_uint32 "rand_t *r"
+.Ft int
+.Fn rand_shuffle "rand_t *r" "void *base" "size_t nmemb" "size_t size"
+.Ft rand_t *
+.Fn rand_close "rand_t *r"
+.Ss Routing
+.Pp
+.Li typedef Ar int Fn (*route_handler) "const struct route_entry *entry" "void *arg"
+.Ft route_t *
+.Fn route_open "void"
+.Ft int
+.Fn route_add "route_t *r" "const struct route_entry *entry"
+.Ft int
+.Fn route_delete "route_t *r" "const struct route_entry *entry"
+.Ft int
+.Fn route_get "route_t *r" "struct route_entry *entry"
+.Ft int
+.Fn route_loop "route_t *r" "route_handler callback" "void *arg"
+.Ft route_t *
+.Fn route_close "route_t *r"
+.Ss Tunnel interface
+.Pp
+.Ft tun_t *
+.Fn tun_open "struct addr *src" "struct addr *dst" "int mtu"
+.Ft int
+.Fn tun_fileno "tun_t *t"
+.Ft const char *
+.Fn tun_name "tun_t *t"
+.Ft ssize_t
+.Fn tun_send "tun_t *t" "const void *buf" "size_t size"
+.Ft ssize_t
+.Fn tun_recv "tun_t *t" "void *buf" "size_t size"
+.Ft tun_t *
+.Fn tun_close "tun_t *t"
+.Pp
+.Sh DESCRIPTION
+.Nm
+provides a simplified, portable interface to several low-level
+networking routines, including network address manipulation, kernel
+.Xr arp 4
+cache and
+.Xr route 4
+table lookup and manipulation, network firewalling, network interface
+lookup and manipulation, and raw IP packet and Ethernet frame
+transmission. It is intended to complement the functionality provided
+by
+.Xr pcap 3 .
+.Pp
+In addition,
+.Nm
+also provides platform-independent definitions of various network
+protocol formats and values for portable low-level network
+programming, as well as a simple binary buffer handling API.
+.Pp
+.Ss Network addressing
+Network addresses are described by the following structure:
+.Bd -literal
+struct addr {
+	uint16_t		addr_type;
+	uint16_t		addr_bits;
+	union {
+		eth_addr_t	__eth;
+		ip_addr_t	__ip;
+		ip6_addr_t	__ip6;
+		
+		uint8_t		__data8[16];
+		uint16_t	__data16[8];
+		uint32_t	__data32[4];
+	} __addr_u;
+};
+#define addr_eth	__addr_u.__eth
+#define addr_ip		__addr_u.__ip
+#define addr_ip6	__addr_u.__ip6
+#define addr_data8	__addr_u.__data8
+#define addr_data16	__addr_u.__data16
+#define addr_data32	__addr_u.__data32
+.Ed
+.Pp
+The following values are defined for
+.Ar addr_type :
+.Bd -literal
+#define ADDR_TYPE_NONE		0	/* No address set */
+#define	ADDR_TYPE_ETH		1	/* Ethernet */
+#define	ADDR_TYPE_IP		2	/* Internet Protocol v4 */
+#define	ADDR_TYPE_IP6		3	/* Internet Protocol v6 */
+.Ed
+.Pp
+The field
+.Ar addr_bits
+denotes the length of the network mask in bits.
+.Pp
+.Fn addr_cmp
+compares network addresses
+.Fa a
+and
+.Fa b ,
+returning an integer less than, equal to, or greater than zero if
+.Fa a
+is found, respectively, to be less than, equal to, or greater than
+.Fa b .
+Both addresses must be of the same address type.
+.Pp
+.Fn addr_bcast
+computes the broadcast address for the network specified in
+.Fa a
+and writes it into
+.Fa b .
+.Pp
+.Fn addr_net
+computes the network address for the network specified in
+.Fa a
+and writes it into
+.Fa b .
+.Pp
+.Fn addr_ntop
+converts an address from network format to a string.
+.Pp
+.Fn addr_pton
+converts an address from a string to network format.
+.Pp
+.Fn addr_ntoa
+converts an address from network format to a string, returning a
+pointer to the result in static memory.
+.Pp
+.Fn addr_aton
+is a synonym for
+.Fn addr_pton .
+.Pp
+.Fn addr_ntos
+converts an address from network format to the appropriate struct
+sockaddr.
+.Pp
+.Fn addr_ston
+converts an address from a struct sockaddr to network format.
+.Pp
+.Fn addr_btos
+converts a network mask length to a network mask specified as a struct
+sockaddr.
+.Pp
+.Fn addr_stob
+converts a network mask specified in a struct sockaddr to a network
+mask length.
+.Pp
+.Fn addr_btom
+converts a network mask length to a network mask in network byte
+order.
+.Pp
+.Fn addr_mtob
+converts a network mask in network byte order to a network mask length.
+.Ss Address Resolution Protocol
+ARP cache entries are described by the following structure:
+.Bd -literal
+struct arp_entry {
+	struct addr	arp_pa;		/* protocol address */
+	struct addr	arp_ha;		/* hardware address */
+};
+.Ed
+.Pp
+.Fn arp_open
+is used to obtain a handle to access the kernel
+.Xr arp 4
+cache.
+.Pp
+.Fn arp_add
+adds a new ARP
+.Fa entry .
+.Pp
+.Fn arp_delete
+deletes the ARP
+.Fa entry
+for the protocol address specified by
+.Fa arp_pa .
+.Pp
+.Fn arp_get
+retrieves the ARP
+.Fa entry
+for the protocol address specified by
+.Fa arp_pa .
+.Pp
+.Fn arp_loop
+iterates over the kernel
+.Xr arp 4
+cache, invoking the specified
+.Fa callback
+with each
+.Fa entry
+and the context
+.Fa arg
+passed to
+.Fn arp_loop .
+.Pp
+.Fn arp_close
+closes the specified handle.
+.Pp
+.Ss Binary buffers
+Binary buffers are described by the following structure:
+.Bd -literal
+typedef struct blob {
+	u_char		*base;		/* start of data */
+	int		 off;		/* offset into data */
+	int		 end;		/* end of data */
+	int		 size;		/* size of allocation */
+} blob_t;
+.Ed
+.Pp
+.Fn blob_new
+is used to allocate a new dynamic binary buffer, returning NULL on failure.
+.Pp
+.Fn blob_read
+reads
+.Fa len
+bytes from the current offset in blob
+.Fa b
+into
+.Fa buf ,
+returning the total number of bytes read, or \-1 on failure.
+.Pp
+.Fn blob_write
+writes
+.Fa len
+bytes from
+.Fa buf
+to blob
+.Fa b ,
+advancing the current offset. It returns the number of bytes written,
+or \-1 on failure.
+.Pp
+.Fn blob_seek
+repositions the offset within blob
+.Fa b
+to
+.Fa off ,
+according to the directive
+.Fa whence
+(see
+.Xr lseek 2
+for details), returning the new absolute offset, or \-1 on failure.
+.Pp
+.Fn blob_index
+returns the offset of the first occurrence in blob
+.Fa b
+of the specified
+.Fa buf
+of length
+.Fa len ,
+or \-1 on failure.
+.Pp
+.Fn blob_rindex
+returns the offset of the last occurrence in blob
+.Fa b
+of the specified
+.Fa buf
+of length
+.Fa len ,
+or \-1 on failure.
+.Pp
+.Fn blob_pack
+converts and writes, and
+.Fn blob_unpack
+reads and converts data in blob
+.Fa b
+according to the given format
+.Fa fmt
+as described below, returning 0 on success, and \-1 on failure.
+.Pp
+The format string is composed of zero or more directives: ordinary
+characters (not
+.Cm %
+),
+which are copied to / read from the blob, and conversion
+specifications, each of which results in reading / writing zero or
+more subsequent arguments.
+.Pp
+Each conversion specification is introduced by the character
+.Cm % ,
+and may be prefixed by length specifier. The arguments must correspond
+properly (after type promotion) with the length and conversion specifiers.
+.Pp
+The length specifier is either a a decimal digit string specifying the
+length of the following argument, or the literal character
+.Cm *
+indicating that the length should be read from an integer argument for
+the argument following it.
+.Pp
+The conversion specifiers and their meanings are:
+.Bl -tag -width indent
+.It Cm D
+An unsigned 32-bit integer in network byte order.
+.It Cm H
+An unsigned 16-bit integer in network byte order.
+.It Cm b
+A binary buffer (length specifier required).
+.It Cm c
+An unsigned character.
+.It Cm d
+An unsigned 32-bit integer in host byte order.
+.It Cm h
+An unsigned 16-bit integer in host byte order.
+.It Cm s
+A C-style null-terminated string, whose maximum length must be
+specified when unpacking.
+.El
+.Pp
+Custom conversion routines and their specifiers may be registered via
+.Fn blob_register_pack ,
+currently undocumented.
+.Pp
+.Fn blob_print
+prints
+.Fa len
+bytes of the contents of blob
+.Fa b
+from the current offset in the specified
+.Fa style ;
+currently only
+.Dq hexl
+is available.
+.Pp
+.Fn blob_free
+deallocates the memory associated with blob
+.Fa b
+and returns NULL.
+.Pp
+.Ss Ethernet
+.Fn eth_open
+is used to obtain a handle to transmit raw Ethernet frames via the
+specified network
+.Fa device .
+.Pp
+.Fn eth_get
+retrieves the hardware MAC address for the interface specified by
+.Ar e .
+.Pp
+.Fn eth_set
+configures the hardware MAC address for the interface specified by
+.Ar e .
+.Pp
+.Fn eth_send
+transmits
+.Fa len
+bytes of the Ethernet frame pointed to by
+.Fa buf .
+.Pp
+.Fn eth_close
+closes the specified handle.
+.Pp
+.Ss Firewalling
+Firewall rules are described by the following structure:
+.Bd -literal
+struct fw_rule {
+	char		fw_device[INTF_NAME_LEN]; /* interface name */
+	uint8_t		fw_op;			  /* operation */
+	uint8_t		fw_dir;			  /* direction */
+	uint8_t		fw_proto;		  /* IP protocol */
+	struct addr	fw_src;			  /* src address / net */
+	struct addr	fw_dst;			  /* dst address / net */
+	uint16_t	fw_sport[2];		  /* range / ICMP type */
+	uint16_t	fw_dport[2];		  /* range / ICMP code */
+};
+.Ed
+.Pp
+The following values are defined for
+.Ar fw_op :
+.Bd -literal
+#define FW_OP_ALLOW	1
+#define FW_OP_BLOCK	2
+.Ed
+.Pp
+The following values are defined for
+.Ar fw_dir :
+.Bd -literal
+#define FW_DIR_IN	1
+#define FW_DIR_OUT	2
+.Ed
+.Pp
+.Fn fw_open
+is used to obtain a handle to access the local network firewall
+configuration.
+.Pp
+.Fn fw_add
+adds the specified firewall
+.Fa rule .
+.Pp
+.Fn fw_delete
+deletes the specified firewall
+.Fa rule .
+.Pp
+.Fn fw_loop
+iterates over the active firewall ruleset, invoking
+the specified
+.Fa callback
+with each
+.Fa rule
+and the context
+.Fa arg
+passed to
+.Fn fw_loop .
+.Pp
+.Fn fw_close
+closes the specified handle.
+.Pp
+.Ss Network interfaces
+Network interface information is described by the following structure:
+.Bd -literal
+#define INTF_NAME_LEN	16
+
+struct intf_entry {
+	u_int		intf_len;		    /* length of entry */
+	char		intf_name[INTF_NAME_LEN];   /* interface name */
+	u_short		intf_type;		    /* interface type (r/o) */
+	u_short		intf_flags;		    /* interface flags */
+	u_int		intf_mtu;		    /* interface MTU */
+	struct addr	intf_addr;		    /* interface address */
+	struct addr	intf_dst_addr;		    /* point-to-point dst */
+	struct addr	intf_link_addr;		    /* link-layer address */
+	u_int		intf_alias_num;		    /* number of aliases */
+	struct addr	intf_alias_addrs __flexarr; /* array of aliases */
+};
+.Ed
+.Pp
+The following bitmask values are defined for
+.Ar intf_type :
+.Bd -literal
+#define INTF_TYPE_OTHER		1	/* other */
+#define INTF_TYPE_ETH		6	/* Ethernet */
+#define INTF_TYPE_LOOPBACK	24	/* software loopback */
+#define INTF_TYPE_TUN		53	/* proprietary virtual/internal */
+.Ed
+.Pp
+The following bitmask values are defined for
+.Ar intf_flags :
+.Bd -literal
+#define INTF_FLAG_UP		0x01	/* enable interface */
+#define INTF_FLAG_LOOPBACK	0x02	/* is a loopback net (r/o) */
+#define INTF_FLAG_POINTOPOINT	0x04	/* point-to-point link (r/o) */
+#define INTF_FLAG_NOARP		0x08	/* disable ARP */
+#define INTF_FLAG_BROADCAST	0x10	/* supports broadcast (r/o) */
+#define INTF_FLAG_MULTICAST	0x20	/* supports multicast (r/o) */
+.Ed
+.Pp
+.Fn intf_open
+is used to obtain a handle to access the network interface
+configuration.
+.Pp
+.Fn intf_get
+retrieves an interface configuration
+.Fa entry ,
+keyed on
+.Fa intf_name .
+For all
+.Fn intf_get
+functions,
+.Fa intf_len
+should be set to the size of the buffer pointed to by
+.Fa entry
+(usually sizeof(struct intf_entry), but should be larger to accommodate
+any interface alias addresses.
+.Pp
+.Fn intf_get_src
+retrieves the configuration for the interface whose primary address
+matches the specified
+.Fa src .
+.Pp
+.Fn intf_get_dst
+retrieves the configuration for the best interface with which to reach
+the specified
+.Fa dst .
+.Pp
+.Fn intf_set
+sets the interface configuration
+.Fa entry .
+.Pp
+.Fn intf_loop
+iterates over all network interfaces, invoking the specified
+.Fa callback
+with each interface configuration
+.Fa entry
+and the context
+.Fa arg
+passed to
+.Fn intf_loop .
+.Pp
+.Fn intf_close
+closes the specified handle.
+.Pp
+.Ss Internet Protocol
+.Fn ip_open
+is used to obtain a handle to transmit raw IP packets, routed by the
+kernel.
+.Pp
+.Fn ip_add_option
+adds the header option for the protocol
+.Fa proto
+specified by
+.Fa optbuf
+of length
+.Fa optlen
+and appends it to the appropriate header of the IP packet contained in
+.Fa buf
+of size
+.Fa len ,
+shifting any existing payload and adding NOPs to pad the option to
+a word boundary if necessary.
+.Pp
+.Fn ip_checksum
+sets the IP checksum and any appropriate transport protocol checksum
+for the IP packet pointed to by
+.Fa buf
+of length
+.Fa len .
+.Pp
+.Fn ip_send
+transmits
+.Fa len
+bytes of the IP packet pointed to by
+.Fa buf .
+.Pp
+.Fn ip_close
+closes the specified handle.
+.Pp
+.Ss Internet Protocol Version 6
+.Fn ip6_checksum
+sets the appropriate transport protocol checksum for the IPv6 packet
+pointed to by
+.Fa buf
+of length
+.Fa len .
+.Pp
+.Ss Random number generation
+.Fn rand_open
+is used to obtain a handle for fast, cryptographically strong
+pseudo-random number generation. The starting seed is derived from the
+system random data source device (if one exists), or from the current
+time and random stack contents.
+.Pp
+.Fn rand_set
+re-initializes the PRNG to start from a known
+.Fa seed
+value, useful in generating repeatable sequences.
+.Pp
+.Fn rand_get
+writes
+.Fa len
+random bytes into
+.Fa buf .
+.Pp
+.Fn rand_add
+adds
+.Fa len
+bytes of entropy data from
+.Fa buf
+into the random mix.
+.Pp
+.Fn rand_uint8 ,
+.Fn rand_uint16 ,
+and
+.Fn rand_uint32
+return 8, 16, and 32-bit unsigned random values, respectively.
+.Pp
+.Fn rand_shuffle
+randomly shuffles an array of
+.Fa nmemb
+elements of
+.Fa size
+bytes, starting at
+.Fa base .
+.Pp
+.Fn rand_close
+closes the specified handle.
+.Pp
+.Ss Routing
+Routing table entries are described by the following structure:
+.Bd -literal
+struct route_entry {
+	struct addr	route_dst;	/* destination address */
+	struct addr	route_gw;	/* gateway address */
+};
+.Ed
+.Pp
+.Fn route_open
+is used to obtain a handle to access the kernel
+.Xr route 4
+table.
+.Pp
+.Fn route_add
+adds a new routing table
+.Fa entry .
+.Pp
+.Fn route_delete
+deletes the routing table
+.Fa entry
+for the destination prefix specified by
+.Fa route_dst .
+.Pp
+.Fn route_get
+retrieves the routing table
+.Fa entry
+for the destination prefix specified by
+.Fa route_dst .
+.Pp
+.Fn route_loop
+iterates over the kernel
+.Xr route 4
+table, invoking the specified
+.Fa callback
+with each
+.Fa entry
+and the context
+.Fa arg
+passed to
+.Fn route_loop .
+.Pp
+.Fn route_close
+closes the specified handle.
+.Pp
+.Ss Tunnel interface
+.Fn tun_open
+is used to obtain a handle to a network tunnel interface, to which
+IP packets destined for
+.Fa dst
+are delivered (with source addresses rewritten to
+.Fa src
+), where they may be read by a userland process and processed as
+desired. IP packets written back to the handle are injected into the
+kernel networking subsystem.
+.Pp
+.Fn tun_fileno
+returns a file descriptor associated with the tunnel handle, suitable
+for
+.Xr select 2 .
+.Pp
+.Fn tun_name
+returns a pointer to the tunnel interface name.
+.Pp
+.Fn tun_send
+submits a packet to the kernel networking subsystem for delivery.
+.Pp
+.Fn tun_recv
+reads the next packet delivered to the tunnel interface.
+.Pp
+.Fn tun_close
+closes the specified handle.
+.Pp
+.Sh RETURN VALUES
+.Fn addr_ntop
+returns a pointer to the
+.Fa dst
+argument, or NULL on failure.
+.Pp
+.Fn addr_ntoa
+returns a pointer to a static memory area containing the printable
+address, or NULL on failure.
+.Pp
+.Fn arp_open ,
+.Fn eth_open ,
+.Fn fw_open ,
+.Fn intf_open ,
+.Fn ip_open ,
+.Fn rand_open ,
+and
+.Fn route_open
+return a valid handle on success, or NULL on failure.
+.Pp
+.Fn arp_close ,
+.Fn eth_close ,
+.Fn fw_close ,
+.Fn intf_close ,
+.Fn ip_close ,
+.Fn rand_close ,
+and
+.Fn route_close
+always return NULL.
+.Pp
+.Fn eth_send
+and
+.Fn ip_send
+return the length of the datagram successfully sent, or \-1 on failure.
+.Pp
+.Fn arp_loop ,
+.Fn fw_loop ,
+.Fn intf_loop ,
+and
+.Fn route_loop
+return the status of their
+.Fa callback
+routines. Any non-zero return from a
+.Fa callback
+will cause the loop to exit immediately.
+.Pp
+.Fn ip_add_option
+returns the length of the inserted option (which may have been padded
+with NOPs for memory alignment) or \-1 on failure.
+.Pp
+.Fn rand_uint8 ,
+.Fn rand_uint16 ,
+and
+.Fn rand_uint32
+return 8, 16, and 32-bit unsigned random values, respectively.
+.Pp
+All other
+.Nm
+routines return 0 on success, or \-1 on failure.
+.Sh SEE ALSO
+.Xr pcap 3
+.Sh AUTHORS
+Dug Song
+.Aq dugsong@monkey.org
+.br
+Oliver Falk
+.Aq oliver@linux-kernel.at

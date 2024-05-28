@@ -2865,6 +2865,8 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     scale_factor *= pix_factor;
   }
 
+  scale_factor *= m_ContentScaleFactor;
+
   // a few special cases here
   if (!strncmp(rzRules->obj->FeatureName, "notmrk", 6) ||
       !strncmp(rzRules->obj->FeatureName, "NOTMRK", 6) ||
@@ -5671,7 +5673,7 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
     wxPoint r = GetPixFromLLROT(lat, lon, 0);
 
     // Some simple inclusion tests
-    if((r.x < 0) || (r.y < 0))
+    if((r.x < -box_dim) || (r.y < -box_dim))
       continue;
     if ((r.x == INVALID_COORD) || (r.y == INVALID_COORD))
       continue;
