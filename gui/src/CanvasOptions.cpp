@@ -39,9 +39,8 @@
 
 #include "chcanv.h"
 #include "CanvasOptions.h"
-#include "OCPNPlatform.h"
 #include "gui_lib.h"
-#include "s52s57.h"
+#include "s52plib.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -50,6 +49,7 @@
 //------------------------------------------------------------------------------
 //    External Static Storage
 //------------------------------------------------------------------------------
+extern s52plib *ps52plib;
 
 //  Helper utilities
 
@@ -539,8 +539,15 @@ void CanvasOptions::UpdateCanvasOptions(void) {
   if (pCBENCDataQuality->GetValue() !=
     parentCanvas->GetShowENCDataQual()) {
     parentCanvas->SetShowENCDataQual(pCBENCDataQuality->GetValue());
-  b_needReLoad = true;
-    }
+    b_needReLoad = true;
+  }
+
+  // If pCBENCDataQuality is true, Force PLIB "Chart Information Objects" true.
+  if (pCBENCDataQuality->GetValue()){
+    if (ps52plib)
+      ps52plib->m_bShowMeta = true;
+    parentCanvas->UpdateCanvasS52PLIBConfig();
+  }
 
   int newMode = NORTH_UP_MODE;
   if (pCBCourseUp->GetValue())
