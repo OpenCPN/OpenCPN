@@ -131,8 +131,8 @@ public:
   void RenderViewOnDC(ocpnDC &dc, ViewPort &vp) { DrawPolygonFilled(dc, vp); }
   static const std::string ConstructPath(const std::string &dir,
                                          const std::string &quality_suffix) {
-    return dir + fs::path::preferred_separator + "basemap_" +
-           quality_suffix + ".shp";
+    return std::string(dir + fs::path::preferred_separator + "basemap_" +
+           quality_suffix + ".shp");
   }
 
   bool CrossesLand(double &lat1, double &lon1, double &lat2, double &lon2);
