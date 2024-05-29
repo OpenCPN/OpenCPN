@@ -25,6 +25,8 @@
  *
  */
 
+// Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
+// error when compiling with VS2022
 #include "OCPNPlatform.h"
 #include "shapefile_basemap.h"
 #include "chartbase.h"
