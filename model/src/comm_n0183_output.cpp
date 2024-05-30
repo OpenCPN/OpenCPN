@@ -368,9 +368,11 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     registry.Deactivate(drv_serial_n0183);
     btempStream = true;
   }
-  driver = CreateOutputConnection(com_name, params_save, btempStream,
-                                  b_restoreStream, dlg_ctx);
-  if (!driver) return 1;
+  if (!g_bGarminHostUpload) {  // Using NMEA0183 upload
+    driver = CreateOutputConnection(com_name, params_save, btempStream,
+                                    b_restoreStream, dlg_ctx);
+    if (!driver) return 1;
+  }
 
   auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
 
@@ -889,10 +891,11 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     registry.Deactivate(drv_serial_n0183);
     btempStream = true;
   }
-  driver = CreateOutputConnection(com_name, params_save, btempStream,
+  if (!g_bGarminHostUpload) {  // Using NMEA0183 upload
+    driver = CreateOutputConnection(com_name, params_save, btempStream,
                                     b_restoreStream, dlg_ctx);
-  if (!driver)
-    return 1;
+    if (!driver) return 1;
+  }
 
   auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(driver);
 
