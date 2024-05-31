@@ -897,7 +897,9 @@ void RoutePointGui::ReLoadIcon(void) {
 bool RoutePointGui::SendToGPS(const wxString &com_name, SendToGpsDlg *dialog) {
 
   N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);
+  ::wxBeginBusyCursor();
   int result = SendWaypointToGPS_N0183(&m_point, com_name, *g_pMUX, dlg_ctx);
+  ::wxEndBusyCursor();
 
   wxString msg;
   if (0 == result)
