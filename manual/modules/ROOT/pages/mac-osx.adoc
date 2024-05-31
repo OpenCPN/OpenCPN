@@ -12,6 +12,7 @@ This process will allow building single architecture binaries which are NOT comp
 - Switch to the source tree (`cd OpenCPN`)
 - Run the build script (`ci/generic-build-macos.sh`)
   - The script installs additional tools and dependencies required to build OpenCPN and needs internet connection
+  - It is not necessary to run the script for subsequent builds, as all the dependencies are already installed, use the normal `cmake` workflow for them.
 - The build products can be found in the `build` subdirectory
 
 This process is continuously tested by the OpenCPN automatic builds, so it is known to work.
@@ -55,7 +56,7 @@ install it using:
 fully compatible with older macOS versions on newer macOS, libarchive
 must instead of from Homebrew, be built as follows:
 
- $ export MACOSX_DEPLOYMENT_TARGET=10.10
+ $ export MACOSX_DEPLOYMENT_TARGET=10.13
  $ wget https://libarchive.org/downloads/libarchive-3.3.3.tar.gz
  $ tar zxf libarchive-3.3.3.tar.gz
  $ cd libarchive-3.3.3
@@ -71,14 +72,16 @@ For local development the wxWidgets from Homebrew (or built locally) can be used
  $ brew install wxwidgets
 
 But to get results fully compatible with the official OpenCPN
-builds, which retain compatibility with older macOS versions, wxWidgets must be version 3.2.2 built manually.
-On Intel machines you may download the prebuilt binaries archive wx322-2_opencpn50_macos1010.tar.bz2 from https://download.opencpn.org/s/8xYPFAqTR8ZGXXb/download
-On any platform (but obligatory on Aplle Silicon as we do not provide the prebuilt artifacts), perform a manual build as follows:
+builds, which retain compatibility with older macOS versions, wxWidgets must be version 3.2.5 built manually.
+For very old Intel machines you may download the prebuilt binaries archive from https://dl.cloudsmith.io/public/nohal/opencpn-dependencies/raw/files/macos_deps_intel_legacy.tar.xz
+For modern Macs, OpenCPN is built as a universal binary against set of prebuilt dependencies available from https://dl.cloudsmith.io/public/nohal/opencpn-dependencies/raw/files/macos_deps_universal-opencpn.tar.xz
 
- $ git clone --recurse-submodules --depth 1 --branch v3.2.2.1 https://github.com/wxWidgets/wxWidgets.git
+To build wxWidgets manually, you may use the following process:
+
+ $ git clone --recurse-submodules --depth 1 --branch v3.2.5 https://github.com/wxWidgets/wxWidgets.git
  $ cd wxWidgets
  $ mkdir build-release && cd build-release
- $ ../configure --with-cxx=11 --with-macosx-version-min=10.10 --enable-unicode --with-osx-cocoa --enable-aui --disable-debug --with-opengl --without-subdirs
+ $ ../configure --with-cxx=11 --with-macosx-version-min=10.13 --enable-unicode --with-osx-cocoa --enable-aui --disable-debug --with-opengl --without-subdirs
  $ make -j2
  $ sudo make install
 
@@ -108,7 +111,7 @@ that we don't work directly in the source tree:
 
 *Build Method 1* - From the command line Prepare our build environment:
 
- $ export MACOSX_DEPLOYMENT_TARGET=10.10
+ $ export MACOSX_DEPLOYMENT_TARGET=10.13
  $ cmake ..
 
 Build OpenCPN:
@@ -117,7 +120,7 @@ Build OpenCPN:
 
 To build a debug version use:
 
- $ export MACOSX_DEPLOYMENT_TARGET=10.10
+ $ export MACOSX_DEPLOYMENT_TARGET=10.13
  $ cmake -DCMAKE_BUILD_TYPE=Debug ..
  $ make
 
@@ -127,7 +130,7 @@ Install OpenCPN:
 
 *Build Method 2* - Using Xcode Create the Xcode project:
 
- $ export MACOSX_DEPLOYMENT_TARGET=10.10
+ $ export MACOSX_DEPLOYMENT_TARGET=10.13
  $ cmake -G Xcode ..
 
 Open the `OpenCPN.xcodeproj` file in Xcode, and use the “Build”, “Run”,
