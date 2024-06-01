@@ -443,6 +443,11 @@ void CanvasOptions::RefreshControlValues(void) {
   }
 
   m_pDispCat->Enable(m_ENCAvail);
+
+  // All NAVAID text options are gated by global "Show Text"
+  pCBENCLightDesc->Enable(pCDOENCText->GetValue());
+  pCBENCBuoyLabels->Enable(pCDOENCText->GetValue());
+
 }
 
 void CanvasOptions::SetENCAvailable(bool avail) {
