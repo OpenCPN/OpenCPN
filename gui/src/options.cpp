@@ -2061,14 +2061,14 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new TimeCtrl(itemPanelShip, ID_TRACKROTATETIME,
                    wxDateTime((time_t)g_track_rotate_time).ToUTC(),
                    wxDefaultPosition, wxDefaultSize, 0);
-  trackSizer1->Add(pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
-                   border_size);
 #else
   pTrackRotateTime =
       new wxTimePickerCtrl(itemPanelShip, ID_TRACKROTATETIME,
                            wxDateTime((time_t)g_track_rotate_time).ToUTC(),
                            wxDefaultPosition, wxDefaultSize, 0);
 #endif  // __WXGTK__
+  trackSizer1->Add(pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
+                   border_size);
 #endif  // wxUSE_TIMEPICKCTRL
 
   pTrackRotateComputerTime =
