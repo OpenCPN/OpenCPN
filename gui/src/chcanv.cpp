@@ -9882,15 +9882,19 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
 
   markPoint->m_bRPIsBeingEdited = false;
 
+  wxString title_base = _("Waypoint Properties");
+  if (!markPoint->m_bIsInRoute)
+    title_base = _("Mark Properties");
+
   g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint*> {markPoint});
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
-                                      _("Waypoint Properties"), _("Layer"),
+                                      title_base, _("Layer"),
                                       GetLayerName(markPoint->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else
-    g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+    g_pMarkInfoDialog->SetDialogTitle(title_base);
 
   g_pMarkInfoDialog->Show();
   g_pMarkInfoDialog->Raise();

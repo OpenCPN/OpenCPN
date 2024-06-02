@@ -665,12 +665,12 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnTrkDeleteAllClick), NULL,
       this);
 
-  //  Create "Waypoints" panel
+  //  Create "Marks" panel
   m_pPanelWpt = new wxPanel(m_pNotebook, wxID_ANY, wxDefaultPosition,
                             wxDefaultSize, wxNO_BORDER | wxTAB_TRAVERSAL);
   wxBoxSizer *sbsWpts = new wxBoxSizer(wxHORIZONTAL);
   m_pPanelWpt->SetSizer(sbsWpts);
-  m_pNotebook->AddPage(m_pPanelWpt, _("Waypoints"));
+  m_pNotebook->AddPage(m_pPanelWpt, _("Marks"));
 
   wxBoxSizer *bSizerWptContents;
   bSizerWptContents = new wxBoxSizer(wxVERTICAL);
@@ -696,7 +696,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnFilterChanged), NULL, this);
 
   m_cbShowAllWP =
-      new wxCheckBox(m_pPanelWpt, wxID_ANY, _("Show all waypoints"));
+      new wxCheckBox(m_pPanelWpt, wxID_ANY, _("Show all marks"));
   bSizerWptContents->Add(m_cbShowAllWP, 0, wxEXPAND | wxLEFT, 5);
   m_cbShowAllWP->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -734,7 +734,7 @@ void RouteManagerDialog::Create() {
                                4 * char_width);
   m_pWptListCtrl->InsertColumn(colWPTSCALE, _("Scale"), wxLIST_FORMAT_LEFT,
                                8 * char_width);
-  m_pWptListCtrl->InsertColumn(colWPTNAME, _("Waypoint Name"),
+  m_pWptListCtrl->InsertColumn(colWPTNAME, _("Mark Name"),
                                wxLIST_FORMAT_LEFT, 15 * char_width);
   m_pWptListCtrl->InsertColumn(colWPTDIST, _("Distance from own ship"),
                                wxLIST_FORMAT_LEFT, 14 * char_width);
@@ -2662,14 +2662,14 @@ void RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint *> wptli
   g_pMarkInfoDialog->UpdateProperties();
   if (wptlist[0]->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
-                                      _("Waypoint Properties"), _("Layer"),
+                                      _("Mark Properties"), _("Layer"),
                                       GetLayerName(wptlist[0]->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else {
     if (wptlist.size() > 1)
-      g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties") + wxString::Format(_(" (%lu points)"), wptlist.size()));
+      g_pMarkInfoDialog->SetDialogTitle(_("Mark Properties") + wxString::Format(_(" (%lu points)"), wptlist.size()));
     else
-      g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+      g_pMarkInfoDialog->SetDialogTitle(_("Mark Properties"));
   }
 
   if (!g_pMarkInfoDialog->IsShown()) g_pMarkInfoDialog->Show();
