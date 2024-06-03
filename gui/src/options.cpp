@@ -7474,6 +7474,7 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   if (event.GetEventObject() == NULL) return;
 
   OnApplyClick(event);
+  SetReturnCode(m_returnChanges);
   if (event.GetInt() == wxID_STOP) return;
 
   Finish();
