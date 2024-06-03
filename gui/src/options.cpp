@@ -2248,7 +2248,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   //  Waypoints
   wxStaticBox* waypointText =
-      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Waypoints"));
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Marks"));
   wxStaticBoxSizer* waypointSizer =
       new wxStaticBoxSizer(waypointText, wxVERTICAL);
   Routes->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
@@ -2263,7 +2263,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                      border_size);
 
   wxStaticText* waypointiconTxt =
-      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint default icon"));
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Mark default icon"));
   waypointiconSelect->Add(waypointiconTxt, 1, wxEXPAND | wxALL,
                           group_item_spacing);
 
@@ -2289,7 +2289,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointSizer->Add(ScaMinSizer, 0, wxLEFT | wxRIGHT | wxEXPAND, border_size);
   pScaMinChckB =
       new wxCheckBox(itemPanelRoutes, wxID_ANY,
-                     _("Show waypoints only at a chartscale greater than 1 :"));
+                     _("Show marks only at a chartscale greater than 1 :"));
   ScaMinSizer->Add(pScaMinChckB, 0);
   m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1, "TEXTTEXTTEXT");
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
@@ -2311,7 +2311,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                      border_size);
 
   wxStaticText* waypointrrTxt =
-      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint range rings"));
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Mark range rings"));
   waypointrrSelect->Add(waypointrrTxt, 1, wxEXPAND | wxALL, group_item_spacing);
 
   pWaypointRangeRingsNumber =
@@ -2378,7 +2378,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   pWayPointPreventDragging = new wxCheckBox(
       itemPanelRoutes, ID_DRAGGINGCHECKBOX,
-      _("Lock Waypoints (Unless waypoint property dialog visible)"));
+      _("Lock marks and waypoints (Unless object property dialog visible)"));
   pWayPointPreventDragging->SetValue(FALSE);
   ControlSizer->Add(pWayPointPreventDragging, verticleInputFlags);
 

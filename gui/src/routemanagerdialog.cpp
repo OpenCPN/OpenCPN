@@ -2660,16 +2660,21 @@ void RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint *> wptli
 
   g_pMarkInfoDialog->SetRoutePoints(wptlist);
   g_pMarkInfoDialog->UpdateProperties();
+
+  wxString base_title = _("Mark Properties");
+  if (wptlist[0]->m_bIsInRoute)
+    base_title = _("Waypoint Properties");
+
   if (wptlist[0]->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
-                                      _("Mark Properties"), _("Layer"),
+                                      base_title, _("Layer"),
                                       GetLayerName(wptlist[0]->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else {
     if (wptlist.size() > 1)
-      g_pMarkInfoDialog->SetDialogTitle(_("Mark Properties") + wxString::Format(_(" (%lu points)"), wptlist.size()));
+      g_pMarkInfoDialog->SetDialogTitle(base_title + wxString::Format(_(" (%lu points)"), wptlist.size()));
     else
-      g_pMarkInfoDialog->SetDialogTitle(_("Mark Properties"));
+      g_pMarkInfoDialog->SetDialogTitle(base_title);
   }
 
   if (!g_pMarkInfoDialog->IsShown()) g_pMarkInfoDialog->Show();
