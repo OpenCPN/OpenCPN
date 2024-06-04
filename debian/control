@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Pavel Kalian <pavel@kalian.cz>
 Build-Depends: debhelper (>= 9),
  cmake3 | cmake (>> 3.5.0),
- lsb-core,
+ base-files (>=12) | lsb-core,
  lsb-release,
  libarchive-dev,
  libbz2-dev,
