@@ -801,13 +801,14 @@ void dashboard_pi::Notify() {
   // Get the identifiers
   std::vector<std::string> PriorityIDs = GetActivePriorityIdentifiers();
   // Get current satellite priority identifier = item 4
-  std::string satID = PriorityIDs[4];
+  // Exclude "address" after ':' that may equal Protokoll
+  std::string satID = PriorityIDs[4].substr(0, PriorityIDs[4].find(':'));
   if (satID.find("nmea0183") != std::string::npos)
     mPriSatStatus = 3;  // GSV
   else if (satID.find("ignal") != std::string::npos)
     mPriSatStatus = 2;  // SignalK
   else if (satID.find("nmea2000") != std::string::npos) {
-    prioN2kPGNsat = satID;
+    prioN2kPGNsat = PriorityIDs[4];
     mPriSatStatus = 1;  // N2k
   }
 

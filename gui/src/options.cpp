@@ -145,7 +145,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 
 extern bool g_bShowOutlines;
 extern bool g_bShowChartBar;
@@ -224,7 +223,7 @@ extern bool g_bQuiltEnable;
 extern bool g_bFullScreenQuilt;
 extern bool g_bConfirmObjectDelete;
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 extern wxLocale* plocale_def_lang;
 #endif
 
@@ -293,7 +292,7 @@ extern wxString GetShipNameFromFile(int);
 WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 static int lang_list[] = {
     wxLANGUAGE_DEFAULT, wxLANGUAGE_ABKHAZIAN, wxLANGUAGE_AFAR,
     wxLANGUAGE_AFRIKAANS, wxLANGUAGE_ALBANIAN, wxLANGUAGE_AMHARIC,
@@ -396,12 +395,8 @@ void prepareSlider(wxSlider* slider) {
 #endif
 
 // sort callback for Connections list  Sort by priority.
-#if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(wxIntPtr item1, wxIntPtr item2,
                                         wxIntPtr list)
-#else
-int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
-#endif
 {
   wxListCtrl* lc = reinterpret_cast<wxListCtrl*>(list);
 
@@ -1496,7 +1491,8 @@ EVT_CHAR_HOOK(options::OnCharHook)
 END_EVENT_TABLE()
 
 options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
-                 const wxPoint& pos, const wxSize& size, long style) {
+                 const wxPoint& pos, const wxSize& size, long style)
+     : pTrackRotateTime(0) {
   Init();
 
   pParent = parent;
@@ -1547,12 +1543,10 @@ options::~options(void) {
 }
 
 // with AIS it's called very often
-#if wxCHECK_VERSION(3, 0, 0)
 bool options::SendIdleEvents(wxIdleEvent& event) {
   if (IsShown()) return wxDialog::SendIdleEvents(event);
   return false;
 }
-#endif
 
 void options::RecalculateSize(int hint_x, int hint_y) {
   if (!g_bresponsive) {
@@ -2060,7 +2054,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   trackSizer1->Add(0, 0, 1, wxEXPAND, 0);
 
-#if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
   pTrackDaily->SetLabel(_("Automatic Daily Tracks at"));
 #ifdef __WXGTK__
@@ -2073,11 +2066,10 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxTimePickerCtrl(itemPanelShip, ID_TRACKROTATETIME,
                            wxDateTime((time_t)g_track_rotate_time).ToUTC(),
                            wxDefaultPosition, wxDefaultSize, 0);
-#endif
+#endif  // __WXGTK__
   trackSizer1->Add(pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT,
                    border_size);
-#endif
-#endif
+#endif  // wxUSE_TIMEPICKCTRL
 
   pTrackRotateComputerTime =
       new wxRadioButton(itemPanelShip, ID_TRACKROTATECOMPUTER, _("Computer"),
@@ -2256,7 +2248,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   //  Waypoints
   wxStaticBox* waypointText =
-      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Waypoints"));
+      new wxStaticBox(itemPanelRoutes, wxID_ANY, _("New Marks"));
   wxStaticBoxSizer* waypointSizer =
       new wxStaticBoxSizer(waypointText, wxVERTICAL);
   Routes->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
@@ -2271,7 +2263,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                      border_size);
 
   wxStaticText* waypointiconTxt =
-      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint default icon"));
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Mark default icon"));
   waypointiconSelect->Add(waypointiconTxt, 1, wxEXPAND | wxALL,
                           group_item_spacing);
 
@@ -2297,7 +2289,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   waypointSizer->Add(ScaMinSizer, 0, wxLEFT | wxRIGHT | wxEXPAND, border_size);
   pScaMinChckB =
       new wxCheckBox(itemPanelRoutes, wxID_ANY,
-                     _("Show waypoints only at a chartscale greater than 1 :"));
+                     _("Show marks only at a chartscale greater than 1 :"));
   ScaMinSizer->Add(pScaMinChckB, 0);
   m_pText_ScaMin = new wxTextCtrl(itemPanelRoutes, -1, "TEXTTEXTTEXT");
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
@@ -2319,7 +2311,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
                      border_size);
 
   wxStaticText* waypointrrTxt =
-      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Waypoint range rings"));
+      new wxStaticText(itemPanelRoutes, wxID_ANY, _("Mark range rings"));
   waypointrrSelect->Add(waypointrrTxt, 1, wxEXPAND | wxALL, group_item_spacing);
 
   pWaypointRangeRingsNumber =
@@ -2386,7 +2378,7 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
 
   pWayPointPreventDragging = new wxCheckBox(
       itemPanelRoutes, ID_DRAGGINGCHECKBOX,
-      _("Lock Waypoints (Unless waypoint property dialog visible)"));
+      _("Lock marks and waypoints (Unless object property dialog visible)"));
   pWayPointPreventDragging->SetValue(FALSE);
   ControlSizer->Add(pWayPointPreventDragging, verticleInputFlags);
 
@@ -2919,7 +2911,6 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     // OpenGL Options
 #ifdef ocpnUSE_GL
-
     wxBoxSizer* OpenGLSizer = new wxBoxSizer(wxVERTICAL);
     itemBoxSizerUI->Add(OpenGLSizer, 0, 0, 0);
 
@@ -2935,17 +2926,13 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     pOpenGL->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(options::OnGLClicked), NULL, this);
-
-
-
 #ifdef __ANDROID__
     pOpenGL->Hide();
     bOpenGL->Hide();
 #endif
-
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
-#endif
+#endif   // ocpnUSE_GL
 
     //  Course Up display update period
     wxStaticText* crat = new wxStaticText(m_ChartDisplayPage, wxID_ANY,
@@ -3722,15 +3709,8 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow2);
 
-    // #if defined(__WXMSW__) || defined(__WXOSX__)
-    //     wxString* ps57CtlListBoxStrings = NULL;
-    //     ps57CtlListBox = new wxCheckListBox(
-    //         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
-    //         ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
-    // #else
     ps57CtlListBox = new OCPNCheckedListCtrl(
         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350));
-    // #endif
 
     marinersSizer->Add(ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing);
   }
@@ -6669,7 +6649,6 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
                                                        ->CanAcceleratePanning();
     }
 
-    g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
 
     g_GLOptions.m_GLPolygonSmoothing = dlg.GetPolygonSmoothing();
@@ -7116,12 +7095,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bTrackDaily = pTrackDaily->GetValue();
 
   g_track_rotate_time = 0;
-#if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
   int h, m, s;
-  if (pTrackRotateTime->GetTime(&h, &m, &s))
+  if (pTrackRotateTime && pTrackRotateTime->GetTime(&h, &m, &s))
     g_track_rotate_time = h * 3600 + m * 60 + s;
-#endif
 #endif
 
   if (pTrackRotateUTC->GetValue())
@@ -7497,6 +7474,7 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   if (event.GetEventObject() == NULL) return;
 
   OnApplyClick(event);
+  SetReturnCode(m_returnChanges);
   if (event.GetInt() == wxID_STOP) return;
 
   Finish();
@@ -7518,8 +7496,7 @@ void options::Finish(void) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  SetReturnCode(m_returnChanges);
-  EndModal(m_returnChanges);
+  m_on_close_cb();
 }
 
 ArrayOfCDI options::GetSelectedChartDirs() {
@@ -7959,9 +7936,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  int rv = 0;
-  if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
-  EndModal(rv);
+  m_on_close_cb();
 }
 
 void options::OnClose(wxCloseEvent& event) {
@@ -7977,7 +7952,7 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  EndModal(0);
+  m_on_close_cb();
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {
@@ -9083,7 +9058,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   btnRebuild->Enable(g_GLOptions.m_bTextureCompressionCaching);
   if (!g_bopengl || g_raster_format == GL_RGB) btnRebuild->Disable();
   btnClear->Enable(g_GLOptions.m_bTextureCompressionCaching);
-  m_cbShowFPS = new wxCheckBox(this, wxID_ANY, _("Show FPS"));
   m_cbPolygonSmoothing = new wxCheckBox(this, wxID_ANY, _("Polygon Smoothing"));
   m_cbLineSmoothing = new wxCheckBox(this, wxID_ANY, _("Line Smoothing"));
   m_cbSoftwareGL =
@@ -9111,7 +9085,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbLineSmoothing, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
-  flexSizer->Add(m_cbShowFPS, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbSoftwareGL, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
@@ -9150,10 +9123,6 @@ bool OpenGLOptionsDlg::GetLineSmoothing(void) const {
   return m_cbLineSmoothing->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetShowFPS(void) const {
-  return m_cbShowFPS->GetValue();
-}
-
 bool OpenGLOptionsDlg::GetSoftwareGL(void) const {
   return m_cbSoftwareGL->GetValue();
 }
@@ -9186,7 +9155,6 @@ void OpenGLOptionsDlg::Populate(void) {
         g_GLOptions.m_bTextureCompressionCaching);
     m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
   }
-  m_cbShowFPS->SetValue(g_bShowFPS);
   m_cbPolygonSmoothing->SetValue(g_GLOptions.m_GLPolygonSmoothing);
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 

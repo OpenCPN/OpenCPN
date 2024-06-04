@@ -163,9 +163,7 @@ using namespace std::literals::chrono_literals;
 #include "tcmgr.h"
 #include "thumbwin.h"
 #include "TrackPropDlg.h"
-#ifdef __linux__
 #include "udev_rule_mgr.h"
-#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -480,7 +478,6 @@ bool g_bLookAhead;
 bool g_bskew_comp;
 bool g_bopengl;
 bool g_bSoftwareGL;
-bool g_bShowFPS;
 bool g_bsmoothpanzoom;
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
@@ -1194,7 +1191,7 @@ bool MyApp::OnInit() {
   //      Init the Route Manager
 
  g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
-                            NMEALogWindow::Get());
+                   NMEALogWindow::GetInstance());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
@@ -1901,18 +1898,16 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
-      if (cp->GetDSPort().Contains(_T("Serial"))) {
+      if (cp->GetDSPort().Contains("Serial")) {
         std::string port(cp->Port.ToStdString());
         CheckSerialAccess(gFrame, port);
       }
     }
   }
   CheckDongleAccess(gFrame);
-#endif
 
   // Initialize the CommBridge
   m_comm_bridge.Initialize();

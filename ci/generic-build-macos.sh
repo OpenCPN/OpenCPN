@@ -32,9 +32,9 @@ brew install wxwidgets
 brew install create-dmg
 
 if [ -d /usr/local/include ]; then
-  ln -s /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
-  ln -s /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
-  ln -s /usr/local/opt/libarchive/lib/libarchive.13.dylib /usr/local/lib/libarchive.13.dylib
+  ln -sf /usr/local/opt/libarchive/include/archive.h /usr/local/include/archive.h
+  ln -sf /usr/local/opt/libarchive/include/archive_entry.h /usr/local/include/archive_entry.h
+  ln -sf /usr/local/opt/libarchive/lib/libarchive.13.dylib /usr/local/lib/libarchive.13.dylib
 fi
 
 for pkg in openssl cmake ; do
@@ -64,6 +64,9 @@ mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
 make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
+
+# Make sure the code signatures are correct
+codesign --force --deep --sign - /tmp/opencpn/bin/OpenCPN.app
 
 make create-pkg
 if [[ ! -z "${CREATE_DMG+x}" ]]; then

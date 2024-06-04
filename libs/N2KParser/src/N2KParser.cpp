@@ -36,10 +36,9 @@ uint32_t millis() {
   return 42;
 }
 
-tN2kMsg MakeN2kMsg(std::vector<unsigned char> &v) {
+static void MakeN2kMsg(std::vector<unsigned char> &v, tN2kMsg &Msg) {
 
-  tN2kMsg Msg;
-  Msg.Clear();;
+  Msg.Clear();
 
   unsigned char *Buf = v.data();
 
@@ -60,15 +59,14 @@ tN2kMsg MakeN2kMsg(std::vector<unsigned char> &v) {
     Msg.Clear();
   }
 
-  for (int j=0; i<static_cast<int>(v.size())-1; i++, j++) Msg.Data[j]=Buf[i];
-
-  return Msg;
+  for (int j=0; i<static_cast<int>(v.size())-1 && j<Msg.DataLen; i++, j++) Msg.Data[j]=Buf[i];
 }
 
 bool ParseN2kPGN128275(std::vector<unsigned char> &v, uint16_t &DaysSince1970,
                        double &SecondsSinceMidnight, uint32_t &Log, uint32_t &TripLog) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN128275(msg, DaysSince1970, SecondsSinceMidnight, Log, TripLog);
 }
@@ -82,7 +80,8 @@ bool ParseN2kPGN129029(std::vector<unsigned char> &v, unsigned char &SID, uint16
                      double &AgeOfCorrection
                      ) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN129029(msg, SID, DaysSince1970, SecondsSinceMidnight,
                      Latitude, Longitude, Altitude,
@@ -96,7 +95,8 @@ bool ParseN2kPGN129029(std::vector<unsigned char> &v, unsigned char &SID, uint16
 
 bool ParseN2kPGN129025(std::vector<unsigned char> &v, double &Latitude, double &Longitude) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN129025(msg, Latitude, Longitude);
 }
@@ -105,7 +105,8 @@ bool ParseN2kPGN129025(std::vector<unsigned char> &v, double &Latitude, double &
 bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID,
                        tN2kHeadingReference &ref, double &COG, double &SOG) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN129026(msg, SID, ref, COG, SOG);
 
@@ -115,7 +116,8 @@ bool ParseN2kPGN129026(std::vector<unsigned char> &v, unsigned char &SID,
 bool ParseN2kPGN127245(std::vector<unsigned char> &v, double &RudderPosition, unsigned char &Instance,
                        tN2kRudderDirectionOrder &RudderDirectionOrder, double &AngleOrder) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN127245(msg, RudderPosition, Instance,
                            RudderDirectionOrder, AngleOrder);
@@ -124,7 +126,8 @@ bool ParseN2kPGN127245(std::vector<unsigned char> &v, double &RudderPosition, un
 bool ParseN2kPGN127250(std::vector<unsigned char> &v, unsigned char &SID,
                        double &Heading, double &Deviation, double &Variation, tN2kHeadingReference &ref) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN127250(msg, SID, Heading, Deviation, Variation, ref);
 
@@ -133,7 +136,8 @@ bool ParseN2kPGN127250(std::vector<unsigned char> &v, unsigned char &SID,
 bool ParseN2kPGN127257(std::vector<unsigned char> &v, unsigned char &SID,
                        double &Yaw, double &Pitch, double &Roll) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN127257(msg, SID, Yaw, Pitch, Roll);
 
@@ -143,7 +147,8 @@ bool ParseN2kPGN128259(std::vector<unsigned char> &v, unsigned char &SID,
                        double &WaterReferenced, double &GroundReferenced,
                        tN2kSpeedWaterReferenceType &SWRT) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN128259(msg, SID, WaterReferenced, GroundReferenced, SWRT);
 
@@ -152,7 +157,8 @@ bool ParseN2kPGN128259(std::vector<unsigned char> &v, unsigned char &SID,
 bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char &SID,
                        tN2kRangeResidualMode &Mode, uint8_t &nSats) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN129540(msg, SID, Mode, nSats);
 
@@ -160,7 +166,8 @@ bool ParseN2kPGN129540(std::vector<unsigned char> &v, unsigned char &SID,
 
 bool ParseN2kPGN129540(std::vector<unsigned char> &v, uint8_t SVIndex, tSatelliteInfo& SatelliteInfo) {
 
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN129540(msg, SVIndex, SatelliteInfo);
 }
@@ -171,7 +178,8 @@ bool ParseN2kPGN129038(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                         double &COG, double &SOG, double &Heading, double &ROT, tN2kAISNavStatus &NavStatus,
                         tN2kAISTransceiverInformation &AISTransceiverInformation)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN129038(msg, MessageID, Repeat, UserID,
                         Latitude, Longitude, Accuracy, RAIM, Seconds,
@@ -183,7 +191,8 @@ bool ParseN2kPGN129039(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                         double &SOG, tN2kAISTransceiverInformation &AISTransceiverInformation, double &Heading,
                         tN2kAISUnit &Unit, bool &Display, bool &DSC, bool &Band, bool &Msg22, tN2kAISMode &Mode, bool &State)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN129039(msg, MessageID, Repeat, UserID,
                         Latitude, Longitude, Accuracy, RAIM, Seconds, COG,
@@ -199,7 +208,8 @@ bool ParseN2kPGN129794(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                         double &Draught, char *Destination, tN2kAISVersion &AISversion, tN2kGNSStype &GNSStype,
                         tN2kAISDTE &DTE, tN2kAISTranceiverInfo &AISinfo)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN129794(msg, MessageID, Repeat, UserID,
                         IMOnumber, Callsign, Name, VesselType, Length,
@@ -210,7 +220,8 @@ bool ParseN2kPGN129794(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
 
 bool ParseN2kPGN129809(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID, char *Name)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN129809(msg, MessageID, Repeat, UserID, Name);
 }
@@ -220,7 +231,8 @@ bool ParseN2kPGN129810(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                       uint8_t &VesselType, char *Vendor, char *Callsign, double &Length, double &Beam,
                       double &PosRefStbd, double &PosRefBow, uint32_t &MothershipID)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN129810(msg, MessageID, Repeat, UserID,
                       VesselType, Vendor, Callsign, Length, Beam,
@@ -229,7 +241,8 @@ bool ParseN2kPGN129810(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
 
 bool ParseN2kPGN129041(std::vector<unsigned char> &v, tN2kAISAtoNReportData &N2kData)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN129041(msg, N2kData);
 }
@@ -238,7 +251,8 @@ bool ParseN2kPGN129041(std::vector<unsigned char> &v, tN2kAISAtoNReportData &N2k
 bool ParseN2kPGN128267(std::vector<unsigned char> &v, unsigned char &SID,
                        double &DepthBelowTransducer, double &Offset, double &Range)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN128267(msg, SID,
                        DepthBelowTransducer, Offset, Range);
@@ -248,7 +262,8 @@ bool ParseN2kPGN128267(std::vector<unsigned char> &v, unsigned char &SID,
 bool ParseN2kPGN130306(std::vector<unsigned char> &v, unsigned char &SID,
                        double &WindSpeed, double &WindAngle, tN2kWindReference &WindReference)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN130306(msg, SID,
                        WindSpeed, WindAngle, WindReference);
@@ -258,7 +273,8 @@ bool ParseN2kPGN130306(std::vector<unsigned char> &v, unsigned char &SID,
 bool ParseN2kPGN130310(std::vector<unsigned char> &v, unsigned char &SID, double &WaterTemperature,
                      double &OutsideAmbientAirTemperature, double &AtmosphericPressure)
 {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN130310(msg, SID, WaterTemperature,
                      OutsideAmbientAirTemperature, AtmosphericPressure);
@@ -269,7 +285,8 @@ bool ParseN2kPGN130313(std::vector<unsigned char> &v, unsigned char &SID,
                        unsigned char &HumidityInstance,
                        tN2kHumiditySource &HumiditySource,
                        double &ActualHumidity, double &SetHumidity) {
-    tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
     return ParseN2kPGN130313(msg, SID, HumidityInstance, HumiditySource,
                              ActualHumidity, SetHumidity);
@@ -281,7 +298,8 @@ bool ParseN2kPGN129793(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                         double &Longitude, double &Latitude, unsigned int &SecondsSinceMidnight,
                         unsigned int &DaysSinceEpoch)
 {
-  tN2kMsg msg = MakeN2kMsg(v);
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
 
   return ParseN2kPGN129793(msg, MessageID, Repeat, UserID,
                         Longitude, Latitude,

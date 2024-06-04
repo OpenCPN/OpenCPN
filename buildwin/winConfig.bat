@@ -83,7 +83,7 @@ set "OCPN_Dir=%CD%"
 set "wxDIR=%OCPN_DIR%\cache\buildwxWidgets"
 set "wxWidgets_ROOT_DIR=%wxDIR%"
 set "wxWidgets_LIB_DIR=%wxDIR%\lib\vc_dll"
-set "wxVER=3.2.4"
+set "wxVER=3.2.5"
 if [%VisualStudioVersion%]==[16.0] (^
   set VCver=16
   set "VCstr=Visual Studio 16"

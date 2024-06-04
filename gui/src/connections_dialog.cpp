@@ -62,6 +62,9 @@ ConnectionsDialog::ConnectionsDialog(wxScrolledWindow* container,
                                      options* parent) {
   m_container = container;
   m_parent = parent;
+  nmea_window_close_listener.Init(
+          NMEALogWindow::GetInstance().nmea_window_close_evt,
+          [&] (ObservedEvt&) { m_cbNMEADebug->SetValue(false); });
 
   Init();
 }
@@ -71,8 +74,8 @@ ConnectionsDialog::~ConnectionsDialog() {}
 void ConnectionsDialog::SetInitialSettings(void) {
 
   m_cbNMEADebug->SetValue(false);
-  if (NMEALogWindow::Get().GetTTYWindow()) {
-    if (NMEALogWindow::Get().GetTTYWindow()->IsShown()) {
+  if (NMEALogWindow::GetInstance().GetTTYWindow()) {
+    if (NMEALogWindow::GetInstance().GetTTYWindow()->IsShown()) {
       m_cbNMEADebug->SetValue(true);
     }
   }
@@ -150,7 +153,7 @@ void ConnectionsDialog::Init() {
   m_cbNMEADebug =
       new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
                      wxDefaultPosition, wxDefaultSize, 0);
-  m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
+  m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
   bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
   m_cbFurunoGP3X =
@@ -499,21 +502,22 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::Get().DestroyWindow();
+    NMEALogWindow::GetInstance().DestroyWindow();
   } else {
-    NMEALogWindow::Get().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
 
     // Try to ensure that the log window is a least a little bit visible
-    wxRect logRect(
-        NMEALogWindow::Get().GetPosX(), NMEALogWindow::Get().GetPosY(),
-        NMEALogWindow::Get().GetSizeW(), NMEALogWindow::Get().GetSizeH());
+    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
+                   NMEALogWindow::GetInstance().GetPosY(),
+                   NMEALogWindow::GetInstance().GetSizeW(),
+                   NMEALogWindow::GetInstance().GetSizeH());
 
     if (m_container->GetRect().Contains(logRect)) {
-      NMEALogWindow::Get().SetPos(
+      NMEALogWindow::GetInstance().SetPos(
           m_container->GetRect().x / 2,
           (m_container->GetRect().y +
            (m_container->GetRect().height - logRect.height) / 2));
-      NMEALogWindow::Get().Move();
+      NMEALogWindow::GetInstance().Move();
     }
 
     m_parent->Raise();
@@ -591,5 +595,3 @@ void ConnectionsDialog::OnPriorityDialog(wxCommandEvent& event) {
   pdlg->ShowModal();
   delete pdlg;
 }
-
-

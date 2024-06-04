@@ -840,6 +840,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/TrackPropDlg.h
     ${GUI_HDR_DIR}/TTYScroll.h
     ${GUI_HDR_DIR}/TTYWindow.h
+    ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
     ${GUI_HDR_DIR}/usb_devices.h
@@ -959,6 +960,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
     ${GUI_SRC_DIR}/TTYScroll.cpp
     ${GUI_SRC_DIR}/TTYWindow.cpp
+    ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
@@ -986,11 +988,6 @@ if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
   list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/garmin_wrapper.cpp)
-endif ()
-
-if (LINUX)
-  list(APPEND GUI_SRC ${GUI_SRC_DIR}/udev_rule_mgr.cpp)
-  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/udev_rule_mgr.h)
 endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)

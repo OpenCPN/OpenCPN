@@ -117,7 +117,6 @@ extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;
 
 extern bool g_bShowOutlines;
@@ -1267,8 +1266,6 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   // CHECK_INT( _T ( "SkewToNorthUp" ), &g_bskew_comp );
   CHECK_INT(_T ( "OpenGL" ), &g_bopengl);
   CHECK_INT(_T ( "SoftwareGL" ), &g_bSoftwareGL);
-
-  CHECK_INT(_T ( "ShowFPS" ), &g_bShowFPS);
 
   CHECK_INT(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 

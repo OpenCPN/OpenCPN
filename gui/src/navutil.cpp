@@ -145,7 +145,6 @@ extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -858,8 +857,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "LookAheadMode" ), &g_bLookAhead);
   Read(_T ( "SkewToNorthUp" ), &g_bskew_comp);
 
-  Read(_T ( "ShowFPS" ), &g_bShowFPS);
-
   Read(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 
   Read(_T( "TalkerIdText" ), &g_TalkerIdText);
@@ -1016,11 +1013,11 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // We allow 0-99 backups ov navobj.xml
   Read(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
 
-  NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
+  NMEALogWindow::GetInstance().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
                                Read(_T("NMEALogWindowSizeY"), 400L));
-  NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
+  NMEALogWindow::GetInstance().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
                               Read(_T("NMEALogWindowPosY"), 10L));
-  NMEALogWindow::Get().CheckPos(display_width, display_height);
+  NMEALogWindow::GetInstance().CheckPos(display_width, display_height);
 
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg
   // filtered but put msg on bus.
@@ -2395,7 +2392,6 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "OpenGL" ), g_bopengl);
   }
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
-  Write(_T ( "ShowFPS" ), g_bShowFPS);
 
   Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
@@ -2450,10 +2446,10 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
 
-  Write(_T ( "NMEALogWindowSizeX" ), NMEALogWindow::Get().GetSizeW());
-  Write(_T ( "NMEALogWindowSizeY" ), NMEALogWindow::Get().GetSizeH());
-  Write(_T ( "NMEALogWindowPosX" ), NMEALogWindow::Get().GetPosX());
-  Write(_T ( "NMEALogWindowPosY" ), NMEALogWindow::Get().GetPosY());
+  Write(_T ( "NMEALogWindowSizeX" ), NMEALogWindow::GetInstance().GetSizeW());
+  Write(_T ( "NMEALogWindowSizeY" ), NMEALogWindow::GetInstance().GetSizeH());
+  Write(_T ( "NMEALogWindowPosX" ), NMEALogWindow::GetInstance().GetPosX());
+  Write(_T ( "NMEALogWindowPosY" ), NMEALogWindow::GetInstance().GetPosY());
 
   Write(_T ( "PreserveScaleOnX" ), g_bPreserveScaleOnX);
 

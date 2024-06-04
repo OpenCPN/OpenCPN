@@ -271,7 +271,6 @@ extern int g_ChartScaleFactor;
 #ifdef ocpnUSE_GL
 #endif
 
-extern bool g_bShowFPS;
 extern double g_gl_ms_per_frame;
 extern bool g_benable_rotate;
 extern bool g_bRollover;
@@ -2998,10 +2997,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           parent_frame->ToggleTestPause();
           break;
         case 'R':
-            g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
-            if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible == 0)
-                g_iNavAidRadarRingsNumberVisible = 1;
-            break;
+          g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
+          if (g_bNavAidRadarRingsShown &&
+              g_iNavAidRadarRingsNumberVisible == 0)
+            g_iNavAidRadarRingsNumberVisible = 1;
+          else if (!g_bNavAidRadarRingsShown &&
+               g_iNavAidRadarRingsNumberVisible == 1)
+            g_iNavAidRadarRingsNumberVisible = 0;
+          break;
         case 'S':
           SetShowENCDepth(!m_encShowDepth);
           ReloadVP();
@@ -5421,18 +5424,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
           _T("%s %4.0f (---)"), _("Scale"),
           true_scale_display);  // Generally, no chart, so no chart scale factor
     }
-
-#ifdef ocpnUSE_GL
-    if (g_bopengl && g_bShowFPS) {
-      wxString fps_str;
-      double fps = 0.;
-      if (g_gl_ms_per_frame > 0) {
-        fps = 1000. / g_gl_ms_per_frame;
-        fps_str.Printf(_T("  %3d fps"), (int)fps);
-      }
-      text += fps_str;
-    }
-#endif
 
     m_scaleValue = true_scale_display;
     m_scaleText = text;
@@ -9891,15 +9882,19 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
 
   markPoint->m_bRPIsBeingEdited = false;
 
+  wxString title_base = _("Waypoint Properties");
+  if (!markPoint->m_bIsInRoute)
+    title_base = _("Mark Properties");
+
   g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint*> {markPoint});
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
-                                      _("Waypoint Properties"), _("Layer"),
+                                      title_base, _("Layer"),
                                       GetLayerName(markPoint->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else
-    g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+    g_pMarkInfoDialog->SetDialogTitle(title_base);
 
   g_pMarkInfoDialog->Show();
   g_pMarkInfoDialog->Raise();
