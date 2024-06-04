@@ -32,6 +32,7 @@ Build-Depends: debhelper (>= 9),
  base-files (<< 12) | libwxgtk-webview3.2-dev,
  portaudio19-dev,
  rapidjson-dev,
+ libxrandr-dev,
  base-files (<< 11) | libglew-dev,
  base-files (>=11) | libglew2.1-static,
  git
