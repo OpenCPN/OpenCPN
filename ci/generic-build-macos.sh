@@ -65,6 +65,9 @@ make install
 make install # Dunno why the second is needed but it is, otherwise
              # plugin data is not included in the bundle
 
+# Make sure the code signatures are correct
+codesign --force --deep --sign - /tmp/opencpn/bin/OpenCPN.app
+
 make create-pkg
 if [[ ! -z "${CREATE_DMG+x}" ]]; then
   make create-dmg
