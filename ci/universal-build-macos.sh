@@ -96,6 +96,17 @@ cmake -DOCPN_CI_BUILD=$CI_BUILD \
 
 # Compile OpenCPN
 make -j$(sysctl -n hw.physicalcpu)
+
+# Make sure wx libraries are referenced using the symlinks
+
+app="OpenCPN.app/Contents/MacOS/OpenCPN"
+for lib in $(otool -L ${app} | grep libwx | cut -d' ' -f 1)
+do
+  newlib="$(echo $lib | sed 's/-3\.2.*\.dylib/-3.2.dylib/g')"
+  echo "${lib} -> ${newlib}"
+  install_name_tool -change ${lib} ${newlib} ${app}
+done
+
 # Create the package artifacts
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS
 mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/SharedSupport/plugins
