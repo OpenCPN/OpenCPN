@@ -1681,25 +1681,11 @@ bool OCPNPlatform::hasInternalGPS(wxString profile) {
 //--------------------------------------------------------------------------
 
 void OCPNPlatform::ShowBusySpinner(void) {
-#ifdef __ANDROID__
-  androidShowBusyIcon();
-#else
-#if wxCHECK_VERSION(2, 9, 0)
-  //    if( !::wxIsBusy() )
-  { ::wxBeginBusyCursor(); }
-#endif
-#endif
+  AbstractPlatform::ShowBusySpinner();
 }
 
 void OCPNPlatform::HideBusySpinner(void) {
-#ifdef __ANDROID__
-  androidHideBusyIcon();
-#else
-#if wxCHECK_VERSION(2, 9, 0)
-  //    if( ::wxIsBusy() )
-  { ::wxEndBusyCursor(); }
-#endif
-#endif
+  AbstractPlatform::ShowBusySpinner();
 }
 
 double OCPNPlatform::GetDisplayDensityFactor() {
