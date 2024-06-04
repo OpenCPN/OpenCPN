@@ -14,7 +14,7 @@ set -x
 # OpenCPN needs to support even older macOS releases than the system
 # it is being built on, set MACOSX_DEPLOYMENT_TARGET environment
 # variable to use the respective SDK version.
-export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.13}
+export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-11.0}
 
 # URL of the repository to download the dependency bundle from
 export DEPS_BUNDLE_REPO="${DEPS_BUNDLE_REPO:-https://dl.cloudsmith.io/public/nohal/opencpn-dependencies/raw/files}"
