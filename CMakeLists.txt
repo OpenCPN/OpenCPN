@@ -2054,7 +2054,7 @@ if (NOT APPLE)
       if (_rv EQUAL 0)
         execute_process(COMMAND
           sh -c \"cp ${PROJECT_SOURCE_DIR}/buildlinux/98-sglock-ocpn.rules \
-                     /lib/udev/rules.d/98-sglock-ocpn.rules\"
+                     /usr/lib/udev/rules.d/98-sglock-ocpn.rules\"
         )
         execute_process(COMMAND
           sh -c \"chmod 644 \

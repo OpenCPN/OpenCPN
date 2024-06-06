@@ -1685,7 +1685,7 @@ void OCPNPlatform::ShowBusySpinner(void) {
 }
 
 void OCPNPlatform::HideBusySpinner(void) {
-  AbstractPlatform::ShowBusySpinner();
+  AbstractPlatform::HideBusySpinner();
 }
 
 double OCPNPlatform::GetDisplayDensityFactor() {
