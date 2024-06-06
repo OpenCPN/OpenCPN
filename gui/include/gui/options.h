@@ -87,8 +87,13 @@ class OCPNChartDirPanel;
 class OCPNSoundPanel;
 
 #define ID_DIALOG 10001
+#ifdef __WXOSX__
+#define SYMBOL_OPTIONS_STYLE \
+  wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX | wxSTAY_ON_TOP
+#else
 #define SYMBOL_OPTIONS_STYLE \
   wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
+#endif
 #define SYMBOL_OPTIONS_TITLE _("Options")
 #define SYMBOL_OPTIONS_IDNAME ID_DIALOG
 #define SYMBOL_OPTIONS_SIZE wxSize(500, 500)
