@@ -1497,10 +1497,9 @@ options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
 
   pParent = parent;
 
-  long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
   SetExtraStyle(wxWS_EX_BLOCK_EVENTS);
 
-  wxDialog::Create(parent, id, caption, pos, size, wstyle);
+  wxDialog::Create(parent, id, caption, pos, size, style);
   SetFont(*dialogFont);
 
   CreateControls();
