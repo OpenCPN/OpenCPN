@@ -74,6 +74,9 @@ CanvasOptions::CanvasOptions(wxWindow* parent)
   SetFont(*qFont);
 
   long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
+#ifdef __WXOSX__
+    mstyle |= wxSTAY_ON_TOP;
+#endif
 
   wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
                    mstyle);
