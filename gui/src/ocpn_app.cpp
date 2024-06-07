@@ -441,6 +441,13 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 
 double g_ownship_predictor_minutes;
 double g_ownship_HDTpredictor_miles;
+int g_cog_predictor_style;
+wxString g_cog_predictor_color;
+int g_cog_predictor_endmarker;
+int g_ownship_HDTpredictor_style;
+wxString g_ownship_HDTpredictor_color;
+int g_ownship_HDTpredictor_endmarker;
+int g_ownship_HDTpredictor_width;
 
 bool g_own_ship_sog_cog_calc;
 int g_own_ship_sog_cog_calc_damp_sec;
