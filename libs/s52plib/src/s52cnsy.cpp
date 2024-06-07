@@ -591,7 +591,6 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
 
     if ((1 == watlev) || (2 == watlev)) {
       // dry
-      //                  udwhaz03str = _T(";OP(--D14050)");
     } else {
       udwhaz03str = _T(";SY(ISODGR51)");  //_T(";OP(8OD14010);SY(ISODGR51)");
       //                  S57_setAtt(geo, "SCAMIN", "INFINITE");
@@ -600,15 +599,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
     //  Move this object to DisplayBase category
     rzRules->obj->m_DisplayCat = DISPLAYBASE;
 
-    /*
-                GString *watlevstr = S57_getAttVal(geo, "WATLEV");
-                if (NULL != watlevstr && ('1' == *watlevstr->str || '2' ==
-       *watlevstr->str)) udwhaz03str = g_string_new(";OP(--D14050"); else {
-                    udwhaz03str = g_string_new(";OP(8OD14010);SY(ISODGR01)");
-                    S57_setAtt(geo, "SCAMIN", "INFINITE");
-                }
-    */
-  }
+   }
 
   if (promote_return) *promote_return = b_promote;
 
