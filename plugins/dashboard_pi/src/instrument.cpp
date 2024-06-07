@@ -138,7 +138,7 @@ DashboardInstrument::DashboardInstrument(wxWindow* pparent, wxWindowID id,
   int width;
   wxFont f;
   if (m_Properties) {
-    f = m_Properties->m_TitelFont.GetChosenFont();
+    f = m_Properties->m_TitleFont.GetChosenFont();
     dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, &f);
   } else {
     f = g_pFontTitle->GetChosenFont();
@@ -222,9 +222,9 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
       pen.SetStyle(wxPENSTYLE_SOLID);
       if (m_Properties)
       {
-          pen.SetColour(GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour));
+          pen.SetColour(GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour));
           dc.SetPen(pen);
-          dc.SetBrush(GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour));
+          dc.SetBrush(GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour));
       }
       else
       {
@@ -234,23 +234,34 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
           dc.SetBrush(cl);
       }
 
-    dc.DrawRoundedRectangle(0, 0, size.x, m_TitleHeight, 3);
+    dc.DrawRoundedRectangle(0, m_TitleTop, size.x, m_TitleHeight, 3);
+    wxFont f;
+    wxString Title=m_title;
     if (m_Properties)
     {
-        dc.SetFont(m_Properties->m_TitelFont.GetChosenFont());
-        dc.SetTextForeground(GetColourSchemeFont(m_Properties->m_TitelFont.GetColour()));
-        dc.SetTextBackground(GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour));
+        f = m_Properties->m_TitleFont.GetChosenFont();
+        dc.SetFont(f);
+        dc.SetTextForeground(GetColourSchemeFont(m_Properties->m_TitleFont.GetColour()));
+        dc.SetTextBackground(GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour));
+        if ( !m_Properties->m_Title.IsEmpty() ) Title=m_Properties->m_Title;
     }
     else
     {
-        dc.SetFont((g_pFontTitle->GetChosenFont()));
+        f = g_pFontTitle->GetChosenFont();
+        dc.SetFont(f);
         dc.SetTextForeground(GetColourSchemeFont(g_pFontTitle->GetColour()));
         GetGlobalColor(_T("DASHL"), &cl);
         dc.SetTextBackground(cl);
     }
     // GetGlobalColor(_T("DASHF"), &cl);
     //dc.SetTextForeground(cl);
-    dc.DrawText(m_title, 5, 0);
+    if (m_TitleRightAlign) {
+      int w,h;
+      dc.GetTextExtent(Title, &w, &h, 0, 0, &f);
+      dc.DrawText(Title, GetClientSize().GetWidth()-w-g_iTitleMargin, m_TitleTop);
+    } else {
+      dc.DrawText(Title, g_iTitleMargin, m_TitleTop);
+    }
   }
 }
 
@@ -271,18 +282,28 @@ DashboardInstrument_Single::DashboardInstrument_Single(wxWindow* pparent,
   m_data = _T("---");
   m_DataHeight = 0;
   m_Properties = Properties;
+  m_DataTop = 0;
+  m_TitleTop = 0;
+  m_DataRightAlign = false;
+  m_TitleRightAlign = false;
 }
 
 wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
   wxFont f;
+  m_DataRightAlign = (g_DataAlignment & wxALIGN_RIGHT) != 0;
+  int InstrumentSpacing = g_iInstrumentSpacing;
+
   if (m_Properties)
   {
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
       f = m_Properties->m_DataFont.GetChosenFont();
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &f);
+
+      if ( m_Properties->m_DataAlignment!=wxALIGN_INVALID ) m_DataRightAlign = (m_Properties->m_DataAlignment & wxALIGN_RIGHT) != 0;
+      if ( m_Properties->m_InstrumentSpacing >= 0 ) InstrumentSpacing = m_Properties->m_InstrumentSpacing;
   }
   else
   {
@@ -290,50 +311,78 @@ wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
       f = g_pFontData->GetChosenFont();
       dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, &f);
+
   }
+
+  m_TitleRightAlign = (g_TitleAlignment & wxALIGN_RIGHT) != 0;
+  m_TitleTop = m_DataHeight * g_TitleVerticalOffset;
+  int h=m_TitleTop + m_TitleHeight + m_DataHeight + InstrumentSpacing;
+  m_DataTop = m_TitleHeight;
+  if ( (g_TitleAlignment & wxALIGN_BOTTOM) != 0 ) {
+    m_TitleTop = m_DataHeight * (1 + g_TitleVerticalOffset);
+    h=m_TitleTop + m_TitleHeight + InstrumentSpacing;
+    m_DataTop = 0;
+  }
+
   if (orient == wxHORIZONTAL) {
-    return wxSize(DefaultWidth, wxMax(hint.y, m_TitleHeight + m_DataHeight));
+    return wxSize(DefaultWidth, wxMax(hint.y, h));
   } else {
-    return wxSize(wxMax(hint.x, DefaultWidth), m_TitleHeight + m_DataHeight);
+    return wxSize(wxMax(hint.x, DefaultWidth), h);
   }
 }
 
 void DashboardInstrument_Single::Draw(wxGCDC* dc) {
   wxColour cl;
+  wxFont f;
+  int dataMargin=g_iDataMargin;
   if (m_Properties)
   {
-      dc->SetFont((m_Properties->m_DataFont.GetChosenFont()));
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc->SetFont((f));
       dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+      if ( m_Properties->m_DataMargin>=0 ) dataMargin = m_Properties->m_DataMargin;
   }
   else
   {
-      dc->SetFont(g_pFontData->GetChosenFont());
+      f = g_pFontData->GetChosenFont();
+      dc->SetFont((f));
       dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
   }
   //GetGlobalColor(_T("DASHF"), &cl);
   //dc->SetTextForeground(cl);
 
-  dc->DrawText(m_data, 10, m_TitleHeight);
+  int x1;
+  x1=dataMargin;
+
+  if ( m_DataRightAlign ) {
+    int w,h;
+    dc->GetTextExtent(m_data, &w, &h, 0, 0, &f);
+    x1=GetClientSize().GetWidth() - w - dataMargin;
+  }
+
+  dc->DrawText(m_data, x1, m_DataTop);
 }
 
 void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
                                          wxString unit) {
   if (m_cap_flag.test(st)) {
     if (!std::isnan(data)) {
+      bool showUnit = (m_Properties ? (m_Properties->m_ShowUnit==1) : g_bShowUnit);
+      wxString format = (m_Properties && m_Properties->m_Format != "" ? m_Properties->m_Format : m_format);
       if (unit == _T("C"))
-        m_data = wxString::Format(m_format, data) + DEGREE_SIGN + _T("C");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _T("C"):"");
       else if (unit == _T("\u00B0"))
-        m_data = wxString::Format(m_format, data) + DEGREE_SIGN;
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : "");
       else if (unit == _T("\u00B0T"))
-        m_data = wxString::Format(m_format, data) + DEGREE_SIGN + _(" true");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _(" true") : "");
       else if (unit == _T("\u00B0M"))
-        m_data = wxString::Format(m_format, data) + DEGREE_SIGN + _(" mag");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _(" mag") : "");
       else if (unit == _T("\u00B0L"))
-        m_data = _T(">") + wxString::Format(m_format, data) + DEGREE_SIGN;
+        m_data = _T(">") + wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : "");
       else if (unit == _T("\u00B0R"))
-        m_data = wxString::Format(m_format, data) + DEGREE_SIGN + _T("<");
+        m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN + _T("<") : "");
       else if (unit == _T("N"))  // Knots
-        m_data = wxString::Format(m_format, data) + _T(" Kts");
+        m_data = wxString::Format(format, data) + (showUnit ? _T(" Kts") : _T(""));
       /* maybe in the future ...
                       else if (unit == _T("M")) // m/s
                         m_data = wxString::Format(m_format, data)+_T(" m/s");
@@ -342,7 +391,7 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
        ... to be completed
        */
       else
-        m_data = wxString::Format(m_format, data) + _T(" ") + unit;
+        m_data = wxString::Format(format, data) + (showUnit ? _T(" ") + unit : "");
     } else
       m_data = _T("---");
 
@@ -376,12 +425,20 @@ wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
   wxClientDC dc(this);
   int w;
   wxFont f;
+  int dataMargin=g_iDataMargin;
+  m_DataRightAlign = (g_DataAlignment & wxALIGN_RIGHT) != 0;
+  int InstrumentSpacing = g_iInstrumentSpacing;
+
   if (m_Properties)
   {
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
       f = m_Properties->m_DataFont.GetChosenFont();
       dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &f);
+
+      if ( m_Properties->m_DataMargin>=0 ) dataMargin = m_Properties->m_DataMargin;
+      if ( m_Properties->m_DataAlignment!=wxALIGN_INVALID ) m_DataRightAlign = (m_Properties->m_DataAlignment & wxALIGN_RIGHT) != 0;
+      if ( m_Properties->m_InstrumentSpacing >= 0 ) InstrumentSpacing = m_Properties->m_InstrumentSpacing;
   }
   else
   {
@@ -391,30 +448,56 @@ wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
       dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, &f);
   }
 
+  m_TitleRightAlign = (g_TitleAlignment & wxALIGN_RIGHT) != 0;
+  m_TitleTop = m_DataHeight*g_TitleVerticalOffset;
+  int h=m_TitleTop + m_TitleHeight + m_DataHeight * 2 + InstrumentSpacing;
+  m_DataTop = m_TitleHeight;
+  if ( (g_TitleAlignment & wxALIGN_BOTTOM) != 0 ) {
+    m_TitleTop = m_DataHeight * 2 + m_DataHeight*g_TitleVerticalOffset;
+    h=m_TitleTop + m_TitleHeight + InstrumentSpacing;
+    m_DataTop = 0;
+  }
+
   if (orient == wxHORIZONTAL) {
-    return wxSize(w + 10, wxMax(hint.y, m_TitleHeight + m_DataHeight * 2));
+    return wxSize(w + dataMargin, wxMax(hint.y, h));
   } else {
-    return wxSize(wxMax(hint.x, w + 10), m_TitleHeight + m_DataHeight * 2);
+    return wxSize(wxMax(hint.x, w + dataMargin), h);
   }
 }
 
 void DashboardInstrument_Position::Draw(wxGCDC* dc) {
   wxColour cl;
+  wxFont f;
+  int dataMargin=g_iDataMargin;
   if (m_Properties)
   {
-      dc->SetFont((m_Properties->m_DataFont.GetChosenFont()));
+      f = m_Properties->m_DataFont.GetChosenFont();
+      dc->SetFont((f));
       dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
+      if ( m_Properties->m_DataMargin>=0 ) dataMargin = m_Properties->m_DataMargin;
   }
   else
   {
-      dc->SetFont((g_pFontData->GetChosenFont()));
+    f = g_pFontData->GetChosenFont();
+      dc->SetFont((f));
       dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
   }
   //GetGlobalColor(_T("DASHF"), &cl);
   //dc->SetTextForeground(cl);
 
-  dc->DrawText(m_data1, 10, m_TitleHeight);
-  dc->DrawText(m_data2, 10, m_TitleHeight + m_DataHeight);
+  int x1,x2;
+  x1=x2=dataMargin;
+
+  if ( m_DataRightAlign ) {
+    int w,h;
+    dc->GetTextExtent(m_data1, &w, &h, 0, 0, &f);
+    x1=GetClientSize().GetWidth() - w - dataMargin;
+    dc->GetTextExtent(m_data2, &w, &h, 0, 0, &f);
+    x2=GetClientSize().GetWidth() - w - dataMargin;
+  }
+
+  dc->DrawText(m_data1, x1, m_DataTop);
+  dc->DrawText(m_data2, x2, m_DataTop + m_DataHeight);
 }
 
 void DashboardInstrument_Position::SetData(DASH_CAP st, double data,

@@ -66,7 +66,7 @@ wxSize DashboardInstrument_Altitude::GetSize(int orient, wxSize hint) {
   wxFont f;
   if (m_Properties)
   {
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
       f = m_Properties->m_DataFont.GetChosenFont();
       dc.GetTextExtent("15.7 Feet", &w, &m_aDataHeight, 0, 0, &f);

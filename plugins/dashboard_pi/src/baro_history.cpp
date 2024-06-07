@@ -87,7 +87,7 @@ wxSize DashboardInstrument_BaroHistory::GetSize(int orient, wxSize hint) {
   int w;
   wxFont f;
   if (m_Properties)
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
   else
       f = g_pFontTitle->GetChosenFont();
   dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);

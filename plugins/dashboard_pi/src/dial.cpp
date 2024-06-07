@@ -79,7 +79,7 @@ wxSize DashboardInstrument_Dial::GetSize(int orient, wxSize hint) {
   int w;
   wxFont f;
   if (m_Properties)
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
   else
       f = g_pFontTitle->GetChosenFont();
   dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
@@ -150,7 +150,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
   wxColour cl;
   if (m_Properties)
   {
-      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   }
   else
   {
@@ -392,7 +392,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       TextPoint.x = m_cx - (width / 2) - 1;
       TextPoint.y = (size.y * .75) - height;
       if (m_Properties)
-          cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+          cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
       else
           GetGlobalColor(_T("DASHL"), &cl);
       int penwidth = size.x / 100;

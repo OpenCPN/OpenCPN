@@ -56,6 +56,19 @@ extern wxFontData *g_pFontData;
 extern wxFontData *g_pFontLabel;
 extern wxFontData *g_pFontSmall;
 
+extern wxFontData *g_pUSFontTitle;
+extern wxFontData *g_pUSFontData;
+extern wxFontData *g_pUSFontLabel;
+extern wxFontData *g_pUSFontSmall;
+
+extern wxAlignment g_TitleAlignment;
+extern double g_TitleVerticalOffset;
+extern int g_iTitleMargin;
+extern bool g_bShowUnit;
+extern wxAlignment g_DataAlignment;
+extern int g_iDataMargin;
+extern int g_iInstrumentSpacing;
+
 wxString toSDMM(int NEflag, double a);
 
 class DashboardInstrument;
@@ -117,11 +130,21 @@ public:
     InstrumentProperties(int aInstrument, int Listplace) {
         m_aInstrument = aInstrument;
         m_Listplace = Listplace;
-        m_TitelFont = *(g_pFontTitle);
+        m_ShowUnit = -1;
+        m_DataAlignment = wxALIGN_INVALID;
+        m_DataMargin = -1;
+        m_InstrumentSpacing = -1;
+        m_Format = "";
+        m_Title = "";
+        m_TitleFont = *(g_pFontTitle);
+        m_USTitleFont = *(g_pUSFontTitle);
         m_DataFont = *(g_pFontData);
+        m_USDataFont = *(g_pUSFontData);
         m_LabelFont = *(g_pFontLabel);
+        m_USLabelFont = *(g_pUSFontLabel);
         m_SmallFont = *(g_pFontSmall);
-        GetGlobalColor(_T("DASHL"), &m_TitlelBackgroundColour);
+        m_USSmallFont = *(g_pUSFontSmall);
+        GetGlobalColor(_T("DASHL"), &m_TitleBackgroundColour);
         GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
         GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
         GetGlobalColor(_T("BLUE3"), &m_Arrow_Second_Colour);
@@ -131,23 +154,43 @@ public:
     {
         m_aInstrument = -1;
         m_Listplace = -1;
-        m_TitelFont = *(g_pFontTitle);
+        m_ShowUnit = -1;
+        m_DataAlignment = wxALIGN_INVALID;
+        m_DataMargin = -1;
+        m_InstrumentSpacing = -1;
+        m_Format = "";
+        m_Title = "";
+        m_TitleFont = *(g_pFontTitle);
+        m_USTitleFont = *(g_pUSFontTitle);
         m_DataFont = *(g_pFontData);
+        m_USDataFont = *(g_pUSFontData);
         m_LabelFont = *(g_pFontLabel);
+        m_USLabelFont = *(g_pUSFontLabel);
         m_SmallFont = *(g_pFontSmall);
-        GetGlobalColor(_T("DASHL"), &m_TitlelBackgroundColour);
+        m_USSmallFont = *(g_pUSFontSmall);
+        GetGlobalColor(_T("DASHL"), &m_TitleBackgroundColour);
         GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
         GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
         GetGlobalColor(_T("BLUE3"), &m_Arrow_Second_Colour);
     };
     int m_aInstrument;
     int m_Listplace;
-    wxFontData m_TitelFont;
-    wxColour m_TitlelBackgroundColour;
+    int m_ShowUnit;
+    wxAlignment m_DataAlignment;
+    int m_DataMargin;
+    int m_InstrumentSpacing;
+    wxString m_Format;
+    wxString m_Title;
+    wxFontData m_TitleFont;
+    wxFontData m_USTitleFont;
+    wxColour m_TitleBackgroundColour;
     wxFontData m_DataFont;
+    wxFontData m_USDataFont;
     wxColour m_DataBackgroundColour;
     wxFontData m_LabelFont;
+    wxFontData m_USLabelFont;
     wxFontData m_SmallFont;
+    wxFontData m_USSmallFont;
     wxColour m_Arrow_First_Colour;
     wxColour m_Arrow_Second_Colour;
 };
@@ -173,6 +216,10 @@ public:
 protected:
   CapType m_cap_flag;
   int m_TitleHeight;
+  int m_DataTop;
+  int m_TitleTop;
+  bool m_DataRightAlign;
+  bool m_TitleRightAlign;
   wxString m_title;
   virtual void Draw(wxGCDC *dc) = 0;
 
