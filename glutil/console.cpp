@@ -1,6 +1,6 @@
- /** \file console.cpp  Simple CLI application to check OpenGL capabilities. */
+/** \file console.cpp  Simple CLI application to check OpenGL capabilities. */
 
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
  *   Copyright (C) 2024 Pavel Kalian                                       *
  *                                                                         *
@@ -114,7 +114,9 @@ public:
 
   void OnInitCmdLine(wxCmdLineParser& parser) override {
     parser.AddSwitch("h", "help", "Print help");
-    parser.AddSwitch("v", "verbose", "Verbose output"); // Actually not used, but prevents wxWidgets from asserting
+    parser.AddSwitch("v", "verbose",
+                     "Verbose output");  // Actually not used, but prevents
+                                         // wxWidgets from asserting
     parser.AddSwitch("d", "debug", "Debug output");
     parser.AddParam("<command>", wxCMD_LINE_VAL_STRING,
                     wxCMD_LINE_PARAM_OPTIONAL);
@@ -160,7 +162,7 @@ public:
     return GL_FALSE;
   }
 
-  void opengl_info(std::ostream & output) const {
+  void opengl_info(std::ostream& output) const {
     using namespace std;
     wxJSONWriter w;
     wxString out;
@@ -174,13 +176,12 @@ public:
     // auto winid = glutCreateWindow("GLUT");
     wxLogDebug("Creating frame");
     wxFrame frame(nullptr, wxID_ANY, "GLCanvas Test", wxPoint(0, 0),
-                   wxSize(0, 0));
+                  wxSize(0, 0));
     wxLogDebug("Showing frame");
     frame.Show(true);
     wxYield();
     wxLogDebug("Creating canvas");
-    TestGLCanvas canvas(&frame, wxID_ANY, wxPoint(0, 0),
-                                   frame.GetClientSize());
+    TestGLCanvas canvas(&frame, wxID_ANY, wxPoint(0, 0), frame.GetClientSize());
     wxYield();
     canvas.SetCurrent(*canvas.m_glRC);
     wxLogDebug("Collecting information");
@@ -202,6 +203,13 @@ public:
     v["GL_USABLE"] = true;
     v["GL_VERSION"] = wxString(glGetString(GL_VERSION));
     v["GL_RENDERER"] = wxString(glGetString(GL_RENDERER));
+#ifdef _WIN32
+    if (v["GL_RENDERER"].AsString() ==
+        "GDI Generic") {  // Windows software renderer is known to be unusable
+                          // and causes crashes
+      v["GL_USABLE"] = false;
+    }
+#endif
     v["GL_VENDOR"] = wxString(glGetString(GL_VENDOR));
     v["GL_SHADING_LANGUAGE_VERSION"] =
         wxString(glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -212,8 +220,7 @@ public:
     v["GL_EXT_framebuffer_object"] =
         QueryExtension("GL_EXT_framebuffer_object");
     wxStringTokenizer tkz(wxString(glGetString(GL_EXTENSIONS)), " ");
-    while (tkz.HasMoreTokens())
-    {
+    while (tkz.HasMoreTokens()) {
       v["GL_EXTENSIONS"].Append(tkz.GetNextToken());
     }
 #ifdef __WXOSX__
@@ -240,7 +247,8 @@ public:
     }
     wxAppConsole::OnCmdLineParsed(parser);
     if (argc == 1) {
-      std::cout << "OpenCPN OpenGL Utility application. Use -h for help" << std::endl;
+      std::cout << "OpenCPN OpenGL Utility application. Use -h for help"
+                << std::endl;
       exit(0);
     }
     wxString option_val;
@@ -255,15 +263,18 @@ public:
       std::cerr << USAGE << std::endl;
       exit(1);
     }
-    if (const std::string command = parser.GetParam(0).ToStdString(); command == "opengl-info") {
+    if (const std::string command = parser.GetParam(0).ToStdString();
+        command == "opengl-info") {
       if (parser.GetParamCount() > 1) {
         std::ofstream myfile;
-        myfile.open(parser.GetParam(1).ToStdString(), std::ios::out | std::ios::trunc);
+        myfile.open(parser.GetParam(1).ToStdString(),
+                    std::ios::out | std::ios::trunc);
         if (myfile.is_open()) {
           opengl_info(myfile);
           myfile.close();
         } else {
-          std::cerr << "ERROR: Can't open " << parser.GetParam(1).ToStdString() << std::endl;
+          std::cerr << "ERROR: Can't open " << parser.GetParam(1).ToStdString()
+                    << std::endl;
           exit(2);
         }
       } else {
