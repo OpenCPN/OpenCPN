@@ -33,6 +33,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <list>
 
 #define CURRENT_SENC_FORMAT_VERSION 201
 
@@ -329,6 +330,7 @@ struct chart_context {
   int vboID;
   int chart_type;
   int chart_scale;
+  std::list<S57Obj*> *(s57chart::*pt2GetAssociatedObjects)(S57Obj *obj);
 };
 
 class LineGeometryDescriptor {

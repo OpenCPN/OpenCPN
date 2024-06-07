@@ -765,6 +765,15 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
     return false;
   }
+  if(root.HasMember("GL_USABLE")) {
+    if (!root["GL_USABLE"].AsBool()) {
+      wxLogMessage("OpenGL test utility reports that OpenGL is not usable.");
+      return false;
+    }
+  } else {
+    wxLogMessage("GL_USABLE not found.");
+    return false;
+  }
   pcaps->dGLSL_Version = 0;
   pcaps->dGLSL_Version = ::atof(pcaps->GLSL_Version.c_str());
   if (pcaps->dGLSL_Version < 1.2) {
