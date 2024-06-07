@@ -543,14 +543,13 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
     // get area DEPARE & DRGARE that intersect this point/line/area
 
     std::list<S57Obj*> *pobj_list = NULL;
-//FIXME plib
-//     if (obj->m_chart_context->chart)
-//       pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
-//     else
-    {
+     if (obj->m_chart_context->chart){
+      chart_context *pcc = obj->m_chart_context;
+      s57chart *chart = (s57chart*)obj->m_chart_context->chart;
+      pobj_list = (chart->*pcc->pt2GetAssociatedObjects)(obj);
+     }
+    else{
       danger = false;
-      //            wxString *ret_str = new wxString(udwhaz03str);
-      //            return ret_str;
     }
 
     if (pobj_list) {
