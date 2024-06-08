@@ -2199,7 +2199,7 @@ endif ()
 #
 if (WIN32)
   file(GLOB WXWIDGETS_MO_FILES
-       ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo
+       ${CMAKE_SOURCE_DIR}/cache/buildwin/wxWidgets/locale/*.mo
   )
   foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)
