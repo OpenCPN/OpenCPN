@@ -62,7 +62,7 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
     !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.3\buildwin ^
     !CACHE_DIR!\buildwin /s /y /q
   if exist !CACHE_DIR!\buildwin\wxWidgets (
-    rmdir !CACHE_DIR!\buildwin\wxWidgets /s /q
+    del !CACHE_DIR!\buildwin\wxWidgets\*.dll /q
   )
   wget !opencpn_support_base!/opencpn-support/raw/files/iphlpapi.lib ^
    -O %CACHE_DIR%\buildwin\iphlpapi.lib
