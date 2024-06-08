@@ -44,7 +44,7 @@
 
 #include "instrument.h"
 
-#define ANGLE_OFFSET 90  // 0 degrees are at 12 o´clock
+#define ANGLE_OFFSET 90  // 0 degrees are at 12 o clock
 
 typedef enum {
   DIAL_LABEL_NONE,
@@ -65,7 +65,8 @@ typedef enum {
   DIAL_POSITION_TOPLEFT,
   DIAL_POSITION_TOPRIGHT,
   DIAL_POSITION_BOTTOMLEFT,
-  DIAL_POSITION_BOTTOMRIGHT
+  DIAL_POSITION_BOTTOMRIGHT,
+  DIAL_POSITION_BOTTOMMIDDLE
 } DialPositionOption;
 
 extern double rad2deg(double angle);
