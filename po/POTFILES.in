@@ -231,7 +231,6 @@ gui/include/gui/iENCToolbar.h
 gui/include/gui/kml.h
 gui/include/gui/Layer.h
 gui/include/gui/LinkPropDlg.h
-gui/include/gui/linux_devices.h
 gui/include/gui/load_errors_dlg.h
 gui/include/gui/MarkInfo.h
 gui/include/gui/mbtiles.h
@@ -349,7 +348,6 @@ gui/src/iENCToolbar.cpp
 gui/src/kml.cpp
 gui/src/Layer.cpp
 gui/src/LinkPropDlg.cpp
-gui/src/linux_devices.cpp
 gui/src/load_errors_dlg.cpp
 gui/src/MarkInfo.cpp
 gui/src/MUIBar.cpp
