@@ -215,6 +215,10 @@ public:
 
 protected:
   CapType m_cap_flag;
+  int m_InstrumentSpacing;
+  int m_DataTextHeight;
+  int m_DataMargin;
+  int m_TitleWidth;
   int m_TitleHeight;
   int m_DataTop;
   int m_TitleTop;
@@ -222,6 +226,12 @@ protected:
   bool m_TitleRightAlign;
   wxString m_title;
   virtual void Draw(wxGCDC *dc) = 0;
+  virtual void InitDataTextHeight(const wxString &sampleText, int &sampleWidth);
+  virtual void InitTitleSize();
+  virtual void InitTitleAndDataPosition(int drawHeight);
+  virtual int GetFullHeight(int drawHeight);
+  virtual int GetDataBottom(int clientHeight);
+  virtual void SetDataFont(wxGCDC* dc);
 
 private:
   bool m_drawSoloInPane;
@@ -239,8 +249,8 @@ public:
 protected:
   wxString m_data;
   wxString m_format;
-  int m_DataHeight;
-  InstrumentProperties* m_Properties;
+//  int m_DataHeight;
+//  InstrumentProperties* m_Properties;
 
   void Draw(wxGCDC *dc);
 };
@@ -261,7 +271,7 @@ protected:
   wxString m_data2;
   DASH_CAP m_cap_flag1;
   DASH_CAP m_cap_flag2;
-  int m_DataHeight;
+//  int m_DataHeight;
 
   void Draw(wxGCDC *dc);
 };

@@ -52,36 +52,21 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
 }
 
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
-  wxColour cl;
-  wxFont f;
-  int dataMargin=g_iDataMargin;
-  if (m_Properties)
-  {
-      f = m_Properties->m_DataFont.GetChosenFont();
-      dc->SetFont((f));
-      dc->SetTextForeground(GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
-      if ( m_Properties->m_DataMargin>=0 ) dataMargin = m_Properties->m_DataMargin;
-  }
-  else
-  {
-      f = g_pFontData->GetChosenFont();
-      dc->SetFont((f));
-      dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
-  }
+  SetDataFont(dc);
 
   int x1,x2;
-  x1=x2=dataMargin;
+  x1=x2=m_DataMargin;
 
   if ( m_DataRightAlign ) {
     int w,h;
-    dc->GetTextExtent(m_data1, &w, &h, 0, 0, &f);
-    x1=GetClientSize().GetWidth() - w - dataMargin;
-    dc->GetTextExtent(m_data2, &w, &h, 0, 0, &f);
-    x2=GetClientSize().GetWidth() - w - dataMargin;
+    dc->GetTextExtent(m_data1, &w, &h, 0, 0);
+    x1=GetClientSize().GetWidth() - w - m_DataMargin;
+    dc->GetTextExtent(m_data2, &w, &h, 0, 0);
+    x2=GetClientSize().GetWidth() - w - m_DataMargin;
   }
 
   dc->DrawText(m_data1, x1, m_DataTop);
-  dc->DrawText(m_data2, x2, m_DataTop + m_DataHeight);
+  dc->DrawText(m_data2, x2, m_DataTop + m_DataTextHeight);
 }
 
 void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
@@ -116,51 +101,25 @@ void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
 }
 
 wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
+  InitTitleSize();
   int w;
-  wxFont f;
+
   wxString sampleText;
-  int dataMargin=g_iDataMargin;
-  m_DataRightAlign = (g_DataAlignment & wxALIGN_RIGHT) != 0;
-  int InstrumentSpacing = g_iInstrumentSpacing;
 
   if (m_Properties ? (m_Properties->m_ShowUnit == 1) : g_bShowUnit) {
     sampleText=_T("000.00 NMi");
   } else {
     sampleText=_T("000.00");
   }
-  if (m_Properties)
-  {
-      f = m_Properties->m_TitleFont.GetChosenFont();
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-      f = m_Properties->m_DataFont.GetChosenFont();
-      dc.GetTextExtent(sampleText, &w, &m_DataHeight, 0, 0, &f);
+  InitDataTextHeight(sampleText,w);
 
-      if ( m_Properties->m_DataMargin>=0 ) dataMargin = m_Properties->m_DataMargin;
-      if ( m_Properties->m_DataAlignment!=wxALIGN_INVALID ) m_DataRightAlign = (m_Properties->m_DataAlignment & wxALIGN_RIGHT) != 0;
-      if ( m_Properties->m_InstrumentSpacing >= 0 ) InstrumentSpacing = m_Properties->m_InstrumentSpacing;
-  }
-  else
-  {
-      f = g_pFontTitle->GetChosenFont();
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-      f = g_pFontData->GetChosenFont();
-      dc.GetTextExtent(sampleText, &w, &m_DataHeight, 0, 0, &f);
-  }
-
-  m_TitleRightAlign = (g_TitleAlignment & wxALIGN_RIGHT) != 0;
-  m_TitleTop = m_DataHeight*g_TitleVerticalOffset;
-  int h=m_TitleTop + m_TitleHeight + m_DataHeight * 2 + InstrumentSpacing;
-  m_DataTop = m_TitleHeight;
-  if ( (g_TitleAlignment & wxALIGN_BOTTOM) != 0 ) {
-    m_TitleTop = m_DataHeight * 2 + m_DataHeight * g_TitleVerticalOffset;
-    h=m_TitleTop + m_TitleHeight + InstrumentSpacing;
-    m_DataTop = 0;
-  }
+  int drawHeight=m_DataTextHeight * 2 + m_DataTextHeight*g_TitleVerticalOffset;
+  InitTitleAndDataPosition(drawHeight);
+  int h = GetFullHeight(drawHeight);
 
   if (orient == wxHORIZONTAL) {
-    return wxSize(w + dataMargin, wxMax(hint.y, h));
+    return wxSize(wxMax(w + m_DataMargin,DefaultWidth), wxMax(hint.y, h));
   } else {
-    return wxSize(wxMax(hint.x, w + dataMargin), h);
+    return wxSize(wxMax(hint.x, wxMax(w + m_DataMargin,DefaultWidth)), h);
   }
 }

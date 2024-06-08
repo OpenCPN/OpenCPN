@@ -56,6 +56,8 @@ public:
   void SetData(DASH_CAP, double, wxString);
 
 private:
+  int w_label, h_label, m_plotdown, m_plotup, m_plotheight;
+
 protected:
   double m_ArrayDepth[DEPTH_RECORD_COUNT];
   double m_MaxDepth;
