@@ -50,5 +50,5 @@ DashboardInstrument_Speedometer::DashboardInstrument_Speedometer(
                                e_value) {
   // We want the main value displayed inside the dial as well
   // as the default arrow
-  SetOptionMainValue(_T("%.2f"), DIAL_POSITION_INSIDE);
+  SetOptionMainValue(_T("%.1f"), DIAL_POSITION_INSIDE);
 }
