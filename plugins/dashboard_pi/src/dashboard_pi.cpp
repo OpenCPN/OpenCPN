@@ -261,7 +261,7 @@ wxString getInstrumentCaption(unsigned int id) {
     case ID_DBP_I_SOG:
       return _("SOG");
     case ID_DBP_D_SOG:
-      return _("Speedometer");
+      return _("Speed SOG");
     case ID_DBP_I_COG:
       return _("COG");
     case ID_DBP_M_COG:
@@ -5593,8 +5593,8 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW\n%.2f"),
-                                  DIAL_POSITION_BOTTOMLEFT);
+            ->SetOptionExtraValue(OCPN_DBP_STC_STW, "STW %.1f",
+                                  DIAL_POSITION_BOTTOMMIDDLE);
         break;
       case ID_DBP_I_COG:
         instrument = new DashboardInstrument_Single(

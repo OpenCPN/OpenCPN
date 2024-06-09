@@ -424,6 +424,16 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       TextPoint.x = size.x - width - 1;
       TextPoint.y = size.x - height;
       break;
+    case DIAL_POSITION_BOTTOMMIDDLE:
+      if (!std::isnan(value)){
+        TextPoint.x = m_cx - (width / 2) - 1;
+        TextPoint.y = size.y - height;
+        // There might be a background drawn below
+        // so we must clear it first.
+        dc->DrawRoundedRectangle(TextPoint.x - 2, TextPoint.y - 2, width + 4,
+                                 height + 4, 3);
+        }
+      break;
   }
 
   //wxColour c2;
