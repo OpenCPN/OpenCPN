@@ -11223,7 +11223,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
       double r = VPoint.rotation;
       SetVPRotation(VPoint.skew);
 
-      pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
+      //pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
       gShapeBasemap.RenderViewOnDC(bgdc, VPoint);
 
       SetVPRotation(r);
