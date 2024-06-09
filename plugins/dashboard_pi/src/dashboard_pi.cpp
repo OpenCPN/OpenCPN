@@ -3474,13 +3474,15 @@ bool dashboard_pi::LoadConfig(void) {
     pConf->Read(_T("BackgroundColor"), &config, "DASHL");
     g_BackgroundColor.Set(config);
 
-    unsigned int alignment;
-    pConf->Read(_T("TitleAlignment"), &alignment, wxALIGN_LEFT);
+    int alignment;
+    pConf->Read(_T("TitleAlignment"), &alignment, (int)wxALIGN_LEFT);
     g_TitleAlignment=(wxAlignment)alignment;
+    if ( g_TitleAlignment==wxALIGN_INVALID ) g_TitleAlignment=wxALIGN_LEFT;
     pConf->Read(_T("TitleMargin"), &g_iTitleMargin, 5);
     pConf->Read(_T("DataShowUnit"), &g_bShowUnit, true);
-    pConf->Read(_T("DataAlignment"), &alignment, wxALIGN_LEFT);
+    pConf->Read(_T("DataAlignment"), &alignment, (int)wxALIGN_LEFT);
     g_DataAlignment=(wxAlignment)alignment;
+    if ( g_DataAlignment==wxALIGN_INVALID ) g_DataAlignment=wxALIGN_LEFT;
     pConf->Read(_T("DataMargin"), &g_iDataMargin, 10);
     pConf->Read(_T("InstrumentSpacing"), &g_iInstrumentSpacing, 0);
     pConf->Read(_T("TitleVerticalOffset"), &g_TitleVerticalOffset, 0.0);
@@ -3610,7 +3612,7 @@ bool dashboard_pi::LoadConfig(void) {
 
                     pConf->Read(wxString::Format(_T("InstDataShowUnit%d"), i + 1), &instp->m_ShowUnit, -1);
                     pConf->Read(wxString::Format(_T("InstDataMargin%d"), i + 1), &instp->m_DataMargin, -1);
-                    pConf->Read(wxString::Format(_T("InstDataAlignment%d"), i + 1), &alignment, wxALIGN_INVALID);
+                    pConf->Read(wxString::Format(_T("InstDataAlignment%d"), i + 1), &alignment, (int)wxALIGN_INVALID);
                     instp->m_DataAlignment=(wxAlignment)alignment;
                     pConf->Read(wxString::Format(_T("InstInstrumentSpacing%d"), i + 1), &instp->m_InstrumentSpacing, -1);
                     pConf->Read(wxString::Format(_T("InstDataFormat%d"), i + 1), &instp->m_Format, "");
