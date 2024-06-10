@@ -1,6 +1,6 @@
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Wed, 17 Apr 2024 13:59:24 +0200
-Subject: [PATCH 2/3] Add missing libs like tinyxml Debian work-around
+Date: Mon, 10 Jun 2024 09:58:18 +0200
+Subject: Add missing libs like tinyxml Debian work-around
 
 Since we remove some bundled libs when repacking the sources,
 references to these libs causes build problems which must
@@ -13,15 +13,15 @@ Forwarded: not-needed
 ---
  CMakeLists.txt             |  1 -
  cmake/SystemLibs.cmake     | 28 ++++++++++++++++++++++++++++
- cmake/in-files/config.h.in |  3 +++
- 3 files changed, 31 insertions(+), 1 deletion(-)
+ cmake/in-files/config.h.in |  1 +
+ 3 files changed, 29 insertions(+), 1 deletion(-)
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a31ec84..55996d6 100644
+index f7ec93f..2dfacd3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1498,7 +1498,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1510,7 +1510,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
  
@@ -64,16 +64,14 @@ index 0000000..473722c
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 47fcdd6..40d0a61 100644
+index 25ec4ee..19c2647 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
-@@ -45,6 +45,9 @@
+@@ -45,6 +45,7 @@
  #cmakedefine HAVE_SYS_TYPES_H
  #cmakedefine HAVE_SYS_FCNTL_H
  #cmakedefine HAVE_SYS_IOCTL_H
-+#cmakedefine HAVE_SYS_SERIAL_LIB
 +#cmakedefine HAVE_STDINT_H
-+
+ #cmakedefine OCPN_DISTRO_BUILD
  
  // The os compatible plugins are are built for
- #define PKG_TARGET "${PKG_TARGET}"

@@ -16,10 +16,10 @@ Forwarded: not-needed
  create mode 100644 data/help_web.html
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7b06b07..a31ec84 100644
+index 5045fab..f8a8a25 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1797,7 +1797,7 @@ if (APPLE)
+@@ -1822,7 +1822,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -28,7 +28,7 @@ index 7b06b07..a31ec84 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1837,11 +1837,11 @@ if (APPLE)
+@@ -1862,11 +1862,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -42,7 +42,7 @@ index 7b06b07..a31ec84 100644
    endif ()
  
    target_sources(
-@@ -1993,7 +1993,7 @@ if (NOT APPLE)
+@@ -2020,7 +2020,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc)
    else ()
