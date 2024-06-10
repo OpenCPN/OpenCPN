@@ -2,3 +2,14 @@ usr/share/doc/opencpn/copyright
 usr/share/opencpn/LICENSING
 usr/share/opencpn/COPYING.*gpl*
 usr/share/opencpn/authors.html
+usr/include/gmock
+usr/include/gtest
+usr/lib/cmake/GTest
+usr/lib/libgmock.a
+usr/lib/libgmock_main.a
+usr/lib/libgtest.a
+usr/lib/libgtest_main.a
+usr/lib/pkgconfig/gmock.pc
+usr/lib/pkgconfig/gmock_main.pc
+usr/lib/pkgconfig/gtest.pc
+usr/lib/pkgconfig/gtest_main.pc
