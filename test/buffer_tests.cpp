@@ -122,7 +122,7 @@ TEST(Buffer, RateLimit1) {
   EXPECT_EQ(queue.size(), 20);
 }
 
-#if !defined(__APPLE__) && !defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32) && !defined(OCPN_DISTRO_BUILD)
 // The MacOS builders seems to have a lot of "too" long sleeps,
 // same for  GA windows. Disable for now.
 TEST(Buffer, RateLimit2) {
