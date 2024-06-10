@@ -2,7 +2,7 @@ Source: opencpn
 Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
 Priority: optional
-Build-Depends: debhelper-compat (= 13),
+Build-Depends: debhelper-compat (= 12),
  cmake,
  googletest,
  libarchive-dev,
