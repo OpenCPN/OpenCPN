@@ -20,3 +20,4 @@ usr/share/opencpn/LINUX_DEVICES.md usr/share/doc/opencpn-data
 usr/share/opencpn/sounds/README.bells usr/share/doc/opencpn-data
 usr/share/opencpn/tcdata/README.harmonics usr/share/doc/opencpn-data
 usr/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd usr/share/doc/opencpn-data
+usr/share/opencpn/basemap_shp
