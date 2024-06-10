@@ -1,0 +1,5 @@
+*.gpg
+*.deb
+InRelease
+Packages
+Release

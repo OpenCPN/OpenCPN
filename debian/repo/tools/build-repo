@@ -1,0 +1,12 @@
+#/bin/bash
+
+# Create derived files from packages in pool
+
+GPG_KEY=4281643F751F1B8AE23DFD002083D0B709041F84
+
+gpg --output KEY.gpg --armor --export $GPG_KEY
+apt-ftparchive packages pool > Packages
+apt-ftparchive release . >Release
+gpg --default-key $GPG_KEY -abs -o Release.gpg Release
+gpg --default-key $GPG_KEY --clearsign -o InRelease Release
+tar cf  /tmp/bullseye-backports-repo.tar.gz -C .. bullseye-backports
