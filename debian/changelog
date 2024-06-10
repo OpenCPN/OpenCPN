@@ -1,6 +1,7 @@
-opencpn (5.8.10~alpha1+dfsg-1) UNRELEASED; urgency=medium
+opencpn (5.9.1-beta1+dfsg-1) unstable; urgency=medium
 
-  * Temporary test target
+  * Local build
+  * Upstream beta release
 
  -- Alec Leamas <leamas.alec@gmail.com>  Wed, 17 Apr 2024 13:13:39 +0200
 
