@@ -98,6 +98,7 @@
 #include "track_gui.h"
 #include "MUIBar.h"
 #include "iENCToolbar.h"
+#include "shapefile_basemap.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -181,7 +182,6 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern bool g_bDebugOGL;
-extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern iENCToolbar *g_iENCToolbar;
@@ -228,6 +228,7 @@ extern bool g_PrintingInProgress;
 ocpnGLOptions g_GLOptions;
 
 wxColor s_regionColor;
+extern ShapeBaseChartSet gShapeBasemap;
 
 //    For VBO(s)
 bool g_b_EnableVBO;
@@ -3635,7 +3636,8 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect,
     }
   }
 
-  m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+  //m_pParentCanvas->pWorldBackgroundChart->RenderViewOnDC(dc, vp);
+  gShapeBasemap.RenderViewOnDC(dc, vp);
 
   glDisable(GL_SCISSOR_TEST);
 
@@ -3901,12 +3903,6 @@ void glChartCanvas::Render() {
       !g_GLOptions.m_bTextureCompressionCaching)
     g_glTextureManager->ClearJobList();
 
-  if (b_timeGL && g_bShowFPS) {
-    if (n_render % 10) {
-      glFinish();
-      g_glstopwatch.Start();
-    }
-  }
   wxPaintDC(this);
 
   ocpnDC gldc(*this);
@@ -4537,20 +4533,6 @@ void glChartCanvas::Render() {
   if (g_b_needFinish) glFinish();
 
   SwapBuffers();
-  if (b_timeGL && g_bShowFPS) {
-    if (n_render % 10) {
-      glFinish();
-
-      double filter = .05;
-
-      // Simple low pass filter
-      g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) +
-                          ((double)(g_glstopwatch.Time()) * filter);
-                  if(g_gl_ms_per_frame > 0)
-                      printf(" OpenGL frame time: %3.0f ms-->  %3.0fFPS\n",
-                      g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
-    }
-  }
 
   g_glTextureManager->TextureCrunch(0.8);
   g_glTextureManager->FactoryCrunch(0.6);
@@ -4762,6 +4744,7 @@ void glChartCanvas::RenderCanvasBackingChart(ocpnDC &dc,
 
   bool world_view = false;
   RenderWorldChart(dc, cvp, rtex, world_view);
+  gShapeBasemap.RenderViewOnDC(dc, cvp);
 
   //    dc.SetPen(wxPen(wxColour(254,254,0), 3));
   //    dc.DrawLine( 0, 0, m_cache_tex_x, m_cache_tex_y);

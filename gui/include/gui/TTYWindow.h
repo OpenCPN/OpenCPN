@@ -52,12 +52,12 @@ public:
 protected:
   void CreateLegendBitmap();
   WindowDestroyListener *m_window_destroy_listener;
-  TTYScroll *m_pScroll;
-  wxButton *m_buttonPause;
-  wxButton *m_buttonCopy;
-  bool bpause;
+  TTYScroll *m_tty_scroll;
+  wxButton *m_btn_pause;
+  wxButton *m_btn_copy;
+  bool m_is_paused;
   wxBitmap m_bm_legend;
-  wxTextCtrl *m_tFilter;
+  wxTextCtrl *m_filter;
 };
 
 #endif

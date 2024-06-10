@@ -41,6 +41,7 @@
 #include <wx/treectrl.h>
 #include <wx/html/htmlwin.h>
 #include "CustomGrid.h"
+#include "XyGribPanel.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -464,6 +465,7 @@ protected:
   wxButton* m_rButtonYes;
   wxButton* m_rButtonApply;
   wxButton* m_rButtonCancel;
+  XyGribPanel* m_xygribPanel;
 
   // Virtual event handlers, overide them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
@@ -487,7 +489,11 @@ protected:
   virtual void OnSaveMail(wxCommandEvent& event) { event.Skip(); }
   virtual void OnCancel(wxCommandEvent& event) { event.Skip(); }
   virtual void OnSendMaiL(wxCommandEvent& event) { event.Skip(); }
-
+  virtual void OnXyGribDownloadButton(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnXyGribAtmModelChoice(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnXyGribWaveModelChoice(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnXyGribConfigChange(wxCommandEvent& event) { event.Skip(); }
+  
 public:
   wxScrolledWindow* m_sScrolledDialog;
 

@@ -46,7 +46,7 @@
 #include "N2KParser.h"
 
 
-wxFontData* g_pFontTitle;
+wxFontData *g_pFontTitle;
 wxFontData *g_pFontData;
 wxFontData *g_pFontLabel;
 wxFontData *g_pFontSmall;
@@ -80,6 +80,16 @@ double g_dHDT;
 double g_dSOG, g_dCOG;
 int g_iDashTempUnit;
 int g_dashPrefWidth, g_dashPrefHeight;
+
+wxColor g_BackgroundColor;
+bool g_ForceBackgroundColor;
+wxAlignment g_TitleAlignment;
+double g_TitleVerticalOffset;
+int g_iTitleMargin;
+bool g_bShowUnit;
+wxAlignment g_DataAlignment;
+int g_iDataMargin;
+int g_iInstrumentSpacing;
 
 PI_ColorScheme aktuellColorScheme;
 #if !defined(NAN)
@@ -251,7 +261,7 @@ wxString getInstrumentCaption(unsigned int id) {
     case ID_DBP_I_SOG:
       return _("SOG");
     case ID_DBP_D_SOG:
-      return _("Speedometer");
+      return _("Speed SOG");
     case ID_DBP_I_COG:
       return _("COG");
     case ID_DBP_M_COG:
@@ -801,13 +811,14 @@ void dashboard_pi::Notify() {
   // Get the identifiers
   std::vector<std::string> PriorityIDs = GetActivePriorityIdentifiers();
   // Get current satellite priority identifier = item 4
-  std::string satID = PriorityIDs[4];
+  // Exclude "address" after ':' that may equal Protokoll
+  std::string satID = PriorityIDs[4].substr(0, PriorityIDs[4].find(':'));
   if (satID.find("nmea0183") != std::string::npos)
     mPriSatStatus = 3;  // GSV
   else if (satID.find("ignal") != std::string::npos)
     mPriSatStatus = 2;  // SignalK
   else if (satID.find("nmea2000") != std::string::npos) {
-    prioN2kPGNsat = satID;
+    prioN2kPGNsat = PriorityIDs[4];
     mPriSatStatus = 1;  // N2k
   }
 
@@ -3345,6 +3356,12 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
           pane.Show(false);
       }
 
+      // Restore size of docked pane
+      if (pane.IsShown() && pane.IsDocked()) {
+        pane.BestSize(cont->m_best_size);
+        m_pauimgr->Update();
+      }
+
       //  This patch fixes a bug in wxAUIManager
       //  FS#548
       // Dropping a DashBoard Window right on top on the (supposedly fixed)
@@ -3362,6 +3379,7 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
   SetToolbarItemState(m_toolbar_item_id,
                       GetDashboardWindowShownCount() != 0 /*cnt==0*/);
   m_pauimgr->Update();
+
 }
 
 void dashboard_pi::UpdateAuiStatus(void) {
@@ -3452,6 +3470,23 @@ bool dashboard_pi::LoadConfig(void) {
     g_FontData.SetChosenFont(g_pUSFontData->GetChosenFont().Scaled(scaler));
     g_USFontData = *g_pUSFontData;
 
+    pConf->Read(_T("ForceBackgroundColor"), &g_ForceBackgroundColor, 0);
+    pConf->Read(_T("BackgroundColor"), &config, "DASHL");
+    g_BackgroundColor.Set(config);
+
+    int alignment;
+    pConf->Read(_T("TitleAlignment"), &alignment, (int)wxALIGN_LEFT);
+    g_TitleAlignment=(wxAlignment)alignment;
+    if ( g_TitleAlignment==wxALIGN_INVALID ) g_TitleAlignment=wxALIGN_LEFT;
+    pConf->Read(_T("TitleMargin"), &g_iTitleMargin, 5);
+    pConf->Read(_T("DataShowUnit"), &g_bShowUnit, true);
+    pConf->Read(_T("DataAlignment"), &alignment, (int)wxALIGN_LEFT);
+    g_DataAlignment=(wxAlignment)alignment;
+    if ( g_DataAlignment==wxALIGN_INVALID ) g_DataAlignment=wxALIGN_LEFT;
+    pConf->Read(_T("DataMargin"), &g_iDataMargin, 10);
+    pConf->Read(_T("InstrumentSpacing"), &g_iInstrumentSpacing, 0);
+    pConf->Read(_T("TitleVerticalOffset"), &g_TitleVerticalOffset, 0.0);
+
     g_pFontLabel = &g_FontLabel;
     pConf->Read(_T("FontLabel"), &config, LabelFont);
     LoadFont(&pDF, config);
@@ -3533,6 +3568,7 @@ bool dashboard_pi::LoadConfig(void) {
       // Version 2
       m_config_version = 2;
       bool b_onePersisted = false;
+      wxSize best_size;
       for (int k = 0; k < d_cnt; k++) {
         pConf->SetPath(
             wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), k + 1));
@@ -3546,6 +3582,11 @@ bool dashboard_pi::LoadConfig(void) {
         pConf->Read(_T("InstrumentCount"), &i_cnt, -1);
         bool b_persist;
         pConf->Read(_T("Persistence"), &b_persist, 1);
+        int val;
+        pConf->Read(_T("BestSizeX"), &val, DefaultWidth);
+        best_size.x = val;
+        pConf->Read(_T("BestSizeY"), &val, DefaultWidth);
+        best_size.y = val;
 
         wxArrayInt ar;
         wxArrayOfInstrumentProperties Property;
@@ -3556,40 +3597,56 @@ bool dashboard_pi::LoadConfig(void) {
             {
                 ar.Add(id);
                 InstrumentProperties* instp;
-                if (pConf->Exists(wxString::Format(_T("InstTitelFont%d"), i + 1)))
+                if (pConf->Exists(wxString::Format(_T("InstTitleFont%d"), i + 1)))
                 {
                     instp = new InstrumentProperties(id, i);
 
-                    pConf->Read(wxString::Format(_T("InstTitelFont%d"), i + 1), &config, TitleFont);
+                    pConf->Read(wxString::Format(_T("InstTitleFont%d"), i + 1), &config, TitleFont);
                     LoadFont(&pDF, config);
-                    pConf->Read(wxString::Format(_T("InstTitelColor%d"), i + 1), &config, "#000000");
+                    pConf->Read(wxString::Format(_T("InstTitleColor%d"), i + 1), &config, "#000000");
                     DummyColor.Set(config);
-                    instp->m_TitelFont.SetChosenFont(DummyFont);
-                    instp->m_TitelFont.SetColour(DummyColor);
+                    instp->m_USTitleFont.SetChosenFont(DummyFont);
+                    instp->m_USTitleFont.SetColour(DummyColor);
+                    instp->m_TitleFont=instp->m_USTitleFont;
+                    instp->m_TitleFont.SetChosenFont(instp->m_USTitleFont.GetChosenFont().Scaled(scaler));
+
+                    pConf->Read(wxString::Format(_T("InstDataShowUnit%d"), i + 1), &instp->m_ShowUnit, -1);
+                    pConf->Read(wxString::Format(_T("InstDataMargin%d"), i + 1), &instp->m_DataMargin, -1);
+                    pConf->Read(wxString::Format(_T("InstDataAlignment%d"), i + 1), &alignment, (int)wxALIGN_INVALID);
+                    instp->m_DataAlignment=(wxAlignment)alignment;
+                    pConf->Read(wxString::Format(_T("InstInstrumentSpacing%d"), i + 1), &instp->m_InstrumentSpacing, -1);
+                    pConf->Read(wxString::Format(_T("InstDataFormat%d"), i + 1), &instp->m_Format, "");
+                    pConf->Read(wxString::Format(_T("InstTitle%d"), i + 1), &instp->m_Title, "");
 
                     pConf->Read(wxString::Format(_T("InstDataFont%d"), i + 1), &config, DataFont);
                     LoadFont(&pDF, config);
                     pConf->Read(wxString::Format(_T("InstDataColor%d"), i + 1), &config, "#000000");
                     DummyColor.Set(config);
-                    instp->m_DataFont.SetChosenFont(DummyFont);
-                    instp->m_DataFont.SetColour(DummyColor);
+                    instp->m_USDataFont.SetChosenFont(DummyFont);
+                    instp->m_USDataFont.SetColour(DummyColor);
+                    instp->m_DataFont=instp->m_USDataFont;
+                    instp->m_DataFont.SetChosenFont(instp->m_USDataFont.GetChosenFont().Scaled(scaler));
 
                     pConf->Read(wxString::Format(_T("InstLabelFont%d"), i + 1), &config, LabelFont);
                     LoadFont(&pDF, config);
                     pConf->Read(wxString::Format(_T("InstLabelColor%d"), i + 1), &config, "#000000");
                     DummyColor.Set(config);
-                    instp->m_LabelFont.SetChosenFont(DummyFont);
-                    instp->m_LabelFont.SetColour(DummyColor);
+                    instp->m_USLabelFont.SetChosenFont(DummyFont);
+                    instp->m_USLabelFont.SetColour(DummyColor);
+                    instp->m_LabelFont=instp->m_USLabelFont;
+                    instp->m_LabelFont.SetChosenFont(instp->m_USLabelFont.GetChosenFont().Scaled(scaler));
 
                     pConf->Read(wxString::Format(_T("InstSmallFont%d"), i + 1), &config, SmallFont);
                     LoadFont(&pDF, config);
                     pConf->Read(wxString::Format(_T("InstSmallColor%d"), i + 1), &config, "#000000");
                     DummyColor.Set(config);
-                    instp->m_SmallFont.SetChosenFont(DummyFont);
-                    instp->m_SmallFont.SetColour(DummyColor);
+                    instp->m_USSmallFont.SetChosenFont(DummyFont);
+                    instp->m_USSmallFont.SetColour(DummyColor);
+                    instp->m_SmallFont=instp->m_USSmallFont;
+                    instp->m_SmallFont.SetChosenFont(instp->m_USSmallFont.GetChosenFont().Scaled(scaler));
 
-                    pConf->Read(wxString::Format(_T("TitlelBackColor%d"), i + 1), &config, "DASHL");
-                    instp->m_TitlelBackgroundColour.Set(config);
+                    pConf->Read(wxString::Format(_T("TitleBackColor%d"), i + 1), &config, "DASHL");
+                    instp->m_TitleBackgroundColour.Set(config);
 
                     pConf->Read(wxString::Format(_T("DataBackColor%d"), i + 1), &config, "DASHB");
                     instp->m_DataBackgroundColour.Set(config);
@@ -3609,6 +3666,7 @@ bool dashboard_pi::LoadConfig(void) {
         DashboardWindowContainer *cont =
             new DashboardWindowContainer(NULL, name, caption, orient, ar, Property);
         cont->m_bPersVisible = b_persist;
+        cont->m_conf_best_size = best_size;
 
         if (b_persist) b_onePersisted = true;
 
@@ -3685,22 +3743,30 @@ bool dashboard_pi::SaveConfig(void) {
       pConf->Write(_T("Persistence"), cont->m_bPersVisible);
       pConf->Write(_T("InstrumentCount"),
                    (int)cont->m_aInstrumentList.GetCount());
+      pConf->Write(_T("BestSizeX"), cont->m_best_size.x);
+      pConf->Write(_T("BestSizeY"), cont->m_best_size.y);
+
       // Delete old Instruments
       for (size_t i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
           if (pConf->Exists(wxString::Format(_T("Instrument%zu"), i + 1)))
           {
               pConf->DeleteEntry(wxString::Format(_T("Instrument%zu"), i + 1));
-              if (pConf->Exists(wxString::Format(_T("InstTitelFont%zu"), i + 1)))
+              if (pConf->Exists(wxString::Format(_T("InstTitleFont%zu"), i + 1)))
               {
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelFont%zu"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitleFont%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitleColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitle%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataShowUnit%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataMargin%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataAlignment%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataFormat%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstDataFont%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstDataColor%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstLabelColor%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstSmallColor%zu"), i + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("TitlelBackColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("TitleBackColor%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("DataBackColor%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%zu"), i + 1));
@@ -3712,7 +3778,7 @@ bool dashboard_pi::SaveConfig(void) {
           pConf->Write(wxString::Format(_T("Instrument%zu"), j + 1), cont->m_aInstrumentList.Item(j));
           InstrumentProperties* Inst = NULL;
           // First delete
-          if (pConf->Exists(wxString::Format(_T("InstTitelFont%zu"), j + 1)))
+          if (pConf->Exists(wxString::Format(_T("InstTitleFont%zu"), j + 1)))
           {
               bool Delete = true;
               for (size_t i = 0; i < cont->m_aInstrumentPropertyList.GetCount(); i++)
@@ -3726,15 +3792,20 @@ bool dashboard_pi::SaveConfig(void) {
               }
               if (Delete)
               {
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelFont%zu"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("InstTitelColor%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitleFont%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitleColor%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstTitle%zu"), j + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataShowUnit%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataMargin%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataAlignment%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("InstDataFormat%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstDataFont%zu"), j + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstDataColor%zu"), j + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%zu"), j + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstLabelColor%zu"), j + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%zu"), j + 1));
                   pConf->DeleteEntry(wxString::Format(_T("InstSmallColor%zu"), j + 1));
-                  pConf->DeleteEntry(wxString::Format(_T("TitlelBackColor%zu"), i + 1));
+                  pConf->DeleteEntry(wxString::Format(_T("TitleBackColor%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("DataBackColor%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%zu"), i + 1));
                   pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%zu"), i + 1));
@@ -3746,15 +3817,15 @@ bool dashboard_pi::SaveConfig(void) {
               Inst = cont->m_aInstrumentPropertyList.Item(i);
               if (Inst->m_Listplace == (int)j)
               {
-                  pConf->Write(wxString::Format(_T("InstTitelFont%zu"), j + 1), Inst->m_TitelFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstTitelColor%zu"), j + 1), Inst->m_TitelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("InstDataFont%zu"), j + 1), Inst->m_DataFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstDataColor%zu"), j + 1), Inst->m_DataFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("InstLabelFont%zu"), j + 1), Inst->m_LabelFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstLabelColor%zu"), j + 1), Inst->m_LabelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("InstSmallFont%zu"), j + 1), Inst->m_SmallFont.GetChosenFont().GetNativeFontInfoDesc());
-                  pConf->Write(wxString::Format(_T("InstSmallColor%zu"), j + 1), Inst->m_SmallFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-                  pConf->Write(wxString::Format(_T("TitlelBackColor%zu"), j + 1), Inst->m_TitlelBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstTitleFont%zu"), j + 1), Inst->m_USTitleFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstTitleColor%zu"), j + 1), Inst->m_USTitleFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstDataFont%zu"), j + 1), Inst->m_USDataFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstDataColor%zu"), j + 1), Inst->m_USDataFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstLabelFont%zu"), j + 1), Inst->m_USLabelFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstLabelColor%zu"), j + 1), Inst->m_USLabelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("InstSmallFont%zu"), j + 1), Inst->m_USSmallFont.GetChosenFont().GetNativeFontInfoDesc());
+                  pConf->Write(wxString::Format(_T("InstSmallColor%zu"), j + 1), Inst->m_USSmallFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
+                  pConf->Write(wxString::Format(_T("TitleBackColor%zu"), j + 1), Inst->m_TitleBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
                   pConf->Write(wxString::Format(_T("DataBackColor%zu"), j + 1), Inst->m_DataBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
                   pConf->Write(wxString::Format(_T("ArrowFirst%zu"), j + 1), Inst->m_Arrow_First_Colour.GetAsString(wxC2S_HTML_SYNTAX));
                   pConf->Write(wxString::Format(_T("ArrowSecond%zu"), j + 1), Inst->m_Arrow_Second_Colour.GetAsString(wxC2S_HTML_SYNTAX));
@@ -3790,6 +3861,10 @@ void dashboard_pi::ApplyConfig(void) {
       cont->m_pDashboardWindow->SetInstrumentList(cont->m_aInstrumentList, &(cont->m_aInstrumentPropertyList));
       bool vertical = orient == wxVERTICAL;
       wxSize sz = cont->m_pDashboardWindow->GetMinSize();
+      wxSize best = cont->m_conf_best_size;
+      if (best.x < 100)
+        best = sz;
+
 // Mac has a little trouble with initial Layout() sizing...
 #ifdef __WXOSX__
       if (sz.x == 0) sz.IncTo(wxSize(160, 388));
@@ -3803,7 +3878,7 @@ void dashboard_pi::ApplyConfig(void) {
                             .LeftDockable(vertical)
                             .RightDockable(vertical)
                             .MinSize(sz)
-                            .BestSize(sz)
+                            .BestSize(best)
                             .FloatingSize(sz)
                             .FloatingPosition(100, 100)
                             .Float()
@@ -4730,6 +4805,12 @@ void DashboardPreferencesDialog::OnInstrumentDelete(wxCommandEvent &event) {
   UpdateButtonsState();
 }
 
+inline void GetFontData(OCPNFontButton* FontButton, wxFontData &UnScaledFont, wxFontData &ScaledFont, double scaler) {
+  UnScaledFont = *(FontButton->GetFontData());
+  ScaledFont = UnScaledFont;
+  ScaledFont.SetChosenFont(UnScaledFont.GetChosenFont().Scaled(scaler));
+}
+
 void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
   // TODO: Instument options
   //  m_Config = Arrayofdashboardwindows.
@@ -4790,17 +4871,13 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
         if (DefaultFont)
             cont->m_aInstrumentPropertyList.Remove(Inst);
         else
-        {                      
-            Inst->m_TitelFont = *(Edit->m_fontPicker2->GetFontData());
-            Inst->m_TitelFont.SetChosenFont(Inst->m_TitelFont.GetChosenFont().Scaled(scaler));
-            Inst->m_DataFont = *(Edit->m_fontPicker4->GetFontData());
-            Inst->m_DataFont.SetChosenFont(Inst->m_DataFont.GetChosenFont().Scaled(scaler));
-            Inst->m_LabelFont = *(Edit->m_fontPicker5->GetFontData());
-            Inst->m_LabelFont.SetChosenFont(Inst->m_LabelFont.GetChosenFont().Scaled(scaler));
-            Inst->m_SmallFont = *(Edit->m_fontPicker6->GetFontData());
-            Inst->m_SmallFont.SetChosenFont(Inst->m_SmallFont.GetChosenFont().Scaled(scaler));
+        {
+            GetFontData(Edit->m_fontPicker2,Inst->m_USTitleFont,Inst->m_TitleFont,scaler);
+            GetFontData(Edit->m_fontPicker4,Inst->m_USDataFont,Inst->m_DataFont,scaler);
+            GetFontData(Edit->m_fontPicker5,Inst->m_USLabelFont,Inst->m_LabelFont,scaler);
+            GetFontData(Edit->m_fontPicker6,Inst->m_USSmallFont,Inst->m_SmallFont,scaler);
             Inst->m_DataBackgroundColour = Edit->m_colourPicker2->GetColour();
-            Inst->m_TitlelBackgroundColour = Edit->m_colourPicker1->GetColour();
+            Inst->m_TitleBackgroundColour = Edit->m_colourPicker1->GetColour();
             Inst->m_Arrow_First_Colour = Edit->m_colourPicker3->GetColour();
             Inst->m_Arrow_Second_Colour = Edit->m_colourPicker4->GetColour();
         }
@@ -5305,6 +5382,8 @@ void DashboardWindow::OnSize(wxSizeEvent &event) {
   }
   Layout();
   Refresh();
+  //  Capture the user adjusted docked Dashboard size
+  this->m_Container->m_best_size = event.GetSize();
 }
 
 void DashboardWindow::OnContextMenu(wxContextMenuEvent &event) {
@@ -5398,8 +5477,9 @@ void DashboardWindow::SetColorScheme(PI_ColorScheme cs) {
   DimeWindow(this);
 
   //  Improve appearance, especially in DUSK or NIGHT palette
-  wxColour col;
-  GetGlobalColor(_T("DASHL"), &col);
+  wxColour col=g_BackgroundColor;
+
+  if ( !g_ForceBackgroundColor ) GetGlobalColor(_T("DASHL"), &col);
   SetBackgroundColour(col);
 
   Refresh(false);
@@ -5515,8 +5595,8 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW\n%.2f"),
-                                  DIAL_POSITION_BOTTOMLEFT);
+            ->SetOptionExtraValue(OCPN_DBP_STC_STW, "STW %.1f",
+                                  DIAL_POSITION_BOTTOMMIDDLE);
         break;
       case ID_DBP_I_COG:
         instrument = new DashboardInstrument_Single(
@@ -5820,6 +5900,7 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
   //  DashboardInstrument_Position
 
   wxSize Hint = wxSize(DefaultWidth, DefaultWidth);
+
   for (unsigned int i = 0; i < m_ArrayOfInstrument.size(); i++) {
     DashboardInstrument *inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
     inst->SetMinSize(inst->GetSize(itemBoxSizer->GetOrientation(), Hint));
@@ -5993,24 +6074,24 @@ EditDialog::EditDialog(wxWindow* parent, InstrumentProperties& Properties, wxWin
     m_staticText1->Wrap(-1);
     fgSizer2->Add(m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    m_fontPicker2 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_TitelFont, wxDefaultPosition, wxDefaultSize);
+    m_fontPicker2 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_USTitleFont, wxDefaultPosition, wxDefaultSize);
     fgSizer2->Add(m_fontPicker2, 0, wxALL, 5);
 
-    m_staticText5 = new wxStaticText(this, wxID_ANY, _("Titlebackgroundcolor:"), wxDefaultPosition, wxDefaultSize, 0);
+    m_staticText5 = new wxStaticText(this, wxID_ANY, _("Title background color:"), wxDefaultPosition, wxDefaultSize, 0);
     m_staticText5->Wrap(-1);
     fgSizer2->Add(m_staticText5, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    m_colourPicker1 = new wxColourPickerCtrl(this, wxID_ANY, Properties.m_TitlelBackgroundColour, wxDefaultPosition, wxDefaultSize, wxCLRP_DEFAULT_STYLE);
+    m_colourPicker1 = new wxColourPickerCtrl(this, wxID_ANY, Properties.m_TitleBackgroundColour, wxDefaultPosition, wxDefaultSize, wxCLRP_DEFAULT_STYLE);
     fgSizer2->Add(m_colourPicker1, 0, wxALL, 5);
 
     m_staticText2 = new wxStaticText(this, wxID_ANY, _("Data:"), wxDefaultPosition, wxDefaultSize, 0);
     m_staticText2->Wrap(-1);
     fgSizer2->Add(m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    m_fontPicker4 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_DataFont, wxDefaultPosition, wxDefaultSize);
+    m_fontPicker4 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_USDataFont, wxDefaultPosition, wxDefaultSize);
     fgSizer2->Add(m_fontPicker4, 0, wxALL, 5);
 
-    m_staticText6 = new wxStaticText(this, wxID_ANY, _("Databackgroundcolor:"), wxDefaultPosition, wxDefaultSize, 0);
+    m_staticText6 = new wxStaticText(this, wxID_ANY, _("Data background color:"), wxDefaultPosition, wxDefaultSize, 0);
     m_staticText6->Wrap(-1);
     fgSizer2->Add(m_staticText6, 0, wxALL, 5);
 
@@ -6021,14 +6102,14 @@ EditDialog::EditDialog(wxWindow* parent, InstrumentProperties& Properties, wxWin
     m_staticText3->Wrap(-1);
     fgSizer2->Add(m_staticText3, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    m_fontPicker5 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_LabelFont, wxDefaultPosition, wxDefaultSize);
+    m_fontPicker5 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_USLabelFont, wxDefaultPosition, wxDefaultSize);
     fgSizer2->Add(m_fontPicker5, 0, wxALL, 5);
 
     m_staticText4 = new wxStaticText(this, wxID_ANY, _("Small:"), wxDefaultPosition, wxDefaultSize, 0);
     m_staticText4->Wrap(-1);
     fgSizer2->Add(m_staticText4, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    m_fontPicker6 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_SmallFont, wxDefaultPosition, wxDefaultSize);
+    m_fontPicker6 = new wxFontPickerCtrl(this, wxID_ANY, Properties.m_USSmallFont, wxDefaultPosition, wxDefaultSize);
     fgSizer2->Add(m_fontPicker6, 0, wxALL, 5);
 
     m_staticText9 = new wxStaticText(this, wxID_ANY, _("Arrow 1 Colour :"), wxDefaultPosition, wxDefaultSize, 0);
@@ -6099,14 +6180,14 @@ EditDialog::~EditDialog()
 
 void EditDialog::OnSetdefault(wxCommandEvent& event)
 {
-    m_fontPicker2->SetSelectedFont(g_FontTitle.GetChosenFont());
-    m_fontPicker2->SetSelectedColour(g_FontTitle.GetColour());
-    m_fontPicker4->SetSelectedFont(g_FontData.GetChosenFont());
-    m_fontPicker4->SetSelectedColour(g_FontData.GetColour());
-    m_fontPicker5->SetSelectedFont(g_FontLabel.GetChosenFont());
-    m_fontPicker5->SetSelectedColour(g_FontLabel.GetColour());
-    m_fontPicker6->SetSelectedFont(g_FontSmall.GetChosenFont());
-    m_fontPicker6->SetSelectedColour(g_FontSmall.GetColour());
+    m_fontPicker2->SetSelectedFont(g_USFontTitle.GetChosenFont());
+    m_fontPicker2->SetSelectedColour(g_USFontTitle.GetColour());
+    m_fontPicker4->SetSelectedFont(g_USFontData.GetChosenFont());
+    m_fontPicker4->SetSelectedColour(g_USFontData.GetColour());
+    m_fontPicker5->SetSelectedFont(g_USFontLabel.GetChosenFont());
+    m_fontPicker5->SetSelectedColour(g_USFontLabel.GetColour());
+    m_fontPicker6->SetSelectedFont(g_USFontSmall.GetChosenFont());
+    m_fontPicker6->SetSelectedColour(g_USFontSmall.GetColour());
     wxColour dummy;
     GetGlobalColor(_T("DASHL"), &dummy);
     m_colourPicker1->SetColour(dummy);

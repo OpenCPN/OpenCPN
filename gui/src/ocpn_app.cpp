@@ -163,9 +163,7 @@ using namespace std::literals::chrono_literals;
 #include "tcmgr.h"
 #include "thumbwin.h"
 #include "TrackPropDlg.h"
-#ifdef __linux__
 #include "udev_rule_mgr.h"
-#endif
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -303,6 +301,7 @@ bool bDrawCurrentValues;
 
 wxString ChartListFileName;
 wxString gWorldMapLocation, gDefaultWorldMapLocation;
+wxString gWorldShapefileLocation;
 wxString *pInit_Chart_Dir;
 wxString g_csv_locn;
 wxString g_SENCPrefix;
@@ -442,6 +441,13 @@ extern HINSTANCE s_hGLU_DLL;  // Handle to DLL
 
 double g_ownship_predictor_minutes;
 double g_ownship_HDTpredictor_miles;
+int g_cog_predictor_style;
+wxString g_cog_predictor_color;
+int g_cog_predictor_endmarker;
+int g_ownship_HDTpredictor_style;
+wxString g_ownship_HDTpredictor_color;
+int g_ownship_HDTpredictor_endmarker;
+int g_ownship_HDTpredictor_width;
 
 bool g_own_ship_sog_cog_calc;
 int g_own_ship_sog_cog_calc_damp_sec;
@@ -479,7 +485,6 @@ bool g_bLookAhead;
 bool g_bskew_comp;
 bool g_bopengl;
 bool g_bSoftwareGL;
-bool g_bShowFPS;
 bool g_bsmoothpanzoom;
 bool g_fog_overzoom;
 double g_overzoom_emphasis_base;
@@ -1171,14 +1176,6 @@ bool MyApp::OnInit() {
   //    Initialize embedded PNG icon graphics
   ::wxInitAllImageHandlers();
 
-  if (g_config_wizard || !wxFileExists(g_Platform->GetConfigFileName())) {
-    FirstUseWizImpl wiz(gFrame);
-    auto res = wiz.Run();
-    if(res) {
-      g_NeedDBUpdate = 2;
-    }
-  }
-
 #ifdef __WXQT__
   //  Now we can configure the Qt StyleSheets, if present
   prepareAndroidStyleSheets();
@@ -1201,7 +1198,7 @@ bool MyApp::OnInit() {
   //      Init the Route Manager
 
  g_pRouteMan = new Routeman(RoutePropDlg::GetDlgCtx(), RoutemanGui::GetDlgCtx(),
-                            NMEALogWindow::Get());
+                   NMEALogWindow::GetInstance());
 
   //      Init the Selectable Route Items List
   pSelect = new Select();
@@ -1283,6 +1280,14 @@ bool MyApp::OnInit() {
   //  Override for some safe and nice default values if the config file was
   //  created from scratch
   if (b_initial_load) g_Platform->SetDefaultOptions();
+
+  if (g_config_wizard || b_initial_load) {
+    FirstUseWizImpl wiz(gFrame, pConfig);
+    auto res = wiz.Run();
+    if(res) {
+      g_NeedDBUpdate = 2;
+    }
+  }
 
   g_Platform->applyExpertMode(g_bUIexpert);
 
@@ -1900,18 +1905,16 @@ bool MyApp::OnInit() {
 
   g_pauimgr->Update();
 
-#if defined(__linux__) && !defined(__ANDROID__)
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams *cp = TheConnectionParams()->Item(i);
     if (cp->bEnabled) {
-      if (cp->GetDSPort().Contains(_T("Serial"))) {
+      if (cp->GetDSPort().Contains("Serial")) {
         std::string port(cp->Port.ToStdString());
         CheckSerialAccess(gFrame, port);
       }
     }
   }
   CheckDongleAccess(gFrame);
-#endif
 
   // Initialize the CommBridge
   m_comm_bridge.Initialize();

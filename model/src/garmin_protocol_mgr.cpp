@@ -63,6 +63,7 @@
 
 #include "model/comm_drv_n0183_serial.h"
 #include "model/config_vars.h"
+#include "config.h"
 #include "model/garmin_wrapper.h"
 #include "model/garmin_protocol_mgr.h"
 #include "model/nmea_ctx_factory.h"

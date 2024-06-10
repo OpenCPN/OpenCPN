@@ -783,7 +783,7 @@ void GribSettingsDialog::SetSettingsDialogSize() {
                  // two times the button's height to handle pages tab's height
 #endif
 #ifdef __WXGTK__
-  SetMinSize(wxSize(0, 0));
+  SetMinSize(wxSize(10, 10));
 #endif
 
   int display_width, display_height;
@@ -792,9 +792,12 @@ void GribSettingsDialog::SetSettingsDialogSize() {
   for (size_t i = 0; i < m_nSettingsBook->GetPageCount();
        i++) {  // compute and set scrolled windows size
     wxScrolledWindow *sc = ((wxScrolledWindow *)m_nSettingsBook->GetPage(i));
-    sc->SetMinSize(wxSize(0, 0));
+    sc->SetMinSize(wxSize(10, 10));
     wxSize scr;
-    if ((int)i == m_SetBookpageIndex) {
+#ifndef __WXGTK__
+    if ((int)i == m_SetBookpageIndex)
+#endif
+    {
       switch (i) {
         case 0:
           scr = m_fgSetDataSizer->Fit(sc);
@@ -809,6 +812,7 @@ void GribSettingsDialog::SetSettingsDialogSize() {
           scr = m_fgSetGuiSizer->Fit(sc);
       }
       sc->SetMinSize(wxSize(wxMin(scr.x, w), wxMin(scr.y, h)));
+      sc->SetSize(wxSize(wxMin(scr.x, w), wxMin(scr.y, h)));
 
       // Constrain size on small displays
       if(display_height < 600){

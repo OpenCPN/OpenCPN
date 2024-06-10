@@ -103,6 +103,10 @@ set(SRC_GRIB
     src/GribSettingsDialog.h
     src/GribRequestDialog.cpp
     src/GribRequestDialog.h
+    src/XyGribPanel.h
+    src/XyGribPanel.cpp
+    src/XyGribModelDef.h
+    src/XyGribModelDef.cpp
     src/icons.h
     src/msg.h
     src/email.h

@@ -720,7 +720,7 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 
   std::string gl_json = fs::path(GetPrivateDataDir().ToStdString()).append("gl_caps.json").string();
 
-  wxString cmd = wxString::Format(_T("%s opengl-info %s"), gl_util_path.c_str(), gl_json.c_str());
+  wxString cmd = wxString::Format("\"%s\" opengl-info \"%s\"", gl_util_path.c_str(), gl_json.c_str());
 
   wxLogMessage("Starting OpenGL test utility: %s", cmd);
 
@@ -763,6 +763,15 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     pcaps->GLSL_Version = root["GL_SHADING_LANGUAGE_VERSION"].AsString();
   } else {
     wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
+    return false;
+  }
+  if(root.HasMember("GL_USABLE")) {
+    if (!root["GL_USABLE"].AsBool()) {
+      wxLogMessage("OpenGL test utility reports that OpenGL is not usable.");
+      return false;
+    }
+  } else {
+    wxLogMessage("GL_USABLE not found.");
     return false;
   }
   pcaps->dGLSL_Version = 0;
@@ -1681,25 +1690,11 @@ bool OCPNPlatform::hasInternalGPS(wxString profile) {
 //--------------------------------------------------------------------------
 
 void OCPNPlatform::ShowBusySpinner(void) {
-#ifdef __ANDROID__
-  androidShowBusyIcon();
-#else
-#if wxCHECK_VERSION(2, 9, 0)
-  //    if( !::wxIsBusy() )
-  { ::wxBeginBusyCursor(); }
-#endif
-#endif
+  AbstractPlatform::ShowBusySpinner();
 }
 
 void OCPNPlatform::HideBusySpinner(void) {
-#ifdef __ANDROID__
-  androidHideBusyIcon();
-#else
-#if wxCHECK_VERSION(2, 9, 0)
-  //    if( ::wxIsBusy() )
-  { ::wxEndBusyCursor(); }
-#endif
-#endif
+  AbstractPlatform::HideBusySpinner();
 }
 
 double OCPNPlatform::GetDisplayDensityFactor() {

@@ -5673,7 +5673,7 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
     wxPoint r = GetPixFromLLROT(lat, lon, 0);
 
     // Some simple inclusion tests
-    if((r.x < 0) || (r.y < 0))
+    if((r.x < -box_dim) || (r.y < -box_dim))
       continue;
     if ((r.x == INVALID_COORD) || (r.y == INVALID_COORD))
       continue;

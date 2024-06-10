@@ -34,7 +34,7 @@ extern OCPNPlatform *g_Platform;
 
 NMEALogWindow *NMEALogWindow::instance = NULL;
 
-NMEALogWindow &NMEALogWindow::Get() {
+NMEALogWindow &NMEALogWindow::GetInstance() {
   if (instance == NULL) {
     instance = new NMEALogWindow;
   }
@@ -42,7 +42,7 @@ NMEALogWindow &NMEALogWindow::Get() {
 }
 
 NMEALogWindow::NMEALogWindow()
-    : window(NULL), width(0), height(0), pos_x(0), pos_y(0) {}
+    : m_window(NULL), m_width(0), m_height(0), m_pos_x(0), m_pos_y(0) {}
 
 void NMEALogWindow::Shutdown() {
   if (instance) {
@@ -51,97 +51,98 @@ void NMEALogWindow::Shutdown() {
   }
 }
 
-bool NMEALogWindow::Active() const { return window != NULL; }
+bool NMEALogWindow::Active() const { return m_window != NULL; }
 
 void NMEALogWindow::Create(wxWindow *parent, int num_lines) {
-  if (window == NULL) {
-    window = new TTYWindow(parent, num_lines, this);
-    window->SetTitle(_("NMEA Debug Window"));
+  if (m_window == NULL) {
+    m_window = new TTYWindow(parent, num_lines, this);
+    m_window->SetTitle(_("NMEA Debug Window"));
 
     // Make sure the window is well on the screen
-    pos_x = wxMax(pos_x, 40);
-    pos_y = wxMax(pos_y, 40);
+    m_pos_x = wxMax(m_pos_x, 40);
+    m_pos_y = wxMax(m_pos_y, 40);
 
-    window->SetSize(pos_x, pos_y, width, height);
+    m_window->SetSize(m_pos_x, m_pos_y, m_width, m_height);
   }
-  window->Show();
+  m_window->Show();
 }
 
 void NMEALogWindow::Add(const wxString &s) {
-  if (window) window->Add(s);
+  if (m_window) m_window->Add(s);
 }
 
 void NMEALogWindow::Refresh(bool do_refresh) {
-  if (window) window->Refresh(do_refresh);
+  if (m_window) m_window->Refresh(do_refresh);
 }
 
 void NMEALogWindow::SetSize(const wxSize &size) {
-  width = size.GetWidth();
-  width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
-  width = wxMin(width, g_Platform->getDisplaySize().x - 20);
-  height = size.GetHeight();
-  height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
-  height = wxMin(height, g_Platform->getDisplaySize().y - 20);
+  m_width = size.GetWidth();
+  m_width = wxMax(m_width, 400 * g_Platform->GetDisplayDensityFactor());
+  m_width = wxMin(m_width, g_Platform->getDisplaySize().x - 20);
+  m_height = size.GetHeight();
+  m_height = wxMax(m_height, 300 * g_Platform->GetDisplayDensityFactor());
+  m_height = wxMin(m_height, g_Platform->getDisplaySize().y - 20);
 }
 
 void NMEALogWindow::SetPos(const wxPoint &pos) {
-  pos_x = pos.x;
-  pos_y = pos.y;
+  m_pos_x = pos.x;
+  m_pos_y = pos.y;
 }
 
 int NMEALogWindow::GetSizeW() {
   UpdateGeometry();
-  return width;
+  return m_width;
 }
 
 int NMEALogWindow::GetSizeH() {
   UpdateGeometry();
-  return height;
+  return m_height;
 }
 
 int NMEALogWindow::GetPosX() {
   UpdateGeometry();
-  return pos_x;
+  return m_pos_x;
 }
 
 int NMEALogWindow::GetPosY() {
   UpdateGeometry();
-  return pos_y;
+  return m_pos_y;
 }
 
 void NMEALogWindow::SetSize(int w, int h) {
-  width = w;
-  width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
-  width = wxMin(width, g_Platform->getDisplaySize().x - 20);
+  m_width = w;
+  m_width = wxMax(m_width, 400 * g_Platform->GetDisplayDensityFactor());
+  m_width = wxMin(m_width, g_Platform->getDisplaySize().x - 20);
 
-  height = h;
-  height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
-  height = wxMin(height, g_Platform->getDisplaySize().y - 20);
+  m_height = h;
+  m_height = wxMax(m_height, 300 * g_Platform->GetDisplayDensityFactor());
+  m_height = wxMin(m_height, g_Platform->getDisplaySize().y - 20);
   //    qDebug() << w << h << width << height;
 }
 
 void NMEALogWindow::SetPos(int x, int y) {
-  pos_x = x;
-  pos_y = y;
+  m_pos_x = x;
+  m_pos_y = y;
 }
 
 void NMEALogWindow::CheckPos(int display_width, int display_height) {
-  if ((pos_x < 0) || (pos_x > display_width)) pos_x = 5;
-  if ((pos_y < 0) || (pos_y > display_height)) pos_y = 5;
+  if ((m_pos_x < 0) || (m_pos_x > display_width)) m_pos_x = 5;
+  if ((m_pos_y < 0) || (m_pos_y > display_height)) m_pos_y = 5;
 }
 
 void NMEALogWindow::DestroyWindow() {
-  if (window) {
+  if (m_window) {
     UpdateGeometry();
-    window->Destroy();
-    window = NULL;
+    m_window->Destroy();
+    m_window = NULL;
+    nmea_window_close_evt.Notify();
   }
 }
 
 void NMEALogWindow::Move() {
-  if (window) {
-    window->Move(pos_x, pos_y);
-    window->Raise();
+  if (m_window) {
+    m_window->Move(m_pos_x, m_pos_y);
+    m_window->Raise();
   }
 }
 
@@ -153,8 +154,8 @@ void NMEALogWindow::Move() {
  * of the window.
  */
 void NMEALogWindow::UpdateGeometry() {
-  if (window) {
-    SetSize(window->GetSize());
-    SetPos(window->GetPosition());
+  if (m_window) {
+    SetSize(m_window->GetSize());
+    SetPos(m_window->GetPosition());
   }
 }

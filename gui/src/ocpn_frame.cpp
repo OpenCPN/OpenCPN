@@ -134,6 +134,7 @@
 #include "TrackPropDlg.h"
 #include "waypointman_gui.h"
 #include "CanvasOptions.h"
+#include "udev_rule_mgr.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -630,8 +631,9 @@ static void onBellsFinishedCB(void *ptr) {
 // My frame constructor
 MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                  const wxSize &size, long style)
-    : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName)
-      {
+    : wxFrame(frame, -1, title, pos, size, style, kTopLevelWindowName),
+      comm_overflow_dlg(this) {
+
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the OpenGL canvas and the DIP
@@ -705,8 +707,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
   //    Establish my children
   struct MuxLogCallbacks log_callbacks;
-  log_callbacks.log_is_active = []() { return NMEALogWindow::Get().Active(); };
-  log_callbacks.log_message = [](const std::string& s) { NMEALogWindow::Get().Add(s); };
+  log_callbacks.log_is_active = []() { return NMEALogWindow::GetInstance().Active(); };
+  log_callbacks.log_message = [](const std::string& s) {
+    NMEALogWindow::GetInstance().Add(s); };
   g_pMUX = new Multiplexer(log_callbacks, g_b_legacy_input_filter_behaviour);
 
   struct AisDecoderCallbacks  ais_callbacks;
@@ -793,6 +796,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
 
 MyFrame::~MyFrame() {
   FrameTimer1.Stop();
+  DestroyDeviceNotFoundDialogs();
+
   delete ChartData;
   // delete pCurrentStack;
 
@@ -3961,7 +3966,20 @@ int MyFrame::DoOptionsDialog() {
     }
   }
 
-  int rr = g_options->ShowModal();
+  // options opens a modeless nmea debug window and cannot use ShowModal()
+  // OTOH, here are dragons: options is overall written to be recreated from
+  // scratch for each invocation. Hence this "semi-modal"  approach for now
+  // See also #3923
+  {
+    bool done = false;
+    g_options->SetOnCloseCb([&done] { done = true; });
+    g_options->Show();
+    while (!done) {
+      wxYield();
+    }
+    g_options->ClearOnCloseCb();
+    g_options->Hide();
+  }
 
 #ifdef __ANDROID__
   androidEnableBackButton(true);
@@ -4000,7 +4018,7 @@ int MyFrame::DoOptionsDialog() {
 #endif
 
   bool ret_val = false;
-  rr = g_options->GetReturnCode();
+  int rr = g_options->GetReturnCode();
 
   if (g_last_ChartScaleFactor != g_ChartScaleFactor) rr |= S52_CHANGED;
 
@@ -4156,8 +4174,8 @@ int MyFrame::DoOptionsDialog() {
       dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
   if (alert_dlg_active) alert_dlg_active->Raise();
 
-  if (NMEALogWindow::Get().Active())
-    NMEALogWindow::Get().GetTTYWindow()->Raise();
+  if (NMEALogWindow::GetInstance().Active())
+    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
 
 #ifdef __ANDROID__
   if (g_pi_manager) g_pi_manager->NotifyAuiPlugIns();
@@ -6865,8 +6883,8 @@ void MyFrame::applySettingsString(wxString settings) {
 
   Refresh(false);
 
-  if (NMEALogWindow::Get().Active())
-    NMEALogWindow::Get().GetTTYWindow()->Raise();
+  if (NMEALogWindow::GetInstance().Active())
+    NMEALogWindow::GetInstance().GetTTYWindow()->Raise();
 }
 
 #ifdef wxHAS_POWER_EVENTS

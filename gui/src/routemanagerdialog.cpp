@@ -74,7 +74,7 @@
 #define DIALOG_MARGIN 10
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
-enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
+enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH, colTRKDATE };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
 enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
@@ -173,6 +173,19 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
 {
   return SortDouble(sort_track_len_dir, ((Track *)item1)->Length(),
                     ((Track *)item2)->Length());
+}
+
+// sort callback. Sort by track start date.
+static int sort_track_date_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+static int wxCALLBACK SortTracksOnDate(wxIntPtr item1, wxIntPtr item2,
+                                       wxIntPtr list)
+#else
+int wxCALLBACK SortTracksOnDate(long item1, long item2, long list)
+#endif
+{
+  return SortRouteTrack(sort_track_date_dir, ((Track *)item1)->GetDate(),
+                        ((Track *)item2)->GetDate());
 }
 
 static int sort_wp_key;
@@ -599,6 +612,8 @@ void RouteManagerDialog::Create() {
                                4 * char_width);
   m_pTrkListCtrl->InsertColumn(colTRKNAME, _("Track Name"), wxLIST_FORMAT_LEFT,
                                20 * char_width);
+  m_pTrkListCtrl->InsertColumn(colTRKDATE, _("Start Date"), wxLIST_FORMAT_LEFT,
+                               20 * char_width);
   m_pTrkListCtrl->InsertColumn(colTRKLENGTH, _("Length"), wxLIST_FORMAT_LEFT,
                                5 * char_width);
 
@@ -665,12 +680,12 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnTrkDeleteAllClick), NULL,
       this);
 
-  //  Create "Waypoints" panel
+  //  Create "Marks" panel
   m_pPanelWpt = new wxPanel(m_pNotebook, wxID_ANY, wxDefaultPosition,
                             wxDefaultSize, wxNO_BORDER | wxTAB_TRAVERSAL);
   wxBoxSizer *sbsWpts = new wxBoxSizer(wxHORIZONTAL);
   m_pPanelWpt->SetSizer(sbsWpts);
-  m_pNotebook->AddPage(m_pPanelWpt, _("Waypoints"));
+  m_pNotebook->AddPage(m_pPanelWpt, _("Marks"));
 
   wxBoxSizer *bSizerWptContents;
   bSizerWptContents = new wxBoxSizer(wxVERTICAL);
@@ -696,7 +711,7 @@ void RouteManagerDialog::Create() {
       wxCommandEventHandler(RouteManagerDialog::OnFilterChanged), NULL, this);
 
   m_cbShowAllWP =
-      new wxCheckBox(m_pPanelWpt, wxID_ANY, _("Show all waypoints"));
+      new wxCheckBox(m_pPanelWpt, wxID_ANY, _("Show all marks"));
   bSizerWptContents->Add(m_cbShowAllWP, 0, wxEXPAND | wxLEFT, 5);
   m_cbShowAllWP->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -734,7 +749,7 @@ void RouteManagerDialog::Create() {
                                4 * char_width);
   m_pWptListCtrl->InsertColumn(colWPTSCALE, _("Scale"), wxLIST_FORMAT_LEFT,
                                8 * char_width);
-  m_pWptListCtrl->InsertColumn(colWPTNAME, _("Waypoint Name"),
+  m_pWptListCtrl->InsertColumn(colWPTNAME, _("Mark Name"),
                                wxLIST_FORMAT_LEFT, 15 * char_width);
   m_pWptListCtrl->InsertColumn(colWPTDIST, _("Distance from own ship"),
                                wxLIST_FORMAT_LEFT, 14 * char_width);
@@ -2080,6 +2095,7 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
     long idx = m_pTrkListCtrl->InsertItem(li);
 
     m_pTrkListCtrl->SetItem(idx, colTRKNAME, trk->GetName(true));
+    m_pTrkListCtrl->SetItem(idx, colTRKDATE, trk->GetDate(true));
 
     wxString len;
     len.Printf(wxT("%5.2f"), trk->Length());
@@ -2101,6 +2117,9 @@ void RouteManagerDialog::UpdateTrkListCtrl() {
   switch (sort_track_key) {
     case SORT_ON_DISTANCE:
       m_pTrkListCtrl->SortItems(SortTracksOnDistance, (wxIntPtr)NULL);
+      break;
+    case SORT_ON_DATE:
+      m_pTrkListCtrl->SortItems(SortTracksOnDate, (wxIntPtr)NULL);
       break;
     case SORT_ON_NAME:
     default:
@@ -2140,6 +2159,10 @@ void RouteManagerDialog::OnTrkColumnClicked(wxListEvent &event) {
     sort_track_key = SORT_ON_DISTANCE;
     sort_track_len_dir++;
     m_pTrkListCtrl->SortItems(SortTracksOnDistance, (wxIntPtr)NULL);
+  } else if (event.m_col == 3) {
+    sort_track_key = SORT_ON_DATE;
+    sort_track_date_dir++;
+    m_pTrkListCtrl->SortItems(SortTracksOnDate, (wxIntPtr)NULL);
   }
 }
 
@@ -2660,16 +2683,21 @@ void RouteManagerDialog::WptShowPropertiesDialog(std::vector<RoutePoint *> wptli
 
   g_pMarkInfoDialog->SetRoutePoints(wptlist);
   g_pMarkInfoDialog->UpdateProperties();
+
+  wxString base_title = _("Mark Properties");
+  if (wptlist[0]->m_bIsInRoute)
+    base_title = _("Waypoint Properties");
+
   if (wptlist[0]->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
-                                      _("Waypoint Properties"), _("Layer"),
+                                      base_title, _("Layer"),
                                       GetLayerName(wptlist[0]->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else {
     if (wptlist.size() > 1)
-      g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties") + wxString::Format(_(" (%lu points)"), wptlist.size()));
+      g_pMarkInfoDialog->SetDialogTitle(base_title + wxString::Format(_(" (%lu points)"), wptlist.size()));
     else
-      g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+      g_pMarkInfoDialog->SetDialogTitle(base_title);
   }
 
   if (!g_pMarkInfoDialog->IsShown()) g_pMarkInfoDialog->Show();

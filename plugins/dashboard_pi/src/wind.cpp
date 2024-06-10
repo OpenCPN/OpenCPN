@@ -159,8 +159,10 @@ void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc) {
     f = g_pFontLabel->GetChosenFont();
   bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &f);
   m_cx = size.x / 2;
-  int availableHeight = size.y - m_TitleHeight - height;
-  m_cy = m_TitleHeight + height / 2;
+  int availableHeight = GetDataBottom(size.y) - m_DataTop;
+  InitTitleAndDataPosition(availableHeight);
+  availableHeight-=height;
+  m_cy = m_DataTop + height / 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2.0 * 0.95;
 
@@ -340,7 +342,8 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
       return;
     case DIAL_POSITION_INSIDE: {
       TextPoint.x = m_cx - (width / 2) - 1;
-      TextPoint.y = (size.y * .75) - height;
+      TextPoint.y = ((size.y - m_InstrumentSpacing) * .75) - height;
+      if ( (g_TitleAlignment & wxALIGN_BOTTOM) != 0 ) TextPoint.y -= m_TitleHeight;
       GetGlobalColor(_T("DASHL"), &cl);
       int penwidth = size.x / 100;
       wxPen* pen =
@@ -357,24 +360,24 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
     case DIAL_POSITION_TOPLEFT:
       GetGlobalColor(_T("DASHN"), &c3);
       TextPoint.x = 0;
-      TextPoint.y = m_TitleHeight;
+      TextPoint.y = m_DataTop;
       text = _T("A:") + text;
       break;
     case DIAL_POSITION_TOPRIGHT:
       GetGlobalColor(_T("DASHN"), &c3);
       TextPoint.x = size.x - width - 1;
-      TextPoint.y = m_TitleHeight;
+      TextPoint.y = m_DataTop;
       break;
     case DIAL_POSITION_BOTTOMLEFT:
       GetGlobalColor(_T("BLUE3"), &c3);
       text = _T("T:") + text;
       TextPoint.x = 0;
-      TextPoint.y = size.y - height;
+      TextPoint.y = GetDataBottom(size.y) - height;
       break;
     case DIAL_POSITION_BOTTOMRIGHT:
       GetGlobalColor(_T("BLUE3"), &c3);
       TextPoint.x = size.x - width - 1;
-      TextPoint.y = size.y - height;
+      TextPoint.y = GetDataBottom(size.y) - height;
       break;
   }
   wxColour c2;

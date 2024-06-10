@@ -59,6 +59,7 @@ set(
   ${MODEL_HDR_DIR}/comm_n0183_output.h
   ${MODEL_HDR_DIR}/comm_navmsg_bus.h
   ${MODEL_HDR_DIR}/comm_navmsg.h
+  ${MODEL_HDR_DIR}/comm_out_queue.h
   ${MODEL_HDR_DIR}/comm_util.h
   ${MODEL_HDR_DIR}/comm_vars.h
   ${MODEL_HDR_DIR}/config_vars.h
@@ -134,6 +135,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_bridge.cpp
   ${MODEL_SRC_DIR}/comm_can_util.cpp
   ${MODEL_SRC_DIR}/comm_decoder.cpp
+  #${MODEL_SRC_DIR}/comm_driver.cpp
   ${MODEL_SRC_DIR}/comm_drv_factory.cpp
   ${MODEL_SRC_DIR}/comm_drv_file.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183.cpp
@@ -149,6 +151,7 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_navmsg_bus.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
   ${MODEL_SRC_DIR}/comm_navmsg.cpp
+  ${MODEL_SRC_DIR}/comm_out_queue.cpp
   ${MODEL_SRC_DIR}/comm_util.cpp
   ${MODEL_SRC_DIR}/comm_vars.cpp
   ${MODEL_SRC_DIR}/config_vars.cpp

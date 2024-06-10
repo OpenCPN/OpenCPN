@@ -93,7 +93,7 @@ wxSize DashboardInstrument_WindDirHistory::GetSize(int orient, wxSize hint) {
   int w;
   wxFont f;
   if (m_Properties)
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
   else
       f = g_pFontTitle->GetChosenFont();
   // Use a dummy for default min width instead of m_title

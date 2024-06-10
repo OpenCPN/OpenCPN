@@ -78,10 +78,10 @@ wxString UndoAction::Description() {
   wxString descr;
   switch (type) {
     case Undo_CreateWaypoint:
-      descr = _("Create Waypoint");
+      descr = _("Create Mark");
       break;
     case Undo_DeleteWaypoint:
-      descr = _("Delete Waypoint");
+      descr = _("Delete Mark");
       break;
     case Undo_MoveWaypoint:
       descr = _("Move Waypoint");

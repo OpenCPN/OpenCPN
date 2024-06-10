@@ -2089,6 +2089,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
       m_this_chart_context->safety_contour = m_next_safe_cnt;
       m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+      m_this_chart_context->pt2GetAssociatedObjects = &s57chart::GetAssociatedObjects;
 
       //  Loop and populate all the objects
       for (int i = 0; i < PI_PRIO_NUM; ++i) {

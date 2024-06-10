@@ -13,6 +13,17 @@
       </catalogs>
     </section>
     <section>
+      <name>OSM basemap</name>
+      <catalogs>
+        <catalog>
+          <name>All OSM basemaps</name>
+          <type>SHP</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/OSMSHP_Catalog.xml</location>
+          <dir>{USERDATA}/OSMSHP</dir>
+        </catalog>
+      </catalogs>
+    </section>
+    <section>
       <name>USA - NOAA &amp; Inland charts</name>
       <sections>
         <section>
