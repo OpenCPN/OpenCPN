@@ -1,0 +1,39 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 10 Jun 2024 20:56:02 +0200
+Subject: tests: add hook to disable tests in docker
+
+---
+ test/rest-tests.cpp | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/test/rest-tests.cpp b/test/rest-tests.cpp
+index dea9dfe..8454149 100644
+--- a/test/rest-tests.cpp
++++ b/test/rest-tests.cpp
+@@ -497,15 +497,19 @@ TEST(RestServer, Object) {
+   app.Run();
+ }
+ 
++#ifndef OCPN_DISTRO_BUILD
+ TEST(RestServer, CheckWrite) {
+-  wxDisableAsserts();
+-  RestServerDlgCtx dialog_ctx;
+-  RouteCtx route_ctx;
+-  RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
+-  app.Run();
+-  delete g_BasePlatform;
+-  g_BasePlatform = 0;
++  if (!getenv("DOCKER_BUILD")) {
++    wxDisableAsserts();
++    RestServerDlgCtx dialog_ctx;
++    RouteCtx route_ctx;
++    RestCheckWriteApp app(dialog_ctx, route_ctx, g_portable);
++    app.Run();
++    delete g_BasePlatform;
++    g_BasePlatform = 0;
++  }
+ }
++#endif
+ 
+ TEST(RestServer, PluginMessage) {
+   wxDisableAsserts();
