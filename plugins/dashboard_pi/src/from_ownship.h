@@ -68,7 +68,6 @@ protected:
   DASH_CAP m_cap_flag2;
   DASH_CAP m_cap_flag3;
   DASH_CAP m_cap_flag4;
-  int m_DataHeight;
 
   void Draw(wxGCDC* dc);
 };

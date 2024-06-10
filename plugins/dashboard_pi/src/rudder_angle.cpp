@@ -57,10 +57,9 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle(
 }
 
 wxSize DashboardInstrument_RudderAngle::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
+  InitTitleSize();
+
   int w;
-  wxFont f = g_pFontTitle->GetChosenFont();
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   if (orient == wxHORIZONTAL) {
     w = wxMax(hint.y, (DefaultWidth - m_TitleHeight) / .7);
   } else {
@@ -96,9 +95,12 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc) {
   wxSize size = GetClientSize();
   wxColour cl;
 
+  int drawHeight=GetDataBottom(size.y) - m_DataTop;
+  InitTitleAndDataPosition(drawHeight);
+
   m_cx = size.x / 2;
-  m_cy = m_TitleHeight + (size.y - m_TitleHeight) * 0.38;
-  m_radius = (size.y - m_TitleHeight) * .6;
+  m_cy = m_DataTop + (drawHeight) * 0.38;
+  m_radius = (drawHeight) * .6;
 
   dc->SetBrush(*wxTRANSPARENT_BRUSH);
 

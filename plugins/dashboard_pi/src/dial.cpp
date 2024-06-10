@@ -75,20 +75,15 @@ DashboardInstrument_Dial::DashboardInstrument_Dial(
 }
 
 wxSize DashboardInstrument_Dial::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
+  InitTitleSize();
+  InitTitleAndDataPosition(DefaultWidth);
   int w;
-  wxFont f;
-  if (m_Properties)
-      f = m_Properties->m_TitelFont.GetChosenFont();
-  else
-      f = g_pFontTitle->GetChosenFont();
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
   if (orient == wxHORIZONTAL) {
-    w = wxMax(hint.y, DefaultWidth + m_TitleHeight);
+    w = wxMax(hint.y, GetFullHeight(DefaultWidth));
     return wxSize(w - m_TitleHeight, w);
   } else {
     w = wxMax(hint.x, DefaultWidth);
-    return wxSize(w, m_TitleHeight + w);
+    return wxSize(w, GetFullHeight(w));
   }
 }
 
@@ -122,7 +117,9 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
 
   wxSize size = GetClientSize();
   m_cx = size.x / 2;
-  int availableHeight = size.y - m_TitleHeight - 6;
+  int availableHeight = GetDataBottom(size.y) - m_DataTop;
+  InitTitleAndDataPosition(availableHeight);
+  availableHeight-=6;
   int width, height;
   wxFont f;
   if (m_Properties)
@@ -130,7 +127,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
   else
     f = g_pFontLabel->GetChosenFont();
   bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &f);
-  m_cy = m_TitleHeight + 2;
+  m_cy = m_DataTop + 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2;
 
@@ -150,7 +147,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
   wxColour cl;
   if (m_Properties)
   {
-      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   }
   else
   {
@@ -390,9 +387,10 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       return;
     case DIAL_POSITION_INSIDE: {
       TextPoint.x = m_cx - (width / 2) - 1;
-      TextPoint.y = (size.y * .75) - height;
+      TextPoint.y = ((size.y - m_InstrumentSpacing) * .75) - height;
+      if ( (g_TitleAlignment & wxALIGN_BOTTOM) != 0 ) TextPoint.y -= m_TitleHeight;
       if (m_Properties)
-          cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+          cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
       else
           GetGlobalColor(_T("DASHL"), &cl);
       int penwidth = size.x / 100;
@@ -412,15 +410,15 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     }
     case DIAL_POSITION_TOPLEFT:
       TextPoint.x = 0;
-      TextPoint.y = m_TitleHeight;
+      TextPoint.y = m_DataTop;
       break;
     case DIAL_POSITION_TOPRIGHT:
       TextPoint.x = size.x - width - 1;
-      TextPoint.y = m_TitleHeight;
+      TextPoint.y = m_DataTop;
       break;
     case DIAL_POSITION_BOTTOMLEFT:
       TextPoint.x = 0;
-      TextPoint.y = size.y - height;
+      TextPoint.y = GetDataBottom(size.y) - height;
       break;
     case DIAL_POSITION_BOTTOMRIGHT:
       TextPoint.x = size.x - width - 1;
@@ -429,7 +427,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     case DIAL_POSITION_BOTTOMMIDDLE:
       if (!std::isnan(value)){
         TextPoint.x = m_cx - (width / 2) - 1;
-        TextPoint.y = size.y - height;
+        TextPoint.y = GetDataBottom(size.y) - height;
         // There might be a background drawn below
         // so we must clear it first.
         dc->DrawRoundedRectangle(TextPoint.x - 2, TextPoint.y - 2, width + 4,

@@ -78,7 +78,7 @@ wxSize DashboardInstrument_GPS::GetSize(int orient, wxSize hint) {
   int w;
   wxFont f;
   if(m_Properties)
-      f = m_Properties->m_TitelFont.GetChosenFont();
+      f = m_Properties->m_TitleFont.GetChosenFont();
   else
       f = g_pFontTitle->GetChosenFont();
   dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
@@ -214,7 +214,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
 
   wxColour cl;
   if (m_Properties)
-      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+      cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   else
       GetGlobalColor(_T("DASHL"), &cl);
   dc->SetTextForeground(cl);
@@ -377,7 +377,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
 
   wxColour cb;
   if (m_Properties)
-      cb = GetColourSchemeBackgroundColour(m_Properties->m_TitlelBackgroundColour);
+      cb = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   else
       GetGlobalColor(_T("DASHL"), &cb);
 

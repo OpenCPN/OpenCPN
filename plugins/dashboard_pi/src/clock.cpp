@@ -55,21 +55,6 @@ DashboardInstrument_Clock::DashboardInstrument_Clock(wxWindow *parent,
   m_Properties = Properties;
 }
 
-wxSize DashboardInstrument_Clock::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
-  int w;
-  wxFont f = g_pFontTitle->GetChosenFont();
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-  f = g_pFontData->GetChosenFont();
-  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &f);
-
-  if (orient == wxHORIZONTAL) {
-    return wxSize(DefaultWidth, wxMax(m_TitleHeight + m_DataHeight, hint.y));
-  } else {
-    return wxSize(wxMax(hint.x, DefaultWidth), m_TitleHeight + m_DataHeight);
-  }
-}
-
 void DashboardInstrument_Clock::SetData(DASH_CAP, double, wxString) {
   // Nothing to do here but we want to override the default
 }
@@ -130,17 +115,17 @@ DashboardInstrument_Moon::DashboardInstrument_Moon(wxWindow *parent,
 }
 
 wxSize DashboardInstrument_Moon::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
-  int w;
-  wxFont f = g_pFontTitle->GetChosenFont();
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
+
+  InitTitleSize();
+
+  int drawHeight=10 + m_radius * 2;
+  InitTitleAndDataPosition(drawHeight);
+  int h = GetFullHeight(drawHeight);
 
   if (orient == wxHORIZONTAL) {
-    return wxSize(DefaultWidth,
-                  wxMax(m_TitleHeight + 10 + m_radius * 2, hint.y));
+    return wxSize(DefaultWidth, wxMax(hint.y, h));
   } else {
-    return wxSize(wxMax(hint.x, DefaultWidth),
-                  m_TitleHeight + 10 + m_radius * 2);
+    return wxSize(wxMax(hint.x, DefaultWidth), h);
   }
 }
 
@@ -162,15 +147,15 @@ void DashboardInstrument_Moon::Draw(wxGCDC *dc) {
   dc->SetBrush(cl0);
   wxPoint points[3];
   points[0].x = 5;
-  points[0].y = m_TitleHeight + m_radius * 2 + 6;
+  points[0].y = m_DataTop + m_radius * 2 + 6;
   points[1].x = sz.x / 2;
-  points[1].y = m_TitleHeight + 10;
+  points[1].y = m_DataTop + 10;
   points[2].x = sz.x - 5;
-  points[2].y = m_TitleHeight + m_radius * 2 + 6;
+  points[2].y = m_DataTop + m_radius * 2 + 6;
   dc->DrawPolygon(3, points, 0, 0);
 
   int x = 2 + m_radius + (sz.x - m_radius - 2) / 8 * m_phase;
-  int y = m_TitleHeight + m_radius + 5;
+  int y = m_DataTop + m_radius + 5;
 
   /* Moon phases are seen upside-down on the southern hemisphere */
   int startangle = (m_hemisphere == _("N") ? -90 : 90);
@@ -190,42 +175,42 @@ void DashboardInstrument_Moon::Draw(wxGCDC *dc) {
       dc->DrawCircle(x, y, m_radius);
       break;
     case 1:
-      dc->DrawEllipticArc(x - m_radius, m_TitleHeight + 5, m_radius * 2,
+      dc->DrawEllipticArc(x - m_radius, m_DataTop + 5, m_radius * 2,
                           m_radius * 2, startangle, startangle + 180);
       dc->SetBrush(cl0);
-      dc->DrawEllipticArc(x - m_radius / 2, m_TitleHeight + 5, m_radius,
+      dc->DrawEllipticArc(x - m_radius / 2, m_DataTop + 5, m_radius,
                           m_radius * 2, startangle, startangle + 180);
       break;
     case 2:
       dc->SetBrush(cl1);
-      dc->DrawEllipticArc(x - m_radius, m_TitleHeight + 5, m_radius * 2,
+      dc->DrawEllipticArc(x - m_radius, m_DataTop + 5, m_radius * 2,
                           m_radius * 2, startangle, startangle + 180);
       break;
     case 3:
       // if( m_hemisphere == _("N") ) {
-      dc->DrawEllipticArc(x - m_radius / 2, m_TitleHeight + 5, m_radius,
+      dc->DrawEllipticArc(x - m_radius / 2, m_DataTop + 5, m_radius,
                           m_radius * 2, -startangle, 180 - startangle);
-      dc->DrawEllipticArc(x - m_radius, m_TitleHeight + 5, m_radius * 2,
+      dc->DrawEllipticArc(x - m_radius, m_DataTop + 5, m_radius * 2,
                           m_radius * 2, startangle, startangle + 180);
       break;
     case 4:
       dc->DrawCircle(x, y, m_radius);
       break;
     case 5:
-      dc->DrawEllipticArc(x - m_radius, m_TitleHeight + 5, m_radius * 2,
+      dc->DrawEllipticArc(x - m_radius, m_DataTop + 5, m_radius * 2,
                           m_radius * 2, -startangle, 180 - startangle);
-      dc->DrawEllipticArc(x - m_radius / 2, m_TitleHeight + 5, m_radius,
+      dc->DrawEllipticArc(x - m_radius / 2, m_DataTop + 5, m_radius,
                           m_radius * 2, startangle, startangle + 180);
       break;
     case 6:
-      dc->DrawEllipticArc(x - m_radius, m_TitleHeight + 5, m_radius * 2,
+      dc->DrawEllipticArc(x - m_radius, m_DataTop + 5, m_radius * 2,
                           m_radius * 2, -startangle, 180 - startangle);
       break;
     case 7:
-      dc->DrawEllipticArc(x - m_radius, m_TitleHeight + 5, m_radius * 2,
+      dc->DrawEllipticArc(x - m_radius, m_DataTop + 5, m_radius * 2,
                           m_radius * 2, -startangle, 180 - startangle);
       dc->SetBrush(cl0);
-      dc->DrawEllipticArc(x - m_radius / 2, m_TitleHeight + 5, m_radius,
+      dc->DrawEllipticArc(x - m_radius / 2, m_DataTop + 5, m_radius,
                           m_radius * 2, -startangle, 180 - startangle);
       break;
   }
@@ -306,31 +291,37 @@ DashboardInstrument_Sun::DashboardInstrument_Sun(wxWindow *parent,
 }
 
 wxSize DashboardInstrument_Sun::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
+  InitTitleSize();
   int w;
-  wxFont f = g_pFontTitle->GetChosenFont();
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-  f = g_pFontData->GetChosenFont();
-  dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, &f);
+  InitDataTextHeight(_T("00:00:00 UTC"),w);
+
+  int drawHeight=m_DataTextHeight * 2 + m_DataTextHeight*g_TitleVerticalOffset;
+  InitTitleAndDataPosition(drawHeight);
+  int h = GetFullHeight(drawHeight);
 
   if (orient == wxHORIZONTAL) {
-    return wxSize(DefaultWidth,
-                  wxMax(m_TitleHeight + m_DataHeight * 2, hint.y));
+    return wxSize(wxMax(w + m_DataMargin,DefaultWidth), wxMax(hint.y, h));
   } else {
-    return wxSize(wxMax(hint.x, DefaultWidth),
-                  m_TitleHeight + m_DataHeight * 2);
+    return wxSize(wxMax(hint.x, wxMax(w + m_DataMargin,DefaultWidth)), h);
   }
 }
 
 void DashboardInstrument_Sun::Draw(wxGCDC *dc) {
-  wxColour cl;
+  SetDataFont(dc);
 
-  dc->SetFont((g_pFontData->GetChosenFont()));
-  GetGlobalColor(_T("DASHF"), &cl);
-  dc->SetTextForeground(cl);
+  int x1,x2;
+  x1=x2=m_DataMargin;
 
-  dc->DrawText(m_sunrise, 10, m_TitleHeight);
-  dc->DrawText(m_sunset, 10, m_TitleHeight + m_DataHeight);
+  if ( m_DataRightAlign ) {
+    int w,h;
+    dc->GetTextExtent(m_sunrise, &w, &h, 0, 0);
+    x1=GetClientSize().GetWidth() - w - m_DataMargin;
+    dc->GetTextExtent(m_sunset, &w, &h, 0, 0);
+    x2=GetClientSize().GetWidth() - w - m_DataMargin;
+  }
+
+  dc->DrawText(m_sunrise, x1, m_DataTop);
+  dc->DrawText(m_sunset, x2, m_DataTop + m_DataTextHeight);
 }
 
 void DashboardInstrument_Sun::SetUtcTime(wxDateTime data) {

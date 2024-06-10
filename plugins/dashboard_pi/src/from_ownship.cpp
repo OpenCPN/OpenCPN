@@ -52,15 +52,21 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
 }
 
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
-  wxColour cl;
+  SetDataFont(dc);
 
-  dc->SetFont((g_pFontData->GetChosenFont()));
-  // dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
-  GetGlobalColor(_T("DASHF"), &cl);
-  dc->SetTextForeground(cl);
+  int x1,x2;
+  x1=x2=m_DataMargin;
 
-  dc->DrawText(m_data1, 10, m_TitleHeight);
-  dc->DrawText(m_data2, 10, m_TitleHeight + m_DataHeight);
+  if ( m_DataRightAlign ) {
+    int w,h;
+    dc->GetTextExtent(m_data1, &w, &h, 0, 0);
+    x1=GetClientSize().GetWidth() - w - m_DataMargin;
+    dc->GetTextExtent(m_data2, &w, &h, 0, 0);
+    x2=GetClientSize().GetWidth() - w - m_DataMargin;
+  }
+
+  dc->DrawText(m_data1, x1, m_DataTop);
+  dc->DrawText(m_data2, x2, m_DataTop + m_DataTextHeight);
 }
 
 void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
@@ -77,27 +83,43 @@ void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
     return;
   if (s_lat < 99999999 && s_lon < 99999999) {
     double brg, dist;
+    bool showUnit = (m_Properties ? (m_Properties->m_ShowUnit==1) : g_bShowUnit);
     DistanceBearingMercator_Plugin(c_lat, c_lon, s_lat, s_lon, &brg, &dist);
-    m_data1.Printf(_T("%03d ") + DEGREE_SIGN, (int)brg);
-    m_data2.Printf(_T("%3.2f %s"),
-                   toUsrDistance_Plugin(dist, g_iDashDistanceUnit),
-                   getUsrDistanceUnit_Plugin(g_iDashDistanceUnit).c_str());
+    if (showUnit) {
+      m_data1.Printf(_T("%03d ") + DEGREE_SIGN , (int)brg);
+      m_data2.Printf(_T("%3.2f %s"),
+                     toUsrDistance_Plugin(dist, g_iDashDistanceUnit),
+                     getUsrDistanceUnit_Plugin(g_iDashDistanceUnit).c_str());
+    } else {
+      m_data1.Printf(_T("%03d") , (int)brg);
+      m_data2.Printf(_T("%3.2f"),
+                     toUsrDistance_Plugin(dist, g_iDashDistanceUnit));
+    }
   }
 
   Refresh(false);
 }
 
 wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
+  InitTitleSize();
   int w;
-  wxFont f = g_pFontTitle->GetChosenFont();
-  dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-  f = g_pFontData->GetChosenFont();
-  dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, &f);
+
+  wxString sampleText;
+
+  if (m_Properties ? (m_Properties->m_ShowUnit == 1) : g_bShowUnit) {
+    sampleText=_T("000.00 NMi");
+  } else {
+    sampleText=_T("000.00");
+  }
+  InitDataTextHeight(sampleText,w);
+
+  int drawHeight=m_DataTextHeight * 2 + m_DataTextHeight*g_TitleVerticalOffset;
+  InitTitleAndDataPosition(drawHeight);
+  int h = GetFullHeight(drawHeight);
 
   if (orient == wxHORIZONTAL) {
-    return wxSize(w + 10, wxMax(hint.y, m_TitleHeight + m_DataHeight * 2));
+    return wxSize(wxMax(w + m_DataMargin,DefaultWidth), wxMax(hint.y, h));
   } else {
-    return wxSize(wxMax(hint.x, w + 10), m_TitleHeight + m_DataHeight * 2);
+    return wxSize(wxMax(hint.x, wxMax(w + m_DataMargin,DefaultWidth)), h);
   }
 }

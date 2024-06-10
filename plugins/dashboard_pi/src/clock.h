@@ -53,7 +53,6 @@ public:
 
   ~DashboardInstrument_Clock(void) {}
 
-  wxSize GetSize(int orient, wxSize hint);
   void SetData(DASH_CAP, double, wxString);
   virtual void SetUtcTime(wxDateTime value);
   wxString GetDisplayTime(wxDateTime UTCtime);
