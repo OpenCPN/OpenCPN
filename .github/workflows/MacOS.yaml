@@ -6,6 +6,8 @@ name: MacOS
     branches:
       - master
       - v5.9.x
+    tags:
+      - '*'           # Push events to every tag not containing /
     paths-ignore:
       - 'buildandroid/**'
   pull_request:
