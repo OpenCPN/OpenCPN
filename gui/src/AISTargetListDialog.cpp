@@ -1106,6 +1106,10 @@ void AISTargetListDialog::UpdateAISTargetList(void) {
         else if (!pAISTarget->b_positionOnceValid)
           b_add = true;
 
+        // Do not show any "lost" targets in the list.
+        if (pAISTarget->b_lost)
+          b_add = false;
+
         if (b_add) {
           m_pMMSI_array->Add(pAISTarget->MMSI);
         }

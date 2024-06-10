@@ -43,11 +43,11 @@ BEGIN_EVENT_TABLE(TTYWindow, wxFrame)
 EVT_CLOSE(TTYWindow::OnCloseWindow)
 END_EVENT_TABLE()
 
-TTYWindow::TTYWindow() : m_window_destroy_listener(NULL), m_pScroll(NULL) {}
+TTYWindow::TTYWindow() : m_window_destroy_listener(NULL), m_tty_scroll(NULL) {}
 
 TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
                      WindowDestroyListener* listener)
-    : m_window_destroy_listener(listener), m_pScroll(NULL) {
+    : m_window_destroy_listener(listener), m_tty_scroll(NULL) {
   wxFrame::Create(
       parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize,
       wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT);
@@ -55,16 +55,16 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   wxBoxSizer* bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   SetSizer(bSizerOuterContainer);
 
-  m_tFilter = new wxTextCtrl(this, wxID_ANY);
+  m_filter = new wxTextCtrl(this, wxID_ANY);
 
-  m_pScroll = new TTYScroll(this, n_lines, *m_tFilter);
-  m_pScroll->Scroll(-1, 1000);  // start with full scroll down
+  m_tty_scroll = new TTYScroll(this, n_lines, *m_filter);
+  m_tty_scroll->Scroll(-1, 1000);  // start with full scroll down
 
-  bSizerOuterContainer->Add(m_pScroll, 1, wxEXPAND, 5);
+  bSizerOuterContainer->Add(m_tty_scroll, 1, wxEXPAND, 5);
 
   wxStaticBox* psbf = new wxStaticBox(this, wxID_ANY, _("Filter"));
   wxStaticBoxSizer* sbSizer2 = new wxStaticBoxSizer(psbf, wxVERTICAL);
-  sbSizer2->Add(m_tFilter, 1, wxALL | wxEXPAND, 5);
+  sbSizer2->Add(m_filter, 1, wxALL | wxEXPAND, 5);
   bSizerOuterContainer->Add(sbSizer2, 0, wxEXPAND, 5);
 
   wxBoxSizer* bSizerBottomContainer = new wxBoxSizer(wxHORIZONTAL);
@@ -81,30 +81,30 @@ TTYWindow::TTYWindow(wxWindow* parent, int n_lines,
   wxStaticBox* buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
   wxStaticBoxSizer* bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
 
-  m_buttonPause = new wxButton(this, wxID_ANY, _("Pause"), wxDefaultPosition,
+  m_btn_pause = new wxButton(this, wxID_ANY, _("Pause"), wxDefaultPosition,
                                wxDefaultSize, 0);
-  m_buttonCopy = new wxButton(this, wxID_ANY, _("Copy"), wxDefaultPosition,
+  m_btn_copy = new wxButton(this, wxID_ANY, _("Copy"), wxDefaultPosition,
                               wxDefaultSize, 0);
-  m_buttonCopy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
+  m_btn_copy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
 
-  bbSizer1->Add(m_buttonPause, 0, wxALL, 5);
-  bbSizer1->Add(m_buttonCopy, 0, wxALL, 5);
+  bbSizer1->Add(m_btn_pause, 0, wxALL, 5);
+  bbSizer1->Add(m_btn_copy, 0, wxALL, 5);
   bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
 
-  m_buttonCopy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+  m_btn_copy->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(TTYWindow::OnCopyClick), NULL,
                         this);
-  m_buttonPause->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+  m_btn_pause->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                          wxCommandEventHandler(TTYWindow::OnPauseClick), NULL,
                          this);
 
-  bpause = false;
+  m_is_paused = false;
 }
 
 TTYWindow::~TTYWindow() {
-  if (m_pScroll) {
-    delete m_pScroll;
-    m_pScroll = NULL;
+  if (m_tty_scroll) {
+    delete m_tty_scroll;
+    m_tty_scroll = NULL;
   }
 }
 
@@ -169,22 +169,22 @@ void TTYWindow::CreateLegendBitmap() {
   dc.SelectObject(wxNullBitmap);
 }
 
-void TTYWindow::OnPauseClick(wxCommandEvent& event) {
-  if (!bpause) {
-    bpause = true;
-    m_pScroll->Pause(true);
-    m_buttonPause->SetLabel(_("Resume"));
+void TTYWindow::OnPauseClick(wxCommandEvent&) {
+  if (!m_is_paused) {
+    m_is_paused = true;
+    m_tty_scroll->Pause(true);
+    m_btn_pause->SetLabel(_("Resume"));
   } else {
-    bpause = false;
-    m_pScroll->Pause(false);
+    m_is_paused = false;
+    m_tty_scroll->Pause(false);
 
-    m_buttonPause->SetLabel(_("Pause"));
+    m_btn_pause->SetLabel(_("Pause"));
   }
 }
 
-void TTYWindow::OnCopyClick(wxCommandEvent& event) { m_pScroll->Copy(); }
+void TTYWindow::OnCopyClick(wxCommandEvent&) { m_tty_scroll->Copy(); }
 
-void TTYWindow::OnCloseWindow(wxCloseEvent& event) {
+void TTYWindow::OnCloseWindow(wxCloseEvent&) {
   if (m_window_destroy_listener) {
     m_window_destroy_listener->DestroyWindow();
   } else {
@@ -193,5 +193,5 @@ void TTYWindow::OnCloseWindow(wxCloseEvent& event) {
 }
 
 void TTYWindow::Add(const wxString& line) {
-  if (m_pScroll) m_pScroll->Add(line);
+  if (m_tty_scroll) m_tty_scroll->Add(line);
 }

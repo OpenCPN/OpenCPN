@@ -17,15 +17,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/*
- * Dialogs about missing udev rules and how to install them.
+/**
+ * \file udev_rule_mgr.h Access checks for comm devices and dongle.
+ *
+ * Only making anything useful on Linux.
  */
+
 
 #ifndef UDEV_RULE_MGR_H__
 #define UDEV_RULE_MGR_H__
 
 #include <string>
-
 #include <wx/window.h>
 
 /** Runs checks and if required dialogs to make dongle accessible. */
@@ -38,5 +40,8 @@ bool CheckDongleAccess(wxWindow* parent);
  * @return True if device can be accessed read/write.
  */
 bool CheckSerialAccess(wxWindow* parent, const std::string device);
+
+/** Destroy all open "Device not found" dialog windows. */
+void DestroyDeviceNotFoundDialogs();
 
 #endif  // UDEV_RULE_MGR_H__

@@ -96,6 +96,7 @@
 #include "s52utils.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "SendToGpsDlg.h"
+#include "shapefile_basemap.h"
 #include "styles.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
@@ -234,7 +235,15 @@ extern int g_n_ownship_min_mm;
 extern double g_COGAvg;  // only needed for debug....
 
 extern int g_click_stop;
+
 extern double g_ownship_predictor_minutes;
+extern int g_cog_predictor_style;
+extern wxString g_cog_predictor_color;
+extern int g_cog_predictor_endmarker;
+extern int g_ownship_HDTpredictor_style;
+extern wxString g_ownship_HDTpredictor_color;
+extern int g_ownship_HDTpredictor_endmarker;
+extern int g_ownship_HDTpredictor_width;
 extern double g_ownship_HDTpredictor_miles;
 
 extern bool g_bquiting;
@@ -270,7 +279,6 @@ extern int g_ChartScaleFactor;
 #ifdef ocpnUSE_GL
 #endif
 
-extern bool g_bShowFPS;
 extern double g_gl_ms_per_frame;
 extern bool g_benable_rotate;
 extern bool g_bRollover;
@@ -282,6 +290,8 @@ extern bool g_bDeferredInitDone;
 
 extern wxString g_CmdSoundString;
 extern bool g_boptionsactive;
+ShapeBaseChartSet gShapeBasemap;
+
 
 //  TODO why are these static?
 static int mouse_x;
@@ -589,6 +599,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex)
 
   //    Create the default world chart
   pWorldBackgroundChart = new GSHHSChart;
+  gShapeBasemap.Reset();
 
   //    Create the default depth unit emboss maps
   m_pEM_Feet = NULL;
@@ -2994,10 +3005,14 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           parent_frame->ToggleTestPause();
           break;
         case 'R':
-            g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
-            if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible == 0)
-                g_iNavAidRadarRingsNumberVisible = 1;
-            break;
+          g_bNavAidRadarRingsShown = !g_bNavAidRadarRingsShown;
+          if (g_bNavAidRadarRingsShown &&
+              g_iNavAidRadarRingsNumberVisible == 0)
+            g_iNavAidRadarRingsNumberVisible = 1;
+          else if (!g_bNavAidRadarRingsShown &&
+               g_iNavAidRadarRingsNumberVisible == 1)
+            g_iNavAidRadarRingsNumberVisible = 0;
+          break;
         case 'S':
           SetShowENCDepth(!m_encShowDepth);
           ReloadVP();
@@ -5418,18 +5433,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
           true_scale_display);  // Generally, no chart, so no chart scale factor
     }
 
-#ifdef ocpnUSE_GL
-    if (g_bopengl && g_bShowFPS) {
-      wxString fps_str;
-      double fps = 0.;
-      if (g_gl_ms_per_frame > 0) {
-        fps = 1000. / g_gl_ms_per_frame;
-        fps_str.Printf(_T("  %3d fps"), (int)fps);
-      }
-      text += fps_str;
-    }
-#endif
-
     m_scaleValue = true_scale_display;
     m_scaleText = text;
     if (m_muiBar) m_muiBar->UpdateDynamicValues();
@@ -5543,7 +5546,9 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
   ref_dim = wxMin(ref_dim, 12);
   ref_dim = wxMax(ref_dim, 6);
 
-  wxColour cPred = PredColor();
+  wxColour cPred;
+  cPred.Set(g_cog_predictor_color);
+  if(cPred == wxNullColour) cPred = PredColor();
 
   //  Establish some graphic element line widths dependent on the platform
   //  display resolution
@@ -5620,8 +5625,9 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         dash_long[1] = dash_long[0] / 2;
       }
 
-      wxPen ppPen2(cPred, g_cog_predictor_width, wxPENSTYLE_USER_DASH);
-      ppPen2.SetDashes(2, dash_long);
+      wxPen ppPen2(cPred, g_cog_predictor_width, (wxPenStyle)g_cog_predictor_style);
+      if(g_cog_predictor_style==(wxPenStyle)wxUSER_DASH)
+        ppPen2.SetDashes(2, dash_long);
       dc.SetPen(ppPen2);
       dc.StrokeLine(
           lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
@@ -5635,49 +5641,52 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
 
         wxPen ppPen3(GetGlobalColor(_T ( "UBLCK" )), wxMax(1, line_width),
-                     wxPENSTYLE_USER_DASH);
-        ppPen3.SetDashes(2, dash_long3);
+                     (wxPenStyle)g_cog_predictor_style);
+        if(g_cog_predictor_style==(wxPenStyle)wxUSER_DASH)
+          ppPen3.SetDashes(2, dash_long3);
         dc.SetPen(ppPen3);
         dc.StrokeLine(
             lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
             lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
       }
 
-      // Prepare COG predictor endpoint icon
-      double png_pred_icon_scale_factor = .4;
-      if (g_ShipScaleFactorExp > 1.0)
-        png_pred_icon_scale_factor *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
-      if (g_scaler)
-        png_pred_icon_scale_factor *= 1.0 / g_scaler;
+      if (g_cog_predictor_endmarker) {
+        // Prepare COG predictor endpoint icon
+        double png_pred_icon_scale_factor = .4;
+        if (g_ShipScaleFactorExp > 1.0)
+          png_pred_icon_scale_factor *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
+        if (g_scaler)
+          png_pred_icon_scale_factor *= 1.0 / g_scaler;
 
-      wxPoint icon[4];
+        wxPoint icon[4];
 
-      float cog_rad = atan2f((float)(lPredPoint.y - lShipMidPoint.y),
-                             (float)(lPredPoint.x - lShipMidPoint.x));
-      cog_rad += (float)PI;
+        float cog_rad = atan2f((float)(lPredPoint.y - lShipMidPoint.y),
+                               (float)(lPredPoint.x - lShipMidPoint.x));
+        cog_rad += (float)PI;
 
-      for (int i = 0; i < 4; i++) {
-        int j = i * 2;
-        double pxa = (double)(s_png_pred_icon[j]);
-        double pya = (double)(s_png_pred_icon[j + 1]);
+        for (int i = 0; i < 4; i++) {
+          int j = i * 2;
+          double pxa = (double)(s_png_pred_icon[j]);
+          double pya = (double)(s_png_pred_icon[j + 1]);
 
-        pya *= png_pred_icon_scale_factor;
-        pxa *= png_pred_icon_scale_factor;
+          pya *= png_pred_icon_scale_factor;
+          pxa *= png_pred_icon_scale_factor;
 
-        double px = (pxa * sin(cog_rad)) + (pya * cos(cog_rad));
-        double py = (pya * sin(cog_rad)) - (pxa * cos(cog_rad));
+          double px = (pxa * sin(cog_rad)) + (pya * cos(cog_rad));
+          double py = (pya * sin(cog_rad)) - (pxa * cos(cog_rad));
 
-        icon[i].x = (int)wxRound(px) + lPredPoint.x + GPSOffsetPixels.x;
-        icon[i].y = (int)wxRound(py) + lPredPoint.y + GPSOffsetPixels.y;
+          icon[i].x = (int)wxRound(px) + lPredPoint.x + GPSOffsetPixels.x;
+          icon[i].y = (int)wxRound(py) + lPredPoint.y + GPSOffsetPixels.y;
+        }
+
+        // Render COG endpoint icon
+        wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), g_cog_predictor_width / 2,
+                     wxPENSTYLE_SOLID);
+        dc.SetPen(ppPen1);
+        dc.SetBrush(wxBrush(cPred));
+
+        dc.StrokePolygon(4, icon);
       }
-
-      // Render COG endpoint icon
-      wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), g_cog_predictor_width / 2,
-                   wxPENSTYLE_SOLID);
-      dc.SetPen(ppPen1);
-      dc.SetBrush(wxBrush(cPred));
-
-      dc.StrokePolygon(4, icon);
     }
   }
 
@@ -5685,7 +5694,9 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
   if (b_render_hdt) {
     float hdt_dash_length = ref_dim * 0.4;
 
-    float hdt_width = g_cog_predictor_width * 0.8;
+    cPred.Set(g_ownship_HDTpredictor_color);
+    if(cPred == wxNullColour) cPred = PredColor();
+    float hdt_width = (g_ownship_HDTpredictor_width>0?g_ownship_HDTpredictor_width:g_cog_predictor_width * 0.8);
     wxDash dash_short[2];
     dash_short[0] =
         (int)(floor(g_Platform->GetDisplayDPmm() * hdt_dash_length) /
@@ -5694,8 +5705,9 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
         (int)(floor(g_Platform->GetDisplayDPmm() * hdt_dash_length * 0.9) /
               hdt_width);  // Short gap            |
 
-    wxPen ppPen2(cPred, hdt_width, wxPENSTYLE_USER_DASH);
-    ppPen2.SetDashes(2, dash_short);
+    wxPen ppPen2(cPred, hdt_width,(wxPenStyle)g_ownship_HDTpredictor_style);
+    if(g_ownship_HDTpredictor_style==(wxPenStyle)wxUSER_DASH)
+      ppPen2.SetDashes(2, dash_short);
 
     dc.SetPen(ppPen2);
     dc.StrokeLine(
@@ -5706,24 +5718,31 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
     dc.SetPen(ppPen1);
     dc.SetBrush(wxBrush(GetGlobalColor(_T ( "GREY2" ))));
 
-    double nominal_circle_size_pixels = wxMax(
+    if (g_ownship_HDTpredictor_endmarker) {
+      double nominal_circle_size_pixels = wxMax(
         4.0, floor(m_pix_per_mm * (ref_dim / 5.0)));  // not less than 4 pixel
 
-    // Scale the circle to ChartScaleFactor, slightly softened....
-    if (g_ShipScaleFactorExp > 1.0)
-      nominal_circle_size_pixels *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
+      // Scale the circle to ChartScaleFactor, slightly softened....
+      if (g_ShipScaleFactorExp > 1.0)
+        nominal_circle_size_pixels *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;
 
-    dc.StrokeCircle(lHeadPoint.x + GPSOffsetPixels.x,
-                    lHeadPoint.y + GPSOffsetPixels.y,
-                    nominal_circle_size_pixels / 2);
+      dc.StrokeCircle(lHeadPoint.x + GPSOffsetPixels.x,
+                      lHeadPoint.y + GPSOffsetPixels.y,
+                      nominal_circle_size_pixels / 2);
+    }
   }
 
   // Draw radar rings if activated
   if (g_bNavAidRadarRingsShown && g_iNavAidRadarRingsNumberVisible > 0) {
     double factor = 1.00;
-    if (g_pNavAidRadarRingsStepUnits == 1)  // nautical miles
+    if (g_pNavAidRadarRingsStepUnits == 1)  // kilometers
       factor = 1 / 1.852;
-
+    else if  (g_pNavAidRadarRingsStepUnits == 2){  // minutes (time)
+      if (std::isnan(gSog))
+        factor = 0.0;
+      else
+        factor = gSog/60;
+    }
     factor *= g_fNavAidRadarRingsStep;
 
     double tlat, tlon;
@@ -8833,7 +8852,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       if (b_start_rollover)
         m_RolloverPopupTimer.Start(m_rollover_popup_timer_msec,
                                    wxTIMER_ONE_SHOT);
-      Route *tail = 0, *current;
+      Route *tail = 0;
+      Route *current = 0;
       bool appending = false;
       bool inserting = false;
       int connect = 0;
@@ -9881,15 +9901,19 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
 
   markPoint->m_bRPIsBeingEdited = false;
 
+  wxString title_base = _("Waypoint Properties");
+  if (!markPoint->m_bIsInRoute)
+    title_base = _("Mark Properties");
+
   g_pMarkInfoDialog->SetRoutePoints(std::vector<RoutePoint*> {markPoint});
   g_pMarkInfoDialog->UpdateProperties();
   if (markPoint->m_bIsInLayer) {
     wxString caption(wxString::Format(_T("%s, %s: %s"),
-                                      _("Waypoint Properties"), _("Layer"),
+                                      title_base, _("Layer"),
                                       GetLayerName(markPoint->m_LayerID)));
     g_pMarkInfoDialog->SetDialogTitle(caption);
   } else
-    g_pMarkInfoDialog->SetDialogTitle(_("Waypoint Properties"));
+    g_pMarkInfoDialog->SetDialogTitle(title_base);
 
   g_pMarkInfoDialog->Show();
   g_pMarkInfoDialog->Raise();
@@ -10608,19 +10632,19 @@ void ChartCanvas::RenderShipToActive(ocpnDC &dc, bool Use_Opengl) {
 
 #ifdef ocpnUSE_GL
     else {
-      glLineWidth(wxMax(g_GLMinSymbolLineWidth, width));
-      dc.SetGLStipple();
 
 #ifdef USE_ANDROID_GLES2
       dc.DrawLine(pa.m_x, pa.m_y, pb.m_x, pb.m_y);
 #else
-      glColor3ub(color.Red(), color.Green(), color.Blue());
-      glBegin(GL_LINES);
-      glVertex2f(pa.m_x, pa.m_y);
-      glVertex2f(pb.m_x, pb.m_y);
-      glEnd();
+      if (style != wxPENSTYLE_SOLID) {
+        if (glChartCanvas::dash_map.find(style) !=
+            glChartCanvas::dash_map.end()) {
+          mypen->SetDashes(2, &glChartCanvas::dash_map[style][0]);
+          dc.SetPen(*mypen);
+        }
+      }
+      dc.DrawLine(pa.m_x, pa.m_y, pb.m_x, pb.m_y);
 #endif
-      glDisable(GL_LINE_STIPPLE);
 
       RouteGui(*rt).RenderSegmentArrowsGL(dc, (int)pa.m_x, (int)pa.m_y, (int)pb.m_x,
                                 (int)pb.m_y, GetVP());
@@ -11199,7 +11223,9 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
       double r = VPoint.rotation;
       SetVPRotation(VPoint.skew);
 
-      pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
+      //pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
+      gShapeBasemap.RenderViewOnDC(bgdc, VPoint);
+
       SetVPRotation(r);
     }
   }  // temp_dc.IsOk();
@@ -12914,7 +12940,7 @@ void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
     int pos_y = g_ais_query_dialog_y;
 
     if (g_pais_query_dialog_active) {
-      delete g_pais_query_dialog_active;
+      g_pais_query_dialog_active->Destroy();
       g_pais_query_dialog_active = new AISTargetQueryDialog();
     } else {
       g_pais_query_dialog_active = new AISTargetQueryDialog();

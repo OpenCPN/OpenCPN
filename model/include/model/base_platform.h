@@ -166,6 +166,7 @@ protected:
 #endif
   int m_monitorWidth, m_monitorHeight;
   bool m_bdisableWindowsDisplayEnum;
+  static bool m_isBusy;
 };
 
 class BasePlatform : public AbstractPlatform {

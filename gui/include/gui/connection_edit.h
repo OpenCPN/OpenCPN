@@ -33,7 +33,6 @@
 #include <wx/stattext.h>
 #include <wx/timer.h>
 
-
 #include "model/conn_params.h"
 #include "model/comm_util.h"
 
@@ -47,16 +46,25 @@ class ConnectionParamsPanel;
 //----------------------------------------------------------------------------
 class ConnectionEditDialog : public wxDialog {
 public:
+  const wxString DEFAULT_TCP_PORT = "10110";
+  const wxString DEFAULT_UDP_PORT = "10110";
+  const wxString DEFAULT_GPSD_PORT = "2947";
+  const wxString DEFAULT_SIGNALK_PORT = "3000";
+  const wxString DEFAULT_IP_ADDRESS = "localhost";
+  // "LIMITED BROADCAST" address
+  //  Deprecated, but still useful on simple mobile networks.
+  const wxString DEFAULT_UDP_OUT_ADDRESS = "255.255.255.255";
+
   ConnectionEditDialog();
- // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
+  // ConnectionEditDialog(wxScrolledWindow *container, options *parent);
   ConnectionEditDialog(options *parent, ConnectionsDialog *client);
 
   ~ConnectionEditDialog();
 
   void Init(void);
   void SetInitialSettings(void);
-  void PreloadControls(ConnectionParams* cp);
-  ConnectionParams* GetParamsFromControls();
+  void PreloadControls(ConnectionParams *cp);
+  ConnectionParams *GetParamsFromControls();
   void SetPropsLabel(wxString label);
 
   void ApplySettings();
@@ -83,12 +91,15 @@ public:
   void OnBtnIStcs(wxCommandEvent &event);
   void OnCbInput(wxCommandEvent &event);
   void OnCbOutput(wxCommandEvent &event);
+  void OnCbMultiCast(wxCommandEvent &event);
+  void OnCbAdvanced(wxCommandEvent &event);
+  void OnClickMore(wxMouseEvent &event);
   void OnRbOutput(wxCommandEvent &event);
   void OnBtnOStcs(wxCommandEvent &event);
   void OnConnValChange(wxCommandEvent &event);
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
-  void OnShowGpsWindowCheckboxClick(wxCommandEvent& event);
+  void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(wxString stat);
@@ -101,6 +112,10 @@ public:
   void FillSourceList();
   void UpdateSourceList(bool bResort);
   bool SortSourceList(void);
+  void SetUDPNetAddressVisiblity(void);
+  bool IsAddressMultiCast(wxString ip);
+  bool IsAddressBroadcast(wxString ip);
+  bool IsDefaultPort(wxString address);
 
   void ClearNMEAForm(void);
   void SetNMEAFormToSerial(void);
@@ -123,30 +138,30 @@ public:
   void onBTScanTimer(wxTimerEvent &event);
   void StopBTScan(void);
 
-  void OnWheelChoice(wxMouseEvent& event);
+  void OnWheelChoice(wxMouseEvent &event);
 
   void ShowInFilter(bool bshow = true);
   void ShowOutFilter(bool bshow = true);
   void LayoutDialog();
 
-
   void CreateControls();
   void ConnectControls();
 
-//private:
+private:
   options *m_parent;
   wxScrolledWindow *m_scrolledwin;
 
   wxGridSizer *gSizerNetProps, *gSizerSerProps, *gSizerCanProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
-  wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
+  wxTextCtrl *m_tcOutputStc;
   wxCheckBox *m_cbCheckCRC, *m_cbGarminHost, *m_cbGarminUploadHost,
       *m_cbCheckSKDiscover;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
+  wxCheckBox *m_cbMultiCast, *m_cbAdvanced;
   wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton  *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
+  wxButton *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
   wxStaticText *m_StaticTextSKServerStatus;
 
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
@@ -163,7 +178,8 @@ public:
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
   wxStaticText *m_stPriority, *m_stFilterSec, *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource, *m_stAuthToken;
+  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource,
+      *m_stAuthToken;
   wxTextCtrl *m_tNetComment, *m_tSerialComment, *m_tAuthToken;
   wxStaticBox *m_sbConnEdit;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
@@ -182,6 +198,7 @@ public:
 #endif
 
   bool connectionsaved;
+  bool m_advanced = false;
   bool m_connection_enabled;
   bool m_bNMEAParams_shown;
   int m_btNoChangeCounter, m_btlastResultCount, m_BTscanning;
@@ -191,10 +208,10 @@ public:
 
   ObsListener new_device_listener;
 
-  //DECLARE_EVENT_TABLE()
-
+protected:
+  wxString MORE, LESS;
+  wxStaticText *m_more;
 };
-
 
 class SentenceListDlg : public wxDialog {
 public:
@@ -218,10 +235,6 @@ private:
   ListType m_type;
   FilterDirection m_dir;
   wxArrayString m_sentences;
-
 };
 
-
-
-
-#endif    //_CONNECT_DIALOG_H
+#endif  //_CONNECT_DIALOG_H

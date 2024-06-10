@@ -32,6 +32,8 @@
 
 #include "wiz_ui_proto.h"
 #include "model/conn_params.h"
+#include "navutil.h"
+
 #include <cstdint>
 
 struct USBDevice {
@@ -62,7 +64,8 @@ const std::vector<USBDevice> known_usb_devices = {
 
 class FirstUseWizImpl : public FirstUseWiz {
 public:
-  FirstUseWizImpl(wxWindow* parent, wxWindowID id = wxID_ANY,
+  FirstUseWizImpl(wxWindow* parent, MyConfig *pConfig,
+                  wxWindowID id = wxID_ANY,
                   const wxString& title = _("OpenCPN Initial Configuration"),
                   const wxBitmap& bitmap = wxNullBitmap,
                   const wxPoint& pos = wxDefaultPosition,
@@ -95,6 +98,7 @@ public:
   void EnumerateGPSD();
 
 private:
+  MyConfig *m_pConfig;
   std::vector<ConnectionParams> m_detected_connections;
   NMEA0183Flavor SeemsN0183(std::string& data);
   bool SeemsN2000(std::string& data);

@@ -26,8 +26,10 @@
  */
 
 #include "wx/wx.h"
+#include <wx/utils.h>
 #include <sstream>
 #include "email.h"
+#include "XyGribModelDef.h"
 
 #include "pi_gl.h"
 
@@ -96,7 +98,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
         "<p>The IFS model GRIB files include information about surface "
         "temperature, "
         "atmospheric pressure, wind strength, wind direction, wave height and "
-        "direction for the whole world on a 0.4 and 0.25 degree resolution "
+        "direction for the whole world on a 0.25 degree resolution "
         "grid with 3 hour "
         "step in the first 144 hours and 6 hour step up to 10 days.</p>"
         "The AIFS model contains data for wind, pressure and temperature on a "
@@ -138,6 +140,10 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   ReadLocalCatalog();
   m_bLocal_source_selected = false;
   EnableDownloadButtons();
+
+  m_selectedAtmModelIndex = 0;
+  m_selectedWaveModelIndex = 0;
+  InitializeXygribDialog();
 }
 
 GribRequestSetting::~GribRequestSetting() {
@@ -499,6 +505,16 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
                 wxString::Format(_("Downloading... %li / %li"),
                                  ev.getTransferred(), ev.getTotal()));
             break;
+          case GribDownloadType::XYGRIB:
+            // Update XyGrib progress gauge
+            m_xygribPanel->m_progress_gauge->SetValue(
+                100 * ev.getTransferred() / ev.getTotal());
+            // Update status text to display information on file size
+            m_xygribPanel->m_status_text->SetLabel(wxString::Format(
+                "%s (%ld kB / %ld kB)",
+                _("Downloading GRIB file").c_str().AsChar(),
+                ev.getTransferred() / 1024, ev.getTotal() / 1024));
+            break;
           default:
             break;
         }
@@ -553,14 +569,14 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   wxYieldIfNeeded();
   wxString model;
   switch (m_chECMWFResolution->GetSelection()) {
-    case 1:
+    case 0:
       model = "ecmwf0p25";
       break;
-    case 2:
+    case 1:
       model = "ecmwfaifs0p25";
       break;
     default:
-      model = "ecmwf";
+      model = "ecmwf0p25";
       break;
   }
   std::ostringstream oss;
@@ -950,10 +966,14 @@ void GribRequestSetting::EnableDownloadButtons() {
       m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
       m_buttonUpdateCatalog->Enable(false);
       break;
+    case GribDownloadType::XYGRIB:
+      m_xygribPanel->m_download_button->Enable(true);
+      break;
     default:
       m_btnDownloadWorld->Enable(true);
       m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
       m_buttonUpdateCatalog->Enable(true);
+      m_xygribPanel->m_download_button->Enable(true);
       break;
   }
 }
@@ -970,12 +990,15 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp) {
   delete m_Vp;
   m_Vp = new PlugIn_ViewPort(*vp);
 
-  GetCanvasPixLL(m_Vp, &m_StartPoint, m_spMaxLat->GetValue(), m_spMinLon->GetValue());
+  GetCanvasPixLL(m_Vp, &m_StartPoint, m_spMaxLat->GetValue(),
+                 m_spMinLon->GetValue());
 
   if (!m_AllowSend) return;
   if (m_cManualZoneSel->GetValue()) return;
 
   SetVpSize(vp);
+  // Viewport has changed : XyGrib estimated size must be recalculated
+  UpdateGribSizeEstimate();
 }
 
 void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
@@ -1864,4 +1887,835 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
   SetRequestDialogSize();
   delete message;
   ::wxEndBusyCursor();
+}
+
+/// @brief Build XyGrib's GRIB URL from GUI selections
+/// @return A string with the complete URL of the GRIB file
+wxString GribRequestSetting::BuildXyGribUrl() {
+  // Server's base address
+  wxString urlStr =
+      wxString::Format("http://grbsrv.opengribs.org/getmygribs2.php?");
+  // Bounding box
+  urlStr << wxString::Format("la1=%.0f", floor(m_Vp->lat_min));
+  urlStr << wxString::Format("&la2=%.0f", ceil(m_Vp->lat_max));
+  urlStr << wxString::Format("&lo1=%.0f", floor(m_Vp->lon_min));
+  urlStr << wxString::Format("&lo2=%.0f", ceil(m_Vp->lon_max));
+
+  // Atmospheric Model & resolution reference
+  urlStr << wxString::Format(
+      "&model=%s",
+      xygribAtmModelList[m_selectedAtmModelIndex]
+          ->reqName[m_xygribPanel->m_resolution_choice->GetSelection()]);
+  // Interval
+  urlStr << wxString::Format(
+      "&intv=%d",
+      xygribAtmModelList[m_selectedAtmModelIndex]
+          ->interval[m_xygribPanel->m_interval_choice->GetSelection()]);
+  // Length in days
+  urlStr << wxString::Format(
+      "&days=%d", m_xygribPanel->m_duration_choice->GetSelection() + 1);
+
+  // Selected run
+  // TODO : available runs depend on model
+  wxString selStr = m_xygribPanel->m_run_choice->GetStringSelection();
+  if (selStr.IsSameAs("18h", false)) {
+    urlStr << "&cyc=18";
+  } else if (selStr.IsSameAs("12h", false)) {
+    urlStr << "&cyc=12";
+  } else if (selStr.IsSameAs("6h", false)) {
+    urlStr << "&cyc=06";
+  } else if (selStr.IsSameAs("0h", false)) {
+    urlStr << "&cyc=00";
+  } else {
+    urlStr << "&cyc=last";
+  }
+
+  // Atmospheric data fields
+  urlStr << "&par=";
+  if (m_xygribPanel->m_wind_cbox->IsEnabled() &&
+      m_xygribPanel->m_wind_cbox->IsChecked())
+    urlStr << "W;";
+  if (m_xygribPanel->m_pressure_cbox->IsEnabled() &&
+      m_xygribPanel->m_pressure_cbox->IsChecked()) {
+    if (xygribAtmModelList[m_selectedAtmModelIndex]->altPressure) {
+      urlStr << "p;";
+    } else {
+      urlStr << "P;";
+    }
+  }
+  if (m_xygribPanel->m_precipitation_cbox->IsEnabled() &&
+      m_xygribPanel->m_precipitation_cbox->IsChecked())
+    urlStr << "R;";
+  if (m_xygribPanel->m_cloudcover_cbox->IsEnabled() &&
+      m_xygribPanel->m_cloudcover_cbox->IsChecked())
+    urlStr << "C;";
+  if (m_xygribPanel->m_temperature_cbox->IsEnabled() &&
+      m_xygribPanel->m_temperature_cbox->IsChecked())
+    urlStr << "T;";
+  if (m_xygribPanel->m_cape_cbox->IsEnabled() &&
+      m_xygribPanel->m_cape_cbox->IsChecked())
+    urlStr << "c;";
+  if (m_xygribPanel->m_reflectivity_cbox->IsEnabled() &&
+      m_xygribPanel->m_reflectivity_cbox->IsChecked())
+    urlStr << "r;";
+  if (m_xygribPanel->m_gust_cbox->IsEnabled() &&
+      m_xygribPanel->m_gust_cbox->IsChecked())
+    urlStr << "G;";
+
+  // Wave model a data fields
+  if ((m_selectedWaveModelIndex >= 0) &&
+      (xygribWaveModelList[m_selectedWaveModelIndex] != nullptr)) {
+    wxString modelStr = wxString::Format(
+        "&wmdl=%s", xygribWaveModelList[m_selectedWaveModelIndex]->reqName);
+    wxString wParams = "";
+    if (m_xygribPanel->m_waveheight_cbox->IsChecked()) {
+      wParams << "s;";
+    }
+    if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
+      wParams << "h;d;p;";
+    }
+    if (wParams.length() > 0) {
+      urlStr << wxString::Format("%s&wpar=%s", modelStr.c_str(),
+                                 wParams.c_str());
+    } else {
+      urlStr << "&wmdl=none";
+    }
+  } else {
+    urlStr << "&wmdl=none";
+  }
+
+  return urlStr;
+}
+
+/// @brief Return a resonably unique GRIB filename for a given configuration
+/// @return Filename to be used for the current GRIB configuration
+wxString GribRequestSetting::BuildGribFileName() {
+  wxString selStr = m_xygribPanel->m_resolution_choice->GetStringSelection();
+  selStr.Replace(".", "P");
+
+  wxString fileName;
+  if (m_selectedWaveModelIndex < 0) {
+    fileName = wxString::Format(
+        "XyGrib_%s_%s_%s.grb2", wxDateTime::Now().Format("%F-%H-%M"),
+        m_xygribPanel->m_atmmodel_choice->GetStringSelection(), selStr);
+  } else {
+    fileName = wxString::Format(
+        "XyGrib_%s_%s_%s_%s.grb2", wxDateTime::Now().Format("%F-%H-%M"),
+        m_xygribPanel->m_atmmodel_choice->GetStringSelection(), selStr,
+        m_xygribPanel->m_wavemodel_choice->GetStringSelection());
+  }
+
+  return fileName;
+}
+
+/// @brief Handle action of Download/Cancel button.
+/// This function gathers the current GRIB configuration and handles the
+/// downloading of the GRIB file. If a transfer is already ongoing, it cancels
+/// it.
+/// @param event Event data from the GUI loop
+void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
+  // Check if we are already downloading a GRIB file
+  if (m_downloading) {
+    // Yes : it means that "Download" button has been changed to "Cancel"
+    // button. So, let's cancel the on-going download
+    OCPN_cancelDownloadFileBackground(m_download_handle);
+    m_downloading = false;
+    m_download_handle = 0;
+    Disconnect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+    m_connected = false;
+    m_xygribPanel->m_progress_gauge->SetValue(0);
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_xygribPanel->m_status_text->SetLabelText(_("Download cancelled"));
+    m_canceled = true;
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxTheApp->ProcessPendingEvents();
+    wxYieldIfNeeded();
+    return;
+  }
+  // No : start a new download
+  if (m_gribSizeEstimate > XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB * 1024 * 1024) {
+    m_xygribPanel->m_status_text->SetLabelText(
+        wxString::Format(_("Can't download GRIB file bigger than %d MB"),
+                         (int)XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB));
+    return;
+  }
+
+  // First we memorize the current configuration. This is the one which will be
+  // saved in OpenCPN' config file at exit
+  MemorizeXyGribConfiguration();
+  m_canceled = false;
+  m_downloading = true;
+  m_downloadType = GribDownloadType::XYGRIB;
+  EnableDownloadButtons();
+  // Change "Download" button into "Cancel" button
+  m_xygribPanel->m_download_button->SetLabelText(_("Cancel"));
+  m_xygribPanel->m_status_text->SetLabelText(
+      _("Preparing GRIB file on server..."));
+  wxYieldIfNeeded();
+
+  // Build the XyGrib DownloadURL from the current GUI configuration
+  wxString requestUrl = BuildXyGribUrl();
+
+  // First we download the temporary XML file that will tell us where to
+  // download the file on the server Downloading the XML triggers the
+  // construction of the GRIB file on the server.
+  wxString filename = wxString::Format("ocpn_xygrib_%s.xml",
+                                       wxDateTime::Now().Format("%F-%H-%M"));
+  wxString path = m_parent.GetGribDir();
+  path << wxFileName::GetPathSeparator();
+  path << filename;
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  auto res = OCPN_downloadFileBackground(requestUrl.c_str(), path, this,
+                                         &m_download_handle);
+
+  // Wait for the file to be downloaded. Note that it can take some time because
+  // server will not send it to us until the GRIB file is ready, or an error
+  // occured.
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+
+  if ((m_canceled) || (!m_bTransferSuccess)) {
+    // Something went wrong : publish error on GUI
+    m_xygribPanel->m_status_text->SetLabelText(_("Grib request failed"));
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxRemoveFile(path);
+    return;
+  }
+
+  // Read the XML file in a wxString
+  wxFile xmlFile;
+  wxString strXml;
+  bool readOk = xmlFile.Open(path);
+  if (readOk) {
+    readOk &= xmlFile.ReadAll(&strXml);
+    if (readOk) {
+      xmlFile.Close();
+    }
+  }
+
+  // Quick and dirty read of the XML file to check status (OK/NOK)
+  wxString url;
+  if (readOk && (((int)strXml.find("\"status\":true") == wxNOT_FOUND))) {
+    // Status is NOK : stop download and report error to GUI
+    wxString errorStr;
+    int errPos = strXml.find("\"message\":\"");
+    int errEnd = strXml.find("\"}");
+    if ((errPos != wxNOT_FOUND) && (errEnd != wxNOT_FOUND)) {
+      errPos += 11;
+      errorStr = strXml.Mid(errPos, errEnd - errPos);
+    } else {
+      errorStr = "Unknown server error";
+    }
+
+    m_xygribPanel->m_status_text->SetLabelText(
+        wxString::Format("%s (%s)", _("Server Error"), errorStr));
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    wxRemoveFile(path);
+    return;
+  } else {
+    // Extract GRIB URL from XML
+    int urlPos = strXml.find("\"url\":\"http:");
+    int urlEnd = strXml.find(".grb2\"");
+    if ((urlPos != wxNOT_FOUND) && (urlEnd != wxNOT_FOUND)) {
+      urlPos += 7;
+      urlEnd += 5;
+      url = strXml.Mid(urlPos, urlEnd - urlPos);
+      url.Replace("\\/", "/");
+    } else {
+      readOk = false;
+    }
+  }
+
+  wxRemoveFile(path);
+
+  // Check if there was any error in the previous phase
+  if (!readOk) {
+    // Yes : stop download and report error to GUI
+    m_xygribPanel->m_status_text->SetLabelText(
+        _("Error parsing XML file from server"));
+    m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+    m_downloadType = GribDownloadType::NONE;
+    EnableDownloadButtons();
+    return;
+  }
+
+  m_xygribPanel->m_status_text->SetLabelText(_("Downloading GRIB file"));
+
+  // Build name of the GRIB file for disk storage
+  path = m_parent.GetGribDir();
+  path << wxFileName::GetPathSeparator();
+  path << BuildGribFileName();
+
+  // Start download
+  m_canceled = false;
+  m_downloading = true;
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  res =
+      OCPN_downloadFileBackground(url.c_str(), path, this, &m_download_handle);
+  // Wait for end of download. Note that the previously registered callback
+  // "onDLEvent" will update the progress indicator on the GUI.
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+
+  // Download finished : restore "Download" button
+  m_xygribPanel->m_download_button->SetLabelText(_("Download"));
+
+  if (!m_canceled) {
+    if (m_bTransferSuccess) {
+      // Transfer successfull : switch to GRIB display on chart
+      m_xygribPanel->m_status_text->SetLabelText(_("Download complete"));
+      wxFileName fn(path);
+      m_parent.m_grib_dir = fn.GetPath();
+      m_parent.m_file_names.Clear();
+      m_parent.m_file_names.Add(path);
+      m_parent.OpenFile();
+      if (m_parent.pPlugIn) {
+        if (m_parent.pPlugIn->m_bZoomToCenterAtInit) m_parent.DoZoomToCenter();
+      }
+      m_parent.SetDialogsStyleSizePosition(true);
+      Close();
+    } else {
+      // Download failed : report error to GUI
+      m_xygribPanel->m_status_text->SetLabelText(_("Download failed"));
+    }
+  }
+  m_downloadType = GribDownloadType::NONE;
+  EnableDownloadButtons();
+}
+
+/// @brief Handle action of changing atmospheric model selection.
+/// This function update the GUI according to the selected atmospheric model
+/// @param event Event data from the GUI loop
+void GribRequestSetting::OnXyGribAtmModelChoice(wxCommandEvent &event) {
+  AtmModelDef_t *selectedAtmModel = nullptr;
+
+  // Find the model descriptor associated to the selected atmospheric model
+  wxString atmModel = m_xygribPanel->m_atmmodel_choice->GetStringSelection();
+  int modelIndex = 0;
+  while ((selectedAtmModel = xygribAtmModelList[modelIndex]) != nullptr) {
+    if (selectedAtmModel->name.IsSameAs(atmModel, true)) {
+      break;
+    }
+    modelIndex++;
+  }
+
+  // If not found, use the first one. This is not supposed to happen.
+  if (selectedAtmModel == nullptr) {
+    selectedAtmModel = xygribAtmModelList[0];
+    modelIndex = 0;
+  }
+
+  // Enable or disable parameters according to the model definition
+  if (selectedAtmModel->wind)
+    m_xygribPanel->m_wind_cbox->Enable();
+  else
+    m_xygribPanel->m_wind_cbox->Disable();
+
+  if (selectedAtmModel->gust)
+    m_xygribPanel->m_gust_cbox->Enable();
+  else
+    m_xygribPanel->m_gust_cbox->Disable();
+
+  if (selectedAtmModel->pressure)
+    m_xygribPanel->m_pressure_cbox->Enable();
+  else
+    m_xygribPanel->m_pressure_cbox->Disable();
+
+  if (selectedAtmModel->temperature)
+    m_xygribPanel->m_temperature_cbox->Enable();
+  else
+    m_xygribPanel->m_temperature_cbox->Disable();
+
+  if (selectedAtmModel->cape)
+    m_xygribPanel->m_cape_cbox->Enable();
+  else
+    m_xygribPanel->m_cape_cbox->Disable();
+
+  if (selectedAtmModel->reflectivity)
+    m_xygribPanel->m_reflectivity_cbox->Enable();
+  else
+    m_xygribPanel->m_reflectivity_cbox->Disable();
+
+  if (selectedAtmModel->cloudCover)
+    m_xygribPanel->m_cloudcover_cbox->Enable();
+  else
+    m_xygribPanel->m_cloudcover_cbox->Disable();
+
+  if (selectedAtmModel->precipitation)
+    m_xygribPanel->m_precipitation_cbox->Enable();
+  else
+    m_xygribPanel->m_precipitation_cbox->Disable();
+
+  // Fill the resolution choice selection
+  m_xygribPanel->m_resolution_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->nbRes; i++) {
+    m_xygribPanel->m_resolution_choice->Insert(selectedAtmModel->resolution[i],
+                                               i);
+  }
+
+  // Fill the duration choice selection
+  m_xygribPanel->m_duration_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->duration; i++) {
+    m_xygribPanel->m_duration_choice->Insert(wxString::Format("%d", i + 1), i);
+  }
+
+  // Fill the interval choice selection
+  m_xygribPanel->m_interval_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->nbInterval; i++) {
+    m_xygribPanel->m_interval_choice->Insert(
+        wxString::Format("%dh", selectedAtmModel->interval[i]), i);
+  }
+
+  // Fill the run choice selection
+  m_xygribPanel->m_run_choice->Clear();
+  if (selectedAtmModel->runMask == XYGRIB_RUN_0_12) {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("12h", 1);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 2);
+  } else {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("6h", 1);
+    m_xygribPanel->m_run_choice->Insert("12h", 2);
+    m_xygribPanel->m_run_choice->Insert("18h", 3);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+  }
+
+  if (modelIndex == m_parent.xyGribConfig.atmModelIndex) {
+    ApplyXyGribConfiguration();
+  } else {
+    m_selectedAtmModelIndex = modelIndex;
+    m_xygribPanel->m_resolution_choice->SetSelection(0);
+    m_xygribPanel->m_duration_choice->SetSelection(
+        m_xygribPanel->m_duration_choice->GetCount() - 1);
+    m_xygribPanel->m_interval_choice->SetSelection(0);
+    m_xygribPanel->m_run_choice->SetSelection(
+        m_xygribPanel->m_run_choice->GetCount() - 1);
+  }
+  MemorizeXyGribConfiguration();
+}
+
+/// @brief Handle action of changing wave model selection.
+/// This function update the GUI according to the selected wave model
+/// @param event Event data from the GUI loop
+void GribRequestSetting::OnXyGribWaveModelChoice(wxCommandEvent &event) {
+  WaveModelDef_t *selectedModel = nullptr;
+
+  // Find the model descriptor associated to the selected wave model
+  wxString waveModel = m_xygribPanel->m_wavemodel_choice->GetStringSelection();
+  int modelIndex = 0;
+  while ((selectedModel = xygribWaveModelList[modelIndex]) != nullptr) {
+    if (selectedModel->name.IsSameAs(waveModel, true)) {
+      break;
+    }
+    modelIndex++;
+  }
+
+  // Model found in the table ?
+  if (selectedModel == nullptr) {
+    // If the model is not found in the table, disable wave model downloading
+    m_selectedWaveModelIndex = -1;
+    m_xygribPanel->m_waveheight_cbox->Disable();
+    m_xygribPanel->m_windwave_cbox->Disable();
+    MemorizeXyGribConfiguration();
+    return;
+  }
+
+  m_selectedWaveModelIndex = modelIndex;
+
+  // Else configure parameters according to model definition
+  if (selectedModel->significantHeight) {
+    m_xygribPanel->m_waveheight_cbox->Enable();
+  } else {
+    m_xygribPanel->m_waveheight_cbox->Disable();
+  }
+
+  if (selectedModel->windWaves) {
+    m_xygribPanel->m_windwave_cbox->Enable();
+  } else {
+    m_xygribPanel->m_windwave_cbox->Disable();
+  }
+  MemorizeXyGribConfiguration();
+}
+
+/// @brief Handle action of changing a GRIB configuration parameter.
+/// The function stores the new configuration and updates GRIB size estimate.
+/// @param event Event data from the GUI loop
+void GribRequestSetting::OnXyGribConfigChange(wxCommandEvent &event) {
+  MemorizeXyGribConfiguration();
+}
+
+/// @brief Initialize GUI configuration with value read from configuration
+void GribRequestSetting::InitializeXygribDialog() {
+  AtmModelDef_t *selectedAtmModel = nullptr;
+  WaveModelDef_t *selectedWaveModel = nullptr;
+
+  // Fill selection of atmospheric models with the ones found in the model table
+  m_xygribPanel->m_atmmodel_choice->Clear();
+  int modelIndex = 0;
+  while ((selectedAtmModel = xygribAtmModelList[modelIndex]) != nullptr) {
+    m_xygribPanel->m_atmmodel_choice->Insert(selectedAtmModel->name,
+                                             modelIndex);
+    modelIndex++;
+  }
+  // Select the initial value from configuration
+  m_selectedAtmModelIndex = m_parent.xyGribConfig.atmModelIndex;
+  selectedAtmModel = xygribAtmModelList[m_selectedAtmModelIndex];
+
+  // Fill selection of wave models with the ones found in the table
+  m_xygribPanel->m_wavemodel_choice->Clear();
+  modelIndex = 0;
+  while ((selectedWaveModel = xygribWaveModelList[modelIndex]) != nullptr) {
+    m_xygribPanel->m_wavemodel_choice->Insert(selectedWaveModel->name,
+                                              modelIndex);
+    modelIndex++;
+  }
+  // Add the "None" selection
+  m_xygribPanel->m_wavemodel_choice->Insert("None", modelIndex);
+  m_selectedWaveModelIndex = m_parent.xyGribConfig.waveModelIndex;
+  selectedWaveModel = xygribWaveModelList[m_selectedWaveModelIndex];
+  if (selectedWaveModel == nullptr) {
+    m_selectedWaveModelIndex = -1;
+  }
+
+  // Fill the resolution choice selection
+  m_xygribPanel->m_resolution_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->nbRes; i++) {
+    m_xygribPanel->m_resolution_choice->Insert(selectedAtmModel->resolution[i],
+                                               i);
+  }
+
+  // Fill the duration choice selection
+  m_xygribPanel->m_duration_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->duration; i++) {
+    m_xygribPanel->m_duration_choice->Insert(wxString::Format("%d", i + 1), i);
+  }
+
+  // Fill the interval choice selection
+  m_xygribPanel->m_interval_choice->Clear();
+  for (int i = 0; i < selectedAtmModel->nbInterval; i++) {
+    m_xygribPanel->m_interval_choice->Insert(
+        wxString::Format("%dh", selectedAtmModel->interval[i]), i);
+  }
+
+  // Fill the run choice selection
+  m_xygribPanel->m_run_choice->Clear();
+  if (selectedAtmModel->runMask == XYGRIB_RUN_0_12) {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("12h", 1);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 2);
+  } else {
+    m_xygribPanel->m_run_choice->Insert("0h", 0);
+    m_xygribPanel->m_run_choice->Insert("6h", 1);
+    m_xygribPanel->m_run_choice->Insert("12h", 2);
+    m_xygribPanel->m_run_choice->Insert("18h", 3);
+    m_xygribPanel->m_run_choice->Insert(_("Latest"), 4);
+  }
+
+  if (selectedAtmModel->wind)
+    m_xygribPanel->m_wind_cbox->Enable();
+  else
+    m_xygribPanel->m_wind_cbox->Disable();
+
+  if (selectedAtmModel->gust)
+    m_xygribPanel->m_gust_cbox->Enable();
+  else
+    m_xygribPanel->m_gust_cbox->Disable();
+
+  if (selectedAtmModel->pressure)
+    m_xygribPanel->m_pressure_cbox->Enable();
+  else
+    m_xygribPanel->m_pressure_cbox->Disable();
+
+  if (selectedAtmModel->temperature)
+    m_xygribPanel->m_temperature_cbox->Enable();
+  else
+    m_xygribPanel->m_temperature_cbox->Disable();
+
+  if (selectedAtmModel->cape)
+    m_xygribPanel->m_cape_cbox->Enable();
+  else
+    m_xygribPanel->m_cape_cbox->Disable();
+
+  if (selectedAtmModel->reflectivity)
+    m_xygribPanel->m_reflectivity_cbox->Enable();
+  else
+    m_xygribPanel->m_reflectivity_cbox->Disable();
+
+  if (selectedAtmModel->cloudCover)
+    m_xygribPanel->m_cloudcover_cbox->Enable();
+  else
+    m_xygribPanel->m_cloudcover_cbox->Disable();
+
+  if (selectedAtmModel->precipitation)
+    m_xygribPanel->m_precipitation_cbox->Enable();
+  else
+    m_xygribPanel->m_precipitation_cbox->Disable();
+
+  if ((selectedWaveModel != nullptr) && (selectedWaveModel->significantHeight))
+    m_xygribPanel->m_waveheight_cbox->Enable();
+  else
+    m_xygribPanel->m_waveheight_cbox->Disable();
+
+  if ((selectedWaveModel != nullptr) && (selectedWaveModel->windWaves))
+    m_xygribPanel->m_windwave_cbox->Enable();
+  else
+    m_xygribPanel->m_windwave_cbox->Disable();
+
+  ApplyXyGribConfiguration();
+}
+
+/// @brief Apply the configuration stored into the configuration structure to
+/// the UI
+void GribRequestSetting::ApplyXyGribConfiguration() {
+  m_xygribPanel->m_atmmodel_choice->SetSelection(
+      m_parent.xyGribConfig.atmModelIndex);
+  m_xygribPanel->m_wavemodel_choice->SetSelection(
+      m_parent.xyGribConfig.waveModelIndex);
+
+  m_xygribPanel->m_wind_cbox->SetValue(m_parent.xyGribConfig.wind);
+  m_xygribPanel->m_gust_cbox->SetValue(m_parent.xyGribConfig.gust);
+  m_xygribPanel->m_pressure_cbox->SetValue(m_parent.xyGribConfig.pressure);
+  m_xygribPanel->m_temperature_cbox->SetValue(
+      m_parent.xyGribConfig.temperature);
+  m_xygribPanel->m_cape_cbox->SetValue(m_parent.xyGribConfig.cape);
+  m_xygribPanel->m_reflectivity_cbox->SetValue(
+      m_parent.xyGribConfig.reflectivity);
+  m_xygribPanel->m_cloudcover_cbox->SetValue(m_parent.xyGribConfig.cloudCover);
+  m_xygribPanel->m_precipitation_cbox->SetValue(
+      m_parent.xyGribConfig.precipitation);
+  m_xygribPanel->m_waveheight_cbox->SetValue(m_parent.xyGribConfig.waveHeight);
+  m_xygribPanel->m_windwave_cbox->SetValue(m_parent.xyGribConfig.windWaves);
+  m_xygribPanel->m_resolution_choice->SetSelection(
+      m_parent.xyGribConfig.resolutionIndex);
+  m_xygribPanel->m_duration_choice->SetSelection(
+      m_parent.xyGribConfig.durationIndex);
+  m_xygribPanel->m_interval_choice->SetSelection(
+      m_parent.xyGribConfig.intervalIndex);
+  m_xygribPanel->m_run_choice->SetSelection(m_parent.xyGribConfig.runIndex);
+
+  UpdateGribSizeEstimate();
+}
+
+/// @brief Apply the configuration stored into the configuration structure to
+/// the UI
+void GribRequestSetting::MemorizeXyGribConfiguration() {
+  m_parent.xyGribConfig.atmModelIndex =
+      m_xygribPanel->m_atmmodel_choice->GetSelection();
+  m_parent.xyGribConfig.waveModelIndex =
+      m_xygribPanel->m_wavemodel_choice->GetSelection();
+
+  m_parent.xyGribConfig.wind = m_xygribPanel->m_wind_cbox->IsChecked();
+  m_parent.xyGribConfig.gust = m_xygribPanel->m_gust_cbox->IsChecked();
+  m_parent.xyGribConfig.pressure = m_xygribPanel->m_pressure_cbox->IsChecked();
+  m_parent.xyGribConfig.temperature =
+      m_xygribPanel->m_temperature_cbox->IsChecked();
+  m_parent.xyGribConfig.cape = m_xygribPanel->m_cape_cbox->IsChecked();
+  m_parent.xyGribConfig.reflectivity =
+      m_xygribPanel->m_reflectivity_cbox->IsChecked();
+  m_parent.xyGribConfig.cloudCover =
+      m_xygribPanel->m_cloudcover_cbox->IsChecked();
+  m_parent.xyGribConfig.precipitation =
+      m_xygribPanel->m_precipitation_cbox->IsChecked();
+  m_parent.xyGribConfig.waveHeight =
+      m_xygribPanel->m_waveheight_cbox->IsChecked();
+  m_parent.xyGribConfig.windWaves = m_xygribPanel->m_windwave_cbox->IsChecked();
+
+  m_parent.xyGribConfig.resolutionIndex =
+      m_xygribPanel->m_resolution_choice->GetSelection();
+  m_parent.xyGribConfig.durationIndex =
+      m_xygribPanel->m_duration_choice->GetSelection();
+  m_parent.xyGribConfig.intervalIndex =
+      m_xygribPanel->m_interval_choice->GetSelection();
+  m_parent.xyGribConfig.runIndex = m_xygribPanel->m_run_choice->GetSelection();
+
+  UpdateGribSizeEstimate();
+}
+
+/// @brief Estimates the size of the GRIB file to be downloaded and prints it
+/// onto GUI Code taken from XyGrib application
+/// (https://github.com/opengribs/XyGrib)
+void GribRequestSetting::UpdateGribSizeEstimate() {
+  double resolution;
+  long days;
+  long interval;
+
+  if (!m_xygribPanel->m_resolution_choice->GetStringSelection().ToCDouble(
+          &resolution)) {
+    m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
+    return;
+  }
+  if (!m_xygribPanel->m_duration_choice->GetStringSelection().ToCLong(&days)) {
+    m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
+    return;
+  }
+  wxString intvStr = m_xygribPanel->m_interval_choice->GetStringSelection();
+  intvStr.Replace("h", "");
+  if (!intvStr.ToCLong(&interval)) {
+    m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
+    return;
+  }
+
+  if (m_Vp == nullptr) {
+    m_xygribPanel->m_sizeestimate_text->SetLabel("Unknown");
+    return;
+  }
+
+  double xmax = m_Vp->lon_max;
+  double xmin = m_Vp->lon_min;
+  double ymax = m_Vp->lat_max;
+  double ymin = m_Vp->lat_min;
+
+  int npts = (int)(ceil(fabs(xmax - xmin) / resolution) *
+                   ceil(fabs(ymax - ymin) / resolution));
+
+  // Number of GribRecords
+  int nbrec = (int)days * 24 / interval + 1;
+
+  int nbPress = (m_xygribPanel->m_pressure_cbox->IsChecked() &&
+                 m_xygribPanel->m_pressure_cbox->IsEnabled())
+                    ? nbrec
+                    : 0;
+  int nbWind = (m_xygribPanel->m_wind_cbox->IsChecked() &&
+                m_xygribPanel->m_wind_cbox->IsEnabled())
+                   ? 2 * nbrec
+                   : 0;
+  int nbRain = (m_xygribPanel->m_precipitation_cbox->IsChecked() &&
+                m_xygribPanel->m_precipitation_cbox->IsEnabled())
+                   ? nbrec - 1
+                   : 0;
+  int nbCloud = (m_xygribPanel->m_cloudcover_cbox->IsChecked() &&
+                 m_xygribPanel->m_cloudcover_cbox->IsEnabled())
+                    ? nbrec - 1
+                    : 0;
+  int nbTemp = (m_xygribPanel->m_temperature_cbox->IsChecked() &&
+                m_xygribPanel->m_temperature_cbox->IsEnabled())
+                   ? nbrec
+                   : 0;
+
+  int nbCAPEsfc = (m_xygribPanel->m_cape_cbox->IsChecked() &&
+                   m_xygribPanel->m_cape_cbox->IsEnabled())
+                      ? nbrec
+                      : 0;
+  int nbReflectivity = (m_xygribPanel->m_reflectivity_cbox->IsChecked() &&
+                        m_xygribPanel->m_reflectivity_cbox->IsEnabled())
+                           ? nbrec
+                           : 0;
+  int nbGUSTsfc = (m_xygribPanel->m_gust_cbox->IsChecked() &&
+                   m_xygribPanel->m_gust_cbox->IsEnabled())
+                      ? nbrec
+                      : 0;
+
+  int head = 179;
+  int estimate = 0;
+  int nbits;  // this can vary when c3 packing is used. Average numbers are used
+              // here
+
+  nbits = 12;
+  estimate += nbWind * (head + (nbits * npts) / 8 + 2);
+
+  nbits = 9;
+  estimate += nbTemp * (head + (nbits * npts) / 8 + 2);
+
+  //    estime += nbTempMin*(head+(nbits*npts)/8+2 );
+  //    estime += nbTempMax*(head+(nbits*npts)/8+2 );
+
+  nbits = 9;
+  estimate += nbRain * (head + 24 + (nbits * npts) / 8 + 2);
+
+  nbits = 14;
+  estimate += nbPress * (head + (nbits * npts) / 8 + 2);
+
+  nbits = 7;
+  estimate += nbCloud * (head + 24 + (nbits * npts) / 8 + 2);
+
+  nbits = 11;
+  estimate += nbReflectivity * (head + (nbits * npts) / 8 + 2);
+
+  nbits = 12;
+  estimate += nbCAPEsfc * (head + (nbits * npts) / 8 + 2);
+
+  nbits = 9;
+  estimate += nbGUSTsfc * (head + (nbits * npts) / 8 + 2);
+  //    estime += nbSUNSDsfc*(head+(nbits*npts)/8+2 );
+
+  // keep a record of the atmosphere estimate. if 0 nothing was selected
+  int atmEstimate = estimate;
+
+  // and now the wave estimate
+  // recalculate number of points based on which model is used
+  if (m_xygribPanel->m_wavemodel_choice->GetStringSelection().IsSameAs(
+          "WW3"))  // 0.5 deg
+  {
+    npts = (int)(ceil(fabs(xmax - xmin) / 0.5) * ceil(fabs(ymax - ymin) / 0.5));
+    nbrec = (int)fmin(8, days) * 24 / interval + 1;
+  } else if (m_xygribPanel->m_wavemodel_choice->GetStringSelection().IsSameAs(
+                 "GWAM"))  // 0.25 deg
+  {
+    npts =
+        (int)(ceil(fabs(xmax - xmin) / 0.25) * ceil(fabs(ymax - ymin) / 0.25));
+    nbrec = (int)fmin(8, days) * 24 / interval + 1;
+  } else if (m_xygribPanel->m_wavemodel_choice->GetStringSelection().IsSameAs(
+                 "EWAM"))  // 0.1 x 0.05 deg
+  {
+    npts =
+        (int)(ceil(fabs(xmax - xmin) / 0.05) * ceil(fabs(ymax - ymin) / 0.1));
+    nbrec = (int)fmin(4, days) * 24 / interval + 1;
+  } else {
+    npts = 0;
+    nbrec = 0;
+  }
+
+  if (m_xygribPanel->m_waveheight_cbox->IsChecked()) {
+    nbits = 9;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+  }
+
+  if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
+    nbits = 15;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+    nbits = 8;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+    nbits = 10;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+  }
+
+  int wavEstimate = estimate - atmEstimate;
+  // reduce wave estimate due to land overlapping by average of 40%
+  wavEstimate = wavEstimate * 0.6;
+  // now adjusted estimate is
+  estimate = atmEstimate + wavEstimate;
+
+  // adjust for packing ~ 65%
+  estimate = estimate * 0.65;
+
+  wxString warningStr = "";
+  if (estimate / (1024 * 1024) > XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB) {
+    warningStr = wxString::Format("(Warning GRIB exceeds %d MB limit)", XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB);
+  }
+
+  m_xygribPanel->m_sizeestimate_text->SetLabel(
+      wxString::Format("%d kB %s", estimate / 1024, warningStr));
+
+  m_gribSizeEstimate = estimate;
 }

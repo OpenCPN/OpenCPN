@@ -452,13 +452,6 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX) {
 
   while (read_next_line(fp, linrec, 1)) {
     nojunk(linrec);
-    int curonly = 0;
-    if (curonly)
-      if (!strstr(linrec, "Current")) continue;
-    //    See the note above about station names
-    //                  if(!strncmp(linrec, "Rivi", 4))
-    //                        int ggl = 4;
-
     if (slackcmp(linrec, pIDX->IDX_reference_name)) continue;
 
     //    Got the right location, so load the data

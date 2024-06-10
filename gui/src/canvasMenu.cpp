@@ -895,7 +895,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   if (seltype & SELTYPE_MARKPOINT) {
     if (!g_bBasicMenus && m_pFoundRoutePoint) {
       name = m_pFoundRoutePoint->GetName();
-      if (name.IsEmpty()) name = _("Unnamed Waypoint");
+      if (name.IsEmpty()) name = _("Unnamed Mark");
       name.Prepend(_T(" ( ")).Append(_T(" )"));
     } else
       name = wxEmptyString;
@@ -907,7 +907,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
       MenuAppend1(menuWaypoint, ID_WP_MENU_PROPERTIES,
                   _("Properties") + _T( "..." ));
     } else {
-      menuWaypoint = new wxMenu(_("Waypoint") + name);
+      menuWaypoint = new wxMenu(_("Mark") + name);
       MenuAppend1(menuWaypoint, ID_WP_MENU_PROPERTIES,
                   _("Properties") + _T( "..." ));
 

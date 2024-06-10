@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+ /**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +16,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/** \file gui_lib.cpp Implements gui_lib.h */
 
 #include <wx/artprov.h>
 #include <wx/dialog.h>
@@ -43,6 +39,15 @@
 extern bool g_bresponsive;
 extern OCPNPlatform* g_Platform;
 extern int g_GUIScaleFactor;
+
+CopyableText::CopyableText(wxWindow* parent, const char* text)
+    : wxTextCtrl(parent, wxID_ANY, text, wxDefaultPosition,
+                 wxDefaultSize, wxBORDER_NONE) {
+  SetEditable(false);
+  wxStaticText tmp(parent, wxID_ANY, text);
+  SetBackgroundColour(tmp.GetBackgroundColour());
+}
+
 
 wxFont* GetOCPNScaledFont(wxString item, int default_size) {
   wxFont* dFont = FontMgr::Get().GetFont(item, default_size);

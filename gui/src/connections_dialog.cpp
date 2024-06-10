@@ -62,6 +62,9 @@ ConnectionsDialog::ConnectionsDialog(wxScrolledWindow* container,
                                      options* parent) {
   m_container = container;
   m_parent = parent;
+  nmea_window_close_listener.Init(
+          NMEALogWindow::GetInstance().nmea_window_close_evt,
+          [&] (ObservedEvt&) { m_cbNMEADebug->SetValue(false); });
 
   Init();
 }
@@ -71,8 +74,8 @@ ConnectionsDialog::~ConnectionsDialog() {}
 void ConnectionsDialog::SetInitialSettings(void) {
 
   m_cbNMEADebug->SetValue(false);
-  if (NMEALogWindow::Get().GetTTYWindow()) {
-    if (NMEALogWindow::Get().GetTTYWindow()->IsShown()) {
+  if (NMEALogWindow::GetInstance().GetTTYWindow()) {
+    if (NMEALogWindow::GetInstance().GetTTYWindow()->IsShown()) {
       m_cbNMEADebug->SetValue(true);
     }
   }
@@ -150,7 +153,7 @@ void ConnectionsDialog::Init() {
   m_cbNMEADebug =
       new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
                      wxDefaultPosition, wxDefaultSize, 0);
-  m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
+  m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
   bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
   m_cbFurunoGP3X =
@@ -167,10 +170,31 @@ void ConnectionsDialog::Init() {
 
   m_cbAPBMagnetic =
       new wxCheckBox(m_container, wxID_ANY,
-                     _("Use magnetic bearings in output sentence ECAPB"),
+                     _("Use magnetic bearings in output sentence APB"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
+
+  wxSizer *talkerSizer = new wxBoxSizer(wxHORIZONTAL);
+  bSizer161->Add(talkerSizer, 0, wxALL, 1);
+
+  talkerSizer->AddSpacer(3 * m_container->GetCharWidth());
+
+  wxStaticText *stTalkerIdText = new wxStaticText(
+          m_container, wxID_ANY,
+          wxString::Format("%s", _("NMEA0183 Talker ID")),
+          wxDefaultPosition, wxDefaultSize, 0);
+  stTalkerIdText->Wrap(-1);
+  talkerSizer->Add(stTalkerIdText, 0, wxALL, 2);
+
+  talkerSizer->AddSpacer(2 * m_container->GetCharWidth());
+
+  m_TalkerIdText = new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
+            wxSize(50, 3 * m_container->GetCharWidth()), 0);
+  m_TalkerIdText->SetMaxLength(2);
+  m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
+  talkerSizer->Add(m_TalkerIdText, 0,  wxALL | wxALIGN_CENTER_VERTICAL, 2);
+
 
   m_ButtonPriorityDialog = new wxButton(m_container, wxID_ANY,
                                         _("Adjust communication priorities..."),
@@ -191,11 +215,11 @@ void ConnectionsDialog::Init() {
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
   m_sbSizerLB->Add(bSizer18, 0, wxEXPAND, 5);
 
-  m_buttonAdd = new wxButton(m_container, wxID_ANY, _("Add Connection"),
+  m_buttonAdd = new wxButton(m_container, wxID_ANY, _("Add Connection..."),
                              wxDefaultPosition, wxDefaultSize, 0);
   bSizer18->Add(m_buttonAdd, 0, wxALL, 5);
 
-  m_buttonEdit = new wxButton(m_container, wxID_ANY, _("Edit Connection"),
+  m_buttonEdit = new wxButton(m_container, wxID_ANY, _("Edit Connection..."),
                               wxDefaultPosition, wxDefaultSize, 0);
   m_buttonEdit->Enable(FALSE);
   bSizer18->Add(m_buttonEdit, 0, wxALL, 5);
@@ -393,7 +417,7 @@ void ConnectionsDialog::OnAddDatasourceClick(wxCommandEvent& event) {
     TheConnectionParams()->Item(i)->m_optionsPanel->SetSelected(false);
 
   ConnectionEditDialog dialog(m_parent, this);
-  dialog.SetSize(m_parent->GetSize());  // fill the entire "settings" dialog space
+  dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
   dialog.SetPropsLabel(_("Configure new connection"));
   dialog.SetDefaultConnectionParams();
 
@@ -453,7 +477,7 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
     if ((index >= 0) && (cp)) {
       ConnectionEditDialog dialog(m_parent, this);
-      dialog.SetSize(m_parent->GetSize());  // fill the entire "settings" dialog space
+      dialog.SetSize(wxSize(m_parent->GetSize().x, m_parent->GetSize().y * 8/10));
       dialog.SetPropsLabel(_("Edit Selected Connection"));
       // Preload the dialog contents
       dialog.PreloadControls(cp);
@@ -478,21 +502,22 @@ void ConnectionsDialog::OnEditDatasourceClick(wxCommandEvent& event) {
 
 void ConnectionsDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
   if (!m_cbNMEADebug->GetValue()) {
-    NMEALogWindow::Get().DestroyWindow();
+    NMEALogWindow::GetInstance().DestroyWindow();
   } else {
-    NMEALogWindow::Get().Create((wxWindow*)(m_parent->pParent), 35);
+    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->pParent), 35);
 
     // Try to ensure that the log window is a least a little bit visible
-    wxRect logRect(
-        NMEALogWindow::Get().GetPosX(), NMEALogWindow::Get().GetPosY(),
-        NMEALogWindow::Get().GetSizeW(), NMEALogWindow::Get().GetSizeH());
+    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
+                   NMEALogWindow::GetInstance().GetPosY(),
+                   NMEALogWindow::GetInstance().GetSizeW(),
+                   NMEALogWindow::GetInstance().GetSizeH());
 
     if (m_container->GetRect().Contains(logRect)) {
-      NMEALogWindow::Get().SetPos(
+      NMEALogWindow::GetInstance().SetPos(
           m_container->GetRect().x / 2,
           (m_container->GetRect().y +
            (m_container->GetRect().height - logRect.height) / 2));
-      NMEALogWindow::Get().Move();
+      NMEALogWindow::GetInstance().Move();
     }
 
     m_parent->Raise();
@@ -511,7 +536,7 @@ void ConnectionsDialog::ApplySettings() {
   g_SOGFilterSec = g_COGFilterSec;
 
   g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
-  //g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
+  g_TalkerIdText = m_TalkerIdText->GetValue();
 
   g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
   g_GPS_Ident = m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
@@ -521,12 +546,29 @@ void ConnectionsDialog::ApplySettings() {
 
 void ConnectionsDialog::UpdateDatastreams() {
   // Recreate datastreams that are new, or have been edited
+  std::vector<std::string>enabled_conns;
+
   for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
     ConnectionParams* cp = TheConnectionParams()->Item(i);
 
-    if (cp->b_IsSetup) continue;
+    // Connection already setup?
+    if (cp->b_IsSetup){
+      if(cp->bEnabled){
+        enabled_conns.push_back(cp->GetStrippedDSPort());
+      }
+      continue;
+    }
 
-    // Connection is new, or edited, or disabled
+    // Check to see if this connection port has been
+    // already enabled in this loop.
+    // If so, then leave this connection alone.
+    // This will handle multiple connections with same port,
+    // but possibly different filters
+    // Also protect against some user config errors
+    if ( std::find(enabled_conns.begin(), enabled_conns.end(),
+                  cp->GetStrippedDSPort()) != enabled_conns.end()) {
+      continue;
+    }
 
     // Terminate and remove any existing driver, if present in registry
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
@@ -544,14 +586,12 @@ void ConnectionsDialog::UpdateDatastreams() {
     // Make any new or re-enabled drivers
     MakeCommDriver(cp);
     cp->b_IsSetup = TRUE;
+    enabled_conns.push_back(cp->GetStrippedDSPort());
   }
 }
-
 
 void ConnectionsDialog::OnPriorityDialog(wxCommandEvent& event) {
   PriorityDlg* pdlg = new PriorityDlg(m_parent);
   pdlg->ShowModal();
   delete pdlg;
 }
-
-

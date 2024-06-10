@@ -2986,6 +2986,7 @@ void s57chart::PopulateObjectsWithContext(){
   m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
   m_this_chart_context->pRigidATONArray = pRigidATONArray;
   m_this_chart_context->safety_contour = m_next_safe_cnt;
+  m_this_chart_context->pt2GetAssociatedObjects = &s57chart::GetAssociatedObjects;
 
 
   //  Loop and populate all the objects

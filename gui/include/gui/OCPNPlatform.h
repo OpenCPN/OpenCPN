@@ -30,11 +30,15 @@
 #include <string>
 #include <vector>
 
+// if wxWidgets headers have not been included, include them now
+#ifndef _WX_DEFS_H_
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
+
+#endif // _WX_DEFS_H_
 
 #include <wx/bmpbuttn.h>
 #include <wx/clrpicker.h>

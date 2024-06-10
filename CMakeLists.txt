@@ -414,15 +414,16 @@ if (MSVC)
 endif ()
 
 if (MSVC)
+  # /D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR works around https://github.com/actions/runner-images/issues/10004
   set(CMAKE_C_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1")
   set(CMAKE_C_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /wd4068")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /wd4068")
-  set(CMAKE_CXX_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa")
-  set(CMAKE_CXX_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa /wd4068")
+  set(CMAKE_CXX_FLAGS_DEBUG "/MP /MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa /D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
+  set(CMAKE_CXX_FLAGS_MINSIZEREL "/MP /MD  /O1  /Ob1 /D NDEBUG /EHa /D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
+  set(CMAKE_CXX_FLAGS_RELEASE "/MP /MD  /O2  /Ob2 /D NDEBUG /Zi /EHa /wd4068 /D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa /wd4068"
+      "/MP /MD  /O2  /Ob1 /D NDEBUG /Zi /EHa /wd4068 /D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR"
   )
   set(CMAKE_EXE_LINKER_FLAGS "/DEBUG /Release ${CMAKE_EXE_LINKER_FLAGS}")
 endif ()
@@ -756,6 +757,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/chcanv.h
     ${GUI_HDR_DIR}/ChInfoWin.h
     ${GUI_HDR_DIR}/color_handler.h
+    ${GUI_HDR_DIR}/comm_overflow_dlg.h
     ${GUI_HDR_DIR}/compass.h
     ${GUI_HDR_DIR}/concanv.h
     ${GUI_HDR_DIR}/ConfigMgr.h
@@ -839,6 +841,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/TrackPropDlg.h
     ${GUI_HDR_DIR}/TTYScroll.h
     ${GUI_HDR_DIR}/TTYWindow.h
+    ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
     ${GUI_HDR_DIR}/update_mgr.h
     ${GUI_HDR_DIR}/usb_devices.h
@@ -877,6 +880,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ChInfoWin.cpp
     ${GUI_SRC_DIR}/cm93.cpp
     ${GUI_SRC_DIR}/color_handler.cpp
+    ${GUI_SRC_DIR}/comm_overflow_dlg.cpp
     ${GUI_SRC_DIR}/compass.cpp
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/ConfigMgr.cpp
@@ -940,6 +944,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/SencManager.cpp
     ${GUI_SRC_DIR}/SendToGpsDlg.cpp
     ${GUI_SRC_DIR}/SendToPeerDlg.cpp
+    ${GUI_SRC_DIR}/shapefile_basemap.cpp
     ${GUI_SRC_DIR}/Station_Data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_utils.cpp
@@ -956,6 +961,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/TrackPropDlg.cpp
     ${GUI_SRC_DIR}/TTYScroll.cpp
     ${GUI_SRC_DIR}/TTYWindow.cpp
+    ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/viewport.cpp
@@ -983,11 +989,6 @@ if (OCPN_USE_GARMINHOST)
   message(STATUS "GarminHost is enabled.")
   set(USE_GARMINHOST 1) # -> config.h
   list(APPEND MODEL_SRC ${MODEL_SRC_DIR}/garmin_wrapper.cpp)
-endif ()
-
-if (LINUX)
-  list(APPEND GUI_SRC ${GUI_SRC_DIR}/udev_rule_mgr.cpp)
-  list(APPEND GUI_HDRS ${GUI_HDR_DIR}/udev_rule_mgr.h)
 endif ()
 
 if (LINUX AND OCPN_USE_CRASHREPORT)
@@ -1239,6 +1240,14 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite)
 
 add_subdirectory("libs/SQLiteCpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::sqlite_cpp)
+
+add_subdirectory("libs/shapelib")
+target_link_libraries(${PACKAGE_NAME} PRIVATE shapelib::shapelib)
+
+add_subdirectory("libs/ShapefileCpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::ShapefileCpp)
+target_include_directories(${PACKAGE_NAME} PRIVATE ${SHAPEFILECPP_INCLUDE_DIR})
+target_include_directories(${PACKAGE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/gdal/include/gdal)
 
 if (NOT QT_ANDROID)
   # TODO: On Linux libdnet may be available from system packages
@@ -1599,6 +1608,20 @@ if (OCPN_BUNDLE_GSHHS)
   )
 endif ()
 
+set(basemap_shp
+        data/basemap_shp/basemap_crude_10x10.cpg
+        data/basemap_shp/basemap_crude_10x10.prj
+        data/basemap_shp/basemap_crude_10x10.shp
+        data/basemap_shp/basemap_crude_10x10.dbf
+        data/basemap_shp/basemap_crude_10x10.qmd
+        data/basemap_shp/basemap_crude_10x10.shx
+        data/basemap_shp/basemap_low.cpg
+        data/basemap_shp/basemap_low.prj
+        data/basemap_shp/basemap_low.shx
+        data/basemap_shp/basemap_low.dbf
+        data/basemap_shp/basemap_low.shp
+        )
+
 # Various data files
 
 set(uiData
@@ -1663,7 +1686,9 @@ if (APPLE)
   set_source_files_properties(
     ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs
   )
-
+  set_source_files_properties(
+    ${basemap_shp} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/basemap_shp
+  )
   set_source_files_properties(
     ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata
   )
@@ -1968,6 +1993,8 @@ if (NOT APPLE)
     install(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs)
   endif ()
 
+  install(FILES ${basemap_shp} DESTINATION ${PREFIX_PKGDATA}/basemap_shp)
+
   file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
   install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
 
@@ -2028,7 +2055,7 @@ if (NOT APPLE)
       if (_rv EQUAL 0)
         execute_process(COMMAND
           sh -c \"cp ${PROJECT_SOURCE_DIR}/buildlinux/98-sglock-ocpn.rules \
-                     /lib/udev/rules.d/98-sglock-ocpn.rules\"
+                     /usr/lib/udev/rules.d/98-sglock-ocpn.rules\"
         )
         execute_process(COMMAND
           sh -c \"chmod 644 \
@@ -2172,7 +2199,7 @@ endif ()
 #
 if (WIN32)
   file(GLOB WXWIDGETS_MO_FILES
-       ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo
+       ${CMAKE_SOURCE_DIR}/cache/buildwin/wxWidgets/locale/*.mo
   )
   foreach (_current_wx_mofile ${WXWIDGETS_MO_FILES})
     get_filename_component(_absFile ${_current_wx_mofile} ABSOLUTE)

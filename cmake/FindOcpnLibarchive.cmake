@@ -28,6 +28,7 @@ endif ()
 if (APPLE)
   if (OCPN_USE_SYSTEM_LIBARCHIVE AND NOT OCPN_USE_DEPS_BUNDLE)
     list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+    list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/libarchive")
   else ()
     #  TODO This is a hack, due to the way libarchive is built and
     #  installed in CI build environment

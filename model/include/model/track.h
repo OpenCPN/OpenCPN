@@ -124,6 +124,19 @@ public:
   }
   void SetName(const wxString name) { m_TrackNameString = name; }
 
+  wxString GetDate(bool auto_if_empty = false) const {
+    wxString name;
+    TrackPoint *rp = NULL;
+    if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+    if (rp && rp->GetCreateTime().IsValid())
+      name = rp->GetCreateTime().FormatISODate() + _T(" ") +
+             rp->GetCreateTime()
+                 .FormatISOTime();  // name = rp->m_CreateTime.Format();
+    else
+      name = _("(Unknown Date)");
+   return name;
+  }
+
   wxString m_GUID;
   bool m_bIsInLayer;
   int m_LayerID;

@@ -129,6 +129,7 @@ extern wxString g_UserPresLibData;
 
 extern wxString *pInit_Chart_Dir;
 extern wxString gWorldMapLocation;
+extern wxString gWorldShapefileLocation;
 
 extern bool s_bSetSystemTime;
 extern bool g_bDisplayGrid;  // Flag indicating if grid is to be displayed
@@ -144,7 +145,6 @@ extern bool g_bAutoAnchorMark;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bSoftwareGL;
-extern bool g_bShowFPS;
 extern bool g_bsmoothpanzoom;
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -200,6 +200,14 @@ extern bool g_bDebugCM93;
 extern bool g_bDebugS57;
 
 extern double g_ownship_predictor_minutes;
+extern int g_cog_predictor_style;
+extern wxString g_cog_predictor_color;
+extern int g_cog_predictor_endmarker;
+extern int g_cog_predictor_width;
+extern int g_ownship_HDTpredictor_style;
+extern wxString g_ownship_HDTpredictor_color;
+extern int g_ownship_HDTpredictor_endmarker;
+extern int g_ownship_HDTpredictor_width;
 extern double g_ownship_HDTpredictor_miles;
 
 extern bool g_own_ship_sog_cog_calc;
@@ -561,6 +569,13 @@ int MyConfig::LoadMyConfig() {
   g_bShowChartBar = 1;
   g_defaultBoatSpeed = 6.0;
   g_ownship_predictor_minutes = 5;
+  g_cog_predictor_style = 105;
+  g_cog_predictor_color = _T("rgb(255,0,0)" );
+  g_cog_predictor_endmarker = 1;
+  g_ownship_HDTpredictor_style = 105;
+  g_ownship_HDTpredictor_color = _T("rgb(255,0,0)" );
+  g_ownship_HDTpredictor_endmarker = 1;
+  g_ownship_HDTpredictor_width = 0;
   g_cog_predictor_width = 3;
   g_ownship_HDTpredictor_miles = 1;
   g_n_ownship_min_mm = 2;
@@ -857,8 +872,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "LookAheadMode" ), &g_bLookAhead);
   Read(_T ( "SkewToNorthUp" ), &g_bskew_comp);
 
-  Read(_T ( "ShowFPS" ), &g_bShowFPS);
-
   Read(_T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision);
 
   Read(_T( "TalkerIdText" ), &g_TalkerIdText);
@@ -969,7 +982,14 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed);
 
   Read(_T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes);
+  Read(_T ( "OwnshipCOGPredictorStyle" ), &g_cog_predictor_style);
+  Read(_T ( "OwnshipCOGPredictorColor" ), &g_cog_predictor_color);
+  Read(_T ( "OwnshipCOGPredictorEndmarker" ), &g_cog_predictor_endmarker);
   Read(_T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width);
+  Read(_T ( "OwnshipHDTPredictorStyle" ), &g_ownship_HDTpredictor_style);
+  Read(_T ( "OwnshipHDTPredictorColor" ), &g_ownship_HDTpredictor_color);
+  Read(_T ( "OwnshipHDTPredictorEndmarker" ), &g_ownship_HDTpredictor_endmarker);
+  Read(_T ( "OwnshipHDTPredictorWidth" ), &g_ownship_HDTpredictor_width);
   Read(_T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles);
 
   Read(_T ( "OwnShipIconType" ), &g_OwnShipIconType);
@@ -1015,11 +1035,11 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   // We allow 0-99 backups ov navobj.xml
   Read(_T ( "KeepNavobjBackups" ), &g_navobjbackups);
 
-  NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
+  NMEALogWindow::GetInstance().SetSize(Read(_T("NMEALogWindowSizeX"), 600L),
                                Read(_T("NMEALogWindowSizeY"), 400L));
-  NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
+  NMEALogWindow::GetInstance().SetPos(Read(_T("NMEALogWindowPosX"), 10L),
                               Read(_T("NMEALogWindowPosY"), 10L));
-  NMEALogWindow::Get().CheckPos(display_width, display_height);
+  NMEALogWindow::GetInstance().CheckPos(display_width, display_height);
 
   // Boolean to cater for legacy Input COM Port filer behaviour, i.e. show msg
   // filtered but put msg on bus.
@@ -1225,6 +1245,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read(_T ( "GPXIODir" ), &g_gpx_path);     // Get the Directory name
   Read(_T ( "TCDataDir" ), &g_TCData_Dir);  // Get the Directory name
   Read(_T ( "BasemapDir"), &gWorldMapLocation);
+  Read(_T ( "BaseShapefileDir"), &gWorldShapefileLocation);
   Read(_T ( "pluginInstallDir"), &g_winPluginDir);
   wxLogMessage("winPluginDir, read from ini file: %s",
                g_winPluginDir.mb_str().data());
@@ -2393,7 +2414,6 @@ void MyConfig::UpdateSettings() {
     Write(_T ( "OpenGL" ), g_bopengl);
   }
   Write(_T ( "SoftwareGL" ), g_bSoftwareGL);
-  Write(_T ( "ShowFPS" ), g_bShowFPS);
 
   Write(_T ( "ZoomDetailFactor" ), g_chart_zoom_modifier_raster);
   Write(_T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector);
@@ -2426,8 +2446,16 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "UseMagAPB" ), g_bMagneticAPB);
 
   Write(_T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes);
+  Write(_T ( "OwnshipCOGPredictorStyle" ), g_cog_predictor_style);
+  Write(_T ( "OwnshipCOGPredictorColor" ), g_cog_predictor_color);
+  Write(_T ( "OwnshipCOGPredictorEndmarker" ), g_cog_predictor_endmarker);
   Write(_T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width);
+  Write(_T ( "OwnshipHDTPredictorStyle" ), g_ownship_HDTpredictor_style);
+  Write(_T ( "OwnshipHDTPredictorColor" ), g_ownship_HDTpredictor_color);
+  Write(_T ( "OwnshipHDTPredictorEndmarker" ), g_ownship_HDTpredictor_endmarker);
+  Write(_T ( "OwnshipHDTPredictorWidth" ), g_ownship_HDTpredictor_width);
   Write(_T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles);
+
   Write(_T ( "OwnShipIconType" ), g_OwnShipIconType);
   Write(_T ( "OwnShipLength" ), g_n_ownship_length_meters);
   Write(_T ( "OwnShipWidth" ), g_n_ownship_beam_meters);
@@ -2448,10 +2476,10 @@ void MyConfig::UpdateSettings() {
 
   Write(_T ( "ChartQuilting" ), g_bQuiltEnable);
 
-  Write(_T ( "NMEALogWindowSizeX" ), NMEALogWindow::Get().GetSizeW());
-  Write(_T ( "NMEALogWindowSizeY" ), NMEALogWindow::Get().GetSizeH());
-  Write(_T ( "NMEALogWindowPosX" ), NMEALogWindow::Get().GetPosX());
-  Write(_T ( "NMEALogWindowPosY" ), NMEALogWindow::Get().GetPosY());
+  Write(_T ( "NMEALogWindowSizeX" ), NMEALogWindow::GetInstance().GetSizeW());
+  Write(_T ( "NMEALogWindowSizeY" ), NMEALogWindow::GetInstance().GetSizeH());
+  Write(_T ( "NMEALogWindowPosX" ), NMEALogWindow::GetInstance().GetPosX());
+  Write(_T ( "NMEALogWindowPosY" ), NMEALogWindow::GetInstance().GetPosY());
 
   Write(_T ( "PreserveScaleOnX" ), g_bPreserveScaleOnX);
 
@@ -2734,6 +2762,7 @@ void MyConfig::UpdateSettings() {
   Write(_T ( "GPXIODir" ), g_gpx_path);
   Write(_T ( "TCDataDir" ), g_TCData_Dir);
   Write(_T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation));
+  Write(_T ( "BaseShapefileDir" ), g_Platform->NormalizePath(gWorldShapefileLocation));
   Write(_T ( "pluginInstallDir" ), g_Platform->NormalizePath(g_winPluginDir));
 
   SetPath(_T ( "/Settings/NMEADataSource" ));

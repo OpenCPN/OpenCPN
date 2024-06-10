@@ -47,6 +47,8 @@ std::string join(std::vector<std::string> v, char c);
 std::string tolower(const std::string& s);
 
 std::vector<std::string> split(const char* s, const std::string& delimiter);
+std::vector<std::string> split(const std::string& s,
+                               const std::string& delimiter);
 
 bool exists(const std::string& path);
 

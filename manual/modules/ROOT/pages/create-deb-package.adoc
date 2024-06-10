@@ -1,0 +1,120 @@
+= Creating a Debian/Ubuntu package
+
+NOTE: This is provisionary docs, these things are far from stable.
+You have been warned!
+
+== General
+
+This page describes how to create .deb packages usable on Debian
+based distros like vanilla Debian, Ubuntu, Raspbian, Mint, etc.
+
+Work is done on a Debian or Ubuntu host. The big picture
+
+1. Install necessary tools.
+2. Make a fresh OpenCPN clone.
+3. Update at least debian/changelog to create a new version
+4. Import the current master branch into upstream/latest
+5. Install build dependencies
+6. Create testable packages
+7. (Optional) Upload packages to an Ubuntu PPA.
+
+
+== Install tools
+
+    $ sudo apt install devscripts git-buildpackage equivs
+
+
+== Make a fresh OpenCPN clone.
+
+The Debian tools creates things in the parent directory. To handle this,
+create  new, empty directory and put the OpenCPN tree there. Then,
+get all necessary three branches:
+
+
+    $ mkdir OpenCPN
+    $ cd OpenCPN
+    $ git clone --origin upstream  https://github.com/OpenCPN/OpenCPN.git
+    $ cd OpenCPN
+    $ git fetch upstream upstream/latest:upstream/latest
+    $ git fetch upstream pristine-tar:pristine-tar
+    $ git fetch upstream ubuntu/numbat:ubuntu/numbat
+    $ git checkout ubuntu/numbat
+
+`ubuntu/numbat` is the branch to use when building Ubuntu Numbat (24.04)
+packages.
+Other alternatives are `ubuntu/jammy`, `ubuntu/focal` and `debian/master`.
+The latter builds packages for the rolling Sid distribution.
+
+
+== Update debian/changelog with a new version
+
+_debian/changelog_ is picky about the format. Editing by hand is hard. Instead,
+use the `dch` tool. It has a multitude of options. The simplest is to create
+a new, minor release using `dch -i`.
+
+dch throws you in an editor loaded with debian/changelog. Complete the entry
+as you consider best (there are many conventions here, but for a local build
+it's not that important).
+
+
+== Import the current master branch into upstream/latest
+
+For now, the debian directory needs to be removed. After that, create a
+tarball based on HEAD:
+
+    $ git checkout master
+    $ git switch -c tmp-build
+    $ git rm -r debian
+    $ git commit -m "Remove unused debian/ dir"
+    $ git archive --prefix opencpn-1.2.3/ --output ../opencpn.tar.gz HEAD
+
+The `--prefix` part should be modified to reflect current version, but is not
+critical. Note the trailing slash!
+
+Next step is to convert the tarball to a formal debian source tarball. This
+is about renaming and stripping files not used  in the Debian build. Do:
+
+    $ git checkout ubuntu/numbat.
+    $ mk-origtargz ../opencpn.tar.gz
+
+Where _../opencpn.tar.gz_  is the file created by `git archive` above. This
+creates something like  _../opencpn_.5.10.920.orig.tar.gz_. The version in
+the filename is taken from debian/changelog.
+
+`ubuntu/numbat` is just an example, see Make a fresh clone above.
+
+The final step is to import this tarball into upstream/latest. Using the
+above do:
+
+   $ gbp import-orig ../opencpn_.5.10.920.orig.tar.gz
+
+== Install build dependencies
+
+    $ mk-build-deps
+    $ sudo dpkg -i *deb     # Expect error messages, ignore them
+    $ sudo apt install -f
+    $ git clean -fxd
+
+== Build packages
+
+The step above creates a tag named like `upstream/5.10.920` or so. Use
+`git tag -l | grep upstream/` to find out the tag name. Then do
+
+    $ git clean -fxd; git checkout .
+    $ gbp buildpackage --git-upstream-tag=upstream/whatever
+
+This builds testable .deb packages in _.._.
+
+
+== Upload to PPA
+
+The artifact uploaded to an Ubuntu ppa is a _.source.changes_ file.  This
+is created using
+
+    $ debuild -S
+
+This requires that gpg signing keys is configured which is outside the scope
+of this document. The command creates something like
+_../opencpn.1.2.3.source.changes_.  Upload to a PPA using something like
+
+    $ dput ppa:leamas-alec/opencpn ../opencpn.1.2.3.source.changes

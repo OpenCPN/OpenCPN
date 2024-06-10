@@ -77,6 +77,8 @@ static const char PATH_SEP = ';';
 static const char PATH_SEP = ':';
 #endif
 
+bool AbstractPlatform::m_isBusy = false;
+
 static const char* const DEFAULT_XDG_DATA_DIRS =
     "~/.local/share:/usr/local/share:/usr/share";
 
@@ -744,17 +746,36 @@ wxString AbstractPlatform::GetPluginDataPath() {
   return m_pluginDataPath;
 }
 
-
 #ifdef __ANDROID__
-void AbstractPlatform::ShowBusySpinner() { androidShowBusyIcon(); }
+void AbstractPlatform::ShowBusySpinner() {
+  if (!m_isBusy) {
+    androidShowBusyIcon();
+    m_isBusy = true;
+  }
+}
 #else
-void AbstractPlatform::ShowBusySpinner() { ::wxBeginBusyCursor(); }
+void AbstractPlatform::ShowBusySpinner() {
+  if (!m_isBusy) {
+    ::wxBeginBusyCursor();
+    m_isBusy = true;
+  }
+}
 #endif
 
 #ifdef __ANDROID__
-void AbstractPlatform::HideBusySpinner() { androidHideBusyIcon(); }
+void AbstractPlatform::HideBusySpinner() {
+  if (m_isBusy) {
+    androidHideBusyIcon();
+    m_isBusy = false;
+  }
+}
 #else
-void AbstractPlatform::HideBusySpinner() { ::wxEndBusyCursor(); }
+void AbstractPlatform::HideBusySpinner() {
+  if (m_isBusy) {
+    ::wxEndBusyCursor();
+    m_isBusy = false;
+  }
+}
 #endif
 
 // getDisplaySize

@@ -39,9 +39,6 @@ extern int g_iDashDepthUnit;
 #pragma hdrstop
 #endif
 
-int m_DataHeight;
-int w_label, h_label, m_plotdown, m_plotup, m_plotheight;
-
 DashboardInstrument_Depth::DashboardInstrument_Depth(wxWindow* parent,
                                                      wxWindowID id,
                                                      wxString title,
@@ -58,36 +55,35 @@ DashboardInstrument_Depth::DashboardInstrument_Depth(wxWindow* parent,
 }
 
 wxSize DashboardInstrument_Depth::GetSize(int orient, wxSize hint) {
-  wxClientDC dc(this);
+
+  InitTitleSize();
   int w;
+  InitDataTextHeight(_T("15.7 Feet"),w);
+
+  wxClientDC dc(this);
   wxFont f;
   if (m_Properties)
   {
-      f = m_Properties->m_TitelFont.GetChosenFont();
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-      f = m_Properties->m_DataFont.GetChosenFont();
-      dc.GetTextExtent("15.7 Feet", &w, &m_DataHeight, 0, 0, &f);
       // Space for bottom(temp)text later.
       f = m_Properties->m_LabelFont.GetChosenFont();
       dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &f);
   }
   else
   {
-      f = g_pFontTitle->GetChosenFont();
-      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, &f);
-      f = g_pFontData->GetChosenFont();
-      dc.GetTextExtent("15.7 Feet", &w, &m_DataHeight, 0, 0, &f);
       // Space for bottom(temp)text later.
       f = g_pFontLabel->GetChosenFont();
       dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &f);
   }
-  int y_total =
-      //  Title         Depth data       plot area       w-temp
-      m_TitleHeight + m_DataHeight + 4 * m_DataHeight + h_label;
+
+               //  Depth data       plot area            w-temp
+  int drawHeight=m_DataTextHeight + 4 * m_DataTextHeight + h_label + m_DataTextHeight*g_TitleVerticalOffset;
+  InitTitleAndDataPosition(drawHeight);
+  int y_total = GetFullHeight(drawHeight);
+
   if (orient == wxHORIZONTAL) {
-    return wxSize( DefaultWidth, wxMax(y_total, hint.y));
+    return wxSize(wxMax(w + m_DataMargin,DefaultWidth), wxMax(y_total, hint.y));
   } else {
-    return wxSize(wxMax(hint.x, DefaultWidth), y_total);
+    return wxSize(wxMax(hint.x, wxMax(w + m_DataMargin,DefaultWidth)), y_total);
   }
 }
 
@@ -147,8 +143,11 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   pen.SetWidth(1);
   dc->SetPen(pen);
 
-  m_plotup = m_TitleHeight + m_DataHeight;
-  m_plotdown = size.y - h_label;
+  int drawHeight=GetDataBottom(size.y) - m_DataTop;
+  InitTitleAndDataPosition(drawHeight);
+
+  m_plotup = m_DataTop + m_DataTextHeight;
+  m_plotdown = m_DataTop + drawHeight - h_label;
   m_plotheight = m_plotdown - m_plotup;
 
   dc->DrawLine(3, m_plotup, size.x - 3, m_plotup);
@@ -284,9 +283,9 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
     wxString s_depth = wxString::Format(_T("%.2f"), m_Depth);
     // We want only one decimal but for security not rounded up.
     s_depth = s_depth.Mid(0, s_depth.length() - 1);
-    dc->DrawText(s_depth + _T(" ") + m_DepthUnit, 10, m_TitleHeight);
+    dc->DrawText(s_depth + _T(" ") + m_DepthUnit, 10, m_DataTop);
   } else
-    dc->DrawText(_T("---"), 10, m_TitleHeight);
+    dc->DrawText(_T("---"), 10, m_DataTop);
   if (m_Properties)
      dc->SetFont(m_Properties->m_LabelFont.GetChosenFont());
   else
