@@ -1,9 +1,8 @@
 OpenCPN temporary 5.9 Debian repository
 =======================================
 
-This repository contains opencpn 5.9.x backported to bookworm. The
-packages here are uploaded to Debian. However, the Debian administrative
-processes are quite slow making a pre-release repository useful.
+This repository contains opencpn 5.9.x beta builds backported to bookworm. These
+will never be uploaded to the Debian repositories
 
 To use the repository:
 
@@ -16,7 +15,3 @@ To use the repository:
 
   - Update the apt catalog and install or update opencpn:
        $ sudo apt update && sudo apt install opencpn
-
-The status of the official bookworm-backports repository is at the time of 
-writing unclear. The file opencpn.list should be removed once the backport
-is available from the official Debian repositories.

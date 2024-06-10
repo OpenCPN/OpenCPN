@@ -1,4 +1,9 @@
-# docker run -v=$PWD:/build -v=/tmp:/output debian:bookworm-backports /bin/bash /build/build.sh
+# podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/amd64 \
+#     -v=$PWD:/build -v=/tmp/pkg-amd64:/output -e DOCKER_BUILD=1 \
+#      debian:bookworm-backports /bin/bash  /build/build.sh
+# podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/aarch64 \
+#     -v=$PWD:/build -v=/tmp/pkg-aarch64:/output -e DOCKER_BUILD=1 \
+#     --arch=aarch64 debian:bookworm-backports /bin/bash /build/build.sh
 
 # Install build tools
 apt update --allow-unauthenticated 
@@ -17,6 +22,7 @@ mk-build-deps
 apt install -y ./*deb
 
 # Build
+export DEBSIGN_KEYID=build@opencpn.org
 git clean -fxd; git checkout .
 gbp buildpackage --git-upstream-tag=upstream/5.9.1-beta1+dfsg
 
