@@ -2026,7 +2026,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                         wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
 
   wxString m_LineColorChoices[] = {
-      ("Default color"), _("Black"),     _("Dark Red"),     _("Dark Green"),
+      _("Default color"), _("Black"),     _("Dark Red"),     _("Dark Green"),
       _("Dark Yellow"),  _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"),
       _("Light Gray"),   _("Dark Gray"), _("Red"),          _("Green"),
       _("Yellow"),       _("Blue"),      _("Magenta"),      _("Cyan"),
