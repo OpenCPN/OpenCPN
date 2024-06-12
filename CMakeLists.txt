@@ -1872,6 +1872,7 @@ if (APPLE)
   target_sources(
     ${PACKAGE_NAME}
     PRIVATE ${gshhs}
+            ${basemap_shp}
             ${uiData}
             ${s57data}
             ${tcData}
