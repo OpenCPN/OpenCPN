@@ -4037,6 +4037,8 @@ int MyFrame::DoOptionsDialog() {
 #endif
 
   if ((g_canvasConfig != last_canvasConfig) || (rr & GL_CHANGED)) {
+    DestroyPersistentDialogs();
+
     UpdateCanvasConfigDescriptors();
 
     if ((g_canvasConfig > 0) && (last_canvasConfig == 0))
