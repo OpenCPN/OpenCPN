@@ -584,7 +584,7 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
   chartsPanelBoxSizer->Add(m_bDnldCharts, 0, wxALIGN_LEFT | wxALL, 5);
 
   m_stCatalogInfo = new wxStaticText(chartsPanel, wxID_ANY,
-                                     _("%u charts total, %u updated, %u new"),
+                                     "",
                                      wxDefaultPosition, wxDefaultSize, 0);
   chartsPanelBoxSizer->Add(m_stCatalogInfo, 1, wxEXPAND | wxALL, 5);
   /// mainSizer->Add( m_stCatalogInfo, 0, wxEXPAND| wxALL, 5 );
