@@ -1,0 +1,24 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 10 Jun 2024 11:44:32 +0200
+Subject: tests: Disable time dependent Buffer.RateLimit2 test.
+
+---
+ test/buffer_tests.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/buffer_tests.cpp b/test/buffer_tests.cpp
+index 15acd7c..1ba81da 100644
+--- a/test/buffer_tests.cpp
++++ b/test/buffer_tests.cpp
+@@ -118,9 +118,9 @@ TEST(Buffer, RateLimit1) {
+   EXPECT_EQ(queue.size(), 20);
+ }
+ 
+-#if !defined(__APPLE__) && !defined (_WIN32)
++#if !defined(__APPLE__) && !defined (_WIN32) && !defined(OCPN_DISTRO_BUILD)
+ // The MacOS builders seems to have a lot of "too" long sleeps,
+-// same for  GA windows. Disable for now.
++// same for  GA windows and Linux buildbots. Disable for now.
+ TEST(Buffer, RateLimit2) {
+   CommOutQueue queue(20, 20ms);
+   for (int i = 0; i < 20; i++) {
