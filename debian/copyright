@@ -16,6 +16,7 @@ Files-Excluded:
  flatpak
  libs/lz4
  libs/serial
+ libs/shapelib
  libs/tinyxml
  libs/wxsvg
  plugins/chartdldr_pi/src/tinyxml
