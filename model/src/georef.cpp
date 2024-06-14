@@ -34,6 +34,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <algorithm>
 
 #include <wx/debug.h>
 
@@ -1267,6 +1268,15 @@ double DistLoxodrome(double slat, double slon, double dlat, double dlon) {
   double dist =
       60 * sqrt(pow(slat - dlat, 2) +
                 pow((slon - dlon) * cos((slat + dlat) / 2 * DEGREE), 2));
+  // Crossing IDL or Greenwich?
+  if (slon * dlon < 0){
+    if (slon < 0) slon += 360.;
+    else if (dlon < 0) dlon += 360.;
+    double distrtw =
+        60 * sqrt(pow(slat - dlat, 2) +
+                  pow((slon - dlon) * cos((slat + dlat) / 2 * DEGREE), 2));
+    return std::min(dist, distrtw);
+  }
   return dist;
 }
 

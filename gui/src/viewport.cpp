@@ -955,8 +955,6 @@ void ViewPort::SetBoxes(void) {
   //  Set the viewport lat/lon bounding box appropriately
   vpBBox.Set(dlat_min, dlon_min, dlat_max, dlon_max);
 
-  printf( "idl: %d\n", ContainsIDL());
-
   // Restore the rotation angle
   SetRotationAngle(rotation_save);
 }
