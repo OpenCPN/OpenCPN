@@ -955,6 +955,8 @@ void ViewPort::SetBoxes(void) {
   //  Set the viewport lat/lon bounding box appropriately
   vpBBox.Set(dlat_min, dlon_min, dlat_max, dlon_max);
 
+  printf( "idl: %d\n", ContainsIDL());
+
   // Restore the rotation angle
   SetRotationAngle(rotation_save);
 }
@@ -962,6 +964,13 @@ void ViewPort::SetBoxes(void) {
 void ViewPort::SetBBoxDirect(double latmin, double lonmin, double latmax,
                              double lonmax) {
   vpBBox.Set(latmin, lonmin, latmax, lonmax);
+}
+bool ViewPort::ContainsIDL(){
+  if ((vpBBox.GetMinLon() <= -180.) && (vpBBox.GetMaxLon() > -180.))
+    return true;
+  if ((vpBBox.GetMinLon() <= 180.) && (vpBBox.GetMaxLon() > 180.))
+    return true;
+  return false;
 }
 
 ViewPort ViewPort::BuildExpandedVP(int width, int height) {
