@@ -50,6 +50,7 @@
 #include "model/select.h"
 
 WayPointman *pWayPointMan;
+extern double g_defaultBoatSpeed;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(RouteList);
@@ -85,7 +86,7 @@ Route::Route() {
   m_NextLegGreatCircle = false;
 
   m_PlannedSpeed = ROUTE_DEFAULT_SPEED;
-  if (g_PlanSpeed != ROUTE_DEFAULT_SPEED) m_PlannedSpeed = g_PlanSpeed;
+  if (g_defaultBoatSpeed != ROUTE_DEFAULT_SPEED) m_PlannedSpeed = g_defaultBoatSpeed;
 
   m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
   m_TimeDisplayFormat = RTE_TIME_DISP_PC;
