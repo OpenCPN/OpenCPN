@@ -50,7 +50,7 @@
 #include "model/select.h"
 
 WayPointman *pWayPointMan;
-extern double g_defaultBoatSpeed;
+double g_defaultBoatSpeed;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(RouteList);

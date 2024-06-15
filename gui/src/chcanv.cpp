@@ -318,7 +318,7 @@ extern wxColour g_colourOwnshipRangeRingsColour;
 
 // LIVE ETA OPTION
 bool g_bShowLiveETA;
-double g_defaultBoatSpeed;
+extern double g_defaultBoatSpeed;
 double g_defaultBoatSpeedUserUnit;
 
 extern int g_nAIS_activity_timer;
