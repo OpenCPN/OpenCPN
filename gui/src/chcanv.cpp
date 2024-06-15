@@ -6437,6 +6437,9 @@ void ChartCanvas::UpdateShips() {
   if (!dc.IsOk()) return;
 
   wxBitmap test_bitmap(dc.GetSize().x, dc.GetSize().y);
+  if (!test_bitmap.IsOk())
+    return;
+  
   wxMemoryDC temp_dc(test_bitmap);
 
   temp_dc.ResetBoundingBox();
