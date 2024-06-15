@@ -67,6 +67,7 @@ extern ChartDB *ChartData;
 extern ocpnStyle::StyleManager *g_StyleManager;
 extern int g_GUIScaleFactor;
 extern bool g_bopengl;
+extern float g_toolbar_scalefactor;
 
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;
@@ -791,18 +792,28 @@ void Piano::FormatKeys(void) {
   width *= m_parentCanvas->GetContentScaleFactor();
 #endif
 
-  int height = GetHeight();
+  // Estimate size of horizontal MUIBar
+  wxSize mui_tool_size = g_StyleManager->GetCurrentStyle()->GetToolSize();
+  //  MuiBar has boosted the MUIButton default size by 125%
+  mui_tool_size = wxSize(mui_tool_size.x * 1.25, mui_tool_size.y * 1.25);
+  //  Muibar horizontal is about 7 "icons" wide.
+  int mui_bar_width_est = mui_tool_size.x * 7 * g_toolbar_scalefactor;
+
   width *= g_btouch ? 0.98f : 0.6f;
+  width = wxMin(width, m_parentCanvas->GetClientSize().x - mui_bar_width_est);
+  width = wxMax(width, mui_bar_width_est);
 
   // Max width available
   m_width_avail = width;
+
+  int height = GetHeight();
 
   int nKeys = m_composite_array.size();
   int kw = style->chartStatusIconWidth;
   if (nKeys) {
     if (!kw) kw = width / nKeys;
 
-    kw = wxMin(kw, (width * 3 / 4) / nKeys);
+    //kw = wxMin(kw, (width * 3 / 4) / nKeys);
     kw = wxMax(kw, 6);
 
     //    Build the Key Regions
