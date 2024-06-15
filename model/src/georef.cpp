@@ -1275,7 +1275,7 @@ double DistLoxodrome(double slat, double slon, double dlat, double dlon) {
     double distrtw =
         60 * sqrt(pow(slat - dlat, 2) +
                   pow((slon - dlon) * cos((slat + dlat) / 2 * DEGREE), 2));
-    return std::min(dist, distrtw);
+    return (std::min)(dist, distrtw);
   }
   return dist;
 }
