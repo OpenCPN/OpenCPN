@@ -574,6 +574,10 @@ void FirstUseWizImpl::EnumerateGPSD() {
 }
 
 void FirstUseWizImpl::EnumerateDatasources() {
+  m_btnRescanSources->Enable(false);
+  SetControlEnable(wxID_CANCEL, false);
+  SetControlEnable(wxID_FORWARD, false);
+  SetControlEnable(wxID_BACKWARD, false);
   wxTheApp->ProcessPendingEvents();
   wxYield();
   g_Platform->ShowBusySpinner();
@@ -659,7 +663,10 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_rtConnectionInfo->WriteText(
       _(" icon in the main Toolbar. In the Toolbox navigate to the Connections "
         "tab."));
-
+  m_btnRescanSources->Enable(true);
+  SetControlEnable(wxID_CANCEL, true);
+  SetControlEnable(wxID_FORWARD, true);
+  SetControlEnable(wxID_BACKWARD, true);
   g_Platform->HideBusySpinner();
 }
 
