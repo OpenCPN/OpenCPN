@@ -35,9 +35,12 @@
 #include <regex>
 #include <wx/sckaddr.h>
 #include <wx/socket.h>
+#include <wx/jsonval.h>
+#include <wx/jsonreader.h>
 #include "wiz_ui.h"
 #include "OCPNPlatform.h"
 #include "model/comm_drv_signalk_net.h"
+#include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
 #include "model/mDNS_query.h"
@@ -192,7 +195,11 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
                            // appendix E)
     // TODO: Other formats of NMEA2000 data
     while (std::getline(ss, to, '\n')) {
-      if (std::regex_search(to, n2k_regex)) {
+      if (std::regex_search(to, n2k_regex) ||
+          (to.length() > 4 && to[0] == ESCAPE && // Actisense/YD N2K mode
+           to[1] == STARTOFTEXT &&
+           to[to.length() - 1] == ENDOFTEXT &&
+           to[to.length() - 2] == ESCAPE)) {
         DEBUG_LOG << "Looks like NMEA2000: " << to;
         return true;
       } else {
@@ -470,7 +477,53 @@ void FirstUseWizImpl::EnumerateTCP() {
 void FirstUseWizImpl::EnumerateSignalK() { FindAllSignalKServers(1); }
 
 void FirstUseWizImpl::EnumerateCAN() {
-  // TODO look at the canX interfaces if we are on Linux
+#ifdef __WXGTK__
+  wxString cmd = "ip -j link show";
+  wxArrayString output;
+  if (long res = wxExecute(cmd, output); res != 0) {
+    DEBUG_LOG << "Network interface evaluation failed with exit code " << res;
+    for (const auto &l : output) {
+      DEBUG_LOG << " - " << l;
+    }
+    return;
+  }
+
+  wxString fis;
+  for (const auto &l : output) {
+    fis.Append(l);
+  }
+  wxJSONReader reader;
+  wxJSONValue root;
+  reader.Parse(fis, &root);
+  if (reader.GetErrorCount() > 0){
+    DEBUG_LOG << "Failed to parse JSON output from ip.";
+    for(const auto &l : reader.GetErrors()) {
+      DEBUG_LOG << " - " << l;
+    }
+    return;
+  }
+  if (root.IsArray()) {
+    for (int i = 0; i < root.Size(); i++) {
+      const wxJSONValue iface = root[i];
+      if (iface.HasMember("ifname") &&
+          iface.HasMember("link_type")) {
+        wxString ifname = iface.Get("ifname", "").AsString();
+        wxString link_type = iface.Get("link_type", "").AsString();
+        if (link_type == "can") {
+          DEBUG_LOG << "Found CAN interface: " << ifname;
+          ConnectionParams params;
+          params.Type = ConnectionType::SOCKETCAN;
+          params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
+          params.Protocol = DataProtocol::PROTO_NMEA2000;
+          params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+          params.Port = ifname;
+          params.UserComment = wxString::Format("SocketCAN: %s", ifname);
+          m_detected_connections.push_back(params);
+        }
+      }
+    }
+  }
+#endif
 }
 
 void FirstUseWizImpl::EnumerateGPSD() {
@@ -500,6 +553,7 @@ void FirstUseWizImpl::EnumerateGPSD() {
 
 void FirstUseWizImpl::EnumerateDatasources() {
   wxTheApp->ProcessPendingEvents();
+  wxYield();
   g_Platform->ShowBusySpinner();
   m_clSources->Clear();
   m_detected_connections.clear();
@@ -520,10 +574,12 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_rtConnectionInfo->WriteText(_("Looking for TCP servers..."));
   m_rtConnectionInfo->Newline();
   EnumerateTCP();
+#ifdef __WXGTK__
   wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Looking for CAN interfaces..."));
   m_rtConnectionInfo->Newline();
   EnumerateCAN();
+#endif
   wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Looking for GPSD servers..."));
   m_rtConnectionInfo->Newline();
