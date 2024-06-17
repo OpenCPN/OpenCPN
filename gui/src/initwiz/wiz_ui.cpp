@@ -190,7 +190,7 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
 
   if (!data.empty()) {
     std::regex n2k_regex(
-        "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [RT] [0-9A-F]{8}("
+        "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [RT] [0-9A-F]{8}( "
         "[0-9A-F]{2})*");  // YD RAW format
                            // (https://www.yachtd.com/downloads/ydnr02.pdf
                            // appendix E)
