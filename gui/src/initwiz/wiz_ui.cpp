@@ -158,6 +158,7 @@ void FirstUseWizImpl::OnWizardFinished(wxWizardEvent& event) {
     }
   }
   cfg->Flush();
+  cfg->LoadMyConfig();
 }
 
 NMEA0183Flavor FirstUseWizImpl::SeemsN0183(std::string& data) {
