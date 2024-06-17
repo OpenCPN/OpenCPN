@@ -217,6 +217,9 @@ void FirstUseWizImpl::EnumerateUSB() {
     DEBUG_LOG << "Found port: " << port.port << ", " << port.description << ", "
               << port.hardware_id;
     for (const auto& device : known_usb_devices) {
+      m_rtConnectionInfo->WriteText(".");
+      wxTheApp->ProcessPendingEvents();
+      wxYield();
       std::stringstream stream_vid;
       std::stringstream stream_pid;
       stream_vid << std::uppercase << std::hex << device.vid;
@@ -243,6 +246,9 @@ void FirstUseWizImpl::EnumerateUSB() {
     }
     if (!known) {
       for (auto sp : Speeds) {
+        m_rtConnectionInfo->WriteText(".");
+        wxTheApp->ProcessPendingEvents();
+        wxYield();
         try {
           DEBUG_LOG << "Trying " << port.port << " at " << sp;
           serial::Serial serial;
@@ -313,11 +319,18 @@ void FirstUseWizImpl::EnumerateUSB() {
       }
     }
   }
+  m_rtConnectionInfo->Newline();
 #endif
 }
 
 void FirstUseWizImpl::EnumerateUDP() {
+  size_t progress = 0;
   for (auto port : UDPPorts) {
+    if (++progress % 10 == 0) {
+      m_rtConnectionInfo->WriteText(".");
+      wxTheApp->ProcessPendingEvents();
+      wxYield();
+    }
     wxIPV4address conn_addr;
     conn_addr.Service(port);
     conn_addr.AnyAddress();
@@ -367,6 +380,7 @@ void FirstUseWizImpl::EnumerateUDP() {
     sock->Close();
     delete sock;
   }
+  m_rtConnectionInfo->Newline();
 }
 
 #ifndef __ANDROID__
@@ -418,8 +432,14 @@ void FirstUseWizImpl::EnumerateTCP() {
     }
   }
 
+  size_t progress = 0;
   for (const auto& ip : ips) {
     for (auto port : TCPPorts) {
+      if (++progress % 10 == 0) {
+        m_rtConnectionInfo->WriteText(".");
+        wxTheApp->ProcessPendingEvents();
+        wxYield();
+      }
       DEBUG_LOG << "Trying TCP port " << port << " on " << ip;
       wxIPV4address conn_addr;
       conn_addr.Service(port);
@@ -471,6 +491,7 @@ void FirstUseWizImpl::EnumerateTCP() {
   }
   route_close(r);
   arp_close(arp);
+  m_rtConnectionInfo->Newline();
 #endif
 }
 
@@ -559,32 +580,43 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_detected_connections.clear();
   m_rtConnectionInfo->Clear();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  m_rtConnectionInfo->WriteText(_("Looking for navigation data sources, this may take a while..."));
+  m_rtConnectionInfo->Newline();
   m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
   m_rtConnectionInfo->Newline();
-  EnumerateSignalK();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateSignalK();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();
-  EnumerateUSB();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateUSB();
   m_rtConnectionInfo->WriteText(_("Looking for UDP data feeds..."));
   m_rtConnectionInfo->Newline();
-  EnumerateUDP();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateUDP();
   m_rtConnectionInfo->WriteText(_("Looking for TCP servers..."));
   m_rtConnectionInfo->Newline();
+  wxTheApp->ProcessPendingEvents();
+  wxYield();
   EnumerateTCP();
 #ifdef __WXGTK__
-  wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Looking for CAN interfaces..."));
   m_rtConnectionInfo->Newline();
+  wxTheApp->ProcessPendingEvents();
+  wxYield();
   EnumerateCAN();
 #endif
-  wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Looking for GPSD servers..."));
   m_rtConnectionInfo->Newline();
+  wxTheApp->ProcessPendingEvents();
+  wxYield();
   EnumerateGPSD();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
   for (const auto& sks : g_sk_servers) {
     ConnectionParams params;
     params.Type = ConnectionType::NETWORK;
