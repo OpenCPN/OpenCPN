@@ -169,7 +169,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
     : GRIBUICtrlBarBase(parent, id, title, pos, size, style) {
   pParent = parent;
   pPlugIn = ppi;
-  m_vp = 0;
+  m_vp = &pPlugIn->GetCurrentViewPort() ;
   pReq_Dialog = NULL;
   m_bGRIBActiveFile = NULL;
   m_pTimelineSet = NULL;
