@@ -27,3 +27,4 @@ src/icons.cpp
 src/GribTable.cpp
 src/GribRequestDialog.cpp
 src/CursorData.cpp
+src\XyGribPanel.cpp
