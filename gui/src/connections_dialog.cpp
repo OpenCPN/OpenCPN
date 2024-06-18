@@ -62,9 +62,6 @@ ConnectionsDialog::ConnectionsDialog(wxScrolledWindow* container,
                                      options* parent) {
   m_container = container;
   m_parent = parent;
-  nmea_window_close_listener.Init(
-          NMEALogWindow::GetInstance().nmea_window_close_evt,
-          [&] (ObservedEvt&) { m_cbNMEADebug->SetValue(false); });
 
   Init();
 }
