@@ -1639,8 +1639,8 @@ bool MyApp::OnInit() {
   gFrame->SetAllToolbarScale();
 
   // Show the frame
-
   gFrame->Show(TRUE);
+  Yield();      // required for Gnome 45
 
   gFrame->SetAndApplyColorScheme(global_color_scheme);
 
