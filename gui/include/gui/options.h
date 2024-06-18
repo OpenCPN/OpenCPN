@@ -281,19 +281,12 @@ public:
   options(const options&) = delete;
   options& operator=(const options&) = delete;
 
-  ~options();
+  ~options(void);
+  bool SendIdleEvents(wxIdleEvent &event);
+  void SetInitialPage(int page_sel, int sub_page = -1);
+  void Finish(void);
 
-  // Should we show tooltips?
-  static bool ShowToolTips();
-
-  void Finish();
-  void SetInitialSettings();
-  void SetConfigPtr(MyConfig *p) { m_pConfig = p; }
-  void SetDirActionButtons();
-  bool GetNeedNew() { return m_bneedNew; }
-  void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
-  int GetScrollRate() { return m_scrollRate; }
-  void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
+  void OnClose(wxCloseEvent &event);
 
   /** Set function invoked when closing. */
   void SetOnCloseCb(std::function<void()> cb) { m_on_close_cb = cb; }
@@ -301,140 +294,127 @@ public:
   /**  Clear function invoked when closing. */
   void ClearOnCloseCb() { m_on_close_cb = []{}; }
 
-  void SetInitialPage(int page_sel, int sub_page = -1);
+  void CreateListbookIcons();
+  void CreateControls(void);
+  size_t CreatePanel(const wxString &title);
   wxScrolledWindow *AddPage(size_t parent, const wxString &title);
   bool DeletePluginPage(wxScrolledWindow *page);
-
   void SetColorScheme(ColorScheme cs);
   void RecalculateSize(int hint_x, int hint_y);
-  void UpdateOptionsUnits();
 
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
-  void AddChartDir(const wxString &dir);
-  void UpdateChartDirList();
-  void UpdateDisplayedChartDirList(ArrayOfCDI p);
+  void SetInitialSettings(void);
+  void SetInitialVectorSettings(void);
 
   void SetCurrentDirList(ArrayOfCDI p) { m_CurrentDirList = p; }
   void SetWorkDirListPtr(ArrayOfCDI *p) { m_pWorkDirList = p; }
-  ArrayOfCDI *GetWorkDirListPtr() { return m_pWorkDirList; }
+  ArrayOfCDI *GetWorkDirListPtr(void) { return m_pWorkDirList; }
 
-  void UpdateWorkArrayFromDisplayPanel();
-  ArrayOfCDI GetSelectedChartDirs();
-  ArrayOfCDI GetUnSelectedChartDirs();
+  void AddChartDir(const wxString &dir);
 
-  void OnConfigMouseSelected(wxMouseEvent &event);
-  void OnCanvasConfigSelectClick(int ID, bool selected);
+  void UpdateDisplayedChartDirList(ArrayOfCDI p);
+  void UpdateOptionsUnits(void);
 
-  wxPoint lastWindowPos;
-  wxSize lastWindowSize;
-  size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
-  int lastPage, lastSubPage;
-  size_t m_pageUI, m_pagePlugins;
-  wxBoxSizer *itemBoxSizerPanelPlugins;
-  wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
-  wxWindow *pParent;
-
-  /** Notified with a OCPN_Sound* pointer when sound has completed. */
-  EventVar m_on_sound_done;
-
-private:
-  void Init();
-  void SetInitialVectorSettings();
-  void CreateControls();
-  void CreateListbookIcons();
-  size_t CreatePanel(const wxString &title);
-  void CreatePanel_MMSI(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_AIS(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Ownship(size_t parent, int border_size,
-                           int group_item_spacing);
-  void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_ChartsLoad(size_t parent, int border_size,
-                              int group_item_spacing);
-  void CreatePanel_VectorCharts(size_t parent, int border_size,
-                                int group_item_spacing);
-  void CreatePanel_TidesCurrents(size_t parent, int border_size,
-                                 int group_item_spacing);
-  void CreatePanel_ChartGroups(size_t parent, int border_size,
-                               int group_item_spacing);
-  void CreatePanel_Display(size_t parent, int border_size,
-                           int group_item_spacing);
-  void CreatePanel_UI(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Units(size_t parent, int border_size,
-                         int group_item_spacing);
-  void CreatePanel_Sounds(size_t parent, int border_size,
-                          int group_item_spacing);
-  void CreatePanel_Advanced(size_t parent, int border_size,
-                            int group_item_spacing);
-  void CreatePanel_Configs(size_t parent, int border_size,
-                           int group_item_spacing);
-  void CreatePanel_Routes(size_t parent, int border_size,
-                          int group_item_spacing);
-
-  bool SendIdleEvents(wxIdleEvent &event);
-
-  void SetConfigButtonState();
-  void ClearConfigList();
-  void BuildConfigList();
-
-  void DoOnPageChange(size_t page);
-  void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
-  void OnAlertEnableButtonClick(wxCommandEvent &event);
-  void OnApplyClick(wxCommandEvent &event);
-  void OnApplyConfig(wxCommandEvent &event);
-  void OnButtonaddClick(wxCommandEvent &event);
-  void OnButtonClearClick(wxCommandEvent &event);
-  void OnButtoncompressClick(wxCommandEvent &event);
-  void OnButtondeleteClick(wxCommandEvent &event);
-  void OnButtonEcdisHelp(wxCommandEvent &event);
-  void OnButtonGroups(wxCommandEvent &event);
-  void OnButtonmigrateClick(wxCommandEvent &event);
-  void OnButtonParseENC(wxCommandEvent &event);
-  void OnButtonSelectClick(wxCommandEvent &event);
-  void OnButtonSelectSound(wxCommandEvent &event);
-  void OnButtonSetStd(wxCommandEvent &event);
-  void OnButtonTestSound(wxCommandEvent &event);
-  void OnCancelClick(wxCommandEvent &event);
-  void OnCharHook(wxKeyEvent &event);
-  void OnChartDirListSelect(wxCommandEvent &event);
-  void OnChartsPageChange(wxListbookEvent &event);
-  void OnChooseFont(wxCommandEvent &event);
-  void OnClose(wxCloseEvent &event);
-  void OnCPAWarnClick(wxCommandEvent &event);
-  void OnCreateConfig(wxCommandEvent &event);
+  void SetConfigPtr(MyConfig *p) { m_pConfig = p; }
   void OnDebugcheckbox1Click(wxCommandEvent &event);
-  void OnDeleteConfig(wxCommandEvent &event);
-  void OnDialogInit(wxInitDialogEvent& event);
   void OnDirctrlSelChanged(wxTreeEvent &event);
-  void OnDisplayCategoryRadioButton(wxCommandEvent &event);
-  void OnEditConfig(wxCommandEvent &event);
-  void OnFontChoice(wxCommandEvent &event);
-  void OnGLClicked(wxCommandEvent &event);
-  void OnInsertTideDataLocation(wxCommandEvent &event);
-  void OnOpenGLOptions(wxCommandEvent &event);
-  void OnPageChange(wxListbookEvent &event);
-  void OnRadarringSelect(wxCommandEvent &event);
+  void OnButtonaddClick(wxCommandEvent &event);
+  void OnButtondeleteClick(wxCommandEvent &event);
+  void OnButtonParseENC(wxCommandEvent &event);
+  void OnButtoncompressClick(wxCommandEvent &event);
+  void OnButtonmigrateClick(wxCommandEvent &event);
+  void OnButtonEcdisHelp(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
-  void OnRemoveTideDataLocation(wxCommandEvent &event);
-  void OnShipTypeSelect(wxCommandEvent &event);
-  void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
+  void OnApplyClick(wxCommandEvent &event);
+  void OnXidOkClick(wxCommandEvent &event);
+  void OnCancelClick(wxCommandEvent &event);
+  void OnChooseFont(wxCommandEvent &event);
+  void OnFontChoice(wxCommandEvent &event);
+  void OnCPAWarnClick(wxCommandEvent &event);
+  void OnSyncCogPredClick(wxCommandEvent &event);
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
-  void OnSubNBPageChange(wxNotebookEvent &event);
-  void OnSyncCogPredClick(wxCommandEvent &event);
-  void OnTopNBPageChange(wxNotebookEvent &event);
-  void OnUnitsChoice(wxCommandEvent &event);
-  void OnWaypointRangeRingSelect(wxCommandEvent &event);
-  void OnXidOkClick(wxCommandEvent &event);
-  void OnZTCCheckboxClick(wxCommandEvent &event);
 
 #if defined(__WXGTK__) || defined(__WXQT__)
   void OnChooseFontColor(wxCommandEvent &event);
 #endif
+  void OnGLClicked(wxCommandEvent &event);
+  void OnOpenGLOptions(wxCommandEvent &event);
+  void OnDisplayCategoryRadioButton(wxCommandEvent &event);
+  void OnButtonClearClick(wxCommandEvent &event);
+  void OnButtonSelectClick(wxCommandEvent &event);
+  void OnButtonSetStd(wxCommandEvent &event);
 
-  wxButton *m_ApplyButton;
-  wxButton *m_OKButton;
-  wxButton *m_CancelButton;
+  void OnPageChange(wxListbookEvent &event);
+  void OnTopNBPageChange(wxNotebookEvent &event);
+  void OnSubNBPageChange(wxNotebookEvent &event);
+  void DoOnPageChange(size_t page);
 
+  wxString SelectSoundFile();
+  void OnButtonSelectSound(wxCommandEvent &event);
+  void OnButtonTestSound(wxCommandEvent &event);
+
+  void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
+  void OnZTCCheckboxClick(wxCommandEvent &event);
+  void OnRadarringSelect(wxCommandEvent &event);
+  void OnWaypointRangeRingSelect(wxCommandEvent &event);
+  void OnShipTypeSelect(wxCommandEvent &event);
+  void OnButtonGroups(wxCommandEvent &event);
+  void OnInsertTideDataLocation(wxCommandEvent &event);
+  void OnRemoveTideDataLocation(wxCommandEvent &event);
+  void OnCharHook(wxKeyEvent &event);
+  void OnChartsPageChange(wxListbookEvent &event);
+  void OnChartDirListSelect(wxCommandEvent &event);
+  void OnUnitsChoice(wxCommandEvent &event);
+
+  void UpdateWorkArrayFromDisplayPanel(void);
+  ArrayOfCDI GetSelectedChartDirs();
+  ArrayOfCDI GetUnSelectedChartDirs();
+  void SetDirActionButtons();
+
+  void OnCreateConfig(wxCommandEvent &event);
+  void OnEditConfig(wxCommandEvent &event);
+  void OnDeleteConfig(wxCommandEvent &event);
+  void OnApplyConfig(wxCommandEvent &event);
+  void SetConfigButtonState();
+  void ClearConfigList();
+  void BuildConfigList();
+  void OnConfigMouseSelected(wxMouseEvent &event);
+  void OnDialogInit(wxInitDialogEvent& event);
+
+
+  bool GetNeedNew() { return m_bneedNew; }
+  void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
+  int GetScrollRate() { return m_scrollRate; }
+  void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
+
+  wxArrayString *GetSerialArray(){ return m_pSerialArray; }
+
+  // Should we show tooltips?
+  static bool ShowToolTips(void);
+
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
+  wxListbook *m_pListbook;
+#else
+  wxNotebook *m_pListbook;
+#endif
+
+  size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
+  size_t m_pageUI, m_pagePlugins;
+  int lastPage, lastSubPage;
+  wxPoint lastWindowPos;
+  wxSize lastWindowSize;
+  wxButton *m_ApplyButton, *m_OKButton, *m_CancelButton;
+
+  ChartGroupArray *m_pGroupArray;
+  int m_groups_changed;
+
+  // Sizer flags
+  wxSizerFlags inputFlags, verticleInputFlags, labelFlags, groupInputFlags;
+  wxSizerFlags groupLabelFlags, groupLabelFlagsHoriz;
+
+  // For general options
+  wxScrolledWindow *pDisplayPanel;
   wxCheckBox *pShowStatusBar, *pShowMenuBar, *pShowChartBar, *pShowCompassWin;
   wxCheckBox *pPrintShowIcon, *pCDOOutlines, *pSDepthUnits, *pSDisplayGrid;
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
@@ -445,75 +425,8 @@ private:
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
 
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
-  wxListbook *m_pListbook;
-#else
-  wxNotebook *m_pListbook;
-#endif
-
-  ChartGroupArray *m_pGroupArray;
-  int m_groups_changed;
-  bool b_haveWMM;
-  bool b_oldhaveWMM;
-
-  int k_plugins;
-  bool m_bForceNewToolbaronCancel;
-
-  wxArrayPtrVoid OBJLBoxArray;
-  wxString m_init_chart_dir;
-  wxArrayString *m_pSerialArray;
-
-  ArrayOfCDI m_CurrentDirList, *m_pWorkDirList;
-  MyConfig *m_pConfig;
-
-  // Sizer flags
-  wxSizerFlags inputFlags, verticleInputFlags, labelFlags, groupInputFlags;
-  wxSizerFlags groupLabelFlags, groupLabelFlagsHoriz;
-
-  // For general options
-  wxScrolledWindow *pDisplayPanel;
-  wxString SelectSoundFile();
-  void UpdateTemplateTitleText();
-  void CheckDeviceAccess(wxString &path);
-  int m_returnChanges;
-  wxListCtrl *tcDataSelected;
-  std::vector<int> marinersStdXref;
-  ChartGroupsUI *groupsPanel;
-  wxImageList *m_topImgList;
-
-  wxCheckBox* m_persist_active_route_chkbox;
-  wxScrolledWindow *m_pNMEAForm;
-  void resetMarStdList(bool bsetConfig, bool bsetStd);
-
-  ObservableListener compat_os_listener;
-  ObsListener m_sound_done_listener;
-
-  ColorScheme m_cs;
-  int m_screenConfig;
-
-  wxNotebookPage *m_groupsPage;
-  wxFont *dialogFont;
-  wxFont smallFont;
-  //  wxFont *dialogFont;
-  wxSize m_small_button_size;
-
-  bool m_bcompact;
-  int m_fontHeight, m_scrollRate;
-  bool m_bfontChanged;
-  bool m_bVectorInit;
-
-  wxBoxSizer *m_boxSizerConfigs;
-  wxColour m_panelBackgroundUnselected;
-  wxString m_selectedConfigPanelGUID;
-  wxSize m_colourPickerDefaultSize;
-
-  wxSize m_sliderSize;
-  bool m_bneedNew;
-  std::function<void()> m_on_close_cb;
-
-  std::shared_ptr<ConnectionsDialog>comm_dialog;
-
   wxTextCtrl *pCmdSoundString;
+
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
       *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor, *m_pSlider_ENCText_Factor;
@@ -527,6 +440,20 @@ private:
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
 
+  // For the Display\Units page
+  wxStaticText *itemStaticTextUserVar;
+  wxStaticText *itemStaticTextUserVar2;
+  wxButton *m_configDeleteButton, *m_configApplyButton;
+
+  void OnAISRolloverClick(wxCommandEvent &event);
+  void UpdateChartDirList();
+
+  void OnCanvasConfigSelectClick(int ID, bool selected);
+
+
+  bool b_haveWMM;
+  bool b_oldhaveWMM;
+  ColorScheme m_cs;
 
   // For "S57" page
   wxBoxSizer *vectorPanel;
@@ -544,6 +471,34 @@ private:
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;
   wxStaticText *m_depthUnitsShal, *m_depthUnitsSafe, *m_depthUnitsDeep;
   int k_vectorcharts;
+
+  // For "Units" page
+  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect,
+      *pTempFormat, *pWindSpeedFormat;
+  wxCheckBox *pCBTrueShow, *pCBMagShow;
+  wxTextCtrl *pMagVar;
+
+  // For "Charts" page
+  wxStaticBoxSizer *activeSizer;
+  wxBoxSizer *chartPanel;
+  wxTextCtrl *pSelCtl;
+
+  ArrayOfCDI ActiveChartArray;
+
+  wxStaticBox *itemActiveChartStaticBox;
+  wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
+  wxButton *pParseENCButton;
+  wxButton *m_removeBtn, *m_compressBtn;
+  wxButton *m_migrateBtn;
+  int k_charts;
+  int m_nCharWidthMax;
+  wxBoxSizer *boxSizerCharts;
+  wxScrolledWindow *m_scrollWinChartList;
+  wxScrolledWindow* chartPanelWin;
+  wxBoxSizer* cmdButtonSizer;
+  wxStaticBox* loadedBox;
+  std::vector<OCPNChartDirPanel *> panelVector;
+  wxArrayString activeChartList;
 
   // For the "Charts->Display Options" page
   wxScrolledWindow *m_ChartDisplayPage;
@@ -568,7 +523,6 @@ private:
       *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
   wxTextCtrl *m_pText_RealtPred_Speed;
-  void OnAISRolloverClick(wxCommandEvent &event);
 
   // For Display->Configs page...
   wxScrolledWindow *m_DisplayConfigsPage;
@@ -576,33 +530,6 @@ private:
   CanvasConfigSelect *m_sconfigSelect_single;
   CanvasConfigSelect *m_sconfigSelect_twovertical;
   wxStaticText *m_Text_def_boat_speed;
-
-  // For "Units" page
-  wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect,
-      *pTempFormat, *pWindSpeedFormat;
-  wxCheckBox *pCBTrueShow, *pCBMagShow;
-  wxTextCtrl *pMagVar;
-
-  // For "Charts" page
-  wxStaticBoxSizer *activeSizer;
-  wxBoxSizer *chartPanel;
-  wxTextCtrl *pSelCtl;
-
-  ArrayOfCDI ActiveChartArray;
-
-  wxStaticBox *itemActiveChartStaticBox;
-  wxButton *pParseENCButton;
-  wxButton *m_removeBtn, *m_compressBtn;
-  wxButton *m_migrateBtn;
-  int k_charts;
-  int m_nCharWidthMax;
-  wxBoxSizer *boxSizerCharts;
-  wxScrolledWindow *m_scrollWinChartList;
-  wxScrolledWindow* chartPanelWin;
-  wxBoxSizer* cmdButtonSizer;
-  wxStaticBox* loadedBox;
-  std::vector<OCPNChartDirPanel *> panelVector;
-  wxArrayString activeChartList;
 
   // For Configuration Template panel
   wxScrolledWindow *m_scrollWinConfigList;
@@ -631,11 +558,6 @@ private:
   wxStaticText *m_textSample;
   bool m_bVisitLang;
 
-  // For the Display\Units page
-  wxStaticText *itemStaticTextUserVar;
-  wxStaticText *itemStaticTextUserVar2;
-  wxButton *m_configDeleteButton, *m_configApplyButton;
-
   // For "AIS Options"
   wxComboBox *m_itemAISListBox;
 
@@ -644,12 +566,13 @@ private:
   AddPluginPanel *m_AddPluginPanel;
   CatalogMgrPanel *m_PluginCatalogMgrPanel;
   wxScrolledWindow *itemPanelPlugins;
+  wxBoxSizer *itemBoxSizerPanelPlugins;
   wxFlexGridSizer *radarGrid, *waypointradarGrid;
   wxChoice *pNavAidRadarRingsNumberVisible, *pWaypointRangeRingsNumber;
   OCPNColourPickerCtrl *m_colourOwnshipRangeRingColour;
   wxChoice *m_itemRadarRingsUnits, *m_itemWaypointRangeRingsUnits;
   OCPNColourPickerCtrl *m_colourTrackLineColour;
-
+  ;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
   wxCheckBox *pSogCogFromLLCheckBox;
@@ -662,6 +585,7 @@ private:
   wxCheckBox *pTrackDaily, *pTrackHighlite;
   wxStaticText *pStatic_CallSign;
 
+#if wxCHECK_VERSION(2, 9, 0)
 #if wxUSE_TIMEPICKCTRL
 #ifdef __WXGTK__
   TimeCtrl *pTrackRotateTime;
@@ -669,10 +593,22 @@ private:
   wxTimePickerCtrl *pTrackRotateTime;
 #endif
 #endif
+#endif
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   OCPNColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxChoice *pSoundDeviceIndex;
   wxStaticText *stSoundDeviceIndex;
+
+  wxArrayPtrVoid OBJLBoxArray;
+  wxString m_init_chart_dir;
+  wxArrayString *m_pSerialArray;
+
+  ArrayOfCDI m_CurrentDirList, *m_pWorkDirList;
+  MyConfig *m_pConfig;
+  wxWindow *pParent;
+
+  int k_plugins;
+  bool m_bForceNewToolbaronCancel;
 
   // Sounds panel
 
@@ -684,8 +620,79 @@ private:
   void OnUXAudioEnableButtonClickSART(wxCommandEvent &event);
   void OnUXAudioEnableButtonClickDSC(wxCommandEvent &event);
 
+  /** Notified with a OCPN_Sound* pointer when sound has completed. */
+  EventVar m_on_sound_done;
+  ObsListener m_sound_done_listener;
 
+private:
+  void Init(void);
+  void CreatePanel_MMSI(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_AIS(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Ownship(size_t parent, int border_size,
+                           int group_item_spacing);
+  void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_ChartsLoad(size_t parent, int border_size,
+                              int group_item_spacing);
+  void CreatePanel_VectorCharts(size_t parent, int border_size,
+                                int group_item_spacing);
+  void CreatePanel_TidesCurrents(size_t parent, int border_size,
+                                 int group_item_spacing);
+  void CreatePanel_ChartGroups(size_t parent, int border_size,
+                               int group_item_spacing);
+  void CreatePanel_Display(size_t parent, int border_size,
+                           int group_item_spacing);
+  void CreatePanel_UI(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Units(size_t parent, int border_size,
+                         int group_item_spacing);
+  void CreatePanel_Sounds(size_t parent, int border_size,
+                          int group_item_spacing);
+  void CreatePanel_Advanced(size_t parent, int border_size,
+                            int group_item_spacing);
+  void CreatePanel_Configs(size_t parent, int border_size,
+                           int group_item_spacing);
+  void CreatePanel_Routes(size_t parent, int border_size,
+                          int group_item_spacing);
 
+  void OnAlertEnableButtonClick(wxCommandEvent &event);
+  void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
+
+  void UpdateTemplateTitleText();
+  void CheckDeviceAccess(wxString &path);
+  int m_returnChanges;
+  wxListCtrl *tcDataSelected;
+  std::vector<int> marinersStdXref;
+  ChartGroupsUI *groupsPanel;
+  wxImageList *m_topImgList;
+
+  wxCheckBox* m_persist_active_route_chkbox;
+  wxScrolledWindow *m_pNMEAForm;
+  void resetMarStdList(bool bsetConfig, bool bsetStd);
+
+  ObservableListener compat_os_listener;
+
+  int m_screenConfig;
+
+  wxNotebookPage *m_groupsPage;
+  wxFont *dialogFont;
+  wxFont smallFont;
+  //  wxFont *dialogFont;
+  wxSize m_small_button_size;
+
+  bool m_bcompact;
+  int m_fontHeight, m_scrollRate;
+  bool m_bfontChanged;
+  bool m_bVectorInit;
+
+  wxBoxSizer *m_boxSizerConfigs;
+  wxColour m_panelBackgroundUnselected;
+  wxString m_selectedConfigPanelGUID;
+  wxSize m_colourPickerDefaultSize;
+
+  wxSize m_sliderSize;
+  bool m_bneedNew;
+  std::function<void()> m_on_close_cb;
+
+  std::shared_ptr<ConnectionsDialog>comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
