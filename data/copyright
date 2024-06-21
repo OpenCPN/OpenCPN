@@ -7,7 +7,6 @@ Files-Excluded: .*
  buildandroid
  buildwin
  plugins/chartdldr_pi/src/tinyxml
- plugins/chartdldr_pi/src/unarr
  plugins/grib_pi/src/bzip2
  src/texcmp/lz4
  src/wxcurl
@@ -599,14 +598,6 @@ License: LGPL-2+
  `/usr/share/common-licenses/LGPL-2'.
  Otherwise, refer to the online version at GNU website
  `https://gnu.org/licenses/old-licenses/gpl-2.0.txt`.
-
-
-License: LGPL-3
- On Debian systems, the full text of the Lesser GNU General Public
- License version 3 can be found in the file
- `/usr/share/common-licenses/LGPL-3'.
- Otherwise, refer to the online version at GNU website
- `https://www.gnu.org/licenses/lgpl-3.0.html`.
 
 
 License: wxWidgets
