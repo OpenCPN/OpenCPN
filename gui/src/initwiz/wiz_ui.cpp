@@ -189,18 +189,28 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
   std::string to;
 
   if (!data.empty()) {
-    std::regex n2k_regex(
+    std::regex actisenseyd_raw_ascii_regex(
         "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [RT] [0-9A-F]{8}( "
-        "[0-9A-F]{2})*");  // YD RAW format
+        "[0-9A-F]{2})*");  // YD RAW format aka Actisense RAW ASCII format
                            // (https://www.yachtd.com/downloads/ydnr02.pdf
                            // appendix E)
+    std::regex actisense_n2k_ascii_regex(
+        "A[0-9]{6}\\.[0-9]{3} [0-9A-F]{5} [0-9A-F]{5} [0-9A-F]+");  // Actisense
+                                                                    // N2K ASCII
+                                                                    // format
     // TODO: Other formats of NMEA2000 data
+
+    if (to.length() > 4 &&
+        // Actisense/YD N2K mode - All the binary formats enclose
+        // the payload between 0x10 0x02 and 0x10 0x03
+        to[0] == ESCAPE && to[1] == STARTOFTEXT &&
+        to[to.length() - 1] == ENDOFTEXT && to[to.length() - 2] == ESCAPE) {
+      DEBUG_LOG << "Looks like NMEA2000: " << to;
+      return true;
+    }
     while (std::getline(ss, to, '\n')) {
-      if (std::regex_search(to, n2k_regex) ||
-          (to.length() > 4 && to[0] == ESCAPE && // Actisense/YD N2K mode
-           to[1] == STARTOFTEXT &&
-           to[to.length() - 1] == ENDOFTEXT &&
-           to[to.length() - 2] == ESCAPE)) {
+      if (std::regex_search(to, actisenseyd_raw_ascii_regex) ||
+          std::regex_search(to, actisense_n2k_ascii_regex)) {
         DEBUG_LOG << "Looks like NMEA2000: " << to;
         return true;
       } else {
