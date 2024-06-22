@@ -1020,8 +1020,8 @@ bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
       token.ToULong(&timestamp, 16);
 
       token = tkz.GetNextToken();           // Source ID
-      unsigned int source;
-      token.ToUInt(&source, 16);
+      unsigned long source;
+      token.ToULong(&source, 16);
 
       token = tkz.GetNextToken();           // Payload + "*CRC_byte"
 
@@ -1044,9 +1044,9 @@ bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
       o_payload.push_back((timestamp >> 24) & 0xFF);
       o_payload.push_back((uint8_t)data.Length()/2);
       for (size_t i = 0; i < data.Length(); i += 2) {
-        unsigned int dv;
+        unsigned long dv;
         wxString sbyte = data.Mid(i, 2);
-        sbyte.ToUInt(&dv, 16);
+        sbyte.ToULong(&dv, 16);
         o_payload.push_back((uint8_t)dv);
       }
       o_payload.push_back(0x55);          // CRC dummy, not checked
