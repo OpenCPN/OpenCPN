@@ -51,6 +51,8 @@
 #include "dnet.h"
 #endif
 
+#define RECEIVE_BUFFER_LENGTH 256
+
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_sk_servers;
 
@@ -459,8 +461,8 @@ void FirstUseWizImpl::EnumerateTCP() {
       client->SetTimeout(1);
       if (client->Connect(conn_addr, true)) {
         DEBUG_LOG << "Connected to " << ip << ":" << port;
-        size_t len = 256;
-        char buffer[len];
+        size_t len = RECEIVE_BUFFER_LENGTH;
+        char buffer[RECEIVE_BUFFER_LENGTH];
         memset(buffer, 0, len);
         client->WaitForRead(1, 0);
         client->Read(&buffer, len);
