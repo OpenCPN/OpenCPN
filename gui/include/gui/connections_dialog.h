@@ -77,7 +77,7 @@ public:
   wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonEdit;
 
   wxTextCtrl *m_tFilterSec;
-  wxStaticText *m_stFilterSec;
+  wxStaticText *m_stFilterSec, *m_stTalkerIdText;
   wxCheckBox *m_cbGarminUploadHost;
   wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
   wxCheckBox *m_cbAPBMagnetic;
