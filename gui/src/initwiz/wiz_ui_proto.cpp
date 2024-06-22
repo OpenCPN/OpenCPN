@@ -199,7 +199,15 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 	bSizerFinish = new wxBoxSizer( wxVERTICAL );
 
 	m_htmlWinFinish = new wxHtmlWindow( m_wpFinish, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	m_htmlWinFinish->SetMinSize( wxSize( 800,600 ) );
+
+        // Try to detect smaller displays, and adjust wizard size accordingly
+        //  Looking for small devices in landscape mode.
+        wxSize displaySize = wxGetDisplaySize();
+        if ((displaySize.y < 500) && (displaySize.x > displaySize.y)){
+          m_htmlWinFinish->SetMinSize( wxSize(displaySize.x * 8/10, displaySize.y * 65 / 100 ));
+        }
+        else
+          m_htmlWinFinish->SetMinSize( wxSize( 800,600 ) );
 
 	bSizerFinish->Add( m_htmlWinFinish, 1, wxALL|wxEXPAND, 5 );
 
