@@ -171,7 +171,8 @@ NMEA0183Flavor FirstUseWizImpl::SeemsN0183(std::string& data) {
     std::regex nmea_regex(".*[\\$!]([a-zA-Z]{5,6})(,.*)");
     std::regex nmea_crc_regex(".*[\\$!]([a-zA-Z]{5,6})(,.*)(\\*[0-9A-Z]{2})");
     while (std::getline(ss, to, '\n')) {
-      if (std::regex_search(to, nmea_regex)) {
+      if (std::regex_search(to, nmea_regex) &&
+          to.find("$PCDIN") == std::string::npos) { // It also must not be SeaSmart encoded NMEA2000
         DEBUG_LOG << "Looks like NMEA0183: " << to;
         if (std::regex_search(to, nmea_crc_regex)) {
           DEBUG_LOG << "Has CRC: " << to;
@@ -200,6 +201,7 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
         "A[0-9]{6}\\.[0-9]{3} [0-9A-F]{5} [0-9A-F]{5} [0-9A-F]+");  // Actisense
                                                                     // N2K ASCII
                                                                     // format
+    std::regex seasmart_regex("\\$PCDIN,[0-9A-F]{6},[0-9A-F]{8},[0-9A-F]{2},[0-9A-F]+\\*[0-9A-F]{2}");
     // TODO: Other formats of NMEA2000 data
 
     if (data.length() > 4 &&
@@ -212,7 +214,8 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
     }
     while (std::getline(ss, to, '\n')) {
       if (std::regex_search(to, actisenseyd_raw_ascii_regex) ||
-          std::regex_search(to, actisense_n2k_ascii_regex)) {
+          std::regex_search(to, actisense_n2k_ascii_regex) ||
+          std::regex_search(to, seasmart_regex)) {
         DEBUG_LOG << "Looks like NMEA2000: " << to;
         return true;
       } else {

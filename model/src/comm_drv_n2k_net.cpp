@@ -596,10 +596,14 @@ N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
   //    Actisense N2k<->ethernet device.
 
   if (isASCII(packet)) {
-    if (std::find(packet.begin(), packet.end(), ':') != packet.end())
+    if (packet[0] == '$' && packet[1] == 'P' && packet[2] == 'C' &&
+        packet[3] == 'D' && packet[4] == 'I' && packet[5] == 'N') {
+      return N2KFormat_SeaSmart;
+    } else if (std::find(packet.begin(), packet.end(), ':') != packet.end()) {
       return N2KFormat_Actisense_RAW_ASCII;
-    else
+    } else {
       return N2KFormat_Actisense_N2K_ASCII;
+    }
   }
   else {
     if (packet[2] == 0x95)
@@ -988,6 +992,78 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(std::vector<unsigned char> pac
   return true;
 }
 
+bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
+  while (!m_circle->empty()) {
+    char b = m_circle->get();
+    if ((b != 0x0a) && (b != 0x0d)) {
+      m_sentence += b;
+    }
+    if (b == 0x0a) {  // end of sentence
+
+      // Extract a can_frame from ASCII stream
+      //printf("%s\n", m_sentence.c_str());
+
+      wxString ss(m_sentence.c_str());
+      m_sentence.clear();
+      wxStringTokenizer tkz(ss, ",");
+
+      // Discard first token
+      wxString token = tkz.GetNextToken();  // $PCDIN
+      m_TX_flag = 'R';
+
+      token = tkz.GetNextToken();           // PGN
+      unsigned long PGN;
+      token.ToULong(&PGN, 16);
+
+      token = tkz.GetNextToken();           // Timestamp
+      unsigned long timestamp;
+      token.ToULong(&timestamp, 16);
+
+      token = tkz.GetNextToken();           // Source ID
+      unsigned int source;
+      token.ToUInt(&source, 16);
+
+      token = tkz.GetNextToken();           // Payload + "*CRC_byte"
+
+      wxStringTokenizer datatkz(token, "*");
+      wxString data = datatkz.GetNextToken();
+
+      // Create the OCPN payload
+      std::vector<uint8_t> o_payload;
+      o_payload.push_back(0x93);
+      o_payload.push_back(0x13);
+      o_payload.push_back(3);      //priority hardcoded, missing in SeaSmart
+      o_payload.push_back(PGN & 0xFF);
+      o_payload.push_back((PGN >> 8) & 0xFF);
+      o_payload.push_back((PGN >> 16) & 0xFF);
+      o_payload.push_back(0xFF);   //destination hardcoded, missing in SeaSmart
+      o_payload.push_back((uint8_t)source);        // header.source);
+      o_payload.push_back(timestamp & 0xFF);
+      o_payload.push_back((timestamp >> 8) & 0xFF);
+      o_payload.push_back((timestamp >> 16) & 0xFF);
+      o_payload.push_back((timestamp >> 24) & 0xFF);
+      o_payload.push_back((uint8_t)data.Length()/2);
+      for (size_t i = 0; i < data.Length(); i += 2) {
+        unsigned int dv;
+        wxString sbyte = data.Mid(i, 2);
+        sbyte.ToUInt(&dv, 16);
+        o_payload.push_back((uint8_t)dv);
+      }
+      o_payload.push_back(0x55);          // CRC dummy, not checked
+
+      if (HandleMgntMsg(PGN, o_payload))
+        return false;
+
+      // Message is ready
+      CommDriverN2KNetEvent Nevent(wxEVT_COMMDRIVER_N2K_NET, 0);
+      auto n2k_payload = std::make_shared<std::vector<uint8_t>>(o_payload);
+      Nevent.SetPayload(n2k_payload);
+      AddPendingEvent(Nevent);
+    }
+  }
+  return true;
+}
+
 void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 #define RD_BUF_SIZE \
   4096
@@ -1053,6 +1129,9 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
           break;
         case N2KFormat_Actisense_NGT:
           ProcessActisense_NGT(data);
+          break;
+        case N2KFormat_SeaSmart:
+          ProcessSeaSmart(data);
           break;
         case N2KFormat_Undefined:
         default:
