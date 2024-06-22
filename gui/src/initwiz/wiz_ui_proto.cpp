@@ -64,7 +64,7 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 	m_cSpeed->SetSelection( 0 );
 	fgSizerUnits->Add( m_cSpeed, 0, wxALL, 5 );
 
-	m_stWind = new wxStaticText( sbSizerUnits->GetStaticBox(), wxID_ANY, _("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stWind = new wxStaticText( sbSizerUnits->GetStaticBox(), wxID_ANY, _("Wind speed"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stWind->Wrap( -1 );
 	fgSizerUnits->Add( m_stWind, 0, wxALL, 5 );
 
