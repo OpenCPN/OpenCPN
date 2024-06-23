@@ -534,6 +534,11 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
   m_scrollWinChartList->SetScrollRate(5, 5);
   m_scrollWinChartList->SetMinSize(wxSize(-1, 12 * GetCharHeight()));
 
+  if (!m_scrollWinChartList->EnableTouchEvents( wxTOUCH_PRESS_GESTURES)) {
+    wxLogError("Failed to enable touch events on chart downloader");
+  }
+  Bind(wxEVT_LONG_PRESS, &ChartDldrPanel::OnLongPress, this);
+
   m_boxSizerCharts = new wxBoxSizer(wxVERTICAL);
   m_scrollWinChartList->SetSizer(m_boxSizerCharts);
 
@@ -720,6 +725,21 @@ ChartDldrPanel::~ChartDldrPanel() {
   this->Disconnect(wxEVT_SIZE, wxSizeEventHandler(ChartDldrPanel::OnSize));
 }
 
+#ifdef HAVE_WX_GESTURE_EVENTS
+void ChartDldrPanel::OnLongPress(wxLongPressEvent &event) {
+  printf(" OnLongPress\n");
+  if (1) {
+    wxPoint pos = event.GetPosition();
+    wxMouseEvent ev(wxEVT_RIGHT_DOWN);
+    ev.m_x = pos.x;
+    ev.m_y = pos.y;
+
+    //MouseEvent(ev);
+  }
+
+}
+#endif
+
 void ChartDldrPanel::OnSize(wxSizeEvent& event) {
   //     wxSize newSize = event.GetSize();
   //     qDebug() << "Size: " << newSize.x << newSize.y;
@@ -814,6 +834,15 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   m_dldrPanel = DldrPanel;
   Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartPanel::OnContextMenu),
           NULL, this);
+
+  if (!EnableTouchEvents( wxTOUCH_PRESS_GESTURES)) {
+    wxLogError("Failed to enable touch events on chart downloader");
+  }
+
+  Bind(wxEVT_LONG_PRESS, &ChartPanel::OnLongPress, this);
+  Bind(wxEVT_LEFT_UP, &ChartPanel::OnLeftUp, this);
+
+  m_popupWanted = false;
 }
 
 ChartPanel::~ChartPanel() {
@@ -833,6 +862,27 @@ void ChartPanel::OnContextMenu(wxMouseEvent& event) {
   if (m_dldrPanel) return m_dldrPanel->OnContextMenu(event);
   event.Skip();
 }
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+void ChartPanel::OnLongPress(wxLongPressEvent &event) {
+  /* we defer the popup menu call upon the leftup event
+  else the menu disappears immediately, */
+  m_popupWanted = true;
+}
+#endif
+
+void ChartPanel::OnLeftUp(wxMouseEvent &event) {
+  wxPoint pos = event.GetPosition();
+
+  if (m_popupWanted) {
+    m_popupWanted = false;
+    wxMouseEvent ev(wxEVT_RIGHT_DOWN);
+    ev.m_x = pos.x;
+    ev.m_y = pos.y;
+    wxPostEvent(this, ev);
+  }
+}
+
 #endif /* CHART_LIST */
 
 ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
