@@ -832,6 +832,8 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   //    divLine, 0, wxEXPAND | wxALL, 5 );
 
   m_dldrPanel = DldrPanel;
+
+#ifdef  HAVE_WX_GESTURE_EVENTS
   Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(ChartPanel::OnContextMenu),
           NULL, this);
 
@@ -841,7 +843,7 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
   Bind(wxEVT_LONG_PRESS, &ChartPanel::OnLongPress, this);
   Bind(wxEVT_LEFT_UP, &ChartPanel::OnLeftUp, this);
-
+#endif
   m_popupWanted = false;
 }
 
