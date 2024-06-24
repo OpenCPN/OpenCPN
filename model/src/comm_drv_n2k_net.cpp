@@ -596,9 +596,13 @@ N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
   //    Actisense N2k<->ethernet device.
 
   if (isASCII(packet)) {
-    if (packet[0] == '$' && packet[1] == 'P' && packet[2] == 'C' &&
-        packet[3] == 'D' && packet[4] == 'I' && packet[5] == 'N') {
+    std::string payload = std::string(packet.begin(), packet.end());
+    if (payload.find("$PCDIN") != std::string::npos) {
       return N2KFormat_SeaSmart;
+    } else if (payload.find("$MXPGN") != std::string::npos) { 
+      // TODO: Due to the weird fragmentation observed with default settings of the wi-fi part,
+      // the payload does not always start with or even contain `$MXPGN`. We now lose the later.
+      return N2KFormat_MiniPlex;
     } else if (std::find(packet.begin(), packet.end(), ':') != packet.end()) {
       return N2KFormat_Actisense_RAW_ASCII;
     } else {
@@ -1064,6 +1068,158 @@ bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
   return true;
 }
 
+bool CommDriverN2KNet::ProcessMiniPlex(std::vector<unsigned char> packet) {
+  /*
+  $MXPGN – NMEA 2000 PGN Data
+  This sentence transports NMEA 2000/CAN frames in NMEA 0183 format. The MiniPlex-3 will transmit this
+  sentence with Talker ID “MX”. When sent to the MiniPlex-3, the Talker ID is ignored unless a routing entry
+  exists for this sentence.
+
+  Format: $--PGN,pppppp,aaaa,c--c*hh<CR><LF>
+
+  pppppp: PGN of the NMEA 2000/CAN frame, 3-byte hexadecimal number. If the PGN is non-global, the
+  lowest byte contains the destination address.
+  aaaa: Attribute Word, a 16-bit hexadecimal number. This word contains the priority, the DLC code and
+  then source/destination address of the frame, formatted as shown below:
+
+  15    14 13 12   11 10   9   8   7   6   5   4   3   2   1   0
+  ----------------------------------------------------------------
+  | S | Priority |      DLC      |             Address           |
+  ----------------------------------------------------------------
+
+  S: Send bit. When an NMEA 2000/CAN frame is received, this bit is 0.
+  To use the $MXPGN sentence to send an NMEA 2000/CAN frame, this bit must be 1.
+  Priority: Frame priority. A value between 0 and 7, a lower value means higher priority.
+  DLC: Data Length Code field, contains the size of the frame in bytes (1..8) or a Class 2
+  Transmission ID (9..15).
+  Address: Depending on the Send bit, this field contains the Source Address (S=0) or the
+  Destination Address (S=1) of the frame.
+  c--c: Data field of the NMEA 2000/CAN frame, organised as one large number in hexadecimal
+  notation from MSB to LSB. This is in accordance with “NMEA 2000 Appendix D”, chapter D.1,
+  “Data Placement within the CAN Frame”.
+  The size of this field depends on the DLC value and can be 1 to 8 bytes (2 to 16 hexadecimal
+  characters).
+
+  NMEA 2000 Reception
+
+  When the MiniPlex-3 converts an NMEA 2000/CAN frame into an $MXPGN sentence, the S bit in the
+  Attribute field will be 0 and the Address field contains the source address of the frame. The destination
+  address of the frame is either global or contained in the lower byte of the PGN, in accordance with the
+  NMEA 2000/ISO specification.
+
+  Notes:
+  
+  Multiple messages can be delivered in a single packet
+  It is not guaranteed that the whole message will be delivered in a single packet, actually it is common
+  that the last message is split "anywhere" and continues in the next packet.
+
+  packet 1 payload
+
+  "$MXPGN,01F119,3816,FFFAAF01A3FDE301*14\r\n
+  $MXPGN,01F201,2816,C50E0A19A0001A40*66\r\n
+  $MXPGN,01F201,2816,6B4C0039058D8A41*15\r\n
+  $MXPGN,01F201,2816,FFFFFFFFFF007542*1D\r\n
+  $MXPGN,01F201,2816,FF7F7F0000000A43*6F\r\n
+  $MXPGN,01F209,2816,2D002400ED0009A0*18\r\n
+  $MXPGN,01F209,2816,FFFFFFFF002C00A1*10\r\n
+  $MXPGN,01F213,6816,00B4F512020106C0*6E\r\n
+  $MXPGN,01F214,6816,01FFFF7FFF04F801*12\r\n
+  $MXPGN,01F214,6816,7EFFFF0009056400*65\r\n
+  $MXPGN,"
+
+  packet 2 payload
+
+  "01F212,6816,185B560101010BC0*62\r\n
+  $MXPGN,01F212,6816,FFFFFFFF00D700C1*1E\r\n
+  $MXPGN,01FD06,5816,FF03F6749570C101*67\r\n
+  $MXPGN,01FD07,5816,03F635B672F20401*1B\r\n"
+
+  packet 1
+
+  "$MXPGN,01F114,3816,FFFFF000D20212FF*1E\r\n
+  $MXPGN,01F905,6816,0001000300005BC0*14\r\n
+  $MXPGN,01F905,6816,6142010EE00007C1*67\r\n
+  $MXPGN,01F905,6816,68206F74206B63C2*6F\r\n
+  $MXPGN,01F905,6816,0D0001FF656D6FC3*16\r\n
+  $MXPGN,01F905,6816,20747261745301C4*62\r\n
+  $MXPGN,01F905,6816,4600746E696F70C5*6E\r\n
+  $MXPGN,01F905,6816,020C84588023C3C6*6E\r\n
+  $MXPGN,01F905,6816,6E727554011200C7*11\r\n
+  $MXPGN,01F905,6816,65726F666562"
+
+  packet 2 payload
+
+  "20C8*1A\r\n
+  $MXPGN,01F905,6816,CCA06B636F7220C9*1F\r\n
+  $MXPGN,01F905,6816,030C85DF2023C4CA*1B\r\n
+  $MXPGN,01F905,6816,656D6F48010600CB*19\r\n
+  $MXPGN,01F905,6816,8765C023C65340CC*1B\r\n
+  $MXPGN,01F905,6816,FFFFFFFFFFFF0CCD*66\r\n
+  $MXPGN,01F10D,2816,FFFF0369FC97F901*16\r\n
+  $MXPGN,01F112,2816,FD03C0FDF49B1A00*11\r\n
+  $MXPGN,01F200,2816,FFFF7FFFFF43F800*10\r\n
+  $MXPGN,01F205,2816,FF050D3A1D4CFC00*19\r\n"
+  */
+  while (!m_circle->empty()) {
+    char b = m_circle->get();
+    if ((b != 0x0a) && (b != 0x0d)) {
+      m_sentence += b;
+    }
+    if (b == 0x0a) {  // end of sentence
+
+      // Extract a can_frame from ASCII stream
+      //printf("%s\n", m_sentence.c_str());
+
+      wxString ss(m_sentence.c_str());
+      m_sentence.clear();
+      wxStringTokenizer tkz(ss, ",");
+
+      // Discard first token
+      wxString token = tkz.GetNextToken();  // $MXPGN
+      m_TX_flag = 'R';
+
+      token = tkz.GetNextToken();           // PGN
+      unsigned long PGN;
+      token.ToULong(&PGN, 16);
+
+      token = tkz.GetNextToken();           // Attribute compound field
+      unsigned long attr;
+      token.ToULong(&attr, 16);
+      // Send Bit
+      bool send_bit = (attr >> 15) != 0;
+      // Priority
+      uint8_t priority = (attr >> 12) & 0x07;
+
+      // dlc
+      uint8_t dlc = (attr >> 8) & 0x0F;
+
+      //address
+      uint8_t address = attr & 0xFF;
+
+      token = tkz.GetNextToken();           // Payload + "*CRC_byte"
+
+      wxStringTokenizer datatkz(token, "*");
+      wxString data = datatkz.GetNextToken();
+
+      if (data.Length() > 16) { // Payload can never exceed 8 bytes (=16 HEX characters)
+        return false;
+      }
+
+      can_frame frame;
+      memset(&frame.data, 0, 8);
+      for (size_t i = 0; i < data.Length(); i += 2) {
+        unsigned long dv;
+        wxString sbyte = data.Mid(data.Length() - i - 2, 2);
+        sbyte.ToULong(&dv, 16);
+        frame.data[i/2] = ((uint8_t)dv);
+      }
+      frame.can_id = (uint32_t)BuildCanID(priority, address, 0xFF, PGN);
+      HandleCanFrameInput(frame);
+    }
+  }
+  return true;
+}
+
 void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 #define RD_BUF_SIZE \
   4096
@@ -1132,6 +1288,9 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
           break;
         case N2KFormat_SeaSmart:
           ProcessSeaSmart(data);
+          break;
+        case N2KFormat_MiniPlex:
+          ProcessMiniPlex(data);
           break;
         case N2KFormat_Undefined:
         default:
@@ -1233,6 +1392,131 @@ void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
     default:
       break;
   }
+}
+
+std::vector<unsigned char> MakeSimpleOutMsg(
+    int data_format, int pgn, std::vector<unsigned char>& payload) {
+  std::vector<unsigned char> out_vec;
+
+  switch (data_format) {
+    case N2KFormat_YD_RAW:
+    case N2KFormat_Actisense_RAW_ASCII: {
+      // Craft the canID
+      unsigned can_id = BuildCanID(6, 0xff, 0xff, pgn);
+      wxString scan_id;
+      scan_id.Printf("%08X", can_id);
+      std::string sscan_id = scan_id.ToStdString();
+      for (unsigned char s : sscan_id) out_vec.push_back(s);
+      out_vec.push_back(' ');
+
+      // Data payload
+      std::string sspl;
+      char tv[4];
+      for (unsigned char d : payload) {
+        snprintf(tv, 4, "%02X ", d);
+        sspl += tv;
+      }
+      for (unsigned char s : sspl) out_vec.push_back(s);
+
+      // terminate
+      out_vec.push_back(0x0d);
+      out_vec.push_back(0x0a);
+      break;
+    }
+    case N2KFormat_Actisense_N2K_ASCII: {
+      // Create the time field
+      wxDateTime now = wxDateTime::Now();
+      wxString stime = now.Format("%H%M%S");
+      stime += ".000 ";
+      std::string sstime = stime.ToStdString();
+      out_vec.push_back('A');
+      for (unsigned char s : sstime) out_vec.push_back(s);
+
+      // src/dest/prio field
+      wxString sdp;
+      sdp.Printf("%02X%02X%1X ",
+                 1,  // source
+                 (unsigned char)0xFF, 0x6);
+      std::string ssdp = sdp.ToStdString();
+      for (unsigned char s : ssdp) out_vec.push_back(s);
+
+      //  PGN field
+      wxString spgn;
+      spgn.Printf("%05X ", pgn);
+      std::string sspgn = spgn.ToStdString();
+      for (unsigned char s : sspgn) out_vec.push_back(s);
+
+      // Data payload
+      std::string sspl;
+      char tv[3];
+      for (unsigned char d : payload) {
+        snprintf(tv, 3, "%02X", d);
+        sspl += tv;
+      }
+      for (unsigned char s : sspl) out_vec.push_back(s);
+
+      // terminator
+      out_vec.push_back(0x0d);
+      out_vec.push_back(0x0a);
+      break;
+    }
+    case N2KFormat_MiniPlex: {
+      out_vec.push_back('$');
+      out_vec.push_back('M');
+      out_vec.push_back('X');
+      out_vec.push_back('P');
+      out_vec.push_back('G');
+      out_vec.push_back('N');
+      out_vec.push_back(',');
+      //  PGN field
+      wxString spgn;
+      spgn.Printf("%06X,", pgn);
+      std::string sspgn = spgn.ToStdString();
+      for (unsigned char c : sspgn) {
+        out_vec.push_back(c);
+      }
+      // Attribute word
+      uint16_t attr = 0;
+      uint8_t len = 8;
+
+      attr |= ((uint16_t)0x06) << 12;
+      attr |= ((uint16_t)payload.size()) << 8;
+      attr |= (uint16_t)0xFF;
+      attr |= 0x8000;  // S bit set to 1
+
+      wxString sattr;
+      sattr.Printf("%04X,", attr);
+      std::string ssattr = sattr.ToStdString();
+      for (unsigned char c : ssattr) {
+        out_vec.push_back(c);
+      }
+      // Data payload
+      char tv[3];
+      for (auto rit = payload.rbegin(); rit != payload.rend(); ++rit) {
+        snprintf(tv, 3, "%02X", *rit);
+        out_vec.push_back(tv[0]);
+        out_vec.push_back(tv[1]);
+      }
+      // CRC
+      uint8_t crc = 0;
+      for (auto ci = ++out_vec.begin(); ci != out_vec.end(); ci++) {
+        crc ^= *ci;
+      }
+      out_vec.push_back('*');
+      snprintf(tv, 3, "%02X", crc);
+      out_vec.push_back(tv[0]);
+      out_vec.push_back(tv[1]);
+
+      // term
+      out_vec.push_back(0x0d);
+      out_vec.push_back(0x0a);
+      //DBG: std::cout << std::string(out_vec.begin(), out_vec.end()) << std::endl << std::flush;
+      break;
+    }
+    default:
+      break;
+  }
+  return out_vec;
 }
 
 std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
@@ -1388,11 +1672,99 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(const std:
 
       break;
     }
+    case N2KFormat_MiniPlex: {
+      std::vector<unsigned char> ovec;
+      if (!IsFastMessagePGN(msg->PGN.pgn) && msg->payload.size() < 8) {
+        // Single packet
+      } else {
+        size_t cur = 0;
+        size_t nframes = (msg->payload.size() > 6 ? (msg->payload.size() - 6 - 1) / 7 + 1 + 1 : 1);
+        for (size_t i = 0; i < nframes; i++) {
+          ovec.push_back('$');
+          ovec.push_back('M');
+          ovec.push_back('X');
+          ovec.push_back('P');
+          ovec.push_back('G');
+          ovec.push_back('N');
+          ovec.push_back(',');
+          //  PGN field
+          wxString spgn;
+          spgn.Printf("%06X,", (int)msg->PGN.pgn);
+          std::string sspgn = spgn.ToStdString();
+          for (unsigned char c : sspgn) {
+            ovec.push_back(c);
+          }
+          // Attribute word
+          uint16_t attr = 0;
+          uint8_t len = 8;
+          if (i == nframes - 1) {
+            len = msg->payload.size() + 1 - 6 - (nframes - 2) * 7;
+          }
+          attr |= ((uint16_t)((uint8_t)msg->priority & 0x07)) << 12;
+          attr |= ((uint16_t)len) << 8;
+          attr |= (uint16_t)dest_addr->address;
+          attr |= 0x8000; // S bit set to 1
+
+          wxString sattr;
+          sattr.Printf("%04X,", attr);
+          std::string ssattr = sattr.ToStdString();
+          for (unsigned char c : ssattr) {
+            ovec.push_back(c);
+          }
+          // Data payload
+          char tv[3];
+          uint8_t databytes = i == 0 ? len - 2 : len - 1;
+          std::vector<unsigned char> payload;
+          for (uint8_t j = 0; j < databytes; j++) {
+            payload.push_back(msg->payload[cur]);
+            cur++;
+          }
+          for (auto rit = payload.rbegin(); rit != payload.rend(); ++rit) {
+            snprintf(tv, 3, "%02X", *rit);
+            ovec.push_back(tv[0]);
+            ovec.push_back(tv[1]);
+          }
+          if (i == 0) { // First frame contains the total payload length
+            snprintf(tv, 3, "%02X", (uint8_t)msg->payload.size());
+            ovec.push_back(tv[0]);
+            ovec.push_back(tv[1]);
+          }
+          //frame counter
+          snprintf(tv, 3, "%02X", (uint8_t)i | m_order);
+          ovec.push_back(tv[0]);
+          ovec.push_back(tv[1]);
+
+          // CRC
+          uint8_t crc = 0;
+          for (auto ci = ++ovec.begin(); ci != ovec.end(); ci++) {
+            crc ^= *ci;
+          }
+          ovec.push_back('*');
+          snprintf(tv, 3, "%02X", crc);
+          ovec.push_back(tv[0]);
+          ovec.push_back(tv[1]);
+
+          // term
+          ovec.push_back(0x0d);
+          ovec.push_back(0x0a);
+
+          //DBG: std::cout << std::string(ovec.begin(), ovec.end()) << std::endl << std::flush;
+
+          //form the result
+          tx_vector.push_back(ovec);
+          ovec.clear();
+        }
+        m_order += 16;
+      break;
+      }
+    }
     case N2KFormat_Actisense_N2K:
       break;
     case N2KFormat_Actisense_RAW:
       break;
     case N2KFormat_Actisense_NGT:
+      break;
+    case N2KFormat_SeaSmart:
       break;
     default:
       break;
@@ -1402,82 +1774,6 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(const std:
 
   return tx_vector;
 }
-
-
-std::vector<unsigned char> MakeSimpleOutMsg( int data_format, int pgn, std::vector<unsigned char> &payload) {
-    std::vector<unsigned char> out_vec;
-
-    switch (data_format) {
-      case N2KFormat_YD_RAW:
-      case N2KFormat_Actisense_RAW_ASCII: {
-
-        // Craft the canID
-        unsigned  can_id = BuildCanID(6, 0xff, 0xff, pgn);
-        wxString scan_id;
-        scan_id.Printf("%08X", can_id);
-        std::string sscan_id = scan_id.ToStdString();
-        for (unsigned char s : sscan_id) out_vec.push_back(s);
-        out_vec.push_back(' ');
-
-        // Data payload
-        std::string sspl;
-        char tv[4];
-        for (unsigned char d : payload) {
-          snprintf(tv, 4, "%02X ", d);
-          sspl += tv;
-        }
-        for (unsigned char s : sspl) out_vec.push_back(s);
-
-        // terminate
-        out_vec.push_back(0x0d);
-        out_vec.push_back(0x0a);
-        break;
-     }
-     case N2KFormat_Actisense_N2K_ASCII:{
-
-        // Create the time field
-        wxDateTime now = wxDateTime::Now();
-        wxString stime = now.Format("%H%M%S");
-        stime += ".000 ";
-        std::string sstime = stime.ToStdString();
-        out_vec.push_back('A');
-        for (unsigned char s : sstime) out_vec.push_back(s);
-
-        // src/dest/prio field
-        wxString sdp;
-        sdp.Printf( "%02X%02X%1X ",
-                   1,       // source
-                   (unsigned char)0xFF,
-                   0x6);
-        std::string ssdp = sdp.ToStdString();
-        for (unsigned char s : ssdp) out_vec.push_back(s);
-
-        //  PGN field
-        wxString spgn;
-        spgn.Printf("%05X ", pgn);
-        std::string sspgn = spgn.ToStdString();
-        for (unsigned char s : sspgn) out_vec.push_back(s);
-
-        // Data payload
-        std::string sspl;
-        char tv[3];
-        for (unsigned char d : payload){
-          snprintf(tv, 3, "%02X", d);
-          sspl += tv;
-        }
-        for (unsigned char s : sspl) out_vec.push_back(s);
-
-        // terminator
-        out_vec.push_back(0x0d);
-        out_vec.push_back(0x0a);
-        break;
-     }
-    default:
-      break;
-    }
-    return out_vec;
-}
-
 
 bool CommDriverN2KNet::PrepareForTX() {
 
@@ -1492,13 +1788,28 @@ bool CommDriverN2KNet::PrepareForTX() {
 
   bool b_found = false;
 
-  // Step 1.
+  // Step 1.1
   // If the detected data format is N2KFormat_Actisense_N2K_ASCII,
   // then we are clearly connected to an actisense device.
   // Nothing else need be done.
 
   if (m_n2k_format == N2KFormat_Actisense_N2K_ASCII)
     return true;
+
+  // Step 1.2
+  // If the detected data format is N2KFormat_MiniPlex,
+  // then we are clearly connected to a MiniPlex.
+  // Nothing else need be done.
+
+  if (m_n2k_format == N2KFormat_MiniPlex)
+    return true;
+
+
+  // Step 1.2
+  // If the detected data format is N2KFormat_SeaSmart,
+  // then we can't transmit.
+  if (m_n2k_format == N2KFormat_SeaSmart)
+    return false;
 
   // Step 2
 
@@ -1569,7 +1880,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(std::vector<std::vector<unsigned char
     case TCP:
       for (std::vector<unsigned char> &v : payload ) {
         if (GetSock() && GetSock()->IsOk()) {
-          printf("---%s", v.data());
+          //printf("---%s", v.data());
           GetSock()->Write(v.data(), v.size());
           if (GetSock()->Error()) {
             if (GetSockServer()) {

@@ -74,7 +74,8 @@ typedef enum
   N2KFormat_Actisense_N2K,
   N2KFormat_Actisense_RAW,
   N2KFormat_Actisense_NGT,
-  N2KFormat_SeaSmart
+  N2KFormat_SeaSmart,
+  N2KFormat_MiniPlex
 } N2K_Format;
 
 typedef enum
@@ -187,6 +188,7 @@ private:
   bool ProcessActisense_RAW(std::vector<unsigned char> packet);
   bool ProcessActisense_NGT(std::vector<unsigned char> packet);
   bool ProcessSeaSmart(std::vector<unsigned char> packet);
+  bool ProcessMiniPlex(std::vector<unsigned char> packet);
 
 
   bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg> &msg,

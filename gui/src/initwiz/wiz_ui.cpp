@@ -172,7 +172,8 @@ NMEA0183Flavor FirstUseWizImpl::SeemsN0183(std::string& data) {
     std::regex nmea_crc_regex(".*[\\$!]([a-zA-Z]{5,6})(,.*)(\\*[0-9A-Z]{2})");
     while (std::getline(ss, to, '\n')) {
       if (std::regex_search(to, nmea_regex) &&
-          to.find("$PCDIN") == std::string::npos) { // It also must not be SeaSmart encoded NMEA2000
+          to.find("$PCDIN") == std::string::npos && // It also must not be SeaSmart encoded NMEA2000
+          to.find("$MXPGN") == std::string::npos) { // or Shipmodul MiniPlex encoded NMEA2000
         DEBUG_LOG << "Looks like NMEA0183: " << to;
         if (std::regex_search(to, nmea_crc_regex)) {
           DEBUG_LOG << "Has CRC: " << to;
@@ -192,17 +193,23 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
   std::string to;
 
   if (!data.empty()) {
+    // YD RAW format aka Actisense RAW ASCII format
+    // (https://www.yachtd.com/downloads/ydnr02.pdf appendix E)
     std::regex actisenseyd_raw_ascii_regex(
         "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [RT] [0-9A-F]{8}( "
-        "[0-9A-F]{2})*");  // YD RAW format aka Actisense RAW ASCII format
-                           // (https://www.yachtd.com/downloads/ydnr02.pdf
-                           // appendix E)
+        "[0-9A-F]{2})*");
+    // Actisense N2K ASCII format
     std::regex actisense_n2k_ascii_regex(
-        "A[0-9]{6}\\.[0-9]{3} [0-9A-F]{5} [0-9A-F]{5} [0-9A-F]+");  // Actisense
-                                                                    // N2K ASCII
-                                                                    // format
-    std::regex seasmart_regex("\\$PCDIN,[0-9A-F]{6},[0-9A-F]{8},[0-9A-F]{2},[0-9A-F]+\\*[0-9A-F]{2}");
-    // TODO: Other formats of NMEA2000 data
+        "A[0-9]{6}\\.[0-9]{3} [0-9A-F]{5} [0-9A-F]{5} [0-9A-F]+");
+    // Format used by the Chetco Digital Instruments, Inc. and adopted by wide
+    // variety of others. Documented in
+    // https://www.seasmart.net/pdf/SeaSmart_HTTP_Protocol_RevG_043012.pdf
+    std::regex seasmart_regex(
+        "\\$PCDIN,[0-9A-F]{6},[0-9A-F]{8},[0-9A-F]{2},[0-9A-F]+\\*[0-9A-F]{2}");
+    // Format used by the Shipmodule Miniplex multiplexers, documented in
+    // https://shipmodul.com/download/commands-v3.25.pdf
+    std::regex miniplex_regex(
+        "\\$MXPGN,[0-9A-F]{6},[0-9A-F]{4},[0-9A-F]+\\*[0-9A-F]{2}");
 
     if (data.length() > 4 &&
         // Actisense/YD N2K mode - All the binary formats enclose
@@ -215,7 +222,8 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
     while (std::getline(ss, to, '\n')) {
       if (std::regex_search(to, actisenseyd_raw_ascii_regex) ||
           std::regex_search(to, actisense_n2k_ascii_regex) ||
-          std::regex_search(to, seasmart_regex)) {
+          std::regex_search(to, seasmart_regex) ||
+          std::regex_search(to, miniplex_regex)) {
         DEBUG_LOG << "Looks like NMEA2000: " << to;
         return true;
       } else {
