@@ -3,49 +3,47 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-04 22:03-0400\n"
-"PO-Revision-Date: 2024-06-09 01:19\n"
+"PO-Revision-Date: 2024-06-24 02:23\n"
 "Last-Translator: \n"
-"Language-Team: Dutch\n"
-"Language: nl_NL\n"
+"Language-Team: Spanish (Modern)\n"
+"Language: es_EM\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Project-ID: 49843\n"
-"X-Crowdin-Language: nl\n"
+"X-Crowdin-Language: es-EM\n"
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
 "X-Crowdin-File-ID: 160\n"
 
 #: src/chartcatalog.cpp:39
 msgid "Catalog is not valid."
-msgstr "Ongeldige catalogus."
+msgstr "crwdns6916:0crwdne6916:0"
 
 #: src/chartcatalog.cpp:385
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
-msgstr "%s (%s tot %s), riviermijlen %3.1f - %3.1f"
+msgstr "crwdns6808:0%scrwdnd6808:0%scrwdnd6808:0%scrwdnd6808:0%3.1fcrwdnd6808:0%3.1fcrwdne6808:0"
 
 #: src/chartcatalog.cpp:393
 #, c-format
 msgid "%s"
-msgstr "%s"
+msgstr "crwdns10522:0%scrwdne10522:0"
 
 #: src/chartdldr_pi.cpp:250
 msgid "ChartDownloader"
-msgstr "Kaart-downloader"
+msgstr "crwdns6809:0crwdne6809:0"
 
 #: src/chartdldr_pi.cpp:253
 msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr "Kaart-downloader plugin voor OpenCPN"
+msgstr "crwdns6810:0crwdne6810:0"
 
 #: src/chartdldr_pi.cpp:258
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
-msgstr "Kaart-downloader plugin voor OpenCPN\n"
-"Voor het downloaden van kaarten en verbeteringen vanaf bronnen die de NOAA\n"
-"kaartcatalogus ondersteunen."
+msgstr "crwdns6811:0crwdne6811:0"
 
 #: src/chartdldr_pi.cpp:265 src/chartdldr_pi.cpp:881 src/chartdldr_pi.cpp:888
 #: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:922 src/chartdldr_pi.cpp:957
@@ -53,428 +51,415 @@ msgstr "Kaart-downloader plugin voor OpenCPN\n"
 #: src/chartdldr_pi.cpp:1470 src/chartdldr_pi.cpp:1474 src/chartdldr_pi.cpp:1555
 #: src/chartdldr_pi.cpp:1670 src/chartdldr_pi.cpp:2401
 msgid "Chart Downloader"
-msgstr "Kaart-downloader"
+msgstr "crwdns6812:0crwdne6812:0"
 
 #: src/chartdldr_pi.cpp:579 src/chartdldr_pi.cpp:602
 msgid "Select all"
-msgstr "Selecteer alles"
+msgstr "crwdns6813:0crwdne6813:0"
 
 #: src/chartdldr_pi.cpp:583 src/chartdldr_pi.cpp:603
 msgid "Deselect all"
-msgstr "De-selecteer alles"
+msgstr "crwdns6814:0crwdne6814:0"
 
 #: src/chartdldr_pi.cpp:588 src/chartdldr_pi.cpp:604
 msgid "Invert selection"
-msgstr "Selectie omkeren"
+msgstr "crwdns6815:0crwdne6815:0"
 
 #: src/chartdldr_pi.cpp:592 src/chartdldr_pi.cpp:605
 msgid "Select updated"
-msgstr "Selecteer bijgewerkte"
+msgstr "crwdns6816:0crwdne6816:0"
 
 #: src/chartdldr_pi.cpp:596 src/chartdldr_pi.cpp:606
 msgid "Select new"
-msgstr "Selecteer nieuwe"
+msgstr "crwdns6817:0crwdne6817:0"
 
 #: src/chartdldr_pi.cpp:654
 #, c-format
 msgid "Charts: %s"
-msgstr "Kaart: %s"
+msgstr "crwdns20386:0%scrwdne20386:0"
 
 #: src/chartdldr_pi.cpp:654
 msgid " from "
-msgstr " vanaf"
+msgstr "crwdns21141:0crwdne21141:0"
 
 #: src/chartdldr_pi.cpp:660 src/chartdldrgui.cpp:499
 msgid "Charts"
-msgstr "Kaarten"
+msgstr "crwdns6840:0crwdne6840:0"
 
 #: src/chartdldr_pi.cpp:721 src/chartdldrgui.h:170 src/chartdldrgui.h:241
 msgid "New"
-msgstr "Nieuw"
+msgstr "crwdns6818:0crwdne6818:0"
 
 #: src/chartdldr_pi.cpp:728 src/chartdldrgui.h:173 src/chartdldrgui.h:242
 msgid "Out of date"
-msgstr "Verouderd"
+msgstr "crwdns21143:0crwdne21143:0"
 
 #: src/chartdldr_pi.cpp:731
 msgid "Up to date"
-msgstr "Bijgewerkt"
+msgstr "crwdns6820:0crwdne6820:0"
 
 #: src/chartdldr_pi.cpp:766
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr "%lu kaarten totaal, %lu bijgewerkt, %lu nieuwe"
+msgstr "crwdns7797:0%lucrwdnd7797:0%lucrwdnd7797:0%lucrwdne7797:0"
 
 #: src/chartdldr_pi.cpp:771 src/chartdldr_pi.cpp:1172 src/chartdldr_pi.cpp:1255
 #: src/chartdldr_pi.cpp:1273 src/chartdldr_pi.cpp:1290 src/chartdldr_pi.cpp:1309
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
-msgstr "%lu kaarten totaal, %lu bijgewerkt, %lu nieuw, %lu geselecteerd"
+msgstr "crwdns21145:0%lucrwdnd21145:0%lucrwdnd21145:0%lucrwdnd21145:0%lucrwdne21145:0"
 
 #: src/chartdldr_pi.cpp:844 src/chartdldr_pi.cpp:1637
 msgid "(Please update first)"
-msgstr "(Eerst bijwerken aub)"
+msgstr "crwdns6870:0crwdne6870:0"
 
 #: src/chartdldr_pi.cpp:849 src/chartdldr_pi.cpp:938
 msgid "Error, the URL to the chart source data seems wrong."
-msgstr "Fout, de URL naar de brongegevens van de kaart lijkt verkeerd."
+msgstr "crwdns6821:0crwdne6821:0"
 
 #: src/chartdldr_pi.cpp:850 src/chartdldr_pi.cpp:939 src/chartdldr_pi.cpp:1376
 msgid "Error"
-msgstr "Fout"
+msgstr "crwdns6822:0crwdne6822:0"
 
 #: src/chartdldr_pi.cpp:879
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
-msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
-"het downloaden van alle nieuwe en bijgewerkte kaarten. \n"
-"Dit kan lang duren."
+msgstr "crwdns7040:0crwdne7040:0"
 
 #: src/chartdldr_pi.cpp:886
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
-msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
-"het downloaden van alleen nieuwe (dus niet bijgewerkte) kaarten. \n"
-"Dit kan lang duren."
+msgstr "crwdns7041:0crwdne7041:0"
 
 #: src/chartdldr_pi.cpp:893
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
-msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
-"het downloaden van alleen bijgewerkte (dus niet van nieuwe) kaarten. \n"
-"Dit kan lang duren."
+msgstr "crwdns7042:0crwdne7042:0"
 
 #: src/chartdldr_pi.cpp:918 src/chartdldr_pi.cpp:1466
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
-msgstr "%d van de %d kaarten is niet gedownload.\n"
-"Controleer de lijst en de internetverbinding en probeer zo nodig opnieuw te downloaden."
+msgstr "crwdns6901:0%dcrwdnd6901:0%dcrwdne6901:0"
 
 #: src/chartdldr_pi.cpp:955 src/chartdldr_pi.cpp:2374 src/chartdldr_pi.cpp:2399
 #, c-format
 msgid "Directory %s can't be created."
-msgstr "Map %s kan niet worden gemaakt."
+msgstr "crwdns6900:0%scrwdne6900:0"
 
 #: src/chartdldr_pi.cpp:977 src/chartdldr_pi.cpp:991
 msgid "Downloading file"
-msgstr "Downloaden bestand"
+msgstr "crwdns6823:0crwdne6823:0"
 
 #: src/chartdldr_pi.cpp:978 src/chartdldr_pi.cpp:992
 msgid "Reading Headers: "
-msgstr "Lezen van koppen: "
+msgstr "crwdns6824:0crwdne6824:0"
 
 #: src/chartdldr_pi.cpp:1022
 #, c-format
 msgid "Failed to Find New Catalog: %s "
-msgstr "Nieuwe catalogus: %s niet gevonden "
+msgstr "crwdns7043:0%scrwdne7043:0"
 
 #: src/chartdldr_pi.cpp:1030
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
-msgstr "Download van catalogus %s mislukt.\n"
-"Controleer of er een werkende internetverbinding is."
+msgstr "crwdns7044:0%scrwdne7044:0"
 
 #: src/chartdldr_pi.cpp:1193 src/chartdldr_pi.cpp:1199 src/chartdldrgui.cpp:566
 msgid "Select All"
-msgstr "Selecteer alles"
+msgstr "crwdns21147:0crwdne21147:0"
 
 #: src/chartdldr_pi.cpp:1195 src/chartdldrgui.cpp:570 src/chartdldrgui.cpp:624
 msgid "Select None"
-msgstr "Selecteer Niets"
+msgstr "crwdns21149:0crwdne21149:0"
 
 #: src/chartdldr_pi.cpp:1196
 msgid "De-select all charts in the list."
-msgstr "De-selecteer alle kaarten in de lijst."
+msgstr "crwdns21151:0crwdne21151:0"
 
 #: src/chartdldr_pi.cpp:1200 src/chartdldrgui.cpp:571
 msgid "Select all charts in the list."
-msgstr "Selecteer alle kaarten in de lijst."
+msgstr "crwdns21153:0crwdne21153:0"
 
 #: src/chartdldr_pi.cpp:1324
 msgid "No charts selected for download."
-msgstr "Geen kaarten geselecteerd om te downloaden."
+msgstr "crwdns6873:0crwdne6873:0"
 
 #: src/chartdldr_pi.cpp:1336
 msgid "Abort download"
-msgstr "Download afbreken"
+msgstr "crwdns7798:0crwdne7798:0"
 
 #: src/chartdldr_pi.cpp:1349
 msgid "Unknown"
-msgstr "Onbekend"
+msgstr "crwdns7799:0crwdne7799:0"
 
 #: src/chartdldr_pi.cpp:1357
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
-msgstr "De geselecteerde kaarten '%s' kunnen niet automatisch worden gedownload. Wilt u een browservenster openen en handmatig downloaden? \n\n"
-"Na het downloaden van de kaarten deze uitpakken in %s"
+msgstr "crwdns7045:0%scrwdnd7045:0%scrwdne7045:0"
 
 #: src/chartdldr_pi.cpp:1374
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
-msgstr "Fout, de URL voor de kaartgegevens (%s) lijkt verkeerd."
+msgstr "crwdns6917:0%scrwdne6917:0"
 
 #: src/chartdldr_pi.cpp:1418
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr "Kaart %u van %u wordt gedownload, %u van downloads is mislukt (%s / %s)"
+msgstr "crwdns7800:0%ucrwdnd7800:0%ucrwdnd7800:0%ucrwdnd7800:0%scrwdnd7800:0%scrwdne7800:0"
 
 #: src/chartdldr_pi.cpp:1423
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
-msgstr "Kaart aan het downloaden %u van %u (%s / %s)"
+msgstr "crwdns17754:0%ucrwdnd17754:0%ucrwdnd17754:0%scrwdnd17754:0%scrwdne17754:0"
 
 #: src/chartdldr_pi.cpp:1460 src/chartdldrgui.cpp:550 src/chartdldrgui.cpp:582
 msgid "Download selected charts"
-msgstr "Geselecteerde kaarten downloaden"
+msgstr "crwdns6841:0crwdne6841:0"
 
 #: src/chartdldr_pi.cpp:1473
 msgid "Chart download cancelled."
-msgstr "Kaart download geannuleerd."
+msgstr "crwdns17756:0crwdne17756:0"
 
 #: src/chartdldr_pi.cpp:1502 src/chartdldrgui.cpp:240
 msgid "Catalog"
-msgstr "Catalogus"
+msgstr "crwdns6829:0crwdne6829:0"
 
 #: src/chartdldr_pi.cpp:1504
 msgid "Released"
-msgstr "Uitgegeven"
+msgstr "crwdns6874:0crwdne6874:0"
 
 #: src/chartdldr_pi.cpp:1506
 msgid "Local path"
-msgstr "Lokaal pad"
+msgstr "crwdns6875:0crwdne6875:0"
 
 #: src/chartdldr_pi.cpp:1552
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
-msgstr "Weet je zeker dat je de kaartbron wilt verwijderen?\n"
-"De lokale kaartbestanden worden niet verwijderd,\n"
-"maar je kunt de kaarten niet meer bijwerken."
+msgstr "crwdns20388:0crwdne20388:0"
 
 #: src/chartdldr_pi.cpp:1622
 msgid "Edit Chart Source"
-msgstr "Kaartbron bewerken"
+msgstr "crwdns6905:0crwdne6905:0"
 
 #: src/chartdldr_pi.cpp:1666
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
-msgstr "Het pad %s maakt geen deel uit van de door u aangegeven kaartmappen.\n"
-"Om de kaarten te zien moet u de juiste map toevoegen via 'Optionele Instellingen' - 'Kaarten' - 'Kaartbestanden' - 'Voeg map toe ...'."
+msgstr "crwdns6904:0%scrwdne6904:0"
 
 #: src/chartdldr_pi.cpp:1761
 msgid "Installing charts."
-msgstr "Kaarten installeren."
+msgstr "crwdns20390:0crwdne20390:0"
 
 #: src/chartdldr_pi.cpp:2354 src/chartdldr_pi.cpp:2358
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
-msgstr "U moet één van de voor-gedefinieerde kaartbronnen selecteren of er zelf één toevoegen.\n"
+msgstr "crwdns6877:0crwdne6877:0"
 
 #: src/chartdldr_pi.cpp:2363
 msgid "The chart source must have a name.\n"
-msgstr "De kaartbron moet een naam hebben.\n"
+msgstr "crwdns6878:0crwdne6878:0"
 
 #: src/chartdldr_pi.cpp:2368
 msgid "The chart source must have a valid URL.\n"
-msgstr "De kaartbron moet een geldige URL hebben. \n"
+msgstr "crwdns6879:0crwdne6879:0"
 
 #: src/chartdldr_pi.cpp:2370
 msgid "You must select a local folder to store the charts.\n"
-msgstr "U moet een lokale map selecteren om de kaarten op te slaan.\n"
+msgstr "crwdns6880:0crwdne6880:0"
 
 #: src/chartdldr_pi.cpp:2379
 msgid "Chart source definition problem"
-msgstr "Probleem kaartbrondefinitie"
+msgstr "crwdns6882:0crwdne6882:0"
 
 #: src/chartdldrgui.cpp:206
 msgid "Dialog"
-msgstr "Dialoogvenster"
+msgstr "crwdns24820:0crwdne24820:0"
 
 #: src/chartdldrgui.cpp:253
 msgid "Predefined"
-msgstr "Vooraf gedefinieerd"
+msgstr "crwdns6883:0crwdne6883:0"
 
 #: src/chartdldrgui.cpp:276
 msgid "Name"
-msgstr "Naam"
+msgstr "crwdns6832:0crwdne6832:0"
 
 #: src/chartdldrgui.cpp:286
 msgid "URL"
-msgstr "URL"
+msgstr "crwdns6833:0crwdne6833:0"
 
 #: src/chartdldrgui.cpp:299
 msgid "Custom"
-msgstr "Aangepast"
+msgstr "crwdns6831:0crwdne6831:0"
 
 #: src/chartdldrgui.cpp:304
 msgid "Proposed chart installation directory"
-msgstr "Voorgestelde kaartinstallatiemap"
+msgstr "crwdns24822:0crwdne24822:0"
 
 #: src/chartdldrgui.cpp:324
 msgid "Select a different directory"
-msgstr "Selecteer een andere map"
+msgstr "crwdns24824:0crwdne24824:0"
 
 #: src/chartdldrgui.cpp:331
 msgid "OK"
-msgstr "OK"
+msgstr "crwdns24826:0crwdne24826:0"
 
 #: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:859
 msgid "Cancel"
-msgstr "Annuleer"
+msgstr "crwdns17758:0crwdne17758:0"
 
 #: src/chartdldrgui.cpp:393 src/chartdldrgui.cpp:1015
 msgid "Choose Chart File Directory"
-msgstr "Kies map voor kaartbestanden"
+msgstr "crwdns7802:0crwdne7802:0"
 
 #: src/chartdldrgui.cpp:428
 msgid "Select Catalog..."
-msgstr "Selecteer catalogus..."
+msgstr "crwdns17760:0crwdne17760:0"
 
 #: src/chartdldrgui.cpp:434
 msgid "Chart Catalogs Available"
-msgstr "Kaartcatalogus beschikbaar"
+msgstr "crwdns17762:0crwdne17762:0"
 
 #: src/chartdldrgui.cpp:455
 msgid "Add Catalog"
-msgstr "Nieuwe catalogus toevoegen"
+msgstr "crwdns17764:0crwdne17764:0"
 
 #: src/chartdldrgui.cpp:457
 msgid "Add a new chart catalog."
-msgstr "Nieuwe kaartcatalogus toevoegen."
+msgstr "crwdns6884:0crwdne6884:0"
 
 #: src/chartdldrgui.cpp:461
 msgid "Delete"
-msgstr "Verwijderen"
+msgstr "crwdns6838:0crwdne6838:0"
 
 #: src/chartdldrgui.cpp:464
 msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr "Verwijder de kaartcatalogus. De gedownloade kaarten worden niet verwijderd."
+msgstr "crwdns6885:0crwdne6885:0"
 
 #: src/chartdldrgui.cpp:468
 msgid "Edit..."
-msgstr "Bewerken..."
+msgstr "crwdns6907:0crwdne6907:0"
 
 #: src/chartdldrgui.cpp:476
 msgid "Update"
-msgstr "Bijwerken"
+msgstr "crwdns6839:0crwdne6839:0"
 
 #: src/chartdldrgui.cpp:480
 msgid "Download the current chart catalog and update the data."
-msgstr "Download de huidige kaartcatalogus en werk de gegevens bij."
+msgstr "crwdns6886:0crwdne6886:0"
 
 #: src/chartdldrgui.cpp:484
 msgid "Update All"
-msgstr "Alles bijwerken"
+msgstr "crwdns7046:0crwdne7046:0"
 
 #: src/chartdldrgui.cpp:487
 msgid "Download all chart catalogs, and then update charts."
-msgstr "Download alle kaartcatalogi en werk vervolgens kaarten bij."
+msgstr "crwdns21155:0crwdne21155:0"
 
 #: src/chartdldrgui.cpp:493
 msgid "Download Charts..."
-msgstr "Download kaarten..."
+msgstr "crwdns17766:0crwdne17766:0"
 
 #: src/chartdldrgui.cpp:518
 msgid "Status"
-msgstr "Status"
+msgstr "crwdns6828:0crwdne6828:0"
 
 #: src/chartdldrgui.cpp:522
 msgid "Date"
-msgstr "Datum"
+msgstr "crwdns21157:0crwdne21157:0"
 
 #: src/chartdldrgui.cpp:526
 msgid "Chart Description"
-msgstr "Kaartomschrijving"
+msgstr "crwdns21159:0crwdne21159:0"
 
 #: src/chartdldrgui.cpp:554
 msgid "Select New"
-msgstr "Selecteer nieuwe"
+msgstr "crwdns21161:0crwdne21161:0"
 
 #: src/chartdldrgui.cpp:556
 msgid "Check all charts that are 'New' in the list."
-msgstr "Selecteer alle kaarten die 'Nieuw' zijn in de lijst."
+msgstr "crwdns21163:0crwdne21163:0"
 
 #: src/chartdldrgui.cpp:559
 msgid "Select Updated"
-msgstr "Selecteer bijgewerkte"
+msgstr "crwdns21165:0crwdne21165:0"
 
 #: src/chartdldrgui.cpp:562
 msgid "Select all charts that are 'Out of Date' in the list."
-msgstr "Selecteer alle kaarten die 'verouderd' zijn in de lijst."
+msgstr "crwdns21167:0crwdne21167:0"
 
 #: src/chartdldrgui.cpp:576
 #, c-format
 msgid "%u charts total, %u updated, %u new, %u selected"
-msgstr "%u kaarten totaal, %u bijgewerkt, %u nieuw, %u geselecteerd"
+msgstr "crwdns21169:0%ucrwdnd21169:0%ucrwdnd21169:0%ucrwdnd21169:0%ucrwdne21169:0"
 
 #: src/chartdldrgui.cpp:587
 #, c-format
 msgid "%u charts total, %u updated, %u new"
-msgstr "%u kaarten totaal, %u bijgewerkt, %u nieuwe"
+msgstr "crwdns7135:0%ucrwdnd7135:0%ucrwdnd7135:0%ucrwdne7135:0"
 
 #: src/chartdldrgui.cpp:870
 msgid "Default Path to Charts"
-msgstr "Standaard pad naar kaarten"
+msgstr "crwdns6909:0crwdne6909:0"
 
 #: src/chartdldrgui.cpp:881
 msgid "Select a folder"
-msgstr "Selecteer een map"
+msgstr "crwdns6835:0crwdne6835:0"
 
 #: src/chartdldrgui.cpp:888
 msgid "Preferences"
-msgstr "Voorkeuren"
+msgstr "crwdns6911:0crwdne6911:0"
 
 #: src/chartdldrgui.cpp:893
 msgid "After catalog update select for download"
-msgstr "Na bijwerken catalogus, selecteren voor downloaden"
+msgstr "crwdns6912:0crwdne6912:0"
 
 #: src/chartdldrgui.cpp:898
 msgid "All updated charts"
-msgstr "Alle bijgewerkte kaarten"
+msgstr "crwdns6913:0crwdne6913:0"
 
 #: src/chartdldrgui.cpp:903
 msgid "All new charts"
-msgstr "Alle nieuwe kaarten"
+msgstr "crwdns6914:0crwdne6914:0"
 
 #: src/chartdldrgui.cpp:913
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr "Bulk-bijwerken van alle geconfigureerde kaartbronnen en kaarten toestaan"
+msgstr "crwdns7137:0crwdne7137:0"
 
 #: src/chartdldrgui.cpp:918
 msgid "Update chart source catalog"
-msgstr "Update kaart-bron catalogus"
+msgstr "crwdns16182:0crwdne16182:0"
 
 #: src/chartdldrgui.cpp:966 src/chartdldrgui.cpp:967
 msgid "Downloading chart sources"
-msgstr "Kaartbronnen downloaden"
+msgstr "crwdns16184:0crwdne16184:0"
 
 #: src/chartdldrgui.cpp:981
 #, c-format
 msgid "Failed to save: %s "
-msgstr "Opslaan mislukt: %s "
+msgstr "crwdns16186:0%scrwdne16186:0"
 
 #: src/chartdldrgui.cpp:983 src/chartdldrgui.cpp:993
 msgid "Chart downloader"
-msgstr "Kaart-downloader"
+msgstr "crwdns16188:0crwdne16188:0"
 
 #: src/chartdldrgui.cpp:990
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."
-msgstr "Download mislukt: %s \n"
-"Controleer de internetverbinding."
+msgstr "crwdns16190:0%scrwdne16190:0"
 
 #: src/chartdldrgui.h:107
 msgid "New chart source"
-msgstr "Nieuwe kaartbron"
+msgstr "crwdns6842:0crwdne6842:0"
 
 #: src/chartdldrgui.h:223
 msgid "Chart Downloader Preferences"
-msgstr "Voorkeuren Kaart Downloader"
+msgstr "crwdns6915:0crwdne6915:0"
 
