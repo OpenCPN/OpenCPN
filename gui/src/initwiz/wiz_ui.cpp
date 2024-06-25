@@ -366,40 +366,49 @@ void FirstUseWizImpl::EnumerateUDP() {
       continue;
     }
     DEBUG_LOG << "Trying UDP port " << port;
-    char buffer[256];
-    memset(buffer, 0, 256);
+    size_t len = RECEIVE_BUFFER_LENGTH;
+    char buffer[RECEIVE_BUFFER_LENGTH];
+    memset(buffer, 0, len);
     sock->SetTimeout(1);
     sock->WaitForRead(1, 0);
-    sock->Read(&buffer, 256);
-    std::string data(buffer);
-    DEBUG_LOG << "Read: " << data;
-    if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
-      ConnectionParams params;
-      params.Type = ConnectionType::NETWORK;
-      params.NetProtocol = NetworkProtocol::UDP;
-      params.Protocol = DataProtocol::PROTO_NMEA0183;
-      params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
-      if (flavor == NMEA0183Flavor::CRC) {
-        params.ChecksumCheck = true;
-      } else {
-        params.ChecksumCheck = false;
+    sock->Read(&buffer, len);
+    // Binary protocols may contain 0x00 bytes, so we have to treat the buffer as such and avoid string conversion
+    while (len > 0 && buffer[len-1] == 0x00) {
+      len--;
+    }
+    if (len > 0) {
+      std::string data(buffer, len);
+      DEBUG_LOG << "Read: " << data;
+      if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
+        ConnectionParams params;
+        params.Type = ConnectionType::NETWORK;
+        params.NetProtocol = NetworkProtocol::UDP;
+        params.Protocol = DataProtocol::PROTO_NMEA0183;
+        params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
+        if (flavor == NMEA0183Flavor::CRC) {
+          params.ChecksumCheck = true;
+        } else {
+          params.ChecksumCheck = false;
+        }
+        params.NetworkAddress = "0.0.0.0";
+        params.NetworkPort = port;
+        params.UserComment = wxString::Format(_("NMEA0183: UDP port %d"), port);
+        m_detected_connections.push_back(params);
+        continue;
+      } else if (SeemsN2000(data)) {
+        ConnectionParams params;
+        params.Type = ConnectionType::NETWORK;
+        params.NetProtocol = NetworkProtocol::UDP;
+        params.Protocol = DataProtocol::PROTO_NMEA2000;
+        params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+        params.NetworkAddress = "0.0.0.0";
+        params.NetworkPort = port;
+        params.UserComment = wxString::Format(_("NMEA2000: UDP port %d"), port);
+        m_detected_connections.push_back(params);
+        continue;
       }
-      params.NetworkAddress = "0.0.0.0";
-      params.NetworkPort = port;
-      params.UserComment = wxString::Format(_("NMEA0183: UDP port %d"), port);
-      m_detected_connections.push_back(params);
-      continue;
-    } else if (SeemsN2000(data)) {
-      ConnectionParams params;
-      params.Type = ConnectionType::NETWORK;
-      params.NetProtocol = NetworkProtocol::UDP;
-      params.Protocol = DataProtocol::PROTO_NMEA2000;
-      params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
-      params.NetworkAddress = "0.0.0.0";
-      params.NetworkPort = port;
-      params.UserComment = wxString::Format(_("NMEA2000: UDP port %d"), port);
-      m_detected_connections.push_back(params);
-      continue;
+    } else {
+      DEBUG_LOG << "No data received";
     }
     sock->Close();
     delete sock;
@@ -478,41 +487,45 @@ void FirstUseWizImpl::EnumerateTCP() {
         client->WaitForRead(1, 0);
         client->Read(&buffer, len);
         // Binary protocols may contain 0x00 bytes, so we have to treat the buffer as such and avoid string conversion
-        while (buffer[len-1] == 0x00 && len > 0) {
+        while (len > 0 && buffer[len-1] == 0x00) {
           len--;
         }
-        std::string data(buffer, len);
-        DEBUG_LOG << "Read: " << data;
-        if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
-          ConnectionParams params;
-          params.Type = ConnectionType::NETWORK;
-          params.NetProtocol = NetworkProtocol::TCP;
-          params.Protocol = DataProtocol::PROTO_NMEA0183;
-          params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
-          if (flavor == NMEA0183Flavor::CRC) {
-            params.ChecksumCheck = true;
-          } else {
-            params.ChecksumCheck = false;
+        if (len > 0) {
+          std::string data(buffer, len);
+          DEBUG_LOG << "Read: " << data;
+          if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
+            ConnectionParams params;
+            params.Type = ConnectionType::NETWORK;
+            params.NetProtocol = NetworkProtocol::TCP;
+            params.Protocol = DataProtocol::PROTO_NMEA0183;
+            params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
+            if (flavor == NMEA0183Flavor::CRC) {
+              params.ChecksumCheck = true;
+            } else {
+              params.ChecksumCheck = false;
+            }
+            params.NetworkAddress = ip;
+            params.NetworkPort = port;
+            params.UserComment =
+                wxString::Format(_("NMEA0183: %s TCP port %d"), ip.c_str(), port);
+            m_detected_connections.push_back(params);
+            continue;
+          } else if (SeemsN2000(data)) {
+            ConnectionParams params;
+            params.Type = ConnectionType::NETWORK;
+            params.NetProtocol = NetworkProtocol::TCP;
+            params.Protocol = DataProtocol::PROTO_NMEA2000;
+            params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+            params.NetworkAddress = ip;
+            params.NetworkPort = port;
+            params.UserComment =
+                wxString::Format(_("NMEA2000: %s TCP port %d"), ip.c_str(), port);
+            m_detected_connections.push_back(params);
+            continue;
           }
-          params.NetworkAddress = ip;
-          params.NetworkPort = port;
-          params.UserComment =
-              wxString::Format(_("NMEA0183: %s TCP port %d"), ip.c_str(), port);
-          m_detected_connections.push_back(params);
-          continue;
-        } else if (SeemsN2000(data)) {
-          ConnectionParams params;
-          params.Type = ConnectionType::NETWORK;
-          params.NetProtocol = NetworkProtocol::TCP;
-          params.Protocol = DataProtocol::PROTO_NMEA2000;
-          params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
-          params.NetworkAddress = ip;
-          params.NetworkPort = port;
-          params.UserComment =
-              wxString::Format(_("NMEA2000: %s TCP port %d"), ip.c_str(), port);
-          m_detected_connections.push_back(params);
-          continue;
         }
+      } else {
+        DEBUG_LOG << "No data received";
       }
       client->Close();
       delete client;
