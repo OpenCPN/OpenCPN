@@ -628,12 +628,6 @@ void FirstUseWizImpl::EnumerateDatasources() {
   wxTheApp->ProcessPendingEvents();
   wxYield();
   m_rtConnectionInfo->WriteText(_("Looking for navigation data sources, this may take a while..."));
-  m_rtConnectionInfo->Newline();
-  m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
-  m_rtConnectionInfo->Newline();
-  wxTheApp->ProcessPendingEvents();
-  wxYield();
-  EnumerateSignalK();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();
   wxTheApp->ProcessPendingEvents();
@@ -649,6 +643,12 @@ void FirstUseWizImpl::EnumerateDatasources() {
   wxTheApp->ProcessPendingEvents();
   wxYield();
   EnumerateTCP();
+  m_rtConnectionInfo->Newline();
+  m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
+  m_rtConnectionInfo->Newline();
+  wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateSignalK();
 #ifdef __WXGTK__
   m_rtConnectionInfo->WriteText(_("Looking for CAN interfaces..."));
   m_rtConnectionInfo->Newline();
