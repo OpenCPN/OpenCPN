@@ -304,7 +304,7 @@ void FirstUseWizImpl::EnumerateUSB() {
               }
               params.Port = port.port;
               params.UserComment = wxString::Format(
-                  "NMEA0183: %s (%s)", port.description, port.port);
+                  "NMEA0183: %s (%s) @%u", port.description, port.port, sp);
               params.Baudrate = sp;
               m_detected_connections.push_back(params);
               break;
@@ -316,7 +316,7 @@ void FirstUseWizImpl::EnumerateUSB() {
               params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
               params.Port = port.port;
               params.UserComment = wxString::Format(
-                  "NMEA2000: %s (%s)", port.description, port.port);
+                  "NMEA2000: %s (%s) @%u", port.description, port.port, sp);
               params.Baudrate = sp;
               m_detected_connections.push_back(params);
               break;
@@ -628,6 +628,7 @@ void FirstUseWizImpl::EnumerateDatasources() {
   wxTheApp->ProcessPendingEvents();
   wxYield();
   m_rtConnectionInfo->WriteText(_("Looking for navigation data sources, this may take a while..."));
+  m_rtConnectionInfo->Newline();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();
   wxTheApp->ProcessPendingEvents();
