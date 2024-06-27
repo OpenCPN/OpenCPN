@@ -528,8 +528,8 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
 
   double fraction = ((double)h) / (m_styleToolSize.y);
-  double new_font_size = font_test_size * (target_size /fraction) / OCPN_GetWinDIPScaleFactor();
-  new_font_size /= OCPN_GetWinDIPScaleFactor();
+  double new_font_size = font_test_size * (target_size /fraction);
+  new_font_size *= m_scaleFactor;
   new_font_size *= m_scaleFactor;
 
   m_font = *wxTheFontList->FindOrCreateFont(new_font_size, wxFONTFAMILY_MODERN,
