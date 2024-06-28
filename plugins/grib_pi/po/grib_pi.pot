@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 5.9.0\n"
+"Project-Id-Version: grib_pi 5.9.1.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-10 22:11-0400\n"
+"POT-Creation-Date: 2024-06-18 09:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -726,7 +726,7 @@ msgstr ""
 #: src/GribRequestDialog.cpp:889 src/GribRequestDialog.cpp:951
 #: src/GribRequestDialog.cpp:2029 src/GribRequestDialog.cpp:2090
 #: src/GribRequestDialog.cpp:2124 src/GribRequestDialog.cpp:2150
-#: src/GribRequestDialog.cpp:2182
+#: src/GribRequestDialog.cpp:2182 src\XyGribPanel.cpp:122
 msgid "Download"
 msgstr ""
 
@@ -786,11 +786,11 @@ msgstr ""
 msgid "zyGrib Code"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:2615
+#: src/GribUIDialogBase.cpp:2615 src\XyGribPanel.cpp:27
 msgid "Resolution"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:2632
+#: src/GribUIDialogBase.cpp:2632 src\XyGribPanel.cpp:39
 msgid "Interval"
 msgstr ""
 
@@ -802,7 +802,7 @@ msgstr ""
 msgid "Time Range"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:2662
+#: src/GribUIDialogBase.cpp:2662 src\XyGribPanel.cpp:31
 msgid "Days"
 msgstr ""
 
@@ -1365,4 +1365,76 @@ msgstr ""
 
 #: src/CursorData.cpp:749
 msgid "Menu"
+msgstr ""
+
+#: src\XyGribPanel.cpp:19
+msgid "Wave model"
+msgstr ""
+
+#: src\XyGribPanel.cpp:23
+msgid "Weather model"
+msgstr ""
+
+#: src\XyGribPanel.cpp:35
+msgid "Run"
+msgstr ""
+
+#: src\XyGribPanel.cpp:78
+msgid "Wind (10m)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:82
+msgid "Wind gust (surface)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:86
+msgid "Pressure (MSL)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:89
+msgid "Temperature (2m)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:92
+msgid "CAPE (surface)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:95
+msgid "Reflectivity (atmosphere)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:98
+msgid "Cloud cover (total)"
+msgstr ""
+
+#: src\XyGribPanel.cpp:101
+msgid "Total precipitation"
+msgstr ""
+
+#: src\XyGribPanel.cpp:104
+msgid "Wave Significant height"
+msgstr ""
+
+#: src\XyGribPanel.cpp:108
+msgid "Wind waves"
+msgstr ""
+
+#: src\XyGribPanel.cpp:115
+msgid "Parameters"
+msgstr ""
+
+#: src\XyGribPanel.cpp:129
+msgid "Status :"
+msgstr ""
+
+#: src\XyGribPanel.cpp:133
+msgid "Ready"
+msgstr ""
+
+#: src\XyGribPanel.cpp:137
+msgid "Estimated size :"
+msgstr ""
+
+#: src\XyGribPanel.cpp:141
+msgid "Unknown"
 msgstr ""
