@@ -515,29 +515,38 @@ bool MUITextButton::Create(wxWindow* parent, wxWindowID id, float scale_factor,
   //  No good reason.....
   m_styleToolSize = wxSize(m_styleToolSize.x * 1.25, m_styleToolSize.y * 1.25);
 
+  int height_ref = m_styleToolSize.y;
+
   // Really contorted logic to work around wxFont problems with Windows scaled displays,
   // And the apparent failure of wxFont::Scale()
   // Sorry...
   int font_test_size = 12;
-  double target_size = 0.4;  // Referenced to height of m_styleToolSize
+  double target_size = 1.0;  // Referenced to height of m_styleToolSize
   wxFont *t_font = wxTheFontList->FindOrCreateFont(
       font_test_size, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 
   int w, h;
   wxScreenDC sdc;
-  sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
+  //sdc.GetTextExtent("M", &w, &h, NULL, NULL, t_font);
+  h = t_font->GetPixelSize().y;
 
-  double fraction = ((double)h) / (m_styleToolSize.y);
+  double fraction = ((double)h) / (height_ref);
   double new_font_size = font_test_size * (target_size /fraction);
   new_font_size *= m_scaleFactor;
   new_font_size *= m_scaleFactor;
+
+#ifdef __WXMSW__
+  // No idea why this is required for MSW.  Probably due to
+  // automatic font selection
+  new_font_size *= 0.6;
+#endif
 
   m_font = *wxTheFontList->FindOrCreateFont(new_font_size, wxFONTFAMILY_MODERN,
                                             wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 #ifndef __WXMSW__
   // Twek the font size on those platforms that correctly support wxFont::Scaled()
-  sdc.GetTextExtent("M", &w, &h, NULL, NULL, &m_font);
-  m_font = m_font.Scaled( 1.5 * target_size * (m_styleToolSize.y * m_scaleFactor) / h);
+  //sdc.GetTextExtent("M", &w, &h, NULL, NULL, &m_font);
+  //m_font = m_font.Scaled( 1.5 * target_size * (m_styleToolSize.y * m_scaleFactor) / h);
 #endif
 
   wxCoord descent, exlead, gw, gh;
