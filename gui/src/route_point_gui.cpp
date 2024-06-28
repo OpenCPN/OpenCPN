@@ -871,9 +871,10 @@ void RoutePointGui::ReLoadIcon(void) {
         ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
         if (style) {
           wxBitmap bmp = style->GetIcon(_T("circle"));
-          if (bmp.IsOk())
-            WayPointmanGui(*pWayPointMan).ProcessIcon(bmp, "tempsub",
-                                                      "tempsub");
+          if (bmp.IsOk()) {
+            wxImage image = bmp.ConvertToImage();
+            WayPointmanGui(*pWayPointMan).ProcessIcon(image, "tempsub", "tempsub");
+          }
         }
       }
       iconUse = _T("tempsub");
