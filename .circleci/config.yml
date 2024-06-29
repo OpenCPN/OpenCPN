@@ -128,10 +128,12 @@ jobs:
     macos:
       xcode: "13.4.1"
     environment:
-      - OCPN_TARGET:  macos
+      - OCPN_TARGET: macos
       - pkg_mod: 11
       - MACOSX_DEPLOYMENT_TARGET: 10.13
+      - OCPN_TARGET_TUPLE: darwin-wx32;10;x86_64
       - ARCHS: x86_64
+      - ARCH: x86_64
       - DEPS_BUNDLE_FILE: macos_deps_intel_legacy.tar.xz
       - DEPS_BUNDLE_DEST: /tmp/ocpn_deps
       - RELEASE: legacyintel
