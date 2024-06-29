@@ -299,7 +299,6 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
                m_scaleBase + 2 * m_scaleDelta);
   dc->DrawLine(3, m_scaleBase + 3 * m_scaleDelta, size.x - 3,
                m_scaleBase + 3 * m_scaleDelta);
-  tdc.SetTextForeground(cl);
 }
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
