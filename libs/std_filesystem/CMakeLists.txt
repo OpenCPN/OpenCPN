@@ -46,5 +46,7 @@ if ((${lc_compiler_id} MATCHES clang
   target_include_directories(
     _FILESYS INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
   )
-  target_compile_definitions(_FILESYS INTERFACE OCPN_GHC_FILESYSTEM)
+  if(APPLE)
+    target_compile_definitions(_FILESYS INTERFACE OCPN_GHC_FILESYSTEM)
+  endif()
 endif ()
