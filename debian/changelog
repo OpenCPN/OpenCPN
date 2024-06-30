@@ -1,4 +1,4 @@
-opencpn (5.9.2-beta2+dfsg-1~bpo12) bookworm-backports; urgency=medium
+opencpn (5.9.2-beta2+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * Upstream beta release backport
 
