@@ -27,7 +27,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Option to build contributed utilities
-option(BUILD_SHAPELIB_CONTRIB "Build utilities (from contrib)" ON)
+option(BUILD_SHAPELIB_CONTRIB "Build utilities (from contrib)" OFF)
 
 # Use rpath?
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -181,6 +181,8 @@ else()
   message(STATUS "WARNING: sed or bash not available so disabling testing")
 endif()
 
+set(BUILD_TESTING OFF)
+
 # For the first series of tests, the user needs to have downloaded
 # from http://dl.maptools.org/dl/shapelib/shape_eg_data.zip, unpacked
 # that file, and specified the location of that directory with
@@ -206,22 +208,22 @@ if(NOT MSVC)
   endif()
 endif()
 
-foreach(executable ${executables})
-  add_executable(${executable} ${executable}.c)
-  target_link_libraries(${executable} ${PACKAGE})
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    # Ensure that the package is relocatable
-    set_target_properties(${TOOLS} PROPERTIES
-      INSTALL_RPATH "@loader_path/${RELATIVE_LIBDIR}")
-  endif()
-  if(BUILD_TESTING)
-    get_target_property(${executable}_LOC ${executable} LOCATION)
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/script.sed "s?\\./${executable}?${${executable}_LOC}?\n")
-  endif()
-  if(NOT MSVC)
-    target_compile_options(${executable} PRIVATE -Wall -Wextra)
-  endif()
-endforeach(executable ${executables})
+#foreach(executable ${executables})
+#  add_executable(${executable} ${executable}.c)
+#  target_link_libraries(${executable} ${PACKAGE})
+#  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+#    # Ensure that the package is relocatable
+#    set_target_properties(${TOOLS} PROPERTIES
+#      INSTALL_RPATH "@loader_path/${RELATIVE_LIBDIR}")
+#  endif()
+#  if(BUILD_TESTING)
+#    get_target_property(${executable}_LOC ${executable} LOCATION)
+#    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/script.sed "s?\\./${executable}?${${executable}_LOC}?\n")
+#  endif()
+#  if(NOT MSVC)
+#    target_compile_options(${executable} PRIVATE -Wall -Wextra)
+#  endif()
+#endforeach(executable ${executables})
 
 #install(TARGETS ${executables}
 #  EXPORT targets DESTINATION ${CMAKE_INSTALL_BINDIR})

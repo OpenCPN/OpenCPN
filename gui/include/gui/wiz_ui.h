@@ -102,6 +102,12 @@ private:
   std::vector<ConnectionParams> m_detected_connections;
   NMEA0183Flavor SeemsN0183(std::string& data);
   bool SeemsN2000(std::string& data);
+
+  inline void SetControlEnable(int id, bool state)
+  {
+    wxWindow *win = wxWindow::FindWindowById(id);
+    if(win) win->Enable(state);
+  }
 };
 
 #endif  //_WIZ_UI_H__
