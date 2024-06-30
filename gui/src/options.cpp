@@ -2012,7 +2012,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   wxString LineStyleChoices[] = {_("Default"),    _("Solid"),
                                  _("Dot"),        _("Long dash"),
-                                 _("Short dash"), _("Dot dash")};
+                                 _("Short dash")};
   int LineStyleNChoices = sizeof(LineStyleChoices) / sizeof(wxString);
   m_shipToActiveStyle =
       new wxChoice(itemPanelShip, wxID_ANY, wxDefaultPosition, wxDefaultSize,
