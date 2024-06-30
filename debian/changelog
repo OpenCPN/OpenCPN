@@ -1,3 +1,9 @@
+opencpn (5.9.2-beta2+dfsg-1~bpo12) bookworm-backports; urgency=medium
+
+  * Upstream beta release backport
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 17:29:20 +0200
+
 opencpn (5.9.1-beta1+dfsg-1~bpo12) bookworm; urgency=medium
 
   * Upstream beta release backport
