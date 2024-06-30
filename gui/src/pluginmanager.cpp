@@ -3137,7 +3137,8 @@ wxString GetNewGUID(void) { return GpxDocument::GetUUID(); }
 
 bool AddCustomWaypointIcon(wxBitmap* pimage, wxString key,
                            wxString description) {
-  WayPointmanGui(*pWayPointMan).ProcessIcon(*pimage, key, description);
+  wxImage image = pimage->ConvertToImage();
+  WayPointmanGui(*pWayPointMan).ProcessIcon(image, key, description);
   return true;
 }
 

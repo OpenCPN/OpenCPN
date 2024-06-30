@@ -242,7 +242,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 
     fgSizer49->Add(fgSizer50, 1, wxEXPAND, 5);
     m_ProjectBoatPanel = new ProjectBoatPanel(this);
-    fgSizer49->Add(m_ProjectBoatPanel, 0, wxALL, 1);
+    fgSizer49->Add(m_ProjectBoatPanel, 0, wxEXPAND | wxALL, 1);
 
     m_fgCDataSizer = new wxFlexGridSizer(0, 2, 0, 0);
     m_fgCDataSizer->SetFlexibleDirection(wxBOTH);

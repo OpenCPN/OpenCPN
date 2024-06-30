@@ -286,7 +286,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   wxString m_choiceStyleChoices[] = {_("Default"),    _("Solid"),
                                      _("Dot"),        _("Long dash"),
-                                     _("Short dash"), _("Dot dash")};
+                                     _("Short dash")};
   int m_choiceStyleNChoices = sizeof(m_choiceStyleChoices) / sizeof(wxString);
   m_choiceStyle =
       new wxChoice(m_pnlBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize,

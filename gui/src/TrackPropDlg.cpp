@@ -499,7 +499,7 @@ void TrackPropDlg::CreateControlsCompact() {
 
   wxString m_chStyleChoices[] = {_("Default"),    _("Solid"),
                                  _("Dot"),        _("Long dash"),
-                                 _("Short dash"), _("Dot dash")};
+                                 _("Short dash")};
   int m_chStyleNChoices = sizeof(m_chStyleChoices) / sizeof(wxString);
   m_cStyle =
       new wxChoice(itemDialog1, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -741,7 +741,7 @@ void TrackPropDlg::CreateControls(void) {
   sbSizerParams->Add(m_stStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
   wxString m_cStyleChoices[] = {_("Default"),   _("Solid"),      _("Dot"),
-                                _("Long dash"), _("Short dash"), _("Dot dash")};
+                                _("Long dash"), _("Short dash")};
   int m_cStyleNChoices = sizeof(m_cStyleChoices) / sizeof(wxString);
   m_cStyle = new wxChoice(m_panelBasic, wxID_ANY, wxDefaultPosition,
                           wxDefaultSize, m_cStyleNChoices, m_cStyleChoices, 0);

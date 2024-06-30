@@ -208,6 +208,10 @@ public:
   virtual void SetData(DASH_CAP st, double data, wxString unit) = 0;
   void SetDrawSoloInPane(bool value);
   void MouseEvent(wxMouseEvent &event);
+#ifdef HAVE_WX_GESTURE_EVENTS
+  void OnLongPress(wxLongPressEvent &event);
+#endif
+  void OnLeftUp(wxMouseEvent &event);
   void SetCapFlag(DASH_CAP val) { m_cap_flag.set(val); }
   bool HasCapFlag(DASH_CAP val) { return m_cap_flag.test(val); }
   int instrumentTypeId;
@@ -235,6 +239,8 @@ protected:
 
 private:
   bool m_drawSoloInPane;
+  bool m_popupWanted;
+
 };
 
 class DashboardInstrument_Single : public DashboardInstrument {
