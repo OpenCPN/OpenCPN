@@ -293,8 +293,12 @@ endmacro ()
 #
 # Language, compiler and static checkers setup
 #
-include(GetArch)
-getarch()
+if (NOT DEFINED ENV{ARCH})
+  include(GetArch)
+  getarch()
+else ()
+  set(ARCH $ENV{ARCH})
+endif ()
 message(STATUS "*** Host Build Architecture is ${ARCH}")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -1872,6 +1876,7 @@ if (APPLE)
   target_sources(
     ${PACKAGE_NAME}
     PRIVATE ${gshhs}
+            ${basemap_shp}
             ${uiData}
             ${s57data}
             ${tcData}

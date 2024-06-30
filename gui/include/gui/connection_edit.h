@@ -147,7 +147,7 @@ public:
   void CreateControls();
   void ConnectControls();
 
-private:
+  // private:
   options *m_parent;
   wxScrolledWindow *m_scrolledwin;
 
@@ -208,6 +208,7 @@ private:
 
   ObsListener new_device_listener;
 
+  // DECLARE_EVENT_TABLE()
 protected:
   wxString MORE, LESS;
   wxStaticText *m_more;

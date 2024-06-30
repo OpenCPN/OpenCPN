@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 4.0.0-0-g0efcecf0)
+// C++ code generated with wxFormBuilder (version 4.2.1-5-gc2f65a65-dirty)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -18,11 +18,16 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 	wxWizardPageSimple* m_wpLangUnits = new wxWizardPageSimple( this );
 	m_pages.Add( m_wpLangUnits );
 
+	wxBoxSizer* bSizerLangUnitsTop;
+	bSizerLangUnitsTop = new wxBoxSizer( wxVERTICAL );
+
+	m_swLangUnits = new wxScrolledWindow( m_wpLangUnits, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	m_swLangUnits->SetScrollRate( 5, 5 );
 	wxBoxSizer* bSizerLangUnits;
 	bSizerLangUnits = new wxBoxSizer( wxVERTICAL );
 
 	wxStaticBoxSizer* sbSizerUnits;
-	sbSizerUnits = new wxStaticBoxSizer( new wxStaticBox( m_wpLangUnits, wxID_ANY, _("Units and formats") ), wxVERTICAL );
+	sbSizerUnits = new wxStaticBoxSizer( new wxStaticBox( m_swLangUnits, wxID_ANY, _("Units and formats") ), wxVERTICAL );
 
 	wxFlexGridSizer* fgSizerUnits;
 	fgSizerUnits = new wxFlexGridSizer( 0, 2, 0, 0 );
@@ -59,17 +64,15 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 	m_cSpeed->SetSelection( 0 );
 	fgSizerUnits->Add( m_cSpeed, 0, wxALL, 5 );
 
-  m_stWind = new wxStaticText(sbSizerUnits->GetStaticBox(), wxID_ANY, _("Wind speed"),
-                                                 wxDefaultPosition, wxDefaultSize, 0);
-  m_stWind->Wrap(-1);
-  fgSizerUnits->Add(m_stWind, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+	m_stWind = new wxStaticText( sbSizerUnits->GetStaticBox(), wxID_ANY, _("Wind speed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stWind->Wrap( -1 );
+	fgSizerUnits->Add( m_stWind, 0, wxALL, 5 );
 
-  wxString m_cWindChoices[] = {_("Knots"), _("m/s"), _("mph"), _("km/h") };
-  int m_cWindNChoices = sizeof(m_cWindChoices) / sizeof(wxString);
-  m_cWind = new wxChoice(sbSizerUnits->GetStaticBox(), wxID_ANY, wxDefaultPosition,
-                                wxDefaultSize, m_cWindNChoices, m_cWindChoices, 0);
-  m_cWind->SetSelection(0);
-  fgSizerUnits->Add(m_cWind, 0, wxALL, 5);
+	wxString m_cWindChoices[] = { _("Knots"), _("mph"), _("km/h"), _("m/s") };
+	int m_cWindNChoices = sizeof( m_cWindChoices ) / sizeof( wxString );
+	m_cWind = new wxChoice( sbSizerUnits->GetStaticBox(), wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cWindNChoices, m_cWindChoices, 0 );
+	m_cWind->SetSelection( 0 );
+	fgSizerUnits->Add( m_cWind, 0, wxALL, 5 );
 
 	m_stPosition = new wxStaticText( sbSizerUnits->GetStaticBox(), wxID_ANY, _("Position"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stPosition->Wrap( -1 );
@@ -103,63 +106,91 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 
 	bSizerLangUnits->Add( 0, 20, 0, wxEXPAND, 5 );
 
-	m_rtLangUnitInfo = new wxRichTextCtrl( m_wpLangUnits, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+	m_rtLangUnitInfo = new wxRichTextCtrl( m_swLangUnits, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	bSizerLangUnits->Add( m_rtLangUnitInfo, 1, wxEXPAND | wxALL, 5 );
 
 
-	m_wpLangUnits->SetSizer( bSizerLangUnits );
+	m_swLangUnits->SetSizer( bSizerLangUnits );
+	m_swLangUnits->Layout();
+	bSizerLangUnits->Fit( m_swLangUnits );
+	bSizerLangUnitsTop->Add( m_swLangUnits, 1, wxEXPAND | wxALL, 5 );
+
+
+	m_wpLangUnits->SetSizer( bSizerLangUnitsTop );
 	m_wpLangUnits->Layout();
 	wxWizardPageSimple* m_wpConnections = new wxWizardPageSimple( this );
 	m_pages.Add( m_wpConnections );
 
+	wxBoxSizer* bSizerConnectionsTop;
+	bSizerConnectionsTop = new wxBoxSizer( wxVERTICAL );
+
+	m_swConnections = new wxScrolledWindow( m_wpConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	m_swConnections->SetScrollRate( 5, 5 );
 	wxBoxSizer* bSizerConnections;
 	bSizerConnections = new wxBoxSizer( wxVERTICAL );
 
-	m_stSources = new wxStaticText( m_wpConnections, wxID_ANY, _("Detected navigation data sources:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSources = new wxStaticText( m_swConnections, wxID_ANY, _("Detected navigation data sources:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stSources->Wrap( -1 );
 	bSizerConnections->Add( m_stSources, 0, wxALL, 5 );
 
 	wxArrayString m_clSourcesChoices;
-	m_clSources = new wxCheckListBox( m_wpConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_clSourcesChoices, 0 );
+	m_clSources = new wxCheckListBox( m_swConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_clSourcesChoices, 0 );
 	bSizerConnections->Add( m_clSources, 1, wxALL|wxEXPAND, 5 );
 
-	m_btnRescanSources = new wxButton( m_wpConnections, wxID_ANY, _("Rescan..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_btnRescanSources = new wxButton( m_swConnections, wxID_ANY, _("Rescan..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerConnections->Add( m_btnRescanSources, 0, wxALL, 5 );
 
 
 	bSizerConnections->Add( 0, 20, 0, wxEXPAND, 5 );
 
-	m_rtConnectionInfo = new wxRichTextCtrl( m_wpConnections, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+	m_rtConnectionInfo = new wxRichTextCtrl( m_swConnections, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	bSizerConnections->Add( m_rtConnectionInfo, 2, wxEXPAND | wxALL, 5 );
 
 
-	m_wpConnections->SetSizer( bSizerConnections );
+	m_swConnections->SetSizer( bSizerConnections );
+	m_swConnections->Layout();
+	bSizerConnections->Fit( m_swConnections );
+	bSizerConnectionsTop->Add( m_swConnections, 1, wxEXPAND | wxALL, 5 );
+
+
+	m_wpConnections->SetSizer( bSizerConnectionsTop );
 	m_wpConnections->Layout();
-	bSizerConnections->Fit( m_wpConnections );
+	bSizerConnectionsTop->Fit( m_wpConnections );
 	wxWizardPageSimple* m_wpCharts = new wxWizardPageSimple( this );
 	m_pages.Add( m_wpCharts );
 
+	wxBoxSizer* bSizerChartsTop;
+	bSizerChartsTop = new wxBoxSizer( wxVERTICAL );
+
+	m_swCharts = new wxScrolledWindow( m_wpCharts, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	m_swCharts->SetScrollRate( 5, 5 );
 	wxBoxSizer* bSizerCharts;
 	bSizerCharts = new wxBoxSizer( wxVERTICAL );
 
-	m_stAddCharts = new wxStaticText( m_wpCharts, wxID_ANY, _("Add existing charts"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stAddCharts = new wxStaticText( m_swCharts, wxID_ANY, _("Add existing charts"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_stAddCharts->Wrap( -1 );
 	bSizerCharts->Add( m_stAddCharts, 0, wxALL, 5 );
 
-	m_lbChartsDirs = new wxListBox( m_wpCharts, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	m_lbChartsDirs = new wxListBox( m_swCharts, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
 	bSizerCharts->Add( m_lbChartsDirs, 0, wxALL|wxEXPAND, 5 );
 
-	m_btnAddChartDir = new wxButton( m_wpCharts, wxID_ANY, _("Add chart directory..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_btnAddChartDir = new wxButton( m_swCharts, wxID_ANY, _("Add chart directory..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizerCharts->Add( m_btnAddChartDir, 0, wxALL, 5 );
 
 
 	bSizerCharts->Add( 0, 20, 0, wxEXPAND, 5 );
 
-	m_rtChartDirInfo = new wxRichTextCtrl( m_wpCharts, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+	m_rtChartDirInfo = new wxRichTextCtrl( m_swCharts, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
 	bSizerCharts->Add( m_rtChartDirInfo, 2, wxEXPAND | wxALL, 5 );
 
 
-	m_wpCharts->SetSizer( bSizerCharts );
+	m_swCharts->SetSizer( bSizerCharts );
+	m_swCharts->Layout();
+	bSizerCharts->Fit( m_swCharts );
+	bSizerChartsTop->Add( m_swCharts, 1, wxEXPAND | wxALL, 5 );
+
+
+	m_wpCharts->SetSizer( bSizerChartsTop );
 	m_wpCharts->Layout();
 	wxWizardPageSimple* m_wpFinish = new wxWizardPageSimple( this );
 	m_pages.Add( m_wpFinish );
@@ -168,7 +199,15 @@ FirstUseWiz::FirstUseWiz( wxWindow* parent, wxWindowID id, const wxString& title
 	bSizerFinish = new wxBoxSizer( wxVERTICAL );
 
 	m_htmlWinFinish = new wxHtmlWindow( m_wpFinish, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO );
-	m_htmlWinFinish->SetMinSize( wxSize( 800,600 ) );
+
+        // Try to detect smaller displays, and adjust wizard size accordingly
+        //  Looking for small devices in landscape mode.
+        wxSize displaySize = wxGetDisplaySize();
+        if ((displaySize.y < 500) && (displaySize.x > displaySize.y)){
+          m_htmlWinFinish->SetMinSize( wxSize(displaySize.x * 8/10, displaySize.y * 65 / 100 ));
+        }
+        else
+          m_htmlWinFinish->SetMinSize( wxSize( 800,600 ) );
 
 	bSizerFinish->Add( m_htmlWinFinish, 1, wxALL|wxEXPAND, 5 );
 

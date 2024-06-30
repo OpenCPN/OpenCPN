@@ -111,7 +111,7 @@
 #include "model/macutils.h"
 #endif
 
-#if (defined(__clang_major__) && (__clang_major__ < 15))
+#if (defined(OCPN_GHC_FILESYSTEM) || (defined(__clang_major__) && (__clang_major__ < 15)))
 // MacOS 1.13
 #include <ghc/filesystem.hpp>
 namespace fs = ghc::filesystem;
