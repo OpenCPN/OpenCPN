@@ -794,7 +794,7 @@ SectionGroup /e "!Shortcuts Section Group" SecGrpShortcuts
 			;# Create shortcuts
 			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@.lnk" "$INSTDIR\opencpn.exe"
-			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@ - No OpenGL.lnk" "$INSTDIR\opencpn.exe" "/no_opengl"
+			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@ - No OpenGL.lnk" "$INSTDIR\opencpn.exe" "--no_opengl"
 			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\$(Uninstall_Folder_Name)"
 			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\$(Uninstall_Folder_Name)\$(Uninstall_Link).lnk" "$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe"
 		!insertmacro MUI_STARTMENU_WRITE_END
