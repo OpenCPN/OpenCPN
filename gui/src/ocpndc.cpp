@@ -633,7 +633,7 @@ void ocpnDC::DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
 
         ldraw = wxMax(ldraw, 4.0);
         lspace = wxMax(lspace, 4.0);
-        lpix = wxMin(lpix, 2000.0);
+        //lpix = wxMin(lpix, 2000.0);
 
         while (lrun < lpix) {
           //    Dash

@@ -422,7 +422,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       break;
     case DIAL_POSITION_BOTTOMRIGHT:
       TextPoint.x = size.x - width - 1;
-      TextPoint.y = size.x - height;
+      TextPoint.y = GetDataBottom(size.y) - height;
       break;
     case DIAL_POSITION_BOTTOMMIDDLE:
       if (!std::isnan(value)){

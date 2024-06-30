@@ -318,7 +318,7 @@ extern wxColour g_colourOwnshipRangeRingsColour;
 
 // LIVE ETA OPTION
 bool g_bShowLiveETA;
-double g_defaultBoatSpeed;
+extern double g_defaultBoatSpeed;
 double g_defaultBoatSpeedUserUnit;
 
 extern int g_nAIS_activity_timer;
@@ -6437,6 +6437,9 @@ void ChartCanvas::UpdateShips() {
   if (!dc.IsOk()) return;
 
   wxBitmap test_bitmap(dc.GetSize().x, dc.GetSize().y);
+  if (!test_bitmap.IsOk())
+    return;
+  
   wxMemoryDC temp_dc(test_bitmap);
 
   temp_dc.ResetBoundingBox();
@@ -6728,10 +6731,11 @@ void ChartCanvas::CreateMUIBar() {
 void ChartCanvas::SetMUIBarPosition() {
   //  if MUIBar is active, size the bar
   if (m_muiBar) {
-    // We precalculate the piano width based on the canvas width
-    int pianoWidth = GetClientSize().x * (g_btouch ? 0.7f : 0.6f);
-    //        if(m_Piano)
-    //            pianoWidth = m_Piano->GetWidth();
+    // We estimate the piano width based on the canvas width
+    int pianoWidth = GetClientSize().x * 0.6f;
+    // If the piano already exists, we can use its exact width
+    if(m_Piano)
+      pianoWidth = m_Piano->GetWidth();
 
     if ((m_muiBar->GetOrientation() == wxHORIZONTAL)) {
       if (m_muiBarHOSize.x > (GetClientSize().x - pianoWidth)) {
