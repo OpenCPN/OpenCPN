@@ -35,9 +35,12 @@
 #include <regex>
 #include <wx/sckaddr.h>
 #include <wx/socket.h>
+#include <wx/jsonval.h>
+#include <wx/jsonreader.h>
 #include "wiz_ui.h"
 #include "OCPNPlatform.h"
 #include "model/comm_drv_signalk_net.h"
+#include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
 #include "model/mDNS_query.h"
@@ -47,6 +50,8 @@
 #include "serial/serial.h"
 #include "dnet.h"
 #endif
+
+#define RECEIVE_BUFFER_LENGTH 256
 
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_sk_servers;
@@ -155,6 +160,7 @@ void FirstUseWizImpl::OnWizardFinished(wxWizardEvent& event) {
     }
   }
   cfg->Flush();
+  cfg->LoadMyConfig();
 }
 
 NMEA0183Flavor FirstUseWizImpl::SeemsN0183(std::string& data) {
@@ -165,7 +171,9 @@ NMEA0183Flavor FirstUseWizImpl::SeemsN0183(std::string& data) {
     std::regex nmea_regex(".*[\\$!]([a-zA-Z]{5,6})(,.*)");
     std::regex nmea_crc_regex(".*[\\$!]([a-zA-Z]{5,6})(,.*)(\\*[0-9A-Z]{2})");
     while (std::getline(ss, to, '\n')) {
-      if (std::regex_search(to, nmea_regex)) {
+      if (std::regex_search(to, nmea_regex) &&
+          to.find("$PCDIN") == std::string::npos && // It also must not be SeaSmart encoded NMEA2000
+          to.find("$MXPGN") == std::string::npos) { // or Shipmodul MiniPlex encoded NMEA2000
         DEBUG_LOG << "Looks like NMEA0183: " << to;
         if (std::regex_search(to, nmea_crc_regex)) {
           DEBUG_LOG << "Has CRC: " << to;
@@ -185,14 +193,37 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
   std::string to;
 
   if (!data.empty()) {
-    std::regex n2k_regex(
-        "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [RT] [0-9A-F]{8}("
-        "[0-9A-F]{2})*");  // YD RAW format
-                           // (https://www.yachtd.com/downloads/ydnr02.pdf
-                           // appendix E)
-    // TODO: Other formats of NMEA2000 data
+    // YD RAW format aka Actisense RAW ASCII format
+    // (https://www.yachtd.com/downloads/ydnr02.pdf appendix E)
+    std::regex actisenseyd_raw_ascii_regex(
+        "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [RT] [0-9A-F]{8}( "
+        "[0-9A-F]{2})*");
+    // Actisense N2K ASCII format
+    std::regex actisense_n2k_ascii_regex(
+        "A[0-9]{6}\\.[0-9]{3} [0-9A-F]{5} [0-9A-F]{5} [0-9A-F]+");
+    // Format used by the Chetco Digital Instruments, Inc. and adopted by wide
+    // variety of others. Documented in
+    // https://www.seasmart.net/pdf/SeaSmart_HTTP_Protocol_RevG_043012.pdf
+    std::regex seasmart_regex(
+        "\\$PCDIN,[0-9A-F]{6},[0-9A-F]{8},[0-9A-F]{2},[0-9A-F]+\\*[0-9A-F]{2}");
+    // Format used by the Shipmodule Miniplex multiplexers, documented in
+    // https://shipmodul.com/download/commands-v3.25.pdf
+    std::regex miniplex_regex(
+        "\\$MXPGN,[0-9A-F]{6},[0-9A-F]{4},[0-9A-F]+\\*[0-9A-F]{2}");
+
+    if (data.length() > 4 &&
+        // Actisense/YD N2K mode - All the binary formats enclose
+        // the payload between 0x10 0x02 and 0x10 0x03
+        data[0] == ESCAPE && data[1] == STARTOFTEXT &&
+        data[data.length() - 1] == ENDOFTEXT && data[data.length() - 2] == ESCAPE) {
+      DEBUG_LOG << "Looks like NMEA2000: " << to;
+      return true;
+    }
     while (std::getline(ss, to, '\n')) {
-      if (std::regex_search(to, n2k_regex)) {
+      if (std::regex_search(to, actisenseyd_raw_ascii_regex) ||
+          std::regex_search(to, actisense_n2k_ascii_regex) ||
+          std::regex_search(to, seasmart_regex) ||
+          std::regex_search(to, miniplex_regex)) {
         DEBUG_LOG << "Looks like NMEA2000: " << to;
         return true;
       } else {
@@ -210,6 +241,9 @@ void FirstUseWizImpl::EnumerateUSB() {
     DEBUG_LOG << "Found port: " << port.port << ", " << port.description << ", "
               << port.hardware_id;
     for (const auto& device : known_usb_devices) {
+      m_rtConnectionInfo->WriteText(".");
+      wxTheApp->ProcessPendingEvents();
+      wxYield();
       std::stringstream stream_vid;
       std::stringstream stream_pid;
       stream_vid << std::uppercase << std::hex << device.vid;
@@ -236,6 +270,9 @@ void FirstUseWizImpl::EnumerateUSB() {
     }
     if (!known) {
       for (auto sp : Speeds) {
+        m_rtConnectionInfo->WriteText(".");
+        wxTheApp->ProcessPendingEvents();
+        wxYield();
         try {
           DEBUG_LOG << "Trying " << port.port << " at " << sp;
           serial::Serial serial;
@@ -267,7 +304,7 @@ void FirstUseWizImpl::EnumerateUSB() {
               }
               params.Port = port.port;
               params.UserComment = wxString::Format(
-                  "NMEA0183: %s (%s)", port.description, port.port);
+                  "NMEA0183: %s (%s) @%u", port.description, port.port, sp);
               params.Baudrate = sp;
               m_detected_connections.push_back(params);
               break;
@@ -279,7 +316,7 @@ void FirstUseWizImpl::EnumerateUSB() {
               params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
               params.Port = port.port;
               params.UserComment = wxString::Format(
-                  "NMEA2000: %s (%s)", port.description, port.port);
+                  "NMEA2000: %s (%s) @%u", port.description, port.port, sp);
               params.Baudrate = sp;
               m_detected_connections.push_back(params);
               break;
@@ -306,11 +343,18 @@ void FirstUseWizImpl::EnumerateUSB() {
       }
     }
   }
+  m_rtConnectionInfo->Newline();
 #endif
 }
 
 void FirstUseWizImpl::EnumerateUDP() {
+  size_t progress = 0;
   for (auto port : UDPPorts) {
+    if (++progress % 10 == 0) {
+      m_rtConnectionInfo->WriteText(".");
+      wxTheApp->ProcessPendingEvents();
+      wxYield();
+    }
     wxIPV4address conn_addr;
     conn_addr.Service(port);
     conn_addr.AnyAddress();
@@ -322,44 +366,54 @@ void FirstUseWizImpl::EnumerateUDP() {
       continue;
     }
     DEBUG_LOG << "Trying UDP port " << port;
-    char buffer[256];
-    memset(buffer, 0, 256);
+    size_t len = RECEIVE_BUFFER_LENGTH;
+    char buffer[RECEIVE_BUFFER_LENGTH];
+    memset(buffer, 0, len);
     sock->SetTimeout(1);
     sock->WaitForRead(1, 0);
-    sock->Read(&buffer, 256);
-    std::string data(buffer);
-    DEBUG_LOG << "Read: " << data;
-    if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
-      ConnectionParams params;
-      params.Type = ConnectionType::NETWORK;
-      params.NetProtocol = NetworkProtocol::UDP;
-      params.Protocol = DataProtocol::PROTO_NMEA0183;
-      params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
-      if (flavor == NMEA0183Flavor::CRC) {
-        params.ChecksumCheck = true;
-      } else {
-        params.ChecksumCheck = false;
+    sock->Read(&buffer, len);
+    // Binary protocols may contain 0x00 bytes, so we have to treat the buffer as such and avoid string conversion
+    while (len > 0 && buffer[len-1] == 0x00) {
+      len--;
+    }
+    if (len > 0) {
+      std::string data(buffer, len);
+      DEBUG_LOG << "Read: " << data;
+      if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
+        ConnectionParams params;
+        params.Type = ConnectionType::NETWORK;
+        params.NetProtocol = NetworkProtocol::UDP;
+        params.Protocol = DataProtocol::PROTO_NMEA0183;
+        params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
+        if (flavor == NMEA0183Flavor::CRC) {
+          params.ChecksumCheck = true;
+        } else {
+          params.ChecksumCheck = false;
+        }
+        params.NetworkAddress = "0.0.0.0";
+        params.NetworkPort = port;
+        params.UserComment = wxString::Format(_("NMEA0183: UDP port %d"), port);
+        m_detected_connections.push_back(params);
+        continue;
+      } else if (SeemsN2000(data)) {
+        ConnectionParams params;
+        params.Type = ConnectionType::NETWORK;
+        params.NetProtocol = NetworkProtocol::UDP;
+        params.Protocol = DataProtocol::PROTO_NMEA2000;
+        params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+        params.NetworkAddress = "0.0.0.0";
+        params.NetworkPort = port;
+        params.UserComment = wxString::Format(_("NMEA2000: UDP port %d"), port);
+        m_detected_connections.push_back(params);
+        continue;
       }
-      params.NetworkAddress = "0.0.0.0";
-      params.NetworkPort = port;
-      params.UserComment = wxString::Format(_("NMEA0183: UDP port %d"), port);
-      m_detected_connections.push_back(params);
-      continue;
-    } else if (SeemsN2000(data)) {
-      ConnectionParams params;
-      params.Type = ConnectionType::NETWORK;
-      params.NetProtocol = NetworkProtocol::UDP;
-      params.Protocol = DataProtocol::PROTO_NMEA2000;
-      params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
-      params.NetworkAddress = "0.0.0.0";
-      params.NetworkPort = port;
-      params.UserComment = wxString::Format(_("NMEA2000: UDP port %d"), port);
-      m_detected_connections.push_back(params);
-      continue;
+    } else {
+      DEBUG_LOG << "No data received";
     }
     sock->Close();
     delete sock;
   }
+  m_rtConnectionInfo->Newline();
 }
 
 #ifndef __ANDROID__
@@ -411,8 +465,14 @@ void FirstUseWizImpl::EnumerateTCP() {
     }
   }
 
+  size_t progress = 0;
   for (const auto& ip : ips) {
     for (auto port : TCPPorts) {
+      if (++progress % 10 == 0) {
+        m_rtConnectionInfo->WriteText(".");
+        wxTheApp->ProcessPendingEvents();
+        wxYield();
+      }
       DEBUG_LOG << "Trying TCP port " << port << " on " << ip;
       wxIPV4address conn_addr;
       conn_addr.Service(port);
@@ -421,42 +481,51 @@ void FirstUseWizImpl::EnumerateTCP() {
       client->SetTimeout(1);
       if (client->Connect(conn_addr, true)) {
         DEBUG_LOG << "Connected to " << ip << ":" << port;
-        char buffer[256];
-        memset(buffer, 0, 256);
+        size_t len = RECEIVE_BUFFER_LENGTH;
+        char buffer[RECEIVE_BUFFER_LENGTH];
+        memset(buffer, 0, len);
         client->WaitForRead(1, 0);
-        client->Read(&buffer, 256);
-        std::string data(buffer);
-        DEBUG_LOG << "Read: " << data;
-        if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
-          ConnectionParams params;
-          params.Type = ConnectionType::NETWORK;
-          params.NetProtocol = NetworkProtocol::TCP;
-          params.Protocol = DataProtocol::PROTO_NMEA0183;
-          params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
-          if (flavor == NMEA0183Flavor::CRC) {
-            params.ChecksumCheck = true;
-          } else {
-            params.ChecksumCheck = false;
-          }
-          params.NetworkAddress = ip;
-          params.NetworkPort = port;
-          params.UserComment =
-              wxString::Format(_("NMEA0183: %s TCP port %d"), ip.c_str(), port);
-          m_detected_connections.push_back(params);
-          continue;
-        } else if (SeemsN2000(data)) {
-          ConnectionParams params;
-          params.Type = ConnectionType::NETWORK;
-          params.NetProtocol = NetworkProtocol::TCP;
-          params.Protocol = DataProtocol::PROTO_NMEA2000;
-          params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
-          params.NetworkAddress = ip;
-          params.NetworkPort = port;
-          params.UserComment =
-              wxString::Format(_("NMEA2000: %s TCP port %d"), ip.c_str(), port);
-          m_detected_connections.push_back(params);
-          continue;
+        client->Read(&buffer, len);
+        // Binary protocols may contain 0x00 bytes, so we have to treat the buffer as such and avoid string conversion
+        while (len > 0 && buffer[len-1] == 0x00) {
+          len--;
         }
+        if (len > 0) {
+          std::string data(buffer, len);
+          DEBUG_LOG << "Read: " << data;
+          if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
+            ConnectionParams params;
+            params.Type = ConnectionType::NETWORK;
+            params.NetProtocol = NetworkProtocol::TCP;
+            params.Protocol = DataProtocol::PROTO_NMEA0183;
+            params.LastDataProtocol = DataProtocol::PROTO_NMEA0183;
+            if (flavor == NMEA0183Flavor::CRC) {
+              params.ChecksumCheck = true;
+            } else {
+              params.ChecksumCheck = false;
+            }
+            params.NetworkAddress = ip;
+            params.NetworkPort = port;
+            params.UserComment =
+                wxString::Format(_("NMEA0183: %s TCP port %d"), ip.c_str(), port);
+            m_detected_connections.push_back(params);
+            continue;
+          } else if (SeemsN2000(data)) {
+            ConnectionParams params;
+            params.Type = ConnectionType::NETWORK;
+            params.NetProtocol = NetworkProtocol::TCP;
+            params.Protocol = DataProtocol::PROTO_NMEA2000;
+            params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+            params.NetworkAddress = ip;
+            params.NetworkPort = port;
+            params.UserComment =
+                wxString::Format(_("NMEA2000: %s TCP port %d"), ip.c_str(), port);
+            m_detected_connections.push_back(params);
+            continue;
+          }
+        }
+      } else {
+        DEBUG_LOG << "No data received";
       }
       client->Close();
       delete client;
@@ -464,13 +533,60 @@ void FirstUseWizImpl::EnumerateTCP() {
   }
   route_close(r);
   arp_close(arp);
+  m_rtConnectionInfo->Newline();
 #endif
 }
 
 void FirstUseWizImpl::EnumerateSignalK() { FindAllSignalKServers(1); }
 
 void FirstUseWizImpl::EnumerateCAN() {
-  // TODO look at the canX interfaces if we are on Linux
+#ifdef __WXGTK__
+  wxString cmd = "ip -j link show";
+  wxArrayString output;
+  if (long res = wxExecute(cmd, output); res != 0) {
+    DEBUG_LOG << "Network interface evaluation failed with exit code " << res;
+    for (const auto &l : output) {
+      DEBUG_LOG << " - " << l;
+    }
+    return;
+  }
+
+  wxString fis;
+  for (const auto &l : output) {
+    fis.Append(l);
+  }
+  wxJSONReader reader;
+  wxJSONValue root;
+  reader.Parse(fis, &root);
+  if (reader.GetErrorCount() > 0){
+    DEBUG_LOG << "Failed to parse JSON output from ip.";
+    for(const auto &l : reader.GetErrors()) {
+      DEBUG_LOG << " - " << l;
+    }
+    return;
+  }
+  if (root.IsArray()) {
+    for (int i = 0; i < root.Size(); i++) {
+      const wxJSONValue iface = root[i];
+      if (iface.HasMember("ifname") &&
+          iface.HasMember("link_type")) {
+        wxString ifname = iface.Get("ifname", "").AsString();
+        wxString link_type = iface.Get("link_type", "").AsString();
+        if (link_type == "can") {
+          DEBUG_LOG << "Found CAN interface: " << ifname;
+          ConnectionParams params;
+          params.Type = ConnectionType::SOCKETCAN;
+          params.NetProtocol = NetworkProtocol::PROTO_UNDEFINED;
+          params.Protocol = DataProtocol::PROTO_NMEA2000;
+          params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
+          params.Port = ifname;
+          params.UserComment = wxString::Format("SocketCAN: %s", ifname);
+          m_detected_connections.push_back(params);
+        }
+      }
+    }
+  }
+#endif
 }
 
 void FirstUseWizImpl::EnumerateGPSD() {
@@ -499,36 +615,55 @@ void FirstUseWizImpl::EnumerateGPSD() {
 }
 
 void FirstUseWizImpl::EnumerateDatasources() {
+  m_btnRescanSources->Enable(false);
+  SetControlEnable(wxID_CANCEL, false);
+  SetControlEnable(wxID_FORWARD, false);
+  SetControlEnable(wxID_BACKWARD, false);
   wxTheApp->ProcessPendingEvents();
+  wxYield();
   g_Platform->ShowBusySpinner();
   m_clSources->Clear();
   m_detected_connections.clear();
   m_rtConnectionInfo->Clear();
   wxTheApp->ProcessPendingEvents();
-  m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
+  wxYield();
+  m_rtConnectionInfo->WriteText(_("Looking for navigation data sources, this may take a while..."));
   m_rtConnectionInfo->Newline();
-  EnumerateSignalK();
-  wxTheApp->ProcessPendingEvents();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();
-  EnumerateUSB();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateUSB();
   m_rtConnectionInfo->WriteText(_("Looking for UDP data feeds..."));
   m_rtConnectionInfo->Newline();
-  EnumerateUDP();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateUDP();
   m_rtConnectionInfo->WriteText(_("Looking for TCP servers..."));
   m_rtConnectionInfo->Newline();
-  EnumerateTCP();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateTCP();
+  m_rtConnectionInfo->Newline();
+  m_rtConnectionInfo->WriteText(_("Looking for Signal K servers..."));
+  m_rtConnectionInfo->Newline();
+  wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateSignalK();
+#ifdef __WXGTK__
   m_rtConnectionInfo->WriteText(_("Looking for CAN interfaces..."));
   m_rtConnectionInfo->Newline();
-  EnumerateCAN();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
+  EnumerateCAN();
+#endif
   m_rtConnectionInfo->WriteText(_("Looking for GPSD servers..."));
   m_rtConnectionInfo->Newline();
+  wxTheApp->ProcessPendingEvents();
+  wxYield();
   EnumerateGPSD();
   wxTheApp->ProcessPendingEvents();
+  wxYield();
   for (const auto& sks : g_sk_servers) {
     ConnectionParams params;
     params.Type = ConnectionType::NETWORK;
@@ -570,7 +705,10 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_rtConnectionInfo->WriteText(
       _(" icon in the main Toolbar. In the Toolbox navigate to the Connections "
         "tab."));
-
+  m_btnRescanSources->Enable(true);
+  SetControlEnable(wxID_CANCEL, true);
+  SetControlEnable(wxID_FORWARD, true);
+  SetControlEnable(wxID_BACKWARD, true);
   g_Platform->HideBusySpinner();
 }
 

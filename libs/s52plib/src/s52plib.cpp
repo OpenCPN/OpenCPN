@@ -2922,15 +2922,14 @@ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     // cached, we have to dump the cache
     wxRect trect;
     m_chartSymbols.GetGLTextureRect(trect, prule->name.SYNM);
-    if (prule->parm2 != trect.width * scale_factor) b_dump_cache = true;
+    if (prule->parm2 != (int)(trect.width * scale_factor)) b_dump_cache = true;
 
     wxBitmap *pbm = NULL;
-    wxImage Image;
 
     // Instantiate the symbol if necessary
     if ((prule->pixelPtr == NULL) || (prule->parm1 != m_colortable_index) ||
         b_dump_cache) {
-      Image =  m_chartSymbols.GetImage(prule->name.SYNM);
+      wxImage Image =  m_chartSymbols.GetImage(prule->name.SYNM);
 
       // delete any old private data
       ClearRulesCache(prule);

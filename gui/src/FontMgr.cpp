@@ -210,21 +210,21 @@ wxColour FontMgr::GetDefaultFontColor( const wxString &TextElement ){
   wxColor defaultColor = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 
   // Special cases here
-  if(TextElement.IsSameAs( "Console Legend") )
+  if(TextElement.IsSameAs( _("Console Legend")) )
     defaultColor = wxColour( 0, 255, 0);
-  else if(TextElement.IsSameAs( "Console Value") )
+  else if(TextElement.IsSameAs( _("Console Value")) )
     defaultColor = wxColour( 0, 255, 0);
-  else if(TextElement.IsSameAs( "Marks") )
+  else if(TextElement.IsSameAs( _("Marks")) )
     defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( "RouteLegInfoRollover") )
+  else if(TextElement.IsSameAs( _("RouteLegInfoRollover")) )
     defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( "AISRollover") )
+  else if(TextElement.IsSameAs( _("AISRollover")) )
     defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( "ExtendedTideIcon") )
+  else if(TextElement.IsSameAs( _("ExtendedTideIcon")) )
     defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( "ChartTexts") )
+  else if(TextElement.IsSameAs( _("ChartTexts")) )
     defaultColor = wxColour( 0, 0, 0);
-  else if(TextElement.IsSameAs( "AIS Target Name") )
+  else if(TextElement.IsSameAs( _("AIS Target Name")) )
     defaultColor = wxColour( 0, 0, 0);
 #ifdef __WXMAC__
   // Override, to adjust for light/dark mode
