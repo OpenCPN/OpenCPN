@@ -2012,7 +2012,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   wxString LineStyleChoices[] = {_("Default"),    _("Solid"),
                                  _("Dot"),        _("Long dash"),
-                                 _("Short dash"), _("Dot dash")};
+                                 _("Short dash")};
   int LineStyleNChoices = sizeof(LineStyleChoices) / sizeof(wxString);
   m_shipToActiveStyle =
       new wxChoice(itemPanelShip, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -2026,7 +2026,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                         wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
 
   wxString m_LineColorChoices[] = {
-      ("Default color"), _("Black"),     _("Dark Red"),     _("Dark Green"),
+      _("Default color"), _("Black"),     _("Dark Red"),     _("Dark Green"),
       _("Dark Yellow"),  _("Dark Blue"), _("Dark Magenta"), _("Dark Cyan"),
       _("Light Gray"),   _("Dark Gray"), _("Red"),          _("Green"),
       _("Yellow"),       _("Blue"),      _("Magenta"),      _("Cyan"),
@@ -7495,7 +7495,8 @@ void options::Finish(void) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  m_on_close_cb();
+  SetReturnCode(m_returnChanges);
+  EndModal(m_returnChanges);
 }
 
 ArrayOfCDI options::GetSelectedChartDirs() {
@@ -7935,7 +7936,9 @@ void options::OnCancelClick(wxCommandEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  m_on_close_cb();
+  int rv = 0;
+  if (m_bForceNewToolbaronCancel) rv = TOOLBAR_CHANGED;
+  EndModal(rv);
 }
 
 void options::OnClose(wxCloseEvent& event) {
@@ -7951,7 +7954,7 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  m_on_close_cb();
+  EndModal(0);
 }
 
 void options::OnFontChoice(wxCommandEvent& event) {

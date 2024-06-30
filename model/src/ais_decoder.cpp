@@ -642,6 +642,8 @@ bool AisDecoder::HandleN2K_129041( std::shared_ptr<const Nmea2000Msg> n2k_msg ){
     pTargetData->ShipName[sizeof(pTargetData->ShipName) - 1] = '\0';
     pTargetData->b_nameValid = true;
     pTargetData->MID = 124;  // Indicates a name from n2k
+
+    pTargetData->ShipType = data.AtoNType;
     pTargetData->Class = AIS_ATON;
 
     if (!N2kIsNA(data.Longitude)) pTargetData->Lon = data.Longitude;

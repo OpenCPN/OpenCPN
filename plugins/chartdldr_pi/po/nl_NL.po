@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 15:43-0500\n"
-"PO-Revision-Date: 2023-04-26 14:38\n"
+"POT-Creation-Date: 2024-04-04 22:03-0400\n"
+"PO-Revision-Date: 2024-06-09 01:19\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -31,15 +31,15 @@ msgstr "%s (%s tot %s), riviermijlen %3.1f - %3.1f"
 msgid "%s"
 msgstr "%s"
 
-#: src/chartdldr_pi.cpp:248
+#: src/chartdldr_pi.cpp:250
 msgid "ChartDownloader"
 msgstr "Kaart-downloader"
 
-#: src/chartdldr_pi.cpp:251
+#: src/chartdldr_pi.cpp:253
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "Kaart-downloader plugin voor OpenCPN"
 
-#: src/chartdldr_pi.cpp:256
+#: src/chartdldr_pi.cpp:258
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
@@ -47,83 +47,83 @@ msgstr "Kaart-downloader plugin voor OpenCPN\n"
 "Voor het downloaden van kaarten en verbeteringen vanaf bronnen die de NOAA\n"
 "kaartcatalogus ondersteunen."
 
-#: src/chartdldr_pi.cpp:263 src/chartdldr_pi.cpp:878 src/chartdldr_pi.cpp:885
-#: src/chartdldr_pi.cpp:892 src/chartdldr_pi.cpp:919 src/chartdldr_pi.cpp:954
-#: src/chartdldr_pi.cpp:1021 src/chartdldr_pi.cpp:1030 src/chartdldr_pi.cpp:1358
-#: src/chartdldr_pi.cpp:1466 src/chartdldr_pi.cpp:1470 src/chartdldr_pi.cpp:1551
-#: src/chartdldr_pi.cpp:1666 src/chartdldr_pi.cpp:2397
+#: src/chartdldr_pi.cpp:265 src/chartdldr_pi.cpp:881 src/chartdldr_pi.cpp:888
+#: src/chartdldr_pi.cpp:895 src/chartdldr_pi.cpp:922 src/chartdldr_pi.cpp:957
+#: src/chartdldr_pi.cpp:1024 src/chartdldr_pi.cpp:1033 src/chartdldr_pi.cpp:1361
+#: src/chartdldr_pi.cpp:1470 src/chartdldr_pi.cpp:1474 src/chartdldr_pi.cpp:1555
+#: src/chartdldr_pi.cpp:1670 src/chartdldr_pi.cpp:2401
 msgid "Chart Downloader"
 msgstr "Kaart-downloader"
 
-#: src/chartdldr_pi.cpp:576 src/chartdldr_pi.cpp:599
+#: src/chartdldr_pi.cpp:579 src/chartdldr_pi.cpp:602
 msgid "Select all"
 msgstr "Selecteer alles"
 
-#: src/chartdldr_pi.cpp:580 src/chartdldr_pi.cpp:600
+#: src/chartdldr_pi.cpp:583 src/chartdldr_pi.cpp:603
 msgid "Deselect all"
 msgstr "De-selecteer alles"
 
-#: src/chartdldr_pi.cpp:585 src/chartdldr_pi.cpp:601
+#: src/chartdldr_pi.cpp:588 src/chartdldr_pi.cpp:604
 msgid "Invert selection"
 msgstr "Selectie omkeren"
 
-#: src/chartdldr_pi.cpp:589 src/chartdldr_pi.cpp:602
+#: src/chartdldr_pi.cpp:592 src/chartdldr_pi.cpp:605
 msgid "Select updated"
 msgstr "Selecteer bijgewerkte"
 
-#: src/chartdldr_pi.cpp:593 src/chartdldr_pi.cpp:603
+#: src/chartdldr_pi.cpp:596 src/chartdldr_pi.cpp:606
 msgid "Select new"
 msgstr "Selecteer nieuwe"
 
-#: src/chartdldr_pi.cpp:651
+#: src/chartdldr_pi.cpp:654
 #, c-format
 msgid "Charts: %s"
 msgstr "Kaart: %s"
 
-#: src/chartdldr_pi.cpp:651
+#: src/chartdldr_pi.cpp:654
 msgid " from "
 msgstr " vanaf"
 
-#: src/chartdldr_pi.cpp:657 src/chartdldrgui.cpp:499
+#: src/chartdldr_pi.cpp:660 src/chartdldrgui.cpp:499
 msgid "Charts"
 msgstr "Kaarten"
 
-#: src/chartdldr_pi.cpp:718 src/chartdldrgui.h:170 src/chartdldrgui.h:241
+#: src/chartdldr_pi.cpp:721 src/chartdldrgui.h:170 src/chartdldrgui.h:241
 msgid "New"
 msgstr "Nieuw"
 
-#: src/chartdldr_pi.cpp:725 src/chartdldrgui.h:173 src/chartdldrgui.h:242
+#: src/chartdldr_pi.cpp:728 src/chartdldrgui.h:173 src/chartdldrgui.h:242
 msgid "Out of date"
 msgstr "Verouderd"
 
-#: src/chartdldr_pi.cpp:728
+#: src/chartdldr_pi.cpp:731
 msgid "Up to date"
 msgstr "Bijgewerkt"
 
-#: src/chartdldr_pi.cpp:763
+#: src/chartdldr_pi.cpp:766
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr "%lu kaarten totaal, %lu bijgewerkt, %lu nieuwe"
 
-#: src/chartdldr_pi.cpp:768 src/chartdldr_pi.cpp:1169 src/chartdldr_pi.cpp:1252
-#: src/chartdldr_pi.cpp:1270 src/chartdldr_pi.cpp:1287 src/chartdldr_pi.cpp:1306
+#: src/chartdldr_pi.cpp:771 src/chartdldr_pi.cpp:1172 src/chartdldr_pi.cpp:1255
+#: src/chartdldr_pi.cpp:1273 src/chartdldr_pi.cpp:1290 src/chartdldr_pi.cpp:1309
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new, %lu selected"
 msgstr "%lu kaarten totaal, %lu bijgewerkt, %lu nieuw, %lu geselecteerd"
 
-#: src/chartdldr_pi.cpp:841 src/chartdldr_pi.cpp:1633
+#: src/chartdldr_pi.cpp:844 src/chartdldr_pi.cpp:1637
 msgid "(Please update first)"
 msgstr "(Eerst bijwerken aub)"
 
-#: src/chartdldr_pi.cpp:846 src/chartdldr_pi.cpp:935
+#: src/chartdldr_pi.cpp:849 src/chartdldr_pi.cpp:938
 msgid "Error, the URL to the chart source data seems wrong."
 msgstr "Fout, de URL naar de brongegevens van de kaart lijkt verkeerd."
 
-#: src/chartdldr_pi.cpp:847 src/chartdldr_pi.cpp:936 src/chartdldr_pi.cpp:1373
+#: src/chartdldr_pi.cpp:850 src/chartdldr_pi.cpp:939 src/chartdldr_pi.cpp:1376
 msgid "Error"
 msgstr "Fout"
 
-#: src/chartdldr_pi.cpp:876
+#: src/chartdldr_pi.cpp:879
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
@@ -131,7 +131,7 @@ msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
 "het downloaden van alle nieuwe en bijgewerkte kaarten. \n"
 "Dit kan lang duren."
 
-#: src/chartdldr_pi.cpp:883
+#: src/chartdldr_pi.cpp:886
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
@@ -139,7 +139,7 @@ msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
 "het downloaden van alleen nieuwe (dus niet bijgewerkte) kaarten. \n"
 "Dit kan lang duren."
 
-#: src/chartdldr_pi.cpp:890
+#: src/chartdldr_pi.cpp:893
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
@@ -147,109 +147,109 @@ msgstr "U hebt gekozen voor het bijwerken van alle kaartcatalogi en \n"
 "het downloaden van alleen bijgewerkte (dus niet van nieuwe) kaarten. \n"
 "Dit kan lang duren."
 
-#: src/chartdldr_pi.cpp:915 src/chartdldr_pi.cpp:1462
+#: src/chartdldr_pi.cpp:918 src/chartdldr_pi.cpp:1466
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr "%d van de %d kaarten is niet gedownload.\n"
 "Controleer de lijst en de internetverbinding en probeer zo nodig opnieuw te downloaden."
 
-#: src/chartdldr_pi.cpp:952 src/chartdldr_pi.cpp:2370 src/chartdldr_pi.cpp:2395
+#: src/chartdldr_pi.cpp:955 src/chartdldr_pi.cpp:2374 src/chartdldr_pi.cpp:2399
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "Map %s kan niet worden gemaakt."
 
-#: src/chartdldr_pi.cpp:974 src/chartdldr_pi.cpp:988
+#: src/chartdldr_pi.cpp:977 src/chartdldr_pi.cpp:991
 msgid "Downloading file"
 msgstr "Downloaden bestand"
 
-#: src/chartdldr_pi.cpp:975 src/chartdldr_pi.cpp:989
+#: src/chartdldr_pi.cpp:978 src/chartdldr_pi.cpp:992
 msgid "Reading Headers: "
 msgstr "Lezen van koppen: "
 
-#: src/chartdldr_pi.cpp:1019
+#: src/chartdldr_pi.cpp:1022
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr "Nieuwe catalogus: %s niet gevonden "
 
-#: src/chartdldr_pi.cpp:1027
+#: src/chartdldr_pi.cpp:1030
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
 msgstr "Download van catalogus %s mislukt.\n"
 "Controleer of er een werkende internetverbinding is."
 
-#: src/chartdldr_pi.cpp:1190 src/chartdldr_pi.cpp:1196 src/chartdldrgui.cpp:566
+#: src/chartdldr_pi.cpp:1193 src/chartdldr_pi.cpp:1199 src/chartdldrgui.cpp:566
 msgid "Select All"
 msgstr "Selecteer alles"
 
-#: src/chartdldr_pi.cpp:1192 src/chartdldrgui.cpp:570 src/chartdldrgui.cpp:624
+#: src/chartdldr_pi.cpp:1195 src/chartdldrgui.cpp:570 src/chartdldrgui.cpp:624
 msgid "Select None"
 msgstr "Selecteer Niets"
 
-#: src/chartdldr_pi.cpp:1193
+#: src/chartdldr_pi.cpp:1196
 msgid "De-select all charts in the list."
 msgstr "De-selecteer alle kaarten in de lijst."
 
-#: src/chartdldr_pi.cpp:1197 src/chartdldrgui.cpp:571
+#: src/chartdldr_pi.cpp:1200 src/chartdldrgui.cpp:571
 msgid "Select all charts in the list."
 msgstr "Selecteer alle kaarten in de lijst."
 
-#: src/chartdldr_pi.cpp:1321
+#: src/chartdldr_pi.cpp:1324
 msgid "No charts selected for download."
 msgstr "Geen kaarten geselecteerd om te downloaden."
 
-#: src/chartdldr_pi.cpp:1333
+#: src/chartdldr_pi.cpp:1336
 msgid "Abort download"
 msgstr "Download afbreken"
 
-#: src/chartdldr_pi.cpp:1346
+#: src/chartdldr_pi.cpp:1349
 msgid "Unknown"
 msgstr "Onbekend"
 
-#: src/chartdldr_pi.cpp:1354
+#: src/chartdldr_pi.cpp:1357
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
 msgstr "De geselecteerde kaarten '%s' kunnen niet automatisch worden gedownload. Wilt u een browservenster openen en handmatig downloaden? \n\n"
 "Na het downloaden van de kaarten deze uitpakken in %s"
 
-#: src/chartdldr_pi.cpp:1371
+#: src/chartdldr_pi.cpp:1374
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
 msgstr "Fout, de URL voor de kaartgegevens (%s) lijkt verkeerd."
 
-#: src/chartdldr_pi.cpp:1415
+#: src/chartdldr_pi.cpp:1418
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr "Kaart %u van %u wordt gedownload, %u van downloads is mislukt (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1420
+#: src/chartdldr_pi.cpp:1423
 #, c-format
 msgid "Downloading chart %u of %u (%s / %s)"
 msgstr "Kaart aan het downloaden %u van %u (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1456 src/chartdldrgui.cpp:550 src/chartdldrgui.cpp:582
+#: src/chartdldr_pi.cpp:1460 src/chartdldrgui.cpp:550 src/chartdldrgui.cpp:582
 msgid "Download selected charts"
 msgstr "Geselecteerde kaarten downloaden"
 
-#: src/chartdldr_pi.cpp:1469
+#: src/chartdldr_pi.cpp:1473
 msgid "Chart download cancelled."
 msgstr "Kaart download geannuleerd."
 
-#: src/chartdldr_pi.cpp:1498 src/chartdldrgui.cpp:240
+#: src/chartdldr_pi.cpp:1502 src/chartdldrgui.cpp:240
 msgid "Catalog"
 msgstr "Catalogus"
 
-#: src/chartdldr_pi.cpp:1500
+#: src/chartdldr_pi.cpp:1504
 msgid "Released"
 msgstr "Uitgegeven"
 
-#: src/chartdldr_pi.cpp:1502
+#: src/chartdldr_pi.cpp:1506
 msgid "Local path"
 msgstr "Lokaal pad"
 
-#: src/chartdldr_pi.cpp:1548
+#: src/chartdldr_pi.cpp:1552
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed,\n"
 "but you will not be able to update the charts anymore."
@@ -257,38 +257,38 @@ msgstr "Weet je zeker dat je de kaartbron wilt verwijderen?\n"
 "De lokale kaartbestanden worden niet verwijderd,\n"
 "maar je kunt de kaarten niet meer bijwerken."
 
-#: src/chartdldr_pi.cpp:1618
+#: src/chartdldr_pi.cpp:1622
 msgid "Edit Chart Source"
 msgstr "Kaartbron bewerken"
 
-#: src/chartdldr_pi.cpp:1662
+#: src/chartdldr_pi.cpp:1666
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "Het pad %s maakt geen deel uit van de door u aangegeven kaartmappen.\n"
 "Om de kaarten te zien moet u de juiste map toevoegen via 'Optionele Instellingen' - 'Kaarten' - 'Kaartbestanden' - 'Voeg map toe ...'."
 
-#: src/chartdldr_pi.cpp:1757
+#: src/chartdldr_pi.cpp:1761
 msgid "Installing charts."
 msgstr "Kaarten installeren."
 
-#: src/chartdldr_pi.cpp:2350 src/chartdldr_pi.cpp:2354
+#: src/chartdldr_pi.cpp:2354 src/chartdldr_pi.cpp:2358
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "U moet één van de voor-gedefinieerde kaartbronnen selecteren of er zelf één toevoegen.\n"
 
-#: src/chartdldr_pi.cpp:2359
+#: src/chartdldr_pi.cpp:2363
 msgid "The chart source must have a name.\n"
 msgstr "De kaartbron moet een naam hebben.\n"
 
-#: src/chartdldr_pi.cpp:2364
+#: src/chartdldr_pi.cpp:2368
 msgid "The chart source must have a valid URL.\n"
 msgstr "De kaartbron moet een geldige URL hebben. \n"
 
-#: src/chartdldr_pi.cpp:2366
+#: src/chartdldr_pi.cpp:2370
 msgid "You must select a local folder to store the charts.\n"
 msgstr "U moet een lokale map selecteren om de kaarten op te slaan.\n"
 
-#: src/chartdldr_pi.cpp:2375
+#: src/chartdldr_pi.cpp:2379
 msgid "Chart source definition problem"
 msgstr "Probleem kaartbrondefinitie"
 
@@ -324,11 +324,11 @@ msgstr "Selecteer een andere map"
 msgid "OK"
 msgstr "OK"
 
-#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:910
+#: src/chartdldrgui.cpp:333 src/chartdldrgui.cpp:859
 msgid "Cancel"
 msgstr "Annuleer"
 
-#: src/chartdldrgui.cpp:393 src/chartdldrgui.cpp:994
+#: src/chartdldrgui.cpp:393 src/chartdldrgui.cpp:1015
 msgid "Choose Chart File Directory"
 msgstr "Kies map voor kaartbestanden"
 
@@ -418,52 +418,52 @@ msgstr "%u kaarten totaal, %u bijgewerkt, %u nieuw, %u geselecteerd"
 msgid "%u charts total, %u updated, %u new"
 msgstr "%u kaarten totaal, %u bijgewerkt, %u nieuwe"
 
-#: src/chartdldrgui.cpp:852
+#: src/chartdldrgui.cpp:870
 msgid "Default Path to Charts"
 msgstr "Standaard pad naar kaarten"
 
-#: src/chartdldrgui.cpp:863
+#: src/chartdldrgui.cpp:881
 msgid "Select a folder"
 msgstr "Selecteer een map"
 
-#: src/chartdldrgui.cpp:870
+#: src/chartdldrgui.cpp:888
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: src/chartdldrgui.cpp:875
+#: src/chartdldrgui.cpp:893
 msgid "After catalog update select for download"
 msgstr "Na bijwerken catalogus, selecteren voor downloaden"
 
-#: src/chartdldrgui.cpp:880
+#: src/chartdldrgui.cpp:898
 msgid "All updated charts"
 msgstr "Alle bijgewerkte kaarten"
 
-#: src/chartdldrgui.cpp:885
+#: src/chartdldrgui.cpp:903
 msgid "All new charts"
 msgstr "Alle nieuwe kaarten"
 
-#: src/chartdldrgui.cpp:895
+#: src/chartdldrgui.cpp:913
 msgid "Allow bulk update of all configured chart sources and charts"
 msgstr "Bulk-bijwerken van alle geconfigureerde kaartbronnen en kaarten toestaan"
 
-#: src/chartdldrgui.cpp:900
+#: src/chartdldrgui.cpp:918
 msgid "Update chart source catalog"
 msgstr "Update kaart-bron catalogus"
 
-#: src/chartdldrgui.cpp:945 src/chartdldrgui.cpp:946
+#: src/chartdldrgui.cpp:966 src/chartdldrgui.cpp:967
 msgid "Downloading chart sources"
 msgstr "Kaartbronnen downloaden"
 
-#: src/chartdldrgui.cpp:960
+#: src/chartdldrgui.cpp:981
 #, c-format
 msgid "Failed to save: %s "
 msgstr "Opslaan mislukt: %s "
 
-#: src/chartdldrgui.cpp:962 src/chartdldrgui.cpp:972
+#: src/chartdldrgui.cpp:983 src/chartdldrgui.cpp:993
 msgid "Chart downloader"
 msgstr "Kaart-downloader"
 
-#: src/chartdldrgui.cpp:969
+#: src/chartdldrgui.cpp:990
 #, c-format
 msgid "Failed to download: %s \n"
 "Verify there is a working Internet connection."

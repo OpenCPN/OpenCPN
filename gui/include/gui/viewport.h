@@ -116,6 +116,7 @@ public:
   void SetBBoxDirect(double latmin, double lonmin, double latmax,
                      double lonmax);
 
+  bool ContainsIDL();
   void InvalidateTransformCache() { lat0_cache = NAN; }
   void SetVPTransformMatrix();
 
