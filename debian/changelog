@@ -1,3 +1,10 @@
+opencpn (5.9.2-beta2+dfsg-1) unstable; urgency=medium
+
+  * Local build
+  * Upstream beta release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 09:03:50 +0200
+
 opencpn (5.9.1-beta1+dfsg-1) unstable; urgency=medium
 
   * Local build
