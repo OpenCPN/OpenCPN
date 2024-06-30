@@ -1,3 +1,9 @@
+opencpn (5.9.2-beta2+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
+
+  * Upstream beta release backport
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 15:11:11 +0200
+
 opencpn (5.9.1-beta1+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
 
   * Upstream beta release backport
