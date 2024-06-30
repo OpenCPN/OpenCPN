@@ -62,9 +62,6 @@ ConnectionsDialog::ConnectionsDialog(wxScrolledWindow* container,
                                      options* parent) {
   m_container = container;
   m_parent = parent;
-  nmea_window_close_listener.Init(
-          NMEALogWindow::GetInstance().nmea_window_close_evt,
-          [&] (ObservedEvt&) { m_cbNMEADebug->SetValue(false); });
 
   Init();
 }
@@ -101,11 +98,24 @@ void ConnectionsDialog::Init() {
   //  Catch SizeEvents to force a layout honoring proportions
   m_container->Connect(wxEVT_SIZE, wxSizeEventHandler(ConnectionsDialog::OnSize), NULL, this);
 
+  // Try to detect smaller displays, and adjust dialog layout accordingly
+  //  Looking for small devices in landscape mode.
+  bool bcompact = false;
+  wxSize displaySize = wxGetDisplaySize();
+  if ((displaySize.y < 500) && (displaySize.x > displaySize.y))
+    bcompact = true;
+
   wxBoxSizer* bSizer4 = new wxBoxSizer(wxVERTICAL);
   m_container->SetSizer(bSizer4);
   m_container->SetVirtualSize(m_container->GetParent()->GetSize());
-  // Do not allow wxScrollWindow m_container to scroll
-  m_container->SetScrollRate(0, 0);
+
+  // In compact mode, we scroll the entire dialog
+  // Otherwise, we scroll only the connection list
+  if (bcompact)
+    m_container->SetScrollRate(1, 1);
+  else
+    m_container->SetScrollRate(0, 0);
+
 
   m_bSizerOuterContainer = new wxBoxSizer(wxVERTICAL);
   bSizer4->Add(m_bSizerOuterContainer, 1, wxEXPAND, 5);
@@ -142,64 +152,123 @@ void ConnectionsDialog::Init() {
   bSizer171->Add(m_stFilterSec, 0, wxALL, nspace);
 
   m_tFilterSec = new wxTextCtrl(m_container, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
+                                wxDefaultPosition,
+                                wxSize(50, 3 * m_container->GetCharWidth()), 0);
   wxString sfilt;
   sfilt.Printf("%d", g_COGFilterSec);
   m_tFilterSec->SetValue(sfilt);
   bSizer171->Add(m_tFilterSec, 0, wxALL, 4);
   bSizer161->Add(bSizer171, 0, wxEXPAND, 5);
 
-  int cb_space = 2;
-  m_cbNMEADebug =
-      new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
-  bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
+  int cb_space = 1;
 
-  m_cbFurunoGP3X =
-      new wxCheckBox(m_container, wxID_ANY, _("Format uploads for Furuno GP3X"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbFurunoGP3X->SetValue(g_GPS_Ident == "FurunoGP3X");
-  bSizer161->Add(m_cbFurunoGP3X, 0, wxALL, cb_space);
+  // On smaller displays, squeeze the dialog slightly
+  if (bcompact){
+    wxFlexGridSizer *GenProps = new wxFlexGridSizer(0, 2, 0, 0);
+    bSizer161->Add(GenProps, 0, wxALL, cb_space);
 
-  m_cbGarminUploadHost = new wxCheckBox(
-      m_container, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"),
-      wxDefaultPosition, wxDefaultSize, 0);
-  m_cbGarminUploadHost->SetValue(g_bGarminHostUpload);
-  bSizer161->Add(m_cbGarminUploadHost, 0, wxALL, cb_space);
+    m_cbNMEADebug =
+        new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
+                       wxDefaultPosition, wxDefaultSize, 0);
+    m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
+    GenProps->Add(m_cbNMEADebug, 0, wxALL, cb_space);
 
-  m_cbAPBMagnetic =
-      new wxCheckBox(m_container, wxID_ANY,
-                     _("Use magnetic bearings in output sentence APB"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
-  bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
+    m_cbFurunoGP3X = new wxCheckBox(m_container, wxID_ANY,
+                                    _("Format uploads for Furuno GP3X"),
+                                    wxDefaultPosition, wxDefaultSize, 0);
+    m_cbFurunoGP3X->SetValue(g_GPS_Ident == "FurunoGP3X");
+    GenProps->Add(m_cbFurunoGP3X, 0, wxALL, cb_space);
 
-  wxSizer *talkerSizer = new wxBoxSizer(wxHORIZONTAL);
-  bSizer161->Add(talkerSizer, 0, wxALL, 1);
+    m_cbGarminUploadHost = new wxCheckBox(
+        m_container, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"),
+        wxDefaultPosition, wxDefaultSize, 0);
+    m_cbGarminUploadHost->SetValue(g_bGarminHostUpload);
+    GenProps->Add(m_cbGarminUploadHost, 0, wxALL, cb_space);
 
-  talkerSizer->AddSpacer(3 * m_container->GetCharWidth());
+    m_cbAPBMagnetic =
+        new wxCheckBox(m_container, wxID_ANY,
+                       _("Use magnetic bearings in output sentence APB"),
+                       wxDefaultPosition, wxDefaultSize, 0);
+    m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
+    GenProps->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
 
-  wxStaticText *stTalkerIdText = new wxStaticText(
-          m_container, wxID_ANY,
-          wxString::Format("%s", _("NMEA0183 Talker ID")),
-          wxDefaultPosition, wxDefaultSize, 0);
-  stTalkerIdText->Wrap(-1);
-  talkerSizer->Add(stTalkerIdText, 0, wxALL, 2);
+    wxSizer *talkerSizer = new wxBoxSizer(wxHORIZONTAL);
+    bSizer161->Add(talkerSizer, 0, wxALL, 1);
 
-  talkerSizer->AddSpacer(2 * m_container->GetCharWidth());
+    m_ButtonPriorityDialog = new wxButton(m_container, wxID_ANY,
+                                          _("Adjust communication priorities..."),
+                                          wxDefaultPosition, wxDefaultSize, 0);
+    talkerSizer->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
 
-  m_TalkerIdText = new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
-            wxSize(50, 3 * m_container->GetCharWidth()), 0);
-  m_TalkerIdText->SetMaxLength(2);
-  m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
-  talkerSizer->Add(m_TalkerIdText, 0,  wxALL | wxALIGN_CENTER_VERTICAL, 2);
+    talkerSizer->AddSpacer(12 * m_container->GetCharWidth());
 
+    m_stTalkerIdText = new wxStaticText(
+        m_container, wxID_ANY,
+        wxString::Format("%s", _("NMEA0183 Talker ID")),
+        wxDefaultPosition, wxDefaultSize, 0);
+    m_stTalkerIdText->Wrap(-1);
+    talkerSizer->Add(m_stTalkerIdText, 0, wxALL, 2);
 
-  m_ButtonPriorityDialog = new wxButton(m_container, wxID_ANY,
-                                        _("Adjust communication priorities..."),
-                                        wxDefaultPosition, wxDefaultSize, 0);
-  bSizer161->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
+    talkerSizer->AddSpacer(2 * m_container->GetCharWidth());
+
+    m_TalkerIdText = new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
+                                    wxSize(50, 3 * m_container->GetCharWidth()), 0);
+    m_TalkerIdText->SetMaxLength(2);
+    m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
+    talkerSizer->Add(m_TalkerIdText, 0,  wxALL | wxALIGN_CENTER_VERTICAL, 2);
+  }
+  else {
+    cb_space = 2;
+    m_cbNMEADebug =
+        new wxCheckBox(m_container, wxID_ANY, _("Show NMEA Debug Window"),
+                       wxDefaultPosition, wxDefaultSize, 0);
+    m_cbNMEADebug->SetValue(NMEALogWindow::GetInstance().Active());
+    bSizer161->Add(m_cbNMEADebug, 0, wxALL, cb_space);
+
+    m_cbFurunoGP3X = new wxCheckBox(m_container, wxID_ANY,
+                                    _("Format uploads for Furuno GP3X"),
+                                    wxDefaultPosition, wxDefaultSize, 0);
+    m_cbFurunoGP3X->SetValue(g_GPS_Ident == "FurunoGP3X");
+    bSizer161->Add(m_cbFurunoGP3X, 0, wxALL, cb_space);
+
+    m_cbGarminUploadHost = new wxCheckBox(
+        m_container, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"),
+        wxDefaultPosition, wxDefaultSize, 0);
+    m_cbGarminUploadHost->SetValue(g_bGarminHostUpload);
+    bSizer161->Add(m_cbGarminUploadHost, 0, wxALL, cb_space);
+
+    m_cbAPBMagnetic =
+        new wxCheckBox(m_container, wxID_ANY,
+                       _("Use magnetic bearings in output sentence APB"),
+                       wxDefaultPosition, wxDefaultSize, 0);
+    m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
+    bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
+
+    wxSizer* talkerSizer = new wxBoxSizer(wxHORIZONTAL);
+    bSizer161->Add(talkerSizer, 0, wxALL, 1);
+
+    talkerSizer->AddSpacer(3 * m_container->GetCharWidth());
+
+    m_stTalkerIdText = new wxStaticText(
+        m_container, wxID_ANY, wxString::Format("%s", _("NMEA0183 Talker ID")),
+        wxDefaultPosition, wxDefaultSize, 0);
+    m_stTalkerIdText->Wrap(-1);
+    talkerSizer->Add(m_stTalkerIdText, 0, wxALL, 2);
+
+    talkerSizer->AddSpacer(2 * m_container->GetCharWidth());
+
+    m_TalkerIdText =
+        new wxTextCtrl(m_container, -1, "", wxDefaultPosition,
+                       wxSize(50, 3 * m_container->GetCharWidth()), 0);
+    m_TalkerIdText->SetMaxLength(2);
+    m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
+    talkerSizer->Add(m_TalkerIdText, 0, wxALL | wxALIGN_CENTER_VERTICAL, 2);
+
+    m_ButtonPriorityDialog = new wxButton(
+        m_container, wxID_ANY, _("Adjust communication priorities..."),
+        wxDefaultPosition, wxDefaultSize, 0);
+    bSizer161->Add(m_ButtonPriorityDialog, 0, wxALL, cb_space);
+  }
 
   bSizer151->Add(bSizer161, 0, wxEXPAND, 5);
   sbSizerGeneral->Add(bSizer151, 0, wxEXPAND, 5);
@@ -251,7 +320,14 @@ void ConnectionsDialog::Init() {
   m_scrollWinConnections = new wxScrolledWindow(
       m_container, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_parent, wxSize(-1, -1)),
       wxBORDER_RAISED | wxVSCROLL | wxBG_STYLE_ERASE);
-  m_scrollWinConnections->SetScrollRate(5, 5);
+
+  // In compact mode, we scroll the entire dialog
+  // Otherwise, we scroll only the connection list
+  if (bcompact)
+    m_scrollWinConnections->SetScrollRate(0, 0);
+  else
+    m_scrollWinConnections->SetScrollRate(5, 5);
+
 #endif
 
   m_sbSizerLB->Add(m_scrollWinConnections, 1, wxRIGHT | wxEXPAND, 5);
