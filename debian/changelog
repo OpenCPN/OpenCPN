@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.2) noble; urgency=medium
+
+  * Adjust version to handle the new epoch
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 02 Jul 2024 00:22:23 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.1) noble; urgency=medium
   * Upstream beta backport
 
