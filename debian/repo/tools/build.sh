@@ -1,9 +1,12 @@
-# podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/amd64 \
+# $ podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/amd64 \
 #     -v=$PWD:/build -v=/tmp/pkg-amd64:/output -e DOCKER_BUILD=1 \
-#      debian:bookworm-backports /bin/bash  /build/build.sh
-# podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/aarch64 \
+#      -ti debian:bookworm-backports
+# # /build/build.sh
+#
+# $ podman run -v $HOME/opencpn-gpg:/root/.gnupg --platform linux/aarch64 \
 #     -v=$PWD:/build -v=/tmp/pkg-aarch64:/output -e DOCKER_BUILD=1 \
-#     --arch=aarch64 debian:bookworm-backports /bin/bash /build/build.sh
+#     -ti debian:bookworm-backports
+# # /build/build.sh
 
 # Install build tools
 apt update --allow-unauthenticated 

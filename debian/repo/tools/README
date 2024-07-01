@@ -4,9 +4,10 @@ Tools for creating opencpn packages.
 These tools uses the packaging at https://github.com/opencpn/opencpn to
 create debian packages and eventually a complete repository
 
-- Use docker and build.sh to create arm64 and amd64 packages, 
+- Copy the complete repo/ structure someplace else.
+- Use podman and build.sh to create arm64 and amd64 packages, 
   move them to pool/
-- Run build-repo
+- Run tools/build-repo
 - Done. Tar the directory, transfer and publish.
 
 - 
