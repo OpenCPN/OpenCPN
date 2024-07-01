@@ -1,7 +1,9 @@
-opencpn (5.9.2-beta2+dfsg-1) unstable; urgency=medium
+opencpn (1:5.9.2-beta2+dfsg-1) unstable; urgency=medium
 
   * Local build
   * Upstream beta release
+  * Add epoch to break inadequate upstream version numbers.
+  * Strip bundled shapelib, use system version instead.
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 09:03:50 +0200
 
