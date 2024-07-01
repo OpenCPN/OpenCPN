@@ -106,12 +106,6 @@ public:
                               wxDateTime aMTime = wxDateTime::Now(),
                               bool aRemoveArchive = false);
 #endif
-#if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
-  bool ExtractUnarrFiles(const wxString& aRarFile, const wxString& aTargetDir,
-                         bool aStripPath = true,
-                         wxDateTime aMTime = wxDateTime::Now(),
-                         bool aRemoveRar = false);
-#endif
 
   void UpdatePrefs(ChartDldrPrefsDlgImpl* dialog);
 

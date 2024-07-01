@@ -52,11 +52,6 @@
 #ifdef DLDR_USE_LIBARCHIVE
 #include <archive.h>
 #include <archive_entry.h>
-#ifdef CHARTDLDR_RAR_UNARR
-#include "unarr.h"
-#endif
-#else
-#include "unarr.h"
 #endif
 
 #ifdef __OCPN__ANDROID__
@@ -1700,12 +1695,8 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
   }
 #ifdef DLDR_USE_LIBARCHIVE
   else if (aFile.Lower().EndsWith(_T("rar"))) {
-#ifdef CHARTDLDR_RAR_UNARR
-    bool ret = ExtractUnarrFiles(aFile, aTargetDir, aStripPath, aMTime, false);
-#else
     bool ret =
         ExtractLibArchiveFiles(aFile, aTargetDir, aStripPath, aMTime, false);
-#endif
     if (ret)
       wxRemoveFile(aFile);
     else
@@ -1719,28 +1710,6 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
              aFile.Lower().EndsWith(_T("xz"))) {
     bool ret =
         ExtractLibArchiveFiles(aFile, aTargetDir, aStripPath, aMTime, false);
-    if (ret)
-      wxRemoveFile(aFile);
-    else
-      wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile);
-    return ret;
-  }
-#else
-  else if (aFile.Lower().EndsWith(_T("rar")) ||
-           aFile.Lower().EndsWith(_T("tar"))
-#ifdef HAVE_BZIP2
-           || aFile.Lower().EndsWith(_T("bz2"))
-#endif
-#ifdef HAVE_ZLIB
-           || aFile.Lower().EndsWith(_T("gz"))
-#endif
-#ifdef HAVE_7Z
-           || aFile.Lower().EndsWith(
-                  _T("7z"))  // TODO: Could it actually extract more formats the
-                             // LZMA SDK supports?
-#endif
-  ) {
-    bool ret = ExtractUnarrFiles(aFile, aTargetDir, aStripPath, aMTime, false);
     if (ret)
       wxRemoveFile(aFile);
     else
@@ -1899,107 +1868,6 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
   return rv;
 
 #endif  // Android
-}
-#endif
-
-#if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
-ar_archive *ar_open_any_archive(ar_stream *stream, const char *fileext) {
-  ar_archive *ar = ar_open_rar_archive(stream);
-  if (!ar)
-    ar =
-        ar_open_zip_archive(stream, fileext && (strcmp(fileext, ".xps") == 0 ||
-                                                strcmp(fileext, ".epub") == 0));
-  if (!ar) ar = ar_open_7z_archive(stream);
-  if (!ar) ar = ar_open_tar_archive(stream);
-  return ar;
-}
-
-bool chartdldr_pi::ExtractUnarrFiles(const wxString &aRarFile,
-                                     const wxString &aTargetDir,
-                                     bool aStripPath, wxDateTime aMTime,
-                                     bool aRemoveRar) {
-  ar_stream *stream = NULL;
-  ar_archive *ar = NULL;
-  int entry_count = 1;
-  int entry_skips = 0;
-  int error_step = 1;
-  bool ret = true;
-
-  stream = ar_open_file(aRarFile.c_str());
-  if (!stream) {
-    wxLogError(_T("Can not open file '") + aRarFile + _T("'."));
-    ar_close_archive(ar);
-    ar_close(stream);
-    return false;
-  }
-  ar = ar_open_any_archive(stream, strrchr(aRarFile.c_str(), '.'));
-  if (!ar) {
-    wxLogError(_T("Can not open archive '") + aRarFile + _T("'."));
-    ar_close_archive(ar);
-    ar_close(stream);
-    return false;
-  }
-  while (ar_parse_entry(ar)) {
-    size_t size = ar_entry_get_size(ar);
-    wxString name = ar_entry_get_name(ar);
-    if (aStripPath) {
-      wxFileName fn(name);
-      /* We can completly replace the entry path */
-      // fn.SetPath(aTargetDir);
-      // name = fn.GetFullPath();
-      /* Or only remove the first dir (eg. ENC_ROOT) */
-      if (fn.GetDirCount() > 0) {
-        fn.RemoveDir(0);
-        name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
-      } else {
-        name = aTargetDir + wxFileName::GetPathSeparator() + name;
-      }
-    }
-    wxFileName fn(name);
-    if (!fn.DirExists()) {
-      if (!wxFileName::Mkdir(fn.GetPath())) {
-        wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
-        ret = false;
-        break;
-      }
-    }
-    wxFileOutputStream file(name);
-    if (!file) {
-      wxLogError(_T("Can not create file '") + name + _T("'."));
-      ret = false;
-      break;
-    }
-    while (size > 0) {
-      unsigned char buffer[1024];
-      size_t count = size < sizeof(buffer) ? size : sizeof(buffer);
-      if (!ar_entry_uncompress(ar, buffer, count)) break;
-      file.Write(buffer, count);
-      size -= count;
-    }
-    file.Close();
-    fn.SetTimes(&aMTime, &aMTime, &aMTime);
-    if (size > 0) {
-      wxLogError("Warning: Failed to uncompress... skipping");
-      entry_skips++;
-      ret = false;
-    }
-  }
-  if (!ar_at_eof(ar)) {
-    wxLogError("Error: Failed to parse entry %d!", entry_count);
-    ret = false;
-  }
-  ar_close_archive(ar);
-  ar_close(stream);
-
-  if (aRemoveRar) wxRemoveFile(aRarFile);
-
-#ifdef _UNIX
-  // reset LC_NUMERIC locale, some locales use a comma for decimal point
-  // and it corrupts navobj.xml file
-  setlocale(LC_NUMERIC, "C");
-#endif
-
-  return ret;
 }
 #endif
 
