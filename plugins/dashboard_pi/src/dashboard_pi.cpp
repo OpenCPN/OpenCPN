@@ -239,6 +239,7 @@ enum {
   ID_DBP_D_ALTI,
   ID_DBP_I_VMGW,
   ID_DBP_I_HUM,
+  ID_DBP_D_STW,
   ID_DBP_LAST_ENTRY  // this has a reference in one of the routines; defining a
                      // "LAST_ENTRY" and setting the reference to it, is one
                      // codeline less to change (and find) when adding new
@@ -262,6 +263,8 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("SOG");
     case ID_DBP_D_SOG:
       return _("Speed SOG");
+    case ID_DBP_D_STW:
+      return _("Speed STW");
     case ID_DBP_I_COG:
       return _("COG");
     case ID_DBP_M_COG:
@@ -401,6 +404,7 @@ void getListItemForInstrument(wxListItem &item, unsigned int id) {
       item.SetImage(0);
       break;
     case ID_DBP_D_SOG:
+    case ID_DBP_D_STW:
     case ID_DBP_D_COG:
     case ID_DBP_D_AW:
     case ID_DBP_D_AWA:
@@ -5607,6 +5611,20 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list, wxArrayOfInstrumentProp
             ->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionExtraValue(OCPN_DBP_STC_STW, "STW %.1f",
+                                  DIAL_POSITION_BOTTOMMIDDLE);
+        break;
+      case ID_DBP_D_STW:
+        instrument = new DashboardInstrument_Speedometer(
+            this, wxID_ANY, getInstrumentCaption(id), Properties,
+            OCPN_DBP_STC_STW, 0, g_iDashSpeedMax);
+        ((DashboardInstrument_Dial *)instrument)
+            ->SetOptionLabel(g_iDashSpeedMax / 20 + 1, DIAL_LABEL_HORIZONTAL);
+        //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1,
+        // DIAL_MARKER_SIMPLE, 5);
+        ((DashboardInstrument_Dial *)instrument)
+            ->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
+        ((DashboardInstrument_Dial *)instrument)
+            ->SetOptionExtraValue(OCPN_DBP_STC_SOG, "SOG %.1f",
                                   DIAL_POSITION_BOTTOMMIDDLE);
         break;
       case ID_DBP_I_COG:
