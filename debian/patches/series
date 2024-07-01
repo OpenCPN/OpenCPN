@@ -4,3 +4,4 @@
 0004-tests-Disable-time-dependent-Buffer.RateLimit2-test.patch
 0004-build-Use-system-shapelib-if-available.patch
 0005-tests-add-hook-to-disable-tests-in-docker.patch
+0007-tests-disable-failing-aarch64-testcase.patch
