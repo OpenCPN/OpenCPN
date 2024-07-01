@@ -1,4 +1,4 @@
-opencpn (5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.1) noble; urgency=medium
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo26.04.1) noble; urgency=medium
   * Upstream beta backport
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sun, 30 Jun 2024 12:04:17 +0200
