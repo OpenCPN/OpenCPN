@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.2) jammy; urgency=medium
+
+  * New minor release to handle epoch
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 02 Jul 2024 00:28:16 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
 
   * Upstream beta release backport
