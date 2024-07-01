@@ -1,4 +1,4 @@
-opencpn (5.9.2-beta2+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2204.1) jammy; urgency=medium
 
   * Upstream beta release backport
 
