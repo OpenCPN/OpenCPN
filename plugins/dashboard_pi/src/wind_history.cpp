@@ -794,9 +794,14 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
                        m_TotalMaxWindSpd, m_WindSpeedUnit.c_str());
   int statw, stath;
   dc->GetTextExtent(statistics, &statw, &stath, 0, 0, &f);
-  if (statw <
-      (m_WindowRect.width - m_LeftLegend - speedw - degw - m_RightLegend)) {
+  int dispw =
+      (m_WindowRect.width - m_LeftLegend - speedw - degw - m_RightLegend);
+  if (statw < dispw) {
     dc->DrawText(statistics, speedw + m_LeftLegend, 3);
+  } else { // Try a shorter text
+    dc->GetTextExtent(statistics.Left(12), &statw, &stath, 0, 0, &f);
+    if (statw < dispw)
+      dc->DrawText(statistics.Left(12), speedw + m_LeftLegend, 3);
   }
 
   pen.SetStyle(wxPENSTYLE_SOLID);
