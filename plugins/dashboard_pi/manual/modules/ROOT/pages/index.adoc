@@ -107,7 +107,7 @@ image::dash-select-instr_0.png[image,width=260,height=265]
 [cols="",]
 |===
 |Position (text)
-|SOG (text) -Speed Over Ground
+|SOG (text) - Speed Over Ground
 |Speedometer (dial)
 |COG(text) - Course Over Ground
 |GPS Compass(dial)
@@ -121,11 +121,11 @@ image::dash-select-instr_0.png[image,width=260,height=265]
 |Depth(text)^1^
 |Depth(dial)^1^
 |Water Temp(text)
-|VMG(text)- Velocity Made Good to a waypoint
+|VMG(text) - Velocity Made Good to a waypoint
 |VMG(dial)
 |Rudder Angle(text)
 |Rudder Angle(dial)
-|GPS in view(text)- the number of satellites detected^2^
+|GPS in view(text) - the number of satellites detected^2^
 |GPS status(dial)^2^
 |Cursor, shows the position of the cursor.
 |Clock, showing UTC from the NMEA stream, in most cases this is the gps time.
