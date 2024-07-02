@@ -108,18 +108,25 @@ requirement for the port to be a TTY is relaxed.
 
 == wxWidgets
 
-OpenCPN uses wxWidgets, currently version 3.2.x on Linux packages,
-and 3.2.5 for other platforms. See
+OpenCPN uses wxWidgets. See
 https://www.wxwidgets.org/docs/[wxWidgets Reference Manuals]
+
+The specific wxWidgets versions vary by platform and OpenCPN version. See the table below for details.
+
+[options="header"]
+|===
+| OpenCPN version | Linux | MacOS | Windows
+| 5.8.x | 3.2.x | 3.2.5 | 3.2.5
+| 5.9.x | 3.2.5 | 3.2.5 | 3.2.5
+|===
 
 wxWidgets uses a tick-tock release schedule where even-numbered versions
 are stable including a stable ABI. Odd-numbered version are unstable,
 development versions.
 
-On Linux platforms OpenCPN normally uses the current stable version,
-at the time of writing 3.2. This is partly a practical issue since
-conservative distributions like Debian don't package unstable, odd
-versions.
+On Linux platforms OpenCPN normally uses the current stable version.
+This is partly a practical issue since conservative distributions
+like Debian don't package unstable, odd versions.
 
 One other platforms unstable, odd versions are occasionally used.
 
