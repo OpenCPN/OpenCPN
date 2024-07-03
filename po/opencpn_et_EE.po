@@ -7105,7 +7105,7 @@ msgid "Select tarball file"
 msgstr "Vali tarball-fail"
 
 #: gui/src/pluginmanager.cpp:3949
-msgid "Error extracting metadata from tarball."
+msgid "Error extracting metadata from tarball (missing metadata.xml?)"
 msgstr "Viga meta-andmete väljastamisel arhiivist."
 
 #: gui/src/pluginmanager.cpp:3950 gui/src/pluginmanager.cpp:3955
