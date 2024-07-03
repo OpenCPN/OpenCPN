@@ -794,7 +794,7 @@ bool PluginHandler::explodeTarball(struct archive* src, struct archive* dest,
     int r = archive_read_next_header(src, &entry);
     if (r == ARCHIVE_EOF) {
       if (metadata_path != "" && !status) {
-
+        wxLogWarning("Plugin tarball does not contain metadata.xml");
       }
       return status;
     }
