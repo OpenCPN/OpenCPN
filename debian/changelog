@@ -1,3 +1,9 @@
+opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.2) focal; urgency=medium
+
+  * Minor bump to handle build errors.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 03 Jul 2024 13:24:22 +0200
+
 opencpn (1:5.9.2-beta2+dfsg-1ubuntu1~bpo2004.1) focal; urgency=medium
 
   * Upstream beta release backport
