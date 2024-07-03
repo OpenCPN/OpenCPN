@@ -138,6 +138,7 @@ DashboardInstrument::DashboardInstrument(wxWindow* pparent, wxWindowID id,
   m_title = title;
   m_Properties = Properties;
   m_cap_flag.set(cap_flag);
+  m_popupWanted = false;
 
   SetBackgroundStyle(wxBG_STYLE_CUSTOM);
   SetDrawSoloInPane(false);
@@ -157,10 +158,47 @@ DashboardInstrument::DashboardInstrument(wxWindow* pparent, wxWindowID id,
   Connect(wxEVT_RIGHT_DOWN,
           wxMouseEventHandler(DashboardInstrument::MouseEvent), NULL, this);
 #endif
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+  if (!EnableTouchEvents( wxTOUCH_PRESS_GESTURES)) {
+    wxLogError("Failed to enable touch events on dashboard Instrument");
+  }
+
+  Bind(wxEVT_LONG_PRESS, &DashboardInstrument::OnLongPress, this);
+  Bind(wxEVT_LEFT_UP, &DashboardInstrument::OnLeftUp, this);
+#endif
+
+}
+
+#ifdef HAVE_WX_GESTURE_EVENTS
+void DashboardInstrument::OnLongPress(wxLongPressEvent &event) {
+  /* we defer the popup menu call upon the leftup event
+  else the menu disappears immediately,
+   */
+  m_popupWanted = true;
+}
+#endif
+
+void DashboardInstrument::OnLeftUp(wxMouseEvent &event) {
+  wxPoint pos = event.GetPosition();
+
+  if (!m_popupWanted) {
+    wxMouseEvent ev(wxEVT_LEFT_UP);
+    ev.m_x = pos.x;
+    ev.m_y = pos.y;
+    GetParent()->GetEventHandler()->AddPendingEvent(ev);
+    return;
+  }
+
+  m_popupWanted = false;
+  wxContextMenuEvent evtCtx(wxEVT_CONTEXT_MENU, this->GetId(),
+                            this->ClientToScreen(event.GetPosition()));
+  evtCtx.SetEventObject(this);
+  GetParent()->GetEventHandler()->AddPendingEvent(evtCtx);
 }
 
 void DashboardInstrument::MouseEvent(wxMouseEvent& event) {
-  if (event.GetEventType() == wxEVT_RIGHT_DOWN) {
+  if (event.GetEventType() == wxEVT_RIGHT_DOWN){
     wxContextMenuEvent evtCtx(wxEVT_CONTEXT_MENU, this->GetId(),
                               this->ClientToScreen(event.GetPosition()));
     evtCtx.SetEventObject(this);

@@ -487,16 +487,20 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
         continue;
       }
 
-      bool lon1l, lon1r, lon2l, lon2r;
-      TestLongitude(prp1->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon1l,
-                    lon1r);
-      TestLongitude(prp2->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon2l,
-                    lon2r);
-      if ((lon1l && lon2l) || (lon1r && lon2r)) {
-        r1valid = false;
-        prp1->m_pos_on_screen = false;
-        continue;
+      // Possible optimization, not usable if vp crosses IDL (180 E)
+      if (!vp.ContainsIDL()) {
+        bool lon1l, lon1r, lon2l, lon2r;
+        TestLongitude(prp1->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon1l,
+                      lon1r);
+        TestLongitude(prp2->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon2l,
+                      lon2r);
+        if ((lon1l && lon2l) || (lon1r && lon2r)) {
+          r1valid = false;
+          prp1->m_pos_on_screen = false;
+          continue;
+        }
       }
+
 
       if (!r1valid) {
         canvas->GetDoubleCanvasPointPix(prp1->m_lat, prp1->m_lon, &r1);

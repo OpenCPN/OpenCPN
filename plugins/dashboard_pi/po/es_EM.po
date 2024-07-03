@@ -5,546 +5,545 @@ msgstr ""
 "POT-Creation-Date: 2024-06-10 22:11-0400\n"
 "PO-Revision-Date: 2024-06-24 02:23\n"
 "Last-Translator: \n"
-"Language-Team: Turkish\n"
-"Language: tr_TR\n"
+"Language-Team: Spanish (Modern)\n"
+"Language: es_EM\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Project-ID: 49843\n"
-"X-Crowdin-Language: tr\n"
+"X-Crowdin-Language: es-EM\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
 "X-Crowdin-File-ID: 111\n"
 
 #: src/clock.cpp:161 src/dial.cpp:525 src/dial.cpp:526 src/gps.cpp:263
 #: src/wind.cpp:69 src/wind_history.cpp:550
 msgid "N"
-msgstr "K"
+msgstr "crwdns3932:0crwdne3932:0"
 
 #: src/dashboard_pi.cpp:260
 msgid "Position"
-msgstr "Mevki"
+msgstr "crwdns3933:0crwdne3933:0"
 
 #: src/dashboard_pi.cpp:262
 msgid "SOG"
-msgstr "SOG"
+msgstr "crwdns3934:0crwdne3934:0"
 
 #: src/dashboard_pi.cpp:264
 msgid "Speed SOG"
-msgstr ""
+msgstr "crwdns29252:0crwdne29252:0"
 
 #: src/dashboard_pi.cpp:266
 msgid "COG"
-msgstr "COG"
+msgstr "crwdns3936:0crwdne3936:0"
 
 #: src/dashboard_pi.cpp:268
 msgid "Mag COG"
-msgstr "Manyetik COG"
+msgstr "crwdns6763:0crwdne6763:0"
 
 #: src/dashboard_pi.cpp:270
 msgid "GNSS Compass"
-msgstr ""
+msgstr "crwdns21171:0crwdne21171:0"
 
 #: src/dashboard_pi.cpp:272
 msgid "True Compass"
-msgstr "Gerçek Pusula"
+msgstr "crwdns3938:0crwdne3938:0"
 
 #: src/dashboard_pi.cpp:274
 msgid "STW"
-msgstr "STW"
+msgstr "crwdns3939:0crwdne3939:0"
 
 #: src/dashboard_pi.cpp:276
 msgid "True HDG"
-msgstr "Gerçek HDG"
+msgstr "crwdns3940:0crwdne3940:0"
 
 #: src/dashboard_pi.cpp:278
 msgid "Mag HDG"
-msgstr "Manyetik HDG"
+msgstr "crwdns3941:0crwdne3941:0"
 
 #: src/dashboard_pi.cpp:281
 msgid "App. Wind Angle & Speed"
-msgstr "Nispi Rüzgar Açısı & Hızı"
+msgstr "crwdns3942:0crwdne3942:0"
 
 #: src/dashboard_pi.cpp:283
 msgid "App & True Wind Angle"
-msgstr "Nispi & Hakiki Rüzgar Açısı"
+msgstr "crwdns8076:0crwdne8076:0"
 
 #: src/dashboard_pi.cpp:285 src/dashboard_pi.cpp:287
 msgid "App. Wind Speed"
-msgstr "Nispi Rüzgar Hızı"
+msgstr "crwdns3943:0crwdne3943:0"
 
 #: src/dashboard_pi.cpp:289
 msgid "True Wind Angle & Speed"
-msgstr "Hakiki Rüzgar Açısı & Hızı"
+msgstr "crwdns3944:0crwdne3944:0"
 
 #: src/dashboard_pi.cpp:291
 msgid "Altitude"
-msgstr ""
+msgstr "crwdns26719:0crwdne26719:0"
 
 #: src/dashboard_pi.cpp:293
 msgid "Altitude Trace"
-msgstr ""
+msgstr "crwdns26721:0crwdne26721:0"
 
 #: src/dashboard_pi.cpp:295 src/dashboard_pi.cpp:297
 msgid "Depth"
-msgstr "Derinlik"
+msgstr "crwdns3945:0crwdne3945:0"
 
 #: src/dashboard_pi.cpp:299 src/dashboard_pi.cpp:301
 msgid "Barometric pressure"
-msgstr "Barometrik Basınç"
+msgstr "crwdns3946:0crwdne3946:0"
 
 #: src/dashboard_pi.cpp:303
 msgid "Water Temp."
-msgstr "Su Sıcaklığı"
+msgstr "crwdns3947:0crwdne3947:0"
 
 #: src/dashboard_pi.cpp:305
 msgid "Air Temp."
-msgstr "Hava Sıcaklığı"
+msgstr "crwdns3948:0crwdne3948:0"
 
 #: src/dashboard_pi.cpp:307
 msgid "App. Wind Angle"
-msgstr "Nispi Rüzgar Açısı"
+msgstr "crwdns3949:0crwdne3949:0"
 
 #: src/dashboard_pi.cpp:309
 msgid "True Wind Angle"
-msgstr "Hakiki Rüzgar Açısı"
+msgstr "crwdns3950:0crwdne3950:0"
 
 #: src/dashboard_pi.cpp:311
 msgid "True Wind Direction"
-msgstr "Hakiki Rüzgar Yönü"
+msgstr "crwdns3951:0crwdne3951:0"
 
 #: src/dashboard_pi.cpp:313
 msgid "True Wind Speed"
-msgstr "Hakiki Rüzgar Hızı"
+msgstr "crwdns3952:0crwdne3952:0"
 
 #: src/dashboard_pi.cpp:315
 msgid "True Wind Dir. & Speed"
-msgstr "Hakiki Rüzgar Yönü&Hızı"
+msgstr "crwdns3953:0crwdne3953:0"
 
 #: src/dashboard_pi.cpp:317 src/dashboard_pi.cpp:319
 msgid "VMG"
-msgstr "VMG"
+msgstr "crwdns3954:0crwdne3954:0"
 
 #: src/dashboard_pi.cpp:321
 msgid "VMG Wind"
-msgstr ""
+msgstr "crwdns28980:0crwdne28980:0"
 
 #: src/dashboard_pi.cpp:323 src/dashboard_pi.cpp:325
 msgid "Rudder Angle"
-msgstr "Düzmen Açısı"
+msgstr "crwdns3955:0crwdne3955:0"
 
 #: src/dashboard_pi.cpp:327
 msgid "GNSS in use"
-msgstr ""
+msgstr "crwdns21173:0crwdne21173:0"
 
 #: src/dashboard_pi.cpp:329
 msgid "GNSS Status"
-msgstr ""
+msgstr "crwdns21175:0crwdne21175:0"
 
 #: src/dashboard_pi.cpp:331
 msgid "Cursor"
-msgstr "Fare"
+msgstr "crwdns3958:0crwdne3958:0"
 
 #: src/dashboard_pi.cpp:333
 msgid "GNSS Clock"
-msgstr ""
+msgstr "crwdns21177:0crwdne21177:0"
 
 #: src/dashboard_pi.cpp:335
 msgid "Sunrise/Sunset"
-msgstr "Gündoğumu/Günbatımı"
+msgstr "crwdns3960:0crwdne3960:0"
 
 #: src/dashboard_pi.cpp:337
 msgid "Moon phase"
-msgstr "Ay Dönümü"
+msgstr "crwdns3961:0crwdne3961:0"
 
 #: src/dashboard_pi.cpp:339
 msgid "Wind history"
-msgstr "Rüzgar Geçmişi"
+msgstr "crwdns3962:0crwdne3962:0"
 
 #: src/dashboard_pi.cpp:341
 msgid "Barometric history"
-msgstr "Barometre Geçmişi"
+msgstr "crwdns3963:0crwdne3963:0"
 
 #: src/dashboard_pi.cpp:343
 msgid "Trip Log"
-msgstr "Yolculuk Kütüğü"
+msgstr "crwdns3964:0crwdne3964:0"
 
 #: src/dashboard_pi.cpp:345
 msgid "Sum Log"
-msgstr "Toplam Kütük"
+msgstr "crwdns3965:0crwdne3965:0"
 
 #: src/dashboard_pi.cpp:347
 msgid "From Ownship"
-msgstr "Teknemden"
+msgstr "crwdns3966:0crwdne3966:0"
 
 #: src/dashboard_pi.cpp:349
 msgid "Pitch"
-msgstr "Eğim"
+msgstr "crwdns8077:0crwdne8077:0"
 
 #: src/dashboard_pi.cpp:351
 msgid "Heel"
-msgstr ""
+msgstr "crwdns8078:0crwdne8078:0"
 
 #: src/dashboard_pi.cpp:353
 msgid "Local GNSS Clock"
-msgstr ""
+msgstr "crwdns21179:0crwdne21179:0"
 
 #: src/dashboard_pi.cpp:355
 msgid "Local CPU Clock"
-msgstr "Yerel CPU Saati"
+msgstr "crwdns10333:0crwdne10333:0"
 
 #: src/dashboard_pi.cpp:357
 msgid "Local Sunrise/Sunset"
-msgstr "Yerel Gün Doğumu/Batımı"
+msgstr "crwdns10334:0crwdne10334:0"
 
 #: src/dashboard_pi.cpp:359
 msgid "Humidity"
-msgstr ""
+msgstr "crwdns28982:0crwdne28982:0"
 
 #: src/dashboard_pi.cpp:600 src/dashboard_pi.cpp:948 src/dashboard_pi.cpp:3563
 #: src/dashboard_pi.cpp:3578 src/dashboard_pi.cpp:4016 src/dashboard_pi.cpp:4110
 #: src/dashboard_pi.cpp:4708
 msgid "Dashboard"
-msgstr "Gösterge Paneli"
+msgstr "crwdns3967:0crwdne3967:0"
 
 #: src/dashboard_pi.cpp:951
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr "OpenCPN için Gösterge Paneli Eklentisi"
+msgstr "crwdns3968:0crwdne3968:0"
 
 #: src/dashboard_pi.cpp:956
 msgid "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
-msgstr "OpenCPN için Gösterge Paneli Eklentisi\n"
-"NMEA kaynağından aldığı seyir verilerini gösterir."
+msgstr "crwdns3969:0crwdne3969:0"
 
 #: src/dashboard_pi.cpp:1817 src/dashboard_pi.cpp:2077 src/dashboard_pi.cpp:3058
 #: src/dashboard_pi.cpp:4242
 msgid "Up"
-msgstr "Yukarı"
+msgstr "crwdns3979:0crwdne3979:0"
 
 #: src/dashboard_pi.cpp:1820 src/dashboard_pi.cpp:2079 src/dashboard_pi.cpp:3060
 #: src/dashboard_pi.cpp:4249
 msgid "Down"
-msgstr "Aşağı"
+msgstr "crwdns3980:0crwdne3980:0"
 
 #: src/dashboard_pi.cpp:1837 src/dashboard_pi.cpp:2088 src/dashboard_pi.cpp:3047
 msgid "Stbd"
-msgstr ""
+msgstr "crwdns20392:0crwdne20392:0"
 
 #: src/dashboard_pi.cpp:1840 src/dashboard_pi.cpp:2090 src/dashboard_pi.cpp:3049
 msgid "Port"
-msgstr ""
+msgstr "crwdns20394:0crwdne20394:0"
 
 #: src/dashboard_pi.cpp:3957
 msgid "Dashboard preferences"
-msgstr "Gösterge PAneli YApılandırması"
+msgstr "crwdns3970:0crwdne3970:0"
 
 #: src/dashboard_pi.cpp:4119
 msgid "show this dashboard"
-msgstr "Bu gösterge panelini göster."
+msgstr "crwdns3971:0crwdne3971:0"
 
 #: src/dashboard_pi.cpp:4130
 msgid "Caption:"
-msgstr "Başlık:"
+msgstr "crwdns3972:0crwdne3972:0"
 
 #: src/dashboard_pi.cpp:4140
 msgid "Orientation:"
-msgstr "Yönelim:"
+msgstr "crwdns3973:0crwdne3973:0"
 
 #: src/dashboard_pi.cpp:4146 src/dashboard_pi.cpp:5413
 msgid "Vertical"
-msgstr "Dikey"
+msgstr "crwdns3974:0crwdne3974:0"
 
 #: src/dashboard_pi.cpp:4147 src/dashboard_pi.cpp:5416
 msgid "Horizontal"
-msgstr "Yatay"
+msgstr "crwdns3975:0crwdne3975:0"
 
 #: src/dashboard_pi.cpp:4178 src/dashboard_pi.cpp:4197 src/dashboard_pi.cpp:5021
 msgid "Instruments"
-msgstr "Aletler"
+msgstr "crwdns3976:0crwdne3976:0"
 
 #: src/dashboard_pi.cpp:4210
 msgid "Add"
-msgstr "Ekle"
+msgstr "crwdns3977:0crwdne3977:0"
 
 #: src/dashboard_pi.cpp:4219
 msgid "Edit"
-msgstr ""
+msgstr "crwdns28984:0crwdne28984:0"
 
 #: src/dashboard_pi.cpp:4234
 msgid "Delete"
-msgstr "Sil"
+msgstr "crwdns3978:0crwdne3978:0"
 
 #: src/dashboard_pi.cpp:4262
 msgid "Appearance"
-msgstr "Görünüm"
+msgstr "crwdns3981:0crwdne3981:0"
 
 #: src/dashboard_pi.cpp:4265
 msgid "Fonts"
-msgstr "Harf biçimi"
+msgstr "crwdns3982:0crwdne3982:0"
 
 #: src/dashboard_pi.cpp:4274 src/dashboard_pi.cpp:6073
 msgid "Title:"
-msgstr "Ünvan:"
+msgstr "crwdns3983:0crwdne3983:0"
 
 #: src/dashboard_pi.cpp:4283 src/dashboard_pi.cpp:6087
 msgid "Data:"
-msgstr "Veri:"
+msgstr "crwdns3984:0crwdne3984:0"
 
 #: src/dashboard_pi.cpp:4292 src/dashboard_pi.cpp:6101
 msgid "Label:"
-msgstr "Etiket:"
+msgstr "crwdns3985:0crwdne3985:0"
 
 #: src/dashboard_pi.cpp:4301 src/dashboard_pi.cpp:6108
 msgid "Small:"
-msgstr "Küçük:"
+msgstr "crwdns3986:0crwdne3986:0"
 
 #: src/dashboard_pi.cpp:4311
 msgid "Reset:"
-msgstr ""
+msgstr "crwdns28986:0crwdne28986:0"
 
 #: src/dashboard_pi.cpp:4315
 msgid "Set dashboard default fonts"
-msgstr ""
+msgstr "crwdns28988:0crwdne28988:0"
 
 #: src/dashboard_pi.cpp:4324
 msgid "Units, Ranges, Formats"
-msgstr "Birimler, Aralıklar, Biçimler"
+msgstr "crwdns3987:0crwdne3987:0"
 
 #: src/dashboard_pi.cpp:4332
 msgid "Speedometer max value:"
-msgstr "Hızölçerin en yüksek değeri:"
+msgstr "crwdns3988:0crwdne3988:0"
 
 #: src/dashboard_pi.cpp:4341
 msgid "Speed Over Ground Damping Factor:"
-msgstr "Yere Göre Süratin Sönümleme Faktörü:"
+msgstr "crwdns9256:0crwdne9256:0"
 
 #: src/dashboard_pi.cpp:4350
 msgid "COG Damping Factor:"
-msgstr ""
+msgstr "crwdns9257:0crwdne9257:0"
 
 #: src/dashboard_pi.cpp:4359
 msgid "Local Time Offset From UTC:"
-msgstr "UTC'den Yerel Saat Düzeltmesi:"
+msgstr "crwdns10335:0crwdne10335:0"
 
 #: src/dashboard_pi.cpp:4384
 msgid "Boat speed units:"
-msgstr "Tekne hız birimleri"
+msgstr "crwdns3989:0crwdne3989:0"
 
 #: src/dashboard_pi.cpp:4387 src/dashboard_pi.cpp:4451
 msgid "Honor OpenCPN settings"
-msgstr "OpenCPN yapılandırmasına uy."
+msgstr "crwdns3990:0crwdne3990:0"
 
 #: src/dashboard_pi.cpp:4387 src/dashboard_pi.cpp:4470
 msgid "Kts"
-msgstr "Kts"
+msgstr "crwdns3991:0crwdne3991:0"
 
 #: src/dashboard_pi.cpp:4388 src/dashboard_pi.cpp:4470
 msgid "mph"
-msgstr "mph"
+msgstr "crwdns3992:0crwdne3992:0"
 
 #: src/dashboard_pi.cpp:4388 src/dashboard_pi.cpp:4470
 msgid "km/h"
-msgstr "km/s"
+msgstr "crwdns3993:0crwdne3993:0"
 
 #: src/dashboard_pi.cpp:4388 src/dashboard_pi.cpp:4470
 msgid "m/s"
-msgstr "m/s"
+msgstr "crwdns3994:0crwdne3994:0"
 
 #: src/dashboard_pi.cpp:4402
 msgid "Depth units:"
-msgstr "Derinlik birimleri:"
+msgstr "crwdns3995:0crwdne3995:0"
 
 #: src/dashboard_pi.cpp:4406 src/dashboard_pi.cpp:4453
 msgid "Meters"
-msgstr "Metre"
+msgstr "crwdns3996:0crwdne3996:0"
 
 #: src/dashboard_pi.cpp:4406
 msgid "Feet"
-msgstr "Fit"
+msgstr "crwdns3997:0crwdne3997:0"
 
 #: src/dashboard_pi.cpp:4406
 msgid "Fathoms"
-msgstr "Kulaç"
+msgstr "crwdns3998:0crwdne3998:0"
 
 #: src/dashboard_pi.cpp:4407
 msgid "Inches"
-msgstr "İnç"
+msgstr "crwdns4000:0crwdne4000:0"
 
 #: src/dashboard_pi.cpp:4407
 msgid "Centimeters"
-msgstr "Santimetre"
+msgstr "crwdns3999:0crwdne3999:0"
 
 #: src/dashboard_pi.cpp:4419
 #, c-format
 msgid "Depth Offset (%s):"
-msgstr ""
+msgstr "crwdns12242:0%scrwdne12242:0"
 
 #: src/dashboard_pi.cpp:4448
 msgid "Distance units:"
-msgstr "Mesafe birimleri"
+msgstr "crwdns4001:0crwdne4001:0"
 
 #: src/dashboard_pi.cpp:4452
 msgid "Nautical miles"
-msgstr "Deniz mili"
+msgstr "crwdns4002:0crwdne4002:0"
 
 #: src/dashboard_pi.cpp:4452
 msgid "Statute miles"
-msgstr "Kara mili"
+msgstr "crwdns4003:0crwdne4003:0"
 
 #: src/dashboard_pi.cpp:4453
 msgid "Kilometers"
-msgstr "Kilometre"
+msgstr "crwdns4004:0crwdne4004:0"
 
 #: src/dashboard_pi.cpp:4467
 msgid "Wind speed units:"
-msgstr "Rüzgar hızı birimleri:"
+msgstr "crwdns4005:0crwdne4005:0"
 
 #: src/dashboard_pi.cpp:4484
 msgid "Temperature units:"
-msgstr ""
+msgstr "crwdns21181:0crwdne21181:0"
 
 #: src/dashboard_pi.cpp:4487
 msgid "Celsius"
-msgstr ""
+msgstr "crwdns21183:0crwdne21183:0"
 
 #: src/dashboard_pi.cpp:4487
 msgid "Fahrenheit"
-msgstr ""
+msgstr "crwdns21185:0crwdne21185:0"
 
 #: src/dashboard_pi.cpp:4487
 msgid "Kelvin"
-msgstr ""
+msgstr "crwdns21187:0crwdne21187:0"
 
 #: src/dashboard_pi.cpp:4502
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
-msgstr ""
+msgstr "crwdns26723:0crwdne26723:0"
 
 #: src/dashboard_pi.cpp:4983
 msgid "Add instrument"
-msgstr "Alet ekle"
+msgstr "crwdns4006:0crwdne4006:0"
 
 #: src/dashboard_pi.cpp:4988
 msgid "Select instrument to add:"
-msgstr "Eklenecek aleti seç:"
+msgstr "crwdns4007:0crwdne4007:0"
 
 #: src/dashboard_pi.cpp:5397 src/dashboard_pi.cpp:5423
 msgid "Preferences..."
-msgstr "Yapılandırma"
+msgstr "crwdns4008:0crwdne4008:0"
 
 #: src/dashboard_pi.cpp:5402
 msgid "Resize..."
-msgstr ""
+msgstr "crwdns20398:0crwdne20398:0"
 
 #: src/dashboard_pi.cpp:5410
 msgid "Undock"
-msgstr ""
+msgstr "crwdns12244:0crwdne12244:0"
 
 #: src/dashboard_pi.cpp:5973
 msgid "Choose font"
-msgstr ""
+msgstr "crwdns20400:0crwdne20400:0"
 
 #: src/dashboard_pi.cpp:6080
 msgid "Title background color:"
-msgstr ""
+msgstr "crwdns29254:0crwdne29254:0"
 
 #: src/dashboard_pi.cpp:6094
 msgid "Data background color:"
-msgstr ""
+msgstr "crwdns29256:0crwdne29256:0"
 
 #: src/dashboard_pi.cpp:6115
 msgid "Arrow 1 Colour :"
-msgstr ""
+msgstr "crwdns28994:0crwdne28994:0"
 
 #: src/dashboard_pi.cpp:6122
 msgid "Arrow 2 Colour :"
-msgstr ""
+msgstr "crwdns28996:0crwdne28996:0"
 
 #: src/dashboard_pi.cpp:6143
 msgid "Set default"
-msgstr ""
+msgstr "crwdns28998:0crwdne28998:0"
 
 #: src/dial.cpp:525 src/wind.cpp:69 src/wind_history.cpp:554
 msgid "NE"
-msgstr "KD"
+msgstr "crwdns4009:0crwdne4009:0"
 
 #: src/dial.cpp:525 src/gps.cpp:267 src/wind.cpp:69 src/wind_history.cpp:558
 msgid "E"
-msgstr "D"
+msgstr "crwdns4010:0crwdne4010:0"
 
 #: src/dial.cpp:525 src/wind.cpp:69 src/wind_history.cpp:562
 msgid "SE"
-msgstr "GD"
+msgstr "crwdns4011:0crwdne4011:0"
 
 #: src/dial.cpp:525 src/gps.cpp:271 src/wind.cpp:70 src/wind_history.cpp:566
 msgid "S"
-msgstr "G"
+msgstr "crwdns4012:0crwdne4012:0"
 
 #: src/dial.cpp:526 src/wind.cpp:70 src/wind_history.cpp:570
 msgid "SW"
-msgstr "GB"
+msgstr "crwdns4013:0crwdne4013:0"
 
 #: src/dial.cpp:526 src/gps.cpp:275 src/wind.cpp:70 src/wind_history.cpp:574
 msgid "W"
-msgstr "W"
+msgstr "crwdns4014:0crwdne4014:0"
 
 #: src/dial.cpp:526 src/wind.cpp:70 src/wind_history.cpp:578
 msgid "NW"
-msgstr "KB"
+msgstr "crwdns4015:0crwdne4015:0"
 
 #: src/instrument.cpp:400
 msgid " true"
-msgstr " hakiki"
+msgstr "crwdns4016:0crwdne4016:0"
 
 #: src/instrument.cpp:402
 msgid " mag"
-msgstr "manyetik"
+msgstr "crwdns4017:0crwdne4017:0"
 
 #: src/wind_history.cpp:54 src/wind_history.cpp:130
 msgid "-"
-msgstr ""
+msgstr "crwdns26725:0crwdne26725:0"
 
 #: src/wind_history.cpp:410
 #, c-format
 msgid "--- %s"
-msgstr ""
+msgstr "crwdns8080:0%scrwdne8080:0"
 
 #: src/wind_history.cpp:552
 msgid "NNE"
-msgstr "KKD"
+msgstr "crwdns4018:0crwdne4018:0"
 
 #: src/wind_history.cpp:556
 msgid "ENE"
-msgstr "DKD"
+msgstr "crwdns4019:0crwdne4019:0"
 
 #: src/wind_history.cpp:560
 msgid "ESE"
-msgstr "DGD"
+msgstr "crwdns4020:0crwdne4020:0"
 
 #: src/wind_history.cpp:564
 msgid "SSE"
-msgstr "GGD"
+msgstr "crwdns4021:0crwdne4021:0"
 
 #: src/wind_history.cpp:568
 msgid "SSW"
-msgstr "GGB"
+msgstr "crwdns4022:0crwdne4022:0"
 
 #: src/wind_history.cpp:572
 msgid "WSW"
-msgstr "BKB"
+msgstr "crwdns4023:0crwdne4023:0"
 
 #: src/wind_history.cpp:576
 msgid "WNW"
-msgstr "BKB"
+msgstr "crwdns4024:0crwdne4024:0"
 
 #: src/wind_history.cpp:580
 msgid "NNW"
-msgstr "KKB"
+msgstr "crwdns4025:0crwdne4025:0"
 
 #: src/wind_history.cpp:792
 #, c-format
 msgid " Max %.1f %s since %02d:%02d  Overall %.1f"
-msgstr ""
+msgstr "crwdns29000:0%.1fcrwdnd29000:0%scrwdnd29000:0%02dcrwdnd29000:0%02dcrwdnd29000:0%.1fcrwdne29000:0"
 

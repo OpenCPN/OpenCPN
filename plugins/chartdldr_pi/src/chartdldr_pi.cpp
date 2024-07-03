@@ -1423,11 +1423,12 @@ After downloading the charts, please extract them to %s"),
             _("Downloading chart %u of %u (%s / %s)"), m_downloading,
             to_download, m_transferredsize.c_str(), m_totalsize.c_str()));
 
-      // if(g_pi && g_pi->m_dldrpanel)
-      // g_pi->m_dldrpanel->Raise();
+      Update();
+      Refresh();
+
       wxTheApp->ProcessPendingEvents();
-      wxYieldIfNeeded();
-      wxMilliSleep(10);
+      wxYield();
+      wxMilliSleep(20);
     }
 
     if (cancelled) {

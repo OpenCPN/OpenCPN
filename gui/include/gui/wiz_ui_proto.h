@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 4.0.0-0-g0efcecf0)
+// C++ code generated with wxFormBuilder (version 4.2.1-5-gc2f65a65-dirty)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -21,6 +21,7 @@
 #include <wx/sizer.h>
 #include <wx/statbox.h>
 #include <wx/richtext/richtextctrl.h>
+#include <wx/scrolwin.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
@@ -34,7 +35,6 @@ WX_DEFINE_ARRAY_PTR( wxWizardPageSimple*, WizardPages );
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////
 /// Class FirstUseWiz
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,23 +43,26 @@ class FirstUseWiz : public wxWizard
 	private:
 
 	protected:
+		wxScrolledWindow* m_swLangUnits;
 		wxStaticText* m_stDepth;
 		wxChoice* m_cDepth;
 		wxStaticText* m_stDistance;
 		wxChoice* m_cDistance;
-    wxStaticText* m_stSpeed;
-    wxChoice* m_cSpeed;
-    wxStaticText* m_stWind;
-    wxChoice* m_cWind;
+		wxStaticText* m_stSpeed;
+		wxChoice* m_cSpeed;
+		wxStaticText* m_stWind;
+		wxChoice* m_cWind;
 		wxStaticText* m_stPosition;
 		wxChoice* m_cPosition;
 		wxCheckBox* m_cbShowTrue;
 		wxCheckBox* m_cbShowMagnetic;
 		wxRichTextCtrl* m_rtLangUnitInfo;
+		wxScrolledWindow* m_swConnections;
 		wxStaticText* m_stSources;
 		wxCheckListBox* m_clSources;
 		wxButton* m_btnRescanSources;
 		wxRichTextCtrl* m_rtConnectionInfo;
+		wxScrolledWindow* m_swCharts;
 		wxStaticText* m_stAddCharts;
 		wxListBox* m_lbChartsDirs;
 		wxButton* m_btnAddChartDir;
