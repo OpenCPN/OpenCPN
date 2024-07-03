@@ -38,7 +38,7 @@ public:
   void ProcessDefaultIcons(double displayDPmm);
   void ProcessIcons(ocpnStyle::Style *style, double displayDPmm);
   void ProcessUserIcons(ocpnStyle::Style *style, double displayDPmm);
-  MarkIcon *ProcessIcon(wxBitmap pimage, const wxString &key,
+  MarkIcon *ProcessIcon(wxImage image, const wxString &key,
                         const wxString &description, bool add_in_front = false);
   unsigned int GetIconTexture(const wxBitmap *pmb, int &glw, int &glh);
 

@@ -30,7 +30,6 @@
 #include <wx/window.h>
 
 #include "model/nmea_log.h"
-#include "observable_evtvar.h"
 
 #include "WindowDestroyListener.h"
 #include "TTYWindow.h"
@@ -68,9 +67,6 @@ public:
   virtual void DestroyWindow();
   static void Shutdown();
   wxWindow *GetTTYWindow(void) { return static_cast<wxWindow*>(m_window); }
-
-  /** Notified when m_window is closing. */
-  EventVar nmea_window_close_evt;
 
 private:
   NMEALogWindow();

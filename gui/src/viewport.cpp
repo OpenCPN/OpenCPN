@@ -963,6 +963,13 @@ void ViewPort::SetBBoxDirect(double latmin, double lonmin, double latmax,
                              double lonmax) {
   vpBBox.Set(latmin, lonmin, latmax, lonmax);
 }
+bool ViewPort::ContainsIDL(){
+  if ((vpBBox.GetMinLon() <= -180.) && (vpBBox.GetMaxLon() > -180.))
+    return true;
+  if ((vpBBox.GetMinLon() <= 180.) && (vpBBox.GetMaxLon() > 180.))
+    return true;
+  return false;
+}
 
 ViewPort ViewPort::BuildExpandedVP(int width, int height) {
   ViewPort new_vp = *this;

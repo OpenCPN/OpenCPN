@@ -2585,6 +2585,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
 
     // Container for last received sat-system info from SK-N2k
     static wxString talkerID = wxEmptyString;
+    // Container for last received AWA that may be needed for TWS calculation
+    static double skAWA;
 
     if (update_path == _T("navigation.position")) {
       if (mPriPosition >= 2) {
@@ -2682,6 +2684,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
         if (std::isnan(m_awaangle)) return;
 
         m_awaangle = GEODESIC_RAD2DEG(m_awaangle);  // negative to port
+        skAWA = m_awaangle;
         wxString m_awaunit = _T("\u00B0R");
         if (m_awaangle < 0) {
           m_awaunit = _T("\u00B0L");
@@ -2702,6 +2705,14 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker, wxString &s
           OCPN_DBP_STC_AWS,
           toUsrSpeed_Plugin(m_awaspeed_kn, g_iDashWindSpeedUnit),
           getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
+
+          // If no TWA from SK try to use AWS/AWA to calculate it
+        if (mPriTWA >= 6 && !std::isnan(skAWA)) {
+          CalculateAndUpdateTWDS(m_awaspeed_kn, skAWA);
+          mPriTWA = 6;
+          mMWVT_Watchdog = gps_watchdog_timeout_ticks;
+          mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
+        }
       }
     }
     else if (( update_path == _T("environment.wind.angleTrueWater") &&

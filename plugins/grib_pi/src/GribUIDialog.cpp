@@ -169,7 +169,8 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
     : GRIBUICtrlBarBase(parent, id, title, pos, size, style) {
   pParent = parent;
   pPlugIn = ppi;
-  m_vp = 0;
+  // Preinitialize the vierwport with an existing value, see https://github.com/OpenCPN/OpenCPN/pull/4002/files
+  m_vp = new PlugIn_ViewPort(pPlugIn->GetCurrentViewPort());
   pReq_Dialog = NULL;
   m_bGRIBActiveFile = NULL;
   m_pTimelineSet = NULL;
